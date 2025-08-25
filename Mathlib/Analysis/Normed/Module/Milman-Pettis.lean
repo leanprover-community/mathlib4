@@ -5,7 +5,7 @@ Authors: Filippo A. E. Nuccio
 -/
 
 import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.LocallyConvex.WeakSpaces
+import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.Analysis.Normed.Module.Dual
@@ -66,7 +66,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 open Metric NormedSpace Function ContinuousLinearMap Pointwise
 
 local notation3 "E**" => StrongDual ℝ (StrongDual ℝ E)
-local notation3 "ℬ₀" => (inclusionInDoubleDual ℝ E) '' closedBall 0 1
+local notation3 "𝒰" => (inclusionInDoubleDual ℝ E) '' closedBall 0 1
 
 /- Goldstine lemma (see Brezis, Chapter § 3.5, Lemma 3.4) says that the unit ball in the double
 dual of a Banach space (**FAE: I suspect completeness is not needed) ** is the closure, with respect
@@ -131,24 +131,24 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
   · rw [not_nontrivial_iff_subsingleton] at hE
     apply surjective_to_subsingleton
   simp at hE
-  let X := WeakBilin <| strongDualPairing ℝ (StrongDual ℝ E) -- `E**` with the weak topology
+  let X := WeakDual ℝ (StrongDual ℝ E) -- `E**` with the weak topology
   let 𝒯 : TopologicalSpace X := inferInstance -- the weak topology on `E**`: can use IsOpen[T] **FAE: Choose!**
   rw [surjective_iff_ball_le_range]
   refine ⟨sphere 0 1, _, zero_lt_one, ?_⟩
   intro ξ hξ
   have hξ_norm : ‖ξ‖ = 1 := by rwa [← mem_sphere_zero_iff_norm]
-  have hξ_mem {V : Set _} (hV_mem : ξ ∈ V) (hV : IsOpen[𝒯] V) : ξ ∈ closure[𝒯] (V ∩ ℬ₀) := by
+  have hξ_mem {V : Set _} (hV_mem : ξ ∈ V) (hV : IsOpen[𝒯] V) : ξ ∈ closure[𝒯] (V ∩ 𝒰) := by
     apply hV.inter_closure <| Set.mem_inter hV_mem _
     rw [goldstine]
     apply sphere_subset_closedBall hξ
-  set ε := infDist ξ ℬ₀ with ε_def
+  set ε := infDist ξ 𝒰 with ε_def
   by_cases ε_pos : 0 = ε
   · sorry
   replace ε_pos : 0 < ε := lt_of_le_of_ne infDist_nonneg ε_pos
   obtain ⟨δ, hδ_pos, hδ_dist⟩ := exists_forall_closed_ball_dist_add_le_two_sub E ε_pos
   obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt (half_pos hδ_pos) hξ_norm
   set V := {x : E** | |x φ - 1| < δ/2} with hV_def
-  have hV_dist {x x' : E**} (hx : x ∈ V ∩ ℬ₀) (hx' : x' ∈ V ∩ ℬ₀) : ‖x - x'‖ < ε/2 := sorry
+  have hV_dist {x x' : E**} (hx : x ∈ V ∩ 𝒰) (hx' : x' ∈ V ∩ 𝒰) : ‖x - x'‖ < ε/2 := sorry
   have hV_open : IsOpen[𝒯] V := by
     rw [hV_def]
     convert @Continuous.isOpen_preimage (X := X) (Y := ℝ) _ _ (fun x : E** ↦ |x φ - 1|)
@@ -158,12 +158,12 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
         dist_zero_right, and_imp, Set.mem_preimage, mem_ball, Real.norm_eq_abs, abs_abs]
     · exact Continuous.comp (X := X) (f := fun x : E** ↦ x φ) (g := fun (x : ℝ) ↦ |x - 1|)
         (by fun_prop) <| WeakBilin.eval_continuous (strongDualPairing ℝ (StrongDual ℝ E)) _
-  obtain ⟨y, hy⟩ : (V ∩ ℬ₀).Nonempty := by
+  obtain ⟨y, hy⟩ : (V ∩ 𝒰).Nonempty := by
     rw [← closure_nonempty_iff (X := X)]
     exact ⟨ξ, hξ_mem hφ_lt hV_open⟩
-  have subset : V ∩ ℬ₀ ⊆ ({y} + closedBall 0 (ε/2) : (Set E**)) := sorry
+  have subset : V ∩ 𝒰 ⊆ ({y} + closedBall 0 (ε/2) : (Set E**)) := sorry
   have clSub : IsClosed[𝒯] ({y} + closedBall 0 (ε/2) : (Set E**)) := sorry
-  have trueEnd : infDist ξ (V ∩ ℬ₀) ≤ ε/2 := by -- migliorare rimpiazzando` V∩𝒰₁` con 𝒰₁
+  have trueEnd : infDist ξ (V ∩ 𝒰) ≤ ε/2 := by -- migliorare rimpiazzando` V∩𝒰₁` con 𝒰₁
     apply (infDist_le_dist_of_mem hy).trans
     specialize hξ_mem hφ_lt hV_open
     apply hξ_mem
@@ -180,58 +180,191 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
 
 lemma exists_open_diam_inter_lt [UniformConvexSpace E] {ξ : E**} {ε : ℝ} (hε : 0 < ε)
     (hξ : ξ ∈ closedBall 0 1) :
-    -- (letI 𝒯 : TopologicalSpace (WeakBilin <| strongDualPairing ℝ (StrongDual ℝ E)) :=
-    ∃ W : Set E**, IsOpen (X := WeakBilin <| strongDualPairing ℝ (StrongDual ℝ E))
-      W ∧ ξ ∈ W ∧ diam (W ∩ ℬ₀) < ε := by sorry
+    -- (letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) :=
+    ∃ W : Set E**, IsOpen (X := WeakDual ℝ (StrongDual ℝ E))
+      W ∧ ξ ∈ W ∧ diam (W ∩ 𝒰) < ε := by sorry
+
+
+example (s : Set (WeakDual ℝ (StrongDual ℝ E)))
+    (hsB : s ⊆ ((closedBall (0 : E**) 1) : Set (E**))) :
+    closure (X := (WeakDual ℝ (StrongDual ℝ E))) s ⊆ ((closedBall (0 : E**) 1) : Set (E**)) := by
+  have h1 : s ⊆ WeakDual.toStrongDual ⁻¹' (((closedBall (0 : E**) 1) : Set (E**))) := by
+    exact hsB
+  have h2 : IsClosed (X := WeakDual ℝ (StrongDual ℝ E))
+    (WeakDual.toStrongDual ⁻¹' (((closedBall (0 : E**) 1) : Set (E**)))) := by
+    apply WeakDual.isClosed_closedBall
+  apply closure_minimal hsB h2
+
+-- (hb : IsBounded (StrongDual.toWeakDual ⁻¹' s))
+
+example (s : Set (WeakDual ℝ (StrongDual ℝ E)))
+    (hB : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) :
+    closure (X := (WeakDual ℝ (StrongDual ℝ E))) s ⊆ closure (X := E**) s := by sorry
+  -- have h1 : s ⊆ WeakDual.toStrongDual ⁻¹' (((closedBall (0 : E**) 1) : Set (E**))) := by
+  --   exact hsB
+  -- have h2 : IsClosed (X := WeakDual ℝ (StrongDual ℝ E))
+  --   (WeakDual.toStrongDual ⁻¹' (((closedBall (0 : E**) 1) : Set (E**)))) := by
+  --   apply WeakDual.isClosed_closedBall
+  -- apply closure_minimal hsB h2
+
+lemma diam_lt_iff_subset {X : Type*} [MetricSpace X] {s : Set X} {ε : ℝ} (hε : 0 < ε) :
+    diam s < ε ↔ ∃ c ρ, ρ < ε ∧ s ⊆ closedBall c ρ := by sorry
+  -- refine ⟨fun h ↦ ?_, fun ⟨c, ρ, hρ₀, hρ₁, hc⟩ ↦ ?_⟩
+  -- · sorry
+  -- · sorry
+
+
+
+lemma diam_WeakClosure_le_of_diam_le {s : Set E**} {ε : ℝ} (hε : 0 < ε) (hs : diam s < ε) :
+    letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+    diam (WeakDual.toStrongDual '' (closure[𝒯] s)) < ε := by
+  let 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+  obtain ⟨c, ρ, hρ, hc⟩ := (diam_lt_iff_subset hε).mp hs
+  have : WeakDual.toStrongDual '' closure[𝒯] s ⊆ closedBall c ρ := by
+    simp only [WeakDual.coe_toStrongDual, Set.image_id']
+    refine closure_minimal hc ?_
+    apply WeakDual.isClosed_closedBall
+  apply lt_of_le_of_lt (diam_mono this isBounded_closedBall)
+  · rw [diam_lt_iff_subset hε]
+    refine ⟨c, ρ, hρ, by simp⟩
+
+lemma WeakClosure_subset_closedBall {s : Set E**} {c : E**} {ε : ℝ} (hε : 0 < ε)
+    (hs : s ⊆ closedBall c ε) :
+    letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+    (WeakDual.toStrongDual '' (closure[𝒯] s)) ⊆ closedBall c ε := by sorry
+  -- let 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+  -- obtain ⟨c, ρ, hρ, hc⟩ := (diam_lt_iff_subset hε).mp hs
+  -- have : WeakDual.toStrongDual '' closure[𝒯] s ⊆ closedBall c ρ := by
+  --   simp only [WeakDual.coe_toStrongDual, Set.image_id']
+  --   refine closure_minimal hc ?_
+  --   apply WeakDual.isClosed_closedBall
+  -- apply lt_of_le_of_lt (diam_mono this isBounded_closedBall)
+  -- · rw [diam_lt_iff_subset hε]
+  --   refine ⟨c, ρ, hρ, by simp⟩
+
+
+-- lemma closure_le_closure (s : Set E**) :
+--     WeakDual.toStrongDual '' (closure (X := WeakDual ℝ (StrongDual ℝ E)) s) ⊆
+--       closure (s) := by
+--     let 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+--     have ff (K : Set (WeakDual ℝ (StrongDual ℝ E))) (h : IsClosed[𝒯] K) : Bornology.IsBounded
+--       (StrongDual.toWeakDual ⁻¹' K) := sorry
+--     rw [closure, closure]
+--     have := Set.image_sInter_subset (f := WeakDual.toStrongDual (𝕜 := ℝ) (E := StrongDual ℝ E))
+--       (S := {t | IsClosed[𝒯] t ∧ s ⊆ t})
+--     apply subset_trans this
+--     rw [Set.sInter_eq_biInter]
+--     apply Set.iInter_mono''
+--     intro S x hx
+--     rw [Set.mem_iInter] at hx ⊢
+--     simp only [Set.mem_setOf_eq, WeakDual.coe_toStrongDual, Set.image_id', and_imp] at hx
+--     intro ⟨hS_cl, hS_s⟩
+--     apply hx _ hS_s
+--     specialize ff S
+    -- have := @WeakDual.isClosed_image_coe_of_bounded_of_closed ℝ _ (StrongDual ℝ E) _ _
+    --   S
+
+
+    --
+    -- intro j
+    -- use j
 
 
 
 
-lemma surjective [UniformConvexSpace E] : closure ℬ₀ = closedBall 0 1 := by
-  let 𝒯 : TopologicalSpace (WeakBilin <| strongDualPairing ℝ (StrongDual ℝ E)) := inferInstance -- the weak topology on `E**`: can use IsOpen[T] **FAE: Choose!**
+
+
+
+  -- have uno := @WeakBilin.isEmbedding ℝ E** (StrongDual ℝ E) _ _ _ _ _ _
+  --       (strongDualPairing ℝ (StrongDual ℝ E)) ?_
+  -- have due := uno.closure_eq_preimage_closure_image s
+  -- rw [due]
+
+  --     set ι : (WeakDual ℝ (StrongDual ℝ E)) → E** := fun x ↦ x with ι_def
+  --     have hι : Topology.IsEmbedding ι := by
+  --       rw [ι_def]
+  --       convert uno
+  --       simp
+        -- exact?
+
+      -- (𝕜 := ℝ) (E := StrongDual ℝ E) (F := (StrongDual ℝ E)
+      --   (B := strongDualPairing ℝ (StrongDual ℝ E))
+        -- (B := strongDualPairing ℝ (StrongDual ℝ E))
+      -- apply WeakSpace.closure_subset (𝕜 := ℝ) (E := E**) (V := W ∩ 𝒰)
+      -- · convert hx_mem
+      --   sorry
+      -- ·
+      -- -- have := @Convex.toWeakSpace_closure ℝ E** _ _ _ _ _ _ _ _ _ (W ∩ 𝒰) ?_
+      -- have : closure ((toWeakSpace ℝ E**) '' (W ∩ 𝒰)) = closure[𝒯] (W ∩ 𝒰) := by
+      --   congr
+      --   · --simp [𝒯, WeakSpace, WeakBilin, TopologicalSpace.Pi]
+      --     -- rfl
+      --   · ext x
+      --     refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+      --     · simp at hx
+      --       sorry
+      --     · simp at ⊢ hx
+      --       sorry
+
+
+
+
+lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
+  let 𝒯 : TopologicalSpace <| WeakDual ℝ (StrongDual ℝ E) := inferInstance
+  -- `WeakDual (StrongDual ℝ E)` is `E**` endowed with the weak-* topology
   ext x
   rw [Metric.mem_closure_iff]
-  refine ⟨fun h ↦ ?_, fun hx ε hε ↦ ?_⟩
-  · sorry
-  · obtain ⟨W, hW, x_mem, h_diam⟩ := exists_open_diam_inter_lt hε hx
-    have hx_mem : x ∈ closure[𝒯] (W ∩ ℬ₀) := by
+  refine ⟨fun h ↦ ?_, fun hx ↦ ?_⟩
+  · rw [← closure_closedBall, Metric.mem_closure_iff] -- use a lemma saying that the image of dual is closed
+    intro ε hε
+    obtain ⟨b, hb_mem, hb_lt⟩ := h ε hε
+    refine ⟨b, ?_, hb_lt⟩
+    obtain ⟨c, hc_le, hc_eq⟩ := by simpa using hb_mem
+    grw [← hc_eq, mem_closedBall, dist_zero_right, double_dual_bound, hc_le]
+  · intro ε hε
+    obtain ⟨W, hW, x_mem, h_diam⟩ := exists_open_diam_inter_lt hε hx
+    have hx_mem : x ∈ closure[𝒯] (W ∩ 𝒰) := by
       apply hW.inter_closure <| Set.mem_inter x_mem _
       rwa [goldstine]
-    obtain ⟨y, y_mem⟩ : (W ∩ ℬ₀).Nonempty := by
-      rw [← closure_nonempty_iff (X := (WeakBilin <| strongDualPairing ℝ (StrongDual ℝ E)))]
+    obtain ⟨y, y_mem⟩ : (W ∩ 𝒰).Nonempty := by
+      rw [← closure_nonempty_iff (X := WeakDual ℝ (StrongDual ℝ E))]
       use x
-    replace hx_mem : x ∈ closure (W ∩ ℬ₀) := by
-      have := @Convex.toWeakSpace_closure
-      -- apply closure_mono
+    -- replace hx_mem : x ∈ closure (W ∩ 𝒰) := by--closure_le_closure hx_mem
+      -- have := @WeakDual.isClosed_image_coe_of_bounded_of_closed ℝ _ (StrongDual ℝ E) _ _
+      --   (closure[𝒯] (W ∩ 𝒰)) ?_ isClosed_closure
+      -- simp at this
+      -- have also := @closure_minimal
+
     refine ⟨y, y_mem.2, ?_⟩
-    apply lt_of_le_of_lt (dist_le_diam_of_mem _ hx_mem (subset_closure y_mem))
-      (by rwa [diam_closure])
-    apply Bornology.IsBounded.closure
-    rw [Metric.isBounded_iff_subset_closedBall 0]
-    refine ⟨1, Set.inter_subset_right.trans (fun _ ha ↦ ?_)⟩
-    obtain ⟨_, hx_norm, hxa⟩ := by simpa using ha
-    grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, hx_norm]
+    replace h_diam := diam_WeakClosure_le_of_diam_le hε h_diam
+    simp only [WeakDual.coe_toStrongDual, Set.image_id'] at h_diam
+    apply lt_of_le_of_lt (dist_le_diam_of_mem _ hx_mem _) h_diam
+    · rw [Metric.isBounded_iff_subset_ball]
+      use 1
+      -- use (0 : E**)
+
+      -- refine ⟨1, Set.inter_subset_right.trans (fun _ ha ↦ ?_)⟩
+      --apply IsCompact.isBounded (α := (StrongDual ℝ E))
+      -- convert WeakDual.isCompact_of_bounded_of_closed (𝕜 := ℝ) (E := (StrongDual ℝ E))
+      --   (s := closure[𝒯] (W ∩ 𝒰)) ?_ ?_
+
+      -- apply Bornology.IsBounded.closure (α := WeakDual ℝ (StrongDual ℝ E))
+      -- rw [Metric.isBounded_iff_subset_closedBall 0]
+      -- refine ⟨1, Set.inter_subset_right.trans (fun _ ha ↦ ?_)⟩
+      -- obtain ⟨_, hx_norm, hxa⟩ := by simpa using ha
+      -- grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, hx_norm]
+    exact subset_closure (X := WeakDual ℝ (StrongDual ℝ E)) y_mem
 
 
 
-    -- rw [← ha.2]
-
-
-
-
-
-
-      -- exact ⟨x, x_mem hφ_lt hV_open⟩
-
-
-
-
-  -- rw [/- Metric.mem_closure_iff, -/ mem_closedBall]
-  -- constructor
-  -- · intro h
-  --   obtain ⟨y, hy⟩ := h (1/2) ?_
-  --   have := dist_triangle x y 0
-
+    -- ·
+    -- apply lt_of_le_of_lt (dist_le_diam_of_mem _ hx_mem (subset_closure y_mem))
+    --   (by rwa [diam_closure])
+    -- apply Bornology.IsBounded.closure
+    -- rw [Metric.isBounded_iff_subset_closedBall 0]
+    -- refine ⟨1, Set.inter_subset_right.trans (fun _ ha ↦ ?_)⟩
+    -- obtain ⟨_, hx_norm, hxa⟩ := by simpa using ha
+    -- grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, hx_norm]
 
 
 /- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is\
@@ -239,5 +372,5 @@ reflexive. For the time being, we state this property as the surjectivity of
 `inclusionInDoubleDual`,
 but it must be proven that for normed space this is equivalent to `includionInDoubleDual` being
 a homeomorphism. -/
-theorem surjective_of_uniformConvexSpace' [UniformConvexSpace E] :
-    Surjective (inclusionInDoubleDual ℝ E) := by
+-- theorem surjective_of_uniformConvexSpace' [UniformConvexSpace E] :
+--     Surjective (inclusionInDoubleDual ℝ E) := by
