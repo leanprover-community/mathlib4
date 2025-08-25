@@ -847,6 +847,7 @@ import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
