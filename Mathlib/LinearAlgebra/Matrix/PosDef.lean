@@ -329,7 +329,7 @@ theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n 𝕜} :
     (fun _ _ => RCLike.ofReal_nonneg.mpr <| hA.eigenvalues_nonneg _),
     ← conjTranspose_mul_self_eq_zero, ← hA.isHermitian.eigenvalues_eq_zero_iff, funext_iff] using h
 
-theorem trace_self_mul_conjTranspose_eq_zero_iff {A : Matrix m n 𝕜} :
+theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n 𝕜} :
     (A * Aᴴ).trace = 0 ↔ A = 0 := by
   simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
 
