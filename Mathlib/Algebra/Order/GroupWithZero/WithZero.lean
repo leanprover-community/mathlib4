@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard
+Authors: Kevin Buzzard, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`
@@ -93,10 +92,32 @@ lemma WithZero.withZeroUnitsEquiv_strictMono :
 
 /-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
 between `WithZero αˣ` with `α`. -/
-@[simps!]
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
-  map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
+  map_rel_iff' {a b} := by
+    cases a <;> cases b <;>
+    simp
+
+/-- Given any linearly ordered commutative group with zero `α`, this is the inclusion of
+`WithZero αˣ` into `α` as an ordered embedding. -/
+@[simps!]
+def OrderEmbedding.withZeroUnits : WithZero αˣ ↪o α := OrderIso.withZeroUnits.toOrderEmbedding
+
+-- @[simp]
+-- lemma OrderEmbedding.withZeroUnits_apply (x : WithZero αˣ) :
+--     OrderEmbedding.withZeroUnits x = withZeroUnitsEquiv x := rfl
+--
+-- lemma OrderEmbedding.withZeroUnits_mul (x y : WithZero αˣ) :
+--     OrderEmbedding.withZeroUnits (x * y) = withZeroUnitsEquiv x * withZeroUnitsEquiv y := by
+--   simp [map_mul]
+
+
+lemma OrderIso.withZeroUnits_apply (x : WithZero αˣ) :
+    OrderIso.withZeroUnits x = withZeroUnitsEquiv x := rfl
+
+lemma OrderIso.withZeroUnits_mul (x y : WithZero αˣ) :
+    OrderIso.withZeroUnits (x * y) = OrderIso.withZeroUnits x * OrderIso.withZeroUnits y :=
+  withZeroUnitsEquiv.map_mul _ _
 
 lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
     StrictMono (withZeroUnitsEquiv (G := α)).symm :=
