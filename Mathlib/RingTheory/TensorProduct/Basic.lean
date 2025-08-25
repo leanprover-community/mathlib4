@@ -255,7 +255,8 @@ unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
   -- restate as an equality of morphisms so that we can use `ext`
   suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip <| LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
+      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
+        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
     exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
   ext xa xb ya yb za zb
   exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
@@ -384,7 +385,7 @@ end Semiring
 section AddCommGroupWithOne
 variable [CommSemiring R]
 variable [AddCommGroupWithOne A] [Module R A]
-variable [AddCommGroupWithOne B] [Module R B]
+variable [AddCommMonoidWithOne B] [Module R B]
 
 instance instAddCommGroupWithOne : AddCommGroupWithOne (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
@@ -398,9 +399,9 @@ theorem intCast_def (z : ℤ) : (z : A ⊗[R] B) = (z : A) ⊗ₜ (1 : B) := rfl
 end AddCommGroupWithOne
 
 section NonUnitalNonAssocRing
-variable [CommRing R]
+variable [CommSemiring R]
 variable [NonUnitalNonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-variable [NonUnitalNonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+variable [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
@@ -409,9 +410,9 @@ instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing (A ⊗[R] B) where
 end NonUnitalNonAssocRing
 
 section NonAssocRing
-variable [CommRing R]
+variable [CommSemiring R]
 variable [NonAssocRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-variable [NonAssocRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+variable [NonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
@@ -421,9 +422,9 @@ instance instNonAssocRing : NonAssocRing (A ⊗[R] B) where
 end NonAssocRing
 
 section NonUnitalRing
-variable [CommRing R]
+variable [CommSemiring R]
 variable [NonUnitalRing A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-variable [NonUnitalRing B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
 
 instance instNonUnitalRing : NonUnitalRing (A ⊗[R] B) where
   toAddCommGroup := TensorProduct.addCommGroup
@@ -454,30 +455,30 @@ instance instCommSemiring : CommSemiring (A ⊗[R] B) where
 end CommSemiring
 
 section Ring
-variable [CommRing R]
+variable [CommSemiring R]
 variable [Ring A] [Algebra R A]
-variable [Ring B] [Algebra R B]
+variable [Semiring B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) where
   toSemiring := instSemiring
   __ := TensorProduct.addCommGroup
   __ := instNonAssocRing
 
-theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
+theorem intCast_def' {B} [Ring B] [Algebra R B] (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
   rw [intCast_def, ← zsmul_one, smul_tmul, zsmul_one]
 
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
   with_reducible_and_instances rfl
 -- fails at `with_reducible_and_instances rfl` https://github.com/leanprover-community/mathlib4/issues/10906
-example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] A)) = leftAlgebra := rfl
 
 end Ring
 
 section CommRing
-variable [CommRing R]
+variable [CommSemiring R]
 variable [CommRing A] [Algebra R A]
-variable [CommRing B] [Algebra R B]
+variable [CommSemiring B] [Algebra R B]
 
 instance instCommRing : CommRing (A ⊗[R] B) :=
   { toRing := inferInstance
@@ -521,8 +522,8 @@ when `A` and `B` are merely rings, by treating both as `ℤ`-algebras.
 -/
 example [Ring A] [Ring B] : Ring (A ⊗[ℤ] B) := by infer_instance
 
-/-- Verify that typeclass search finds the comm_ring structure on `A ⊗[ℤ] B`
-when `A` and `B` are merely comm_rings, by treating both as `ℤ`-algebras.
+/-- Verify that typeclass search finds the CommRing structure on `A ⊗[ℤ] B`
+when `A` and `B` are merely `CommRing`s, by treating both as `ℤ`-algebras.
 -/
 example [CommRing A] [CommRing B] : CommRing (A ⊗[ℤ] B) := by infer_instance
 
@@ -1407,3 +1408,15 @@ lemma Algebra.TensorProduct.includeLeft_surjective
   TensorProduct.flip_mk_surjective _ h
 
 end
+
+variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
+  [NonUnitalNonAssocSemiring B] [Module R A] [Module R B] [SMulCommClass R A A]
+  [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+lemma LinearMap.mulLeft_tmul (a : A) (b : B) :
+    mulLeft R (a ⊗ₜ[R] b) = map (mulLeft R a) (mulLeft R b) := by
+  ext; simp
+
+lemma LinearMap.mulRight_tmul (a : A) (b : B) :
+    mulRight R (a ⊗ₜ[R] b) = map (mulRight R a) (mulRight R b) := by
+  ext; simp

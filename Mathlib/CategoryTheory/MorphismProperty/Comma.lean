@@ -166,7 +166,7 @@ def isoFromComma [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
 components and naturality in the forward direction. -/
 @[simps!]
 def isoMk [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (l : X.left ≅ Y.left)
-    (r : X.right ≅ Y.right) (h : L.map l.hom ≫ Y.hom = X.hom ≫ R.map r.hom := by aesop_cat) :
+    (r : X.right ≅ Y.right) (h : L.map l.hom ≫ Y.hom = X.hom ≫ R.map r.hom := by cat_disch) :
     X ≅ Y :=
   isoFromComma (CategoryTheory.Comma.isoMk l r h)
 
@@ -334,7 +334,7 @@ protected def Over.mk {A : T} (f : A ⟶ X) (hf : P f) : P.Over Q X where
 /-- Make a morphism in `P.Over Q X` from a morphism in `T` with compatibilities. -/
 @[simps hom]
 protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
-    (w : f ≫ B.hom = A.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+    (w : f ≫ B.hom = A.hom := by cat_disch) (hf : Q f := by trivial) : A ⟶ B where
   __ := CategoryTheory.Over.homMk f w
   prop_hom_left := hf
   prop_hom_right := trivial
@@ -342,7 +342,7 @@ protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
 /-- Make an isomorphism in `P.Over Q X` from an isomorphism in `T` with compatibilities. -/
 @[simps! hom_left inv_left]
 protected def Over.isoMk [Q.RespectsIso] {A B : P.Over Q X} (f : A.left ≅ B.left)
-    (w : f.hom ≫ B.hom = A.hom := by aesop_cat) : A ≅ B :=
+    (w : f.hom ≫ B.hom = A.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk f (Discrete.eqToIso' rfl)
 
 @[ext]
@@ -395,7 +395,7 @@ protected def Under.mk {A : T} (f : X ⟶ A) (hf : P f) : P.Under Q X where
 /-- Make a morphism in `P.Under Q X` from a morphism in `T` with compatibilities. -/
 @[simps hom]
 protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
-    (w : A.hom ≫ f = B.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+    (w : A.hom ≫ f = B.hom := by cat_disch) (hf : Q f := by trivial) : A ⟶ B where
   __ := CategoryTheory.Under.homMk f w
   prop_hom_left := trivial
   prop_hom_right := hf
@@ -403,7 +403,7 @@ protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
 /-- Make an isomorphism in `P.Under Q X` from an isomorphism in `T` with compatibilities. -/
 @[simps! hom_right inv_right]
 protected def Under.isoMk [Q.RespectsIso] {A B : P.Under Q X} (f : A.right ≅ B.right)
-    (w : A.hom ≫ f.hom = B.hom := by aesop_cat) : A ≅ B :=
+    (w : A.hom ≫ f.hom = B.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk (Discrete.eqToIso' rfl) f
 
 @[ext]

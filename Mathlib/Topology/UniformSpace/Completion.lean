@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 The goal is to construct a left-adjoint to the inclusion of complete Hausdorff uniform spaces
 into all uniform spaces. Any uniform space `α` gets a completion `Completion α` and a morphism
-(ie. uniformly continuous map) `(↑) : α → Completion α` which solves the universal
+(i.e. uniformly continuous map) `(↑) : α → Completion α` which solves the universal
 mapping problem of factorizing morphisms from `α` to any complete Hausdorff uniform space `β`.
 It means any uniformly continuous `f : α → β` gives rise to a unique morphism
 `Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ (↑)`.
@@ -324,7 +324,7 @@ theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
 
-/-- The Haudorff completion as an abstract completion. -/
+/-- The Hausdorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   space := Completion α
   coe := (↑)

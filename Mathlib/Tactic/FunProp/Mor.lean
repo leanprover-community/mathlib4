@@ -27,12 +27,12 @@ namespace Meta.FunProp
 
 namespace Mor
 
-/-- Is `name` a coerction from some function space to functions? -/
+/-- Is `name` a coercion from some function space to functions? -/
 def isCoeFunName (name : Name) : CoreM Bool := do
   let .some info ← getCoeFnInfo? name | return false
   return info.type == .coeFun
 
-/-- Is `e` a coerction from some function space to functions? -/
+/-- Is `e` a coercion from some function space to functions? -/
 def isCoeFun (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
   let .some info ← getCoeFnInfo? name | return false
@@ -125,9 +125,8 @@ where
       let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
 
       go (.app (.app c f) x) as
-    | .app f a, as =>
-      go f (as.push { expr := a })
-    | f        , as => k f as.reverse
+    | .app f a, as => go f (as.push { expr := a })
+    | f, as => k f as.reverse
 
 
 /--
