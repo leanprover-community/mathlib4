@@ -190,7 +190,7 @@ theorem neg_mem_of_notMem (x : R) (h : x ∉ P) : -x ∈ P := by
   simp_all
 
 @[aesop unsafe 70% apply]
-theorem mem_of_not_neg_mem (x : R) (h : -x ∉ P) : x ∈ P := by
+theorem mem_of_neg_notMem (x : R) (h : -x ∉ P) : x ∈ P := by
   have := mem_or_neg_mem P x
   simp_all
 
