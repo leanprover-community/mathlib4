@@ -56,6 +56,7 @@ def single (a : α) (b : M) : α →₀ M where
       · simp [hb, Pi.single, update]
       simp [ha]
 
+@[simp]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
   simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
