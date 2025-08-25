@@ -23,25 +23,22 @@ variable [MonoidWithZeroHomClass F A B] {f : F}
 
 open WithZero
 
-#check OrderMonoidWithZeroHom
+/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an homomorphism of monoids with zero. -/
+@[simps!]
+def valueGroup₀_MonoidWithZeroHom : valueGroup₀ f →*₀ WithZero Bˣ :=
+  WithZero.map' (valueGroup f).subtype
 
-/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
+lemma valueGroup₀_MonoidWithZeroHom_strictMono :
+    StrictMono (valueGroup₀_MonoidWithZeroHom (f := f)) :=
+  map'_strictMono (Subtype.strictMono_coe _)
+
+/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
+the use of `valueGroup₀_MonoidWithZeroHom` and apply the above lemma
+`valueGroup₀_MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
 def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
-  toFun := WithZero.map' (valueGroup f).subtype
-  inj' := WithZero.map'_injective Subtype.val_injective ..
-  map_rel_iff' {a b} := by
-    refine ⟨fun h ↦ ?_, fun h ↦ WithZero.map'_mono (fun _ _ x ↦ x) h⟩
-    · revert a
-      simp only [Function.Embedding.coeFn_mk, «forall», map_zero, WithZero.zero_le, imp_self,
-        map'_coe, Subgroup.subtype_apply, Subtype.forall, true_and]
-      intro a _ h_le
-      have hb : b ≠ 0 := by
-        intro H
-        apply lt_iff_not_ge.mp <| zero_lt_coe a
-        grw [h_le, H, map_zero]
-      obtain ⟨_, rfl⟩ := ne_zero_iff_exists.mp hb
-      simp [coe_le_coe, ge_iff_le, map'_coe, Subgroup.subtype_apply] at h_le ⊢
-      exact h_le
+  toFun := valueGroup₀_MonoidWithZeroHom
+  inj' := valueGroup₀_MonoidWithZeroHom_strictMono.injective
+  map_rel_iff' := valueGroup₀_MonoidWithZeroHom_strictMono.le_iff_le
 
 @[simp]
 lemma valueGroup₀_OrderEmbedding_apply (x : valueGroup₀ f) :
@@ -57,26 +54,19 @@ def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o B :=
 
 lemma valueGroup₀_OrderEmbedding'_apply (x : valueGroup₀ f) :
     valueGroup₀_OrderEmbedding' x =
-      OrderIso.withZeroUnits (WithZero.map' (valueGroup f).subtype x) := rfl
+      OrderIso.withZeroUnits.toOrderEmbedding (WithZero.map' (valueGroup f).subtype x) := rfl
+
 
 lemma valueGroup₀_OrderEmbedding'_mul (x y : valueGroup₀ f) :
     valueGroup₀_OrderEmbedding' (x * y) =
       valueGroup₀_OrderEmbedding' x * valueGroup₀_OrderEmbedding' y := by
   simp [valueGroup₀_OrderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
 
-instance : IsOrderedMonoid (valueGroup₀ f) where
-  mul_le_mul_left := by
-    intro a b h c
-    match a, b, c with
-    | _, _, 0 => simp
-    | 0, _, (c : valueGroup f) => simp
-    | some a, 0, _ => exact (not_le_of_gt (WithZero.zero_lt_coe a) h).elim
-    | (x : valueGroup f), (y : valueGroup f), (c : valueGroup f) =>
-      simp only [← valueGroup₀_OrderEmbedding'.le_iff_le, valueGroup₀_OrderEmbedding'_mul,
-        valueGroup₀_OrderEmbedding'_mul]
-      rw [mul_le_mul_left]
-      · rwa [coe_le_coe] at h
-      simp [valueGroup₀_OrderEmbedding', OrderIso.withZeroUnits_apply]
+instance : IsOrderedMonoid B := inferInstance
+
+instance : IsOrderedMonoid (WithZero Bˣ) := .comap WithZero.withZeroUnitsEquiv_strictMono
+
+instance : IsOrderedMonoid (valueGroup₀ f) := .comap valueGroup₀_MonoidWithZeroHom_strictMono
 
 instance : LinearOrderedCommGroupWithZero (valueGroup₀ f) where
   zero_le_one := by simp
