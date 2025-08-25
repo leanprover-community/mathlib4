@@ -208,13 +208,9 @@ def elabHead (term : Term) : TermElabM Head := withRef term do
 
 end ElabHead
 
-/-- Elaborate the `(disch := ...)` syntax. -/
-def elabOptDisch (optDischargeSyntax : Syntax) : TacticM (Option Simp.Discharge) := do
-  if optDischargeSyntax.isNone then
-    return none
-  else
-    let (_, d) ← tacticToDischarge optDischargeSyntax[0][3]
-    return d
+/-- Elaborate the `(disch := ...)` syntax for a `simp`-like tactic. -/
+def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
+  return (← tacticToDischarge stx.raw[3]).2
 
 /--
 `push` pushes the given constant away from the root of the expression. For example
@@ -232,7 +228,7 @@ The `push` tactic can be extended using the `@[push]` attribute.
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
 elab (name := push) "push " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
-  let disch? ← disch?.mapM fun disch => return (← tacticToDischarge disch).2
+  let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
@@ -275,7 +271,7 @@ For example, `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma for neg
 but `not_not : ¬ ¬ p ↔ p` is not a `pull` lemma.
 -/
 elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
-  let disch? ← disch?.mapM fun disch => return (← tacticToDischarge disch).2
+  let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
@@ -286,12 +282,9 @@ simproc_decl _root_.pushFun (fun _ ↦ _) := pushStep .lambda
 section Conv
 
 @[inherit_doc push]
-syntax (name := pushConv) "push " (discharger)? (colGt term) : conv
-
-/-- Execute `push` as a conv tactic. -/
-@[tactic pushConv] def elabPushConv : Tactic := fun stx ↦ withMainContext do
-  let disch? ← elabOptDisch stx[1]
-  let head ← elabHead ⟨stx[2]⟩
+elab "push " disch?:(discharger)? head:(colGt term) : conv => withMainContext do
+  let disch? ← disch?.mapM elabDischarger
+  let head ← elabHead head
   Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
 
 @[inherit_doc push_neg]
@@ -315,12 +308,9 @@ which will print the `push_neg` form of `e`.
 macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
 
 @[inherit_doc pull]
-syntax (name := pullConv) "pull " (discharger)? (colGt term) : conv
-
-/-- Execute `pull` as a conv tactic. -/
-@[tactic pullConv] def elabPullConv : Tactic := fun stx ↦ withMainContext do
-  let disch? ← elabOptDisch stx[1]
-  let head ← elabHead ⟨stx[2]⟩
+elab "pull " disch?:(discharger)? head:(colGt term) : conv => withMainContext do
+  let disch? ← disch?.mapM elabDischarger
+  let head ← elabHead head
   Conv.applySimpResult (← pullCore head (← instantiateMVars (← Conv.getLhs)) disch?)
 
 /--
