@@ -317,7 +317,7 @@ theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 
 /-- The natural degree of `cyclotomic n` is at most `totient n`.
 
-If the base ring is nontrivial, then the degree is excatly `φ n`,
+If the base ring is nontrivial, then the degree is exactly `φ n`,
 otherwise it's zero. -/
 lemma natDegree_cyclotomic_le {R : Type*} [Ring R] {n : ℕ} :
     natDegree (cyclotomic n R) ≤ n.totient := by
