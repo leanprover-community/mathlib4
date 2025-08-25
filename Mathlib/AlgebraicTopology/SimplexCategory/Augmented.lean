@@ -65,10 +65,13 @@ def equivAugmentedCosimplicialObjectFunctorCompDropIso :
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 taking the point of the augmentation corresponds to evaluation at the initial object. -/
 @[simps!]
-def equivAugmentedCosimplicialObjecFunctorCompPointIso :
+def equivAugmentedCosimplicialObjectFunctorCompPointIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.point ≅
     ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
   .refl _
+
+@[deprecated (since := "2025-08-22")] alias equivAugmentedCosimplicialObjecFunctorCompPointIso :=
+  equivAugmentedCosimplicialObjectFunctorCompPointIso
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow

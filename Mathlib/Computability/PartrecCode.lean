@@ -266,7 +266,7 @@ theorem primrec_recOn' {α σ}
     let F (a : α) (c : Code) : σ :=
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
     Primrec (fun a => F a (c a) : α → σ) := by
-  intros _ _ _ _ F
+  intro _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     letI a := p.1.1; letI IH := p.1.2; letI n := p.2.1; letI m := p.2.2
     IH[m]?.bind fun s =>
@@ -380,7 +380,7 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
       Nat.Partrec.Code.recOn c (z a) (s a) (l a) (r a) (PR a) (CO a) (PC a) (RF a)
     Computable fun a => F a (c a) := by
   -- TODO(Mario): less copy-paste from previous proof
-  intros _ _ _ _ F
+  intro _ _ _ _ F
   let G₁ : (α × List σ) × ℕ × ℕ → Option σ := fun p =>
     letI a := p.1.1; letI IH := p.1.2; letI n := p.2.1; letI m := p.2.2
     IH[m]?.bind fun s =>
