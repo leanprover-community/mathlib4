@@ -101,7 +101,7 @@ lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
 
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' (· ~[r] ·) := by
   rw [List.chain'_iff_get]
-  intros i h
+  intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
@@ -841,7 +841,7 @@ alias SetRel.infiniteDimensional_swap_iff := SetRel.infiniteDimensional_inv
 
 lemma SetRel.IsWellFounded.inv_of_finiteDimensional [r.FiniteDimensional] :
     r.inv.IsWellFounded := by
-  rw [IsWellFounded, WellFounded.wellFounded_iff_no_descending_seq]
+  rw [IsWellFounded, wellFounded_iff_isEmpty_descending_chain]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
   exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
