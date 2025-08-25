@@ -406,8 +406,7 @@ lemma valuedCompletion_surjective_iff :
           ext x
           simp
     · exact ⟨_, by simpa using ha⟩
-  · refine ⟨a, ?_⟩
-    simp [ha]
+  · exact ⟨a, by simp [ha]⟩
 
 instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
     [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
