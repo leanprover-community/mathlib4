@@ -226,7 +226,7 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Icc a b] a,
       s ∈ 𝓝[Ico a b] a,
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
-      ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
+      ∃ u ∈ Ioi a, Ico a u ⊆ s] := by
   tfae_have 1 ↔ 2 := by
     rw [nhdsWithin_Icc_eq_nhdsGE hab]
   tfae_have 1 ↔ 3 := by

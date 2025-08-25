@@ -41,7 +41,7 @@ Almost the whole file is dedicated to showing that `ι i` is an open immersion. 
 this is an open embedding of topological spaces follows from `Mathlib/Topology/Gluing.lean`, and it
 remains to construct `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, ι i '' U)` for each `U ⊆ U i`.
 Since `Γ(𝒪_X, ι i '' U)` is the limit of `diagram_over_open`, the components of the structure
-sheafs of the spaces in the gluing diagram, we need to construct a map
+sheaves of the spaces in the gluing diagram, we need to construct a map
 `ιInvApp_π_app : Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing diagram.
 
 We will refer to ![this diagram](https://i.imgur.com/P0phrwr.png) in the following doc strings.

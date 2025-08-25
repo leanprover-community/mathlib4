@@ -736,8 +736,7 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
     rw [Set.mem_Ici] at hr
     rcases hr.lt_or_eq with (hrlt | rfl)
     · exact Set.mem_image_of_mem _ hrlt
-    · exfalso
-      simp at h
+    · simp at h
   · rcases h with ⟨hne, r, hr, rfl⟩
     rw [Set.mem_Ioi] at hr
     refine

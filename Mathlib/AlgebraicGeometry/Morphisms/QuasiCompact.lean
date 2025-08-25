@@ -216,7 +216,7 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
       (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
   obtain ⟨S, rfl⟩ := hY
   clear * - H
-  intros Z hZ
+  intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
   wlog hX : ∃ R, X = Spec R
   · obtain ⟨R, g, hg⟩ :=

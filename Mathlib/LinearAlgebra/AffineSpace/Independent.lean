@@ -195,18 +195,7 @@ theorem affineIndependent_iff_indicator_eq_of_affineCombination_eq (p : ι → P
           Finset.affineCombination_indicator_subset w2 p s1.subset_union_right,
           ← @vsub_eq_zero_iff_eq V, Finset.affineCombination_vsub] at heq
         exact ha (s1 ∪ s2) (Set.indicator (↑s1) w1 - Set.indicator (↑s2) w2) hws heq i hi
-      · rw [← Finset.mem_coe, Finset.coe_union] at hi
-        have h₁ : Set.indicator (↑s1) w1 i = 0 := by
-          simp only [Set.indicator, Finset.mem_coe, ite_eq_right_iff]
-          intro h
-          by_contra
-          exact (mt (@Set.mem_union_left _ i ↑s1 ↑s2) hi) h
-        have h₂ : Set.indicator (↑s2) w2 i = 0 := by
-          simp only [Set.indicator, Finset.mem_coe, ite_eq_right_iff]
-          intro h
-          by_contra
-          exact (mt (@Set.mem_union_right _ i ↑s2 ↑s1) hi) h
-        simp [h₁, h₂]
+      · simp_all
     · intro ha s w hw hs i0 hi0
       let w1 : ι → k := Function.update (Function.const ι 0) i0 1
       have hw1 : ∑ i ∈ s, w1 i = 1 := by

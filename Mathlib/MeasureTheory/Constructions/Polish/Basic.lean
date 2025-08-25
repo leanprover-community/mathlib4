@@ -95,7 +95,7 @@ def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
   constructor
 
 /-- The `MeasurableSpace α` instance on a `StandardBorelSpace` `α` is equal to
-the borel sets of `upgradeStandardBorel α`. -/
+the Borel sets of `upgradeStandardBorel α`. -/
 theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace α] :
     ‹MeasurableSpace α› = @borel _ (upgradeStandardBorel α).toTopologicalSpace :=
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
@@ -567,7 +567,8 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparate
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
-  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
+    rangeFactorization_surjective
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space and the range of `f` is measurable,

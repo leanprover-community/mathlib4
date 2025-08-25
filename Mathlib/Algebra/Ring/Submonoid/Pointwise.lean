@@ -109,7 +109,7 @@ lemma addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
       exacts [le_sup_left (a := M • N) (smul_mem_smul hm hx),
         le_sup_right (a := M • N) (smul_mem_smul hm hx)]
     · apply (smul_zero (A := A) m).symm ▸ (M • N ⊔ M • P).zero_mem
-    · intros _ _ _ _ h1 h2; rw [smul_add]; exact add_mem h1 h2)
+    · intro _ _ _ _ h1 h2; rw [smul_add]; exact add_mem h1 h2)
   (sup_le (smul_le_smul_right le_sup_left) <| smul_le_smul_right le_sup_right)
 
 variable {ι : Sort*}

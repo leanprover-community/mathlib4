@@ -12,7 +12,7 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 
 ## Main Definitions
 
-Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`) , `x` be a point in `F`
+Let `f` be a function from a Hilbert Space `F` to `𝕜` (`𝕜` is `ℝ` or `ℂ`), `x` be a point in `F`
 and `f'` be a vector in F. Then
 
   `HasGradientWithinAt f f' s x`

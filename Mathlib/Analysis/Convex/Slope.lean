@@ -323,7 +323,7 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
     (hxy' : f x < f y) : StrictMonoOn f (s ∩ Set.Ici y) := by
   intro u hu v hv huv
   have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z := by
-    intros z hz
+    intro z hz
     refine hf.lt_right_of_left_lt hx hz.1 ?_ hxy'
     rw [openSegment_eq_Ioo (hxy.trans hz.2)]
     exact ⟨hxy, hz.2⟩

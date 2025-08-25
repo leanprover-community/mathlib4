@@ -15,7 +15,7 @@ If `C` has limits, then the category `PresheafedSpace C` has colimits,
 and the forgetful functor to `TopCat` preserves these colimits.
 
 When restricted to a diagram where the underlying continuous maps are open embeddings,
-this says that we can glue presheaved spaces.
+this says that we can glue presheafed spaces.
 
 Given a diagram `F : J ⥤ PresheafedSpace C`,
 we first build the colimit of the underlying topological spaces,
@@ -270,12 +270,12 @@ instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
     · intro j
       simp⟩
 
-/-- When `C` has limits, the category of presheaved spaces with values in `C` itself has colimits.
+/-- When `C` has limits, the category of presheafed spaces with values in `C` itself has colimits.
 -/
 instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
   ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
-/-- The underlying topological space of a colimit of presheaved spaces is
+/-- The underlying topological space of a colimit of presheafed spaces is
 the colimit of the underlying topological spaces.
 -/
 instance forget_preservesColimits [HasLimits C] :

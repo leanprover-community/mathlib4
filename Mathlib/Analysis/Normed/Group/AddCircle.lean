@@ -69,7 +69,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     rw [abs_inv, eq_inv_mul_iff_mul_eq₀ ((not_congr abs_eq_zero).mpr hp)] at hx
     rw [← hx, inv_mul_cancel₀ hp, this, ← abs_mul, mul_sub, mul_inv_cancel_left₀ hp, mul_comm p]
   clear! x p
-  intros x
+  intro x
   simp only [le_antisymm_iff, le_norm_iff, Real.norm_eq_abs]
   refine ⟨le_of_forall_le fun r hr ↦ ?_, ?_⟩
   · rw [abs_sub_round_eq_min, le_inf_iff]
@@ -77,7 +77,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     constructor
     · simpa [abs_of_nonneg] using hr (fract x)
     · simpa [abs_sub_comm (fract x)]
-        using hr (fract x - 1) (by simp [← self_sub_floor, ← sub_eq_zero, sub_sub]; simp)
+        using hr (fract x - 1) (by simp)
   · simpa [zmultiples, QuotientAddGroup.eq, zsmul_eq_mul, mul_one, mem_mk, mem_range, and_imp,
       forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_swap (α := ℕ)]
       using round_le _

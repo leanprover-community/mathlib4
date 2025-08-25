@@ -132,8 +132,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
             * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (update x i t) ^ p)  ∂ (μ i)) ∂μ := by
           -- pull out the integral over `xᵢ`
           rw [lmarginal_insert' _ _ hi]
-          · congr! with x t
-            simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
+          · simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
           · change Measurable (fun x ↦ _)
             simp only [Pi.mul_apply, Pi.pow_apply, Finset.prod_apply]
             refine (hf.pow_const _).mul <| Finset.measurable_fun_prod _ ?_

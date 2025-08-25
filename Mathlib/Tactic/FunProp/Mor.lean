@@ -125,9 +125,8 @@ where
       let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
 
       go (.app (.app c f) x) as
-    | .app f a, as =>
-      go f (as.push { expr := a })
-    | f        , as => k f as.reverse
+    | .app f a, as => go f (as.push { expr := a })
+    | f, as => k f as.reverse
 
 
 /--

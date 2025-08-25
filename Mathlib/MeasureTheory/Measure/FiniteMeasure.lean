@@ -310,7 +310,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
   apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
   · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ _ Hu _ Hv Heq
+  intro _ _ Hu _ Hv Heq
   simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
 
 lemma apply_iUnion_le {μ : FiniteMeasure Ω} {f : ℕ → Set Ω}

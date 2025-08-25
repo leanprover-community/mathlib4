@@ -620,7 +620,7 @@ theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClo
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
+/-- A closed embedding is proper, i.e., inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see
 `Topology.IsClosedEmbedding.isLindelof_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClosedEmbedding f) :

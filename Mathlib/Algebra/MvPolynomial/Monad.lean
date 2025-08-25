@@ -55,7 +55,7 @@ variable {σ : Type*} {τ : Type*}
 variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
 
 /--
-`bind₁` is the "left hand side" bind operation on `MvPolynomial`, operating on the variable type.
+`bind₁` is the "left-hand side" bind operation on `MvPolynomial`, operating on the variable type.
 Given a polynomial `p : MvPolynomial σ R` and a map `f : σ → MvPolynomial τ R` taking variables
 in `p` to polynomials in the variable type `τ`, `bind₁ f p` replaces each variable in `p` with
 its value under `f`, producing a new polynomial in `τ`. The coefficient type remains the same.
@@ -64,7 +64,7 @@ This operation is an algebra hom.
 def bind₁ (f : σ → MvPolynomial τ R) : MvPolynomial σ R →ₐ[R] MvPolynomial τ R :=
   aeval f
 
-/-- `bind₂` is the "right hand side" bind operation on `MvPolynomial`,
+/-- `bind₂` is the "right-hand side" bind operation on `MvPolynomial`,
 operating on the coefficient type.
 Given a polynomial `p : MvPolynomial σ R` and
 a map `f : R → MvPolynomial σ S` taking coefficients in `p` to polynomials over a new ring `S`,

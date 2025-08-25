@@ -241,7 +241,6 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       rw [div_lt_iff₀ (Real.log_pos hc), ← Real.log_pow]
       exact Real.log_lt_log hj hi.2
     _ = ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
-      congr 1 with i
       simp [← pow_mul, mul_comm]
     _ ≤ (c⁻¹ ^ 2) ^ ⌊Real.log j / Real.log c⌋₊ / ((1 : ℝ) - c⁻¹ ^ 2) :=
       geom_sum_Ico_le_of_lt_one (sq_nonneg _) C

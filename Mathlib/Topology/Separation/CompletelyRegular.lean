@@ -170,7 +170,7 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     intro U hxU hU
     obtain ⟨f, hf, efx, hfU⟩ :=
       CompletelyRegularSpace.completely_regular_isOpen x U hU hxU
-    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
+    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => simp [EqOn, subset_def]
     rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
       isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
@@ -231,7 +231,7 @@ alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
 
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
-  intros a b hab
+  intro a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)

@@ -377,7 +377,7 @@ theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
     (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
-  simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc ,← F.map_comp]
+  simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc, ← F.map_comp]
 
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
     ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by

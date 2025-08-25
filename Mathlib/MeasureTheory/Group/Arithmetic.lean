@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Measure.AEMeasurable
 /-!
 # Typeclasses for measurability of operations
 
-In this file we define classes `MeasurableMul` etc and prove dot-style lemmas
+In this file we define classes `MeasurableMul` etc. and prove dot-style lemmas
 (`Measurable.mul`, `AEMeasurable.mul` etc). For binary operations we define two typeclasses:
 
 - `MeasurableMul` says that both left and right multiplication are measurable;
@@ -16,7 +16,7 @@ In this file we define classes `MeasurableMul` etc and prove dot-style lemmas
 
 and similarly for other binary operations. The reason for introducing these classes is that in case
 of topological space `α` equipped with the Borel `σ`-algebra, instances for `MeasurableMul₂`
-etc require `α` to have a second countable topology.
+etc. require `α` to have a second countable topology.
 
 We define separate classes for `MeasurableDiv`/`MeasurableSub`
 because on some types (e.g., `ℕ`, `ℝ≥0∞`) division and/or subtraction are not defined as `a * b⁻¹` /

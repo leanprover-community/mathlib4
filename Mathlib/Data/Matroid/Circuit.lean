@@ -716,7 +716,7 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   -- By symmetry and duality, it suffices to show the implication in one direction.
   suffices aux : ∀ {N : Matroid α} {B' : Set α} (hB' : N.IsBase B') {e f},
       e ∈ N.fundCocircuit f B' → f ∈ N.fundCircuit e B' from
-    ⟨fun h ↦ aux hB h , fun h ↦ aux hB.compl_isBase_dual <| by
+    ⟨fun h ↦ aux hB h, fun h ↦ aux hB.compl_isBase_dual <| by
       simpa [fundCocircuit, inter_eq_self_of_subset_right hB.subset_ground]⟩
   clear! B M e f
   intro M B hB e f he

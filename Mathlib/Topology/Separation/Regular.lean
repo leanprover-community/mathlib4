@@ -83,7 +83,7 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ (x : X) (s : Set X), Disjoint (𝓝ˢ s) (𝓝 x) ↔ x ∉ closure s,
       ∀ (x : X) (s : Set X), s ∈ 𝓝 x → ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s,
       ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
-      ∀ x : X , (𝓝 x).lift' closure = 𝓝 x] := by
+      ∀ x : X, (𝓝 x).lift' closure = 𝓝 x] := by
   tfae_have 1 ↔ 5 := by
     rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),

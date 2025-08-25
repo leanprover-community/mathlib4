@@ -144,8 +144,7 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
     · convert h
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
-      exact not_isUnit_zero
-      ,
+      exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
 @[deprecated (since := "2025-04-22")] alias isUnit_ring_inverse := isUnit_ringInverse

@@ -35,9 +35,9 @@ Containment:
   `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
-* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, ie number of subgraphs of `G`
+* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, i.e. number of subgraphs of `G`
   isomorphic to `H`.
-* `SimpleGraph.labelledCopyCount G H`: Number of labelled copies of `H` in `G`, ie number of
+* `SimpleGraph.labelledCopyCount G H`: Number of labelled copies of `H` in `G`, i.e. number of
   graph embeddings from `H` to `G`.
 
 Induced containment:
@@ -197,6 +197,7 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   }
 
 /-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
+@[simps!]
 def topEmbedding (f : Copy (⊤ : SimpleGraph α) G) : (⊤ : SimpleGraph α) ↪g G :=
   { f.toEmbedding with
     map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}

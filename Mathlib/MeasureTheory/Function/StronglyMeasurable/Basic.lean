@@ -131,7 +131,7 @@ private lemma simpleFuncAux_eq_of_lt : ∀ n > m, simpleFuncAux f g n (g m) = f 
   | _, .refl => by simp [simpleFuncAux]
   | _, Nat.le.step (m := n) hmn => by
     obtain hnm | hnm := eq_or_ne (g n) (g m) <;>
-      simp [simpleFuncAux, Set.piecewise_eq_of_notMem , hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
+      simp [simpleFuncAux, Set.piecewise_eq_of_notMem, hnm.symm, simpleFuncAux_eq_of_lt _ hmn]
 
 private lemma simpleFuncAux_eventuallyEq : ∀ᶠ n in atTop, simpleFuncAux f g n (g m) = f (g m) :=
   eventually_atTop.2 ⟨_, simpleFuncAux_eq_of_lt⟩
@@ -742,7 +742,7 @@ theorem _root_.Embedding.comp_stronglyMeasurable_iff {m : MeasurableSpace α} [T
     have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
         isClosed_range := by
-          rw [surjective_onto_range.range_eq]
+          rw [rangeFactorization_surjective.range_eq]
           exact isClosed_univ }
     have : Measurable (G ∘ f) := Measurable.subtype_mk H.measurable
     exact hG.measurableEmbedding.measurable_comp_iff.1 this

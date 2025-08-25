@@ -85,7 +85,7 @@ Any pseudo extended metric space is a topological space and a uniform space (see
 `UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudo extended metric space is just an extended metric space.
 
-We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+We make the uniformity/topology part of the data instead of deriving it from the metric. This e.g.
 ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
@@ -581,7 +581,7 @@ Any extended metric space is a T1 topological space and a uniform space (see `To
 `T1Space`, `UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
-This eg ensures that we do not get a diamond when doing
+This e.g. ensures that we do not get a diamond when doing
 `[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
 See Note [forgetful inheritance]. -/

@@ -146,8 +146,7 @@ variable {e : AddChar ℝ Circle}
 @[simp]
 lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
-  · simp only [Circle.coe_inv] at h
-    simp [← h, e.map_neg_eq_inv]
+  · simp [← h, e.map_neg_eq_inv]
   · simp only [Submonoid.unitSphere, SetLike.coe_mem]
 
 @[simp]

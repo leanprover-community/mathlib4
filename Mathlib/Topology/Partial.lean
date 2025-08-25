@@ -9,7 +9,7 @@ import Mathlib.Topology.Neighborhoods
 /-!
 # Partial functions and topological spaces
 
-In this file we prove properties of `Filter.PTendsto` etc in topological spaces. We also introduce
+In this file we prove properties of `Filter.PTendsto` etc. in topological spaces. We also introduce
 `PContinuous`, a version of `Continuous` for partially defined functions.
 -/
 

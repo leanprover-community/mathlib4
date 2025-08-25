@@ -35,7 +35,7 @@ We then construct the bar resolution. The `n`th object in this complex is the re
 `Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
 defined by sending `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`.
+`j = 0, ..., n - 1`.
 
 In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
 `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
@@ -409,7 +409,7 @@ variable (n)
 /-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`. -/
+`j = 0, ..., n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
   freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
     Finset.univ.sum fun j : Fin (n + 1) =>
@@ -438,7 +438,7 @@ open barComplex
 /-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
 differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`. -/
+`j = 0, ..., n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
   ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
     ext x

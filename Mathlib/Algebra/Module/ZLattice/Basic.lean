@@ -401,7 +401,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     refine measure_mono_null this
       (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
     refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
-      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
+      (AffineSubspace.mem_mk'.not.mpr ?_)).symm
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx

@@ -36,7 +36,7 @@ def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale
   refine LinearEquiv.ofBijective (mapBaseChange R S T)
     ⟨?_, fun x ↦ (KaehlerDifferential.exact_mapBaseChange_map R S T x).mp (Subsingleton.elim _ _)⟩
   rw [injective_iff_map_eq_zero]
-  intros x hx
+  intro x hx
   obtain ⟨x, rfl⟩ := (Algebra.H1Cotangent.exact_δ_mapBaseChange R S T x).mp hx
   rw [Subsingleton.elim x 0, map_zero]
 

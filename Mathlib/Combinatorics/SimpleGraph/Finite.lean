@@ -297,7 +297,7 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
 
 @[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_false]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :

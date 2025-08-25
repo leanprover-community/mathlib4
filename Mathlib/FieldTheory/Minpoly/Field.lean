@@ -320,7 +320,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
   refine (minpoly.unique _ _ (monic_X_pow_sub_C _ hσ.orderOf_pos.ne.symm) ?_ ?_).symm
   · rw [map_sub]
     simp [← AlgEquiv.pow_toLinearMap, pow_orderOf_eq_one]
-  · intros q hq hs
+  · intro q hq hs
     rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
     intro H
     rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs

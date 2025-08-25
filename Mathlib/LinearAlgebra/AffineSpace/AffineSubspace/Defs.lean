@@ -325,8 +325,10 @@ def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
     simpa [vadd_vsub_assoc] using
       direction.add_mem (direction.smul_mem c (direction.sub_mem hp₁ hp₂)) hp₃
 
+/-- A point lies in an affine subspace constructed from another point and a direction if and only
+if their difference is in that direction. -/
 @[simp]
-theorem mem_mk' (p q : P) (direction : Submodule k V) : q ∈ mk' p direction ↔ q -ᵥ p ∈ direction :=
+theorem mem_mk' {p q : P} {direction : Submodule k V} : q ∈ mk' p direction ↔ q -ᵥ p ∈ direction :=
   Iff.rfl
 
 /-- An affine subspace constructed from a point and a direction contains that point. -/
@@ -354,15 +356,7 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
     simpa using direction.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
 
-/-- A point lies in an affine subspace constructed from another point and a direction if and only
-if their difference is in that direction. -/
-theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
-    p₂ ∈ mk' p₁ direction ↔ p₂ -ᵥ p₁ ∈ direction := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [← direction_mk' p₁ direction]
-    exact vsub_mem_direction h (self_mem_mk' _ _)
-  · rw [← vsub_vadd p₂ p₁]
-    exact vadd_mem_mk' p₁ h
+@[deprecated (since := "2025-08-15")] alias mem_mk'_iff_vsub_mem := mem_mk'
 
 /-- Constructing an affine subspace from a point in a subspace and that subspace's direction
 yields the original subspace. -/
@@ -607,7 +601,7 @@ theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
 
 @[simp] lemma mk'_top (p : P) : mk' p (⊤ : Submodule k V) = ⊤ := by
   ext x
-  simp [mem_mk'_iff_vsub_mem]
+  simp [mem_mk']
 
 variable (P)
 

@@ -223,7 +223,7 @@ theorem evalHorizontalComp_cons_cons {f f' g g' h h' i i' : C}
     (e_ηθ : η ⊗ₘ θ = ηθ) (e_ηθs : ηs ⊗ₘ θs = ηθs)
     (e_ηθ₁ : ηθ ≫ ηθs = ηθ₁) (e_ηθ₂ : (α ⊗ᵢ β).hom ≫ ηθ₁ = ηθ₂) :
     (α.hom ≫ η ≫ ηs) ⊗ₘ (β.hom ≫ θ ≫ θs) = ηθ₂ := by
-  simp [← e_ηθ , ← e_ηθs , ← e_ηθ₁, ← e_ηθ₂]
+  simp [← e_ηθ, ← e_ηθs, ← e_ηθ₁, ← e_ηθ₂]
 
 end
 

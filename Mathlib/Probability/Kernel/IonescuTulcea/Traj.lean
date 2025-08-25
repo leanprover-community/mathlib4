@@ -592,6 +592,19 @@ section integral
 
 /-! ### Integrals and `traj` -/
 
+theorem lintegral_traj₀ {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : AEMeasurable f (traj κ a x₀)) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ := by
+  nth_rw 1 [← traj_map_updateFinset, MeasureTheory.lintegral_map']
+  · convert mf
+    exact traj_map_updateFinset x₀
+  · exact measurable_updateFinset_left.aemeasurable
+
+theorem lintegral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : Measurable f) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ :=
+  lintegral_traj₀ x₀ mf.aemeasurable
+
 variable {E : Type*} [NormedAddCommGroup E]
 
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}

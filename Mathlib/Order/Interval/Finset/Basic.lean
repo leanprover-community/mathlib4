@@ -1149,7 +1149,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   `Relation.TransGen (· ⋖ ·) x z`, which we can extend with `Relation.TransGen.tail`. -/
   · exact .tail (transGen_covBy_of_lt hxz) hzy
   /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
-  `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
+  `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y`, then `Relation.TransGen.single`. -/
   · simp only [lt_iff_le_not_ge, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz hz.1.1) hxy)
 termination_by #(Ico x y)

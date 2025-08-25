@@ -62,7 +62,7 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
     (H : Function.Injective (X.presheaf.germ U x hx)) :
     Function.Injective (X.presheaf.germ (X.basicOpen f) x hf) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at H ⊢
-  intros t ht
+  intro t ht
   have := hU.isLocalization_basicOpen f
   obtain ⟨t, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) t
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,

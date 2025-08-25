@@ -67,7 +67,7 @@ def toTopObjOneHomeo : ⦋1⦌.toTopObj ≃ₜ I where
 open unitInterval in
 instance (x : SimplexCategory) : PathConnectedSpace x.toTopObj := by
   refine ⟨inferInstance, ?_⟩
-  intros f g
+  intro f g
   dsimp [toTopObj, toType_apply] at f g ⊢
   refine ⟨⟨fun j ↦ ⟨toNNReal (symm j) • f.1 + toNNReal j • g.1, ?_⟩, ?_⟩, ?_, ?_⟩
   · ext; simp [Finset.sum_add_distrib, ← Finset.mul_sum, f.2, g.2]
