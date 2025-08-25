@@ -811,10 +811,10 @@ instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
 instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
-theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by ext; simp [compl]
-theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
-theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
-theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
+theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by simp [compl]
+theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by simp [compl]
+theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
   convert eq_isEquiv α

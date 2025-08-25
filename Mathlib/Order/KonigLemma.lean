@@ -124,9 +124,9 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     refine ⟨fun ⟨hne, h'⟩ ↦ ?_, ?_⟩
     · have hle' : i + 1 ≤ j := h.lt_of_ne <| by rintro rfl; simp [π_refl] at hne
       exact congr_arg Sigma.fst <| h' (i+1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
-        (fun h ↦ by apply_fun Sigma.fst at h; simp at h)
+        (fun h ↦ by simp at h)
     rintro rfl
-    refine ⟨fun h ↦ by apply_fun Sigma.fst at h; simp at h, ?_⟩
+    refine ⟨fun h ↦ by simp at h, ?_⟩
     rintro j c ⟨hij : i ≤ j, hcb : π _ c = π _ b⟩ ⟨hji : j ≤ i + 1, rfl : π hji b = c⟩ hne
     replace hne := show i ≠ j by rintro rfl; contradiction
     obtain rfl := hji.antisymm (hij.lt_of_ne hne)
