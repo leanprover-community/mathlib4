@@ -393,6 +393,21 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
 
+lemma valuedCompletion_surjective_iff :
+    Function.Surjective (v : hat K → Γ₀) ↔ Function.Surjective (v : K → Γ₀) := by
+  constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
+  · induction a using Completion.induction_on
+    · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
+      · simp [H]
+      · simp only [H, imp_false]
+        rcases eq_or_ne γ 0 with rfl | hγ
+        · simp at H
+        · convert isClosed_univ.sdiff (isOpen_sphere (hat K) hγ) using 1
+          ext x
+          simp
+    · exact ⟨_, by simpa using ha⟩
+  · exact ⟨a, by simp [ha]⟩
+
 instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
     [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
   rw [faithfulSMul_iff_algebraMap_injective R (hat K)]
