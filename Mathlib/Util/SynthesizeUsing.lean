@@ -37,7 +37,7 @@ The tactic must solve for all goals, in contrast to `synthesizeUsing`.
 -/
 def synthesizeUsing' {u : Level} (type : Q(Sort u)) (tac : TacticM Unit) : MetaM Q($type) := do
   let (goals, e) ← synthesizeUsing type tac
-  -- Note: doesn't use `tac *> Tactic.done` since that just adds a message
+  -- Note: does not use `tac *> Tactic.done` since that just adds a message
   -- rather than raising an error.
   unless goals.isEmpty do
     throwError m!"synthesizeUsing': unsolved goals\n{goalsToMessageData goals}"
