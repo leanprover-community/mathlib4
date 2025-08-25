@@ -454,6 +454,22 @@ theorem ContinuousOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜]
     ContinuousOn (fun x => (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prodMk hf)
 
+--@[continuity, fun_prop]  -- add this?
+theorem ContinuousWithinAt.clm_comp
+  {g : X → F →L[𝕜] G}
+  {f : X → E →L[𝕜] F} {s : Set X} {x : X}
+  (hg : ContinuousWithinAt g s x) (hf : ContinuousWithinAt f s x) :
+    ContinuousWithinAt (fun y ↦ (g y).comp (f y)) s x :=
+  (compL 𝕜 E F G).continuous₂.continuousAt.comp_continuousWithinAt (hg.prodMk hf)
+
+--@[continuity, fun_prop]  -- add this?
+theorem ContinuousAt.clm_comp
+  {g : X → F →L[𝕜] G}
+  {f : X → E →L[𝕜] F} {x : X}
+  (hg : ContinuousAt g x) (hf : ContinuousAt f x) :
+    ContinuousAt (fun y ↦ (g y).comp (f y)) x :=
+  (hg.continuousWithinAt.clm_comp hf.continuousWithinAt).continuousAt Filter.univ_mem
+
 @[continuity, fun_prop]
 theorem Continuous.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ f x (g x)) :=
@@ -488,6 +504,20 @@ theorem Continuous.continuousLinearMapCoprod
     Continuous (fun x => (f x).coprod (g x)) := by
   apply continuousOn_univ.mp
   exact hf.continuousOn.continuousLinearMapCoprod hg.continuousOn
+
+theorem ContinuousWithinAt.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X} {x : X}
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun y => (f y).coprod (g y)) s x := by
+  simp only [← comp_fst_add_comp_snd]
+  exact (hf.clm_comp continuousWithinAt_const).add (hg.clm_comp continuousWithinAt_const)
+
+theorem ContinuousAt.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {x : X}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
+    ContinuousAt (fun y => (f y).coprod (g y)) x :=
+  (hf.continuousWithinAt.continuousLinearMapCoprod
+    hg.continuousWithinAt).continuousAt Filter.univ_mem
 
 end
 
