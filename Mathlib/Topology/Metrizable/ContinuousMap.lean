@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
@@ -22,11 +22,10 @@ variable {X Y : Type*}
   [TopologicalSpace Y]
 
 instance [PseudoMetrizableSpace Y] : PseudoMetrizableSpace C(X, Y) :=
-  let _ := pseudoMetrizableSpacePseudoMetric Y
+  let := pseudoMetrizableSpaceUniformity Y
+  have := pseudoMetrizableSpaceUniformity_countably_generated Y
   inferInstance
 
-instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) :=
-  let _ := metrizableSpaceMetric Y
-  UniformSpace.metrizableSpace
+instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) where
 
 end ContinuousMap
