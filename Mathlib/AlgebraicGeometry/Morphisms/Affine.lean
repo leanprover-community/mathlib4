@@ -62,7 +62,7 @@ instance (priority := 900) [IsAffineHom f] : QuasiCompact f :=
 
 instance [IsAffineHom f] [IsAffineHom g] : IsAffineHom (f ≫ g) := by
   constructor
-  intros U hU
+  intro U hU
   rw [Scheme.comp_base, Opens.map_comp_obj]
   apply IsAffineHom.isAffine_preimage
   apply IsAffineHom.isAffine_preimage
@@ -75,7 +75,7 @@ instance : MorphismProperty.IsMultiplicative @IsAffineHom where
 instance {X : Scheme} (r : Γ(X, ⊤)) :
     IsAffineHom (X.basicOpen r).ι := by
   constructor
-  intros U hU
+  intro U hU
   fapply (Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion (X.basicOpen r).ι).mp
   convert hU.basicOpen (X.presheaf.map (homOfLE le_top).op r)
   rw [X.basicOpen_res]
@@ -87,7 +87,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     QuasiSeparatedSpace X := by
   rw [quasiSeparatedSpace_iff_affine]
-  intros U V
+  intro U V
   obtain ⟨s', hs', e⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
   rw [← Set.inter_univ (_ ∩ _), ← Opens.coe_top, ← iSup_basicOpen_of_span_eq_top _ _ e,
     ← iSup_subtype'', Opens.coe_iSup, Set.inter_iUnion]
