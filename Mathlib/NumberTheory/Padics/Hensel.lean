@@ -179,7 +179,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   have hdzne' : (↑(F.derivative.eval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff_val.2 h)
   obtain ⟨q, hq⟩ := F.binomExpansion z (-z1)
   have : ‖(↑(F.derivative.eval z) * (↑(F.eval z) / ↑(F.derivative.eval z)) : ℚ_[p])‖ ≤ 1 := by
-    rw [padicNormE.mul]
+    rw [norm_mul]
     exact mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
   have : F.derivative.eval z * -z1 = -F.eval z := by
     calc
@@ -358,7 +358,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
         (T_lt_one hnorm) (by simp)) (deriv_norm_pos hnorm))
     _ = ‖F.eval a‖ / ‖F.derivative.eval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,
-        PadicInt.coe_mul, padicNormE.mul]
+        PadicInt.coe_mul, norm_mul]
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption
 
