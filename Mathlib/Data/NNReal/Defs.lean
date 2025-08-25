@@ -45,7 +45,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-assert_not_exists Star
+assert_not_exists TrivialStar
 
 open Function
 

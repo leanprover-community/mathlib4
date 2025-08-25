@@ -538,8 +538,8 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
 @[to_additive (attr := simps)
-"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
-`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s,
+as a `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`. -/]
 protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
     [TopologicalSpace α] [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]

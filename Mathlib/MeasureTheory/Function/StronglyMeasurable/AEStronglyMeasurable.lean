@@ -342,6 +342,15 @@ protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [Cont
 
 end Arithmetic
 
+section Star
+
+@[fun_prop, measurability]
+protected theorem star {R : Type*} [TopologicalSpace R] [Star R] [ContinuousStar R] {f : α → R}
+    (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (star f) μ :=
+  ⟨star (hf.mk f), hf.stronglyMeasurable_mk.star, hf.ae_eq_mk.star⟩
+
+end Star
+
 section Order
 
 @[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
@@ -480,8 +489,6 @@ a.e. strong measurability. -/
 protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
-
-@[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
 /-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 
@@ -622,7 +629,7 @@ theorem _root_.Topology.IsEmbedding.aestronglyMeasurable_comp_iff [PseudoMetriza
   · let G : β → range g := rangeFactorization g
     have hG : IsClosedEmbedding G :=
       { hg.codRestrict _ _ with
-        isClosed_range := by rw [surjective_onto_range.range_eq]; exact isClosed_univ }
+        isClosed_range := by rw [rangeFactorization_surjective.range_eq]; exact isClosed_univ }
     have : AEMeasurable (G ∘ f) μ := AEMeasurable.subtype_mk H.aemeasurable
     exact hG.measurableEmbedding.aemeasurable_comp_iff.1 this
   · rcases (aestronglyMeasurable_iff_aemeasurable_separable.1 H).2 with ⟨t, ht, h't⟩

@@ -72,7 +72,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
       simp [← Quotient.mk_smul, SetLike.le_def, submoduleOf]
     · rw [mapQ, ← range_eq_top, range_liftQ, range_comp]
       have := congr($(hx').submoduleOf N₂)
-      rw [submoduleOf_self, submoduleOf_sup_of_le (by aesop) (by aesop),
+      rw [submoduleOf_self, submoduleOf_sup_of_le (by simp_all) (by simp_all),
         submoduleOf_span_singleton_of_mem _ hxN₂] at this
       simpa [← span_singleton_eq_range, LinearMap.range_toSpanSingleton] using this.symm
 
