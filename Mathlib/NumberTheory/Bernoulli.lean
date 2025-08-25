@@ -254,8 +254,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
-  field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
-  left; left; ring
+  grind [Nat.cast_mul]
 
 section Faulhaber
 
