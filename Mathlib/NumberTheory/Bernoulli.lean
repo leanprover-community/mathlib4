@@ -197,8 +197,8 @@ theorem bernoulli_eq_bernoulli'_of_ne_one {n : ℕ} (hn : n ≠ 1) : bernoulli n
 theorem sum_bernoulli (n : ℕ) :
     (∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k) = if n = 1 then 1 else 0 := by
   cases n with | zero => simp | succ n =>
-  cases n with 
-  | zero => simp 
+  cases n with
+  | zero => simp
   | succ n =>
   suffices (∑ i ∈ range n, ↑((n + 2).choose (i + 2)) * bernoulli (i + 2)) = n / 2 by
     simp only [this, sum_range_succ', cast_succ, bernoulli_one, bernoulli_zero, choose_one_right,
