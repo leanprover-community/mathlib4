@@ -41,7 +41,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
   simp only [Set.mem_setOf_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
     RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
-    ← map_sub, padicNormE.eq_padicNorm, true_and, forall_const]
+    ← map_sub, Padic.eq_padicNorm, true_and, forall_const]
   constructor
   · intro n
     use Units.mk0 (exp (-n : ℤ)) (by simp)
@@ -134,26 +134,19 @@ lemma coe_withValRingEquiv_symm :
       Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
   rfl
 
--- is `IsUniformInducing f -> IsUniformInducing (extension f)` true? If so, would golf this.
-lemma uniformContinuous_withValRingEquiv :
-    UniformContinuous (Padic.withValRingEquiv (p := p)) := by
-  suffices UniformContinuous (Padic.withValRingEquiv (p := p)).toAddMonoidHom from this
-  apply uniformContinuous_addMonoidHom_of_continuous
-  exact Completion.continuous_extension
-
-lemma uniformContinuous_withValRingEquiv_symm :
-    UniformContinuous (Padic.withValRingEquiv (p := p)).symm := by
-  suffices UniformContinuous (Padic.withValRingEquiv (p := p)).symm.toAddMonoidHom from this
-  exact uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
-    (Padic.denseRange_ratCast p) (Completion.uniformContinuous_coe _)
-
 /-- The `p`-adic numbers are isomophic as uniform spaces to the completion of the rationals at
 the `p`-adic valuation. -/
 noncomputable
 def withValUniformEquiv :
-    (Rat.padicValuation p).Completion ≃ᵤ ℚ_[p] where
-  __ := Padic.withValRingEquiv
-  uniformContinuous_toFun := Padic.uniformContinuous_withValRingEquiv
-  uniformContinuous_invFun := Padic.uniformContinuous_withValRingEquiv_symm
+    (Rat.padicValuation p).Completion ≃ᵤ ℚ_[p] :=
+  UniformEquiv.symm <| Padic.withValRingEquiv.symm.toUniformEquivOfIsUniformInducing <|
+    isDenseInducing_cast_withVal.isUniformInducing_extend isUniformInducing_cast_withVal
+      (Completion.isUniformInducing_coe _)
+
+@[simp]
+lemma toEquiv_withValUniformEquiv_eq_toEquiv_withValRingEquiv :
+    (withValUniformEquiv (p := p) : (Rat.padicValuation p).Completion ≃ ℚ_[p]) =
+      (withValRingEquiv (p := p) :) :=
+  rfl
 
 end Padic
