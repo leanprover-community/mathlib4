@@ -26,7 +26,7 @@ namespace ModularForm
 open EisensteinSeries CongruenceSubgroup
 
 /-- This defines Eisenstein series as modular forms of weight `k`, level `Γ(N)` and congruence
-condition given by `a: Fin 2 → ZMod N`. -/
+condition given by `a : Fin 2 → ZMod N`. -/
 def eisensteinSeries_MF {k : ℤ} {N : ℕ} [NeZero N] (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
     ModularForm (Gamma N) k where
   toFun := eisensteinSeries_SIF a k
