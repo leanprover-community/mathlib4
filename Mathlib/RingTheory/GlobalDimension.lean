@@ -42,8 +42,19 @@ variable {C : Type u} [Category.{v, u} C] [Abelian C]
 noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasProjectiveDimensionLT X i}
 
+noncomputable def nonnegProjectiveDimension (X : C) : ℕ∞ :=
+  sInf (({(n : ℕ) | HasProjectiveDimensionLT X n}).image WithTop.some)
+
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
     HasProjectiveDimensionLE X n := by
+  sorry
+
+lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
+    Limits.IsZero X := by
+  sorry
+
+lemma projectiveDimension_eq_nonnegProjectiveDimension_of_not_zero (X : C) (h : ¬ Limits.IsZero X) :
+    nonnegProjectiveDimension X = projectiveDimension X :=  by
   sorry
 
 end ProjectiveDimension
