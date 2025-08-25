@@ -32,13 +32,6 @@ variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace �
 
 open AffineMap
 
-theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
-    IsClosed (s.direction : Set W) ↔ IsClosed (s : Set Q) := by
-  rcases s.eq_bot_or_nonempty with (rfl | ⟨x, hx⟩); · simp
-  rw [← (IsometryEquiv.vaddConst x).toHomeomorph.symm.isClosed_image,
-    AffineSubspace.coe_direction_eq_vsub_set_right hx]
-  rfl
-
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₁ (homothety p₁ c p₂) = ‖c‖ * dist p₁ p₂ := by
@@ -213,29 +206,6 @@ theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
     rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nndist, mul_left_comm,
       inv_mul_cancel₀ (dist_ne_zero.2 h), mul_one]
-
-variable (𝕜)
-
-theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy : y ∈ interior s) :
-    ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s := by
-  rw [(NormedAddCommGroup.nhds_basis_norm_lt (1 : 𝕜)).eventually_iff]
-  rcases eq_or_ne y x with h | h
-  · use 1
-    simp [h.symm, interior_subset hy]
-  have hxy : 0 < ‖y -ᵥ x‖ := by rwa [norm_pos_iff, vsub_ne_zero]
-  obtain ⟨u, hu₁, hu₂, hu₃⟩ := mem_interior.mp hy
-  obtain ⟨ε, hε, hyε⟩ := Metric.isOpen_iff.mp hu₂ y hu₃
-  refine ⟨ε / ‖y -ᵥ x‖, div_pos hε hxy, fun δ (hδ : ‖δ - 1‖ < ε / ‖y -ᵥ x‖) => hu₁ (hyε ?_)⟩
-  rw [lt_div_iff₀ hxy, ← norm_smul, sub_smul, one_smul] at hδ
-  rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
-
-theorem eventually_homothety_image_subset_of_finite_subset_interior (x : Q) {s : Set Q} {t : Set Q}
-    (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ '' t ⊆ s := by
-  suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s by
-    simp_rw [Set.image_subset_iff]
-    exact (Filter.eventually_all_finite ht).mpr this
-  intro y hy
-  exact eventually_homothety_mem_of_mem_interior 𝕜 x (h hy)
 
 end NormedSpace
 
