@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Subterminal
 # Exponential ideals
 
 An exponential ideal of a cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
-`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring theoretic ideals. We
+`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring-theoretic ideals. We
 define the notion here for inclusion functors `i : D ⥤ C` rather than explicit subcategories to
 preserve the principle of equivalence.
 
