@@ -512,7 +512,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.image_subtype :=
   LinearIndepOn.image
 
--- See, for example, Keith Conrad's note
+-- See, for example, Keith Conrad's note [ConradLinearChar]
 --  <https://kconrad.math.uconn.edu/blurbs/galoistheory/linearchar.pdf>
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
