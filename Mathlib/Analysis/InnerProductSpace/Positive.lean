@@ -195,6 +195,13 @@ theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
   simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
+theorem IsSymmetricProjection.le_iff_comp_eq_left {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ p ∘ₗ q = p := by
+  rw [hp.le_iff_comp_eq_right hq]
+  constructor <;> intro h <;> ext x <;> apply ext_inner_left 𝕜 fun y => ?_ <;>
+  simp only [coe_comp, Function.comp_apply, ← hq.isSymmetric _, ← hp.isSymmetric _] <;>
+  simp only [← LinearMap.comp_apply, h]
+
 open Submodule in
 theorem _root_.Submodule.coe_starProjection_le_coe_starProjection_iff (U V : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :

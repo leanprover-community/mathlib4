@@ -327,6 +327,12 @@ theorem IsSymmetricProjection.sub_of_comp_eq_right {p q : E →ₗ[𝕜] E}
     fun y => ?_) hqp, hq.isSymmetric.sub hp.isSymmetric⟩
   simp_rw [Module.End.mul_apply, ← hp.isSymmetric _, ← hq.isSymmetric _, ← comp_apply, hqp]
 
+theorem IsSymmetricProjection.sub_of_comp_eq_left {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) (hpq : p ∘ₗ q = p) :
+    (q - p).IsSymmetricProjection := by
+  refine hp.sub_of_comp_eq_right hq <| LinearMap.ext fun x => ext_inner_left 𝕜 fun y => ?_
+  simp_rw [comp_apply, ← hq.isSymmetric _, ← hp.isSymmetric _, ← comp_apply, hpq]
+
 end LinearMap
 
 open ContinuousLinearMap in
