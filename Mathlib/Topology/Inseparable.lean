@@ -381,13 +381,13 @@ lemma IsClosedMap.specializingMap (hf : IsClosedMap f) : SpecializingMap f :=
 
 lemma Topology.IsInducing.specializingMap (hf : IsInducing f)
     (h : StableUnderSpecialization (range f)) : SpecializingMap f := by
-  intros x y e
+  intro x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
 lemma Topology.IsInducing.generalizingMap (hf : IsInducing f)
     (h : StableUnderGeneralization (range f)) : GeneralizingMap f := by
-  intros x y e
+  intro x y e
   obtain ⟨y, rfl⟩ := h e ⟨x, rfl⟩
   exact ⟨_, hf.specializes_iff.mp e, rfl⟩
 
