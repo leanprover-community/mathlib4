@@ -479,17 +479,37 @@ end IsImmersionAt
 
 variable {x : M}
 
+--- TODO: are the manifold hypotheses necessary now? think!
+/-- A point-wise version of `Topology.IsInducing.nhds_eq_comap` -/
+lemma nhds_eq_comap {f : M → N} (hf : ContinuousAt f x)
+    {s : Set M} (hs : IsOpen s) (hs' : s ∈ 𝓝 x) (hf' : Topology.IsEmbedding (s.restrict f)) :
+    𝓝 x = Filter.comap f (𝓝 (f x)) := by
+  apply le_antisymm
+  · exact Filter.map_le_iff_le_comap.mp hf
+  · rw [le_nhds_iff]
+    intro s' hxs' hs'
+    rw [Filter.mem_comap]
+    let ssmall : Set s := sorry -- s' as subset of s...
+    have : IsOpen ssmall := sorry -- hopefully easy
+    use (s.restrict f) '' ssmall--(s ∩ s')
+    constructor
+    · -- TODO: this move is too strong, but we don't need all of it!
+      --apply IsOpen.mem_nhds
+      --sorry--have : IsOpenMap (s.restrict f) := by apply?
+      --apply mem_image_of_mem
+      --refine (mem_image (s.restrict f) ssmall (f x)).mpr ?_
+      sorry -- use x cast to s...
+    rw [preimage_subset_iff]
+    rintro x ⟨x', hx', hx'x⟩
+    sorry
+
 -- TODO: are the manifold hypotheses necessary now? think!
 lemma continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContinuousAt f x ↔ ContinuousAt (φ ∘ f) x := by
   choose t ht hxt htφ using h.exists_nbhd_restr_isEmbedding
-  refine ⟨fun hf ↦ h.continuousAt.comp hf, fun h ↦ ?_⟩
-  -- should be easy now; the following does not typecheck, but is the idea
-  -- have h' := ContinuousAt ((t.restrict φ) ∘ f) x := sorry -- "should be easy"
-  sorry
-  -- lemma: if φ is locally an embedding, the same result holds (prove something),
-  -- then apply to immersions at x
+  simp_rw [ContinuousAt, nhds_eq_comap h.continuousAt ht hxt htφ, Filter.tendsto_comap_iff,
+    comp_apply]
 
 -- TODO: add same lemma for immersions and continuity
 
