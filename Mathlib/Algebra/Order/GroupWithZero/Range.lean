@@ -5,6 +5,7 @@ Authors: Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
+import Mathlib.Algebra.Order.Hom.MonoidWithZero
 
 /-! # The range of a MonoidWithZeroHom
 
@@ -21,6 +22,8 @@ variable [MonoidWithZero A] [LinearOrderedCommGroupWithZero B]
 variable [MonoidWithZeroHomClass F A B] {f : F}
 
 open WithZero
+
+#check OrderMonoidWithZeroHom
 
 /-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
 def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
