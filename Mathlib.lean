@@ -951,6 +951,7 @@ import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.Opposite
+import Mathlib.Algebra.Order.Ring.Ordering.Defs
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Algebra.Order.Ring.Rat
@@ -4806,6 +4807,7 @@ import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Padics.ValuativeRel
+import Mathlib.NumberTheory.Padics.WithVal
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
 import Mathlib.NumberTheory.PrimeCounting
@@ -6649,6 +6651,7 @@ import Mathlib.Topology.Separation.CountableSeparatingOn
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Separation.Regular
