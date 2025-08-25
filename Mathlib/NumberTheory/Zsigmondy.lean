@@ -7,8 +7,10 @@ Authors: Mantas Bakšys, Yury Kudryashov, Alex Best
 import Mathlib.Algebra.Polynomial.Homogenize
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.Rify
 
 /-!
 ## Zsigmondy's theorem
@@ -23,6 +25,12 @@ Inspired by Mathlib 3 code at https://github.com/leanprover-community/mathlib3/t
 -/
 
 open Finset
+
+@[gcongr]
+theorem MvPolynomial.eval₂_dvd_eval₂ {σ R S : Type*} [CommSemiring R] [CommSemiring S]
+    (f : R →+* S) (g : σ → S) {p q : MvPolynomial σ R} (h : p ∣ q) :
+    p.eval₂ f g ∣ q.eval₂ f g :=
+  map_dvd (eval₂Hom f g) h
 
 protected theorem MvPolynomial.IsWeightedHomogeneous.expand {σ R M : Type*} [CommSemiring R]
     [AddCommMonoid M] {w : σ → M} {φ : MvPolynomial σ R} {n : M} (h : φ.IsWeightedHomogeneous w n)
