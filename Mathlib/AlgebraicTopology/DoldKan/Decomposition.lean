@@ -53,7 +53,7 @@ theorem decomposition_Q (n q : ℕ) :
   induction q with
   | zero =>
     simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
-      Finset.filter_False, Finset.sum_empty]
+      Finset.filter_false, Finset.sum_empty]
   | succ q hq =>
     by_cases hqn : q + 1 ≤ n + 1
     swap
