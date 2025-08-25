@@ -371,11 +371,11 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
     ring
 
-variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommRing Rₘ] [CommRing Sₙ] [CommRing Rₘ'] [CommRing Sₙ']
-  [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ] [Algebra Rₘ Sₙ]
-  [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ] [IsLocalization N Sₙ]
-  [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ] [IsScalarTower R S Sₙ]
-  [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
+variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ] [CommSemiring Rₘ']
+  [CommSemiring Sₙ'] [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ]
+  [Algebra Rₘ Sₙ] [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ]
+  [IsLocalization N Sₙ] [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ]
+  [IsScalarTower R S Sₙ] [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
 
 theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
       (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
@@ -441,20 +441,6 @@ lemma coe_algEquiv_symm :
 
 end Localization
 
-end CommSemiring
-
-section CommRing
-
-variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
-
-namespace Localization
-
-theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
-  simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-end Localization
-
 open IsLocalization
 
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
@@ -478,7 +464,7 @@ theorem Field.localization_map_bijective {K Kₘ : Type*} [Field K] [CommRing K�
 -- way round causes issues with defeq of instances, so this is actually easier.
 section Algebra
 
-variable {S} {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
+variable {Rₘ Sₘ : Type*} [CommSemiring Rₘ] [CommSemiring Sₘ]
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 variable [Algebra S Sₘ] [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 include S
@@ -581,6 +567,19 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
   have : IsLocalization (M.map (algebraMap R S)) Sₘ := i
   IsLocalization.map_injective_of_injective _ _ _ hRS
 
+instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by
+  simpa
+
 end Algebra
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
+variable [Algebra R S] {P : Type*} [CommRing P]
+
+theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
+  simpa using mk_algebraMap (R := R) (A := ℤ) _
 
 end CommRing
