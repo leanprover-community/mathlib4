@@ -234,8 +234,8 @@ section Eval
 variable {x : R}
 
 /-- `eval x p` is the evaluation of the polynomial `p` at `x` -/
-def eval : R → R[X] → R :=
-  eval₂ (RingHom.id _)
+def eval (x : R) (p : R[X]) : R :=
+  eval₂ (RingHom.id _) x p
 
 theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
   rw [eval, eval₂_eq_sum]
