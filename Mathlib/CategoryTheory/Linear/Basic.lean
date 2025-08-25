@@ -40,7 +40,7 @@ namespace CategoryTheory
 
 /-- A category is called `R`-linear if `P ⟶ Q` is an `R`-module such that composition is
 `R`-linear in both variables. -/
-class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditive C] where
+class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Presemiadditive C] where
   homModule : ∀ X Y : C, Module R (X ⟶ Y) := by infer_instance
   /-- compatibility of the scalar multiplication with the post-composition -/
   smul_comp : ∀ (X Y Z : C) (r : R) (f : X ⟶ Y) (g : Y ⟶ Z), (r • f) ≫ g = r • f ≫ g := by
@@ -60,15 +60,17 @@ open CategoryTheory
 
 namespace CategoryTheory.Linear
 
-variable {C : Type u} [Category.{v} C] [Preadditive C]
+variable {C : Type u} [Category.{v} C]
 
-instance preadditiveNatLinear : Linear ℕ C where
-  smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_nsmul f r
-  comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_nsmul g r
+instance preadditiveNatLinear [Presemiadditive C] : Linear ℕ C where
+  smul_comp X _Y _Z r f g := by exact (Presemiadditive.rightComp X g).map_nsmul f r
+  comp_smul _X _Y Z f r g := by exact (Presemiadditive.leftComp Z f).map_nsmul g r
 
-instance preadditiveIntLinear : Linear ℤ C where
+instance preadditiveIntLinear [Preadditive C] : Linear ℤ C where
   smul_comp X _Y _Z r f g := by exact (Preadditive.rightComp X g).map_zsmul f r
   comp_smul _X _Y Z f r g := by exact (Preadditive.leftComp Z f).map_zsmul g r
+
+variable [Presemiadditive C]
 
 section End
 
