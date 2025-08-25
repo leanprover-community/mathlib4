@@ -136,7 +136,7 @@ theorem neg_smul_mem [P.HasIdealSupport]
 
 end HasIdealSupport
 
-theorem hasIdealSupport_of_isUnit_2 (isUnit_2 : IsUnit (2 : R)) : P.HasIdealSupport := by
+theorem hasIdealSupport_of_isUnit_two (isUnit_2 : IsUnit (2 : R)) : P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
   intro x a _ _
   obtain ⟨half, h2⟩ := IsUnit.exists_left_inv isUnit_2
