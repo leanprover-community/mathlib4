@@ -47,7 +47,7 @@ is proved in `RingTheory.Polynomial`.
 
 ## Tags
 
-Noetherian, Noetherian, Noetherian ring, Noetherian module, Noetherian ring, Noetherian module
+Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
 
 -/
 
