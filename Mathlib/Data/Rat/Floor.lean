@@ -268,7 +268,7 @@ def evalIntFract : NormNumExt where eval {u R} e := do
       let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $R))
       let instFloorRing ← synthInstanceQ (q(FloorRing $R))
       assertInstancesCommute
-      return .isNat sr (mkRawNatLit 0) q(IsNat.intFract $r $m $pr)
+      return .isNat sr q(nat_lit 0) q(IsNat.intFract $r $m $pr)
     | .isNegNat sr m pr =>
       let instIsStrictOrderedRing ← synthInstanceQ (q(IsStrictOrderedRing $R))
       let instFloorRing ← synthInstanceQ (q(FloorRing $R))
