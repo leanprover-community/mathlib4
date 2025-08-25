@@ -732,8 +732,7 @@ lemma linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
 lemma not_linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
     ¬LinearIndepOn R v s ↔ ∃ t ⊆ s, ∃ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i ∧ ∃ i ∈ t, 0 < f i := by
-  rw [linearIndepOn_finset_iffₒₛ]
-  simp only [not_forall]
+  simp only [linearIndepOn_finset_iffₒₛ, not_forall]
   refine ⟨fun ⟨t, hst, f, heq, i, hi, hfi⟩ => ?_,
     fun ⟨t, hst, f, heq, i, hi, hfi⟩ => ⟨t, hst, f, heq, i, hst hi, pos_iff_ne_zero.1 hfi⟩⟩
   by_cases hi' : i ∈ t
