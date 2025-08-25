@@ -196,7 +196,6 @@ open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
 -/
-
 /-
 Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
 no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems
