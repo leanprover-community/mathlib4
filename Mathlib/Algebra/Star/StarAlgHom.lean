@@ -780,12 +780,16 @@ theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.r
   rfl
 
 -- should be a `simp` lemma, but causes a linter timeout
-theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm :=
+theorem toRingEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm :=
   rfl
 
+@[deprecated (since := "25-08-2025")] alias to_ringEquiv_symm := toRingEquiv_symm
+
 @[simp]
-theorem symm_to_ringEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
+theorem symm_toRingEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
   rfl
+
+@[deprecated (since := "25-08-2025")] alias symm_to_ringEquiv := symm_toRingEquiv
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
