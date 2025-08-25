@@ -335,9 +335,11 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
 
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
+/-- This instance can be found using `Functor.hasBiproduct_of_preserves'`, but it is faster
+to keep it here. -/
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
-  inferInstance
+  F.hasBiproduct_of_preserves _
 
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
 def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
