@@ -12,15 +12,18 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 
 ## Main definition
 
-* `FractionalIdeal.extended`: Let `A` and `B` be commutative rings with respective localizations
+* `FractionalIdeal.extended₀`: Let `A` and `B` be commutative rings with respective localizations
   `IsLocalization M K` and `IsLocalization N L`. Let `f : A →+* B` be a ring homomorphism with
   `hf : M ≤ Submonoid.comap f N`. If `I : FractionalIdeal M K`, then the extension of `I` along
   `f` is `extended L hf I : FractionalIdeal N L`.
+* `FractionalIdeal.extended`: Let `A ⊆ B` be commutative domains with fraction fields `K ⊆ L`
+  respectively, the ring homomorphism `FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ K` that extends
+  a fractional ideal of `A` to a fractional ideal of `B`.
 
 ## Main results
 
-* `extended_add` says that extension commutes with addition.
-* `extended_mul` says that extension commutes with multiplication.
+* `extended_add₀` says that extension commutes with addition.
+* `extended_mul₀` says that extension commutes with multiplication.
 
 ## Tags
 
@@ -31,6 +34,8 @@ open IsLocalization FractionalIdeal Submodule
 
 namespace FractionalIdeal
 
+section Localization
+
 variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] {f : A →+* B}
 variable {K : Type*} {M : Submonoid A} [CommRing K] [Algebra A K] [IsLocalization M K]
 variable (L : Type*) {N : Submonoid B} [CommRing L] [Algebra B L] [IsLocalization N L]
@@ -40,7 +45,7 @@ variable (I : FractionalIdeal M K) (J : FractionalIdeal M K)
 /-- Given commutative rings `A` and `B` with respective localizations `IsLocalization M K` and
 `IsLocalization N L`, and a ring homomorphism `f : A →+* B` satisfying `M ≤ Submonoid.comap f N`, a
 fractional ideal `I` of `A` can be extended along `f` to a fractional ideal of `B`. -/
-def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
+def extended₀ (I : FractionalIdeal M K) : FractionalIdeal N L where
   val := span B <| (IsLocalization.map (S := K) L f hf) '' I
   property := by
     have ⟨a, ha, frac⟩ := I.isFractional
@@ -55,20 +60,20 @@ def extended (I : FractionalIdeal M K) : FractionalIdeal N L where
 
 local notation "map_f" => (IsLocalization.map (S := K) L f hf)
 
-lemma mem_extended_iff (x : L) : (x ∈ I.extended L hf) ↔ x ∈ span B (map_f '' I) := by
+lemma mem_extended₀_iff (x : L) : (x ∈ I.extended₀ L hf) ↔ x ∈ span B (map_f '' I) := by
   constructor <;> { intro hx; simpa }
 
 @[simp]
-lemma coe_extended_eq_span : I.extended L hf = span B (map_f '' I) := by
-  ext; simp [mem_coe, mem_extended_iff]
+lemma coe_extended₀_eq_span : I.extended₀ L hf = span B (map_f '' I) := by
+  ext; simp [mem_coe, mem_extended₀_iff]
 
 @[simp]
-theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
+theorem extended₀_zero : extended₀ L hf (0 : FractionalIdeal M K) = 0 :=
   have : ((0 : FractionalIdeal M K) : Set K) = {0} := by ext; simp
   coeToSubmodule_injective (by simp [this])
 
 @[simp]
-theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
+theorem extended₀_one : extended₀ L hf (1 : FractionalIdeal M K) = 1 := by
   refine coeToSubmodule_injective <| Submodule.ext fun x ↦ ⟨fun hx ↦ span_induction
     ?_ (zero_mem _) (fun y z _ _ hy hz ↦ add_mem hy hz) (fun b y _ hy ↦ smul_mem _ b hy) hx, ?_⟩
   · rintro ⟨b, _, rfl⟩
@@ -77,9 +82,9 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact ⟨f a, ha, by rw [Algebra.linearMap_apply, Algebra.linearMap_apply, map_eq]⟩
 
-theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L hf) := by
+theorem extended₀_add : (I + J).extended₀ L hf = (I.extended₀ L hf) + (J.extended₀ L hf) := by
   apply coeToSubmodule_injective
-  simp only [coe_extended_eq_span, coe_add, Submodule.add_eq_sup, ← span_union, ← Set.image_union]
+  simp only [coe_extended₀_eq_span, coe_add, Submodule.add_eq_sup, ← span_union, ← Set.image_union]
   apply Submodule.span_eq_span
   · rintro _ ⟨y, hy, rfl⟩
     obtain ⟨i, hi, j, hj, rfl⟩ := (mem_add I J y).mp <| SetLike.mem_coe.mp hy
@@ -91,9 +96,9 @@ theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L
     exact hy.elim (fun h ↦ (mem_add I J y).mpr ⟨y, h, 0, zero_mem J, add_zero y⟩)
       (fun h ↦ (mem_add I J y).mpr ⟨0, zero_mem I, y, h, zero_add y⟩)
 
-theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L hf) := by
+theorem extended₀_mul : (I * J).extended₀ L hf = (I.extended₀ L hf) * (J.extended₀ L hf) := by
   apply coeToSubmodule_injective
-  simp only [coe_extended_eq_span, coe_mul, span_mul_span]
+  simp only [coe_extended₀_eq_span, coe_mul, span_mul_span]
   refine Submodule.span_eq_span (fun _ h ↦ ?_) (fun _ h ↦ ?_)
   · rcases h with ⟨x, hx, rfl⟩
     replace hx : x ∈ (I : Submodule A K) * (J : Submodule A K) := coe_mul I J ▸ hx
@@ -108,5 +113,29 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
       exact smul_mem _ (f a) hy
   · rcases Set.mem_mul.mp h with ⟨y, ⟨i, hi, rfl⟩, z, ⟨j, hj, rfl⟩, rfl⟩
     exact Submodule.subset_span ⟨i * j, mul_mem_mul hi hj, by simp⟩
+
+end Localization
+
+section Algebra
+
+open scoped nonZeroDivisors
+
+variable (A K L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B]
+  [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
+  [Algebra A B] [NoZeroSMulDivisors A B]
+
+/--
+The ring homomorphisme between that extends a fractional ideal of `A` to a fractional ideal of `B`.
+-/
+def extended : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L where
+  toFun :=
+    have hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
+    extended₀ L hs
+  map_one' := extended₀_one L _
+  map_mul' := extended₀_mul L _
+  map_zero' := extended₀_zero L _
+  map_add' := extended₀_add L _
+
+end Algebra
 
 end FractionalIdeal
