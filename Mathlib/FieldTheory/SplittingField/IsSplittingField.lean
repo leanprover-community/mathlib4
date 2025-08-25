@@ -180,6 +180,6 @@ theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : p.Splits (algebr
     p.IsSplittingField K (adjoin K (p.rootSet L)) :=
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin K (p.rootSet L) hx, rfl⟩
 
-def Polynomial.isSplittingField_C (a : K) : Polynomial.IsSplittingField K K (C a) where
+theorem Polynomial.isSplittingField_C (a : K) : Polynomial.IsSplittingField K K (C a) where
   splits' := by simp
   adjoin_rootSet' := by simp
