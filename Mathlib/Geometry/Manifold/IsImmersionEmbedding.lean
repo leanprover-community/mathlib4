@@ -488,24 +488,38 @@ variable {x : M}
 lemma nhds_eq_comap {f : M → N} (hf : ContinuousAt f x)
     {s : Set M} (hs : IsOpen s) (hs' : s ∈ 𝓝 x) (hf' : Topology.IsEmbedding (s.restrict f)) :
     𝓝 x = Filter.comap f (𝓝 (f x)) := by
-  apply le_antisymm
-  · exact Filter.map_le_iff_le_comap.mp hf
-  · rw [le_nhds_iff]
-    intro s' hxs' hs'
-    rw [Filter.mem_comap]
-    let ssmall : Set s := sorry -- s' as subset of s...
-    have : IsOpen ssmall := sorry -- hopefully easy
-    use (s.restrict f) '' ssmall--(s ∩ s')
-    constructor
-    · -- TODO: this move is too strong, but we don't need all of it!
-      --apply IsOpen.mem_nhds
-      --sorry--have : IsOpenMap (s.restrict f) := by apply?
-      --apply mem_image_of_mem
-      --refine (mem_image (s.restrict f) ssmall (f x)).mpr ?_
-      sorry -- use x cast to s...
-    rw [preimage_subset_iff]
-    rintro x ⟨x', hx', hx'x⟩
-    sorry
+  symm
+  set x' : s := ⟨x, mem_of_mem_nhds hs'⟩
+  have aux := hf'.isInducing.nhds_eq_comap (x := x')
+  have : f x = (s.restrict f) x' := rfl
+  rw [← map_nhds_subtype_coe_eq_nhds (mem_of_mem_nhds hs') hs', aux, ← this]
+  rw [restrict_eq, ← Filter.comap_comap]
+  set l' := Filter.comap f (𝓝 (f x))
+  -- is this true? i is injective, but not surjective...
+  sorry
+
+  -- have := hf'.isInducing.nhds_eq_comap
+  -- have : f x = (s.restrict f) ⟨x, mem_of_mem_nhds hs'⟩ := rfl
+  -- rw [this]
+  -- rw [hf'.isInducing.nhds_eq_comap]
+  -- apply le_antisymm
+  -- · exact Filter.map_le_iff_le_comap.mp hf
+  -- · rw [le_nhds_iff]
+  --   intro s' hxs' hs'
+  --   rw [Filter.mem_comap]
+  --   let ssmall : Set s := sorry -- s' as subset of s...
+  --   have : IsOpen ssmall := sorry -- hopefully easy
+  --   use (s.restrict f) '' ssmall--(s ∩ s')
+  --   constructor
+  --   · -- TODO: this move is too strong, but we don't need all of it!
+  --     --apply IsOpen.mem_nhds
+  --     --sorry--have : IsOpenMap (s.restrict f) := by apply?
+  --     --apply mem_image_of_mem
+  --     --refine (mem_image (s.restrict f) ssmall (f x)).mpr ?_
+  --     sorry -- use x cast to s...
+  --   rw [preimage_subset_iff]
+  --   rintro x ⟨x', hx', hx'x⟩
+  --   sorry
 
 -- TODO: are the manifold hypotheses necessary now? think!
 lemma continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
