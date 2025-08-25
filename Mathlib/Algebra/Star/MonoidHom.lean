@@ -190,7 +190,7 @@ instance : EquivLike (A ≃⋆* B) A B where
   right_inv e := e.right_inv
   coe_injective' f g h := by cases f; cases g; simp_all
 
-instance : MulEquivClass (A ≃⋆* B) A B where
+instance : MulHomClass (A ≃⋆* B) A B where
   map_mul f := f.map_mul'
 
 instance : StarHomClass (A ≃⋆* B) A B where
@@ -245,7 +245,7 @@ theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆* B) = e := rfl
 
 /-- Construct a `StarMulEquiv` from an equivalence in some type which preserves `*` and `star`. -/
 @[simps]
-def ofClass [EquivLike F A B] [MulEquivClass F A B] [StarHomClass F A B] (f : F) :
+def ofClass [EquivLike F A B] [MulHomClass F A B] [StarHomClass F A B] (f : F) :
     A ≃⋆* B where
   toFun := f
   invFun := EquivLike.inv f

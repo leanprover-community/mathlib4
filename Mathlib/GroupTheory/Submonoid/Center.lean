@@ -132,7 +132,7 @@ section congr
 variable {M} {N : Type*}
 
 @[to_additive] theorem _root_.MulEquivClass.apply_mem_center {F} [EquivLike F M N] [Mul M] [Mul N]
-    [MulEquivClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
+    [MulHomClass F M N] (e : F) {x : M} (hx : x ∈ Set.center M) : e x ∈ Set.center N := by
   let e := MulEquivClass.toMulEquiv e
   change e x ∈ Set.center N
   constructor <;>
@@ -140,7 +140,7 @@ variable {M} {N : Type*}
     [map_mul, e.symm_apply_apply, (hx.comm _).eq, (isMulCentral_iff _).mp hx, ← hx.right_comm])
 
 @[to_additive] theorem _root_.MulEquivClass.apply_mem_center_iff {F} [EquivLike F M N]
-    [Mul M] [Mul N] [MulEquivClass F M N] (e : F) {x : M} :
+    [Mul M] [Mul N] [MulHomClass F M N] (e : F) {x : M} :
     e x ∈ Set.center N ↔ x ∈ Set.center M :=
   ⟨(by simpa using MulEquivClass.apply_mem_center (MulEquivClass.toMulEquiv e).symm ·),
     MulEquivClass.apply_mem_center e⟩

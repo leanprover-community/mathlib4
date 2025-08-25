@@ -212,7 +212,7 @@ theorem map_coe_toMonoidHom (f : F) (S : Submonoid M) : S.map (f : M →* N) = S
   rfl
 
 @[to_additive (attr := simp)]
-theorem map_coe_toMulEquiv {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) (S : Submonoid M) :
+theorem map_coe_toMulEquiv {F} [EquivLike F M N] [MulHomClass F M N] (f : F) (S : Submonoid M) :
     S.map (f : M ≃* N) = S.map f :=
   rfl
 
