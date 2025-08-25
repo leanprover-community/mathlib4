@@ -35,6 +35,10 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
 
+@[to_additive]
+lemma IsMulTorsionFree.pow_eq_one_iff (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
+  ⟨fun h ↦ by rwa [← pow_left_inj hn, one_pow], fun h ↦ by rw [h, one_pow]⟩
+
 end Monoid
 
 section Group
