@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finsupp.Single
 import Mathlib.Tactic.FastInstance
@@ -295,6 +295,9 @@ lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x
 
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+
+instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
+  DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
 
 end AddMonoid
 

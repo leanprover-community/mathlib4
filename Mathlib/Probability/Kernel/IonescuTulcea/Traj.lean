@@ -592,6 +592,19 @@ section integral
 
 /-! ### Integrals and `traj` -/
 
+theorem lintegral_traj₀ {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : AEMeasurable f (traj κ a x₀)) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ := by
+  nth_rw 1 [← traj_map_updateFinset, MeasureTheory.lintegral_map']
+  · convert mf
+    exact traj_map_updateFinset x₀
+  · exact measurable_updateFinset_left.aemeasurable
+
+theorem lintegral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : Measurable f) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ :=
+  lintegral_traj₀ x₀ mf.aemeasurable
+
 variable {E : Type*} [NormedAddCommGroup E]
 
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
@@ -626,9 +639,9 @@ lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X
     (partialTraj κ a b u) ⊗ₘ (traj κ b) = (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) := by
   ext s ms
   rw [Measure.map_apply, Measure.compProd_apply, ← traj_comp_partialTraj hab, comp_apply']
-  · congr with x
+  · congr 1 with x
     rw [← traj_map_updateFinset, Measure.map_apply, Measure.map_apply]
-    · congr with y
+    · congr 1 with y
       simp only [Set.mem_preimage]
       congrm (fun i ↦ ?_, fun i ↦ ?_) ∈ s <;> simp [updateFinset]
     any_goals fun_prop
