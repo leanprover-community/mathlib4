@@ -43,14 +43,14 @@ requiring that this scalar action `r • x` must agree with left multiplication 
 structure morphism `algebraMap R A r * x`.
 
 As a result, there are two ways to talk about an `R`-algebra `A` when `A` is a semiring:
-1. ```lean
-   variable [CommSemiring R] [Semiring A]
-   variable [Algebra R A]
-   ```
-2. ```lean
-   variable [CommSemiring R] [Semiring A]
-   variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
-   ```
+1.  ```lean
+    variable [CommSemiring R] [Semiring A]
+    variable [Algebra R A]
+    ```
+2.  ```lean
+    variable [CommSemiring R] [Semiring A]
+    variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    ```
 
 The first approach implies the second via typeclass search; so any lemma stated with the second set
 of arguments will automatically apply to the first set. Typeclass search does not know that the
