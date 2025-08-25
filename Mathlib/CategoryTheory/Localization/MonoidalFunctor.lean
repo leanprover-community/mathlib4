@@ -16,6 +16,7 @@ category, and a functor `F : D ⥤ E` to a monoidal category, such that `L ⋙ F
 then `F` is monoidal with respect to the localized monoidal structure on `D`. See
 `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
+
 universe u
 
 namespace CategoryTheory
