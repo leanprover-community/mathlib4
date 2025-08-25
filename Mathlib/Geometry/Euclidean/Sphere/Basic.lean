@@ -46,9 +46,9 @@ open Module
 be positive; that should be given as a hypothesis to lemmas that require it. -/
 @[ext]
 structure Sphere [MetricSpace P] where
-  /-- center of this sphere -/
+  /-- Center of this sphere. -/
   center : P
-  /-- radius of the sphere: not required to be positive -/
+  /-- Radius of the sphere; not required to be positive. -/
   radius : ℝ
 
 variable {P}

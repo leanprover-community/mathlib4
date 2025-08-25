@@ -75,7 +75,7 @@ noncomputable def coproductCofan : Cocone F where
         (F ⋙ forgetToSheafedSpace) j, inferInstance⟩
       naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
 
-/-- The explicit coproduct cofan constructed in `coproduct_cofan` is indeed a colimit. -/
+/-- The explicit coproduct cofan constructed in `coproductCofan` is indeed a colimit. -/
 noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
   desc s :=
     ⟨colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
@@ -241,7 +241,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
 
 end HasCoequalizer
 
-/-- The coequalizer of two locally ringed space in the category of sheafed spaces is a locally
+/-- The coequalizer of two locally ringed spaces in the category of sheafed spaces is a locally
 ringed space. -/
 noncomputable def coequalizer : LocallyRingedSpace where
   toSheafedSpace := Limits.coequalizer f.toShHom g.toShHom
@@ -262,7 +262,7 @@ theorem isLocalHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g
     IsLocalHom (g.stalkMap x).hom := by
   rw [PresheafedSpace.stalkMap.congr_hom _ _ H.symm x]; infer_instance
 
-/-- The cofork constructed in `coequalizer_cofork` is indeed a colimit cocone. -/
+/-- The cofork constructed in `coequalizerCofork` is indeed a colimit cocone. -/
 noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g) := by
   apply Cofork.IsColimit.mk'
   intro s
