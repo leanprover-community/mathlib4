@@ -6,6 +6,7 @@ Authors: Johan Commelin, Adam Topaz
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.Analysis.Convex.StdSimplex
 import Mathlib.Analysis.Convex.PathConnected
+import Mathlib.Analysis.Convex.Topology
 import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
