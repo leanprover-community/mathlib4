@@ -1026,8 +1026,8 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
 
 variable {R : α → β → Prop} {C : Computation α → Computation β → Prop}
 
-@[simp] lemma liftRelAux_inl_inl {a : α} {b : β} :
-  LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
+@[simp] lemma liftRelAux_inl_inl {a : α} {b : β} : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b :=
+  rfl
 @[simp] lemma liftRelAux_inl_inr {a : α} {cb} :
     LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
@@ -1068,7 +1068,7 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     simp [h]
   · simp only [liftRel_think_left]
     revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h
+    apply cb.recOn (fun b => _) fun cb' => _ <;> intro _ h
     · simpa using h
     · simpa [h] using IH _ h
 

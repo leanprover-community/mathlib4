@@ -115,7 +115,7 @@ instance instMulOneClass [MulOneClass M] [ContinuousMul M] :
   surjective_mk.mulOneClass mk mk_one mk_mul
 
 /-- `SeparationQuotient.mk` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `SeparationQuotient.mk` as an `AddMonoidHom`. -/]
 def mkMonoidHom [MulOneClass M] [ContinuousMul M] : M →* SeparationQuotient M where
   toFun := mk
   map_mul' := mk_mul

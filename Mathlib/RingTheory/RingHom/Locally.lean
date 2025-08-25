@@ -18,7 +18,8 @@ a subset `{ t }` of `S` generating the unit ideal, such that `P` holds for all c
 
 Assuming without further mention that `P` is stable under composition with isomorphisms,
 `Locally P` is local on the target by construction, i.e. it satisfies
-`OfLocalizationSpanTarget`. If `P` itself is local on the target, `Locally P` coincides with `P`.
+`RingHom.OfLocalizationSpanTarget`. If `P` itself is local on the target,
+`Locally P` coincides with `P`.
 
 The `Locally` construction preserves various properties of `P`, e.g. if `P` is stable under
 composition, base change, etc., so is `Locally P`.
@@ -31,7 +32,8 @@ composition, base change, etc., so is `Locally P`.
 - `RingHom.locally_isStableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
-- `RingHom.locally_stableUnderCompositionWithLocalizationAway`: `Locally P` is stable under
+- `RingHom.locally_StableUnderCompositionWithLocalizationAwayTarget` and
+  `RingHom.locally_StableUnderCompositionWithLocalizationAwaySource`: `Locally P` is stable under
   composition with localization away maps if `P` is.
 - `RingHom.locally_localizationPreserves`: If `P` is preserved by localizations, then so is
   `Locally P`.
@@ -305,15 +307,10 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
         (S := Submonoid.powers a.val) (A := Localization.Away a.val)]
       exact Algebra.IsPushout.out
   · intro a
-    have : (algebraMap (S ⊗[R] T) (S ⊗[R] Localization.Away a.val)).comp
-        Algebra.TensorProduct.includeLeftRingHom =
-        Algebra.TensorProduct.includeLeftRingHom := by
-      ext x
-      simp [RingHom.algebraMap_toAlgebra]
-    rw [this]
+    rw [← IsScalarTower.algebraMap_eq]
     apply hPb R (Localization.Away a.val)
-    rw [IsScalarTower.algebraMap_eq R T (Localization.Away a.val)]
-    apply hs a a.property
+    rw [IsScalarTower.algebraMap_eq R T]
+    exact hs a a.property
 
 /-- If `P` is preserved by localization away, then so is `Locally P`. -/
 lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :

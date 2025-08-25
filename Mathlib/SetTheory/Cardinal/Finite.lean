@@ -17,8 +17,6 @@ import Mathlib.SetTheory.Cardinal.ENat
   If `α` is infinite, `Nat.card α = 0`.
 * `ENat.card α` is the cardinality of `α` as an  extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
-* `PartENat.card α` is the cardinality of `α` as an extended natural number
-  (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 assert_not_exists Field
@@ -143,7 +141,8 @@ lemma card_mono (ht : t.Finite) (h : s ⊆ t) : Nat.card s ≤ Nat.card t :=
   toNat_le_toNat (mk_le_mk_of_subset h) ht.lt_aleph0
 
 lemma card_image_le {f : α → β} (hs : s.Finite) : Nat.card (f '' s) ≤ Nat.card s :=
-  have := hs.to_subtype; card_le_card_of_surjective (imageFactorization f s) surjective_onto_image
+  have := hs.to_subtype
+  card_le_card_of_surjective (imageFactorization f s) imageFactorization_surjective
 
 lemma card_image_of_injOn {f : α → β} (hf : s.InjOn f) : Nat.card (f '' s) = Nat.card s := by
   classical
@@ -168,13 +167,13 @@ lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).Inj
 lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
 
-@[simp] lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
+lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
   card_congr (Equiv.Set.univ α)
 
 lemma card_range_of_injective {f : α → β} (hf : Injective f) :
     Nat.card (range f) = Nat.card α := by
   rw [← Nat.card_preimage_of_injective hf le_rfl]
-  simp
+  simp [Nat.card_univ]
 
 end Set
 
@@ -262,7 +261,7 @@ theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
 
 protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
 
-@[simp] lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
+lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
   rw [← Nat.card_image_of_injOn fst_injOn_graph, image_fst_graphOn]
 
 end Set

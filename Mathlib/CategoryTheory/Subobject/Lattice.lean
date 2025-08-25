@@ -162,7 +162,7 @@ variable [HasImages C] [HasBinaryCoproducts C]
 which is functorial in both arguments,
 and which on `Subobject A` will induce a `SemilatticeSup`. -/
 def sup {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A :=
-  curryObj ((forget A).prod (forget A) ⋙ uncurry.obj Over.coprod ⋙ image)
+  Functor.curryObj ((forget A).prod (forget A) ⋙ Functor.uncurry.obj Over.coprod ⋙ image)
 
 /-- A morphism version of `le_sup_left`. -/
 def leSupLeft {A : C} (f g : MonoOver A) : f ⟶ (sup.obj f).obj g := by
@@ -693,14 +693,14 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
     ⟨Subobject.mk (Z.arrow ≫ Y.arrow),
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
   invFun Z := Subobject.mk (ofLE _ _ Z.2)
-  left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
+  left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by cat_disch)
   right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by
     dsimp
     constructor
     · intro h
       exact le_of_comm (((underlyingIso _).inv ≫ ofLE _ _ (Subtype.mk_le_mk.mp h) ≫
-        (underlyingIso _).hom)) (by aesop_cat)
+        (underlyingIso _).hom)) (by cat_disch)
     · intro h
       exact Subtype.mk_le_mk.mpr (le_of_comm
         ((underlyingIso _).hom ≫ ofLE _ _ h ≫ (underlyingIso _).inv) (by simp))
