@@ -203,5 +203,3 @@ theorem isOrdering_iff :
               simp_all [mem_support]
 
 end RingPreordering
-
-#min_imports
