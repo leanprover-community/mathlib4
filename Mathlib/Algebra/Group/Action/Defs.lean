@@ -488,7 +488,6 @@ lemma isScalarTower_iff_smulCommClass_of_commMonoid (R₁ R : Type*)
     SMulCommClass R₁ R R ↔ IsScalarTower R₁ R R :=
   ⟨fun _ ↦ IsScalarTower.of_commMonoid R₁ R, fun _ ↦ SMulCommClass.of_commMonoid R₁ R R⟩
 
-
 end
 
 section CompatibleScalar
@@ -515,6 +514,34 @@ lemma IsScalarTower.of_smul_one_mul {M N} [Monoid N] [SMul M N]
 lemma SMulCommClass.of_mul_smul_one {M N} [Monoid N] [SMul M N]
     (H : ∀ (x : M) (y : N), y * x • (1 : N) = x • y) : SMulCommClass M N N :=
   ⟨fun x y z ↦ by rw [← H x z, smul_eq_mul, ← H, smul_eq_mul, mul_assoc]⟩
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / P / M` and `Q / P / N` are
+scalar towers, then `Q / N / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₂₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [Monoid P] [MulAction P Q]
+    [IsScalarTower M N P] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N Q where
+  smul_assoc m n q := by rw [← smul_one_smul P, smul_assoc m, smul_assoc, smul_one_smul]
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / N` are
+scalar towers, then `Q / P / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₃₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower N P Q] : IsScalarTower M P Q where
+  smul_assoc m p q := by rw [← smul_one_smul N m, smul_assoc, smul_one_smul]
+
+/--
+Let `Q / P / N / M` be a tower. If `P / N / M`, `Q / N / M` and `Q / P / M` are
+scalar towers, then `Q / P / N` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₂₃₄ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul P Q] [Monoid N] [MulAction N P] [MulAction N Q]
+    [IsScalarTower M N P] [IsScalarTower M N Q] [IsScalarTower M P Q]
+    (h : Function.Surjective fun m : M ↦ m • (1 : N)) : IsScalarTower N P Q where
+  smul_assoc n p q := by obtain ⟨m, rfl⟩ := h n; simp_rw [smul_one_smul, smul_assoc]
 
 end CompatibleScalar
 
