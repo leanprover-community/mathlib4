@@ -35,7 +35,7 @@ def eisensteinSeries_MF {k : ℤ} {N : ℕ} [NeZero N] (hk : 3 ≤ k) (a : Fin 2
   bdd_at_infty' := isBoundedAtImInfty_eisensteinSeries_SIF a hk
 
 /-- Normalised Eisenstein series of level 1 and weight `k`,
-here they need `1/2` since we sum over coprime pairs. -/
+here they have been scaled by `1/2` since we sum over coprime pairs. -/
 noncomputable def E {k : ℕ} (hk : 3 ≤ k) : ModularForm Γ(1) k :=
   (1/2 : ℂ) • eisensteinSeries_MF (mod_cast hk) 0
 
