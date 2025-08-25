@@ -713,7 +713,7 @@ theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
   simp [SetLike.ext_iff]
 
 /-- Restriction of a monoid hom to a submonoid of the codomain. -/
-@[to_additive (attr := simps apply)
+@[to_additive (attr := simps (config := .asFn))
   /-- Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the codomain. -/]
 def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h : ∀ x, f x ∈ s) :
     M →* s where
