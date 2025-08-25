@@ -43,11 +43,11 @@ function `a` which tends to `0`, then `f` tends to `1` (neutral element of `Semi
 In this pair of lemmas (`squeeze_one_norm'` and `squeeze_one_norm`), following a convention of
 similar lemmas in `Topology.MetricSpace.Basic` and `Topology.Algebra.Order`, the `'` version is
 phrased using "eventually" and the non-`'` version is phrased absolutely. -/
-@[to_additive "Special case of the sandwich theorem: if the norm of `f` is eventually bounded by a
-real function `a` which tends to `0`, then `f` tends to `0`. In this pair of lemmas
+@[to_additive /-- Special case of the sandwich theorem: if the norm of `f` is eventually bounded by
+a real function `a` which tends to `0`, then `f` tends to `0`. In this pair of lemmas
 (`squeeze_zero_norm'` and `squeeze_zero_norm`), following a convention of similar lemmas in
 `Topology.MetricSpace.Pseudo.Defs` and `Topology.Algebra.Order`, the `'` version is phrased using
-\"eventually\" and the non-`'` version is phrased absolutely."]
+"eventually" and the non-`'` version is phrased absolutely. -/]
 theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ᶠ n in t₀, ‖f n‖ ≤ a n)
     (h' : Tendsto a t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 1) :=
   tendsto_one_iff_norm_tendsto_zero.2 <|
@@ -55,8 +55,8 @@ theorem squeeze_one_norm' {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h 
 
 /-- Special case of the sandwich theorem: if the norm of `f` is bounded by a real function `a` which
 tends to `0`, then `f` tends to `1`. -/
-@[to_additive "Special case of the sandwich theorem: if the norm of `f` is bounded by a real
-function `a` which tends to `0`, then `f` tends to `0`."]
+@[to_additive /-- Special case of the sandwich theorem: if the norm of `f` is bounded by a real
+function `a` which tends to `0`, then `f` tends to `0`. -/]
 theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h : ∀ n, ‖f n‖ ≤ a n) :
     Tendsto a t₀ (𝓝 0) → Tendsto f t₀ (𝓝 1) :=
   squeeze_one_norm' <| Eventually.of_forall h
@@ -75,7 +75,7 @@ theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x�
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
 
 /-- See `tendsto_norm_one` for a version with pointed neighborhoods. -/
-@[to_additive "See `tendsto_norm_zero` for a version with pointed neighborhoods."]
+@[to_additive /-- See `tendsto_norm_zero` for a version with pointed neighborhoods. -/]
 theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := by
   simpa using tendsto_norm_div_self (1 : E)
 
@@ -97,12 +97,14 @@ instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
+  enorm_zero := by simp [enorm_eq_nnnorm]
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
-  mul_comm := by simp [mul_comm]
+  __ := NormedGroup.toENormedMonoid
+  __ := ‹NormedCommGroup E›
 
 end Instances
 
@@ -210,8 +212,8 @@ theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
 end
 
 /-- If `‖y‖ → ∞`, then we can assume `y ≠ x` for any fixed `x`. -/
-@[to_additive eventually_ne_of_tendsto_norm_atTop "If `‖y‖→∞`, then we can assume `y≠x` for any
-fixed `x`"]
+@[to_additive eventually_ne_of_tendsto_norm_atTop /-- If `‖y‖→∞`, then we can assume `y≠x` for any
+fixed `x` -/]
 theorem eventually_ne_of_tendsto_norm_atTop' {l : Filter α} {f : α → E}
     (h : Tendsto (fun y => ‖f y‖) l atTop) (x : E) : ∀ᶠ y in l, f y ≠ x :=
   (h.eventually_ne_atTop _).mono fun _x => ne_of_apply_ne norm
@@ -310,7 +312,7 @@ section NormedGroup
 variable [NormedGroup E] {a b : E}
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
-@[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
+@[to_additive /-- See `tendsto_norm_zero` for a version with full neighborhoods. -/]
 lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
