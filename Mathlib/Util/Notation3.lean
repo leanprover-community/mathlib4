@@ -182,7 +182,7 @@ def matchFVar (userName : Name) (matchTy : Matcher) : Matcher := fun s => do
 def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
   withType (matchTy s)
 
-/-- Matches raw nat lits. -/
+/-- Matches raw `Nat` literals. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
   guard <| (← getExpr).rawNatLit? == n
   return s
