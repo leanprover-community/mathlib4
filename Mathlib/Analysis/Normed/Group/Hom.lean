@@ -92,7 +92,7 @@ instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V
 initialize_simps_projections NormedAddGroupHom (toFun → apply)
 
 theorem coe_inj (H : (f : V₁ → V₂) = g) : f = g := by
-  cases f; cases g; congr
+  grind [DFunLike.coe_fn_eq]
 
 theorem coe_injective : @Function.Injective (NormedAddGroupHom V₁ V₂) (V₁ → V₂) toFun := by
   apply coe_inj
