@@ -150,7 +150,7 @@ instance (priority := low) : IsTopologicalRing R := by
 /-- A ring with a topological additive structure and a valuative relationship is
 a uniform space made up of entourages of the form `{ (x, y) | v (y - x) < γ }`.
 However, this is not a global instance to prevent timeouts in typeclass inference,
-since otherwise, TC search for `UniformSpace R` will start exploring `ValuativeTopology R`. -/
+since otherwise, TC search for `UniformSpace R` will start exploring `IsValuativeTopology R`. -/
 local instance : UniformSpace R := IsTopologicalAddGroup.toUniformSpace R
 
 open Uniformity in
