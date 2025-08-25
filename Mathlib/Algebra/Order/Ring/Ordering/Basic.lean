@@ -6,11 +6,11 @@ Authors: Florent Schaffhauser, Artie Khovanov
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Order.Ring.Ordering.Defs
 import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
 /-!
+# Ring orderings
 
 We prove basic properties of (pre)orderings on rings and their supports.
 
@@ -32,12 +32,15 @@ namespace RingPreordering
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 
-theorem toSubsemiring_le {P₁ P₂ : RingPreordering R} :
-    P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
-
 @[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
   toSubsemiring_strictMono.monotone
+
+theorem toSubsemiring_le {P₁ P₂ : RingPreordering R} :
+    P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
+
+@[gcongr]
+protected alias ⟨_, toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
 theorem inv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
@@ -54,22 +57,6 @@ theorem Field.inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha 
 @[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ P := by
   induction hx using IsSumSq.rec' <;> aesop
-
-section mkOfSubsemiring
-
-variable {R : Type*} [CommRing R] {P : Subsemiring R}
-  {le : Subsemiring.sumSq R ≤ P} {minus : -1 ∉ P}
-
-variable (P le minus) in
-/-- Construct a preordering from a subsemiring. -/
-def mkOfSubsemiring : RingPreordering R where toSubsemiring := P
-
-@[simp]
-theorem mkOfSubsemiring_toSubsemiring : (mkOfSubsemiring P le minus).toSubsemiring = P := rfl
-@[simp] theorem mem_mkOfSubsemiring {x : R} : x ∈ mkOfSubsemiring P le minus ↔ x ∈ P := .rfl
-@[simp] theorem coe_mkOfSubsemiring : mkOfSubsemiring P le minus = (P : Set R) := rfl
-
-end mkOfSubsemiring
 
 section mk'
 
@@ -125,12 +112,12 @@ end ne_top
 namespace HasIdealSupport
 
 theorem smul_mem [P.HasIdealSupport]
-  (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : x * a ∈ P := by
+    (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : x * a ∈ P := by
   rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
   simp [*]
 
 theorem neg_smul_mem [P.HasIdealSupport]
-  (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : -(x * a) ∈ P := by
+    (x : R) {a : R} (h₁a : a ∈ P) (h₂a : -a ∈ P) : -(x * a) ∈ P := by
   rw [hasIdealSupport_iff] at ‹P.HasIdealSupport›
   simp [*]
 
@@ -216,3 +203,5 @@ theorem isOrdering_iff :
               simp_all [mem_support]
 
 end RingPreordering
+
+#min_imports
