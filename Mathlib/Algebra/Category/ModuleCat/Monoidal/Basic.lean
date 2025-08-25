@@ -171,6 +171,42 @@ instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCatego
 instance : CommRing ((𝟙_ (ModuleCat.{u} R) : ModuleCat.{u} R) : Type u) :=
   inferInstanceAs <| CommRing R
 
+theorem hom_tensorHom {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) :
+    (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
+  rfl
+
+theorem hom_whiskerLeft (L : ModuleCat.{u} R) {M N : ModuleCat.{u} R} (f : M ⟶ N) :
+    (L ◁ f).hom = f.hom.lTensor L :=
+  rfl
+
+theorem hom_whiskerRight {L M : ModuleCat.{u} R} (f : L ⟶ M) (N : ModuleCat.{u} R) :
+    (f ▷ N).hom = f.hom.rTensor N :=
+  rfl
+
+theorem hom_hom_leftUnitor {M : ModuleCat.{u} R} :
+    (λ_ M).hom.hom = (TensorProduct.lid _ _).toLinearMap :=
+  rfl
+
+theorem hom_inv_leftUnitor {M : ModuleCat.{u} R} :
+    (λ_ M).inv.hom = (TensorProduct.lid _ _).symm.toLinearMap :=
+  rfl
+
+theorem hom_hom_rightUnitor {M : ModuleCat.{u} R} :
+    (ρ_ M).hom.hom = (TensorProduct.rid _ _).toLinearMap :=
+  rfl
+
+theorem hom_inv_rightUnitor {M : ModuleCat.{u} R} :
+    (ρ_ M).inv.hom = (TensorProduct.rid _ _).symm.toLinearMap :=
+  rfl
+
+theorem hom_hom_associator {M N K : ModuleCat.{u} R} :
+    (α_ M N K).hom.hom = (TensorProduct.assoc _ _ _ _).toLinearMap :=
+  rfl
+
+theorem hom_inv_associator {M N K : ModuleCat.{u} R} :
+    (α_ M N K).inv.hom = (TensorProduct.assoc _ _ _ _).symm.toLinearMap :=
+  rfl
+
 namespace MonoidalCategory
 
 @[simp]
