@@ -10,10 +10,10 @@ import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 /-!
 # The Grothendieck construction gives a fibered category
 
-In this file we show that the Grothendieck applied to a pseudofunctor `F`
+In this file we show that the Grothendieck construction applied to a pseudofunctor `F`
 gives a fibered category over the base category.
 
-We also provide a `HasFibers` instance to `∫ F`, such that the fiber over `S` is the
+We also provide a `HasFibers` instance to `∫ᶜ F`, such that the fiber over `S` is the
 category `F(S)`.
 
 ## References
@@ -22,7 +22,7 @@ Angelo Vistoli
 
 -/
 
-namespace CategoryTheory.Pseudofunctor.Grothendieck
+namespace CategoryTheory.Pseudofunctor.CoGrothendieck
 
 open Functor Opposite Bicategory Fiber
 
@@ -33,7 +33,7 @@ section
 variable {R S : 𝒮} (a : F.obj ⟨op S⟩) (f : R ⟶ S)
 
 /-- The domain of the cartesian lift of `f`. -/
-abbrev domainCartesianLift : ∫ F := ⟨R, (F.map f.op.toLoc).obj a⟩
+abbrev domainCartesianLift : ∫ᶜ F := ⟨R, (F.map f.op.toLoc).obj a⟩
 
 /-- The cartesian lift of `f`. -/
 abbrev cartesianLift : domainCartesianLift a f ⟶ ⟨S, a⟩ := ⟨f, 𝟙 _⟩
@@ -44,14 +44,14 @@ instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
 variable {a} in
 /-- Given some lift `φ'` of `g ≫ f`, the canonical map from the domain of `φ'` to the domain of
 the cartesian lift of `f`. -/
-abbrev homCartesianLift {a' : ∫ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
+abbrev homCartesianLift {a' : ∫ᶜ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
     [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
   base := g
   fiber :=
     have : φ'.base = g ≫ f := by simpa using IsHomLift.fac' (forget F) (g ≫ f) φ'
     φ'.fiber ≫ eqToHom (by simp [this]) ≫ (F.mapComp f.op.toLoc g.op.toLoc).hom.app a
 
-instance isHomLift_homCartesianLift {a' : ∫ F} {φ' : a' ⟶ ⟨S, a⟩} {g : a'.1 ⟶ R}
+instance isHomLift_homCartesianLift {a' : ∫ᶜ F} {φ' : a' ⟶ ⟨S, a⟩} {g : a'.1 ⟶ R}
     [IsHomLift (forget F) (g ≫ f) φ'] : IsHomLift (forget F) g (homCartesianLift f g φ') :=
   IsHomLift.map (forget F) (homCartesianLift f g φ')
 
@@ -66,16 +66,16 @@ lemma isStronglyCartesian_homCartesianLift :
 
 end
 
-/-- `forget F : ∫ F ⥤ 𝒮` is a fibered category. -/
+/-- `forget F : ∫ᶜ F ⥤ 𝒮` is a fibered category. -/
 instance : IsFibered (forget F) :=
   IsFibered.of_exists_isStronglyCartesian (fun a _ f ↦
     ⟨domainCartesianLift a.2 f, cartesianLift a.2 f, isStronglyCartesian_homCartesianLift a.2 f⟩)
 
 variable (F) (S : 𝒮)
 
-/-- The inclusion map from `F(S)` into `∫ F`. -/
+/-- The inclusion map from `F(S)` into `∫ᶜ F`. -/
 @[simps]
-def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
+def ι : F.obj ⟨op S⟩ ⥤ ∫ᶜ F where
   obj a := { base := S, fiber := a}
   map {a b} φ := { base := 𝟙 S, fiber := φ ≫ (F.mapId ⟨op S⟩).inv.app b}
   map_comp {a b c} φ ψ := by
@@ -115,10 +115,10 @@ noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
 
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).IsEquivalence where
 
-/-- `HasFibers` instance for `∫ F`, where the fiber over `S` is `F.obj ⟨op S⟩`. -/
+/-- `HasFibers` instance for `∫ᶜ F`, where the fiber over `S` is `F.obj ⟨op S⟩`. -/
 noncomputable instance : HasFibers (forget F) where
   Fib S := F.obj ⟨op S⟩
   ι := ι F
   comp_const := comp_const F
 
-end CategoryTheory.Pseudofunctor.Grothendieck
+end CategoryTheory.Pseudofunctor.CoGrothendieck
