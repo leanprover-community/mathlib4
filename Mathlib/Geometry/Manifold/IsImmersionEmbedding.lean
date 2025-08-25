@@ -468,14 +468,31 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
     have hC : Topology.IsEmbedding C := by
       sorry -- should be a lemma... refine (Topology.isEmbedding_iff C).mpr ?_
     let as : s → E' := (h.equiv ∘ fun x ↦ (x, (0 : F))) ∘ C
-    -- try co-restricting this one instead
-    let bs : s → ↑(h.codChart.extend I').target := Set.codRestrict as (h.codChart.extend I').target sorry
+    have aux (x : s ): as x ∈ (h.codChart.extend I').target := by
+      obtain ⟨x, hx⟩ := x
+      simp only [as, C]
+      change (⇑h.equiv ∘ fun x ↦ (x, 0)) (C ⟨x, hx⟩) ∈ (h.codChart.extend I').target
+      have : C ⟨x, hx⟩ ∈ (h.domChart.extend I).target := by
+        simp only [C, restrict_apply]
+        apply (h.domChart.extend I).map_source
+        rwa [PartialHomeomorph.extend_source]
+      rw [← h.writtenInCharts this]
+      rw [h.codChart.extend_target_eq_image_source]
+      apply mem_image_of_mem
+      apply h.map_source_subset_source
+      apply mem_image_of_mem
+      simp only [C, restrict_apply]
+      simp_rw [← h.domChart.extend_source (I := I)]
+      exact (h.domChart.extend I).map_target this
+    let bs : s → (h.codChart.extend I').target :=
+      Set.codRestrict as (h.codChart.extend I').target aux
     have : s.restrict rhs = A ∘ bs := by
-      sorry
+      ext ⟨x, hx⟩
+      simp [A, bs, rhs, comp_apply, as, C]
     rw [this]
     refine hA.comp  ?_
     unfold bs as
-    exact (hj.comp hC).codRestrict (h.codChart.extend I').target sorry -- copy-paste same sorry
+    exact (hj.comp hC).codRestrict (h.codChart.extend I').target aux
   rw [this]
   exact hrhs
 
