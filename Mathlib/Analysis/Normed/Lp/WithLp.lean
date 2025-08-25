@@ -116,6 +116,12 @@ lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
 lemma toLp_surjective : Function.Surjective (@toLp p V) :=
   Function.RightInverse.surjective <| toLp_ofLp _
 
+lemma ofLp_injective : Function.Injective (@ofLp p V) :=
+  Function.LeftInverse.injective <| toLp_ofLp _
+
+lemma toLp_injective : Function.Injective (@toLp p V) :=
+  Function.LeftInverse.injective <| ofLp_toLp _
+
 section AddCommGroup
 variable [AddCommGroup V]
 
