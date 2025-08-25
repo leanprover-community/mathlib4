@@ -201,7 +201,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
     convert h0
     · rw [IsScalarTower.algebraMap_eq R (R ⧸ P) (FractionRing (R ⧸ P))]
       rw [ker_comp_of_injective]
-      · ext a; simp
+      · simp
       · exact FaithfulSMul.algebraMap_injective (R ⧸ P) (FractionRing (R ⧸ P))
 
 end Polynomial

@@ -116,7 +116,7 @@ theorem val_mul (n : ℕ) (x y : AdicCompletion I R) : (x * y).val n = x.val n *
 This is `AdicCompletion.eval` postcomposed with the algebra isomorphism
 `R ⧸ (I ^ n • ⊤) ≃ₐ[R] R ⧸ I ^ n`. -/
 def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
-  have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by ext x; simp
+  have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by simp
   AlgHom.comp
     (Ideal.quotientEquivAlgOfEq R h)
     (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))

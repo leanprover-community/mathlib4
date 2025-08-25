@@ -84,8 +84,7 @@ private lemma aux_bdd [ZeroHomClass F R ℝ] : BddAbove {x | ∃ i, v (p.coeff i
   · left
     use ⟨i, hi⟩
     simp [f]
-  · right
-    simp [Polynomial.notMem_support_iff.mp hi]
+  · simp [Polynomial.notMem_support_iff.mp hi]
 
 @[simp]
 theorem gaussNorm_coe_powerSeries [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ]

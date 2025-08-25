@@ -125,7 +125,7 @@ def restrictRootsOfUnity [MonoidHomClass F R S] (σ : F) (n : ℕ) :
       exact map_one σ⟩
     map_one' := by ext1; simp only [OneMemClass.coe_one, map_one]
     map_mul' := fun ξ₁ ξ₂ ↦ by
-      ext1; simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
+      simp only [Subgroup.coe_mul, map_mul, MulMemClass.mk_mul_mk] }
 
 @[simp]
 theorem restrictRootsOfUnity_coe_apply [MonoidHomClass F R S] (σ : F) (ζ : rootsOfUnity k R) :
@@ -158,7 +158,6 @@ theorem coe_rootsOfUnity_to_set [NeZero k] :
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
 theorem rootsOfUnity_one_set : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
-  ext x
   simp
 
 end CommMonoid

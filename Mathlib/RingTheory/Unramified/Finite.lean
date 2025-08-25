@@ -210,8 +210,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     · simp_rw [this, hf, Finsupp.sum, Finset.mul_sum, TensorProduct.tmul_mul_tmul, one_mul]
     · rw [← one_tmul_mul_elem, hf, finite_of_free_aux]
       rfl
-    · intro; simp
-    · intro; simp
+    · simp
+    · simp
   -- In particular, `fⱼx = ∑ Fᵢⱼbⱼ = ∑ Gᵢⱼbⱼ = ∑ₛ aᵢⱼfᵢ` for all `j`.
   have : ∀ j, x * f j = f.sum fun i y ↦ a i j • y := by
     intro j

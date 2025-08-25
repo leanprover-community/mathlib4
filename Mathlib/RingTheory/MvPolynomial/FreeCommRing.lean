@@ -63,7 +63,7 @@ noncomputable def mvPolynomialSupportLEEquiv
       intro hm
       have : m ∉ (p.1 i).support := fun h => hm (p.2 i h)
       simpa [coeff, eq_comm, MvPolynomial.mem_support_iff] using this
-    right_inv := fun p => by ext; simp [coeff] }
+    right_inv := fun p => by simp [coeff] }
 
 @[simp]
 theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R] [DecidableEq R]

@@ -1273,11 +1273,9 @@ def moduleAux : A ⊗[R] B →ₗ[R] M →ₗ[R] M :=
   TensorProduct.lift
     { toFun := fun a => a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
       map_add' := fun r t => by
-        ext
-        simp only [add_smul, LinearMap.add_apply]
+        simp only [add_smul]
       map_smul' := fun n r => by
-        ext
-        simp only [RingHom.id_apply, LinearMap.smul_apply, smul_assoc] }
+        simp only [RingHom.id_apply, smul_assoc] }
 
 theorem moduleAux_apply (a : A) (b : B) (m : M) : moduleAux (a ⊗ₜ[R] b) m = a • b • m :=
   rfl

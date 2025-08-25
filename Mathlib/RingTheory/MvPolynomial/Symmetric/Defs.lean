@@ -269,7 +269,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
     rw [hs, ht] at this
     · simp only [biUnion_singleton_eq_self] at this
       exact absurd this hst.symm
-  all_goals intro x y; simp [Finsupp.support_single_disjoint]
+  all_goals simp [Finsupp.support_single_disjoint]
 
 theorem support_esymm' [DecidableEq σ] [Nontrivial R] (n : ℕ) : (esymm σ R n).support =
     (powersetCard n (univ : Finset σ)).biUnion fun t => {∑ i ∈ t, Finsupp.single i 1} := by

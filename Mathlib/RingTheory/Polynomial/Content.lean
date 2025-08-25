@@ -151,8 +151,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
     · rw [mem_support_iff] at h0
       push_neg at h0
       simp [h0]
-  · intro x
-    simp [h]
+  · simp [h]
 
 -- Porting note: this reduced with simp so created `normUnit_content` and put simp on it
 theorem normalize_content {p : R[X]} : normalize p.content = p.content :=

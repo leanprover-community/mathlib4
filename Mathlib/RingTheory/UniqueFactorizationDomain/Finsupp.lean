@@ -51,7 +51,6 @@ theorem factorization_mul {a b : α} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /-- For any `p`, the power of `p` in `x^n` is `n` times the power in `x` -/
 theorem factorization_pow {x : α} {n : ℕ} : factorization (x ^ n) = n • factorization x := by
-  ext
   simp [factorization]
 
 theorem associated_of_factorization_eq (a b : α) (ha : a ≠ 0) (hb : b ≠ 0)

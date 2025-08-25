@@ -187,8 +187,7 @@ theorem map_exact : Function.Exact (map I f) (map I g) := by
       simpa using congrArg (fun x ↦ x.val n) hz
     let a := mapExactAux hf hfg hg hk b hb
     refine ⟨AdicCompletion.mk I M (AdicCauchySequence.mk I M (fun n ↦ (a n : M)) ?_), ?_⟩
-    · refine fun n ↦ SModEq.symm ?_
-      simp [a, mapExactAux, SModEq]
+    · simp [a, mapExactAux, SModEq]
     · ext n
       suffices h : Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f (a n)) =
             Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (b (k + n)) by

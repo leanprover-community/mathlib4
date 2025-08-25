@@ -35,7 +35,7 @@ lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :
     minimalPrimes R = { I | I.IsMaximal } := by
-  ext; simp [minimalPrimes_eq_setOf_isPrime, Ideal.isMaximal_iff_isPrime]
+  simp [minimalPrimes_eq_setOf_isPrime, Ideal.isMaximal_iff_isPrime]
 
 /-- Note that the `ringKrullDim` of the trivial ring is `⊥` and not `0`. -/
 example [Subsingleton R] : Ring.KrullDimLE 0 R := inferInstance
