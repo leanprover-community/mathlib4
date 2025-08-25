@@ -236,6 +236,9 @@ instance : One Cardinal.{u} :=
   -- `PUnit` might be more canonical, but this is convenient for defeq with natCast
   ⟨lift #(Fin 1)⟩
 
+instance : NeZero (1 : Cardinal) :=
+  ⟨mk_ne_zero _⟩
+
 instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
