@@ -179,7 +179,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
   have hdzne' : (↑(F.derivative.eval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff_val.2 h)
   obtain ⟨q, hq⟩ := F.binomExpansion z (-z1)
   have : ‖(↑(F.derivative.eval z) * (↑(F.eval z) / ↑(F.derivative.eval z)) : ℚ_[p])‖ ≤ 1 := by
-    rw [padicNormE.mul]
+    rw [norm_mul]
     exact mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
   have : F.derivative.eval z * -z1 = -F.eval z := by
     calc
@@ -293,7 +293,7 @@ private theorem bound' : Tendsto (fun n : ℕ => ‖F.derivative.eval a‖ * T ^
   exact
     tendsto_const_nhds.mul
       (Tendsto.comp (tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) (T_lt_one hnorm))
-        (Nat.tendsto_pow_atTop_atTop_of_one_lt (by norm_num)))
+        (Nat.tendsto_pow_atTop_atTop_of_one_lt (by simp)))
 
 private theorem bound :
     ∀ {ε}, ε > 0 → ∃ N : ℕ, ∀ {n}, n ≥ N → ‖F.derivative.eval a‖ * T ^ 2 ^ n < ε := fun hε ↦
@@ -345,7 +345,7 @@ private theorem T_pos : T > 0 := by
 private theorem newton_seq_succ_dist_weak (n : ℕ) :
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ < ‖F.eval a‖ / ‖F.derivative.eval a‖ :=
   have : 2 ≤ 2 ^ (n + 1) := by
-    have := pow_right_mono₀ (by norm_num : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
+    have := pow_right_mono₀ (by simp : 1 ≤ 2) (Nat.le_add_left _ _ : 1 ≤ n + 1)
     simpa using this
   calc
     ‖newton_seq (n + 2) - newton_seq (n + 1)‖ ≤ ‖F.derivative.eval a‖ * T ^ 2 ^ (n + 1) :=
@@ -355,10 +355,10 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
         (le_of_lt (T_lt_one hnorm)) this) (norm_nonneg _))
     _ < ‖F.derivative.eval a‖ * T ^ 1 :=
       (mul_lt_mul_of_pos_left (pow_lt_pow_right_of_lt_one₀ (T_pos hnorm hnsol)
-        (T_lt_one hnorm) (by norm_num)) (deriv_norm_pos hnorm))
+        (T_lt_one hnorm) (by simp)) (deriv_norm_pos hnorm))
     _ = ‖F.eval a‖ / ‖F.derivative.eval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,
-        PadicInt.coe_mul, padicNormE.mul]
+        PadicInt.coe_mul, norm_mul]
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption
 

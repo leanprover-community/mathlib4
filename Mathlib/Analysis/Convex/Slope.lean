@@ -257,9 +257,9 @@ theorem ConvexOn.secant_mono (hf : ConvexOn 𝕜 s f) {a x y : 𝕜} (ha : a ∈
   · simp
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
-    · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> field_simp
+    · convert hf.secant_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;> simp
     · convert hf.slope_mono_adjacent hx hy hxa hya using 1
-      rw [← neg_div_neg_eq]; field_simp
+      rw [← neg_div_neg_eq]; simp
   · exact hf.secant_mono_aux2 ha hy hxa hxy
 
 theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
@@ -323,7 +323,7 @@ theorem ConvexOn.strict_mono_of_lt (hf : ConvexOn 𝕜 s f) {x y : 𝕜} (hx : x
     (hxy' : f x < f y) : StrictMonoOn f (s ∩ Set.Ici y) := by
   intro u hu v hv huv
   have step1 : ∀ {z : 𝕜}, z ∈ s ∩ Set.Ioi y → f y < f z := by
-    intros z hz
+    intro z hz
     refine hf.lt_right_of_left_lt hx hz.1 ?_ hxy'
     rw [openSegment_eq_Ioo (hxy.trans hz.2)]
     exact ⟨hxy, hz.2⟩
