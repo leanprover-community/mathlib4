@@ -17,6 +17,8 @@ formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open Filter Finset Function Encodable

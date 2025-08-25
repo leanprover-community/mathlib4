@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.Algebra.IsUniformGroup.Defs
@@ -14,6 +13,8 @@ import Mathlib.Topology.Algebra.Group.Pointwise
 
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
+
+assert_not_exists Cardinal
 
 noncomputable section
 
@@ -412,18 +413,6 @@ theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
     exact not_finite β
   · rintro rfl
     exact multipliable_one
-
-@[to_additive (attr := simp)]
-theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
-  rcases finite_or_infinite β with hβ|hβ
-  · letI : Fintype β := Fintype.ofFinite β
-    rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
-    simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
-  · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
-    rcases eq_or_ne a 1 with rfl | ha
-    · simp
-    · apply tprod_eq_one_of_not_multipliable
-      simpa [multipliable_const_iff] using ha
 
 end IsTopologicalGroup
 
