@@ -110,9 +110,13 @@ open ZeroObject
 def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
   initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 
--- Porting note: removed @[simp] as the LHS simplifies
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
+
+/-- `simp`-normal form of `bot_arrow_eq_zero`. -/
+@[simp]
+theorem initialTo_b_eq_zero [HasZeroMorphisms C] {B : C} : initial.to B = 0 := by
+  rw [← bot_arrow, bot_arrow_eq_zero]
 
 end ZeroOrderBot
 
