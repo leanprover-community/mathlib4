@@ -32,9 +32,9 @@ elab "pnat_positivity" : tactic => withMainContext do
     let ctx ← getLCtx
     let alreadyDeclared := Option.isSome <| ← ctx.findDeclM? fun ldecl => do
       if ← isDefEq ldecl.type q(0 < PNat.val $declExpr) then
-        pure <| .some ()
+        pure <| some ()
       else
-        pure .none
+        pure none
     if alreadyDeclared then
       return g
     let (_, mvarIdNew) ← (← g.assert .anonymous q(0 < PNat.val $declExpr) pf).intro1P
