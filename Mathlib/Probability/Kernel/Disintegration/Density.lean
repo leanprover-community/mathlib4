@@ -286,8 +286,6 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   · exact StronglyMeasurable.aestronglyMeasurable
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
 
-@[deprecated (since := "2025-01-21")] alias condexp_densityProcess := condExp_densityProcess
-
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Martingale (fun n x ↦ densityProcess κ ν n a x s) (countableFiltration γ) (ν a) :=
@@ -641,8 +639,7 @@ lemma densityProcess_fst_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
   · simp only [h]
     by_cases h' : κ a (countablePartitionSet n x ×ˢ univ) = 0
     · simp [h']
-    · rw [ENNReal.div_zero h']
-      simp
+    · simp
   · rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     have : countablePartitionSet n x ×ˢ univ = {p : γ × β | p.1 ∈ countablePartitionSet n x} := by
       ext x

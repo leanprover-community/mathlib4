@@ -149,9 +149,6 @@ theorem LinearIndependent.iSupIndep_span_singleton (hv : LinearIndependent R v) 
   ext
   simp
 
-@[deprecated (since := "2024-11-24")]
-alias LinearIndependent.independent_span_singleton := LinearIndependent.iSupIndep_span_singleton
-
 end repr
 
 section union
@@ -326,7 +323,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
       refine ⟨c • 1, -a • 1, ?_, by aesop⟩
       simp only [smul_assoc, one_smul, neg_smul]
       module
-    refine ⟨d • 1, -b • 1, ?_, by contrapose! hbd; aesop⟩
+    refine ⟨d • 1, -b • 1, ?_, by contrapose! hbd; simp_all⟩
     simp only [smul_add, smul_assoc, one_smul, smul_smul, mul_comm d, h]
     module
   refine ⟨fun h' ↦ ⟨?_, h⟩, fun ⟨h₁, h₂⟩ ↦ pair_add_smul_add_smul_iff_aux _ _ _ _ h₂ h₁⟩

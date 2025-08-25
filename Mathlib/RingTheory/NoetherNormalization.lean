@@ -290,6 +290,6 @@ theorem exists_finite_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k)
     algebraize [g.toRingHom]
     rw [IsScalarTower.algebraMap_eq k (MvPolynomial (Fin s) k), algebraMap_toAlgebra']
   exact ⟨s, g, inj, int.to_finite
-    (h ▸ algebraMap_finiteType_iff_algebra_finiteType.mpr fin).of_comp_finiteType⟩
+    (h ▸ RingHom.finiteType_algebraMap.mpr fin).of_comp_finiteType⟩
 
 end mainthm

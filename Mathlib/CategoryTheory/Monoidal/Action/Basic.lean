@@ -120,40 +120,40 @@ class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
       f ⊙ₗₘ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
-    aesop_cat
-  actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by aesop_cat
-  id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by aesop_cat
+    cat_disch
+  actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by cat_disch
+  id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by cat_disch
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : c ⟶ c') (f₂ : c' ⟶ c'')
       (g₁ : d ⟶ d') (g₂ : d' ⟶ d'') :
       (f₁ ≫ f₂) ⊙ₗₘ (g₁ ≫ g₂) = (f₁ ⊙ₗₘ g₁) ≫ (f₂ ⊙ₗₘ g₂) := by
-    aesop_cat
+    cat_disch
   actionAssocIso_hom_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
       ((f ⊗ₘ g) ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).hom =
         (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗₘ g ⊙ₗₘ h) := by
-    aesop_cat
+    cat_disch
   actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (λₗ d).hom ≫ f = (𝟙_ C) ⊴ₗ f ≫ (λₗ d').hom := by
-    aesop_cat
+    cat_disch
   whiskerLeft_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
       (c ◁ f) ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ f ⊵ₗ d ≫ (αₗ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   whiskerRight_actionHomLeft {c c' : C} (c'' : C) (f : c ⟶ c') (d : D) :
       (f ▷ c'') ⊵ₗ d = (αₗ c c'' d).hom ≫
         f ⊵ₗ (c'' ⊙ₗ d : D) ≫ (αₗ c' c'' d).inv := by
-    aesop_cat
+    cat_disch
   associator_actionHom (c₁ c₂ c₃ : C) (d : D) :
       (α_ c₁ c₂ c₃).hom ⊵ₗ d ≫ (αₗ c₁ (c₂ ⊗ c₃) d).hom ≫
         c₁ ⊴ₗ (αₗ c₂ c₃ d).hom =
       (αₗ (c₁ ⊗ c₂ : C) c₃ d).hom ≫ (αₗ c₁ c₂ (c₃ ⊙ₗ d)).hom := by
-    aesop_cat
+    cat_disch
   leftUnitor_actionHom (c : C) (d : D) :
       (λ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ (λₗ _).hom := by
-    aesop_cat
+    cat_disch
   rightUnitor_actionHom (c : C) (d : D) :
       (ρ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ (λₗ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc] MonoidalLeftAction.actionHom_def
 attribute [reassoc, simp] MonoidalLeftAction.id_actionHomLeft
@@ -187,7 +187,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
@@ -434,39 +434,39 @@ class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : d ⟶ d') (g : c ⟶ c') :
       f ⊙ᵣₘ g = f ⊵ᵣ c ≫ d' ⊴ᵣ g := by
-    aesop_cat
-  actionHomRight_id (c : C) (d : D) : d ⊴ᵣ 𝟙 c = 𝟙 (d ⊙ᵣ c) := by aesop_cat
-  id_actionHomLeft (c : C) (d : D) : 𝟙 d ⊵ᵣ c = 𝟙 (d ⊙ᵣ c) := by aesop_cat
+    cat_disch
+  actionHomRight_id (c : C) (d : D) : d ⊴ᵣ 𝟙 c = 𝟙 (d ⊙ᵣ c) := by cat_disch
+  id_actionHomLeft (c : C) (d : D) : 𝟙 d ⊵ᵣ c = 𝟙 (d ⊙ᵣ c) := by cat_disch
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : d ⟶ d') (f₂ : d' ⟶ d'')
       (g₁ : c ⟶ c') (g₂ : c' ⟶ c'') :
       (f₁ ≫ f₂) ⊙ᵣₘ (g₁ ≫ g₂) = (f₁ ⊙ᵣₘ g₁) ≫ (f₂ ⊙ᵣₘ g₂) := by
-    aesop_cat
+    cat_disch
   actionAssocIso_hom_naturality
       {d₁ d₂ : D} {c₁ c₂ c₃ c₄ : C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
       (f ⊙ᵣₘ g ⊗ₘ h) ≫ (αᵣ d₂ c₂ c₄).hom =
         (αᵣ d₁ c₁ c₃).hom ≫ ((f ⊙ᵣₘ g) ⊙ᵣₘ h) := by
-    aesop_cat
+    cat_disch
   actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (ρᵣ d).hom ≫ f = f ⊵ᵣ (𝟙_ C) ≫ (ρᵣ d').hom := by
-    aesop_cat
+    cat_disch
   actionHomRight_whiskerRight {c' c'' : C} (f : c' ⟶ c'') (c : C) (d : D) :
      d ⊴ᵣ (f ▷ c) = (αᵣ _ _ _).hom ≫ ((d ⊴ᵣ f) ⊵ᵣ c) ≫ (αᵣ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   whiskerRight_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
      d ⊴ᵣ (c ◁ f) = (αᵣ d c c').hom ≫ (d ⊙ᵣ c) ⊴ᵣ f ≫ (αᵣ d c c'').inv := by
-    aesop_cat
+    cat_disch
   actionHom_associator (c₁ c₂ c₃ : C) (d : D) :
       d ⊴ᵣ (α_ c₁ c₂ c₃).hom ≫ (αᵣ d c₁ (c₂ ⊗ c₃)).hom ≫
         (αᵣ (d ⊙ᵣ c₁ : D) c₂ c₃).hom =
       (αᵣ d (c₁ ⊗ c₂ : C) c₃).hom ≫ (αᵣ d c₁ c₂).hom ⊵ᵣ c₃ := by
-    aesop_cat
+    cat_disch
   actionHom_leftUnitor (c : C) (d : D) :
       d ⊴ᵣ (λ_ c).hom = (αᵣ _ _ _).hom ≫ (ρᵣ _).hom ⊵ᵣ c := by
-    aesop_cat
+    cat_disch
   actionHom_rightUnitor (c : C) (d : D) :
       d ⊴ᵣ (ρ_ c).hom = (αᵣ _ _ _).hom ≫ (ρᵣ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc] MonoidalRightAction.actionHom_def
 attribute [reassoc, simp] MonoidalRightAction.id_actionHomLeft
@@ -496,7 +496,7 @@ open Category
 
 variable {C D} [MonoidalCategory C] [MonoidalRightAction C D]
 
--- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
+-- Simp normal forms are aligned with the ones in `MonoidalCategory`.
 
 @[simp]
 lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
