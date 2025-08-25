@@ -560,7 +560,7 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
       (SeparationQuotient.isUniformInducing_mk.comp h).rangeFactorization
   have hgd : DenseRange ff :=
     ((denseRange_inclusion_iff subset_closure).2 subset_rfl).comp
-      surjective_onto_range.denseRange (continuous_inclusion subset_closure)
+      rangeFactorization_surjective.denseRange (continuous_inclusion subset_closure)
   have hg : IsDenseInducing ff := hgu.isDenseInducing hgd
   let fwd := hid.extend ff
   have hfwd : UniformContinuous fwd :=
