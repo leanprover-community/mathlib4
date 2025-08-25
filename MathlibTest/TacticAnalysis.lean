@@ -1,5 +1,7 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 
+section declarations
+
 section rwMerge
 
 set_option linter.tacticAnalysis.rwMerge true
@@ -59,3 +61,20 @@ example : 1 + 1 = 2 := by
   rfl
 
 end replaceWithGrind
+
+end declarations
+
+section internals
+
+section setOptionIn
+
+/-- warning: Try this: rw [xy, yz] -/
+#guard_msgs in
+set_option linter.tacticAnalysis.rwMerge true in
+example : x = z := by
+  rw [xy]
+  rw [yz]
+
+end setOptionIn
+
+end internals
