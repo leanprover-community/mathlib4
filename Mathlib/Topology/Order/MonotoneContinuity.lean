@@ -285,6 +285,9 @@ protected theorem continuous (e : α ≃o β) : Continuous e := by
   · rw [e.preimage_Iio]
     apply isOpen_gt'
 
+instance : ContinuousMapClass (α ≃o β) α β where
+  map_continuous := OrderIso.continuous
+
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
 def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
   { e with
