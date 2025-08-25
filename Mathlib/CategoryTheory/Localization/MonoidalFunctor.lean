@@ -10,6 +10,11 @@ import Mathlib.Combinatorics.Quiver.ReflQuiver
 /-!
 
 # Universal property of localized monoidal categories
+
+This file proves that, given a localization functor `L : C ⥤ D`, such that `C` is a monoidal
+category, and a functor `F : D ⥤ E` to a monoidal category, such that `L ⋙ F` is monoidal,
+then `F` is monoidal with respect to the localized monoidal structure on `D`. See
+`CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
 universe u
 
@@ -48,6 +53,9 @@ noncomputable instance : Lifting₂ L' L' W W
     ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) where
   iso' := Iso.refl _
 
+/--
+The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
+-/
 noncomputable def μNatIso : ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) ≅
     (curriedTensor _ ⋙ (whiskeringRight _ _ _).obj F) := by
   refine lift₂NatIso L' L' W W
@@ -80,6 +88,24 @@ lemma μNatIso_hom_app_app (X Y : C) :
         F.map (Functor.OplaxMonoidal.δ L' X Y) := by
   simp [μNatIso, lift₂NatIso, Lifting₂.iso, Lifting₂.iso']
   rfl
+
+/--
+Variant of `μNatIso_hom_app_app` where the notation `L'` in the first argument is replaced by `L`
+-/
+lemma μNatIso_hom_app_app' (X Y : C) :
+  ((μNatIso L W ε F).hom.app (L.obj X)).app ((L').obj Y) =
+    Functor.LaxMonoidal.μ (L ⋙ F) X Y ≫
+      F.map (Functor.OplaxMonoidal.δ L' X Y) :=
+  μNatIso_hom_app_app _ _ _ _ X Y
+
+/--
+Variant of `μNatIso_hom_app_app` where the notation `L'` in the second argument is replaced by `L`
+-/
+lemma μNatIso_hom_app_app'' (X Y : C) :
+  ((μNatIso L W ε F).hom.app ((L').obj X)).app (L.obj Y) =
+    Functor.LaxMonoidal.μ (L ⋙ F) X Y ≫
+      F.map (Functor.OplaxMonoidal.δ L' X Y) :=
+  μNatIso_hom_app_app _ _ _ _ X Y
 
 lemma μNatIso_inv_app_app (X Y : C) :
     ((μNatIso L W ε F).inv.app ((L').obj X)).app ((L').obj Y) =
@@ -142,8 +168,8 @@ lemma μNatIso_associativity_aux (X Y Z : C) :
   slice_rhs 5 6 =>
     rw [← MonoidalCategory.whiskerLeft_comp, ← F.map_comp]
     simp only [δ_μ, Functor.map_id, MonoidalCategory.whiskerLeft_id]
-  simp only [Category.id_comp, Category.assoc]
-  erw [map_associator' (L' ⋙ F)]
+  simp only [Category.id_comp, Category.assoc, ← Functor.comp_obj]
+  rw [map_associator' (L' ⋙ F)]
   slice_rhs 2 3 =>
     simp only [Functor.comp_obj]
     rw [← MonoidalCategory.comp_whiskerRight]
@@ -154,6 +180,9 @@ lemma μNatIso_associativity_aux (X Y Z : C) :
   simp only [← F.map_comp]
   simp
 
+/--
+Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a localization functor.
+-/
 noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
   εIso := εIso (L ⋙ F) ≪≫ F.mapIso ε
   μIso X Y := ((μNatIso L W ε F).app X).app Y
@@ -227,8 +256,9 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
           curriedTensor_obj_obj, Functor.LaxMonoidal.left_unitality,
           Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.map_comp, Category.assoc]
         slice_lhs 5 6 =>
-          erw [← MonoidalCategory.tensorHom_id, ← Functor.map_id, μNatIso_naturality]
-        erw [μNatIso_hom_app_app]
+          rw [← MonoidalCategory.tensorHom_id, ← Functor.map_id]
+          change _ ≫ ((μNatIso L W ε F).hom.app unit).app _
+          rw [μNatIso_naturality, μNatIso_hom_app_app']
         simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, Functor.comp_obj,
           whiskeringRight_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
           MonoidalCategory.tensorHom_id, Category.assoc, ← Functor.map_comp]
@@ -243,7 +273,7 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
         rw [← cancel_epi ((F.obj (L.obj (𝟙_ C))) ◁ F.map eX.hom)]
         conv_rhs => rw [← MonoidalCategory.id_tensorHom, ← Functor.map_id, ← Category.assoc,
           μNatIso_naturality_assoc]
-        erw [μNatIso_hom_app_app]
+        rw [μNatIso_hom_app_app']
         simp only [whiskeringRight_obj_obj, Functor.comp_obj, curriedTensor_obj_obj,
           Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, MonoidalCategory.id_tensorHom,
           MonoidalCategory.tensorHom_id, Category.assoc]
@@ -264,8 +294,10 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
     simp only [Functor.comp_obj, Functor.comp_map, whiskeringRight_obj_obj, curriedTensor_obj_obj,
       Functor.LaxMonoidal.left_unitality, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal]
     slice_rhs 2 4 =>
-      erw [← MonoidalCategory.tensorHom_id, ← Functor.map_id, μNatIso_naturality]
-    erw [μNatIso_hom_app_app]
+      rw [← MonoidalCategory.tensorHom_id, ← Functor.map_id]
+      change _ ≫ ((μNatIso L W ε F).hom.app unit).app _
+      rw [μNatIso_naturality]
+    rw [μNatIso_hom_app_app']
     simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, Functor.comp_obj,
       whiskeringRight_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
       MonoidalCategory.tensorHom_id, Category.assoc, ← Functor.map_comp]
@@ -287,8 +319,9 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
         curriedTensor_obj_obj, Functor.LaxMonoidal.right_unitality,
         Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, Functor.map_comp, Category.assoc]
         slice_lhs 5 6 =>
-          erw [← MonoidalCategory.id_tensorHom, ← Functor.map_id, μNatIso_naturality]
-        erw [μNatIso_hom_app_app]
+          rw [← MonoidalCategory.id_tensorHom, ← Functor.map_id]
+          change _ ≫ ((μNatIso L W ε F).hom.app _).app unit
+          rw [μNatIso_naturality, μNatIso_hom_app_app'']
         simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, Functor.comp_obj,
           whiskeringRight_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
           MonoidalCategory.id_tensorHom, Category.assoc, ← Functor.map_comp]
@@ -303,7 +336,7 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
         rw [← cancel_epi (F.map eX.hom ▷ (F.obj (L.obj (𝟙_ C))))]
         conv_rhs => rw [← MonoidalCategory.tensorHom_id, ← Functor.map_id, ← Category.assoc,
           μNatIso_naturality_assoc]
-        erw [μNatIso_hom_app_app]
+        rw [μNatIso_hom_app_app'']
         simp only [whiskeringRight_obj_obj, Functor.comp_obj, curriedTensor_obj_obj,
           Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, MonoidalCategory.id_tensorHom,
           MonoidalCategory.tensorHom_id, Category.assoc]
@@ -316,17 +349,17 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
         rw [@rightUnitor_hom_app, ε']
         slice_rhs 2 3 =>
           rw [← MonoidalCategory.whiskerLeft_comp, Iso.hom_inv_id, whiskerLeft_id]
-        simp only [Category.id_comp, Category.assoc]
-        change _ = _ ≫ Functor.LaxMonoidal.μ L' _ _ ≫ _
-        erw [Category.id_comp]
+        simp only [Category.assoc]
+        rfl
     change (ρ_ ((L' ⋙ F).obj x)).hom = _
     rw [Functor.LaxMonoidal.right_unitality (L' ⋙ F)]
     simp only [Functor.comp_obj, Functor.comp_map, whiskeringRight_obj_obj, curriedTensor_obj_obj,
       Functor.LaxMonoidal.right_unitality, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
       Functor.map_comp]
     slice_rhs 2 4 =>
-      erw [← MonoidalCategory.id_tensorHom, ← Functor.map_id, μNatIso_naturality_assoc]
-    erw [μNatIso_hom_app_app]
+      rw [← MonoidalCategory.id_tensorHom, ← Functor.map_id]
+      change _ ≫ ((μNatIso L W ε F).hom.app _).app unit ≫ _
+      rw [μNatIso_naturality_assoc, μNatIso_hom_app_app'']
     simp only [whiskeringRight_obj_obj, Functor.comp_obj, curriedTensor_obj_obj,
       Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, MonoidalCategory.id_tensorHom, ←
       Functor.map_comp, Category.assoc]
@@ -336,6 +369,9 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal where
     change _ = _ ≫ Functor.LaxMonoidal.μ L' _ _ ≫ _
     simp
 
+/--
+Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a localization functor.
+-/
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoremonoidalOfComp L W ε F).toMonoidal
 
