@@ -34,7 +34,7 @@ semiring structure.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
   `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
-  and `sInf` for the infimum of a set of cardinals.
+  and `sInf` for the minimum of a set of cardinals.
 
 ## Main statements
 
