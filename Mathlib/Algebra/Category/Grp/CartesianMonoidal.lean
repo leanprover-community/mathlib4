@@ -23,7 +23,7 @@ namespace Grp
 def binaryProductLimitCone (G H : Grp.{u}) : LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (MonoidHom.fst G H)) (ofHom (MonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (MonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
 /-- We choose `Grp.of (G × H)` as the product of `G` and `H` and `Grp.of PUnit` as
 the terminal object. -/
@@ -53,7 +53,7 @@ namespace AddGrp
 def binaryProductLimitCone (G H : AddGrp.{u}) : LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (AddMonoidHom.fst G H)) (ofHom (AddMonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (AddMonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
 /-- We choose `AddGrp.of (G × H)` as the product of `G` and `H` and `AddGrp.of PUnit` as
 the terminal object. -/
@@ -83,7 +83,7 @@ namespace CommGrp
 def binaryProductLimitCone (G H : CommGrp.{u}) : LimitCone (pair G H) where
   cone := BinaryFan.mk (ofHom (MonoidHom.fst G H)) (ofHom (MonoidHom.snd G H))
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (MonoidHom.prod l.hom r.hom))
-    (fun _ _ => rfl) (fun _ _ => rfl) (by aesop_cat)
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
 /-- We choose `CommGrp.of (G × H)` as the product of `G` and `H` and `CommGrp.of PUnit` as
 the terminal object. -/

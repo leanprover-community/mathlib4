@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.IsNormal
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -91,10 +90,6 @@ instance instAddLeftReflectLE :
 
 instance : IsLeftCancelAdd Ordinal where
   add_left_cancel a b c h := by simpa only [le_antisymm_iff, add_le_add_iff_left] using h
-
-@[deprecated add_left_cancel_iff (since := "2024-12-11")]
-protected theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c :=
-  add_left_cancel_iff
 
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]

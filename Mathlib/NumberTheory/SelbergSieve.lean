@@ -3,7 +3,7 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Data.Real.Basic
 import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
@@ -58,21 +58,21 @@ Then a sieve-type theorem will give us an upper (or lower) bound on the size of 
 multiple of a prime in `P`. -/
 class BoundingSieve where
   /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
-    on the size of this set after the multiples of small primes have been removed. -/
+  on the size of this set after the multiples of small primes have been removed. -/
   support : Finset ℕ
   /-- The finite set of prime numbers whose multiples are to be sifted from `support`. We work with
-    their product because it lets us treat `nu` as a multiplicative arithmetic function. It also
-    plays well with Moebius inversion. -/
+  their product because it lets us treat `nu` as a multiplicative arithmetic function. It also
+  plays well with Moebius inversion. -/
   prodPrimes : ℕ
   prodPrimes_squarefree : Squarefree prodPrimes
   /-- A sequence representing how much each element of `support` should be weighted. -/
   weights : ℕ → ℝ
   weights_nonneg : ∀ n : ℕ, 0 ≤ weights n
   /-- An approximation to `∑ i in support, weights i`, i.e. the size of the unsifted set. A bad
-    approximation will yield a weak statement in the final theorem. -/
+  approximation will yield a weak statement in the final theorem. -/
   totalMass : ℝ
   /-- `nu d` is an approximation to the proportion of elements of `support` that are a multiple of
-    `d` -/
+  `d` -/
   nu : ArithmeticFunction ℝ
   nu_mult : nu.IsMultiplicative
   nu_pos_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → 0 < nu p
@@ -82,8 +82,8 @@ class BoundingSieve where
   gives the user control over the size of the error term. -/
 class SelbergSieve extends BoundingSieve where
   /-- The `level` of the sieve controls how many terms we include in the inclusion-exclusion type
-    sum. A higher level will yield a tighter bound for the main term, but will also increase the
-    size of the error term. -/
+  sum. A higher level will yield a tighter bound for the main term, but will also increase the
+  size of the error term. -/
   level : ℝ
   one_le_level : 1 ≤ level
 
