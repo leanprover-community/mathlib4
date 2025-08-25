@@ -139,7 +139,6 @@ theorem isNonarchimedean_invariantExtension :
 /-- The algebra norm `invariantExtension` extends the norm on `K`. -/
 theorem invariantExtension_extends (x : K) :
     (invariantExtension K L) (algebraMap K L x) = ‖x‖ := by
-  rw [invariantExtension, ← AlgebraNorm.toFun_eq_coe]
   simp [algNormOfAlgEquiv_extends _ x, ciSup_const]
 
 end invariantExtension
