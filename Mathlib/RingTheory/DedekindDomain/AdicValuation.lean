@@ -410,6 +410,7 @@ variable (K)
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
 abbrev adicCompletion := (v.valuation K).Completion
 
+@[deprecated Valuation.Completion.valued_apply (since := "2025-08-19")]
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
 
@@ -422,21 +423,20 @@ lemma valuedAdicCompletion_surjective :
 --   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
 
 /-- The ring of integers of `adicCompletion`. -/
-def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
-  Valued.v.valuationSubring
-
-instance : Inhabited (adicCompletionIntegers K v) :=
-  ⟨0⟩
+abbrev adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
+  Valuation.Completion.integers (v.valuation K)
 
 variable (R)
 
+@[deprecated Valuation.Completion.mem_integers (since := "2025-08-19")]
 theorem mem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∈ v.adicCompletionIntegers K ↔ Valued.v x ≤ 1 :=
   Iff.rfl
 
+@[deprecated Valuation.Completion.notMem_integers (since := "2025-08-19")]
 theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
-  rw [not_congr <| mem_adicCompletionIntegers R K v]
+  rw [not_congr <| Valuation.Completion.mem_integers (v.valuation K)]
   exact not_le
 
 @[deprecated (since := "2025-05-23")]
@@ -444,55 +444,21 @@ alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 
-instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
-    UniformContinuousConstSMul R (WithVal <| v.valuation K) :=
-  uniformContinuousConstSMul_of_continuousConstSMul R (WithVal <| v.valuation K)
-
-section Algebra
 variable [Algebra S K]
 
-instance adicValued.uniformContinuousConstSMul :
-    UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
-  refine ⟨fun l ↦ ?_⟩
-  simp_rw [Algebra.smul_def]
-  exact (Ring.uniformContinuousConstSMul (WithVal <| v.valuation K)).uniformContinuous_const_smul _
-
-open UniformSpace in
-instance : Algebra S (v.adicCompletion K) where
-  toSMul := Completion.instSMul _ _
-  algebraMap := Completion.coeRingHom.comp (algebraMap _ _)
-  commutes' r x := by
-    induction x using Completion.induction_on with
-    | hp =>
-      exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
-    | ih x =>
-      change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
-        = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
-      norm_cast
-      rw [Algebra.commutes]
-  smul_def' r x := by
-    induction x using Completion.induction_on with
-    | hp =>
-      exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
-    | ih x =>
-      change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
-      norm_cast
-      rw [← Algebra.smul_def]
-
+@[deprecated Valuation.Completion.coe_smul (since := "2025-08-19")]
 theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   UniformSpace.Completion.coe_smul r x
 
+@[deprecated Valuation.Completion.coe_algebraMap (since := "2025-08-19")]
 theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
 
-end Algebra
-
-theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
-  rw [mem_adicCompletionIntegers]
-  letI : Valued K ℤᵐ⁰ := adicValued v
-  dsimp only [adicCompletion]
-  rw [Valued.valuedCompletion_apply]
+open Valuation.Completion in
+theorem coe_algebraMap_mem (r : R) :
+    ↑((algebraMap R (WithVal (v.valuation K))) r) ∈ adicCompletionIntegers K v := by
+  rw [mem_integers, valued_apply]
   exact v.valuation_le_one _
 
 instance : Algebra R (v.adicCompletionIntegers K) where
@@ -506,7 +472,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       exact coe_algebraMap_mem _ _ v r⟩
   algebraMap :=
   { toFun r :=
-      ⟨(algebraMap R K r : adicCompletion K v), coe_algebraMap_mem _ _ v r⟩
+      ⟨(algebraMap R (WithVal (v.valuation K)) r), coe_algebraMap_mem _ _ v r⟩
     map_one' := by simp only [map_one]; rfl
     map_mul' x y := by
       ext
@@ -524,35 +490,40 @@ instance : Algebra R (v.adicCompletionIntegers K) where
 
 @[simp]
 lemma algebraMap_adicCompletionIntegers_apply (r : R) :
-    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
+    (algebraMap R (v.adicCompletionIntegers K) r : v.adicCompletion K) =
+      algebraMap R (WithVal (v.valuation K)) r :=
   rfl
 
-instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
+instance : FaithfulSMul R (v.adicCompletionIntegers K) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   intro x y
-  simp [Subtype.ext_iff, (FaithfulSMul.algebraMap_injective R K).eq_iff]
+  simp_rw [Subtype.ext_iff, algebraMap_adicCompletionIntegers_apply]
+  exact fun h ↦ FaithfulSMul.algebraMap_injective R _ (UniformSpace.Completion.coe_inj.1 h)
 
 variable {R K} in
 open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
 integer ring. -/
+@[deprecated Valuation.Completion.valued_eq_valuation (since := "2025-08-19")]
 theorem valuedAdicCompletion_eq_valuation (r : R) :
     Valued.v (r : v.adicCompletion K) = v.valuation K r := by
   convert Valued.valuedCompletion_apply (r : K)
 
 variable {R K} in
 /-- The valuation on the completion agrees with the global valuation on elements of the field. -/
+@[deprecated Valuation.Completion.valued_eq_valuation' (since := "2025-08-19")]
 theorem valuedAdicCompletion_eq_valuation' (k : K) :
     Valued.v (k : v.adicCompletion K) = v.valuation K k := by
   convert Valued.valuedCompletion_apply k
 
 variable {R K} in
+open Valuation.Completion in
 open scoped algebraMap in -- to make the coercion from `R` fire
 /-- A global integer is in the local integers. -/
 lemma coe_mem_adicCompletionIntegers (r : R) :
     (r : adicCompletion K v) ∈ adicCompletionIntegers K v := by
-  rw [mem_adicCompletionIntegers, valuedAdicCompletion_eq_valuation]
-  exact valuation_le_one v r
+  rw [mem_integers, valued_eq_valuation, valuation_of_algebraMap]
+  exact intValuation_le_one v r
 
 @[simp]
 theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K) :
@@ -568,14 +539,14 @@ instance adicCompletion.instIsScalarTower' :
 
 end AlgebraInstances
 
-open nonZeroDivisors algebraMap in
+open nonZeroDivisors algebraMap Valuation.Completion in
 variable {R K} in
 lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOneSpectrum R)
     (a : v.adicCompletion K) : ∃ b ∈ R⁰, a * b ∈ v.adicCompletionIntegers K := by
   by_cases ha : a ∈ v.adicCompletionIntegers K
   · use 1
     simp [ha]
-  · rw [notMem_adicCompletionIntegers] at ha
+  · rw [notMem_integers] at ha
     -- Let the additive valuation of a be -d with d>0
     obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = ofAdd d :=
       Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
@@ -585,9 +556,9 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
     -- use ϖ^d
     refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
-    -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality in ℤ
-    rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
-      valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, ← WithZero.coe_pow,
+    -- now manually translate the goal (an inequality in ℤₘ₀) to an inequality in ℤ
+    rw [mem_integers, algebraMap.coe_pow, map_mul, hd, map_pow,
+      valued_eq_valuation, valuation_of_algebraMap, hϖ, ← WithZero.coe_pow,
       ← WithZero.coe_mul, WithZero.coe_le_one, ← toAdd_le, toAdd_mul, toAdd_ofAdd, toAdd_pow,
       toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
