@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.LinearAlgebra.Matrix.Permutation
+import Mathlib.Data.Matrix.Stochastic
 
 /-!
 # Doubly stochastic matrices
@@ -31,7 +32,7 @@ Show that the submonoid of doubly stochastic matrices is the meet of them, or re
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-open Finset Function Matrix
+open Finset Function Matrix Stochastic
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
@@ -101,6 +102,48 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+
+
+/-- A matrix is doubly stochastic if and only if it is both row and
+column stochastic. -/
+lemma doublyStochastic_iff_rowStochastic_and_colStochastic :
+    M ∈ doublyStochastic R n ↔ (M ∈ rowStochastic R n) ∧ M ∈ colStochastic R n := by
+  constructor
+  · intro hM
+    constructor
+    · constructor
+      · exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
+      · exact mulVec_one_of_mem_doublyStochastic hM
+    · constructor
+      · exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
+      · exact one_vecMul_of_mem_doublyStochastic hM
+  · intro hM
+    constructor
+    · exact (hM.1).1
+    · constructor
+      · exact (hM.1).2
+      · exact (hM.2).2
+
+/-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
+lemma mem_doublyStochastic_iff_transpose :
+    M ∈ doublyStochastic R n ↔
+      M.transpose ∈ doublyStochastic R n := by
+  constructor
+  · intro hM
+    have : (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
+      exact mem_doublyStochastic_iff_sum.mp hM
+    have h₀ : ∀ (i j : n), 0 ≤ M.transpose i j := by aesop
+    have h₁ : ∀ (i : n), ∑ j, M.transpose i j = 1 := by aesop
+    have h₂ : ∀ (j : n), ∑ i, M.transpose i j = 1 := by aesop
+    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂ ⟩
+  · intro hM
+    have : (∀ i j, 0 ≤ M.transpose i j) ∧ (∀ i, ∑ j, M.transpose i j = 1)
+        ∧ ∀ j, ∑ i, M.transpose i j = 1 := by
+      exact mem_doublyStochastic_iff_sum.mp hM
+    have h₀ : ∀ (i j : n), 0 ≤ M i j := by aesop
+    have h₁ : ∀ (i : n), ∑ j, M i j = 1 := by aesop
+    have h₂ : ∀ (j : n), ∑ i, M i j = 1 := by aesop
+    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂⟩
 
 end OrderedSemiring
 
