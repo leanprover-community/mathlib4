@@ -211,9 +211,7 @@ theorem tail_nil : tail (nil : Seq α) = nil :=
 
 @[simp]
 theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
-  obtain ⟨f, al⟩ := s
-  apply Subtype.eq
-  dsimp [tail, cons]
+  rfl
 
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
     s = cons x s.tail := by

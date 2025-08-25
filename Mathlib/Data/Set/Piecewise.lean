@@ -99,8 +99,7 @@ theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j �
 lemma piecewise_comp (f g : α → γ) (h : β → α) :
     letI : DecidablePred (· ∈ h ⁻¹' s) := @instDecidablePredComp _ (· ∈ s) _ h _;
     (s.piecewise f g) ∘ h = (h ⁻¹' s).piecewise (f ∘ h) (g ∘ h) := by
-  ext x
-  by_cases hx : h x ∈ s <;> simp [hx]
+  rfl
 
 theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁ f₂ : α → β}
     [∀ i, Decidable (i ∈ s)] (h₁ : MapsTo f₁ (s₁ ∩ s) (t₁ ∩ t))

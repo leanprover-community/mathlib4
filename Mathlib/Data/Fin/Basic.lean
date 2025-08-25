@@ -1171,9 +1171,7 @@ lemma predAbove_castPred_self (p : Fin (n + 1)) (hp : p ≠ last n) :
     (castPred p hp).predAbove p = castPred p hp := predAbove_castPred_of_le _ _ Fin.le_rfl hp
 
 @[simp] lemma predAbove_right_zero [NeZero n] {i : Fin n} : predAbove (i : Fin n) 0 = 0 := by
-  cases n
-  · exact i.elim0
-  · rw [predAbove_of_le_castSucc _ _ (zero_le _), castPred_zero]
+  rfl
 
 lemma predAbove_zero_succ [NeZero n] {i : Fin n} : predAbove 0 i.succ = i := by
   rw [predAbove_succ_of_le _ _ (Fin.zero_le _)]
