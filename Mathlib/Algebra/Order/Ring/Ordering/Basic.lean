@@ -40,7 +40,7 @@ theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) 
   toSubsemiring_strictMono.monotone
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
-theorem inv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
+theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by aesop (config := { enableSimp := false })
   simp_all
 
