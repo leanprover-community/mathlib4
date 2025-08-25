@@ -702,8 +702,7 @@ lemma pullback_lift_snd_apply (h : W → X) (k : W → Y) (fac : h ≫ f = k ≫
   congr_fun (pullback.lift_snd (C := Type u) h k fac) w
 
 @[ext]
-lemma pullback_ext
-    {z₁ z₂ : pullback f g}
+lemma pullback_ext {z₁ z₂ : pullback f g}
     (h₁ : pullback.fst f g z₁ = pullback.fst f g z₂)
     (h₂ : pullback.snd f g z₁ = pullback.snd f g z₂) : z₁ = z₂ :=
   PullbackCone.IsLimit.type_ext (pullbackIsPullback f g) h₁ h₂
