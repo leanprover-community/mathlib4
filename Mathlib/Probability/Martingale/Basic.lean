@@ -89,8 +89,6 @@ protected theorem stronglyMeasurable (hf : Martingale f ℱ μ) (i : ι) :
 theorem condExp_ae_eq (hf : Martingale f ℱ μ) {i j : ι} (hij : i ≤ j) : μ[f j|ℱ i] =ᵐ[μ] f i :=
   hf.2 i j hij
 
-@[deprecated (since := "2025-01-21")] alias condexp_ae_eq := condExp_ae_eq
-
 protected theorem integrable (hf : Martingale f ℱ μ) (i : ι) : Integrable (f i) μ :=
   integrable_condExp.congr (hf.condExp_ae_eq (le_refl i))
 
@@ -133,8 +131,6 @@ theorem martingale_condExp (f : Ω → E) (ℱ : Filtration ι m0) (μ : Measure
     [SigmaFiniteFiltration μ ℱ] : Martingale (fun i => μ[f|ℱ i]) ℱ μ :=
   ⟨fun _ => stronglyMeasurable_condExp, fun _ j hij => condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)⟩
 
-@[deprecated (since := "2025-01-21")] alias martingale_condexp := martingale_condExp
-
 namespace Supermartingale
 
 protected theorem adapted [LE E] (hf : Supermartingale f ℱ μ) : Adapted ℱ f :=
@@ -150,8 +146,6 @@ protected theorem integrable [LE E] (hf : Supermartingale f ℱ μ) (i : ι) : I
 theorem condExp_ae_le [LE E] (hf : Supermartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     μ[f j|ℱ i] ≤ᵐ[μ] f i :=
   hf.2.1 i j hij
-
-@[deprecated (since := "2025-01-21")] alias condexp_ae_le := condExp_ae_le
 
 theorem setIntegral_le [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → ℝ} (hf : Supermartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
@@ -196,8 +190,6 @@ protected theorem integrable [LE E] (hf : Submartingale f ℱ μ) (i : ι) : Int
 theorem ae_le_condExp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i ≤ j) :
     f i ≤ᵐ[μ] μ[f j|ℱ i] :=
   hf.2.1 i j hij
-
-@[deprecated (since := "2025-01-21")] alias ae_le_condexp := ae_le_condExp
 
 theorem add [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by

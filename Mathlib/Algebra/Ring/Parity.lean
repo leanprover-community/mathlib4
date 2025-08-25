@@ -214,7 +214,7 @@ variable {m n : ℕ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ ↦ by omega, fun h ↦ ⟨n / 2, by grind⟩⟩
+  ⟨fun ⟨m, hm⟩ ↦ by omega, fun h ↦ ⟨n / 2, by omega⟩⟩
 
 instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ odd_iff.symm
 

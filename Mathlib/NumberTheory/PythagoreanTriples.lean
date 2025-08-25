@@ -538,7 +538,7 @@ theorem classified : h.IsClassified := by
       apply Int.natAbs_eq_zero.mp
       apply Nat.eq_zero_of_gcd_eq_zero_right h0
     use 0, 1, 0
-    field_simp [hx, hy]
+    simp [hx, hy]
   apply h.isClassified_of_normalize_isPrimitiveClassified
   apply h.normalize.isPrimitiveClassified_of_coprime
   apply Int.gcd_div_gcd_div_gcd (Nat.pos_of_ne_zero h0)
