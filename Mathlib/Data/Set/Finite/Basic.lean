@@ -862,7 +862,7 @@ protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 theorem infinite_of_injOn_mapsTo {s : Set α} {t : Set β} {f : α → β} (hi : InjOn f s)
     (hm : MapsTo f s t) (hs : s.Infinite) : t.Infinite :=
-  ((infinite_image_iff hi).2 hs).mono (mapsTo'.mp hm)
+  ((infinite_image_iff hi).2 hs).mono (mapsTo_iff_image_subset.mp hm)
 
 theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α → β} (hs : s.Infinite)
     (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
