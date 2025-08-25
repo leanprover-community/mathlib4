@@ -168,6 +168,16 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
+/-- A symmetric projection is positive. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    p.IsPositive :=
+  hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
+
+/-- A star projection operator is positive. -/
+@[deprecated (since := "19-08-2025")]
+alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -198,13 +208,13 @@ lemma _root_.LinearMap.isPositive_toContinuousLinearMap_iff
     [FiniteDimensional 𝕜 E] (T : E →ₗ[𝕜] E) :
     have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
-  simp_rw [IsPositive, LinearMap.IsPositive, reApplyInnerSelf, isSelfAdjoint_iff_isSymmetric]
-  rfl
+  simp only [IsPositive, isSelfAdjoint_iff_isSymmetric, coe_toContinuousLinearMap, reApplyInnerSelf,
+    coe_toContinuousLinearMap', LinearMap.IsPositive]
 
 lemma isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
-  rw [LinearMap.IsPositive, coe_coe, IsPositive, ← isSelfAdjoint_iff_isSymmetric]
-  rfl
+  simp only [LinearMap.IsPositive, ← isSelfAdjoint_iff_isSymmetric, coe_coe, IsPositive,
+    reApplyInnerSelf]
 
 alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 
@@ -359,8 +369,7 @@ end PartialOrder
 @[grind →]
 theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint
     {p : E →L[𝕜] E} (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p := by
-  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric
-    (congr(LinearMapClass.linearMap $hp.eq))]
+  rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
 /-- A star projection operator is positive.
@@ -382,7 +391,8 @@ theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
       (LinearMap.range p)ᗮ = LinearMap.ker p].TFAE := by
   tfae_have 1 ↔ 2 := hp.isSelfAdjoint_iff_isStarNormal.symm
   tfae_have 2 ↔ 3 := hp.isPositive_iff_isSelfAdjoint.symm
-  tfae_have 2 ↔ 4 := hp.isSelfAdjoint_iff_orthogonal_range
+  tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
+    (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 
 end ContinuousLinearMap

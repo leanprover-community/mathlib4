@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -98,13 +98,13 @@ lemma surjectiveOnStalks_of_surjective (h : Function.Surjective f) :
 
 lemma SurjectiveOnStalks.comp (hg : SurjectiveOnStalks g) (hf : SurjectiveOnStalks f) :
     SurjectiveOnStalks (g.comp f) := by
-  intros I hI
+  intro I hI
   have := (hg I hI).comp (hf _ (hI.comap g))
   rwa [← RingHom.coe_comp, ← Localization.localRingHom_comp] at this
 
 lemma SurjectiveOnStalks.of_comp (hg : SurjectiveOnStalks (g.comp f)) :
     SurjectiveOnStalks g := by
-  intros I hI
+  intro I hI
   have := hg I hI
   rw [Localization.localRingHom_comp (I.comap (g.comp f)) (I.comap g) _ _ rfl _ rfl,
     RingHom.coe_comp] at this
@@ -159,7 +159,7 @@ lemma SurjectiveOnStalks.baseChange
     (hf : (algebraMap R T).SurjectiveOnStalks) :
     (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
-  intros J hJ
+  intro J hJ
   rw [surjective_localRingHom_iff]
   intro x
   obtain ⟨t, r, a, ht, e⟩ := hf.exists_mul_eq_tmul x (J.comap g) inferInstance

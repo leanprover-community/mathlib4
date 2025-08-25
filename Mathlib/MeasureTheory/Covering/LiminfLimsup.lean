@@ -71,7 +71,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   suffices ∀ i, μ (atTop.blimsup Y₁ p \ Z i) = 0 by
     rwa [ae_le_set, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, diff_iInter,
       measure_iUnion_null_iff]
-  intros i
+  intro i
   set W := atTop.blimsup Y₁ p \ Z i
   by_contra contra
   obtain ⟨d, hd, hd'⟩ : ∃ d, d ∈ W ∧ ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ),

@@ -3,6 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Data.Finite.Card
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
@@ -417,7 +418,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       rcases eq_or_ne (c.index i) k with rfl | hi
       · have A : update c.partSize (c.index i) (c.partSize (c.index i) + 1) (c.index i) =
           c.partSize (c.index i) + 1 := by simp
-        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm , by simp⟩
+        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm, by simp⟩
       · have A : update c.partSize k (c.partSize k + 1) (c.index i) = c.partSize (c.index i) := by
           simp [hi]
         exact ⟨c.index i, (c.invEmbedding i).cast A.symm, by simp [hi]⟩
@@ -747,7 +748,7 @@ theorem applyOrderedFinpartition_update_right
     · exact (c.emb_strictMono (c.index j)).injective
   · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true,
       update_of_ne]
-    congr
+    congr 1
     apply Function.update_comp_eq_of_notMem_range
     have A : Disjoint (range (c.emb m)) (range (c.emb (c.index j))) :=
       c.disjoint (mem_univ m) (mem_univ (c.index j)) h
