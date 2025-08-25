@@ -3,8 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Convex.Basic
 import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Functoriality of the standard simplex
