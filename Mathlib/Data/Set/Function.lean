@@ -1067,6 +1067,13 @@ lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn 
 lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t s :=
   ⟨BijOn.symm h, BijOn.symm h.symm⟩
 
+/-- If `t ⊆ f '' s`, there exists a preimage of `t` under `f` contained in `s` such that
+`f` restricted to `u` is injective. -/
+lemma exists_injOn_image_eq_of_surjOn (hfs : s.SurjOn f t) :
+    ∃ (u : Set α), u.InjOn f ∧ u ⊆ s ∧ f '' u = t := by
+  choose x hmem heq using hfs
+  exact ⟨Set.range (fun a : t ↦ x a.2), fun _ ⟨a, ha⟩ _ ⟨b, hb⟩ hab ↦ by grind, by grind, by aesop⟩
+
 end Set
 
 namespace Function
