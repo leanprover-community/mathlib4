@@ -23,12 +23,12 @@ theorem surjective_iff_ne_zero [DivisionSemiring R] [Module R M] {f : M →ₗ[R
   use (z * (f y)⁻¹) • y
   simp [hy]
 
-protected alias ⟨_, surjective⟩ := LinearMap.surjective_iff_ne_zero
+protected alias ⟨_, surjective⟩ := surjective_iff_ne_zero
 
 theorem range_smulRight_apply_of_surjective [Semiring R] [Module R M] [Module R M₁]
     {f : M →ₗ[R] R} (hf : Function.Surjective f) (x : M₁) :
     range (f.smulRight x) = Submodule.span R {x} := Submodule.ext fun z => by
-  simp_rw [LinearMap.mem_range, LinearMap.smulRight_apply, Submodule.mem_span_singleton]
+  simp_rw [mem_range, smulRight_apply, Submodule.mem_span_singleton]
   refine ⟨fun ⟨w, hw⟩ => ⟨f w, hw ▸ rfl⟩, fun ⟨w, hw⟩ => ?_⟩
   obtain ⟨y, rfl⟩ := hf w
   exact ⟨y, hw⟩
@@ -36,6 +36,6 @@ theorem range_smulRight_apply_of_surjective [Semiring R] [Module R M] [Module R 
 theorem range_smulRight_apply [DivisionSemiring R] [Module R M] [Module R M₁]
     {f : M →ₗ[R] R} (hf : f ≠ 0) (x : M₁) :
     range (f.smulRight x) = Submodule.span R {x} :=
-  range_smulRight_apply_of_surjective (LinearMap.surjective hf) x
+  range_smulRight_apply_of_surjective (f.surjective hf) x
 
 end LinearMap
