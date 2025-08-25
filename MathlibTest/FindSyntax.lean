@@ -47,13 +47,25 @@ In `Init.Notation`:
 #find_syntax "~~~" approx  -- a `prefix`
 
 /--
-info: Found 5 uses among over 700 syntax declarations
+info: Found 15 uses among over 700 syntax declarations
 In `Init.Tactics`:
   Lean.Parser.Tactic.mrefineMacro: 'mrefine'
   Lean.Parser.Tactic.refine: 'refine'
   Lean.Parser.Tactic.refine': 'refine''
   Lean.Parser.Tactic.tacticRefine_lift'_: 'refine_lift''
   Lean.Parser.Tactic.tacticRefine_lift_: 'refine_lift'
+
+In `Std.Tactic.Do.Syntax`:
+  Lean.Parser.Tactic.mrefine: 'mrefine'
+  Lean.Parser.Tactic.«mrefinePat#_»: '#'
+  Lean.Parser.Tactic.«mrefinePat%_»: '%'
+  Lean.Parser.Tactic.«mrefinePat(_)»: '( _ )'
+  Lean.Parser.Tactic.mrefinePat?_: '?'
+  Lean.Parser.Tactic.mrefinePats: ','
+  Lean.Parser.Tactic.«mrefinePat⌜_⌝»: '⌜ _ ⌝'
+  Lean.Parser.Tactic.«mrefinePat□_»: '□'
+  Lean.Parser.Tactic.«mrefinePat⟨_⟩»: '⟨ _ ⟩'
+  Lean.Parser.Tactic.mrefinePat.quot: '`(mrefinePat|  _ )'
 -/
 #guard_msgs in
 #find_syntax "refine" approx  -- a `nonReservedSymbol`
