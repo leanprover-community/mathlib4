@@ -53,12 +53,13 @@ variable {G₁ G₂ : SimpleGraph V} [Fintype G.edgeSet] [Fintype G₁.edgeSet] 
 abbrev edgeFinset : Finset (Sym2 V) :=
   Set.toFinset G.edgeSet
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_edgeFinset : (G.edgeFinset : Set (Sym2 V)) = G.edgeSet :=
   Set.coe_toFinset _
 
 variable {G}
 
+@[simp]
 theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
   Set.mem_toFinset
 
@@ -70,10 +71,13 @@ theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
     (e : Sym2 V).toFinset.card = 2 :=
   Sym2.card_toFinset_of_not_isDiag e.val (G.not_isDiag_of_mem_edgeFinset e.prop)
 
+@[simp]
 theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp
 
+@[simp]
 theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
 
+@[simp]
 theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
 
 @[mono, gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
@@ -96,12 +100,15 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
+@[simp]
 lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
   simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
 
+@[simp]
 lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
   rw [← edgeFinset_bot, edgeFinset_inj]
 
+@[simp]
 lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
   rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
 
@@ -155,6 +162,10 @@ theorem neighborFinset_def : G.neighborFinset v = (G.neighborSet v).toFinset :=
   rfl
 
 @[simp]
+theorem coe_neighborFinset : (G.neighborFinset v : Set V) = G.neighborSet v :=
+  Set.coe_toFinset _
+
+@[simp]
 theorem mem_neighborFinset (w : V) : w ∈ G.neighborFinset v ↔ G.Adj v w :=
   Set.mem_toFinset
 
@@ -181,6 +192,18 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
+
+variable {G v} in
+theorem degree_pos_iff_nonempty : 0 < G.degree v ↔ (G.neighborSet v).Nonempty :=
+  G.degree_pos_iff_exists_adj v
+
+variable {G v} in
+theorem Adj.degree_pos_left {w : V} (h : G.Adj v w) : 0 < G.degree v :=
+  G.degree_pos_iff_nonempty.mpr ⟨_, h⟩
+
+variable {G v} in
+theorem Adj.degree_pos_right {w : V} (h : G.Adj w v) : 0 < G.degree v :=
+  h.symm.degree_pos_left
 
 theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
   rw [G.degree_pos_iff_exists_adj v, mem_support]
