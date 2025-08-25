@@ -237,6 +237,9 @@ variable {x : R}
 def eval (x : R) (p : R[X]) : R :=
   eval₂ (RingHom.id _) x p
 
+@[simp]
+theorem eval₂_id : eval₂ (RingHom.id _) x p = p.eval x := rfl
+
 theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
   rw [eval, eval₂_eq_sum]
   rfl
