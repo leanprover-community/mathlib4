@@ -83,7 +83,7 @@ lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc Real.exp a = exp ℝ a :=
   Real.exp_eq_exp_ℝ ▸ exp_eq_normedSpace_exp ha
 
-@[aesop safe apply (rule_sets := [CStarAlgebra])]
+@[aesop safe apply (rule_sets := [CStarAlgebra]), grind ←]
 lemma _root_.IsSelfAdjoint.exp_nonneg {𝕜 : Type*} [Field 𝕜] [Algebra 𝕜 A]
     [PartialOrder A] [StarOrderedRing A] {a : A} (ha : IsSelfAdjoint a) :
     0 ≤ exp 𝕜 a := by
@@ -115,7 +115,7 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
-@[simp]
+@[simp, grind ←]
 protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
 
