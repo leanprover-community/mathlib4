@@ -185,7 +185,7 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[norm_cast]
 lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : ↑(q⁻¹) = (q⁻¹ : α) := by
-  rw [inv_def', cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
+  rw [inv_def, cast_divInt_of_ne_zero _ hq, cast_def, inv_div, Int.cast_natCast]
 
 @[norm_cast] lemma cast_div_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.num : α) ≠ 0) :
     ↑(p / q) = (p / q : α) := by
