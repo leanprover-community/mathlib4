@@ -47,12 +47,17 @@ vector space and `ι : Type*` is an arbitrary indexing type.
 
 ## Implementation notes
 
-We use families instead of sets because it allows us to say that two identical vectors are linearly
-dependent.
+We use families instead of sets in `LinearIndependent` because it allows us to say that two
+identical vectors are linearly dependent.
 
-If you want to use sets, use the family `(fun x ↦ x : s → M)` given a set `s : Set M`. The lemmas
-`LinearIndependent.to_subtype_range` and `LinearIndependent.of_subtype_range` connect those two
-worlds.
+If you want to use sets, use `LinearIndepOn id s` given a set `s : Set M`. The lemmas
+`LinearIndependent.linearIndepOn_id` and `LinearIndependent.of_linearIndepOn_id_range` connect those
+two worlds.
+
+In this file we prove some variants of results on different kinds of (semi)rings. We distinguish
+them by using suffixes in their names, e.g. `linearIndependent_iffₛ` for semirings,
+`linearIndependent_iffₒₛ` for (canonically) ordered semirings, and `linearIndependent_iff` (without
+suffix) for rings.
 
 ## TODO
 
@@ -629,7 +634,7 @@ section LinearlyCanonicallyOrdered
 
 variable [LinearOrder R] [CanonicallyOrderedAdd R] [AddRightReflectLE R] [IsCancelAdd M]
 
-theorem linearIndependent_iffₒ :
+theorem linearIndependent_iffₒₛ :
     LinearIndependent R v ↔
       ∀ (s t : Finset ι) (f : ι → R), Disjoint s t →
         ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i → (∀ i ∈ s, f i = 0) ∧ ∀ i ∈ t, f i = 0 := by
@@ -643,7 +648,7 @@ theorem linearIndependent_iffₒ :
     · refine ⟨fun i hi => ?_, fun i hi => ?_⟩
       · simpa [hi, hst.notMem_of_mem_left_finset hi] using h i (Finset.mem_union_left _ hi)
       · simpa [hi, hst.notMem_of_mem_right_finset hi] using (h i (Finset.mem_union_right _ hi)).symm
-  · specialize h (s.filter fun i => g i ≤ f i) (s.filter fun i => f i < g i)
+  · specialize h { i ∈ s | g i ≤ f i } { i ∈ s | f i < g i }
       (fun i => if g i ≤ f i then f i - g i else g i - f i) ?_ ?_
     · simp_rw [Finset.disjoint_left, Finset.mem_filter]
       exact fun i ⟨_, hi⟩ ⟨_, hi'⟩ => hi.not_gt hi'
@@ -665,11 +670,11 @@ theorem linearIndependent_iffₒ :
       · apply (not_le.1 hi').le.antisymm
         simpa [hi', tsub_eq_zero_iff_le] using h.2 i (Finset.mem_filter.2 ⟨hi, not_le.1 hi'⟩)
 
-theorem not_linearIndependent_iffₒ :
+theorem not_linearIndependent_iffₒₛ :
     ¬ LinearIndependent R v ↔
       ∃ (s t : Finset ι) (f : ι → R),
         ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i ∧ Disjoint s t ∧ ∃ i ∈ s, 0 < f i := by
-  simp only [linearIndependent_iffₒ, not_forall]
+  simp only [linearIndependent_iffₒₛ, not_forall]
   refine ⟨fun ⟨s, t, f, hst, heq, h⟩ => ?_, fun ⟨s, t, f, heq, hst, i, hfi⟩ =>
     ⟨s, t, f, hst, heq, fun ⟨hf, _⟩ => pos_iff_ne_zero.1 hfi.2 (hf i hfi.1)⟩⟩
   simp only [not_and, not_or, not_not, imp_iff_not_or, not_forall] at h
@@ -677,10 +682,10 @@ theorem not_linearIndependent_iffₒ :
   · exact ⟨s, t, f, heq, hst, i, hi, pos_of_ne_zero hfi⟩
   · exact ⟨t, s, f, heq.symm, hst.symm, i, hi, pos_of_ne_zero hgi⟩
 
-nonrec theorem Fintype.linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
+nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
     LinearIndependent R v ↔ ∀ t, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i → ∀ i, f i = 0 := by
-  rw [linearIndependent_iffₒ]
+  rw [linearIndependent_iffₒₛ]
   refine ⟨fun h t f heq i => ?_, fun h t₁ t₂ f ht₁t₂ heq => ?_⟩
   · specialize h t tᶜ f disjoint_compl_right heq
     by_cases hi : i ∈ t
@@ -693,10 +698,10 @@ nonrec theorem Fintype.linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
         simp [Finset.mem_compl.1 hi, hi']
     · refine ⟨fun i hi => ?_, fun i hi => ?_⟩ <;> simpa [hi] using h i
 
-theorem Fintype.not_linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
+theorem Fintype.not_linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
     ¬ LinearIndependent R v ↔ ∃ t, ∃ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∉ t, f i • v i ∧ ∃ i ∈ t, 0 < f i := by
-  simp only [linearIndependent_iffₒ, not_forall]
+  simp only [linearIndependent_iffₒₛ, not_forall]
   refine ⟨fun ⟨t, f, heq, i, hfi⟩ => ?_, fun ⟨t, f, heq, i, hi, hfi⟩ =>
     ⟨t, f, heq, i, pos_iff_ne_zero.1 hfi⟩⟩
   by_cases hi' : i ∈ t
@@ -704,10 +709,10 @@ theorem Fintype.not_linearIndependent_iffₒ [DecidableEq ι] [Fintype ι] :
   · refine ⟨tᶜ, f, ?_, i, Finset.mem_compl.2 hi', pos_of_ne_zero hfi⟩
     simp [heq]
 
-lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
+lemma linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ t ⊆ s, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i → ∀ i ∈ s, f i = 0 := by
-  rw [LinearIndepOn, Fintype.linearIndependent_iffₒ]
+  rw [LinearIndepOn, Fintype.linearIndependent_iffₒₛ]
   refine ⟨fun h t ht f heq i hi => h { i | i.1 ∈ t } (f ∘ Subtype.val) ?_ ⟨i, hi⟩,
     fun h t f heq i => ?_⟩
   · simp only [Finset.compl_filter, Finset.sum_filter, Function.comp_apply, Finset.coe_sort_coe]
@@ -724,10 +729,10 @@ lemma linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
       simpa [Embedding.subtype, ← Finset.compl_eq_univ_sdiff]
     · simpa using h
 
-lemma not_linearIndepOn_finset_iffₒ [DecidableEq ι] {s : Finset ι} :
+lemma not_linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
     ¬LinearIndepOn R v s ↔ ∃ t ⊆ s, ∃ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i ∧ ∃ i ∈ t, 0 < f i := by
-  rw [linearIndepOn_finset_iffₒ]
+  rw [linearIndepOn_finset_iffₒₛ]
   simp only [not_forall]
   refine ⟨fun ⟨t, hst, f, heq, i, hi, hfi⟩ => ?_,
     fun ⟨t, hst, f, heq, i, hi, hfi⟩ => ⟨t, hst, f, heq, i, hst hi, pos_iff_ne_zero.1 hfi⟩⟩
