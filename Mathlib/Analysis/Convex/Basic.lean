@@ -657,19 +657,26 @@ section OrderedRing
 
 variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
-/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
+/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval.
+This bijection sends the zeroth vertex `Pi.single 0 1` to `0` and
+the first vertex `Pi.single 0 1` to `1`. -/
 @[simps -fullyApplied]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
-  toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
+  toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
-  invFun x := ⟨![x, 1 - x], Fin.forall_fin_two.2 ⟨x.2.1, sub_nonneg.2 x.2.2⟩,
-    calc
-      ∑ i : Fin 2, ![(x : 𝕜), 1 - x] i = x + (1 - x) := Fin.sum_univ_two _
-      _ = 1 := add_sub_cancel _ _⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
-      calc
-        (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
-        _ = f.1 1 := add_sub_cancel_left _ _
+  invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
+  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| by
+    have := f.2.2
+    rw [Fin.sum_univ_two] at this
+    simp [← this]
+
+@[simp]
+lemma stdSimplexEquivIcc_zero :
+    stdSimplexEquivIcc 𝕜 ⟨_, single_mem_stdSimplex 𝕜 0⟩ = ⟨0, by simp⟩ := rfl
+
+@[simp]
+lemma stdSimplexEquivIcc_one :
+    stdSimplexEquivIcc 𝕜 ⟨_, single_mem_stdSimplex 𝕜 1⟩ = ⟨1, by simp⟩ := rfl
 
 end OrderedRing
 
