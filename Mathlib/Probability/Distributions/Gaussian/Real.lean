@@ -353,7 +353,17 @@ lemma gaussianReal_map_const_sub (y : ℝ) :
   rw [this, ← Measure.map_map (by fun_prop) (by fun_prop), gaussianReal_map_neg,
     gaussianReal_map_const_add, add_comm]
 
-variable {Ω : Type} [MeasureSpace Ω]
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X - y`
+has Gaussian law with mean `μ - y` and variance `v`. -/
+lemma gaussianReal_sub_const' {Ω : Type*} {mΩ : MeasurableSpace Ω} {m : Measure Ω} {X : Ω → ℝ}
+   (hX : Measure.map X m = gaussianReal μ v) (y : ℝ) :
+    Measure.map (fun ω ↦ X ω - y) m = gaussianReal (μ - y) v := by
+  have hXm : AEMeasurable X m := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  change Measure.map ((fun ω ↦ ω - y) ∘ X) m = gaussianReal (μ - y) v
+  rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.sub_const _).aemeasurable hXm, hX,
+    gaussianReal_map_sub_const y]
+
+variable {Ω : Type*} [MeasureSpace Ω]
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
 has Gaussian law with mean `μ + y` and variance `v`. -/
@@ -370,6 +380,15 @@ lemma gaussianReal_const_add {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
     Measure.map (fun ω ↦ y + X ω) ℙ = gaussianReal (μ + y) v := by
   simp_rw [add_comm y]
   exact gaussianReal_add_const hX y
+
+/-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X - y`
+has Gaussian law with mean `μ - y` and variance `v`. -/
+lemma gaussianReal_sub_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (y : ℝ) :
+    Measure.map (fun ω ↦ X ω - y) ℙ = gaussianReal (μ - y) v := by
+  have hXm : AEMeasurable X := aemeasurable_of_map_neZero (by rw [hX]; infer_instance)
+  change Measure.map ((fun ω ↦ ω - y) ∘ X) ℙ = gaussianReal (μ - y) v
+  rw [← AEMeasurable.map_map_of_aemeasurable (measurable_id'.sub_const _).aemeasurable hXm, hX,
+    gaussianReal_map_sub_const y]
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `c * X`
 has Gaussian law with mean `c * μ` and variance `c^2 * v`. -/
