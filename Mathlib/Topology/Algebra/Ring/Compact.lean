@@ -21,7 +21,7 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 
 ## Main results
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
-  Compact Hausdorff artinian rings are finite (and thus discrete).
+  Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:
   Maximal ideals are open in compact Hausdorff noetherian rings.
 - `IsLocalRing.isOpen_iff_finite_quotient`:
@@ -36,14 +36,16 @@ See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 -/
 
 attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compact_of_discrete
+  DivisionRing.finite_of_compactSpace_of_t2Space
 
 variable {R : Type*} [CommRing R] [TopologicalSpace R]
 variable [IsTopologicalRing R] [CompactSpace R] [T2Space R]
 
 namespace IsArtinianRing
 
-/-- Compact Hausdorff artinian (commutative) rings are finite. -/
-instance (priority := low) finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
+/-- Compact Hausdorff Artinian (commutative) rings are finite. This is not an instance, as it would
+apply to every `Finite` goal, causing slowly failing typeclass search in some cases. -/
+theorem finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
     Finite R := by
   obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R)
   have H : (∏ p : PrimeSpectrum R, p.asIdeal) ^ n = ⊥ := by

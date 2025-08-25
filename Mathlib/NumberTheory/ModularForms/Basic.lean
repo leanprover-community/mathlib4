@@ -80,7 +80,7 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
     simp [ofComplex_apply_of_im_pos hz]
   refine .congr (fun z hz ↦ DifferentiableAt.differentiableWithinAt ?_) this
   have : 0 < (-conj z).im := by simpa using hz
-  have := hf.differentiableAt ((Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds this)
+  have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
   simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/

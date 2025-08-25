@@ -89,7 +89,7 @@ theorem permanent_smul (M : Matrix n n R) (c : R) :
   congr
   ext
   rw [mul_comm]
-  conv in ∏ _ , c * _ => simp [mul_comm c];
+  conv in ∏ _, c * _ => simp [mul_comm c];
   exact prod_mul_pow_card.symm
 
 @[simp]

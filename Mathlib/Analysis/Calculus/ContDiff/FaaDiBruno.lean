@@ -418,7 +418,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       rcases eq_or_ne (c.index i) k with rfl | hi
       · have A : update c.partSize (c.index i) (c.partSize (c.index i) + 1) (c.index i) =
           c.partSize (c.index i) + 1 := by simp
-        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm , by simp⟩
+        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm, by simp⟩
       · have A : update c.partSize k (c.partSize k + 1) (c.index i) = c.partSize (c.index i) := by
           simp [hi]
         exact ⟨c.index i, (c.invEmbedding i).cast A.symm, by simp [hi]⟩
