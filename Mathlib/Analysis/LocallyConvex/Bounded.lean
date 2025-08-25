@@ -504,3 +504,30 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
 end NormedSpace
 
 end VonNBornologyEqMetric
+
+section QuasiCompleteSpace
+
+/-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+complete. -/
+class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [SeminormedRing 𝕜]
+    [SMul 𝕜 E] : Prop where
+  /-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+  complete. -/
+  quasiComplete : ∀ ⦃s : Set E⦄, Bornology.IsVonNBounded 𝕜 s → IsClosed s → IsComplete s
+
+variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing 𝕜] [SMul 𝕜 E]
+
+/- A complete space with zero is quasi-complete with respect to scalar multiplication by a
+seminormed ring. -/
+instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
+  quasiComplete _ _ := IsClosed.isComplete
+
+/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
+theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
+    [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=
+  isCompact_closure_of_totallyBounded_of_isComplete_closure hs
+    (QuasiCompleteSpace.quasiComplete (TotallyBounded.isVonNBounded 𝕜 (TotallyBounded.closure hs))
+    isClosed_closure)
+
+end QuasiCompleteSpace
