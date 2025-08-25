@@ -752,8 +752,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   | nil => cases hi
   | cons n ns IH =>
     rcases i with - | i
-    · rw [Nat.add_zero, List.take_zero, sum_nil]
-      simp
+    · simp
     · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
           sum_cons, splitAt_eq, drop_take, drop_drop]
       rw [Nat.add_sub_add_left]
