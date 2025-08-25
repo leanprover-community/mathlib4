@@ -154,10 +154,16 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 open Lean
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- Main part of `evalInv`. -/
-def evalInv.core {u : Level} {α : Q(Type u)} (e a : Q(«$α»)) (ra : Result a)
-    (dsα : Q(DivisionSemiring «$α»)) (i : Option Q(CharZero «$α»)) : MetaM (Result e) := do
-  haveI' : $e =Q $a⁻¹ := ⟨⟩
+/-- The result of inverting a norm_num results. -/
+def Result.inv {u : Level} {α : Q(Type u)} {a : Q(«$α»)} (ra : Result a)
+    (dsα : Q(DivisionSemiring «$α»)) (czα : Option Q(CharZero «$α») := none) :
+    MetaM (Result q($a⁻¹)) := do
+  -- allow the caller to pass the CharZero instance as an optimization
+  let i ←
+    if let some czα := czα then
+      pure (some czα)
+    else
+      (← inferCharZeroOfDivisionSemiring? dsα)
   if let .some ⟨qa, na, da, pa⟩ := ra.toNNRat' dsα then
     let qb := qa⁻¹
     if qa > 0 then
@@ -201,9 +207,8 @@ such that `norm_num` successfully recognises `a`. -/
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dsα ← inferDivisionSemiring α
-  let i ← inferCharZeroOfDivisionSemiring? dsα
   guard <| ← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   assumeInstancesCommute
-  evalInv.core e a ra dsα i
+  ra.inv dsα
 
 end Mathlib.Meta.NormNum
