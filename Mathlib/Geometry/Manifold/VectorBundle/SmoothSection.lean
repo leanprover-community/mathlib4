@@ -215,7 +215,7 @@ lemma ContMDiff.sum_section {s : Finset ι}
   fun x₀ ↦ .sum_section fun i hi ↦ (hs i hi) x₀
 
 /-- The scalar product `ψ • s` of a `C^k` function `ψ : M → 𝕜` and a section `s` of a vector
-bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ` .
+bundle `V → M` is `C^k` once `s` is `C^k` on an open set containing `tsupport ψ`.
 
 This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
 lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → 𝕜}
@@ -323,9 +323,9 @@ end operations
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
 Denoted as `Cₛ^n⟮I; F, V⟯` within the `Manifold` namespace. -/
 structure ContMDiffSection where
-  /-- the underlying function of this section -/
+  /-- The underlying function of this section. -/
   protected toFun : ∀ x, V x
-  /-- proof that this section is `C^n` -/
+  /-- Proof that this section is `C^n`. -/
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
