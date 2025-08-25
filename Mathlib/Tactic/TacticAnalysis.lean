@@ -276,6 +276,9 @@ from the start of the sequence. -/
 def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
     (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
     CommandElabM Unit := do
+  /- We use `mkNullNode tacticSeq` to attach correct position info to `stx`. Otherwise, the
+  position info of the current ref (i.e. the whole command) is attached, and we log the message on
+  the wrong range. See also [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/SourceInfo.20in.20quoted.20but.20not.20parsed.20syntax/with/535927774) -/
   let stx ← withRef (mkNullNode tacticSeq) `(tactic| $tacticSeq;*)
   withRef stx do
   -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
