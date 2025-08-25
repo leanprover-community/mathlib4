@@ -40,8 +40,8 @@ initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (Std.Hash
 `addDeclEntry isDecl declName mod` takes as input the `Bool`ean `isDecl` and the `Name`s of
 a declaration or import, `declName`, and of a module, `mod`.
 It extends the `AssertExists` environment extension with the data `isDecl, declName, mod`.
-This information is used to capture declarations and modules that are required not to
-exist/be imported at some point, but should eventually exist/be imported.
+This information is used to capture declarations and modules that are forbidden from
+existing/being imported at some point, but should eventually exist/be imported.
 -/
 def addDeclEntry {m : Type → Type} [MonadEnv m] (isDecl : Bool) (declName mod : Name) : m Unit :=
   modifyEnv (assertExistsExt.addEntry · { isDecl := isDecl, givenName := declName, modName := mod })
