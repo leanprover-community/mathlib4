@@ -74,6 +74,10 @@ instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpa
   «v» := valuation R
   is_topological_valuation := mem_nhds_zero_iff
 
+lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued.v = valuation R := rfl
+
 theorem hasBasis_nhds (x : R) :
     (𝓝 x).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
@@ -84,6 +88,12 @@ theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
       fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
   convert hasBasis_nhds (0 : R); rw [sub_zero]
+
+variable (R) in
+lemma hasBasis_nhds_zero' :
+    (𝓝 0).HasBasis (· ≠ 0) ({ x : R | valuation _ x < · }) :=
+  (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.hasBasis_nhds_zero := hasBasis_nhds_zero
@@ -107,6 +117,13 @@ instance (priority := low) : IsTopologicalRing R :=
   letI := IsTopologicalAddGroup.toUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   inferInstance
+
+lemma hasBasis_nhds_sub (x : R) :
+    (𝓝 x).HasBasis (· ≠ 0) ({ y : R | valuation _ (y - x) < · }) := by
+  convert (hasBasis_nhds_zero' R).comap (Equiv.addRight (-x)) using 1
+  · refine .trans ?_ ((Homeomorph.addRight (-x)).comap_nhds_eq 0).symm
+    simp [Homeomorph.addRight_symm]
+  · simp [sub_eq_add_neg]
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
