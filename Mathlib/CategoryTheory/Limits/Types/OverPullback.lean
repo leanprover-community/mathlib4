@@ -69,18 +69,18 @@ admits `overPushout` as a right adjoint. -/
 def overPushoutAdjunction : overPullback f ⊣ overPushout f :=
   .mkOfHomEquiv
     { homEquiv S T :=
-        { toFun φ :=
-            Over.homMk (fun s ↦ ⟨S.hom s, fun ⟨x, hx⟩ ↦ φ.left ⟨⟨s, x⟩, by aesop⟩,
-              fun _ ↦ congr_fun (Over.w φ) _⟩)
-          invFun ψ :=
-            Over.homMk
-              (fun ⟨⟨s, e⟩, h⟩ ↦ (ψ.left s).2.1 ⟨e, h.symm.trans (congr_fun (Over.w ψ).symm _)⟩)
-              (by ext ⟨⟨s, e⟩, h⟩; exact (ψ.left s).2.2 ⟨e, _⟩)
-          left_inv _ := rfl
-          right_inv ψ := by
-            ext s
-            · exact (congr_fun (Over.w ψ).symm s)
-            · dsimp } }
+      { toFun φ :=
+          Over.homMk (fun s ↦ ⟨S.hom s, fun ⟨x, hx⟩ ↦ φ.left ⟨⟨s, x⟩, by aesop⟩,
+            fun _ ↦ congr_fun (Over.w φ) _⟩)
+        invFun ψ :=
+          Over.homMk
+            (fun ⟨⟨s, e⟩, h⟩ ↦ (ψ.left s).2.1 ⟨e, h.symm.trans (congr_fun (Over.w ψ).symm _)⟩)
+            (by ext ⟨⟨s, e⟩, h⟩; exact (ψ.left s).2.2 ⟨e, _⟩)
+        left_inv _ := rfl
+        right_inv ψ := by
+          ext s
+          · exact (congr_fun (Over.w ψ).symm s)
+          · dsimp } }
 
 instance : (overPullback f).IsLeftAdjoint := (overPushoutAdjunction f).isLeftAdjoint
 
