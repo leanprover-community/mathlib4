@@ -649,7 +649,6 @@ import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.Algebra.LieAdmissible.Defs
 import Mathlib.Algebra.LinearRecurrence
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Basic
@@ -766,6 +765,7 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Prod
+import Mathlib.Algebra.NonAssoc.LieAdmissible.Defs
 import Mathlib.Algebra.NonAssoc.PreLie.Basic
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Notation.Defs
