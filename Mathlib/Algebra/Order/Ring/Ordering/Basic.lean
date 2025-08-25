@@ -214,3 +214,5 @@ theorem isOrdering_iff :
     | inr =>  have := h x y
               have := h x (-y)
               simp_all [mem_support]
+
+end RingPreordering
