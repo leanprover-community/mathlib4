@@ -955,6 +955,24 @@ theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
     ContDiffWithinAt 𝕜 n (Prod.snd : E × F → F) s p :=
   contDiff_snd.contDiffWithinAt
 
+-- If there is a need, add `contDiffWithinAt_prod_iff`; this will require
+-- `ContMDiffWithinAt.{fst,snd}`.
+
+theorem contDiffAt_prod_iff (f : E → F × G) :
+    ContDiffAt 𝕜 n f x ↔
+      ContDiffAt 𝕜 n (Prod.fst ∘ f) x ∧ ContDiffAt 𝕜 n (Prod.snd ∘ f) x :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+
+theorem contDiffOn_prod_iff (f : E → F × G) :
+    ContDiffOn 𝕜 n f s ↔
+      ContDiffOn 𝕜 n (Prod.fst ∘ f) s ∧ ContDiffOn 𝕜 n (Prod.snd ∘ f) s :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+
+theorem contDiff_prod_iff (f : E → F × G) :
+    ContDiff 𝕜 n f ↔
+      ContDiff 𝕜 n (Prod.fst ∘ f) ∧ ContDiff 𝕜 n (Prod.snd ∘ f) :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
+
 section NAry
 
 variable {E₁ E₂ E₃ : Type*}
@@ -1487,3 +1505,5 @@ theorem ContDiff.iterate_deriv' (n : ℕ) :
   | k + 1, _, hf => ContDiff.iterate_deriv' _ k (contDiff_succ_iff_deriv.mp hf).2.2
 
 end deriv
+
+set_option linter.style.longFile 1700

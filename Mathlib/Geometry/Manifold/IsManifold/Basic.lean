@@ -921,6 +921,28 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
+section
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
+    {e : PartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    {e' : PartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
+    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+  simp only [maximalAtlas, mem_maximalAtlas_iff]
+  rintro e'' ⟨f, hf, f', hf', rfl⟩
+  rw [_root_.PartialHomeomorph.prod_symm_trans_prod, _root_.PartialHomeomorph.prod_symm_trans_prod]
+  exact ⟨contDiffGroupoid_prod
+    (compatible_of_mem_maximalAtlas he (subset_maximalAtlas hf))
+    (compatible_of_mem_maximalAtlas he' (subset_maximalAtlas hf')),
+    contDiffGroupoid_prod
+      (compatible_of_mem_maximalAtlas (subset_maximalAtlas hf) he)
+      (compatible_of_mem_maximalAtlas (subset_maximalAtlas hf') he')⟩
+
+end
+
 section DisjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
