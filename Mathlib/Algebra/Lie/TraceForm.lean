@@ -76,8 +76,8 @@ lemma traceForm_apply_lie_apply (x y z : L) :
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← Module.End.mul_eq_comp]
 
-/-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint w.r.t.
-the trace form. -/
+/-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint
+w.r.t. the trace form. -/
 lemma traceForm_apply_lie_apply' (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = - traceForm R L M y ⁅x, z⁆ :=
   calc traceForm R L M ⁅x, y⁆ z
