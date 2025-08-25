@@ -659,7 +659,7 @@ variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 /-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval.
 This bijection sends the zeroth vertex `Pi.single 0 1` to `0` and
-the first vertex `Pi.single 0 1` to `1`. -/
+the first vertex `Pi.single 1 1` to `1`. -/
 @[simps -fullyApplied]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
