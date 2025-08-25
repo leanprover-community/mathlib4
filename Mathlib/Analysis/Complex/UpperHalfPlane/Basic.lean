@@ -203,6 +203,7 @@ theorem vadd_im : (x +ᵥ z).im = z.im :=
   zero_add _
 
 end RealAddAction
+
 section upperHalfPlaneSet
 
 /-- The upper half plane as a subset of `ℂ`. This is convenient for taking derivatives of functions
