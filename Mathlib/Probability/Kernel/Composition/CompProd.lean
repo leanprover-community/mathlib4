@@ -420,7 +420,6 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   ext1 n
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
-    classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp +unfoldPartialApp only [SimpleFunc.const_zero,
       SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
