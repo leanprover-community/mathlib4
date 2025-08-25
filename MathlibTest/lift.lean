@@ -37,14 +37,14 @@ example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   exact Int.le_add_one hn'
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
-  lift n to ℕ using hn with k hk hn
+  lift n to ℕ using id hn with k hk
   guard_target =ₛ 0 ≤ (k : Int) + 1
   guard_hyp hn : 0 ≤ (k : Int)
   guard_hyp hk : k = n
   exact Int.le_add_one hn
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
-  lift n to ℕ using hn with k rfl hn
+  lift n to ℕ using id hn with k rfl
   guard_target =ₛ 0 ≤ (k : Int) + 1
   guard_hyp hn : 0 ≤ (k : Int)
   exact Int.le_add_one hn
@@ -117,7 +117,7 @@ instance canLift_subtype (R : Type _) (s : Set R) :
   { prf := fun x hx => ⟨⟨x, hx⟩, rfl⟩ }
 
 example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by
-  lift x to {x // P x} using hx with y hy hx
+  lift x to {x // P x} using id hx with y hy
   guard_target =ₛ P y
   guard_hyp hy : y = x
   guard_hyp hx : P y
