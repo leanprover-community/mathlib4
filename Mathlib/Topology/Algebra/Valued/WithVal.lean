@@ -93,13 +93,9 @@ def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 instance {R} [Ring R] (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ :=
   Valued.mk' (valuation v)
 
-@[simp]
-theorem apply_equiv (r : WithVal v) :
-    (Valued.v : Valuation (WithVal v) Γ₀) r = v (equiv v r) :=
-  rfl
+theorem apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
-@[simp]
-theorem apply_symm_equiv (r : R) : v ((WithVal.equiv v).symm r) = v r := rfl
+@[simp] theorem apply_symm_equiv (r : R) : Valued.v ((equiv v).symm r) = v r := rfl
 
 end Ring
 
