@@ -116,10 +116,7 @@ theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).
 def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
     ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
   e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
-    MulEquiv.subgroupCongr <| by
-      ext1 p
-      simp [e.permCongr.symm.surjective.exists,
-        show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
+    MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
 
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
