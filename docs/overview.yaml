@@ -394,7 +394,7 @@ Probability Theory:
     almost sure convergence: 'MeasureTheory.ae'
     convergence in distribution: 'MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
-    Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
+    Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
   Stochastic Processes:
     martingale: 'MeasureTheory.Martingale'
