@@ -307,7 +307,7 @@ open UnitaryGroup in
 theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff'
     (U : unitaryGroup n R) (x : Matrix n n R) :
     PosSemidef ((star U : Matrix n n R) * x * (U : Matrix n n R)) ↔ x.PosSemidef := by
-  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, IsSelfAdjoint.unitary_conjugate_iff',
+  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_unitary_conjugate_iff',
     and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec]
   exact fun h => ⟨fun H y => by simpa using H (star U *ᵥ y), fun H _ => H _⟩
@@ -634,7 +634,7 @@ open UnitaryGroup in
 theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff' [DecidableEq n]
     (U : unitaryGroup n R) {x : Matrix n n R} :
     PosDef ((star U : Matrix n n R) * x * (U : Matrix n n R)) ↔ x.PosDef := by
-  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, IsSelfAdjoint.unitary_conjugate_iff',
+  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_unitary_conjugate_iff',
     and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose,
     ← star_mulVec, ← dotProduct_mulVec]
   refine fun h => ⟨fun h x hx => ?_, fun h x hx => ?_⟩
