@@ -40,7 +40,7 @@ namespace Algebra.FormallyUnramified
 
 theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
   rw [iff_comp_injective]
-  intros B _ _ I hI f₁ f₂ e
+  intro B _ _ I hI f₁ f₂ e
   ext x
   have : f₁ x - f₂ x ∈ I := by
     simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun e x
@@ -76,7 +76,7 @@ theorem bijective_of_isAlgClosed_of_isLocalRing
     congr 1
     apply LinearMap.restrictScalars_injective K
     apply _root_.TensorProduct.ext'
-    intros r s
+    intro r s
     obtain ⟨s, rfl⟩ := e.surjective s
     suffices s • (Ideal.Quotient.mk (IsLocalRing.maximalIdeal A)) r = r • e s by
       simpa [ofId, e']

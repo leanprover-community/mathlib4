@@ -52,12 +52,11 @@ the adjacency relation.
 This is injective (see `SimpleGraph.map_injective`). -/
 protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Relation.Map G.Adj f f
-  symm a b := by -- Porting note: `obviously` used to handle this
-    rintro ⟨v, w, h, rfl, rfl⟩
-    use w, v, h.symm, rfl
-  loopless a := by -- Porting note: `obviously` used to handle this
-    rintro ⟨v, w, h, rfl, h'⟩
-    exact h.ne (f.injective h'.symm)
+  symm a b := by
+    rintro ⟨v, w, h, _⟩
+    have := h.symm -- Porting note: `obviously` didn't need this hint while `aesop` does.
+    aesop (add norm unfold Relation.Map)
+  loopless a := by aesop (add norm unfold Relation.Map)
 
 instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
     Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›
@@ -138,7 +137,7 @@ theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G
   rw [map_le_iff_le_comap]
 
 lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f := by
-  intros v w; simp [Subsingleton.elim v w]
+  intro v w; simp [Subsingleton.elim v w]
 
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton
