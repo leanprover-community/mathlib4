@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 Given a map `f : E → B`, in order to show that `Over.pullback f : Over B ⥤ Over E`
 commutes with colimits, we show that it admits a right adjoint. In order to
-do that, we first construct a functor `overPullback f : Over B ⥤ Over E` the
+do that, we first construct a functor `overPullback f : Over B ⥤ Over E` whose
 definition involves explicit types rather than categorical pullbacks, and
 we define its right adjoint `overPushout f : Over E ⥤ Over B`.
 
