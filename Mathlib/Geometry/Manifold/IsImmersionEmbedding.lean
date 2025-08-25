@@ -491,12 +491,10 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
     set s := h.domChart.source
     set φ := h.domChart.extend I
     set ψ := h.codChart.extend I'
-    /- write s.restrict rhs as the composition of
-    - some restriction of h.codChart.extend I').symm --- which is an embedding because restricted appropriately
+    /- We write s.restrict rhs as the composition of three embeddings:
+    - ψ restricted to its target (TODO! is this true?)
     - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
-    - h.domChart.extend I restricted appropriately (to s'), similarly
-    then use IsEmbedding.comp
-    -/
+    - φ restricted to its source. -/
     let floc := (h.equiv ∘ fun x ↦ (x, (0 : F)))
     have aux (x : s): (floc ∘ (s.restrict φ)) x ∈ ψ.target := by
       obtain ⟨x, hx⟩ := x
@@ -521,6 +519,7 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
       simp [bs, rhs, comp_apply, floc, φ, ψ]
     rw [this]
     refine h.codChart.isEmbedding_extend_symm_restrict_target.comp  ?_
+    -- TODO: make fun_prop do this!
     exact (hj.comp h.domChart.isEmbedding_extend_restrict_source).codRestrict
       (h.codChart.extend I').target aux
   rw [this]
@@ -543,7 +542,36 @@ lemma nhds_eq_comap {f : M → N} (hf : ContinuousAt f x)
   rw [restrict_eq, ← Filter.comap_comap]
   set l' := Filter.comap f (𝓝 (f x))
   -- is this true? i is injective, but not surjective...
-  sorry
+  -- does following my nose help?
+  ext s2
+  constructor
+  · intro hs
+    refine Filter.mem_map.mpr ?_
+    exact Filter.preimage_mem_comap hs
+  · intro hs
+    rw [Filter.mem_map] at hs
+    rw [Filter.mem_comap] at hs
+    obtain ⟨t, ht, htl⟩ := hs
+    -- very unsure if this is good!
+    have : t ∩ s ⊆ s2 := by
+      rw [← image_subset_iff] at htl
+
+      --rw? at htl
+      sorry
+    have scifi : t ∩ s ∈ l' := by
+      refine Filter.mem_comap.mpr ?_
+      use f '' (t ∩ s)
+      refine ⟨?_, ?_⟩
+      · have : IsOpen t := by sorry -- by further shrinking t
+        -- idea: f '' t ∩ s = (s.restrict f) (image of t);
+        -- s.restrict f is an open map -> we're good, right?
+        -- TROUBLE: we only have an embedding, not an open map...
+        sorry
+      · have : InjOn f (t ∩ s) := sorry -- something like this should hold. argh!
+        sorry
+    exact Filter.mem_of_superset (Filter.inter_mem ht sorry) this
+
+  --sorry
 
   -- have := hf'.isInducing.nhds_eq_comap
   -- have : f x = (s.restrict f) ⟨x, mem_of_mem_nhds hs'⟩ := rfl
