@@ -487,22 +487,23 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
     ext ⟨x, hx⟩
     simpa using h.foobar hx
   have hrhs : Topology.IsEmbedding (h.domChart.source.restrict rhs) := by
+    -- Local notation for readability.
     set s := h.domChart.source
+    set φ := h.domChart.extend I
+    set ψ := h.codChart.extend I'
     /- write s.restrict rhs as the composition of
     - some restriction of h.codChart.extend I').symm --- which is an embedding because restricted appropriately
     - (h.equiv ∘ fun x ↦ (x, 0)) (which is an embedding, see above)
     - h.domChart.extend I restricted appropriately (to s'), similarly
     then use IsEmbedding.comp
     -/
-    let A : _ → M' := (h.codChart.extend I').target.restrict ((h.codChart.extend I').symm)
-    let C : s → E := s.restrict (h.domChart.extend I)
-    let as : s → E' := (h.equiv ∘ fun x ↦ (x, (0 : F))) ∘ C
-    have aux (x : s ): as x ∈ (h.codChart.extend I').target := by
+    let floc := (h.equiv ∘ fun x ↦ (x, (0 : F)))
+    have aux (x : s): (floc ∘ (s.restrict φ)) x ∈ ψ.target := by
       obtain ⟨x, hx⟩ := x
-      simp only [as, C]
-      change (⇑h.equiv ∘ fun x ↦ (x, 0)) (C ⟨x, hx⟩) ∈ (h.codChart.extend I').target
-      have : C ⟨x, hx⟩ ∈ (h.domChart.extend I).target := by
-        simp only [C, restrict_apply]
+      -- XXX: replace by the right rewrite!
+      change (⇑h.equiv ∘ fun x ↦ (x, 0)) ((s.restrict φ) ⟨x, hx⟩) ∈ ψ.target
+      have : (s.restrict φ) ⟨x, hx⟩ ∈ φ.target := by
+        simp only [restrict_apply]
         apply (h.domChart.extend I).map_source
         rwa [PartialHomeomorph.extend_source]
       rw [← h.writtenInCharts this]
@@ -510,17 +511,16 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
       apply mem_image_of_mem
       apply h.map_source_subset_source
       apply mem_image_of_mem
-      simp only [C, restrict_apply]
+      simp only [restrict_apply]
       simp_rw [← h.domChart.extend_source (I := I)]
       exact (h.domChart.extend I).map_target this
     let bs : s → (h.codChart.extend I').target :=
-      Set.codRestrict as (h.codChart.extend I').target aux
-    have : s.restrict rhs = A ∘ bs := by
+      Set.codRestrict (floc ∘ (s.restrict φ)) (h.codChart.extend I').target aux
+    have : s.restrict rhs = (ψ.target.restrict ψ.symm) ∘ bs := by
       ext ⟨x, hx⟩
-      simp [A, bs, rhs, comp_apply, as, C]
+      simp [bs, rhs, comp_apply, floc, φ, ψ]
     rw [this]
     refine h.codChart.isEmbedding_extend_symm_restrict_target.comp  ?_
-    unfold bs as
     exact (hj.comp h.domChart.isEmbedding_extend_restrict_source).codRestrict
       (h.codChart.extend I').target aux
   rw [this]
