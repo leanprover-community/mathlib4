@@ -62,7 +62,7 @@ theorem pushforward_cover_iff_cover_pullback [G.Full] [G.Faithful] {X : C} (S : 
 variable [G.IsLocallyFull K] [G.IsLocallyFaithful K]
 
 /-- If a functor `G : C ⥤ (D, K)` is fully faithful and locally dense,
-then the set `{ T ∩ mor(C) | T ∈ K }` is a grothendieck topology of `C`.
+then the set `{ T ∩ mor(C) | T ∈ K }` is a Grothendieck topology of `C`.
 -/
 @[simps]
 def inducedTopology : GrothendieckTopology C where
