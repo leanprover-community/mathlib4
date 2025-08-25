@@ -89,9 +89,6 @@ theorem apply_equiv (r : WithVal v) : v (equiv v r) = Valued.v r := rfl
 
 @[simp] theorem apply_symm_equiv (r : R) : Valued.v ((equiv v).symm r) = v r := rfl
 
-@[simp]
-lemma apply_symm_equiv (r : R) : v ((WithVal.equiv v).symm r) = v r := rfl
-
 end WithVal
 
 /-! The completion of a field with respect to a valuation. -/
