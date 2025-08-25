@@ -347,8 +347,7 @@ assumptions. -/
 theorem opow_le_iff_le_log' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x := by
   obtain rfl | hx := eq_or_ne x 0
-  · rw [log_zero_right, Ordinal.le_zero, Ordinal.le_zero, opow_eq_zero]
-    simp [hc, (zero_lt_one.trans hb).ne']
+  · simp [hc, (zero_lt_one.trans hb).ne']
   · exact opow_le_iff_le_log hb hx
 
 theorem le_log_of_opow_le {b x c : Ordinal} (hb : 1 < b) (h : b ^ c ≤ x) : c ≤ log b x := by

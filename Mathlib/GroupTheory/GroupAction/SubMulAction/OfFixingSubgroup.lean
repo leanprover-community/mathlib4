@@ -131,8 +131,6 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
 @[to_additive]
 theorem of_fixingSubgroupEmpty_mapScalars_surjective :
     Surjective (fixingSubgroup M (∅ : Set α)).subtype := fun g ↦ by
-  suffices g ∈ fixingSubgroup M (∅ : Set α) by
-    exact ⟨⟨g, this⟩, rfl⟩
   simp [mem_fixingSubgroup_iff]
 
 end Empty
