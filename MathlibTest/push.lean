@@ -2,6 +2,7 @@ import Mathlib.Tactic.Push
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Insert
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -99,13 +100,23 @@ example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜ
 
 end membership
 
--- the following examples still need more tagging to work
+section log
 
--- example (a b c : Real) (ha : 0 < a) (hc : 0 < c) :
---     Real.log (a ^ 4 * (1/c) / a * Real.exp b) =
---       4 * Real.log a + (0 - Real.log c) - Real.log a + b := by
---   push (disch := positivity) Real.log
---   rfl
+example (a b : ℝ) (ha : a > 0) (hb : b > 0) : Real.log (a * b) = Real.log a + Real.log b := by
+  set_option trace.Meta.Tactic.simp true in
+  pull (disch := positivity) Real.log
+
+example (a b c : Real) (ha : 0 < a) (hc : 0 < c) :
+    Real.log (a ^ 4 * c⁻¹ / a * Real.exp b) = 4 * Real.log a + -Real.log c - Real.log a + b := by
+  push (disch := positivity) Real.log
+  pull (disch := positivity) Real.log
+  guard_target = Real.log (a ^ 4 * c⁻¹ / a) + b = 4 * Real.log a + Real.log c⁻¹ - Real.log a + b
+  push (disch := positivity) Real.log
+  rfl
+
+end log
+
+-- the following examples still need more tagging to work
 
 -- example (a b : ℚ) : ((a + b⁻¹ + 1) / 2) ^ 2 = 0 := by
 --   push · ^ ·
