@@ -3,6 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.Algebra.Regular.Opposite
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Ideal.Prod
@@ -478,6 +480,48 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
   · exact fun ih ↦ RingEquiv.isArtinianRing (.symm .piOptionEquivProd)
 
 namespace IsArtinianRing
+
+section Semiring
+
+variable {R : Type*} [Semiring R]
+
+theorem isRightRegular_iff_isUnit [IsArtinianRing R] {x : R} : IsRightRegular x ↔ IsUnit x := by
+  rw [IsRightRegular, IsUnit.isUnit_iff_mulRight_bijective, Bijective, and_iff_left_of_imp]
+  exact IsArtinian.surjective_of_injective_endomorphism (.toSpanSingleton R R x)
+
+theorem isRegular_iff_isUnit [IsArtinianRing R] {x : R} : IsRegular x ↔ IsUnit x := by
+  rw [isRegular_iff, isRightRegular_iff_isUnit, and_iff_right_of_imp (·.isRegular.1)]
+
+theorem isLeftRegular_iff_isUnit [IsArtinianRing Rᵐᵒᵖ] {x : R} : IsLeftRegular x ↔ IsUnit x := by
+  rw [← isRightRegular_op, ← isUnit_op]; exact isRightRegular_iff_isUnit
+
+theorem isRegular_iff_isUnit_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] {x : R} :
+    IsRegular x ↔ IsUnit x := by
+  rw [isRegular_iff, isLeftRegular_iff_isUnit, and_iff_left_of_imp (·.isRegular.2)]
+
+end Semiring
+
+section Ring
+
+variable (R : Type*) [Ring R]
+
+theorem nonZeroDivisorsRight_eq_isUnitSubmonoid [IsArtinianRing R] :
+    nonZeroDivisorsRight R = IsUnit.submonoid R := by
+  ext; rw [← isRightRegular_iff_mem_nonZeroDivisorsRight]; apply isRightRegular_iff_isUnit
+
+theorem nonZeroDivisors_eq_isUnitSubmonoid [IsArtinianRing R] :
+    nonZeroDivisors R = IsUnit.submonoid R := by
+  ext; rw [← isRegular_iff_mem_nonZeroDivisors]; apply isRegular_iff_isUnit
+
+theorem nonZeroDivisorsLeft_eq_isUnitSubmonoid [IsArtinianRing Rᵐᵒᵖ] :
+    nonZeroDivisorsLeft R = IsUnit.submonoid R := by
+  ext; rw [← isLeftRegular_iff_mem_nonZeroDivisorsLeft]; apply isLeftRegular_iff_isUnit
+
+theorem nonZeroDivisors_eq_isUnitSubmonoid_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ] :
+    nonZeroDivisors R = IsUnit.submonoid R := by
+  ext; rw [← isRegular_iff_mem_nonZeroDivisors]; apply isRegular_iff_isUnit_of_mulOpposite
+
+end Ring
 
 section CommSemiring
 
