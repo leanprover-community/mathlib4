@@ -170,68 +170,46 @@ lemma sum_Icc_pred {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
     rw [Icc_succ_succ, Finset.sum_union (by simp)]
     grind
 
-lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass ℤ F] (f : ℤ → F)
+lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass ℤ F] {f : ℤ → F}
     (hc : CauchySeq fun N : ℕ => ∑ m ∈ Finset.Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
     Tendsto f atTop (𝓝 0) := by
-  have h := cauchySeq_iff_tendsto_dist_atTop_0.mp hc
-  simp_rw [cauchySeq_iff_le_tendsto_0] at *
+  simp only [cauchySeq_iff_le_tendsto_0, Metric.tendsto_atTop, gt_iff_lt, ge_iff_le,
+    dist_zero_right, Real.norm_eq_abs] at *
   obtain ⟨g, hg, H, Hg⟩ := hc
-  simp [Metric.tendsto_atTop] at *
   intro ε hε
-  obtain ⟨N, hN⟩ := (Hg (2 * ε) (by linarith))
-  use N + 1
-  intro n hn
-  have H3 := H (n).natAbs (n -1).natAbs N (by omega) (by omega)
+  obtain ⟨N, hN⟩ := (Hg (2 * ε) (by positivity))
+  refine ⟨N + 1, fun n hn => ?_⟩
+  have H3 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
   rw [sum_Icc_pred f (by omega)] at H3
   have h1 : |n| = n := by
-    simp only [abs_eq_self]
+    rw [abs_eq_self]
     omega
   have h2 : |n - 1| = n - 1 := by
-    simp only [abs_eq_self, Int.sub_nonneg]
+    rw [abs_eq_self, Int.sub_nonneg]
     omega
-  simp [Nat.cast_natAbs, h1, Int.cast_eq, ← hs n, (two_mul (f n)).symm, neg_sub,
-    h2, Int.cast_sub, Int.cast_one, dist_add_self_left] at H3
-  have hgnn :  ‖2 * f n‖ < 2 * ε := lt_of_le_of_lt (le_trans H3 (le_abs_self (g N))) (hN N (by rfl))
   have := norm_smul (2 : ℤ) (f n)
-  simp only [zsmul_eq_mul, Int.cast_ofNat] at this
-  simpa [this, Int.norm_eq_abs] using hgnn
-
-
-lemma int_tendsto_nat {f : ℤ → ℂ} {x : ℂ} (hf : Tendsto f atTop (𝓝 x)) :
-    Tendsto (fun n : ℕ => f n) atTop (𝓝 x) := by
-  have := Nat.map_cast_int_atTop
-  rw [Metric.tendsto_atTop] at *
-  intro ε hε
-  obtain ⟨N, hN⟩ := hf ε hε
-  use N.natAbs
-  intro n hn
-  apply hN n ?_
-  omega
+  simp only [Nat.cast_natAbs, h1, Int.cast_eq, ← hs n, (two_mul (f n)).symm, neg_sub, h2,
+    Int.cast_sub, Int.cast_one, dist_add_self_left, zsmul_eq_mul, Int.cast_ofNat] at *
+  simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H3 (le_abs_self (g N)))
+    (hN N (by rfl))
 
 lemma G2_Ico (z : ℍ) : G2 z =
     limUnder (atTop) (fun N : ℕ => ∑ m ∈ Finset.Ico (-N : ℤ) N, e2Summand m z) := by
   apply symm
-  simp [G2]
-  rw [Filter.Tendsto.limUnder_eq]
-  have := CauchySeq.tendsto_limUnder (G2_cauchy z)
-  apply Tendsto_of_sub_tendsto_zero _ this
-  have h0 := cauchSeq_sum_Icc_tendsto_zero _  (G2_cauchy z) ?_
+  rw [G2, Filter.Tendsto.limUnder_eq]
+  apply Tendsto_of_sub_tendsto_zero _ (CauchySeq.tendsto_limUnder (G2_cauchy z))
+  have h0 := cauchSeq_sum_Icc_tendsto_zero (G2_cauchy z) ?_
   conv =>
     enter [1]
     ext N
-    simp
-    rw [sum_Icc_eq_sum_Ico_succ _ (by omega)]
-    simp
-  · have := Filter.Tendsto.neg h0
-    simp only [neg_zero] at this
-    have := int_tendsto_nat this
-    apply this
+    rw [Pi.sub_apply, sum_Icc_eq_sum_Ico_succ _ (by omega), sub_add_cancel_left]
+  · simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
   · intro m
-    simp [e2Summand]
-    rw [← tsum_int_eq_tsum_neg (fun a => eisSummand 2 ![-m, a] z)]
+    simp only [e2Summand, ← tsum_int_eq_tsum_neg (fun a => eisSummand 2 ![-m, a] z)]
     congr
     ext b
-    simp [eisSummand]
+    simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+      Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, Int.cast_neg, neg_mul, inv_inj]
     norm_cast
     simp only [Int.cast_neg]
     ring
