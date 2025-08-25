@@ -517,6 +517,7 @@ variable {α β : Type*} [UniformSpace α] [UniformSpace β]
 theorem isUniformInducing_val (s : Set α) :
     IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
 
+@[simp]
 theorem uniformContinuous_rangeFactorization_iff {f : α → β} :
     UniformContinuous (rangeFactorization f) ↔ UniformContinuous f :=
   (isUniformInducing_val _).uniformContinuous_iff
@@ -525,13 +526,14 @@ theorem UniformContinuous.rangeFactorization {f : α → β} (hf : UniformContin
     UniformContinuous (rangeFactorization f) :=
   uniformContinuous_rangeFactorization_iff.mpr hf
 
-theorem isUniformInducing_rangeFactoriztion_iff {f : α → β} :
+@[simp]
+theorem isUniformInducing_rangeFactorization_iff {f : α → β} :
     IsUniformInducing (rangeFactorization f) ↔ IsUniformInducing f :=
   (isUniformInducing_val (range f)).isUniformInducing_comp_iff.symm
 
-theorem IsUniformInducing.rangeFactoriztion {f : α → β} (hf : IsUniformInducing f) :
+theorem IsUniformInducing.rangeFactorization {f : α → β} (hf : IsUniformInducing f) :
     IsUniformInducing (rangeFactorization f) :=
-  isUniformInducing_rangeFactoriztion_iff.2 hf
+  isUniformInducing_rangeFactorization_iff.2 hf
 
 namespace Dense
 
@@ -567,7 +569,7 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
   let ff : α → closure (range sf) := inclusion subset_closure ∘ rangeFactorization sf
   have hgu : IsUniformInducing ff :=
     (isUniformEmbedding_set_inclusion subset_closure).isUniformInducing.comp
-      (SeparationQuotient.isUniformInducing_mk.comp h).rangeFactoriztion
+      (SeparationQuotient.isUniformInducing_mk.comp h).rangeFactorization
   have hgd : DenseRange ff :=
     ((denseRange_inclusion_iff subset_closure).2 subset_rfl).comp
       surjective_onto_range.denseRange (continuous_inclusion subset_closure)
@@ -600,7 +602,7 @@ lemma IsDenseInducing.isUniformInducing_extend {γ : Type*} [UniformSpace γ]
   suffices Subtype.val ∘ fwd = SeparationQuotient.mk ∘ hid.extend f by
     rw [← SeparationQuotient.isUniformInducing_mk.isUniformInducing_comp_iff, ← this]
     exact (isUniformInducing_val _).comp hfu
-  rw [← val_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
+  rw [← coe_comp_rangeFactorization (SeparationQuotient.mk ∘ hid.extend f),
     ← val_comp_inclusion hrr, Function.comp_assoc, Subtype.val_injective.comp_left.eq_iff]
   refine hid.extend_unique ?_ ?_
   · simp [ff, hid.inseparable_extend h.uniformContinuous.continuous.continuousAt, sf]

@@ -137,7 +137,7 @@ theorem tendsto_extend (di : IsDenseInducing i) {f : α → γ} {a : α} (hf : C
   rw [IsDenseInducing.extend, ← di.nhds_eq_comap]
   exact tendsto_nhds_limUnder ⟨_, hf⟩
 
-theorem inseparable_extend [RegularSpace γ] (di : IsDenseInducing i) {f : α → γ} {a : α}
+theorem inseparable_extend [R1Space γ] (di : IsDenseInducing i) {f : α → γ} {a : α}
     (hf : ContinuousAt f a) : Inseparable (di.extend f (i a)) (f a) :=
   tendsto_nhds_unique_inseparable (di.tendsto_extend hf) hf
 
