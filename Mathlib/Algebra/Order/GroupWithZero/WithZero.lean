@@ -101,8 +101,8 @@ lemma OrderIso.withZeroUnits_apply (x : WithZero αˣ) :
     OrderIso.withZeroUnits x = withZeroUnitsEquiv x := rfl
 
 lemma OrderIso.withZeroUnits_mul (x y : WithZero αˣ) :
-    OrderIso.withZeroUnits (x * y) = OrderIso.withZeroUnits x * OrderIso.withZeroUnits y := by
-  simp [OrderIso.withZeroUnits, map_mul]
+    OrderIso.withZeroUnits (x * y) = OrderIso.withZeroUnits x * OrderIso.withZeroUnits y :=
+  withZeroUnitsEquiv.map_mul _ _
 
 lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
     StrictMono (withZeroUnitsEquiv (G := α)).symm :=
