@@ -322,11 +322,7 @@ lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .i
 
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
-
-TODO: Upgrade this to a `ContinuousLinearEquiv`. This should be true for any topological
-vector space over a normed field thanks to `ContinuousLinearMap.precomp` and
-`ContinuousLinearMap.postcomp`. -/
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
 @[simps]
 def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S M]
     [ContinuousConstSMul S M] [SMulCommClass R S M] :
