@@ -446,40 +446,12 @@ namespace PartialHomeomorph
 
 omit [ChartedSpace H M]
 
-lemma nhds_eq_filter_comap (φ : PartialHomeomorph M H) {x} (hx : x ∈ φ.source) :
-    𝓝 x = Filter.comap φ (𝓝 (φ x)) := by
-  apply le_antisymm
-  · apply Filter.map_le_iff_le_comap.mp (φ.continuousAt hx)
-  · have : ContinuousAt φ.symm (φ x) := φ.continuousAt_symm (φ.map_source hx)
-    have : Filter.comap φ (𝓝 (φ x)) ≤
-        Filter.comap φ (Filter.comap (φ.symm) (𝓝 (φ.symm (φ x)))) := by
-      gcongr; exact Filter.map_le_iff_le_comap.mp this
-    apply this.trans ?_
-    rw [Filter.comap_comap, φ.left_inv hx]
-    have : φ.symm ∘ φ =ᶠ[𝓝 x] id := by -- missing lemma!
-      apply Filter.eventually_of_mem (U := φ.source)
-      apply φ.open_source.mem_nhds hx
-      intro x hx
-      simp only [comp_apply, id_eq, φ.left_inv hx]
-    have : Filter.comap (↑φ.symm ∘ ↑φ) (𝓝 x) = Filter.comap id (𝓝 x) := by
-      -- TODO: should follow from the previous sorry; specific to neighbourhoods
-      sorry
-    rw [this]
-    apply le_of_eq
-    rw [Filter.comap_id] -- should this be simp?
-
-lemma isInducing_restrict_source (φ : PartialHomeomorph M H) :
-    Topology.IsInducing <| φ.source.restrict φ := by
-  -- TODO: use the previous lemma, and relate comap with Subtype.val...
-  sorry
-
 lemma isEmbedding_restrict_source (φ : PartialHomeomorph M H) :
-    Topology.IsEmbedding <| φ.source.restrict φ :=
-  ⟨φ.isInducing_restrict_source, by rw [← injOn_iff_injective]; exact φ.injOn⟩
+    Topology.IsEmbedding <| φ.source.restrict φ := φ.isOpenEmbedding_restrict.isEmbedding
 
 lemma isEmbedding_symm_restrict_target (φ : PartialHomeomorph M H) :
     Topology.IsEmbedding <| φ.target.restrict φ.symm :=
-  φ.symm.isEmbedding_restrict_source
+  φ.symm.isOpenEmbedding_restrict.isEmbedding
 
 lemma isEmbedding_extend_restrict_source (φ : PartialHomeomorph M H) :
     Topology.IsEmbedding <| φ.source.restrict (φ.extend I) :=
