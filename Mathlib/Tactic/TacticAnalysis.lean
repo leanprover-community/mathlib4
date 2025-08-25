@@ -206,13 +206,16 @@ to report proposed changes.
 It hooks into the linting system to move through the infotree,
 collecting tactic syntax and state to call the passes on.
 -/
-def tacticAnalysis : Linter where run := withSetOptionIn fun stx => do
+def tacticAnalysis : Linter where run enclosingStx := enclosingStx |> withSetOptionIn fun _ => do
   if (← get).messages.hasErrors then
     return
   let env ← getEnv
   let configs := (tacticAnalysisExt.getState env).map (· |>.snd)
   let trees ← getInfoTrees
-  runPasses configs stx trees
+  /- Here, we use `enclosingStx` to filter the infotrees we visit. Since many infotrees use the
+  whole command (including `set_option ... in`) for their range, we would erroneously exclude them
+  if we used the inner syntax. -/
+  runPasses configs enclosingStx trees
 
 initialize addLinter tacticAnalysis
 
