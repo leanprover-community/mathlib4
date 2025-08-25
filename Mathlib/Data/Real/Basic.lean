@@ -402,19 +402,19 @@ instance : DistribLattice ℝ :=
     sup := (· ⊔ ·)
     le := (· ≤ ·)
     le_sup_left := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_left
     le_sup_right := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_right
     sup_le := by
-      intros a b c
+      intro a b c
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       induction c using Real.ind_mk
@@ -422,26 +422,26 @@ instance : DistribLattice ℝ :=
       exact CauSeq.sup_le
     inf := (· ⊓ ·)
     inf_le_left := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_left
     inf_le_right := by
-      intros a b
+      intro a b
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_right
     le_inf := by
-      intros a b c
+      intro a b c
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       induction c using Real.ind_mk
       simp_rw [← mk_inf, mk_le]
       exact CauSeq.le_inf
     le_sup_inf := by
-      intros a b c
+      intro a b c
       induction a using Real.ind_mk
       induction b using Real.ind_mk
       induction c using Real.ind_mk
@@ -461,7 +461,7 @@ instance : SemilatticeSup ℝ :=
 
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
-    intros a b
+    intro a b
     induction a using Real.ind_mk
     induction b using Real.ind_mk
     simpa using CauSeq.le_total ..⟩
