@@ -113,13 +113,13 @@ def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
 infixl:80 " ⁻¹' " => preimage
 
-@[simp, mfld_simps, grind =]
+@[simp, mfld_simps, grind =, push]
 theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
 
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
 infixl:80 " '' " => image
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=
   Iff.rfl
 
@@ -148,7 +148,7 @@ This function is more flexible than `f '' univ`, as the image requires that the 
 and not an arbitrary Sort. -/
 def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 
-@[simp, grind =] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
+@[simp, grind =, push] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl
 
 @[mfld_simps] theorem mem_range_self (i : ι) : f i ∈ range f := ⟨i, rfl⟩
 

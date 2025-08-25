@@ -48,7 +48,8 @@ initialize pushExt : SimpleScopedEnvExtension SimpTheorem (DiscrTree SimpTheorem
 
 /--
 Checks if the theorem is suitable for the `pull` tactic. That is,
-check if it is of the form `f as = b` where `b` contains the head `f`.
+check if it is of the form `x = f ...` where `x` contains the head `f`,
+but `f` is not the head of `x`.
 -/
 def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
   let cinfo ← getConstInfo declName
@@ -88,10 +89,12 @@ For example:
 @[push] theorem not_iff (p q : Prop) : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q)
 ```
 
-If the pushed constant appears on the other side, then the reverse direction of the lemma is
-added as a `pull` lemma.
+When applicable, a `pull` attribute is automatically added in the reverse direction.
+To avoid this, use the `push only` syntax.
+
+To use the reverse direction of the lemma, use the `push ←` syntax.
 -/
-syntax (name := pushAttr) "push" (" ←" <|> " <-")? (ppSpace prio)? : attr
+syntax (name := pushAttr) "push" (" ←" <|> " <-")? (" only")? (ppSpace prio)? : attr
 
 @[inherit_doc pushAttr]
 initialize registerBuiltinAttribute {
@@ -99,11 +102,16 @@ initialize registerBuiltinAttribute {
   descr := "attribute for push"
   add := fun declName stx kind => MetaM.run' do
     let inv := !stx[1].isNone
-    let prio ← getAttrParamOptPrio stx[2]
-    for thm in ← mkSimpTheoremFromConst declName (inv := inv) (prio := prio) do
-      pushExt.add thm
-    if let some head ← isPullThm declName inv then
-      for thm in ← mkSimpTheoremFromConst declName (inv := !inv) (prio := prio) do
+    let isOnly := !stx[2].isNone
+    let prio ← getAttrParamOptPrio stx[3]
+    let #[thm] ← mkSimpTheoremFromConst declName (inv := inv) (prio := prio) |
+      throwError "couldn't generate a simp theorem for `push`"
+    pushExt.add thm
+    unless isOnly do
+      let inv := !inv -- the `pull` lemma is added in the reverse direction
+      if let some head ← isPullThm declName inv then
+        let #[thm] ← mkSimpTheoremFromConst declName (inv := inv) (prio := prio) |
+          throwError "couldn't generate a simp theorem for `pull`"
         pullExt.add (thm, head)
 }
 
