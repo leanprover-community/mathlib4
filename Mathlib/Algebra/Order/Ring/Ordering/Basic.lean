@@ -3,12 +3,12 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.Ring.Semireal.Defs
+import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Order.Ring.Ordering.Defs
+import Mathlib.Algebra.Ring.SumsOfSquares
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
 
 /-!
 
