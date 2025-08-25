@@ -513,6 +513,10 @@ theorem preBeth_le_preBeth {o₁ o₂ : Ordinal} : preBeth o₁ ≤ preBeth o₂
   preBeth_strictMono.le_iff_le
 
 @[simp]
+theorem preBeth_inj {o₁ o₂ : Ordinal} : preBeth o₁ = preBeth o₂ ↔ o₁ = o₂ :=
+  preBeth_strictMono.injective.eq_iff
+
+@[simp]
 theorem preBeth_zero : preBeth 0 = 0 := by
   rw [preBeth]
   simp
@@ -538,7 +542,7 @@ theorem isNormal_preBeth : Order.IsNormal preBeth := by
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | (n + 1) => by
+  | n + 1 => by
     rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
     simp
 
@@ -559,6 +563,18 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
 @[simp]
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
+
+@[simp]
+theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
+  simpa using preBeth_inj (o₂ := 0)
+
+theorem isStrongLimit_preBeth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (preBeth o) := by
+  refine ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩
+  rw [preBeth_limit H.isSuccPrelimit] at ha
+  rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+  have := power_le_power_left two_ne_zero ha.le
+  rw [← preBeth_succ] at this
+  exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
@@ -620,16 +636,8 @@ theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
 theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
-  rcases eq_or_ne o 0 with (rfl | h)
-  · rw [beth_zero]
-    exact isStrongLimit_aleph0
-  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
-    rw [beth_limit] at ha
-    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-      have := power_le_power_left two_ne_zero ha.le
-      rw [← beth_succ] at this
-      exact this.trans_lt (beth_strictMono (H.succ_lt hi))
-    · rw [isSuccLimit_iff]
-      exact ⟨h, H⟩
+  apply isStrongLimit_preBeth
+  simp_rw [isSuccLimit_add_iff, isSuccLimit_omega0, isSuccLimit_iff]
+  tauto
 
 end Cardinal
