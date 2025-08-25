@@ -377,11 +377,15 @@ variable [Category.{v} C]
 
 universe u'
 
-instance uliftCategory : Category.{v} (ULift.{u'} C) where
+/-- The category structure on `ULift C` that is induced from the category
+structure on `C`. This is not made a global instance because of a diamond
+when `C` is a preordered type. -/
+def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
 
+attribute [local instance] uliftCategory in
 -- We verify that this previous instance can lift small categories to large categories.
 example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by infer_instance
 

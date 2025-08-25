@@ -342,8 +342,8 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
       rw [counit_app_functor, ← Functor.comp_map]
       have l :
-        NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
-      rw [l,w.hom.naturality]
+        NatTrans.app w.hom j = NatTrans.app w.hom ((𝟭 J).obj j) := by dsimp
+      rw [l, w.hom.naturality]
       simp
     inv_hom_id := by
       apply hom_ext Q
@@ -359,6 +359,17 @@ def homEquiv (h : IsLimit t) {W : C} : (W ⟶ t.pt) ≃ ((Functor.const J).obj W
   invFun π := h.lift (Cone.mk _ π)
   left_inv f := h.hom_ext (by simp)
   right_inv π := by cat_disch
+
+@[reassoc (attr := simp)]
+lemma homEquiv_symm_π_app (h : IsLimit t) {W : C}
+    (f : (const J).obj W ⟶ F) (j : J) :
+    h.homEquiv.symm f ≫ t.π.app j = f.app j := by
+  simp [homEquiv]
+
+lemma homEquiv_symm_naturality (h : IsLimit t) {W W' : C}
+    (f : (const J).obj W ⟶ F) (g : W' ⟶ W) :
+    h.homEquiv.symm ((Functor.const _).map g ≫ f) = g ≫ h.homEquiv.symm f :=
+  h.homEquiv.injective (by aesop)
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
@@ -826,6 +837,17 @@ def homEquiv (h : IsColimit t) {W : C} : (t.pt ⟶ W) ≃ (F ⟶ (const J).obj W
 @[simp]
 lemma homEquiv_apply (h : IsColimit t) {W : C} (f : t.pt ⟶ W) :
     h.homEquiv f = (t.extend f).ι := rfl
+
+@[reassoc (attr := simp)]
+lemma ι_app_homEquiv_symm (h : IsColimit t) {W : C}
+    (f : F ⟶ (const J).obj W) (j : J) :
+    t.ι.app j ≫ h.homEquiv.symm f = f.app j := by
+  simp [homEquiv]
+
+lemma homEquiv_symm_naturality (h : IsColimit t) {W W' : C}
+    (f : F ⟶ (const J).obj W) (g : W ⟶ W') :
+    h.homEquiv.symm (f ≫ (Functor.const _).map g) = h.homEquiv.symm f ≫ g :=
+  h.homEquiv.injective (by aesop)
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
