@@ -668,10 +668,6 @@ TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
 set_option pp.mvars false in
 /--
 error: unsolved goals
-R : Type _
-inst✝¹ : CommRing R
-a b c d e f g : R
-u₁ u₂ : Rˣ
 K : Type
 inst✝ : CommGroupWithZero K
 x y : K
