@@ -14,8 +14,9 @@ In this file, we define `C^n` local diffeomorphisms between manifolds.
 
 A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s`
 and `t` of `x` and `f x`, respectively, such that `f` restricts to a diffeomorphism
-between `s` and `t`. `f` is called a **local diffeomorphism on `s`** iff it is a local diffeomorphism
-at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on `univ`.
+between `s` and `t`. `f` is called a **local diffeomorphism on `s`** iff it is a local
+diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on
+`univ`.
 
 ## Main definitions
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
