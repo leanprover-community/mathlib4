@@ -16,8 +16,7 @@ This file shows some results on linear functionals on division semirings, such a
 namespace LinearMap
 variable {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]
 
-theorem surjective_iff_ne_zero {R M : Type*} [AddCommMonoid M]
-    [DivisionSemiring R] [Module R M] {f : M →ₗ[R] R} :
+theorem surjective_iff_ne_zero [DivisionSemiring R] [Module R M] {f : M →ₗ[R] R} :
     Function.Surjective f ↔ f ≠ 0 := by
   refine ⟨ne_zero_of_surjective, fun hf z => ?_⟩
   obtain ⟨y, hy⟩ : ∃ y, f y ≠ 0 := by simpa [Ne, LinearMap.ext_iff] using hf
