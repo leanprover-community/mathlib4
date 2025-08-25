@@ -742,10 +742,13 @@ theorem intCast_eq_zero_iff_even {n : ℤ} : (n : ZMod 2) = 0 ↔ Even n :=
 
 alias ⟨_, _root_.Even.intCast_zmod_two⟩ := intCast_eq_zero_iff_even
 
-theorem eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
+theorem natCast_eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
   mod_cast intCast_eq_zero_iff_even (n := n)
 
-alias ⟨_, _root_.Even.natCast_zmod_two⟩ := eq_zero_iff_even
+@[deprecated (since := "2025-08-25")]
+alias eq_zero_iff_even := natCast_eq_zero_iff_even
+
+alias ⟨_, _root_.Even.natCast_zmod_two⟩ := natCast_eq_zero_iff_even
 
 theorem intCast_eq_one_iff_odd {n : ℤ} : (n : ZMod 2) = 1 ↔ Odd n := by
   rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, Int.odd_iff, Int.ModEq]
@@ -753,13 +756,19 @@ theorem intCast_eq_one_iff_odd {n : ℤ} : (n : ZMod 2) = 1 ↔ Odd n := by
 
 alias ⟨_, _root_.Odd.intCast_zmod_two⟩ := intCast_eq_one_iff_odd
 
-theorem eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n :=
+theorem natCast_eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n :=
   mod_cast intCast_eq_one_iff_odd (n := n)
 
-alias ⟨_, _root_.Odd.natCast_zmod_two⟩ := eq_one_iff_odd
+@[deprecated (since := "2025-08-25")]
+alias eq_one_iff_odd := natCast_eq_one_iff_odd
 
-theorem ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
-  simp [eq_zero_iff_even]
+alias ⟨_, _root_.Odd.natCast_zmod_two⟩ := natCast_eq_one_iff_odd
+
+theorem natCast_ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
+  simp [natCast_eq_zero_iff_even]
+
+@[deprecated (since := "2025-08-25")]
+alias ne_zero_iff_odd := natCast_ne_zero_iff_odd
 
 theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
