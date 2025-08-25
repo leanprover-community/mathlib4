@@ -28,7 +28,7 @@ variable {E B : Type u} (f : E → B)
 /-- The pullback functor `Over B ⥤ Over E` for a map `f : E → B` between types.
 This definition uses a explicit definition of types rather than using the
 categorical pullback as in `Over.pullback`, see `overPullbackIso` for
-a comparison isomorphism.  -/
+a comparison isomorphism. -/
 @[simps]
 def overPullback : Over B ⥤ Over E where
   obj S := Over.mk (Y := { x : S.left × E // S.hom x.1 = f x.2}) (fun x ↦ x.1.2)
