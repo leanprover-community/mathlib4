@@ -133,15 +133,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
       φ.comp (inclusion (le_topologicalClosure S)) = ψ.comp (inclusion (le_topologicalClosure S))) :
     φ = ψ := by
   rw [DFunLike.ext'_iff]
-  have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine IsInducing.subtypeVal.dense_iff.2 fun x => ?_
-    convert show ↑x ∈ closure (S : Set A) from x.prop
-    rw [← Set.range_comp]
-    exact
-      Set.ext fun y =>
-        ⟨by
-          rintro ⟨y, rfl⟩
-          exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
+  have : DenseRange (Set.inclusion (le_topologicalClosure S)) := by simp [-SetLike.coe_sort_coe]
   refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
   simpa only using DFunLike.congr_fun h x

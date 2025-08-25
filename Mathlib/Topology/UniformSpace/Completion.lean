@@ -443,6 +443,14 @@ theorem extension_coe [T0Space β] (hf : UniformContinuous f) (a : α) :
     (Completion.extension f) a = f a :=
   cPkg.extend_coe hf a
 
+theorem inseparable_extension_coe (hf : UniformContinuous f) (x : α) :
+    Inseparable (Completion.extension f x) (f x) :=
+  cPkg.inseparable_extend_coe hf x
+
+lemma isUniformInducing_extension [CompleteSpace β] (h : IsUniformInducing f) :
+    IsUniformInducing (Completion.extension f) :=
+  cPkg.isUniformInducing_extend h
+
 variable [T0Space β] [CompleteSpace β]
 
 theorem extension_unique (hf : UniformContinuous f) {g : Completion α → β}
