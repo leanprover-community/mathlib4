@@ -14,7 +14,7 @@ These commands are used to enforce the independence of different parts of mathli
 
 ## TODO
 
-After the port, potentially reimplement the mathlib 3 linters to check that declarations asserted
+Potentially reimplement the mathlib 3 linters to check that declarations asserted
 not to exist do eventually exist.
 
 Implement `assert_instance` and `assert_no_instance`.
