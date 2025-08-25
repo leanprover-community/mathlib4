@@ -490,9 +490,7 @@ lemma forall_subset_image_iff {p : Set β → Prop} : (∀ t ⊆ f '' s, p t) �
   simp [subset_image_iff]
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
-  refine Iff.symm <| (Iff.intro (image_mono)) fun h => ?_
-  rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
-  exact preimage_mono h
+  grind [Set.image_subset_iff, Set.preimage_image_eq]
 
 theorem prod_quotient_preimage_eq_image [s : Setoid α] (g : Quotient s → β) {h : α → β}
     (Hh : h = g ∘ Quotient.mk'') (r : Set (β × β)) :
