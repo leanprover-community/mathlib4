@@ -401,20 +401,21 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
       · apply ball_subset_ball' _ hy
         simp only [hz, norm_smul, abs_of_nonneg Dpos.le, abs_of_nonneg B.le, dist_zero_right,
           Real.norm_eq_abs, abs_div]
-        simp only [div_le_iff₀ B, field_simps]
+        simp only [div_mul_eq_mul_div, div_add_div_same, div_le_iff₀ B]
         ring_nf
         rfl
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp only [B.ne', Ne, not_false_iff, mul_one, neg_sub, add_tsub_cancel_right,
-              field_simps]
-          · simp only [B.ne', Ne, not_false_iff, mul_one, field_simps]
+          · simp only [Ne, B.ne', not_false_iff, div_sub', mul_one, neg_div', neg_sub,
+              add_tsub_cancel_right]
+          · simp only [Ne, B.ne', not_false_eq_true, div_sub', mul_one, sub_add_cancel_right]
             apply div_nonpos_of_nonpos_of_nonneg _ B.le
             linarith only
         rw [← mem_closedBall_iff_norm']
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
-        simp only [div_le_iff₀ B, field_simps]
+        field_simp
+        rw [div_le_one_iff]; left; refine ⟨B, ?_⟩
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos

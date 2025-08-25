@@ -53,7 +53,8 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have cnpos : 0 < c n := cnpos'
       calc
         u (c n) - c n * l = (u (c n) / c n - l) * c n := by
-          simp only [cnpos.ne', Ne, Nat.cast_eq_zero, not_false_iff, field_simps]
+          simp only [Ne, Nat.cast_eq_zero, cnpos.ne', not_false_iff, div_sub', div_mul_eq_mul_div,
+            eq_div_iff]
         _ ≤ ε * c n := by
           gcongr
           refine (le_abs_self _).trans ?_
@@ -107,7 +108,8 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have cnpos : 0 < c n := cnpos'
       calc
         (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by
-          simp only [cnpos.ne', Ne, Nat.cast_eq_zero, not_false_iff, neg_sub, field_simps]
+          simp only [Ne, Nat.cast_eq_zero, cnpos.ne', not_false_iff, div_sub', neg_div', neg_sub,
+            div_mul_eq_mul_div, eq_div_iff]
         _ ≤ ε * c n := by
           gcongr
           refine le_trans (neg_le_abs _) ?_

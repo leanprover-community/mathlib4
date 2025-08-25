@@ -173,7 +173,8 @@ theorem map_frobeniusPoly (n : ℕ) :
         (p : ℚ) ^ (n - i - v p (j + 1)) by
     have aux : ∀ k : ℕ, (p : ℚ) ^ k ≠ 0 := by
       intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
-    simpa [aux, -one_div, -pow_eq_zero_iff', field_simps] using this.symm
+    simpa only [inv_eq_one_div, mul_div_assoc', mul_one, div_mul_eq_mul_div, ne_eq, aux,
+      not_false_eq_true, eq_div_iff, div_eq_iff, Nat.cast_mul, Nat.cast_pow] using this.symm
   rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
     map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
   ring
