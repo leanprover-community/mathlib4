@@ -281,7 +281,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
   let φ : Kˣ →* K :=
     { toFun := fun x => x ^ i
       map_one' := by simp
-      map_mul' := by intros; simp [mul_pow] }
+      map_mul' := by simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance
   calc (∑ x : Kˣ, φ x) = if φ = 1 then Fintype.card Kˣ else 0 := sum_hom_units φ
       _ = if q - 1 ∣ i then -1 else 0 := by

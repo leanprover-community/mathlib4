@@ -445,12 +445,12 @@ def Tape.move {Γ} [Inhabited Γ] : Dir → Tape Γ → Tape Γ
 @[simp]
 theorem Tape.move_left_right {Γ} [Inhabited Γ] (T : Tape Γ) :
     (T.move Dir.left).move Dir.right = T := by
-  cases T; simp [Tape.move]
+  simp [Tape.move]
 
 @[simp]
 theorem Tape.move_right_left {Γ} [Inhabited Γ] (T : Tape Γ) :
     (T.move Dir.right).move Dir.left = T := by
-  cases T; simp [Tape.move]
+  simp [Tape.move]
 
 /-- Construct a tape from a left side and an inclusive right side. -/
 def Tape.mk' {Γ} [Inhabited Γ] (L R : ListBlank Γ) : Tape Γ :=
@@ -474,7 +474,6 @@ theorem Tape.mk'_right₀ {Γ} [Inhabited Γ] (L R : ListBlank Γ) : (Tape.mk' L
 
 @[simp]
 theorem Tape.mk'_left_right₀ {Γ} [Inhabited Γ] (T : Tape Γ) : Tape.mk' T.left T.right₀ = T := by
-  cases T
   simp only [Tape.right₀, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons]
 
 theorem Tape.exists_mk' {Γ} [Inhabited Γ] (T : Tape Γ) : ∃ L R, T = Tape.mk' L R :=
