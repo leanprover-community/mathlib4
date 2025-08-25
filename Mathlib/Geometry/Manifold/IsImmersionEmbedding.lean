@@ -446,22 +446,39 @@ namespace PartialHomeomorph
 
 omit [ChartedSpace H M]
 
-lemma isEmbedding_restrict_source (φ : PartialHomeomorph M H) :
+-- useful?
+lemma isEmbedding_restrict (φ : PartialHomeomorph M H) :
     Topology.IsEmbedding <| φ.source.restrict φ := φ.isOpenEmbedding_restrict.isEmbedding
 
-lemma isEmbedding_symm_restrict_target (φ : PartialHomeomorph M H) :
+-- useful?
+lemma isEmbedding_symm_restrict (φ : PartialHomeomorph M H) :
     Topology.IsEmbedding <| φ.target.restrict φ.symm :=
   φ.symm.isOpenEmbedding_restrict.isEmbedding
 
-lemma isEmbedding_extend_restrict_source (φ : PartialHomeomorph M H) :
+-- add!
+lemma isEmbedding_extend_restrict (φ : PartialHomeomorph M H) :
     Topology.IsEmbedding <| φ.source.restrict (φ.extend I) :=
-  I.isClosedEmbedding.isEmbedding.comp φ.isEmbedding_restrict_source
+  I.isClosedEmbedding.isEmbedding.comp φ.isEmbedding_restrict
 
-lemma isEmbedding_extend_symm_restrict_target (φ : PartialHomeomorph M H) :
+-- add!
+lemma isEmbedding_extend_symm_restrict (φ : PartialHomeomorph M H) :
     Topology.IsEmbedding <| (φ.extend I).target.restrict ((φ.extend I).symm) := by
-  have := φ.isEmbedding_symm_restrict_target
-  -- TODO: think, is I.symm "inducing at each x"?
-  sorry
+  -- add, next to I.rightInverseOn
+  have : RightInverse ((range I).restrict I.symm) (Set.codRestrict I (range I) (by simp)) := by
+    intro ⟨x, hx⟩
+    simp [restrict_apply, Subtype.ext_iff_val, I.right_inv hx]
+  --- extract, both versions! this one requires T2Space H
+  --have hI : Topology.IsClosedEmbedding ((range I).restrict I.symm) :=
+  --  this.isClosedEmbedding (I.continuous.codRestrict (by simp)) I.continuousOn_symm.restrict
+  have hI : Topology.IsEmbedding ((range I).restrict I.symm) :=
+    .of_leftInverse this (I.continuous.codRestrict (by simp)) I.continuousOn_symm.restrict
+  let f2 := (I.target ∩ I.symm ⁻¹' φ.target).restrict I.symm
+  have hI' : Topology.IsClosedEmbedding (Set.codRestrict f2 φ.target sorry) := by
+    sorry -- given hI, restrict-codRestrict harder!
+  have : (I.target ∩ I.symm ⁻¹' φ.target).restrict (φ.symm ∘ I.symm) =
+      (φ.target.restrict φ.symm) ∘ (Set.codRestrict f2 φ.target sorry) := by
+    ext; simp [f2]
+  simpa using φ.isEmbedding_symm_restrict.comp hI'.isEmbedding
 
 end PartialHomeomorph
 
@@ -518,9 +535,9 @@ lemma exists_nbhd_restr_isEmbedding (h : IsImmersionAt F I I' n f x) :
       ext ⟨x, hx⟩
       simp [bs, rhs, comp_apply, floc, φ, ψ]
     rw [this]
-    refine h.codChart.isEmbedding_extend_symm_restrict_target.comp  ?_
+    refine h.codChart.isEmbedding_extend_symm_restrict.comp  ?_
     -- TODO: make fun_prop do this!
-    exact (hj.comp h.domChart.isEmbedding_extend_restrict_source).codRestrict
+    exact (hj.comp h.domChart.isEmbedding_extend_restrict).codRestrict
       (h.codChart.extend I').target aux
   rw [this]
   exact hrhs
@@ -596,8 +613,8 @@ lemma nhds_eq_comap {f : M → N} (hf : ContinuousAt f x)
   --   rintro x ⟨x', hx', hx'x⟩
   --   sorry
 
--- TODO: are the manifold hypotheses necessary now? think!
-lemma continuousAt_iff_comp_isImmersionAt [IsManifold J n N] [IsManifold J' n N']
+-- these seem superfluous now: [IsManifold J n N] [IsManifold J' n N']
+lemma continuousAt_iff_comp_isImmersionAt
     {f : M → N} {φ : N → N'} (h : IsImmersionAt F J J' n φ (f x)) :
     ContinuousAt f x ↔ ContinuousAt (φ ∘ f) x := by
   choose t ht hxt htφ using h.exists_nbhd_restr_isEmbedding
