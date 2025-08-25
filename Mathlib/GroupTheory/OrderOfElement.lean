@@ -350,11 +350,11 @@ theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Inje
 theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf y :=
   orderOf_injective H.subtype Subtype.coe_injective y
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.val_injective y
 
-@[to_additive (attr := norm_cast, simp)]
+@[to_additive (attr := norm_cast)]
 theorem Units.isOfFinOrder_val {u : Gˣ} : IsOfFinOrder (u : G) ↔ IsOfFinOrder u :=
   Units.coeHom_injective.isOfFinOrder_iff
 
