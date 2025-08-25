@@ -3,6 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
+import Batteries.Data.List.Basic
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
@@ -45,7 +46,6 @@ theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     (scanl f b l)[i]?.bind fun x => l[i]?.map fun y => f x y := by
   induction l generalizing b i with
   | nil =>
-    symm
     simp only [scanl, getElem?_nil, Option.map_none, Option.bind_fun_none, getElem?_cons_succ]
   | cons hd tl hl =>
     simp only [scanl_cons, singleton_append]

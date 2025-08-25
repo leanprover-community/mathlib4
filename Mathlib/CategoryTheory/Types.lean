@@ -39,7 +39,7 @@ universe v v' w u u'
 
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
-@[to_additive existing CategoryTheory.types]
+@[to_additive self]
 instance types : LargeCategory (Type u) where
   Hom a b := a → b
   id _ := id
@@ -150,7 +150,7 @@ theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
 @[simp]
 theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
     F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
-  aesop_cat
+  cat_disch
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
@@ -211,13 +211,15 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl
 
-instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
-  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+/-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
+def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
+  preimage f := fun x ↦ (f (ULift.up x)).down
 
-instance uliftFunctor_faithful : uliftFunctor.Faithful where
-  map_injective {_X} {_Y} f g p :=
-    funext fun x =>
-      congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
+instance uliftFunctor_full : (uliftFunctor.{v, u}).Full :=
+  fullyFaithfulULiftFunctor.full
+
+instance uliftFunctor_faithful : uliftFunctor.{v, u}.Faithful :=
+  fullyFaithfulULiftFunctor.faithful
 
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
 -/
@@ -230,7 +232,7 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
+  ⟨fun H => congr_fun H PUnit.unit, by simp_all⟩
 
 /-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
 @[stacks 003C]
@@ -265,7 +267,7 @@ section
 allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
-  map f := Functor.map f
+  map f := _root_.Functor.map f
   map_id := fun α => by funext X; apply id_map
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
@@ -276,7 +278,7 @@ theorem ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
 
 @[simp]
 theorem ofTypeFunctor_map {α β} (f : α → β) :
-    (ofTypeFunctor m).map f = (Functor.map f : m α → m β) :=
+    (ofTypeFunctor m).map f = (_root_.Functor.map f : m α → m β) :=
   rfl
 
 end
@@ -359,7 +361,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `aesop_cat`.)
+-- (In this order the proofs are handled by `cat_disch`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

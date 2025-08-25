@@ -5,7 +5,7 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
 import Mathlib.Tactic.FieldSimp
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 
 /-!
@@ -53,7 +53,7 @@ protected def copy (S : LocalSubring R) (s : Set R) (hs : s = ↑S.toSubring) : 
 def map [Nontrivial S] (f : R →+* S) (s : LocalSubring R) : LocalSubring S :=
   mk (s.1.map f)
 
-/-- The range of a ringhom from a local ring as a `LocalSubring`. -/
+/-- The range of a ring homomorphism from a local ring as a `LocalSubring`. -/
 @[simps! toSubring]
 def range [IsLocalRing R] [Nontrivial S] (f : R →+* S) : LocalSubring S :=
   .copy (map f (mk ⊤)) f.range (by ext x; exact congr(x ∈ $(Set.image_univ.symm)))
