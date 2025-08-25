@@ -43,12 +43,12 @@ theorem toSubsemiring_le {P₁ P₂ : RingPreordering R} :
 protected alias ⟨_, toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
-theorem inv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
+theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   have : (a * (a⁻¹ * a⁻¹) : R) ∈ P := by aesop (config := { enableSimp := false })
   simp_all
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
-theorem Field.inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
+theorem inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
     a⁻¹ ∈ P := by
   have mem : a * (a⁻¹ * a⁻¹) ∈ P := by aesop
   field_simp at mem
@@ -123,7 +123,7 @@ theorem neg_smul_mem [P.HasIdealSupport]
 
 end HasIdealSupport
 
-theorem hasIdealSupport_of_isUnit_2 (isUnit_2 : IsUnit (2 : R)) : P.HasIdealSupport := by
+theorem hasIdealSupport_of_isUnit_two (isUnit_2 : IsUnit (2 : R)) : P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
   intro x a _ _
   obtain ⟨half, h2⟩ := IsUnit.exists_left_inv isUnit_2
@@ -177,14 +177,14 @@ theorem neg_mem_of_notMem (x : R) (h : x ∉ P) : -x ∈ P := by
   simp_all
 
 @[aesop unsafe 70% apply]
-theorem mem_of_not_neg_mem (x : R) (h : -x ∉ P) : x ∈ P := by
+theorem mem_of_neg_notMem (x : R) (h : -x ∉ P) : x ∈ P := by
   have := mem_or_neg_mem P x
   simp_all
 
 end HasMemOrNegMem
 
 theorem isOrdering_iff :
-    P.IsOrdering ↔ (∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P) := by
+    P.IsOrdering ↔ ∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P := by
   refine ⟨fun _ a b h₁ => ?_, fun h => ?_⟩
   · by_contra
     have : a * b ∈ P := by simpa using mul_mem (by aesop : -a ∈ P) (by aesop : -b ∈ P)
