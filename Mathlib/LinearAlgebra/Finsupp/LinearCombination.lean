@@ -448,7 +448,7 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
 /-- A variant of `Submodule.mem_span_finset` using `s` as the index type. -/
 lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
     x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
-  rw [← Subtype.range_val (s := s.toSet), ← Fintype.range_linearCombination]
+  rw [← Subtype.range_val (s := (s : Set M)), ← Fintype.range_linearCombination]
   simp [Fintype.linearCombination]
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
