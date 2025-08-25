@@ -143,7 +143,7 @@ instance : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
       isLowerSet := by
-        intros a b _ h
+        intro a b _ h
         simp only [Finset.coe_empty, Set.mem_empty_iff_false]
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
   bot_le _ _ := by

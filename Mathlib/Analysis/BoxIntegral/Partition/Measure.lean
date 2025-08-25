@@ -108,7 +108,7 @@ namespace Box
 
 variable [Fintype ι]
 
--- This is not a `simp` lemma because the left hand side simplifies already.
+-- This is not a `simp` lemma because the left-hand side simplifies already.
 -- See `volume_apply'` for the relevant `simp` lemma.
 theorem volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
