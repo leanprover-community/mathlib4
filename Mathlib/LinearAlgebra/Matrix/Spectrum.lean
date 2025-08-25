@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Topology.Algebra.Module.FiniteDimension
@@ -22,6 +23,12 @@ namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 variable {A : Matrix n n 𝕜}
+
+lemma finite_real_spectrum [DecidableEq n] : (spectrum ℝ A).Finite := by
+  rw [← spectrum.preimage_algebraMap 𝕜]
+  exact A.finite_spectrum.preimage (FaithfulSMul.algebraMap_injective ℝ 𝕜).injOn
+
+instance [DecidableEq n] : Finite (spectrum ℝ A) := A.finite_real_spectrum
 
 /-- The spectrum of a matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
 theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
@@ -148,6 +155,22 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
+
+/-- The spectrum of a Hermitian matrix is the range of its eigenvalues under `RCLike.ofReal`. -/
+theorem spectrum_eq_image_range :
+    spectrum 𝕜 A = RCLike.ofReal '' Set.range hA.eigenvalues := Set.ext fun x => by
+  conv_lhs => rw [hA.spectral_theorem]
+  simp
+
+/-- The `ℝ`-spectrum of a Hermitian matrix over `RCLike` field is the range of the eigenvalue
+function. -/
+theorem spectrum_real_eq_range_eigenvalues :
+    spectrum ℝ A = Set.range hA.eigenvalues := Set.ext fun x => by
+  conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
+  simp
+
+@[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
+  spectrum_real_eq_range_eigenvalues
 
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :
