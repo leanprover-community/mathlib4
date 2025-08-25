@@ -66,7 +66,7 @@ by all files.
 It also ignores the `Mathlib/Tactic/Linter/DeprecatedModule.lean` import (namely, the current file),
 since there is no need to import this module.
 -/
-def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m] [MonadQuotation m]
+def addModuleDeprecation {m : Type → Type} [Monad m] [MonadEnv m]
     (msg? : Option String) : m Unit := do
   let modName ← getMainModule
   modifyEnv (deprecatedModuleExt.addEntry ·

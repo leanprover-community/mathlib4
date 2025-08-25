@@ -75,8 +75,8 @@ theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
 theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
   (divInt_eq_zero b0).not
 
--- TODO: Rename `mkRat_num_den` in Batteries
-@[simp] alias mkRat_num_den' := mkRat_self
+-- TODO: Rename `mkRat_num_den` in Lean core
+alias mkRat_num_den' := mkRat_self
 
 theorem intCast_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := mk'_eq_divInt
 
