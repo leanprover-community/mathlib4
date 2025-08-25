@@ -32,80 +32,52 @@ variable {p : ℕ} [Fact p.Prime]
 
 open NNReal WithZero UniformSpace
 
--- TODO: use Rat.padicValuation after #27667
-lemma continuous_cast_withVal : Continuous ((Rat.castHom ℚ_[p]).comp
-    (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
-  rw [continuous_iff_continuousAt]
-  intro x U
-  simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe,
-    Function.comp_apply, Metric.mem_nhds_iff, gt_iff_lt, Filter.mem_map, Valued.mem_nhds,←
-    Set.image_subset_iff, forall_exists_index, and_imp]
-  intro ε hε hU
-  obtain ⟨y, hy⟩ := rat_dense p 0 hε
-  lift ε to ℝ≥0 using hε.le
-  -- inventing a non-zero element of the ball
-  have hp : (p : ℝ≥0)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
-  obtain ⟨n, hn⟩ := exists_pow_lt₀ hp (Units.mk0 ε (by simpa using hε.ne'))
-  simp only [inv_pow, Units.val_mk0, ← NNReal.coe_lt_coe] at hn
-  use Units.mk0 (exp (-n : ℤ)) (by simp)
-  refine subset_trans ?_ hU
-  intro y
-  simp only [Units.val_mk0, Set.mem_image, Set.mem_setOf_eq,
-    Metric.mem_ball, dist_eq_norm, forall_exists_index, and_imp]
-  rintro y h rfl
-  set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
-  set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-  change Rat.padicValuation p (y' - x') < exp _ at h
-  refine hn.trans' ?_
-  simp only [← Rat.cast_sub, padicNormE.eq_padicNorm, padicNorm, zpow_neg, NNReal.coe_inv,
-    NNReal.coe_pow, NNReal.coe_natCast]
-  split_ifs with hxy
-  · simp only [Rat.cast_zero, inv_pos]
-    exact pow_pos (by simp [Nat.Prime.pos Fact.out]) _
-  · simp only [Rat.cast_inv, Rat.cast_zpow, Rat.cast_natCast]
-    rw [inv_lt_inv₀, ← zpow_natCast, zpow_lt_zpow_iff_right₀]
-    · simpa [Rat.padicValuation, hxy, ← exp_neg] using h
-    · exact_mod_cast Nat.Prime.one_lt Fact.out
-    · exact zpow_pos (by simp [Nat.Prime.pos Fact.out]) _
-    · exact pow_pos (by simp [Nat.Prime.pos Fact.out]) _
-
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
+  have hp0' : 0 < (p : ℚ) := by simp [Nat.Prime.pos Fact.out]
+  have hp0 : 0 < (p : ℝ)⁻¹ := by simp [Nat.Prime.pos Fact.out]
+  have hp1' : 1 < (p : ℚ) := by simp [Nat.Prime.one_lt Fact.out]
+  have hp1 : (p : ℝ)⁻¹ < 1 := by simp [inv_lt_one_iff₀, Nat.Prime.one_lt Fact.out]
+  rw [Filter.HasBasis.isUniformInducing_iff (Valued.hasBasis_uniformity _ _)
+    (Metric.uniformity_basis_dist_le_pow hp0 hp1)]
+  simp only [Set.mem_setOf_eq, dist_eq_norm_sub, inv_pow, RingEquiv.toRingHom_eq_coe,
+    RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe, Function.comp_apply, ← Rat.cast_sub,
+    ← map_sub, padicNormE.eq_padicNorm, true_and, forall_const]
   constructor
-  rw [uniformity_eq_comap_nhds_zero, uniformity_eq_comap_nhds_zero, Filter.comap_comap]
-  ext U
-  simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe,
-    Function.comp_apply, Filter.mem_comap, Set.preimage_comp, Set.preimage_subset_iff,
-    Set.mem_preimage, ← Rat.cast_sub, ← map_sub, Prod.forall]
-  constructor
-  · rintro ⟨V, hV, hV'⟩
-    refine ⟨((Rat.castHom ℚ_[p]).comp (WithVal.equiv (Rat.padicValuation p)).toRingHom) ⁻¹' V,
-      ?_, ?_⟩
-    · exact continuous_cast_withVal.continuousAt hV
-    · simpa using hV'
-  · rintro ⟨V, hV, hV'⟩
-    simp only [Metric.mem_nhds_iff, gt_iff_lt]
-    rw [Valued.mem_nhds_zero] at hV
-    obtain ⟨γ, hγ⟩ := hV
-    let ε : ℚ := p ^ (log γ : ℤ)
-    refine ⟨_, ⟨ε, ?_, subset_refl _⟩, ?_⟩
-    · simp only [ε, Rat.cast_zpow, Rat.cast_natCast]
-      refine zpow_pos ?_ _
-      exact_mod_cast Nat.Prime.pos Fact.out
-    · intro x y hab
-      refine hV' x y (hγ ?_)
-      simp only [Set.mem_setOf_eq]
-      set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
-      set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-      simp only [Rat.cast_lt, map_sub, ← hy, ← hx, Metric.mem_ball,
-        dist_zero_right, padicNormE.eq_padicNorm, ε] at hab
-      change Rat.padicValuation p (y' - x') < γ.val
-      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-      split_ifs with hxy
+  · intro n
+    use Units.mk0 (exp (-n : ℤ)) (by simp)
+    intro x y h
+    set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    rw [Valuation.map_sub_swap] at h
+    change Rat.padicValuation p (x' - y') < exp _ at h
+    rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
+    · change padicNorm p (x' - y') ≤ _
+      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      split_ifs with H
+      · simp
+      · simp only [H, ↓reduceIte, exp_lt_exp, neg_lt_neg_iff] at h
+        simpa [hp0', zpow_pos, pow_pos, inv_le_inv₀] using
+          zpow_right_mono₀ (a := (p : ℚ)) (by exact_mod_cast (Nat.Prime.one_le Fact.out)) h.le
+    · simp [Nat.Prime.ne_zero Fact.out]
+  · intro γ
+    use (log (γ.val * exp (- 1))).natAbs
+    intro x y h
+    set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
+    set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
+    rw [Valuation.map_sub_swap]
+    change Rat.padicValuation p (x' - y') < γ
+    rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
+    · change padicNorm p (x' - y') ≤ _ at h
+      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
+        padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
+      split_ifs with H
       · simp
       · rw [← lt_log_iff_exp_lt (by simp)]
-        rwa [padicNorm.eq_zpow_of_nonzero hxy, zpow_lt_zpow_iff_right₀] at hab
-        exact_mod_cast Nat.Prime.one_lt Fact.out
+        simp_all [← zpow_natCast, zpow_pos, inv_le_inv₀, zpow_le_zpow_iff_right₀ hp1', abs_le,
+          Int.lt_iff_add_one_le]
+    · simp [Nat.Prime.ne_zero Fact.out]
 
 lemma isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
