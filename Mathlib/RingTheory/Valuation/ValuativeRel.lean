@@ -100,6 +100,15 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+/-- The strict version of the valuative relation. -/
+def rel_lt (x y : R) : Prop := x ≤ᵥ y ∧ ¬ y ≤ᵥ x
+
+@[inherit_doc] infix:50 " <ᵥ " => ValuativeRel.rel_lt
+
+macro_rules | `($a <ᵥ $b) => `(binrel% ValuativeRel.rel_lt $a $b)
+
+lemma rel_lt_iff (x y : R) : x <ᵥ y ↔ x ≤ᵥ y ∧ ¬ y ≤ᵥ x := Iff.rfl
+
 @[simp]
 lemma rel_refl (x : R) : x ≤ᵥ x := by
   cases rel_total x x <;> assumption
@@ -420,8 +429,7 @@ instance : LinearOrder (ValueGroupWithZero R) where
 
 @[simp]
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
-    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔
-      x * s ≤ᵥ y * t ∧ ¬ y * t ≤ᵥ x * s :=
+    ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t :=
   Iff.rfl
 
 instance : Bot (ValueGroupWithZero R) where
@@ -550,6 +558,11 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.rel_iff_le]
+
+lemma _root_.Valuation.Compatible.rel_lt_iff_lt {Γ₀ : Type*}
+    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [v.Compatible] {x y : R} :
+    x <ᵥ y ↔ v x < v y := by
+  simp [lt_iff_le_not_ge, ← Valuation.Compatible.rel_iff_le, rel_lt_iff]
 
 @[simp]
 lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
