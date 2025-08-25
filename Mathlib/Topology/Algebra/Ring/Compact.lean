@@ -23,11 +23,11 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
   Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:
-  Maximal ideals are open in compact Hausdorff noetherian rings.
+  Maximal ideals are open in compact Hausdorff Noetherian rings.
 - `IsLocalRing.isOpen_iff_finite_quotient`:
-  An ideal in a compact Hausdorff noetherian local ring is open iff it has finite index.
+  An ideal in a compact Hausdorff Noetherian local ring is open iff it has finite index.
 - `IsDedekindDomain.isOpen_iff`:
-  An ideal in a compact Hausdorff dedekind domain (that is not a field) is open iff it is non-zero.
+  An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is non-zero.
 
 ## Future projects
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.

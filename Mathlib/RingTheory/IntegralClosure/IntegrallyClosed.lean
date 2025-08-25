@@ -43,12 +43,12 @@ in which case it's also equivalent to being a finite product of normal domains.
 
 We'd need to add these conditions if we want exactly the products of Dedekind domains.
 
-In fact noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
+In fact Noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
 could be defined as `IsReduced`, `IsNoetherian`, `Ring.DimensionLEOne`, and either
 `IsIntegrallyClosed` or `NormalDomain`. If we use `NormalDomain` then `IsReduced` is automatic,
 but we could also consider a version of `NormalDomain` that only requires the localizations are
 `IsIntegrallyClosed` but may not be domains, and that may not equivalent to the ring itself being
-`IsIntegrallyClosed` (even for noetherian rings?).
+`IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
 
