@@ -238,6 +238,48 @@ theorem contMDiff_prod_assoc :
       fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
   contMDiff_fst.fst.prodMk <| contMDiff_fst.snd.prodMk contMDiff_snd
 
+/-- `ContMDiffAt.comp` for a function of two arguments. -/
+theorem ContMDiffAt.comp₂ {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M}
+    (ha : ContMDiffAt (I'.prod J') J n h (f x, g x)) (fa : ContMDiffAt I I' n f x)
+    (ga : ContMDiffAt I J' n g x) : ContMDiffAt I J n (fun x ↦ h (f x, g x)) x :=
+  ha.comp (f := fun x ↦ (f x, g x)) _ (fa.prodMk ga)
+
+/-- `ContMDiffAt.comp₂`, with a separate argument for point equality. -/
+theorem ContMDiffAt.comp₂_of_eq {h : M' × N' → N} {f : M → M'} {g : M → N'} {x : M} {y : M' × N'}
+    (ha : ContMDiffAt (I'.prod J') J n h y) (fa : ContMDiffAt I I' n f x)
+    (ga : ContMDiffAt I J' n g x) (e : (f x, g x) = y) :
+    ContMDiffAt I J n (fun x ↦ h (f x, g x)) x := by
+  rw [← e] at ha
+  exact ha.comp₂ fa ga
+
+/-- Curried `C^n` functions are `C^n` in the first coordinate. -/
+theorem ContMDiffAt.curry_left {f : M → M' → N} {x : M} {y : M'}
+    (fa : ContMDiffAt (I.prod I') J n (uncurry f) (x, y)) :
+    ContMDiffAt I J n (fun x ↦ f x y) x :=
+  fa.comp₂ contMDiffAt_id contMDiffAt_const
+alias ContMDiffAt.along_fst := ContMDiffAt.curry_left
+
+/-- Curried `C^n` functions are `C^n` in the second coordinate. -/
+theorem ContMDiffAt.curry_right {f : M → M' → N} {x : M} {y : M'}
+    (fa : ContMDiffAt (I.prod I') J n (uncurry f) (x, y)) :
+    ContMDiffAt I' J n (fun y ↦ f x y) y :=
+  fa.comp₂ contMDiffAt_const contMDiffAt_id
+alias ContMDiffAt.along_snd := ContMDiffAt.curry_right
+
+/-- Curried `C^n` functions are `C^n` in the first coordinate. -/
+theorem ContMDiff.curry_left {f : M → M' → N}
+    (fa : ContMDiff (I.prod I') J n (uncurry f)) {y : M'} :
+    ContMDiff I J n (fun x ↦ f x y) :=
+  fun _ ↦ (fa _).along_fst
+alias ContMDiff.along_fst := ContMDiff.curry_left
+
+/-- Curried `C^n` functions are `C^n` in the second coordinate. -/
+theorem ContMDiff.curry_right {f : M → M' → N} {x : M}
+    (fa : ContMDiff (I.prod I') J n (uncurry f)) :
+    ContMDiff I' J n (fun y ↦ f x y) :=
+  fun _ ↦ (fa _).along_snd
+alias ContMDiff.along_snd := ContMDiff.curry_right
+
 section prodMap
 
 variable {g : N → N'} {r : Set N} {y : N}
