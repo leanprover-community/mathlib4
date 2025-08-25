@@ -5,6 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+import Mathlib.Data.Int.Interval
+import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -160,4 +162,19 @@ lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
   refine prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) ?_ ?_ ?_ ?_ ?_ <;> simp
 
 end LinearOrder
+
+/-- Gauss' summation formula for consecutive integers. -/
+theorem sum_Ico_id_mul_two {a b : ℤ} (h : a ≤ b) :
+    (∑ i ∈ Ico a b, i) * 2 = (b - a) * (a + b - 1) := by
+  induction b, h using Int.le_induction with
+  | base => simp
+  | succ b h ih =>
+    rw [← Finset.sum_Ico_add_eq_sum_Ico_add_one h, add_mul, ih]
+    grind
+
+/-- Gauss' summation formula for consecutive integers. -/
+theorem sum_Ico_id {a b : ℤ} (h : a ≤ b) :
+    ∑ i ∈ Ico a b, i = (b - a) * (a + b - 1) / 2 :=
+  Int.eq_ediv_of_mul_eq_left (by simp) (sum_Ico_id_mul_two h)
+
 end Finset
