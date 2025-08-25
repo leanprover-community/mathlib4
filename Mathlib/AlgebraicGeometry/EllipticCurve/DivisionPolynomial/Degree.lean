@@ -197,7 +197,7 @@ private lemma natDegree_coeff_preΨ' (n : ℕ) :
     (W.preΨ' n).natDegree ≤ expDegree n ∧ (W.preΨ' n).coeff (expDegree n) = expCoeff n := by
   let dm {m n p q} : _ → _ → (p * q : R[X]).natDegree ≤ m + n := natDegree_mul_le_of_le
   let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
-  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
+  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
   let cp {m n p} : _ → (p ^ m : R[X]).coeff (m * n) = _ := coeff_pow_of_natDegree_le
   induction n using normEDSRec with
   | zero => simpa only [preΨ'_zero] using ⟨natDegree_zero.le, Int.cast_zero.symm⟩
@@ -333,8 +333,8 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
   constructor
   · refine natDegree_mul_le_of_le (dp h.1) ?_
     split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
-  · rw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
-      coeff_Ψ₂Sq, coeff_one_zero, hc]
+  · rw [coeff_mul_add_eq_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2,
+      apply_ite₂ coeff, coeff_Ψ₂Sq, coeff_one_zero, hc]
     · norm_cast
     split_ifs <;> simp only [natDegree_one.le, W.natDegree_Ψ₂Sq_le]
 
@@ -385,7 +385,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
     (W.Φ n).natDegree ≤ n ^ 2 ∧ (W.Φ n).coeff (n ^ 2) = 1 := by
   let dm {m n p q} : _ → _ → (p * q : R[X]).natDegree ≤ m + n := natDegree_mul_le_of_le
   let dp {m n p} : _ → (p ^ n : R[X]).natDegree ≤ n * m := natDegree_pow_le_of_le n
-  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_of_natDegree_le
+  let cm {m n p q} : _ → _ → (p * q : R[X]).coeff (m + n) = _ := coeff_mul_add_eq_of_natDegree_le
   let h {n} := W.natDegree_coeff_preΨ' n
   rcases n with _ | _ | n
   iterate 2 simp [natDegree_X_le]
