@@ -255,6 +255,18 @@ instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE �
 
 end Mul
 
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulMono ℕ M where
+  elim _n _ _m₁ _m₂ hm := nsmul_le_nsmul_right hm _
+
+instance {M : Type*} [PartialOrder M] [AddCancelCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulStrictMono ℕ M where
+  elim _n hn _m₁ _m₂ := nsmul_lt_nsmul_right hn.ne'
+
+instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+    PosSMulStrictMono ℤ G where
+  elim _n hn _m₁ _m₂ := zsmul_lt_zsmul_right hn
+
 section SMul
 variable [SMul α β]
 
