@@ -38,23 +38,24 @@ lie admissible, jacobi identity, lie algebra
 /-- A `LieAdmissibleRing` is a `NonUnitalNonAssocRing` such that the canonical bracket
 `⁅x, y⁆ := x * y - y * x` turns it into a `LieRing`. This is expressed by an associator identity. -/
 @[ext]
-class LieAdmissibleRing (L : Type*) : Type _ extends NonUnitalNonAssocRing L where
+class LieAdmissibleRing (L : Type*) extends NonUnitalNonAssocRing L where
   assoc_def (x y z : L) : associator x y z + associator z x y + associator y z x =
   associator y x z + associator z y x + associator x z y
 
 /-- `LieAdmissibleAlgebras` are `LieAdmissibleRings` with a compatible action by scalars in a
 commutative ring. -/
 @[ext]
-class LieAdmissibleAlgebra (R : Type*) [CommRing R] (L : Type*) [LieAdmissibleRing L] :
-    Type _ extends Module R L, IsScalarTower R L L, SMulCommClass R L L where
+class LieAdmissibleAlgebra (R : Type*) [CommRing R] (L : Type*) [LieAdmissibleRing L]
+  extends Module R L, IsScalarTower R L L, SMulCommClass R L L where
 
 section instances
-variable {R : Type*} [CommRing R]
+
+variable {R L : Type*} [CommRing R]
+
 section ring
-variable {L : Type*} [LieAdmissibleRing L]
 
 /-- By definition, every `LieAdmissibleRing` yields a `LieRing` with the commutator bracket. -/
-instance : LieRing L where
+instance [LieAdmissibleRing L] : LieRing L where
   add_lie x y z := by
     simp [Ring.lie_def]
     noncomm_ring
@@ -74,17 +75,18 @@ instance : LieRing L where
 end ring
 
 section algebra
-variable {L : Type*} [LieAdmissibleRing L] [LieAdmissibleAlgebra R L]
 
 /-- Every `LieAdmissibleAlgebra` is a `LieAlgebra` with the commutator bracket. -/
-instance : LieAlgebra R L where
+instance [LieAdmissibleRing L] [LieAdmissibleAlgebra R L] : LieAlgebra R L where
   lie_smul r x y := by
     simp [Ring.lie_def]
     rw [mul_smul_comm, smul_mul_assoc, ← smul_sub]
 end algebra
+
 end instances
 
 namespace LeftPreLieRing
+
 variable {L : Type*} [LeftPreLieRing L]
 
 /-- `LeftPreLieRings` are an example of `LieAdmissibleRings` by the commutatitvity assumption on the
@@ -95,29 +97,36 @@ instance : LieAdmissibleRing L where
     have assoc_zxy := LeftPreLieRing.assoc_symm' z x y
     have assoc_yzx := LeftPreLieRing.assoc_symm' y z x
     grind
+
 end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
+
 variable {R L : Type*} [CommRing R] [LeftPreLieRing L] [LeftPreLieAlgebra R L]
 
 instance : LieAdmissibleAlgebra R L where
+
 end LeftPreLieAlgebra
 
 namespace RightPreLieRing
+
 variable {L : Type*} [RightPreLieRing L]
 
-/-- `RightPreLieRings` are an example of `LieAdmissibleRings` by the commutatitvity assumption on the
-associator. -/
+/-- `RightPreLieRings` are an example of `LieAdmissibleRings` by the commutatitvity assumption on
+the associator. -/
 instance : LieAdmissibleRing L where
   assoc_def x y z := by
     have assoc_xyz := RightPreLieRing.assoc_symm' x y z
     have assoc_zxy := RightPreLieRing.assoc_symm' z x y
     have assoc_yzx := RightPreLieRing.assoc_symm' y z x
     grind
+
 end RightPreLieRing
 
 namespace RightPreLieAlgebra
+
 variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
 
 instance : LieAdmissibleAlgebra R L where
+
 end RightPreLieAlgebra
