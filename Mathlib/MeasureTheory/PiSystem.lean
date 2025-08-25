@@ -97,6 +97,14 @@ theorem IsPiSystem.insert_univ {S : Set (Set α)} (h_pi : IsPiSystem S) :
     · simp [hs, ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
+lemma IsPiSystem.iff_of_empty_mem (S : Set (Set α)) (hS : ∅ ∈ S) :
+    (IsPiSystem S) ↔ (∀ s ∈ S, ∀ t ∈ S, s ∩ t ∈ S) := by
+  refine ⟨fun h s hs t ht ↦ ?_, fun h s hs t ht _ ↦ h s hs t ht⟩
+  by_cases h' : (s ∩ t).Nonempty
+  · exact h s hs t ht h'
+  · push_neg at h'
+    exact h' ▸ hS
+
 theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : α → β) :
     IsPiSystem { s : Set α | ∃ t ∈ S, f ⁻¹' t = s } := by
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
