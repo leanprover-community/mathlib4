@@ -56,7 +56,7 @@ lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
 elements are nontrivial. -/
 def IsPrimitive (ψ : AddChar R R') : Prop := ∀ ⦃a : R⦄, a ≠ 0 → mulShift ψ a ≠ 1
 
-/-- The composition of a primitive additive character with an injective mooid homomorphism
+/-- The composition of a primitive additive character with an injective monoid homomorphism
 is also primitive. -/
 lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
     {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
@@ -85,7 +85,8 @@ theorem IsPrimitive.of_ne_one {F : Type u} [Field F] {ψ : AddChar F R'} (hψ : 
 lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
     (hr : ¬ IsUnit r) : ¬ IsPrimitive (e.mulShift r) := by
   simp only [IsPrimitive, not_forall]
-  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite, mem_nonZeroDivisors_iff, not_forall] at hr
+  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite,
+    mem_nonZeroDivisors_iff_right, not_forall] at hr
   rcases hr with ⟨x, h, h'⟩
   exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff]⟩
 

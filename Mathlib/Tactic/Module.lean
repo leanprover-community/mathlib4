@@ -61,9 +61,7 @@ def eval [Add M] [Zero M] [SMul R M] (l : NF R M) : M := (l.map (fun (⟨r, x⟩
 
 @[simp] theorem eval_cons [AddMonoid M] [SMul R M] (p : R × M) (l : NF R M) :
     (p ::ᵣ l).eval = p.1 • p.2 + l.eval := by
-  unfold eval cons
-  rw [List.map_cons]
-  rw [List.sum_cons]
+  rfl
 
 theorem atom_eq_eval [AddMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
@@ -461,11 +459,11 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r):)⟩
   /- parse a `(0:M)` -/
   | ~q(0) =>
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [], q(NF.zero_eq_eval $M)⟩
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [], q(NF.zero_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
-    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommGroup.toNatModule), [((q(1), x'), k)],
+    pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [((q(1), x'), k)],
       q(NF.atom_eq_eval $x')⟩
 
 /-- Given expressions `R` and `M` representing types such that `M`'s is a module over `R`'s, and

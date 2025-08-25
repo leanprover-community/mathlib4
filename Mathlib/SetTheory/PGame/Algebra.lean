@@ -5,6 +5,12 @@ Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zh
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.SetTheory.PGame.Order
+import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Algebraic structure on pregames
@@ -118,9 +124,6 @@ theorem moveLeft_neg {x : PGame} (i) :
   cases x
   rfl
 
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-alias moveLeft_neg' := moveLeft_neg
-
 theorem moveLeft_neg_toLeftMovesNeg {x : PGame} (i) :
     (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by simp
 
@@ -130,27 +133,8 @@ theorem moveRight_neg {x : PGame} (i) :
   cases x
   rfl
 
-@[deprecated moveRight_neg (since := "2024-10-30")]
-alias moveRight_neg' := moveRight_neg
-
 theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
     (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
-
-@[deprecated moveRight_neg (since := "2024-10-30")]
-theorem moveLeft_neg_symm {x : PGame} (i) :
-    x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
-
-@[deprecated moveRight_neg (since := "2024-10-30")]
-theorem moveLeft_neg_symm' {x : PGame} (i) :
-    x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
-
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-theorem moveRight_neg_symm {x : PGame} (i) :
-    x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
-
-@[deprecated moveLeft_neg (since := "2024-10-30")]
-theorem moveRight_neg_symm' {x : PGame} (i) :
-    x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
 @[simp]
 theorem forall_leftMoves_neg {x : PGame} {p : (-x).LeftMoves → Prop} :

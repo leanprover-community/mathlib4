@@ -422,7 +422,7 @@ lemma height_eq_top_iff {x : α} :
     rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
     push_neg
     intro n
-    obtain ⟨p, hlast, hp⟩ := h (n+1)
+    obtain ⟨p, hlast, hp⟩ := h (n + 1)
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
 
 /--
@@ -445,6 +445,16 @@ protected alias ⟨_, IsMin.height_eq_zero⟩ := height_eq_zero
   height_eq_zero (α := αᵒᵈ)
 
 protected alias ⟨_, IsMax.coheight_eq_zero⟩ := coheight_eq_zero
+
+lemma height_ne_zero {x : α} : height x ≠ 0 ↔ ¬ IsMin x := height_eq_zero.not
+
+@[simp] lemma height_pos {x : α} : 0 < height x ↔ ¬ IsMin x := by
+  simp [pos_iff_ne_zero]
+
+lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq_zero.not
+
+@[simp] lemma coheight_pos {x : α} : 0 < coheight x ↔ ¬ IsMax x := by
+  simp [pos_iff_ne_zero]
 
 @[simp] lemma height_bot (α : Type*) [Preorder α] [OrderBot α] : height (⊥ : α) = 0 := by simp
 
@@ -480,7 +490,7 @@ lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     simp [ENat.add_one_le_iff]
   · congr! 1
     · exact coe_lt_height_iff hfin
-    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n+1)
+    · simpa [hfin, ENat.lt_add_one_iff] using height_le_coe_iff (x := x) (n := n + 1)
 
 lemma coheight_eq_coe_add_one_iff {x : α} {n : ℕ} :
     coheight x = n + 1 ↔
@@ -519,7 +529,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
   · suffices ∃ x < a, ↑n ≤ height x by
       simp_all [minimal_iff_forall_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
-    obtain ⟨p, rfl, hp⟩ := hfin (n+1)
+    obtain ⟨p, rfl, hp⟩ := hfin (n + 1)
     use p.eraseLast.last, p.eraseLast_last_rel_last (by omega)
     simpa [hp] using length_le_height_last (p := p.eraseLast)
 
@@ -527,6 +537,16 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
 lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
     coheight a = n ↔ Maximal (fun y => n ≤ coheight y) a :=
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
+
+lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
+  rw [← ENat.add_one_le_iff ENat.one_ne_top, show 1 + 1 = (2 : ℕ∞) from rfl]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
+    refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
+  · rintro ⟨y, z, hzy, hyx⟩
+    let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
+      (List.Chain'.cons_cons hzy <| List.chain'_pair.mpr hyx)
+    exact Order.length_le_height (p := p) (by rfl)
 
 end height
 
@@ -554,11 +574,7 @@ lemma krullDim_nonneg_iff : 0 ≤ krullDim α ↔ Nonempty α := by
 
 lemma krullDim_eq_bot [IsEmpty α] : krullDim α = ⊥ := krullDim_eq_bot_iff.mpr ‹_›
 
-@[deprecated (since := "2024-12-22")] alias krullDim_eq_bot_of_isEmpty := krullDim_eq_bot
-
 lemma krullDim_nonneg [Nonempty α] : 0 ≤ krullDim α := krullDim_nonneg_iff.mpr ‹_›
-
-@[deprecated (since := "2024-12-22")] alias krullDim_nonneg_of_nonempty := krullDim_nonneg
 
 theorem krullDim_ne_bot_iff : krullDim α ≠ ⊥ ↔ Nonempty α := by
   rw [ne_eq, krullDim_eq_bot_iff, not_isEmpty_iff]
@@ -667,9 +683,6 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
       WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
-@[deprecated (since := "2024-12-22")]
-alias krullDim_eq_top_of_infiniteDimensionalOrder := krullDim_eq_top
-
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ krullDim_eq_top⟩
   cases isEmpty_or_nonempty α
@@ -687,7 +700,7 @@ lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.l
     constructor
     · exact fun H ↦ ⟨(LTSeries.longestOf α).take ⟨_, Nat.lt_succ.mpr H⟩, rfl⟩
     · exact fun ⟨l, hl⟩ ↦ hl ▸ l.longestOf_is_longest
-  · simpa [krullDim_eq_top] using Rel.InfiniteDimensional.exists_relSeries_with_length n
+  · simpa [krullDim_eq_top] using SetRel.InfiniteDimensional.exists_relSeries_with_length n
 
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
 lemma krullDim_eq_iSup_length [Nonempty α] :
@@ -728,11 +741,19 @@ lemma height_le_krullDim (a : α) : height a ≤ krullDim α := by
 lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
   simpa using height_le_krullDim (α := αᵒᵈ) a
 
+@[simp]
+lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
+    height (LTSeries.longestOf α).last = krullDim α := by
+  refine le_antisymm (height_le_krullDim _) ?_
+  rw [krullDim_eq_length_of_finiteDimensionalOrder, height]
+  norm_cast
+  exact le_iSup_iff.mpr <| fun _ h ↦ iSup_le_iff.mp (h _) le_rfl
+
 /--
 The Krull dimension is the supremum of the elements' heights.
 
 This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
-`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+`WithBot ℕ∞` is on the outside of the right-hand side, which is usually more convenient.
 
 If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
 version, with the coercion under the supremum.
@@ -852,6 +873,12 @@ lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
   · constructor
     · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalOrder α)))
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
+
+lemma krullDim_ne_bot_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊥ :=
+  (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).1
+
+lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ :=
+  (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
 
 end finiteDimensional
 
@@ -1017,8 +1044,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
   change (krullDim (WithTop ℕ) = ⊤)
-  simp only [krullDim_WithTop, krullDim_nat]
-  rfl
+  simp [← WithBot.coe_top, ← WithBot.coe_one, ← WithBot.coe_add]
 
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by

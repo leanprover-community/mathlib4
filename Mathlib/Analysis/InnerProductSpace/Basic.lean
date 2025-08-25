@@ -85,7 +85,7 @@ lemma inner_smul_left_eq_star_smul (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r�
     ← algebraMap_star_comm, ← smul_eq_mul, algebraMap_smul]
 
 /-- Special case of `inner_smul_left_eq_star_smul` when the acting ring has a trivial star
-(eg `ℕ`, `ℤ`, `ℚ≥0`, `ℚ`, `ℝ`). -/
+(e.g. `ℕ`, `ℤ`, `ℚ≥0`, `ℚ`, `ℝ`). -/
 lemma inner_smul_left_eq_smul [TrivialStar 𝕝] (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left_eq_star_smul, starRingEnd_apply, star_trivial]
 
@@ -570,12 +570,7 @@ theorem real_inner_add_sub_eq_zero_iff (x y : F) : ⟪x + y, x - y⟫_ℝ = 0 �
   conv_rhs => rw [← mul_self_inj_of_nonneg (norm_nonneg _) (norm_nonneg _)]
   simp only [← @inner_self_eq_norm_mul_norm ℝ, inner_add_left, inner_sub_right, real_inner_comm y x,
     sub_eq_zero, re_to_real]
-  constructor
-  · intro h
-    rw [add_comm] at h
-    linarith
-  · intro h
-    linarith
+  grind
 
 /-- Given two orthogonal vectors, their sum and difference have equal norms. -/
 theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w + v‖ := by
@@ -918,4 +913,5 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
 -- The instance above does not create diamonds for concrete `𝕜`:
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
 example :
-  (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal := rfl
+    (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
+  rfl

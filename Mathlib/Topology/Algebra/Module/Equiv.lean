@@ -13,7 +13,7 @@ Continuous semilinear / linear / star-linear equivalences between topological mo
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -104,7 +104,7 @@ def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjo
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (π := φ) i) <|
+      Continuous.comp (continuous_apply (A := φ) i) <|
         @continuous_subtype_val _ _ fun x =>
           x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
   continuous_invFun :=
@@ -416,6 +416,41 @@ lemma prodAssoc_symm_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) :
 
 end prodAssoc
 
+section prodProdProdComm
+
+variable (R M₁ M₂ M₃ M₄ : Type*) [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+  [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
+
+/-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
+This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
+def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where
+  toLinearEquiv := LinearEquiv.prodProdProdComm R M₁ M₂ M₃ M₄
+  continuous_toFun := by fun_prop
+  continuous_invFun := by fun_prop
+
+@[simp]
+theorem prodProdProdComm_symm :
+    (prodProdProdComm R M₁ M₂ M₃ M₄).symm = prodProdProdComm R M₁ M₃ M₂ M₄ :=
+  rfl
+
+@[simp]
+lemma prodProdProdComm_toLinearEquiv :
+    (prodProdProdComm R M₁ M₂ M₃ M₄).toLinearEquiv = LinearEquiv.prodProdProdComm R M₁ M₂ M₃ M₄ :=
+  rfl
+
+@[simp]
+lemma coe_prodProdProdComm :
+    (prodProdProdComm R M₁ M₂ M₃ M₄ : (M₁ × M₂) × M₃ × M₄ → (M₁ × M₃) × M₂ × M₄) =
+      Equiv.prodProdProdComm M₁ M₂ M₃ M₄ := rfl
+
+@[simp]
+lemma prodProdProdComm_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) (p₄ : M₄) :
+    prodProdProdComm R M₁ M₂ M₃ M₄ ((p₁, p₂), p₃, p₄) = ((p₁, p₃), p₂, p₄) := rfl
+
+end prodProdProdComm
+
 section prodUnique
 
 variable (R M N : Type*) [Semiring R]
@@ -677,7 +712,7 @@ def piCongrLeft (R : Type*) [Semiring R] {ι ι' : Type*}
   __ := LinearEquiv.piCongrLeft R φ e
 
 /-- The product over `S ⊕ T` of a family of topological modules
-is isomorphic (topologically and alegbraically) to the product of
+is isomorphic (topologically and algebraically) to the product of
 (the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `ContinuousLinearEquiv`.
@@ -1025,8 +1060,6 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 @[simp] lemma inverse_of_not_isInvertible
     {f : M →L[R] M₂} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
   dif_neg hf
-
-@[deprecated (since := "2024-10-29")] alias inverse_non_equiv := inverse_of_not_isInvertible
 
 @[simp]
 theorem isInvertible_zero_iff :
