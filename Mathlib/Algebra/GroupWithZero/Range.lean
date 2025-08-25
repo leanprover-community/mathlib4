@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E.
 -/
 
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-! # The range of a MonoidWithZeroHom
@@ -49,15 +49,19 @@ namespace MonoidWithZeroHom
 
 open Set Subgroup Submonoid
 
-lemma mrange_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
-    (f : G →*₀ H) :
-    Nontrivial (MonoidHom.mrange f) :=
-  ⟨1, ⟨0, 0, by simp⟩, by simp [Subtype.ext_iff]⟩
+section mrange
 
-lemma range_nontrivial {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H]
-    (f : G →*₀ H) :
+variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H] [Nontrivial H] (f : G →*₀ H)
+
+lemma mrange_nontrivial :
+    Nontrivial (MonoidHom.mrange f) :=
+  ⟨1, 0, by simp [Subtype.ext_iff]⟩
+
+lemma range_nontrivial :
     (Set.range f).Nontrivial :=
   Set.nontrivial_coe_sort.mp f.mrange_nontrivial
+
+end mrange
 
 variable {A B F : Type*} [FunLike F A B] (f : F)
 
