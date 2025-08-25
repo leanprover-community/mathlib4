@@ -164,6 +164,10 @@ protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInve
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x
 
+@[nontriviality]
+theorem IsFixedPt.of_subsingleton [Subsingleton α] (f : α → α) (x : α) : IsFixedPt f x :=
+  Subsingleton.elim _ _
+
 end Function
 
 namespace Pi

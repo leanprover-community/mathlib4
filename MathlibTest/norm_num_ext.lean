@@ -12,6 +12,7 @@ import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Data.NNRat.Floor
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
@@ -417,18 +418,56 @@ end big_operators
 
 section floor
 
+section Semiring
+
+variable (R : Type*) [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
+
+example : ⌊(2 : R)⌋₊ = 2 := by norm_num1
+example : ⌈(2 : R)⌉₊ = 2 := by norm_num1
+
+end Semiring
+
+section Ring
+
 variable (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+
+example : ⌊(-1 : R)⌋ = -1 := by norm_num1
+example : ⌊(2 : R)⌋ = 2 := by norm_num1
+example : ⌈(-1 : R)⌉ = -1 := by norm_num1
+example : ⌈(2 : R)⌉ = 2 := by norm_num1
+example : ⌊(-2 : R)⌋₊ = 0 := by norm_num1
+example : ⌈(-3 : R)⌉₊ = 0 := by norm_num1
+example : round (1 : R) = 1 := by norm_num1
+example : Int.fract (1 : R) = 0 := by norm_num1
+example : round (-3 : R) = -3 := by norm_num1
+example : Int.fract (-3 : R) = 0 := by norm_num1
+
+
+end Ring
+
+section Semifield
+
+variable (K : Type*) [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
+
+example : ⌊(35 / 16 : K)⌋₊ = 2 := by norm_num1
+example : ⌈(35 / 16 : K)⌉₊ = 3 := by norm_num1
+
+end Semifield
+
+section Field
+
 variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
-example : ⌊(-1 : R)⌋ = -1 := by norm_num
-example : ⌊(2 : R)⌋ = 2 := by norm_num
 example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
 example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
-
-example : ⌈(-1 : R)⌉ = -1 := by norm_num
-example : ⌈(2 : R)⌉ = 2 := by norm_num
 example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
 example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+example : ⌊(-35 / 16 : K)⌋₊ = 0 := by norm_num1
+example : ⌈(-35 / 16 : K)⌉₊ = 0 := by norm_num1
+example : round (-35 / 16 : K) = -2 := by norm_num1
+example : Int.fract (-35 / 16 : K) = 13 / 16 := by norm_num1
+
+end Field
 
 end floor
 

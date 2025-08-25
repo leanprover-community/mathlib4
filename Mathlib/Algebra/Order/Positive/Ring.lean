@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Tactic.FastInstance
 
 /-!
@@ -26,7 +27,7 @@ section AddBasic
 
 variable [AddMonoid M] [Preorder M] [AddLeftStrictMono M]
 
-instance : Add { x : M // 0 < x } :=
+instance instAdd : Add { x : M // 0 < x } :=
   ⟨fun x y => ⟨x + y, add_pos x.2 y.2⟩⟩
 
 @[simp, norm_cast]
@@ -97,12 +98,28 @@ instance : Semigroup { x : R // 0 < x } := fast_instance%
 instance : Distrib { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.distrib _ coe_add val_mul
 
-instance : One { x : R // 0 < x } :=
-  ⟨⟨1, one_pos⟩⟩
+/-- Enable natural literals in `{x : R // 0 < x}`.
+
+Note that this instance uses `OfNat` instance from `Grind`,
+which is equal to the Mathlib-provided instance for all specific numerals
+but is not definitionally equal to the Mathlib-provided instance for `{n : ℕ} [n.AtLeastTwo]`.
+-/
+instance instOfNat {n : ℕ} [NeZero n] : OfNat {x : R // 0 < x} n where
+  ofNat := .mk (OfNat.ofNat n) <| by
+    rcases n with _ | _ | _
+    · exact absurd rfl ‹NeZero _›.1
+    · apply one_pos
+    · exact Nat.cast_pos'.mpr <| by simp
+
+@[simp, norm_cast]
+theorem val_ofNat (n : ℕ) [NeZero n] : (ofNat(n) : {x : R // 0 < x}).val = ofNat(n) := rfl
 
 @[simp]
-theorem val_one : ((1 : { x : R // 0 < x }) : R) = 1 :=
+theorem mk_ofNat (n : ℕ) [NeZero n] :
+    (⟨ofNat(n), (ofNat(n) : {x : R // 0 < x}).2⟩ : {x : R // 0 < x}) = ofNat(n) :=
   rfl
+
+theorem val_one : ((1 : { x : R // 0 < x }) : R) = 1 := rfl
 
 instance : Monoid { x : R // 0 < x } := fast_instance%
   Subtype.coe_injective.monoid _ val_one val_mul val_pow
