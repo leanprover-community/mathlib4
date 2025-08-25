@@ -253,7 +253,7 @@ theorem comp_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
     (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
 
 theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := by
-  ext; simp only [comp_toFun']; rfl
+  rfl
 
 theorem comp_id : g.comp id = g := by ext; rfl
 
