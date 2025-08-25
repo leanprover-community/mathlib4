@@ -5,6 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Diagonal
 
@@ -46,7 +47,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra Field Star
+assert_not_exists Algebra Field TrivialStar
 
 universe u u' v w
 
@@ -219,7 +220,7 @@ end NonUnitalNonAssocRing
 
 section DistribMulAction
 
-variable [Monoid R] [Mul α] [AddCommMonoid α] [DistribMulAction R α]
+variable [Mul α] [AddCommMonoid α] [DistribSMul R α]
 
 @[simp]
 theorem smul_dotProduct [IsScalarTower R α α] (x : R) (v w : m → α) :
@@ -667,11 +668,6 @@ theorem vecMul_zero [Fintype m] (v : m → α) : v ᵥ* (0 : Matrix m n α) = 0 
   ext
   simp [vecMul]
 
-theorem smul_mulVec_assoc [Fintype n] [Monoid R] [DistribMulAction R α] [IsScalarTower R α α]
-    (a : R) (A : Matrix m n α) (b : n → α) : (a • A) *ᵥ b = a • A *ᵥ b := by
-  ext
-  apply smul_dotProduct
-
 theorem mulVec_add [Fintype n] (A : Matrix m n α) (x y : n → α) :
     A *ᵥ (x + y) = A *ᵥ x + A *ᵥ y := by
   ext
@@ -692,17 +688,31 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
-    (b • v) ᵥ* M = b • v ᵥ* M := by
-  ext i
-  simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
-
-theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
-    [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
+theorem mulVec_smul [Fintype n] [DistribSMul R α] [SMulCommClass R α α]
+    (M : Matrix m n α) (b : R) (v : n → α) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
-  ext i
-  simp only [mulVec, dotProduct, Finset.smul_sum, Pi.smul_apply, mul_smul_comm]
+  ext
+  exact dotProduct_smul _ _ _
+
+theorem smul_mulVec [Fintype n] [DistribSMul R α] [IsScalarTower R α α]
+    (b : R) (M : Matrix m n α) (v : n → α) :
+    (b • M) *ᵥ v = b • M *ᵥ v := by
+  ext
+  exact smul_dotProduct _ _ _
+
+theorem smul_vecMul [Fintype m] [DistribSMul R α] [IsScalarTower R α α]
+    (b : R) (v : m → α) (M : Matrix m n α) :
+    (b • v) ᵥ* M = b • v ᵥ* M := by
+  ext
+  exact smul_dotProduct _ _ _
+
+theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
+    (v : m → α) (b : R) (M : Matrix m n α) :
+    v ᵥ* (b • M) = b • v ᵥ* M := by
+  ext
+  exact dotProduct_smul _ _ _
+
+@[deprecated (since := "2025-08-14")] alias smul_mulVec_assoc := smul_mulVec
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
@@ -774,6 +784,36 @@ theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x :
   ext i j
   simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
     smul_eq_mul, Finset.sum_mul, mul_assoc]
+
+lemma mul_right_injective_iff_mulVec_injective [Fintype m] [Nonempty n] {A : Matrix l m α} :
+    Function.Injective (fun B : Matrix m n α => A * B) ↔ Function.Injective A.mulVec := by
+  refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_col fun j => ha congr(($hBC).col j)⟩
+  inhabit n
+  -- `replicateRow` is not available yet
+  suffices (of fun i j => v i) = (of fun i j => w i) from
+    funext fun i => congrFun₂ this i (default : n)
+  exact ha <| ext fun _ _ => congrFun hvw _
+
+lemma mul_left_injective_iff_vecMul_injective [Nonempty l] [Fintype m] {A : Matrix m n α} :
+    Function.Injective (fun B : Matrix l m α => B * A) ↔ Function.Injective A.vecMul := by
+  refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_row fun i => ha congr(($hBC).row i)⟩
+  inhabit l
+  --  `replicateCol` is not available yet
+  suffices (of fun i j => v j) = (of fun i j => w j) from
+    funext fun j => congrFun₂ this (default : l) j
+  exact ha <| ext fun _ _ => congrFun hvw _
+
+lemma isLeftRegular_iff_mulVec_injective [Fintype m] {A : Matrix m m α} :
+    IsLeftRegular A ↔ Function.Injective A.mulVec := by
+  cases isEmpty_or_nonempty m
+  · simp [IsLeftRegular, Function.injective_of_subsingleton]
+  exact mul_right_injective_iff_mulVec_injective
+
+lemma isRightRegular_iff_vecMul_injective [Fintype m] {A : Matrix m m α} :
+    IsRightRegular A ↔ Function.Injective A.vecMul := by
+  cases isEmpty_or_nonempty m
+  · simp [IsRightRegular, Function.injective_of_subsingleton]
+  exact mul_left_injective_iff_vecMul_injective
 
 end NonUnitalSemiring
 
@@ -921,16 +961,12 @@ section Semiring
 variable [Semiring R]
 
 lemma mulVec_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
-    (ha : IsUnit A) : Function.Injective A.mulVec := by
-  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
-  intro x y hxy
-  simpa [hBr] using congrArg B.mulVec hxy
+    (ha : IsUnit A) : Function.Injective A.mulVec :=
+  isLeftRegular_iff_mulVec_injective.1 ha.isRegular.left
 
 lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
-    (ha : IsUnit A) : Function.Injective A.vecMul := by
-  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
-  intro x y hxy
-  simpa [hBl] using congrArg B.vecMul hxy
+    (ha : IsUnit A) : Function.Injective A.vecMul :=
+  isRightRegular_iff_vecMul_injective.1 ha.isRegular.right
 
 lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
     (h : (M ^ k).row i = 0) (h' : k ≤ l) :
@@ -952,10 +988,10 @@ section CommSemiring
 
 variable [CommSemiring α]
 
+@[deprecated mulVec_smul (since := "2025-08-14")]
 theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α) :
-    A *ᵥ (a • b) = a • A *ᵥ b := by
-  ext
-  apply dotProduct_smul
+    A *ᵥ (a • b) = a • A *ᵥ b :=
+  mulVec_smul _ _ _
 
 end CommSemiring
 

@@ -188,13 +188,16 @@ theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
   rwa [orderOf, minimalPeriod, dif_neg]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem orderOf_eq_zero_iff : orderOf x = 0 ↔ ¬IsOfFinOrder x :=
   ⟨fun h H ↦ H.orderOf_pos.ne' h, orderOf_eq_zero⟩
 
 @[to_additive]
 theorem orderOf_eq_zero_iff' : orderOf x = 0 ↔ ∀ n : ℕ, 0 < n → x ^ n ≠ 1 := by
   simp_rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one, not_exists, not_and]
+
+@[to_additive]
+lemma orderOf_ne_zero_iff : orderOf x ≠ 0 ↔ IsOfFinOrder x := orderOf_eq_zero_iff.not_left
 
 @[to_additive]
 theorem orderOf_eq_iff {n} (h : 0 < n) :
@@ -211,8 +214,8 @@ theorem orderOf_eq_iff {n} (h : 0 < n) :
     exact h1 ⟨n, h, h'⟩
 
 /-- A group element has finite order iff its order is positive. -/
-@[to_additive
-  /-- A group element has finite additive order iff its order is positive. -/]
+@[to_additive (attr := simp)
+/-- A group element has finite additive order iff its order is positive. -/]
 theorem orderOf_pos_iff : 0 < orderOf x ↔ IsOfFinOrder x := by
   rw [iff_not_comm.mp orderOf_eq_zero_iff, pos_iff_ne_zero]
 
@@ -384,7 +387,7 @@ protected lemma IsOfFinOrder.orderOf_pow (h : IsOfFinOrder x) :
 @[to_additive]
 lemma Nat.Coprime.orderOf_pow (h : (orderOf y).Coprime m) : orderOf (y ^ m) = orderOf y := by
   by_cases hg : IsOfFinOrder y
-  · rw [hg.orderOf_pow y m , h.gcd_eq_one, Nat.div_one]
+  · rw [hg.orderOf_pow y m, h.gcd_eq_one, Nat.div_one]
   · rw [m.coprime_zero_left.1 (orderOf_eq_zero hg ▸ h), pow_one]
 
 @[to_additive]
@@ -680,6 +683,18 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
     y ∈ zpowers x ↔ y ∈ (Finset.range (orderOf x)).image (x ^ ·) :=
   hx.mem_powers_iff_mem_zpowers.symm.trans hx.mem_powers_iff_mem_range_orderOf
 
+/-- See `Subgroup.closure_toSubmonoid_of_finite` for a version for finite groups. -/
+@[to_additive
+/-- See `AddSubgroup.closure_toAddSubmonoid_of_finite` for a version for finite additive groups. -/]
+lemma Subgroup.closure_toSubmonoid_of_isOfFinOrder {s : Set G} (hs : ∀ x ∈ s, IsOfFinOrder x) :
+    (closure s).toSubmonoid = Submonoid.closure s := by
+  refine le_antisymm ?_ (le_closure_toSubmonoid s)
+  rw [closure_toSubmonoid]
+  refine Submonoid.closure_le.mpr <| Set.union_subset Submonoid.subset_closure
+    fun x (hx : x⁻¹ ∈ s) ↦ ?_
+  apply Submonoid.powers_le.mpr (Submonoid.subset_closure hx)
+  simp [(hs _ hx).mem_powers_iff_mem_zpowers]
+
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
 @[to_additive /-- The equivalence between `Fin (addOrderOf a)` and
 `Subgroup.zmultiples a`, sending `i` to `i • a`. -/]
@@ -891,6 +906,14 @@ theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
   rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←
     Equiv.eq_symm_apply, finEquivZPowers_symm_apply]
   simp [h]
+
+/-- See `Subgroup.closure_toSubmonoid_of_isOfFinOrder` for a version with weaker assumptions. -/
+@[to_additive
+/-- See `AddSubgroup.closure_toAddSubmonoid_of_isOfFinOrder` for a version with weaker
+assumptions. -/]
+lemma Subgroup.closure_toSubmonoid_of_finite {s : Set G} :
+    (closure s).toSubmonoid = Submonoid.closure s :=
+  closure_toSubmonoid_of_isOfFinOrder <| by simp [isOfFinOrder_of_finite]
 
 end Finite
 
