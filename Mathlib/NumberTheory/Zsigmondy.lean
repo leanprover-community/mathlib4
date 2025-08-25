@@ -7,10 +7,15 @@ Authors: Mantas Bakšys, Yury Kudryashov, Alex Best
 import Mathlib.Algebra.Polynomial.Homogenize
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Tactic.Rify
+import Mathlib.NumberTheory.Multiplicity
+import Mathlib.Algebra.Order.WithTop.Untop0
+import Mathlib.RingTheory.Fintype
+import Mathlib.Tactic.Positivity.Finset
 
 /-!
 ## Zsigmondy's theorem
@@ -23,6 +28,79 @@ primitive prime divisor `p`.
 
 Inspired by Mathlib 3 code at https://github.com/leanprover-community/mathlib3/tree/zsigmondy
 -/
+
+namespace Int
+
+variable {a b n : ℤ}
+
+theorem ModEq.dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b :=
+  ⟨fun ha ↦ by simpa using h.dvd.add ha, fun hb ↦ by simpa using h.symm.dvd.add hb⟩
+
+theorem sq_modEq_sq {p : ℤ} (hp : Prime p) :
+    a ^ 2 ≡ b ^ 2 [ZMOD p] ↔ a ≡ b [ZMOD p] ∨ a ≡ -b [ZMOD p] := by
+  rw [modEq_comm]
+  simp only [modEq_iff_dvd, ← hp.dvd_mul]
+  ring_nf
+
+end Int
+
+namespace Mathlib.Meta.NormNum
+open Qq
+
+/-
+TODO: the next 2 extensions derive `n` twice.
+Fix this before moving to moving them to PRs.
+-/
+
+/-- `norm_num` extension for `Nat.ModEq`. -/
+@[norm_num Nat.ModEq _ _ _]
+def evalNatModEq : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
+  | 0, ~q(Prop), ~q(Nat.ModEq $n $a $b) =>
+    derive (u := 0) (α := q(Prop)) q(($a % $n : ℕ) = $b % $n)
+  | _, _, _ => failure
+
+/-- `norm_num` extension for `Int.ModEq`. -/
+@[norm_num Int.ModEq _ _ _]
+def evalIntModEq : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
+  | 0, ~q(Prop), ~q(Int.ModEq $n $a $b) =>
+    derive (u := 0) (α := q(Prop)) q(($a % $n : ℤ) = $b % $n)
+  | _, _, _ => failure
+
+/-- `norm_num` extension for `Even`.
+
+Works for `ℕ` and `ℤ`. -/
+@[norm_num Even _]
+def evalEven : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
+  | 0, ~q(Prop), ~q(@Even ℕ $addN $a) =>
+    assertInstancesCommute
+    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 0) q(Even $a) q((@Nat.even_iff $a).symm)
+    return .ofBoolResult r
+  | 0, ~q(Prop), ~q(@Even ℤ $addN $a) =>
+    assertInstancesCommute
+    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 0) q(Even $a) q((@Int.even_iff $a).symm)
+    return .ofBoolResult r
+  | _, _, _ => failure
+
+/-- `norm_num` extension for `Odd`.
+
+Works for `ℕ` and `ℤ`. -/
+@[norm_num Odd _]
+def evalOdd : NormNumExt where eval {u αP} e := do
+  match u, αP, e with
+  | 0, ~q(Prop), ~q(@Odd ℕ $inst $a) =>
+    assertInstancesCommute
+    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 1) q(Odd $a) q((@Nat.odd_iff $a).symm)
+    return .ofBoolResult r
+  | 0, ~q(Prop), ~q(@Odd ℤ $inst $a) =>
+    assertInstancesCommute
+    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 1) q(Odd $a) q((@Int.odd_iff $a).symm)
+    return .ofBoolResult r
+  | _ => failure
+
+end Mathlib.Meta.NormNum
 
 open Finset
 
@@ -714,7 +792,7 @@ lemma not_dvd_and_not_dvd_of_dvd_cyclotomic₂ {a b : ℤ} {p n : ℕ} [Fact p.P
   exact (Nat.prime_iff_prime_int.mp Fact.out).not_unit this
 
 lemma not_dvd_cyclotomic₂_of_ne_pow_padicValNat_mul_orderOf_div {p n : ℕ} [Fact p.Prime] {a b : ℤ}
-    (hpa : ¬↑p ∣ a)  (hab : |a| ≠ |b|) (hn : n ≠ p ^ padicValNat p n * orderOf (a / b : ZMod p)) :
+    (hpa : ¬↑p ∣ a) (hab : |a| ≠ |b|) (hn : n ≠ p ^ padicValNat p n * orderOf (a / b : ZMod p)) :
     ¬↑p ∣ MvPolynomial.eval ![a, b] (.cyclotomic₂ n ℤ) := by
   intro hpΦ
   have hp : p.Prime := Fact.out
