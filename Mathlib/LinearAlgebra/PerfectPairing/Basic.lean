@@ -314,7 +314,7 @@ variable {p : M →ₗ[R] N →ₗ[R] R} [p.IsPerfPair]
 
 variable (p) in
 /-- Given a perfect pairing `p` between `M` and `N`, we say a pair of submodules `U` in `M` and
-`V` in `N` are perfectly complementary wrt `p` if their dual annihilators are complementary, using
+`V` in `N` are perfectly complementary w.r.t. `p` if their dual annihilators are complementary, using
 `p` to identify `M` and `N` with dual spaces. -/
 structure IsPerfectCompl (U : Submodule R M) (V : Submodule R N) : Prop where
   isCompl_left : IsCompl U (V.dualAnnihilator.map p.toPerfPair.symm)

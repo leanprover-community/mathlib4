@@ -11,11 +11,11 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
 ## Main results
 
 - `CategoryTheory.Functor.IsLocallyFull`:
-  A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
+  A functor `G : C ⥤ D` is locally full w.r.t. a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
   the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
   in the image of `G` is a coverage of the topology on `D`.
 - `CategoryTheory.Functor.IsLocallyFaithful`:
-  A functor `G : C ⥤ D` is locally faithful wrt a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
+  A functor `G : C ⥤ D` is locally faithful w.r.t. a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
   image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that `gᵢ ≫ f₁ = gᵢ ≫ f₂`
   is a coverage of the topology on `D`.
 
@@ -75,7 +75,7 @@ open Presieve Opposite
 namespace Functor
 
 /--
-A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
+A functor `G : C ⥤ D` is locally full w.r.t. a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
 the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
 in the image of `G` is a coverage of the topology on `D`.
 -/
@@ -84,7 +84,7 @@ class IsLocallyFull : Prop where
     (G.imageSieve f).functorPushforward G ∈ K _
 
 /--
-A functor `G : C ⥤ D` is locally faithful wrt a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
+A functor `G : C ⥤ D` is locally faithful w.r.t. a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
 image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that `gᵢ ≫ f₁ = gᵢ ≫ f₂`
 is a coverage of the topology on `D`.
 -/
