@@ -92,6 +92,8 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
 
+@[inherit_doc] scoped [RingTheory.LinearMap] notation "μ" => LinearMap.mul' _ _
+
 variable {A}
 
 /-- Simultaneous multiplication on the left and right is a linear map. -/
