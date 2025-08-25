@@ -1066,17 +1066,11 @@ instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : K 
     CommGroupWithZero (MonoidHom.mrange v) where
   inv := fun x ↦ ⟨x⁻¹, by
     obtain ⟨y, hy⟩ := x.prop
-    simp_rw [← hy]
-    rw [MonoidHom.mem_mrange]
     use y⁻¹
-    simp⟩
+    simp [← hy]⟩
   zero := ⟨0, by simp⟩
-  zero_mul _ := by
-    rw [Subtype.ext_iff]
-    exact zero_mul _
-  mul_zero _ := by
-    rw [Subtype.ext_iff]
-    exact mul_zero _
+  zero_mul _ := Subtype.ext (zero_mul _)
+  mul_zero _ := Subtype.ext (mul_zero _)
   exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- map_one]⟩, by simp⟩
   inv_zero := Subtype.ext inv_zero
   mul_inv_cancel := by
@@ -1087,4 +1081,5 @@ instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : K 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
     CommGroupWithZero (MonoidHom.mrange v) :=
   inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
+
 end Valuation
