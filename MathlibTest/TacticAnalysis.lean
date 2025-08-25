@@ -68,6 +68,9 @@ section internals
 
 section setOptionIn
 
+/- Test that top-level `set_option ... in` commands activate tactic analyses, and do not
+accidentally disable them (#28926) -/
+
 /-- warning: Try this: rw [xy, yz] -/
 #guard_msgs in
 set_option linter.tacticAnalysis.rwMerge true in
