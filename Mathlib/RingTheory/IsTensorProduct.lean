@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Localization.Additive
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -592,3 +593,34 @@ lemma Algebra.IsPushout.of_equiv [h : IsPushout R R' S S']
   simpa [h.equiv_tmul] using DFunLike.congr_fun he x
 
 end IsBaseChange
+
+namespace AddSubmonoid
+
+variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G]
+
+theorem isLocalizationMap_iff_isTensorProduct (f : M →ₗ[ℕ] G) :
+    IsLocalizationMap ⊤ f ↔ IsTensorProduct (zmultiplesHom _ f).toNatLinearMap where
+  mp h := (⟨f.toAddHom, h⟩ : LocalizationMap ⊤ G).addMonoidHomTensor.symm.bijective
+  mpr h := by
+    convert (isLocalizationMap_tensorProductMk M).comp_addEquiv h.equiv.toAddEquiv
+    ext; simp
+
+theorem isLocalizationMap_iff_isBaseChange (f : M →ₗ[ℕ] G) :
+    IsLocalizationMap ⊤ f ↔ IsBaseChange ℤ f := isLocalizationMap_iff_isTensorProduct f
+
+theorem isLocalizationMap_iff_isPushout {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] :
+    IsLocalizationMap ⊤ (algebraMap R S) ↔ Algebra.IsPushout ℕ ℤ R S :=
+  (isLocalizationMap_iff_isBaseChange (algebraMap R S).toNatLinearMap).trans
+    (Algebra.isPushout_iff ..).symm
+
+end AddSubmonoid
+
+namespace Algebra.GrothendieckAddGroup
+
+instance (R) [CommSemiring R] : Algebra.IsPushout ℕ ℤ R (GrothendieckAddGroup R) :=
+  AddSubmonoid.isLocalizationMap_iff_isPushout.mp (AddLocalization.addMonoidOf _).isLocalizationMap
+
+instance (R) [CommSemiring R] : Algebra.IsPushout ℕ R ℤ (GrothendieckAddGroup R) :=
+  .symm inferInstance
+
+end Algebra.GrothendieckAddGroup
