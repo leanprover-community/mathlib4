@@ -145,9 +145,9 @@ lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
 @[deprecated (since := "2025-08-25")] alias inv_divInt' := inv_divInt
 
 @[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by
-  rw [mkRat_eq_divInt, inv_divInt']
+  rw [mkRat_eq_divInt, inv_divInt]
 
-lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', num_divInt_den]
+@[deprecated (since := "2025-08-25")] alias inv_def' := inv_def
 
 @[simp] lemma divInt_div_divInt (n₁ d₁ n₂ d₂) :
     (n₁ /. d₁) / (n₂ /. d₂) = (n₁ * d₂) /. (d₁ * n₂) := by
@@ -161,7 +161,7 @@ variable (a b c : ℚ)
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
 @[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
-lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_ofNat]
+lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, Rat.intCast_one]
 
 protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
   rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> omega
@@ -184,8 +184,16 @@ instance addCommGroup : AddCommGroup ℚ where
   add_assoc := Rat.add_assoc
   neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
-  nsmul := nsmulRec
-  zsmul := zsmulRec
+  nsmul := (· * ·)
+  zsmul := (· * ·)
+  nsmul_zero := Rat.zero_mul
+  nsmul_succ n q := by
+    change ((n + 1 : Int) : Rat) * q = _
+    rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_one, Rat.one_mul]
+    rfl
+  zsmul_zero' := Rat.zero_mul
+  zsmul_succ' _ _ := by simp [Rat.add_mul, Rat.intCast_one]
+  zsmul_neg' _ _ := by rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
 
 instance addGroup : AddGroup ℚ := by infer_instance
 
@@ -209,14 +217,8 @@ instance commMonoid : CommMonoid ℚ where
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
   npow n q := q ^ n
-  npow_zero := by intros; apply Rat.ext <;> simp [Int.pow_zero]
-  npow_succ n q := by
-    rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
-    · congr
-    · rw [mk'_pow, Int.natAbs_pow]
-      exact q.reduced.pow_left _
-    · rw [mk'_pow]
-      exact q.reduced.pow_right _
+  npow_zero := Rat.pow_zero
+  npow_succ n q := Rat.pow_succ q n
 
 instance monoid : Monoid ℚ := by infer_instance
 
