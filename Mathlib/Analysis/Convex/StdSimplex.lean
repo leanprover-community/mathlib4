@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Finsupp.Pi
 # Functoriality of the standard simplex
 
 When `f : X → Y` is a map between finite types, and `S` is an ordered semiring,
-we define the maps `stdSimplex.map f : stdSimplex S X → stdSimplex S Y`.
+we define the map `stdSimplex.map f : stdSimplex S X → stdSimplex S Y`.
 In the case `S := ℝ`, we show that these maps are continuous.
 
 -/
