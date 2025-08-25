@@ -117,6 +117,11 @@ lemma algebraMap_galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
 
+variable (K) in
+lemma galRestrict_symm_algebraMap_apply (σ : B ≃ₐ[A] B) (x : B) :
+    (galRestrict A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) :=
+  galRestrictHom_symm_algebraMap_apply A K L B σ x
+
 end galois
 
 variable [FiniteDimensional K L]
@@ -370,6 +375,13 @@ lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
   simp
 
 variable {A B}
+
+@[simp]
+theorem Algebra.intNorm_map_algEquiv (x : B) (σ : B ≃ₐ[A] B) :
+    Algebra.intNorm A B (σ x) = Algebra.intNorm A B x := by
+  apply FaithfulSMul.algebraMap_injective A (FractionRing A)
+  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
+    ← galRestrict_symm_algebraMap_apply A (FractionRing A), norm_eq_of_algEquiv]
 
 @[simp]
 lemma Algebra.intNorm_eq_zero {x : B} : Algebra.intNorm A B x = 0 ↔ x = 0 := by
