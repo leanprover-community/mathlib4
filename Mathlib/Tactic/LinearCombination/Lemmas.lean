@@ -3,7 +3,8 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Data.Ineq
 
 /-!
@@ -81,19 +82,19 @@ theorem smul_eq_const [SMul K α] (p : t = s) (c : α) : t • c = s • c := p 
 
 theorem smul_le_const [Ring K] [PartialOrder K] [IsOrderedRing K]
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
-    [OrderedSMul K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
+    [IsOrderedModule K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p ha
 
 theorem smul_lt_const [Ring K] [PartialOrder K] [IsOrderedRing K]
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
-    [OrderedSMul K α] (p : t < s) {a : α} (ha : 0 < a) :
+    [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 < a) :
     t • a < s • a :=
   smul_lt_smul_of_pos_right p ha
 
 theorem smul_lt_const_weak [Ring K] [PartialOrder K] [IsOrderedRing K]
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
-    [OrderedSMul K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
+    [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p.le ha
 
@@ -101,19 +102,19 @@ theorem smul_const_eq [SMul K α] (p : b = c) (s : K) : s • b = s • c := p �
 
 theorem smul_const_le [Semiring K] [PartialOrder K]
     [AddCommMonoid α] [PartialOrder α] [Module K α]
-    [OrderedSMul K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
+    [IsOrderedModule K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p hs
 
 theorem smul_const_lt [Semiring K] [PartialOrder K]
     [AddCommMonoid α] [PartialOrder α] [Module K α]
-    [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 < s) :
+    [IsStrictOrderedModule K α] (p : b < c) {s : K} (hs : 0 < s) :
     s • b < s • c :=
   smul_lt_smul_of_pos_left p hs
 
 theorem smul_const_lt_weak [Semiring K] [PartialOrder K]
     [AddCommMonoid α] [PartialOrder α] [Module K α]
-    [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
+    [IsStrictOrderedModule K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p.le hs
 

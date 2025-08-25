@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Prod
+import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Ordered scalar product
@@ -41,11 +39,14 @@ This file is now mostly useless. We should try deleting `OrderedSMul`
 ordered module, ordered scalar, ordered smul, ordered action, ordered vector space
 -/
 
+deprecated_module (since := "2025-08-25")
+
 /-- The ordered scalar product property is when an ordered additive commutative monoid
 with a partial order has a scalar multiplication which is compatible with the order. Note that this
 is different from `IsOrderedSMul`, which uses `≤`, has no semiring assumption, and has no positivity
 constraint on the defining conditions.
 -/
+@[deprecated IsStrictOrderedModule (since := "2025-08-25")]
 class OrderedSMul (R M : Type*) [Semiring R] [PartialOrder R]
     [AddCommMonoid M] [PartialOrder M] [SMulWithZero R M] :
   Prop where
@@ -57,6 +58,7 @@ class OrderedSMul (R M : Type*) [Semiring R] [PartialOrder R]
 variable {ι 𝕜 R M N : Type*}
 
 section OrderedSMul
+set_option linter.deprecated false
 variable [Semiring R] [PartialOrder R] [AddCommMonoid M] [PartialOrder M]
   [SMulWithZero R M] [OrderedSMul R M]
 
@@ -72,6 +74,7 @@ instance OrderDual.instOrderedSMul : OrderedSMul R Mᵒᵈ where
 
 end OrderedSMul
 
+set_option linter.deprecated false in
 /-- To prove that a linear ordered monoid is an ordered module, it suffices to verify only the first
 axiom of `OrderedSMul`. -/
 theorem OrderedSMul.mk'' [Semiring 𝕜] [PartialOrder 𝕜]
@@ -80,6 +83,7 @@ theorem OrderedSMul.mk'' [Semiring 𝕜] [PartialOrder 𝕜]
   { smul_lt_smul_of_pos := fun hab hc => h hc hab
     lt_of_smul_lt_smul_of_pos := fun hab hc => (h hc).lt_iff_lt.1 hab }
 
+set_option linter.deprecated false in
 instance Nat.orderedSMul [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M] :
     OrderedSMul ℕ M :=
   OrderedSMul.mk'' fun n hn a b hab => by
@@ -90,6 +94,7 @@ instance Nat.orderedSMul [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMo
       | zero => dsimp; rwa [one_nsmul, one_nsmul]
       | succ n ih => simp only [succ_nsmul _ n.succ, _root_.add_lt_add (ih n.succ_pos) hab]
 
+set_option linter.deprecated false in
 instance Int.orderedSMul [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M] :
     OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
@@ -101,7 +106,7 @@ instance Int.orderedSMul [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 section LinearOrderedSemiring
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
 
--- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
+set_option linter.deprecated false in
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
   OrderedSMul.mk'' fun _ => strictMono_mul_left_of_pos
 
@@ -109,11 +114,12 @@ end LinearOrderedSemiring
 
 section LinearOrderedSemifield
 
-variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Semifield 𝕜] [PartialOrder 𝕜] [IsStrictOrderedRing 𝕜] [PosMulReflectLT 𝕜]
   [AddCommMonoid M] [PartialOrder M]
   [AddCommMonoid N] [PartialOrder N]
   [MulActionWithZero 𝕜 M] [MulActionWithZero 𝕜 N]
 
+set_option linter.deprecated false in
 /-- To prove that a vector space over a linear ordered field is ordered, it suffices to verify only
 the first axiom of `OrderedSMul`. -/
 theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c → c • a ≤ c • b) :
@@ -128,42 +134,14 @@ theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c �
   refine hlt' _ _ _ hab (pos_of_mul_pos_right ?_ hc.le)
   simp only [c.mul_inv, zero_lt_one]
 
+set_option linter.deprecated false in
 instance [OrderedSMul 𝕜 M] [OrderedSMul 𝕜 N] : OrderedSMul 𝕜 (M × N) :=
   OrderedSMul.mk' fun _ _ _ h hc =>
     ⟨smul_le_smul_of_nonneg_left h.1.1 hc.le, smul_le_smul_of_nonneg_left h.1.2 hc.le⟩
 
+set_option linter.deprecated false in
 instance Pi.orderedSMul {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, PartialOrder (M i)]
     [∀ i, MulActionWithZero 𝕜 (M i)] [∀ i, OrderedSMul 𝕜 (M i)] : OrderedSMul 𝕜 (∀ i, M i) :=
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
 
 end LinearOrderedSemifield
-
-section Invertible
-variable (α : Type*) {β : Type*}
-variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [AddLeftMono β]
-
-lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
-  rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
-    smul_smul, invOf_mul_self, one_smul]
-
-lemma sup_eq_half_smul_add_add_abs_sub (x y : β) : x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
-  rw [← two_nsmul_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
-    smul_smul, invOf_mul_self, one_smul]
-
-end Invertible
-
-section DivisionSemiring
-variable (α : Type*) {β : Type*}
-variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [AddLeftMono β]
-
-lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
-  letI := invertibleOfNonzero (two_ne_zero' α)
-  exact inf_eq_half_smul_add_sub_abs_sub α x y
-
-lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
-  letI := invertibleOfNonzero (two_ne_zero' α)
-  exact sup_eq_half_smul_add_add_abs_sub α x y
-
-end DivisionSemiring
