@@ -322,6 +322,33 @@ theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : 
 lemma extend_prod (f' : PartialHomeomorph M' H') :
     (f.prod f').extend (I.prod I') = (f.extend I).prod (f'.extend I') := by simp
 
+open Topology
+
+lemma isEmbedding_extend_restrict (φ : PartialHomeomorph M H) :
+    IsEmbedding <| φ.source.restrict (φ.extend I) :=
+  I.isClosedEmbedding.isEmbedding.comp φ.isOpenEmbedding_restrict.isEmbedding
+
+lemma isEmbedding_extend_symm_restrict (φ : PartialHomeomorph M H) :
+    IsEmbedding <| (φ.extend I).target.restrict ((φ.extend I).symm) := by
+  have hI : IsEmbedding ((range I).restrict I.symm) := I.isEmbedding_symm_restrict
+  let f2 := (I.target ∩ I.symm ⁻¹' φ.target).restrict I.symm
+  have aux : ∀ (x : ↑(I.target ∩ ↑I.symm ⁻¹' φ.target)), f2 x ∈ φ.target := by
+    intro ⟨x, hx⟩
+    simpa [f2] using hx.2
+  -- have : f2 = Set.codRestrict ((I.target ∩ I.symm ⁻¹' φ.target).restrict
+  -- ((range I).restrict I.symm)) φ.target sorry := sorry
+  -- XXX: can I upgrade this to a closed embedding?
+  have hI' : IsEmbedding (Set.codRestrict f2 φ.target aux) := by
+  -- doesn't typecheck yet, but this is the idea: rewrite, then apply aux
+    let s' : Set (range I) := sorry -- (I.target ∩ I.symm ⁻¹' φ.target)
+    have : MapsTo ((range ↑I).restrict ↑I.symm) s' φ.target := sorry
+    convert hI.restrict (s := s') (t := φ.target) this
+    sorry -- almost what I want!
+  have : (I.target ∩ I.symm ⁻¹' φ.target).restrict (φ.symm ∘ I.symm) =
+      (φ.target.restrict φ.symm) ∘ (Set.codRestrict f2 φ.target aux) := by
+    ext; simp [f2]
+  simpa using φ.symm.isOpenEmbedding_restrict.isEmbedding.comp hI'.isEmbedding
+
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
 theorem extend_coord_change_source :
