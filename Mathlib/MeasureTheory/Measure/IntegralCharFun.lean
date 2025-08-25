@@ -95,7 +95,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
       integrable_sinc
   calc μ.real {x | r < |x|}
   _ = μ.real {x | 2 < |2 * r⁻¹ * x|} := by
-    congr with x
+    congr 1 with x
     simp only [Set.mem_setOf_eq, abs_mul, Nat.abs_ofNat]
     rw [abs_of_nonneg (a := r⁻¹) (by positivity), mul_assoc, ← inv_mul_lt_iff₀ (by positivity),
       inv_mul_cancel₀ (by positivity), lt_inv_mul_iff₀ (by positivity), mul_one]
@@ -149,7 +149,7 @@ end Real
 of the set `{x | r < |L x|}` in terms of the integral of the characteristic function. -/
 lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
-    {μ : Measure E} [IsProbabilityMeasure μ] (L : Dual ℝ E) {r : ℝ} (hr : 0 < r) :
+    {μ : Measure E} [IsProbabilityMeasure μ] (L : StrongDual ℝ E) {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by
   have : IsProbabilityMeasure (μ.map L) := isProbabilityMeasure_map (by fun_prop)
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map L) hr with x

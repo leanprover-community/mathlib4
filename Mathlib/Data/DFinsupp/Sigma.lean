@@ -63,8 +63,6 @@ theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
 
 @[simp]
 theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (f + g) = (sigmaCurry f + sigmaCurry g : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -72,8 +70,6 @@ theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (r • f) = (r • sigmaCurry f : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -92,8 +88,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne, single_eq_of_ne hj]
       simpa using hj
-  · rw [single_eq_of_ne, single_eq_of_ne hi, zero_apply]
-    simp [hi]
+  · simp [hi]
 
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
@@ -152,8 +147,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne hj, single_eq_of_ne]
       simpa using hj
-  · rw [single_eq_of_ne hi, single_eq_of_ne, zero_apply]
-    simp [hi]
+  · simp [hi]
 
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 

@@ -414,7 +414,7 @@ theorem arrowCongr_symm (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
   rfl
 
 /-- If `A₁` is equivalent to `A₂` and `A₁'` is equivalent to `A₂'`, then the type of maps
-`A₁ ≃ₐ[R] A₁'` is equivalent to the type of maps `A₂ ≃ ₐ[R] A₂'`.
+`A₁ ≃ₐ[R] A₁'` is equivalent to the type of maps `A₂ ≃ₐ[R] A₂'`.
 
 This is the `AlgEquiv` version of `AlgEquiv.arrowCongr`. -/
 @[simps apply]
@@ -539,6 +539,10 @@ lemma ofBijective_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (a
 @[simp]
 lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
     (ofBijective f hf).toLinearMap = f := rfl
+
+@[simp]
+lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    AlgHomClass.toAlgHom (ofBijective f hf) = f := rfl
 
 section OfLinearEquiv
 
@@ -686,13 +690,18 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
   ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
     e.toAlgHom.algebraMap_eq_apply h⟩
 
-/-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
-@[simps]
-def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
-    (A ≃ₐ[R] A) →* A →ₗ[R] A where
-  toFun := AlgEquiv.toLinearMap
+/-- `AlgEquiv.toAlgHom` as a `MonoidHom`. -/
+@[simps] def toAlgHomHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (A ≃ₐ[R] A) →* A →ₐ[R] A where
+  toFun := AlgEquiv.toAlgHom
   map_one' := rfl
-  map_mul' := fun _ _ ↦ rfl
+  map_mul' _ _ := rfl
+
+/-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
+@[simps!]
+def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (A ≃ₐ[R] A) →* Module.End R A :=
+  AlgHom.toEnd.comp (toAlgHomHom R A)
 
 lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
     (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
@@ -758,6 +767,23 @@ def toAlgAut : G →* A ≃ₐ[R] A where
 end
 
 end MulSemiringAction
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Semiring T] [Algebra R S] [Algebra R T]
+
+instance [Subsingleton S] [Subsingleton T] : Unique (S ≃ₐ[R] T) where
+  default := AlgEquiv.ofAlgHom default default
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+    (AlgHom.ext fun _ ↦ Subsingleton.elim _ _)
+  uniq _ := AlgEquiv.ext fun _ ↦ Subsingleton.elim _ _
+
+@[simp]
+lemma AlgEquiv.default_apply [Subsingleton S] [Subsingleton T] (x : S) :
+    (default : S ≃ₐ[R] T) x = 0 :=
+  rfl
+
+end
 
 /-- The algebra equivalence between `ULift A` and `A`. -/
 @[simps! -isSimp apply]
