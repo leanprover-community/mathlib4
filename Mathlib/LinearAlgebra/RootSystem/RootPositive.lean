@@ -174,7 +174,7 @@ lemma isSymm_posForm :
     apply FaithfulSMul.algebraMap_injective S R
     simpa using B.symm.eq x y
 
-/-- The length of the `i`-th root wrt a root-positive form taking values in `S`. -/
+/-- The length of the `i`-th root w.r.t. a root-positive form taking values in `S`. -/
 def rootLength (i : ι) : S :=
   B.posForm (P.rootSpanMem S i) (P.rootSpanMem S i)
 
