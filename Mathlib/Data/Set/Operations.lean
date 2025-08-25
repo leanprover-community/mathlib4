@@ -8,6 +8,7 @@ import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Basic definitions about sets
@@ -67,7 +68,7 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-@[simp, mfld_simps]
+@[simp, mfld_simps, push]
 theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
@@ -88,19 +89,19 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps, grind]
+@[simp, mfld_simps, grind, push]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
 
 instance : HasCompl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_compl_iff (s : Set α) (x : α) : x ∈ sᶜ ↔ x ∉ s := Iff.rfl
 
 theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
@@ -184,7 +185,7 @@ variable {a : α} {b : β} {s : Set α} {t : Set β} {p : α × β}
 
 theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 
-@[simp, mfld_simps, grind =]
+@[simp, mfld_simps, grind =, push]
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
 @[mfld_simps]
@@ -205,12 +206,12 @@ def diagonal (α : Type*) : Set (α × α) := {p | p.1 = p.2}
 
 theorem mem_diagonal (x : α) : (x, x) ∈ diagonal α := rfl
 
-@[simp, grind =] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
+@[simp, grind =, push] theorem mem_diagonal_iff {x : α × α} : x ∈ diagonal α ↔ x.1 = x.2 := .rfl
 
 /-- The off-diagonal of a set `s` is the set of pairs `(a, b)` with `a, b ∈ s` and `a ≠ b`. -/
 def offDiag (s : Set α) : Set (α × α) := {x | x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2}
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_offDiag {x : α × α} {s : Set α} : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 :=
   Iff.rfl
 
