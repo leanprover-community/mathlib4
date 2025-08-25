@@ -485,7 +485,7 @@ lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.i
 @[simp]
 lemma valuation_coe_ratFunc (f : RatFunc K) :
     Valued.v (f : K⸨X⸩) = Valued.v f := by
-  simp [valuation_def, ← valuation_eq_LaurentSeries_valuation, WithZero.valued_def]
+  simp [valuation_def, ← valuation_eq_LaurentSeries_valuation]
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = exp (-(s : ℤ)) := by
@@ -878,7 +878,7 @@ lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : RatFunc K, Valued.v f = Value
   · use 0
     simp [hx]
   use RatFunc.X ^ (-WithZero.log (Valued.v x))
-  rw [zpow_neg, map_inv₀, map_zpow₀, WithZero.valued_def,
+  rw [zpow_neg, map_inv₀, map_zpow₀, v_def,
     valuation_X_eq_neg_one, ← WithZero.exp_zsmul, ← WithZero.exp_neg]
   simp [WithZero.exp_log, hx]
 
@@ -1028,7 +1028,7 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha),
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
     use Units.mk0 (Valued.v a) (by simp [ha])
-    simp only [Units.val_mk0, valued_def, Set.setOf_subset_setOf]
+    simp only [Units.val_mk0, v_def, Set.setOf_subset_setOf]
     rintro y val_y b rfl
     simp [← Valuation.map_eq_of_sub_lt _ val_y]
 
