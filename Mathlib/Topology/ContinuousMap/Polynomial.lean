@@ -167,7 +167,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     (polynomialFunctions I).comap (compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm) =
       polynomialFunctions (Set.Icc a b) := by
   ext f
-  fconstructor
+  constructor
   · rintro ⟨p, ⟨-, w⟩⟩
     rw [DFunLike.ext_iff] at w
     dsimp at w
@@ -191,11 +191,9 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
         rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
         have w₁ : 0 < (b - a)⁻¹ := inv_pos.mpr (sub_pos.mpr h)
         have w₂ : 0 ≤ (x : ℝ) - a := sub_nonneg.mpr x.2.1
-        have w₃ : (x : ℝ) - a ≤ b - a := sub_le_sub_right x.2.2 a
-        fconstructor
+        constructor
         · exact mul_nonneg w₂ (le_of_lt w₁)
-        · rw [← div_eq_mul_inv, div_le_one (sub_pos.mpr h)]
-          exact w₃
+        · grw [← div_eq_mul_inv, div_le_one (sub_pos.mpr h), x.2.2]
   · rintro ⟨p, ⟨-, rfl⟩⟩
     let q := p.comp ((b - a) • Polynomial.X + Polynomial.C a)
     refine ⟨q, ⟨?_, ?_⟩⟩
