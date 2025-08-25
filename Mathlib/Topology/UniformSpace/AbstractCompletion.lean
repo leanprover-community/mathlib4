@@ -121,6 +121,11 @@ variable {f : α → β}
 theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.isDenseInducing.extend f :=
   if_pos hf
 
+theorem inseparable_extend_coe (hf : UniformContinuous f) (x : α) :
+    Inseparable (pkg.extend f (ι x)) (f x) := by
+  rw [extend_def _ hf]
+  exact pkg.isDenseInducing.inseparable_extend hf.continuous.continuousAt
+
 theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a := by
   rw [pkg.extend_def hf]
   exact pkg.isDenseInducing.extend_eq hf.continuous a
@@ -137,6 +142,11 @@ theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
 
 theorem continuous_extend : Continuous (pkg.extend f) :=
   pkg.uniformContinuous_extend.continuous
+
+lemma isUniformInducing_extend (h : IsUniformInducing f) :
+    IsUniformInducing (pkg.extend f) := by
+  rw [extend_def _ h.uniformContinuous]
+  exact pkg.isDenseInducing.isUniformInducing_extend pkg.isUniformInducing h
 
 variable [T0Space β]
 
