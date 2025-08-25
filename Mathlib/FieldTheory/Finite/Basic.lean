@@ -633,6 +633,47 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     · exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
+theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
+    (p : ℤ) ∣ n ^ (p - 1) - 1 :=
+  modEq_iff_dvd.mp (ModEq.symm (ModEq.pow_card_sub_one_eq_one hp hpn))
+
+theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p : ℤ) ∣ n ^ p - n := by
+  by_cases ch : (p : ℤ) ∣ n
+  · exact Int.dvd_trans ch (Int.dvd_sub (dvd_pow_self n (Nat.Prime.ne_zero hp)) (Int.dvd_refl n))
+  · have hnp : IsCoprime n p := by
+      rw [ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
+      exact IsCoprime.symm ((fun {m n} ↦ isCoprime_iff_gcd_eq_one.mpr) ch)
+    have : n ^ (p - 1) - 1 ∣ n ^ p - n := by
+      use n
+      simp [Int.sub_mul, ← Int.pow_succ, Nat.sub_one_add_one_eq_of_pos (Nat.Prime.one_le hp)]
+    exact Int.dvd_trans (prime_dvd_pow_sub_one hp hnp) this
+
+theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] :=
+  ModEq.symm ((fun {_ _ _} ↦ modEq_iff_dvd.mpr) (prime_dvd_pow_self_sub hp))
+
+theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : x ≥ y)
+    (hy : y > 0) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  by_cases ch : (p : ℤ) ∣ n
+  · calc
+    _ ≡ 0 [ZMOD p] := Dvd.dvd.modEq_zero_int (Dvd.dvd.pow ch (by omega))
+    _ ≡ _ [ZMOD p] :=
+      Int.ModEq.symm ((fun {n a} ↦ Int.modEq_zero_iff_dvd.mpr) (Dvd.dvd.pow ch (by omega)))
+  · have : n ^ (x - y) ≡ 1 [ZMOD p] := by
+      refine Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) ?_)
+      calc
+        _ ∣ n ^ (p - 1) - 1 :=
+          have : IsCoprime n p := by
+            rw [Int.ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
+            exact IsCoprime.symm ((fun {m n} ↦ Int.isCoprime_iff_gcd_eq_one.mpr) ch)
+          Int.prime_dvd_pow_sub_one hp this
+        _ ∣ _ := by
+          rcases h with ⟨m, hm⟩
+          rw [hm]
+          exact pow_one_sub_dvd_pow_mul_sub_one n (p - 1) m
+    have : n ^ (x - y) * n ^ y ≡ 1 * n ^ y [ZMOD p] := Int.ModEq.mul this rfl
+    rwa [← pow_add, one_mul, Nat.sub_add_cancel hxy] at this
+
 /-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
 `n ^ (p - 1) ≡ 1 [MOD p]`. -/
 theorem Nat.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : p.Prime) {n : ℕ} (hpn : n.Coprime p) :
