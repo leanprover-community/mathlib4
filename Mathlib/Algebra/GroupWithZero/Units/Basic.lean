@@ -286,9 +286,9 @@ lemma one_div_mul_cancel (h : a ≠ 0) : 1 / a * a = 1 := h.isUnit.one_div_mul_c
 
 lemma div_left_inj' (hc : c ≠ 0) : a / c = b / c ↔ a = b := hc.isUnit.div_left_inj
 
-@[field_simps] lemma div_eq_iff (hb : b ≠ 0) : a / b = c ↔ a = c * b := hb.isUnit.div_eq_iff
+lemma div_eq_iff (hb : b ≠ 0) : a / b = c ↔ a = c * b := hb.isUnit.div_eq_iff
 
-@[field_simps] lemma eq_div_iff (hb : b ≠ 0) : c = a / b ↔ c * b = a := hb.isUnit.eq_div_iff
+lemma eq_div_iff (hb : b ≠ 0) : c = a / b ↔ c * b = a := hb.isUnit.eq_div_iff
 
 -- TODO: Swap RHS around
 lemma div_eq_iff_mul_eq (hb : b ≠ 0) : a / b = c ↔ c * b = a := hb.isUnit.div_eq_iff.trans eq_comm
@@ -413,14 +413,14 @@ lemma mul_eq_mul_of_div_eq_div (a c : G₀) (hb : b ≠ 0) (hd : d ≠ 0)
     (h : a / b = c / d) : a * d = c * b := by
   rw [← mul_one a, ← div_self hb, ← mul_comm_div, h, div_mul_eq_mul_div, div_mul_cancel₀ _ hd]
 
-@[field_simps] lemma div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
+lemma div_eq_div_iff (hb : b ≠ 0) (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
   hb.isUnit.div_eq_div_iff hd.isUnit
 
-@[field_simps] lemma mul_inv_eq_mul_inv_iff (hb : b ≠ 0) (hd : d ≠ 0) :
+lemma mul_inv_eq_mul_inv_iff (hb : b ≠ 0) (hd : d ≠ 0) :
     a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b :=
   hb.isUnit.mul_inv_eq_mul_inv_iff hd.isUnit
 
-@[field_simps] lemma inv_mul_eq_inv_mul_iff (hb : b ≠ 0) (hd : d ≠ 0) :
+lemma inv_mul_eq_inv_mul_iff (hb : b ≠ 0) (hd : d ≠ 0) :
     b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b :=
   hb.isUnit.inv_mul_eq_inv_mul_iff hd.isUnit
 

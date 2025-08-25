@@ -968,7 +968,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
+@[to_additive]
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
 
 @[to_additive]
