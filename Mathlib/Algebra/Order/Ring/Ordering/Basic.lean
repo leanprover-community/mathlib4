@@ -45,7 +45,7 @@ theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
   simp_all
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
-theorem Field.inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
+theorem inv_mem {F : Type*} [Field F] {P : RingPreordering F} {a : F} (ha : a ∈ P) :
     a⁻¹ ∈ P := by
   have mem : a * (a⁻¹ * a⁻¹) ∈ P := by aesop
   field_simp at mem
