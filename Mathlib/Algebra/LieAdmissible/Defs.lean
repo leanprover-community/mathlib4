@@ -57,21 +57,20 @@ section ring
 /-- By definition, every `LieAdmissibleRing` yields a `LieRing` with the commutator bracket. -/
 instance [LieAdmissibleRing L] : LieRing L where
   add_lie x y z := by
-    simp [Ring.lie_def]
-    noncomm_ring
+    simp [Ring.lie_def, mul_add, add_mul]
+    abel
   lie_add x y z := by
-    simp [Ring.lie_def]
-    noncomm_ring
+    simp [Ring.lie_def, mul_add, add_mul]
+    abel
   lie_self := by simp [Ring.lie_def]
   leibniz_lie x y z := by
-    have assoc := LieAdmissibleRing.assoc_def x y z
     apply sub_eq_zero.mp
+    simp [Ring.lie_def, mul_sub, sub_mul]
+    have assoc := LieAdmissibleRing.assoc_def x y z
     apply sub_eq_zero_of_eq at assoc
     simp [associator_apply] at assoc
-    simp [Ring.lie_def]
-    noncomm_ring; simp;
-    abel_nf at assoc; simp at assoc;
     grind
+
 end ring
 
 section algebra
@@ -79,8 +78,8 @@ section algebra
 /-- Every `LieAdmissibleAlgebra` is a `LieAlgebra` with the commutator bracket. -/
 instance [LieAdmissibleRing L] [LieAdmissibleAlgebra R L] : LieAlgebra R L where
   lie_smul r x y := by
-    simp [Ring.lie_def]
-    rw [mul_smul_comm, smul_mul_assoc, ← smul_sub]
+    simp [Ring.lie_def, mul_smul_comm, smul_mul_assoc, ← smul_sub]
+
 end algebra
 
 end instances
