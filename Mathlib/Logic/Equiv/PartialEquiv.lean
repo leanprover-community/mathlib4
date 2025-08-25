@@ -700,9 +700,7 @@ theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈
 /-- Two equivalent partial equivs have coinciding inverses on the target. -/
 theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') :
     EqOn e.symm e'.symm e.target :=
-  -- Porting note: `h.symm'` dot notation doesn't work anymore because `h` is not recognised as
-  -- `PartialEquiv.EqOnSource` for some reason.
-  eqOn (symm' h)
+  eqOn h.symm'
 
 /-- Composition of partial equivs respects equivalence. -/
 theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ} (he : e ≈ e')
