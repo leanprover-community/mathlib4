@@ -47,7 +47,7 @@ instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
 under the canonical projection. It is also mapped to the unit vector in the real line through
 the canonical injection, see `mfderiv_subtype_coe_Icc_one`.
 
-Note that one can not abuse defeqs for this definition: this is *not* the same as the vector
+Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
 orientation-reversing. -/
 irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :

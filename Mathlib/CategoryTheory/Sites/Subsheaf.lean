@@ -57,7 +57,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
 theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
   intro U s hs
   change _ ∈ J _
-  convert J.top_mem U.unop -- Porting note: `U.unop` can not be inferred now
+  convert J.top_mem U.unop -- Porting note: `U.unop` cannot be inferred now
   rw [eq_top_iff]
   rintro V i -
   exact G.map i.op hs

@@ -73,7 +73,7 @@ will try to apply `norm_num` to close numerical goals.
 
 The invocation of `field_simp` removes the lemma `one_div` from the simpset, as this lemma
 works against the algorithm explained above. It also removes
-`mul_eq_zero : x * y = 0 ↔ x = 0 ∨ y = 0`, as `norm_num` can not work on disjunctions to
+`mul_eq_zero : x * y = 0 ↔ x = 0 ∨ y = 0`, as `norm_num` cannot work on disjunctions to
 close goals of the form `24 ≠ 0`, and replaces it with `mul_ne_zero : x ≠ 0 → y ≠ 0 → x * y ≠ 0`
 creating two goals instead of a disjunction.
 

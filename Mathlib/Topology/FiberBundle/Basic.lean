@@ -136,7 +136,7 @@ A drawback is that some silly constructions will typecheck: in the case of the t
 can add two vectors in different tangent spaces (as they both are elements of `F` from the point of
 view of Lean). To solve this, one could mark the tangent space as irreducible, but then one would
 lose the identification of the tangent space to `F` with `F`. There is however a big advantage of
-this situation: even if Lean can not check that two basepoints are defeq, it will accept the fact
+this situation: even if Lean cannot check that two basepoints are defeq, it will accept the fact
 that the tangent spaces are the same. For instance, if two maps `f` and `g` are locally inverse to
 each other, one can express that the composition of their derivatives is the identity of
 `TangentSpace I x`. One could fear issues as this composition goes from `TangentSpace I x` to
