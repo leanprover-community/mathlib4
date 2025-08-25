@@ -1098,16 +1098,9 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
-@[simp] lemma support_tail (p : G.Walk v v) (hp : ¬ p.Nil) :
+@[simp] lemma support_tail_of_not_nil (p : G.Walk v u) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
-
-lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
-    p.tail.support = p.support.tail := by
-  match p with
-  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
-  | .cons h q =>
-    simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
