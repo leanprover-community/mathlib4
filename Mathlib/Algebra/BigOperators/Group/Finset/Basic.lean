@@ -960,10 +960,6 @@ theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
     #s = ∑ b ∈ s.image f, #{a ∈ s | f a = b} :=
   card_eq_sum_card_fiberwise fun _ => mem_image_of_mem _
 
-theorem mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
-    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := by
-  induction s using Finset.cons_induction with grind
-
 end Nat
 end Finset
 
@@ -1042,8 +1038,13 @@ end List
 namespace Multiset
 
 @[simp]
-lemma mem_sum {s : Finset ι} {m : ι → Multiset ι} : a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
-  induction s using Finset.cons_induction <;> simp [*]
+lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
+    a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
+  induction s using Finset.cons_induction with grind
+
+@[deprecated Multiset.mem_sum (since := "2025-08-24")]
+theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
+    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
 
 variable [DecidableEq ι]
 
