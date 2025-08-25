@@ -11,17 +11,18 @@ import Mathlib.Topology.Algebra.Valued.WithVal
 import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
-# Equivalence between `ℚ_[p]` and `UniformSpace.Completion (WithVal v)` for `v : Valuation ℚ ℤᵐ⁰`
+# Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
 
 The `p`-adic numbers are isomorphic as a field to the completion of the rationals at the
-`p`-adic valuation.
+`p`-adic valuation. This is implemented via `Valuation.Completion` using `Rat.padicValuation`,
+which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))`.
 
 ## Main definitions
 
 * `Padic.withValRingEquiv`: the field isomorphism between
-  `UniformSpace.Completion (WithVal v)` and `ℚ_[p]`
+  `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 * `Padic.withValUniformEquiv`: the uniform space isomorphism between
-  `UniformSpace.Completion (WithVal v)` and `ℚ_[p]`
+  `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 
 -/
 
@@ -33,7 +34,7 @@ open NNReal WithZero UniformSpace
 
 -- TODO: use Rat.padicValuation after #27667
 lemma continuous_cast_withVal : Continuous ((Rat.castHom ℚ_[p]).comp
-    (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom) := by
+    (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
   rw [continuous_iff_continuousAt]
   intro x U
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, Rat.coe_castHom, RingHom.coe_coe,
@@ -52,11 +53,9 @@ lemma continuous_cast_withVal : Continuous ((Rat.castHom ℚ_[p]).comp
   simp only [Units.val_mk0, Set.mem_image, Set.mem_setOf_eq,
     Metric.mem_ball, dist_eq_norm, forall_exists_index, and_imp]
   rintro y h rfl
-  set x' : ℚ := (WithVal.equiv
-    ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))) x with hx
-  set y' : ℚ := (WithVal.equiv
-    ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))) y with hy
-  change Valuation.comap _ _ (y' - x') < exp _ at h
+  set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
+  set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
+  change Rat.padicValuation p (y' - x') < exp _ at h
   refine hn.trans' ?_
   simp only [← Rat.cast_sub, padicNormE.eq_padicNorm, padicNorm, zpow_neg, NNReal.coe_inv,
     NNReal.coe_pow, NNReal.coe_natCast]
@@ -65,13 +64,13 @@ lemma continuous_cast_withVal : Continuous ((Rat.castHom ℚ_[p]).comp
     exact pow_pos (by simp [Nat.Prime.pos Fact.out]) _
   · simp only [Rat.cast_inv, Rat.cast_zpow, Rat.cast_natCast]
     rw [inv_lt_inv₀, ← zpow_natCast, zpow_lt_zpow_iff_right₀]
-    · simpa [← Rat.cast_sub, hxy] using h
+    · simpa [Rat.padicValuation, hxy, ← exp_neg] using h
     · exact_mod_cast Nat.Prime.one_lt Fact.out
     · exact zpow_pos (by simp [Nat.Prime.pos Fact.out]) _
     · exact pow_pos (by simp [Nat.Prime.pos Fact.out]) _
 
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
-    (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom) := by
+    (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
   constructor
   rw [uniformity_eq_comap_nhds_zero, uniformity_eq_comap_nhds_zero, Filter.comap_comap]
   ext U
@@ -80,8 +79,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     Set.mem_preimage, ← Rat.cast_sub, ← map_sub, Prod.forall]
   constructor
   · rintro ⟨V, hV, hV'⟩
-    refine ⟨((Rat.castHom ℚ_[p]).comp
-    (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom) ⁻¹' V,
+    refine ⟨((Rat.castHom ℚ_[p]).comp (WithVal.equiv (Rat.padicValuation p)).toRingHom) ⁻¹' V,
       ?_, ?_⟩
     · exact continuous_cast_withVal.continuousAt hV
     · simpa using hV'
@@ -97,15 +95,12 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     · intro x y hab
       refine hV' x y (hγ ?_)
       simp only [Set.mem_setOf_eq]
-      set x' : ℚ := (WithVal.equiv
-        ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))) x with hx
-      set y' : ℚ := (WithVal.equiv
-        ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))) y with hy
+      set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
+      set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
       simp only [Rat.cast_lt, map_sub, ← hy, ← hx, Metric.mem_ball,
         dist_zero_right, padicNormE.eq_padicNorm, ε] at hab
-      change Valuation.comap _ _ (y' - x') < γ.val
-      simp only [Valuation.comap_apply, eq_ratCast, mulValuation_toFun, Rat.cast_eq_zero,
-        valuation_ratCast]
+      change Rat.padicValuation p (y' - x') < γ.val
+      simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
       split_ifs with hxy
       · simp
       · rw [← lt_log_iff_exp_lt (by simp)]
@@ -113,7 +108,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
         exact_mod_cast Nat.Prime.one_lt Fact.out
 
 lemma isDenseInducing_cast_withVal : IsDenseInducing ((Rat.castHom ℚ_[p]).comp
-    (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom) := by
+    (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by
   refine Padic.isUniformInducing_cast_withVal.isDenseInducing ?_
   intro
   -- nhds_discrete causes timeouts on TC search
@@ -125,9 +120,8 @@ open scoped Valued in
 the `p`-adic valuation. -/
 noncomputable
 def withValRingEquiv :
-    ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p])).Completion ≃+* ℚ_[p] where
-  toFun := (extensionHom ((Rat.castHom ℚ_[p]).comp
-    (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).toRingHom)
+    (Rat.padicValuation p).Completion ≃+* ℚ_[p] where
+  toFun := (extensionHom ((Rat.castHom ℚ_[p]).comp (WithVal.equiv (Rat.padicValuation p)).toRingHom)
     Padic.isUniformInducing_cast_withVal.uniformContinuous.continuous)
   invFun := Padic.isDenseInducing_cast_withVal.extend coe'
   left_inv y := by
@@ -147,7 +141,7 @@ def withValRingEquiv :
       exact (uniformContinuous_uniformly_extend Padic.isUniformInducing_cast_withVal
         (Padic.denseRange_ratCast p) (uniformContinuous_coe _)).continuous
     · have : ∀ q : ℚ, Padic.isDenseInducing_cast_withVal.extend coe' q = coe'
-        ((WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p]))).symm q) := by
+        ((WithVal.equiv (Rat.padicValuation p)).symm q) := by
         intro q
         apply IsDenseInducing.extend_eq
         exact continuous_coe _
@@ -160,7 +154,7 @@ def withValRingEquiv :
 @[simp]
 lemma coe_withValRingEquiv :
     ⇑(Padic.withValRingEquiv (p := p)) = Completion.extension
-      (Rat.cast ∘ (WithVal.equiv ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p])))) :=
+      ((↑) ∘ (WithVal.equiv (Rat.padicValuation p))) :=
   rfl
 
 @[simp]
@@ -186,7 +180,7 @@ lemma uniformContinuous_withValRingEquiv_symm :
 the `p`-adic valuation. -/
 noncomputable
 def withValUniformEquiv :
-    ((Padic.mulValuation (p := p)).comap (Rat.castHom ℚ_[p])).Completion ≃ᵤ ℚ_[p] where
+    (Rat.padicValuation p).Completion ≃ᵤ ℚ_[p] where
   __ := Padic.withValRingEquiv
   uniformContinuous_toFun := Padic.uniformContinuous_withValRingEquiv
   uniformContinuous_invFun := Padic.uniformContinuous_withValRingEquiv_symm
