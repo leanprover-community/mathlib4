@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.PreLie.Basic
-import Mathlib.Tactic
+import Mathlib.Algebra.NonAssoc.PreLie.Basic
 /-!
 # Lie admissible rings and algebras
 
