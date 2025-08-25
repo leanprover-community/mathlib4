@@ -683,7 +683,7 @@ theorem of_measurable_inverse_on_range {g : range f → α} (hf₁ : Measurable 
     (hf₂ : MeasurableSet (range f)) (hg : Measurable g) (H : LeftInverse g (rangeFactorization f)) :
     MeasurableEmbedding f := by
   set e : α ≃ᵐ range f :=
-    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective surjective_onto_range⟩,
+    ⟨⟨rangeFactorization f, g, H, H.rightInverse_of_surjective rangeFactorization_surjective⟩,
       hf₁.subtype_mk, hg⟩
   exact (MeasurableEmbedding.subtype_coe hf₂).comp e.measurableEmbedding
 
@@ -742,6 +742,34 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   by_contra h
   apply hx
   exact ⟨y, h, rfl⟩
+
+@[simp]
+lemma equivRange_apply (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange x = ⟨f x, mem_range_self x⟩ := by
+  simp [MeasurableEmbedding.equivRange, MeasurableEquiv.cast, MeasurableEquiv.Set.univ,
+    MeasurableEmbedding.equivImage]
+
+@[simp]
+lemma equivRange_symm_apply_mk (hf : MeasurableEmbedding f) (x : α) :
+    hf.equivRange.symm ⟨f x, mem_range_self x⟩ = x := by
+  nth_rw 3 [← hf.equivRange.symm_apply_apply x]
+  rw [hf.equivRange_apply]
+
+/-- The left-inverse of a `MeasurableEmbedding` -/
+protected noncomputable
+def invFun [Nonempty α] (hf : MeasurableEmbedding f) (x : β) : α :=
+  open Classical in
+  if hx : x ∈ range f then hf.equivRange.symm ⟨x, hx⟩ else (Nonempty.some inferInstance)
+
+@[fun_prop, measurability]
+lemma measurable_invFun [Nonempty α] (hf : MeasurableEmbedding f) :
+    Measurable (hf.invFun : β → α) :=
+  open Classical in
+  Measurable.dite (by fun_prop) measurable_const hf.measurableSet_range
+
+lemma leftInverse_invFun [Nonempty α] (hf : MeasurableEmbedding f) : hf.invFun.LeftInverse f := by
+  intro x
+  simp [MeasurableEmbedding.invFun]
 
 end MeasurableEmbedding
 

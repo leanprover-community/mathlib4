@@ -106,13 +106,13 @@ lemma fromRows_toRows (A : Matrix (m₁ ⊕ m₂) n R) : fromRows A.toRows₁ A.
   ext (i | i) j <;> simp
 
 lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
-  intros x1 x2 y1 y2
+  intro x1 x2 y1 y2
   simp [← Matrix.ext_iff]
 
 lemma fromCols_inj : Function.Injective2 (@fromCols R m n₁ n₂) := by
-  intros x1 x2 y1 y2
+  intro x1 x2 y1 y2
   simp only [← Matrix.ext_iff]
-  aesop
+  simp_all
 
 lemma fromCols_ext_iff (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (B₁ : Matrix m n₁ R)
     (B₂ : Matrix m n₂ R) :
@@ -278,7 +278,7 @@ lemma equiv_compl_fromCols_mul_fromRows_eq_one_comm
     (A₁ : Matrix n {i // p i} R) (A₂ : Matrix n {i // ¬p i} R)
     (B₁ : Matrix {i // p i} n R) (B₂ : Matrix {i // ¬p i} n R) :
     fromCols A₁ A₂ * fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ * fromCols A₁ A₂ = 1 :=
-  fromCols_mul_fromRows_eq_one_comm (id (Equiv.sumCompl p).symm) A₁ A₂ B₁ B₂
+  fromCols_mul_fromRows_eq_one_comm (Equiv.sumCompl p).symm A₁ A₂ B₁ B₂
 
 end CommRing
 
