@@ -114,7 +114,7 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
     (y : X.obj (op m)) (hy : X.map f.op y = x) :
     IsIso f := by
   obtain ⟨x, hx⟩ := x
-  induction' m using SimplexCategory.rec with m
+  induction m using SimplexCategory.rec with | _ m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
   by_contra!
   refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩

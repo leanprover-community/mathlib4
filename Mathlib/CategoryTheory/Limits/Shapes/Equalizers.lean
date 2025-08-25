@@ -144,11 +144,11 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       (by rintro _ _ (_ | _ | _) <;> simp)
   counitIso :=
     NatIso.ofComponents (fun j => eqToIso (by
-            induction' j with X
+            induction j with | _ X
             cases X <;> rfl))
       (fun {i} {j} f => by
-      induction' i with i
-      induction' j with j
+      induction i with | _ i
+      induction j with | _ j
       let g := f.unop
       have : f = g.op := rfl
       rw [this]
