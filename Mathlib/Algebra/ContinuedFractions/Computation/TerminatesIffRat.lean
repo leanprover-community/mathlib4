@@ -281,7 +281,6 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
     rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with ⟨ifp_n, stream_nth_eq, -⟩
     have : ifp_succ_n.fr.num < ifp_n.fr.num :=
       stream_succ_nth_fr_num_lt_nth_fr_num_rat stream_nth_eq stream_succ_nth_eq
-    have : ifp_succ_n.fr.num + 1 ≤ ifp_n.fr.num := Int.add_one_le_of_lt this
     exact le_trans this (IH stream_nth_eq)
 
 theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.stream q n = none := by
