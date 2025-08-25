@@ -69,20 +69,22 @@ theorem veblenWith_of_ne_zero (f : Ordinal → Ordinal) (h : o ≠ 0) :
 
 /-- `veblenWith f o` is always normal for `o ≠ 0`. See `isNormal_veblenWith` for a version which
 assumes `IsNormal f`. -/
-theorem isNormal_veblenWith' (f : Ordinal → Ordinal) (h : o ≠ 0) : IsNormal (veblenWith f o) := by
+theorem isNormal_veblenWith' (f : Ordinal → Ordinal) (h : o ≠ 0) :
+    Order.IsNormal (veblenWith f o) := by
   rw [veblenWith_of_ne_zero f h]
   exact isNormal_derivFamily _
 
-variable (hf : IsNormal f)
+variable (hf : Order.IsNormal f)
 include hf
 
 /-- `veblenWith f o` is always normal whenever `f` is. See `isNormal_veblenWith'` for a version
 which does not assume `IsNormal f`. -/
-theorem isNormal_veblenWith (o : Ordinal) : IsNormal (veblenWith f o) := by
+theorem isNormal_veblenWith (o : Ordinal) : Order.IsNormal (veblenWith f o) := by
   obtain rfl | h := eq_or_ne o 0
   · rwa [veblenWith_zero]
   · exact isNormal_veblenWith' f h
 
+@[deprecated (since := "2025-08-23")]
 protected alias IsNormal.veblenWith := isNormal_veblenWith
 
 theorem veblenWith_veblenWith_of_lt (h : o₁ < o₂) (a : Ordinal) :
@@ -90,10 +92,10 @@ theorem veblenWith_veblenWith_of_lt (h : o₁ < o₂) (a : Ordinal) :
   let x : Set.Iio _ := ⟨o₁, h⟩
   rw [veblenWith_of_ne_zero f h.bot_lt.ne',
     derivFamily_fp (f := fun y : Set.Iio o₂ ↦ veblenWith f y.1) (i := x)]
-  exact hf.veblenWith x
+  exact isNormal_veblenWith hf x
 
 theorem veblenWith_succ (o : Ordinal) : veblenWith f (succ o) = deriv (veblenWith f o) := by
-  rw [deriv_eq_enumOrd (hf.veblenWith o), veblenWith_of_ne_zero f (succ_ne_zero _),
+  rw [deriv_eq_enumOrd (isNormal_veblenWith hf o), veblenWith_of_ne_zero f (succ_ne_zero _),
     derivFamily_eq_enumOrd]
   · apply congr_arg
     ext a
@@ -104,10 +106,10 @@ theorem veblenWith_succ (o : Ordinal) : veblenWith f (succ o) = deriv (veblenWit
     · rw [Function.mem_fixedPoints_iff, ha]
     · rw [← ha]
       exact veblenWith_veblenWith_of_lt hf hb _
-  · exact fun o ↦ hf.veblenWith o.1
+  · exact fun o ↦ isNormal_veblenWith hf o.1
 
 theorem veblenWith_right_strictMono (o : Ordinal) : StrictMono (veblenWith f o) :=
-  (hf.veblenWith o).strictMono
+  (isNormal_veblenWith hf o).strictMono
 
 @[simp]
 theorem veblenWith_lt_veblenWith_iff_right : veblenWith f o a < veblenWith f o b ↔ a < b :=
@@ -136,7 +138,7 @@ theorem veblenWith_left_monotone (a : Ordinal) : Monotone (veblenWith f · a) :=
 theorem veblenWith_pos (hp : 0 < f 0) : 0 < veblenWith f o a := by
   have H (b) : 0 < veblenWith f 0 b := by
     rw [veblenWith_zero]
-    exact hp.trans_le (hf.monotone (Ordinal.zero_le _))
+    exact hp.trans_le (hf.strictMono.monotone (Ordinal.zero_le _))
   obtain rfl | h := Ordinal.eq_zero_or_pos o
   · exact H a
   · rw [← veblenWith_veblenWith_of_lt hf h]
@@ -163,8 +165,8 @@ theorem left_le_veblenWith (hp : 0 < f 0) (o a : Ordinal) : o ≤ veblenWith f o
   (veblenWith_zero_strictMono hf hp).le_apply.trans <|
     (veblenWith_right_strictMono hf _).monotone (Ordinal.zero_le _)
 
-theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
-  rw [isNormal_iff_strictMono_limit]
+theorem isNormal_veblenWith_zero (hp : 0 < f 0) : Order.IsNormal (veblenWith f · 0) := by
+  rw [isNormal_iff]
   refine ⟨veblenWith_zero_strictMono hf hp, fun o ho a IH ↦ ?_⟩
   rw [veblenWith_of_ne_zero f ho.ne_bot, derivFamily_zero]
   apply nfpFamily_le fun l ↦ ?_
@@ -181,6 +183,9 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     rw [veblenWith_veblenWith_of_lt hf]
     rw [lt_succ_iff]
     exact le_max_left _ b
+
+@[deprecated (since := "2025-08-23")]
+alias IsNormal.veblenWith_zero := isNormal_veblenWith_zero
 
 theorem cmp_veblenWith :
     cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
@@ -249,8 +254,8 @@ theorem veblen_zero_apply (a : Ordinal) : veblen 0 a = ω ^ a := by
 theorem veblen_of_ne_zero (h : o ≠ 0) : veblen o = derivFamily fun x : Set.Iio o ↦ veblen x.1 :=
   veblenWith_of_ne_zero _ h
 
-theorem isNormal_veblen (o : Ordinal) : IsNormal (veblen o) :=
-  (isNormal_opow one_lt_omega0).veblenWith o
+theorem isNormal_veblen (o : Ordinal) : Order.IsNormal (veblen o) :=
+  isNormal_veblenWith (isNormal_opow one_lt_omega0) o
 
 theorem veblen_veblen_of_lt (h : o₁ < o₂) (a : Ordinal) : veblen o₁ (veblen o₂ a) = veblen o₂ a :=
   veblenWith_veblenWith_of_lt (isNormal_opow one_lt_omega0) h a
@@ -304,8 +309,8 @@ theorem veblen_zero_inj : veblen o₁ 0 = veblen o₂ 0 ↔ o₁ = o₂ :=
 theorem left_le_veblen (o a : Ordinal) : o ≤ veblen o a :=
   left_le_veblenWith (isNormal_opow one_lt_omega0) (by simp) o a
 
-theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
-  (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
+theorem isNormal_veblen_zero : Order.IsNormal (veblen · 0) :=
+  isNormal_veblenWith_zero (isNormal_opow one_lt_omega0) (by simp)
 
 theorem cmp_veblen : cmp (veblen o₁ a) (veblen o₂ b) =
     match cmp o₁ o₂ with
@@ -369,7 +374,7 @@ theorem epsilon0_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
 
 @[simp]
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
-  rw [epsilon_eq_deriv, (isNormal_opow one_lt_omega0).deriv_fp]
+  rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon0 : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
@@ -406,14 +411,14 @@ scoped notation "Γ_ " => gamma
 of `veblen ε₀ 0`, `veblen (veblen ε₀ 0) 0`, etc. -/
 scoped notation "Γ₀" => Γ_ 0
 
-theorem isNormal_gamma : IsNormal gamma :=
+theorem isNormal_gamma : Order.IsNormal gamma :=
   isNormal_deriv _
 
 theorem strictMono_gamma : StrictMono gamma :=
   isNormal_gamma.strictMono
 
 theorem monotone_gamma : Monotone gamma :=
-  isNormal_gamma.monotone
+  strictMono_gamma.monotone
 
 @[simp]
 theorem gamma_lt_gamma : Γ_ a < Γ_ b ↔ a < b :=
@@ -429,7 +434,7 @@ theorem gamma_inj : Γ_ a = Γ_ b ↔ a = b :=
 
 @[simp]
 theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
-  isNormal_veblen_zero.deriv_fp o
+  deriv_fp isNormal_veblen_zero o
 
 theorem gamma0_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
   deriv_zero_right _
