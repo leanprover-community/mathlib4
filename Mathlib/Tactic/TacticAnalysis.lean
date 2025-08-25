@@ -276,7 +276,8 @@ from the start of the sequence. -/
 def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
     (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
     CommandElabM Unit := do
-  let stx ← `(tactic| $(tacticSeq);*)
+  let stx ← withRef (mkNullNode tacticSeq) `(tactic| $tacticSeq;*)
+  withRef stx do
   -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
   if let [goal] := i.goalsBefore then
     let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
