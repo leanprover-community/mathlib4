@@ -303,7 +303,6 @@ theorem mk₂_apply (f : M → Nₗ → Pₗ) {H1 H2 H3 H4} (m : M) (n : Nₗ) :
 
 variable {R}
 
-
 variable (A Pₗ)
 variable [Module A Pₗ] [SMulCommClass R A Pₗ]
 
@@ -317,27 +316,6 @@ variable {A Pₗ}
 theorem lcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) : lcomp A _ f g x = g (f x) := rfl
 
 theorem lcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lcomp A Pₗ f g = g ∘ₗ f := rfl
-
-variable (R M Nₗ Pₗ)
-
-/-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
-def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →ₗ[R] Pₗ :=
-  flip
-    { toFun := lcomp R Pₗ
-      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
-      map_smul' := fun (_c : R) _f => ext₂ fun g _x => g.map_smul _ _ }
-
-variable {R M Nₗ Pₗ}
-
-section
-
-@[simp]
-theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
-    llcomp R M Nₗ Pₗ f g x = f (g x) := rfl
-
-theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
-
-end
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
 form a bilinear map `Q → Q' → P`. -/
@@ -374,7 +352,10 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
 
 omit [Module R M] in
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
-form a bilinear map `M → N → Q`. -/
+form a bilinear map `M → N → Q`.
+
+See `LinearMap.compr₂ₛₗ` for a version of this which does not support towers of scalars but which
+does support semi-linear maps. -/
 def compr₂ [Module R A] [Module A M] [Module A Qₗ]
     [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) : M →ₗ[A] Nₗ →ₗ[R] Qₗ where
@@ -409,6 +390,76 @@ theorem bijective_compr₂_of_equiv (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : P
     Bijective (f.compr₂ g.toLinearMap) :=
   ⟨injective_compr₂_of_injective f g.toLinearMap hf.1 g.bijective.1,
   surjective_compr₂_of_equiv f g hf.2⟩
+
+section CommSemiringSemilinear
+
+variable {R₂ R₃ R₄ M N P Q : Type*}
+variable [CommSemiring R₂] [CommSemiring R₃] [CommSemiring R₄]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
+variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
+variable {σ₁₂ : R →+* R₂} {σ₁₃ : R →+* R₃} {σ₁₄ : R →+* R₄} {σ₂₃ : R₂ →+* R₃}
+variable {σ₂₄ : R₂ →+* R₄} {σ₃₄ : R₃ →+* R₄} {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
+variable [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+variable [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃]
+
+variable (M N P)
+
+variable (R₃) in
+/-- Composing linear maps as a bilinear map from `(M →ₛₗ[σ₁₂] N) × (N →ₛₗ[σ₂₃] P)`
+to `M →ₛₗ[σ₁₃] P`. -/
+def llcomp : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
+  flip
+    { toFun := lcompₛₗ _ P σ₂₃
+      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
+      map_smul' := fun (_c : R₂) _f => ext₂ fun g _x => g.map_smulₛₗ _ _ }
+
+variable {M N P}
+
+@[simp]
+theorem llcomp_apply (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) (x : M) :
+    llcomp _ M N P f g x = f (g x) := rfl
+
+theorem llcomp_apply' (f : N →ₛₗ[σ₂₃] P) (g : M →ₛₗ[σ₁₂] N) : llcomp _ M N P f g = f ∘ₛₗ g := rfl
+
+omit [Module R M] in
+/-- Composing a linear map `P →ₛₗ[σ₃₄] Q` and a bilinear map `M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P` to
+form a bilinear map `M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q`.
+
+See `LinearMap.compr₂` for a version of this definition, which does not support semi-linear maps but
+which does support towers of scalars. -/
+def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) : M →ₛₗ[σ₁₄] N →ₛₗ[σ₂₄] Q :=
+  llcomp _ N P Q g ∘ₛₗ f
+
+@[simp]
+theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
+    f.compr₂ₛₗ g m n = g (f m n) := rfl
+
+/-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
+theorem injective_compr₂ₛₗ_of_injective (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
+    (hf : Injective f) (hg : Injective g) : Injective (f.compr₂ₛₗ g) :=
+  hg.injective_linearMapComp_left.comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂ₛₗ_of_exists_rightInverse [RingHomInvPair σ₃₄ σ₄₃]
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
+    (hf : Surjective f) (hg : ∃ g' : Q →ₛₗ[σ₄₃] P, g.comp g' = LinearMap.id) :
+    Surjective (f.compr₂ₛₗ g) := (surjective_comp_left_of_exists_rightInverse hg).comp hf
+
+/-- A version of `Function.Surjective.comp` for composition of a bilinear map with a linear map. -/
+theorem surjective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q) (hf : Surjective f) :
+    Surjective (f.compr₂ₛₗ g.toLinearMap) :=
+  surjective_compr₂ₛₗ_of_exists_rightInverse f g.toLinearMap hf ⟨g.symm, by simp⟩
+
+/-- A version of `Function.Bijective.comp` for composition of a bilinear map with a linear map. -/
+theorem bijective_compr₂ₛₗ_of_equiv [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄]
+    (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P ≃ₛₗ[σ₃₄] Q) (hf : Bijective f) :
+    Bijective (f.compr₂ₛₗ g.toLinearMap) :=
+  ⟨injective_compr₂ₛₗ_of_injective f g.toLinearMap hf.1 g.bijective.1,
+  surjective_compr₂ₛₗ_of_equiv f g hf.2⟩
+
+end CommSemiringSemilinear
 
 variable (R M)
 

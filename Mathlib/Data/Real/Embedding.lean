@@ -128,7 +128,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
       simp [hk]
     have hka0 : k * a.den ≠ 0 := mul_ne_zero hk0 a.den_ne_zero
     obtain ⟨m, ⟨hm1, hm2⟩, _⟩ := existsUnique_add_zsmul_mem_Ico zero_lt_one 0 (k • a.den • x - 1)
-    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den) , ?_, ?_⟩
+    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den), ?_, ?_⟩
     · rw [mkRat_mem_ratLt hka0, ← smul_smul]
       simpa using hm2
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
@@ -149,7 +149,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     exact num_smul_one_lt_den_smul_add hu hv
 
 theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
-   Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
+  Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 

@@ -161,7 +161,7 @@ def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone
 def biconeIsBilimitOfColimitCoconeOfIsColimit {f : J → C} {t : Cocone (Discrete.functor f)}
     (ht : IsColimit t) : (Bicone.ofColimitCocone ht).IsBilimit :=
   isBilimitOfIsColimit _ <| IsColimit.ofIsoColimit ht <| Cocones.ext (Iso.refl _) <| by
-    rintro ⟨j⟩; simp
+    simp
 
 end Fintype
 
@@ -813,11 +813,7 @@ theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
   cases nonempty_fintype τ
   intro z
   have reassoced {t : τ} {W : C} (h : _ ⟶ W) :
-    biproduct.ι S s ≫ f ≫ biproduct.π T t ≫ h = 0 ≫ h := by
-    simp only [← Category.assoc]
-    apply eq_whisker
-    simp only [Category.assoc]
-    apply z
+    biproduct.ι S s ≫ f ≫ biproduct.π T t ≫ h = 0 ≫ h := by grind
   set x := biproduct.ι S s ≫ f ≫ inv f ≫ biproduct.π S s
   have h₁ : x = 𝟙 (S s) := by simp [x]
   have h₀ : x = 0 := by
