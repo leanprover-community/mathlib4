@@ -693,7 +693,7 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
   ⟨RingHom.FiniteType.of_finite,
     by intro; algebraize [f]; exact finite_of_finite_type_of_isJacobsonRing R S⟩
 
-/-- If `K` is a Jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+/-- If `K` is a Jacobson Noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 theorem finite_of_algHom_finiteType_of_isJacobsonRing
     {K L A : Type*} [CommRing K] [DivisionRing L] [CommRing A]
@@ -707,7 +707,7 @@ theorem finite_of_algHom_finiteType_of_isJacobsonRing
   exact Module.Finite.of_injective ((Ideal.Quotient.mkₐ K m).comp f).toLinearMap
     (RingHom.injective _)
 
-/-- If `K` is a Jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+/-- If `K` is a Jacobson Noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     {K L A : Type*} [CommRing K] [Field L] [CommRing A]
