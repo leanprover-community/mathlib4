@@ -505,9 +505,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
-  simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
-    simp only [add_tsub_cancel_right, ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_succ_pos,
-      cast_pred, cast_pow, cast_ofNat] at h
+  replace h : 2 ^ (p' + 2) - 1 ∣ s p' := by simpa [ZMod.intCast_zmod_eq_zero_iff_dvd] using h
   obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
