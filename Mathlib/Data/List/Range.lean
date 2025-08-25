@@ -34,7 +34,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   · simp
   · rw [range_succ]
     simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
-    rw [hn, forall_lt_succ]
+    rw [hn, forall_lt_succ_right]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
