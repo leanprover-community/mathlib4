@@ -1525,6 +1525,8 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Convex
+import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.Complex.IntegerCompl
@@ -1546,6 +1548,7 @@ import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Complex.Schwarz
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.Analysis.Complex.Tietze
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
@@ -2978,14 +2981,11 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Determinant
-import Mathlib.Data.Complex.Exponential
-import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Orientation
-import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
