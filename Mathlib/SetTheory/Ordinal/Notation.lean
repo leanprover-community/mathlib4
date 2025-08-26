@@ -796,8 +796,6 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
 
 section
 
--- Porting note: `R'` is used in the proof but marked as an unused variable.
-set_option linter.unusedVariables false in
 theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω ∣ repr a')
     (e0 : repr a0 ≠ 0) (h : repr a' + m < (ω ^ repr a0)) (n : ℕ+) (k : ℕ) :
     let R := repr (opowAux 0 a0 (oadd a0 n a' * ofNat m) k m)
@@ -894,11 +892,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
           Nat.cast_succ, _root_.zero_add,
           add_zero]
       rw [opow_add, opow_mul, opow_omega0, add_one_eq_succ]
-      · congr
-        conv_lhs =>
-          dsimp [(· ^ ·)]
-          simp [Pow.pow, opow, Ordinal.succ_ne_zero]
-        rw [opow_natCast]
+      · simp
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega0]
         exact ⟨_, rfl⟩
@@ -1111,10 +1105,8 @@ theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
 
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
-  rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
-  suffices ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b from this _ _
-  intro a b; induction a <;>
-    simp [*, pow_succ, mul_assoc, -Function.iterate_succ]
+  rw [@fastGrowing_succ 2 1 rfl]
+  simp
 
 /-- We can extend the fast growing hierarchy one more step to `ε₀` itself, using `ω ^ (ω ^ (⋯ ^ ω))`
 as the fundamental sequence converging to `ε₀` (which is not an `ONote`). Extending the fast

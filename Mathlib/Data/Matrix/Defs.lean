@@ -19,6 +19,7 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 * `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
 * `Matrix.submatrix`: take a submatrix by reindexing rows and columns
 * `Matrix.module`: matrices are a module over the ring of entries
+* `Set.matrix`: set of matrices with entries in a given set
 
 ## Notation
 
@@ -38,7 +39,7 @@ form `fun i j ↦ _` or even `(fun i j ↦ _ : Matrix m n α)`, as these are not
 as having the right type. Instead, `Matrix.of` should be used.
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -277,6 +278,11 @@ protected theorem map_sub [Sub α] [Sub β] (f : α → β) (hf : ∀ a₁ a₂,
 
 protected theorem map_smul [SMul R α] [SMul R β] (f : α → β) (r : R) (hf : ∀ a, f (r • a) = r • f a)
     (M : Matrix m n α) : (r • M).map f = r • M.map f :=
+  ext fun _ _ => hf _
+
+protected theorem map_smulₛₗ [SMul R α] [SMul S β] (f : α → β) (σ : R → S) (r : R)
+    (hf : ∀ a, f (r • a) = σ r • f a)
+    (M : Matrix m n α) : (r • M).map f = σ r • M.map f :=
   ext fun _ _ => hf _
 
 /-- The scalar action via `Mul.toSMul` is transformed by the same map as the elements
@@ -540,6 +546,20 @@ lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
 /-- A partially applied version of `Matrix.col_apply` -/
 lemma col_apply' (A : Matrix m n α) (i : n) : A.col i = fun j ↦ A j i := rfl
 
+section
+
+/-- Two matrices agree if their rows agree. -/
+@[local ext]
+lemma ext_row {A B : Matrix m n α} (h : ∀ i, A.row i = B.row i) : A = B :=
+  ext fun i j => congr_fun (h i) j
+
+/-- Two matrices agree if their columns agree. -/
+@[local ext]
+lemma ext_col {A B : Matrix m n α} (h : ∀ j, A.col j = B.col j) : A = B :=
+  ext fun i j => congr_fun (h j) i
+
+end
+
 lemma row_submatrix {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
     (A.submatrix r c).row i = (A.submatrix id c).row (r i) := rfl
 
@@ -563,5 +583,39 @@ lemma row_transpose (A : Matrix m n α) : Aᵀ.row = A.col := rfl
 lemma col_transpose (A : Matrix m n α) : Aᵀ.col = A.row := rfl
 
 end RowCol
+
+end Matrix
+
+namespace Set
+
+/-- Given a set `S`, `S.matrix` is the set of matrices `M`
+all of whose entries `M i j` belong to `S`. -/
+def matrix (S : Set α) : Set (Matrix m n α) := {M | ∀ i j, M i j ∈ S}
+
+theorem mem_matrix {S : Set α} {M : Matrix m n α} :
+    M ∈ S.matrix ↔ ∀ i j, M i j ∈ S := .rfl
+
+theorem matrix_eq_pi {S : Set α} :
+    S.matrix = of.symm ⁻¹' Set.univ.pi fun (_ : m) ↦ Set.univ.pi fun (_ : n) ↦ S := by
+  ext
+  simp [Set.mem_matrix]
+
+end Set
+
+namespace Matrix
+
+variable {S : Set α}
+
+@[simp]
+theorem transpose_mem_matrix_iff {M : Matrix m n α} :
+    Mᵀ ∈ S.matrix ↔ M ∈ S.matrix := forall_comm
+
+theorem submatrix_mem_matrix {M : Matrix m n α} {r : l → m} {c : o → n} (hM : M ∈ S.matrix) :
+    M.submatrix r c ∈ S.matrix := by simp_all [Set.mem_matrix]
+
+theorem submatrix_mem_matrix_iff {M : Matrix m n α} {r : l → m} {c : o → n}
+    (hr : Function.Surjective r) (hc : Function.Surjective c) :
+    M.submatrix r c ∈ S.matrix ↔ M ∈ S.matrix :=
+  ⟨(hr.forall.mpr fun _ => hc.forall.mpr fun _ => · _ _), submatrix_mem_matrix⟩
 
 end Matrix
