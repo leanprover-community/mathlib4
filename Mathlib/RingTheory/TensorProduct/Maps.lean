@@ -425,6 +425,9 @@ def map (f : A →ₐ[S] C) (g : B →ₐ[R] D) : A ⊗[R] B →ₐ[S] C ⊗[R] 
   algHomOfLinearMapTensorProduct (AlgebraTensorModule.map f.toLinearMap g.toLinearMap) (by simp)
     (by simp [one_def])
 
+@[simp] lemma toLinearMap_map (f : A →ₐ[S] C) (g : B →ₐ[R] D) :
+    (map f g).toLinearMap = TensorProduct.AlgebraTensorModule.map f.toLinearMap g.toLinearMap := rfl
+
 @[simp]
 theorem map_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] D) (a : A) (b : B) : map f g (a ⊗ₜ b) = f a ⊗ₜ g b :=
   rfl
@@ -481,6 +484,14 @@ lemma comm_comp_map_apply (f : A →ₐ[R] C) (g : B →ₐ[R] D) (x) :
     TensorProduct.comm R C D (Algebra.TensorProduct.map f g x) =
     (Algebra.TensorProduct.map g f) (TensorProduct.comm R A B x) :=
   congr($(comm_comp_map f g) x)
+
+variable (A) in
+/-- `lTensor A g : A ⊗ B →ₐ A ⊗ D` is the natural algebra morphism induced by `g : B →ₐ D`. -/
+noncomputable abbrev lTensor (g : B →ₐ[R] D) : (A ⊗[R] B) →ₐ[S] (A ⊗[R] D) := map (.id S A) g
+
+variable (B) in
+/-- `rTensor B f : A ⊗ B →ₐ C ⊗ B` is the natural algebra morphism induced by `f : A →ₐ C`. -/
+noncomputable abbrev rTensor (f : A →ₐ[S] C) : A ⊗[R] B →ₐ[S] C ⊗[R] B := map f (.id R B)
 
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
 from S- and R- isomorphisms between the tensor factors.
@@ -560,8 +571,7 @@ theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
   rfl
 
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D := by
-  ext; rfl
+    (tensorTensorTensorComm R R' S T A B C D).symm = tensorTensorTensorComm R S R' T A C B D := rfl
 
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R R' S T A B C D).toLinearEquiv =
@@ -570,9 +580,7 @@ theorem tensorTensorTensorComm_toLinearEquiv :
 @[simp]
 theorem toLinearEquiv_tensorTensorTensorComm :
     (tensorTensorTensorComm R R R R A B C D).toLinearEquiv =
-      _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
-  apply LinearEquiv.toLinearMap_injective
-  ext; simp
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
 
 lemma map_bijective {f : A →ₐ[R] B} {g : C →ₐ[R] D}
     (hf : Function.Bijective f) (hg : Function.Bijective g) :
@@ -596,7 +604,6 @@ lemma includeRight_bijective (h : Function.Bijective (algebraMap R A)) :
 end
 
 end Monoidal
-
 
 section
 
