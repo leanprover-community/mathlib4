@@ -23,9 +23,6 @@ This file gives the key definitions and results about matrices that are
   a positive vector with unit `ℓ₁`-norm (informally, a probility distributio)
   then the result is also a positive vector with unit `ℓ₁`-norm
 
-* `doublyStochastic_iff_rowStochastic_and_colStochastic` A matrix is doubly stochastic
-  if and only if it is both row and column stochastic
-
 -/
 
 open Finset Function
@@ -37,8 +34,6 @@ namespace Stochastic
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {M : Matrix n n R}
 variable {x : n → R}
-
--- # rowStochastic
 
 /--
 A square matrix is row stochastic iff all entries are nonnegative, and right
@@ -111,28 +106,10 @@ lemma nonneg_mulVec_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
   refine Left.mul_nonneg ?_ (hx k)
   exact nonneg_of_mem_rowStochastic hM
 
-/-- Left multiplication of a row stochastic matrix by a vector that is a
-probability distribution gives a vector that is a probability distribution. -/
-lemma pdist_vecMul_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
-    (hx : (∀ i : n, 0 ≤ x i) ∧ ∑ i : n, x i = 1) :
-    (∀ j : n, 0 ≤ (x ᵥ* M) j) ∧ ∑ j : n, (x ᵥ* M) j = 1 := by
-  constructor
-  · exact nonneg_vecMul_of_mem_rowStochastic hM hx.1
-  · have h₀ : ∑ i : n, x i = x ⬝ᵥ 1 := by
-      exact Eq.symm (dotProduct_one x)
-    rw [h₀] at hx
-    have h₁ : ∑ j : n, (x ᵥ* M) j = (x ᵥ* M) ⬝ᵥ 1 := by
-      exact Eq.symm (dotProduct_one (x ᵥ* M))
-    rw [h₁]
-    have h₂ : x ᵥ* M ⬝ᵥ 1 = x ⬝ᵥ (M *ᵥ 1) := by
-      rw [@dotProduct_mulVec]
-    rw [h₂]
-    have h₃ : M *ᵥ 1 = 1 := hM.2
-    rw [h₃]
-    exact hx.2
 
-
--- # colStochastic
+lemma mulVec_dotProduct_one_eq_one (hM : M ∈ rowStochastic R n)
+    (hx : x ⬝ᵥ 1 = 1) : (x ᵥ* M) ⬝ᵥ 1 = 1 := by
+  rw [← dotProduct_mulVec, hM.2, hx]
 
 /--
 A square matrix is column stochastic iff all entries are nonnegative, and left
