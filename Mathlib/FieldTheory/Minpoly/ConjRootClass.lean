@@ -143,10 +143,8 @@ theorem monic_minpoly (c : ConjRootClass K L) : c.minpoly.Monic := by
   rw [minpoly_mk]
   exact minpoly.monic (Algebra.IsIntegral.isIntegral _)
 
-theorem minpoly_ne_zero (c : ConjRootClass K L) : c.minpoly ≠ 0 := by
-  induction c
-  rw [minpoly_mk]
-  exact minpoly.ne_zero (Algebra.IsIntegral.isIntegral _)
+theorem minpoly_ne_zero (c : ConjRootClass K L) : c.minpoly ≠ 0 :=
+  c.monic_minpoly.ne_zero
 
 theorem irreducible_minpoly (c : ConjRootClass K L) : Irreducible c.minpoly := by
   induction c
