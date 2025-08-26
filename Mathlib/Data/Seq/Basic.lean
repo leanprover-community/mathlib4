@@ -149,8 +149,7 @@ theorem take_zero {s : Seq α} : s.take 0 = [] := by
 
 @[simp]
 theorem take_succ_cons {n : ℕ} {x : α} {s : Seq α} :
-    (cons x s).take (n + 1) = x :: s.take n := by
-  rfl
+    (cons x s).take (n + 1) = x :: s.take n := rfl
 
 @[simp]
 theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),

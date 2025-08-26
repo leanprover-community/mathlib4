@@ -119,8 +119,7 @@ theorem xa_mul_xa (i j : ZMod (2 * n)) : xa i * xa j = a ((n : ZMod (2 * n)) + j
   rfl
 
 @[simp]
-theorem a_zero : a 0 = (1 : QuaternionGroup n) := by
-  rfl
+theorem a_zero : a 0 = (1 : QuaternionGroup n) := rfl
 
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
