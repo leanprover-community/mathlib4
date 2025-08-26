@@ -55,9 +55,7 @@ lemma last_mem_finset (f : Fin (n + 1) →o Fin (m + 1)) (x : Fin (m + 2)) :
 lemma castSucc_mem_finset_iff
     (f : Fin (n + 1) →o Fin (m + 1)) (x : Fin (m + 2)) (i : Fin (n + 1)) :
     i.castSucc ∈ finset f x ↔ x ≤ (f i).castSucc := by
-  have := i.castSucc_ne_last
-  simp only [mem_finset_iff, Fin.castPred_castSucc]
-  tauto
+  simp [mem_finset_iff, Fin.castPred_castSucc]
 
 lemma nonempty_finset (f : Fin (n + 1) →o Fin (m + 1)) (x : Fin (m + 2)) :
     (finset f x).Nonempty :=
