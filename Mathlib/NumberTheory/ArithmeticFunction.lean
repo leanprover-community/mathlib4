@@ -896,12 +896,6 @@ theorem cardFactors_eq_zero_iff_eq_zero_or_one {n : ℕ} : Ω n = 0 ↔ n = 0 �
 @[simp]
 theorem cardFactors_pos_iff_one_lt {n : ℕ} : 0 < Ω n ↔ 1 < n := by
   rw [cardFactors_apply, List.length_pos_iff, primeFactorsList_ne_nil]
-  /-
-  -- alternative proof not using the added `Nat.primeFactorsList_ne_nil`
-  convert not_congr (cardFactors_eq_zero_iff_eq_zero_or_one (n := n))
-  · omega
-  · omega
-  -/
 
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
