@@ -362,7 +362,7 @@ def uliftMap (f : α →o β) : ULift α →o ULift β :=
 end OrderHom
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-class OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] extends
+abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
 --  RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
@@ -420,23 +420,25 @@ def OrderEmbedding (α β : Type*) [LE α] [LE β] :=
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
-/-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
-def RelEmbedding.orderEmbeddingOfLTEmbedding {α β} [PartialOrder α] [PartialOrder β]
-    (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
-  { f with
-    map_rel_iff' := by
-      simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
-
-@[simp]
-theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply {α β} [PartialOrder α] [PartialOrder β]
-    {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
-    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x := rfl
 
 namespace OrderEmbedding
 
 instance [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
 
 instance [LE α] [LE β] : OrderHomClass (α ↪o β) α β := RelEmbedding.instRelHomClass
+
+/-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
+def _root_.RelEmbedding.orderEmbeddingOfLTEmbedding {α β} [PartialOrder α] [PartialOrder β]
+    (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
+  { f with
+    map_rel_iff' := by
+      simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
+
+@[simp]
+theorem _root_.RelEmbedding.orderEmbeddingOfLTEmbedding_apply {α β}
+    [PartialOrder α] [PartialOrder β]
+  {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
+  RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x := rfl
 
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
