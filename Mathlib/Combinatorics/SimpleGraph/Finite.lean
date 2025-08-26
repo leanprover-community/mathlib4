@@ -365,7 +365,7 @@ theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
 and `maxDegree_le_of_forall_degree_le`. -/
 def maxDegree [DecidableRel G.Adj] : ℕ :=
-  Option.getD (univ.image fun v => G.degree v).max 0
+  WithTop.untopD 0 (univ.image fun v => G.degree v).max
 
 /-- There exists a vertex of maximal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
