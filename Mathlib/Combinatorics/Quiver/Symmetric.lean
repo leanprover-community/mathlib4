@@ -165,7 +165,7 @@ def lift [HasReverse V'] (φ : Prefunctor V V') :
   | Sum.inr g => reverse (φ.map g)
 
 theorem lift_spec [HasReverse V'] (φ : Prefunctor V V') :
-    Symmetrify.of.comp (Symmetrify.lift φ) = φ := by
+    Symmetrify.of.comp (Symmetrify.lift φ) = φ :=
   rfl
 
 theorem lift_reverse [h : HasInvolutiveReverse V']
