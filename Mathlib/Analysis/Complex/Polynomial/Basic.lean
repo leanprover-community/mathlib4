@@ -5,7 +5,7 @@ Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.Complex.FiniteDimensional
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.Topology.Algebra.Polynomial
 

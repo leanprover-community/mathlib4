@@ -6,7 +6,7 @@ Authors: David Loeffler
 
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.Complex.FiniteDimensional
 
 /-!
 # Convergence of `p`-series (complex case)

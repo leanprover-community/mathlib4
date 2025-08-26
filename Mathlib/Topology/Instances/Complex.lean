@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.Complex.FiniteDimensional
 import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Topology.Algebra.Field
