@@ -108,7 +108,6 @@ end membership
 section log
 
 example (a b : ℝ) (ha : a > 0) (hb : b > 0) : Real.log (a * b) = Real.log a + Real.log b := by
-  set_option trace.Meta.Tactic.simp true in
   pull (disch := positivity) Real.log
 
 example (a b c : Real) (ha : 0 < a) (hc : 0 < c) :
