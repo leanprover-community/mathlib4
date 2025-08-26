@@ -51,7 +51,7 @@ jobs:
           packagesDir = "../.lake/packages"
 
           [[require]]
-          name = "$NAME"
+          name = "mathlib"
           path = "../"
 
           [[require]]
