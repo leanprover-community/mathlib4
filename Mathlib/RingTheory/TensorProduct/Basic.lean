@@ -959,7 +959,7 @@ lemma comm_comp_map_apply (f : A →ₐ[R] C) (g : B →ₐ[R] D) (x) :
   congr($(comm_comp_map f g) x)
 
 variable (A) in
-/-- `lTensor A f : A ⊗ B →ₐ A ⊗ C` is the natural algebra morphism induced by `f : B →ₐc C`. -/
+/-- `lTensor A f : A ⊗ B →ₐ A ⊗ C` is the natural algebra morphism induced by `f : B →ₐ C`. -/
 noncomputable abbrev lTensor (g : B →ₐ[R] D) : (A ⊗[R] B) →ₐ[S] (A ⊗[R] D) := map (.id S A) g
 
 variable (A) in
