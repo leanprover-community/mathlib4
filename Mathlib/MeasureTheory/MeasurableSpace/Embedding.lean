@@ -491,7 +491,7 @@ def piCongrLeft (f : δ ≃ δ') : (∀ b, π (f b)) ≃ᵐ ∀ a, π a where
     exact fun i => measurable_pi_apply (f i)
 
 theorem coe_piCongrLeft (f : δ ≃ δ') :
-    ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := by rfl
+    ⇑(MeasurableEquiv.piCongrLeft π f) = f.piCongrLeft π := rfl
 
 lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Type*}
     [∀ i', MeasurableSpace (β i')] (x : (i : ι) → β (e i)) (i : ι) :
@@ -591,10 +591,10 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)]
     · exact measurable_pi_iff.1 measurable_snd _
 
 theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
-    ⇑(MeasurableEquiv.sumPiEquivProdPi α) = Equiv.sumPiEquivProdPi α := by rfl
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α) = Equiv.sumPiEquivProdPi α := rfl
 
 theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
-    ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := by rfl
+    ⇑(MeasurableEquiv.sumPiEquivProdPi α).symm = (Equiv.sumPiEquivProdPi α).symm := rfl
 
 /-- The measurable equivalence for (dependent) functions on an Option type
   `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
