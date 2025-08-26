@@ -128,7 +128,6 @@ variable (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
 lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y ⟶ X) (y : F.obj Y),
     F.map i y = x ∧ IsConnected Y ∧ Mono i := by
   obtain ⟨ι, f, g, hl, hc, he⟩ := has_decomp_connected_components X
-  have : Fintype ι := Fintype.ofFinite ι
   let s : Cocone (Discrete.functor f ⋙ F) := F.mapCocone (Cofan.mk X g)
   let s' : IsColimit s := isColimitOfPreserves F hl
   obtain ⟨⟨j⟩, z, h⟩ := Concrete.isColimit_exists_rep _ s' x
