@@ -54,8 +54,7 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Relation.Map G.Adj f f
   symm a b := by
     rintro ⟨v, w, h, _⟩
-    have := h.symm -- Porting note: `obviously` didn't need this hint while `aesop` does.
-    aesop (add norm unfold Relation.Map)
+    aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
   loopless a := by aesop (add norm unfold Relation.Map)
 
 instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
