@@ -17,6 +17,7 @@ section opNorm
 
 namespace ContinuousLinearMap
 
+-- **TODO** Open PR moving these two, and removing `exists_lt_apply_of_lt_opNorm` away from `NNNorm`
 variable {𝕜 𝕜' E F : Type*}
 variable [NormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [DenselyNormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NontriviallyNormedField 𝕜']
@@ -55,7 +56,9 @@ theorem exists_nnorm_eq_one_lt_apply_of_lt_opNorm' [Nontrivial E]
     _ < ‖x‖⁻¹ * ‖f x‖ := by
       gcongr; exact lt_of_le_of_lt (le_of_not_gt hr₀) hr
 
-instance [Nontrivial E] : Nontrivial (StrongDual 𝕜 E) := sorry
+-- **TODO** Add it somewhere in Mathlib via a PR (do it more generally, ask on Zulip)
+instance [Nontrivial E] : Nontrivial (StrongDual 𝕜 E) := by
+  sorry
 
 end ContinuousLinearMap
 
@@ -68,6 +71,8 @@ open Metric NormedSpace Function ContinuousLinearMap Pointwise
 local notation3 "E**" => StrongDual ℝ (StrongDual ℝ E)
 local notation3 "𝒰" => (inclusionInDoubleDual ℝ E) '' closedBall 0 1
 
+-- **TODO**: Change name, generalise to every radious/centre, align assumptions with
+-- `double_dual_bound`
 lemma inclusion_subset : 𝒰 ⊆ closedBall 0 1 := by
   intro _ ⟨_, _, hxa⟩
   grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, ← mem_closedBall_zero_iff]
@@ -82,9 +87,10 @@ the pairing whose *first* variable is in `M*` and the second is in `M`. -/
 lemma goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
   (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1 := by sorry
 
-lemma surjective_iff_ball_le_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (f : E →L[ℝ] F) : Surjective f ↔ ∃ s : Set F, ∃ ρ > 0, sphere 0 ρ ≤ Set.range f := by
-  refine ⟨fun _ ↦ ⟨Set.univ, 1, by simp_all⟩, fun ⟨s, ρ, ρ_pos, sphere_le⟩ z ↦ ?_⟩
+-- **TODO** Check not in Mathlib, miminise assumptions, golf proof.
+lemma surjective_iff_ball_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (f : E →L[ℝ] F) : Surjective f ↔ ∃ ρ > 0, sphere 0 ρ ≤ Set.range f := by
+  refine ⟨fun _ ↦ ⟨1, by simp_all⟩, fun ⟨ρ, ρ_pos, sphere_le⟩ z ↦ ?_⟩
   by_cases hz : z = 0
   · exact ⟨0, by simp_all⟩
   set α := ‖z‖ with hα_def
@@ -132,8 +138,8 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
   simp at hE
   let X := WeakDual ℝ (StrongDual ℝ E) -- `E**` with the weak topology
   let 𝒯 : TopologicalSpace X := inferInstance -- the weak topology on `E**`: can use IsOpen[T] **FAE: Choose!**
-  rw [surjective_iff_ball_le_range]
-  refine ⟨sphere 0 1, _, zero_lt_one, ?_⟩
+  rw [surjective_iff_ball_subset_range]
+  refine ⟨1, zero_lt_one, ?_⟩
   intro ξ hξ
   have hξ_norm : ‖ξ‖ = 1 := by rwa [← mem_sphere_zero_iff_norm]
   have hξ_mem {V : Set _} (hV_mem : ξ ∈ V) (hV : IsOpen[𝒯] V) : ξ ∈ closure[𝒯] (V ∩ 𝒰) := by
