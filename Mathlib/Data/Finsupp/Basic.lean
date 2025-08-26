@@ -296,7 +296,8 @@ theorem equivMapDomain_single (f : α ≃ β) (a : α) (b : M) :
     equivMapDomain f (single a b) = single (f a) b := by
   classical
     ext x
-    simp only [single_apply, Equiv.apply_eq_iff_eq_symm_apply, equivMapDomain_apply]
+    simp_rw [equivMapDomain_apply, single_apply, Equiv.apply_eq_iff_eq_symm_apply,
+      Equiv.symm_symm]
 
 @[simp]
 theorem equivMapDomain_zero {f : α ≃ β} : equivMapDomain f (0 : α →₀ M) = (0 : β →₀ M) := by
@@ -402,7 +403,7 @@ theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →�
     mapDomain f x (f a) = x a := by
   rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
-    exact single_eq_of_ne (hf.ne hba)
+    exact single_eq_of_ne' (hf.ne hba)
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
@@ -485,10 +486,10 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
       convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
-      exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
+      exact (hf.mono hS).ne hax (Finset.mem_of_mem_erase hi) (Finset.ne_of_mem_erase hi).symm
     · rw [notMem_support_iff.1 hax]
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
-      exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
+      exact hf.ne ha (hS hi) (ne_of_mem_of_not_mem hi hax).symm
 
 theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →₀ M)
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
@@ -1003,7 +1004,7 @@ protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (a : α) (b : �
 lemma uncurry_single (a : α) (b : β) (m : M) :
     (single a (single b m)).uncurry = single (a, b) m := by
   ext ⟨x, y⟩
-  rcases eq_or_ne a x with rfl | hne <;> classical simp [single_apply, *]
+  rcases eq_or_ne x a with rfl | hne <;> classical simp [single_apply, *]
 
 theorem sum_uncurry_index [AddCommMonoid N] (f : α →₀ β →₀ M) (g : α × β → M → N) :
     f.uncurry.sum (fun p c => g p c) = f.sum fun a f => f.sum fun b ↦ g (a, b) := by
@@ -1249,7 +1250,7 @@ theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
   dsimp only [extendDomain_toFun]
-  obtain rfl | ha := eq_or_ne a.val a'
+  obtain rfl | ha := eq_or_ne a' a.val
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
     intro h

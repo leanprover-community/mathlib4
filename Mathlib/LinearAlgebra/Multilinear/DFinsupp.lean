@@ -141,7 +141,7 @@ theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
     (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i, Π₀ j, M i j) :
     dfinsuppFamily (Pi.single p f) x = DFinsupp.single p (f fun i => x _ (p i)) := by
   ext p'
-  obtain rfl | hp := eq_or_ne p p'
+  obtain rfl | hp := eq_or_ne p' p
   · simp
   · simp [hp]
 

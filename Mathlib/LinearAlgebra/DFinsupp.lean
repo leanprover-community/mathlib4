@@ -99,7 +99,7 @@ theorem lapply_comp_lsingle_same [DecidableEq ι] (i : ι) :
 
 @[simp]
 theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
-    lapply i ∘ₗ lsingle i' = (0 : M i' →ₗ[R] M i) := by ext; simp [h.symm]
+    lapply i ∘ₗ lsingle i' = (0 : M i' →ₗ[R] M i) := by ext; simp [h]
 
 section Lsum
 

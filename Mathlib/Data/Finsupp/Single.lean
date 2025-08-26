@@ -56,9 +56,10 @@ def single (a : α) (b : M) : α →₀ M where
       · simp [hb, Pi.single, update]
       simp [ha]
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply [Decidable (a' = a)] : single a b a' = if a' = a then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
+  rw [single, coe_mk, Pi.single_apply]
+  congr
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -66,7 +67,7 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  simp [single_apply, Set.indicator]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -75,6 +76,10 @@ theorem single_eq_same : (single a b : α →₀ M) a = b := by
 @[simp]
 theorem single_eq_of_ne (h : a' ≠ a) : (single a b : α →₀ M) a' = 0 := by
   classical exact Pi.single_eq_of_ne h _
+
+@[simp]
+theorem single_eq_of_ne' (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
+  classical exact Pi.single_eq_of_ne' h _
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b := by
@@ -106,7 +111,7 @@ theorem support_single_subset : (single a b).support ⊆ {a} := by
   split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
-  rcases em (x = a) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
+  rcases em (x = a) with (rfl | hx) <;> [simp; simp [hx]]
 
 theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
   Set.range_subset_iff.2 single_apply_mem
@@ -143,7 +148,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     · rw [DFunLike.ext_iff] at eq
       have h₁ := eq a₁
       have h₂ := eq a₂
-      simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne (Ne.symm h)] at h₁ h₂
+      simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne' h] at h₁ h₂
       exact Or.inr ⟨h₁, h₂.symm⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
     · rfl
@@ -464,11 +469,11 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     constructor
     · ext d
       rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
+      by_cases h_cases : d = c
+      · simp only [h_cases, hc₂, single_eq_same]
       · rw [single_apply, single_apply, if_neg, if_neg h_cases]
         by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+        exact h_cases (f.injective (hfd.trans hc₂.symm))
     · exact hc₂
 
 @[simp]

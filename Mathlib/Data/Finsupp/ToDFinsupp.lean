@@ -290,11 +290,11 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η
       @DFinsupp.single _ (fun i => η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
   obtain ⟨i, a⟩ := a
   ext j b
-  by_cases h : i = j
+  by_cases h : j = i
   · subst h
     classical simp [split_apply, Finsupp.single_apply]
   suffices Finsupp.single (⟨i, a⟩ : Σ i, η i) n ⟨j, b⟩ = 0 by simp [split_apply, dif_neg h, this]
-  have H : (⟨i, a⟩ : Σ i, η i) ≠ ⟨j, b⟩ := by simp [h]
+  have H : ⟨j, b⟩ ≠ (⟨i, a⟩ : Σ i, η i) := by simp [h]
   classical rw [Finsupp.single_apply, if_neg H]
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
