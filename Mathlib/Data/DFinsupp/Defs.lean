@@ -469,7 +469,7 @@ theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
 theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 
-theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i' = 0 := by
+theorem single_eq_of_ne {i i' b} (h : i' ≠ i) : (single i b : Π₀ i, β i) i' = 0 := by
   simp only [single_apply, dif_neg h]
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
@@ -487,8 +487,8 @@ theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
       have hci := congr_fun h_coe i
       have hcj := congr_fun h_coe j
       rw [DFinsupp.single_eq_same] at hci hcj
-      rw [DFinsupp.single_eq_of_ne (Ne.symm hij)] at hci
-      rw [DFinsupp.single_eq_of_ne hij] at hcj
+      rw [DFinsupp.single_eq_of_ne hij] at hci
+      rw [DFinsupp.single_eq_of_ne (Ne.symm hij)] at hcj
       exact Or.inr ⟨hci, hcj.symm⟩
   · rintro (⟨rfl, hxi⟩ | ⟨hi, hj⟩)
     · rw [eq_of_heq hxi]
