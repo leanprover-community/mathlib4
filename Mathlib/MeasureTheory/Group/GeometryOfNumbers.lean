@@ -56,7 +56,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddGroup L] [Countable L] [Ad
       (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
 
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
-is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
+is large enough compared to the covolume of a lattice `L` of `E`, then it contains a nonzero
 lattice point of `L`. -/
 theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddCommGroup E]
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]

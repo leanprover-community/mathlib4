@@ -51,7 +51,7 @@ noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure �
 /-- A finite measure obtained from an s-finite measure `μ`, such that
 `μ = μ.toFinite.withDensity (μ.rnDeriv µ.toFinite)`
 (see `MeasureTheory.Measure.withDensity_rnDeriv_eq` along with
-`MeasureTheory.absolutelyContinuous_toFinite`). If `μ` is non-zero, then `μ.toFinite` is a
+`MeasureTheory.absolutelyContinuous_toFinite`). If `μ` is nonzero, then `μ.toFinite` is a
 probability measure. -/
 noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
   μ.toFiniteAux[|univ]

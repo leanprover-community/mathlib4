@@ -225,7 +225,7 @@ theorem Inv_divided_by_X_pow_order_leftInv {f : k⟦X⟧} (hf : f ≠ 0) :
   exact mul_invOfUnit (divXPowOrder f) (firstUnitCoeff hf) rfl
 
 open scoped Classical in
-/-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a non-zero
+/-- `Unit_of_divided_by_X_pow_order` is the unit power series obtained by dividing a nonzero
 power series by the largest power of `X` that divides it. -/
 def Unit_of_divided_by_X_pow_order (f : k⟦X⟧) : k⟦X⟧ˣ :=
   if hf : f = 0 then 1

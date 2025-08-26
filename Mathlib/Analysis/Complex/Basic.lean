@@ -582,7 +582,7 @@ def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
-/- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
+/- If `z` is nonzero, then either `z` or `-z` is in `slitPlane`. -/
 lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
     z ∈ slitPlane ∨ -z ∈ slitPlane := by
   rw [mem_slitPlane_iff, mem_slitPlane_iff]

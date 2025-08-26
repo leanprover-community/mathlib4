@@ -96,7 +96,7 @@ example : 0 ≤ 0 := by compute_degree!
 --  OfNat.ofNat 0
 example : natDegree (0 : ℤ[X]) ≤ 5 := by compute_degree!
 
---  OfNat.ofNat (non-zero)
+--  OfNat.ofNat (nonzero)
 example : natDegree (1 : ℤ[X]) ≤ 5 := by compute_degree!
 
 --  NatCast.natCast
@@ -128,7 +128,7 @@ variable [Ring R]
 --  OfNat.ofNat 0
 example : natDegree (0 : R[X]) ≤ 5 := by compute_degree!
 
---  OfNat.ofNat (non-zero)
+--  OfNat.ofNat (nonzero)
 example : natDegree (1 : R[X]) ≤ 5 := by compute_degree!
 
 --  NatCast.natCast

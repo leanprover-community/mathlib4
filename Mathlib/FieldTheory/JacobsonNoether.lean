@@ -132,7 +132,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
         rwa [h_find]
       rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
-  -- We define `c` to be the value that we proved above to be non-zero.
+  -- We define `c` to be the value that we proved above to be nonzero.
   set c := (ad k D a)^[n] b with hc_def
   let _ : Invertible c := ⟨c⁻¹, inv_mul_cancel₀ hb.1, mul_inv_cancel₀ hb.1⟩
   -- We prove that `c` commutes with `a`.

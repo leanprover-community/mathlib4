@@ -456,7 +456,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
-/-- In a Noetherian integral domain which is not a field, every nonzero ideal contains a non-zero
+/-- In a Noetherian integral domain which is not a field, every nonzero ideal contains a nonzero
   product of prime ideals; in a field, the whole ring is a nonzero ideal containing only 0 as
   product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}

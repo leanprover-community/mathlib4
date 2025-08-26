@@ -289,7 +289,7 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
       simp [this]
 
 /-- This theorem combines the results of the special cases above, using `ENNReal` division to remove
-the requirement that the ratio is eventually non-zero. -/
+the requirement that the ratio is eventually nonzero. -/
 theorem ofScalars_radius_eq_inv_of_tendsto_ENNReal [NormOneClass E] {r : ℝ≥0∞}
     (hc' : Tendsto (fun n ↦ ENNReal.ofReal ‖c n.succ‖ / ENNReal.ofReal ‖c n‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = r⁻¹ := by

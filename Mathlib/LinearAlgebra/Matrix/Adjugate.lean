@@ -334,7 +334,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
     rw [h_card, Nat.zero_sub, pow_zero, adjugate_subsingleton, det_one]
   replace h_card := tsub_add_cancel_of_le h_card.nat_succ_le
   -- express `A` as an evaluation of a polynomial in n^2 variables, and solve in the polynomial ring
-  -- where `A'.det` is non-zero.
+  -- where `A'.det` is nonzero.
   let A' := mvPolynomialX n n ℤ
   suffices A'.adjugate.det = A'.det ^ (Fintype.card n - 1) by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_det, ←
@@ -486,7 +486,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
   · exact (h h_card).elim
   rw [← h_card]
   -- express `A` as an evaluation of a polynomial in n^2 variables, and solve in the polynomial ring
-  -- where `A'.det` is non-zero.
+  -- where `A'.det` is nonzero.
   let A' := mvPolynomialX n n ℤ
   suffices adjugate (adjugate A') = det A' ^ (Fintype.card n - 2) • A' by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_adjugate, this,

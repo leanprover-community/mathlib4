@@ -17,7 +17,7 @@ Here we collect some results about matrices over `ℚ` and `ℤ`.
 ## Main definitions and results
 
 * `Matrix.num`, `Matrix.den`: express a rational matrix `A` as the quotient of an integer matrix
-  by a (non-zero) natural.
+  by a (nonzero) natural.
 
 ## TODO
 

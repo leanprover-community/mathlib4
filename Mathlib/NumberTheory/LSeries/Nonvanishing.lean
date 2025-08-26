@@ -18,7 +18,7 @@ then the L-function of `χ` does not vanish at `s`.
 
 As a consequence, we have the corresponding statement for the Riemann ζ function:
 `riemannZeta_ne_zero_of_one_le_re` (which does not require `s ≠ 1`, since the junk value at `s = 1`
-happens to be non-zero).
+happens to be nonzero).
 
 These results are prerequisites for the **Prime Number Theorem** and
 **Dirichlet's Theorem** on primes in arithmetic progressions.

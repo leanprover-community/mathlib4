@@ -124,7 +124,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
       (1 : ℝ) ≤ ((b : ℝ) + 1) ^ f.natDegree * (|α - a / (b + 1)| * A) := by
   -- `fR` is `f` viewed as a polynomial with `ℝ` coefficients.
   set fR : ℝ[X] := map (algebraMap ℤ ℝ) f
-  -- `fR` is non-zero, since `f` is non-zero.
+  -- `fR` is nonzero, since `f` is nonzero.
   obtain fR0 : fR ≠ 0 := fun fR0 =>
     (map_injective (algebraMap ℤ ℝ) fun _ _ A => Int.cast_inj.mp A).ne f0
       (fR0.trans (Polynomial.map_zero _).symm)

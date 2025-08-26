@@ -26,7 +26,7 @@ namespace QuadraticForm
 variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the
-(non-zero) real numbers and the weighted sum of squares with weights `sign ∘ u`. -/
+(nonzero) real numbers and the weighted sum of squares with weights `sign ∘ u`. -/
 noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     IsometryEquiv (weightedSumSquares ℝ w)
       (weightedSumSquares ℝ (fun i ↦ (sign (w i) : ℝ))) := by

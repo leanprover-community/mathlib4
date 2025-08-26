@@ -42,7 +42,7 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
 * `LinearMap.nilRank`: the smallest index at which `polyCharpoly` has a nonzero coefficient,
   which is independent of the choice of basis for `L`.
 * `LinearMap.IsNilRegular`: an element `x` of `L` is *nil-regular* with respect to `φ`
-  if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero,
+  if the `n`-th coefficient of the characteristic polynomial of `φ x` is nonzero,
   where `n` denotes the nil-rank of `φ`.
 
 ## Implementation details
@@ -499,7 +499,7 @@ and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms,
 and denote `n := nilRank φ`.
 
 An element `x : L` is *nil-regular* with respect to `φ`
-if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
+if the `n`-th coefficient of the characteristic polynomial of `φ x` is nonzero. -/
 def IsNilRegular (x : L) : Prop :=
   Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0
 

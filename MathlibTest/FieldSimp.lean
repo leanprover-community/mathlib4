@@ -129,7 +129,7 @@ example : P (x ^ 2 * x ^ (-2 : ℤ)) := by test_field_simp
 #guard_msgs in
 example : P (x ^ (-37 : ℤ) * x ^ 37) := by test_field_simp
 
--- If x is non-zero, we do cancel.
+-- If x is nonzero, we do cancel.
 
 /-- info: P 1 -/
 #guard_msgs in

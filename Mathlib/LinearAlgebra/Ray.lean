@@ -271,7 +271,7 @@ section Action
 
 variable {G : Type*} [Group G] [DistribMulAction G M]
 
-/-- Any invertible action preserves the non-zeroness of ray vectors. This is primarily of interest
+/-- Any invertible action preserves the nonzeroness of ray vectors. This is primarily of interest
 when `G = Rˣ` -/
 instance {R : Type*} : MulAction G (RayVector R M) where
   smul r := Subtype.map (r • ·) fun _ => (smul_ne_zero_iff_ne _).2
@@ -280,7 +280,7 @@ instance {R : Type*} : MulAction G (RayVector R M) where
 
 variable [SMulCommClass R G M]
 
-/-- Any invertible action preserves the non-zeroness of rays. This is primarily of interest when
+/-- Any invertible action preserves the nonzeroness of rays. This is primarily of interest when
 `G = Rˣ` -/
 instance : MulAction G (Module.Ray R M) where
   smul r := Quotient.map (r • ·) fun _ _ h => h.smul _

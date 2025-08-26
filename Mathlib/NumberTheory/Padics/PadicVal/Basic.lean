@@ -365,7 +365,7 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
       padicValRat.self hp.elim.one_lt, mul_one]
 
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
-(if the sum is non-zero). -/
+(if the sum is nonzero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
     (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
   induction n with

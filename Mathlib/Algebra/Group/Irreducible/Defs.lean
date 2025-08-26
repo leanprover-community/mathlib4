@@ -34,7 +34,7 @@ variable [Monoid M] {p q a b : M}
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units.
 
-We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
+We explicitly avoid stating that `p` is nonzero, this would require a semiring. Assuming only a
 monoid allows us to reuse irreducible for associated elements. -/
 @[to_additive]
 structure Irreducible (p : M) : Prop where

@@ -73,7 +73,7 @@ nonzero zero-divisors.  The elements are easy to write down:
 `∑ i ∈ Finset.range oa, [a] ^ i` and `[a] - 1` are nonzero elements of `R[A]`
 whose product is zero.
 
-In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero
+In particular, this applies whenever the additive monoid `A` is an additive group with a nonzero
 torsion element. -/
 theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a : A)
     (o2 : 2 ≤ addOrderOf a) : ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by

@@ -33,9 +33,9 @@ For an element `f : R[A]`, this file defines
 
 If the grading type `A` is a linearly ordered additive monoid, then these two notions of degree
 coincide with the standard one:
-* the sup-degree is the maximum of the exponents of the monomials that appear with non-zero
+* the sup-degree is the maximum of the exponents of the monomials that appear with nonzero
   coefficient in `f`, or `⊥`, if `f = 0`;
-* the inf-degree is the minimum of the exponents of the monomials that appear with non-zero
+* the inf-degree is the minimum of the exponents of the monomials that appear with nonzero
   coefficient in `f`, or `⊤`, if `f = 0`.
 
 The main results are

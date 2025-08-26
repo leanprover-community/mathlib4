@@ -241,7 +241,7 @@ lemma char_is_prime_or_zero (p : ℕ) [hc : CharP R p] : Nat.Prime p ∨ p = 0 :
   | 1, hc => absurd (Eq.refl (1 : ℕ)) (@char_ne_one R _ _ (1 : ℕ) hc)
   | m + 2, hc => Or.inl (@char_is_prime_of_two_le R _ _ (m + 2) hc (Nat.le_add_left 2 m))
 
-/-- The characteristic is prime if it is non-zero. -/
+/-- The characteristic is prime if it is nonzero. -/
 lemma char_prime_of_ne_zero {p : ℕ} [CharP R p] (hp : p ≠ 0) : p.Prime :=
   (CharP.char_is_prime_or_zero R p).resolve_right hp
 

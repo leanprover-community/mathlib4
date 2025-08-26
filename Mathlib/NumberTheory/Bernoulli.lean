@@ -304,7 +304,7 @@ theorem sum_range_pow (n p : ℕ) :
       rw [← div_eq_iff (hne p), div_eq_mul_inv, sum_mul]
       rw [PowerSeries.ext_iff] at this
       simpa using this p
-    -- the power series `exp ℚ - 1` is non-zero, a fact we need in order to use `mul_right_inj'`
+    -- the power series `exp ℚ - 1` is nonzero, a fact we need in order to use `mul_right_inj'`
     have hexp : exp ℚ - 1 ≠ 0 := by
       simp only [exp, PowerSeries.ext_iff, Ne, not_forall]
       use 1

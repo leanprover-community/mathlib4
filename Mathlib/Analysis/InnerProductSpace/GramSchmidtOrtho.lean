@@ -22,7 +22,7 @@ and outputs a set of orthogonal vectors which have the same span.
 - `gramSchmidt_linearIndependent`: if the input vectors of `gramSchmidt` are linearly independent,
   then so are the output vectors.
 - `gramSchmidt_ne_zero`: if the input vectors of `gramSchmidt` are linearly independent,
-  then the output vectors are non-zero.
+  then the output vectors are nonzero.
 - `gramSchmidtBasis`: the basis produced by the Gram-Schmidt process when given a basis as input
 - `gramSchmidtNormed`:
   the normalized `gramSchmidt` process, i.e each vector in `gramSchmidtNormed` has unit length
@@ -201,7 +201,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
   simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
 
 /-- If the input vectors of `gramSchmidt` are linearly independent,
-then the output vectors are non-zero. -/
+then the output vectors are nonzero. -/
 theorem gramSchmidt_ne_zero {f : ι → E} (n : ι) (h₀ : LinearIndependent 𝕜 f) :
     gramSchmidt 𝕜 f n ≠ 0 :=
   gramSchmidt_ne_zero_coe _ (LinearIndependent.comp h₀ _ Subtype.coe_injective)

@@ -405,7 +405,7 @@ of open sets, then for any point we can find a neighbourhood on which only finit
 `f` are not equal to 1. -/
 @[to_additive /-- If a family of functions `f` has locally-finite support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
-`f` are non-zero. -/]
+`f` are nonzero. -/]
 theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :

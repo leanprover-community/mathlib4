@@ -17,7 +17,7 @@ Then the coefficients of the characteristic polynomial of `ad R L x` are polynom
 The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 
 Continuing to write `n` for the rank of `L`, an element `x` of `L` is *regular*
-if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero.
+if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is nonzero.
 
 ## Main declarations
 
@@ -85,7 +85,7 @@ lemma rank_le_natTrailingDegree_charpoly_ad [Nontrivial R] :
 
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
-if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
+if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is nonzero. -/
 def IsRegular (x : L) : Prop := LinearMap.IsNilRegular φ x
 
 lemma isRegular_def :
@@ -157,7 +157,7 @@ lemma rank_le_natTrailingDegree_charpoly_ad [Nontrivial R] :
 
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
-if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
+if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is nonzero. -/
 abbrev IsRegular (x : L) : Prop := LieModule.IsRegular R L x
 
 lemma isRegular_def :

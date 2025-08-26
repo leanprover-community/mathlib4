@@ -23,7 +23,7 @@ In this file we show that if `R` satisfies `NoZeroDivisors` and `A` is a grading
 also satisfies `NoZeroDivisors`.
 
 Because of the instances to `UniqueProds/Sums`, we obtain a formalization of the well-known result
-that if `R` is a field and `A` is a left-ordered group, then `R[A]` contains no non-zero
+that if `R` is a field and `A` is a left-ordered group, then `R[A]` contains no nonzero
 zero-divisors.
 The actual assumptions on `R` are weaker.
 
@@ -39,10 +39,10 @@ The actual assumptions on `R` are weaker.
   `NoZeroDivisors R[A]`.
 
 TODO: move the rest of the docs to UniqueProds?
-* `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
+* `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no nonzero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
   left addition, then `R[A]` has no nonzero zero-divisors.
-* `NoZeroDivisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
+* `NoZeroDivisors.of_right_ordered` shows that if `R` is a semiring with no nonzero
   zero-divisors, `A` is a linearly ordered, add left cancel semigroup with strictly monotone
   right addition, then `R[A]` has no nonzero zero-divisors.
 

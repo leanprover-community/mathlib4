@@ -26,7 +26,7 @@ characteristic 0 form a root system. We achieve this by studying root chains.
   The `α`-chain through `β` (`β - qα ... β ... β + rα`) are the only roots of the form `β + kα`.
 
 - `LieAlgebra.IsKilling.eq_neg_or_eq_of_eq_smul`:
-  `±α` are the only `K`-multiples of a root `α` that are also (non-zero) roots.
+  `±α` are the only `K`-multiples of a root `α` that are also (nonzero) roots.
 
 - `LieAlgebra.IsKilling.rootSystem`: The root system of a finite-dimensional Lie algebra with
   non-degenerate Killing form over a field of characteristic zero,
@@ -343,7 +343,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
     cases this (rootSpace_one_div_two_smul α hα)
 
-/-- `±α` are the only `K`-multiples of a root `α` that are also (non-zero) roots. -/
+/-- `±α` are the only `K`-multiples of a root `α` that are also (nonzero) roots. -/
 lemma eq_neg_or_eq_of_eq_smul (hβ : β.IsNonZero) (k : K) (h : (β : H → K) = k • α) :
     β = -α ∨ β = α := by
   by_cases hα : α.IsZero

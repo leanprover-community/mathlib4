@@ -423,7 +423,7 @@ if `norm_num`med.
   --- reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
-reducing to `False` is not exactly correlated with a coefficient being non-zero.
+reducing to `False` is not exactly correlated with a coefficient being nonzero.
 It does mean that `compute_degree` reduced the initial goal to an unprovable state
 (unless there was already a contradiction in the initial hypotheses!), but it is indicative that
 there may be some problem.

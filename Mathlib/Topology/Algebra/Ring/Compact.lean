@@ -27,7 +27,7 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 - `IsLocalRing.isOpen_iff_finite_quotient`:
   An ideal in a compact Hausdorff Noetherian local ring is open iff it has finite index.
 - `IsDedekindDomain.isOpen_iff`:
-  An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is non-zero.
+  An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is nonzero.
 
 ## Future projects
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.

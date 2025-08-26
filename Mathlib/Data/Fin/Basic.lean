@@ -369,7 +369,7 @@ whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   Nat.mod_eq_of_lt h
 
-/-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
+/-- If `n` is nonzero, converting the value of a `Fin n` to `Fin n` results
 in the same value. -/
 @[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
   Fin.ext <| val_cast_of_lt a.isLt

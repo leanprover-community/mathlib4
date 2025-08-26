@@ -241,7 +241,7 @@ end CommRing
 
 /-- The homogeneous degree bounds the total degree.
 
-See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is non-zero. -/
+See also `MvPolynomial.IsHomogeneous.totalDegree` when `φ` is nonzero. -/
 lemma totalDegree_le (hφ : IsHomogeneous φ n) : φ.totalDegree ≤ n := by
   apply Finset.sup_le
   intro d hd

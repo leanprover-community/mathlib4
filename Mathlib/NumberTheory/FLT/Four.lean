@@ -262,7 +262,7 @@ theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 
   apply Fermat42.not_minimal hf h2 hp
 
 /--
-Fermat's Last Theorem for $n=4$: if `a b c : ℕ` are all non-zero
+Fermat's Last Theorem for $n=4$: if `a b c : ℕ` are all nonzero
 then `a ^ 4 + b ^ 4 ≠ c ^ 4`.
 -/
 theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by

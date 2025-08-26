@@ -195,9 +195,9 @@ instance instNormedSpaceLieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜
 
 /-! ## `C^n` manifolds with `C^n` inversion away from zero
 
-Typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n` at all non-zero
+Typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n` at all nonzero
 points. (This includes multiplicative Lie groups, but also complete normed semifields.)
-Point-wise inversion is `C^n` when the function/denominator is non-zero. -/
+Point-wise inversion is `C^n` when the function/denominator is nonzero. -/
 section ContMDiffInv₀
 
 -- See note [Design choices about smooth algebraic structures]
@@ -286,7 +286,7 @@ end ContMDiffInv₀
 /-! ### Point-wise division of `C^n` functions
 
 If `[ContMDiffMul I n N]` and `[ContMDiffInv₀ I n N]`, point-wise division of `C^n`
-functions `f : M → N` is `C^n` whenever the denominator is non-zero.
+functions `f : M → N` is `C^n` whenever the denominator is nonzero.
 (This includes `N` being a completely normed field.)
 -/
 section Div

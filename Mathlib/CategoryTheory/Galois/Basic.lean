@@ -368,7 +368,7 @@ lemma lt_card_fiber_of_mono_of_notIso {X Y : C} (f : X ⟶ Y) [Mono f]
   exact Nat.le_antisymm
     (Finite.card_le_of_injective (F.map f) (injective_of_mono_of_preservesPullback (F.map f))) hlt
 
-/-- The cardinality of the fiber of a not-initial object is non-zero. -/
+/-- The cardinality of the fiber of a not-initial object is nonzero. -/
 lemma non_zero_card_fiber_of_not_initial (X : C) (h : IsInitial X → False) :
     Nat.card (F.obj X) ≠ 0 := by
   intro hzero
