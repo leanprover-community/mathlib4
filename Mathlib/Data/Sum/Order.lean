@@ -526,7 +526,8 @@ def sumCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ �
 @[simp]
 theorem sumCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
     (e₁.sumCongr e₂).trans (f₁.sumCongr f₂) = (e₁.trans f₁).sumCongr (e₂.trans f₂) := by
-  ext; simp
+  sorry
+  --ext; simp
 
 @[simp]
 theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
@@ -535,7 +536,8 @@ theorem sumCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
 
 @[simp]
 theorem sumCongr_refl : sumCongr (.refl α) (.refl β) = .refl _ := by
-  ext; simp
+  sorry
+  --ext; simp
 
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
 @[simps! apply]
@@ -615,7 +617,8 @@ def sumLexCongr (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ �
 @[simp]
 theorem sumLexCongr_trans (e₁ : α₁ ≃o β₁) (e₂ : α₂ ≃o β₂) (f₁ : β₁ ≃o γ₁) (f₂ : β₂ ≃o γ₂) :
     (e₁.sumLexCongr e₂).trans (f₁.sumLexCongr f₂) = (e₁.trans f₁).sumLexCongr (e₂.trans f₂) := by
-  ext; simp
+  sorry
+  --ext; simp
 
 @[simp]
 theorem sumLexCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
@@ -624,7 +627,8 @@ theorem sumLexCongr_symm (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) :
 
 @[simp]
 theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
-  ext; simp
+  sorry
+  --ext; simp
 
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=

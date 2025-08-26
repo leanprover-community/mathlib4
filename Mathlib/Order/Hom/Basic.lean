@@ -365,8 +365,6 @@ end OrderHom
 abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
---  RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
-
 namespace OrderHomClass
 
 variable [Preorder α] [Preorder β] [FunLike F α β] [OrderHomClass F α β]
@@ -420,12 +418,13 @@ def OrderEmbedding (α β : Type*) [LE α] [LE β] :=
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
-
 namespace OrderEmbedding
 
 instance [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
 
 instance [LE α] [LE β] : OrderHomClass (α ↪o β) α β := RelEmbedding.instRelHomClass
+
+instance [LE α] [LE β] : EmbeddingLike (α ↪o β) α β := RelEmbedding.instEmbeddingLike
 
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def _root_.RelEmbedding.orderEmbeddingOfLTEmbedding {α β} [PartialOrder α] [PartialOrder β]
@@ -620,6 +619,15 @@ instance : FunLike (α ≃o β) α β := RelIso.instFunLike
 instance : EquivLike (α ≃o β) α β := RelIso.instEquivLike
 
 instance : OrderHomClass (α ≃o β) α β := RelIso.instRelHomClass
+
+@[simp]
+theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, (f a) ≤ (f b) ↔ a ≤ b) :
+    (RelIso.mk f @o : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_fn_toEquiv (f : α ≃o β) : (f.toEquiv : α → β) = f :=
+  rfl
 
 @[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
