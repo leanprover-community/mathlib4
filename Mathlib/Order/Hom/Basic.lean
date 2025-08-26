@@ -362,8 +362,10 @@ def uliftMap (f : α →o β) : ULift α →o ULift β :=
 end OrderHom
 
 /-- `OrderHomClass F α b` asserts that `F` is a type of `≤`-preserving morphisms. -/
-abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] :=
+class OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLike F α β] extends
   RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
+
+--  RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop)
 
 namespace OrderHomClass
 
@@ -412,7 +414,7 @@ instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
 
 /-- An order embedding is an embedding `f : α ↪ β` such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelEmbedding (≤) (≤)`. -/
-abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
+def OrderEmbedding (α β : Type*) [LE α] [LE β] :=
   @RelEmbedding α β (· ≤ ·) (· ≤ ·)
 
 /-- Notation for an `OrderEmbedding`. -/
@@ -431,6 +433,10 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply {α β} [PartialOrder α]
     RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x := rfl
 
 namespace OrderEmbedding
+
+instance [LE α] [LE β] : FunLike (α ↪o β) α β := RelEmbedding.instFunLike
+
+instance [LE α] [LE β] : OrderHomClass (α ↪o β) α β := RelEmbedding.instRelHomClass
 
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
@@ -595,7 +601,7 @@ end RelHom
 
 /-- An order isomorphism is an equivalence such that `a ≤ b ↔ (f a) ≤ (f b)`.
 This definition is an abbreviation of `RelIso (≤) (≤)`. -/
-abbrev OrderIso (α β : Type*) [LE α] [LE β] :=
+def OrderIso (α β : Type*) [LE α] [LE β] :=
   @RelIso α β (· ≤ ·) (· ≤ ·)
 
 /-- Notation for an `OrderIso`. -/
@@ -607,15 +613,11 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
-instance : EquivLike (α ≃o β) α β where
-  coe f := f.toFun
-  inv f := f.invFun
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
-    congr
+instance : FunLike (α ≃o β) α β := RelIso.instFunLike
+
+instance : EquivLike (α ≃o β) α β := RelIso.instEquivLike
+
+instance : OrderHomClass (α ≃o β) α β := RelIso.instRelHomClass
 
 @[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
@@ -633,6 +635,9 @@ def toOrderEmbedding (e : α ≃o β) : α ↪o β :=
 @[simp]
 theorem coe_toOrderEmbedding (e : α ≃o β) : ⇑e.toOrderEmbedding = e :=
   rfl
+
+instance : CoeOut (α ≃o β) (α ↪o β) :=
+  ⟨toOrderEmbedding⟩
 
 protected theorem bijective (e : α ≃o β) : Function.Bijective e :=
   e.toEquiv.bijective
