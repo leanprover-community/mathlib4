@@ -140,7 +140,7 @@ theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s�
 theorem normalize_gcd (s : Multiset α) : normalize s.gcd = s.gcd :=
   Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 
-theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s → x = 0 := by
+theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x ∈ s, x = 0 := by
   constructor
   · intro h x hx
     apply eq_zero_of_zero_dvd
