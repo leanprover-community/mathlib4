@@ -981,7 +981,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
 Find the first argument of `nm` that has a multiplicative type-class on it.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the first argument of each type-class.
+Note: we only consider the first relevant argument of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
@@ -994,7 +994,8 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
         if let some c := tgt.getAppFn.constName? then
           if findTranslation? (← getEnv) c |>.isSome then
-            if let some arg := tgt.getArg? 0 then
+            let relevantArg := (relevantArgAttr.find? (← getEnv) c).getD 0
+            if let some arg := tgt.getArg? relevantArg then
               return xs.findIdx? (arg.containsFVar ·.fvarId!)
         return none
     trace[to_additive_detail] "firstMultiplicativeArg: {l}"
