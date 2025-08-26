@@ -61,6 +61,12 @@ are equivalent on `ℝ^n` for abstract (norm equivalence) reasons. Instead, we g
 (easy) proof which provides a comparison between these two norms with explicit constants.
 
 We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
+
+## TODO
+
+TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
+`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 
 
@@ -276,6 +282,10 @@ We only register this emetric space structure as a temporary instance, as the tr
 registered later) will have as uniformity exactly the product uniformity, instead of the one coming
 from the edistance (which is equal to it, but not defeq). See Note [forgetful inheritance]
 explaining why having definitionally the right uniformity is often important.
+
+TODO: the results about uniformity and bornology should be using the tools in
+`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 
 

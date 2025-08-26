@@ -37,6 +37,12 @@ If you wish to endow a type synonym of `α × β` with the `L^p` distance, you c
 
 This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.
 
+## TODO
+
+TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
+`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+the only remaining results are about `Lipschitz` and `Antilipschitz`.
+
 -/
 
 open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
@@ -289,6 +295,10 @@ We only register this emetric space structure as a temporary instance, as the tr
 registered later) will have as uniformity exactly the product uniformity, instead of the one coming
 from the edistance (which is equal to it, but not defeq). See Note [forgetful inheritance]
 explaining why having definitionally the right uniformity is often important.
+
+TODO: the results about uniformity and bornology should be using the tools in
+`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 
 

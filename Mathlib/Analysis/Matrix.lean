@@ -524,6 +524,8 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
   PiLp.isBoundedSMulSeminormedAddCommGroupToPi 2 _
 
+/-- This applies to the Frobenius norm. -/
+@[local instance]
 theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
@@ -535,6 +537,7 @@ theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [M
 /-- Normed space instance (using the Frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
+@[local instance]
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
