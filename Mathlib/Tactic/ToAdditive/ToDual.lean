@@ -117,19 +117,8 @@ initialize dontTranslateAttr : NameMapExtension Unit ←
 /-- Maps names to their dual counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
-/-- The bundle of environment extensions for `to_dual` -/
-def toDualBundle : BundledExtensions where
-  ignoreArgsAttr := ignoreArgsAttr
-  reorderAttr := reorderAttr
-  relevantArgAttr := relevantArgAttr
-  dontTranslateAttr := dontTranslateAttr
-  translations := translations
-  attrName := `to_dual
-  changeNumeral := false
-  isDual := true
-
 /--
-Dictionary used by `guessName` to autogenerate names.
+Dictionary used by `guessToDualName` to autogenerate names.
 
 Note: `guessName` capitalizes first element of the output according to
 capitalization of the input. Input and first element should therefore be lower-case,
@@ -184,14 +173,26 @@ def nameDict : String → List String
 
   | x             => [x]
 
-/-- So far, we don't have any dual abbreviations that need to be fixed. -/
-def fixAbbreviation : List String → List String := id
+/-- Automatically generate the dual version of a name. -/
+def guessToDualName : String → String := guessName nameDict id
+
+/-- The bundle of environment extensions for `to_dual` -/
+def toDualBundle : BundledExtensions where
+  ignoreArgsAttr := ignoreArgsAttr
+  reorderAttr := reorderAttr
+  relevantArgAttr := relevantArgAttr
+  dontTranslateAttr := dontTranslateAttr
+  translations := translations
+  attrName := `to_dual
+  changeNumeral := false
+  isDual := true
+  guessName := guessToDualName
 
 initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addToAdditiveAttr toDualBundle nameDict fixAbbreviation src (← elabToAdditive stx) kind
+      addToAdditiveAttr toDualBundle src (← elabToAdditive stx) kind
     applicationTime := .afterCompilation
   }
 

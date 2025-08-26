@@ -415,6 +415,8 @@ structure BundledExtensions : Type where
   changeNumeral : Bool
   /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
   isDual : Bool
+  /-- `guessName` tries to guess how a lemma name should be translated. -/
+  guessName : String → String
 attribute [inherit_doc to_additive_ignore_args] BundledExtensions.ignoreArgsAttr
 attribute [inherit_doc to_additive_relevant_arg] BundledExtensions.relevantArgAttr
 attribute [inherit_doc to_additive_dont_translate] BundledExtensions.dontTranslateAttr
@@ -691,7 +693,7 @@ def expand (b : BundledExtensions) (e : Expr) : MetaM Expr := do
 /-- Rename binder names in pi type. -/
 def renameBinderNames (b : BundledExtensions) (src : Expr) : Expr :=
   src.mapForallBinderNames fun
-    | .str p s => .str p (guessName s b)
+    | .str p s => .str p (b.guessName s)
     | n => n
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -973,7 +975,6 @@ def firstMultiplicativeArg (b : BundledExtensions) (nm : Name) : MetaM Nat := do
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (b : BundledExtensions)
-    (nameDict : String → List String) (fixAbbreviation : List String → List String)
     (cfg : Config) (src : Name) : CoreM Name := do
   if cfg.self then
     if cfg.tgt != .anonymous then
@@ -981,7 +982,7 @@ def targetName (b : BundledExtensions)
     return src
   let .str pre s := src | throwError "{b.attrName}: can't transport {src}"
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
-  let tgt_auto := guessName nameDict fixAbbreviation s
+  let tgt_auto := b.guessName s
   let depth := cfg.tgt.getNumParts
   let pre := findPrefixTranslation? (← getEnv) pre b
   let (pre1, pre2) := pre.splitAt (depth - 1)
@@ -1107,7 +1108,6 @@ def elabToAdditive (stx : Syntax) : CoreM Config :=
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
 partial def applyAttributes (b : BundledExtensions)
-    (nameDict : String → List String) (fixAbbreviation : List String → List String)
     (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
     TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
@@ -1141,8 +1141,7 @@ partial def applyAttributes (b : BundledExtensions)
   let nestedDecls ←
     match h : additiveAttrs.size with
       | 0 => pure #[]
-      | 1 => (addToAdditiveAttr b nameDict fixAbbreviation tgt
-          (← elabToAdditive additiveAttrs[0].stx) additiveAttrs[0].kind)
+      | 1 => addToAdditiveAttr b tgt (← elabToAdditive additiveAttrs[0].stx) additiveAttrs[0].kind
       | _ => throwError "cannot apply {thisAttr} multiple times."
   let allDecls := #[src, tgt] ++ nestedDecls
   if attrs.size > 0 then
@@ -1176,13 +1175,12 @@ partial def applyAttributes (b : BundledExtensions)
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
-partial def copyMetaData (b : BundledExtensions)
-    (nameDict : String → List String) (fixAbbreviation : List String → List String)
-    (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
+partial def copyMetaData (b : BundledExtensions) (cfg : Config) (src tgt : Name) :
+    CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
     unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
       for eqn in eqns do
-        _ ← addToAdditiveAttr b nameDict fixAbbreviation eqn cfg
+        _ ← addToAdditiveAttr b eqn cfg
       eqnsAttribute.add tgt (eqns.map (findTranslation? (← getEnv) b · |>.get!))
   else
     /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
@@ -1191,19 +1189,17 @@ partial def copyMetaData (b : BundledExtensions)
     additivizeLemmas b #[src, tgt] "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    (applyAttributes b nameDict fixAbbreviation
-      cfg.ref cfg.attrs b.attrName src tgt)
+    (applyAttributes b cfg.ref cfg.attrs b.attrName src tgt)
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-partial def transformDecl (b : BundledExtensions)
-    (nameDict : String → List String) (fixAbbreviation : List String → List String)
-    (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
+partial def transformDecl (b : BundledExtensions) (cfg : Config) (src tgt : Name) :
+    CoreM (Array Name) := do
   transformDeclAux b cfg src tgt src
-  copyMetaData b nameDict fixAbbreviation cfg src tgt
+  copyMetaData b cfg src tgt
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
 partial def checkExistingType (b : BundledExtensions)
@@ -1234,13 +1230,12 @@ See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
 partial def addToAdditiveAttr (b : BundledExtensions)
-    (nameDict : String → List String) (fixAbbreviation : List String → List String)
     (src : Name) (cfg : Config) (kind := AttributeKind.global) :
     AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`{b.attrName}` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
-  let tgt ← targetName b nameDict fixAbbreviation cfg src
+  let tgt ← targetName b cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
@@ -1275,10 +1270,10 @@ partial def addToAdditiveAttr (b : BundledExtensions)
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
       proceedFields b src tgt
-      copyMetaData b nameDict fixAbbreviation cfg src tgt
+      copyMetaData b cfg src tgt
     else
       -- tgt doesn't exist, so let's make it
-      transformDecl b nameDict fixAbbreviation cfg src tgt
+      transformDecl b cfg src tgt
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
@@ -1300,16 +1295,15 @@ def toAdditiveBundle : BundledExtensions where
   attrName := `to_additive
   changeNumeral := true
   isDual := false
+  guessName := guessToAdditiveName
 
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addToAdditiveAttr toAdditiveBundle nameDict fixAbbreviation src (← elabToAdditive stx) kind
+      addToAdditiveAttr toAdditiveBundle src (← elabToAdditive stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
 
 end ToAdditive
-
-set_option linter.style.longFile 1700
