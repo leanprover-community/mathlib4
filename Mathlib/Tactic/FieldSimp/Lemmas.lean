@@ -13,7 +13,10 @@ import Mathlib.Util.Qq
 
 open List
 
+namespace Mathlib.Tactic.FieldSimp
+
 section zpow'
+
 variable {α : Type*}
 
 section
@@ -101,9 +104,6 @@ lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
   simp [zpow', ha, hb]
   exact mul_zpow a b n
 
-end zpow'
-
-namespace List
 variable {M : Type*}
 
 -- in the library somewhere?
@@ -112,9 +112,7 @@ theorem prod'_zpow' {β : Type*} [CommGroupWithZero β] {r : ℤ} {l : List β} 
   let fr : β →* β := ⟨⟨fun b ↦ zpow' b r, one_zpow' r⟩, (mul_zpow' r)⟩
   map_list_prod' fr l
 
-end List
-
-namespace Mathlib.Tactic.FieldSimp
+end zpow'
 
 theorem subst_add {M : Type*} [Semiring M] {x₁ x₂ X₁ X₂ Y y a : M}
     (h₁ : x₁ = a * X₁) (h₂ : x₂ = a * X₂) (H_atom : X₁ + X₂ = Y) (hy : a * Y = y) :
@@ -319,7 +317,7 @@ instance : Pow (NF M) ℤ where
 theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
     (l ^ r).eval = zpow' l.eval r := by
   unfold NF.eval at ⊢
-  simp only [List.prod'_zpow', map_map, NF.zpow_apply]
+  simp only [prod'_zpow', map_map, NF.zpow_apply]
   congr! 2
   ext p
   simp [← zpow'_mul, mul_comm]
