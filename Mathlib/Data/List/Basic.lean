@@ -994,12 +994,13 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
   mp := by
     induction l with | nil => simp | cons a l ih => ?_
-    rcases ha : f a with - | b <;> simp [ha]
-    · intro h
+    rcases ha : f a with - | b
+    · simp only [ha, filterMap_cons_none, map_cons, mem_cons, forall_eq_or_imp, reduceCtorEq,
+        false_and, imp_false]
+      intro h
       simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
         using List.length_filterMap_le f l
-    · rintro rfl h
-      exact ⟨rfl, ih h⟩
+    · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
 
 /-! ### filter -/
