@@ -936,7 +936,7 @@ theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k 
   simp [cardFactors_pow, hp]
 
 theorem cardFactors_eq_factorization_sum_exponent {n : ℕ} :
-    Ω n = n.factorization.sum fun _ k => k /- alternative : `fun _ => id` -/ := by
+    Ω n = n.factorization.sum fun _ k => k := by
   simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
