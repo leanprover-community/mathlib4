@@ -196,8 +196,8 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (r : R) (A : Type*) [CommRing A] [Algebra R A]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+    (r : R) (A : Type*) [CommSemiring A] [Algebra R A]
 
 instance IsLocalization.tensor (M : Submonoid R) [IsLocalization M A] :
     IsLocalization (Algebra.algebraMapSubmonoid S M) (S ⊗[R] A) := by

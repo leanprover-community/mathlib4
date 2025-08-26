@@ -185,7 +185,7 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
   · rw [coeff_mul, Finset.sum_mul]
     apply Finset.sum_congr rfl
     simp only [Finset.mem_antidiagonal, coeff_scaleRoots, Prod.forall]
-    intros a b e
+    intro a b e
     cases lt_or_ge (natDegree p) a with
     | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul]
     | inr ha =>
