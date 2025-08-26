@@ -208,7 +208,6 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     have h3 : (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) *
           (μ x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤ L + ε := by
       have heq : L + ε = L + ε / 2 + ε / 2 := by rw [add_assoc, add_halves]
-      have hL0' : 0 < L + ε / 2 := add_pos_of_nonneg_of_pos hL0 (half_pos hε)
       rw [heq, ← tsub_le_iff_left]
       nth_rw 3 [← mul_one (L + ε / 2)]
       rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff₀ hL0', div_div]
