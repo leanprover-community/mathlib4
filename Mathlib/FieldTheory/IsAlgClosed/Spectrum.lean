@@ -142,7 +142,7 @@ variable (𝕜)
 
 -- We will use this both to show eigenvalues exist, and to prove Schur's lemma.
 /-- Every element `a` in a nontrivial finite-dimensional algebra `A`
-over an algebraically closed field `𝕜` has non-empty spectrum. -/
+over an algebraically closed field `𝕜` has nonempty spectrum. -/
 theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontrivial A]
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a

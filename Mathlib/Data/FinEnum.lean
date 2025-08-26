@@ -200,11 +200,11 @@ theorem card_eq_zero {α : Type u} [FinEnum α] [IsEmpty α] : card α = 0 :=
 theorem card_pos_iff {α : Type u} [FinEnum α] : 0 < card α ↔ Nonempty α :=
   card_eq_fintypeCard (α := α) ▸ Fintype.card_pos_iff
 
-/-- Any non-empty enumeration has more than one element. -/
+/-- Any nonempty enumeration has more than one element. -/
 lemma card_pos {α : Type*} [FinEnum α] [Nonempty α] : 0 < card α :=
   card_pos_iff.mpr ‹_›
 
-/-- No non-empty enumeration has 0 elements. -/
+/-- No nonempty enumeration has 0 elements. -/
 lemma card_ne_zero {α : Type*} [FinEnum α] [Nonempty α] : card α ≠ 0 := card_pos.ne'
 
 /-- Any enumeration of a type with unique inhabitant has length 1. -/

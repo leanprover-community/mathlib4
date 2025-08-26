@@ -12,7 +12,7 @@ import Mathlib.Data.Finset.Sort
 
 A composition of a natural number `n` is a decomposition `n = i₀ + ... + i_{k-1}` of `n` into a sum
 of positive integers. Combinatorially, it corresponds to a decomposition of `{0, ..., n-1}` into
-non-empty blocks of consecutive integers, where the `iⱼ` are the lengths of the blocks.
+nonempty blocks of consecutive integers, where the `iⱼ` are the lengths of the blocks.
 This notion is closely related to that of a partition of `n`, but in a composition of `n` the
 order of the `iⱼ`s matters.
 
@@ -105,7 +105,7 @@ structure Composition (n : ℕ) where
 
 attribute [simp] Composition.blocks_sum
 
-/-- Combinatorial viewpoint on a composition of `n`, by seeing it as non-empty blocks of
+/-- Combinatorial viewpoint on a composition of `n`, by seeing it as nonempty blocks of
 consecutive integers in `{0, ..., n-1}`. We register every block by its left end-point, yielding
 a finset containing `0`. As this does not make sense for `n = 0`, we add `n` to this finset, and
 get a finset of `{0, ..., n}` containing `0` and `n`. This is the data in the structure

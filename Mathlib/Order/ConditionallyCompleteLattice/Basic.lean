@@ -9,7 +9,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Defs
 /-!
 # Theory of conditionally complete lattices
 
-A conditionally complete lattice is a lattice in which every non-empty bounded subset `s`
+A conditionally complete lattice is a lattice in which every nonempty bounded subset `s`
 has a least upper bound and a greatest lower bound, denoted below by `sSup s` and `sInf s`.
 Typical examples are `ℝ`, `ℕ`, and `ℤ` with their usual orders.
 
@@ -644,7 +644,7 @@ namespace WithTop
 
 variable [ConditionallyCompleteLinearOrderBot α]
 
-/-- The `sSup` of a non-empty set is its least upper bound for a conditionally
+/-- The `sSup` of a nonempty set is its least upper bound for a conditionally
 complete lattice with a top. -/
 theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (WithTop β)}
     (hs : s.Nonempty) : IsLUB s (sSup s) := by

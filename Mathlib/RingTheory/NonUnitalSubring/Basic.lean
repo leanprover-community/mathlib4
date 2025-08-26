@@ -609,7 +609,7 @@ def prodEquiv (s : NonUnitalSubring R) (t : NonUnitalSubring S) : s.prod t ≃+*
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
-/-- The underlying set of a non-empty directed Sup of `NonUnitalSubring`s is just a union of the
+/-- The underlying set of a nonempty directed Sup of `NonUnitalSubring`s is just a union of the
 `NonUnitalSubring`s. Note that this fails without the directedness assumption (the union of two
 `NonUnitalSubring`s is typically not a `NonUnitalSubring`) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubring R}

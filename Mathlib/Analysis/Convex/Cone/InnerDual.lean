@@ -289,7 +289,7 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
     specialize hinner _ (K.add_mem hxK hzK)
     rwa [add_sub_cancel_right, real_inner_comm, ← neg_nonneg, neg_eq_neg_one_mul,
       ← real_inner_smul_right, neg_smul, one_smul, neg_sub] at hinner
-  · -- as `K` is closed and non-empty, it is pointed
+  · -- as `K` is closed and nonempty, it is pointed
     have hinner₀ := hinner 0 (ConvexCone.Pointed.of_nonempty_of_isClosed (C := K) ne hc)
     -- the rest of the proof is a straightforward calculation
     rw [zero_sub, inner_neg_right, Right.neg_nonpos_iff] at hinner₀
@@ -311,7 +311,7 @@ alias ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem :=
   ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
 
 set_option linter.deprecated false in
-/-- The inner dual of inner dual of a non-empty, closed convex cone is itself. -/
+/-- The inner dual of inner dual of a nonempty, closed convex cone is itself. -/
 @[deprecated ProperCone.innerDual_innerDual (since := "2025-07-06")]
 theorem ConvexCone.innerDualCone_of_innerDualCone_eq_self (K : ConvexCone ℝ H)
     (ne : (K : Set H).Nonempty) (hc : IsClosed (K : Set H)) :

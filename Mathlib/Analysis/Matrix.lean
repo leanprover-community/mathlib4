@@ -368,7 +368,7 @@ protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
   { Matrix.linftyOpSeminormedAddCommGroup, Matrix.instNonUnitalRing with
     norm_mul_le := linfty_opNorm_mul }
 
-/-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
+/-- The `L₁-L∞` norm preserves one on nonempty matrices. Note this is safe as an instance, as it
 carries no data. -/
 instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
     NormOneClass (Matrix n n α) where norm_one := (linfty_opNorm_diagonal _).trans norm_one

@@ -14,7 +14,7 @@ This file introduces the Scott topology on a preorder.
 ## Main definitions
 
 - `DirSupInacc` - a set `u` is said to be inaccessible by directed joins if, when the least upper
-  bound of a directed set `d` lies in `u` then `d` has non-empty intersection with `u`.
+  bound of a directed set `d` lies in `u` then `d` has nonempty intersection with `u`.
 - `DirSupClosed` - a set `s` is said to be closed under directed joins if, whenever a directed set
   `d` has a least upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 - `Topology.scott` - the Scott topology is defined as the join of the topology of upper sets and the
@@ -69,12 +69,12 @@ section Preorder
 variable [Preorder α] {s t : Set α}
 
 /-- A set `s` is said to be inaccessible by directed joins on `D` if, when the least upper bound of
-a directed set `d` in `D` lies in `s` then `d` has non-empty intersection with `s`. -/
+a directed set `d` in `D` lies in `s` then `d` has nonempty intersection with `s`. -/
 def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
   ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
 
 /-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
-directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
+directed set `d` lies in `s` then `d` has nonempty intersection with `s`. -/
 def DirSupInacc (s : Set α) : Prop :=
   ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
 

@@ -124,7 +124,7 @@ theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
 @[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
   simp [mapsTo', subset_empty_iff]
 
-/-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
+/-- If `f` maps `s` to `t` and `s` is nonempty, `t` is nonempty. -/
 theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
   (hs.image f).mono (mapsTo'.mp h)
 

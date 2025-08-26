@@ -894,7 +894,7 @@ warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
 /-- `additivizeLemmas names desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
-`names` must be non-empty. -/
+`names` must be nonempty. -/
 def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
     (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t

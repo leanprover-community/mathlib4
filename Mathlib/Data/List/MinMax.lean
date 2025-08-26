@@ -386,11 +386,11 @@ theorem maximum_ne_bot_of_length_pos (h : 0 < l.length) : l.maximum ≠ ⊥ :=
 theorem minimum_ne_top_of_length_pos (h : 0 < l.length) : l.minimum ≠ ⊤ :=
   maximum_ne_bot_of_length_pos (α := αᵒᵈ) h
 
-/-- The maximum value in a non-empty `List`. -/
+/-- The maximum value in a nonempty `List`. -/
 def maximum_of_length_pos (h : 0 < l.length) : α :=
   WithBot.unbot l.maximum (maximum_ne_bot_of_length_pos h)
 
-/-- The minimum value in a non-empty `List`. -/
+/-- The minimum value in a nonempty `List`. -/
 def minimum_of_length_pos (h : 0 < l.length) : α :=
   maximum_of_length_pos (α := αᵒᵈ) h
 

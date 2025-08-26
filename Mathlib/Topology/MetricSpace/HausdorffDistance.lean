@@ -29,7 +29,7 @@ This files introduces:
 * `infEdist_closure`: the edistance to a set and its closure coincide
 * `EMetric.mem_closure_iff_infEdist_zero`: a point `x` belongs to the closure of `s` iff
   `infEdist x s = 0`
-* `IsCompact.exists_infEdist_eq_edist`: if `s` is compact and non-empty, there exists a point `y`
+* `IsCompact.exists_infEdist_eq_edist`: if `s` is compact and nonempty, there exists a point `y`
   which attains this edistance
 * `IsOpen.exists_iUnion_isClosed`: every open set `U` can be written as the increasing union
   of countably many closed subsets of `U`

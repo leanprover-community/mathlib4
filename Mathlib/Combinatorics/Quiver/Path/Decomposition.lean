@@ -11,7 +11,7 @@ import Mathlib.Tactic.Cases
 /-!
 # Path Decomposition and Boundary Crossing
 
-This section provides lemmas for decomposing non-empty paths and for reasoning about paths that
+This section provides lemmas for decomposing nonempty paths and for reasoning about paths that
 cross the boundary of a given set of vertices `S`.
 -/
 namespace Quiver.Path

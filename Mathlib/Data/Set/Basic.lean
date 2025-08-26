@@ -352,7 +352,7 @@ theorem not_notMem : ¬a ∉ s ↔ a ∈ s :=
 
 @[deprecated (since := "2025-05-23")] alias not_not_mem := not_notMem
 
-/-! ### Non-empty sets -/
+/-! ### Nonempty sets -/
 
 theorem nonempty_coe_sort {s : Set α} : Nonempty ↥s ↔ s.Nonempty :=
   nonempty_subtype

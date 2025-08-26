@@ -59,7 +59,7 @@ namespace CompleteLattice
 
 variable (α)
 
-/-- A compactness property for a complete lattice is that any `sup`-closed non-empty subset
+/-- A compactness property for a complete lattice is that any `sup`-closed nonempty subset
 contains its `sSup`. -/
 def IsSupClosedCompact : Prop :=
   ∀ (s : Set α) (_ : s.Nonempty), SupClosed s → sSup s ∈ s

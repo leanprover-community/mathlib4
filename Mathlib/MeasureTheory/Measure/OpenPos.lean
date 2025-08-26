@@ -245,7 +245,7 @@ For another counterexample, for all $α ∈ (0,1)$, there is a generalised Canto
 of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
 fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
 
-However, with respect to a measure which is positive on non-empty open sets, *closed* measure
+However, with respect to a measure which is positive on nonempty open sets, *closed* measure
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
 -/
 

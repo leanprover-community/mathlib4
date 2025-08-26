@@ -16,7 +16,7 @@ This file contains one definition, and various results on boundedness in pseudo-
 * `Metric.diam s` : The `iSup` of the distances of members of `s`.
   Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
-* `isBounded_iff_subset_closedBall`: a non-empty set is bounded if and only if
+* `isBounded_iff_subset_closedBall`: a nonempty set is bounded if and only if
   it is included in some closed ball
 * describing the cobounded filter, relating to the cocompact filter
 * `IsCompact.isBounded`: compact sets are bounded

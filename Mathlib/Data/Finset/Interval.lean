@@ -88,7 +88,7 @@ theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (
   · rintro ⟨v, hv, rfl⟩
     exact ⟨le_sup_left, sup_lt_of_lt_sdiff_left hv h⟩
 
-/-- Cardinality of a non-empty `Icc` of finsets. -/
+/-- Cardinality of a nonempty `Icc` of finsets. -/
 theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
   rw [← card_sdiff h, ← card_powerset, Icc_eq_image_powerset h, Finset.card_image_iff]
   rintro u hu v hv (huv : s ⊔ u = s ⊔ v)

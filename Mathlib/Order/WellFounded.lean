@@ -209,7 +209,7 @@ noncomputable def argmin [Nonempty α] : α :=
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
   WellFounded.not_lt_min (InvImage.wf f h.wf) _ _ (Set.mem_univ a)
 
-/-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
+/-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a nonempty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
 `Function.not_lt_argminOn`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=

@@ -120,7 +120,7 @@ theorem countable_iff_exists_subset_range [Nonempty α] {s : Set α} :
     exact ⟨enumerateCountable h default, subset_range_enumerate _ _⟩, fun ⟨f, hsf⟩ =>
     (countable_range f).mono hsf⟩
 
-/-- A non-empty set is countable iff there exists a surjection from the
+/-- A nonempty set is countable iff there exists a surjection from the
 natural numbers onto the subtype induced by the set.
 -/
 protected theorem countable_iff_exists_surjective {s : Set α} (hs : s.Nonempty) :

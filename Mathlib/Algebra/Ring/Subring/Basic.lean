@@ -734,7 +734,7 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
     map_mul' := fun _x _y => rfl
     map_add' := fun _x _y => rfl }
 
-/-- The underlying set of a non-empty directed sSup of subrings is just a union of the subrings.
+/-- The underlying set of a nonempty directed sSup of subrings is just a union of the subrings.
   Note that this fails without the directedness assumption (the union of two subrings is
   typically not a subring) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)

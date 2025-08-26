@@ -164,7 +164,7 @@ theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : Measura
   rw [measure_eq_trim, OuterMeasure.trim_eq_iInf, μ.coe_toOuterMeasure]
 
 /-- A variant of `measure_eq_iInf` which has a single `iInf`. This is useful when applying a
-  lemma next that only works for non-empty infima, in which case you can use
+  lemma next that only works for nonempty infima, in which case you can use
   `nonempty_measurable_superset`. -/
 theorem measure_eq_iInf' (μ : Measure α) (s : Set α) :
     μ s = ⨅ t : { t // s ⊆ t ∧ MeasurableSet t }, μ t := by

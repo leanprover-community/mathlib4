@@ -15,8 +15,8 @@ We define a few types of compact sets in a topological space.
 
 For a topological space `α`,
 * `TopologicalSpace.Compacts α`: The type of compact sets.
-* `TopologicalSpace.NonemptyCompacts α`: The type of non-empty compact sets.
-* `TopologicalSpace.PositiveCompacts α`: The type of compact sets with non-empty interior.
+* `TopologicalSpace.NonemptyCompacts α`: The type of nonempty compact sets.
+* `TopologicalSpace.PositiveCompacts α`: The type of compact sets with nonempty interior.
 * `TopologicalSpace.CompactOpens α`: The type of compact open sets. This is a central object in the
   study of spectral spaces.
 -/

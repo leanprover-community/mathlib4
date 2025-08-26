@@ -897,7 +897,7 @@ section sum
 variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
     [cm : ChartedSpace H M] [cm' : ChartedSpace H M']
 
-/-- The disjoint union of two charted spaces modelled on a non-empty space `H`
+/-- The disjoint union of two charted spaces modelled on a nonempty space `H`
 is a charted space over `H`. -/
 def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
@@ -1279,14 +1279,14 @@ protected instance instChartedSpace : ChartedSpace H s where
     simp only [mem_iUnion, mem_singleton_iff]
     use x
 
-/-- If `s` is a non-empty open subset of `M`, every chart of `s` is the restriction
+/-- If `s` is a nonempty open subset of `M`, every chart of `s` is the restriction
 of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he : e ∈ atlas H s) :
     ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
   exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
 
-/-- If `t` is a non-empty open subset of `H`,
+/-- If `t` is a nonempty open subset of `H`,
 every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}

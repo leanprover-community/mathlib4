@@ -106,7 +106,7 @@ end Cardinal
 
 section Nonempty
 
-/-- A commutative ring can be constructed on any non-empty type.
+/-- A commutative ring can be constructed on any nonempty type.
 
 See also `Infinite.nonempty_field`. -/
 instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by

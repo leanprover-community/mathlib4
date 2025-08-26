@@ -562,7 +562,7 @@ section sUnion
 
 variable [Preorder P]
 
-/-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
+/-- A nonempty directed union of ideals of sets in a preorder is an ideal. -/
 lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
     (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
   refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,

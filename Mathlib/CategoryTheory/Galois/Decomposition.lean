@@ -140,7 +140,7 @@ lemma fiber_in_connected_component (X : C) (x : F.obj X) : ∃ (Y : C) (i : Y �
 lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a : F.obj A)
     (b : F.obj B) (i : A ⟶ X) (j : B ⟶ X) (h : F.map i a = F.map j b) [Mono i] [Mono j] :
     ∃ (f : A ≅ B), F.map f.hom a = b := by
-  /- We consider the fiber product of A and B over X. This is a non-empty (because of `h`)
+  /- We consider the fiber product of A and B over X. This is a nonempty (because of `h`)
   subobject of `A` and `B` and hence isomorphic to `A` and `B` by connectedness. -/
   let Y : C := pullback i j
   let u : Y ⟶ A := pullback.fst i j
@@ -298,7 +298,7 @@ lemma exists_hom_from_galois_of_fiber (X : C) (x : F.obj X) :
   obtain ⟨f, hf⟩ := h2.surjective x
   exact ⟨A, f, a, h1, hf⟩
 
-/-- Any object with non-empty fiber admits a hom from a Galois object. -/
+/-- Any object with nonempty fiber admits a hom from a Galois object. -/
 lemma exists_hom_from_galois_of_fiber_nonempty (X : C) (h : Nonempty (F.obj X)) :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A := by
   obtain ⟨x⟩ := h

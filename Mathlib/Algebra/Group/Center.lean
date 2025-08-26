@@ -169,7 +169,7 @@ theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
   simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
     top_eq_univ]
 
-/-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
+/-- The centralizer of the product of nonempty sets is equal to the product of the centralizers. -/
 @[to_additive addCentralizer_prod]
 theorem centralizer_prod {N : Type*} [Mul N] {S : Set M} {T : Set N}
     (hS : S.Nonempty) (hT : T.Nonempty) :

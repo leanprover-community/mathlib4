@@ -216,12 +216,12 @@ lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ {x | x ∈ s}.Subsingleton 
 
 /-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
-Since a relation series is assumed to be non-empty, this is well defined. -/
+Since a relation series is assumed to be nonempty, this is well defined. -/
 def head (x : RelSeries r) : α := x 0
 
 /-- End of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its last element is `aₙ`.
 
-Since a relation series is assumed to be non-empty, this is well defined. -/
+Since a relation series is assumed to be nonempty, this is well defined. -/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
 lemma apply_zero (p : RelSeries r) : p 0 = p.head := rfl

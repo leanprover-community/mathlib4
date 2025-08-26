@@ -50,7 +50,7 @@ open TopologicalSpace Set Filter Metric Bornology
 
 open scoped ENNReal Pointwise Topology NNReal
 
-/-- The interval `[0,1]` as a compact set with non-empty interior. -/
+/-- The interval `[0,1]` as a compact set with nonempty interior. -/
 def TopologicalSpace.PositiveCompacts.Icc01 : PositiveCompacts ℝ where
   carrier := Icc 0 1
   isCompact' := isCompact_Icc
@@ -58,7 +58,7 @@ def TopologicalSpace.PositiveCompacts.Icc01 : PositiveCompacts ℝ where
 
 universe u
 
-/-- The set `[0,1]^ι` as a compact set with non-empty interior. -/
+/-- The set `[0,1]^ι` as a compact set with nonempty interior. -/
 def TopologicalSpace.PositiveCompacts.piIcc01 (ι : Type*) [Finite ι] :
     PositiveCompacts (ι → ℝ) where
   carrier := pi univ fun _ => Icc 0 1

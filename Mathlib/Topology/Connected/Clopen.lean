@@ -137,7 +137,7 @@ variable [PreconnectedSpace α]
   {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
 include h_nonempty h_disj
 
-/-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
+/-- In a preconnected space, any disjoint family of nonempty clopen subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isClopen
     (h_clopen : ∀ i, IsClopen (s i)) :
@@ -153,7 +153,7 @@ lemma subsingleton_of_disjoint_isClopen
   · rw [hi, univ_inter] at h_ne
     exact h_nonempty j h_ne
 
-/-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
+/-- In a preconnected space, any disjoint cover by nonempty open subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
     (h_open : ∀ i, IsOpen (s i)) (h_Union : ⋃ i, s i = univ) :
@@ -165,7 +165,7 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
   · simp
   · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
 
-/-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
+/-- In a preconnected space, any finite disjoint cover by nonempty closed subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
     (h_closed : ∀ i, IsClosed (s i)) (h_Union : ⋃ i, s i = univ) :

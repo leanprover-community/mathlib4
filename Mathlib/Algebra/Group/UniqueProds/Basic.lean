@@ -14,7 +14,7 @@ import Mathlib.Data.DFinsupp.Defs
 /-!
 # Unique products and related notions
 
-A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊆ G`, there is an
+A group `G` has *unique products* if for any two nonempty finite subsets `A, B ⊆ G`, there is an
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element
 of `B`.  We call the formalization this property `UniqueProds`.  Since the condition requires no
 property of the group operation, we define it for a Type simply satisfying `Mul`.  We also
@@ -212,7 +212,7 @@ theorem of_image_filter [DecidableEq H]
 
 end UniqueMul
 
-/-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two non-empty
+/-- Let `G` be a Type with addition.  `UniqueSums G` asserts that any two nonempty
 finite subsets of `G` have the `UniqueAdd` property, with respect to some element of their
 sum `A + B`. -/
 class UniqueSums (G) [Add G] : Prop where
@@ -221,7 +221,7 @@ class UniqueSums (G) [Add G] : Prop where
   uniqueAdd_of_nonempty :
     ∀ {A B : Finset G}, A.Nonempty → B.Nonempty → ∃ a0 ∈ A, ∃ b0 ∈ B, UniqueAdd A B a0 b0
 
-/-- Let `G` be a Type with multiplication.  `UniqueProds G` asserts that any two non-empty
+/-- Let `G` be a Type with multiplication.  `UniqueProds G` asserts that any two nonempty
 finite subsets of `G` have the `UniqueMul` property, with respect to some element of their
 product `A * B`. -/
 class UniqueProds (G) [Mul G] : Prop where
@@ -232,7 +232,7 @@ class UniqueProds (G) [Mul G] : Prop where
 
 attribute [to_additive] UniqueProds
 
-/-- Let `G` be a Type with addition. `TwoUniqueSums G` asserts that any two non-empty
+/-- Let `G` be a Type with addition. `TwoUniqueSums G` asserts that any two nonempty
 finite subsets of `G`, at least one of which is not a singleton, possesses at least two pairs
 of elements satisfying the `UniqueAdd` property. -/
 class TwoUniqueSums (G) [Add G] : Prop where
@@ -241,7 +241,7 @@ class TwoUniqueSums (G) [Add G] : Prop where
   uniqueAdd_of_one_lt_card : ∀ {A B : Finset G}, 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueAdd A B p1.1 p1.2 ∧ UniqueAdd A B p2.1 p2.2
 
-/-- Let `G` be a Type with multiplication. `TwoUniqueProds G` asserts that any two non-empty
+/-- Let `G` be a Type with multiplication. `TwoUniqueProds G` asserts that any two nonempty
 finite subsets of `G`, at least one of which is not a singleton, possesses at least two pairs
 of elements satisfying the `UniqueMul` property. -/
 class TwoUniqueProds (G) [Mul G] : Prop where

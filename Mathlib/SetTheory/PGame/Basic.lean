@@ -45,7 +45,7 @@ While it is often convenient to work "by induction" on pregames, in some situati
 awkward, so we also define accessor functions `SetTheory.PGame.LeftMoves`,
 `SetTheory.PGame.RightMoves`, `SetTheory.PGame.moveLeft` and `SetTheory.PGame.moveRight`.
 There is a relation `PGame.Subsequent p q`, saying that
-`p` can be reached by playing some non-empty sequence of moves starting from `q`, an instance
+`p` can be reached by playing some nonempty sequence of moves starting from `q`, an instance
 `WellFounded Subsequent`, and a local tactic `pgame_wf_tac` which is helpful for discharging proof
 obligations in inductive proofs relying on this relation.
 

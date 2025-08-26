@@ -18,7 +18,7 @@ In the file the unit interval `[0, 1]` in `ℝ` is denoted by `I`, and `X` is a 
 * `Joined (x y : X)` means there is a path between `x` and `y`.
 * `Joined.somePath (h : Joined x y)` selects some path between two points `x` and `y`.
 * `pathComponent (x : X)` is the set of points joined to `x`.
-* `PathConnectedSpace X` is a predicate class asserting that `X` is non-empty and every two
+* `PathConnectedSpace X` is a predicate class asserting that `X` is nonempty and every two
   points of `X` are joined.
 
 Then there are corresponding relative notions for `F : Set X`.
@@ -26,7 +26,7 @@ Then there are corresponding relative notions for `F : Set X`.
 * `JoinedIn F (x y : X)` means there is a path `γ` joining `x` to `y` with values in `F`.
 * `JoinedIn.somePath (h : JoinedIn F x y)` selects a path from `x` to `y` inside `F`.
 * `pathComponentIn F (x : X)` is the set of points joined to `x` in `F`.
-* `IsPathConnected F` asserts that `F` is non-empty and every two
+* `IsPathConnected F` asserts that `F` is nonempty and every two
   points of `F` are joined in `F`.
 
 ## Main theorems
@@ -493,7 +493,7 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
 /-! ### Path connected spaces -/
 
 
-/-- A topological space is path-connected if it is non-empty and every two points can be
+/-- A topological space is path-connected if it is nonempty and every two points can be
 joined by a continuous path. -/
 @[mk_iff]
 class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where

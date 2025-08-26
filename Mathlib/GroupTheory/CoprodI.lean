@@ -33,7 +33,7 @@ When `M i` are all groups, `Monoid.CoprodI M` is also a group
 - `Monoid.CoprodI.lift : (∀ {i}, M i →* N) ≃ (Monoid.CoprodI M →* N)`: the universal property.
 - `Monoid.CoprodI.Word M`: the type of reduced words.
 - `Monoid.CoprodI.Word.equiv M : Monoid.CoprodI M ≃ word M`.
-- `Monoid.CoprodI.NeWord M i j`: an inductive description of non-empty words
+- `Monoid.CoprodI.NeWord M i j`: an inductive description of nonempty words
   with first letter from `M i` and last letter from `M j`,
   together with an API (`singleton`, `append`, `head`, `tail`, `to_word`, `Prod`, `inv`).
   Used in the proof of the Ping-Pong-lemma.
@@ -603,7 +603,7 @@ instance : DecidableEq (CoprodI M) :=
 end Word
 
 variable (M) in
-/-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
+/-- A `NeWord M i j` is a representation of a nonempty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
 inductive NeWord : ι → ι → Type _
@@ -696,7 +696,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
       refine ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', ?_⟩
       simpa [toWord] using hw'
 
-/-- A non-empty reduced word determines an element of the free product, given by multiplication. -/
+/-- A nonempty reduced word determines an element of the free product, given by multiplication. -/
 def prod {i j} (w : NeWord M i j) :=
   w.toWord.prod
 
@@ -726,7 +726,7 @@ theorem append_last {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWo
 theorem append_prod {i j k l} {w₁ : NeWord M i j} {hne : j ≠ k} {w₂ : NeWord M k l} :
     (append w₁ hne w₂).prod = w₁.prod * w₂.prod := by simp [toWord, prod, Word.prod]
 
-/-- One can replace the first letter in a non-empty reduced word by an element of the same
+/-- One can replace the first letter in a nonempty reduced word by an element of the same
 group -/
 def replaceHead : ∀ {i j : ι} (x : M i) (_hnotone : x ≠ 1) (_w : NeWord M i j), NeWord M i j
   | _, _, x, h, singleton _ _ => singleton x h
@@ -739,7 +739,7 @@ theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M 
   · rfl
   · simp [*, replaceHead]
 
-/-- One can multiply an element from the left to a non-empty reduced word if it does not cancel
+/-- One can multiply an element from the left to a nonempty reduced word if it does not cancel
 with the first element in the word. -/
 def mulHead {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) : NeWord M i j :=
   replaceHead (x * w.head) hnotone w
@@ -768,7 +768,7 @@ section Group
 
 variable {G : ι → Type*} [∀ i, Group (G i)]
 
-/-- The inverse of a non-empty reduced word -/
+/-- The inverse of a nonempty reduced word -/
 def inv : ∀ {i j} (_w : NeWord G i j), NeWord G j i
   | _, _, singleton x h => singleton x⁻¹ (mt inv_eq_one.mp h)
   | _, _, append w₁ h w₂ => append w₂.inv h.symm w₁.inv

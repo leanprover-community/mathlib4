@@ -93,7 +93,7 @@ theorem apply_eq_of_chain {c : Set (PartialRefinement u s p)} (hc : IsChain (· 
     v₁ i = v₂ i :=
   (hc.total h₁ h₂).elim (fun hle => hle.2 _ hi₁) (fun hle => (hle.2 _ hi₂).symm)
 
-/-- The carrier of the least upper bound of a non-empty chain of partial refinements is the union of
+/-- The carrier of the least upper bound of a nonempty chain of partial refinements is the union of
 their carriers. -/
 def chainSupCarrier (c : Set (PartialRefinement u s p)) : Set ι :=
   ⋃ v ∈ c, carrier v

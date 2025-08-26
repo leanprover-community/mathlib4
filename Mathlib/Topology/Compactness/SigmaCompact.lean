@@ -42,7 +42,7 @@ lemma isSigmaCompact_iUnion_of_isCompact [hι : Countable ι] (s : ι → Set X)
     (hcomp : ∀ i, IsCompact (s i)) : IsSigmaCompact (⋃ i, s i) := by
   rcases isEmpty_or_nonempty ι
   · simp only [iUnion_of_empty, isSigmaCompact_empty]
-  · -- If ι is non-empty, choose a surjection f : ℕ → ι, this yields a map ℕ → Set X.
+  · -- If ι is nonempty, choose a surjection f : ℕ → ι, this yields a map ℕ → Set X.
     obtain ⟨f, hf⟩ := countable_iff_exists_surjective.mp hι
     exact ⟨s ∘ f, fun n ↦ hcomp (f n), Function.Surjective.iUnion_comp hf _⟩
 

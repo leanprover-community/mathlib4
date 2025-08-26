@@ -42,7 +42,7 @@ We use `sInf` to ensure that the definition works if `α` has no elements. -/
 theorem norm_eq (f : α →ᵇ β) : ‖f‖ = sInf { C : ℝ | 0 ≤ C ∧ ∀ x : α, ‖f x‖ ≤ C } := by
   simp [norm_def, BoundedContinuousFunction.dist_eq]
 
-/-- When the domain is non-empty, we do not need the `0 ≤ C` condition in the formula for `‖f‖` as a
+/-- When the domain is nonempty, we do not need the `0 ≤ C` condition in the formula for `‖f‖` as a
 `sInf`. -/
 theorem norm_eq_of_nonempty [h : Nonempty α] : ‖f‖ = sInf { C : ℝ | ∀ x : α, ‖f x‖ ≤ C } := by
   obtain ⟨a⟩ := h

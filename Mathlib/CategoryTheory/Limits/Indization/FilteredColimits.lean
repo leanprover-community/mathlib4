@@ -102,7 +102,7 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- the finite limit with the filtered colimit, we obtain
   -- `lim_j Hom_{Over (colimit F)}(yGj, 𝟙 (colimit F)) ≅`
   --   `colim_i lim_j Hom_{Over (colimit F)}(yGj, colimit.ι F i)`, and so we find `i` such that
-  -- the limit is non-empty.
+  -- the limit is nonempty.
   obtain ⟨i, hi⟩ := exists_nonempty_limit_obj_of_isColimit F G _
     (colimit.isColimitToOver F) _ (Iso.refl _) h₁
   -- `F.obj i` is a small filtered colimit of representables, say of the functor `H : K ⥤ C`, so
@@ -115,7 +115,7 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   -- Again, we pull the colimit out of the hom functor and commute limit and colimit to obtain
   -- `lim_j Hom_{Over (colimit F)}(yGj, colimit.ι F i) ≅`
   --   `colim_k lim_j Hom_{Over (colimit F)}(yGj, yHk)`, and so we find `k` such that the limit
-  -- is non-empty.
+  -- is nonempty.
   obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
       yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
         (pre P.F yoneda (colimit F)).obj <| (map (colimit.ι F i)).obj <| mk _))) :=

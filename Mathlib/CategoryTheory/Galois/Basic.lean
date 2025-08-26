@@ -317,7 +317,7 @@ lemma evaluation_aut_injective_of_isConnected (A : C) [IsConnected A] (a : F.obj
   · exact evaluation_injective_of_isConnected F A A a
   · exact @Aut.ext _ _ A
 
-/-- A morphism from an object `X` with non-empty fiber to a connected object `A` is an
+/-- A morphism from an object `X` with nonempty fiber to a connected object `A` is an
 epimorphism. -/
 lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.obj X)]
     (f : X ⟶ A) : Epi f := Epi.mk <| fun {Z} u v huv ↦ by
@@ -328,15 +328,15 @@ lemma epi_of_nonempty_of_isConnected {X A : C} [IsConnected A] [h : Nonempty (F.
 lemma surjective_on_fiber_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] : Function.Surjective (F.map f) :=
   surjective_of_epi (FintypeCat.incl.map (F.map f))
 
-/- A morphism from an object with non-empty fiber to a connected object is surjective on fibers. -/
+/- A morphism from an object with nonempty fiber to a connected object is surjective on fibers. -/
 lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
     [IsConnected A] (f : X ⟶ A) :
     Function.Surjective (F.map f) := by
   have : Epi f := epi_of_nonempty_of_isConnected F f
   exact surjective_on_fiber_of_epi F f
 
-/-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
-also `∏ᶜ X` has non-empty fiber. -/
+/-- If `X : ι → C` is a finite family of objects with nonempty fiber, then
+also `∏ᶜ X` has nonempty fiber. -/
 instance nonempty_fiber_pi_of_nonempty_of_finite {ι : Type*} [Finite ι] (X : ι → C)
     [∀ i, Nonempty (F.obj (X i))] : Nonempty (F.obj (∏ᶜ X)) := by
   cases nonempty_fintype ι

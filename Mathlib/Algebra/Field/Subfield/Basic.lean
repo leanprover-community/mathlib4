@@ -397,7 +397,7 @@ theorem map_bot (f : K →+* L) : (⊥ : Subfield K).map f = ⊥ :=
 theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
-/-- The underlying set of a non-empty directed sSup of subfields is just a union of the subfields.
+/-- The underlying set of a nonempty directed sSup of subfields is just a union of the subfields.
   Note that this fails without the directedness assumption (the union of two subfields is
   typically not a subfield) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)

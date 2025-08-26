@@ -224,7 +224,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 
 namespace NonemptyCompacts
 
-/-- In an emetric space, the type of non-empty compact subsets is an emetric space,
+/-- In an emetric space, the type of nonempty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
 instance emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t

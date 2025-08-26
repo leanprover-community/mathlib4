@@ -44,7 +44,7 @@ structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ‚Ñ
   convex' : Convex ‚Ñù carrier
   /-- A convex body has compact carrier set -/
   isCompact' : IsCompact carrier
-  /-- A convex body has non-empty carrier set -/
+  /-- A convex body has nonempty carrier set -/
   nonempty' : carrier.Nonempty
 
 namespace ConvexBody

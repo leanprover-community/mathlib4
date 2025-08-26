@@ -320,7 +320,7 @@ theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α,
   obtain ⟨u, hu⟩ := Set.countable_iff_exists_subset_range.mp hs
   exact ⟨u, s_dense.mono hu⟩
 
-/-- A dense sequence in a non-empty separable topological space.
+/-- A dense sequence in a nonempty separable topological space.
 
 If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the main way to use
 separability of `α`. -/

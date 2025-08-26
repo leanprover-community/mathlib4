@@ -323,7 +323,7 @@ end UniformOfFintype
 section OfMultiset
 
 open scoped Classical in
-/-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
+/-- Given a nonempty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
   ⟨fun a => s.count a / (Multiset.card s),

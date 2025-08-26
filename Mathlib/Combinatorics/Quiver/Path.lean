@@ -178,7 +178,7 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
   · rintro ⟨c, p', e, rfl, h⟩
     simp [h]
 
-/-- Every non-empty path can be decomposed as an initial path plus a final edge. -/
+/-- Every nonempty path can be decomposed as an initial path plus a final edge. -/
 lemma length_ne_zero_iff_eq_cons :
     p.length ≠ 0 ↔ ∃ (c : V) (p' : Path a c) (e : c ⟶ b), p = p'.cons e := by
   refine ⟨fun h ↦ ?_, ?_⟩

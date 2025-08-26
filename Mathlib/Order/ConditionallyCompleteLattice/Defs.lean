@@ -10,7 +10,7 @@ import Mathlib.Order.WellFounded
 /-!
 # Definitions of conditionally complete lattices
 
-A conditionally complete lattice is a lattice in which every non-empty bounded subset `s`
+A conditionally complete lattice is a lattice in which every nonempty bounded subset `s`
 has a least upper bound and a greatest lower bound, denoted below by `sSup s` and `sInf s`.
 Typical examples are `ℝ`, `ℕ`, and `ℤ` with their usual orders.
 

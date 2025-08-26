@@ -610,7 +610,7 @@ def get_pr_comments_summary(pr_number: int) -> Optional[str]:
             body = comment.get('body', '').strip()
             url = comment.get('url', '')
 
-            if body:  # Only include non-empty comments
+            if body:  # Only include nonempty comments
                 # Format timestamp to be more readable
                 try:
                     # GitHub API returns ISO format like: 2024-01-15T10:30:00Z

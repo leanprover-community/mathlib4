@@ -195,7 +195,7 @@ end Finite
 ### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 
 Like the `Sup` of a `ConditionallyCompleteLattice`, `Finset.sup'` also requires the set to be
-non-empty. As a result, we can translate between the two.
+nonempty. As a result, we can translate between the two.
 -/
 
 namespace Finset

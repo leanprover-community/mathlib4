@@ -94,7 +94,7 @@ compute the Levenshtein distances from each suffix of `xs` to `y :: ys`.
 
 The return value is a list of length `x.length + 1`,
 and it is convenient for the recursive calls that we bundle this list
-with a proof that it is non-empty.
+with a proof that it is nonempty.
 -/
 def impl
     (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=

@@ -1065,10 +1065,10 @@ section
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
 /-- A compact set is covered by finitely many left multiplicative translates of a set
-  with non-empty interior. -/
+  with nonempty interior. -/
 @[to_additive
   /-- A compact set is covered by finitely many left additive translates of a set
-    with non-empty interior. -/]
+    with nonempty interior. -/]
 theorem compact_covered_by_mul_left_translates {K V : Set G} (hK : IsCompact K)
     (hV : (interior V).Nonempty) : ∃ t : Finset G, K ⊆ ⋃ g ∈ t, (g * ·) ⁻¹' V := by
   obtain ⟨t, ht⟩ : ∃ t : Finset G, K ⊆ ⋃ x ∈ t, interior ((x * ·) ⁻¹' V) := by

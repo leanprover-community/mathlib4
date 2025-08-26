@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 # Incidence algebras
 
 Given a locally finite order `α` the incidence algebra over `α` is the type of functions from
-non-empty intervals of `α` to some algebraic codomain.
+nonempty intervals of `α` to some algebraic codomain.
 
 This algebra has a natural multiplication operation whereby the product of two such functions
 is defined on an interval by summing over all divisions into two subintervals the product of the

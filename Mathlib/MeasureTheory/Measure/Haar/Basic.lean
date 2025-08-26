@@ -39,7 +39,7 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 ## Main Declarations
 
 * `haarMeasure`: the Haar measure on a locally compact Hausdorff group. This is a left invariant
-  regular measure. It takes as argument a compact set of the group (with non-empty interior),
+  regular measure. It takes as argument a compact set of the group (with nonempty interior),
   and is normalized so that the measure of the given set is 1.
 * `haarMeasure_self`: the Haar measure is normalized.
 * `isMulLeftInvariant_haarMeasure`: the Haar measure is left invariant.
@@ -96,7 +96,7 @@ theorem index_empty {V : Set G} : index ∅ V = 0 := by simp [index]
 variable [TopologicalSpace G]
 
 /-- `prehaar K₀ U K` is a weighted version of the index, defined as `(K : U)/(K₀ : U)`.
-  In the applications `K₀` is compact with non-empty interior, `U` is open containing `1`,
+  In the applications `K₀` is compact with nonempty interior, `U` is open containing `1`,
   and `K` is any compact set.
   The argument `K` is a (bundled) compact set, so that we can consider `prehaar K₀ U` as an
   element of `haarProduct` (below). -/
@@ -678,10 +678,10 @@ example [LocallyCompactSpace G] (μ : Measure G) [IsHaarMeasure μ] (K₀ : Posi
   haarMeasure_unique μ K₀
 
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is finite
-  on some compact set with non-empty interior. -/
+  on some compact set with nonempty interior. -/
 @[to_additive
 /-- To show that an invariant σ-finite measure is regular it is sufficient to show that it is
-  finite on some compact set with non-empty interior. -/]
+  finite on some compact set with nonempty interior. -/]
 theorem regular_of_isMulLeftInvariant {μ : Measure G} [SigmaFinite μ] [IsMulLeftInvariant μ]
     {K : Set G} (hK : IsCompact K) (h2K : (interior K).Nonempty) (hμK : μ K ≠ ∞) : Regular μ := by
   rw [haarMeasure_unique μ ⟨⟨K, hK⟩, h2K⟩]; exact Regular.smul hμK

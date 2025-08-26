@@ -22,8 +22,8 @@ import Mathlib.Order.Disjointed
   unions.
 
 * The proof of this theorem relies on the notion of `IsPiSystem`, i.e., a collection of sets
-  which is closed under binary non-empty intersections. Note that this is a small variation around
-  the usual notion in the literature, which often requires that a π-system is non-empty, and closed
+  which is closed under binary nonempty intersections. Note that this is a small variation around
+  the usual notion in the literature, which often requires that a π-system is nonempty, and closed
   also under disjoint intersections. This variation turns out to be convenient for the
   formalization.
 
@@ -659,7 +659,7 @@ theorem generate_inter {s : Set (Set α)} (hs : IsPiSystem s) {t₁ t₂ : Set �
   generates is equal to the σ-algebra it generates.
   This result is known as the π-λ theorem.
   A collection of sets closed under binary intersection is called a π-system (often requiring
-  additionally that it is non-empty, but we drop this condition in the formalization).
+  additionally that it is nonempty, but we drop this condition in the formalization).
 -/
 theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
     generateFrom s = (generate s).toMeasurableSpace fun _ _ => generate_inter hs :=

@@ -182,9 +182,9 @@ theorem pretransitive_iff_subsingleton_quotient :
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
     exact Quotient.eq''.mp h
 
-/-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
+/-- If `α` is nonempty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
-@[to_additive /-- If `α` is non-empty, an additive action is pretransitive if and only if the
+@[to_additive /-- If `α` is nonempty, an additive action is pretransitive if and only if the
 quotient has exactly one element. -/]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by

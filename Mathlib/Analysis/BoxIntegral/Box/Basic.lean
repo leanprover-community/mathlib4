@@ -72,7 +72,7 @@ of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type*) where
   /-- coordinates of the lower and upper corners of the box -/
   (lower upper : ι → ℝ)
-  /-- Each lower coordinate is less than its upper coordinate: i.e., the box is non-empty -/
+  /-- Each lower coordinate is less than its upper coordinate: i.e., the box is nonempty -/
   lower_lt_upper : ∀ i, lower i < upper i
 
 attribute [simp] Box.lower_lt_upper

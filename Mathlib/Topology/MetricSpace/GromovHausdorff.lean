@@ -21,7 +21,7 @@ called `GHSpace`, and endow it with a metric space structure. The distance,
 known as the Gromov-Hausdorff distance, is defined as follows: given two
 nonempty compact spaces `X` and `Y`, their distance is the minimum Hausdorff distance
 between all possible isometric embeddings of `X` and `Y` in all metric spaces.
-To define properly the Gromov-Hausdorff space, we consider the non-empty
+To define properly the Gromov-Hausdorff space, we consider the nonempty
 compact subsets of `ℓ^∞(ℝ)` up to isometry, which is a well-defined type,
 and define the distance as the infimum of the Hausdorff distance over all
 embeddings in `ℓ^∞(ℝ)`. We prove that this coincides with the previous description,
