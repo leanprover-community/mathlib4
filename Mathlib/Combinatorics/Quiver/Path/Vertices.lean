@@ -5,7 +5,7 @@ Authors: Matteo Cipollina
 -/
 
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path--.Decomposition
+import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.List.Basic
 
@@ -167,30 +167,25 @@ lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
 
 section
 
-variable {V : Type*} [Quiver V]
+variable {a b : V} (p : Path a b)
 
 open List
 
 /-- Given a path `p : Path a b` and an index `n ≤ p.length`,
     we can split `p = p₁.comp p₂` with `p₁.length = n`. -/
-theorem exists_comp_of_length_le {a b : V} (p : Path a b) {n : ℕ} (hn : n ≤ p.length) :
+theorem exists_eq_comp_of_le_length {n : ℕ} (hn : n ≤ p.length) :
     ∃ (c : V) (p₁ : Path a c) (p₂ : Path c b),
       p = p₁.comp p₂ ∧ p₁.length = n := by
   induction p generalizing n with
   | nil =>
-      have h : n = 0 := by simp_all only [length_nil, nonpos_iff_eq_zero]
-      subst h
-      exact ⟨a, Path.nil, Path.nil, by simp only [comp_nil], rfl⟩
-  | cons p' e ih =>
-      rename_i c
-      rw [length_cons] at hn
-      rcases (Nat.le_succ_iff).1 hn with h | h
-      · rcases ih h with ⟨d, p₁, p₂, hp, hl⟩
-        refine ⟨d, p₁, p₂.cons e, ?_, hl⟩
-        simp; rw [hp]
-      · subst h
-        refine ⟨c, p'.cons e, Path.nil, ?_, ?_⟩
-        all_goals simp
+    obtain ⟨rfl⟩ : n = 0 := by simpa using hn
+    exact ⟨a, Path.nil, Path.nil, by simp, rfl⟩
+  | @cons _ c p' e ih =>
+    rw [length_cons] at hn
+    rcases (Nat.le_succ_iff).1 hn with h | rfl
+    · obtain ⟨d, p₁, p₂, hp, hl⟩ := ih h
+      exact ⟨d, p₁, p₂.cons e, by simp [hp], hl⟩
+    · exact ⟨c, p'.cons e, Path.nil, by simp, by simp⟩
 
 /-- If a vertex `v` occurs in the list of vertices of a path `p : Path a b`, then `p` can be
 decomposed as a concatenation of a subpath from `a` to `v` and a subpath from `v` to `b`. -/
@@ -203,7 +198,7 @@ theorem exists_comp_of_mem_vertices {a b v : V} (p : Path a b)
       rw [hv, length_append]
       simp
     omega
-  obtain ⟨c, p₁, p₂, hp, hl⟩ := exists_comp_of_length_le p h_len
+  obtain ⟨c, p₁, p₂, hp, hl⟩ := exists_eq_comp_of_le_length p h_len
   suffices hvc : v = c by
     subst hvc
     exact ⟨p₁, p₂, hp⟩
@@ -227,134 +222,19 @@ theorem exists_comp_of_mem_vertices {a b v : V} (p : Path a b)
   simp [head?_cons, Option.some.injEq] at this
   exact this
 
-lemma vertices_head_eq_start {a b : V} (p : Path a b) :
-    p.vertices.head (vertices_ne_nil p) = a := by
-  induction p with
-  | nil => simp only [vertices_nil, head_cons]
-  | cons p' _ ih =>
-    simp [vertices_cons, concat_eq_append]
-    have : p'.vertices ≠ [] := vertices_ne_nil p'
-    simp [head_append_of_ne_nil this]
-
-lemma vertices_getLast_eq_end {a b : V} (p : Path a b) :
-  p.vertices.getLast (vertices_ne_nil p) = b := by simp
-
-lemma end_eq_vertices_get_of_comp_length {a b c : V} (p₁ : Path a c) (p₂ : Path c b) :
-    c = (p₁.comp p₂).vertices.get ⟨p₁.length, by simp⟩ := by simp
-
 /-- `split_at_vertex` decomposes a path `p` at the vertex sitting in
     position `i` of its `vertices` -/
-theorem split_at_vertices_index {a b : V} (p : Path a b) (i : ℕ)
+theorem split_at_vertices_index (i : ℕ)
     (hi : i < p.vertices.length) :
     ∃ (v : V) (p₁ : Path a v) (p₂ : Path v b),
       p = p₁.comp p₂ ∧
       p₁.length = i ∧
-      v = p.vertices.get ⟨i, hi⟩ := by
+      v = p.vertices[i] := by
   have hi_le_len : i ≤ p.length := by
     rw [vertices_length] at hi
     exact Nat.le_of_lt_succ hi
-  obtain ⟨v, p₁, p₂, hp, hlen⟩ := exists_comp_of_length_le p hi_le_len
-  subst hp
-  refine ⟨v, p₁, p₂, rfl, hlen, ?_⟩
-  simp [hlen]
-
-lemma not_mem_vertices_dropLast_of_split_at_vertex
-    [DecidableEq V] {a b v : V} {p : Path a b}
-    (h_v_in_p : v ∈ p.vertices) :
-    let i  := p.vertices.idxOf v
-    let hi := List.idxOf_lt_length_iff.2 h_v_in_p
-    ∀ (c : V) (p_prefix : Path a c) (p_suffix : Path c b)
-      (_ : p = p_prefix.comp p_suffix)
-      (_ : p_prefix.length = i)
-      (_ : c = p.vertices.get ⟨i, hi⟩),
-      v ∉ p_prefix.vertices.dropLast := by
-  intro i hi c p_prefix p_suffix h_comp h_len_prefix h_c_eq
-  subst h_c_eq
-  by_contra h_in_prefix
-  have h_idx_lt : idxOf v p_prefix.vertices.dropLast < i := by
-    have : idxOf v p_prefix.vertices.dropLast <
-        p_prefix.vertices.dropLast.length :=
-      List.idxOf_lt_length_iff.2 h_in_prefix
-    simpa [h_len_prefix, vertices_length,
-           length_dropLast] using this
-  have h_prefix_in_p : IsPrefix p_prefix.vertices.dropLast p.vertices := by
-    have hverts :
-        p.vertices = p_prefix.vertices.dropLast ++ p_suffix.vertices := by
-      simpa [vertices_comp] using
-        congrArg vertices h_comp
-    have : IsPrefix p_prefix.vertices.dropLast
-        (p_prefix.vertices.dropLast ++ p_suffix.vertices) :=
-      prefix_append p_prefix.vertices.dropLast p_suffix.vertices
-    simp [hverts]
-  have hverts :
-      p.vertices = p_prefix.vertices.dropLast ++ p_suffix.vertices := by
-    simpa [vertices_comp] using
-      congrArg vertices h_comp
-  have h_eq_idx :
-      i = idxOf v p_prefix.vertices.dropLast := by
-    have h_on_append :
-        idxOf v (p_prefix.vertices.dropLast ++ p_suffix.vertices) =
-        idxOf v p_prefix.vertices.dropLast :=
-      idxOf_append_of_mem (l₁ := p_prefix.vertices.dropLast)
-        (l₂ := p_suffix.vertices) (a := v) h_in_prefix
-    simp_all only [get_eq_getElem, vertices_comp, lt_self_iff_false, i]
-  have h_abs :
-      idxOf v p_prefix.vertices.dropLast <
-      idxOf v p_prefix.vertices.dropLast := by
-    simp_all only [get_eq_getElem, vertices_comp, prefix_append, lt_self_iff_false, i]
-  exact (Nat.lt_irrefl _ h_abs)
-
-lemma mem_tail_vertices_suffix_of_two_le_count [DecidableEq V] {a b v : V} {p : Path a b}
-    (h_v_in_p : v ∈ p.vertices) (h_v_count : p.vertices.count v ≥ 2) :
-    let i := p.vertices.idxOf v
-    let hi := List.idxOf_lt_length_iff.2 h_v_in_p
-    ∀ (c : V) (p_prefix : Path a c) (p_suffix : Path c b)
-      (_ : p = p_prefix.comp p_suffix) (_ : p_prefix.length = i)
-      (_ : c = p.vertices.get ⟨i, hi⟩),
-      v ∈ p_suffix.vertices.tail := by
-  intro i hi c p_prefix p_suffix h_comp h_len_prefix h_c_eq
-  have h_notin_prefix : v ∉ p_prefix.vertices.dropLast := by
-    exact
-      (not_mem_vertices_dropLast_of_split_at_vertex
-          (a := a) (b := b) (p := p) (v := v) h_v_in_p)
-        c p_prefix p_suffix h_comp h_len_prefix h_c_eq
-  have h_count_split :
-      (p_prefix.vertices.dropLast ++ p_suffix.vertices).count v ≥ 2 := by
-    simpa [h_comp, vertices_comp] using h_v_count
-  have h_count_prefix :
-      (p_prefix.vertices.dropLast).count v = 0 :=
-    count_eq_zero_of_not_mem h_notin_prefix
-  have h_count_suffix : p_suffix.vertices.count v ≥ 2 := by
-    have : (p_prefix.vertices.dropLast).count v +
-        p_suffix.vertices.count v ≥ 2 := by
-      simpa [count_append] using h_count_split
-    simpa [h_count_prefix, zero_add] using this
-  classical
-  cases hvs : p_suffix.vertices with
-  | nil =>
-    simp [hvs] at h_count_suffix
-  | cons x xs =>
-    by_cases hx : x = v
-    · have : v ∈ xs := by
-        by_contra hnot
-        have hx0 := count_eq_zero_of_not_mem (l := xs) (a := v) hnot
-        have hle : 2 ≤ 1 := by
-          subst h_comp hx
-          simp_all only [count_append, count_cons_self, zero_add, ge_iff_le, Nat.reduceLeDiff]
-        subst h_comp hx
-        simp_all only [Nat.reduceLeDiff]
-      simpa [hvs] using this
-    · have hx2 : xs.count v ≥ 2 := by
-        simpa [hvs, count_cons, hx] using h_count_suffix
-      have : v ∈ xs := by
-        by_contra hnot
-        have hx0 := count_eq_zero_of_not_mem (l := xs) (a := v) hnot
-        have hle : 2 ≤ 0 := by
-          subst h_comp
-          simp_all only [count_append, ne_eq, not_false_eq_true, count_cons_of_ne, add_zero,
-            ge_iff_le, nonpos_iff_eq_zero, reduceCtorEq]
-        exact (not_le_of_gt (by decide : 0 < 2)) hle
-      simpa [hvs] using this
+  obtain ⟨v, p₁, p₂, rfl, rfl⟩ := exists_eq_comp_of_le_length p hi_le_len
+  exact ⟨v, p₁, p₂, rfl, rfl, by simp⟩
 
 /-- Given vertices lists from a path composition,
 the prefix path’s vertices is a prefix of the full path’s vertices. -/
@@ -383,13 +263,9 @@ lemma mem_vertices_eq_end_or_mem_dropLast {a b c : V} (p : Path a b) (h : c ∈ 
       | inl h_eq_p'_end =>
         right
         subst h_eq_p'_end
-        simp_all only [true_or, imp_self, vertices_cons, concat_eq_append, mem_append, mem_cons,
-          not_mem_nil, or_false, end_mem_vertices, ne_eq, cons_ne_self, not_false_eq_true,
-          dropLast_append_of_ne_nil, dropLast_singleton, append_nil]
+        simp
       | inr h_in_p'_dropLast =>
-        simp_all only [or_true, imp_self, vertices_cons, concat_eq_append, mem_append, mem_cons,
-          not_mem_nil, or_false, true_or, ne_eq, cons_ne_self, not_false_eq_true,
-          dropLast_append_of_ne_nil, dropLast_singleton, append_nil]
+        simp_all
     | inr h_eq_b =>
       left
       exact h_eq_b
