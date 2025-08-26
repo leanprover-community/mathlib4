@@ -645,8 +645,8 @@ theorem interior_paramSet :
     interior (paramSet K) = Set.univ.pi fun w ↦ if w = w₀ then Set.Iio 0 else Set.Ioo 0 1 := by
   simp [interior_pi_set Set.finite_univ, apply_ite]
 
-theorem measurableSet_interior_paramSet :
-    MeasurableSet (interior (paramSet K)) := measurableSet_interior
+@[deprecated (since := "2025-08-26")] alias measurableSet_interior_paramSet :=
+  measurableSet_interior
 
 open scoped Classical in
 theorem closure_paramSet :
@@ -853,7 +853,7 @@ theorem volume_interior_eq_volume_closure :
     refine MeasurableSet.preimage ?_ (continuous_normAtAllPlaces K).measurable
     refine MeasurableSet.image_of_continuousOn_injOn ?_ (continuous_expMapBasis K).continuousOn
       (injective_expMapBasis K).injOn
-    exact measurableSet_interior_paramSet K
+    exact measurableSet_interior
   refine le_antisymm (measure_mono interior_subset_closure) ?_
   refine (measure_mono (closure_normLeOne_subset K)).trans ?_
   refine le_of_eq_of_le ?_ (measure_mono (subset_interior_normLeOne K))
