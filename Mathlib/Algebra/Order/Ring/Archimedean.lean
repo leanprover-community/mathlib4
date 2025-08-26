@@ -114,32 +114,38 @@ noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValua
 
 @[simp] theorem addValuation_apply (a : R) : addValuation R a = mk a := rfl
 
-variable {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R]
+variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
 
 @[simp]
-theorem orderHom_zero (f : M →+o R) : orderHom f 0 = mk (f 1) := by
+theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
   rw [← mk_one, orderHom_mk]
 
 variable [NeZero (1 : M)]
 
 @[simp]
-theorem mk_eq_zero_of_archimedean [Archimedean M] {x : M} (h : x ≠ 0) : mk x = 0 :=
+theorem mk_eq_zero_of_archimedean [Archimedean S] {x : S} (h : x ≠ 0) : mk x = 0 :=
   mk_eq_mk_of_archimedean h one_ne_zero
 
-theorem eq_zero_or_top_of_archimedean [Archimedean M] (x : ArchimedeanClass M) : x = 0 ∨ x = ⊤ := by
+theorem eq_zero_or_top_of_archimedean [Archimedean S] (x : ArchimedeanClass S) : x = 0 ∨ x = ⊤ := by
   induction x with | mk x
   obtain rfl | h := eq_or_ne x 0 <;> simp_all
 
-theorem mk_map_of_archimedean [Archimedean M] (f : M →+o R) {x : M} (h : x ≠ 0) :
+/-- See `mk_map_of_archimedean'` for a version taking `M →+*o R`. -/
+theorem mk_map_of_archimedean [Archimedean S] (f : S →+o R) {x : S} (h : x ≠ 0) :
     mk (f x) = mk (f 1) := by
   rw [← orderHom_mk, mk_eq_zero_of_archimedean h, orderHom_zero]
 
-@[simp]
-theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : M) = 0 := by
-  simpa using mk_map_of_archimedean ⟨Int.castAddHom M, fun _ ↦ by simp⟩ h
+/-- See `mk_map_of_archimedean` for a version taking `M →+o R`. -/
+theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x ≠ 0) :
+    mk (f x) = 0 := by
+  simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
 
 @[simp]
-theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : M) = 0 := by
+theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 :=
+  mk_map_of_archimedean' ⟨Int.castAddHom M, fun _ ↦ by simp⟩ h
+
+@[simp]
+theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : S) = 0 := by
   rw [← Int.cast_natCast]
   exact mk_intCast (mod_cast h)
 
@@ -210,10 +216,15 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
 
 @[simp]
-theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : M) = 0 := by
-  simpa using mk_map_of_archimedean ⟨(Rat.castHom M : ℚ →+ M), fun _ ↦ by simp⟩ h
+theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 :=
+  mk_map_of_archimedean' (Rat.castHom R) h
 
-theorem mk_le_mk_iff_ratCast {x y : M} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
+variable {S : Type*} [LinearOrder S] [Ring S] [IsOrderedRing S] [Archimedean S]
+
+/-- See `mk_le_mk_iff_of_archimedean` for a more convenient version when `S` is a field. -/
+theorem mk_le_mk_iff_of_archimedean' {x y : R} (f : S →+*o R)
+    (H : ∀ n : ℕ, ∃ q : S, 0 < q ∧ n * f q ≤ 1) :
+    mk x ≤ mk y ↔ ∃ q : S, 0 < f q ∧ f q * |y| ≤ |x| := by
   constructor
   · rintro ⟨n, hn⟩
     obtain rfl | hn₀ := n.eq_zero_or_pos
@@ -228,7 +239,31 @@ theorem mk_le_mk_iff_ratCast {x y : M} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q �
     rw [← le_inv_mul_iff₀ (mod_cast hq₀)] at hq
     exact hq.trans (mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg x))
 
-theorem mk_lt_mk_iff_ratCast {x y : M} : mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
+/-- See `mk_lt_mk_iff_of_archimedean` for a more convenient version when `S` is a field. -/
+theorem mk_lt_mk_iff_of_archimedean' {x y : R} (f : S →+*o R)
+    (H : ∀ n : ℕ, ∃ q : S, 0 < q ∧ n * f q ≤ 1) :
+    mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
+  refine ⟨fun H q ↦ ?_, fun H n ↦ by simpa using H n⟩
+  obtain ⟨n, hn⟩ := exists_nat_gt q
+  apply (H n).trans_le'
+  simpa using mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
+
+variable {S : Type*} [LinearOrder S] [Field S] [IsOrderedRing S]
+
+private theorem exists_mul_lt_one (f : S →+*o R) (n : ℕ) : ∃ q : S, 0 < q ∧ n * f q ≤ 1 := by
+  cases n with
+  | zero => exact ⟨1, zero_lt_one, by simp⟩
+  | succ n => refine ⟨(f n.succ)⁻¹, ?_, ?_⟩ <;> simp
+
+/-- See `mk_le_mk_iff_of_archimedean'` for a more general version where `S` is a ring. -/
+theorem mk_le_mk_iff_of_archimedean {x y : R} (f : S →+*o R) :
+    mk x ≤ mk y ↔ ∃ q : S, 0 < f q ∧ f q * |y| ≤ |x| := by
+  apply mk_le_mk_iff_of_archimedean'
+
+/-- See `mk_lt_mk_iff_of_archimedean'` for a more general version where `S` is a ring. -/
+theorem mk_lt_mk_iff_of_archimedean {x y : R} [Archimedean S]
+    (f : S →+*o R) (H : ∀ n : ℕ, ∃ q : S, 0 < q ∧ n * f q < 1) :
+    mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
   refine ⟨fun H q ↦ ?_, fun H n ↦ by simpa using H n⟩
   obtain ⟨n, hn⟩ := exists_nat_gt q
   apply (H n).trans_le'
