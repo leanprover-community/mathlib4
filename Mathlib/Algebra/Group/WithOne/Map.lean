@@ -14,9 +14,13 @@ variable {α β γ : Type*}
 
 namespace WithOne
 
-/-- Lift a map `f : α → β` to `WithOne α → WithOne β`. Implemented using `Option.map`. -/
+/-- Lift a map `f : α → β` to `WithOne α → WithOne β`. Implemented using `Option.map`.
+
+Note: the definition previously known as `WithOne.map` is now called `WithOne.mapMulHom`. -/
 @[to_additive
-/-- Lift a map `f : α → β` to `WithZero α → WithZero β`. Implemented using `Option.map`. -/]
+/-- Lift a map `f : α → β` to `WithZero α → WithZero β`. Implemented using `Option.map`.
+
+Note: the definition previously known as `WithZero.map` is now called `WithZero.mapAddHom`. -/]
 def map (f : α → β) : WithOne α → WithOne β := Option.map f
 
 @[to_additive (attr := simp)]
