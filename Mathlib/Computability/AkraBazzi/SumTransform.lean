@@ -478,7 +478,7 @@ Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, su
 `R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
 namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 
-@[continuity]
+@[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
   refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
