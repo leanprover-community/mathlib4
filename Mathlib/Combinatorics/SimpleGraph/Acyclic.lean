@@ -200,10 +200,10 @@ theorem IsAcyclic.isPath_iff_chain' [DecidableEq V] (hG : G.IsAcyclic) {v w : V}
       rw [edges_cons] at h
       have hcc := List.chain'_cons'.mp h
       refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
-      rcases show tail.length = 0 ∨ 0 < tail.length by omega with h' | h'
+      rcases tail.length.eq_zero_or_pos with h' | h'
       · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
       · by_contra hh
-        apply hG <| cons head <| tail.takeUntil u' hh
+        apply hG <| cons head (tail.takeUntil u' hh)
         simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons]
         have : cons head (tail.takeUntil u' hh) |>.support.tail.Nodup := by
           refine tail.isPath_def.mp (ih hcc.2) |>.sublist <| List.IsInfix.sublist ?_
@@ -213,8 +213,7 @@ theorem IsAcyclic.isPath_iff_chain' [DecidableEq V] (hG : G.IsAcyclic) {v w : V}
         refine hcc.1 s(u', v') ?_ rfl
         rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
         have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
-        rw [snd_takeUntil head.ne] at this
-        simp [this]
+        simp [this, snd_takeUntil head.ne]
 
 theorem IsAcyclic.isPath_of_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} {p : G.Walk v w}
     (h : p.IsTrail) : p.IsPath :=
