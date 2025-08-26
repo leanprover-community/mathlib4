@@ -1,21 +1,13 @@
-import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Instances.EReal
-import Mathlib.Analysis.Convex.Intrinsic
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Topology.Semicontinuous
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.InnerProductSpace.Calculus
+import Mathlib
 
 open Filter BigOperators Set EReal
-open scoped Pointwise Topology
+open scoped Pointwise
 
 @[simp]
 noncomputable instance real_smul_ereal : SMul ℝ EReal := ⟨fun a x => a * x⟩
 
 @[simp]
-lemma EReal.smul_eq_mul (z : ℝ) (v : EReal): z • v = z * v := by rfl
+lemma EReal.smul_eq_mul (z : ℝ) (v : EReal): z • v = z * v := rfl
 
 section aux
 
@@ -144,6 +136,7 @@ lemma EReal.smul_gt_bot_of_ge_zero {a : ℝ} {b : EReal}
     a • b > ⊥ := by
   by_cases hb2 : b = ⊤
   · rw[hb2];
+    simp
     apply lt_mul_of_lt_of_one_le_of_nonneg
     simp;simp;simpa
   apply EReal.mul_gt_bot
@@ -173,11 +166,11 @@ lemma EReal.smul_add_pre (a : ℝ){x y : EReal}(hx : x > ⊥)(hx1 : x < ⊤)(hy 
   rw[not_lt_top_iff.mp hy1, EReal.add_top_iff_ne_bot.mpr (LT.lt.ne_bot hx)]
   have ha : a > 0 ∨ a = 0 ∨ a < 0 := trichotomous a 0
   rcases ha with ha | ha | ha
-  rw[EReal.coe_mul_top_of_pos ha]
-  rw[EReal.add_top_iff_ne_bot.mpr (LT.lt.ne_bot <| mul_gt_bot (EReal.bot_lt_coe a) (EReal.coe_lt_top a) hx hx1)]
-  rw[ha]
+  rw [EReal.coe_mul_top_of_pos ha, EReal.add_top_iff_ne_bot.mpr
+    (LT.lt.ne_bot <| mul_gt_bot (EReal.bot_lt_coe a) (EReal.coe_lt_top a) hx hx1)]
+  rw [ha]
   simp
-  rw[EReal.coe_mul_top_of_neg ha]
+  rw [EReal.coe_mul_top_of_neg ha]
   exact Eq.symm (EReal.add_bot (↑a * x))
 
 lemma EReal.smul_add (a : ℝ){x y : EReal}(hx : x > ⊥)(hy : y > ⊥) :
@@ -217,10 +210,8 @@ lemma EReal.pos_smul_add' {a : ℝ} {x y : EReal} (ha : a > 0) :
     a * (x + y) = a * x + a * y := by
   simpa using (EReal.pos_smul_add a ha)
 
-lemma EReal.sub_ge_sub_of_ge_add_sub {a b c d : EReal} (h : a ≥ b + c - d)
-  (ha1 : a ≠ ⊤) (ha2 : a ≠ ⊥)
-  (hb1 : b ≠ ⊤) (hb2 : b ≠ ⊥)
-  (hc1 : c ≠ ⊤) (hc2 : c ≠ ⊥)
+lemma EReal.sub_ge_sub_of_ge_add_sub {a b c d : EReal} (h : a ≥ b + c - d) (ha1 : a ≠ ⊤) (ha2 : a ≠ ⊥)
+  (hb1 : b ≠ ⊤) (hb2 : b ≠ ⊥) (hc1 : c ≠ ⊤) (hc2 : c ≠ ⊥)
   (hd1 : d ≠ ⊤) (hd2 : d ≠ ⊥) : d - b ≥ c - a := by
   lift a to ℝ using ⟨ha1, ha2⟩
   lift b to ℝ using ⟨hb1, hb2⟩
@@ -242,13 +233,6 @@ lemma EReal.lt_top_of_add_le {a b d: EReal}
   push_neg at ha
   simp at ha
   simp [ha] at h
-
-lemma EReal.ge_add_sub {a b : EReal}
-  (ha1 : a ≠ ⊤) (ha2 : a ≠ ⊥)
-  (hb1 : b ≠ ⊤) (hb2 : b ≠ ⊥) : a ≥ a + (b - b) := by
-  lift a to ℝ using ⟨ha1, ha2⟩
-  lift b to ℝ using ⟨hb1, hb2⟩
-  rw [← EReal.coe_sub, sub_self, ← EReal.coe_add, add_zero]
 
 lemma EReal.ge_add_sub_of_ge_add_sub
   {a b c d : EReal} (h : a ≥ b + c - d) (ha1 : a ≠ ⊤) (ha2: a ≠ ⊥)
@@ -319,7 +303,7 @@ lemma EReal.add_le_iff_sub_le (a b : ℝ)(c : EReal) :
 
 lemma EReal.sub_eq_neg_add (a b:EReal) : a - b  = -b + a := by
   calc
-    _ = a+(-b) := by rfl
+    _ = a + (-b) := by rfl
     _ = _ := by exact AddCommMonoid.add_comm a (-b)
 
 lemma EReal.add_top_eq_top  {a :EReal}(p: a > ⊥) : a + ⊤=⊤:= by
@@ -334,9 +318,9 @@ lemma EReal.bot_add_eq_bot  {a :EReal}(p: a < ⊤) : ⊥ + a=⊥:= by
   · rw [h]; simp
   have : a ≠ ⊤ := by exact LT.lt.ne_top p
   lift a to ℝ using ⟨this,h⟩
-  exact rfl
+  rfl
 
-lemma EReal.sub_add_eq_sub_sub {a b c:EReal} (hb: b ≠ ⊥) (hc: c ≠ ⊥) :
+lemma EReal.sub_add_eq_sub_sub {a b c : EReal} (hb: b ≠ ⊥) (hc: c ≠ ⊥) :
     a - (b + c) = a - b - c := by
   by_cases h: b = ⊤
   · by_cases h': c = ⊤
@@ -361,7 +345,7 @@ lemma EReal.mul_pos_real_le {a b : EReal} {c : ℝ} (hab : a ≤ b) (hc : c > 0)
 
 lemma EReal.finset_mul_sum [DecidableEq ι] :
     (τ : Finset ι) → (f : ι → EReal) → (a : ℝ) → (hpos : a > 0) →
-    a * ∑ i ∈ τ, f i = ∑ i in τ, a * f i := by
+    a * ∑ i ∈ τ, f i = ∑ i ∈ τ, a * f i := by
   apply Finset.induction
   · simp_all
   intro a τ ha hf
@@ -470,8 +454,7 @@ lemma mul_sub_mul_sub_mul (a b : ℝ)(c : EReal) : a * (b - c) = a * b - a * c :
   apply EReal.coe_eq_coe_iff.mpr
   ring
 
-lemma le_add_of_ne_top_ne_bot_sub_le {a b c : EReal} (h : a - b ≤ c)
-  (ha1: a ≠ ⊤) (ha2: a ≠ ⊥)
+lemma le_add_of_ne_top_ne_bot_sub_le {a b c : EReal} (h : a - b ≤ c) (ha1: a ≠ ⊤) (ha2: a ≠ ⊥)
   (hb1: b ≠ ⊤) (hb2: b ≠ ⊥) (hc1: c ≠ ⊤) (hc2 : c ≠ ⊥) : a ≤ b + c := by
     lift a to ℝ using ⟨ha1, ha2⟩
     lift b to ℝ using ⟨hb1, hb2⟩
@@ -482,8 +465,8 @@ lemma le_add_of_ne_top_ne_bot_sub_le {a b c : EReal} (h : a - b ≤ c)
     apply EReal.coe_le_coe_iff.2
     linarith
 
-lemma real_sub_not_bot {a b: EReal} (ha1: a ≠ ⊤) (ha2: a ≠ ⊥)
-  (hb1: b ≠ ⊤) (hb2: b ≠ ⊥) : a - b > ⊥ := by
+lemma real_sub_not_bot {a b: EReal} (ha1: a ≠ ⊤) (ha2: a ≠ ⊥) (hb1: b ≠ ⊤) (hb2: b ≠ ⊥) :
+     a - b > ⊥ := by
     lift a to ℝ using ⟨ha1, ha2⟩
     lift b to ℝ using ⟨hb1, hb2⟩
     rw [← EReal.coe_sub]
@@ -518,7 +501,7 @@ section Sup_inf
 
 namespace EReal
 lemma biSup_le {u :Set α} {f: α → EReal} {a: EReal} (p : ∀ i ∈ u, f i ≤ a): ⨆ t ∈ u, f t ≤ a := by
-  simp; exact p
+  simpa
 
 lemma le_biSup {α: Type u} {u :Set α} {f: α → EReal} {a: α} (p: a ∈ u): f a ≤ ⨆ t ∈ u, f t := by
   exact _root_.le_biSup f p
@@ -634,7 +617,7 @@ lemma Range.eq_if {α : Type u} {i : Sort u_1} {f g: i → α } (eq: ∀ x, f x 
 
 lemma Range.eq_if' {α : Type u} {i : Sort u_1} {f g: i → α } (eq: f = g) :
     range f = range g := by
-  rw [eq];
+  rw [eq]
 
 lemma biSup_coe_const_add' {a : EReal} {f : α → EReal} {s : Set α} (p : a < ⊤) (q : a > ⊥) :
     a + (⨆ m ∈ s, f m) =  (⨆ m ∈ s, a + f m) := by
@@ -922,7 +905,11 @@ theorem ConvexOn.map_sum_le' {ι : Type*} [AddCommGroup E] [Module ℝ E] [Decid
 
 end Convex
 
+
+
 section liminf
+
+open Topology
 
 lemma EReal.liminf_negconst_mul {F : Filter α} [F.NeBot] {f : α → EReal} {c : EReal}
     (hc1 : c ≥ 0) (hc2 : c ≠ ⊤) : liminf (fun (i : α) => c * f i) F = c * (liminf f F):= by
@@ -979,6 +966,7 @@ section sum
 
 lemma EReal.sum_lt_top_of_forall_lt_top {n : ℕ} {f : Fin n → EReal}
     (hf : ∀ i, f i > ⊥) : ∑ i, f i > ⊥ := by
+
   induction' n with n nh
   · simp
   rw[Fin.sum_univ_castSucc]
