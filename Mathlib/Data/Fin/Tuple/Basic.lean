@@ -763,8 +763,6 @@ section InsertNth
 
 variable {α : Fin (n + 1) → Sort*} {β : Sort*}
 
-/- Porting note: Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
-automatic insertion and specifying that motive seems to work. -/
 /-- Define a function on `Fin (n + 1)` from a value on `i : Fin (n + 1)` and values on each
 `Fin.succAbove i j`, `j : Fin n`. This version is elaborated as eliminator and works for
 propositions, see also `Fin.insertNth` for a version without an `@[elab_as_elim]`
@@ -774,9 +772,8 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     (p : ∀ j : Fin n, α (i.succAbove j)) (j : Fin (n + 1)) : α j :=
   if hj : j = i then Eq.rec x hj.symm
   else
-    if hlt : j < i then @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_castPred_of_lt _ _ hlt) (p _)
-    else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
-    (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
+    if hlt : j < i then (succAbove_castPred_of_lt _ _ hlt) ▸ (p _)
+    else (succAbove_pred_of_lt _ _ <| (Fin.lt_or_lt_of_ne hj).resolve_left hlt) ▸ (p _)
 
 -- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
 alias forall_iff_succ := forall_fin_succ
@@ -906,20 +903,14 @@ theorem insertNth_right_injective {p : Fin (n + 1)} (x : α p) :
     Function.Injective (insertNth p x) :=
   insertNth_injective2.right _
 
-/- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
-automatic insertion and specifying that motive seems to work. -/
 theorem insertNth_apply_below {i j : Fin (n + 1)} (h : j < i) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _
-    (succAbove_castPred_of_lt _ _ h) (p <| j.castPred _) := by
+    i.insertNth x p j = succAbove_castPred_of_lt _ _ h ▸ (p <| j.castPred _) := by
   rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_lt h), dif_pos h]
 
-/- Porting note: Once again, Lean told me `(fun x x_1 ↦ α x)` was an invalid motive, but disabling
-automatic insertion and specifying that motive seems to work. -/
 theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
     (p : ∀ k, α (i.succAbove k)) :
-    i.insertNth x p j = @Eq.recOn _ _ (fun x _ ↦ α x) _
-    (succAbove_pred_of_lt _ _ h) (p <| j.pred _) := by
+    i.insertNth x p j = succAbove_pred_of_lt _ _ h ▸ (p <| j.pred _) := by
   rw [insertNth, succAboveCases, dif_neg (Fin.ne_of_gt h), dif_neg (Fin.lt_asymm h)]
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
