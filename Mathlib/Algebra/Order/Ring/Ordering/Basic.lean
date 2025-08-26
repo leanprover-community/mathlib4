@@ -40,7 +40,7 @@ theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
 
 @[gcongr]
-alias ⟨_, GCongr.toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le
+alias ⟨_, GCongr.toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le_toSubsemiring
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
 theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
