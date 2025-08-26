@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.SimpleGraph.Acyclic
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -706,3 +704,4 @@ apply @Connected.mono _ _ (.coeSubgraph ((toSubgraph T T_le_H).deleteVerts {v}))
 end Subgraph
 
 end SimpleGraph
+#min_imports
