@@ -221,24 +221,8 @@ lemma pdist_mulVec_of_mem_colStochastic (hM : M ∈ colStochastic R n)
 /-- A matrix is column stochastic if and only if its transpose is row stochastic. -/
 lemma colStochastic_iff_transpose_rowStochastic :
     M ∈ colStochastic R n ↔ Mᵀ ∈ rowStochastic R n := by
-  constructor
-  · intro hM
-    have hM₁ : (∀ i j, 0 ≤ M i j) ∧ (∀ j, ∑ i, M i j = 1) := mem_colStochastic_iff_sum.mp hM
-    have hM₂ : (∀ i, ∑ j, Mᵀ i j = 1) := by aesop
-    have hM₃ : ∀ i j, 0 ≤ Mᵀ i j := by
-      refine fun i j ↦ ?_
-      have : ∀ i j, 0 ≤ M i j := hM.1
-      aesop
-    rw [mem_rowStochastic_iff_sum]
-    exact ⟨hM₃, hM₂⟩
-  · intro hM
-    have hM₁ : (∀ i j, 0 ≤ Mᵀ i j) ∧ (∀ i, ∑ j, Mᵀ i j = 1) := mem_rowStochastic_iff_sum.mp hM
-    have hM₂ : (∀ i, ∑ j, Mᵀ i j = 1) := by aesop
-    have hM₃ : ∀ i j, 0 ≤ M i j := by
-      refine fun i j ↦ ?_
-      have : ∀ i j, 0 ≤ Mᵀ i j := hM.1
-      aesop
-    rw [mem_colStochastic_iff_sum]
-    exact ⟨hM₃, hM₂⟩
+  simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
+    and_congr_left_iff]
+  exact fun _ ↦ forall_swap
 
 end Stochastic
