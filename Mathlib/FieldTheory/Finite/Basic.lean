@@ -635,7 +635,7 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
 
 theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
     (p : ℤ) ∣ n ^ (p - 1) - 1 :=
-  modEq_iff_dvd.mp (ModEq.symm (ModEq.pow_card_sub_one_eq_one hp hpn))
+  (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
 
 theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p : ℤ) ∣ n ^ p - n := by
   by_cases ch : (p : ℤ) ∣ n
