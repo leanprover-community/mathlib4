@@ -20,16 +20,16 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 ## Main results
 
-* `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative artinian
+* `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative Artinian
   ring to any localization of itself is surjective.
 
-* `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative artinian ring
+* `IsArtinianRing.isNilpotent_jacobson_bot`: the Jacobson radical of a commutative Artinian ring
   is a nilpotent ideal.
 
 ## Implementation Details
 
 The predicate `IsArtinianRing` is defined in `Mathlib/RingTheory/Artinian/Ring.lean` instead,
-so that we can apply basic API on artinian modules to division rings without a heavy import.
+so that we can apply basic API on Artinian modules to division rings without a heavy import.
 
 ## References
 
@@ -61,7 +61,7 @@ theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
   exact isNilpotent_jacobson_bot
 
 variable (R) in
-/-- Commutative artinian reduced local ring is a field. -/
+/-- Commutative Artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
   (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
     (Ideal.Quotient.field _).toIsField
@@ -71,7 +71,7 @@ section Localization
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
 include S
 
-/-- Localizing an artinian ring can only reduce the amount of elements. -/
+/-- Localizing an Artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
   obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
