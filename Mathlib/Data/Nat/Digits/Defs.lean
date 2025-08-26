@@ -357,6 +357,8 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
     · apply Nat.div_lt_self <;> omega
     · assumption
 
+-- TODO: find a good way to fix the linter error; simp_all is called on three goals, one remains
+set_option linter.flexible false in
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
 theorem digits_lt_base {b m d : ℕ} (hb : 1 < b) (hd : d ∈ digits b m) : d < b := by
   rcases b with (_ | _ | b) <;> try simp_all
