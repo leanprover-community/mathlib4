@@ -211,7 +211,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
   toFun := fun v i ↦ v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  cont := by continuity
+  cont := by fun_prop
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
