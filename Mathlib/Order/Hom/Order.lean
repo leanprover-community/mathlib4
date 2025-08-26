@@ -51,8 +51,8 @@ instance [SemilatticeInf β] : Min (α →o β) where
     ((f ⊓ g : α →o β) : α → β) = (f : α → β) ⊓ g := rfl
 
 instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
-  { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
-    inf := (· ⊓ ·) }
+  { (_ : PartialOrder (α →o β)),
+    (OrderIso.dualHom α β).symm.toGaloisInsertion.liftSemilatticeInf with inf := (· ⊓ ·) }
 
 instance lattice [Lattice β] : Lattice (α →o β) :=
   { (_ : SemilatticeSup (α →o β)), (_ : SemilatticeInf (α →o β)) with }
