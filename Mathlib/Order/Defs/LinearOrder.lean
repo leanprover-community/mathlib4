@@ -44,7 +44,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
   (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
 macro "compareOfLessAndEq_rfl" : tactic =>
-  `(tactic| (intros a b; first | rfl |
+  `(tactic| (intro a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
     (induction a <;> induction b <;> simp +decide only)))
 
@@ -282,18 +282,16 @@ theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
 theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
   (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
 
-instance : Batteries.LawfulCmp (compare (α := α)) where
-  symm a b := by
-    cases h : compare a b <;>
-    simp only [Ordering.swap] <;> symm
-    · exact compare_gt_iff_gt.2 <| compare_lt_iff_lt.1 h
-    · exact compare_eq_iff_eq.2 <| compare_eq_iff_eq.1 h |>.symm
-    · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
-  le_trans := fun h₁ h₂ ↦
-    compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
-  cmp_iff_beq := by simp [compare_eq_iff_eq]
-  cmp_iff_lt := by simp [compare_lt_iff_lt]
-  cmp_iff_le := by simp [compare_le_iff_le]
+instance : Std.LawfulBCmp (compare (α := α)) where
+  eq_swap {a b} := by
+    cases _ : compare b a <;>
+      simp_all [Ordering.swap, compare_eq_iff_eq, compare_lt_iff_lt, compare_gt_iff_gt]
+  isLE_trans h₁ h₂ := by
+    simp only [← Ordering.ne_gt_iff_isLE, compare_le_iff_le] at *
+    exact le_trans h₁ h₂
+  compare_eq_iff_beq := by simp [compare_eq_iff_eq]
+  eq_lt_iff_lt := by simp [compare_lt_iff_lt]
+  isLE_iff_le := by simp [← Ordering.ne_gt_iff_isLE, compare_le_iff_le]
 
 end Ord
 

@@ -63,7 +63,7 @@ def EuclideanQuadrant (n : ℕ) : Type :=
 
 section
 
-/- Register class instances for euclidean half-space and quadrant, that can not be noticed
+/- Register class instances for Euclidean half-space and quadrant, that can not be noticed
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}
@@ -121,32 +121,26 @@ theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
   rw [f.interior_preimage, interior_Ici]
   apply Function.surjective_eval
 
-@[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
-
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ici]
   apply Function.surjective_eval
 
-@[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
-
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
-  let f : (Π _ : Fin n, ℝ) →L[ℝ] ℝ := ContinuousLinearMap.proj i
+  let f : StrongDual ℝ (Π _ : Fin n, ℝ) := ContinuousLinearMap.proj i
   change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ioi]
   apply Function.surjective_eval
-
-@[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
 
 @[simp]
 theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -154,8 +148,6 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
-@[deprecated (since := "2024-11-12")] alias frontier_halfspace := frontier_halfSpace
-
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -163,7 +155,7 @@ theorem range_euclideanQuadrant (n : ℕ) :
 theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
-  let f : Fin n → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  let f : Fin n → StrongDual ℝ (Π _ : Fin n, ℝ) := fun i ↦ ContinuousLinearMap.proj i
   have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
     ext; simp; rfl
   have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
@@ -394,9 +386,6 @@ lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
-
-@[deprecated (since := "2025-01-25")]
-alias IccRightChart_extend_right_mem_frontier := IccRightChart_extend_top_mem_frontier
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
