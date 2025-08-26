@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.RowCol
 import Mathlib.Data.Matrix.Notation
 
 /-!

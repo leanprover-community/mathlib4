@@ -3285,7 +3285,6 @@ import Mathlib.Data.Matrix.Bilinear
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.Diagonal
 import Mathlib.Data.Matrix.DualNumber
@@ -3293,10 +3292,7 @@ import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Mul
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.PEquiv
-import Mathlib.Data.Matrix.Rank
 import Mathlib.Data.Matrix.Reflection
-import Mathlib.Data.Matrix.RowCol
-import Mathlib.Data.Matrix.Vec
 import Mathlib.Data.Matroid.Basic
 import Mathlib.Data.Matroid.Circuit
 import Mathlib.Data.Matroid.Closure
@@ -4164,6 +4160,7 @@ import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 import Mathlib.LinearAlgebra.Matrix.Circulant
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.LinearAlgebra.Matrix.Defs
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Determinant.Misc
@@ -4195,7 +4192,9 @@ import Mathlib.LinearAlgebra.Matrix.Permutation
 import Mathlib.LinearAlgebra.Matrix.Polynomial
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.ProjectiveSpecialLinearGroup
+import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Reindex
+import Mathlib.LinearAlgebra.Matrix.RowCol
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
@@ -4209,6 +4208,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.Transvection
 import Mathlib.LinearAlgebra.Matrix.Unique
+import Mathlib.LinearAlgebra.Matrix.Vec
 import Mathlib.LinearAlgebra.Matrix.ZPow
 import Mathlib.LinearAlgebra.Multilinear.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basis
