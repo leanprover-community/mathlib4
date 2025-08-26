@@ -127,7 +127,7 @@ theorem repr_symm_single : b.repr.symm (Finsupp.single i c) = c • b i :=
 theorem repr_self : b.repr (b i) = Finsupp.single i 1 :=
   LinearEquiv.apply_symm_apply _ _
 
-theorem repr_self_apply (j) [Decidable (i = j)] : b.repr (b i) j = if i = j then 1 else 0 := by
+theorem repr_self_apply (j) [Decidable (j = i)] : b.repr (b i) j = if j = i then 1 else 0 := by
   rw [repr_self, Finsupp.single_apply]
 
 @[simp]
@@ -263,7 +263,7 @@ theorem Basis.sum_repr [Fintype ι] (b : Basis ι R M) (u : M) : ∑ i, b.repr u
 
 @[simp]
 theorem Basis.equivFun_self [Finite ι] [DecidableEq ι] (b : Basis ι R M) (i j : ι) :
-    b.equivFun (b i) j = if i = j then 1 else 0 := by rw [b.equivFun_apply, b.repr_self_apply]
+    b.equivFun (b i) j = if j = i then 1 else 0 := by rw [b.equivFun_apply, b.repr_self_apply]
 
 theorem Basis.repr_sum_self [Fintype ι] (b : Basis ι R M) (c : ι → R) :
     b.repr (∑ i, c i • b i) = c := by

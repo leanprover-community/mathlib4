@@ -34,7 +34,7 @@ variable [Zero M] [MonoidWithZero R] [MulActionWithZero R M]
 
 @[simp]
 theorem single_smul (a b : α) (f : α → M) (r : R) : single a r b • f a = single a (r • f b) b := by
-  by_cases h : a = b <;> simp [h]
+  by_cases h : b = a <;> simp [h]
 
 end
 

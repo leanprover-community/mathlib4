@@ -110,8 +110,8 @@ theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → 
 theorem sum_single (f : MonoidAlgebra k G) : f.sum single = f :=
   Finsupp.sum_single f
 
-theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
-    single a b a' = if a = a' then b else 0 :=
+theorem single_apply {a a' : G} {b : k} [Decidable (a' = a)] :
+    single a b a' = if a' = a then b else 0 :=
   Finsupp.single_apply
 
 @[simp]
@@ -375,10 +375,7 @@ variable [Semiring k]
 
 theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
-  -- Porting note: `reducible` cannot be `local` so proof gets long.
-  rw [mul_def, Finsupp.sum_apply]; congr; ext
-  rw [Finsupp.sum_apply]; congr; ext
-  apply single_apply
+  simp_rw [mul_def, MonoidAlgebra, Finsupp.sum_apply, single_apply, Eq.comm]
 
 open Finset in
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
@@ -687,8 +684,8 @@ theorem sum_single_index {N} [AddCommMonoid N] {a : G} {b : k} {h : G → k → 
 theorem sum_single (f : k[G]) : f.sum single = f :=
   Finsupp.sum_single f
 
-theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
-    single a b a' = if a = a' then b else 0 :=
+theorem single_apply {a a' : G} {b : k} [Decidable (a' = a)] :
+    single a b a' = if a' = a then b else 0 :=
   Finsupp.single_apply
 
 @[simp]

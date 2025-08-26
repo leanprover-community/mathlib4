@@ -130,7 +130,7 @@ theorem mk_coord_apply_eq (i : ι) : (Basis.mk hli hsp).coord i (v i) = 1 :=
 basis if `j ≠ i`. -/
 theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i (v j) = 0 :=
   show hli.repr ⟨v j, Submodule.subset_span (mem_range_self j)⟩ i = 0 by
-    simp [hli.repr_eq_single j, h]
+    simp [hli.repr_eq_single j, h.symm]
 
 /-- Given a basis, the `i`th element of the dual basis evaluates to the Kronecker delta on the
 `j`th element of the basis. -/

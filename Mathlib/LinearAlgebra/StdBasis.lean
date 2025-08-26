@@ -92,7 +92,7 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
     (Pi.basis s).repr (Pi.single j (s j i)) = Finsupp.single ⟨j, i⟩ 1 := by
   classical
   ext ⟨j', i'⟩
-  by_cases hj : j = j'
+  by_cases hj : j' = j
   · subst hj
     simp only [Pi.basis, LinearEquiv.trans_apply,
       LinearEquiv.piCongrRight, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,

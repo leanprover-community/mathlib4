@@ -234,7 +234,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     · simpa
     · intro y hy xy
       simp only [SetLike.mem_coe, mem_supported, subset_def, Finset.mem_coe, mem_support_iff] at h₁
-      simp [mt (H _ (h₁ _ hy) _ xs) xy]
+      simp [mt (H _ xs _ (h₁ _ hy)) xy.symm]
     · simp +contextual
   · by_contra h
     exact xs (h₁ <| Finsupp.mem_support_iff.2 h)

@@ -56,9 +56,10 @@ def single (a : α) (b : M) : α →₀ M where
       · simp [hb, Pi.single, update]
       simp [ha]
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply [Decidable (a' = a)] : single a b a' = if a' = a then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
+  rw [single, coe_mk, Pi.single_apply]
+  congr
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -66,14 +67,18 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  simp [single_apply, Set.indicator]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
   classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
 
 @[simp]
-theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
+theorem single_eq_of_ne (h : a' ≠ a) : (single a b : α →₀ M) a' = 0 := by
+  classical exact Pi.single_eq_of_ne h _
+
+@[simp]
+theorem single_eq_of_ne' (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
   classical exact Pi.single_eq_of_ne' h _
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
@@ -106,7 +111,7 @@ theorem support_single_subset : (single a b).support ⊆ {a} := by
   split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
-  rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
+  rcases em (x = a) with (rfl | hx) <;> [simp; simp [hx]]
 
 theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
   Set.range_subset_iff.2 single_apply_mem
@@ -130,8 +135,8 @@ theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆
   refine ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, ?_⟩
   rintro ⟨h, rfl⟩
   ext x
-  by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
-  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
+  by_cases hx : x = a <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
+  exact notMem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx))) hx)
 
 theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     single a₁ b₁ = single a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ ∨ b₁ = 0 ∧ b₂ = 0 := by
@@ -143,7 +148,7 @@ theorem single_eq_single_iff (a₁ a₂ : α) (b₁ b₂ : M) :
     · rw [DFunLike.ext_iff] at eq
       have h₁ := eq a₁
       have h₂ := eq a₂
-      simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne (Ne.symm h)] at h₁ h₂
+      simp only [single_eq_same, single_eq_of_ne h, single_eq_of_ne' h] at h₁ h₂
       exact Or.inr ⟨h₁, h₂.symm⟩
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
     · rfl
@@ -390,11 +395,11 @@ theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
   ext s; by_cases hs : s = a
   · rw [hs, erase_same, coe_zero, Pi.zero_apply]
   · rw [erase_ne hs]
-    exact single_eq_of_ne (Ne.symm hs)
+    exact single_eq_of_ne hs
 
 theorem erase_single_ne {a a' : α} {b : M} (h : a ≠ a') : erase a (single a' b) = single a' b := by
   ext s; by_cases hs : s = a
-  · rw [hs, erase_same, single_eq_of_ne h.symm]
+  · rw [hs, erase_same, single_eq_of_ne h]
   · rw [erase_ne hs]
 
 @[simp]
@@ -464,11 +469,11 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     constructor
     · ext d
       rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
+      by_cases h_cases : d = c
+      · simp only [h_cases, hc₂, single_eq_same]
       · rw [single_apply, single_apply, if_neg, if_neg h_cases]
         by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+        exact h_cases (f.injective (hfd.trans hc₂.symm))
     · exact hc₂
 
 @[simp]
@@ -498,7 +503,7 @@ theorem zipWith_single_single (f : M → N → P) (hf : f 0 0 = 0) (a : α) (m :
     zipWith f hf (single a m) (single a n) = single a (f m n) := by
   ext a'
   rw [zipWith_apply]
-  obtain rfl | ha' := eq_or_ne a a'
+  obtain rfl | ha' := eq_or_ne a' a
   · rw [single_eq_same, single_eq_same, single_eq_same]
   · rw [single_eq_of_ne ha', single_eq_of_ne ha', single_eq_of_ne ha', hf]
 

@@ -596,7 +596,7 @@ theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
   Finsupp.single_eq_same
 
-theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : n ≠ m) : (monomial n c).coeff m = 0 :=
+theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).coeff m = 0 :=
   Finsupp.single_eq_of_ne h
 
 @[simp]
