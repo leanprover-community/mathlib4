@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
 import Mathlib.Analysis.Convex.Star
@@ -241,7 +240,7 @@ theorem Convex.translate_preimage_left (hs : Convex 𝕜 s) (z : E) :
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_Iic (r : β) : Convex 𝕜 (Iic r) := fun x hx y hy a b ha hb hab =>
   calc
@@ -268,7 +267,7 @@ end OrderedAddCommMonoid
 section OrderedCancelAddCommMonoid
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
-  [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 theorem convex_Iio (r : β) : Convex 𝕜 (Iio r) := by
   intro x hx y hy a b ha hb hab
@@ -301,7 +300,7 @@ end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+variable [AddCommMonoid β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
 
 theorem convex_uIcc (r s : β) : Convex 𝕜 (uIcc r s) :=
   convex_Icc _ _
@@ -315,7 +314,7 @@ end AddCommMonoid
 section LinearOrderedAddCommMonoid
 
 variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
-  [PartialOrder β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+  [PartialOrder β] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {s : Set E} {f : E → β}
 
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
@@ -547,18 +546,18 @@ Relates `Convex` and `OrdConnected`.
 
 section
 
-theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
+theorem Set.OrdConnected.convex_of_chain [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+    [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E}
+    (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
   refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
   obtain hxy | hyx := h.total hx hy
   · exact (segment_subset_Icc hxy).trans (hs.out hx hy)
   · rw [segment_symm]
     exact (segment_subset_Icc hyx).trans (hs.out hy hx)
 
-theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) : Convex 𝕜 s :=
+theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LinearOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {s : Set E} (hs : s.OrdConnected) :
+    Convex 𝕜 s :=
   hs.convex_of_chain <| isChain_of_trichotomous s
 
 theorem convex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} :

@@ -422,10 +422,9 @@ section OrdConnected
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
-    (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
+theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [PartialOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected)
+    (hx : x ∈ s) (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
   · refine hs.out hx hy (mem_Icc.2 ⟨?_, ?_⟩)
