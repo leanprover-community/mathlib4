@@ -6,6 +6,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Group.Defs
 
 /-!
 # Lemmas about densely linearly ordered groups.
@@ -83,3 +86,39 @@ lemma mul_le_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
   exact hd.le.trans (h a' ha' b' hb')
 
 end DenselyOrdered
+
+variable {M : Type*} [LinearOrder M] [DenselyOrdered M] {x : M}
+
+section Monoid
+variable [AddCommMonoid M] [ExistsAddOfLE M] [IsOrderedCancelAddMonoid M]
+
+private theorem exists_two_nsmul_le_of_pos (hx : 0 < x) : ∃ y : M, 0 < y ∧ 2 • y ≤ x := by
+  obtain ⟨y, hy, hyx⟩ := exists_between hx
+  obtain hyx | hxy := le_total (2 • y) x
+  · exact ⟨y, hy, hyx⟩
+  obtain ⟨z, hz, rfl⟩ := exists_pos_add_of_lt' hyx
+  exact ⟨z, hz, by simpa [two_nsmul] using hxy⟩
+
+theorem exists_nsmul_lt_of_pos (hx : 0 < x) : ∀ n : ℕ, ∃ y : M, 0 < y ∧ n • y < x
+  | 0 => ⟨x, by simpa⟩
+  | 1 => by simpa using exists_between hx
+  | n + 2 => by
+    obtain ⟨y, hy, hyx⟩ := exists_nsmul_lt_of_pos hx (n + 1)
+    obtain ⟨z, hz, hzy⟩ := exists_two_nsmul_le_of_pos hy
+    refine ⟨z, hz, hyx.trans_le' ?_⟩
+    calc (n + 2) • z
+      _ ≤ (2 * (n + 1)) • z := nsmul_left_monotone hz.le (by omega)
+      _ = (n + 1) • 2 • z := by rw [← mul_nsmul]
+      _ ≤ (n + 1) • y := nsmul_le_nsmul_right hzy _
+
+end Monoid
+
+section Group
+variable [AddCommGroup M] [IsOrderedCancelAddMonoid M]
+
+theorem exists_nsmul_gt_of_neg (hx : x < 0) (n : ℕ) : ∃ y : M, y < 0 ∧ x < n • y := by
+  obtain ⟨y, hy, hy'⟩ := exists_nsmul_lt_of_pos (neg_pos_of_neg hx) n
+  use -y, neg_neg_of_pos hy
+  simpa [lt_neg] using hy'
+
+end Group
