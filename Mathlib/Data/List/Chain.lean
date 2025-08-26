@@ -319,12 +319,10 @@ theorem chain'_of_not (h : ¬List.Chain' R l) :
   induction l with
   | nil => simp
   | cons head tail ih =>
-      rw [chain'_cons']
-      constructor
+      refine List.chain'_cons'.mpr ⟨fun y yh ↦ ?_, ?_⟩
       · by_cases h' : tail.length = 0
-        · simp [eq_nil_iff_length_eq_zero.mpr h']
-        · intro y yh
-          simp only [head?_eq_getElem?, Option.mem_def] at yh
+        · simp [List.eq_nil_iff_length_eq_zero.mpr h'] at yh
+        · simp only [head?_eq_getElem?, Option.mem_def] at yh
           obtain ⟨_, rfl⟩ := getElem?_eq_some_iff.mp yh
           have := h 0 (by rw [length_cons]; omega)
           rwa [getElem_cons_zero] at this
