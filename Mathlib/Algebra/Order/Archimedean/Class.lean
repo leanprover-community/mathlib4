@@ -195,7 +195,7 @@ theorem lift_mk {α : Type*} (f : M → α) (h : ∀ a b, mk a = mk b → f a = 
   exact Quotient.lift_mk f (fun _ _ h' ↦ h _ _ <| mk_eq_mk.mpr h') a
 
 /-- Lift a `M → M → α` function to `MulArchimedeanClass M → MulArchimedeanClass M → α`. -/
-@[to_additive "Lift a `M → M → α` function to `ArchimedeanClass M → ArchimedeanClass M → α`."]
+@[to_additive /-- Lift a `M → M → α` function to `ArchimedeanClass M → ArchimedeanClass M → α`. -/]
 def lift₂ {α : Type*} (f : M → M → α)
     (h : ∀ a₁ b₁ a₂ b₂, mk a₁ = mk b₁ → mk a₂ = mk b₂ → f a₁ a₂ = f b₁ b₂) :
     MulArchimedeanClass M → MulArchimedeanClass M → α :=
@@ -245,7 +245,6 @@ theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 which is also the largest class. -/
 @[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/]
-noncomputable
 instance : OrderTop (MulArchimedeanClass M) where
   top := mk 1
   le_top A := by
@@ -257,10 +256,9 @@ instance : OrderTop (MulArchimedeanClass M) where
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
 @[to_additive (attr := simp)]
-theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := by
-  constructor
-  · simp [← mk_one, mk_eq_mk]
-  · simp_all
+theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 where
+  mp := by simp [← mk_one, mk_eq_mk]
+  mpr := by simp_all
 
 @[to_additive (attr := simp)]
 theorem top_eq_mk_iff : ⊤ = mk a ↔ a = 1 := by
