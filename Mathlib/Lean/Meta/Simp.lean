@@ -81,7 +81,8 @@ def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
 /-- Construct a `Simp.Context`, following the same algorithm that would be done in a "simp" run:
 look up all the simp-lemmas in the library, and adjust (add/erase) as specified by the provided
 `simpArgs` list. -/
-def Simp.Context.ofArgs (args : Syntax) (config : Simp.Config := {}) : TacticM Simp.Context := do
+def Simp.Context.ofArgs (args : TSyntax ``Parser.Tactic.simpArgs) (config : Simp.Config := {}) :
+    TacticM Simp.Context := do
   let simpTheorems ← Meta.getSimpTheorems
   let congrTheorems ← Meta.getSimpCongrTheorems
   let ctx ← Simp.mkContext config

@@ -323,8 +323,9 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
           return ⟨L, ((n₁, e₁), i₁) :: l₁', ((n₂, e₂), i₂) :: l₂',
             (q(NF.eval_mul_eval_cons $n₁ $e₁ $pf₁):), (q(NF.eval_mul_eval_cons $n₂ $e₂ $pf₂):), pf₀⟩
       else
-        -- this is a "junk" sorry: the proof doesn't get used when flag `nonzero` is set to false
-        bothPresent t₁ t₂ n₁ n₂ e₁ q(sorry) i₁
+        -- the `default` is a "junk" expression:
+        -- the proof doesn't get used when flag `nonzero` is set to false
+        bothPresent t₁ t₂ n₁ n₂ e₁ default i₁
     else
       let ⟨L, l₂', l₁', pf₂, pf₁, pf₀⟩ ← absent t₂ (((n₁, e₁), i₁) :: t₁) n₂ e₂ i₂
       return ⟨L, l₁', l₂', q($pf₁), q($pf₂), pf₀⟩
@@ -519,8 +520,7 @@ open Elab Tactic Lean.Parser.Tactic
 /-- If the user provided a discharger, elaborate it. If not, we will use the `field_simp` default
 discharger, which (among other things) includes a simp-run for the specified argument list, so we
 elaborate those arguments. -/
-def parseDischarger (d : Option (TSyntax `Lean.Parser.Tactic.discharger))
-    (args : Option (TSyntax `Lean.Parser.Tactic.simpArgs)) :
+def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax ``simpArgs)) :
     TacticM (∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) := do
   match d with
   | none =>
