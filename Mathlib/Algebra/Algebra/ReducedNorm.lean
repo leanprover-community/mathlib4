@@ -3,7 +3,7 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie
 -/
-import Mathlib
+import Mathlib.LinearAlgebra.Matrix.CharPoly.Basic
 
 /-!
 This file defines the reduced characteristic norm and trace of a central simple algebra `A` over
