@@ -481,12 +481,12 @@ lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
-  (homeomorph_prod p α β).t0Space
+  (homeomorphProd p α β).symm.t0Space
 
 variable [SecondCountableTopology α] [SecondCountableTopology β]
 
 instance secondCountableTopology : SecondCountableTopology (WithLp p (α × β)) :=
-  (homeomorph_prod p α β).symm.secondCountableTopology
+  (homeomorphProd p α β).secondCountableTopology
 
 end TopologicalSpace
 
@@ -519,7 +519,7 @@ lemma toEquiv_uniformEquivProd : (uniformEquivProd p α β).toEquiv = WithLp.equ
 variable [CompleteSpace α] [CompleteSpace β]
 
 instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
-  (uniformEquiv_prod p α β).completeSpace_iff.1 inferInstance
+  (uniformEquivProd p α β).completeSpace_iff.2 inferInstance
 
 end UniformSpace
 
