@@ -21,7 +21,7 @@ from an identity implemented in mathlib as `Finset.sum_involution`. Namely, we u
 `Finset.sum_involution` to show that `∑ t ∈ pairs σ k, weight σ R k t = 0`. We then identify
 `(-1) ^ k * k * esymm σ R k` with the terms of the weight sum for which `t.fst` has
 cardinality `k`, and `(-1) ^ i * esymm σ R i * psum σ R (k - i)` with the terms of the weight sum
-for which `t.fst` has cardinality `i` for `i < k` , and we thereby derive the main result
+for which `t.fst` has cardinality `i` for `i < k`, and we thereby derive the main result
 `(-1) ^ k * k * esymm σ R k + ∑ i ∈ range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0` (or
 rather, two equivalent forms which provide direct definitions for `esymm` and `psum` in lower-degree
 terms).
@@ -156,7 +156,7 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   apply sum_finset_product
   simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
-  have : #p.fst ≤ k := by apply le_of_lt; aesop
+  have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
 private lemma filter_pairs_lt (k : ℕ) :
