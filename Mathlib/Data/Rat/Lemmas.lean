@@ -16,9 +16,12 @@ import Mathlib.Data.PNat.Defs
 
 namespace Rat
 
+-- TODO: move this to Lean
+attribute [norm_cast] num_intCast den_intCast
+
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rcases e : a /. b with ⟨n, d, h, c⟩
-  rw [Rat.mk'_eq_divInt, divInt_eq_iff b0 (mod_cast h)] at e
+  rw [Rat.mk'_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
   have := congr_arg Int.natAbs e
@@ -27,7 +30,8 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   by_cases b0 : b = 0; · simp [b0]
   rcases e : a /. b with ⟨n, d, h, c⟩
-  rw [mk'_eq_divInt, divInt_eq_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
+  rw [mk'_eq_divInt,
+    divInt_eq_divInt_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
   refine Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left ?_
   rw [← Int.natAbs_mul, ← Int.natCast_dvd_natCast, Int.dvd_natAbs, ← e]; simp
 
@@ -36,7 +40,7 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
   obtain rfl | hn := eq_or_ne n 0
   · simp [qdf]
   have : q.num * d = n * ↑q.den := by
-    refine (divInt_eq_iff ?_ hd).mp ?_
+    refine (divInt_eq_divInt_iff ?_ hd).mp ?_
     · exact Int.natCast_ne_zero.mpr (Rat.den_nz _)
     · rwa [num_divInt_den]
   have hqdn : q.num ∣ n := by
@@ -175,7 +179,7 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℚ) ↔ IsSquare n := by
 
 @[norm_cast, simp]
 theorem isSquare_intCast_iff {z : ℤ} : IsSquare (z : ℚ) ↔ IsSquare z := by
-  simp_rw [isSquare_iff, intCast_num, intCast_den, IsSquare.one, and_true]
+  simp_rw [isSquare_iff, num_intCast, den_intCast, IsSquare.one, and_true]
 
 @[simp]
 theorem isSquare_ofNat_iff {n : ℕ} :
@@ -235,7 +239,7 @@ end Casts
 
 protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
   rw [← num_divInt_den q]
-  simp only [Rat.neg_divInt, Rat.inv_divInt', Rat.divInt_neg]
+  simp only [Rat.neg_divInt, Rat.inv_divInt, Rat.divInt_neg]
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
@@ -286,7 +290,7 @@ theorem den_div_natCast_eq_one_iff (m n : ℕ) (hn : n ≠ 0) : ((m : ℚ) / n).
   (den_div_intCast_eq_one_iff m n (Int.ofNat_ne_zero.mpr hn)).trans Int.ofNat_dvd
 
 theorem inv_intCast_num_of_pos {a : ℤ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 := by
-  rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
+  rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt, divInt_eq_div, Nat.cast_one]
   apply num_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
@@ -295,7 +299,7 @@ theorem inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 
   inv_intCast_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
 
 theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
-  rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt', divInt_eq_div, Nat.cast_one]
+  rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt, divInt_eq_div, Nat.cast_one]
   apply den_div_eq_of_coprime ha0
   rw [Int.natAbs_one]
   exact Nat.coprime_one_left _
@@ -346,13 +350,13 @@ theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
 
 theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
   have hq' : q.num ≠ 0 := by simpa using hq
-  rw [inv_def', divInt_eq_div, div_eq_mul_inv, mul_den, inv_intCast_den, if_neg hq']
+  rw [inv_def, divInt_eq_div, div_eq_mul_inv, mul_den, inv_intCast_den, if_neg hq']
   norm_cast
   rw [one_mul, inv_intCast_num, Int.natAbs_mul, Int.natAbs_sign_of_ne_zero hq', mul_one,
     Int.natAbs_cast, q.reduced.symm, Nat.div_one]
 
 theorem num_inv (q : ℚ) : (q⁻¹).num = q.num.sign * q.den := by
-  rw [Rat.inv_def', Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_num, Rat.inv_intCast_num]
+  rw [Rat.inv_def, Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_num, Rat.inv_intCast_num]
   norm_cast
   rw [one_mul, inv_intCast_den, Int.natAbs_mul, Int.natAbs_cast]
   split <;> simp_all [Int.natAbs_sign_of_ne_zero, q.reduced.symm, mul_comm]

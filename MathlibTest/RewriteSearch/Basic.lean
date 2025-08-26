@@ -1,5 +1,11 @@
 import Mathlib.Tactic.RewriteSearch
 
+#adaptation_note /-- nightly-2025-08-25
+Test disabled until we figure out the segfaults when running `rw_search` in the interpreter.
+-/
+
+/-
+
 set_option autoImplicit true
 
 -- You can enable tracing of the `rw_search` algorithm using
@@ -78,3 +84,5 @@ theorem foo (n : Nat) : makeSingleton n = [0] := by
   · simp only [makeSingleton]
   · -- At one point, this failed with: unknown free variable '_uniq.62770'
     rw_search
+
+-/
