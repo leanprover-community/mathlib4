@@ -214,7 +214,7 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     let h' : B →+ A := e.symm
     simp_rw [e.toHomeomorph.symm.isInducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
-    ext τ -- from this point on the definitions of `g`, `g'` etc above don't work without `@`.
+    ext τ -- from this point on the definitions of `g`, `g'` etc. above don't work without `@`.
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩

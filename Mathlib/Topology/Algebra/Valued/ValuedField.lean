@@ -17,7 +17,7 @@ valuation.basic).
 We already know from valuation.topology that one can build a topology on `K` which
 makes it a topological ring.
 
-The first goal is to show `K` is a topological *field*, ie inversion is continuous
+The first goal is to show `K` is a topological *field*, i.e. inversion is continuous
 at every non-zero element.
 
 The next goal is to prove `K` is a *completable* topological field. This gives us
@@ -392,6 +392,21 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
+
+lemma valuedCompletion_surjective_iff :
+    Function.Surjective (v : hat K → Γ₀) ↔ Function.Surjective (v : K → Γ₀) := by
+  constructor <;> intro h γ <;> obtain ⟨a, ha⟩ := h γ
+  · induction a using Completion.induction_on
+    · by_cases H : ∃ x : K, (v : K → Γ₀) x = γ
+      · simp [H]
+      · simp only [H, imp_false]
+        rcases eq_or_ne γ 0 with rfl | hγ
+        · simp at H
+        · convert isClosed_univ.sdiff (isOpen_sphere (hat K) hγ) using 1
+          ext x
+          simp
+    · exact ⟨_, by simpa using ha⟩
+  · exact ⟨a, by simp [ha]⟩
 
 instance {R : Type*} [CommSemiring R] [Algebra R K] [UniformContinuousConstSMul R K]
     [FaithfulSMul R K] : FaithfulSMul R (hat K) := by
