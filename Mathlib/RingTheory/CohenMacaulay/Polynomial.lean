@@ -146,7 +146,8 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
         nth_rw 4 [mul_comm]
         simp [← mul_assoc, h1, h2, add_comm]
       · rcases Localization.mkHom_surjective a with ⟨⟨x, y⟩, h⟩
-        use ((monomial n) x, ⟨C y.1, by simp [pc]⟩)
+        have : y.1 ∉ q := y.2
+        use ((monomial n) x, ⟨C y.1, by simpa [pc]⟩)
         simp only [← h, Localization.mkHom_apply, algebraMap_def, coe_mapRingHom, map_C, ←
           Localization.mk_one_eq_algebraMap, monomial_mul_C, map_monomial, S, Localization.mk_mul]
         congr 1
@@ -163,7 +164,8 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
       have g_spec (n : ℕ) := Classical.choose_spec
         (IsLocalization.exists_of_eq (M := q.primeCompl) (eq' n))
       let s := ∏ n ∈ x.1.1 ∪ y.1.1, g n
-      use ⟨C s.1, by simp [pc]⟩
+      have : s.1 ∉ q := s.2
+      use ⟨C s.1, by simpa [pc]⟩
       ext n
       simp only [coeff_C_mul, s]
       by_cases mem : n ∈ x.1.1 ∪ y.1.1
