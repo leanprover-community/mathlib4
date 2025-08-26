@@ -206,8 +206,7 @@ lemma map'_predAbove {n : ℕ} (i : Fin (n + 1)) (x : Fin (n + 2)) :
         · simp only [not_lt] at h
           rwa [Fin.predAbove_of_le_castSucc _ _ h, ← Fin.castSucc_lt_castSucc_iff,
             Fin.castSucc_castPred]
-  · rw [map'_last, Fin.succAbove_of_lt_succ, Fin.succ_last]
-    apply Fin.castSucc_lt_last
+  · simp [map'_last]
 
 lemma monotone_map' (f : Fin (n + 1) →o Fin (m + 1)) :
     Monotone (map' f) := by
