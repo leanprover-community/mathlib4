@@ -519,8 +519,7 @@ theorem snoc_comp_castSucc {α : Sort*} {a : α} {f : Fin n → α} :
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 
 lemma snoc_zero {α : Sort*} (p : Fin 0 → α) (x : α) :
-    Fin.snoc p x = fun _ ↦ x := by
-  rfl
+    Fin.snoc p x = fun _ ↦ x := rfl
 
 @[simp]
 theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
