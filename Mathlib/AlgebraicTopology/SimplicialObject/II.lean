@@ -98,9 +98,7 @@ lemma map'_eq_castSucc_iff (f : Fin (n + 1) →o Fin (m + 1)) (x : Fin (m + 2)) 
 @[simp]
 lemma map'_last (f : Fin (n + 1) →o Fin (m + 1)) :
     map' f (Fin.last _) = Fin.last _ := by
-  rw [map'_eq_last_iff]
-  intro i
-  apply Fin.castSucc_lt_last
+  simp [map'_eq_last_iff]
 
 @[simp]
 lemma map'_zero (f : Fin (n + 1) →o Fin (m + 1)) :
