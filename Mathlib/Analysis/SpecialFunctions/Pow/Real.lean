@@ -238,11 +238,7 @@ theorem rpow_sum_of_nonneg {ι : Type*} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι}
 
 /-- See also `rpow_neg` for a version with `(x ^ y)⁻¹` in the RHS. -/
 theorem rpow_neg_eq_inv_rpow (x y : ℝ) : x ^ (-y) = x⁻¹ ^ y := by
-  rw [rpow_def, Complex.ofReal_neg, Complex.cpow_neg, rpow_def, Complex.ofReal_inv,
-    Complex.inv_cpow_eq_ite]
-  split_ifs
-  · rw [Complex.conj_re, Complex.conj_ofReal]
-  · rfl
+  simp [rpow_def, Complex.cpow_neg, Complex.inv_cpow_eq_ite, apply_ite]
 
 /-- See also `rpow_neg_eq_inv_rpow` for a version with `x⁻¹ ^ y` in the RHS. -/
 theorem rpow_neg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
