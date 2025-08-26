@@ -8,7 +8,7 @@ import Mathlib.Analysis.Calculus.DiffContOnCl
 import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
