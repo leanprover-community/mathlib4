@@ -594,6 +594,9 @@ theorem cast_pos [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] (n : P
 theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
   rw [← cast_to_nat, mul_to_nat, Nat.cast_mul, cast_to_nat, cast_to_nat]
 
+-- TODO: find a good way to fix the linter error
+-- simp is called on three goals, with different simp set
+set_option linter.flexible false in
 @[simp]
 theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
