@@ -261,9 +261,10 @@ theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (s
 -- `simp`-normal form is `toOption_eq_some_iff`.
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
-  by_cases h : o.Dom <;> simp [h]
-  · exact ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
-  · exact mt Exists.fst h
+  by_cases h : o.Dom
+  · simpa [h] using ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
+  · simp only [h, ↓reduceDIte, Option.mem_def, reduceCtorEq, false_iff]
+    exact mt Exists.fst h
 
 @[simp]
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
