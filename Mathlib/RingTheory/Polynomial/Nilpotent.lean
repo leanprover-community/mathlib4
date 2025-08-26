@@ -135,9 +135,9 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
   · refine isUnit_of_mul_eq_one _ (Q.coeff 0) ?_
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
-  · intros n hn
+  · intro n hn
     rw [nilpotent_iff_mem_prime]
-    intros I hI
+    intro I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
       rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← map_mul, hQ, map_one, degree_one]
