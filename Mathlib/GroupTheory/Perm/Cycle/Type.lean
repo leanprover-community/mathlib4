@@ -228,8 +228,7 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
   refine map_le_map ?_
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 
-theorem Disjoint.cycleType_mul {f g : Perm α} (h : f.Disjoint g) :
-    (f * g).cycleType = f.cycleType + g.cycleType := cycleType h
+@[deprecated (since := "2025-08-26")] alias Disjoint.cycleType_mul := Disjoint.cycleType
 
 theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
@@ -243,7 +242,7 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Finset.sum_insert hi]
-    rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
+    rw [Disjoint.cycleType, hrec hs']
     apply disjoint_noncommProd_right
     intro j hj
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
