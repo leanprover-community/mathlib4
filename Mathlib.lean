@@ -1538,6 +1538,7 @@ import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Complex.MeanValue
+import Mathlib.Analysis.Complex.Norm
 import Mathlib.Analysis.Complex.OpenMapping
 import Mathlib.Analysis.Complex.OperatorNorm
 import Mathlib.Analysis.Complex.Periodic
@@ -2992,7 +2993,6 @@ import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Module
-import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
