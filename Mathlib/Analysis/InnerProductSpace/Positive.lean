@@ -341,7 +341,6 @@ lemma isUnit_of_forall_le_norm_inner_map (f : E →L[𝕜] E) {c : ℝ≥0} (hc 
   rw [isUnit_iff_bijective, bijective_iff_dense_range_and_antilipschitz]
   have h_anti : AntilipschitzWith c⁻¹ f := antilipschitz_of_forall_le_inner_map f hc h
   refine ⟨?_, ⟨_, h_anti⟩⟩
-  have _inst := h_anti.completeSpace_range_clm
   rw [Submodule.topologicalClosure_eq_top_iff, Submodule.eq_bot_iff]
   intro x hx
   have : ‖x‖ ^ 2 * c = 0 := le_antisymm (by simpa only [hx (f x) ⟨x, rfl⟩, norm_zero] using h x)
