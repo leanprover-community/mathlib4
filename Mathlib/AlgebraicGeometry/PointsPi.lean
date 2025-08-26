@@ -114,7 +114,6 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i : _) : IsAffine (𝒰.obj i) := isAffine_Spec _
   have (i : _) : ∃ j, Set.range (f i).base ⊆ (𝒰.map j).opensRange := by
     refine ⟨𝒰.f ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
