@@ -542,7 +542,7 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
   map_mul' _a _b := single_mul_single.symm
 
 @[to_additive (dont_translate := k) mul_single_apply_aux]
-theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
+theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) (r : k) {x y z : G}
     (H : ∀ a ∈ f.support, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
   classical exact
     calc
@@ -557,7 +557,7 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 @[to_additive (dont_translate := k) mul_single_zero_apply]
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
-  f.mul_single_apply_aux fun a ha => by rw [mul_one]
+  f.mul_single_apply_aux r fun a ha => by rw [mul_one]
 
 @[to_additive (dont_translate := k) mul_single_apply_of_not_exists_add]
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
@@ -570,7 +570,7 @@ theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
       grind
 
 @[to_additive (dont_translate := k) single_mul_apply_aux]
-theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
+theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) (r : k) {x y z : G}
     (H : ∀ a ∈ f.support, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
   classical exact
       have : (f.sum fun a b => ite (x * a = y) (0 * b) 0) = 0 := by simp
@@ -586,7 +586,7 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
 @[to_additive (dont_translate := k) single_zero_mul_apply]
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (single (1 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux fun a ha => by rw [one_mul]
+  f.single_mul_apply_aux r fun a ha => by rw [one_mul]
 
 @[to_additive (dont_translate := k) single_mul_apply_of_not_exists_add]
 theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
@@ -668,12 +668,12 @@ variable [Semiring k] [Group G]
 @[to_additive (dont_translate := k) (attr := simp) mul_single_apply]
 theorem mul_single_apply (f : MonoidAlgebra k G) (r : k) (x y : G) :
     (f * single x r) y = f (y * x⁻¹) * r :=
-  f.mul_single_apply_aux fun _a _ => eq_mul_inv_iff_mul_eq.symm
+  f.mul_single_apply_aux r fun _a _ => eq_mul_inv_iff_mul_eq.symm
 
 @[to_additive (dont_translate := k) (attr := simp) single_mul_apply]
 theorem single_mul_apply (r : k) (x : G) (f : MonoidAlgebra k G) (y : G) :
     (single x r * f) y = r * f (x⁻¹ * y) :=
-  f.single_mul_apply_aux fun _z _ => eq_inv_mul_iff_mul_eq.symm
+  f.single_mul_apply_aux r fun _z _ => eq_inv_mul_iff_mul_eq.symm
 
 @[to_additive (dont_translate := k) mul_apply_left]
 theorem mul_apply_left (f g : MonoidAlgebra k G) (x : G) :
