@@ -191,7 +191,7 @@ theorem exists_eq_comp_of_le_length {n : ℕ} (hn : n ≤ p.length) :
 decomposed as a concatenation of a subpath from `a` to `v` and a subpath from `v` to `b`. -/
 theorem exists_comp_of_mem_vertices {a b v : V} (p : Path a b)
   (h : v ∈ p.vertices) : ∃ (p₁ : Path a v) (p₂ : Path v b), p = p₁.comp p₂ := by
-  obtain ⟨l₁, l₂, hv⟩ := exists_mem_split h
+  obtain ⟨l₁, l₂, hv⟩ := (mem_iff_append.mp h : ∃ s t : List V, p.vertices = s ++ v :: t)
   have h_len : l₁.length ≤ p.length := by
     have : p.vertices.length = p.length + 1 := vertices_length p
     have : l₁.length < p.vertices.length := by
