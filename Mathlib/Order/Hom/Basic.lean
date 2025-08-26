@@ -621,15 +621,6 @@ instance : EquivLike (α ≃o β) α β := RelIso.instEquivLike
 instance : OrderHomClass (α ≃o β) α β := RelIso.instRelHomClass
 
 @[simp]
-theorem coe_fn_mk (f : α ≃ β) (o : ∀ ⦃a b⦄, (f a) ≤ (f b) ↔ a ≤ b) :
-    (RelIso.mk f @o : α → β) = f :=
-  rfl
-
-@[simp]
-theorem coe_fn_toEquiv (f : α ≃o β) : (f.toEquiv : α → β) = f :=
-  rfl
-
-@[simp]
 theorem toFun_eq_coe {f : α ≃o β} : f.toFun = f :=
   rfl
 
@@ -677,6 +668,7 @@ theorem refl_apply (x : α) : refl α x = x :=
 theorem refl_toEquiv : (refl α).toEquiv = Equiv.refl α :=
   rfl
 
+
 /-- Inverse of an order isomorphism. -/
 def symm (e : α ≃o β) : β ≃o α := RelIso.symm e
 
@@ -716,6 +708,15 @@ theorem coe_toEquiv (e : α ≃o β) : ⇑e.toEquiv = e := rfl
 
 @[simp]
 theorem coe_symm_toEquiv (e : α ≃o β) : ⇑e.toEquiv.symm = e.symm := rfl
+
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+  because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
+def Simps.apply (h : α ≃o β) : α → β :=
+  h
+
+/-- See Note [custom simps projection]. -/
+def Simps.symm_apply (h : α ≃o β) : β → α :=
+  h.symm
 
 section
 
