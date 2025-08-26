@@ -36,7 +36,7 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
   toSubsemiring_strictMono.monotone
 
-theorem toSubsemiring_le {P₁ P₂ : RingPreordering R} :
+theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
 
 @[gcongr]
