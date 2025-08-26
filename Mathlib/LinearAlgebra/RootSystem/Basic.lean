@@ -135,7 +135,6 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
     have hpi : (p.flip (coroot i)) (root i) = 2 := by simp [hp i]
     simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply]
-  have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   obtain ⟨l, hl⟩ := hc i (mem_range_self j)
   rw [← hl]
   have hkl : (p.flip (coroot l)) (root k) = 2 := by
@@ -232,7 +231,6 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
     have hpi : (p.flip (coroot i)) (root i) = 2 := by simp [hp i]
     simp [α, β, α', β', sα, sβ, sα', ← preReflection_preReflection β (p.flip β') hpi,
       preReflection_apply] -- v4.7.0-rc1 issues
-  have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h] using hp k
   apply p.flip.toPerfPair.injective
   apply Dual.eq_of_preReflection_mapsTo (finite_range root) hsp (hp k) (hs k)
   · simp [map_sub, α, β, α', β', sα, hk, preReflection_apply, hp i, hp j,
