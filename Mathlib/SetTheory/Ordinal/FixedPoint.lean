@@ -155,7 +155,7 @@ theorem isNormal_derivFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.
   · rw [derivFamily_succ, ← succ_le_iff]
     exact le_nfpFamily _ _
   · rw [derivFamily_limit _ h, Set.image_eq_range]
-    have : Nonempty (Set.Iio o) := ⟨0, h.bot_lt⟩
+    have := h.nonempty_Iio.to_subtype
     exact isLUB_ciSup (bddAbove_of_small _)
 
 theorem derivFamily_strictMono [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) :
@@ -172,7 +172,7 @@ theorem derivFamily_fp [Small.{u} ι] {i} (H : IsNormal (f i)) (o : Ordinal) :
     rw [derivFamily_succ]
     exact nfpFamily_fp H _
   | limit o l IH =>
-    have : Nonempty (Set.Iio o) := ⟨0, l.bot_lt⟩
+    have := l.nonempty_Iio.to_subtype
     rw [derivFamily_limit _ l, H.map_iSup]
     refine eq_of_forall_ge_iff fun c => ?_
     rw [Ordinal.iSup_le_iff, Ordinal.iSup_le_iff]
