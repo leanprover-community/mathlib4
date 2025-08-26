@@ -55,7 +55,7 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
     (f : Matrix n n R ≃ₐ[R] Matrix n n R) :
     ∃ T : GL n R, ⇑f = fun x => T * x * ((T⁻¹ : GL n R) : Matrix n n R) := by
   obtain hn | hn := isEmpty_or_nonempty n
-  · exact ⟨1, funext fun a => Matrix.ext fun i => isEmpty_iff.mp hn i |>.elim⟩
+  · exact ⟨1, Subsingleton.elim _ _⟩
   simp_rw [funext_iff, @eq_comm _ (f _), Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
   obtain ⟨u, v, hu, hv⟩ : ∃ u v : n → R, u ≠ 0 ∧ v ≠ 0 := ⟨1, 1, one_ne_zero, one_ne_zero⟩
   obtain ⟨z, hz⟩ : ∃ z : n → R, f (vecMulVec u v) *ᵥ z ≠ 0 := by
