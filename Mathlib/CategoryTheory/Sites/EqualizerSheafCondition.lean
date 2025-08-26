@@ -138,7 +138,7 @@ theorem compatible_iff (x : FirstObj P S.arrows) :
   constructor
   · intro t
     apply SecondObj.ext
-    intros Y Z g f hf
+    intro Y Z g f hf
     simpa [firstMap, secondMap] using t _ g hf
   · intro t Y Z f g hf
     rw [Types.limit_ext_iff'] at t

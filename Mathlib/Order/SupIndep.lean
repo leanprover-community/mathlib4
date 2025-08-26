@@ -340,7 +340,7 @@ theorem iSupIndep.comp' {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : 
 theorem iSupIndep.sSupIndep_range (ht : iSupIndep t) : sSupIndep <| range t := by
   rw [sSupIndep_iff]
   rw [← coe_comp_rangeFactorization t] at ht
-  exact ht.comp' surjective_onto_range
+  exact ht.comp' rangeFactorization_surjective
 
 @[simp]
 theorem iSupIndep_ne_bot :
@@ -370,7 +370,7 @@ theorem iSupIndep.injOn (ht : iSupIndep t) : InjOn t {i | t i ≠ ⊥} := by
 
 theorem iSupIndep.injective (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
-  aesop
+  simp_all
 
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
     iSupIndep t ↔ Disjoint (t i) (t j) := by
