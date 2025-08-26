@@ -10,7 +10,7 @@ import Mathlib.Topology.Connected.LocPathConnected
 # Charted spaces
 
 A smooth manifold is a topological space `M` locally modelled on a Euclidean space (or a Euclidean
-half-space for manifolds with boundaries, or an infinite dimensional vector space for more general
+half-space for manifolds with boundaries, or an infinite-dimensional vector space for more general
 notions of manifolds), i.e., the manifold is covered by open subsets on which there are local
 homeomorphisms (the charts) going to a model space `H`, and the changes of charts should be smooth
 maps.

@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 /-!
 # Functions which vanish as distributions vanish as functions
 
-In a finite dimensional normed real vector space endowed with a Borel measure, consider a locally
+In a finite-dimensional normed real vector space endowed with a Borel measure, consider a locally
 integrable function whose integral against all compactly supported smooth functions vanishes. Then
 the function is almost everywhere zero.
 This is proved in `ae_eq_zero_of_integral_contDiff_smul_eq_zero`.

@@ -9,9 +9,9 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Tactic.IntervalCases
 
 /-!
-# Finite dimensional vector spaces
+# Finite-dimensional vector spaces
 
-This file contains some further development of finite dimensional vector spaces, their dimensions,
+This file contains some further development of finite-dimensional vector spaces, their dimensions,
 and linear maps on such spaces.
 
 Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`

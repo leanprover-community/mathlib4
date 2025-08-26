@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Localization.Module
 /-!
 # ℤ-lattices
 
-Let `E` be a finite dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
+Let `E` be a finite-dimensional vector space over a `NormedLinearOrderedField` `K` with a solid
 norm that is also a `FloorRing`, e.g. `ℝ`. A (full) `ℤ`-lattice `L` of `E` is a discrete
 subgroup of `E` such that `L` spans `E` over `K`.
 

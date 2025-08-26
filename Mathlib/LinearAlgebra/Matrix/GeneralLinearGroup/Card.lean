@@ -15,7 +15,7 @@ This file computes the cardinal of the general linear group over finite rings.
 ## Main statements
 
 * `card_linearIndependent` gives the cardinal of the set of linearly independent vectors over a
-  finite dimensional vector space over a finite field.
+  finite-dimensional vector space over a finite field.
 * `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
 -/
 
@@ -32,7 +32,7 @@ local notation "n" => Module.finrank K V
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
 open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
-/-- The cardinal of the set of linearly independent vectors over a finite dimensional vector space
+/-- The cardinal of the set of linearly independent vectors over a finite-dimensional vector space
 over a finite field. -/
 theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
     Nat.card { s : Fin k → V // LinearIndependent K s } =
