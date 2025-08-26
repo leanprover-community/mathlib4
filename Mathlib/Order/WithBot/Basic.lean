@@ -212,6 +212,24 @@ def equivOption : WithBot α ≃ Option α where
   left_inv := by grind
   right_inv := by grind
 
+attribute [grind =] equivOption_apply equivOption_symm_apply
+
+theorem equivOption_eq_some {x : WithBot α} {y : α} :
+    equivOption x = Option.some y ↔ x = WithBot.some y := by
+  grind
+
+theorem equivOption_eq_none {x : WithBot α} :
+    equivOption x = none ↔ x = ⊥ := by
+  grind
+
+theorem equivOption_symm_eq_coe {x : Option α} {y : α} :
+    equivOption.symm x = WithBot.some y ↔ x = Option.some y := by
+  grind
+
+theorem equivOption_symm_eq_bot {x : Option α} :
+    equivOption.symm x = ⊥ ↔ x = none := by
+  grind
+
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
 @[simps] def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
   toFun := fun ⟨x,h⟩ => WithBot.unbot x h
@@ -235,8 +253,7 @@ attribute [grind =] withBotCongr_apply
 
 @[simp]
 theorem withBotCongr_refl : withBotCongr (Equiv.refl α) = Equiv.refl _ :=
-  sorry -- wait for #28025
-  -- Equiv.ext <| congr_fun WithBot.map_id
+  Equiv.ext <| congr_fun WithBot.map_id
 
 @[simp, grind =]
 theorem withBotCongr_symm (e : α ≃ β) : withBotCongr e.symm = (withBotCongr e).symm :=
@@ -247,8 +264,7 @@ theorem withBotCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     withBotCongr (e₁.trans e₂) = (withBotCongr e₁).trans (withBotCongr e₂) := by
   ext x : 1
   symm
-  sorry -- wait for #28025
-  -- apply WithBot.map_map
+  apply WithBot.map_map
 
 end Equiv
 
@@ -773,6 +789,24 @@ def equivOption : WithTop α ≃ Option α where
   left_inv x := by cases x <;> grind
   right_inv x := by cases x <;> grind
 
+attribute [grind =] equivOption_apply equivOption_symm_apply
+
+theorem equivOption_eq_none {x : WithTop α} :
+    equivOption x = none ↔ x = ⊤ :=
+  WithBot.equivOption_eq_none
+
+theorem equivOption_eq_some {x : WithTop α} {y : α} :
+    equivOption x = Option.some y ↔ x = WithBot.some y :=
+  WithBot.equivOption_eq_some
+
+theorem equivOption_symm_eq_top {x : Option α} :
+    equivOption.symm x = ⊤ ↔ x = none :=
+  WithBot.equivOption_symm_eq_bot
+
+theorem equivOption_symm_eq_coe {x : Option α} {y : α} :
+    equivOption.symm x = WithBot.some y ↔ x = Option.some y :=
+  WithBot.equivOption_symm_eq_coe
+
 /-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
 @[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
   toFun := fun ⟨x,h⟩ => WithTop.untop x h
@@ -796,8 +830,7 @@ attribute [grind =] withTopCongr_apply
 
 @[simp]
 theorem withTopCongr_refl : withTopCongr (Equiv.refl α) = Equiv.refl _ :=
-  sorry -- wait for #28025
-  -- Equiv.ext <| congr_fun WithBot.map_id
+  Equiv.ext <| congr_fun WithBot.map_id
 
 @[simp, grind =]
 theorem withTopCongr_symm (e : α ≃ β) : withTopCongr e.symm = (withTopCongr e).symm :=
@@ -808,8 +841,7 @@ theorem withTopCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
     withTopCongr (e₁.trans e₂) = (withTopCongr e₁).trans (withTopCongr e₂) := by
   ext x : 1
   symm
-  sorry -- wait for #28025
-  -- apply WithBot.map_map
+  apply WithBot.map_map
 
 end Equiv
 
