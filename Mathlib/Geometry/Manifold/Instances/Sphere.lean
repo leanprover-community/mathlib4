@@ -9,10 +9,10 @@ import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Tactic.Module
 
 /-!
