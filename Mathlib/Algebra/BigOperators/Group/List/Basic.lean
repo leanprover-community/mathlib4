@@ -343,43 +343,6 @@ theorem prod_inv {K : Type*} [DivisionCommMonoid K] :
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv xs]
 
--- TODO: can this use `List.reverse.prod` instead?
-/-- The product of the elements of a list. This is a variant of the library version of `List.prod`,
-in which multiplication goes backwards (the first element of the list goes leftmost in the
-multiplication). -/
-def prod' {M : Type*} [Mul M] [One M] : List M → M := foldr (fun a t ↦ t * a) 1
-
-example {M : Type*} [Mul M] [One M] (a b c : M) : List.prod [a, b, c] = a * (b * (c * 1)) := rfl
-example {M : Type*} [Mul M] [One M] (a b c : M) : List.prod' [a, b, c] = 1 * c * b * a := rfl
-
-@[simp]
-theorem prod'_cons [Mul M] [One M] {a} {l : List M} : (a :: l).prod' = l.prod' * a := rfl
-
-@[simp]
-theorem prod'_nil [Mul M] [One M] : (([] : List M)).prod' = 1 := rfl
-
--- TODO: if it does, golf proof using `prod_inv`!
-theorem prod'_inv₀ {K : Type*} [DivisionCommMonoid K] :
-    ∀ (L : List K), L.prod'⁻¹ = (map (fun x ↦ x⁻¹) L).prod'
-  | [] => by simp
-  | x :: xs => by simp [mul_comm, prod'_inv₀ xs]
-
-theorem prod'_hom {M : Type*} {N : Type*} [Monoid M] [Monoid N] (l : List M) {F : Type*}
-    [FunLike F M N] [MonoidHomClass F M N] (f : F) : (map f l).prod' = f l.prod' := by
-  simp only [prod', foldr_map, ← map_one f]
-  exact l.foldr_hom f (fun x y => (map_mul f y x).symm)
-
-theorem _root_.map_list_prod' {M : Type*} {N : Type*} [Monoid M] [Monoid N] {F : Type*}
-    [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
-    f l.prod' = (map (⇑f) l).prod' :=
-  (l.prod'_hom f).symm
-
--- Do we need the ℕ exponent at all?
-theorem prod'_pow {β : Type*} [CommMonoid β] {r : ℕ} {l : List β} :
-    l.prod' ^ r = (map (fun x ↦ x ^ r) l).prod' :=
-  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_pow r⟩, (mul_pow · · r)⟩
-  map_list_prod' fr l
-
 /-- Cancellation of a telescoping product. -/
 @[to_additive /-- Cancellation of a telescoping sum. -/]
 theorem prod_range_div (n : ℕ) (f : ℕ → G) :
