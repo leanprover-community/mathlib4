@@ -740,8 +740,7 @@ lemma MeromorphicAt.comp_analyticAt {g : 𝕜 → 𝕜}
     filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top.mp hg'] with z hz
     grind
   · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
-    rw [← Ne, WithTop.ne_top_iff_exists] at hg'
-    obtain ⟨n, hn⟩ := hg'
+    obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
     obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
     refine ⟨n * r, (((han.fun_inv hne).pow r).smul (hr.comp hg)).congr ?_⟩
     filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
