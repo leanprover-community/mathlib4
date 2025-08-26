@@ -129,8 +129,7 @@ lemma map'_map' {p : ℕ} (f : Fin (n + 1) →o Fin (m + 1))
           exact g.monotone (by simpa using hz.1)
         · intro i hi
           exact hy.2 (f i) (by simpa using hz.2 i hi)
-      · symm
-        rw [hz]
+      · rw [hz, Eq.comm]
         rw [map'_eq_last_iff] at hz ⊢
         intro i
         exact hy.2 (f i) (by simpa using hz i)
