@@ -231,7 +231,7 @@ noncomputable def coinvariantsFinsuppLEquiv :
 
 @[simp]
 lemma coinvariantsFinsuppLEquiv_apply (x : Coinvariants (ρ.finsupp α)) :
-    coinvariantsFinsuppLEquiv ρ α x = coinvariantsToFinsupp ρ α x := by rfl
+    coinvariantsFinsuppLEquiv ρ α x = coinvariantsToFinsupp ρ α x := rfl
 
 end Finsupp
 
