@@ -692,7 +692,7 @@ nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι]
     · exact h.1 i hi
     · exact h.2 i (Finset.mem_compl.2 hi)
   · specialize h t₁ (fun i => if i ∈ t₁ ∨ i ∈ t₂ then f i else 0) ?_
-    · rw [← Finset.sum_subset (ht₁t₂.le_compl_left)]
+    · rw [← Finset.sum_subset ht₁t₂.le_compl_left]
       · convert heq using 2 with i hi i hi <;> simp [hi]
       · intro i hi hi'
         simp [Finset.mem_compl.1 hi, hi']
