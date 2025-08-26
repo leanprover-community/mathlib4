@@ -673,14 +673,14 @@ theorem linearIndependent_iffₒₛ :
 theorem not_linearIndependent_iffₒₛ :
     ¬ LinearIndependent R v ↔
       ∃ (s t : Finset ι) (f : ι → R),
-        ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i ∧ Disjoint s t ∧ ∃ i ∈ s, 0 < f i := by
+        Disjoint s t ∧ ∑ i ∈ s, f i • v i = ∑ i ∈ t, f i • v i ∧ ∃ i ∈ s, 0 < f i := by
   simp only [linearIndependent_iffₒₛ, pos_iff_ne_zero]
   set_option push_neg.use_distrib true in push_neg
   refine ⟨fun ⟨s, t, f, hst, heq, h⟩ => ?_,
-    fun ⟨s, t, f, heq, hst, hi⟩ => ⟨s, t, f, hst, heq, .inl hi⟩⟩
+    fun ⟨s, t, f, hst, heq, hi⟩ => ⟨s, t, f, hst, heq, .inl hi⟩⟩
   rcases h with ⟨i, hi, hfi⟩ | ⟨i, hi, hgi⟩
-  · exact ⟨s, t, f, heq, hst, i, hi, hfi⟩
-  · exact ⟨t, s, f, heq.symm, hst.symm, i, hi, hgi⟩
+  · exact ⟨s, t, f, hst, heq, i, hi, hfi⟩
+  · exact ⟨t, s, f, hst.symm, heq.symm, i, hi, hgi⟩
 
 nonrec theorem Fintype.linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
     LinearIndependent R v ↔ ∀ t, ∀ (f : ι → R),
