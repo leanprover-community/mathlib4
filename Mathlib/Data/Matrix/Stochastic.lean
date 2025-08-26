@@ -5,9 +5,10 @@ Authors: Steven Herbert
 -/
 
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
 
 /-!
-# StochasticMatrix
+# Stochastic matrices
 
 This file gives the key definitions and results about matrices that are
 (possibly) only singly stochastic (both row and column).
@@ -20,7 +21,7 @@ This file gives the key definitions and results about matrices that are
 ## Main statements
 
 * `pdist_vecMul_of_mem_rowStochastic` if a row stochastic matrix is applied to
-  a positive vector with unit `ℓ₁`-norm (informally, a probility distributio)
+  a positive vector with unit `ℓ₁`-norm (informally, a probility distribution)
   then the result is also a positive vector with unit `ℓ₁`-norm
 
 -/
@@ -44,14 +45,8 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
     Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1  }
   mul_mem' {M N} hM hN := by
-    refine Set.mem_sep ?_ ?_
-    · intro i j
-      apply Finset.sum_nonneg
-      intro k _
-      apply mul_nonneg
-      · exact hM.1 i k
-      · exact hN.1 k j
-    · rw [← mulVec_mulVec, hN.2, hM.2]
+    refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_⟩
+    next => rw [← mulVec_mulVec, hN.2, hM.2]
   one_mem' := by
     simp [zero_le_one_elem]
 
@@ -61,8 +56,7 @@ lemma mem_rowStochastic :
 
 /-- A square matrix is row stochastic if each element is non-negative and row sums to one. -/
 lemma mem_rowStochastic_iff_sum :
-    M ∈ rowStochastic R n ↔
-      (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) := by
+    M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) := by
   simp [funext_iff, rowStochastic, mulVec, dotProduct]
 
 /-- Every entry of a row stochastic matrix is nonnegative. -/
@@ -204,24 +198,8 @@ lemma pdist_mulVec_of_mem_colStochastic (hM : M ∈ colStochastic R n)
 /-- A matrix is column stochastic if and only if its transpose is row stochastic. -/
 lemma colStochastic_iff_transpose_rowStochastic :
     M ∈ colStochastic R n ↔ Mᵀ ∈ rowStochastic R n := by
-  constructor
-  · intro hM
-    have hM₁ : (∀ i j, 0 ≤ M i j) ∧ (∀ j, ∑ i, M i j = 1) := mem_colStochastic_iff_sum.mp hM
-    have hM₂ : (∀ i, ∑ j, Mᵀ i j = 1) := by aesop
-    have hM₃ : ∀ i j, 0 ≤ Mᵀ i j := by
-      refine fun i j ↦ ?_
-      have : ∀ i j, 0 ≤ M i j := hM.1
-      aesop
-    rw [mem_rowStochastic_iff_sum]
-    exact ⟨hM₃, hM₂⟩
-  · intro hM
-    have hM₁ : (∀ i j, 0 ≤ Mᵀ i j) ∧ (∀ i, ∑ j, Mᵀ i j = 1) := mem_rowStochastic_iff_sum.mp hM
-    have hM₂ : (∀ i, ∑ j, Mᵀ i j = 1) := by aesop
-    have hM₃ : ∀ i j, 0 ≤ M i j := by
-      refine fun i j ↦ ?_
-      have : ∀ i j, 0 ≤ Mᵀ i j := hM.1
-      aesop
-    rw [mem_colStochastic_iff_sum]
-    exact ⟨hM₃, hM₂⟩
+  simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
+    and_congr_left_iff]
+  exact fun _ ↦ forall_swap
 
 end Stochastic

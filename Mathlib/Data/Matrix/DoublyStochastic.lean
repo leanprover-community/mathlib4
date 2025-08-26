@@ -106,23 +106,12 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
 
 /-- A matrix is doubly stochastic if and only if it is both row and
 column stochastic. -/
-lemma doublyStochastic_iff_rowStochastic_and_colStochastic :
-    M ∈ doublyStochastic R n ↔ (M ∈ rowStochastic R n) ∧ M ∈ colStochastic R n := by
-  constructor
-  · intro hM
-    constructor
-    · constructor
-      · exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
-      · exact mulVec_one_of_mem_doublyStochastic hM
-    · constructor
-      · exact fun i j ↦ nonneg_of_mem_doublyStochastic hM
-      · exact one_vecMul_of_mem_doublyStochastic hM
-  · intro hM
-    constructor
-    · exact (hM.1).1
-    · constructor
-      · exact (hM.1).2
-      · exact (hM.2).2
+lemma rowStochastic_inf_colStochastic :
+    rowStochastic R n ⊓ colStochastic R n = doublyStochastic R n := by
+  ext M
+  simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    Set.mem_setOf_eq, doublyStochastic]
+  grind
 
 /-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
 lemma mem_doublyStochastic_iff_transpose :
