@@ -100,8 +100,8 @@ lemma nonneg_mulVec_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
   refine Left.mul_nonneg ?_ (hx k)
   exact nonneg_of_mem_rowStochastic hM
 
-
-lemma mulVec_dotProduct_one_eq_one (hM : M ∈ rowStochastic R n)
+/-- Left left-multiplication by row stochastic preserves `ℓ₁ norm` -/
+lemma vecMul_dotProduct_one_eq_one_rowStochastic (hM : M ∈ rowStochastic R n)
     (hx : x ⬝ᵥ 1 = 1) : (x ᵥ* M) ⬝ᵥ 1 = 1 := by
   rw [← dotProduct_mulVec, hM.2, hx]
 
@@ -175,24 +175,10 @@ lemma nonneg_vecMul_of_mem_colStochastic (hM : M ∈ colStochastic R n)
   refine Left.mul_nonneg (hx k) ?_
   exact nonneg_of_mem_colStochastic hM
 
-/-- Right multiplication of a column stochastic matrix by a vector that is a
-probability distribution gives a vector that is a probability distribution. -/
-lemma pdist_mulVec_of_mem_colStochastic (hM : M ∈ colStochastic R n)
-    (hx : (∀ i : n, 0 ≤ x i) ∧ ∑ i : n, x i = 1) :
-    (∀ j : n, 0 ≤ (M *ᵥ x) j) ∧ ∑ j : n, (M *ᵥ x) j = 1 := by
-  constructor
-  · exact nonneg_mulVec_of_mem_colStochastic hM hx.1
-  · have h₀ : ∑ i : n, x i = 1 ⬝ᵥ x := by
-      exact Eq.symm (one_dotProduct x)
-    rw [h₀] at hx
-    have h₁ : ∑ j : n, (M *ᵥ x) j = 1 ⬝ᵥ (M *ᵥ x) := by
-      exact Eq.symm (one_dotProduct (M *ᵥ x))
-    rw [h₁]
-    have h₂ : 1 ⬝ᵥ M *ᵥ x = (1 ᵥ* M) ⬝ᵥ x := dotProduct_mulVec 1 M x
-    rw [h₂]
-    have h₃ : 1 ᵥ* M = 1 := one_vecMul_of_mem_colStochastic hM
-    rw [h₃]
-    exact hx.2
+/-- Left left-multiplication by column stochastic preserves `ℓ₁ norm` -/
+lemma mulVec_dotProduct_one_eq_one_colStochastic (hM : M ∈ colStochastic R n)
+    (hx : 1 ⬝ᵥ x = 1) : 1  ⬝ᵥ (M  *ᵥ x) = 1 := by
+  rw [dotProduct_mulVec, hM.2, hx]
 
 
 /-- A matrix is column stochastic if and only if its transpose is row stochastic. -/
