@@ -14,10 +14,12 @@ see `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`.
 
 namespace Matrix
 
-open Matrix
+open Matrix LinearMap
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
+/-- This takes in a non-unital algebra homomorphism `f` and vectors `y, z : n → R`
+and constructs a linear operator on `(n → R)` such that `x ↦ f (vecMulVec x y) *ᵥ z`. -/
 private def NonUnitalAlgHom.apply_vecMulVec_mulVec [Semiring R]
     (f : (Matrix n n R) →ₙₐ[R] Matrix n n R) (y z : n → R) :
     (n → R) →ₗ[R] n → R where
@@ -25,7 +27,7 @@ private def NonUnitalAlgHom.apply_vecMulVec_mulVec [Semiring R]
   map_add' w p := by simp_rw [add_vecMulVec, map_add, add_mulVec]
   map_smul' w r := by simp_rw [smul_vecMulVec, map_smul, smul_mulVec, RingHom.id_apply]
 
-private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_mul [CommSemiring R]
+private theorem NonUnitalAlgHom.toMatrix'_apply_vecMulVec_mulVec_mul [CommSemiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
     (f.apply_vecMulVec_mulVec y z).toMatrix' * A
     = f A * (f.apply_vecMulVec_mulVec y z).toMatrix' := toLin'.injective <| LinearMap.ext fun x =>
@@ -50,22 +52,20 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
   obtain hn | hn := isEmpty_or_nonempty n
   · exact ⟨1, funext fun a => Matrix.ext fun i => isEmpty_iff.mp hn i |>.elim⟩
   simp_rw [funext_iff, @eq_comm _ (f _), Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
-  obtain ⟨u, y, hu, hy⟩ : ∃ u y : n → R, u ≠ 0 ∧ y ≠ 0 := ⟨1, 1, one_ne_zero, one_ne_zero⟩
-  obtain ⟨z, hz⟩ : ∃ z : n → R, f (vecMulVec u y) *ᵥ z ≠ 0 := by
+  obtain ⟨u, v, hu, hv⟩ : ∃ u v : n → R, u ≠ 0 ∧ v ≠ 0 := ⟨1, 1, one_ne_zero, one_ne_zero⟩
+  obtain ⟨z, hz⟩ : ∃ z : n → R, f (vecMulVec u v) *ᵥ z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
-    suffices ¬ f (vecMulVec u y) = 0 by
-      rwa [← LinearMap.toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff,
-        LinearMap.ext_iff] at this
+    suffices ¬ f (vecMulVec u v) = 0 by
+      rwa [← toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff] at this
     rw [← ne_eq, EmbeddingLike.map_ne_zero_iff]
     simp only [Ne, ← ext_iff, vecMulVec_apply, zero_apply, mul_eq_zero, not_forall, not_or,
       exists_and_left, exists_and_right]
-    exact ⟨Function.ne_iff.mp hu, Function.ne_iff.mp hy⟩
-  let T := f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec y z
+    exact ⟨Function.ne_iff.mp hu, Function.ne_iff.mp hv⟩
+  let T := f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec v z
   have this A : T.toMatrix' * A = f A * T.toMatrix' :=
-    f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec_mul y z A
+    f.toAlgHom.toNonUnitalAlgHom.toMatrix'_apply_vecMulVec_mulVec_mul v z A
   suffices hM : IsUnit T.toMatrix' from ⟨hM.unit, fun A => this A |>.symm⟩
-  simp_rw [← isUnit_toLin'_iff, toLin'_toMatrix', LinearMap.isUnit_iff_range_eq_top,
-    LinearMap.range_eq_top]
+  simp_rw [← isUnit_toLin'_iff, toLin'_toMatrix', isUnit_iff_range_eq_top, range_eq_top]
   intro w
   obtain ⟨B, hB⟩ : ∃ B : Matrix n n R, f B *ᵥ T u = w := by
     obtain ⟨d, hd⟩ : ∃ d : n → R, T u ⬝ᵥ d = 1 := by
@@ -81,9 +81,8 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
     simp_rw [mulVec, Pi.one_apply, ← hd, dotProduct, replicateRow_apply, mul_comm]
   use (toLin' B) u
   rw [← toLin'_toMatrix' T]
-  simp_rw [toLin'_apply, mulVec_mulVec, this, ← mulVec_mulVec,
-    ← toLin'_apply T.toMatrix', toLin'_toMatrix']
-  exact hB
+  simp_rw [toLin'_apply, mulVec_mulVec, this, ← mulVec_mulVec, ← toLin'_apply T.toMatrix',
+    toLin'_toMatrix', hB]
 
 section Examples
 
