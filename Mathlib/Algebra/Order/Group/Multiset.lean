@@ -186,7 +186,7 @@ theorem le_smul_dedup [DecidableEq α] (s : Multiset α) : ∃ n : ℕ, s ≤ n 
   ⟨(s.map fun a => count a s).fold max 0,
     le_iff_count.2 fun a => by
       rw [count_nsmul]; by_cases h : a ∈ s
-      · refine le_trans ?_ (Nat.mul_le_mul_left _ <| count_pos.2 <| mem_dedup.2 h)
+      · grw [← one_le_count_iff_mem.2 <| mem_dedup.2 h]
         have : count a s ≤ fold max 0 (map (fun a => count a s) (a ::ₘ erase s a)) := by
           simp
         rw [cons_erase h] at this

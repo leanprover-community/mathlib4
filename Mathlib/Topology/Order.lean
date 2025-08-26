@@ -378,9 +378,11 @@ theorem gc_coinduced_induced (f : α → β) :
     GaloisConnection (TopologicalSpace.coinduced f) (TopologicalSpace.induced f) := fun _ _ =>
   coinduced_le_iff_le_induced
 
+@[gcongr]
 theorem induced_mono (h : t₁ ≤ t₂) : t₁.induced g ≤ t₂.induced g :=
   (gc_coinduced_induced g).monotone_u h
 
+@[gcongr]
 theorem coinduced_mono (h : t₁ ≤ t₂) : t₁.coinduced f ≤ t₂.coinduced f :=
   (gc_coinduced_induced f).monotone_l h
 
