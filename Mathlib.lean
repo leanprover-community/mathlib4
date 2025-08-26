@@ -4195,6 +4195,7 @@ import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.LinearAlgebra.Matrix.StarAlgEquiv
 import Mathlib.LinearAlgebra.Matrix.StdBasis
 import Mathlib.LinearAlgebra.Matrix.Swap
 import Mathlib.LinearAlgebra.Matrix.Symmetric
