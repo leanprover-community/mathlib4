@@ -493,9 +493,6 @@ theorem single_commute [Mul G] {a : G} {b : k} (ha : ∀ a', Commute a a') (hb :
     DFunLike.congr_fun this
   addHom_ext' fun a' => AddMonoidHom.ext fun b' => single_commute_single (ha a') (hb b')
 
--- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
--- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
--- instead of relying on `Finsupp.single`.
 @[to_additive (dont_translate := k) (attr := simp) single_pow]
 theorem single_pow [Monoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (a ^ n) (b ^ n)
   | 0 => by
@@ -606,7 +603,7 @@ theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlge
   single_commute Commute.one_left (Commute.all _) f
 
 /-- `Finsupp.single 1` as a `RingHom` -/
-@[to_additive (dont_translate := k) (attr := simps)]
+@[to_additive (dont_translate := k) (attr := simps) /-- `Finsupp.single 0` as a `RingHom` -/]
 def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
   { singleAddHom 1 with
     toFun := single 1

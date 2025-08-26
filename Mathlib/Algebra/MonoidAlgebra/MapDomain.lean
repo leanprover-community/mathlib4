@@ -58,7 +58,9 @@ variable [Monoid M] [Monoid N] [Monoid O]
 variable (R) in
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `Finsupp.mapDomain f` is a ring homomorphism between their monoid algebras. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /--
+If `f : G → H` is a multiplicative homomorphism between two monoids, then
+`Finsupp.mapDomain f` is a ring homomorphism between their monoid algebras. -/]
 def mapDomainRingHom {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     MonoidAlgebra R M →+* MonoidAlgebra R N where
   __ : MonoidAlgebra R M →+ MonoidAlgebra R N := Finsupp.mapDomain.addMonoidHom f
