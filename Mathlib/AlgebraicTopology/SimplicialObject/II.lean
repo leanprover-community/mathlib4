@@ -120,8 +120,7 @@ lemma map'_map' {p : ℕ} (f : Fin (n + 1) →o Fin (m + 1))
     · rw [hy]
       rw [map'_eq_castSucc_iff] at hy
       obtain ⟨z, hz⟩ | hz := Fin.eq_castSucc_or_eq_last (map' f y.castSucc)
-      · symm
-        rw [hz]
+      · rw [hz, Eq.comm]
         rw [map'_eq_castSucc_iff] at hz ⊢
         constructor
         · refine hy.1.trans ?_
