@@ -742,8 +742,9 @@ lemma MeromorphicAt.comp_analyticAt {g : 𝕜 → 𝕜}
   · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
     obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp hg'
     obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
-    refine ⟨n * r, (((han.fun_inv hne).pow r).smul (hr.comp hg)).congr ?_⟩
+    set j := fun z ↦ (z - g x) ^ r • f z
+    have : AnalyticAt 𝕜 (fun z ↦ (h z)⁻¹ ^ r • j (g z)) x := by fun_prop (disch := assumption)
+    refine ⟨n * r, this.congr ?_⟩
     filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
-    simp only [Pi.smul_apply', Pi.pow_apply, inv_pow, Function.comp_apply]
-    rw [inv_smul_eq_iff₀ (pow_ne_zero r hzne), ← mul_smul (h z ^ r), mul_comm, pow_mul,
-      ← mul_pow, ← smul_eq_mul, ← hz]
+    simp only [inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
+    rw [← mul_smul (h z ^ r), mul_comm, pow_mul, ← mul_pow, ← smul_eq_mul, ← hz]
