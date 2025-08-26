@@ -3290,7 +3290,6 @@ import Mathlib.Data.Matrix.Diagonal
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.PEquiv
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Matroid.Basic
@@ -4186,6 +4185,7 @@ import Mathlib.LinearAlgebra.Matrix.LDL
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
 import Mathlib.LinearAlgebra.Matrix.Permanent
 import Mathlib.LinearAlgebra.Matrix.Permutation
