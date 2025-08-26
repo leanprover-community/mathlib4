@@ -132,8 +132,7 @@ lemma map'_map' {p : ℕ} (f : Fin (n + 1) →o Fin (m + 1))
         rw [map'_eq_last_iff] at hz ⊢
         intro i
         exact hy.2 (f i) (by simpa using hz i)
-    · symm
-      rw [hx, map'_last]
+    · rw [Eq.comm, hx, map'_last]
       rw [map'_eq_last_iff] at hx ⊢
       intro i
       apply hx
