@@ -448,6 +448,7 @@ import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Group.Units.Opposite
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
+import Mathlib.Algebra.Group.WithOne.Map
 import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.Algebra.GroupWithZero.Action.ConjAct
@@ -1579,6 +1580,7 @@ import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
@@ -3287,7 +3289,6 @@ import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Matrix.Diagonal
-import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Data.Matrix.DualNumber
 import Mathlib.Data.Matrix.Hadamard
 import Mathlib.Data.Matrix.Invertible
@@ -5129,6 +5130,7 @@ import Mathlib.Probability.CDF
 import Mathlib.Probability.CondVar
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
+import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Exponential
 import Mathlib.Probability.Distributions.Gamma
