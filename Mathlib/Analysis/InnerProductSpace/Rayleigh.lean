@@ -64,7 +64,6 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
   ext a
   constructor
   · rintro ⟨x, hx : x ≠ 0, hxT⟩
-    have : ‖x‖ ≠ 0 := by simp [hx]
     let c : 𝕜 := ↑‖x‖⁻¹ * r
     have : c ≠ 0 := by simp [c, hx, hr.ne']
     refine ⟨c • x, ?_, ?_⟩
