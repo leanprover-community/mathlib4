@@ -78,6 +78,11 @@ variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M]
 
 example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m (X m)) := rfl
 
+-- Applying a section to an argument. TODO: beta-reduce instead!
+/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check (T% X) x
+
 end TotalSpace
 
 -- Elaborators for MDifferentiable{WithinAt,At,On}.
