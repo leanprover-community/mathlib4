@@ -3,9 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Analysis.Complex.FiniteDimensional
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.Analysis.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Orientation
 import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.Tactic.LinearCombination
