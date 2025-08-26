@@ -108,7 +108,7 @@ variable {S : Type*} [CommSemiring S] [PartialOrder S]
 
 /-- A vector is in the same ray as a nonnegative multiple of itself. -/
 lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) := by
-  obtain h | h := (algebraMap_nonneg R h).eq_or_gt
+  obtain h | h := (algebraMap_nonneg R h).eq_or_lt'
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
@@ -205,7 +205,7 @@ instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
     ⟨fun _ => SameRay.refl _, fun h => h.symm, by
-      intros x y z hxy hyz
+      intro x y z hxy hyz
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/

@@ -63,6 +63,9 @@ lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r +
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
 
+lemma turanGraph_adj {v w} :
+  (turanGraph n r).Adj v w ↔ v % r ≠ w % r := by rfl
+
 instance turanGraph.instDecidableRelAdj : DecidableRel (turanGraph n r).Adj := by
   dsimp only [turanGraph]; infer_instance
 
@@ -109,7 +112,7 @@ lemma exists_isTuranMaximal (hr : 0 < r) :
   classical
   let c := {H : SimpleGraph V | H.CliqueFree (r + 1)}
   have cn : c.toFinset.Nonempty := ⟨⊥, by
-    simp only [Set.toFinset_setOf, mem_filter, mem_univ, true_and, c]
+    rw [Set.toFinset_setOf, mem_filter_univ]
     exact cliqueFree_bot (by omega)⟩
   obtain ⟨S, Sm, Sl⟩ := exists_max_image c.toFinset (#·.edgeFinset) cn
   use S, inferInstance
@@ -252,7 +255,8 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
-    intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
+    #adaptation_note /-- 2025-07-19 added `-congrConsts` -/
+    intro z zc; push_neg; simp_rw -congrConsts [h.not_adj_iff_part_eq]
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y

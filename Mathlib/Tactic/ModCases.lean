@@ -74,16 +74,14 @@ partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (
     let (pr, acc) ← proveOnModCases n a b1 p
     pure (q(onModCases_succ $b $g $pr), g.mvarId! :: acc)
 
-#adaptation_note /-- kmill 2025-06-28 Added `unusedHavesSuffices` since `p₁` is "unused". -/
 /--
 Int case of `mod_cases h : e % n`.
 -/
-@[nolint unusedHavesSuffices]
 def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℤ)) (n : ℕ) : TacticM Unit := do
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   have p₁ : Nat.ble 1 $lit =Q true := ⟨⟩
-  let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
+  let (p₂, gs) ← proveOnModCases lit e q(nat_lit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
     | `(binderIdent| $n:ident) => g.intro n.getId
@@ -158,7 +156,7 @@ def modCases (h : TSyntax `Lean.binderIdent) (e : Q(ℕ)) (n : ℕ) : TacticM Un
   let ⟨u, p, g⟩ ← inferTypeQ (.mvar (← getMainGoal))
   have lit : Q(ℕ) := mkRawNatLit n
   let p₁ : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-  let (p₂, gs) ← proveOnModCases lit e (mkRawNatLit 0) p
+  let (p₂, gs) ← proveOnModCases lit e q(nat_lit 0) p
   let gs ← gs.mapM fun g => do
     let (fvar, g) ← match h with
     | `(binderIdent| $n:ident) => g.intro n.getId

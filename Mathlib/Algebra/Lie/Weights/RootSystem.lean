@@ -381,7 +381,7 @@ field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
     RootSystem H.root K (Dual K H) H :=
   RootSystem.mk'
-    IsReflexive.toPerfectPairingDual
+    .id
     { toFun := (↑)
       inj' := by
         intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
@@ -402,8 +402,7 @@ lemma corootForm_rootSystem_eq_killing :
   rw [restrict_killingForm_eq_sum, RootPairing.CorootForm, ← Finset.sum_coe_sort (s := H.root)]
   rfl
 
-@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
-  rfl
+@[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
@@ -429,10 +428,9 @@ section IsSimple
 variable [IsSimple K L]
 
 open Weight in
-lemma eq_top_of_invtSubmodule_ne_bot
-   (q : Submodule K (Dual K H))
-   (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-   (h₁ : q ≠ ⊥) : q = ⊤ := by
+lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
+    (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
+    (h₁ : q ≠ ⊥) : q = ⊤ := by
   have _i := nontrivial_of_isIrreducible K L L
   let S := rootSystem H
   by_contra h₃
@@ -454,14 +452,8 @@ lemma eq_top_of_invtSubmodule_ne_bot
   have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
   have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     by_contra h
-    have i_non_zero : i.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
-    have j_non_zero : j.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
+    have i_non_zero : i.1.IsNonZero := by grind
+    have j_non_zero : j.1.IsNonZero := by grind
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
@@ -470,7 +462,7 @@ lemma eq_top_of_invtSubmodule_ne_bot
         simp at this; exact this)
       have := s₂ i j h₁ h₂
       rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
-      field_simp at this
+      simp at this
     have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
     | inl hl =>
@@ -587,9 +579,7 @@ lemma eq_top_of_invtSubmodule_ne_bot
   have c₂ : I' ≠ ⊥ := by
     rw [← h] at s₆
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
-  rcases this with h_bot | h_top
-  · contradiction
-  · contradiction
+  grind
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L

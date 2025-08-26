@@ -27,7 +27,7 @@ at `t • x` when `t ≠ 0`.
 * `DifferentiableAt.fderiv_norm_self`: if the norm is differentiable at `x`,
   then `fderiv ℝ (‖·‖) x x = ‖x‖`.
 * `norm_fderiv_norm`: if the norm is differentiable at `x` then the operator norm of its derivative
-  is `1` (on a non trivial space).
+  is `1` (on a non-trivial space).
 
 ## Tags
 
@@ -38,7 +38,7 @@ differentiability, norm
 open ContinuousLinearMap Filter NNReal Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {n : WithTop ℕ∞} {f : E →L[ℝ] ℝ} {x : E} {t : ℝ}
+variable {n : WithTop ℕ∞} {f : StrongDual ℝ E} {x : E} {t : ℝ}
 
 variable (E) in
 theorem not_differentiableAt_norm_zero [Nontrivial E] :
@@ -162,9 +162,9 @@ theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖
   · conv_lhs => enter [1, 1]; change _root_.abs ∘ (fun t ↦ 1 + t)
     rw [deriv_comp, deriv_abs, deriv_const_add]
     · simp
-    · exact differentiableAt_abs (by norm_num)
+    · exact differentiableAt_abs (by simp)
     · exact differentiableAt_id.const_add _
-  · exact (differentiableAt_abs (by norm_num)).comp _ (differentiableAt_id.const_add _)
+  · exact (differentiableAt_abs (by simp)).comp _ (differentiableAt_id.const_add _)
 
 variable (x t) in
 theorem fderiv_norm_smul :

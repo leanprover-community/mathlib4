@@ -248,7 +248,7 @@ theorem fiber_card_ne_zero_iff_mem_image (s : Finset α) (f : α → β) [Decida
 
 lemma card_filter_le_iff (s : Finset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
     #(s.filter P) ≤ n ↔ ∀ s' ⊆ s, n < #s' → ∃ a ∈ s', ¬ P a :=
-  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by aesop) h,
+  (s.1.card_filter_le_iff P n).trans ⟨fun H s' hs' h ↦ H s'.1 (by simp_all) h,
     fun H s' hs' h ↦ H ⟨s', nodup_of_le hs' s.2⟩ (fun _ hx ↦ Multiset.subset_of_le hs' hx) h⟩
 
 @[simp]
@@ -283,7 +283,7 @@ theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
 
 theorem card_filter_eq_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = #s ↔ ∀ x ∈ s, p x := by
-  rw [(card_filter_le s p).eq_iff_not_lt, not_lt, eq_iff_card_le_of_subset (filter_subset p s),
+  rw [← (card_filter_le s p).ge_iff_eq, eq_iff_card_le_of_subset (filter_subset p s),
     filter_eq_self]
 
 alias ⟨filter_card_eq, _⟩ := card_filter_eq_iff
@@ -292,6 +292,7 @@ theorem card_filter_eq_zero_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = 0 ↔ ∀ x ∈ s, ¬ p x := by
   rw [card_eq_zero, filter_eq_empty_iff]
 
+@[gcongr]
 nonrec lemma card_lt_card (h : s ⊂ t) : #s < #t := card_lt_card <| val_lt_iff.2 h
 
 lemma card_strictMono : StrictMono (card : Finset α → ℕ) := fun _ _ ↦ card_lt_card
@@ -430,7 +431,9 @@ lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
 
 /-- If there are more pigeons than pigeonholes, then there are two pigeons in the same pigeonhole.
--/
+
+See also `Set.exists_ne_map_eq_of_encard_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
 theorem exists_ne_map_eq_of_card_lt_of_maps_to (hc : #t < #s) {f : α → β}
     (hf : Set.MapsTo f s t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
@@ -478,7 +481,7 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
   exact ⟨a, a.2, rfl⟩
 
 /--
-Given a surjectiive map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
+Given a surjective map `f` from a finite set `s` to another finite set `t`, if `s` is no larger
 than `t`, then `f` is injective when restricted to `s`.
 See `Finset.inj_on_of_surj_on_of_card_le` for the version where `f` is a dependent function.
 -/
@@ -660,7 +663,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
   · simp
-  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).le_iff_eq.trans (card_eq_one.trans ⟨?_, ?_⟩)
+  refine (Nat.succ_le_of_lt (card_pos.2 ⟨x, hx⟩)).ge_iff_eq'.trans (card_eq_one.trans ⟨?_, ?_⟩)
   · rintro ⟨y, rfl⟩
     simp
   · exact fun h => ⟨x, eq_singleton_iff_unique_mem.2 ⟨hx, fun y hy => h _ hy _ hx⟩⟩
@@ -703,11 +706,7 @@ theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
-theorem exists_ne_of_one_lt_card (hs : 1 < #s) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
-  obtain ⟨x, hx, y, hy, hxy⟩ := Finset.one_lt_card.mp hs
-  by_cases ha : y = a
-  · exact ⟨x, hx, ne_of_ne_of_eq hxy ha⟩
-  · exact ⟨y, hy, ha⟩
+@[deprecated (since := "2025-08-14")] alias exists_ne_of_one_lt_card := exists_mem_ne
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection
@@ -757,6 +756,19 @@ theorem card_eq_three : #s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z �
     simp only [xy, xz, yz, mem_insert, card_insert_of_notMem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 
+theorem card_eq_four : #s = 4 ↔
+    ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
+  constructor
+  · rw [card_eq_succ]
+    simp_rw [card_eq_three]
+    rintro ⟨a, _, abcd, rfl, b, c, d, bc, bd, cd, rfl⟩
+    simp_rw [mem_insert, mem_singleton, not_or] at abcd
+    exact ⟨a, b, c, d, abcd.1, abcd.2.1, abcd.2.2, bc, bd, cd, rfl⟩
+  · rintro ⟨x, y, z, w, xy, xz, xw, yz, yw, zw, rfl⟩
+    simp only [xy, xz, xw, yz, yw, zw, mem_insert,
+      card_insert_of_notMem, not_false_iff, mem_singleton,
+      or_self_iff, card_singleton]
+
 end DecidableEq
 
 theorem two_lt_card_iff : 2 < #s ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
@@ -771,6 +783,22 @@ theorem two_lt_card_iff : 2 < #s ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s 
 
 theorem two_lt_card : 2 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   simp_rw [two_lt_card_iff, exists_and_left]
+
+theorem three_lt_card_iff : 3 < #s ↔
+    ∃ a b c d, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ d ∈ s ∧
+    a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+  classical
+    simp_rw [lt_iff_add_one_le, le_card_iff_exists_subset_card, reduceAdd, card_eq_four,
+      ← exists_and_left, exists_comm (α := Finset α)]
+    constructor
+    · rintro ⟨a, b, c, d, t, hsub, hab, hac, had, hbc, hbd, hcd, rfl⟩
+      exact ⟨a, b, c, d, by simp_all [insert_subset_iff]⟩
+    · rintro ⟨a, b, c, d, ha, hb, hc, hd, hab, hac, had, hbc, hbd, hcd⟩
+      exact ⟨a, b, c, d, {a, b, c, d}, by simp_all [insert_subset_iff]⟩
+
+theorem three_lt_card : 3 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, ∃ d ∈ s,
+    a ≠ b ∧ a ≠ c ∧ a ≠ d ∧ b ≠ c ∧ b ≠ d ∧ c ≠ d := by
+  simp_rw [three_lt_card_iff, exists_and_left]
 
 /-! ### Inductions -/
 
