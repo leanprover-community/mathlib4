@@ -84,7 +84,7 @@ lemma cochainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
   rfl
 
 @[simp]
-lemma cochainsMap_zero : cochainsMap (A := A) (B := B) f 0 = 0 := by rfl
+lemma cochainsMap_zero : cochainsMap (A := A) (B := B) f 0 = 0 := rfl
 
 lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap f φ).f i) := by

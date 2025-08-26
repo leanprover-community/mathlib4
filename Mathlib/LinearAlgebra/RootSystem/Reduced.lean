@@ -185,7 +185,7 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
   suffices P.coxeterWeight i j • P.root i = (4 : R) • P.root i from
     smul_left_injective R (P.ne_zero i) this
   calc P.coxeterWeight i j • P.root i
-      = (P.pairing i j * P.pairing j i) • P.root i := by rfl
+      = (P.pairing i j * P.pairing j i) • P.root i := rfl
     _ = P.pairing i j • (2 : R) • P.root j := by rw [mul_smul, h₁]
     _ = (4 : R) • P.root i := by rw [smul_comm, h₂, ← mul_smul]; norm_num
 

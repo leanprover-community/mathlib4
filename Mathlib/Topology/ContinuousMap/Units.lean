@@ -51,8 +51,7 @@ lemma unitsLift_apply_inv_apply (f : C(X, Mˣ)) (x : X) :
 
 @[to_additive (attr := simp)]
 lemma unitsLift_symm_apply_apply_inv' (f : C(X, M)ˣ) (x : X) :
-    (ContinuousMap.unitsLift.symm f x)⁻¹ = (↑f⁻¹ : C(X, M)) x := by
-  rfl
+    (ContinuousMap.unitsLift.symm f x)⁻¹ = (↑f⁻¹ : C(X, M)) x := rfl
 
 end Monoid
 

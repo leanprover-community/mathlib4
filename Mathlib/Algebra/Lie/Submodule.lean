@@ -385,8 +385,7 @@ instance : SupSet (LieSubmodule R L M) where
 
 @[norm_cast, simp]
 theorem sup_toSubmodule :
-    (↑(N ⊔ N') : Submodule R M) = (N : Submodule R M) ⊔ (N' : Submodule R M) := by
-  rfl
+    (↑(N ⊔ N') : Submodule R M) = (N : Submodule R M) ⊔ (N' : Submodule R M) := rfl
 
 @[simp]
 theorem sSup_toSubmodule (S : Set (LieSubmodule R L M)) :

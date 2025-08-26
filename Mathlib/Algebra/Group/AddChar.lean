@@ -100,8 +100,7 @@ initialize_simps_projections AddChar (toFun → apply) -- needs to come after Fu
 
 @[simp] lemma coe_mk (f : A → M)
     (map_zero_eq_one' : f 0 = 1) (map_add_eq_mul' : ∀ a b : A, f (a + b) = f a * f b) :
-    AddChar.mk f map_zero_eq_one' map_add_eq_mul' = f := by
-  rfl
+    AddChar.mk f map_zero_eq_one' map_add_eq_mul' = f := rfl
 
 /-- An additive character maps `0` to `1`. -/
 @[simp] lemma map_zero_eq_one (ψ : AddChar A M) : ψ 0 = 1 := ψ.map_zero_eq_one'

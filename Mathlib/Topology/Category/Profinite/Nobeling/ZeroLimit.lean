@@ -173,7 +173,7 @@ def range_equiv_smaller (o : Ordinal) : range (π C (ord I · < o)) ≃ smaller 
 
 theorem smaller_factorization (o : Ordinal) :
     (fun (p : smaller C o) ↦ p.1) ∘ (range_equiv_smaller C o).toFun =
-    (πs C o) ∘ (fun (p : range (π C (ord I · < o))) ↦ p.1) := by rfl
+    (πs C o) ∘ (fun (p : range (π C (ord I · < o))) ↦ p.1) := rfl
 
 theorem linearIndependent_iff_smaller (o : Ordinal) :
     LinearIndependent ℤ (GoodProducts.eval (π C (ord I · < o))) ↔

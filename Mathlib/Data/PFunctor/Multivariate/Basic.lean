@@ -122,16 +122,13 @@ def comp.get (x : comp P Q α) : P (fun i => Q i α) :=
   ⟨x.1.1, fun i a => ⟨x.fst.snd i a, fun (j : Fin2 m) (b : (Q i).B _ j) => x.snd j ⟨i, ⟨a, b⟩⟩⟩⟩
 
 theorem comp.get_map (f : α ⟹ β) (x : comp P Q α) :
-    comp.get (f <$$> x) = (fun i (x : Q i α) => f <$$> x) <$$> comp.get x := by
-  rfl
+    comp.get (f <$$> x) = (fun i (x : Q i α) => f <$$> x) <$$> comp.get x := rfl
 
 @[simp]
-theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := by
-  rfl
+theorem comp.get_mk (x : P (fun i => Q i α)) : comp.get (comp.mk x) = x := rfl
 
 @[simp]
-theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := by
-  rfl
+theorem comp.mk_get (x : comp P Q α) : comp.mk (comp.get x) = x := rfl
 
 /-
 lifting predicates and relations

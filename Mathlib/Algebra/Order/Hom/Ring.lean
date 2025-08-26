@@ -354,8 +354,7 @@ instance : Inhabited (α ≃+*o α) :=
   ⟨OrderRingIso.refl α⟩
 
 @[simp]
-theorem refl_apply (x : α) : OrderRingIso.refl α x = x := by
-  rfl
+theorem refl_apply (x : α) : OrderRingIso.refl α x = x := rfl
 
 @[simp]
 theorem coe_ringEquiv_refl : (OrderRingIso.refl α : α ≃+* α) = RingEquiv.refl α :=

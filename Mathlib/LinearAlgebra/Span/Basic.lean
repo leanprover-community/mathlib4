@@ -823,8 +823,7 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
     toSpanNonzeroSingleton R M x h t =
-      (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := by
-  rfl
+      (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := rfl
 
 @[simp]
 lemma toSpanNonzeroSingleton_symm_apply_smul (m : R ∙ x) :

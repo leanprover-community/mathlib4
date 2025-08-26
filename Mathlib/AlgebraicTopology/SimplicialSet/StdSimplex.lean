@@ -101,8 +101,7 @@ def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin
 
 lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : SimplexCategory}
     (x : (stdSimplex.{u}.obj n).obj m₁) :
-    (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
-  rfl
+    (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := rfl
 
 /-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
 def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
@@ -189,8 +188,7 @@ lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ A) :
     (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subpresheaf.toPresheaf A) ≃ A.obj (op n)))
-      yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
-  rfl
+      yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := rfl
 
 end Subcomplex
 

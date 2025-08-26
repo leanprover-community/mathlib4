@@ -555,8 +555,7 @@ def πs (o : Ordinal) : LocallyConstant (π C (ord I · < o)) ℤ →ₗ[ℤ] Lo
   LocallyConstant.comapₗ ℤ ⟨(ProjRestrict C (ord I · < o)), (continuous_projRestrict _ _)⟩
 
 theorem coe_πs (o : Ordinal) (f : LocallyConstant (π C (ord I · < o)) ℤ) :
-    πs C o f = f ∘ ProjRestrict C (ord I · < o) := by
-  rfl
+    πs C o f = f ∘ ProjRestrict C (ord I · < o) := rfl
 
 theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
   LocallyConstant.comap_injective ⟨_, (continuous_projRestrict _ _)⟩
@@ -572,8 +571,7 @@ def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
     (continuous_projRestricts _ _)⟩
 
 theorem coe_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) (f : LocallyConstant (π C (ord I · < o₁)) ℤ) :
-    (πs' C h f).toFun = f.toFun ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := by
-  rfl
+    (πs' C h f).toFun = f.toFun ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := rfl
 
 theorem injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Injective (πs' C h) :=
   LocallyConstant.comap_injective ⟨_, (continuous_projRestricts _ _)⟩

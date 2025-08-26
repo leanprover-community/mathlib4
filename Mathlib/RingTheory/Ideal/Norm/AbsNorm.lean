@@ -54,8 +54,7 @@ This is used to define the absolute ideal norm `Ideal.absNorm`.
 noncomputable def cardQuot (S : Submodule R M) : ℕ :=
   AddSubgroup.index S.toAddSubgroup
 
-theorem cardQuot_apply (S : Submodule R M) : cardQuot S = Nat.card (M ⧸ S) := by
-  rfl
+theorem cardQuot_apply (S : Submodule R M) : cardQuot S = Nat.card (M ⧸ S) := rfl
 
 variable (R M)
 

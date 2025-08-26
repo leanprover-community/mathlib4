@@ -198,7 +198,7 @@ theorem tendsto_self_div_two_mul_self_add_one :
 `n`-th partial product of Wallis' formula for `π / 2`. -/
 theorem stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq (n : ℕ) (hn : n ≠ 0) :
     stirlingSeq n ^ 4 / stirlingSeq (2 * n) ^ 2 * (n / (2 * n + 1)) = Wallis.W n := by
-  have : 4 = 2 * 2 := by rfl
+  have : 4 = 2 * 2 := rfl
   rw [stirlingSeq, this, pow_mul, stirlingSeq, Wallis.W_eq_factorial_ratio]
   simp_rw [div_pow, mul_pow]
   rw [sq_sqrt, sq_sqrt]

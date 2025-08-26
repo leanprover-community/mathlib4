@@ -441,8 +441,7 @@ instance nonarchAddGroupSeminormClass :
   map_neg_eq_map' f := f.neg'
 
 @[simp]
-theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
-  rfl
+theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := rfl
 
 @[ext]
 theorem ext : (∀ x, p x = q x) → p = q :=

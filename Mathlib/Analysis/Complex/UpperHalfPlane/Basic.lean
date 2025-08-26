@@ -80,8 +80,7 @@ theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
 
 @[simp]
 lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
-    UpperHalfPlane.coe ⟨z, hz⟩ = z := by
-  rfl
+    UpperHalfPlane.coe ⟨z, hz⟩ = z := rfl
 
 @[simp]
 theorem mk_coe (z : ℍ) (h : 0 < (z : ℂ).im := z.2) : mk z h = z :=

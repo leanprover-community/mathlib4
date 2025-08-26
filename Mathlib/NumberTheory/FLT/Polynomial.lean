@@ -222,7 +222,7 @@ theorem Polynomial.flt
   have hn' : 0 < n := by linarith
   rw [← sub_eq_zero, ← one_mul (a ^ n), ← one_mul (b ^ n), ← one_mul (c ^ n), sub_eq_add_neg,
     ← neg_mul] at heq
-  have hone : (1 : k[X]) = C 1 := by rfl
+  have hone : (1 : k[X]) = C 1 := rfl
   have hneg_one : (-1 : k[X]) = C (-1) := by simp only [map_neg, map_one]
   simp_rw [hneg_one, hone] at heq
   apply flt_catalan hn'.ne' hn'.ne' hn'.ne' _

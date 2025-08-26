@@ -131,8 +131,7 @@ lemma coe_withValRingEquiv :
 @[simp]
 lemma coe_withValRingEquiv_symm :
     ⇑(Padic.withValRingEquiv (p := p)).symm =
-      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := by
-  rfl
+      Padic.isDenseInducing_cast_withVal.extend Completion.coe' := rfl
 
 /-- The `p`-adic numbers are isomophic as uniform spaces to the completion of the rationals at
 the `p`-adic valuation. -/

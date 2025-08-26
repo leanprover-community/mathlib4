@@ -177,8 +177,7 @@ theorem get_natCast {x : ℕ} : get (x : PartENat) (dom_natCast x) = x :=
   get_natCast' _ _
 
 theorem coe_add_get {x : ℕ} {y : PartENat} (h : ((x : PartENat) + y).Dom) :
-    get ((x : PartENat) + y) h = x + get y h.2 := by
-  rfl
+    get ((x : PartENat) + y) h = x + get y h.2 := rfl
 
 @[simp]
 theorem get_add {x y : PartENat} (h : (x + y).Dom) : get (x + y) h = x.get h.1 + y.get h.2 :=

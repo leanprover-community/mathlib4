@@ -360,12 +360,12 @@ instance isOrderedAddMonoid : IsOrderedAddMonoid Surreal where
   add_le_add_left := by rintro ⟨_⟩ ⟨_⟩ hx ⟨_⟩; exact @add_le_add_left PGame _ _ _ _ _ hx _
 
 lemma mk_add {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
-    Surreal.mk (x + y) (hx.add hy) = Surreal.mk x hx + Surreal.mk y hy := by rfl
+    Surreal.mk (x + y) (hx.add hy) = Surreal.mk x hx + Surreal.mk y hy := rfl
 
 lemma mk_sub {x y : PGame} (hx : x.Numeric) (hy : y.Numeric) :
-    Surreal.mk (x - y) (hx.sub hy) = Surreal.mk x hx - Surreal.mk y hy := by rfl
+    Surreal.mk (x - y) (hx.sub hy) = Surreal.mk x hx - Surreal.mk y hy := rfl
 
-lemma zero_def : 0 = mk 0 numeric_zero := by rfl
+lemma zero_def : 0 = mk 0 numeric_zero := rfl
 
 noncomputable instance : LinearOrder Surreal :=
   { Surreal.partialOrder with

@@ -559,8 +559,7 @@ lemma SetRel.exists_graph_eq_iff (R : SetRel α β) :
 
 namespace Set
 
-theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := by
-  rfl
+theorem image_eq (f : α → β) (s : Set α) : f '' s = (Function.graph f).image s := rfl
 
 theorem preimage_eq (f : α → β) (s : Set β) : f ⁻¹' s = (Function.graph f).preimage s := by
   simp [Set.preimage, SetRel.preimage]

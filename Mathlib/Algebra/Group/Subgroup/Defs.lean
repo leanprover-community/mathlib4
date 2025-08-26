@@ -233,8 +233,7 @@ lemma subtype_injective :
   Subtype.coe_injective
 
 @[to_additive (attr := simp)]
-theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
-  rfl
+theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := rfl
 
 variable {H}
 

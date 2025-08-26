@@ -86,8 +86,7 @@ noncomputable def of_coeff (f : ℤ → Module.End R V)
 @[simp]
 theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ n, ∀ m < n, (f m) x = 0) (x : V) (n : ℤ) :
-    ((HahnModule.of R).symm ((of_coeff f hf) x)).coeff n = (f n) x := by
-  rfl
+    ((HahnModule.of R).symm ((of_coeff f hf) x)).coeff n = (f n) x := rfl
 
 @[simp]
 theorem ncoeff_of_coeff (f : ℤ → Module.End R V)

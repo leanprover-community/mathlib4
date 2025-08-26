@@ -77,8 +77,7 @@ theorem realize_func (v : α → M) {n} (f : L.Functions n) (ts) :
 
 @[simp]
 theorem realize_function_term {n} (v : Fin n → M) (f : L.Functions n) :
-    f.term.realize v = funMap f v := by
-  rfl
+    f.term.realize v = funMap f v := rfl
 
 @[simp]
 theorem realize_relabel {t : L.Term α} {g : α → β} {v : β → M} :

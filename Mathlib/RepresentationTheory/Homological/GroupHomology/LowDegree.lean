@@ -1001,8 +1001,7 @@ lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
 @[simp]
 lemma H1AddEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
     (H1AddEquivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
-      H1π A ((cycles₁IsoOfIsTrivial A).inv <| single g a) := by
-  rfl
+      H1π A ((cycles₁IsoOfIsTrivial A).inv <| single g a) := rfl
 
 end IsTrivial
 

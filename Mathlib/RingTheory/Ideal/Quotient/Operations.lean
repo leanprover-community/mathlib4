@@ -486,8 +486,7 @@ def kerLiftAlg (f : A →ₐ[R₁] B) : A ⧸ (RingHom.ker f) →ₐ[R₁] B :=
 
 @[simp]
 theorem kerLiftAlg_mk (f : A →ₐ[R₁] B) (a : A) :
-    kerLiftAlg f (Quotient.mk (RingHom.ker f) a) = f a := by
-  rfl
+    kerLiftAlg f (Quotient.mk (RingHom.ker f) a) = f a := rfl
 
 @[simp]
 theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
@@ -821,8 +820,7 @@ theorem quotQuotEquivComm_comp_quotQuotMk :
   RingHom.ext <| quotQuotEquivComm_quotQuotMk I J
 
 @[simp]
-theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
-  rfl
+theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := rfl
 
 variable {I J}
 
@@ -976,8 +974,7 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
   rfl
 
 @[simp]
-theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
-  rfl
+theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := rfl
 
 @[simp]
 theorem quotQuotEquivComm_comp_quotQuotMkₐ :

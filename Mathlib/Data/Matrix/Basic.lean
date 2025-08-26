@@ -305,8 +305,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
       ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
-        (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
-  rfl
+        (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :
     (Pi.evalAddMonoidHom _ i).comp (diagAddMonoidHom m α) = entryAddMonoidHom α i i := by
@@ -337,8 +336,7 @@ def entryLinearMap (i : m) (j : n) :
 -- for unification to succeed
 lemma entryLinearMap_eq_comp {i : m} {j : n} :
     entryLinearMap R α i j =
-      LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ (ofLinearEquiv R).symm.toLinearMap := by
-  rfl
+      LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ (ofLinearEquiv R).symm.toLinearMap := rfl
 
 @[simp] lemma proj_comp_diagLinearMap (i : m) :
     LinearMap.proj i ∘ₗ diagLinearMap m R α = entryLinearMap R α i i := by
@@ -571,8 +569,7 @@ theorem mapMatrix_trans (f : α ≃ₛₗ[σᵣₛ] β) (g : β ≃ₛₗ[σₛ�
   rfl
 
 @[simp] lemma mapMatrix_toLinearMap (f : α ≃ₛₗ[σᵣₛ] β) :
-    (f.mapMatrix : _ ≃ₛₗ[_] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
-  rfl
+    (f.mapMatrix : _ ≃ₛₗ[_] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := rfl
 
 lemma entryLinearMap_comp_mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) (i : m) (j : n) :
     (entryLinearMap S _ i j).comp f.mapMatrix.toLinearMap =

@@ -75,8 +75,7 @@ instance : FunLike (P →ᵃⁱ[𝕜] P₂) P P₂ where
   coe_injective' f g := by cases f; cases g; simp
 
 @[simp]
-theorem coe_toAffineMap : ⇑f.toAffineMap = f := by
-  rfl
+theorem coe_toAffineMap : ⇑f.toAffineMap = f := rfl
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P →ᵃⁱ[𝕜] P₂) → P →ᵃ[𝕜] P₂) := by
   rintro ⟨f, _⟩ ⟨g, _⟩ rfl
@@ -347,8 +346,7 @@ def toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂ :=
   { e.toLinearEquiv.toAffineEquiv with norm_map := e.norm_map }
 
 @[simp]
-theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂) = e := by
-  rfl
+theorem coe_toAffineIsometryEquiv : ⇑(e.toAffineIsometryEquiv : V ≃ᵃⁱ[𝕜] V₂) = e := rfl
 
 @[simp]
 theorem toAffineIsometryEquiv_linearIsometryEquiv :
