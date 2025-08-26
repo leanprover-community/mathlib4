@@ -85,7 +85,7 @@ lemma inner_smul_left_eq_star_smul (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r�
     ← algebraMap_star_comm, ← smul_eq_mul, algebraMap_smul]
 
 /-- Special case of `inner_smul_left_eq_star_smul` when the acting ring has a trivial star
-(eg `ℕ`, `ℤ`, `ℚ≥0`, `ℚ`, `ℝ`). -/
+(e.g. `ℕ`, `ℤ`, `ℚ≥0`, `ℚ`, `ℝ`). -/
 lemma inner_smul_left_eq_smul [TrivialStar 𝕝] (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left_eq_star_smul, starRingEnd_apply, star_trivial]
 
