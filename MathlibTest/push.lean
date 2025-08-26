@@ -109,6 +109,7 @@ section log
 
 example (a b : ℝ) (ha : a > 0) (hb : b > 0) : Real.log (a * b) = Real.log a + Real.log b := by
   pull (disch := positivity) Real.log
+  rfl
 
 example (a b c : Real) (ha : 0 < a) (hc : 0 < c) :
     Real.log (a ^ 4 * c⁻¹ / a * Real.exp b) = 4 * Real.log a + -Real.log c - Real.log a + b := by
