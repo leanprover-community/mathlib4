@@ -246,16 +246,6 @@ namespace Polynomial
 section CommRing
 
 -- Porting note: move to better place
-lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* T)
-    (u : Set S) (x : S) (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
-  rw [Subring.mem_closure] at hx ⊢
-  intro T₁ h₁
-  rw [← Subring.mem_comap]
-  apply hx
-  simp only [Subring.coe_comap, ← Set.image_subset_iff]
-  exact h₁
-
--- Porting note: move to better place
 lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     p ∈ Subring.closure (insert X {f | f.degree ≤ 0} : Set R[X]) := by
   refine Polynomial.induction_on p ?_ ?_ ?_
@@ -263,9 +253,9 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     apply Subring.subset_closure
     apply Set.mem_insert_of_mem
     exact degree_C_le
-  · intros p1 p2 h1 h2
+  · intro p1 p2 h1 h2
     exact Subring.add_mem _ h1 h2
-  · intros n r hr
+  · intro n r hr
     rw [pow_succ, ← mul_assoc]
     apply Subring.mul_mem _ hr
     apply Subring.subset_closure
@@ -726,66 +716,3 @@ nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     f.Finite := by
   algebraize [f, (g.comp f)]
   exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl⟩
-
-namespace Ideal
-
-@[deprecated (since := "2024-10-27")]
-alias IsJacobson := IsJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff := isJacobsonRing_iff
-@[deprecated (since := "2024-10-27")]
-alias IsJacobson.out := IsJacobsonRing.out
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff_prime_eq := isJacobsonRing_iff_prime_eq
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff_sInf_maximal := isJacobsonRing_iff_sInf_maximal
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iff_sInf_maximal' := isJacobsonRing_iff_sInf_maximal'
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_of_surjective := isJacobsonRing_of_surjective
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_iso := isJacobsonRing_iso
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_of_isIntegral := isJacobsonRing_of_isIntegral
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_of_isIntegral' := isJacobsonRing_of_isIntegral'
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_iff_isMaximal_disjoint := IsLocalization.isMaximal_iff_isMaximal_disjoint
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_of_isMaximal_disjoint := IsLocalization.isMaximal_of_isMaximal_disjoint
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_localization := isJacobsonRing_localization
-
-namespace Polynomial
-
-@[deprecated (since := "2024-10-27")]
-alias isIntegral_isLocalization_polynomial_quotient := isIntegral_isLocalization_polynomial_quotient
-@[deprecated (since := "2024-10-27")]
-alias jacobson_bot_of_integral_localization := jacobson_bot_of_integral_localization
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_polynomial_of_isJacobson := isJacobsonRing_polynomial_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isJacobson_polynomial_iff_isJacobson := isJacobsonRing_polynomial_iff_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_comap_C_of_isMaximal := isMaximal_comap_C_of_isMaximal
-@[deprecated (since := "2024-10-27")]
-alias quotient_mk_comp_C_isIntegral_of_jacobson :=
-  Polynomial.quotient_mk_comp_C_isIntegral_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias isMaximal_comap_C_of_isJacobson := isMaximal_comap_C_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias comp_C_integral_of_surjective_of_jacobson :=
-  Polynomial.comp_C_integral_of_surjective_of_isJacobsonRing
-
-end Polynomial
-
-@[deprecated (since := "2024-10-27")]
-alias MvPolynomial.isJacobson_MvPolynomial_fin := isJacobsonRing_MvPolynomial_fin
-@[deprecated (since := "2024-10-27")]
-alias MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson :=
-  MvPolynomial.quotient_mk_comp_C_isIntegral_of_isJacobsonRing
-@[deprecated (since := "2024-10-27")]
-alias MvPolynomial.comp_C_integral_of_surjective_of_jacobson :=
-  MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing
-
-end Ideal

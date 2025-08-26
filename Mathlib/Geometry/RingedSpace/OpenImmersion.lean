@@ -67,7 +67,7 @@ spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U
 -/
 class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : Prop where
   /-- the underlying continuous map of underlying spaces from the source to an open subset of the
-    target. -/
+  target. -/
   base_open : IsOpenEmbedding f.base
   /-- the underlying sheaf morphism is an isomorphism on each open subset -/
   c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))
@@ -210,7 +210,9 @@ theorem app_inv_app' (U : Opens Y) (hU : (U : Set Y) ⊆ Set.range f.base) :
             (le_antisymm (Set.image_preimage_subset f.base U.1) <|
               (Set.image_preimage_eq_inter_range (f := f.base) (t := U.1)).symm ▸
                 Set.subset_inter_iff.mpr ⟨fun _ h => h, hU⟩)).op := by
-  erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
+  simp only [TopCat.Presheaf.pushforward_obj_obj, app_invApp, Opens.carrier_eq_coe,
+    homOfLE_leOfHom, eqToHom_op]
+  tauto
 
 /-- An isomorphism is an open immersion. -/
 instance ofIso {X Y : PresheafedSpace C} (H : X ≅ Y) : IsOpenImmersion H.hom where
@@ -456,8 +458,11 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
       simp_rw [Category.id_comp]
       rintro (_ | _ | _) <;> symm
-      · erw [Category.comp_id]
-        exact limit.w (cospan f.base g.base) WalkingCospan.Hom.inl
+      · simp only [limit.cone_x, Functor.const_obj_obj, cospan_one, Functor.comp_obj, forget_obj,
+          Functor.mapCone_pt, Functor.mapCone_π_app, PullbackCone.condition_one, forget_map,
+          comp_base, cospan_left, cospan_right, Functor.comp_map, cospan_map_inl, cospan_map_inr,
+          diagramIsoCospan_hom_app, PullbackCone.fst_limit_cone]
+        tauto
       · exact Category.comp_id _
       · exact Category.comp_id _)
 

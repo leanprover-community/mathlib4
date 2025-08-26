@@ -242,14 +242,14 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
 /-- Calculate the integral of `g ∘ f : α →ₛ F`, where `f` is an integrable function from `α` to `E`
-    and `g` is a function from `E` to `F`. We require `g 0 = 0` so that `g ∘ f` is integrable. -/
+and `g` is a function from `E` to `F`. We require `g 0 = 0` so that `g ∘ f` is integrable. -/
 theorem map_integral (f : α →ₛ E) (g : E → F) (hf : Integrable f μ) (hg : g 0 = 0) :
     (f.map g).integral μ = ∑ x ∈ f.range, (μ.real (f ⁻¹' {x})) • g x :=
   map_setToSimpleFunc _ weightedSMul_union hf hg
 
 /-- `SimpleFunc.integral` and `SimpleFunc.lintegral` agree when the integrand has type
-    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion.
-    See `integral_eq_lintegral` for a simpler version. -/
+`α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion.
+See `integral_eq_lintegral` for a simpler version. -/
 theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : Integrable f μ) (hg0 : g 0 = 0)
     (ht : ∀ b, g b ≠ ∞) :
     (f.map (ENNReal.toReal ∘ g)).integral μ = ENNReal.toReal (∫⁻ a, g (f a) ∂μ) := by
@@ -270,8 +270,8 @@ theorem integral_congr {f g : α →ₛ E} (hf : Integrable f μ) (h : f =ᵐ[μ
     f.integral μ = g.integral μ :=
   setToSimpleFunc_congr (weightedSMul μ) (fun _ _ => weightedSMul_null) weightedSMul_union hf h
 
-/-- `SimpleFunc.bintegral` and `SimpleFunc.integral` agree when the integrand has type
-    `α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion. -/
+/-- `SimpleFunc.integral` and `SimpleFunc.lintegral` agree when the integrand has type
+`α →ₛ ℝ≥0∞`. But since `ℝ≥0∞` is not a `NormedSpace`, we need some form of coercion. -/
 theorem integral_eq_lintegral {f : α →ₛ ℝ} (hf : Integrable f μ) (h_pos : 0 ≤ᵐ[μ] f) :
     f.integral μ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal (f a) ∂μ) := by
   have : f =ᵐ[μ] f.map (ENNReal.toReal ∘ ENNReal.ofReal) :=

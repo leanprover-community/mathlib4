@@ -3,12 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Localizations of commutative rings
@@ -159,26 +160,27 @@ theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ 
 
 variable (S)
 
-/-- `IsLocalization.toLocalizationWithZeroMap M S` shows `S` is the monoid localization of
-`R` at `M`. -/
-@[simps]
-def toLocalizationWithZeroMap : Submonoid.LocalizationWithZeroMap M S where
+/-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
+abbrev toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S
   map_units' := IsLocalization.map_units _
   surj' := IsLocalization.surj _
   exists_of_eq _ _ := IsLocalization.exists_of_eq
 
-/-- `IsLocalization.toLocalizationMap M S` shows `S` is the monoid localization of `R` at `M`. -/
-abbrev toLocalizationMap : Submonoid.LocalizationMap M S :=
-  (toLocalizationWithZeroMap M S).toLocalizationMap
+@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
 
 @[simp]
-theorem toLocalizationMap_toMap : (toLocalizationMap M S).toMap = (algebraMap R S : R →*₀ S) :=
-  rfl
+lemma toLocalizationMap_toMonoidHom :
+    (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
-theorem toLocalizationMap_toMap_apply (x) : (toLocalizationMap M S).toMap x = algebraMap R S x :=
-  rfl
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
+
+@[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
+
+@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
+
+lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
 
 theorem surj₂ : ∀ z w : S, ∃ z' w' : R, ∃ d : M,
     (z * algebraMap R S d = algebraMap R S z') ∧ (w * algebraMap R S d = algebraMap R S w') :=
@@ -480,12 +482,11 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
 `z = f x * (f y)⁻¹`. -/
 noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* P :=
-  { Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap M S)
-      g.toMonoidWithZeroHom hg with
+  { (toLocalizationMap M S).lift₀ g.toMonoidWithZeroHom hg with
     map_add' := by
       intro x y
       dsimp
-      rw [(toLocalizationWithZeroMap M S).lift_def, (toLocalizationWithZeroMap M S).lift_spec,
+      rw [(toLocalizationMap M S).lift₀_def, (toLocalizationMap M S).lift_spec,
         mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
         mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
@@ -846,7 +847,7 @@ end
 theorem toLocalizationMap_eq_monoidOf : toLocalizationMap M (Localization M) = monoidOf M :=
   rfl
 
-theorem monoidOf_eq_algebraMap (x) : (monoidOf M).toMap x = algebraMap R (Localization M) x :=
+theorem monoidOf_eq_algebraMap (x) : monoidOf M x = algebraMap R (Localization M) x :=
   rfl
 
 theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
@@ -855,7 +856,7 @@ theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
 theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y := by
   rw [mk_eq_monoidOf_mk'_apply, mk', toLocalizationMap_eq_monoidOf]
 
--- Porting note: removed `simp`. Left hand side can be simplified; not clear what normal form should
+-- Porting note: removed `simp`. Left-hand side can be simplified; not clear what normal form should
 --be.
 theorem mk_eq_mk' : (mk : R → M → Localization M) = IsLocalization.mk' (Localization M) :=
   mk_eq_monoidOf_mk'
