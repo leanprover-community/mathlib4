@@ -114,23 +114,26 @@ theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
   | zero => rw [Nat.cast_zero, opow_zero, pow_zero]
   | succ n IH => rw [Nat.cast_succ, add_one_eq_succ, opow_succ, pow_succ, IH]
 
-theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) := by
+theorem isNormal_opow {a : Ordinal} (h : 1 < a) : Order.IsNormal (a ^ · : Ordinal → Ordinal) := by
   have ha : 0 < a := zero_lt_one.trans h
   refine IsNormal.of_succ_lt ?_ fun hl ↦ ?_
   · simpa only [mul_one, opow_succ] using fun b ↦ (mul_lt_mul_iff_left (opow_pos b ha)).2 h
   · simp [IsLUB, IsLeast, upperBounds, lowerBounds, ← opow_le_of_isSuccLimit ha.ne' hl]
 
-theorem opow_lt_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b < a ^ c ↔ b < c :=
-  (isNormal_opow a1).lt_iff
+theorem strictMono_opow {a : Ordinal} (h : 1 < a) : StrictMono (a ^ · : Ordinal → Ordinal) :=
+  (isNormal_opow h).strictMono
 
-theorem opow_le_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b ≤ a ^ c ↔ b ≤ c :=
-  (isNormal_opow a1).le_iff
+theorem opow_lt_opow_iff_right {a b c : Ordinal} (h : 1 < a) : a ^ b < a ^ c ↔ b < c :=
+  (strictMono_opow h).lt_iff_lt
 
-theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c :=
-  (isNormal_opow a1).inj
+theorem opow_le_opow_iff_right {a b c : Ordinal} (h : 1 < a) : a ^ b ≤ a ^ c ↔ b ≤ c :=
+  (strictMono_opow h).le_iff_le
 
-theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
-  (isNormal_opow a1).isSuccLimit
+theorem opow_right_inj {a b c : Ordinal} (h : 1 < a) : a ^ b = a ^ c ↔ b = c :=
+  (strictMono_opow h).injective.eq_iff
+
+theorem isSuccLimit_opow {a b : Ordinal} (h : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
+  (isNormal_opow h).map_isSuccLimit
 
 @[deprecated (since := "2025-07-08")]
 alias isLimit_opow := isSuccLimit_opow
@@ -178,8 +181,8 @@ theorem left_lt_opow {a b : Ordinal} (ha : 1 < a) (hb : 1 < b) : a < a ^ b := by
   conv_lhs => rw [← opow_one a]
   rwa [opow_lt_opow_iff_right ha]
 
-theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
-  (isNormal_opow a1).le_apply
+theorem right_le_opow {a : Ordinal} (b : Ordinal) (h : 1 < a) : b ≤ a ^ b :=
+  (strictMono_opow h).le_apply
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
@@ -202,12 +205,12 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   | limit c l IH =>
     refine
       eq_of_forall_ge_iff fun d =>
-        (((isNormal_opow a1).trans (isNormal_add_right b)).limit_le l).trans ?_
+        (((isNormal_opow a1).comp (isNormal_add_right b)).le_iff_forall_le l).trans ?_
     dsimp only [Function.comp_def]
     simp +contextual only [IH]
     exact
-      (((isNormal_mul_right <| opow_pos b (Ordinal.pos_iff_ne_zero.2 a0)).trans
-              (isNormal_opow a1)).limit_le
+      (((isNormal_mul_right <| opow_pos b (Ordinal.pos_iff_ne_zero.2 a0)).comp
+              (isNormal_opow a1)).le_iff_forall_le
           l).symm
 
 theorem opow_one_add (a b : Ordinal) : a ^ (1 + b) = a * a ^ b := by rw [opow_add, opow_one]
@@ -239,9 +242,8 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   | limit c l IH =>
     refine
       eq_of_forall_ge_iff fun d =>
-        (((isNormal_opow a1).trans (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 b0))).limit_le
-              l).trans
-          ?_
+        (((isNormal_opow a1).comp
+          (isNormal_mul_right (Ordinal.pos_iff_ne_zero.2 b0))).le_iff_forall_le l).trans ?_
     dsimp only [Function.comp_def]
     simp +contextual only [IH]
     exact (opow_le_of_isSuccLimit (opow_ne_zero _ a0) l).symm
