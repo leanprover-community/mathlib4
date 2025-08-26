@@ -147,7 +147,7 @@ own sequence.
 -/
 def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
     CommandElabM (Array (Array (ContextInfo × TacticInfo))) := do
-  let some enclosingRange := stx.getRange? |
+  let some _enclosingRange := stx.getRange? |
     throw (Exception.error stx m!"operating on syntax without range")
   -- Turn the CommandElabM into a surrounding context for traversing the tree.
   let ctx ← read
@@ -155,8 +155,12 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
   let ctxInfo := { env := state.env, fileMap := ctx.fileMap, ngen := state.ngen }
   let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
     (fun _ i _ => do
-      if let some range := i.stx.getRange? then
-        pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
+      if let some _range := i.stx.getRange? then
+        -- It turns out some syntax replacements change the ranges, so we get misleading answers.
+        -- Comment out the check for now, since the worst that can happen is we analyze a piece
+        -- of syntax that belongs to another declaration (that would be analyzed later on anyway).
+        -- pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
+        pure true
       else pure false)
     (fun ctx i _c cs => do
       let relevantChildren := (cs.filterMap id).toArray
