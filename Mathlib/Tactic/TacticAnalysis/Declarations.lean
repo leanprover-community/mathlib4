@@ -189,19 +189,19 @@ register_option linter.tacticAnalysis.introMerge : Bool := {
 
 @[tacticAnalysis linter.tacticAnalysis.introMerge, inherit_doc linter.tacticAnalysis.introMerge]
 def introMerge : TacticAnalysis.Config := .ofComplex {
-  out := (Option <| TSyntax `tactic)
-  ctx := (Array (Array Syntax))
+  out := Option (TSyntax `tactic)
+  ctx := Array (Array Term)
   trigger ctx stx :=
     match stx with
     | `(tactic| intro $args*) => .continue ((ctx.getD #[]).push args)
     | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
   test ctx goal := do
-    let ctxT : Array (Term) := ctx.flatten.map (⟨·⟩)
+    let ctxT := ctx.flatten
     let tac ← `(tactic| intro $ctxT*)
     try
-      let (_, _) ← Lean.Elab.runTactic goal tac
-      return tac
+      let _ ← Lean.Elab.runTactic goal tac
+      return some tac
     catch _e => -- if for whatever reason we can't run `intro` here.
-      pure Option.none -- for whatever reason, we can't use `return` here?
+      return none
   tell _stx _old new :=
-    if let .some tac := new.fst then m!"Try this: {tac}" else none}
+    if let some tac := new.fst then m!"Try this: {tac}" else none}
