@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.LinearAlgebra.Matrix.Permutation
+import Mathlib.Data.Matrix.Stochastic
 
 /-!
 # Doubly stochastic matrices
@@ -31,7 +32,7 @@ Show that the submonoid of doubly stochastic matrices is the meet of them, or re
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-open Finset Function Matrix
+open Finset Function Matrix Stochastic
 
 variable {R n : Type*} [Fintype n] [DecidableEq n]
 
@@ -102,6 +103,37 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
 
+
+/-- A matrix is doubly stochastic if and only if it is both row and
+column stochastic. -/
+lemma rowStochastic_inf_colStochastic :
+    rowStochastic R n ⊓ colStochastic R n = doublyStochastic R n := by
+  ext M
+  simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    Set.mem_setOf_eq, doublyStochastic]
+  grind
+
+/-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
+lemma mem_doublyStochastic_iff_transpose :
+    M ∈ doublyStochastic R n ↔
+      M.transpose ∈ doublyStochastic R n := by
+  constructor
+  · intro hM
+    have : (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
+      exact mem_doublyStochastic_iff_sum.mp hM
+    have h₀ : ∀ (i j : n), 0 ≤ M.transpose i j := by aesop
+    have h₁ : ∀ (i : n), ∑ j, M.transpose i j = 1 := by aesop
+    have h₂ : ∀ (j : n), ∑ i, M.transpose i j = 1 := by aesop
+    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂ ⟩
+  · intro hM
+    have : (∀ i j, 0 ≤ M.transpose i j) ∧ (∀ i, ∑ j, M.transpose i j = 1)
+        ∧ ∀ j, ∑ i, M.transpose i j = 1 := by
+      exact mem_doublyStochastic_iff_sum.mp hM
+    have h₀ : ∀ (i j : n), 0 ≤ M i j := by aesop
+    have h₁ : ∀ (i : n), ∑ j, M i j = 1 := by aesop
+    have h₂ : ∀ (j : n), ∑ i, M i j = 1 := by aesop
+    exact mem_doublyStochastic_iff_sum.2 ⟨h₀, h₁, h₂⟩
+
 end OrderedSemiring
 
 section LinearOrderedSemifield
@@ -138,3 +170,4 @@ lemma exists_mem_doublyStochastic_eq_smul_iff {M : Matrix n n R} {s : R} (hs : 0
   exact ⟨s⁻¹ • M, by simp [mem_doublyStochastic_iff_sum, ← mul_sum, hs.ne', *]⟩
 
 end LinearOrderedSemifield
+
