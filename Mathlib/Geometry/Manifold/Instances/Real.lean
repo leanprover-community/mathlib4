@@ -481,33 +481,24 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
   · -- `e = left chart`, `e' = right chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
-    simp only [IccLeftChart, Fin.isValue, lt_sub_iff_add_lt, PartialHomeomorph.symm_symm,
-      modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, ModelWithCorners.mk_coe,
-      PartialEquiv.coe_symm_mk, hz₀, sup_of_le_left, update_eq_self, toLp_ofLp, mem_setOf_eq,
-      PartialHomeomorph.mk_coe_symm, IccRightChart, preimage_setOf_eq, lt_inf_iff,
-      lt_add_iff_pos_left] at hz₁ hz₂
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_self,
+      max_eq_left, hz₀, lt_sub_iff_add_lt, mfld_simps] at hz₁ hz₂
+    rw [min_eq_left hz₁.le, lt_add_iff_pos_left] at hz₂
     ext i
     rw [Subsingleton.elim i 0]
-    simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
-      IccLeftChart, IccRightChart, PartialHomeomorph.coe_trans, PartialHomeomorph.mk_coe,
-      PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk, ModelWithCorners.mk_symm, comp_apply,
-      sup_of_le_left, update_eq_self, toLp_ofLp, min_eq_left hz₁.le, hz₀]
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, *,
+      max_eq_left, min_eq_left hz₁.le, update_self, mfld_simps]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨z, hz₀⟩, rfl⟩
-    simp only [IccRightChart, Fin.isValue, PartialHomeomorph.symm_symm,
-      modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, ModelWithCorners.mk_coe,
-      PartialEquiv.coe_symm_mk, max_eq_left hz₀, update_eq_self, toLp_ofLp, mem_setOf_eq,
-      PartialHomeomorph.mk_coe_symm, IccLeftChart, preimage_setOf_eq, sup_lt_iff,
-      sub_lt_self_iff] at hz₁ hz₂
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, max_lt_iff,
+      update_self, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
     rw [lt_sub_comm] at hz₁
     ext i
     rw [Subsingleton.elim i 0]
-    simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
-      IccRightChart, IccLeftChart, PartialHomeomorph.coe_trans, PartialHomeomorph.mk_coe,
-      PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk, ModelWithCorners.mk_symm, comp_apply,
-      hz₀, sup_of_le_left, update_eq_self, toLp_ofLp, hz₁.le]
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart,
+      update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
