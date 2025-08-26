@@ -177,18 +177,9 @@ theorem compExactValue_correctness_of_stream_eq_some :
       let f := Int.fract (1 / ifp_n.fr)
       have f_ne_zero : f ≠ 0 := by simpa [f] using ifp_succ_n_fr_ne_zero
       rw [inv_eq_one_div] at tmp_calc tmp_calc'
-      -- because `field_simp` is not as powerful
-      have hA : (↑⌊1 / ifp_n.fr⌋ * pA + ppA) + pA * f = pA * (1 / ifp_n.fr) + ppA := by
-        have := congrFun (congrArg HMul.hMul tmp_calc) f
-        rwa [right_distrib, div_mul_cancel₀ (h := f_ne_zero),
-          div_mul_cancel₀ (h := f_ne_zero)] at this
-      have hB : (↑⌊1 / ifp_n.fr⌋ * pB + ppB) + pB * f = pB * (1 / ifp_n.fr) + ppB := by
-        have := congrFun (congrArg HMul.hMul tmp_calc') f
-        rwa [right_distrib, div_mul_cancel₀ (h := f_ne_zero),
-          div_mul_cancel₀ (h := f_ne_zero)] at this
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
       dsimp only [conts, pconts, ppconts]
-      field_simp [compExactValue, contsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
+      simp [compExactValue, contsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
         nextConts, nextNum, nextDen]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       grind
