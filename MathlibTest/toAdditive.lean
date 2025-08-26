@@ -165,7 +165,7 @@ run_cmd do
   let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
   liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
-  successIfFail <| liftCoreM <| addToAdditiveAttr toAdditiveBundle nameDict fixAbbreviation `bar11_works { ref := ← getRef }
+  successIfFail <| liftCoreM <| addToAdditiveAttr toAdditiveBundle `bar11_works { ref := ← getRef }
 
 /- Test on inductive types -/
 inductive AddInd : ℕ → Prop where
@@ -216,7 +216,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl toAdditiveBundle nameDict fixAbbreviation { ref := ← getRef} `Test.some_def `Test.add_some_def
+    transformDecl toAdditiveBundle { ref := ← getRef} `Test.some_def `Test.add_some_def
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
