@@ -31,15 +31,15 @@ private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_mul [CommSemiring R]
     = f A * (f.apply_vecMulVec_mulVec y z).toMatrix' := toLin'.injective <| LinearMap.ext fun x =>
   let T := f.apply_vecMulVec_mulVec y z
   calc
-    ((LinearMap.toMatrix' T) * A) *ᵥ x = T (A *ᵥ x) := by
+    (T.toMatrix' * A) *ᵥ x = T (A *ᵥ x) := by
       ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
-    _ = (f (vecMulVec (A *ᵥ x) y)) *ᵥ z := by simp [T, NonUnitalAlgHom.apply_vecMulVec_mulVec]
-    _ = (f (A * vecMulVec x y)) *ᵥ z := by
+    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, NonUnitalAlgHom.apply_vecMulVec_mulVec]
+    _ = f (A * vecMulVec x y) *ᵥ z := by
       simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
     _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
-    _ = (f A) *ᵥ (T x) := by
+    _ = f A *ᵥ T x := by
       simp only [← mulVec_mulVec]; rfl
-    _ = (f A * (LinearMap.toMatrix' T)) *ᵥ x := by
+    _ = (f A * T.toMatrix') *ᵥ x := by
       simp_rw [← mulVec_mulVec, ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
 
 /-- Given an algebra automorphism `f` on `Matrix n n R`, there exists an invertible matrix `T`
@@ -51,7 +51,7 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
   · exact ⟨1, funext fun a => Matrix.ext fun i => isEmpty_iff.mp hn i |>.elim⟩
   simp_rw [funext_iff, @eq_comm _ (f _), Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
   obtain ⟨u, y, hu, hy⟩ : ∃ u y : n → R, u ≠ 0 ∧ y ≠ 0 := ⟨1, 1, one_ne_zero, one_ne_zero⟩
-  obtain ⟨z, hz⟩ : ∃ z : n → R, (f (vecMulVec u y)) *ᵥ z ≠ 0 := by
+  obtain ⟨z, hz⟩ : ∃ z : n → R, f (vecMulVec u y) *ᵥ z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
     suffices ¬ f (vecMulVec u y) = 0 by
       rwa [← LinearMap.toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff,
@@ -61,13 +61,13 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
       exists_and_left, exists_and_right]
     exact ⟨Function.ne_iff.mp hu, Function.ne_iff.mp hy⟩
   let T := f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec y z
-  have this A : (T.toMatrix' * A) = (f A * T.toMatrix') :=
+  have this A : T.toMatrix' * A = f A * T.toMatrix' :=
     f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec_mul y z A
   suffices hM : IsUnit T.toMatrix' from ⟨hM.unit, fun A => this A |>.symm⟩
   simp_rw [← isUnit_toLin'_iff, toLin'_toMatrix', LinearMap.isUnit_iff_range_eq_top,
     LinearMap.range_eq_top]
   intro w
-  obtain ⟨B, hB⟩ : ∃ B : Matrix n n R, (f B) *ᵥ (T u) = w := by
+  obtain ⟨B, hB⟩ : ∃ B : Matrix n n R, f B *ᵥ T u = w := by
     obtain ⟨d, hd⟩ : ∃ d : n → R, T u ⬝ᵥ d = 1 := by
       have hi : T u ≠ 0 := by simpa [T, NonUnitalAlgHom.apply_vecMulVec_mulVec]
       obtain ⟨q, hq⟩ := Function.ne_iff.mp hi
@@ -76,7 +76,7 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
     obtain ⟨B, hB⟩ := f.bijective.2 (vecMulVec w d)
     use B
     rw [hB, vecMulVec_eq Unit, ← mulVec_mulVec]
-    suffices (replicateRow Unit d) *ᵥ (T u) = 1 by ext; simp [this, mulVec_one]
+    suffices replicateRow Unit d *ᵥ T u = 1 by ext; simp [this, mulVec_one]
     ext
     simp_rw [mulVec, Pi.one_apply, ← hd, dotProduct, replicateRow_apply, mul_comm]
   use (toLin' B) u
