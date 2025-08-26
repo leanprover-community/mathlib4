@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Noetherian.Basic
 * `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
 * `Polynomial.isNoetherianRing`:
-  Hilbert basis theorem, that if a ring is noetherian then so is its polynomial ring.
+  Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
 
 noncomputable section
@@ -997,8 +997,8 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
       (MvPolynomial.finSuccEquiv _ n).toRingEquiv.symm
       (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ isNoetherianRing_fin)
 
-/-- The multivariate polynomial ring in finitely many variables over a noetherian ring
-is itself a noetherian ring. -/
+/-- The multivariate polynomial ring in finitely many variables over a Noetherian ring
+is itself a Noetherian ring. -/
 instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ
