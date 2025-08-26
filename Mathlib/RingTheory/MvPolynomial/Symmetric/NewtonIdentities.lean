@@ -73,8 +73,6 @@ private lemma pairMap_of_snd_notMem_fst {t : Finset σ × σ} (h : t.snd ∉ t.f
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
 
-@[deprecated (since := "2025-05-24")] alias pairMap_of_snd_nmem_fst := pairMap_of_snd_notMem_fst
-
 @[simp]
 private theorem pairMap_involutive : (pairMap σ).Involutive := by
   intro t
