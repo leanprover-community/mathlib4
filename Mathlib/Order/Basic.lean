@@ -811,10 +811,10 @@ instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
 instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
-theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by ext; simp [compl]
-theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
-theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
-theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
+theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by simp [compl]
+theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by simp [compl]
+theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
   convert eq_isEquiv α
@@ -1003,12 +1003,12 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
@@ -1047,12 +1047,12 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
