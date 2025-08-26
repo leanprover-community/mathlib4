@@ -182,17 +182,19 @@ theorem prod_eq (s : Set α) (t : Set β) : s ×ˢ t = Prod.fst ⁻¹' s ∩ Pro
 
 variable {a : α} {b : β} {s : Set α} {t : Set β} {p : α × β}
 
-theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
-
 @[simp, mfld_simps, grind =]
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
 @[mfld_simps]
+theorem mk_mem_prod_iff : (a, b) ∈ s ×ˢ t ↔ a ∈ s ∧ b ∈ t :=
+  Iff.rfl
+
+@[deprecated mem_prod (since := "2025-08-26")]
+theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
+
+@[deprecated mk_mem_prod_iff (since := "2025-08-26")]
 theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
-
-@[deprecated (since := "2025-02-21")]
-alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 

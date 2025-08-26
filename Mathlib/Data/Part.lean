@@ -87,6 +87,10 @@ protected def Mem (o : Part α) (a : α) : Prop :=
 instance : Membership α (Part α) :=
   ⟨Part.Mem⟩
 
+theorem mem_def (a : α) (o : Part α) : a ∈ o ↔ ∃ h, o.get h = a :=
+  Iff.rfl
+
+@[deprecated mem_def (since := "2025-08-26")]
 theorem mem_eq (a : α) (o : Part α) : (a ∈ o) = ∃ h, o.get h = a :=
   rfl
 
@@ -548,7 +552,7 @@ def restrict (p : Prop) (o : Part α) (H : p → o.Dom) : Part α :=
 @[simp]
 theorem mem_restrict (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
     a ∈ restrict p o h ↔ p ∧ a ∈ o := by
-  dsimp [restrict, mem_eq]; constructor
+  dsimp [restrict, mem_def]; constructor
   · rintro ⟨h₀, h₁⟩
     exact ⟨h₀, ⟨_, h₁⟩⟩
   rintro ⟨h₀, _, h₂⟩; exact ⟨h₀, h₂⟩

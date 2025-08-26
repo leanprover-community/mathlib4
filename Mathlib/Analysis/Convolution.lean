@@ -565,7 +565,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     have A : support (g p) ⊆ k := support_subset_iff'.2 (fun y hy ↦ hgs p y hp hy)
     have B : Continuous (g p) := by
       refine hg.comp_continuous (.prodMk_right _) fun x => ?_
-      simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
+      simpa only [mk_mem_prod_iff, mem_univ, and_true] using hp
     rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
     · simp [H] at hx
     · exact H
@@ -605,7 +605,7 @@ theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
   apply
     (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prodMk hv)
   intro x hx
-  simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
+  simp only [hx, mk_mem_prod_iff, mem_univ, and_self_iff, _root_.id]
 
 /-- The convolution is continuous if one function is locally integrable and the other has compact
 support and is continuous. -/
@@ -1039,7 +1039,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   let g' := fderiv 𝕜 ↿g
   have A : ∀ p ∈ s, Continuous (g p) := fun p hp ↦ by
     refine hg.continuousOn.comp_continuous (.prodMk_right _) fun x => ?_
-    simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
+    simpa only [mk_mem_prod_iff, mem_univ, and_true] using hp
   have A' : ∀ q : P × G, q.1 ∈ s → s ×ˢ univ ∈ 𝓝 q := fun q hq ↦ by
     apply (hs.prod isOpen_univ).mem_nhds
     simpa only [mem_prod, mem_univ, and_true] using hq
@@ -1109,7 +1109,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (.prodMk_right _)
     intro x
-    simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hq₀
+    simpa only [mk_mem_prod_iff, mem_univ, and_true] using hq₀
   set K' := (-k + {q₀.2} : Set G) with K'_def
   have hK' : IsCompact K' := hk.neg.add isCompact_singleton
   obtain ⟨U, U_open, K'U, hU⟩ : ∃ U, IsOpen U ∧ K' ⊆ U ∧ IntegrableOn f U μ :=
@@ -1258,7 +1258,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     · apply isoE'.symm.contDiff.comp_contDiffOn
       apply hg.comp (isoP.prodCongr isoG).contDiff.contDiffOn
       rintro ⟨p, x⟩ ⟨hp, -⟩
-      simpa only [mem_preimage, ContinuousLinearEquiv.prodCongr_apply, prodMk_mem_set_prod_eq,
+      simpa only [mem_preimage, ContinuousLinearEquiv.prodCongr_apply, mk_mem_prod_iff,
         mem_univ, and_true] using hp
   have A : ContDiffOn 𝕜 n (isoF ∘ R ∘ (isoP.prodCongr isoG).symm) (s ×ˢ univ) := by
     apply isoF.contDiff.comp_contDiffOn
@@ -1287,7 +1287,7 @@ theorem contDiffOn_convolution_right_with_param_comp {n : ℕ∞} (L : E →L[�
     (hg : ContDiffOn 𝕜 n ↿g (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply (contDiffOn_convolution_right_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prodMk hv)
   intro x hx
-  simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
+  simp only [hx, mk_mem_prod_iff, mem_univ, and_self_iff, _root_.id]
 
 /-- The convolution `g * f` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
 supported. Version where `g` depends on an additional parameter in an open subset `s` of a
@@ -1310,7 +1310,7 @@ theorem contDiffOn_convolution_left_with_param_comp [μ.IsAddLeftInvariant] [μ.
     (hg : ContDiffOn 𝕜 n ↿g (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (g x ⋆[L, μ] f) (v x)) s := by
   apply (contDiffOn_convolution_left_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prodMk hv)
   intro x hx
-  simp only [hx, prodMk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
+  simp only [hx, mk_mem_prod_iff, mem_univ, and_self_iff, _root_.id]
 
 theorem _root_.HasCompactSupport.contDiff_convolution_right {n : ℕ∞} (hcg : HasCompactSupport g)
     (hf : LocallyIntegrable f μ) (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n (f ⋆[L, μ] g) := by

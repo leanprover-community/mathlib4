@@ -180,6 +180,6 @@ section goal_depends_on_hyp
 open Part
 example (p : Prop) (o : Part α) (h : p → o.Dom) (a : α) :
     a ∈ restrict p o h ↔ p ∧ a ∈ o := by
-  dsimp [restrict, mem_eq]
+  dsimp [restrict, mem_def]
   tauto
 end goal_depends_on_hyp
