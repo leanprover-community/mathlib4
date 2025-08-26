@@ -680,6 +680,29 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [
     use .append puw.toPath.reverse (pux.toPath : G.Walk u x)
     simpa using ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
 
+lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [DecidableEq V]
+  [Fintype V] {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected) :
+  ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
+obtain ⟨T, T_le_H, T_isTree⟩ := h.coe.exists_isTree_le
+have ⟨T_conn, _⟩ := T_isTree
+have := @Fintype.ofFinite H.verts
+have := Classical.decRel T.Adj
+obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
+use v, v.coe_prop
+apply @Connected.mono _ _ (.coeSubgraph ((toSubgraph T T_le_H).deleteVerts {v}))
+· obtain ⟨_, _⟩ := coeSubgraph_le (toSubgraph T T_le_H)
+  constructor
+  · simp
+    grind
+  · intro _ _ ⟨_, _, ⟨_, _, _⟩, _, _⟩
+    aesop
+· aesop
+· have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
+  have : Fintype ((toSubgraph T T_le_H).neighborSet v) := @Fintype.ofFinite _ Subtype.finite
+  apply Connected_coeSubgraph
+  apply connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial (T_conn.toSubgraph T_le_H)
+  simp [← hv]
+
 end Subgraph
 
 end SimpleGraph
