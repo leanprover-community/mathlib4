@@ -21,7 +21,7 @@ In this file, we prove that regular local ring is domain
 
 -/
 
-open IsLocalRing
+open IsLocalRing IsRegularLocalRing
 
 variable (R : Type*) [CommRing R]
 
@@ -66,11 +66,13 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
       · simp only [Finset.coe_sort_coe, Set.range_comp, Set.range_inclusion Tsub,
           SetLike.coe_sort_coe, Finset.mem_coe, top_le_iff,
           IsLocalRing.CotangentSpace.span_image_eq_top_iff]
-        simp only [span_eq_top_iff, Submodule.subtype_apply, Ideal.submodule_span_eq]
+        apply Submodule.map_injective_of_injective (maximalIdeal R).injective_subtype
+        simp only [Submodule.map_span, Submodule.subtype_apply, Ideal.submodule_span_eq,
+          Submodule.map_top, Submodule.range_subtype]
         convert span
         ext
         simpa using fun a ↦ Tsub a
-      · rw [← Nat.cast_inj (R := WithBot ℕ∞), (isRegularLocalRing_iff R).mp ‹_›, ← card]
+      · rw [← Nat.cast_inj (R := WithBot ℕ∞), (iff_finrank_cotangentSpace R).mp ‹_›, ← card]
         simp
     have li := LinearIndependent.comp this (Set.inclusion h) (Set.inclusion_injective h)
     have inc : Set.inclusion Tsub ∘ Set.inclusion h = Set.inclusion sub := rfl
@@ -83,8 +85,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have le := ringKrullDim_le_ringKrullDim_add_card sub
     have ge : (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span S.toSet))) + S.card ≤
       ringKrullDim R := by
-      simp only [← Nat.cast_add, ← (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_le,
-        spanFinrank_maximalIdeal]
+      simp only [← Nat.cast_add, ← (iff_finrank_cotangentSpace R).mp ‹_›, Nat.cast_le,
+        spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
       let f := Ideal.mapCotangent (maximalIdeal R) (maximalIdeal (R ⧸ Ideal.span S.toSet))
         (Ideal.Quotient.mkₐ R (Ideal.span S.toSet)) (fun x hx ↦ by simpa)
       have ker : (LinearMap.ker f : Set (maximalIdeal R).Cotangent) = (Submodule.span
