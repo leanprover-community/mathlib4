@@ -21,7 +21,7 @@ separation axioms, and the related T₂.₅ condition.
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
   T₂.₅ implies T₂.
 
-See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc spaces; and
+See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc. spaces; and
 `Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
 `T6Space`.
 
@@ -571,6 +571,7 @@ theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h 
 end SeparatedFinset
 
 /-- In a `T2Space`, every compact set is closed. -/
+@[aesop 50% apply, grind ←]
 theorem IsCompact.isClosed [T2Space X] {s : Set X} (hs : IsCompact s) : IsClosed s :=
   isClosed_iff_forall_filter.2 fun _x _f _ hfs hfx =>
     let ⟨_y, hy, hfy⟩ := hs.exists_clusterPt hfs

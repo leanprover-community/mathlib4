@@ -20,7 +20,7 @@ dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
 ## Implementation notes
 
 We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the dual cone of any set
-always contains `0`, ie is a pointed cone.
+always contains `0`, i.e. is a pointed cone.
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
 `ConvexCone.dual`.
 

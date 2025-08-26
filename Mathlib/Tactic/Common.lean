@@ -127,20 +127,20 @@ import hierarchy.
 -/
 
 /-!
-# Register tactics with `hint`. Tactics are tried in reverse registration order.
+# Register tactics with `hint`. Tactics with larger priority run first.
 -/
 
 section Hint
 
-register_hint grind
-register_hint trivial
-register_hint tauto
-register_hint split
-register_hint intro
-register_hint aesop
-register_hint simp_all?
-register_hint exact?
-register_hint decide
-register_hint omega
+register_hint (priority := 200) grind
+register_hint (priority := 1000) trivial
+register_hint (priority := 500) tauto
+register_hint (priority := 1000) split
+register_hint (priority := 1000) intro
+register_hint (priority := 80) aesop
+register_hint (priority := 800) simp_all?
+register_hint (priority := 600) exact?
+register_hint (priority := 1000) decide
+register_hint (priority := 200) omega
 
 end Hint
