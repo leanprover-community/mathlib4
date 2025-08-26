@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Sqrt
 
 /-!
   # Norm on the complex numbers

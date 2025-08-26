@@ -5,7 +5,7 @@ Authors: Moritz Doll, Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.Seminorm
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
