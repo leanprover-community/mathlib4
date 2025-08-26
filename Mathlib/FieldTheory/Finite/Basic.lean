@@ -794,7 +794,7 @@ theorem unit_isSquare_iff (hF : ringChar F ≠ 2) (a : Fˣ) :
       dsimp
       rw [mul_comm, pow_mul, pow_two]
 
-/-- A non-zero `a : F` is a square if and only if `a ^ (#F / 2) = 1`. -/
+/-- A nonzero `a : F` is a square if and only if `a ^ (#F / 2) = 1`. -/
 theorem isSquare_iff (hF : ringChar F ≠ 2) {a : F} (ha : a ≠ 0) :
     IsSquare a ↔ a ^ (Fintype.card F / 2) = 1 := by
   apply

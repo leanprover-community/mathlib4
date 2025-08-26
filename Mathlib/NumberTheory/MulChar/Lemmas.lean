@@ -163,7 +163,7 @@ end Fintype
 variable {F : Type*} [Field F] [Finite F]
 variable {R : Type*} [CommRing R]
 
-/- The non-zero values of a multiplicative character of order `n` are `n`th roots of unity. -/
+/- The nonzero values of a multiplicative character of order `n` are `n`th roots of unity. -/
 lemma apply_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
     ∃ ζ ∈ rootsOfUnity (orderOf χ) R, ζ = χ a := by
   have hu : IsUnit (χ a) := ha.isUnit.map χ
@@ -173,7 +173,7 @@ lemma apply_mem_rootsOfUnity_orderOf (χ : MulChar F R) {a : F} (ha : a ≠ 0) :
     show a = (isUnit_iff_ne_zero.mpr ha).unit by simp only [IsUnit.unit_spec],
     MulChar.one_apply_coe]
 
-/-- The non-zero values of a multiplicative character `χ` such that `χ^n = 1`
+/-- The nonzero values of a multiplicative character `χ` such that `χ^n = 1`
 are `n`th roots of unity. -/
 lemma apply_mem_rootsOfUnity_of_pow_eq_one {χ : MulChar F R} {n : ℕ} (hχ : χ ^ n = 1)
     {a : F} (ha : a ≠ 0) :

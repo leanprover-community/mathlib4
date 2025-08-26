@@ -45,7 +45,7 @@ Use of `@[simp]` generally follows the rule of removing conditions on a measure
 when possible.
 
 Hypotheses that are used to "define" a conditional distribution by requiring that
-the conditioning set has non-zero measure should be named using the abbreviation
+the conditioning set has nonzero measure should be named using the abbreviation
 "c" (which stands for "conditionable") rather than "nz". For example `(hci : μ (s ∩ t) ≠ 0)`
 (rather than `hnzi`) should be used for a hypothesis ensuring that `μ[|s ∩ t]` is defined.
 

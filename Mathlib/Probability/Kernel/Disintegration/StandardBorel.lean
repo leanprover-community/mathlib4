@@ -379,7 +379,7 @@ instance _root_.MeasureTheory.Measure.instIsMarkovKernelCondKernel
   rw [Measure.condKernel]
   infer_instance
 
-/-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
+/-- If the singleton `{x}` has nonzero mass for `ρ.fst`, then for all `s : Set Ω`,
 `ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
 lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero [MeasurableSingletonClass α]
     {x : α} (hx : ρ.fst {x} ≠ 0) (s : Set Ω) :

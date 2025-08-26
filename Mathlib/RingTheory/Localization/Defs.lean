@@ -875,12 +875,12 @@ variable [IsDomain R]
 
 variable (S) in
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
-non-zero elements is an integral domain. -/
+nonzero elements is an integral domain. -/
 theorem isDomain_of_le_nonZeroDivisors (hM : M ≤ nonZeroDivisors R) : IsDomain S where
   __ : IsCancelMulZero S := (toLocalizationMap M S).isCancelMulZero
   __ : Nontrivial S := (toLocalizationMap M S).nontrivial fun h ↦ zero_notMem_nonZeroDivisors (hM h)
 
-/-- The localization of an integral domain to a set of non-zero elements is an integral domain. -/
+/-- The localization of an integral domain to a set of nonzero elements is an integral domain. -/
 theorem isDomain_localization {M : Submonoid R} (hM : M ≤ nonZeroDivisors R) :
     IsDomain (Localization M) :=
   isDomain_of_le_nonZeroDivisors _ hM

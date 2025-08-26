@@ -97,7 +97,7 @@ theorem lintegral_rpow_funMulInvSnorm_eq_one {p : ℝ} (hp0_lt : 0 < p) {f : α 
   rw [lintegral_mul_const', ENNReal.mul_inv_cancel hf_nonzero hf_top]
   rwa [inv_ne_top]
 
-/-- Hölder's inequality in case of finite non-zero integrals -/
+/-- Hölder's inequality in case of finite nonzero integrals -/
 theorem lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top {p q : ℝ} (hpq : p.HolderConjugate q)
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_nontop : (∫⁻ a, f a ^ p ∂μ) ≠ ⊤)
     (hg_nontop : (∫⁻ a, g a ^ q ∂μ) ≠ ⊤) (hf_nonzero : (∫⁻ a, f a ^ p ∂μ) ≠ 0)
@@ -158,7 +158,7 @@ theorem lintegral_mul_le_Lp_mul_Lq (μ : Measure α) {p q : ℝ} (hpq : p.Holder
   by_cases hg_top : ∫⁻ a, g a ^ q ∂μ = ⊤
   · rw [mul_comm, mul_comm ((∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p))]
     exact lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_eq_top hpq.symm.pos hpq.nonneg hg_top hf_zero
-  -- non-⊤ non-zero case
+  -- non-⊤ nonzero case
   exact ENNReal.lintegral_mul_le_Lp_mul_Lq_of_ne_zero_of_ne_top hpq hf hf_top hg_top hf_zero hg_zero
 
 /-- A different formulation of Hölder's inequality for two functions, with two exponents that sum to

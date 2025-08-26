@@ -51,7 +51,7 @@ open Measure
 returns back to `s` under some iteration of `f`. -/
 structure Conservative (f : α → α) (μ : Measure α) : Prop extends QuasiMeasurePreserving f μ μ where
   /-- If `f` is a conservative self-map and `s` is a measurable set of nonzero measure,
-  then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
+  then there exists a point `x ∈ s` that returns to `s` under a nonzero iteration of `f`. -/
   exists_mem_iterate_mem' : ∀ ⦃s⦄, MeasurableSet s → μ s ≠ 0 → ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s
 
 /-- A self-map preserving a finite measure is conservative. -/
@@ -88,7 +88,7 @@ theorem _root_.MeasureTheory.conservative_congr {ν : Measure α} (h : ae μ = a
   ⟨(congr_ae · h), (congr_ae · h.symm)⟩
 
 /-- If `f` is a conservative self-map and `s` is a null measurable set of nonzero measure,
-then there exists a point `x ∈ s` that returns to `s` under a non-zero iteration of `f`. -/
+then there exists a point `x ∈ s` that returns to `s` under a nonzero iteration of `f`. -/
 theorem exists_mem_iterate_mem (hf : Conservative f μ)
     (hsm : NullMeasurableSet s μ) (hs₀ : μ s ≠ 0) :
     ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by

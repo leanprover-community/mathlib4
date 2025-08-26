@@ -84,7 +84,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
   simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac, smul_eq_mul]
   rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top _ _), one_mul]
 
-/-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
+/-- If the singleton `{x}` has nonzero mass for `ρ.fst`, then for all `s : Set Ω`,
 `ρCond x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
 lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] {x : α}
     (hx : ρ.fst {x} ≠ 0) (s : Set Ω) : ρCond x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) := by

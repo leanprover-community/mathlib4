@@ -361,7 +361,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     C_simp
     ring1
 
-/-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
+/-- The nonzero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=
   Units.mkOfMulEqOne _ _ <| by
@@ -579,7 +579,7 @@ variable [DecidableEq K] [DecidableEq L]
 /-! ## Group law in affine coordinates -/
 
 /-- The group homomorphism mapping a nonsingular affine point `(x, y)` of a Weierstrass curve `W` to
-the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
+the class of the nonzero fractional ideal `⟨X - x, Y - y⟩` in the ideal class group of `F[W]`. -/
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with

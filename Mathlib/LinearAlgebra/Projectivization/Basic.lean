@@ -68,7 +68,7 @@ instance [Nontrivial V] : Nonempty (ℙ K V) :=
 
 variable {K}
 
-/-- A function on non-zero vectors which is independent of scale, descends to a function on the
+/-- A function on nonzero vectors which is independent of scale, descends to a function on the
 projectivization. -/
 protected def lift {α : Type*} (f : { v : V // v ≠ 0 } → α)
     (hf : ∀ (a b : { v : V // v ≠ 0 }) (t : K), a = t • (b : V) → f a = f b)

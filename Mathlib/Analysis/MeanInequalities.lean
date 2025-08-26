@@ -126,14 +126,14 @@ version for real-valued nonnegative functions. -/
 theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i ≤ ∑ i ∈ s, w i * z i := by
-  -- If some number `z i` equals zero and has non-zero weight, then LHS is 0 and RHS is nonnegative.
+  -- If some number `z i` equals zero and has nonzero weight, then LHS is 0 and RHS is nonnegative.
   by_cases A : ∃ i ∈ s, z i = 0 ∧ w i ≠ 0
   · rcases A with ⟨i, his, hzi, hwi⟩
     rw [prod_eq_zero his]
     · exact sum_nonneg fun j hj => mul_nonneg (hw j hj) (hz j hj)
     · rw [hzi]
       exact zero_rpow hwi
-  -- If all numbers `z i` with non-zero weight are positive, then we apply Jensen's inequality
+  -- If all numbers `z i` with nonzero weight are positive, then we apply Jensen's inequality
   -- for `exp` and numbers `log (z i)` with weights `w i`.
   · simp only [not_exists, not_and, Ne, Classical.not_not] at A
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)

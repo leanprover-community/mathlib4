@@ -129,7 +129,7 @@ theorem mem_iff_annIdealGenerator_dvd {p : 𝕜[X]} {a : A} :
   rw [← Ideal.mem_span_singleton, span_singleton_annIdealGenerator]
 
 /-- The generator of the annihilating ideal has minimal degree among
-the non-zero members of the annihilating ideal -/
+the nonzero members of the annihilating ideal -/
 theorem degree_annIdealGenerator_le_of_mem (a : A) (p : 𝕜[X]) (hp : p ∈ annIdeal 𝕜 a)
     (hpn0 : p ≠ 0) : degree (annIdealGenerator 𝕜 a) ≤ degree p :=
   degree_le_of_dvd (mem_iff_annIdealGenerator_dvd.1 hp) hpn0

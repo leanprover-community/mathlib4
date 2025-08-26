@@ -18,7 +18,7 @@ We already know from valuation.topology that one can build a topology on `K` whi
 makes it a topological ring.
 
 The first goal is to show `K` is a topological *field*, i.e. inversion is continuous
-at every non-zero element.
+at every nonzero element.
 
 The next goal is to prove `K` is a *completable* topological field. This gives us
 a completion `hat K` which is a topological field. We also prove that `K` is automatically

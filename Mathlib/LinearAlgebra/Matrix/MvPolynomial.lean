@@ -63,7 +63,7 @@ theorem mvPolynomialX_mapMatrix_aeval [Fintype m] [DecidableEq m] [CommSemiring 
 
 variable (m)
 
-/-- In a nontrivial ring, `Matrix.mvPolynomialX m m R` has non-zero determinant. -/
+/-- In a nontrivial ring, `Matrix.mvPolynomialX m m R` has nonzero determinant. -/
 theorem det_mvPolynomialX_ne_zero [DecidableEq m] [Fintype m] [CommRing R] [Nontrivial R] :
     det (mvPolynomialX m m R) ≠ 0 := by
   intro h_det

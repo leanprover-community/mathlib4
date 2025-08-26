@@ -155,7 +155,7 @@ They achieve the following goals.
   but it "picks it up along the way".
 * They split checking the inequality `coeff p n ≠ 0` into the task of
   finding a value `c` for the `coeff` and then
-  proving that this value is non-zero by `coeff_ne_zero`.
+  proving that this value is nonzero by `coeff_ne_zero`.
 -/
 theorem natDegree_eq_of_le_of_coeff_ne_zero' {deg m o : ℕ} {c : R} {p : R[X]}
     (h_natDeg_le : natDegree p ≤ m) (coeff_eq : coeff p o = c)

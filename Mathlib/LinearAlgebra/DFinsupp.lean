@@ -360,7 +360,7 @@ theorem dfinsuppSumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (
 @[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
 
 /-- The supremum of a family of submodules is equal to the range of `DFinsupp.lsum`; that is
-every element in the `iSup` can be produced from taking a finite number of non-zero elements
+every element in the `iSup` can be produced from taking a finite number of nonzero elements
 of `p i`, coercing them to `N`, and summing them. -/
 theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
     iSup p = LinearMap.range (DFinsupp.lsum ℕ fun i => (p i).subtype) := by
@@ -374,7 +374,7 @@ theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom` composed with `DFinsupp.filter_add_monoid_hom`; that is, every element in the
-bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
+bounded `iSup` can be produced from taking a finite number of nonzero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
     ⨆ (i) (_ : p i), S i =

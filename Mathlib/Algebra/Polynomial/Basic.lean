@@ -365,7 +365,7 @@ theorem toFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[X]) :
     (∑ i ∈ s, f i : R[X]).toFinsupp = ∑ i ∈ s, (f i).toFinsupp :=
   map_sum (toFinsuppIso R) f s
 
-/-- The set of all `n` such that `X^n` has a non-zero coefficient. -/
+/-- The set of all `n` such that `X^n` has a nonzero coefficient. -/
 def support : R[X] → Finset ℕ
   | ⟨p⟩ => p.support
 

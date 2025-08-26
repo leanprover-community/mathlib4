@@ -153,7 +153,7 @@ namespace Units
 
 variable [GroupWithZero G₀]
 
-/-- Embed a non-zero element of a `GroupWithZero` into the unit group.
+/-- Embed a nonzero element of a `GroupWithZero` into the unit group.
   By combining this function with the operations on units,
   or the `/ₚ` operation, it is possible to write a division
   as a partial function with three arguments. -/

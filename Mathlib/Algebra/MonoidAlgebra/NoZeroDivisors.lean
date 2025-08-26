@@ -7,10 +7,10 @@ import Mathlib.Algebra.Group.UniqueProds.Basic
 import Mathlib.Algebra.MonoidAlgebra.Opposite
 
 /-!
-# Variations on non-zero divisors in `AddMonoidAlgebra`s
+# Variations on nonzero divisors in `AddMonoidAlgebra`s
 
 This file studies the interaction between typeclass assumptions on two Types `R` and `A` and
-whether `R[A]` has non-zero zero-divisors.  For some background on related
+whether `R[A]` has nonzero zero-divisors.  For some background on related
 questions, see [Kaplansky's Conjectures](https://en.wikipedia.org/wiki/Kaplansky%27s_conjectures),
 especially the *zero divisor conjecture*.
 
@@ -41,10 +41,10 @@ The actual assumptions on `R` are weaker.
 TODO: move the rest of the docs to UniqueProds?
 * `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
-  left addition, then `R[A]` has no non-zero zero-divisors.
+  left addition, then `R[A]` has no nonzero zero-divisors.
 * `NoZeroDivisors.of_right_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add left cancel semigroup with strictly monotone
-  right addition, then `R[A]` has no non-zero zero-divisors.
+  right addition, then `R[A]` has no nonzero zero-divisors.
 
 The conditions on `A` imposed in `NoZeroDivisors.of_left_ordered` are sometimes referred to as
 `left-ordered`.

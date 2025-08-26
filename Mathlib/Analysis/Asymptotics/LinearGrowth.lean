@@ -540,7 +540,7 @@ lemma _root_.Monotone.linearGrowthInf_comp {a : EReal} (h : Monotone u)
     rw [← hv.liminf_eq] at ha
     exact ha.symm.lt_of_le (linearGrowthInf_natCast_nonneg v)
   have v_top := tendsto_atTop_of_linearGrowthInf_natCast_pos hv₁.ne.symm
-  -- Either `u = 0`, or `u` is non-zero and bounded by `1`, or `u` is eventually larger than one.
+  -- Either `u = 0`, or `u` is nonzero and bounded by `1`, or `u` is eventually larger than one.
   -- In the latter case, we apply `le_linearGrowthInf_comp` and `linearGrowthInf_comp_le`.
   by_cases u_0 : u = ⊥
   · rw [u_0, Pi.bot_comp, linearGrowthInf_bot, ← hv.liminf_eq, mul_bot_of_pos hv₁]
@@ -569,7 +569,7 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
     rw [← hv.liminf_eq] at ha
     exact ha.symm.lt_of_le (linearGrowthInf_natCast_nonneg v)
   have v_top := tendsto_atTop_of_linearGrowthInf_natCast_pos hv₁.ne.symm
-  -- Either `u = 0`, or `u` is non-zero and bounded by `1`, or `u` is eventually larger than one.
+  -- Either `u = 0`, or `u` is nonzero and bounded by `1`, or `u` is eventually larger than one.
   -- In the latter case, we apply `le_linearGrowthSup_comp` and `linearGrowthSup_comp_le`.
   by_cases u_0 : u = ⊥
   · rw [u_0, Pi.bot_comp, linearGrowthSup_bot, ← hv.liminf_eq, mul_bot_of_pos hv₁]

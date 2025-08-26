@@ -376,7 +376,7 @@ theorem LinearIndependent.map' (hv : LinearIndependent R v) (f : M →ₗ[R] M')
   hv.map <| by simp_rw [hf_inj, disjoint_bot_right]
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map, `j : M →+ M'` is a monoid map,
-such that they send non-zero elements to non-zero elements, and compatible with the scalar
+such that they send nonzero elements to nonzero elements, and compatible with the scalar
 multiplications on `M` and `M'`, then `j` sends linearly independent families of vectors to
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/
@@ -390,7 +390,7 @@ theorem LinearIndependent.map_of_injective_injective {R' M' : Type*}
   exact hi _ <| hv _ _ (hj _ H) s hs
 
 /-- If `M / R` and `M' / R'` are modules, `i : R → R'` is a surjective map which maps zero to zero,
-`j : M →+ M'` is a monoid map which sends non-zero elements to non-zero elements, such that the
+`j : M →+ M'` is a monoid map which sends nonzero elements to nonzero elements, such that the
 scalar multiplications on `M` and `M'` are compatible, then `j` sends linearly independent families
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map'`. -/

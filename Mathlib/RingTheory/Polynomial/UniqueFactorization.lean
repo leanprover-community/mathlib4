@@ -88,7 +88,7 @@ instance (priority := 100) uniqueFactorizationMonoid : UniqueFactorizationMonoid
   letI := Classical.arbitrary (NormalizedGCDMonoid D)
   exact ufm_of_decomposition_of_wfDvdMonoid
 
-/-- If `D` is a unique factorization domain, `f` is a non-zero polynomial in `D[X]`, then `f` has
+/-- If `D` is a unique factorization domain, `f` is a nonzero polynomial in `D[X]`, then `f` has
 only finitely many monic factors.
 (Note that its factors up to unit may be more than monic factors.)
 See also `UniqueFactorizationMonoid.fintypeSubtypeDvd`. -/

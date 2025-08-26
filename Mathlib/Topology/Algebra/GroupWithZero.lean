@@ -86,7 +86,7 @@ variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G�
   {s : Set α} {a : α}
 
 /-!
-### Continuity of `fun x ↦ x⁻¹` at a non-zero point
+### Continuity of `fun x ↦ x⁻¹` at a nonzero point
 
 We define `HasContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for

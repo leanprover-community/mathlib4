@@ -19,7 +19,7 @@ Hermann Minkowski.
   points in a subgroup such that the translates of a set by these two points are not disjoint when
   the covolume of the subgroup is larger than the volume of the set.
 * `exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`: Minkowski's theorem, existence of
-  a non-zero lattice point inside a convex symmetric domain of large enough volume.
+  a nonzero lattice point inside a convex symmetric domain of large enough volume.
 
 ## TODO
 
@@ -81,7 +81,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
 
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
 domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
-contains a non-zero lattice point of `L`. Compared to
+contains a nonzero lattice point of `L`. Compared to
 `exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure`, this version requires in addition
 that `s` is compact and `L` is discrete but provides a weaker inequality rather than a strict
 inequality. -/

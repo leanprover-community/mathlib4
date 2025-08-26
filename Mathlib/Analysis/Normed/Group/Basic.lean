@@ -1405,7 +1405,7 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   | _, _, _ => throwError "not `‖·‖`"
 
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
-on non-zero inputs. -/
+on nonzero inputs. -/
 @[positivity ‖_‖]
 def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with

@@ -6,7 +6,7 @@ Authors: Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash, Wen Yang
 import Mathlib.Data.Matrix.Basic
 
 /-!
-# Matrices with a single non-zero element.
+# Matrices with a single nonzero element.
 
 This file provides `Matrix.single`. The matrix `Matrix.single i j c` has `c`
 at position `(i, j)`, and zeroes elsewhere.

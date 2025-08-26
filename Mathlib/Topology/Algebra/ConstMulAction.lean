@@ -301,7 +301,7 @@ theorem continuousAt_const_smul_iff₀ (hc : c ≠ 0) :
 theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c • f x) ↔ Continuous f :=
   continuous_const_smul_iff (Units.mk0 c hc)
 
-/-- Scalar multiplication by a non-zero element of a group with zero acting on `α` is a
+/-- Scalar multiplication by a nonzero element of a group with zero acting on `α` is a
 homeomorphism from `α` onto itself. -/
 @[simps! -fullyApplied apply]
 protected def Homeomorph.smulOfNeZero (c : G₀) (hc : c ≠ 0) : α ≃ₜ α :=

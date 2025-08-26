@@ -11,8 +11,8 @@ import Mathlib.Algebra.Regular.Defs
 /-!
 # Regular elements
 
-By definition, a regular element in a commutative ring is a non-zero divisor.
-Lemma `isRegular_of_ne_zero` implies that every non-zero element of an integral domain is regular.
+By definition, a regular element in a commutative ring is a nonzero divisor.
+Lemma `isRegular_of_ne_zero` implies that every nonzero element of an integral domain is regular.
 Since it assumes that the ring is a `CancelMonoidWithZero` it applies also, for instance, to `ℕ`.
 
 The lemmas in Section `MulZeroClass` show that the `0` element is (left/right-)regular if and

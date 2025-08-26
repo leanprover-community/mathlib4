@@ -213,7 +213,7 @@ open scoped NNReal ENNReal
 
 section UniformOfFinset
 
-/-- Uniform distribution taking the same non-zero probability on the nonempty finset `s` -/
+/-- Uniform distribution taking the same nonzero probability on the nonempty finset `s` -/
 def uniformOfFinset (s : Finset α) (hs : s.Nonempty) : PMF α := by
   classical
   refine ofFinset (fun a => if a ∈ s then s.card⁻¹ else 0) s ?_ ?_

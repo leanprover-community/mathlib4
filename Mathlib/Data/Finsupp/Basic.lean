@@ -13,7 +13,7 @@ import Mathlib.Data.Rat.BigOperators
 
 ## Main declarations
 
-* `Finsupp.graph`: the finset of input and output pairs with non-zero outputs.
+* `Finsupp.graph`: the finset of input and output pairs with nonzero outputs.
 * `Finsupp.mapRange.equiv`: `Finsupp.mapRange` as an equiv.
 * `Finsupp.mapDomain`: maps the domain of a `Finsupp` by a function and by summing.
 * `Finsupp.comapDomain`: postcomposition of a `Finsupp` with a function injective on the preimage
@@ -50,7 +50,7 @@ section Graph
 variable [Zero M]
 
 /-- The graph of a finitely supported function over its support, i.e. the finset of input and output
-pairs with non-zero outputs. -/
+pairs with nonzero outputs. -/
 def graph (f : α →₀ M) : Finset (α × M) :=
   f.support.map ⟨fun a => Prod.mk a (f a), fun _ _ h => (Prod.mk.inj h).1⟩
 

@@ -111,7 +111,7 @@ section
 variable [AddCommMonoid M'] [Module R' M']
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is an injective map
-non-zero elements, `j : M →+ M'` is an injective monoid homomorphism, such that the scalar
+nonzero elements, `j : M →+ M'` is an injective monoid homomorphism, such that the scalar
 multiplications on `M` and `M'` are compatible, then the rank of `M / R` is smaller than or equal to
 the rank of `M' / R'`. As a special case, taking `R = R'` it is
 `LinearMap.lift_rank_le_of_injective`. -/
@@ -178,8 +178,8 @@ end Semiring
 section Ring
 variable [Ring R] [AddCommGroup M] [Module R M] [Ring R']
 
-/-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends non-zero elements to
-non-zero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
+/-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends nonzero elements to
+nonzero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
 multiplications on `M` and `M'` are compatible, then the rank of `M / R` is smaller than or equal to
 the rank of `M' / R'`. As a special case, taking `R = R'` it is
 `LinearMap.lift_rank_le_of_injective`. -/

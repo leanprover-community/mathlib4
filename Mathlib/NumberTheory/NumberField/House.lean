@@ -275,7 +275,7 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
 include hpq h0p cardα cardβ ha habs in
-/-- There exists a "small" non-zero algebraic integral solution of an
+/-- There exists a "small" nonzero algebraic integral solution of an
 non-trivial underdetermined system of linear equations with algebraic integer coefficients. -/
 theorem exists_ne_zero_int_vec_house_le :
     ∃ (ξ : β → 𝓞 K), ξ ≠ 0 ∧ a *ᵥ ξ = 0 ∧

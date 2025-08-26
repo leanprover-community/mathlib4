@@ -586,7 +586,7 @@ It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
 
 This is useful since the family of non-top archimedean classes is linearly independent. -/
 @[to_additive FiniteArchimedeanClass
-/-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
+/-- `FiniteArchimedeanClass M` is the quotient of the nonzero elements of the additive group `M` by
 additive archimedean equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`.
 
@@ -599,7 +599,7 @@ abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 namespace FiniteMulArchimedeanClass
 
 /-- Create a `FiniteMulArchimedeanClass` from a non-one element. -/
-@[to_additive /-- Create a `FiniteArchimedeanClass` from a non-zero element. -/]
+@[to_additive /-- Create a `FiniteArchimedeanClass` from a nonzero element. -/]
 def mk (a : M) (h : a ≠ 1) : FiniteMulArchimedeanClass M :=
   ⟨MulArchimedeanClass.mk a, MulArchimedeanClass.mk_eq_top_iff.not.mpr h⟩
 

@@ -70,7 +70,7 @@ class NormalizationMonoid (α : Type*) [CancelCommMonoidWithZero α] where
   normUnit : α → αˣ
   /-- The proposition that `normUnit` maps `0` to the identity. -/
   normUnit_zero : normUnit 0 = 1
-  /-- The proposition that `normUnit` respects multiplication of non-zero elements. -/
+  /-- The proposition that `normUnit` respects multiplication of nonzero elements. -/
   normUnit_mul : ∀ {a b}, a ≠ 0 → b ≠ 0 → normUnit (a * b) = normUnit a * normUnit b
   /-- The proposition that `normUnit` maps units to their inverses. -/
   normUnit_coe_units : ∀ u : αˣ, normUnit u = u⁻¹

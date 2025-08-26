@@ -97,7 +97,7 @@ theorem rank_le_one_iff [Module.Free K V] :
     simp
 
 /-- A vector space has dimension `1` if and only if there is a
-single non-zero vector of which all vectors are multiples. -/
+single nonzero vector of which all vectors are multiples. -/
 theorem rank_eq_one_iff [Module.Free K V] :
     Module.rank K V = 1 ↔ ∃ v₀ : V, v₀ ≠ 0 ∧ ∀ v, ∃ r : K, r • v₀ = v := by
   haveI := nontrivial_of_invariantBasisNumber K
@@ -123,7 +123,7 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
   simp
 
 /-- A submodule has dimension `1` if and only if there is a
-single non-zero vector in the submodule such that the submodule is contained in
+single nonzero vector in the submodule such that the submodule is contained in
 its span. -/
 theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by

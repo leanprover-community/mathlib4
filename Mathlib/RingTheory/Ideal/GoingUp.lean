@@ -96,7 +96,7 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
   rw [quotientMap_mk, coe_mapRingHom, map_C]
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
-that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
+that is nonzero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
 `P ≠ 0` and `P ∩ R = (0)`.
 -/
 theorem exists_nonzero_mem_of_ne_bot {P : Ideal R[X]} (Pb : P ≠ ⊥) (hP : ∀ x : R, C x ∈ P → x = 0) :

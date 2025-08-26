@@ -75,7 +75,7 @@ universe u v
 variable {R : Type u} [CommRing R] [IsDedekindDomain R] {K : Type v} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
-/-! ### Valuations of non-zero elements -/
+/-! ### Valuations of nonzero elements -/
 
 
 namespace HeightOneSpectrum

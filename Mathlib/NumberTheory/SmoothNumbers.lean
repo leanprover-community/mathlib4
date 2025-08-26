@@ -171,7 +171,7 @@ lemma factoredNumbers_insert (s : Finset ℕ) {N : ℕ} (hN : ¬ N.Prime) :
     factoredNumbers s ⊆ factoredNumbers t :=
   fun _ hx ↦ ⟨hx.1, fun p hp ↦ hst <| hx.2 p hp⟩
 
-/-- The non-zero non-`s`-factored numbers are `≥ N` when `s` contains all primes less than `N`. -/
+/-- The nonzero non-`s`-factored numbers are `≥ N` when `s` contains all primes less than `N`. -/
 lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s) :
     (factoredNumbers s)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
@@ -365,7 +365,7 @@ lemma mem_smoothNumbers_of_lt {m n : ℕ} (hm : 0 < m) (hmn : m < n) : m ∈ n.s
   smoothNumbers_eq_factoredNumbers _ ▸ ⟨ne_zero_of_lt hm,
   fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_primeFactorsList h) hmn⟩
 
-/-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
+/-- The nonzero non-`N`-smooth numbers are `≥ N`. -/
 lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   simpa only [smoothNumbers_eq_factoredNumbers]
     using factoredNumbers_compl <| Finset.filter_subset _ (Finset.range N)

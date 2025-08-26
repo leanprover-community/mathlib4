@@ -636,7 +636,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 
 /-- In a Dedekind domain, any ideal is spanned by two elements, where one of the element
-could be any fixed non-zero element in the ideal. -/
+could be any fixed nonzero element in the ideal. -/
 lemma IsDedekindDomain.exists_eq_span_pair {I : Ideal R} {x : R} (hxI : x ∈ I) (hx : x ≠ 0) :
     ∃ y, I = .span {x, y} := by
   obtain ⟨y, rfl⟩ := exists_sup_span_eq (I.span_singleton_le_iff_mem.mpr hxI) (by simpa)

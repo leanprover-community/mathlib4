@@ -85,7 +85,7 @@ theorem analyticAt {d : 𝕜 → ℤ} {x : 𝕜} (h : 0 ≤ d x) :
     rwa [sub_ne_zero]
 
 /--
-Factorized rational functions are non-zero wherever the exponent is zero.
+Factorized rational functions are nonzero wherever the exponent is zero.
 -/
 theorem ne_zero {d : 𝕜 → ℤ} {x : 𝕜} (h : d x = 0) :
     (∏ᶠ u, (· - u) ^ d u) x ≠ 0 := by

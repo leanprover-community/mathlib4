@@ -510,7 +510,7 @@ namespace Units
 
 variable (R M : Type*) [Monoid R] [AddCommMonoid M] [DistribMulAction R M]
 
-/-- The non-zero elements of `M` are invariant under the action by the units of `R`. -/
+/-- The nonzero elements of `M` are invariant under the action by the units of `R`. -/
 def nonZeroSubMul : SubMulAction Rˣ M where
   carrier := { x : M | x ≠ 0 }
   smul_mem' := by simp [Units.smul_def]

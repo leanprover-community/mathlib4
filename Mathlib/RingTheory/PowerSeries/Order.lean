@@ -19,7 +19,7 @@ We prove that if the commutative ring `R` of coefficients is an integral domain,
 then the ring `R⟦X⟧` of formal power series in one variable over `R`
 is an integral domain.
 
-Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
+Given a nonzero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order. This is useful when
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
 
@@ -236,7 +236,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     rw [Finset.prod_insert ha, ← mul_assoc, mul_right_comm, coeff_mul_one_sub_of_lt_order _ t.1]
     exact ih t.2
 
-/-- Given a non-zero power series `f`, `divXPowOrder f` is the power series obtained by
+/-- Given a nonzero power series `f`, `divXPowOrder f` is the power series obtained by
 dividing out the largest power of X that divides `f`, that is its order -/
 def divXPowOrder (f : R⟦X⟧) : R⟦X⟧ :=
   .mk fun n ↦ coeff (n + f.order.toNat) f

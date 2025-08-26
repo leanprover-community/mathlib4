@@ -13,8 +13,8 @@ import Mathlib.Data.ZMod.Basic
 # Examples of zero-divisors in `AddMonoidAlgebra`s
 
 This file contains an easy source of zero-divisors in an `AddMonoidAlgebra`.
-If `k` is a field and `G` is an additive group containing a non-zero torsion element, then
-`k[G]` contains non-zero zero-divisors: this is lemma `zero_divisors_of_torsion`.
+If `k` is a field and `G` is an additive group containing a nonzero torsion element, then
+`k[G]` contains nonzero zero-divisors: this is lemma `zero_divisors_of_torsion`.
 
 There is also a version for periodic elements of an additive monoid: `zero_divisors_of_periodic`.
 
@@ -23,7 +23,7 @@ The converse of this statement is
 
 The formalized example generalizes in trivial ways the assumptions: the field `k` can be any
 nontrivial ring `R` and the additive group `G` with a torsion element can be any additive monoid
-`A` with a non-zero periodic element.
+`A` with a nonzero periodic element.
 
 Besides this example, we also address a comment in `Data.Finsupp.Lex` to the effect that the proof
 that addition is monotone on `α →₀ N` uses that it is *strictly* monotone on `N`.
@@ -49,8 +49,8 @@ namespace Counterexample
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with an element `a` satisfying `n • a = a` and `(n - 1) • a ≠ a`, for some `2 ≤ n`,
-then `R[A]` contains non-zero zero-divisors.  The elements are easy to write down:
-`[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `R[A]` whose product
+then `R[A]` contains nonzero zero-divisors.  The elements are easy to write down:
+`[a]` and `[a] ^ (n - 1) - 1` are nonzero elements of `R[A]` whose product
 is zero.
 
 Observe that such an element `a` *cannot* be invertible.  In particular, this lemma never applies
@@ -68,9 +68,9 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
   rfl
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
-monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
-non-zero zero-divisors.  The elements are easy to write down:
-`∑ i ∈ Finset.range oa, [a] ^ i` and `[a] - 1` are non-zero elements of `R[A]`
+monoid with a nonzero element `a` of finite order `oa`, then `R[A]` contains
+nonzero zero-divisors.  The elements are easy to write down:
+`∑ i ∈ Finset.range oa, [a] ^ i` and `[a] - 1` are nonzero elements of `R[A]`
 whose product is zero.
 
 In particular, this applies whenever the additive monoid `A` is an additive group with a non-zero

@@ -277,7 +277,7 @@ theorem sSupIndep.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆
 /-- An independent indexed family of elements in a complete lattice is one in which every element
   is disjoint from the `iSup` of the rest.
 
-  Example: an indexed family of non-zero elements in a
+  Example: an indexed family of nonzero elements in a
   vector space is linearly independent iff the indexed family of subspaces they generate is
   independent in this sense.
 

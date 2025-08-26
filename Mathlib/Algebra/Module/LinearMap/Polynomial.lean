@@ -39,7 +39,7 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
   is the characteristic polynomial of `φ x`.
 * `LinearMap.polyCharpoly_coeff_isHomogeneous`: the coefficients of `polyCharpoly`
   are homogeneous polynomials in the parameters.
-* `LinearMap.nilRank`: the smallest index at which `polyCharpoly` has a non-zero coefficient,
+* `LinearMap.nilRank`: the smallest index at which `polyCharpoly` has a nonzero coefficient,
   which is independent of the choice of basis for `L`.
 * `LinearMap.IsNilRegular`: an element `x` of `L` is *nil-regular* with respect to `φ`
   if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero,
@@ -423,7 +423,7 @@ section aux
 Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms.
 Then `LinearMap.nilRankAux φ b` is the smallest index
-at which `LinearMap.polyCharpoly φ b` has a non-zero coefficient.
+at which `LinearMap.polyCharpoly φ b` has a nonzero coefficient.
 
 This number does not depend on the choice of `b`, see `nilRankAux_basis_indep`. -/
 noncomputable
@@ -452,7 +452,7 @@ variable [Module.Finite R L] [Module.Free R L]
 /-- Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms.
 Then `LinearMap.nilRank φ b` is the smallest index
-at which `LinearMap.polyCharpoly φ b` has a non-zero coefficient.
+at which `LinearMap.polyCharpoly φ b` has a nonzero coefficient.
 
 This number does not depend on the choice of `b`,
 see `LinearMap.nilRank_eq_polyCharpoly_natTrailingDegree`. -/

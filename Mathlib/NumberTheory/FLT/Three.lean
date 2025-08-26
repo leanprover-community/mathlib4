@@ -14,7 +14,7 @@ import Mathlib.Algebra.Ring.Divisibility.Lemmas
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
-* `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
+* `fermatLastTheoremThree`: Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all nonzero then
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 
 ## Implementation details
@@ -738,7 +738,7 @@ end eisenstein
 
 end case2
 
-/-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
+/-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all nonzero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
   classical

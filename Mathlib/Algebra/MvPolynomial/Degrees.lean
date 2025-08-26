@@ -18,7 +18,7 @@ monomial of $P$.
 ## Main declarations
 
 * `MvPolynomial.degrees p` : the multiset of variables representing the union of the multisets
-  corresponding to each non-zero monomial in `p`.
+  corresponding to each nonzero monomial in `p`.
   For example if `7 ≠ 0` in `R` and `p = x²y+7y³` then `degrees p = {x, x, y, y, y}`
 
 * `MvPolynomial.degreeOf n p : ℕ` : the total degree of `p` with respect to the variable `n`.

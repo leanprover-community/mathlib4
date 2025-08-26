@@ -156,7 +156,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 open ZeroObject
 
-/-- The `n`-th homology of the alternating constant complex is zero for non-zero even `n`. -/
+/-- The `n`-th homology of the alternating constant complex is zero for nonzero even `n`. -/
 noncomputable
 def alternatingConstHomologyDataEvenNEZero (X : C) (n : ℕ) (hn : Even n) (h₀ : n ≠ 0) :
     ((alternatingConst.obj X).sc n).HomologyData :=

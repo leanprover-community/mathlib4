@@ -11,14 +11,14 @@ import Mathlib.Tactic.LinearCombination
 
 /-!
 # Fermat's Last Theorem for the case n = 4
-There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
+There are no nonzero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
 
 assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
-/-- Shorthand for three non-zero integers `a`, `b`, and `c` satisfying `a ^ 4 + b ^ 4 = c ^ 2`.
+/-- Shorthand for three nonzero integers `a`, `b`, and `c` satisfying `a ^ 4 + b ^ 4 = c ^ 2`.
 We will show that no integers satisfy this equation. Clearly Fermat's Last theorem for n = 4
 follows. -/
 def Fermat42 (a b c : ℤ) : Prop :=
@@ -180,7 +180,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     apply @IsCoprime.of_mul_left_left _ _ _ a
     rw [← sq, ht1, (by ring : m ^ 2 - n ^ 2 = m ^ 2 + -n * n)]
     exact (Int.isCoprime_iff_gcd_eq_one.mpr ht4).pow_left.add_mul_right_left (-n)
-  -- m is positive because b is non-zero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
+  -- m is positive because b is nonzero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
   have hb20 : b ^ 2 ≠ 0 := mt pow_eq_zero h.1.2.1
   have h4 : 0 < m := by
     apply lt_of_le_of_ne ht6

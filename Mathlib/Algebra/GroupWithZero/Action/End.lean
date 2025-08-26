@@ -70,7 +70,7 @@ instance AddMonoid.End.applyFaithfulSMul [AddMonoid α] :
     FaithfulSMul (AddMonoid.End α) α :=
   ⟨fun {_ _ h} => AddMonoidHom.ext h⟩
 
-/-- Each non-zero element of a `GroupWithZero` defines an additive monoid isomorphism of an
+/-- Each nonzero element of a `GroupWithZero` defines an additive monoid isomorphism of an
 `AddMonoid` on which it acts distributively.
 This is a stronger version of `DistribMulAction.toAddMonoidHom`. -/
 def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]

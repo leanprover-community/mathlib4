@@ -20,7 +20,7 @@ non-commutative monoids.
 
 This file declares the notations:
 - `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the locale `nonZeroDivisors`.
-- `M₀⁰[M]` for the submonoid of non-zero smul-divisors of `M₀` with respect to `M`, in the locale
+- `M₀⁰[M]` for the submonoid of nonzero smul-divisors of `M₀` with respect to `M`, in the locale
   `nonZeroSMulDivisors`
 
 Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access this notation in
@@ -96,11 +96,11 @@ end
 def nonZeroDivisors (M₀ : Type*) [MonoidWithZero M₀] : Submonoid M₀ :=
   nonZeroDivisorsLeft M₀ ⊓ nonZeroDivisorsRight M₀
 
-/-- The notation for the submonoid of non-zero divisors. -/
+/-- The notation for the submonoid of nonzero divisors. -/
 scoped[nonZeroDivisors] notation:9000 M₀ "⁰" => nonZeroDivisors M₀
 
 /-- Let `M₀` be a monoid with zero and `M` an additive monoid with an `M₀`-action, then the
-collection of non-zero smul-divisors forms a submonoid.
+collection of nonzero smul-divisors forms a submonoid.
 
 These elements are also called `M`-regular. -/
 def nonZeroSMulDivisors (M₀ : Type*) [MonoidWithZero M₀] (M : Type*) [Zero M] [MulAction M₀ M] :
@@ -109,7 +109,7 @@ def nonZeroSMulDivisors (M₀ : Type*) [MonoidWithZero M₀] (M : Type*) [Zero M
   one_mem' m h := (one_smul M₀ m) ▸ h
   mul_mem' {r₁ r₂} h₁ h₂ m H := h₂ _ <| h₁ _ <| mul_smul r₁ r₂ m ▸ H
 
-/-- The notation for the submonoid of non-zero smul-divisors. -/
+/-- The notation for the submonoid of nonzero smul-divisors. -/
 scoped[nonZeroSMulDivisors] notation:9000 M₀ "⁰[" M "]" => nonZeroSMulDivisors M₀ M
 
 open nonZeroDivisors
@@ -374,7 +374,7 @@ variable {M₀}
 section MonoidWithZero
 variable [MonoidWithZero M₀] {a b : M₀⁰}
 
-/-- The units of the monoid of non-zero divisors of `M₀` are equivalent to the units of `M₀`. -/
+/-- The units of the monoid of nonzero divisors of `M₀` are equivalent to the units of `M₀`. -/
 @[simps]
 def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   __ := Units.map M₀⁰.subtype
@@ -400,8 +400,8 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
   · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
     rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
 
-/-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
-of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
+/-- The nonzero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
+of the nonzero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
   toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)

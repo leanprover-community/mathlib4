@@ -44,7 +44,7 @@ import Mathlib.RingTheory.SimpleModule.Basic
   `p i`-torsion submodules when the `p i` are pairwise coprime. A more general version with coprime
   ideals is `Submodule.torsionBySet_is_internal`.
 * `Submodule.noZeroSMulDivisors_iff_torsion_bot` : a module over a domain has
-  `NoZeroSMulDivisors` (that is, there is no non-zero `a`, `x` such that `a • x = 0`)
+  `NoZeroSMulDivisors` (that is, there is no nonzero `a`, `x` such that `a • x = 0`)
   iff its torsion submodule is trivial.
 * `Submodule.QuotientTorsion.torsion_eq_bot` : quotienting by the torsion submodule makes the
   torsion submodule of the new module trivial. If `R` is a domain, we can derive an instance

@@ -14,7 +14,7 @@ import Mathlib.Topology.Order.LocalExtr
 # Topological fields
 
 A topological division ring is a topological ring whose inversion function is continuous at every
-non-zero element.
+nonzero element.
 
 -/
 

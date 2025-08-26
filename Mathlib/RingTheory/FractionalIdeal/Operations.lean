@@ -321,7 +321,7 @@ section Quotient
 
 This section defines the ideal quotient of fractional ideals.
 
-In this section we need that each non-zero `y : R` has an inverse in
+In this section we need that each nonzero `y : R` has an inverse in
 the localization, i.e. that the localization is a field. We satisfy this
 assumption by taking `S = nonZeroDivisors R`, `R`'s localization at which
 is a field because `R` is a domain.

@@ -56,7 +56,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
     exact mod_cast a0
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le
-  -- Looks innocuous, but we now have an integer with non-zero absolute value: this is at
+  -- Looks innocuous, but we now have an integer with nonzero absolute value: this is at
   -- least one away from zero.  The gain here is what gets the proof going.
   have ap : 0 < |a * ↑q - ↑b * p| := abs_pos.mpr a0
   -- Actually, the absolute value of an integer is a natural number
@@ -173,7 +173,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
 /-- **Liouville's Theorem** -/
 protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental ℤ x := by
   -- Proceed by contradiction: if `x` is algebraic, then `x` is the root (`ef0`) of a
-  -- non-zero (`f0`) polynomial `f`
+  -- nonzero (`f0`) polynomial `f`
   rintro ⟨f : ℤ[X], f0, ef0⟩
   -- Change `aeval x f = 0` to `eval (map _ f) = 0`, who knew.
   replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0 := by

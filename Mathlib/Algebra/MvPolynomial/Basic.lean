@@ -52,7 +52,7 @@ In the definitions below, we use the following notation:
 ## Implementation notes
 
 Recall that if `Y` has a zero, then `X →₀ Y` is the type of functions from `X` to `Y` with finite
-support, i.e. such that only finitely many elements of `X` get sent to non-zero terms in `Y`.
+support, i.e. such that only finitely many elements of `X` get sent to nonzero terms in `Y`.
 The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R`; here `σ →₀ ℕ` denotes the space of all
 monomials in the variables, and the function to `R` sends a monomial to its coefficient in
 the polynomial being represented.
@@ -496,7 +496,7 @@ theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolyno
 
 section Support
 
-/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient. -/
+/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a nonzero coefficient. -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
   Finsupp.support p
 

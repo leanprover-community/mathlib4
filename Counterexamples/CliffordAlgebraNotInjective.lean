@@ -260,7 +260,7 @@ theorem algebraMap_αβγ_eq_zero : algebraMap K (CliffordAlgebra Q) (α * β * 
   rw [Algebra.algebraMap_eq_smul_one, αβγ_smul_eq_zero]
 
 /-- Our final result: for the quadratic form `Q60596.Q`, the algebra map to the Clifford algebra
-is not injective, as it sends the non-zero `α * β * γ` to zero. -/
+is not injective, as it sends the nonzero `α * β * γ` to zero. -/
 theorem algebraMap_not_injective : ¬Function.Injective (algebraMap K <| CliffordAlgebra Q) :=
   fun h => αβγ_ne_zero <| h <| by rw [algebraMap_αβγ_eq_zero, RingHom.map_zero]
 

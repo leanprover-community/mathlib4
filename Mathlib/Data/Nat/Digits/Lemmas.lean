@@ -133,7 +133,7 @@ theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2
   convert Nat.mul_le_mul_left ((b + 2) ^ (l.length - 1)) this using 1
   rw [Nat.mul_one]
 
-/-- Any non-zero natural number `m` is greater than
+/-- Any nonzero natural number `m` is greater than
 (b+2)^((number of digits in the base (b+2) representation of m) - 1)
 -/
 theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
@@ -143,7 +143,7 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
-/-- Any non-zero natural number `m` is greater than
+/-- Any nonzero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
 theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :

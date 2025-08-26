@@ -451,7 +451,7 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
   rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
 
-/-- If a non-zero polynomial splits, then it has no repeated roots on that field
+/-- If a nonzero polynomial splits, then it has no repeated roots on that field
 if and only if it is separable. -/
 theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
     f.roots.Nodup ↔ f.Separable := by
@@ -463,7 +463,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
-/-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
+/-- If a nonzero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
 if and only if it is separable. -/
 @[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)

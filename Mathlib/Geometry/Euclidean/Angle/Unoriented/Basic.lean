@@ -217,7 +217,7 @@ theorem inner_eq_neg_mul_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) :
 theorem inner_eq_mul_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) : ⟪x, y⟫ = ‖x‖ * ‖y‖ := by
   simp [← cos_angle_mul_norm_mul_norm, h]
 
-/-- The inner product of two non-zero vectors equals the negative product of their norms
+/-- The inner product of two nonzero vectors equals the negative product of their norms
 if and only if the angle between the two vectors is π. -/
 theorem inner_eq_neg_mul_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ⟪x, y⟫ = -(‖x‖ * ‖y‖) ↔ angle x y = π := by
@@ -225,7 +225,7 @@ theorem inner_eq_neg_mul_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
   have h₁ : ‖x‖ * ‖y‖ ≠ 0 := (mul_pos (norm_pos_iff.mpr hx) (norm_pos_iff.mpr hy)).ne'
   rw [angle, h, neg_div, div_self h₁, Real.arccos_neg_one]
 
-/-- The inner product of two non-zero vectors equals the product of their norms
+/-- The inner product of two nonzero vectors equals the product of their norms
 if and only if the angle between the two vectors is 0. -/
 theorem inner_eq_mul_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ⟪x, y⟫ = ‖x‖ * ‖y‖ ↔ angle x y = 0 := by
@@ -257,7 +257,7 @@ theorem norm_sub_eq_abs_sub_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) 
     inner_eq_mul_norm_of_angle_eq_zero h, sq_abs (‖x‖ - ‖y‖)]
   ring
 
-/-- The norm of the difference of two non-zero vectors equals the sum of their norms
+/-- The norm of the difference of two nonzero vectors equals the sum of their norms
 if and only the angle between the two vectors is π. -/
 theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x - y‖ = ‖x‖ + ‖y‖ ↔ angle x y = π := by
@@ -269,7 +269,7 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
     ⟪x, y⟫ = (‖x‖ ^ 2 + ‖y‖ ^ 2 - (‖x‖ + ‖y‖) ^ 2) / 2 := by linarith
     _ = -(‖x‖ * ‖y‖) := by ring
 
-/-- The norm of the sum of two non-zero vectors equals the sum of their norms
+/-- The norm of the sum of two nonzero vectors equals the sum of their norms
 if and only the angle between the two vectors is 0. -/
 theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ ↔ angle x y = 0 := by
@@ -281,7 +281,7 @@ theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y 
     ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
     _ = ‖x‖ * ‖y‖ := by ring
 
-/-- The norm of the difference of two non-zero vectors equals the absolute value
+/-- The norm of the difference of two nonzero vectors equals the absolute value
 of the difference of their norms if and only the angle between the two vectors is 0. -/
 theorem norm_sub_eq_abs_sub_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ‖x - y‖ = |‖x‖ - ‖y‖| ↔ angle x y = 0 := by

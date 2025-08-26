@@ -177,7 +177,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   constructor
   refine LocallyFiniteOrder.ofFiniteIcc ?_
   -- We only need to show that we can construct a finite set for some set between
-  -- a non-zero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
+  -- a nonzero `z : Γ₀` and 1, because we can scale/invert this set to cover the whole group.
   suffices ∀ z : (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ, (Set.Icc z 1).Finite by
     rintro x y
     rcases lt_trichotomy y x with hxy | rfl | hxy

@@ -239,7 +239,7 @@ end OfFintype
 
 section normalize
 
-/-- Given an `f` with non-zero and non-infinite sum, get a `PMF` by normalizing `f` by its `tsum`.
+/-- Given an `f` with nonzero and non-infinite sum, get a `PMF` by normalizing `f` by its `tsum`.
 -/
 def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : PMF α :=
   ⟨fun a => f a * (∑' x, f x)⁻¹,
@@ -260,7 +260,7 @@ end normalize
 
 section Filter
 
-/-- Create new `PMF` by filtering on a set with non-zero measure and normalizing. -/
+/-- Create new `PMF` by filtering on a set with nonzero measure and normalizing. -/
 def filter (p : PMF α) (s : Set α) (h : ∃ a ∈ s, a ∈ p.support) : PMF α :=
   PMF.normalize (s.indicator p) (by simpa using h) (p.tsum_coe_indicator_ne_top s)
 

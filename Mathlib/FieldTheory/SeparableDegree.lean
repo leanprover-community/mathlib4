@@ -72,7 +72,7 @@ This file contains basics about the separable degree of a field extension.
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
 
-- `Polynomial.natSepDegree_eq_natDegree_iff`: the separable degree of a non-zero polynomial is
+- `Polynomial.natSepDegree_eq_natDegree_iff`: the separable degree of a nonzero polynomial is
   equal to its degree if and only if it is separable.
 
 - `Polynomial.natSepDegree_eq_of_splits`: if a polynomial splits over `E`, then its separable degree
@@ -326,7 +326,7 @@ theorem natSepDegree_zero : (0 : F[X]).natSepDegree = 0 := by
 theorem natSepDegree_one : (1 : F[X]).natSepDegree = 0 := by
   rw [← C_1, natSepDegree_C]
 
-/-- A non-constant polynomial has non-zero separable degree. -/
+/-- A non-constant polynomial has nonzero separable degree. -/
 theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := by
   rw [natSepDegree, ne_eq, Finset.card_eq_zero, ← ne_eq, ← Finset.nonempty_iff_ne_empty]
   use rootOfSplits _ (SplittingField.splits f) (ne_of_apply_ne _ h)
@@ -338,11 +338,11 @@ theorem natSepDegree_ne_zero (h : f.natDegree ≠ 0) : f.natSepDegree ≠ 0 := b
 theorem natSepDegree_eq_zero_iff : f.natSepDegree = 0 ↔ f.natDegree = 0 :=
   ⟨(natSepDegree_ne_zero f).mtr, natSepDegree_eq_zero f⟩
 
-/-- A polynomial has non-zero separable degree if and only if it is non-constant. -/
+/-- A polynomial has nonzero separable degree if and only if it is non-constant. -/
 theorem natSepDegree_ne_zero_iff : f.natSepDegree ≠ 0 ↔ f.natDegree ≠ 0 :=
   Iff.not <| natSepDegree_eq_zero_iff f
 
-/-- The separable degree of a non-zero polynomial is equal to its degree if and only if
+/-- The separable degree of a nonzero polynomial is equal to its degree if and only if
 it is separable. -/
 theorem natSepDegree_eq_natDegree_iff (hf : f ≠ 0) :
     f.natSepDegree = f.natDegree ↔ f.Separable := by
@@ -550,7 +550,7 @@ alias natSepDegree_eq_one_iff_of_irreducible' := Irreducible.natSepDegree_eq_one
 alias natSepDegree_eq_one_iff_of_irreducible := Irreducible.natSepDegree_eq_one_iff_of_monic
 
 /-- If a monic polynomial of separable degree one splits, then it is of form `(X - C y) ^ m` for
-some non-zero natural number `m` and some element `y` of `F`. -/
+some nonzero natural number `m` and some element `y` of `F`. -/
 theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
     (hs : f.Splits (RingHom.id F))
     (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
@@ -581,7 +581,7 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
     exact not_irreducible_pow hq.ne_one hi
 
 /-- If a monic polynomial over a field `F` of exponential characteristic `q` has separable degree
-one, then it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
+one, then it is of the form `(X ^ (q ^ n) - C y) ^ m` for some nonzero natural number `m`,
 some natural number `n`, and some element `y` of `F`, such that either `n = 0` or `y` has no
 `q`-th root in `F`. -/
 theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F q] (hm : f.Monic)
@@ -604,7 +604,7 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
     mul_one, ← hp] using hf
 
 /-- A monic polynomial over a field `F` of exponential characteristic `q` has separable degree one
-if and only if it is of the form `(X ^ (q ^ n) - C y) ^ m` for some non-zero natural number `m`,
+if and only if it is of the form `(X ^ (q ^ n) - C y) ^ m` for some nonzero natural number `m`,
 some natural number `n`, and some element `y` of `F`. -/
 theorem natSepDegree_eq_one_iff (q : ℕ) [ExpChar F q] (hm : f.Monic) :
     f.natSepDegree = 1 ↔ ∃ (m n : ℕ) (y : F), m ≠ 0 ∧ f = (X ^ q ^ n - C y) ^ m := by

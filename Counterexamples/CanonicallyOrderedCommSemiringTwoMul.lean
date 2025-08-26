@@ -9,7 +9,7 @@ import Mathlib.Data.ZMod.Basic
 /-!
 
 A canonically ordered commutative semiring with two different elements `a` and `b` such that
-`a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically
+`a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed nonzero element of a canonically
 ordered semiring need not be injective.  In particular, multiplying by a strictly positive element
 need not be strictly monotone.
 

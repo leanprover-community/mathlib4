@@ -488,7 +488,7 @@ theorem ideal_ne_top_iff_exists (hR : ¬IsField R) (I : Ideal R) :
 variable (R)
 
 /-- A Dedekind domain is equal to the intersection of its localizations at all its height one
-non-zero prime ideals viewed as subalgebras of its field of fractions. -/
+nonzero prime ideals viewed as subalgebras of its field of fractions. -/
 theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
     (⨅ v : HeightOneSpectrum R,
         Localization.subalgebra.ofField K _ v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by

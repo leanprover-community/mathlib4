@@ -29,7 +29,7 @@ and it will mainly be applied to rings (e.g. the ring of integers in a number fi
 We therefore implement it as a subgroup of the units of a commutative monoid.
 
 We have chosen to define `rootsOfUnity n` for `n : ℕ` and add a `[NeZero n]` typeclass
-assumption when we need `n` to be non-zero (which is the case for most interesting statements).
+assumption when we need `n` to be nonzero (which is the case for most interesting statements).
 Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^0 = 1` is
 satisfied for all units).
 -/

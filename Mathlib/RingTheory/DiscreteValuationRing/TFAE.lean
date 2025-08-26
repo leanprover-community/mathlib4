@@ -153,7 +153,7 @@ The following are equivalent:
 0. `R` is a PID
 1. `R` is a valuation ring
 2. `R` is a Dedekind domain
-3. `R` is integrally closed with at most one non-zero prime ideal
+3. `R` is integrally closed with at most one nonzero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² ≤ 1`
 6. Every nonzero ideal is a power of `m`.
@@ -195,7 +195,7 @@ Noetherian local domain that is not a field `(R, m, k)`:
 0. `R` is a discrete valuation ring
 1. `R` is a valuation ring
 2. `R` is a Dedekind domain
-3. `R` is integrally closed with a unique non-zero prime ideal
+3. `R` is integrally closed with a unique nonzero prime ideal
 4. `m` is principal
 5. `dimₖ m/m² = 1`
 6. Every nonzero ideal is a power of `m`.

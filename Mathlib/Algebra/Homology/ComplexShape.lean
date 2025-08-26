@@ -47,7 +47,7 @@ with chain groups indexed by `ι`.
 Typically `ι` will be `ℕ`, `ℤ`, or `Fin n`.
 
 There is a relation `Rel : ι → ι → Prop`,
-and we will only allow a non-zero differential from `i` to `j` when `Rel i j`.
+and we will only allow a nonzero differential from `i` to `j` when `Rel i j`.
 
 There are axioms which imply `{ j // c.Rel i j }` and `{ i // c.Rel i j }` are subsingletons.
 This means that the shape consists of some union of lines, rays, intervals, and circles.

@@ -154,7 +154,7 @@ theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.
   If we let `R` be the image of `R` in `R[x]/I` then we also have a map `R[x] → R'[x]`.
   In particular we can map `I` across this map, to get `I'` and a new map `R' → R'[x] → R'[x]/I`.
-  This theorem shows `I'` will not contain any non-zero constant polynomials. -/
+  This theorem shows `I'` will not contain any nonzero constant polynomials. -/
 theorem eq_zero_of_polynomial_mem_map_range (I : Ideal R[X]) (x : ((Quotient.mk I).comp C).range)
     (hx : C x ∈ I.map (Polynomial.mapRingHom ((Quotient.mk I).comp C).rangeRestrict)) : x = 0 := by
   let i := ((Quotient.mk I).comp C).rangeRestrict

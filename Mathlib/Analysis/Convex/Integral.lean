@@ -78,14 +78,14 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
     apply (range g).inter_subset_right
     exact SimpleFunc.approxOn_mem hgm.measurable h₀ _ _
 
-/-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
+/-- If `μ` is a nonzero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.average_mem [IsFiniteMeasure μ] [NeZero μ] (hs : Convex ℝ s) (hsc : IsClosed s)
     (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (⨍ x, f x ∂μ) ∈ s :=
   hs.integral_mem hsc (ae_mono' smul_absolutelyContinuous hfs) hfi.to_average
 
-/-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
+/-- If `μ` is a nonzero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
@@ -94,7 +94,7 @@ theorem Convex.set_average_mem (hs : Convex ℝ s) (hsc : IsClosed s) (h0 : μ t
   have := NeZero.mk h0
   hs.average_mem hsc hfs hfi
 
-/-- If `μ` is a non-zero finite measure on `α`, `s` is a convex set in `E`, and `f` is an integrable
+/-- If `μ` is a nonzero finite measure on `α`, `s` is a convex set in `E`, and `f` is an integrable
 function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `closure s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.set_average_mem_closure (hs : Convex ℝ s) (h0 : μ t ≠ 0) (ht : μ t ≠ ∞)
@@ -119,7 +119,7 @@ theorem ConcaveOn.average_mem_hypograph [IsFiniteMeasure μ] [NeZero μ] (hg : C
     hg.neg.average_mem_epigraph hgc.neg hsc hfs hfi hgi.neg
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
-set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
+set `s`, `μ` is a finite nonzero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points to `s`, then the value of `g` at the average value of `f` is less than or equal to
 the average value of `g ∘ f` provided that both `f` and `g ∘ f` are integrable. See also
 `ConvexOn.map_centerMass_le` for a finite sum version of this lemma. -/
@@ -130,7 +130,7 @@ theorem ConvexOn.map_average_le [IsFiniteMeasure μ] [NeZero μ]
   (hg.average_mem_epigraph hgc hsc hfs hfi hgi).2
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is concave and continuous on a convex closed
-set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
+set `s`, `μ` is a finite nonzero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points to `s`, then the average value of `g ∘ f` is less than or equal to the value of `g`
 at the average value of `f` provided that both `f` and `g ∘ f` are integrable. See also
 `ConcaveOn.le_map_centerMass` for a finite sum version of this lemma. -/
@@ -141,7 +141,7 @@ theorem ConcaveOn.le_map_average [IsFiniteMeasure μ] [NeZero μ]
   (hg.average_mem_hypograph hgc hsc hfs hfi hgi).2
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
-set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
+set `s`, `μ` is a finite nonzero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points of a set `t` to `s`, then the value of `g` at the average value of `f` over `t` is
 less than or equal to the average value of `g ∘ f` over `t` provided that both `f` and `g ∘ f` are
 integrable. -/
@@ -154,7 +154,7 @@ theorem ConvexOn.set_average_mem_epigraph (hg : ConvexOn ℝ s g) (hgc : Continu
   hg.average_mem_epigraph hgc hsc hfs hfi hgi
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is concave and continuous on a convex closed
-set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
+set `s`, `μ` is a finite nonzero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points of a set `t` to `s`, then the average value of `g ∘ f` over `t` is less than or
 equal to the value of `g` at the average value of `f` over `t` provided that both `f` and `g ∘ f`
 are integrable. -/
@@ -166,7 +166,7 @@ theorem ConcaveOn.set_average_mem_hypograph (hg : ConcaveOn ℝ s g) (hgc : Cont
     hg.neg.set_average_mem_epigraph hgc.neg hsc h0 ht hfs hfi hgi.neg
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is convex and continuous on a convex closed
-set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
+set `s`, `μ` is a finite nonzero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points of a set `t` to `s`, then the value of `g` at the average value of `f` over `t` is
 less than or equal to the average value of `g ∘ f` over `t` provided that both `f` and `g ∘ f` are
 integrable. -/
@@ -177,7 +177,7 @@ theorem ConvexOn.map_set_average_le (hg : ConvexOn ℝ s g) (hgc : ContinuousOn 
   (hg.set_average_mem_epigraph hgc hsc h0 ht hfs hfi hgi).2
 
 /-- **Jensen's inequality**: if a function `g : E → ℝ` is concave and continuous on a convex closed
-set `s`, `μ` is a finite non-zero measure on `α`, and `f : α → E` is a function sending
+set `s`, `μ` is a finite nonzero measure on `α`, and `f : α → E` is a function sending
 `μ`-a.e. points of a set `t` to `s`, then the average value of `g ∘ f` over `t` is less than or
 equal to the value of `g` at the average value of `f` over `t` provided that both `f` and `g ∘ f`
 are integrable. -/

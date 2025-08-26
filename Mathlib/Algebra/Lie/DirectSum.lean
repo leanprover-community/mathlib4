@@ -179,14 +179,14 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
     map_lie' := fun {x y} => by
       let f' i := (f i : L i →ₗ[R] L')
       /- The goal is linear in `y`. We can use this to reduce to the case that `y` has only one
-        non-zero component. -/
+        nonzero component. -/
       suffices ∀ (i : ι) (y : L i),
           toModule R ι L' f' ⁅x, of L i y⁆ =
             ⁅toModule R ι L' f' x, toModule R ι L' f' (of L i y)⁆ by
         simp only [← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
         congr; clear y; ext i y; exact this i y
-      -- Similarly, we can reduce to the case that `x` has only one non-zero component.
+      -- Similarly, we can reduce to the case that `x` has only one nonzero component.
       suffices ∀ (i j) (y : L i) (x : L j),
           toModule R ι L' f' ⁅of L j x, of L i y⁆ =
             ⁅toModule R ι L' f' (of L j x), toModule R ι L' f' (of L i y)⁆ by

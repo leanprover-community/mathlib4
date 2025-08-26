@@ -199,7 +199,7 @@ theorem X_inv : (X : k⟦X⟧)⁻¹ = 0 :=
 theorem smul_inv (r : k) (φ : k⟦X⟧) : (r • φ)⁻¹ = r⁻¹ • φ⁻¹ :=
   MvPowerSeries.smul_inv _ _
 
-/-- `firstUnitCoeff` is the non-zero coefficient whose index is `f.order`, seen as a unit of the
+/-- `firstUnitCoeff` is the nonzero coefficient whose index is `f.order`, seen as a unit of the
   field. It is obtained using `divided_by_X_pow_order`, defined in `PowerSeries.Order`. -/
 def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
   have : Invertible (constantCoeff (divXPowOrder f)) := by
@@ -207,7 +207,7 @@ def firstUnitCoeff {f : k⟦X⟧} (hf : f ≠ 0) : kˣ :=
     simpa [constantCoeff_divXPowOrder_eq_zero_iff.not]
   unitOfInvertible (constantCoeff (divXPowOrder f))
 
-/-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a non-zero power
+/-- `Inv_divided_by_X_pow_order` is the inverse of the element obtained by diving a nonzero power
 series by the largest power of `X` dividing it. Useful to create a term of type `Units`, done in
 `Unit_divided_by_X_pow_order` -/
 def Inv_divided_by_X_pow_order {f : k⟦X⟧} (hf : f ≠ 0) : k⟦X⟧ :=

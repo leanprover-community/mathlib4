@@ -21,7 +21,7 @@ groups here are not necessarily finite dimensional.
 * `LieAddGroup I G` : a Lie additive group where `G` is a manifold on the model with corners `I`.
 * `LieGroup I G` : a Lie multiplicative group where `G` is a manifold on the model with corners `I`.
 * `ContMDiffInv₀`: typeclass for `C^n` manifolds with `0` and `Inv` such that inversion is `C^n`
-  map at each non-zero point. This includes complete normed fields and (multiplicative) Lie groups.
+  map at each nonzero point. This includes complete normed fields and (multiplicative) Lie groups.
 
 
 ## Main results

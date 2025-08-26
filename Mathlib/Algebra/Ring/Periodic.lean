@@ -224,7 +224,7 @@ theorem Periodic.lift_coe [AddGroup α] (h : Periodic f c) (a : α) :
   rfl
 
 /-- A periodic function `f : R → X` on a semiring (or, more generally, `AddZeroClass`)
-of non-zero period is not injective. -/
+of nonzero period is not injective. -/
 lemma Periodic.not_injective {R X : Type*} [AddZeroClass R] {f : R → X} {c : R}
     (hf : Periodic f c) (hc : c ≠ 0) : ¬ Injective f := fun h ↦ hc <| h hf.eq
 

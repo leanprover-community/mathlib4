@@ -20,7 +20,7 @@ for them.
 
 There are various definitions of a DVR in the literature; we define a DVR to be a local PID
 which is not a field (the first definition in Wikipedia) and prove that this is equivalent
-to being a PID with a unique non-zero prime ideal (the definition in Serre's
+to being a PID with a unique nonzero prime ideal (the definition in Serre's
 book "Local Fields").
 
 Let R be an integral domain, assumed to be a principal ideal ring and a local ring.
@@ -103,7 +103,7 @@ theorem exists_irreducible : ∃ ϖ : R, Irreducible ϖ := by
 theorem exists_prime : ∃ ϖ : R, Prime ϖ :=
   (exists_irreducible R).imp fun _ => irreducible_iff_prime.1
 
-/-- An integral domain is a DVR iff it's a PID with a unique non-zero prime ideal. -/
+/-- An integral domain is a DVR iff it's a PID with a unique nonzero prime ideal. -/
 theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
     IsDiscreteValuationRing R ↔ IsPrincipalIdealRing R ∧ ∃! P : Ideal R, P ≠ ⊥ ∧ IsPrime P := by
   constructor

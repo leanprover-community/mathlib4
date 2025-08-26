@@ -11,7 +11,7 @@ import Mathlib.SetTheory.Ordinal.Family
 # Cantor Normal Form
 
 The Cantor normal form of an ordinal is generally defined as its base `ω` expansion, with its
-non-zero exponents in decreasing order. Here, we more generally define a base `b` expansion
+nonzero exponents in decreasing order. Here, we more generally define a base `b` expansion
 `Ordinal.CNF` in this manner, which is well-behaved for any `b ≥ 2`.
 
 # Implementation notes

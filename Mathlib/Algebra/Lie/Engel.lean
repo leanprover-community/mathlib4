@@ -41,9 +41,9 @@ be proper.
 
 The first part of the traditional statement of Engel's theorem consists of the statement that if `M`
 is a non-trivial `R`-module and `L ⊆ End(M)` is a finite-dimensional Lie subalgebra of nilpotent
-elements, then there exists a non-zero element `m : M` that is annihilated by every element of `L`.
+elements, then there exists a nonzero element `m : M` that is annihilated by every element of `L`.
 This follows trivially from the result established here `LieModule.isNilpotent_iff_forall`, that
-`M` is a nilpotent Lie module over `L`, since the last non-zero term in the lower central series
+`M` is a nilpotent Lie module over `L`, since the last nonzero term in the lower central series
 will consist of such elements `m` (see: `LieModule.nontrivial_max_triv_of_isNilpotent`). It seems
 that this result has not previously been established at this level of generality.
 

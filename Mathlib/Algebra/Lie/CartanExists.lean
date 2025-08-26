@@ -251,7 +251,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     use n + 1
     rwa [pow_succ]
   -- Now we find a subset `s` of `K` of size `≥ r`
-  -- such that `constantCoeff ψ` takes non-zero values on all of `s`.
+  -- such that `constantCoeff ψ` takes nonzero values on all of `s`.
   -- This turns out to be the subset that we alluded to earlier.
   obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff ψ).eval α ≠ 0 := by
     classical
@@ -267,7 +267,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
       suffices finrank K Q + r = finrank K L by rw [← this, zero_add, Nat.add_sub_cancel]
       apply Submodule.finrank_quotient_add_finrank
     -- Hence there exists a subset of size `≥ r` in the complement of `t`,
-    -- and `constantCoeff ψ` takes non-zero values on all of this subset.
+    -- and `constantCoeff ψ` takes nonzero values on all of this subset.
     obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
     use s \ t
     refine ⟨?_, ?_⟩
@@ -328,7 +328,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
-  -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
+  -- Recall that `constantCoeff ψ` is nonzero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
   -- Hence `⁅v, _⁆` acts injectively on `Q`.
   rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
@@ -338,7 +338,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
   use (toEnd K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
-  · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
+  · -- And `⁅v, _⁆ ^ k` applied to `z'` is nonzero by definition of `n`.
     apply Nat.find_min hz'; omega
   · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 

@@ -29,7 +29,7 @@ We define the quadratic character of a finite field `F` with values in ℤ.
 section Define
 
 /-- Define the quadratic character with values in ℤ on a monoid with zero `α`.
-It takes the value zero at zero; for non-zero argument `a : α`, it is `1`
+It takes the value zero at zero; for nonzero argument `a : α`, it is `1`
 if `a` is a square, otherwise it is `-1`.
 
 This only deserves the name "character" when it is multiplicative,

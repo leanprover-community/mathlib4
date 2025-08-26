@@ -30,7 +30,7 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 
 # Main results
 
-- `Ideal.IsPrime.to_maximal_ideal`: a non-zero prime ideal in a PID is maximal.
+- `Ideal.IsPrime.to_maximal_ideal`: a nonzero prime ideal in a PID is maximal.
 - `EuclideanDomain.to_principal_ideal_domain` : a Euclidean domain is a PID.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 

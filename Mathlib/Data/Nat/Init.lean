@@ -18,7 +18,7 @@ import Mathlib.Util.AssertExists
 This file contains:
 * some basic lemmas about natural numbers
 * extra recursors:
-  * `leRecOn`, `le_induction`: recursion and induction principles starting at non-zero numbers
+  * `leRecOn`, `le_induction`: recursion and induction principles starting at nonzero numbers
   * `decreasing_induction`: recursion growing downwards
   * `le_rec_on'`, `decreasing_induction'`: versions with slightly weaker assumptions
   * `strong_rec'`: recursion based on strong inequalities
@@ -141,7 +141,7 @@ lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) 
 @[simp] lemma rec_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
     Nat.rec (motive := C) h0 h 1 = h 0 h0 := rfl
 
-/-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
+/-- Recursion starting at a nonzero number: given a map `C k → C (k+1)` for each `k ≥ n`,
 there is a map from `C n` to each `C m`, `n ≤ m`.
 
 This is a version of `Nat.le.rec` that works for `Sort u`.
@@ -208,7 +208,7 @@ lemma leRec_succ_left {motive : (m : ℕ) → n ≤ m → Sort*}
       leRec (motive := motive) refl le_succ_of_le h1 := by
   rw [leRec_trans _ _ (le_succ n) h2, leRec_succ']
 
-/-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
+/-- Recursion starting at a nonzero number: given a map `C k → C (k + 1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
 when `k ≥ n`, see `Nat.leRec`. -/
 @[elab_as_elim]
@@ -251,7 +251,7 @@ lemma strongRecOn'_beta {P : ℕ → Sort*} {h} :
     (strongRecOn' n h : P n) = h n fun m _ ↦ (strongRecOn' m h : P m) := by
   simp only [strongRecOn']; rw [Nat.strongRec']
 
-/-- Induction principle starting at a non-zero number.
+/-- Induction principle starting at a nonzero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
 for `induction'`).
 

@@ -124,7 +124,7 @@ lemma primeFactors_val_eq_normalizedFactors (ha : IsRadical a) :
   rw [primeFactors, Multiset.toFinset_val, Multiset.dedup_eq_self]
   exact normalizedFactors_nodup ha
 
--- Note that the non-zero assumptions are necessary here.
+-- Note that the nonzero assumptions are necessary here.
 theorem primeFactors_mul_eq_union [DecidableEq M] (ha : a ≠ 0) (hb : b ≠ 0) :
     primeFactors (a * b) = primeFactors a ∪ primeFactors b := by
   ext p

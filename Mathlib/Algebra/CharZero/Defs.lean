@@ -10,7 +10,7 @@ import Mathlib.Logic.Basic
 
 # Characteristic zero
 
-A ring `R` is called of characteristic zero if every natural number `n` is non-zero when considered
+A ring `R` is called of characteristic zero if every natural number `n` is nonzero when considered
 as an element of `R`. Since this definition doesn't mention the multiplicative structure of `R`
 except for the existence of `1` in this file characteristic zero is defined for additive monoids
 with `1`.

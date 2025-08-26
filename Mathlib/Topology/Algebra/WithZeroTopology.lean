@@ -73,7 +73,7 @@ theorem tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀
   simp [nhds_zero]
 
 /-!
-### Neighbourhoods of non-zero elements
+### Neighbourhoods of nonzero elements
 -/
 
 /-- The neighbourhood filter of a nonzero element consists of all sets containing that

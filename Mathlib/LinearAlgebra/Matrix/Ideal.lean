@@ -91,7 +91,7 @@ open Matrix
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
 /-- A standard basis matrix is in $J(Mₙ(I))$
-as long as its one possibly non-zero entry is in $J(I)$. -/
+as long as its one possibly nonzero entry is in $J(I)$. -/
 theorem single_mem_jacobson_matrix (I : Ideal R) :
     ∀ x ∈ I.jacobson, ∀ (i j : n), single i j x ∈ (I.matrix n).jacobson := by
   -- Proof generalized from example 8 in

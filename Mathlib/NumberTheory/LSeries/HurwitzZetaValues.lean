@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.LSeries.RiemannZeta
 /-!
 # Special values of Hurwitz and Riemann zeta functions
 
-This file gives the formula for `ζ (2 * k)`, for `k` a non-zero integer, in terms of Bernoulli
+This file gives the formula for `ζ (2 * k)`, for `k` a nonzero integer, in terms of Bernoulli
 numbers. More generally, we give formulae for any Hurwitz zeta functions at any (strictly) negative
 integer in terms of Bernoulli polynomials.
 

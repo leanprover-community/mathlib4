@@ -473,7 +473,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
 variable [LieModule R L M]
 
 /-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
-of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
+of `M` contains a nonzero element on which `L` acts trivially unless the entire action is trivial.
 
 Taking `M = L`, this provides a useful characterisation of Abelian-ness for nilpotent Lie
 algebras. -/

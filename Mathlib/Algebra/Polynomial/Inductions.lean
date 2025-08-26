@@ -175,11 +175,11 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
         exact hC fun h : coeff p 0 = 0 => by simp [h] at h0')
     h0
 
-/-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
+/-- A property holds for all polynomials of nonzero `natDegree` with coefficients in a
 semiring `R` if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
-* monomials with nonzero coefficient and non-zero exponent,
+* monomials with nonzero coefficient and nonzero exponent,
 with appropriate restrictions on each term.
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.

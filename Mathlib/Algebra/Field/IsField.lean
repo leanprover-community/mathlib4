@@ -10,7 +10,7 @@ import Mathlib.Tactic.Common
 # `IsField` predicate
 
 Predicate on a (semi)ring that it is a (semi)field, i.e. that the multiplication is
-commutative, that it has more than one element and that all non-zero elements have a
+commutative, that it has more than one element and that all nonzero elements have a
 multiplicative inverse. In contrast to `Field`, which contains the data of a function associating
 to an element of the field its multiplicative inverse, this predicate only assumes the existence
 and can therefore more easily be used to e.g. transfer along ring isomorphisms.

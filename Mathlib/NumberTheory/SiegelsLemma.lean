@@ -12,13 +12,13 @@ import Mathlib.Tactic.Rify
 
 In this file we introduce and prove Siegel's Lemma in its most basic version. This is a fundamental
 tool in diophantine approximation and transcendence and says that there exists a "small" integral
-non-zero solution of a non-trivial underdetermined system of linear equations with integer
+nonzero solution of a non-trivial underdetermined system of linear equations with integer
 coefficients.
 
 ## Main results
 
-- `exists_ne_zero_int_vec_norm_le`: Given a non-zero `m × n` matrix `A` with `m < n` the linear
-system it determines has a non-zero integer solution `t` with
+- `exists_ne_zero_int_vec_norm_le`: Given a nonzero `m × n` matrix `A` with `m < n` the linear
+system it determines has a nonzero integer solution `t` with
 `‖t‖ ≤ ((n * ‖A‖) ^ ((m : ℝ) / (n - m)))`
 
 ## Notation
@@ -115,7 +115,7 @@ private lemma card_S_eq [DecidableEq α] : #(Finset.Icc N P) = ∏ i : α, (P i 
   rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
-/-- The sup norm of a non-zero integer matrix is at least one -/
+/-- The sup norm of a nonzero integer matrix is at least one -/
 lemma one_le_norm_A_of_ne_zero (hA : A ≠ 0) : 1 ≤ ‖A‖ := by
   by_contra! h
   apply hA

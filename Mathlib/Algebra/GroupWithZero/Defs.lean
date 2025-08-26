@@ -116,7 +116,7 @@ theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M�
 end MonoidWithZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
-and right absorbing, and left/right multiplication by a non-zero element is injective. -/
+and right absorbing, and left/right multiplication by a nonzero element is injective. -/
 class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
@@ -161,7 +161,7 @@ end CommSemigroup
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
 `0` is left and right absorbing,
-and left/right multiplication by a non-zero element is injective. -/
+and left/right multiplication by a nonzero element is injective. -/
 class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 -- See note [lower cancel priority]

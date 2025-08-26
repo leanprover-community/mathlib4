@@ -14,7 +14,7 @@ This file defines two `ℤ`-valued analogs of the logarithm of `r : R` with base
 * `Int.log b r`: Lower logarithm, or floor **log**. Greatest `k` such that `↑b^k ≤ r`.
 * `Int.clog b r`: Upper logarithm, or **c**eil **log**. Least `k` such that `r ≤ ↑b^k`.
 
-Note that `Int.log` gives the position of the left-most non-zero digit:
+Note that `Int.log` gives the position of the left-most nonzero digit:
 ```lean
 #eval (Int.log 10 (0.09 : ℚ), Int.log 10 (0.10 : ℚ), Int.log 10 (0.11 : ℚ))
 --    (-2,                    -1,                    -1)

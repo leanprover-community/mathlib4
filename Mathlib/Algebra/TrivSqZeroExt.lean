@@ -1017,7 +1017,7 @@ theorem range_liftAux (f : R →ₐ[S] A) (g : M →ₗ[S] A)
 
 /-- A universal property of the trivial square-zero extension, providing a unique
 `TrivSqZeroExt R M →ₐ[R] A` for every pair of maps `f : R →ₐ[S] A` and `g : M →ₗ[S] A`,
-where the range of `g` has no non-zero products, and scaling the input to `g` on the left or right
+where the range of `g` has no nonzero products, and scaling the input to `g` on the left or right
 amounts to a corresponding multiplication by `f` in the output.
 
 This isomorphism is named to match the very similar `Complex.lift`. -/

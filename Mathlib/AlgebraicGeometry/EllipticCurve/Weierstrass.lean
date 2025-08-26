@@ -26,7 +26,7 @@ of algebro-geometric machinery) that every elliptic curve `E` is a projective pl
 to a Weierstrass curve given by the equation `Y² + a₁XY + a₃Y = X³ + a₂X² + a₄X + a₆` for some `aᵢ`
 in `R`, and such that a certain quantity called the discriminant of `E` is a unit in `R`. If `R` is
 a field, this quantity divides the discriminant of a cubic polynomial whose roots over a splitting
-field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points of `E`.
+field of `R` are precisely the `X`-coordinates of the nonzero 2-torsion points of `E`.
 
 ## Main definitions
 
@@ -294,7 +294,7 @@ section TorsionPolynomial
 
 /-- A cubic polynomial whose discriminant is a multiple of the Weierstrass curve discriminant. If
 `W` is an elliptic curve over a field `R` of characteristic different from 2, then its roots over a
-splitting field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points of `W`. -/
+splitting field of `R` are precisely the `X`-coordinates of the nonzero 2-torsion points of `W`. -/
 def twoTorsionPolynomial : Cubic R :=
   ⟨4, W.b₂, 2 * W.b₄, W.b₆⟩
 

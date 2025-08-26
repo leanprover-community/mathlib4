@@ -133,7 +133,7 @@ instance partialOrder : PartialOrder (ENormedSpace 𝕜 V) where
   le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
   le_antisymm _ _ h₁₂ h₂₁ := ext fun x => le_antisymm (h₁₂ x) (h₂₁ x)
 
-/-- The `ENormedSpace` sending each non-zero vector to infinity. -/
+/-- The `ENormedSpace` sending each nonzero vector to infinity. -/
 noncomputable instance : Top (ENormedSpace 𝕜 V) :=
   ⟨{  toFun := fun x => open scoped Classical in if x = 0 then 0 else ⊤
       eq_zero' := fun x => by split_ifs <;> simp [*]

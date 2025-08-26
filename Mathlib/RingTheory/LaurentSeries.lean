@@ -42,9 +42,9 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 * Basic properties of Hasse derivatives
 ### About the `X`-Adic valuation:
-* The (integral) valuation of a power series is the order of the first non-zero coefficient, see
+* The (integral) valuation of a power series is the order of the first nonzero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
-* The valuation of a Laurent series is the order of the first non-zero coefficient, see
+* The valuation of a Laurent series is the order of the first nonzero coefficient, see
   `LaurentSeries.valuation_le_iff_coeff_lt_eq_zero`.
 * Every Laurent series of valuation less than `(1 : ℤᵐ⁰)` comes from a power series, see
   `LaurentSeries.val_le_one_iff_eq_coe`.
@@ -513,7 +513,7 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
     Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd] at H
 
-/- The valuation of a power series is the order of the first non-zero coefficient. -/
+/- The valuation of a power series is the order of the first nonzero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
     Valued.v (f : K⸨X⸩) ≤ Multiplicative.ofAdd (-d : ℤ) ↔
       ∀ n : ℕ, n < d → coeff n f = 0 := by
@@ -551,7 +551,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
       ofAdd_add, valuation_single_zpow, neg_neg, WithZero.coe_mul,
       mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
 
-/- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
+/- The valuation of a Laurent series is the order of the first nonzero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     Valued.v f ≤ ↑(Multiplicative.ofAdd (-D : ℤ)) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩

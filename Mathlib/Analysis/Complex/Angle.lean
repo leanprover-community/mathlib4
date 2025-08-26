@@ -30,7 +30,7 @@ open scoped Real
 namespace Complex
 variable {a x y : ℂ}
 
-/-- The angle between two non-zero complex numbers is the absolute value of the argument of their
+/-- The angle between two nonzero complex numbers is the absolute value of the argument of their
 quotient.
 
 Note that this does not hold when `x` or `y` is `0` as the LHS is `π / 2` while the RHS is `0`. -/
