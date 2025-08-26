@@ -10,7 +10,8 @@ import Mathlib.Util.AssertExists
 /-!
 # Cardinal Numbers
 
-We define cardinal numbers as a quotient of types under the equivalence relation of equinumerity.
+We define cardinal numbers as a quotient of types under the equivalence relation of equinumerosity
+(i.e., existence of a bijection).
 
 ## Main definitions
 

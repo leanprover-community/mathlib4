@@ -30,13 +30,13 @@ semiring structure.
 * Cardinals form a `CanonicallyOrderedAdd` `OrderedCommSemiring` with the aforementioned sum and
   product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
-* The less than relation on cardinals forms a well-order.
+* The less-than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
   `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
   and `sInf` for the minimum of a set of cardinals.
 
-## Main Statements
+## Main statements
 
 * Cantor's theorem: `Cardinal.cantor c : c < 2 ^ c`.
 * König's theorem: `Cardinal.sum_lt_prod`
