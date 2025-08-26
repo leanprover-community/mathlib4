@@ -82,6 +82,9 @@ theorem two_mul_count_bool_of_even (hl : Chain' (· ≠ ·) l) (h2 : Even (lengt
     2 * count b l = length l := by
   rw [← count_not_add_count l b, hl.count_not_eq_count h2, two_mul]
 
+-- TODO: is there a nice way to fix the linter? simp is run on 8 goals at once,
+-- with slightly different simp sets
+set_option linter.flexible false in
 theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
     2 * count b l =
       if Even (length l) then length l else
