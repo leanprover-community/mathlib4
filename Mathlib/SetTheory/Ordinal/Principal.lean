@@ -101,19 +101,14 @@ protected theorem Principal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, Principal o
   by_cases hs : BddAbove s
   · obtain rfl | hs' := s.eq_empty_or_nonempty
     · assumption
-    · intro x y hx hy
-      rw [lt_csSup_iff hs hs'] at *
-      obtain ⟨a, has, ha⟩ := hx
-      obtain ⟨b, hbs, hb⟩ := hy
-      refine ⟨_, max_rec' _ has hbs, max_rec ?_ ?_⟩ <;> intro hab
-      · exact H a has ha (hb.trans_le hab)
-      · exact H b hbs (ha.trans_le hab) hb
+    simp only [Principal, lt_csSup_iff hs hs', forall_exists_index, and_imp]
+    intro x y a has ha b hbs hb
+    have h : max a b ∈ s := max_rec' _ has hbs
+    exact ⟨_, h, H (max a b) h (lt_max_of_lt_left ha) (lt_max_of_lt_right hb)⟩
   · rwa [csSup_of_not_bddAbove hs]
 
 protected theorem Principal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, Principal op (f i)) :
-    Principal op (⨆ i, f i) := by
-  apply Principal.sSup
-  simpa
+    Principal op (⨆ i, f i) := Principal.sSup (by simpa)
 
 end Arbitrary
 
