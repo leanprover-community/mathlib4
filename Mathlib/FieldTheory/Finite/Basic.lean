@@ -637,17 +637,12 @@ theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : 
     (p : ℤ) ∣ n ^ (p - 1) - 1 :=
   (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
 
-theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p : ℤ) ∣ n ^ p - n := by
-  by_cases ch : (p : ℤ) ∣ n
-  · exact Int.dvd_trans ch (Int.dvd_sub (dvd_pow_self n (Nat.Prime.ne_zero hp)) (Int.dvd_refl n))
-  · have hnp : IsCoprime n p := by
-      rw [ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
-      exact IsCoprime.symm (isCoprime_iff_gcd_eq_one.mpr ch)
-    refine Int.dvd_trans (prime_dvd_pow_sub_one hp hnp) ⟨n, ?_⟩
-    simp [Int.sub_mul, ← Int.pow_succ, Nat.sub_one_add_one_eq_of_pos (Nat.Prime.one_le hp)]
+theorem ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  simp [← ZMod.intCast_eq_intCast_iff]
 
-theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ p ≡ n [ZMOD p] :=
-  ModEq.symm (modEq_iff_dvd.mpr (prime_dvd_pow_self_sub hp))
+theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p : ℤ) ∣ n ^ p - n :=
+  (ModEq.pow_prime_eq_self hp).symm.dvd
 
 theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : x ≥ y)
     (hy : y > 0) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
