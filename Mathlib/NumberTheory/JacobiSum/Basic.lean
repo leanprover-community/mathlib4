@@ -101,7 +101,7 @@ theorem jacobiSum_trivial_trivial :
   classical
   rw [jacobiSum_eq_sum_sdiff]
   have : ∀ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x) = 1 := by
-    intros x hx
+    intro x hx
     rw [← map_mul, MulChar.trivial_apply, if_pos]
     simp only [mem_sdiff, mem_univ, mem_insert, mem_singleton, not_or, ← ne_eq, true_and] at hx
     simpa only [isUnit_iff_ne_zero, mul_ne_zero_iff, ne_eq, sub_eq_zero, @eq_comm _ _ x] using hx
