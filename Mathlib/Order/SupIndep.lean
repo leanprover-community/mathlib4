@@ -98,8 +98,6 @@ theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDis
   fun _ ha _ hb hab =>
     sup_singleton.subst <| hs (singleton_subset_iff.2 hb) ha <| notMem_singleton.2 hab
 
-@[deprecated (since := "2025-01-17")] alias sup_indep.pairwise_disjoint := SupIndep.pairwiseDisjoint
-
 theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
     f i ≤ t.sup f ↔ i ∈ t := by
   refine ⟨fun h => ?_, le_sup⟩
@@ -325,7 +323,7 @@ theorem iSupIndep.mono {s t : ι → α} (hs : iSupIndep s) (hst : t ≤ s) : iS
   fun i => (hs i).mono (hst i) <| iSup₂_mono fun j _ => hst j
 
 /-- Composing an independent indexed family with an injective function on the index results in
-another indepedendent indexed family. -/
+another independent indexed family. -/
 theorem iSupIndep.comp {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : iSupIndep t)
     (hf : Injective f) : iSupIndep (t ∘ f) := fun i =>
   (ht (f i)).mono_right <| by
@@ -342,7 +340,7 @@ theorem iSupIndep.comp' {ι ι' : Sort*} {t : ι → α} {f : ι' → ι} (ht : 
 theorem iSupIndep.sSupIndep_range (ht : iSupIndep t) : sSupIndep <| range t := by
   rw [sSupIndep_iff]
   rw [← coe_comp_rangeFactorization t] at ht
-  exact ht.comp' surjective_onto_range
+  exact ht.comp' rangeFactorization_surjective
 
 @[simp]
 theorem iSupIndep_ne_bot :
@@ -372,7 +370,7 @@ theorem iSupIndep.injOn (ht : iSupIndep t) : InjOn t {i | t i ≠ ⊥} := by
 
 theorem iSupIndep.injective (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
   suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
-  aesop
+  simp_all
 
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :
     iSupIndep t ↔ Disjoint (t i) (t j) := by
