@@ -978,17 +978,16 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
       insertTranslation srcLemma tgtLemma
 
 /--
-Find the first argument of `nm` that has a multiplicative type-class on it.
+Find the argument of `nm` that appears in the first multiplicative type-class argument.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the first relevant argument of each type-class.
+Note: we only consider the `to_additive_relevant_arg` of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
-def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
+def findMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
     -- xs are the arguments to the constant
-    let xs := xs.toList
-    let l ← xs.filterMapM fun x ↦ do
+    let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
       -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
       -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
       forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
@@ -998,10 +997,8 @@ def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
             if let some arg := tgt.getArg? relevantArg then
               return xs.findIdx? (arg.containsFVar ·.fvarId!)
         return none
-    trace[to_additive_detail] "firstMultiplicativeArg: {l}"
-    match l with
-    | [] => return 0
-    | (head :: tail) => return tail.foldl Nat.min head
+    trace[to_additive_detail] "findMultiplicativeArg: {arg}"
+    return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (cfg : Config) (src : Name) : CoreM Name := do
@@ -1281,7 +1278,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     -- for example, this is necessary for `HPow.hPow`
     if findTranslation? (← getEnv) src |>.isSome then
       return #[tgt]
-  let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
+  let firstMultArg ← MetaM.run' <| findMultiplicativeArg src
   if firstMultArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
     relevantArgAttr.add src firstMultArg
