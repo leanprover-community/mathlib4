@@ -1530,7 +1530,6 @@ import Mathlib.Analysis.Complex.Conformal
 import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.Complex.FiniteDimensional
 import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.Complex.IntegerCompl
@@ -4073,6 +4072,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Prod
 import Mathlib.LinearAlgebra.CliffordAlgebra.SpinGroup
 import Mathlib.LinearAlgebra.CliffordAlgebra.Star
 import Mathlib.LinearAlgebra.Coevaluation
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.CrossProduct

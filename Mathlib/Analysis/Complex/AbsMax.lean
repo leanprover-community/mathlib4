@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Complex.FiniteDimensional
 import Mathlib.Analysis.NormedSpace.Extr
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Topology.Order.ExtrClosure
 
 /-!
