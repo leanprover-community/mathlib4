@@ -106,10 +106,10 @@ instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [
 
 section IsSMulRegular
 
-theorem IsSMulRegular.of_isLocalizedModule {M M' : Type*} [AddCommMonoid M] [Module R M]
-    [AddCommMonoid M'] [Module R M'] [Module S M'] [IsScalarTower R S M']
-    (f : M →ₗ[R] M') [IsLocalizedModule p f] {x : R} (reg : IsSMulRegular M x) :
-    IsSMulRegular M' (algebraMap R S x) :=
+variable {M} in
+theorem IsSMulRegular.of_isLocalizedModule {K : Type*} [AddCommMonoid K] [Module R K]
+    (f : K →ₗ[R] M) [IsLocalizedModule p f] {x : R} (reg : IsSMulRegular K x) :
+    IsSMulRegular M (algebraMap R S x) :=
   have : Module.Flat R S := IsLocalization.flat S p
   reg.of_flat_of_isBaseChange (IsLocalizedModule.isBaseChange p S f)
 
