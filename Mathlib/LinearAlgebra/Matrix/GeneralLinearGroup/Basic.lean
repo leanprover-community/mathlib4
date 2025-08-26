@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.Algebra.Ring.Action.ConjAct
 
 /-!
 # Basic lemmas about the general linear group $GL(n, R)$
@@ -88,6 +89,11 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
   rw [← toLin'_toMatrix' T]
   simp_rw [toLin'_apply, mulVec_mulVec, this, ← mulVec_mulVec, ← toLin'_apply T.toMatrix',
     toLin'_toMatrix', hB]
+
+/-- Alternate statement of `coe_eq_generalLinearGroup_conjugate`. -/
+theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] :
+    Function.Surjective (MulSemiringAction.toAlgEquiv (G := ConjAct (GL n R)) R (Matrix n n R)) :=
+  fun f => f.coe_eq_generalLinearGroup_conjugate.imp fun _ h => (DFunLike.coe_injective h).symm
 
 section Examples
 
