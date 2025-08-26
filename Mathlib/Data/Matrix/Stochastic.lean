@@ -50,14 +50,8 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
     Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1  }
   mul_mem' {M N} hM hN := by
-    refine Set.mem_sep ?_ ?_
-    · intro i j
-      apply Finset.sum_nonneg
-      intro k _
-      apply mul_nonneg
-      · exact hM.1 i k
-      · exact hN.1 k j
-    · rw [← mulVec_mulVec, hN.2, hM.2]
+    refine ⟨fun i j => sum_nonneg fun i _ => mul_nonneg (hM.1 _ _) (hN.1 _ _), ?_⟩
+    next => rw [← mulVec_mulVec, hN.2, hM.2]
   one_mem' := by
     simp [zero_le_one_elem]
 
