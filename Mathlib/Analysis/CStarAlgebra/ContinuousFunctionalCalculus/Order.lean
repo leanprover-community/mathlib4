@@ -399,7 +399,6 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
   intro a b ha hab
   have hb : 0 ≤ b := ha.trans hab
   -- these two `have`s are just for performance
-  have := IsSelfAdjoint.of_nonneg ha; have := IsSelfAdjoint.of_nonneg hb
   have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
     calc _ = a := by rw [cfc_id ℝ a]
       _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
