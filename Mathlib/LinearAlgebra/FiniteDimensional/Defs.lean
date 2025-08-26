@@ -20,7 +20,7 @@ definitions of finite-dimensionality of `V`:
 
 - it admits a finite basis.
 - it is finitely generated.
-- it is noetherian, i.e., every subspace is finitely generated.
+- it is Noetherian, i.e., every subspace is finitely generated.
 
 We introduce a typeclass `FiniteDimensional K V` capturing this property. For ease of transfer of
 proof, it is defined using the second point of view, i.e., as `Module.Finite`. However, we prove
@@ -39,7 +39,7 @@ that all these points of view are equivalent, with the following lemmas
 - `of_finrank_pos` states that a nonzero `finrank` (implying non-infinite dimension)
   implies finite-dimensionality
 - `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
-  it is noetherian (in `Mathlib/FieldTheory/Finiteness.lean`)
+  it is Noetherian (in `Mathlib/FieldTheory/Finiteness.lean`)
 
 We make use of `finrank`, the dimension of a finite dimensional space, returning a `Nat`, as
 opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite dimension, its
@@ -55,7 +55,7 @@ Preservation of finite-dimensionality and formulas for the dimension are given f
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or noetherian modules, and they can be found in
+Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
 `Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
 

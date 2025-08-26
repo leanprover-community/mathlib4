@@ -847,6 +847,7 @@ import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Group.PartialSups
 import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
@@ -1849,6 +1850,12 @@ import Mathlib.Analysis.RCLike.BoundedContinuous
 import Mathlib.Analysis.RCLike.Inner
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Analysis.RCLike.TangentCone
+import Mathlib.Analysis.Real.Cardinality
+import Mathlib.Analysis.Real.Hyperreal
+import Mathlib.Analysis.Real.Pi.Bounds
+import Mathlib.Analysis.Real.Pi.Irrational
+import Mathlib.Analysis.Real.Pi.Leibniz
+import Mathlib.Analysis.Real.Pi.Wallis
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Bernstein
@@ -3493,20 +3500,14 @@ import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Rat.Star
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Real.Cardinality
 import Mathlib.Data.Real.CompleteField
 import Mathlib.Data.Real.ConjExponents
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Real.Embedding
 import Mathlib.Data.Real.GoldenRatio
-import Mathlib.Data.Real.Hyperreal
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Real.OfDigits
-import Mathlib.Data.Real.Pi.Bounds
-import Mathlib.Data.Real.Pi.Irrational
-import Mathlib.Data.Real.Pi.Leibniz
-import Mathlib.Data.Real.Pi.Wallis
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.Real.Sign
 import Mathlib.Data.Real.Sqrt
@@ -4744,6 +4745,7 @@ import Mathlib.NumberTheory.MaricaSchoenheim
 import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+import Mathlib.NumberTheory.ModularForms.DedekindEta
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
@@ -4808,6 +4810,7 @@ import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.RingHoms
 import Mathlib.NumberTheory.Padics.ValuativeRel
+import Mathlib.NumberTheory.Padics.WithVal
 import Mathlib.NumberTheory.Pell
 import Mathlib.NumberTheory.PellMatiyasevic
 import Mathlib.NumberTheory.PrimeCounting

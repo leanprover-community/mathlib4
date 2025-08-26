@@ -1367,7 +1367,8 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
     Injective f ↔ IsCancelMul M := by
   simp [injective_iff, isCancelMul_iff_forall_isRegular]
 
-theorem map_isRegular (f : LocalizationMap S N) {m : M} (hm : IsRegular m) : IsRegular (f m) := by
+@[to_additive] theorem map_isRegular (f : LocalizationMap S N) {m : M}
+    (hm : IsRegular m) : IsRegular (f m) := by
   refine (Commute.isRegular_iff (Commute.all _)).mpr fun n₁ n₂ eq ↦ ?_
   have ⟨ms₁, eq₁⟩ := f.surj n₁
   have ⟨ms₂, eq₂⟩ := f.surj n₂
@@ -1379,7 +1380,7 @@ theorem map_isRegular (f : LocalizationMap S N) {m : M} (hm : IsRegular m) : IsR
   simp_rw [mul_left_comm _ m] at eq
   exact eq.imp fun _ ↦ (hm.1 ·)
 
-theorem isCancelMul [IsCancelMul M] (f : LocalizationMap S N) : IsCancelMul N := by
+@[to_additive] theorem isCancelMul (f : LocalizationMap S N) [IsCancelMul M] : IsCancelMul N := by
   simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n
