@@ -465,7 +465,7 @@ lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :
     (homeomorph p β).toEquiv = WithLp.equiv p (Π i, β i) := rfl
 
 lemma isOpenMap_apply [∀ i, TopologicalSpace (β i)] (i : ι) :
-    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).symm.isOpenMap
+    IsOpenMap (fun f : PiLp p β ↦ f i) := (isOpenMap_eval i).comp (homeomorph p β).isOpenMap
 
 instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)] :
     T0Space (PiLp p β) :=
@@ -473,7 +473,7 @@ instance instProdT0Space [∀ i, TopologicalSpace (β i)] [∀ i, T0Space (β i)
 
 instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
     [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
-  (homeomorph p β).symm.secondCountableTopology
+  (homeomorph p β).secondCountableTopology
 
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   (Pi.uniformSpace β).comap ofLp
@@ -502,7 +502,7 @@ lemma toEquiv_uniformEquiv [∀ i, UniformSpace (β i)] :
 
 instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
     CompleteSpace (PiLp p β) :=
-  (uniformEquiv p β).completeSpace_iff.1 inferInstance
+  (uniformEquiv p β).completeSpace_iff.2 inferInstance
 
 section Fintype
 variable [hp : Fact (1 ≤ p)]
@@ -1032,7 +1032,7 @@ variable {𝕜} in
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := continuous_apply p β i
+  cont := PiLp.continuous_apply p β i
 
 end Fintype
 
