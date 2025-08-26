@@ -83,7 +83,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
   simp only [unpair]
-  by_cases h : n - s * s < s <;> simp [s, h, ↓reduceIte]
+  by_cases h : n - s * s < s <;> simp only [h, ↓reduceIte, gt_iff_lt, s]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp only [not_lt] at h
     have s0 : 0 < s := sqrt_pos.2 n1
@@ -109,8 +109,10 @@ theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
   simpa using right_le_pair n.unpair.1 n.unpair.2
 
 theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
-  by_cases h₁ : a₁ < b <;> simp [pair, h₁, Nat.add_assoc]
-  · by_cases h₂ : a₂ < b <;> simp [h₂, h]
+  by_cases h₁ : a₁ < b <;> simp only [pair, h₁, ↓reduceIte, Nat.add_assoc]
+  · by_cases h₂ : a₂ < b
+    · simp [h₂, h]
+    simp only [h₂, ↓reduceIte]
     simp? at h₂ says simp only [not_lt] at h₂
     apply Nat.add_lt_add_of_le_of_lt
     · exact Nat.mul_self_le_mul_self h₂
@@ -125,7 +127,8 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
   by_cases h₁ : a < b₁
   · simpa [pair, h₁, Nat.add_assoc, lt_trans h₁ h, h] using mul_self_lt_mul_self h
   · simp only [pair, h₁, ↓reduceIte, Nat.add_assoc]
-    by_cases h₂ : a < b₂ <;> simp [h₂, h]
+    by_cases h₂ : a < b₂; swap; · simp [h₂, h]
+    simp only [h₂, ↓reduceIte]
     simp? at h₁ says simp only [not_lt] at h₁
     rw [Nat.add_comm, Nat.add_comm _ a, Nat.add_assoc, Nat.add_lt_add_iff_left]
     rwa [Nat.add_comm, ← sqrt_lt, sqrt_add_eq]

@@ -733,8 +733,9 @@ def hasShift :
       zero_add_hom_app := fun n X => hF.map_injective (by
         have this := dcongr_arg (fun a => (i a).hom.app X) (zero_add n)
         rw [← cancel_mono ((i n).hom.app ((s 0).obj X)) ]
-        simp [this, map_add_hom_app,
-          shiftFunctorAdd_zero_add_hom_app, eqToHom_map]
+        simp only [comp_obj, map_add_hom_app, this, shiftFunctorAdd_zero_add_hom_app, id_obj,
+          Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp, Iso.inv_hom_id_app,
+          Category.comp_id, map_comp, eqToHom_map]
         congr 1
         erw [(i n).hom.naturality]
         simp)
