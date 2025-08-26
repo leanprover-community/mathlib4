@@ -16,6 +16,7 @@ import Mathlib.NumberTheory.Multiplicity
 import Mathlib.Algebra.Order.WithTop.Untop0
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.NormNum.Parity
 
 /-!
 ## Zsigmondy's theorem
@@ -67,38 +68,6 @@ def evalIntModEq : NormNumExt where eval {u αP} e := do
   | 0, ~q(Prop), ~q(Int.ModEq $n $a $b) =>
     derive (u := 0) (α := q(Prop)) q(($a % $n : ℤ) = $b % $n)
   | _, _, _ => failure
-
-/-- `norm_num` extension for `Even`.
-
-Works for `ℕ` and `ℤ`. -/
-@[norm_num Even _]
-def evalEven : NormNumExt where eval {u αP} e := do
-  match u, αP, e with
-  | 0, ~q(Prop), ~q(@Even ℕ $addN $a) =>
-    assertInstancesCommute
-    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 0) q(Even $a) q((@Nat.even_iff $a).symm)
-    return .ofBoolResult r
-  | 0, ~q(Prop), ~q(@Even ℤ $addN $a) =>
-    assertInstancesCommute
-    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 0) q(Even $a) q((@Int.even_iff $a).symm)
-    return .ofBoolResult r
-  | _, _, _ => failure
-
-/-- `norm_num` extension for `Odd`.
-
-Works for `ℕ` and `ℤ`. -/
-@[norm_num Odd _]
-def evalOdd : NormNumExt where eval {u αP} e := do
-  match u, αP, e with
-  | 0, ~q(Prop), ~q(@Odd ℕ $inst $a) =>
-    assertInstancesCommute
-    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 1) q(Odd $a) q((@Nat.odd_iff $a).symm)
-    return .ofBoolResult r
-  | 0, ~q(Prop), ~q(@Odd ℤ $inst $a) =>
-    assertInstancesCommute
-    let ⟨b, r⟩ ← deriveBoolOfIff q($a % 2 = 1) q(Odd $a) q((@Int.odd_iff $a).symm)
-    return .ofBoolResult r
-  | _ => failure
 
 end Mathlib.Meta.NormNum
 
