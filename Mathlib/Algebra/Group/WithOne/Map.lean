@@ -14,18 +14,17 @@ variable {α β γ : Type*}
 
 namespace WithOne
 
--- TODO: Rename this to `WithOne.map` after moving that out of the way.
 /-- Lift a map `f : α → β` to `WithOne α → WithOne β`. Implemented using `Option.map`. -/
 @[to_additive
 /-- Lift a map `f : α → β` to `WithZero α → WithZero β`. Implemented using `Option.map`. -/]
-def map'' (f : α → β) : WithOne α → WithOne β := Option.map f
+def map (f : α → β) : WithOne α → WithOne β := Option.map f
 
 @[to_additive (attr := simp)]
-theorem map''_bot (f : α → β) : map'' f 1 = 1 :=
+theorem map_bot (f : α → β) : map f 1 = 1 :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem map''_coe (f : α → β) (a : α) : map'' f a = f a :=
+theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
 /-- The image of a binary function `f : α → β → γ` as a function
@@ -46,9 +45,9 @@ lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f 1 b = 1 := rfl
 @[to_additive (attr := simp)]
 lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a 1 = 1 := by cases a <;> rfl
 @[to_additive (attr := simp)]
-lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map'' fun b ↦ f a b := rfl
+lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
 @[to_additive (attr := simp)]
-lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map'' (f · b) := by
+lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
   cases a <;> rfl
 
 @[to_additive (attr := simp)]
