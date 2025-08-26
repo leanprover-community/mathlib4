@@ -3289,7 +3289,6 @@ import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.Data.Matrix.Diagonal
 import Mathlib.Data.Matrix.DualNumber
-import Mathlib.Data.Matrix.Hadamard
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.Data.Matrix.Kronecker
 import Mathlib.Data.Matrix.Mul
@@ -4179,6 +4178,7 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Card
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
+import Mathlib.LinearAlgebra.Matrix.Hadamard
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
 import Mathlib.LinearAlgebra.Matrix.Ideal
