@@ -12,7 +12,7 @@ import Mathlib.RingTheory.SimpleRing.Congr
 
 ## Main results
 
-* `IsSimpleRing.tfae`: a simple ring is semisimple iff it is artinian,
+* `IsSimpleRing.tfae`: a simple ring is semisimple iff it is Artinian,
   iff it has a minimal left ideal.
 
 * `isSimpleRing_isArtinianRing_iff`: a ring is simple Artinian iff it is semisimple, isotypic,
@@ -20,11 +20,11 @@ import Mathlib.RingTheory.SimpleRing.Congr
 
 * `IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite`: a simple Artinian algebra is
   isomorphic to a (finite-dimensional) matrix algebra over a division algebra. The division
-  algebra is the opoposite of the endomorphism algebra of a simple (i.e., minimal) left ideal.
+  algebra is the opposite of the endomorphism algebra of a simple (i.e., minimal) left ideal.
 
 * `IsSemisimpleRing.exists_algEquiv_pi_matrix_end_mulOpposite`: a semisimple algebra is
   isomorphic to a finite direct product of matrix algebras over division algebras. The division
-  algebras are the opoposites of the endomorphism algebras of the simple (i.e., minimal)
+  algebras are the opposites of the endomorphism algebras of the simple (i.e., minimal)
   left ideals.
 
 * `IsSimpleRing.exists_algEquiv_matrix_divisionRing_finite`,
@@ -40,7 +40,7 @@ import Mathlib.RingTheory.SimpleRing.Congr
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
 
-/-- A simple ring is semisimple iff it is artinian, iff it has a minimal left ideal. -/
+/-- A simple ring is semisimple iff it is Artinian, iff it has a minimal left ideal. -/
 theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
     [IsSemisimpleRing R, IsArtinianRing R, ∃ I : Ideal R, IsAtom I] := by
   tfae_have 1 → 2 := fun _ ↦ inferInstance
