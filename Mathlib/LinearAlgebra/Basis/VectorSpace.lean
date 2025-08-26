@@ -266,6 +266,18 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 
+open LinearPMap in
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  obtain ⟨g, hg⟩ := LinearMap.exists_extend (mkSpanSingleton (K := K) _ w hv).toFun
+  refine ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, ?_⟩⟩
+  have : g v = w := by
+    rw [show g v = (mkSpanSingleton (K := K) _ w hv).toFun ⟨v, mem_span_singleton_self v⟩ from
+      by simp [← hg]]
+    apply mkSpanSingleton_apply
+  simp_all
+
 theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →ₗ[K] V')
     (hv : v ∉ p) (y : V') : ∃ g : V →ₗ[K] V', g.comp p.subtype = f ∧ g v = y := by
   rcases (LinearPMap.supSpanSingleton ⟨p, f⟩ v y hv).toFun.exists_extend with ⟨g, hg⟩
