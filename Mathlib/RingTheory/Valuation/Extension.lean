@@ -140,7 +140,7 @@ instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
     Function.Injective (algebraMap vK.integer vA.integer) :=
-  FaithfulSMul.algebraMap_injective ↥vK.integer ↥vA.integer
+  FaithfulSMul.algebraMap_injective _ _
 
 @[instance]
 theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
