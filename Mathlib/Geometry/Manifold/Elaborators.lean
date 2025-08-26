@@ -101,7 +101,7 @@ elab:max "T% " t:term:arg : term => do
   match etype with
   | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
     trace[TotalSpaceMk] "Section of a trivial bundle"
-    if E == base then
+    if ← withReducible (isDefEq E base) then
       return ← withLocalDecl x BinderInfo.default base fun x ↦ do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
         mkLambdaFVars #[x] body
@@ -116,7 +116,7 @@ elab:max "T% " t:term:arg : term => do
       let decltype ← inferType decl >>= instantiateMVars
       match decltype with
       | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ =>
-        if E == V then
+        if ← withReducible (isDefEq E V) then
           return ← withLocalDecl x BinderInfo.default base fun x ↦ do
             let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
             mkLambdaFVars #[x] body
@@ -127,10 +127,10 @@ elab:max "T% " t:term:arg : term => do
     let ut ← tgt.getUniverse
     -- TODO: can `tgt` depend on `x` in a way that is not a function application?
     -- Check that `x` is not a bound variable in `tgt`!
-    let triv_bundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
+    let trivBundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
     return ← withLocalDecl x BinderInfo.default src fun x ↦ do
       let body := mkAppN (.const ``Bundle.TotalSpace.mk' [us, ut, ut])
-        #[src, triv_bundle, tgt, x, .app e x]
+        #[src, trivBundle, tgt, x, .app e x]
       mkLambdaFVars #[x] body
   | _ => pure ()
   return e
