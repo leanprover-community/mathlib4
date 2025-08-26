@@ -33,13 +33,11 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.id`: identity map as `α →o α`;
 * `OrderHom.curry`: an order homomorphism between `α × β →o γ` and `α →o β →o γ`;
 * `OrderHom.uncurry`: an order homomorphism between `α →o β →o γ` and `α × β →o γ`;
-* `OrderIso.curry`: an order isomorphism between `α × β →o γ` and `α →o β →o γ`;
 * `OrderHom.comp`: composition of two bundled monotone maps;
 * `OrderHom.compₘ`: composition of bundled monotone maps as a bundled monotone map;
 * `OrderHom.const`: constant function as a bundled monotone map;
 * `OrderHom.prod`: combine `α →o β` and `α →o γ` into `α →o β × γ`;
 * `OrderHom.prodₘ`: a more bundled version of `OrderHom.prod`;
-* `OrderIso.prod`: order isomorphism between `α →o β × γ` and `(α →o β) × (α →o γ)`;
 * `OrderHom.diag`: diagonal embedding of `α` into `α × α` as a bundled monotone map;
 * `OrderHom.onDiag`: restrict a monotone map `α →o α →o β` to the diagonal;
 * `OrderHom.fst`: projection `Prod.fst : α × β → α` as a bundled monotone map;
@@ -51,10 +49,8 @@ because the more bundled version usually does not work with dot notation.
 * `OrderHom.apply`: application of an `OrderHom` at a point as a bundled monotone map;
 * `OrderHom.pi`: combine a family of monotone maps `f i : α →o π i` into a monotone map
   `α →o Π i, π i`;
-* `OrderIso.pi`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
 * `OrderHom.Subtype.val`: embedding `Subtype.val : Subtype p → α` as a bundled monotone map;
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
-* `OrderIso.dualHom`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
 
 We also define two functions to convert other bundled maps to `α →o β`:
 
@@ -977,7 +973,7 @@ noncomputable def ofUnique
 /-- Order isomorphism between the space of monotone maps to `β × γ` and the product of the spaces
 of monotone maps to `β` and `γ`. -/
 @[simps]
-def prod [Preorder α] [Preorder β] [Preorder γ] : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
+def prodIso [Preorder α] [Preorder β] [Preorder γ] : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
   toFun f := (OrderHom.fst.comp f, OrderHom.snd.comp f)
   invFun f := f.1.prod f.2
   map_rel_iff' := forall_and.symm
@@ -987,13 +983,13 @@ variable {ι : Type*} {π : ι → Type*} [∀ i, Preorder (π i)]
 /-- Order isomorphism between bundled monotone maps `α →o Π i, π i` and families of bundled monotone
 maps `Π i, α →o π i`. -/
 @[simps]
-def pi [Preorder α] : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
+def piIso [Preorder α] : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := OrderHom.pi
   map_rel_iff' := forall_swap
 
 /-- `OrderHom.dual` as an order isomorphism. -/
-def dualHom (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
+def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 
