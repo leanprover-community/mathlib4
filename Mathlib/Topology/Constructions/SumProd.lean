@@ -921,14 +921,11 @@ lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
   continuous_toFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
+    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Homeomorph.sumComm Y W)) (@id Z)) := by fun_prop
     fun_prop
   continuous_invFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
+    have : Continuous (Sum.map (Sum.map (@id X) (Homeomorph.sumComm Y W).symm) (@id Z)) := by
+      fun_prop
     fun_prop
 
 @[simp]
