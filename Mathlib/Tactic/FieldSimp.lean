@@ -525,14 +525,13 @@ def parseDischarger (d : Option (TSyntax `Lean.Parser.Tactic.discharger))
   match d with
   | none =>
     let ctx ← Simp.Context.ofArgs (args.getD ⟨.missing⟩) { contextual := true }
-    let tac := wrapSimpDischargerWithCtx FieldSimp.discharge ctx
-    return (synthesizeUsing' · tac)
+    return fun e ↦ Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   | some d =>
     if args.isSome then
       logWarningAt args.get!
         "Custom `field_simp` dischargers do not make use of the `field_simp` arguments list"
     match d with
-    | `(discharger| (discharger:=$tac)) =>
+    | `(discharger| (discharger := $tac)) =>
       let tac := (evalTactic (← `(tactic| ($tac))) *> pruneSolvedGoals)
       return (synthesizeUsing' · tac)
     | _ => throwError "could not parse the provided discharger {d}"
@@ -584,8 +583,7 @@ open Mathlib.Tactic
 
 simproc_decl field (Eq _ _) := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
-  let disch {u} e := synthesizeUsing' (u := u) e <|
-    wrapSimpDischargerWithCtx FieldSimp.discharge ctx
+  let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   try
     let r ← AtomM.run .reducible <| FieldSimp.reduceEq disch t
     -- the `field_simp`-normal form is in opposition to the `simp`-lemmas `one_div` and `mul_inv`,
