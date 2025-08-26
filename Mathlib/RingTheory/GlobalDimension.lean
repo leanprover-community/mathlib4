@@ -45,6 +45,10 @@ noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
 noncomputable def nonnegProjectiveDimension (X : C) : ℕ∞ :=
   sInf (({(n : ℕ) | HasProjectiveDimensionLT X n}).image WithTop.some)
 
+lemma projectiveDimension_eq_of_iso (X Y : C) (e : X ≅ Y) :
+    projectiveDimension X = projectiveDimension Y := by
+  sorry
+
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
     HasProjectiveDimensionLE X n := by
   sorry
@@ -87,10 +91,12 @@ lemma globalDimension_eq_iSup_loclization : globalDimension R =
 HasGlobalDimensionLE R n ↔ Subsingleton (Tor (ResidueField R) (ResidueField R) (n + 1))
 -/
 
+/-
 --This lemma need `Tor`
 lemma globalDimension_eq_projectiveDimension_residueField [IsLocalRing R] :
     globalDimension R = projectiveDimension (ModuleCat.of R (ResidueField R)) := by
   sorry
+-/
 
 --projective dimension finite condition can be removed when `Tor` is ready
 lemma projectiveDimension_quotSMulTop [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
