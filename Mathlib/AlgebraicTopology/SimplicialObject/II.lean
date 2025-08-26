@@ -13,7 +13,8 @@ in `SimplexCategoryᵒᵖ`, i.e. a functor `SimplexCategory ⥤ SimplexCategory�
 If we identify `SimplexCategory` with the category of finite nonempty
 linearly ordered types, this functor could be interpreted as the
 contravariant functor which sends a finite nonempty linearly ordered type `T`
-to `T →o Fin 2`; in particular, it sends `Fin (n + 1)` to a linearly
+to `T →o Fin 2` (with `f ≤ g ↔ ∀ i, g i ≤ f i`, which turns out to
+be a linear order); in particular, it sends `Fin (n + 1)` to a linearly
 ordered type which is isomorphic to `Fin (n + 2)`. As a result, we define
 `SimplexCategory.II` as a functor which sends `⦋n⦌` to `⦋n + 1⦌`: on morphisms,
 it sends faces to degeneracies and vice versa. This construction appeared
@@ -219,8 +220,8 @@ end II
 
 /-- The functor `SimplexCategory ⥤ SimplexCategoryᵒᵖ` (i.e. a cosimplicial
 object in `SimplexCategoryᵒᵖ`) which sends `⦋n⦌` to the object in `SimplexCategoryᵒᵖ`
-that is associated to the linearly ordered type `⦋n + 1⦌` (identified as the ordered
-type `⦋n⦌ →o ⦋1⦌`). -/
+that is associated to the linearly ordered type `⦋n + 1⦌` (which could be
+identified to the ordered type `⦋n⦌ →o ⦋1⦌`). -/
 @[simps obj]
 def II : CosimplicialObject SimplexCategoryᵒᵖ where
   obj n := op ⦋n.len + 1⦌
