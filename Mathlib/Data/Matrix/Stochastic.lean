@@ -5,6 +5,7 @@ Authors: Steven Herbert
 -/
 
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Stochastic matrices
