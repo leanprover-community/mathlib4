@@ -377,6 +377,8 @@ theorem le_def {f g : α ≃. β} : f ≤ g ↔ ∀ (a : α) (b : β), b ∈ f a
 instance : OrderBot (α ≃. β) :=
   { instBotPEquiv with bot_le := fun _ _ _ h => (not_mem_none _ h).elim }
 
+-- TODO: fix this!
+set_option linter.flexible false in
 instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
   { instPartialOrderPEquiv with
     inf := fun f g =>
