@@ -56,8 +56,8 @@ def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
   forallTelescope cinfo.type fun _ type => do
     let some (lhs, rhs) := type.eqOrIff? | return none
     let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
-    let some head := Head.ofExpr? lhs | return none
-    if Head.ofExpr? rhs != some head && (findHead? rhs head).isSome then
+    let some head := Head.ofExpr? rhs | return none
+    if Head.ofExpr? lhs != some head && (findHead? lhs head).isSome then
       return head
     return none
 where

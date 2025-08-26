@@ -59,8 +59,6 @@ register_option push_neg.use_distrib : Bool :=
 
 open Lean Meta Elab.Tactic Parser.Tactic
 
-section push
-
 /--
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
@@ -116,23 +114,18 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
     | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
-end push
-
-section pull
-
-open Simp in
 /-- Try to rewrite using a pull lemma. -/
 def pullStep (head : Head) : Simp.Simproc := fun e => do
   let thms := pullExt.getState (← getEnv)
   -- We can't use `Simp.rewrite?` here, because we need to only allow rewriting with theorems
   -- that pull the correct head.
-  let candidates ← withSimpIndexConfig <| thms.getMatchWithExtra e
+  let candidates ← Simp.withSimpIndexConfig <| thms.getMatchWithExtra e
   if candidates.isEmpty then
     return Simp.Step.continue
   let candidates := candidates.insertionSort fun e₁ e₂ => e₁.1.1.priority > e₂.1.1.priority
   for ((thm, thm_head), numExtraArgs) in candidates do
     if thm_head == head then
-      if let some result ← tryTheoremWithExtraArgs? e thm numExtraArgs then
+      if let some result ← Simp.tryTheoremWithExtraArgs? e thm numExtraArgs then
         return Simp.Step.continue result
   return Simp.Step.continue
 
@@ -145,8 +138,6 @@ def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
     | none => { post := pullStep head }
     | some disch => { post := pullStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
-
-end pull
 
 section ElabHead
 open Elab Term
