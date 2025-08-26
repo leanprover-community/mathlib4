@@ -9,6 +9,7 @@ import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.Normed.Module.Complemented -- for nontriviality of the dual
 import Mathlib.Analysis.Normed.Module.Dual
 
 open scoped Topology NNReal
@@ -23,18 +24,18 @@ variable [NormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [DenselyNormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NontriviallyNormedField 𝕜']
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜' F] {σ₁₂ : 𝕜 →+* 𝕜'} [RingHomIsometric σ₁₂]
 
-theorem exists_nnorm_eq_one_lt_apply_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0} (hr : r < ‖f‖) :
-    ∃ x : E, ‖x‖ = 1 ∧ r < ‖f x‖ := by
+theorem exists_nnorm_eq_one_lt_apply_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 0 ≤ r)
+    (hr : r < ‖f‖) : ∃ x : E, ‖x‖ = 1 ∧ r < ‖f x‖ := by
   obtain ⟨x, hlt, hr⟩ := exists_lt_apply_of_lt_opNorm f hr
   obtain rfl | hx0 := eq_zero_or_norm_pos x
   · simp only [map_zero, norm_zero] at hr
-    exact (not_lt_of_ge r.2 hr).elim
+    exact (not_lt_of_ge hr₀ hr).elim
   use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
   suffices r < ‖x‖⁻¹ * ‖f x‖ by simpa [norm_smul, inv_mul_cancel₀ hx0.ne'] using this
   calc
     r < 1⁻¹ * ‖f x‖ := by simpa
     _ < ‖x‖⁻¹ * ‖f x‖ := by
-      gcongr; exact lt_of_le_of_lt r.2 hr
+      gcongr; exact lt_of_le_of_lt hr₀ hr
 
 theorem exists_nnorm_eq_one_lt_apply_of_lt_opNorm' [Nontrivial E]
     (f : E →SL[σ₁₂] F) {r : ℝ} (hr : r < ‖f‖) :
@@ -109,7 +110,23 @@ lemma surjective_iff_ball_subset_range {F : Type*} [NormedAddCommGroup F] [Norme
   rw [map_smul, hx, hy_def, ← smul_assoc, smul_eq_mul, show (ρ⁻¹ * α * (ρ * α⁻¹)) = 1 by grind,
     one_smul]
 
-lemma exists_sub_one_lt [Nontrivial E] {ξ : E**} {δ : ℝ} (hδ : 0 < δ) (h : ‖ξ‖ = 1) :
+lemma exists_sub_one_lt {ξ : E**} {δ : ℝ} (hδ₀ : 0 < δ) (hδ₁ : δ < 1) (h : ‖ξ‖ = 1) :
+    ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
+  obtain ⟨φ, hφ_eq, hφ_lt⟩ := exists_nnorm_eq_one_lt_apply_of_lt_opNorm
+    (f := ξ) (r := 1 - δ) (by grind) (by grind)
+  replace hφ_lt : 1 - δ < |ξ φ| := by rwa [Real.norm_eq_abs] at hφ_lt
+  wlog h_pos : 0 ≤ ξ φ generalizing φ
+  · exact this (-φ) (by rw [opNorm_neg, hφ_eq]) (by simpa)
+      (by simpa only [map_neg, Left.nonneg_neg_iff] using le_of_not_ge h_pos)
+  have : ξ φ ≤ 1 := by
+    apply le_of_abs_le
+    grw [← Real.norm_eq_abs, le_opNorm ξ φ, h, hφ_eq, one_mul]
+  refine ⟨φ, hφ_eq, ?_⟩
+  rw [← abs_neg, neg_sub]
+  rw [abs_eq_self.mpr (by grind)] at ⊢ hφ_lt
+  rwa [sub_lt_comm]
+
+lemma exists_sub_one_lt_nontrivial [Nontrivial E] {ξ : E**} {δ : ℝ} (hδ : 0 < δ) (h : ‖ξ‖ = 1) :
     ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
   obtain ⟨φ, hφ_eq, hφ_lt⟩ := exists_nnorm_eq_one_lt_apply_of_lt_opNorm'
     (f := ξ) (r := 1 - δ) (by grind)
@@ -151,7 +168,7 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
   · sorry
   replace ε_pos : 0 < ε := lt_of_le_of_ne infDist_nonneg ε_pos
   obtain ⟨δ, hδ_pos, hδ_dist⟩ := exists_forall_closed_ball_dist_add_le_two_sub E ε_pos
-  obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt (half_pos hδ_pos) hξ_norm
+  obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt_nontrivial (half_pos hδ_pos) hξ_norm
   set V := {x : E** | |x φ - 1| < δ/2} with hV_def
   have hV_dist {x x' : E**} (hx : x ∈ V ∩ 𝒰) (hx' : x' ∈ V ∩ 𝒰) : ‖x - x'‖ < ε/2 := sorry
   have hV_open : IsOpen[𝒯] V := by
@@ -190,9 +207,58 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
 --       W ∧ ξ ∈ W ∧ diam (W ∩ 𝒰) < ε := by sorry
 
 lemma exists_ball_lt [UniformConvexSpace E] {ξ : E**} {ε : ℝ} (hε : 0 < ε)
-    (hξ : ξ ∈ closedBall 0 1) :
+    (hξ : ξ ∈ sphere 0 1) :
     letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
-    ∃ W : Set E**, ∃ c : E**, IsOpen[𝒯] W ∧ ξ ∈ W ∧ (W ∩ 𝒰) ⊆ closedBall c ε := by sorry
+    ∃ W : Set E**, IsOpen[𝒯] W ∧ ξ ∈ W ∧ ∃ c, (W ∩ 𝒰) ⊆ closedBall c ε := by
+  letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+  obtain ⟨δ', hδ₀, h_UniformConvex⟩ := exists_forall_closedBall_dist_lt E hε
+  have hξ_norm : ‖ξ‖ = 1 := by rwa [← mem_sphere_zero_iff_norm]
+  set δ := min δ' (1/2)
+  have hδ₀ : 0 < δ/2 := by positivity
+  have hδ₁ : δ/2 < 1 := by
+    calc δ/2 ≤ δ := by linarith
+          _ =  min δ' (1/2) := by rfl
+          _ ≤ (1/2) := min_le_right ..
+          _ < 1 := by linarith
+  obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt hδ₀ hδ₁ hξ_norm
+  set V := {x : E** | |x φ - 1| < δ/2} with hV_def
+  have hξ_mem {V : Set _} (hV_mem : ξ ∈ V) (hV : IsOpen[𝒯] V) : ξ ∈ closure[𝒯] (V ∩ 𝒰) := by
+    apply hV.inter_closure <| Set.mem_inter hV_mem _
+    rw [goldstine]
+    apply sphere_subset_closedBall hξ
+  have hV_open : IsOpen[𝒯] V := by
+    convert @Continuous.isOpen_preimage (X := WeakDual ℝ (StrongDual ℝ E)) (Y := ℝ) _ _
+      (fun x : E** ↦ |x φ - 1|) (s := ball 0 (δ/2)) _ isOpen_ball
+    · ext
+      simp_all only [mem_sphere_iff_norm, sub_zero,/-  Set.mem_inter_iff, -/ Set.mem_setOf_eq,
+        dist_zero_right,/-  and_imp,  -/Set.mem_preimage, mem_ball, Real.norm_eq_abs, abs_abs]
+    · exact Continuous.comp (X := WeakDual ℝ (StrongDual ℝ E)) (f := fun x : E** ↦ x φ) (g := fun (x : ℝ) ↦ |x - 1|)
+        (by fun_prop) <| WeakBilin.eval_continuous (strongDualPairing ℝ (StrongDual ℝ E)) _
+  refine ⟨V, hV_open, by simpa, ?_⟩
+  obtain ⟨y, hy⟩ : (V ∩ 𝒰).Nonempty := by
+    rw [← closure_nonempty_iff (X := WeakDual ℝ (StrongDual ℝ E))]
+    exact ⟨ξ, hξ_mem hφ_lt hV_open⟩
+  use y
+  intro ζ hζ
+  have {t : E**} (ht : t ∈ V) : t φ < δ/2 + 1 := by
+    rw [hV_def, Set.mem_setOf_eq, abs_sub_lt_iff] at ht
+    linarith
+  rw [mem_closedBall_iff_norm]
+  apply le_of_lt
+  sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 -- lemma diam_lt_iff_subset {X : Type*} [MetricSpace X] {s : Set X} {ε : ℝ} (hε : 0 < ε) :
@@ -227,7 +293,6 @@ lemma WeakClosure_subset_closedBall {s : Set E**} {c : E**} {ε : ℝ} (hs : s �
 lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
   let 𝒯 : TopologicalSpace <| WeakDual ℝ (StrongDual ℝ E) := inferInstance
   ext x
-
   refine ⟨fun h ↦ ?_, fun hx ↦ ?_⟩
   · rw [Metric.mem_closure_iff] at h -- **FAE : BLEAH!**
     rw [← closure_closedBall, Metric.mem_closure_iff]
@@ -239,7 +304,9 @@ lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
     grw [← hc_eq, mem_closedBall, dist_zero_right, double_dual_bound, hc_le]
   rw [Metric.mem_closure_iff]
   intro ε hε
-  obtain ⟨W, c, hW, x_mem, hW_sub⟩ := exists_ball_lt (ε := ε/3) (by positivity) hx
+  replace hx : x ∈ sphere 0 1 := sorry -- fals0 ma sufficiente
+  obtain ⟨W, c, hW, x_mem, hW_sub⟩ := exists_ball_lt (ε := ε/3) (by positivity)
+    (sphere_subset_closedBall hx)
   have hx_mem : x ∈ closure[𝒯] (W ∩ 𝒰) := by
     apply hW.inter_closure <| Set.mem_inter x_mem _
     rwa [goldstine]
@@ -257,8 +324,6 @@ lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
     linarith
   apply WeakClosure_subset_closedBall _ hx_mem
   apply subset_trans hW_sub <| closedBall_subset_closedBall (by linarith)
-
-
 
 /- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is
 reflexive. For the time being, we state this property as the surjectivity of
