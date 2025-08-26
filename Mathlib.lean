@@ -1523,6 +1523,7 @@ import Mathlib.Analysis.Complex.Angle
 import Mathlib.Analysis.Complex.Arg
 import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.Cardinality
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Complex.Conformal
@@ -2988,7 +2989,6 @@ import Mathlib.Data.Bundle
 import Mathlib.Data.Char
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Module
