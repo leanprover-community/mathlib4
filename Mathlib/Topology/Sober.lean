@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.OpenCover
+import Mathlib.Algebra.HierarchyDesign
 
 /-!
 # Sober spaces
