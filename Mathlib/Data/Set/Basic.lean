@@ -444,7 +444,7 @@ theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.m
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
 
-@[simp, grind =, push]
+@[simp, grind =]
 theorem mem_empty_iff_false (x : α) : x ∈ (∅ : Set α) ↔ False :=
   Iff.rfl
 
@@ -485,34 +485,20 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   uniq := eq_empty_of_isEmpty
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
-@[push]
 theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
   simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
-@[push ←]
-theorem nonempty_iff_ne_empty {s : Set α} : s.Nonempty ↔ s ≠ ∅ :=
+theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
-/-- Variant of `nonempty_iff_ne_empty` used in the `push` tactic. -/
-@[push ←]
-theorem nonempty_iff_empty_ne {s : Set α} : s.Nonempty ↔ ∅ ≠ s :=
-  nonempty_iff_ne_empty.trans ne_comm
-
 /-- See also `nonempty_iff_ne_empty'`. -/
-@[push]
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
   rw [nonempty_subtype, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `not_nonempty_iff_eq_empty'`. -/
-@[push ←]
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
-
-/-- Variant of `nonempty_iff_ne_empty'` used in the `push` tactic. -/
-@[push ←]
-theorem nonempty_iff_empty_ne' : Nonempty s ↔ ∅ ≠ s :=
-  nonempty_iff_ne_empty'.trans ne_comm
 
 alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 
@@ -628,7 +614,7 @@ theorem MemUnion.elim {x : α} {a b : Set α} {P : Prop} (H₁ : x ∈ a ∪ b) 
     (H₃ : x ∈ b → P) : P :=
   Or.elim H₁ H₂ H₃
 
-@[simp, grind =, push]
+@[simp, grind =]
 theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ b :=
   Iff.rfl
 
@@ -741,7 +727,7 @@ theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
 theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a ∈ s₂ } :=
   rfl
 
-@[simp, mfld_simps, grind =, push]
+@[simp, mfld_simps, grind =]
 theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b :=
   Iff.rfl
 
@@ -968,7 +954,7 @@ theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 
 theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 
-@[simp, grind =, push]
+@[simp, grind =]
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 
