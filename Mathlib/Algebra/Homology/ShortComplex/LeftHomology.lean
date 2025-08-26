@@ -152,8 +152,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   hπ := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _))
 
 @[simp] lemma ofIsColimitCokernelCofork_f' (hg : S.g = 0) (c : CokernelCofork S.f)
-    (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
-  rfl
+    (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := rfl
 
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given by
 the chosen `cokernel S.f` -/

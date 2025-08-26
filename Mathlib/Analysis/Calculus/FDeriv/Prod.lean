@@ -448,7 +448,7 @@ theorem hasFDerivWithinAt_apply (i : ι) (f : ∀ i, F' i) (s' : Set (∀ i, F' 
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasFDerivWithinAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f) (s := s'))).1
-  have h' : comp (proj i) id' = proj i := by rfl
+  have h' : comp (proj i) id' = proj i := rfl
   rw [← h']; apply h; apply hasFDerivWithinAt_id
 
 theorem hasFDerivWithinAt_pi :
