@@ -106,48 +106,10 @@ end zpow'
 namespace List
 variable {M : Type*}
 
-
-/-- The product of the elements of a list. This is a variant of the library version of `List.prod`,
-in which multiplication goes backwards (the first element of the list goes leftmost in the
-multiplication). -/
-def prod' {M : Type*} [Mul M] [One M] : List M → M := foldr (fun a t ↦ t * a) 1
-
-example {M : Type*} [Mul M] [One M] (a b c : M) : List.prod [a, b, c] = a * (b * (c * 1)) := rfl
-example {M : Type*} [Mul M] [One M] (a b c : M) : List.prod' [a, b, c] = 1 * c * b * a := rfl
-
-@[simp]
-theorem prod'_cons [Mul M] [One M] {a} {l : List M} : (a :: l).prod' = l.prod' * a := rfl
-
-@[simp]
-theorem prod'_nil [Mul M] [One M] : (([] : List M)).prod' = 1 := rfl
-
--- generalize library `List.prod_inv`
-theorem prod'_inv₀ {K : Type*} [DivisionCommMonoid K] :
-    ∀ (L : List K), L.prod'⁻¹ = (map (fun x ↦ x⁻¹) L).prod'
-  | [] => by simp
-  | x :: xs => by simp [mul_comm, prod'_inv₀ xs]
-
-theorem prod'_hom {M : Type*} {N : Type*} [Monoid M] [Monoid N] (l : List M) {F : Type*}
-    [FunLike F M N] [MonoidHomClass F M N] (f : F) : (map f l).prod' = f l.prod' := by
-  simp only [prod', foldr_map, ← map_one f]
-  exact l.foldr_hom f (fun x y => (map_mul f y x).symm)
-
-theorem _root_.map_list_prod' {M : Type*} {N : Type*} [Monoid M] [Monoid N] {F : Type*}
-    [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
-    f l.prod' = (map (⇑f) l).prod' :=
-  (l.prod'_hom f).symm
-
 -- in the library somewhere?
 theorem prod'_zpow' {β : Type*} [CommGroupWithZero β] {r : ℤ} {l : List β} :
     zpow' l.prod' r = (map (fun x ↦ zpow' x r) l).prod' :=
   let fr : β →* β := ⟨⟨fun b ↦ zpow' b r, one_zpow' r⟩, (mul_zpow' r)⟩
-  map_list_prod' fr l
-
--- Do we need the ℕ exponent at all?
--- in the library somewhere?
-theorem _root_.List.prod'_pow {β : Type*} [CommMonoid β] {r : ℕ} {l : List β} :
-    l.prod' ^ r = (map (fun x ↦ x ^ r) l).prod' :=
-  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_pow r⟩, (mul_pow · · r)⟩
   map_list_prod' fr l
 
 end List
@@ -335,12 +297,6 @@ theorem cons_zero_eq_div_of_eq_div [CommGroupWithZero M] (e : M) {t t_n t_d : NF
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
--- generalize library `List.prod_inv`
-theorem _root_.List.prod_inv₀ {K : Type*} [DivisionCommMonoid K] :
-    ∀ (L : List K), L.prod⁻¹ = (map (fun x ↦ x⁻¹) L).prod
-  | [] => by simp
-  | x :: xs => by simp [mul_comm, prod_inv₀ xs]
-
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
   simp only [NF.eval, List.map_map, List.prod'_inv₀, NF.instInv]
   congr! 2
@@ -359,12 +315,6 @@ instance : Pow (NF M) ℤ where
 
 @[simp] theorem zpow_apply (r : ℤ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) :=
   rfl
-
--- in the library somewhere?
-theorem _root_.List.prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
-    l.prod ^ r = (map (fun x ↦ x ^ r) l).prod :=
-  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
-  map_list_prod fr l
 
 theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
     (l ^ r).eval = zpow' l.eval r := by
