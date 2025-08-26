@@ -72,15 +72,20 @@ example (A : Set Nat) : A ∈ 𝒫 A := by
 
 example (x y : Nat) (A B : Set Nat) : (x, y) ∈ A ×ˢ B := by
   push · ∈ ·
-  -- Note: we don't allow `push` to unfold projections, which is a bit unfortunate in this case
-  guard_target =ₛ (x, y).1 ∈ A ∧ (x, y).2 ∈ B
-  pull · ∈ ·
-  guard_target =ₛ (x, y) ∈ A ×ˢ B
+  -- `push · ∈ ·` can unpack the pair `(x, y)` because a specialized lemma has been tagged
+  guard_target =ₛ x ∈ A ∧ y ∈ B
   exact test_sorry
 
-example (x y : Nat) (A : Set Nat) : (x, y) ∈ Set.diagonal Nat ∪ Set.offDiag A := by
+example (p : Nat × Nat) (A B : Set Nat) : p ∈ A ×ˢ B := by
   push · ∈ ·
-  guard_target =ₛ (x, y).1 = (x, y).2 ∨ (x, y).1 ∈ A ∧ (x, y).2 ∈ A ∧ (x, y).1 ≠ (x, y).2
+  guard_target =ₛ p.1 ∈ A ∧ p.2 ∈ B
+  pull · ∈ ·
+  guard_target =ₛ p ∈ A ×ˢ B
+  exact test_sorry
+
+example (p : Nat × Nat) (A : Set Nat) : p ∈ Set.diagonal Nat ∪ Set.offDiag A := by
+  push · ∈ ·
+  guard_target =ₛ p.1 = p.2 ∨ p.1 ∈ A ∧ p.2 ∈ A ∧ p.1 ≠ p.2
   exact test_sorry
 
 example (x y z : Nat) : x ∈ ({x, y, z, y, x} : Set Nat) := by
