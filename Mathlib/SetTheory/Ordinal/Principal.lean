@@ -68,6 +68,7 @@ theorem not_principal_iff_of_monotone
     ¬ Principal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [principal_iff_of_monotone h₁ h₂]
 
+@[simp]
 theorem principal_zero : Principal op 0 := fun a _ h =>
   (Ordinal.not_lt_zero a h).elim
 
@@ -93,6 +94,21 @@ theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
 
 theorem nfp_le_of_principal (hao : a < o) (ho : Principal op o) : nfp (op a) a ≤ o :=
   nfp_le fun n => (ho.iterate_lt hao n).le
+
+protected theorem Principal.sSup {s : Set Ordinal} (H : ∀ x ∈ s, Principal op x) :
+    Principal op (sSup s) := by
+  have : Principal op (sSup ∅) := by simp
+  by_cases hs : BddAbove s
+  · obtain rfl | hs' := s.eq_empty_or_nonempty
+    · assumption
+    simp only [Principal, lt_csSup_iff hs hs', forall_exists_index, and_imp]
+    intro x y a has ha b hbs hb
+    have h : max a b ∈ s := max_rec' _ has hbs
+    exact ⟨_, h, H (max a b) h (lt_max_of_lt_left ha) (lt_max_of_lt_right hb)⟩
+  · rwa [csSup_of_not_bddAbove hs]
+
+protected theorem Principal.iSup {ι} {f : ι → Ordinal} (H : ∀ i, Principal op (f i)) :
+    Principal op (⨆ i, f i) := Principal.sSup (by simpa)
 
 end Arbitrary
 
