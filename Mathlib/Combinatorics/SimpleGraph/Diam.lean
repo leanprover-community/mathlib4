@@ -138,7 +138,7 @@ lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
 lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
   contrapose! huv
-  simp only [ediam, eccent, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  simp only [ediam, eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
   exact huv u v
 
 lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
@@ -299,7 +299,7 @@ lemma diam_eq_zero_iff_ediam_eq_top [Nontrivial α] : G.diam = 0 ↔ G.ediam = �
 
 /-- A finite and nontrivial graph is connected if and only if its diameter is not zero.
 See also `connected_iff_ediam_ne_top` for the extended diameter version. -/
-lemma connected_iff_diam_ne_zero [Fintype α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
+lemma connected_iff_diam_ne_zero [Finite α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
   rw [connected_iff_ediam_ne_top, not_iff_not, diam_eq_zero_iff_ediam_eq_top]
 
 end diam
@@ -400,8 +400,7 @@ def center (G : SimpleGraph α) : Set α :=
 lemma center_nonempty [Nonempty α] : G.center.Nonempty :=
   exists_eccent_eq_radius
 
-lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius :=
-  Set.mem_def
+lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius := .rfl
 
 lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] :
     G.center = Set.univ ↔ G.radius = G.ediam := by

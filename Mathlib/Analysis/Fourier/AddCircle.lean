@@ -80,11 +80,7 @@ variable [hT : Fact (0 < T)]
 /-- Haar measure on the additive circle, normalised to have total measure 1. -/
 def haarAddCircle : Measure (AddCircle T) :=
   addHaarMeasure ⊤
-
--- The `IsAddHaarMeasure` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : IsAddHaarMeasure (@haarAddCircle T _) :=
-  Measure.isAddHaarMeasure_addHaarMeasure ⊤
+deriving IsAddHaarMeasure
 
 instance : IsProbabilityMeasure (@haarAddCircle T _) :=
   IsProbabilityMeasure.mk addHaarMeasure_self
@@ -184,7 +180,7 @@ theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : Ad
 def fourierSubalgebra : StarSubalgebra ℂ C(AddCircle T, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range fourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range (fourier (T := T))) ≤
+    change Algebra.adjoin ℂ (range (fourier (T := T))) ≤
       star (Algebra.adjoin ℂ (range (fourier (T := T))))
     refine adjoin_le ?_
     rintro - ⟨n, rfl⟩
@@ -290,7 +286,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
   -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
-  simp_rw (config := {singlePass := true}) [this]
+  simp_rw +singlePass [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
@@ -356,7 +352,7 @@ section FourierL2
 /-- We define `fourierBasis` to be a `ℤ`-indexed Hilbert basis for `Lp ℂ 2 haarAddCircle`,
 which by definition is an isometric isomorphism from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`. -/
 def fourierBasis : HilbertBasis ℤ ℂ (Lp ℂ 2 <| @haarAddCircle T hT) :=
-  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `fourierBasis` are the functions `fourierLp 2`, i.e. the
 monomials `fourier n` on the circle considered as elements of `L²`. -/
@@ -483,7 +479,7 @@ theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ �
   rw [(by ring : ((b - a : ℝ) : ℂ) / (-2 * π * I * n) = ((b - a : ℝ) : ℂ) * (1 / (-2 * π * I * n)))]
   have s2 : (b : AddCircle (b - a)) = (a : AddCircle (b - a)) := by
     simpa using coe_add_period (b - a) a
-  rw [s2, integral_const_mul, ← sub_mul, mul_sub, mul_sub]
+  rw [s2, intervalIntegral.integral_const_mul, ← sub_mul, mul_sub, mul_sub]
   congr 1
   · conv_lhs => rw [mul_comm, mul_div, mul_one]
     rw [div_eq_iff (ofReal_ne_zero.mpr hT.out.ne')]

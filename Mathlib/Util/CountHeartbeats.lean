@@ -20,7 +20,7 @@ If this number is above the current `maxHeartbeats`, we also print a `Try this:`
 -/
 
 
-open Lean Elab Command Meta
+open Lean Elab Command Meta Linter
 
 namespace Mathlib.CountHeartbeats
 
@@ -93,17 +93,17 @@ set_option linter.style.maxHeartbeats false in
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
-for long running declarations.
+for long-running declarations.
 
 If you do so, please resist the temptation to set the limit as low as possible.
 As the `simp` set and other features of the library evolve,
 other contributors will find that their (likely unrelated) changes
 have pushed the declaration over the limit.
-`count_heartbearts in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
+`count_heartbeats in` will automatically suggest a `set_option maxHeartbeats` via "Try this:"
 using the least number of the form `2^k * 200000` that suffices.
 
-Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
-has granularity 1000 times finer that the limits set by `set_option maxHeartbeats`.
+Note that the internal heartbeat counter accessible via `IO.getNumHeartbeats`
+has granularity 1000 times finer than the limits set by `set_option maxHeartbeats`.
 As this is intended as a user command, we divide by 1000.
 
 The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
@@ -215,8 +215,6 @@ end Mathlib
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
 
-open Lean Elab Command
-
 namespace Mathlib.Linter
 
 /--
@@ -249,14 +247,14 @@ namespace CountHeartbeats
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
 def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
+  unless getLinterValue linter.countHeartbeats (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
     let s ← get
-    if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
+    if getLinterValue linter.countHeartbeatsApprox (← getLinterOptions) then
       elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
     else
       elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))

@@ -19,7 +19,7 @@ has exactly one fixed point, so `|S|` is odd and the involution defined by
 `(x, y, z) ↦ (x, z, y)` also has a fixed point." — [Don Zagier](Zagier1990)
 
 This elementary proof (`Nat.Prime.sq_add_sq'`) is independent of `Nat.Prime.sq_add_sq` in
-`Mathlib.NumberTheory.SumTwoSquares`, which uses the unique factorisation of `ℤ[i]`.
+`Mathlib/NumberTheory/SumTwoSquares.lean`, which uses the unique factorisation of `ℤ[i]`.
 For a geometric interpretation of the piecewise involution (`Zagier.complexInvo`)
 see [Moritz Firsching's MathOverflow answer](https://mathoverflow.net/a/299696).
 -/
@@ -160,7 +160,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
     rw [show x * x + 4 * x * z = x * (x + 4 * z) by linarith] at h
     rcases (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e | e
     · rw [e, mul_one] at h
-      simp_all [h, show z = 0 by linarith [e]]
+      simp_all [show z = 0 by linarith [e]]
     · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false, reduceCtorEq] at h
       simp only [h, true_and]
       linarith [e]

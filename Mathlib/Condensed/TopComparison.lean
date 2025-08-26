@@ -77,7 +77,7 @@ theorem equalizerCondition_yonedaPresheaf
       MapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
-    congr
+    congr 1
     exact DFunLike.ext'_iff.mp ((hq Z B π).lift_comp a (factorsThrough_of_pullbackCondition G X ha))
 
 /--
@@ -130,7 +130,7 @@ end
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
-noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
+noncomputable abbrev TopCat.toCondensedSet (X : TopCat.{u + 1}) : CondensedSet.{u} :=
   toSheafCompHausLike.{u+1} _ X (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--

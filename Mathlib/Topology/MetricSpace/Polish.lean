@@ -224,7 +224,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
   have A : CauchySeq fun n => (u n).1 := by
     refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
-    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
+    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)
   obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
@@ -238,7 +238,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
       _ < (1 / 2) ^ 0 := hu 0 0 n le_rfl n.zero_le
   have Cpos : 0 < C := lt_of_le_of_lt (div_nonneg zero_le_one infDist_nonneg) (hC 0)
   have Hmem : ∀ {y}, y ∈ s ↔ 0 < infDist y sᶜ := fun {y} ↦ by
-    rw [← s.isOpen.isClosed_compl.not_mem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
+    rw [← s.isOpen.isClosed_compl.notMem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
   have I : ∀ n, 1 / C ≤ infDist (u n).1 sᶜ := fun n ↦ by
     have : 0 < infDist (u n).1 sᶜ := Hmem.1 (u n).2
     rw [div_le_iff₀' Cpos]

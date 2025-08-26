@@ -87,7 +87,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   classical
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
-  obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
+  obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
   push_neg at hc
@@ -133,7 +133,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
         mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
-  have h_sep : h.Separable := separable_gcd_right _ (Algebra.IsSeparable.isSeparable F β).map
+  have h_sep : h.Separable := separable_gcd_right _ (.map (Algebra.IsSeparable.isSeparable F β))
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
@@ -161,7 +161,7 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
   · dsimp only [γ]
     convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
-      map_C, AdjoinSimple.algebraMap_gen, map_add, Polynomial.map_mul, map_X]
+      map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr
 
 -- If `F` is infinite and `E/F` has only finitely many intermediate fields, then for any
@@ -236,7 +236,7 @@ section FiniteIntermediateField
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
   wlog hmn : m < n
-  · exact this F E hneq.symm heq.symm (hneq.lt_or_lt.resolve_left hmn)
+  · exact this F E hneq.symm heq.symm (hneq.lt_or_gt.resolve_left hmn)
   by_cases hm : m = 0
   · rw [hm] at heq hmn
     simp only [pow_zero, adjoin_one] at heq
@@ -341,13 +341,18 @@ end Field
 variable (F E : Type*) [Field F] [Field E] [Algebra F E]
     [FiniteDimensional F E] [Algebra.IsSeparable F E]
 
+theorem AlgHom.natCard_of_splits (L : Type*) [Field L] [Algebra F L]
+    (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
+    Nat.card (E →ₐ[F] L) = finrank F E :=
+  (AlgHom.natCard_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
+    (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
+      (PowerBasis.finrank _).symm
+
 @[simp]
 theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
     (hL : ∀ x : E, (minpoly F x).Splits (algebraMap F L)) :
     Fintype.card (E →ₐ[F] L) = finrank F E := by
-  convert (AlgHom.card_of_powerBasis (L := L) (Field.powerBasisOfFiniteOfSeparable F E)
-    (Algebra.IsSeparable.isSeparable _ _) <| hL _).trans
-      (PowerBasis.finrank _).symm
+  rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_splits F E L hL]
 
 @[simp]
 theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :

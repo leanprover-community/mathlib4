@@ -125,7 +125,7 @@ that `a` together with proofs of `a ∈ l` and `p a`. -/
 def chooseX : ∀ _hp : ∃! a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a } :=
   Quotient.recOn l (fun l' ex_unique => List.chooseX p l' (ExistsUnique.exists ex_unique))
     (by
-      intros a b _
+      intro a b _
       funext hp
       suffices all_equal : ∀ x y : { t // t ∈ b ∧ p t }, x = y by
         apply all_equal
@@ -160,7 +160,6 @@ def subsingletonEquiv [Subsingleton α] : List α ≃ Multiset α where
   invFun :=
     (Quot.lift id) fun (a b : List α) (h : a ~ b) =>
       (List.ext_get h.length_eq) fun _ _ _ => Subsingleton.elim _ _
-  left_inv _ := rfl
   right_inv m := Quot.inductionOn m fun _ => rfl
 
 @[simp]

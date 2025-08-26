@@ -57,7 +57,7 @@ section
 error: failed to synthesize
   Semiring R
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]
@@ -232,7 +232,8 @@ section
 /--
 error: invalid binder annotation, type is not a class instance
   UniqueFactorizationDomain R
-use the command `set_option checkBinderAnnotations false` to disable the check
+
+Note: Use the command `set_option checkBinderAnnotations false` to disable the check
 -/
 #guard_msgs in
 variable? [UniqueFactorizationDomain R] =>

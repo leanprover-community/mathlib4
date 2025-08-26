@@ -12,12 +12,12 @@ This file defines the category of root pairings, following the definition of cat
 given in SGA III Exp. 21 Section 6.
 
 ## Main definitions:
- * `RootPairingCat`: Objects are root pairings.
+* `RootPairingCat`: Objects are root pairings.
 
 ## TODO
 
- * Forgetful functors
- * Functions passing between module maps and root pairing homs
+* Forgetful functors
+* Functions passing between module maps and root pairing homs
 
 ## Implementation details
 

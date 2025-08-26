@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
+import Mathlib.Algebra.Group.TransferInstance
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.Algebra.Equiv.TransferInstance
 
 /-! Homogeneous lexicographic monomial ordering
 
@@ -157,11 +157,11 @@ theorem single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=
 
 theorem single_lt_iff {a b : α} :
     toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b :=
-  single_strictAnti.lt_iff_lt
+  single_strictAnti.lt_iff_gt
 
 theorem single_le_iff {a b : α} :
     toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b :=
-  single_strictAnti.le_iff_le
+  single_strictAnti.le_iff_ge
 
 theorem monotone_degree :
     Monotone (fun (x : DegLex (α →₀ ℕ)) ↦ (ofDegLex x).degree) := by
@@ -171,18 +171,18 @@ theorem monotone_degree :
   · apply le_of_lt h
   · apply le_of_eq h.1
 
-instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
+noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot := toDegLex (0 : α →₀ ℕ)
   bot_le x := by
     simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]
     rcases eq_zero_or_pos (ofDegLex x).degree with (h | h)
-    · simp only [h, lt_self_iff_false, true_and, false_or, ge_iff_le]
+    · simp only [h, lt_self_iff_false, true_and, false_or]
       exact bot_le
     · simp [h]
 
 instance wellFoundedLT [WellFoundedGT α] :
     WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_lt⟩
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
 
 end DegLex
 

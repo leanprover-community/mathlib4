@@ -29,7 +29,10 @@ macro "measurability" : attr =>
 /--
 The tactic `measurability` solves goals of the form `Measurable f`, `AEMeasurable f`,
 `StronglyMeasurable f`, `AEStronglyMeasurable f μ`, or `MeasurableSet s` by applying lemmas tagged
-with the `measurability` user attribute. -/
+with the `measurability` user attribute.
+
+`fun_prop` is a (usually more powerful) alternative to `measurability`
+if your goal does not involve `MeasurableSet`. -/
 macro "measurability" : tactic =>
   `(tactic| aesop (config := { terminal := true })
     (rule_sets := [$(Lean.mkIdent `Measurable):ident]))

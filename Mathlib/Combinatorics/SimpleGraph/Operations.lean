@@ -29,19 +29,6 @@ namespace SimpleGraph
 
 variable {V : Type*} (G : SimpleGraph V) (s t : V)
 
-namespace Iso
-
-variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
-
-include f in
-theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    #G.edgeFinset = #G'.edgeFinset := by
-  apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
-  exact f.mapEdgeSet
-
-end Iso
-
 section ReplaceVertex
 
 variable [DecidableEq V]
@@ -160,15 +147,20 @@ variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
   rw [edge_adj]; infer_instance
 
-lemma edge_self_eq_bot : edge s s = ⊥ := by
-  ext; rw [edge_adj]; aesop
-
 @[simp]
-lemma sup_edge_self : G ⊔ edge s s = G := by
-  rw [edge_self_eq_bot, sup_of_le_left bot_le]
+lemma edge_self_eq_bot : edge s s = ⊥ := by
+  ext; rw [edge_adj]; simp_all
+
+lemma sup_edge_self : G ⊔ edge s s = G := by simp
 
 lemma lt_sup_edge (hne : s ≠ t) (hn : ¬ G.Adj s t) : G < G ⊔ edge s t :=
   left_lt_sup.2 fun h ↦ hn <| h <| (edge_adj ..).mpr ⟨Or.inl ⟨rfl, rfl⟩, hne⟩
+
+lemma edge_le_iff {v w : V} : edge v w ≤ G ↔ v = w ∨ G.Adj v w := by
+  obtain h | h := eq_or_ne v w
+  · simp [h]
+  · refine ⟨fun h ↦ .inr <| h (by simp_all [edge_adj]), fun hadj v' w' hvw' ↦ ?_⟩
+    aesop (add simp [edge_adj, adj_symm])
 
 variable {s t}
 

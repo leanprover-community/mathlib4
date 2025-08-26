@@ -17,7 +17,7 @@ with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ
 embedding.
 
 This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
-provided by `Mathlib/Data/RCLike/Basic.lean` as
+provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 * `RCLike.toStrictOrderedCommRing`
 * `RCLike.toStarOrderedRing`
@@ -34,8 +34,8 @@ Complex numbers with different imaginary parts are incomparable.
 protected def partialOrder : PartialOrder ℂ where
   le z w := z.re ≤ w.re ∧ z.im = w.im
   lt z w := z.re < w.re ∧ z.im = w.im
-  lt_iff_le_not_le z w := by
-    rw [lt_iff_le_not_le]
+  lt_iff_le_not_ge z w := by
+    rw [lt_iff_le_not_ge]
     tauto
   le_refl _ := ⟨le_rfl, rfl⟩
   le_trans _ _ _ h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
@@ -116,7 +116,7 @@ lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_e
 
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy
-  simp only [ofRealHom_eq_coe, real_le_real, hxy]
+  simp only [real_le_real, hxy]
 
 end Complex
 

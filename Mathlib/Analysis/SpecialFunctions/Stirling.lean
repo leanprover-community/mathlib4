@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
 import Mathlib.Analysis.PSeries
-import Mathlib.Data.Real.Pi.Wallis
+import Mathlib.Analysis.Real.Pi.Wallis
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -22,8 +22,8 @@ We proceed in two parts.
 **Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
 and prove that this sequence converges to a real, positive number $a$. For this the two main
 ingredients are
- - taking the logarithm of the sequence and
- - using the series expansion of $\log(1 + x)$.
+- taking the logarithm of the sequence and
+- using the series expansion of $\log(1 + x)$.
 
 **Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
@@ -38,8 +38,8 @@ open Finset Filter Nat Real
 namespace Stirling
 
 /-!
- ### Part 1
- https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
+### Part 1
+https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
 -/
 
 
@@ -65,8 +65,7 @@ theorem log_stirlingSeq_formula (n : ℕ) :
       <;> positivity
 
 /-- The sequence `log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))` has the series expansion
-   `∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`
--/
+`∑ 1 / (2 * (k + 1) + 1) * (1 / 2 * (m + 1) + 1)^(2 * (k + 1))`. -/
 theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     HasSum (fun k : ℕ => (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(m + 1) + 1)) ^ 2) ^ ↑(k + 1))
       (log (stirlingSeq (m + 1)) - log (stirlingSeq (m + 2))) := by
@@ -82,7 +81,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     ring
   · have h : ∀ x ≠ (0 : ℝ), 1 + x⁻¹ = (x + 1) / x := fun x hx ↦ by field_simp [hx]
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
-      factorial_succ, cast_mul, cast_succ, cast_zero, range_one, sum_singleton, h]
+      factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring
 
 /-- The sequence `log ∘ stirlingSeq ∘ succ` is monotone decreasing -/
@@ -179,8 +178,8 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
   exact tendsto_atTop_ciInf stirlingSeq'_antitone ⟨x, hx'⟩
 
 /-!
- ### Part 2
- https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
+### Part 2
+https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
 
 

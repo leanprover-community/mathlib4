@@ -42,23 +42,23 @@ end
 
 universe u
 
-/-- info: fun α [Lattice α] a b => a ⊔ b : (α : Type u) → [inst : Lattice α] → α → α → α -/
+/-- info: fun α [Lattice α] a b => a ⊔ b : (α : Type u) → [Lattice α] → α → α → α -/
 #guard_msgs in
 #check fun (α : Type u) [Lattice α] (a b : α) => max a b
 
-/-- info: fun α [LinearOrder α] a b => max a b : (α : Type u) → [inst : LinearOrder α] → α → α → α -/
+/-- info: fun α [LinearOrder α] a b => max a b : (α : Type u) → [LinearOrder α] → α → α → α -/
 #guard_msgs in
 #check fun (α : Type u) [LinearOrder α] (a b : α) => max a b
 
 /--
-info: fun α [CompleteLinearOrder α] a b => max a b : (α : Type u) → [inst : CompleteLinearOrder α] → α → α → α
+info: fun α [CompleteLinearOrder α] a b => max a b : (α : Type u) → [CompleteLinearOrder α] → α → α → α
 -/
 #guard_msgs in
 #check fun (α : Type u) [CompleteLinearOrder α] (a b : α) => max a b
 
 /--
 info: fun α [ConditionallyCompleteLinearOrder α] a b =>
-  max a b : (α : Type u) → [inst : ConditionallyCompleteLinearOrder α] → α → α → α
+  max a b : (α : Type u) → [ConditionallyCompleteLinearOrder α] → α → α → α
 -/
 #guard_msgs in
 #check fun (α : Type u) [ConditionallyCompleteLinearOrder α] (a b : α) => max a b

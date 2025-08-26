@@ -135,7 +135,7 @@ variable {K V : Type*}
 section
 variable [AddCommGroup V] [Field K] [CharZero K] [Module K V] {a b μ ν : K} {v w x y : V}
 
-example  (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
+example (h : a ^ 2 + b ^ 2 = 1) : a • (a • x - b • y) + (b • a • y + b • b • x) = x := by
   linear_combination (norm := module) h • x
 
 example (h1 : a • x + b • y = 0) (h2 : a • μ • x + b • ν • y = 0) : (μ - ν) • a • x = 0 := by
@@ -197,7 +197,7 @@ in particular negation/subtraction does not "distribute". The following four tes
 current behaviour, without taking a stance on whether this should be considered a feature or a bug.
 -/
 
-example {a : ℕ}  (h : a = 3) : a ^ 2 + 3 = 4 * a := by
+example {a : ℕ} (h : a = 3) : a ^ 2 + 3 = 4 * a := by
   linear_combination a * h - h
 
 /--
@@ -314,14 +314,14 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--
-error: application type mismatch
-  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
-argument
+error: Application type mismatch: The argument
   0
 has type
-  ℝ : Type
+  ℝ
 but is expected to have type
-  ℤ : Type
+  ℤ
+in the application
+  Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
 -/
 #guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by

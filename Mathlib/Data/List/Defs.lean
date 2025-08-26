@@ -36,7 +36,7 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-  | []       => default
+  | [] => default
   | (a :: _) => a
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
@@ -218,9 +218,7 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
       let (a', l') := extractp p l
       (a', a :: l')
 
-/-- Notation for calculating the product of a `List`
--/
-
+/-- Notation for calculating the product of a `List` -/
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
@@ -229,12 +227,15 @@ section Chain
 instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
-  | nil => simp only [List.Chain.nil]; infer_instance
-  | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
+  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
+  | cons b as ih =>
+    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
 
 instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
     Decidable (Chain' R l) := by
-  cases l <;> dsimp only [List.Chain'] <;> infer_instance
+  cases l
+  · exact inferInstanceAs (Decidable True)
+  · exact inferInstanceAs (Decidable (Chain _ _ _))
 
 end Chain
 
@@ -413,7 +414,7 @@ def replaceIf : List α → List Bool → List α → List α
 /-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
 @[simp]
 def iterate (f : α → α) (a : α) : (n : ℕ) → List α
-  | 0     => []
+  | 0 => []
   | n + 1 => a :: iterate f (f a) n
 
 /-- Tail-recursive version of `List.iterate`. -/
@@ -425,7 +426,7 @@ where
   @[simp, specialize]
   loop (a : α) (n : ℕ) (l : List α) : List α :=
     match n with
-    | 0     => reverse l
+    | 0 => reverse l
     | n + 1 => loop (f a) n (a :: l)
 
 theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
@@ -477,7 +478,5 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
-
-alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 
 end List

@@ -165,7 +165,7 @@ lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInverted
 variable {W}
 
 lemma cases (α : W.RightFraction X Y) :
-    ∃ (X' : C) (s : X' ⟶ X) (hs : W s) (f : X' ⟶ Y) , α = RightFraction.mk s hs f :=
+    ∃ (X' : C) (s : X' ⟶ X) (hs : W s) (f : X' ⟶ Y), α = RightFraction.mk s hs f :=
   ⟨_, _, _, _, rfl⟩
 
 end RightFraction
@@ -400,7 +400,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
       refine ⟨Z, q.f ≫ u, q.s ≫ u, ?_, ?_, ?_⟩
       · simp only [p₁, p₂, assoc, reassoc_of% fac₃]
       · rw [assoc, assoc, assoc, assoc, fac₄, reassoc_of% hft]
-      · simp only [p₁, p₂, assoc, ← reassoc_of% fac₃]
+      · simp only [p₁, assoc, ← reassoc_of% fac₃]
         exact W.comp_mem _ _ b.hs (W.comp_mem _ _ z₂.hs
           (W.comp_mem _ _ w₂.hs (W.comp_mem _ _ q.hs hu)))
     · have eq : a₂.s ≫ z₂.f ≫ w₂.s = a₂.s ≫ t₂ ≫ w₂.f := by
@@ -445,7 +445,7 @@ noncomputable instance : Category (Localization W) where
     change (Hom.mk (ofHom W (𝟙 X))).comp (Hom.mk z) = Hom.mk z
     rw [Hom.comp_eq, comp_eq (ofHom W (𝟙 X)) z (ofHom W z.f) (by simp)]
     dsimp
-    simp only [comp₀, id_comp, comp_id]
+    simp only [id_comp, comp_id]
   assoc := by
     rintro (X₁ X₂ X₃ X₄ : C) f₁ f₂ f₃
     obtain ⟨z₁, rfl⟩ := Hom.mk_surjective f₁
@@ -470,7 +470,7 @@ variable (W) in
 /-- The localization functor to the constructed localized category for a morphism property
 that has left calculus of fractions. -/
 @[simps obj]
-def Q : C ⥤ Localization W where
+noncomputable def Q : C ⥤ Localization W where
   obj X := X
   map f := Hom.mk (ofHom W f)
   map_id _ := rfl
@@ -480,7 +480,8 @@ def Q : C ⥤ Localization W where
     simp only [ofHom, comp₀, comp_id]
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
-abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
+noncomputable abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y :=
+  Hom.mk f
 
 lemma homMk_eq_hom_mk {X Y : C} (f : W.LeftFraction X Y) : homMk f = Hom.mk f := rfl
 
@@ -507,7 +508,8 @@ lemma homMk_eq_iff_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
 
 /-- The morphism in `Localization W` that is the formal inverse of a morphism
 which belongs to `W`. -/
-def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X := homMk (ofInv s hs)
+noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
+  homMk (ofInv s hs)
 
 lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
     (Q W).map f ≫ Qinv s hs = homMk (mk f s hs) := by
@@ -517,7 +519,7 @@ lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
 
 /-- The isomorphism in `Localization W` that is induced by a morphism in `W`. -/
 @[simps]
-def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
+noncomputable def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
   hom := (Q W).map s
   inv := Qinv s hs
   hom_inv_id := by
@@ -557,9 +559,8 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
       F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
-lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y)
-    (F : C ⥤ E) (hF : W.IsInvertedBy F) :
-  Hom.map (Hom.mk f) F hF = f.map F hF := rfl
+lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    Hom.map (Hom.mk f) F hF = f.map F hF := rfl
 
 namespace StrictUniversalPropertyFixedTarget
 
@@ -755,8 +756,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
       LeftFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
-    simp only [id_comp] at hst
-    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+    grind
   · rintro ⟨Z, s, hs, fac⟩
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
@@ -964,8 +964,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
       RightFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
-    simp only [comp_id] at hst
-    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+    grind
   · rintro ⟨Z, s, hs, fac⟩
     simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
