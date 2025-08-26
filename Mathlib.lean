@@ -1541,6 +1541,7 @@ import Mathlib.Analysis.Complex.MeanValue
 import Mathlib.Analysis.Complex.Norm
 import Mathlib.Analysis.Complex.OpenMapping
 import Mathlib.Analysis.Complex.OperatorNorm
+import Mathlib.Analysis.Complex.Order
 import Mathlib.Analysis.Complex.Periodic
 import Mathlib.Analysis.Complex.PhragmenLindelof
 import Mathlib.Analysis.Complex.Polynomial.Basic
@@ -2993,7 +2994,6 @@ import Mathlib.Data.Complex.BigOperators
 import Mathlib.Data.Complex.Determinant
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Module
-import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Orientation
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
