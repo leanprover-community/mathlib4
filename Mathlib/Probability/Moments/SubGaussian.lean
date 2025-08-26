@@ -417,7 +417,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
         · exact hmY (t * q)
       _ = exp ((cX.sqrt + cY.sqrt) ^ 2 * t ^ 2 / 2) := by
         simp_rw [← exp_mul, ← exp_add]
-        simp [p, q]
+        simp only [NNReal.coe_div, NNReal.coe_add, coe_sqrt, one_div, inv_div, exp_eq_exp, p, q]
         field_simp
         linear_combination t ^ 2 * (-√↑cY * Real.sq_sqrt cX.coe_nonneg
             -√↑cX * Real.sq_sqrt cY.coe_nonneg) }

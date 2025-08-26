@@ -132,7 +132,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   · convert Complex.arg_cos_add_sin_mul_I _
     · push_cast; rfl
     · push_cast; rfl
-    simp
+    simp only [Int.cast_natCast, Set.mem_Ioc]
     refine ⟨(neg_lt_neg Real.pi_pos).trans_le ?_, ?_⟩
     · rw [neg_zero]
       positivity
@@ -148,7 +148,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   · push_cast
     rw [← sub_one_mul, sub_div, div_self]
     exact mod_cast hn
-  simp
+  simp only [Int.cast_sub, Int.cast_natCast, Set.mem_Ioc]
   field_simp
   constructor
   · push_neg at h₂

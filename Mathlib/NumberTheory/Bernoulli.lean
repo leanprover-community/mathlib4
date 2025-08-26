@@ -129,7 +129,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
   refine sum_congr rfl fun k hk => ?_
   congr
   have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast
-  simp [field, ← cast_sub (mem_range.1 hk).le, mul_comm]
+  simp only [← cast_sub (mem_range.1 hk).le, succ_eq_add_one, field, mul_comm]
   rw_mod_cast [tsub_add_eq_add_tsub (mem_range.1 hk).le, choose_mul_succ_eq]
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli' n`. -/
@@ -152,7 +152,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
   have := factorial_mul_factorial_dvd_factorial_add i j
-  simp (disch := assumption) [field, add_choose]
+  simp [field, add_choose, *]
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
 theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by

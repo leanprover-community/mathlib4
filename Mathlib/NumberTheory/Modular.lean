@@ -234,9 +234,9 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   subst hg
   rw [coe_specialLinearGroup_apply]
   replace nonZ2 : z * (g 1 0 : ℂ) + g 1 1 ≠ 0 := by convert nonZ2 using 1; ring
-  simp [field]
   have H := congr(Int.cast (R := ℂ) $(det_fin_two g))
   simp at H
+  simp [field]
   linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :

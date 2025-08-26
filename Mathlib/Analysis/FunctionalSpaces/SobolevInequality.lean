@@ -492,7 +492,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   · convert eLpNorm_le_eLpNorm_fderiv_one μ hu h2u hn using 2
     · suffices (p' : ℝ) = n' by simpa using this
       rw [← inv_inj, hp']
-      simp (disch := assumption) [field, n', NNReal.conjExponent]
+      simp [field, n', NNReal.conjExponent, *]
     · norm_cast
       simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
       simp only [n, NNReal.coe_one] at hnp

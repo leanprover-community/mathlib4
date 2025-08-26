@@ -275,9 +275,7 @@ lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
   convert hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
-  simp [field, pow_add]
-  rw [← mul_pow]
-  ring_nf
+  simp [field, pow_add, ← mul_pow]
 
 end Complex
 

@@ -137,7 +137,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
-  · simp (disch := positivity) [field]
+  · simp (disch := positivity) only [Real.sqrt_mul, mul_inv_rev, field]
     rw [Real.sqrt_sq_eq_abs]
   · congr 1
     field_simp
