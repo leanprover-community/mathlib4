@@ -16,26 +16,31 @@ namespace Matrix
 
 open Matrix LinearMap
 
-variable {R n : Type*} [Fintype n] [DecidableEq n]
+variable {R n : Type*} [Fintype n]
 
 /-- This takes in a non-unital algebra homomorphism `f` and vectors `y, z : n → R`
 and constructs a linear operator on `(n → R)` such that `x ↦ f (vecMulVec x y) *ᵥ z`. -/
 private def NonUnitalAlgHom.apply_vecMulVec_mulVec [Semiring R]
-    (f : (Matrix n n R) →ₙₐ[R] Matrix n n R) (y z : n → R) :
-    (n → R) →ₗ[R] n → R where
-  toFun x := f (vecMulVec x y) *ᵥ z
-  map_add' w p := by simp_rw [add_vecMulVec, map_add, add_mulVec]
-  map_smul' w r := by simp_rw [smul_vecMulVec, map_smul, smul_mulVec, RingHom.id_apply]
+    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) :
+    (n → R) →ₗ[R] (n → R) :=
+  (mulVecBilin R ℕ).flip z ∘ₗ (↑f : Matrix n n R →ₗ[R] Matrix n n R) ∘ₗ (vecMulVecBilin R ℕ).flip y
+
+@[simp]
+private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_apply [Semiring R]
+    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (x y z : n → R) :
+  f.apply_vecMulVec_mulVec y z x = f (vecMulVec x y) *ᵥ z := rfl
+
+variable [DecidableEq n]
 
 private theorem NonUnitalAlgHom.toMatrix'_apply_vecMulVec_mulVec_mul [CommSemiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
-    (f.apply_vecMulVec_mulVec y z).toMatrix' * A
-    = f A * (f.apply_vecMulVec_mulVec y z).toMatrix' := toLin'.injective <| LinearMap.ext fun x =>
+    (f.apply_vecMulVec_mulVec y z).toMatrix' * A = f A * (f.apply_vecMulVec_mulVec y z).toMatrix' :=
+  toLin'.injective <| LinearMap.ext fun x =>
   let T := f.apply_vecMulVec_mulVec y z
   calc
     (T.toMatrix' * A) *ᵥ x = T (A *ᵥ x) := by
       ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
-    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, NonUnitalAlgHom.apply_vecMulVec_mulVec]
+    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, NonUnitalAlgHom.apply_vecMulVec_mulVec_apply]
     _ = f (A * vecMulVec x y) *ᵥ z := by
       simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
     _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
