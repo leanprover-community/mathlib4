@@ -299,8 +299,7 @@ theorem update_self : f.update a (f a) = f := by
     simp
 
 @[simp]
-theorem zero_update : update 0 a b = single a b := by
-  rfl
+theorem zero_update : update 0 a b = single a b := rfl
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by

@@ -147,8 +147,7 @@ theorem tail_pure (a : α) : tail (pure a) = pure a :=
   rfl
 
 @[simp]
-theorem tail_think (s : Computation α) : tail (think s) = s := by
-  rfl
+theorem tail_think (s : Computation α) : tail (think s) = s := rfl
 
 @[simp]
 theorem tail_empty : tail (empty α) = empty α :=
