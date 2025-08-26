@@ -171,6 +171,14 @@ lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f
 @[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by grind
 
+@[simp] lemma map₂_eq_coe_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} {c : γ} :
+    map₂ f a b = WithBot.some c ↔ ∃ a' b', a = .some a' ∧ b = .some b' ∧ f a' b' = c :=
+  match a, b with
+  | .bot, .bot
+  | .bot, .some b
+  | .some a, .bot
+  | .some a, .some b => by simp
+
 lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := by grind
 
 lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x := by grind
@@ -738,6 +746,10 @@ lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f
 
 @[simp] lemma map₂_eq_top_iff {f : α → β → γ} {a : WithTop α} {b : WithTop β} :
     map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := WithBot.map₂_eq_bot_iff
+
+@[simp] lemma map₂_eq_coe_iff {f : α → β → γ} {a : WithTop α} {b : WithTop β} {c : γ} :
+    map₂ f a b = WithTop.some c ↔ ∃ a' b', a = .some a' ∧ b = .some b' ∧ f a' b' = c :=
+  WithBot.map₂_eq_coe_iff
 
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
