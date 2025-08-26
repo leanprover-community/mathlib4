@@ -465,7 +465,7 @@ theorem pow_le_descPochhammer_eval {n : ℕ} {s : S} (h : n - 1 ≤ s) :
 
 /-- `descPochhammer S n` is monotone on `[n-1, ∞)`. -/
 theorem monotoneOn_descPochhammer_eval (n : ℕ) :
-    MonotoneOn (descPochhammer S n).eval (Set.Ici (n - 1 : S)) := by
+    MonotoneOn (Polynomial.eval · (descPochhammer S n)) (Set.Ici (n - 1 : S)) := by
   induction n with
   | zero => simp [monotoneOn_const]
   | succ n ih =>

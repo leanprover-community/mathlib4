@@ -3,6 +3,7 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
+import Mathlib.Tactic.CategoryTheory.Refs
 import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Tactic.Simps.Basic
@@ -74,15 +75,6 @@ This attribute also works for lemmas of shape `∀ .., f = g` where `f g : X ≅
 isomorphisms, provided that `Tactic.CategoryTheory.IsoReassoc` has been imported.
 -/
 syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
-
-/--
-IO ref for reassociation handlers `reassoc` attribute, so that it can be extended
-with additional handlers. Handlers take a proof of the equation.
-
-The default handler is `reassocExprHom` for morphism reassociation.
-This will be extended in `Tactic.CategoryTheory.IsoReassoc` for isomorphism reassociation.
--/
-private initialize reassocImplRef : IO.Ref (Array (Expr → MetaM Expr)) ← IO.mkRef #[]
 
 /--
 Registers a handler for `reassocExpr`. The handler takes a proof of an equation

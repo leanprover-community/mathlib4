@@ -40,7 +40,7 @@ These also prevent non-computable instances being used to construct these instan
 instance instDivisionRing : DivisionRing ℚ := inferInstance
 
 protected lemma inv_nonneg {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by
-  rw [inv_def']
+  rw [inv_def]
   exact divInt_nonneg (Int.natCast_nonneg a.den) (num_nonneg.mpr ha)
 
 protected lemma div_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b :=
@@ -67,7 +67,7 @@ instance instZPow : Pow ℚ≥0 ℤ where
 @[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl
 @[simp, norm_cast] lemma coe_zpow (p : ℚ≥0) (n : ℤ) : ((p ^ n : ℚ≥0) : ℚ) = p ^ n := rfl
 
-lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.inv_def', num_coe, den_coe]
+lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.inv_def, num_coe, den_coe]
 lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) := by
   ext; simp [Rat.div_def', num_coe, den_coe]
 
@@ -93,8 +93,8 @@ instance instSemifield : Semifield ℚ≥0 where
   nnqsmul q a := q * a
   nnqsmul_def q a := rfl
   zpow n a := a ^ n
-  zpow_zero' a := by ext; norm_cast
-  zpow_succ' n a := by ext; norm_cast
-  zpow_neg' n a := by ext; norm_cast
+  zpow_zero' a := by ext; apply Field.zpow_zero'
+  zpow_succ' n a := by ext; apply Field.zpow_succ'
+  zpow_neg' n a := by ext; apply Field.zpow_neg'
 
 end NNRat
