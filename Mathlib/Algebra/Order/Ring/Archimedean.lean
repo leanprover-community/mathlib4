@@ -5,6 +5,7 @@ Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Order.Archimedean.Class
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.RingTheory.Valuation.Basic
 
 /-!
@@ -120,7 +121,7 @@ variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
 theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
   rw [← mk_one, orderHom_mk]
 
-variable [NeZero (1 : M)]
+variable [NeZero (1 : S)]
 
 @[simp]
 theorem mk_eq_zero_of_archimedean [Archimedean S] {x : S} (h : x ≠ 0) : mk x = 0 :=
@@ -142,7 +143,7 @@ theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x �
 
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 :=
-  mk_map_of_archimedean' ⟨Int.castAddHom M, fun _ ↦ by simp⟩ h
+  mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
 @[simp]
 theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : S) = 0 := by
@@ -216,58 +217,9 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
 
 @[simp]
-theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 :=
-  mk_map_of_archimedean' (Rat.castHom R) h
-
-variable {S : Type*} [LinearOrder S] [Ring S] [IsOrderedRing S] [Archimedean S]
-
-/-- See `mk_le_mk_iff_of_archimedean` for a more convenient version when `S` is a field. -/
-theorem mk_le_mk_iff_of_archimedean' {x y : R} (f : S →+*o R)
-    (H : ∀ n : ℕ, ∃ q : S, 0 < q ∧ n * f q ≤ 1) :
-    mk x ≤ mk y ↔ ∃ q : S, 0 < f q ∧ f q * |y| ≤ |x| := by
-  constructor
-  · rintro ⟨n, hn⟩
-    obtain rfl | hn₀ := n.eq_zero_or_pos
-    · have := exists_gt (0 : ℚ)
-      simp_all
-    · use (n : ℚ)⁻¹
-      aesop (add simp [inv_mul_le_iff₀])
-  · rintro ⟨q, hq₀, hq⟩
-    obtain ⟨n, hn⟩ := exists_nat_gt q⁻¹
-    use n
-    simp_rw [ArchimedeanOrder.val_of, nsmul_eq_mul]
-    rw [← le_inv_mul_iff₀ (mod_cast hq₀)] at hq
-    exact hq.trans (mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg x))
-
-/-- See `mk_lt_mk_iff_of_archimedean` for a more convenient version when `S` is a field. -/
-theorem mk_lt_mk_iff_of_archimedean' {x y : R} (f : S →+*o R)
-    (H : ∀ n : ℕ, ∃ q : S, 0 < q ∧ n * f q ≤ 1) :
-    mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
-  refine ⟨fun H q ↦ ?_, fun H n ↦ by simpa using H n⟩
-  obtain ⟨n, hn⟩ := exists_nat_gt q
-  apply (H n).trans_le'
-  simpa using mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
-
-variable {S : Type*} [LinearOrder S] [Field S] [IsOrderedRing S]
-
-private theorem exists_mul_lt_one (f : S →+*o R) (n : ℕ) : ∃ q : S, 0 < q ∧ n * f q ≤ 1 := by
-  cases n with
-  | zero => exact ⟨1, zero_lt_one, by simp⟩
-  | succ n => refine ⟨(f n.succ)⁻¹, ?_, ?_⟩ <;> simp
-
-/-- See `mk_le_mk_iff_of_archimedean'` for a more general version where `S` is a ring. -/
-theorem mk_le_mk_iff_of_archimedean {x y : R} (f : S →+*o R) :
-    mk x ≤ mk y ↔ ∃ q : S, 0 < f q ∧ f q * |y| ≤ |x| := by
-  apply mk_le_mk_iff_of_archimedean'
-
-/-- See `mk_lt_mk_iff_of_archimedean'` for a more general version where `S` is a ring. -/
-theorem mk_lt_mk_iff_of_archimedean {x y : R} [Archimedean S]
-    (f : S →+*o R) (H : ∀ n : ℕ, ∃ q : S, 0 < q ∧ n * f q < 1) :
-    mk x < mk y ↔ ∀ q : ℚ, q * |y| < |x| := by
-  refine ⟨fun H q ↦ ?_, fun H n ↦ by simpa using H n⟩
-  obtain ⟨n, hn⟩ := exists_nat_gt q
-  apply (H n).trans_le'
-  simpa using mul_le_mul_of_nonneg_right (mod_cast hn.le) (abs_nonneg y)
+theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
+  have := IsOrderedRing.toIsStrictOrderedRing R
+  simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
 
 end Field
 end ArchimedeanClass
