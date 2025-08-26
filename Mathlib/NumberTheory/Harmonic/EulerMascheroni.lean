@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.Data.Complex.ExponentialBounds
-import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 # The Euler-Mascheroni constant `γ`

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.Asymptotics
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!

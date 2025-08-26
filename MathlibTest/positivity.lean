@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Positivity
-import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic

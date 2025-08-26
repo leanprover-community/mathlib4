@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.Complex.Exponential
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
