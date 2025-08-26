@@ -589,6 +589,19 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
 
 end induced_subgraphs
 
+theorem Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
+    (toSubgraph H h).Connected := by
+  obtain ⟨hpreconn, _⟩ := hconn
+  simp_all [Subgraph.connected_iff_forall_exists_walk_subgraph]
+  intro u v
+  obtain ⟨p, _⟩ := hpreconn.set_univ_walk_nonempty u v
+  use p.transfer G (fun e he ↦ edgeSet_subset_edgeSet.mpr h (p.edges_subset_edgeSet he))
+  constructor
+  · simp
+  · intro x y hxy
+    rw [Walk.adj_toSubgraph_iff_mem_edges, Walk.edges_transfer] at hxy
+    exact p.edges_subset_edgeSet hxy
+
 namespace Subgraph
 
 lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [DecidableEq V]
