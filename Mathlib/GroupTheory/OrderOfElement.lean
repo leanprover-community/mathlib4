@@ -199,6 +199,12 @@ theorem orderOf_eq_zero_iff' : orderOf x = 0 ↔ ∀ n : ℕ, 0 < n → x ^ n �
 @[to_additive]
 lemma orderOf_ne_zero_iff : orderOf x ≠ 0 ↔ IsOfFinOrder x := orderOf_eq_zero_iff.not_left
 
+/-- In a nontrivial monoid with zero, the order of the zero element is zero. -/
+@[simp]
+lemma orderOf_zero (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀] : orderOf (0 : M₀) = 0 := by
+  rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one]
+  simp +contextual [ne_of_gt]
+
 @[to_additive]
 theorem orderOf_eq_iff {n} (h : 0 < n) :
     orderOf x = n ↔ x ^ n = 1 ∧ ∀ m, m < n → 0 < m → x ^ m ≠ 1 := by
@@ -344,9 +350,13 @@ theorem Function.Injective.isOfFinOrder_iff [Monoid H] {f : G →* H} (hf : Inje
 theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf y :=
   orderOf_injective H.subtype Subtype.coe_injective y
 
-@[to_additive]
+@[to_additive (attr := norm_cast)]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.val_injective y
+
+@[to_additive (attr := norm_cast)]
+theorem Units.isOfFinOrder_val {u : Gˣ} : IsOfFinOrder (u : G) ↔ IsOfFinOrder u :=
+  Units.coeHom_injective.isOfFinOrder_iff
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[to_additive (attr := simps) /-- If the additive order of `x` is finite, then `x` is an additive
@@ -833,6 +843,21 @@ lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Submonoid G)
     Fintype.card_eq.2 ⟨finEquivPowers <| isOfFinOrder_of_finite _⟩
 
 end FiniteCancelMonoid
+
+lemma isOfFinOrder_iff_isUnit [Monoid G] [Finite Gˣ] {x : G} : IsOfFinOrder x ↔ IsUnit x := by
+  use IsOfFinOrder.isUnit
+  rintro ⟨u, rfl⟩
+  rw [Units.isOfFinOrder_val]
+  apply isOfFinOrder_of_finite
+
+alias ⟨_, IsUnit.isOfFinOrder⟩ := isOfFinOrder_iff_isUnit
+
+lemma orderOf_eq_zero_iff_eq_zero {G₀ : Type*} [GroupWithZero G₀] [Finite G₀] {a : G₀} :
+    orderOf a = 0 ↔ a = 0 := by
+  -- Prove an instance inline to avoid extra imports.
+  -- TODO: move this instance elsewhere?
+  have : Finite G₀ˣ := .of_injective _ Units.val_injective
+  simp [isOfFinOrder_iff_isUnit]
 
 section FiniteGroup
 variable [Group G] {x y : G}
