@@ -53,7 +53,7 @@ lemma birkhoffMax_succ {f : α → α} {φ n x} :
   have h : birkhoffSum f φ ∘ Nat.succ = fun k ↦ φ + birkhoffSum f φ k ∘ f := by
     funext k _
     simp [add_comm k 1, birkhoffSum_add f φ 1, birkhoffSum_one]
-  rw [h, partialSups_addLeft, Pi.add_apply, add_right_inj, show n.succ = Order.succ n by rfl,
+  rw [h, partialSups_const_add, Pi.add_apply, add_right_inj, show n.succ = Order.succ n by rfl,
     partialSups_succ', Pi.sup_apply, Pi.partialSups_apply]
   simp [Function.comp_apply, ← Pi.partialSups_apply]
   rfl
