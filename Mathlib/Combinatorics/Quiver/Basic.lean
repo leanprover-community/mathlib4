@@ -130,7 +130,8 @@ lemma eq_homOfEq_iff (f : X ⟶ Y) (g : X' ⟶ Y') (hX : X' = X) (hY : Y' = Y) :
   subst hX hY; simp
 
 @[to_dual self (reorder := 3 4, 5 6, 7 8)]
-lemma homOfEq_heq (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) : homOfEq f hX hY ≍ f := (heq_of_homOfEq_ext hX hY rfl).symm
+lemma homOfEq_heq (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) : homOfEq f hX hY ≍ f :=
+  (heq_of_homOfEq_ext hX hY rfl).symm
 
 @[to_dual self (reorder := 3 4, 5 6, 9 10)]
 lemma homOfEq_heq_left_iff (f : X ⟶ Y) (g : X' ⟶ Y') (hX : X = X') (hY : Y = Y') :
