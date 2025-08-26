@@ -66,10 +66,12 @@ theorem mem_carrier {x : L} {c : ConjRootClass K L} : x ∈ c.carrier ↔ mk K x
 theorem carrier_zero : (0 : ConjRootClass K L).carrier = {0} := by
   ext; rw [mem_carrier, mk_eq_zero_iff, Set.mem_singleton_iff]
 
-theorem carrier_inj: Function.Injective (carrier (K:=K) (L:=L)) := by
-  intros x y H; rw [Set.ext_iff] at H; simp at H
-  induction x; induction y; rename_i x y
-  rw [<- H]
+theorem carrier_inj : Function.Injective (carrier (K := K) (L := L)) := by
+  intro x y H
+  induction x with | h x => ?_
+  induction y with | h y => ?_
+  simp_rw [Set.ext_iff, mem_carrier] at H
+  rw [← H]
 
 instance : Neg (ConjRootClass K L) where
   neg := Quotient.map (fun x ↦ -x) (fun _ _ ↦ IsConjRoot.neg)
@@ -81,13 +83,11 @@ instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
 @[simp]
-theorem carrier_neg (c : ConjRootClass K L): carrier (- c) = - carrier c := by
-  ext; simp; rw [<- mk_neg]
-  constructor <;> intro H
-  · rw [H, neg_neg]
-  · rw [<- H, neg_neg]
+theorem carrier_neg (c : ConjRootClass K L) : carrier (- c) = - carrier c := by
+  ext
+  simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 
-theorem exist_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
+theorem exists_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
     (∃ᵉ (a ∈ x.carrier) (b ∈ y.carrier), a + b = 0) ↔ x = -y := by
   simp_rw [mem_carrier]
   constructor
@@ -98,8 +98,8 @@ theorem exist_mem_carrier_add_eq_zero (x y : ConjRootClass K L) :
     | h y => exact ⟨-y, mk_neg y, y, rfl, neg_add_cancel _⟩
 
 instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
-    DecidablePred (· ∈ c.carrier) :=
-  fun x ↦ decidable_of_iff (mk K x = c) (by simp)
+    DecidablePred (· ∈ c.carrier) := fun x ↦
+  decidable_of_iff (mk K x = c) (by simp)
 
 instance [Normal K L] [DecidableEq L] [Fintype (L ≃ₐ[K] L)] (c : ConjRootClass K L) :
     Fintype c.carrier :=
@@ -119,8 +119,7 @@ theorem minpoly_mk (x : L) : (mk K x).minpoly = minpoly K x :=
   rfl
 
 @[simp]
-theorem minpoly_inj {c d : ConjRootClass K L} :
-    c.minpoly = d.minpoly ↔ c = d := by
+theorem minpoly_inj {c d : ConjRootClass K L} : c.minpoly = d.minpoly ↔ c = d := by
   induction c
   induction d
   simp [isConjRoot_def]
@@ -178,10 +177,8 @@ theorem nodup_aroots_minpoly (c : ConjRootClass K L) : (c.minpoly.aroots L).Nodu
 theorem aroots_minpoly_eq_carrier_val (c : ConjRootClass K L) [Fintype c.carrier] :
     c.minpoly.aroots L = c.carrier.toFinset.1 := by
   classical
-  simp_rw [← rootSet_minpoly_eq_carrier, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val]
-  symm
-  rw [Multiset.dedup_eq_self]
-  exact nodup_roots ((separable_map _).mpr c.separable_minpoly)
+  simp_rw [← rootSet_minpoly_eq_carrier, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val,
+    c.nodup_aroots_minpoly.dedup]
 
 theorem carrier_eq_mk_aroots_minpoly (c : ConjRootClass K L) [Fintype c.carrier] :
     c.carrier.toFinset = ⟨c.minpoly.aroots L, c.nodup_aroots_minpoly⟩ := by
