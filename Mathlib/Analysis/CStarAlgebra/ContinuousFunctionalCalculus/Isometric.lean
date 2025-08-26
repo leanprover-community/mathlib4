@@ -179,10 +179,6 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
   toContinuousFunctionalCalculus := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have _inst (a : A) : CompactSpace (σ R a) := by
-      rw [← isCompact_iff_compactSpace, ← spectrum.preimage_algebraMap S]
-      exact halg.isClosedEmbedding.isCompact_preimage <|
-        ContinuousFunctionalCalculus.isCompact_spectrum a
     have := SpectrumRestricts.cfc f halg.isUniformEmbedding h0 h
     rw [cfcHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
@@ -371,10 +367,6 @@ protected theorem isometric_cfc (f : C(S, R)) (halg : Isometry (algebraMap R S))
     halg.isUniformEmbedding h0 h
   isometric a ha := by
     obtain ⟨ha', haf⟩ := h a |>.mp ha
-    have _inst (a : A) : CompactSpace (σₙ R a) := by
-      rw [← isCompact_iff_compactSpace, ← quasispectrum.preimage_algebraMap S]
-      exact halg.isClosedEmbedding.isCompact_preimage <|
-        NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum a
     have := QuasispectrumRestricts.cfc f halg.isUniformEmbedding h0 h
     rw [cfcₙHom_eq_restrict f halg.isUniformEmbedding ha ha' haf]
     refine .of_dist_eq fun g₁ g₂ ↦ ?_
