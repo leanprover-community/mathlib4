@@ -79,16 +79,11 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
       obtain ⟨q, hq⟩ := Function.ne_iff.mp hi
       use Pi.single q (T u q)⁻¹
       rw [dotProduct_single, mul_inv_cancel₀ hq]
-    obtain ⟨B, hB⟩ := f.bijective.2 (vecMulVec w d)
+    obtain ⟨B, hB⟩ := f.surjective (vecMulVec w d)
     use B
-    rw [hB, vecMulVec_eq Unit, ← mulVec_mulVec]
-    suffices replicateRow Unit d *ᵥ T u = 1 by ext; simp [this, mulVec_one]
-    ext
-    simp_rw [mulVec, Pi.one_apply, ← hd, dotProduct, replicateRow_apply, mul_comm]
-  use (toLin' B) u
-  rw [← toLin'_toMatrix' T]
-  simp_rw [toLin'_apply, mulVec_mulVec, this, ← mulVec_mulVec, ← toLin'_apply T.toMatrix',
-    toLin'_toMatrix', hB]
+    rw [hB, vecMulVec_mulVec, dotProduct_comm, hd, MulOpposite.op_one, one_smul]
+  use B *ᵥ u
+  simp_rw [← toMatrix'_mulVec, mulVec_mulVec, this, ← mulVec_mulVec, toMatrix'_mulVec, hB]
 
 /-- Alternate statement of `coe_eq_generalLinearGroup_conjugate`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] :
