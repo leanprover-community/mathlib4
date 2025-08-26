@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Localization.Monoidal
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 /-!
 
@@ -21,7 +20,7 @@ universe u
 
 namespace CategoryTheory
 
-open CategoryTheory Limits Opposite Monoidal MonoidalCategory Functor Functor.Monoidal
+open CategoryTheory Limits Opposite MonoidalCategory Functor Functor.Monoidal
 
 namespace Localization.Monoidal
 
