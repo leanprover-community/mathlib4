@@ -663,6 +663,21 @@ lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
     1 - Real.exp (- (μ₁ - μ₂) ^ 2 / 2) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
   sorry
 
+-- not proved yet.
+lemma tvDist_dirac_of_ne {x y : E} (hxy : x ≠ y) :
+    tvDist (Measure.dirac x) (Measure.dirac y) = 1 := by
+  sorry
+
+lemma gaussianReal_ext_iff {μ₁ μ₂ : ℝ} {v₁ v₂ : ℝ≥0} :
+    gaussianReal μ₁ v₁ = gaussianReal μ₂ v₂ ↔ μ₁ = μ₂ ∧ v₁ = v₂ := by
+  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  rw [← integral_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← integral_id_gaussianReal (μ := μ₂) (v := v₂), h]
+  simp only [integral_id_gaussianReal, true_and]
+  suffices (v₁ : ℝ) = v₂ by simpa
+  rw [← variance_id_gaussianReal (μ := μ₁) (v := v₁),
+    ← variance_id_gaussianReal (μ := μ₂) (v := v₂), h]
+
 lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
     (hy : y ∉ Set.range (CameronMartin.toInitialSpace (μ := μ))) :
     μ.map (fun z ↦ z + y) ⟂ₘ μ := by
@@ -679,20 +694,21 @@ lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
     refine Tendsto.comp ?_ <| tendsto_natCast_atTop_atTop (R := ℝ)
     simp [tendsto_div_const_atBot_iff]
   refine hcn.trans_le ?_
-  obtain ⟨L, hL_var, hL_le⟩ : ∃ L : StrongDual ℝ E, Var[L; μ] = 1 ∧ n ≤ L y := by
+  obtain ⟨L, hL_var, hL_lt⟩ : ∃ L : StrongDual ℝ E, (Var[L; μ] = 1 ∨ Var[L; μ] = 0) ∧ n < L y := by
     simp only [CameronMartin.range_toInitialSpace, Set.mem_setOf_eq, not_exists, not_forall,
       not_le] at hy
     obtain ⟨L, hL_var, hL_lt⟩ := hy n
+    by_cases hL_var_zero : Var[L; μ] = 0
+    · exact ⟨L, Or.inr hL_var_zero, hL_lt⟩
     have h_var_pos : 0 < Var[L; μ] := by
-      refine (variance_nonneg _ _).lt_of_ne' ?_
-      simp [variance_eq_zero_iff (IsGaussian.memLp_dual μ L 2 (by simp))]
-      sorry
+      refine (variance_nonneg _ _).lt_of_ne' hL_var_zero
     refine ⟨√Var[L; μ]⁻¹ • L, ?_, ?_⟩
-    · simp only [ContinuousLinearMap.coe_smul']
+    · left
+      simp only [ContinuousLinearMap.coe_smul']
       rw [variance_smul, Real.sq_sqrt, inv_mul_cancel₀]
       · exact h_var_pos.ne'
       · simp [variance_nonneg]
-    · refine hL_lt.le.trans ?_
+    · refine hL_lt.trans_le ?_
       simp only [Real.sqrt_inv, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       conv_lhs => rw [← one_mul (L y)]
       gcongr
@@ -709,10 +725,20 @@ lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
   simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
   have : L ∘ (fun z ↦ z + y) = fun z ↦ L z + L y := by ext; simp
   rw [this, variance_add_const (by fun_prop)]
-  simp only [hL_var, Real.toNNReal_one]
-  refine le_trans ?_ (one_sub_exp_le_tvDist_gaussianReal (μ[L] + L y) μ[L])
-  gcongr
-  ring_nf
-  exact hL_le
+  by_cases hL_var_zero : Var[L; μ] = 0
+  · simp only [hL_var_zero, Real.toNNReal_zero, gaussianReal_zero_var, tsub_le_iff_right,
+      ge_iff_le]
+    rw [tvDist_dirac_of_ne]
+    · simp only [le_add_iff_nonneg_right]
+      positivity
+    · simp only [ne_eq, add_eq_left]
+      have : (0 : ℝ) ≤ n := by positivity
+      exact (this.trans_lt hL_lt).ne'
+  · simp only [hL_var_zero, or_false] at hL_var
+    simp only [hL_var, Real.toNNReal_one]
+    refine le_trans ?_ (one_sub_exp_le_tvDist_gaussianReal (μ[L] + L y) μ[L])
+    gcongr
+    ring_nf
+    exact hL_lt.le
 
 end ProbabilityTheory
