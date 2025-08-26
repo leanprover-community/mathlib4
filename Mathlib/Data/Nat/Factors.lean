@@ -123,7 +123,6 @@ theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 �
     · exact primeFactorsList_zero
     · exact primeFactorsList_one
 
-@[simp]
 theorem primeFactorsList_ne_nil (n : ℕ) : n.primeFactorsList ≠ [] ↔ 1 < n := by
   convert not_congr (primeFactorsList_eq_nil n)
   · omega
