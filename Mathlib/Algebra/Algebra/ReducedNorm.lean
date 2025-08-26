@@ -3,7 +3,7 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie
 -/
-import Mathlib.LinearAlgebra.Matrix.CharPoly.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 /-!
 This file defines the reduced characteristic norm and trace of a central simple algebra `A` over
@@ -17,7 +17,7 @@ a field `K`.
 * `ReducedTrace e a` is a `K`-linear map that sends `a : A` to the trace of `a` under the algebra
   isomorphism `e`.
 
-## Tagd
+## Tags
 Noncommutative algebra, central simple algebra, reduced norm, reduced trace
 -/
 
