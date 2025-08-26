@@ -576,12 +576,14 @@ prefix are allowed to import modules with the second prefix, even if disallowed 
 
 For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
 ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
-because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
-outside `Mathlib/Algebra/Notation.lean`.
+because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra`
+that are outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
+  -- This file is about computing with topological spaces.
+  (`Mathlib.Data.Analysis.Topology, `Mathlib.Topology),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
   (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold)
