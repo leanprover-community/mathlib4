@@ -78,27 +78,11 @@ lemma le_one_of_mem_rowStochastic (hM : M ∈ rowStochastic R n) {i j : n} :
   exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
 
 
-/-- Left multiplication of a row stochastic matrix by a non-negative vector
-gives a non-negative vector. -/
-lemma nonneg_vecMul_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
-    (hx : ∀ i : n, 0 ≤ x i) : ∀ j : n, 0 ≤ (x ᵥ* M) j := by
-  intro j
-  simp only [Matrix.vecMul, dotProduct]
-  apply Finset.sum_nonneg
-  intro k _
-  apply mul_nonneg (hx k)
-  exact nonneg_of_mem_rowStochastic hM
+lemma vecMul_nonneg (hM : ∀ i j, 0 ≤ M i j) (hx : 0 ≤ x) : 0 ≤ x ᵥ* M :=
+  fun j ↦ Finset.sum_nonneg fun i _ ↦ mul_nonneg (hx i) (hM i j)
 
-/-- Right multiplication of a row stochastic matrix by a non-negative vector
-gives a non-negative vector. -/
-lemma nonneg_mulVec_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
-    (hx : ∀ i : n, 0 ≤ x i) : ∀ j : n, 0 ≤ (M *ᵥ x) j := by
-  intro j
-  simp only [Matrix.mulVec, dotProduct]
-  apply Finset.sum_nonneg
-  intro k _
-  refine Left.mul_nonneg ?_ (hx k)
-  exact nonneg_of_mem_rowStochastic hM
+lemma mulVec_nonneg (hM : ∀ i j, 0 ≤ M i j) (hx : 0 ≤ x) : 0 ≤ M *ᵥ x :=
+  fun i ↦ Finset.sum_nonneg fun j _ ↦ mul_nonneg (hM i j) (hx j) 
 
 /-- Left left-multiplication by row stochastic preserves `ℓ₁ norm` -/
 lemma vecMul_dotProduct_one_eq_one_rowStochastic (hM : M ∈ rowStochastic R n)
