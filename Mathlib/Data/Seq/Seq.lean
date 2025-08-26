@@ -1398,6 +1398,7 @@ theorem All_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [All, mem_iff_exists_get?]
   grind
 
+set_option linter.dupNamespace false in
 private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (h_base : motive s)
     (h_step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
@@ -1790,4 +1791,4 @@ end Seq1
 
 end Stream'
 
-set_option linter.style.longFile 2000
+set_option linter.style.longFile 1900
