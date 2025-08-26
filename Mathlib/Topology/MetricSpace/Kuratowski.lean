@@ -64,8 +64,7 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
     calc
       dist a b ≤ dist a (x n) + dist (x n) b := dist_triangle _ _ _
       _ = 2 * dist a (x n) + (dist b (x n) - dist a (x n)) := by simp [dist_comm]; ring
-      _ ≤ 2 * dist a (x n) + |dist b (x n) - dist a (x n)| := by
-        apply_rules [add_le_add_left, le_abs_self]
+      _ ≤ 2 * dist a (x n) + |dist b (x n) - dist a (x n)| := by grw [← le_abs_self]
       _ ≤ 2 * (e / 2) + |embeddingOfSubset x b n - embeddingOfSubset x a n| := by
         rw [C]
         gcongr
