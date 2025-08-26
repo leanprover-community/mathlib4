@@ -609,7 +609,7 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
-  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | empty => simp only [Finset.not_nonempty_empty] at hs
   | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with

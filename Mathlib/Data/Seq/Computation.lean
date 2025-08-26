@@ -1068,7 +1068,7 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     simp [h]
   · simp only [liftRel_think_left]
     revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h
+    apply cb.recOn (fun b => _) fun cb' => _ <;> intro _ h
     · simpa using h
     · simpa [h] using IH _ h
 

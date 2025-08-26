@@ -180,7 +180,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   let J' : Finset (Set α) := Finset.biUnion (Finset.univ : Finset J) fun u ↦ Ju u (h_ss u.prop)
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
-    simp only [J' ,univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
+    simp only [J', univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
       mem_iUnion, Finset.exists_coe, exists₂_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
@@ -345,7 +345,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     have ht1' : ∀ x ∈ J, K1 x = K x := fun x hx ↦ hK1_of_ne _ (fun h_eq ↦ hJ (h_eq ▸ hx))
     have ht2 : (⋃ x ∈ J, (K1 x : Set (Set α))) = ⋃ x ∈ J, ((K x : Set (Set α))) := by
       apply iUnion₂_congr
-      intros x hx
+      intro x hx
       exact_mod_cast hK1_of_ne _ (ne_of_mem_of_not_mem hx hJ)
     simp only [hK1s]
     refine ⟨?_, ⟨hC.disjointOfDiffUnion_subset h1.1 h1.2, ?_⟩, ?_,
@@ -369,7 +369,7 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
           rw [Set.disjoint_iff_inter_eq_empty] at h7
           exact_mod_cast h7
         exact ⟨h8, Disjoint.symm h8⟩
-    · intros i hi
+    · intro i hi
       rw [ht1' i hi]
       exact hK1 i hi
     · simp only [iUnion_iUnion_eq_or_left]
@@ -378,19 +378,19 @@ theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
         exact hC.pairwiseDisjoint_disjointOfDiffUnion h1.1 h1.2
       · simpa [ht2]
       · simp only [mem_coe, mem_iUnion, exists_prop, ne_eq, id_eq, forall_exists_index, and_imp]
-        intros i hi j x hx h3 h4
+        intro i hi j x hx h3 h4
         obtain ki : i ⊆ s \ ⋃₀ J := hC.subset_of_diffUnion_disjointOfDiffUnion h1.1 h1.2 _
           (hK1s ▸ hi)
         obtain hx2 : j ⊆ x := subset_trans (subset_sUnion_of_mem (ht1' x hx ▸ h3)) (hK3 x hx)
         obtain kj : j ⊆ ⋃₀ J := hx2.trans <| subset_sUnion_of_mem hx
         exact disjoint_of_subset ki kj disjoint_sdiff_left
-    · intros a ha
+    · intro a ha
       simp_rw [hK1_of_ne _ (ne_of_mem_of_not_mem ha hJ)]
       change ∀ t' ∈ (K a : Set (Set α)), t' ⊆ a
       rw [← sUnion_subset_iff]
       exact hK3 a ha
     · refine ⟨hC.empty_notMem_disjointOfDiffUnion h1.1 h1.2, ?_⟩
-      intros a ha
+      intro a ha
       rw [ht1' a ha]
       exact hK4 a ha
     · simp only [iUnion_iUnion_eq_or_left, sUnion_union, ht2, K1]

@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Data.Finsupp.SMul
 
 /-!
-# Finsupps and sum/product types
+# `Finsupp`s and sum/product types
 
 This file contains results about modules involving `Finsupp` and sum/product/sigma types.
 

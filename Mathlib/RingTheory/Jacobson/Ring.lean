@@ -253,9 +253,9 @@ lemma mem_closure_X_union_C {R : Type*} [Ring R] (p : R[X]) :
     apply Subring.subset_closure
     apply Set.mem_insert_of_mem
     exact degree_C_le
-  · intros p1 p2 h1 h2
+  · intro p1 p2 h1 h2
     exact Subring.add_mem _ h1 h2
-  · intros n r hr
+  · intro n r hr
     rw [pow_succ, ← mul_assoc]
     apply Subring.mul_mem _ hr
     apply Subring.subset_closure
@@ -684,7 +684,7 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   exact Algebra.IsIntegral.finite
 
 /--
-If `f : R →+* S` is a ring homomorphism from a jacobson ring to a field,
+If `f : R →+* S` is a ring homomorphism from a Jacobson ring to a field,
 then it is finite if and only if it is finite type.
 -/
 lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
@@ -693,7 +693,7 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
   ⟨RingHom.FiniteType.of_finite,
     by intro; algebraize [f]; exact finite_of_finite_type_of_isJacobsonRing R S⟩
 
-/-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+/-- If `K` is a Jacobson Noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 theorem finite_of_algHom_finiteType_of_isJacobsonRing
     {K L A : Type*} [CommRing K] [DivisionRing L] [CommRing A]
@@ -707,7 +707,7 @@ theorem finite_of_algHom_finiteType_of_isJacobsonRing
   exact Module.Finite.of_injective ((Ideal.Quotient.mkₐ K m).comp f).toLinearMap
     (RingHom.injective _)
 
-/-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+/-- If `K` is a Jacobson Noetherian ring, `A` a nontrivial `K`-algebra of finite type,
 then any `K`-subfield of `A` is finite over `K`. -/
 nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
     {K L A : Type*} [CommRing K] [Field L] [CommRing A]

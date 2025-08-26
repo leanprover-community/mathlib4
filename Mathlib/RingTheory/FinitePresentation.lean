@@ -33,7 +33,6 @@ section ModuleAndAlgebra
 
 universe w₁ w₂ w₃
 
--- Porting note: `M, N` is never used
 variable (R : Type w₁) (A : Type w₂) (B : Type w₃)
 
 /-- An algebra over a commutative semiring is `Algebra.FinitePresentation` if it is the quotient of
