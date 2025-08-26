@@ -411,7 +411,7 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
 lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
   rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
   apply Finset.sup_le
-  intros i hi
+  intro i hi
   by_cases hn : n ≤ i
   · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
@@ -1165,6 +1165,10 @@ In a Dedekind domain, to divide and contain are equivalent, see `Ideal.dvd_iff_l
 -/
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
+
+@[simp]
+theorem dvd_bot {I : Ideal R} : I ∣ ⊥ :=
+  dvd_zero I
 
 /-- See also `isUnit_iff_eq_one`. -/
 @[simp high]
