@@ -151,9 +151,7 @@ variable {ι M}
 @[simp]
 theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
-  ext a
-  change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
-  convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
+  rfl
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
