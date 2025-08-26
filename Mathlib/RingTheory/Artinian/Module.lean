@@ -507,7 +507,7 @@ variable {R : Type*} [Ring R]
 
 open nonZeroDivisors
 
-/-- If an element of an artinian ring is not a zero divisor then it is a unit. -/
+/-- If an element of an Artinian ring is not a zero divisor then it is a unit. -/
 theorem isUnit_of_mem_nonZeroDivisors [IsArtinianRing R] {a : R} (ha : a ∈ R⁰) : IsUnit a := by
   rwa [isUnit_iff_isRegular, isRegular_iff_mem_nonZeroDivisors]
 
@@ -515,7 +515,7 @@ theorem isUnit_of_mem_nonZeroDivisors_of_mulOpposite [IsArtinianRing Rᵐᵒᵖ]
     (ha : a ∈ R⁰) : IsUnit a := by
   rwa [isUnit_iff_isRegular_of_mulOpposite, isRegular_iff_mem_nonZeroDivisors]
 
-/-- In an artinian ring, an element is a unit iff it is a non-zero-divisor.
+/-- In an Artinian ring, an element is a unit iff it is a non-zero-divisor.
 See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
 theorem isUnit_iff_mem_nonZeroDivisors [IsArtinianRing R] {a : R} : IsUnit a ↔ a ∈ R⁰ := by
   rw [isUnit_iff_isRegular, isRegular_iff_mem_nonZeroDivisors]
