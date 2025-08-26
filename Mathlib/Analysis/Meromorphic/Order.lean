@@ -730,3 +730,21 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
 alias codiscrete_setOf_order_eq_zero_or_top := codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
 
 end MeromorphicOn
+
+lemma MeromorphicAt.comp_analyticAt {g : 𝕜 → 𝕜}
+    (hf : MeromorphicAt f (g x)) (hg : AnalyticAt 𝕜 g x) : MeromorphicAt (f ∘ g) x := by
+  obtain ⟨r, hr⟩ := hf
+  by_cases hg' : analyticOrderAt (g · - g x) x = ⊤
+  · -- trivial case: `g` is locally constant near `x`
+    refine .congr (.const (f (g x)) x) ?_
+    filter_upwards [nhdsWithin_le_nhds <| analyticOrderAt_eq_top.mp hg'] with z hz
+    grind
+  · -- interesting case: `g z - g x` looks like `(z - x) ^ n` times a non-vanishing function
+    rw [← Ne, WithTop.ne_top_iff_exists] at hg'
+    obtain ⟨n, hn⟩ := hg'
+    obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
+    refine ⟨n * r, (((han.fun_inv hne).pow r).smul (hr.comp hg)).congr ?_⟩
+    filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
+    simp only [Pi.smul_apply', Pi.pow_apply, inv_pow, Function.comp_apply]
+    rw [inv_smul_eq_iff₀ (pow_ne_zero r hzne), ← mul_smul (h z ^ r), mul_comm, pow_mul,
+      ← mul_pow, ← smul_eq_mul, ← hz]
