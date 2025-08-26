@@ -196,7 +196,6 @@ end of_injective
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
     IsClosedImmersion f := by
   rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := MorphismProperty.pullback_snd (P := @IsClosedImmersion) (f ≫ g) g inferInstance
   infer_instance
 
 instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion h) := by
