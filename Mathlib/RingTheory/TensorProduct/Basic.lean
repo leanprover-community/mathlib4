@@ -963,7 +963,7 @@ variable (A) in
 noncomputable abbrev lTensor (g : B →ₐ[R] D) : (A ⊗[R] B) →ₐ[S] (A ⊗[R] D) := map (.id S A) g
 
 variable (A) in
-/-- `rTensor A f : B ⊗ A →ₐc C ⊗ A` is the natural algebra morphism induced by `f : B →ₐc C`. -/
+/-- `rTensor A f : B ⊗ A →ₐ C ⊗ A` is the natural algebra morphism induced by `f : B →ₐ C`. -/
 noncomputable abbrev rTensor (f : A →ₐ[R] C) : A ⊗[R] B →ₐ[R] C ⊗[R] B := map f (.id R B)
 
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
