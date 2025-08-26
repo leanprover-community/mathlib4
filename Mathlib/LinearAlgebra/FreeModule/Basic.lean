@@ -176,7 +176,7 @@ variable {R} in
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
 each `r : R` gets represented as `s • B i` as an element of `S`. -/
 theorem repr_algebraMap {ι : Type*} {B : Basis ι R S} {i : ι} (hBi : B i = 1) (r : R) :
-    B.repr ((algebraMap R S) r) = Finsupp.single i r := by
+    B.repr (algebraMap R S r) = Finsupp.single i r := by
   ext j; simp [Algebra.algebraMap_eq_smul_one, ← hBi]
 
 end Module.Basis
