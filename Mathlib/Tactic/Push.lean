@@ -268,7 +268,7 @@ elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location
   transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
 
 /-- A simproc variant of `push fun _ ↦ ·` that should be used as `simp [↓pushFun]`. -/
-simproc_decl _root_.pushFun (fun _ ↦ _) := pushStep .lambda
+simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda
 
 section Conv
 
