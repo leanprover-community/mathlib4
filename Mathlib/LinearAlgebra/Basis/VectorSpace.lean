@@ -266,18 +266,6 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
   let ⟨g, hg⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨f.comp g, by rw [LinearMap.comp_assoc, hg, f.comp_id]⟩
 
-open LinearPMap in
-instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
-  obtain ⟨v, hv⟩ := exists_ne (0 : V)
-  obtain ⟨w, hw⟩ := exists_ne (0 : V')
-  obtain ⟨g, hg⟩ := LinearMap.exists_extend (mkSpanSingleton (K := K) _ w hv).toFun
-  refine ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, ?_⟩⟩
-  have : g v = w := by
-    rw [show g v = (mkSpanSingleton (K := K) _ w hv).toFun ⟨v, mem_span_singleton_self v⟩ from
-      by simp [← hg]]
-    apply mkSpanSingleton_apply
-  simp_all
-
 theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →ₗ[K] V')
     (hv : v ∉ p) (y : V') : ∃ g : V →ₗ[K] V', g.comp p.subtype = f ∧ g v = y := by
   rcases (LinearPMap.supSpanSingleton ⟨p, f⟩ v y hv).toFun.exists_extend with ⟨g, hg⟩
@@ -299,6 +287,13 @@ theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v �
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
 
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
+
 @[deprecated (since := "2025-05-23")]
 alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
@@ -309,6 +304,7 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
   rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
+
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
