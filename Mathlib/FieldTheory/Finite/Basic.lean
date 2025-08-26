@@ -651,23 +651,12 @@ theorem Int.ModEq.pow_card_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : n ^ 
 
 theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : x ≥ y)
     (hy : y > 0) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
-  haveI : Fact p.Prime := ⟨hp⟩
-  by_cases ch : (p : ℤ) ∣ n
-  · calc
-    _ ≡ 0 [ZMOD p] := (dvd_pow ch (by omega)).modEq_zero_int
-    _ ≡ _ [ZMOD p] := Int.ModEq.symm (Int.modEq_zero_iff_dvd.mpr (dvd_pow ch (by omega)))
-  · have : n ^ (x - y) ≡ 1 [ZMOD p] := by
-      refine Int.ModEq.symm (Int.modEq_iff_dvd.mpr ?_)
-      calc
-        _ ∣ n ^ (p - 1) - 1 := by
-          refine Int.prime_dvd_pow_sub_one hp ?_
-          rw [Int.ofNat_dvd_left, ← Nat.Prime.coprime_iff_not_dvd hp] at ch
-          exact IsCoprime.symm (Int.isCoprime_iff_gcd_eq_one.mpr ch)
-        _ ∣ _ := by
-          rcases h with ⟨m, hm⟩
-          simp [hm, pow_one_sub_dvd_pow_mul_sub_one]
-    have : n ^ (x - y) * n ^ y ≡ 1 * n ^ y [ZMOD p] := Int.ModEq.mul this rfl
-    rwa [← pow_add, one_mul, Nat.sub_add_cancel hxy] at this
+  rw [← Nat.mul_div_eq_iff_dvd] at h
+  by_cases hn : n ≡ 0 [ZMOD p]
+  · grw [hn, zero_pow (hy.trans_le hxy).ne', zero_pow hy.ne']
+  · rw [Int.modEq_zero_iff_dvd, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at hn
+    grw [← pow_sub_mul_pow n hxy, ← h, pow_mul, Int.ModEq.pow_card_sub_one_eq_one hp hn.symm,
+      one_pow, one_mul]
 
 /-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
 `n ^ (p - 1) ≡ 1 [MOD p]`. -/
