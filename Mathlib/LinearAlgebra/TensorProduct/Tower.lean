@@ -735,7 +735,7 @@ lemma baseChange_span (s : Set M) :
 
 end Submodule
 
-open scoped TensorProduct
+open scoped TensorProduct in
 lemma TensorProduct.assoc_tensor' {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
     [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D] [Module R A] [Module R B] [Module R C]
     [Module R D] :
