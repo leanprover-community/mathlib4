@@ -418,6 +418,18 @@ abbrev OrderEmbedding (α β : Type*) [LE α] [LE β] :=
 /-- Notation for an `OrderEmbedding`. -/
 infixl:25 " ↪o " => OrderEmbedding
 
+/-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
+def RelEmbedding.orderEmbeddingOfLTEmbedding {α β} [PartialOrder α] [PartialOrder β]
+    (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
+  { f with
+    map_rel_iff' := by
+      simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
+
+@[simp]
+theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply {α β} [PartialOrder α] [PartialOrder β]
+    {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
+    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x := rfl
+
 namespace OrderEmbedding
 
 variable [Preorder α] [Preorder β] (f : α ↪o β)
@@ -526,18 +538,6 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 
 @[simp, norm_cast]
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
-
-/-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
-def RelEmbedding.orderEmbeddingOfLTEmbedding {α β} [PartialOrder α] [PartialOrder β]
-    (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
-  { f with
-    map_rel_iff' := by
-      simp [le_iff_lt_or_eq, f.map_rel_iff, f.injective.eq_iff] }
-
-@[simp]
-theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply {α β} [PartialOrder α] [PartialOrder β]
-    {f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)} {x : α} :
-    RelEmbedding.orderEmbeddingOfLTEmbedding f x = f x := rfl
 
 end OrderEmbedding
 
