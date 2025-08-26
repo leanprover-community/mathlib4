@@ -83,12 +83,13 @@ theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Fiel
   letI := Module.Finite.left K E L
   of_module_finite K E
 
-theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L where
-  to_charZero := CharZero.of_addMonoidHom (e := e.toAddMonoidHom) (by simp) e.injective
-  to_finiteDimensional :=
-    letI := CharZero.of_addMonoidHom  (e := e.toAddMonoidHom) (by simp) e.injective
-    let e' : K ≃ₐ[ℚ] L := { __ := e, commutes' r := by simp }
-    e'.toLinearEquiv.finiteDimensional
+theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
+  letI := CharZero.of_addMonoidHom (e := e.toAddMonoidHom) (by simp) e.injective
+  {
+    to_charZero := inferInstance
+    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+  }
+
 
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
