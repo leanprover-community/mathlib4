@@ -95,9 +95,8 @@ This elaborator operates purely syntactically, by analysing the local contexts f
 hypothesis for the above cases. Therefore, it is (hopefully) fast enough to always run.
 -/
 -- TODO: document how this elaborator works, any gotchas, etc.
-elab:max "T% " t:term:arg args:term,* : term => do
+elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
-  let argsE := ← args.getElems.mapM (Term.elabTerm · none)
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
@@ -105,7 +104,6 @@ elab:max "T% " t:term:arg args:term,* : term => do
     if ← withReducible (isDefEq E base) then
       return ← withLocalDecl x BinderInfo.default base fun x ↦ do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
-        -- do we want this instead? let asdf := e.beta (#[x] ++ argsE)
         mkLambdaFVars #[x] body
   | .forallE x base (mkApp12 (.const ``TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
     trace[TotalSpaceMk] "Vector field"
