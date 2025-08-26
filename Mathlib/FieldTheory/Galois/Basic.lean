@@ -18,7 +18,7 @@ In this file we define Galois extensions as extensions which are both separable 
 - `IsGalois F E` where `E` is an extension of `F`
 - `fixedField H` where `H : Subgroup (E ≃ₐ[F] E)`
 - `fixingSubgroup K` where `K : IntermediateField F E`
-- `intermediateFieldEquivSubgroup` where `E/F` is finite-dimensional and Galois
+- `intermediateFieldEquivSubgroup` where `E/F` is finite dimensional and Galois
 
 ## Main results
 
