@@ -34,7 +34,7 @@ prove the same equality for the Bochner integral.
 
 This file is to a large extent a copy of part of `Mathlib/MeasureTheory/Integral/Prod.lean`.
 The product of two measures is a particular case of composition-product of kernels and
-it turns out that once the measurablity of the Lebesgue integral of a kernel is proved,
+it turns out that once the measurability of the Lebesgue integral of a kernel is proved,
 almost all proofs about integrals against products of measures extend with minimal modifications
 to the composition-product of two kernels.
 
@@ -481,7 +481,7 @@ lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
 lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
-    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
+    {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ)) :
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
   rw [Measure.compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
@@ -240,7 +240,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
-        · simpa only [coe_gnpow, pow_zero] using Submonoid.one_mem _
+        · simp only [coe_gnpow, pow_zero, one_mem]
         · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
@@ -478,6 +478,9 @@ instance : Algebra (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
 
 lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fromZeroRingHom 𝒜 x := rfl
 
+instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
+  .of_algebraMap_eq' rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
@@ -664,7 +667,7 @@ lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
   rintro _ ⟨z, rfl⟩
   obtain ⟨⟨n, ⟨a, ha⟩, ⟨b, hb'⟩, j, rfl : _ = b⟩, rfl⟩ := mk_surjective z
-  use mk ⟨n+j•e,⟨a*g^j, ?_⟩ ,⟨x^j, ?_⟩, j, rfl⟩
+  use mk ⟨n+j•e,⟨a*g^j, ?_⟩, ⟨x^j, ?_⟩, j, rfl⟩
   · simp [awayMapAux_mk 𝒜 (hx := hx)]
   · apply SetLike.mul_mem_graded ha
     exact SetLike.pow_mem_graded _ hg

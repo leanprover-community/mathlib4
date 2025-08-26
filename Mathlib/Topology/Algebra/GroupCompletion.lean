@@ -55,6 +55,10 @@ instance [Sub α] : Sub (Completion α) :=
 theorem UniformSpace.Completion.coe_zero [Zero α] : ((0 : α) : Completion α) = 0 :=
   rfl
 
+@[simp] lemma UniformSpace.Completion.coe_eq_zero_iff [Zero α] [T0Space α] {x : α} :
+    (x : Completion α) = 0 ↔ x = 0 :=
+  Completion.coe_inj
+
 end Group
 
 namespace UniformSpace.Completion
@@ -262,8 +266,7 @@ theorem AddMonoidHom.completion_zero :
   refine Completion.induction_on x ?_ ?_
   · apply isClosed_eq (AddMonoidHom.continuous_completion (0 : α →+ β) continuous_const)
     exact continuous_const
-  · intro a
-    simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
+  · simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 
 theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
     [IsUniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
@@ -274,7 +277,6 @@ theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace
   refine Completion.induction_on x ?_ ?_
   · exact isClosed_eq ((f + g).continuous_completion hfg)
       ((f.continuous_completion hf).add (g.continuous_completion hg))
-  · intro a
-    simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
+  · simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
 
 end AddMonoidHom

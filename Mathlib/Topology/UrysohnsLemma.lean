@@ -385,7 +385,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.zero_apply]
-    exact sub_eq_zero_of_eq (id (EqOn.symm hgt) hx)
+    exact sub_eq_zero_of_eq (hgt.symm hx)
   · intro x hx
     simp only [ContinuousMap.sub_apply, ContinuousMap.one_apply, Pi.one_apply, sub_eq_self]
     exact hgs hx

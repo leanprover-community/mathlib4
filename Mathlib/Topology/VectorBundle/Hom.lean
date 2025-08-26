@@ -461,7 +461,7 @@ lemma Continuous.clm_bundle_apply
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : Continuous (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) := by
-  simp only [continuous_iff_continuousOn_univ] at hϕ hv ⊢
+  simp only [← continuousOn_univ] at hϕ hv ⊢
   exact hϕ.clm_bundle_apply hv
 
 end OneVariable
@@ -514,7 +514,7 @@ lemma Continuous.clm_bundle_apply₂
     (hv : Continuous (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
     Continuous (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) := by
-  simp only [continuous_iff_continuousOn_univ] at hψ hv hw ⊢
+  simp only [← continuousOn_univ] at hψ hv hw ⊢
   exact hψ.clm_bundle_apply₂ hv hw
 
 /-- Rewrite `ContinuousLinearMap.inCoordinates` using continuous linear equivalences, in the

@@ -62,7 +62,7 @@ instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
-(ie. the image of zero). -/
+(i.e. the image of zero). -/
 def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 
 namespace Q
@@ -294,7 +294,7 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := fun p q ↦ by
+theorem f_matrix (p q : Q n) : |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
   induction n with
   | zero =>
     dsimp [f]

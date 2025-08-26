@@ -142,7 +142,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
   induction' ys with y ys ih generalizing l
   · simp +contextual
   rw [permutationsAux2_snd_cons,
-    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by funext _; simp, mem_cons, ih]
+    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by simp, mem_cons, ih]
   constructor
   · rintro (rfl | ⟨l₁, l₂, l0, rfl, rfl⟩)
     · exact ⟨[], y :: ys, by simp⟩
@@ -325,7 +325,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (map (cons c) (permutations'Aux a l)).flatMap (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
-    intros a' b'
+    intro a' b'
     simp only [flatMap_map, permutations'Aux]
     change (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
@@ -452,8 +452,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   rw [get_permutations'Aux, get_permutations'Aux]
   have hl : length (s.insertIdx k x) = length (s.insertIdx (k + 1) x) := by
     rw [length_insertIdx_of_le_length hk.le, length_insertIdx_of_le_length (Nat.succ_le_of_lt hk)]
-  refine ext_get hl fun n hn hn' => ?_
-  grind
+  exact ext_get hl fun n hn hn' => by grind
 
 theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]

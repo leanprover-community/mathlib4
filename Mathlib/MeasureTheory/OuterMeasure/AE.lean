@@ -24,7 +24,7 @@ In this file we define the filter and prove some basic theorems about it.
 
 All notation introduced in this file
 reducibly unfolds to the corresponding definitions about filters,
-so generic lemmas about `Filter.Eventually`, `Filter.EventuallyEq` etc apply.
+so generic lemmas about `Filter.Eventually`, `Filter.EventuallyEq` etc. apply.
 However, we restate some lemmas specifically for `ae`.
 
 ## Tags
@@ -118,7 +118,7 @@ theorem ae_eq_symm {f g : α → β} (h : f =ᵐ[μ] g) : g =ᵐ[μ] f :=
 theorem ae_eq_trans {f g h : α → β} (h₁ : f =ᵐ[μ] g) (h₂ : g =ᵐ[μ] h) : f =ᵐ[μ] h :=
   h₁.trans h₂
 
-@[simp] lemma ae_eq_top  : ae μ = ⊤ ↔ ∀ a, μ {a} ≠ 0 := by
+@[simp] lemma ae_eq_top : ae μ = ⊤ ↔ ∀ a, μ {a} ≠ 0 := by
   simp only [Filter.ext_iff, mem_ae_iff, mem_top, ne_eq]
   refine ⟨fun h a ha ↦ by simpa [ha] using (h {a}ᶜ).1, fun h s ↦ ⟨fun hs ↦ ?_, ?_⟩⟩
   · rw [← compl_empty_iff, ← not_nonempty_iff_eq_empty]
