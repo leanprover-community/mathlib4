@@ -1098,7 +1098,7 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
-lemma support_tail_of_not_nil (p : G.Walk v u) (hp : ¬ p.Nil) :
+lemma support_tail_of_not_nil (p : G.Walk u v) (hp : ¬ p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
