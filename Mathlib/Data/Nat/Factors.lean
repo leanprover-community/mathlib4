@@ -123,6 +123,11 @@ theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 �
     · exact primeFactorsList_zero
     · exact primeFactorsList_one
 
+@[simp]
+theorem primeFactorsList_ne_nil (n : ℕ) : n.primeFactorsList ≠ [] ↔ 1 < n := by
+  convert not_congr (primeFactorsList_eq_nil n)
+  · omega
+
 open scoped List in
 theorem eq_of_perm_primeFactorsList {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : a.primeFactorsList ~ b.primeFactorsList) : a = b := by
