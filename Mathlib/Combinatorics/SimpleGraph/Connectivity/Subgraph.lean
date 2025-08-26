@@ -604,6 +604,26 @@ theorem Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connec
 
 namespace Subgraph
 
+lemma Connected_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (hconn : G''.Connected) :
+    (Subgraph.coeSubgraph G'').Connected := by
+  obtain ⟨hpreconn, _⟩ := Subgraph.connected_iff.mp hconn
+  have := hpreconn.coe.set_univ_walk_nonempty
+  simp_all [connected_iff_forall_exists_walk_subgraph]
+  intro u v hu' hu'' hv' hv''
+  obtain ⟨p'', _⟩ := this u hu' hu'' v hv' hv''
+  use p''.map {
+    toFun x := x.val.val
+    map_rel' := by
+      intro _ _ h''
+      exact Subgraph.coe_adj_sub _ _ _ (h''.adj_sub' ..)
+  }
+  constructor
+  all_goals simp
+  · grind
+  · intro _ _ ⟨x'', y'', h'', _, _⟩
+    use x''.val, y''.val
+    simp_all [← coe_adj, h''.adj_sub]
+
 lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [DecidableEq V]
     {H : G.Subgraph} (hconn : H.Connected) {v : V} [Fintype ↑(H.neighborSet v)]
     (hdeg : H.degree v = 1) [Nontrivial H.verts] : (H.deleteVerts {v}).Connected := by
