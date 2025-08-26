@@ -734,12 +734,3 @@ lemma baseChange_span (s : Set M) :
   rw [baseChange_eq_span, map_span, span_span_of_tower]
 
 end Submodule
-
-open scoped TensorProduct in
-lemma TensorProduct.assoc_tensor' {R A B C D : Type*} [CommSemiring R] [AddCommMonoid A]
-    [AddCommMonoid B] [AddCommMonoid C] [AddCommMonoid D] [Module R A] [Module R B] [Module R C]
-    [Module R D] :
-    TensorProduct.assoc R A (B ⊗[R] C) D = LinearEquiv.rTensor D (TensorProduct.assoc R A B C).symm
-    ≪≫ₗ (TensorProduct.assoc R (A ⊗[R] B) C D) ≪≫ₗ TensorProduct.assoc R A B (C ⊗[R] D)
-    ≪≫ₗ LinearEquiv.lTensor A (TensorProduct.assoc R B C D).symm :=
-  LinearEquiv.toLinearMap_inj.mp <| by ext; simp

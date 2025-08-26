@@ -167,6 +167,12 @@ lemma assoc_tensor :
     ≪≫ₗ (TensorProduct.assoc R M N (Q ⊗[R] S)).symm :=
   LinearEquiv.toLinearMap_inj.mp <| ext_fourfold fun _ _ _ => congrFun rfl
 
+lemma assoc_tensor' :
+    TensorProduct.assoc R M (N ⊗[R] Q) S = LinearEquiv.rTensor S (TensorProduct.assoc R M N Q).symm
+    ≪≫ₗ (TensorProduct.assoc R (M ⊗[R] N) Q S) ≪≫ₗ TensorProduct.assoc R M N (Q ⊗[R] S)
+    ≪≫ₗ LinearEquiv.lTensor M (TensorProduct.assoc R N Q S).symm :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold'' fun _ _ _ => congrFun rfl
+
 lemma assoc_tensor'' :
     TensorProduct.assoc R M N (Q ⊗[R] S) = (TensorProduct.assoc R (M ⊗[R] N) Q S).symm
     ≪≫ₗ LinearEquiv.rTensor S (TensorProduct.assoc R M N Q) ≪≫ₗ TensorProduct.assoc R M (N ⊗[R] Q) S
