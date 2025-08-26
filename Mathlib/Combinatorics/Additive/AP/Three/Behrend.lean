@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Data.Complex.ExponentialBounds
 
 /-!
 # Behrend's bound on Roth numbers

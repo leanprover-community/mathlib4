@@ -5,7 +5,7 @@ Authors: Anatole Dedecker, Eric Wieser
 -/
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
