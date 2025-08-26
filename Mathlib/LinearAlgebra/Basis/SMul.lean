@@ -113,8 +113,7 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     apply e.ext
     intro j
     trans ((unitsSMul e w).coord i) ((w j)⁻¹ • (unitsSMul e w) j)
-    · congr
-      simp [Basis.unitsSMul, ← mul_smul]
+    · simp [Basis.unitsSMul, ← mul_smul]
     simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
       map_smul, Finsupp.single_apply]
     split_ifs with h <;> simp [h]

@@ -635,7 +635,7 @@ lemma reflection_inv (P : RootPairing ι R M N) (i : ι) :
   refine Equiv.ext ?_ ?_ ?_
   · exact LinearMap.ext_iff.mpr (fun x => by simp [← weightEquiv_apply])
   · exact LinearMap.ext_iff.mpr (fun x => by simp [← coweightEquiv_apply])
-  · exact _root_.Equiv.ext (fun j => by simp only [← indexHom_apply, map_inv]; simp)
+  · exact _root_.Equiv.ext (fun j => by simp)
 
 instance : DistribMulAction P.Aut M where
   smul w x := weightHom P w x
