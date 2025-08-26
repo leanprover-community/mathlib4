@@ -881,21 +881,21 @@ theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ 
 @[deprecated (since := "2025-02-21")] alias sum_casesOn := Primrec.sumCasesOn
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
-  list_cons' Primcodable.prim
+  list_cons' (Primcodable.prim _)
 
 theorem list_casesOn {f : α → List β} {g : α → σ} {h : α → β × List β → σ} :
     Primrec f →
       Primrec g →
         Primrec₂ h → @Primrec _ σ _ _ fun a => List.casesOn (f a) (g a) fun b l => h a (b, l) :=
-  list_casesOn' Primcodable.prim
+  list_casesOn' (Primcodable.prim _)
 
 theorem list_foldl {f : α → List β} {g : α → σ} {h : α → σ × β → σ} :
     Primrec f →
       Primrec g → Primrec₂ h → Primrec fun a => (f a).foldl (fun s b => h a (s, b)) (g a) :=
-  list_foldl' Primcodable.prim
+  list_foldl' (Primcodable.prim _)
 
 theorem list_reverse : Primrec (@List.reverse α) :=
-  list_reverse' Primcodable.prim
+  list_reverse' (Primcodable.prim _)
 
 theorem list_foldr {f : α → List β} {g : α → σ} {h : α → β × σ → σ} (hf : Primrec f)
     (hg : Primrec g) (hh : Primrec₂ h) :
