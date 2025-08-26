@@ -652,6 +652,7 @@ end AddMonoidAlgebra
 
 variable [CommSemiring R]
 
+variable (k G) in
 /-- The algebra equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative`. -/
 def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMonoid G] :
@@ -659,6 +660,7 @@ def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMon
   { AddMonoidAlgebra.toMultiplicative k G with
     commutes' := fun r => by simp [AddMonoidAlgebra.toMultiplicative] }
 
+variable (k G) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
