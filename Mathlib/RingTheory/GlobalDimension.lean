@@ -57,6 +57,14 @@ lemma projectiveDimension_eq_nonnegProjectiveDimension_of_not_zero (X : C) (h : 
     nonnegProjectiveDimension X = projectiveDimension X :=  by
   sorry
 
+lemma projectiveDimension_ne_top_iff (X : C) : projectiveDimension X ≠ ⊤ ↔
+    ∃ n, HasProjectiveDimensionLE X n := by
+  sorry
+
+lemma nonnegProjectiveDimension_ne_top_iff (X : C) : nonnegProjectiveDimension X ≠ ⊤ ↔
+    ∃ n, HasProjectiveDimensionLE X n := by
+  sorry
+
 end ProjectiveDimension
 
 variable [IsNoetherianRing R]
@@ -79,17 +87,22 @@ lemma globalDimension_eq_iSup_loclization : globalDimension R =
 HasGlobalDimensionLE R n ↔ Subsingleton (Tor (ResidueField R) (ResidueField R) (n + 1))
 -/
 
+--This lemma need `Tor`
 lemma globalDimension_eq_projectiveDimension_residueField [IsLocalRing R] :
     globalDimension R = projectiveDimension (ModuleCat.of R (ResidueField R)) := by
   sorry
 
+--projective dimension finite condition can be removed when `Tor` is ready
 lemma projectiveDimension_quotSMulTop [IsLocalRing R] (M : ModuleCat.{v} R) [Module.Finite R M]
+    (fin : ∃ n, HasProjectiveDimensionLE M n)
     (x : R) (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x) :
     projectiveDimension M = projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) + 1 := by
   sorry
 
+--projective dimension finite condition can be removed when `Tor` is ready
 lemma projectiveDimension_quotient_regular_sequence [IsLocalRing R] (M : ModuleCat.{v} R)
-    [Module.Finite R M] (rs : List R) (mem : ∀ x ∈ rs, x ∈ maximalIdeal R) (reg : IsRegular M rs) :
+    [Module.Finite R M] (fin : ∃ n, HasProjectiveDimensionLE M n)
+    (rs : List R) (mem : ∀ x ∈ rs, x ∈ maximalIdeal R) (reg : IsRegular M rs) :
     projectiveDimension M = projectiveDimension
     (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))) + rs.length := by
   sorry
