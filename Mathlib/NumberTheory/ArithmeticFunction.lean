@@ -935,7 +935,7 @@ lemma cardFactors_pow {m k : ℕ} : Ω (m ^ k) = k * Ω m := by
 theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k := by
   simp [cardFactors_pow, hp]
 
-theorem cardFactors_eq_factorization_sum_exponent {n : ℕ} :
+theorem cardFactors_eq_sum_factorization {n : ℕ} :
     Ω n = n.factorization.sum fun _ k => k := by
   simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
 
