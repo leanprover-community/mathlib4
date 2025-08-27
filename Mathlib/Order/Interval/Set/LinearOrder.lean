@@ -213,8 +213,8 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   rcases le_total a b with hab | hab
   · simp only [hab, sup_of_le_right] at h; exact Ioo_union_Ioi' h
-  · simp [hab] at h; rw [min_comm]
-    simp [*, min_eq_left_of_lt]
+  · rw [min_comm]
+    simp_all [min_eq_left_of_lt]
 
 theorem Ioi_subset_Ioo_union_Ici : Ioi a ⊆ Ioo a b ∪ Ici b := fun x hx =>
   (lt_or_ge x b).elim (fun hxb => Or.inl ⟨hx, hxb⟩) fun hxb => Or.inr hxb
@@ -352,8 +352,7 @@ theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := b
   rcases le_total c d with hcd | hcd
   · simp only [hcd, inf_of_le_left] at h; exact Iic_union_Ioc' h
   · rw [max_comm]
-    simp [hcd] at h
-    simp [*, max_eq_right_of_lt h]
+    simp_all [max_eq_right_of_lt]
 
 theorem Iio_subset_Iic_union_Ioo : Iio b ⊆ Iic a ∪ Ioo a b := fun x hx =>
   (le_or_gt x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
@@ -374,8 +373,8 @@ theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
 theorem Iio_union_Ioo (h : min c d < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   rcases le_total c d with hcd | hcd
   · simp only [hcd, inf_of_le_left] at h; exact Iio_union_Ioo' h
-  · simp [hcd] at h; rw [max_comm]
-    simp [*, max_eq_right_of_lt h]
+  · rw [max_comm]
+    simp_all [max_eq_right_of_lt]
 
 theorem Iic_subset_Iic_union_Icc : Iic b ⊆ Iic a ∪ Icc a b :=
   Subset.trans Iic_subset_Iic_union_Ioc (union_subset_union_right _ Ioc_subset_Icc_self)

@@ -222,9 +222,7 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   classical
   -- TODO: This should be a single `simp` call but `simp` refuses to use
   -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
-  simp only [le_eq_subset, birkhoffFinset, Set.le_eq_subset, RelEmbedding.coe_trans, comp_apply]
-  rw [OrderIso.coe_toOrderEmbedding, Fintype.coe_finsetOrderIsoSet_symm]
-  simp
+  simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
@@ -234,10 +232,8 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
-  simp only [Set.le_eq_subset, birkhoffSet, not_isEmpty_of_nonempty, ↓reduceDIte,
-    RelEmbedding.coe_trans, RelEmbedding.coe_mk, Embedding.coeFn_mk, OrderIso.coe_toOrderEmbedding,
-    comp_apply, SetLike.coe_set_eq]
-  have : Subsingleton (OrderBot α) := inferInstance; convert rfl
+  have : Subsingleton (OrderBot α) := inferInstance
+  simp [birkhoffSet, this.allEq]
 
 variable [DecidableEq α]
 
