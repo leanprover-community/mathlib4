@@ -33,7 +33,7 @@ namespace SSet
 
 variable (X : SSet.{u})
 
-/-- The type of simplices of a simpliciat set `X`. This type `X.S` is in bijection
+/-- The type of simplices of a simplicial set `X`. This type `X.S` is in bijection
 with `X.Elements` (see `SSet.equivElements`), but `X.S` is not what the literature
 names "category of simplices of `X`", as the category on `X.S` comes from
 a preorder (see `S.le_iff_nonempty_hom`). -/
