@@ -77,7 +77,7 @@ variable {B}
 theorem norm_extends {i : ι} (hBi : B i = (1 : L)) (x : K) :
     B.norm ((algebraMap K L) x) = ‖x‖ := by
   classical
-  simp only [norm, repr_algebraMap _ hBi]
+  simp only [norm, repr_algebraMap hBi, Finsupp.single_apply]
   apply le_antisymm
   · aesop
   · exact le_sup'_of_le _ (mem_univ i) (by simp)
@@ -195,7 +195,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   -- g 0 = 0seminormFromBounded
   have hg0 : g 0 = 0 := B.norm_zero
   -- g takes nonnegative values
-  have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x ↦ by simp only [g, Basis.norm]; aesop
+  have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x ↦ by simp only [g, Basis.norm]; simp
   -- g extends the norm on K
   have hg_ext : ∀ (x : K), g ((algebraMap K L) x) = ‖x‖ := Basis.norm_extends hB1
   -- g is nonarchimedean

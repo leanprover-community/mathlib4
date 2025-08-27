@@ -54,9 +54,6 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
   · have In : (n : WithTop ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
-    -- Porting note: the next line is a hack allowing Lean to find the operator norm instance.
-    let norm := @ContinuousLinearMap.hasOpNorm _ _ Eu ((Du →L[𝕜] Fu) →L[𝕜] Du →L[𝕜] Gu) _ _ _ _ _ _
-      (RingHom.id 𝕜)
     have I1 :
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
           ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
@@ -75,9 +72,6 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
           apply Finset.sum_congr rfl fun i hi => ?_
           rw [Nat.succ_sub (Nat.lt_succ_iff.1 (Finset.mem_range.1 hi)),
             ← norm_iteratedFDerivWithin_fderivWithin hs hx]
-    -- Porting note: the next line is a hack allowing Lean to find the operator norm instance.
-    let norm := @ContinuousLinearMap.hasOpNorm _ _ (Du →L[𝕜] Eu) (Fu →L[𝕜] Du →L[𝕜] Gu) _ _ _ _ _ _
-      (RingHom.id 𝕜)
     have I2 :
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompL Du (fderivWithin 𝕜 f s y) (g y)) s x‖ ≤
         ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 (i + 1) f s x‖ *
@@ -145,8 +139,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   -- lift the bilinear map `B` to a bilinear map `Bu` on the lifted spaces.
   let Bu₀ : Eu →L[𝕜] Fu →L[𝕜] G := ((B.comp (isoE : Eu →L[𝕜] E)).flip.comp (isoF : Fu →L[𝕜] F)).flip
   let Bu : Eu →L[𝕜] Fu →L[𝕜] Gu :=
-   ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
-    (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
+    ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
+      (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀
   have hBu : Bu = ContinuousLinearMap.compL 𝕜 Eu (Fu →L[𝕜] G) (Fu →L[𝕜] Gu)
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
@@ -311,7 +305,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     refine Finset.sum_le_sum ?_
     intro m _
     specialize IH hf.2 (n := n - m) (le_trans (by exact_mod_cast n.sub_le m) hn)
-    refine le_trans (mul_le_mul_of_nonneg_left IH (by simp [mul_nonneg])) ?_
+    grw [IH]
     rw [Finset.mul_sum, ← Finset.sum_coe_sort]
     refine Finset.sum_le_sum ?_
     simp only [Finset.mem_univ, forall_true_left, Subtype.forall, Finset.mem_sym_iff]

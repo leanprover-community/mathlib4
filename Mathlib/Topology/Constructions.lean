@@ -377,6 +377,16 @@ theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
 
+@[simp]
+theorem continuous_rangeFactorization_iff {f : X → Y} :
+    Continuous (rangeFactorization f) ↔ Continuous f :=
+  IsInducing.subtypeVal.continuous_iff
+
+@[continuity, fun_prop]
+theorem Continuous.rangeFactorization {f : X → Y} (hf : Continuous f) :
+    Continuous (rangeFactorization f) :=
+  continuous_rangeFactorization_iff.mpr hf
+
 theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
   continuous_subtype_val.continuousAt
@@ -384,6 +394,11 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
   rfl
+
+@[simp]
+theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
+    DenseRange (inclusion hst) ↔ t ⊆ closure s := by
+  rw [DenseRange, Subtype.dense_iff, ← range_comp, val_comp_inclusion, Subtype.range_coe]
 
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
@@ -732,7 +747,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
-@[to_additive (attr := continuity) "`Pi.single i x` is continuous in `x`."]
+@[to_additive (attr := continuity) /-- `Pi.single i x` is continuous in `x`. -/]
 theorem continuous_mulSingle [∀ i, One (A i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, A i) :=
   continuous_const.update _ continuous_id

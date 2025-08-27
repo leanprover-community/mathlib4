@@ -155,7 +155,7 @@ noncomputable abbrev toField : Field K where
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
-      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField _ (IsFractionRing.toField R).toIsField
+      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
   mpr h :=
     letI := h.toField
     (IsLocalization.atUnits R _ (S := K)
@@ -550,5 +550,20 @@ instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := b
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
     (FaithfulSMul.algebraMap_injective R A)
+
+section IsScalarTower
+
+attribute [local instance] liftAlgebra
+
+instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
+    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
+    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
+    IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
+  smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
+    rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
+    simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
+      IsLocalization.mk'_mul_cancel_left, algebraMap_smul, smul_assoc]
+
+end IsScalarTower
 
 end FractionRing

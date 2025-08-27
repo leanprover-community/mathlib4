@@ -130,10 +130,7 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
+deriving Epi
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
   -- Porting note: was an `apply (config := { instances := false })`
@@ -217,8 +214,8 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   { toFun g := f.unop ≫ g
     map_one' := rfl
     map_zero' := rfl
-    map_add' := by aesop_cat
-    map_mul' := by aesop_cat }
+    map_add' := by cat_disch
+    map_mul' := by cat_disch }
 
 /-- A homomorphism of topological rings can be postcomposed with functions from a source space `X`;
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/

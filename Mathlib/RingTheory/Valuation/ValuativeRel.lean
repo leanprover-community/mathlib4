@@ -27,7 +27,7 @@ saying that `R` is endowed with an equivalence class of valuations.
   Use the notation `x ≤ᵥ y` for this relation.
 - `ValuativeRel.valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
   taking values in `ValuativeRel.ValueGroupWithZero R`.
-- Given a valution `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
+- Given a valuation `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
   ensures that the relation `x ≤ᵥ y` is equivalent to `v x ≤ v y`. Note that
   it is possible to have `[v.Compatible]` and `[w.Compatible]` for two different valuations on `R`.
 - If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
@@ -552,10 +552,19 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   simp_rw [← Valuation.Compatible.rel_iff_le]
 
 @[simp]
-lemma valuation_posSubmonoid_ne_zero_of_compatible {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
+lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
     (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
     v (x : R) ≠ 0 := by
   simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
+
+@[deprecated (since := "2025-08-06")]
+alias valuation_posSubmonoid_ne_zero_of_compatible := _root_.Valuation.apply_posSubmonoid_ne_zero
+
+@[simp]
+lemma _root_.Valuation.apply_posSubmonoid_pos {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
+    (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
+    0 < v x :=
+  zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
@@ -784,7 +793,7 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
-/-- Any rank-at-most-one valuation has a mularchimedean value group.
+/-- Any rank-at-most-one valuation has a mul-archimedean value group.
 The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`
 which is in a later file since it requires a larger theory of reals. -/
 instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by
