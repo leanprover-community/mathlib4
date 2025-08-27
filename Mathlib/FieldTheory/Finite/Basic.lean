@@ -644,8 +644,8 @@ theorem ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (n : �
 theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p : ℤ) ∣ n ^ p - n :=
   (ModEq.pow_prime_eq_self hp).symm.dvd
 
-theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : x ≥ y)
-    (hy : y > 0) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
+theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : y ≤ x)
+    (hy : 0 < y) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
   rw [← Nat.mul_div_eq_iff_dvd] at h
   by_cases hn : n ≡ 0 [ZMOD p]
   · grw [hn, zero_pow (hy.trans_le hxy).ne', zero_pow hy.ne']
