@@ -170,6 +170,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Pseudofunctor
+import Mathlib.Algebra.Category.ModuleCat.Semi
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
@@ -190,6 +191,7 @@ import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Colimits
 import Mathlib.Algebra.Category.MonCat.FilteredColimits
 import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
+import Mathlib.Algebra.Category.MonCat.Presemiadditive
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.MonCat.Yoneda
 import Mathlib.Algebra.Category.Ring.Adjunctions
@@ -2602,6 +2604,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective.LiftingProperties
 import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
 import Mathlib.CategoryTheory.Preadditive.Schur
+import Mathlib.CategoryTheory.Preadditive.Semi
 import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.CategoryTheory.Preadditive.Transfer
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic

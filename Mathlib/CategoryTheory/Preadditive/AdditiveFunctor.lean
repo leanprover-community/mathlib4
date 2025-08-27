@@ -35,19 +35,21 @@ namespace CategoryTheory
 
 /-- A functor `F` is additive provided `F.map` is an additive homomorphism. -/
 @[stacks 00ZY]
-class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  (F : C ⥤ D) : Prop where
+class Functor.Additive {C D : Type*} [Category C] [Category D]
+    [Presemiadditive C] [Presemiadditive D] (F : C ⥤ D) : Prop where
+  /-- The zero morphism is mapped to the zero morphism. -/
+  map_zero : ∀ {X Y : C}, F.map (0 : X ⟶ Y) = 0 := by cat_disch
   /-- the addition of two morphisms is mapped to the sum of their images -/
   map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by cat_disch
 
-section Preadditive
+section Presemiadditive
 
 namespace Functor
 
 section
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
-  [Preadditive C] [Preadditive D] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
+  [Presemiadditive C] [Presemiadditive D] [Presemiadditive E] (F : C ⥤ D) [Functor.Additive F]
 
 @[simp]
 theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
@@ -55,8 +57,10 @@ theorem map_add {X Y : C} {f g : X ⟶ Y} : F.map (f + g) = F.map f + F.map g :=
 
 /-- `F.mapAddHom` is an additive homomorphism whose underlying function is `F.map`. -/
 @[simps!]
-def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) :=
-  AddMonoidHom.mk' (fun f => F.map f) fun _ _ => F.map_add
+def mapAddHom {X Y : C} : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y) where
+  toFun := F.map
+  map_zero' := Additive.map_zero
+  map_add' _ _ := Additive.map_add
 
 theorem coe_mapAddHom {X Y : C} : ⇑(F.mapAddHom : (X ⟶ Y) →+ _) = F.map :=
   rfl
@@ -71,20 +75,8 @@ instance {E : Type*} [Category E] [Preadditive E] (G : D ⥤ E) [Functor.Additiv
 
 instance {J : Type*} [Category J] (j : J) : ((evaluation J C).obj j).Additive where
 
-@[simp]
-theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_neg _
-
-@[simp]
-theorem map_sub {X Y : C} {f g : X ⟶ Y} : F.map (f - g) = F.map f - F.map g :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_sub _ _
-
 theorem map_nsmul {X Y : C} {f : X ⟶ Y} {n : ℕ} : F.map (n • f) = n • F.map f :=
   (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_nsmul _ _
-
--- You can alternatively just use `Functor.map_smul` here, with an explicit `(r : ℤ)` argument.
-theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.map f :=
-  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 
 @[simp]
 nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset α) :
@@ -93,16 +85,23 @@ nonrec theorem map_sum {X Y : C} {α : Type*} (f : α → (X ⟶ Y)) (s : Finset
 
 variable {F}
 
-lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
-  constructor
-  intro X Y f g
-  simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
-    NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
+lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive where
+  map_zero {X Y} := by
+    simp_rw [← NatIso.naturality_1 e 0, Functor.map_zero, Presemiadditive.zero_comp,
+      Presemiadditive.comp_zero]
+  map_add {X Y f g} := by
+    simp_rw [← NatIso.naturality_1 e (f + g), map_add, Presemiadditive.add_comp,
+      NatTrans.naturality, Presemiadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
     [(F ⋙ G).Additive] : G.Additive where
+  map_zero {X Y} := by
+    simp_rw [← cancel_mono (G.map (F.objObjPreimageIso Y).inv),
+      ← cancel_epi (G.map (F.objObjPreimageIso X).hom), Presemiadditive.zero_comp,
+      Presemiadditive.comp_zero, ← Functor.map_comp, Presemiadditive.zero_comp,
+      Presemiadditive.comp_zero, ← F.map_zero, ← F.comp_map, Functor.map_zero]
   map_add {X Y f g} := by
     obtain ⟨f', hf'⟩ := F.map_surjective ((F.objObjPreimageIso X).hom ≫ f ≫
       (F.objObjPreimageIso Y).inv)
@@ -110,14 +109,13 @@ lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
       (F.objObjPreimageIso Y).inv)
     simp only [← cancel_mono (G.map (F.objObjPreimageIso Y).inv),
       ← cancel_epi (G.map (F.objObjPreimageIso X).hom),
-      Preadditive.add_comp, Preadditive.comp_add, ← Functor.map_comp]
-    erw [← hf', ← hg', ← (F ⋙ G).map_add]
-    dsimp
-    rw [F.map_add]
+      Presemiadditive.add_comp, Presemiadditive.comp_add, ← Functor.map_comp]
+    simp_rw [← hf', ← hg', ← F.comp_map, ← Functor.map_add, F.comp_map]
 
 lemma additive_of_comp_faithful
     (F : C ⥤ D) (G : D ⥤ E) [G.Additive] [(F ⋙ G).Additive] [Faithful G] :
     F.Additive where
+  map_zero := G.map_injective <| by rw [← Functor.comp_map, G.map_zero, (F ⋙ G).map_zero]
   map_add {_ _ f₁ f₂} := G.map_injective (by
     rw [← Functor.comp_map, G.map_add, (F ⋙ G).map_add, Functor.comp_map, Functor.comp_map])
 
@@ -131,13 +129,13 @@ end
 
 section InducedCategory
 
-variable {C : Type*} {D : Type*} [Category D] [Preadditive D] (F : C → D)
+variable {C : Type*} {D : Type*} [Category D] [Presemiadditive D] (F : C → D)
 
 instance inducedFunctor_additive : Functor.Additive (inducedFunctor F) where
 
 end InducedCategory
 
-instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Preadditive C]
+instance fullSubcategoryInclusion_additive {C : Type*} [Category C] [Presemiadditive C]
     (Z : ObjectProperty C) : Z.ι.Additive where
 
 section
@@ -145,8 +143,8 @@ section
 -- To talk about preservation of biproducts we need to specify universes explicitly.
 noncomputable section
 
-variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] [Preadditive C]
-  [Preadditive D] (F : C ⥤ D)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] [Presemiadditive C]
+  [Presemiadditive D] (F : C ⥤ D)
 
 open CategoryTheory.Limits
 
@@ -192,7 +190,7 @@ end Functor
 
 namespace Equivalence
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category C] [Category D] [Presemiadditive C] [Presemiadditive D]
 
 instance inverse_additive (e : C ≌ D) [e.functor.Additive] : e.inverse.Additive where
   map_add {f g} := e.functor.map_injective (by simp)
@@ -201,7 +199,7 @@ end Equivalence
 
 section
 
-variable (C D : Type*) [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable (C D : Type*) [Category C] [Category D] [Presemiadditive C] [Presemiadditive D]
 
 /-- Bundled additive functors. -/
 def AdditiveFunctor :=
@@ -213,8 +211,11 @@ instance : Category (AdditiveFunctor C D) :=
 /-- the category of additive functors is denoted `C ⥤+ D` -/
 infixr:26 " ⥤+ " => AdditiveFunctor
 
-instance : Preadditive (C ⥤+ D) :=
-  Preadditive.inducedCategory _
+instance : Presemiadditive (C ⥤+ D) :=
+  Presemiadditive.inducedCategory _
+
+omit [Presemiadditive D] in
+instance [Preadditive D] : Preadditive (C ⥤+ D) := .inducedCategory _
 
 /-- An additive functor is in particular a functor. -/
 def AdditiveFunctor.forget : (C ⥤+ D) ⥤ C ⥤ D :=
@@ -249,7 +250,9 @@ theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
     (AdditiveFunctor.forget C D).map α = α :=
   rfl
 
-instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
+instance : Functor.Additive (AdditiveFunctor.forget C D) where
+  map_zero := rfl
+  map_add := rfl
 
 instance (F : C ⥤+ D) : Functor.Additive F.1 :=
   F.2
@@ -328,6 +331,25 @@ theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
   rfl
 
 end Exact
+
+end Presemiadditive
+
+section Preadditive
+
+variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable (F : C ⥤ D) [F.Additive]
+
+@[simp]
+theorem map_neg {X Y : C} {f : X ⟶ Y} : F.map (-f) = -F.map f :=
+  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_neg _
+
+@[simp]
+theorem map_sub {X Y : C} {f g : X ⟶ Y} : F.map (f - g) = F.map f - F.map g :=
+  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_sub _ _
+
+-- You can alternatively just use `Functor.map_smul` here, with an explicit `(r : ℤ)` argument.
+theorem map_zsmul {X Y : C} {f : X ⟶ Y} {r : ℤ} : F.map (r • f) = r • F.map f :=
+  (F.mapAddHom : (X ⟶ Y) →+ (F.obj X ⟶ F.obj Y)).map_zsmul _ _
 
 end Preadditive
 
