@@ -298,6 +298,14 @@ example : P (x / (x * y + x * z))  := by test_field_simp
 #guard_msgs in
 example : P (2 * x - 1 * x) := by test_field_simp
 
+/-- info: P x -/
+#guard_msgs in
+example : P (x * 1) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example : P (x * 1) := by test_field_simp
+
 /-- info: P (x * (2 - 1 - 1)) -/
 #guard_msgs in
 example : P (2 * x - x - x) := by test_field_simp
@@ -317,6 +325,19 @@ example : P ((3 - 2) * x - x) := by test_field_simp
 #guard_msgs in
 example : P (0 * x) := by test_field_simp
 
+/-- info: P 0 -/
+#guard_msgs in
+example : P (x * 0) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example (hx : x = 0) : x * y = 0 := by
+  field_simp
+
+-- For local hypotheses, these need to be passed in explicitly.
+example (hx : x = 0) : x * y = 0 := by
+  field_simp [hx]
+
 /-- info: P (0 * (x * y + 1)) -/
 #guard_msgs in
 example : P (0 * x * y + 0) := by test_field_simp
@@ -334,6 +355,88 @@ example : P (-(-x)) := by test_field_simp
 /-- info: P (0 - (0 + -x)) -/
 #guard_msgs in
 example : P (0 -(0 + (-x))) := by test_field_simp
+
+/-! ### Parentheses -/
+-- Terms in parentheses are sometimes expanded, but not always.
+-- Telling when this happens is a bit brittle.
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (a - (a - x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (y - (y - x)) := by test_field_simp
+
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - x)) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (x + 0) + a)) := by test_field_simp
+
+/-- info: P (y + a - x) -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (y + a) + a)) := by test_field_simp
+
+/-- info: P (y + a) -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a))) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a) + a)) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - (y + a))) := by test_field_simp
+
+-- In contrast, this example makes progress.
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - y - a)) := by test_field_simp
+
+/-! ### Parentheses -/
+-- Terms in parentheses are sometimes expanded, but not always.
+-- Telling when this happens is a bit brittle.
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (a - (a - x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (y - (y - x)) := by test_field_simp
+
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - x)) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (x + 0) + a)) := by test_field_simp
+
+/-- info: P (y + a - x) -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (y + a) + a)) := by test_field_simp
+
+/-- info: P (y + a) -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a))) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a) + a)) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - (y + a))) := by test_field_simp
+
+-- In contrast, this example makes progress.
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - y - a)) := by test_field_simp
 
 /-! ### Transparency
 
