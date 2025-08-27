@@ -101,3 +101,7 @@ lemma IsCyclic.monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
   exact ⟨e.trans (rootsOfUnityUnitsMulEquiv M (Nat.card G)) |>.trans (mulEquivOfCyclicCardEq hord)⟩
 
 end cyclic
+
+instance {M : Type*} [CommMonoid M] : HasEnoughRootsOfUnity M 1 where
+  prim := ⟨1, by simp⟩
+  cyc := isCyclic_of_subsingleton
