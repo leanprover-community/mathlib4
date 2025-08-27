@@ -37,19 +37,19 @@ namespace Pullback
 
 variable {C : Type u} [Category.{v} C]
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ Z)
-variable [∀ i, HasPullback (𝒰.map i ≫ f) g]
+variable [∀ i, HasPullback (𝒰.f i ≫ f) g]
 
 /-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
-def v (i j : 𝒰.J) : Scheme :=
-  pullback ((pullback.fst (𝒰.map i ≫ f) g) ≫ 𝒰.map i) (𝒰.map j)
+def v (i j : 𝒰.I₀) : Scheme :=
+  pullback ((pullback.fst (𝒰.f i ≫ f) g) ≫ 𝒰.f i) (𝒰.f j)
 
 /-- The canonical transition map `(Uᵢ ×[Z] Y) ×[X] Uⱼ ⟶ (Uⱼ ×[Z] Y) ×[X] Uᵢ` given by the fact
 that pullbacks are associative and symmetric. -/
-def t (i j : 𝒰.J) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
-  have : HasPullback (pullback.snd _ _ ≫ 𝒰.map i ≫ f) g :=
-    hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
-  have : HasPullback (pullback.snd _ _ ≫ 𝒰.map j ≫ f) g :=
-    hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
+def t (i j : 𝒰.I₀) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
+  have : HasPullback (pullback.snd _ _ ≫ 𝒰.f i ≫ f) g :=
+    hasPullback_assoc_symm (𝒰.f j) (𝒰.f i) (𝒰.f i ≫ f) g
+  have : HasPullback (pullback.snd _ _ ≫ 𝒰.f j ≫ f) g :=
+    hasPullback_assoc_symm (𝒰.f i) (𝒰.f j) (𝒰.f j ≫ f) g
   refine (pullbackSymmetry ..).hom ≫ (pullbackAssoc ..).inv ≫ ?_
   refine ?_ ≫ (pullbackAssoc ..).hom ≫ (pullbackSymmetry ..).hom
   refine pullback.map _ _ _ _ (pullbackSymmetry _ _).hom (𝟙 _) (𝟙 _) ?_ ?_
@@ -57,7 +57,7 @@ def t (i j : 𝒰.J) : v 𝒰 f g i j ⟶ v 𝒰 f g j i := by
   · rw [Category.comp_id, Category.id_comp]
 
 @[simp, reassoc]
-theorem t_fst_fst (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
+theorem t_fst_fst (i j : 𝒰.I₀) : t 𝒰 f g i j ≫ pullback.fst _ _ ≫ pullback.fst _ _ =
     pullback.snd _ _ := by
   simp only [t, Category.assoc, pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_fst,
     pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd, pullbackAssoc_inv_fst_fst,
@@ -334,19 +334,20 @@ theorem lift_comp_ι (i : 𝒰.J) :
       (pullback.fst _ _ : pullback (p1 𝒰 f g) (𝒰.map i) ⟶ _) := by
   apply ((gluing 𝒰 f g).openCover.pullbackCover (pullback.fst _ _)).hom_ext
   intro j
-  dsimp only [Cover.pullbackCover]
+  dsimp only [Cover.pullbackCover, Cover.map, Coverage.ZeroHypercover.pullback₁,
+    PreZeroHypercover.pullback₁]
   trans pullbackFstιToV 𝒰 f g i j ≫ fV 𝒰 f g j i ≫ (gluing 𝒰 f g).ι _
   · rw [← show _ = fV 𝒰 f g j i ≫ _ from (gluing 𝒰 f g).glue_condition j i]
     simp_rw [← Category.assoc]
     congr 1
     rw [gluing_f, gluing_t]
     apply pullback.hom_ext <;> simp_rw [Category.assoc]
-    · simp_rw [t_fst_fst, pullback.lift_fst, pullbackFstιToV_snd, GlueData.openCover_map]
+    · simp_rw [t_fst_fst, pullback.lift_fst, pullbackFstιToV_snd, GlueData.openCover_f]
     · simp_rw [t_fst_snd, pullback.lift_snd, pullbackFstιToV_fst_assoc, pullback.condition_assoc,
-        GlueData.openCover_map, p2]
+        GlueData.openCover_f, p2]
       simp
   · rw [pullback.condition, ← Category.assoc]
-    simp_rw [pullbackFstιToV_fst, GlueData.openCover_map]
+    simp_rw [pullbackFstιToV_fst, GlueData.openCover_f]
 
 /-- The canonical isomorphism between `W ×[X] Uᵢ` and `Uᵢ ×[X] Y`. That is, the preimage of `Uᵢ` in
 `W` along `p1` is indeed `Uᵢ ×[X] Y`. -/
@@ -399,7 +400,7 @@ def gluedIsLimit : IsLimit (PullbackCone.mk _ _ (p_comm 𝒰 f g)) := by
   simp_rw [PullbackCone.mk_pt, PullbackCone.mk_π_app] at h₁ h₂
   apply (𝒰.pullbackCover s.fst).hom_ext
   intro i
-  rw [gluedLift, (𝒰.pullbackCover s.fst).ι_glueMorphisms, 𝒰.pullbackCover_map]
+  rw [gluedLift, (𝒰.pullbackCover s.fst).ι_glueMorphisms, Cover.map, 𝒰.pullbackCover_f]
   rw [← cancel_epi
     (pullbackRightPullbackFstIso (p1 𝒰 f g) (𝒰.map i) m ≪≫ pullback.congrHom h₁ rfl).hom,
     Iso.trans_hom, Category.assoc, pullback.congrHom_hom, pullback.lift_fst_assoc,
@@ -439,7 +440,7 @@ instance base_affine_hasPullback {C : CommRingCat} {X Y : Scheme} (f : X ⟶ Spe
 
 instance left_affine_comp_pullback_hasPullback {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z)
     (i : Z.affineCover.J) : HasPullback ((Z.affineCover.pullbackCover f).map i ≫ f) g := by
-  simp only [Cover.pullbackCover_obj, Cover.pullbackCover_map, pullback.condition]
+  simp only [Cover.pullbackCover_X, Cover.pullbackCover_f, pullback.condition]
   exact hasPullback_assoc_symm f (Z.affineCover.map i) (Z.affineCover.map i) g
 
 instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
@@ -464,7 +465,7 @@ theorem _root_.AlgebraicGeometry.Scheme.isEmpty_pullback
   isEmpty_of_commSq (IsPullback.of_hasPullback f g).toCommSq H
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/
-@[simps! J obj map]
+@[simps! I₀ X f]
 def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   fapply
     ((gluing 𝒰 f g).openCover.pushforwardIso
@@ -472,9 +473,19 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       𝒰.J (fun i => pullback (𝒰.map i ≫ f) g)
       (fun i => pullback.map _ _ _ _ (𝒰.map i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
       (Equiv.refl 𝒰.J) fun _ => Iso.refl _
-  rintro (i : 𝒰.J)
-  simp_rw [Cover.pushforwardIso_J, Cover.pushforwardIso_map, GlueData.openCover_map,
-    GlueData.openCover_J, gluing_J]
+  rintro (i : 𝒰.I₀)
+  simp [Cover.map]
+  apply pullback.hom_ext
+  simp [GlueData.openCover, Cover.J]
+  simp [p1, Cover.map, Cover.obj, Cover.J] at *
+  erw [Equiv.refl_apply]
+  rfl
+  simp [GlueData.openCover]
+  simp [p2, Cover.map, Cover.J, Cover.obj]
+  rfl
+  simp_rw [Cover.pushforwardIso_I₀, Cover.pushforwardIso_f, Cover.map, Coverage.ZeroHypercover.bind,
+    GlueData.openCover_f,
+    GlueData.openCover_I₀, gluing_J]
   exact pullback.hom_ext (by simp [p1]) (by simp [p2])
 
 /-- Given an open cover `{ Yᵢ }` of `Y`, then `X ×[Z] Y` is covered by `X ×[Z] Yᵢ`. -/
