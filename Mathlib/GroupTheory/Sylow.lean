@@ -622,7 +622,6 @@ theorem exists_subgroup_card_pow_prime_le [Finite G] (p : ℕ) :
     (lt_or_eq_of_le hnm).elim
       (fun hnm : n < m =>
         have h0m : 0 < m := lt_of_le_of_lt n.zero_le hnm
-        have _wf : m - 1 < m := Nat.sub_lt h0m zero_lt_one
         have hnm1 : n ≤ m - 1 := le_tsub_of_add_le_right hnm
         let ⟨K, hK⟩ :=
           @exists_subgroup_card_pow_prime_le _ _ n (m - 1) _
