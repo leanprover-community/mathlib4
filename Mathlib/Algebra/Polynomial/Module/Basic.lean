@@ -243,6 +243,7 @@ theorem eval_single (r : R) (i : ℕ) (m : M) : eval r (single R i m) = r ^ i �
 theorem eval_lsingle (r : R) (i : ℕ) (m : M) : eval r (lsingle R i m) = r ^ i • m :=
   eval_single r i m
 
+@[simp]
 theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (p • q) = p.eval r • eval r q := by
   induction q using induction_linear with
