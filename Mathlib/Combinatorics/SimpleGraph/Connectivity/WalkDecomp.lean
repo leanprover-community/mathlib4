@@ -223,7 +223,7 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
   | case1 u v h =>
     #adaptation_note
     /-- Prior to `nightly-2025-02-24` this was just `aesop`. -/
-    simp at h
+    simp only [support_nil, List.mem_cons, List.not_mem_nil, or_false] at h
     subst h
     simp
   | case2 _ _ q _ hadj hu' =>

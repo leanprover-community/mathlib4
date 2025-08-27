@@ -274,7 +274,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   filter_upwards [nhdsWithin_le_nhds (this.preimage_mem_nhds hC),
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
-  simp [-extChartAt] at hy
+  simp only [preimage_setOf_eq, mem_setOf_eq] at hy
   convert hy
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
