@@ -71,7 +71,8 @@ theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
 
-lemma natCast_norm {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
+@[simp]
+lemma norm_natcast {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormSMulClass ℤ 𝕜]
     (a : ℕ) : ‖(a : 𝕜)‖ = a := by
   simpa using norm_natCast_eq_mul_norm_one 𝕜 a
 

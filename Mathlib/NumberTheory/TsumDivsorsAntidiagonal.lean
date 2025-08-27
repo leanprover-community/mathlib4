@@ -96,7 +96,7 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1
       · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun x ↦
             ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖ ^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
             ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * ‖r‖ ^ (y * x))) (n := b)]
-        gcongr <;> rename_i i hi <;> simp [natCast_norm] at *
+        gcongr <;> rename_i i hi <;> simp at *
         · exact Nat.le_of_dvd b.2 hi
         · apply le_of_eq
           nth_rw 2 [← Nat.mul_div_cancel' hi]
@@ -104,7 +104,7 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1
       · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
           pow_one, norm_mul]
         gcongr
-        simpa [natCast_norm] using (Nat.card_divisors_le_self b)
+        simpa  using (Nat.card_divisors_le_self b)
   · intro a
     simpa using mul_nonneg (by simp) (by simp)
 
@@ -121,7 +121,7 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     · apply (summable_prod_mul_pow k hr).prod_symm.congr
       simp
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
-    divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div', cast_sum,
+    divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div, cast_sum,
     cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k hr)]
   apply tsum_congr
   intro n
