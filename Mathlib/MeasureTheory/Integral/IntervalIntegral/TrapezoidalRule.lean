@@ -373,7 +373,7 @@ theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     rw [this]
     exact trapezoidal_error_le_of_lt h_lt h_df h_ddf h_ddf_integrable fpp_bound N_nonzero
   -- Trivial case: a = b
-  · simp [trapezoidal_integral, trapezoidal_error, h_eq]
+  · simp [h_eq]
   -- Slightly trickier case: a > b (requires flipping the direction and sign of the true and
   -- approximate integrals)
   · have : [[a, b]] = Icc b a := uIcc_of_gt h_gt
@@ -392,7 +392,7 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   -- This use of rcases slightly duplicates effort from the proof of trapezoidal_error_le, but doing
   -- it any other way that I can think of would be worse.
   rcases eq_or_ne a b with h_eq | h_neq
-  · simp [trapezoidal_integral, trapezoidal_error, h_eq]
+  · simp [h_eq]
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
