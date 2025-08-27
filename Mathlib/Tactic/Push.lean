@@ -142,10 +142,10 @@ def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
 section ElabHead
 open Elab Term
 
-private partial def syntaxLambdaBody (stx : Syntax) : Syntax :=
-  match stx with
-  | `(fun $_ => $stx) => syntaxLambdaBody stx
-  | _ => stx
+/-- Remove any `fun x ↦` or `fun x =>` from the start of the syntax. -/
+partial def lambdaSyntaxBody : Syntax → Syntax
+  | `(fun $_ => $stx) => lambdaSyntaxBody stx
+  | stx => stx
 
 /--
 This is a copy of `elabCDotFunctionAlias?` in core lean.
@@ -156,8 +156,8 @@ def elabCDotFunctionAlias? (stx : Term) : TermElabM (Option Expr) := do
   let stx ← liftMacroM <| expandMacros stx
   match stx with
   | `(fun $binders* => $f $args*) =>
-    -- we use `syntaxLambdaBody` to get rid of extra lambdas in cases like `∃ _, ·`
-    if binders.raw.toList.isPerm (args.raw.toList.map syntaxLambdaBody) then
+    -- we use `lambdaSyntaxBody` to get rid of extra lambdas in cases like `∃ _, ·`
+    if binders.raw.toList.isPerm (args.raw.toList.map lambdaSyntaxBody) then
       try Term.resolveId? f catch _ => return none
     else
       return none
@@ -191,8 +191,7 @@ def elabHead (term : Term) : TermElabM Head := withRef term do
   | `(∀ $_, ·) => return .forall
   | _ =>
     match ← resolveId? term (withInfo := true) <|> elabCDotFunctionAlias? term with
-    | some (.const name _) =>
-      return .name name
+    | some (.const name _) => return .name name
     | _ => throwError "Could not resolve `push` arugment {term}. \
       Expected either a constant as in `push Not`, \
       or a function with `·` notation as in `push ¬ .`"
@@ -201,7 +200,7 @@ end ElabHead
 
 /-- Elaborate the `(disch := ...)` syntax for a `simp`-like tactic. -/
 def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
-  return (← tacticToDischarge stx.raw[3]).2
+  (·.2) <$> tacticToDischarge stx.raw[3]
 
 /--
 `push` pushes the given constant away from the root of the expression. For example
@@ -210,11 +209,13 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 - `push ¬ ·` is the same as `push_neg` or `push Not`, and it rewrites
   `¬∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
 
-In addition to constants, `push` can be used to push `∀` and `fun` binders:
+In addition to constants, `push` can be used to push `fun` and `∀` binders:
+- `push fun _ ↦ ·` rewrites  `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
 - `push ∀ _, ·` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
-- `push fun _ ↦ ·` rewrites  `fun x => f x + g x` into `f + g`
 
 The `push` tactic can be extended using the `@[push]` attribute.
+
+To instead move a constant closer to the root of the expression, use the `pull` tactic.
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
@@ -232,7 +233,7 @@ For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by
 `push_neg` is a special case of the more general `push` tactic, namely `push Not`.
 The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
 built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
-transformed to either of `p → ¬ q` (the default) and `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
+transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
 `set_option push_neg.use_distrib true`.
 
 Another example: given a hypothesis
@@ -257,9 +258,11 @@ It pulls the given constant towards the root of the expression. For example
 - `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
 
 A lemma is considdered a `pull` lemma if its reverse direction is a `push` lemma
-in which the pushed constant is present in the result.
-For example, `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma for negation,
-but `not_not : ¬ ¬ p ↔ p` is not a `pull` lemma.
+that actually moves the given constant away from the root. For example
+- `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma, but `not_not : ¬ ¬ p ↔ p` is not.
+- `log_mul : log (x * y) = log x + log y` is a `pull` lemma, but `log_abs : log |x| = log x` is not.
+
+TODO: add a `@[pull]` attribute to add `pull` lemmas without using `@[push]`.
 -/
 elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
   let disch? ← disch?.mapM elabDischarger
