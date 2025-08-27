@@ -150,7 +150,7 @@ lemma triangle_removal (hG : #(G.cliqueFinset 3) < triangleRemovalBound ε * car
       (#G.edgeFinset - #G'.edgeFinset : ℝ) < ε * (card α^2 : ℕ) ∧ G'.CliqueFree 3 := by
   by_contra! h
   refine hG.not_ge (farFromTriangleFree_iff.2 ?_).le_card_cliqueFinset
-  intros G' _ hG hG'
+  intro G' _ hG hG'
   exact le_of_not_gt fun i ↦ h G' hG _ i hG'
 
 end SimpleGraph
