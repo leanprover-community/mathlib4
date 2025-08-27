@@ -155,15 +155,15 @@ open Lean
 
 attribute [local instance] monadLiftOptionMetaM in
 /-- The result of inverting a norm_num results. -/
-def Result.inv {u : Level} {α : Q(Type u)} {a : Q(«$α»)} (ra : Result a)
-    (dsα : Q(DivisionSemiring «$α»)) (czα : Option Q(CharZero «$α») := none) :
+def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
+    (dsα : Q(DivisionSemiring $α)) (czα : Option Q(CharZero $α) := none) :
     MetaM (Result q($a⁻¹)) := do
   -- allow the caller to pass the CharZero instance as an optimization
   let i ←
     if let some czα := czα then
       pure (some czα)
     else
-      (← inferCharZeroOfDivisionSemiring? dsα)
+      inferCharZeroOfDivisionSemiring? dsα
   if let .some ⟨qa, na, da, pa⟩ := ra.toNNRat' dsα then
     let qb := qa⁻¹
     if qa > 0 then
@@ -208,7 +208,8 @@ such that `norm_num` successfully recognises `a`. -/
   let ra ← derive a
   let dsα ← inferDivisionSemiring α
   guard <| ← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
+  haveI' : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute
-  ra.inv dsα
+  ra.inv q($dsα)
 
 end Mathlib.Meta.NormNum
