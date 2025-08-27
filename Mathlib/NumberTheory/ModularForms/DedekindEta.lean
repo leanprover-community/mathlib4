@@ -4,14 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
 import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2
-import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 
 /-!
 # Dedekind eta function
@@ -27,10 +21,10 @@ differentiable on the upper half-plane.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
+open UpperHalfPlane hiding I
+
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
-
-open _root_.UpperHalfPlane hiding I
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
