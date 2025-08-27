@@ -55,9 +55,13 @@ theorem Linear.singleton (a) : ({a} : Set α).Linear :=
 theorem Linear.closure_finset (s : Finset α) : (closure (s : Set α) : Set α).Linear :=
   ⟨0, s, by rw [zero_vadd]⟩
 
-theorem Linear.of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) : (P : Set α).Linear :=
-  let ⟨s, hP⟩ := hP
-  ⟨0, s, by rw [zero_vadd, hP]⟩
+theorem Linear.iff_eq_vadd_addSubmonoid_fg :
+    s.Linear ↔ ∃ (a : α) (P : AddSubmonoid α), P.FG ∧ s = a +ᵥ (P : Set α) :=
+  exists_congr fun a => ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩
+
+theorem Linear.of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) : (P : Set α).Linear := by
+  rw [iff_eq_vadd_addSubmonoid_fg]
+  exact ⟨0, P, hP, by rw [zero_vadd]⟩
 
 theorem Linear.univ [AddMonoid.FG α] : (univ : Set α).Linear :=
   of_addSubmonoid_fg AddMonoid.FG.fg_top
