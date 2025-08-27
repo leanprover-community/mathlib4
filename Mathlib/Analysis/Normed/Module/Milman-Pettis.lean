@@ -79,18 +79,21 @@ lemma inclusion_subset : 𝒰 ⊆ closedBall 0 1 := by
   grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, ← mem_closedBall_zero_iff]
   assumption
 
+lemma closed𝒰 [CompleteSpace E] : IsClosed 𝒰 :=
+    (inclusionInDoubleDualLi ℝ E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
+
 
 /- Goldstine lemma (see Brezis, Chapter § 3.5, Lemma 3.4) says that the unit ball in the double
 dual of a Banach space (**FAE: I suspect completeness is not needed) ** is the closure, with respect
 to the weak topology `σ(E**, E*)` induced by the canonical pairing `E** × E* → ℝ`, of the image of
 the unit ball in  `E`. Observe that, for any topological `𝕜`-module `M`, `strongDualPairing 𝕜 M` is
 the pairing whose *first* variable is in `M*` and the second is in `M`. -/
-lemma goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
-  (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1 := by sorry
+axiom goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
+  (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1-- := by sorry
 
 -- **TODO** Check not in Mathlib, miminise assumptions, golf proof.
-lemma surjective_iff_ball_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (f : E →L[ℝ] F) : Surjective f ↔ ∃ ρ > 0, sphere 0 ρ ≤ Set.range f := by
+lemma surjective_iff_sphere_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (f : E →L[ℝ] F) : Surjective f ↔ ∃ ρ > 0, sphere 0 ρ ⊆ Set.range f := by
   refine ⟨fun _ ↦ ⟨1, by simp_all⟩, fun ⟨ρ, ρ_pos, sphere_le⟩ z ↦ ?_⟩
   by_cases hz : z = 0
   · exact ⟨0, by simp_all⟩
@@ -109,6 +112,13 @@ lemma surjective_iff_ball_subset_range {F : Type*} [NormedAddCommGroup F] [Norme
   use (ρ⁻¹ * α) • x
   rw [map_smul, hx, hy_def, ← smul_assoc, smul_eq_mul, show (ρ⁻¹ * α * (ρ * α⁻¹)) = 1 by grind,
     one_smul]
+
+lemma surjective_iff_closedBall_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (f : E →L[ℝ] F) : Surjective f ↔ ∃ ρ > 0, closedBall 0 ρ ⊆ Set.range f :=
+  ⟨fun _ ↦ ⟨1, by simp_all⟩,
+  fun ⟨_, ρ_pos, sphere_le⟩ ↦ (surjective_iff_sphere_subset_range f).mpr ⟨_, ρ_pos, fun _ hx ↦
+    sphere_le (sphere_subset_closedBall hx)⟩⟩
+
 
 lemma exists_sub_one_lt {ξ : E**} {δ : ℝ} (hδ₀ : 0 < δ) (hδ₁ : δ < 1) (h : ‖ξ‖ = 1) :
     ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
@@ -155,7 +165,7 @@ theorem surjective_of_uniformConvexSpace [UniformConvexSpace E] :
   simp at hE
   let X := WeakDual ℝ (StrongDual ℝ E) -- `E**` with the weak topology
   let 𝒯 : TopologicalSpace X := inferInstance -- the weak topology on `E**`: can use IsOpen[T] **FAE: Choose!**
-  rw [surjective_iff_ball_subset_range]
+  rw [surjective_iff_sphere_subset_range]
   refine ⟨1, zero_lt_one, ?_⟩
   intro ξ hξ
   have hξ_norm : ‖ξ‖ = 1 := by rwa [← mem_sphere_zero_iff_norm]
@@ -213,7 +223,7 @@ lemma exists_ball_lt [UniformConvexSpace E] {ξ : E**} {ε : ℝ} (hε : 0 < ε)
   letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
   obtain ⟨δ', hδ₀, h_UniformConvex⟩ := exists_forall_closedBall_dist_lt E hε
   have hξ_norm : ‖ξ‖ = 1 := by rwa [← mem_sphere_zero_iff_norm]
-  set δ := min δ' (1/2)
+  set δ := min δ' (1/2) with δ_def
   have hδ₀ : 0 < δ/2 := by positivity
   have hδ₁ : δ/2 < 1 := by
     calc δ/2 ≤ δ := by linarith
@@ -221,43 +231,44 @@ lemma exists_ball_lt [UniformConvexSpace E] {ξ : E**} {ε : ℝ} (hε : 0 < ε)
           _ ≤ (1/2) := min_le_right ..
           _ < 1 := by linarith
   obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt hδ₀ hδ₁ hξ_norm
-  set V := {x : E** | |x φ - 1| < δ/2} with hV_def
+  replace hφ_lt : |ξ φ - 1| < δ'/2 := by
+    apply lt_of_lt_of_le hφ_lt--div_lt_div_of_pos_right )
+    rw [div_le_div_iff_of_pos_right (zero_lt_two), δ_def]
+    exact min_le_left ..
+  set V := {x : E** | |x φ - 1| < δ'/2} with hV_def
   have hξ_mem {V : Set _} (hV_mem : ξ ∈ V) (hV : IsOpen[𝒯] V) : ξ ∈ closure[𝒯] (V ∩ 𝒰) := by
     apply hV.inter_closure <| Set.mem_inter hV_mem _
     rw [goldstine]
     apply sphere_subset_closedBall hξ
   have hV_open : IsOpen[𝒯] V := by
     convert @Continuous.isOpen_preimage (X := WeakDual ℝ (StrongDual ℝ E)) (Y := ℝ) _ _
-      (fun x : E** ↦ |x φ - 1|) (s := ball 0 (δ/2)) _ isOpen_ball
+      (fun x : E** ↦ |x φ - 1|) (s := ball 0 (δ'/2)) _ isOpen_ball
     · ext
       simp_all only [mem_sphere_iff_norm, sub_zero,/-  Set.mem_inter_iff, -/ Set.mem_setOf_eq,
         dist_zero_right,/-  and_imp,  -/Set.mem_preimage, mem_ball, Real.norm_eq_abs, abs_abs]
-    · exact Continuous.comp (X := WeakDual ℝ (StrongDual ℝ E)) (f := fun x : E** ↦ x φ) (g := fun (x : ℝ) ↦ |x - 1|)
+    · exact Continuous.comp (X := WeakDual ℝ (StrongDual ℝ E)) (g := fun (x : ℝ) ↦ |x - 1|)
         (by fun_prop) <| WeakBilin.eval_continuous (strongDualPairing ℝ (StrongDual ℝ E)) _
   refine ⟨V, hV_open, by simpa, ?_⟩
-  obtain ⟨y, hy⟩ : (V ∩ 𝒰).Nonempty := by
+  obtain ⟨ϖ, hϖ⟩ : (V ∩ 𝒰).Nonempty := by
     rw [← closure_nonempty_iff (X := WeakDual ℝ (StrongDual ℝ E))]
     exact ⟨ξ, hξ_mem hφ_lt hV_open⟩
-  use y
+  use ϖ
   intro ζ hζ
-  have {t : E**} (ht : t ∈ V) : t φ < δ/2 + 1 := by
-    rw [hV_def, Set.mem_setOf_eq, abs_sub_lt_iff] at ht
+  have {θ : E**} (hθ : θ ∈ V) : θ φ > 1 - δ'/2 := by
+    rw [hV_def, Set.mem_setOf_eq, abs_sub_lt_iff] at hθ
     linarith
   rw [mem_closedBall_iff_norm]
   apply le_of_lt
-  sorry
-
-
-
-
-
-
-
-
-
-
-
-
+  obtain ⟨z, hz_norm, hzζ⟩ := hζ.2
+  obtain ⟨y, hy_norm, hyϖ⟩ := hϖ.2
+  rw [← hzζ, ← hyϖ, ← map_sub, double_dual_norm_eq]
+  apply h_UniformConvex (by rwa [← mem_closedBall_zero_iff]) (by rwa [← mem_closedBall_zero_iff])
+  rw [← double_dual_norm_eq ℝ, map_add, hzζ, hyϖ]
+  calc ‖ζ + ϖ‖ ≥ ‖(ζ + ϖ) φ‖ := by grw [(le_opNorm (f := ζ + ϖ) φ), hφ_norm, mul_one]
+             _ = |ζ φ + ϖ φ| := by simp
+             _ ≥ ζ φ + ϖ φ := le_abs_self ..
+             _ > 1 - δ'/2 + 1 - δ'/2 := by linarith [this hζ.1, this hϖ.1]
+             _ = 2 - δ' := by linarith
 
 
 
@@ -288,9 +299,7 @@ lemma WeakClosure_subset_closedBall {s : Set E**} {c : E**} {ε : ℝ} (hs : s �
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
 
-
-
-lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
+lemma surjective_old_with_ball [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
   let 𝒯 : TopologicalSpace <| WeakDual ℝ (StrongDual ℝ E) := inferInstance
   ext x
   refine ⟨fun h ↦ ?_, fun hx ↦ ?_⟩
@@ -302,14 +311,14 @@ lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
     refine ⟨b, ?_, hb_lt⟩
     obtain ⟨c, hc_le, hc_eq⟩ := by simpa using hb_mem
     grw [← hc_eq, mem_closedBall, dist_zero_right, double_dual_bound, hc_le]
+  replace hx : x ∈ sphere 0 1 := sorry -- fals0 ma sufficiente
   rw [Metric.mem_closure_iff]
   intro ε hε
-  replace hx : x ∈ sphere 0 1 := sorry -- fals0 ma sufficiente
-  obtain ⟨W, c, hW, x_mem, hW_sub⟩ := exists_ball_lt (ε := ε/3) (by positivity)
-    (sphere_subset_closedBall hx)
+  obtain ⟨W, hW, x_mem, c, hW_sub⟩ := exists_ball_lt (ε := ε/3) (by positivity) hx
   have hx_mem : x ∈ closure[𝒯] (W ∩ 𝒰) := by
     apply hW.inter_closure <| Set.mem_inter x_mem _
-    rwa [goldstine]
+    rw [goldstine]
+    exact sphere_subset_closedBall (α := E**) hx
   obtain ⟨y, hy_mem⟩ : (W ∩ 𝒰).Nonempty := by
     rw [← closure_nonempty_iff (X := WeakDual ℝ (StrongDual ℝ E))]
     use x
@@ -325,10 +334,41 @@ lemma surjective [UniformConvexSpace E] : closure 𝒰 = closedBall 0 1 := by
   apply WeakClosure_subset_closedBall _ hx_mem
   apply subset_trans hW_sub <| closedBall_subset_closedBall (by linarith)
 
+lemma sphere_subset_closure [UniformConvexSpace E] : sphere 0 1 ⊆ closure 𝒰 := by
+  let 𝒯 : TopologicalSpace <| WeakDual ℝ (StrongDual ℝ E) := inferInstance
+  intro x hx
+  rw [Metric.mem_closure_iff]
+  intro ε hε
+  obtain ⟨W, hW, x_mem, c, hW_sub⟩ := exists_ball_lt (ε := ε/3) (by positivity) hx
+  have hx_mem : x ∈ closure[𝒯] (W ∩ 𝒰) := by
+    apply hW.inter_closure <| Set.mem_inter x_mem _
+    rw [goldstine]
+    exact sphere_subset_closedBall (α := E**) hx
+  obtain ⟨y, hy_mem⟩ : (W ∩ 𝒰).Nonempty := by
+    rw [← closure_nonempty_iff (X := WeakDual ℝ (StrongDual ℝ E))]
+    use x
+  refine ⟨y, hy_mem.2, ?_⟩
+  suffices x ∈ closedBall c (ε/2) by
+    apply lt_of_le_of_lt
+    apply dist_triangle  (y := c)
+    simp at this
+    grw [hW_sub] at hy_mem
+    simp only [mem_closedBall, dist_comm] at hy_mem
+    grw [hy_mem, this]
+    linarith
+  apply WeakClosure_subset_closedBall _ hx_mem
+  apply subset_trans hW_sub <| closedBall_subset_closedBall (by linarith)
+
+lemma sphere_subset_image [CompleteSpace E] [UniformConvexSpace E] : sphere 0 1 ⊆ 𝒰 := by
+  grw [sphere_subset_closure, IsClosed.closure_eq]
+  exact closed𝒰
+
 /- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is
 reflexive. For the time being, we state this property as the surjectivity of
 `inclusionInDoubleDual`,
 but it must be proven that for normed space this is equivalent to `includionInDoubleDual` being
 a homeomorphism. -/
--- theorem surjective_of_uniformConvexSpace' [UniformConvexSpace E] :
---     Surjective (inclusionInDoubleDual ℝ E) := by
+theorem surjective_of_uniformConvexSpace' [CompleteSpace E] [UniformConvexSpace E] :
+    Surjective (inclusionInDoubleDual ℝ E) :=
+  (surjective_iff_sphere_subset_range _).mpr
+    ⟨_, zero_lt_one, sphere_subset_image.trans <| Set.image_subset_range ..⟩
