@@ -104,56 +104,12 @@ lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
   simp [zpow', ha, hb]
   exact mul_zpow a b n
 
+theorem list_prod_zpow' [CommGroupWithZero α] {r : ℤ} {l : List α} :
+    zpow' (prod l) r = prod (map (fun x ↦ zpow' x r) l) :=
+  let fr : α →* α := ⟨⟨fun b ↦ zpow' b r, one_zpow' r⟩, (mul_zpow' r)⟩
+  map_list_prod fr l
+
 end zpow'
-
-section prod'
-
--- TODO: can this use `List.reverse.prod` instead?
-/-- The product of the elements of a list. This is a variant of the library version of `List.prod`,
-in which multiplication goes backwards (the first element of the list goes leftmost in the
-multiplication). -/
-def prod' {M : Type*} [Mul M] [One M] : List M → M := foldr (fun a t ↦ t * a) 1
-
-variable {M : Type*}
-
-example {M : Type*} [Mul M] [One M] (a b c : M) : List.prod [a, b, c] = a * (b * (c * 1)) := rfl
-example {M : Type*} [Mul M] [One M] (a b c : M) : prod' [a, b, c] = 1 * c * b * a := rfl
-
-@[simp]
-theorem prod'_cons [Mul M] [One M] {a} {l : List M} : prod' (a :: l) = (prod' l) * a := by rfl
-
-@[simp]
-theorem prod'_nil [Mul M] [One M] :prod'  (([] : List M)) = 1 := rfl
-
--- TODO: if it does, golf proof using `prod_inv`!
-theorem prod'_inv₀ {K : Type*} [DivisionCommMonoid K] :
-    ∀ (L : List K), (prod' L)⁻¹ = prod' (map (fun x ↦ x⁻¹) L)
-  | [] => by simp
-  | x :: xs => by simp [mul_comm, prod'_inv₀ xs]
-
-theorem prod'_hom {M : Type*} {N : Type*} [Monoid M] [Monoid N] (l : List M) {F : Type*}
-    [FunLike F M N] [MonoidHomClass F M N] (f : F) : prod' (map f l) = f (prod' l) := by
-  simp only [prod', foldr_map, ← map_one f]
-  exact l.foldr_hom f (fun x y => (map_mul f y x).symm)
-
-theorem _root_.map_list_prod' {M : Type*} {N : Type*} [Monoid M] [Monoid N] {F : Type*}
-    [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
-    f (prod' l) = prod' (map (⇑f) l) :=
-  (prod'_hom l f).symm
-
--- Do we need the ℕ exponent at all?
-theorem prod'_pow {β : Type*} [CommMonoid β] {r : ℕ} {l : List β} :
-    (prod' l) ^ r = prod' (map (fun x ↦ x ^ r) l) :=
-  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_pow r⟩, (mul_pow · · r)⟩
-  map_list_prod' fr l
-
--- in the library somewhere?
-theorem prod'_zpow' {β : Type*} [CommGroupWithZero β] {r : ℤ} {l : List β} :
-    zpow' (prod' l) r = prod' (map (fun x ↦ zpow' x r) l) :=
-  let fr : β →* β := ⟨⟨fun b ↦ zpow' b r, one_zpow' r⟩, (mul_zpow' r)⟩
-  map_list_prod' fr l
-
-end prod'
 
 theorem subst_add {M : Type*} [Semiring M] {x₁ x₂ X₁ X₂ Y y a : M}
     (h₁ : x₁ = a * X₁) (h₂ : x₂ = a * X₂) (H_atom : X₁ + X₂ = Y) (hy : a * Y = y) :
@@ -219,13 +175,13 @@ def cons (p : ℤ × M) (l : NF M) : NF M := p :: l
 by forming the "multiplicative linear combination" it specifies: raise each `M` term to the power of
 the corresponding `ℤ` term, then multiply them all together. -/
 noncomputable def eval [GroupWithZero M] (l : NF M) : M :=
-  prod' (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ zpow' x r))
+  (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ zpow' x r)).reverse.prod
 
 @[simp] theorem eval_cons [GroupWithZero M] (p : ℤ × M) (l : NF M) :
     (p ::ᵣ l).eval = l.eval * zpow' p.2 p.1 := by
   unfold eval cons
-  rw [List.map_cons, prod'_cons]
-
+  rw [List.map_cons]
+  simp
 
 theorem cons_ne_zero [GroupWithZero M] (r : ℤ) {x : M} (hx : x ≠ 0) {l : NF M} (hl : l.eval ≠ 0) :
     ((r, x) ::ᵣ l).eval ≠ 0 := by
@@ -337,7 +293,7 @@ instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
-  simp only [NF.eval, List.map_map, prod'_inv₀, NF.instInv]
+  simp only [NF.eval, List.map_map, NF.instInv, prod_reverse, List.prod_inv]
   congr! 2
   ext p
   simp [zpow'_neg]
@@ -352,13 +308,12 @@ theorem inv_eq_eval [CommGroupWithZero M] {l : NF M} {x : M} (h : x = l.eval) :
 instance : Pow (NF M) ℤ where
   pow l r := l.map fun (a, x) ↦ (r * a, x)
 
-@[simp] theorem zpow_apply (r : ℤ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) :=
-  rfl
+@[simp] theorem zpow_apply (r : ℤ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) := rfl
 
 theorem eval_zpow' [CommGroupWithZero M] (l : NF M) (r : ℤ) :
     (l ^ r).eval = zpow' l.eval r := by
   unfold NF.eval at ⊢
-  simp only [prod'_zpow', map_map, NF.zpow_apply]
+  simp only [zpow_apply, list_prod_zpow', map_map, map_reverse]
   congr! 2
   ext p
   simp [← zpow'_mul, mul_comm]

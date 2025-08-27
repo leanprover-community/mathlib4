@@ -129,11 +129,13 @@ private def evalPrettyAux (iM : Q(GroupWithZero $M)) (l : qNF M) :
   | [] => return ⟨q(1), q(rfl)⟩
   | [((r, x), _)] =>
     let ⟨e, pf⟩ ← evalPrettyMonomial iM r x
-    return ⟨e, q(Eq.trans (one_mul _) $pf)⟩
-  | ((r, x), _) :: t =>
+    return ⟨e, q(by rw [NF.eval_cons]; exact Eq.trans (one_mul _) $pf)⟩
+  | ((r, x), k) :: t =>
     let ⟨e, pf_e⟩ ← evalPrettyMonomial iM r x
     let ⟨t', pf⟩ ← evalPrettyAux iM t
-    return ⟨q($t' * $e), (q(congr_arg₂ HMul.hMul $pf $pf_e):)⟩
+    have pf'' : Q(NF.eval $(qNF.toNF (((r, x), k) :: t)) = (NF.eval $(qNF.toNF t)) * zpow' $x $r) :=
+      (q(NF.eval_cons ($r, $x) $(qNF.toNF t)):)
+    return ⟨q($t' * $e), q(Eq.trans $pf'' (congr_arg₂ HMul.hMul $pf $pf_e))⟩
 
 /-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
 def evalPretty (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
