@@ -282,8 +282,8 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
   subst hn
   by_cases hindep : LinearIndepOn ℕ id (t : Set α)
   · exact ProperLinear.proper_semilinear ⟨a, t, hindep, rfl⟩
-  · rw [not_linearIndepOn_finset_iffₒ] at hindep
-    rcases hindep with ⟨t', ht', f, g, heq, i, hi, hfi⟩
+  · rw [not_linearIndepOn_finset_iffₒₛ] at hindep
+    rcases hindep with ⟨t', ht', f, heq, i, hi, hfi⟩
     simp only [Function.id_def] at heq
     convert_to
       (⋃ j ∈ t', ⋃ k ∈ Finset.range (f j),
@@ -293,24 +293,24 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
       constructor
       · rintro ⟨x, hx, rfl⟩
         rw [mem_closure_finset] at hx
-        rcases hx with ⟨h, -, rfl⟩
-        induction hn : h i using Nat.strong_induction_on generalizing h with | _ n ih'
+        rcases hx with ⟨g, -, rfl⟩
+        induction hn : g i using Nat.strong_induction_on generalizing g with | _ n ih'
         subst hn
-        by_cases hh : ∀ j ∈ t', f j ≤ h j
-        · convert ih' (h i - f i) (tsub_lt_self (hfi.trans_le (hh i hi)) hfi)
-            (fun j => if hj : j ∈ t' then h j - f j else h j + g j) (by simp [hi]) using 1
-          nth_rw 1 [← Finset.union_sdiff_of_subset ht']
+        by_cases hfg : ∀ j ∈ t', f j ≤ g j
+        · convert ih' (g i - f i) (Nat.sub_lt_self hfi (hfg i hi))
+            (fun j => if hj : j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
+          conv_lhs => rw [← Finset.union_sdiff_of_subset ht']
           simp_rw [vadd_eq_add, add_left_cancel_iff, Finset.sum_union Finset.sdiff_disjoint.symm,
             dite_eq_ite, ite_smul, Finset.sum_ite, Finset.filter_mem_eq_inter,
             Finset.inter_eq_right.2 ht', Finset.filter_notMem_eq_sdiff, add_smul,
             Finset.sum_add_distrib, ← heq, ← add_assoc, add_right_comm, ← Finset.sum_add_distrib,
             ← add_smul]
-          refine congr_arg (· + _) (Finset.sum_congr rfl fun j hj => ?_)
-          rw [tsub_add_cancel_of_le (hh j hj)]
-        · simp_rw [not_forall, not_le] at hh
-          rcases hh with ⟨j, hj, hhj⟩
+          congr! 2 with j hj
+          rw [tsub_add_cancel_of_le (hfg j hj)]
+        · push_neg at hfg
+          rcases hfg with ⟨j, hj, hgj⟩
           simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
-          refine ⟨j, hj, h j, hhj, ∑ x ∈ t.erase j, h x • x,
+          refine ⟨j, hj, g j, hgj, ∑ k ∈ t.erase j, g k • k,
             sum_mem fun x hx => (nsmul_mem (mem_closure_of_mem hx) _), ?_⟩
           rw [← Finset.sum_erase_add _ _ (ht' hj), ← add_assoc, add_right_comm]
       · simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
