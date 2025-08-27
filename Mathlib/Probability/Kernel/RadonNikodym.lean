@@ -112,8 +112,8 @@ lemma measurable_rnDerivAux (κ η : Kernel α γ) :
     Measurable (fun p : α × γ ↦ Kernel.rnDerivAux κ η p.1 p.2) := by
   simp_rw [rnDerivAux]
   split_ifs with hα
-  · refine Measurable.ennreal_toReal <| measurable_from_prod_countable_right
-      (fun a ↦ measurable_rnDeriv (κ a) (η a)) fun a a' c ha'_mem_a ↦ ?_
+  · refine Measurable.ennreal_toReal <| measurable_from_prod_countable_right'
+      (fun a ↦ Measure.measurable_rnDeriv (κ a) (η a)) fun a a' c ha'_mem_a ↦ ?_
     have h_eq : ∀ κ : Kernel α γ, κ a' = κ a := fun κ ↦ by
       ext s hs
       exact mem_of_mem_measurableAtom ha'_mem_a

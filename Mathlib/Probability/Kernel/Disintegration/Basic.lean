@@ -193,7 +193,7 @@ noncomputable def condKernelCountable (h_atom : ∀ x y, x ∈ measurableAtom y 
     Kernel (α × β) Ω where
   toFun p := κCond p.1 p.2
   measurable' := by
-    refine measurable_from_prod_countabler_right (fun a ↦ (κCond a).measurable) fun x y hx hy ↦ ?_
+    refine measurable_from_prod_countable_right' (fun a ↦ (κCond a).measurable) fun x y hx hy ↦ ?_
     simpa using DFunLike.congr (h_atom _ _ hy) rfl
 
 lemma condKernelCountable_apply (h_atom : ∀ x y, x ∈ measurableAtom y → κCond x = κCond y)
