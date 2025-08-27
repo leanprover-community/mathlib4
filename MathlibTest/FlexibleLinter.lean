@@ -1,6 +1,9 @@
 import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Group
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Module
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.LinearCombination
 
@@ -188,17 +191,53 @@ example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   abel_nf
   assumption
 
---  `abel` is an allowed `simp`-follower.
+-- So are `abel_nf!`, `group` and `module.
+#guard_msgs in
+example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
+  simp
+  abel_nf!
+  assumption
+
+#guard_msgs in
+example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
+  simp
+  group at h ⊢
+  assumption
+
+#guard_msgs in
+example {V : Type*} [AddCommMonoid V] {x y : V} : 0 + x + (y + x) = x + x + y := by
+  simp
+  module
+
+-- `grind` is another flexible tactic.
+#guard_msgs in
+example {x y : ℕ} : 0 + x + (y + x) = x + x + y := by
+  simp
+  grind
+
+--  `abel` and `abel!` are allowed `simp`-followers.
 #guard_msgs in
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
   abel
 
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  abel!
+
 --  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
+-- So is `ring_nf!`.
 #guard_msgs in
 example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
   simp
   ring_nf
+  assumption
+
+#guard_msgs in
+example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
+  simp
+  ring_nf!
   assumption
 
 --  `ring` is an allowed `simp`-follower.
@@ -206,6 +245,11 @@ example {a b : Nat} (h : a + b = 1 + a + b) : a + b = b + a + 0 + 1 := by
 example {a b : Nat} : a + b = b + a + 0 := by
   simp
   ring
+
+#guard_msgs in
+example {a b : Nat} : a + b = b + a + 0 := by
+  simp
+  ring!
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
@@ -323,6 +367,18 @@ example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
   simp
   linear_combination h
 
+-- Test that `linarith` is accepted as a follower of `simp`.
+#guard_msgs in
+example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
+  simp
+  linarith
+
+-- Test that `nlinarith` is accepted as a follower of `simp`.
+#guard_msgs in
+example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
+  simp
+  nlinarith
+
 section test_internals
 open Lean Mathlib.Linter Flexible
 
@@ -345,6 +401,7 @@ flex? simp_all only
 flex? simp
 /-- warning: true -/#guard_msgs in
 flex? simp_all
+
 end
 
 /-- info: #[h] -/ #guard_msgs in
