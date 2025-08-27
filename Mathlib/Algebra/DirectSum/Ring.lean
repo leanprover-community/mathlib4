@@ -480,8 +480,7 @@ instance : IntCast (A 0) :=
   ⟨GRing.intCast⟩
 
 @[simp]
-theorem of_intCast (n : ℤ) : of A 0 n = n := by
-  rfl
+theorem of_intCast (n : ℤ) : of A 0 n = n := rfl
 
 /-- The `Ring` derived from `GSemiring A`. -/
 instance GradeZero.ring : Ring (A 0) :=
