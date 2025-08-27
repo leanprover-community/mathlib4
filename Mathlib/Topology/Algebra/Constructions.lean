@@ -11,7 +11,7 @@ import Mathlib.Topology.Homeomorph.Lemmas
 
 In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc till we have these definitions.
+action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
 
 ## Tags
 
@@ -129,7 +129,7 @@ lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M →
   refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
-  intros u s hs
+  intro u s hs
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
 

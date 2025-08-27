@@ -907,11 +907,12 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 @[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 
 @[simp]
-theorem cardFactors_eq_zero {n : ℕ} : Ω n = 0 ↔ n ≤ 1 := by
-  simp [cardFactors_apply, Nat.le_one_iff_eq_zero_or_eq_one]
+theorem cardFactors_eq_zero_iff_eq_zero_or_one {n : ℕ} : Ω n = 0 ↔ n = 0 ∨ n = 1 := by
+  rw [cardFactors_apply, List.length_eq_zero_iff, primeFactorsList_eq_nil]
 
 @[simp]
-theorem cardFactors_pos {n : ℕ} : 0 < Ω n ↔ 1 < n := by simp [pos_iff_ne_zero]
+theorem cardFactors_pos_iff_one_lt {n : ℕ} : 0 < Ω n ↔ 1 < n := by
+  rw [cardFactors_apply, List.length_pos_iff, primeFactorsList_ne_nil]
 
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
@@ -950,6 +951,10 @@ lemma cardFactors_pow {m k : ℕ} : Ω (m ^ k) = k * Ω m := by
 @[simp]
 theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k := by
   simp [cardFactors_pow, hp]
+
+theorem cardFactors_eq_sum_factorization {n : ℕ} :
+    Ω n = n.factorization.sum fun _ k => k := by
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=
