@@ -9,7 +9,6 @@ import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
-import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2
 import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
