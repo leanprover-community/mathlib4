@@ -637,7 +637,7 @@ theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : 
     (p : ℤ) ∣ n ^ (p - 1) - 1 :=
   (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
 
-theorem ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (n : ℤ) ^ p ≡ n [ZMOD p] := by
+theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (n : ℤ) ^ p ≡ n [ZMOD p] := by
   haveI : Fact p.Prime := ⟨hp⟩
   simp [← ZMod.intCast_eq_intCast_iff]
 
