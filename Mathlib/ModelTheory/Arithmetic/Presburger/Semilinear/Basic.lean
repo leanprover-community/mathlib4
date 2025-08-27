@@ -32,111 +32,89 @@ universe u v w
 
 namespace Set
 
-variable {α : Type u} [AddCommMonoid α] {β : Type v} [AddCommMonoid β] {ι : Type w}
-  {s s₁ s₂ : Set α}
+variable {α : Type u} [AddCommMonoid α] {β : Type v} [AddCommMonoid β] {s s₁ s₂ : Set α}
 
-open Pointwise Submodule
+open Pointwise AddSubmonoid
 
-theorem Linear.exists_submodule_fg (hs : s.Linear) :
-    ∃ (M : Submodule ℕ α) (s' : Set M), M.FG ∧ s'.Linear ∧ s = Subtype.val '' s' := by
+theorem Linear.exists_addSubmonoid_fg (hs : s.Linear) :
+    ∃ (P : AddSubmonoid α) (s' : Set P), P.FG ∧ s'.Linear ∧ s = Subtype.val '' s' := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   refine ⟨_, _, ⟨insert a t, rfl⟩,
-    ⟨⟨a, mem_span_of_mem (Finset.mem_insert_self a t)⟩,
-      t.attach.image fun ⟨b, hb⟩ => ⟨b, mem_span_of_mem (Finset.mem_insert_of_mem hb)⟩, rfl⟩, ?_⟩
-  rw [← coe_subtype, image_vadd_distrib, subtype_apply, ← map_coe, ← span_image]
+    ⟨⟨a, mem_closure_of_mem (Finset.mem_insert_self a t)⟩,
+      t.attach.image fun ⟨b, hb⟩ => ⟨b, mem_closure_of_mem (Finset.mem_insert_of_mem hb)⟩, rfl⟩, ?_⟩
+  rw [← coe_subtype, image_vadd_distrib, subtype_apply, ← coe_map, AddMonoidHom.map_mclosure]
   congr!
   ext b
   simp only [Finset.mem_coe, subtype_apply, Finset.coe_image, Finset.coe_attach, image_univ,
     mem_image, mem_range, Subtype.exists, Subtype.mk.injEq, exists_prop, exists_eq_right,
     exists_eq_right_right]
   rw [iff_and_self]
-  exact fun hb => mem_span_of_mem (Finset.mem_insert_of_mem hb)
+  exact fun hb => mem_closure_of_mem (Finset.mem_insert_of_mem hb)
 
-theorem Semilinear.exists_submodule_fg (hs : s.Semilinear) :
-    ∃ (M : Submodule ℕ α) (s' : Set M), M.FG ∧ s'.Semilinear ∧ s = Subtype.val '' s' := by
+theorem Semilinear.exists_addSubmonoid_fg (hs : s.Semilinear) :
+    ∃ (P : AddSubmonoid α) (s' : Set P), P.FG ∧ s'.Semilinear ∧ s = Subtype.val '' s' := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
-  choose! M S' hM hS' hM' using fun t ht => (hS t ht).exists_submodule_fg
-  refine ⟨S.sup M, ⋃ (t : S), Submodule.inclusion (Finset.le_sup t.2) '' S' t.1,
-    fg_finset_sup _ _ hM, iUnion fun t => (hS' t.1 t.2).semilinear.image _, ?_⟩
-  simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, Submodule.coe_inclusion,
-    ← fun t : S => hM' t.1 t.2]
+  choose! P S' hP hS' hP' using fun t ht => (hS t ht).exists_addSubmonoid_fg
+  refine ⟨S.sup P, ⋃ (t : S), AddSubmonoid.inclusion (Finset.le_sup t.2) '' S' t.1,
+    FG.finset_sup _ _ hP, iUnion fun t => (hS' t.1 t.2).semilinear.image _, ?_⟩
+  simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
+    ← fun t : S => hP' t.1 t.2]
   rfl
 
-theorem Semilinear.exists_submodule_fg₂ (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
-    ∃ (M : Submodule ℕ α) (s₁' s₂' : Set M), M.FG ∧ s₁'.Semilinear ∧ s₁ = Subtype.val '' s₁'
+theorem Semilinear.exists_addSubmonoid_fg₂ (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) :
+    ∃ (P : AddSubmonoid α) (s₁' s₂' : Set P), P.FG ∧ s₁'.Semilinear ∧ s₁ = Subtype.val '' s₁'
       ∧ s₂'.Semilinear ∧ s₂ = Subtype.val '' s₂' := by
-  rcases hs₁.exists_submodule_fg with ⟨M₁, s₁', hM₁, hs₁', rfl⟩
-  rcases hs₂.exists_submodule_fg with ⟨M₂, s₂', hM₂, hs₂', rfl⟩
-  refine ⟨M₁ ⊔ M₂, (Submodule.inclusion le_sup_left) '' s₁',
-    (Submodule.inclusion le_sup_right) '' s₂', hM₁.sup hM₂, hs₁'.image _, ?_, hs₂'.image _, ?_⟩
-    <;> simp_rw [image_image, Submodule.coe_inclusion]
+  rcases hs₁.exists_addSubmonoid_fg with ⟨P₁, s₁', hP₁, hs₁', rfl⟩
+  rcases hs₂.exists_addSubmonoid_fg with ⟨P₂, s₂', hP₂, hs₂', rfl⟩
+  refine ⟨P₁ ⊔ P₂, (AddSubmonoid.inclusion le_sup_left) '' s₁',
+    (AddSubmonoid.inclusion le_sup_right) '' s₂', hP₁.sup hP₂, hs₁'.image _, ?_, hs₂'.image _, ?_⟩
+    <;> simp_rw [image_image, AddSubmonoid.coe_inclusion]
 
-theorem Linear.exists_image_eq_of_surjective {s : Set β} {f : α →ₗ[ℕ] β} (hs : s.Linear)
-    (hf : Function.Surjective f) : ∃ s', s'.Linear ∧ s = f '' s' := by
-  classical
-  rcases hs with ⟨a, t, rfl⟩
-  rcases hf.hasRightInverse with ⟨g, hg⟩
-  refine ⟨_, ⟨g a, t.image g, rfl⟩, ?_⟩
-  rw [image_vadd_distrib, hg a, ← map_coe, map_span, ← Finset.coe_image, Finset.image_image,
-    hg.comp_eq_id, Finset.image_id]
+variable {F : Type*} [FunLike F α β] [AddMonoidHomClass F α β]
 
-theorem Semilinear.exists_image_eq_of_surjective {s : Set β} {f : α →ₗ[ℕ] β} (hs : s.Semilinear)
-    (hf : Function.Surjective f) : ∃ s', s'.Semilinear ∧ s = f '' s' := by
-  classical
-  rcases hs with ⟨S, hS, rfl⟩
-  choose! g hg using fun t ht => (hS t ht).exists_image_eq_of_surjective hf
-  refine ⟨⋃₀ S.image g, sUnion fun s hs => ?_, ?_⟩
-  · simp only [Finset.mem_image] at hs
-    rcases hs with ⟨t, ht, rfl⟩
-    exact (hg t ht).1.semilinear
-  · simp_rw [image_sUnion, Finset.coe_image, sUnion_eq_biUnion, biUnion_image, Finset.mem_coe]
-    conv => enter [2, 1, t, 1, ht]; rw [← (hg t ht).2]
+theorem Semilinear.preimage [AddMonoid.FG α] [IsCancelAdd β] {s : Set β} (hs : s.Semilinear)
+    (f : F) : (f ⁻¹' s).Semilinear := by
+  rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := α)) with ⟨n, g, hg⟩
+  rw [AddMonoidHom.mrange_eq_top] at hg
+  rw [← image_preimage_eq (f ⁻¹' s) hg]
+  apply image
+  rw [← preimage_comp, ← AddMonoidHom.coe_coe, ← AddMonoidHom.coe_comp]
+  exact hs.preimage_nat _
 
 variable [IsCancelAdd α]
 
-theorem Semilinear.preimage_nat_of_surjective [Fintype ι] {f : (ι → ℕ) →ₗ[ℕ] α} (hs : s.Semilinear)
-    (hf : Function.Surjective f) : (f ⁻¹' s).Semilinear := by
-  rcases hs.exists_image_eq_of_surjective hf with ⟨s₁, hs₁, rfl⟩
-  apply proj'
-  rw [setOf_and]
-  apply inter_nat
-  · exact hs₁.preimage_nat (LinearMap.funLeft ℕ ℕ Sum.inr)
-  · refine (Linear.of_subtractive_addSubmonoid_nat {
-        carrier := setOf _
-        add_mem' h₁ h₂ := ?_
-        zero_mem' := ?_
-      } fun _ h₁ _ h₂ => ?_).semilinear <;> simp_all [Pi.add_comp]
-
 /-- Semilinear sets in a commutative cancellative monoid are closed under intersection. -/
 theorem Semilinear.inter (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) : (s₁ ∩ s₂).Semilinear := by
-  rcases hs₁.exists_submodule_fg₂ hs₂ with ⟨M, s₁', s₂', hM, hs₁', rfl, hs₂', rfl⟩
+  rcases hs₁.exists_addSubmonoid_fg₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
   rw [← image_inter Subtype.val_injective]
-  refine image ?_ M.subtype
-  rw [← Module.Finite.iff_fg] at hM
-  rcases hM.exists_fin' with ⟨n, f, hf⟩
+  apply image (f := P.subtype)
+  rw [← AddMonoid.fg_iff_addSubmonoid_fg, AddMonoid.fg_def, fg_iff_exists_fin_addMonoidHom] at hP
+  rcases hP with ⟨n, f, hf⟩
+  rw [AddMonoidHom.mrange_eq_top] at hf
   rw [← image_preimage_eq (s₁' ∩ s₂') hf, preimage_inter]
   apply image
-  apply inter_nat <;> apply preimage_nat_of_surjective <;> assumption
+  apply inter_nat <;> apply preimage_nat <;> assumption
 
 /-- Semilinear sets in a commutative cancellative monoid are closed under set difference. -/
 theorem Semilinear.diff (hs₁ : s₁.Semilinear) (hs₂ : s₂.Semilinear) : (s₁ \ s₂).Semilinear := by
-  rcases hs₁.exists_submodule_fg₂ hs₂ with ⟨M, s₁', s₂', hM, hs₁', rfl, hs₂', rfl⟩
+  rcases hs₁.exists_addSubmonoid_fg₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
   rw [← image_diff Subtype.val_injective]
-  refine image ?_ M.subtype
-  rw [← Module.Finite.iff_fg] at hM
-  rcases hM.exists_fin' with ⟨n, f, hf⟩
+  apply image (f := P.subtype)
+  rw [← AddMonoid.fg_iff_addSubmonoid_fg, AddMonoid.fg_def, fg_iff_exists_fin_addMonoidHom] at hP
+  rcases hP with ⟨n, f, hf⟩
+  rw [AddMonoidHom.mrange_eq_top] at hf
   rw [← image_preimage_eq (s₁' \ s₂') hf, preimage_diff]
   apply image
-  apply diff_nat <;> apply preimage_nat_of_surjective <;> assumption
+  apply diff_nat <;> apply preimage_nat <;> assumption
 
 /-- Semilinear sets in a finitely generated commutative cancellative monoid are closed under
-  complement. -/
-theorem Semilinear.compl [Module.Finite ℕ α] (hs : s.Semilinear) : sᶜ.Semilinear := by
+complement. -/
+theorem Semilinear.compl [AddMonoid.FG α] (hs : s.Semilinear) : sᶜ.Semilinear := by
   rw [compl_eq_univ_diff]
   exact univ.diff hs
 
-example [Fintype ι] {s : Set (ι → ℤ)} (hs : s.Semilinear) : sᶜ.Semilinear := hs.compl
+example {ι : Type*} [Finite ι] {s : Set (ι → ℤ)} (hs : s.Semilinear) : sᶜ.Semilinear := hs.compl
 
 end Set
