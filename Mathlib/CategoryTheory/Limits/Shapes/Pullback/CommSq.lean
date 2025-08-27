@@ -346,7 +346,7 @@ theorem of_horiz_isIso_mono [IsIso fst] [Mono g] (sq : CommSq fst snd f g) :
     (by
       refine
         PullbackCone.IsLimit.mk _ (fun s => s.fst ≫ inv fst) (by simp)
-          (fun s => ?_) (by aesop_cat)
+          (fun s => ?_) (by cat_disch)
       simp only [← cancel_mono g, Category.assoc, ← sq.w, IsIso.inv_hom_id_assoc, s.condition])
 
 theorem of_horiz_isIso [IsIso fst] [IsIso g] (sq : CommSq fst snd f g) :
@@ -917,6 +917,46 @@ Z --id--> Z
 -/
 lemma id_horiz (f : X ⟶ Z) : IsPullback (𝟙 X) f f (𝟙 Z) :=
   of_horiz_isIso ⟨by simp only [Category.id_comp, Category.comp_id]⟩
+
+/--
+In a category, given a morphism `f : A ⟶ B` and an object `X`,
+this is the obvious pullback diagram:
+```
+A ⨯ X ⟶ A
+  |     |
+  v     v
+B ⨯ X ⟶ B
+```
+-/
+lemma of_prod_fst_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryProduct A X]
+    [HasBinaryProduct B X] :
+    IsPullback prod.fst (prod.map f (𝟙 X)) f prod.fst where
+  isLimit' := ⟨PullbackCone.isLimitAux' _ (fun s ↦ by
+    refine ⟨prod.lift s.fst (s.snd ≫ prod.snd), ?_, ?_, ?_⟩
+    · simp
+    · ext
+      · simp [PullbackCone.condition]
+      · simp
+    · intro m h₁ h₂
+      dsimp at m h₁ h₂ ⊢
+      ext
+      · simpa using h₁
+      · simp [← h₂])⟩
+
+lemma of_isLimit_binaryFan_of_isTerminal
+    {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c)
+    {T : C} (hT : IsTerminal T) :
+    IsPullback c.fst c.snd (hT.from _) (hT.from _) where
+  isLimit' := ⟨PullbackCone.IsLimit.mk _
+    (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩)
+    (fun s m h₁ h₂ ↦ by
+      apply BinaryFan.IsLimit.hom_ext hc
+      · rw [h₁, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩]
+        rfl
+      · rw [h₂, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩]
+        rfl)⟩
 
 end IsPullback
 

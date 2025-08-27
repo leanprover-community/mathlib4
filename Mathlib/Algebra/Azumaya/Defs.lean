@@ -20,7 +20,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 ## Reference
 
-* [Benson Farb , R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
+* [Benson Farb, R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
 
 ## Tags
 

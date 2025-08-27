@@ -116,14 +116,14 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
   · rintro ⟨h⟩
     refine ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ ?_⟩⟩
     intro s
-    dsimp only [PushoutCocone.inr, PushoutCocone.mk] -- Porting note: Originally `dsimp`
+    dsimp
     refine ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, ?_, ?_⟩
     · apply BinaryCofan.IsColimit.hom_ext hc
       · rw [← H.w_assoc]; erw [h.fac _ ⟨WalkingPair.right⟩]; exact s.condition
       · rw [← Category.assoc]; exact h.fac _ ⟨WalkingPair.left⟩
     · intro m e₁ e₂
       apply BinaryCofan.IsColimit.hom_ext h
-      · dsimp only [BinaryCofan.mk, id] -- Porting note: Originally `dsimp`
+      · dsimp
         rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
       · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
   · refine fun H => ⟨?_⟩
@@ -269,7 +269,7 @@ variable {D : Type u''} [Category.{v''} D]
 instance adhesive_functor [Adhesive C] [HasPullbacks C] [HasPushouts C] :
     Adhesive (D ⥤ C) := by
   constructor
-  intros W X Y Z f g h i hf H
+  intro W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
   apply isVanKampenColimit_of_evaluation
   intro x
@@ -287,7 +287,7 @@ theorem adhesive_of_preserves_and_reflects (F : C ⥤ D) [Adhesive D]
     [ReflectsColimitsOfShape WalkingSpan F] :
     Adhesive C := by
   apply Adhesive.mk (hasPullback_of_mono_left := H₁) (hasPushout_of_mono_left := H₂)
-  intros W X Y Z f g h i hf H
+  intro W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
   refine IsVanKampenColimit.of_mapCocone F ?_
   refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
