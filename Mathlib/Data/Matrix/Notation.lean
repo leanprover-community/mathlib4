@@ -234,9 +234,8 @@ theorem transpose_empty_rows (A : Matrix m' (Fin 0) α) : Aᵀ = of ![] :=
 theorem transpose_empty_cols (A : Matrix (Fin 0) m' α) : Aᵀ = of fun _ => ![] :=
   funext fun _ => empty_eq _
 
-@[simp]
-theorem cons_transpose (v : n' → α) (A : Matrix (Fin m) n' α) :
-    (of (vecCons v A))ᵀ = of fun i => vecCons (v i) (Aᵀ i) := by
+theorem cons_transpose (v : n' → α) (A : (Fin m) → n' → α) :
+    (of (vecCons v A))ᵀ = of fun i => vecCons (v i) ((of A)ᵀ i) := by
   ext i j
   refine Fin.cases ?_ ?_ j <;> simp
 

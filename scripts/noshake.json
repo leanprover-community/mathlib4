@@ -234,6 +234,7 @@
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
+  "Mathlib.Tactic.Simproc.Matrix": ["Mathlib.Data.Matrix.Reflection"],
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Ring.NamePolyVars": ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.Tactic.ReduceModChar":
@@ -394,6 +395,7 @@
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic":
   ["Batteries.Tactic.Trans", "Mathlib.Tactic.AdaptationNote"],
+  "Mathlib.LinearAlgebra.UnitaryGroup": ["Mathlib.Tactic.Simproc.Matrix"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
