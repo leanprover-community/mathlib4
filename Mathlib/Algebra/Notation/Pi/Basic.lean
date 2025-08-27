@@ -90,7 +90,7 @@ lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
     (mulSingle i x : ι → M) i' = if i' = i then x else 1 :=
   Function.update_apply (1 : ι → M) i x i'
 
--- Porting note: Same as above.
+-- Porting note: added type ascription (_ : ι → M)
 /-- On non-dependent functions, `Pi.mulSingle` is symmetric in the two indices. -/
 @[to_additive /-- On non-dependent functions, `Pi.single` is symmetric in the two indices. -/]
 lemma mulSingle_comm (i : ι) (x : M) (j : ι) :
