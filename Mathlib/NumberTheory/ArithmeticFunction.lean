@@ -823,7 +823,7 @@ theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
     σ 1 (p ^ i) = ∑ k ∈ .range (i + 1), p ^ k := by
   simp [sigma_apply_prime_pow hp]
 
-theorem sigma_eq_sum_div' (k n : ℕ) : sigma k n = ∑ d ∈ Nat.divisors n, (n / d) ^ k := by
+theorem sigma_eq_sum_div (k n : ℕ) : sigma k n = ∑ d ∈ Nat.divisors n, (n / d) ^ k := by
   rw [sigma, ArithmeticFunction.coe_mk, ← Nat.sum_div_divisors]
 
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]
@@ -893,6 +893,14 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 @[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 
 @[simp]
+theorem cardFactors_eq_zero_iff_eq_zero_or_one {n : ℕ} : Ω n = 0 ↔ n = 0 ∨ n = 1 := by
+  rw [cardFactors_apply, List.length_eq_zero_iff, primeFactorsList_eq_nil]
+
+@[simp]
+theorem cardFactors_pos_iff_one_lt {n : ℕ} : 0 < Ω n ↔ 1 < n := by
+  rw [cardFactors_apply, List.length_pos_iff, primeFactorsList_ne_nil]
+
+@[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine ⟨fun h => ?_, fun h => List.length_eq_one_iff.2 ⟨n, primeFactorsList_prime h⟩⟩
   cases n with | zero => simp at h | succ n =>
@@ -929,6 +937,10 @@ lemma cardFactors_pow {m k : ℕ} : Ω (m ^ k) = k * Ω m := by
 @[simp]
 theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k := by
   simp [cardFactors_pow, hp]
+
+theorem cardFactors_eq_sum_factorization {n : ℕ} :
+    Ω n = n.factorization.sum fun _ k => k := by
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=
