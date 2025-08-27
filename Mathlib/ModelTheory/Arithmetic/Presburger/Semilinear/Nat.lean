@@ -243,7 +243,7 @@ namespace ProperLinear
 
 variable (hs : s.ProperLinear)
 
-open Submodule
+open Module Submodule
 
 private noncomputable def base : ι → ℕ := hs.choose
 
@@ -291,8 +291,6 @@ private theorem span_extendedPeriods :
   ext j
   simp [toRatVec, Pi.basisFun_apply, Pi.single_apply]
 
-open Module
-
 private noncomputable def basis : Basis hs.extendedPeriods ℚ (ι → ℚ) :=
   Basis.mk hs.linearIndepOn_extendedPeriods
     (image_eq_range _ _ ▸ top_le_iff.2 hs.span_extendedPeriods)
@@ -310,7 +308,7 @@ private theorem floor_base (i) : hs.floor hs.base i = 0 := by simp [floor]
 
 private theorem fract_base : hs.fract hs.base = hs.base := by simp [fract, hs.floor_base]
 
-private theorem floor_add_smul_self {x i} {n : ℕ} :
+private theorem floor_add_nsmul_self {x i} {n : ℕ} :
     hs.floor (x + n • i.1) i = hs.floor x i + n := by
   simp only [floor]
   rw [map_add, ← sub_add_eq_add_sub]
@@ -332,7 +330,7 @@ private theorem floor_add_sum_of_subset_of_notMem {f : (ι → ℕ) → ℕ} {x 
 private theorem floor_toNat_sum_le (x) :
     ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (- hs.floor x i).toNat • i.1 := by
   rw [← toRatVec_mono]
-  simp only [floor, map_add, map_sum, map_smul]
+  simp only [floor, map_add, map_sum, map_nsmul]
   rw [← sub_le_iff_le_add, ← Finset.sum_sub_distrib]
   conv =>
     enter [1, 2, _]
@@ -355,7 +353,7 @@ private theorem toRatVec_fract_eq (x) :
       ∑ i, Int.fract (hs.basis.repr (toRatVec x - toRatVec hs.base) i) • toRatVec i.1 := by
   simp only [fract]
   rw [← map_tsub_of_le _ _ _ (hs.floor_toNat_sum_le x)]
-  simp only [map_add, map_sum, map_smul]
+  simp only [map_add, map_sum, map_nsmul]
   rw [← sub_add_eq_add_sub, sub_add, ← Finset.sum_sub_distrib]
   conv =>
     enter [1, 2, 2, _]
@@ -395,7 +393,7 @@ private theorem fract_idem (x) : hs.fract (hs.fract x) = hs.fract x := by
   · rw [hs.toRatVec_fract_eq, add_sub_cancel_left]
     simp [← hs.basis_apply, Finsupp.single_apply, Int.fract_lt_one]
 
-private theorem mem_iff_fract_eq_floor_nonneg (x) :
+private theorem mem_iff_fract_eq_and_floor_nonneg (x) :
     x ∈ s ↔
       hs.fract x = hs.base ∧ ∀ i, 0 ≤ hs.floor x i ∧ (i.1 ∉ hs.periods → hs.floor x i = 0) := by
   nth_rw 1 [hs.eq_base_vadd_span_periods]
@@ -419,7 +417,7 @@ private theorem mem_iff_fract_eq_floor_nonneg (x) :
         simp [hf x hx.2]
   · intro ⟨hx₁, hx₂⟩
     refine ⟨∑ i ∈ {i : hs.extendedPeriods | i.1 ∈ hs.periods}, (hs.floor x i).toNat • i.1,
-      sum_mem fun i hi => smul_mem _ _ (mem_span_of_mem (Finset.mem_filter.1 hi).2), ?_⟩
+      sum_mem fun i hi => nsmul_mem (mem_span_of_mem (Finset.mem_filter.1 hi).2) _, ?_⟩
     rw [Finset.sum_filter, ← hx₁]
     conv =>
       rhs
@@ -453,8 +451,8 @@ private theorem setOfFractNe_semilinear : hs.setOfFractNe.Semilinear := by
     · intro hx
       refine ⟨hs.fract x, ⟨hx, x, rfl⟩, ∑ i, (hs.floor x i).toNat • i.1, ?_,
         ∑ i, (-hs.floor x i).toNat • i.1, ?_, ?_⟩
-      · exact sum_mem fun i _ => smul_mem _ _ (mem_span_of_mem i.2)
-      · exact sum_mem fun i _ => smul_mem _ _ (mem_span_of_mem i.2)
+      · exact sum_mem fun i _ => nsmul_mem (mem_span_of_mem i.2) _
+      · exact sum_mem fun i _ => nsmul_mem (mem_span_of_mem i.2) _
       · exact hs.add_floor_neg_toNat_sum_eq x
     · rintro ⟨_, ⟨hz, ⟨z, rfl⟩⟩, y, hy, y', hy', heq⟩
       apply congr_arg hs.fract at heq
@@ -496,41 +494,39 @@ private theorem setOfFloorNeg_semilinear : hs.setOfFloorNeg.Semilinear := by
   · ext x
     simp only [setOfFloorNeg, mem_iUnion, mem_union, mem_setOf, exists_prop]
     constructor
-    · rintro ⟨hx₁, i, hx₂ | ⟨hi, hx₂⟩⟩
-      · refine Or.inl ⟨i, ((- hs.floor x i).toNat - 1) • i.1, ?_,
-          ∑ j ∈ (Finset.univ.erase i : Finset _), (hs.floor x j).toNat • j.1, ?_,
-          ∑ j ∈ (Finset.univ.erase i : Finset _), (- hs.floor x j).toNat • j.1, ?_, ?_⟩
-        · exact smul_mem _ _ (mem_span_of_mem (mem_singleton i.1))
-        · refine sum_mem fun j hj => smul_mem _ _ (mem_span_of_mem ?_)
-          simpa [Subtype.val_inj] using hj
-        · refine sum_mem fun j hj => smul_mem _ _ (mem_span_of_mem ?_)
-          simpa [Subtype.val_inj] using hj
-        · rw [add_assoc x, ← succ_nsmul',
-            tsub_add_cancel_of_le
-              ((Int.le_toNat (neg_pos.2 hx₂).le).2 (le_neg.1 (Int.cast_le_neg_one_of_neg hx₂))),
-            add_assoc x,
-            Finset.add_sum_erase _ (fun j => (- hs.floor x j).toNat • j.1) (Finset.mem_univ i),
-            ← add_zero (Finset.sum (Finset.univ.erase i) _),
-            ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 hx₂.le,
-            Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx₁]
-          exact hs.add_floor_neg_toNat_sum_eq x
-      · refine Or.inr ⟨i, Finset.mem_filter.2 ⟨Finset.mem_univ _, hi⟩,
-          ((hs.floor x i).toNat - 1) • i.1, ?_,
-          ∑ j ∈ (Finset.univ.erase i : Finset _), (hs.floor x j).toNat • j.1, ?_,
-          ∑ j ∈ (Finset.univ.erase i : Finset _), (- hs.floor x j).toNat • j.1, ?_, ?_⟩
-        · exact smul_mem _ _ (mem_span_of_mem (mem_singleton i.1))
-        · refine sum_mem fun j hj => smul_mem _ _ (mem_span_of_mem ?_)
-          simpa [Subtype.val_inj] using hj
-        · refine sum_mem fun j hj => smul_mem _ _ (mem_span_of_mem ?_)
-          simpa [Subtype.val_inj] using hj
-        · rw [add_assoc hs.base, ← succ_nsmul',
-            tsub_add_cancel_of_le ((Int.le_toNat hx₂.le).2 (Int.add_one_le_of_lt hx₂)),
-            add_assoc hs.base,
-            Finset.add_sum_erase _ (fun j => (hs.floor x j).toNat • j.1) (Finset.mem_univ i),
-            ← add_zero (Finset.sum (Finset.univ.erase i) _),
-            ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 (neg_neg_iff_pos.2 hx₂).le,
-            Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx₁]
-          exact hs.add_floor_neg_toNat_sum_eq x
+    · refine fun ⟨hx₁, i, h⟩ => h.elim
+        (fun hx₂ => Or.inl ⟨i, ((- hs.floor x i).toNat - 1) • i.1,
+          nsmul_mem (mem_span_of_mem (mem_singleton i.1)) _,
+          ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1,
+          sum_mem fun j hj => nsmul_mem (mem_span_of_mem (by simpa [Subtype.val_inj] using hj)) _,
+          ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1,
+          sum_mem fun j hj => nsmul_mem (mem_span_of_mem (by simpa [Subtype.val_inj] using hj)) _,
+          ?_⟩)
+        fun ⟨hi, hx₂⟩ => Or.inr ⟨i, Finset.mem_filter.2 ⟨Finset.mem_univ _, hi⟩,
+          ((hs.floor x i).toNat - 1) • i.1,
+          nsmul_mem (mem_span_of_mem (mem_singleton i.1)) _,
+          ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1,
+          sum_mem fun j hj => nsmul_mem (mem_span_of_mem (by simpa [Subtype.val_inj] using hj)) _,
+          ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1,
+          sum_mem fun j hj => nsmul_mem (mem_span_of_mem (by simpa [Subtype.val_inj] using hj)) _,
+          ?_⟩
+      · rw [add_assoc x, ← succ_nsmul',
+          tsub_add_cancel_of_le
+            ((Int.le_toNat (neg_pos.2 hx₂).le).2 (le_neg.1 (Int.cast_le_neg_one_of_neg hx₂))),
+          add_assoc x,
+          Finset.add_sum_erase _ (fun j => (- hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          ← add_zero (Finset.sum (Finset.univ.erase i) _),
+          ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 hx₂.le,
+          Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx₁]
+        exact hs.add_floor_neg_toNat_sum_eq x
+      · rw [add_assoc hs.base, ← succ_nsmul',
+          tsub_add_cancel_of_le ((Int.le_toNat hx₂.le).2 (Int.add_one_le_of_lt hx₂)),
+          add_assoc hs.base,
+          Finset.add_sum_erase _ (fun j => (hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          ← add_zero (Finset.sum (Finset.univ.erase i) _),
+          ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 (neg_neg_iff_pos.2 hx₂).le,
+          Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx₁]
+        exact hs.add_floor_neg_toNat_sum_eq x
     · rintro (⟨i, y, hy, z, hz, z', hz', heq⟩ | ⟨i, hi, y, hy, z, hz, z', hz', heq⟩)
       · refine ⟨?_, i, Or.inl ?_⟩
         · apply congr_arg hs.fract at heq
@@ -542,14 +538,14 @@ private theorem setOfFloorNeg_semilinear : hs.setOfFloorNeg.Semilinear := by
         · simp only [mem_span_singleton] at hy
           rcases hy with ⟨n, rfl⟩
           rw [← Finset.coe_erase, mem_span_finset] at hz hz'
-          rcases hz with ⟨h, _, rfl⟩
-          rcases hz' with ⟨h', _, rfl⟩
+          rcases hz with ⟨h, -, rfl⟩
+          rcases hz' with ⟨h', -, rfl⟩
           apply congr_arg hs.floor at heq
           apply congr_fun (a := i) at heq
           rw [add_assoc x, ← succ_nsmul',
             hs.floor_add_sum_of_subset_of_notMem (Finset.erase_subset _ _)
               (Finset.notMem_erase _ _),
-            hs.floor_add_smul_self,
+            hs.floor_add_nsmul_self,
             hs.floor_add_sum_of_subset_of_notMem (Finset.erase_subset _ _)
               (Finset.notMem_erase _ _), hs.floor_base] at heq
           simp only [Nat.cast_add, Nat.cast_one] at heq
@@ -566,8 +562,8 @@ private theorem setOfFloorNeg_semilinear : hs.setOfFloorNeg.Semilinear := by
         · simp only [mem_span_singleton] at hy
           rcases hy with ⟨n, rfl⟩
           rw [← Finset.coe_erase, mem_span_finset] at hz hz'
-          rcases hz with ⟨h, _, rfl⟩
-          rcases hz' with ⟨h', _, rfl⟩
+          rcases hz with ⟨h, -, rfl⟩
+          rcases hz' with ⟨h', -, rfl⟩
           apply congr_arg hs.floor at heq
           apply congr_fun (a := i) at heq
           rw [hs.floor_add_sum_of_subset_of_notMem (Finset.erase_subset _ _)
@@ -575,66 +571,48 @@ private theorem setOfFloorNeg_semilinear : hs.setOfFloorNeg.Semilinear := by
             add_assoc hs.base, ← succ_nsmul',
             hs.floor_add_sum_of_subset_of_notMem (Finset.erase_subset _ _)
               (Finset.notMem_erase _ _),
-            hs.floor_add_smul_self, hs.floor_base] at heq
+            hs.floor_add_nsmul_self, hs.floor_base] at heq
           simp only [Nat.cast_add, Nat.cast_one, zero_add] at heq
           simp [heq]
-  · apply Semilinear.union
-    · refine Semilinear.iUnion fun i => Semilinear.proj' ?_
-      rw [setOf_and]
-      apply Semilinear.inter_nat
-      · refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
-        rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure, ← Finset.coe_singleton]
-        exact Semilinear.closure_finset _
-      · apply Semilinear.proj'
-        rw [setOf_and]
-        apply Semilinear.inter_nat
-        · refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
-          rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure, ← Finset.coe_erase]
-          exact Semilinear.closure_finset _
-        · apply Semilinear.proj'
-          rw [setOf_and]
-          apply Semilinear.inter_nat
-          · refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
-            rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure, ← Finset.coe_erase]
-            exact Semilinear.closure_finset _
-          · convert Semilinear.of_linear_equation' (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
-              (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
-              (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 1
-            ext x
-            simp only [mem_setOf]
-            conv =>
-              rhs
-              rw [← Sum.elim_comp_inl_inr x, ← Sum.elim_comp_inl_inr (x ∘ Sum.inl),
-                ← Sum.elim_comp_inl_inr ((x ∘ Sum.inl) ∘ Sum.inl)]
-            simp [-Sum.elim_comp_inl_inr, add_assoc, add_left_comm _ i.1]
-    · refine Semilinear.biUnion fun i _ => Semilinear.proj' ?_
-      rw [setOf_and]
-      apply Semilinear.inter_nat
-      · refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
-        rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure, ← Finset.coe_singleton]
-        exact Semilinear.closure_finset _
-      · apply Semilinear.proj'
-        rw [setOf_and]
-        apply Semilinear.inter_nat
-        · refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
-          rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure, ← Finset.coe_erase]
-          exact Semilinear.closure_finset _
-        · apply Semilinear.proj'
-          rw [setOf_and]
-          apply Semilinear.inter_nat
-          · refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
-            rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure, ← Finset.coe_erase]
-            exact Semilinear.closure_finset _
-          · convert Semilinear.of_linear_equation' (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
-              (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
-              (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using 1
-            ext x
-            simp only [mem_setOf]
-            conv =>
-              rhs
-              rw [← Sum.elim_comp_inl_inr x, ← Sum.elim_comp_inl_inr (x ∘ Sum.inl),
-                ← Sum.elim_comp_inl_inr ((x ∘ Sum.inl) ∘ Sum.inl)]
-            simp [-Sum.elim_comp_inl_inr, add_assoc]
+  · refine Semilinear.union (Semilinear.iUnion fun i => Semilinear.proj' ?_)
+      (Semilinear.biUnion fun i hi => Semilinear.proj' ?_)
+      <;> (rw [setOf_and]
+           apply Semilinear.inter_nat
+           on_goal 2 =>
+             apply Semilinear.proj'
+             rw [setOf_and]
+             apply Semilinear.inter_nat
+           on_goal 3 =>
+             apply Semilinear.proj'
+             rw [setOf_and]
+             apply Semilinear.inter_nat)
+    on_goal 4 =>
+      convert Semilinear.of_linear_equation' (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 1
+      ext x
+      simp only [mem_setOf]
+      conv =>
+        rhs
+        rw [← Sum.elim_comp_inl_inr x, ← Sum.elim_comp_inl_inr (x ∘ Sum.inl),
+          ← Sum.elim_comp_inl_inr ((x ∘ Sum.inl) ∘ Sum.inl)]
+      simp [-Sum.elim_comp_inl_inr, add_assoc, add_left_comm _ i.1]
+    on_goal 7 =>
+      convert Semilinear.of_linear_equation' (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using 1
+      ext x
+      simp only [mem_setOf]
+      conv =>
+        rhs
+        rw [← Sum.elim_comp_inl_inr x, ← Sum.elim_comp_inl_inr (x ∘ Sum.inl),
+          ← Sum.elim_comp_inl_inr ((x ∘ Sum.inl) ∘ Sum.inl)]
+      simp [-Sum.elim_comp_inl_inr, add_assoc]
+    all_goals
+      refine Semilinear.preimage_nat ?_ (LinearMap.funLeft ℕ ℕ Sum.inr)
+      rw [← coe_toAddSubmonoid, span_nat_eq_addSubmonoidClosure]
+      first | rw [← Finset.coe_erase] | rw [← Finset.coe_singleton]
+      exact Semilinear.closure_finset _
 
 include hs in
 omit [Fintype ι] in
@@ -642,8 +620,8 @@ lemma compl_nat [Finite ι] : sᶜ.Semilinear := by
   haveI := Fintype.ofFinite ι
   convert hs.setOfFractNe_semilinear.union hs.setOfFloorNeg_semilinear using 1
   ext x
-  simp only [mem_compl_iff, hs.mem_iff_fract_eq_floor_nonneg, Subtype.forall, not_and, not_forall,
-    setOfFractNe, ne_eq, setOfFloorNeg, Subtype.exists, mem_union, mem_setOf_eq]
+  simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, Subtype.forall, not_and,
+    not_forall, setOfFractNe, ne_eq, setOfFloorNeg, Subtype.exists, mem_union, mem_setOf_eq]
   grind
 
 end ProperLinear
