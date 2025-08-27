@@ -28,7 +28,7 @@ variable {f : ℕ → ℕ}
 -/
 lemma bonza_apply_dvd_pow (hf : f ∈ bonza) {n : ℕ} (hn : n > 0) : f n ∣ n ^ n := by
   have : (f n : ℤ) ∣ (f n : ℤ) ^ f n :=
-    Dvd.dvd.pow (Int.dvd_refl (f n)) (Nat.ne_zero_of_lt (hf.2 n hn))
+    (f n : ℤ).dvd_refl.pow (Nat.ne_zero_of_lt (hf.2 n hn))
   have : (f n : ℤ) ∣ (n : ℤ) ^ n := (Int.dvd_iff_dvd_of_dvd_sub (hf.1 n n hn hn)).mpr this
   rwa [← Int.natCast_pow n n, ofNat_dvd] at this
 
@@ -47,21 +47,21 @@ lemma bonza_apply_prime_eq_one_or_dvd_self_sub_apply (hf : f ∈ bonza) {p : ℕ
         exact dvd_pow_self p ch
       _ ∣ _ := hf.1 p b (Prime.pos hp) hb
     have : (b : ℤ) ≡ (f b : ℤ) [ZMOD p] := by calc
-      _ ≡ (b : ℤ) ^ p [ZMOD p] := Int.ModEq.symm (ModEq.pow_card_eq_self hp)
-      _ ≡ (f b) ^ f p [ZMOD p] := Int.ModEq.symm ((fun {n a b} ↦ Int.modEq_iff_dvd.mpr) this)
+      _ ≡ (b : ℤ) ^ p [ZMOD p] := (ModEq.pow_prime_eq_self hp b).symm
+      _ ≡ (f b) ^ f p [ZMOD p] := (Int.modEq_iff_dvd.mpr this).symm
       _ ≡ _ [ZMOD p] := by
         rw [eq]
         nth_rw 2 [← pow_one (f b : ℤ)]
         exact Int.ModEq.pow_eq_pow hp (p.sub_one_dvd_pow_sub_one k) (one_le_pow k p (Prime.pos hp))
-          (by norm_num)
+          (by norm_num) (f b)
     rwa [modEq_comm, Int.modEq_iff_dvd] at this
 
 /- For each bonza function $f$, then $f p = 1$ for sufficient big prime $p$
 -/
 theorem bonza_not_x_apply_prime_of_gt_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
-    (∃ N, ∀ p > N, Nat.Prime p → f p = 1) := by
+    (∃ N, ∀ p > N, p.Prime → f p = 1) := by
   obtain ⟨b, hb, neq⟩ : ∃ b, b > 0 ∧ f b ≠ b := Set.not_subset.mp hnf
-  have {p : ℕ} (hp : Nat.Prime p): f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
+  have {p : ℕ} (hp : p.Prime): f p = 1 ∨ (p : ℤ) ∣ (b : ℤ) - (f b : ℤ) :=
     Or.casesOn (bonza_apply_prime_eq_one_or_dvd_self_sub_apply hf hp) (by grind) (by grind)
   use ((b : ℤ) - (f b : ℤ)).natAbs
   intro p _ pp
@@ -70,21 +70,11 @@ theorem bonza_not_x_apply_prime_of_gt_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x,
   · have : p ≤ ((b : ℤ) - (f b : ℤ)).natAbs := natAbs_le_of_dvd_ne_zero ch (by grind)
     linarith
 
-theorem Nat.exists_prime_gt_modEq_neg_one {k : ℕ} (n : ℕ) (hk0 : NeZero k) :
-    ∃ (p : ℕ), Prime p ∧ n < p ∧ p ≡ -1 [ZMOD k] := by
-  have : IsUnit (-1 : ZMod k) := by simp
-  obtain ⟨p, hp⟩ := Nat.forall_exists_prime_gt_and_eq_mod this n
-  refine ⟨p, ⟨hp.2.1, hp.1, ?_⟩⟩
-  rw [modEq_comm, ← ZMod.intCast_eq_intCast_iff, ZMod.intCast_eq_intCast_iff_dvd_sub, Int.sub_neg]
-  have := hp.2.2
-  rw [eq_neg_iff_add_eq_zero, ← cast_add_one p, ZMod.natCast_eq_zero_iff] at this
-  exact ofNat_dvd_left.mpr this
-
 theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
-    ∀ p > 2, Nat.Prime p → f p = 1 := by
-  obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, Nat.Prime p → f p = 1 :=
+    ∀ p > 2, p.Prime → f p = 1 := by
+  obtain ⟨N, hN⟩ : ∃ N, ∀ p > N, p.Prime → f p = 1 :=
     bonza_not_x_apply_prime_of_gt_eq_one hf hnf
-  have apply_dvd_pow_sub {a p : ℕ} (ha : a > 0) (pp : Nat.Prime p) (hp : p > N) :
+  have apply_dvd_pow_sub {a p : ℕ} (ha : a > 0) (pp : p.Prime) (hp : p > N) :
       (f a : ℤ) ∣ p ^ a - 1 := by
     simpa [hN p hp pp, Nat.cast_one, one_pow] using hf.1 a p ha (by omega)
   intro q hq qp
@@ -92,7 +82,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
     (Nat.dvd_prime_pow qp).mp (bonza_apply_dvd_pow hf (zero_lt_of_lt hq))
   by_cases ch : k = 0
   · simpa [ch] using ha2
-  · have {p : ℕ} (pp : Nat.Prime p) (hp : p > N) : (q : ℤ) ∣ p ^ q - 1 := by calc
+  · have {p : ℕ} (pp : p.Prime) (hp : p > N) : (q : ℤ) ∣ p ^ q - 1 := by calc
       _ ∣ (f q : ℤ) := by
         rw [ha2, Int.natCast_pow q k]
         exact dvd_pow_self (q : ℤ) ch
@@ -100,7 +90,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
     obtain ⟨p, hp⟩ := Nat.exists_prime_gt_modEq_neg_one N (NeZero.of_gt hq)
     have : 1 ≡ -1 [ZMOD q] := by calc
       _ ≡ p ^ q [ZMOD q] := by grind [Int.modEq_iff_dvd]
-      _ ≡ p [ZMOD q] := ModEq.pow_card_eq_self qp
+      _ ≡ p [ZMOD q] := ModEq.pow_prime_eq_self qp p
       _ ≡ _ [ZMOD q] := hp.2.2
     rw [modEq_comm, Int.modEq_iff_dvd] at this
     have : (q : ℤ).natAbs ≤ (1 - (-1) : ℤ).natAbs := natAbs_le_of_dvd_ne_zero this (by norm_num)
@@ -110,7 +100,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
 -/
 lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
     ∀ n, n > 0 → ∃ a, f n = 2 ^ a := fun n hn ↦ by
-  have : ∀ {p}, Nat.Prime p → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
+  have : ∀ {p}, p.Prime → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
     by_contra nh
     have dvd : (p : ℤ) ∣ p ^ n - 1 := by calc
       _ ∣ (f n : ℤ) := ofNat_dvd.mpr hp
@@ -148,7 +138,7 @@ lemma padicValNat_lemma {a : ℕ} (ha : a ≥ 4) (dvd : 2 ∣ a) : padicValNat 2
 lemma verify_case_two_dvd {a b : ℕ} {x : ℤ} (hb : 2 ∣ b) (ha : a ≥ 4) (ha2 : 2 ∣ a) (hx : 2 ∣ x) :
     2 ^ (padicValNat 2 a + 2) ∣ (b : ℤ) ^ a - x ^ 2 ^ (padicValNat 2 a + 2) := by
   refine dvd_sub ?_ ?_
-  · exact Int.dvd_trans (pow_dvd_pow 2 (padicValNat_lemma ha ha2))
+  · exact (pow_dvd_pow 2 (padicValNat_lemma ha ha2)).trans
       (pow_dvd_pow_of_dvd (ofNat_dvd_right.mpr hb) a)
   · calc
     _ ∣ (2 : ℤ) ^ 2 ^ (padicValNat 2 a + 2) := by

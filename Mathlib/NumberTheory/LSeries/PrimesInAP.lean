@@ -487,6 +487,13 @@ theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
   obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (setOf_prime_and_eq_mod_infinite ha) n
   exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
 
+theorem exists_prime_gt_modEq_neg_one {k : ℕ} (n : ℕ) (hk0 : NeZero k) :
+    ∃ (p : ℕ), Prime p ∧ n < p ∧ p ≡ -1 [ZMOD k] := by
+  have : IsUnit (-1 : ZMod k) := by simp
+  obtain ⟨p, hp⟩ := Nat.forall_exists_prime_gt_and_eq_mod this n
+  refine ⟨p, ⟨hp.2.1, hp.1, ?_⟩⟩
+  simpa [← ZMod.intCast_eq_intCast_iff] using hp.2.2
+
 end Nat
 
 end DirichletsTheorem
