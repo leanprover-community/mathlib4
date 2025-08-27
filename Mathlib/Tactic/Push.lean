@@ -24,11 +24,11 @@ namespace Mathlib.Tactic.Push
 variable (p q : Prop) {α : Sort*} (s : α → Prop)
 
 -- The more specific `Classical.not_imp` is attempted before the more general `not_forall_eq`.
--- This happens because `not_forall_eq`  is handled manually in `pushNegBuiltin`.
+-- This happens because `not_forall_eq` is handled manually in `pushNegBuiltin`.
 attribute [push] not_not not_or Classical.not_imp not_false_eq_true not_true_eq_false
 attribute [push ←] ne_eq
 
-@[push] theorem not_iff : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q) :=
+@[push] theorem not_iff : ¬ (p ↔ q) ↔ (p ∧ ¬ q) ∨ (¬ p ∧ q) :=
   _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
 @[push] theorem not_exists : (¬ ∃ x, s x) ↔ (∀ x, binderNameHint x s <| ¬ s x) :=
   _root_.not_exists
@@ -43,8 +43,8 @@ attribute [push]
 
 attribute [push ←] Function.id_def
 
--- TODO(Jovan): Decide if we want this lemma, and if so, fix the proofs that break as a result
--- @[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬0 < n ↔ n = 0 :=
+-- TODO: decide if we want this lemma, and if so, fix the proofs that break as a result
+-- @[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬ 0 < n ↔ n = 0 :=
 --   Nat.not_lt.trans Nat.le_zero
 
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
@@ -62,8 +62,8 @@ open Lean Meta Elab.Tactic Parser.Tactic
 /--
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
-- `¬(p ∧ q)` turns into `p → ¬q` or `¬a ∨ ¬q`, depending on the option `push_neg.use_distrib`.
-- `¬∀ a, p` turns into `∃ a, ¬p`, where the binder name `a` is preserved.
+- `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the option `push_neg.use_distrib`.
+- `¬ ∀ a, p` turns into `∃ a, ¬ p`, where the binder name `a` is preserved.
 -/
 private def pushNegBuiltin : Simp.Simproc := fun e => do
   let e := (← instantiateMVars e).cleanupAnnotations
@@ -97,7 +97,7 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
   let thms := pushExt.getState (← getEnv)
   if let some r ← Simp.rewrite? e thms {} "push" false then
     -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
-    -- after rewriting `¬ ¬ ¬p` into `¬p`, we want to rewrite again at `¬p`.
+    -- after rewriting `¬ ¬ ¬ p` into `¬ p`, we may want to rewrite `¬ p` again.
     return Simp.Step.visit r
   if let some ex := e_whnf.not? then
     pushNegBuiltin ex
@@ -192,7 +192,7 @@ def elabHead (term : Term) : TermElabM Head := withRef term do
   | _ =>
     match ← resolveId? term (withInfo := true) <|> elabCDotFunctionAlias? term with
     | some (.const name _) => return .name name
-    | _ => throwError "Could not resolve `push` arugment {term}. \
+    | _ => throwError "Could not resolve `push` argument {term}. \
       Expected either a constant as in `push Not`, \
       or a function with `·` notation as in `push ¬ .`"
 
@@ -207,10 +207,10 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 - `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 - `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
 - `push ¬ ·` is the same as `push_neg` or `push Not`, and it rewrites
-  `¬∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
+  `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
 
 In addition to constants, `push` can be used to push `fun` and `∀` binders:
-- `push fun _ ↦ ·` rewrites  `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
+- `push fun _ ↦ ·` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
 - `push ∀ _, ·` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
 
 The `push` tactic can be extended using the `@[push]` attribute.
@@ -228,7 +228,7 @@ elab (name := push) "push " disch?:(discharger)? head:(colGt term) loc:(location
 /--
 Push negations into the conclusion or a hypothesis.
 For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
-`h : ∃ x, ∀ y, y < x`. Variable names are conserved.
+`h : ∃ x, ∀ y, y < x`. Binder names are preserved.
 
 `push_neg` is a special case of the more general `push` tactic, namely `push Not`.
 The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
@@ -238,13 +238,13 @@ transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ 
 
 Another example: given a hypothesis
 ```lean
-h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε)
+h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε
 ```
 writing `push_neg at h` will turn `h` into
 ```lean
 h : ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|
 ```
-Note that names are conserved by this tactic, contrary to what would happen with `simp`
+Note that binder names are preserved by this tactic, contrary to what would happen with `simp`
 using the relevant lemmas. One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
@@ -257,7 +257,7 @@ It pulls the given constant towards the root of the expression. For example
 - `pull · ∈ ·` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 - `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
 
-A lemma is considdered a `pull` lemma if its reverse direction is a `push` lemma
+A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
 that actually moves the given constant away from the root. For example
 - `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma, but `not_not : ¬ ¬ p ↔ p` is not.
 - `log_mul : log (x * y) = log x + log y` is a `pull` lemma, but `log_abs : log |x| = log x` is not.
