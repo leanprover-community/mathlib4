@@ -156,18 +156,12 @@ open Lean
 attribute [local instance] monadLiftOptionMetaM in
 /-- The result of inverting a norm_num results. -/
 def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
-    (dsα : Q(DivisionSemiring $α)) (czα : Option Q(CharZero $α) := none) :
+    (dsα : Q(DivisionSemiring $α)) (czα? : Option Q(CharZero $α)) :
     MetaM (Result q($a⁻¹)) := do
-  -- allow the caller to pass the CharZero instance as an optimization
-  let i ←
-    if let some czα := czα then
-      pure (some czα)
-    else
-      inferCharZeroOfDivisionSemiring? dsα
   if let .some ⟨qa, na, da, pa⟩ := ra.toNNRat' dsα then
     let qb := qa⁻¹
     if qa > 0 then
-      if let some _i := i then
+      if let some _i := czα? then
         have lit2 : Q(ℕ) := mkRawNatLit (na.natLit! - 1)
         haveI : $na =Q ($lit2).succ := ⟨⟩
         return .isNNRat' dsα qb q($da) q($na) q(isNNRat_inv_pos $pa)
@@ -188,7 +182,7 @@ def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
     let qb := qa⁻¹
     guard <| qa < 0
-    if let some _i := i then
+    if let some _i := czα? then
       have lit : Q(ℕ) := na.appArg!
       haveI : $na =Q Int.negOfNat $lit := ⟨⟩
       have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
@@ -210,6 +204,6 @@ such that `norm_num` successfully recognises `a`. -/
   guard <| ← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
   haveI' : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute
-  ra.inv q($dsα)
+  ra.inv q($dsα) (← inferCharZeroOfDivisionSemiring? dsα)
 
 end Mathlib.Meta.NormNum
