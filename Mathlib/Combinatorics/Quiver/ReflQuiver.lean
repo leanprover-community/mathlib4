@@ -78,7 +78,6 @@ theorem ext' {V W : Type u} [ReflQuiver.{v} V] [ReflQuiver.{v} W]
       F.map f = Quiver.homOfEq (G.map f) (h_obj _).symm (h_obj _).symm) : F = G := by
   obtain ⟨Fpre, Fid⟩ := F
   obtain ⟨Gpre, Gid⟩ := G
-  simp at h_obj h_map
   obtain rfl : Fpre = Gpre := Prefunctor.ext' (V := V) (W := W) h_obj h_map
   rfl
 
