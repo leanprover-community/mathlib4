@@ -62,7 +62,7 @@ structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   retraction : Y ⟶ X
   /-- `f` composed with `retraction` is the identity -/
-  id : f ≫ retraction = 𝟙 X := by aesop_cat
+  id : f ≫ retraction = 𝟙 X := by cat_disch
 
 attribute [reassoc (attr := simp)] SplitMono.id
 
@@ -92,7 +92,7 @@ structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
   /-- `section_` composed with `f` is the identity -/
-  id : section_ ≫ f = 𝟙 Y := by aesop_cat
+  id : section_ ≫ f = 𝟙 Y := by cat_disch
 
 attribute [reassoc (attr := simp)] SplitEpi.id
 

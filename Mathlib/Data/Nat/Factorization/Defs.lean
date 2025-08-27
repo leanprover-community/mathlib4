@@ -5,6 +5,7 @@ Authors: Stuart Presnell
 -/
 import Batteries.Data.List.Count
 import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
@@ -266,8 +267,6 @@ theorem ordProj_dvd (n p : ℕ) : ordProj[p] n ∣ n := by
   rw [hp.primeFactorsList_pow, List.subperm_ext_iff]
   intro q hq
   simp [List.eq_of_mem_replicate hq]
-
-@[deprecated (since := "2024-10-24")] alias ord_proj_dvd := ordProj_dvd
 
 lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
     (∀ p : ℕ, ordProj[p] a ∣ ordProj[p] b) ↔ a ∣ b := by
