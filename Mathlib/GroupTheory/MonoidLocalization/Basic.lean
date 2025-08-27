@@ -114,16 +114,15 @@ end Submonoid
 
 namespace Localization
 
--- Porting note: this does not work so it is done explicitly instead
--- run_cmd to_additive.map_namespace `Localization `AddLocalization
--- run_cmd Elab.Command.liftCoreM <| ToAdditive.insertTranslation `Localization `AddLocalization
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `Localization `AddLocalization
 
 /-- The congruence relation on `M × S`, `M` a `CommMonoid` and `S` a submonoid of `M`, whose
 quotient is the localization of `M` at `S`, defined as the unique congruence relation on
 `M × S` such that for any other congruence relation `s` on `M × S` where for all `y ∈ S`,
 `(1, 1) ∼ (y, y)` under `s`, we have that `(x₁, y₁) ∼ (x₂, y₂)` by `r` implies
 `(x₁, y₁) ∼ (x₂, y₂)` by `s`. -/
-@[to_additive AddLocalization.r
+@[to_additive
 /-- The congruence relation on `M × S`, `M` an `AddCommMonoid` and `S` an `AddSubmonoid` of `M`,
 whose quotient is the localization of `M` at `S`, defined as the unique congruence relation on
 `M × S` such that for any other congruence relation `s` on `M × S` where for all `y ∈ S`,
@@ -134,7 +133,7 @@ def r (S : Submonoid M) : Con (M × S) :=
 
 /-- An alternate form of the congruence relation on `M × S`, `M` a `CommMonoid` and `S` a
 submonoid of `M`, whose quotient is the localization of `M` at `S`. -/
-@[to_additive AddLocalization.r'
+@[to_additive
 /-- An alternate form of the congruence relation on `M × S`, `M` a `CommMonoid` and `S` a
 submonoid of `M`, whose quotient is the localization of `M` at `S`. -/]
 def r' : Con (M × S) := by
@@ -159,7 +158,7 @@ def r' : Con (M × S) := by
 /-- The congruence relation used to localize a `CommMonoid` at a submonoid can be expressed
 equivalently as an infimum (see `Localization.r`) or explicitly
 (see `Localization.r'`). -/
-@[to_additive AddLocalization.r_eq_r'
+@[to_additive
 /-- The additive congruence relation used to localize an `AddCommMonoid` at a submonoid can be
 expressed equivalently as an infimum (see `AddLocalization.r`) or explicitly
 (see `AddLocalization.r'`). -/]
@@ -174,11 +173,11 @@ theorem r_eq_r' : r S = r' S :=
 
 variable {S}
 
-@[to_additive AddLocalization.r_iff_exists]
+@[to_additive]
 theorem r_iff_exists {x y : M × S} : r S x y ↔ ∃ c : S, ↑c * (↑y.2 * x.1) = c * (x.2 * y.1) := by
   simp only [r_eq_r' S, r', Con.rel_mk]
 
-@[to_additive AddLocalization.r_iff_oreEqv_r]
+@[to_additive]
 theorem r_iff_oreEqv_r {x y : M × S} : r S x y ↔ (OreLocalization.oreEqv S M).r x y := by
   simp only [r_iff_exists, Subtype.exists, exists_prop, OreLocalization.oreEqv, smul_eq_mul,
     Submonoid.mk_smul]

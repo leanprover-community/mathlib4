@@ -278,9 +278,6 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
       rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
-      let _ : Setoid ↑(H ⊔ N) :=
-        (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))
-      -- Porting note: Lean couldn't find this automatically
       refine Quotient.eq.mpr ?_
       change leftRel _ _ _
       rw [leftRel_apply]

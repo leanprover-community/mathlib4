@@ -27,6 +27,10 @@ instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : F
   Quotient.fintype (leftRel s)
 
 @[to_additive]
+instance (priority := 100) finite [Finite α] : Finite (α ⧸ s) :=
+  Quotient.finite _
+
+@[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
     Fintype (Quotient (QuotientGroup.rightRel s)) :=
   .ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm

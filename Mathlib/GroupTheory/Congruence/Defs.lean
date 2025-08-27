@@ -195,7 +195,6 @@ def toQuotient : M → c.Quotient :=
 
 variable (c)
 
--- Porting note: was `priority 0`. why?
 /-- Coercion from a type with a multiplication to its quotient by a congruence relation.
 
 See Note [use has_coe_t]. -/
