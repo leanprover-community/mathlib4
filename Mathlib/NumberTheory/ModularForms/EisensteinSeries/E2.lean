@@ -38,6 +38,16 @@ lemma e2Summand_zero_eq_riemannZeta_two (z : ℍ) : e2Summand 0 z = 2 * riemannZ
   simpa [e2Summand, eisSummand] using
     (two_riemannZeta_eq_tsum_int_inv_even_pow (k := 2) (by omega) (by simp)).symm
 
+theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z := by
+  simp only [e2Summand, ← tsum_int_eq_tsum_neg (fun a => eisSummand 2 ![-n, a] z)]
+  congr
+  ext b
+  simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, Int.cast_neg, neg_mul, inv_inj]
+  norm_cast
+  simp only [Int.cast_neg]
+  ring
+
 /-- The Eisenstein series of weight `2` and level `1` defined as the limit as `N` tends to
 infinity of the partial sum of `m` in `[N,N)` of `e2Summand m`. This sum over symmetric
 intervals is handy in showing it is Cauchy. -/
@@ -133,7 +143,7 @@ theorem G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, 2 * (2 * �
     apply this
   simpa using (hf.hasSum).comp tendsto_finset_range
 
-lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z) := by
+lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z) := by
   conv =>
     enter [1]
     ext n
@@ -143,17 +153,14 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N
     -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * Complex.I * z) ^ (n : ℕ))
   simpa using G2_tendsto z
 
-lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2)  - 8 * π ^ 2 *
+lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2) - 8 * π ^ 2 *
     ∑' n : ℕ+, sigma 1 n * cexp (2 * π * Complex.I * z) ^ (n : ℕ) := by
-  rw [G2, Filter.Tendsto.limUnder_eq]
+  rw [G2, Filter.Tendsto.limUnder_eq, sub_eq_add_neg]
   conv =>
     enter [1]
     ext N
     rw [G2_partial_sum_eq z N]
-  rw [sub_eq_add_neg]
-  apply Filter.Tendsto.add
-  · simp
-  · simpa using G2_tendsto z
+  apply Filter.Tendsto.add (by simp) (by simpa using G2_tendsto z)
 
 section transform
 
@@ -171,7 +178,7 @@ lemma sum_Icc_pred {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
     grind
 
 lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass ℤ F] {f : ℤ → F}
-    (hc : CauchySeq fun N : ℕ => ∑ m ∈ Finset.Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
+    (hc : CauchySeq fun N : ℕ ↦ ∑ m ∈ Finset.Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
     Tendsto f atTop (𝓝 0) := by
   simp only [cauchySeq_iff_le_tendsto_0, Metric.tendsto_atTop, gt_iff_lt, ge_iff_le,
     dist_zero_right, Real.norm_eq_abs] at *
@@ -194,25 +201,84 @@ lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass �
     (hN N (by rfl))
 
 lemma G2_Ico (z : ℍ) : G2 z =
-    limUnder (atTop) (fun N : ℕ => ∑ m ∈ Finset.Ico (-N : ℤ) N, e2Summand m z) := by
+    limUnder (atTop) (fun N : ℕ ↦ ∑ m ∈ Finset.Ico (-N : ℤ) N, e2Summand m z) := by
   apply symm
   rw [G2, Filter.Tendsto.limUnder_eq]
   apply Tendsto_of_sub_tendsto_zero _ (CauchySeq.tendsto_limUnder (G2_cauchy z))
-  have h0 := cauchSeq_sum_Icc_tendsto_zero (G2_cauchy z) ?_
+  have h0 := cauchSeq_sum_Icc_tendsto_zero (G2_cauchy z) (by apply e2Summand_even)
   conv =>
     enter [1]
     ext N
     rw [Pi.sub_apply, sum_Icc_eq_sum_Ico_succ _ (by omega), sub_add_cancel_left]
-  · simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
-  · intro m
-    simp only [e2Summand, ← tsum_int_eq_tsum_neg (fun a => eisSummand 2 ![-m, a] z)]
-    congr
-    ext b
-    simp only [eisSummand, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
-      Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, Int.cast_neg, neg_mul, inv_inj]
-    norm_cast
-    simp only [Int.cast_neg]
-    ring
+  simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
+lemma limUnder_mul_const {α : Type*} [Preorder α] [(atTop : Filter α).NeBot] (f : α → ℂ)
+    (hf : CauchySeq f) (c : ℂ) :
+    c * (limUnder atTop f)= limUnder atTop (c • f) := by
+  nth_rw 2 [Filter.Tendsto.limUnder_eq]
+  apply Filter.Tendsto.const_mul
+  refine CauchySeq.tendsto_limUnder hf
+
+theorem extracted_66 (z : ℍ) :
+  (fun _ => ((z : ℂ) ^ 2)⁻¹) *
+    (fun N : ℕ ↦ ∑ x ∈ Finset.Ico (-↑N : ℤ) ↑N, ∑' (n : ℤ), (((x : ℂ) * (-↑z)⁻¹ + ↑n) ^ 2)⁻¹) =
+  fun N : ℕ ↦
+    ∑' (n : ℤ), ∑ x ∈ Finset.Ico (-↑N : ℤ) ↑N, (((n : ℂ) * ↑z + ↑x) ^ 2)⁻¹ := by
+  ext N
+  simp
+  rw [@Finset.mul_sum, Summable.tsum_finsetSum]
+  · congr
+    ext n
+    rw [← tsum_mul_left, ← tsum_int_eq_tsum_neg]
+    congr
+    ext d
+    have hz := ne_zero z
+
+    rw [← mul_inv]
+    congr 1
+    rw [show ((d : ℂ) * ↑z + ↑n) ^ 2 = (-↑d * ↑z - ↑n) ^ 2 by ring, ← mul_pow]
+    congr
+    simp only [UpperHalfPlane.coe] at *
+    rw [mul_add]
+    field_simp
+    ring
+  · intro i hi
+    exact EisensteinSeries.linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
+
+lemma G2_S_act (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) =  limUnder (atTop)
+    fun N : ℕ => ((∑' (n : ℤ), ∑ m ∈ Finset.Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) := by
+  rw [modular_S_smul]
+  simp [G2]
+  rw [ limUnder_mul_const]
+  congr
+  ext n
+  have := congr_fun (extracted_66 z) n
+  simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk] using this
+  · have := G2_Ico (ModularGroup.S • z)
+    rw [modular_S_smul] at this
+
+    sorry
+
+    /- apply CauchySeq_Icc_iff_CauchySeq_Ico
+    intro d
+    rw [int_sum_neg]
+    congr
+    ext n
+    simp only [UpperHalfPlane.coe, Int.cast_neg, neg_mul, inv_inj]
+    ring
+    have := G2_cauchy ⟨-(1 : ℂ) / z, by simpa using pnat_div_upper 1 z⟩
+    simp only [coe_mk_subtype, one_div] at this
+    apply this.congr
+    ext N
+    congr
+    ext m
+    congr
+    ext n
+    congr 1
+    simp only [UpperHalfPlane.coe]
+    have hz := ne_zero z
+    rw [← neg_ne_zero] at hz
+    field_simp
+ -/
 
 end transform
