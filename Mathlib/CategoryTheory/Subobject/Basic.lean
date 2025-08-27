@@ -101,8 +101,6 @@ instance (X : C) : PartialOrder (Subobject X) :=
 
 namespace Subobject
 
--- Porting note: made it a def rather than an abbreviation
--- because Lean would make it too transparent
 /-- Convenience constructor for a subobject. -/
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=
   (toThinSkeleton _).obj (MonoOver.mk' f)
@@ -172,11 +170,6 @@ noncomputable def underlying {X : C} : Subobject X ⥤ C :=
   representative ⋙ MonoOver.forget _ ⋙ Over.forget _
 
 instance : CoeOut (Subobject X) C where coe Y := underlying.obj Y
-
--- Porting note: removed as it has become a syntactic tautology
--- @[simp]
--- theorem underlying_as_coe {X : C} (P : Subobject X) : underlying.obj P = P :=
---   rfl
 
 /-- If we construct a `Subobject Y` from an explicit `f : X ⟶ Y` with `[Mono f]`,
 then pick an arbitrary choice of underlying object `(Subobject.mk f : C)` back in `C`,
@@ -625,11 +618,9 @@ lemma map_obj_injective {X Y : C} (f : X ⟶ Y) [Mono f] :
 def mapIso {A B : C} (e : A ≅ B) : Subobject A ≌ Subobject B :=
   lowerEquivalence (MonoOver.mapIso e)
 
--- Porting note: the note below doesn't seem true anymore
--- @[simps] here generates a lemma `map_iso_to_order_iso_to_equiv_symm_apply`
--- whose left-hand side is not in simp normal form.
 /-- In fact, there's a type level bijection between the subobjects of isomorphic objects,
 which preserves the order. -/
+@[simps]
 def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   toFun := (map e.hom).obj
   invFun := (map e.inv).obj
@@ -646,16 +637,6 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
       apply_fun (map e.hom).obj at h
       · exact h
       · apply Functor.monotone
-
-@[simp]
-theorem mapIsoToOrderIso_apply (e : X ≅ Y) (P : Subobject X) :
-    mapIsoToOrderIso e P = (map e.hom).obj P :=
-  rfl
-
-@[simp]
-theorem mapIsoToOrderIso_symm_apply (e : X ≅ Y) (Q : Subobject Y) :
-    (mapIsoToOrderIso e).symm Q = (map e.inv).obj Q :=
-  rfl
 
 /-- `map f : Subobject X ⥤ Subobject Y` is
 the left adjoint of `pullback f : Subobject Y ⥤ Subobject X`. -/

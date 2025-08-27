@@ -104,17 +104,12 @@ theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f �
     (h₁ : S f) (h₂ : R h₁ g) : bind S R (g ≫ f) :=
   ⟨_, _, _, h₁, h₂, rfl⟩
 
--- Porting note: it seems the definition of `Presieve` must be unfolded in order to define
---   this inductive type, it was thus renamed `singleton'`
 -- Note we can't make this into `HasSingleton` because of the out-param.
 /-- The singleton presieve. -/
-inductive singleton' : ⦃Y : C⦄ → (Y ⟶ X) → Prop
-  | mk : singleton' f
+inductive singleton : Presieve X
+  | mk : singleton f
 
-/-- The singleton presieve. -/
-def singleton : Presieve X := singleton' f
-
-lemma singleton.mk {f : Y ⟶ X} : singleton f f := singleton'.mk
+@[deprecated (since := "2025-08-22")] alias singleton' := singleton
 
 @[simp]
 theorem singleton_eq_iff_domain (f g : Y ⟶ X) : singleton f g ↔ f = g := by
