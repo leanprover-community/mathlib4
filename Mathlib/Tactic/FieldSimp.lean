@@ -77,7 +77,7 @@ def evalPrettyMonomial (iM : Q(GroupWithZero $M)) (r : ℤ) (x : Q($M)) :
 can't be done. If `r = 0`, then `zpow' x r` is equal to `x / x`, so it can be simplified to 1 (hence
 dropped from the beginning of the product) if we can find a proof that `x ≠ 0`. -/
 def tryClearZero
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (iM : Q(GroupWithZero $M))
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (iM : Q(CommGroupWithZero $M))
     (r : ℤ) (x : Q($M)) (i : ℕ) (l : qNF M) :
     MetaM <| Σ l' : qNF M, Q(NF.eval $(qNF.toNF (((r, x), i) :: l)) = NF.eval $(l'.toNF)) := do
   if r != 0 then
@@ -93,7 +93,7 @@ def tryClearZero
 corresponding atom can be proved nonzero, and construct a proof that their associated expressions
 are equal. -/
 def removeZeros
-    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (iM : Q(GroupWithZero $M))
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (iM : Q(CommGroupWithZero $M))
     (l : qNF M) :
     MetaM <| Σ l' : qNF M, Q(NF.eval $(l.toNF) = NF.eval $(l'.toNF)) :=
   match l with
@@ -123,15 +123,15 @@ def split (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
       let r' : ℤ := -r
       return ⟨t_n, ((r', x), i) :: t_d, (q(NF.cons_eq_div_of_eq_div' $r' $x $pf):)⟩
 
-private def evalPrettyAux (iM : Q(GroupWithZero $M)) (l : qNF M) :
+private def evalPrettyAux (iM : Q(CommGroupWithZero $M)) (l : qNF M) :
     MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) := do
   match l with
   | [] => return ⟨q(1), q(rfl)⟩
   | [((r, x), _)] =>
-    let ⟨e, pf⟩ ← evalPrettyMonomial iM r x
+    let ⟨e, pf⟩ ← evalPrettyMonomial q(inferInstance) r x
     return ⟨e, q(by rw [NF.eval_cons]; exact Eq.trans (one_mul _) $pf)⟩
   | ((r, x), k) :: t =>
-    let ⟨e, pf_e⟩ ← evalPrettyMonomial iM r x
+    let ⟨e, pf_e⟩ ← evalPrettyMonomial q(inferInstance) r x
     let ⟨t', pf⟩ ← evalPrettyAux iM t
     have pf'' : Q(NF.eval $(qNF.toNF (((r, x), k) :: t)) = (NF.eval $(qNF.toNF t)) * zpow' $x $r) :=
       (q(NF.eval_cons ($r, $x) $(qNF.toNF t)):)
@@ -267,7 +267,7 @@ partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
       return ⟨L, ((n, e), i) :: l₁', l₂', (q(NF.eval_mul_eval_cons $n $e $pf₁):), q($pf₂), pf₀⟩
     else if n = 0 then
       -- Don't pull anything out, but eliminate the term if it is a cancellable zero
-      let ⟨l₁'', pf''⟩ ← tryClearZero disch q(inferInstance) 0 e i l₁'
+      let ⟨l₁'', pf''⟩ ← tryClearZero disch iM 0 e i l₁'
       let pf'' : Q(NF.eval ((0, $e) ::ᵣ $(l₁'.toNF)) = NF.eval $(l₁''.toNF)) := pf''
       return ⟨L, l₁'', l₂', (q(NF.eval_mul_eval_cons_zero $pf₁ $pf''):), q($pf₂), pf₀⟩
     try
@@ -464,7 +464,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
 def reduceExprQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (iM : Q(CommGroupWithZero $M)) (x : Q($M)) : AtomM (Σ x' : Q($M), Q($x = $x')) := do
   let ⟨y, ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM x
-  let ⟨l', pf'⟩ ← qNF.removeZeros disch q(inferInstance) l
+  let ⟨l', pf'⟩ ← qNF.removeZeros disch iM l
   let ⟨x', pf''⟩ ← qNF.evalPretty iM l'
   let pf_yx : Q($y = $x') := q(Eq.trans (Eq.trans $pf $pf') $pf'')
   return ⟨g.expr x', q(Eq.trans $pf_sgn $(g.congr pf_yx))⟩
