@@ -99,14 +99,12 @@ lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
 protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
   unfold ModEq at *; rw [mul_mod_mul_left, mul_mod_mul_left, h]
 
-@[gcongr]
 protected theorem mul_left (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD n] :=
   (h.mul_left' _).of_dvd (dvd_mul_left _ _)
 
 protected theorem mul_right' (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n * c] := by
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left' c
 
-@[gcongr]
 protected theorem mul_right (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n] := by
   rw [mul_comm a, mul_comm b]; exact h.mul_left c
 
@@ -127,11 +125,9 @@ protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c 
   rw [modEq_iff_dvd, Int.natCast_add, Int.natCast_add, add_sub_add_comm]
   exact Int.dvd_add h₁.dvd h₂.dvd
 
-@[gcongr]
 protected theorem add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
   ModEq.rfl.add h
 
-@[gcongr]
 protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [MOD n] :=
   h.add ModEq.rfl
 

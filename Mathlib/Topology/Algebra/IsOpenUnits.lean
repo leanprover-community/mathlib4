@@ -55,7 +55,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero
 
-/-- If `R` has the `I`-adic topology where `I` is contained in the jacobson radical
+/-- If `R` has the `I`-adic topology where `I` is contained in the Jacobson radical
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
 lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}

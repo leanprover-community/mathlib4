@@ -72,8 +72,6 @@ def AllAgree (x : ∀ n, CofixA F n) :=
 @[simp]
 theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constructor
 
-@[deprecated (since := "2024-12-25")] alias agree_trival := agree_trivial
-
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
     (h₀ : i ≍ j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
   obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
@@ -280,7 +278,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
     apply x.consistent
   revert ch
   rw [h']
-  intros ch h
+  intro ch h
   congr
   ext a
   dsimp only [children]
@@ -288,7 +286,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   rw [cast_eq_iff_heq] at hh
   revert a''
   rw [h]
-  intros _ hh
+  intro _ hh
   cases hh
   rfl
 

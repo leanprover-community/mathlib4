@@ -49,10 +49,10 @@ open NormedSpace Topology -- For `NormedSpace.exp`.
 open scoped ENNReal NNReal
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
-    coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
-    case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
-    not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
-    `spectralRadius a = ∞`. -/
+coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
+case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
+not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
+`spectralRadius a = ∞`. -/
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
@@ -65,14 +65,19 @@ section SpectrumCompact
 
 open Filter
 
-variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormedField 𝕜]
 
 local notation "σ" => spectrum 𝕜
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
 
+section Algebra
+
+variable [Ring A] [Algebra 𝕜 A]
+
 @[simp]
-theorem SpectralRadius.of_subsingleton [Subsingleton A] (a : A) : spectralRadius 𝕜 a = 0 := by
+theorem SpectralRadius.of_subsingleton [Subsingleton A] (a : A) :
+    spectralRadius 𝕜 a = 0 := by
   simp [spectralRadius]
 
 @[simp]
@@ -80,15 +85,36 @@ theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
   nontriviality A
   simp [spectralRadius]
 
-theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜} (h : spectralRadius 𝕜 a < ‖k‖₊) :
-    k ∈ ρ a :=
+@[simp]
+theorem spectralRadius_one [Nontrivial A] :
+    spectralRadius 𝕜 (1 : A) = 1 := by
+  simp [spectralRadius]
+
+theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜}
+    (h : spectralRadius 𝕜 a < ‖k‖₊) : k ∈ ρ a :=
   Classical.not_not.mp fun hn => h.not_ge <| le_iSup₂ (α := ℝ≥0∞) k hn
 
-variable [CompleteSpace A]
+lemma spectralRadius_pow_le (a : A) (n : ℕ) (hn : n ≠ 0) :
+    (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
+  simp only [spectralRadius, ENNReal.iSup₂_pow_of_ne_zero _ hn]
+  refine iSup₂_le fun x hx ↦ ?_
+  apply le_iSup₂_of_le (x ^ n) (spectrum.pow_mem_pow a n hx)
+  simp
+
+lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
+    (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
+  cases n
+  · simp
+  · exact spectralRadius_pow_le a _ (by simp)
+
+end Algebra
+
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
 
+@[simp]
 protected theorem isClosed (a : A) : IsClosed (σ a) :=
   (isOpen_resolventSet a).isClosed_compl
 
@@ -118,9 +144,11 @@ theorem subset_closedBall_norm_mul (a : A) : σ a ⊆ Metric.closedBall (0 : �
 theorem subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closedBall (0 : 𝕜) ‖a‖ :=
   fun k hk => by simp [norm_le_norm_of_mem hk]
 
+@[simp]
 theorem isBounded (a : A) : Bornology.IsBounded (σ a) :=
   Metric.isBounded_closedBall.subset (subset_closedBall_norm_mul a)
 
+@[simp, grind]
 protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
   Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
 
@@ -133,11 +161,20 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
   rw [← preimage_algebraMap ℝ]
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
+@[simp]
+theorem isCompact_nnreal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    (a : A) [CompactSpace (spectrum ℝ a)] : IsCompact (spectrum ℝ≥0 a) := by
+  rw [isCompact_iff_compactSpace]
+  infer_instance
+
+grind_pattern isCompact_nnreal => IsCompact (spectrum ℝ≥0 a)
+
 section QuasispectrumCompact
 
 variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
+@[simp, grind]
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
     ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 B)]
@@ -153,6 +190,16 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
   exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
+
+omit [CompleteSpace B] in
+@[simp]
+theorem _root_.quasispectrum.isCompact_nnreal [NormedSpace ℝ B] [IsScalarTower ℝ B B]
+    [SMulCommClass ℝ B B] (a : B) [CompactSpace (quasispectrum ℝ a)] :
+    IsCompact (quasispectrum ℝ≥0 a) := by
+  rw [isCompact_iff_compactSpace]
+  infer_instance
+
+grind_pattern quasispectrum.isCompact_nnreal => IsCompact (quasispectrum ℝ≥0 a)
 
 end QuasispectrumCompact
 
@@ -517,7 +564,7 @@ instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
 
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
-def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : A →L[𝕜] 𝕜 :=
+def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
   { φ.toLinearMap with cont := map_continuous φ }
 
 @[simp]

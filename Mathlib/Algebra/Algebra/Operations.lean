@@ -307,9 +307,14 @@ protected theorem pow_add {m n : ℕ} (h : n ≠ 0) : M ^ (m + n) = M ^ m * M ^ 
 protected theorem pow_one : M ^ 1 = M := by
   rw [Submodule.pow_succ, Submodule.pow_zero, Submodule.one_mul]
 
-/-- `Submodule.pow_succ` with the right hand side commuted. -/
+/-- `Submodule.pow_succ` with the right-hand side commuted. -/
 protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
   rw [add_comm, M.pow_add h, Submodule.pow_one]
+
+@[simp]
+theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Submodule R A) ^ n = ⊥
+  | 1, _ => Submodule.pow_one _
+  | n + 2, _ => by rw [Submodule.pow_succ, bot_pow n.succ_ne_zero, bot_mul]
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction n with
@@ -361,6 +366,9 @@ theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
 @[simp]
 theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y = x := by
   simp [one_eq_range]
+
+theorem smul_one_eq_span (x : A) : x • (1 : Submodule R A) = span R {x} := by
+  rw [one_eq_span, smul_span, smul_set_singleton, smul_eq_mul, mul_one]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by

@@ -404,14 +404,13 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
         fun n : ℕ => μ (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
       have h : (fun n : ℕ => (1 : ℝ) / (s (ψ n) : ℝ) * (s (ψ n) : ℝ)) =ᶠ[atTop] 1 := by
         apply Filter.EventuallyEq.div_mul_cancel_atTop
-        exact Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop) ha_pos hψ_lim
+        exact (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop).num ha_pos hψ_lim
       simp_rw [← rpow_mul (apply_nonneg μ _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
-    exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq
-      ((((tendsto_smoothingFun_of_map_one_le_one μ hμ1 x).comp
-      ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
-        Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop)
-          ha_pos hψ_lim)).rpow hψ_lim (Or.inr ha_pos)))))
+    exact ((tendsto_smoothingFun_of_map_one_le_one μ hμ1 x |>.comp <|
+      tendsto_natCast_atTop_iff.mp <| (tendsto_natCast_atTop_atTop.comp
+        hψ_mono.tendsto_atTop).num ha_pos hψ_lim).rpow
+          hψ_lim <| .inr ha_pos).congr' h_eq |>.limsup_eq.le
 
 theorem tendsto_smoothingFun_comp (hμ1 : μ 1 ≤ 1) (x : R) {ψ : ℕ → ℕ}
     (hψ_mono : StrictMono ψ) :
@@ -449,7 +448,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
     have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_le_of_lt (_root_.zero_le _)
       (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm)))))
     rw [← div_self h0, ← sub_div, cast_sub (hmu_le _)]
-  have b_in : b ∈ Set.Icc (0 : ℝ) 1 := unitInterval.mem_iff_one_sub_mem.mp a_in
+  have b_in : b ∈ Set.Icc (0 : ℝ) 1 := Set.Icc.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
   have hx : limsup (fun n : ℕ => μ (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingFun μ x ^ a := limsup_mu_le μ hμ1 hmu_le a_in hψ_mono hψ_lim

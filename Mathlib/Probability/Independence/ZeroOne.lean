@@ -73,9 +73,6 @@ theorem condExp_eq_zero_or_one_of_condIndepSet_self
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
   rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_eq_zero_or_one_of_condIndepSet_self := condExp_eq_zero_or_one_of_condIndepSet_self
-
 open Filter
 
 theorem Kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) (t : Set ι) :
@@ -235,9 +232,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
   filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
   rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup := condExp_zero_or_one_of_measurableSet_limsup
-
 end Abstract
 
 section AtTop
@@ -291,10 +285,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atTop_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup_atTop :=
-  condExp_zero_or_one_of_measurableSet_limsup_atTop
 
 end AtTop
 
@@ -353,10 +343,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atBot_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup_atBot :=
-  condExp_zero_or_one_of_measurableSet_limsup_atBot
 
 end AtBot
 

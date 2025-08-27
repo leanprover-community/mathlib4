@@ -85,7 +85,7 @@ commuting with the action of `G`.
 structure Hom (M N : Action V G) where
   /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
-  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
+  comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by cat_disch
 
 namespace Hom
 
@@ -112,6 +112,9 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
+lemma hom_injective {M N : Action V G} : Function.Injective (Hom.hom : (M ⟶ N) → (M.V ⟶ N.V)) :=
+  fun _ _ ↦ Hom.ext
+
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext h
@@ -120,17 +123,17 @@ lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.
 theorem id_hom (M : Action V G) : (𝟙 M : Hom M M).hom = 𝟙 M.V :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem hom_inv_hom {M N : Action V G} (f : M ≅ N) :
     f.hom.hom ≫ f.inv.hom = 𝟙 M.V := by
   rw [← comp_hom, Iso.hom_inv_id, id_hom]
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem inv_hom_hom {M N : Action V G} (f : M ≅ N) :
     f.inv.hom ≫ f.hom.hom = 𝟙 N.V := by
   rw [← comp_hom, Iso.inv_hom_id, id_hom]
@@ -140,7 +143,7 @@ from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
 @[simps]
 def mkIso {M N : Action V G} (f : M.V ≅ N.V)
-    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by aesop_cat) : M ≅ N where
+    (comm : ∀ g : G, M.ρ g ≫ f.hom = f.hom ≫ N.ρ g := by cat_disch) : M ≅ N where
   hom :=
     { hom := f.hom
       comm := comm }

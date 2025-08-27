@@ -24,6 +24,8 @@ We prove the following facts:
   is bounded.
 -/
 
+-- TODO assert_not_exists Cardinal
+
 variable {E : Type*}
 
 open Metric Set

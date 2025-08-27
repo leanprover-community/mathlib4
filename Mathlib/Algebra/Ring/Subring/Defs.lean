@@ -157,9 +157,6 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
--- projection `s.toSubmonoid`
-
 instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h

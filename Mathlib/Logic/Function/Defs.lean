@@ -22,13 +22,6 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-#adaptation_note /-- nightly-2024-03-16
-Because of changes in how equation lemmas are generated,
-`@[eqns]` will only work properly when used immediately after the definition
-(and when none of the default equation lemmas are needed).
-Thus this usage is no longer allowed: -/
--- attribute [eqns flip_def] flip
-
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]

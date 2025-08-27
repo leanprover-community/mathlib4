@@ -47,8 +47,8 @@ theorem mk_as (a : LocallyDiscrete C) : mk a.as = a := rfl
 def locallyDiscreteEquiv : LocallyDiscrete C ≃ C where
   toFun := LocallyDiscrete.as
   invFun := LocallyDiscrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
   locallyDiscreteEquiv.decidableEq
@@ -74,7 +74,7 @@ lemma comp_as {a b c : LocallyDiscrete C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g
 instance (priority := 900) homSmallCategory (a b : LocallyDiscrete C) : SmallCategory (a ⟶ b) :=
   CategoryTheory.discreteCategory (a.as ⟶ b.as)
 
--- Porting note: Manually adding this instance (inferInstance doesn't work)
+/-- This instance is used to see through the synonym `a ⟶ b = Discrete (a.as ⟶ b.as)`. -/
 instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsingleton (f ⟶ g) :=
   instSubsingletonDiscreteHom f g
 

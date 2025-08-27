@@ -83,6 +83,9 @@ theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
 @[simp] lemma slope_neg_fun (f : k → E) : slope (-f) = -slope f := by
   ext x y; exact slope_neg f x y
 
+lemma slope_eq_zero_iff {f : k → E} {a b : k} : slope f a b = 0 ↔ f a = f b := by
+  simp [slope, sub_eq_zero, eq_comm, or_iff_right_of_imp (congr_arg _)]
+
 /-- `slope f a c` is a linear combination of `slope f a b` and `slope f b c`. This version
 explicitly provides coefficients. If `a ≠ c`, then the sum of the coefficients is `1`, so it is
 actually an affine combination, see `lineMap_slope_slope_sub_div_sub`. -/
@@ -118,3 +121,28 @@ theorem lineMap_slope_lineMap_slope_lineMap (f : k → PE) (a b r : k) :
   convert lineMap_slope_slope_sub_div_sub f b (lineMap a b r) a hab.symm using 2
   rw [lineMap_apply_ring, eq_div_iff (sub_ne_zero.2 hab), sub_mul, one_mul, mul_sub, ← sub_sub,
     sub_sub_cancel]
+
+section Order
+
+variable [LinearOrder k] [IsStrictOrderedRing k] [PartialOrder E] [IsOrderedAddMonoid E]
+  [PosSMulMono k E] {f : k → E} {x y : k}
+
+lemma slope_nonneg_iff_of_le (hxy : x ≤ y) : 0 ≤ slope f x y ↔ f x ≤ f y := by
+  by_cases hxeqy : x = y
+  · simp [hxeqy]
+  refine ⟨fun h ↦ ?_, fun h ↦ smul_nonneg (inv_nonneg.2 (sub_nonneg.2 hxy)) ?_⟩
+  · have := smul_nonneg (sub_nonneg.2 hxy) h
+    rwa [slope, ← mul_smul, mul_inv_cancel₀ (mt sub_eq_zero.1 (Ne.symm hxeqy)), one_smul,
+      vsub_eq_sub, sub_nonneg] at this
+  · rwa [vsub_eq_sub, sub_nonneg]
+
+lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x := by
+  simpa using slope_nonneg_iff_of_le (f := -f) hxy
+
+lemma slope_pos_iff_of_le (hxy : x ≤ y) : 0 < slope f x y ↔ f x < f y := by
+  simp_rw [lt_iff_le_and_ne, slope_nonneg_iff_of_le hxy, Ne, eq_comm, slope_eq_zero_iff]
+
+lemma slope_neg_iff_of_le (hxy : x ≤ y) : slope f x y < 0 ↔ f y < f x := by
+  simpa using slope_pos_iff_of_le (f := -f) hxy
+
+end Order

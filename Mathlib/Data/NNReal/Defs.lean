@@ -45,7 +45,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-assert_not_exists Star
+assert_not_exists TrivialStar
 
 open Function
 
@@ -322,8 +322,12 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 /-- Alias for the use of `gcongr` -/
 @[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
-protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
-  max_le_max h (le_refl 0)
+protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
+  max_le_max_right _ h
+
+@[gcongr]
+protected theorem _root_.Real.toNNReal_mono {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : r₁.toNNReal ≤ r₂.toNNReal :=
+  Real.toNNReal_monotone h
 
 @[simp]
 theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
@@ -347,8 +351,8 @@ theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 def gi : GaloisInsertion Real.toNNReal (↑) :=
-  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
-    Real.toNNReal_coe
+  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_monotone Real.le_coe_toNNReal
+    fun _ => Real.toNNReal_coe
 
 -- note that anything involving the (decidability of the) linear order,
 -- will be noncomputable, everything else should not be.
@@ -756,16 +760,6 @@ theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
-@[deprecated div_le_div_of_nonneg_left (since := "2024-11-12")]
-theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
-    a / b ≤ a / c :=
-  div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
-
-@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
-nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
-    a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_iff_of_pos_left a0 b0 c0
-
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
@@ -873,7 +867,7 @@ theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConne
     exact ⟨z, h.out hx hy ⟨toNNReal_le_iff_le_coe.1 hz.1, hz.2⟩, toNNReal_coe⟩
 
 theorem preimage_real_toNNReal (h : t.OrdConnected) : (Real.toNNReal ⁻¹' t).OrdConnected :=
-  h.preimage_mono Real.toNNReal_mono
+  h.preimage_mono Real.toNNReal_monotone
 
 end OrdConnected
 

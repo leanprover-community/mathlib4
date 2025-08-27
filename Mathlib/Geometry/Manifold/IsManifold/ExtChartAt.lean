@@ -25,10 +25,10 @@ in general, but we can still register them as `PartialEquiv`.
 ## Main results
 
 * `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
-`f.extend I ∘ (f'.extend I).symm` is continuous on its source
+  `f.extend I ∘ (f'.extend I).symm` is continuous on its source
 
 * `contDiffOn_ext_coord_change`: for `x x : M`, the coordinate change
-`(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
+  `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
@@ -88,7 +88,7 @@ theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
   rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
-  exact image_subset _ inter_subset_right
+  exact image_mono inter_subset_right
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
@@ -495,10 +495,6 @@ theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
     (hy : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 y := by
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
   exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
-
-@[deprecated (since := "2024-11-27")] alias
-extChartAt_target_union_comp_range_mem_nhds_of_mem :=
-extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by

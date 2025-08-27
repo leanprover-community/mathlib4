@@ -81,7 +81,7 @@ open List in
 * 2: $f n = O(a ^ n)$ for some $-R < a < R$;
 * 3: $f n = O(a ^ n)$ for some $0 < a < R$;
 * 4: there exist `a < R` and `C` such that one of `C` and `R` is positive and $|f n| ≤ Ca^n$
-     for all `n`;
+  for all `n`;
 * 5: there exists `0 < a < R` and a positive `C` such that $|f n| ≤ Ca^n$ for all `n`;
 * 6: there exists `a < R` such that $|f n| ≤ a ^ n$ for sufficiently large `n`;
 * 7: there exists `0 < a < R` such that $|f n| ≤ a ^ n$ for sufficiently large `n`.

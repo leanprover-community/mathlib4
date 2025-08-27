@@ -363,7 +363,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
-      V_id := fun i => by ext; simp
+      V_id := fun i => by simp
       t_id := fun i => by ext; rfl
       t_inter := fun _ _ _ _ hx => hx
       cocycle := fun _ _ _ _ _ => rfl }
@@ -375,8 +375,6 @@ and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
--- Porting note: `elementwise` here produces a bad lemma,
--- where too much has been simplified, despite the `nosimp`.
 @[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion' _ :=
@@ -386,9 +384,7 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   intro x y e
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
-  -- see the porting note on `ι_fromOpenSubsetsGlue`
   rw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
-  change x = y at e
   subst e
   rw [(ofOpenSubsets U).ι_eq_iff_rel]
   exact ⟨⟨⟨x, hx⟩, hy⟩, rfl, rfl⟩
@@ -427,7 +423,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
     rename_i x
     exact ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 
-/-- The gluing of an open cover is homeomomorphic to the original space. -/
+/-- The gluing of an open cover is homeomorphic to the original space. -/
 def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
   Equiv.toHomeomorphOfContinuousOpen

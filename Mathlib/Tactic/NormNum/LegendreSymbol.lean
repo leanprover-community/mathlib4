@@ -15,7 +15,7 @@ the arguments are numerals.
 ## Implementation notes
 
 We use the Law of Quadratic Reciprocity for the Jacobi symbol to compute the value of `J(a | b)`
-efficiently, roughly comparable in effort with the euclidean algorithm for the computation
+efficiently, roughly comparable in effort with the Euclidean algorithm for the computation
 of the gcd of `a` and `b`. More precisely, the computation is done in the following steps.
 
 * Use `J(a | 0) = 1` (an artifact of the definition) and `J(a | 1) = 1` to deal
@@ -150,7 +150,7 @@ theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : 
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
 
-/-- Use quadratic reciproity to reduce to smaller `b`. -/
+/-- Use quadratic reciprocity to reduce to smaller `b`. -/
 theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
   rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_one_mod_four ha (Nat.odd_iff.mpr hb)]

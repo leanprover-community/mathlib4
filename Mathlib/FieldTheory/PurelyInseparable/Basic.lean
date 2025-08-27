@@ -321,7 +321,7 @@ lemma IsPurelyInseparable.finrank_eq_pow
   suffices ∀ (F E : Type v) [Field F] [Field E] [Algebra F E] (q : ℕ) [ExpChar F q]
       [IsPurelyInseparable F E] [FiniteDimensional F E], ∃ n, finrank F E = q ^ n by
     simpa using this (⊥ : IntermediateField F E) E q
-  intros F E _ _ _ q _ _ _
+  intro F E _ _ _ q _ _ _
   generalize hd : finrank F E = d
   induction d using Nat.strongRecOn generalizing F with
   | ind d IH =>
@@ -566,7 +566,7 @@ namespace Field
 as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide. -/
-@[stacks 09HJ "`sepDegree` is defined as the right hand side of 09HJ"]
+@[stacks 09HJ "`sepDegree` is defined as the right-hand side of 09HJ"]
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
   have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _

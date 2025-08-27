@@ -138,8 +138,8 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
 @[simp]
 lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
     n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
-  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
-    List.toFinset_range'_1_1]
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap
+    (f_inj := by simp_all), List.toFinset_range'_1_1]
 
 lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
@@ -203,6 +203,7 @@ theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   · simp only [mem_divisors, Nat.succ_ne_zero m, and_true, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
 
+@[gcongr]
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
   Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
 

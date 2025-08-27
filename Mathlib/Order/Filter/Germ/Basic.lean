@@ -101,12 +101,14 @@ end Product
 
 namespace Germ
 
+/-- The germ corresponding to a global function. -/
 @[coe]
-def ofFun : (α → β) → (Germ l β) := @Quotient.mk' _ (germSetoid _ _)
+def ofFun : (α → β) → Germ l β := @Quotient.mk' _ (germSetoid _ _)
 
 instance : CoeTC (α → β) (Germ l β) :=
   ⟨ofFun⟩
 
+/-- Germ of the constant function `fun x : α ↦ c` at a filter `l`. -/
 @[coe] -- Porting note: removed `HasLiftT` instance
 def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
@@ -409,7 +411,7 @@ instance instMonoid [Monoid M] : Monoid (Germ l M) :=
     npow := fun n a => a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
-@[to_additive "Coercion from functions to germs as an additive monoid homomorphism."]
+@[to_additive /-- Coercion from functions to germs as an additive monoid homomorphism. -/]
 def coeMulHom [Monoid M] (l : Filter α) : (α → M) →* Germ l M where
   toFun := ofFun; map_one' := rfl; map_mul' _ _ := rfl
 

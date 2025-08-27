@@ -293,7 +293,7 @@ section Nat
 /-!
 ### Functions on `ℕ`
 
-(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requsisites.)
+(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requisites.)
 -/
 
 variable [GeneralizedBooleanAlgebra α]

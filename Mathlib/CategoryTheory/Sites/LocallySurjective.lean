@@ -78,7 +78,7 @@ lemma app_localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : T
     f.app _ (localPreimage f s g hg) = G.map g.op s :=
   hg.choose_spec
 
-/-- A morphism of presheaves `f : F ⟶ G` is locally surjective with respect to a grothendieck
+/-- A morphism of presheaves `f : F ⟶ G` is locally surjective with respect to a Grothendieck
 topology if every section of `G` is locally in the image of `f`. -/
 class IsLocallySurjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) : Prop where
   imageSieve_mem {U : C} (s : ToType (G.obj (op U))) : imageSieve f s ∈ J U
@@ -98,18 +98,10 @@ theorem isLocallySurjective_iff_range_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f :
     Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 
-@[deprecated (since := "2025-01-26")]
-alias isLocallySurjective_iff_imagePresheaf_sheafify_eq_top :=
-  isLocallySurjective_iff_range_sheafify_eq_top
-
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem isLocallySurjective_iff_range_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (Subpresheaf.range f).sheafify J = ⊤ := by
   apply isLocallySurjective_iff_range_sheafify_eq_top
-
-@[deprecated (since := "2025-01-26")]
-alias isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' :=
-  isLocallySurjective_iff_range_sheafify_eq_top'
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem isLocallySurjective_iff_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :

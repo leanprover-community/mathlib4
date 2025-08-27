@@ -7,14 +7,13 @@ import Batteries.Tactic.Exact
 import Batteries.Tactic.Init
 import Mathlib.Logic.Basic
 import Mathlib.Util.AtomM
-import Std.Data.TreeMap
 import Qq
 
 /-!
 
 # Intuitionistic tautology (`itauto`) decision procedure
 
-The `itauto` tactic will prove any intuitionistic tautology. It implements the well known
+The `itauto` tactic will prove any intuitionistic tautology. It implements the well-known
 `G4ip` algorithm:
 [Dyckhoff, *Contraction-free sequent calculi for intuitionistic logic*][dyckhoff_1992].
 

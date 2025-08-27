@@ -3,7 +3,6 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Std.Data.HashMap
 import Batteries.Lean.HashMap
 import Mathlib.Tactic.Linarith.Datatypes
 
@@ -88,7 +87,7 @@ def CompSource.flatten : CompSource → Std.HashMap Nat Nat
   | (CompSource.assump n) => (∅ : Std.HashMap Nat Nat).insert n 1
   | (CompSource.add c1 c2) =>
       (CompSource.flatten c1).mergeWith (fun _ b b' => b + b') (CompSource.flatten c2)
-  | (CompSource.scale n c) => (CompSource.flatten c).mapVal (fun _ v => v * n)
+  | (CompSource.scale n c) => (CompSource.flatten c).map (fun _ v => v * n)
 
 /-- Formats a `CompSource` for printing. -/
 def CompSource.toString : CompSource → String

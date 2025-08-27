@@ -264,11 +264,11 @@ theorem ODE_solution_unique_of_mem_Icc_left
   apply ODE_solution_unique_of_mem_Icc_right hv'
     (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
     (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
-  · intros t ht
+  · intro t ht
     convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
-  · intros t ht
+  · intro t ht
     convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
@@ -309,7 +309,7 @@ theorem ODE_solution_unique_of_mem_Ioo
     (hg : ∀ t ∈ Ioo a b, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) :
     EqOn f g (Ioo a b) := by
-  intros t' ht'
+  intro t' ht'
   rcases lt_or_ge t' t₀ with (h | h)
   · have hss : Icc t' t₀ ⊆ Ioo a b :=
       fun _ ht'' ↦ ⟨lt_of_lt_of_le ht'.1 ht''.1, lt_of_le_of_lt ht''.2 ht.2⟩
@@ -334,7 +334,7 @@ theorem ODE_solution_unique_of_mem_Ioo
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
-/-- Local unqueness of ODE solutions. -/
+/-- Local uniqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_eventually
     (hv : ∀ᶠ t in 𝓝 t₀, LipschitzOnWith K (v t) (s t))
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)

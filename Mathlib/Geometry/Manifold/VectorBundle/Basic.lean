@@ -288,8 +288,6 @@ class ContMDiffVectorBundle : Prop where
       ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
         (e.baseSet ∩ e'.baseSet)
 
-@[deprecated (since := "2025-01-09")] alias SmoothVectorBundle := ContMDiffVectorBundle
-
 variable {F E} in
 protected theorem ContMDiffVectorBundle.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
     [h : ContMDiffVectorBundle n F E IB] : ContMDiffVectorBundle m F E IB :=
@@ -566,8 +564,6 @@ class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : WithTop ℕ∞) : Prop
   contMDiffOn_coordChange :
     ∀ i j, ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
 
-@[deprecated (since := "2025-01-09")] alias IsSmooth := IsContMDiff
-
 theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsContMDiff IB n] (i j : ι) :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
   h.1 i j
@@ -647,8 +643,6 @@ class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : WithTop ℕ∞) : Prop whe
           ∀ (b : B) (_ : b ∈ e.baseSet ∩ e'.baseSet) (v : F),
             f b v = (e' ⟨b, e.symm b v⟩).2
 
-@[deprecated (since := "2025-01-09")] alias IsSmooth := IsContMDiff
-
 variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsContMDiff IB n] {e e' : Pretrivialization F (π F E)}
 
 variable (IB n) in
@@ -659,23 +653,16 @@ noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
   Classical.choose (ha.exists_contMDiffCoordChange e he e' he') b
 
-@[deprecated (since := "2025-01-09")] alias smoothCoordChange := contMDiffCoordChange
-
 theorem contMDiffOn_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (a.contMDiffCoordChange n IB he he')
       (e.baseSet ∩ e'.baseSet) :=
   (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).1
 
-@[deprecated (since := "2025-01-09")]
-alias contMDiffOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
-
 theorem contMDiffCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     a.contMDiffCoordChange n IB he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
   (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).2 b hb v
-
-@[deprecated (since := "2025-01-09")] alias smoothCoordChange_apply := contMDiffCoordChange_apply
 
 theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
@@ -684,8 +671,6 @@ theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
   · rw [e.mk_symm hb.1 v, e'.coe_fst', e.proj_symm_apply' hb.1]
     rw [e.proj_symm_apply' hb.1]; exact hb.2
   · exact a.contMDiffCoordChange_apply he he' hb v
-
-@[deprecated (since := "2025-01-09")] alias mk_smoothCoordChange := mk_contMDiffCoordChange
 
 variable (IB) in
 /-- Make a `ContMDiffVectorBundle` from a `ContMDiffVectorPrebundle`. -/
@@ -700,7 +685,5 @@ theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
       rw [a.contMDiffCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
         Trivialization.coordChangeL_apply]
       exacts [rfl, hb] }
-
-@[deprecated (since := "2025-01-09")] alias smoothVectorBundle := contMDiffVectorBundle
 
 end VectorPrebundle

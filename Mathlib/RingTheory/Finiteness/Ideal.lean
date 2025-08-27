@@ -70,9 +70,6 @@ theorem exists_pow_le_of_le_radical_of_fg_radical {R : Type*} [CommSemiring R] {
     I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
     _ ≤ J := hk
 
-@[deprecated (since := "2024-10-24")]
-alias exists_pow_le_of_le_radical_of_fG := exists_pow_le_of_le_radical_of_fg_radical
-
 lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Ideal R}
     (h' : I ≤ J.radical) (h : I.FG) :
     ∃ n : ℕ, I ^ n ≤ J := by
@@ -83,7 +80,7 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
       Set.singleton_subset_iff, SetLike.mem_coe] at hJ
     obtain ⟨n, hn⟩ := hJ
     refine ⟨n, by simpa [Ideal.span_singleton_pow, Ideal.span_le]⟩
-  · intros I₁ I₂ h₁ h₂ hJ
+  · intro I₁ I₂ h₁ h₂ hJ
     obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
     use n₁ + n₂

@@ -103,7 +103,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; simp)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 end
 
@@ -209,8 +209,7 @@ end EqToHom
 @[simp]
 theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
-  · intro _ _ _
-    simp
+  · simp
   · intro _
     rfl
 
@@ -286,7 +285,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro _ i
     exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
-    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
+    exact ⟨fun i => inv (f i), by cat_disch, by cat_disch⟩
 
 variable (C)
 

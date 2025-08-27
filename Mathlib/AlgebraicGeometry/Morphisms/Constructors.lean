@@ -178,7 +178,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
   apply IsLocalAtTarget.mk'
   · exact fun {X Y} f U => P.universally.of_isPullback
       (isPullback_morphismRestrict f U).flip
-  · intros X Y f ι U hU H X' Y' i₁ i₂ f' h
+  · intro X Y f ι U hU H X' Y' i₁ i₂ f' h
     apply hP₂ _ (fun i ↦ i₂ ⁻¹ᵁ U i)
     · simp only [IsOpenCover, ← top_le_iff] at hU ⊢
       rintro x -

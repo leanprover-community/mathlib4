@@ -67,7 +67,7 @@ lemma self_mem_orthRadius (s : Sphere P) (p : P) : p ∈ s.orthRadius p :=
 
 lemma mem_orthRadius_iff_inner_left {s : Sphere P} {p x : P} :
     x ∈ s.orthRadius p ↔ ⟪x -ᵥ p, p -ᵥ s.center⟫ = 0 := by
-  rw [orthRadius, mem_mk'_iff_vsub_mem, Submodule.mem_orthogonal_singleton_iff_inner_left]
+  rw [orthRadius, mem_mk', Submodule.mem_orthogonal_singleton_iff_inner_left]
 
 lemma mem_orthRadius_iff_inner_right {s : Sphere P} {p x : P} :
     x ∈ s.orthRadius p ↔ ⟪p -ᵥ s.center, x -ᵥ p⟫ = 0 := by

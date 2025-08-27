@@ -453,7 +453,7 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     intro i
     simp only [c']
     split_ifs with h; · exact h
-    by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
+    by_cases hi : ‖a.c i‖ = 0 <;> simp [norm_smul, hi]
   refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j

@@ -55,6 +55,18 @@ to learn about it as well!
   * Provides comprehensive status reporting and next steps guidance
   Run with `python3 scripts/migrate_to_fork.py` (interactive) or `python3 scripts/migrate_to_fork.py -y` (auto-accept).
   Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
+- `githelper.py`
+  The subcommand `githelper.py fix` helps contributors fix their git repository setup
+  by step-by-step converting it from its current state to a well defined target state.
+  The target state mostly matches the state after of a freshly cloned fork (`gh repo clone <fork>`)
+  and looks like this:
+
+  - The remote `upstream` points to `leanprover-community/mathlib4`
+  - The remote `origin` points to the contributor's own fork
+  - The `gh` default repo points to `leanprover-community/mathlib4`
+  - `master`s remote is `upstream` but its pushRemote is `origin`
+
+  Other subcommands to automate git-related actions may be added in the future.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
@@ -65,6 +77,8 @@ to learn about it as well!
   and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
 
 **CI workflow**
+- `lake-build-with-retry.sh`
+  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
@@ -80,6 +94,9 @@ to learn about it as well!
   `*-pr-testing-NNNN` branch.
 - `update_nolints_CI.sh`
   Update the `nolints.json` file to remove unneeded entries. Automatically run once a week.
+- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
+  This script downloads a .json file with proposed assignments and makes the
+  corresponding github API calls.
 - `bench_summary.lean`
   Convert data retrieved from the speed center into a shorter, more accessible format,
   and post a comment with this summary on github.

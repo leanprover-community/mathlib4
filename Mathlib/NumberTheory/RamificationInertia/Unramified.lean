@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.RingTheory.Unramified.LocalRing
-import Mathlib.RingTheory.LocalRing.ResidueField.Algebraic
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 
 /-!
 
@@ -15,8 +15,8 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 
 ## Main result
 - `Algebra.isUnramifiedAt_iff_of_isDedekindDomain`:
-  Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S ⊇ R` be a dedekind domain
-  that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramifed iff `e(p) = 1`.
+  Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S ⊇ R` be a Dedekind domain
+  that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`.
 
 -/
 
@@ -79,8 +79,9 @@ lemma Algebra.IsUnramifiedAt.of_liesOver
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
-/-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a dedekind domain
-that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramifed iff `e(p) = 1`. -/
+set_option synthInstance.maxHeartbeats 25000 in -- infer_instance timeout
+/-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
+that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
     {p : Ideal S} [p.IsPrime] [IsDedekindDomain S] [EssFiniteType R S] [IsDomain R]
     [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S]

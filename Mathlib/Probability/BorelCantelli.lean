@@ -50,9 +50,6 @@ theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [Comp
   exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)
     (comap_measurable <| f j).stronglyMeasurable (hfi.indep_comap_natural_of_lt hf hij)
 
-@[deprecated (since := "2025-01-21")]
-alias iIndepFun.condexp_natural_ae_eq_of_lt := iIndepFun.condExp_natural_ae_eq_of_lt
-
 theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, MeasurableSet (s n))
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
@@ -60,10 +57,6 @@ theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, Measurab
   rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
-
-@[deprecated (since := "2025-01-21")]
-alias iIndepSet.condexp_indicator_filtrationOfSet_ae_eq :=
-  iIndepSet.condExp_indicator_filtrationOfSet_ae_eq
 
 open Filter
 

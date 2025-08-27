@@ -210,7 +210,7 @@ noncomputable def addSubgroupOfClosure (h : A = .closure (Set.range b)) :
     Basis ι ℤ A.toIntSubmodule :=
   (b.restrictScalars ℤ).map <|
     LinearEquiv.ofEq _ _
-      (by rw [h, ← Submodule.span_int_eq_addSubgroup_closure, toAddSubgroup_toIntSubmodule])
+      (by rw [h, ← Submodule.span_int_eq_addSubgroupClosure, toAddSubgroup_toIntSubmodule])
 
 @[simp]
 theorem addSubgroupOfClosure_apply (h : A = .closure (Set.range b)) (i : ι) :

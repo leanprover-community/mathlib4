@@ -41,6 +41,17 @@ def inferOrderedRing (α : Q(Type u)) : MetaM <|
     return ⟨ring, partialOrder, isOrderedRing⟩
   go <|> throwError "not an ordered ring"
 
+/-- Helper function to synthesize typed `Semifield α` `LinearOrder α` `IsStrictOrderedRing α`
+expressions. -/
+def inferLinearOrderedSemifield (α : Q(Type u)) : MetaM <|
+    (_ : Q(Semifield $α)) × (_ : Q(LinearOrder $α)) × Q(IsStrictOrderedRing $α) :=
+  let go := do
+    let semifield ← synthInstanceQ q(Semifield $α)
+    let linearOrder ← synthInstanceQ q(LinearOrder $α)
+    let isStrictOrderedRing ← synthInstanceQ q(IsStrictOrderedRing $α)
+    return ⟨semifield, linearOrder, isStrictOrderedRing⟩
+  go <|> throwError "not a linear ordered semifield"
+
 /-- Helper function to synthesize typed `Field α` `LinearOrder α` `IsStrictOrderedRing α`
 expressions. -/
 def inferLinearOrderedField (α : Q(Type u)) : MetaM <|
@@ -62,6 +73,41 @@ theorem isNat_lt_false [Semiring α] [PartialOrder α] [IsOrderedRing α] {a b :
     (ha : IsNat a a') (hb : IsNat b b') (h : Nat.ble b' a' = true) : ¬a < b :=
   not_lt_of_ge (isNat_le_true hb ha h)
 
+theorem isNNRat_le_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
+    {a b : α} → {na nb : ℕ} → {da db : ℕ} →
+    IsNNRat a na da → IsNNRat b nb db →
+    decide (Nat.mul na (db) ≤ Nat.mul nb (da)) → a ≤ b
+  | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
+    have h := (Nat.cast_le (α := α)).mpr <| of_decide_eq_true h
+    have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da
+    have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
+    have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
+    rw [← mul_assoc, Nat.commute_cast] at h
+    simp only [Nat.mul_eq, Nat.cast_mul, mul_invOf_cancel_right'] at h
+    rwa [Nat.commute_cast] at h
+
+theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
+    {a b : α} → {na nb : ℕ} → {da db : ℕ} →
+    IsNNRat a na da → IsNNRat b nb db → decide (na * db < nb * da) → a < b
+  | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
+    have h := (Nat.cast_lt (α := α)).mpr <| of_decide_eq_true h
+    have ha : 0 < ⅟(da : α) := pos_invOf_of_invertible_cast da
+    have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
+    have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
+    rw [← mul_assoc, Nat.commute_cast] at h
+    simp? at h says simp only [Nat.cast_mul, mul_invOf_cancel_right'] at h
+    rwa [Nat.commute_cast] at h
+
+theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+    {a b : α} {na nb : ℕ} {da db : ℕ}
+    (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
+  not_le_of_gt (isNNRat_lt_true hb ha h)
+
+theorem isNNRat_lt_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b : α} {na nb : ℕ} {da db : ℕ}
+    (ha : IsNNRat a na da) (hb : IsNNRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
+  not_lt_of_ge (isNNRat_le_true hb ha h)
+
 theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db →
@@ -72,7 +118,9 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp at h; rwa [Int.commute_cast] at h
+    simp only [Int.ofNat_eq_coe, Int.mul_def, Int.cast_mul, Int.cast_natCast,
+      mul_invOf_cancel_right'] at h
+    rwa [Int.commute_cast] at h
 
 theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α] :
     {a b : α} → {na nb : ℤ} → {da db : ℕ} →
@@ -174,7 +222,8 @@ where
       return .isFalse q(isRat_le_false $pa $pb $r)
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm
+  | .isNNRat _ .., _ | _, .isNNRat _ .. => ratArm
+  | .isNegNNRat _ .., _ | _, .isNegNNRat _ .. => ratArm
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let ⟨_, _, _i⟩ ← inferOrderedSemiring α
@@ -224,8 +273,29 @@ where
     else
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_lt_false $pa $pb $r)
+  let rec nnratArm : MetaM (Result e) := do
+    -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
+    /-
+       NOTE: after the ordered algebra refactor, this is not true anymore,
+       so there may be a better typeclass
+    -/
+    let ⟨_, _, _⟩ ← inferLinearOrderedSemifield α
+    assumeInstancesCommute
+    haveI' : $e =Q ($a < $b) := ⟨⟩
+    let ⟨qa, na, da, pa⟩ ← ra.toNNRat' q(Semifield.toDivisionSemiring)
+    let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' q(Semifield.toDivisionSemiring)
+    if qa < qb then
+      let r : Q(decide ($na * $db < $nb * $da) = true) := (q(Eq.refl true) : Expr)
+      return .isTrue q(isNNRat_lt_true $pa $pb $r)
+    else
+      let r : Q(decide ($nb * $da ≤ $na * $db) = true) := (q(Eq.refl true) : Expr)
+      return .isFalse q(isNNRat_lt_false $pa $pb $r)
   let rec ratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
+    /-
+       NOTE: after the ordered algebra refactor, this is not true anymore,
+       so there may be a better typeclass
+    -/
     let ⟨_, _, _i⟩ ← inferLinearOrderedField α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
@@ -239,7 +309,10 @@ where
       return .isFalse q(isRat_lt_false $pa $pb $r)
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm
+  | .isNegNNRat _ .., _ | _, .isNegNNRat _ .. => ratArm
+    -- mixing positive rationals and negative naturals means we need to use the full rat handler
+  | .isNNRat _ .., .isNegNat _ .. | .isNegNat _ .., .isNNRat _ .. => ratArm
+  | .isNNRat _ .., _ | _, .isNNRat _ .. => nnratArm
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let ⟨_, _, _i⟩ ← inferOrderedSemiring α

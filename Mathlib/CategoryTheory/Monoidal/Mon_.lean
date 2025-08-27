@@ -33,13 +33,13 @@ class Mon_Class (X : C) where
   one : 𝟙_ C ⟶ X
   /-- The multiplication morphism of a monoid object. -/
   mul : X ⊗ X ⟶ X
-  one_mul (X) : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
-  mul_one (X) : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
+  one_mul (X) : one ▷ X ≫ mul = (λ_ X).hom := by cat_disch
+  mul_one (X) : X ◁ one ≫ mul = (ρ_ X).hom := by cat_disch
   -- Obviously there is some flexibility stating this axiom.
   -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
   -- and chooses to place the associator on the right-hand side.
   -- The heuristic is that unitors and associators "don't have much weight".
-  mul_assoc (X) : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
+  mul_assoc (X) : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by cat_disch
 
 namespace Mon_Class
 
@@ -72,8 +72,8 @@ variable {M N O : C} [Mon_Class M] [Mon_Class N] [Mon_Class O]
 
 /-- The property that a morphism between monoid objects is a monoid morphism. -/
 class IsMon_Hom (f : M ⟶ N) : Prop where
-  one_hom (f) : η ≫ f = η := by aesop_cat
-  mul_hom (f) : μ ≫ f = (f ⊗ₘ f) ≫ μ := by aesop_cat
+  one_hom (f) : η ≫ f = η := by cat_disch
+  mul_hom (f) : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch
 
 attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
 
@@ -142,8 +142,8 @@ attribute [instance] Hom.is_mon_hom
 
 /-- Construct a morphism `M ⟶ N` of `Mon_ C` from a map `f : M ⟶ N` and a `IsMon_Hom f` instance. -/
 abbrev Hom.mk' {M N : Mon_ C} (f : M.X ⟶ N.X)
-    (one_f : η ≫ f = η := by aesop_cat)
-    (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by aesop_cat) : Hom M N :=
+    (one_f : η ≫ f = η := by cat_disch)
+    (mul_f : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch) : Hom M N :=
   have : IsMon_Hom f := ⟨one_f, mul_f⟩
   .mk f
 
@@ -201,7 +201,7 @@ instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.h
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
 instance : (forget C).ReflectsIsomorphisms where
-  reflects f e := ⟨⟨.mk' (inv f.hom), by aesop_cat⟩⟩
+  reflects f e := ⟨⟨.mk' (inv f.hom), by cat_disch⟩⟩
 
 instance {M N : Mon_ C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
   inferInstanceAs <| IsIso <| (forget C).map f
@@ -216,8 +216,8 @@ def mkIso' {M N : C} [Mon_Class M] [Mon_Class N] (e : M ≅ N) [IsMon_Hom e.hom]
 /-- Construct an isomorphism of monoid objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
 @[simps!]
-abbrev mkIso {M N : Mon_ C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by aesop_cat)
-    (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by aesop_cat) : M ≅ N :=
+abbrev mkIso {M N : Mon_ C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by cat_disch)
+    (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by cat_disch) : M ≅ N :=
   have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
@@ -362,7 +362,7 @@ end Monoidal
 
 variable (C D) in
 /-- `mapMon` is functorial in the lax monoidal functor. -/
-@[simps] -- Porting note: added this, not sure how it worked previously without.
+@[simps]
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj F := F.mapMon
   map α := { app A := .mk' (α.hom.app A.X) }
@@ -836,7 +836,7 @@ variable [BraidedCategory.{v₁} C]
 
 /-- Predicate for a monoid object to be commutative. -/
 class IsCommMon (X : C) [Mon_Class X] where
-  mul_comm (X) : (β_ X X).hom ≫ μ = μ := by aesop_cat
+  mul_comm (X) : (β_ X X).hom ≫ μ = μ := by cat_disch
 
 open scoped Mon_Class
 

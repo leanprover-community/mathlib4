@@ -16,9 +16,9 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 ## Main Definitions
 
 * `IsUltrametricDist.algNormOfAlgEquiv` : given `σ : L ≃ₐ[K] L`, the function `L → ℝ` sending
-`x : L` to `‖ σ x ‖` is a `K`-algebra norm on `L`.
+  `x : L` to `‖ σ x ‖` is a `K`-algebra norm on `L`.
 * `IsUltrametricDist.invariantExtension` : the function `L → ℝ` sending `x : L` to the maximum of
-`‖ σ x ‖` over all `σ : L ≃ₐ[K] L` is a `K`-algebra norm on `L`.
+  `‖ σ x ‖` over all `σ : L ≃ₐ[K] L` is a `K`-algebra norm on `L`.
 
 ## Main Results
 * `IsUltrametricDist.isPowMul_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is power-multiplicative.
@@ -139,7 +139,6 @@ theorem isNonarchimedean_invariantExtension :
 /-- The algebra norm `invariantExtension` extends the norm on `K`. -/
 theorem invariantExtension_extends (x : K) :
     (invariantExtension K L) (algebraMap K L x) = ‖x‖ := by
-  rw [invariantExtension, ← AlgebraNorm.toFun_eq_coe]
   simp [algNormOfAlgEquiv_extends _ x, ciSup_const]
 
 end invariantExtension

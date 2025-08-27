@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
@@ -28,7 +28,7 @@ with a formula).
 
 ## Main results
 
-* `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
+* `normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map` : The Kummer-Dedekind
   theorem.
 * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
   `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
@@ -60,7 +60,7 @@ open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
 
 /-- Let `S / R` be a ring extension and `x : S`, then the conductor of `R<x>` is the
-    biggest ideal of `S` contained in `R<x>`. -/
+biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
   zero_mem' b := by simp only [zero_mul, zero_mem]
@@ -188,7 +188,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     apply Ideal.le_comap_map
 
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
-    when `I` and `(conductor R x) ∩ R` are coprime. -/
+when `I` and `(conductor R x) ∩ R` are coprime. -/
 noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) :
     R<x> ⧸ I.map (algebraMap R R<x>) ≃+* S ⧸ I.map (algebraMap R S) := by
@@ -268,8 +268,8 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
 
 open Classical in
 /-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
-    factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
-    over `R`, taken `mod I`. -/
+factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
+over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
@@ -285,7 +285,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
 
 open Classical in
 /-- The second half of the **Kummer-Dedekind Theorem**, stating that the
-    bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
+bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
     (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) {J : Ideal S}

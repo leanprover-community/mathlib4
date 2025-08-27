@@ -22,7 +22,7 @@ comonadicity theorem:
 * `F` creates `F`-split coequalizers, see
   `CategoryTheory.Monad.comonadicOfCreatesFSplitEqualizers`
   (The converse of this is also shown, see
-   `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
+  `CategoryTheory.Monad.createsFSplitEqualizersOfComonadic`)
 * `C` has and `F` preserves `F`-split equalizers, and `F` reflects isomorphisms, see
   `CategoryTheory.Monad.comonadicOfHasPreservesFSplitEqualizersOfReflectsIsomorphisms`
 * `C` has and `F` preserves coreflexive equalizers, and `F` reflects isomorphisms, see

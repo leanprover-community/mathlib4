@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.Asymptotics
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
@@ -130,7 +130,7 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   rw [Metric.eventually_nhds_iff] at H
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
-  intros x _ y hy hxy
+  intro x _ y hy hxy
   have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
@@ -233,9 +233,6 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
 
 theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_exp_atBot_nhdsWithin := tendsto_exp_atBot_nhdsGT
 
 @[simp]
 theorem isBoundedUnder_ge_exp_comp (l : Filter α) (f : α → ℝ) :
@@ -345,9 +342,6 @@ theorem map_exp_atBot : map exp atBot = 𝓝[>] 0 := by
 @[simp]
 theorem comap_exp_nhdsGT_zero : comap exp (𝓝[>] 0) = atBot := by
   rw [← map_exp_atBot, comap_map exp_injective]
-
-@[deprecated (since := "2024-12-22")]
-alias comap_exp_nhdsWithin_Ioi_zero := comap_exp_nhdsGT_zero
 
 theorem tendsto_comp_exp_atBot {f : ℝ → α} :
     Tendsto (fun x => f (exp x)) atBot l ↔ Tendsto f (𝓝[>] 0) l := by
@@ -470,9 +464,6 @@ theorem comap_exp_nhdsNE : comap exp (𝓝[≠] 0) = comap re atBot := by
   have : (exp ⁻¹' {0})ᶜ = Set.univ := eq_univ_of_forall exp_ne_zero
   simp [nhdsWithin, comap_exp_nhds_zero, this]
 
-@[deprecated (since := "2024-12-22")]
-alias comap_exp_nhdsWithin_zero := comap_exp_nhdsNE
-
 theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto (fun x => re (f x)) l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
@@ -488,9 +479,6 @@ theorem tendsto_exp_comap_re_atBot : Tendsto exp (comap re atBot) (𝓝 0) :=
 
 theorem tendsto_exp_comap_re_atBot_nhdsNE : Tendsto exp (comap re atBot) (𝓝[≠] 0) :=
   comap_exp_nhdsNE ▸ tendsto_comap
-
-@[deprecated (since := "2024-12-22")]
-alias tendsto_exp_comap_re_atBot_nhdsWithin := tendsto_exp_comap_re_atBot_nhdsNE
 
 end Complex
 

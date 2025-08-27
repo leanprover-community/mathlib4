@@ -236,7 +236,7 @@ lemma mk₀_surjective (F : ComposableArrows C 0) : ∃ (X : C), F = mk₀ X :=
 @[simps!]
 def homMk₁ {F G : ComposableArrows C 1}
     (left : F.obj' 0 ⟶ G.obj' 0) (right : F.obj' 1 ⟶ G.obj' 1)
-    (w : F.map' 0 1 ≫ right = left ≫ G.map' 0 1 := by aesop_cat) :
+    (w : F.map' 0 1 ≫ right = left ≫ G.map' 0 1 := by cat_disch) :
     F ⟶ G :=
   homMk (fun i => match i with
       | ⟨0, _⟩ => left
@@ -258,7 +258,7 @@ lemma hom_ext₁ {F G : ComposableArrows C 1} {φ φ' : F ⟶ G}
 @[simps!]
 def isoMk₁ {F G : ComposableArrows C 1}
     (left : F.obj' 0 ≅ G.obj' 0) (right : F.obj' 1 ≅ G.obj' 1)
-    (w : F.map' 0 1 ≫ right.hom = left.hom ≫ G.map' 0 1 := by aesop_cat) :
+    (w : F.map' 0 1 ≫ right.hom = left.hom ≫ G.map' 0 1 := by cat_disch) :
     F ≅ G where
   hom := homMk₁ left.hom right.hom w
   inv := homMk₁ left.inv right.inv (by
@@ -844,8 +844,7 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
       | 0 => Iso.refl _
       | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
-    · simp only [← Fin.mk_zero]
-      simp
+    · simp
     · exact h i (by valid)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`

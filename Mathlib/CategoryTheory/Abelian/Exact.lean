@@ -124,7 +124,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
     (fun u hu => cokernel.desc (kernel.ι S.g) u
       (by rw [← cokernel.π_desc S.f u hu, ← Category.assoc, h, zero_comp]))
     (by simp) ?_
-  intros _ _ _ _ hm
+  intro _ _ _ _ hm
   ext
   rw [hm, cokernel.π_desc]
 

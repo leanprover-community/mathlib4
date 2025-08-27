@@ -37,11 +37,13 @@ def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   left_inv x := (Option.map_map _ _ _).trans <| e.symm_comp_self.symm ▸ congr_fun Option.map_id x
   right_inv x := (Option.map_map _ _ _).trans <| e.self_comp_symm.symm ▸ congr_fun Option.map_id x
 
+attribute [grind =] optionCongr_apply
+
 @[simp]
 theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=
   ext <| congr_fun Option.map_id
 
-@[simp]
+@[simp, grind =]
 theorem optionCongr_symm (e : α ≃ β) : optionCongr e.symm = (optionCongr e).symm :=
   rfl
 
@@ -65,7 +67,7 @@ section RemoveNone
 variable (e : Option α ≃ Option β)
 
 /-- If we have a value on one side of an `Equiv` of `Option`
-    we also have a value on the other side of the equivalence
+we also have a value on the other side of the equivalence
 -/
 def removeNone_aux (x : α) : β :=
   if h : (e (some x)).isSome then Option.get _ h

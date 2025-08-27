@@ -57,7 +57,7 @@ Below we define `c.next` and `c.prev` which provide these related elements.
 @[ext]
 structure ComplexShape (ι : Type*) where
   /-- Nonzero differentials `X i ⟶ X j` shall be allowed
-    on homological complexes when `Rel i j` holds. -/
+  on homological complexes when `Rel i j` holds. -/
   Rel : ι → ι → Prop
   /-- There is at most one nonzero differential from `X i`. -/
   next_eq : ∀ {i j j'}, Rel i j → Rel i j' → j = j'

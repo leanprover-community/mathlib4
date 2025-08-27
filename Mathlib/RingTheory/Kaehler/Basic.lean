@@ -11,14 +11,14 @@ import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
-# The module of kaehler differentials
+# The module of Kähler differentials
 
 ## Main results
 
-- `KaehlerDifferential`: The module of kaehler differentials. For an `R`-algebra `S`, we provide
+- `KaehlerDifferential`: The module of Kähler differentials. For an `R`-algebra `S`, we provide
   the notation `Ω[S⁄R]` for `KaehlerDifferential R S`.
   Note that the slash is `\textfractionsolidus`.
-- `KaehlerDifferential.D`: The derivation into the module of kaehler differentials.
+- `KaehlerDifferential.D`: The derivation into the module of Kähler differentials.
 - `KaehlerDifferential.span_range_derivation`: The image of `D` spans `Ω[S⁄R]` as an `S`-module.
 - `KaehlerDifferential.linearMapEquivDerivation`:
   The isomorphism `Hom_R(Ω[S⁄R], M) ≃ₗ[S] Der_R(S, M)`.
@@ -46,7 +46,7 @@ import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 suppress_compilation
 
-section KaehlerDifferential
+noncomputable section KaehlerDifferential
 
 open scoped TensorProduct
 open Algebra Finsupp
@@ -147,25 +147,15 @@ Note that the slash is `\textfractionsolidus`.
 -/
 def KaehlerDifferential : Type v :=
   (KaehlerDifferential.ideal R S).Cotangent
-
-instance : AddCommGroup (KaehlerDifferential R S) := inferInstanceAs <|
-  AddCommGroup (KaehlerDifferential.ideal R S).Cotangent
-
-instance KaehlerDifferential.module : Module (S ⊗[R] S) (KaehlerDifferential R S) :=
-  Ideal.Cotangent.moduleOfTower _
+deriving AddCommGroup, Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S), Inhabited
 
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
-
-instance : Nonempty Ω[S⁄R] := ⟨0⟩
 
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
     Module R' Ω[S⁄R] :=
   Submodule.Quotient.module' _
-
-instance : IsScalarTower S (S ⊗[R] S) Ω[S⁄R] :=
-  Ideal.Cotangent.isScalarTower _
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
@@ -675,7 +665,6 @@ theorem KaehlerDifferential.kerTotal_map' [Algebra R B]
       (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
   rw [Submodule.map_sup, ← kerTotal_map R R A B h, Submodule.map_span, ← Set.range_comp]
   congr
-  refine congr_arg Set.range ?_
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 section

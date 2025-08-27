@@ -63,7 +63,7 @@ instance instZero (C : PointedCone R E) : Zero C :=
   ⟨0, C.zero_mem⟩
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
-def _root_.ConvexCone.toPointedCone {C : ConvexCone R E} (hC : C.Pointed) : PointedCone R E where
+def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
   carrier := C
   add_mem' hx hy := C.add_mem hx hy
   zero_mem' := hC
@@ -83,9 +83,12 @@ lemma _root_.ConvexCone.mem_toPointedCone {C : ConvexCone R E} (hC : C.Pointed) 
   Iff.rfl
 
 @[simp, norm_cast]
-lemma _root_.ConvexCone.coe_toPointedCone {C : ConvexCone R E} (hC : C.Pointed) :
+lemma _root_.ConvexCone.coe_toPointedCone (C : ConvexCone R E) (hC : C.Pointed) :
     C.toPointedCone hC = C :=
   rfl
+
+@[simp]
+lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone trivial = ⊤ := rfl
 
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩

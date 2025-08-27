@@ -203,10 +203,7 @@ alias cochainsMap_f_0_comp_zeroCochainsLequiv := cochainsMap_f_0_comp_cochainsIs
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_1_comp_cochainsIso₁ :
-    (cochainsMap f φ).f 1 ≫ (cochainsIso₁ B).hom = (cochainsIso₁ A).hom ≫ cochainsMap₁ f φ := by
-  ext x
-  simp only [cochainsMap_f]
-  rfl
+    (cochainsMap f φ).f 1 ≫ (cochainsIso₁ B).hom = (cochainsIso₁ A).hom ≫ cochainsMap₁ f φ := rfl
 
 @[deprecated (since := "2025-06-25")]
 alias cochainsMap_f_1_comp_oneCochainsIso := cochainsMap_f_1_comp_cochainsIso₁
@@ -410,10 +407,12 @@ lemma H1π_comp_map :
 alias H1π_comp_H1Map := H1π_comp_map
 
 @[simp]
-theorem map_1_one (φ : (Action.res _ 1).obj A ⟶ B) :
+theorem map₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
     map 1 φ 1 = 0 := by
   simp [← cancel_epi (H1π _)]
 
+@[deprecated (since := "2025-07-31")]
+alias map_1_one := map₁_one
 @[deprecated (since := "2025-06-09")]
 alias H1Map_one := map_1_one
 
@@ -431,7 +430,7 @@ noncomputable def H1InfRes :
   f := map (QuotientGroup.mk' S) (subtype _ _ <| le_comap_invariants A.ρ S) 1
   g := map S.subtype (𝟙 _) 1
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
-    (fun f φ => map f φ 1), map_1_one]
+    (fun f φ => map f φ 1), map₁_one]
 
 /-- The inflation map `H¹(G ⧸ S, A^S) ⟶ H¹(G, A)` is a monomorphism. -/
 instance : Mono (H1InfRes A S).f := by

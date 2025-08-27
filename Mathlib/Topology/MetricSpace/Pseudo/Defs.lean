@@ -110,7 +110,7 @@ Any pseudometric space is a topological space and a uniform space (see `Topologi
 `UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudometric space is just a metric space.
 
-We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+We make the uniformity/topology part of the data instead of deriving it from the metric. This e.g.
 ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
@@ -122,7 +122,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
-    intros x y; exact ENNReal.coe_nnreal_eq _
+    intro x y; exact ENNReal.coe_nnreal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
   toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle

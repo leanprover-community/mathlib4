@@ -46,14 +46,7 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E[×n]→L[𝕜] F
--- The `AddCommMonoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) :=
-  inferInstanceAs <| AddCommMonoid <| ∀ n : ℕ, E[×n]→L[𝕜] F
-
-instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
-  ⟨0⟩
+deriving AddCommMonoid, Inhabited
 
 section Module
 

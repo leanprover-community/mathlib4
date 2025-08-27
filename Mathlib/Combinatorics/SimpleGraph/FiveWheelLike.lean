@@ -21,7 +21,7 @@ If `¬ G.IsCompleteMultipartite` then it contains a `G.IsPathGraph3Compl v w₁ 
 an edge `w₁w₂` and a vertex `v` such that `vw₁` and `vw₂` are non-edges.
 
 Hence any maximally `Kᵣ₊₂`-free graph that is not complete-multipartite must contain distinct
-vertices `v, w₁, w₂`, together with `r`-sets `s` and `t`, such that `{v , w₁, w₂}` induces the
+vertices `v, w₁, w₂`, together with `r`-sets `s` and `t`, such that `{v, w₁, w₂}` induces the
 single edge `w₁w₂`, `s ∪ t` is disjoint from `{v, w₁, w₂}`, and `s ∪ {v}`, `t ∪ {v}`, `s ∪ {w₁}` and
  `t ∪ {w₂}` are all `r + 1`-cliques.
 
@@ -63,12 +63,12 @@ statements of results and match our definition of `IsFiveWheelLikeFree`.
 
 ## References
 
-* B. Andrasfái, P Erdős, V. T. Sós
+* [B. Andrasfái, P Erdős, V. T. Sós
   **On the connection between chromatic number, maximal clique, and minimal degree of a graph**
-  https://doi.org/10.1016/0012-365X(74)90133-2
+  https://doi.org/10.1016/0012-365X(74)90133-2][andrasfaiErdosSos1974]
 
-* S. Brandt **On the structure of graphs with bounded clique number**
-  https://doi.org/10.1007/s00493-003-0042-z
+* [S. Brandt **On the structure of graphs with bounded clique number**
+  https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
 open Finset SimpleGraph
 
@@ -98,7 +98,7 @@ An `IsFiveWheelLike r k v w₁ w₂ s t` structure in `G` consists of vertices `
 `s` and `t` such that `{v, w₁, w₂}` induces the single edge `w₁w₂` (i.e. they form an
 `IsPathGraph3Compl`), `v, w₁, w₂ ∉ s ∪ t`, `s ∪ {v}, t ∪ {v}, s ∪ {w₁}, t ∪ {w₂}` are all
 `(r + 1)`- cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
- multipartite then `G` will contain such a structure : see
+multipartite then `G` will contain such a structure : see
 `exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`.)
 -/
 structure IsFiveWheelLike (G : SimpleGraph α) (r k : ℕ) (v w₁ w₂ : α) (s t : Finset α) :
@@ -125,7 +125,7 @@ lemma exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite
 
 /-- `G.FiveWheelLikeFree r k` means there is no `IsFiveWheelLike r k` structure in `G`. -/
 def FiveWheelLikeFree (G : SimpleGraph α) (r k : ℕ) : Prop :=
-    ∀ {v w₁ w₂ s t}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s t
+  ∀ {v w₁ w₂ s t}, ¬ G.IsFiveWheelLike r k v w₁ w₂ s t
 
 namespace IsFiveWheelLike
 
@@ -134,7 +134,7 @@ variable {v w₁ w₂ : α} {t : Finset α} (hw : G.IsFiveWheelLike r k v w₁ w
 include hw
 
 @[symm] lemma symm : G.IsFiveWheelLike r k v w₂ w₁ t s :=
-  let ⟨p2, d1, d2, d3, d4, c1, c2, c3, c4 , hk⟩ := hw
+  let ⟨p2, d1, d2, d3, d4, c1, c2, c3, c4, hk⟩ := hw
   ⟨p2.symm, d2, d1, d4, d3, c3, c4, c1, c2, by rwa [inter_comm]⟩
 
 lemma fst_notMem_right : w₁ ∉ t :=

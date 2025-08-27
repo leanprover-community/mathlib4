@@ -48,8 +48,7 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
   set F : Set α →o Set α :=
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
-      monotone' := fun s t hst =>
-        compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
+      monotone' := fun s t hst => by dsimp at hst ⊢; gcongr }
   set s : Set α := F.lfp
   have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp
   have hns : g '' (f '' s)ᶜ = sᶜ := compl_injective (by simp [hs])
@@ -122,9 +121,8 @@ end Wo
 /-- The cardinals are totally ordered. See
 `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice
 instance. -/
--- Porting note: `ULift.{max u v, u} α` was `ULift α`
 theorem total (α : Type u) (β : Type v) : Nonempty (α ↪ β) ∨ Nonempty (β ↪ α) :=
-  match @min_injective Bool (fun b => cond b (ULift.{max u v, u} α) (ULift.{max u v, v} β)) ⟨true⟩
+  match @min_injective Bool (fun b => cond b (ULift α) (ULift.{max u v, v} β)) ⟨true⟩
     with
   | ⟨true, ⟨h⟩⟩ =>
     let ⟨f, hf⟩ := h false

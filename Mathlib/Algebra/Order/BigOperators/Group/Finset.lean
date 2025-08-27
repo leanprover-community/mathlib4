@@ -368,9 +368,9 @@ variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {f : ι → M
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`. -/
-@[to_additive "In a canonically-ordered additive monoid, a sum bounds each of its terms.
+@[to_additive /-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
 
-See also `Finset.single_le_sum`."]
+See also `Finset.single_le_sum`. -/]
 lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
@@ -522,6 +522,21 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i
     _ = 1 := prod_const_one
 
 end LinearOrderedCancelCommMonoid
+
+theorem apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
+    [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+    {f : α → β} (zero : f ⊥ = 0) (ih : ∀ {s t}, f (s ⊔ t) ≤ f s + f t)
+    {s : ι → α} (t : Finset ι) :
+    f (t.sup s) ≤ ∑ i ∈ t, f (s i) := by
+  classical
+  refine t.induction_on zero.le fun i t it h ↦ ?_
+  simpa only [sup_insert, Finset.sum_insert it] using ih.trans (by gcongr)
+
+theorem apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+    {f : Set α → β} (zero : f ∅ = 0) (ih : ∀ {s t}, f (s ∪ t) ≤ f s + f t)
+    {s : ι → Set α} (t : Finset ι) :
+    f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
+  Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
 
 end Finset
 

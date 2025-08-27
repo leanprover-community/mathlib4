@@ -241,8 +241,8 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
       simp only [Module.End.pow_apply]
-      -- The right hand side is nonzero,
-      -- so it will suffice to show the left hand side is always zero.
+      -- The right-hand side is nonzero,
+      -- so it will suffice to show the left-hand side is always zero.
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
@@ -289,7 +289,7 @@ theorem sum_smul (n : ℕ) :
   -- Start with `(x+y)^n = (x+y)^n`,
   -- take the `x`-derivative, evaluate at `x=X, y=1-X`, and multiply by `X`:
   trans MvPolynomial.aeval e (pderiv true ((x + y) ^ n)) * X
-  -- On the left hand side we'll use the binomial theorem, then simplify.
+  -- On the left-hand side we'll use the binomial theorem, then simplify.
   · -- We first prepare a tedious rewrite:
     have w : ∀ k : ℕ, k • bernsteinPolynomial R n k =
         (k : R[X]) * Polynomial.X ^ (k - 1) * (1 - Polynomial.X) ^ (n - k) * (n.choose k : R[X]) *
@@ -326,7 +326,7 @@ theorem sum_mul_smul (n : ℕ) :
   -- Start with `(x+y)^n = (x+y)^n`,
   -- take the second `x`-derivative, evaluate at `x=X, y=1-X`, and multiply by `X`:
   trans MvPolynomial.aeval e (pderiv true (pderiv true ((x + y) ^ n))) * X ^ 2
-  -- On the left hand side we'll use the binomial theorem, then simplify.
+  -- On the left-hand side we'll use the binomial theorem, then simplify.
   · -- We first prepare a tedious rewrite:
     have w : ∀ k : ℕ, (k * (k - 1)) • bernsteinPolynomial R n k =
         (n.choose k : R[X]) * ((1 - Polynomial.X) ^ (n - k) *
@@ -347,7 +347,7 @@ theorem sum_mul_smul (n : ℕ) :
       MvPolynomial.aeval_X,
       Derivation.leibniz_pow, Derivation.leibniz, Derivation.map_natCast, map_natCast, map_pow,
       map_mul]
-  -- On the right hand side, we'll just simplify.
+  -- On the right-hand side, we'll just simplify.
   · simp only [x, y, e, (pderiv _).leibniz_pow,
       (pderiv true).map_add, pderiv_true_x, pderiv_true_y, Algebra.id.smul_eq_mul, add_zero,
       mul_one, map_nsmul, map_pow, map_add, Bool.cond_true,

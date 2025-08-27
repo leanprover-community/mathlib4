@@ -76,7 +76,7 @@ noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
     (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
       (Quiver.Hom.op_inj
         (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))))
-    (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by aesop_cat))
+    (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by cat_disch))
 
 /-- The counit isomorphism of the
 equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
@@ -92,7 +92,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
         opShiftFunctorEquivalence_counitIso_inv_app_shift, ← Functor.map_comp,
         Iso.hom_inv_id_app, Functor.map_id]
       simp only [Functor.id_obj, comp_id])
-    (by aesop_cat)
+    (by cat_disch)
 
 end TriangleOpEquivalence
 

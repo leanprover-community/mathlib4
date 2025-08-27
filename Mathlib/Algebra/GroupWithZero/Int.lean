@@ -18,12 +18,12 @@ namespace WithZero
 
 @[deprecated exp_zsmul (since := "2025-05-17")]
 theorem ofAdd_zpow (a : ℤ) : (↑(ofAdd a) : ℤᵐ⁰) = ofAdd (1 : ℤ) ^ a :=
-  show exp a = exp 1 ^ a by simp [← exp_zsmul]
+  show exp a = exp 1 ^ a by simp
 
 @[deprecated exp_neg (since := "2025-05-17")]
 theorem ofAdd_neg_one_pow_comm (a : ℤ) (n : ℕ) :
     ((↑(ofAdd (-1 : ℤ)) : ℤᵐ⁰) ^ (-a)) ^ n = ofAdd (n : ℤ) ^ a :=
   show (exp (-1 : ℤ) ^ (-a)) ^ n = exp (n : ℤ) ^ a by
-    simp [← exp_zsmul, ← exp_nsmul, mul_comm, exp_neg]
+    simp [mul_comm]
 
 end WithZero

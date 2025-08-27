@@ -421,7 +421,7 @@ lemma unreduced_edges_subset :
   simp only [mem_filter, regularityReduced_adj, not_and, not_exists,
     not_le, mem_biUnion, mem_union, mem_product, Prod.exists, mem_offDiag, and_imp,
     or_assoc, and_assoc, P.mk_mem_nonUniforms, Finpartition.mk_mem_sparsePairs, mem_interedges_iff]
-  intros hx hy h h'
+  intro hx hy h h'
   replace h' := h' h
   obtain ⟨U, hU, hx⟩ := P.exists_mem hx
   obtain ⟨V, hV, hy⟩ := P.exists_mem hy

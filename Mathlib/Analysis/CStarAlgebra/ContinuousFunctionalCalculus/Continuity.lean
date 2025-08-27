@@ -97,7 +97,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -450,7 +450,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,

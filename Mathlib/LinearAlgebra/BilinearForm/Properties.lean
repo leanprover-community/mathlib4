@@ -16,7 +16,7 @@ For orthogonality, see `Mathlib/LinearAlgebra/BilinearForm/Orthogonal.lean`.
 ## Notations
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
-the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
+the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
 - `M`, `M'`, ... are modules over the commutative semiring `R`,
@@ -89,7 +89,7 @@ theorem isSymm_def : IsSymm B ↔ ∀ x y, B x y = B y x where
   mpr h := ⟨h⟩
 
 theorem isSymm_iff : IsSymm B ↔ LinearMap.IsSymm B := by
-  simp [isSymm_def, LinearMap.IsSymm]
+  simp [isSymm_def, LinearMap.isSymm_def]
 
 namespace IsSymm
 

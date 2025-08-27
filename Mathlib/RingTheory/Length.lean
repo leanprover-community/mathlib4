@@ -16,7 +16,7 @@ import Mathlib.RingTheory.FiniteLength
 ## Main results
 - `Module.length`: `Module.length R M` is the length of `M` as an `R`-module.
 - `Module.length_pos`: The length of a nontrivial module is positive
-- `Module.length_ne_top`: The length of an artinian and noetherian module is finite.
+- `Module.length_ne_top`: The length of an Artinian and Noetherian module is finite.
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
@@ -91,7 +91,7 @@ lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R 
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
     rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
-    let R : Rel (Submodule R M) (Submodule R M) :=
+    let R : SetRel (Submodule R M) (Submodule R M) :=
       {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
     change R.inv.IsWellFounded ∧ R.IsWellFounded
     exact ⟨.of_finiteDimensional R.inv, .of_finiteDimensional R⟩
@@ -259,7 +259,7 @@ lemma Module.length_of_free_of_finite
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
-    Order.krullDim_eq_one_iff_of_boundedOrder]
+    Order.krullDim_eq_one_iff_of_boundedOrder, isSimpleModule_iff]
 
 variable (R M) in
 @[simp]

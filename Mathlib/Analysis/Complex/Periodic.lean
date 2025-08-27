@@ -72,6 +72,19 @@ theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]
   simpa using Real.pi_pos
 
+lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
+  simp [qParam, exp_ne_zero]
+
+@[fun_prop]
+lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
+    unfold qParam
+    fun_prop
+
+@[fun_prop]
+lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
+    unfold qParam
+    fun_prop
+
 @[deprecated (since := "2025-02-17")] alias abs_qParam_lt_iff := norm_qParam_lt_iff
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by

@@ -88,7 +88,7 @@ theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap ℚ_[p] (PadicAlgCl p))]
   ext
-  rw [valuation_coe, norm_extends, padicNormE.norm_p, one_div, NNReal.coe_inv,
+  rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
 /-- The valuation on `PadicAlgCl p` has rank one. -/
@@ -179,7 +179,7 @@ theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun x y ↦ by
   refine UniformSpace.Completion.induction_on₂ x y
-    (isClosed_le (continuous_norm.comp continuous_add) (by continuity)) (fun a b ↦ ?_)
+    (isClosed_le (continuous_norm.comp continuous_add) (by fun_prop)) (fun a b ↦ ?_)
   rw [← UniformSpace.Completion.coe_add, norm_extends, norm_extends, norm_extends]
   exact PadicAlgCl.isNonarchimedean p a b
 

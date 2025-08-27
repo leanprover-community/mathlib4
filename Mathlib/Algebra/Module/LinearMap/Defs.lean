@@ -51,7 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star DomMulAct Pi.module WCovBy.image Field
+assert_not_exists TrivialStar DomMulAct Pi.module WCovBy.image Field
 
 open Function
 
@@ -215,7 +215,7 @@ def toDistribMulActionHom (f : M →ₛₗ[σ] M₃) : DistribMulActionHom σ.to
 @[simp]
 theorem coe_toAddHom (f : M →ₛₗ[σ] M₃) : ⇑f.toAddHom = f := rfl
 
--- Porting note: no longer a `simp`
+@[simp]
 theorem toFun_eq_coe {f : M →ₛₗ[σ] M₃} : f.toFun = (f : M → M₃) := rfl
 
 @[ext]
@@ -611,17 +611,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
-def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
-  { fₗ with }
-
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
-
-/-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
-def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
-  { fₗ with }
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
 instance : LinearMapClass (M →+[R] M₃) R M M₃ where

@@ -32,11 +32,11 @@ explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
 * `valueGroup f` is the smallest subgroup of `Bˣ` containing the range of `f`;
 * `valueMonoid₀ f` is the smallest subgroup with `0` containing the range of `f`;
 * When `B` is a group with zero, rather than merely a monoid with zero, the above definitions
-all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
-`valueMonoid_eq_valueGroup'` for an equality as subsets.
+  all coincide: see `valueMonoid_eq_valueGroup` for an equality as submonoids and
+  `valueMonoid_eq_valueGroup'` for an equality as subsets.
 * When `B` is a *commutative* group with zero, `MonoidWithZeroHom.valueGroup` can be
-explicitly described as the elements that are ratios of terms in `range f`, see
-`MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
+  explicitly described as the elements that are ratios of terms in `range f`, see
+  `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`.
 
 ## Implementation details
 `MonoidWithZeroHom.valueMonoid` is defined explicitly in terms of its carrier, by proving the
@@ -100,9 +100,7 @@ codomain containing the range of `f`. -/
 abbrev valueGroup₀ := WithZero (valueGroup f)
 
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
-  rcases hb with ⟨c, _⟩
-  simp only [mem_valueMonoid_iff, mem_preimage, mem_range]
-  use c
+  tauto
 
 lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
   suffices b ∈ valueMonoid f from Subgroup.mem_closure.mpr fun _ a ↦ a this

@@ -114,7 +114,7 @@ lemma isNat_ordinalSub.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an - bn = rn → IsNat (a - b) rn
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_sub ..⟩
 
-/-- The `norm_num` extension for subtration on ordinals. -/
+/-- The `norm_num` extension for subtraction on ordinals. -/
 @[norm_num (_ : Ordinal) - (_ : Ordinal)]
 def evalOrdinalSub : NormNumExt where
   eval {u α} e := do
@@ -182,7 +182,7 @@ lemma isNat_ordinalOPow.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an ^ bn = rn → IsNat (a ^ b) rn
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_opow ..⟩
 
-/-- The `norm_num` extension for homogenous power on ordinals. -/
+/-- The `norm_num` extension for homogeneous power on ordinals. -/
 @[norm_num (_ : Ordinal) ^ (_ : Ordinal)]
 def evalOrdinalOPow : NormNumExt where
   eval {u α} e := do
@@ -196,7 +196,7 @@ def evalOrdinalOPow : NormNumExt where
       have rn : Q(ℕ) := mkRawNatLit (an.natLit! ^ bn.natLit!)
       have : ($an ^ $bn) =Q $rn := ⟨⟩
       pure (.isNat i rn q(isNat_ordinalOPow $pa $pb (.refl $rn)))
-    | _, _ => throwError "not homogenous power on ordinals"
+    | _, _ => throwError "not homogeneous power on ordinals"
 
 /-- info: 12 ^ 2 -/
 #guard_msgs in

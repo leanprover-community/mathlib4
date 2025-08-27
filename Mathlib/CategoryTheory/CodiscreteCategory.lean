@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 /-!
 # Codiscrete categories
 
-We define `Codiscrete A` as an alias for the type `A` ,
+We define `Codiscrete A` as an alias for the type `A`,
 and use this type alias to provide a `Category` instance
 whose Hom type are Unit types.
 
@@ -49,8 +49,8 @@ theorem Codiscrete.mk_as {α : Type u} (X : Codiscrete α) : Codiscrete.mk X.as 
 def codiscreteEquiv {α : Type u} : Codiscrete α ≃ α where
   toFun := Codiscrete.as
   invFun := Codiscrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance {α : Type u} [DecidableEq α] : DecidableEq (Codiscrete α) :=
   codiscreteEquiv.decidableEq

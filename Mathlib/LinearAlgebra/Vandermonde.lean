@@ -3,10 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
 
@@ -175,7 +172,7 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
       coe_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
       W, r, rev_castSucc]
-    field_simp
+    simp
     ring
   /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,
   and apply induction. -/
