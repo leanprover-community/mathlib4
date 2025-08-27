@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Spectral theory of hermitian matrices
@@ -149,6 +149,13 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
+/-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
+theorem eigenvalues_eq_zero_iff :
+    hA.eigenvalues = 0 ↔ A = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by ext; simp [h, eigenvalues_eq]⟩
+  rw [hA.spectral_theorem, h, Pi.comp_zero, RCLike.ofReal_zero, Function.const_zero,
+    Pi.zero_def, diagonal_zero, mul_zero, zero_mul]
+
 end DecidableEq
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
@@ -162,6 +169,11 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
       diagonal_zero, mul_zero, zero_mul] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
   exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
+
+theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
+    A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
+  conv_lhs => rw [hA.spectral_theorem, trace_mul_cycle]
+  simp
 
 end IsHermitian
 
