@@ -413,7 +413,7 @@ lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
 
 lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
     ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
-  simpa using RelCWComplex.union_iUnion_openCell_eq_complex (C := C) (D := ∅)
+  simpa using RelCWComplex.union_iUnion_openCell_eq_complex (C := C)
 
 /-- The contrapositive of `disjoint_openCell_of_ne`. -/
 lemma RelCWComplex.eq_of_not_disjoint_openCell [RelCWComplex C D] {n : ℕ} {j : cell C n} {m : ℕ}
@@ -607,7 +607,7 @@ lemma CWComplex.Subcomplex.union {C : Set X} [CWComplex C] {E : Subcomplex C} :
   rw [empty_union] at this
   exact this
 
-/-- An alternative version of `Subcomplex`: Instead of requiring that `E` is closed it requires
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
   that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
 @[simps -isSimp]
 def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComplex C D]
