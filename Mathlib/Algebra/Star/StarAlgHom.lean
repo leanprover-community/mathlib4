@@ -869,4 +869,29 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
 
 end Bijective
 
+section Group
+variable {S R : Type*} [Mul R] [Add R] [Star R] [SMul S R]
+
+@[simps -isSimp one mul]
+instance aut : Group (R ≃⋆ₐ[S] R) where
+  one := refl
+  mul a b := b.trans a
+  one_mul _ := rfl
+  mul_one _ := rfl
+  mul_assoc _ _ _ := rfl
+  inv f := f.symm
+  inv_mul_cancel f := ext <| symm_apply_apply f
+
+@[simp] theorem mul_apply (f g : R ≃⋆ₐ[S] R) (x : R) : (f * g) x = f (g x) := rfl
+
+@[simp] theorem one_apply (x : R) : (1 : R ≃⋆ₐ[S] R) x = x := rfl
+
+theorem aut_inv (f : R ≃⋆ₐ[S] R) : f⁻¹ = f.symm := rfl
+
+@[simp] theorem coe_pow (f : R ≃⋆ₐ[S] R) (n : ℕ) :
+    ⇑(f ^ n) = (⇑f)^[n] :=
+  hom_coe_pow _ (funext one_apply) (fun f g ↦ funext <| mul_apply f g) _ _
+
+end Group
+
 end StarAlgEquiv
