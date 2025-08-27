@@ -810,7 +810,7 @@ theorem convolution_tendsto_right {ι} {g : ι → G → E'} {l : Filter ι} {x�
   rw [Metric.tendsto_nhds] at hcg ⊢
   simp_rw [Metric.eventually_prod_nhds_iff] at hcg
   intro ε hε
-  have h2ε : 0 < ε / 3 := div_pos hε (by norm_num)
+  have h2ε : 0 < ε / 3 := div_pos hε (by simp)
   obtain ⟨p, hp, δ, hδ, hgδ⟩ := hcg _ h2ε
   dsimp only [uncurry] at hgδ
   have h2k := hk.eventually (ball_mem_nhds x₀ <| half_pos hδ)
@@ -972,7 +972,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
       (hg.differentiable le_rfl).differentiableAt.hasFDerivAt.comp x
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
-  have hK' : IsCompact K' := (hcg.fderiv 𝕜).neg.add (isCompact_closedBall x₀ 1)
+  have hK' : IsCompact K' := (hcg.fderiv 𝕜).isCompact.neg.add (isCompact_closedBall x₀ 1)
   apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
   · filter_upwards with t x hx using
       (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv le_rfl)
@@ -1336,7 +1336,7 @@ bilinear map `L` and measure `ν`. It is defined to be the function mapping `x` 
 `∫ t in 0..x, L (f t) (g (x - t)) ∂ν` if `0 < x`, and 0 otherwise. -/
 noncomputable def posConvolution (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
     (ν : Measure ℝ := by volume_tac) : ℝ → F :=
-  indicator (Ioi (0 : ℝ)) fun x => ∫ t in (0)..x, L (f t) (g (x - t)) ∂ν
+  indicator (Ioi (0 : ℝ)) fun x => ∫ t in 0..x, L (f t) (g (x - t)) ∂ν
 
 theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
     (ν : Measure ℝ := by volume_tac) [NoAtoms ν] :
@@ -1382,7 +1382,7 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSp
     {μ ν : Measure ℝ}
     [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
-    ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =
+    ∫ x : ℝ in Ioi 0, ∫ t : ℝ in 0..x, L (f t) (g (x - t)) ∂ν ∂μ =
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by
   rw [← integrable_indicator_iff measurableSet_Ioi] at hf hg
   simp_rw [← integral_indicator measurableSet_Ioi]

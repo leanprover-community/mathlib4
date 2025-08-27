@@ -233,7 +233,6 @@ theorem isUnit_iff_bijective {f : CircleDeg1Lift} : IsUnit f ↔ Bijective f :=
 theorem coe_pow : ∀ n : ℕ, ⇑(f ^ n) = f^[n]
   | 0 => rfl
   | n + 1 => by
-    ext x
     simp [coe_pow n, pow_succ]
 
 theorem semiconjBy_iff_semiconj {f g₁ g₂ : CircleDeg1Lift} :

@@ -51,9 +51,9 @@ structure DiagramOfCones where
   obj : ∀ j : J, Cone (F.obj j)
   /-- For each map, a map of cones. -/
   map : ∀ {j j' : J} (f : j ⟶ j'), (Cones.postcompose (F.map f)).obj (obj j) ⟶ obj j'
-  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
 /-- A structure carrying a diagram of cocones over the functors `F.obj j`.
 -/
@@ -62,9 +62,9 @@ structure DiagramOfCocones where
   obj : ∀ j : J, Cocone (F.obj j)
   /-- For each map, a map of cocones. -/
   map : ∀ {j j' : J} (f : j ⟶ j'), (obj j) ⟶ (Cocones.precompose (F.map f)).obj (obj j')
-  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by aesop_cat
+  id : ∀ j : J, (map (𝟙 j)).hom = 𝟙 _ := by cat_disch
   comp : ∀ {j₁ j₂ j₃ : J} (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃),
-    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by aesop_cat
+    (map (f ≫ g)).hom = (map f).hom ≫ (map g).hom := by cat_disch
 
 variable {F}
 
@@ -106,7 +106,7 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
                   have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
                   dsimp at this
                   simp? at this says
-                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
+                    simp only [Category.id_comp, map_id, NatTrans.id_app] at this
                   exact this } }
       naturality := fun j j' f =>
         (Q j').hom_ext

@@ -175,9 +175,7 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
-  apply AlgHom.ext
-  intro x
-  congr
+  rfl
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -236,11 +234,15 @@ theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 
+@[simp]
+lemma eval_map_algebraMap (P : R[X]) (b : B) :
+    (map (algebraMap R B) P).eval b = aeval b P := by
+  rw [aeval_def, eval_map]
+
 /-- `mapAlg` is the morphism induced by `R → S`. -/
 theorem mapAlg_eq_map (S : Type v) [Semiring S] [Algebra R S] (p : R[X]) :
     mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
-  ext; congr
+  rfl
 
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   map_zero (aeval x)
@@ -593,6 +595,14 @@ end Ring
 section CommRing
 variable [CommRing R] {p : R[X]} {t : R}
 
+@[simp]
+theorem aeval_neg {p : R[X]} [Ring A] [Algebra R A] (x : A) :
+    aeval x (- p) = - aeval x p := map_neg ..
+
+@[simp]
+theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :
+    aeval x (p - q) = aeval x p - aeval x q := map_sub ..
+
 theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
     (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
   rw [aeval_def, eval₂_eq_sum]
@@ -674,7 +684,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
     intro i hi
     rw [coeff_eq_zero_of_natDegree_lt hi, zero_smul]
   intro l IH
-  obtain _|hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
+  obtain _ | hl := (natDegree_smul_le (P.coeff l) Q).lt_or_eq
   · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
     rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
   suffices P.coeff l * Q.leadingCoeff = 0 by
@@ -685,7 +695,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   apply Finset.sum_eq_single (l, m) _ (by simp)
   simp only [Finset.mem_antidiagonal, ne_eq, Prod.forall, Prod.mk.injEq, not_and]
   intro i j hij H
-  obtain hi|rfl|hi := lt_trichotomy i l
+  obtain hi | rfl | hi := lt_trichotomy i l
   · have hj : m < j := by omega
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
   · omega

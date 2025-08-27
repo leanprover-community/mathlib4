@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -74,7 +74,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists CompleteLattice Submonoid
+assert_not_exists CompleteLattice Monoid
 
 noncomputable section
 
@@ -335,7 +335,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by aesop)
+    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     ext i
     simp only [mapRange_apply, onFinset_apply]
     split_ifs <;> simp_all
