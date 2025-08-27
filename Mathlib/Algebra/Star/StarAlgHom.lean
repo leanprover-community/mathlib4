@@ -874,8 +874,8 @@ variable {S R : Type*} [Mul R] [Add R] [Star R] [SMul S R]
 
 @[simps -isSimp one mul]
 instance aut : Group (R ≃⋆ₐ[S] R) where
-  one := StarAlgEquiv.refl
-  mul a b := StarAlgEquiv.trans b a
+  one := refl
+  mul a b := b.trans a
   one_mul _ := rfl
   mul_one _ := rfl
   mul_assoc _ _ _ := rfl
