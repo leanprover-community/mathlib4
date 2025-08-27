@@ -32,101 +32,126 @@ open scoped MatrixGroups
 
 namespace EisensteinSeries
 
-variable (N : ℕ) (a : Fin 2 → ZMod N)
+variable (N r : ℕ) (a : Fin 2 → ZMod N)
 
 section gammaSet_def
 
-/-- The set of pairs of coprime integers congruent to `a` mod `N`. -/
-def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ IsCoprime (v 0) (v 1)}
+/-- The set of pairs of integers congruent to `a` mod `N` and with `gcd` equal to `r`. -/
+def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (v 0).gcd (v 1) = r}
 
 open scoped Function in -- required for scoped `on` notation
-lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N) := by
+lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N r) := by
   refine fun u v huv ↦ ?_
   contrapose! huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1
 
 /-- For level `N = 1`, the gamma sets are all equal. -/
-lemma gammaSet_one_eq (a a' : Fin 2 → ZMod 1) : gammaSet 1 a = gammaSet 1 a' :=
+lemma gammaSet_one_const (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a = gammaSet 1 r a' :=
   congr_arg _ (Subsingleton.elim _ _)
 
+/-- For level `N = 1`, the gamma sets simplify to only a `gcd` condition. -/
+lemma gammaSet_one_eq (a : Fin 2 → ZMod 1) :
+    gammaSet 1 r a = {v : Fin 2 → ℤ | (v 0).gcd (v 1) = r} := by
+  simp [gammaSet, Subsingleton.eq_zero]
+
+lemma gammaSet_one_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 r 0 ↔ (v 0).gcd (v 1) = r := by
+  simp [gammaSet, Subsingleton.eq_zero]
+
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
-def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 a ≃ gammaSet 1 a' :=
-  Equiv.setCongr (gammaSet_one_eq a a')
+def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1 r a' :=
+  Equiv.setCongr (gammaSet_one_const r a a')
 
 /-- The map from `Fin 2 → ℤ` sending `![a,b]` to `a.gcd b`. -/
-def finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
+abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
 
-/-- The set of pairs of integers whose gcd is `N`, defined as the fiber of
-`finGcdMap` at `N`. -/
-def gammaSetWithGcd (N : ℕ) : Set (Fin 2 → ℤ) := finGcdMap ⁻¹' {N}
+lemma finGcdMap_div {r : ℕ} [NeZero r] (v : Fin 2 → ℤ) (hv : finGcdMap v = r) :
+    IsCoprime ((v / r) 0 ) ((v / r) 1) := by
+  rw [← hv]
+  apply isCoprime_div_gcd_div_gcd'
+  have := NeZero.ne r
+  aesop
+
+lemma finGcdMap_smul {r : ℕ} (a : ℤ) {v : Fin 2 → ℤ} (hv : finGcdMap v = r) :
+    finGcdMap (a • v) = a.natAbs * r := by
+  simp [finGcdMap, Int.gcd_mul_left, hv]
 
 /-- An abbreviation of the map which divides a integer vector by an integer. -/
-abbrev divIntMap (N : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := fun i => v i / N
+abbrev divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
 
-lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 0 ↔ IsCoprime (v 0) (v 1) := by
-  simpa [gammaSet] using fun h ↦ Subsingleton.eq_zero (Int.cast ∘ v)
+lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
+  rw [gammaSet_one_mem, Int.isCoprime_iff_gcd_eq_one]
 
-lemma gammaSetWithGcd_div_N {N : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ gammaSetWithGcd N) (i : Fin 2) :
-   (N : ℤ) ∣ v i  := by
-  simp only [gammaSetWithGcd, mem_preimage, finGcdMap, Fin.isValue, mem_singleton_iff] at *
-  fin_cases i <;> simp [← hv, Int.gcd_dvd_left, Int.gcd_dvd_right]
+lemma gammaSet_div_gcd {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ (gammaSet 1 r 0)) (i : Fin 2) :
+   (r : ℤ) ∣ v i := by
+  fin_cases i <;> simp [← hv.2, Int.gcd_dvd_left, Int.gcd_dvd_right]
 
-lemma gammaSetWithGcd_to_gammaSet10_bijection {N : ℕ} (hN : N ≠ 0) :
-    Set.BijOn (divIntMap N) (gammaSetWithGcd N) (gammaSet 1 0) := by
+lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
+    Set.BijOn (divIntMap r) (gammaSet 1 r 0) (gammaSet 1 1 0) := by
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
-    simp only [ne_eq, gammaSetWithGcd, mem_preimage, finGcdMap, Fin.isValue, mem_singleton_iff,
-      gammaSet_top_mem] at *
-    rw [← hx] at hN ⊢
-    apply isCoprime_div_gcd_div_gcd' (by simpa using hN)
+    simp only [divIntMap, Fin.isValue, gammaSet_top_mem] at *
+    exact finGcdMap_div _ hx.2
   · intro x hx v hv hv2
     ext i
-    exact (Int.ediv_left_inj (gammaSetWithGcd_div_N hx i) (gammaSetWithGcd_div_N hv i)).mp
-        (congr_fun hv2 i)
+    exact (Int.ediv_left_inj (gammaSet_div_gcd hx i) (gammaSet_div_gcd hv i)).mp
+      (congr_fun hv2 i)
   · intro x hx
-    use N • x
-    simp only [gammaSetWithGcd, nsmul_eq_mul, mem_preimage, finGcdMap, Fin.isValue,
-      Pi.mul_apply, Pi.natCast_apply, mem_singleton_iff]
+    use r • x
+    simp only [nsmul_eq_mul, divIntMap, Int.cast_natCast]
     constructor
     · rw [gammaSet_top_mem, Int.isCoprime_iff_gcd_eq_one] at hx
-      simp [Int.gcd_mul_left, hx]
+      exact ⟨by apply Subsingleton.eq_zero, by simp [Int.gcd_mul_left, hx]⟩
     · ext i
-      simp_all [divIntMap]
+      simp_all [NeZero.ne r]
 
-lemma gammaSetWithGcd_map_eq {N : ℕ} (v : gammaSetWithGcd N) : v.1 = N • (divIntMap N v) := by
-  by_cases hN : N = 0
-  · have hv := v.2
-    simp only [hN, gammaSetWithGcd, mem_preimage, finGcdMap, Fin.isValue, mem_singleton_iff,
-      Int.gcd_eq_zero_iff, CharP.cast_eq_zero, zero_nsmul] at *
+lemma gammaSet_eq_gcd_mul_divIntMap {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ gammaSet 1 r 0) :
+    v = r • (divIntMap r v) := by
+  by_cases hr : r = 0
+  · have hv := hv.2
+    simp only [hr, Fin.isValue, Int.gcd_eq_zero_iff, CharP.cast_eq_zero, zero_smul] at *
     ext i
     fin_cases i <;> simp [hv]
   · ext i
-    simp_all [Pi.smul_apply, divIntMap, ← Int.mul_ediv_assoc _ (gammaSetWithGcd_div_N v.2 i)]
+    simp_all [Pi.smul_apply, divIntMap, ← Int.mul_ediv_assoc _ (gammaSet_div_gcd hv i)]
 
-/-- The equivalence between `gammaSetWithGcd` and `gammaSet` for non-zero `N`. -/
-def gammaSetWithGcdEquiv {N : ℕ} (hN : N ≠ 0) : gammaSetWithGcd N ≃ gammaSet 1 0 := by
-  apply Set.BijOn.equiv _ (gammaSetWithGcd_to_gammaSet10_bijection hN)
+/-- The equivalence between `gammaSet 1 r 0` and `gammaSet 1 1 0` for non-zero `r`. -/
+def gammaSet_div_gcd_Equiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0 :=
+    Set.BijOn.equiv _ (gammaSet_div_gcd_to_gammaSet10_bijection r)
 
-/-- The equivalence between `(Fin 2 → ℤ)` and `Σ  n : ℕ, gammaSetWithGcd n)` . -/
-def gammaSetWithGcdTopEquiv : (Fin 2 → ℤ) ≃ (Σ  n : ℕ, gammaSetWithGcd n) :=
-  (Equiv.sigmaFiberEquiv finGcdMap).symm
+/-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
+def gammaSetDivGcdTopEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
+  apply ((Equiv.sigmaFiberEquiv finGcdMap).symm).trans
+  refine Equiv.sigmaCongrRight fun b => ?_
+  apply Equiv.setCongr
+  rw [fun n => gammaSet_one_eq n 0]
+  rfl
 
 @[simp]
-lemma gammaSetWithGcdTopEquiv_symm_eq (v : Σ n : ℕ, gammaSetWithGcd n) :
-    (gammaSetWithGcdTopEquiv.symm v) = v.2 := by
-  simp [gammaSetWithGcdTopEquiv, finGcdMap, Equiv.sigmaFiberEquiv]
+lemma gammaSetDivGcdTopEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
+    (gammaSetDivGcdTopEquiv.symm v) = v.2 := rfl
 
 end gammaSet_def
 
-variable {N a}
+variable {N a r} [NeZero r]
 
 section gamma_action
 
+/-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
+coprime entries. -/
+lemma vecMulSL_gcd {v : Fin 2 → ℤ} (hab : finGcdMap v = r) (A : SL(2, ℤ)) :
+    finGcdMap (v ᵥ* A.1) = r := by
+  have hvr : v = r • (v / r) := by
+    ext i
+    refine Eq.symm (Int.mul_ediv_cancel' ?_)
+    fin_cases i <;> simp [← hab, Int.gcd_dvd_left, Int.gcd_dvd_right]
+  rw [hvr, smul_vecMul]
+  simpa using finGcdMap_smul r (Int.isCoprime_iff_gcd_eq_one.mp ((finGcdMap_div v hab).vecMulSL A))
+
 /-- Right-multiplying by `γ ∈ SL(2, ℤ)` sends `gammaSet N a` to `gammaSet N (a ᵥ* γ)`. -/
-lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ : SL(2, ℤ)) :
-    v ᵥ* γ ∈ gammaSet N (a ᵥ* γ) := by
-  refine ⟨?_, hv.2.vecMulSL γ⟩
+lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N r a)
+    (γ : SL(2, ℤ)) : v ᵥ* γ ∈ gammaSet N r (a ᵥ* γ) := by
+  refine ⟨?_, vecMulSL_gcd hv.2 γ⟩
   have := RingHom.map_vecMul (m := Fin 2) (n := Fin 2) (Int.castRingHom (ZMod N)) γ v
   simp only [eq_intCast, Int.coe_castRingHom] at this
   simp_rw [Function.comp_def, this, hv.1]
@@ -134,7 +159,7 @@ lemma vecMul_SL2_mem_gammaSet {v : Fin 2 → ℤ} (hv : v ∈ gammaSet N a) (γ 
 
 variable (a) in
 /-- The bijection between `GammaSets` given by multiplying by an element of `SL(2, ℤ)`. -/
-def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N a ≃ gammaSet N (a ᵥ* γ) where
+def gammaSetEquiv (γ : SL(2, ℤ)) : gammaSet N r a ≃ gammaSet N r (a ᵥ* γ) where
   toFun v := ⟨v.1 ᵥ* γ, vecMul_SL2_mem_gammaSet v.2 γ⟩
   invFun v := ⟨v.1 ᵥ* ↑(γ⁻¹), by
       have := vecMul_SL2_mem_gammaSet v.2 γ⁻¹
@@ -168,7 +193,7 @@ end eisSummand
 variable (a)
 
 /-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
-def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, eisSummand k x z
+def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N 1 a, eisSummand k x z
 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
