@@ -412,6 +412,8 @@ instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful :=
   Functor.Faithful.of_comp_iso
     (G := oneTruncation₂) (H := ReflQuiv.forget) OneTruncation₂.ofNerve₂.natIso
 
+-- TODO: fix non-terminal simp (large simp sets)
+set_option linter.flexible false in
 instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
   map_surjective := by
     intro X Y F

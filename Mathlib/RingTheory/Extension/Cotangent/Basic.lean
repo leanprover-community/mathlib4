@@ -433,6 +433,8 @@ lemma toKaehler_cotangentSpaceBasis (i) :
 
 end Generators
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 -- TODO: generalize to essentially of finite presentation algebras
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in

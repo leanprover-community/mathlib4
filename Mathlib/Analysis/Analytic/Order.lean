@@ -253,6 +253,8 @@ lemma analyticOrderAt_smul_eq_top_of_right {f : 𝕜 → 𝕜} (hg : analyticOrd
   obtain ⟨t, h₁t, h₂t, h₃t⟩ := hg
   exact ⟨t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩
 
+-- TODO: should module be considered normalising?
+set_option linter.flexible false in
 /-- The order is additive when scalar multiplying analytic functions. -/
 lemma analyticOrderAt_smul {f : 𝕜 → 𝕜} (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     analyticOrderAt (f • g) z₀ = analyticOrderAt f z₀ + analyticOrderAt g z₀ := by
