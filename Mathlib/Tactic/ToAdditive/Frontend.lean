@@ -701,8 +701,8 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   else
     return src
 
-/-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`
-making sure not to translate `xᵢ` if `i` is in `dontTranslate`. -/
+/-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
+making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementForall (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
@@ -718,8 +718,8 @@ def applyReplacementForall (dontTranslate : List Nat) (e : Expr) :
   else
     applyReplacementFun e #[]
 
-/-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`
-making sure not to translate `xᵢ` if `i` is in `dontTranslate`. -/
+/-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`,
+making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
 def applyReplacementLambda (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
@@ -981,7 +981,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
 Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the `to_additive_relevant_arg` of each type-class.
+Note: we only consider the relevant argument (`to_additive_relevant_arg`) of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def findMultiplicativeArg (nm : Name) : MetaM Nat := do
@@ -1280,10 +1280,10 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     -- for example, this is necessary for `HPow.hPow`
     if findTranslation? (← getEnv) src |>.isSome then
       return #[tgt]
-  let firstMultArg ← MetaM.run' <| findMultiplicativeArg src
-  if firstMultArg != 0 then
-    trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
-    relevantArgAttr.add src firstMultArg
+  let relevantArg ← MetaM.run' <| findMultiplicativeArg src
+  if relevantArg != 0 then
+    trace[to_additive_detail] "Setting relevant_arg for {src} to be {relevantArg}."
+    relevantArgAttr.add src relevantArg
   insertTranslation src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then
