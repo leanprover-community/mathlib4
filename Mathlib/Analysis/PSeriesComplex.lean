@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.PSeries
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Convergence of `p`-series (complex case)
