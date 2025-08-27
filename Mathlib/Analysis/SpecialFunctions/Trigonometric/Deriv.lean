@@ -839,7 +839,6 @@ theorem iteratedDeriv_even_cos (n : ℕ) :
 theorem iteratedDeriv_odd_sin (n : ℕ) :
     iteratedDeriv (2 * n + 1) sin = (-1) ^ n * cos := by simp
 
-@[simp]
 theorem iteratedDeriv_odd_cos (n : ℕ) :
     iteratedDeriv (2 * n + 1) cos = (-1) ^ (n + 1) * sin := by simp [pow_succ]
 
@@ -946,7 +945,6 @@ theorem iteratedDeriv_even_cos (n : ℕ) :
 theorem iteratedDeriv_odd_sin (n : ℕ) :
     iteratedDeriv (2 * n + 1) sin = (-1) ^ n * cos := by simp
 
-@[simp]
 theorem iteratedDeriv_odd_cos (n : ℕ) :
     iteratedDeriv (2 * n + 1) cos = (-1) ^ (n + 1) * sin := by simp [pow_succ]
 
