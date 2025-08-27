@@ -333,9 +333,7 @@ theorem ListBlank.map_cons {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedM
 @[simp]
 theorem ListBlank.nth_map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ')
     (l : ListBlank Γ) (n : ℕ) : (l.map f).nth n = f (l.nth n) := by
-  refine l.inductionOn fun l ↦ ?_
-  -- Rewrite `Quotient.mk` to `ListBlank.mk`
-  change ((mk l).map f).nth n = f ((mk l).nth n)
+  refine l.induction_on fun l ↦ ?_
   simp only [ListBlank.map_mk, ListBlank.nth_mk, ← List.getD_default_eq_getI]
   rw [← List.getD_map _ _ f]
   simp
@@ -369,9 +367,7 @@ theorem ListBlank.append_mk {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) :
 
 theorem ListBlank.append_assoc {Γ} [Inhabited Γ] (l₁ l₂ : List Γ) (l₃ : ListBlank Γ) :
     ListBlank.append (l₁ ++ l₂) l₃ = ListBlank.append l₁ (ListBlank.append l₂ l₃) := by
-  refine l₃.inductionOn fun l ↦ ?_
-  -- Rewrite `Quotient.mk` to `ListBlank.mk`
-  change append (l₁ ++ l₂) (mk l) = append l₁ (append l₂ (mk l))
+  refine l₃.induction_on fun l ↦ ?_
   simp only [ListBlank.append_mk, List.append_assoc]
 
 /-- The `flatMap` function on lists is well defined on `ListBlank`s provided that the default
@@ -396,9 +392,7 @@ theorem ListBlank.flatMap_mk
 @[simp]
 theorem ListBlank.cons_flatMap {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l : ListBlank Γ)
     (f : Γ → List Γ') (hf) : (l.cons a).flatMap f hf = (l.flatMap f hf).append (f a) := by
-  refine l.inductionOn fun l ↦ ?_
-  -- Rewrite `Quotient.mk` to `ListBlank.mk`
-  change ((mk l).cons a).flatMap f hf = ((mk l).flatMap f hf).append (f a)
+  refine l.induction_on fun l ↦ ?_
   simp only [ListBlank.append_mk, ListBlank.flatMap_mk, ListBlank.cons_mk, List.flatMap_cons]
 
 end ListBlank
