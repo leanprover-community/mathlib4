@@ -1325,7 +1325,6 @@ theorem integral_simpleFunc_larger_space (hm : m ≤ m0) (f : @SimpleFunc β m F
     (hf_int : Integrable f μ) :
     ∫ x, f x ∂μ = ∑ x ∈ @SimpleFunc.range β F m f, μ.real (f ⁻¹' {x}) • x := by
   simp_rw [← f.coe_toLargerSpace_eq hm]
-  have hf_int : Integrable (f.toLargerSpace hm) μ := by rwa [SimpleFunc.coe_toLargerSpace_eq]
   rw [SimpleFunc.integral_eq_sum _ hf_int]
   congr 1
 

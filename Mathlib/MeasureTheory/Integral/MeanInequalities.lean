@@ -381,7 +381,6 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     (h_add_top : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ ⊤) :
     (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≤
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
-  have hp_not_nonpos : ¬p ≤ 0 := by simp [hpq.pos]
   have h0_rpow : (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≠ 0 := by
     simp [h_add_zero, h_add_top, -Pi.add_apply]
   suffices h :
