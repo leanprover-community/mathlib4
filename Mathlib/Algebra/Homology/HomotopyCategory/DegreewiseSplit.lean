@@ -20,7 +20,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+-- Explicit universe annotations were used in this file to improve performance #12737
+
+universe v
+
+variable {C : Type*} [Category.{v} C] [Preadditive C]
 
 namespace CochainComplex
 

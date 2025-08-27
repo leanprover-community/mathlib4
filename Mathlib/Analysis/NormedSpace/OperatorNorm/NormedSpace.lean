@@ -3,9 +3,9 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
+import Mathlib.Analysis.Normed.Module.Span
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
-import Mathlib.Analysis.Normed.Module.Span
 
 /-!
 # Operator norm for maps on normed spaces
@@ -116,8 +116,7 @@ lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
 instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 
-/-- Continuous linear maps themselves form a normed space with respect to
-    the operator norm. -/
+/-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
 instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
@@ -140,9 +139,6 @@ by a positive factor. -/
 theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f) :
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
-
-@[deprecated (since := "2024-10-26")]
-alias antilipschitz_of_embedding := antilipschitz_of_isEmbedding
 
 end OpNorm
 
@@ -215,10 +211,8 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     haveI := g.symm.surjective.nontrivial
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
--- `SeminormedAddGroup (Fₗ →L[𝕜] E →L[𝕜] Fₗ)` is too slow to synthesize in the `simpNF` linter,
--- which fails on this lemma with a deterministic timeout
-@[simp, nolint simpNF]
-theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
+@[simp]
+theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=
@@ -357,3 +351,25 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_finish
 
 end Equicontinuous
+
+section single
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
+
+/-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
+protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
+  (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
+
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
+
+lemma ContinuousLinearMap.norm_single [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    (i : ι) [Nontrivial (E i)] :
+    ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
+  (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
+
+end single
