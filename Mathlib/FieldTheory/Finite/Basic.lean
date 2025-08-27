@@ -637,15 +637,15 @@ theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : 
     (p : ℤ) ∣ n ^ (p - 1) - 1 :=
   (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
 
-theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (n : ℤ) ^ p ≡ n [ZMOD p] := by
+theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : n ^ p ≡ n [ZMOD p] := by
   haveI : Fact p.Prime := ⟨hp⟩
   simp [← ZMod.intCast_eq_intCast_iff]
 
-theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) {n : ℤ} : (p : ℤ) ∣ n ^ p - n :=
-  (ModEq.pow_prime_eq_self hp).symm.dvd
+theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : (p : ℤ) ∣ n ^ p - n :=
+  (ModEq.pow_prime_eq_self hp n).symm.dvd
 
 theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : y ≤ x)
-    (hy : 0 < y) {n : ℤ} : n ^ x ≡ n ^ y [ZMOD p] := by
+    (hy : 0 < y) (n : ℤ) : n ^ x ≡ n ^ y [ZMOD p] := by
   rw [← Nat.mul_div_eq_iff_dvd] at h
   by_cases hn : n ≡ 0 [ZMOD p]
   · grw [hn, zero_pow (hy.trans_le hxy).ne', zero_pow hy.ne']
