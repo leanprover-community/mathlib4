@@ -79,8 +79,6 @@ protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} 
 open GenContFract
   (compExactValue compExactValue_correctness_of_stream_eq_some_aux_comp)
 
--- TODO: grind should be marked as normalising tactic!
-set_option linter.flexible false in
 /-- Shows the correctness of `compExactValue` in case the continued fraction
 `GenContFract.of v` did not terminate at position `n`. That is, we obtain the
 value `v` if we pass the two successive (auxiliary) continuants at positions `n` and `n + 1` as well

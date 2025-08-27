@@ -406,8 +406,6 @@ lemma root_chainBotIdx :
 
 include h
 
--- TODO: should module be marked as normalising?
-set_option linter.flexible false in
 lemma chainBotCoeff_sub_chainTopCoeff :
     P.chainBotCoeff i j - P.chainTopCoeff i j = P.pairingIn ℤ j i := by
   suffices ∀ i j, LinearIndependent R ![P.root i, P.root j] →
