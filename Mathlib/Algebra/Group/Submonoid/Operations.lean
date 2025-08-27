@@ -967,7 +967,7 @@ theorem pi_bot : (pi Set.univ fun i => (⊥ : Submonoid (M i))) = ⊥ :=
 
 @[to_additive]
 theorem le_pi_iff {I : Set ι} {S : ∀ i, Submonoid (M i)} {J : Submonoid (∀ i, M i)} :
-    J ≤ pi I S ↔ ∀ i ∈ I, map (Pi.evalMonoidHom M i) J ≤ S i :=
+    J ≤ pi I S ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom M i) (S i) :=
   Set.subset_pi_iff
 
 @[to_additive (attr := simp)]

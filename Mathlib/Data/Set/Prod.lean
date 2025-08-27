@@ -810,7 +810,7 @@ theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
 
-theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, (· i) '' s' ⊆ t i := by
+theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹' t i := by
   grind
 
 theorem update_mem_pi_iff [DecidableEq ι] {a} (ha : a ∈ pi s t) {i b} :
