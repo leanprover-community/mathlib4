@@ -23,6 +23,7 @@ namespace symmetricSubalgebra
 variable (σ R)
 variable [Fintype σ] [Fintype τ] [CommRing R] [CommSemiring S] [Algebra R S]
 
+/-- `aevalMultiset` evaluates a symmetric polynomial at the elements of s. -/
 noncomputable
 def aevalMultiset (m : Multiset S) :
     symmetricSubalgebra σ R →ₐ[R] S :=
@@ -34,6 +35,10 @@ variable {σ R}
 lemma aevalMultiset_apply (m : Multiset S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R m p =
       aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((esymmAlgEquiv σ R rfl).symm p) := rfl
+
+lemma aevalMultiset_esymm (m : Multiset S) (i : Fin (Fintype.card σ)) :
+    aevalMultiset σ R m ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ = m.esymm (i + 1) := by
+  simp [aevalMultiset_apply, esymmAlgEquiv_symm_apply]
 
 theorem aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R (Finset.univ.val.map f) p = aeval f (p : MvPolynomial σ R) := by
