@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
 -/
 import Mathlib.Analysis.PSeries
-import Mathlib.Data.Real.Pi.Wallis
+import Mathlib.Analysis.Real.Pi.Wallis
 import Mathlib.Tactic.AdaptationNote
 
 /-!

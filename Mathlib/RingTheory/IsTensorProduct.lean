@@ -340,7 +340,7 @@ theorem IsBaseChange.iff_lift_unique :
           ∀ [IsScalarTower R S Q],
             ∀ g : M →ₗ[R] Q, ∃! g' : N →ₗ[S] Q, (g'.restrictScalars R).comp f = g :=
   ⟨fun h => by
-    intros Q _ _ _ _ g
+    intro Q _ _ _ _ g
     exact ⟨h.lift g, h.lift_comp g, fun g' e => h.algHom_ext' _ _ (e.trans (h.lift_comp g).symm)⟩,
     IsBaseChange.of_lift_unique f⟩
 
