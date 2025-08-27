@@ -32,13 +32,13 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 
 namespace EuclideanGeometry
 
+set_option linter.unusedSimpArgs false in
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
 hyperplane. -/
 theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (hy : y ≠ c) :
     inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c := by
   rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
-  have hy' := dist_ne_zero.2 hy
-  simp [field, eq_comm]
+  simp [field, eq_comm, ↓hx, ↓hy]
 
 /-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
 hyperplane. -/
