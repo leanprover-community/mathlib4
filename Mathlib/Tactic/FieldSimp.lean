@@ -19,6 +19,8 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.FieldSimp
 
+initialize registerTraceClass `Tactic.field_simp
+
 variable {v : Level}
 
 /-! ### Lists of expressions representing exponents and atoms, and operations on such lists -/
