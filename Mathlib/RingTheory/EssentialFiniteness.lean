@@ -75,7 +75,7 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
     · intro s
       obtain ⟨t, ht, ht', h⟩ := hσ s
       exact ⟨⟨⟨_, h⟩, ⟨t, ht⟩, ht'⟩, rfl⟩
-    · intros x y e
+    · intro x y e
       exact ⟨1, by simpa using Subtype.ext e⟩
 
 lemma essFiniteType_iff :
@@ -165,7 +165,7 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
   use σ.image Algebra.TensorProduct.includeRight
   intro s
   induction s using TensorProduct.induction_on with
-  | zero => exact ⟨1, one_mem _, isUnit_one, by simpa using zero_mem _⟩
+  | zero => exact ⟨1, one_mem _, isUnit_one, by simp⟩
   | tmul x y =>
     obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
     have H (x : S) (hx : x ∈ Algebra.adjoin R (σ : Set S)) :

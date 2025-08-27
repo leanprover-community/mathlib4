@@ -378,9 +378,11 @@ theorem gc_coinduced_induced (f : α → β) :
     GaloisConnection (TopologicalSpace.coinduced f) (TopologicalSpace.induced f) := fun _ _ =>
   coinduced_le_iff_le_induced
 
+@[gcongr]
 theorem induced_mono (h : t₁ ≤ t₂) : t₁.induced g ≤ t₂.induced g :=
   (gc_coinduced_induced g).monotone_u h
 
+@[gcongr]
 theorem coinduced_mono (h : t₁ ≤ t₂) : t₁.coinduced f ≤ t₂.coinduced f :=
   (gc_coinduced_induced f).monotone_l h
 
@@ -495,6 +497,14 @@ instance : DiscreteTopology ℤ := ⟨rfl⟩
 instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 
+lemma Nat.cast_continuous {R : Type*} [NatCast R] [TopologicalSpace R] :
+    Continuous (Nat.cast (R := R)) :=
+  continuous_of_discreteTopology
+
+lemma Int.cast_continuous {R : Type*} [IntCast R] [TopologicalSpace R] :
+    Continuous (Int.cast (R := R)) :=
+  continuous_of_discreteTopology
+
 instance sierpinskiSpace : TopologicalSpace Prop :=
   generateFrom {{True}}
 
@@ -582,7 +592,7 @@ theorem nhds_nhdsAdjoint [DecidableEq α] (a : α) (f : Filter α) :
 theorem le_nhdsAdjoint_iff' {a : α} {f : Filter α} {t : TopologicalSpace α} :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, @nhds α t b = pure b := by
   classical
-  simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).le_iff_eq]
+  simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).ge_iff_eq']
 
 theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : TopologicalSpace α) :
     t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
@@ -596,7 +606,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: timeouts without `b₁ := t₁`
+-- Porting note: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)
@@ -780,12 +790,10 @@ theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
 
 theorem closure_induced {f : α → β} {a : α} {s : Set α} :
     a ∈ @closure α (t.induced f) s ↔ f a ∈ closure (f '' s) := by
-  letI := t.induced f
   simp only [mem_closure_iff_frequently, nhds_induced, frequently_comap, mem_image, and_comm]
 
 theorem isClosed_induced_iff' {f : α → β} {s : Set α} :
     IsClosed[t.induced f] s ↔ ∀ a, f a ∈ closure (f '' s) → a ∈ s := by
-  letI := t.induced f
   simp only [← closure_subset_iff_isClosed, subset_def, closure_induced]
 
 end Induced

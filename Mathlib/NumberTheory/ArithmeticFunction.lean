@@ -574,6 +574,12 @@ theorem map_prod_of_subset_primeFactors [CommMonoidWithZero R] {f : ArithmeticFu
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
+theorem prod_primeFactors [CommMonoidWithZero R] {f : ArithmeticFunction R}
+    (h_mult : f.IsMultiplicative) {l : ℕ} (hl : Squarefree l) :
+    ∏ a ∈ l.primeFactors, f a = f l := by
+  rw [← h_mult.map_prod_of_subset_primeFactors l _ Finset.Subset.rfl,
+    prod_primeFactors_of_squarefree hl]
+
 theorem map_div_of_coprime [GroupWithZero R] {f : ArithmeticFunction R}
     (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l / d).Coprime d) (hd : f d ≠ 0) :
     f (l / d) = f l / f d := by
@@ -884,6 +890,14 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 @[simp] theorem cardFactors_one : Ω 1 = 0 := by simp [cardFactors_apply]
 
 @[simp]
+theorem cardFactors_eq_zero_iff_eq_zero_or_one {n : ℕ} : Ω n = 0 ↔ n = 0 ∨ n = 1 := by
+  rw [cardFactors_apply, List.length_eq_zero_iff, primeFactorsList_eq_nil]
+
+@[simp]
+theorem cardFactors_pos_iff_one_lt {n : ℕ} : 0 < Ω n ↔ 1 < n := by
+  rw [cardFactors_apply, List.length_pos_iff, primeFactorsList_ne_nil]
+
+@[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine ⟨fun h => ?_, fun h => List.length_eq_one_iff.2 ⟨n, primeFactorsList_prime h⟩⟩
   cases n with | zero => simp at h | succ n =>
@@ -907,9 +921,23 @@ theorem cardFactors_multiset_prod {s : Multiset ℕ} (h0 : s.prod ≠ 0) :
 theorem cardFactors_apply_prime {p : ℕ} (hp : p.Prime) : Ω p = 1 :=
   cardFactors_eq_one_iff_prime.2 hp
 
+lemma cardFactors_pow {m k : ℕ} : Ω (m ^ k) = k * Ω m := by
+  by_cases hm : m = 0
+  · subst hm
+    cases k <;> simp
+  induction k with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, cardFactors_mul (pow_ne_zero n hm) hm, ih]
+    ring
+
 @[simp]
 theorem cardFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) : Ω (p ^ k) = k := by
-  rw [cardFactors_apply, hp.primeFactorsList_pow, List.length_replicate]
+  simp [cardFactors_pow, hp]
+
+theorem cardFactors_eq_sum_factorization {n : ℕ} :
+    Ω n = n.factorization.sum fun _ k => k := by
+  simp [cardFactors_apply, ← List.sum_toFinset_count_eq_length, Finsupp.sum]
 
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 def cardDistinctFactors : ArithmeticFunction ℕ :=
@@ -985,7 +1013,7 @@ theorem moebius_eq_or (n : ℕ) : μ n = 0 ∨ μ n = 1 ∨ μ n = -1 := by
 
 theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n = -1 := by
   have := moebius_eq_or n
-  aesop
+  omega
 
 theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
@@ -998,7 +1026,7 @@ theorem moebius_sq {n : ℕ} :
   split_ifs with h
   · exact moebius_sq_eq_one_of_squarefree h
   · simp only [moebius_eq_zero_of_not_squarefree h,
-      zero_pow (show 2 ≠ 0 by norm_num)]
+      zero_pow (show 2 ≠ 0 by simp)]
 
 theorem abs_moebius {n : ℕ} :
     |μ n| = if Squarefree n then 1 else 0 := by
@@ -1176,12 +1204,12 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
   · dsimp
-    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (Nat.pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
   · dsimp
-    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),
@@ -1262,12 +1290,12 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
         (forall_congr' fun n => ?_) <;>
     refine imp_congr_right fun hn => ?_
   · dsimp
-    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (Nat.pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
   · dsimp
-    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+    rw [dif_pos hn, ← Units.val_inj, ← Units.coeHom_apply, map_prod, Units.val_mk0,
       prod_congr rfl _]
     intro x hx
     rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),

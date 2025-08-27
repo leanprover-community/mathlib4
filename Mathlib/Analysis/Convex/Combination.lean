@@ -23,6 +23,7 @@ mathematical arguments go: one doesn't change weights, but merely adds some. Thi
 lemmas unconditional on the sum of the weights being `1`.
 -/
 
+assert_not_exists Cardinal
 
 open Set Function Pointwise
 
@@ -126,7 +127,7 @@ theorem Finset.centerMass_filter_ne_zero [∀ i, Decidable (w i ≠ 0)] :
 
 namespace Finset
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
+variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [PosSMulMono R α]
 
 theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
@@ -148,7 +149,7 @@ lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
     s.centerMass w z = t.centerMass w z := by
   simp [centerMass, eq_neg_of_add_eq_zero_right hw, eq_neg_of_add_eq_zero_left hz]
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
+variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [PosSMulMono R α]
 
 /-- The center of mass of a finite subset of a convex set belongs to the set
 provided that all weights are non-negative, and the total weight is positive. -/
@@ -208,9 +209,7 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
     exact hy
   · convert h {x, y} (fun z => if z = y then b else a) _ _ _
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
-    · intro i _
-      simp only
-      split_ifs <;> assumption
+    · grind
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
     · intro i hi
       simp only [Finset.mem_singleton, Finset.mem_insert] at hi

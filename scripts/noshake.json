@@ -22,6 +22,7 @@
   "Batteries.Tactic.Relation.Rfl",
   "Batteries.Tactic.Relation.Symm",
   "Batteries.Tactic.Replace",
+  "Batteries.Tactic.SeqFocus",
   "Batteries.Tactic.Simpa",
   "Batteries.Tactic.SolveByElim",
   "Batteries.Tactic.SolveByElim.Backtrack",
@@ -122,6 +123,7 @@
   "Mathlib.Tactic.Linarith.Lemmas",
   "Mathlib.Tactic.LinearCombination",
   "Mathlib.Tactic.Linter",
+  "Mathlib.Tactic.Linter.DeprecatedModule",
   "Mathlib.Tactic.Linter.Header",
   "Mathlib.Tactic.Measurability",
   "Mathlib.Tactic.MinImports",
@@ -201,6 +203,7 @@
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
+  "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Sheaves.CommRingCat":
   ["Mathlib.Algebra.Category.Ring.Limits"],
@@ -208,7 +211,7 @@
   ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
-  "Mathlib.Topology.Germ": ["Mathlib.Analysis.Normed.Module.Basic"],
+  "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -223,6 +226,7 @@
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
   "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
+  "Mathlib.Tactic.ToAdditive.Frontend": ["Lean.Meta.Tactic.TryThis"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
@@ -248,7 +252,8 @@
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",
    "Mathlib.Data.PNat.Defs"],
-  "Mathlib.Tactic.Order.CollectFacts": ["Mathlib.Order.Basic"],
+  "Mathlib.Tactic.Order.CollectFacts":
+  ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
@@ -338,6 +343,7 @@
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
+  "Mathlib.Std.Data.HashMap": ["Std.Data.HashMap.AdditionalOperations"],
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
   "Mathlib.RingTheory.PowerSeries.Evaluation":
   ["Mathlib.RingTheory.PowerSeries.PiTopology"],
@@ -386,7 +392,8 @@
   "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
-  "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
+  "Mathlib.Logic.Basic":
+  ["Batteries.Tactic.Trans", "Mathlib.Tactic.AdaptationNote"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
@@ -414,6 +421,10 @@
   "Mathlib.Deprecated.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.ZMod.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
+  "Mathlib.Data.String.Basic":
+  ["Mathlib.Algebra.Order.Group.Nat",
+   "Mathlib.Data.Char",
+   "Mathlib.Data.List.Lex"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
@@ -505,6 +516,7 @@
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.Int.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Regular.Defs": ["Mathlib.Algebra.Notation.Defs"],
   "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
   "Mathlib.Algebra.Order.Quantale": ["Mathlib.Tactic.Variable"],
   "Mathlib.Algebra.Order.Pi": ["Mathlib.Algebra.Notation.Lemmas"],

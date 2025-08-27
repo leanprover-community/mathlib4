@@ -353,4 +353,40 @@ instance [(weakEquivalences C).ContainsIdentities] (X : C) :
   rw [weakEquivalence_iff]
   apply id_mem
 
+section MapFactorizationData
+
+variable {X Y : C} (f : X ⟶ Y)
+
+section
+
+variable (h : MapFactorizationData (cofibrations C) (trivialFibrations C) f)
+
+instance : Cofibration h.i := by
+  simpa only [cofibration_iff] using h.hi
+
+instance : Fibration h.p := by
+  simpa only [fibration_iff] using h.hp.1
+
+instance : WeakEquivalence h.p := by
+  simpa only [weakEquivalence_iff] using h.hp.2
+
+end
+
+section
+
+variable (h : MapFactorizationData (trivialCofibrations C) (fibrations C) f)
+
+instance : Cofibration h.i := by
+  simpa only [cofibration_iff] using h.hi.1
+
+instance : WeakEquivalence h.i := by
+  simpa only [weakEquivalence_iff] using h.hi.2
+
+instance : Fibration h.p := by
+  simpa only [fibration_iff] using h.hp
+
+end
+
+end MapFactorizationData
+
 end HomotopicalAlgebra

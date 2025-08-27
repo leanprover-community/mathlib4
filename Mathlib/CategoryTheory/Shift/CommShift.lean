@@ -107,8 +107,8 @@ satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
 class CommShift where
   /-- The commutation isomorphisms for all `a`-shifts this functor is equipped with -/
   iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
-  zero : iso 0 = CommShift.isoZero F A := by aesop_cat
-  add (a b : A) : iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by aesop_cat
+  zero : iso 0 = CommShift.isoZero F A := by cat_disch
+  add (a b : A) : iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by cat_disch
 
 variable {A}
 
@@ -266,7 +266,7 @@ which commute with a shift by an additive monoid `A`, this typeclass
 asserts a compatibility of `τ` with these shifts. -/
 class CommShift : Prop where
   shift_comm (a : A) : (F₁.commShiftIso a).hom ≫ Functor.whiskerRight τ _ =
-    Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom := by aesop_cat
+    Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom := by cat_disch
 
 section
 
@@ -296,18 +296,12 @@ lemma app_shift (a : A) (X : C) :
       (F₂.commShiftIso a).inv.app X := by
   simp [shift_app_comm_assoc τ a X]
 
-@[deprecated (since := "2024-12-31")] alias CommShift.comm' := shift_comm
-@[deprecated (since := "2024-12-31")] alias CommShift.comm := shift_comm
-@[deprecated (since := "2024-12-31")] alias CommShift.comm_app := shift_app_comm
-@[deprecated (since := "2024-12-31")] alias CommShift.shift_app := shift_app
-@[deprecated (since := "2024-12-31")] alias CommShift.app_shift := app_shift
-
 end
 
 namespace CommShift
 
 instance of_iso_inv [NatTrans.CommShift e.hom A] :
-  NatTrans.CommShift e.inv A := ⟨fun a => by
+    NatTrans.CommShift e.inv A := ⟨fun a => by
   ext X
   dsimp
   rw [← cancel_epi (e.hom.app (X⟦a⟧)), e.hom_inv_id_app_assoc, ← shift_app_comm_assoc,

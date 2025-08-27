@@ -235,7 +235,7 @@ theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultil
   have : {c} = (Finset.univ : Finset (Composition 0)) := by
     apply Finset.eq_of_subset_of_card_le <;> simp [Finset.card_univ, composition_card 0]
   rw [← this, Finset.sum_singleton, compAlongComposition_apply]
-  symm; congr! -- Porting note: needed the stronger `congr!`!
+  symm; congr!
 
 @[simp]
 theorem comp_coeff_zero' (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
@@ -257,7 +257,7 @@ theorem comp_coeff_one (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultili
     Finset.sum_singleton]
   refine q.congr (by simp) fun i hi1 hi2 => ?_
   simp only [applyComposition_ones]
-  exact p.congr rfl fun j _hj1 hj2 => by congr! -- Porting note: needed the stronger `congr!`
+  exact p.congr rfl fun j _hj1 hj2 => by congr!
 
 /-- Only `0`-th coefficient of `q.comp p` depends on `q 0`. -/
 theorem removeZero_comp_of_pos (q : FormalMultilinearSeries 𝕜 F G)
@@ -624,8 +624,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
       blocks_fun i = (compChangeOfVariables m M N _ H).2.blocksFun _ :=
         (compChangeOfVariables_blocksFun m M N H i).symm
       _ = (compChangeOfVariables m M N _ H').2.blocksFun _ := by
-        apply Composition.blocksFun_congr <;>
-        first | rw [heq] | rfl
+        grind
       _ = blocks_fun' i := compChangeOfVariables_blocksFun m M N H' i
   -- 3 - show that the map is surjective
   · intro i hi
@@ -642,7 +641,7 @@ theorem compPartialSumTarget_tendsto_prod_atTop :
   · intro m n hmn a ha
     have : ∀ i, i < m.1 → i < n.1 := fun i hi => lt_of_lt_of_le hi hmn.1
     have : ∀ i, i < m.2 → i < n.2 := fun i hi => lt_of_lt_of_le hi hmn.2
-    aesop
+    simp_all
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
     obtain ⟨n, hn⟩ : BddAbove ((Finset.univ.image fun i : Fin c.length => c.blocksFun i) : Set ℕ) :=
