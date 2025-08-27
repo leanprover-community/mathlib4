@@ -386,6 +386,7 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
+set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
 is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_id_gaussianReal (z : ℂ) :
@@ -408,7 +409,9 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [integral_cexp_quadratic (by simpa using pos_iff_ne_zero.mpr hv), ← mul_assoc]
     _ = 1 * cexp (-μ ^ 2 / (2 * v) - (z + μ / v) ^ 2 / (4 * -(2 * v)⁻¹)) := by
       congr 1
-      simp [field, Real.sqrt_eq_rpow, -mul_inv_rev]
+      simp only [field, sqrt_eq_rpow, one_div, ofReal_inv, NNReal.coe_inv, NNReal.coe_mul,
+        NNReal.coe_ofNat, ofReal_mul, ofReal_ofNat, neg_neg, div_inv_eq_mul,
+        ne_eq, ofReal_eq_zero, rpow_eq_zero, not_false_eq_true]
       rw [Complex.ofReal_cpow (by positivity)]
       push_cast
       ring_nf
