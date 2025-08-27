@@ -14,7 +14,7 @@ import Mathlib.Topology.JacobsonSpace
 - `PrimeSpectrum.exists_isClosed_singleton_of_isJacobson`:
   The spectrum of a Jacobson ring is a Jacobson space.
 - `PrimeSpectrum.isOpen_singleton_tfae_of_isNoetherian_of_isJacobson`:
-  If `R` is both noetherian and Jacobson, then the following are equivalent for `x : Spec R`:
+  If `R` is both Noetherian and Jacobson, then the following are equivalent for `x : Spec R`:
   1. `{x}` is open (i.e. `x` is an isolated point)
   2. `{x}` is clopen
   3. `{x}` is both closed and stable under generalization
@@ -67,7 +67,7 @@ lemma isJacobsonRing_iff_jacobsonSpace :
   exact sInf_le ⟨hx, (isClosed_singleton_iff_isMaximal _).mp hx'⟩
 
 /--
-If `R` is both noetherian and jacobson, then the following are equivalent for `x : Spec R`:
+If `R` is both Noetherian and Jacobson, then the following are equivalent for `x : Spec R`:
 1. `{x}` is open (i.e. `x` is an isolated point)
 2. `{x}` is clopen
 3. `{x}` is both closed and stable under generalization
