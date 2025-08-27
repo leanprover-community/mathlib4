@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Data.Complex.ExponentialBounds
 
 /-!
 # Behrend's bound on Roth numbers
@@ -58,7 +58,7 @@ lemma threeAPFree_frontier {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsS
     ThreeAPFree (frontier s) := by
   intro a ha b hb c hc habc
   obtain rfl : (1 / 2 : 𝕜) • a + (1 / 2 : 𝕜) • c = b := by
-    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by norm_num), two_smul]
+    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by simp), two_smul]
   have :=
     hs₁.eq (hs₀.frontier_subset ha) (hs₀.frontier_subset hc) one_half_pos one_half_pos
       (add_halves _) hb.2
@@ -114,13 +114,13 @@ theorem sphere_subset_box : sphere n d k ⊆ box n d :=
   filter_subset _ _
 
 theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
-    ‖(WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
+    ‖WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
   rw [EuclideanSpace.norm_eq]
   dsimp
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
 
 theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
-    (fun x : Fin n → ℕ => (WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
+    (fun x : Fin n → ℕ => WithLp.toLp 2 ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
       Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (√↑k) :=
   fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 
@@ -211,8 +211,8 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   cases d
   · simp
   apply threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
-  · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
-      forall_apply_eq_imp_iff₂, sphere, mem_filter]
+  · simp only [mem_image, and_imp, forall_exists_index,
+      sphere, mem_filter]
     rintro _ x hx _ rfl
     exact (map_le_of_mem_box hx).trans_lt sum_lt
   apply map_injOn.mono fun x => ?_
@@ -388,14 +388,11 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
 
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
-  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
+  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv, nValue]
+  · grw [ceil_lt_mul]
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff₀]
-      · norm_num; exact le_sqrt_log hN
+      · norm_num [le_sqrt_log hN]
       · norm_num1
-    · apply log_nonneg
-      rw [one_le_cast]
-      exact hN.trans' (by norm_num1)
     · rw [cast_pos, lt_ceil, cast_zero, Real.sqrt_pos]
       refine log_pos ?_
       rw [one_lt_cast]

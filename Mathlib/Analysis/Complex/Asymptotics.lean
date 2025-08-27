@@ -9,7 +9,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 /-!
 # Lemmas about asymptotics and the natural embedding `ℝ → ℂ`
 
-In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc and `(↑) : ℝ → ℂ`.
+In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc. and `(↑) : ℝ → ℂ`.
 -/
 
 namespace Complex
@@ -54,3 +54,12 @@ lemma isBigO_comp_ofReal_nhds_ne {f g : ℂ → ℂ} {x : ℝ} (h : f =O[𝓝[�
   h.comp_tendsto <| continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin fun _ _ ↦ by simp_all
 
 end Complex
+
+section Int
+
+open Filter in
+lemma Int.cast_complex_isTheta_cast_real : Int.cast (R := ℂ) =Θ[cofinite] Int.cast (R := ℝ) := by
+  apply Asymptotics.IsTheta.of_norm_eventuallyEq_norm
+  filter_upwards with n using by simp
+
+end Int

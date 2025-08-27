@@ -199,7 +199,7 @@ theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.
 
 theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
-  show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
+  change _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
     dsimp [Function.comp_def]

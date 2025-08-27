@@ -244,7 +244,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       calc
       ∞ = ∫⁻ _ in {a | s < f a}, ENNReal.ofReal (∫ t in (0)..s, g t) ∂μ := by
           simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
-            h's, ne_eq, ENNReal.ofReal_eq_zero, not_le]
+            h's]
           rw [ENNReal.mul_top]
           simpa [intervalIntegral.integral_of_le s_pos.le] using hs
       _ ≤ ∫⁻ ω in {a | s < f a}, ENNReal.ofReal (∫ t in (0)..f ω, g t) ∂μ := by
@@ -550,7 +550,7 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
   apply Eventually.of_forall (fun t ht ↦ ?_)
   have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by
-    rw [measure_zero_iff_ae_notMem]
+    rw [measure_eq_zero_iff_ae_notMem]
     filter_upwards [f_bdd] with a ha using not_lt.mpr ha
   rw [measureReal_def, ENNReal.toReal_eq_zero_iff]
   exact Or.inl <| measure_mono_null (fun a ha ↦ lt_of_lt_of_le htM ha) obs

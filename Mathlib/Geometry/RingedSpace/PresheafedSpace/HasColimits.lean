@@ -15,7 +15,7 @@ If `C` has limits, then the category `PresheafedSpace C` has colimits,
 and the forgetful functor to `TopCat` preserves these colimits.
 
 When restricted to a diagram where the underlying continuous maps are open embeddings,
-this says that we can glue presheaved spaces.
+this says that we can glue presheafed spaces.
 
 Given a diagram `F : J ⥤ PresheafedSpace C`,
 we first build the colimit of the underlying topological spaces,
@@ -267,15 +267,14 @@ instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
     · rfl
-    · intro j
-      simp⟩
+    · simp⟩
 
-/-- When `C` has limits, the category of presheaved spaces with values in `C` itself has colimits.
+/-- When `C` has limits, the category of presheafed spaces with values in `C` itself has colimits.
 -/
 instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} C) :=
   ⟨fun {_ _} => ⟨fun {F} => ⟨colimitCocone F, colimitCoconeIsColimit F⟩⟩⟩
 
-/-- The underlying topological space of a colimit of presheaved spaces is
+/-- The underlying topological space of a colimit of presheafed spaces is
 the colimit of the underlying topological spaces.
 -/
 instance forget_preservesColimits [HasLimits C] :
@@ -299,7 +298,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
   fapply NatIso.ofComponents
   · intro X
     refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
-    simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
+    simp only [Functor.op_obj, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     erw [← TopCat.comp_app]
@@ -327,12 +326,6 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
       ← comp_c_app_assoc,
       congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
-  -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block
-  set f := _
-  change _ ≫ f = _
-  suffices f_eq : f = 𝟙 _ by rw [f_eq, comp_id]
-  erw [← (F.obj j).presheaf.map_id]
-  change (F.obj j).presheaf.map _ ≫ _ = _
   simp
 
 @[simp]

@@ -128,6 +128,7 @@
     "Mathlib.Topology"
   ],
   "Mathlib.Data": [
+    "Mathlib.Analysis",
     "Mathlib.AlgebraicGeometry",
     "Mathlib.AlgebraicTopology",
     "Mathlib.Computability",

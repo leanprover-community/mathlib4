@@ -24,7 +24,7 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open scoped Topology Filter
+open scoped Asymptotics Topology Filter
 open Set
 
 namespace Complex
@@ -32,15 +32,17 @@ namespace Complex
 /-- The complex sine function is everywhere strictly differentiable, with the derivative `cos x`. -/
 theorem hasStrictDerivAt_sin (x : ℂ) : HasStrictDerivAt sin (cos x) x := by
   simp only [cos, div_eq_mul_inv]
-  convert ((((hasStrictDerivAt_id x).neg.mul_const I).cexp.sub
+  convert ((((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp.sub
     ((hasStrictDerivAt_id x).mul_const I).cexp).mul_const I).mul_const (2 : ℂ)⁻¹ using 1
-  simp only [Function.comp, id]
+  simp only [id]
   rw [sub_mul, mul_assoc, mul_assoc, I_mul_I, neg_one_mul, neg_neg, mul_one, one_mul, mul_assoc,
     I_mul_I, mul_neg_one, sub_neg_eq_add, add_comm]
 
 /-- The complex sine function is everywhere differentiable, with the derivative `cos x`. -/
 theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
+
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
 
 theorem contDiff_sin {n} : ContDiff ℂ n sin :=
   (((contDiff_neg.mul contDiff_const).cexp.sub (contDiff_id.mul contDiff_const).cexp).mul
@@ -79,8 +81,8 @@ theorem deriv_sin : deriv sin = cos :=
 theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
   simp only [sin, div_eq_mul_inv, neg_mul_eq_neg_mul]
   convert (((hasStrictDerivAt_id x).mul_const I).cexp.add
-    ((hasStrictDerivAt_id x).neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
-  simp only [Function.comp, id]
+    ((hasStrictDerivAt_id x).fun_neg.mul_const I).cexp).mul_const (2 : ℂ)⁻¹ using 1
+  simp only [id]
   ring
 
 /-- The complex cosine function is everywhere differentiable, with the derivative `-sin x`. -/
@@ -125,7 +127,7 @@ theorem deriv_cos' : deriv cos = fun x => -sin x :=
 `cosh x`. -/
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).neg.cexp).mul_const (2 : ℂ)⁻¹
+  convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
     using 1
   rw [id, mul_neg_one, sub_eq_add_neg, neg_neg]
 
@@ -133,6 +135,8 @@ theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
 `cosh x`. -/
 theorem hasDerivAt_sinh (x : ℂ) : HasDerivAt sinh (cosh x) x :=
   (hasStrictDerivAt_sinh x).hasDerivAt
+
+theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
 
 theorem contDiff_sinh {n} : ContDiff ℂ n sinh :=
   (contDiff_exp.sub contDiff_neg.cexp).div_const _
@@ -169,7 +173,7 @@ theorem deriv_sinh : deriv sinh = cosh :=
 derivative `sinh x`. -/
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).neg.cexp).mul_const (2 : ℂ)⁻¹
+  convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
     using 1
   rw [id, mul_neg_one, sub_eq_add_neg]
 
@@ -321,8 +325,8 @@ section
 /-! ### Simp lemmas for derivatives of `fun x => Complex.cos (f x)` etc., `f : E → ℂ` -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E}
-  {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : E → ℂ} {f' : StrongDual ℂ E}
+  {x : E} {s : Set E}
 
 /-! #### `Complex.cos` -/
 
@@ -556,6 +560,8 @@ theorem hasStrictDerivAt_sin (x : ℝ) : HasStrictDerivAt sin (cos x) x :=
 theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
   (hasStrictDerivAt_sin x).hasDerivAt
 
+theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
+
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=
   Complex.contDiff_sin.real_of_complex
 
@@ -632,6 +638,8 @@ theorem hasStrictDerivAt_sinh (x : ℝ) : HasStrictDerivAt sinh (cosh x) x :=
 
 theorem hasDerivAt_sinh (x : ℝ) : HasDerivAt sinh (cosh x) x :=
   (Complex.hasDerivAt_sinh x).real_of_complex
+
+theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
 
 theorem contDiff_sinh {n} : ContDiff ℝ n sinh :=
   Complex.contDiff_sinh.real_of_complex
@@ -765,7 +773,7 @@ theorem sinh_sub_id_strictMono : StrictMono fun x => sinh x - x := by
   refine strictMonoOn_of_deriv_pos (convex_Ici _) ?_ fun x hx => ?_
   · exact (continuous_sinh.sub continuous_id).continuousOn
   · rw [interior_Ici, mem_Ioi] at hx
-    rw [deriv_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]
+    rw [deriv_fun_sub, deriv_sinh, deriv_id'', sub_pos, one_lt_cosh]
     exacts [hx.ne', differentiableAt_sinh, differentiableAt_id]
 
 @[simp]
@@ -900,8 +908,8 @@ section
 /-! ### Simp lemmas for derivatives of `fun x => Real.cos (f x)` etc., `f : E → ℝ` -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
-  {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
+  {x : E} {s : Set E}
 
 /-! #### `Real.cos` -/
 

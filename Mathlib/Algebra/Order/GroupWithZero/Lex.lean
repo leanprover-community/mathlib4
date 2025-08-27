@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.ProdHom
-import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Group.Equiv
 import Mathlib.Algebra.Order.Monoid.Lex
+import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Data.Prod.Lex
 
 /-!
@@ -25,35 +26,6 @@ Create the "LinOrdCommGrpWithZero" category.
 
 -/
 
--- TODO: find a better place
-/-- `toLex` as a monoid isomorphism. -/
-def toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] : G × H ≃* G ×ₗ H where
-  toFun := toLex
-  invFun := ofLex
-  left_inv := ofLex_toLex
-  right_inv := toLex_ofLex
-  map_mul' := toLex_mul
-
-@[simp]
-lemma coe_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv G H) = toLex :=
-  rfl
-
-@[simp]
-lemma coe_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv G H).symm = ofLex :=
-  rfl
-
-@[simp]
-lemma toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑(toLexMulEquiv G H : G × H ≃ G ×ₗ H) = toLex :=
-  rfl
-
-@[simp]
-lemma toEquiv_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
-    ⇑((toLexMulEquiv G H).symm : G ×ₗ H ≃ G × H) = ofLex :=
-  rfl
-
 namespace MonoidWithZeroHom
 
 variable {M₀ N₀ : Type*}
@@ -64,7 +36,7 @@ lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preor
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
-  · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
+  · simp [WithZero.withZeroUnitsEquiv]
 
 lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [PartialOrder N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (inl M₀ N₀) :=
@@ -76,7 +48,7 @@ lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZ
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
-  · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
+  · simp [WithZero.withZeroUnitsEquiv]
 
 lemma inr_strictMono [GroupWithZero M₀] [PartialOrder M₀] [LinearOrderedCommGroupWithZero N₀]
     [DecidablePred fun x : N₀ ↦ x = 0] : StrictMono (inr M₀ N₀) :=
@@ -130,7 +102,7 @@ nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
     cases y
     · simp
     · simp
-    · simp [WithZero.zero_lt_coe]
+    · simp
     · simpa using Prod.Lex.monotone_fst _ _
 
 @[simp]

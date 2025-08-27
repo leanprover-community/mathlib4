@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -195,7 +196,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n
     refine zero_lt_one.trans_le ?_
-    simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ (cone k).le]
+    simp only [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ (cone k).le]
   have A :
     Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / c k ^ (n + 1) * c k / (⌊c k ^ n⌋₊ / c k ^ n))
       atTop (𝓝 (1 * c k / 1)) := by
@@ -240,7 +241,6 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       rw [div_lt_iff₀ (Real.log_pos hc), ← Real.log_pow]
       exact Real.log_lt_log hj hi.2
     _ = ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
-      congr 1 with i
       simp [← pow_mul, mul_comm]
     _ ≤ (c⁻¹ ^ 2) ^ ⌊Real.log j / Real.log c⌋₊ / ((1 : ℝ) - c⁻¹ ^ 2) :=
       geom_sum_Ico_le_of_lt_one (sq_nonneg _) C
@@ -254,12 +254,12 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         apply Real.log_injOn_pos (Real.rpow_pos_of_pos A _)
         · rw [Set.mem_Ioi]; positivity
         rw [Real.log_rpow A]
-        simp only [one_div, Real.log_inv, Real.log_pow, Nat.cast_one, mul_neg, neg_inj]
+        simp only [one_div, Real.log_inv, Real.log_pow, mul_neg, neg_inj]
         field_simp [(Real.log_pos hc).ne']
         ring
       rw [Real.rpow_sub A, I]
       have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
-      field_simp [hj.ne', (zero_lt_one.trans hc).ne']
+      simp
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
 

@@ -154,7 +154,7 @@ instance instSemiring : Semiring (Language α) where
   mul_one l := by simp [mul_def, one_def]
   natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
-  natCast_succ n := by cases n <;> simp [Nat.cast, add_def, zero_def]
+  natCast_succ n := by cases n <;> simp [add_def, zero_def]
   left_distrib _ _ _ := image2_union_right
   right_distrib _ _ _ := image2_union_left
   nsmul := nsmulRec
@@ -198,7 +198,7 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
-  simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
+  simp only [mul_def, mem_image2] at hx ⊢
   tauto
 
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
@@ -226,13 +226,7 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction n generalizing x with
-  | zero =>
-    simp only [mem_one, pow_zero, length_eq_zero_iff]
-    constructor
-    · rintro rfl
-      exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · rintro ⟨_, rfl, rfl, _⟩
-      rfl
+  | zero => simp
   | succ n ihn =>
     simp only [pow_succ', mem_mul, ihn]
     constructor
@@ -245,11 +239,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
   simp only [mem_kstar, mem_iSup, mem_pow]
-  constructor
-  · rintro ⟨S, rfl, hS⟩
-    exact ⟨_, S, rfl, rfl, hS⟩
-  · rintro ⟨_, S, rfl, rfl, hS⟩
-    exact ⟨S, rfl, hS⟩
+  grind
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by

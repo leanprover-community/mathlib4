@@ -30,11 +30,9 @@ theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
 
 theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
   refine IsStableUnderBaseChange.mk isIntegral_respectsIso ?_
-  introv h x
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · apply isIntegral_zero
-  · intro x y; exact IsIntegral.tmul x (h y)
-  · intro x y hx hy; exact IsIntegral.add hx hy
+  introv int
+  rw [algebraMap_isIntegral_iff] at int ⊢
+  infer_instance
 
 open Polynomial in
 /-- `S` is an integral `R`-algebra if there exists a set `{ r }` that
@@ -43,7 +41,7 @@ theorem isIntegral_ofLocalizationSpan :
     OfLocalizationSpan (RingHom.IsIntegral ·) := by
   introv R hs H r
   letI := f.toAlgebra
-  show r ∈ (integralClosure R S).toSubmodule
+  change r ∈ (integralClosure R S).toSubmodule
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ s hs
   rintro ⟨t, ht⟩
   letI := (Localization.awayMap f t).toAlgebra

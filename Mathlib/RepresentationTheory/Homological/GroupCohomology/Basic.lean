@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.Opposite
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 
@@ -20,7 +21,7 @@ $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representati
 
 We have a `k`-linear isomorphism
 $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
-the righthand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
+the right-hand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
 representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
 where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
 resulting map agrees with the differential $d^n$ defined above, a fact we prove.
@@ -54,7 +55,6 @@ possible scalar action diamonds.
 
 ## TODO
 
-* The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
 
@@ -119,7 +119,7 @@ end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] [DecidableEq G] (n) (A : Rep k G)
+variable [Group G] (n) (A : Rep k G)
 
 open inhomogeneousCochains Rep
 
@@ -129,6 +129,7 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
+    classical
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
@@ -149,7 +150,7 @@ theorem inhomogeneousCochains.d_comp_d :
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousCochainsIso :
+def inhomogeneousCochainsIso [DecidableEq G] :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
     (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
@@ -161,6 +162,12 @@ def inhomogeneousCochainsIso :
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
+variable {A} in
+/-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
+abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
+    cocycles A n :=
+  (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h])
+
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
 abbrev iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
   (inhomogeneousCochains A).iCycles n
@@ -170,18 +177,23 @@ inhomogeneous cochains. -/
 abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
   (inhomogeneousCochains A).toCycles i j
 
+variable {A} in
+theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
+    iCocycles A n (cocyclesMk f h) = f := by
+  exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
+
 end groupCohomology
 
 open groupCohomology
 
 /-- The group cohomology of a `k`-linear `G`-representation `A`, as the cohomology of its complex
 of inhomogeneous cochains. -/
-def groupCohomology [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
+def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupCohomology.π [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
+abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
@@ -189,7 +201,7 @@ abbrev groupCohomology.π [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
 noncomputable alias groupCohomologyπ := groupCohomology.π
 
 @[elab_as_elim]
-theorem groupCohomology_induction_on [Group G] [DecidableEq G] {A : Rep k G} {n : ℕ}
+theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
     {C : groupCohomology A n → Prop} (x : groupCohomology A n)
     (h : ∀ x : cocycles A n, C (π A n x)) : C x := by
   rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
@@ -201,6 +213,14 @@ def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
+
+/-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
+`Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
+`G`-representation. -/
+def groupCohomologyIso [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+    (P : ProjectiveResolution (Rep.trivial k G k)) :
+    groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
+  groupCohomologyIsoExt A n ≪≫ P.isoExt _ _
 
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :

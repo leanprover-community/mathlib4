@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
@@ -244,7 +245,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
 
 lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
     Set.InjOn (ζ ^ ·) (Finset.range n) := by
-  intros i hi j hj e
+  intro i hi j hj e
   rw [Finset.coe_range, Set.mem_Iio] at hi hj
   exact hζ.pow_inj hi hj e
 
@@ -256,6 +257,13 @@ lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
 
 lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
   ⟨_, .orderOf _, fun _ hl ↦ unique hl (.orderOf _)⟩
+
+theorem _root_.isPrimitiveRoot_of_mem_rootsOfUnity {u : Mˣ} {n : ℕ} [NeZero n]
+    (hu : u ∈ rootsOfUnity n M) :
+    ∃ d : ℕ, d ≠ 0 ∧ d ∣ n ∧ IsPrimitiveRoot u d :=
+  ⟨orderOf u, (IsOfFinOrder.orderOf_pos ⟨n, NeZero.pos n,
+    (isPeriodicPt_mul_iff_pow_eq_one u).mpr hu⟩).ne', orderOf_dvd_of_pow_eq_one hu,
+    IsPrimitiveRoot.orderOf u⟩
 
 section Maps
 
@@ -330,7 +338,7 @@ theorem zpow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℤ) : ζ ^ l = 1 �
     rw [← h.pow_eq_one_iff_dvd, ← inv_inj, ← zpow_neg, ← hl', zpow_natCast, inv_one]
 
 theorem inv (h : IsPrimitiveRoot ζ k) : IsPrimitiveRoot ζ⁻¹ k :=
-  { pow_eq_one := by simp only [h.pow_eq_one, inv_one, eq_self_iff_true, inv_pow]
+  { pow_eq_one := by simp only [h.pow_eq_one, inv_one, inv_pow]
     dvd_of_pow_eq_one := by
       intro l hl
       apply h.dvd_of_pow_eq_one l
@@ -563,7 +571,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
   by_cases hα : α = 0
   · rw [hα, zero_pow hn.ne'] at e
     simp only [hα, e.symm, nthRoots_zero_right, mul_zero,
-      Finset.range_val, Multiset.map_const', Multiset.card_range]
+      Multiset.map_const', Multiset.card_range]
   classical
   symm; apply Multiset.eq_of_le_of_card_le
   · rw [← Finset.range_val,
@@ -582,7 +590,7 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
   split_ifs with h
   · obtain ⟨α, hα⟩ := h
     rw [nthRoots_eq hζ hα, Multiset.card_map, Multiset.card_range]
-  · obtain (rfl|hn) := n.eq_zero_or_pos; · simp
+  · obtain (rfl | hn) := n.eq_zero_or_pos; · simp
     push_neg at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_notMem, mem_nthRoots hn]
 
@@ -644,14 +652,14 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
   have : NeZero k := ⟨h0⟩
   symm
   refine Finset.card_bij (fun i _ ↦ ζ ^ i) ?_ ?_ ?_
-  · simp only [and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range]
     rintro i - hi
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0)]
     exact h.pow_of_coprime i hi.symm
-  · simp only [and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range]
     rintro i hi - j hj - H
     exact h.pow_inj hi hj H
-  · simp only [exists_prop, mem_filter, mem_range, mem_univ]
+  · simp only [exists_prop, mem_filter, mem_range]
     intro ξ hξ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0), h.isPrimitiveRoot_iff] at hξ
     rcases hξ with ⟨i, hin, hi, H⟩

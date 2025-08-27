@@ -7,7 +7,7 @@ import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
@@ -64,7 +64,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
       by_contra hCon
       simp_all [← h₁x.meromorphicOrderAt_eq_zero_iff, t₀ ⟨x, h₂x⟩]
     rw [intervalIntegrable_congr_codiscreteWithin this]
-    apply _root_.intervalIntegrable_const_iff.2
+    apply Iff.mpr _root_.intervalIntegrable_const_iff
     tauto
 
 /--
@@ -163,6 +163,14 @@ theorem circleIntegrable_log_norm_meromorphicOn_of_nonneg (hf : MeromorphicOn f 
   exact circleIntegrable_log_norm_meromorphicOn hf
 
 /--
+Variant of `circleIntegrable_log_norm_meromorphicOn` for factorized rational functions.
+-/
+theorem circleIntegrable_log_norm_factorizedRational {R : ℝ} {c : ℂ} (D : ℂ → ℤ) :
+    CircleIntegrable (∑ᶠ u, ((D u) * log ‖· - u‖)) c R :=
+  CircleIntegrable.finsum (fun _ ↦ (circleIntegrable_log_norm_meromorphicOn
+    (analyticOnNhd_id.sub analyticOnNhd_const).meromorphicOn).const_smul)
+
+/--
 If `f` is complex meromorphic on a circle in the complex plane, then `log⁺ ‖f ·‖` is circle
 integrable over that circle.
 -/
@@ -171,8 +179,7 @@ theorem circleIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f (sphere
   simp_rw [← half_mul_log_add_log_abs, mul_add]
   apply CircleIntegrable.add
   · apply (circleIntegrable_log_norm_meromorphicOn hf).const_mul
-  · apply IntervalIntegrable.const_mul
-    apply (circleIntegrable_log_norm_meromorphicOn hf).abs
+  · apply (circleIntegrable_log_norm_meromorphicOn hf).abs.const_mul
 
 /--
 Variant of `circleIntegrable_posLog_norm_meromorphicOn` for non-negative radii.
