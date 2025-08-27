@@ -193,8 +193,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
     ext x
     simp [of]
     -- porting note: `simp` should fire with the following lemma automatically
-    have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
-    exact this
+    exact LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, ← of_id]
   exact (lift Q of a).prop

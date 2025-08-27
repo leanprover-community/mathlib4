@@ -37,6 +37,8 @@ noncomputable def binomialSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂] (�
     FormalMultilinearSeries 𝕂 𝔸 𝔸 :=
   .ofScalars 𝔸 (Ring.choose a ·)
 
+-- TODO: should grind be considered normalising?
+set_option linter.flexible false in
 theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂]
     {𝔸 : Type v} [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] {a b : 𝕂}
     (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) :
@@ -63,6 +65,7 @@ theorem binomialSeries_radius_eq_top_of_nat {𝕂 : Type v} [RCLike 𝕂] {𝔸 
 /-- The radius of convergence of `binomialSeries 𝔸 a` is `1`, when `a` is not natural. -/
 theorem binomialSeries_radius_eq_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} (ha : ∀ (k : ℕ), a ≠ k) : (binomialSeries 𝔸 a).radius = 1 := by
-  simp [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp)]
+  simp only [binomialSeries_eq_ordinaryHypergeometricSeries (b := (1 : 𝕂)) (by norm_cast; simp),
+    FormalMultilinearSeries.radius_compNeg]
   conv at ha => ext; rw [ne_comm]
   exact ordinaryHypergeometricSeries_radius_eq_one _ _ _ _ (by norm_cast; grind)
