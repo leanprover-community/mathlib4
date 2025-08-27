@@ -34,13 +34,11 @@ def unitary.toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
 
 @[simp]
 theorem unitary.toStarAlgAut_apply (u : unitary R) (x : R) :
-    toStarAlgAut S R u x = u * x * (star u : R) :=
-  rfl
+    toStarAlgAut S R u x = u * x * (star u : R) := rfl
 
 @[simp]
 theorem unitary.toStarAlgAut_symm_apply (u : unitary R) (x : R) :
-    (toStarAlgAut S R u).symm x = (star u : R) * x * u :=
-  rfl
+    (toStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
 
 @[simp]
 theorem unitary.toStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
@@ -53,6 +51,5 @@ theorem unitary.toStarAlgAut_conj_symm (u : unitary R) :
 
 @[simp]
 theorem unitary.toRingEquiv_toStarAlgAut (u : unitary R) :
-    (toStarAlgAut S R u).toRingEquiv =
-    MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
+    (toStarAlgAut S R u).toRingEquiv = MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
   rfl
