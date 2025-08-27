@@ -230,9 +230,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
       F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm := by cat_disch) :
     F = G := by
   match F, G with
-  | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with
-    | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>
+  | mk F_obj _ _ _, mk G_obj _ _ _ =>
     obtain rfl : F_obj = G_obj := by
       ext X
       apply h_obj

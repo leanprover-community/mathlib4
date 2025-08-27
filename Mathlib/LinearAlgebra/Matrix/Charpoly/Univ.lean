@@ -11,7 +11,7 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 # The universal characteristic polynomial
 
 In this file we define the universal characteristic polynomial `Matrix.charpoly.univ`,
-which is the charactistic polynomial of the matrix with entries `Xᵢⱼ`,
+which is the characteristic polynomial of the matrix with entries `Xᵢⱼ`,
 and hence has coefficients that are multivariate polynomials.
 
 It is universal in the sense that one obtains the characteristic polynomial of a matrix `M`
@@ -36,7 +36,7 @@ variable (f : R →+* S)
 
 variable (R) in
 /-- The universal characteristic polynomial for `n × n`-matrices,
-is the charactistic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
+is the characteristic polynomial of `Matrix.mvPolynomialX n n ℤ` with entries `Xᵢⱼ`.
 
 Its `i`-th coefficient is a homogeneous polynomial of degree `n - i`,
 see `Matrix.charpoly.univ_coeff_isHomogeneous`.
