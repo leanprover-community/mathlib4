@@ -120,7 +120,7 @@ def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0
     Set.BijOn.equiv _ (gammaSet_div_gcd_to_gammaSet10_bijection r)
 
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
-def gammaSetDivGcdTopEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
+def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply ((Equiv.sigmaFiberEquiv finGcdMap).symm).trans
   refine Equiv.sigmaCongrRight fun b => ?_
   apply Equiv.setCongr
@@ -128,8 +128,8 @@ def gammaSetDivGcdTopEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) :=
   rfl
 
 @[simp]
-lemma gammaSetDivGcdTopEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
-    (gammaSetDivGcdTopEquiv.symm v) = v.2 := rfl
+lemma gammaSetDivGcdSigmaEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
+    (gammaSetDivGcdSigmaEquiv.symm v) = v.2 := rfl
 
 end gammaSet_def
 
