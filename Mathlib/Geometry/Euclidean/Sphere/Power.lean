@@ -212,31 +212,18 @@ theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P
 /-- **Tangent-Secant Theorem**. The square of the tangent length equals
     the product of secant segment lengths. -/
 theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
-    (ha : a ∈ s) (hb : b ∈ s) (ht : t ∈ s) (hpt : p ≠ t)
+    (ha : a ∈ s) (hb : b ∈ s)
     (h_secant : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
     (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
-    dist t p ^ 2 = dist a p * dist b p := by
-  have hp_outside : s.radius < dist p s.center := by
-    by_contra h; push_neg at h
-    obtain h_lt | h_eq := lt_or_eq_of_le h
-    · exact Sphere.IsTangent.notMem_of_dist_lt h_tangent.isTangent (by rwa [dist_comm])
-        (mem_affineSpan ℝ (Set.mem_insert p {t}))
-    · exact hpt (h_tangent.mem_and_mem_iff_eq.mp
-        ⟨by rw [mem_sphere, h_eq], mem_affineSpan ℝ (Set.mem_insert p {t})⟩)
-  rw [eq_comm, ← dist_comm p a, ← dist_comm p b,
-    Sphere.mul_dist_eq_abs_power h_secant ha hb,
-    abs_of_pos ((Sphere.power_pos_iff_radius_lt_dist_center
-        (Sphere.radius_nonneg_of_mem ha)).mpr hp_outside),
-    Sphere.power, ← mem_sphere.mp ht, dist_eq_norm_vsub, dist_eq_norm_vsub]
-  have h_orthogonal : ⟪t -ᵥ p, t -ᵥ s.center⟫ = 0 := by
-    rw [← neg_vsub_eq_vsub_rev, inner_neg_left, neg_eq_zero]
-    exact Sphere.mem_orthRadius_iff_inner_left.mp
-      (h_tangent.le_orthRadius (left_mem_affineSpan_pair ℝ p t))
-  rw [← vsub_add_vsub_cancel p t s.center, pow_two, pow_two, pow_two,
-    norm_add_sq_eq_norm_sq_add_norm_sq_real]
-  · ring_nf
-    rw [← neg_vsub_eq_vsub_rev, norm_neg, ← dist_eq_norm_vsub]
-  · rwa [← neg_vsub_eq_vsub_rev, inner_neg_left, neg_eq_zero]
+    dist p t ^ 2 = dist p a * dist p b := by
+  have hr := radius_nonneg_of_mem ha
+  have h_outside : s.radius ≤ dist p s.center := by
+    rw [dist_comm]
+    by_contra! hlt
+    exact h_tangent.isTangent.notMem_of_dist_lt hlt (left_mem_affineSpan_pair ℝ p t)
+  rw [mul_dist_eq_power_of_radius_le_dist_center hr h_secant ha hb h_outside,
+    Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
+  ring
 
 end Sphere
 
