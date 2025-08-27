@@ -15,23 +15,28 @@ and `Triple F G R` accessible as `Quadruple.leftTriple` and `Quadruple.rightTrip
 
 Currently the only two results are the following:
 * When `F` and `R` are fully faithful, the components of the induced natural transformation `G ⟶ L`
-  are epic iff the components of the natural transformation `F ⟶ R` are monic.
+  are epimorphisms iff the components of the natural transformation `F ⟶ R` are monomorphisms.
 * When `L` and `G` are fully faithful, the components of the induced natural transformation `L ⟶ G`
-  are epic iff the components of the natural transformation `R ⟶ F` are monic.
+  are epimorphisms iff the components of the natural transformation `R ⟶ F` are monomorphisms.
+This is in particular relevant for the adjoint quadruples `π₀ ⊣ disc ⊣ Γ ⊣ codisc` that appear in
+cohesive topoi, and can be found e.g. as proposition 2.7
+[here](https://ncatlab.org/nlab/show/cohesive+topos).
 -/
 
 open CategoryTheory Limits Functor Adjunction Triple
 
-variable {C D : Type*} [Category C] [Category D]
+universe v₁ v₂ u₁ u₂
+
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 variable (L : C ⥤ D) (F : D ⥤ C) (G : C ⥤ D) (R : D ⥤ C)
 
-/-- Structure containing the three adjunctions of an adjoint triple `L ⊣ F ⊣ G ⊣ R`. -/
+/-- Structure containing the three adjunctions of an adjoint quadruple `L ⊣ F ⊣ G ⊣ R`. -/
 structure CategoryTheory.Adjunction.Quadruple where
-  /-- Adjunction `L ⊣ F` of the adjoint quadruple `L ⊣ F ⊣ G ⊣ H`. -/
+  /-- Adjunction `L ⊣ F` of the adjoint quadruple `L ⊣ F ⊣ G ⊣ R`. -/
   adj₁ : L ⊣ F
-  /-- Adjunction `F ⊣ G` of the adjoint quadruple `L ⊣ F ⊣ G ⊣ H`. -/
+  /-- Adjunction `F ⊣ G` of the adjoint quadruple `L ⊣ F ⊣ G ⊣ R`. -/
   adj₂ : F ⊣ G
-  /-- Adjunction `G ⊣ R` of the adjoint quadruple `L ⊣ F ⊣ G ⊣ H`. -/
+  /-- Adjunction `G ⊣ R` of the adjoint quadruple `L ⊣ F ⊣ G ⊣ R`. -/
   adj₃ : G ⊣ R
 
 namespace CategoryTheory.Adjunction.Quadruple
@@ -69,27 +74,27 @@ section RightFullyFaithful
 variable [F.Full] [F.Faithful]
 
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful, all components
-of the natural transformation `G ⟶ L` are epic iff all components of the natural transformation
-`F ⟶ R` are monic. -/
+of the natural transformation `G ⟶ L` are epimorphisms iff all components of the natural
+transformation `F ⟶ R` are monomorphisms. -/
 lemma epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app :
     (∀ X, Epi (q.leftTriple.rightToLeft.app X)) ↔ ∀ X, Mono (q.rightTriple.leftToRight.app X) := by
   simp_rw [mono_leftToRight_app_iff_mono_adj₂_unit_app, rightToLeft_eq_counits]
-  dsimp; simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.id_obj,
+  dsimp
+  simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.id_obj,
     whiskerLeft_app, Category.comp_id, Category.id_comp]
   simp_rw [epi_comp_iff_of_epi, epi_iff_forall_injective, mono_iff_forall_injective]
-  rw [forall_comm]; refine forall_congr' fun X ↦ forall_congr' fun Y ↦ ?_
+  rw [forall_comm]
+  refine forall_congr' fun X ↦ forall_congr' fun Y ↦ ?_
   rw [← (q.adj₁.homEquiv _ _).comp_injective _]
-  change (fun g ↦ q.adj₁.homEquiv _ _ _).Injective ↔ _
-  simp_rw [q.adj₁.homEquiv_naturality_left]
+  simp_rw [Function.comp_def, q.adj₁.homEquiv_naturality_left]
   refine ((q.adj₁.homEquiv _ _).injective_comp fun f ↦ _).trans ?_
   rw [← ((q.adj₂.homEquiv _ _).trans (q.adj₃.homEquiv _ _)).comp_injective _]
-  change (fun g ↦ q.adj₃.homEquiv _ _ (q.adj₂.homEquiv _ _ _)).Injective ↔ _
-  simp [← q.adj₂.homEquiv_symm_id, ← q.adj₂.homEquiv_naturality_right_symm,
+  simp [Function.comp_def, ← q.adj₂.homEquiv_symm_id, ← q.adj₂.homEquiv_naturality_right_symm,
     ← q.adj₃.homEquiv_id, ← q.adj₃.homEquiv_naturality_left]
 
-/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful, their domain
-has all pushouts and their codomain has all pullbacks, the natural transformation `G ⟶ L` is epic
-iff the natural transformation `F ⟶ R` is monic. -/
+/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful and their domain
+and codomain have all pushouts resp. pullbacks, the natural transformation `G ⟶ L` is an
+epimorphism iff the natural transformation `F ⟶ R` is a monomorphism. -/
 lemma epi_leftTriple_rightToLeft_iff_mono_rightTriple_leftToRight [HasPullbacks C] [HasPushouts D] :
     Epi q.leftTriple.rightToLeft ↔ Mono q.rightTriple.leftToRight := by
   rw [NatTrans.epi_iff_epi_app, NatTrans.mono_iff_mono_app]
@@ -102,8 +107,8 @@ section LeftFullyFaithful
 variable [L.Full] [L.Faithful] [G.Full] [G.Faithful]
 
 /-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful, all components
-of the natural transformation `L ⟶ G` are epic iff all components of the natural transformation
-`R ⟶ F` are monic. -/
+of the natural transformation `L ⟶ G` are epimorphisms iff all components of the natural
+transformation `R ⟶ F` are monomorphisms. -/
 lemma epi_leftTriple_leftToRight_app_iff_mono_rightTriple_rightToLeft_app :
     (∀ X, Epi (q.leftTriple.leftToRight.app X)) ↔ ∀ X, Mono (q.rightTriple.rightToLeft.app X) := by
   have h := q.op.epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app
@@ -111,9 +116,9 @@ lemma epi_leftTriple_leftToRight_app_iff_mono_rightTriple_rightToLeft_app :
   rw [← (Opposite.equivToOpposite (α := D)).forall_congr_right] at h
   simpa using h.symm
 
-/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful, their domain
-has all pushouts and their codomain has all pullbacks, the natural transformation `L ⟶ G` is epic
-iff the natural transformation `R ⟶ F` is monic. -/
+/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `L` and `G` are fully faithful and their domain
+and codomain have all pullbacks resp. pushouts, the natural transformation `L ⟶ G` is an
+epimorphism iff the natural transformation `R ⟶ F` is a monomorphism. -/
 lemma epi_leftTriple_leftToRight_iff_mono_rightTriple_rightToLeft [HasPullbacks C] [HasPushouts D] :
     Epi q.leftTriple.leftToRight ↔ Mono q.rightTriple.rightToLeft := by
   rw [NatTrans.epi_iff_epi_app, NatTrans.mono_iff_mono_app]

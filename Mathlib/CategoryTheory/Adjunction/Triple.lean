@@ -153,7 +153,9 @@ lemma rightToLeft_app_adj₂_unit_app (X : C) :
 transformation `H ⟶ F`. -/
 @[simp]
 lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft  := by
-  ext; rw [rightToLeft_eq_units, rightToLeft_eq_counits]; simp
+  ext
+  rw [rightToLeft_eq_units, rightToLeft_eq_counits]
+  simp
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
 `H ⟶ F` is epic at `X` iff the image of the unit of the adjunction `F ⊣ G` under `H` is. -/
@@ -247,7 +249,9 @@ transformation `H.op ⟶ F.op` obtained from the dual adjoint triple `H.op ⊣ G
 dual to the natural transformation `F ⟶ H`. -/
 @[simp]
 lemma leftToRight_op : t.op.leftToRight = NatTrans.op t.leftToRight := by
-  ext; rw [leftToRight, leftToRight_eq_counits]; simp
+  ext
+  rw [leftToRight, leftToRight_eq_counits]
+  simp
 
 omit [H.Full] [H.Faithful] in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
