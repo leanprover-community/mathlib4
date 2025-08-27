@@ -226,8 +226,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
   rw [Filter.eventually_all]
   intro i
   have h : Tendsto (fun (n : ℕ) => log (b i * n)) atTop atTop :=
-    Tendsto.comp tendsto_log_atTop
-      <| Tendsto.const_mul_atTop (b_pos R i) tendsto_natCast_atTop_atTop
+    tendsto_log_atTop.comp <| tendsto_natCast_atTop_atTop.const_mul_atTop (b_pos R i)
   exact h.eventually_gt_atTop 0
 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
@@ -328,7 +327,7 @@ lemma differentiableAt_smoothingFn {x : ℝ} (hx : 1 < x) : DifferentiableAt ℝ
   have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
   change DifferentiableAt ℝ (fun z => 1 / log z) x
   simp_rw [one_div]
-  exact DifferentiableAt.inv (differentiableAt_log (by positivity)) this
+  exact (differentiableAt_log (by positivity)).inv this
 
 @[aesop safe apply]
 lemma differentiableAt_one_sub_smoothingFn {x : ℝ} (hx : 1 < x) :
@@ -363,8 +362,8 @@ lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
       · refine IsBigO.mul_isLittleO
           (by rw [isBigO_neg_right]; aesop (add safe isBigO_refl)) ?_
         rw [isLittleO_one_left_iff]
-        exact Tendsto.comp tendsto_norm_atTop_atTop
-          <| Tendsto.comp (tendsto_pow_atTop (by norm_num)) tendsto_log_atTop
+        exact tendsto_norm_atTop_atTop.comp
+          <| (tendsto_pow_atTop (by norm_num)).comp tendsto_log_atTop
       · exact Filter.Eventually.of_forall (fun x hx => by rw [mul_one] at hx; simp [hx])
     _ = fun x => x⁻¹ := by simp
 
@@ -453,9 +452,8 @@ lemma isEquivalent_smoothingFn_sub_self (i : α) :
       have : (fun (n : ℕ) => log (b i) + log n) = fun (n : ℕ) => log n + log (b i) := by
         ext; simp [add_comm]
       rw [this]
-      exact IsEquivalent.add_isLittleO IsEquivalent.refl
-        <| IsLittleO.natCast_atTop (f := fun (_ : ℝ) => log (b i))
-          isLittleO_const_log_atTop
+      exact IsEquivalent.refl.add_isLittleO
+        <| isLittleO_const_log_atTop.natCast_atTop (f := fun (_ : ℝ) => log (b i))
     _ = (fun (n : ℕ) => -log (b i) / (log n) ^ 2) := by ext; congr 1; rw [← pow_two]
 
 lemma isTheta_smoothingFn_sub_self (i : α) :
@@ -568,13 +566,13 @@ lemma asympBound_def' {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :
 section
 include R
 
-lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := by
-  calc 0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)
-       _ ≤ asympBound g a b n := by
-        simp only [asympBound_def']
-        gcongr n ^ p a b * (1 + ?_)
-        have := R.g_nonneg
-        aesop (add safe Real.rpow_nonneg, safe div_nonneg, safe Finset.sum_nonneg)
+lemma asympBound_pos (n : ℕ) (hn : 0 < n) : 0 < asympBound g a b n := calc
+  0 < (n : ℝ) ^ p a b * (1 + 0) := by aesop (add safe Real.rpow_pos_of_pos)
+    _ ≤ asympBound g a b n := by
+      simp only [asympBound_def']
+      gcongr n ^ p a b * (1 + ?_)
+      have := R.g_nonneg
+      aesop (add safe Real.rpow_nonneg, safe div_nonneg, safe Finset.sum_nonneg)
 
 lemma eventually_asympBound_pos : ∀ᶠ (n : ℕ) in atTop, 0 < asympBound g a b n := by
   filter_upwards [eventually_gt_atTop 0] with n hn using R.asympBound_pos n hn
