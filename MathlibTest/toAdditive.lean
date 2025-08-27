@@ -679,13 +679,14 @@ def MyPrivateMul.mul' (x : MyPrivateMul) := x.mul
 
 class MyRing (α : Type*) extends Group α
 
-@[to_additive (dont_translate := β) add_neg_iff_mul_inv]
-lemma mul_inv_iff_mul_inv {α β : Type} [Group α] [MyRing β] (a : α) (b : β) :
-    a * a⁻¹ = 1 ↔ b * b⁻¹ = 1 := by
+@[to_additive (dont_translate := β γ) add_neg_iff_mul_inv]
+lemma mul_inv_iff_mul_inv {α β γ : Type} [Group α] [MyRing β] [MyRing γ] (a : α) (b : β) (c : γ) :
+    a * a⁻¹ = 1 ↔ b * b⁻¹ = 1 ∨ c * c⁻¹ = 1 := by
   simp
 
 /--
-info: add_neg_iff_mul_inv {α β : Type} [AddGroup α] [MyRing β] (a : α) (b : β) : a + -a = 0 ↔ b * b⁻¹ = 1
+info: add_neg_iff_mul_inv {α β γ : Type} [AddGroup α] [MyRing β] [MyRing γ] (a : α) (b : β) (c : γ) :
+  a + -a = 0 ↔ b * b⁻¹ = 1 ∨ c * c⁻¹ = 1
 -/
 #guard_msgs in
 #check add_neg_iff_mul_inv

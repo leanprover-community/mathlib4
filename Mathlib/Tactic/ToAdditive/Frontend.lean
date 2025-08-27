@@ -93,8 +93,8 @@ the fifth argument before the third argument. This is used in `to_dual` to swap 
 -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /--
-`dont_translate := ...` takes a list of type variables that should not be considered
-for translation. For example in
+`dont_translate := ...` takes a list of type variables (separated by spaces) that should not be
+considered for translation. For example in
 ```
 lemma foo {α β : Type} [Group α] [Group β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
 ```
