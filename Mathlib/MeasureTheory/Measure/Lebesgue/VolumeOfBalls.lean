@@ -3,11 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-!
 # Volume of balls
@@ -15,7 +15,7 @@ import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 Let `E` be a finite dimensional normed `ℝ`-vector space equipped with a Haar measure `μ`. We
 prove that
 `μ (Metric.ball 0 1) = (∫ (x : E), Real.exp (- ‖x‖ ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)`
-for any real number `p` with `0 < p`, see `MeasureTheorymeasure_unitBall_eq_integral_div_gamma`. We
+for any real number `p` with `0 < p`, see `MeasureTheory.measure_unitBall_eq_integral_div_gamma`. We
 also prove the corresponding result to compute `μ {x : E | g x < 1}` where `g : E → ℝ` is a function
 defining a norm on `E`, see `MeasureTheory.measure_lt_one_eq_integral_div_gamma`.
 
