@@ -1166,6 +1166,7 @@ import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Subsemiring
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Algebra.Star.UnitaryStarAlgAut
 import Mathlib.Algebra.Symmetrized
 import Mathlib.Algebra.TrivSqZeroExt
 import Mathlib.Algebra.Tropical.Basic
