@@ -31,7 +31,7 @@ namespace CategoryTheory.Functor.CoconeTypes
 open Limits
 
 lemma isMulticoequalizer_iff {J : MultispanShape.{w, w'}} {d : MultispanIndex J (Type u)}
-  (c : d.multispan.CoconeTypes) :
+    (c : d.multispan.CoconeTypes) :
     c.IsColimit ↔
       (∀ (i₁ i₂ : J.R) (x₁ : d.right i₁) (x₂ : d.right i₂)
         (_ : c.ι (.right i₁) x₁ = c.ι (.right i₂) x₂),
