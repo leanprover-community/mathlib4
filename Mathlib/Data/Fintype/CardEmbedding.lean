@@ -33,10 +33,9 @@ theorem card_embedding_eq_of_unique {α β : Type*} [Unique α] [Fintype β] [Fi
 -- Porting note: `induction α using Fintype.induction_empty_option` can't work with the `Fintype α`
 -- instance so instead we make an ugly refine and `dsimp` a lot.
 @[simp]
-theorem card_embedding_eq {α β : Type*} [h : Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
+theorem card_embedding_eq {α β : Type*} [Fintype α] [Fintype β] [emb : Fintype (α ↪ β)] :
     ‖α ↪ β‖ = ‖β‖.descFactorial ‖α‖ := by
   rw [Subsingleton.elim emb Embedding.fintype]
-  induction α using Fintype.induction_empty_option (h_fintype := h)
   refine Fintype.induction_empty_option (P := fun t ↦ ‖t ↪ β‖ = ‖β‖.descFactorial ‖t‖)
         (fun α₁ α₂ h₂ e ih ↦ ?_) (?_) (fun γ h ih ↦ ?_) α <;> dsimp only at * <;> clear! α
   · letI := Fintype.ofEquiv _ e.symm
