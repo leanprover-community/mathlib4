@@ -181,8 +181,7 @@ noncomputable def comap (s : SingularManifold X k I)
 
 @[simp, mfld_simps]
 lemma comap_M (s : SingularManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
-    (s.comap hφ).M = M := by
-  rfl
+    (s.comap hφ).M = M := rfl
 
 @[simp, mfld_simps]
 lemma comap_f (s : SingularManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :

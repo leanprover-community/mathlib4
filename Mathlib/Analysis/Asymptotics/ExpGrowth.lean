@@ -37,12 +37,10 @@ noncomputable def expGrowthInf (u : ℕ → ℝ≥0∞) : EReal := liminf (fun n
 noncomputable def expGrowthSup (u : ℕ → ℝ≥0∞) : EReal := limsup (fun n ↦ log (u n) / n) atTop
 
 lemma expGrowthInf_def {u : ℕ → ℝ≥0∞} :
-    expGrowthInf u = linearGrowthInf (log ∘ u) := by
-  rfl
+    expGrowthInf u = linearGrowthInf (log ∘ u) := rfl
 
 lemma expGrowthSup_def {u : ℕ → ℝ≥0∞} :
-    expGrowthSup u = linearGrowthSup (log ∘ u) := by
-  rfl
+    expGrowthSup u = linearGrowthSup (log ∘ u) := rfl
 
 /-! ### Basic properties -/
 
