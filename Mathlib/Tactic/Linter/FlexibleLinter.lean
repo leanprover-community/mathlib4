@@ -285,7 +285,7 @@ def stoppers : Std.HashSet Name :=
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
-  `fun_prop`, `continuity` and `measurability`, `positivity`, `finiteness`, `finiteness`,
+  `fun_prop`, `continuity` and `measurability`, `positivity`, `finiteness`, `finiteness?`,
   `split`, `split_ifs`.
 -/
 def flexible : Std.HashSet Name :=
@@ -313,13 +313,15 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.LinearCombination.linearCombination,
     ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
-    -- `cfc_tac` and `cfc_zero_tac` use aesop under the hood, `cfc_cont_tactic` also uses fun_prop.
+    -- `cfc_tac` and `cfc_zero_tac` use `aesop` under the hood, `cfc_cont_tactic` also uses `fun_prop`.
     `cfcTac,
     `cfcZeroTac,
     `cfcContTac,
-    -- `continuity` and `measurability` also use aesop under the hood.
+    -- `continuity` and `measurability` also use `aesop` under the hood.
     `tacticContinuity,
     `tacticMeasurability,
+    `finiteness,
+    `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
     `Mathlib.Meta.FunProp.funPropTacStx,
     `Lean.Parser.Tactic.split,
