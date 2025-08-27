@@ -363,7 +363,7 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
   have : K.indicator (fun x ↦ g x • f x) = (fun x ↦ g x • f x) := by
     apply indicator_eq_self.2
     apply support_subset_iff'.2
-    intros x hx
+    intro x hx
     simp [image_eq_zero_of_notMem_tsupport hx]
   rw [← this, indicator_smul]
   apply Integrable.smul_of_top_right
@@ -382,7 +382,7 @@ theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
   have : K.indicator (fun x ↦ f x • g x) = (fun x ↦ f x • g x) := by
     apply indicator_eq_self.2
     apply support_subset_iff'.2
-    intros x hx
+    intro x hx
     simp [image_eq_zero_of_notMem_tsupport hx]
   rw [← this, indicator_smul_left]
   apply Integrable.smul_of_top_left

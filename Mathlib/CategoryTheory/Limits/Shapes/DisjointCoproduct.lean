@@ -18,7 +18,7 @@ Shows that a category with disjoint coproducts is `InitialMonoClass`.
 
 * Adapt this to the infinitary (small) version: This is one of the conditions in Giraud's theorem
   characterising sheaf topoi.
-* Construct examples (and counterexamples?), eg Type, Vec.
+* Construct examples (and counterexamples?), e.g. Type, Vec.
 * Define extensive categories, and show every extensive category has disjoint coproducts.
 * Define coherent categories and use this to define positive coherent categories.
 -/

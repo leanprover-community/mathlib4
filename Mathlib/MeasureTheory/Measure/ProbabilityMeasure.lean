@@ -253,7 +253,7 @@ theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpac
   apply Measurable.measure_of_isPiSystem_of_isProbabilityMeasure generateFrom_prod.symm
     isPiSystem_prod _
   simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
-  intros _ u Hu v Hv Heq
+  intro _ u Hu v Hv Heq
   simp_rw [← Heq, Measure.prod_prod]
   apply Measurable.mul
   · exact (Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst)

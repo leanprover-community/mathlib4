@@ -322,8 +322,12 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 /-- Alias for the use of `gcongr` -/
 @[gcongr] alias ⟨_, GCongr.toReal_le_toReal⟩ := coe_le_coe
 
-protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
-  max_le_max h (le_refl 0)
+protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
+  max_le_max_right _ h
+
+@[gcongr]
+protected theorem _root_.Real.toNNReal_mono {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : r₁.toNNReal ≤ r₂.toNNReal :=
+  Real.toNNReal_monotone h
 
 @[simp]
 theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
@@ -347,8 +351,8 @@ theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 def gi : GaloisInsertion Real.toNNReal (↑) :=
-  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_mono Real.le_coe_toNNReal fun _ =>
-    Real.toNNReal_coe
+  GaloisInsertion.monotoneIntro NNReal.coe_mono Real.toNNReal_monotone Real.le_coe_toNNReal
+    fun _ => Real.toNNReal_coe
 
 -- note that anything involving the (decidability of the) linear order,
 -- will be noncomputable, everything else should not be.
@@ -863,7 +867,7 @@ theorem image_real_toNNReal (h : s.OrdConnected) : (Real.toNNReal '' s).OrdConne
     exact ⟨z, h.out hx hy ⟨toNNReal_le_iff_le_coe.1 hz.1, hz.2⟩, toNNReal_coe⟩
 
 theorem preimage_real_toNNReal (h : t.OrdConnected) : (Real.toNNReal ⁻¹' t).OrdConnected :=
-  h.preimage_mono Real.toNNReal_mono
+  h.preimage_mono Real.toNNReal_monotone
 
 end OrdConnected
 
