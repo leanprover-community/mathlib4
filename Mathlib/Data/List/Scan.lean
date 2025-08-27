@@ -91,10 +91,8 @@ theorem getElem_scanl_eq_foldl_take {i : ℕ} (h : i < (scanl f b l).length) :
   induction i generalizing b l
   case zero => simp
   case succ i ih =>
-    simp at h ih
-    have : 0 < l.length := by omega -- or `grind` or `Nat.zero_lt_of_lt h`
-    rcases exists_cons_of_length_pos this with ⟨hd, tl, rfl⟩
-    dsimp -- This only helps the user understand the goal and could be removed.
+    simp only [length_scanl, Nat.add_lt_add_iff_right] at h ih
+    rcases exists_cons_of_length_pos (Nat.zero_lt_of_lt h) with ⟨hd, tl, rfl⟩
     exact ih h
 
 lemma lt_scanl_length_of_lt_length_add_one {i : ℕ} (h : i < l.length + 1) :
