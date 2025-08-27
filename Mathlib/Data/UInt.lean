@@ -40,7 +40,6 @@ run_cmd
           nsmul_eq_mul, BitVec.natCast_eq_ofNat]
         rfl
 
-
       attribute [local instance] natCast intCast
 
       @[simp, int_toBitVec]

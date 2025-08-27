@@ -367,9 +367,9 @@ lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = di
 
 lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_den _).symm
 
-lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} (hd₁ : d₁ ≠ 0) (hd₂ : d₂ ≠ 0) :
+lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} :
     divNat n₁ d₁ * divNat n₂ d₂ = divNat (n₁ * n₂) (d₁ * d₂) := by
-  ext; push_cast; exact Rat.divInt_mul_divInt _ _ (mod_cast hd₁) (mod_cast hd₂)
+  ext; push_cast; exact Rat.divInt_mul_divInt _ _
 
 lemma divNat_mul_left {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (a * n) (a * d) = divNat n d := by
   ext; push_cast; exact Rat.divInt_mul_left (mod_cast ha)
