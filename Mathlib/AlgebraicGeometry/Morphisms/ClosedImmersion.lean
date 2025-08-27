@@ -245,7 +245,6 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     Function.Injective (f.stalkMap x) := by
   let φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤) := f.appTop
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   let res (i : 𝒰.J) : Γ(X, ⊤) ⟶ Γ(𝒰.obj i, ⊤) := (𝒰.map i).appTop
   refine stalkMap_injective_of_isAffine _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
   rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ_apply] at h

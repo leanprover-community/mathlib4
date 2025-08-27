@@ -82,7 +82,7 @@ instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 /-- The canonical map from `α` into `WithOne α` -/
-@[to_additive (attr := coe) /-- The canonical map from `α` into `WithZero α` -/]
+@[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
   Option.some
 
