@@ -199,8 +199,8 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
     change φ₁' _ _ ≫ f = φ₁' _ _ ≫ g at h₁
     change φ₂' _ _ ≫ f = φ₂' _ _ ≫ g at h₂
     ext i
-    set j : Fin ((x.len + 1) + (y.len + 1)) := i.cast (Nat.succ_add x.len (y.len + 1)).symm
-    haveI : i = j.cast (Nat.succ_add x.len (y.len + 1)) := rfl
+    let j : Fin ((x.len + 1) + (y.len + 1)) := i.cast (Nat.succ_add x.len (y.len + 1)).symm
+    have : i = j.cast (Nat.succ_add x.len (y.len + 1)) := rfl
     rw [this]
     cases j using Fin.addCases (m := x.len + 1) (n := y.len + 1) with
     | left j =>
@@ -226,26 +226,23 @@ lemma φ₁_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of x₁, .of y₁, .of x₂, .of y₂, f₁, f₂ => by
     change φ₁' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₁ ≫ φ₁' _ _
-    ext i
-    simp only [SimplexCategory.len_mk, tensorHomOf, Nat.add_eq, SimplexCategory.mkHom,
-      SimplexCategory.comp_toOrderHom, SimplexCategory.eqToHom_toOrderHom,
-      SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe,
-      OrderIso.coe_toOrderEmbedding, Function.comp_apply, Fin.castOrderIso_apply, Fin.coe_cast]
-    haveI := φ₁'_eval x₁ x₂ i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    haveI := φ₁'_eval y₁ y₂ <| (WithInitial.down f₁).toOrderHom i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
+    ext i : 3
+    dsimp [tensorHomOf]
+    have e₁ := φ₁'_eval x₁ x₂ i
+    have e₂ := φ₁'_eval y₁ y₂ <| (WithInitial.down f₁).toOrderHom i
+    simp only [SimplexCategory.len_mk] at e₁ e₂
+    rw [e₁, e₂]
+    simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
+      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply,
+      Fin.cast_trans, Fin.cast_eq_self, Fin.cast_inj]
     conv_lhs =>
-      arg 1
       change Fin.addCases
         (fun i ↦ Fin.castAdd (y₂.len + 1) (f₁.toOrderHom i))
         (fun i ↦ Fin.natAdd (y₁.len + 1) (f₂.toOrderHom i))
         (Fin.castAdd (x₂.len + 1) i)
       rw [Fin.addCases_left]
     rfl
-  | _, _, .star, _, f₁, f₂ => by aesop_cat
+  | _, _, .star, _, f₁, f₂ => by cat_disch
   | .star, _, _, _, _, _ => rfl
 
 @[reassoc (attr := simp)]
@@ -254,27 +251,24 @@ lemma φ₂_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of x₁, .of y₁, .of x₂, .of y₂, f₁, f₂ => by
     change φ₂' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₂ ≫ φ₂' _ _
-    ext i
-    simp only [SimplexCategory.len_mk, tensorHomOf, Nat.add_eq, SimplexCategory.mkHom,
-      SimplexCategory.comp_toOrderHom, SimplexCategory.eqToHom_toOrderHom,
-      SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe,
-      OrderIso.coe_toOrderEmbedding, Function.comp_apply, Fin.castOrderIso_apply, Fin.coe_cast]
-    haveI := φ₂'_eval x₁ x₂ i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    haveI := φ₂'_eval y₁ y₂ <| (WithInitial.down f₂).toOrderHom i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
+    ext i : 3
+    dsimp [tensorHomOf]
+    have e₁ := φ₂'_eval x₁ x₂ i
+    have e₂ := φ₂'_eval y₁ y₂ <| (WithInitial.down f₂).toOrderHom i
+    simp only [SimplexCategory.len_mk] at e₁ e₂
+    rw [e₁, e₂]
+    simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
+      Nat.succ_eq_add_one, OrderEmbedding.toOrderHom_coe,
+      OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply,
+      Fin.cast_trans, Fin.cast_eq_self, Fin.cast_inj]
     conv_lhs =>
-      arg 1
-      rw [Fin.cast_trans, Fin.cast_natAdd_left]
       change Fin.addCases
         (fun i ↦ Fin.castAdd (y₂.len + 1) (f₁.toOrderHom i))
         (fun i ↦ Fin.natAdd (y₁.len + 1) (f₂.toOrderHom i))
         (Fin.natAdd (x₁.len + 1) i)
       rw [Fin.addCases_right]
     rfl
-  | .star, _, _, _, f₁, f₂ => by aesop_cat
+  | .star, _, _, _, f₁, f₂ => by cat_disch
   | _, _, .star, _, _, _ => rfl
 
 @[reassoc (attr := simp)]
@@ -283,25 +277,20 @@ lemma φ₂_comp_associator (x y z : AugmentedSimplexCategory) :
   match x, y, z with
   | .of x, .of y, .of z => by
     change φ₂' _ _ ≫ WithInitial.down _ = φ₂' _ _ ≫ φ₂' _ _
-    ext i
-    simp only [SimplexCategory.len_mk, MonoidalCategoryStruct.associator, associator, eqToIso.hom,
-      SimplexCategory.comp_toOrderHom, eqToHom_toOrderHom, OrderHom.comp_coe,
-      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Function.comp_apply,
-      Fin.castOrderIso_apply, Fin.coe_cast]
-    haveI := φ₂'_eval (tensorObjOf x y) z i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    haveI := φ₂'_eval y z i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    generalize_proofs h h'
-    haveI := φ₂'_eval x (tensorObjOf y z) <| Fin.cast h' <| i.natAdd (y.len + 1)
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    simp +arith
-  | .star, _, _ => by aesop_cat
-  | _, .star, _ => by aesop_cat
-  | _, _, .star => by aesop_cat
+    ext i : 3
+    dsimp [MonoidalCategoryStruct.associator, associator]
+    simp only [eqToHom_toOrderHom, SimplexCategory.len_mk, OrderEmbedding.toOrderHom_coe,
+      OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply]
+    have e₁ := φ₂'_eval (tensorObjOf x y) z i
+    have e₂ := φ₂'_eval y z i
+    have e₃ := φ₂'_eval x (tensorObjOf y z) <|
+      Fin.cast (by simp +arith) <| i.natAdd (y.len + 1)
+    simp only [SimplexCategory.len_mk] at e₁ e₂ e₃
+    rw [e₁, e₂, e₃]
+    ext; simp +arith
+  | .star, _, _ => by cat_disch
+  | _, .star, _ => by cat_disch
+  | _, _, .star => by cat_disch
 
 @[reassoc (attr := simp)]
 lemma φ₁_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
@@ -309,25 +298,17 @@ lemma φ₁_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
   match x, y, z with
   | .of x, .of y, .of z => by
     change φ₁' _ _ ≫ φ₁' _ _ ≫ WithInitial.down _ = φ₁' _ _
-    ext i
-    simp only [SimplexCategory.len_mk, MonoidalCategoryStruct.associator, associator, eqToIso.hom,
-      SimplexCategory.comp_toOrderHom, eqToHom_toOrderHom, OrderHom.comp_coe,
-      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Function.comp_apply,
-      Fin.castOrderIso_apply, Fin.coe_cast]
-    haveI := φ₁'_eval x y i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    haveI := φ₁'_eval x (tensorObjOf y z) i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    generalize_proofs h h'
-    haveI := φ₁'_eval (tensorObjOf x y) z <| Fin.cast h <| i.castAdd (y.len + 1)
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    simp +arith
-  | .star, _, _ => by aesop_cat
-  | _, .star, _ => by aesop_cat
-  | _, _, .star => by aesop_cat
+    ext i : 3
+    dsimp [MonoidalCategoryStruct.associator, associator]
+    have e₁ := φ₁'_eval x y i
+    have e₂ := φ₁'_eval x (tensorObjOf y z) i
+    have e₃ := φ₁'_eval (tensorObjOf x y) z <| Fin.cast (by simp +arith) <| i.castAdd (y.len + 1)
+    simp only [SimplexCategory.len_mk] at e₁ e₂ e₃
+    rw [e₁, e₂, e₃]
+    ext; simp +arith
+  | .star, _, _ => by cat_disch
+  | _, .star, _ => by cat_disch
+  | _, _, .star => by cat_disch
 
 @[reassoc (attr := simp)]
 lemma φ₂_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
@@ -335,33 +316,23 @@ lemma φ₂_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
   match x, y, z with
   | .of x, .of y, .of z => by
     change φ₂' _ _ ≫ φ₁' _ _ ≫ WithInitial.down _ = φ₁' _ _ ≫ φ₂' _ _
-    ext i
-    simp only [SimplexCategory.len_mk, MonoidalCategoryStruct.associator, associator, eqToIso.hom,
-      SimplexCategory.comp_toOrderHom, eqToHom_toOrderHom, OrderHom.comp_coe,
-      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Function.comp_apply,
-      Fin.castOrderIso_apply, Fin.coe_cast]
-    haveI := φ₁'_eval y z i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    haveI := φ₂'_eval x y i
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    generalize_proofs h h'
-    haveI := φ₁'_eval (tensorObjOf x y) z <| Fin.cast h <| i.natAdd (x.len + 1)
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    haveI := φ₂'_eval x (tensorObjOf y z) <| Fin.cast h' <| i.castAdd (z.len + 1)
-    simp only [SimplexCategory.len_mk] at this
-    rw [this]
-    simp +arith
-  | .star, _, _ => by aesop_cat
-  | _, .star, _ => by aesop_cat
-  | _, _, .star => by aesop_cat
+    ext i : 3
+    dsimp [MonoidalCategoryStruct.associator, associator]
+    have e₁ := φ₁'_eval y z i
+    have e₂ := φ₂'_eval x y i
+    have e₃ := φ₁'_eval (tensorObjOf x y) z <| Fin.cast (by simp +arith) <| i.natAdd (x.len + 1)
+    have e₄ := φ₂'_eval x (tensorObjOf y z) <| Fin.cast (by simp +arith) <| i.castAdd (z.len + 1)
+    simp only [SimplexCategory.len_mk] at e₁ e₂ e₃ e₄
+    rw [e₁, e₂, e₃, e₄]
+    ext; simp +arith
+  | .star, _, _ => by cat_disch
+  | _, .star, _ => by cat_disch
+  | _, _, .star => by cat_disch
 
 theorem tensor_comp {x₁ y₁ z₁ x₂ y₂ z₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) (g₁ : y₁ ⟶ z₁) (g₂ : y₂ ⟶ z₂) :
     (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) = (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) := by
-  aesop_cat
+  cat_disch
 
 theorem tensor_id (x y : AugmentedSimplexCategory) : (𝟙 x) ⊗ₘ (𝟙 y) = 𝟙 (x ⊗ y) := by
   ext
@@ -374,17 +345,6 @@ instance : MonoidalCategory AugmentedSimplexCategory :=
   MonoidalCategory.ofTensorHom
     (id_tensorHom_id := tensor_id)
     (tensor_comp := tensor_comp)
-    (pentagon := fun w x y z ↦ by
-      ext
-      -- These `simp only` could be all be `simp [← id_tensorHom, ← tensorHom_id]`
-      -- but linter complains.
-      · simp only [φ₁_comp_tensorHom_assoc, φ₁_comp_φ₁_comp_associator_assoc, φ₁_comp_tensorHom,
-          Category.id_comp, φ₁_comp_φ₁_comp_associator]
-      · simp only [φ₁_comp_tensorHom_assoc, φ₂_comp_φ₁_comp_associator_assoc, φ₂_comp_tensorHom,
-          φ₁_comp_φ₁_comp_associator_assoc, φ₂_comp_φ₁_comp_associator]
-      · simp only [φ₁_comp_tensorHom_assoc, φ₂_comp_associator_assoc,
-          φ₂_comp_φ₁_comp_associator_assoc, φ₂_comp_tensorHom, φ₂_comp_associator]
-      · simp only [φ₂_comp_tensorHom_assoc, φ₂_comp_associator_assoc, φ₂_comp_tensorHom,
-          Category.id_comp, φ₂_comp_associator])
+    (pentagon := fun w x y z ↦ by ext <;> simp [-id_tensorHom, -tensorHom_id])
 
 end AugmentedSimplexCategory
