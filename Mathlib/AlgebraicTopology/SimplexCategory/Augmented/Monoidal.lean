@@ -18,7 +18,7 @@ of finite ordinals, the tensor products corresponds to ordinal sum.
 
 As the unit of this structure is an initial object, for every `x y : AugmentedSimplexCategory`,
 there are maps `AugmentedSimplexCategory.φ₁ x y : x ⟶ x ⊗ y` and
-`AugmentedSimplexCategory.φ₁ x y : y ⟶ x ⊗ y`. The main API for working with the tensor product
+`AugmentedSimplexCategory.φ₂ x y : y ⟶ x ⊗ y`. The main API for working with the tensor product
 of maps is given by  `AugmentedSimplexCategory.tensorObj_hom_ext`, which characterizes maps
 `x ⊗ y ⟶ z` in terms of their composition with these two maps. We also characterize the behaviour
 of the associator isomorphism with respect to these maps.
