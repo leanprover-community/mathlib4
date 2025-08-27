@@ -200,6 +200,18 @@ lemma cauchSeq_sum_Icc_tendsto_zero {F : Type*} [NormedRing F] [NormSMulClass �
   simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H3 (le_abs_self (g N)))
     (hN N (by rfl))
 
+theorem G2_Ico.extracted_1_2 (z : ℍ) :
+  Tendsto (fun (N : ℕ) ↦ ∑ m ∈ Finset.Ico (-(N : ℤ)) N, e2Summand m z) atTop
+    (𝓝 (limUnder atTop fun (N : ℕ) ↦ ∑ m ∈ Finset.Icc (-(N : ℤ)) ↑N, e2Summand m z)) := by
+  apply Tendsto_of_sub_tendsto_zero _ (CauchySeq.tendsto_limUnder (G2_cauchy z))
+  have h0 := cauchSeq_sum_Icc_tendsto_zero (G2_cauchy z) (by apply e2Summand_even)
+  conv =>
+    enter [1]
+    ext N
+    rw [Pi.sub_apply, sum_Icc_eq_sum_Ico_succ _ (by omega), sub_add_cancel_left]
+  simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
+
+
 lemma G2_Ico (z : ℍ) : G2 z =
     limUnder (atTop) (fun N : ℕ ↦ ∑ m ∈ Finset.Ico (-N : ℤ) N, e2Summand m z) := by
   apply symm
@@ -233,7 +245,6 @@ theorem extracted_66 (z : ℍ) :
     congr
     ext d
     have hz := ne_zero z
-
     rw [← mul_inv]
     congr 1
     rw [show ((d : ℂ) * ↑z + ↑n) ^ 2 = (-↑d * ↑z - ↑n) ^ 2 by ring, ← mul_pow]
@@ -247,38 +258,17 @@ theorem extracted_66 (z : ℍ) :
 
 lemma G2_S_act (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) =  limUnder (atTop)
     fun N : ℕ => ((∑' (n : ℤ), ∑ m ∈ Finset.Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) := by
-  rw [modular_S_smul]
-  simp [G2]
-  rw [ limUnder_mul_const]
-  congr
-  ext n
-  have := congr_fun (extracted_66 z) n
-  simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk] using this
-  · have := G2_Ico (ModularGroup.S • z)
-    rw [modular_S_smul] at this
-
-    sorry
-
-    /- apply CauchySeq_Icc_iff_CauchySeq_Ico
-    intro d
-    rw [int_sum_neg]
-    congr
+  rw [modular_S_smul, G2_Ico, limUnder_mul_const]
+  · congr
     ext n
-    simp only [UpperHalfPlane.coe, Int.cast_neg, neg_mul, inv_inj]
-    ring
-    have := G2_cauchy ⟨-(1 : ℂ) / z, by simpa using pnat_div_upper 1 z⟩
-    simp only [coe_mk_subtype, one_div] at this
-    apply this.congr
-    ext N
-    congr
-    ext m
-    congr
-    ext n
-    congr 1
-    simp only [UpperHalfPlane.coe]
-    have hz := ne_zero z
-    rw [← neg_ne_zero] at hz
-    field_simp
- -/
+    have := congr_fun (extracted_66 z) n
+    simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk] using this
+  · have := (G2_Ico (ModularGroup.S • z)).symm
+    rw [Filter.limUnder_eq_iff] at this
+    · rw [modular_S_smul] at *
+      apply Filter.Tendsto.cauchySeq
+      apply this.congr
+      simp
+    · exact Exists.intro _ (by apply G2_Ico.extracted_1_2 (ModularGroup.S • z))
 
 end transform
