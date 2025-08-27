@@ -52,7 +52,7 @@ We define this as the supremum of the cardinalities of linearly independent subs
 The supremum may not be attained, see https://mathoverflow.net/a/263053.
 
 For a free module over any ring satisfying the strong rank condition
-(e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
+(e.g. left-Noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
 In particular this agrees with the usual notion of the dimension of a vector space.
@@ -375,9 +375,6 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
     Module.rank R L ≤ Module.rank R L' :=
   ((Algebra.lsmul S R M s).restrict h).rank_le_of_injective <|
     fun _ _ h ↦ by simpa using hr (Subtype.ext_iff.mp h)
-
-@[deprecated (since := "2024-11-21")]
-alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
 
 variable (R R' M) in
 lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]

@@ -191,11 +191,8 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
     mt norm_eq_zero.2 (by rw [hz.1]; apply deriv_norm_ne_zero; assumption)
   have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff_val.2 h)
   obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion z (-z1)
-  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map, mul_neg, even_two,
-    Even.neg_pow] at hq
   have : ‖(↑(F.derivative.aeval z) * (↑(F.aeval z) / ↑(F.derivative.aeval z)) : ℚ_[p])‖ ≤ 1 := by
-    rw [padicNormE.mul]
-    exact mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
+    simpa using mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
   have : F.derivative.aeval z * -z1 = -F.aeval z := by
     calc
       F.derivative.aeval z * -z1 =
@@ -374,7 +371,7 @@ private theorem newton_seq_succ_dist_weak (n : ℕ) :
         (T_lt_one hnorm) (by norm_num)) (deriv_norm_pos hnorm))
     _ = ‖F.aeval a‖ / ‖F.derivative.aeval a‖ := by
       rw [T_gen, sq, pow_one, norm_div, ← mul_div_assoc, PadicInt.padic_norm_e_of_padicInt,
-        PadicInt.coe_mul, padicNormE.mul]
+        PadicInt.coe_mul, norm_mul]
       apply mul_div_mul_left
       apply deriv_norm_ne_zero; assumption
 
@@ -455,7 +452,7 @@ private theorem a_soln_is_unique (ha : F.aeval a = 0) (z' : ℤ_[p]) (hz' : F.ae
   have : (F.derivative.aeval a + q * h) * h = 0 :=
     Eq.symm
       (calc
-        0 = F.aeval (a + h) := show 0 = F.aeval (a + (z' - a)) by rw [add_comm]; simp [hz']
+        0 = F.aeval (a + h) := show 0 = F.aeval (a + (z' - a)) by simp [hz']
         _ = F.derivative.aeval a * h + q * h ^ 2 := by rw [hq, ha, zero_add]
         _ = (F.derivative.aeval a + q * h) * h := by rw [sq, right_distrib, mul_assoc]
         )

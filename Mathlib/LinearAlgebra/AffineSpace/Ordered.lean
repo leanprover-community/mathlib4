@@ -53,7 +53,8 @@ theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lin
 
 theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_lt_add_right (smul_lt_smul_of_pos_left ha (sub_pos.2 hr)) _
+  gcongr
+  exact sub_pos.2 hr
 
 omit [IsOrderedRing k] in
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
