@@ -908,6 +908,20 @@ lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
+lemma toPosMulReflectLT : PosMulReflectLT K where
+  elim := by
+    rintro ⟨x, hx⟩ y z hyz
+    dsimp at *
+    rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
+    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 3 1).1 hx.2
+    simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
+      mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
+    refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
+    rintro rfl
+    simp at hyz
+
+scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
+
 theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by
     replace hab := hab.le
@@ -920,12 +934,7 @@ scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 /-- A star algebra over `K` has a scalar multiplication that respects the order. -/
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
-    OrderedSMul K A where
-  smul_lt_smul_of_pos {_ _ _} hxy hc := StarModule.smul_lt_smul_of_pos hxy hc
-  lt_of_smul_lt_smul_of_pos {x y c} hxy hc := by
-    have : c⁻¹ • c • x < c⁻¹ • c • y :=
-      StarModule.smul_lt_smul_of_pos hxy (RCLike.inv_pos_of_pos hc)
-    simpa [smul_smul, inv_mul_cancel₀ hc.ne'] using this
+    OrderedSMul K A := .mk' fun _a _b _zc hab hc ↦ (smul_lt_smul_of_pos_left hab hc).le
 
 instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
     [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
