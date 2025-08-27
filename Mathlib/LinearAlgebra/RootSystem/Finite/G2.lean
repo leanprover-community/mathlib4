@@ -277,17 +277,23 @@ lemma shortAddLongRoot_eq :
     shortAddLongRoot P = shortRoot P + longRoot P := by
   simp [shortAddLongRoot, shortAddLong, reflection_apply_root]
 
+-- TODO: should module be marked as normalising?
+set_option linter.flexible false in
 lemma twoShortAddLongRoot_eq :
     twoShortAddLongRoot P = (2 : R) • shortRoot P + longRoot P := by
   simp [twoShortAddLongRoot, twoShortAddLong, reflection_apply_root]
   module
 
+-- TODO: should module be marked as normalising?
+set_option linter.flexible false in
 omit [Finite ι] [CharZero R] [IsDomain R] in
 lemma threeShortAddLongRoot_eq :
     threeShortAddLongRoot P = (3 : R) • shortRoot P + longRoot P := by
   simp [threeShortAddLongRoot, threeShortAddLong, reflection_apply_root]
   module
 
+-- TODO: should module be marked as normalising?
+set_option linter.flexible false in
 lemma threeShortAddTwoLongRoot_eq :
     threeShortAddTwoLongRoot P = (3 : R) • shortRoot P + (2 : R) • longRoot P := by
   simp [threeShortAddTwoLongRoot, threeShortAddTwoLong, reflection_apply_root]

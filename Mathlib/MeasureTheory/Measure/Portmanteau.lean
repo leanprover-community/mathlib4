@@ -627,6 +627,8 @@ lemma _root_.IsPiSystem.tendsto_probabilityMeasure_biUnion
     simpa using h
   simpa using this
 
+-- TODO: should grind be considered normalising?
+set_option linter.flexible false in
 /-- Consider a set of sets `S` containing arbitrarily small neighborhoods of any point, and a
 probability measure. Then any open set can be approximated arbitrarily well in measure from inside
 by a finite union of elements of `S`.
