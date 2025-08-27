@@ -442,6 +442,52 @@ lemma leviCivita_rhs_addZ [CompleteSpace E]
   ext x
   exact leviCivita_rhs_addZ_apply I (hX x) (hY x) (hZ x) (hZ' x)
 
+lemma leviCivita_rhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
+    leviCivita_rhs' I X Y (f • Z) x = f x • leviCivita_rhs' I X Y Z x := by
+  simp only [leviCivita_rhs']
+  simp [rhs_aux_smulX]
+  rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
+  beta_reduce
+  have h1 : VectorField.mlieBracket I X (f • Z) x =
+      f x • VectorField.mlieBracket I X Z x + mfderiv% f x (X x) • Z x := by
+    rw [VectorField.mlieBracket_smul_right hf hZ, add_comm]
+  have h2 : VectorField.mlieBracket I (f • Z) Y x =
+      -(mfderiv% f x (Y x)) • Z x + f x • VectorField.mlieBracket I Z Y x := by
+    rw [VectorField.mlieBracket_smul_left hf hZ]
+  --rw [h1, h2]; beta_reduce
+  --simp only [smul_eq_mul, product_add_right_apply]
+  set A := rhs_aux I X Y Z x
+  set B := rhs_aux I Y Z X x
+  set C := rhs_aux I Z X Y x
+  -- continue here!
+  sorry
+  -- simp_rw [product_apply]
+  -- set D' := (mfderiv% f x) (X x)
+  -- set D := (fun x ↦ (mfderiv% f x) (X x)) • Z
+
+  -- --rw [product_add_right, product_add_right]
+  -- -- These are all science fiction, and not fully true!
+  -- rw [product_smul_left, product_smul_right, product_smul_right]
+  -- set E := ⟪Z, VectorField.mlieBracket I X Y⟫
+  -- set F := ⟪Y, VectorField.mlieBracket I X Z⟫
+  -- set G := ⟪X, VectorField.mlieBracket I Z Y⟫
+  -- -- apart from science fiction mistakes, this is "an easy computation"
+  -- simp; abel_nf
+  -- sorry
+
+lemma leviCivita_rhs'_smulZ [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    leviCivita_rhs' I X Y (f • Z) = f • leviCivita_rhs' I X Y Z := by
+  ext x
+  exact leviCivita_rhs'_smulZ_apply I (hf x) (hX x) (hY x) (hZ x)
+
+lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
+  simp only [leviCivita_rhs]
+  rw [smul_comm, leviCivita_rhs'_smulZ I hf hX hY hZ]
+/- old proof attempt was:
 lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ : MDiff (T% Z)) :
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs, leviCivita_rhs']
@@ -472,7 +518,7 @@ lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ 
   set G := ⟪X, VectorField.mlieBracket I Z Y⟫
   -- apart from science fiction mistakes, this is "an easy computation"
   simp; abel_nf
-  sorry
+  sorry -/
 
 end leviCivita_rhs
 
