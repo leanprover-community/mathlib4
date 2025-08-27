@@ -3,9 +3,9 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.LinearAlgebra.Matrix.Hadamard
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Data.Matrix.Kronecker
-import Mathlib.Data.Matrix.Hadamard
 
 /-! # Vectorization of matrices
 
