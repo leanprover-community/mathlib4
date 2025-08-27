@@ -16,7 +16,7 @@ as the Radon–Nikodym derivative of the law of `X`. In particular, a measurable
 is said to the probability density function of a random variable `X` if for all measurable
 sets `S`, `ℙ(X ∈ S) = ∫ x in S, f x dx`. Probability density functions are one way of describing
 the distribution of a random variable, and are useful for calculating probabilities and
-finding moments (although the latter is better achieved with moment generating functions).
+finding moments (although the latter is better achieved with moment-generating functions).
 
 This file also defines the continuous uniform distribution and proves some properties about
 random variables with this distribution.
@@ -283,9 +283,9 @@ theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : p
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
   rw [hasFiniteIntegral_iff_enorm]
   have : (fun x => ‖f x‖ₑ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖ₑ := by
-    refine ae_eq_trans ((ae_eq_refl _).mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
+    refine ae_eq_trans ((ae_eq_refl _).fun_mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
     simp_rw [← smul_eq_mul, enorm_smul, smul_eq_mul]
-    refine .mul (ae_eq_refl _) ?_
+    refine .fun_mul (ae_eq_refl _) ?_
     simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 

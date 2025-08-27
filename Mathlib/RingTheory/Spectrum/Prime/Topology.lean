@@ -6,16 +6,11 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Order.Ring.Idempotent
 import Mathlib.Order.Heyting.Hom
 import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.Ideal.GoingUp
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
-import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Spectral.Basic
@@ -1172,24 +1167,12 @@ lemma _root_.RingHom.IsIntegral.specComap_surjective {f : R →+* S} (hf : f.IsI
 
 end IsIntegral
 
-section LocalizationAtMinimal
+variable (R)
 
-variable {I : Ideal R} [hI : I.IsPrime]
-
-end LocalizationAtMinimal
-
-end CommSemiring
-
-end PrimeSpectrum
-
-section CommSemiring
-variable [CommSemiring R]
-
-open PrimeSpectrum in
 /-- Zero loci of minimal prime ideals of `R` are irreducible components in `Spec R` and any
 irreducible component is a zero locus of some minimal prime ideal. -/
 @[stacks 00ES]
-protected def minimalPrimes.equivIrreducibleComponents :
+protected def _root_.minimalPrimes.equivIrreducibleComponents :
     minimalPrimes R ≃o (irreducibleComponents <| PrimeSpectrum R)ᵒᵈ := by
   let e : {p : Ideal R | p.IsPrime ∧ ⊥ ≤ p} ≃o PrimeSpectrum R :=
     ⟨⟨fun x ↦ ⟨x.1, x.2.1⟩, fun x ↦ ⟨x.1, x.2, bot_le⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, Iff.rfl⟩
@@ -1198,21 +1181,17 @@ protected def minimalPrimes.equivIrreducibleComponents :
     (e.trans ((PrimeSpectrum.pointsEquivIrreducibleCloseds R).trans
     (TopologicalSpace.IrreducibleCloseds.orderIsoSubtype' (PrimeSpectrum R)).dual))
 
-namespace PrimeSpectrum
-
 lemma vanishingIdeal_irreducibleComponents :
-    vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) =
-    minimalPrimes R := by
+    vanishingIdeal '' (irreducibleComponents <| PrimeSpectrum R) = minimalPrimes R := by
   rw [irreducibleComponents_eq_maximals_closed, minimalPrimes_eq_minimals,
     image_antitone_setOf_maximal (fun s t hs _ ↦ (vanishingIdeal_anti_mono_iff hs.1).symm),
     ← funext (@Set.mem_setOf_eq _ · Ideal.IsPrime), ← vanishingIdeal_isClosed_isIrreducible]
   rfl
 
 lemma zeroLocus_minimalPrimes :
-    zeroLocus ∘ (↑) '' minimalPrimes R =
-    irreducibleComponents (PrimeSpectrum R) := by
+    zeroLocus ∘ (↑) '' minimalPrimes R = irreducibleComponents (PrimeSpectrum R) := by
   rw [← vanishingIdeal_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
-  intros s hs
+  intro s hs
   simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
     using isClosed_of_mem_irreducibleComponents s hs
 
@@ -1232,9 +1211,9 @@ lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
   conv_lhs => rw [← (isClosed_zeroLocus _).closure_eq]
   exact vanishingIdeal_mem_minimalPrimes.symm
 
-end PrimeSpectrum
-
 end CommSemiring
+
+end PrimeSpectrum
 
 namespace IsLocalRing
 

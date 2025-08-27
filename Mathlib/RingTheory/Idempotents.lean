@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 
@@ -153,7 +153,7 @@ lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq 
     (R : I → Type*) [∀ i, Semiring (R i)] :
     CompleteOrthogonalIdempotents (Pi.single (M := R) · 1) := by
   refine ⟨⟨by simp [IsIdempotentElem, ← Pi.single_mul], ?_⟩, Finset.univ_sum_single 1⟩
-  intros i j hij
+  intro i j hij
   ext k
   by_cases hi : i = k
   · subst hi; simp [hij]
@@ -384,7 +384,7 @@ lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     obtain ⟨x, rfl⟩ := Ideal.quotientInfToPiQuotient_surj this x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     exact ⟨x, by ext i; simp [Ideal.quotientInfToPiQuotient]⟩
-  intros i j hij
+  intro i j hij
   rw [Ideal.isCoprime_span_singleton_iff]
   exact ⟨1, e i, by simp [mul_sub, he.ortho hij]⟩
 
@@ -427,7 +427,7 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   suffices ∀ s : Finset I, (∏ i ∈ s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_
-  intros a s has e'
+  intro a s has e'
   suffices (1 - e a) * x = x by simp [has, mul_assoc, e', this]
   obtain ⟨c, rfl⟩ := hx a
   rw [← mul_assoc, (he.idem a).one_sub.eq]

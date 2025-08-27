@@ -132,9 +132,13 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
     rw [← pullbackArrows_comm, ← isSheafFor_iff_generate]
     exact PK (pullbackArrows f R) (K.pullbacks f R hR)
 
-/-- Any presheaf is a sheaf for the bottom (trivial) grothendieck topology. -/
+/-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top_sieve]
+
+/-- The composition of a sheaf with a ULift functor is still a sheaf. -/
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) :=
+  isSheaf_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl) h
 
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
@@ -185,7 +189,7 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
   have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
   have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
   have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
-  aesop_cat
+  cat_disch
 
 /--
 The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
@@ -205,7 +209,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
         have ht := H.choose_spec.1 f.obj.hom f.property
-        aesop_cat
+        cat_disch
       uniq := by
         intro s Fs HFs
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)

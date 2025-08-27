@@ -31,9 +31,9 @@ variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
 /-- Consider a sigma-compact group acting continuously and transitively on a Baire space. Then
 the orbit map is open around the identity. It follows in `isOpenMap_smul_of_sigmaCompact` that it
 is open around any point. -/
-@[to_additive "Consider a sigma-compact additive group acting continuously and transitively on a
+@[to_additive /-- Consider a sigma-compact additive group acting continuously and transitively on a
 Baire space. Then the orbit map is open around zero. It follows in
-`isOpenMap_vadd_of_sigmaCompact` that it is open around any point."]
+`isOpenMap_vadd_of_sigmaCompact` that it is open around any point. -/]
 theorem smul_singleton_mem_nhds_of_sigmaCompact
     {U : Set G} (hU : U ∈ 𝓝 1) (x : X) : U • {x} ∈ 𝓝 x := by
   /- Consider a small closed neighborhood `V` of the identity. Then the group is covered by
@@ -88,9 +88,9 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
 /-- Consider a sigma-compact group acting continuously and transitively on a Baire space. Then
 the orbit map is open. This is a version of the open mapping theorem, valid notably for the
 action of a sigma-compact locally compact group on a locally compact space. -/
-@[to_additive "Consider a sigma-compact additive group acting continuously and transitively on a
+@[to_additive /-- Consider a sigma-compact additive group acting continuously and transitively on a
 Baire space. Then the orbit map is open. This is a version of the open mapping theorem, valid
-notably for the action of a sigma-compact locally compact group on a locally compact space."]
+notably for the action of a sigma-compact locally compact group on a locally compact space. -/]
 theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g • x) := by
   /- We have already proved the theorem around the basepoint of the orbit, in
   `smul_singleton_mem_nhds_of_sigmaCompact`. The general statement follows around an arbitrary

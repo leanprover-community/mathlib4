@@ -136,7 +136,7 @@ example {x y z w : ℕ} : true := by
 --     xs ≤ zs := by
 --   revert ys zs
 --   induction' xs with x xs
---  ; intros ys zs h h'
+--  ; intro ys zs h h'
 --  ; cases ys with y ys
 --  ; cases zs with z zs
 --  ; try { cases h; cases h'; done },
@@ -151,7 +151,7 @@ example {x y z w : ℕ} : true := by
 --     (h : xs ≤ ys) :
 --     xs ++ zs ≤ ys ++ zs := by
 --   revert ys
---   induction xs with x xs; intros ys h
+--   induction xs with x xs; intro ys h
 --   · cases ys; apply list.le_refl; cases h
 --   · cases ys with y ys; cases h; simp [has_le.le,list.le] at *
 --     revert h; apply and.imp_right
@@ -162,7 +162,7 @@ example {x y z w : ℕ} : true := by
 --     (h : xs ≤ ys) :
 --     zs ++ xs ≤ zs ++ ys := by
 --   revert ys zs
---   induction xs with x xs; intros ys zs h
+--   induction xs with x xs; intro ys zs h
 --   · cases ys
 --     · simp; apply list.le_refl
 --     · cases h
