@@ -191,7 +191,7 @@ example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   abel_nf
   assumption
 
--- So are `abel_nf!`, `group` and `module.
+-- So are `abel_nf!`, `group` and `module`.
 #guard_msgs in
 example {a b : Nat} (h : a + b = a + (b + 1)) : a + b = b + a + 0 + 1 := by
   simp
