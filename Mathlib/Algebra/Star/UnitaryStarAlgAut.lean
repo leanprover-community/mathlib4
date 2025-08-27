@@ -14,6 +14,7 @@ This file defines the ⋆-algebra automorphism on `R` given by a unitary `u` suc
 `x ↦ u * x * star u`.
 -/
 
+namespace unitary
 variable {S R : Type*} [Semiring R] [StarMul R]
   [SMul S R] [IsScalarTower S R R] [SMulCommClass S R R]
 
@@ -22,8 +23,8 @@ variable (S R) in
 `x ↦ u * x * star u`.
 
 This is the ⋆-algebra automorphism version of a specialized version of
-`MulSemiringAction.toRingEquiv` (see `unitary.toRingEquiv_toStarAlgAut`). -/
-def unitary.toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
+`MulSemiringAction.toRingEquiv`. -/
+def toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
   toFun u :=
   { toRingEquiv := MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u)
     map_smul' _ _ := by simp [smul_comm]
@@ -33,22 +34,24 @@ def unitary.toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
   map_mul' g h := by ext; simp [mul_smul]
 
 @[simp]
-theorem unitary.toStarAlgAut_apply (u : unitary R) (x : R) :
+theorem toStarAlgAut_apply (u : unitary R) (x : R) :
     toStarAlgAut S R u x = u * x * (star u : R) := rfl
 
 @[simp]
-theorem unitary.toStarAlgAut_symm_apply (u : unitary R) (x : R) :
+theorem toStarAlgAut_symm_apply (u : unitary R) (x : R) :
     (toStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
 
 @[simp]
-theorem unitary.toStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
+theorem toStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
     (toStarAlgAut S R u₁).trans (toStarAlgAut S R u₂) = toStarAlgAut S R (u₂ * u₁) :=
   map_mul _ _ _ |>.symm
 
-theorem unitary.toStarAlgAut_symm (u : unitary R) :
+theorem toStarAlgAut_symm (u : unitary R) :
     (toStarAlgAut S R u).symm = toStarAlgAut S R (star u) := by
   ext; simp
 
-theorem unitary.toRingEquiv_toStarAlgAut (u : unitary R) :
+theorem toRingEquiv_toStarAlgAut (u : unitary R) :
     (toStarAlgAut S R u).toRingEquiv = MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
   rfl
+
+end unitary
