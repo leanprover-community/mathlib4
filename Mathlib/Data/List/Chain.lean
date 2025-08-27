@@ -313,7 +313,7 @@ theorem chain'_getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
     R l[n] l[n + 1] :=
   chain'_pair.mp <| Chain'.infix h ⟨l.take n, l.drop (n + 2), by simp⟩
 
-theorem chain'_of_not (h : ¬List.Chain' R l) :
+theorem exists_not_of_not_chain (h : ¬List.Chain' R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by
   contrapose! h
   induction l with
