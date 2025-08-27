@@ -890,7 +890,7 @@ theorem aut_inv (f : R ≃⋆ₐ[S] R) : f⁻¹ = f.symm := rfl
 
 @[simp] theorem coe_pow (f : R ≃⋆ₐ[S] R) (n : ℕ) :
     ⇑(f ^ n) = (⇑f)^[n] :=
-  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+  hom_coe_pow _ (funext one_apply) (fun f g ↦ funext <| mul_apply f g) _ _
 
 end Group
 
