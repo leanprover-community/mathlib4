@@ -1,11 +1,15 @@
-import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.FlexibleLinter
+
+import Mathlib.Data.ENNReal.Operations
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.LinearCombination
 
 set_option linter.flexible true
 set_option linter.unusedVariables false
@@ -209,11 +213,40 @@ example {V : Type*} [AddCommMonoid V] {x y : V} : 0 + x + (y + x) = x + x + y :=
   simp
   module
 
--- `grind` is another flexible tactic.
+-- `grind` is another flexible tactic, as is `cfc_tac`, `positivity` and `finiteness`.
 #guard_msgs in
 example {x y : ℕ} : 0 + x + (y + x) = x + x + y := by
   simp
   grind
+
+#guard_msgs in
+example (h : False) : False ∧ True := by
+  simp
+  cfc_tac
+
+#guard_msgs in
+example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
+  simp
+  positivity
+
+-- TODO: this should not warn not warn!
+open scoped ENNReal
+/--
+warning: 'simp' is a flexible tactic modifying '⊢'…
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: … and 'finiteness' uses '⊢'!
+-/
+#guard_msgs in
+example {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a * b ≠ ∞ := by
+  simp
+  finiteness
+
+#guard_msgs in
+example {a b : ℝ≥0∞} (ha : a = 0) (hb : b = a) : a + b + 3 < ∞ := by
+  simp [hb]
+  finiteness_nonterminal; simp [ha]
 
 --  `abel` and `abel!` are allowed `simp`-followers.
 #guard_msgs in
