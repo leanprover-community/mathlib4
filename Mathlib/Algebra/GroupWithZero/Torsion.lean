@@ -32,7 +32,7 @@ namespace UniqueFactorizationMonoid
 instance : IsMulTorsionFree M := by
   refine .mk' fun x hx y hy n hn hxy ↦ ?_
   obtain ⟨u, hu⟩ : Associated x y := by
-    have := (associated_of_eq hxy).normalizedFactors_eq
+    have := (Associated.of_eq hxy).normalizedFactors_eq
     rwa [normalizedFactors_pow, normalizedFactors_pow, nsmul_right_inj hn,
       ← associated_iff_normalizedFactors_eq_normalizedFactors hx hy] at this
   replace hx : IsLeftRegular (x ^ n) := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hx).pow n
