@@ -1287,9 +1287,4 @@ lemma left_le_of_mem_range' {a b s x : ℕ} (hx : x ∈ List.range' a b s) : a �
 
 end range'
 
-/-! ### Split -/
-section split
-
-end split
-
 end List
