@@ -7,6 +7,8 @@ import Mathlib.Tactic.Module
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.LinearCombination
 
+-- TODO: after #28658 lands, mark field_simp as normalising ?!
+-- then test field_simp; linear_combination
 -- TODO: add tests for positivity and finiteness, finiteness_nonterminal
 
 set_option linter.flexible true
