@@ -528,16 +528,7 @@ theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = 
   | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
 
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
-  induction l with
-  | nil => exact iff_of_true rfl not_mem_nil
-  | cons b l ih =>
-    simp only [length, mem_cons, idxOf_cons]
-    rw [cond_eq_if]
-    split_ifs with h <;> simp at h
-    · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
-    · simp only [Ne.symm h, false_or]
-      rw [← ih]
-      exact succ_inj
+  grind
 
 @[simp]
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
