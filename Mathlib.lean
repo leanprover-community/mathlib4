@@ -821,6 +821,7 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Div
 import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Action
@@ -1020,6 +1021,7 @@ import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Polynomial.HasseDeriv
+import Mathlib.Algebra.Polynomial.Homogenize
 import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Laurent
@@ -5784,6 +5786,7 @@ import Mathlib.RingTheory.Valuation.ValExtension
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Compare
 import Mathlib.RingTheory.WittVector.Complete
