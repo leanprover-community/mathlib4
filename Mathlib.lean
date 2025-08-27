@@ -6916,6 +6916,7 @@ import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import Mathlib.Topology.Metrizable.ContinuousMap
+import Mathlib.Topology.Metrizable.CountableSeparating
 import Mathlib.Topology.Metrizable.Real
 import Mathlib.Topology.Metrizable.Uniformity
 import Mathlib.Topology.Metrizable.Urysohn
