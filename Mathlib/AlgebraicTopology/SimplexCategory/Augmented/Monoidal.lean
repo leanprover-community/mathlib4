@@ -174,23 +174,17 @@ abbrev φ₂' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.dow
 
 lemma φ₁'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (φ₁' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  simp only [φ₁', WithInitial.down, φ₁, MonoidalCategoryStruct.rightUnitor, rightUnitor, tensorObj,
-    Iso.refl_inv, MonoidalCategoryStruct.whiskerLeft, tensorHom, SimplexCategory.mk_len, Nat.add_eq,
-    SimplexCategory.mkHom, Category.id_comp, SimplexCategory.comp_toOrderHom,
-    SimplexCategory.len_mk, SimplexCategory.eqToHom_toOrderHom, SimplexCategory.Hom.toOrderHom_mk,
-    OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding,
-    Function.comp_apply, Fin.castOrderIso_apply, Fin.cast_inj]
-  rfl
+  dsimp [φ₁', φ₁, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
+    tensorHom, WithInitial.down, rightUnitor, tensorObj]
+  ext
+  simp [OrderEmbedding.toOrderHom]
 
 lemma φ₂'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
     (φ₂' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  simp only [SimplexCategory.len_mk, φ₂', WithInitial.down, φ₂, MonoidalCategoryStruct.leftUnitor,
-    leftUnitor, tensorObj, Iso.refl_inv, MonoidalCategoryStruct.whiskerRight, tensorHom,
-    SimplexCategory.mk_len, Nat.add_eq, SimplexCategory.mkHom, Category.id_comp,
-    SimplexCategory.comp_toOrderHom, SimplexCategory.eqToHom_toOrderHom,
-    SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe,
-    OrderIso.coe_toOrderEmbedding, Function.comp_apply, Fin.castOrderIso_apply, Fin.cast_inj]
-  rfl
+  dsimp [φ₂', φ₂, MonoidalCategoryStruct.leftUnitor, MonoidalCategoryStruct.whiskerRight,
+    tensorHom, WithInitial.down, leftUnitor, tensorObj]
+  ext
+  simp [OrderEmbedding.toOrderHom]
 
 /-- We can characterize morphisms out of a tensor product via their precomposition with `φ₁` and
 `φ₂`. -/

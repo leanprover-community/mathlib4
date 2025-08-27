@@ -21,8 +21,6 @@ objects and that functors out of `AugmentedSimplexCategoryᵒᵖ` are equivalent
 objects, and we provide a translation of the main constrcutions on augmented (co)simplicial objects
 (i.e `drop`, `point` and `toArrow`) in terms of these equivalences.
 
-## TODOs
-* Define a monoidal structure on `AugmentedSimplexCategory`.
 -/
 
 open CategoryTheory
