@@ -23,19 +23,24 @@ variable (S R) in
 
 This is the ⋆-algebra automorphism version of a specialized version of
 `MulSemiringAction.toRingEquiv` (see `unitary.toRingEquiv_toStarAlgAut`). -/
-@[simps]
 def unitary.toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
   toFun u :=
-  { toFun x := u * x * (star u : R)
-    invFun x := (star u : R) * x * u
-    left_inv _ := by simp [← mul_assoc, mul_assoc _ _ (u : R)]
-    right_inv _ := by simp [← mul_assoc, mul_assoc _ _ (star u : R)]
-    map_add' _ _ := by simp [mul_add, add_mul]
-    map_smul' _ _ := by simp [mul_smul_comm, smul_mul_assoc]
-    map_mul' _ _ := by simp [mul_assoc _ (star u : R), ← mul_assoc (star u : R), mul_assoc]
-    map_star' _ := by simp [mul_assoc] }
+  { toRingEquiv := MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u)
+    map_smul' _ _ := by simp [smul_comm]
+    map_star' _ := by simp [HSMul.hSMul, SMul.smul, ConjAct.ofConjAct, mul_assoc,
+      ← unitary.star_eq_inv] }
   map_one' := by ext; simp
-  map_mul' _ _ := by ext; simp [StarAlgEquiv.aut_mul, mul_assoc]
+  map_mul' g h := by ext; simp [mul_smul]
+
+@[simp]
+theorem unitary.toStarAlgAut_apply (u : unitary R) (x : R) :
+    toStarAlgAut S R u x = u * x * (star u : R) :=
+  rfl
+
+@[simp]
+theorem unitary.toStarAlgAut_symm_apply (u : unitary R) (x : R) :
+    (toStarAlgAut S R u).symm x = (star u : R) * x * u :=
+  rfl
 
 @[simp]
 theorem unitary.toStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
@@ -49,5 +54,5 @@ theorem unitary.toStarAlgAut_conj_symm (u : unitary R) :
 @[simp]
 theorem unitary.toRingEquiv_toStarAlgAut (u : unitary R) :
     (toStarAlgAut S R u).toRingEquiv =
-      MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
+    MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
   rfl
