@@ -259,7 +259,7 @@ variable {x : M}
 variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
 If ∇ is a Levi-Civita connection on `TM`, then
-`⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
+`2 ⟨∇ X Y, Z⟩ = leviCivita_rhs' I X Y Z` for all vector fields `Z`. -/
 noncomputable def leviCivita_rhs' : M → ℝ :=
   rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y
   - ⟪Y ,(VectorField.mlieBracket I X Z)⟫
@@ -268,8 +268,8 @@ noncomputable def leviCivita_rhs' : M → ℝ :=
 
 variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
-If ∇ is a Levi-Civita connection on `TM`, then
-`⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all vector fields `Z`. -/
+If `∇` is a Levi-Civita connection on `TM`, then
+`⟨∇ X Y, Z⟩ = leviCivita_rhs I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
 noncomputable def leviCivita_rhs : M → ℝ := (1 / 2 : ℝ) • leviCivita_rhs' I X Y Z
 
 omit [IsManifold I ∞ M] in
@@ -314,6 +314,8 @@ lemma leviCivita_rhs_addX [CompleteSpace E]
   ext x
   simp [leviCivita_rhs_addX_apply _ (hX x) (hX' x) (hY x) (hZ x)]
 
+open VectorField
+
 variable {I} in
 lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -323,10 +325,10 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   unfold leviCivita_rhs'
   simp only [Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulX, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
-  simp only [product_apply, VectorField.mlieBracket_smul_left (W := Z) hf hX,
-    VectorField.mlieBracket_smul_left (W := Y) hf hX, inner_add_right]
-  simp only [← product_apply]
-  simp only [neg_smul, inner_neg_right]
+  simp only [product_apply, mlieBracket_smul_left (W := Z) hf hX,
+    mlieBracket_smul_left (W := Y) hf hX, inner_add_right]
+  -- Combining this line with the previous one fails.
+  simp only [← product_apply, neg_smul, inner_neg_right]
   have h1 :
       letI dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x);
       inner ℝ (Y x) ((mfderiv I 𝓘(ℝ, ℝ) f x) (Z x) • X x) = dfZ * ⟪X, Y⟫ x := by
@@ -338,30 +340,28 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     simp only [product]
     rw [← real_inner_smul_left, real_inner_smul_right, real_inner_smul_left]
   simp only [h1, h2]
-  clear h1 h2
   set dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
   set dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x)
-  have h4 : ⟪f • X, VectorField.mlieBracket I Z Y⟫ x =
-      f x * ⟪X, VectorField.mlieBracket I Z Y⟫ x := by
+  have h3 : ⟪f • X, mlieBracket I Z Y⟫ x = f x * ⟪X, mlieBracket I Z Y⟫ x := by
     rw [product_apply, Pi.smul_apply', real_inner_smul_left]
-  have h5 : inner ℝ (Z x) (f x • VectorField.mlieBracket I X Y x) =
-      f x * ⟪Z, VectorField.mlieBracket I X Y⟫ x := by
+  have h4 : inner ℝ (Z x) (f x • mlieBracket I X Y x) = f x * ⟪Z, mlieBracket I X Y⟫ x := by
     rw [product_apply, real_inner_smul_right]
-  rw [real_inner_smul_right (Y x), h4, h5]
-  set A := ⟪Y, VectorField.mlieBracket I X Z⟫
-  set B := ⟪Z, VectorField.mlieBracket I X Y⟫
-  set C := ⟪X, VectorField.mlieBracket I Z Y⟫
-  set R := dfZ * ⟪X, Y⟫ x
-  set R' := dfY * ⟪Z, X⟫ x
-  set E := rhs_aux I X Y Z x
-  set F := rhs_aux I Y Z X x
-  set G := rhs_aux I Z X Y x
-  calc f x * E + (f x * F + R') - (f x * G + R) - (-R + f x * A x) - (-R' + f x * B x) + f x * C x
-    _ = (f x * E + f x * F - f x * G - f x * A x - f x * B x + f x * C x) + R' + R' := by
-      abel
-    _ = f x * (E + F - G - A x - B x + C x) + R' + R' := by ring
-    _ = _ := by ac_rfl
-#print axioms leviCivita_rhs'_smulX_apply
+  rw [real_inner_smul_right (Y x), h3, h4]
+  -- set A := ⟪Y, mlieBracket I X Z⟫ with hA
+  -- set B := ⟪Z, mlieBracket I X Y⟫
+  -- set C := ⟪X, mlieBracket I Z Y⟫
+  -- set R := dfZ * ⟪X, Y⟫ x with hR
+  -- set R' := dfY * ⟪Z, X⟫ x with hR'
+  -- set E := rhs_aux I X Y Z x
+  -- set F := rhs_aux I Y Z X x
+  -- set G := rhs_aux I Z X Y x
+  -- Push all applications of `x` inwards, then it's indeed obvious.
+  simp
+  ring
+
+-- The term `2 A` is a bit surprising, but seems to be correct: the only sorry is for the
+-- product rule of the Lie bracket, which seems correct.
+
 variable {I} in
 lemma leviCivita_rhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -377,13 +377,14 @@ lemma leviCivita_rhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
   congr 1
   rw [smul_eq_mul]; rw [mul_assoc]
 
--- TODO: need an extra term; how to state this in the nicest way?
 variable {I} in
 lemma leviCivita_rhs_smulX [CompleteSpace E] {f : M → ℝ}
     (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z := by
+    letI dfY (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+    letI A (x) := dfY x * ⟪Z, X⟫ x
+    leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z + A := by
   ext x
-  sorry -- exact leviCivita_rhs_smulX_apply (hf x) (hX x) (hY x) (hZ x)
+  exact leviCivita_rhs_smulX_apply (hf x) (hX x) (hY x) (hZ x)
 
 lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
