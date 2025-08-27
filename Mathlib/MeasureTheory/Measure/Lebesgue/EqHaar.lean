@@ -94,8 +94,6 @@ theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [Normed
     [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
-  have : IsAddHaarMeasure (map f b.addHaar) :=
-    AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
     (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
   erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]

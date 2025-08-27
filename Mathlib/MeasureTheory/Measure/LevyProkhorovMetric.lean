@@ -131,7 +131,6 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
   have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' ofNat_ne_top
-  have half_ε_lt_top : ε / 2 ≠ ∞ := by finiteness
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
   have lt_r : levyProkhorovEDist μ ν < r := lt_add_right LPμν_finite half_ε_pos.ne'
