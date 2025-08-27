@@ -189,9 +189,7 @@ end IntFractPair
 
 
 theorem coe_of_h_rat_eq (v_eq_q : v = (↑q : K)) : (↑((of q).h : ℚ) : K) = (of v).h := by
-  unfold of IntFractPair.seq1
-  rw [← IntFractPair.coe_of_rat_eq v_eq_q]
-  simp
+  simp_all
 
 theorem coe_of_s_get?_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
     (((of q).s.get? n).map (Pair.map (↑)) : Option <| Pair K) = (of v).s.get? n := by
