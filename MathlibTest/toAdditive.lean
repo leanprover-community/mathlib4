@@ -236,9 +236,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One (
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg `Test.pi.has_one
+  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg `Test.foo_mul
+  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
 end
@@ -363,7 +363,7 @@ run_cmd do
   let stx ← `(Semigroup MonoidEnd)
   liftTermElabM do
     let e ← Term.elabTerm stx none
-    guard <| additiveTest (← getEnv) e == some `Test.MonoidEnd
+    guard <| additiveTest (← getEnv) e == some (.inl `Test.MonoidEnd)
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -456,6 +456,7 @@ lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
 @[to_additive (attr := reduce_mod_char, simp)]
 lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
+section
 -- Test the error message for a name that cannot be additivised.
 
 /--
@@ -468,7 +469,9 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 @[to_additive]
-instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+local instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+
+end
 
 -- Test the error message for a wrong `to_additive existing`.
 
@@ -671,3 +674,36 @@ def MyPrivateMul.mk' (a : Nat) := MyPrivateMul.mk a
 
 @[to_additive]
 def MyPrivateMul.mul' (x : MyPrivateMul) := x.mul
+
+/-! Test the `(dont_translate := ...)` framework -/
+
+class MyRing (α : Type*) extends Group α
+
+@[to_additive (dont_translate := β γ) add_neg_iff_mul_inv]
+lemma mul_inv_iff_mul_inv {α β γ : Type} [Group α] [MyRing β] [MyRing γ] (a : α) (b : β) (c : γ) :
+    a * a⁻¹ = 1 ↔ b * b⁻¹ = 1 ∨ c * c⁻¹ = 1 := by
+  simp
+
+/--
+info: add_neg_iff_mul_inv {α β γ : Type} [AddGroup α] [MyRing β] [MyRing γ] (a : α) (b : β) (c : γ) :
+  a + -a = 0 ↔ b * b⁻¹ = 1 ∨ c * c⁻¹ = 1
+-/
+#guard_msgs in
+#check add_neg_iff_mul_inv
+
+@[to_additive (dont_translate := β) add_neg_iff_mul_inv]
+def Subtype.mul_inv_iff_mul_inv {α β : Type} [Group α] [MyRing β] (a : α) (b : β) :
+    {a : α // a * a⁻¹ = 1 ↔ b * b⁻¹ = 1} := by
+  exists a
+  simp
+
+/--
+info: Subtype.mul_inv_iff_mul_inv._proof_1 {α β : Type} [Group α] [MyRing β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
+-/
+#guard_msgs in
+#check Subtype.mul_inv_iff_mul_inv._proof_1
+/--
+info: Subtype.add_neg_iff_mul_inv._proof_1 {α β : Type} [AddGroup α] [MyRing β] (a : α) (b : β) : a + -a = 0 ↔ b * b⁻¹ = 1
+-/
+#guard_msgs in
+#check Subtype.add_neg_iff_mul_inv._proof_1
