@@ -310,6 +310,8 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
       _ = (b * c) • t := ?_
     · rw [mul_smul, neg_eq_iff_add_eq_zero, smul_comm a b, ← smul_add, h₁, smul_zero]
 
+-- TODO: should module be marked as normalising?
+set_option linter.flexible false in
 @[simp] lemma LinearIndependent.pair_add_smul_add_smul_iff [Nontrivial R] :
     LinearIndependent R ![a • x + b • y, c • x + d • y] ↔
       LinearIndependent R ![x, y] ∧ a * d ≠ b * c := by

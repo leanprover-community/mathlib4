@@ -379,6 +379,8 @@ lemma coreflection_eq_flip_reflection :
     P.coreflection i = P.flip.reflection i :=
   rfl
 
+-- TODO: should module be considered normalising?
+set_option linter.flexible false in
 lemma reflection_reflectionPerm {i j : ι} :
     P.reflection (P.reflectionPerm j i) = P.reflection j * P.reflection i * P.reflection j := by
   ext x; simp [reflection_apply, coreflection_apply]; module
