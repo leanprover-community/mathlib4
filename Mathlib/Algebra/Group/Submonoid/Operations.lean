@@ -973,7 +973,7 @@ theorem le_pi_iff {I : Set ι} {S : ∀ i, Submonoid (M i)} {J : Submonoid (∀ 
 @[to_additive (attr := simp)]
 theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M i)} (i : ι) (x : M i) :
     Pi.mulSingle i x ∈ pi I S ↔ i ∈ I → x ∈ S i :=
-  Set.update_mem_pi_iff (one_mem (pi I _))
+  Set.update_mem_pi_iff_of_mem (one_mem (pi I _))
 
 @[to_additive]
 theorem pi_eq_bot_iff (S : ∀ i, Submonoid (M i)) : pi Set.univ S = ⊥ ↔ ∀ i, S i = ⊥ := by
