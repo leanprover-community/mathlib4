@@ -985,18 +985,20 @@ Note: we only consider the `to_additive_relevant_arg` of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def findMultiplicativeArg (nm : Name) : MetaM Nat := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
-    -- xs are the arguments to the constant
+  forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
+    let env ← getEnv
+    -- check if the target has a multiplicative type argument, and if so,
+    -- find the index of a type appearing in there
+    let multArg? (tgt : Expr) : Option Nat := do
+      let c ← tgt.getAppFn.constName?
+      guard (findTranslation? env c).isSome
+      let relevantArg := (relevantArgAttr.find? env c).getD 0
+      let arg ← tgt.getArg? relevantArg
+      xs.findIdx? (arg.containsFVar ·.fvarId!)
+    -- run the above check on all hypotheses and on the conclusion
     let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
-      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
-      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
-      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isSome then
-            let relevantArg := (relevantArgAttr.find? (← getEnv) c).getD 0
-            if let some arg := tgt.getArg? relevantArg then
-              return xs.findIdx? (arg.containsFVar ·.fvarId!)
-        return none
+        forallTelescope (← inferType x) fun _ys tgt ↦ return multArg? tgt
+    let arg := arg <|> multArg? ty
     trace[to_additive_detail] "findMultiplicativeArg: {arg}"
     return arg.getD 0
 
