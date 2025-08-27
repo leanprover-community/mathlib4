@@ -215,8 +215,6 @@ theorem _root_.Set.conj_mem_fixingSubgroup (hg : g • t = s) {k : M} (hk : k �
   rw [← Set.mem_smul_set_iff_inv_smul_mem, hg]
   exact hy
 
--- TODO: `group` should also be marked as normalising tactic
-set_option linter.flexible false in
 @[to_additive]
 theorem fixingSubgroup_map_conj_eq (hg : g • t = s) :
     (fixingSubgroup M t).map (MulAut.conj g).toMonoidHom = fixingSubgroup M s :=  by

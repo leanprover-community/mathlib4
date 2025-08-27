@@ -37,8 +37,6 @@ noncomputable def binomialSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂] (�
     FormalMultilinearSeries 𝕂 𝔸 𝔸 :=
   .ofScalars 𝔸 (Ring.choose a ·)
 
--- TODO: should grind be considered normalising?
-set_option linter.flexible false in
 theorem binomialSeries_eq_ordinaryHypergeometricSeries {𝕂 : Type u} [Field 𝕂] [CharZero 𝕂]
     {𝔸 : Type v} [Ring 𝔸] [Algebra 𝕂 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸] {a b : 𝕂}
     (h : ∀ (k : ℕ), (k : 𝕂) ≠ -b) :
