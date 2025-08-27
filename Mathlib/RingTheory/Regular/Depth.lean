@@ -315,6 +315,32 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
     lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
   tfae_finish
 
+section
+
+lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : ModuleCat.{v} R)
+    (f : M ⟶ N) (mono : Mono f) :
+    Mono (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
+  apply ConcreteCategory.mono_of_injective
+  rw [← AddMonoidHom.ker_eq_bot_iff]
+  apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
+  simp only [AddCommGrp.hom_ofHom, AddMonoidHom.mem_ker, AddMonoidHom.flip_apply,
+    Ext.bilinearComp_apply_apply] at hx
+  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
+  have : (Ext.addEquiv₀ x ≫ f) = 0 := (AddEquiv.map_eq_zero_iff Ext.addEquiv₀.symm).mp hx
+  exact (AddEquiv.map_eq_zero_iff Ext.addEquiv₀).mp (zero_of_comp_mono f this)
+
+lemma CategoryTheory.Abelian.extFunctor_post_apply_zero_preserve_momoMorphism
+    (L M N : ModuleCat.{v} R) (g : M ⟶ N) (mono : Epi g) :
+    Mono (AddCommGrp.ofHom <| ((Ext.mk₀ g)).precomp L (zero_add 0)) := by
+  apply ConcreteCategory.mono_of_injective
+  rw [← AddMonoidHom.ker_eq_bot_iff]
+  apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
+  simp only [AddCommGrp.hom_ofHom, AddMonoidHom.mem_ker, Ext.bilinearComp_apply_apply] at hx
+  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
+  have : (g  ≫ Ext.addEquiv₀ x) = 0 := (AddEquiv.map_eq_zero_iff Ext.addEquiv₀.symm).mp hx
+  exact (AddEquiv.map_eq_zero_iff Ext.addEquiv₀).mp (zero_of_epi_comp g this)
+
+end
 
 section depth
 
@@ -415,7 +441,7 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   simp [Ideal.depth, moduleDepth_eq_sup_nat]
   congr
   ext n
-  simp only [Set.mem_setOf_eq, and_congr_right_iff]
+  simp only [and_congr_right_iff]
   intro lt_top
   convert this n.toNat
   <;> nth_rw 1 [← ENat.coe_toNat (LT.lt.ne_top lt_top), ENat.coe_lt_coe]
@@ -462,7 +488,7 @@ lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
     simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr]
       using (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mpr h
 
-lemma moduleDepth_ge_min_of_shortExact_fst
+lemma moduleDepth_ge_min_of_shortExact_snd_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
     (N : ModuleCat.{v} R) : moduleDepth S.X₂ N ≥ moduleDepth S.X₁ N ⊓ moduleDepth S.X₃ N := by
   apply le_sSup
@@ -476,7 +502,45 @@ lemma moduleDepth_ge_min_of_shortExact_fst
     (Ext.contravariant_sequence_exact₂' hS N i)
     (zero3.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
-lemma moduleDepth_ge_min_of_shortExact_snd
+lemma moduleDepth_ge_min_of_shortExact_fst_fst
+    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
+    (N : ModuleCat.{v} R) : moduleDepth S.X₁ N ≥ moduleDepth S.X₂ N ⊓ (moduleDepth S.X₃ N - 1) := by
+  apply le_sSup
+  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  intro i hi2 hi3
+  have zero2 : IsZero (AddCommGrp.of (Ext S.X₂ N i)) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
+  have hi3' : (i + 1 : ℕ) < moduleDepth S.X₃ N := by
+    simpa using lt_tsub_iff_right.mp hi3
+  have zero3 : IsZero (AddCommGrp.of (Ext S.X₃ N (i + 1))) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi3')
+  exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+    (Ext.contravariant_sequence_exact₁' hS N i (i + 1) (add_comm _ _))
+    (zero2.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
+
+lemma moduleDepth_ge_min_of_shortExact_trd_fst
+    (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
+    (N : ModuleCat.{v} R) : moduleDepth S.X₃ N ≥ moduleDepth S.X₂ N ⊓ (moduleDepth S.X₁ N + 1) := by
+  apply le_sSup
+  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  intro i hi2 hi1
+  have zero2 : IsZero (AddCommGrp.of (Ext S.X₂ N i)) :=
+    @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
+  by_cases eq0 : i = 0
+  · rw [eq0] at zero2 ⊢
+    have := extFunctor_post_apply_zero_preserve_momoMorphism.{max v u} N _ _ S.g hS.epi_g
+    exact AddCommGrp.subsingleton_of_isZero <| @zero2.of_mono _ _ _ _ _ _ this
+  · have hi1' : (i - 1 : ℕ) < moduleDepth S.X₁ N := by
+      have : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero eq0
+      rw [← this, Nat.cast_add, Nat.cast_one] at hi1
+      exact lt_of_add_lt_add_right hi1
+    have zero1 : IsZero (AddCommGrp.of (Ext S.X₁ N (i - 1))) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi1')
+    exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+      (Ext.contravariant_sequence_exact₃' hS N (i - 1) i (by omega))
+      (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
+
+lemma moduleDepth_ge_min_of_shortExact_snd_snd
     (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
     (hS : S.ShortExact) : moduleDepth N S.X₂ ≥ moduleDepth N S.X₁ ⊓ moduleDepth N S.X₃ := by
   apply le_sSup
@@ -490,6 +554,44 @@ lemma moduleDepth_ge_min_of_shortExact_snd
     (Ext.covariant_sequence_exact₂' N hS i)
     (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
 
+lemma moduleDepth_ge_min_of_shortExact_fst_snd
+    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
+    (hS : S.ShortExact) : moduleDepth N S.X₁ ≥ moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₃ + 1) := by
+  apply le_sSup
+  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  intro i hi2 hi3
+  have zero2 : IsZero (AddCommGrp.of (Ext N S.X₂ i)) :=
+    @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
+  by_cases eq0 : i = 0
+  · rw [eq0] at zero2 ⊢
+    have := extFunctorObj_zero_preserve_momoMorphism.{max v u} N _ _ S.f hS.mono_f
+    exact AddCommGrp.subsingleton_of_isZero <| @zero2.of_mono _ _ _ _ _ _ this
+  · have hi3' : (i - 1 : ℕ) < moduleDepth N S.X₃ := by
+      have : i - 1 + 1 = i := Nat.succ_pred_eq_of_ne_zero eq0
+      rw [← this, Nat.cast_add, Nat.cast_one] at hi3
+      exact lt_of_add_lt_add_right hi3
+    have zero3 : IsZero (AddCommGrp.of (Ext N S.X₃ (i - 1))) :=
+      @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi3')
+    exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+      (Ext.covariant_sequence_exact₁' N hS (i - 1) i (by omega))
+      (zero3.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
+
+lemma moduleDepth_ge_min_of_shortExact_trd_snd
+    (N : ModuleCat.{v} R) (S : ShortComplex (ModuleCat.{v} R))
+    (hS : S.ShortExact) : moduleDepth N S.X₃ ≥ moduleDepth N S.X₂ ⊓ (moduleDepth N S.X₁ - 1) := by
+  apply le_sSup
+  simp only [Set.mem_setOf_eq, lt_inf_iff, and_imp]
+  intro i hi2 hi1
+  have zero2 : IsZero (AddCommGrp.of (Ext N S.X₂ i)) :=
+    @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi2)
+  have hi1' : (i + 1 : ℕ) < moduleDepth N S.X₁ := by
+    simpa using lt_tsub_iff_right.mp hi1
+  have zero1 : IsZero (AddCommGrp.of (Ext N S.X₁ (i + 1))) :=
+    @AddCommGrp.isZero_of_subsingleton _ (ext_subsingleton_of_lt_moduleDepth hi1')
+  exact AddCommGrp.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
+    (Ext.covariant_sequence_exact₃' N hS i (i + 1) rfl)
+    (zero2.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
+
 lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
     [Nontrivial M] [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
@@ -499,7 +601,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
   rw [moduleDepth_eq_sup_nat]
   congr
   ext m
-  simp only [Set.mem_setOf_eq, exists_prop]
+  simp only [exists_prop]
   refine ⟨fun ⟨lt_top, h⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
   · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt_top) with ⟨n, hn⟩
     simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
