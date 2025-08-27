@@ -27,7 +27,7 @@ Eisenstein series and their q-expansions.
 open Filter Complex ArithmeticFunction Nat Topology
 
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
-to `(a , b)`. -/
+to `(a, b)`. -/
 def divisorsAntidiagonalFactors (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ :=
     fun x ↦
    ⟨⟨x.1.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.2)⟩,
@@ -45,7 +45,7 @@ lemma divisorsAntidiagonalFactors_one (x : Nat.divisorsAntidiagonal 1) :
   simp [divisorsAntidiagonalFactors, h.1, h.2]
 
 /-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
-given by sending `n = a * b` to `(a , b)`. -/
+given by sending `n = a * b` to `(a, b)`. -/
 def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
   toFun x := divisorsAntidiagonalFactors x.1 x.2
   invFun x :=

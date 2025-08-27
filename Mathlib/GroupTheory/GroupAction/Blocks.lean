@@ -20,7 +20,7 @@ Given `SMul G X`, an action of a type `G` on a type `X`, we define
   definition `MulAction.IsBlock.def_one`
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
-  and non trivial blocks: orbit of the group, orbit of a normal subgroup…
+  and non-trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 

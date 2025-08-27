@@ -287,7 +287,6 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
       by_cases h : a = 0
       · simp [h]
       · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
-        ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
