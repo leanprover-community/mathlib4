@@ -706,7 +706,7 @@ def skeletonLT (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Subcomp
       exact subset_iUnion _ _)
     (by
       rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell]
-      congr
+      congrm D ∪ ?_
       apply iUnion_congr fun m ↦ ?_
       rw [iUnion_subtype, iUnion_comm]
       rfl)
