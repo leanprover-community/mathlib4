@@ -64,7 +64,7 @@ theorem laurentAux_div :
     laurentAux r (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap _ _ (taylor r p) / algebraMap _ _ (taylor r q) :=
   -- Porting note: added `by exact taylor_mem_nonZeroDivisors r`
-  map_apply_div (laurentAux _) (by exact taylor_mem_nonZeroDivisors r) p _
+  map_apply_div _ (by exact taylor_mem_nonZeroDivisors r) p _
 
 @[simp]
 theorem laurentAux_algebraMap : laurentAux r (algebraMap _ _ p) = algebraMap _ _ (taylor r p) := by
