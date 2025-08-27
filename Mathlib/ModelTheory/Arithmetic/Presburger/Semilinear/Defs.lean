@@ -122,9 +122,10 @@ theorem Semilinear.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, s.Semilinear)
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using hS.1.union (ih hS.2)
 
-theorem Semilinear.iUnion [Fintype ι] {s : ι → Set α}
+theorem Semilinear.iUnion [Finite ι] {s : ι → Set α}
     (hs : ∀ i, (s i).Semilinear) : (⋃ i, s i).Semilinear := by
   classical
+  haveI := Fintype.ofFinite ι
   rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
   apply sUnion
   simpa
