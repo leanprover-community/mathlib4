@@ -33,8 +33,8 @@ open Limits
 lemma isMulticoequalizer_iff {J : MultispanShape.{w, w'}} {d : MultispanIndex J (Type u)}
     (c : d.multispan.CoconeTypes) :
     c.IsColimit ↔
-      (∀ (i₁ i₂ : J.R) (x₁ : d.right i₁) (x₂ : d.right i₂)
-        (_ : c.ι (.right i₁) x₁ = c.ι (.right i₂) x₂),
+      (∀ (i₁ i₂ : J.R) (x₁ : d.right i₁) (x₂ : d.right i₂),
+        c.ι (.right i₁) x₁ = c.ι (.right i₂) x₂ →
           d.multispan.ιColimitType (.right i₁) x₁ = d.multispan.ιColimitType (.right i₂) x₂) ∧
       (∀ (x : c.pt), ∃ (i : J.R) (a : d.right i), c.ι (.right i) a = x) := by
   have (x : d.multispan.ColimitType) :
