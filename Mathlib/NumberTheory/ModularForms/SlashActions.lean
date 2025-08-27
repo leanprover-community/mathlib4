@@ -162,7 +162,6 @@ theorem SL_slash : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ) :=
 
 theorem SL_slash_def :
     f ∣[k] γ = fun τ ↦ f (γ • τ) * denom γ τ ^ (-k) := by
-  ext
   simp [SL_slash, slash_def, σ]
 
 theorem SL_slash_apply :
