@@ -30,7 +30,7 @@ differentiable on the upper half-plane.
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
 
-open UpperHalfPlane hiding I
+open _root_.UpperHalfPlane hiding I
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 

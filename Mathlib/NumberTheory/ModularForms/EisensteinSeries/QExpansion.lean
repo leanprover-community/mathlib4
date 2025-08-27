@@ -61,7 +61,7 @@ open BoundedContinuousFunction in
 theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f : ℕ → ℂ} {p : ℝ}
     (hp : 0 < p) (hf : f =O[atTop] (fun n ↦ ((n ^ l) : ℝ))) : SummableLocallyUniformlyOn
     (fun n ↦ (f n) • iteratedDerivWithin k (fun z ↦ cexp (2 * ↑π * I * z / p) ^ n) ℍₒ) ℍₒ := by
-  apply SummableLocallyUniformlyOn_of_locally_bounded upperHalfPlaneSet_isOpen
+  apply SummableLocallyUniformlyOn_of_locally_bounded isOpen_upperHalfPlaneSet
   intro K hK hKc
   haveI : CompactSpace K := isCompact_univ_iff.mp (isCompact_iff_isCompact_univ.mp hKc)
   let c : ContinuousMap K ℂ := ⟨fun r : K ↦ Complex.exp (2 * ↑π * I * r / p), by fun_prop⟩
@@ -80,7 +80,7 @@ theorem summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion (k l : ℕ) {f
   have h0 := pow_le_pow_left₀ (by apply norm_nonneg _) (norm_coe_le_norm (mkOfCompact c) ⟨z, hz⟩) n
   simp only [norm_mkOfCompact, mkOfCompact_apply, ContinuousMap.coe_mk, ←
     exp_nsmul', Pi.smul_apply,
-    iteratedDerivWithin_cexp_mul_const k n p upperHalfPlaneSet_isOpen (hK hz), smul_eq_mul,
+    iteratedDerivWithin_cexp_mul_const k n p isOpen_upperHalfPlaneSet (hK hz), smul_eq_mul,
     norm_mul, norm_pow, Complex.norm_div, norm_ofNat, norm_real, Real.norm_eq_abs, norm_I, mul_one,
     norm_natCast, abs_norm, ge_iff_le, r, c] at *
   rw [← mul_assoc]
@@ -111,20 +111,20 @@ theorem differnetiableAt_iteratedDerivWithin_cexp (n a : ℕ) {s : Set ℂ}
 lemma iteratedDerivWithin_tsum_exp_eq (k : ℕ) (z : ℍ) : iteratedDerivWithin k (fun z ↦
     ∑' n : ℕ, cexp (2 * π * I * z) ^ n) ℍₒ z =
     ∑' n : ℕ, iteratedDerivWithin k (fun s : ℂ ↦ cexp (2 * ↑π * I * s) ^ n) ℍₒ z := by
-  rw [iteratedDerivWithin_tsum k upperHalfPlaneSet_isOpen (by simpa using z.2)]
+  rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet (by simpa using z.2)]
   · exact fun x hx => summable_geometric_iff_norm_lt_one.mpr
       (UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨x, hx⟩)
   · exact fun n _ _ => summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' n
   · exact fun n l z hl hz => differnetiableAt_iteratedDerivWithin_cexp n l
-      upperHalfPlaneSet_isOpen hz
+      isOpen_upperHalfPlaneSet hz
 
 theorem contDiffOn_tsum_cexp (k : ℕ∞) :
     ContDiffOn ℂ k (fun z : ℂ ↦ ∑' n : ℕ, cexp (2 * ↑π * I * z) ^ n) ℍₒ :=
   contDiffOn_of_differentiableOn_deriv fun m _ z hz ↦
-  ((summableUniformlyOn_differentiableOn upperHalfPlaneSet_isOpen
+  ((summableUniformlyOn_differentiableOn isOpen_upperHalfPlaneSet
   (summableLocallyUniformlyOn_iteratedDerivWithin_qExpansion' m)
   (fun n _ hz => differnetiableAt_iteratedDerivWithin_cexp n m
-    upperHalfPlaneSet_isOpen hz)) z hz).congr (fun z hz ↦
+    isOpen_upperHalfPlaneSet hz)) z hz).congr (fun z hz ↦
     iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩) (iteratedDerivWithin_tsum_exp_eq m ⟨z, hz⟩)
 
 private lemma iteratedDerivWithin_tsum_exp_eq' {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
@@ -150,11 +150,11 @@ private lemma iteratedDerivWithin_tsum_exp_eq' {k : ℕ} (hk : 1 ≤ k) (z : ℍ
     have := exp_nsmul' (p := 1) (a := 2 * π * I) (n := n)
     simp only [div_one] at this
     simpa [this, ofReal_one, div_one, one_mul, UpperHalfPlane.coe] using
-      iteratedDerivWithin_cexp_mul_const k n 1 upperHalfPlaneSet_isOpen z.2
+      iteratedDerivWithin_cexp_mul_const k n 1 isOpen_upperHalfPlaneSet z.2
   rw [iteratedDerivWithin_const_sub hk, iteratedDerivWithin_fun_neg, iteratedDerivWithin_const_mul]
   · simp only [iteratedDerivWithin_tsum_exp_eq, neg_mul]
   · simpa using z.2
-  · exact upperHalfPlaneSet_isOpen.uniqueDiffOn
+  · exact isOpen_upperHalfPlaneSet.uniqueDiffOn
   · exact (contDiffOn_tsum_cexp k).contDiffWithinAt (by simpa using z.2)
 
 theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) :
@@ -264,7 +264,8 @@ lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSetN n) :
   ring_nf
 
 lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
-    ∑' (x : Fin 2 → ℤ), eisSummand k x z = (riemannZeta (k)) * (eisensteinSeries 𝟙 k z) := by
+    ∑' (x : Fin 2 → ℤ), eisSummand k x z =
+    (riemannZeta (k)) * (eisensteinSeries (N := 1) 0 k z) := by
   rw [← GammaSet_top_Equiv.symm.tsum_eq]
   have hk1 : 1 < k := by omega
   conv =>
@@ -295,17 +296,17 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * I) ^ k / (k - 1)!) *
     ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
-  have : (eisensteinSeries_MF (k := k) (by omega) standardcongruencecondition) z =
-    (eisensteinSeries_SIF standardcongruencecondition k) z := rfl
-  rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply standardcongruencecondition k z,
-    eisensteinSeries, standardcongruencecondition]
+  have : (eisensteinSeries_MF (k := k) (by omega) 0) z =
+    (eisensteinSeries_SIF (N := 1) 0 k) z := rfl
+  rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply 0 k z,
+    eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_sigma_cexp (by omega) hk2 z
   have HE2 := tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries (by omega) z
   have z2 : (riemannZeta (k)) ≠ 0 := by
     refine riemannZeta_ne_zero_of_one_lt_re ?_
     simp only [natCast_re, Nat.one_lt_cast]
     omega
-  simp only [PNat.val_ofNat, standardcongruencecondition, eisSummand, Fin.isValue,
+  simp only [eisSummand, Fin.isValue,
     UpperHalfPlane.coe, zpow_neg, zpow_natCast, neg_mul, eisensteinSeries, ←
     inv_mul_eq_iff_eq_mul₀ z2, ne_eq, one_div, smul_eq_mul] at *
   simp_rw [← HE2, HE1, mul_add]
