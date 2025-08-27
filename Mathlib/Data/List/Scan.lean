@@ -115,9 +115,8 @@ theorem getElem_scanl_eq_foldl_take'' {i : ℕ} (h : i ≤ l.length) :
   getElem_scanl_eq_foldl_take (lt_scanl_length_of_le_length h)
 
 theorem get_scanl_eq_foldl_take {i : Fin (l.length + 1)} :
-    (l.scanl f b).get (i.cast (l.length_scanl b).symm) = (l.take i).foldl f b := by
-  apply getElem_scanl_eq_foldl_take'
-  exact i.isLt
+    (l.scanl f b).get (i.cast (l.length_scanl b).symm) = (l.take i).foldl f b :=
+  getElem_scanl_eq_foldl_take' i.isLt
 
 /-! ### List.scanr -/
 
