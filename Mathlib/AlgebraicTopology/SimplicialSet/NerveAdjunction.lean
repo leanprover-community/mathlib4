@@ -109,7 +109,7 @@ noncomputable def nerve₂.seagull (C : Type u) [Category C] :
 instance (C : Type u) [Category C] : Mono (nerve₂.seagull C) where
   right_cancellation {X} (f g : X → ComposableArrows C 2) eq := by
     ext x
-    simp [nerve₂.seagull] at eq
+    simp only [nerve₂.seagull, prod.comp_lift] at eq
     have eq1 := congr($eq ≫ prod.fst)
     have eq2 := congr($eq ≫ prod.snd)
     simp only [limit.lift_π, BinaryFan.mk_fst, BinaryFan.mk_snd] at eq1 eq2
@@ -269,11 +269,14 @@ hypothesis, where that prefunctor the central hypothesis is conjugated by the is
 @[simps!] def toNerve₂.mk' : X ⟶ nerveFunctor₂.obj (Cat.of C) :=
   toNerve₂.mk (F ≫ (OneTruncation₂.ofNerve₂.natIso.app (Cat.of C)).hom) hyp
 
+-- TODO: fix non-terminal simp (acting on two goals, with different large simp sets)
+set_option linter.flexible false in
 /-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F hyp) = F := by
   refine ReflPrefunctor.ext (fun _ ↦ ComposableArrows.ext₀ rfl)
     (fun X Y g ↦ eq_of_heq (heq_eqRec_iff_heq.2 <| heq_eqRec_iff_heq.2 ?_))
-  simp [oneTruncation₂]
+  simp only [oneTruncation₂, ReflQuiv.of_val, toNerve₂.mk'_app, toNerve₂.mk.app_zero, Cat.of_α,
+    toNerve₂.mk.app_one, Nat.reduceAdd, Fin.isValue]
   refine Quiver.heq_of_homOfEq_ext ?_ ?_ (f' := F.map g) ?_
   · exact ComposableArrows.ext₀ rfl
   · exact ComposableArrows.ext₀ rfl
