@@ -67,10 +67,10 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
-  field_simp [Nat.cast_add_one_ne_zero k]
+  simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
-    ∫ x : ℝ in (0)..1, bernoulliFun k x = 0 := by
+    ∫ x : ℝ in 0..1, bernoulliFun k x = 0 := by
   rw [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
       ((Polynomial.continuous _).intervalIntegrable _ _)]
   rw [bernoulliFun_eval_one]

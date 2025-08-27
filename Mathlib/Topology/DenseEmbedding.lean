@@ -132,6 +132,15 @@ variable [TopologicalSpace γ]
 def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
 
+theorem tendsto_extend (di : IsDenseInducing i) {f : α → γ} {a : α} (hf : ContinuousAt f a) :
+    Tendsto f (𝓝 a) (𝓝 (di.extend f (i a))) := by
+  rw [IsDenseInducing.extend, ← di.nhds_eq_comap]
+  exact tendsto_nhds_limUnder ⟨_, hf⟩
+
+theorem inseparable_extend [R1Space γ] (di : IsDenseInducing i) {f : α → γ} {a : α}
+    (hf : ContinuousAt f a) : Inseparable (di.extend f (i a)) (f a) :=
+  tendsto_nhds_unique_inseparable (di.tendsto_extend hf) hf
+
 theorem extend_eq_of_tendsto [T2Space γ] (di : IsDenseInducing i) {b : β} {c : γ} {f : α → γ}
     (hf : Tendsto f (comap i (𝓝 b)) (𝓝 c)) : di.extend f b = c :=
   haveI := di.comap_nhds_neBot
@@ -275,9 +284,6 @@ theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
   de.injective.eq_iff
 
 theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
-
-@[deprecated (since := "2024-10-26")]
-alias to_embedding := isEmbedding
 
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=

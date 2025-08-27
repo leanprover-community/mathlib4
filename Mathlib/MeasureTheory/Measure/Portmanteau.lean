@@ -42,6 +42,13 @@ The separate implications are:
 * `MeasureTheory.tendsto_of_forall_isOpen_le_liminf` gives the implication (O) → (T) for
     any sequence of Borel probability measures.
 
+We also deduce a practical convergence criterion for probability measures, in
+`IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem`.
+Assume that, applied to all the elements of a π-system, a sequence of probability measures
+converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
+small neighborhoods of any point. Then the sequence of probability measures converges for the
+weak topology.
+
 ## Implementation notes
 
 Many of the characterizations of weak convergence hold for finite measures and are proven in that
@@ -435,7 +442,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     fun n ↦ Metric.isOpen_thickening
   have key := fun (n : ℕ) ↦ h (Fthicks_open n).measurableSet (rs_null n)
   apply ENNReal.le_of_forall_pos_le_add
-  intros ε ε_pos μF_finite
+  intro ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=
@@ -573,5 +580,133 @@ theorem tendsto_of_forall_isOpen_le_liminf {ι : Type*} {μ : ProbabilityMeasure
   exact isBoundedUnder_of ⟨1, by simp⟩ |>.isCoboundedUnder_ge
 
 end le_liminf_open_implies_convergence
+
+section convergenceCriterion
+
+open scoped Finset
+
+variable {Ω ι : Type*} [MeasurableSpace Ω]
+
+/-- Given a π-system, if a sequence of measures converges along all elements of the π-system, then
+it also converges along finite unions of elements of the π-system. -/
+lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
+    {S : Set (Set Ω)} (hS : IsPiSystem S) {μ : ι → Measure Ω} {ν : Measure Ω} {l : Filter ι}
+    {t : Finset (Set Ω)} (ht : ∀ s ∈ t, s ∈ S)
+    (hmeas : ∀ s ∈ S, MeasurableSet s)
+    (h : ∀ s ∈ S, Tendsto (fun i ↦ (μ i).real s) l (𝓝 (ν.real s)))
+    (hν : ∀ s ∈ S, ν s ≠ ∞ := by finiteness)
+    (hμ : ∀ s ∈ S, ∀ i, μ i s ≠ ∞ := by finiteness) :
+    Tendsto (fun i ↦ (μ i).real (⋃ s ∈ t, s)) l (𝓝 (ν.real (⋃ s ∈ t, s))) := by
+  /- This statement is not completely obvious, as `⋃ s ∈ t, s` does not belong to the π-system `S`.
+  However, thanks to the inclusion-exclusion formula one may express its measure in terms of
+  measures of elements of `S`, from which the result follows. -/
+  have A (i) : (μ i).real (⋃ s ∈ t, s) = ∑ u ∈ t.powerset with u.Nonempty,
+      (-1 : ℝ) ^ (#u + 1) * (μ i).real (⋂ s ∈ u, s) :=
+    measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
+      (fun s hs ↦ hμ _ (ht _ hs) i)
+  simp_rw [A, measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
+    (fun s hs ↦ hν _ (ht _ hs))]
+  refine tendsto_finset_sum _ (fun u hu ↦ ?_)
+  simp only [Finset.mem_filter, Finset.mem_powerset] at hu
+  apply Filter.Tendsto.const_mul
+  rcases eq_empty_or_nonempty (⋂ s ∈ u, s) with h'u | h'u
+  · simpa [h'u] using tendsto_const_nhds
+  apply h
+  exact hS.biInter_mem hu.2 (fun s hs ↦ ht _ (hu.1 hs)) h'u
+
+/-- Given a π-system, if a sequence of probability measures converges along all elements of
+the π-system, then it also converges along finite unions of elements of the π-system. -/
+lemma _root_.IsPiSystem.tendsto_probabilityMeasure_biUnion
+    {S : Set (Set Ω)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure Ω} {ν : ProbabilityMeasure Ω}
+    {l : Filter ι} {t : Finset (Set Ω)} (ht : ∀ s ∈ t, s ∈ S) (hmeas : ∀ s ∈ S, MeasurableSet s)
+    (h : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
+    Tendsto (fun i ↦ μ i (⋃ s ∈ t, s)) l (𝓝 (ν (⋃ s ∈ t, s))) := by
+  have : Tendsto (fun i ↦ (μ i : Measure Ω).real (⋃ s ∈ t, s)) l
+      (𝓝 ((ν : Measure Ω).real (⋃ s ∈ t, s))) := by
+    apply hS.tendsto_measureReal_biUnion ht hmeas
+    simpa using h
+  simpa using this
+
+/-- Consider a set of sets `S` containing arbitrarily small neighborhoods of any point, and a
+probability measure. Then any open set can be approximated arbitrarily well in measure from inside
+by a finite union of elements of `S`.
+
+This is a technical lemma for `IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem`, which is
+why it is formulated for a `ProbabilityMeasure`. If needed, this could be generalized to finite
+measures or to general measures.
+-/
+lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
+    [TopologicalSpace Ω] [SecondCountableTopology Ω]
+    {S : Set (Set Ω)} (ν : ProbabilityMeasure Ω)
+    (h : ∀ (u : Set Ω), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
+    {G : Set Ω} (hG : IsOpen G) {r : ℝ≥0} (hr : r < ν G) :
+    ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G := by
+  classical
+  obtain ⟨T, TS, T_count, hT⟩ : ∃ T : Set (Set Ω), T ⊆ S ∧ T.Countable ∧ ⋃ t ∈ T, t = G := by
+    have : ∀ (x : G), ∃ s ∈ S, s ∈ 𝓝 (x : Ω) ∧ s ⊆ G := fun x ↦ h G hG x x.2
+    choose! s hsS hs_nhds hsG using this
+    rcases TopologicalSpace.isOpen_iUnion_countable (fun i ↦ interior (s i))
+      (fun i ↦ isOpen_interior) with ⟨T₀, T₀_count, hT₀⟩
+    refine ⟨s '' T₀, by grind, T₀_count.image s, ?_⟩
+    refine Subset.antisymm (by simp; grind) ?_
+    have : G ⊆ ⋃ i, interior (s i) := by
+      intro y hy
+      simpa using ⟨y, hy, mem_interior_iff_mem_nhds.2 (hs_nhds ⟨y, hy⟩)⟩
+    apply this.trans
+    rw [← hT₀, biUnion_image]
+    exact iUnion₂_mono fun i j ↦ interior_subset
+  have : T.Nonempty := by
+    contrapose! hr
+    simp [← hT, hr]
+  rcases T_count.exists_eq_range this with ⟨f, hf⟩
+  have G_eq : G = ⋃ n, f n := by simp [← hT, hf]
+  have : Tendsto (fun i ↦ ν (Accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
+    (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
+  rw [← G_eq] at this
+  rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
+  refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
+  · convert hn
+    simp [accumulate_def]
+    grind
+  · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
+
+/-- Assume that, applied to all the elements of a π-system, a sequence of probability measures
+converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
+small neighborhoods of any point. Then the sequence of probability measures converges for the
+weak topology. -/
+lemma _root_.IsPiSystem.tendsto_probabilityMeasure_of_tendsto_of_mem
+    [TopologicalSpace Ω] [SecondCountableTopology Ω] [OpensMeasurableSpace Ω]
+    {S : Set (Set Ω)} (hS : IsPiSystem S) {μ : ι → ProbabilityMeasure Ω} {ν : ProbabilityMeasure Ω}
+    {l : Filter ι} [l.IsCountablyGenerated]
+    (hmeas : ∀ s ∈ S, MeasurableSet s)
+    (h : ∀ (u : Set Ω), IsOpen u → ∀ x ∈ u, ∃ s ∈ S, s ∈ 𝓝 x ∧ s ⊆ u)
+    (h' : ∀ s ∈ S, Tendsto (fun i ↦ μ i s) l (𝓝 (ν s))) :
+    Tendsto μ l (𝓝 ν) := by
+  /- We apply the portmanteau theorem: it suffices to show that, given an open set `G`
+  and `r < ν G`, then for large `i` one has `r < μᵢ G`. For this, we approximate `G` from inside by
+  a finite union `G'` of elements of `S`, still with measure `> r`, by Lemma
+  `ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen`. If we have `μᵢ G' → ν G'`,
+  then we deduce `r < μᵢ G'` for large `i`, and therefore `r < μᵢ G`.
+
+  Our assumption does not give directly `μᵢ G' → ν G'`, as `G'` does not belong to the π-system `S`.
+  However, the inclusion-exclusion formula makes it possible to express `μᵢ G'` and `ν G'` in terms
+  of the measures of intersections of elements of `S`, for which we have the convergence. It follows
+  that `μᵢ G' → ν G'` holds, concluding the proof. This second step is already formalized in the
+  lemma `IsPiSystem.tendsto_probabilityMeasure_biUnion`. -/
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
+  apply tendsto_of_forall_isOpen_le_liminf
+  intro G hG
+  refine (le_liminf_iff (isCoboundedUnder_ge_of_le (x := 1) l (by simp)) (by isBoundedDefault)).2
+    (fun r hr ↦ ?_)
+  obtain ⟨T, TS, T_meas, TG⟩ :
+      ∃ T : Finset (Set Ω), (∀ t ∈ T, t ∈ S) ∧ (r < ν (⋃ t ∈ T, t)) ∧ (⋃ t ∈ T, t) ⊆ G :=
+    ν.exists_lt_measure_biUnion_of_isOpen h hG hr
+  have : Tendsto (fun i ↦ μ i (⋃ t ∈ T, t)) l (𝓝 (ν (⋃ t ∈ T, t))) :=
+    hS.tendsto_probabilityMeasure_biUnion TS hmeas h'
+  filter_upwards [(tendsto_order.1 this).1 r T_meas] with i hi
+  exact hi.trans_le <| ProbabilityMeasure.apply_mono _ TG
+
+end convergenceCriterion
 
 end MeasureTheory --namespace
