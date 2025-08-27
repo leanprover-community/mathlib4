@@ -100,8 +100,12 @@ instance : Preorder X.S where
   le_refl _ := le_refl (α := Subcomplex X) _
   le_trans _ _ _ := le_trans (α := Subcomplex X)
 
-lemma le_iff {x y : X.S} : x ≤ y ↔ Subcomplex.ofSimplex x.2 ≤ Subcomplex.ofSimplex y.2 :=
+lemma le_def {x y : X.S} : x ≤ y ↔ Subcomplex.ofSimplex x.2 ≤ Subcomplex.ofSimplex y.2 :=
   Iff.rfl
+
+lemma le_iff {x y : X.S} : x ≤ y ↔ ∃ (f : ⦋x.1⦌ ⟶ ⦋y.1⦌), X.map f.op y.2 = x.2 := by
+  rw [le_def, Subcomplex.ofSimplex_le_iff, Subpresheaf.ofSection_obj, Set.mem_setOf_eq]
+  tauto
 
 lemma mk_map_le {n m : ℕ} (x : X _⦋n⦌) (f : ⦋m⦌ ⟶ ⦋n⦌) :
     S.mk (X.map f.op x) ≤ S.mk x := by
