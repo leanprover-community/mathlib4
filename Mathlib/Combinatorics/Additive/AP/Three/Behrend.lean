@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Data.Complex.ExponentialBounds
 
 /-!
 # Behrend's bound on Roth numbers
@@ -388,14 +388,11 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
 
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
-  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
+  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv, nValue]
+  · grw [ceil_lt_mul]
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff₀]
       · norm_num [le_sqrt_log hN]
       · norm_num1
-    · apply log_nonneg
-      rw [one_le_cast]
-      exact hN.trans' (by norm_num1)
     · rw [cast_pos, lt_ceil, cast_zero, Real.sqrt_pos]
       refine log_pos ?_
       rw [one_lt_cast]

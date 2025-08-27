@@ -497,6 +497,15 @@ lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
 
 end mul_one
 
+/-- If the codomain of an injective monoid homomorphism is torsion free,
+then so is the domain. -/
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
+then so is the domain. -/]
+theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
+    (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
+  pow_left_injective n hn x y hxy := hf <| IsMulTorsionFree.pow_left_injective hn <| by
+    simpa using congrArg f hxy
+
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes
 

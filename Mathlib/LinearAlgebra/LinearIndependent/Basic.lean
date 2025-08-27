@@ -452,7 +452,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     -- Porting note: `g` must be specified.
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
       Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
-    · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
+    · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_true]
     · exact Finset.disjoint_filter.2 fun x _ hx =>
         disjoint_left.1 isCompl_range_inl_range_inr.disjoint hx
   rw [← eq_neg_iff_add_eq_zero] at this

@@ -98,7 +98,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
   · intro h; refine ⟨fun x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
-  · intros hα l1 l2 hl
+  · intro hα l1 l2 hl
     induction l1 generalizing l2 <;> cases l2
     · rfl
     · cases hl
@@ -528,16 +528,7 @@ theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = 
   | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
 
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
-  induction l with
-  | nil => exact iff_of_true rfl not_mem_nil
-  | cons b l ih =>
-    simp only [length, mem_cons, idxOf_cons]
-    rw [cond_eq_if]
-    split_ifs with h <;> simp at h
-    · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
-    · simp only [Ne.symm h, false_or]
-      rw [← ih]
-      exact succ_inj
+  grind
 
 @[simp]
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
@@ -952,7 +943,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
     by simp [← h (pure b)]
   induction l with
-  | nil => intro; simp
+  | nil => simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 
 end FoldlMFoldrM
