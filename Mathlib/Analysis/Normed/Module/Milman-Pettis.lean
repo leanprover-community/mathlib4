@@ -6,6 +6,7 @@ Authors: Filippo A. E. Nuccio
 
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.LinearAlgebra.Dual.Defs
 
 open scoped Topology NNReal
 
@@ -65,12 +66,12 @@ local notation3 "𝒰" => (inclusionInDoubleDual ℝ E) '' closedBall 0 1
 
 -- **TODO**: Change name, generalise to every radious/centre, align assumptions with
 -- `double_dual_bound`
-lemma inclusion_subset : 𝒰 ⊆ closedBall 0 1 := by
-  intro _ ⟨_, _, hxa⟩
-  grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, ← mem_closedBall_zero_iff]
-  assumption
+-- lemma image_closedBall_subset_closedBall : 𝒰 ⊆ closedBall 0 1 := by
+--   intro _ ⟨_, _, hxa⟩
+--   grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, ← mem_closedBall_zero_iff]
+--   assumption
 
-lemma closed𝒰 [CompleteSpace E] : IsClosed 𝒰 :=
+lemma IsClosed_image_ball [CompleteSpace E] : IsClosed 𝒰 :=
     (inclusionInDoubleDualLi ℝ E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
 
 lemma WeakClosure_subset_closedBall {s : Set E**} {c : E**} {ε : ℝ} (hs : s ⊆ closedBall c ε) :
@@ -212,27 +213,30 @@ lemma sphere_subset_closure [UniformConvexSpace E] : sphere 0 1 ⊆ closure 𝒰
 
 lemma sphere_subset_image [CompleteSpace E] [UniformConvexSpace E] : sphere 0 1 ⊆ 𝒰 := by
   grw [sphere_subset_closure, IsClosed.closure_eq]
-  exact closed𝒰
+  exact IsClosed_image_ball
 
-variable (E)
+variable (E) [CompleteSpace E] [UniformConvexSpace E]
 
 /- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is
 reflexive, stated as the surjectivity of `inclusionInDoubleDual`. For the version proving
 this is a linear isometric equivalence, see `LinearIsometryEquiv_of_uniformConvexSpace`. -/
-theorem surjective_of_uniformConvexSpace [CompleteSpace E] [UniformConvexSpace E] :
-    Surjective (inclusionInDoubleDual ℝ E) :=
+theorem surjective_of_uniformConvexSpace : Surjective (inclusionInDoubleDual ℝ E) :=
   (surjective_iff_sphere_subset_range _).mpr
     ⟨_, zero_lt_one, sphere_subset_image.trans <| Set.image_subset_range ..⟩
 
 /-- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is
 reflexive. For a version proving only surjectivity, see `surjective_of_uniformConvexSpace`. -/
 noncomputable
-def LinearIsometryEquiv_of_uniformConvexSpace [CompleteSpace E] [UniformConvexSpace E] :
-  E ≃ₗᵢ[ℝ] E** where
+def LinearIsometryEquiv_of_uniformConvexSpace : E ≃ₗᵢ[ℝ] E** where
     __ := inclusionInDoubleDualLi ℝ E
     invFun := sorry
     left_inv := sorry
     right_inv := sorry
+
+instance : Module.IsReflexive ℝ E where
+  bijective_dual_eval' := by
+    convert (LinearIsometryEquiv_of_uniformConvexSpace E).bijective
+    sorry
 
 alias milman_pettis := surjective_of_uniformConvexSpace
 -- alias milman_pettis := LinearIsometryEquiv_of_uniformConvexSpace
