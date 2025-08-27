@@ -959,12 +959,12 @@ lemma comm_comp_map_apply (f : A →ₐ[R] C) (g : B →ₐ[R] D) (x) :
   congr($(comm_comp_map f g) x)
 
 variable (A) in
-/-- `lTensor A f : A ⊗ B →ₐ A ⊗ C` is the natural algebra morphism induced by `f : B →ₐ C`. -/
+/-- `lTensor A g : A ⊗ B →ₐ A ⊗ D` is the natural algebra morphism induced by `g : B →ₐ D`. -/
 noncomputable abbrev lTensor (g : B →ₐ[R] D) : (A ⊗[R] B) →ₐ[S] (A ⊗[R] D) := map (.id S A) g
 
-variable (A) in
-/-- `rTensor A f : B ⊗ A →ₐ C ⊗ A` is the natural algebra morphism induced by `f : B →ₐ C`. -/
-noncomputable abbrev rTensor (f : A →ₐ[R] C) : A ⊗[R] B →ₐ[R] C ⊗[R] B := map f (.id R B)
+variable (B) in
+/-- `rTensor B f : A ⊗ B →ₐ C ⊗ B` is the natural algebra morphism induced by `f : A →ₐ C`. -/
+noncomputable abbrev rTensor (f : A →ₐ[S] C) : A ⊗[R] B →ₐ[S] C ⊗[R] B := map f (.id R B)
 
 /-- Construct an isomorphism between tensor products of an S-algebra with an R-algebra
 from S- and R- isomorphisms between the tensor factors.
