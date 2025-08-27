@@ -49,7 +49,6 @@ theorem unitary.toStarAlgAut_symm (u : unitary R) :
     (toStarAlgAut S R u).symm = toStarAlgAut S R (star u) := by
   ext; simp
 
-@[simp]
 theorem unitary.toRingEquiv_toStarAlgAut (u : unitary R) :
     (toStarAlgAut S R u).toRingEquiv = MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
   rfl
