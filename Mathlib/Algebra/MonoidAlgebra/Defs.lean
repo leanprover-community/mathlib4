@@ -956,6 +956,7 @@ theorem mul_apply_antidiagonal [Add G] (f g : k[G]) (x : G) (s : Finset (G × G)
     (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 + p.2 = x) : (f * g) x = ∑ p ∈ s, f p.1 * g p.2 :=
   @MonoidAlgebra.mul_apply_antidiagonal k (Multiplicative G) _ _ _ _ _ s @hs
 
+@[simp]
 theorem single_mul_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} :
     single a₁ b₁ * single a₂ b₂ = single (a₁ + a₂) (b₁ * b₂) :=
   @MonoidAlgebra.single_mul_single k (Multiplicative G) _ _ _ _ _ _

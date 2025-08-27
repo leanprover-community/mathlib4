@@ -609,7 +609,7 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
-  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | empty => simp only [Finset.not_nonempty_empty] at hs
   | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with
@@ -738,12 +738,8 @@ lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
     (le_sup'_of_le _ H.choose_spec (h _ H.choose_spec).ge)
 
 @[simp]
-theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
-  apply le_antisymm
-  · apply sup'_le
-    intros
-    exact le_rfl
-  · apply le_sup' (fun _ => a) H.choose_spec
+theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a :=
+  sup'_eq_of_forall H (fun _ ↦ a) fun _ ↦ congrFun rfl
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :
