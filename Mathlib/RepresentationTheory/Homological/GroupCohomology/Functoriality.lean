@@ -57,8 +57,7 @@ noncomputable def cochainsMap :
 
 @[simp]
 lemma cochainsMap_id :
-    cochainsMap (MonoidHom.id _) (𝟙 A) = 𝟙 (inhomogeneousCochains A) := by
-  rfl
+    cochainsMap (MonoidHom.id _) (𝟙 A) = 𝟙 (inhomogeneousCochains A) := rfl
 
 @[simp]
 lemma cochainsMap_id_f_hom_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
@@ -74,14 +73,12 @@ lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H]
     [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
     (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
     cochainsMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) =
-      cochainsMap f φ ≫ cochainsMap g ψ := by
-  rfl
+      cochainsMap f φ ≫ cochainsMap g ψ := rfl
 
 @[reassoc]
 lemma cochainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     cochainsMap (MonoidHom.id G) (φ ≫ ψ) =
-      cochainsMap (MonoidHom.id G) φ ≫ cochainsMap (MonoidHom.id G) ψ := by
-  rfl
+      cochainsMap (MonoidHom.id G) φ ≫ cochainsMap (MonoidHom.id G) ψ := rfl
 
 @[simp]
 lemma cochainsMap_zero : cochainsMap (A := A) (B := B) f 0 = 0 := rfl
@@ -320,13 +317,11 @@ noncomputable def mapShortComplexH1 :
 
 @[simp]
 theorem mapShortComplexH1_zero :
-    mapShortComplexH1 (A := A) (B := B) f 0 = 0 := by
-  rfl
+    mapShortComplexH1 (A := A) (B := B) f 0 = 0 := rfl
 
 @[simp]
 theorem mapShortComplexH1_id :
-    mapShortComplexH1 (MonoidHom.id _) (𝟙 A) = 𝟙 _ := by
-  rfl
+    mapShortComplexH1 (MonoidHom.id _) (𝟙 A) = 𝟙 _ := rfl
 
 @[reassoc]
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
@@ -513,8 +508,7 @@ theorem mapShortComplexH2_zero :
 
 @[simp]
 theorem mapShortComplexH2_id :
-    mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = 𝟙 _ := by
-  rfl
+    mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = 𝟙 _ := rfl
 
 @[reassoc]
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]

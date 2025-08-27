@@ -130,8 +130,7 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
   { y | ↑y ∈ x }
 
 @[simp]
-theorem congToClass_empty : congToClass ∅ = ∅ := by
-  rfl
+theorem congToClass_empty : congToClass ∅ = ∅ := rfl
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
 def classToCong (x : Class.{u}) : Set Class.{u} :=

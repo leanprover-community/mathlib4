@@ -32,8 +32,7 @@ instance : MulAction G (ℙ K V) where
     rw [map_comp, Function.comp_apply]
 
 lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :
-    g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := by
-  rfl
+    g • x = x.map g.toLinearEquiv.toLinearMap g.toLinearEquiv.injective := rfl
 
 @[simp]
 lemma smul_mk (g : G) {v : V} (hv : v ≠ 0) :
