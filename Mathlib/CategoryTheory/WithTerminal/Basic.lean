@@ -88,19 +88,13 @@ def comp : ∀ {X Y Z : WithTerminal C}, Hom X Y → Hom Y Z → Hom X Z
   | star, star, star => fun _ _ => PUnit.unit
 attribute [nolint simpNF] comp.eq_4
 
+@[aesop safe destruct (rule_sets := [CategoryTheory])]
+lemma false_of_from_star' {X : C} (f : Hom star (of X)) : False := (f : PEmpty).elim
+
 instance : Category.{v} (WithTerminal C) where
   Hom X Y := Hom X Y
   id _ := id _
   comp := comp
-  assoc {a b c d} f g h := by
-    -- Porting note: it would be nice to automate this away as well.
-    -- I tried splitting this into separate `Quiver` and `Category` instances,
-    -- so the `false_of_from_star` destruct rule below can be used here.
-    -- That works, but causes mysterious failures of `cat_disch` in `map`.
-    cases a <;> cases b <;> cases c <;> cases d <;> try cat_disch
-    · exact (h : PEmpty).elim
-    · exact (g : PEmpty).elim
-    · exact (h : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -471,17 +465,13 @@ def comp : ∀ {X Y Z : WithInitial C}, Hom X Y → Hom Y Z → Hom X Z
   | star, star, star => fun _ _ => PUnit.unit
 attribute [nolint simpNF] comp.eq_3
 
+@[aesop safe destruct (rule_sets := [CategoryTheory])]
+lemma false_of_to_star' {X : C} (f : Hom (of X) star) : False := (f : PEmpty).elim
+
 instance : Category.{v} (WithInitial C) where
   Hom X Y := Hom X Y
   id X := id X
   comp f g := comp f g
-  assoc {a b c d} f g h := by
-    -- Porting note: it would be nice to automate this away as well.
-    -- See the note on `Category (WithTerminal C)`
-    cases a <;> cases b <;> cases c <;> cases d <;> try cat_disch
-    · exact (g : PEmpty).elim
-    · exact (f : PEmpty).elim
-    · exact (f : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f

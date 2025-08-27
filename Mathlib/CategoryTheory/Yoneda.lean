@@ -600,8 +600,7 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun _ ↦ Equiv.toIso yonedaEquiv)) (by
     intro X Y f
     ext a b
-    dsimp [yonedaEquiv]
-    simp [← FunctorToTypes.naturality])
+    simp [yonedaEquiv, ← FunctorToTypes.naturality])
 
 /-- The curried version of the Yoneda lemma. -/
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :

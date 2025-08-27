@@ -58,12 +58,8 @@ section
 
 variable {J : Type w₁}
 
-/- Porting note: add this because Lean cannot see directly through the `∘` for
-`Function.comp` -/
-
-instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
-  dsimp
-  infer_instance
+instance (f : J → I) : (j : J) → Category ((C ∘ f) j) :=
+  inferInstanceAs <| (j : J) → Category (C (f j))
 
 /-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
@@ -111,7 +107,6 @@ section
 
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
-/- Porting note: maybe mixing up universes -/
 instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
@@ -119,9 +114,6 @@ instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
   | Sum.inr j => by
     dsimp
     infer_instance
-
-/- Porting note: replaced `Sum.rec` with `match`'s per the error about
-current state of code generation -/
 
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
