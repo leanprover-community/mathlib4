@@ -277,7 +277,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr exac
           mono_f := (ModuleCat.mono_iff_injective S.f).mpr inj
           epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surj }
-        exact ge_trans (moduleDepth_ge_min_of_shortExact_fst S hS M) (le_inf_iff.mpr
+        exact ge_trans (moduleDepth_ge_min_of_shortExact_snd_fst S hS M) (le_inf_iff.mpr
           ⟨le_trans (tsub_le_tsub_left dimle1' _) ge1, le_trans (tsub_le_tsub_left dimle3' _) ge3⟩)
       · have : Subsingleton L1 ∨ Subsingleton L3 := by
           simpa [← not_nontrivial_iff_subsingleton] using Classical.not_and_iff_not_or_not.mp ntr
