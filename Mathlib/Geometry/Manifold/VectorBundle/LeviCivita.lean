@@ -7,6 +7,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative
 import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+import Mathlib.Util.PrintSorries
 
 /-!
 # The Levi-Civita connection
