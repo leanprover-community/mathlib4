@@ -35,7 +35,7 @@ theorem isColimit_exists_rep [HasLimitsOfShape Jᵒᵖ C] {c : Cocone F} (hc : I
     ∃ (i : J) (y : F.obj i), (c.ι.app i).base y = x :=
   Concrete.isColimit_exists_rep (F ⋙ forget C) (isColimitOfPreserves (forget C) hc) x
 
--- Porting note: argument `C` of colimit need to be made explicit, odd
+-- Porting note: argument `C` of colimit need to be made explicit, otherwise we get universe issues
 theorem colimit_exists_rep [HasLimitsOfShape Jᵒᵖ C] (x : colimit (C := SheafedSpace C) F) :
     ∃ (i : J) (y : F.obj i), (colimit.ι F i).base y = x :=
   Concrete.isColimit_exists_rep (F ⋙ SheafedSpace.forget C)
@@ -132,7 +132,7 @@ theorem coequalizer_π_app_isLocalHom
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): this instance has to be manually added
   haveI : IsIso (PreservesCoequalizer.iso
       SheafedSpace.forgetToPresheafedSpace f.toShHom g.toShHom).hom.c :=
-    PresheafedSpace.c_isIso_of_iso _
+    inferInstance
   -- Had to add this instance too.
   have := CommRingCat.equalizer_ι_isLocalHom' (PresheafedSpace.componentwiseDiagram _
         ((Opens.map
@@ -172,7 +172,7 @@ theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).base ⁻¹' ((coequalizer.π f.toShHom g.toShHom).base ''
       (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
   fapply Types.coequalizer_preimage_image_eq_of_preimage_eq f.base
-    -- Porting note: Type of `f.base` and `g.base` needs to be explicit
+    -- Porting note: Type of `g.base` needs to be explicit
     (g.base : X.carrier.1 ⟶ Y.carrier.1)
   · ext
     simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
