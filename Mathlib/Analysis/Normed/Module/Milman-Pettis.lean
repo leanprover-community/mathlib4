@@ -7,6 +7,7 @@ Authors: Filippo A. E. Nuccio
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.LinearAlgebra.Dual.Defs
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 open scoped Topology NNReal
 
@@ -19,6 +20,7 @@ variable {𝕜 𝕜' E F : Type*}
 variable [NormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [DenselyNormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NontriviallyNormedField 𝕜']
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜' F] {σ₁₂ : 𝕜 →+* 𝕜'} [RingHomIsometric σ₁₂]
+
 
 theorem exists_nnorm_eq_one_lt_apply_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ} (hr₀ : 0 ≤ r)
     (hr : r < ‖f‖) : ∃ x : E, ‖x‖ = 1 ∧ r < ‖f x‖ := by
@@ -57,12 +59,15 @@ end ContinuousLinearMap
 
 end opNorm
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {𝕜 𝕜₁ 𝕜₂ E E₁ E₂ : Type*} [RCLike 𝕜₂] [NontriviallyNormedField 𝕜] [NormedField 𝕜₁]
+[NormedAddCommGroup E] [NormedSpace 𝕜 E]
+[SeminormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
+[NormedAddCommGroup E₂] [NormedSpace 𝕜₂ E₂]
 
 open Metric NormedSpace Function ContinuousLinearMap Pointwise
 
-local notation3 "E**" => StrongDual ℝ (StrongDual ℝ E)
-local notation3 "𝒰" => (inclusionInDoubleDual ℝ E) '' closedBall 0 1
+local notation3 "E**" => StrongDual 𝕜 (StrongDual 𝕜 E)
+local notation3 "𝒰" => (inclusionInDoubleDual 𝕜₂ E₂) '' closedBall 0 1
 
 -- **TODO**: Change name, generalise to every radious/centre, align assumptions with
 -- `double_dual_bound`
@@ -71,39 +76,40 @@ local notation3 "𝒰" => (inclusionInDoubleDual ℝ E) '' closedBall 0 1
 --   grw [← hxa, mem_closedBall_zero_iff, double_dual_bound, ← mem_closedBall_zero_iff]
 --   assumption
 
-lemma IsClosed_image_ball [CompleteSpace E] : IsClosed 𝒰 :=
-    (inclusionInDoubleDualLi ℝ E).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
+-- **FAE** serve RCLike, not-Semi(Normed)
+lemma IsClosed_image_ball [CompleteSpace E₂] : IsClosed 𝒰 :=
+    (inclusionInDoubleDualLi 𝕜₂ E₂).isometry.isClosedEmbedding.isClosedMap _ isClosed_closedBall
 
+-- **FAE** serve Nontriviallynormed, basta SeminormedAddGroup
 lemma WeakClosure_subset_closedBall {s : Set E**} {c : E**} {ε : ℝ} (hs : s ⊆ closedBall c ε) :
-    letI 𝒯 : TopologicalSpace (WeakDual ℝ (StrongDual ℝ E)) := inferInstance
+    letI 𝒯 : TopologicalSpace (WeakDual 𝕜 (StrongDual 𝕜 E)) := inferInstance
     (closure[𝒯] s) ⊆ closedBall (α := E**) c ε :=
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
 
 -- **TODO** Check not in Mathlib, miminise assumptions, golf proof.
-lemma surjective_iff_sphere_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (f : E →L[ℝ] F) : Surjective f ↔ ∃ ρ > 0, sphere 0 ρ ⊆ Set.range f := by
+lemma surjective_iff_sphere_subset_range [Algebra ℝ 𝕜₁]
+    {F : Type*} [NormedAddCommGroup F] [Module 𝕜₁ F]
+    [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜₁ F] [Module ℝ E₁] [IsScalarTower ℝ 𝕜₁ E₁]
+    (f : E₁ →L[𝕜₁] F) : Surjective f ↔ ∃ ρ > 0, sphere 0 ρ ⊆ Set.range f := by
   refine ⟨fun _ ↦ ⟨1, by simp_all⟩, fun ⟨ρ, ρ_pos, sphere_le⟩ z ↦ ?_⟩
   by_cases hz : z = 0
   · exact ⟨0, by simp_all⟩
-  set α := ‖z‖ with hα_def
-  have hα : α ≠ 0 := by
-    rwa [norm_ne_zero_iff]
-  set y := (ρ * α⁻¹) • z with hy_def
-  have hy : y ∈ sphere 0 ρ := by
-    simp
-    calc ‖y‖ = ‖(ρ * α⁻¹) • z‖  := by rw [hy_def]
-           _ = |ρ * α⁻¹| * ‖z‖ := by rw [norm_smul, Real.norm_eq_abs]
-           _ = |ρ * α⁻¹| * |α| := by simp [hα_def]
-           _ = ρ := by
-            simpa [← abs_mul, mul_assoc, inv_mul_cancel₀ hα] using le_of_lt ρ_pos
-  obtain ⟨x, hx⟩ := sphere_le hy
+  set α := ‖z‖
+  have hα : α ≠ 0 := by rwa [norm_ne_zero_iff]
+  have h_mem : (ρ * α⁻¹) • z ∈ sphere 0 ρ := by
+    simp only [mem_sphere_iff_norm, sub_zero]
+    calc  ‖(ρ * α⁻¹) • z‖ = |ρ * α⁻¹| * |α| := by rw [norm_smul, Real.norm_eq_abs, abs_mul,
+      abs_norm]
+           _ = ρ := by simpa [← abs_mul, mul_assoc, inv_mul_cancel₀ hα] using le_of_lt ρ_pos
+  obtain ⟨x, hx⟩ := sphere_le h_mem
   use (ρ⁻¹ * α) • x
-  rw [map_smul, hx, hy_def, ← smul_assoc, smul_eq_mul, show (ρ⁻¹ * α * (ρ * α⁻¹)) = 1 by grind,
-    one_smul]
+  simp [hx, ← smul_assoc, show (ρ⁻¹ * α * (ρ * α⁻¹)) = 1 by grind]
 
-lemma surjective_iff_closedBall_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (f : E →L[ℝ] F) : Surjective f ↔ ∃ ρ > 0, closedBall 0 ρ ⊆ Set.range f :=
+lemma surjective_iff_closedBall_subset_range [Algebra ℝ 𝕜₁]
+    {F : Type*} [NormedAddCommGroup F] [Module 𝕜₁ F]
+    [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜₁ F] [Module ℝ E₁] [IsScalarTower ℝ 𝕜₁ E₁]
+    (f : E₁ →L[𝕜₁] F) : Surjective f ↔ ∃ ρ > 0, closedBall 0 ρ ⊆ Set.range f :=
   ⟨fun _ ↦ ⟨1, by simp_all⟩,
   fun ⟨_, ρ_pos, sphere_le⟩ ↦ (surjective_iff_sphere_subset_range f).mpr ⟨_, ρ_pos, fun _ hx ↦
     sphere_le (sphere_subset_closedBall hx)⟩⟩
@@ -116,7 +122,7 @@ the pairing whose *first* variable is in `M*` and the second is in `M`. -/
 axiom goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
   (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1-- := by sorry
 
-lemma exists_sub_one_lt {ξ : E**} {δ : ℝ} (hδ₀ : 0 < δ) (hδ₁ : δ < 1) (h : ‖ξ‖ = 1) :
+lemma exists_functional_sub_one_lt {ξ : E**} {δ : ℝ} (hδ₀ : 0 < δ) (hδ₁ : δ < 1) (h : ‖ξ‖ = 1) :
     ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
   obtain ⟨φ, hφ_eq, hφ_lt⟩ := exists_nnorm_eq_one_lt_apply_of_lt_opNorm
     (f := ξ) (r := 1 - δ) (by grind) (by grind)
@@ -146,7 +152,7 @@ lemma exists_ball_lt [UniformConvexSpace E] {ξ : E**} {ε : ℝ} (hε : 0 < ε)
           _ =  min δ' (1/2) := by rfl
           _ ≤ (1/2) := min_le_right ..
           _ < 1 := by linarith
-  obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_sub_one_lt hδ₀ hδ₁ hξ_norm
+  obtain ⟨φ, hφ_norm, hφ_lt⟩ := exists_functional_sub_one_lt hδ₀ hδ₁ hξ_norm
   replace hφ_lt : |ξ φ - 1| < δ'/2 := by
     apply lt_of_lt_of_le hφ_lt
     rw [div_le_div_iff_of_pos_right (zero_lt_two), δ_def]
