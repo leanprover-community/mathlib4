@@ -997,7 +997,6 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
     | _ => pure #[]
 
 open Tactic.TryThis in
-open private addSuggestionCore in addSuggestion in
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $existing?
@@ -1038,13 +1037,19 @@ def elabToAdditive : Syntax → CoreM Config
           logWarningAt doc <| .tagged ``Linter.deprecatedAttr
             m!"String syntax for `to_additive` docstrings is deprecated: Use \
               docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
-          addSuggestionCore doc
-            (header := "Update deprecated syntax to:\n")
-            (codeActionPrefix? := "Update to: ")
-            (isInline := true)
-            #[{
-              suggestion := "/-- " ++ doc.getString.trim ++ " -/"
-            }]
+          /-
+          #adaptation_note 2025-08-27
+          `addSuggestionCore` was removed in https://github.com/leanprover/lean4/pull/9966
+          As far as I can see, the replacement functionality is only available in `MetaM`,
+          rather than `CoreM`, so some redesign will be needed here.
+          -/
+          -- addSuggestionCore doc
+          --   (header := "Update deprecated syntax to:\n")
+          --   (codeActionPrefix? := "Update to: ")
+          --   (isInline := true)
+          --   #[{
+          --     suggestion := "/-- " ++ doc.getString.trim ++ " -/"
+          --   }]
         return doc.getString
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
