@@ -89,7 +89,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
 theorem getElem_scanl_eq_foldl_take {i : ℕ} (h : i < (scanl f b l).length) :
     (scanl f b l)[i] = foldl f b (l.take i) := by
   induction i generalizing b l
-  case zero => simp
+  case zero => exact getElem_scanl_zero
   case succ i ih =>
     simp only [length_scanl, Nat.add_lt_add_iff_right] at h ih
     rcases exists_cons_of_length_pos (Nat.zero_lt_of_lt h) with ⟨hd, tl, rfl⟩
