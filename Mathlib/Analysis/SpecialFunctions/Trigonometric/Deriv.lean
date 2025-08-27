@@ -44,6 +44,7 @@ theorem hasDerivAt_sin (x : ℂ) : HasDerivAt sin (cos x) x :=
 
 theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℂ n sin :=
   (((contDiff_neg.mul contDiff_const).cexp.sub (contDiff_id.mul contDiff_const).cexp).mul
     contDiff_const).div_const _
@@ -89,6 +90,7 @@ theorem hasStrictDerivAt_cos (x : ℂ) : HasStrictDerivAt cos (-sin x) x := by
 theorem hasDerivAt_cos (x : ℂ) : HasDerivAt cos (-sin x) x :=
   (hasStrictDerivAt_cos x).hasDerivAt
 
+@[fun_prop]
 theorem contDiff_cos {n} : ContDiff ℂ n cos :=
   ((contDiff_id.mul contDiff_const).cexp.add (contDiff_neg.mul contDiff_const).cexp).div_const _
 
@@ -138,6 +140,7 @@ theorem hasDerivAt_sinh (x : ℂ) : HasDerivAt sinh (cosh x) x :=
 
 theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sinh {n} : ContDiff ℂ n sinh :=
   (contDiff_exp.sub contDiff_neg.cexp).div_const _
 
@@ -182,6 +185,7 @@ theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
 theorem hasDerivAt_cosh (x : ℂ) : HasDerivAt cosh (sinh x) x :=
   (hasStrictDerivAt_cosh x).hasDerivAt
 
+@[fun_prop]
 theorem contDiff_cosh {n} : ContDiff ℂ n cosh :=
   (contDiff_exp.add contDiff_neg.cexp).div_const _
 
@@ -562,6 +566,7 @@ theorem hasDerivAt_sin (x : ℝ) : HasDerivAt sin (cos x) x :=
 
 theorem isEquivalent_sin : sin ~[𝓝 0] id := by simpa using (hasDerivAt_sin 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sin {n} : ContDiff ℝ n sin :=
   Complex.contDiff_sin.real_of_complex
 
@@ -599,6 +604,7 @@ theorem hasStrictDerivAt_cos (x : ℝ) : HasStrictDerivAt cos (-sin x) x :=
 theorem hasDerivAt_cos (x : ℝ) : HasDerivAt cos (-sin x) x :=
   (Complex.hasDerivAt_cos x).real_of_complex
 
+@[fun_prop]
 theorem contDiff_cos {n} : ContDiff ℝ n cos :=
   Complex.contDiff_cos.real_of_complex
 
@@ -641,6 +647,7 @@ theorem hasDerivAt_sinh (x : ℝ) : HasDerivAt sinh (cosh x) x :=
 
 theorem isEquivalent_sinh : sinh ~[𝓝 0] id := by simpa using (hasDerivAt_sinh 0).isLittleO
 
+@[fun_prop]
 theorem contDiff_sinh {n} : ContDiff ℝ n sinh :=
   Complex.contDiff_sinh.real_of_complex
 
@@ -678,6 +685,7 @@ theorem hasStrictDerivAt_cosh (x : ℝ) : HasStrictDerivAt cosh (sinh x) x :=
 theorem hasDerivAt_cosh (x : ℝ) : HasDerivAt cosh (sinh x) x :=
   (Complex.hasDerivAt_cosh x).real_of_complex
 
+@[fun_prop]
 theorem contDiff_cosh {n} : ContDiff ℝ n cosh :=
   Complex.contDiff_cosh.real_of_complex
 
