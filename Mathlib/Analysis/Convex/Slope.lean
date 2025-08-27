@@ -95,10 +95,12 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
-      exact add_lt_add_left ((mul_lt_mul_left hb).2 hxz) _
+      unfold y
+      gcongr
     have hyz : y < z := by
       rw [← one_mul z, ← hab, add_mul]
-      exact add_lt_add_right ((mul_lt_mul_left ha).2 hxz) _
+      unfold y
+      gcongr
     have : (f y - f x) * (z - y) ≤ (f z - f y) * (y - x) :=
       (div_le_div_iff₀ (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
@@ -302,9 +304,9 @@ theorem StrictConvexOn.secant_strict_mono (hf : StrictConvexOn 𝕜 s f) {a x y 
   rcases lt_or_gt_of_ne hxa with hxa | hxa
   · rcases lt_or_gt_of_ne hya with hya | hya
     · convert hf.secant_strict_mono_aux3 hx ha hxy hya using 1 <;> rw [← neg_div_neg_eq] <;>
-        field_simp
+        simp
     · convert hf.slope_strict_mono_adjacent hx hy hxa hya using 1
-      rw [← neg_div_neg_eq]; field_simp
+      rw [← neg_div_neg_eq]; simp
   · exact hf.secant_strict_mono_aux2 ha hy hxa hxy
 
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any point `a` the slope of the secant line of `f`
@@ -315,7 +317,7 @@ theorem StrictConcaveOn.secant_strict_mono (hf : StrictConcaveOn 𝕜 s f) {a x 
   have key := hf.neg.secant_strict_mono ha hx hy hxa hya hxy
   simp only [Pi.neg_apply] at key
   rw [← neg_lt_neg_iff]
-  convert key using 1 <;> field_simp <;> ring
+  convert key using 1 <;> simp <;> ring
 
 /-- If `f` is convex on a set `s` in a linearly ordered field, and `f x < f y` for two points
 `x < y` in `s`, then `f` is strictly monotone on `s ∩ [y, ∞)`. -/

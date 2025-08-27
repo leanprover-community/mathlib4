@@ -23,7 +23,7 @@ Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fracti
 
 ## Main statement
 
-  * `isNoetherian` states that every fractional ideal of a noetherian integral domain is noetherian
+  * `isNoetherian` states that every fractional ideal of a Noetherian integral domain is Noetherian
 
 ## References
 
@@ -853,7 +853,7 @@ theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdea
     coe_mul, mul_assoc, spanSingleton_mul_spanSingleton, mul_inv_cancel₀ h_gx, spanSingleton_one,
     mul_one]
 
-/-- Every fractional ideal of a noetherian integral domain is noetherian. -/
+/-- Every fractional ideal of a Noetherian integral domain is Noetherian. -/
 theorem isNoetherian [IsNoetherianRing R₁] (I : FractionalIdeal R₁⁰ K) : IsNoetherian R₁ I := by
   obtain ⟨d, J, _, rfl⟩ := exists_eq_spanSingleton_mul I
   apply isNoetherian_spanSingleton_inv_to_map_mul
