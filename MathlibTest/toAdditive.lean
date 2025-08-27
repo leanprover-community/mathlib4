@@ -236,9 +236,9 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One (
   ⟨fun _ => 1⟩
 
 run_cmd do
-  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg `Test.pi.has_one
+  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| firstMultiplicativeArg `Test.foo_mul
+  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
 end
