@@ -62,6 +62,15 @@ lemma mem_doublyStochastic_iff_sum :
       (∀ i j, 0 ≤ M i j) ∧ (∀ i, ∑ j, M i j = 1) ∧ ∀ j, ∑ i, M i j = 1 := by
   simp [funext_iff, doublyStochastic, mulVec, vecMul, dotProduct]
 
+/-- A matrix is doubly stochastic if and only if it is both row and
+column stochastic. -/
+lemma rowStochastic_inf_colStochastic :
+    rowStochastic R n ⊓ colStochastic R n = doublyStochastic R n := by
+  ext M
+  simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    Set.mem_setOf_eq, doublyStochastic]
+  grind
+
 /-- Every entry of a doubly stochastic matrix is nonnegative. -/
 lemma nonneg_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) {i j : n} : 0 ≤ M i j :=
   hM.1 _ _
@@ -102,16 +111,6 @@ lemma permMatrix_mem_doublyStochastic {σ : Equiv.Perm n} :
   case g1 => aesop
   case g2 => simp [Equiv.toPEquiv_apply]
   case g3 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
-
-
-/-- A matrix is doubly stochastic if and only if it is both row and
-column stochastic. -/
-lemma rowStochastic_inf_colStochastic :
-    rowStochastic R n ⊓ colStochastic R n = doublyStochastic R n := by
-  ext M
-  simp only [rowStochastic, colStochastic, Submonoid.mem_inf, Submonoid.mem_mk, Subsemigroup.mem_mk,
-    Set.mem_setOf_eq, doublyStochastic]
-  grind
 
 /-- A matrix is doubly stochastic iff its transpose is doubly stochastic -/
 lemma mem_doublyStochastic_iff_transpose :
