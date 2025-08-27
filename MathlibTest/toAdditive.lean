@@ -689,3 +689,20 @@ info: add_neg_iff_mul_inv {α β : Type} [AddGroup α] [MyRing β] (a : α) (b :
 -/
 #guard_msgs in
 #check add_neg_iff_mul_inv
+
+@[to_additive (dont_translate := β) add_neg_iff_mul_inv]
+def Subtype.mul_inv_iff_mul_inv {α β : Type} [Group α] [MyRing β] (a : α) (b : β) :
+    {a : α // a * a⁻¹ = 1 ↔ b * b⁻¹ = 1} := by
+  exists a
+  simp
+
+/--
+info: Subtype.mul_inv_iff_mul_inv._proof_1 {α β : Type} [Group α] [MyRing β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
+-/
+#guard_msgs in
+#check Subtype.mul_inv_iff_mul_inv._proof_1
+/--
+info: Subtype.add_neg_iff_mul_inv._proof_1 {α β : Type} [AddGroup α] [MyRing β] (a : α) (b : β) : a + -a = 0 ↔ b * b⁻¹ = 1
+-/
+#guard_msgs in
+#check Subtype.add_neg_iff_mul_inv._proof_1
