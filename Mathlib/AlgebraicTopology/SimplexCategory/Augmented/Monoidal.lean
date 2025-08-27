@@ -34,12 +34,10 @@ open scoped Simplicial
 
 @[simp]
 lemma eqToHom_toOrderHom {x y : SimplexCategory} (h : WithInitial.of x = WithInitial.of y) :
-  SimplexCategory.Hom.toOrderHom (WithInitial.down <| eqToHom h) =
-    (Fin.castOrderIso
-      (congrArg (fun t ↦ t + 1) (by injection h with h; rw [h]))).toOrderEmbedding.toOrderHom := by
-  injection h with h
-  subst h
-  rfl
+    SimplexCategory.Hom.toOrderHom (WithInitial.down <| eqToHom h) =
+      (Fin.castOrderIso
+        (congrArg (fun t ↦ t + 1) (by injection h with h; rw [h]))).toOrderEmbedding.toOrderHom :=
+  SimplexCategory.eqToHom_toOrderHom (by injection h)
 
 /-- An auxiliary definition for the tensor product of two objects in `AugmentedSimplexCategory`. -/
 -- (Impl. note): This definition could easily be inlined in
