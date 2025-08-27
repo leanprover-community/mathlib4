@@ -342,7 +342,7 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
   | one => simp
   | more n ih1 ih2 =>
     trans (n + 2 : ℤ).negOnePow * (2 * x * (U R (n + 1)).eval x - (U R n).eval x)
-    · push_cast
+    · push_cast; push_cast at ih2
       rw [U_add_two, eval_sub, eval_mul, eval_mul, ih1, ih2]
       rw [Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
       simp; ring
