@@ -751,11 +751,11 @@ def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
 Given a list of variable local identifiers that shouldn't be translated,
 determine the arguments that shouldn't be translated.
 
-TODO(Jovan): Currently, this doesn't deduce from the type which arguments should not be translated,
-but this should be added in the future, so that the presence of `Ring α` will flag `α` as
-a type to not be translated.
+TODO: Currently, this function doesn't deduce any `dont_translate` types from `type`.
+In the future we would like that the presence of `MonoidAlgebra k G` will automatically
+flag `k` as a type to not be translated.
 -/
-def getDontTranslate (given : List Ident) (type : Expr) : MetaM (List Nat) := do
+def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := do
   forallTelescope type fun xs _ => do
     given.mapM fun id => withRef id.raw <| do
       let fvarId ← getFVarFromUserName id.getId
@@ -767,7 +767,7 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat))
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  let dont ← getDontTranslate dont srcDecl.type
+  let dont ← getDontTranslates dont srcDecl.type
   decl := decl.updateType <| ← applyReplacementForall dont <| ← reorderForall reorder <|
     renameBinderNames <| ← expand decl.type
   if let some v := decl.value? then
@@ -978,7 +978,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
       insertTranslation srcLemma tgtLemma
 
 /--
-Find the argument of `nm` that appears in the first multiplicative type-class argument.
+Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the `to_additive_relevant_arg` of each type-class.
@@ -987,8 +987,8 @@ E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 def findMultiplicativeArg (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
     let env ← getEnv
-    -- check if the target has a multiplicative type argument, and if so,
-    -- find the index of a type appearing in there
+    -- check if `tgt` has a multiplicative type argument, and if so,
+    -- find the index of a type from `xs` appearing in there
     let multArg? (tgt : Expr) : Option Nat := do
       let c ← tgt.getAppFn.constName?
       guard (findTranslation? env c).isSome
@@ -1245,9 +1245,9 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let dont ← getDontTranslate dont type
-  let type ← applyReplacementForall dont <| ← reorderForall reorder <| ← expand <|
-    ← unfoldAuxLemmas type
+  let dont ← getDontTranslates dont type
+  let type ←
+    applyReplacementForall dont <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
     throwError "`to_additive` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
