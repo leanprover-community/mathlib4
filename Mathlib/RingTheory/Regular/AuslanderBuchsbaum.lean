@@ -222,18 +222,6 @@ lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
   enat_to_nat
   omega
 
-lemma CategoryTheory.Abelian.extFunctorObj_zero_preserve_momoMorphism (L M N : ModuleCat.{v} R)
-    (f : M ⟶ N) (mono : Mono f) :
-    Mono (AddCommGrp.ofHom <| ((Ext.mk₀ f)).postcomp L (add_zero 0)) := by
-  apply ConcreteCategory.mono_of_injective
-  rw [← AddMonoidHom.ker_eq_bot_iff]
-  apply (AddSubgroup.eq_bot_iff_forall _).mpr (fun x hx ↦ ?_)
-  simp only [AddCommGrp.hom_ofHom, AddMonoidHom.mem_ker, AddMonoidHom.flip_apply,
-    Ext.bilinearComp_apply_apply] at hx
-  rw [← Ext.mk₀_homEquiv₀_apply x, Ext.mk₀_comp_mk₀] at hx
-  have : (Ext.addEquiv₀ x ≫ f) = 0 := (AddEquiv.map_eq_zero_iff Ext.addEquiv₀.symm).mp hx
-  exact (AddEquiv.map_eq_zero_iff Ext.addEquiv₀).mp (zero_of_comp_mono f this)
-
 lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
     (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
     (le1 : HasProjectiveDimensionLE M 1) (nle0 : ¬ HasProjectiveDimensionLE M 0) :
