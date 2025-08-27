@@ -101,3 +101,23 @@ noncomputable def reprEquiv : Finite.repr R M ≃ₗ[R] M :=
   LinearMap.quotKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
 
 end Module.Finite
+
+theorem AddSubmonoid.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommMonoid M]
+    {S : AddSubmonoid M} : S.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℕ) →+ M), AddMonoidHom.mrange f = S := by
+  rw [← S.toNatSubmodule_toAddSubmonoid, ← Submodule.fg_iff_addSubmonoid_fg,
+    Submodule.fg_iff_exists_fin_linearMap]
+  refine exists_congr fun n => ⟨fun ⟨f, hf⟩ => ⟨f, ?_⟩, fun ⟨f, hf⟩ => ⟨f.toNatLinearMap, ?_⟩⟩
+  · rw [← hf, LinearMap.range_toAddSubmonoid]
+    rfl
+  · rw [← Submodule.toAddSubmonoid_inj, ← hf, LinearMap.range_toAddSubmonoid]
+    rfl
+
+theorem AddSubgroup.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommGroup M]
+    {H : AddSubgroup M} : H.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℤ) →+ M), AddMonoidHom.range f = H := by
+  rw [← H.toIntSubmodule_toAddSubgroup, ← Submodule.fg_iff_addSubgroup_fg,
+    Submodule.fg_iff_exists_fin_linearMap]
+  refine exists_congr fun n => ⟨fun ⟨f, hf⟩ => ⟨f, ?_⟩, fun ⟨f, hf⟩ => ⟨f.toIntLinearMap, ?_⟩⟩
+  · rw [← hf, LinearMap.range_toAddSubgroup]
+    rfl
+  · rw [← Submodule.toAddSubgroup_inj, ← hf, LinearMap.range_toAddSubgroup]
+    rfl
