@@ -243,7 +243,7 @@ theorem divp_eq_divp_iff {x y : α} {ux uy : αˣ} : x /ₚ ux = y /ₚ uy ↔ x
 -- Theoretically redundant as `field_simp` lemma.
 @[field_simps]
 theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * y /ₚ (ux * uy) := by
-  rw [divp_mul_eq_mul_divp, divp_assoc', divp_divp_eq_divp_mul]
+  rw [divp_mul_eq_mul_divp, ← divp_assoc, divp_divp_eq_divp_mul]
 
 variable [Subsingleton αˣ] {a b : α}
 

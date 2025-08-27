@@ -92,7 +92,7 @@ theorem div_neg_self {a : K} (h : a ≠ 0) : a / -a = -1 := by rw [div_neg_eq_ne
 theorem neg_div_self {a : K} (h : a ≠ 0) : -a / a = -1 := by rw [neg_div, div_self h]
 
 theorem div_sub_div_same (a b c : K) : a / c - b / c = (a - b) / c := by
-  rw [sub_eq_add_neg, ← neg_div, div_add_div_same, sub_eq_add_neg]
+  rw [sub_eq_add_neg, ← neg_div, ← add_div, sub_eq_add_neg]
 
 theorem same_sub_div {a b : K} (h : b ≠ 0) : (b - a) / b = 1 - a / b := by
   simpa only [← @div_self _ _ b h] using (div_sub_div_same b a b).symm

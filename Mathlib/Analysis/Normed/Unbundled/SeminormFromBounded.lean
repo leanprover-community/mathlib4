@@ -241,7 +241,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z (le_refl _)))
   by_cases hz : f z = 0
   · simp only [hz, div_zero, zero_add, le_refl]
-  · rw [div_add_div_same, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
+  · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
