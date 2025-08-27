@@ -230,3 +230,29 @@ lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
     simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
 
 end shift_invariance
+
+section Real
+
+/-!
+Lemmas simplifying iterated derivatives within real intervals to iterated derivatives at a point.
+-/
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+theorem iteratedDerivWithin_Ioo {n : ℕ} {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Ioo a b)
+    {f : ℝ → F} (hf : ContDiffOn ℝ n f (Set.Icc a b)) :
+    iteratedDerivWithin n f (Set.Ioo a b) x = iteratedDeriv n f x := by
+  rw [iteratedDerivWithin_eq_iteratedDeriv]
+  · exact uniqueDiffOn_convex (convex_Ioo a b) (by simp_all)
+  · exact ContDiffOn.contDiffAt hf (by rwa [Icc_mem_nhds_iff])
+  · exact hx
+
+theorem iteratedDerivWithin_Icc {n : ℕ} {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Icc a b)
+    {f : ℝ → F} (hf : ContDiff ℝ n f) :
+    iteratedDerivWithin n f (Set.Icc a b) x = iteratedDeriv n f x := by
+  rw [iteratedDerivWithin_eq_iteratedDeriv]
+  · exact uniqueDiffOn_convex (convex_Icc a b) (by simp_all)
+  · exact ContDiff.contDiffAt hf
+  · exact hx
+
+end Real
