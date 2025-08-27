@@ -51,6 +51,7 @@ noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ :=
 
 local notation "⟪" X ", " Y "⟫" => product I X Y
 
+-- Basic API for the product of two vector fields.
 section product
 
 omit [IsManifold I ∞ M]
@@ -127,12 +128,15 @@ synthesized
   fun x ↦ instNormedAddCommGroupOfRiemannianBundle x
 inferred
   fun b ↦ inst✝⁷ -/
+-- TODO: diagnose and fix this, and replace by `MDifferentiable(At).inner_bundle!
+
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
-lemma foo (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
+lemma MDifferentiable.inner_bundle' (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) : MDiff ⟪Y, Z⟫ :=
   MDifferentiable.inner_bundle hY hZ
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
-lemma fooAt {x} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) : MDiffAt ⟪Y, Z⟫ x :=
+lemma MDifferentiableAt.inner_bundle' {x} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    MDiffAt ⟪Y, Z⟫ x :=
   MDifferentiableAt.inner_bundle hY hZ
 
 namespace CovariantDerivative
@@ -141,19 +145,31 @@ namespace CovariantDerivative
 -- TODO: include in cheat sheet!
 variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
--- TODO: make g part of the notation!
+/-- Predicate saying for a connection `∇` on a Riemannian manifold `M`  to be compatible with the
+ambient metric, i.e. for all smooth vector fields `X`, `Y` and `Z` on `M`, we have
+`X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
 def IsCompatible : Prop :=
   ∀ X Y Z : Π x : M, TangentSpace I x, -- XXX: missing differentiability hypotheses!
   ∀ x : M,
   mfderiv% ⟪Y, Z⟫ x (X x) = ⟪cov X Y, Z⟫ x + ⟪Y, cov X Z⟫ x
 
--- TODO: make g part of the notation!
-/-- A covariant derivative on `TM` is called the **Levi-Civita connection** for a Riemannian metric
-`g` on `M` iff it is torsion-free and compatible with `g`. -/
+/-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
+iff it is torsion-free and compatible with `g`.
+Note that the bundle metric on `TM` is implicitly hidden in this definition. See `TODO` for a
+version depending on a choice of Riemannian metric on `M`.
+-/
 def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 
--- This is mild defeq abuse, right?
 variable (X Y Z) in
+/-- The first term in the definition of the candidate Levi-Civita connection:
+`rhs_aux I X Y Z = X ⟨Y, Z⟩ = x ↦ d(⟨Y, Z⟩)_x (X x)`.
+
+This definition contains mild defeq abuse, which is invisible on paper:
+The function `⟨Y, Z⟩` maps `M` into `ℝ`, hence its differential at a point `x` maps `T_p M`
+to an element of the tangent space of `ℝ`. A summand `⟨Y, [X, Z]⟩`, however, yields an honest
+real number: Lean complains that these have different types.
+Fortunately, `ℝ` is defeq to its own tangent space; casting `rhs_aux` to the real numbers
+allows the addition to type-check. -/
 noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv% ⟪Y, Z⟫ x (X x))
 
 section rhs_aux
@@ -165,20 +181,20 @@ lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   congr
   exact product_swap I Z Y
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x}
-
 omit [IsManifold I ∞ M] in
 variable (X X' Y Z) in
 lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
   ext x
   simp [rhs_aux]
 
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {x}
+
 variable (X) in
 @[simp]
 lemma rhs_aux_addY_apply (hY : MDiffAt (T% Y) x) (hY' : MDiffAt (T% Y') x) (hZ : MDiffAt (T% Z) x) :
     rhs_aux I X (Y + Y') Z x = rhs_aux I X Y Z x + rhs_aux I X Y' Z x := by
   simp only [rhs_aux]
-  rw [product_add_left, mfderiv_add (fooAt hY hZ) (fooAt hY' hZ)]
+  rw [product_add_left, mfderiv_add (hY.inner_bundle' hZ) (hY'.inner_bundle' hZ)]
   simp; congr
 
 variable (X) in
@@ -192,7 +208,7 @@ variable (X) in
 lemma rhs_aux_addZ_apply (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
   rhs_aux I X Y (Z + Z') x = rhs_aux I X Y Z x + rhs_aux I X Y Z' x := by
   unfold rhs_aux
-  rw [product_add_right, mfderiv_add (fooAt hY hZ) (fooAt hY hZ')]; simp; congr
+  rw [product_add_right, mfderiv_add (hY.inner_bundle' hZ) (hY.inner_bundle' hZ')]; simp; congr
 
 variable (X) in
 lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z')) :
@@ -211,7 +227,7 @@ lemma rhs_aux_smulY_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) : ℝ := (mfderiv% f x) (X x)
     rhs_aux I X (f • Y) Z x = f x • rhs_aux I X Y Z x + A x • ⟪Y, Z⟫ x := by
-  rw [rhs_aux, product_smul_left, mfderiv_smul (fooAt hY hZ) hf]
+  rw [rhs_aux, product_smul_left, mfderiv_smul (hY.inner_bundle' hZ) hf]
 
 variable (X) in
 lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
@@ -239,7 +255,6 @@ end rhs_aux
 
 variable {x : M}
 
--- XXX: inlining rhs_aux here makes things not typecheck any more!
 variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
 If ∇ is a Levi-Civita connection on `TM`, then
