@@ -85,6 +85,37 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 
+theorem getElem_scanl_eq_foldl_take {i : ℕ} (h : i < (l.scanl f b).length) :
+    (l.scanl f b)[i] = (l.take i).foldl f b := by
+  induction i
+  case zero => simp
+  case succ i ih =>
+    specialize ih (lt_of_succ_lt h)
+
+    sorry
+
+lemma lt_scanl_length_of_lt_length_add_one {i : ℕ} (h : i < l.length + 1) :
+    i < (l.scanl f b).length :=
+  lt_of_lt_of_eq h (l.length_scanl b).symm
+
+/-- an alternative taking `i < l.length + 1` -/
+theorem getElem_scanl_eq_foldl_take' {i : ℕ} (h : i < l.length + 1) :
+    getElem (l.scanl f b) i (lt_scanl_length_of_lt_length_add_one h) = (l.take i).foldl f b :=
+  getElem_scanl_eq_foldl_take (lt_scanl_length_of_lt_length_add_one h)
+
+lemma lt_scanl_length_of_le_length {i : ℕ} (h : i ≤ l.length) : i < (l.scanl f b).length :=
+  lt_scanl_length_of_lt_length_add_one (lt_add_one_of_le h)
+
+/-- another alternative with `i ≤ l.length` -/
+theorem getElem_scanl_eq_foldl_take'' {i : ℕ} (h : i ≤ l.length) :
+    getElem (l.scanl f b) i (lt_scanl_length_of_le_length h) = (l.take i).foldl f b :=
+  getElem_scanl_eq_foldl_take (lt_scanl_length_of_le_length h)
+
+theorem get_scanl_eq_foldl_take {i : Fin (l.length + 1)} :
+    (l.scanl f b).get (i.cast (l.length_scanl b).symm) = (l.take i).foldl f b := by
+  apply getElem_scanl_eq_foldl_take'
+  exact i.isLt
+
 /-! ### List.scanr -/
 
 variable {f : α → β → β}
