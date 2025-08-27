@@ -45,7 +45,7 @@ theorem unitary.toStarAlgAut_trans_toStarAlgAut (u₁ u₂ : unitary R) :
     (toStarAlgAut S R u₁).trans (toStarAlgAut S R u₂) = toStarAlgAut S R (u₂ * u₁) :=
   map_mul _ _ _ |>.symm
 
-theorem unitary.toStarAlgAut_conj_symm (u : unitary R) :
+theorem unitary.toStarAlgAut_symm (u : unitary R) :
     (toStarAlgAut S R u).symm = toStarAlgAut S R (star u) := by
   ext; simp
 
