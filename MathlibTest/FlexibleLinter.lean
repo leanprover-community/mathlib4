@@ -7,8 +7,6 @@ import Mathlib.Tactic.Module
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.LinearCombination
 
--- TODO: add tests for positivity and finiteness, finiteness_nonterminal
-
 set_option linter.flexible true
 set_option linter.unusedVariables false
 
