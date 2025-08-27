@@ -547,6 +547,9 @@ theorem sin_lt_sin_of_lt_of_le_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) ≤ x) 
 theorem strictMonoOn_sin : StrictMonoOn sin (Icc (-(π / 2)) (π / 2)) := fun _ hx _ hy hxy =>
   sin_lt_sin_of_lt_of_le_pi_div_two hx.1 hy.2 hxy
 
+theorem monotoneOn_sin : MonotoneOn sin (Set.Icc (-(π / 2)) (π / 2)) :=
+  strictMonoOn_sin.monotoneOn
+
 theorem cos_lt_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π) (hxy : x < y) :
     cos y < cos x := by
   rw [← sin_pi_div_two_sub, ← sin_pi_div_two_sub]
@@ -558,6 +561,9 @@ theorem cos_lt_cos_of_nonneg_of_le_pi_div_two {x y : ℝ} (hx₁ : 0 ≤ x) (hy�
 
 theorem strictAntiOn_cos : StrictAntiOn cos (Icc 0 π) := fun _ hx _ hy hxy =>
   cos_lt_cos_of_nonneg_of_le_pi hx.1 hy.2 hxy
+
+theorem antitoneOn_cos : AntitoneOn cos (Set.Icc 0 π) :=
+  strictAntiOn_cos.antitoneOn
 
 theorem cos_le_cos_of_nonneg_of_le_pi {x y : ℝ} (hx₁ : 0 ≤ x) (hy₂ : y ≤ π) (hxy : x ≤ y) :
     cos y ≤ cos x :=
