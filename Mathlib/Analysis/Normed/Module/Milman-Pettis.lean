@@ -5,12 +5,7 @@ Authors: Filippo A. E. Nuccio
 -/
 
 import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.LocallyConvex.WeakSpace
-import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.WeakDual
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.Normed.Module.Complemented -- for nontriviality of the dual
-import Mathlib.Analysis.Normed.Module.Dual
 
 open scoped Topology NNReal
 
@@ -56,10 +51,6 @@ theorem exists_nnorm_eq_one_lt_apply_of_lt_opNorm' [Nontrivial E]
     r < 1⁻¹ * ‖f x‖ := by simpa
     _ < ‖x‖⁻¹ * ‖f x‖ := by
       gcongr; exact lt_of_le_of_lt (le_of_not_gt hr₀) hr
-
--- **TODO** Add it somewhere in Mathlib via a PR (do it more generally, ask on Zulip)
-instance [Nontrivial E] : Nontrivial (StrongDual 𝕜 E) := by
-  sorry
 
 end ContinuousLinearMap
 
@@ -116,7 +107,7 @@ lemma surjective_iff_closedBall_subset_range {F : Type*} [NormedAddCommGroup F] 
   fun ⟨_, ρ_pos, sphere_le⟩ ↦ (surjective_iff_sphere_subset_range f).mpr ⟨_, ρ_pos, fun _ hx ↦
     sphere_le (sphere_subset_closedBall hx)⟩⟩
 
-/- Goldstine lemma (see Brezis, Chapter § 3.5, Lemma 3.4) says that the unit ball in the double
+/-- Goldstine lemma (see Brezis, Chapter § 3.5, Lemma 3.4) says that the unit ball in the double
 dual of a Banach space (**FAE: I suspect completeness is not needed) ** is the closure, with respect
 to the weak topology `σ(E**, E*)` induced by the canonical pairing `E** × E* → ℝ`, of the image of
 the unit ball in  `E`. Observe that, for any topological `𝕜`-module `M`, `strongDualPairing 𝕜 M` is
@@ -227,14 +218,14 @@ variable (E)
 
 /- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is
 reflexive, stated as the surjectivity of `inclusionInDoubleDual`. For the version proving
-this is a linear isometric equivalence, see `LinearIsometryEquiv_of_uniformConvexSpace`.
-but it must be proven that for normed space this is equivalent to `includionInDoubleDual` being
-a homeomorphism. -/
+this is a linear isometric equivalence, see `LinearIsometryEquiv_of_uniformConvexSpace`. -/
 theorem surjective_of_uniformConvexSpace [CompleteSpace E] [UniformConvexSpace E] :
     Surjective (inclusionInDoubleDual ℝ E) :=
   (surjective_iff_sphere_subset_range _).mpr
     ⟨_, zero_lt_one, sphere_subset_image.trans <| Set.image_subset_range ..⟩
 
+/-- Milman-Pettis theorem: every uniformly convex Banach (**FAE: Complete Needed?**) space is
+reflexive. For a version proving only surjectivity, see `surjective_of_uniformConvexSpace`. -/
 noncomputable
 def LinearIsometryEquiv_of_uniformConvexSpace [CompleteSpace E] [UniformConvexSpace E] :
   E ≃ₗᵢ[ℝ] E** where
