@@ -364,8 +364,7 @@ theorem cospanExt_inv_app_right :
   rfl
 
 @[simp]
-theorem cospanExt_inv_app_one : (cospanExt iX iY iZ wf wg).inv.app WalkingCospan.one = iZ.inv := by
-  rfl
+theorem cospanExt_inv_app_one : (cospanExt iX iY iZ wf wg).inv.app WalkingCospan.one = iZ.inv := rfl
 
 end
 

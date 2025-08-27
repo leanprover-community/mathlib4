@@ -339,8 +339,7 @@ the version provided in `tensorObj_comul` below.
 -/
 theorem tensorObj_comul' (A B : C) [Comon_Class A] [Comon_Class B] :
     Δ[A ⊗ B] =
-      (Δ[A] ⊗ₘ Δ[B]) ≫ (tensorμ (op A) (op B) (op A) (op B)).unop := by
-  rfl
+      (Δ[A] ⊗ₘ Δ[B]) ≫ (tensorμ (op A) (op B) (op A) (op B)).unop := rfl
 
 /--
 The comultiplication on the tensor product of two comonoids is

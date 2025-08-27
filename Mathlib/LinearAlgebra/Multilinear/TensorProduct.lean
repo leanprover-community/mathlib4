@@ -56,8 +56,7 @@ def domCoprodDep' :
 @[simp]
 theorem domCoprodDep'_apply (a : MultilinearMap R (fun i₁ ↦ N (.inl i₁)) N₁)
     (b : MultilinearMap R (fun i₂ ↦ N (.inr i₂)) N₂) :
-    domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := by
-  rfl
+    domCoprodDep' (a ⊗ₜ b) = domCoprodDep a b := rfl
 
 end
 
