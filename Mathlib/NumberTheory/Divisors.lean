@@ -744,35 +744,3 @@ lemma mul_mem_zero_one_two_three_four_iff {a b : ℤ} (h₀ : a = 0 ↔ b = 0) :
   aesop
 
 end Int
-
-section pnat
-
-/-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
-to `(a , b)`. -/
-def mapdiv (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ := by
-  refine fun x =>
-   ⟨⟨x.1.1, Nat.pos_of_mem_divisors (Nat.fst_mem_divisors_of_mem_antidiagonal x.2)⟩,
-    (⟨x.1.2, Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩ : ℕ+),
-    Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal x.2)⟩
-
-/-- The equivalence from the union over `n` of `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+`
-given by sending `n = a * b` to `(a , b)`. -/
-def sigmaAntidiagonalEquivProd : (Σ n : ℕ+, Nat.divisorsAntidiagonal n) ≃ ℕ+ × ℕ+ where
-  toFun x := mapdiv x.1 x.2
-  invFun x :=
-    ⟨⟨x.1.1 * x.2.1, mul_pos x.1.2 x.2.2⟩, ⟨x.1, x.2⟩, by
-      simp only [PNat.mk_coe, Nat.mem_divisorsAntidiagonal, ne_eq, mul_eq_zero, not_or]
-      refine ⟨rfl, PNat.ne_zero x.1, PNat.ne_zero x.2⟩⟩
-  left_inv := by
-    rintro ⟨n, ⟨k, l⟩, h⟩
-    rw [Nat.mem_divisorsAntidiagonal] at h
-    simp_rw [mapdiv, PNat.mk_coe]
-    ext <;> simp [h] at *
-    rfl
-  right_inv := by
-    rintro ⟨n, ⟨k, l⟩, h⟩
-    · simp_rw [mapdiv]
-      norm_cast
-    · rfl
-
-end pnat
