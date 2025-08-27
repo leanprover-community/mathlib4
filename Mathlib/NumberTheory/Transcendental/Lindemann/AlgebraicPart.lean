@@ -221,7 +221,8 @@ theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
     sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
     iff_true_intro ha, iff_true_intro hb, and_true, Ne, card_eq_zero, filter_eq_empty_iff,
     not_forall, not_not, exists_prop', nonempty_prop, Prod.exists, mem_product, Set.mem_toFinset]
-  exact ConjRootClass.exists_mem_carrier_add_eq_zero x y
+  convert ConjRootClass.exists_mem_carrier_add_eq_zero x y
+  tauto
 
 theorem single_mul_single_apply_zero_eq_zero_iff [CharZero F] [NoZeroDivisors R]
     (x : ConjRootClass F K) {a : R} (ha : a ≠ 0) (y : ConjRootClass F K) {b : R} (hb : b ≠ 0) :
