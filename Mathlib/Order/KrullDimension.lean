@@ -198,7 +198,9 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; omega)
     suffices p'.length ≤ height x by
-      simp [p'] at this
+      simp? [p']  at this says
+        simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
+          Nat.cast_one, p'] at this
       convert this
       norm_cast
       omega
