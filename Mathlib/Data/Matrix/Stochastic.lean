@@ -6,6 +6,8 @@ Authors: Steven Herbert
 
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Mul
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
 # Stochastic matrices
@@ -17,12 +19,6 @@ This file gives the key definitions and results about matrices that are
 
 * `rowStochastic`
 * `colStochastic`
-
-## Main statements
-
-* `pdist_vecMul_of_mem_rowStochastic` if a row stochastic matrix is applied to
-  a positive vector with unit `ℓ₁`-norm (informally, a probility distribution)
-  then the result is also a positive vector with unit `ℓ₁`-norm
 
 -/
 
@@ -78,16 +74,48 @@ lemma le_one_of_mem_rowStochastic (hM : M ∈ rowStochastic R n) {i j : n} :
   exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
 
 
-lemma vecMul_nonneg (hM : ∀ i j, 0 ≤ M i j) (hx : 0 ≤ x) : 0 ≤ x ᵥ* M :=
-  fun j ↦ Finset.sum_nonneg fun i _ ↦ mul_nonneg (hx i) (hM i j)
+/-- Left multiplication of a row stochastic matrix by a non-negative vector
+gives a non-negative vector -/
+lemma nonneg_vecMul_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
+    (hx : ∀ i : n, 0 ≤ x i) : ∀ j : n, 0 ≤ (x ᵥ* M) j := by
+  intro j
+  simp only [Matrix.vecMul, dotProduct]
+  apply Finset.sum_nonneg
+  intro k _
+  apply mul_nonneg (hx k)
+  exact nonneg_of_mem_rowStochastic hM
 
-lemma mulVec_nonneg (hM : ∀ i j, 0 ≤ M i j) (hx : 0 ≤ x) : 0 ≤ M *ᵥ x :=
-  fun i ↦ Finset.sum_nonneg fun j _ ↦ mul_nonneg (hM i j) (hx j) 
+/-- Right multiplication of a row stochastic matrix by a non-negative vector
+gives a non-negative vector -/
+lemma nonneg_mulVec_of_mem_rowStochastic (hM : M ∈ rowStochastic R n)
+    (hx : ∀ i : n, 0 ≤ x i) : ∀ j : n, 0 ≤ (M *ᵥ x) j := by
+  intro j
+  simp only [Matrix.mulVec, dotProduct]
+  apply Finset.sum_nonneg
+  intro k _
+  refine Left.mul_nonneg ?_ (hx k)
+  exact nonneg_of_mem_rowStochastic hM
 
 /-- Left left-multiplication by row stochastic preserves `ℓ₁ norm` -/
 lemma vecMul_dotProduct_one_eq_one_rowStochastic (hM : M ∈ rowStochastic R n)
     (hx : x ⬝ᵥ 1 = 1) : (x ᵥ* M) ⬝ᵥ 1 = 1 := by
   rw [← dotProduct_mulVec, hM.2, hx]
+
+/-- The set of row stochastic matrices is convex. -/
+lemma convex_rowStochastic : Convex R (rowStochastic R n : Set (Matrix n n R)) := by
+  intro x hx y hy a b ha hb h
+  simp only [SetLike.mem_coe, mem_rowStochastic_iff_sum] at hx hy ⊢
+  simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
+
+/-- Any permutation matrix is row stochastic. -/
+lemma permMatrix_mem_rowStochastic {σ : Equiv.Perm n} :
+    σ.permMatrix R ∈ rowStochastic R n := by
+  rw [mem_rowStochastic_iff_sum]
+  refine ⟨fun i j => ?g1, ?g2⟩
+  case g1 => aesop
+  case g2 => simp [Equiv.toPEquiv_apply]
+
+
 
 /--
 A square matrix is column stochastic iff all entries are nonnegative, and left
@@ -164,6 +192,19 @@ lemma mulVec_dotProduct_one_eq_one_colStochastic (hM : M ∈ colStochastic R n)
     (hx : 1 ⬝ᵥ x = 1) : 1  ⬝ᵥ (M  *ᵥ x) = 1 := by
   rw [dotProduct_mulVec, hM.2, hx]
 
+/-- The set of column stochastic matrices is convex. -/
+lemma convex_colStochastic : Convex R (colStochastic R n : Set (Matrix n n R)) := by
+  intro x hx y hy a b ha hb h
+  simp only [SetLike.mem_coe, mem_colStochastic_iff_sum] at hx hy ⊢
+  simp [add_nonneg, ha, hb, mul_nonneg, hx, hy, sum_add_distrib, ← mul_sum, h]
+
+/-- Any permutation matrix is column stochastic. -/
+lemma permMatrix_mem_colStochastic {σ : Equiv.Perm n} :
+    σ.permMatrix R ∈ colStochastic R n := by
+  rw [mem_colStochastic_iff_sum]
+  refine ⟨fun i j => ?g1, ?g2⟩
+  case g1 => aesop
+  case g2 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
 
 /-- A matrix is column stochastic if and only if its transpose is row stochastic. -/
 lemma colStochastic_iff_transpose_rowStochastic :
