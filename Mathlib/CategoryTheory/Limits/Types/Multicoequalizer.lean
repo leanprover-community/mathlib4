@@ -64,17 +64,17 @@ end CategoryTheory.Functor.CoconeTypes
 
 open CompleteLattice CategoryTheory Limits
 
-namespace Set
+namespace CategoryTheory.Limits.Types
 
 variable {X : Type u} {ι : Type w} {A : Set X} {U : ι → Set X} {V : ι → ι → Set X}
-  (c : MulticoequalizerDiagram A U V)
 
 /-- Given `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
 that `MulticoequalizerDiagram A U V` holds, then in the category of types,
 `A` is the multicoequalizer of the `U i`s along the `V i j`s. -/
-noncomputable def isColimitOfMulticoequalizerDiagram :
-    IsColimit (c.multicofork.map functorToTypes) := by
-  let e := (c.multispanIndex.map functorToTypes).multispan
+noncomputable def isColimitOfMulticoequalizerDiagram
+    (c : MulticoequalizerDiagram A U V) :
+    IsColimit (c.multicofork.map Set.functorToTypes) := by
+  let e := (c.multispanIndex.map Set.functorToTypes).multispan
   apply _root_.Nonempty.some
   rw [Types.isColimit_iff_coconeTypesIsColimit,
     Functor.CoconeTypes.isMulticoequalizer_iff]
@@ -88,8 +88,8 @@ noncomputable def isColimitOfMulticoequalizerDiagram :
     dsimp [e] at eq₁ eq₂
     rw [eq₁, eq₂]
   · simp only [MulticoequalizerDiagram.multicofork_pt, ← c.iSup_eq,
-      iSup_eq_iUnion, mem_iUnion] at hx
+      Set.iSup_eq_iUnion, Set.mem_iUnion] at hx
     obtain ⟨i, hi⟩ := hx
     exact ⟨i, ⟨x, hi⟩, rfl⟩
 
-end Set
+end CategoryTheory.Limits.Types
