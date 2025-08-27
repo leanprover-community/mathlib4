@@ -138,8 +138,8 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
 @[simp]
 lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
     n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
-  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
-    List.toFinset_range'_1_1]
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap
+    (f_inj := by simp_all), List.toFinset_range'_1_1]
 
 lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
