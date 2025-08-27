@@ -57,15 +57,17 @@ def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
     let some (lhs, rhs) := type.eqOrIff? | return none
     let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
     let some head := Head.ofExpr? rhs | return none
-    if Head.ofExpr? lhs != some head && (findHead? lhs head).isSome then
+    if Head.ofExpr? lhs != some head && findHead? lhs head then
       return head
     return none
 where
-  /-- Check if the expression has the head in any subexpression-/
-  findHead? (e : Expr) : Head → Option Expr
-  | .name n => e.find? fun | .const n' _ => n' == n | _ => false
-  | .lambda => e.find? (· matches .lam ..)
-  | .forall => e.find? (· matches .forallE ..)
+  /-- Checks if the expression has the head in any subexpression.
+  We don't need to check this for `.lambda`, because the term being a function
+  is sufficient for `pull fun _ ↦ ·` to be applicable. -/
+  findHead? (e : Expr) : Head → Bool
+  | .name n => e.foldConsts false (· == n || ·)
+  | .lambda => true
+  | .forall => (e.find? (· matches .forallE ..)).isSome
 
 /-- A theorem for the `pull` tactic -/
 abbrev PullTheorem := SimpTheorem × Head
