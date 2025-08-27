@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.Data.Real.Pi.Bounds
+import Mathlib.Analysis.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex

@@ -7,7 +7,7 @@ import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
-import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
