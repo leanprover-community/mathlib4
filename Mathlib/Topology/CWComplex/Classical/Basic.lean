@@ -570,16 +570,19 @@ lemma eq_iff (E F : Subcomplex C) : E = F ↔ (E : Set X) = F :=
 
 /-- Copy of a `Subcomplex` with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. See Note [range copy pattern]. -/
-protected def copy (E : Subcomplex C) (F : Set X) (hF : F = E) : Subcomplex C :=
+protected def copy (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
+    (hJ : J = E.I) : Subcomplex C :=
   { carrier := F
-    I := E.I
+    I := J
     closed' := hF.symm ▸ E.closed'
-    union' := hF.symm ▸ E.union' }
+    union' := hF.symm ▸ hJ ▸ E.union' }
 
-@[simp] lemma coe_copy (E : Subcomplex C) (F : Set X) (hF : F = E) :
-  (E.copy F hF : Set X) = F := rfl
+@[simp] lemma coe_copy (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
+    (hJ : J = E.I) : (E.copy F hF J hJ : Set X) = F :=
+  rfl
 
-lemma copy_eq (E : Subcomplex C) (F : Set X) (hF : F = E) : E.copy F hF = E :=
+lemma copy_eq (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
+    (hJ : J = E.I) : E.copy F hF J hJ = E :=
   SetLike.coe_injective hF
 
 lemma union (E : Subcomplex C) :
