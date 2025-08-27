@@ -88,6 +88,12 @@ theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] :
     Function.Surjective (MulSemiringAction.toAlgEquiv (G := ConjAct (GL n R)) R (Matrix n n R)) :=
   fun f => f.coe_eq_generalLinearGroup_conjugate.imp fun _ h => (DFunLike.coe_injective h).symm
 
+/-- Algebra automorphisms on matrices preserves the trace. -/
+theorem trace_algEquiv_apply [Field R] (f : Matrix n n R ≃ₐ[R] Matrix n n R) (x : Matrix n n R) :
+    trace (f x) = trace x := by
+  obtain ⟨T, hT⟩ := f.coe_eq_generalLinearGroup_conjugate
+  simp [hT, trace_mul_cycle (T : Matrix n n R)]
+
 section Examples
 
 /-- The matrix [a, -b; b, a] (inspired by multiplication by a complex number); it is an element of
