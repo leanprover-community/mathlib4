@@ -301,7 +301,7 @@ variable [HasZeroMorphisms C]
 
 theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
   mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial)
-    (by simp [eq_iff_true_of_subsingleton])
+    (by simp)
 
 @[simp]
 theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
