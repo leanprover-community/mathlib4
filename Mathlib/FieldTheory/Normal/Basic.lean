@@ -187,8 +187,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
         ((IsScalarTower.toAlgHom F K₂ E).comp ϕ).toRingHom.toAlgebra _
         (fun x _ ↦ ⟨(h.out x).1.tower_top,
           splits_of_splits_of_dvd _ (map_ne_zero (minpoly.ne_zero (h.out x).1))
-            -- Porting note: had to override typeclass inference below using `(_)`
-            (by rw [splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ (_) (_) (_)]
+            (by rw [splits_map_iff, ← IsScalarTower.algebraMap_eq]
                 exact (h.out x).2)
             (minpoly.dvd_map_of_isScalarTower F K₁ x)⟩)
         (IntermediateField.adjoin_univ _ _)
@@ -196,8 +195,7 @@ noncomputable def AlgHom.liftNormal [h : Normal F E] : E →ₐ[F] E :=
 @[simp]
 theorem AlgHom.liftNormal_commutes [Normal F E] (x : K₁) :
     ϕ.liftNormal E (algebraMap K₁ E x) = algebraMap K₂ E (ϕ x) :=
-  -- Porting note: This seems to have been some sort of typeclass override trickery using `by apply`
-  -- Now we explicitly specify which typeclass to override, using `(_)` instead of `_`
+  -- We have to specify one `Algebra` instance by unification, not synthesis.
   @AlgHom.commutes K₁ E E _ _ _ _ (_) _ _
 
 @[simp]
