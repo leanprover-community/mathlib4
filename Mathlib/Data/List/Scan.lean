@@ -85,6 +85,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 
+/-- takes `i < (l.scanl f b).length` -/
 theorem getElem_scanl_eq_foldl_take {i : ℕ} (h : i < (l.scanl f b).length) :
     (l.scanl f b)[i] = (l.take i).foldl f b := by
   induction i
