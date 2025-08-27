@@ -217,11 +217,7 @@ theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kern
 
 @[simp] lemma snd_compProd_prodMkLeft
     (κ : Kernel α β) (η : Kernel β γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
-    snd (κ ⊗ₖ prodMkLeft α η) = η ∘ₖ κ := by
-  ext a s hs
-  rw [snd_apply' _ _ hs, compProd_apply, comp_apply' _ _ _ hs]
-  · rfl
-  · exact measurable_snd hs
+    snd (κ ⊗ₖ prodMkLeft α η) = η ∘ₖ κ := (comp_eq_snd_compProd η κ).symm
 
 lemma compProd_prodMkLeft_eq_comp
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel β γ) [IsSFiniteKernel η] :
