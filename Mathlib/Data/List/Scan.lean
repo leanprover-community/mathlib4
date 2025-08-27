@@ -109,7 +109,7 @@ theorem getElem_scanl_eq_foldl_take' {i : ℕ} (h : i < l.length + 1) :
 lemma lt_scanl_length_of_le_length {i : ℕ} (h : i ≤ l.length) : i < (l.scanl f b).length :=
   lt_scanl_length_of_lt_length_add_one (lt_add_one_of_le h)
 
-/-- another alternative with `i ≤ l.length` -/
+/-- an alternative taking `i ≤ l.length` -/
 theorem getElem_scanl_eq_foldl_take'' {i : ℕ} (h : i ≤ l.length) :
     getElem (l.scanl f b) i (lt_scanl_length_of_le_length h) = (l.take i).foldl f b :=
   getElem_scanl_eq_foldl_take (lt_scanl_length_of_le_length h)
