@@ -21,6 +21,11 @@ This file contains basic results on the following notions, which are defined in 
 * `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
+
+## Note
+
+Some theorems on `Set.pi` are misnamed. Since `Set.pi` does not have infix notation, we should
+preserve the order of appearance when naming declarations.
 -/
 
 
@@ -820,7 +825,7 @@ theorem update_mem_pi_iff [DecidableEq ι] {a} (ha : a ∈ pi s t) {i b} :
   · intro h j
     by_cases heq : j = i <;> grind [update_self, update_of_ne]
 
-theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} := by
+theorem pi_univ_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} := by
   classical
   simp only [eq_singleton_iff_unique_mem]
   refine ⟨fun ⟨h₁, h₂⟩ i => ⟨by grind, fun x hx => ?_⟩, by grind⟩

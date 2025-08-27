@@ -978,7 +978,7 @@ theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M 
 @[to_additive]
 theorem pi_eq_bot_iff (S : ∀ i, Submonoid (M i)) : pi Set.univ S = ⊥ ↔ ∀ i, S i = ⊥ := by
   simp_rw [SetLike.ext'_iff]
-  exact Set.univ_pi_eq_singleton_iff
+  exact Set.pi_univ_eq_singleton_iff
 
 end Pi
 
