@@ -9,8 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Conformal maps between complex vector spaces
@@ -107,7 +107,7 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     simp
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
-    conjugate is complex linear, and the map is nonvanishing. -/
+conjugate is complex linear, and the map is nonvanishing. -/
 theorem isConformalMap_iff_is_complex_or_conj_linear :
     IsConformalMap g ↔
       ((∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨

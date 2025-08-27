@@ -288,8 +288,6 @@ theorem mem_image_of_mem (f : α → β) {a} (h : a ∈ s) : f a ∈ s.image f :
 lemma forall_mem_image {p : β → Prop} : (∀ y ∈ s.image f, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
 lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 
-@[deprecated (since := "2024-11-23")] alias forall_image := forall_mem_image
-
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
   eq_of_veq (s.map f).2.dedup.symm
 
@@ -514,7 +512,7 @@ section FilterMap
   if `f a` is `some b` then `b` is included in the result, otherwise
   `a` is excluded from the resulting finset.
 
-  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s , f a = some b}`. -/
+  In notation, `filterMap f s` is the finset `{b : β | ∃ a ∈ s, f a = some b}`. -/
 -- TODO: should there be `filterImage` too?
 def filterMap (f : α → Option β) (s : Finset α)
     (f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') : Finset β :=
@@ -694,14 +692,12 @@ protected def finsetSubtypeComm (p : α → Prop) :
   left_inv s := by
     ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk,
-      exists_and_right, exists_eq_right, Subtype.impEmbedding] at *
-    · grind
-    · grind
+      exists_and_right, exists_eq_right, Subtype.impEmbedding] at * <;>
+    grind
   right_inv s := by
     ext a; constructor <;> intro h <;>
     simp only [Finset.mem_map, Finset.mem_attach, Subtype.exists, Embedding.coeFn_mk,
-      Subtype.impEmbedding] at *
-    · grind
-    · grind
+      Subtype.impEmbedding] at * <;>
+    grind
 
 end Equiv

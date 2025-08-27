@@ -259,8 +259,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-set_option maxHeartbeats 400000 in
--- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -441,7 +439,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
               by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
         · ext; simp [eq_comm]
     · simp
-  · intros R _ g i hi hi_min _ R₀ _ f
+  · intro R _ g i hi hi_min _ R₀ _ f
     let M := R[X] ⧸ Ideal.span {g.1 i}
     have : Module.Free R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
     have : Module.Finite R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
@@ -555,7 +553,7 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
   · simp only [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.image_iUnion,
       Finset.set_biUnion_biUnion, hf₁]
   · simp only [Finset.mem_biUnion, forall_exists_index, and_imp]
-    intros x y hy hx
+    intro x y hy hx
     have H : degBound ⟨y.g⟩ ≤ S.degBound :=
       Finset.le_sup (f := fun e ↦ ∑ i, (e.g i).degree.succ) hy
     refine ⟨(hf₂ y x hx).trans H, fun i ↦ SetLike.le_def.mp ?_ (hf₃ y x hx i)⟩

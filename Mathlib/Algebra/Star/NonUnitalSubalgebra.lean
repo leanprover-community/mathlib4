@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.Prod
 
 /-!
 # Non-unital Star Subalgebras
@@ -882,8 +883,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B
     (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
-
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 @[simp]
 theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :

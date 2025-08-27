@@ -70,12 +70,12 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     rw [← smul_A_eq_A_smul ha, inv_smul_smul]
 
 /-- A non-empty set with no doubling is the left translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the left-translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the left-translate of its stabilizer. -/]
 lemma smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     a •> (stabilizer G A : Set G) = A := (smul_stabilizer_of_no_doubling_aux hA ha).1
 
 /-- A non-empty set with no doubling is the right translate of its stabilizer. -/
-@[to_additive "A non-empty set with no doubling is the right translate of its stabilizer."]
+@[to_additive /-- A non-empty set with no doubling is the right translate of its stabilizer. -/]
 lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
     (stabilizer G A : Set G) <• a = A := (smul_stabilizer_of_no_doubling_aux hA ha).2
 
@@ -106,7 +106,7 @@ private lemma mul_inv_eq_inv_mul_of_doubling_lt_two_aux (h : #(A * A) < 2 * #A) 
   rw [mul_inv_eq_iff_eq_mul, mul_assoc, ← hzxwy, inv_mul_cancel_left]
 
 -- TODO: is there a way to get wlog to make `mul_inv_eq_inv_mul_of_doubling_lt_two_aux` a goal?
--- ie wlog in the target rather than hypothesis
+-- i.e. wlog in the target rather than hypothesis
 -- (BM: third time seeing this pattern)
 -- I'm thinking something like wlog_suffices, where I could write
 -- wlog_suffices : A⁻¹ * A ⊆ A * A⁻¹
