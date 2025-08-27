@@ -87,13 +87,6 @@ lemma WeakClosure_subset_closedBall {s : Set E**} {c : E**} {ε : ℝ} (hs : s �
     (closure[𝒯] s) ⊆ closedBall (α := E**) c ε :=
   closure_minimal hs (WeakDual.isClosed_closedBall ..)
 
-/- Goldstine lemma (see Brezis, Chapter § 3.5, Lemma 3.4) says that the unit ball in the double
-dual of a Banach space (**FAE: I suspect completeness is not needed) ** is the closure, with respect
-to the weak topology `σ(E**, E*)` induced by the canonical pairing `E** × E* → ℝ`, of the image of
-the unit ball in  `E`. Observe that, for any topological `𝕜`-module `M`, `strongDualPairing 𝕜 M` is
-the pairing whose *first* variable is in `M*` and the second is in `M`. -/
-axiom goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
-  (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1-- := by sorry
 
 -- **TODO** Check not in Mathlib, miminise assumptions, golf proof.
 lemma surjective_iff_sphere_subset_range {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -123,27 +116,18 @@ lemma surjective_iff_closedBall_subset_range {F : Type*} [NormedAddCommGroup F] 
   fun ⟨_, ρ_pos, sphere_le⟩ ↦ (surjective_iff_sphere_subset_range f).mpr ⟨_, ρ_pos, fun _ hx ↦
     sphere_le (sphere_subset_closedBall hx)⟩⟩
 
+/- Goldstine lemma (see Brezis, Chapter § 3.5, Lemma 3.4) says that the unit ball in the double
+dual of a Banach space (**FAE: I suspect completeness is not needed) ** is the closure, with respect
+to the weak topology `σ(E**, E*)` induced by the canonical pairing `E** × E* → ℝ`, of the image of
+the unit ball in  `E`. Observe that, for any topological `𝕜`-module `M`, `strongDualPairing 𝕜 M` is
+the pairing whose *first* variable is in `M*` and the second is in `M`. -/
+axiom goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
+  (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1-- := by sorry
 
 lemma exists_sub_one_lt {ξ : E**} {δ : ℝ} (hδ₀ : 0 < δ) (hδ₁ : δ < 1) (h : ‖ξ‖ = 1) :
     ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
   obtain ⟨φ, hφ_eq, hφ_lt⟩ := exists_nnorm_eq_one_lt_apply_of_lt_opNorm
     (f := ξ) (r := 1 - δ) (by grind) (by grind)
-  replace hφ_lt : 1 - δ < |ξ φ| := by rwa [Real.norm_eq_abs] at hφ_lt
-  wlog h_pos : 0 ≤ ξ φ generalizing φ
-  · exact this (-φ) (by rw [opNorm_neg, hφ_eq]) (by simpa)
-      (by simpa only [map_neg, Left.nonneg_neg_iff] using le_of_not_ge h_pos)
-  have : ξ φ ≤ 1 := by
-    apply le_of_abs_le
-    grw [← Real.norm_eq_abs, le_opNorm ξ φ, h, hφ_eq, one_mul]
-  refine ⟨φ, hφ_eq, ?_⟩
-  rw [← abs_neg, neg_sub]
-  rw [abs_eq_self.mpr (by grind)] at ⊢ hφ_lt
-  rwa [sub_lt_comm]
-
-lemma exists_sub_one_lt_nontrivial [Nontrivial E] {ξ : E**} {δ : ℝ} (hδ : 0 < δ) (h : ‖ξ‖ = 1) :
-    ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
-  obtain ⟨φ, hφ_eq, hφ_lt⟩ := exists_nnorm_eq_one_lt_apply_of_lt_opNorm'
-    (f := ξ) (r := 1 - δ) (by grind)
   replace hφ_lt : 1 - δ < |ξ φ| := by rwa [Real.norm_eq_abs] at hφ_lt
   wlog h_pos : 0 ≤ ξ φ generalizing φ
   · exact this (-φ) (by rw [opNorm_neg, hφ_eq]) (by simpa)
