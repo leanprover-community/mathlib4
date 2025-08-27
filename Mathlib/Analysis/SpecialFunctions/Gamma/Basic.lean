@@ -145,7 +145,7 @@ section GammaRecurrence
 
 /-- The indefinite version of the `Γ` function, `Γ(s, X) = ∫ x ∈ 0..X, exp(-x) x ^ (s - 1)`. -/
 def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
-  ∫ x in (0)..X, (-x).exp * x ^ (s - 1)
+  ∫ x in 0..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
     Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
