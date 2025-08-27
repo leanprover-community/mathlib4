@@ -798,6 +798,52 @@ theorem sinh_lt_self_iff : sinh x < x ↔ x < 0 :=
 
 end Real
 
+section iteratedDeriv
+
+open Real
+
+@[simp]
+theorem iteratedDerivWithin_sin_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Icc a b) :
+    iteratedDerivWithin n sin (Set.Icc a b) x = iteratedDeriv n sin x :=
+  iteratedDerivWithin_Icc h hx contDiff_sin
+
+@[simp]
+theorem iteratedDerivWithin_cos_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Icc a b) :
+    iteratedDerivWithin n cos (Set.Icc a b) x = iteratedDeriv n cos x :=
+  iteratedDerivWithin_Icc h hx contDiff_cos
+
+@[simp]
+theorem iteratedDerivWithin_sinh_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Icc a b) :
+    iteratedDerivWithin n sinh (Set.Icc a b) x = iteratedDeriv n sinh x :=
+  iteratedDerivWithin_Icc h hx contDiff_sinh
+
+@[simp]
+theorem iteratedDerivWithin_cosh_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Icc a b) :
+    iteratedDerivWithin n cosh (Set.Icc a b) x = iteratedDeriv n cosh x :=
+  iteratedDerivWithin_Icc h hx contDiff_cosh
+
+@[simp]
+theorem iteratedDerivWithin_sin_Ioo (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Ioo a b) :
+    iteratedDerivWithin n sin (Set.Ioo a b) x = iteratedDeriv n sin x :=
+  iteratedDerivWithin_Ioo h hx contDiff_sin.contDiffOn
+
+@[simp]
+theorem iteratedDerivWithin_cos_Ioo (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Ioo a b) :
+    iteratedDerivWithin n cos (Set.Ioo a b) x = iteratedDeriv n cos x :=
+  iteratedDerivWithin_Ioo h hx contDiff_cos.contDiffOn
+
+@[simp]
+theorem iteratedDerivWithin_sinh_Ioo (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Ioo a b) :
+    iteratedDerivWithin n sinh (Set.Ioo a b) x = iteratedDeriv n sinh x :=
+  iteratedDerivWithin_Ioo h hx contDiff_sinh.contDiffOn
+
+@[simp]
+theorem iteratedDerivWithin_cosh_Ioo (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Set.Ioo a b) :
+    iteratedDerivWithin n cosh (Set.Ioo a b) x = iteratedDeriv n cosh x :=
+  iteratedDerivWithin_Ioo h hx contDiff_cosh.contDiffOn
+
+end iteratedDeriv
+
 section
 
 /-! ### Simp lemmas for derivatives of `fun x => Real.cos (f x)` etc., `f : ℝ → ℝ` -/
