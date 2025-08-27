@@ -227,4 +227,8 @@ theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
 
 end OrderedSub
 
+instance {M : Type*} : IsAddTorsionFree (Multiset M) :=
+  ⟨fun n hn x y h ↦ open Classical in Multiset.ext' fun _ ↦
+    (Nat.mul_right_inj hn).mp <| by simp only [← Multiset.count_nsmul, h]⟩
+
 end Multiset

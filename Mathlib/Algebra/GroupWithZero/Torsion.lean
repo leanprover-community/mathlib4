@@ -3,7 +3,7 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Xavier Roblot
 -/
-import Mathlib.RingTheory.Binomial
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
@@ -21,11 +21,9 @@ variable {M : Type*} [CancelCommMonoidWithZero M]
 theorem IsMulTorsionFree.mk' (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
     IsMulTorsionFree M := by
   refine ⟨fun n hn x y hxy ↦ ?_⟩
-  by_cases hx : x = 0
-  · subst hx; exact (pow_eq_zero (hxy.symm.trans (zero_pow hn))).symm
-  by_cases hy : y = 0
-  · subst hy; exact pow_eq_zero (hxy.trans (zero_pow hn))
-  exact ih x hx y hy n hn hxy
+  by_cases h : x ≠ 0 ∧ y ≠ 0
+  · exact ih x h.1 y h.2 n hn hxy
+  grind [pow_eq_zero, zero_pow]
 
 variable [UniqueFactorizationMonoid M] [NormalizationMonoid M] [IsMulTorsionFree Mˣ]
 
