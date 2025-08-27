@@ -37,7 +37,6 @@ hyperplane. -/
 theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (hy : y ≠ c) :
     inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c := by
   rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
-  have hx' := dist_ne_zero.2 hx
   have hy' := dist_ne_zero.2 hy
   -- takes 300ms, but the "equivalent" simp call fails -> hard to speed up
   field_simp [mul_assoc, mul_comm, hx, hx.symm, eq_comm]
