@@ -92,7 +92,7 @@ theorem getElem_scanl_eq_foldl_take {i : ℕ} (h : i < (scanl f b l).length) :
   | zero => exact getElem_scanl_zero
   | succ i ih =>
     simp only [length_scanl, Nat.add_lt_add_iff_right] at h ih
-    rcases exists_cons_of_length_pos (Nat.zero_lt_of_lt h) with ⟨hd, tl, rfl⟩
+    obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt h)
     exact ih h
 
 lemma lt_scanl_length_of_lt_length_add_one {i : ℕ} (h : i < l.length + 1) :
