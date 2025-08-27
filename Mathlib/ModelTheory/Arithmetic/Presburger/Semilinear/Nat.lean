@@ -46,18 +46,11 @@ open Pointwise AddSubmonoid Matrix
 lemma Linear.iff_eq_vadd_range {s : Set α} :
     s.Linear ↔ ∃ (a : α) (n : ℕ) (f : (Fin n → ℕ) →+ α), s = a +ᵥ Set.range f := by
   classical
-  rw [iff_eq_vadd_addSubmonoid_fg]
-  refine exists_congr fun a => ?_
-  conv_lhs =>
-    enter [1, P, 1]
-    rw [← P.toNatSubmodule_toAddSubmonoid, ← Submodule.fg_iff_addSubmonoid_fg,
-      Submodule.fg_iff_exists_fin_linearMap]
-    enter [1, n, 1, f]
-    rw [SetLike.ext'_iff, LinearMap.range_coe, coe_toNatSubmodule]
-  refine ⟨fun ⟨P, ⟨n, f, hf⟩, hs⟩ => ⟨n, f, ?_⟩, fun ⟨n, f, hf⟩ =>
-    ⟨AddMonoidHom.mrange f, ⟨n, f.toNatLinearMap, rfl⟩, ?_⟩⟩
-  · simp [hf, hs]
-  · simp [hf]
+  simp_rw [iff_eq_vadd_addSubmonoid_fg, fg_iff_exists_fin_addMonoidHom]
+  refine exists_congr fun a => ⟨fun ⟨P, ⟨n, f, hf⟩, hs⟩ => ⟨n, f, ?_⟩, fun ⟨n, f, hs⟩ =>
+    ⟨_, ⟨n, f, rfl⟩, ?_⟩⟩
+  · rw [← AddMonoidHom.coe_mrange, hf, hs]
+  · rw [AddMonoidHom.coe_mrange, hs]
 
 lemma Linear.iff_eq_setOf_add_mulVec {s : Set (ι → ℕ)} :
     s.Linear ↔ ∃ (v : ι → ℕ) (n : ℕ) (A : Matrix ι (Fin n) ℕ), s = { v + A *ᵥ x | x } := by
@@ -419,8 +412,7 @@ private theorem mem_iff_fract_eq_and_floor_nonneg (x) :
     refine ⟨∑ i ∈ {i : hs.extendedPeriods | i.1 ∈ hs.periods}, (hs.floor x i).toNat • i.1,
       sum_mem fun i hi => nsmul_mem (mem_span_of_mem (Finset.mem_filter.1 hi).2) _, ?_⟩
     rw [Finset.sum_filter, ← hx₁]
-    conv =>
-      rhs
+    conv_rhs =>
       rw [← add_zero x, ← Finset.sum_const_zero (ι := hs.extendedPeriods) (s := Finset.univ)]
     convert (hs.add_floor_neg_toNat_sum_eq x).symm using 3 with i _ i
     · split_ifs with hi
