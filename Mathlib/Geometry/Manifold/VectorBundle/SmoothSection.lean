@@ -229,6 +229,17 @@ lemma ContMDiffOn.smul_section_of_tsupport {s : Π (x : M), V x} {ψ : M → �
     simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
   · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
 
+-- unused
+/-- The scalar product `ψ • s` of a `C^k` function `ψ: M → 𝕜` and a section `s` of a vector
+bundle `V → M` is `C^k` once `s` is `C^k` at each point in `tsupport ψ`.
+
+This is a vector bundle analogue of `contMDiff_of_tsupport`. -/
+lemma ContMDiffOn.smul_section_of_tsupport' {s : Π (x : M), V x} {ψ : M → 𝕜} {u : Set M}
+    (hs : ∀ x ∈ tsupport ψ,
+      ContMDiffAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) x) :
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  sorry
+
 /-- The sum of a locally finite collection of sections is `C^k` iff each section is.
 Version at a point within a set. -/
 lemma ContMDiffWithinAt.sum_section_of_locallyFinite
@@ -290,7 +301,7 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     (ht' : ∀ i, ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
     ContMDiffWithinAt I (I.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
-      (fun y hy ↦ ?_) (by grind) trivial
+    (fun y hy ↦ ?_) (by simp) trivial
   rw [← tsum_eq_finsum]
   choose U hu hfin using ht y
   have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
