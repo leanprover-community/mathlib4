@@ -43,7 +43,7 @@
   "Mathlib.Data.Finsupp.Notation",
   "Mathlib.Data.Int.Defs",
   "Mathlib.Data.Int.Notation",
-  "Mathlib.Data.Matrix.Notation",
+  "Mathlib.LinearAlgebra.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Nat.Notation",
   "Mathlib.Data.Rat.Init",
