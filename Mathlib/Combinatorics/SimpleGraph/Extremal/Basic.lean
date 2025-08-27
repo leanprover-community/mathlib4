@@ -5,7 +5,6 @@ Authors: Mitchell Horner
 -/
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.Operations
 
 /-!
 # Extremal graph theory
