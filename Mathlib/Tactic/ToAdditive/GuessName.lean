@@ -8,7 +8,7 @@ import Std.Data.TreeMap.Basic
 import Mathlib.Data.String.Defs
 
 /-!
-# Name generation APIs for `to_additive`
+# Name generation APIs for `to_additive`-like attributes
 -/
 
 open Std
@@ -84,7 +84,33 @@ def capitalizeFirstLike (s : String) : List String → List String
   | [] => []
 
 /--
-Dictionary used by `guessName` to autogenerate names.
+Turn each element to lower-case, apply the `nameDict` and
+capitalize the output like the input.
+-/
+@[specialize]
+def applyNameDict (nameDict : String → List String) : List String → List String
+  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict nameDict s
+  | [] => []
+
+/--
+Autogenerate additive name.
+This runs in several steps:
+1) Split according to capitalisation rule and at `_`.
+2) Apply word-by-word translation rules.
+3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
+-/
+@[specialize]
+def guessName (nameDict : String → List String) (fixAbbreviation : List String → List String) :
+    String → String :=
+  String.mapTokens '\'' <|
+  fun s =>
+    String.join <|
+    fixAbbreviation <|
+    applyNameDict nameDict <|
+    s.splitCase
+
+/--
+Dictionary used by `guessToAdditiveName` to autogenerate names.
 
 Note: `guessName` capitalizes first element of the output according to
 capitalization of the input. Input and first element should therefore be lower-case,
@@ -133,14 +159,6 @@ def nameDict : String → List String
   | "irreducible"   => ["add", "Irreducible"]
   | "mlconvolution" => ["lconvolution"]
   | x               => [x]
-
-/--
-Turn each element to lower-case, apply the `nameDict` and
-capitalize the output like the input.
--/
-def applyNameDict : List String → List String
-  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
-  | [] => []
 
 /--
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
@@ -237,19 +255,8 @@ def fixAbbreviation : List String → List String
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
-/--
-Autogenerate additive name.
-This runs in several steps:
-1) Split according to capitalisation rule and at `_`.
-2) Apply word-by-word translation rules.
-3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
--/
-def guessName : String → String :=
-  String.mapTokens '\'' <|
-  fun s =>
-    String.join <|
-    fixAbbreviation <|
-    applyNameDict <|
-    s.splitCase
+/-- Automatically generate the additivized version of a name. -/
+def guessToAdditiveName : String → String :=
+  guessName nameDict fixAbbreviation
 
 end ToAdditive
