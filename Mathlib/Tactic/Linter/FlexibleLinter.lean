@@ -264,6 +264,7 @@ def stoppers : Std.HashSet Name :=
     `Mathlib.Tactic.RingNF.ringNF,
     `Mathlib.Tactic.RingNF.tacticRing_nf!__,
     `Mathlib.Tactic.Group.group,
+    `finiteness_nonterminal,
     -- "continuators": the *effect* of these tactics is similar the "properly stoppers" above,
     -- though they typically wrap other tactics inside them.
     -- The linter ignores the wrapper, but does recurse into the enclosed tactics
@@ -284,7 +285,7 @@ def stoppers : Std.HashSet Name :=
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
-  `fun_prop`, `continuity` and `measurability`,
+  `fun_prop`, `continuity` and `measurability`, `positivity`, `finiteness`, `finiteness`,
   `split`, `split_ifs`.
 -/
 def flexible : Std.HashSet Name :=
@@ -303,6 +304,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.RingNF.ring,
     `Mathlib.Tactic.RingNF.tacticRing!,
     `Mathlib.Tactic.Module.tacticModule,
+    `Mathlib.Tactic.Positivity.positivity,
     ``Lean.Parser.Tactic.grind,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
