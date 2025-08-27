@@ -12,7 +12,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 We prove that if `M` is an `UniqueFactorizationMonoid` that can be equipped with a
 `NormalizationMonoid` structure and such that `Mˣ` is torsion-free, then `M` is torsion-free.
 
-Note. You need to import that file to get that the monoid of ideals of a Dedekind domain is
+Note. You need to import this file to get that the monoid of ideals of a Dedekind domain is
 torsion-free.
 -/
 
