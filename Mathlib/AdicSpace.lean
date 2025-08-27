@@ -16,6 +16,16 @@ class HuberRing (R : Type u) extends CommRing R, TopologicalSpace R, IsTopologic
   pod : ∃ (R₀ : Type u) (_ : CommRing R₀) (_ : TopologicalSpace R₀) (_ : IsTopologicalRing R₀),
     Nonempty (HuberRing.ringOfDefinition R₀ R)
 
+instance (R : Type u) [HuberRing R] : NonarchimedeanAddGroup R := by
+  rcases HuberRing.pod (R := R) with ⟨A₀, _, _, _, _, emb, J, _, _⟩
+  have h₁ := J.nonarchimedean
+  have : NonarchimedeanRing A₀ := by
+    convert h₁
+  apply NonarchimedeanAddGroup.nonarchimedean_of_emb (algebraMap A₀ R : A₀ →+ R) emb
+
+instance (R : Type u) [HuberRing R] : NonarchimedeanRing R where
+  is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean
+
 structure IsRingOfIntegralElements (R₀ : Type u) (R : Type u)
     [CommRing R₀] [TopologicalSpace R₀] [HuberRing R] [Algebra R₀ R] : Prop extends
     IsIntegrallyClosedIn R₀ R, IsOpenEmbedding (algebraMap R₀ R) where
@@ -515,15 +525,38 @@ instance : Algebra A r.Localization := by
   infer_instance
 
 def ringSubgroupsBasisFamily : OpenAddSubgroup A → AddSubgroup r.Localization :=
-  let D : Subring r.Localization := Subring.closure
-    ((fun x ↦ r.invSelf * x) '' (algebraMap A r.Localization '' (r.T : Set A)))
-  fun U ↦ (Submodule.span (D : Type u) (algebraMap A r.Localization '' U)).toAddSubgroup
+  fun U ↦ (Submodule.span (Subring.closure
+    ((fun x ↦ r.invSelf * x) '' (algebraMap A r.Localization '' (r.T : Set A))))
+    (algebraMap A r.Localization '' U)).toAddSubgroup
 
-def ringSubgroupsBasis : RingSubgroupsBasis (ringSubgroupsBasisFamily r) where
-  inter := by sorry
-  mul := by sorry
-  leftMul := by sorry
-  rightMul := by sorry
+def ringSubgroupsBasis : RingSubgroupsBasis (ringSubgroupsBasisFamily r) :=
+  RingSubgroupsBasis.of_comm (ringSubgroupsBasisFamily r)
+    (fun U V ↦ ⟨U ⊓ V, by
+      simp only [ringSubgroupsBasisFamily]
+      intro x hx
+      constructor
+      · apply Submodule.span_mono _ hx
+        apply Set.image_mono
+        simp
+      · apply Submodule.span_mono _ hx
+        apply Set.image_mono
+        simp⟩)
+    (fun U ↦ by
+      obtain ⟨V, hV⟩ := NonarchimedeanRing.mul_subset U
+      use V
+      dsimp only [ringSubgroupsBasisFamily]
+      let R := (Subring.closure
+        ((fun x ↦ r.invSelf * x) '' (algebraMap A r.Localization '' (r.T : Set A))))
+      let S := ((algebraMap A r.Localization : _ → _) '' (V : Set A))
+      let T := ((algebraMap A r.Localization : _ → _) '' (U : Set A))
+      have : Submodule.span R S * Submodule.span R S ≤ Submodule.span R T := by
+        rw [Submodule.span_mul_span]
+        apply Submodule.span_mono
+        convert Set.image_mono hV
+        simp [S, Set.image_mul]
+      refine subset_trans ?_ this
+      simp [S, R, Submodule.mul_eq_span_mul_set])
+    fun x U ↦ sorry
 
 instance : TopologicalSpace r.Localization :=
   (spa.ringSubgroupsBasis r).topology
@@ -560,28 +593,38 @@ instance : IsTopologicalRing (UniformSpace.Completion r.Localization) :=
 
 open UniformSpace
 
-lemma rationalOpenData.le_iff_exists_unique {A : HuberPair} (r s : rationalOpenData A) :
-    r ≤ s ↔ Nonempty (Unique (Completion s.Localization →A[A] Completion r.Localization)) := by
+attribute [-instance] UniformSpace.Completion.ring
+
+def rationalOpenData.algHomOfLE {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
+    s.Localization →ₐ[A] r.Localization :=
   sorry
 
-noncomputable def rationalOpenData.uniqueOfLE
-    {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
-    Unique (Completion s.Localization →A[A] Completion r.Localization) :=
-  ((rationalOpenData.le_iff_exists_unique r s).mp h).some
+@[simp]
+lemma rationalOpenData.algHomOfLE_refl {A : HuberPair}
+    (r : rationalOpenData A) :
+    algHomOfLE r r (le_refl r) = AlgHom.id _ _ := by
+  sorry
 
-attribute [-instance] UniformSpace.Completion.ring
+@[simp]
+lemma rationalOpenData.algHomOfLE_trans {A : HuberPair}
+    {r s t : rationalOpenData A} (hrs : r ≤ s) (hst : s ≤ t) :
+    (algHomOfLE r s hrs).comp (algHomOfLE s t hst) = algHomOfLE r t (fun _ a ↦ hst (hrs a)) := by
+  sorry
+
+lemma rationalOpenData.algHomOfLE_continuous {A : HuberPair} (r s : rationalOpenData A)
+    (h : r ≤ s) : Continuous (algHomOfLE r s h) :=
+  sorry
 
 noncomputable def rationalOpenData.topAlgHomOfLE
     {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
-    Completion s.Localization →A[A] Completion r.Localization :=
-  letI := uniqueOfLE r s h
-  default
-
-lemma rationalOpenData.topAlgHom_eq {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s)
-    (f : Completion s.Localization →A[A] Completion r.Localization) :
-    rationalOpenData.topAlgHomOfLE r s h = f := by
-  letI := uniqueOfLE r s h
-  exact Subsingleton.elim _ _
+    Completion s.Localization →A[A] Completion r.Localization where
+  toRingHom := Completion.mapRingHom (algHomOfLE r s h).toRingHom (algHomOfLE_continuous r s h)
+  commutes' x := by
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, Completion.mapRingHom_apply]
+    rw [Completion.algebraMap_def, Completion.algebraMap_def]
+    sorry
+  cont := Completion.continuous_map
 
 end spa
 
@@ -592,11 +635,20 @@ noncomputable def spa.presheafOnRationalOpenDataAlg (A : HuberPair) :
   obj r := TopAlgCat.of A (Completion r.unop.Localization)
   map h := TopAlgCat.ofHom A (rationalOpenData.topAlgHomOfLE _ _ h.unop.1.1)
   map_id _ := by
-    apply ConcreteCategory.ext
-    apply rationalOpenData.topAlgHom_eq
+    ext
+    change Completion.map _ _ = _
+    simp
   map_comp _ _ := by
-    apply ConcreteCategory.ext
-    apply rationalOpenData.topAlgHom_eq
+    ext
+    change Completion.map _ _ = (Completion.map _ ∘ Completion.map _) _
+    rw [Completion.map_comp]
+    · change _ = Completion.map ((rationalOpenData.algHomOfLE _ _ _).comp
+        (rationalOpenData.algHomOfLE _ _ _)) _
+      simp [-AlgHom.coe_comp]
+    · apply uniformContinuous_addMonoidHom_of_continuous
+      exact rationalOpenData.algHomOfLE_continuous _ _ _
+    · apply uniformContinuous_addMonoidHom_of_continuous
+      exact rationalOpenData.algHomOfLE_continuous _ _ _
 
 noncomputable def spa.presheafOnRationalOpenData (A : HuberPair) :
     (rationalOpenData A)ᵒᵖ ⥤  TopRingCat :=
