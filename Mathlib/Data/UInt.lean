@@ -24,6 +24,8 @@ version also interferes more with software-verification use-cases, which is reas
 cautious here.
 -/
 
+/-
+Commented out on nightly-2028-08-26, could someone please restore if wanted?
 -- these theorems are fragile, so do them first
 set_option hygiene false in
 run_cmd
@@ -152,3 +154,4 @@ def isASCIIAlphanum (c : UInt8) : Bool :=
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (Nat.lt_trans n.toBitVec.isLt (by decide))⟩
 
 end UInt8
+-/
