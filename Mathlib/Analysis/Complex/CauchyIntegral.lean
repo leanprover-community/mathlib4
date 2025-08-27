@@ -297,8 +297,8 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   rw [Real.exp_le_exp] at hle
   -- Unfold definition of `circleIntegral` and cancel some terms.
   suffices
-    (∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp b) θ)) =
-      ∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp a) θ) by
+    (∫ θ in 0..2 * π, I • f (circleMap c (Real.exp b) θ)) =
+      ∫ θ in 0..2 * π, I • f (circleMap c (Real.exp a) θ) by
     simpa only [circleIntegral, add_sub_cancel_left, ofReal_exp, ← exp_add, smul_smul, ←
       div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center (Real.exp_pos _).ne'),
       circleMap_sub_center, deriv_circleMap]

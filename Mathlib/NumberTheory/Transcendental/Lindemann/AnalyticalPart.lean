@@ -33,7 +33,7 @@ theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
   ring
 
 theorem integral_exp_mul_eval (p : ℂ[X]) (s : ℂ) :
-    s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
+    s * ∫ x in 0..1, exp (-(x • s)) * p.eval (x • s) =
       -(exp (-s) * p.sumIDeriv.eval s) + p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul,
     intervalIntegral.integral_eq_sub_of_hasDerivAt
@@ -50,7 +50,7 @@ private def P (f : ℂ[X]) (s : ℂ) :=
   exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.eval s
 
 private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
-    P f s = exp s * (s * ∫ x in (0)..1, exp (-(x • s)) * f.eval (x • s)) := by
+    P f s = exp s * (s * ∫ x in 0..1, exp (-(x • s)) * f.eval (x • s)) := by
   rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
     neg_add_eq_sub, P]
 
