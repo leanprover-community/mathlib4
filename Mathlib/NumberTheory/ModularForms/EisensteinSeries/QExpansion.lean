@@ -263,14 +263,15 @@ lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSetN n) : eis
   ring_nf
 
 lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
-    ∑' (x : Fin 2 → ℤ), eisSummand k x z = (riemannZeta (k)) * (eisensteinSeries 𝟙 k z) := by
+    ∑' (x : Fin 2 → ℤ), eisSummand k x z =
+    (riemannZeta (k)) * (eisensteinSeries (N := 1) 0 k z) := by
   rw [← GammaSet_top_Equiv.symm.tsum_eq]
   have hk1 : 1 < k := by omega
   conv =>
     enter [1,1]
     ext c
     rw [GammaSet_top_Equiv_symm_eq]
-  rw [eisensteinSeries , Summable.tsum_sigma, zeta_nat_eq_tsum_of_gt_one hk1,
+  rw [eisensteinSeries, Summable.tsum_sigma, zeta_nat_eq_tsum_of_gt_one hk1,
     tsum_mul_tsum_of_summable_norm (by simp [hk1])
     (by apply (summable_norm_eisSummand (by omega) z).subtype)]
   · simp only [one_div]
@@ -294,23 +295,24 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     (E hk) z = 1 + (1 / (riemannZeta (k))) * ((-2 * π * Complex.I) ^ k / (k - 1)!) *
     ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * Complex.I * z) ^ (n : ℤ) := by
-  have : (eisensteinSeries_MF (k := k) (by omega) standardcongruencecondition) z =
-    (eisensteinSeries_SIF standardcongruencecondition k) z := rfl
-  rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply standardcongruencecondition k z,
-    eisensteinSeries, standardcongruencecondition]
+  have : (eisensteinSeries_MF (k := k) (by omega) 0) z =
+    (eisensteinSeries_SIF (N := 1) 0 k) z := rfl
+  rw [E, ModularForm.smul_apply, this, eisensteinSeries_SIF_apply 0 k z,
+    eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_sigma_cexp (by omega) hk2 z
   have HE2 := tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries (by omega) z
   have z2 : (riemannZeta (k)) ≠ 0 := by
     refine riemannZeta_ne_zero_of_one_lt_re ?_
     simp only [natCast_re, Nat.one_lt_cast]
     omega
-  simp only [PNat.val_ofNat, standardcongruencecondition, eisSummand, Fin.isValue,
+  simp only [eisSummand, Fin.isValue,
     UpperHalfPlane.coe, zpow_neg, zpow_natCast, neg_mul, eisensteinSeries, ←
     inv_mul_eq_iff_eq_mul₀ z2, ne_eq, one_div, smul_eq_mul] at *
   simp_rw [← HE2, HE1, mul_add]
   field_simp
   ring
 
+--move this
 theorem even_div_two_ne_zero {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) : k / 2 ≠ 0 := by
   simp only [ne_eq, Nat.div_eq_zero_iff, OfNat.ofNat_ne_zero, false_or, not_lt]
   suffices (2 : ℤ) ≤ k by
