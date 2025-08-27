@@ -64,9 +64,7 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
     suffices ¬ f (vecMulVec u v) = 0 by
       rwa [← toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff] at this
     rw [← ne_eq, EmbeddingLike.map_ne_zero_iff]
-    simp only [Ne, ← ext_iff, vecMulVec_apply, zero_apply, mul_eq_zero, not_forall, not_or,
-      exists_and_left, exists_and_right]
-    exact ⟨Function.ne_iff.mp hu, Function.ne_iff.mp hv⟩
+    exact vecMulVec_ne_zero hu hv
   let T := f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec v z
   have this A : T.toMatrix' * A = f A * T.toMatrix' :=
     f.toAlgHom.toNonUnitalAlgHom.toMatrix'_apply_vecMulVec_mulVec_mul v z A
