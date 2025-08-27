@@ -835,7 +835,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
     exact quadratic_root_cos_pi_div_five
   have hd : discrim 4 (-2) (-1) = (2 * √5) * (2 * √5) := by norm_num [discrim, mul_mul_mul_comm]
   rcases (quadratic_eq_zero_iff (by norm_num) hd c).mp this with h | h
-  · simp only [h, neg_neg]; linarith
+  · simp [h]; linarith
   · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
     rw [not_le, h]
     exact div_neg_of_neg_of_pos (by norm_num [lt_sqrt]) (by positivity)

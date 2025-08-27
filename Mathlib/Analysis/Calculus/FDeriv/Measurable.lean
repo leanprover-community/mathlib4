@@ -798,8 +798,7 @@ lemma isOpen_A_with_param {r s : ℝ} (hf : Continuous f.uncurry) (L : E →L[�
   obtain ⟨b, b_lt, hb⟩ : ∃ b, b < s * r ∧ ∀ y ∈ closedBall x t, ∀ z ∈ closedBall x t,
       ‖f a z - f a y - (L z - L y)‖ ≤ b := by
     have B : Continuous (fun (p : E × E) ↦ ‖f a p.2 - f a p.1 - (L p.2 - L p.1)‖) := by fun_prop
-    have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by
-      simp only [prod_nonempty_iff, nonempty_closedBall, and_self]; linarith
+    have C : (closedBall x t ×ˢ closedBall x t).Nonempty := by simp; linarith
     rcases ((isCompact_closedBall x t).prod (isCompact_closedBall x t)).exists_isMaxOn
       C B.continuousOn with ⟨p, pt, hp⟩
     simp only [mem_prod, mem_closedBall] at pt
