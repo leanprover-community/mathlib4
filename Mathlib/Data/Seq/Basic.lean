@@ -358,22 +358,22 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
 /-- Version of `eq_of_bisim` that looks more like an induction principle. -/
 theorem eq_of_bisim' {s₁ s₂ : Seq α}
     (motive : Seq α → Seq α → Prop)
-    (h_base : motive s₁ s₂)
-    (h_step : ∀ s₁ s₂, motive s₁ s₂ →
+    (base : motive s₁ s₂)
+    (step : ∀ s₁ s₂, motive s₁ s₂ →
       (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂') ∨
       (s₁ = nil ∧ s₂ = nil)) : s₁ = s₂ := by
-  apply eq_of_bisim motive _ h_base
+  apply eq_of_bisim motive _ base
   intro s₁ s₂ h
-  rcases h_step s₁ s₂ h with (⟨_, _, _, h₁, h₂, _⟩ | ⟨h_nil₁, h_nil₂⟩)
+  rcases step s₁ s₂ h with (⟨_, _, _, h₁, h₂, _⟩ | ⟨h_nil₁, h_nil₂⟩)
   · simpa [h₁, h₂]
   · simp [h_nil₁, h_nil₂]
 
 /-- Version of `eq_of_bisim'` that requires only `s₁ = s₂`
-instead of `s₁ = nil ∧ s₂ = nil` in `h_step`. -/
+instead of `s₁ = nil ∧ s₂ = nil` in `step`. -/
 theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
     (motive : Seq α → Seq α → Prop)
-    (h_base : motive s₁ s₂)
-    (h_step : ∀ s₁ s₂, motive s₁ s₂ →
+    (base : motive s₁ s₂)
+    (step : ∀ s₁ s₂, motive s₁ s₂ →
       (s₁ = s₂) ∨
       (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ (motive s₁' s₂'))) : s₁ = s₂ := by
   let motive' : Seq α → Seq α → Prop := fun s₁ s₂ => s₁ = s₂ ∨ motive s₁ s₂
@@ -382,7 +382,7 @@ theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
   simp only [motive'] at ih ⊢
   rcases ih with (rfl | ih)
   · cases s₁ <;> grind
-  rcases h_step s₁ s₂ ih with (rfl | ⟨hd, s₁', s₂', _⟩)
+  rcases step s₁ s₂ ih with (rfl | ⟨hd, s₁', s₂', _⟩)
   · cases s₁ <;> grind
   · grind
 
@@ -1399,8 +1399,8 @@ theorem All_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   grind
 
 set_option linter.dupNamespace false in
-private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (h_base : motive s)
-    (h_step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
+private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
   induction n with
   | zero => simpa
@@ -1409,21 +1409,21 @@ private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (h_b
     generalize s.drop m = t at *
     cases t
     · simpa
-    · exact h_step _ _ ih
+    · exact step _ _ ih
 
 /-- Coinductive principle for `All`. -/
 theorem All.coind {s : Seq α} {p : α → Prop}
-    (motive : Seq α → Prop) (h_base : motive s)
-    (h_step : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl)
+    (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl)
     : s.All p := by
   apply All_of_get
   intro n
-  have := All.coind_drop_motive motive h_base (fun hd tl ih ↦ (h_step hd tl ih).right) n
+  have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right) n
   rw [← head_dropn]
   generalize s.drop n = s' at this
   cases s' with
   | nil => simp
-  | cons hd tl => simp [(h_step hd tl this).left]
+  | cons hd tl => simp [(step hd tl this).left]
 
 theorem All_mp {p q : α → Prop} (h : ∀ a, p a → q a) {s : Seq α} (hp : s.All p) :
     s.All q := by
@@ -1471,7 +1471,7 @@ theorem Pairwise.nil {R : α → α → Prop} : Pairwise R (@nil α) := by
   simp [Pairwise]
 
 theorem Pairwise.cons {R : α → α → Prop} {hd : α} {tl : Seq α}
-    (h_lt : tl.All (R hd ·))
+    (h_hd : tl.All (R hd ·))
     (h_tl : Pairwise R tl) : Pairwise R (cons hd tl) := by
   simp only [Pairwise] at *
   intro i j x y h_ij hx hy
@@ -1482,7 +1482,7 @@ theorem Pairwise.cons {R : α → α → Prop} {hd : α} {tl : Seq α}
     cases i with
     | zero =>
       simp only [get?_cons_zero, Option.some.injEq] at hx
-      exact hx ▸ All_get h_lt hy
+      exact hx ▸ All_get h_hd hy
     | succ n => exact h_tl n k x y (by omega) hx hy
 
 theorem Pairwise.cons_elim {R : α → α → Prop} {hd : α} {tl : Seq α}
@@ -1516,31 +1516,31 @@ theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd t
 
 /-- Coinductive principle for `Pairwise`. -/
 theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
-    (motive : Seq α → Prop) (h_base : motive s)
-    (h_step : ∀ hd tl, motive (.cons hd tl) → tl.All (R hd ·) ∧ motive tl) : Pairwise R s := by
+    (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → tl.All (R hd ·) ∧ motive tl) : Pairwise R s := by
   simp only [Pairwise]
   intro i j x y h_ij hx hy
   obtain ⟨k, hj⟩ := Nat.exists_eq_add_of_lt h_ij
   rw [← head_dropn] at hx
   rw [hj, ← head_dropn, Nat.add_assoc, dropn_add, head_dropn] at hy
-  have := All.coind_drop_motive motive h_base (fun hd tl ih ↦ (h_step hd tl ih).right) i
+  have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right) i
   generalize s.drop i = s' at *
   cases s' with
   | nil => simp at hx
   | cons hd tl =>
     simp at hx hy
-    exact hx ▸ All_get (h_step hd tl this).left hy
+    exact hx ▸ All_get (step hd tl this).left hy
 
 /-- Coinductive principle for `Pairwise` that assumes that `R` is transitive. It allows to prove
-`R hd tl.head` instead of `tl.All (R hd ·)` in `h_step`. -/
+`R hd tl.head` instead of `tl.All (R hd ·)` in `step`. -/
 theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans α R] {s : Seq α}
-    (motive : Seq α → Prop) (h_base : motive s)
-    (h_step : ∀ hd tl, motive (.cons hd tl) → (∀ x ∈ tl.head, R hd x) ∧ motive tl) :
+    (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → (∀ x ∈ tl.head, R hd x) ∧ motive tl) :
     Pairwise R s := by
   have h_succ {n} {x y} (hx : s.get? n = some x) (hy : s.get? (n + 1) = some y) : R x y := by
     rw [← head_dropn] at hx
-    have := All.coind_drop_motive motive h_base (fun hd tl ih ↦ (h_step hd tl ih).right)
-    exact (h_step x (s.drop (n + 1)) (head_eq_some hx ▸ this n)).left _ (by simpa)
+    have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right)
+    exact (step x (s.drop (n + 1)) (head_eq_some hx ▸ this n)).left _ (by simpa)
   simp only [Pairwise]
   intro i j x y h_ij hx hy
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt h_ij
@@ -1593,8 +1593,8 @@ theorem AtLeastAsLongAs.cons_elim {a : Seq α} {hd : β} {tl : Seq β}
 
 /-- Coinductive principle for `AtLeastAsLongAs`. -/
 theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
-    (motive : Seq α → Seq β → Prop) (h_base : motive a b)
-    (h_step : ∀ a b, motive a b →
+    (motive : Seq α → Seq β → Prop) (base : motive a b)
+    (step : ∀ a b, motive a b →
       (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl))
     : a.AtLeastAsLongAs b := by
   simp only [AtLeastAsLongAs, TerminatedAt, ← head_dropn]
@@ -1609,7 +1609,7 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
       | nil => simp at hb
       | cons tb_hd tb_tl =>
         simp only [ne_eq, cons_ne_nil, not_false_eq_true, forall_const] at ih
-        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_step (a.drop m) (.cons tb_hd tb_tl) ih _ _ (by rfl)
+        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := step (a.drop m) (.cons tb_hd tb_tl) ih _ _ (by rfl)
         simpa [ha]
   contrapose
   rw [head_eq_none_iff]
@@ -1617,7 +1617,7 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
   cases tb
   · simp
   · intro hb
-    obtain ⟨a_hd, a_tl, ha, _⟩ := h_step _ _ (this hb) _ _ (by rfl)
+    obtain ⟨a_hd, a_tl, ha, _⟩ := step _ _ (this hb) _ _ (by rfl)
     simp [ha]
 
 @[simp]
