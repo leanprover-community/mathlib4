@@ -325,8 +325,6 @@ lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
   simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
   simpa [coe] using h i j
 
-@[deprecated (since := "2024-11-19")] noncomputable alias coe' := coe
-
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe⟩
 
@@ -340,13 +338,9 @@ theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
     (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-@[deprecated (since := "2024-11-19")] alias coe'_apply_complex := coe_apply_complex
-
 @[simp]
 theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
-
-@[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
 
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]

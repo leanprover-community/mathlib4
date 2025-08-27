@@ -724,13 +724,7 @@ theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction ns with
   | nil => simp [splitWrtCompositionAux]
-  | cons n ns IH =>
-    intro l h; simp only [sum_cons] at h
-    have := le_trans (Nat.le_add_right _ _) h
-    simp only [splitWrtCompositionAux_cons]; dsimp
-    rw [length_take, IH] <;> simp [length_drop]
-    · assumption
-    · exact le_tsub_of_add_le_left h
+  | cons n ns IH => grind [splitWrtCompositionAux_cons]
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
 given by the block sizes in `c`. -/
@@ -758,8 +752,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   | nil => cases hi
   | cons n ns IH =>
     rcases i with - | i
-    · rw [Nat.add_zero, List.take_zero, sum_nil]
-      simp
+    · simp
     · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
           sum_cons, splitAt_eq, drop_take, drop_drop]
       rw [Nat.add_sub_add_left]

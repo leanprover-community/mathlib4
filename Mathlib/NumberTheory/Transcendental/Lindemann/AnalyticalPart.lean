@@ -19,10 +19,7 @@ namespace LindemannWeierstrass
 noncomputable section
 
 open scoped Nat
-
 open Complex Polynomial
-
-attribute [local fun_prop] Polynomial.differentiable Complex.continuous_abs
 
 theorem hasDerivAt_cexp_mul_sumIDeriv (p : ℂ[X]) (s : ℂ) (x : ℝ) :
     HasDerivAt (fun x : ℝ ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s)))
@@ -119,14 +116,14 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     have h :
       (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1 ⊆
         (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Icc 0 1 :=
-      Set.image_subset _ Set.Ioc_subset_Icc_self
+      Set.image_mono Set.Ioc_subset_Icc_self
     refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
     fun_prop
   obtain ⟨c, h⟩ := this.exists_norm_le
   simp_rw [Real.norm_eq_abs] at h
   refine P_le _ s c (fun p x hx => ?_)
   specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
-  refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
+  grw [← h]
   simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
     Complex.norm_pow, real_smul, norm_mul, norm_real, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
     abs_norm, mul_pow, Real.norm_of_nonneg hx.1.le]

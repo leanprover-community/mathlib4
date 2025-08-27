@@ -11,6 +11,7 @@ import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 import Mathlib.Order.SymmDiff
 
 /-!
@@ -441,7 +442,7 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
   -- probably because of the type synonym
   · ext x
     exact hC _
-  · apply Finsupp.mulHom_ext'; intros x
+  · apply Finsupp.mulHom_ext'; intro x
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `Finsupp.mulHom_ext'` needs to have increased priority
     apply MonoidHom.ext_mnat
     exact hX _
@@ -582,6 +583,11 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 @[simp]
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne fun h => by cases Finsupp.single_eq_zero.1 h
+
+@[simp]
+theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (mapRange g hg φ) = g (coeff m φ) := by
+  simp [mapRange, coeff]
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -1029,7 +1035,7 @@ variable [Algebra R S] {M : Submodule R S}
 lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M * coeffsIn σ N := by
   classical
   refine le_antisymm (coeffsIn_le.2 ?_) ?_
-  · intros r hr s
+  · intro r hr s
     induction hr using Submodule.mul_induction_on' with
     | mem_mul_mem m hm n hn =>
       rw [← add_zero s, ← monomial_mul]
@@ -1037,7 +1043,7 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     | add x _ y _ hx hy =>
       simpa [map_add] using add_mem hx hy
   · rw [Submodule.mul_le]
-    intros x hx y hy k
+    intro x hx y hy k
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 

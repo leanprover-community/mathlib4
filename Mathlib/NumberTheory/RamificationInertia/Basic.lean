@@ -134,7 +134,7 @@ variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
   dsimp only [ramificationIdx]
-  congr
+  congr 1
   ext n
   simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
   rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
@@ -934,8 +934,6 @@ theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.Is
   letI : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ I) := IsScalarTower.of_algebraMap_eq <| by
     rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
   exact (finrank_mul_finrank (R ⧸ p) (S ⧸ P) (T ⧸ I)).symm
-
-@[deprecated (since := "2024-12-09")] alias inertiaDeg_tower := inertiaDeg_algebra_tower
 
 end tower
 
