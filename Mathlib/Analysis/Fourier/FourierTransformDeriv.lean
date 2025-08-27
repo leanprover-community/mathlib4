@@ -744,7 +744,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
     gcongr
     exact norm_innerSL_le _
   rcases eq_or_ne w 0 with rfl | hw
-  · simp [hn]
+  · simp only [norm_zero, ne_eq, hn, not_false_eq_true, zero_pow, zero_mul, ge_iff_le]
     positivity
   rw [mul_le_mul_iff_right₀ (pow_pos (by simp [hw]) n)] at Z
   apply Z.trans
