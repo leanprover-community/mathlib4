@@ -312,7 +312,10 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     left
     rw [sq_sqrt]
     exact Finset.sum_nonneg (fun i _hi ↦ by positivity)
-  · simp [PiLp.inner_apply, EuclideanSpace.measurableEquiv, Finset.mul_sum, mul_assoc]
+  · simp? [PiLp.inner_apply, EuclideanSpace.measurableEquiv, Finset.mul_sum, mul_assoc] says
+      simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
+      WithLp.equiv_symm_apply, PiLp.inner_apply, PiLp.toLp_apply, RCLike.inner_apply, conj_trivial,
+      ofReal_sum, ofReal_mul, Finset.mul_sum, mul_assoc]
     simp_rw [mul_comm]
   · simp only [EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, mul_pow, ← Finset.mul_sum]
     congr

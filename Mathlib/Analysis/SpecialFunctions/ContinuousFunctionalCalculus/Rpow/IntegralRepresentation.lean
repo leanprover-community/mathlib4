@@ -500,7 +500,7 @@ lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ 
   · simp_rw [← CFC.nnrpow_eq_rpow hq]
     exact monotone_nnrpow hp
   · have hq : q = 0 := by simpa using hq
-    simp [hq]
+    simp only [hq, NNReal.coe_zero]
     intro a b hab
     by_cases ha : 0 ≤ a
     · have hb : 0 ≤ b := ha.trans hab
