@@ -313,7 +313,7 @@ theorem chain'_getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
     R l[n] l[n + 1] :=
   chain'_pair.mp <| Chain'.infix h ⟨l.take n, l.drop (n + 2), by simp⟩
 
-theorem exists_not_of_not_chain (h : ¬List.Chain' R l) :
+theorem exists_not_of_not_chain' (h : ¬List.Chain' R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by
   contrapose! h
   induction l with
@@ -334,7 +334,7 @@ theorem chain'_iff_forall_getElem :
     Chain' R l ↔ ∀ (n : ℕ) (h : n + 1 < l.length), R l[n] l[n + 1] := by
   refine ⟨chain'_getElem, fun h ↦ ?_⟩
   contrapose! h
-  exact chain'_of_not h
+  exact exists_not_of_not_chain' h
 
 theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
   | [] => Iff.rfl
