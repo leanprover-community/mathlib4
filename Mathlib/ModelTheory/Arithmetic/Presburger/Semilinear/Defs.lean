@@ -292,22 +292,21 @@ lemma Linear.proper_semilinear [IsCancelAdd α] (hs : s.Linear) : s.ProperSemili
     · ext x
       simp only [mem_vadd_set, SetLike.mem_coe]
       constructor
-      · rintro ⟨x, hx, rfl⟩
-        rw [mem_closure_finset] at hx
-        rcases hx with ⟨g, -, rfl⟩
+      · rintro ⟨y, hy, rfl⟩
+        rw [mem_closure_finset] at hy
+        rcases hy with ⟨g, -, rfl⟩
         induction hn : g i using Nat.strong_induction_on generalizing g with | _ n ih'
         subst hn
         by_cases hfg : ∀ j ∈ t', f j ≤ g j
         · convert ih' (g i - f i) (Nat.sub_lt_self hfi (hfg i hi))
-            (fun j => if hj : j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
+            (fun j => if j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
           conv_lhs => rw [← Finset.union_sdiff_of_subset ht']
           simp_rw [vadd_eq_add, add_left_cancel_iff, Finset.sum_union Finset.sdiff_disjoint.symm,
-            dite_eq_ite, ite_smul, Finset.sum_ite, Finset.filter_mem_eq_inter,
-            Finset.inter_eq_right.2 ht', Finset.filter_notMem_eq_sdiff, add_smul,
-            Finset.sum_add_distrib, ← heq, ← add_assoc, add_right_comm, ← Finset.sum_add_distrib,
-            ← add_smul]
+            ite_smul, Finset.sum_ite, Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht',
+            Finset.filter_notMem_eq_sdiff, add_smul, Finset.sum_add_distrib, ← heq, ← add_assoc,
+            add_right_comm, ← Finset.sum_add_distrib]
           congr! 2 with j hj
-          rw [tsub_add_cancel_of_le (hfg j hj)]
+          rw [← add_smul, tsub_add_cancel_of_le (hfg j hj)]
         · push_neg at hfg
           rcases hfg with ⟨j, hj, hgj⟩
           simp only [mem_iUnion, Finset.mem_range, mem_vadd_set, SetLike.mem_coe, vadd_eq_add]
