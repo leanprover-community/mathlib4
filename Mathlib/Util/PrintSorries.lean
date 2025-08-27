@@ -3,7 +3,6 @@ Copyright (c) 2025 Henrik Böving, Yaël Dillies, Kyle Miller. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Init
 import Mathlib.Lean.Expr.Basic
 
 /-!
