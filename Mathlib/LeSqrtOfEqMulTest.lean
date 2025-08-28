@@ -5,6 +5,9 @@ lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a
   · exact Or.inl hle
   · right
     simp at hle
-    have : (a.sqrt + 1) ^ 2 > a := by
-      exact Nat.lt_succ_sqrt' a
+    have : a.sqrt.succ ≤ b := by
+      bound
+    have := Nat.lt_succ_sqrt' a
+    have : b * c < b * a.sqrt.succ := by
+      sorry
     nlinarith
