@@ -13,6 +13,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Group.WithOne.Map
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -236,23 +237,46 @@ instance [LinearOrderedAddCommGroupWithTop α] :
     mul_inv_cancel := @LinearOrderedAddCommGroupWithTop.add_neg_cancel _ (_) }
 
 namespace WithZero
-section Preorder
-variable [Preorder α] [Preorder β] {x : WithZero α} {a b : α}
 
-instance instPreorder : Preorder (WithZero α) := WithBot.preorder
-instance instOrderBot : OrderBot (WithZero α) := WithBot.orderBot
+section Bot
 
-@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le
+instance instBot : Bot (WithZero α) :=
+  ⟨none⟩
 
-@[simp] lemma zero_lt_coe (a : α) : (0 : WithZero α) < a := WithBot.bot_lt_coe a
-@[simp] lemma not_coe_le_zero : ¬ a ≤ (0 : WithZero α) := WithBot.not_coe_le_bot a
-@[simp] lemma not_lt_zero : ¬ x < (0 : WithZero α) := WithBot.not_lt_bot _
-
+@[simp← ]
 lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
-@[simp, norm_cast] lemma coe_lt_coe : (a : WithZero α) < b ↔ a < b := WithBot.coe_lt_coe
+end Bot
 
-@[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
+section Preorder
+
+variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
+
+instance (priority := 10) le : LE (WithZero α) :=
+  ⟨fun o₁ o₂ => ∀ a : α, o₁ = ↑a → ∃ b : α, o₂ = ↑b ∧ a ≤ b⟩
+
+lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := .rfl
+
+@[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := by simp [le_def]
+@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := by simp [le_def]
+@[simp] lemma not_coe_le_zero : ¬ a ≤ (0 : WithZero α) := by simp [le_def]
+
+instance (priority := 10) lt : LT (WithZero α) :=
+  ⟨fun o₁ o₂ : WithZero α => ∃ b : α, o₂ = ↑b ∧ ∀ a : α, o₁ = ↑a → a < b⟩
+
+lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := .rfl
+
+@[simp, norm_cast] lemma coe_lt_coe : (a : WithZero α) < b ↔ a < b := by simp [lt_def]
+@[simp] lemma zero_lt_coe (a : α) : 0 < (a : WithZero α) := by simp [lt_def]
+@[simp] protected lemma not_lt_zero (a : WithZero α) : ¬a < 0 := by simp [lt_def]
+
+instance instPreorder [Preorder α] : Preorder (WithZero α) where
+  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
+  le_refl x := by cases x <;> simp [le_def]
+  le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
+
+instance instOrderBot : OrderBot (WithZero α) where
+  bot_le := by simp [le_def]
 
 @[simp, norm_cast] lemma one_lt_coe [One α] : 1 < (a : WithZero α) ↔ 1 < a := coe_lt_coe
 
@@ -262,8 +286,8 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 
 @[simp, norm_cast] lemma coe_le_one [One α] : (a : WithZero α) ≤ 1 ↔ a ≤ 1 := coe_le_coe
 
-theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
-  WithBot.coe_le_iff
+theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b := by
+  simp [le_def]
 
 @[simp] lemma unzero_le_unzero {a b : WithZero α} (ha hb) :
     unzero (x := a) ha ≤ unzero (x := b) hb ↔ a ≤ b := by
@@ -302,7 +326,7 @@ instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero
     induction a
     · exact fun _ => ⟨b, (zero_add b).symm⟩
     induction b
-    · exact fun h => (WithBot.not_coe_le_bot _ h).elim
+    · exact fun h => (not_coe_le_zero h).elim
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
@@ -375,12 +399,57 @@ instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
 
 end PartialOrder
 
-instance instLattice [Lattice α] : Lattice (WithZero α) := WithBot.lattice
+
+section Lattice
+
+instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithZero α) where
+  sup
+    -- note this is `Option.merge`, but with the right defeq when unfolding
+    | 0, 0 => 0
+    | (a : α), 0 => a
+    | 0, (b : α) => b
+    | (a : α), (b : α) => ↑(a ⊔ b)
+  le_sup_left x y := by cases x <;> cases y <;> simp
+  le_sup_right x y := by cases x <;> cases y <;> simp
+  sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
+
+theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithZero α) = (a : WithZero α) ⊔ b :=
+  rfl
+
+instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithZero α) where
+  inf := .map₂ (· ⊓ ·)
+  inf_le_left x y := by cases x <;> cases y <;> simp
+  inf_le_right x y := by cases x <;> cases y <;> simp
+  le_inf x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using le_inf
+
+theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithZero α) = (a : WithZero α) ⊓ b :=
+  rfl
+
+instance instLattice [Lattice α] : Lattice (WithZero α) :=
+  { WithZero.semilatticeSup, WithZero.semilatticeInf with }
+
+end Lattice
+
+instance decidableEq [DecidableEq α] : DecidableEq (WithZero α) :=
+  inferInstanceAs <| DecidableEq (Option α)
+
+instance decidableLE [Preorder α] [DecidableLE α] : DecidableLE (WithZero α)
+  | 0, _ => isTrue <| by simp
+  | (a : α), 0 => isFalse <| by simp
+  | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
+
+instance decidableLT [Preorder α] [DecidableLT α] : DecidableLT (WithZero α)
+  | _, 0 => isFalse <| by simp
+  | 0, (a : α) => isTrue <| by simp
+  | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
+
+instance isTotal_le [Preorder α] [IsTotal α (· ≤ ·)] : IsTotal (WithZero α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
 
 section LinearOrder
 variable [LinearOrder α] {a b c : α} {x y : WithZero α}
 
-instance instLinearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
+instance instLinearOrder : LinearOrder (WithZero α) := Lattice.toLinearOrder _
 
 protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a ≤ max b c := by
   simp only [WithZero.coe_le_coe, le_max_iff]
