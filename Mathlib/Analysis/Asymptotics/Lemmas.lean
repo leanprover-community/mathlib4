@@ -680,6 +680,7 @@ lemma summable_mul_tendsto_const {F ι : Type*} [NontriviallyNormedField F] [Com
     apply Filter.Tendsto.isBigO_one
     exact hg
   simpa using ((Asymptotics.isBigO_const_mul_self 1 f cofinite).mul h0)
+
 namespace PartialHomeomorph
 
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]

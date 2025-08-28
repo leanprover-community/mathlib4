@@ -24,6 +24,8 @@ Eisenstein series and their q-expansions.
 
 -/
 
+open Filter Complex ArithmeticFunction Nat Topology
+
 /-- The map from `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b`
 to `(a, b)`. -/
 def divisorsAntidiagonalFactors (n : ℕ+) : Nat.divisorsAntidiagonal n → ℕ+ × ℕ+ :=
@@ -62,14 +64,10 @@ lemma sigmaAntidiagonalEquivProd_symm_apply_snd (x : ℕ+ × ℕ+) :
 
 section tsum
 
-open Filter Complex ArithmeticFunction Nat Topology
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
-lemma natCast_norm [NormSMulClass ℤ 𝕜] (a : ℕ) : ‖(a : 𝕜)‖ = a := by
-  simpa using norm_natCast_eq_mul_norm_one 𝕜 a
-
-lemma summable_norm_pow_mul_geometric_div_one_sub [CompleteSpace 𝕜] (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+omit [NormSMulClass ℤ 𝕜] in
+lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
   rw [show (fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n)) =
     fun n : ℕ ↦ (n ^ k * r ^ n) * (1 / (1 - r ^ n)) by grind]
@@ -82,25 +80,23 @@ lemma summable_norm_pow_mul_geometric_div_one_sub [CompleteSpace 𝕜] (k : ℕ)
   apply (Filter.Tendsto.div h1 this (by simp)).congr
   simp
 
-variable [CompleteSpace 𝕜] [NormSMulClass ℤ 𝕜]
-
-theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1) :
-    Summable fun c : (n : ℕ+) × { x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
+theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+    Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
     (c.2.1).1 ^ k * (r ^ (c.2.1.2 * c.2.1.1)) := by
   apply Summable.of_norm
   rw [summable_sigma_of_nonneg]
   constructor
-  · apply fun n => (hasSum_fintype _).summable
+  · exact fun n ↦ (hasSum_fintype _).summable
   · simp only [norm_mul, norm_pow, tsum_fintype, Finset.univ_eq_attach]
     · apply Summable.of_nonneg_of_le (f := fun c : ℕ+ ↦ ‖(c : 𝕜) ^ (k + 1) * r ^ (c : ℕ)‖)
-        (fun b => Finset.sum_nonneg (fun _ _ => by apply mul_nonneg (by simp) (by simp))) ?_
+        (fun b ↦ Finset.sum_nonneg (fun _ _ ↦ by apply mul_nonneg (by simp) (by simp))) ?_
         (by apply (summable_norm_pow_mul_geometric_of_norm_lt_one (k + 1) hr).subtype)
       intro b
       apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, ‖(b : 𝕜)‖ ^ k * ‖r ^ (b : ℕ)‖)
       · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun x ↦
-            ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
+            ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖ ^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
             ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * ‖r‖ ^ (y * x))) (n := b)]
-        gcongr <;> rename_i i hi <;> simp [natCast_norm] at *
+        gcongr <;> rename_i i hi <;> simp at *
         · exact Nat.le_of_dvd b.2 hi
         · apply le_of_eq
           nth_rw 2 [← Nat.mul_div_cancel' hi]
@@ -108,15 +104,13 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) (r : 𝕜) (hr : ‖r‖ < 1
       · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
           pow_one, norm_mul]
         gcongr
-        simpa [natCast_norm] using (Nat.card_divisors_le_self b)
+        simpa  using (Nat.card_divisors_le_self b)
   · intro a
     simpa using mul_nonneg (by simp) (by simp)
 
 theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (ℕ+ × ℕ+) ↦ c.1 ^ k * (r ^ (c.2 * c.1 : ℕ)) := by
-  rw [sigmaAntidiagonalEquivProd.summable_iff.symm]
-  simp only [sigmaAntidiagonalEquivProd, divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk]
-  apply summable_divisorsAntidiagonal_aux k r hr
+  simpa [sigmaAntidiagonalEquivProd.summable_iff.symm] using summable_divisorsAntidiagonal_aux k hr
 
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' (c : ℕ+), c ^ k * (r ^ (d * c : ℕ)) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
@@ -127,8 +121,8 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     · apply (summable_prod_mul_pow k hr).prod_symm.congr
       simp
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
-    divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div', cast_sum,
-    cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k r hr)]
+    divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div, cast_sum,
+    cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k hr)]
   apply tsum_congr
   intro n
   simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
@@ -145,7 +139,7 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
 
 lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' n : ℕ+, n * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ 1 n * r ^ (n : ℕ) := by
-  have := fun m : ℕ+ => tsum_choose_mul_geometric_of_norm_lt_one
+  have := fun m : ℕ+ ↦ tsum_choose_mul_geometric_of_norm_lt_one
     (r := r ^ (m : ℕ)) 0 (by simpa using (pow_lt_one₀ (by simp) hr (by apply PNat.ne_zero)))
   simp only [add_zero, Nat.choose_zero_right, Nat.cast_one, one_mul, zero_add, pow_one,
     one_div] at this
@@ -157,7 +151,7 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
       enter [1]
       ext m
       rw [mul_assoc, ← pow_succ' (r ^ (n : ℕ)) m]
-    rw [← tsum_pnat_eq_tsum_succ (fun m => n * (r ^ (n : ℕ)) ^ (m : ℕ))]
+    rw [← tsum_pnat_eq_tsum_succ (fun m ↦ n * (r ^ (n : ℕ)) ^ (m : ℕ))]
   have h00 := (tsum_prod_pow_eq_tsum_sigma 1 hr)
   rw [Summable.tsum_comm (by apply summable_prod_mul_pow 1 hr)] at h00
   rw [← h00]
