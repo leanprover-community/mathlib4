@@ -237,9 +237,7 @@ instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One (
 
 run_cmd do
   let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.pi.has_one
-  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.pi.has_one
   if n != 1 then throwError "{n} != 1"
-  let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.foo_mul
   let n ← liftCoreM <| MetaM.run' <| findMultiplicativeArg `Test.foo_mul
   if n != 4 then throwError "{n} != 4"
 
@@ -366,7 +364,6 @@ run_cmd do
   liftTermElabM do
     let e ← Term.elabTerm stx none
     guard <| additiveTest (← getEnv) e == some (.inl `Test.MonoidEnd)
-    guard <| additiveTest (← getEnv) e == some (.inl `Test.MonoidEnd)
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -460,7 +457,6 @@ lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
 lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
 
 section
-section
 -- Test the error message for a name that cannot be additivised.
 
 /--
@@ -473,9 +469,6 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 @[to_additive]
-local instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
-
-end
 local instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
 
 end
