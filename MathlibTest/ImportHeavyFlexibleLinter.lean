@@ -2,6 +2,7 @@ import Mathlib.Tactic.Linter.FlexibleLinter
 
 import Mathlib.Data.ENNReal.Operations
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
@@ -10,6 +11,8 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.Ring
+import Mathlib.Topology.Continuous
+import Mathlib.Topology.Instances.Nat
 
 set_option linter.flexible true
 set_option linter.unusedVariables false
@@ -28,7 +31,8 @@ example : (0 + 2 : Rat) + 1 = 3 := by
   simp
   norm_num
 
-/-- ## further flexible tactics -/
+/-! ## further flexible tactics -/
+
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
 
@@ -81,6 +85,14 @@ example {a b : Nat} : a + b = b + a + 0 := by
   simp
   abel!
 
+-- Test that `continuity` is also a flexible tactic: the goal must be solvable by continuity,
+-- but require some simplication first.
+example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
+    (hf : Continuous f) (hg : Continuous g) :
+    Continuous (fun x ↦ (f ∘ g) x + 0) := by
+  simp
+  continuity
+
 --  `ring` and `ring!` are allowed `simp`-followers.
 #guard_msgs in
 example {a b : Nat} : a + b = b + a + 0 := by
@@ -109,7 +121,7 @@ example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
   simp
   nlinarith
 
-/-- ## followers/rigidifiers -/
+/-! ## followers/rigidifiers -/
 
 --  `abel_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `abel_nf`.
 #guard_msgs in
