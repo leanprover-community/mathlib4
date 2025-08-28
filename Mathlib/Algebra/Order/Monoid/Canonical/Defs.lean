@@ -108,7 +108,7 @@ variable [CommMagma α] [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
-  simp only [mul_comm, le_iff_exists_mul]
+  simp only [mul_comm _ a, le_iff_exists_mul]
 
 end CommMagma
 

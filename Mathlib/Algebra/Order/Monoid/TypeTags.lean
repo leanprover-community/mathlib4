@@ -31,9 +31,11 @@ instance Additive.isOrderedCancelAddMonoid
 instance Multiplicative.canonicallyOrderedMul
     [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedMul (Multiplicative α) where
+  le_mul_self _ _ := le_add_self (α := α)
   le_self_mul _ _ := le_self_add (α := α)
 
 instance Additive.canonicallyOrderedAdd
     [Monoid α] [PartialOrder α] [CanonicallyOrderedMul α] :
     CanonicallyOrderedAdd (Additive α) where
+  le_add_self _ _ := le_mul_self (α := α)
   le_self_add _ _ := le_self_mul (α := α)

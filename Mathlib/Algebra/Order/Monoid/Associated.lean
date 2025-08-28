@@ -21,6 +21,8 @@ We also define an equivalence relation `Associated`
 saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
+
+TODO: none of this docstring is true anymore?
 -/
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
@@ -32,6 +34,7 @@ instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
 
 instance : CanonicallyOrderedMul (Associates M) where
   exists_mul_of_le h := h
+  le_mul_self _ b := ⟨b, rfl⟩
   le_self_mul _ b := ⟨b, rfl⟩
 
 end Associates
