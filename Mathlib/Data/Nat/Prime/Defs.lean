@@ -126,8 +126,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         · exact a m m2 hm mdvd
         · rw [mul_comm] at e
           have : 1 < k := by
-            have := e ▸ one_mul m ▸ l
-            exact Nat.lt_of_mul_lt_mul_right (a := m) this
+            exact Nat.lt_of_mul_lt_mul_right (a := m) ((one_mul m).symm ▸ e ▸ l)
           exact a k this hk ⟨m, e⟩⟩
 
 theorem prime_iff_not_exists_mul_eq {p : ℕ} :
