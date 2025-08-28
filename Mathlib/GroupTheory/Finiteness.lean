@@ -408,11 +408,11 @@ end Prod
 
 namespace Pi
 
-variable {ι : Type*} [Finite ι] {M : ι → Type*}
+variable {ι : Type*} [Finite ι]
 
 /-- Finite product of finitely generated monoids is finitely generated. -/
 @[to_additive /-- Finite product of finitely generated additive monoids is finitely generated. -/]
-instance instMonoidFG [∀ i, Monoid (M i)] [∀ i, Monoid.FG (M i)] :
+instance instMonoidFG {M : ι → Type*} [∀ i, Monoid (M i)] [∀ i, Monoid.FG (M i)] :
     Monoid.FG (∀ i, M i) where
   fg_top := by
     rw [← Submonoid.pi_top Set.univ]
@@ -420,8 +420,8 @@ instance instMonoidFG [∀ i, Monoid (M i)] [∀ i, Monoid.FG (M i)] :
 
 /-- Finite product of finitely generated groups is finitely generated. -/
 @[to_additive /-- Finite product of finitely generated additive groups is finitely generated. -/]
-instance instGroupFG [∀ i, Group (M i)] [∀ i, Group.FG (M i)] :
-    Group.FG (∀ i, M i) where
+instance instGroupFG {G : ι → Type*} [∀ i, Group (G i)] [∀ i, Group.FG (G i)] :
+    Group.FG (∀ i, G i) where
   out := by
     rw [← Subgroup.pi_top Set.univ]
     exact .pi fun i => Group.FG.out
