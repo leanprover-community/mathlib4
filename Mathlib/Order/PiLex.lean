@@ -9,8 +9,12 @@ import Mathlib.Tactic.Common
 /-!
 # Lexicographic order on Pi types
 
-This file defines the lexicographic order for Pi types. `a` is less than `b` if `a i = b i` for all
-`i` up to some point `k`, and `a k < b k`.
+This file defines the lexicographic and colexicographic orders for Pi types.
+
+* In the lexicographic order, `a` is less than `b` if `a i = b i` for all `i` up to some point
+  `k`, and `a k < b k`.
+* In the colexicographic order, `a` is less than `b` if `a i = b i` for all `i` above some point
+  `k`, and `a k < b k`.
 
 ## Notation
 
