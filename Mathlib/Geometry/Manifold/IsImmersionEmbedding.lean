@@ -423,22 +423,26 @@ lemma Continuous.of_comp_iff_isInducing_restr {X Y Z : Type*}
     (hg : Topology.IsInducing (s.restrict g)) :
     ContinuousAt f x ↔ ContinuousAt (g ∘ f) x := by
   have hg' : ContinuousAt g (f x) := by
-    let i := Subtype.val (p := s)
-    have hi' : Set.range i ∈ nhds (i ⟨f x, mem_of_mem_nhds hs'⟩) := by
-      rwa [Subtype.range_coe_subtype]
-    exact ((IsEmbedding.subtypeVal (p := s)).isInducing.continuousAt_iff' hi').mp
-      (hg.continuous.continuousAt)
+    apply ContinuousWithinAt.continuousAt ?_ (hs.mem_nhds <| mem_of_mem_nhds hs')
+    rw [continuousWithinAt_iff_continuousAt_restrict _ (mem_of_mem_nhds hs')]
+    exact hg.continuous.continuousAt
   refine ⟨fun hf ↦ hg'.comp hf, fun h ↦ ?_⟩
 
   let s' : Set X := f ⁻¹' s
   have hxs' : x ∈ s' := by rw [mem_preimage]; exact mem_of_mem_nhds hs'
   have hmaps : MapsTo f s' s := by simpa +contextual [s'] using fun ⦃x⦄ a ↦ a
-  have : ContinuousAt (s'.restrict (g ∘ f)) ⟨x, hxs'⟩ := h.comp (by fun_prop)
-  have : ContinuousAt (hmaps.restrict f) ⟨x, hxs'⟩ := hg.continuousAt_iff.mpr this
-  -- subtype-restriction argument
-  sorry
+  have hf' : ContinuousAt (s'.restrict (g ∘ f)) ⟨x, hxs'⟩ := h.comp (by fun_prop)
 
-#exit
+  -- TODO: is this lemma fully true? need to think!
+  have hf'' : ContinuousAt (hmaps.restrict f) ⟨x, hxs'⟩ := hg.continuousAt_iff.mpr hf'
+  have : ContinuousAt (s'.restrict f) ⟨x, hxs'⟩ := by
+    have : (s'.restrict f) = Subtype.val ∘ (hmaps.restrict f) := sorry
+    rw [this]
+    apply continuousAt_subtype_val.comp hf''
+  rw [← continuousWithinAt_iff_continuousAt_restrict] at this
+  apply this.continuousAt
+  -- need s' be a neighbourhood of x? if so for all s, f is continuous at x...
+  sorry
 
 variable {x : M}
 --- TODO: are the manifold hypotheses necessary now? think!
