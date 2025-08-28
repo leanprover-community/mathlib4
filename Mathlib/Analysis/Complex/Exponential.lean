@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Analysis.Complex.Norm
 import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Norm
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
@@ -571,7 +571,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  · field_simp [mul_comm]
+  · simp [field]
   · omega
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -598,6 +598,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
   field_simp [show (m : ℝ) ≠ 0 by norm_cast; omega]
+  simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
     |exp x - a| ≤ b := by simpa using h
