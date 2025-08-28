@@ -724,7 +724,7 @@ theorem range_toSpanSingleton (x : M) :
     range (toSpanSingleton R M x) = .span R {x} :=
   SetLike.coe_injective (Submodule.span_singleton_eq_range R x).symm
 
-variable (R) in
+variable (R M) in
 theorem span_singleton_eq_range (x : M) :
     (R ∙ x) = range (toSpanSingleton R M x) :=
   range_toSpanSingleton x |>.symm
