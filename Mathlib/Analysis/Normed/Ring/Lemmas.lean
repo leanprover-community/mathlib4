@@ -3,14 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
@@ -65,15 +62,14 @@ instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRin
 
 lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) [RingHomIsometric σ] :
-    Isometry σ := fun x y ↦ by
-  simp only [edist_eq_enorm_sub, enorm_eq_iff_norm_eq, ← map_sub, RingHomIsometric.is_iso]
+    Isometry σ := AddMonoidHomClass.isometry_of_norm _ fun _ => RingHomIsometric.norm_map
 
 /-- If `σ` and `σ'` are mutually inverse, then one is `RingHomIsometric` if the other is. Not an
 instance, as it would cause loops. -/
 lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) {σ' : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ σ'] [RingHomIsometric σ] :
     RingHomIsometric σ' :=
-  ⟨fun {x} ↦ by rw [← RingHomIsometric.is_iso (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
+  ⟨fun {x} ↦ by rw [← RingHomIsometric.norm_map (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
 
 end SeminormedRing
 
@@ -268,17 +264,3 @@ lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 end Filter
 
 end NonUnitalNormedRing
-
-section NormedRing
-variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
-
-protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
-  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
-
-example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
-
-@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
-    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
-
-end NormedRing

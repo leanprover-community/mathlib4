@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm
@@ -308,13 +309,13 @@ private theorem μ_bddAbove (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs : ∀ n : 
   have hψ : ∀ n, 0 ≤ 1 / (ψ n : ℝ) := fun _ ↦ by simp only [one_div, inv_nonneg, cast_nonneg]
   by_cases hx : μ x ≤ 1
   · use 1
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff']
+    simp only [mem_upperBounds, Set.mem_range, forall_exists_index]
     rintro _ n rfl
     apply le_trans (rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hμ1 _ _) (hψ n))
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
     exact rpow_le_one (apply_nonneg _ _) hx (div_nonneg (cast_nonneg _) (cast_nonneg _))
   · use μ x
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff']
+    simp only [mem_upperBounds, Set.mem_range, forall_exists_index]
     rintro _ n rfl
     apply le_trans (rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hμ1 _ _) (hψ n))
     rw [← rpow_natCast, ← rpow_mul (apply_nonneg _ _), mul_one_div]
@@ -403,14 +404,13 @@ private theorem limsup_mu_le (hμ1 : μ 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ 
         fun n : ℕ => μ (x ^ s (ψ n)) ^ (1 / (ψ n : ℝ)) := by
       have h : (fun n : ℕ => (1 : ℝ) / (s (ψ n) : ℝ) * (s (ψ n) : ℝ)) =ᶠ[atTop] 1 := by
         apply Filter.EventuallyEq.div_mul_cancel_atTop
-        exact Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop) ha_pos hψ_lim
+        exact (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop).num ha_pos hψ_lim
       simp_rw [← rpow_mul (apply_nonneg μ _), mul_div]
       exact EventuallyEq.comp₂ EventuallyEq.rfl HPow.hPow (h.div EventuallyEq.rfl)
-    exact le_of_eq (Tendsto.limsup_eq (Tendsto.congr' h_eq
-      ((((tendsto_smoothingFun_of_map_one_le_one μ hμ1 x).comp
-      ((tendsto_natCast_atTop_iff (R := ℝ)).mp <|
-        Tendsto.num (tendsto_natCast_atTop_atTop.comp hψ_mono.tendsto_atTop)
-          ha_pos hψ_lim)).rpow hψ_lim (Or.inr ha_pos)))))
+    exact ((tendsto_smoothingFun_of_map_one_le_one μ hμ1 x |>.comp <|
+      tendsto_natCast_atTop_iff.mp <| (tendsto_natCast_atTop_atTop.comp
+        hψ_mono.tendsto_atTop).num ha_pos hψ_lim).rpow
+          hψ_lim <| .inr ha_pos).congr' h_eq |>.limsup_eq.le
 
 theorem tendsto_smoothingFun_comp (hμ1 : μ 1 ≤ 1) (x : R) {ψ : ℕ → ℕ}
     (hψ_mono : StrictMono ψ) :

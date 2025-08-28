@@ -95,7 +95,7 @@ scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
 
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
     @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
-  simp only [instTopologicalSpace, Pi.topologicalSpace, ge_iff_le, le_iInf_iff]
+  simp only [instTopologicalSpace, Pi.topologicalSpace, le_iInf_iff]
   exact fun i ↦ le_trans (iInf_le _ i) (induced_mono htu)
 
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
@@ -149,6 +149,8 @@ theorem denseRange_toMvPowerSeries [CommSemiring R] :
     DenseRange (MvPolynomial.toMvPowerSeries (R := R) (σ := σ)) := fun f ↦ by
   classical
   exact mem_closure_of_tendsto (tendsto_trunc'_atTop f) <| .of_forall fun _ ↦ Set.mem_range_self _
+
+@[deprecated (since := "2025-05-21")] alias toMvPowerSeries_denseRange := denseRange_toMvPowerSeries
 
 variable (σ R)
 

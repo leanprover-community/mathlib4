@@ -49,10 +49,10 @@ open NormedSpace Topology -- For `NormedSpace.exp`.
 open scoped ENNReal NNReal
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
-    coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
-    case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
-    not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
-    `spectralRadius a = ∞`. -/
+coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
+case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
+not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
+`spectralRadius a = ∞`. -/
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
   ⨆ k ∈ spectrum 𝕜 a, ‖k‖₊
@@ -65,14 +65,19 @@ section SpectrumCompact
 
 open Filter
 
-variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable [NormedField 𝕜]
 
 local notation "σ" => spectrum 𝕜
 local notation "ρ" => resolventSet 𝕜
 local notation "↑ₐ" => algebraMap 𝕜 A
 
+section Algebra
+
+variable [Ring A] [Algebra 𝕜 A]
+
 @[simp]
-theorem SpectralRadius.of_subsingleton [Subsingleton A] (a : A) : spectralRadius 𝕜 a = 0 := by
+theorem SpectralRadius.of_subsingleton [Subsingleton A] (a : A) :
+    spectralRadius 𝕜 a = 0 := by
   simp [spectralRadius]
 
 @[simp]
@@ -80,11 +85,31 @@ theorem spectralRadius_zero : spectralRadius 𝕜 (0 : A) = 0 := by
   nontriviality A
   simp [spectralRadius]
 
-theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜} (h : spectralRadius 𝕜 a < ‖k‖₊) :
-    k ∈ ρ a :=
+@[simp]
+theorem spectralRadius_one [Nontrivial A] :
+    spectralRadius 𝕜 (1 : A) = 1 := by
+  simp [spectralRadius]
+
+theorem mem_resolventSet_of_spectralRadius_lt {a : A} {k : 𝕜}
+    (h : spectralRadius 𝕜 a < ‖k‖₊) : k ∈ ρ a :=
   Classical.not_not.mp fun hn => h.not_ge <| le_iSup₂ (α := ℝ≥0∞) k hn
 
-variable [CompleteSpace A]
+lemma spectralRadius_pow_le (a : A) (n : ℕ) (hn : n ≠ 0) :
+    (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
+  simp only [spectralRadius, ENNReal.iSup₂_pow_of_ne_zero _ hn]
+  refine iSup₂_le fun x hx ↦ ?_
+  apply le_iSup₂_of_le (x ^ n) (spectrum.pow_mem_pow a n hx)
+  simp
+
+lemma spectralRadius_pow_le' [Nontrivial A] (a : A) (n : ℕ) :
+    (spectralRadius 𝕜 a) ^ n ≤ spectralRadius 𝕜 (a ^ n) := by
+  cases n
+  · simp
+  · exact spectralRadius_pow_le a _ (by simp)
+
+end Algebra
+
+variable [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
 
 theorem isOpen_resolventSet (a : A) : IsOpen (ρ a) :=
   Units.isOpen.preimage ((continuous_algebraMap 𝕜 A).sub continuous_const)
@@ -564,8 +589,6 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   invFun f :=
     { val := f.toContinuousLinearMap
       property := by rw [eq_set_map_one_map_mul]; exact ⟨map_one f, map_mul f⟩ }
-  left_inv _ := Subtype.ext <| ContinuousLinearMap.ext fun _ => rfl
-  right_inv _ := AlgHom.ext fun _ => rfl
 
 @[simp]
 theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=

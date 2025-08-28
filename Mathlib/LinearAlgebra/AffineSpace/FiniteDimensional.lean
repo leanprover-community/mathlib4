@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.AffineSpace.Basis
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
@@ -251,7 +252,7 @@ lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simpa [card_pos] using hst
   obtain rfl | ht' := t.eq_empty_or_nonempty
-  · simp [Set.subset_empty_iff] at hst
+  · simp at hst
   have := hs'.to_subtype
   have := ht'.to_set.to_subtype
   have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst <| hs'.to_set.affineSpan k
@@ -598,15 +599,14 @@ theorem collinear_insert_insert_insert_left_of_mem_affineSpan_pair {p₁ p₂ p�
     (h₁ : p₁ ∈ line[k, p₄, p₅]) (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃, p₄} : Set P) := by
   refine (collinear_insert_insert_insert_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
-  repeat apply Set.insert_subset_insert
-  simp
+  gcongr; simp
 
 /-- If three points lie in the affine span of two points, the first three points are collinear. -/
 theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (h₁ : p₁ ∈ line[k, p₄, p₅])
     (h₂ : p₂ ∈ line[k, p₄, p₅]) (h₃ : p₃ ∈ line[k, p₄, p₅]) :
     Collinear k ({p₁, p₂, p₃} : Set P) := by
   refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
-  simp [Set.insert_subset_insert]
+  gcongr; simp
 
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/

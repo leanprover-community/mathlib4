@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Ring.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
@@ -187,7 +187,7 @@ lemma forall_lt_mono (hst : toColex s ≤ toColex t) (ht : ∀ b ∈ t, b < a) :
 /-- `s ≤ {a}` in colex iff all elements of `s` are strictly less than `a`, except possibly `a` in
 which case `s = {a}`. -/
 lemma toColex_le_singleton : toColex s ≤ toColex {a} ↔ ∀ b ∈ s, b ≤ a ∧ (a ∈ s → b = a) := by
-  simp only [toColex_le_toColex, mem_singleton, and_assoc, exists_eq_left]
+  simp only [toColex_le_toColex, mem_singleton, exists_eq_left]
   refine forall₂_congr fun b _ ↦ ?_; obtain rfl | hba := eq_or_ne b a <;> aesop
 
 /-- `s < {a}` in colex iff all elements of `s` are strictly less than `a`. -/
@@ -307,7 +307,7 @@ private lemma max_mem_aux {s t : Colex α} (hst : s ≠ t) : (ofColex s ∆ ofCo
 lemma toColex_lt_toColex_iff_exists_forall_lt :
     toColex s < toColex t ↔ ∃ a ∈ t, a ∉ s ∧ ∀ b ∈ s, b ∉ t → b < a := by
   rw [← not_le, toColex_le_toColex, not_forall]
-  simp only [not_forall, not_exists, not_and, not_le, exists_prop, exists_and_left]
+  simp only [not_forall, not_exists, not_and, not_le, exists_prop]
 
 lemma lt_iff_exists_forall_lt {s t : Colex α} :
     s < t ↔ ∃ a ∈ ofColex t, a ∉ ofColex s ∧ ∀ b ∈ ofColex s, b ∉ ofColex t → b < a :=
@@ -511,7 +511,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by omega) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
@@ -556,8 +556,7 @@ theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i �
   invFun s := equivBitIndices.symm s.ofColex
   left_inv n := equivBitIndices.symm_apply_apply n
   right_inv s :=  Finset.toColex_inj.2 (equivBitIndices.apply_symm_apply s.ofColex)
-  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le),
-    toFinset_bitIndices_twoPowSum]
+  map_rel_iff' := by simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le)]
 
 end Nat
 end Finset

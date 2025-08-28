@@ -97,7 +97,7 @@ satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`
 on a shell `ε / ‖c‖ < ‖m i‖ < ε` for some positive number `ε` and an elements `c : 𝕜`, `1 < ‖c‖`,
 then it satisfies this inequality for all `m`.
 
-If the domain is a Hausdorff space, then the continuity assumption is reduntant,
+If the domain is a Hausdorff space, then the continuity assumption is redundant,
 see `bound_of_shell` below. -/
 theorem bound_of_shell_of_continuous (f : E [⋀^ι]→ₗ[𝕜] F) (hfc : Continuous f)
     {ε : ℝ} {C : ℝ} (hε : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
@@ -320,8 +320,6 @@ def prodLIE : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[�
     (ContinuousLinearMap.snd 𝕜 F G).compContinuousAlternatingMap f)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   norm_map' f := opNorm_prod f.1 f.2
 
 variable (𝕜 E) in
@@ -568,8 +566,7 @@ variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
 
 namespace ContinuousAlternatingMap
 
-/-- Continuous alternating maps themselves form a normed group with respect to
-    the operator norm. -/
+/-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
 instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
   NormedAddCommGroup.ofSeparation fun _f hf ↦
     toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
