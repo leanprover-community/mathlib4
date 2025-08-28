@@ -51,7 +51,7 @@ end logic
 section lambda
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
-  push fun x ↦ ·
+  push fun x ↦ _
   with_reducible rfl
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
@@ -62,44 +62,44 @@ end lambda
 section membership
 
 example (x : Nat) (A : Set Nat) : x ∈ ∅ ∪ Set.univ ∩ ({a | a = 4} \ Aᶜ) := by
-  push · ∈ ·
+  push _ ∈ _
   guard_target =ₛ (False ∨ True ∧ x = 4 ∧ ¬x ∉ A)
   exact test_sorry
 
 example (A : Set Nat) : A ∈ 𝒫 A := by
-  push · ∈ ·
+  push _ ∈ _
   rfl
 
 example (x y : Nat) (A B : Set Nat) : (x, y) ∈ A ×ˢ B := by
-  push · ∈ ·
-  -- `push · ∈ ·` can unpack the pair `(x, y)` because a specialized lemma has been tagged
+  push _ ∈ _
+  -- `push _ ∈ _` can unpack the pair `(x, y)` because a specialized lemma has been tagged
   guard_target =ₛ x ∈ A ∧ y ∈ B
   exact test_sorry
 
 example (p : Nat × Nat) (A B : Set Nat) : p ∈ A ×ˢ B := by
-  push · ∈ ·
+  push _ ∈ _
   guard_target =ₛ p.1 ∈ A ∧ p.2 ∈ B
-  pull · ∈ ·
+  pull _ ∈ _
   guard_target =ₛ p ∈ A ×ˢ B
   exact test_sorry
 
 example (p : Nat × Nat) (A : Set Nat) : p ∈ Set.diagonal Nat ∪ Set.offDiag A := by
-  push · ∈ ·
+  push _ ∈ _
   guard_target =ₛ p.1 = p.2 ∨ p.1 ∈ A ∧ p.2 ∈ A ∧ p.1 ≠ p.2
   exact test_sorry
 
 example (x y z : Nat) : x ∈ ({x, y, z, y, x} : Set Nat) := by
-  push · ∈ ·
+  push _ ∈ _
   guard_target =ₛ x = x ∨ x = y ∨ x = z ∨ x = y ∨ x = x
   exact test_sorry
 
 example (x : Nat) (A B C : Set Nat) : x ∈ A ∧ ¬ x ∈ B ∨ x ∈ C := by
-  pull · ∈ ·
+  pull _ ∈ _
   guard_target =ₛ x ∈ A ∩ Bᶜ ∪ C
   exact test_sorry
 
 example (a b c : α) (s : Set α) : a ∈ (∅ ∪ (Set.univ ∩ (({b, c} \ sᶜᶜ) ∪ {b | b = a}))) := by
-  push · ∈ ·
+  push _ ∈ _
   guard_target =ₛ False ∨ True ∧ ((a = b ∨ a = c) ∧ ¬¬a ∉ s ∨ a = a)
   exact test_sorry
 
@@ -124,12 +124,12 @@ end log
 -- the following examples still need more tagging to work
 
 -- example (a b : ℚ) : ((a + b⁻¹ + 1) / 2) ^ 2 = 0 := by
---   push · ^ ·
+--   push _ ^ _
 --   guard_target =ₛ (a ^ 2 + 2 * a * b⁻¹ + (b ^ 2)⁻¹ + 2 * (a + b⁻¹) * 1 + 1) / 2 ^ 2 = 0
 --   ring_nf
 --   exact test_sorry
 
 -- example (s t : Set α) (a : α) : (s ∪ t ∩ {a} ∩ {x | x ≠ a} ∩ {_x | True})ᶜ = s := by
---   push ·ᶜ
+--   push _ᶜ
 --   guard_target =ₛ sᶜ ∩ (tᶜ ∪ {x | x ≠ a} ∪ {a} ∪ {a | ¬True}) = s
 --   exact test_sorry
