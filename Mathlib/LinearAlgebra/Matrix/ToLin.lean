@@ -6,11 +6,11 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Basis.Fin
 import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.LinearAlgebra.Basis.SMul
+import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.StdBasis
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.RingTheory.Ideal.Span
@@ -176,20 +176,13 @@ theorem range_vecMulLinear (M : Matrix m n R) :
   unfold vecMul
   simp_rw [single_dotProduct, one_mul]
 
-theorem Matrix.vecMul_injective_iff {R : Type*} [Ring R] {M : Matrix m n R} :
+theorem Matrix.vecMul_injective_iff {M : Matrix m n R} :
     Function.Injective M.vecMul ↔ LinearIndependent R M.row := by
-  rw [← coe_vecMulLinear]
-  simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
-    LinearMap.mem_ker, vecMulLinear_apply, row_def]
-  refine ⟨fun h c h0 ↦ congr_fun <| h c ?_, fun h c h0 ↦ funext <| h c ?_⟩
-  · rw [← h0]
-    ext i
-    simp [vecMul, dotProduct]
-  · rw [← h0]
-    ext j
-    simp [vecMul, dotProduct]
+  rw [← coe_vecMulLinear, linearIndependent_iff_injective_fintypeLinearCombination]
+  congr! 1
+  exact funext fun _ => Matrix.vecMul_eq_sum _ _
 
-lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [Ring R] {A : Matrix m m R}
+lemma Matrix.linearIndependent_rows_of_isUnit {A : Matrix m m R}
     [DecidableEq m] (ha : IsUnit A) : LinearIndependent R A.row := by
   rw [← Matrix.vecMul_injective_iff]
   exact Matrix.vecMul_injective_of_isUnit ha
@@ -336,12 +329,12 @@ theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range M.col) := by
   rw [← vecMulLinear_transpose, range_vecMulLinear, row_transpose]
 
-theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
+theorem Matrix.mulVec_injective_iff {M : Matrix m n R} :
     Function.Injective M.mulVec ↔ LinearIndependent R M.col := by
   change Function.Injective (fun x ↦ _) ↔ _
   simp_rw [← M.vecMul_transpose, vecMul_injective_iff, row_transpose]
 
-lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype m]
+lemma Matrix.linearIndependent_cols_of_isUnit [Fintype m]
     {A : Matrix m m R} [DecidableEq m] (ha : IsUnit A) :
     LinearIndependent R A.col := by
   rw [← Matrix.mulVec_injective_iff]

@@ -78,10 +78,8 @@ section BottomRow
 
 /-- The two numbers `c`, `d` in the "bottom_row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
 theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
-    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) := by
-  use -(↑g : Matrix (Fin 2) (Fin 2) R) 0 1, (↑g : Matrix (Fin 2) (Fin 2) R) 0 0
-  rw [add_comm, neg_mul, ← sub_eq_add_neg, ← det_fin_two]
-  exact g.det_coe
+    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) :=
+  isCoprime_row g 1
 
 /-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
@@ -233,14 +231,13 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   have nonZ1 : (p 0 : ℂ) ^ 2 + (p 1 : ℂ) ^ 2 ≠ 0 := mod_cast hp.sq_add_sq_ne_zero
   have : ((↑) : ℤ → ℝ) ∘ p ≠ 0 := fun h => hp.ne_zero (by ext i; simpa using congr_fun h i)
   have nonZ2 : (p 0 : ℂ) * z + p 1 ≠ 0 := by simpa using linear_ne_zero z this
-  simp only [coe_specialLinearGroup_apply, hg, algebraMap_int_eq, Int.coe_castRingHom,
-    Complex.ofReal_intCast]
-  field_simp [nonZ1, nonZ2, denom_ne_zero]
-  rw [(by simp :
-    (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
-  rw [← hg, det_fin_two]
-  simp only [Int.cast_sub, Int.cast_mul]
-  ring
+  subst hg
+  rw [coe_specialLinearGroup_apply]
+  replace nonZ2 : z * (g 1 0 : ℂ) + g 1 1 ≠ 0 := by convert nonZ2 using 1; ring
+  have H := congr(Int.cast (R := ℂ) $(det_fin_two g))
+  simp at H
+  simp [field]
+  linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto

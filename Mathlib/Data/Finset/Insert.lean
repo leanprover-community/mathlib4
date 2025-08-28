@@ -332,7 +332,7 @@ def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α}
   invFun := prodPiCons f has
   left_inv _ := by grind [prodPiCons, consPiProd]
   right_inv _ := by
-    -- I'm surprised `grind` next this `ext` step: it is just `Prod.ext` and `funext`.
+    -- I'm surprised `grind` needs this `ext` step: it is just `Prod.ext` and `funext`.
     ext _ hi <;> grind [prodPiCons, consPiProd]
 
 end Cons
@@ -395,7 +395,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a => by simp⟩
 
 @[simp]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
