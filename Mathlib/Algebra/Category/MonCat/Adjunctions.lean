@@ -5,8 +5,11 @@ Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.Semigrp.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.WithOne.Basic
+import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -27,50 +30,81 @@ open CategoryTheory
 
 namespace MonCat
 
-/-- The functor of adjoining a neutral element `one` to a semigroup.
- -/
-@[to_additive (attr := simps) "The functor of adjoining a neutral element `zero` to a semigroup"]
+/-- The functor of adjoining a neutral element `one` to a semigroup. -/
+@[to_additive (attr := simps)
+/-- The functor of adjoining a neutral element `zero` to a semigroup -/]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map := WithOne.map
-  map_id _ := WithOne.map_id
-  map_comp := WithOne.map_comp
+  map f := ofHom (WithOne.mapMulHom f.hom)
+  map_id _ := MonCat.hom_ext WithOne.mapMulHom_id
+  map_comp _ _ := MonCat.hom_ext (WithOne.mapMulHom_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
   forget₂ :=
     { obj := fun M => Semigrp.of M
-      map := MonoidHom.toMulHom }
+      map f := Semigrp.ofHom f.hom.toMulHom }
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/
-@[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat`"]
+@[to_additive /-- The `adjoinZero`-forgetful adjunction from `AddSemigrp` to `AddMonCat` -/]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} Semigrp.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => WithOne.lift.symm
+    { homEquiv X Y :=
+        ConcreteCategory.homEquiv.trans (WithOne.lift.symm.trans
+          (ConcreteCategory.homEquiv (X := X) (Y := (forget₂ _ _).obj Y)).symm)
       homEquiv_naturality_left_symm := by
-        intro S T M f g
-        ext x
-        simp only [Equiv.symm_symm, adjoinOne_map, coe_comp]
-        simp_rw [WithOne.map]
-        cases x
-        · rfl
-        · simp
-          rfl }
+        intros
+        ext ⟨_ | _⟩ <;> simp <;> rfl }
 
 /-- The free functor `Type u ⥤ MonCat` sending a type `X` to the free monoid on `X`. -/
+@[to_additive
+/-- The free functor `Type u ⥤ AddMonCat` sending a type `X` to the free additive monoid on `X`. -/]
 def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
-  map := FreeMonoid.map
-  map_id _ := FreeMonoid.hom_eq (fun _ => rfl)
-  map_comp _ _ := FreeMonoid.hom_eq (fun _ => rfl)
+  map f := ofHom (FreeMonoid.map f)
+  map_id _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
+  map_comp _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl)
 
 /-- The free-forgetful adjunction for monoids. -/
+@[to_additive /-- The free-forgetful adjunction for additive monoids. -/]
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => FreeMonoid.lift.symm
-      homEquiv_naturality_left_symm := fun _ _ => FreeMonoid.hom_eq (fun _ => rfl) }
+    -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.
+    { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans FreeMonoid.lift.symm
+      homEquiv_naturality_left_symm _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 end MonCat
+
+namespace AddCommMonCat
+
+/-- The free functor `Type u ⥤ AddCommMonCat`
+sending a type `X` to the free commutative monoid on `X`. -/
+@[simps]
+noncomputable
+def free : Type u ⥤ AddCommMonCat.{u} where
+  obj α := .of (α →₀ ℕ)
+  map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
+
+/-- The free-forgetful adjunction for commutative monoids. -/
+noncomputable
+def adj : free ⊣ forget AddCommMonCat.{u} where
+  unit := { app X i := Finsupp.single i 1 }
+  counit :=
+  { app M := ofHom (Finsupp.liftAddHom (multiplesHom M))
+    naturality {M N} f := by dsimp; ext1; apply Finsupp.liftAddHom.symm.injective; ext; simp }
+
+instance : free.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
+
+instance : (forget AddCommMonCat.{u}).IsRightAdjoint := ⟨_, ⟨adj⟩⟩
+
+end AddCommMonCat
+
+namespace CommMonCat
+
+instance : (forget CommMonCat.{u}).IsRightAdjoint :=
+  ⟨_, ⟨AddCommMonCat.adj.comp AddCommMonCat.equivalence.toAdjunction⟩⟩
+
+end CommMonCat

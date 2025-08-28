@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.Basic
 
@@ -27,20 +27,20 @@ variable {G : Type u} [Group G] [MulAction G α]
 variable {M : Type u} [Monoid M] [MulAction M α]
 
 /-- If the action is periodic, then a lower bound for its period can be computed. -/
-@[to_additive "If the action is periodic, then a lower bound for its period can be computed."]
+@[to_additive /-- If the action is periodic, then a lower bound for its period can be computed. -/]
 theorem le_period {m : M} {a : α} {n : ℕ} (period_pos : 0 < period m a)
     (moved : ∀ k, 0 < k → k < n → m ^ k • a ≠ a) : n ≤ period m a :=
   le_of_not_gt fun period_lt_n =>
     moved _ period_pos period_lt_n <| pow_period_smul m a
 
 /-- If for some `n`, `m ^ n • a = a`, then `period m a ≤ n`. -/
-@[to_additive "If for some `n`, `(n • m) +ᵥ a = a`, then `period m a ≤ n`."]
+@[to_additive /-- If for some `n`, `(n • m) +ᵥ a = a`, then `period m a ≤ n`. -/]
 theorem period_le_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : m ^ n • a = a) :
     period m a ≤ n :=
   (isPeriodicPt_smul_iff.mpr fixed).minimalPeriod_le n_pos
 
 /-- If for some `n`, `m ^ n • a = a`, then `0 < period m a`. -/
-@[to_additive "If for some `n`, `(n • m) +ᵥ a = a`, then `0 < period m a`."]
+@[to_additive /-- If for some `n`, `(n • m) +ᵥ a = a`, then `0 < period m a`. -/]
 theorem period_pos_of_fixed {m : M} {a : α} {n : ℕ} (n_pos : 0 < n) (fixed : m ^ n • a = a) :
     0 < period m a :=
   (isPeriodicPt_smul_iff.mpr fixed).minimalPeriod_pos n_pos
@@ -53,7 +53,8 @@ theorem period_eq_one_iff {m : M} {a : α} : period m a = 1 ↔ m • a = a :=
     (period_pos_of_fixed one_pos (by simpa))⟩
 
 /-- For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `m ^ n`. -/
-@[to_additive "For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `n • m`."]
+@[to_additive
+/-- For any non-zero `n` less than the period of `m` on `a`, `a` is moved by `n • m`. -/]
 theorem pow_smul_ne_of_lt_period {m : M} {a : α} {n : ℕ} (n_pos : 0 < n)
     (n_lt_period : n < period m a) : m ^ n • a ≠ a := fun a_fixed =>
   not_le_of_gt n_lt_period <| period_le_of_fixed n_pos a_fixed

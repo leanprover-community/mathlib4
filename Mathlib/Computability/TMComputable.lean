@@ -82,7 +82,6 @@ instance inhabitedσ : Inhabited tm.σ :=
 def Stmt : Type :=
   Turing.TM2.Stmt tm.Γ tm.Λ tm.σ
 
--- Porting note: The `deriving Inhabited` handler couldn't derive this.
 instance inhabitedStmt : Inhabited (Stmt tm) :=
   inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 
@@ -135,8 +134,7 @@ structure EvalsToInTime {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option
   steps_le_m : steps ≤ m
 
 /-- Reflexivity of `EvalsTo` in 0 steps. -/
--- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
+def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a (some a) :=
   ⟨0, rfl⟩
 
 /-- Transitivity of `EvalsTo` in the sum of the numbers of steps. -/
@@ -146,8 +144,7 @@ def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Opt
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
 
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
--- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a a 0 :=
+def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a (some a) 0 :=
   ⟨EvalsTo.refl f a, le_refl 0⟩
 
 /-- Transitivity of `EvalsToInTime` in the sum of the numbers of steps. -/
@@ -301,6 +298,20 @@ instance inhabitedTM2Computable :
 
 instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
+
+/--
+For any two polynomial time Multi-tape Turing Machines,
+there exists another polynomial time multi-tape Turing Machine that composes their operations.
+This machine can work by simply having one tape for each tape in both of the composed TMs.
+It first carries out the operations of the first TM on the tapes associated with the first TM,
+then copies the output tape of the first TM to the input tape of the second TM,
+then runs the second TM.
+-/
+proof_wanted TM2ComputableInPolyTime.comp
+    {α β γ : Type} {eα : FinEncoding α} {eβ : FinEncoding β}
+    {eγ : FinEncoding γ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
+    (h2 : TM2ComputableInPolyTime eβ eγ g) :
+  Nonempty (TM2ComputableInPolyTime eα eγ (g ∘ f))
 
 end
 

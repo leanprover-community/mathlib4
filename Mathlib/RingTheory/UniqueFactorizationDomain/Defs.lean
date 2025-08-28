@@ -3,10 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
 import Mathlib.Order.WellFounded
 
 /-!
@@ -19,9 +19,7 @@ import Mathlib.Order.WellFounded
   `Irreducible` is equivalent to `Prime`
 -/
 
-assert_not_exists Field
-assert_not_exists Finsupp
-assert_not_exists Ideal
+assert_not_exists Field Finsupp Ideal
 
 variable {α : Type*}
 
@@ -30,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 /-- Well-foundedness of the strict version of ∣, which is equivalent to the descending chain
 condition on divisibility and to the ascending chain condition on
 principal ideals in an integral domain.
-  -/
+-/
 abbrev WfDvdMonoid (α : Type*) [CommMonoidWithZero α] : Prop :=
   IsWellFounded α DvdNotUnit
 
@@ -57,24 +55,25 @@ theorem exists_irreducible_factor {a : α} (ha : ¬IsUnit a) (ha0 : a ≠ 0) :
     hs.1⟩
 
 @[elab_as_elim]
-theorem induction_on_irreducible {P : α → Prop} (a : α) (h0 : P 0) (hu : ∀ u : α, IsUnit u → P u)
-    (hi : ∀ a i : α, a ≠ 0 → Irreducible i → P a → P (i * a)) : P a :=
+theorem induction_on_irreducible {motive : α → Prop} (a : α)
+    (zero : motive 0) (unit : ∀ u : α, IsUnit u → motive u)
+    (mul : ∀ a i : α, a ≠ 0 → Irreducible i → motive a → motive (i * a)) : motive a :=
   haveI := Classical.dec
   wellFounded_dvdNotUnit.fix
     (fun a ih =>
-      if ha0 : a = 0 then ha0.substr h0
+      if ha0 : a = 0 then ha0.substr zero
       else
-        if hau : IsUnit a then hu a hau
+        if hau : IsUnit a then unit a hau
         else
-          let ⟨i, hii, b, hb⟩ := exists_irreducible_factor hau ha0
+          let ⟨i, i_irred, b, hb⟩ := exists_irreducible_factor hau ha0
           let hb0 : b ≠ 0 := ne_zero_of_dvd_ne_zero ha0 ⟨i, mul_comm i b ▸ hb⟩
-          hb.symm ▸ hi b i hb0 hii <| ih b ⟨hb0, i, hii.1, mul_comm i b ▸ hb⟩)
+          hb.symm ▸ mul b i hb0 i_irred <| ih b ⟨hb0, i, i_irred.1, mul_comm i b ▸ hb⟩)
     a
 
 theorem exists_factors (a : α) :
     a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ Associated f.prod a :=
   induction_on_irreducible a (fun h => (h rfl).elim)
-    (fun _ hu _ => ⟨0, fun _ h => False.elim (Multiset.not_mem_zero _ h), hu.unit, one_mul _⟩)
+    (fun _ hu _ => ⟨0, fun _ h => False.elim (Multiset.notMem_zero _ h), hu.unit, one_mul _⟩)
     fun a i ha0 hi ih _ =>
     let ⟨s, hs⟩ := ih ha0
     ⟨i ::ₘ s, fun b H => (Multiset.mem_cons.1 H).elim (fun h => h.symm ▸ hi) (hs.1 b), by
@@ -93,7 +92,7 @@ theorem not_unit_iff_exists_factors_eq (a : α) (hn0 : a ≠ 0) :
       · rw [Multiset.prod_cons, mul_comm b, mul_assoc, Multiset.prod_erase h, mul_comm],
     fun ⟨_, hi, he, hne⟩ =>
     let ⟨b, h⟩ := Multiset.exists_mem_of_ne_zero hne
-    not_isUnit_of_not_isUnit_dvd (hi b h).not_unit <| he ▸ Multiset.dvd_prod h⟩
+    not_isUnit_of_not_isUnit_dvd (hi b h).not_isUnit <| he ▸ Multiset.dvd_prod h⟩
 
 theorem isRelPrime_of_no_irreducible_factors {x y : α} (nonzero : ¬(x = 0 ∧ y = 0))
     (H : ∀ z : α, Irreducible z → z ∣ x → ¬z ∣ y) : IsRelPrime x y :=
@@ -108,10 +107,9 @@ section Prio
 -- set_option default_priority 100
 
 -- see Note [default priority]
-/-- unique factorization monoids.
-
-These are defined as `CancelCommMonoidWithZero`s with well-founded strict divisibility
-relations, but this is equivalent to more familiar definitions:
+/--
+Unique factorization monoids are defined as `CancelCommMonoidWithZero`s with well-founded
+strict divisibility relations, but this is equivalent to more familiar definitions:
 
 Each element (except zero) is uniquely represented as a multiset of irreducible factors.
 Uniqueness is only up to associated elements.
@@ -120,25 +118,19 @@ Each element (except zero) is non-uniquely represented as a multiset
 of prime factors.
 
 To define a UFD using the definition in terms of multisets
-of irreducible factors, use the definition `of_exists_unique_irreducible_factors`
+of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
-
 -/
-class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] extends
-    IsWellFounded α DvdNotUnit : Prop where
+class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] : Prop
+    extends IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
     [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
     UniqueFactorizationMonoid α :=
   { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
-
-@[deprecated ufm_of_decomposition_of_wfDvdMonoid (since := "2024-02-12")]
-theorem ufm_of_gcd_of_wfDvdMonoid [CancelCommMonoidWithZero α] [WfDvdMonoid α]
-    [DecompositionMonoid α] : UniqueFactorizationMonoid α :=
-  ufm_of_decomposition_of_wfDvdMonoid
 
 end Prio
 

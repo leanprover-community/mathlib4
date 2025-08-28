@@ -321,7 +321,7 @@ lemma IsMeasurableRatCDF.monotone_stieltjesFunctionAux (a : α) :
 lemma IsMeasurableRatCDF.continuousWithinAt_stieltjesFunctionAux_Ici (a : α) (x : ℝ) :
     ContinuousWithinAt (IsMeasurableRatCDF.stieltjesFunctionAux f a) (Ici x) x := by
   rw [← continuousWithinAt_Ioi_iff_Ici]
-  convert Monotone.tendsto_nhdsWithin_Ioi (monotone_stieltjesFunctionAux hf a) x
+  convert Monotone.tendsto_nhdsGT (monotone_stieltjesFunctionAux hf a) x
   rw [sInf_image']
   have h' : ⨅ r : Ioi x, stieltjesFunctionAux f a r
       = ⨅ r : { r' : ℚ // x < r' }, stieltjesFunctionAux f a r := by
@@ -449,9 +449,9 @@ lemma stieltjesOfMeasurableRat_eq (hf : Measurable f) (a : α) (r : ℚ) :
 lemma stieltjesOfMeasurableRat_unit_prod (hf : Measurable f) (a : α) :
     stieltjesOfMeasurableRat (fun (p : Unit × α) ↦ f p.2) (hf.comp measurable_snd) ((), a)
       = stieltjesOfMeasurableRat f hf a := by
-  simp_rw [stieltjesOfMeasurableRat,IsMeasurableRatCDF.stieltjesFunction,
+  simp_rw [stieltjesOfMeasurableRat, IsMeasurableRatCDF.stieltjesFunction,
     ← IsMeasurableRatCDF.stieltjesFunctionAux_unit_prod a]
-  congr with x
+  congr 1 with x
   congr 1 with p : 1
   cases p with
   | mk _ b => rw [← toRatCDF_unit_prod b]

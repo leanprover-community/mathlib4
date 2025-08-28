@@ -28,30 +28,35 @@ namespace PresheafOfModules
 
 variable (F : C ⥤ D)
 
+/-- Implementation of `pushforward₀`. -/
+@[simps]
+def pushforward₀_obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
+    PresheafOfModules (F.op ⋙ R) :=
+  { obj X := ModuleCat.of _ (M.obj (F.op.obj X))
+    map {X Y} f := M.map (F.op.map f)
+    map_id X := by
+      refine ModuleCat.hom_ext
+        -- Work around an instance diamond for `restrictScalarsId'`
+        (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
+      exact (M.congr_map_apply (F.op.map_id X) x).trans (by simp)
+    map_comp := fun f g ↦ by
+      refine ModuleCat.hom_ext
+        -- Work around an instance diamond for `restrictScalarsId'`
+        (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
+      exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
+
 /-- The pushforward functor on presheaves of modules for a functor `F : C ⥤ D` and
 `R : Dᵒᵖ ⥤ RingCat`. On the underlying presheaves of abelian groups, it is induced
 by the precomposition with `F.op`. -/
 def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
     PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R) where
-  obj M :=
-    { obj := fun X ↦ ModuleCat.of _ (M.obj (F.op.obj X))
-      map := fun {X Y} f ↦ M.map (F.op.map f)
-      map_id := fun X ↦ by
-        refine ModuleCat.hom_ext
-          -- Work around an instance diamond for `restrictScalarsId'`
-          (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
-        exact (M.congr_map_apply (F.op.map_id X) x).trans (by simp)
-      map_comp := fun f g ↦ by
-        refine ModuleCat.hom_ext
-          -- Work around an instance diamond for `restrictScalarsId'`
-          (@LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ (fun x => ?_))
-        exact (M.congr_map_apply (F.op.map_comp f g) x).trans (by simp) }
-  map {M₁ M₂} φ := { app := fun X ↦ φ.app _ }
+  obj M := pushforward₀_obj F R M
+  map {M₁ M₂} φ := { app X := φ.app _ }
 
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
-def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
-    pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
+noncomputable def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :
+    pushforward₀.{v} F R ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (Functor.whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
 variable {F}
@@ -67,7 +72,7 @@ noncomputable def pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforwardCompToPresheaf :
-    pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (whiskeringLeft _ _ _).obj F.op :=
+    pushforward.{v} φ ⋙ toPresheaf _ ≅ toPresheaf _ ⋙ (Functor.whiskeringLeft _ _ _).obj F.op :=
   Iso.refl _
 
 lemma pushforward_obj_map_apply (M : PresheafOfModules.{v} R) {X Y : Cᵒᵖ} (f : X ⟶ Y)

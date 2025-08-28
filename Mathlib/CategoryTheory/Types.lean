@@ -5,8 +5,9 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.CoeSort
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.
@@ -38,7 +39,7 @@ universe v v' w u u'
 
 /- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
   still be additivized. -/
-@[to_additive existing CategoryTheory.types]
+@[to_additive self]
 instance types : LargeCategory (Type u) where
   Hom a b := a → b
   id _ := id
@@ -47,9 +48,6 @@ instance types : LargeCategory (Type u) where
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
--- because of its "if all else fails, apply all `ext` lemmas" policy,
--- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
   funext x
   exact h x
@@ -137,10 +135,10 @@ variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 @[simp]
 theorem map_comp_apply (f : X ⟶ Y) (g : Y ⟶ Z) (a : F.obj X) :
-    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp [types_comp]
+    (F.map (f ≫ g)) a = (F.map g) ((F.map f) a) := by simp
 
 @[simp]
-theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp [types_id]
+theorem map_id_apply (a : F.obj X) : (F.map (𝟙 X)) a = a := by simp
 
 theorem naturality (f : X ⟶ Y) (x : F.obj X) : σ.app Y ((F.map f) x) = (G.map f) (σ.app X x) :=
   congr_fun (σ.naturality f) x
@@ -152,7 +150,7 @@ theorem comp (x : F.obj X) : (σ ≫ τ).app X x = τ.app X (σ.app X x) :=
 @[simp]
 theorem eqToHom_map_comp_apply (p : X = Y) (q : Y = Z) (x : F.obj X) :
     F.map (eqToHom q) (F.map (eqToHom p) x) = F.map (eqToHom <| p.trans q) x := by
-  aesop_cat
+  cat_disch
 
 variable {D : Type u'} [𝒟 : Category.{u'} D] (I J : D ⥤ C) (ρ : I ⟶ J) {W : D}
 
@@ -175,6 +173,17 @@ theorem hom_inv_id_app_apply (α : F ≅ G) (X) (x) : α.inv.app X (α.hom.app X
 @[simp]
 theorem inv_hom_id_app_apply (α : F ≅ G) (X) (x) : α.hom.app X (α.inv.app X x) = x :=
   congr_fun (α.inv_hom_id_app X) x
+
+lemma naturality_symm {F G : C ⥤ Type*} (e : ∀ j, F.obj j ≃ G.obj j)
+    (naturality : ∀ {j j'} (f : j ⟶ j'), e j' ∘ F.map f = G.map f ∘ e j) {j j' : C}
+    (f : j ⟶ j') :
+    (e j').symm ∘ G.map f = F.map f ∘ (e j).symm := by
+  ext x
+  obtain ⟨y, rfl⟩ := (e j).surjective x
+  apply (e j').injective
+  dsimp
+  simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
+  exact (congr_fun (naturality f) y).symm
 
 end FunctorToTypes
 
@@ -202,16 +211,18 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl
 
-instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
-  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+/-- `uliftFunctor : Type u ⥤ Type max u v` is fully faithful. -/
+def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
+  preimage f := fun x ↦ (f (ULift.up x)).down
 
-instance uliftFunctor_faithful : uliftFunctor.Faithful where
-  map_injective {_X} {_Y} f g p :=
-    funext fun x =>
-      congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
+instance uliftFunctor_full : (uliftFunctor.{v, u}).Full :=
+  fullyFaithfulULiftFunctor.full
+
+instance uliftFunctor_faithful : uliftFunctor.{v, u}.Faithful :=
+  fullyFaithfulULiftFunctor.faithful
 
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
- -/
+-/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
   NatIso.ofComponents uliftTrivial
 
@@ -221,12 +232,10 @@ def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
 def homOfElement {X : Type u} (x : X) : PUnit ⟶ X := fun _ => x
 
 theorem homOfElement_eq_iff {X : Type u} (x y : X) : homOfElement x = homOfElement y ↔ x = y :=
-  ⟨fun H => congr_fun H PUnit.unit, by aesop⟩
+  ⟨fun H => congr_fun H PUnit.unit, by simp_all⟩
 
-/-- A morphism in `Type` is a monomorphism if and only if it is injective.
-
-See <https://stacks.math.columbia.edu/tag/003C>.
--/
+/-- A morphism in `Type` is a monomorphism if and only if it is injective. -/
+@[stacks 003C]
 theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
@@ -237,10 +246,8 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
 theorem injective_of_mono {X Y : Type u} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
 
-/-- A morphism in `Type` is an epimorphism if and only if it is surjective.
-
-See <https://stacks.math.columbia.edu/tag/003C>.
--/
+/-- A morphism in `Type` is an epimorphism if and only if it is surjective. -/
+@[stacks 003C]
 theorem epi_iff_surjective {X Y : Type u} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · rintro ⟨H⟩
@@ -260,11 +267,8 @@ section
 allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
-  map f := Functor.map f
-  map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
-  `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its
-  original proof -/
-  map_comp f g := funext fun _ => LawfulFunctor.comp_map f g _
+  map f := _root_.Functor.map f
+  map_id := fun α => by funext X; apply id_map
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 
@@ -274,7 +278,7 @@ theorem ofTypeFunctor_obj : (ofTypeFunctor m).obj = m :=
 
 @[simp]
 theorem ofTypeFunctor_map {α β} (f : α → β) :
-    (ofTypeFunctor m).map f = (Functor.map f : m α → m β) :=
+    (ofTypeFunctor m).map f = (_root_.Functor.map f : m α → m β) :=
   rfl
 
 end
@@ -357,7 +361,7 @@ instance : SplitEpiCategory (Type u) where
 end CategoryTheory
 
 -- We prove `equivIsoIso` and then use that to sneakily construct `equivEquivIso`.
--- (In this order the proofs are handled by `aesop_cat`.)
+-- (In this order the proofs are handled by `cat_disch`.)
 /-- Equivalences (between types in the same universe) are the same as (isomorphic to) isomorphisms
 of types. -/
 @[simps]

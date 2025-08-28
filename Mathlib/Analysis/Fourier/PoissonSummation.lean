@@ -18,7 +18,7 @@ Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
 * For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
+  See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
@@ -53,7 +53,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
-    have (x : ℝ) : ‖e x‖ = 1 := (AddCircle.toCircle (-m • x)).abs_coe
+    have (x : ℝ) : ‖e x‖ = 1 := (AddCircle.toCircle (-m • x)).norm_coe
     intro K g
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
@@ -76,7 +76,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
       convert hf ⟨uIcc 0 1, isCompact_uIcc⟩ using 1
       exact funext fun n => neK _ _
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f).comp (ContinuousMap.addRight n) x := by
-      simp only [ContinuousMap.comp_apply, mul_comp] at eadd ⊢
+      simp only [mul_comp] at eadd ⊢
       simp_rw [eadd]
     -- Rearrange sum of interval integrals into an integral over `ℝ`.
     _ = ∫ x, e x * f x := by

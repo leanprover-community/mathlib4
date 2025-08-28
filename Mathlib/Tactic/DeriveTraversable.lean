@@ -58,8 +58,8 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 multiple declarations it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
-  let auxDeclMap := (← read).auxDeclToFullName
-  let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
+  let auxDeclMap := (← getLCtx).auxDeclToFullName
+  let fvars := auxDeclMap.foldl (init := []) fun fvars fvar fullName =>
     if fullName = declName then fvars.concat fvar else fvars
   match fvars with
   | [] => throwError "no auxiliary local declaration corresponding to the current declaration"
@@ -86,7 +86,7 @@ This is convenient to make a definition with equation lemmas. -/
 def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
-  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (.mkStr (n?.getD type) "match") 1)
+  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxDeclName (.mkStr (n?.getD type) "match"))
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
   let iinfo ← getConstInfoInduct type
@@ -103,7 +103,7 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
                patterns }
   let mres ← Term.mkMatcher { matcherName
                               matchType
-                              discrInfos := mkArray (indices.length + 1) {}
+                              discrInfos := .replicate (indices.length + 1) {}
                               lhss }
   mres.addMatcher
   let rhss ← lhss.mapM fun altLHS => do
@@ -217,7 +217,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let params := params.pop
     let tgt := mkAppN tgt params
     let tgt ← mkInst cls tgt
-    params.zipWithIndex.foldrM (fun (param, i) tgt => do
+    params.zipIdx.foldrM (fun (param, i) tgt => do
       -- add typeclass hypothesis for each inductive parameter
       let tgt ← (do
         guard (i < decl.numParams)
@@ -414,7 +414,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
           levelParams := levels
           modifiers :=
             { isUnsafe := d.isUnsafe
-              visibility := .protected }
+              isProtected := true }
           declName := n'
           type := t'
           value := e'
@@ -440,7 +440,7 @@ def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArr
 /--
 Run the following tactic:
 ```lean
-intros _ .. x
+intro _ .. x
 dsimp only [Traversable.traverse, Functor.map]
 induction x <;> (the simp tactic corresponding to s) <;> (tac)
 ```

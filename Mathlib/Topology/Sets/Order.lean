@@ -3,7 +3,6 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -36,7 +35,7 @@ instance : SetLike (ClopenUpperSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
-initialize_simps_projections ClopenUpperSet (carrier → coe)
+initialize_simps_projections ClopenUpperSet (carrier → coe, as_prefix coe)
 
 theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'

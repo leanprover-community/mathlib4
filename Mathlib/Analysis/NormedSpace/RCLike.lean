@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.NormedSpace.Pointwise
 
 /-!
 # Normed spaces over R or C
@@ -76,7 +76,7 @@ theorem LinearMap.bound_of_ball_bound' {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : 
   f.bound_of_sphere_bound r_pos c (fun z hz => h z hz.le) z
 
 theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ)
-    (f : E →L[𝕜] 𝕜) (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) : ‖f‖ ≤ c / r := by
+    (f : StrongDual 𝕜 E) (h : ∀ z ∈ closedBall (0 : E) r, ‖f z‖ ≤ c) : ‖f‖ ≤ c / r := by
   apply ContinuousLinearMap.opNorm_le_bound
   · apply div_nonneg _ r_pos.le
     exact
@@ -84,10 +84,6 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
         (h 0 (by simp only [norm_zero, mem_closedBall, dist_zero_left, r_pos.le]))
   apply LinearMap.bound_of_ball_bound' r_pos
   exact fun z hz => h z hz
-
-@[deprecated (since := "2024-02-02")]
-alias ContinuousLinearMap.op_norm_bound_of_ball_bound :=
-  ContinuousLinearMap.opNorm_bound_of_ball_bound
 
 variable (𝕜)
 include 𝕜 in

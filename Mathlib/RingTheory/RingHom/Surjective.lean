@@ -38,11 +38,11 @@ theorem surjective_stableUnderComposition : StableUnderComposition surjective :=
 
 theorem surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stableUnderComposition.respectsIso
-  intros _ _ _ _ e
+  intro _ _ _ _ e
   exact e.surjective
 
 theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective := by
-  refine IsStableUnderBaseChange.mk _ surjective_respectsIso ?_
+  refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
   classical
   introv h x
   induction x with
@@ -73,8 +73,8 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   intro r
   obtain ⟨a, e'⟩ := H r (algebraMap _ _ x)
   obtain ⟨b, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers (r : R)) a
-  erw [IsLocalization.map_mk'] at e'
-  rw [eq_comm, IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, Subtype.coe_mk, ← map_mul] at e'
+  rw [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_mk', eq_comm,
+    IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, Subtype.coe_mk, ← map_mul] at e'
   obtain ⟨⟨_, n', rfl⟩, e''⟩ := (IsLocalization.eq_iff_exists (Submonoid.powers (f r)) _).mp e'
   dsimp only at e''
   rw [mul_comm x, ← mul_assoc, ← map_pow, ← map_mul, ← map_mul, ← pow_add] at e''

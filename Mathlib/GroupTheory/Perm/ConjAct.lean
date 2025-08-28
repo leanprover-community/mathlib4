@@ -3,12 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
 import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.GroupTheory.Perm.Support
-/-! # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
+
+/-!
+# Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
 We prove some lemmas related to the action of `ConjAct (Perm α)` on `Perm α`:
 
@@ -17,7 +16,7 @@ Let `α` be a decidable fintype.
 * `conj_support_eq` relates the support of `k • g` with that of `g`
 
 * `cycleFactorsFinset_conj_eq`, `mem_cycleFactorsFinset_conj'`
-  and `cycleFactorsFinset_conj` relate the set of cycles of `g`,  `g.cycleFactorsFinset`,
+  and `cycleFactorsFinset_conj` relate the set of cycles of `g`, `g.cycleFactorsFinset`,
   with that for `k • g`
 
 -/
@@ -42,8 +41,9 @@ theorem cycleFactorsFinset_conj (g k : Perm α) :
   ext c
   rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, Finset.mem_map_equiv,
     ← mem_cycleFactorsFinset_conj g k]
-  simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
-  group
+  -- We avoid `group` here to minimize imports while low in the hierarchy;
+  -- typically it would be better to invoke the tactic.
+  simp [mul_assoc]
 
 /-- A permutation `c` is a cycle of `g` iff `k • c` is a cycle of `k • g` -/
 @[simp]

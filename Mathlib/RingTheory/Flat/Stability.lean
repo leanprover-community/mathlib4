@@ -40,64 +40,29 @@ section Composition
 /-! ### Composition
 
 Let `R` be a ring, `S` a flat `R`-algebra and `M` a flat `S`-module. To show that `M` is flat
-as an `R`-module, we show that the inclusion of an `R`-ideal `I` into `R` tensored on the left with
-`M` is injective. For this consider the composition of natural maps
+as an `R`-module, we show that the inclusion of an `R`-submodule `N` into an `R`-module `P`
+tensored on the left with `M` is injective. For this consider the composition of natural maps
 
-`M ⊗[R] I ≃ M ⊗[S] (S ⊗[R] I) ≃ M ⊗[S] J → M ⊗[S] S ≃ M ≃ M ⊗[R] R`
+`M ⊗[R] N ≃ M ⊗[S] (S ⊗[R] N) → M ⊗[S] (S ⊗[R] P) ≃ M ⊗[R] P`;
 
-where `J` is the image of `S ⊗[R] I` under the (by flatness of `S`) injective map
-`S ⊗[R] I → S`. One checks that this composition is precisely `I → R` tensored on the left
-with `M` and it is injective as a composition of injective maps (note that
-`M ⊗[S] J → M ⊗[S] S` is injective because `M` is `S`-flat).
+`S ⊗[R] N → S ⊗[R] P` is injective by `R`-flatness of `S`,
+so the middle map is injective by `S`-flatness of `M`.
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)
-  [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+  [CommSemiring R] [CommSemiring S] [Algebra R S]
+  [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
 
-private noncomputable abbrev auxRightMul (I : Ideal R) : M ⊗[R] I →ₗ[S] M := by
-  letI i : M ⊗[R] I →ₗ[S] M ⊗[R] R := AlgebraTensorModule.map LinearMap.id I.subtype
-  letI e' : M ⊗[R] R →ₗ[S] M := AlgebraTensorModule.rid R S M
-  exact AlgebraTensorModule.rid R S M ∘ₗ i
-
-private noncomputable abbrev J (I : Ideal R) : Ideal S := LinearMap.range (auxRightMul R S S I)
-
-private noncomputable abbrev auxIso [Flat R S] {I : Ideal R} :
-    S ⊗[R] I ≃ₗ[S] J R S I := by
-  apply LinearEquiv.ofInjective (auxRightMul R S S I)
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
-  exact (Flat.iff_lTensor_injective' R S).mp inferInstance I
-
-private noncomputable abbrev auxLTensor [Flat R S] (I : Ideal R) :
-    M ⊗[R] I →ₗ[S] M := by
-  letI e1 : M ⊗[R] I ≃ₗ[S] M ⊗[S] (S ⊗[R] I) :=
-    (AlgebraTensorModule.cancelBaseChange R S S M I).symm
-  letI e2 : M ⊗[S] (S ⊗[R] I) ≃ₗ[S] M ⊗[S] (J R S I) :=
-    TensorProduct.congr (LinearEquiv.refl S M) (auxIso R S)
-  letI e3 : M ⊗[S] (J R S I) →ₗ[S] M ⊗[S] S := lTensor M (J R S I).subtype
-  letI e4 : M ⊗[S] S →ₗ[S] M := TensorProduct.rid S M
-  exact e4 ∘ₗ e3 ∘ₗ (e1 ≪≫ₗ e2)
-
-private lemma auxLTensor_eq [Flat R S] {I : Ideal R} :
-    (auxLTensor R S M I : M ⊗[R] I →ₗ[R] M) =
-    TensorProduct.rid R M ∘ₗ lTensor M I.subtype := by
-  apply TensorProduct.ext'
-  intro m x
-  erw [TensorProduct.rid_tmul]
-  simp
-
+open AlgebraTensorModule in
 /-- If `S` is a flat `R`-algebra, then any flat `S`-Module is also `R`-flat. -/
 theorem trans [Flat R S] [Flat S M] : Flat R M := by
-  rw [Flat.iff_lTensor_injective']
-  intro I
-  rw [← EquivLike.comp_injective _ (TensorProduct.rid R M)]
-  haveI h : TensorProduct.rid R M ∘ lTensor M I.subtype =
-    TensorProduct.rid R M ∘ₗ lTensor M I.subtype := rfl
-  simp only [h, ← auxLTensor_eq R S M, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
-  exact (Flat.iff_lTensor_injective' S M).mp inferInstance _
-
-@[deprecated (since := "2024-11-03")] alias comp := trans
+  rw [Flat.iff_lTensor_injectiveₛ]
+  introv
+  rw [← coe_lTensor (A := S), ← EquivLike.injective_comp (cancelBaseChange R S S _ _),
+    ← LinearEquiv.coe_coe, ← LinearMap.coe_comp, lTensor_comp_cancelBaseChange,
+    LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
+  iterate 2 apply Flat.lTensor_preserves_injective_linearMap
+  exact Subtype.val_injective
 
 end Composition
 
@@ -105,56 +70,31 @@ section BaseChange
 
 /-! ### Base change
 
-Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra. To show that
-`S ⊗[R] M` is `S`-flat, we consider for an ideal `I` in `S` the composition of natural maps
-
-`I ⊗[S] (S ⊗[R] M) ≃ I ⊗[R] M → S ⊗[R] M ≃ S ⊗[S] (S ⊗[R] M)`.
-
-One checks that this composition is precisely the inclusion `I → S` tensored on the right
-with `S ⊗[R] M` and that the former is injective (note that `I ⊗[R] M → S ⊗[R] M` is
-injective, since `M` is `R`-flat).
+Let `R` be a ring, `M` a flat `R`-module and `S` an `R`-algebra, then
+`S ⊗[R] M` is a flat `S`-module. This is a special case of `Module.Flat.instTensorProduct`.
 
 -/
 
 variable (R : Type u) (S : Type v) (M : Type w)
-  [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M]
-
-private noncomputable abbrev auxRTensorBaseChange (I : Ideal S) :
-    I ⊗[S] (S ⊗[R] M) →ₗ[S] S ⊗[S] (S ⊗[R] M) :=
-  letI e1 : I ⊗[S] (S ⊗[R] M) ≃ₗ[S] I ⊗[R] M :=
-    AlgebraTensorModule.cancelBaseChange R S S I M
-  letI e2 : S ⊗[S] (S ⊗[R] M) ≃ₗ[S] S ⊗[R] M :=
-    AlgebraTensorModule.cancelBaseChange R S S S M
-  letI f : I ⊗[R] M →ₗ[S] S ⊗[R] M := AlgebraTensorModule.map I.subtype LinearMap.id
-  e2.symm.toLinearMap ∘ₗ f ∘ₗ e1.toLinearMap
-
-private lemma auxRTensorBaseChange_eq (I : Ideal S) :
-    auxRTensorBaseChange R S M I = rTensor (S ⊗[R] M) I.subtype := by
-  ext
-  simp
+  [CommSemiring R] [CommSemiring S] [Algebra R S]
+  [AddCommMonoid M] [Module R M]
 
 /-- If `M` is a flat `R`-module and `S` is any `R`-algebra, `S ⊗[R] M` is `S`-flat. -/
-instance baseChange [Flat R M] : Flat S (S ⊗[R] M) := by
-  rw [Flat.iff_rTensor_injective']
-  intro I
-  simp only [← auxRTensorBaseChange_eq, auxRTensorBaseChange, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, EmbeddingLike.comp_injective, EquivLike.injective_comp]
-  exact rTensor_preserves_injective_linearMap (I.subtype : I →ₗ[R] S) Subtype.val_injective
+instance baseChange [Flat R M] : Flat S (S ⊗[R] M) := inferInstance
 
 /-- A base change of a flat module is flat. -/
-theorem isBaseChange [Flat R M] (N : Type t) [AddCommGroup N] [Module R N] [Module S N]
+theorem isBaseChange [Flat R M] (N : Type t) [AddCommMonoid N] [Module R N] [Module S N]
     [IsScalarTower R S N] {f : M →ₗ[R] N} (h : IsBaseChange S f) :
     Flat S N :=
-  of_linearEquiv S (S ⊗[R] M) N (IsBaseChange.equiv h).symm
+  of_linearEquiv (IsBaseChange.equiv h).symm
 
 end BaseChange
 
 section Localization
 
 variable {R : Type u} {M Mp : Type*} (Rp : Type v)
-  [CommRing R] [AddCommGroup M] [Module R M] [CommRing Rp] [Algebra R Rp]
-  [AddCommGroup Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp]
+  [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring Rp] [Algebra R Rp]
+  [AddCommMonoid Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp]
 
 instance localizedModule [Flat R M] (S : Submonoid R) :
     Flat (Localization S) (LocalizedModule S M) := by

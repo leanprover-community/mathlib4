@@ -82,10 +82,13 @@ theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b
   let ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
--- Porting note: due to some interaction with the local notation, `r` became explicit here in lean3
 theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
+
+theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} {g : α → β} {s : Set α}
+    (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : DirectedOn r s) : DirectedOn rb (g '' s) :=
+  directedOn_image.mpr (hf.mono hg)
 
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
@@ -122,6 +125,12 @@ class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
 
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
   IsDirected.directed _ _
+
+theorem directed_of₃ (r : α → α → Prop) [IsDirected α r] [IsTrans α r] (a b c : α) :
+    ∃ d, r a d ∧ r b d ∧ r c d :=
+  have ⟨e, hae, hbe⟩ := directed_of r a b
+  have ⟨f, hef, hcf⟩ := directed_of r e c
+  ⟨f, Trans.trans hae hef, Trans.trans hbe hef, hcf⟩
 
 theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 
@@ -321,3 +330,48 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 -- see Note [lower instance priority]
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
+
+namespace DirectedOn
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} {r : (i : ι) → α i → α i → Prop}
+
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i) (y i)) d) (i : ι) :
+    DirectedOn (r i) ((fun a => a i) '' d) :=
+  DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
+
+lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i)) :
+    DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi Set.univ d) := by
+  intro a ha b hb
+  choose f hfd haf hbf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
+  exact ⟨f, fun i _ => hfd i, haf, hbf⟩
+
+end Pi
+
+section Prod
+
+variable {r₂ : β → β → Prop}
+
+/-- Local notation for a relation -/
+local infixl:50 " ≼₁ " => r
+/-- Local notation for a relation -/
+local infixl:50 " ≼₂ " => r₂
+
+lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
+    DirectedOn (· ≼₁ ·) (Prod.fst '' d) :=
+  DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.1)
+
+lemma snd {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
+    DirectedOn (· ≼₂ ·) (Prod.snd '' d) :=
+  DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.2)
+
+lemma prod {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
+    DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
+  obtain ⟨r₁, hdr₁, hpr₁, hqr₁⟩ := h₁ _ hpd.1 _ hqd.1
+  obtain ⟨r₂, hdr₂, hpr₂, hqr₂⟩ := h₂ _ hpd.2 _ hqd.2
+  exact ⟨⟨r₁, r₂⟩, ⟨hdr₁, hdr₂⟩, ⟨hpr₁, hpr₂⟩, ⟨hqr₁, hqr₂⟩⟩
+
+end Prod
+
+end DirectedOn

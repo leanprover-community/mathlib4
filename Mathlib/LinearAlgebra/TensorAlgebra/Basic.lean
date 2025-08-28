@@ -58,10 +58,7 @@ end TensorAlgebra
 -/
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
-
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
-instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
-instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
+deriving Inhabited, Semiring
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
@@ -115,7 +112,6 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
   rw [ι]
   rfl
 
--- Porting note: Changed `irreducible_def` to `def` to get `@[simps symm_apply]` to work
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/
@@ -190,8 +186,6 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- Porting note: Added `h`. `h` is needed for `of`.
-  let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
@@ -203,6 +197,21 @@ theorem induction {C : TensorAlgebra R M → Prop}
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, of_id]
   exact Subtype.prop (lift R of a)
+
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R (M := M))) = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using induction with
+  | algebraMap => exact algebraMap_mem _ _
+  | add x y hx hy => exact add_mem hx hy
+  | mul x y hx hy => exact mul_mem hx hy
+  | ι x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+@[simp]
+theorem range_lift {A : Type*} [Semiring A] [Algebra R A] (f : M →ₗ[R] A) :
+    (lift R f).range = Algebra.adjoin R (Set.range f) := by
+  simp_rw [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    Function.comp_def, lift_ι_apply]
 
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : TensorAlgebra R M →ₐ[R] R :=

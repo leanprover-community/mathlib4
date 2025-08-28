@@ -12,13 +12,13 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 ## Main results
 
- * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
+* `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
 
 
 namespace Nat
 
-variable {α : Type*} [LinearOrderedSemifield α]
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
 
 lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
   | 0 => by simp

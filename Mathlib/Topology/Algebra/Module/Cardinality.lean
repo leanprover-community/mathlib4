@@ -41,7 +41,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
   have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
   rcases B.exists with ⟨n, hn⟩
   refine ⟨x + c^n, by simpa using hn, ?_⟩
-  simp only [ne_eq, add_right_eq_self]
+  simp only [add_ne_left]
   apply pow_ne_zero
   simpa using c_pos
 
@@ -59,12 +59,12 @@ the same cardinality as the whole space.
 
 See also `cardinal_eq_of_mem_nhds`. -/
 lemma cardinal_eq_of_mem_nhds_zero
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [Zero E] [MulActionWithZero 𝕜 E]
     [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} (hs : s ∈ 𝓝 (0 : E)) : #s = #E := by
   /- As `s` is a neighborhood of `0`, the space is covered by the rescaled sets `c^n • s`,
   where `c` is any element of `𝕜` with norm `> 1`. All these sets are in bijection and have
   therefore the same cardinality. The conclusion follows. -/
-  obtain ⟨c, hc⟩ : ∃ x : 𝕜 , 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
+  obtain ⟨c, hc⟩ : ∃ x : 𝕜, 1 < ‖x‖ := NormedField.exists_lt_norm 𝕜 1
   have cn_ne : ∀ n, c^n ≠ 0 := by
     intro n
     apply pow_ne_zero
@@ -96,7 +96,7 @@ lemma cardinal_eq_of_mem_nhds_zero
 /-- In a topological vector space over a nontrivially normed field, any neighborhood of a point has
 the same cardinality as the whole space. -/
 theorem cardinal_eq_of_mem_nhds
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddGroup E] [MulActionWithZero 𝕜 E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {s : Set E} {x : E} (hs : s ∈ 𝓝 x) : #s = #E := by
   let g := Homeomorph.addLeft x
@@ -109,7 +109,7 @@ theorem cardinal_eq_of_mem_nhds
 /-- In a topological vector space over a nontrivially normed field, any nonempty open set has
 the same cardinality as the whole space. -/
 theorem cardinal_eq_of_isOpen
-    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {E : Type*} (𝕜 : Type*) [NontriviallyNormedField 𝕜] [AddGroup E] [MulActionWithZero 𝕜 E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E] {s : Set E}
     (hs : IsOpen s) (h's : s.Nonempty) : #s = #E := by
   rcases h's with ⟨x, hx⟩
@@ -135,6 +135,6 @@ theorem Set.Countable.dense_compl
   calc
     (ℵ₀ : Cardinal.{u}) < 𝔠 := aleph0_lt_continuum
     _ ≤ #(interior s) :=
-      continuum_le_cardinal_of_isOpen 𝕜 isOpen_interior (nmem_singleton_empty.1 H)
+      continuum_le_cardinal_of_isOpen 𝕜 isOpen_interior (notMem_singleton_empty.1 H)
     _ ≤ #s := mk_le_mk_of_subset interior_subset
     _ ≤ ℵ₀ := le_aleph0 hs

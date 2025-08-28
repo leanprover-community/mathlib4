@@ -53,17 +53,14 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
   toFun f := (restrictScalars α).map f
   invFun g := homMk ((toPresheaf R).map g) (fun X r' m ↦ by
     apply hM₂.isSeparated _ _ (Presheaf.imageSieve_mem J α r')
-    -- Type-ascript `hr` so it uses `RingCat.Hom.hom` instead of `ConcreteCategory.instFunLike`
-    rintro Y p ⟨r : R.obj _, (hr : α.app (Opposite.op Y) r = R'.map p.op r')⟩
+    rintro Y p ⟨r : R.obj _, hr⟩
     have hg : ∀ (z : M₁.obj X), g.app _ (M₁.map p.op z) = M₂.map p.op (g.app X z) :=
-      fun z ↦ congr_fun ((forget _).congr_map (g.naturality p.op)) z
+      fun z ↦ CategoryTheory.congr_fun (g.naturality p.op) z
     change M₂.map p.op (g.app X (r' • m)) = M₂.map p.op (r' • show M₂.obj X from g.app X m)
     dsimp at hg ⊢
     rw [← hg, M₂.map_smul, ← hg, ← hr]
     erw [← (g.app _).hom.map_smul]
     rw [M₁.map_smul, ← hr]
     rfl)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end PresheafOfModules

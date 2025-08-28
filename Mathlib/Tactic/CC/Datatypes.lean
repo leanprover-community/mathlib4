@@ -3,11 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.CongrTheorems
-import Lean.Meta.Tactic.Rfl
-import Batteries.Data.RBMap.Basic
+import Batteries.Classes.Order
 import Mathlib.Lean.Meta.Basic
-import Std.Data.HashMap.Basic
+import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Datatypes for `cc`
@@ -70,24 +69,22 @@ scoped instance : Ord Expr where
 
 /-- Red-black maps whose keys are `Expr`s.
 
-TODO: the choice between `RBMap` and `HashMap` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+TODO: the choice between `TreeMap` and `HashMap` is not obvious:
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashMap` could be more optimal. -/
-abbrev RBExprMap (α : Type u) := Batteries.RBMap Expr α compare
+abbrev ExprMap (α : Type u) := Std.TreeMap Expr α compare
 
 /-- Red-black sets of `Expr`s.
 
-TODO: the choice between `RBSet` and `HashSet` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+TODO: the choice between `TreeSet` and `HashSet` is not obvious:
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
-abbrev RBExprSet := Batteries.RBSet Expr compare
+abbrev ExprSet := Std.TreeSet Expr compare
 
 /-- `CongrTheorem`s equipped with additional infos used by congruence closure modules. -/
 structure CCCongrTheorem extends CongrTheorem where
   /-- If `heqResult` is true, then lemma is based on heterogeneous equality
-      and the conclusion is a heterogeneous equality. -/
+  and the conclusion is a heterogeneous equality. -/
   heqResult : Bool := false
   /-- If `hcongrTheorem` is true, then lemma was created using `mkHCongrWithArity`. -/
   hcongrTheorem : Bool := false
@@ -122,9 +119,9 @@ structure CCConfig where
   /-- If `true`, congruence closure modulo Associativity and Commutativity. -/
   ac : Bool := true
   /-- If `hoFns` is `some fns`, then full (and more expensive) support for higher-order functions is
-     *only* considered for the functions in fns and local functions. The performance overhead is
-     described in the paper "Congruence Closure in Intensional Type Theory". If `hoFns` is `none`,
-     then full support is provided for *all* constants. -/
+  *only* considered for the functions in fns and local functions. The performance overhead is
+  described in the paper "Congruence Closure in Intensional Type Theory". If `hoFns` is `none`,
+  then full support is provided for *all* constants. -/
   hoFns : Option (List Name) := none
   /-- If `true`, then use excluded middle -/
   em : Bool := true
@@ -154,9 +151,11 @@ scoped instance : Ord ACApps where
     | .ofExpr _, .apps _ _ => .lt
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
-      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
-          let o := compare args₁[i]! args₂[i]!
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
+        have hs := eq_of_beq <| Std.LawfulBEqCmp.compare_eq_iff_beq.mp hs
+        for hi : i in [:args₁.size] do
+          have hi := hi.right
+          let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
           if o != .eq then return o
         return .eq
 
@@ -173,11 +172,11 @@ def ACApps.isSubset : (e₁ e₂ : ACApps) → Bool
       if args₁.size ≤ args₂.size then Id.run do
         let mut i₁ := 0
         let mut i₂ := 0
-        while i₁ < args₁.size ∧ i₂ < args₂.size do
-          if args₁[i₁]! == args₂[i₂]! then
+        while h : i₁ < args₁.size ∧ i₂ < args₂.size do
+          if args₁[i₁] == args₂[i₂] then
             i₁ := i₁ + 1
             i₂ := i₂ + 1
-          else if Expr.lt args₂[i₂]! args₁[i₁]! then
+          else if Expr.lt args₂[i₂] args₁[i₁] then
             i₂ := i₂ + 1
           else return false
         return i₁ == args₁.size
@@ -197,20 +196,20 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
     | .apps op₂ args₂ =>
       if op₁ == op₂ then
         let mut i₂ := 0
-        for i₁ in [:args₁.size] do
+        for h : i₁ in [:args₁.size] do
           if i₂ == args₂.size then
-            r := r.push args₁[i₁]!
-          else if args₁[i₁]! == args₂[i₂]! then
+            r := r.push args₁[i₁]
+          else if args₁[i₁] == args₂[i₂]! then
             i₂ := i₂ + 1
           else
-            r := r.push args₁[i₁]!
+            r := r.push args₁[i₁]
     | .ofExpr e₂ =>
       let mut found := false
-      for i in [:args₁.size] do
-        if !found && args₁[i]! == e₂ then
+      for h : i in [:args₁.size] do
+        if !found && args₁[i] == e₂ then
           found := true
         else
-          r := r.push args₁[i]!
+          r := r.push args₁[i]
     return r
   | .ofExpr e => if e₂ == e then r else r.push e
 
@@ -229,12 +228,12 @@ def ACApps.intersection (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Exp
     let mut r := r
     let mut i₁ := 0
     let mut i₂ := 0
-    while i₁ < args₁.size ∧ i₂ < args₂.size do
-      if args₁[i₁]! == args₂[i₂]! then
-        r := r.push args₁[i₁]!
+    while h : i₁ < args₁.size ∧ i₂ < args₂.size do
+      if args₁[i₁] == args₂[i₂] then
+        r := r.push args₁[i₁]
         i₁ := i₁ + 1
         i₂ := i₂ + 1
-      else if Expr.lt args₂[i₂]! args₁[i₁]! then
+      else if Expr.lt args₂[i₂] args₁[i₁] then
         i₂ := i₂ + 1
       else
         i₁ := i₁ + 1
@@ -261,19 +260,17 @@ def ACApps.toExpr : ACApps → Option Expr
 
 /-- Red-black maps whose keys are `ACApps`es.
 
-TODO: the choice between `RBMap` and `HashMap` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+TODO: the choice between `TreeMap` and `HashMap` is not obvious:
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashMap` could be more optimal. -/
-abbrev RBACAppsMap (α : Type u) := Batteries.RBMap ACApps α compare
+abbrev ACAppsMap (α : Type u) := Std.TreeMap ACApps α compare
 
 /-- Red-black sets of `ACApps`es.
 
-TODO: the choice between `RBSet` and `HashSet` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+TODO: the choice between `TreeSet` and `HashSet` is not obvious:
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
-abbrev RBACAppsSet := Batteries.RBSet ACApps compare
+abbrev ACAppsSet := Std.TreeSet ACApps compare
 
 /-- For proof terms generated by AC congruence closure modules, we want a placeholder as an equality
   proof between given two terms which will be generated by non-AC congruence closure modules later.
@@ -339,10 +336,10 @@ structure Entry where
   /-- root of the congruence class, it is meaningless if `e` is not an application. -/
   cgRoot : Expr
   /-- When `e` was added to this equivalence class because of an equality `(H : e = tgt)`, then
-      we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
+  we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
   target : Option Expr := none
   /-- When `e` was added to this equivalence class because of an equality `(H : e = tgt)`, then
-      we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
+  we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
   proof : Option EntryExpr := none
   /-- Variable in the AC theory. -/
   acVar : Option Expr := none
@@ -355,39 +352,39 @@ structure Entry where
   /-- `true` if equivalence class contains lambda expressions -/
   hasLambdas : Bool
   /-- `heqProofs == true` iff some proofs in the equivalence class are based on heterogeneous
-      equality. We represent equality and heterogeneous equality in a single equivalence class. -/
+  equality. We represent equality and heterogeneous equality in a single equivalence class. -/
   heqProofs : Bool
   /-- If `fo == true`, then the expression associated with this entry is an application, and we are
-      using first-order approximation to encode it. That is, we ignore its partial applications. -/
+  using first-order approximation to encode it. That is, we ignore its partial applications. -/
   fo : Bool
   /-- number of elements in the equivalence class, it is meaningless if `e != root` -/
   size : Nat
   /-- The field `mt` is used to implement the mod-time optimization introduce by the Simplify
-      theorem prover. The basic idea is to introduce a counter gmt that records the number of
-      heuristic instantiation that have occurred in the current branch. It is incremented after each
-      round of heuristic instantiation. The field `mt` records the last time any proper descendant
-      of this entry was involved in a merge. -/
+  theorem prover. The basic idea is to introduce a counter gmt that records the number of
+  heuristic instantiation that have occurred in the current branch. It is incremented after each
+  round of heuristic instantiation. The field `mt` records the last time any proper descendant
+  of this entry was involved in a merge. -/
   mt : Nat
   deriving Inhabited
 
 /-- Stores equivalence class data associated with an expression `e`. -/
-abbrev Entries := RBExprMap Entry
+abbrev Entries := ExprMap Entry
 
 /-- Equivalence class data associated with an expression `e` used by AC congruence closure
 modules. -/
 structure ACEntry where
   /-- Natural number associated to an expression. -/
   idx : Nat
-  /-- AC variables that occur on the left hand side of an equality which `e` occurs as the left hand
+  /-- AC variables that occur on the left-hand side of an equality which `e` occurs as the left-hand
   side of in `CCState.acR`. -/
-  RLHSOccs : RBACAppsSet := ∅
-  /-- AC variables that occur on the **left** hand side of an equality which `e` occurs as the right
-  hand side of in `CCState.acR`. Don't confuse. -/
-  RRHSOccs : RBACAppsSet := ∅
+  RLHSOccs : ACAppsSet := ∅
+  /-- AC variables that occur on the **left**-hand side of an equality which `e` occurs as the
+  right-hand side of in `CCState.acR`. Don't confuse. -/
+  RRHSOccs : ACAppsSet := ∅
   deriving Inhabited
 
 /-- Returns the occurrences of this entry in either the LHS or RHS. -/
-def ACEntry.ROccs (ent : ACEntry) : (inLHS : Bool) → RBACAppsSet
+def ACEntry.ROccs (ent : ACEntry) : (inLHS : Bool) → ACAppsSet
   | true => ent.RLHSOccs
   | false => ent.RRHSOccs
 
@@ -395,17 +392,17 @@ def ACEntry.ROccs (ent : ACEntry) : (inLHS : Bool) → RBACAppsSet
 structure ParentOcc where
   expr : Expr
   /-- If `symmTable` is true, then we should use the `symmCongruences`, otherwise `congruences`.
-      Remark: this information is redundant, it can be inferred from `expr`. We use store it for
-      performance reasons. -/
+  Remark: this information is redundant, it can be inferred from `expr`. We use store it for
+  performance reasons. -/
   symmTable : Bool
 
 /-- Red-black sets of `ParentOcc`s. -/
-abbrev ParentOccSet := Batteries.RBSet ParentOcc (Ordering.byKey ParentOcc.expr compare)
+abbrev ParentOccSet := Std.TreeSet ParentOcc (Ordering.byKey ParentOcc.expr compare)
 
 /-- Used to map an expression `e` to another expression that contains `e`.
 
 When `e` is normalized, its parents should also change. -/
-abbrev Parents := RBExprMap ParentOccSet
+abbrev Parents := ExprMap ParentOccSet
 
 inductive CongruencesKey
   /-- `fn` is First-Order: we do not consider all partial applications. -/
@@ -428,11 +425,12 @@ Note that this only works for two-argument relations: `ModEq n` and `ModEq m` ar
 same. -/
 abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
-/-- Stores the root representatives of subsingletons. -/
-abbrev SubsingletonReprs := RBExprMap Expr
+/-- Stores the root representatives of subsingletons, this uses `FastSingleton` instead of
+`Subsingleton`. -/
+abbrev SubsingletonReprs := ExprMap Expr
 
 /-- Stores the root representatives of `.instImplicit` arguments. -/
-abbrev InstImplicitReprs := RBExprMap (List Expr)
+abbrev InstImplicitReprs := ExprMap (List Expr)
 
 abbrev TodoEntry := Expr × Expr × EntryExpr × Bool
 
@@ -456,23 +454,23 @@ structure CCState extends CCConfig where
   /-- Records which instances of the same class are defeq. -/
   instImplicitReprs : InstImplicitReprs := ∅
   /-- The congruence closure module has a mode where the root of each equivalence class is marked as
-      an interpreted/abstract value. Moreover, in this mode proof production is disabled.
-      This capability is useful for heuristic instantiation. -/
+  an interpreted/abstract value. Moreover, in this mode proof production is disabled.
+  This capability is useful for heuristic instantiation. -/
   frozePartitions : Bool := false
   /-- Mapping from operators occurring in terms and their canonical
-      representation in this module -/
-  canOps : RBExprMap Expr := ∅
+  representation in this module -/
+  canOps : ExprMap Expr := ∅
   /-- Whether the canonical operator is supported by AC. -/
-  opInfo : RBExprMap Bool := ∅
+  opInfo : ExprMap Bool := ∅
   /-- Extra `Entry` information used by the AC part of the tactic. -/
-  acEntries : RBExprMap ACEntry := ∅
+  acEntries : ExprMap ACEntry := ∅
   /-- Records equality between `ACApps`. -/
-  acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
+  acR : ACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+  in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
-      it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
+  it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
   gmt : Nat := 0
   deriving Inhabited
 
@@ -481,7 +479,7 @@ attribute [inherit_doc SubsingletonReprs] CCState.subsingletonReprs
 /-- Update the `CCState` by constructing and inserting a new `Entry`. -/
 def CCState.mkEntryCore (ccs : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool) :
     CCState :=
-  assert! ccs.entries.find? e |>.isNone
+  assert! ccs.entries[e]? |>.isNone
   let n : Entry :=
     { next := e
       root := e
@@ -500,20 +498,20 @@ namespace CCState
 
 /-- Get the root representative of the given expression. -/
 def root (ccs : CCState) (e : Expr) : Expr :=
-  match ccs.entries.find? e with
+  match ccs.entries[e]? with
   | some n => n.root
   | none => e
 
 /-- Get the next element in the equivalence class.
 Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
 def next (ccs : CCState) (e : Expr) : Expr :=
-  match ccs.entries.find? e with
+  match ccs.entries[e]? with
   | some n => n.next
   | none => e
 
 /-- Check if `e` is the root of the congruence class. -/
 def isCgRoot (ccs : CCState) (e : Expr) : Bool :=
-  match ccs.entries.find? e with
+  match ccs.entries[e]? with
   | some n => e == n.cgRoot
   | none => true
 
@@ -524,13 +522,13 @@ heuristic instantiation that have occurred in the current branch. It is incremen
 of heuristic instantiation. The field `mt` records the last time any proper descendant of this
 entry was involved in a merge. -/
 def mt (ccs : CCState) (e : Expr) : Nat :=
-  match ccs.entries.find? e with
+  match ccs.entries[e]? with
   | some n => n.mt
   | none => ccs.gmt
 
 /-- Is the expression in an equivalence class with only one element (namely, itself)? -/
 def inSingletonEqc (ccs : CCState) (e : Expr) : Bool :=
-  match ccs.entries.find? e with
+  match ccs.entries[e]? with
   | some it => it.next == e
   | none => true
 
@@ -552,12 +550,12 @@ def checkEqc (ccs : CCState) (e : Expr) : Bool :=
     let mut size : Nat := 0
     let mut it := e
     repeat
-      let some itN := ccs.entries.find? it | failure
+      let some itN := ccs.entries[it]? | failure
       guard (itN.root == root)
       let mut it₂ := it
       -- following `target` fields should lead to root
       repeat
-        let it₂N := ccs.entries.find? it₂
+        let it₂N := ccs.entries[it₂]?
         match it₂N.bind Entry.target with
         | some it₃ => it₂ := it₃
         | none => break
@@ -565,14 +563,14 @@ def checkEqc (ccs : CCState) (e : Expr) : Bool :=
       it := itN.next
       size := size + 1
     until it == e
-    guard (ccs.entries.find? root |>.any (·.size == size))
+    guard (ccs.entries[root]? |>.any (·.size == size))
 
 /-- Check for integrity of the `CCState`. -/
 def checkInvariant (ccs : CCState) : Bool :=
   ccs.entries.all fun k n => k != n.root || checkEqc ccs k
 
 def getNumROccs (ccs : CCState) (e : Expr) (inLHS : Bool) : Nat :=
-  match ccs.acEntries.find? e with
+  match ccs.acEntries[e]? with
   | some ent => (ent.ROccs inLHS).size
   | none => 0
 
@@ -583,17 +581,19 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     let mut r := args[0]?
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
     for hi : i in [1:args.size] do
-      if (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-        let currOccs := ccs.getNumROccs (args[i]'hi.2) inLHS
+      if args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+        let currOccs := ccs.getNumROccs args[i] inLHS
         if currOccs < numOccs then
-          r := (args[i]'hi.2)
+          r := args[i]
           numOccs := currOccs
     return r
   | .ofExpr e => e
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the LHS. -/
 def getVarWithLeastLHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e true
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the RHS. -/
 def getVarWithLeastRHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e false
 
@@ -604,7 +604,7 @@ def ppEqc (ccs : CCState) (e : Expr) : MessageData := Id.run do
   let mut lr : List MessageData := []
   let mut it := e
   repeat
-    let some itN := ccs.entries.find? it | break
+    let some itN := ccs.entries[it]? | break
     let mdIt : MessageData :=
       if it.isForall || it.isLambda || it.isLet then paren (ofExpr it) else ofExpr it
     lr := mdIt :: lr
@@ -623,7 +623,7 @@ def ppEqcs (ccs : CCState) (nonSingleton : Bool := true) : MessageData :=
   bracket "{" (group <| joinSep l (ofFormat ("," ++ .line))) "}"
 
 def ppParentOccsAux (ccs : CCState) (e : Expr) : MessageData :=
-  match ccs.parents.find? e with
+  match ccs.parents[e]? with
   | some poccs =>
     let r := ofExpr e ++ ofFormat (.line ++ ":=" ++ .line)
     let ps := poccs.toList.map fun o => ofExpr o.expr
@@ -635,7 +635,7 @@ def ppParentOccs (ccs : CCState) : MessageData :=
   bracket "{" (group <| joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppACDecl (ccs : CCState) (e : Expr) : MessageData :=
-  match ccs.acEntries.find? e with
+  match ccs.acEntries[e]? with
   | some it => group (ofFormat (s!"x_{it.idx}" ++ .line ++ ":=" ++ .line) ++ ofExpr e)
   | none => nil
 
@@ -644,7 +644,7 @@ def ppACDecls (ccs : CCState) : MessageData :=
   bracket "{" (joinSep r (ofFormat ("," ++ .line))) "}"
 
 def ppACExpr (ccs : CCState) (e : Expr) : MessageData :=
-  if let some it := ccs.acEntries.find? e then
+  if let some it := ccs.acEntries[e]? then
     s!"x_{it.idx}"
   else
     ofExpr e
@@ -666,8 +666,8 @@ def ppAC (ccs : CCState) : MessageData :=
 end CCState
 
 /-- The congruence closure module (optionally) uses a normalizer.
-    The idea is to use it (if available) to normalize auxiliary expressions
-    produced by internal propagation rules (e.g., subsingleton propagator). -/
+The idea is to use it (if available) to normalize auxiliary expressions
+produced by internal propagation rules (e.g., subsingleton propagator). -/
 structure CCNormalizer where
   normalize : Expr → MetaM Expr
 
@@ -676,7 +676,7 @@ attribute [inherit_doc CCNormalizer] CCNormalizer.normalize
 structure CCPropagationHandler where
   propagated : Array Expr → MetaM Unit
   /-- Congruence closure module invokes the following method when
-      a new auxiliary term is created during propagation. -/
+  a new auxiliary term is created during propagation. -/
   newAuxCCTerm : Expr → MetaM Unit
 
 /-- `CCStructure` extends `CCState` (which records a set of facts derived by congruence closure)
@@ -691,5 +691,12 @@ structure CCStructure extends CCState where
   phandler : Option CCPropagationHandler := none
   cache : CCCongrTheoremCache := ∅
   deriving Inhabited
+
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 end Mathlib.Tactic.CC

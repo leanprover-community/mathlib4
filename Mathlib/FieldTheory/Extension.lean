@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Fintype.Order
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extension of field embeddings
@@ -110,8 +110,10 @@ noncomputable def union : Lifts F E K :=
   have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
   ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
     AlgHom.ext fun x ↦ (hc.total i.2 j.2).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ by
-      erw [AlgHom.comp_apply, ← hji.snd (Subalgebra.inclusion h x),
-        inclusion_inclusion, inclusion_self, AlgHom.id_apply x]) _ rfl).comp
+      rw [AlgHom.comp_apply, ← inclusion]
+      dsimp only [coe_type_toSubalgebra]
+      rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
+    _ rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
@@ -123,7 +125,7 @@ theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
       (i := ⟨σ, hσ⟩) x (le_iSup (toSubalgebra <| t ·) ⟨σ, hσ⟩)⟩
 
 theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
-  le_antisymm (iSup_le <| by rintro ⟨i, rfl|hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
+  le_antisymm (iSup_le <| by rintro ⟨i, rfl | hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
     iSup_le fun i ↦ le_iSup_of_le ⟨i, .inr i.2⟩ le_rfl
 
 /-- A chain of lifts has an upper bound. -/
@@ -233,7 +235,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
   letI := (inclusion hfφ.1).toAlgebra
   letI : SMul L φ.carrier := Algebra.toSMul
-  have : IsScalarTower L φ.carrier E := ⟨(smul_assoc · (· : E))⟩
+  have : IsScalarTower L φ.carrier E := ⟨fun x y ↦ smul_assoc x (y : E)⟩
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this
     exact (hφ h1).1 h2
@@ -253,11 +255,18 @@ theorem exists_algHom_adjoin_of_splits' :
     · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
       exact ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
     · ext x
-      exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
+      let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
+      refine Eq.trans congr($hφ y) ?_
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+      exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
-  convert (hK s hs).2; ext; exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
+  convert (hK s hs).2
+  ext
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+    AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply, f']
+  exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 
 include hK in
 theorem exists_algHom_of_adjoin_splits' (hS : adjoin L S = ⊤) :

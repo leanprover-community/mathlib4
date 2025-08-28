@@ -3,7 +3,7 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Filter
 
 /-!
@@ -73,7 +73,7 @@ universe u v
 and, for all `ℱ : Filter X`, any cluster point of `map f ℱ` is the image by `f` of a cluster point
 of `ℱ`. -/
 @[mk_iff isProperMap_iff_clusterPt, fun_prop]
-structure IsProperMap (f : X → Y) extends Continuous f : Prop where
+structure IsProperMap (f : X → Y) : Prop extends Continuous f where
   /-- By definition, if `f` is a proper map and `ℱ` is any filter on `X`, then any cluster point of
   `map f ℱ` is the image by `f` of some cluster point of `ℱ`. -/
   clusterPt_of_mapClusterPt :
@@ -182,8 +182,6 @@ lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g
     rw [nhds_prod_eq, le_prod]
     exact ⟨hx, hz⟩
 
-@[deprecated (since := "2024-10-06")] alias IsProperMap.prod_map := IsProperMap.prodMap
-
 /-- Any product of proper maps is proper. -/
 lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsProperMap (f i)) :
@@ -276,28 +274,17 @@ protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :
 lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
   isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap
-
 /-- The coercion from a closed subset is proper. -/
 lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMap ((↑) : C → X) :=
   hC.isClosedEmbedding_subtypeVal.isProperMap
-
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_subtype_val_of_closed := IsClosed.isProperMap_subtypeVal
 
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
     IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
 
-@[deprecated (since := "2024-10-20")]
-alias isProperMap_restr_of_proper_of_closed := IsProperMap.restrict
-
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
   hf.isClosedMap.isClosed_range
-
-@[deprecated (since := "2024-05-08")] alias IsProperMap.closed_range := IsProperMap.isClosed_range
 
 /-- Version of `isProperMap_iff_isClosedMap_and_compact_fibers` in terms of `cofinite` and
 `cocompact`. Only works when the codomain is `T1`. -/
@@ -349,14 +336,14 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   -- `𝒰`, we get that the function `(f, pure) : X → (Y, Filter X)` tends to `(y, 𝒰)` along
   -- `𝒰`. Furthermore, each `(f, pure)(x) = (f × id)(x, pure x)` is clearly an element of
   -- the closed set `(f × id) '' F`, thus the limit `(y, 𝒰)` also belongs to that set.
-      this.mem_of_tendsto (hy.prod_mk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
+      this.mem_of_tendsto (hy.prodMk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
         (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
   -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
     rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
   -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
   -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is a ultrafilter,
   -- it is enough to show that `Uᶜ` is not in `𝒰`.
-    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_not_mem_iff.mp fun hUc ↦ ?_⟩
+    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_notMem_iff.mp fun hUc ↦ ?_⟩
     rw [mem_closure_iff_nhds] at hx
   -- Indeed, if that was the case, the set `V := {𝒢 : Filter X | Uᶜ ∈ 𝒢}` would be a neighborhood
   -- of `𝒰` in `Filter X`, hence `U ×ˢ V` would be a neighborhood of `(x, 𝒰) : X × Filter X`.

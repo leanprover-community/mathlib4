@@ -44,7 +44,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
-    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
+    fun _ => F.effectiveEpiOver B, ?_, ?_⟩
   · funext; ext -- Do we want `Presieve.ext`?
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
     rintro ⟨⟩
@@ -67,7 +67,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
+    refine ⟨Z, fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
@@ -87,13 +87,7 @@ instance : haveI := F.reflects_precoherent;
     F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
   functorPushforward_mem_iff := by
     rw [eq_induced F]
-    #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    exact Iff.rfl
+    rfl
 
 lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F :=
@@ -191,13 +185,7 @@ instance : haveI := F.reflects_preregular;
     F.IsDenseSubsite (regularTopology C) (regularTopology D) where
   functorPushforward_mem_iff := by
     rw [eq_induced F]
-    #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    exact Iff.rfl
+    rfl
 
 lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F :=
@@ -294,7 +282,7 @@ lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
   obtain ⟨_, hF₂⟩ := hF
-  refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  refine ⟨⟨fun n ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
   · exact ⟨isLimitOfReflects s (isLimitOfPreserves (F ⋙ s) hc)⟩
   · exact isLimitOfIsLimitForkMap s _ (hF₂ π c hc).some
 
@@ -309,8 +297,7 @@ lemma isSheaf_coherent_of_projective_of_comp [Preregular C] [FinitaryExtensive C
     [ReflectsFiniteProducts s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
-  exact ⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦
-    ⟨isLimitOfReflects s (isLimitOfPreserves (F ⋙ s) hc)⟩⟩⟩⟩
+  exact ⟨fun n ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨isLimitOfReflects s (isLimitOfPreserves (F ⋙ s) hc)⟩⟩⟩⟩
 
 instance [Preregular C] [FinitaryExtensive C]
     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]

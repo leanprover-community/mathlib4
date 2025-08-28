@@ -40,40 +40,25 @@ theorem star_natCast_smul [Semiring R] [AddCommMonoid M] [Module R M] [StarAddMo
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_natCast_smul (starAddEquiv : M ≃+ M) R R n x
 
-@[deprecated (since := "2024-04-17")]
-alias star_nat_cast_smul := star_natCast_smul
-
 @[simp]
 theorem star_intCast_smul [Ring R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℤ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_intCast_smul (starAddEquiv : M ≃+ M) R R n x
-
-@[deprecated (since := "2024-04-17")]
-alias star_int_cast_smul := star_intCast_smul
 
 @[simp]
 theorem star_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M]
     (n : ℕ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_natCast_smul (starAddEquiv : M ≃+ M) R R n x
 
-@[deprecated (since := "2024-04-17")]
-alias star_inv_nat_cast_smul := star_inv_natCast_smul
-
 @[simp]
 theorem star_inv_intCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M]
     (n : ℤ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_intCast_smul (starAddEquiv : M ≃+ M) R R n x
 
-@[deprecated (since := "2024-04-17")]
-alias star_inv_int_cast_smul := star_inv_intCast_smul
-
 @[simp]
 theorem star_ratCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℚ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_ratCast_smul (starAddEquiv : M ≃+ M) _ _ _ x
-
-@[deprecated (since := "2024-04-17")]
-alias star_rat_cast_smul := star_ratCast_smul
 
 /-!
 Per the naming convention, these two lemmas call `(q • ·)` `nnrat_smul` and `rat_smul` respectively,
@@ -142,30 +127,29 @@ variable {A} [Invertible (2 : R)]
 @[simps]
 def selfAdjointPart : A →ₗ[R] selfAdjoint A where
   toFun x :=
-    ⟨(⅟ 2 : R) • (x + star x), by
+    ⟨(⅟2 : R) • (x + star x), by
       rw [selfAdjoint.mem_iff, star_smul, star_trivial, star_add, star_star, add_comm]⟩
   map_add' x y := by
     ext
     simp [add_add_add_comm]
   map_smul' r x := by
     ext
-    simp [← mul_smul, show ⅟ 2 * r = r * ⅟ 2 from Commute.invOf_left <| (2 : ℕ).cast_commute r]
+    simp [← mul_smul, show ⅟2 * r = r * ⅟2 from Commute.invOf_left <| (2 : ℕ).cast_commute r]
 
 /-- The skew-adjoint part of an element of a star module, as a linear map. -/
 @[simps]
 def skewAdjointPart : A →ₗ[R] skewAdjoint A where
   toFun x :=
-    ⟨(⅟ 2 : R) • (x - star x), by
+    ⟨(⅟2 : R) • (x - star x), by
       simp only [skewAdjoint.mem_iff, star_smul, star_sub, star_star, star_trivial, ← smul_neg,
         neg_sub]⟩
   map_add' x y := by
     ext
-    simp only [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_mk,
-      AddSubgroup.coe_add]
+    simp only [sub_add, ← smul_add, sub_sub_eq_add_sub, star_add, AddSubgroup.coe_add]
   map_smul' r x := by
     ext
     simp [← mul_smul, ← smul_sub,
-      show r * ⅟ 2 = ⅟ 2 * r from Commute.invOf_right <| (2 : ℕ).commute_cast r]
+      show r * ⅟2 = ⅟2 * r from Commute.invOf_right <| (2 : ℕ).commute_cast r]
 
 theorem StarModule.selfAdjointPart_add_skewAdjointPart (x : A) :
     (selfAdjointPart R x : A) + skewAdjointPart R x = x := by
@@ -180,7 +164,7 @@ theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
   Subtype.eq (hx.coe_selfAdjointPart_apply R)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
     (selfAdjointPart R).comp (selfAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
@@ -189,17 +173,17 @@ theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     skewAdjointPart R x = 0 := Subtype.eq <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem skewAdjointPart_comp_subtype_selfAdjoint :
     (skewAdjointPart R).comp (selfAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun x ↦ x.2.skewAdjointPart_apply R
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp`
+@[simp]
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
     (skewAdjointPart R).comp (skewAdjoint.submodule R A).subtype = .id :=
   LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by
@@ -210,7 +194,6 @@ variable (A)
 
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
--- Porting note: This attribute causes a `timeout at 'whnf'`.
 @[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))
@@ -240,3 +223,9 @@ lemma isSelfAdjoint_algebraMap_iff {r : R} (h : Function.Injective (algebraMap R
   ⟨fun hr ↦ h <| algebraMap_star_comm r (A := A) ▸ hr.star_eq, IsSelfAdjoint.algebraMap A⟩
 
 end algebraMap
+
+theorem IsIdempotentElem.star_iff {R : Type*} [Mul R] [StarMul R] {a : R} :
+    IsIdempotentElem (star a) ↔ IsIdempotentElem a := by
+  simp [IsIdempotentElem, ← star_mul]
+
+alias ⟨_, IsIdempotentElem.star⟩ := IsIdempotentElem.star_iff

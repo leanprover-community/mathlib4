@@ -31,7 +31,7 @@ structure ContinuousMap (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] 
   /-- Proposition that `toFun` is continuous -/
   protected continuous_toFun : Continuous toFun := by continuity
 
-/-- The type of continuous maps from `X` to `Y`. -/
+/-- `C(X, Y)` is the type of continuous maps from `X` to `Y`. -/
 notation "C(" X ", " Y ")" => ContinuousMap X Y
 
 section
@@ -88,7 +88,7 @@ def Simps.apply (f : C(X, Y)) : X → Y := f
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
-@[simp] -- Porting note: removed `norm_cast` attribute
+@[simp]
 protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
     ⇑(f : C(X, Y)) = f :=
   rfl
@@ -118,10 +118,6 @@ theorem copy_eq (f : C(X, Y)) (f' : X → Y) (h : f' = f) : f.copy f' h = f :=
 protected theorem continuous (f : C(X, Y)) : Continuous f :=
   f.continuous_toFun
 
-@[deprecated map_continuous (since := "2024-09-29")]
-theorem continuous_set_coe (s : Set C(X, Y)) (f : s) : Continuous (f : X → Y) :=
-  map_continuous _
-
 /-- Deprecated. Use `DFunLike.congr_fun` instead. -/
 protected theorem congr_fun {f g : C(X, Y)} (H : f = g) (x : X) : f x = g x :=
   H ▸ rfl
@@ -136,5 +132,8 @@ theorem coe_injective : Function.Injective (DFunLike.coe : C(X, Y) → (X → Y)
 @[simp]
 theorem coe_mk (f : X → Y) (h : Continuous f) : ⇑(⟨f, h⟩ : C(X, Y)) = f :=
   rfl
+
+instance [Subsingleton Y] : Subsingleton C(X, Y) := DFunLike.subsingleton_cod
+instance [IsEmpty X] : Subsingleton C(X, Y) := DFunLike.subsingleton_dom
 
 end ContinuousMap

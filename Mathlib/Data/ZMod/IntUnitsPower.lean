@@ -23,6 +23,8 @@ by using `Module R (Additive M)` in its place, especially since this already has
 `R = ℕ` and `R = ℤ`.
 -/
 
+assert_not_exists Ideal TwoSidedIdeal
+
 instance : SMul (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| au.toMul ^ z.val
 
@@ -60,20 +62,18 @@ instance Int.instUnitsPow : Pow ℤˣ R where
 -- The above instances form no typeclass diamonds with the standard power operators
 -- but we will need `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 example : Int.instUnitsPow = Monoid.toNatPow := rfl
-example : Int.instUnitsPow = DivInvMonoid.Pow := rfl
+example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
 
-@[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) :
-  (r • u).toMul = u.toMul ^ r := rfl
+@[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) : (r • u).toMul = u.toMul ^ r := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change ((n : R) • Additive.ofMul u).toMul = _
   rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
--- See note [no_index around OfNat.ofNat]
 lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
-    s ^ (no_index (OfNat.ofNat n : R)) = s ^ (no_index (OfNat.ofNat n : ℕ)) :=
+    s ^ (ofNat(n) : R) = s ^ (ofNat(n) : ℕ) :=
   uzpow_natCast _ _
 
 @[simp] lemma one_uzpow (x : R) : (1 : ℤˣ) ^ x = 1 :=

@@ -76,7 +76,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
       · refine Cocones.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
-          simp only [c'.w, Category.assoc, Category.id_comp, Category.comp_id]
+          simp only [c'.w, Category.id_comp, Category.comp_id]
     · exact ⟨NatTrans.congr_app eα.symm _⟩
     · exact ⟨NatTrans.congr_app eα.symm _⟩
     · exact ⟨by simp⟩
@@ -93,7 +93,10 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
-      · dsimp; rw [PushoutCocone.condition_zero]; erw [Category.assoc, hh.w, hf.w_assoc]
+      · dsimp
+        rw [PushoutCocone.condition_zero, Category.assoc]
+        erw [hh.w]
+        rw [hf.w_assoc]
       exacts [hh.w.symm, hi.w.symm]
     · rintro i _ (_ | _ | _)
       · dsimp; simp_rw [Functor.map_id]
@@ -113,14 +116,14 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
   · rintro ⟨h⟩
     refine ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ ?_⟩⟩
     intro s
-    dsimp only [PushoutCocone.inr, PushoutCocone.mk] -- Porting note: Originally `dsimp`
+    dsimp
     refine ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, ?_, ?_⟩
     · apply BinaryCofan.IsColimit.hom_ext hc
       · rw [← H.w_assoc]; erw [h.fac _ ⟨WalkingPair.right⟩]; exact s.condition
       · rw [← Category.assoc]; exact h.fac _ ⟨WalkingPair.left⟩
     · intro m e₁ e₂
       apply BinaryCofan.IsColimit.hom_ext h
-      · dsimp only [BinaryCofan.mk, id] -- Porting note: Originally `dsimp`
+      · dsimp
         rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
       · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
   · refine fun H => ⟨?_⟩
@@ -128,14 +131,20 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
     · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
-      erw [Category.assoc, H.isColimit.fac _ WalkingSpan.right, hc.fac]; rfl
+      rw [Category.assoc]
+      erw [H.isColimit.fac _ WalkingSpan.right]
+      erw [hc.fac]
+      rfl
     · intro s; exact H.isColimit.fac _ WalkingSpan.left
     · intro s m e₁ e₂
       apply PushoutCocone.IsColimit.hom_ext H.isColimit
       · symm; exact (H.isColimit.fac _ WalkingSpan.left).trans e₂.symm
       · rw [H.isColimit.fac _ WalkingSpan.right]
         apply BinaryCofan.IsColimit.hom_ext hc
-        · erw [hc.fac, ← H.w_assoc, e₂]; rfl
+        · erw [hc.fac]
+          erw [← H.w_assoc]
+          rw [e₂]
+          rfl
         · refine ((Category.assoc _ _ _).symm.trans e₁).trans ?_; symm; exact hc.fac _ _
 
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
@@ -238,14 +247,14 @@ instance Type.adhesive : Adhesive (Type u) :=
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
 
 noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesive C] :
-    RegularMonoCategory C :=
-  ⟨fun f _ =>
-    { Z := pushout f f
+    IsRegularMonoCategory C :=
+  ⟨fun f _ => ⟨{
+      Z := pushout f f
       left := pushout.inl _ _
       right := pushout.inr _ _
       w := pushout.condition
       isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
-        (IsPushout.of_hasPushout f f)).isLimitFork }⟩
+        (IsPushout.of_hasPushout f f)).isLimitFork }⟩⟩
 
 -- This then implies that adhesive categories are balanced
 example [Adhesive C] : Balanced C :=
@@ -260,7 +269,7 @@ variable {D : Type u''} [Category.{v''} D]
 instance adhesive_functor [Adhesive C] [HasPullbacks C] [HasPushouts C] :
     Adhesive (D ⥤ C) := by
   constructor
-  intros W X Y Z f g h i hf H
+  intro W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
   apply isVanKampenColimit_of_evaluation
   intro x
@@ -278,7 +287,7 @@ theorem adhesive_of_preserves_and_reflects (F : C ⥤ D) [Adhesive D]
     [ReflectsColimitsOfShape WalkingSpan F] :
     Adhesive C := by
   apply Adhesive.mk (hasPullback_of_mono_left := H₁) (hasPushout_of_mono_left := H₂)
-  intros W X Y Z f g h i hf H
+  intro W X Y Z f g h i hf H
   rw [IsPushout.isVanKampen_iff]
   refine IsVanKampenColimit.of_mapCocone F ?_
   refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
@@ -310,7 +319,7 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))
   rw [IsPushout.isVanKampen_iff] at this ⊢
   refine (IsVanKampenColimit.precompose_isIso_iff
-    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
+    (Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
   refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)

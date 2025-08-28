@@ -3,8 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Multiset.Nodup
 import Mathlib.Data.List.NatAntidiagonal
+import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Antidiagonals in ℕ × ℕ as multisets
@@ -18,6 +18,8 @@ generally for sums going from `0` to `n`.
 This refines file `Data.List.NatAntidiagonal` and is further refined by file
 `Data.Finset.NatAntidiagonal`.
 -/
+
+assert_not_exists Monoid
 
 namespace Multiset
 
@@ -55,8 +57,8 @@ theorem antidiagonal_succ {n : ℕ} :
 
 theorem antidiagonal_succ' {n : ℕ} :
     antidiagonal (n + 1) = (n + 1, 0) ::ₘ (antidiagonal n).map (Prod.map id Nat.succ) := by
-  rw [antidiagonal, List.Nat.antidiagonal_succ', ← coe_add, add_comm, antidiagonal, map_coe,
-    coe_add, List.singleton_append, cons_coe]
+  rw [antidiagonal, List.Nat.antidiagonal_succ', ← coe_add, Multiset.add_comm, antidiagonal,
+    map_coe, coe_add, List.singleton_append, cons_coe]
 
 theorem antidiagonal_succ_succ' {n : ℕ} :
     antidiagonal (n + 2) =

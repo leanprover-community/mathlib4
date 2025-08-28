@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Powerset
 
 /-!
@@ -43,39 +44,35 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       ∃ t : Finset (Fin n), s < #t ∧ StrictAntiOn f ↑t := by
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
-  let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
+  let inc_sequences_ending_in (i : Fin n) : Finset (Finset (Fin n)) :=
     univ.powerset.filter fun t => Finset.max t = i ∧ StrictMonoOn f ↑t
-  let dec_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
+  let dec_sequences_ending_in (i : Fin n) : Finset (Finset (Fin n)) :=
     univ.powerset.filter fun t => Finset.max t = i ∧ StrictAntiOn f ↑t
   -- The singleton sequence is in both of the above collections.
   -- (This is useful to show that the maximum length subsequence is at least 1, and that the set
   -- of subsequences is nonempty.)
-  have inc_i : ∀ i, {i} ∈ inc_sequences_ending_in i := fun i => by
+  have inc_i (i) : {i} ∈ inc_sequences_ending_in i := by
     simp [inc_sequences_ending_in, StrictMonoOn]
-  have dec_i : ∀ i, {i} ∈ dec_sequences_ending_in i := fun i => by
+  have dec_i (i) : {i} ∈ dec_sequences_ending_in i := by
     simp [dec_sequences_ending_in, StrictAntiOn]
   -- Define the pair of labels: at index `i`, the pair is the maximum length of an increasing
   -- subsequence ending at `i`, paired with the maximum length of a decreasing subsequence ending
   -- at `i`.
   -- We call these labels `(a_i, b_i)`.
-  let ab' : Fin n → ℕ × ℕ := by
-    intro i
-    apply
-      (max' ((inc_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, inc_i i⟩ _),
-        max' ((dec_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, dec_i i⟩ _))
-  -- Porting note: it costs many resources to unfold `ab'` so we obscure the definition:
-  generalize hab : ab' = ab
+  let ab (i : Fin n) : ℕ × ℕ :=
+    (max' ((inc_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, inc_i i⟩ _),
+      max' ((dec_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, dec_i i⟩ _))
   -- It now suffices to show that one of the labels is 'big' somewhere. In particular, if the
   -- first in the pair is more than `r` somewhere, then we have an increasing subsequence in our
   -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
+  have hab1 (i : Fin n) : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
+    simpa only [ab] using max'_mem _ _
+  have hab2 (i : Fin n) : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
+    simpa only [ab] using max'_mem _ _
   rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
-  · refine Or.imp ?_ ?_ hi
-    on_goal 1 =>
-      have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
-        simp only [ab', ← hab]; exact max'_mem _ _
-    on_goal 2 =>
-      have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
-        simp only [ab', ← hab]; exact max'_mem _ _
+  · refine hi.imp ?_ ?_
+    on_goal 1 => have := hab1 i
+    on_goal 2 => have := hab2 i
     all_goals
       intro hi
       rw [mem_image] at this
@@ -85,7 +82,6 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       apply ht₁.2.2
   -- Show first that the pair of labels is unique.
   have : Injective ab := by
-    simp only [← hab]
     apply injective_of_lt_imp_ne
     intro i j k q
     injection q with q₁ q₂
@@ -94,12 +90,10 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
     on_goal 1 =>
       apply ne_of_lt _ q₁
-      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by
-        dsimp only [ab']; exact max'_mem _ _
+      have := hab1 i
     on_goal 2 =>
       apply ne_of_lt _ q₂
-      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by
-        dsimp only [ab']; exact max'_mem _ _
+      have := hab2 i
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]
@@ -128,7 +122,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
         rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
         · apply (irrefl _ ‹j < j›).elim
         · exfalso
-          apply not_le_of_lt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
+          apply not_le_of_gt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
         · first
           | apply lt_of_le_of_lt _ ‹f i < f j›
           | apply lt_of_lt_of_le ‹f j < f i› _
@@ -137,9 +131,9 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
           · rfl
         · apply ht₁.2.2 ‹x ∈ t› ‹y ∈ t› ‹x < y›
       -- Finally show that this new subsequence is one longer than the old one.
-      · rw [card_insert_of_not_mem, ht₂]
+      · rw [card_insert_of_notMem, ht₂]
         intro
-        apply not_le_of_lt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
+        apply not_le_of_gt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
   -- Finished both goals!
   -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
   -- Suppose all the labels are small.
@@ -150,14 +144,13 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
+    simp only [ran, mem_image, mem_range, mem_univ, mem_product, true_and,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
     -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is an increasing and
     -- decreasing subsequence which we did right near the top.
     have z : 1 ≤ (ab i).1 ∧ 1 ≤ (ab i).2 := by
-      simp only [← hab]
       constructor <;>
         · apply le_max'
           rw [mem_image]
@@ -165,7 +158,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
     exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
-  apply not_le_of_lt hn
+  apply not_le_of_gt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
   simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
 

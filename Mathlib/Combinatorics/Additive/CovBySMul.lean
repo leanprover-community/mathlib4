@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Relation of covering by cosets
@@ -22,8 +24,8 @@ variable {M N X : Type*} [Monoid M] [Monoid N] [MulAction M X] [MulAction N X] {
 variable (M) in
 /-- Predicate for a set `A` to be covered by at most `K` cosets of another set `B` under the action
 by the monoid `M`. -/
-@[to_additive "Predicate for a set `A` to be covered by at most `K` cosets of another set `B` under
-the action by the monoid `M`."]
+@[to_additive /-- Predicate for a set `A` to be covered by at most `K` cosets of another set `B`
+under the action by the monoid `M`. -/]
 def CovBySMul (K : ℝ) (A B : Set X) : Prop := ∃ F : Finset M, #F ≤ K ∧ A ⊆ (F : Set M) • B
 
 @[to_additive (attr := simp, refl)]
@@ -42,7 +44,7 @@ lemma covBySMul_zero : CovBySMul M 0 A B ↔ A = ∅ := by simp [CovBySMul]
 lemma CovBySMul.mono (hKL : K ≤ L) : CovBySMul M K A B → CovBySMul M L A B := by
   rintro ⟨F, hF, hFAB⟩; exact ⟨F, hF.trans hKL, hFAB⟩
 
-@[to_additive] lemma CovBySMul.trans [MulAction M N] [IsScalarTower M N X]
+@[to_additive] lemma CovBySMul.trans [SMul M N] [IsScalarTower M N X]
     (hAB : CovBySMul M K A B) (hBC : CovBySMul N L B C) : CovBySMul N (K * L) A C := by
   classical
   have := hAB.nonneg

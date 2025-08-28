@@ -43,9 +43,9 @@ variable (X : Profinite.{u})
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S := @FintypeCat.of S (Fintype.ofFinite S)
   map f := DiscreteQuotient.ofLE f.le
-  -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
-  -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by ext; aesop_cat
+  -- Porting note: `map_comp` used to be proved by default by `cat_disch`.
+  -- once `cat_disch` can prove this again, remove the entire `map_comp` here.
+  map_comp _ _ := by funext; cat_disch
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
@@ -54,7 +54,8 @@ abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
 /-- A cone over `X.diagram` whose cone point is `X`. -/
 def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
   { pt := X
-    π := { app := fun S => ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
+    π := { app := fun S => CompHausLike.ofHom (Y := X.diagram.obj S) _
+            ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
 
 instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lift X.asLimitCone) :=
   CompHausLike.isIso_of_bijective _

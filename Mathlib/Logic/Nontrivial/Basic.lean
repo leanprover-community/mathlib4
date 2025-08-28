@@ -97,7 +97,3 @@ instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α 
 @[nontriviality]
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)
-
-@[to_additive]
-theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
-  Subsingleton.elim _ _

@@ -41,7 +41,8 @@ open Set Finset
 
 universe u
 
-variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} {E : Type u} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E]
 
 namespace Caratheodory
 
@@ -65,15 +66,15 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
-  have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
+  have hk : k i₀ = 0 := by simp [k, ne_of_gt hg]
   have ksum : ∑ e ∈ t.erase i₀, k e = 1 := by
     calc
       ∑ e ∈ t.erase i₀, k e = ∑ e ∈ t, k e := by
-        conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
+        conv_rhs => rw [← insert_erase hi₀, sum_insert (notMem_erase i₀ t), hk, zero_add]
       _ = ∑ e ∈ t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine ⟨⟨i₀, hi₀⟩, k, ?_, by convert ksum, ?_⟩
-  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
+  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne]
     intro e _ het
     by_cases hes : e ∈ s
     · have hge : 0 < g e := by
@@ -100,17 +101,17 @@ variable {s : Set E} {x : E}
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
 noncomputable def minCardFinsetOfMemConvexHull (hx : x ∈ convexHull 𝕜 s) : Finset E :=
-  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
+  Function.argminOn Finset.card { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
     simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using hx
 
 variable (hx : x ∈ convexHull 𝕜 s)
 
 theorem minCardFinsetOfMemConvexHull_subseteq : ↑(minCardFinsetOfMemConvexHull hx) ⊆ s :=
-  (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).1
+  (Function.argminOn_mem _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).1
 
 theorem mem_minCardFinsetOfMemConvexHull :
     x ∈ convexHull 𝕜 (minCardFinsetOfMemConvexHull hx : Set E) :=
-  (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).2
+  (Function.argminOn_mem _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).2
 
 theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx).Nonempty := by
   rw [← Finset.coe_nonempty, ← @convexHull_nonempty_iff 𝕜]
@@ -118,7 +119,7 @@ theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx
 
 theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ convexHull 𝕜 (t : Set E)) : #(minCardFinsetOfMemConvexHull hx) ≤ #t :=
-  Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
+  Function.argminOn_le _ _ (by exact ⟨ht₁, ht₂⟩)
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by
@@ -161,7 +162,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx
-  simp only [t.convexHull_eq, exists_prop, Set.mem_setOf_eq] at ht₃
+  simp only [t.convexHull_eq, Set.mem_setOf_eq] at ht₃
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := ht₃
   let t' := {i ∈ t | w i ≠ 0}
   refine ⟨t', t'.fintypeCoeSort, ((↑) : t' → E), w ∘ ((↑) : t' → E), ?_, ?_, ?_, ?_, ?_⟩
@@ -170,7 +171,8 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
   · exact ht₂.comp_embedding ⟨_, inclusion_injective (Finset.filter_subset (fun i => w i ≠ 0) t)⟩
   · exact fun i =>
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
-  · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
+  · simp only [univ_eq_attach, Function.comp_apply]
+    rw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
   · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
     rw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
