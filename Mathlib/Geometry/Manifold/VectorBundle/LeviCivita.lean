@@ -289,7 +289,7 @@ lemma leviCivita_rhs'_addX_apply [CompleteSpace E]
   simp only [leviCivita_rhs', rhs_aux_addX, Pi.add_apply, Pi.sub_apply]
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
-  simp_rw [product_apply, VectorField.mlieBracket_add_left (W := Y) hX hX',
+  simp_rw [product_apply, VectorField.mlieBracket_add_right (V := Y) hX hX',
     VectorField.mlieBracket_add_left (W := Z) hX hX', inner_add_right, ← product_apply,
     product_add_left_apply]
   rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
@@ -344,7 +344,7 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   set dfZ : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Z x)
   have h3 : ⟪f • X, mlieBracket I Z Y⟫ x = f x * ⟪X, mlieBracket I Z Y⟫ x := by
     rw [product_apply, Pi.smul_apply', real_inner_smul_left]
-  have h4 : inner ℝ (Z x) (f x • mlieBracket I X Y x) = f x * ⟪Z, mlieBracket I X Y⟫ x := by
+  have h4 : inner ℝ (Z x) (f x • mlieBracket I Y X x) = f x * ⟪Z, mlieBracket I Y X⟫ x := by
     rw [product_apply, real_inner_smul_right]
   rw [real_inner_smul_right (Y x), h3, h4]
   -- set A := ⟪Y, mlieBracket I X Z⟫ with hA
@@ -395,8 +395,10 @@ lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
   simp only [product_apply]
-  simp only [Pi.add_apply, VectorField.mlieBracket_add_right (V := X) hY hY',
+  simp only [Pi.add_apply, mlieBracket_add_left (W := X) hY hY',
     VectorField.mlieBracket_add_right (V := Z) hY hY', inner_add_right, ← product_apply]
+  have : mlieBracket I (Y + Y') X x = mlieBracket I (Y) X x + mlieBracket I Y' X x := by
+    exact mlieBracket_add_left (W := X) hY hY'
   abel
 
 lemma leviCivita_rhs_addY_apply [CompleteSpace E]
@@ -561,6 +563,8 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   have almoster : A + A = leviCivita_rhs' I X Y Z := by simp only [leviCivita_rhs', *]
   simp only [leviCivita_rhs, ← almoster, smul_add]
   ext; simp; ring
+
+#exit
 
 section
 
