@@ -120,7 +120,7 @@ lemma compactSpace_of_universallyClosed
   have htZc : t ∈ Zc := by
     intro ⟨z, hz, hzt⟩
     suffices ∃ i, fT.base z ∈ Ti i ∧ p.base z ∈ U i from hz (by simpa)
-    exact ⟨𝒰.f (p.base z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p.base z)⟩
+    exact ⟨𝒰.idx (p.base z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p.base z)⟩
   obtain ⟨U', ⟨g, rfl⟩, htU', hU'le⟩ := Opens.isBasis_iff_nbhd.mp isBasis_basic_opens htZc
   let σ : Finset 𝒰.J := MvPolynomial.vars g
   let φ : MvPolynomial 𝒰.J K →+* MvPolynomial 𝒰.J K :=

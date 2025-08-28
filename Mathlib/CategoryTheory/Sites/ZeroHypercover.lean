@@ -90,8 +90,8 @@ base. -/
 def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i)) :
     PreZeroHypercover.{max w w'} T where
   I₀ := Σ (i : E.I₀), (F i).I₀
-  X := fun ⟨i, j⟩ ↦ (F i).X j
-  f := fun ⟨i, j⟩ ↦ (F i).f j ≫ E.f i
+  X i := (F i.1).X i.2
+  f i := (F i.1).f i.2 ≫ E.f i.1
 
 /-- Given pre-`0`-hypercovers `{ Uᵢ }` and `{ Uⱼ }`, this is the pre-`0`-hypercover
 `{ Uᵢ ×[X] Uⱼ }`. -/
@@ -206,6 +206,13 @@ instance : Category (ZeroHypercover.{w} J S) where
   comp := PreZeroHypercover.Hom.comp
 
 end ZeroHypercover
+
+variable {J} in
+lemma mem_iff_exists_zeroHypercover {X : C} {R : Presieve X} :
+    R ∈ J X ↔ ∃ (𝒰 : ZeroHypercover.{max u v} J X), R = Presieve.ofArrows 𝒰.X 𝒰.f := by
+  refine ⟨fun hR ↦ ?_, fun ⟨𝒰, hR⟩ ↦ hR ▸ 𝒰.mem₀⟩
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
+  use ⟨⟨ι, Y, f⟩, hR⟩
 
 end Precoverage
 

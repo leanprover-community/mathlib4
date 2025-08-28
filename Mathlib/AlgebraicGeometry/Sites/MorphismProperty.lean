@@ -122,4 +122,11 @@ instance : (coverage P).IsStableUnderBaseChange where
     use i, (H i).isoPullback.inv.base w
     simpa [← Scheme.comp_base_apply]
 
+instance [P.ContainsIdentities] : (coverage P).HasIsos where
+  mem_covering_of_isIso {S T} f hf := by
+    rw [← Presieve.ofArrows_pUnit, ofArrows_mem_coverage_iff]
+    refine ⟨fun x ↦ ?_, fun _ : Unit ↦ P.of_isIso f⟩
+    use (), (inv f).base x
+    simp [← Scheme.comp_base_apply]
+
 end AlgebraicGeometry.Scheme

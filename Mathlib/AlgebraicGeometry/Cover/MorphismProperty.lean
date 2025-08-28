@@ -56,10 +56,15 @@ this causes worse error messages, but in practice `P` is mostly defined via `cla
 -/
 abbrev Cover (K : Coverage Scheme.{u}) := Coverage.ZeroHypercover.{v} K
 
+
 variable {K}
 
 variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover K) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
+
+abbrev Cover.J (𝒰 : X.Cover K) := 𝒰.I₀
+abbrev Cover.map (𝒰 : X.Cover K) := 𝒰.f
+abbrev Cover.obj (𝒰 : X.Cover K) := 𝒰.X
 
 lemma Cover.exists_eq [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
     ∃ i y, (𝒰.f i).base y = x := by
@@ -159,8 +164,8 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover (coverage P))
 /-- The pushforward of a cover along an isomorphism. -/
 @[simps! I₀ X f]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
-    {X Y : Scheme.{u}} (𝒰 : Cover (coverage P) X) (f : X ⟶ Y) [IsIso f] :
-    Cover (coverage P) Y :=
+    {X Y : Scheme.{u}} (𝒰 : Cover.{v} (coverage P) X) (f : X ⟶ Y) [IsIso f] :
+    Cover.{v} (coverage P) Y :=
   Cover.copy ((coverOfIsIso.{v, u} f).bind fun _ => 𝒰) 𝒰.I₀ _ _
     ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.I₀).symm) (fun _ => Iso.refl _)
     fun _ => (Category.id_comp _).symm
