@@ -27,14 +27,7 @@ open Real Complex
 
 open scoped UpperHalfPlane
 
-/-- The UpperHalfPlane as a subset of `ℂ`. This is convinient for takind derivatives of functions
-on the upper half plane. -/
-abbrev complexUpperHalfPlane := {z : ℂ | 0 < z.im}
-
-local notation "ℍₒ" => complexUpperHalfPlane
-
-lemma complexUpperHalPlane_isOpen : IsOpen ℍₒ := by
-  exact (isOpen_lt continuous_const Complex.continuous_im)
+local notation "ℍₒ" => UpperHalfPlane.upperHalfPlaneSet
 
 local notation "ℂ_ℤ" => integerComplement
 
@@ -287,7 +280,7 @@ lemma cotTerm_iteratedDerivWith' (d k : ℕ) :
     (z - (d + 1)) ^ (-1 - k : ℤ))) ℍₒ := by
   apply Set.EqOn.trans (upperHalfPlane_inter_integerComplement ▸
     iteratedDerivWithin_congr_right_of_isOpen (fun (z : ℂ) ↦ cotTerm z d) k
-    complexUpperHalPlane_isOpen (Complex.isOpen_compl_range_intCast))
+    isOpen_upperHalfPlaneSet (Complex.isOpen_compl_range_intCast))
   intro z hz
   simpa using cotTerm_iteratedDerivWith d k (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩)
 
@@ -336,7 +329,7 @@ private lemma iteratedDerivWithin_cotTerm_bounded_uniformly {k : ℕ} (hk : 1 �
 lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm (k : ℕ) (hk : 1 ≤ k) :
     SummableLocallyUniformlyOn
     (fun n : ℕ ↦ iteratedDerivWithin k (fun z : ℂ ↦ cotTerm z n) ℍₒ) ℍₒ := by
-  apply SummableLocallyUniformlyOn_of_locally_bounded (complexUpperHalPlane_isOpen)
+  apply SummableLocallyUniformlyOn_of_locally_bounded (isOpen_upperHalfPlaneSet)
   intro K hK hKc
   have hKK2 : IsCompact (Set.image (inclusion hK) univ) := by
     exact (isCompact_iff_isCompact_univ.mp hKc).image_of_continuousOn
@@ -376,11 +369,11 @@ private theorem aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (x : ℍ
     (-1) ^ k * (k !) * (x : ℂ) ^ (-1 - k : ℤ) + iteratedDerivWithin k
         (fun z : ℂ ↦ ∑' n : ℕ, cotTerm z n) ℍₒ x =
       (-1) ^ (k : ℕ) * (k : ℕ)! * ∑' n : ℤ, ((x : ℂ) + n) ^ (-1 - k : ℤ) := by
-    rw [iteratedDerivWithin_tsum k complexUpperHalPlane_isOpen
+    rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet
        (by simpa using x.2) (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
        (fun l hl hl2 ↦ summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm l hl)
        (fun n l z hl hz ↦ ((DifferentiableOn_iteratedDeriv_cotTerm n l)).differentiableAt
-       ((IsOpen.mem_nhds (complexUpperHalPlane_isOpen) hz)))]
+       ((IsOpen.mem_nhds (isOpen_upperHalfPlaneSet) hz)))]
     conv =>
       enter [1,2,1]
       ext n
@@ -407,9 +400,9 @@ theorem iteratedDerivWithin_cot_pi_z_sub_inv (k : ℕ) (z : ℍ) :
     (iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z) -
     (-1) ^ k * (k !) * ((z : ℂ) ^ (-1 - k : ℤ)) := by
   simp_rw [sub_eq_add_neg]
-  rw [iteratedDerivWithin_fun_add (by apply z.2) complexUpperHalPlane_isOpen.uniqueDiffOn]
+  rw [iteratedDerivWithin_fun_add (by apply z.2) isOpen_upperHalfPlaneSet.uniqueDiffOn]
   · simpa [iteratedDerivWithin_fun_neg] using iteratedDerivWithin_one_div k
-      complexUpperHalPlane_isOpen z.2
+      isOpen_upperHalfPlaneSet z.2
   · exact ContDiffWithinAt.smul (by fun_prop) (cot_pi_z_contDiffWithinAt k z)
   · simp only [one_div]
     apply ContDiffWithinAt.neg
