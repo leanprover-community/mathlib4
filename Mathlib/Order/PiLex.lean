@@ -110,10 +110,6 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Lex (∀ 
 instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Colex (∀ i, β i)) :=
   partialOrderOfSO (· < ·)
 
-/-def colexIsoLex [LinearOrder ι] [∀ a, PartialOrder (β a)] :
-    Colex (∀ i, β i) ≃o Lex (∀ i : ιᵒᵈ, β (OrderDual.ofDual i)) :=
-  Equiv.refl _-/
-
 /-- `Lex (∀ i, α i)` is a linear order if the original order has well-founded `<`. -/
 noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Lex (∀ i, β i)) :=
