@@ -213,9 +213,9 @@ There are some exceptions to this heuristic:
 * Identifiers that have the `@[to_additive]` attribute are ignored.
   For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
   You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
-* If an identifier `d` has attribute `@[to_additive_relevant_arg n]` then the argument
+* If an identifier `d` has attribute `@[to_additive (relevant_arg := n)]` then the argument
   in position `n` is checked for a fixed type, instead of checking the first argument.
-  `@[to_additive]` will automatically add the attribute `@[to_additive_relevant_arg n]` to a
+  `@[to_additive]` will automatically add the attribute `(relevant_arg := n)` to a
   declaration when the first argument has no multiplicative type-class, but argument `n` does.
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
@@ -254,7 +254,7 @@ mismatch error.
     The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
     contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
     If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
-    should have automatically added the attribute `@[to_additive_relevant_arg]` to the declaration.
+    should have automatically added the attribute `(relevant_arg := ...)]` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
     ```
       open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
@@ -262,7 +262,7 @@ mismatch error.
     The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
     with a multiplicative structure on it. `none` means `0`.
     If you get a different output (or a failure), you could add the attribute
-    `@[to_additive_relevant_arg n]` manually, where `n` is an (1-indexed) argument with a
+    `@[to_additive (relevant_arg := n)]` manually, where `n` is an (1-indexed) argument with a
     multiplicative structure.
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
@@ -1013,7 +1013,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
 Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the relevant argument (`to_additive_relevant_arg`) of each type-class.
+Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def findMultiplicativeArg (nm : Name) : MetaM Nat := do
