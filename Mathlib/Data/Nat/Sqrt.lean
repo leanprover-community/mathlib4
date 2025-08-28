@@ -201,12 +201,21 @@ lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t *
 lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := by
   simpa only [Nat.pow_two] using not_exists_sq
 
-lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a.sqrt :=
+lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a.sqrt := by
+  rcases le_total b c with bc | cb
+  · left
+    have : b * b ≤ b * c := by
+      exact mul_le_mul_left b bc
+    have := h ▸ this
+    exact le_sqrt.mpr this
+  · sorry
+  /- alternative proof:
   if hle : b ≤ a.sqrt then
     Or.inl hle
   else
     Or.inr (Nat.le_of_lt_succ (Nat.lt_of_mul_lt_mul_left (lt_of_lt_of_le (h ▸ Nat.lt_succ_sqrt a)
       (mul_le_mul_right a.sqrt.succ (Nat.gt_of_not_le hle)))))
     -- or : `by right; nlinarith [Nat.lt_succ_sqrt' a]`
+  -/
 
 end Nat
