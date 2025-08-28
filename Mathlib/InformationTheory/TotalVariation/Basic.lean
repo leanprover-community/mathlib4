@@ -73,8 +73,8 @@ namespace ProbabilityTheory
 variable {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
   {μ ν : Measure 𝓧}
 
-lemma mutuallySingular_iff_min_rnDeriv_eq_zero [SigmaFinite μ] [SigmaFinite ν] :
-    μ ⟂ₘ ν ↔ ∀ᵐ x ∂(μ + ν), min (μ.rnDeriv (μ + ν) x) (ν.rnDeriv (μ + ν) x) = 0 := by
+lemma mutuallySingular_iff_rnDeriv_eq_zero [SigmaFinite μ] [SigmaFinite ν] :
+    μ ⟂ₘ ν ↔ ∀ᵐ x ∂(μ + ν), μ.rnDeriv (μ + ν) x = 0 ∨ ν.rnDeriv (μ + ν) x = 0 := by
   have hμ_ac : μ ≪ μ + ν := (Measure.AbsolutelyContinuous.refl _).add_right _
   have hν_ac : ν ≪ μ + ν := by
     rw [add_comm]
@@ -82,11 +82,11 @@ lemma mutuallySingular_iff_min_rnDeriv_eq_zero [SigmaFinite μ] [SigmaFinite ν]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [ae_add_measure_iff]
     suffices h1 : ∀ (μ : Measure 𝓧) (ν) [SigmaFinite μ] [SigmaFinite ν] (h : μ ⟂ₘ ν),
-        ∀ᵐ x ∂ν, min ((∂μ/∂(μ + ν)) x) ((∂ν/∂(μ + ν)) x) = 0 by
+        ∀ᵐ x ∂ν, (∂μ/∂(μ + ν)) x = 0 ∨ (∂ν/∂(μ + ν)) x = 0 by
       refine ⟨?_, h1 μ ν h⟩
       rw [add_comm μ]
-      convert h1 ν μ h.symm using 3
-      rw [min_comm]
+      convert h1 ν μ h.symm using 2
+      rw [_root_.or_comm]
     intro μ ν _ _ h
     rw [← Measure.rnDeriv_eq_zero] at h
     have hν_ac : ν ≪ μ + ν := by
@@ -103,7 +103,6 @@ lemma mutuallySingular_iff_min_rnDeriv_eq_zero [SigmaFinite μ] [SigmaFinite ν]
     rw [hx_div]
     simp only [Pi.zero_apply, ENNReal.div_eq_zero_iff]
     left
-    rw [← bot_eq_zero, min_eq_bot, bot_eq_zero] at hx_min
     simpa [hx_pos.ne'] using hx_min
 
 /-- Total variation distance between two measures. -/
@@ -223,7 +222,7 @@ lemma tvDist_eq_zero_iff [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
 
 lemma tvDist_eq_one_iff_mutuallySingular [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     tvDist μ ν = 1 ↔ μ ⟂ₘ ν := by
-  rw [mutuallySingular_iff_min_rnDeriv_eq_zero]
+  rw [mutuallySingular_iff_rnDeriv_eq_zero]
   have hμ_ac : μ ≪ μ + ν := (Measure.AbsolutelyContinuous.refl _).add_right _
   have hν_ac : ν ≪ μ + ν := by
     rw [add_comm]
@@ -240,6 +239,9 @@ lemma tvDist_eq_one_iff_mutuallySingular [IsProbabilityMeasure μ] [IsProbabilit
     _ = 1 := by simp
   simp only [this, _root_.or_false]
   rw [lintegral_eq_zero_iff (by fun_prop)]
-  rfl
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    <;> filter_upwards [h]
+    <;> simp_rw [Pi.zero_apply, ← bot_eq_zero, min_eq_bot, bot_eq_zero]
+    <;> exact fun x hx ↦ hx
 
 end ProbabilityTheory
