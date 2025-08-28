@@ -59,14 +59,14 @@ instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
   Function.Injective.mulOneClass DFunLike.coe DFunLike.coe_injective' rfl fun _ _ => rfl
 
 /-- `DFunLike.coe` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`DFunLike.coe` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `DFunLike.coe` as an `AddMonoidHom`. -/]
 def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
   toFun := DFunLike.coe
   map_one' := rfl
   map_mul' _ _ := rfl
 
 /-- The constant-function embedding, as a multiplicative monoid hom. -/
-@[to_additive (attr := simps) "The constant-function embedding, as an additive monoid hom."]
+@[to_additive (attr := simps) /-- The constant-function embedding, as an additive monoid hom. -/]
 def constMonoidHom [MulOneClass Y] : Y →* LocallyConstant X Y where
   toFun := const X
   map_one' := rfl
@@ -94,7 +94,7 @@ theorem charFn_eq_one [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x =
   Set.indicator_eq_one_iff_mem _
 
 theorem charFn_eq_zero [Nontrivial Y] (x : X) (hU : IsClopen U) : charFn Y hU x = (0 : Y) ↔ x ∉ U :=
-  Set.indicator_eq_zero_iff_not_mem _
+  Set.indicator_eq_zero_iff_notMem _
 
 theorem charFn_inj [Nontrivial Y] (hU : IsClopen U) (hV : IsClopen V)
     (h : charFn Y hU = charFn Y hV) : U = V :=
@@ -288,7 +288,7 @@ end coeFn
 section Eval
 
 /-- Evaluation as a `MonoidHom` -/
-@[to_additive (attr := simps!) "Evaluation as an `AddMonoidHom`"]
+@[to_additive (attr := simps!) /-- Evaluation as an `AddMonoidHom` -/]
 def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
   (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
 
@@ -314,7 +314,7 @@ section Comap
 variable [TopologicalSpace Y] {Z : Type*}
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `LocallyConstant.comap` as an `AddMonoidHom`. -/]
 def comapMonoidHom [MulOneClass Z] (f : C(X, Y)) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
@@ -377,7 +377,7 @@ section Map
 variable {Z : Type*}
 
 /-- `LocallyConstant.map` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.map` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `LocallyConstant.map` as an `AddMonoidHom`. -/]
 def mapMonoidHom [MulOneClass Y] [MulOneClass Z] (f : Y →* Z) :
     LocallyConstant X Y →* LocallyConstant X Z where
   toFun := map f

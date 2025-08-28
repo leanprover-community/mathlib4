@@ -52,7 +52,7 @@ noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
 /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
 let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `rightLim f a`, is defined
 by using the order topology on `α`. If `a` is isolated to its right or the function has no right
-limit, , we use `f a` instead to guarantee a good behavior in most cases. -/
+limit, we use `f a` instead to guarantee a good behavior in most cases. -/
 noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
   @Function.leftLim αᵒᵈ β _ _ f a
 
@@ -70,7 +70,7 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[<] a = ⊥) : leftLim f a = f a := by
   rw [h'α.topology_eq_generate_intervals] at h
-  simp [leftLim, ite_eq_left_iff, h]
+  simp [leftLim, h]
 
 theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
     {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
@@ -208,43 +208,6 @@ theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x 
     · rw [h] at h'
       exact hf.continuousWithinAt_Ioi_iff_rightLim_eq.2 h'
 
-/-- In a second countable space, the set of points where a monotone function is not right-continuous
-is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
-version. -/
-theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousWithinAt f (Ioi x) x } := by
-  apply (countable_image_lt_image_Ioi f).mono
-  rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
-  dsimp
-  contrapose! hx
-  refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
-  · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
-      (hf (le_of_lt hy))
-  rcases hx u hu with ⟨v, xv, fvu⟩
-  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsGT xv
-  filter_upwards [this] with y hy
-  apply (hf hy.2.le).trans_lt fvu
-
-/-- In a second countable space, the set of points where a monotone function is not left-continuous
-is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
-version. -/
-theorem countable_not_continuousWithinAt_Iio [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousWithinAt f (Iio x) x } :=
-  hf.dual.countable_not_continuousWithinAt_Ioi
-
-/-- In a second countable space, the set of points where a monotone function is not continuous
-is at most countable. -/
-theorem countable_not_continuousAt [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousAt f x } := by
-  apply
-    (hf.countable_not_continuousWithinAt_Ioi.union hf.countable_not_continuousWithinAt_Iio).mono
-      _
-  refine compl_subset_compl.1 ?_
-  simp only [compl_union]
-  rintro x ⟨hx, h'x⟩
-  simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x ⊢
-  exact continuousAt_iff_continuous_left'_right'.2 ⟨h'x, hx⟩
-
 end Monotone
 
 namespace Antitone
@@ -309,11 +272,5 @@ theorem continuousWithinAt_Ioi_iff_rightLim_eq :
 coincide. -/
 theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x = rightLim f x :=
   hf.dual_right.continuousAt_iff_leftLim_eq_rightLim
-
-/-- In a second countable space, the set of points where an antitone function is not continuous
-is at most countable. -/
-theorem countable_not_continuousAt [SecondCountableTopology β] :
-    Set.Countable { x | ¬ContinuousAt f x } :=
-  hf.dual_right.countable_not_continuousAt
 
 end Antitone

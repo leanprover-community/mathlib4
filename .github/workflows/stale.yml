@@ -1,12 +1,11 @@
 name: 'Close stale issues and PRs'
 on:
-  schedule:
-    - cron: '30 1 * * *' # every day at 01:30 UTC
   workflow_dispatch:
 
 jobs:
   stale:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       # until https://github.com/actions/stale/pull/1145 is merged
       - uses: asterisk/github-actions-stale@1b80269ed4fffa62ade5d212089f005f03cde943 # branch: main-only-matching-filter

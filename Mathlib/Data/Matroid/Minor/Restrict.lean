@@ -86,24 +86,19 @@ section restrict
     obtain ⟨B', hB', rfl⟩ := hI'.exists_isBase
     obtain ⟨B, hB, hIB, hBIB'⟩ := hI.exists_isBase_subset_union_isBase hB'
     rw [hB'.inter_isBasis_iff_compl_inter_isBasis_dual, diff_inter_diff] at hI'
-
     have hss : M.E \ (B' ∪ (R ∩ M.E)) ⊆ M.E \ (B ∪ (R ∩ M.E)) := by
       apply diff_subset_diff_right
       rw [union_subset_iff, and_iff_left subset_union_right, union_comm]
       exact hBIB'.trans (union_subset_union_left _ (subset_inter hIY hI.subset_ground))
-
     have hi : M✶.Indep (M.E \ (B ∪ (R ∩ M.E))) := by
       rw [dual_indep_iff_exists]
       exact ⟨B, hB, disjoint_of_subset_right subset_union_left disjoint_sdiff_left⟩
-
     have h_eq := hI'.eq_of_subset_indep hi hss
       (diff_subset_diff_right subset_union_right)
     rw [h_eq, ← diff_inter_diff, ← hB.inter_isBasis_iff_compl_inter_isBasis_dual] at hI'
-
     obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset
       (subset_inter hIB (subset_inter hIY hI.subset_ground))
     obtain rfl := hI'.indep.eq_of_isBasis hJ
-
     have hIJ' : I ⊂ B ∩ (R ∩ M.E) := hIJ.ssubset_of_ne (fun he ↦ hIn (by rwa [he]))
     obtain ⟨e, he⟩ := exists_of_ssubset hIJ'
     exact ⟨e, ⟨⟨(hBIB' he.1.1).elim (fun h ↦ (he.2 h).elim) id,he.1.2⟩, he.2⟩,
@@ -142,7 +137,7 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
   rw [Dep, restrict_indep_iff, restrict_ground_eq]; tauto
 
 @[simp] theorem restrict_ground_eq_self (M : Matroid α) : (M ↾ M.E) = M := by
-  refine ext_indep rfl ?_; aesop
+  refine ext_indep rfl ?_; simp_all
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
@@ -467,7 +462,7 @@ theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.enca
     exact fun e heJ heI ↦ ⟨he e ⟨heJ, heI⟩, hJ.subset_ground heJ⟩
   obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_isBasis_of_subset I.subset_union_right
   rw [← hJ'.encard_eq_encard hb] at hIJ
-  exact hIJ.not_le (encard_mono hJJ')
+  exact hIJ.not_ge (encard_mono hJJ')
 
 lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
     (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by

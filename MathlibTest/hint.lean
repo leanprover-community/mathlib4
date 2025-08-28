@@ -1,6 +1,11 @@
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.Linarith
+import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.ComputeDegree
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Finiteness
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.TautoSet
 
 /--
@@ -35,7 +40,7 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-• norm_num
+• ring
 -/
 #guard_msgs in
 example : 37^2 - 35^2 = 72 * 2 := by hint
@@ -43,6 +48,7 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 /--
 info: Try these:
 • decide
+• ring_nf
 • norm_num
 -/
 #guard_msgs in
@@ -51,6 +57,7 @@ example : Nat.Prime 37 := by hint
 /--
 info: Try these:
 • aesop
+• ring_nf
 • norm_num
 • simp_all only [zero_le, and_true]
 -/
@@ -94,6 +101,7 @@ example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A
 /--
 info: Try these:
 • aesop
+• ring_nf
 • norm_num
 • simp_all only [Nat.not_ofNat_le_one]
 ---
@@ -103,3 +111,35 @@ warning: declaration uses 'sorry'
 example : 2 ≤ 1 := by hint
 
 end tauto_set
+
+section compute_degree
+/--
+info: Try these:
+• compute_degree
+-/
+#guard_msgs in
+open Polynomial in
+example : natDegree ((X + 1) : Nat[X]) ≤ 1 := by hint
+end compute_degree
+
+section field_simp
+/--
+info: Try these:
+• exact Units.divp_add_divp_same a b u₁
+• ring_nf
+• abel_nf
+• norm_num
+-/
+#guard_msgs in
+example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint
+end field_simp
+
+section finiteness
+/--
+info: Try these:
+• finiteness
+-/
+#guard_msgs in
+open ENNReal in
+example : (1 : ℝ≥0∞) < ∞ := by hint
+end finiteness

@@ -7,8 +7,8 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological properties of convex sets
@@ -23,7 +23,7 @@ We prove the following facts:
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
-assert_not_exists Norm
+assert_not_exists Cardinal Norm
 
 open Metric Bornology Set Pointwise Convex
 
@@ -144,7 +144,7 @@ theorem Convex.combo_interior_self_subset_interior {s : Set E} (hs : Convex 𝕜
     (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) : a • interior s + b • s ⊆ interior s :=
   calc
     a • interior s + b • s ⊆ a • interior s + b • closure s :=
-      add_subset_add Subset.rfl <| image_subset _ subset_closure
+      add_subset_add Subset.rfl <| image_mono subset_closure
     _ ⊆ interior s := hs.combo_interior_closure_subset_interior ha hb hab
 
 /-- If `s` is a convex set, then `a • closure s + b • interior s ⊆ interior s` for all `0 ≤ a`,
@@ -419,54 +419,6 @@ TODO Generalise this from convex sets to sets that are balanced / star-shaped ab
 theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Convex ℝ s) {x : E}
     (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : s ⊆ interior (homothety x t '' s) :=
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht
-
-theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
-    [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
-    {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by fun_prop
-  apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
-  convert h
-  rw [segment_eq_image ℝ x y]
-
-/-- A nonempty convex set is path connected. -/
-protected theorem Convex.isPathConnected {s : Set E} (hconv : Convex ℝ s) (hne : s.Nonempty) :
-    IsPathConnected s := by
-  refine isPathConnected_iff.mpr ⟨hne, ?_⟩
-  intro x x_in y y_in
-  exact JoinedIn.of_segment_subset ((segment_subset_iff ℝ).2 (hconv x_in y_in))
-
-/-- A nonempty convex set is connected. -/
-protected theorem Convex.isConnected {s : Set E} (h : Convex ℝ s) (hne : s.Nonempty) :
-    IsConnected s :=
-  (h.isPathConnected hne).isConnected
-
-/-- A convex set is preconnected. -/
-protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreconnected s :=
-  s.eq_empty_or_nonempty.elim (fun h => h.symm ▸ isPreconnected_empty) fun hne =>
-    (h.isConnected hne).isPreconnected
-
-/-- A subspace in a topological vector space over `ℝ` is path connected. -/
-theorem Submodule.isPathConnected (s : Submodule ℝ E) : IsPathConnected (s : Set E) :=
-  s.convex.isPathConnected s.nonempty
-
-/-- Every topological vector space over ℝ is path connected.
-
-Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
--/
-protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
-  pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
-
-/-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
-is path connected in `p` then the complement of `q` is path connected in `E`. -/
-theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ E}
-    (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) : IsPathConnected (qᶜ : Set E) := by
-  convert (hpc.image continuous_subtype_val).add q.isPathConnected using 1
-  trans Submodule.prodEquivOfIsCompl p q hpq '' ({0}ᶜ ×ˢ univ)
-  · rw [prod_univ, LinearEquiv.image_eq_preimage]
-    ext
-    simp
-  · ext
-    simp [mem_add, and_assoc]
 
 end ContinuousSMul
 
