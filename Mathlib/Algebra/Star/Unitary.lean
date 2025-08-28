@@ -192,10 +192,10 @@ def map (f : R →⋆* S) : unitary R →⋆* unitary S where
   map_star' _ := Subtype.ext <| map_star f _
 
 @[simp]
-lemma coe_map (f : R →⋆* S) (x : unitary R) : (map f x : S) = f x := rfl
+lemma coe_map (f : R →⋆* S) (x : unitary R) : map f x = f x := rfl
 
 @[simp]
-lemma coe_map_star (f : R →⋆* S) (x : unitary R) : (map f (star x) : S) = f (star x) := rfl
+lemma coe_map_star (f : R →⋆* S) (x : unitary R) : map f (star x) = f (star x) := rfl
 
 @[simp]
 lemma map_id : map (.id R) = .id (unitary R) := rfl
