@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2
 
 /-!
 # Dedekind eta function
@@ -22,10 +21,10 @@ differentiable on the upper half-plane.
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
+open UpperHalfPlane hiding I
+
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
-
-open UpperHalfPlane hiding I
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
@@ -77,12 +76,14 @@ lemma multipliableLocallyUniformlyOn_eta :
   · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
     simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 
-/-- Eta is non-vanishing on the upper half plane. -/
-lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
-  apply mul_ne_zero (Periodic.qParam_ne_zero z)
-  refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z)  ?_ ?_
+lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : (∏' n, (1 - eta_q n z)) ≠ 0 := by
+  refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
   · exact fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz
   · simpa [eta_q, ← summable_norm_iff] using summable_eta_q ⟨z, hz⟩
+
+/-- Eta is non-vanishing on the upper half plane. -/
+lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
+  apply mul_ne_zero (Periodic.qParam_ne_zero z) (eta_tprod_ne_zero hz)
 
 lemma logDeriv_one_sub_cexp (r : ℂ) : logDeriv (fun z ↦ 1 - r * cexp z) =
     fun z ↦ -r * cexp z / (1 - r * cexp z) := by
@@ -113,12 +114,56 @@ lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x)
   rw [tsum_congr (one_sub_eta_logDeriv_eq z), ← tsum_mul_left]
   grind
 
-theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
-    DifferentiableAt ℂ eta z := by
-  apply DifferentiableAt.mul (by fun_prop)
-  refine (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
+lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
+    DifferentiableAt ℂ (fun x ↦ ∏' n, (1 - eta_q n x)) z := by
+  apply (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
     isOpen_upperHalfPlaneSet z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
   filter_upwards with b
   simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (by fun_prop)
+
+theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
+    DifferentiableAt ℂ eta z := by
+  apply DifferentiableAt.mul (by fun_prop) (differentiableAt_eta_tprod hz)
+
+lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
+    Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
+  simp only [one_sub_eta_logDeriv_eq]
+  apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
+    (by simpa [Periodic.qParam] using UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨z, hz⟩)).mul_left
+    (-2 * π * I))).congr
+  intro b
+  field_simp [one_sub_eta_q_ne_zero b hz]
+  ring
+
+lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24 := by
+  have : (𝕢 24) = (fun z ↦ cexp (z)) ∘ (fun z => (2 * ↑π * I / 24) * z)  := by
+    ext y
+    simp only [Periodic.qParam, ofReal_ofNat, comp_apply]
+    ring_nf
+  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
+  simp only [LogDeriv_exp, Pi.one_apply, deriv_id'', mul_one, one_mul]
+
+lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * I / 12) * E2 z := by
+  unfold ModularForm.eta
+  rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
+    Periodic.qParam]) (eta_tprod_ne_zero z.2) (by fun_prop) (differentiableAt_eta_tprod z.2)]
+  have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet (x := z)
+    (f := fun n x => 1 - eta_q n x) (fun i ↦ one_sub_eta_q_ne_zero i z.2)
+    (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_log_deriv_one_sub_eta_q z.2)
+    (multipliableLocallyUniformlyOn_eta ) (eta_tprod_ne_zero z.2)
+  rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
+  simp only [logDeriv_q_term z, HG, tsum_logDeriv_eta_q z, E2, one_div,
+    mul_inv_rev, Pi.smul_apply, smul_eq_mul]
+  rw [G2_q_exp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
+    (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z), mul_sub, sub_eq_add_neg, mul_add]
+  congr 1
+  · field_simp
+    ring
+  · field_simp [tsum_pnat_eq_tsum_succ (f := fun n ↦ n * cexp (2 * π * I * z) ^ n
+      / (1 - cexp (2 * π * I * z) ^ n )), eta_q_eq_pow]
+    simp_rw [← tsum_mul_left, ← tsum_mul_right, ← tsum_neg]
+    congr
+    ext n
+    ring_nf
 
 end ModularForm
