@@ -23,7 +23,7 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `ᵀ` for `Matrix.transpose`
 

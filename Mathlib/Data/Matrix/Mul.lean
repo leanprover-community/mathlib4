@@ -24,7 +24,7 @@ This file defines vector and matrix multiplication
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `⬝ᵥ` for `dotProduct`
 * `*ᵥ` for `Matrix.mulVec`

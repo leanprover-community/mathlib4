@@ -51,7 +51,7 @@ As specific examples of models with corners, we define (in `Geometry.Manifold.In
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
   define `n`-dimensional real manifolds without boundary
-  (with notation `𝓡 n` in the locale `Manifold`)
+  (with notation `𝓡 n` in the scope `Manifold`)
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
