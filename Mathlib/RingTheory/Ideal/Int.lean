@@ -34,7 +34,15 @@ namespace Int
 
 open Ideal
 
-variable {R : Type*} [Ring R] {I : Ideal R}
+variable {R : Type*}
+
+section Ring
+
+variable [Ring R] {I : Ideal R}
+
+instance liesOver_span_absNorm (I : Ideal R) :
+    I.LiesOver (span {(absNorm (under ℤ I) : ℤ)}) := by
+  rw [liesOver_iff, under_def, Int.ideal_span_absNorm_eq_self]
 
 theorem cast_mem_ideal_iff {d : ℤ} :
     (d : R) ∈ I ↔ (absNorm (under ℤ I) : ℤ) ∣ d := by
@@ -78,5 +86,24 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
   · rw [show absNorm I = 0 by
       exact AddSubgroup.index_eq_zero_iff_infinite.mpr <| not_finite_iff_infinite.mp h]
     exact Nat.dvd_zero _
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] [IsDomain R] [Algebra.IsIntegral ℤ R]
+
+theorem absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] : (absNorm (under ℤ P)).Prime := by
+  rw [Nat.prime_iff_prime_int, ← span_singleton_prime, Int.ideal_span_absNorm_eq_self]
+  · infer_instance
+  · refine Int.natCast_ne_zero.mpr <| absNorm_eq_zero_iff.not.mpr ?_
+    have : P ≠ ⊥ := NeZero.ne _
+    contrapose! this
+    exact eq_bot_of_comap_eq_bot this
+
+instance _root_Nat.prime_absNorm (P : Ideal R) [P.IsPrime] [NeZero P] :
+    Fact (absNorm (under ℤ P)).Prime := ⟨absNorm_under_prime P⟩
+
+end CommRing
 
 end Int

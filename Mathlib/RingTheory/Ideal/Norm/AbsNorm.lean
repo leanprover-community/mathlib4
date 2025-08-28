@@ -328,6 +328,8 @@ theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := b
   · rintro rfl
     exact absNorm_bot
 
+
+
 theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
     absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ := by
   simp_rw [ne_eq, Ideal.absNorm_eq_zero_iff, mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot]

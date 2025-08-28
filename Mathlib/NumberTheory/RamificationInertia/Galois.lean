@@ -170,6 +170,12 @@ theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] [IsGalois K L] :
   rw [inertiaDegIn, dif_pos h]
   exact inertiaDeg_eq_of_isGalois p h.choose P K L
 
+theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime] (hp : p ≠ ⊥)
+    [IsGalois K L] [NoZeroSMulDivisors A B] : p.ramificationIdxIn B ≠ 0 := by
+  obtain ⟨P⟩ := (inferInstance : Nonempty (primesOver p B))
+  rw [ramificationIdxIn_eq_ramificationIdx p P K L]
+  exact IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P.1 hp
+
 end RamificationInertia
 
 section fundamental_identity
