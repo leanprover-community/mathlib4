@@ -14,13 +14,6 @@ open Lean Elab Meta Qq TendstoTactic
 
 namespace TendstoTactic
 
--- TODO: where to move?
-partial def getLast {α : Q(Type)} (li : Q(List $α)) : MetaM <| Option <| Q($α) := do
-  let ~q(List.cons $hd $tl) := li | return .none
-  match tl with
-  | ~q(List.cons $tl_hd $tl_tl) => return ← getLast tl
-  | ~q(List.nil) => return .some hd
-
 structure MS where
   basis : Q(Basis)
   logBasis : Q(LogBasis $basis)
@@ -186,8 +179,10 @@ def insertLastLog (ms : MS) : MetaM MS := do
   haveI : List.getLast ($basis_hd :: $basis_tl) (List.cons_ne_nil _ _) =Q $last := ⟨⟩
   let basis := ← reduceBasis q($ms.basis ++ [Real.log ∘ $last])
   haveI : $basis =Q $ms.basis ++ [Real.log ∘ $last] := ⟨⟩
-  let logBasis := q(LogBasis.insertLastLog (basis_hd := $basis_hd) (basis_tl := $basis_tl)
+  let logBasis := ← reduceLogBasis q(LogBasis.insertLastLog (basis_hd := $basis_hd) (basis_tl := $basis_tl)
     $ms.logBasis)
+  have : $logBasis =Q LogBasis.insertLastLog (basis_hd := $basis_hd) (basis_tl := $basis_tl)
+    $ms.logBasis := ⟨⟩
   let h_basis : Q(WellFormedBasis $basis) := q(insertLastLog_WellFormedBasis $ms.h_basis)
   let ms' : MS := {
     basis := basis

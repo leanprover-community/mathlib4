@@ -53,6 +53,7 @@ partial def getBasisExtension (basis basis' : Q(Basis)) : MetaM (Q(BasisExtensio
     else
       let ex ← getBasisExtension basis basis_tl'
       return q(BasisExtension.insert $basis_hd' $ex)
+  | _ => panic! "unexpected basis or basis' in getBasisExtension"
 
 structure BasisState where
   basis : Q(Basis)
@@ -63,51 +64,105 @@ structure BasisState where
 
 abbrev BasisM := StateT BasisState TacticM
 
+def proveTendstoTop (ms : MS) : TacticM Q(Tendsto $ms.f atTop atTop) := do
+  let ⟨ms, h_trimmed⟩ ← trimMS ms
+  let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "Unexpected basis in proveTendstoTop"
+  let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms.val
+  let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in proveTendstoTop"
+  let .pos h_first_is_pos := ← getFirstIs exps | panic! "Unexpected nonpos in proveTendstoTop"
+  let .pos h_coef_pos := ← compareReal coef | panic! "Unexpected coef in proveTendstoTop"
+  return (q(PreMS.tendsto_top_of_FirstIsPos $ms.h_wo $ms.h_approx $h_trimmed $ms.h_basis $h_leading_eq $h_first_is_pos $h_coef_pos) : Expr)
+
+inductive FindPlaceResultRight (f right_hd : Q(ℝ → ℝ))
+  | gt (h : Q((Real.log ∘ $right_hd) =o[atTop] $f))
+  | eq (c : Q(ℝ)) (h_c_pos : Q($c ≠ 0)) (h_eq : Q($f ~[atTop] $c • $right_hd))
+deriving Inhabited
+
+structure FindPlaceResult (ms : MS) where
+  left : Q(Basis)
+  right_hd : Q(ℝ → ℝ)
+  right_tl : Q(Basis)
+  h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g))
+  h_right : FindPlaceResultRight ms.f right_hd
+deriving Inhabited
+
 -- assumptions:
 -- `ms` tends to infinity
 -- `ms` is o-little of logs of `left`
 -- `ms.basis = left ++ cur :: right`
 partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
+    (h_pos : Q(Term.FirstIsPos (PreMS.leadingTerm $ms.val).exps))
     (left : Q(Basis)) (cur : Q(ℝ → ℝ)) (right : Q(Basis))
     (logBasis : Q(LogBasis ($cur :: $right)))
-    (h_logBasis : Q(LogBasis.WellFormed $logBasis)) :
-    BasisM (Q(Basis) × Q(ℝ → ℝ) × Q(Basis)) := do
+    (h_logBasis : Q(LogBasis.WellFormed $logBasis))
+    (h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g))) :
+    BasisM (FindPlaceResult ms) := do
   match right with
   | ~q(List.nil) =>
     -- then `cur` is the last element of basis, so
     -- `ms` is not o-little of `log cur = log b_n` as `ms ~ b_1 ^ e_1 * ... * b_n ^ e_n -> inf`
-    return (← reduceBasis left, cur, ← reduceBasis right)
+    let left' := ← reduceBasis left
+    have : $left' =Q $left := ⟨⟩
+    let h_right : Q((Real.log ∘ $cur) =o[atTop] $ms.f) := (q(PreMS.log_basis_getLast_IsLittleO $ms.h_basis $ms.h_wo $ms.h_approx $h_trimmed $h_pos) : Expr)
+    return {
+      left := left'
+      right_hd := cur
+      right_tl := q(List.nil)
+      h_left := q($h_left)
+      h_right := .gt q($h_right)
+    }
   | ~q(List.cons $right_hd $right_tl) =>
     -- in this case `log cur` is approximated by `logBasis`
+    dbg_trace f!"cur : {← ppExpr cur}"
+    dbg_trace f!"right_hd : {← ppExpr right_hd}"
+    dbg_trace f!"right_tl : {← ppExpr right_tl}"
     let ~q(LogBasis.cons _ _ _ $logBasis_tl $log_hd) := logBasis
       | panic! s!"findPlaceAux: unexpected logBasis: {← ppExpr logBasis}"
+    have : $ms.basis =Q $left ++ $cur :: $right_hd :: $right_tl := ⟨⟩
+    let h_basis' : Q(WellFormedBasis ($right_hd :: $right_tl)) := q(WellFormedBasis.tail (WellFormedBasis.of_append_right $ms.h_basis))
     let log_hd' : MS := {
       basis := _
       logBasis := _
       val := q($log_hd)
       f := q(Real.log ∘ $cur)
-      h_approx := q(sorry) -- from h_logBasis
-      h_wo := q(sorry) -- from h_logBasis
-      h_basis := q(sorry) -- from h_basis
+      h_approx := q(LogBasis.WellFormed_cons_Approximates $h_logBasis)
+      h_wo := q(LogBasis.WellFormed_cons_WellOrdered $h_logBasis)
+      h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
-    match ← MS.compare ms log_hd' h_trimmed q(sorry) with
+    let ⟨log_hd', h_log_hd_trimmed⟩ ← trimMS log_hd'
+    match ← MS.compare ms log_hd' h_trimmed q($h_log_hd_trimmed) with
     | .gt h => -- `ms` grows faster than `log cur` => we stop here, `left` is maximal
-      return (← reduceBasis left, cur, right)
+      let left' := ← reduceBasis left
+      have : $left' =Q $left := ⟨⟩
+      return {
+        left := left'
+        right_hd := cur
+        right_tl := right
+        h_left := q($h_left)
+        h_right := .gt h
+      }
     | .lt h => -- `log cur` grows faster than `ms` => we add `cur` to the `left`
-      findPlaceAux ms h_trimmed q($left ++ [$cur]) right_hd right_tl q(LogBasis.tail $logBasis)
-        q(LogBasis.tail_WellFormed $h_logBasis)
+      -- have : List.getLast? ($left ++ [$cur]) =Q .some $cur := by
+      have : $log_hd'.f =Q (Real.log ∘ $cur) := ⟨⟩
+      let h_left' : Q(∀ g ∈ List.getLast? ($left ++ [$cur]), $ms.f =o[atTop] (Real.log ∘ g)) :=
+        q(log_left_concat $left $h)
+      findPlaceAux ms h_trimmed h_pos q($left ++ [$cur]) right_hd right_tl
+        q(LogBasis.tail $logBasis) q(LogBasis.tail_WellFormed $h_logBasis) q($h_left')
     | .eq c hc h =>
       throwError "Not implemented: eq in findPlace"
   | _ => panic! "findPlaceAux: unexpected right"
 
 /-- Finds `left`, `right_hd`, `right_tl` such that `ms.basis = left ++ right_hd :: right_tl`,
 `ms` is o-little of logs of `left`, and `left` is maximal. Assumes `ms` tendsto infinity. -/
-partial def findPlace (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) :
-    BasisM (Q(Basis) × Q(ℝ → ℝ) × Q(Basis)) := do
+partial def findPlace (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
+    (h_pos : Q(Term.FirstIsPos (PreMS.leadingTerm $ms.val).exps)) :
+    BasisM (FindPlaceResult ms) := do
   let basis : Q(Basis) := (← get).basis
+  dbg_trace f!"findPlace: basis : {← ppExpr basis}"
+  dbg_trace f!"findPlace: logBasis : {← ppExpr (← get).logBasis}"
   let ~q(List.cons $basis_hd $basis_tl) := basis | panic! "Unexpected basis (nil) in findPlace"
-  findPlaceAux ms h_trimmed q(List.nil) basis_hd basis_tl (← get).logBasis (← get).h_logBasis
+  findPlaceAux ms h_trimmed h_pos q(List.nil) basis_hd basis_tl (← get).logBasis (← get).h_logBasis q(by simp)
 
 -- TODO: move
 lemma PreMS.Approximates_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef : PreMS basis_tl}
@@ -117,9 +172,10 @@ lemma PreMS.Approximates_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef 
   generalize_proofs h
   exact h.choose_spec.left
 
-def extractDeepCoef (ms : MS) (depth : Nat) : MetaM MS := do
+def extractDeepCoef (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (depth : Nat) :
+    MetaM <| (ms : MS) × Q(PreMS.Trimmed $ms.val) := do
   match depth with
-  | 0 => return ms
+  | 0 => return ⟨ms, h_trimmed⟩
   | newDepth + 1 =>
     let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "Unexpected basis in extractDeepCoef"
     let ~q(PreMS.cons ($exp, $coef) $tl) := ms.val | panic! "Unexpected ms in extractDeepCoef"
@@ -133,7 +189,8 @@ def extractDeepCoef (ms : MS) (depth : Nat) : MetaM MS := do
       h_basis := q(WellFormedBasis.tail $ms.h_basis)
       h_logBasis := q(LogBasis.tail_WellFormed $ms.h_logBasis)
     }
-    extractDeepCoef newMS newDepth
+    let new_h_trimmed : Q(PreMS.Trimmed $coef) := q((PreMS.Trimmed_cons $h_trimmed).left)
+    extractDeepCoef newMS new_h_trimmed newDepth
 
 lemma PreMS.Approximates_log_exp {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
     (h_approx : ms.Approximates f) :
@@ -173,34 +230,58 @@ theorem PreMS.sub_exp_Approximates {basis : Basis} {G H : PreMS basis} {f g : �
   rw [this]
   apply PreMS.mul_Approximates h_basis hG_approx hH_approx
 
+set_option maxHeartbeats 0 in
 partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : BasisM MS := do
   let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
-  match ← getFirstIs exps with
-  | .pos _ =>
+  match ← getFirstIsPos exps with
+  | .wrong h_nonpos => return ms.exp h_nonpos
+  | .right h_first_is_pos =>
     -- find place for a new basis element
-    let (left, right_hd, right_tl) ← findPlace ms h_trimmed
+    let ⟨left, right_hd, right_tl, h_left, h_right⟩ ← findPlace ms h_trimmed h_first_is_pos
+    let .gt h_right := h_right | throwError "Unexpected h_right in createExpMS"
     haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩
+    -- dbg_trace "place found"
     -- extract deep coef `G`
-    let G : MS := ← extractDeepCoef ms (← computeLength left)
+    let ⟨G, hG_trimmed⟩ := ← extractDeepCoef ms h_trimmed (← computeLength left)
     haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩
-    haveI expG := q(Real.exp ∘ $G.f)
+    have expG := q(Real.exp ∘ $G.f)
     haveI : $expG =Q Real.exp ∘ $G.f := ⟨⟩
+    -- dbg_trace "G is ready"
     do
     -- insert `exp g` in basis
     let new_n_id ← updateNId left q($right_hd :: $right_tl) expG (← get).n_id
     let basis := ← reduceBasis q($left ++ $expG :: $right_hd :: $right_tl)
-    haveI : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
-    haveI h_basis : Q(WellFormedBasis ($left ++ $expG :: $right_hd :: $right_tl)) :=
-      q(WellFormedBasis.insert $ms.h_basis sorry sorry sorry)
+    have : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
+    let h_ms_equiv_G : Q($ms.f ~[atTop] $G.f) :=
+      let h_coef : Q((PreMS.leadingTerm $ms.val).coef = (PreMS.leadingTerm $G.val).coef) :=
+        ← mkEqRefl q((PreMS.leadingTerm $ms.val).coef)
+      let h_exps : Q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps = (PreMS.leadingTerm $ms.val).exps) :=
+        ← mkEqRefl q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps)
+      q(PreMS.IsEquivalent_of_leadingTerm_zeros_append $ms.h_wo $G.h_wo $ms.h_approx $G.h_approx $h_trimmed $hG_trimmed $ms.h_basis $h_coef $h_exps)
+    -- sorry
+    let h_ms_tendsto_top : Q(Tendsto $ms.f atTop atTop) := ← proveTendstoTop ms -- use h_first_is_pos
+    -- let h_G_tendsto_top : Q(Tendsto $G.f atTop atTop) := q(Asymptotics.IsEquivalent.tendsto_atTop $h_G_equiv_ms $h_ms_tendsto_top)
+    let h_expG_tendsto_top : Q(Tendsto $expG atTop atTop) := q(Filter.Tendsto.comp Real.tendsto_exp_atTop
+      (Asymptotics.IsEquivalent.tendsto_atTop $h_ms_equiv_G $h_ms_tendsto_top))
+    let hG_left : Q(∀ (g : ℝ → ℝ), List.getLast? $left = some g → (Real.log ∘ $expG) =o[atTop] (Real.log ∘ g)) :=
+      q(log_congr_IsEquivalent_left $left $h_ms_equiv_G $h_left)
+    let hG_right : Q(∀ (g : ℝ → ℝ), ($right_hd :: $right_tl).head? = some g → (Real.log ∘ g) =o[atTop] (Real.log ∘ $expG)) :=
+      q(log_congr_IsEquivalent_right' $right_hd $right_tl $h_ms_equiv_G $h_right)
+    let h_basis : Q(WellFormedBasis ($left ++ $expG :: $right_hd :: $right_tl)) :=
+      q(WellFormedBasis.insert $ms.h_basis $h_expG_tendsto_top $hG_left $hG_right)
+    let logBasis : Q(LogBasis $basis) := ← reduceLogBasis q(LogBasis.extendBasisMiddle $expG $ms.logBasis $G.val)
+    -- have : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
+    -- have : $logBasis =Q LogBasis.extendBasisMiddle $expG $ms.logBasis $G.val := ⟨⟩
     StateT.set {
       basis := basis
       h_basis := q($h_basis)
-      logBasis := q(LogBasis.extendBasisMiddle $expG $ms.logBasis $G.val)
-      h_logBasis := q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis $G.h_wo
-        (PreMS.Approximates_log_exp $G.h_approx))
+      logBasis := logBasis
+      h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis $G.h_wo
+        (PreMS.Approximates_log_exp $G.h_approx)) : Expr)
       n_id := q($new_n_id)
     }
+    -- dbg_trace "basis updated"
     -- create H = F - G
     let G_updated ← updateBasis G
     let ms_updated ← updateBasis ms
@@ -209,7 +290,7 @@ partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : Basis
     -- prove `¬ FirstIsPos` for `H`
     let ⟨H_leading, hH_leading_eq⟩ ← getLeadingTermWithProof H.val
     let ~q(⟨$H_coef, $H_exps⟩) := H_leading | panic! "Unexpected leading of H in createExpMS"
-    let h_H_nonpos : Q(¬ Term.FirstIsPos $H_exps) := q(sorry)
+    let .wrong h_H_nonpos := (← getFirstIsPos H_exps) | panic! "Unexpected nonpos in createExpMS"
     let H_exp := H.exp h_H_nonpos
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
     let G_exp := MS.monomial (← get).basis (← get).logBasis new_idx (← get).h_basis
@@ -232,13 +313,6 @@ partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : Basis
       h_basis := G_exp.h_basis
       h_logBasis := G_exp.h_logBasis
     }
-    -- throwError "exp of function with infinite leading term is not implemented"
-  | .neg h_exps =>
-    let h_nonpos : Q(¬ Term.FirstIsPos $exps) := q(Term.not_FirstIsPos_of_FirstIsNeg $h_exps)
-    return ms.exp h_nonpos
-  | .zero h_exps =>
-    let h_nonpos : Q(¬ Term.FirstIsPos $exps) := q(Term.not_FirstIsPos_of_AllZero $h_exps)
-    return ms.exp h_nonpos
 
 partial def createMSImp (body : Expr) : BasisM MS := do
   if body.isBVar then
@@ -257,7 +331,9 @@ partial def createMSImp (body : Expr) : BasisM MS := do
       return MS.add ms1 ms2 ⟨⟩
   | (``HSub.hSub, #[_, _, _, _, arg1, arg2]) =>
     let ms1 ← createMSImp arg1
+    dbg_trace "arg1 done"
     let ms2 ← createMSImp arg2
+    dbg_trace "arg2 done"
     if ms1.basis != ms2.basis then
       let ms1' ← updateBasis ms1
       return MS.sub ms1' ms2 ⟨⟩
@@ -327,6 +403,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
       return MS.log ms h_trimmed h_pos h_last
   | (``Real.exp, #[arg]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
+    dbg_trace "exp arg done"
     return ← createExpMS ms h_trimmed
   | _ =>
     if body.hasLooseBVars then
@@ -348,6 +425,7 @@ def computeTendsto (f : Q(ℝ → ℝ)) :
   match f with
   | .lam _ _ b _ =>
     let ms ← createMS b
+    dbg_trace "ms created"
     let ⟨ms_trimmed, h_trimmed?⟩ ← trimPartialMS ms
     let hf_eq ← mkFreshExprMVarQ q($ms.f = $f)
     hf_eq.mvarId!.applyRfl

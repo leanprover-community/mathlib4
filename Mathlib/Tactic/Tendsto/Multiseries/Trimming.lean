@@ -51,6 +51,58 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
   · rfl
   · rfl
 
+theorem const_Trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (PreMS.const basis c).Trimmed := by
+  cases' basis with basis_hd basis_tl
+  · constructor
+  simp [const]
+  constructor
+  · exact const_Trimmed hc
+  cases basis_tl <;> simp [const, zero, hc]
+
+theorem monomial_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) :
+    (PreMS.monomial basis n).Trimmed := by
+  cases' basis with basis_hd basis_tl
+  · constructor
+  cases' n with n
+  · simp [monomial]
+    constructor
+    · simp [one]
+      exact const_Trimmed (by simp)
+    · cases basis_tl <;> simp [one, zero, const]
+  · simp [monomial]
+    constructor
+    · apply monomial_Trimmed
+      simpa using h
+    · cases basis_tl
+      · simp at h
+      cases n <;> simp [monomial, zero]
+
+theorem extendBasisEnd_ne_zero {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
+    (h : ms ≠ zero _) : ms.extendBasisEnd b ≠ zero _ := by
+  cases' basis with basis_hd basis_tl
+  · simp [extendBasisEnd, zero, const]
+  cases' ms with exp coef tl
+  · simp [zero] at h
+  simp [extendBasisEnd, zero]
+
+theorem extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    (h_trimmed : ms.Trimmed) : (ms.extendBasisEnd b).Trimmed := by
+  cases' ms with exp coef tl
+  · simp [extendBasisEnd]
+    constructor
+  simp [extendBasisEnd]
+  constructor
+  · cases' basis_tl with basis_tl_hd basis_tl_tl
+    · simp [extendBasisEnd, const]
+      constructor
+      · exact (Trimmed_cons h_trimmed).left
+      · exact (Trimmed_cons h_trimmed).right
+    · exact extendBasisEnd_Trimmed (Trimmed_cons h_trimmed).left
+  · cases' basis_tl with basis_tl_hd basis_tl_tl
+    · simp [extendBasisEnd, const, zero]
+    · exact extendBasisEnd_ne_zero (Trimmed_cons h_trimmed).right
+
 -- TODO: Where should I put it? Trimming is not needed here.
 /-- If `f` can be approximated by multiseries with negative leading exponent, then
 it tends to zero. -/

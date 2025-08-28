@@ -36,6 +36,20 @@ theorem nil_WellFormed : WellFormed (.nil) := by simp [WellFormed]
 
 theorem single_WellFormed (f : ℝ → ℝ) : WellFormed (.single f) := by simp [WellFormed]
 
+theorem WellFormed_cons_WellOrdered {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
+    ms.WellOrdered := by
+  simp [WellFormed] at h
+  exact h.left
+
+theorem WellFormed_cons_Approximates {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
+    {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
+    (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
+    ms.Approximates (Real.log ∘ basis_hd) := by
+  simp [WellFormed] at h
+  exact h.right.left
+
 @[reducible]
 def tail {basis_hd : ℝ → ℝ} {basis_tl : Basis} (logBasis : LogBasis (basis_hd :: basis_tl)) :
     LogBasis basis_tl :=
@@ -73,6 +87,7 @@ noncomputable def extendBasisMiddle {right_hd : ℝ → ℝ} {left right_tl : Ba
           (extendBasisMiddle (left := left_tl_hd :: left_tl_tl) f logBasis_tl ms)
           (ms'.extendBasisMiddle (left := left_tl_hd :: left_tl_tl) f)
 
+@[reducible]
 noncomputable def extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
     (logBasis : LogBasis (basis_hd :: basis_tl)) (ms : PreMS [f]) :
     LogBasis (basis_hd :: basis_tl ++ [f]) :=
@@ -82,6 +97,7 @@ noncomputable def extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f 
     .cons _ _ _ (extendBasisEnd f logBasis_tl ms)
       (ms'.extendBasisEnd _)
 
+@[reducible]
 noncomputable def insertLastLog {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (logBasis : LogBasis (basis_hd :: basis_tl)) :
     LogBasis ((basis_hd :: basis_tl) ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=

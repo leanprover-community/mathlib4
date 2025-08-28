@@ -253,44 +253,25 @@ theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis} {f : �
   · linarith
   · exact h_leadingTerm
 
-theorem compare_of_leadingTerms {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms1 ms2 : PreMS (basis_hd :: basis_tl)} {f1 f2 : ℝ → ℝ}
-    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
-    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
-    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
-    (h_basis : WellFormedBasis (basis_hd :: basis_tl))
-    (h2 : ms2 ≠ .nil)
-    (h_lt : ms1.leadingTerm < ms2.leadingTerm) :
-    f1 =o[atTop] f2 := by
-  apply Asymptotics.IsEquivalent.trans_isLittleO
-    (IsEquivalent_leadingTerm h_wo1 h_approx1 h_trimmed1 h_basis)
-  apply Asymptotics.IsLittleO.trans_isEquivalent _
-    (IsEquivalent_leadingTerm h_wo2 h_approx2 h_trimmed2 h_basis).symm
-  rw [Term.lt_iff] at h_lt
-  cases' ms1 with exp1 coef1 tl1
-  · convert Asymptotics.isLittleO_zero _ _ using 1
-    ext t
-    rw [Term.zero_coef_toFun]
-    · simp
-    unfold leadingTerm
-    simp
-  cases' ms2 with exp2 coef2 tl2
-  · contradiction
-  have _ : IsAsymm ℝ (· < ·) := inferInstance
-  obtain ⟨h_coef_wo1, h_comp1, h_tl_wo1⟩ := WellOrdered_cons h_wo1
-  obtain ⟨h_coef_wo2, h_comp2, h_tl_wo2⟩ := WellOrdered_cons h_wo2
-  obtain ⟨fC1, h_coef1, _, h_tl1⟩ := Approximates_cons h_approx1
-  obtain ⟨fC2, h_coef2, _, h_tl2⟩ := Approximates_cons h_approx2
-  obtain ⟨h_coef_trimmed1, h_coef_ne_zero1⟩ := Trimmed_cons h_trimmed1
-  obtain ⟨h_coef_trimmed2, h_coef_ne_zero2⟩ := Trimmed_cons h_trimmed2
-  clear h2
-  unfold leadingTerm at h_lt
-  simp at h_lt
-  simp [LT.lt] at h_lt
+lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
+    (h_basis : WellFormedBasis basis)
+    (h1 : t1.exps.length = basis.length)
+    (h2 : t2.exps.length = basis.length)
+    (h_coef2 : t2.coef ≠ 0)
+    (h_lt : t1.exps < t2.exps) :
+    t1.toFun basis =o[atTop] t2.toFun basis := by
+  obtain ⟨coef1, exps1⟩ := t1
+  obtain ⟨coef2, exps2⟩ := t2
+  simp at h1 h2 h_lt h_coef2
+  cases' basis with basis_hd basis_tl
+  · simp at h1 h2
+    simp [h1, h2] at h_lt
+  cases' exps1 with exp1 exps1_tl
+  · simp at h1
+  cases' exps2 with exp2 exps2_tl
+  · simp at h2
   cases h_lt with
   | cons h =>
-    unfold leadingTerm
-    simp
     unfold Term.toFun
     simp
     conv => lhs; ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
@@ -298,63 +279,228 @@ theorem compare_of_leadingTerms {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     apply Asymptotics.IsLittleO.mul_isBigO
     swap
     · apply isBigO_refl
-    convert_to (Term.toFun ⟨coef1.leadingTerm.coef, coef1.leadingTerm.exps⟩ basis_tl) =o[atTop]
-        Term.toFun ⟨coef2.leadingTerm.coef, coef2.leadingTerm.exps⟩ basis_tl
+    convert_to (Term.toFun ⟨coef1, exps1_tl⟩ basis_tl) =o[atTop]
+        Term.toFun ⟨coef2, exps2_tl⟩ basis_tl
     · unfold Term.toFun
       ext x
       conv => rhs; rw [Term.fold_eq_mul]
     · unfold Term.toFun
       ext x
       conv => rhs; rw [Term.fold_eq_mul]
-    cases' basis_tl with basis_tl_hd basis_tl_tl
-    · cases h
-    apply Asymptotics.IsEquivalent.trans_isLittleO
-      (IsEquivalent_leadingTerm h_coef_wo1 h_coef1 h_coef_trimmed1 h_basis.tail).symm
-    apply Asymptotics.IsLittleO.trans_isEquivalent _
-      (IsEquivalent_leadingTerm h_coef_wo2 h_coef2 h_coef_trimmed2 h_basis.tail)
-    apply compare_of_leadingTerms h_coef_wo1 h_coef_wo2 h_coef1 h_coef2 h_coef_trimmed1
-      h_coef_trimmed2 h_basis.tail h_coef_ne_zero2
-    simp [LT.lt]
-    constructor
-    · right
-      exact h
-    constructor
-    · intro h'
-      rw [h'] at h
-      apply asymm h h
-    · apply asymm h
+    exact Term.IsLittleO_of_lt_exps h_basis.tail (by simpa using h1) (by simpa using h2) (by simpa) h
   | rel h =>
-    change exp1 < exp2 at h
     apply Asymptotics.isLittleO_of_tendsto'
-    · refine (Term.toFun_ne_zero (t := leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)) h_basis ?_).mono ?_
-      · intro h'
-        apply zero_of_leadingTerm_zero_coef h_trimmed2 at h'
-        simp [zero] at h'
+    · apply (Term.toFun_ne_zero (t := ⟨coef2, exp2 :: exps2_tl⟩) h_basis (by simpa)).mono
       intro x h1 h2
       contradiction
     simp_rw [div_eq_mul_inv]
     apply Filter.Tendsto.congr' (f₁ := fun x ↦
-      (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp1, coef1) tl1)).toFun (basis_hd :: basis_tl) x *
-        ((leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv.toFun (basis_hd :: basis_tl) x))
-    · apply ((leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv_toFun h_basis).mono
+      (Term.toFun ⟨coef1, exp1 :: exps1_tl⟩ (basis_hd :: basis_tl)) x *
+        (Term.toFun (Term.inv ⟨coef2, exp2 :: exps2_tl⟩) (basis_hd :: basis_tl)) x)
+    · apply ((Term.inv_toFun (t := ⟨coef2, exp2 :: exps2_tl⟩) h_basis)).mono
       intro x hx
       simp at hx ⊢
       left
       rw [hx]
+    simp at h1 h2
     apply Filter.Tendsto.congr' (f₁ :=
-        ((leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp1, coef1) tl1)).mul
-        (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv).toFun (basis_hd :: basis_tl))
+      ((Term.mk coef1 (exp1 :: exps1_tl)).mul
+      (Term.mk coef2 (exp2 :: exps2_tl)).inv).toFun (basis_hd :: basis_tl))
     · refine (Term.mul_toFun
-        (t1 := leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp1, coef1) tl1))
-        (t2 := (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp2, coef2) tl2)).inv)
+        (t1 := Term.mk coef1 (exp1 :: exps1_tl))
+        (t2 := Term.inv ⟨coef2, exp2 :: exps2_tl⟩)
         h_basis
         ?_).mono ?_
-      · rw [leadingTerm_length, Term.inv_length, leadingTerm_length]
+      · simp [Term.inv_length,h1, h2]
       intro x hx
       simpa using hx
     apply Term.tendsto_zero _ _ _ h_basis
-    · simp [leadingTerm_length]
+    · simp [h1, h2]
     · simpa
+
+theorem Term.IsLittleO_of_lt_exps_left {left right : Basis} {t1 t2 : Term}
+    (h_basis : WellFormedBasis (left ++ right))
+    (h1 : t1.exps.length = left.length + right.length)
+    (h2 : t2.exps.length = right.length)
+    (h_coef2 : t2.coef ≠ 0)
+    (h_lt : t1.exps < List.replicate left.length 0 ++ t2.exps) :
+    t1.toFun (left ++ right) =o[atTop] t2.toFun right := by
+  obtain ⟨coef2, exps2⟩ := t2
+  let t2' : Term := ⟨coef2, List.replicate left.length 0 ++ exps2⟩
+  have : t2'.toFun (left ++ right) = Term.toFun ⟨coef2, exps2⟩ right := Term.zeros_append_toFun _ h2
+  rw [← this]
+  apply Term.IsLittleO_of_lt_exps h_basis <;> simpa
+
+theorem Term.IsLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Term}
+    (h_basis : WellFormedBasis (left ++ right))
+    (h1 : t1.exps.length = left.length + right.length)
+    (h2 : t2.exps.length = right.length)
+    (h_coef1 : t1.coef ≠ 0)
+    (h_lt : List.replicate left.length 0 ++ t2.exps < t1.exps) :
+    t2.toFun right =o[atTop] t1.toFun (left ++ right) := by
+  obtain ⟨coef2, exps2⟩ := t2
+  let t2' : Term := ⟨coef2, List.replicate left.length 0 ++ exps2⟩
+  have : t2'.toFun (left ++ right) = Term.toFun ⟨coef2, exps2⟩ right := Term.zeros_append_toFun _ h2
+  rw [← this]
+  apply Term.IsLittleO_of_lt_exps h_basis <;> simpa
+
+theorem IsLittleO_of_lt_leadingTerm_left {left right : Basis}
+    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right} {f1 f2 : ℝ → ℝ}
+    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
+    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
+    (h_basis : WellFormedBasis (left ++ right))
+    (h2 : ms2 ≠ zero _)
+    (h_lt : ms1.leadingTerm.exps < List.replicate left.length 0 ++ ms2.leadingTerm.exps) :
+    f1 =o[atTop] f2 := by
+  apply Asymptotics.IsEquivalent.trans_isLittleO
+    (IsEquivalent_leadingTerm h_wo1 h_approx1 h_trimmed1 h_basis)
+  apply Asymptotics.IsLittleO.trans_isEquivalent _
+    (IsEquivalent_leadingTerm h_wo2 h_approx2 h_trimmed2 h_basis.of_append_right).symm
+  apply Term.IsLittleO_of_lt_exps_left h_basis _ _ _ h_lt
+  · simp [leadingTerm_length]
+  · simp [leadingTerm_length]
+  · contrapose! h2
+    exact zero_of_leadingTerm_zero_coef h_trimmed2 h2
+
+theorem IsLittleO_of_lt_leadingTerm_right {left right : Basis}
+    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right} {f1 f2 : ℝ → ℝ}
+    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
+    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
+    (h_basis : WellFormedBasis (left ++ right))
+    (h1 : ms1 ≠ zero _)
+    (h_lt : List.replicate left.length 0 ++ ms2.leadingTerm.exps < ms1.leadingTerm.exps) :
+    f2 =o[atTop] f1 := by
+  apply Asymptotics.IsEquivalent.trans_isLittleO
+    (IsEquivalent_leadingTerm h_wo2 h_approx2 h_trimmed2 h_basis.of_append_right)
+  apply Asymptotics.IsLittleO.trans_isEquivalent _
+    (IsEquivalent_leadingTerm h_wo1 h_approx1 h_trimmed1 h_basis).symm
+  apply Term.IsLittleO_of_lt_exps_right h_basis _ _ _ h_lt
+  · simp [leadingTerm_length]
+  · simp [leadingTerm_length]
+  · contrapose! h1
+    exact zero_of_leadingTerm_zero_coef h_trimmed1 h1
+
+
+theorem IsLittleO_of_lt_leadingTerm {basis : Basis}
+    {ms1 ms2 : PreMS basis} {f1 f2 : ℝ → ℝ}
+    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
+    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
+    (h_basis : WellFormedBasis basis)
+    (h2 : ms2 ≠ zero _)
+    (h_lt : ms1.leadingTerm.exps < ms2.leadingTerm.exps) :
+    f1 =o[atTop] f2 :=
+  IsLittleO_of_lt_leadingTerm_left (left := []) h_wo1 h_wo2 h_approx1 h_approx2 h_trimmed1 h_trimmed2 h_basis h2 h_lt
+
+theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis}
+    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right} {f1 f2 : ℝ → ℝ}
+    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
+    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
+    (h_basis : WellFormedBasis (left ++ right))
+    (h_coef : ms1.leadingTerm.coef = ms2.leadingTerm.coef)
+    (h_exps : List.replicate left.length 0 ++ ms2.leadingTerm.exps = ms1.leadingTerm.exps) :
+    f1 ~[atTop] f2 := by
+  apply Asymptotics.IsEquivalent.trans
+    (IsEquivalent_leadingTerm h_wo1 h_approx1 h_trimmed1 h_basis)
+  apply Asymptotics.IsEquivalent.trans _
+    (IsEquivalent_leadingTerm h_wo2 h_approx2 h_trimmed2 h_basis.of_append_right).symm
+  convert Asymptotics.IsEquivalent.refl using 1
+  let t2' : Term := ⟨ms2.leadingTerm.coef, List.replicate left.length 0 ++ ms2.leadingTerm.exps⟩
+  have : t2'.toFun (left ++ right) = Term.toFun ms2.leadingTerm right := by
+    apply Term.zeros_append_toFun
+    simp [leadingTerm_length]
+  rw [← this]
+  congr!
+  simp [t2']
+  conv => rhs; change ⟨ms1.leadingTerm.coef, ms1.leadingTerm.exps⟩
+  congr 1
+  rw [h_coef]
+
+theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
+    (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
+    ms ≠ zero _ := by
+  intro h
+  cases' basis with basis_hd basis_tl
+  · simp [leadingTerm] at h_pos
+    cases h_pos
+  · apply Term.not_FirstIsPos_of_AllZero _ h_pos
+    simp [h, zero, leadingTerm]
+    exact Term.AllZero_of_replicate
+
+theorem const_leadingTerm_eq {basis : Basis} {c : ℝ} :
+    (PreMS.const basis c).leadingTerm = ⟨c, List.replicate basis.length 0⟩ := by
+  cases' basis with basis_hd basis_tl
+  · simp [const, leadingTerm]
+  · simp [const, leadingTerm, const_leadingTerm_eq, List.replicate_succ]
+
+theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
+    (PreMS.monomial basis n).leadingTerm = ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ := by
+  cases' basis with basis_hd basis_tl
+  · simp at h
+  cases' n with n
+  · simp [monomial, leadingTerm, one, const_leadingTerm_eq]
+  · simp [monomial, leadingTerm, monomial_leadingTerm_eq (by simpa using h), List.replicate_succ]
+
+theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
+    (ms.extendBasisEnd b).leadingTerm = ⟨ms.leadingTerm.coef, ms.leadingTerm.exps ++ [0]⟩ := by
+  cases' basis with basis_hd basis_tl
+  · simp [extendBasisEnd, leadingTerm, const]
+  cases' ms with exp coef tl
+  · simp [extendBasisEnd, leadingTerm, List.replicate_succ']
+  simp [extendBasisEnd, leadingTerm, extendBasisEnd_leadingTerm_eq]
+
+lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
+    {ms : PreMS basis}
+    (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
+    basis ≠ [] := by
+  contrapose! h_pos
+  subst h_pos
+  exact id
+
+theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
+    {ms : PreMS basis} {f : ℝ → ℝ} (h_wo : ms.WellOrdered) (h_approx : ms.Approximates f)
+    (h_trimmed : ms.Trimmed) (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
+    (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] f := by
+  cases' basis with basis_hd basis_tl
+  · simp [leadingTerm] at h_pos
+    cases h_pos
+  have h_basis' := insertLastLog_WellFormedBasis h_basis
+  let ms' : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+    ms.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
+  have h_wo' : ms'.WellOrdered := PreMS.extendBasisEnd_WellOrdered h_wo
+  have h_approx' : ms'.Approximates f := PreMS.extendBasisEnd_Approximates h_basis' h_approx
+  have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
+  let ms_log : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+    PreMS.monomial _ (basis_tl.length + 1)
+  have h_log_wo : ms_log.WellOrdered := monomial_WellOrdered
+  have h_log_approx : ms_log.Approximates (Real.log ∘ ((basis_hd :: basis_tl).getLast (log_basis_getLast_IsLittleO_aux h_pos))) := by
+    convert monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
+    simp
+  have h_log_trimmed : ms_log.Trimmed := monomial_Trimmed (by simp)
+  apply IsLittleO_of_lt_leadingTerm h_log_wo h_wo' h_log_approx h_approx' h_log_trimmed h_trimmed' h_basis'
+  · exact extendBasisEnd_ne_zero (FirstIsPos_ne_zero h_pos)
+  simp only [ms_log, ms']
+  rw [monomial_leadingTerm_eq (by simp)]
+  simp [extendBasisEnd_leadingTerm_eq]
+  have h_len : ms.leadingTerm.exps.length = basis_tl.length + 1 := by
+    simp [leadingTerm_length]
+  clear * - h_pos h_len
+  generalize ms.leadingTerm.exps = exps at *
+  generalize basis_tl.length + 1 = n at *
+  induction n generalizing exps with
+  | zero =>
+    simp at h_len
+    simp [h_len] at h_pos
+    cases h_pos
+  | succ n ih =>
+    cases' exps with exp exps_tl <;> simp at h_len
+    rcases h_pos with h_pos | ⟨rfl, h_pos⟩
+    · exact List.Lex.rel h_pos
+    apply List.Lex.cons
+    apply ih _ h_pos h_len
 
 --------------------------------
 

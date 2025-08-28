@@ -52,6 +52,27 @@ partial def computeLength (b : Q(Basis)) : MetaM Nat := do
   | ~q(List.cons $basis_hd $basis_tl) => return 1 + (← computeLength basis_tl)
   | _ => panic! s!"computeLength: unexpected basis: {← ppExpr b}"
 
+partial def getLast {α : Q(Type)} (li : Q(List $α)) : MetaM <| Option <| Q($α) := do
+  match li with
+  | ~q(List.nil) => return .none
+  | ~q(List.cons $hd $tl) =>
+    match tl with
+    | ~q(List.cons $tl_hd $tl_tl) => return ← getLast tl
+    | ~q(List.nil) => return .some hd
+  | _ => panic! s!"getLast: unexpected list: {← ppExpr li}"
+
+/-- Assuming `basis = left ++ right`, returns `left`. -/
+def expressAsAppend (basis right : Q(Basis)) : MetaM Q(Basis) := do
+  let leftLength := (← computeLength basis) - (← computeLength right)
+  go basis leftLength
+where go (li : Q(Basis)) (depth : Nat) : MetaM Q(Basis) := do
+  match depth with
+  | 0 => return q(List.nil)
+  | d + 1 =>
+    let ~q(List.cons $hd $tl) := li | panic! s!"expressAsAppend: unexpected basis: {← ppExpr li}"
+    let tl' ← go tl d
+    return q(List.cons $hd $tl')
+
 def replicate {α : Q(Type)} (n : Nat) (x : Q($α)) : MetaM Q(List $α) := do
   match n with
   | 0 => return q(List.nil)
@@ -98,9 +119,72 @@ mutual
 
 end
 
--- partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
---     MetaM Q(LogBasis $basis) := do
---   let ~q(List.cons $basis_hd $basis_tl) := basis | return logBasis
---   match logBasis with
+partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
+    MetaM Q(LogBasis $basis) := do
+  match logBasis.getAppFnArgs with
+  | (``LogBasis.nil, _) => return logBasis
+  | (``LogBasis.single, _) => return logBasis
+  | (``LogBasis.cons, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl_hd : Q(ℝ → ℝ)), (basis_tl_tl : Q(Basis)),
+      (logBasis_tl : Q(LogBasis ($basis_tl_hd :: $basis_tl_tl))),
+      (ms : Q(PreMS ($basis_tl_hd :: $basis_tl_tl)))]) =>
+    have : $basis =Q $basis_hd :: $basis_tl_hd :: $basis_tl_tl := ⟨⟩
+    let logBasis_tl' ← reduceLogBasis logBasis_tl
+    return q(LogBasis.cons $basis_hd $basis_tl_hd $basis_tl_tl $logBasis_tl' $ms)
+  | (``LogBasis.tail, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl : Q(Basis)),
+      (logBasis_arg : Q(LogBasis ($basis_hd :: $basis_tl)))]) =>
+    have : $basis =Q $basis_tl := ⟨⟩
+    let logBasis_arg' ← reduceLogBasis logBasis_arg
+    match basis_tl, logBasis_arg' with
+    | ~q(List.nil), ~q(LogBasis.single _) => return q(LogBasis.nil)
+    | ~q(List.cons $basis_tl_hd $basis_tl_tl), ~q(LogBasis.cons _ _ _ $logBasis_tl _) =>
+      return q($logBasis_tl)
+    | _ => panic! "Unexpected basis_tl or logBasis_arg' in reduceLogBasis"
+  | (``LogBasis.extendBasisMiddle, #[(right_hd : Q(ℝ → ℝ)), (left : Q(Basis)),
+      (right_tl : Q(Basis)), (f : Q(ℝ → ℝ)),
+      (logBasis_arg : Q(LogBasis ($left ++ $right_hd :: $right_tl))),
+      (ms : Q(PreMS ($right_hd :: $right_tl)))]) =>
+    have : $basis =Q $left ++ $f :: $right_hd :: $right_tl := ⟨⟩
+    let logBasis_arg' ← reduceLogBasis logBasis_arg
+    have : $logBasis_arg' =Q $logBasis_arg := ⟨⟩
+    match left with
+    | ~q(List.nil) => return q(LogBasis.cons _ _ _ $logBasis_arg' $ms)
+    | ~q(List.cons $left_hd $left_tl) =>
+      match left_tl with
+      | ~q(List.nil) =>
+        match logBasis_arg' with
+        | ~q(LogBasis.cons _ _ _ $logBasis_tl $ms') =>
+          return q(LogBasis.cons _ _ _
+            (LogBasis.extendBasisMiddle (left := []) $f $logBasis_tl $ms)
+            (PreMS.extendBasisMiddle (left := []) $f $ms'))
+        | _ => unreachable!
+      | ~q(List.cons $left_tl_hd $left_tl_tl) =>
+        match logBasis_arg' with
+        | ~q(LogBasis.cons _ _ _ $logBasis_tl $ms') =>
+          return q(LogBasis.cons $left_hd $left_tl_hd ($left_tl_tl ++ $f :: $right_hd :: $right_tl)
+            (LogBasis.extendBasisMiddle (left := $left_tl_hd :: $left_tl_tl) $f $logBasis_tl $ms)
+            (PreMS.extendBasisMiddle (left := $left_tl_hd :: $left_tl_tl) $f $ms'))
+        | _ => unreachable!
+      | _ => panic! "Unexpected left_tl in reduceLogBasis"
+    | _ => panic! "Unexpected left in reduceLogBasis"
+  | (``LogBasis.extendBasisEnd, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl : Q(Basis)), (f : Q(ℝ → ℝ)),
+      (logBasis_arg : Q(LogBasis ($basis_hd :: $basis_tl))),
+      (ms : Q(PreMS ([$f])))]) =>
+    have : $basis =Q $basis_hd :: $basis_tl ++ [$f] := ⟨⟩
+    let logBasis_arg' ← reduceLogBasis logBasis_arg
+    have : $logBasis_arg' =Q $logBasis_arg := ⟨⟩
+    match basis_tl, logBasis_arg' with
+    | ~q(List.nil), ~q(LogBasis.single _) => return q(LogBasis.cons _ _ _ (.single _) $ms)
+    | ~q(List.cons $basis_tl_hd $basis_tl_tl), ~q(LogBasis.cons _ _ _ $logBasis_tl $ms') =>
+      return q(LogBasis.cons $basis_hd $basis_tl_hd ($basis_tl_tl ++ [$f])
+        (LogBasis.extendBasisEnd $f $logBasis_tl $ms) (PreMS.extendBasisEnd _ $ms'))
+    | _ => panic! "Unexpected basis_tl or logBasis_arg' in reduceLogBasis"
+  | (``LogBasis.insertLastLog, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl : Q(Basis)),
+      (logBasis_arg : Q(LogBasis ($basis_hd :: $basis_tl)))]) =>
+    let .some lastElem ← getLast (α := q(ℝ → ℝ)) q($basis_hd :: $basis_tl) | unreachable!
+    have : $basis =Q $basis_hd :: $basis_tl ++ [Real.log ∘ $lastElem] := ⟨⟩
+    let logBasis' : Q(LogBasis $basis) := q(LogBasis.extendBasisEnd (Real.log ∘ $lastElem)
+      $logBasis_arg (PreMS.monomial [Real.log ∘ $lastElem] 0))
+    reduceLogBasis logBasis'
+  | _ => panic! "Unexpected logBasis in reduceLogBasis"
 
 end TendstoTactic

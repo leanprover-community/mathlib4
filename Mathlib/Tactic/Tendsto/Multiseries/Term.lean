@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
+
 
 /-!
 Here we find the limit of the term of the form `coef * b1(x)^d1 * b2(x)^d2 * ...`
@@ -82,14 +84,32 @@ theorem inv_length {t : Term} : t.inv.exps.length = t.exps.length := by
 theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basis)
     (h_length : t1.exps.length = t2.exps.length) :
     (mul t1 t2).toFun basis =ᶠ[atTop] fun x ↦ t1.toFun basis x * t2.toFun basis x := by
-  unfold toFun
-  simp [mul]
-  induction' h : t1.exps with hd1 tl1 ih generalizing t2 basis
+  obtain ⟨coef1, exps1⟩ := t1
+  obtain ⟨coef2, exps2⟩ := t2
+  apply (basis_eventually_pos h_basis).mono
+  intro x h_pos
+  simp [toFun, mul]
+  simp at h_length
+  rw [fold_eq_mul]
+  conv => rhs; rw [fold_eq_mul]; arg 2; rw [fold_eq_mul]
+  move_mul [coef1, coef2]
+  simp
+  left
+  left
+  induction' exps1 with exp1 exps1 ih generalizing exps2 basis
+  · symm at h_length
+    simp_all
+  cases' exps2 with exp2 exps2
+  · simp at h_length
+  cases' basis with basis_hd basis_tl
   · simp
-    symm at h_length
-    simp [h] at h_length
-    simp [h_length]
-  · sorry
+  simp [List.foldl_cons]
+  rw [fold_eq_mul]
+  conv => rhs; rw [fold_eq_mul]; arg 2; rw [fold_eq_mul]
+  specialize ih h_basis.tail exps2 (by simpa using h_length)
+    (fun f hf ↦ h_pos f <| List.mem_cons_of_mem basis_hd hf)
+  rw [ih, Real.rpow_add (h_pos _ (by simp))]
+  ring
 
 theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (fun x ↦ (t.toFun basis x)⁻¹) =ᶠ[atTop] fun x ↦ t.inv.toFun basis x := by
@@ -235,6 +255,17 @@ theorem zero_head_toFun (coef : ℝ) {exp : ℝ} {exps_tl : List ℝ} {basis : B
   cases basis with
   | nil => simp at h_length
   | cons basis_hd basis_tl => simp [h_exp]
+
+theorem zeros_append_toFun (coef : ℝ) {exps : List ℝ} {left right : Basis}
+    (h_length : exps.length = right.length) :
+    let t : Term := ⟨coef, List.replicate left.length 0 ++ exps⟩;
+    t.toFun (left ++ right) = (mk coef exps).toFun right := by
+  simp
+  induction' left with left_hd left_tl ih
+  · rfl
+  simp [List.replicate_succ]
+  rw [Term.zero_head_toFun _ (by simpa) rfl]
+  simpa using ih
 
 /-- If the first exponent is not zero, then `log t.toFun` is asymptotically equivalent to
 `log coef + exps[0] * log basis[0]`. -/
@@ -597,18 +628,6 @@ theorem tendsto_bot_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
 --   constructor
 --   · linarith
 --   apply compare_trans _ _ _ h12.right h23.right
-
-instance : Preorder Term where
-  le t1 t2 := t1.exps ≤ t2.exps
-  le_refl t := by simp
-  le_trans t1 t2 t3 h12 h23 := by
-    simp_all
-    apply le_trans h12 h23
-
-theorem le_iff (t1 t2 : Term) : t1 ≤ t2 ↔ t1.exps ≤ t2.exps := by rfl
-
-theorem lt_iff (t1 t2 : Term) : t1 < t2 ↔ t1.exps < t2.exps := by
-  sorry
 
 -- TODO
 theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : Basis}

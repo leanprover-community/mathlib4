@@ -77,4 +77,14 @@ partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
   | ~q(List.replicate $n 0) => return .zero q(Term.AllZero_of_replicate)
   | _ => panic! "Unexpected list in getFirstIs"
 
+inductive FirstIsPosResult (x : Q(List ℝ))
+| right (pf : Q(Term.FirstIsPos $x))
+| wrong (pf : Q(¬ Term.FirstIsPos $x))
+
+def getFirstIsPos (x : Q(List ℝ)) : TacticM (FirstIsPosResult x) := do
+  match ← getFirstIs x with
+  | .pos pf => return .right pf
+  | .neg pf => return .wrong q(Term.not_FirstIsPos_of_FirstIsNeg $pf)
+  | .zero pf => return .wrong q(Term.not_FirstIsPos_of_AllZero $pf)
+
 end TendstoTactic

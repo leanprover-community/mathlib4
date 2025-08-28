@@ -37,11 +37,22 @@ theorem WellFormedBasis.nil : WellFormedBasis [] := by simp [WellFormedBasis]
 theorem WellFormedBasis.single (f : ℝ → ℝ) (hf : Tendsto f atTop atTop) : WellFormedBasis [f] := by
   simpa [WellFormedBasis]
 
+theorem WellFormedBasis.of_sublist {basis basis' : Basis} (h : List.Sublist basis basis')
+    (h_basis : WellFormedBasis basis') : WellFormedBasis basis := by
+  simp [WellFormedBasis] at h_basis ⊢
+  constructor
+  · exact h_basis.left.sublist h
+  · intro f hf
+    exact h_basis.right _ (h.subset hf)
+
 /-- Tail of well-formed basis is well-ordered. -/
 theorem WellFormedBasis.tail {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (h : WellFormedBasis (basis_hd :: basis_tl)) : WellFormedBasis basis_tl := by
-  simp [WellFormedBasis] at h ⊢
-  tauto
+    (h : WellFormedBasis (basis_hd :: basis_tl)) : WellFormedBasis basis_tl :=
+  WellFormedBasis.of_sublist (by simp) h
+
+theorem WellFormedBasis.of_append_right {left right : Basis} (h : WellFormedBasis (left ++ right)) :
+    WellFormedBasis right :=
+  WellFormedBasis.of_sublist (by simp) h
 
 theorem WellFormedBasis.insert {left right : Basis} {f : ℝ → ℝ}
     (h : WellFormedBasis (left ++ right))
