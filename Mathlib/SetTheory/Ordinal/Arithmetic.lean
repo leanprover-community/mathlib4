@@ -1171,7 +1171,7 @@ instance canLiftOrdinalNat : CanLift Ordinal ℕ (↑) fun x => x < ω :=
     ⟨n, hn.symm⟩⟩
 
 theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
-  obtain ho | ho := lt_or_le o ω
+  obtain ho | ho := lt_or_ge o ω
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
 

@@ -171,12 +171,12 @@ lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
 attribute [local simp] toENatAux_nat toENatAux_zero toENatAux_ofENat
 
 lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
-  cases lt_or_le x ω with
+  cases lt_or_ge x ω with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_omega0 n).trans hx]
 
 theorem toENatAux_le_nat {x : Ordinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
-  cases lt_or_le x ω with
+  cases lt_or_ge x ω with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (nat_lt_omega0 n).trans_le hx]
 
