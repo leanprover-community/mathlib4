@@ -42,29 +42,31 @@ theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n
 instance : DecidableRel (IsCoprime : ℤ → ℤ → Prop) :=
   fun m n => decidable_of_iff (Int.gcd m n = 1) Int.isCoprime_iff_gcd_eq_one.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 
-alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
+alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
+
+@[deprecated (since := "2025-08-25")]
+alias IsCoprime.nat_coprime := IsCoprime.natCoprime
 
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
-    IsCoprime (a : R) (b : R) := by
-  rw [← isCoprime_iff_coprime] at h
-  rw [← Int.cast_natCast a, ← Int.cast_natCast b]
-  exact IsCoprime.intCast h
+    IsCoprime (a : R) (b : R) :=
+  mod_cast h.isCoprime.intCast
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
   IsCoprime.ne_zero_or_ne_zero (R := A) <| by
     simpa only [map_natCast] using IsCoprime.map (Nat.Coprime.isCoprime h) (Int.castRingHom A)
 
-theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i ∈ t, s i) x := by
-  classical
-  refine Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ ?_
-  rw [Finset.prod_insert hbt]
-  rw [Finset.forall_mem_insert] at H
-  exact H.1.mul_left (ih H.2)
+theorem IsCoprime.prod_left (h : ∀ i ∈ t, IsCoprime (s i) x) : IsCoprime (∏ i ∈ t, s i) x := by
+  induction t using Finset.cons_induction with
+  | empty => apply isCoprime_one_left
+  | cons b t hbt ih =>
+    rw [Finset.prod_cons]
+    rw [Finset.forall_mem_cons] at h
+    exact h.1.mul_left (ih h.2)
 
 theorem IsCoprime.prod_right : (∀ i ∈ t, IsCoprime x (s i)) → IsCoprime x (∏ i ∈ t, s i) := by
   simpa only [isCoprime_comm] using IsCoprime.prod_left (R := R)

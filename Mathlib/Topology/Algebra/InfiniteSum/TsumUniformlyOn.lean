@@ -69,7 +69,7 @@ theorem derivWithin_tsum {f : ι → E → F} (hs : IsOpen s) {x : E} (hx : x �
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
-    derivWithin (fun z ↦ ∑' n , f n z) s x = ∑' n, derivWithin (f n) s x := by
+    derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x := by
   apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
   apply HasDerivAt.hasDerivWithinAt
   apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ (hf y hy).hasSum) hx
@@ -92,7 +92,7 @@ theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
       (fun n ↦ (iteratedDerivWithin k (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n k r, k ≤ m → r ∈ s →
       DifferentiableAt E (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
-    iteratedDerivWithin m (fun z ↦ ∑' n , f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
+    iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
   induction' m  with m hm generalizing x
   · simp
   · simp_rw [iteratedDerivWithin_succ]
