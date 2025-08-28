@@ -154,8 +154,7 @@ private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ 
 
 instance instPartialOrder : PartialOrder (Colex (Finset α)) where
   le_refl _ _ ha ha' := (ha' ha).elim
-  le_antisymm _ _ hst hts := ofColex.injective <|
-    (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
+  le_antisymm _ _ hst hts := (antisymm_aux hst hts).antisymm (antisymm_aux hts hst)
   le_trans s t u hst htu a has hau := by
     by_cases hat : a ∈ ofColex t
     · have ⟨b, hbu, hbt, hab⟩ := htu hat hau
@@ -362,9 +361,7 @@ lemma toColex_le_toColex_iff_max'_mem :
 
 lemma le_iff_max'_mem {s t : Colex (Finset α)} :
     s ≤ t ↔ ∀ h : s ≠ t, (ofColex s ∆ ofColex t).max' (max_mem_aux h) ∈ ofColex t :=
-  toColex_le_toColex_iff_max'_mem.trans
-    ⟨fun h hst ↦ h <| ofColex.injective.ne_iff.2 hst,
-    fun h hst ↦ h <| ofColex.injective.ne_iff.1 hst⟩
+  toColex_le_toColex_iff_max'_mem
 
 lemma toColex_lt_toColex_iff_max'_mem :
     toColex s < toColex t ↔ ∃ hst : s ≠ t, (s ∆ t).max' (symmDiff_nonempty.2 hst) ∈ t := by
@@ -542,9 +539,7 @@ variable {s t : Finset ℕ} {n : ℕ}
 
 lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈ ofColex s, n ^ k := by
   intro s t hst
-  induction s with | h s
-  induction t with | h t
-  rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
+  rw [lt_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
   exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by omega) <|
@@ -566,7 +561,7 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
     Function.Injective (fun s : Finset ℕ ↦ ∑ i ∈ s, n ^ i) := by
   intro _ _ h
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
-    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, toColex_inj] at h
+    geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff] at h
 
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i ∈ s, n ^ i :=
   (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
