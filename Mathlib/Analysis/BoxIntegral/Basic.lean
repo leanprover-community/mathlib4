@@ -693,7 +693,7 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
     rw [← sum_mul]
     trans μ.toBoxAdditive I * ε₁; swap
     · linarith
-    simp_rw [mul_le_mul_right ε₁0, μ.toBoxAdditive_apply]
+    simp_rw [mul_le_mul_iff_left₀ ε₁0, μ.toBoxAdditive_apply]
     refine le_trans ?_ <| toReal_mono (lt_top_iff_ne_top.1 μI) <| μ.mono <| un (B \ B') sdiff_subset
     simp_rw [measureReal_def]
     rw [← toReal_sum (fun J hJ ↦ μJ_ne_top J (mem_sdiff.1 hJ).1), ← Finset.tsum_subtype]

@@ -32,9 +32,6 @@ functions `(ℝ × ℝ) → E`.
 We use the following local notation to make the statement more readable. Note that the documentation
 website shows the actual terms, not those abbreviated using local notations.
 
-Porting note (Yury Kudryashov): I disabled some of these notations because I failed to make them
-work with Lean 4.
-
 * `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
 * `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely
   `[a ∘ Fin.succAbove i, b ∘ Fin.succAbove i]`;
@@ -46,7 +43,6 @@ work with Lean 4.
 ## TODO
 
 * Add a version that assumes existence and integrability of partial derivatives.
-* Restore local notations for find another way to make the statements more readable.
 
 ## Tags
 

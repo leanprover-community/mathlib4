@@ -24,7 +24,7 @@ the set family made of its `r`-sets.
 
 ## Notation
 
-`A # r` is notation for `A.slice r` in locale `finset_family`.
+`A # r` is notation for `A.slice r` in scope `finset_family`.
 -/
 
 

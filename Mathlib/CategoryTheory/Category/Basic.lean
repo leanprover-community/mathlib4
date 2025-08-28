@@ -55,7 +55,7 @@ for which objects live in `Type u` and morphisms live in `Type v`.
 
 Because the universe parameter `u` for the objects can be inferred from `C`
 when we write `Category C`, while the universe parameter `v` for the morphisms
-can not be automatically inferred, through the category theory library
+cannot be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```

@@ -179,7 +179,7 @@ variable {ι M}
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
 -- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
--- This is not useful as an `@[ext]` lemma as the `ext` tactic can not infer `R`.
+-- This is not useful as an `@[ext]` lemma as the `ext` tactic cannot infer `R`.
 theorem ext_component {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) :
     f = g :=
   DFinsupp.ext h

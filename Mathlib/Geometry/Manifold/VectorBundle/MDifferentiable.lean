@@ -239,7 +239,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
-Note that the differentiability of `ϕ` can not be always be stated as differentiability of a map
+Note that the differentiability of `ϕ` cannot be always be stated as differentiability of a map
 into a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁`
 and `b₂` are globally smooth, but we want to apply this lemma with only local information.
 Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
@@ -277,7 +277,7 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
-Note that the differentiability of `ϕ` can not be always be stated as differentiability of a map
+Note that the differentiability of `ϕ` cannot be always be stated as differentiability of a map
 into a manifold, as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁`
 and `b₂` are globally smooth, but we want to apply this lemma with only local information.
 Therefore, we formulate it using differentiability of `ϕ` read in coordinates.
