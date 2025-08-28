@@ -53,7 +53,7 @@ base case of `I 1 θ`, it is in fact more convenient to give the recursive formu
 in terms of `I n θ` and `I (n - 1) θ` (note the natural subtraction!).
 Despite the usually inconvenient subtraction, this in fact allows deducing both of the above facts
 with significantly fewer analysis computations.
-In addition, note the `0 ^ n` on the right hand side - this is intentional, and again allows
+In addition, note the `0 ^ n` on the right-hand side - this is intentional, and again allows
 combining the proof of the "usual" recursion formula and the base case `I 1 θ`.
 -/
 private lemma recursion' (n : ℕ) :
@@ -297,7 +297,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =
       eval₂ (Int.castRingHom ℝ) (π / 2) (sinPoly n) * b ^ (2 * n + 1) := by
     nth_rw 2 [h] at e
-    field_simp at e ⊢
+    simp [field, div_pow] at e ⊢
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
   norm_cast at this

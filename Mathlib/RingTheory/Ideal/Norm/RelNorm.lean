@@ -127,8 +127,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
   let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (Algebra.algebraMapSubmonoid S M) Sₘ L
-  have : IsIntegralClosure Sₘ Rₘ L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [map_spanIntNorm]
   refine span_eq_span (Set.image_subset_iff.mpr ?_) (Set.image_subset_iff.mpr ?_)
   · intro a' ha'
@@ -148,7 +146,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [map_mul, map_pow]
-    have : FiniteDimensional K L := .of_isLocalization R S R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
   · intro a ha
@@ -343,11 +340,10 @@ theorem relNorm_algebraMap (I : Ideal R) :
   let P' := Algebra.algebraMapSubmonoid S P.primeCompl
   let Rₚ := Localization.AtPrime P
   let K := FractionRing R
-  simp only [← spanIntNorm_localization (R := R) (Sₘ := Localization P') _ _
-    P.primeCompl_le_nonZeroDivisors]
-  rw [Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
-    ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
-    spanNorm_singleton, Ideal.span_singleton_pow]
+  rw [← spanIntNorm_localization R _ _ P.primeCompl_le_nonZeroDivisors (Localization P'),
+      Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
+      ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
+      spanNorm_singleton, Ideal.span_singleton_pow]
   congr 2
   apply IsFractionRing.injective Rₚ K
   rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
@@ -355,6 +351,7 @@ theorem relNorm_algebraMap (I : Ideal R) :
 
 variable (R)
 
+/-- A version of `relNorm_algebraMap` involving a tower of algebras `S/R/R'`. -/
 theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
     [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
       I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
