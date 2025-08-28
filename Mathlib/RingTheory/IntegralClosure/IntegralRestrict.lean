@@ -7,6 +7,7 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
@@ -63,7 +64,7 @@ def galRestrictHom : (L →ₐ[K] L) ≃* (B →ₐ[A] B) where
       (((f.restrictScalars A).comp (IsScalarTower.toAlgHom A B L)).codRestrict
         (integralClosure A L) (fun x ↦ IsIntegral.map _ (IsIntegralClosure.isIntegral A L x)))
   map_mul' := by
-    intros σ₁ σ₂
+    intro σ₁ σ₂
     ext x
     apply (IsIntegralClosure.equiv A (integralClosure A L) L B).symm.injective
     ext
@@ -338,6 +339,16 @@ lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
   exact Algebra.map_intNormAux x
 
 variable (A B)
+
+theorem Algebra.intNorm_intNorm {C : Type*} [CommRing C] [IsDomain C] [IsIntegrallyClosed C]
+    [Algebra A C] [Algebra B C] [IsScalarTower A B C] [Module.Finite A C] [Module.Finite B C]
+    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing C)]
+    [Algebra.IsSeparable (FractionRing B) (FractionRing C)] (x : C) :
+    intNorm A B (intNorm B C x) = intNorm A C x := by
+  apply FaithfulSMul.algebraMap_injective A (FractionRing A)
+  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
+    algebraMap_intNorm_fractionRing, Algebra.norm_norm]
 
 lemma Algebra.intNorm_eq_norm [Module.Free A B] : Algebra.intNorm A B = Algebra.norm A := by
   ext x
