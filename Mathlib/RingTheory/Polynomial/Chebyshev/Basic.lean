@@ -1,15 +1,13 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
+Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Yuval Filmus
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Data.Real.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
 # Chebyshev polynomials
@@ -213,17 +211,6 @@ theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n)
     · simp
   | neg n ih => rw [T_neg, ih]; simp
 
-theorem T_cos (n : ℤ) (θ : ℝ) : (T ℝ n).eval θ.cos = (n * θ).cos := by
-  induction n using Chebyshev.induct' with
-  | zero => simp
-  | one => simp
-  | add_two n ih1 ih2 =>
-    rw [T_add_two, eval_sub, eval_mul, eval_mul, eval_ofNat, eval_X, ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [Real.cos_add_cos, mul_assoc, mul_comm θ.cos, ←mul_assoc]
-    push_cast; congr 3 <;> ring
-  | neg n ih => simp [T_neg, ih]
-
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 -- Well-founded definitions are now irreducible by default;
 -- as this was implemented before this change,
@@ -391,30 +378,6 @@ theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow *
       rw [Int.negOnePow_succ, Int.negOnePow_add, Int.negOnePow_even 2 even_two]
       simp; ring
     · simp
-
-theorem U_sin (n : ℤ) (θ : ℝ) : (U ℝ n).eval θ.cos * θ.sin = ((n+1) * θ).sin := by
-  induction n using Chebyshev.induct with
-  | zero => simp
-  | one => norm_num; rw [Real.sin_two_mul]; ring
-  | add_two n ih1 ih2 =>
-    norm_num
-    rw [sub_mul]
-    trans 2 * θ.cos * ((U ℝ (n+1)).eval θ.cos * θ.sin) - (U ℝ n).eval θ.cos * θ.sin
-    · ring
-    rw [ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [Real.sin_add_sin, mul_assoc, mul_comm θ.cos, ←mul_assoc]
-    push_cast; congr 3 <;> ring
-  | neg_add_one n ih1 ih2 =>
-    rw [U_sub_one]
-    norm_num
-    rw [sub_mul]
-    trans 2 * θ.cos * ((U ℝ (-n)).eval θ.cos * θ.sin) - (U ℝ (-n+1)).eval θ.cos * θ.sin
-    · ring
-    rw [ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [←Real.sin_neg, ←Real.cos_neg, Real.sin_add_sin, mul_assoc, mul_comm (-θ).cos, ←mul_assoc]
-    push_cast; congr 3 <;> ring
 
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
