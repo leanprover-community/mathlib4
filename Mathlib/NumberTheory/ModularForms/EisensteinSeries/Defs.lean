@@ -79,7 +79,7 @@ lemma finGcdMap_smul {r : ℕ} (a : ℤ) {v : Fin 2 → ℤ} (hv : finGcdMap v =
 /-- An abbreviation of the map which divides a integer vector by an integer. -/
 abbrev divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
 
-lemma gammaSet_top_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
+lemma mem_gammaSet_one (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
   rw [gammaSet_one_mem, Int.isCoprime_iff_gcd_eq_one]
 
 lemma gammaSet_div_gcd {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ (gammaSet 1 r 0)) (i : Fin 2) :
@@ -101,7 +101,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     simp only [nsmul_eq_mul, divIntMap, Int.cast_natCast]
     constructor
     · rw [gammaSet_top_mem, Int.isCoprime_iff_gcd_eq_one] at hx
-      exact ⟨by apply Subsingleton.eq_zero, by simp [Int.gcd_mul_left, hx]⟩
+      exact ⟨Subsingleton.eq_zero _, by simp [Int.gcd_mul_left, hx]⟩
     · ext i
       simp_all [NeZero.ne r]
 
@@ -124,7 +124,7 @@ def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) 
   apply ((Equiv.sigmaFiberEquiv finGcdMap).symm).trans
   refine Equiv.sigmaCongrRight fun b => ?_
   apply Equiv.setCongr
-  rw [fun n => gammaSet_one_eq n 0]
+  rw [gammaSet_one_eq]
   rfl
 
 @[simp]
@@ -137,8 +137,7 @@ variable {N a r} [NeZero r]
 
 section gamma_action
 
-/-- A vector with coprime entries, right-multiplied by a matrix in `SL(2, R)`, has
-coprime entries. -/
+/-- Right-multiplying a vector by a matrix in `SL(2, ℤ)` doesn't change its gcd. -/
 lemma vecMulSL_gcd {v : Fin 2 → ℤ} (hab : finGcdMap v = r) (A : SL(2, ℤ)) :
     finGcdMap (v ᵥ* A.1) = r := by
   have hvr : v = r • (v / r) := by
