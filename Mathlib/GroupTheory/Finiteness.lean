@@ -38,13 +38,10 @@ section Submonoid
 variable [Monoid N] {P : Submonoid M} {Q : Submonoid N}
 
 /-- A submonoid of `M` is finitely generated if it is the closure of a finite subset of `M`. -/
-@[to_additive]
+@[to_additive /-- An additive submonoid of `N` is finitely generated if it is the closure of a
+finite subset of `M`. -/]
 def Submonoid.FG (P : Submonoid M) : Prop :=
   ∃ S : Finset M, Submonoid.closure ↑S = P
-
-/-- An additive submonoid of `N` is finitely generated if it is the closure of a finite subset of
-`M`. -/
-add_decl_doc AddSubmonoid.FG
 
 /-- An equivalent expression of `Submonoid.FG` in terms of `Set.Finite` instead of `Finset`. -/
 @[to_additive /-- An equivalent expression of `AddSubmonoid.FG` in terms of `Set.Finite` instead of
