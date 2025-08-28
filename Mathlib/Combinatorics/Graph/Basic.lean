@@ -347,7 +347,6 @@ theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
   Iff.rfl
 
 /-- The loopSet is included in the incidenceSet. -/
-theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := by
-  intro _ h; use x; exact h
+theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
 
 end Graph
