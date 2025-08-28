@@ -70,16 +70,16 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
   · simp [angle_self hx]
   have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
-    field_simp [sin_angle_mul_norm_mul_norm]
+    simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
-  field_simp [mul_assoc, inner_sub_left, inner_sub_right, real_inner_comm x y, hsub]
+  simp [field, inner_sub_left, inner_sub_right, real_inner_comm x y]
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy : x - y ≠ 0) :
     Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
-  field_simp [sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
+  simp [field, sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
@@ -298,10 +298,12 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
 
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- A variant of the law of sines, angle-at-point form. -/
 theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
-  field_simp [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31]
+  simp [field, dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, mul_comm (dist ..)]
   exact law_sin _ _ _
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/
