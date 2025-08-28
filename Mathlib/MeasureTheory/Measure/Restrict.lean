@@ -496,7 +496,7 @@ theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
   rw [Set.biUnion_eq_iUnion]
   exact restrict_iUnion (fun i j hij ↦ hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
 
-theorem restrict_finset_biUnion {s : ι → Set α} {T : Finset ι}
+theorem restrict_biUnion_finset {s : ι → Set α} {T : Finset ι}
     (hd : T.toSet.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = sum fun (i : T) => μ.restrict (s i) :=
   restrict_biUnion (T := T.toSet) Finite.to_countable hd hm
@@ -1098,7 +1098,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
         _ = C.toSet.ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
-      rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_finset_biUnion _ P_meas, Measure.sum_apply _ ht]
+      rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_biUnion_finset _ P_meas, Measure.sum_apply _ ht]
       refine fun C₁ hC₁ C₂ hC₂ hC ↦ Set.disjoint_iff.mpr fun x hx ↦ hC <| ?_
       exact subset_antisymm (C_subset_C hC₁ hx) (C_subset_C hC₂ (Set.inter_comm _ _ ▸ hx))
     _ ≤ (M • μ.restrict (⋃ i, s i)) t := by
