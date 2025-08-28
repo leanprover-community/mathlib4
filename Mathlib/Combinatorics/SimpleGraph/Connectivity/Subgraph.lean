@@ -647,16 +647,16 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [
         p.adj_toSubgraph_toPath hp
       /- Prove vertex v is not in the path by showing that vertex u is passed twice. -/
       have v_not_mem_p' : v ∉ (p.toPath : G.Walk u z).toSubgraph.verts := by
-        simp
+        rw [Walk.verts_toSubgraph, Set.mem_setOf_eq]
         by_contra v_mem_p'
         obtain ⟨puv, pvz, p'_eq_puvz⟩ := Walk.mem_support_iff_exists_append.mp v_mem_p'
         have not_nil_pvz : ¬pvz.Nil := by
           apply Walk.not_nil_of_ne
           by_contra v_eq_z
-          simp [v_eq_z] at z_mem_H'
-        simp [p'_eq_puvz] at p_adj_if_p'_adj
+          aesop
+        rw [p'_eq_puvz, Walk.toSubgraph_append] at p_adj_if_p'_adj
         have : (p.toPath : G.Walk u z).support.Duplicate u := by
-          simp [p'_eq_puvz, Walk.support_append, List.duplicate_iff_two_le_count]
+          rw [p'_eq_puvz, Walk.support_append, List.duplicate_iff_two_le_count, List.count_append]
           have := List.one_le_count_iff.mpr puv.start_mem_support
           have := List.one_le_count_iff.mpr (Walk.snd_mem_tail_support not_nil_pvz)
           rw [u_unique pvz.snd (H_adj_if_p_adj <| p_adj_if_p'_adj <| Or.inr <|
@@ -679,29 +679,28 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [
     simpa using ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
 
 lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [DecidableEq V]
-  [Fintype V] {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected) :
-  ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
-obtain ⟨T, T_le_H, T_isTree⟩ := h.coe.exists_isTree_le
-have ⟨T_conn, _⟩ := T_isTree
-have := @Fintype.ofFinite H.verts
-have := Classical.decRel T.Adj
-obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
-use v, v.coe_prop
-apply @Connected.mono _ _ (.coeSubgraph ((toSubgraph T T_le_H).deleteVerts {v}))
-· obtain ⟨_, _⟩ := coeSubgraph_le (toSubgraph T T_le_H)
-  constructor
-  · simp
-    grind
-  · intro _ _ ⟨_, _, ⟨_, _, _⟩, _, _⟩
-    aesop
-· aesop
-· have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
-  have : Fintype ((toSubgraph T T_le_H).neighborSet v) := @Fintype.ofFinite _ Subtype.finite
-  apply Connected_coeSubgraph
-  apply connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial (T_conn.toSubgraph T_le_H)
-  simp [← hv]
+    [Fintype V] {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected) :
+    ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
+  obtain ⟨T, T_le_H, T_isTree⟩ := h.coe.exists_isTree_le
+  have ⟨T_conn, _⟩ := T_isTree
+  have := @Fintype.ofFinite H.verts
+  have := Classical.decRel T.Adj
+  obtain ⟨v, hv⟩ := T_isTree.exists_vert_degree_one_of_nontrivial
+  use v, v.coe_prop
+  apply @Connected.mono _ _ (.coeSubgraph ((toSubgraph T T_le_H).deleteVerts {v}))
+  · obtain ⟨_, _⟩ := coeSubgraph_le (toSubgraph T T_le_H)
+    constructor
+    · simp only [map_verts, hom_apply, Subgraph.induce_verts]
+      grind
+    · intro _ _ ⟨_, _, ⟨_, _, _⟩, _, _⟩
+      aesop
+  · aesop
+  · have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
+    have : Fintype ((toSubgraph T T_le_H).neighborSet v) := @Fintype.ofFinite _ Subtype.finite
+    apply Connected_coeSubgraph
+    apply connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial (T_conn.toSubgraph T_le_H)
+    simp [← hv]
 
 end Subgraph
 
 end SimpleGraph
-#min_imports

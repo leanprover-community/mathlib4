@@ -242,7 +242,7 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
     have hle : ∑ v : V, 2 ≤ ∑ v, G.degree v := by
       gcongr
       exact le_trans q (G.minDegree_le_degree _)
-    simp only [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
+    rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
     omega
   · linarith [h.isConnected.preconnected.minDegree_pos_of_nontrivial]
 
