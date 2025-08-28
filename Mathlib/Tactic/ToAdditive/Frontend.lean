@@ -92,8 +92,18 @@ the fifth argument before the third argument. This is used in `to_dual` to swap 
 `≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
 -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
+/--
+`dont_translate := ...` takes a list of type variables (separated by spaces) that should not be
+considered for translation. For example in
+```
+lemma foo {α β : Type} [Group α] [Group β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
+```
+we can choose to only additivize `α` by writing `to_additive (dont_translate := β)`.
+-/
+syntax toAdditiveDontTranslateOption := &"dont_translate" " := " ident+
 /-- Options to `to_additive`. -/
-syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
+syntax toAdditiveOption :=
+  "(" toAdditiveAttrOption <|> toAdditiveReorderOption <|> toAdditiveDontTranslateOption ")"
 /-- An `existing` or `self` name hint for `to_additive`. -/
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
@@ -431,6 +441,8 @@ structure Config : Type where
   /-- The attributes which we want to give to both the multiplicative and additive versions.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
+  /-- A list of type variables that should not be translated by `to_additive`. -/
+  dontTranslate : List Ident := []
   /-- The `Syntax` element corresponding to the original multiplicative declaration
   (or the `to_additive` attribute if it is added later),
   which we need for adding definition ranges. -/
@@ -459,14 +471,15 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
-unsafe def additiveTestUnsafe (env : Environment) (e : Expr) : Option Name :=
-  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Name := do
+unsafe def additiveTestUnsafe (env : Environment) (e : Expr) (dontTranslate : Array FVarId) :
+    Option (Name ⊕ FVarId) :=
+  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
       if (dontTranslateAttr.find? env e.constName).isNone &&
         (inApp || (findTranslation? env e.constName).isSome) then
         failure
       else
-        return e.constName
+        return .inl e.constName
     if (← get).contains e then
       failure
     modify fun s => s.insert e
@@ -485,6 +498,7 @@ unsafe def additiveTestUnsafe (env : Environment) (e : Expr) : Option Name :=
     | .letE _ _ e body _ => visit e <|> visit body
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
+    | .fvar fvarId       => if dontTranslate.contains fvarId then return .inr fvarId else failure
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
 
@@ -495,8 +509,9 @@ constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
-def additiveTest (env : Environment) (e : Expr) : Option Name :=
-  unsafe additiveTestUnsafe env e
+def additiveTest (env : Environment) (e : Expr) (dontTranslate : Array FVarId := #[]) :
+    Option (Name ⊕ FVarId) :=
+  unsafe additiveTestUnsafe env e dontTranslate
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
@@ -521,7 +536,7 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (e : Expr) : MetaM Expr := do
+def applyReplacementFun (e : Expr) (dontTranslate : Array FVarId := #[]) : MetaM Expr := do
   let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
@@ -564,11 +579,14 @@ where /-- Implementation of `applyReplacementFun`. -/
           let gfAdditive :=
             if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
               if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId] then
+                additiveTest env gAllArgs[relevantArgId] dontTranslate then
                 Id.run <| do
                   if trace then
-                    dbg_trace s!"The application of {nm} contains the fixed type \
-                      {fxd}, so it is not changed"
+                    match fxd with
+                    | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
+                      {fxd}, so it is not changed."
+                    | .inr fvarId => dbg_trace s!"The application of {nm} contains a fixed \
+                      variable so it is not changed."
                   gf
               else
                 r gf
@@ -577,14 +595,14 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            (additiveTest env gAllArgs[relevantArgId]!).isNone then
+            (additiveTest env gAllArgs[relevantArgId]! dontTranslate).isNone then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
           let firstArg := gAllArgs[0]!
           if let some changedArgNrs := changeNumeralAttr.find? env nm then
-            if additiveTest env firstArg |>.isNone then
+            if additiveTest env firstArg dontTranslate |>.isNone then
               if trace then
                 dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
                   However, we will still recurse into all the non-numeral arguments."
@@ -683,6 +701,40 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   else
     return src
 
+/-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
+making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
+def applyReplacementForall (dontTranslate : List Nat) (e : Expr) :
+    MetaM Expr := do
+  if let some maxDont := dontTranslate.max? then
+    forallBoundedTelescope e (some (maxDont + 1)) fun xs e => do
+      let xs := xs.map (·.fvarId!)
+      let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
+      let mut e ← applyReplacementFun e dontTranslate
+      for x in xs.reverse do
+        let decl ← x.getDecl
+        let xType ← applyReplacementFun decl.type dontTranslate
+        e := .forallE decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
+      return e
+  else
+    applyReplacementFun e #[]
+
+/-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`,
+making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
+def applyReplacementLambda (dontTranslate : List Nat) (e : Expr) :
+    MetaM Expr := do
+  if let some maxDont := dontTranslate.max? then
+    lambdaBoundedTelescope e (maxDont + 1) fun xs e => do
+      let xs := xs.map (·.fvarId!)
+      let dontTranslate := dontTranslate.filterMap (xs[·]?) |>.toArray
+      let mut e ← applyReplacementFun e dontTranslate
+      for x in xs.reverse do
+        let decl ← x.getDecl
+        let xType ← applyReplacementFun decl.type dontTranslate
+        e := .lam decl.userName xType (e.abstract #[.fvar x]) decl.binderInfo
+      return e
+  else
+    applyReplacementFun e #[]
+
 /-- Unfold auxlemmas in the type and value. -/
 def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
   let mut decl := decl
@@ -695,19 +747,35 @@ def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
     decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
   return decl
 
+/--
+Given a list of variable local identifiers that shouldn't be translated,
+determine the arguments that shouldn't be translated.
+
+TODO: Currently, this function doesn't deduce any `dont_translate` types from `type`.
+In the future we would like that the presence of `MonoidAlgebra k G` will automatically
+flag `k` as a type to not be translated.
+-/
+def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := do
+  forallTelescope type fun xs _ => do
+    given.mapM fun id => withRef id.raw <| do
+      let fvarId ← getFVarFromUserName id.getId
+      return (xs.idxOf? fvarId).get!
+
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
-    MetaM ConstantInfo := do
+def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat))
+    (dont : List Ident) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <|
+  let dont ← getDontTranslates dont srcDecl.type
+  decl := decl.updateType <| ← applyReplacementForall dont <| ← reorderForall reorder <|
     renameBinderNames <| ← expand decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand v
+    decl := decl.updateValue <| ← applyReplacementLambda dont <| ← reorderLambda reorder <|
+      ← expand v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
+      value := ← applyReplacementLambda dont <| ← reorderLambda reorder <| ← expand info.value }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
@@ -801,8 +869,11 @@ partial def transformDeclAux
   if !pre.isPrefixOf src then
     insertTranslation src tgt
   -- now transform the source declaration
-  let trgDecl : ConstantInfo ←
-    MetaM.run' <| updateDecl tgt srcDecl <| if src == pre then cfg.reorder else []
+  let trgDecl : ConstantInfo ← MetaM.run' <|
+    if src == pre then
+      updateDecl tgt srcDecl cfg.reorder cfg.dontTranslate
+    else
+      updateDecl tgt srcDecl [] []
   let value ← match trgDecl with
     | .thmInfo { value, .. } | .defnInfo { value, .. } | .opaqueInfo { value, .. } => pure value
     | _ => throwError "Expected {tgt} to have a value."
@@ -907,29 +978,29 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
       insertTranslation srcLemma tgtLemma
 
 /--
-Find the first argument of `nm` that has a multiplicative type-class on it.
+Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the first argument of each type-class.
+Note: we only consider the relevant argument (`to_additive_relevant_arg`) of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
-def firstMultiplicativeArg (nm : Name) : MetaM Nat := do
-  forallTelescopeReducing (← getConstInfo nm).type fun xs _ ↦ do
-    -- xs are the arguments to the constant
-    let xs := xs.toList
-    let l ← xs.filterMapM fun x ↦ do
-      -- write the type of `x` as `(y₀ : α₀) → ... → (yₙ : αₙ) → f a₀ ... aₙ`;
-      -- if `f` can be additivized, mark free variables in `a₀` as multiplicative arguments
-      forallTelescopeReducing (← inferType x) fun _ys tgt ↦ do
-        if let some c := tgt.getAppFn.constName? then
-          if findTranslation? (← getEnv) c |>.isSome then
-            if let some arg := tgt.getArg? 0 then
-              return xs.findIdx? (arg.containsFVar ·.fvarId!)
-        return none
-    trace[to_additive_detail] "firstMultiplicativeArg: {l}"
-    match l with
-    | [] => return 0
-    | (head :: tail) => return tail.foldl Nat.min head
+def findMultiplicativeArg (nm : Name) : MetaM Nat := do
+  forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
+    let env ← getEnv
+    -- check if `tgt` has a multiplicative type argument, and if so,
+    -- find the index of a type from `xs` appearing in there
+    let multArg? (tgt : Expr) : Option Nat := do
+      let c ← tgt.getAppFn.constName?
+      guard (findTranslation? env c).isSome
+      let relevantArg := (relevantArgAttr.find? env c).getD 0
+      let arg ← tgt.getArg? relevantArg
+      xs.findIdx? (arg.containsFVar ·.fvarId!)
+    -- run the above check on all hypotheses and on the conclusion
+    let arg ← OptionT.run <| xs.firstM fun x ↦ OptionT.mk do
+        forallTelescope (← inferType x) fun _ys tgt ↦ return multArg? tgt
+    let arg := arg <|> multArg? ty
+    trace[to_additive_detail] "findMultiplicativeArg: {arg}"
+    return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (cfg : Config) (src : Name) : CoreM Name := do
@@ -1004,6 +1075,7 @@ def elabToAdditive : Syntax → CoreM Config
       $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
+    let mut dontTranslate := []
     for stx in opts do
       match stx with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
@@ -1021,6 +1093,8 @@ def elabToAdditive : Syntax → CoreM Config
             | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
             | n+1 => pure n
           reorder := cycle :: reorder
+      | `(toAdditiveOption| (dont_translate := $[$types:ident]*)) =>
+        dontTranslate := dontTranslate ++ types.toList
       | _ => throwUnsupportedSyntax
     let (existing, self) := match existing? with
       | `(toAdditiveNameHint| existing) => (true, false)
@@ -1059,7 +1133,7 @@ def elabToAdditive : Syntax → CoreM Config
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
       doc
       allowAutoName := false
-      attrs, reorder, existing, self
+      attrs, reorder, dontTranslate, existing, self
       ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
@@ -1156,7 +1230,8 @@ partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) :
   copyMetaData cfg src tgt
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : MetaM Unit := do
+partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont : List Ident) :
+    MetaM Unit := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   if 0 ∈ reorder.flatten then
@@ -1170,9 +1245,9 @@ partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) : Met
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  -- no need to rename binder names for existing types
+  let dont ← getDontTranslates dont type
   let type ←
-    applyReplacementFun <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
+    applyReplacementForall dont <| ← reorderForall reorder <| ← expand <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
     throwError "`to_additive` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
@@ -1197,7 +1272,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    MetaM.run' <| checkExistingType src tgt cfg.reorder
+    MetaM.run' <| checkExistingType src tgt cfg.reorder cfg.dontTranslate
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
     reorderAttr.add src cfg.reorder
@@ -1205,10 +1280,10 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     -- for example, this is necessary for `HPow.hPow`
     if findTranslation? (← getEnv) src |>.isSome then
       return #[tgt]
-  let firstMultArg ← MetaM.run' <| firstMultiplicativeArg src
-  if firstMultArg != 0 then
-    trace[to_additive_detail] "Setting relevant_arg for {src} to be {firstMultArg}."
-    relevantArgAttr.add src firstMultArg
+  let relevantArg ← MetaM.run' <| findMultiplicativeArg src
+  if relevantArg != 0 then
+    trace[to_additive_detail] "Setting relevant_arg for {src} to be {relevantArg}."
+    relevantArgAttr.add src relevantArg
   insertTranslation src tgt alreadyExists
   let nestedNames ←
     if alreadyExists then
