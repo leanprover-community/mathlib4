@@ -15,7 +15,7 @@ import Mathlib.Tactic.ToAdditive
 In this section we set up the theory so that Lean's types and functions between them
 can be viewed as a `LargeCategory` in our framework.
 
-Lean can not transparently view a function as a morphism in this category, and needs a hint in
+Lean cannot transparently view a function as a morphism in this category, and needs a hint in
 order to be able to type check. We provide the abbreviation `asHom f` to guide type checking,
 as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
 

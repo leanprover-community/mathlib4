@@ -43,8 +43,8 @@ tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 a
 automatic instances for these cases). One can require whatever regularity one wants in the
 `IsContMDiffRiemannianBundle` instance above, for example
 `[IsContMDiffRiemannianBundle I n E (fun (x : M) ↦ TangentSpace I x)]`, and one should also add
-`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean can not infer
-the latter from the former as it can not guess `n`).
+`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean cannot infer
+the latter from the former as it cannot guess `n`).
 -/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
@@ -386,7 +386,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
   it stays inside `u`, then by the derivative control its image in the extended chart has length
-  at most `r`, so it can not exit the ball of radius `r`, which means that in the manifold it is
+  at most `r`, so it cannot exit the ball of radius `r`, which means that in the manifold it is
   inside `v` (which is strictly inside `u`). This means that the path will stay inside `u` for
   a little bit longer, by openness of `v`. Iterating this argument, it follows that the path will
   remain inside `u` for the whole time interval `[0, 1]`. In particular, its right endpoint is

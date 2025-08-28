@@ -109,7 +109,7 @@ namespace IsCoverDense
 variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D)
 
--- this is not marked with `@[ext]` because `H` can not be inferred from the type
+-- this is not marked with `@[ext]` because `H` cannot be inferred from the type
 theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
   apply ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ.cond

@@ -590,7 +590,7 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
     (hEapprox : ∃ K ⊆ E, IsCompact K ∧ 0 < μ K) : E / E ∈ 𝓝 (1 : G) := by
   /- For any measure `μ` and set `E` containing a compact set `K` of positive measure, there exists
   a neighborhood `V` of the identity such that `v • K \ K` has small measure for all `v ∈ V`, say
-  `< μ K`. Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
+  `< μ K`. Then `v • K` and `K` cannot be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
   This show that `K / K` contains the neighborhood `V` of `1`, and therefore that it is
   itself such a neighborhood. -/
   obtain ⟨K, hKE, hK, K_closed, hKpos⟩ : ∃ K ⊆ E, IsCompact K ∧ IsClosed K ∧ 0 < μ K := by

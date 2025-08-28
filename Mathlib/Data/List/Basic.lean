@@ -1080,7 +1080,7 @@ section eraseP
 
 variable {p : α → Bool}
 
--- Cannot be @[simp] because `a` can not be inferred by `simp`.
+-- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by
   let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa
