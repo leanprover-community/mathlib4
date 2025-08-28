@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
@@ -220,7 +220,7 @@ theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} [DecidableEq �
   | @insert a s ha ih =>
     rw [Finset.prod_insert ha, squarefree_mul_iff]
     rw [Finset.coe_insert, Set.pairwise_insert] at hs
-    refine ⟨IsRelPrime.prod_right fun i hi ↦ ?_, hs' a (by simp), ?_⟩
+    refine ⟨.prod_right fun i hi ↦ ?_, hs' a (by simp), ?_⟩
     · exact (hs.right i (by simp [hi]) fun h ↦ ha (h ▸ hi)).left
     · exact ih hs.left fun i hi ↦ hs' i <| Finset.mem_insert_of_mem hi
 
