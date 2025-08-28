@@ -263,7 +263,7 @@ If ∇ is a Levi-Civita connection on `TM`, then
 noncomputable def leviCivita_rhs' : M → ℝ :=
   rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y
   - ⟪Y ,(VectorField.mlieBracket I X Z)⟫
-  - ⟪Z, (VectorField.mlieBracket I X Y)⟫
+  - ⟪Z, (VectorField.mlieBracket I Y X)⟫
   + ⟪X, (VectorField.mlieBracket I Z Y)⟫
 
 variable (X Y Z) in
@@ -533,9 +533,7 @@ lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
 lemma isolate_aux {α : Type*} [AddCommGroup α]
     (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
     A + A = X + Y - Z - D - E + F := by
-  trans (X + Y - Z) - D - E + F
-  · rw [h]; abel
-  · abel
+  rw [h]; abel
 
 variable (X Y Z) in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
@@ -554,16 +552,15 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
     simp only [aux I Y Z X cov h, A, C, E, product_swap _ (cov X Y) Z]
   have eq3 : rhs_aux I Z X Y = B + C + F := by
     simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (cov Y Z)]
-  -- add (I) and (II), subtract (III)
+  -- Add eq1 and eq2 and subtract eq3.
   have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = A + A + D + E - F := by
     rw [eq1, eq2, eq3]; abel
-
-  -- solve for ⟪cov X Y, Z⟫ and obtain the claim
-  simp only [leviCivita_rhs] -- - D - E + F
-  ext x
+  -- Solve for ⟪cov X Y, Z⟫ and obtain the claim.
   have almost := isolate_aux A D E F (rhs_aux I X Y Z) (rhs_aux I Y Z X) (rhs_aux I Z X Y)
     (by simp [this])
-  sorry -- obvious: if A + A = stuff, A = 1/2 stuff
+  have almoster : A + A = leviCivita_rhs' I X Y Z := by simp only [leviCivita_rhs', *]
+  simp only [leviCivita_rhs, ← almoster, smul_add]
+  ext; simp; ring
 
 section
 
