@@ -733,6 +733,9 @@ theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
 
+theorem toLinearMap_toSpanSingleton (x : M₁) :
+    (toSpanSingleton R₁ x).toLinearMap = LinearMap.toSpanSingleton R₁ M₁ x := rfl
+
 end ToSpanSingleton
 
 end Semiring
