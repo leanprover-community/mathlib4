@@ -43,7 +43,6 @@
   "Mathlib.Data.Finsupp.Notation",
   "Mathlib.Data.Int.Defs",
   "Mathlib.Data.Int.Notation",
-  "Mathlib.LinearAlgebra.Matrix.Notation",
   "Mathlib.Data.Matroid.Init",
   "Mathlib.Data.Nat.Notation",
   "Mathlib.Data.Rat.Init",
@@ -53,6 +52,7 @@
   "Mathlib.Geometry.Manifold.Instances.Real",
   "Mathlib.Init",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
+  "Mathlib.LinearAlgebra.Matrix.Notation",
   "Mathlib.Mathport.Attributes",
   "Mathlib.Mathport.Notation",
   "Mathlib.Mathport.Rename",
@@ -254,6 +254,8 @@
    "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.Order.CollectFacts":
   ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
+  "Mathlib.Tactic.NormNum.ModEq":
+  ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":

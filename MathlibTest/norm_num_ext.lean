@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
@@ -477,6 +478,19 @@ example : (2 : ℤ) ∣ 4 := by norm_num1
 example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
+
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
 
 end mod
 
