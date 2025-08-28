@@ -138,6 +138,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
       F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc]
 
+lemma TransportEnrichment.eId_eq (X : TransportEnrichment F C) :
+    eId W X = ε F ≫ F.map (eId (C := C) V X) :=
+  rfl
+
+lemma TransportEnrichment.eComp_eq (X Y Z : TransportEnrichment F C) :
+    eComp W X Y Z = μ F _ _ ≫ F.map (eComp V _ _ _) :=
+  rfl
+
 end
 
 /-- Construct an honest category from a `Type v`-enriched category.
@@ -269,6 +277,12 @@ theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y)
 
 theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
     homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
+  rfl
+
+@[simp]
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W ((λ_ _).inv ≫ (f ⊗ₘ g) ≫ eComp W ..) = homOf W f ≫ homOf W g := by
+  rw [← Category.assoc]
   rfl
 
 end

@@ -146,7 +146,7 @@ lemma ceilRoot_ne_zero : ceilRoot n a ≠ 0 ↔ n ≠ 0 ∧ a ≠ 0 := by
 by divisibility.
 
 Note that this cannot possibly hold for `n = 0`, regardless of the value of `ceilRoot 0 a`, because
-the statement reduces to `a = 1 ↔ ceilRoot 0 a ∣ b`, which is false for eg `a = 0`,
+the statement reduces to `a = 1 ↔ ceilRoot 0 a ∣ b`, which is false for e.g. `a = 0`,
 `b = ceilRoot 0 a`. -/
 lemma dvd_pow_iff_ceilRoot_dvd (hn : n ≠ 0) : a ∣ b ^ n ↔ ceilRoot n a ∣ b := by
   obtain rfl | ha := eq_or_ne a 0
