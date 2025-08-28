@@ -35,29 +35,21 @@ changes sign when the endpoints are swapped. -/
 theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     trapezoidal_integral f N a b = -(trapezoidal_integral f N b a) := by
   unfold trapezoidal_integral
-  rw [neg_mul_eq_neg_mul, ← sum_range_reflect, (by ring: (b - a) / N = -((a - b) / N))]
-  simp only [neg_mul, add_comm, neg_inj, mul_eq_mul_left_iff, add_right_inj, div_eq_zero_iff]
-  left
+  rw [neg_mul_eq_neg_mul, neg_div', neg_sub, add_comm (f b) (f a), ← sum_range_reflect]
+  congr 2
   apply sum_congr rfl
   intro k hk
-  apply congrArg
+  norm_cast
+  rw [tsub_tsub, add_comm 1, Nat.cast_add, Nat.cast_sub (mem_range.mp hk), Nat.cast_sub N_nonzero]
+  apply congr_arg
   field_simp
-  let q := N - 1 - 1 - k
-  have: q = (N : ℝ) - 1 - 1 - (k : ℝ) := by
-    rw [← (by grind: N - (k + 2) = q)]
-    rw [(by ring: (N : ℝ) - 1 - 1 - (k : ℝ) = (N : ℝ) - ((k : ℝ) + 2))]
-    norm_cast
-    apply Eq.symm (Int.subNatNat_of_le ?_)
-    exact Nat.add_lt_of_lt_sub (List.mem_range.mp hk)
-  simp only [q, this]
   ring
 
 /-- The absolute error of the trapezoidal rule does not change when the endpoints are swapped. -/
 theorem trapezoidal_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     trapezoidal_error f N a b = trapezoidal_error f N b a := by
   unfold trapezoidal_error
-  rw [trapezoidal_integral_symm f N_nonzero a b, integral_symm, ← abs_neg]
-  ring_nf
+  rw [trapezoidal_integral_symm f N_nonzero a b, integral_symm, neg_sub_neg, abs_sub_comm]
 
 /-- Just like exact integration, the trapezoidal integration from `a` to `a` is zero. -/
 @[simp]
@@ -89,37 +81,13 @@ lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_
   let g (k : ℕ) (t : ℝ) := (t / 2) * (f (ak k) + f (ak k + t)) - ∫ x in (ak k)..(ak k + t), f x
   -- Verify that [ak k, ak k + h] is still within the bounds of integration for sensible k.
   have ak_bound {k : ℕ} (hk: k < N) {t : ℝ} (ht: t ∈ Icc 0 h) : ak k + t ∈ Icc a b := by
-    unfold ak h
-    field_simp
+    unfold ak h at *
+    rw [Set.mem_Icc] at ht ⊢
+    rw [← Nat.add_one_le_iff] at hk
     constructor
-    · refine (le_div_iff₀ ?_).mpr ?_
-      · exact Nat.cast_pos.mpr N_nonzero
-      · rw [add_assoc]
-        refine le_add_of_le_of_nonneg ?_ ?_
-        · exact le_refl (a * ↑N)
-        · apply add_nonneg ?_ ?_
-          · exact mul_nonneg
-              (by norm_cast; exact Nat.zero_le k)
-              (sub_nonneg_of_le (le_of_lt a_lt_b))
-          · exact mul_nonneg ht.left (by norm_cast; exact Nat.zero_le N)
-    · refine (div_le_iff₀ ?_).mpr ?_
-      · exact Nat.cast_pos.mpr N_nonzero
-      · have k_N_comp: (k + 1) * (b - a) ≤ N * (b - a) := by
-          norm_cast
-          exact mul_le_mul
-                  (Nat.cast_le.mpr hk)
-                  (le_refl (b - a))
-                  (sub_nonneg_of_le (le_of_lt a_lt_b))
-                  (Nat.cast_nonneg N)
-        have tN_hN: t * N ≤ h * N := mul_le_mul_of_nonneg_right ht.right (Nat.cast_nonneg N)
-        calc
-          _ ≤ a * N + k * (b - a) + h * N   := add_le_add
-                                                (le_refl (a * ↑N + ↑k * (b - a)))
-                                                (tN_hN)
-          _ = a * N + k * (b - a) + (b - a) := by unfold h; field_simp
-          _ = a * N + (k + 1) * (b - a)     := by rw [add_assoc, ← add_one_mul]
-          _ ≤ a * N + N * (b - a)           := (add_le_add_iff_left (a * ↑N)).mpr k_N_comp
-          _ = b * N                         := by ring
+    · nlinarith
+    · grw [add_assoc, ← le_sub_iff_add_le', ht.2, ← add_one_mul, ← Nat.cast_add_one, hk,
+        mul_div_cancel₀ _ (by positivity)]
   -- We will mostly use ak_bound in these simplified forms.  (There is one use later on which does
   -- need it, so we do have prove it in full.)
   have a_lt_ak {k : ℕ} (hk: k < N): a ≤ ak k := by
@@ -155,27 +123,13 @@ lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_
         exact ⟨tsub_le_iff_left.mp hx.left, le_sub_iff_add_le'.mp hx.right⟩
     -- Compute g' by applying standard derivative identities.
     have h_dg (y : ℝ) (hy: y ∈ Icc 0 h) : HasDerivWithinAt (g k) (dg k y) (Icc 0 h) y := by
-      apply fun_sub
-      · apply fun_mul
-        · apply div_const
-          exact hasDerivWithinAt_id _ _
-        · apply const_add
-          exact comp_deriv h_df hy
+      refine fun_sub (fun_mul (div_const (hasDerivWithinAt_id _ _) _)
+        (const_add _ (comp_deriv h_df hy))) ?_
       · nth_rewrite 1 [← add_zero (ak k)]
         simp_rw [← integral_comp_add_left f (ak k)]
         -- We now want to apply FToC and be done with it, but we'll need to prove that
-        have h_cont : ContinuousOn (fun x ↦ f (ak k + x)) (Icc 0 h) := by
-          have : ContinuousOn f (Icc (0 + ak k) (h + ak k)) := by
-            apply ContinuousOn.mono (s := Icc a b) h_cf
-            apply Set.Icc_subset_Icc
-            · rw [zero_add]
-              exact a_lt_ak hk
-            · rw [add_comm]
-              exact ak_h_lt_b hk
-          apply ContinuousOn.comp' this
-          · fun_prop
-          · rw [add_comm 0 _, add_comm h _]
-            exact Monotone.mapsTo_Icc add_left_mono
+        have h_cont : ContinuousOn (fun x ↦ f (ak k + x)) (Icc 0 h) :=
+          h_cf.comp' (by fun_prop) fun t ↦ ak_bound hk
         have := Fact.mk hy -- Needed for integral_hasDerivWithinAt_right
         apply integral_hasDerivWithinAt_right
         · apply ContinuousOn.intervalIntegrable_of_Icc hy.left
@@ -189,17 +143,10 @@ lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_
       -- so that the various HasDerivWithinAt theorems will have everything they need.
       let dfaky := derivWithin f (Icc a b) (ak k + y)
       rw [(by ring: ddg k y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg k y) - dfaky)]
-      apply fun_sub
-      · apply fun_add
-        · apply const_mul
-          apply const_add
-          exact comp_deriv h_df hx
-        · apply fun_mul
-          · apply div_const
-            exact hasDerivWithinAt_id _ _
-          · rw [iteratedDerivWithin_eq_iterate]
-            exact comp_deriv h_ddf hx
-      · exact comp_deriv h_df hx
+      refine fun_sub (fun_add (const_mul _ (const_add _ (comp_deriv h_df hx)))
+        (fun_mul (div_const (hasDerivWithinAt_id _ _) _) ?_)) (comp_deriv h_df hx)
+      rw [iteratedDerivWithin_eq_iterate]
+      exact comp_deriv h_ddf hx
     -- Technically this would work for all x ≥ 0, but we only need it for x ∈ Icc 0 h (and it makes
     -- more pure-mathematical sense that way).
     have bound_ddg : ∀ x ∈ Icc 0 h, |ddg k x| ≤ (ζ / 2) * (x ^ 1) := by
@@ -242,9 +189,7 @@ lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_
         rw [Real.norm_eq_abs]
         apply abs_bound x (mem_Icc_of_Ioc ?_)
         exact ⟨hx.left, le_trans hx.right ht.right⟩
-      apply norm_integral_le_of_norm_le
-              ht.left
-              (ae_of_all _ this)
+      apply norm_integral_le_of_norm_le ht.left (ae_of_all _ this)
       apply ContinuousOn.intervalIntegrable_of_Icc ht.left
       apply ContinuousOn.mono cont (s := [[0, h]])
       field_simp
