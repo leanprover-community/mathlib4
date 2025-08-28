@@ -783,8 +783,8 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
   · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, hasFiniteIntegral_iff_enorm, H,
       true_and]
     rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnreal_ennreal.aemeasurable]
-    · simp [enorm_smul]
-    · simpa [aemeasurable_withDensity_ennreal_iff hf, enorm_smul] using H.enorm
+    · simp [enorm_smul, -Nonneg.coe_smul]
+    · simpa [aemeasurable_withDensity_ennreal_iff hf, enorm_smul, -Nonneg.coe_smul] using H.enorm
   · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
 
 theorem integrable_withDensity_iff_integrable_smul {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
@@ -893,7 +893,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
     apply lintegral_congr_ae
     filter_upwards [(memL1_smul_of_L1_withDensity f_meas u).coeFn_toLp] with x hx
     rw [hx]
-    simp [NNReal.smul_def, enorm_smul]
+    simp [NNReal.smul_def, enorm_smul, -Nonneg.coe_smul]
 
 @[simp]
 theorem withDensitySMulLI_apply {f : α → ℝ≥0} (f_meas : Measurable f)

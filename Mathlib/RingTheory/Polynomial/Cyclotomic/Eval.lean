@@ -191,8 +191,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
   suffices Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq']) ^ totient n <
       Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) by
     simp [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
-      hq'.le, coe_nnnorm, NNReal.coe_pow,
-      Real.coe_toNNReal', sub_nonneg] at this
+      hq'.le, coe_nnnorm, Real.coe_toNNReal', sub_nonneg] at this
     convert this
     rw [eq_comm]
     simp [cyclotomic_nonneg n hq'.le]

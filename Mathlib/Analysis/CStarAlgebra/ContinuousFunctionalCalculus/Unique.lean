@@ -175,14 +175,15 @@ instance NNReal.instContinuousMap.UniqueHom [T2Space A] :
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
       { toFun := Subtype.map (↑) (by simp [s'])
-        invFun := Subtype.map Real.toNNReal (by simp [s'])
+        invFun := Subtype.map Real.toNNReal (by simp [s', -Subtype.exists, -Subtype.forall])
         left_inv := fun _ ↦ by ext; simp
         right_inv := fun x ↦ by
           ext
           obtain ⟨y, -, hy⟩ := x.2
           simpa using hy ▸ NNReal.coe_nonneg y
         continuous_toFun := continuous_coe.subtype_map (by simp [s'])
-        continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
+        continuous_invFun := continuous_real_toNNReal.subtype_map
+          (by simp [s', -Subtype.exists, -Subtype.forall]) }
     have (ξ : C(s, ℝ≥0) →⋆ₐ[ℝ≥0] A) (hξ : Continuous ξ) :
         (let ξ' := ξ.realContinuousMapOfNNReal.comp <| ContinuousMap.compStarAlgHom' ℝ ℝ e
         Continuous ξ' ∧ ξ' (.restrict s' <| .id ℝ) = ξ (.restrict s <| .id ℝ≥0)) := by
@@ -255,9 +256,9 @@ lemma toContinuousMapHom_toNNReal (f : C(X, ℝ)₀) :
 lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r • f.toNNReal := by
   ext x
   by_cases h : 0 ≤ f x
-  · simpa [max_eq_left h, NNReal.smul_def] using mul_nonneg r.coe_nonneg h
+  · simpa [max_eq_left h, NNReal.smul_def, -Nonneg.coe_smul] using mul_nonneg r.coe_nonneg h
   · push_neg at h
-    simpa [max_eq_right h.le, NNReal.smul_def]
+    simpa [max_eq_right h.le, NNReal.smul_def, -Nonneg.coe_smul]
       using mul_nonpos_of_nonneg_of_nonpos r.coe_nonneg h.le
 
 @[simp]
@@ -364,14 +365,15 @@ instance NNReal.instContinuousMapZero.UniqueHom
     let s' : Set ℝ := (↑) '' s
     let e : s ≃ₜ s' :=
       { toFun := Subtype.map (↑) (by simp [s'])
-        invFun := Subtype.map Real.toNNReal (by simp [s'])
+        invFun := Subtype.map Real.toNNReal (by simp [s', -Subtype.exists, -Subtype.forall])
         left_inv := fun _ ↦ by ext; simp
         right_inv := fun x ↦ by
           ext
           obtain ⟨y, -, hy⟩ := x.2
           simpa using hy ▸ NNReal.coe_nonneg y
         continuous_toFun := continuous_coe.subtype_map (by simp [s'])
-        continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
+        continuous_invFun := continuous_real_toNNReal.subtype_map
+          (by simp [s', -Subtype.exists, -Subtype.forall]) }
     let _inst₁ : Zero s' := ⟨0, ⟨0, h0 ▸ Subtype.property (0 : s), coe_zero⟩⟩
     have h0' : ((0 : s') : ℝ) = 0 := rfl
     have e0 : e 0 = 0 := by ext; simp [e, h0, h0']

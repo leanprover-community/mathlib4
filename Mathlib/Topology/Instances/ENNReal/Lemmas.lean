@@ -966,9 +966,8 @@ theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : 
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tsum_lt_tsum hle hi hg
 
-theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b := by
-  rw [← tsum_zero]
-  exact tsum_lt_tsum (fun a => zero_le _) hi hg
+theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) : 0 < ∑' b, g b :=
+  tsum_zero.symm.trans_lt (tsum_lt_tsum (fun _ => zero_le _) hi hg)
 
 open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :

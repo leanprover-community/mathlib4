@@ -680,9 +680,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         convert eLpNorm_le_eLpNorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
         rw [ENNReal.coe_rpow_of_nonneg]
         · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
-        · rw [one_div, one_div]
-          norm_cast
-          rw [hp']
+        · rw [one_div, one_div, ← NNReal.coe_inv, ← NNReal.coe_inv, hp']
           simpa using hpq
     _ = eLpNorm u p' μ * t := by rw [eLpNorm_restrict_eq_of_support_subset h2u]
     _ ≤ (C * eLpNorm (fderiv ℝ u) p μ) * t := by

@@ -51,59 +51,26 @@ open Function
 
 -- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
+abbrev NNReal := { r : ℝ // 0 ≤ r } /- deriving
   Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+  Nontrivial, Inhabited -/
 
 namespace NNReal
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
-instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := Nonneg.orderBot
-instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
-instance : Sub ℝ≥0 := Nonneg.sub
-instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
-
-noncomputable instance : LinearOrder ℝ≥0 :=
-  Subtype.instLinearOrder _
-
-noncomputable instance : Semifield ℝ≥0 :=
-  Nonneg.semifield
-
-instance : IsOrderedRing ℝ≥0 :=
-  Nonneg.isOrderedRing
-
-instance : IsStrictOrderedRing ℝ≥0 :=
-  Nonneg.isStrictOrderedRing
-
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
-  /- Both `LinearOrderedCommGroupWithZero` and `Semifield` inherit from `CommGroupWithZero`.
-  However, if we project both of them into a `GroupWithZero` and try to unify them
-  at `reducible_and_instances` transparency, then we unfold `instSemifield` into `Nonneg.semifield`
-  which also causes an unfolding of `NNReal` to `{x // 0 ≤ x}`. Those two are (intentionally!)
-  not defeq at `reducible_and_instances`, even though the instances on them are.
-
-  So we either need to copy all the `Nonneg` instances and redefine them specifically for `NNReal`,
-  or we need to avoid the unfold in the unification. The latter has a smaller impact.
-  -/
-  __ := instSemifield.toCommGroupWithZero.toGroupWithZero
-  __ := Nonneg.linearOrderedCommGroupWithZero
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
 
 /-- Coercion `ℝ≥0 → ℝ`. -/
-@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
+@[coe] abbrev toReal : ℝ≥0 → ℝ := Subtype.val
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 

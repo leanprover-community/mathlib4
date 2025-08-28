@@ -40,4 +40,5 @@ noncomputable instance : ContinuousSqrt ℝ≥0 where
   sqrt := NNReal.sqrt ∘ (fun x ↦ x.2 - x.1)
   continuousOn_sqrt := by fun_prop
   sqrt_nonneg := by simp
-  sqrt_mul_sqrt := by simpa using fun _ _ h ↦ Eq.symm <| add_tsub_cancel_of_le h
+  sqrt_mul_sqrt := by simpa using
+    fun (a a_1 : ℝ≥0) (h : a ≤ a_1) ↦ Eq.symm <| add_tsub_cancel_of_le h

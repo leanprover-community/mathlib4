@@ -182,7 +182,7 @@ theorem hasIntegral_iff : HasIntegral I l f vol y ↔
     ∀ ε > (0 : ℝ), ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧
       ∀ c π, l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ ε :=
   ((l.hasBasis_toFilteriUnion_top I).tendsto_iff nhds_basis_closedBall).trans <| by
-    simp [@forall_swap ℝ≥0 (TaggedPrepartition I)]
+    simp [-Subtype.forall, -Subtype.exists, @forall_swap ℝ≥0 (TaggedPrepartition I)]
 
 /-- Quite often it is more natural to prove an estimate of the form `a * ε`, not `ε` in the RHS of
 `BoxIntegral.hasIntegral_iff`, so we provide this auxiliary lemma. -/

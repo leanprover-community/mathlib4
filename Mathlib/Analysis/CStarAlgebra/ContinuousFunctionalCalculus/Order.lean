@@ -123,7 +123,7 @@ lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
   have hf' := hf.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
   have hg' := hg.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
   rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_le_iff ..]
-  simp [NNReal.coe_le_coe, ← ha_spec.image]
+  simp [← ha_spec.image]
 
 open ContinuousFunctionalCalculus in
 /-- In a unital `ℝ`-algebra `A` with a continuous functional calculus, an element `a : A` is larger

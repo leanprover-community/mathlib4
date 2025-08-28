@@ -452,7 +452,7 @@ lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
     apply Filter.Tendsto.mul_const
     apply Filter.Tendsto.const_mul
     convert hasSum_geometric_of_lt_one C.2 (h y hy).1 |>.tendsto_sum_nat
-    simp [NNReal.coe_sub <| le_of_lt (h y hy).1, NNReal.coe_one]
+    simp [NNReal.coe_sub <| le_of_lt (h y hy).1]
 
 end
 

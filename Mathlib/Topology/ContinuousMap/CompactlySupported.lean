@@ -667,7 +667,7 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
       ne_eq, not_or, Decidable.not_not, ContinuousMap.coe_sub, Pi.sub_apply] at hx ⊢
     simp [hx.1, hx.2]
   · ext x
-    simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)
+    simpa [← NNReal.coe_add, -Nonneg.coe_add] using add_tsub_cancel_of_le (h x)
 
 /-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
 continuous `ℝ≥0`-valued function. -/
@@ -739,7 +739,7 @@ lemma exists_add_nnrealPart_add_eq (f g : C_c(α, ℝ)) : ∃ (h : C_c(α, ℝ�
         ring
   · rcases le_total 0 (g x) with hgx | hgx
     · rcases le_total 0 (f x + g x) with hfgx | hfgx
-      · simp only [hfgx, sup_of_le_left, add_comm, hfx, sup_of_le_right, hgx, zero_add] at hhx
+      · simp only [hfgx, sup_of_le_left, hfx, sup_of_le_right, hgx, zero_add] at hhx
         rw [sup_of_le_left (neg_nonneg.mpr hfx), sup_of_le_right (neg_nonpos.mpr hgx),
           sup_of_le_right (neg_nonpos.mpr hfgx), zero_add, add_zero]
         linarith
@@ -823,8 +823,11 @@ noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] �
       map_add' f g := by
         simp only [neg_add_rev]
         obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g
-        rw [← add_zero ((Λ (f + g).nnrealPart).toReal - (Λ (-g + -f).nnrealPart).toReal),
-          ← sub_self (Λ h).toReal, sub_add_sub_comm, ← NNReal.coe_add, ← NNReal.coe_add,
+        rw [← add_zero ((Λ (f + g).nnrealPart).toReal - (Λ (-g + -f).nnrealPart).toReal)]
+        conv_lhs =>
+          right
+          rw [← sub_self (Λ h).toReal]
+        rw [sub_add_sub_comm, ← NNReal.coe_add, ← NNReal.coe_add,
           ← LinearMap.map_add, ← LinearMap.map_add, hh.1, add_comm (-g) (-f), hh.2]
         simp only [map_add, NNReal.coe_add]
         ring
