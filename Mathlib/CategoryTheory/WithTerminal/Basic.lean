@@ -460,7 +460,7 @@ private def widePullbackShapeEquivObj {J : Type*} :
   right_inv x := by cases x <;> simp
 
 /-- Implementation detail for `widePullbackShapeEquiv`. -/
-private def widePullbackShapeEquivMap {J : Type*} (x y: WidePullbackShape J) :
+private def widePullbackShapeEquivMap {J : Type*} (x y : WidePullbackShape J) :
     (x ⟶ y) ≃ (widePullbackShapeEquivObj x ⟶ widePullbackShapeEquivObj y) where
   toFun
   | .term _ => PUnit.unit
