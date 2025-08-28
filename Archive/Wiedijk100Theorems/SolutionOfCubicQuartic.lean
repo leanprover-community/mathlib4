@@ -236,8 +236,7 @@ theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
   have h256 : (256 : K) = 2 ^ 8 := by norm_num
   have h₁ : a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e = a * (y ^ 4 + p * y ^ 2 + r) := by
     simp only [hp, hr, y, h4, h8, h16, h256]
-    simp [ha, field_simps]
-    linear_combination (1048576 * a ^ 10 * x + 262144 * a ^ 9 * b) * hqz
+    linear_combination (norm := (field_simp; ring)) (4 * a * x + b) * hqz / a ^ 3 / 2 ^ 5
   rw [h₁, ha.isUnit.mul_right_eq_zero]
   calc
     _ ↔ 1 * (y ^ 2 * y ^ 2) + p * y ^ 2 + r = 0 := by
