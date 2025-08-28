@@ -166,17 +166,21 @@ def resolvePushId? (stx : Term) : TermElabM (Option Expr) := do
   | `(rightact% $f _ _)
   | `(binrel% $f _ _)
   | `(binrel_no_prop% $f _ _)
-  | `(unop% $f _) => try resolveId? f catch _ => return none
-  | stx => try resolveId? stx catch _ => return none
+  | `(unop% $f _)
+  | f => try resolveId? f catch _ => return none
 
 /-- Elaborator for the argument passed to `push`. It accepts a constant, or a function -/
 def elabHead (stx : Term) : TermElabM Head := withRef stx do
+  -- we elaborate `stx` to get an appropriate error message if the term isn't well formed,
+  -- and to add hover information
+  _ ← withTheReader Term.Context ({ · with ignoreTCFailures := true }) <|
+    Term.withoutModifyingElabMetaStateWithInfo <| Term.withoutErrToSorry <| Term.elabTerm stx none
   match stx with
   | `(fun $_ => _) => return .lambda
   | `(∀ $_, _) => return .forall
   | _ =>
     match ← resolvePushId? stx with
-    | some f@(.const name _) => addTermInfo' stx f; return .name name
+    | some (.const name _) => return .name name
     | _ => throwError "Could not resolve `push` argument {stx}. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
