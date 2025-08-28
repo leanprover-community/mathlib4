@@ -280,8 +280,8 @@ variable (k A)
 
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids, then
 `MonoidAlgebra.domCongr e` is an algebra equivalence between their monoid algebras. -/
-@[to_additive /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids, then
-`AddMonoidAlgebra.domCongr e` is an algebra equivalence between their monoid algebras. -/]
+@[to_additive /-- If `e : G ≃+ H` is an additive equivalence between two additive monoids, then
+`AddMonoidAlgebra.domCongr e` is an algebra equivalence between their add monoid algebras. -/]
 def domCongr (e : G ≃* H) : MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
     (Finsupp.domLCongr e : (G →₀ A) ≃ₗ[k] (H →₀ A))
@@ -313,7 +313,7 @@ lemma domCongr_comp_lsingle (e : G ≃* H) (g : G) :
     (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
 
 @[to_additive (attr := simp)]
-theorem domCongr_refl : domCongr k A (MulEquiv.refl G) = AlgEquiv.refl :=
+theorem domCongr_refl : domCongr k A (.refl G) = .refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
 @[to_additive (attr := simp)]

@@ -118,7 +118,7 @@ variable [Semiring k] [NonUnitalNonAssocSemiring R]
 -- versions of `single`. Perhaps someone wants to try making this a `def` rather than an `abbrev`?
 -- In Mathlib 3 this was locally reducible.
 /-- `MonoidAlgebra.single a r` for `a : M`, `r : R` is the element `ar : R[M]`. -/
-@[to_additive /-- `MonoidAlgebra.single a r` for `a : M`, `r : R` is the element `ar : R[M]`. -/]
+@[to_additive /-- `AddMonoidAlgebra.single a r` for `a : M`, `r : R` is the element `ar : R[M]`. -/]
 abbrev single (a : G) (b : k) : MonoidAlgebra k G := Finsupp.single a b
 
 @[to_additive]
@@ -166,14 +166,14 @@ it trying to unify two things that are different. -/
   f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
 
 /-- The product of `f g : MonoidAlgebra k G` is the finitely supported function
-  whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
-  such that `x * y = a`. (Think of the group ring of a group.) -/
+whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
+such that `x * y = a`. (Think of the group ring of a group.) -/
 instance instMul : Mul (MonoidAlgebra k G) := ⟨MonoidAlgebra.mul'⟩
 
 /-- The product of `f g : k[G]` is the finitely supported function
-  whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
-  such that `x + y = a`. (Think of the product of multivariate
-  polynomials where `α` is the additive monoid of monomial exponents.) -/
+whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
+such that `x + y = a`. (Think of the product of multivariate
+polynomials where `α` is the additive monoid of monomial exponents.) -/
 instance _root_.AddMonoidAlgebra.instMul [Add G] : Mul (AddMonoidAlgebra k G) :=
   ⟨fun f g => MonoidAlgebra.mul' (G := Multiplicative G) f g⟩
 
@@ -231,7 +231,7 @@ section One
 variable [NonAssocSemiring R] [Semiring k] [One G]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function
-  that is `1` at `1` and zero elsewhere. -/
+that is `1` at `1` and zero elsewhere. -/
 @[to_additive (dont_translate := k) one /--
 The unit of the multiplication is `single 0 1`, i.e. the function
 that is `1` at `0` and zero elsewhere. -/]
