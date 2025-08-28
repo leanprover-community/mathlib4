@@ -87,6 +87,11 @@ theorem gMul_eq_coe_linearMap {i j} (a : ⨂[R]^i M) (b : (⨂[R]^j) M) :
       ⨂[R]^i M →ₗ[R] (⨂[R]^j) M →ₗ[R] (⨂[R]^(i + j)) M) a b :=
   rfl
 
+theorem gMul_apply {i j} (a : ⨂[R]^i M) (b : (⨂[R]^j) M) :
+    a ₜ* b = ((TensorProduct.mk R _ _).compr₂ ↑(mulEquiv : _ ≃ₗ[R] (⨂[R]^(i + j)) M) :
+      ⨂[R]^i M →ₗ[R] (⨂[R]^j) M →ₗ[R] (⨂[R]^(i + j)) M) a b :=
+  by simp
+
 variable (R M)
 
 /-- Cast between "equal" tensor powers. -/
