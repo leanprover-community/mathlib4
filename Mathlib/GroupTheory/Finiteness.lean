@@ -270,8 +270,8 @@ theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG
   exact AddSubmonoid.fg_iff_mul_fg (AddSubgroup.toAddSubmonoid P)
 
 /-- The product of two finitely generated subgroups is finitely generated. -/
-@[to_additive /-- The product of two finitely generated additive subgroups is finitely generated.
--/]
+@[to_additive
+/-- The product of two finitely generated additive subgroups is finitely generated. -/]
 theorem Subgroup.FG.prod {G' : Type*} [Group G'] {P : Subgroup G} {Q : Subgroup G'}
     (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
   rw [fg_iff_submonoid_fg] at *
