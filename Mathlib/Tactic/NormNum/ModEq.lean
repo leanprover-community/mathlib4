@@ -26,10 +26,10 @@ def evalNatModEq : NormNumExt where eval {u αP} e := do
   | _, _, _ => failure
 
 /-- `norm_num` extension for `Int.ModEq`. -/
-@[norm_num Int.ModEq _ _ _]
+@[norm_num _ ≡ _ [ZMOD _]]
 def evalIntModEq : NormNumExt where eval {u αP} e := do
   match u, αP, e with
-  | 0, ~q(Prop), ~q(Int.ModEq $n $a $b) =>
+  | 0, ~q(Prop), ~q($a ≡ $b [ZMOD $n]) =>
     let ⟨b, pb⟩ ← deriveBoolOfIff _ e q(Int.modEq_iff_dvd.symm)
     return .ofBoolResult pb
   | _, _, _ => failure
