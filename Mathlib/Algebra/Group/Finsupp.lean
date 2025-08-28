@@ -167,6 +167,14 @@ lemma update_eq_erase_add_single (f : ι →₀ M) (a : ι) (b : M) :
     · simp
     · simp [h, erase_ne, h.symm]
 
+lemma update_eq_single_add {f : ι →₀ M} {a : ι} (h : f a = 0) (b : M) :
+    f.update a b = single a b + f := by
+  rw [update_eq_single_add_erase, erase_of_notMem_support (by simpa)]
+
+lemma update_eq_add_single {f : ι →₀ M} {a : ι} (h : f a = 0) (b : M) :
+    f.update a b = f + single a b := by
+  rw [update_eq_erase_add_single, erase_of_notMem_support (by simpa)]
+
 lemma single_add_erase (a : ι) (f : ι →₀ M) : single a (f a) + f.erase a = f := by
   rw [← update_eq_single_add_erase, update_self]
 
@@ -295,6 +303,9 @@ lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x
 
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+
+instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
+  DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
 
 end AddMonoid
 

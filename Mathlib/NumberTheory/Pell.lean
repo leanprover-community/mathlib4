@@ -373,7 +373,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   refine ⟨(q₁.num * q₂.num - d * (q₁.den * q₂.den)) / m, (q₁.num * q₂.den - q₂.num * q₁.den) / m,
       ?_, ?_⟩
   · qify [hd₁, hd₂]
-    field_simp [hm₀]
+    field_simp
     norm_cast
     grind
   · qify [hd₂]
