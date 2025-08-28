@@ -63,6 +63,16 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5).le, ← hf x h5]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): the proof was rewritten, because it was too slow
+  -- Original:
+  /-
+  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
+    refine ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _)
+      (convex_Ioi 0.5)).add ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
+      ((2 : ℝ) • LinearMap.id)).subset
+      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_left two_pos).mpr ha)) (convex_Ioi 0.5))).sub
+      ((convex_on_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _))
+    norm_num
+  -/
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     · apply ConcaveOn.add
