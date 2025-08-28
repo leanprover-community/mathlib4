@@ -31,9 +31,11 @@ open Rat Real
 def Irrational (x : ℝ) :=
   x ∉ Set.range ((↑) : ℚ → ℝ)
 
-theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, x ≠ a / b := by
-  simp only [Irrational, Rat.forall, not_exists, Set.mem_range, cast_intCast, cast_div,
-    eq_comm]
+theorem irrational_iff_ne_rational (x : ℝ) : Irrational x ↔ ∀ a b : ℤ, b ≠ 0 → x ≠ a / b := by
+  simp [Irrational, Rat.forall, eq_comm]
+
+theorem Irrational.ne_rational {x : ℝ} (hx : Irrational x) (a b : ℤ) : x ≠ a / b := by
+  rintro rfl; exact hx ⟨a / b, by simp⟩
 
 /-- A transcendental real number is irrational. -/
 theorem Transcendental.irrational {r : ℝ} (tr : Transcendental ℚ r) : Irrational r := by
@@ -55,7 +57,7 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
     rw [Int.cast_ne_zero, Int.natCast_ne_zero]
     exact P
   have c2 : ((D : ℤ) : ℝ) ^ n ≠ 0 := pow_ne_zero _ c1
-  rw [mk'_eq_divInt, cast_pow, cast_mk, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
+  rw [mk'_eq_divInt, cast_pow, cast_divInt, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
     ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
   rw [← Int.dvd_natAbs, ← Int.natCast_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,

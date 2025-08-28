@@ -28,6 +28,11 @@ example : (mersenne 5).Prime :=
 example : (mersenne 7).Prime :=
   lucas_lehmer_sufficiency _ (by simp) (by norm_num)
 
+example : ¬ (mersenne 11).Prime := by
+  intro h
+  have := lucas_lehmer_necessity 11 (by norm_num) h
+  norm_num at this
+
 example : (mersenne 13).Prime :=
   lucas_lehmer_sufficiency _ (by simp) (by norm_num)
 
@@ -36,6 +41,11 @@ example : (mersenne 17).Prime :=
 
 example : (mersenne 19).Prime :=
   lucas_lehmer_sufficiency _ (by simp) (by norm_num)
+
+example : ¬ (mersenne 23).Prime := by
+  intro h
+  have := lucas_lehmer_necessity 23 (by norm_num) h
+  norm_num at this
 
 /-- 2147483647.Prime, Euler (1772) -/
 example : (mersenne 31).Prime :=

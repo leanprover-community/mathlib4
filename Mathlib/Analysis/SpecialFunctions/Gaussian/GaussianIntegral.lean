@@ -215,7 +215,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply,
         univ_inter, real_smul, mul_one, integral_mul_cexp_neg_mul_sq hb]
       rw [volume_real_Ioo_of_le (by linarith [pi_nonneg])]
-      field_simp [(by contrapose! hb; rw [hb, zero_re] : b ≠ 0)]
+      simp
       ring
 
 theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = √(π / b) := by
@@ -328,6 +328,8 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     · norm_num
     · exact (div_pos pi_pos hb).le
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
@@ -340,8 +342,8 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
       norm_num
       rw [rpow_neg (le_of_lt hx), rpow_one]
     rw [smul_eq_mul, this]
-    field_simp [(ne_of_lt (show 0 < x from hx)).symm]
-    norm_num; ring
+    simp [field, (ne_of_lt (show 0 < x from hx)).symm]
+    norm_num
   · rw [div_one, ← mul_div_assoc, mul_comm, mul_div_cancel_right₀ _ (two_ne_zero' ℝ)]
 
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
@@ -359,7 +361,7 @@ lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
   | zero => simp [-one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
   | succ k ih =>
     rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih, Nat.mul_add]
-    field_simp
+    simp
     ring
 
 open scoped Nat in

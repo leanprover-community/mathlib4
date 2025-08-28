@@ -3,8 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 
@@ -187,6 +188,16 @@ lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_sphere := isOpen_sphere
+
+open WithZeroTopology in
+lemma continuous_valuation : Continuous v := by
+  simp only [continuous_iff_continuousAt, ContinuousAt]
+  rintro x
+  by_cases hx : v x = 0
+  · simpa [hx, (hasBasis_nhds _).tendsto_iff WithZeroTopology.hasBasis_nhds_zero,
+      Valuation.map_sub_of_right_eq_zero _ hx] using fun i hi ↦ ⟨.mk0 i hi, fun y ↦ id⟩
+  · simpa [(hasBasis_nhds _).tendsto_iff (WithZeroTopology.hasBasis_nhds_of_ne_zero hx)]
+      using ⟨.mk0 (v x) hx, fun _ ↦ Valuation.map_eq_of_sub_lt _⟩
 
 end IsValuativeTopology
 

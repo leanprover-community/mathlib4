@@ -436,7 +436,7 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
       _ = s / 2 * δ := by ring
   have invs_nonneg : 0 ≤ 2 / s := div_nonneg zero_le_two (zero_le_two.trans hi.le)
   calc
-    1 - δ = 2 / s * (s / 2 - s / 2 * δ) := by field_simp [spos.ne']; ring
+    1 - δ = 2 / s * (s / 2 - s / 2 * δ) := by field_simp [spos.ne']
     _ ≤ 2 / s * ‖d - a.c i‖ :=
       (mul_le_mul_of_nonneg_left (by linarith only [hcrj, I, J, hi]) invs_nonneg)
     _ = ‖(2 / s) • a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
@@ -453,7 +453,7 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     intro i
     simp only [c']
     split_ifs with h; · exact h
-    by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]
+    by_cases hi : ‖a.c i‖ = 0 <;> simp [norm_smul, hi]
   refine ⟨c', fun n => norm_c'_le n, fun i j inej => ?_⟩
   -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j

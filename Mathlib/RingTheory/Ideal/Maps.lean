@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Data.DFinsupp.Module
 import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -803,6 +804,39 @@ theorem Module.annihilator_eq_top_iff : annihilator R M = ⊤ ↔ Subsingleton M
       simp_rw [mem_annihilator.mp (h ▸ Submodule.mem_top)]⟩,
     fun _ ↦ top_le_iff.mp fun _ _ ↦ mem_annihilator.mpr fun _ ↦ Subsingleton.elim _ _⟩
 
+theorem Module.annihilator_prod : annihilator R (M × M') = annihilator R M ⊓ annihilator R M' := by
+  ext
+  simp_rw [Ideal.mem_inf, mem_annihilator,
+    Prod.forall, Prod.smul_mk, Prod.mk_eq_zero, forall_and_left, ← forall_and_right]
+
+theorem Module.annihilator_finsupp {ι : Type*} [Nonempty ι] :
+    annihilator R (ι →₀ M) = annihilator R M := by
+  ext r; simp_rw [mem_annihilator]
+  constructor <;> intro h
+  · refine Nonempty.elim ‹_› fun i : ι ↦ ?_
+    simpa using fun m ↦ congr($(h (Finsupp.single i m)) i)
+  · intro m; ext i; exact h _
+
+section
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+
+theorem Module.annihilator_dfinsupp : annihilator R (Π₀ i, M i) = ⨅ i, annihilator R (M i) := by
+  ext r; simp only [mem_annihilator, Ideal.mem_iInf]
+  constructor <;> intro h
+  · intro i m
+    classical simpa using DFunLike.congr_fun (h (DFinsupp.single i m)) i
+  · intro m; ext i; exact h i _
+
+theorem Module.annihilator_pi : annihilator R (Π i, M i) = ⨅ i, annihilator R (M i) := by
+  ext r; simp only [mem_annihilator, Ideal.mem_iInf]
+  constructor <;> intro h
+  · intro i m
+    classical simpa using congr_fun (h (Pi.single i m)) i
+  · intro m; ext i; exact h i _
+
+end
+
 namespace Submodule
 
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
@@ -962,6 +996,14 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     exact
       (H.mem_or_mem this).imp (fun h => ha ▸ mem_map_of_mem f h) fun h => hb ▸ mem_map_of_mem f h
 
+lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
+    [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
+  obtain h | h := m.map_eq_top_or_isMaximal_of_surjective f hf ‹_›
+  · apply congr_arg (comap f) at h
+    rw [comap_map_of_surjective _ hf, comap_top] at h
+    exact (IsMaximal.ne_top ‹_› (eq_top_iff.mpr <| h ▸ sup_le (le_of_eq rfl) hk)).elim
+  · exact h
+
 end Ring
 
 section CommRing
@@ -1078,6 +1120,23 @@ theorem eq_liftOfRightInverse (hf : Function.RightInverse f_inv f) (g : A →+* 
 
 end RingHom
 
+/-- Any ring isomorphism induces an order isomorphism of ideals. -/
+@[simps apply]
+def RingEquiv.idealComapOrderIso {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) :
+    Ideal S ≃o Ideal R where
+  toFun I := I.comap e
+  invFun I := I.map e
+  left_inv I := I.map_comap_of_surjective _ e.surjective
+  right_inv I := I.comap_map_of_bijective _ e.bijective
+  map_rel_iff' := by
+    simp [← Ideal.map_le_iff_le_comap, Ideal.map_comap_of_surjective _ e.surjective]
+
+@[simp]
+lemma RingEquiv.idealComapOrderIso_symm_apply
+    {R S : Type*} [Semiring R] [Semiring S] (e : R ≃+* S) (I : Ideal R) :
+    e.idealComapOrderIso.symm I = I.map e :=
+  rfl
+
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
@@ -1112,9 +1171,6 @@ end Algebra
 theorem FaithfulSMul.ker_algebraMap_eq_bot (R A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [FaithfulSMul R A] : RingHom.ker (algebraMap R A) = ⊥ := by
   ext; simp
-
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.of_ker_algebraMap_eq_bot := FaithfulSMul.ker_algebraMap_eq_bot
 
 section PrincipalIdeal
 

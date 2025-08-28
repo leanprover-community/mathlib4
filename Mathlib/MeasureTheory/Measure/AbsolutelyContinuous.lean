@@ -118,6 +118,15 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
 
+lemma null_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
+    (ht : ν t = 0) : μ t = 0 :=
+  hμν ht
+
+lemma pos_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
+    (ht : 0 < μ t) : 0 < ν t := by
+  contrapose! ht
+  simp_all [hμν.null_mono]
+
 end AbsolutelyContinuous
 
 @[simp]
@@ -148,7 +157,7 @@ lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • �
 
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
   ⟨fun h s => by
-    rw [measure_zero_iff_ae_notMem, measure_zero_iff_ae_notMem]
+    rw [measure_eq_zero_iff_ae_notMem, measure_eq_zero_iff_ae_notMem]
     exact fun hs => h hs, fun h _ hs => h hs⟩
 
 alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=

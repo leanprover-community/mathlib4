@@ -21,11 +21,7 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
--- The `Inhabited` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance (C) [Quiver C] : Inhabited (HomRel C) where
-  default := fun _ _ _ _ ↦ PUnit
+deriving Inhabited
 
 namespace CategoryTheory
 
@@ -114,7 +110,6 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
     comp r (Quot.mk _ f) (Quot.mk _ g) = Quot.mk _ (f ≫ g) :=
   rfl
 
--- Porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
@@ -201,12 +196,7 @@ def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
 variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
-  apply Functor.ext; rotate_left
-  · rintro X
-    rfl
-  · rintro X Y f
-    dsimp [lift, functor]
-    simp
+  tauto
 
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
@@ -216,7 +206,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
     congr
   · rintro _ _ f
     dsimp [lift, Functor]
-    refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
+    refine Quot.inductionOn f fun _ ↦ ?_
     simp only [heq_eq_eq]
     congr
 
