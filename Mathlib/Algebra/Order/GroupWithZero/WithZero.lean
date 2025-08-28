@@ -95,8 +95,6 @@ between `WithZero αˣ` with `α`. -/
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
   map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
-
-
 lemma OrderIso.withZeroUnits_apply (x : WithZero αˣ) :
     OrderIso.withZeroUnits x = withZeroUnitsEquiv x := rfl
 
