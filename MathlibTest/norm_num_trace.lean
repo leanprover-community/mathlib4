@@ -17,16 +17,16 @@ open Mathlib.Meta.NormNum
 trace:
 [Tactic.norm_num] ✅️ evalMul
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
   [Tactic.norm_num] ✅️ evalAdd
     [Tactic.norm_num] ✅️ evalOfNat
-      [Tactic.norm_num] 1 ⇒ isNat 1 (⋯)
+      [Tactic.norm_num] 1 ==> isNat 1 (⋯)
     [Tactic.norm_num] ✅️ evalOfNat
-      [Tactic.norm_num] 1 ⇒ isNat 1 (⋯)
-    [Tactic.norm_num] 1 + 1 ⇒ isNat 2 (⋯)
-  [Tactic.norm_num] 2 * (1 + 1) ⇒ isNat 4 (⋯)
+      [Tactic.norm_num] 1 ==> isNat 1 (⋯)
+    [Tactic.norm_num] 1 + 1 ==> isNat 2 (⋯)
+  [Tactic.norm_num] 2 * (1 + 1) ==> isNat 4 (⋯)
 [Tactic.norm_num] ✅️ evalTrue
-  [Tactic.norm_num] True ⇒ isTrue (True.intro)
+  [Tactic.norm_num] True ==> isTrue (True.intro)
 -/
 #guard_msgs in
 example : 2 * (1 + 1) = 4 := by
@@ -36,52 +36,52 @@ set_option linter.unusedTactic false in
 /--
 trace: [Tactic.norm_num] ❌️ evalMul
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
   [Tactic.norm_num] ❌️ evalAdd
     [Tactic.norm_num] ✅️ evalOfNat
-      [Tactic.norm_num] 1 ⇒ isNat 1 (⋯)
-    [Tactic.norm_num] 1 + x ⇒ x: no norm_nums apply
-  [Tactic.norm_num] 2 * (1 + x) ⇒ 1 + x: no norm_nums apply
+      [Tactic.norm_num] 1 ==> isNat 1 (⋯)
+    [Tactic.norm_num] 1 + x ==> x: no norm_nums apply
+  [Tactic.norm_num] 2 * (1 + x) ==> 1 + x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalAdd
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 1 ⇒ isNat 1 (⋯)
-  [Tactic.norm_num] 1 + x ⇒ x: no norm_nums apply
+    [Tactic.norm_num] 1 ==> isNat 1 (⋯)
+  [Tactic.norm_num] 1 + x ==> x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalAdd
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 1 ⇒ isNat 1 (⋯)
-  [Tactic.norm_num] 1 + x ⇒ x: no norm_nums apply
+    [Tactic.norm_num] 1 ==> isNat 1 (⋯)
+  [Tactic.norm_num] 1 + x ==> x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalMul
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
   [Tactic.norm_num] ❌️ evalAdd
     [Tactic.norm_num] ✅️ evalOfNat
-      [Tactic.norm_num] 1 ⇒ isNat 1 (⋯)
-    [Tactic.norm_num] 1 + x ⇒ x: no norm_nums apply
-  [Tactic.norm_num] 2 * (1 + x) ⇒ 1 + x: no norm_nums apply
+      [Tactic.norm_num] 1 ==> isNat 1 (⋯)
+    [Tactic.norm_num] 1 + x ==> x: no norm_nums apply
+  [Tactic.norm_num] 2 * (1 + x) ==> 1 + x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalAdd
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
   [Tactic.norm_num] ❌️ evalMul
     [Tactic.norm_num] ✅️ evalOfNat
-      [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
-    [Tactic.norm_num] 2 * x ⇒ x: no norm_nums apply
-  [Tactic.norm_num] 2 + 2 * x ⇒ 2 * x: no norm_nums apply
+      [Tactic.norm_num] 2 ==> isNat 2 (⋯)
+    [Tactic.norm_num] 2 * x ==> x: no norm_nums apply
+  [Tactic.norm_num] 2 + 2 * x ==> 2 * x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalMul
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
-  [Tactic.norm_num] 2 * x ⇒ x: no norm_nums apply
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
+  [Tactic.norm_num] 2 * x ==> x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalMul
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
-  [Tactic.norm_num] 2 * x ⇒ x: no norm_nums apply
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
+  [Tactic.norm_num] 2 * x ==> x: no norm_nums apply
 [Tactic.norm_num] ❌️ evalAdd
   [Tactic.norm_num] ✅️ evalOfNat
-    [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
+    [Tactic.norm_num] 2 ==> isNat 2 (⋯)
   [Tactic.norm_num] ❌️ evalMul
     [Tactic.norm_num] ✅️ evalOfNat
-      [Tactic.norm_num] 2 ⇒ isNat 2 (⋯)
-    [Tactic.norm_num] 2 * x ⇒ x: no norm_nums apply
-  [Tactic.norm_num] 2 + 2 * x ⇒ 2 * x: no norm_nums apply
+      [Tactic.norm_num] 2 ==> isNat 2 (⋯)
+    [Tactic.norm_num] 2 * x ==> x: no norm_nums apply
+  [Tactic.norm_num] 2 + 2 * x ==> 2 * x: no norm_nums apply
 -/
 #guard_msgs in
 example (x : ℕ) : 2 * (1 + x) = 2 + 2 * x := by

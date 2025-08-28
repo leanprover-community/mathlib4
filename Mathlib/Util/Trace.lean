@@ -17,6 +17,9 @@ A wrapper around `Lean.withTraceNode` where every node wraps a function `k : α 
 The resulting trace node includes output of the form `{a} ⇒ {(← k a)}` upon success,
 and `{a} ⇒ {err}` on error.
 
+We do not include this result on the first line, as it would thwart attempts to group trace nodes
+from the same function name within the Firefox profiler data export.
+
 Typically this should be used in extensible tactics like `norm_num` and `positivity`.
 -/
 def withTraceNodeApplication
@@ -34,10 +37,10 @@ def withTraceNodeApplication
       let _ := always.except
       try
         let b ← k a
-        Lean.addTrace cls <| .group m!"{a}{Format.line}⇒ {.nest 2 (toMessageData b)}"
+        Lean.addTrace cls <| .group m!"{a}{Format.line}==> {.nest 2 (toMessageData b)}"
         return b
       catch err =>
-        Lean.addTrace cls <| .group m!"{a}{Format.line}⇒ {.nest 2 err.toMessageData}"
+        Lean.addTrace cls <| .group m!"{a}{Format.line}==> {.nest 2 err.toMessageData}"
         throw err
 
 end Mathlib.Meta
