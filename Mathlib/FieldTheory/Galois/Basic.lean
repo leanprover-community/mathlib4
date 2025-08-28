@@ -182,7 +182,7 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
 
 @[simp] lemma FixedPoints.mem_intermediateField_iff
     {M : Type*} [Monoid M] [MulSemiringAction M E] [SMulCommClass M F E] {x : E} :
-    x ∈ (FixedPoints.intermediateField (F := F) M) ↔ ∀ m : M, m • x = x := Iff.rfl
+    x ∈ FixedPoints.intermediateField (F := F) M ↔ ∀ m : M, m • x = x := .rfl
 
 namespace IntermediateField
 
