@@ -369,7 +369,7 @@ variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {f : ι → M
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`. -/
-@[to_additive _root_.CanonicallyOrderedAddCommMonoid.single_le_prod
+@[to_additive _root_.CanonicallyOrderedAddCommMonoid.single_le_sum
 /-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
 
 See also `Finset.single_le_sum`. -/]
