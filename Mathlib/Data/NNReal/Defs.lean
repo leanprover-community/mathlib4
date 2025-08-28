@@ -98,7 +98,7 @@ noncomputable instance zpow : Pow ℝ≥0 ℤ where
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
 -/
-noncomputable instance : Semifield ℝ≥0 :=
+noncomputable instance : Semifield ℝ≥0 := fast_instance%
   Function.Injective.semifield toReal Subtype.val_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
