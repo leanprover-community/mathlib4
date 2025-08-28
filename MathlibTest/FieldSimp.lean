@@ -713,10 +713,3 @@ example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 
 example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
-
-/-! ## Miscellaneous -/
-
--- An example of "unfolding" `field_simps` to its "definition"
-example {aa : ℚ} (ha : (aa : ℚ) ≠ 0) (hb : 2 * aa = 3) : (1 : ℚ) / aa = 2/ 3 := by
-  simp (disch := field_simp_discharge) [-one_div, -one_divp, -mul_eq_zero, field_simps]
-  rw [hb]
