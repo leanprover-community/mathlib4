@@ -814,7 +814,7 @@ theorem quadratic_root_cos_pi_div_five :
     rw [ne_eq, sin_eq_zero_iff, hθ]
     push_neg
     intro n hn
-    replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
+    replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
     omega
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]

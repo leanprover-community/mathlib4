@@ -145,7 +145,6 @@ lemma hasSum_mellin_pi_mul_sq' {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → �
       conv_rhs => enter [1]; rw [← sign_mul_abs (r i), ofReal_mul, ← ofRealHom_eq_coe,
         SignType.map_cast]
       field_simp [h]
-      ring_nf
   · convert h_sum using 2 with i
     rcases eq_or_ne (r i) 0 with h | h
     · rw [h, abs_zero, ofReal_zero, zero_rpow hs₂.ne', zero_rpow hs.ne', div_zero, div_zero]

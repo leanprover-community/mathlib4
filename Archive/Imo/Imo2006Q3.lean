@@ -70,8 +70,7 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
       rw [mul_pow, sq_abs, hz]; ring
     _ ≤ 32 * ((2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4) := by gcongr
     _ = (sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2) ^ 2 := by
-      field_simp
-      rw [mul_pow, sq_sqrt zero_le_two, hz]
+      simp [field, hz]
       ring
 
 /-- Proof that `M = 9 * sqrt 2 / 32` works with the substitution. -/
