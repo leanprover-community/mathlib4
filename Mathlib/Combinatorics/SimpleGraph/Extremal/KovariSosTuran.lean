@@ -134,8 +134,8 @@ lemma card_edgeFinset_le_bound [Nonempty V] [Nonempty α] [Nonempty β]
   -- counting `t`
   · trans (card V)*((descPochhammer ℝ (card α)).eval
         ((∑ v, G.degree v : ℝ)/card V)/(card α).factorial)
-    · rw [← Nat.cast_two, ← Nat.cast_mul, ← sum_degrees_eq_twice_card_edges, Nat.cast_sum,
-        mul_div, div_le_div_iff_of_pos_right (by positivity), mul_le_mul_left (by positivity)]
+    · rw [← Nat.cast_two, ← Nat.cast_mul, ← sum_degrees_eq_twice_card_edges, Nat.cast_sum, mul_div,
+        div_le_div_iff_of_pos_right (by positivity), mul_le_mul_iff_right₀ (by positivity)]
       exact pow_le_descPochhammer_eval h_avg
     · exact le_card_filterNeighborFinsetSubsets h_avg
   -- counting `v`
