@@ -15,6 +15,7 @@ namespace PUnit
 
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd PUnit where
   exists_add_of_le {_ _} _ := ⟨unit, by subsingleton⟩
+  le_add_self _ _ := trivial
   le_self_add _ _ := trivial
 
 instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid PUnit where

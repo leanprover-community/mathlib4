@@ -399,7 +399,7 @@ noncomputable instance lattice : Lattice PartENat :=
     le_inf := fun _ _ _ => le_min }
 
 instance : CanonicallyOrderedAdd PartENat :=
-  { le_self_add := fun a b =>
+  { le_self_add a b :=
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
         PartENat.casesOn a (top_add _).ge fun _ =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
