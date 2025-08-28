@@ -325,7 +325,7 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     ring
 
 @[simp]
-theorem U_degree [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℕ) :
+theorem U_degree_nat [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℕ) :
   (U R n).degree = n := by
   induction n using Nat.twoStepInduction with
   | zero => simp
@@ -344,9 +344,40 @@ theorem U_degree [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : 
     · rw [ih1, this]; norm_cast; omega
 
 @[simp]
-theorem U_natDegree [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℕ) :
+theorem U_natDegree_nat [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℕ) :
   (U R n).natDegree = n :=
-  natDegree_eq_of_degree_eq_some (U_degree R hR n)
+  natDegree_eq_of_degree_eq_some (U_degree_nat R hR n)
+
+@[simp]
+theorem U_degree_neg_one : (U R (-1)).degree = ⊥ := by simp
+
+@[simp]
+theorem U_natDegree_neg_one : (U R (-1)).natDegree = 0 := by simp
+
+@[simp]
+theorem U_degree_nonzero [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2)
+  (n : ℤ) (hn : n ≠ -1) : (U R n).degree = ↑((n + 1).natAbs - 1) := by
+  obtain ⟨m, hn⟩ := n.eq_nat_or_neg
+  cases hn with
+  | inl hn => subst hn; rw [U_degree_nat R hR m]; norm_cast
+  | inr hn =>
+    subst hn; rw [U_neg, degree_neg]
+    cases m with
+    | zero => simp
+    | succ m =>
+      cases m with
+      | zero => contradiction
+      | succ m =>
+        trans (U R m).degree
+        · congr; omega
+        · rw [U_degree_nat R hR m]; norm_cast
+
+@[simp]
+theorem U_natDegree [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℤ) :
+  (U R n).natDegree = (n + 1).natAbs - 1 := by
+  by_cases n = -1
+  case pos hn => subst hn; simp
+  case neg hn => exact natDegree_eq_of_degree_eq_some (U_degree_nonzero R hR n hn)
 
 @[simp]
 theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow * (U R n).eval x := by
