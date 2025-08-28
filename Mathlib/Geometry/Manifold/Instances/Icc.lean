@@ -19,13 +19,15 @@ the interval in `ℝ` (see `contMDiffOn_comp_projIcc_iff` and friends).
 
 We also define `1 : TangentSpace (𝓡∂ 1) z`, and relate it to `1` in the real line.
 
-## TODO
-
-This file can be thoroughly rewritten once mathlib has a good theory of smooth immersions and
-embeddings. Once this is done,
 - the inclusion `Icc x y → ℝ` is a smooth embedding, and in particular smooth
 - deduce the dual result: a function `f : M → Icc x y` is smooth iff
   its composition with the inclusion into `ℝ` is smooth
+
+## TODO
+
+This file can be thoroughly rewritten once mathlib has a good theory of smooth embeddings and
+submersions. Once this is done,
+- the inclusion `Icc x y → ℝ` is a smooth embedding
 - prove the projection `ℝ → Icc x y` is a smooth submersion, hence smooth
 - use this to simplify the proof that `f : Icc x y → M` is smooth iff the composition `ℝ → M`
   with the projection `ℝ → Icc x y` is
@@ -82,9 +84,9 @@ lemma bar_apply (z : EuclideanSpace ℝ (Fin 1)) : bar z = z 0 := rfl
 
 -- TODO: the proof works, except that some details with the chosen computation are not right
 /-- The inclusion map from a closed segment to `ℝ` is a smooth immersion -/
-lemma isImmersion_subtype_coe_Icc [h : Fact (x < y)] :
+lemma isImmersion_subtype_coe_Icc :
     letI F := (EuclideanSpace ℝ (Fin 0));
-    IsImmersion F (𝓡∂ 1) 𝓘(ℝ) ⊤ (fun (z : Icc x y) ↦ (z : ℝ)) := by
+    IsImmersion F (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   letI φ₀ := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin 1)) (EuclideanSpace ℝ (Fin 0))
   have : (Module.finrank ℝ ℝ) = 1 := Module.finrank_self ℝ
@@ -170,6 +172,18 @@ lemma contMDiffOn_projIcc :
     simp only [sub_right_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
+
+/-- A function `f : M → Icc x y` is smooth iff its composition with the inclusion
+into `ℝ` is smooth. -/
+lemma contMDiff_iff_comp_subtype_coe_Icc {f : M → Icc x y} [IsManifold I n M] :
+    ContMDiff I (𝓡∂ 1) n f ↔ ContMDiff I 𝓘(ℝ) ⊤ ((fun (z : Icc x y) ↦ (z : ℝ)) ∘ f) := by
+  have := isImmersion_subtype_coe_Icc (x := x) (y := y) (n := n)
+  set φ := (fun (z : Icc x y) ↦ (z : ℝ))
+  have hf : Continuous f := sorry
+  --have aux := ContMDiff.iff_comp_isImmersion this hf (I := I) (n := n) (J := (𝓡∂ 1))
+  -- TODO: continue here and get this working!
+  --rw [ContMDiff.iff_comp_isImmersion this hf (n := n) (φ := φ)]
+  sorry
 
 lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by

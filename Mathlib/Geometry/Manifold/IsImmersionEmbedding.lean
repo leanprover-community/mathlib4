@@ -664,4 +664,16 @@ variable [IsManifold I n M] [IsManifold I' n M']
 /-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
 
+lemma _root_.ContMDiff.iff_comp_isImmersion [IsManifold J n N] [IsManifold J' n N']
+    {f : M → N} {φ : N → N'} (h : IsImmersion F J J' n φ)
+    (hf : Continuous f) : -- TODO: is this hypothesis needed?
+    ContMDiff I J n f ↔ ContMDiff I J' n (φ ∘ f) := by
+  constructor
+  · intro hf' x
+    rw [← ContMDiffAt.iff_comp_isImmersionAt (h (f x)) hf.continuousAt]
+    exact hf' x
+  · intro hcomp x
+    rw [ContMDiffAt.iff_comp_isImmersionAt (h (f x)) hf.continuousAt (I := I)]
+    apply hcomp x
+
 end IsImmersion
