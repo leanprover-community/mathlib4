@@ -488,7 +488,7 @@ theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
       have hcj := congr_fun h_coe j
       rw [DFinsupp.single_eq_same] at hci hcj
       rw [DFinsupp.single_eq_of_ne hij] at hci
-      rw [DFinsupp.single_eq_of_ne' hij] at hcj
+      rw [DFinsupp.single_eq_of_ne hij.symm] at hcj
       exact Or.inr ⟨hci, hcj.symm⟩
   · rintro (⟨rfl, hxi⟩ | ⟨hi, hj⟩)
     · rw [eq_of_heq hxi]
