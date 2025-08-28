@@ -72,10 +72,9 @@ lemma exists_mem_interior_convexHull_affineBasis (hs : s ∈ 𝓝 x) :
   set d : AffineBasis (Fin (finrank ℝ E + 1)) ℝ E := Units.mk0 ε' hε'.ne' • c
   have hε₀ : 0 < ε / 2 := by positivity
   have hdnorm : (range d : Set E) ⊆ closedBall 0 (ε / 2) := by
-    simp [d, abs_of_nonneg hε'.le,
-      range_subset_iff, norm_smul]
-    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff₀ hc',
-      mul_le_mul_left hε₀] using hcnorm
+    simp [d, abs_of_nonneg hε'.le, range_subset_iff, norm_smul]
+    simpa [ε', hε₀.ne', range_subset_iff, ← mul_div_right_comm (ε / 2), div_le_iff₀ hc', hε₀]
+      using hcnorm
   refine ⟨d, ?_, ?_⟩
   · simpa [d, Pi.smul_def, range_smul, interior_smul₀, convexHull_smul, zero_mem_smul_set_iff,
       hε'.ne']

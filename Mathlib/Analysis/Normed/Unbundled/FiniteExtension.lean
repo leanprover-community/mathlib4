@@ -161,7 +161,7 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
       apply le_antisymm _ (norm_repr_le_norm B j)
       have hj' := Finset.le_sup' (fun i ↦ ‖B.repr ((algebraMap K L) k * y) i‖) (mem_univ i)
       simp only [repr_smul', norm_mul, ← hi] at hj hj'
-      exact (mul_le_mul_left (lt_of_le_of_ne (norm_nonneg _)
+      exact (mul_le_mul_iff_right₀ (lt_of_le_of_ne (norm_nonneg _)
         (Ne.symm (norm_ne_zero_iff.mpr hk)))).mp (hj ▸ hj')
     simp only [norm, hj]
     rw [repr_smul', norm_mul, hi, hij]
