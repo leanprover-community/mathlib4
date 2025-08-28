@@ -71,8 +71,8 @@ theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M
   convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
 
 /-- The product of two finitely generated submonoids is finitely generated. -/
-@[to_additive /-- The product of two finitely generated additive submonoids is finitely generated.
--/]
+@[to_additive
+/-- The product of two finitely generated additive submonoids is finitely generated. -/]
 theorem Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
   classical
   obtain ⟨bM, hbM⟩ := hP
@@ -94,8 +94,8 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
   exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
 
 /-- Finite product of finitely generated submonoids is finitely generated. -/
-@[to_additive /-- Finite product of finitely generated additive submonoids is finitely generated.
--/]
+@[to_additive
+/-- Finite product of finitely generated additive submonoids is finitely generated. -/]
 theorem Submonoid.FG.pi (hP : ∀ i, (P i).FG) : (pi Set.univ P).FG := by
   classical
   haveI := Fintype.ofFinite ι
