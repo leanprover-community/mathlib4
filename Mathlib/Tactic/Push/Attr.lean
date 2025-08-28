@@ -63,7 +63,7 @@ def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
 where
   /-- Checks if the expression has the head in any subexpression.
   We don't need to check this for `.lambda`, because the term being a function
-  is sufficient for `pull fun _ ↦ ·` to be applicable. -/
+  is sufficient for `pull fun _ ↦ _` to be applicable. -/
   findHead? (e : Expr) : Head → Bool
   | .name n => e.foldConsts false (· == n || ·)
   | .lambda => true
