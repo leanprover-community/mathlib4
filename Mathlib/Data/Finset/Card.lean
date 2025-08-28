@@ -475,9 +475,9 @@ lemma surj_on_of_inj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha 
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
   let f' : s → β := fun a ↦ f a a.2
   have hinj' : Set.InjOn f' s.attach := fun x hx y hy hxy ↦ Subtype.ext (hinj _ _ x.2 y.2 hxy)
-  have hmapsTo : Set.MapsTo f' s.attach t := fun x hx ↦ hf _ _
+  have hmapsto' : Set.MapsTo f' s.attach t := fun x hx ↦ hf _ _
   intro b hb
-  obtain ⟨a, ha, rfl⟩ := surjOn_of_injOn_of_card_le _ hmapsTo hinj' (by rwa [card_attach]) hb
+  obtain ⟨a, ha, rfl⟩ := surjOn_of_injOn_of_card_le _ hmapsto' hinj' (by rwa [card_attach]) hb
   exact ⟨a, a.2, rfl⟩
 
 /--
