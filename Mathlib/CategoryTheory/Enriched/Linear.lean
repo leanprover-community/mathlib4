@@ -97,10 +97,12 @@ variable (R)
 abbrev addCommGroupEnrichedModuleCatHom (X Y : C) : AddCommGroup (X ⟶ Y) :=
   (eHomEquiv (V := ModuleCat R)).addCommGroup
 
-instance moduleModuleCatHom {X Y : C} :
+def moduleModuleCatHom (X Y : C) :
     letI : AddCommGroup (X ⟶ Y) := addCommGroupEnrichedModuleCatHom R X Y
     Module R (X ⟶ Y) :=
   EnrichedOrdinaryCategory.homEquiv.module R
+
+variable (C)
 
 /-- The preadditive structure on `C` induced by `C` being enriched over `ModuleCat R` for a
 commutative ring `R`. -/
@@ -113,14 +115,12 @@ abbrev preadditiveEnrichedModuleCat : Preadditive C where
     apply (eHomEquiv (ModuleCat R)).injective
     simp [Equiv.add_def, eHomEquiv_comp, MonoidalPreadditive.tensor_add]
 
-variable {R}
+attribute [local instance] moduleModuleCatHom
 
-example : MonoidalLinear R (ModuleCat R) := inferInstance
-
-instance linearEnrichedModuleCat :
-    letI : Preadditive C := preadditiveEnrichedModuleCat R
+def linearEnrichedModuleCat :
+    letI : Preadditive C := preadditiveEnrichedModuleCat R C
     Linear R C :=
-  letI : Preadditive C := preadditiveEnrichedModuleCat R
+  letI : Preadditive C := preadditiveEnrichedModuleCat R C
   { smul_comp X Y Z r f g := by
       apply (eHomEquiv (ModuleCat R)).injective
       simp only [Equiv.smul_def]
