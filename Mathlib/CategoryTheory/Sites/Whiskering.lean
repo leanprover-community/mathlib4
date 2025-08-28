@@ -146,7 +146,7 @@ lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget A)).obj F).2).isSeparated _ _ S hS).ext (fun _ _ hf => h _ _ hf)
+    ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
