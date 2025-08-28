@@ -339,7 +339,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
         norm_add_le_of_le J2 <| (le_opNorm _ _).trans <| by gcongr; exact Lf' _ _ m_ge
       _ = (4 + 12 * ‖c‖) * ‖y‖ * (1 / 2) ^ e := by ring
       _ ≤ (4 + 12 * ‖c‖) * ‖y‖ * (ε / (4 + 12 * ‖c‖)) := by gcongr
-      _ = ε * ‖y‖ := by field_simp [ne_of_gt pos]; ring
+      _ = ε * ‖y‖ := by field_simp
   rw [← this.fderiv] at f'K
   exact ⟨this.differentiableAt, f'K⟩
 
@@ -358,12 +358,10 @@ variable (𝕜 f)
 is Borel-measurable. -/
 theorem measurableSet_of_differentiableAt_of_isComplete {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
     MeasurableSet { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } := by
-  -- Porting note: was
-  -- simp [differentiable_set_eq_D K hK, D, isOpen_B.measurableSet, MeasurableSet.iInter,
-  --   MeasurableSet.iUnion]
   simp only [D, differentiable_set_eq_D K hK]
-  repeat apply_rules [MeasurableSet.iUnion, MeasurableSet.iInter] <;> intro
-  exact isOpen_B.measurableSet
+  aesop
+    (add safe apply [MeasurableSet.iUnion, MeasurableSet.iInter, isOpen_B])
+    (add unsafe IsOpen.measurableSet)
 
 variable [CompleteSpace F]
 
@@ -606,7 +604,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]
+      _ = ε := by field_simp
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
