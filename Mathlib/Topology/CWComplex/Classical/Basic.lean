@@ -560,8 +560,6 @@ lemma mem_carrier {E : Subcomplex C} {x : X} : x ∈ E.carrier ↔ x ∈ (E : Se
 
 lemma coe_eq_carrier {E : Subcomplex C} : (E : Set X) = E.carrier := rfl
 
-lemma mem {E : Subcomplex C} {x : X} : x ∈ E ↔ x ∈ (E : Set X) := Iff.rfl
-
 @[ext] lemma ext {E F : Subcomplex C} (h : ∀ x, x ∈ E ↔ x ∈ F) : E = F :=
   SetLike.ext h
 
@@ -569,7 +567,7 @@ lemma eq_iff (E F : Subcomplex C) : E = F ↔ (E : Set X) = F :=
   SetLike.coe_injective.eq_iff.symm
 
 /-- Copy of a `Subcomplex` with a new `carrier` equal to the old one. Useful to fix definitional
-equalities. See Note [range copy pattern]. -/
+equalities. -/
 protected def copy (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
     (hJ : J = E.I) : Subcomplex C :=
   { carrier := F
@@ -602,8 +600,7 @@ export RelCWComplex (Subcomplex)
 
 namespace Subcomplex
 
-export RelCWComplex.Subcomplex (I closed union mem_carrier coe_eq_carrier mem ext copy coe_copy
-  copy_eq)
+export RelCWComplex.Subcomplex (I closed union mem_carrier coe_eq_carrier ext copy coe_copy copy_eq)
 
 end CWComplex.Subcomplex
 
@@ -700,7 +697,6 @@ namespace CWComplex.Subcomplex
 export RelCWComplex.Subcomplex (subset_complex base_subset)
 
 end CWComplex.Subcomplex
-
 
 end Subcomplex
 
@@ -862,11 +858,11 @@ lemma RelCWComplex.iUnion_skeleton_eq_complex [RelCWComplex C D] :
 
 lemma RelCWComplex.mem_skeletonLT_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp [← iUnion_openCell_eq_skeletonLT, Subcomplex.mem]
+  simp [← SetLike.mem_coe, ← iUnion_openCell_eq_skeletonLT]
 
 lemma CWComplex.mem_skeletonLT_iff [CWComplex C] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp [← iUnion_openCell_eq_skeletonLT, Subcomplex.mem]
+  simp [← SetLike.mem_coe, ← iUnion_openCell_eq_skeletonLT]
 
 lemma RelCWComplex.mem_skeleton_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeleton C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
