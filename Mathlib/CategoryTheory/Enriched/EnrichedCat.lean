@@ -19,7 +19,7 @@ category `V`.
 -/
 
 
-universe w v u u₁ u₂
+universe w v u u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -44,7 +44,8 @@ def of (C : Type u) [EnrichedCategory.{w} V C] : EnrichedCat.{w, v, u} V :=
 
 open EnrichedCategory ForgetEnrichment
 
-variable {V} {C D E E' : EnrichedCat.{w, v, u} V}
+variable {V} {C : Type u} [EnrichedCategory V C] {D : Type u₁} [EnrichedCategory V D]
+  {E : Type u₂} [EnrichedCategory V E] {E' : Type u₃} [EnrichedCategory V E']
 
 /-- Whisker a `V`-enriched natural transformation on the left. -/
 @[simps!]
@@ -57,7 +58,7 @@ def whiskerLeft
 @[simps!]
 def whiskerRight
     {F G : EnrichedFunctor V C D} (α : F ⟶ G) (H : EnrichedFunctor V D E) :
-    (F.comp V H) ⟶ (G.comp V H) :=
+    F.comp V H ⟶ G.comp V H :=
   ⟨(F.forgetComp H).hom ≫ Functor.whiskerRight α.out H.forget ≫ (G.forgetComp H).inv⟩
 
 /-- Composing the `V`-enriched identity functor with any functor is isomorphic to that functor. -/
