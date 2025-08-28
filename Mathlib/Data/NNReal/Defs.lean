@@ -60,6 +60,11 @@ namespace NNReal
 
 @[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
+/-- Coercion `ℝ≥0 → ℝ`. -/
+@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
+
+instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
+
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
@@ -77,8 +82,26 @@ instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 noncomputable instance : LinearOrder ℝ≥0 :=
   Subtype.instLinearOrder _
 
-noncomputable instance : Semifield ℝ≥0 :=
-  Nonneg.semifield
+noncomputable instance : Inv ℝ≥0 where
+  inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
+
+noncomputable instance : Div ℝ≥0 where
+  div x y := ⟨(x : ℝ) / (y : ℝ), div_nonneg x.2 y.2⟩
+
+noncomputable instance : SMul ℚ≥0 ℝ≥0 where
+  smul x y := ⟨x • (y : ℝ), by rw [NNRat.smul_def]; exact mul_nonneg x.cast_nonneg y.2⟩
+
+noncomputable instance zpow : Pow ℝ≥0 ℤ where
+  pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
+
+/-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
+and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
+it needs to be reducible(-with-instances).
+-/
+noncomputable instance : Semifield ℝ≥0 := fast_instance%
+  Function.Injective.semifield toReal Subtype.val_injective
+    rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
 instance : IsOrderedRing ℝ≥0 :=
   Nonneg.isOrderedRing
@@ -86,26 +109,11 @@ instance : IsOrderedRing ℝ≥0 :=
 instance : IsStrictOrderedRing ℝ≥0 :=
   Nonneg.isStrictOrderedRing
 
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 where
-  /- Both `LinearOrderedCommGroupWithZero` and `Semifield` inherit from `CommGroupWithZero`.
-  However, if we project both of them into a `GroupWithZero` and try to unify them
-  at `reducible_and_instances` transparency, then we unfold `instSemifield` into `Nonneg.semifield`
-  which also causes an unfolding of `NNReal` to `{x // 0 ≤ x}`. Those two are (intentionally!)
-  not defeq at `reducible_and_instances`, even though the instances on them are.
-
-  So we either need to copy all the `Nonneg` instances and redefine them specifically for `NNReal`,
-  or we need to avoid the unfold in the unification. The latter has a smaller impact.
-  -/
-  __ := instSemifield.toCommGroupWithZero.toGroupWithZero
-  __ := Nonneg.linearOrderedCommGroupWithZero
+noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
+  Nonneg.linearOrderedCommGroupWithZero
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
-
-/-- Coercion `ℝ≥0 → ℝ`. -/
-@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
-
-instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
 -- Simp lemma to put back `n.val` into the normal form given by the coercion.
 @[simp]
@@ -374,7 +382,8 @@ example : Semiring ℝ≥0 := by infer_instance
 
 example : CommMonoid ℝ≥0 := by infer_instance
 
-example : IsOrderedMonoid ℝ≥0 := by infer_instance
+example : IsOrderedMonoid ℝ≥0 := instLinearOrderedCommGroupWithZero.toIsOrderedMonoid
+
 
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
