@@ -148,8 +148,8 @@ theorem triangle (M N : ModuleCat.{u} R) :
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   ext : 1
   apply TensorProduct.ext_threefold
-  intro x y z
-  exact (TensorProduct.smul_tmul _ _ _).symm
+  intro x y
+  exact TensorProduct.tmul_smul _ _
 
 end MonoidalCategory
 
