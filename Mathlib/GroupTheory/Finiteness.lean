@@ -71,7 +71,7 @@ theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M
   convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
 
 /-- The product of two finitely generated submonoids is finitely generated. -/
-@[to_additive
+@[to_additive AddSubmonoid.FG.prod
 /-- The product of two finitely generated additive submonoids is finitely generated. -/]
 theorem Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
   classical
@@ -80,6 +80,8 @@ theorem Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
   refine ⟨bM ×ˢ singleton 1 ∪ singleton 1 ×ˢ bN, ?_⟩
   push_cast
   simp [closure_union, hbM, hbN]
+
+@[deprecated (since := "2025-08-28")] alias AddSubmonoid.FG.sum := AddSubmonoid.FG.prod
 
 section Pi
 
@@ -270,7 +272,7 @@ theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG
   exact AddSubmonoid.fg_iff_mul_fg (AddSubgroup.toAddSubmonoid P)
 
 /-- The product of two finitely generated subgroups is finitely generated. -/
-@[to_additive
+@[to_additive AddSubgroup.FG.prod
 /-- The product of two finitely generated additive subgroups is finitely generated. -/]
 theorem Subgroup.FG.prod {G' : Type*} [Group G'] {P : Subgroup G} {Q : Subgroup G'}
     (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
