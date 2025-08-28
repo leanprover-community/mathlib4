@@ -200,6 +200,7 @@ theorem aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     rw [← mul_inv]
     congr 1
     rw [show ((d : ℂ) * ↑z + ↑n) ^ 2 = (-↑d * ↑z - ↑n) ^ 2 by ring, ← mul_pow]
+    simp only [Int.cast_neg, neg_mul]
     field_simp [mul_add, ne_zero z]
     ring
   · exact fun i hi =>
