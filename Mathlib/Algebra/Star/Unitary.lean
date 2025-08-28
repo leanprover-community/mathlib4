@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Star.MonoidHom
 import Mathlib.Algebra.Star.StarProjection
 
 /-!
@@ -237,22 +238,67 @@ end SMul
 
 section Map
 
-variable {F R S : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S]
-variable [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S] (f : F)
+variable {R S T : Type*} [Monoid R] [StarMul R] [Monoid S] [StarMul S] [Monoid T] [StarMul T]
 
-lemma map_mem {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
+lemma map_mem {F : Type*} [FunLike F R S] [StarHomClass F R S] [MonoidHomClass F R S]
+    (f : F) {r : R} (hr : r ∈ unitary R) : f r ∈ unitary S := by
   rw [unitary.mem_iff] at hr
   simpa [map_star, map_mul] using And.intro congr(f $(hr.1)) congr(f $(hr.2))
 
-/-- The group homomorphism between unitary subgroups of star monoids induced by a star
-homomorphism -/
+/-- The star monoid homomorphism between unitary subgroups induced by a star monoid homomorphism of
+the underlying star monoids. -/
 @[simps]
-def map : unitary R →* unitary S where
+def map (f : R →⋆* S) : unitary R →⋆* unitary S where
   toFun := Subtype.map f (fun _ ↦ map_mem f)
   map_one' := Subtype.ext <| map_one f
   map_mul' _ _ := Subtype.ext <| map_mul f _ _
+  map_star' _ := Subtype.ext <| map_star f _
 
-lemma toUnits_comp_map : toUnits.comp (map f) = (Units.map f).comp toUnits := by ext; rfl
+@[simp]
+lemma coe_map (f : R →⋆* S) (x : unitary R) : map f x = f x := rfl
+
+@[simp]
+lemma coe_map_star (f : R →⋆* S) (x : unitary R) : map f (star x) = f (star x) := rfl
+
+@[simp]
+lemma map_id : map (.id R) = .id (unitary R) := rfl
+
+lemma map_comp (g : S →⋆* T) (f : R →⋆* S) : map (g.comp f) = (map g).comp (map f) := rfl
+
+@[simp]
+lemma map_injective {f : R →⋆* S} (hf : Function.Injective f) :
+    Function.Injective (map f : unitary R → unitary S) :=
+  Subtype.map_injective (fun _ ↦ map_mem f) hf
+
+lemma toUnits_comp_map (f : R →⋆* S) :
+    toUnits.comp (map f).toMonoidHom = (Units.map f.toMonoidHom).comp toUnits := by
+  ext; rfl
+
+/-- The star monoid isomorphism between unitary subgroups induced by a star monoid isomorphism of
+the underlying star monoids. -/
+@[simps]
+def mapEquiv (f : R ≃⋆* S) : unitary R ≃⋆* unitary S :=
+  { map f.toStarMonoidHom with
+    toFun := map f.toStarMonoidHom
+    invFun := map f.symm.toStarMonoidHom
+    left_inv := fun _ ↦ Subtype.ext <| f.left_inv _
+    right_inv := fun _ ↦ Subtype.ext <| f.right_inv _ }
+
+@[simp]
+lemma mapEquiv_refl : mapEquiv (.refl R) = .refl (unitary R) := rfl
+
+@[simp]
+lemma mapEquiv_symm (f : R ≃⋆* S) : mapEquiv f.symm = (mapEquiv f).symm := rfl
+
+@[simp]
+lemma mapEquiv_trans (f : R ≃⋆* S) (g : S ≃⋆* T) :
+    mapEquiv (f.trans g) = (mapEquiv f).trans (mapEquiv g) :=
+  rfl
+
+@[simp]
+lemma toMonoidHom_mapEquiv (f : R ≃⋆* S) :
+    (mapEquiv f).toStarMonoidHom = map f.toStarMonoidHom :=
+  rfl
 
 end Map
 
