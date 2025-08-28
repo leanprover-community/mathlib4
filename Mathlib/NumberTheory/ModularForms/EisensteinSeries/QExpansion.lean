@@ -173,7 +173,8 @@ theorem EisensteinSeries.qExpansion_identity {k : ℕ} (hk : 1 ≤ k) (z : ℍ) 
     field_simp [h3]
     ring_nf
     simp [Nat.mul_two]
-  rw [← iteratedDerivWithin_tsum_exp_eq' hk z, ← iteratedDerivWithin_cot_series_rep_one_div hk z]
+  rw [← iteratedDerivWithin_tsum_exp_eq' hk z, ← iteratedDerivWithin_cot_series_rep_div_pow hk
+    (by simpa using z.2) ]
   apply iteratedDerivWithin_congr
   · intro x hx
     simpa using pi_mul_cot_pi_q_exp ⟨x, hx⟩
