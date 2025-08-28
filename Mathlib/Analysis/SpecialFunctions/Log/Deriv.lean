@@ -305,6 +305,8 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     · linarith
     · exact div_pos one_pos (by linarith)
   convert hasSum_log_sub_log_of_abs_lt_one h₁ using 1
+  have h₂ : (2 : ℝ) * a + 1 ≠ 0 := by linarith
+  have h₃ := h.ne'
   rw [← log_div]
   · congr
     simp [field]
