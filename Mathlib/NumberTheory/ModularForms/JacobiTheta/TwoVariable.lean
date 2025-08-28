@@ -80,10 +80,10 @@ lemma norm_jacobiTheta₂_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
     (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
     ‖jacobiTheta₂_term n z τ‖ ≤ rexp (-π * (T * n ^ 2 - 2 * S * |n|)) := by
   simp_rw [norm_jacobiTheta₂_term, Real.exp_le_exp, sub_eq_add_neg, neg_mul, ← neg_add,
-    neg_le_neg_iff, mul_comm (2 : ℝ), mul_assoc π, ← mul_add, mul_le_mul_left pi_pos,
+    neg_le_neg_iff, mul_comm (2 : ℝ), mul_assoc π, ← mul_add, mul_le_mul_iff_right₀ pi_pos,
     mul_comm T, mul_comm S]
   refine add_le_add (mul_le_mul le_rfl hτ hT.le (sq_nonneg _)) ?_
-  rw [← mul_neg, mul_assoc, mul_assoc, mul_le_mul_left two_pos, mul_comm, neg_mul, ← mul_neg]
+  rw [← mul_neg, mul_assoc, mul_assoc, mul_le_mul_iff_right₀ two_pos, mul_comm, neg_mul, ← mul_neg]
   refine le_trans ?_ (neg_abs_le _)
   rw [mul_neg, neg_le_neg_iff, abs_mul, Int.cast_abs]
   exact mul_le_mul_of_nonneg_left hz (abs_nonneg _)

@@ -135,13 +135,13 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
     PosMulStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_left a.2).1 h
+  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_right₀ a.2).1 h
 
 #adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_right a.2).1 h
+  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_left₀ a.2).1 h
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=

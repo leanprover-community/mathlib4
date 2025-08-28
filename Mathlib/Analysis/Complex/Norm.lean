@@ -47,8 +47,9 @@ private theorem norm_add_le' (z w : ℂ) :  ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
   (mul_self_le_mul_self_iff (norm_nonneg (z + w)) (add_nonneg (norm_nonneg z)
     (norm_nonneg w))).2 <| by
     rw [norm_mul_self_eq_normSq, add_mul_self_eq, norm_mul_self_eq_normSq, norm_mul_self_eq_normSq,
-      add_right_comm, normSq_add, add_le_add_iff_left, mul_assoc, mul_le_mul_left (zero_lt_two' ℝ),
-      norm_def, norm_def, ← Real.sqrt_mul <| normSq_nonneg z, ← normSq_conj w, ← map_mul]
+      add_right_comm, normSq_add, mul_assoc, norm_def, norm_def, ← Real.sqrt_mul <| normSq_nonneg z,
+      ← normSq_conj w, ← map_mul]
+    gcongr
     exact re_le_norm (z * conj w)
 
 private theorem norm_eq_zero_iff {z : ℂ} : ‖z‖ = 0 ↔ z = 0 :=
