@@ -90,7 +90,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     Set.BijOn (divIntMap r) (gammaSet 1 r 0) (gammaSet 1 1 0) := by
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
-    simp only [divIntMap, Fin.isValue, mem_gammaSet_one] at *
+    simp only [divIntMap, mem_gammaSet_one] at *
     exact finGcdMap_div _ hx.2
   · intro x hx v hv hv2
     ext i
