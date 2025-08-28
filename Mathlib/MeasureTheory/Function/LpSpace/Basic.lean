@@ -923,7 +923,7 @@ lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ
     (f : α →ₘ[μ] R).coeFn_star
 
 noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
-  star_involutive _ := Subtype.ext <| star_involutive _ 
+  star_involutive _ := Subtype.ext <| star_involutive _
 
 noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
   star_trivial _ := Subtype.ext <| star_trivial _
