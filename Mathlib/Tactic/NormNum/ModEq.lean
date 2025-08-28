@@ -17,10 +17,10 @@ namespace Mathlib.Meta.NormNum
 open Qq
 
 /-- `norm_num` extension for `Nat.ModEq`. -/
-@[norm_num Nat.ModEq _ _ _]
+@[norm_num _ ≡ _ [MOD _]]
 def evalNatModEq : NormNumExt where eval {u αP} e := do
   match u, αP, e with
-  | 0, ~q(Prop), ~q(Nat.ModEq $n $a $b) =>
+  | 0, ~q(Prop), ~q($a ≡ $b [MOD $n]) =>
     let ⟨b, pb⟩ ← deriveBoolOfIff _ e q(Nat.modEq_iff_dvd.symm)
     return .ofBoolResult pb
   | _, _, _ => failure
