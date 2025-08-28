@@ -50,10 +50,9 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : Kernel α Ω) [IsSFiniteKern
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
     (Kernel.measurable_coe κ hs) (Kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
   conv_rhs => rw [Measure.setLIntegral_condKernel_eq_measure_prod ht hs, hκ]
-  simp only [Measure.compProd_apply (ht.prod hs), Set.mem_prod, ← lintegral_indicator ht]
+  simp only [Measure.compProd_apply (ht.prod hs), ← lintegral_indicator ht]
   congr with x
-  by_cases hx : x ∈ t
-  all_goals simp [hx]
+  by_cases hx : x ∈ t <;> simp [hx]
 
 /-- Auxiliary lemma for `eq_condKernel_of_measure_eq_compProd`.
 Uniqueness of the disintegration kernel on ℝ. -/

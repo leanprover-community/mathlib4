@@ -50,6 +50,7 @@ are computable.
 quaternion
 -/
 
+open Module
 
 /-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$,
 denoted as `ℍ[R,a,b]`.
@@ -77,19 +78,16 @@ open Quaternion
 
 /-- The equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
 @[simps]
-def equivProd {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
+def equivProd {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ R × R × R × R where
   toFun a := ⟨a.1, a.2, a.3, a.4⟩
   invFun a := ⟨a.1, a.2.1, a.2.2.1, a.2.2.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
 @[simps symm_apply]
-def equivTuple {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
+def equivTuple {R : Type*} (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 4 → R) where
   toFun a := ![a.1, a.2, a.3, a.4]
   invFun a := ⟨a 0, a 1, a 2, a 3⟩
-  left_inv _ := rfl
-  right_inv f := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
+  right_inv _ := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
 
 @[simp]
 theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃ : R) (x : ℍ[R,c₁,c₂,c₃]) :
@@ -158,17 +156,8 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) :
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
   coe_injective.eq_iff
 
--- Porting note: removed `simps`, added simp lemmas manually.
--- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
+@[simps]
 instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
-
-@[scoped simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
-
-@[scoped simp] theorem zero_imI : (0 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
-
-@[scoped simp] theorem zero_imJ : (0 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
-
-@[scoped simp] theorem zero_imK : (0 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
 @[scoped simp] theorem zero_im : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
@@ -180,16 +169,8 @@ instance : Inhabited ℍ[R,c₁,c₂,c₃] := ⟨0⟩
 section One
 variable [One R]
 
--- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
+@[simps]
 instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
-
-@[scoped simp] theorem one_re : (1 : ℍ[R,c₁,c₂,c₃]).re = 1 := rfl
-
-@[scoped simp] theorem one_imI : (1 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
-
-@[scoped simp] theorem one_imJ : (1 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
-
-@[scoped simp] theorem one_imK : (1 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
 @[scoped simp] theorem one_im : (1 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
@@ -201,17 +182,9 @@ end Zero
 section Add
 variable [Add R]
 
--- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
+@[simps]
 instance : Add ℍ[R,c₁,c₂,c₃] :=
   ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
-
-@[simp] theorem add_re : (a + b).re = a.re + b.re := rfl
-
-@[simp] theorem add_imI : (a + b).imI = a.imI + b.imI := rfl
-
-@[simp] theorem add_imJ : (a + b).imJ = a.imJ + b.imJ := rfl
-
-@[simp] theorem add_imK : (a + b).imK = a.imK + b.imK := rfl
 
 @[simp]
 theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -235,16 +208,8 @@ end AddZeroClass
 section Neg
 variable [Neg R]
 
--- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
+@[simps]
 instance : Neg ℍ[R,c₁,c₂,c₃] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
-
-@[simp] theorem neg_re : (-a).re = -a.re := rfl
-
-@[simp] theorem neg_imI : (-a).imI = -a.imI := rfl
-
-@[simp] theorem neg_imJ : (-a).imJ = -a.imJ := rfl
-
-@[simp] theorem neg_imK : (-a).imK = -a.imK := rfl
 
 @[simp]
 theorem neg_mk (a₁ a₂ a₃ a₄ : R) : -(mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) = ⟨-a₁, -a₂, -a₃, -a₄⟩ :=
@@ -261,16 +226,9 @@ variable [AddGroup R]
 @[simp, norm_cast]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
+@[simps]
 instance : Sub ℍ[R,c₁,c₂,c₃] :=
   ⟨fun a b => ⟨a.1 - b.1, a.2 - b.2, a.3 - b.3, a.4 - b.4⟩⟩
-
-@[simp] theorem sub_re : (a - b).re = a.re - b.re := rfl
-
-@[simp] theorem sub_imI : (a - b).imI = a.imI - b.imI := rfl
-
-@[simp] theorem sub_imJ : (a - b).imJ = a.imJ - b.imJ := rfl
-
-@[simp] theorem sub_imK : (a - b).imK = a.imK - b.imK := rfl
 
 @[simp] theorem sub_im : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
@@ -311,28 +269,13 @@ variable [Ring R]
 * `k * k = - c₁ * c₃`;
 * `i * k = c₁ * j + c₂ * k`, `k * i = -c₁ * j`;
 * `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
+@[simps]
 instance : Mul ℍ[R,c₁,c₂,c₃] :=
   ⟨fun a b =>
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 + c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4,
       a.1 * b.2 + a.2 * b.1 + c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3,
       a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 + c₂ * a.3 * b.2 - c₁ * a.4 * b.2,
       a.1 * b.4 + a.2 * b.3 + c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1⟩⟩
-
-@[simp]
-theorem mul_re : (a * b).re = a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 +
-    c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4 := rfl
-
-@[simp]
-theorem mul_imI : (a * b).imI = a.1 * b.2 + a.2 * b.1 +
-    c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3 := rfl
-
-@[simp]
-theorem mul_imJ : (a * b).imJ = a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 +
-    c₂ * a.3 * b.2 - c₁ * a.4 * b.2 := rfl
-
-@[simp]
-theorem mul_imK : (a * b).imK = a.1 * b.4 + a.2 * b.3 +
-    c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1 := rfl
 
 @[simp]
 theorem mk_mul_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -349,6 +292,7 @@ section SMul
 
 variable [SMul S R] [SMul T R] (s : S)
 
+@[simps]
 instance : SMul S ℍ[R,c₁,c₂,c₃] where smul s a := ⟨s • a.1, s • a.2, s • a.3, s • a.4⟩
 
 instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂,c₃] where
@@ -356,14 +300,6 @@ instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T ℍ[R,c₁,c₂,c�
 
 instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂,c₃] where
   smul_comm s t x := by ext <;> exact smul_comm _ _ _
-
-@[simp] theorem smul_re : (s • a).re = s • a.re := rfl
-
-@[simp] theorem smul_imI : (s • a).imI = s • a.imI := rfl
-
-@[simp] theorem smul_imJ : (s • a).imJ = s • a.imJ := rfl
-
-@[simp] theorem smul_imK : (s • a).imK = s • a.imK := rfl
 
 @[simp] theorem smul_im {S} [CommRing R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext (smul_zero s).symm rfl rfl rfl
@@ -479,8 +415,8 @@ instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> simp
 
 @[norm_cast, simp]
-lemma coe_ofNat {n : ℕ} [n.AtLeastTwo]:
-    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) := by
+lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
+    ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
 -- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
@@ -658,7 +594,7 @@ theorem star_add_self : star a + a = 2 * a.re + c₂ * a.imI := by rw [add_comm,
 theorem star_eq_two_re_sub : star a = ↑(2 * a.re + c₂ * a.imI) - a :=
   eq_sub_iff_add_eq.2 a.star_add_self'
 
-lemma comm (r : R) (x : ℍ[R, c₁, c₂, c₃]) : r * x = x * r := by
+lemma comm (r : R) (x : ℍ[R,c₁,c₂,c₃]) : r * x = x * r := by
   ext <;> simp [mul_comm]
 
 instance : IsStarNormal a :=
@@ -1138,7 +1074,7 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] {a : ℍ[R]}
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
@@ -1157,7 +1093,7 @@ theorem normSq_nonneg : 0 ≤ normSq a := by
 
 @[simp]
 theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
-  normSq_nonneg.le_iff_eq.trans normSq_eq_zero
+  normSq_nonneg.ge_iff_eq'.trans normSq_eq_zero
 
 instance instNontrivial : Nontrivial ℍ[R] where
   exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩
@@ -1183,31 +1119,7 @@ end LinearOrderedCommRing
 
 section Field
 
-variable [LinearOrderedField R] (a b : ℍ[R])
-
-@[simps -isSimp]
-instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
-
-instance instGroupWithZero : GroupWithZero ℍ[R] :=
-  { Quaternion.instNontrivial with
-    inv := Inv.inv
-    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
-    mul_inv_cancel := fun a ha => by
-      rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
-
-@[norm_cast, simp]
-theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
-  map_inv₀ (algebraMap R ℍ[R]) _
-
-@[norm_cast, simp]
-theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
-  map_div₀ (algebraMap R ℍ[R]) x y
-
-@[norm_cast, simp]
-theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
-  map_zpow₀ (algebraMap R ℍ[R]) x z
+variable [Field R] (a b : ℍ[R])
 
 instance instNNRatCast : NNRatCast ℍ[R] where nnratCast q := (q : R)
 instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
@@ -1226,6 +1138,32 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 @[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
 
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
+
+variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
+
+@[simps -isSimp]
+instance instInv : Inv ℍ[R] :=
+  ⟨fun a => (normSq a)⁻¹ • star a⟩
+
+instance instGroupWithZero : GroupWithZero ℍ[R] :=
+  { Quaternion.instNontrivial with
+    inv := Inv.inv
+    inv_zero := by rw [inv_def, star_zero, smul_zero]
+    mul_inv_cancel := fun a ha => by
+      rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
+        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
+
+@[norm_cast, simp]
+theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
+  map_inv₀ (algebraMap R ℍ[R]) _
+
+@[norm_cast, simp]
+theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
+  map_div₀ (algebraMap R ℍ[R]) x y
+
+@[norm_cast, simp]
+theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
+  map_zpow₀ (algebraMap R ℍ[R]) x z
 
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instRing

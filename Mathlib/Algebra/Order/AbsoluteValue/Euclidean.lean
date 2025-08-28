@@ -14,10 +14,10 @@ absolute value is compatible with the Euclidean domain structure on its domain.
 
 ## Main definitions
 
- * `AbsoluteValue.IsEuclidean abv` is a predicate on absolute values on `R` mapping to `S`
-    that preserve the order on `R` arising from the Euclidean domain structure.
- * `AbsoluteValue.abs_isEuclidean` shows the "standard" absolute value on `ℤ`,
-   mapping negative `x` to `-x`, is euclidean.
+* `AbsoluteValue.IsEuclidean abv` is a predicate on absolute values on `R` mapping to `S`
+  that preserve the order on `R` arising from the Euclidean domain structure.
+* `AbsoluteValue.abs_isEuclidean` shows the "standard" absolute value on `ℤ`,
+  mapping negative `x` to `-x`, is Euclidean.
 -/
 
 @[inherit_doc]
@@ -27,7 +27,7 @@ namespace AbsoluteValue
 
 section OrderedSemiring
 
-variable {R S : Type*} [EuclideanDomain R] [OrderedSemiring S]
+variable {R S : Type*} [EuclideanDomain R] [Semiring S] [PartialOrder S]
 variable (abv : AbsoluteValue R S)
 
 /-- An absolute value `abv : R → S` is Euclidean if it is compatible with the

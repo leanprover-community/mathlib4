@@ -90,7 +90,7 @@ variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--
-If a functor `F : C ⥤ D` preserves short exact sequences on the left hand side, (i.e.
+If a functor `F : C ⥤ D` preserves short exact sequences on the left-hand side, (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact)
 then it preserves monomorphism.
 -/
@@ -100,10 +100,10 @@ lemma preservesMonomorphisms_of_preserves_shortExact_left
   preserves f := h _ { exact := exact_cokernel f } |>.2
 
 /--
-For an addivite functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences on the left hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
+For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
+- `F` preserves short exact sequences on the left-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
   then `0 ⟶ F(A) ⟶ F(B) ⟶ F(C)` is exact.
-- `F` preserves exact sequences on the left hand side, i.e. if `A ⟶ B ⟶ C` is exact where `A ⟶ B`
+- `F` preserves exact sequences on the left-hand side, i.e. if `A ⟶ B ⟶ C` is exact where `A ⟶ B`
   is mono, then `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono as well.
 - `F` preserves kernels.
 - `F` preserves finite limits.
@@ -127,7 +127,6 @@ lemma preservesFiniteLimits_tfae : List.TFAE
         comm₂₃ := show 𝟙 _ ≫ F.map _ = F.map (cokernel.π _) ≫ _ by
           rw [Category.id_comp, ← F.map_comp, cokernel.π_desc] }
     exact (exact_iff_of_epi_of_isIso_of_mono φ).1 (hF T ⟨(S.exact_iff_exact_coimage_π).1 hS⟩).1
-
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f) ?_
@@ -136,19 +135,16 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     let hS := hF S ⟨exact_kernel f, inferInstance⟩
     have : Mono (S.map F).f := hS.2
     exact hS.1.fIsKernel
-
   tfae_have 3 → 4
   | hF => by
     exact preservesFiniteLimits_of_preservesKernels F
-
   tfae_have 4 → 1
   | ⟨_⟩, S, hS =>
     (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
-
   tfae_finish
 
 /--
-If a functor `F : C ⥤ D` preserves exact sequences on the right hand side (i.e.
+If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),
 then it preserves epimorphisms.
 -/
@@ -158,10 +154,10 @@ lemma preservesEpimorphisms_of_preserves_shortExact_right
   preserves f := h _ { exact := exact_kernel f } |>.2
 
 /--
-For an addivite functor `F : C ⥤ D` between abelian categories, the following are equivalent:
-- `F` preserves short exact sequences on the right hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
+For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
+- `F` preserves short exact sequences on the right-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
   exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
-- `F` preserves exact sequences on the right hand side, i.e. if `A ⟶ B ⟶ C` is exact where `B ⟶ C`
+- `F` preserves exact sequences on the right-hand side, i.e. if `A ⟶ B ⟶ C` is exact where `B ⟶ C`
   is epi, then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact and `F(B) ⟶ F(C)` is epi as well.
 - `F` preserves cokernels.
 - `F` preserves finite colimits.
@@ -185,7 +181,6 @@ lemma preservesFiniteColimits_tfae : List.TFAE
         comm₁₂ := show _ ≫ F.map (kernel.ι _) = F.map _ ≫ 𝟙 _ by
           rw [← F.map_comp, Abelian.image.fac, Category.comp_id] }
     exact (exact_iff_of_epi_of_isIso_of_mono φ).2 (hF T ⟨(S.exact_iff_exact_image_ι).1 hS⟩).1
-
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f) ?_
@@ -194,15 +189,12 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     let hS := hF S ⟨exact_cokernel f, inferInstance⟩
     have : Epi (S.map F).g := hS.2
     exact hS.1.gIsCokernel
-
   tfae_have 3 → 4
   | hF => by
     exact preservesFiniteColimits_of_preservesCokernels F
-
   tfae_have 4 → 1
   | ⟨_⟩, S, hS => (S.map F).exact_and_epi_g_iff_g_is_cokernel |>.2
     ⟨CokernelCofork.mapIsColimit _ hS.gIsCokernel F⟩
-
   tfae_finish
 
 /--
@@ -229,7 +221,6 @@ lemma exact_tfae : List.TFAE
     · have h := (preservesFiniteColimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).epi_g)
       exact h f
-
   tfae_have 2 → 1
   | hF, S, hS => by
     have : Mono (S.map F).f := exact_iff_mono _ (by simp) |>.1 <|
@@ -237,14 +228,11 @@ lemma exact_tfae : List.TFAE
     have : Epi (S.map F).g := exact_iff_epi _ (by simp) |>.1 <|
       hF (.mk S.g (0 : S.X₃ ⟶ 0) <| by simp) (exact_iff_epi _ (by simp) |>.2 hS.epi_g)
     exact ⟨hF S hS.exact⟩
-
   tfae_have 3 → 4
   | h => ⟨preservesFiniteLimits_of_preservesHomology F,
       preservesFiniteColimits_of_preservesHomology F⟩
-
   tfae_have 4 → 2
   | ⟨h1, h2⟩, _, h => h.map F
-
   tfae_finish
 
 end

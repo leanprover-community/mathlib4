@@ -213,8 +213,9 @@ lemma Produces.exists_nonterminal_input_mem {u v : List (Symbol T g.NT)} (hguv :
   obtain ⟨w, l, r⟩ := hguv
   exact ⟨w, l, r.nonterminal_input_mem⟩
 
-lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t) :
-    ∀ s ≠ [.nonterminal t], ¬g.Derives [.nonterminal t] s := fun _ hs ↦ by
+lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
+    (s : List (Symbol T g.NT)) (hs : s ≠ [.nonterminal t]) :
+    ¬g.Derives [.nonterminal t] s := by
   rw [derives_iff_eq_or_head]
   push_neg
   refine ⟨hs.symm, fun _ hx ↦ ?_⟩

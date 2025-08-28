@@ -25,14 +25,14 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   submodule of `M[X]`.
 - `Ideal.Filtration.submodule_fg_iff_stable`: If `F.N i` are all finitely generated, then
   `F.Stable` iff `F.submodule.FG`.
-- `Ideal.Filtration.Stable.of_le`: In a finite module over a noetherian ring,
+- `Ideal.Filtration.Stable.of_le`: In a finite module over a Noetherian ring,
   if `F' ≤ F`, then `F.Stable → F'.Stable`.
 - `Ideal.exists_pow_inf_eq_pow_smul`: **Artin-Rees lemma**.
   given `N ≤ M`, there exists a `k` such that `IⁿM ⊓ N = Iⁿ⁻ᵏ(IᵏM ⊓ N)` for all `n ≥ k`.
 - `Ideal.iInf_pow_eq_bot_of_isLocalRing`:
-  **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for noetherian local rings.
+  **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian local rings.
 - `Ideal.iInf_pow_eq_bot_of_isDomain`:
-  **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for noetherian domains.
+  **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
 
 -/
 
@@ -85,7 +85,7 @@ instance : SupSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sSup_le_sSup_of_forall_exists_le _
+        apply sSup_le_sSup_of_isCofinalFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -105,7 +105,7 @@ instance : InfSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
       mono := fun i => by
-        apply sInf_le_sInf_of_forall_exists_le _
+        apply sInf_le_sInf_of_isCoinitialFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
@@ -228,7 +228,7 @@ open PolynomialModule
 variable (F F')
 
 /-- The `R[IX]`-submodule of `M[X]` associated with an `I`-filtration. -/
-protected def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
+protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
   carrier := { f | ∀ i, f i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
   zero_mem' _ := Submodule.zero_mem _
@@ -251,7 +251,7 @@ theorem inf_submodule : (F ⊓ F').submodule = F.submodule ⊓ F'.submodule := b
 variable (I M)
 
 /-- `Ideal.Filtration.submodule` as an `InfHom`. -/
-def submoduleInfHom :
+noncomputable def submoduleInfHom :
     InfHom (I.Filtration M) (Submodule (reesAlgebra I) (PolynomialModule R M)) where
   toFun := Ideal.Filtration.submodule
   map_inf' := inf_submodule
@@ -281,8 +281,9 @@ theorem submodule_span_single :
 theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     F.submodule = Submodule.span _ (⋃ i ≤ n₀, single R i '' (F.N i : Set M)) ↔
       ∀ n ≥ n₀, I • F.N n = F.N (n + 1) := by
-  rw [← submodule_span_single, ← LE.le.le_iff_eq, Submodule.span_le, Set.iUnion_subset_iff]
-  swap; · exact Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)
+  rw [← submodule_span_single,
+    ← (Submodule.span_mono (Set.iUnion₂_subset_iUnion _ _)).ge_iff_eq',
+    Submodule.span_le, Set.iUnion_subset_iff]
   constructor
   · intro H n hn
     refine (F.smul_le n).antisymm ?_
@@ -423,18 +424,12 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalR
   Ideal.iInf_pow_smul_eq_bot_of_le_jacobson _
     ((le_maximalIdeal h).trans (maximalIdeal_le_jacobson _))
 
-@[deprecated (since := "2024-11-12")]
-alias Ideal.iInf_pow_smul_eq_bot_of_localRing := Ideal.iInf_pow_smul_eq_bot_of_isLocalRing
-
-/-- **Krull's intersection theorem** for noetherian local rings. -/
+/-- **Krull's intersection theorem** for Noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_isLocalRing [IsNoetherianRing R] [IsLocalRing R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_isLocalRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
-
-@[deprecated (since := "2024-11-12")]
-alias Ideal.iInf_pow_eq_bot_of_localRing := Ideal.iInf_pow_eq_bot_of_isLocalRing
 
 /-- Also see `Ideal.isIdempotentElem_iff_eq_bot_or_top` for integral domains. -/
 theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
@@ -446,12 +441,8 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
     refine Or.inl (eq_bot_iff.mpr ?_)
     rw [← Ideal.iInf_pow_eq_bot_of_isLocalRing I ‹_›]
     apply le_iInf
-    rintro (_|n) <;> simp [H.pow_succ_eq]
+    rintro (_ | n) <;> simp [H.pow_succ_eq]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
-
-@[deprecated (since := "2024-11-12")]
-alias Ideal.isIdempotentElem_iff_eq_bot_or_top_of_localRing :=
-  Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing
 
 open IsLocalRing in
 theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
@@ -465,7 +456,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
 
-/-- **Krull's intersection theorem** for noetherian domains. -/
+/-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors (M := R) h

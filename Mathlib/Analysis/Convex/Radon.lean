@@ -30,7 +30,8 @@ open Fintype Finset Set
 
 namespace Convex
 
-variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {ι 𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E]
 
 /-- **Radon's theorem on convex sets**.
 
@@ -62,10 +63,11 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
   refine centerMass_mem_convexHull_of_nonpos _ (fun _ hi ↦ (mem_filter.mp hi).2.le) ?_
     (fun _i hi ↦ mem_image_of_mem _ fun hi' ↦ ?_)
   · linarith only [hI, hJI]
-  · exact (mem_filter.mp hi').2.not_lt (mem_filter.mp hi).2
+  · exact (mem_filter.mp hi').2.not_gt (mem_filter.mp hi).2
 
 open Module
 
+omit [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] in
 /-- Corner case for `helly_theorem'`. -/
 private lemma helly_theorem_corner {F : ι → Set E} {s : Finset ι}
     (h_card_small : #s ≤ finrank 𝕜 E + 1)
@@ -83,7 +85,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     (h_inter : ∀ I ⊆ s, #I ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i ∈ s, F i).Nonempty := by
   classical
-  obtain h_card | h_card := lt_or_le #s (finrank 𝕜 E + 1)
+  obtain h_card | h_card := lt_or_ge #s (finrank 𝕜 E + 1)
   · exact helly_theorem_corner (le_of_lt h_card) h_inter
   generalize hn : #s = n
   rw [hn] at h_card

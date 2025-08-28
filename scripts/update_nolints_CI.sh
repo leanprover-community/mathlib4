@@ -26,7 +26,7 @@ pr_body='I am happy to remove some nolints for you!'
 
 git checkout -b "$branch_name"
 git add scripts/nolints.json
-git commit -m "$pr_title"
+git commit -m "$pr_title" || { echo "No changes to commit" && exit 0; }
 
 gh_api() {
   local url="$1"

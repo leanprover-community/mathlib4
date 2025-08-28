@@ -94,9 +94,6 @@ lemma Topology.IsOpenEmbedding.coborder_preimage (hf : IsOpenEmbedding f) (s : S
     coborder (f ⁻¹' s) = f ⁻¹' coborder s :=
   coborder_preimage hf.isOpenMap hf.continuous s
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.coborder_preimage := IsOpenEmbedding.coborder_preimage
-
 lemma isClosed_preimage_val_coborder :
     IsClosed (coborder s ↓∩ s) := by
   rw [isClosed_preimage_val, inter_eq_right.mpr subset_coborder, coborder_inter_closure]
@@ -124,17 +121,11 @@ lemma Topology.IsInducing.isLocallyClosed_iff {s : Set X}
   · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isLocallyClosed_iff := IsInducing.isLocallyClosed_iff
-
 lemma Topology.IsEmbedding.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsEmbedding f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
   simp_rw [hf.isInducing.isLocallyClosed_iff,
     ← (image_injective.mpr hf.injective).eq_iff, image_preimage_eq_inter_range]
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isLocallyClosed_iff := IsEmbedding.isLocallyClosed_iff
 
 lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
     {f : X → Y} (hf : IsInducing f) (hf' : IsLocallyClosed (range f)) :

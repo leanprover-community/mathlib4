@@ -33,13 +33,13 @@ Euler-Mascheroni constant will follow in a subsequent PR.
   functional equation relating values at `s` and `1 - s`
 
 For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
-see `Mathlib.NumberTheory.LSeries.HurwitzZetaValues`. For computation of the constant term as
-`s → 1`, see `Mathlib.NumberTheory.Harmonic.ZetaAsymp`.
+see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of the constant term as
+`s → 1`, see `Mathlib/NumberTheory/Harmonic/ZetaAsymp.lean`.
 
 ## Outline of proofs:
 
 These results are mostly special cases of more general results for even Hurwitz zeta functions
-proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
+proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 -/
 
 
@@ -185,7 +185,7 @@ on mathlib's conventions for `0 ^ s`). -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
   have := zeta_eq_tsum_one_div_nat_cpow hs
-  rw [tsum_eq_zero_add] at this
+  rw [Summable.tsum_eq_zero_add] at this
   · simpa [zero_cpow (Complex.ne_zero_of_one_lt_re hs)]
   · rwa [Complex.summable_one_div_nat_cpow]
 
@@ -215,13 +215,7 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
     Tendsto (fun s : ℝ ↦ (s - 1) * ∑' (n : ℕ), 1 / (n : ℝ) ^ s) (𝓝[>] 1) (𝓝 1) := by
   rw [← tendsto_ofReal_iff, ofReal_one]
   have : Tendsto (fun s : ℝ ↦ (s : ℂ)) (𝓝[>] 1) (𝓝[{s | 1 < re s}] 1) :=
-    continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin (fun _ _ ↦ by aesop)
+    continuous_ofReal.continuousWithinAt.tendsto_nhdsWithin (fun _ _ ↦ by simp_all)
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
-
-/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
-aliases for the old names -/
-section aliases
-
-end aliases

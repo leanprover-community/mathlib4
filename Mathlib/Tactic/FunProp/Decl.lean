@@ -36,7 +36,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
@@ -55,7 +55,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
-  let (xs,bi,b) ← forallMetaTelescope info.type
+  let (xs, bi, b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"

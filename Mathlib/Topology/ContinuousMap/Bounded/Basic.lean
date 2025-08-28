@@ -78,8 +78,6 @@ instance instCoeTC [FunLike F α β] [BoundedContinuousMapClass F α β] : CoeTC
 @[simp]
 theorem coe_toContinuousMap (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
 
-@[deprecated (since := "2024-11-23")] alias coe_to_continuous_fun := coe_toContinuousMap
-
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (h : α →ᵇ β) : α → β := h
@@ -158,7 +156,7 @@ theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (
 
 theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
     (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C := by
-  have c : Continuous fun x => dist (f x) (g x) := by continuity
+  have c : Continuous fun x => dist (f x) (g x) := by fun_prop
   obtain ⟨x, -, le⟩ :=
     IsCompact.exists_isMaxOn isCompact_univ Set.univ_nonempty (Continuous.continuousOn c)
   exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y => le trivial) (w x)
@@ -217,6 +215,12 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
 
+theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
+  simp_rw [edist_nndist, nndist_eq_iSup]
+  refine ENNReal.coe_iSup ⟨nndist f g, ?_⟩
+  rintro - ⟨x, hx, rfl⟩
+  exact nndist_coe_le_nndist x
+
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
   Iff.intro
@@ -241,14 +245,9 @@ theorem isInducing_coeFn : IsInducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ �
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
-@[deprecated (since := "2024-10-28")] alias inducing_coeFn := isInducing_coeFn
-
 -- TODO: upgrade to `IsUniformEmbedding`
 theorem isEmbedding_coeFn : IsEmbedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨isInducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_coeFn := isEmbedding_coeFn
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
@@ -438,7 +437,7 @@ theorem dist_extend_extend (f : α ↪ δ) (g₁ g₂ : α →ᵇ β) (h₁ h₂
       _ ≤ _ := dist_coe_le_dist _
 
 theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α →ᵇ β => extend f g h :=
-  Isometry.of_dist_eq fun g₁ g₂ => by simp [dist_nonneg]
+  Isometry.of_dist_eq fun g₁ g₂ => by simp
 
 end Extend
 
@@ -539,10 +538,10 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
 @[to_additive (attr := simps)
-"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
-`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
-    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s,
+as a `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`. -/]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*)
+    [TopologicalSpace α] [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
     (α →ᵇ β) →* (α →ᵇ γ) where
@@ -626,7 +625,7 @@ instance instLipschitzAdd : LipschitzAdd (α →ᵇ β) where
       rw [dist_le (mul_nonneg C_nonneg dist_nonneg)]
       intro x
       refine le_trans (lipschitz_with_lipschitz_const_add ⟨f₁ x, g₁ x⟩ ⟨f₂ x, g₂ x⟩) ?_
-      refine mul_le_mul_of_nonneg_left ?_ C_nonneg
+      gcongr
       apply max_le_max <;> exact dist_coe_le_dist x⟩
 
 end LipschitzAdd
@@ -697,8 +696,8 @@ instance instSMul : SMul 𝕜 (α →ᵇ β) where
         let ⟨b, hb⟩ := f.bounded
         ⟨dist c 0 * b, fun x y => by
           refine (dist_smul_pair c (f x) (f y)).trans ?_
-          refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
-          exact hb x y⟩ }
+          gcongr
+          apply hb⟩ }
 
 @[simp]
 theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f x := rfl
@@ -723,14 +722,14 @@ instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
     refine (dist_smul_pair c (f₁ x) (f₂ x)).trans ?_
-    exact mul_le_mul_of_nonneg_left (dist_coe_le_dist x) dist_nonneg
+    gcongr
+    apply dist_coe_le_dist
   dist_pair_smul' c₁ c₂ f := by
-    rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
+    rw [dist_le (by positivity)]
     intro x
     refine (dist_pair_smul c₁ c₂ (f x)).trans ?_
-    refine mul_le_mul_of_nonneg_left ?_ dist_nonneg
-    convert dist_coe_le_dist (β := β) x
-    simp
+    gcongr
+    apply dist_coe_le_dist (g := 0)
 
 end SMul
 

@@ -306,7 +306,7 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
     abel
   map_add' f g := by
     have := congr(φ $(f.toNNReal_add_add_neg_add_neg_eq g))
-    simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
+    simp only [map_add] at this ⊢
     rw [← sub_eq_zero] at this ⊢
     rw [← this]
     abel

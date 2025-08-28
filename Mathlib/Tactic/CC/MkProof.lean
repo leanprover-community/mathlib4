@@ -91,7 +91,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
       return false
     else if ← pureIsDefEq (← inferType f) (← inferType g) then
       /- Case 1: `f` and `g` have the same type, then we can create a congruence proof for
-         `HEq (f a) (g b)` -/
+         `f a ≍ g b` -/
       return true
     else if f.isApp && g.isApp then
       -- Case 2: `f` and `g` are congruent
@@ -100,7 +100,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
       /-
       f and g are not congruent nor they have the same type.
       We can't generate a congruence proof in this case because the following lemma
-        `hcongr : HEq f₁ f₂ → HEq a₁ a₂ → HEq (f₁ a₁) (f₂ a₂)`
+        `hcongr : f₁ ≍ f₂ → a₁ ≍ a₂ → f₁ a₁ ≍ f₂ a₂`
       is not provable.
       Remark: it is also not provable in MLTT, Coq and Agda (even if we assume UIP).
       -/
@@ -318,8 +318,8 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
 /-- If `e₁ : R lhs₁ rhs₁`, `e₂ : R lhs₂ rhs₂` and `lhs₁ = rhs₂`, where `R` is a symmetric relation,
 prove `R lhs₁ rhs₁` is equivalent to `R lhs₂ rhs₂`.
 
- * if `lhs₁` is known to equal `lhs₂`, return `none`
- * if `lhs₁` is not known to equal `rhs₂`, fail. -/
+* if `lhs₁` is known to equal `lhs₂`, return `none`
+* if `lhs₁` is not known to equal `rhs₂`, fail. -/
 partial def mkSymmCongrProof (e₁ e₂ : Expr) (heqProofs : Bool) : CCM (Option Expr) := do
   let some (R₁, lhs₁, rhs₁) ← e₁.relSidesIfSymm? | return none
   let some (R₂, lhs₂, rhs₂) ← e₂.relSidesIfSymm? | return none
@@ -379,10 +379,10 @@ partial def mkDelayedProof (H : DelayedExpr) : CCM Expr := do
   | .heqSymm h => mkHEqSymm (← mkDelayedProof h)
 
 /-- Use the format of `H` to try and construct a proof or `lhs = rhs`:
- * If `H = .congr`, then use congruence.
- * If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
-   if they have the format `R a b`, by proving `a = b`.
- * Otherwise, return the (delayed) proof encoded by `H` itself. -/
+* If `H = .congr`, then use congruence.
+* If `H = .eqTrue`, try to prove `lhs = True` or `rhs = True`,
+  if they have the format `R a b`, by proving `a = b`.
+* Otherwise, return the (delayed) proof encoded by `H` itself. -/
 partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Expr := do
   match H with
   | .congr => mkCongrProof lhs rhs heqProofs
@@ -415,7 +415,7 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
   | .ofDExpr H => mkDelayedProof H
 
 /--
-If `asHEq` is `true`, then build a proof for `HEq e₁ e₂`.
+If `asHEq` is `true`, then build a proof for `e₁ ≍ e₂`.
 Otherwise, build a proof for `e₁ = e₂`.
 The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
 partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr) := do
@@ -493,7 +493,7 @@ The result is `none` if `e₁` and `e₂` are not in the same equivalence class.
 partial def getEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
   getEqProofCore e₁ e₂ false
 
-/-- Build a proof for `HEq e₁ e₂`.
+/-- Build a proof for `e₁ ≍ e₂`.
 The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
 @[inline]
 partial def getHEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
@@ -559,7 +559,7 @@ def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
 
 /-- Given `tr := t*r` `sr := s*r` `tEqs : t = s`, return a proof for `tr = sr`
 
-    We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
+We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
 def mkACSimpProof (tr t s r sr : ACApps) (tEqs : DelayedExpr) : MetaM DelayedExpr := do
   if tr == t then
     return tEqs

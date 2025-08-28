@@ -28,11 +28,9 @@ Obviously there's more to do:
 
 open CategoryTheory Limits TopologicalSpace Opens
 
-universe u
-
 noncomputable section
 
-variable (X : TopCat.{u})
+variable (X : TopCat)
 
 open TopCat
 
@@ -45,8 +43,8 @@ form a sheaf.
 In fact, the proof is identical when we do this for dependent functions to a type family `T`,
 so we do the more general case.
 -/
-theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
-  isSheaf_of_isSheafUniqueGluing_types.{u} _ fun ι U sf hsf => by
+theorem toTypes_isSheaf (T : X → Type*) : (presheafToTypes X T).IsSheaf :=
+  isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf hsf => by
   -- We use the sheaf condition in terms of unique gluing
   -- U is a family of open sets, indexed by `ι` and `sf` is a compatible family of sections.
   -- In the informal comments below, I'll just write `U` to represent the union.
@@ -77,7 +75,7 @@ theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
 /-- The presheaf of not-necessarily-continuous functions to
 a target type `T` satisfies the sheaf condition.
 -/
-theorem toType_isSheaf (T : Type u) : (presheafToType X T).IsSheaf :=
+theorem toType_isSheaf (T : Type*) : (presheafToType X T).IsSheaf :=
   toTypes_isSheaf X fun _ => T
 
 end TopCat.Presheaf
@@ -87,12 +85,12 @@ namespace TopCat
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in type family
 `T : X → Type u`.
 -/
-def sheafToTypes (T : X → Type u) : Sheaf (Type u) X :=
+def sheafToTypes (T : X → Type*) : Sheaf (Type _) X :=
   ⟨presheafToTypes X T, Presheaf.toTypes_isSheaf _ _⟩
 
 /-- The sheaf of not-necessarily-continuous functions on `X` with values in a type `T`.
 -/
-def sheafToType (T : Type u) : Sheaf (Type u) X :=
+def sheafToType (T : Type*) : Sheaf (Type _) X :=
   ⟨presheafToType X T, Presheaf.toType_isSheaf _ _⟩
 
 end TopCat
