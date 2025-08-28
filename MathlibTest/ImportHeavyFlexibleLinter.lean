@@ -8,9 +8,12 @@ import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Module
 import Mathlib.Tactic.Ring
+
+import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Topology.Continuous
 import Mathlib.Topology.Instances.Nat
 
@@ -92,6 +95,12 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     Continuous (fun x ↦ (f ∘ g) x + 0) := by
   simp
   continuity
+
+-- A similar example for the `measurability` tactic.
+example {α : Type*} [MeasurableSpace α] {f : α → ℚ} (hf : Measurable f) :
+    Measurable (fun x ↦ f x + 0) := by
+  simp
+  measurability
 
 --  `ring` and `ring!` are allowed `simp`-followers.
 #guard_msgs in
