@@ -55,7 +55,7 @@ lemma gammaSet_one_eq (a : Fin 2 → ZMod 1) :
     gammaSet 1 r a = {v : Fin 2 → ℤ | (v 0).gcd (v 1) = r} := by
   simp [gammaSet, Subsingleton.eq_zero]
 
-lemma gammaSet_one_mem (v : Fin 2 → ℤ) : v ∈ gammaSet 1 r 0 ↔ (v 0).gcd (v 1) = r := by
+lemma gammaSet_one_mem_iff (v : Fin 2 → ℤ) : v ∈ gammaSet 1 r 0 ↔ (v 0).gcd (v 1) = r := by
   simp [gammaSet, Subsingleton.eq_zero]
 
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
@@ -80,7 +80,7 @@ lemma finGcdMap_smul {r : ℕ} (a : ℤ) {v : Fin 2 → ℤ} (hv : finGcdMap v =
 abbrev divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
 
 lemma mem_gammaSet_one (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
-  rw [gammaSet_one_mem, Int.isCoprime_iff_gcd_eq_one]
+  rw [gammaSet_one_mem_iff, Int.isCoprime_iff_gcd_eq_one]
 
 lemma gammaSet_div_gcd {r : ℕ} {v : Fin 2 → ℤ} (hv : v ∈ (gammaSet 1 r 0)) (i : Fin 2) :
    (r : ℤ) ∣ v i := by
@@ -121,7 +121,7 @@ def gammaSetDivGcdEquiv (r : ℕ) [NeZero r] : gammaSet 1 r 0 ≃ gammaSet 1 1 0
 
 /-- The equivalence between `(Fin 2 → ℤ)` and `Σ n : ℕ, gammaSet 1 n 0)` . -/
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
-  apply ((Equiv.sigmaFiberEquiv finGcdMap).symm).trans
+  apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
   refine Equiv.sigmaCongrRight fun b => ?_
   apply Equiv.setCongr
   rw [gammaSet_one_eq]
