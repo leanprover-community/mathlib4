@@ -738,14 +738,14 @@ section Inv
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
+  rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
 @[simp]
 theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p ≤ 1 := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
+  rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
@@ -817,9 +817,7 @@ theorem le_toNNReal_of_coe_le {x : ℝ≥0} {y : ℝ} (h : ↑x ≤ y) : x ≤ y
   (le_toNNReal_iff_coe_le <| x.2.trans h).2 h
 
 nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupSet.sSup s = 0 := by
-  rw [← bddAbove_coe] at hs
-  rw [← coe_inj, coe_sSup, NNReal.coe_zero]
-  exact sSup_of_not_bddAbove hs
+  grind [csSup_of_not_bddAbove, csSup_empty, bot_eq_zero']
 
 theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
