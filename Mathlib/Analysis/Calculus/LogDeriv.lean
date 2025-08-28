@@ -107,10 +107,11 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
   simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
   ring
 
-lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
-    [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAlgebra 𝕜 E] [NormedSpace ℝ 𝕜]
-    {f g : 𝕜 → E} {s : Set 𝕜} (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
-    (hs2 : IsOpen s) (hsc : Convex ℝ s) (hgn : ∀ x ∈ s, g x ≠ 0) (hfn : ∀ x ∈ s, f x ≠ 0) :
+
+lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E] [NontriviallyNormedField 𝕜]
+    [IsRCLikeNormedField 𝕜] [NormedAlgebra 𝕜 E] {f g : 𝕜 → E} {s : Set 𝕜}
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hs2 : IsOpen s) (hsc : IsPreconnected s) (hgn : ∀ x ∈ s, g x ≠ 0) (hfn : ∀ x ∈ s, f x ≠ 0) :
     EqOn (logDeriv f) (logDeriv g) s ↔ ∃ (z : E), z ≠ 0 ∧ s.EqOn f (z • g) := by
   by_cases hs : s.Nonempty
   · constructor
@@ -126,15 +127,8 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
             deriv_comp z (differentiableAt_inv (hgn z hz)) (hg.differentiableAt (hs2.mem_nhds hz)),
             mul_neg, Pi.sub_apply, Pi.mul_apply, comp_apply, Pi.div_apply, Pi.pow_apply]
           ring
-        have H3 := Convex.is_const_of_fderivWithin_eq_zero (f := f * g⁻¹) (s := s) hsc
-          (hf.mul (DifferentiableOn.inv hg hgn)) ?_ hy ht
-        · simp only [Pi.mul_apply, Pi.inv_apply] at H3
-          simp only [← H3, Pi.smul_apply, smul_eq_mul]
-          field_simp [← H3, hgn y hy]
-        · suffices he : s.EqOn (deriv f * g⁻¹ - f * deriv g / g ^ 2) 0 by
-            intro v hv
-            have ha := he hv ▸ (hderiv hv)
-            simpa [fderivWithin_of_isOpen hs2 hv] using (ContinuousLinearMap.ext_ring ha)
+        have hfg : EqOn (deriv (f * g⁻¹)) 0 s := by
+          apply hderiv.trans
           intro z hz
           simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
             Pi.zero_apply]
@@ -144,10 +138,15 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
           have H := h hz
           simp_rw [Pi.div_apply, div_eq_div_iff (hfn z hz) (hgn z hz), mul_comm] at H
           simp [← H, mul_comm]
-    · intro h
-      obtain ⟨z, hz0, hz⟩ := h
-      intro x hx
-      simp [logDeriv_apply, EqOn.deriv hz hs2 hx, hz hx, deriv_const_smul _
+        letI := IsRCLikeNormedField.rclike 𝕜
+        obtain ⟨a, ha⟩ := IsOpen.exists_is_const_of_deriv_eq_zero (f := f * g⁻¹) (s := s) hs2 hsc
+          (hf.mul (DifferentiableOn.inv hg hgn)) hfg
+        have hay := ha y hy
+        have hat := ha t ht
+        simp only [ne_eq, Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul] at *
+        rw [hat, ← hay]
+        field_simp [hgn y hy]
+    · rintro ⟨z, hz0, hz⟩ x hx
+      simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
         (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
-  · simp only [not_nonempty_iff_eq_empty.mp hs, eqOn_empty, ne_eq, and_true, true_iff]
-    exact ⟨1, one_ne_zero⟩
+  ·  simpa [not_nonempty_iff_eq_empty.mp hs] using ⟨1, one_ne_zero⟩
