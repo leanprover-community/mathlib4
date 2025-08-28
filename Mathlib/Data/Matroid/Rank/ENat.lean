@@ -481,13 +481,8 @@ lemma eRk_lt_encard_iff_dep [M.RankFinite] (hXE : X ⊆ M.E := by aesop_mat) :
   ⟨fun h ↦ (not_indep_iff).1 fun hi ↦ h.ne hi.eRk_eq_encard, Dep.eRk_lt_encard⟩
 
 lemma Indep.exists_insert_of_encard_lt {I J : Set α} (hI : M.Indep I) (hJ : M.Indep J)
-    (hcard : I.encard < J.encard) : ∃ e ∈ J \ I, M.Indep (insert e I) := by
-  have hIfin : I.Finite := encard_lt_top_iff.1 <| hcard.trans_le le_top
-  rw [← hI.eRk_eq_encard, ← hJ.eRk_eq_encard] at hcard
-  obtain ⟨e, he, hIe⟩ := exists_eRk_insert_eq_add_one_of_lt hcard
-  refine ⟨e, he, ?_⟩
-  rw [indep_iff_eRk_eq_encard_of_finite (hIfin.insert e), hIe, encard_insert_of_notMem he.2,
-    hI.eRk_eq_encard]
+    (hcard : I.encard < J.encard) : ∃ e ∈ J \ I, M.Indep (insert e I) :=
+  augment hI hJ hcard
 
 lemma isBasis'_iff_indep_encard_eq_of_finite (hIfin : I.Finite) :
     M.IsBasis' I X ↔ I ⊆ X ∧ M.Indep I ∧ I.encard = M.eRk X := by
