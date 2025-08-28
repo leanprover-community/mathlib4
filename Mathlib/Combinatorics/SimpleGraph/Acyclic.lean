@@ -237,13 +237,12 @@ lemma isTree_iff_connected_and_card [Finite V] :
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
     [DecidableRel G.Adj] : G.minDegree = 1 := by
   by_cases q : 2 ≤ G.minDegree
-  · have := @Fintype.one_lt_card V
-    have := h.card_edgeFinset
+  · have := h.card_edgeFinset
     have := G.sum_degrees_eq_twice_card_edges
     have hle : ∑ v : V, 2 ≤ ∑ v, G.degree v := by
       gcongr
       exact le_trans q (G.minDegree_le_degree _)
-    simp at hle
+    simp only [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
     omega
   · linarith [h.isConnected.preconnected.minDegree_pos_of_nontrivial]
 
