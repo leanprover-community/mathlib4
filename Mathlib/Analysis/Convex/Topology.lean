@@ -89,6 +89,14 @@ def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterva
     exact (continuous_pi <| Fin.forall_fin_two.2
       ⟨continuous_const.sub continuous_subtype_val, continuous_subtype_val⟩)
 
+@[simp]
+lemma stdSimplexHomeomorphUnitInterval_zero :
+    stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 0⟩ = 0 := rfl
+
+@[simp]
+lemma stdSimplexHomeomorphUnitInterval_one :
+    stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
+
 end stdSimplex
 
 /-! ### Topological vector spaces -/
