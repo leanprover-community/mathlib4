@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Tactic.Order
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Strictly positive elements of a C⋆-algebra
@@ -83,29 +85,6 @@ lemma spectrum_pos [NonnegSpectrumClass 𝕜 A] {a : A} (ha : IsStrictlyPositive
 grind_pattern IsStrictlyPositive.spectrum_pos => x ∈ spectrum 𝕜 a, IsStrictlyPositive a
 
 end Algebra
-
-section CStarAlgebra
-
-variable [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
-
--- move to `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order`
-protected lemma of_le {a b : A} (ha : IsStrictlyPositive a) (hab : a ≤ b) :
-    IsStrictlyPositive b :=
-  ⟨ha.1.trans hab, CStarAlgebra.isUnit_of_le ha.2 ha.1 hab⟩
-
--- move to `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order`
-@[grind ←, aesop 90% apply]
-lemma _root_.isStrictlyPositive_add {a b : A}
-    (h : IsStrictlyPositive a ∧ 0 ≤ b ∨ 0 ≤ a ∧ IsStrictlyPositive b) :
-    IsStrictlyPositive (a + b) := by
-  obtain h|h := h
-  case inl =>
-    exact IsStrictlyPositive.of_le (a := a) h.1 ((le_add_iff_nonneg_right a).mpr h.2)
-  case inr =>
-    exact IsStrictlyPositive.of_le (a := b) h.2 (le_add_of_nonneg_left h.1)
-
-end CStarAlgebra
-
 
 end IsStrictlyPositive
 
