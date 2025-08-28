@@ -148,11 +148,8 @@ theorem triangle (M N : ModuleCat.{u} R) :
       tensorHom (rightUnitor M).hom (𝟙 N) := by
   ext : 1
   apply TensorProduct.ext_threefold
-  intro x y z
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp [tensorHom, associator]
-  change x ⊗ₜ[R] ((leftUnitor N).hom) (y ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] y) ⊗ₜ[R] z
-  erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
-  exact (TensorProduct.smul_tmul _ _ _).symm
+  intro x y
+  exact TensorProduct.tmul_smul _ _
 
 end MonoidalCategory
 
