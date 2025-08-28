@@ -12,6 +12,16 @@ import Mathlib.Probability.Notation
 # Bernoulli random variables
 
 This file computes the expectation, variance, conditional variance of a Bernoulli random variable.
+
+## Main declarations
+
+* `ProbabilityTheory.bernoulli`: Bernoulli measure on `ℝ` with parameter `p`.
+* `ProbabilityTheory.IsBernoulli`:
+  Predicate for a random variable to be Bernoulli according to *some* parameter.
+* `ProbabilityTheory.IsBernoulli.integral_eq`: Computation of the expectation of a Bernoulli r.v.
+* `ProbabilityTheory.IsBernoulli.variance_eq`: Computation of the variance of a Bernoulli r.v.
+* `ProbabilityTheory.IsBernoulli.condVar_eq`:
+  Computation of the conditional variance of a Bernoulli r.v.
 -/
 
 open MeasureTheory
@@ -144,7 +154,11 @@ lemma condVar_of_ae_eq_zero_or_one {m₀ : MeasurableSpace Ω} (hm : m ≤ m₀)
 
 /-! ### Predicate for a measure to be Bernoulli -/
 
-/-- The Bernoulli probability distribution with parameter `p`. -/
+/-- The Bernoulli probability distribution with parameter `p`.
+
+`p` is taken to have type `ℝ≥0`, and therefore we need to choose a junk value for `p > 1`.
+We decide to make `bernoulli` monotone in `p`, meaning that `bernoulli p = bernoulli 1` for all
+`p ≥ 1`. -/
 noncomputable def bernoulli (p : ℝ≥0) : Measure ℝ := (1 - p) • .dirac 0 + (1 - (1 - p)) • .dirac 1
 
 /-- A measure is Bernoulli if it is the Bernoulli distribution with some parameter `p`. -/
@@ -175,14 +189,14 @@ lemma IsBernoulli.ae_eq_zero_or_one (hX : HasLaw X μ P) : ∀ᵐ ω ∂P, X ω 
 
 The expectation of a Bernoulli random variable is equal
 to the probability that it's equal to `1`. -/
-lemma IsBernoulli.expectation_eq (hX : HasLaw X μ P) : P[X] = P.real {ω | X ω = 1} :=
+lemma IsBernoulli.integral_eq (hX : HasLaw X μ P) : P[X] = P.real {ω | X ω = 1} :=
   integral_of_ae_eq_zero_or_one hX.aemeasurable <| ae_eq_zero_or_one hX
 
 /-- **Expectation of a Bernoulli random variable**.
 
 One minus the expectation of a Bernoulli random variable is equal
 to the probability that it's equal to `0`. -/
-lemma IsBernoulli.one_sub_expectation (hX : HasLaw X μ P) : 1 - P[X] = P.real {ω | X ω = 0} :=
+lemma IsBernoulli.one_sub_integral (hX : HasLaw X μ P) : 1 - P[X] = P.real {ω | X ω = 0} :=
   have := hX.isProbabilityMeasure
   one_sub_integral_of_ae_eq_zero_or_one hX.aemeasurable (ae_eq_zero_or_one hX)
 
