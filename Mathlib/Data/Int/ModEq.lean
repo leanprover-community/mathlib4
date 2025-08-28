@@ -215,7 +215,91 @@ protected theorem mul_right_cancel_iff' (hc : c ≠ 0) :
     a * c ≡ b * c [ZMOD m * c] ↔ a ≡ b [ZMOD m] :=
   ⟨ModEq.mul_right_cancel' hc, ModEq.mul_right'⟩
 
+theorem dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b := by
+  simp only [← modEq_zero_iff_dvd]
+  exact ⟨fun ha ↦ h.symm.trans ha, h.trans⟩
+
 end ModEq
+
+@[simp]
+theorem self_modEq_zero : n ≡ 0 [ZMOD n] := by simp [ModEq]
+
+@[simp]
+theorem modEq_abs : a ≡ b [ZMOD |n|] ↔ a ≡ b [ZMOD n] := by simp [ModEq]
+
+theorem modEq_natAbs : a ≡ b [ZMOD n.natAbs] ↔ a ≡ b [ZMOD n] := by simp [natCast_natAbs]
+
+@[simp]
+theorem add_modEq_left_iff : a + b ≡ a [ZMOD n] ↔ n ∣ b := by
+  simp [modEq_iff_dvd]
+
+@[simp]
+theorem add_modEq_right_iff : a + b ≡ b [ZMOD n] ↔ n ∣ a := by
+  rw [add_comm, add_modEq_left_iff]
+
+@[simp]
+theorem left_modEq_add_iff : a ≡ a + b [ZMOD n] ↔ n ∣ b := by
+  rw [modEq_comm, add_modEq_left_iff]
+
+@[simp]
+theorem right_modEq_add_iff : b ≡ a + b [ZMOD n] ↔ n ∣ a := by
+  rw [modEq_comm, add_modEq_right_iff]
+
+@[simp]
+theorem add_self_modEq_iff : a + n ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem self_add_modEq_iff : n + a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [add_comm, add_self_modEq_iff]
+
+@[simp]
+theorem modEq_add_self_iff : a ≡ b + n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modEq_self_add_iff : a ≡ n + b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem add_mul_self_modEq_iff : a + b * n ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem mul_self_add_modEq_iff : b * n + a ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, add_mul_self_modEq_iff]
+
+@[simp]
+theorem modEq_add_mul_self_iff : a ≡ b + c * n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modEq_mul_self_add_iff : a ≡ b * n + c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, modEq_add_mul_self_iff]
+
+@[simp]
+theorem add_self_mul_modEq_iff : a + n * b ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem self_mul_add_modEq_iff : n * b + a ≡ c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, add_self_mul_modEq_iff]
+
+@[simp]
+theorem modEq_add_self_mul_iff : a ≡ b + n * c [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  simp [ModEq]
+
+@[simp]
+theorem modEq_self_mul_add_iff : a ≡ n * b + c [ZMOD n] ↔ a ≡ c [ZMOD n] := by
+  rw [add_comm, modEq_add_self_mul_iff]
+
+@[simp]
+theorem sub_self_modEq_iff : a - n ≡ b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [← add_self_modEq_iff, sub_add_cancel]
+
+@[simp]
+theorem modEq_sub_self_iff : a ≡ b - n [ZMOD n] ↔ a ≡ b [ZMOD n] := by
+  rw [← modEq_add_self_iff, sub_add_cancel]
 
 theorem modEq_one : a ≡ b [ZMOD 1] :=
   modEq_of_dvd (one_dvd _)
@@ -226,21 +310,18 @@ theorem modEq_sub (a b : ℤ) : a ≡ b [ZMOD a - b] :=
 @[simp]
 theorem modEq_zero_iff : a ≡ b [ZMOD 0] ↔ a = b := by rw [ModEq, emod_zero, emod_zero]
 
-@[simp]
-theorem add_modEq_left : n + a ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 <| by simp
+theorem add_modEq_left : n + a ≡ a [ZMOD n] := by simp
 
-@[simp]
-theorem add_modEq_right : a + n ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 <| by simp
+theorem add_modEq_right : a + n ≡ a [ZMOD n] := by simp
+
+theorem modEq_and_modEq_iff_modEq_lcm {a b m n : ℤ} :
+    a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m.lcm n] := by
+  simp only [modEq_iff_dvd, coe_lcm_dvd_iff]
 
 theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
-    a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] :=
-  ⟨fun h => by
-    rw [modEq_iff_dvd, modEq_iff_dvd] at h
-    rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
-    refine hmn.mul_dvd_of_dvd_of_dvd ?_ ?_ <;>
-      rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
-      tauto,
-    fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
+    a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] := by
+  convert ← modEq_and_modEq_iff_modEq_lcm using 1
+  rw [lcm_eq_mul_iff.mpr (.inr <| .inr hmn), ← natAbs_mul, modEq_natAbs]
 
 theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]
