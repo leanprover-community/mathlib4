@@ -12,7 +12,6 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.PNat.Defs
 
 /-!
 # Divisor Finsets
