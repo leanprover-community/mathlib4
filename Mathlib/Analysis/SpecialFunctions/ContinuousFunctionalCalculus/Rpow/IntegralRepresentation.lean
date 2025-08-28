@@ -123,6 +123,7 @@ lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x)
       (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
+set_option linter.flexible false in
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     ContinuousOn (rpowIntegrand₀₁ p · x) (Ioi 0) := by
   refine ContinuousOn.congr ?_ <| rpowIntegrand₀₁_eqOn_pow_div hp hx
@@ -499,7 +500,7 @@ lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ 
   · simp_rw [← CFC.nnrpow_eq_rpow hq]
     exact monotone_nnrpow hp
   · have hq : q = 0 := by simpa using hq
-    simp [hq]
+    simp only [hq, NNReal.coe_zero]
     intro a b hab
     by_cases ha : 0 ≤ a
     · have hb : 0 ≤ b := ha.trans hab

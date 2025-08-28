@@ -168,6 +168,8 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   rw [lift_symm_apply, lift_symm_apply]
   simp only [h]
 
+-- TODO: fix non-terminal simp (related to the porting note)
+set_option linter.flexible false in
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.
@@ -193,8 +195,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
     ext x
     simp [of]
     -- porting note: `simp` should fire with the following lemma automatically
-    have := LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
-    exact this
+    exact LinearMap.codRestrict_apply s.toSubmodule (CliffordAlgebra.ι Q) x (h := ι)
   -- finding a proof is finding an element of the subalgebra
   rw [← AlgHom.id_apply (R := R) a, ← of_id]
   exact (lift Q of a).prop

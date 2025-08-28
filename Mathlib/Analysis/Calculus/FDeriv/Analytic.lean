@@ -807,7 +807,7 @@ theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
     (fun _ ↦ hasFDerivAt_id _)
   have I : f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) none =
       (f.flipMultilinear v.2) ∘L (.fst _ _ _) := by
-    simp [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption]
+    simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption]
     apply ContinuousLinearMap.ext (fun w ↦ ?_)
     simp
   have J : ∀ (i : ι), f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) (some i)
