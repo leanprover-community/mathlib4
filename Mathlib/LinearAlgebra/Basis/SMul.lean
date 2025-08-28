@@ -21,15 +21,10 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
+variable {ι R R₂ M : Type*}
 
-section Module
-
-variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
-namespace Basis
-
-variable (b : Basis ι R M)
+namespace Module.Basis
+variable [Semiring R] [AddCommMonoid M] [Module R M] (b : Basis ι R M)
 
 section SMul
 variable {G G'}
@@ -118,8 +113,7 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     apply e.ext
     intro j
     trans ((unitsSMul e w).coord i) ((w j)⁻¹ • (unitsSMul e w) j)
-    · congr
-      simp [Basis.unitsSMul, ← mul_smul]
+    · simp [Basis.unitsSMul, ← mul_smul]
     simp only [Basis.coord_apply, LinearMap.smul_apply, Basis.repr_self, Units.smul_def,
       map_smul, Finsupp.single_apply]
     split_ifs with h <;> simp [h]
@@ -142,7 +136,4 @@ theorem repr_isUnitSMul {v : Basis ι R₂ M} {w : ι → R₂} (hw : ∀ i, IsU
   repr_unitsSMul _ _ _ _
 
 end CommSemiring
-
-end Basis
-
-end Module
+end Module.Basis

@@ -365,7 +365,7 @@ theorem Adapted.upcrossingStrat_adapted (hf : Adapted ℱ f) :
   change StronglyMeasurable[ℱ n] fun ω =>
     ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
       {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
-  refine Finset.stronglyMeasurable_sum _ fun i _ =>
+  refine Finset.stronglyMeasurable_fun_sum _ fun i _ =>
     stronglyMeasurable_const.indicator ((hf.isStoppingTime_lowerCrossingTime n).inter ?_)
   simp_rw [← not_le]
   exact (hf.isStoppingTime_upperCrossingTime n).compl
@@ -498,12 +498,11 @@ theorem upperCrossingTime_eq_upperCrossingTime_of_lt {M : ℕ} (hNM : N ≤ M)
 theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsBefore a b f N ω := by
   intro N M hNM ω
   simp only [upcrossingsBefore]
-  by_cases hemp : {n : ℕ | upperCrossingTime a b f N n ω < N}.Nonempty
-  · refine csSup_le_csSup (upperCrossingTime_lt_bddAbove hab) hemp fun n hn => ?_
-    rw [Set.mem_setOf_eq, upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
-    exact lt_of_lt_of_le hn hNM
-  · rw [Set.not_nonempty_iff_eq_empty] at hemp
-    simp [hemp, csSup_empty]
+  gcongr sSup {n | ?_} with n
+  · exact upperCrossingTime_lt_bddAbove hab
+  intro hn
+  rw [upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
+  exact lt_of_lt_of_le hn hNM
 
 theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ} (hN₁ : N ≤ N₁)
     (hN₁' : f N₁ ω < a) (hN₂ : N₁ ≤ N₂) (hN₂' : b < f N₂ ω) :
@@ -631,14 +630,7 @@ theorem crossing_pos_eq (hab : a < b) :
     refine ⟨rfl, ?_⟩
     simp +unfoldPartialApp only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic]
-    ext ω
-    split_ifs with h₁ h₂ h₂
-    · simp_rw [hf']
-    · simp_rw [Set.mem_Iic, ← hf' _ _] at h₂
-      exact False.elim (h₂ h₁)
-    · simp_rw [Set.mem_Iic, hf' _ _] at h₁
-      exact False.elim (h₁ h₂)
-    · rfl
+    simp_all
   | succ k ih =>
     have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =
         upperCrossingTime a b f N (k + 1) := by
@@ -702,7 +694,7 @@ This inequality is central for the martingale convergence theorem as it provides
 for the upcrossings.
 
 We note that on top of taking the supremum on both sides of the inequality, we had also used
-the monotone convergence theorem on the left hand side to take the supremum outside of the
+the monotone convergence theorem on the left-hand side to take the supremum outside of the
 integral. To do this, we need to make sure $U_N(a, b)$ is measurable and integrable. Integrability
 is easy to check as $U_N(a, b) ≤ N$ and so it suffices to show measurability. Indeed, by
 noting that
@@ -747,7 +739,7 @@ theorem Adapted.measurable_upcrossingsBefore (hf : Adapted ℱ f) (hab : a < b) 
     ext ω
     exact upcrossingsBefore_eq_sum hab
   rw [this]
-  exact Finset.measurable_sum _ fun i _ => Measurable.indicator measurable_const <|
+  exact Finset.measurable_fun_sum _ fun i _ => Measurable.indicator measurable_const <|
     ℱ.le N _ (hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N)
 
 theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted ℱ f) (hab : a < b) :
@@ -757,7 +749,7 @@ theorem Adapted.integrable_upcrossingsBefore [IsFiniteMeasure μ] (hf : Adapted 
     rw [Real.norm_eq_abs, Nat.abs_cast, Nat.cast_le]
     exact upcrossingsBefore_le _ _ hab
   ⟨Measurable.aestronglyMeasurable (measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)),
-    hasFiniteIntegral_of_bounded this⟩
+    .of_bounded this⟩
 
 /-- The number of upcrossings of a realization of a stochastic process (`upcrossings` takes value
 in `ℝ≥0∞` and so is allowed to be `∞`). -/

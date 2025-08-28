@@ -79,12 +79,12 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
 
 /-- A morphism of locally ringed spaces as a morphism of sheafed spaces. -/
 abbrev Hom.toShHom {X Y : LocallyRingedSpace.{u}} (f : X.Hom Y) :
-  X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
+    X.toSheafedSpace ⟶ Y.toSheafedSpace := f.1
 
 @[simp, nolint simpVarHead]
 lemma Hom.toShHom_mk {X Y : LocallyRingedSpace.{u}}
-    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) :
-  Hom.toShHom ⟨f, hf⟩ = f := rfl
+    (f : X.toPresheafedSpace.Hom Y.toPresheafedSpace) (hf) : Hom.toShHom ⟨f, hf⟩ = f :=
+  rfl
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
@@ -277,7 +277,7 @@ def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
 noncomputable
 instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where
   default := LocallyRingedSpace.emptyTo X
-  uniq f := by ext ⟨⟩ x; aesop_cat
+  uniq f := by ext ⟨⟩ x; cat_disch
 
 /-- The empty space is initial in `LocallyRingedSpace`. -/
 noncomputable
@@ -290,7 +290,7 @@ theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
   simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
     Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
-  intros hx
+  intro hx
   rw [map_zero, isUnit_zero_iff]
   change (0 : X.presheaf.stalk x) ≠ (1 : X.presheaf.stalk x)
   exact zero_ne_one
