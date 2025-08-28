@@ -44,32 +44,6 @@ theorem sq_modEq_sq {p : ℤ} (hp : Prime p) :
 
 end Int
 
-namespace Mathlib.Meta.NormNum
-open Qq
-
-/-
-TODO: the next 2 extensions derive `n` twice.
-Fix this before moving to moving them to PRs.
--/
-
-/-- `norm_num` extension for `Nat.ModEq`. -/
-@[norm_num Nat.ModEq _ _ _]
-def evalNatModEq : NormNumExt where eval {u αP} e := do
-  match u, αP, e with
-  | 0, ~q(Prop), ~q(Nat.ModEq $n $a $b) =>
-    derive (u := 0) (α := q(Prop)) q(($a % $n : ℕ) = $b % $n)
-  | _, _, _ => failure
-
-/-- `norm_num` extension for `Int.ModEq`. -/
-@[norm_num Int.ModEq _ _ _]
-def evalIntModEq : NormNumExt where eval {u αP} e := do
-  match u, αP, e with
-  | 0, ~q(Prop), ~q(Int.ModEq $n $a $b) =>
-    derive (u := 0) (α := q(Prop)) q(($a % $n : ℤ) = $b % $n)
-  | _, _, _ => failure
-
-end Mathlib.Meta.NormNum
-
 open Finset
 
 @[gcongr]
@@ -497,32 +471,6 @@ lemma padicValInt_two_pow_two_pow_add_pow_two_pow_of_ne_zero {a b : ℤ} (ha : O
     apply padicValInt_two_pow_two_pow_add_pow_two_pow_of_zmodEq_four
     · exact ha.pow
     · rw [Int.ModEq, Int.sq_mod_four_eq_one_of_odd ha, Int.sq_mod_four_eq_one_of_odd hb]
-
-@[simp]
-lemma orderOf_zero (M : Type*) [MonoidWithZero M] [Nontrivial M] : orderOf (0 : M) = 0 := by
-  rw [orderOf_eq_zero_iff, isOfFinOrder_iff_pow_eq_one]
-  rintro ⟨n, hn₀, hn⟩
-  simp [hn₀.ne'] at hn
-
-@[simp]
-lemma Units.isOfFinOrder_val {M : Type*} [Monoid M] {u : Mˣ} :
-    IsOfFinOrder u.val ↔ IsOfFinOrder u :=
-  Function.Injective.isOfFinOrder_iff (f := Units.coeHom M) (by
-    intro x y h
-    simp at h
-    exact_mod_cast h
-  )
-
-lemma isOfFinOrder_iff_isUnit {M : Type*} [Monoid M] [Finite Mˣ] {x : M} :
-    IsOfFinOrder x ↔ IsUnit x := by
-  use IsOfFinOrder.isUnit
-  rintro ⟨u, rfl⟩
-  rw [Units.isOfFinOrder_val]
-  apply isOfFinOrder_of_finite
-
-lemma orderOf_eq_zero_iff_eq_zero {G₀ : Type*} [GroupWithZero G₀] [Finite G₀] {a : G₀} :
-    orderOf a = 0 ↔ a = 0 := by
-  rw [orderOf_eq_zero_iff, isOfFinOrder_iff_isUnit, isUnit_iff_ne_zero, ne_eq, not_not]
 
 lemma prime_not_dvd_pow_sub_pow_of_not_orderOf_dvd {p n : ℕ} [Fact p.Prime] {a b : ℤ}
     (hpb : ¬↑p ∣ b) (hn : ¬orderOf (a / b : ZMod p) ∣ n) :
