@@ -126,13 +126,12 @@ end HasIdealSupport
 theorem hasIdealSupport_of_isUnit_two (isUnit_2 : IsUnit (2 : R)) : P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
   intro x a _ _
-  obtain ⟨half, h2⟩ := IsUnit.exists_left_inv isUnit_2
-  set y := (1 + x) * half
-  set z := (1 - x) * half
-  have mem : (y * y) * a + (z * z) * -a ∈ P ∧ (y * y) * -a + (z * z) * a ∈ P := by aesop
-  rw [show x = y * y - z * z by linear_combination (-(2 * x * half) - 1 * x) * h2]
-  ring_nf at mem ⊢
-  assumption
+  set y := (1 + x) * ⅟2
+  set z := (1 - x) * ⅟2
+  rw [show x = y ^ 2 - z ^ 2 by
+    linear_combination (- x - x * ⅟2 * 2) * invOf_mul_self (2 : R)]
+  ring_nf
+  aesop (add simp sub_eq_add_neg)
 
 theorem supportAddSubgroup_eq_bot_iff_support_eq_bot [P.HasIdealSupport] :
     P.supportAddSubgroup = ⊥ ↔ P.support = ⊥ where
