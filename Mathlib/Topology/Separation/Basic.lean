@@ -834,6 +834,15 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs]
 
+lemma Function.update_eventuallyEq_nhdsNE
+    {α β : Type*} [TopologicalSpace α] [T1Space α] [DecidableEq α] (f : α → β) (a a' : α) (b : β) :
+    Function.update f a b =ᶠ[𝓝[≠] a'] f := by
+  rcases eq_or_ne a' a with rfl | ha
+  · filter_upwards [eventually_mem_nhdsWithin] with u hu
+    apply Function.update_of_ne hu
+  · filter_upwards [eventually_ne_nhdsWithin ha] with u hu
+    apply Function.update_of_ne hu
+
 /-! ### R₁ (preregular) spaces -/
 
 section R1Space
