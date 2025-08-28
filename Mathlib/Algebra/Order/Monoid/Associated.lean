@@ -22,7 +22,7 @@ saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 
-TODO: none of this docstring is true anymore?
+TODO: almost none of this docstring is true anymore?
 -/
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
