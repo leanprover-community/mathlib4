@@ -64,15 +64,7 @@ example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
   simp
   positivity
 
--- TODO: this should not warn not warn!
 open scoped ENNReal
-/--
-warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
----
-info: … and 'finiteness' uses '⊢'!
--/
 #guard_msgs in
 example {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) : a * b ≠ ∞ := by
   simp
