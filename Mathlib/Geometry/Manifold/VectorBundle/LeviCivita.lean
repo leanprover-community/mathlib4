@@ -319,14 +319,12 @@ open VectorField
 variable {I} in
 lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
-    letI A := dfY * ⟪Z, X⟫ x
-    leviCivita_rhs' I (f • X) Y Z x = f x • leviCivita_rhs' I X Y Z x + A + A := by
+    leviCivita_rhs' I (f • X) Y Z x = f x • leviCivita_rhs' I X Y Z x := by
   unfold leviCivita_rhs'
   simp only [Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulX, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
   simp only [product_apply, mlieBracket_smul_left (W := Z) hf hX,
-    mlieBracket_smul_left (W := Y) hf hX, inner_add_right]
+    mlieBracket_smul_right (V := Y) hf hX, inner_add_right]
   -- Combining this line with the previous one fails.
   simp only [← product_apply, neg_smul, inner_neg_right]
   have h1 :
@@ -346,7 +344,7 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
     rw [product_apply, Pi.smul_apply', real_inner_smul_left]
   have h4 : inner ℝ (Z x) (f x • mlieBracket I Y X x) = f x * ⟪Z, mlieBracket I Y X⟫ x := by
     rw [product_apply, real_inner_smul_right]
-  rw [real_inner_smul_right (Y x), h3, h4]
+  rw [real_inner_smul_right (Y x), h3]--, h4]
   -- set A := ⟪Y, mlieBracket I X Z⟫ with hA
   -- set B := ⟪Z, mlieBracket I X Y⟫
   -- set C := ⟪X, mlieBracket I Z Y⟫
@@ -357,32 +355,22 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   -- set G := rhs_aux I Z X Y x
   -- Push all applications of `x` inwards, then it's indeed obvious.
   simp
-  ring
-
--- The term `2 A` is a bit surprising, but seems to be correct: the only sorry is for the
--- product rule of the Lie bracket, which seems correct.
+  ring_nf
+  congr
 
 variable {I} in
 lemma leviCivita_rhs_smulX_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
-    letI A := dfY * ⟪Z, X⟫ x
-    leviCivita_rhs I (f • X) Y Z x = f x • leviCivita_rhs I X Y Z x + A := by
+    leviCivita_rhs I (f • X) Y Z x = f x • leviCivita_rhs I X Y Z x := by
   simp only [leviCivita_rhs, one_div, Pi.smul_apply, smul_eq_mul]
   simp_rw [leviCivita_rhs'_smulX_apply (I := I) hf hX hY hZ]
-  rw [← mul_assoc, mul_comm (f x), left_distrib, left_distrib]
-  set dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
-  set A := dfY * ⟪Z, X⟫ x
-  rw [add_assoc, show 2⁻¹ * A + 2⁻¹ * A = A by ring]
-  congr 1
-  rw [smul_eq_mul]; rw [mul_assoc]
+  rw [← mul_assoc, mul_comm (f x), smul_eq_mul]
+  ring
 
 variable {I} in
 lemma leviCivita_rhs_smulX [CompleteSpace E] {f : M → ℝ}
     (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
-    letI dfY (x) : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
-    letI A (x) := dfY x * ⟪Z, X⟫ x
-    leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z + A := by
+    leviCivita_rhs I (f • X) Y Z = f • leviCivita_rhs I X Y Z := by
   ext x
   exact leviCivita_rhs_smulX_apply (hf x) (hX x) (hY x) (hZ x)
 
@@ -563,8 +551,6 @@ lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
   have almoster : A + A = leviCivita_rhs' I X Y Z := by simp only [leviCivita_rhs', *]
   simp only [leviCivita_rhs, ← almoster, smul_add]
   ext; simp; ring
-
-#exit
 
 section
 
