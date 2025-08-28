@@ -23,8 +23,9 @@ there exists a strictly monotone linear map to lexicographically ordered
 as long as for a family of `ArchimedeanClass.IsGrade` submodule of `M`, there exists a
 strictly monotone linear map to `R` for each grade.
 
-Archimedean grades is a family of linearly independent submodules,
-where each is the complement of the ball under the corresponding closed ball.
+Archimedean grades are a family of linearly independent submodules indexed by
+`c : ArchimedeanClass`, where each is the complement of the
+`ArchimedeanClass.ball K c` under `ArchimedeanClass.closedBall K c`.
 
 By setting `K = ℚ` and `R = ℝ`, the condition can be trivially satisfied, leading
 to a proof of the classic Hahn embedding theorem. (TODO: implement this)
@@ -64,7 +65,7 @@ variable {R : Type*} [AddCommGroup R] [LinearOrder R] [IsOrderedAddMonoid R] [Ar
 variable [Module K R]
 
 variable (K M R) in
-/-- specifies a family of grades of `M`, and
+/-- Specifies a family of grades of `M`, and
 strictly monotone linear maps from each grade to module `R`. -/
 structure HahnEmbeddingSeed where
   /-- For each `ArchimedeanClass`, specify a corresponding grade. -/
@@ -76,7 +77,7 @@ structure HahnEmbeddingSeed where
   /-- `grade` is the complement of `ArchimedeanClass.ball` under `ArchimedeanClass.closedBall`. -/
   ball_sup_grade_eq (c : ArchimedeanClass M) : ball K c ⊔ (grade c) = closedBall K c
   /-- `gradeMap` is strictly monotone. -/
-  strictMono (c : ArchimedeanClass M) : StrictMono (gradeMap c)
+  strictMono_gradeMap (c : ArchimedeanClass M) : StrictMono (gradeMap c)
 
 variable (seed : HahnEmbeddingSeed K M R)
 
@@ -117,7 +118,7 @@ theorem archimedeanClassMk_eq {c : ArchimedeanClass M} {a : M}
     exact Submodule.mem_sup_right ha
 
 omit [IsOrderedAddMonoid R] [Archimedean R] in
-theorem archimedean_grade (c : ArchimedeanClass M) : Archimedean (seed.grade c) := by
+instance archimedean_grade (c : ArchimedeanClass M) : Archimedean (seed.grade c) := by
   apply archimedean_of_mk_eq_mk
   intro a ha b hb
   suffices ArchimedeanClass.mk a.val = ArchimedeanClass.mk b.val by
@@ -256,7 +257,7 @@ certain properties (See below). -/
 structure IsPartialHahnEmbedding (f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)) :
     Prop where
   /-- A partial Hahn embedding is strictly monotone. -/
-  strictMono : StrictMono f
+  strictMono_gradeMap : StrictMono f
   /-- A partial Hahn embedding always extends `baseEmbedding`. -/
   baseEmbedding_le : seed.baseEmbedding ≤ f
   /-- if Hahn series $f$ is in the range, then any truncation of $f$ is also in the range. -/
@@ -304,7 +305,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
       (seed.gradeMap (f.support.min' hsupport)) (f (f.support.min' hsupport)) by
     simpa using this
   suffices 0 < (f (f.support.min' hsupport)).val by
-    apply (seed.strictMono (f.support.min' hsupport))
+    apply (seed.strictMono_gradeMap (f.support.min' hsupport))
     simpa using this
   -- using the fact that `f.sum` is positive, we only needs to show that
   -- the remaining terms of f after removing the dominating class is of higher class
@@ -379,7 +380,7 @@ omit [Archimedean R] in
 /-- `HahnEmbeddingSeed.baseEmbedding` is a partial Hahn embedding. -/
 theorem isPartialHahnEmbedding_baseEmbedding :
     IsPartialHahnEmbedding seed seed.baseEmbedding where
-  strictMono := seed.baseEmbedding_strictMono
+  strictMono_gradeMap := seed.baseEmbedding_strictMono
   baseEmbedding_le := le_refl _
   truncLT_mem_range := seed.truncLT_mem_range_baseEmbedding
 
@@ -400,14 +401,14 @@ instance : Inhabited (PartialHahnEmbedding seed) where
 def toOrderAddMonoidHom : f.val.domain →+o Lex (HahnSeries (FiniteArchimedeanClass M) R) where
   __ := f.val.toFun
   map_zero' := by simp
-  monotone' := f.prop.strictMono.monotone
+  monotone' := f.prop.strictMono_gradeMap.monotone
 
 omit [IsOrderedAddMonoid R] [Archimedean R] in
 theorem toOrderAddMonoidHom_apply (x : f.val.domain) : f.toOrderAddMonoidHom x = f.val x := rfl
 
 omit [IsOrderedAddMonoid R] [Archimedean R] in
 theorem toOrderAddMonoidHom_injective : Function.Injective f.toOrderAddMonoidHom :=
-  f.prop.strictMono.injective
+  f.prop.strictMono_gradeMap.injective
 
 omit [IsOrderedAddMonoid R] [Archimedean R] in
 theorem mem_domain {x : M} {c : ArchimedeanClass M} (hx : x ∈ seed.grade c) : x ∈ f.val.domain := by
@@ -453,7 +454,7 @@ theorem orderTop_eq_iff (x y : f.val.domain) :
   have hnonempty : Nonempty (FiniteArchimedeanClass M) := inferInstance
   obtain c := hnonempty.some
   have hnontrivial' : Nontrivial (seed.grade c) := seed.nontrivial_grade c.prop
-  have : Nontrivial R := (seed.strictMono c).injective.nontrivial
+  have : Nontrivial R := (seed.strictMono_gradeMap c).injective.nontrivial
   rw [← archimedeanClassMk_eq_iff]
   simp_rw [← HahnSeries.archimedeanClassOrderIsoWithTop_apply]
   rw [(HahnSeries.archimedeanClassOrderIsoWithTop (FiniteArchimedeanClass M) R).injective.eq_iff]
@@ -477,7 +478,7 @@ theorem orderTop_eq_archimedeanClass (x : f.val.domain) :
   have hx''mem : x''.val ∈ seed.grade (FiniteArchimedeanClass.mk x.val hx0').val := hx'mem
   have h0 : (seed.gradeMap (FiniteArchimedeanClass.mk x.val hx0').val) ⟨x''.val, hx''mem⟩ ≠ 0
       := by
-    rw [(LinearMap.map_eq_zero_iff _ (seed.strictMono _).injective).ne]
+    rw [(LinearMap.map_eq_zero_iff _ (seed.strictMono_gradeMap _).injective).ne]
     unfold x''
     simpa using hx'0
   have heq' : mk x''.val = mk x.val := heq
@@ -740,7 +741,7 @@ theorem eval_lt {x : M} (hx : x ∉ f.val.domain) (y : f.val.domain) (h : x < y.
     rw [mk_sub_comm x z.val]
     simpa [hyxtop] using hz
   -- Since both `y` and `z` are in the domain, we can apply `f`'s monotonicity on them
-  rw [← f.prop.strictMono.lt_iff_lt, HahnSeries.lt_iff] at hzy
+  rw [← f.prop.strictMono_gradeMap.lt_iff_lt, HahnSeries.lt_iff] at hzy
   obtain ⟨i, hj, hi⟩ := hzy
   -- We show that the dictating coefficient of `f.val y < f.val z`
   -- is at the same position as the dictating coefficient of `f.eval x < f.val y`
@@ -793,7 +794,7 @@ theorem extendFun_strictMono {x : M} (hx : x ∉ f.val.domain) : StrictMono (f.e
   by_cases hc : c = 0
   · rw [hc] at ⊢ hac
     suffices f.val 0 < f.val ⟨a, ha⟩ by simpa using this
-    exact f.prop.strictMono (by simpa using hac)
+    exact f.prop.strictMono_gradeMap (by simpa using hac)
   · exact f.eval_lt (hx' hc) ⟨a, ha⟩ hac
 
 theorem baseEmbedding_le_extendFun {x : M} (hx : x ∉ f.val.domain) :
@@ -854,7 +855,7 @@ theorem truncLT_mem_range_extendFun {x : M} (hx : x ∉ f.val.domain) (y : (f.ex
 
 theorem isPartialHahnEmbedding_extendFun {x : M} (hx : x ∉ f.val.domain) :
     IsPartialHahnEmbedding seed (extendFun f hx) where
-  strictMono := f.extendFun_strictMono hx
+  strictMono_gradeMap := f.extendFun_strictMono hx
   baseEmbedding_le := f.baseEmbedding_le_extendFun hx
   truncLT_mem_range := f.truncLT_mem_range_extendFun hx
 
@@ -901,7 +902,7 @@ theorem sSupFun_strictMono {c : Set (PartialHahnEmbedding seed)} (hnonempty : c.
     LinearPMap.sSup_apply _ hmem ⟨(y - x).val, hf⟩
   rw [this]
   obtain ⟨f', _, hf'⟩ := (Set.mem_image _ _ _).mp hmem
-  have hmono: StrictMono f := hf'.symm ▸ f'.prop.strictMono
+  have hmono: StrictMono f := hf'.symm ▸ f'.prop.strictMono_gradeMap
   rw [show 0 = f 0 by simp]
   apply hmono
   change 0 < y - x
@@ -945,7 +946,7 @@ omit [Archimedean R] in
 theorem isPartialHahnEmbedding_sSupFun {c : Set (PartialHahnEmbedding seed)}
     (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) :
     IsPartialHahnEmbedding seed (sSupFun hc) where
-  strictMono := sSupFun_strictMono hnonempty hc
+  strictMono_gradeMap := sSupFun_strictMono hnonempty hc
   baseEmbedding_le := baseEmbedding_le_sSupFun hnonempty hc
   truncLT_mem_range := truncLT_mem_range_sSupFun hnonempty hc
 
@@ -974,8 +975,9 @@ theorem exists_domain_eq_top : ∃ f : PartialHahnEmbedding seed, f.val.domain =
 
 end PartialHahnEmbedding
 
-/-- **Hahn embedding theorem for ordered module**:
-there exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
+/-- **Hahn embedding theorem for ordered module**
+
+There exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
 `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
 `HahnEmbeddingSeed K M R` is nonempty. The `PartialHahnEmbedding` with maximal domain is the
 desired embedding. -/
@@ -988,7 +990,7 @@ theorem exists_linearMap_hahnSeries_strictMono_and_archimedeanClassMk_eq
   obtain ⟨⟨fdomain, f⟩, hpartial⟩ := e
   obtain rfl := hdomain
   refine ⟨f ∘ₗ LinearMap.id.codRestrict ⊤ (by simp), ?_, ?_⟩
-  · apply hpartial.strictMono.comp
+  · apply hpartial.strictMono_gradeMap.comp
     intro _ _ h
     simpa [← Subtype.coe_lt_coe] using h
   · simp_rw [LinearPMap.mk_apply] at harch

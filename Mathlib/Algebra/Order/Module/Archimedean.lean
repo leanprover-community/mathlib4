@@ -20,10 +20,10 @@ import Mathlib.Algebra.Order.Module.Basic
 namespace ArchimedeanClass
 
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
-variable (K : Type*) [Ring K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
+variable {K : Type*} [Ring K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable [Module K M] [PosSMulMono K M]
 
-variable {K} in
+@[simp]
 theorem mk_smul (a : M) {k : K} (h : k ≠ 0) : mk (k • a) = mk a := by
   have : Nontrivial K := nontrivial_iff.mpr ⟨k, 0, h⟩
   obtain ⟨m, hm⟩ := Archimedean.arch 1 (show 0 < |k| by simpa using h)
@@ -36,15 +36,16 @@ theorem mk_smul (a : M) {k : K} (h : k ≠ 0) : mk (k • a) = mk a := by
     rw [this]
     exact smul_le_smul_of_nonneg_right hn (by simp)
 
-variable {K} in
 theorem mk_le_mk_smul (a : M) (k : K) : mk a ≤ mk (k • a) := by
   obtain rfl | h := eq_or_ne k 0
   · simp
   · rw [mk_smul a h]
 
-/-- Given a `s : UpperSet` of `ArchimedeanClass M` for a linearly ordered module `M` with
-Archimedean scaler, all elements belong to these classes form a submodule, with the exception for
-`s = ⊤` where the set would be empty. For `s = ⊤`, we assign the junk value `⊥`.
+variable (K)
+
+/-- Given an upper set `s` of archimedean classes in a linearly ordered module `M` with Archimedean
+scalars, all elements belonging to these classes form a submodule, except when `s = ⊤` for which the
+set would be empty. For `s = ⊤`, we assign the junk value `⊥`.
 
 This has the same carrier as `ArchimedeanClass.addSubgroup`'s. -/
 noncomputable
@@ -71,9 +72,11 @@ This has the same carrier as `ArchimedeanClass.closedBallAddSubgroup`'s. -/
 noncomputable
 abbrev closedBall (c : ArchimedeanClass M) := submodule K (UpperSet.Ici c)
 
+@[simp]
 theorem toAddSubgroup_ball (c : ArchimedeanClass M) :
     (ball K c).toAddSubgroup = ballAddSubgroup c := rfl
 
+@[simp]
 theorem toAddSubgroup_closedBall (c : ArchimedeanClass M) :
     (closedBall K c).toAddSubgroup = closedBallAddSubgroup c := rfl
 
