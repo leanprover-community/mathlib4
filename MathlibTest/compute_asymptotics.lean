@@ -449,12 +449,12 @@ example :
     Tendsto f (𝓝[>] 0) (𝓝 0) := by
   compute_asymptotics
 
-lemma lol :
+lemma lel :
     let f := fun (y : ℝ) ↦ (Real.log (1 + y) - y) / (y^2);
     Tendsto f (𝓝[>] 0) (𝓝 (-1/2)) := by
   compute_asymptotics
 
-#print axioms lol
+#print axioms lel
 
 example :
     let f := fun (y : ℝ) ↦ (y * Real.log y) / y;
