@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Range
 import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Equivalence of value group definitions
