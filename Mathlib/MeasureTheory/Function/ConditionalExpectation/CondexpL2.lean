@@ -369,7 +369,7 @@ theorem condExpIndSMul_smul [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs :
   rw [condExpIndSMul, condExpIndSMul, toSpanSingleton_smul,
     (toSpanSingleton ℝ x).smul_compLpL c, smul_apply]
 
-@[deprecated (since := 28-08-2025)] alias condExpIndSMul_smul' := condExpIndSMul_smul
+@[deprecated (since := "28-08-2025")] alias condExpIndSMul_smul' := condExpIndSMul_smul
 
 theorem condExpIndSMul_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condExpIndSMul hm hs hμs x =ᵐ[μ] fun a =>
