@@ -1,6 +1,5 @@
 /-
-Copyright (c) 2022 Johan Commelin. All rights reserved.
-Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
+Copyright (c) 2022 Johan Commelin (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yury Kudryashov, Alex Best
 -/
@@ -400,14 +399,6 @@ lemma eq_or_eq_neg_and_even_of_pow_eq_pow {R : Type*} [Ring R] [LinearOrder R]
 lemma ZMod.ofNat_eq_zero_iff {m n : ℕ} [m.AtLeastTwo] :
     (no_index(OfNat.ofNat m) : ZMod n) = 0 ↔ n ∣ OfNat.ofNat m := by
   rw [← Nat.cast_ofNat, ZMod.natCast_eq_zero_iff]
-
-lemma Odd.intCast_zmod_two {n : ℤ} (hn : Odd n) : (n : ZMod 2) = 1 := by
-  rcases hn with ⟨m, rfl⟩
-  simp [ZMod.ofNat_eq_zero_iff]
-
-lemma Odd.natCast_zmod_two {n : ℕ} (hn : Odd n) : (n : ZMod 2) = 1 := by
-  rcases hn with ⟨m, rfl⟩
-  simp [ZMod.ofNat_eq_zero_iff]
 
 lemma Odd.multiplicity_two_eq_zero_nat {n : ℕ} (hn : Odd n) : multiplicity 2 n = 0 := by
   rwa [multiplicity_eq_zero, ← even_iff_two_dvd, Nat.not_even_iff_odd]
