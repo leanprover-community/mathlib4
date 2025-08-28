@@ -154,7 +154,7 @@ theorem regOfFamily_eq_det' (u : Fin (rank K) → (𝓞 K)ˣ) :
   by_cases hu : IsMaxRank u
   · rw [regOfFamily_of_isMaxRank hu, ZLattice.covolume_eq_det _
       (((basisOfIsMaxRank hu).restrictScalars ℤ).reindex (equivFinRank K)), Basis.coe_reindex]
-    congr with i
+    congr 3 with i
     simp [basisOfIsMaxRank_apply hu]
   · rw [regOfFamily_eq_zero hu, det_eq_zero_of_not_linearIndependent_rows, abs_zero]
     rwa [IsMaxRank, ← linearIndependent_equiv (equivFinRank K).symm] at hu

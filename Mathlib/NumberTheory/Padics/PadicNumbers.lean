@@ -58,6 +58,89 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
 
+open WithZero
+
+/-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
+def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
+  toFun x := if x = 0 then 0 else exp (-padicValRat p x)
+  map_zero' := by simp
+  map_one' := by simp
+  map_mul' := by
+    intros
+    split_ifs <;>
+    simp_all [padicValRat.mul, exp_add, mul_comm]
+  map_add_le_max' := by
+    intros
+    split_ifs
+    any_goals simp_all [- exp_neg]
+    rw [← min_le_iff]
+    exact padicValRat.min_le_padicValRat_add ‹_›
+
+/-- The p-adic valuation on integers, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
+def Int.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℤ ℤᵐ⁰ :=
+  (Rat.padicValuation p).comap (Int.castRingHom ℚ)
+
+lemma Rat.padicValuation_cast (p : ℕ) [Fact p.Prime] (x : ℤ) :
+    Rat.padicValuation p (Int.cast x) = Int.padicValuation p x :=
+  rfl
+
+lemma Rat.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
+    Rat.padicValuation p x = 0 ↔ x = 0 := by
+  simp
+
+@[simp]
+lemma Int.padicValuation_eq_zero_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
+    Int.padicValuation p x = 0 ↔ x = 0 := by
+  simp [← Rat.padicValuation_cast]
+
+@[simp]
+lemma Rat.padicValuation_self (p : ℕ) [Fact p.Prime] :
+    Rat.padicValuation p p = exp (-1) := by
+  simp [Rat.padicValuation, Nat.Prime.ne_zero Fact.out]
+
+@[simp]
+lemma Int.padicValuation_self (p : ℕ) [Fact p.Prime] :
+    Int.padicValuation p p = exp (-1) := by
+  simp [← Rat.padicValuation_cast]
+
+lemma Int.padicValuation_le_one (p : ℕ) [Fact p.Prime] (x : ℤ) :
+    Int.padicValuation p x ≤ 1 := by
+  simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+  split_ifs
+  · simp
+  · rw [← le_log_iff_exp_le] <;>
+    simp_all
+
+lemma Int.padicValuation_eq_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
+    Int.padicValuation p x = 1 ↔ ¬ (p : ℤ) ∣ x := by
+  simp only [← Rat.padicValuation_cast, Rat.padicValuation, Valuation.coe_mk,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Rat.intCast_eq_zero, padicValRat.of_int]
+  split_ifs
+  · simp_all
+  · rw [← exp_zero, exp_injective.eq_iff]
+    simp_all [Nat.Prime.ne_one Fact.out]
+
+lemma Int.padicValuation_lt_one_iff {p : ℕ} [Fact p.Prime] {x : ℤ} :
+    Int.padicValuation p x < 1 ↔ (p : ℤ) ∣ x := by
+  simp [lt_iff_le_and_ne, padicValuation_eq_one_iff, Int.padicValuation_le_one]
+
+lemma Rat.padicValuation_le_one_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
+    Rat.padicValuation p x ≤ 1 ↔ ¬ p ∣ x.den := by
+  nth_rw 1 [← x.num_div_den, map_div₀, ← Int.natCast_dvd_natCast, ← Int.padicValuation_eq_one_iff,
+    Rat.padicValuation_cast, ← Int.cast_natCast, Rat.padicValuation_cast, div_le_one₀]
+  · rcases (Int.padicValuation_le_one p x.den).eq_or_lt with h | h
+    · simp [h, Int.padicValuation_le_one]
+    · simp only [h.ne, iff_false, not_le]
+      rcases (Int.padicValuation_le_one p x.num).eq_or_lt with h' | h'
+      · simp [h, h']
+      · rw [Int.padicValuation_lt_one_iff] at h h'
+        exfalso
+        rw [Int.natCast_dvd_natCast] at h
+        rw [Int.natCast_dvd] at h'
+        exact Nat.not_coprime_of_dvd_of_dvd (Nat.Prime.one_lt Fact.out) h h' x.reduced.symm
+  · simp [zero_lt_iff]
+
 noncomputable section
 
 open Nat padicNorm CauSeq CauSeq.Completion Metric
@@ -606,8 +689,7 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     ⟨q' N, by
       classical
       dsimp [padicNormE]
-      -- Porting note: this used to be `change`, but that times out.
-      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε
+      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
@@ -1071,11 +1153,25 @@ noncomputable def mulValuation : Valuation ℚ_[p] ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-x.valuation)
   map_zero' := by simp
   map_one' := by simp
-  map_mul' _ := by split_ifs <;> simp_all [exp_add, exp_neg, mul_comm]
+  map_mul' _ _ := by split_ifs <;> simp_all [add_comm]
   map_add_le_max' _ _ := by
     split_ifs
-    any_goals simp_all
+    any_goals simp_all [inv_le_inv₀]
     simpa using le_valuation_add ‹_›
+
+lemma comap_mulValuation_eq_padicValuation :
+    (mulValuation (p := p)).comap (Rat.castHom _) = Rat.padicValuation p := by
+  ext
+  simp [Rat.padicValuation]
+
+lemma comap_mulValuation_eq_int_padicValuation :
+    (mulValuation (p := p)).comap (Int.castRingHom _) = Int.padicValuation p := by
+  ext
+  simp [← Rat.padicValuation_cast, ← comap_mulValuation_eq_padicValuation]
+
+lemma norm_eq_zpow_log_mulValuation {x : ℚ_[p]} (hx : x ≠ 0) :
+    ‖x‖ = (p : ℝ) ^ (log (mulValuation x)) := by
+  simp [norm_eq_zpow_neg_valuation, hx]
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=

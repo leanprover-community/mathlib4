@@ -33,14 +33,7 @@ variable (T)
 squares in `T`. -/
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
--- The `Category` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Category (Arrow T) := commaCategory
-
--- Satisfying the inhabited linter
-instance Arrow.inhabited [Inhabited T] : Inhabited (Arrow T) where
-  default := show Comma (𝟭 T) (𝟭 T) from default
+deriving Category, [Inhabited T] → Inhabited _
 
 end
 
