@@ -53,7 +53,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
     rw [Valuation.map_sub_swap, Units.val_mk0] at h
-    change Rat.padicValuation p (x' - y') < exp _ at h
+    change Rat.padicValuation p (x' - y') < exp _ at h -- TODO add lemma
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
     · rw [map_sub, ← hx, ← hy]
       simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
@@ -70,7 +70,7 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
     rw [Valuation.map_sub_swap]
-    change Rat.padicValuation p (x' - y') < γ
+    change Rat.padicValuation p (x' - y') < γ -- TODO add lemma
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le] at h
     · change padicNorm p (x' - y') ≤ _ at h
       simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
