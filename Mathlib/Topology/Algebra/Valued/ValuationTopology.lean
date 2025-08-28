@@ -149,7 +149,7 @@ instance (priority := 100) : IsTopologicalRing R :=
 
 section Discrete
 
-lemma discreteTopology_of_ne_zero_imp_v_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
+lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1) :
     DiscreteTopology R := by
   simp only [discreteTopology_iff_isOpen_singleton_zero, isOpen_iff_mem_nhds, mem_singleton_iff,
     forall_eq, mem_nhds_zero, subset_singleton_iff, mem_setOf_eq]
@@ -176,7 +176,7 @@ lemma val_discrete_of_forall_lt {r : Γ₀} (hr : r ≠ 0) (h : ∀ x : K, v x �
 
 lemma discreteTopology_of_forall_lt {r : Γ₀} (hr : r ≠ 0) (h : ∀ x : K, v x ≠ 0 → r < v x) :
     DiscreteTopology K :=
-  discreteTopology_of_ne_zero_imp_v_eq_one (by simpa using val_discrete_of_forall_lt hr h)
+  discreteTopology_of_forall_map_eq_one (by simpa using val_discrete_of_forall_lt hr h)
 
 end Discrete
 
