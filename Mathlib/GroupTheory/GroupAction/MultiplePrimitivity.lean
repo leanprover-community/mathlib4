@@ -165,6 +165,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     [IsPretransitive M α] {n : ℕ} (hn : 1 ≤ n) {a : α} :
     IsMultiplyPreprimitive M α n.succ ↔
       IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
+  simp only [Nat.succ_eq_add_one]
   constructor
   · apply isMultiplyPreprimitive_ofStabilizer
   · intro H
@@ -172,12 +173,11 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     constructor
     · exact ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
     · intro s hs
+      replace hs : s.encard = n := ENat.add_left_injective_of_ne_top ENat.one_ne_top (by simpa)
       have : ∃ b : α, b ∈ s := by
-        rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]
-        intro h
-        apply not_lt.mpr hn
-        rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj] at hs
-        simp only [← hs, zero_lt_one]
+        rw [← Nat.cast_le (α := ℕ∞), ← hs, Nat.cast_one, ENat.one_le_iff_ne_zero] at hn
+        rw [← Set.nonempty_def]
+        exact Set.nonempty_of_encard_ne_zero hn
       obtain ⟨b, hb⟩ := this
       obtain ⟨g, hg : g • b = a⟩ := exists_smul_eq M b a
       rw [isPreprimitive_ofFixingSubgroup_conj_iff (g := g)]
@@ -197,14 +197,9 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
           · simpa only using hy
       rw [hst, isPreprimitive_fixingSubgroup_insert_iff]
       apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
-      apply ENat.add_left_injective_of_ne_top ENat.one_ne_top
-      simp only
-      rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
-      apply congr_arg₂ _ _ rfl
-      rw [show s = g⁻¹ • s' from by simp [hs'],
-        ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
-      rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
-      exact notMem_val_image M t
+      rw [← hs, show s = g⁻¹ • s' by simp [hs'], ← Set.image_smul,
+        (MulAction.injective g⁻¹).encard_image, hst,
+        Set.encard_insert_of_notMem (notMem_val_image M t), Subtype.coe_injective.encard_image]
 
 /-- The fixator of a subset of cardinal `d` in an `n`-primitive action
 acts `n-d`-primitively on the remaining (`d ≤ n`) -/
