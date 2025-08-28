@@ -16,7 +16,7 @@ individual functions.
 
 -/
 
-open  TopologicalSpace Filter  Complex Set Function
+open TopologicalSpace Filter Complex Set Function
 
 theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s} {f : ι → ℂ → ℂ}
     (hf : ∀ i, f i x ≠ 0) (hd : ∀ i : ι, DifferentiableOn ℂ (f i) s)
@@ -24,8 +24,8 @@ theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s
     (hnez : ∏' (i : ι), f i x ≠ 0) : logDeriv (∏' i : ι, f i ·) x = ∑' i : ι, logDeriv (f i) x := by
   apply symm
   rw [← Summable.hasSum_iff hm, HasSum]
-  have := logDeriv_tendsto (f := fun (n : Finset ι) ↦ ∏ i ∈ n, (f i))
-    (g := (∏' i : ι, f i ·)) (s := s) hs (p := atTop)
+  have := logDeriv_tendsto (f := fun (n : Finset ι) ↦ ∏ i ∈ n, f i)
+    (g := (∏' i : ι, f i ·)) hs (p := atTop)
   simp only [eventually_atTop, ge_iff_le, ne_eq, forall_exists_index, Subtype.forall] at this
   conv =>
     enter [1]
@@ -38,7 +38,7 @@ theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s
     aesop
   · convert hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp
       htend.hasProdLocallyUniformlyOn
-    simp
+    rw [Finset.prod_apply]
   · exact fun b hb z hz => DifferentiableAt.differentiableWithinAt
       (DifferentiableAt.finset_prod fun i hi ↦ DifferentiableWithinAt.differentiableAt (hd i z hz)
       (hs.mem_nhds hz))

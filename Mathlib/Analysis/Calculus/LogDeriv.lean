@@ -134,7 +134,7 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
           (hf.mul (DifferentiableOn.inv hg hgn)) ?_ hy ht
         · simp only [Pi.mul_apply, Pi.inv_apply] at H3
           rw [← H3]
-          field_simp [hgn y hy]
+          field_simp [← H3, hgn y hy]
         · have he : s.EqOn (deriv f * g⁻¹ - f * deriv g / g ^ 2) 0 := by
             intro z hz
             field_simp [hgn z hz]
@@ -150,6 +150,6 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
       obtain ⟨z, hz0, hz⟩ := h
       intro x hx
       simp [logDeriv_apply, deriv_eqOn_congr hz hs2 hx, hz hx, deriv_const_smul _
-        (hg.differentiableAt (hs2.mem_nhds  hx)), mul_div_mul_left (deriv g x) (g x) hz0]
+        (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
   · simp only [not_nonempty_iff_eq_empty.mp hs, eqOn_empty, ne_eq, and_true, true_iff]
     exact ⟨1, one_ne_zero⟩
