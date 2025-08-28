@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Norm.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.Data.Nat.Factorization.PrimePow
 
 /-!
 # Primitive roots in cyclotomic fields

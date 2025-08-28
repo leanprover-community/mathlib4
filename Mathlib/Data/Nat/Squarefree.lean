@@ -5,8 +5,9 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+import Mathlib.NumberTheory.Divisors
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Lemmas about squarefreeness of natural numbers
