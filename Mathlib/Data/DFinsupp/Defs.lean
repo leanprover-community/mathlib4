@@ -472,9 +472,6 @@ theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
 theorem single_eq_of_ne {i i' b} (h : i' ≠ i) : (single i b : Π₀ i, β i) i' = 0 := by
   simp only [single_apply, @eq_comm _ i i', dif_neg h]
 
-theorem single_eq_of_ne' {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i' = 0 := by
-  simp only [single_apply, dif_neg h]
-
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
   Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
 
@@ -1189,7 +1186,7 @@ theorem extendWith_some [∀ i, Zero (α i)] (f : Π₀ i, α (some i)) (a : α 
 theorem extendWith_single_zero [DecidableEq ι] [∀ i, Zero (α i)] (i : ι) (x : α (some i)) :
     (single i x).extendWith 0 = single (some i) x := by
   ext (_ | j)
-  · rw [extendWith_none, single_eq_of_ne' (Option.some_ne_none _)]
+  · rw [extendWith_none, single_eq_of_ne (Option.some_ne_none _).symm]
   · rw [extendWith_some]
     obtain rfl | hij := Decidable.eq_or_ne j i
     · rw [single_eq_same, single_eq_same]
