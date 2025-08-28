@@ -131,22 +131,23 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
         · simp only [Pi.mul_apply, Pi.inv_apply] at H3
           simp only [← H3, Pi.smul_apply, smul_eq_mul]
           field_simp [← H3, hgn y hy]
-        · have he : s.EqOn (deriv f * g⁻¹ - f * deriv g / g ^ 2) 0 := by
-            intro z hz
-            simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
-              Pi.zero_apply]
+        · suffices he : s.EqOn (deriv f * g⁻¹ - f * deriv g / g ^ 2) 0 by
+            intro v hv
+            have ha := he hv ▸ (hderiv hv)
+            simpa [fderivWithin_of_isOpen hs2 hv] using (ContinuousLinearMap.ext_ring ha)
+          intro z hz
+          simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
+            Pi.zero_apply]
+          suffices deriv f z * g z - f z * deriv g z = 0 by
             field_simp [hgn z hz]
-            have H := h hz
-            simp_rw [Pi.div_apply, div_eq_div_iff (hfn z hz) (hgn z hz), mul_comm] at H
-            simp only [← H, mul_zero]
-            ring
-          intro v hv
-          have ha := he hv ▸ (hderiv hv)
-          simpa [fderivWithin_of_isOpen hs2 hv] using (ContinuousLinearMap.ext_ring ha)
+            simp [this]
+          have H := h hz
+          simp_rw [Pi.div_apply, div_eq_div_iff (hfn z hz) (hgn z hz), mul_comm] at H
+          simp [← H, mul_comm]
     · intro h
       obtain ⟨z, hz0, hz⟩ := h
       intro x hx
-      simp [logDeriv_apply, deriv_eqOn_congr hz hs2 hx, hz hx, deriv_const_smul _
+      simp [logDeriv_apply, EqOn.deriv hz hs2 hx, hz hx, deriv_const_smul _
         (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
   · simp only [not_nonempty_iff_eq_empty.mp hs, eqOn_empty, ne_eq, and_true, true_iff]
     exact ⟨1, one_ne_zero⟩

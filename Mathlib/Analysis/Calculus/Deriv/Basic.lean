@@ -593,7 +593,7 @@ theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
   unfold derivWithin
   rw [fderivWithin_congr hs hx]
 
-lemma deriv_eqOn_congr {𝕜'} [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 𝕜'] {f g : 𝕜 → 𝕜'}
+lemma EqOn.deriv {f g : 𝕜 → F}
     {s : Set 𝕜} (hfg : s.EqOn f g) (hs : IsOpen s) : s.EqOn (deriv f) ( deriv g) := by
   intro x hx
   rw [← derivWithin_of_isOpen hs hx, ← derivWithin_of_isOpen hs hx]
