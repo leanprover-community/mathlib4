@@ -414,8 +414,8 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
         field_simp
-        rw [div_le_one_iff]; left; refine ⟨B, ?_⟩
-        nlinarith only [hx, D_lt_one]
+        rw [div_le_one_iff]
+        exact Or.inl ⟨B, by nlinarith only [hx, D_lt_one]⟩
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos
     exact div_pos (mul_pos Dpos (by linarith only [hx])) B
