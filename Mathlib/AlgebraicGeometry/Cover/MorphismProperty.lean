@@ -37,33 +37,28 @@ namespace Scheme
 
 variable (K : Coverage Scheme.{u})
 
+/-- A coverage `K` on `Scheme` is called jointly surjective if every covering family in `K`
+is jointly surjective. -/
 class JointlySurjective (K : Coverage Scheme.{u}) : Prop where
   exists_eq {X : Scheme.{u}} (S : Presieve X) (hS : S ∈ K X) (x : X) :
     ∃ (Y : Scheme.{u}) (g : Y ⟶ X) (y : Y), S g ∧ g.base y = x
 
--- TODO: provide API to and from a presieve.
-/-- A cover of `X` consists of jointly surjective indexed family of scheme morphisms
-with target `X` all satisfying `P`.
-
-This is merely a coverage in the pretopology defined by `P`, and it would be optimal
-if we could reuse the existing API about pretopologies, However, the definitions of sieves and
-Grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
-obtain. Also, since such a coverage in the pretopology usually contains a proper class of
-immersions, it is quite hard to glue them, reason about finite covers, etc.
-
-Note: The `map_prop` field is equipped with a default argument `by infer_instance`. In general
-this causes worse error messages, but in practice `P` is mostly defined via `class`.
--/
+/-- A cover of `X` in the coverage `K` is a `0`-hypercover for `K`. -/
 abbrev Cover (K : Coverage Scheme.{u}) := Coverage.ZeroHypercover.{v} K
-
 
 variable {K}
 
 variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover K) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
+/-- The indexing type of a cover. This will be deprecated in the future in favour of `Cover.I₀`. -/
 abbrev Cover.J (𝒰 : X.Cover K) := 𝒰.I₀
+
+/-- The component maps of a cover. This will be deprecated in the future in favour of `Cover.f`. -/
 abbrev Cover.map (𝒰 : X.Cover K) := 𝒰.f
+
+/-- The covering components of a cover. This will be deprecated in the future in favour of
+`Cover.X`. -/
 abbrev Cover.obj (𝒰 : X.Cover K) := 𝒰.X
 
 lemma Cover.exists_eq [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
@@ -71,6 +66,7 @@ lemma Cover.exists_eq [JointlySurjective K] (𝒰 : X.Cover K) (x : X) :
   obtain ⟨Y, g, y, ⟨i⟩, hy⟩ := JointlySurjective.exists_eq 𝒰.presieve₀ 𝒰.mem₀ x
   use i, y
 
+/-- A choice of an index `i` such that `x` is in the range of `𝒰.f i`. -/
 def Cover.idx [JointlySurjective K] (𝒰 : X.Cover K) (x : X) : 𝒰.I₀ :=
   (𝒰.exists_eq x).choose
 
@@ -96,7 +92,6 @@ variable {P Q : MorphismProperty Scheme.{u}}
   [P.IsStableUnderBaseChange] [P.HasPullbacks] [IsJointlySurjectivePreserving P]
   [Q.IsStableUnderBaseChange] [Q.HasPullbacks] [IsJointlySurjectivePreserving Q]
 
-@[simp]
 lemma presieve₀_mem_coverage_iff (E : PreZeroHypercover X) :
     E.presieve₀ ∈ coverage P X ↔ (∀ x, ∃ i, x ∈ Set.range (E.f i).base) ∧ ∀ i, P (E.f i) := by
   simp
@@ -217,7 +212,7 @@ abbrev Cover.pullbackCover' {X W : Scheme.{u}} (𝒰 : X.Cover (coverage P)) (f 
   𝒰.pullback₂ f
 
 /-- Given covers `{ Uᵢ }` and `{ Uⱼ }`, we may form the cover `{ Uᵢ ×[X] Uⱼ }`. -/
-@[simps!]
+@[simps! I₀ X f]
 def Cover.inter [P.IsStableUnderComposition] {X : Scheme.{u}} (𝒰₁ : Scheme.Cover (coverage P) X)
     (𝒰₂ : Scheme.Cover (coverage P) X)
     [∀ (i : 𝒰₁.I₀) (j : 𝒰₂.I₀), HasPullback (𝒰₁.f i) (𝒰₂.f j)] :
