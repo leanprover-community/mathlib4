@@ -565,17 +565,15 @@ vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 lemma congr_of_forall_product [FiniteDimensional ℝ E]
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
   by_cases hE : Subsingleton E
-  · sorry
+  · ext x
+    have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+    apply Subsingleton.allEq _
   ext x
   letI b := Basis.ofVectorSpace ℝ E
   letI t := trivializationAt E (TangentSpace I : M → Type _) x
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    by_contra!
-    have : IsEmpty ↑(Basis.ofVectorSpaceIndex ℝ E) := not_nonempty_iff.mp this
-    have : Subsingleton E := by
-      sorry
-    apply hE this
+  have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
   have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
     choose r wo using exists_wellOrder _
     exact r
@@ -592,10 +590,6 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   have h₂ : ⟪X', real i⟫ x = (hframe.repr i) X' x := by
     rw [hframe.repr_eq_inner' _ hx]
     simp [real, real_inner_comm]
-  -- this would work, except that h is unapplied, but my results are applied...
-  --simp_rw [hframe'.repr_eq_inner' _ hx]
-  --specialize h (real i)
-  --simp [real_inner_comm]
   rw [← h₁, ← h₂, h (real i)]
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
