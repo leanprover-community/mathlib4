@@ -142,59 +142,44 @@ def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
 section ElabHead
 open Elab Term
 
-/-- Remove any `fun x ↦` or `fun x =>` from the start of the syntax. -/
-partial def lambdaSyntaxBody : Syntax → Syntax
-  | `(fun $_ => $stx) => lambdaSyntaxBody stx
-  | stx => stx
+/-- Return `true` if `stx` is an underscore, i.e. `_` or `fun $_ => _`/`fun $_ ↦ _`. -/
+partial def isUnderscore : Term → Bool
+  | `(_) | `(fun $_ => _) => true
+  | _ => false
 
-/--
-This is a copy of `elabCDotFunctionAlias?` in core lean.
-It has been modified so that it can also support `∃ _, ·`, `∑ _, ·`, etc.
--/
-def elabCDotFunctionAlias? (stx : Term) : TermElabM (Option Expr) := do
-  let some stx ← liftMacroM <| expandCDotArg? stx | pure none
-  let stx ← liftMacroM <| expandMacros stx
-  match stx with
-  | `(fun $binders* => $f $args*) =>
-    -- we use `lambdaSyntaxBody` to get rid of extra lambdas in cases like `∃ _, ·`
-    if binders.raw.toList.isPerm (args.raw.toList.map lambdaSyntaxBody) then
-      try Term.resolveId? f catch _ => return none
+/-- `resolvePushId?` is a version of `resolveId?` that also supports notations like `_ ∈ _`,
+`∃ x, _` and `∑ x, _`. -/
+def resolvePushId? (stx : Term) : TermElabM (Option Expr) := do
+  match ← liftMacroM <| expandMacros stx with
+  | `($f $args*) =>
+    -- Note: we would like to insist that all arguments in the notation are given as underscores,
+    -- but for example `∑ x, _` expands to `Finset.sum Finset.univ fun _ ↦ _`,
+    -- in which `Finset.univ` is not an underscore. So instead
+    -- we only insist that the last argument is an underscore.
+    if isUnderscore args.back! then
+      try resolveId? f catch _ => return none
     else
       return none
-  | `(fun $binders* => binop% $f $a $b)
-  | `(fun $binders* => binop_lazy% $f $a $b)
-  | `(fun $binders* => leftact% $f $a $b)
-  | `(fun $binders* => rightact% $f $a $b)
-  | `(fun $binders* => binrel% $f $a $b)
-  | `(fun $binders* => binrel_no_prop% $f $a $b) =>
-    if binders == #[a, b] || binders == #[b, a] then
-      try Term.resolveId? f catch _ => return none
-    else
-      return none
-  | `(fun $binders* => unop% $f $a) =>
-    if binders == #[a] then
-      try Term.resolveId? f catch _ => return none
-    else
-      return none
-  | _ => return none
-where
-  /-- Auxiliary function for `elabCDotFunctionAlias?` -/
-  expandCDotArg? (stx : Term) : MacroM (Option Term) :=
-    match stx with
-    | `(($h:hygieneInfo $e)) => Term.expandCDot? e h.getHygieneInfo
-    | _ => Term.expandCDot? stx none
+  | `(binop% $f _ _)
+  | `(binop_lazy% $f _ _)
+  | `(leftact% $f _ _)
+  | `(rightact% $f _ _)
+  | `(binrel% $f _ _)
+  | `(binrel_no_prop% $f _ _)
+  | `(unop% $f _) => try resolveId? f catch _ => return none
+  | stx => try resolveId? stx catch _ => return none
 
 /-- Elaborator for the argument passed to `push`. It accepts a constant, or a function -/
-def elabHead (term : Term) : TermElabM Head := withRef term do
-  match term with
-  | `(fun $_ => ·) => return .lambda
-  | `(∀ $_, ·) => return .forall
+def elabHead (stx : Term) : TermElabM Head := withRef stx do
+  match stx with
+  | `(fun $_ => _) => return .lambda
+  | `(∀ $_, _) => return .forall
   | _ =>
-    match ← resolveId? term (withInfo := true) <|> elabCDotFunctionAlias? term with
-    | some (.const name _) => return .name name
-    | _ => throwError "Could not resolve `push` argument {term}. \
-      Expected either a constant as in `push Not`, \
-      or a function with `·` notation as in `push ¬ .`"
+    match ← resolvePushId? stx with
+    | some f@(.const name _) => addTermInfo' stx f; return .name name
+    | _ => throwError "Could not resolve `push` argument {stx}. \
+      Expected either a constant, e.g. `push Not`, \
+      or notation with underscores, e.g. `push ¬ _`"
 
 end ElabHead
 
@@ -204,14 +189,14 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
 
 /--
 `push` pushes the given constant away from the root of the expression. For example
-- `push · ∈ ·` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
+- `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 - `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
-- `push ¬ ·` is the same as `push_neg` or `push Not`, and it rewrites
+- `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
   `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
 
 In addition to constants, `push` can be used to push `fun` and `∀` binders:
-- `push fun _ ↦ ·` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
-- `push ∀ _, ·` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
+- `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
+- `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
 
 The `push` tactic can be extended using the `@[push]` attribute.
 
@@ -254,7 +239,7 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 /--
 `pull` is the inverse tactic to `push`.
 It pulls the given constant towards the root of the expression. For example
-- `pull · ∈ ·` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
+- `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 - `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
 
 A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
@@ -270,8 +255,11 @@ elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
 
-/-- A simproc variant of `push fun _ ↦ ·` that should be used as `simp [↓pushFun]`. -/
+/-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda
+
+/-- A simproc variant of `pull fun _ ↦ _`, to be used as `simp [pullFun]`. -/
+simproc_decl _root_.pullFun (_) := pullStep .lambda
 
 section Conv
 
