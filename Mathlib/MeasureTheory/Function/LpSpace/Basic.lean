@@ -923,16 +923,10 @@ lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ
     (f : α →ₘ[μ] R).coeFn_star
 
 noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
-  star_involutive f := by
-    ext
-    filter_upwards
-    exact congrFun (congrArg AEEqFun.cast <| star_involutive f.1)
+  star_involutive _ := Subtype.ext <| star_involutive _ 
 
 noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
-  star_trivial f := by
-    ext
-    filter_upwards
-    exact congrFun (congrArg AEEqFun.cast <| star_trivial f.1)
+  star_trivial _ := Subtype.ext <| star_trivial _
 
 end Star
 
