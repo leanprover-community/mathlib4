@@ -131,7 +131,7 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     · exfalso; exact (ne_of_gt (Nat.lt_succ_iff.mpr hk)) h
     · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add, pow_one, neg_div, mul_neg,
         mul_neg, mul_neg, neg_neg, neg_mul, neg_mul, neg_mul, div_neg]
-      field_simp [Int.cast_ne_zero.mpr hn, I_ne_zero]
+      field_simp
 
 end BernoulliFourierCoeffs
 

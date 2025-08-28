@@ -372,7 +372,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
   convert hf using 1
   · ext; simp only [comp_apply]; congr 1; field_simp
-  · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
+  · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp
 
 -- Note that `h'` is **not** implied by `h` if `c` is negative.
 -- TODO: generalise this lemma to enorms!

@@ -39,8 +39,7 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     simp [field, mul_comm (i : ℂ), mul_comm (n : ℂ)]
   · simp only [forall_exists_index]
     rintro l k hk
-    have hz : π ≠ 0 := pi_pos.ne'
-    field_simp [hz, I_ne_zero] at hk
+    field_simp at hk
     norm_cast at hk
     have : n ∣ l * i := by rw [← Int.natCast_dvd_natCast, hk]; apply dvd_mul_right
     exact hi.symm.dvd_of_dvd_mul_right this
