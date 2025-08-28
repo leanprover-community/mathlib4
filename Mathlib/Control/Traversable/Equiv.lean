@@ -56,6 +56,9 @@ protected theorem comp_map {α β γ : Type u} (g : α → β) (h : β → γ) (
   simp [Equiv.map, Function.comp_def]
 
 protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
+  -- Add the instance to the local context (since `Equiv.functor` is not an instance).
+  -- Although it can be found by unification, Lean prefers to synthesize instances and
+  -- then check that they are defeq to the instance found by unification.
   let _inst := Equiv.functor eqv
   { map_const := fun {_ _} => rfl
     id_map := Equiv.id_map eqv
