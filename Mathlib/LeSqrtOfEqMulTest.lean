@@ -5,5 +5,5 @@ lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a
     Or.inl hle
   else
     Or.inr (Nat.le_of_lt_succ (Nat.lt_of_mul_lt_mul_left (lt_mul_of_lt_mul_right
-      (lt_of_eq_of_lt h.symm (Nat.lt_succ_sqrt a)) (Nat.gt_of_not_le hle))))
+      (h ▸ Nat.lt_succ_sqrt a) (Nat.gt_of_not_le hle))))
     -- or : `by right; nlinarith [Nat.lt_succ_sqrt' a]`
