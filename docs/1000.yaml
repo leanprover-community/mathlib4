@@ -676,8 +676,18 @@ Q657903:
 
 Q660799:
   title: Darboux's theorem (analysis)
-  # "all derivatives have the intermediate value property"
-  # TODO should exist in mathlib, add decl!
+  decls:
+    - exists_hasDerivWithinAt_eq_of_gt_of_lt
+    - exists_hasDerivWithinAt_eq_of_lt_of_gt
+    - Set.OrdConnected.image_hasDerivWithinAt
+    - Set.OrdConnected.image_derivWithin
+    - Set.OrdConnected.image_deriv
+    - Convex.image_hasDerivWithinAt
+    - Convex.image_derivWithin
+    - Convex.image_deriv
+    - exists_hasDerivWithinAt_eq_of_ge_of_le
+    - exists_hasDerivWithinAt_eq_of_le_of_ge
+  authors: Yury Kudryashov
 
 Q670235:
   title: Fundamental theorem of arithmetic
@@ -1452,7 +1462,7 @@ Q1227061:
 
 Q1227702:
   title: Dirichlet's unit theorem
-  decls: 
+  decls:
     - NumberField.Units.basisModTorsion
     - NumberField.Units.exist_unique_eq_mul_prod
   authors: Xavier Roblot
