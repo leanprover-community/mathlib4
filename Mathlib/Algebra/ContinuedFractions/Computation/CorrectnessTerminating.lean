@@ -166,7 +166,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have : compExactValue ppconts pconts ifp_n.fr =
           (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
         -- unfold compExactValue and the convergent computation once
-        simp [ifp_n_fract_ne_zero, compExactValue, nextConts, nextNum, nextDen, ppA, ppB]
+        simp only [compExactValue, ifp_n_fract_ne_zero, ↓reduceIte, nextConts, nextNum, one_mul,
+          nextDen, ppA, ppB]
         ac_rfl
       rw [this]
       -- two calculations needed to show the claim
@@ -179,9 +180,9 @@ theorem compExactValue_correctness_of_stream_eq_some :
       rw [inv_eq_one_div] at tmp_calc tmp_calc'
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
       dsimp only [conts, pconts, ppconts]
+      have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       simp [compExactValue, contsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
         nextConts, nextNum, nextDen]
-      have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       grind
 
 open GenContFract (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
