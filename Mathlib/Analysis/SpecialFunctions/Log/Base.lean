@@ -515,7 +515,7 @@ theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) 
   cases eq_or_ne (log b) 0 with
   | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
   | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
-                (by positivity)).congr fun x ↦ by field_simp [logb]; ring
+                (by positivity)).congr fun x ↦ by simp [field, div_pow, logb]
 
 theorem isLittleO_pow_logb_id_atTop {n : ℕ} : (fun x => logb b x ^ n) =o[atTop] id := by
   rw [Asymptotics.isLittleO_iff_tendsto']
