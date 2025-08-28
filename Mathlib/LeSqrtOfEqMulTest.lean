@@ -4,7 +4,8 @@ lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a
   by_cases hle : b ≤ a.sqrt
   · exact Or.inl hle
   · right
-    simp at hle
+    replace hle : a.sqrt < b := by
+      exact Nat.gt_of_not_le hle
     have := Nat.lt_succ_sqrt a
     have : b * c < a.sqrt.succ * a.sqrt.succ := by
       exact lt_of_eq_of_lt h.symm this
