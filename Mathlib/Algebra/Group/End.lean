@@ -32,7 +32,7 @@ end monoid, aut group
 
 assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
-variable {A M G α β : Type*}
+variable {A M G α β γ : Type*}
 
 /-! ### Type endomorphisms -/
 
@@ -292,12 +292,12 @@ extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`.
 @[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
 
 @[simp]
-theorem _root_.Equiv.permCongrHom_symm {α β : Type*} (e : α ≃ β) :
+theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
     e.permCongrHom.symm = e.symm.permCongrHom :=
   rfl
 
 @[simp]
-theorem _root_.Equiv.permCongrHom_trans {α β γ : Type*} (e : α ≃ β) (e' : β ≃ γ) :
+theorem _root_.Equiv.permCongrHom_trans (e : α ≃ β) (e' : β ≃ γ) :
     e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
   rfl
 
