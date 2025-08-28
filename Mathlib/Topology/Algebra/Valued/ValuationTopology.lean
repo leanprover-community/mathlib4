@@ -29,11 +29,25 @@ noncomputable section
 
 universe v u
 
-variable {R : Type u} [Ring R] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+variable {R K : Type u} [Ring R] [DivisionRing K] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
 
 namespace Valuation
 
 variable (v : Valuation R Γ₀)
+
+lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r : Γ₀} (hr : r ≠ 0)
+    (h : ∀ x : K, v x ≠ 0 → r < v x) (x : K) (hx : v x ≠ 0) : v x = 1 := by
+  lift r to Γ₀ˣ using IsUnit.mk0 _ hr
+  rcases lt_trichotomy (Units.mk0 _ hx) 1 with H | H | H
+  · obtain ⟨k, hk⟩ := exists_pow_lt H r
+    specialize h (x ^ k) (by simp [hx])
+    simp [← Units.val_lt_val, ← map_pow, h.not_gt] at hk
+  · simpa [Units.ext_iff] using H
+  · rw [← inv_lt_one'] at H
+    obtain ⟨k, hk⟩ := exists_pow_lt H r
+    specialize h (x ^ (-k : ℤ)) (by simp [hx])
+    simp only [zpow_neg, zpow_natCast, map_inv₀, map_pow] at h
+    simp [← Units.val_lt_val, h.not_gt, inv_pow] at hk
 
 /-- The basis of open subgroups for the topology on a ring determined by a valuation. -/
 theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgroup γ : AddSubgroup R) :=
@@ -158,25 +172,10 @@ lemma discreteTopology_of_forall_map_eq_one (h : ∀ x : R, x ≠ 0 → v x = 1)
   obtain ⟨x, hx, hx'⟩ := h
   exact ⟨x, hx', hx.ne⟩
 
-variable {K : Type*} [DivisionRing K] [Valued K Γ₀] [MulArchimedean Γ₀]
-
-lemma val_discrete_of_forall_lt {r : Γ₀} (hr : r ≠ 0) (h : ∀ x : K, v x ≠ 0 → r < v x)
-    (x : K) (hx : v x ≠ 0) : v x = 1 := by
-  lift r to Γ₀ˣ using IsUnit.mk0 _ hr
-  rcases lt_trichotomy (Units.mk0 _ hx) 1 with H | H | H
-  · obtain ⟨k, hk⟩ := exists_pow_lt H r
-    specialize h (x ^ k) (by simp [hx])
-    simp [← Units.val_lt_val, ← map_pow, h.not_gt] at hk
-  · simpa [Units.ext_iff] using H
-  · rw [← inv_lt_one'] at H
-    obtain ⟨k, hk⟩ := exists_pow_lt H r
-    specialize h (x ^ (-k : ℤ)) (by simp [hx])
-    simp only [zpow_neg, zpow_natCast, map_inv₀, map_pow] at h
-    simp [← Units.val_lt_val, h.not_gt, inv_pow] at hk
-
-lemma discreteTopology_of_forall_lt {r : Γ₀} (hr : r ≠ 0) (h : ∀ x : K, v x ≠ 0 → r < v x) :
+lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] [Valued K Γ₀] {r : Γ₀} (hr : r ≠ 0)
+    (h : ∀ x : K, v x ≠ 0 → r < v x) :
     DiscreteTopology K :=
-  discreteTopology_of_forall_map_eq_one (by simpa using val_discrete_of_forall_lt hr h)
+  discreteTopology_of_forall_map_eq_one (by simpa using Valued.v.map_eq_one_of_forall_lt hr h)
 
 end Discrete
 
