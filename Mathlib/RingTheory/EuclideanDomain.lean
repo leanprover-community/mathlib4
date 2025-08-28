@@ -53,7 +53,7 @@ theorem isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
 
 /-- This is a version of `isCoprime_div_gcd_div_gcd` which replaces the `q ≠ 0` assumption with
 `gcd p q ≠ 0`. -/
-theorem isCoprime_div_gcd_div_gcd' (hpq : GCDMonoid.gcd p q ≠ 0) :
+theorem isCoprime_div_gcd_div_gcd_of_gcd_ne_zero (hpq : GCDMonoid.gcd p q ≠ 0) :
     IsCoprime (p / GCDMonoid.gcd p q) (q / GCDMonoid.gcd p q) :=
   (gcd_isUnit_iff _ _).1 <|
     isUnit_gcd_of_eq_mul_gcd

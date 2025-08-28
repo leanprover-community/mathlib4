@@ -68,7 +68,7 @@ abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
 lemma finGcdMap_div {r : ℕ} [NeZero r] (v : Fin 2 → ℤ) (hv : finGcdMap v = r) :
     IsCoprime ((v / r) 0 ) ((v / r) 1) := by
   rw [← hv]
-  apply isCoprime_div_gcd_div_gcd'
+  apply isCoprime_div_gcd_div_gcd_of_gcd_ne_zero
   have := NeZero.ne r
   aesop
 
@@ -90,7 +90,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     Set.BijOn (divIntMap r) (gammaSet 1 r 0) (gammaSet 1 1 0) := by
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
-    simp only [divIntMap, Fin.isValue, gammaSet_top_mem] at *
+    simp only [divIntMap, Fin.isValue, mem_gammaSet_one] at *
     exact finGcdMap_div _ hx.2
   · intro x hx v hv hv2
     ext i
@@ -100,7 +100,7 @@ lemma gammaSet_div_gcd_to_gammaSet10_bijection (r : ℕ) [NeZero r] :
     use r • x
     simp only [nsmul_eq_mul, divIntMap, Int.cast_natCast]
     constructor
-    · rw [gammaSet_top_mem, Int.isCoprime_iff_gcd_eq_one] at hx
+    · rw [mem_gammaSet_one, Int.isCoprime_iff_gcd_eq_one] at hx
       exact ⟨Subsingleton.eq_zero _, by simp [Int.gcd_mul_left, hx]⟩
     · ext i
       simp_all [NeZero.ne r]
