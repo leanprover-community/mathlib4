@@ -54,9 +54,7 @@ theorem Gamma_integrand_isLittleO (s : ℝ) :
   have : (fun x : ℝ => exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
       (fun x : ℝ => exp (1 / 2 * x) / x ^ s)⁻¹ := by
     ext1 x
-    field_simp [exp_ne_zero, exp_neg, ← Real.exp_add]
-    left
-    ring
+    simp [field, ← exp_nsmul, exp_neg]
   rw [this]
   exact (tendsto_exp_mul_div_rpow_atTop s (1 / 2) one_half_pos).inv_tendsto_atTop
 

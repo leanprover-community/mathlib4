@@ -257,7 +257,8 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
     refine
       (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1)
         hg_dist hg_cau.tendsto_limUnder).trans_eq ?_
-    field_simp [show (3 - 2 : ℝ) = 1 by norm_num1]
+    field_simp
+    ring
   · rw [← hge]
     exact norm_compContinuous_le _ _
 

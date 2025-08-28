@@ -297,7 +297,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =
       eval₂ (Int.castRingHom ℝ) (π / 2) (sinPoly n) * b ^ (2 * n + 1) := by
     nth_rw 2 [h] at e
-    field_simp at e ⊢
+    simp [field, div_pow] at e ⊢
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
   norm_cast at this

@@ -477,7 +477,7 @@ noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
 
-noncomputable instance field : Field ℝ where
+noncomputable instance instField : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]

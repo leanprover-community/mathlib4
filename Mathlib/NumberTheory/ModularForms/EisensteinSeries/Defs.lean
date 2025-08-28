@@ -95,7 +95,9 @@ theorem eisSummand_SL2_apply (k : ℤ) (i : (Fin 2 → ℤ)) (A : SL(2, ℤ)) (z
   simp only [eisSummand, vecMul, vec2_dotProduct, denom, UpperHalfPlane.specialLinearGroup_apply]
   have h (a b c d u v : ℂ) (hc : c * z + d ≠ 0) : (u * ((a * z + b) / (c * z + d)) + v) ^ (-k) =
       (c * z + d) ^ k * ((u * a + v * c) * z + (u * b + v * d)) ^ (-k) := by
-    field_simp [hc]
+    replace hc : z * c + d ≠ 0 := by convert hc using 1; ring
+    field_simp
+    simp [div_zpow]
     ring_nf
   simpa using h (hc := denom_ne_zero A z) ..
 

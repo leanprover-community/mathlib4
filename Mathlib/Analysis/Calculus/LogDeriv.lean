@@ -47,15 +47,12 @@ theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
       logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
-  simp only [logDeriv_apply]
-  field_simp [mul_comm]
+  simp [field, logDeriv_apply, *]
 
 theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
     logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
-  simp only [logDeriv_apply]
-  field_simp [mul_comm]
-  ring
+  simp [field, logDeriv_apply, *]
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
     logDeriv (fun z => f z * a) x = logDeriv f x := by
@@ -87,8 +84,7 @@ lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 
   · simp [logDeriv_apply, zero_zpow, *]
   · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
-    field_simp [zpow_ne_zero, zpow_sub_one₀ hf]
-    ring
+    simp [field, zpow_sub_one₀ hf]
 
 lemma logDeriv_fun_pow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℕ) :
     logDeriv (f · ^ n) x = n * logDeriv f x :=

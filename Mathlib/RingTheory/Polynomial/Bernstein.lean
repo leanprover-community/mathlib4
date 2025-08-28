@@ -206,7 +206,8 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 =
       (-1) ^ (n - ν) * (ascPochhammer R (n - ν)).eval (ν + 1 : R) := by
   rw [flip' _ _ _ h]
-  simp [Polynomial.eval_comp]
+  simp only [iterate_derivative_comp_one_sub_X, eval_mul, eval_pow, eval_neg, eval_one, eval_comp,
+    eval_sub, eval_X, sub_self, iterate_derivative_at_0]
   obtain rfl | h' := h.eq_or_lt
   · simp
   · norm_cast

@@ -39,13 +39,13 @@ variable [NormedSpace 𝕜 E]
 @[simp]
 theorem norm_smul_inv_norm {x : E} (hx : x ≠ 0) : ‖(‖x‖⁻¹ : 𝕜) • x‖ = 1 := by
   have : ‖x‖ ≠ 0 := by simp [hx]
-  field_simp [norm_smul]
+  simp [field, norm_smul]
 
 /-- Lemma to normalize a vector in a normed space `E` over either `ℂ` or `ℝ` to length `r`. -/
 theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0) :
     ‖((r : 𝕜) * (‖x‖ : 𝕜)⁻¹) • x‖ = r := by
   have : ‖x‖ ≠ 0 := by simp [hx]
-  field_simp [norm_smul, r_nonneg, rclike_simps]
+  simp [field, norm_smul, r_nonneg, rclike_simps]
 
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by

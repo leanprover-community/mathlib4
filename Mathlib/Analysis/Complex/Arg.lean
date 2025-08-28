@@ -26,13 +26,15 @@ variable {x y : ℂ}
 
 namespace Complex
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   rcases eq_or_ne y 0 with (rfl | hy)
   · simp
   simp only [hx, hy, sameRay_iff_norm_smul_eq, arg_eq_arg_iff hx hy]
-  field_simp [hx, hy]
+  simp [field, hx]
   rw [mul_comm, eq_comm]
 
 theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by

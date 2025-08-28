@@ -711,7 +711,7 @@ def ValueGroupWithZero.embed [h : v.Compatible] : ValueGroupWithZero R →*₀ �
   map_one' := by simp
   map_mul' _ _ := by
     apply ValuativeRel.ValueGroupWithZero.lift_mul
-    field_simp
+    simp [field]
 
 @[simp]
 lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
