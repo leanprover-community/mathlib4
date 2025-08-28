@@ -281,7 +281,9 @@ theorem valuativeCriterion_existence_aux
           congr 3
           · simp only [mul_comm _ (∏ i, d i), mul_assoc, mul_left_comm _ (∏ i, d i),
               mul_comm (d _) (ai _), ← Finset.mul_sum, hai]
-            grind [Nat.cast_inj]
+            cases h : d j
+            · cases (hdi j).ne' h
+            · simp; ring
           · ext i; congr 1; ring
           · ring
       _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) :=
@@ -289,7 +291,9 @@ theorem valuativeCriterion_existence_aux
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
           simp_rw [mul_comm (d _) (ai _), hai]
-          grind [Nat.cast_inj]
+          cases h : d j
+          · cases (hdi j).ne' h
+          · simp; ring_nf
       _ = valuation O K ((φ _) ^ a) ^ (d j * ∏ i, d i) := by
           · simp only [ψ, ← map_pow]
             congr 2
