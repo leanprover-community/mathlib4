@@ -339,8 +339,7 @@ noncomputable def esymmAlgEquiv (hn : Fintype.card σ = n) :
 lemma esymmAlgEquiv_symm_apply (hn : Fintype.card σ = n) (i : Fin n) :
     (esymmAlgEquiv σ R hn).symm ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ = X i := by
   apply_fun esymmAlgHom σ R n using esymmAlgHom_injective R hn.ge
-  simp [esymmAlgEquiv, AlgEquiv.ofBijective, RingEquiv.ofBijective, EquivLike.toEquiv,
-    (RingEquiv.symm_mk), Equiv.ofBijective, Function.surjInv_eq, esymmAlgHom]
+  simp_rw [esymmAlgEquiv, AlgEquiv.ofBijective_apply_symm_apply, esymmAlgHom, aeval_X]
 
 end CommRing
 
