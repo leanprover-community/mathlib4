@@ -7,11 +7,6 @@ import Mathlib.Data.List.Basic
 
 /-!
 # Properties of `List.enum`
-
-## Deprecation note
-
-Many lemmas in this file have been replaced by theorems in Lean4,
-in terms of `xs[i]?` and `xs[i]` rather than `get` and `get?`.
 -/
 
 namespace List
