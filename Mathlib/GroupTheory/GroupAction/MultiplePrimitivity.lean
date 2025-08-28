@@ -172,6 +172,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     [IsPretransitive M α] {n : ℕ} (hn : 1 ≤ n) {a : α} :
     IsMultiplyPreprimitive M α n.succ ↔
       IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by
+  simp only [Nat.succ_eq_add_one]
   constructor
   · apply isMultiplyPreprimitive_ofStabilizer
   · intro H
@@ -179,39 +180,22 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     constructor
     · exact ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
     · intro s hs
-      have : ∃ b : α, b ∈ s := by
-        rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]
-        intro h
-        apply not_lt.mpr hn
-        rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj] at hs
-        simp only [← hs, zero_lt_one]
-      obtain ⟨b, hb⟩ := this
+      replace hs : s.encard = n := by simpa using hs
+      obtain ⟨b, hb⟩ := Set.nonempty_of_encard_ne_zero <| by
+        rwa [hs, Nat.cast_ne_zero, ← Nat.one_le_iff_ne_zero]
       obtain ⟨g, hg : g • b = a⟩ := exists_smul_eq M b a
       rw [isPreprimitive_ofFixingSubgroup_conj_iff (g := g)]
       set s' := g • s with hs'
       let t : Set (SubMulAction.ofStabilizer M a) := Subtype.val ⁻¹' s'
       have hst : s' = insert a (Subtype.val '' t) := by
         ext x
-        constructor
-        · intro hxs
-          by_cases hxa : x = a
-          · simp [hxa]
-          · exact Set.mem_insert_of_mem _
-              ⟨⟨x, hxa⟩, by simp only [t, Set.mem_preimage]; exact hxs, rfl⟩
-        · rw [Set.mem_insert_iff]
-          rintro (⟨rfl⟩ | ⟨y, hy, rfl⟩)
-          · simpa [s', ← hg]
-          · simpa only using hy
+        simp [s', t, ← hg, mem_ofStabilizer_iff]
+        grind [Set.smul_mem_smul_set (a := g) hb]
       rw [hst, isPreprimitive_fixingSubgroup_insert_iff]
-      apply IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n
-      apply ENat.add_left_injective_of_ne_top ENat.one_ne_top
-      simp only
-      rw [← Nat.cast_one, ← Nat.cast_add, ← hs]
-      apply congr_arg₂ _ _ rfl
-      rw [show s = g⁻¹ • s' from by simp [hs'],
-        ← Set.image_smul, (MulAction.injective g⁻¹).encard_image, hst]
-      rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
-      exact notMem_val_image M t
+      refine IsMultiplyPreprimitive.isPreprimitive_ofFixingSubgroup _ n ?_
+      rw [← hs, show s = g⁻¹ • s' by simp [hs'], ← Set.image_smul,
+        (MulAction.injective g⁻¹).encard_image, hst,
+        Set.encard_insert_of_notMem (notMem_val_image M t), Subtype.coe_injective.encard_image]
 
 /-- The fixator of a subset of cardinal `d` in an `n`-primitive action
 acts `n-d`-primitively on the remaining (`d ≤ n`). -/
