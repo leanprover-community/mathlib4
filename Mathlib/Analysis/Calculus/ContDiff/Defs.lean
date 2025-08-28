@@ -61,8 +61,8 @@ function is `C^n` inside `s` if it admits a sequence of derivatives up to `n` in
 This definition still has the problem that a function which is locally `C^n` would not need to
 be `C^n`, as different choices of sequences of derivatives around different points might possibly
 not be glued together to give a globally defined sequence of derivatives. (Note that this issue
-can not happen over reals, thanks to partition of unity, but the behavior over a general field is
-not so clear, and we want a definition for general fields). Also, there are locality
+cannot happen over the real numbers, thanks to partitions of unity, but the behavior over a general
+field is not so clear, and we want a definition for general fields). Also, there are locality
 problems for the order parameter: one could image a function which, for each `n`, has a nice
 sequence of derivatives up to order `n`, but they do not coincide for varying `n` and can therefore
 not be glued to give rise to an infinite sequence of derivatives. This would give a function

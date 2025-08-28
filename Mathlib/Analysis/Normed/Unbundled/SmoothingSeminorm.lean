@@ -448,7 +448,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
     have h0 : (ψ m : ℝ) ≠ 0 := cast_ne_zero.mpr (_root_.ne_of_gt (lt_of_le_of_lt (_root_.zero_le _)
       (hψ_mono (Nat.pos_of_ne_zero (one_le_iff_ne_zero.mp hm)))))
     rw [← div_self h0, ← sub_div, cast_sub (hmu_le _)]
-  have b_in : b ∈ Set.Icc (0 : ℝ) 1 := unitInterval.mem_iff_one_sub_mem.mp a_in
+  have b_in : b ∈ Set.Icc (0 : ℝ) 1 := Set.Icc.mem_iff_one_sub_mem.mp a_in
   have hnu_le : ∀ n : ℕ, nu n ≤ n := fun n => by simp only [hnu, tsub_le_self]
   have hx : limsup (fun n : ℕ => μ (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop ≤
       smoothingFun μ x ^ a := limsup_mu_le μ hμ1 hmu_le a_in hψ_mono hψ_lim

@@ -92,14 +92,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i)
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
--- The `Monoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Monoid (Monoid.CoprodI M) := by
-  delta Monoid.CoprodI; infer_instance
-
-instance : Inhabited (Monoid.CoprodI M) :=
-  ⟨1⟩
+deriving Monoid, Inhabited
 
 namespace Monoid.CoprodI
 
@@ -352,7 +345,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
   · simp only [rcons, dif_pos hm, dif_pos hm'] at he
-    aesop
+    simp_all
   · exfalso
     simp only [rcons, dif_pos hm, dif_neg hm'] at he
     rw [he] at h

@@ -136,7 +136,9 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
   · simp_all [← h]; ring
-  · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
+  · simp only [Nat.mul_add, Nat.add_mul, one_mul, mul_one, ← Nat.add_assoc,
+      Nat.add_right_cancel_iff] at h
+    rw [← h]; ring
 
 /-- `IsReduced` holds if the two entries in the vector are the
 same.  The reduction algorithm will produce a system with this
@@ -399,7 +401,7 @@ theorem gcd_props :
         b = b' * d ∧
           z * a' = succPNat (x * b') ∧
             w * b' = succPNat (y * a') ∧ (z * a : ℕ) = x * b + d ∧ (w * b : ℕ) = y * a + d := by
-  intros d w x y z a' b'
+  intro d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
   have _ : d = ur.a := rfl

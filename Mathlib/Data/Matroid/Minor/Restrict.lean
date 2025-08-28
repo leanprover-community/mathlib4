@@ -137,7 +137,7 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
   rw [Dep, restrict_indep_iff, restrict_ground_eq]; tauto
 
 @[simp] theorem restrict_ground_eq_self (M : Matroid α) : (M ↾ M.E) = M := by
-  refine ext_indep rfl ?_; aesop
+  refine ext_indep rfl ?_; simp_all
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
