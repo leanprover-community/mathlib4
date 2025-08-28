@@ -414,36 +414,24 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
 
 end IsImmersionAt
 
-lemma ContinuousAt.of_comp_iff_isEmbedding
-    {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    {f : X → Y} {g : Y → Z} {x : X} (hf' : Topology.IsEmbedding g) :
-    ContinuousAt f x ↔ ContinuousAt (g ∘ f) x := by
-  refine Topology.IsInducing.continuousAt_iff hf'.isInducing
+open Topology
 
+-- TODO: move this lemma to its proper location!
 lemma Continuous.of_comp_iff_isInducing_restr {X Y Z : Type*}
     [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     {f : X → Y} {g : Y → Z} {x : X} {s : Set Y} (hs : IsOpen s) (hs' : s ∈ 𝓝 (f x))
     (hg : Topology.IsInducing (s.restrict g)) :
     ContinuousAt f x ↔ ContinuousAt (g ∘ f) x := by
-  have hg' : ContinuousAt (s.restrict g) ⟨f x, mem_of_mem_nhds hs'⟩ := hg.continuous.continuousAt
   have hg' : ContinuousAt g (f x) := by
-    have := (Topology.IsEmbedding.subtypeVal (p := s)).isInducing
-    have aux : g ∘ (Subtype.val (p := s)) = (s.restrict g) := sorry
-
-    rw [← aux] at hg'
-
-    rw [this.continuousAt_iff] at hg'
-    --have := this.comp hg
-    sorry
-  -- have : ContinuousAt f x := by
-  --   have : ContinuousAt (s.restrict g) ⟨f x, mem_of_mem_nhds hs'⟩ := hf'.continuous.continuousAt
-  --   rw [ContinuousAt.of_comp_iff_isEmbedding hf']
-  --   -- want Continuous.comp_isEmbedding, should be a lemma, right?
-  --   sorry
+    let i := Subtype.val (p := s)
+    have hi' : Set.range i ∈ nhds (i ⟨f x, mem_of_mem_nhds hs'⟩) := by
+      rwa [Subtype.range_coe_subtype]
+    exact ((IsEmbedding.subtypeVal (p := s)).isInducing.continuousAt_iff' hi').mp
+      (hg.continuous.continuousAt)
   refine ⟨fun hf ↦ hg'.comp hf, fun h ↦ ?_⟩
 
   let s' : Set X := f ⁻¹' s
-  have hxs' : x ∈ s' := by rw [@mem_preimage]; exact mem_of_mem_nhds hs'
+  have hxs' : x ∈ s' := by rw [mem_preimage]; exact mem_of_mem_nhds hs'
   have hmaps : MapsTo f s' s := by simpa +contextual [s'] using fun ⦃x⦄ a ↦ a
   have : ContinuousAt (s'.restrict (g ∘ f)) ⟨x, hxs'⟩ := h.comp (by fun_prop)
   have : ContinuousAt (hmaps.restrict f) ⟨x, hxs'⟩ := hg.continuousAt_iff.mpr this
