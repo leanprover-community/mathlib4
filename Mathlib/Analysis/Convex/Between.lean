@@ -365,6 +365,32 @@ theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
 
 end OrderedRing
 
+section lift
+
+variable [ZeroLEOneClass R]
+variable (R' : Type*) [Ring R'] [PartialOrder R']
+variable [Module R' V] [Module R' R] [IsScalarTower R' R V] [SMulPosMono R' R]
+
+theorem affineSegment.lift (x y : P) : affineSegment R' x y ⊆ affineSegment R x y := by
+  rintro p ⟨a, ⟨⟨ha₀, ha₁⟩, rfl⟩⟩
+  refine ⟨a • 1, ⟨?_, ?_⟩, by simp [lineMap_apply]⟩
+  · rw [← zero_smul R' (1 : R)]
+    exact smul_le_smul_of_nonneg_right ha₀ zero_le_one
+  · nth_rw 2 [← one_smul R' 1]
+    exact smul_le_smul_of_nonneg_right ha₁ zero_le_one
+
+variable {R'} in
+/-- Lift a `Wbtw` predicate from one ring to another along a scalar tower. -/
+theorem Wbtw.lift {x y z : P} (h : Wbtw R' x y z) : Wbtw R x y z :=
+  affineSegment.lift R R' x z h
+
+variable {R'} in
+/-- Lift a `Sbtw` predicate from one ring to another along a scalar tower. -/
+theorem Sbtw.lift {x y z : P} (h : Sbtw R' x y z) : Sbtw R x y z :=
+  ⟨h.wbtw.lift R, h.2⟩
+
+end lift
+
 @[simp]
 theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
   fun h => h.ne_left rfl
