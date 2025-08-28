@@ -366,7 +366,7 @@ theorem condExpIndSMul_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : G
 theorem condExpIndSMul_smul [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndSMul hm hs hμs (c • x) = c • condExpIndSMul hm hs hμs x := by
-  rw [condExpIndSMul, condExpIndSMul, toSpanSingleton_smul',
+  rw [condExpIndSMul, condExpIndSMul, toSpanSingleton_smul,
     (toSpanSingleton ℝ x).smul_compLpL c, smul_apply]
 
 @[deprecated (since := 28-08-2025)] alias condExpIndSMul_smul' := condExpIndSMul_smul
