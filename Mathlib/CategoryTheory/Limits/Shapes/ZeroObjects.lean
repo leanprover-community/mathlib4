@@ -171,7 +171,7 @@ section
 variable [HasZeroObject C]
 
 /-- Construct a `Zero C` for a category with a zero object.
-This can not be a global instance as it will trigger for every `Zero C` typeclass search.
+This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 

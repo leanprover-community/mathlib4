@@ -66,12 +66,6 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
     exact (log_neg_iff hb).mpr hb₁
 
-lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 (0 : ℝ)) := by
-  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
-  exact (log_pos_iff (by positivity)).mpr <| by aesop
-
 lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atBot atTop := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
@@ -81,9 +75,11 @@ lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
 lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) :
     Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 0) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
-  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_iff_pos <| tendsto_id (α := ℝ)).mpr ?_
+  refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop
 
+@[deprecated (since := "2025-08-24")]
+alias tendsto_rpow_atTop_of_base_gt_one := tendsto_rpow_atBot_of_base_gt_one
 
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
@@ -322,7 +318,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     exact (ht.ne' h.1).elim
   · refine (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' ?_
     refine (eventually_ge_atTop 0).mono fun t ht => ?_
-    field_simp [Real.exp_neg, rpow_neg ht]
+    simp [field, Real.exp_neg, rpow_neg ht]
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
