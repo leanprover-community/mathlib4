@@ -5810,7 +5810,6 @@ import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
 import Mathlib.RingTheory.ZMod.UnitsCyclic
-import Mathlib.Sandbox
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Basic
