@@ -803,6 +803,27 @@ theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
 
+theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹' t i := by
+  grind
+
+theorem update_mem_pi_iff [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i} :
+    update a i b ∈ pi s t ↔ a ∈ pi (s \ {i}) t ∧ (i ∈ s → b ∈ t i) := by
+  constructor
+  · grind [update_self, update_of_ne]
+  · rintro h j
+    cases eq_or_ne i j <;> grind [update_self, update_of_ne]
+
+theorem update_mem_pi_iff_of_mem [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i}
+    (ha : a ∈ pi s t) : update a i b ∈ pi s t ↔ i ∈ s → b ∈ t i := by
+  rw [update_mem_pi_iff, and_iff_right]
+  exact fun j hj => ha j hj.1
+
+theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} := by
+  classical
+  simp only [eq_singleton_iff_unique_mem]
+  refine ⟨fun ⟨h₁, h₂⟩ i => ⟨by grind, fun x hx => ?_⟩, by grind⟩
+  rw [← h₂ _ fun j _ => (update_mem_pi_iff_of_mem h₁).mpr (fun _ => hx) j trivial, update_self]
+
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
     ⟨fun h => or_iff_not_imp_right.2 ?_, fun h => h.elim pi_mono fun h' => h'.symm ▸ empty_subset _⟩
