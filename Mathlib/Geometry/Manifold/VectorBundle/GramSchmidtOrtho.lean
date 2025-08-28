@@ -345,8 +345,14 @@ variable {s : ι → (x : B) → E x} {u : Set B} {x : B} {i : ι}
 lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
     {i : ι} (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
     CMDiffAt[u] n (T% (VectorBundle.gramSchmidt s i)) x := by
-  sorry /- TODO: this simp lemma loops now; not sure why!
-  simp_rw [VectorBundle.gramSchmidt_def]
+  -- XXX: this `suffices` used to be just `simp only [VectorBundle.gramSchmidt_def]`
+  suffices CMDiffAt[u] n (T% (fun x ↦ s i x - ∑ j ∈ Iio i,
+      (ℝ ∙ VectorBundle.gramSchmidt s j x).starProjection (s i x))) x by
+    simp_rw [VectorBundle.gramSchmidt]
+    apply this.congr
+    · intro x hx
+      rw [InnerProductSpace.gramSchmidt_def]; simp
+    · rw [InnerProductSpace.gramSchmidt_def]; simp
   apply (hs i).sub_section
   apply ContMDiffWithinAt.sum_section
   intro i' hi'
@@ -359,7 +365,7 @@ lemma gramSchmidt_contMDiffWithinAt (hs : ∀ i, CMDiffAt[u] n (T% (s i)) x)
   apply ContMDiffWithinAt.orthogonalProjection (gramSchmidt_contMDiffWithinAt hs this) (hs i)
   apply VectorBundle.gramSchmidt_ne_zero_coe _ _ this
 termination_by i
-decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi' -/
+decreasing_by exact (LocallyFiniteOrderBot.finset_mem_Iio i i').mp hi'
 
 lemma gramSchmidt_contMDiffAt (hs : ∀ i, CMDiffAt n (T% (s i)) x)
     (hs' : LinearIndependent ℝ ((s · x) ∘ ((↑) : Set.Iic i → ι))) :
