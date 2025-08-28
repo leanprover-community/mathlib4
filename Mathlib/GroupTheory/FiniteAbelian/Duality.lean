@@ -21,9 +21,9 @@ namespace CommGroup
 open MonoidHom
 
 private
-lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
+lemma dvd_exponent {ι G : Type*} [Finite ι] [Monoid G] {n : ι → ℕ}
     (e : G ≃* ((i : ι) → Multiplicative (ZMod (n i)))) (i : ι) :
-  n i ∣ Monoid.exponent G := by
+    n i ∣ Monoid.exponent G := by
   classical -- to get `DecidableEq ι`
   have : n i = orderOf (e.symm <| Pi.mulSingle i <| .ofAdd 1) := by
     simpa only [MulEquiv.orderOf_eq, orderOf_piMulSingle, orderOf_ofAdd_eq_addOrderOf]
@@ -33,8 +33,9 @@ lemma dvd_exponent {ι G : Type*} [Finite ι] [CommGroup G] {n : ι → ℕ}
 variable (G M : Type*) [CommGroup G] [Finite G] [CommMonoid M]
 
 private
-lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
-    ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
+lemma exists_apply_ne_one_aux
+    (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ a : ZMod n, a ≠ 0 →
+      ∃ φ : Multiplicative (ZMod n) →* M, φ (.ofAdd a) ≠ 1)
     {a : G} (ha : a ≠ 1) :
     ∃ φ : G →* M, φ a ≠ 1 := by
   obtain ⟨ι, _, n, _, h⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G
@@ -42,8 +43,6 @@ lemma exists_apply_ne_one_aux (H : ∀ n : ℕ, n ∣ Monoid.exponent G → ∀ 
   obtain ⟨i, hi⟩ : ∃ i : ι, e a i ≠ 1 := by
     contrapose! ha
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
-  have hi : (e a i).toAdd ≠ 0 := by
-    simp only [ne_eq, toAdd_eq_zero, hi, not_false_eq_true]
   obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi
@@ -68,7 +67,6 @@ theorem monoidHom_mulEquiv_of_hasEnoughRootsOfUnity : Nonempty ((G →* Mˣ) ≃
   obtain ⟨ι, _, n, ⟨h₁, h₂⟩⟩ := equiv_prod_multiplicative_zmod_of_finite G
   let e := h₂.some
   let e' := Pi.monoidHomMulEquiv (fun i ↦ Multiplicative (ZMod (n i))) Mˣ
-  let e'' := MulEquiv.monoidHomCongr e (.refl Mˣ)
   have : ∀ i, NeZero (n i) := fun i ↦ NeZero.of_gt (h₁ i)
   have inst i : HasEnoughRootsOfUnity M <| Nat.card <| Multiplicative <| ZMod (n i) := by
     have hdvd : Nat.card (Multiplicative (ZMod (n i))) ∣ Monoid.exponent G := by
@@ -76,6 +74,6 @@ theorem monoidHom_mulEquiv_of_hasEnoughRootsOfUnity : Nonempty ((G →* Mˣ) ≃
         using dvd_exponent e i
     exact HasEnoughRootsOfUnity.of_dvd M hdvd
   let E i := (IsCyclic.monoidHom_equiv_self (Multiplicative (ZMod (n i))) M).some
-  exact ⟨e''.trans <| e'.trans <| (MulEquiv.piCongrRight E).trans e.symm⟩
+  exact ⟨e.monoidHomCongrLeft.trans <| e'.trans <| .trans (.piCongrRight E) e.symm⟩
 
 end CommGroup

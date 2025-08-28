@@ -26,7 +26,7 @@ that natural closure operators are in bijection with Grothendieck topologies.
 * `CategoryTheory.GrothendieckTopology.closureOperator`: The bundled `ClosureOperator` given
   by `CategoryTheory.GrothendieckTopology.close`.
 * `CategoryTheory.GrothendieckTopology.IsClosed`: A sieve `S` on `X` is closed for the topology `J`
-   if it contains every arrow it covers.
+  if it contains every arrow it covers.
 * `CategoryTheory.Functor.closedSieves`: The presheaf sending `X` to the collection of `J`-closed
   sieves on `X`. This is additionally shown to be a sheaf for `J`, and if this is a sheaf for a
   different topology `J'`, then `J' ≤ J`.
@@ -172,7 +172,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
       simp only [and_comm]
       apply and_congr_right
       intro hg
-      rw [Sieve.pullback_eq_top_iff_mem, Sieve.pullback_eq_top_iff_mem, q g hg]
+      rw [Sieve.mem_iff_pullback_eq_top, Sieve.mem_iff_pullback_eq_top, q g hg]
     constructor
     · intro hf
       rw [J₁.covers_iff]
@@ -191,7 +191,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
       intro Y f hf
       apply le_antisymm
       · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1 _, c⟩
-        rw [Sieve.pullback_eq_top_iff_mem,
+        rw [Sieve.mem_iff_pullback_eq_top,
           ← show (x (u ≫ f) _).1 = (x f hf).1.pullback u from congr_arg Subtype.val (hx f u hf)]
         conv_lhs => congr; congr; rw [← c] -- Porting note: Originally `simp_rw [← c]`
         rw [show (x (g ≫ f') _).1 = _ from congr_arg Subtype.val (hx f' g hf')]
@@ -261,8 +261,8 @@ def topologyOfClosureOperator (c : ∀ X : C, ClosureOperator (Sieve X))
     rw [Set.mem_setOf_eq] at hS
     rw [Set.mem_setOf_eq, ← (c X).idempotent, eq_top_iff, ← hS]
     apply (c X).monotone fun Y f hf => _
-    intros Y f hf
-    rw [Sieve.pullback_eq_top_iff_mem, ← hc]
+    intro Y f hf
+    rw [Sieve.mem_iff_pullback_eq_top, ← hc]
     apply hR hf
 
 /--
@@ -278,6 +278,6 @@ theorem topologyOfClosureOperator_close (c : ∀ X : C, ClosureOperator (Sieve X
     (S : Sieve X) : (topologyOfClosureOperator c pb).close S = c X S := by
   ext Y f
   change c _ (Sieve.pullback f S) = ⊤ ↔ c _ S f
-  rw [pb, Sieve.pullback_eq_top_iff_mem]
+  rw [pb, Sieve.mem_iff_pullback_eq_top]
 
 end CategoryTheory

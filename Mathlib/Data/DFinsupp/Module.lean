@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.DFinsupp.Defs
 
 /-!
@@ -26,30 +26,31 @@ section Algebra
 
 /-- Dependent functions with finite support inherit a semiring action from an action on each
 coordinate. -/
-instance [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] : SMul γ (Π₀ i, β i) :=
-  ⟨fun c v => v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _⟩
+instance [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] : SMulZeroClass γ (Π₀ i, β i) where
+  smul c v := v.mapRange (fun _ => (c • ·)) fun _ => smul_zero _
+  smul_zero _ := mapRange_zero _ _
 
-theorem smul_apply [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
+theorem smul_apply [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
     (v : Π₀ i, β i) (i : ι) : (b • v) i = b • v i :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (b : γ)
+theorem coe_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (b : γ)
     (v : Π₀ i, β i) : ⇑(b • v) = b • ⇑v :=
   rfl
 
-instance smulCommClass {δ : Type*} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
-    [∀ i, DistribMulAction γ (β i)] [∀ i, DistribMulAction δ (β i)] [∀ i, SMulCommClass γ δ (β i)] :
+instance smulCommClass {δ : Type*} [∀ i, Zero (β i)]
+    [∀ i, SMulZeroClass γ (β i)] [∀ i, SMulZeroClass δ (β i)] [∀ i, SMulCommClass γ δ (β i)] :
     SMulCommClass γ δ (Π₀ i, β i) where
   smul_comm r s m := ext fun i => by simp only [smul_apply, smul_comm r s (m i)]
 
-instance isScalarTower {δ : Type*} [Monoid γ] [Monoid δ] [∀ i, AddMonoid (β i)]
-    [∀ i, DistribMulAction γ (β i)] [∀ i, DistribMulAction δ (β i)] [SMul γ δ]
+instance isScalarTower {δ : Type*} [∀ i, Zero (β i)]
+    [∀ i, SMulZeroClass γ (β i)] [∀ i, SMulZeroClass δ (β i)] [SMul γ δ]
     [∀ i, IsScalarTower γ δ (β i)] : IsScalarTower γ δ (Π₀ i, β i) where
   smul_assoc r s m := ext fun i => by simp only [smul_apply, smul_assoc r s (m i)]
 
-instance isCentralScalar [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
-    [∀ i, DistribMulAction γᵐᵒᵖ (β i)] [∀ i, IsCentralScalar γ (β i)] :
+instance isCentralScalar [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
+    [∀ i, SMulZeroClass γᵐᵒᵖ (β i)] [∀ i, IsCentralScalar γ (β i)] :
     IsCentralScalar γ (Π₀ i, β i) where
   op_smul_eq_smul r m := ext fun i => by simp only [smul_apply, op_smul_eq_smul r (m i)]
 
@@ -69,10 +70,23 @@ instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (�
 
 end Algebra
 
+variable (γ) in
+/-- Coercion from a `DFinsupp` to a pi type is a `LinearMap`. -/
+def coeFnLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
+    (Π₀ i, β i) →ₗ[γ] ∀ i, β i where
+  toFun := (⇑)
+  map_add' := coe_add
+  map_smul' := coe_smul
+
+@[simp]
+lemma coeFnLinearMap_apply [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
+    (v : Π₀ i, β i) : coeFnLinearMap γ v = v :=
+  rfl
+
 section FilterAndSubtypeDomain
 
 @[simp]
-theorem filter_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] (p : ι → Prop)
+theorem filter_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)] (p : ι → Prop)
     [DecidablePred p] (r : γ) (f : Π₀ i, β i) : (r • f).filter p = r • f.filter p := by
   ext
   simp [smul_apply, smul_ite]
@@ -90,7 +104,7 @@ def filterLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module �
 variable {γ β}
 
 @[simp]
-theorem subtypeDomain_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
+theorem subtypeDomain_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
     {p : ι → Prop} [DecidablePred p] (r : γ) (f : Π₀ i, β i) :
     (r • f).subtypeDomain p = r • f.subtypeDomain p :=
   DFunLike.coe_injective rfl
@@ -112,7 +126,7 @@ variable [DecidableEq ι]
 
 section
 
-variable [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
+variable [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
 
 @[simp]
 theorem mk_smul {s : Finset ι} (c : γ) (x : ∀ i : (↑s : Set ι), β (i : ι)) :
@@ -129,7 +143,7 @@ theorem single_smul {i : ι} (c : γ) (x : β i) : single i (c • x) = c • si
 
 end
 
-theorem support_smul {γ : Type w} [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
+theorem support_smul {γ : Type w} [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
     [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (b : γ) (v : Π₀ i, β i) :
     (b • v).support ⊆ v.support :=
   support_mapRange
@@ -143,14 +157,14 @@ open Finset
 variable {κ : Type*}
 
 @[simp]
-theorem comapDomain_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
+theorem comapDomain_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
     (h : κ → ι) (hh : Function.Injective h) (r : γ) (f : Π₀ i, β i) :
     comapDomain h hh (r • f) = r • comapDomain h hh f := by
   ext
   rw [smul_apply, comapDomain_apply, smul_apply, comapDomain_apply]
 
 @[simp]
-theorem comapDomain'_smul [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)]
+theorem comapDomain'_smul [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
     (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h) (r : γ) (f : Π₀ i, β i) :
     comapDomain' h hh' (r • f) = r • comapDomain' h hh' f := by
   ext
@@ -168,7 +182,7 @@ end SigmaCurry
 
 variable {α : Option ι → Type v}
 
-theorem equivProdDFinsupp_smul [Monoid γ] [∀ i, AddMonoid (α i)] [∀ i, DistribMulAction γ (α i)]
+theorem equivProdDFinsupp_smul [∀ i, Zero (α i)] [∀ i, SMulZeroClass γ (α i)]
     (r : γ) (f : Π₀ i, α i) : equivProdDFinsupp (r • f) = r • equivProdDFinsupp f :=
   Prod.ext (smul_apply _ _ _) (comapDomain_smul _ (Option.some_injective _) _ _)
 

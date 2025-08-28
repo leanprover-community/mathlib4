@@ -30,6 +30,7 @@ variable {α : Type u}
 open Batteries (RBNode)
 
 /-- Makes a `Tree α` out of a red-black tree. -/
+@[deprecated "Deprecated without replacement." (since := "2025-04-02")]
 def ofRBNode : RBNode α → Tree α
   | RBNode.nil => nil
   | RBNode.node _color l key r => node key (ofRBNode l) (ofRBNode r)

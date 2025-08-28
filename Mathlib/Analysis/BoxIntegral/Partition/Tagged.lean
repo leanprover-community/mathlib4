@@ -26,7 +26,6 @@ rectangular box, box partition
 noncomputable section
 
 open Finset Function ENNReal NNReal Set
-open scoped Classical
 
 namespace BoxIntegral
 
@@ -37,7 +36,7 @@ prepartition. For simplicity we require that `tag` is defined for all boxes in `
 we will use only the values of `tag` on the boxes of the partition. -/
 structure TaggedPrepartition (I : Box ι) extends Prepartition I where
   /-- Choice of tagged point of each box in this prepartition:
-    we extend this to a total function, on all boxes in `ι → ℝ`. -/
+  we extend this to a total function, on all boxes in `ι → ℝ`. -/
   tag : Box ι → ι → ℝ
   /-- Each tagged point belongs to `I` -/
   tag_mem_Icc : ∀ J, tag J ∈ Box.Icc I
@@ -67,7 +66,6 @@ theorem iUnion_mk (π : Prepartition I) (f h) : (mk π f h).iUnion = π.iUnion :
 @[simp]
 theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
--- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
@@ -87,13 +85,13 @@ theorem isPartition_iff_iUnion_eq : IsPartition π ↔ π.iUnion = I :=
   Prepartition.isPartition_iff_iUnion_eq
 
 /-- The tagged partition made of boxes of `π` that satisfy predicate `p`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def filter (p : Box ι → Prop) : TaggedPrepartition I :=
   ⟨π.1.filter p, π.2, π.3⟩
 
 @[simp]
-theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J :=
-  Finset.mem_filter
+theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J := by
+  classical exact Finset.mem_filter
 
 @[simp]
 theorem iUnion_filter_not (π : TaggedPrepartition I) (p : Box ι → Prop) :
@@ -157,7 +155,7 @@ returns the tagged partition of `I` into all the boxes of all `πi J hJ`. The ta
 is defined to be the `π.tag` of the box of the partition `π` that includes `J`.
 
 Note that usually the result is not a Henstock partition. -/
-@[simps (config := .asFn) tag]
+@[simps -fullyApplied tag]
 def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepartition J) :
     TaggedPrepartition I where
   toPrepartition := π.toPrepartition.biUnion πi
@@ -202,7 +200,8 @@ theorem isHenstock_biUnionTagged {π : Prepartition I} {πi : ∀ J, TaggedPrepa
 
 /-- In a Henstock prepartition, there are at most `2 ^ Fintype.card ι` boxes with a given tag. -/
 theorem IsHenstock.card_filter_tag_eq_le [Fintype ι] (h : π.IsHenstock) (x : ι → ℝ) :
-    #{J ∈ π.boxes | π.tag J = x} ≤ 2 ^ Fintype.card ι :=
+    #{J ∈ π.boxes | π.tag J = x} ≤ 2 ^ Fintype.card ι := by
+  classical
   calc
     #{J ∈ π.boxes | π.tag J = x} ≤ #{J ∈ π.boxes | x ∈ Box.Icc J} := by
       refine Finset.card_le_card fun J hJ => ?_
@@ -248,7 +247,7 @@ theorem IsSubordinate.diam_le [Fintype ι] {π : TaggedPrepartition I} (h : π.I
     _ ≤ 2 * r (π.tag J) := diam_closedBall (le_of_lt (r _).2)
 
 /-- Tagged prepartition with single box and prescribed tag. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def single (I J : Box ι) (hJ : J ≤ I) (x : ι → ℝ) (h : x ∈ Box.Icc I) : TaggedPrepartition I :=
   ⟨Prepartition.single I J hJ, fun _ => x, fun _ => h⟩
 
@@ -274,7 +273,6 @@ theorem isHenstock_single_iff (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     IsHenstock (single I J hJ x h) ↔ x ∈ Box.Icc J :=
   forall_mem_single (fun x J => x ∈ Box.Icc J) hJ h
 
---@[simp] -- Porting note: Commented out, because `simp only [isHenstock_single_iff]` simplifies it
 theorem isHenstock_single (h : x ∈ Box.Icc I) : IsHenstock (single I I le_rfl x h) :=
   (isHenstock_single_iff (le_refl I) h).2 h
 
@@ -287,6 +285,7 @@ theorem isSubordinate_single [Fintype ι] (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
 theorem iUnion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) : (single I J hJ x h).iUnion = J :=
   Prepartition.iUnion_single hJ
 
+open scoped Classical in
 /-- Union of two tagged prepartitions with disjoint unions of boxes. -/
 def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π₂.iUnion) :
     TaggedPrepartition I where
@@ -297,14 +296,15 @@ def disjUnion (π₁ π₂ : TaggedPrepartition I) (h : Disjoint π₁.iUnion π
     split_ifs
     exacts [π₁.tag_mem_Icc J, π₂.tag_mem_Icc J]
 
+open scoped Classical in
 @[simp]
 theorem disjUnion_boxes (h : Disjoint π₁.iUnion π₂.iUnion) :
     (π₁.disjUnion π₂ h).boxes = π₁.boxes ∪ π₂.boxes := rfl
 
 @[simp]
 theorem mem_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
-    J ∈ π₁.disjUnion π₂ h ↔ J ∈ π₁ ∨ J ∈ π₂ :=
-  Finset.mem_union
+    J ∈ π₁.disjUnion π₂ h ↔ J ∈ π₁ ∨ J ∈ π₂ := by
+  classical exact Finset.mem_union
 
 @[simp]
 theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
@@ -321,6 +321,7 @@ theorem disjUnion_tag_of_mem_right (h : Disjoint π₁.iUnion π₂.iUnion) (hJ 
 
 theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h₂ : IsSubordinate π₂ r)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsSubordinate (π₁.disjUnion π₂ h) r := by
+  classical
   refine fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => ?_) fun hJ => ?_
   · rw [disjUnion_tag_of_mem_left _ hJ]
     exact h₁ _ hJ
@@ -329,6 +330,7 @@ theorem IsSubordinate.disjUnion [Fintype ι] (h₁ : IsSubordinate π₁ r) (h�
 
 theorem IsHenstock.disjUnion (h₁ : IsHenstock π₁) (h₂ : IsHenstock π₂)
     (h : Disjoint π₁.iUnion π₂.iUnion) : IsHenstock (π₁.disjUnion π₂ h) := by
+  classical
   refine fun J hJ => (Finset.mem_union.1 hJ).elim (fun hJ => ?_) fun hJ => ?_
   · rw [disjUnion_tag_of_mem_left _ hJ]
     exact h₁ _ hJ
@@ -364,18 +366,18 @@ theorem distortion_le_iff {c : ℝ≥0} : π.distortion ≤ c ↔ ∀ J ∈ π, 
 @[simp]
 theorem _root_.BoxIntegral.Prepartition.distortion_biUnionTagged (π : Prepartition I)
     (πi : ∀ J, TaggedPrepartition J) :
-    (π.biUnionTagged πi).distortion = π.boxes.sup fun J => (πi J).distortion :=
-  sup_biUnion _ _
+    (π.biUnionTagged πi).distortion = π.boxes.sup fun J => (πi J).distortion := by
+  classical exact sup_biUnion _ _
 
 @[simp]
 theorem distortion_biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) :
-    (π.biUnionPrepartition πi).distortion = π.boxes.sup fun J => (πi J).distortion :=
-  sup_biUnion _ _
+    (π.biUnionPrepartition πi).distortion = π.boxes.sup fun J => (πi J).distortion := by
+  classical exact sup_biUnion _ _
 
 @[simp]
 theorem distortion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
-    (π₁.disjUnion π₂ h).distortion = max π₁.distortion π₂.distortion :=
-  sup_union
+    (π₁.disjUnion π₂ h).distortion = max π₁.distortion π₂.distortion := by
+  classical exact sup_union
 
 theorem distortion_of_const {c} (h₁ : π.boxes.Nonempty) (h₂ : ∀ J ∈ π, Box.distortion J = c) :
     π.distortion = c :=
@@ -386,8 +388,8 @@ theorem distortion_single (hJ : J ≤ I) (h : x ∈ Box.Icc I) :
     distortion (single I J hJ x h) = J.distortion :=
   sup_singleton
 
-theorem distortion_filter_le (p : Box ι → Prop) : (π.filter p).distortion ≤ π.distortion :=
-  sup_mono (filter_subset _ _)
+theorem distortion_filter_le (p : Box ι → Prop) : (π.filter p).distortion ≤ π.distortion := by
+  classical exact sup_mono (filter_subset _ _)
 
 end Distortion
 

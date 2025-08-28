@@ -97,7 +97,7 @@ theorem congr_nhdsWithin' {s : Set H} {x : H} {f g : H → H'} (h1 : f =ᶠ[𝓝
   (hG.congr_iff_nhdsWithin h1 h2).mpr hP
 
 theorem congr_iff {s : Set H} {x : H} {f g : H → H'} (h : f =ᶠ[𝓝 x] g) : P f s x ↔ P g s x :=
-  hG.congr_iff_nhdsWithin (mem_nhdsWithin_of_mem_nhds h) (mem_of_mem_nhds h : _)
+  hG.congr_iff_nhdsWithin (mem_nhdsWithin_of_mem_nhds h) (mem_of_mem_nhds h :)
 
 theorem congr {s : Set H} {x : H} {f g : H → H'} (h : f =ᶠ[𝓝 x] g) (hP : P f s x) : P g s x :=
   (hG.congr_iff h).mp hP
@@ -266,7 +266,7 @@ structure groupoid (by composition in the source space and in the target space),
 expressing it in charted spaces does not depend on the element of the maximal atlas one uses
 both in the source and in the target manifolds, provided they are defined around `x` and `g x`
 respectively, and provided `g` is continuous within `s` at `x` (otherwise, the local behavior
-of `g` at `x` can not be captured with a chart in the target). -/
+of `g` at `x` cannot be captured with a chart in the target). -/
 theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source)
     (he' : e' ∈ G.maximalAtlas M) (xe' : x ∈ e'.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source)
@@ -379,7 +379,7 @@ theorem liftPropWithinAt_congr_of_eventuallyEq (h : LiftPropWithinAt P g s x) (h
 
 theorem liftPropWithinAt_congr_of_eventuallyEq_of_mem (h : LiftPropWithinAt P g s x)
     (h₁ : g' =ᶠ[𝓝[s] x] g) (h₂ : x ∈ s) : LiftPropWithinAt P g' s x :=
-  liftPropWithinAt_congr_of_eventuallyEq hG h h₁ (mem_of_mem_nhdsWithin h₂ h₁ : _)
+  liftPropWithinAt_congr_of_eventuallyEq hG h h₁ (mem_of_mem_nhdsWithin h₂ h₁ :)
 
 theorem liftPropWithinAt_congr_iff_of_eventuallyEq (h₁ : g' =ᶠ[𝓝[s] x] g) (hx : g' x = g x) :
     LiftPropWithinAt P g' s x ↔ LiftPropWithinAt P g s x :=
@@ -425,9 +425,6 @@ theorem liftPropWithinAt_mono_of_mem_nhdsWithin
   refine ⟨h.1.mono_of_mem_nhdsWithin hst, mono_of_mem_nhdsWithin ?_ h.2⟩
   simp_rw [← mem_map, (chartAt H x).symm.map_nhdsWithin_preimage_eq (mem_chart_target H x),
     (chartAt H x).left_inv (mem_chart_source H x), hst]
-
-@[deprecated (since := "2024-10-31")]
-alias liftPropWithinAt_mono_of_mem := liftPropWithinAt_mono_of_mem_nhdsWithin
 
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
@@ -531,7 +528,7 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
     (hQ : ∀ y, Q id univ y) (U : Opens M) :
     LiftProp Q (Subtype.val : U → M) := by
   intro x
-  show LiftPropAt Q (id ∘ Subtype.val) x
+  change LiftPropAt Q (id ∘ Subtype.val) x
   rw [← hG.liftPropAt_iff_comp_subtype_val]
   apply hG.liftProp_id hQ
 
@@ -539,7 +536,7 @@ theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalI
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
     LiftProp Q (Opens.inclusion hUV : U → V) := by
   intro x
-  show LiftPropAt Q (id ∘ Opens.inclusion hUV) x
+  change LiftPropAt Q (id ∘ Opens.inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
   apply hG.liftProp_id hQ
 
@@ -574,7 +571,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
         · exact closedUnderRestriction' heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef
-        · simp only [*, interior_interior, hu.interior_eq, mfld_simps]
+        · simp only [*, hu.interior_eq, mfld_simps]
     right_invariance' := by
       intro s x f e' he'G he'x h hx
       have hxs : x ∈ s := by simpa only [e'.left_inv he'x, mfld_simps] using hx

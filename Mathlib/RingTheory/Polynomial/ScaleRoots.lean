@@ -60,7 +60,7 @@ theorem support_scaleRoots_eq (p : R[X]) {s : R} (hs : s ∈ nonZeroDivisors R) 
     (by intro i
         simp only [coeff_scaleRoots, Polynomial.mem_support_iff]
         intro p_ne_zero ps_zero
-        have := pow_mem hs (p.natDegree - i) _ ps_zero
+        have := (pow_mem hs (p.natDegree - i)).2 _ ps_zero
         contradiction)
 
 @[simp]
@@ -98,7 +98,7 @@ lemma scaleRoots_one (p : R[X]) :
 lemma scaleRoots_zero (p : R[X]) :
     p.scaleRoots 0 = p.leadingCoeff • X ^ p.natDegree := by
   ext n
-  simp only [coeff_scaleRoots, ne_eq, tsub_eq_zero_iff_le, not_le, zero_pow_eq, mul_ite,
+  simp only [coeff_scaleRoots, tsub_eq_zero_iff_le, zero_pow_eq, mul_ite,
     mul_one, mul_zero, coeff_smul, coeff_X_pow, smul_eq_mul]
   split_ifs with h₁ h₂ h₂
   · subst h₂; rfl
@@ -119,7 +119,7 @@ variable [Semiring S] [CommSemiring R] [Semiring A] [Field K]
 theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s : S)
     (hsa : Commute (f s) a) (hf : ∀ s₁ s₂, Commute (f s₁) (f s₂)) :
     eval₂ f (f s * a) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f a p := by
-   calc
+  calc
     _ = (scaleRoots p s).support.sum fun i =>
           f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i := by
       simp [eval₂_eq_sum, sum_def]
@@ -152,9 +152,8 @@ theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : 
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
-  -- The proof works without this option, but *much* slower.
-  set_option tactic.skipAssignedInstances false in
-  nontriviality S using Subsingleton.eq_zero
+  -- if we don't specify the type with `(_ : S)`, the proof is much slower
+  nontriviality S using Subsingleton.eq_zero (_ : S)
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
   rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
@@ -179,18 +178,18 @@ lemma mul_scaleRoots (p q : R[X]) (r : R) :
   trans (∑ x ∈ Finset.antidiagonal n, coeff p x.1 * coeff q x.2) *
     r ^ (natDegree p + natDegree q - n)
   · rw [← coeff_mul]
-    cases lt_or_le (natDegree (p * q)) n with
+    cases lt_or_ge (natDegree (p * q)) n with
     | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
     | inr h =>
       rw [mul_comm, mul_assoc, ← pow_add, add_comm, tsub_add_tsub_cancel natDegree_mul_le h]
   · rw [coeff_mul, Finset.sum_mul]
     apply Finset.sum_congr rfl
     simp only [Finset.mem_antidiagonal, coeff_scaleRoots, Prod.forall]
-    intros a b e
-    cases lt_or_le (natDegree p) a with
-    | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
+    intro a b e
+    cases lt_or_ge (natDegree p) a with
+    | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul]
     | inr ha =>
-      cases lt_or_le (natDegree q) b with
+      cases lt_or_ge (natDegree q) b with
       | inl h => simp only [coeff_eq_zero_of_natDegree_lt h, zero_mul, mul_zero]
       | inr hb =>
         simp only [← e, mul_assoc, mul_comm (r ^ (_ - a)), ← pow_add]
@@ -211,12 +210,12 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
-    mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
+    mul_comm (r ^ _), ← h, ← add_mul]
   #adaptation_note /-- v4.7.0-rc1
   Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
   but this now causes a max rec depth error. -/
   rw [mul_assoc, ← pow_add]
-  cases lt_or_le (natDegree (p + q)) n with
+  cases lt_or_ge (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
   | inr hn =>
       rw [add_comm (_ - n), tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
@@ -250,7 +249,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
-  simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, Units.smul_def, mul_assoc,
+  simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, mul_assoc,
     ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
     one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots

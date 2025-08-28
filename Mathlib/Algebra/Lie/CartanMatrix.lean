@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.Quotient
-import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Lie algebras from Cartan matrices
@@ -30,10 +30,10 @@ In this file we provide the above construction. It is defined for any square mat
 the results for non-Cartan matrices should be regarded as junk.
 
 Recall that a Cartan matrix is a square matrix of integers `A` such that:
- * For diagonal values we have: `A i i = 2`.
- * For off-diagonal values (`i ≠ j`) we have: `A i j ∈ {-3, -2, -1, 0}`.
- * `A i j = 0 ↔ A j i = 0`.
- * There exists a diagonal matrix `D` over ℝ such that `D * A * D⁻¹` is symmetric positive definite.
+* For diagonal values we have: `A i i = 2`.
+* For off-diagonal values (`i ≠ j`) we have: `A i j ∈ {-3, -2, -1, 0}`.
+* `A i j = 0 ↔ A j i = 0`.
+* There exists a diagonal matrix `D` over ℝ such that `D * A * D⁻¹` is symmetric positive definite.
 
 ## Alternative construction
 
@@ -171,16 +171,7 @@ Note that it is defined for any matrix of integers. Its value for non-Cartan mat
 regarded as junk. -/
 def Matrix.ToLieAlgebra :=
   FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A
-
--- Porting note: the following were derived automatically in mathlib3.
-instance Matrix.ToLieAlgebra.instLieRing : LieRing (Matrix.ToLieAlgebra R A) :=
-  inferInstanceAs (LieRing (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
-
-instance Matrix.ToLieAlgebra.instInhabited : Inhabited (Matrix.ToLieAlgebra R A) :=
-  inferInstanceAs (Inhabited (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
-
-instance Matrix.ToLieAlgebra.instLieAlgebra : LieAlgebra R (Matrix.ToLieAlgebra R A) :=
-  inferInstanceAs (LieAlgebra R (FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R A))
+deriving LieRing, Inhabited, LieAlgebra R
 
 namespace CartanMatrix
 

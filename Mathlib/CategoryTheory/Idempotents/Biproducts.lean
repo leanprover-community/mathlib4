@@ -64,7 +64,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_f, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
-        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, instZero_zero]
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero]
 
 end Biproducts
 
@@ -103,15 +103,15 @@ instance (P : Karoubi C) : HasBinaryBiproduct P P.complement :=
       inr := P.complement.decompId_i
       inl_fst := P.decompId.symm
       inl_snd := by
-        simp only [instZero_zero, hom_ext_iff, complement_X, comp_f,
+        simp only [zero_def, hom_ext_iff, complement_X, comp_f,
           decompId_i_f, decompId_p_f, complement_p, comp_sub, comp_id, idem, sub_self]
       inr_fst := by
-        simp only [instZero_zero, hom_ext_iff, complement_X, comp_f,
+        simp only [zero_def, hom_ext_iff, complement_X, comp_f,
           decompId_i_f, complement_p, decompId_p_f, sub_comp, id_comp, idem, sub_self]
       inr_snd := P.complement.decompId.symm }
     (by
       ext
-      simp only [complement_X, comp_f, decompId_i_f, decompId_p_f, complement_p, instAdd_add, idem,
+      simp only [complement_X, comp_f, decompId_i_f, decompId_p_f, complement_p, add_def, idem,
         comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero, add_sub_cancel, id_f])
 
 attribute [-simp] hom_ext_iff
@@ -125,20 +125,20 @@ def decomposition (P : Karoubi C) : P ⊞ P.complement ≅ (toKaroubi _).obj P.X
   hom_inv_id := by
     apply biprod.hom_ext'
     · rw [biprod.inl_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
-        add_right_eq_self, ← assoc]
+        add_eq_left, ← assoc]
       refine (?_ =≫ _).trans zero_comp
       ext
       simp only [comp_f, toKaroubi_obj_X, decompId_i_f, decompId_p_f,
-        complement_p, comp_sub, comp_id, idem, sub_self, instZero_zero]
+        complement_p, comp_sub, comp_id, idem, sub_self, zero_def]
     · rw [biprod.inr_desc_assoc, comp_id, biprod.lift_eq, comp_add, ← decompId_assoc,
-        add_left_eq_self, ← assoc]
+        add_eq_right, ← assoc]
       refine (?_ =≫ _).trans zero_comp
       ext
       simp only [complement_X, comp_f, decompId_i_f, complement_p,
-        decompId_p_f, sub_comp, id_comp, idem, sub_self, instZero_zero]
+        decompId_p_f, sub_comp, id_comp, idem, sub_self, zero_def]
   inv_hom_id := by
     ext
-    simp only [toKaroubi_obj_X, biprod.lift_desc, instAdd_add, comp_f, decompId_p_f, decompId_i_f,
+    simp only [toKaroubi_obj_X, biprod.lift_desc, add_def, comp_f, decompId_p_f, decompId_i_f,
       idem, complement_X, complement_p, comp_sub, comp_id, sub_comp, id_comp, sub_self, sub_zero,
       add_sub_cancel, id_f, toKaroubi_obj_p]
 

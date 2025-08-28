@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -32,11 +32,6 @@ noncomputable def enumOrd (s : Set Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} 
 termination_by o
 
 variable {s : Set Ordinal.{u}}
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-20")]
-theorem enumOrd_def (o : Ordinal.{u}) :
-    enumOrd s o = sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b }) := by
-  rw [enumOrd]
 
 theorem enumOrd_le_of_forall_lt (ha : a ∈ s) (H : ∀ b < o, enumOrd s b < a) : enumOrd s o ≤ a := by
   rw [enumOrd]
@@ -98,7 +93,7 @@ theorem range_enumOrd (hs : ¬ BddAbove s) : range (enumOrd s) = s := by
     refine ⟨sInf t, (enumOrd_le_of_forall_lt ha ?_).antisymm ?_⟩
     · intro b hb
       by_contra! hb'
-      exact hb.not_le (csInf_le' hb')
+      exact hb.not_ge (csInf_le' hb')
     · exact csInf_mem (s := t) ⟨a, (enumOrd_strictMono hs).id_le a⟩
 
 theorem enumOrd_surjective (hs : ¬ BddAbove s) {b : Ordinal} (hb : b ∈ s) :
@@ -109,9 +104,8 @@ theorem enumOrd_le_of_subset {t : Set Ordinal} (hs : ¬ BddAbove s) (hst : s ⊆
     enumOrd t ≤ enumOrd s := by
   intro a
   rw [enumOrd, enumOrd]
-  apply csInf_le_csInf' (enumOrd_nonempty hs a) (inter_subset_inter hst _)
-  intro b hb c hc
-  exact (enumOrd_le_of_subset hs hst c).trans_lt <| hb c hc
+  gcongr with b c
+  exacts [enumOrd_nonempty hs a, enumOrd_le_of_subset hs hst c]
 termination_by a => a
 
 /-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `s`. -/
@@ -125,6 +119,20 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hs : ¬ BddAbove s) :
 
 theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
   (eq_enumOrd _ hf.not_bddAbove_range_of_wellFoundedLT).2 ⟨hf, rfl⟩
+
+/-- If `s` is closed under nonempty suprema, then its enumerator function is normal.
+See also `enumOrd_isNormal_iff_isClosed`. -/
+theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t ∈ s) (hs : ¬ BddAbove s) :
+    IsNormal (enumOrd s) := by
+  refine (isNormal_iff_strictMono_limit _).2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
+  trans ⨆ b : Iio o, enumOrd s b
+  · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
+    · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
+      apply H _ _ (range_nonempty _) (bddAbove_of_small _)
+      rintro _ ⟨c, rfl⟩
+      exact enumOrd_mem hs c
+    · exact Ordinal.le_iSup _ (⟨_, ho.succ_lt hb⟩ : Iio o)
+  · exact Ordinal.iSup_le fun x ↦ ha _ x.2
 
 @[simp]
 theorem enumOrd_univ : enumOrd Set.univ = id := by

@@ -119,7 +119,7 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     simp [field_simps, y, ha, h9, h54]; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, cubic_depressed_eq_zero_iff hω hp_nonzero hr hs3 ht]
-  simp_rw [eq_sub_iff_add_eq]
+  simp_rw [y, eq_sub_iff_add_eq]
 
 /-- The solution of the cubic equation when p equals zero. -/
 theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
@@ -142,7 +142,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
         field_simp; ring
       _ = a * (x + b / (3 * a)) ^ 3 + (d - (9 * a * b * c - 2 * b ^ 3) * a / (3 * a) ^ 3) := by
         simp only [hb2, hb3]; field_simp [ha]; ring
-      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; field_simp [h54]; ring
+      _ = a * ((x + b / (3 * a)) ^ 3 - s ^ 3) := by rw [hs3, hq]; simp [field, h54]; ring
   have h₃ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have h₄ : ∀ x : K, x ^ 3 - s ^ 3 = (x - s) * (x - s * ω) * (x - s * ω ^ 2) := by
     intro x
@@ -218,7 +218,7 @@ theorem quartic_eq_zero_iff (ha : a ≠ 0)
     simp [field_simps, y, ha, h4, h8, h16, h256]; ring
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   rw [h₁, h₂, quartic_depressed_eq_zero_iff hq_nonzero hu hs hv hw]
-  simp_rw [eq_sub_iff_add_eq]
+  simp_rw [y, eq_sub_iff_add_eq]
 
 /-- The roots of a quartic polynomial when `q` equals zero. -/
 theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
@@ -249,7 +249,7 @@ theorem quartic_eq_zero_iff_of_q_eq_zero (ha : a ≠ 0)
       have ht' : discrim 1 p r = t * t := by rw [discrim]; linear_combination -ht
       rw [quadratic_eq_zero_iff one_ne_zero ht', mul_one]
     _ ↔ _ := by
-      simp_rw [← hv, ← hw, pow_two, mul_self_eq_mul_self_iff, eq_sub_iff_add_eq, or_assoc]
+      simp_rw [y, ← hv, ← hw, pow_two, mul_self_eq_mul_self_iff, eq_sub_iff_add_eq, or_assoc]
 
 end Quartic
 

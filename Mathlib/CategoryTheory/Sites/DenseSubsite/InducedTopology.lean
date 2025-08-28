@@ -62,7 +62,7 @@ theorem pushforward_cover_iff_cover_pullback [G.Full] [G.Faithful] {X : C} (S : 
 variable [G.IsLocallyFull K] [G.IsLocallyFaithful K]
 
 /-- If a functor `G : C ⥤ (D, K)` is fully faithful and locally dense,
-then the set `{ T ∩ mor(C) | T ∈ K }` is a grothendieck topology of `C`.
+then the set `{ T ∩ mor(C) | T ∈ K }` is a Grothendieck topology of `C`.
 -/
 @[simps]
 def inducedTopology : GrothendieckTopology C where
@@ -95,7 +95,7 @@ def inducedTopology : GrothendieckTopology C where
     apply K.pullback_stable i
     refine K.superset_covering ?_ (H' hg)
     rintro W _ ⟨Z', g', i', hg, rfl⟩
-    refine ⟨Z', g' ≫ g , i', hg, ?_⟩
+    refine ⟨Z', g' ≫ g, i', hg, ?_⟩
     simp
 
 @[simp]
@@ -118,9 +118,6 @@ instance (priority := 900) locallyCoverDense_of_isCoverDense [G.IsCoverDense K] 
 
 instance (priority := 900) [G.IsCoverDense K] : G.IsDenseSubsite (G.inducedTopology K) K where
   functorPushforward_mem_iff := Iff.rfl
-
-@[deprecated (since := "2024-07-23")]
-alias inducedTopologyOfIsCoverDense := inducedTopology
 
 variable (J)
 

@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
@@ -27,6 +26,11 @@ between a pair of `V`-functors (this requires limits in `V`),
 but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
 
 We verify that when `V = Type v`, all these notion reduce to the usual ones.
+
+## References
+
+* [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
+  [morrison-penney-enriched]
 -/
 
 
@@ -48,15 +52,18 @@ Note that we do not assume that `V` is a concrete category,
 so there may not be an "honest" underlying category at all!
 -/
 class EnrichedCategory (C : Type u₁) where
+  /-- `X ⟶[V] Y` is the `V` object of morphisms from `X` to `Y`. -/
   Hom : C → C → V
+  /-- The identity morphism of this category -/
   id (X : C) : 𝟙_ V ⟶ Hom X X
+  /-- Composition of two morphisms in this category -/
   comp (X Y Z : C) : Hom X Y ⊗ Hom Y Z ⟶ Hom X Z
-  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by aesop_cat
-  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by aesop_cat
+  id_comp (X Y : C) : (λ_ (Hom X Y)).inv ≫ id X ▷ _ ≫ comp X X Y = 𝟙 _ := by cat_disch
+  comp_id (X Y : C) : (ρ_ (Hom X Y)).inv ≫ _ ◁ id Y ≫ comp X Y Y = 𝟙 _ := by cat_disch
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
-    _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
+    _ ◁ comp X Y Z ≫ comp W X Z := by cat_disch
 
-notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+@[inherit_doc EnrichedCategory.Hom] notation3 X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
 variable {C : Type u₁} [EnrichedCategory V C]
 
@@ -96,7 +103,6 @@ section
 
 variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 
--- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.
@@ -132,6 +138,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
       F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc]
 
+lemma TransportEnrichment.eId_eq (X : TransportEnrichment F C) :
+    eId W X = ε F ≫ F.map (eId (C := C) V X) :=
+  rfl
+
+lemma TransportEnrichment.eComp_eq (X Y Z : TransportEnrichment F C) :
+    eComp W X Y Z = μ F _ _ ≫ F.map (eComp V _ _ _) :=
+  rfl
+
 end
 
 /-- Construct an honest category from a `Type v`-enriched category.
@@ -143,7 +157,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
   id_comp f := congr_fun (e_id_comp (Type v) _ _) f
   comp_id f := congr_fun (e_comp_id (Type v) _ _) f
-  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ : _)
+  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ :)
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
@@ -162,14 +176,11 @@ def enrichedCategoryTypeEquivCategory (C : Type u₁) :
     EnrichedCategory (Type v) C ≃ Category.{v} C where
   toFun _ := categoryOfEnrichedCategoryType C
   invFun _ := enrichedCategoryTypeOfCategory C
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -256,8 +267,14 @@ theorem forgetEnrichment_id' (X : C) :
 @[simp]
 theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ForgetEnrichment.homTo W (f ≫ g) =
-      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ ForgetEnrichment.homTo W g)) ≫
+      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
         eComp W _ _ _ :=
+  rfl
+
+@[simp]
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W ((λ_ _).inv ≫ (f ⊗ₘ g) ≫ eComp W ..) = homOf W f ≫ homOf W g := by
+  rw [← Category.assoc]
   rfl
 
 end
@@ -268,13 +285,15 @@ satisfying the usual axioms.
 -/
 structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
     [EnrichedCategory V D] where
+  /-- The application of this functor to an object -/
   obj : C → D
+  /-- The `V`-morphism from `X ⟶[V] Y` to `F.obj X ⟶[V] F.obj Y`, for all `X Y : C` -/
   map : ∀ X Y : C, (X ⟶[V] Y) ⟶ obj X ⟶[V] obj Y
-  map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by aesop_cat
+  map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by cat_disch
   map_comp :
     ∀ X Y Z : C,
-      eComp V X Y Z ≫ map X Z = (map X Y ⊗ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
-    aesop_cat
+      eComp V X Y Z ≫ map X Z = (map X Y ⊗ₘ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
+    cat_disch
 
 attribute [reassoc (attr := simp)] EnrichedFunctor.map_id
 
@@ -296,6 +315,16 @@ def EnrichedFunctor.comp {C : Type u₁} {D : Type u₂} {E : Type u₃} [Enrich
     (G : EnrichedFunctor V D E) : EnrichedFunctor V C E where
   obj X := G.obj (F.obj X)
   map _ _ := F.map _ _ ≫ G.map _ _
+
+lemma EnrichedFunctor.ext {C : Type u₁} {D : Type u₂} [EnrichedCategory V C]
+    [EnrichedCategory V D] {F G : EnrichedFunctor V C D} (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : C), F.map X Y ≫ eqToHom (by rw [h_obj, h_obj]) = G.map X Y) : F = G := by
+  match F, G with
+  | mk F_obj F_map _ _, mk G_obj G_map _ _ =>
+    obtain rfl : F_obj = G_obj := funext fun X ↦ h_obj X
+    congr
+    ext X Y
+    simpa using h_map X Y
 
 section
 
@@ -370,17 +399,104 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/
 @[ext]
 structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
+  /-- The `A`-graded transformation from `F` to `G` -/
   app : ∀ X : C, A.1 ⟶ F.obj X ⟶[V] G.obj X
+  /-- `app` is a natural transformation. -/
   naturality :
     ∀ X Y : C,
-      (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ app Y) ≫ eComp V _ _ _ =
-        (app X ⊗ G.map X Y) ≫ eComp V _ _ _
+      (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ₘ app Y) ≫ eComp V _ _ _ =
+        (app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _
+
+attribute [reassoc] GradedNatTrans.naturality
+
+/-- A natural transformation between two enriched functors is a `𝟙_ V`-graded natural
+transformation. -/
+abbrev EnrichedNatTrans (F G : EnrichedFunctor V C D) := GradedNatTrans Center.tensorUnit F G
+
+namespace EnrichedNatTrans
+
+open EnrichedCategory
+
+variable (F : EnrichedFunctor V C D)
+
+/-- The identity natural transformation on an enriched functor. -/
+@[simps]
+def id : EnrichedNatTrans F F where
+  app X := eId V (F.obj X)
+  naturality X Y := by
+    rw [tensorHom_def, tensorHom_def']
+    simp
+
+variable {F} {G H : EnrichedFunctor V C D}
+
+/-- The naturality condition of an enriched natural transformation from `F` to `G` as an equality
+of morphisms `Hom X Y ⟶ Hom (F.obj X) (G.obj Y)` for `X, Y : C`. -/
+@[reassoc]
+theorem naturality (α : EnrichedNatTrans F G) (X Y : C) :
+    (ρ_ _).inv ≫ (F.map X Y ⊗ₘ α.app Y) ≫ eComp V _ _ _ =
+    (λ_ _).inv ≫ (α.app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _ := by
+  have := GradedNatTrans.naturality α X Y
+  simp only [Center.tensorUnit_fst, Center.tensorUnit_snd_β, Iso.trans_hom, Iso.symm_hom,
+    Category.assoc] at this
+  rwa [Iso.eq_inv_comp]
+
+/-- The composition of enriched natural transformations. -/
+@[simps]
+def comp (α : EnrichedNatTrans F G) (β : EnrichedNatTrans G H) : EnrichedNatTrans F H where
+  app X := (ρ_ (𝟙_ V)).inv ≫ (α.app X ⊗ₘ β.app X) ≫ eComp _ _ _ _
+  naturality X Y := by
+    rw [tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, tensorHom_def, whiskerLeft_comp, Category.assoc,
+      associator_inv_naturality_right_assoc, associator_inv_naturality_middle_assoc,
+      whisker_exchange_assoc _ (β.app Y)]
+    simp only [Center.tensorUnit_fst]
+    rw [whiskerLeft_rightUnitor_inv, Category.assoc, Iso.hom_inv_id_assoc,
+      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ 𝟙_ V),
+      ← rightUnitor_inv_naturality_assoc (X := (F.obj X ⟶[V] F.obj Y) ⊗ (F.obj Y ⟶[V] G.obj Y)),
+      ← tensorHom_def_assoc, GradedNatTrans.naturality_assoc α]
+    simp only [Center.tensorUnit_fst]
+    rw [rightUnitor_inv_naturality_assoc, rightUnitor_inv_naturality_assoc,
+      rightUnitor_tensor_inv, tensorHom_def', Category.assoc, comp_whiskerRight, Category.assoc,
+      ← associator_inv_naturality_middle_assoc, ← associator_inv_naturality_left_assoc,
+      ← whisker_exchange_assoc, ← associator_inv_naturality_right_assoc,
+      ← whisker_exchange_assoc, e_assoc, ← whisker_exchange_assoc,
+      ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, ← whiskerLeft_comp_assoc, Category.assoc,
+      Category.assoc, ← tensorHom_def_assoc, β.naturality, ← tensorHom_def'_assoc,
+      tensorHom_def, whiskerLeft_comp, whiskerLeft_comp, Category.assoc, Category.assoc,
+      Category.assoc, ← e_assoc, ← whisker_exchange_assoc, ← tensorHom_def_assoc]
+    monoidal
+
+instance category : Category (EnrichedFunctor V C D) where
+  Hom F G := EnrichedNatTrans F G
+  id F := id F
+  comp α β := comp α β
+  comp_id α := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, id_app]
+    rw [tensorHom_def, Category.assoc, ← rightUnitor_inv_naturality_assoc]
+    simp
+  id_comp α := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, id_app]
+    rw [tensorHom_def', Category.assoc]
+    simp only [id_whiskerLeft, Category.assoc, e_id_comp, Category.comp_id]
+    monoidal
+  assoc α β γ := by
+    ext X
+    simp only [Center.tensorUnit_fst, comp_app, Iso.cancel_iso_inv_left]
+    rw [tensorHom_def', tensorHom_def', comp_whiskerRight, comp_whiskerRight,
+      Category.assoc, Category.assoc, Category.assoc, ← e_assoc', comp_whiskerRight,
+      Category.assoc, associator_naturality_left_assoc, associator_naturality_middle_assoc,
+      whisker_exchange_assoc, associator_naturality_right_assoc, ← whiskerLeft_comp_assoc,
+      ← tensorHom_def', whisker_exchange_assoc, ← whiskerLeft_comp_assoc, ← tensorHom_def_assoc]
+    monoidal
+
+end EnrichedNatTrans
 
 variable [BraidedCategory V]
 
@@ -425,8 +541,6 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
       map := fun _ _ f => F.map f
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- We verify that the presheaf representing natural transformations
 between `Type v`-enriched functors is actually represented by
@@ -444,7 +558,7 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
         inv := fun σ =>
           { app := fun X x => (σ x).app X
             naturality := fun X Y => by ext ⟨x, f⟩; exact (σ x).naturality f } })
-    (by aesop_cat)
+    (by cat_disch)
 
 end
 

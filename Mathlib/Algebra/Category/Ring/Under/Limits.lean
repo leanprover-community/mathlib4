@@ -38,8 +38,8 @@ variable {ι : Type u} (P : ι → Under R)
 
 /-- The canonical fan on `P : ι → Under R` given by `∀ i, P i`. -/
 def piFan : Fan P :=
-  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom))
-    (fun i ↦ Under.homMk (Pi.evalRingHom _ i))
+  Fan.mk (Under.mk <| ofHom <| Pi.ringHom (fun i ↦ (P i).hom.hom))
+    (fun i ↦ Under.homMk (ofHom <| Pi.evalRingHom _ i))
 
 /-- The canonical fan is limiting. -/
 def piFanIsLimit : IsLimit (piFan P) :=
@@ -68,8 +68,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     apply CommRingCat.mkUnder_ext
     intro c
     induction c
-    · simp only [AlgHom.toUnder_right, map_zero, Under.comp_right, comp_apply,
-        AlgEquiv.toUnder_hom_right_apply, Pi.evalAlgHom_apply, Pi.zero_apply]
+    · simp only [map_zero, Under.comp_right]
     · simp only [AlgHom.toUnder_right, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
         Pi.evalAlgHom_apply, Under.comp_right, comp_apply, AlgEquiv.toUnder_hom_right_apply,
         Algebra.TensorProduct.piRight_tmul]
@@ -82,6 +81,7 @@ def tensorProductFanIsLimit [Finite ι] : IsLimit (tensorProductFan S P) :=
   (IsLimit.equivIsoLimit (tensorProductFanIso P)).symm (Under.piFanIsLimit _)
 
 /-- `tensorProd R S` preserves the limit of the canonical fan on `P`. -/
+noncomputable -- marked noncomputable for performance (only)
 def piFanTensorProductIsLimit [Finite ι] : IsLimit ((tensorProd R S).mapCone (Under.piFan P)) :=
   (isLimitMapConeFanMkEquiv (tensorProd R S) P _).symm <| tensorProductFanIsLimit P
 
@@ -91,16 +91,12 @@ instance (J : Type u) [Finite J] (f : J → Under R) :
   have hc : IsLimit c := Under.piFanIsLimit f
   preservesLimit_of_preserves_limit_cone hc (piFanTensorProductIsLimit f)
 
-instance (J : Type) [Finite J] :
-    PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
-  let J' : Type u := ULift.{u} J
-  have : PreservesLimitsOfShape (Discrete J') (tensorProd R S) :=
-    preservesLimitsOfShape_of_discrete (tensorProd R S)
-  let e : Discrete J' ≌ Discrete J := Discrete.equivalence Equiv.ulift
-  preservesLimitsOfShape_of_equiv e (R.tensorProd S)
-
 instance : PreservesFiniteProducts (tensorProd R S) where
-  preserves J := { }
+  preserves n :=
+    let J : Type u := ULift.{u} (Fin n)
+    have : PreservesLimitsOfShape (Discrete J) (tensorProd R S) :=
+      preservesLimitsOfShape_of_discrete (tensorProd R S)
+    preservesLimitsOfShape_of_equiv (Discrete.equivalence Equiv.ulift) (R.tensorProd S)
 
 end Pi
 
@@ -135,7 +131,8 @@ lemma equalizerFork'_ι {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [
     (Under.equalizerFork' f g).ι = (AlgHom.equalizer f g).val.toUnder := rfl
 
 /-- The canonical fork on `f g : A ⟶ B` is limiting. -/
-def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
+-- marked noncomputable for performance (only)
+noncomputable def equalizerForkIsLimit {A B : Under R} (f g : A ⟶ B) :
     IsLimit (Under.equalizerFork f g) :=
   isLimitOfReflects (Under.forget R) <|
     (isLimitMapConeForkEquiv (Under.forget R) (equalizer_comp f g)).invFun <|
@@ -161,7 +158,8 @@ lemma tensorProdEqualizer_ι {A B : Under R} (f g : A ⟶ B) :
   rfl
 
 /-- If `S` is `R`-flat, `S ⊗[R] eq(f, g)` is isomorphic to `eq(𝟙 ⊗[R] f, 𝟙 ⊗[R] g)`. -/
-def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
+-- marked noncomputable for performance (only)
+noncomputable def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
     tensorProdEqualizer f g ≅ Under.equalizerFork'
         (Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom f))
         (Algebra.TensorProduct.map (AlgHom.id S S) (toAlgHom g)) :=
@@ -170,6 +168,7 @@ def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B)
     apply AlgHom.coe_tensorEqualizer
 
 /-- If `S` is `R`-flat, `tensorProd R S` preserves the equalizer of `f` and `g`. -/
+noncomputable -- marked noncomputable for performance (only)
 def tensorProdMapEqualizerForkIsLimit [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :
     IsLimit ((tensorProd R S).mapCone <| Under.equalizerFork f g) :=
   (isLimitMapConeForkEquiv (tensorProd R S) _).symm <|
@@ -200,14 +199,14 @@ variable (f : R ⟶ S)
 /-- `Under.pushout f` preserves finite products. -/
 instance : PreservesFiniteProducts (Under.pushout f) where
   preserves _ :=
-    letI : Algebra R S := RingHom.toAlgebra f
+    letI : Algebra R S := f.hom.toAlgebra
     preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 
 /-- `Under.pushout f` preserves finite limits if `f` is flat. -/
-lemma preservesFiniteLimits_of_flat (hf : RingHom.Flat f) :
+lemma preservesFiniteLimits_of_flat (hf : RingHom.Flat f.hom) :
     PreservesFiniteLimits (Under.pushout f) where
   preservesFiniteLimits _ :=
-    letI : Algebra R S := RingHom.toAlgebra f
+    letI : Algebra R S := f.hom.toAlgebra
     haveI : Module.Flat R S := hf
     preservesLimitsOfShape_of_natIso (tensorProdIsoPushout R S)
 

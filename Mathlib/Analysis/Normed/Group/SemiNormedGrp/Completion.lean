@@ -43,30 +43,27 @@ namespace SemiNormedGrp
 @[simps]
 def completion : SemiNormedGrp.{u} ⥤ SemiNormedGrp.{u} where
   obj V := SemiNormedGrp.of (Completion V)
-  map f := f.completion
-  map_id _ := completion_id
-  map_comp f g := (completion_comp f g).symm
+  map f := SemiNormedGrp.ofHom f.hom.completion
+  map_id _ := SemiNormedGrp.hom_ext completion_id
+  map_comp f g := SemiNormedGrp.hom_ext (completion_comp f.hom g.hom).symm
 
 instance completion_completeSpace {V : SemiNormedGrp} : CompleteSpace (completion.obj V) :=
   Completion.completeSpace _
 
 /-- The canonical morphism from a seminormed group `V` to its completion. -/
-@[simps]
-def completion.incl {V : SemiNormedGrp} : V ⟶ completion.obj V where
-  toFun v := (v : Completion V)
-  map_add' := Completion.coe_add
-  bound' := ⟨1, fun v => by simp⟩
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] SemiNormedGrp.completion.incl_apply
+def completion.incl {V : SemiNormedGrp} : V ⟶ completion.obj V :=
+  ofHom
+  { toFun v := (v : Completion V)
+    map_add' := Completion.coe_add
+    bound' := ⟨1, fun v => by simp⟩ }
 
 theorem completion.norm_incl_eq {V : SemiNormedGrp} {v : V} : ‖completion.incl v‖ = ‖v‖ :=
   UniformSpace.Completion.norm_coe _
 
-theorem completion.map_normNoninc {V W : SemiNormedGrp} {f : V ⟶ W} (hf : f.NormNoninc) :
-    (completion.map f).NormNoninc :=
+theorem completion.map_normNoninc {V W : SemiNormedGrp} {f : V ⟶ W} (hf : f.hom.NormNoninc) :
+    (completion.map f).hom.NormNoninc :=
   NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.2 <|
-    (NormedAddGroupHom.norm_completion f).le.trans <|
+    (NormedAddGroupHom.norm_completion f.hom).le.trans <|
       NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.1 hf
 
 variable (V W : SemiNormedGrp)
@@ -76,45 +73,27 @@ from the completion of `V` to the completion of `W`.
 The difference from the definition obtained from the functoriality of completion is in that the
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
 def completion.mapHom (V W : SemiNormedGrp.{u}) :
-    -- Porting note: cannot see instances through concrete cats
-    have (V W : SemiNormedGrp.{u}) : AddGroup (V ⟶ W) :=
-      inferInstanceAs <| AddGroup <| NormedAddGroupHom V W
-    (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
-  @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g => f.completion_add g
+     (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
+  @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g =>
+    SemiNormedGrp.hom_ext (f.hom.completion_add g.hom)
 
--- @[simp] -- Porting note: removed simp since LHS simplifies and is not used
 theorem completion.map_zero (V W : SemiNormedGrp) : completion.map (0 : V ⟶ W) = 0 :=
-  -- Porting note: cannot see instances through concrete cats
-  @AddMonoidHom.map_zero _ _ (_) (_) (completion.mapHom V W)
+  (completion.mapHom V W).map_zero
 
 instance : Preadditive SemiNormedGrp.{u} where
-  homGroup P Q := inferInstanceAs <| AddCommGroup <| NormedAddGroupHom P Q
-  add_comp _ Q _ f f' g := by
-    ext x
-    -- Porting note: failing simps probably due to instance synthesis issues with concrete
-    -- cats; see the gymnastics below for what used to be
-    -- simp only [add_apply, comp_apply. map_add]
-    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
-      CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
-    convert map_add g (f x) (f' x)
-  comp_add _ _ _ _ _ _ := by
-    ext
-    -- Porting note: failing simps probably due to instance synthesis issues with concrete
-    -- cats; see the gymnastics below for what used to be
-    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
-      CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
 
 instance : Functor.Additive completion where
-  map_add := NormedAddGroupHom.completion_add _ _
+  map_add := SemiNormedGrp.hom_ext <| NormedAddGroupHom.completion_add _ _
 
 /-- Given a normed group hom `f : V → W` with `W` complete, this provides a lift of `f` to
 the completion of `V`. The lemmas `lift_unique` and `lift_comp_incl` provide the api for the
 universal property of the completion. -/
 def completion.lift {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W] (f : V ⟶ W) :
-    completion.obj V ⟶ W where
-  toFun := f.extension
-  map_add' := f.extension.toAddMonoidHom.map_add'
-  bound' := f.extension.bound'
+    completion.obj V ⟶ W :=
+  ofHom
+  { toFun := f.hom.extension
+    map_add' := f.hom.extension.toAddMonoidHom.map_add'
+    bound' := f.hom.extension.bound' }
 
 theorem completion.lift_comp_incl {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) : completion.incl ≫ completion.lift f = f :=
@@ -122,7 +101,7 @@ theorem completion.lift_comp_incl {V W : SemiNormedGrp} [CompleteSpace W] [T0Spa
 
 theorem completion.lift_unique {V W : SemiNormedGrp} [CompleteSpace W] [T0Space W]
     (f : V ⟶ W) (g : completion.obj V ⟶ W) : completion.incl ≫ g = f → g = completion.lift f :=
-  fun h => (NormedAddGroupHom.extension_unique _ fun v =>
-    ((NormedAddGroupHom.ext_iff.1 h) v).symm).symm
+  fun h => SemiNormedGrp.hom_ext (NormedAddGroupHom.extension_unique _ fun v =>
+    ((SemiNormedGrp.ext_iff.1 h) v).symm).symm
 
 end SemiNormedGrp

@@ -37,6 +37,8 @@ open CategoryTheory CategoryTheory.Limits
 
 open Opposite
 
+open scoped Simplicial
+
 namespace AlgebraicTopology
 
 variable {C : Type*} [Category C] [Abelian C]
@@ -55,7 +57,7 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
-def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
+def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 
@@ -82,7 +84,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     apply kernelSubobject_factors
     dsimp [objX]
     -- Use a simplicial identity
-    erw [Category.assoc, ← X.δ_comp_δ (Fin.zero_le i.succ)]
+    rw [Category.assoc, ← Fin.castSucc_zero, ← X.δ_comp_δ (Fin.zero_le i.succ)]
     -- We can rewrite the arrow out of the intersection of all the kernels as a composition
     -- of a morphism we don't care about with the arrow out of the kernel of `X.δ i.succ.succ`.
     rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i.succ (by simp)),
@@ -90,13 +92,14 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
 
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
-    -- after the first erw the proofs are almost identical
+    -- after the first rw the proofs are almost identical
   rcases n with _ | n <;> dsimp [objD]
-  · erw [Subobject.factorThru_arrow_assoc, Category.assoc,
+  · rw [Subobject.factorThru_arrow_assoc, Category.assoc, ← Fin.castSucc_zero,
       ← X.δ_comp_δ_assoc (Fin.zero_le (0 : Fin 2)),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin 2) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
-  · erw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
+  · rw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
+      ← Fin.castSucc_zero,
       ← X.δ_comp_δ (Fin.zero_le (0 : Fin (n + 3))),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin (n + 3)) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
@@ -116,22 +119,23 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
+    (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
       · apply top_factors
       · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
-        erw [Category.assoc, ← f.naturality,
+        rw [Category.assoc, SimplicialObject.δ, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
-          Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
+          Category.assoc]
+        erw [kernelSubobject_arrow_comp_assoc]
+        rw [zero_comp, comp_zero]))
     fun n => by
-    cases n <;> dsimp [objD, objX] <;> aesop_cat
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 
 open NormalizedMooreComplex
 
-variable (C)
-
+variable (C) in
 /-- The (normalized) Moore complex of a simplicial object `X` in an abelian category `C`.
 
 The `n`-th object is intersection of
@@ -144,16 +148,10 @@ which maps each of these intersections of kernels to the next.
 def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
-  -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
-  map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
-  map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
 
-variable {C}
-
--- Porting note: removed @[simp] as it is not in normal form
+-- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
--- Porting note: in mathlib, `apply ChainComplex.of_d` was enough
   ChainComplex.of_d _ _ (d_squared X) n
 
 end AlgebraicTopology

@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2021 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fox Thomson, Yaël Dillies
+Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 -/
 import Mathlib.Computability.NFA
+import Mathlib.Data.List.ReduceOption
 
 /-!
 # Epsilon Nondeterministic Finite Automata
@@ -41,7 +42,7 @@ structure εNFA (α : Type u) (σ : Type v) where
   /-- Set of acceptance states. -/
   accept : Set σ
 
-variable {α : Type u} {σ : Type v} (M : εNFA α σ) {S : Set σ} {s : σ} {a : α}
+variable {α : Type u} {σ : Type v} (M : εNFA α σ) {S : Set σ} {s t u : σ} {a : α}
 
 namespace εNFA
 
@@ -57,11 +58,23 @@ theorem subset_εClosure (S : Set σ) : S ⊆ M.εClosure S :=
 
 @[simp]
 theorem εClosure_empty : M.εClosure ∅ = ∅ :=
-  eq_empty_of_forall_not_mem fun s hs ↦ by induction hs <;> assumption
+  eq_empty_of_forall_notMem fun s hs ↦ by induction hs <;> assumption
 
 @[simp]
 theorem εClosure_univ : M.εClosure univ = univ :=
   eq_univ_of_univ_subset <| subset_εClosure _ _
+
+theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
+  mp h := by
+    induction h with
+    | base => tauto
+    | step _ _ _ _ ih =>
+      obtain ⟨s, _, _⟩ := ih
+      use s
+      solve_by_elim [εClosure.step]
+  mpr := by
+    intro ⟨t, _, h⟩
+    induction h <;> subst_vars <;> solve_by_elim [εClosure.step]
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
@@ -99,9 +112,17 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 
 @[simp]
 theorem evalFrom_empty (x : List α) : M.evalFrom ∅ x = ∅ := by
-  induction' x using List.reverseRecOn with x a ih
-  · rw [evalFrom_nil, εClosure_empty]
-  · rw [evalFrom_append_singleton, ih, stepSet_empty]
+  induction x using List.reverseRecOn with
+  | nil => rw [evalFrom_nil, εClosure_empty]
+  | append_singleton x a ih => rw [evalFrom_append_singleton, ih, stepSet_empty]
+
+theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
+    s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
+  induction x using List.reverseRecOn generalizing s with
+  | nil => apply mem_εClosure_iff_exists
+  | append_singleton _ _ ih =>
+    simp_rw [evalFrom_append_singleton, mem_stepSet_iff, ih]
+    tauto
 
 /-- `M.eval x` computes all possible paths through `M` with input `x` starting at an element of
 `M.start`. -/
@@ -123,6 +144,117 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
 def accepts : Language α :=
   { x | ∃ S ∈ M.accept, S ∈ M.eval x }
+
+/-- `M.IsPath` represents a traversal in `M` from a start state to an end state by following a list
+of transitions in order. -/
+@[mk_iff]
+inductive IsPath : σ → σ → List (Option α) → Prop
+  | nil (s : σ) : IsPath s s []
+  | cons (t s u : σ) (a : Option α) (x : List (Option α)) :
+      t ∈ M.step s a → IsPath t u x → IsPath s u (a :: x)
+
+@[simp]
+theorem isPath_nil : M.IsPath s t [] ↔ s = t := by
+  rw [isPath_iff]
+  simp [eq_comm]
+
+alias ⟨IsPath.eq_of_nil, _⟩ := isPath_nil
+
+@[simp]
+theorem isPath_singleton {a : Option α} : M.IsPath s t [a] ↔ t ∈ M.step s a where
+  mp := by
+    rintro (_ | ⟨_, _, _, _, _, _, ⟨⟩⟩)
+    assumption
+  mpr := by tauto
+
+alias ⟨_, IsPath.singleton⟩ := isPath_singleton
+
+theorem isPath_append {x y : List (Option α)} :
+    M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
+  mp := by
+    induction x generalizing s with
+    | nil =>
+      rw [List.nil_append]
+      tauto
+    | cons x a ih =>
+      rintro (_ | ⟨t, _, _, _, _, _, h⟩)
+      apply ih at h
+      tauto
+  mpr := by
+    intro ⟨t, hx, _⟩
+    induction x generalizing s <;> cases hx <;> tauto
+
+theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
+    s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (.replicate n none) where
+  mp h := by
+    induction h with
+    | base t =>
+      use 0
+      subst t
+      apply IsPath.nil
+    | step _ _ _ _ ih =>
+      obtain ⟨n, _⟩ := ih
+      use n + 1
+      rw [List.replicate_add, isPath_append]
+      tauto
+  mpr := by
+    intro ⟨n, h⟩
+    induction n generalizing s₂
+    · rw [List.replicate_zero] at h
+      apply IsPath.eq_of_nil at h
+      solve_by_elim
+    · simp_rw [List.replicate_add, isPath_append, List.replicate_one, isPath_singleton] at h
+      obtain ⟨t, _, _⟩ := h
+      solve_by_elim [εClosure.step]
+
+theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
+    s₂ ∈ M.evalFrom {s₁} x ↔ ∃ x', x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' := by
+  induction x using List.reverseRecOn generalizing s₂ with
+  | nil =>
+    rw [evalFrom_nil, mem_εClosure_iff_exists_path]
+    constructor
+    · intro ⟨n, _⟩
+      use List.replicate n none
+      rw [List.reduceOption_replicate_none]
+      trivial
+    · simp_rw [List.reduceOption_eq_nil_iff]
+      intro ⟨_, ⟨n, rfl⟩, h⟩
+      exact ⟨n, h⟩
+  | append_singleton x a ih =>
+    rw [evalFrom_append_singleton, mem_stepSet_iff]
+    constructor
+    · intro ⟨t, ht, h⟩
+      obtain ⟨x', _, _⟩ := ih.mp ht
+      rw [mem_εClosure_iff_exists] at h
+      simp_rw [mem_εClosure_iff_exists_path] at h
+      obtain ⟨u, _, n, _⟩ := h
+      use x' ++ some a :: List.replicate n none
+      rw [List.reduceOption_append, List.reduceOption_cons_of_some,
+        List.reduceOption_replicate_none, isPath_append]
+      tauto
+    · simp_rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff,
+        List.reduceOption_eq_nil_iff]
+      intro ⟨_, ⟨x', _, rfl, _, n, rfl⟩, h⟩
+      rw [isPath_append] at h
+      obtain ⟨t, _, _ | u⟩ := h
+      use t
+      rw [mem_εClosure_iff_exists, ih]
+      simp_rw [mem_εClosure_iff_exists_path]
+      tauto
+
+theorem mem_accepts_iff_exists_path {x : List α} :
+    x ∈ M.accepts ↔
+      ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' where
+  mp := by
+    intro ⟨s₂, _, h⟩
+    rw [eval, mem_evalFrom_iff_exists] at h
+    obtain ⟨s₁, _, h⟩ := h
+    rw [mem_evalFrom_iff_exists_path] at h
+    tauto
+  mpr := by
+    intro ⟨s₁, s₂, x', hs₁, hs₂, h⟩
+    have := M.mem_evalFrom_iff_exists.mpr ⟨_, hs₁, M.mem_evalFrom_iff_exists_path.mpr ⟨_, h⟩⟩
+    exact ⟨s₂, hs₂, this⟩
 
 /-! ### Conversions between `εNFA` and `NFA` -/
 

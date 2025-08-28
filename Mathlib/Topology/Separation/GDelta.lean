@@ -7,7 +7,7 @@ import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.GDelta.Basic
 
 /-!
@@ -17,7 +17,7 @@ import Mathlib.Topology.GDelta.Basic
 
 * `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
   closed sets are Gδ.
-* `T6Space`: A T₆ space is a Perfectly normal T₁ space. T₆ implies T₅.
+* `T6Space`: A T₆ space is a perfectly normal T₀ space. T₆ implies T₅.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
@@ -35,7 +35,6 @@ section Separation
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
 
-@[deprecated (since := "2024-02-15")] alias isGδ_compl_singleton := IsGδ.compl_singleton
 
 theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
@@ -56,18 +55,17 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
 
-@[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=
-  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
+  Finite.induction_on _ hs .empty fun _ _ ↦ .union (.singleton _)
 
 
 section PerfectlyNormal
 
 /-- A topological space `X` is a *perfectly normal space* provided it is normal and
 closed sets are Gδ. -/
-class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] extends NormalSpace X : Prop where
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] : Prop extends NormalSpace X where
     closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 
 /-- Lemma that allows the easy conclusion that perfectly normal spaces are completely normal. -/
@@ -108,13 +106,27 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
        ((Disjoint.symm hd₁).hasSeparatingCover_closed_gdelta_right isClosed_closure <|
          closed_gdelta isClosed_closure).mono (fun ⦃_⦄ a ↦ a) subset_closure⟩
 
-/-- A T₆ space is a perfectly normal T₁ space. -/
-class T6Space (X : Type u) [TopologicalSpace X] extends T1Space X, PerfectlyNormalSpace X : Prop
+/-- In a perfectly normal space, all closed sets are Gδ. -/
+theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : IsGδ s :=
+  PerfectlyNormalSpace.closed_gdelta hs
+
+instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
+  specializes_symmetric x y hxy := by
+    rw [specializes_iff_forall_closed]
+    intro K hK hyK
+    apply IsClosed.isGδ at hK
+    obtain ⟨Ts, hoTs, -, rfl⟩ := hK
+    rw [mem_sInter] at hyK ⊢
+    intros
+    solve_by_elim [hxy.mem_open]
+
+/-- A T₆ space is a perfectly normal T₀ space. -/
+class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
-  -- follows from type-class inference
+
 end PerfectlyNormal
 
 end Separation

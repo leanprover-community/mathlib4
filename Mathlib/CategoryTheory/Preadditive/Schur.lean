@@ -93,12 +93,6 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
--- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
--- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
--- where we need a `FiniteDimensional 𝕜 (End X)`.
--- These are definitionally equal, but without eta reduction Lean can't see this.
--- To get around this, we use `convert I`,
--- then check the various instances agree field-by-field,
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.
@@ -184,14 +178,10 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
-  refine ⟨fun h => by rw [h]; simp, fun h => ?_⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
-  interval_cases finrank 𝕜 (X ⟶ Y)
-  · rfl
-  · exact False.elim (h rfl)
+  omega
 
-open scoped Classical
-
+open scoped Classical in
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) = if Nonempty (X ≅ Y) then 1 else 0 := by
   split_ifs with h

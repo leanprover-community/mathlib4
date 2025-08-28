@@ -16,7 +16,7 @@ example [AddZeroClass G] {a : G} : a + a = a + (a + 0) := by
 
 structure F where
   (a : ℕ)
-  (v : Mathlib.Vector ℕ a)
+  (v : List.Vector ℕ a)
   (p : v.val = [])
 
 example (f : F) : f.v.val = [] := by
@@ -38,15 +38,12 @@ example (C : Cat) (W X Y Z : C.O) (f : C.H X Y) (g : C.H W X) (h _k : C.H Y Z) :
 example (C : Cat) (X Y : C.O) (f : C.H X Y) : C.c f (C.i Y) = f := by
   nth_rw 1 [C.ri]
 
--- Porting note: the next test fails because `nth_rewrite` has unfortunately changed behaviour
--- since mathlib3.
-
--- example (x y z : ℕ) (h1 : x = y) (h2 : y = z) :
---   x + x + x + y = y + y + x + x := by
---   nth_rewrite 3 [h1, h2] -- h2 is not used
---   nth_rewrite 3 [h2]
---   repeat { rw [h1] }
---   repeat { rw [h2] }
+example (x y z : ℕ) (h1 : x = y) (h2 : y = z) :
+    x + x + x + y = y + y + x + x := by
+  nth_rewrite 3 [h1, h2] -- h2 *is* used, this is different from mathlib3
+  nth_rewrite 3 [h2]
+  rw [h1]
+  rw [h2]
 
 axiom foo : [1] = [2]
 
@@ -63,34 +60,27 @@ example : [[7],[6]] = [[5],[5]] := by
   nth_rewrite 1 [← foo']
   rfl
 
--- Porting note:
--- The next two tests fail because the `nth_rewrite` we have in mathlib4
--- is just a syntactic wrapper around the `Occurrences` argument
--- for the internal rewriting functions,
--- and not actually a port of the mathlib3 tactic.
--- Thus is suffers from the exact same problem:
--- when a lemma matches in several different ways,
--- we cannot rewrite via the later ones because of stuck metavariables.
+example (a b c : ℕ) : c + a + b = a + c + b := by
+  nth_rewrite 4 [add_comm]
+  rfl
 
--- example (a b c : ℕ) : c + a + b = a + c + b := by
---   nth_rewrite 4 [add_comm]
+axiom wowzer : (3, 3) = (5, 2)
+axiom kachow (n : ℕ) : (4, n) = (5, n)
+axiom pchew (n : ℕ) : (n, 5) = (5, n)
+axiom smash (n m : ℕ) : (n, m) = (1, 1)
 
--- axiom wowzer : (3, 3) = (5, 2)
--- axiom kachow (n : ℕ) : (4, n) = (5, n)
--- axiom pchew (n : ℕ) : (n, 5) = (5, n)
--- axiom smash (n m : ℕ) : (n, m) = (1, 1)
+example : [(3, 3), (5, 9), (5, 9)] = [(4, 5), (3, 6), (1, 1)] := by
+  nth_rewrite 1 [wowzer]
+  nth_rewrite 3 [← pchew]
+  nth_rewrite 1 [pchew]
 
--- example : [(3, 3), (5, 9), (5, 9)] = [(4, 5), (3, 6), (1, 1)] := by
---   nth_rewrite 1 [wowzer]
---   nth_rewrite 3 [← pchew]
---   nth_rewrite 1 [pchew]
-
---   nth_rewrite 1 [smash]
---   nth_rewrite 2 [smash]
---   nth_rewrite 3 [smash]
---   nth_rewrite 4 [smash]
---   nth_rewrite 5 [smash]
---   nth_rewrite 6 [smash]
+  nth_rewrite 1 [smash]
+  nth_rewrite 2 [smash]
+  nth_rewrite 3 [smash]
+  nth_rewrite 4 [smash]
+  nth_rewrite 5 [smash]
+  nth_rewrite 6 [smash]
+  rfl
 
 example (x y : Prop) (h₁ : x ↔ y) (h₂ : x ↔ x ∧ x) : x ∧ x ↔ x := by
   nth_rewrite 3 [h₁] at h₂

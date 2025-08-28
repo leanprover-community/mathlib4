@@ -3,8 +3,7 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Algebra.Group.Nat.Basic
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Convert
@@ -23,6 +22,8 @@ See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLe
 and `Nat.digits`.
 -/
 
+assert_not_exists Monoid
+
 -- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => xor
@@ -40,7 +41,7 @@ def boddDiv2 : ℕ → Bool × ℕ
     | (false, m) => (true, m)
     | (true, m) => (false, succ m)
 
-/-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
+/-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2` -/
 def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
 
 /-- `bodd n` returns `true` if `n` is odd -/
@@ -62,7 +63,7 @@ lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
 lemma bodd_add (m n : ℕ) : bodd (m + n) = bxor (bodd m) (bodd n) := by
   induction n
   case zero => simp
-  case succ n ih => simp [← Nat.add_assoc, Bool.xor_not, ih]
+  case succ n ih => simp [← Nat.add_assoc, ih]
 
 @[simp]
 lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
@@ -95,14 +96,14 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
+  rcases boddDiv2 n with ⟨_ |_, _⟩ <;> simp
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
 lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
   | succ n => by
-    simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
+    simp only [bodd_succ, div2_succ, Nat.mul_comm]
     refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
@@ -120,8 +121,8 @@ lemma bit_zero : bit false 0 = 0 :=
   rfl
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
- and adds the bit `b` as the least significant bit each time.
- Returns the corresponding natural number -/
+and adds the bit `b` as the least significant bit each time.
+Returns the corresponding natural number -/
 def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
   | 0 => m
   | n + 1 => bit b (shiftLeft' b m n)
@@ -151,7 +152,7 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 
 /-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
-    the head of the list represents the least significant bit -/
+the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 

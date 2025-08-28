@@ -1,0 +1,34 @@
+name: bot fix style
+
+# triggers the action when
+on:
+  issue_comment:
+    # the PR receives a comment, or a comment is edited
+    types: [created, edited]
+  pull_request_review:
+    # triggers on a review, whether or not it is accompanied by a comment
+    types: [submitted]
+  pull_request_review_comment:
+    # triggers on a review comment
+    types: [created, edited]
+
+jobs:
+  fix_style:
+    # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
+    # both set simultaneously: depending on the event that triggers the PR, usually only one is set
+    env:
+      AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      COMMENT_EVENT: ${{ github.event.comment.body }}
+      COMMENT_REVIEW: ${{ github.event.review.body }}
+      COMMENT_REVIEW_COMMENT: ${{ github.event.pull_request_review_comment.body }}
+    name: Fix style issues from lint
+    # the `if` works with `comment`s, but not with `review`s or `review_comment`s
+    # if: github.event.issue.pull_request
+    # && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
+        with:
+          mode: fix
+          lint-bib-file: true
+          BOT_FIX_STYLE_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -22,8 +22,7 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
 
 namespace Prefunctor
 
--- Porting note: added during port.
--- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
+-- These lemmas cannot be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
 lemma mk_obj {V W : Type*} [Quiver V] [Quiver W] {obj : V → W} {map} {X : V} :
     (Prefunctor.mk obj map).obj X = obj X := rfl
@@ -44,6 +43,18 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
   congr
   funext X Y f
   simpa using h_map X Y f
+
+/-- This may be a more useful form of `Prefunctor.ext`. -/
+theorem ext' {V W : Type u} [Quiver V] [Quiver W] {F G : Prefunctor V W}
+    (h_obj : ∀ X, F.obj X = G.obj X)
+    (h_map : ∀ (X Y : V) (f : X ⟶ Y),
+      F.map f = Quiver.homOfEq (G.map f) (h_obj _).symm (h_obj _).symm) : F = G := by
+  obtain ⟨Fobj, Fmap⟩ := F
+  obtain ⟨Gobj, Gmap⟩ := G
+  obtain rfl : Fobj = Gobj := funext h_obj
+  simp only [mk.injEq, heq_eq_eq, true_and]
+  ext X Y f
+  simpa only [Quiver.homOfEq_rfl] using h_map X Y f
 
 /-- The identity morphism between quivers. -/
 @[simps]
@@ -87,5 +98,22 @@ notation "𝟭q" => id
 theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
     (h : f = g) : F.map f = F.map g := by
   rw [h]
+
+/-- An equality of prefunctors gives an equality on objects. -/
+theorem congr_obj {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = G) (X : U) :
+    F.obj X = G.obj X := by cases e; rfl
+
+/-- An equality of prefunctors gives an equality on homs. -/
+theorem congr_hom {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = G) {X Y : U}
+    (f : X ⟶ Y) : Quiver.homOfEq (F.map f) (congr_obj e X) (congr_obj e Y) = G.map f := by
+  subst e
+  simp
+
+/-- Prefunctors commute with `homOfEq`. -/
+@[simp]
+theorem homOfEq_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} (f : X ⟶ Y)
+    {X' Y' : U} (hX : X = X') (hY : Y = Y') :
+    F.map (Quiver.homOfEq f hX hY) =
+      Quiver.homOfEq (F.map f) (congr_arg F.obj hX) (congr_arg F.obj hY) := by subst hX hY; simp
 
 end Prefunctor

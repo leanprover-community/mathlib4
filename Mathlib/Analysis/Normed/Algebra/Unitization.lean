@@ -213,9 +213,6 @@ theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
   comap_uniformity := rfl
   injective := (addEquiv 𝕜 A).injective
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
-
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
@@ -232,7 +229,7 @@ noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   dist_eq := normedRingAux.dist_eq
-  norm_mul := normedRingAux.norm_mul
+  norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
-import Mathlib.CategoryTheory.Bicategory.Adjunction
+import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 import Mathlib.Tactic.TFAE
 
 /-!

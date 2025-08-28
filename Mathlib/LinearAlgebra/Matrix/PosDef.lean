@@ -20,8 +20,10 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main results
 
-* `Matrix.posSemidef_iff_eq_transpose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
+* `Matrix.posSemidef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   semidefinite iff it has the form `Bᴴ * B` for some `B`.
+* `Matrix.posDef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
+  definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
 * `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
 -/
@@ -43,7 +45,7 @@ open scoped Matrix
 /-- A matrix `M : Matrix n n R` is positive semidefinite if it is Hermitian and `xᴴ * M * x` is
 nonnegative for all `x`. -/
 def PosSemidef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n → R, 0 ≤ dotProduct (star x) (M *ᵥ x)
+  M.IsHermitian ∧ ∀ x : n → R, 0 ≤ star x ⬝ᵥ (M *ᵥ x)
 
 protected theorem PosSemidef.diagonal [StarOrderedRing R] [DecidableEq n] {d : n → R} (h : 0 ≤ d) :
     PosSemidef (diagonal d) :=
@@ -63,7 +65,7 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosSemidef) : M.IsHermitian :=
   hM.1
 
 theorem re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
-    0 ≤ RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
+    0 ≤ RCLike.re (star x ⬝ᵥ (M *ᵥ x)) :=
   RCLike.nonneg_iff.mp (hM.2 _) |>.1
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
@@ -90,9 +92,18 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
 theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
   convert hM.2 (star x) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
+
+@[simp]
+theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
+  ⟨(by simpa using ·.transpose), .transpose⟩
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
+
+@[simp]
+theorem _root_.Matrix.posSemidef_conjTranspose_iff {M : Matrix n n R} :
+    Mᴴ.PosSemidef ↔ M.PosSemidef :=
+  ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 protected lemma zero : PosSemidef (0 : Matrix n n R) :=
   ⟨isHermitian_zero, by simp⟩
@@ -106,11 +117,10 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
   ⟨isHermitian_natCast _, fun x => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
+    exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
-    PosSemidef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosSemidef (ofNat(d) : Matrix n n R) :=
   .natCast d
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
@@ -118,13 +128,13 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
   ⟨isHermitian_intCast _, fun x => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
+    exact zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
 protected theorem _root_.Matrix.posSemidef_intCast_iff
     [StarOrderedRing R] [DecidableEq n] [Nonempty n] [Nontrivial R] (d : ℤ) :
     PosSemidef (d : Matrix n n R) ↔ 0 ≤ d :=
-  posSemidef_diagonal_iff.trans <| by simp [Pi.le_def]
+  posSemidef_diagonal_iff.trans <| by simp
 
 protected lemma pow [StarOrderedRing R] [DecidableEq n]
     {M : Matrix n n R} (hM : M.PosSemidef) (k : ℕ) :
@@ -161,18 +171,28 @@ lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
 
+theorem trace_nonneg {A : Matrix n n 𝕜} (hA : A.PosSemidef) : 0 ≤ A.trace := by
+  classical
+  simp [hA.isHermitian.trace_eq_sum_eigenvalues, ← map_sum,
+    Finset.sum_nonneg (fun _ _ => hA.eigenvalues_nonneg _)]
+
+theorem det_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
+    0 ≤ M.det := by
+  rw [hM.isHermitian.det_eq_prod_eigenvalues]
+  exact Finset.prod_nonneg fun i _ ↦ by simpa using hM.eigenvalues_nonneg i
+
 section sqrt
 
 variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 
 /-- The positive semidefinite square root of a positive semidefinite matrix -/
 noncomputable def sqrt : Matrix n n 𝕜 :=
-  hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) *
+  hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues) *
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
-@[delab app.Matrix.PosSemidef.sqrt]
+@[app_delab Matrix.PosSemidef.sqrt]
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
@@ -196,7 +216,7 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   let C : Matrix n n 𝕜 := hA.1.eigenvectorUnitary
-  let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
+  let E := diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues : n → 𝕜)
   suffices C * (E * (star C * C) * E) * star C = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
     simpa only [← mul_assoc] using this
@@ -243,16 +263,41 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   have aux : star v ⬝ᵥ (A - B) *ᵥ v = 0 := by
     rw [sub_mulVec, dotProduct_sub, h_van.1, h_van.2, sub_zero]
   rw [hv', dotProduct_smul, RCLike.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
-  exact hv <| Matrix.dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
+  exact hv <| dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
     (RCLike.ofReal_ne_zero.mpr ht) aux
+
+include hA in
+lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
+  ⟨eq_of_sq_eq_sq hA hB, fun h => h ▸ rfl⟩
 
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
   (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
 
 include hA in
-lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt := by
-  subst B
-  rw [hA.sqrt_sq]
+lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = hB.sqrt ↔ A ^ 2 = B :=
+  ⟨fun h => h ▸ hB.sq_sqrt, fun h => by subst h; rw [hA.sqrt_sq]⟩
+
+include hA in
+lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B ^ 2 := by
+  simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
+
+@[deprecated (since := "2025-05-07")] alias ⟨_, eq_sqrt_of_sq_eq⟩ := eq_sqrt_iff_sq_eq
+
+@[simp]
+lemma sqrt_eq_zero_iff : hA.sqrt = 0 ↔ A = 0 := by
+  rw [sqrt_eq_iff_eq_sq _ .zero, zero_pow two_ne_zero]
+
+@[simp]
+lemma sqrt_eq_one_iff : hA.sqrt = 1 ↔ A = 1 := by
+  rw [sqrt_eq_iff_eq_sq _ .one, one_pow]
+
+@[simp]
+lemma isUnit_sqrt_iff : IsUnit hA.sqrt ↔ IsUnit A := by
+  conv_rhs => rw [← hA.sqrt_mul_self]
+  rw [isUnit_mul_self_iff]
+
+lemma inv_sqrt : hA.sqrt⁻¹ = hA.inv.sqrt := by
+  rw [eq_sqrt_iff_sq_eq hA.posSemidef_sqrt.inv, sq, ← Matrix.mul_inv_rev, ← sq, sq_sqrt]
 
 end sqrt
 
@@ -284,25 +329,33 @@ lemma eigenvalues_self_mul_conjTranspose_nonneg (A : Matrix m n 𝕜) [Decidable
   (posSemidef_self_mul_conjTranspose _).eigenvalues_nonneg _
 
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
-lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
+lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
     PosSemidef A ↔ ∃ (B : Matrix n n 𝕜), A = Bᴴ * B := by
   classical
   refine ⟨fun hA ↦ ⟨hA.sqrt, ?_⟩, fun ⟨B, hB⟩ ↦ (hB ▸ posSemidef_conjTranspose_mul_self B)⟩
   simp_rw [← PosSemidef.sq_sqrt hA, pow_two]
   rw [hA.posSemidef_sqrt.1]
 
-lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
-    (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
+@[deprecated (since := "2025-05-07")]
+alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
+
+/-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
+lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
+  refine ⟨fun h => h.eigenvalues_nonneg, fun h => ?_⟩
   rw [hA.spectral_theorem]
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
+
+@[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
+  IsHermitian.posSemidef_iff_eigenvalues_nonneg
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
   constructor
-  · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_transpose_mul_self.mp hA
+  · obtain ⟨B, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hA
     rw [← Matrix.mulVec_mulVec, dotProduct_mulVec,
       vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero]
     intro h0
@@ -313,17 +366,17 @@ theorem PosSemidef.dotProduct_mulVec_zero_iff
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
 theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
-    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ Matrix.toLin' A x = 0 := by
-  simpa only [toLinearMap₂'_apply', toLin'_apply] using hA.dotProduct_mulVec_zero_iff x
+    Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
+  simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
 /-!
 ## Positive definite matrices
 -/
 
 /-- A matrix `M : Matrix n n R` is positive definite if it is hermitian
-   and `xᴴMx` is greater than zero for all nonzero `x`. -/
+and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
-  M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < dotProduct (star x) (M *ᵥ x)
+  M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x)
 
 namespace PosDef
 
@@ -331,21 +384,25 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
   hM.1
 
 theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
-    0 < RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
+    0 < RCLike.re (star x ⬝ᵥ (M *ᵥ x)) :=
   RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
-  · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
+  · simp only [hx, zero_dotProduct, star_zero]
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 
 theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
+
+@[simp]
+theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosDef ↔ M.PosDef :=
+  ⟨(by simpa using ·.transpose), .transpose⟩
 
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     {d : n → R} (h : ∀ i, 0 < d i) :
@@ -364,8 +421,8 @@ theorem _root_.Matrix.posDef_diagonal_iff
     PosDef (diagonal d) ↔ ∀ i, 0 < d i := by
   refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
-  simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
-    star_one, one_mul, Function.ne_iff, Pi.zero_apply] at this
+  simp_rw [mulVec_single_one, ← Pi.single_star, star_one, single_dotProduct, one_mul,
+    col_apply, diagonal_apply_eq, Function.ne_iff] at this
   exact this ⟨i, by simp⟩
 
 protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
@@ -378,7 +435,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_natCast _, fun x hx => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -386,10 +443,9 @@ theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [No
     PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) [d.AtLeastTwo] :
-    PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosDef (ofNat(d) : Matrix n n R) :=
   .natCast d (NeZero.ne _)
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -398,7 +454,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_intCast _, fun x hx => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -416,13 +472,37 @@ protected lemma add_posSemidef [AddLeftMono R]
 protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
-  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
-    rw [add_mulVec, dotProduct_add]
-    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+  add_comm A B ▸ hB.add_posSemidef hA
 
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
+
+lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
+    (hB : Function.Injective B.mulVec) :
+    (Bᴴ * A * B).PosDef := by
+  refine ⟨Matrix.isHermitian_conjTranspose_mul_mul _ hA.1, fun x hx => ?_⟩
+  have : B *ᵥ x ≠ 0 := fun h => hx <| hB.eq_iff' (mulVec_zero _) |>.1 h
+  simpa only [star_mulVec, dotProduct_mulVec, vecMul_vecMul] using hA.2 _ this
+
+lemma mul_mul_conjTranspose_same {A : Matrix n n R} {B : Matrix m n R} (hA : A.PosDef)
+    (hB : Function.Injective B.vecMul) :
+    (B * A * Bᴴ).PosDef := by
+  replace hB := star_injective.comp <| hB.comp star_injective
+  simp_rw [Function.comp_def, star_vecMul, star_star] at hB
+  simpa using hA.conjTranspose_mul_mul_same (B := Bᴴ) hB
+
+theorem conjTranspose_mul_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matrix m n R)
+    (hA : Function.Injective A.mulVec) :
+    PosDef (Aᴴ * A) := by
+  classical
+  simpa using conjTranspose_mul_mul_same .one hA
+
+theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
+
+@[simp]
+theorem _root_.Matrix.posDef_conjTranspose_iff {M : Matrix n n R} : Mᴴ.PosDef ↔ M.PosDef :=
+  ⟨(by simpa using ·.conjTranspose), .conjTranspose⟩
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticMap'.PosDef) : M.PosDef := by
@@ -444,30 +524,82 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
+/-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
+lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
+  refine ⟨fun h => h.eigenvalues_pos, fun h => ?_⟩
+  rw [hA.spectral_theorem]
+  refine (posDef_diagonal_iff.mpr <| by simpa using h).mul_mul_conjTranspose_same ?_
+  rw [vecMul_injective_iff_isUnit, ← unitary.val_toUnits_apply]
+  exact Units.isUnit _
+
+theorem trace_pos [Nonempty n] {A : Matrix n n 𝕜} (hA : A.PosDef) : 0 < A.trace := by
+  classical
+  simp [hA.isHermitian.trace_eq_sum_eigenvalues, ← map_sum,
+    Finset.sum_pos (fun _ _ => hA.eigenvalues_pos _)]
+
 theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
   apply Finset.prod_pos
   intro i _
   simpa using hM.eigenvalues_pos i
 
-theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M :=
-  isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
+section Field
+variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
 
-protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
-  refine ⟨hM.isHermitian.inv, fun x hx => ?_⟩
-  have := hM.2 (M⁻¹ *ᵥ x) ((Matrix.mulVec_injective_iff_isUnit.mpr ?_ |>.ne_iff' ?_).2 hx)
-  · let _inst := hM.isUnit.invertible
-    rwa [star_mulVec, mulVec_mulVec, Matrix.mul_inv_of_invertible, one_mulVec,
-      ← star_pos_iff, ← star_mulVec, ← star_dotProduct] at this
-  · simpa using hM.isUnit
-  · simp
+theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M := by
+  by_contra h
+  obtain ⟨a, ha, ha2⟩ : ∃ a ≠ 0, M *ᵥ a = 0 := by
+    obtain ⟨a, b, ha⟩ := Function.not_injective_iff.mp <| mulVec_injective_iff_isUnit.not.mpr h
+    exact ⟨a - b, by simp [sub_eq_zero, ha, mulVec_sub]⟩
+  simpa [ha2] using hM.2 _ ha
+
+protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻¹.PosDef := by
+  have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
+  · let _ := hM.isUnit.invertible
+    simpa using this.conjTranspose
+  · simp only [Matrix.vecMul_injective_iff_isUnit, isUnit_nonsing_inv_iff, hM.isUnit]
 
 @[simp]
-theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
+theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
+
+end Field
+
+lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    PosDef hM.posSemidef.sqrt := by
+  apply PosDef.mul_mul_conjTranspose_same
+  · rw [posDef_diagonal_iff]
+    simpa using hM.eigenvalues_pos
+  · apply Matrix.vecMul_injective_of_isUnit
+    convert (Group.isUnit _).map (unitaryGroup n 𝕜).subtype
+
+/--
+A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
+-/
+lemma _root_.Matrix.posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
+    PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B := by
+  refine ⟨fun hA ↦ ⟨_, hA.posDef_sqrt.isUnit, ?_⟩, fun ⟨B, hB, hA⟩ ↦ (hA ▸ ?_)⟩
+  · simp [hA.posDef_sqrt.isHermitian.eq]
+  · exact conjTranspose_mul_self _ (mulVec_injective_of_isUnit hB)
+
+@[deprecated (since := "07-08-2025")] alias posDef_iff_eq_conjTranspose_mul_self :=
+  Matrix.posDef_iff_eq_conjTranspose_mul_self
+
+/-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
+@[grind =]
+theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
+    (hx : x.PosSemidef) : x.PosDef ↔ IsUnit x := by
+  refine ⟨fun h => h.isUnit, fun h => ⟨hx.1, fun v hv => ?_⟩⟩
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hx
+  simp_rw [dotProduct_mulVec, ← vecMul_vecMul, ← star_mulVec, ← dotProduct_mulVec,
+    dotProduct_star_self_pos_iff]
+  contrapose! hv
+  rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
+    mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
 end PosDef
 
@@ -501,22 +633,20 @@ variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-    { inner := fun x y => dotProduct (star x) (M *ᵥ y)
-      conj_symm := fun x y => by
-        dsimp only [Inner.inner]
-        rw [star_dotProduct, starRingEnd_apply, star_star, star_mulVec, dotProduct_mulVec,
-          hM.isHermitian.eq]
-      nonneg_re := fun x => by
+    { inner := fun x y => (M *ᵥ y) ⬝ᵥ star x
+      conj_inner_symm := fun x y => by
+        rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
+          star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
+      re_inner_nonneg := fun x => by
         by_cases h : x = 0
         · simp [h]
-        · exact le_of_lt (hM.re_dotProduct_pos h)
-      definite := fun x (hx : dotProduct _ _ = 0) => by
+        · exact (dotProduct_comm _ (M *ᵥ x) ▸ hM.re_dotProduct_pos h).le
+      definite := fun x (hx : _ ⬝ᵥ _ = 0) => by
         by_contra! h
-        simpa [hx, lt_irrefl] using hM.re_dotProduct_pos h
-      add_left := by simp only [star_add, add_dotProduct, eq_self_iff_true, forall_const]
+        simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
+      add_left := by simp only [star_add, dotProduct_add, forall_const]
       smul_left := fun x y r => by
-        simp only
-        rw [← smul_eq_mul, ← smul_dotProduct, starRingEnd_apply, ← star_smul] }
+        rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :

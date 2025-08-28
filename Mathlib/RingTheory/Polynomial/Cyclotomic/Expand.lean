@@ -69,6 +69,15 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       Nat.totient_mul ((Nat.Prime.coprime_iff_not_dvd hp).2 hdiv), Nat.totient_prime hp,
       mul_comm (p - 1), ← Nat.mul_succ, Nat.sub_one, Nat.succ_pred_eq_of_pos hp.pos]
 
+@[simp]
+lemma cyclotomic_six (R : Type*) [Ring R] : cyclotomic 6 R = X ^ 2 - X + 1 := by
+  suffices cyclotomic 6 ℤ = X ^ 2 - X + 1 by
+    rw [← map_cyclotomic_int, this]
+    simp
+  apply mul_right_cancel₀ (cyclotomic_ne_zero 2 ℤ)
+  rw [show 6 = 2 * 3 by rfl, ← cyclotomic_expand_eq_cyclotomic_mul Nat.prime_three (by norm_num1)]
+  simp; ring
+
 /-- If `p` is a prime such that `p ∣ n`, then
 `expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
 @[simp]
@@ -153,7 +162,7 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     · assumption
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`
- if and only if it is a primitive `m`-th root of unity. -/
+if and only if it is a primitive `m`-th root of unity. -/
 theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [CommRing R]
     [IsDomain R] [hp : Fact (Nat.Prime p)] [hchar : CharP R p] {μ : R} [NeZero (m : R)] :
     (Polynomial.cyclotomic (p ^ k * m) R).IsRoot μ ↔ IsPrimitiveRoot μ m := by

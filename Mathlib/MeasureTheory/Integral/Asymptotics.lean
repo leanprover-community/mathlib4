@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Integral.IntegrableOn
-import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Bounding of integrals by asymptotics
@@ -39,7 +37,7 @@ variable [MeasurableSpace α] [NormedAddCommGroup F] {μ : Measure α}
 
 /-- If `f = O[l] g` on measurably generated `l`, `f` is strongly measurable at `l`,
 and `g` is integrable at `l`, then `f` is integrable at `l`. -/
-theorem _root_.Asymptotics.IsBigO.integrableAtFilter [IsMeasurablyGenerated l]
+theorem IsBigO.integrableAtFilter [IsMeasurablyGenerated l]
     (hf : f =O[l] g) (hfm : StronglyMeasurableAtFilter f l μ) (hg : IntegrableAtFilter g l μ) :
     IntegrableAtFilter f l μ := by
   obtain ⟨C, hC⟩ := hf.bound
@@ -50,7 +48,7 @@ theorem _root_.Asymptotics.IsBigO.integrableAtFilter [IsMeasurablyGenerated l]
   exact (hfg x hx).trans (le_abs_self _)
 
 /-- Variant of `MeasureTheory.Integrable.mono` taking `f =O[⊤] (g)` instead of `‖f(x)‖ ≤ ‖g(x)‖` -/
-theorem _root_.Asymptotics.IsBigO.integrable (hfm : AEStronglyMeasurable f μ)
+theorem IsBigO.integrable (hfm : AEStronglyMeasurable f μ)
     (hf : f =O[⊤] g) (hg : Integrable g μ) : Integrable f μ := by
   rewrite [← integrableAtFilter_top] at *
   exact hf.integrableAtFilter ⟨univ, univ_mem, hfm.restrict⟩ hg
@@ -82,13 +80,13 @@ variable [NormedSpace ℝ E] [NormedAddCommGroup F]
 /-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
 of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
 theorem IsBigO.set_integral_isBigO
-    (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (hs : MeasurableSet s) (hμ : μ s < ⊤)  :
+    (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (hs : MeasurableSet s) (hμ : μ s < ⊤) :
     (fun x ↦ ∫ i in s, f (i, x) ∂μ) =O[l] g := by
   obtain ⟨C, hC⟩ := hf.bound
   obtain ⟨t, htl, ht⟩ := hC.exists_mem
   obtain ⟨u, hu, v, hv, huv⟩ := Filter.mem_prod_iff.mp htl
-  refine isBigO_iff.mpr ⟨C * (μ s).toReal, eventually_iff_exists_mem.mpr ⟨v, hv, fun x hx ↦ ?_⟩⟩
-  rw [mul_assoc, ← smul_eq_mul (a' := ‖g x‖), ← MeasureTheory.Measure.restrict_apply_univ,
+  refine isBigO_iff.mpr ⟨C * μ.real s, eventually_iff_exists_mem.mpr ⟨v, hv, fun x hx ↦ ?_⟩⟩
+  rw [mul_assoc, ← smul_eq_mul _ ‖g x‖, ← MeasureTheory.measureReal_restrict_apply_univ,
     ← integral_const, mul_comm, ← smul_eq_mul, ← integral_smul_const]
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ s]; exact hμ⟩
   refine (norm_integral_le_integral_norm _).trans <|
@@ -164,7 +162,7 @@ end LinearOrder
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] [CompactIccSpace α]
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [CompactIccSpace α]
 
 /-- If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g`, for some
 `g` integrable at `atTop`, then `f` is integrable. -/

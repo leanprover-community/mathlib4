@@ -3,7 +3,6 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompactlyGenerated.Basic
 
 /-!
@@ -101,7 +100,7 @@ lemma atomistic (hS : BooleanGenerators S) (a : α) (ha : a ≤ sSup S) : ∃ T 
 
 lemma isAtomistic_of_sSup_eq_top (hS : BooleanGenerators S) (h : sSup S = ⊤) :
     IsAtomistic α := by
-  refine ⟨fun a ↦ ?_⟩
+  refine CompleteLattice.isAtomistic_iff.2 fun a ↦ ?_
   obtain ⟨s, hs, hs'⟩ := hS.atomistic a (h ▸ le_top)
   exact ⟨s, hs', fun I hI ↦ hS.isAtom I (hs hI)⟩
 

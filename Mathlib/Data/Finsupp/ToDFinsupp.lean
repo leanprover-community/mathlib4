@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`
@@ -198,7 +198,7 @@ end Lemmas
 section Equivs
 
 /-- `Finsupp.toDFinsupp` and `DFinsupp.toFinsupp` together form an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃ Π₀ _ : ι, M where
   toFun := Finsupp.toDFinsupp
@@ -208,7 +208,7 @@ def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
 
 /-- The additive version of `finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def finsuppAddEquivDFinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃+ Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -220,8 +220,6 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
--- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
---@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -230,7 +228,6 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_smul' := Finsupp.toDFinsupp_smul
     map_add' := Finsupp.toDFinsupp_add }
 
--- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :
@@ -242,18 +239,16 @@ theorem finsuppLequivDFinsupp_symm_apply [DecidableEq ι] [Semiring R] [AddCommM
     ↑(LinearEquiv.symm (finsuppLequivDFinsupp (ι := ι) (M := M) R)) = DFinsupp.toFinsupp :=
   rfl
 
--- Porting note: moved noncomputable declaration into section begin
 noncomputable section Sigma
 
 /-! ### Stronger versions of `Finsupp.split` -/
---noncomputable section
 
 variable {η : ι → Type*} {N : Type*} [Semiring R]
 
 open Finsupp
 
 /-- `Finsupp.split` is an equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
-def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
+def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η i →₀ N where
   toFun f := ⟨split f, Trunc.mk ⟨(splitSupport f : Finset ι).val, fun i => by
           rw [← Finset.mem_def, mem_splitSupport_iff_nonzero]
           exact (em _).symm⟩⟩
@@ -272,25 +267,25 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σi, η i) →₀ N) ≃ Π₀ i, η 
   right_inv f := by ext; simp [split]
 
 @[simp]
-theorem sigmaFinsuppEquivDFinsupp_apply [Zero N] (f : (Σi, η i) →₀ N) :
+theorem sigmaFinsuppEquivDFinsupp_apply [Zero N] (f : (Σ i, η i) →₀ N) :
     (sigmaFinsuppEquivDFinsupp f : ∀ i, η i →₀ N) = Finsupp.split f :=
   rfl
 
 @[simp]
-theorem sigmaFinsuppEquivDFinsupp_symm_apply [Zero N] (f : Π₀ i, η i →₀ N) (s : Σi, η i) :
-    (sigmaFinsuppEquivDFinsupp.symm f : (Σi, η i) →₀ N) s = f s.1 s.2 :=
+theorem sigmaFinsuppEquivDFinsupp_symm_apply [Zero N] (f : Π₀ i, η i →₀ N) (s : Σ i, η i) :
+    (sigmaFinsuppEquivDFinsupp.symm f : (Σ i, η i) →₀ N) s = f s.1 s.2 :=
   rfl
 
 @[simp]
 theorem sigmaFinsuppEquivDFinsupp_support [DecidableEq ι] [Zero N]
-    [∀ (i : ι) (x : η i →₀ N), Decidable (x ≠ 0)] (f : (Σi, η i) →₀ N) :
+    [∀ (i : ι) (x : η i →₀ N), Decidable (x ≠ 0)] (f : (Σ i, η i) →₀ N) :
     (sigmaFinsuppEquivDFinsupp f).support = Finsupp.splitSupport f := by
   ext
   rw [DFinsupp.mem_support_toFun]
   exact (Finsupp.mem_splitSupport_iff_nonzero _ _).symm
 
 @[simp]
-theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η i) (n : N) :
+theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σ i, η i) (n : N) :
     sigmaFinsuppEquivDFinsupp (Finsupp.single a n) =
       @DFinsupp.single _ (fun i => η i →₀ N) _ _ a.1 (Finsupp.single a.2 n) := by
   obtain ⟨i, a⟩ := a
@@ -298,15 +293,15 @@ theorem sigmaFinsuppEquivDFinsupp_single [DecidableEq ι] [Zero N] (a : Σi, η 
   by_cases h : i = j
   · subst h
     classical simp [split_apply, Finsupp.single_apply]
-  suffices Finsupp.single (⟨i, a⟩ : Σi, η i) n ⟨j, b⟩ = 0 by simp [split_apply, dif_neg h, this]
-  have H : (⟨i, a⟩ : Σi, η i) ≠ ⟨j, b⟩ := by simp [h]
+  suffices Finsupp.single (⟨i, a⟩ : Σ i, η i) n ⟨j, b⟩ = 0 by simp [split_apply, dif_neg h, this]
+  have H : (⟨i, a⟩ : Σ i, η i) ≠ ⟨j, b⟩ := by simp [h]
   classical rw [Finsupp.single_apply, if_neg H]
 
 -- Without this Lean fails to find the `AddZeroClass` instance on `Π₀ i, (η i →₀ N)`.
 attribute [-instance] Finsupp.instZero
 
 @[simp]
-theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σi, η i) →₀ N) :
+theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σ i, η i) →₀ N) :
     sigmaFinsuppEquivDFinsupp (f + g) =
       (sigmaFinsuppEquivDFinsupp f + sigmaFinsuppEquivDFinsupp g : Π₀ i : ι, η i →₀ N) := by
   ext
@@ -314,7 +309,7 @@ theorem sigmaFinsuppEquivDFinsupp_add [AddZeroClass N] (f g : (Σi, η i) →₀
 
 /-- `Finsupp.split` is an additive equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
-def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σi, η i) →₀ N) ≃+ Π₀ i, η i →₀ N :=
+def sigmaFinsuppAddEquivDFinsupp [AddZeroClass N] : ((Σ i, η i) →₀ N) ≃+ Π₀ i, η i →₀ N :=
   { sigmaFinsuppEquivDFinsupp with
     toFun := sigmaFinsuppEquivDFinsupp
     invFun := sigmaFinsuppEquivDFinsupp.symm
@@ -334,14 +329,8 @@ attribute [-instance] Finsupp.instAddMonoid
 /-- `Finsupp.split` is a linear equivalence between `(Σ i, η i) →₀ N` and `Π₀ i, (η i →₀ N)`. -/
 @[simps]
 def sigmaFinsuppLequivDFinsupp [AddCommMonoid N] [Module R N] :
-    ((Σi, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
-    -- Porting note: was
-    -- sigmaFinsuppAddEquivDFinsupp with map_smul' := sigmaFinsuppEquivDFinsupp_smul
-    -- but times out
-  { sigmaFinsuppEquivDFinsupp with
-    toFun := sigmaFinsuppEquivDFinsupp
-    invFun := sigmaFinsuppEquivDFinsupp.symm
-    map_add' := sigmaFinsuppEquivDFinsupp_add
+    ((Σ i, η i) →₀ N) ≃ₗ[R] Π₀ i, η i →₀ N :=
+  { sigmaFinsuppAddEquivDFinsupp with
     map_smul' := sigmaFinsuppEquivDFinsupp_smul }
 
 end Sigma

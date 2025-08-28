@@ -150,12 +150,12 @@ theorem leftInverse_list : Function.LeftInverse (ofList γ) (toList _)
     ext x
     cases x
   | WType.mk (Listα.cons x) f => by
-    simp only [ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
+    simp only [toList, ofList, leftInverse_list (f PUnit.unit), mk.injEq, heq_eq_eq, true_and]
     rfl
 
 theorem rightInverse_list : Function.RightInverse (ofList γ) (toList _)
   | List.nil => rfl
-  | List.cons hd tl => by simp only [toList, rightInverse_list tl]
+  | List.cons hd tl => by simp [rightInverse_list tl]
 
 /-- Lists are equivalent to their associated `WType` -/
 def equivList : WType (Listβ γ) ≃ List γ where

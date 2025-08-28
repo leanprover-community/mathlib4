@@ -64,7 +64,7 @@ theorem χ₄_int_eq_if_mod_four (n : ℤ) :
   have help : ∀ m : ℤ, 0 ≤ m → m < 4 → χ₄ m = if m % 2 = 0 then 0 else if m = 1 then 1 else -1 := by
     decide
   rw [← Int.emod_emod_of_dvd n (by omega : (2 : ℤ) ∣ 4), ← ZMod.intCast_mod n 4]
-  exact help (n % 4) (Int.emod_nonneg n (by omega)) (Int.emod_lt n (by omega))
+  exact help (n % 4) (Int.emod_nonneg n (by omega)) (Int.emod_lt_abs n (by omega))
 
 theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
     χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 :=
@@ -142,7 +142,7 @@ theorem χ₈_int_eq_if_mod_eight (n : ℤ) :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈ m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 7 then 1 else -1 := by
     decide
   rw [← Int.emod_emod_of_dvd n (by omega : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
-  exact help (n % 8) (Int.emod_nonneg n (by omega)) (Int.emod_lt n (by omega))
+  exact help (n % 8) (Int.emod_nonneg n (by omega)) (Int.emod_lt_abs n (by omega))
 
 theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
     χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 :=
@@ -173,7 +173,7 @@ theorem χ₈'_int_eq_if_mod_eight (n : ℤ) :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈' m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 3 then 1 else -1 := by
     decide
   rw [← Int.emod_emod_of_dvd n (by omega : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
-  exact help (n % 8) (Int.emod_nonneg n (by omega)) (Int.emod_lt n (by omega))
+  exact help (n % 8) (Int.emod_nonneg n (by omega)) (Int.emod_lt_abs n (by omega))
 
 theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
     χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 :=

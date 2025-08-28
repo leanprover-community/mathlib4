@@ -35,7 +35,6 @@ variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 
--- Porting note: new notation
 local notation "𝕄" => MvPolynomial (Fin 2 × ℕ) ℤ
 
 open Finset MvPolynomial
@@ -118,10 +117,10 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
       rw [Finsupp.support_eq_singleton]
-      simp only [and_true, Finsupp.single_eq_same, eq_self_iff_true, Ne]
+      simp only [and_true, Finsupp.single_eq_same, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
     simp only [bind₁_monomial, hsupp, Int.cast_natCast, prod_singleton, eq_intCast,
-      Finsupp.single_eq_same, C_pow, mul_eq_mul_left_iff, eq_self_iff_true, Int.cast_pow]
+      Finsupp.single_eq_same, Int.cast_pow]
   · simp only [map_mul, bind₁_X_right]
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
@@ -204,11 +203,11 @@ theorem peval_polyOfInterest (n : ℕ) (x y : 𝕎 k) :
     (x * y).coeff (n + 1) + p ^ (n + 1) * x.coeff (n + 1) * y.coeff (n + 1) -
       y.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * x.coeff i ^ p ^ (n + 1 - i) -
       x.coeff (n + 1) * ∑ i ∈ range (n + 1 + 1), p ^ i * y.coeff i ^ p ^ (n + 1 - i) := by
-  simp only [polyOfInterest, peval, map_natCast, Matrix.head_cons, map_pow,
+  simp only [polyOfInterest, peval,
     Function.uncurry_apply_pair, aeval_X, Matrix.cons_val_one, map_mul, Matrix.cons_val_zero,
     map_sub]
   rw [sub_sub, add_comm (_ * _), ← sub_sub]
-  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, eval₂_rename, mul_coeff, peval, map_natCast,
+  simp [wittPolynomial_eq_sum_C_mul_X_pow, aeval, mul_coeff, peval, map_natCast,
     map_add, map_pow, map_mul]
 
 variable [CharP k p]
@@ -220,7 +219,7 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
-  simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
+  simp only [this, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
     not_false_eq_true, reduceCtorEq]
   have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x ∈ range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
@@ -250,15 +249,15 @@ theorem nth_mul_coeff' (n : ℕ) :
       congr!
       simp
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha' with ha ha <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> omega
   use f
   intro x y
   dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a
-  cases' a with a ha
-  cases' a with i m
+  obtain ⟨a, ha⟩ := a
+  obtain ⟨i, m⟩ := a
   fin_cases i <;> rfl -- surely this case split is not necessary
 
 theorem nth_mul_coeff (n : ℕ) :

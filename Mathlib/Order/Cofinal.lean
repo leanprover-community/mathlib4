@@ -3,7 +3,9 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.GaloisConnection.Basic
+import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.WellFounded
 
 /-!
 # Cofinal sets
@@ -11,7 +13,7 @@ import Mathlib.Order.GaloisConnection
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
-For the cofinality of a set as a cardinal, see `Mathlib.SetTheory.Cardinal.Cofinality`.
+For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality.lean`.
 
 ## TODO
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.CompletelyRegular
+import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
@@ -75,31 +75,25 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
-/-- In a T0 topological space equipped with a sigma algebra which contains all open sets,
-the assignment `x ↦ diracProba x` is injective. -/
-lemma injective_diracProba_of_T0 [T0Space X] :
-    Function.Injective (fun (x : X) ↦ diracProba x) := by
-  intro x y δx_eq_δy
-  by_contra x_ne_y
-  exact dirac_ne_dirac x_ne_y <| congr_arg Subtype.val δx_eq_δy
+@[deprecated (since := "2025-08-15")] alias injective_diracProba_of_T0 := injective_diracProba
 
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
     ¬ Tendsto diracProba L (𝓝 (diracProba x)) := by
-  obtain ⟨U, U_nhd, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
+  obtain ⟨U, U_nhds, hU⟩ : ∃ U, U ∈ 𝓝 x ∧ ∃ᶠ x in L, x ∉ U := by
     by_contra! con
     apply h
-    intro U U_nhd
-    simpa only [not_frequently, not_not] using con U U_nhd
-  have Uint_nhd : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhd
+    intro U U_nhds
+    simpa only [not_frequently, not_not] using con U U_nhds
+  have Uint_nhds : interior U ∈ 𝓝 x := by simpa only [interior_mem_nhds] using U_nhds
   obtain ⟨f, fx_eq_one, f_vanishes_outside⟩ :=
     CompletelyRegularSpace.exists_BCNN isOpen_interior.isClosed_compl
-      (by simpa only [mem_compl_iff, not_not] using mem_of_mem_nhds Uint_nhd)
+      (by simpa only [mem_compl_iff, not_not] using mem_of_mem_nhds Uint_nhds)
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto, not_forall]
   use f
   simp only [diracProba, ProbabilityMeasure.coe_mk, fx_eq_one,
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
-  apply not_tendsto_iff_exists_frequently_nmem.mpr
+  apply not_tendsto_iff_exists_frequently_notMem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
           hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
@@ -130,7 +124,7 @@ noncomputable def diracProbaInverse : range (diracProba (X := X)) → X :=
 lemma diracProbaInverse_eq [T0Space X] {x : X} {μ : range (diracProba (X := X))}
     (h : μ = diracProba x) :
     diracProbaInverse μ = x := by
-  apply injective_diracProba_of_T0 (X := X)
+  apply injective_diracProba (X := X)
   simp only [← h]
   exact (mem_range.mp μ.prop).choose_spec
 
@@ -169,7 +163,7 @@ lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
   apply continuous_iff_continuousAt.mpr
   intro μ
   apply continuousAt_of_tendsto_nhds (y := diracProbaInverse μ)
-  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhd ↦ mem_nhd
+  exact (tendsto_diracProbaEquivSymm_iff_tendsto _).mpr fun _ mem_nhds ↦ mem_nhds
 
 /-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
 its image in `ProbabilityMeasure X`. -/
@@ -183,9 +177,6 @@ that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 theorem isEmbedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
     IsEmbedding (fun (x : X) ↦ diracProba x) :=
   IsEmbedding.subtypeVal.comp diracProbaHomeomorph.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_diracProba := isEmbedding_diracProba
 
 end embed_to_probabilityMeasure
 

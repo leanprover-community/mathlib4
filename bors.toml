@@ -1,7 +1,7 @@
-status = ["Build", "Lint style"]
+status = ["CI Success"]
 use_squash_merge = true
 timeout_sec = 28800
-block_labels = ["WIP", "blocked-by-other-PR", "merge-conflict", "awaiting-CI"]
+block_labels = ["WIP", "blocked-by-other-PR", "merge-conflict", "awaiting-CI", "bench-after-CI"]
 delete_merged_branches = true
 update_base_for_deletes = true
 cut_body_after = "---"

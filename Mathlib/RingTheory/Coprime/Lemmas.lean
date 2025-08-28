@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.RingTheory.Coprime.Basic
@@ -22,6 +22,8 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
+open scoped Function -- required for scoped `on` notation
+
 section IsCoprime
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}
@@ -31,34 +33,40 @@ section
 theorem Int.isCoprime_iff_gcd_eq_one {m n : ℤ} : IsCoprime m n ↔ Int.gcd m n = 1 := by
   constructor
   · rintro ⟨a, b, h⟩
-    have : 1 = m * a + n * b := by rwa [mul_comm m, mul_comm n, eq_comm]
-    exact Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, this⟩)
+    refine Nat.dvd_one.mp (Int.gcd_dvd_iff.mpr ⟨a, b, ?_⟩)
+    rwa [mul_comm m, mul_comm n, eq_comm]
   · rw [← Int.ofNat_inj, IsCoprime, Int.gcd_eq_gcd_ab, mul_comm m, mul_comm n, Nat.cast_one]
     intro h
     exact ⟨_, _, h⟩
 
+instance : DecidableRel (IsCoprime : ℤ → ℤ → Prop) :=
+  fun m n => decidable_of_iff (Int.gcd m n = 1) Int.isCoprime_iff_gcd_eq_one.symm
+
+@[simp, norm_cast]
 theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Coprime m n := by
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 
-alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
+alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
+
+@[deprecated (since := "2025-08-25")]
+alias IsCoprime.nat_coprime := IsCoprime.natCoprime
 
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
-    IsCoprime (a : R) (b : R) := by
-  rw [← isCoprime_iff_coprime] at h
-  rw [← Int.cast_natCast a, ← Int.cast_natCast b]
-  exact IsCoprime.intCast h
+    IsCoprime (a : R) (b : R) :=
+  mod_cast h.isCoprime.intCast
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
   IsCoprime.ne_zero_or_ne_zero (R := A) <| by
     simpa only [map_natCast] using IsCoprime.map (Nat.Coprime.isCoprime h) (Int.castRingHom A)
 
-theorem IsCoprime.prod_left : (∀ i ∈ t, IsCoprime (s i) x) → IsCoprime (∏ i ∈ t, s i) x := by
-  classical
-  refine Finset.induction_on t (fun _ ↦ isCoprime_one_left) fun b t hbt ih H ↦ ?_
-  rw [Finset.prod_insert hbt]
-  rw [Finset.forall_mem_insert] at H
-  exact H.1.mul_left (ih H.2)
+theorem IsCoprime.prod_left (h : ∀ i ∈ t, IsCoprime (s i) x) : IsCoprime (∏ i ∈ t, s i) x := by
+  induction t using Finset.cons_induction with
+  | empty => apply isCoprime_one_left
+  | cons b t hbt ih =>
+    rw [Finset.prod_cons]
+    rw [Finset.forall_mem_cons] at h
+    exact h.1.mul_left (ih h.2)
 
 theorem IsCoprime.prod_right : (∀ i ∈ t, IsCoprime x (s i)) → IsCoprime x (∏ i ∈ t, s i) := by
   simpa only [isCoprime_comm] using IsCoprime.prod_left (R := R)
@@ -165,9 +173,8 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
 theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [DecidableEq I] :
     (∃ μ : I → R, (∑ i : I, μ i * ∏ j ∈ {i}ᶜ, s j) = 1) ↔ Pairwise (IsCoprime on s) := by
   convert exists_sum_eq_one_iff_pairwise_coprime Finset.univ_nonempty (s := s) using 1
-  simp only [Function.onFun, pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
+  simp only [pairwise_subtype_iff_pairwise_finset', coe_univ, Set.pairwise_univ]
 
--- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j ∈ t \ {i}, s j) := by
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
@@ -263,7 +270,7 @@ theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
     exact @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsRelPrime.prod_right_iff.mp (hp i hi)
-    exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
+    grind
 
 namespace IsRelPrime
 

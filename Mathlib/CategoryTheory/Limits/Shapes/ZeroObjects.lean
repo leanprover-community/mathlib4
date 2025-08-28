@@ -75,6 +75,12 @@ theorem eq_of_src (hX : IsZero X) (f g : X ⟶ Y) : f = g :=
 theorem eq_of_tgt (hX : IsZero X) (f g : Y ⟶ X) : f = g :=
   (hX.eq_from f).trans (hX.eq_from g).symm
 
+lemma epi (h : IsZero X) {Y : C} (f : Y ⟶ X) : Epi f where
+  left_cancellation _ _ _ := h.eq_of_src _ _
+
+lemma mono (h : IsZero X) {Y : C} (f : X ⟶ Y) : Mono f where
+  right_cancellation _ _ _ := h.eq_of_tgt _ _
+
 /-- Any two zero objects are isomorphic. -/
 def iso (hX : IsZero X) (hY : IsZero Y) : X ≅ Y where
   hom := hX.to_ Y
@@ -165,7 +171,7 @@ section
 variable [HasZeroObject C]
 
 /-- Construct a `Zero C` for a category with a zero object.
-This can not be a global instance as it will trigger for every `Zero C` typeclass search.
+This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 

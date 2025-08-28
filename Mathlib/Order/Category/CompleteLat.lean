@@ -18,55 +18,54 @@ universe u
 open CategoryTheory
 
 /-- The category of complete lattices. -/
-def CompleteLat :=
-  Bundled CompleteLattice
+structure CompleteLat where
+  /-- The underlying lattice. -/
+  (carrier : Type*)
+  [str : CompleteLattice carrier]
+
+attribute [instance] CompleteLat.str
+
+initialize_simps_projections CompleteLat (carrier → coe, -str)
 
 namespace CompleteLat
 
-instance : CoeSort CompleteLat Type* :=
-  Bundled.coeSort
+instance : CoeSort CompleteLat (Type _) :=
+  ⟨CompleteLat.carrier⟩
 
-instance (X : CompleteLat) : CompleteLattice X :=
-  X.str
+attribute [coe] CompleteLat.carrier
 
-/-- Construct a bundled `CompleteLat` from a `CompleteLattice`. -/
-def of (α : Type*) [CompleteLattice α] : CompleteLat :=
-  Bundled.of α
+/-- Construct a bundled `CompleteLat` from the underlying type and typeclass. -/
+abbrev of (X : Type*) [CompleteLattice X] : CompleteLat := ⟨X⟩
 
-@[simp]
 theorem coe_of (α : Type*) [CompleteLattice α] : ↥(of α) = α :=
   rfl
 
 instance : Inhabited CompleteLat :=
   ⟨of PUnit⟩
 
-instance : BundledHom @CompleteLatticeHom where
-  toFun _ _ f := f.toFun
-  id := @CompleteLatticeHom.id
-  comp := @CompleteLatticeHom.comp
-  hom_ext _ _ _ _ h := DFunLike.coe_injective h
+instance : LargeCategory.{u} CompleteLat where
+  Hom X Y := CompleteLatticeHom X Y
+  id X := CompleteLatticeHom.id X
+  comp f g := g.comp f
 
-deriving instance LargeCategory for CompleteLat
-
-instance : ConcreteCategory CompleteLat := by
-  dsimp [CompleteLat]; infer_instance
+instance : ConcreteCategory CompleteLat (CompleteLatticeHom · ·) where
+  hom f := f
+  ofHom f := f
 
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
-  forget₂ :=
-    { obj := fun X => BddLat.of X
-      map := fun {_ _} => CompleteLatticeHom.toBoundedLatticeHom }
-  forget_comp := rfl
+  forget₂.obj X := .of X
+  forget₂.map f := BddLat.ofHom (CompleteLatticeHom.toBoundedLatticeHom f)
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : CompleteLatticeHom _ _) -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO, wrong?
-  inv := (e.symm : CompleteLatticeHom _ _)
+  hom := ConcreteCategory.ofHom e
+  inv := ConcreteCategory.ofHom e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
 /-- `OrderDual` as a functor. -/
-@[simps]
+@[simps map]
 def dual : CompleteLat ⥤ CompleteLat where
   obj X := of Xᵒᵈ
   map {_ _} := CompleteLatticeHom.dual

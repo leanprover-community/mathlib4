@@ -30,8 +30,8 @@ theorem hasDerivAt_tan {x : ℝ} (h : cos x ≠ 0) : HasDerivAt tan (1 / cos x ^
 theorem tendsto_abs_tan_of_cos_eq_zero {x : ℝ} (hx : cos x = 0) :
     Tendsto (fun x => abs (tan x)) (𝓝[≠] x) atTop := by
   have hx : Complex.cos x = 0 := mod_cast hx
-  simp only [← Complex.abs_ofReal, Complex.ofReal_tan]
-  refine (Complex.tendsto_abs_tan_of_cos_eq_zero hx).comp ?_
+  simp only [← Real.norm_eq_abs, ← Complex.norm_real, Complex.ofReal_tan]
+  refine (Complex.tendsto_norm_tan_of_cos_eq_zero hx).comp ?_
   refine Tendsto.inf Complex.continuous_ofReal.continuousAt ?_
   exact tendsto_principal_principal.2 fun y => mt Complex.ofReal_inj.1
 
@@ -136,8 +136,8 @@ end deriv
 
 section fderiv
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
-  {s : Set E} {n : ℕ∞}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
+  {x : E} {s : Set E} {n : ℕ∞}
 
 theorem HasStrictFDerivAt.arctan (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => arctan (f x)) ((1 / (1 + f x ^ 2)) • f') x :=

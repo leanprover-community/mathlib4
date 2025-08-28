@@ -3,7 +3,8 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # `Nat.Upto`
@@ -52,7 +53,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [InvImage, Upto.GT]
-    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
+    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_gt fun h' => ha _ h' h)]
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=

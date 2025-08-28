@@ -47,7 +47,7 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 -/
 
 
-universe w v u
+universe w w' v u
 
 namespace CategoryTheory
 
@@ -82,6 +82,30 @@ theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology
 theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
 
+section
+
+variable {J} {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
+  (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
+  (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
+    e (P₁.map f.op x) = P₂.map f.op (e x))
+
+include he in
+lemma isSheaf_of_nat_equiv (hP₁ : Presieve.IsSheaf J P₁) :
+    Presieve.IsSheaf J P₂ := fun _ R hR ↦
+  isSheafFor_of_nat_equiv e he (hP₁ R hR)
+
+include he in
+lemma isSheaf_iff_of_nat_equiv :
+    Presieve.IsSheaf J P₁ ↔ Presieve.IsSheaf J P₂ :=
+  ⟨fun hP₁ ↦ isSheaf_of_nat_equiv e he hP₁,
+    fun hP₂ ↦
+      isSheaf_of_nat_equiv (fun _ ↦ (@e _).symm) (fun X Y f x ↦ by
+        obtain ⟨y, rfl⟩ := e.surjective x
+        refine e.injective ?_
+        simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply, he]) hP₂⟩
+
+end
+
 /-- The property of being a sheaf is preserved by isomorphism. -/
 theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=
   fun _ S hS => isSheafFor_iso i (h S hS)
@@ -108,9 +132,13 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
     rw [← pullbackArrows_comm, ← isSheafFor_iff_generate]
     exact PK (pullbackArrows f R) (K.pullbacks f R hR)
 
-/-- Any presheaf is a sheaf for the bottom (trivial) grothendieck topology. -/
+/-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top_sieve]
+
+/-- The composition of a sheaf with a ULift functor is still a sheaf. -/
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) :=
+  isSheaf_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl) h
 
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
@@ -118,8 +146,7 @@ is the same as a co-cone over the sieve. Constructing a co-cone from a compatibl
 any presieve, as does constructing a family of elements from a co-cone. Showing compatibility of the
 family needs the sieve condition.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
- -/
-
+-/
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
     (hx : FamilyOfElements.Compatible x) :
     Cocone (R.diagram) where
@@ -128,13 +155,14 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     { app := fun f => x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
-        simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
-          Functor.const_obj_obj, Functor.comp_map, fullSubcategoryInclusion.map, Over.forget_map,
-          Functor.const_obj_map, Category.comp_id]
+        simp only [Functor.id_obj, Functor.comp_obj, ObjectProperty.ι_obj, Over.forget_obj,
+          Functor.const_obj_obj, Functor.comp_map, ObjectProperty.ι_map, Over.forget_map,
+          Functor.const_obj_map, comp_id]
         rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
         apply hx
         simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
+/-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
     FamilyOfElements (yoneda.obj s.pt) R :=
   fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
@@ -161,7 +189,7 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
   have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
   have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
   have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
-  aesop_cat
+  cat_disch
 
 /--
 The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
@@ -181,7 +209,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
         have ht := H.choose_spec.1 f.obj.hom f.property
-        aesop_cat
+        cat_disch
       uniq := by
         intro s Fs HFs
         replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)

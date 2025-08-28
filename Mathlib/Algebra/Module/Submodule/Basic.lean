@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Submodules of a module
@@ -99,7 +100,7 @@ instance [VAdd M α] : VAdd p α :=
   p.toAddSubmonoid.vadd
 
 instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
-  ⟨fun a => (vadd_comm (a : M) : _)⟩
+  ⟨fun a => vadd_comm (a : M)⟩
 
 instance [VAdd M α] [FaithfulVAdd M α] : FaithfulVAdd p α :=
   ⟨fun h => Subtype.ext <| eq_of_vadd_eq_vadd h⟩
@@ -132,6 +133,9 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 
+@[gcongr]
+protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le
+
 -- See `neg_coe_set`
 theorem neg_coe : -(p : Set M) = p :=
   Set.ext fun _ => p.neg_mem_iff
@@ -143,14 +147,16 @@ section IsDomain
 variable [Ring R] [IsDomain R]
 variable [AddCommGroup M] [Module R M] {b : ι → M}
 
-theorem not_mem_of_ortho {x : M} {N : Submodule R M}
+theorem notMem_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ∉ N := by
   intro hx
   simpa using ortho (-1) x hx
 
+@[deprecated (since := "2025-05-23")] alias not_mem_of_ortho := notMem_of_ortho
+
 theorem ne_zero_of_ortho {x : M} {N : Submodule R M}
     (ortho : ∀ (c : R), ∀ y ∈ N, c • x + y = (0 : M) → c = 0) : x ≠ 0 :=
-  mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (not_mem_of_ortho ortho)
+  mt (fun h => show x ∈ N from h.symm ▸ N.zero_mem) (notMem_of_ortho ortho)
 
 end IsDomain
 

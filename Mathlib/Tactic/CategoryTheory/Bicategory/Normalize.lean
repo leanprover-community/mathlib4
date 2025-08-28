@@ -10,7 +10,7 @@ import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 # Normalization of 2-morphisms in bicategories
 
 This file provides the implementation of the normalization given in
-`Mathlib.Tactic.CategoryTheory.Coherence.Normalize`. See this file for more details.
+`Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
 
 -/
 
@@ -38,7 +38,7 @@ theorem evalComp_nil_cons (α : f ≅ g) (β : g ≅ h) (η : h ⟶ i) (ηs : i 
   simp
 
 theorem evalComp_cons (α : f ≅ g) (η : g ⟶ h) {ηs : h ⟶ i} {θ : i ⟶ j} {ι : h ⟶ j}
-    (e_ι : ηs ≫ θ = ι)  :
+    (e_ι : ηs ≫ θ = ι) :
     (α.hom ≫ η ≫ ηs) ≫ θ = α.hom ≫ η ≫ ι := by
   simp [e_ι]
 

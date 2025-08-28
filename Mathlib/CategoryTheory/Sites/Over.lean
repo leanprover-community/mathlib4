@@ -84,7 +84,7 @@ lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : S
     let T := Over.mk (b ≫ W.hom)
     let c : T ⟶ Y₁ := Over.homMk g (by dsimp [T]; rw [← Over.w a, ← reassoc_of% w, Over.w f])
     let d : T ⟶ W := Over.homMk b
-    refine ⟨T, c, 𝟙 Z, ?_, by simp [c]⟩
+    refine ⟨T, c, 𝟙 Z, ?_, by simp [T, c]⟩
     rw [show c ≫ f = d ≫ a by ext; exact w]
     exact S.downward_closed h _
 
@@ -108,7 +108,7 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact S.downward_closed ha _
   · intro hg
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
-      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by aesop_cat⟩
+      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
 end Sieve
 

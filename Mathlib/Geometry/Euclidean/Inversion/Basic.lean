@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Tactic.AdaptationNote
 
 /-!
@@ -40,7 +40,6 @@ sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [inversion] -/
 theorem inversion_def :
     inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
   rfl
@@ -92,12 +91,11 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   rcases eq_or_ne x c with (rfl | hx)
   · simp
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- was `field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]`,
-  -- but really slow. Replaced by `simp only ...` to speed up.
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [inversion, sq, mul_div_assoc', div_mul_eq_mul_div,
-    div_div, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
-    abs_dist, ← dist_eq_norm_vsub, mul_assoc, eq_div_iff, div_eq_iff]
+  simp only [inversion]
+  field_simp
+  simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
+    abs_dist, ← dist_eq_norm_vsub]
+  field_simp
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -164,11 +162,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- used to be `field_simp`, but was really slow; replaced by `simp only ...` to speed up
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [mul_div_assoc', div_div_eq_mul_div, div_mul_eq_mul_div,
-    div_eq_iff]
-  ring
+  field_simp
 
 /-!
 ### Ptolemy's inequality
@@ -185,7 +179,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   · rw [dist_self, zero_mul, zero_add]
   rcases eq_or_ne c a with (rfl | hc)
   · rw [dist_self, zero_mul]
-    apply_rules [add_nonneg, mul_nonneg, dist_nonneg]
+    positivity
   rcases eq_or_ne d a with (rfl | hd)
   · rw [dist_self, mul_zero, add_zero, dist_comm d, dist_comm d, mul_comm]
   /- Otherwise, we apply the triangle inequality to `EuclideanGeometry.inversion a 1 b`,
@@ -195,7 +189,7 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
   rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
-  convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
+  convert H using 1 <;> simp [field, dist_comm a]; ring
 
 end EuclideanGeometry
 

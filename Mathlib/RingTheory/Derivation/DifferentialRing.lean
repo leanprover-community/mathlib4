@@ -13,6 +13,7 @@ use the x′ notation for the derivative of x.
 -/
 
 /-- A derivation from a ring to itself, as a typeclass. -/
+@[ext]
 class Differential (R : Type*) [CommRing R] where
   /-- The `Derivation` associated with the ring. -/
   deriv : Derivation ℤ R R
@@ -27,7 +28,7 @@ open Lean PrettyPrinter Delaborator SubExpr in
 A delaborator for the x′ notation. This is required because it's not direct function application,
 so the default delaborator doesn't work.
 -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6
@@ -52,11 +53,11 @@ lemma algebraMap.coe_deriv {A : Type*} {B : Type*} [CommRing A] [CommRing B] [Al
 
 /--
 A differential ring `A` and an algebra over it `B` share constants if all
-constants in B are in the range of `algberaMap A B`.
+constants in B are in the range of `algebraMap A B`.
 -/
 class Differential.ContainConstants (A B : Type*) [CommRing A] [CommRing B]
     [Algebra A B] [Differential B] : Prop where
-  /-- If the derivative of x is 0, then it's in the range of `algberaMap A B`. -/
+  /-- If the derivative of x is 0, then it's in the range of `algebraMap A B`. -/
   protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
 lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B]

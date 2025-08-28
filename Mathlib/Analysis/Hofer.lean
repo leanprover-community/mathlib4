@@ -63,13 +63,14 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
             (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
           _ = (∑ i ∈ r, (1 / 2 : ℝ) ^ i) * ε := by
             rw [Finset.sum_mul]
+            simp
             field_simp
           _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
       have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by
         refine @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => ?_
         exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le
       exact hu (n + 1) ⟨A, B⟩
-  cases' forall_and.mp key with key₁ key₂
+  obtain ⟨key₁, key₂⟩ := forall_and.mp key
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
     refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => ?_

@@ -34,6 +34,8 @@ open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDou
 
 open scoped Topology
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- If `(f y - f x) / (y - x)` converges to a limit as `y` tends to `x`, then the same goes if
 `y` is shifted a little bit, i.e., `f (y + (y-x)^2) - f x) / (y - x)` converges to the same limit.
 This lemma contains a slightly more general version of this statement (where one considers
@@ -57,7 +59,7 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
   apply Tendsto.congr' _ Z
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := by apply Tendsto.mono_right h' hl self_mem_nhdsWithin
   filter_upwards [this] with y hy
-  field_simp [sub_ne_zero.2 hy]
+  simp [field, sub_ne_zero.2 hy]
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
@@ -71,7 +73,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
     As `μ [y, x] = f x - f (y^-)`, this is not exactly the right result, so one uses a sandwiching
     argument to deduce the convergence for `(f x - f y) / (x - y)`. -/
   filter_upwards [VitaliFamily.ae_tendsto_rnDeriv (vitaliFamily (volume : Measure ℝ) 1) f.measure,
-    rnDeriv_lt_top f.measure volume, f.countable_leftLim_ne.ae_not_mem volume] with x hx h'x h''x
+    rnDeriv_lt_top f.measure volume, f.countable_leftLim_ne.ae_notMem volume] with x hx h'x h''x
   -- Limit on the right, following from differentiation of measures
   have L1 :
     Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[>] x) (𝓝 (rnDeriv f.measure volume x).toReal) := by
@@ -97,15 +99,13 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
   -- Shifting a little bit the limit on the left, by `(y - x)^2`.
   have L3 : Tendsto (fun y => (leftLim f (y + 1 * (y - x) ^ 2) - f x) / (y - x)) (𝓝[<] x)
       (𝓝 (rnDeriv f.measure volume x).toReal) := by
-    apply tendsto_apply_add_mul_sq_div_sub (nhds_left'_le_nhds_ne x) L2
+    apply tendsto_apply_add_mul_sq_div_sub (nhdsLT_le_nhdsNE x) L2
     apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
     · apply Tendsto.mono_left _ nhdsWithin_le_nhds
       have : Tendsto (fun y : ℝ => y + ↑1 * (y - x) ^ 2) (𝓝 x) (𝓝 (x + ↑1 * (x - x) ^ 2)) :=
         tendsto_id.add (((tendsto_id.sub_const x).pow 2).const_mul ↑1)
       simpa using this
-    · have : Ioo (x - 1) x ∈ 𝓝[<] x := by
-        apply Ioo_mem_nhdsWithin_Iio; exact ⟨by linarith, le_refl _⟩
-      filter_upwards [this]
+    · filter_upwards [Ioo_mem_nhdsLT <| show x - 1 < x by simp]
       rintro y ⟨hy : x - 1 < y, h'y : y < x⟩
       rw [mem_Iio]
       nlinarith
@@ -124,7 +124,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
       refine div_le_div_of_nonpos_of_le (by linarith) ?_
       simpa only [sub_le_sub_iff_right] using f.mono.leftLim_le (le_refl y)
   -- prove the result by splitting into left and right limits.
-  rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhds_left'_sup_nhds_right', tendsto_sup]
+  rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhdsLT_sup_nhdsGT, tendsto_sup]
   exact ⟨L4, L1⟩
 
 /-- A monotone function is almost everywhere differentiable, with derivative equal to the
@@ -134,15 +134,15 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
   /- We already know that the Stieltjes function associated to `f` (i.e., `g : x ↦ f (x^+)`) is
     differentiable almost everywhere. We reduce to this statement by sandwiching values of `f` with
     values of `g`, by shifting with `(y - x)^2` (which has no influence on the relevant
-    scale `y - x`.)-/
+    scale `y - x`.) -/
   filter_upwards [hf.stieltjesFunction.ae_hasDerivAt,
-    hf.countable_not_continuousAt.ae_not_mem volume] with x hx h'x
+    hf.countable_not_continuousAt.ae_notMem volume] with x hx h'x
   have A : hf.stieltjesFunction x = f x := by
     rw [Classical.not_not, hf.continuousAt_iff_leftLim_eq_rightLim] at h'x
     apply le_antisymm _ (hf.le_rightLim (le_refl _))
     rw [← h'x]
     exact hf.leftLim_le (le_refl _)
-  rw [hasDerivAt_iff_tendsto_slope, (nhds_left'_sup_nhds_right' x).symm, tendsto_sup,
+  rw [hasDerivAt_iff_tendsto_slope, (nhdsLT_sup_nhdsGT x).symm, tendsto_sup,
     slope_fun_def_field, A] at hx
   -- prove differentiability on the right, by sandwiching with values of `g`
   have L1 : Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[>] x)
@@ -150,15 +150,13 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
     -- limit of a helper function, with a small shift compared to `g`
     have : Tendsto (fun y => (hf.stieltjesFunction (y + -1 * (y - x) ^ 2) - f x) / (y - x)) (𝓝[>] x)
         (𝓝 (rnDeriv hf.stieltjesFunction.measure volume x).toReal) := by
-      apply tendsto_apply_add_mul_sq_div_sub (nhds_right'_le_nhds_ne x) hx.2
+      apply tendsto_apply_add_mul_sq_div_sub (nhdsGT_le_nhdsNE x) hx.2
       apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
       · apply Tendsto.mono_left _ nhdsWithin_le_nhds
         have : Tendsto (fun y : ℝ => y + -↑1 * (y - x) ^ 2) (𝓝 x) (𝓝 (x + -↑1 * (x - x) ^ 2)) :=
           tendsto_id.add (((tendsto_id.sub_const x).pow 2).const_mul (-1))
         simpa using this
-      · have : Ioo x (x + 1) ∈ 𝓝[>] x := by
-          apply Ioo_mem_nhdsWithin_Ioi; exact ⟨le_refl _, by linarith⟩
-        filter_upwards [this]
+      · filter_upwards [Ioo_mem_nhdsGT <| show x < x + 1 by simp]
         rintro y ⟨hy : x < y, h'y : y < x + 1⟩
         rw [mem_Ioi]
         nlinarith
@@ -178,15 +176,13 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
     -- limit of a helper function, with a small shift compared to `g`
     have : Tendsto (fun y => (hf.stieltjesFunction (y + -1 * (y - x) ^ 2) - f x) / (y - x)) (𝓝[<] x)
         (𝓝 (rnDeriv hf.stieltjesFunction.measure volume x).toReal) := by
-      apply tendsto_apply_add_mul_sq_div_sub (nhds_left'_le_nhds_ne x) hx.1
+      apply tendsto_apply_add_mul_sq_div_sub (nhdsLT_le_nhdsNE x) hx.1
       apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
       · apply Tendsto.mono_left _ nhdsWithin_le_nhds
         have : Tendsto (fun y : ℝ => y + -↑1 * (y - x) ^ 2) (𝓝 x) (𝓝 (x + -↑1 * (x - x) ^ 2)) :=
           tendsto_id.add (((tendsto_id.sub_const x).pow 2).const_mul (-1))
         simpa using this
-      · have : Ioo (x - 1) x ∈ 𝓝[<] x := by
-          apply Ioo_mem_nhdsWithin_Iio; exact ⟨by linarith, le_refl _⟩
-        filter_upwards [this]
+      · filter_upwards [Ioo_mem_nhdsLT <| show x - 1 < x by simp]
         rintro y hy
         rw [mem_Ioo] at hy
         rw [mem_Iio]
@@ -205,8 +201,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
       apply div_le_div_of_nonpos_of_le hy.le
       exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by linarith))
   -- conclude global differentiability
-  rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, (nhds_left'_sup_nhds_right' x).symm,
-    tendsto_sup]
+  rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhdsLT_sup_nhdsGT, tendsto_sup]
   exact ⟨L2, L1⟩
 
 /-- A monotone real function is differentiable Lebesgue-almost everywhere. -/

@@ -28,6 +28,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 set theory, cardinals, extended natural numbers
 -/
 
+assert_not_exists Field
+
 open Function Set
 universe u v
 
@@ -48,7 +50,7 @@ instance : Coe ENat Cardinal := ⟨Cardinal.ofENat⟩
 @[simp, norm_cast] lemma ofENat_one : ofENat 1 = 1 := rfl
 
 @[simp, norm_cast] lemma ofENat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℕ∞)) : Cardinal) = OfNat.ofNat n :=
+    ((ofNat(n) : ℕ∞) : Cardinal) = OfNat.ofNat n :=
   rfl
 
 lemma ofENat_strictMono : StrictMono ofENat :=
@@ -67,14 +69,14 @@ lemma ofENat_lt_aleph0 {m : ℕ∞} : (m : Cardinal) < ℵ₀ ↔ m < ⊤ :=
 @[simp] lemma ofENat_lt_nat {m : ℕ∞} {n : ℕ} : ofENat m < n ↔ m < n := by norm_cast
 
 @[simp] lemma ofENat_lt_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
-    ofENat m < no_index (OfNat.ofNat n) ↔ m < OfNat.ofNat n := ofENat_lt_nat
+    ofENat m < ofNat(n) ↔ m < OfNat.ofNat n := ofENat_lt_nat
 
 @[simp] lemma nat_lt_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) < n ↔ m < n := by norm_cast
 @[simp] lemma ofENat_pos {m : ℕ∞} : 0 < (m : Cardinal) ↔ 0 < m := by norm_cast
 @[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by norm_cast
 
 @[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
-  no_index (OfNat.ofNat m : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
+    (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
 
 lemma ofENat_mono : Monotone ofENat := ofENat_strictMono.monotone
 
@@ -88,14 +90,14 @@ lemma ofENat_le_ofENat {m n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := ofEN
 @[simp] lemma ofENat_le_one {m : ℕ∞} : ofENat m ≤ 1 ↔ m ≤ 1 := by norm_cast
 
 @[simp] lemma ofENat_le_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
-    ofENat m ≤ no_index (OfNat.ofNat n) ↔ m ≤ OfNat.ofNat n := ofENat_le_nat
+    ofENat m ≤ ofNat(n) ↔ m ≤ OfNat.ofNat n := ofENat_le_nat
 
 @[simp] lemma nat_le_ofENat {m : ℕ} {n : ℕ∞} : (m : Cardinal) ≤ n ↔ m ≤ n := by norm_cast
 @[simp] lemma one_le_ofENat {n : ℕ∞} : 1 ≤ (n : Cardinal) ↔ 1 ≤ n := by norm_cast
 
 @[simp]
 lemma ofNat_le_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
-    no_index (OfNat.ofNat m : Cardinal) ≤ n ↔ OfNat.ofNat m ≤ n := nat_le_ofENat
+    (ofNat(m) : Cardinal) ≤ n ↔ OfNat.ofNat m ≤ n := nat_le_ofENat
 
 lemma ofENat_injective : Injective ofENat := ofENat_strictMono.injective
 
@@ -112,10 +114,10 @@ lemma ofENat_inj {m n : ℕ∞} : (m : Cardinal) = n ↔ m = n := ofENat_injecti
 @[simp] lemma one_eq_ofENat {m : ℕ∞} : 1 = (m : Cardinal) ↔ m = 1 := by norm_cast; apply eq_comm
 
 @[simp] lemma ofENat_eq_ofNat {m : ℕ∞} {n : ℕ} [n.AtLeastTwo] :
-    (m : Cardinal) = no_index (OfNat.ofNat n) ↔ m = OfNat.ofNat n := ofENat_eq_nat
+    (m : Cardinal) = ofNat(n) ↔ m = OfNat.ofNat n := ofENat_eq_nat
 
 @[simp] lemma ofNat_eq_ofENat {m : ℕ} {n : ℕ∞} [m.AtLeastTwo] :
-    no_index (OfNat.ofNat m) = (n : Cardinal) ↔ OfNat.ofNat m = n := nat_eq_ofENat
+    ofNat(m) = (n : Cardinal) ↔ OfNat.ofNat m = n := nat_eq_ofENat
 
 @[simp, norm_cast] lemma lift_ofENat : ∀ m : ℕ∞, lift.{u, v} m = m
   | (m : ℕ) => lift_natCast m
@@ -157,7 +159,7 @@ lemma toENatAux_nat (n : ℕ) : toENatAux n = n := Nat.cast_injective.extend_app
 lemma toENatAux_zero : toENatAux 0 = 0 := toENatAux_nat 0
 
 lemma toENatAux_eq_top {a : Cardinal} (ha : ℵ₀ ≤ a) : toENatAux a = ⊤ :=
-  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_lt <| hn ▸ nat_lt_aleph0 n
+  extend_apply' _ _ _ fun ⟨n, hn⟩ ↦ ha.not_gt <| hn ▸ nat_lt_aleph0 n
 
 lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
   | (n : ℕ) => toENatAux_nat n
@@ -166,12 +168,12 @@ lemma toENatAux_ofENat : ∀ n : ℕ∞, toENatAux n = n
 attribute [local simp] toENatAux_nat toENatAux_zero toENatAux_ofENat
 
 lemma toENatAux_gc : GaloisConnection (↑) toENatAux := fun n x ↦ by
-  cases lt_or_le x ℵ₀ with
+  cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (ofENat_le_aleph0 n).trans hx]
 
 theorem toENatAux_le_nat {x : Cardinal} {n : ℕ} : toENatAux x ≤ n ↔ x ≤ n := by
-  cases lt_or_le x ℵ₀ with
+  cases lt_or_ge x ℵ₀ with
   | inl hx => lift x to ℕ using hx; simp
   | inr hx => simp [toENatAux_eq_top hx, (nat_lt_aleph0 n).trans_le hx]
 
@@ -187,8 +189,8 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
   toFun := toENatAux
   map_one' := toENatAux_nat 1
   map_mul' x y := by
-    wlog hle : x ≤ y; · rw [mul_comm, this y x (le_of_not_le hle), mul_comm]
-    cases lt_or_le y ℵ₀ with
+    wlog hle : x ≤ y; · rw [mul_comm, this y x (le_of_not_ge hle), mul_comm]
+    cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
       simp only [← Nat.cast_mul, toENatAux_nat]
@@ -200,8 +202,8 @@ noncomputable def toENat : Cardinal.{u} →+*o ℕ∞ where
         · rwa [Ne, toENatAux_eq_zero]
         · exact le_mul_of_one_le_of_le (one_le_iff_ne_zero.2 hx) hy
   map_add' x y := by
-    wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_le hle), add_comm]
-    cases lt_or_le y ℵ₀ with
+    wlog hle : x ≤ y; · rw [add_comm, this y x (le_of_not_ge hle), add_comm]
+    cases lt_or_ge y ℵ₀ with
     | inl hy =>
       lift x to ℕ using hle.trans_lt hy; lift y to ℕ using hy
       simp only [← Nat.cast_add, toENatAux_nat]
@@ -247,12 +249,16 @@ lemma toENat_nat (n : ℕ) : toENat n = n := map_natCast _ n
 @[simp] lemma toENat_eq_one {a : Cardinal} : toENat a = 1 ↔ a = 1 := toENat_eq_nat
 
 @[simp] lemma toENat_le_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
-    toENat a ≤ no_index (OfNat.ofNat n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
+    toENat a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n := toENat_le_nat
 
 @[simp] lemma toENat_eq_ofNat {a : Cardinal} {n : ℕ} [n.AtLeastTwo] :
-    toENat a = no_index (OfNat.ofNat n) ↔ a = OfNat.ofNat n := toENat_eq_nat
+    toENat a = ofNat(n) ↔ a = OfNat.ofNat n := toENat_eq_nat
 
 @[simp] lemma toENat_eq_top {a : Cardinal} : toENat a = ⊤ ↔ ℵ₀ ≤ a := enat_gc.u_eq_top
+
+lemma toENat_ne_top {a : Cardinal} : toENat a ≠ ⊤ ↔ a < ℵ₀ := by simp
+
+@[simp] lemma toENat_lt_top {a : Cardinal} : toENat a < ⊤ ↔ a < ℵ₀ := by simp [lt_top_iff_ne_top]
 
 @[simp]
 theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by

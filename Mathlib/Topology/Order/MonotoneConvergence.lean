@@ -32,25 +32,25 @@ variable {α β : Type*}
 
 /-- We say that `α` is a `SupConvergenceClass` if the following holds. Let `f : ι → α` be a
 monotone function, let `a : α` be a least upper bound of `Set.range f`. Then `f x` tends to `𝓝 a`
- as `x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`,
-`f = CoeTC.coe` in the definition, then prove it for any `f` in `tendsto_atTop_isLUB`.
+as `x → ∞` (formally, at the filter `Filter.atTop`). We require this for `ι = (s : Set α)`,
+`f = (↑)` in the definition, then prove it for any `f` in `tendsto_atTop_isLUB`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class SupConvergenceClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
   /-- proof that a monotone function tends to `𝓝 a` as `x → ∞` -/
   tendsto_coe_atTop_isLUB :
-    ∀ (a : α) (s : Set α), IsLUB s a → Tendsto (CoeTC.coe : s → α) atTop (𝓝 a)
+    ∀ (a : α) (s : Set α), IsLUB s a → Tendsto ((↑) : s → α) atTop (𝓝 a)
 
 /-- We say that `α` is an `InfConvergenceClass` if the following holds. Let `f : ι → α` be a
 monotone function, let `a : α` be a greatest lower bound of `Set.range f`. Then `f x` tends to `𝓝 a`
 as `x → -∞` (formally, at the filter `Filter.atBot`). We require this for `ι = (s : Set α)`,
-`f = CoeTC.coe` in the definition, then prove it for any `f` in `tendsto_atBot_isGLB`.
+`f = (↑)` in the definition, then prove it for any `f` in `tendsto_atBot_isGLB`.
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
-  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞`-/
+  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞` -/
   tendsto_coe_atBot_isGLB :
-    ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (CoeTC.coe : s → α) atBot (𝓝 a)
+    ∀ (a : α) (s : Set α), IsGLB s a → Tendsto ((↑) : s → α) atBot (𝓝 a)
 
 instance OrderDual.supConvergenceClass [Preorder α] [TopologicalSpace α] [InfConvergenceClass α] :
     SupConvergenceClass αᵒᵈ :=
@@ -167,10 +167,7 @@ instance Prod.supConvergenceClass
     tendsto_atTop_isLUB (monotone_fst.restrict s) h.1
   have B : Tendsto (fun x : s => (x : α × β).2) atTop (𝓝 b) :=
     tendsto_atTop_isLUB (monotone_snd.restrict s) h.2
-  convert A.prod_mk_nhds B
-  -- Porting note: previously required below to close
-  -- ext1 ⟨⟨x, y⟩, h⟩
-  -- rfl
+  exact A.prodMk_nhds B
 
 instance [Preorder α] [Preorder β] [TopologicalSpace α] [TopologicalSpace β] [InfConvergenceClass α]
     [InfConvergenceClass β] : InfConvergenceClass (α × β) :=

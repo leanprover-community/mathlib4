@@ -53,7 +53,7 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
     exact le_antisymm (mem_withSign_neg_one.mp hx') (mem_withSign_one.mp hx)
   · rw [codisjoint_iff_le_sup]
     intro x _hx
-    obtain hp | hn := (le_refl (0 : ℤ)).le_or_le x
+    obtain hp | hn := (le_refl (0 : ℤ)).ge_or_le x
     · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
     · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 
@@ -85,7 +85,7 @@ theorem withSign.not_injective :
     apply zero_ne_one h.symm
   apply hinj.ne this
   rw [LinearMap.map_zero, LinearMap.map_add, DirectSum.toModule_lof, DirectSum.toModule_lof]
-  simp
+  simp [p1, n1]
 
 /-- And so they do not represent an internal direct sum. -/
 theorem withSign.not_internal : ¬DirectSum.IsInternal withSign :=
