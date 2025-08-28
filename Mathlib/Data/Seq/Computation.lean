@@ -796,14 +796,18 @@ theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) 
 theorem empty_orElse (c) : (empty α <|> c) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (empty α <|> c₂) = c₁) _ rfl
   intro s' s h; rw [← h]
-  apply recOn s <;> intro s <;> rw [think_empty] <;> simp
+  apply recOn s <;> intro s <;> rw [think_empty]
+  · simp
+  simp only [BisimO, orElse_think, destruct_think]
   rw [← think_empty]
 
 @[simp]
 theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (c₂ <|> empty α) = c₁) _ rfl
   intro s' s h; rw [← h]
-  apply recOn s <;> intro s <;> rw [think_empty] <;> simp
+  apply recOn s <;> intro s <;> rw [think_empty]
+  · simp
+  simp only [BisimO, orElse_think, destruct_think]
   rw [← think_empty]
 
 /-- `c₁ ~ c₂` asserts that `c₁` and `c₂` either both terminate with the same result,
@@ -1068,7 +1072,7 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     simp [h]
   · simp only [liftRel_think_left]
     revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h
+    apply cb.recOn (fun b => _) fun cb' => _ <;> intro _ h
     · simpa using h
     · simpa [h] using IH _ h
 
