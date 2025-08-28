@@ -700,6 +700,35 @@ example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^
 example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
   field_simp
 
+-- Extracted from `Analysis/SpecificLimits/Basic.lean`
+
+-- TODO: why does this fail?
+/-- error: field_simp made no progress on goal -/
+#guard_msgs in
+example {𝕜 : Type*} [DivisionRing 𝕜] {n' x : 𝕜} (hn : n' ≠ 0) :
+    1 / (1 + x / n') = n' / (n' + x) := by
+  have : n'  ≠ 0 := sorry
+  have : n' + x ≠ 0 := sorry
+  field_simp
+
+-- For comparison: the same test passes when working over a field.
+example {𝕜 : Type*} [Field 𝕜] {n' x : 𝕜} (hn : n' ≠ 0) :
+    1 / (1 + x / n') = n' / (n' + x) := by
+  field_simp
+
+-- When we cannot discharge the `n' = 0` goal, we currently fail.
+/--
+error: unsolved goals
+𝕜 : Type u_1
+inst✝ : Field 𝕜
+a x : 𝕜
+⊢ 1 / (1 + x / a) = a / (a + x)
+-/
+#guard_msgs in
+example {𝕜 : Type*} [Field 𝕜] {a x : 𝕜} :
+    1 / (1 + x / a) = a / (a + x) := by
+  field_simp
+
 /-! ## Miscellaneous -/
 
 -- An example of "unfolding" `field_simps` to its "definition"
