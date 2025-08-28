@@ -129,16 +129,17 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
         have H3 := Convex.is_const_of_fderivWithin_eq_zero (f := f * g⁻¹) (s := s) hsc
           (hf.mul (DifferentiableOn.inv hg hgn)) ?_ hy ht
         · simp only [Pi.mul_apply, Pi.inv_apply] at H3
-          rw [← H3]
+          simp only [← H3, Pi.smul_apply, smul_eq_mul]
           field_simp [← H3, hgn y hy]
         · have he : s.EqOn (deriv f * g⁻¹ - f * deriv g / g ^ 2) 0 := by
             intro z hz
+            simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
+              Pi.zero_apply]
             field_simp [hgn z hz]
-            rw [pow_two, mul_comm, mul_assoc, ← mul_sub, mul_eq_zero]
-            right
             have H := h hz
             simp_rw [Pi.div_apply, div_eq_div_iff (hfn z hz) (hgn z hz), mul_comm] at H
-            simp [H]
+            simp only [← H, mul_zero]
+            ring
           intro v hv
           have ha := he hv ▸ (hderiv hv)
           simpa [fderivWithin_of_isOpen hs2 hv] using (ContinuousLinearMap.ext_ring ha)
