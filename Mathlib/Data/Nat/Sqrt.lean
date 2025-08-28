@@ -203,11 +203,7 @@ lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := b
 
 lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a.sqrt := by
   rcases le_total b c with bc | cb
-  · left
-    have : b * b ≤ b * c := by
-      exact mul_le_mul_left b bc
-    have := h ▸ this
-    exact le_sqrt.mpr this
+  · exact Or.inl <| le_sqrt.mpr <| h ▸ mul_le_mul_left b bc
   · sorry
   /- alternative proof:
   if hle : b ≤ a.sqrt then
