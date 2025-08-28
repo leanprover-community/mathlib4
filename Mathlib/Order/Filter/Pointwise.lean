@@ -685,8 +685,7 @@ variable [Group α] [DivisionMonoid β] [FunLike F α β] [MonoidHomClass F α �
 
 /-! Note that `Filter α` is not a group because `f / f ≠ 1` in general -/
 
--- Porting note: increase priority to appease `simpNF` so left-hand side doesn't simplify
-@[to_additive (attr := simp 1100)]
+@[to_additive (attr := simp high)] -- Ensure this fires before `le_div_iff`.
 protected theorem one_le_div_iff : 1 ≤ f / g ↔ ¬Disjoint f g := by
   refine ⟨fun h hfg => ?_, ?_⟩
   · obtain ⟨s, hs, t, ht, hst⟩ := hfg.le_bot (mem_bot : ∅ ∈ ⊥)
