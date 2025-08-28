@@ -294,7 +294,7 @@ abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
   HomeomorphClass.toHomeomorph e
 
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e := by
-  simp
+  rfl --Simp can prove this too
 
 @[simp]
 theorem coe_toHomeomorph_symm (e : α ≃o β) : ⇑e.toHomeomorph.symm = e.symm :=
