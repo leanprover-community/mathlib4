@@ -57,7 +57,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
 theorem Subpresheaf.le_sheafify : G ≤ G.sheafify J := by
   intro U s hs
   change _ ∈ J _
-  convert J.top_mem U.unop -- Porting note: `U.unop` can not be inferred now
+  convert J.top_mem U.unop
   rw [eq_top_iff]
   rintro V i -
   exact G.map i.op hs
@@ -80,8 +80,6 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
   intro U S hS x hx
   let S' := Sieve.bind S fun Y f hf => G.sieveOfSection (x f hf).1
   have := fun (V) (i : V ⟶ U) (hi : S' i) => hi
-  -- Porting note: change to explicit variable so that `choose` can find the correct
-  -- dependent functions. Thus everything follows need two additional explicit variables.
   choose W i₁ i₂ hi₂ h₁ h₂ using this
   dsimp [-Sieve.bind_apply] at *
   let x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
@@ -159,9 +157,8 @@ theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSh
   apply (h _ ((Subpresheaf.homOfLe (G.le_sheafify J)).app U s).prop).isSeparatedFor.ext
   intro V i hi
   have := elementwise_of% f.naturality
-  -- Porting note: filled in some underscores where Lean3 could automatically fill.
-  exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : G ≤ sheafify J G)).app U s).2)
-    ((G.family_of_elements_compatible _).compPresheafMap _) _ hi).trans (this _ _)
+  exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : _ ≤ sheafify _ _)).app _ _).2)
+    ((G.family_of_elements_compatible _).compPresheafMap _) _ _).trans (this _ _)
 
 theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toPresheaf ⟶ F')
@@ -275,13 +272,6 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
 
 instance : Limits.HasImages (Sheaf J (Type max v u)) :=
   ⟨fun f => ⟨⟨imageFactorization f⟩⟩⟩
-
-@[deprecated (since := "2025-01-25")] alias toImagePresheafSheafify :=
-  Subpresheaf.toRangeSheafify
-@[deprecated (since := "2025-01-25")] alias imageSheaf := Sheaf.image
-@[deprecated (since := "2025-01-25")] alias toImageSheaf := Sheaf.toImage
-@[deprecated (since := "2025-01-25")] alias imageSheafι := Sheaf.imageι
-@[deprecated (since := "2025-01-25")] alias toImageSheaf_ι := Sheaf.toImage_ι
 
 end Image
 

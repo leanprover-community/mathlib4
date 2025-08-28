@@ -84,7 +84,7 @@ theorem val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
   rfl
 
 instance : Pow { x : R // 0 < x } ℕ :=
-  ⟨fun x n => ⟨(x : R) ^ n , pow_pos x.2 n⟩⟩
+  ⟨fun x n => ⟨(x : R) ^ n, pow_pos x.2 n⟩⟩
 
 @[simp]
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :

@@ -38,8 +38,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
-   (Section 17.5)][IrelandRosen1990]
+* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
+  [IrelandRosen1990]
 
 ## Tags
 
@@ -373,7 +373,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   refine ⟨(q₁.num * q₂.num - d * (q₁.den * q₂.den)) / m, (q₁.num * q₂.den - q₂.num * q₁.den) / m,
       ?_, ?_⟩
   · qify [hd₁, hd₂]
-    field_simp [hm₀]
+    field_simp
     norm_cast
     grind
   · qify [hd₂]

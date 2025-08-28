@@ -70,16 +70,16 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
   · simp [angle_self hx]
   have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
-    field_simp [sin_angle_mul_norm_mul_norm]
+    simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
-  field_simp [mul_assoc, inner_sub_left, inner_sub_right, real_inner_comm x y, hsub]
+  simp [field, inner_sub_left, inner_sub_right, real_inner_comm x y]
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy : x - y ≠ 0) :
     Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
-  field_simp [sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
+  simp [field, sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
@@ -298,10 +298,12 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
 
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- A variant of the law of sines, angle-at-point form. -/
 theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
-  field_simp [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31]
+  simp [field, dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, mul_comm (dist ..)]
   exact law_sin _ _ _
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/
@@ -350,6 +352,22 @@ theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
   simpa only [neg_vsub_eq_vsub_rev] using
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
       (vsub_ne_zero.mpr h13)
+
+/-- Given a triangle `ABC` with `A ≠ B` and `A ≠ C` and a point `P` on `BC`,
+`∠ B A P + ∠ P A C = ∠ B A C`. -/
+lemma angle_add_of_ne_of_ne {a b c p : P} (hb : a ≠ b) (hc : a ≠ c) (hp : Wbtw ℝ b p c) :
+    ∠ b a p + ∠ p a c = ∠ b a c := by
+  by_cases pb : p = b; · simpa [pb] using angle_self_of_ne hb.symm
+  by_cases pc : p = c; · simpa [pc] using angle_self_of_ne hc.symm
+  have ea := angle_add_angle_add_angle_eq_pi c hb
+  have eb := angle_add_angle_add_angle_eq_pi p hb
+  have ec := angle_add_angle_add_angle_eq_pi p hc.symm
+  replace hp : ∠ b p c = π := angle_eq_pi_iff_sbtw.mpr ⟨hp, pb, pc⟩
+  have hp' : ∠ c p b = π := by rwa [angle_comm] at hp
+  rw [angle_comm p b a, angle_eq_angle_of_angle_eq_pi a hp, angle_comm a b c] at eb
+  rw [angle_eq_angle_of_angle_eq_pi a hp', angle_comm c p a] at ec
+  have ep := angle_add_angle_eq_pi_of_angle_eq_pi a hp
+  linarith only [ea, eb, ec, ep]
 
 /-- **Stewart's Theorem**. -/
 theorem dist_sq_mul_dist_add_dist_sq_mul_dist (a b c p : P) (h : ∠ b p c = π) :

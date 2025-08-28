@@ -77,10 +77,10 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
     ring1
   · simp_rw [variableChange_a₃, Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div,
       hu, a₁_of_isCharTwoJEqZeroNF, show (2 : F) = 0 from CharP.cast_eq_zero F 2]
-    field_simp
-  · field_simp [variableChange_a₄, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
+    simp [field]
+  · simp [field, variableChange_a₄, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
     linear_combination hs + (s ^ 4 - s * t - E.a₃ * s) * CharP.cast_eq_zero F 2
-  · field_simp [variableChange_a₆, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
+  · simp [field, variableChange_a₆, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
     linear_combination ht - (t ^ 2 + E.a₃ * t) * CharP.cast_eq_zero F 2
 
 private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
@@ -135,7 +135,7 @@ private lemma exists_variableChange_of_char_three_of_j_ne_zero
     ring1
   · simp_rw [variableChange_a₂, a₁_of_isCharThreeJNeZeroNF, Units.val_inv_eq_inv_val,
       Units.val_mk0, inv_pow, inv_mul_eq_div, hu]
-    field_simp
+    simp [field]
   · simp_rw [variableChange_a₃, a₁_of_isCharThreeJNeZeroNF, a₃_of_isCharThreeJNeZeroNF]
     ring1
   · simp_rw [variableChange_a₄, a₁_of_isCharThreeJNeZeroNF, a₃_of_isCharThreeJNeZeroNF,
@@ -145,7 +145,7 @@ private lemma exists_variableChange_of_char_three_of_j_ne_zero
     simp_rw [variableChange_a₆, a₁_of_isCharThreeJNeZeroNF, a₃_of_isCharThreeJNeZeroNF,
       a₄_of_isCharThreeJNeZeroNF, Units.val_inv_eq_inv_val, Units.val_mk0,
       inv_pow, inv_mul_eq_div, pow_mul u 2 3, hu]
-    field_simp
+    simp [field]
     linear_combination heq
 
 private lemma exists_variableChange_of_char_three_of_j_eq_zero
@@ -175,10 +175,10 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
   · simp_rw [variableChange_a₄, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
       Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu,
       show (3 : F) = 0 from CharP.cast_eq_zero F 3]
-    field_simp
+    simp [field]
   · simp_rw [variableChange_a₆, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
       Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div]
-    field_simp
+    simp [field]
     linear_combination hr
 
 private lemma exists_variableChange_of_char_three (heq : E.j = E'.j) :
@@ -263,7 +263,7 @@ private lemma exists_variableChange_of_char_ne_two_or_three
     · simp [ha₄, ha₄', variableChange_a₄]
     · simp_rw [variableChange_a₆, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
         ha₄, Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu]
-      field_simp
+      simp [field]
   by_cases ha₆ : E.a₆ = 0
   · have ha₄ := E.Δ'.ne_zero
     rw [coe_Δ', Δ_of_isShortNF, ha₆, zero_pow two_ne_zero, mul_zero, add_zero, ← mul_assoc,
@@ -287,7 +287,7 @@ private lemma exists_variableChange_of_char_ne_two_or_three
     · simp [variableChange_a₃]
     · simp_rw [variableChange_a₄, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
         Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu]
-      field_simp
+      simp [field]
     · simp [ha₆, ha₆', variableChange_a₆]
   have ha₄' : E'.a₄ ≠ 0 := fun h ↦ by
     rw [h, zero_pow three_ne_zero, zero_mul, mul_eq_zero,
@@ -300,12 +300,12 @@ private lemma exists_variableChange_of_char_ne_two_or_three
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₆ / E'.a₆ / (E.a₄ / E'.a₄)) 2
   have hu4 : u ^ 4 = E.a₄ / E'.a₄ := by
     rw [pow_mul u 2 2, hu]
-    field_simp
+    simp [field]
     linear_combination -heq
   have hu6 : u ^ 6 = E.a₆ / E'.a₆ := by
     rw [pow_mul u 2 3, hu]
-    field_simp
-    linear_combination -E.a₆ * E'.a₆ * heq
+    simp [field]
+    linear_combination -heq
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff four_ne_zero, hu4, div_ne_zero_iff]
     exact ⟨ha₄, ha₄'⟩
@@ -316,10 +316,10 @@ private lemma exists_variableChange_of_char_ne_two_or_three
   · simp [variableChange_a₃]
   · simp_rw [variableChange_a₄, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
       Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu4]
-    field_simp
+    simp [field]
   · simp_rw [variableChange_a₆, a₁_of_isShortNF, a₂_of_isShortNF, a₃_of_isShortNF,
       Units.val_inv_eq_inv_val, Units.val_mk0, inv_pow, inv_mul_eq_div, hu6]
-    field_simp
+    simp [field]
 
 end CharNeTwoOrThree
 

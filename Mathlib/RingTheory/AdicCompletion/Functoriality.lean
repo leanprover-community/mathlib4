@@ -14,7 +14,7 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `AdicCauchySequence.map I f`: the linear map on `I`-adic cauchy sequences induced by `f`
+- `AdicCauchySequence.map I f`: the linear map on `I`-adic Cauchy sequences induced by `f`
 - `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
@@ -81,7 +81,7 @@ theorem transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
 
 namespace AdicCauchySequence
 
-/-- A linear map induces a linear map on adic cauchy sequences. -/
+/-- A linear map induces a linear map on adic Cauchy sequences. -/
 @[simps]
 def map (f : M →ₗ[R] N) : AdicCauchySequence I M →ₗ[R] AdicCauchySequence I N where
   toFun a := ⟨fun n ↦ f (a n), fun {m n} hmn ↦ by
@@ -216,7 +216,7 @@ section Families
 In this section we consider a family `M : ι → Type*` of `R`-modules. Purely from
 the formal properties of adic completions we obtain two canonical maps
 
-- `AdicCompleiton I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
+- `AdicCompletion I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
 - `(⨁ j, (AdicCompletion I (M j))) →ₗ[R] AdicCompletion I (⨁ j, M j)`
 
 If `ι` is finite, both are isomorphisms and, modulo

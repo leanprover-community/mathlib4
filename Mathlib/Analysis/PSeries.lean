@@ -138,7 +138,7 @@ variable {u : ℕ → ℕ} {f : ℕ → ℝ≥0∞}
 open NNReal in
 theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (hu : StrictMono u) :
-    ∑' k , f k ≤ ∑ k ∈ range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
+    ∑' k, f k ≤ ∑ k ∈ range (u 0), f k + ∑' k : ℕ, (u (k + 1) - u k) * f (u k) := by
   rw [ENNReal.tsum_eq_iSup_nat' hu.tendsto_atTop]
   refine iSup_le fun n =>
     (Finset.le_sum_schlomilch hf h_pos hu.monotone n).trans (add_le_add_left ?_ _)
@@ -433,6 +433,8 @@ section shifted
 
 open Filter Asymptotics Topology
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   suffices ∀ (b c : ℝ), Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) →
@@ -452,7 +454,7 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
       refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
       filter_upwards [eventually_gt_atTop (-c)] with x hx
-      field_simp [(by linarith : 0 < x + c).ne']
+      simp [field, (by linarith : 0 < x + c).ne']
     apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'
     filter_upwards [eventually_gt_atTop (-b), eventually_gt_atTop (-c)] with x hb hc
     rw [neg_lt_iff_pos_add] at hb hc

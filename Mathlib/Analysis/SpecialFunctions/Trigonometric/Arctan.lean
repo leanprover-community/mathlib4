@@ -41,6 +41,19 @@ theorem tan_add'
     tan (x + y) = (tan x + tan y) / (1 - tan x * tan y) :=
   tan_add (Or.inl h)
 
+theorem tan_sub {x y : ℝ}
+    (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
+      (∃ k : ℤ, x = (2 * k + 1) * π / 2) ∧ ∃ l : ℤ, y = (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) := by
+  simpa only [← Complex.ofReal_inj, Complex.ofReal_sub, Complex.ofReal_add, Complex.ofReal_div,
+    Complex.ofReal_mul, Complex.ofReal_tan] using
+    @Complex.tan_sub (x : ℂ) (y : ℂ) (by convert h <;> norm_cast)
+
+theorem tan_sub' {x y : ℝ}
+    (h : (∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) :
+    tan (x - y) = (tan x - tan y) / (1 + tan x * tan y) :=
+  tan_sub (Or.inl h)
+
 theorem tan_two_mul : tan (2 * x) = 2 * tan x / (1 - tan x ^ 2) := by
   have := @Complex.tan_two_mul x
   norm_cast at *
@@ -273,9 +286,7 @@ theorem arctan_add_eq_add_pi (h : 1 < x * y) (hx : 0 < x) :
   have k := arctan_add (mul_inv x y ▸ inv_lt_one_of_one_lt₀ h)
   rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
     sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
-  convert k.symm using 3
-  field_simp
-  rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
+  grind
 
 theorem arctan_add_eq_sub_pi (h : 1 < x * y) (hx : x < 0) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by
