@@ -24,8 +24,6 @@ version also interferes more with software-verification use-cases, which is reas
 cautious here.
 -/
 
-/-
-Commented out on nightly-2028-08-26, could someone please restore if wanted?
 -- these theorems are fragile, so do them first
 set_option hygiene false in
 run_cmd
@@ -37,7 +35,6 @@ run_cmd
       open $typeName (toBitVec_mul) in
       protected theorem toBitVec_nsmul (n : ℕ) (a : $typeName) :
           (n • a).toBitVec = n • a.toBitVec := by
-        change (n * a).toBitVec = n • a.toBitVec
         rw [Lean.Grind.Semiring.nsmul_eq_natCast_mul, toBitVec_mul,
           nsmul_eq_mul, BitVec.natCast_eq_ofNat]
         rfl
@@ -154,4 +151,3 @@ def isASCIIAlphanum (c : UInt8) : Bool :=
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, .inl (Nat.lt_trans n.toBitVec.isLt (by decide))⟩
 
 end UInt8
--/
