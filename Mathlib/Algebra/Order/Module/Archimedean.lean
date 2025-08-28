@@ -37,9 +37,7 @@ theorem mk_smul (a : M) {k : K} (h : k ≠ 0) : mk (k • a) = mk a := by
     exact smul_le_smul_of_nonneg_right hn (by simp)
 
 theorem mk_le_mk_smul (a : M) (k : K) : mk a ≤ mk (k • a) := by
-  obtain rfl | h := eq_or_ne k 0
-  · simp
-  · rw [mk_smul a h]
+  obtain rfl | h := eq_or_ne k 0 <;> simp [*]
 
 variable (K)
 
