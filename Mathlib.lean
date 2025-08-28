@@ -5017,6 +5017,7 @@ import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Interval.Finset.DenselyOrdered
 import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Order.Interval.Finset.IccSums
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Finset.SuccPred
 import Mathlib.Order.Interval.Lex
