@@ -97,6 +97,7 @@ variable (R)
 abbrev addCommGroupEnrichedModuleCatHom (X Y : C) : AddCommGroup (X ⟶ Y) :=
   (eHomEquiv (V := ModuleCat R)).addCommGroup
 
+/-- The `R`-module structure on the Hom-set of an `ModuleCat R`-enriched ordinary category `C`. -/
 def moduleModuleCatHom (X Y : C) :
     letI : AddCommGroup (X ⟶ Y) := addCommGroupEnrichedModuleCatHom R X Y
     Module R (X ⟶ Y) :=
@@ -117,6 +118,7 @@ abbrev preadditiveEnrichedModuleCat : Preadditive C where
 
 attribute [local instance] moduleModuleCatHom
 
+/-- If a category `C` is enriched over `ModuleCat R`, then it is `R`-linear. -/
 def linearEnrichedModuleCat :
     letI : Preadditive C := preadditiveEnrichedModuleCat R C
     Linear R C :=
