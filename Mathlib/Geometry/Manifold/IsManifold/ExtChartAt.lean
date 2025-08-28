@@ -328,26 +328,32 @@ lemma isEmbedding_extend_restrict (φ : PartialHomeomorph M H) :
     IsEmbedding <| φ.source.restrict (φ.extend I) :=
   I.isClosedEmbedding.isEmbedding.comp φ.isOpenEmbedding_restrict.isEmbedding
 
+-- move to the right location!
+lemma IsEmbedding.subtype_map_of_subset {X : Type*} [TopologicalSpace X]
+    {s t : Set X} (hst : s ⊆ t) : IsEmbedding (Subtype.map id hst) := by
+  have := IsEmbedding.subtypeVal (p := t)
+  rw [← IsEmbedding.of_comp_iff (IsEmbedding.subtypeVal (p := t))]
+  exact IsEmbedding.subtypeVal (p := s)
+
+-- TODO: name and move to the right location!
+lemma foo {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    {f : X → Y} {g : Y → Z} {s : Set X} {t : Set Y}
+    (hf : IsEmbedding (s.restrict f)) (hg : IsEmbedding (t.restrict g)) :
+    IsEmbedding ((s ∩ f ⁻¹' t).restrict (g ∘ f)) := by
+  have hm : MapsTo f (s ∩ f⁻¹' t) t := by intro x ⟨_hxs, hxt⟩; simp_all
+  have : s ∩ f⁻¹' t ⊆ s := inter_subset_left
+  have hf' : IsEmbedding (hm.restrict f) :=
+    (hf.comp (IsEmbedding.subtype_map_of_subset this)).codRestrict t _
+  exact hg.comp hf'
+
 lemma isEmbedding_extend_symm_restrict (φ : PartialHomeomorph M H) :
     IsEmbedding <| (φ.extend I).target.restrict ((φ.extend I).symm) := by
-  have hI : IsEmbedding ((range I).restrict I.symm) := I.isEmbedding_symm_restrict
-  let f2 := (I.target ∩ I.symm ⁻¹' φ.target).restrict I.symm
-  have aux : ∀ (x : ↑(I.target ∩ ↑I.symm ⁻¹' φ.target)), f2 x ∈ φ.target := by
-    intro ⟨x, hx⟩
-    simpa [f2] using hx.2
-  -- have : f2 = Set.codRestrict ((I.target ∩ I.symm ⁻¹' φ.target).restrict
-  -- ((range I).restrict I.symm)) φ.target sorry := sorry
-  -- XXX: can I upgrade this to a closed embedding?
-  have hI' : IsEmbedding (Set.codRestrict f2 φ.target aux) := by
-  -- doesn't typecheck yet, but this is the idea: rewrite, then apply aux
-    let s' : Set (range I) := sorry -- (I.target ∩ I.symm ⁻¹' φ.target)
-    have : MapsTo ((range ↑I).restrict ↑I.symm) s' φ.target := sorry
-    convert hI.restrict (s := s') (t := φ.target) this
-    sorry -- almost what I want!
-  have : (I.target ∩ I.symm ⁻¹' φ.target).restrict (φ.symm ∘ I.symm) =
-      (φ.target.restrict φ.symm) ∘ (Set.codRestrict f2 φ.target aux) := by
-    ext; simp [f2]
-  simpa using φ.symm.isOpenEmbedding_restrict.isEmbedding.comp hI'.isEmbedding
+  -- (φ.extend I).symm is the composition of φ.symm (which is an embedding on its target)
+  -- and I.symm (which is an embedding on its range).
+  -- Composing both and restricting appropriately, we obtain our claim.
+  simp
+  rw [← I.range_eq_target]
+  exact foo I.isEmbedding_symm_restrict φ.symm.isOpenEmbedding_restrict.isEmbedding
 
 /-! We use the name `extend_coord_change` for `(f'.extend I).symm ≫ f.extend I`. -/
 
