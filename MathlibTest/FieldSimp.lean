@@ -707,9 +707,16 @@ example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^
 example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
   field_simp
 
-/-! ## Miscellaneous -/
+-- Extracted from `Analysis/SpecificLimits/Basic.lean`
 
--- An example of "unfolding" `field_simps` to its "definition"
-example {aa : ℚ} (ha : (aa : ℚ) ≠ 0) (hb : 2 * aa = 3) : (1 : ℚ) / aa = 2/ 3 := by
-  simp (disch := field_simp_discharge) [-one_div, -one_divp, -mul_eq_zero, field_simps]
-  rw [hb]
+-- `field_simp` assumes commutativity: in its absence, it does nothing.
+/-- error: field_simp made no progress on goal -/
+#guard_msgs in
+example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 0) :
+    1 / (1 + x / n') = n' / (n' + x) := by
+  field_simp
+
+-- For comparison: the same test passes when working over a field.
+example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
+    1 / (1 + x / n') = n' / (n' + x) := by
+  field_simp
