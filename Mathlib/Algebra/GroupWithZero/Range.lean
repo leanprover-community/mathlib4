@@ -132,7 +132,7 @@ variable (f) in
 in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
 `valueMonoid₀ f`. -/
 @[simps!]
-def restrict₀ : A →*₀ (valueGroup₀ f) where
+def restrict₀ : A →*₀ valueGroup₀ f where
   toFun a :=
     if h : f a ≠ 0 then (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) else 0
   map_one' := by simp; rfl
