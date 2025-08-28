@@ -462,7 +462,7 @@ private theorem aux₃ :
       help₁ hξ₀.ne' Hv.ne' Hu.ne'
     _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
-    _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field_simp; ring
+    _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field_simp
     _ ≤ (u' * (2 * u' - 1) : ℝ)⁻¹ := by gcongr
 
 -- The conditions `ass ξ u v` persist in the inductive step.
