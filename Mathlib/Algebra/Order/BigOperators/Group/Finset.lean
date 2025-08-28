@@ -365,18 +365,22 @@ section CanonicallyOrderedMul
 
 variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
--- TODO: the namespace this theorem is in no longer exists as a typeclass.
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`. -/
-@[to_additive _root_.CanonicallyOrderedAddCommMonoid.single_le_sum
-/-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
+@[to_additive /-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
 
 See also `Finset.single_le_sum`. -/]
-lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
+lemma _root_.CanonicallyOrderedMul.single_le_prod {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   single_le_prod' (fun _ _ ↦ one_le _) hi
+
+@[deprecated (since := "2025-08-28")]
+alias _root_.CanonicallyOrderedCommMonoid.single_le_prod := CanonicallyOrderedMul.single_le_prod
+
+@[deprecated (since := "2025-08-28")]
+alias _root_.CanonicallyOrderedAddCommMonoid.single_le_sum := CanonicallyOrderedAdd.single_le_sum
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=
