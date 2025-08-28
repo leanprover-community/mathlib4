@@ -433,7 +433,7 @@ attribute [reassoc] GradedNatTrans.naturality
 transformation. -/
 structure EnrichedNatTrans (F G : EnrichedFunctor V C D) where
   /-- The underlying natural transformation of an enriched transformation. -/
-  (out : F.forget ⟶ G.forget)
+  out : F.forget ⟶ G.forget
 
 namespace EnrichedFunctor
 

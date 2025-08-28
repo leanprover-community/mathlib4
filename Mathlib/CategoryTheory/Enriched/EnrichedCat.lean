@@ -50,7 +50,7 @@ variable {V} {C D E E' : EnrichedCat.{w, v, u} V}
 @[simps!]
 def whiskerLeft
     (F : EnrichedFunctor V C D) {G H : EnrichedFunctor V D E} (α : G ⟶ H) :
-    (F.comp V G) ⟶ (F.comp V H) :=
+    F.comp V G ⟶ F.comp V H :=
   ⟨(F.forgetComp G).hom ≫ F.forget.whiskerLeft α.out ≫ (F.forgetComp H).inv⟩
 
 /-- Whisker a `V`-enriched natural transformation on the right. -/

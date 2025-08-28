@@ -282,30 +282,22 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ �
 @[reassoc]
 theorem whiskerLeft_comp_tensorHom {V W X Y Z : C} (f : V ⟶ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
     (V ◁ g) ≫ (f ⊗ₘ h) = f ⊗ₘ (g ≫ h) := by
-  nth_rw 2 [← id_comp f]
-  rw [tensor_comp]
-  simp
+  simp [tensorHom_def']
 
 @[reassoc]
 theorem whiskerRight_comp_tensorHom {V W X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : V ⟶ W) :
     (f ▷ V) ≫ (g ⊗ₘ h) = (f ≫ g) ⊗ₘ h := by
-  nth_rw 2 [← id_comp h]
-  rw [tensor_comp]
-  simp
+  simp [tensorHom_def]
 
 @[reassoc]
 theorem tensorHom_comp_whiskerLeft {V W X Y Z : C} (f : V ⟶ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
     (f ⊗ₘ g) ≫ (W ◁ h) = f ⊗ₘ (g ≫ h) := by
-  nth_rw 2 [← comp_id f]
-  rw [tensor_comp]
-  simp
+  simp [tensorHom_def]
 
 @[reassoc]
 theorem tensorHom_comp_whiskerRight {V W X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : V ⟶ W) :
     (f ⊗ₘ h) ≫ (g ▷ W) = (f ≫ g) ⊗ₘ h := by
-  nth_rw 2 [← comp_id h]
-  rw [tensor_comp]
-  simp
+  simp [tensorHom_def, whisker_exchange]
 
 @[reassoc] lemma leftUnitor_inv_comp_tensorHom {X Y Z : C} (f : 𝟙_ C ⟶ Y) (g : X ⟶ Z) :
     (λ_ X).inv ≫ (f ⊗ₘ g) = g ≫ (λ_ Z).inv ≫ f ▷ Z := by simp [tensorHom_def']
