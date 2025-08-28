@@ -3,19 +3,20 @@ Copyright (c) 2022 Johan Commelin (c) 2025 Concordance Inc. dba Harmonic. All ri
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yury Kudryashov, Alex Best
 -/
-import Mathlib.Algebra.Polynomial.Homogenize
-import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.Algebra.Order.WithTop.Untop0
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Homogenize
+import Mathlib.NumberTheory.Multiplicity
+import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Tactic.Rify
-import Mathlib.NumberTheory.Multiplicity
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.RingTheory.Fintype
-import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.Parity
+import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Rify
 
 /-!
 ## Zsigmondy's theorem
