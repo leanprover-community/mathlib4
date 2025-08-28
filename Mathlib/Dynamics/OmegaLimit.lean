@@ -24,7 +24,7 @@ as `n ⟶ ∞`.
 
 ## Notations
 
-The `omegaLimit` locale provides the localised notation `ω` for
+The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit`, as well as `ω⁺` and `ω⁻` for `omegaLimit atTop` and
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.

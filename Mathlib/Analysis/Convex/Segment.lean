@@ -17,7 +17,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 ## Notations
 
 We provide the following notation:
-* `[x -[𝕜] y] = segment 𝕜 x y` in locale `Convex`
+* `[x -[𝕜] y] = segment 𝕜 x y` in scope `Convex`
 
 ## TODO
 

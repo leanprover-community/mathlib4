@@ -70,7 +70,7 @@ prime divisors (with multiplicity) of `b`, as provided by `b.factors`. This agre
 Jacobi symbol when `b` is odd and gives less meaningful values when it is not (e.g., the symbol
 is `1` when `b = 0`). This is called `jacobiSym a b`.
 
-We define localized notation (locale `NumberTheorySymbols`) `J(a | b)` for the Jacobi
+We define localized notation (scope `NumberTheorySymbols`) `J(a | b)` for the Jacobi
 symbol `jacobiSym a b`.
 -/
 

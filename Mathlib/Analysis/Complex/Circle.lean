@@ -21,7 +21,7 @@ We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)`
 
 We define two additive characters onto the circle:
 * `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the
-  notation `𝐞` in the locale `FourierTransform`). This uses the analyst convention that there is a
+  notation `𝐞` in the scope `FourierTransform`). This uses the analyst convention that there is a
   `2 * π` in the exponent.
 * `Real.probChar`: The character `fun x ↦ exp (x * I)`, which uses the probabilist convention that
   there is no `2 * π` in the exponent.

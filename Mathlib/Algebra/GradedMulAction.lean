@@ -15,7 +15,7 @@ has an additively-graded multiplicative action on `M`. The typeclasses are:
 * `GradedMonoid.GSMul A M`
 * `GradedMonoid.GMulAction A M`
 
-With the `SigmaGraded` locale open, these respectively imbue:
+With the `SigmaGraded` scope open, these respectively imbue:
 
 * `SMul (GradedMonoid A) (GradedMonoid M)`
 * `MulAction (GradedMonoid A) (GradedMonoid M)`

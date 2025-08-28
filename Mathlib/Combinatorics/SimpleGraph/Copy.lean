@@ -46,7 +46,7 @@ Induced containment:
 
 ## Notation
 
-The following notation is declared in locale `SimpleGraph`:
+The following notation is declared in scope `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 * `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 
