@@ -103,7 +103,7 @@ theorem mem_balancedHull_iff : x ∈ balancedHull 𝕜 s ↔ ∃ r : 𝕜, ‖r�
 `t` of `s`. -/
 theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆ t) :
     balancedHull 𝕜 s ⊆ t := by
-  intros x hx
+  intro x hx
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
   exact ht.smul_mem hr (h hy)
 

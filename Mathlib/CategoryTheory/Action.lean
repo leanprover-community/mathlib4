@@ -159,12 +159,8 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   cases inv_smul_eq_iff.mpr h.symm
   rfl
 
--- Porting note: added to ease the proof of `uncurry`
-lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
-    ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
-      f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
-  revert a' b' f
-  exact ActionCategory.cases (fun t g => ⟨g⁻¹ • t, t, g, rfl, rfl, rfl, by simp⟩)
+@[deprecated (since := "2025-08-21")]
+alias cases' := ActionCategory.cases
 
 variable {H : Type*} [Group H]
 
@@ -201,15 +197,8 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
     rw [F.map_one]
     rfl
   map_comp f g := by
-    -- Porting note: I was not able to use `ActionCategory.cases` here,
-    -- but `ActionCategory.cases'` seems as good; the original proof was:
-    -- intro x y z f g; revert y z g
-    -- refine' action_category.cases _
-    -- simp [single_obj.comp_as_mul, sane]
-    obtain ⟨_, z, γ₁, rfl, rfl, rfl, rfl⟩ := ActionCategory.cases' g
-    obtain ⟨_, y, γ₂, rfl, hy, rfl, rfl⟩ := ActionCategory.cases' f
-    obtain rfl : y = γ₁⁻¹ • z := congr_arg Sigma.snd hy.symm
-    simp [sane]
+    cases g using ActionCategory.cases
+    simp [SingleObj.comp_as_mul, sane]
     rfl
 
 end Group

@@ -112,7 +112,7 @@ theorem det_fderivPolarCoordSymm (p : ℝ × ℝ) :
     Matrix.det_fin_two_of, sub_neg_eq_add]
   ring
 
--- Porting note: this instance is needed but not automatically synthesised
+/-- This instance is required to see through the defeq `volume = volume.prod volume`. -/
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 

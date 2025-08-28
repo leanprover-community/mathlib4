@@ -101,6 +101,15 @@ instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S
     (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
   NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
 
+theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZeroDivisors R]
+    [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
+    FaithfulSMul R S := by
+  rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
+  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+
+instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
+    FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
+
 end Localization
 
 end AtPrime
@@ -185,9 +194,9 @@ theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
   convert congr_arg (Ideal.map (algebraMap R (Localization.AtPrime I)))
-  -- Porting note: `algebraMap R ...` can not be solve by unification
+  -- Porting note: `algebraMap R ...` cannot be solve by unification
     (AtPrime.comap_maximalIdeal (hI := hI)).symm
-  -- Porting note: can not find `hI`
+  -- Porting note: cannot find `hI`
   rw [map_comap I.primeCompl]
 
 lemma AtPrime.eq_maximalIdeal_iff_comap_eq {J : Ideal (Localization.AtPrime I)} :

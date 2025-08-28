@@ -32,7 +32,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * Annihilators:
   * `Module.dualAnnihilator_gc R M` is the antitone Galois correspondence between
-    `Submodule.dualAnnihilator` and `Submodule.dualConnihilator`.
+    `Submodule.dualAnnihilator` and `Submodule.dualCoannihilator`.
 * Finite-dimensional vector spaces:
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and

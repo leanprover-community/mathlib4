@@ -54,7 +54,7 @@ namespace Complex
 
 /-- The Beta function `Β (u, v)`, defined as `∫ x:ℝ in 0..1, x ^ (u - 1) * (1 - x) ^ (v - 1)`. -/
 noncomputable def betaIntegral (u v : ℂ) : ℂ :=
-  ∫ x : ℝ in (0)..1, (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)
+  ∫ x : ℝ in 0..1, (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)
 
 /-- Auxiliary lemma for `betaIntegral_convergent`, showing convergence at the left endpoint. -/
 theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
@@ -105,7 +105,7 @@ theorem betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1
   · rwa [sub_re, one_re, ← sub_pos, sub_neg_eq_add, sub_add_cancel]
 
 theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
-    ∫ x in (0)..a, (x : ℂ) ^ (s - 1) * ((a : ℂ) - x) ^ (t - 1) =
+    ∫ x in 0..a, (x : ℂ) ^ (s - 1) * ((a : ℂ) - x) ^ (t - 1) =
     (a : ℂ) ^ (s + t - 1) * betaIntegral s t := by
   have ha' : (a : ℂ) ≠ 0 := ofReal_ne_zero.mpr ha.ne'
   rw [betaIntegral]
@@ -250,7 +250,7 @@ theorem GammaSeq_add_one_left (s : ℂ) {n : ℕ} (hn : n ≠ 0) :
   · abel
 
 theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (hn : n ≠ 0) :
-    GammaSeq s n = ∫ x : ℝ in (0)..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) := by
+    GammaSeq s n = ∫ x : ℝ in 0..n, ↑((1 - x / n) ^ n) * (x : ℂ) ^ (s - 1) := by
   have : ∀ x : ℝ, x = x / n * n := by intro x; rw [div_mul_cancel₀]; exact Nat.cast_ne_zero.mpr hn
   conv_rhs => enter [1, x, 2, 1]; rw [this x]
   rw [GammaSeq_eq_betaIntegral_of_re_pos hs]
@@ -275,7 +275,7 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
 /-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
-    Tendsto (fun n : ℕ => ∫ x : ℝ in (0)..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
+    Tendsto (fun n : ℕ => ∫ x : ℝ in 0..n, ((1 - x / n) ^ n : ℝ) * (x : ℂ) ^ (s - 1)) atTop
       (𝓝 <| Gamma s) := by
   rw [Gamma_eq_integral hs]
   -- We apply dominated convergence to the following function, which we will show is uniformly
@@ -322,14 +322,15 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
   · intro n
     rw [ae_restrict_iff' measurableSet_Ioi]
     filter_upwards with x hx
-    dsimp only [f]
+    simp only [mem_Ioi, f] at hx ⊢
     rcases lt_or_ge (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
       exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le₀ hxn <| by positivity) _),
-          norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re, mul_le_mul_right (rpow_pos_of_pos hx _)]
+          norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
+      gcongr
       exact one_sub_div_pow_le_exp_neg hxn
 
 /-- Euler's limit formula for the complex Gamma function. -/

@@ -285,7 +285,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae' {u : Filter ι} [NeBot u] [IsCou
   exact ⟨ms ∘ ns, hms1.comp hns1.tendsto_atTop, hns2⟩
 
 /-- `TendstoInMeasure` is equivalent to every subsequence having another subsequence
-￼which converges almost surely. -/
+ which converges almost surely. -/
 theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
     {f : ℕ → α → E} (hf : ∀ (n : ℕ), AEStronglyMeasurable (f n) μ) {g : α → E} :
     TendstoInMeasure μ f atTop g ↔

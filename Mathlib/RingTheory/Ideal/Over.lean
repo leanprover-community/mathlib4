@@ -110,8 +110,8 @@ theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
 
 variable {A}
 
-/-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
-class LiesOver : Prop where
+/-- `P` lies over `p` if `p` is the preimage of `P` by the `algebraMap`. -/
+@[mk_iff] class LiesOver : Prop where
   over : p = P.under A
 
 instance over_under : P.LiesOver (P.under A) where over := rfl

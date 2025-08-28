@@ -100,9 +100,7 @@ codomain containing the range of `f`. -/
 abbrev valueGroup₀ := WithZero (valueGroup f)
 
 lemma mem_valueMonoid {b : Bˣ} (hb : b.val ∈ range f) : b ∈ valueMonoid f := by
-  rcases hb with ⟨c, _⟩
-  simp only [mem_valueMonoid_iff, mem_preimage, mem_range]
-  use c
+  tauto
 
 lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
   suffices b ∈ valueMonoid f from Subgroup.mem_closure.mpr fun _ a ↦ a this

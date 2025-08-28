@@ -66,7 +66,7 @@ def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
     let e ← instantiateMVars <| ← mvarId.getType
     let some (_, e₁, e₂) := (← whnfR e).eq? | throwError "requires an equality goal"
     match (← whnfR e₁).getAppFnArgs, (← whnfR e₂).getAppFnArgs with
-    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]) ,
+    | (``CategoryStruct.comp, #[_, _, _, _, _, α, η]),
       (``CategoryStruct.comp, #[_, _, _, _, _, α', η']) =>
       match (← whnfR η).getAppFnArgs, (← whnfR η').getAppFnArgs with
       | (``CategoryStruct.comp, #[_, _, _, _, _, η, ηs]),

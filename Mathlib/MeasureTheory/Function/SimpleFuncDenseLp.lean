@@ -212,8 +212,6 @@ theorem tendsto_approxOn_L1_enorm [OpensMeasurableSpace E] {f : β → E} (hf : 
     tendsto_approxOn_Lp_eLpNorm hf h₀ one_ne_top hμ
       (by simpa [eLpNorm_one_eq_lintegral_enorm] using hi)
 
-@[deprecated (since := "2025-01-21")] alias tendsto_approxOn_L1_nnnorm := tendsto_approxOn_L1_enorm
-
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by

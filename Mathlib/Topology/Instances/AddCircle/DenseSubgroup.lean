@@ -34,8 +34,8 @@ theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
     rw [← AddSubgroup.coe_zmultiples, SetLike.coe_subset_coe, AddSubgroup.closure_le,
       AddSubgroup.coe_zmultiples, pair_subset_iff]
     refine ⟨⟨r.num, ?_⟩, r.den, ?_⟩
-    · field_simp [mul_div_left_comm _ b, ← Rat.cast_def, hr]
-    · field_simp
+    · simp [field, mul_div_left_comm _ b, ← Rat.cast_def, hr]
+    · simp [field]
   · intro h
     contrapose! h
     rcases (AddSubgroup.dense_or_cyclic _).resolve_left h with ⟨c, hc⟩

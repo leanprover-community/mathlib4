@@ -44,11 +44,11 @@ is the distance between these points in the metric defined by some inner product
 nonrec def dist (x y : E) : ℝ :=
   dist (toEuclidean x) (toEuclidean y)
 
-/-- Closed ball w.r.t. the euclidean distance. -/
+/-- Closed ball w.r.t. the Euclidean distance. -/
 def closedBall (x : E) (r : ℝ) : Set E :=
   {y | dist y x ≤ r}
 
-/-- Open ball w.r.t. the euclidean distance. -/
+/-- Open ball w.r.t. the Euclidean distance. -/
 def ball (x : E) (r : ℝ) : Set E :=
   {y | dist y x < r}
 

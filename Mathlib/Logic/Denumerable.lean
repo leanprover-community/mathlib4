@@ -232,7 +232,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
-        (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
+        (by intro a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with

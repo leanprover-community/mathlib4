@@ -442,7 +442,7 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
   -- probably because of the type synonym
   · ext x
     exact hC _
-  · apply Finsupp.mulHom_ext'; intros x
+  · apply Finsupp.mulHom_ext'; intro x
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `Finsupp.mulHom_ext'` needs to have increased priority
     apply MonoidHom.ext_mnat
     exact hX _
@@ -1035,7 +1035,7 @@ variable [Algebra R S] {M : Submodule R S}
 lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M * coeffsIn σ N := by
   classical
   refine le_antisymm (coeffsIn_le.2 ?_) ?_
-  · intros r hr s
+  · intro r hr s
     induction hr using Submodule.mul_induction_on' with
     | mem_mul_mem m hm n hn =>
       rw [← add_zero s, ← monomial_mul]
@@ -1043,7 +1043,7 @@ lemma coeffsIn_mul (M N : Submodule R S) : coeffsIn σ (M * N) = coeffsIn σ M *
     | add x _ y _ hx hy =>
       simpa [map_add] using add_mem hx hy
   · rw [Submodule.mul_le]
-    intros x hx y hy k
+    intro x hx y hy k
     rw [MvPolynomial.coeff_mul]
     exact sum_mem fun c hc ↦ Submodule.mul_mem_mul (hx _) (hy _)
 

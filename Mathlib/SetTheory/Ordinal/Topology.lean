@@ -51,21 +51,6 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬ IsSuccLimit a :
       exact isOpen_Ioo
     · exact (ha ha').elim
 
-@[deprecated SuccOrder.nhdsGT (since := "2025-01-05")]
-protected theorem nhdsGT (a : Ordinal) : 𝓝[>] a = ⊥ := SuccOrder.nhdsGT
-
-@[deprecated SuccOrder.nhdsLT_eq_nhdsNE (since := "2025-01-05")]
-theorem nhdsLT_eq_nhdsNE (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a :=
-  SuccOrder.nhdsLT_eq_nhdsNE a
-
-@[deprecated SuccOrder.nhdsLE_eq_nhds (since := "2025-01-05")]
-theorem nhdsLE_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a :=
-  SuccOrder.nhdsLE_eq_nhds a
-
-@[deprecated SuccOrder.hasBasis_nhds_Ioc_of_exists_lt (since := "2025-01-05")]
-theorem hasBasis_nhds_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
-  SuccOrder.hasBasis_nhds_Ioc_of_exists_lt ⟨0, Ordinal.pos_iff_ne_zero.2 h⟩
-
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
   (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff

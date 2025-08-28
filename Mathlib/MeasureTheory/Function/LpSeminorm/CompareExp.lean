@@ -23,7 +23,7 @@ section SameSpace
 
 variable {α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
   [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -38,7 +38,7 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   repeat' rw [eLpNorm'_eq_lintegral_enorm]
   rw [h_rw]
   let r := p * q / (q - p)
-  have hpqr : 1 / p = 1 / q + 1 / r := by field_simp [r, hp0_lt.ne', hq0_lt.ne']
+  have hpqr : 1 / p = 1 / q + 1 / r := by simp [field]
   calc
     (∫⁻ a : α, (‖f a‖ₑ * g a) ^ p ∂μ) ^ (1 / p) ≤
         (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
@@ -141,8 +141,6 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.mono_exponent := MemLp.mono_exponent
 
-@[deprecated (since := "2025-01-07")] alias MemLp.memℒp_of_exponent_le := MemLp.mono_exponent
-
 /-- If a function is supported on a finite-measure set and belongs to `ℒ^p`, then it belongs to
 `ℒ^q` for any `q ≤ p`. -/
 lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α → ε'} (hfq : MemLp f q μ)
@@ -158,10 +156,6 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
 
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.mono_exponent_of_measure_support_ne_top := MemLp.mono_exponent_of_measure_support_ne_top
-
-@[deprecated (since := "2025-01-07")]
-alias MemLp.memℒp_of_exponent_le_of_measure_support_ne_top :=
-  MemLp.mono_exponent_of_measure_support_ne_top
 
 end SameSpace
 

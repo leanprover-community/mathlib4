@@ -45,8 +45,6 @@ section
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
-/- Porting note: `cat_disch` not firing on `assoc` where autotac in Lean 3 did -/
-
 /-- `sum C D` gives the direct sum of two categories.
 -/
 instance sum : Category.{max v₁ v₂} (C ⊕ D) where
@@ -64,10 +62,6 @@ instance sum : Category.{max v₁ v₂} (C ⊕ D) where
     match X, Y, Z, f, g with
     | inl _, inl _, inl _, f, g => ULift.up <|f.down ≫ g.down
     | inr _, inr _, inr _, f, g => ULift.up <| f.down ≫ g.down
-  assoc {W X Y Z} f g h :=
-    match X, Y, Z, W with
-    | inl _, inl _, inl _, inl _ => by simp
-    | inr _, inr _, inr _, inr _ => by simp
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
 theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False := by

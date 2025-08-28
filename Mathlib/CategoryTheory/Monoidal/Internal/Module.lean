@@ -35,11 +35,6 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
--- Porting note: in the following proof `have := ...; convert this` is to help Lean infer what the
--- underlying rings are.
--- Porting note: `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
--- add them manually
--- @[simps!]
 instance Ring_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)

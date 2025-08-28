@@ -416,6 +416,41 @@ lemma prodAssoc_symm_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) :
 
 end prodAssoc
 
+section prodProdProdComm
+
+variable (R M₁ M₂ M₃ M₄ : Type*) [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+  [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
+
+/-- The product of topological modules is four-way commutative up to continuous linear isomorphism.
+This is `LinearEquiv.prodProdProdComm` prodAssoc as a continuous linear equivalence. -/
+def prodProdProdComm : ((M₁ × M₂) × M₃ × M₄) ≃L[R] (M₁ × M₃) × M₂ × M₄ where
+  toLinearEquiv := LinearEquiv.prodProdProdComm R M₁ M₂ M₃ M₄
+  continuous_toFun := by fun_prop
+  continuous_invFun := by fun_prop
+
+@[simp]
+theorem prodProdProdComm_symm :
+    (prodProdProdComm R M₁ M₂ M₃ M₄).symm = prodProdProdComm R M₁ M₃ M₂ M₄ :=
+  rfl
+
+@[simp]
+lemma prodProdProdComm_toLinearEquiv :
+    (prodProdProdComm R M₁ M₂ M₃ M₄).toLinearEquiv = LinearEquiv.prodProdProdComm R M₁ M₂ M₃ M₄ :=
+  rfl
+
+@[simp]
+lemma coe_prodProdProdComm :
+    (prodProdProdComm R M₁ M₂ M₃ M₄ : (M₁ × M₂) × M₃ × M₄ → (M₁ × M₃) × M₂ × M₄) =
+      Equiv.prodProdProdComm M₁ M₂ M₃ M₄ := rfl
+
+@[simp]
+lemma prodProdProdComm_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) (p₄ : M₄) :
+    prodProdProdComm R M₁ M₂ M₃ M₄ ((p₁, p₂), p₃, p₄) = ((p₁, p₃), p₂, p₄) := rfl
+
+end prodProdProdComm
+
 section prodUnique
 
 variable (R M N : Type*) [Semiring R]

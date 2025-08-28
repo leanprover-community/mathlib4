@@ -97,7 +97,7 @@ theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   by_cases h : 1 < p ∧ 0 < n
   · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · simp only [not_and_or,not_gt_eq,Nat.le_zero] at h
+  · simp only [not_and_or, not_gt_eq, Nat.le_zero] at h
     apply h.elim
     · intro h
       interval_cases p
@@ -119,7 +119,7 @@ namespace padicValInt
 variable {p : ℕ}
 
 theorem of_ne_one_ne_zero {z : ℤ} (hp : p ≠ 1) (hz : z ≠ 0) :
-    padicValInt p z = multiplicity (p : ℤ) z:= by
+    padicValInt p z = multiplicity (p : ℤ) z := by
   rw [padicValInt, padicValNat_def' hp (Int.natAbs_ne_zero.mpr hz)]
   apply Int.multiplicity_natAbs
 
@@ -138,10 +138,12 @@ theorem of_nat {n : ℕ} : padicValInt p n = padicValNat p n := by simp [padicVa
 /-- If `p ≠ 0` and `p ≠ 1`, then `padicValInt p p` is `1`. -/
 theorem self (hp : 1 < p) : padicValInt p p = 1 := by simp [padicValNat.self hp]
 
+@[simp]
+theorem eq_zero_iff {z : ℤ} : padicValInt p z = 0 ↔ p = 1 ∨ z = 0 ∨ ¬(p : ℤ) ∣ z := by
+  rw [padicValInt, padicValNat.eq_zero_iff, Int.natAbs_eq_zero, ← Int.ofNat_dvd_left]
+
 theorem eq_zero_of_not_dvd {z : ℤ} (h : ¬(p : ℤ) ∣ z) : padicValInt p z = 0 := by
-  rw [padicValInt, padicValNat.eq_zero_iff]
-  right; right
-  rwa [← Int.ofNat_dvd_left]
+  simp [h]
 
 end padicValInt
 

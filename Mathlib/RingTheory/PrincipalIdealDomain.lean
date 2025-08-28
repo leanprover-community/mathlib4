@@ -410,8 +410,6 @@ theorem isCoprime_of_dvd (x y : R) (nonzero : ¬(x = 0 ∧ y = 0))
 theorem dvd_or_isCoprime (x y : R) (h : Irreducible x) : x ∣ y ∨ IsCoprime x y :=
   h.dvd_or_isRelPrime.imp_right IsRelPrime.isCoprime
 
-@[deprecated (since := "2025-01-23")] alias dvd_or_coprime := dvd_or_isCoprime
-
 /-- See also `Irreducible.isRelPrime_iff_not_dvd`. -/
 theorem Irreducible.coprime_iff_not_dvd {p n : R} (hp : Irreducible p) :
     IsCoprime p n ↔ ¬p ∣ n := by rw [← isRelPrime_iff_isCoprime, hp.isRelPrime_iff_not_dvd]

@@ -119,7 +119,7 @@ theorem uniformEquicontinuous_birkhoffAverage (hf : LipschitzWith 1 f) (hg : Uni
       simpa using (hf.iterate _).edist_le_mul_of_le h.le
     _ = n * ε / n := by simp
     _ ≤ ε := by
-      rcases eq_or_ne n 0 with hn | hn <;> field_simp [hn, hε.le, mul_div_cancel_left₀]
+      rcases eq_or_ne n 0 with hn | hn <;> simp [hn, hε.le, mul_div_cancel_left₀]
 
 /-- If `f : X → X` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`),
 `g : X → E` is a uniformly continuous, and `l : X → E` is a continuous function,

@@ -241,7 +241,7 @@ lemma isClosed_iff_of_isColimit (X : Set c.pt) :
   simp only [← isOpen_compl_iff, isOpen_iff_of_isColimit _ hc,
     Functor.const_obj_obj, Set.preimage_compl]
 
-lemma continuous_iff_of_isColimit {X : Type w} [TopologicalSpace X] (f : c.pt → X) :
+lemma continuous_iff_of_isColimit {X : Type u'} [TopologicalSpace X] (f : c.pt → X) :
     Continuous f ↔ ∀ (j : J), Continuous (f ∘ c.ι.app j) := by
   simp only [continuous_def, isOpen_iff_of_isColimit _ hc]
   tauto

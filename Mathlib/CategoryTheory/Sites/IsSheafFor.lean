@@ -268,9 +268,7 @@ theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R).arrows} (t₁ 
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
   fun h => by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
-  -- Porting note: congr fails to make progress
-  apply congr_arg
-  exact h
+  congr
 
 /-- Compatible families of elements for a presheaf of types `P` and a presieve `R`
 are in 1-1 correspondence with compatible families for the same presheaf and
@@ -532,8 +530,8 @@ noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor 
   (isSheafFor_iff_yonedaSheafCondition.1 h f).exists.choose
 
 /--
-Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension, ie
-that the triangle below commutes, provided `P` is a sheaf for `S`
+Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension,
+i.e. that the triangle below commutes, provided `P` is a sheaf for `S`
 ```
       f
    S  →  P

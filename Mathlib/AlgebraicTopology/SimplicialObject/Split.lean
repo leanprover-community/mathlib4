@@ -81,7 +81,7 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
 instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
     (fun A =>
-      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi (inferInstance : Epi A.e))⟩,
+      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi A.e)⟩,
         A.e.toOrderHom⟩ :
       IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) => Fin (Δ.unop.len + 1) → Fin (k + 1))
     (by
@@ -145,7 +145,7 @@ theorem eqId_iff_len_le : A.EqId ↔ Δ.unop.len ≤ A.1.unop.len := by
   constructor
   · intro h
     rw [h]
-  · exact le_antisymm (len_le_of_epi (inferInstance : Epi A.e))
+  · exact le_antisymm (len_le_of_epi A.e)
 
 theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
   constructor
@@ -154,9 +154,9 @@ theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
     subst h
     dsimp only [id, e]
     infer_instance
-  · intro h
+  · intro
     rw [eqId_iff_len_le]
-    exact len_le_of_mono h
+    exact len_le_of_mono A.e
 
 /-- Given `A : IndexSet Δ₁`, if `p.unop : unop Δ₂ ⟶ unop Δ₁` is an epi, this
 is the obvious element in `A : IndexSet Δ₂` associated to the composition

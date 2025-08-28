@@ -358,18 +358,14 @@ end Prod
 
 namespace AddMonoid
 
-instance : FG ℕ := by
-  rw [fg_iff, ← Nat.addSubmonoid_closure_one]
-  exact ⟨{1}, rfl, by simp⟩
+instance : FG ℕ where
+  fg_top := ⟨{1}, by simp⟩
 
 end AddMonoid
 
 namespace AddGroup
 
-instance : FG ℤ := by
-  rw [fg_iff]
-  refine ⟨{1}, ?_, by simp⟩
-  ext x
-  simp [AddSubgroup.mem_closure_singleton]
+instance : FG ℤ where
+  out := ⟨{1}, by simp⟩
 
 end AddGroup

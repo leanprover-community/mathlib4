@@ -582,9 +582,9 @@ theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, 
     exact MonoidHom.exponent_dvd (f := Pi.evalMonoidHom (M ·) i) (Function.surjective_eval i)
 
 /-- The exponent of product of two monoids is the `lcm` of the exponents of the
-individuaul monoids. -/
+individual monoids. -/
 @[to_additive AddMonoid.exponent_prod /-- The exponent of product of two additive monoids is the
-`lcm` of the exponents of the individuaul additive monoids. -/]
+`lcm` of the exponents of the individual additive monoids. -/]
 theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
     exponent (M₁ × M₂) = lcm (exponent M₁) (exponent M₂) := by
   refine dvd_antisymm ?_ (lcm_dvd ?_ ?_)

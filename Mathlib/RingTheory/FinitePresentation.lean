@@ -33,7 +33,6 @@ section ModuleAndAlgebra
 
 universe w₁ w₂ w₃
 
--- Porting note: `M, N` is never used
 variable (R : Type w₁) (A : Type w₂) (B : Type w₃)
 
 /-- An algebra over a commutative semiring is `Algebra.FinitePresentation` if it is the quotient of
@@ -393,9 +392,7 @@ def FinitePresentation (f : A →+* B) : Prop :=
 @[simp]
 lemma finitePresentation_algebraMap [Algebra A B] :
     (algebraMap A B).FinitePresentation ↔ Algebra.FinitePresentation A B := by
-  delta RingHom.FinitePresentation
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.FinitePresentation, toAlgebra_algebraMap]
 
 namespace FiniteType
 

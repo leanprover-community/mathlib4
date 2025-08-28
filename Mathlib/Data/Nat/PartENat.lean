@@ -737,6 +737,6 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    linearOrder, LinearOrder.toBiheytingAlgebra with }
+    linearOrder, linearOrder.toBiheytingAlgebra with }
 
 end PartENat

@@ -388,7 +388,7 @@ theorem isLittleO_const_left {c : E''} :
   · simp only [isLittleO_zero, true_or]
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
-@[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
+@[simp high] -- Increase priority so that this triggers before `isLittleO_const_left`
 theorem isLittleO_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
@@ -533,11 +533,7 @@ theorem IsBigO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
 
 theorem isLittleO_pow_sub_pow_sub (x₀ : E') {n m : ℕ} (h : n < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => ‖x - x₀‖ ^ n :=
-  haveI : Tendsto (fun x => ‖x - x₀‖) (𝓝 x₀) (𝓝 0) := by
-    apply tendsto_norm_zero.comp
-    rw [← sub_self x₀]
-    exact tendsto_id.sub tendsto_const_nhds
-  (isLittleO_pow_pow h).comp_tendsto this
+  (isLittleO_pow_pow h).comp_tendsto (tendsto_norm_sub_self x₀)
 
 theorem isLittleO_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => x - x₀ := by

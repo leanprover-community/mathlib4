@@ -102,7 +102,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
-  LinearEquiv.refl R (M →L[R] R)
+  LinearEquiv.refl R (StrongDual R M)
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 
@@ -198,7 +198,7 @@ def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E
 /-- The weak-star topology is coarser than the dual-norm topology. -/
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
-      (WeakDual.instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E)) := by
+      (instTopologicalSpaceWeakDual .. : TopologicalSpace (WeakDual 𝕜 E)) := by
   convert (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
   exact induced_id.symm
 
@@ -240,7 +240,7 @@ theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
   isClosed_image_coe_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
     (isClosed_polar _ _)
 
-/-- The image under `↑ : NormedSpace.Dual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
+/-- The image under `↑ : StrongDual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
     (s_nhds : s ∈ 𝓝 (0 : E)) :

@@ -98,7 +98,7 @@ lemma Finite.to_wellQuasiOrderedLE [Finite α] : WellQuasiOrderedLE α where
 
 instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrderedLE α] :
     WellFoundedLT α := by
-  rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+  rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
   refine ⟨fun f ↦ ?_⟩
   obtain ⟨a, b, h, hf⟩ := wellQuasiOrdered_le f
   exact (f.map_rel_iff.2 h).not_ge hf
@@ -123,7 +123,7 @@ theorem wellQuasiOrderedLE_iff :
     fun ⟨hwf, hc⟩ ↦ ⟨fun f ↦ ?_⟩⟩
   obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq (· > ·) f
   · exfalso
-    apply RelEmbedding.not_wellFounded_of_decreasing_seq _ hwf.wf
+    apply RelEmbedding.not_wellFounded _ hwf.wf
     exact (RelEmbedding.ofMonotone _ h1).swap
   · contrapose! hc
     refine ⟨Set.range (f ∘ g), ?_, ?_⟩

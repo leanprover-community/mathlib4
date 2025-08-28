@@ -47,7 +47,7 @@ field at an infinite place is then derived in this file, as `InfinitePlace` is a
   `v.Completion →+* ℝ` when `v` is real.
 - `NumberField.Completion.bijective_extensionEmbedding_of_isComplex` : the embedding
   `v.Completion →+* ℂ` is bijective when `v` is complex. See also
-  `bijective_extensionEmebdding_of_isReal` for the corresponding result for `v.Completion →+* ℝ`
+  `bijective_extensionEmbedding_of_isReal` for the corresponding result for `v.Completion →+* ℝ`
   when `v` is real.
 
 ## Tags

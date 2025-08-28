@@ -88,8 +88,8 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
-  ⟨ fun h => p.edges_subset_edgeSet h
-  , fun he => by simpa [Nat.succ_le] using (h e he).ge ⟩
+  ⟨fun h => p.edges_subset_edgeSet h,
+   fun he => by simpa [Nat.succ_le] using (h e he).ge⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
@@ -141,8 +141,7 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
   simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]
   simp only [ht.even_degree_iff, Ne, not_forall, not_and, Classical.not_not, exists_prop]
   obtain rfl | hn := eq_or_ne u v
-  · left
-    simp
+  · simp
   · right
     convert_to _ = ({u, v} : Finset V).card
     · simp [hn]

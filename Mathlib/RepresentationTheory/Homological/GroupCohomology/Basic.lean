@@ -21,7 +21,7 @@ $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representati
 
 We have a `k`-linear isomorphism
 $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
-the righthand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
+the right-hand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
 representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
 where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
 resulting map agrees with the differential $d^n$ defined above, a fact we prove.

@@ -114,7 +114,7 @@ lemma isNat_ordinalSub.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an - bn = rn → IsNat (a - b) rn
   | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_sub ..⟩
 
-/-- The `norm_num` extension for subtration on ordinals. -/
+/-- The `norm_num` extension for subtraction on ordinals. -/
 @[norm_num (_ : Ordinal) - (_ : Ordinal)]
 def evalOrdinalSub : NormNumExt where
   eval {u α} e := do

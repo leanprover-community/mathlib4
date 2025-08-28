@@ -100,20 +100,14 @@ theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (
 
 /-- Product of a list of elements in a submonoid is in the submonoid. -/
 @[to_additive /-- Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`. -/]
-theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ s) : l.prod ∈ s := by
-  lift l to List s using hl
-  rw [← coe_list_prod]
-  exact l.prod.coe_prop
+theorem list_prod_mem {l : List M} (hl : ∀ x ∈ l, x ∈ s) : l.prod ∈ s := _root_.list_prod_mem hl
 
 /-- Product of a multiset of elements in a submonoid of a `CommMonoid` is in the submonoid. -/
 @[to_additive
       /-- Sum of a multiset of elements in an `AddSubmonoid` of an `AddCommMonoid` is
       in the `AddSubmonoid`. -/]
 theorem multiset_prod_mem {M} [CommMonoid M] (S : Submonoid M) (m : Multiset M)
-    (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := by
-  lift m to Multiset S using hm
-  rw [← coe_multiset_prod]
-  exact m.prod.coe_prop
+    (hm : ∀ a ∈ m, a ∈ S) : m.prod ∈ S := _root_.multiset_prod_mem m hm
 
 @[to_additive]
 theorem multiset_noncommProd_mem (S : Submonoid M) (m : Multiset M) (comm) (h : ∀ x ∈ m, x ∈ S) :

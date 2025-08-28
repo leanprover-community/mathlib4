@@ -208,7 +208,7 @@ lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s
     IsClosed[L] s ↔ DirSupClosed s := by
   rw [lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h,
     @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
-  aesop
+  simp_all
 
 end Preorder
 

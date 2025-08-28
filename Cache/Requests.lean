@@ -240,8 +240,8 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   IO.println s!"Using cache from {remoteName}: {repo}"
   return {repo := repo, useFirst := false}
 
--- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-def useFROCache : Bool := false
+-- FRO cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
+def useFROCache : Bool := true
 
 /-- Public URL for mathlib cache -/
 def URL : String :=
@@ -266,7 +266,7 @@ Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server
 The `f/` prefix means that it's a common file for caching.
 -/
 def mkFileURL (repo URL fileName : String) : String :=
-  let pre := if repo == MATHLIBREPO then "" else s!"{repo}/"
+  let pre := if !useFROCache && repo == MATHLIBREPO then "" else s!"{repo}/"
   s!"{URL}/f/{pre}{fileName}"
 
 section Get

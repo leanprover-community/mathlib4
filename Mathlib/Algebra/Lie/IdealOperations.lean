@@ -153,6 +153,7 @@ theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : 
   exact h x hx n hn
 
 variable {I J N N'} in
+@[gcongr]
 theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
   rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]
@@ -274,7 +275,7 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
   congr
   ext
   simp_all only [Subtype.exists, LieSubmodule.mem_inf, LieHom.mem_idealRange_iff, exists_prop,
-    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap, Set.mem_image,
+    Set.mem_setOf_eq, LieHom.coe_toLinearMap, mem_comap,
     exists_exists_and_exists_and_eq_and, LieHom.map_lie]
   grind
 

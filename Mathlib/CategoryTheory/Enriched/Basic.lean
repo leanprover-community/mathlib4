@@ -63,7 +63,7 @@ class EnrichedCategory (C : Type u₁) where
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
     _ ◁ comp X Y Z ≫ comp W X Z := by cat_disch
 
-@[inherit_doc EnrichedCategory.Hom] notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+@[inherit_doc EnrichedCategory.Hom] notation3 X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
 variable {C : Type u₁} [EnrichedCategory V C]
 
@@ -137,6 +137,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
       ← associativity_inv_assoc, ← F.map_comp, ← F.map_comp, e_assoc,
       F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc]
+
+lemma TransportEnrichment.eId_eq (X : TransportEnrichment F C) :
+    eId W X = ε F ≫ F.map (eId (C := C) V X) :=
+  rfl
+
+lemma TransportEnrichment.eComp_eq (X Y Z : TransportEnrichment F C) :
+    eComp W X Y Z = μ F _ _ ≫ F.map (eComp V _ _ _) :=
+  rfl
 
 end
 
@@ -261,6 +269,12 @@ theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : 
     ForgetEnrichment.homTo W (f ≫ g) =
       ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
         eComp W _ _ _ :=
+  rfl
+
+@[simp]
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W ((λ_ _).inv ≫ (f ⊗ₘ g) ≫ eComp W ..) = homOf W f ≫ homOf W g := by
+  rw [← Category.assoc]
   rfl
 
 end

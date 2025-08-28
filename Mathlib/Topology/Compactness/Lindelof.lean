@@ -212,7 +212,7 @@ theorem IsLindelof.disjoint_nhdsSet_right {l : Filter X} [CountableInterFilter l
     (hs : IsLindelof s) : Disjoint l (𝓝ˢ s) ↔ ∀ x ∈ s, Disjoint l (𝓝 x) := by
   simpa only [disjoint_comm] using hs.disjoint_nhdsSet_left
 
-/-- For every family of closed sets whose intersection avoids a Lindelö set,
+/-- For every family of closed sets whose intersection avoids a Lindelöf set,
 there exists a countable subfamily whose intersection avoids this Lindelöf set. -/
 theorem IsLindelof.elim_countable_subfamily_closed {ι : Type v} (hs : IsLindelof s)
     (t : ι → Set X) (htc : ∀ i, IsClosed (t i)) (hst : (s ∩ ⋂ i, t i) = ∅) :
@@ -620,7 +620,7 @@ theorem Topology.IsClosedEmbedding.isLindelof_preimage {f : X → Y} (hf : IsClo
     {K : Set Y} (hK : IsLindelof K) : IsLindelof (f ⁻¹' K) :=
   hf.isInducing.isLindelof_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of Lindelöf sets are contained in Lindelöf.
+/-- A closed embedding is proper, i.e., inverse images of Lindelöf sets are contained in Lindelöf.
 Moreover, the preimage of a Lindelöf set is Lindelöf, see
 `Topology.IsClosedEmbedding.isLindelof_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_coLindelof {f : X → Y} (hf : IsClosedEmbedding f) :

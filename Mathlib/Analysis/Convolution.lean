@@ -71,7 +71,7 @@ Versions of these statements for functions depending on a parameter are also giv
   argument. This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
 # Notation
-The following notations are localized in the locale `Convolution`:
+The following notations are localized in the scope `Convolution`:
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
@@ -1336,7 +1336,7 @@ bilinear map `L` and measure `ν`. It is defined to be the function mapping `x` 
 `∫ t in 0..x, L (f t) (g (x - t)) ∂ν` if `0 < x`, and 0 otherwise. -/
 noncomputable def posConvolution (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
     (ν : Measure ℝ := by volume_tac) : ℝ → F :=
-  indicator (Ioi (0 : ℝ)) fun x => ∫ t in (0)..x, L (f t) (g (x - t)) ∂ν
+  indicator (Ioi (0 : ℝ)) fun x => ∫ t in 0..x, L (f t) (g (x - t)) ∂ν
 
 theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E') (L : E →L[ℝ] E' →L[ℝ] F)
     (ν : Measure ℝ := by volume_tac) [NoAtoms ν] :
@@ -1382,7 +1382,7 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] [CompleteSp
     {μ ν : Measure ℝ}
     [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
-    ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =
+    ∫ x : ℝ in Ioi 0, ∫ t : ℝ in 0..x, L (f t) (g (x - t)) ∂ν ∂μ =
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by
   rw [← integrable_indicator_iff measurableSet_Ioi] at hf hg
   simp_rw [← integral_indicator measurableSet_Ioi]

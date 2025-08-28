@@ -94,11 +94,11 @@ theorem KernelFork.ι_ofι {X Y P : C} (f : X ⟶ Y) (ι : P ⟶ X) (w : ι ≫ 
 
 section
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy nor case_bash
+attribute [local aesop safe cases] WalkingParallelPair WalkingParallelPairHom
 
 /-- Every kernel fork `s` is isomorphic (actually, equal) to `fork.ofι (fork.ι s) _`. -/
 def isoOfι (s : Fork f 0) : s ≅ Fork.ofι (Fork.ι s) (Fork.condition s) :=
-  Cones.ext (Iso.refl _) <| by rintro ⟨j⟩ <;> simp
+  Cones.ext (Iso.refl _) <| by aesop
 
 /-- If `ι = ι'`, then `fork.ofι ι _` and `fork.ofι ι' _` are isomorphic. -/
 def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
@@ -114,7 +114,7 @@ def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D)
     match j with
     | zero => Iso.refl _
     | one => Iso.refl _
-  NatIso.ofComponents app <| by rintro ⟨i⟩ ⟨j⟩ <;> intro g <;> cases g <;> simp [app]
+  NatIso.ofComponents app <| by rintro ⟨i⟩ ⟨j⟩ <;> rintro (g | g) <;> aesop
 
 end
 

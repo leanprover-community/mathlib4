@@ -238,7 +238,7 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
       h.wf ?_ b
-    intros b ih hab
+    intro b ih hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩

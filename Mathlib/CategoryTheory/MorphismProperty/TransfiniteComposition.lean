@@ -3,12 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
-import Mathlib.Order.Shrink
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Order.Interval.Set.SuccOrder
-import Mathlib.Logic.UnivLE
+import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -172,45 +171,6 @@ def ofComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hf : W f) (hg : W g) :
     W.TransfiniteCompositionOfShape (Fin 3) (f ≫ g) :=
   ofComposableArrows W (.mk₂ f g) (fun i ↦ by fin_cases i <;> assumption)
 
-variable {J}
-
-section isomorphisms
-
-variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
-
-instance {j : J} (g : ⊥ ⟶ j) : IsIso (h.F.map g) := by
-  obtain rfl : g = homOfLE bot_le := rfl
-  induction j using SuccOrder.limitRecOn with
-  | isMin j hj =>
-    obtain rfl := hj.eq_bot
-    dsimp
-    infer_instance
-  | succ j hj hj' =>
-    have : IsIso _ := h.map_mem j hj
-    rw [← homOfLE_comp bot_le (Order.le_succ j), h.F.map_comp]
-    infer_instance
-  | isSuccLimit j hj hj' =>
-    letI : OrderBot (Set.Iio j) :=
-      { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
-        bot_le j := bot_le }
-    simpa using Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit
-      (i₀ := ⊥) (fun i _ ↦ hj' i.1 i.2) (h.F.isColimitOfIsWellOrderContinuous j hj)
-
-instance {j j' : J} (f : j ⟶ j') : IsIso (h.F.map f) :=
-  IsIso.of_isIso_fac_left (h.F.map_comp (homOfLE bot_le) f).symm
-
-instance (j : J) : IsIso (h.incl.app j) :=
-  Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit'
-    (fun _ _  ↦ inferInstance) h.isColimit j (homOfLE bot_le)
-
-include h in
-/-- A transfinite composition of isomorphisms is an isomorphism. -/
-lemma isIso : IsIso f := by
-  rw [← h.fac]
-  infer_instance
-
-end isomorphisms
-
 end TransfiniteCompositionOfShape
 
 /-- Given `W : MorphismProperty C` and a well-ordered type `J`, this is
@@ -269,6 +229,60 @@ lemma isStableUnderTransfiniteCompositionOfShape_iff_of_orderIso (e : J ≃o J')
 
 end
 
+section
+
+variable (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+namespace IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
+
+variable {W J} {X Y : C} {f : X ⟶ Y} (hf : W.TransfiniteCompositionOfShape J f)
+  [W.IsMultiplicative]
+  (hJ : ∀ (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J],
+    W.IsStableUnderColimitsOfShape J)
+
+attribute [local instance] IsCofiltered.isConnected
+
+include hJ in
+lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
+  obtain rfl : g = homOfLE bot_le := rfl
+  induction j using SuccOrder.limitRecOn with
+  | isMin j hj =>
+    obtain rfl := hj.eq_bot
+    simpa using W.id_mem _
+  | succ j hj hj' =>
+    rw [← homOfLE_comp bot_le (Order.le_succ j), hf.F.map_comp]
+    exact W.comp_mem _ _ hj' (hf.map_mem j hj)
+  | isSuccLimit j hj hj' =>
+    letI : OrderBot (Set.Iio j) :=
+      { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj⟩
+        bot_le j := bot_le }
+    exact MorphismProperty.colimitsOfShape_le _
+      (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
+
+include hf hJ in
+lemma mem [W.RespectsIso] : W f :=
+  (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2
+    (MorphismProperty.colimitsOfShape_le _
+      (.of_isColimit hf.isColimit (fun j ↦ mem_map_bot_le _ hJ _)))
+
+end IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
+
+variable {W J} in
+open IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape in
+lemma IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
+    [W.IsMultiplicative] [W.RespectsIso]
+    (hJ : ∀ (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J],
+      W.IsStableUnderColimitsOfShape J) :
+    W.IsStableUnderTransfiniteCompositionOfShape J where
+  le _ _ _ | ⟨hf⟩ => mem hf hJ
+
+instance [W.IsMultiplicative] [W.RespectsIso]
+    [MorphismProperty.IsStableUnderFilteredColimits.{w, w} W] :
+    W.IsStableUnderTransfiniteCompositionOfShape J :=
+  .of_isStableUnderColimitsOfShape (fun _ _ _ _ _ ↦ by infer_instance)
+
+end
+
 /-- A class of morphisms `W : MorphismProperty C` is stable under infinite composition
 if for any functor `F : ℕ ⥤ C` such that `F.obj n ⟶ F.obj (n + 1)` is in `W` for any `n : ℕ`,
 the map `F.obj 0 ⟶ c.pt` is in `W` for any colimit cocone `c : Cocone F`. -/
@@ -281,16 +295,17 @@ if it is multiplicative and stable under transfinite composition of any shape
 class IsStableUnderTransfiniteComposition : Prop where
   isStableUnderTransfiniteCompositionOfShape
     (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
-    W.IsStableUnderTransfiniteCompositionOfShape J
+    W.IsStableUnderTransfiniteCompositionOfShape J := by infer_instance
 
 namespace IsStableUnderTransfiniteComposition
 
 attribute [instance] isStableUnderTransfiniteCompositionOfShape
 
-instance : (isomorphisms C).IsStableUnderTransfiniteComposition where
-  isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
-    rintro _ _ f ⟨hf⟩
-    exact hf.isIso⟩
+instance [W.IsMultiplicative] [W.RespectsIso]
+    [MorphismProperty.IsStableUnderFilteredColimits.{w, w} W] :
+    IsStableUnderTransfiniteComposition.{w} W where
+
+example : (isomorphisms C).IsStableUnderTransfiniteComposition := inferInstance
 
 variable [IsStableUnderTransfiniteComposition.{w'} W]
 
@@ -365,6 +380,43 @@ lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
   · exact (le_transfiniteCompositions P).trans
   · intro h
     exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
+
+namespace TransfiniteCompositionOfShape
+
+variable {W} {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+section
+
+variable [IsStableUnderTransfiniteComposition.{w} W]
+  {X Y : C} {f : X ⟶ Y} (h : W.TransfiniteCompositionOfShape J f)
+
+lemma mem_map {i j : J} (φ : i ⟶ j) :
+    W (h.F.map φ) :=
+  W.transfiniteCompositionsOfShape_le _ _ ((h.iic j).ici ⟨i, leOfHom φ⟩).mem
+
+lemma mem_incl_app (j : J) :
+    W (h.incl.app j) :=
+  W.transfiniteCompositionsOfShape_le _ _ (h.ici j).mem
+
+end
+
+section isomorphisms
+
+example : (isomorphisms C).IsStableUnderTransfiniteCompositionOfShape J := inferInstance
+
+variable {X Y : C} {f : X ⟶ Y} (h : (isomorphisms C).TransfiniteCompositionOfShape J f)
+
+include h in
+lemma isIso : IsIso f :=
+  (isomorphisms C).transfiniteCompositionsOfShape_le _ _ h.mem
+
+instance {i j : J} (f : i ⟶ j) : IsIso (h.F.map f) := h.mem_map f
+
+instance (j : J) : IsIso (h.incl.app j) := h.mem_incl_app j
+
+end isomorphisms
+
+end TransfiniteCompositionOfShape
 
 end MorphismProperty
 

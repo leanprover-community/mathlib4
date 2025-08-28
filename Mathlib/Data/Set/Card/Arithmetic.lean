@@ -21,7 +21,7 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
 
-variable {α : Type*}
+variable {α ι : Type*}
 
 open scoped Finset
 
@@ -45,6 +45,18 @@ lemma finsum_one {s : Set α} : ∑ᶠ i ∈ s, 1 = s.ncard := by
     · simp [h]
     · exact finsum_mem_eq_zero_of_infinite (by simpa [Function.support_const h])
   · simp [finsum_mem_eq_finite_toFinset_sum _ hs, Set.ncard_eq_toFinset_card s hs]
+
+namespace Finset
+
+lemma set_ncard_biUnion_le (t : Finset ι) (s : ι → Set α) :
+    (⋃ i ∈ t, s i).ncard ≤ ∑ i ∈ t, (s i).ncard :=
+  t.apply_union_le_sum (by simp) (Set.ncard_union_le _ _)
+
+lemma set_encard_biUnion_le (t : Finset ι) (s : ι → Set α) :
+    (⋃ i ∈ t, s i).encard ≤ ∑ i ∈ t, (s i).encard :=
+  t.apply_union_le_sum (by simp) (Set.encard_union_le _ _)
+
+end Finset
 
 namespace Set
 
@@ -91,8 +103,6 @@ theorem exists_union_disjoint_cardinal_eq_iff (s : Set α) :
 
 open scoped Function
 
-variable {ι : Type*}
-
 lemma Finite.ncard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : ∀ i ∈ t, (s i).Finite)
     (h : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).ncard = ∑ᶠ i ∈ t, (s i).ncard := by
   rw [← finsum_one, finsum_mem_biUnion h ht hs, finsum_mem_congr rfl fun i hi ↦ finsum_one]
@@ -119,5 +129,29 @@ lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Di
     (⋃ i, s i).encard = ∑ᶠ i, (s i).encard := by
   rw [← finsum_mem_univ, ← finite_univ.encard_biUnion (fun a _ b _ hab ↦ hs hab)]
   simp
+
+lemma Finite.ncard_biUnion_le {t : Set ι} (ht : t.Finite) (s : ι → Set α) :
+    (⋃ i ∈ t, s i).ncard ≤ ∑ᶠ i ∈ t, (s i).ncard := by
+  simpa [← finsum_mem_eq_finite_toFinset_sum] using ht.toFinset.set_ncard_biUnion_le s
+
+lemma Finite.encard_biUnion_le {t : Set ι} (ht : t.Finite) (s : ι → Set α) :
+    (⋃ i ∈ t, s i).encard ≤ ∑ᶠ i ∈ t, (s i).encard := by
+  simpa [← finsum_mem_eq_finite_toFinset_sum] using ht.toFinset.set_encard_biUnion_le s
+
+lemma ncard_iUnion_le_of_fintype [Fintype ι] (s : ι → Set α) :
+    (⋃ i, s i).ncard ≤ ∑ i, (s i).ncard := by
+  simpa using Finset.univ.set_ncard_biUnion_le s
+
+lemma encard_iUnion_le_of_fintype [Fintype ι] (s : ι → Set α) :
+    (⋃ i, s i).encard ≤ ∑ i, (s i).encard := by
+  simpa using Finset.univ.set_encard_biUnion_le s
+
+lemma ncard_iUnion_le_of_finite [Finite ι] (s : ι → Set α) :
+    (⋃ i, s i).ncard ≤ ∑ᶠ i, (s i).ncard := by
+  simpa using finite_univ.ncard_biUnion_le s
+
+lemma encard_iUnion_le_of_finite [Finite ι] (s : ι → Set α) :
+    (⋃ i, s i).encard ≤ ∑ᶠ i, (s i).encard := by
+  simpa using finite_univ.encard_biUnion_le s
 
 end Set

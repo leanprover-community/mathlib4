@@ -662,6 +662,19 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
 
 end Monoid
 
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
+injective. -/
+@[mk_iff]
+class IsAddTorsionFree (M : Type*) [AddMonoid M] where
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+
+/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+@[to_additive, mk_iff]
+class IsMulTorsionFree (M : Type*) [Monoid M] where
+  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+
+attribute [to_additive existing] isMulTorsionFree_iff
+
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 

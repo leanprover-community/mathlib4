@@ -210,7 +210,7 @@ lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
     convert Function.Bijective.comp e.bijective hc.bijective
     ext y
     obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
-    aesop
+    simp_all
 
 end IsColimit
 

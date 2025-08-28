@@ -132,7 +132,7 @@ instance fintypeWalkingParallelPair : Fintype WalkingParallelPair where
   elems := [WalkingParallelPair.zero, WalkingParallelPair.one].toFinset
   complete x := by cases x <;> simp
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
+attribute [local aesop safe cases] WalkingParallelPair WalkingParallelPairHom
 
 instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
     Fintype (WalkingParallelPairHom j j') where
@@ -141,14 +141,12 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
       (WalkingParallelPair.recOn j' [WalkingParallelPairHom.id zero].toFinset
         [left, right].toFinset)
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
-  complete := by
-    rintro (_ | _) <;> simp
-    cases j <;> simp
+  complete := by aesop
 end
 
 instance : FinCategory WalkingParallelPair where
   fintypeObj := fintypeWalkingParallelPair
-  fintypeHom := instFintypeWalkingParallelPairHom -- Porting note: could not be inferred
+  fintypeHom := instFintypeWalkingParallelPairHom
 
 /-- Equalizers are finite limits, so if `C` has all finite limits, it also has all equalizers -/
 example [HasFiniteLimits C] : HasEqualizers C := by infer_instance
@@ -159,7 +157,9 @@ example [HasFiniteColimits C] : HasCoequalizers C := by infer_instance
 
 variable {J : Type v}
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy; no case_bash
+-- Porting note: we would like to write something like:
+-- attribute [local aesop safe cases] WidePullbackShape WidePushoutShape
+-- But aesop can't add a `cases` attribute to type synonyms.
 
 namespace WidePullbackShape
 
@@ -185,8 +185,8 @@ end WidePullbackShape
 
 namespace WidePushoutShape
 
-instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
-  rw [WidePushoutShape]; infer_instance
+instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) :=
+  inferInstanceAs <| Fintype (Option _)
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by

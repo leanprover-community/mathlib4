@@ -158,7 +158,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     fun s f H i hi ↦ condExpKernel_ae_eq_condExp hm' (hπ i (f i) (H i hi))
   have h_eq : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i), ∀ᵐ ω ∂μ,
       ∀ i ∈ s, ENNReal.toReal (condExpKernel μ m' ω (f i)) = (μ⟦f i | m'⟧) ω := by
-    intros s f H
+    intro s f H
     simp_rw [← Finset.mem_coe]
     rw [ae_ball_iff (Finset.countable_toSet s)]
     exact h_eq' s f H
@@ -232,10 +232,10 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
   rw [condIndepSets_iff _ _ _ _ ?_ ?_]
   · simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff, forall_eq]
-  · intros s' hs'
+  · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
-  · intros s' hs'
+  · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
 
@@ -647,10 +647,6 @@ theorem condIndepFun_iff_condExp_inter_preimage_eq_mul {mβ : MeasurableSpace β
   · rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
     exact h s t hs ht
 
-@[deprecated (since := "2025-01-21")]
-alias condIndepFun_iff_condexp_inter_preimage_eq_mul :=
-  condIndepFun_iff_condExp_inter_preimage_eq_mul
-
 theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
     (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :
     iCondIndepFun m' hm' f μ ↔
@@ -672,10 +668,6 @@ theorem iCondIndepFun_iff_condExp_inter_preimage_eq_mul {β : ι → Type*}
         rw [(h_sets i hi).choose_spec.2.symm]
         simp only [g, dif_pos hi]
       convert h with i hi i hi <;> exact hg i hi
-
-@[deprecated (since := "2025-01-21")]
-alias iCondIndepFun_iff_condexp_inter_preimage_eq_mul :=
-  iCondIndepFun_iff_condExp_inter_preimage_eq_mul
 
 theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :

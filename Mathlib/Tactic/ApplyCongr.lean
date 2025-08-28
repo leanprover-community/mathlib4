@@ -25,16 +25,16 @@ Otherwise `apply_congr e` will apply the lemma `e`.
 
 Recall that a goal that appears as `∣ X` in `conv` mode
 represents a goal of `⊢ X = ?m`,
-i.e. an equation with a metavariable for the right hand side.
+i.e. an equation with a metavariable for the right-hand side.
 
 To successfully use `apply_congr e`, `e` will need to be an equation
 (possibly after function arguments),
 which can be unified with a goal of the form `X = ?m`.
-The right hand side of `e` will then determine the metavariable,
-and `conv` will subsequently replace `X` with that right hand side.
+The right-hand side of `e` will then determine the metavariable,
+and `conv` will subsequently replace `X` with that right-hand side.
 
 As usual, `apply_congr` can create new goals;
-any of these which are _not_ equations with a metavariable on the right hand side
+any of these which are _not_ equations with a metavariable on the right-hand side
 will be hard to deal with in `conv` mode.
 Thus `apply_congr` automatically calls `intros` on any new goals,
 and fails if they are not then equations.

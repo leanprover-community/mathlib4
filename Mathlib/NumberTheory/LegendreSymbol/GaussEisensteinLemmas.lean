@@ -111,7 +111,7 @@ private theorem eisenstein_lemma_aux₁ (p : ℕ) [Fact p.Prime] [hp2 : Fact (p 
     ((∑ x ∈ Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
       #{x ∈ Ico 1 (p / 2).succ | p / 2 < (a * x.cast : ZMod p).val} +
         ∑ x ∈ Ico 1 (p / 2).succ, x + (∑ x ∈ Ico 1 (p / 2).succ, a * x / p : ℕ) :=
-  have hp2 : (p : ZMod 2) = (1 : ℕ) := (eq_iff_modEq_nat _).2 hp2.1
+  have hp2 : (p : ZMod 2) = (1 : ℕ) := (natCast_eq_natCast_iff _ _ _).2 hp2.1
   calc
     ((∑ x ∈ Ico 1 (p / 2).succ, a * x : ℕ) : ZMod 2) =
         ((∑ x ∈ Ico 1 (p / 2).succ, (a * x % p + p * (a * x / p)) : ℕ) : ZMod 2) := by
@@ -138,8 +138,8 @@ theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : �
     (hap : (a : ZMod p) ≠ 0) :
     #{x ∈ Ico 1 (p / 2).succ | p / 2 < (a * x.cast : ZMod p).val} ≡
       ∑ x ∈ Ico 1 (p / 2).succ, x * a / p [MOD 2] :=
-  have ha2 : (a : ZMod 2) = (1 : ℕ) := (eq_iff_modEq_nat _).2 ha2
-  (eq_iff_modEq_nat 2).1 <| sub_eq_zero.1 <| by
+  have ha2 : (a : ZMod 2) = (1 : ℕ) := (natCast_eq_natCast_iff _ _ _).2 ha2
+  (natCast_eq_natCast_iff _ _ 2).1 <| sub_eq_zero.1 <| by
     simpa [add_left_comm, sub_eq_add_neg, ← mul_sum, mul_comm, ha2, Nat.cast_sum,
       add_neg_eq_iff_eq_add.symm, add_assoc] using
       Eq.symm (eisenstein_lemma_aux₁ p hap)

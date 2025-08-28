@@ -286,10 +286,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atTop [StandardBorelSpace Ω
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atTop_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
 
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup_atTop :=
-  condExp_zero_or_one_of_measurableSet_limsup_atTop
-
 end AtTop
 
 section AtBot
@@ -347,10 +343,6 @@ theorem condExp_zero_or_one_of_measurableSet_limsup_atBot [StandardBorelSpace Ω
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 :=
   condExp_eq_zero_or_one_of_condIndepSet_self hm (limsup_le_iSup.trans (iSup_le h_le) t ht_tail)
     ((condIndep_limsup_atBot_self hm h_le h_indep).condIndepSet_of_measurableSet ht_tail ht_tail)
-
-@[deprecated (since := "2025-01-21")]
-alias condexp_zero_or_one_of_measurableSet_limsup_atBot :=
-  condExp_zero_or_one_of_measurableSet_limsup_atBot
 
 end AtBot
 

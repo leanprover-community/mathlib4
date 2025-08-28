@@ -103,9 +103,7 @@ lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   · rw [integral_Ici_eq_integral_Ioi, integral_const_mul, integral_Ioi_rpow_of_lt _ ht]
-    · field_simp [hr]
-      rw [mul_assoc, ← rpow_add ht]
-      simp
+    · simp [field, ← rpow_add ht]
     linarith
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
     refine ae_of_all _ fun x (hx : t ≤ x) ↦ ?_

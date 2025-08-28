@@ -114,7 +114,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
   rcases eq_or_ne n 0 with rfl | hn
   · -- show that both sides vanish when `n = 0`; this is the hardest part of the proof!
     refine (term_zero ..).trans ?_
-    -- the right hand sum is over the union below, but in each term, one factor is always zero
+    -- the right-hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext
       simp

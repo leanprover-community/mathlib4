@@ -87,7 +87,6 @@ lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
   exact (cast_def _).symm
 
 instance instSemifield : Semifield ℚ≥0 where
-  __ := instNNRatCommSemiring
   inv_zero := by ext; simp
   mul_inv_cancel q h := by ext; simp [h]
   nnratCast_def q := q.num_div_den.symm

@@ -204,7 +204,7 @@ theorem prec' {f g h} (hf : Partrec f) (hg : Partrec g) (hh : Partrec h) :
 theorem ppred : Partrec fun n => ppred n :=
   have : Primrec₂ fun n m => if n = Nat.succ m then 0 else 1 :=
     (Primrec.ite
-      (@PrimrecRel.comp _ _ _ _ _ _ _ _ _ _
+      (@PrimrecRel.comp _ _ _ _ _ _ _ _ _
         Primrec.eq Primrec.fst (_root_.Primrec.succ.comp Primrec.snd))
       (_root_.Primrec.const 0) (_root_.Primrec.const 1)).to₂
   (of_primrec (Primrec₂.unpaired'.2 this)).rfind.of_eq fun n => by

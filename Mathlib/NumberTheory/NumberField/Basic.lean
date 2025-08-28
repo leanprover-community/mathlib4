@@ -167,8 +167,8 @@ def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
   map_add' x y:= by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
-/-- The ring isomorphsim `(𝓞 K) ≃+* (𝓞 L)` given by restricting
-  a ring isomorphsim `e : K ≃+* L` to `𝓞 K`. -/
+/-- The ring isomorphism `(𝓞 K) ≃+* (𝓞 L)` given by restricting
+  a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
 def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
     [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
@@ -328,7 +328,7 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-/-- Any extension between ring of integers of number fields is noetherian. -/
+/-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
 

@@ -35,7 +35,6 @@ variable (J : Type w)
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
 def WidePullbackShape := Option J
 
--- Porting note: strangely this could be synthesized
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
@@ -326,9 +325,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
-  apply eq_lift_of_comp_eq
-  · simp
-  · rfl  -- Porting note: quite a few missing refl's in cat_disch now
+  aesop
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
