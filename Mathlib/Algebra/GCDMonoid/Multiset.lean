@@ -79,7 +79,8 @@ variable [DecidableEq α]
 @[simp]
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
-    by_cases h : a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s; swap; · simp [IH, h]
+    simp only [h, dedup_cons_of_mem, IH, lcm_cons]
     unfold lcm
     rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
     apply lcm_eq_of_associated_left (associated_normalize _)
@@ -140,7 +141,7 @@ theorem gcd_mono {s₁ s₂ : Multiset α} (h : s₁ ⊆ s₂) : s₂.gcd ∣ s�
 theorem normalize_gcd (s : Multiset α) : normalize s.gcd = s.gcd :=
   Multiset.induction_on s (by simp) fun a s _ ↦ by simp
 
-theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x : α, x ∈ s → x = 0 := by
+theorem gcd_eq_zero_iff (s : Multiset α) : s.gcd = 0 ↔ ∀ x ∈ s, x = 0 := by
   constructor
   · intro h x hx
     apply eq_zero_of_zero_dvd
@@ -165,7 +166,8 @@ variable [DecidableEq α]
 @[simp]
 theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
-    by_cases h : a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s; swap; · simp [IH, h]
+    simp only [h, dedup_cons_of_mem, IH, gcd_cons]
     unfold gcd
     rw [← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
     apply (associated_normalize _).gcd_eq_left

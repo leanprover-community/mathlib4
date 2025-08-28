@@ -183,7 +183,7 @@ private theorem Polynomial.flt_catalan_aux
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
         have hch2 : 2 ≤ ch := by omega
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
-        refine le_trans ?_ (Nat.mul_le_mul_left _ hch2)
+        grw [← hch2]
         omega
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
