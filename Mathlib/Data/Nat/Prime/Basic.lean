@@ -37,6 +37,9 @@ theorem Prime.dvd_iff_eq {p a : ℕ} (hp : p.Prime) (a1 : a ≠ 1) : a ∣ p ↔
   · exact mul_one _
   · exact (a1 rfl).elim
 
+theorem Prime.coprime_iff_ne {p q : ℕ} (hp : p.Prime) (hq : q.Prime) : p.Coprime q ↔ p ≠ q := by
+  rw [hp.coprime_iff_not_dvd, hq.dvd_iff_eq (hp.ne_one), ne_comm]
+
 theorem Prime.eq_two_or_odd {p : ℕ} (hp : Prime p) : p = 2 ∨ p % 2 = 1 :=
   p.mod_two_eq_zero_or_one.imp_left fun h =>
     ((hp.eq_one_or_self_of_dvd 2 (dvd_of_mod_eq_zero h)).resolve_left (by decide)).symm
