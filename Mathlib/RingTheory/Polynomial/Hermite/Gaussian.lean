@@ -19,7 +19,7 @@ polynomial factor occurring in the `n`th derivative of a Gaussian.
 
 * `Polynomial.deriv_gaussian_eq_hermite_mul_gaussian`:
   The Hermite polynomial is (up to sign) the polynomial factor occurring in the
-  `n`th derivative of a gaussian.
+  `n`th derivative of a Gaussian.
 
 ## References
 
@@ -34,7 +34,7 @@ open Polynomial
 
 namespace Polynomial
 
-/-- `hermite n` is (up to sign) the factor appearing in `deriv^[n]` of a gaussian -/
+/-- `hermite n` is (up to sign) the factor appearing in `deriv^[n]` of a Gaussian. -/
 theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
     deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x =
     (-1 : ℝ) ^ n * aeval x (hermite n) * Real.exp (-(x ^ 2 / 2)) := by
@@ -56,9 +56,8 @@ theorem hermite_eq_deriv_gaussian (n : ℕ) (x : ℝ) : aeval x (hermite n) =
     (-1 : ℝ) ^ n * deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x / Real.exp (-(x ^ 2 / 2)) := by
   rw [deriv_gaussian_eq_hermite_mul_gaussian]
   field_simp [Real.exp_ne_zero]
-  rw [← @smul_eq_mul ℝ _ ((-1) ^ n), ← inv_smul_eq_iff₀, mul_assoc, smul_eq_mul, ← inv_pow, ←
-    neg_inv, inv_one]
-  exact pow_ne_zero _ (by simp)
+  rw [← pow_mul]
+  simp
 
 theorem hermite_eq_deriv_gaussian' (n : ℕ) (x : ℝ) : aeval x (hermite n) =
     (-1 : ℝ) ^ n * deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x * Real.exp (x ^ 2 / 2) := by
