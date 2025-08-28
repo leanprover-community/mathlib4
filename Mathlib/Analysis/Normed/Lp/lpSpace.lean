@@ -720,7 +720,7 @@ theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : M
         ((norm_nonneg _).trans (hCf ⟨i, rfl⟩))
 
 instance : Mul (lp B ∞) where
-  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _ , f.property.infty_mul g.property⟩
+  mul f g := ⟨HMul.hMul (α := ∀ i, B i) _ _, f.property.infty_mul g.property⟩
 
 @[simp]
 theorem infty_coeFn_mul (f g : lp B ∞) : ⇑(f * g) = ⇑f * ⇑g :=
