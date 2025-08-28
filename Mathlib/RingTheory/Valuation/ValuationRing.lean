@@ -8,6 +8,7 @@ import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -133,12 +134,12 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul, ← h]; congr 1; ring
+    simp only [← RingHom.map_mul]; congr 1; linear_combination h
   · left
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul, ← h]; congr 1; ring
+    simp only [← RingHom.map_mul]; congr 1; linear_combination h
 
 -- Porting note: it is much faster to split the instance `LinearOrderedCommGroupWithZero`
 -- into two parts
@@ -208,14 +209,14 @@ noncomputable def valuation : Valuation K (ValueGroup A K) where
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
-      congr 1; ring
+      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      congr 1; linear_combination h
     · apply le_trans _ (le_max_right _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add, ← (algebraMap A K).map_one, ← h]
-      congr 1; ring
+      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      congr 1; linear_combination h
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
   constructor
