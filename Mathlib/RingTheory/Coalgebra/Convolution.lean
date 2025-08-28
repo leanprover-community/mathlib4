@@ -3,6 +3,7 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała, Yunzhou Xie. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała, Yunzhou Xie
 -/
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Coalgebra.Basic
 
