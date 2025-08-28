@@ -291,7 +291,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
-/-- The category of sheaves taking values in `A` on a grothendieck topology. -/
+/-- The category of sheaves taking values in `A` on a Grothendieck topology. -/
 structure Sheaf where
   /-- the underlying presheaf -/
   val : Cᵒᵖ ⥤ A

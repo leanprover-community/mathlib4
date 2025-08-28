@@ -92,7 +92,6 @@ lemma arithGeom_same_eq_mul_div (ha : a ≠ 1) (n : ℕ) :
 lemma arithGeom_zero_eq_mul_div' (ha : a ≠ 1) (n : ℕ) :
     arithGeom a b 0 n = b * (1 - a ^ n) / (1 - a) := by
   rw [arithGeom_eq ha n]
-  have : 1 - a ≠ 0 := sub_ne_zero.mpr ha.symm
   field_simp
   ring
 

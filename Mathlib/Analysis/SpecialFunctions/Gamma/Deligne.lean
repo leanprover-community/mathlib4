@@ -53,14 +53,12 @@ lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s 
   rw [Gammaℝ_def, Gammaℝ_def, neg_div, add_div, neg_add, div_self two_ne_zero,
     Gamma_add_one _ (div_ne_zero hs two_ne_zero),
     cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), cpow_neg_one]
-  field_simp [pi_ne_zero]
-  ring
+  field_simp
 
 lemma Gammaℂ_add_one {s : ℂ} (hs : s ≠ 0) : Gammaℂ (s + 1) = Gammaℂ s * s / 2 / π := by
   rw [Gammaℂ_def, Gammaℂ_def, Gamma_add_one _ hs, neg_add,
     cpow_add _ _ (mul_ne_zero two_ne_zero (ofReal_ne_zero.mpr pi_ne_zero)), cpow_neg_one]
-  field_simp [pi_ne_zero]
-  ring
+  field_simp
 
 lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 := by
   apply mul_ne_zero
@@ -196,7 +194,6 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
   simp_rw [mul_div_assoc, mul_inv]
   generalize (Gammaℝ (s - 1))⁻¹ = A
   field_simp [pi_ne_zero]
-  ring
 
 end reflection
 

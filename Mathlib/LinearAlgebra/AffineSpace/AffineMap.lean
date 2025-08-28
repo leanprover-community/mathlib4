@@ -523,7 +523,6 @@ theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = l
 
 theorem lineMap_symm (p₀ p₁ : P1) :
     lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
-  rw [comp_lineMap]
   simp
 
 @[simp]

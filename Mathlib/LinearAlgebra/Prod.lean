@@ -813,12 +813,12 @@ namespace LinearMap
 /-!
 ## Tunnels and tailings
 
-NOTE: The proof of strong rank condition for noetherian rings is changed.
+NOTE: The proof of strong rank condition for Noetherian rings is changed.
 `LinearMap.tunnel` and `LinearMap.tailing` are not used in mathlib anymore.
 These are marked as deprecated with no replacements.
 If you use them in external projects, please consider using other arguments instead.
 
-Some preliminary work for establishing the strong rank condition for noetherian rings.
+Some preliminary work for establishing the strong rank condition for Noetherian rings.
 
 Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
 we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
@@ -829,8 +829,8 @@ and `tailings f i n` for the supremum of the first `n + 1` copies:
 they are the pieces left behind, sitting inside the tunnel.
 
 By construction, each `tailing f i (n + 1)` is disjoint from `tailings f i n`;
-later, when we assume `M` is noetherian, this implies that `N` must be trivial,
-and establishes the strong rank condition for any left-noetherian ring.
+later, when we assume `M` is Noetherian, this implies that `N` must be trivial,
+and establishes the strong rank condition for any left-Noetherian ring.
 -/
 
 section Graph

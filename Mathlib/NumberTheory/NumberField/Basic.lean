@@ -328,7 +328,7 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-/-- Any extension between ring of integers of number fields is noetherian. -/
+/-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
 

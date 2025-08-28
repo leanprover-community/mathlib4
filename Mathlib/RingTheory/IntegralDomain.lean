@@ -162,9 +162,9 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       -- Porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
-    field_simp [hg']
+    field_simp
     -- Porting note: `norm_cast` was here, but does nothing.
-    rw [add_comm, mul_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
 
 end Polynomial
 

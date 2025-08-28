@@ -177,7 +177,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
     calc
       u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
-      _ = (l + ε * (1 + ε + l)) := by field_simp; ring
+      _ = (l + ε * (1 + ε + l)) := by field_simp
       _ < d := hε
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
@@ -256,7 +256,6 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         rw [Real.log_rpow A]
         simp only [one_div, Real.log_inv, Real.log_pow, mul_neg, neg_inj]
         field_simp [(Real.log_pos hc).ne']
-        ring
       rw [Real.rpow_sub A, I]
       have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
       simp
@@ -304,4 +303,3 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1
       field_simp [(sub_pos.2 hc).ne']
-      ring!

@@ -333,7 +333,6 @@ def lift : Pseudofunctor (FreeBicategory B) C where
     induction η using Quot.rec
     · induction θ using Quot.rec <;> rfl
     · rfl
-  -- Porting note: still borked from here. The infoview doesn't update properly for me.
   map₂_whisker_left := by
     intro a b c f g h η
     induction η using Quot.rec

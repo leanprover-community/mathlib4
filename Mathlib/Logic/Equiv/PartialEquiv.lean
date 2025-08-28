@@ -602,8 +602,7 @@ theorem coe_trans_symm : ((e.trans e').symm : γ → α) = e.symm ∘ e'.symm :=
 theorem trans_apply {x : α} : (e.trans e') x = e' (e x) :=
   rfl
 
-theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := by
-  cases e; cases e'; rfl
+theorem trans_symm_eq_symm_trans_symm : (e.trans e').symm = e'.symm.trans e.symm := rfl
 
 @[simp, mfld_simps]
 theorem trans_source : (e.trans e').source = e.source ∩ e ⁻¹' e'.source :=
@@ -700,9 +699,7 @@ theorem EqOnSource.symm' {e e' : PartialEquiv α β} (h : e ≈ e') : e.symm ≈
 /-- Two equivalent partial equivs have coinciding inverses on the target. -/
 theorem EqOnSource.symm_eqOn {e e' : PartialEquiv α β} (h : e ≈ e') :
     EqOn e.symm e'.symm e.target :=
-  -- Porting note: `h.symm'` dot notation doesn't work anymore because `h` is not recognised as
-  -- `PartialEquiv.EqOnSource` for some reason.
-  eqOn (symm' h)
+  eqOn h.symm'
 
 /-- Composition of partial equivs respects equivalence. -/
 theorem EqOnSource.trans' {e e' : PartialEquiv α β} {f f' : PartialEquiv β γ} (he : e ≈ e')

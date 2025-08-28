@@ -1,4 +1,4 @@
-import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Tactic.Order
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by

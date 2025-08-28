@@ -837,7 +837,6 @@ theorem assoc_aux_2 : (TensorProduct.assoc R A B C) (1 ⊗ₜ[R] 1 ⊗ₜ[R] 1) 
 
 variable (R A C D)
 
--- Porting note: much nicer than Lean 3 proof
 /-- The associator for tensor product of R-algebras, as an algebra isomorphism. -/
 protected def assoc : A ⊗[S] C ⊗[R] D ≃ₐ[S] A ⊗[S] (C ⊗[R] D) :=
   AlgEquiv.ofLinearEquiv

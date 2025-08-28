@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.LinearAlgebra.Matrix.ZPow
-import Mathlib.Data.Matrix.ConjTranspose
 
 /-! # Hermitian matrices
 

@@ -200,7 +200,7 @@ instance orderBot : OrderBot (Pretopology C) where
     rintro ⟨Y, f, hf, rfl⟩
     exact K.has_isos f
 
-/-- The trivial pretopology induces the trivial grothendieck topology. -/
+/-- The trivial pretopology induces the trivial Grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
   (gi C).gc.l_bot
 

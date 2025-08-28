@@ -286,9 +286,7 @@ theorem arctan_add_eq_add_pi (h : 1 < x * y) (hx : 0 < x) :
   have k := arctan_add (mul_inv x y ▸ inv_lt_one_of_one_lt₀ h)
   rw [arctan_inv_of_pos hx, arctan_inv_of_pos hy, show _ + _ = π - (arctan x + arctan y) by ring,
     sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', sub_eq_add_neg, ← arctan_neg, add_comm] at k
-  convert k.symm using 3
-  field_simp
-  rw [show -x + -y = -(x + y) by ring, show x * y - 1 = -(1 - x * y) by ring, neg_div_neg_eq]
+  grind
 
 theorem arctan_add_eq_sub_pi (h : 1 < x * y) (hx : x < 0) :
     arctan x + arctan y = arctan ((x + y) / (1 - x * y)) - π := by

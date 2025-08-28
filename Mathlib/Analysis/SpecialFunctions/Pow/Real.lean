@@ -236,6 +236,11 @@ theorem rpow_sum_of_nonneg {ι : Type*} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι}
   · rw [forall_mem_cons] at h
     rw [sum_cons, prod_cons, ← ihs h.2, rpow_add_of_nonneg ha h.1 (sum_nonneg h.2)]
 
+/-- See also `rpow_neg` for a version with `(x ^ y)⁻¹` in the RHS. -/
+theorem rpow_neg_eq_inv_rpow (x y : ℝ) : x ^ (-y) = x⁻¹ ^ y := by
+  simp [rpow_def, Complex.cpow_neg, Complex.inv_cpow_eq_ite, apply_ite]
+
+/-- See also `rpow_neg_eq_inv_rpow` for a version with `x⁻¹ ^ y` in the RHS. -/
 theorem rpow_neg {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : x ^ (-y) = (x ^ y)⁻¹ := by
   simp only [rpow_def_of_nonneg hx]; split_ifs <;> simp_all [exp_neg]
 
@@ -461,8 +466,7 @@ theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
   simp
 
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
-  suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹ by rwa [Int.cast_neg, Int.cast_one] at H
-  simp only [rpow_intCast, zpow_one, zpow_neg]
+  rw [rpow_neg_eq_inv_rpow, rpow_one]
 
 theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := by
   iterate 2 rw [Real.rpow_def_of_nonneg]; split_ifs with h_ifs <;> simp_all
@@ -470,7 +474,7 @@ theorem mul_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) : (x * y) ^ z = x ^ z * y ^ z := 
   all_goals positivity
 
 theorem inv_rpow (hx : 0 ≤ x) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
-  simp only [← rpow_neg_one, ← rpow_mul hx, mul_comm]
+  rw [← rpow_neg_eq_inv_rpow, rpow_neg hx]
 
 theorem div_rpow (hx : 0 ≤ x) (hy : 0 ≤ y) (z : ℝ) : (x / y) ^ z = x ^ z / y ^ z := by
   simp only [div_eq_mul_inv, mul_rpow hx (inv_nonneg.2 hy), inv_rpow hy]

@@ -77,7 +77,7 @@ variable {B}
 theorem norm_extends {i : ι} (hBi : B i = (1 : L)) (x : K) :
     B.norm ((algebraMap K L) x) = ‖x‖ := by
   classical
-  simp only [norm, repr_algebraMap _ hBi]
+  simp only [norm, repr_algebraMap hBi, Finsupp.single_apply]
   apply le_antisymm
   · aesop
   · exact le_sup'_of_le _ (mem_univ i) (by simp)

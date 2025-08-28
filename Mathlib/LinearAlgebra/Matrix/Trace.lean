@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.RowCol
-import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix
