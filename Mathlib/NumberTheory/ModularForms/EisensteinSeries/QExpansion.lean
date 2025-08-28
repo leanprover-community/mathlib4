@@ -253,9 +253,9 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
   · simpa using Summable.prod (f := fun x : ℤ × ℤ ↦ eisSummand k ![x.1, x.2] z)
       (by apply summable_prod_eisSummand hk)
 
-lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSetN n) : eisSummand k v z =
-  ((n : ℂ) ^ k)⁻¹ * eisSummand k (div_N_map n v) z := by
-  have := gammaSetN_map_eq v
+lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSet 1 n 0) : eisSummand k v z =
+  ((n : ℂ) ^ k)⁻¹ * eisSummand k (divIntMap n v) z := by
+  have := gammaSet_eq_gcd_mul_divIntMap v.2
   simp_rw [eisSummand]
   nth_rw 1 2 [this]
   simp only [Fin.isValue, Pi.smul_apply, nsmul_eq_mul, Int.cast_mul, Int.cast_natCast, zpow_neg, ←
@@ -265,12 +265,12 @@ lemma gammaSetN_eisSummand (k : ℤ) (z : ℍ) {n : ℕ} (v : gammaSetN n) : eis
 lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
     ∑' (x : Fin 2 → ℤ), eisSummand k x z =
     (riemannZeta (k)) * (eisensteinSeries (N := 1) 0 k z) := by
-  rw [← GammaSet_top_Equiv.symm.tsum_eq]
+  rw [← gammaSetDivGcdSigmaEquiv.symm.tsum_eq]
   have hk1 : 1 < k := by omega
   conv =>
     enter [1,1]
     ext c
-    rw [GammaSet_top_Equiv_symm_eq]
+    rw [gammaSetDivGcdSigmaEquiv_symm_eq]
   rw [eisensteinSeries, Summable.tsum_sigma, zeta_nat_eq_tsum_of_gt_one hk1,
     tsum_mul_tsum_of_summable_norm (by simp [hk1])
     (by apply (summable_norm_eisSummand (by omega) z).subtype)]
@@ -280,14 +280,15 @@ lemma tsum_prod_eisSummand_eq_riemannZeta_eisensteinSeries {k : ℕ} (hk : 3 ≤
       intro b
       by_cases hb : b = 0
       · simp [hb, CharP.cast_eq_zero, gammaSetN_eisSummand k z, show ((0 : ℂ) ^ k)⁻¹ = 0 by aesop]
-      · simpa [gammaSetN_eisSummand k z, zpow_natCast, tsum_mul_left, hb] using
-          (gammaSetN_Equiv hb).tsum_eq (fun v ↦ eisSummand k v z)
+      · haveI : NeZero b := ⟨by simp [hb]⟩
+        simpa [gammaSetN_eisSummand k z, zpow_natCast, tsum_mul_left, hb]
+         using (gammaSetDivGcdEquiv b).tsum_eq (fun v ↦ eisSummand k v z)
     · apply summable_mul_of_summable_norm (f:= fun (n : ℕ) ↦ ((n : ℂ) ^ k)⁻¹)
-        (g := fun (v : gammaSet 1 0) ↦ eisSummand k v z) (by simp [hk1])
+        (g := fun (v : gammaSet 1 1 0) ↦ eisSummand k v z) (by simp [hk1])
       apply (EisensteinSeries.summable_norm_eisSummand (by omega) z).subtype
     · exact fun b => by simpa using (Summable.of_norm (by apply
       (summable_norm_eisSummand (by omega) z).subtype)).mul_left (a := ((b : ℂ) ^ k)⁻¹)
-  · apply ((GammaSet_top_Equiv.symm.summable_iff (f := fun v ↦ eisSummand k v z)).mpr
+  · apply ((gammaSetDivGcdSigmaEquiv.symm.summable_iff (f := fun v ↦ eisSummand k v z)).mpr
       (EisensteinSeries.summable_norm_eisSummand (by omega) z).of_norm).congr
     simp
 
@@ -310,7 +311,6 @@ lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : E
     inv_mul_eq_iff_eq_mul₀ z2, ne_eq, one_div, smul_eq_mul] at *
   simp_rw [← HE2, HE1, mul_add]
   field_simp
-  ring
 
 --move this
 theorem even_div_two_ne_zero {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) : k / 2 ≠ 0 := by
@@ -337,15 +337,13 @@ lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k ≠ 0) 
   rw [hk1, hk11] at this
   rw [h3, this, (Nat.mul_factorial_pred hkn0).symm]
   field_simp
-  have : (k : ℂ) * ↑(k - 1)! * (2 ^ k * ↑π ^ k * (-1) ^ (k / 2)) /
-    ((-1) ^ (k / 2 + 1) * 2 ^ (k - 1) * ↑π ^ k * ↑(bernoulli k) * ↑(k - 1)!) =
-    (↑k * ↑(k - 1)! * (2 ^ k * ↑π ^ k * (-1) ^ (k / 2)) /
-    ((-1) ^ (k / 2 + 1) * 2 ^ (k - 1) * ↑π ^ k * ↑(k - 1)!)) * 1 / (bernoulli k) := by
-    ring
-  rw [this, show k = 1 + (k - 1) by omega, pow_add, pow_one, add_tsub_cancel_left]
-  congr
+  have : (((k * (k - 1)!) : ℕ) : ℂ) * 1 * 2 ^ k * (-1) ^ (k / 2) / ↑(bernoulli k) =
+    ((k * (k - 1)!) : ℂ) * 2 ^ k * (-1) ^ (k / 2) * (1 / ↑(bernoulli k)) := by
+    norm_cast
+    ring_nf
+  rw [Even.neg_one_pow hk2, this, show k = 1 + (k - 1) by omega]
+  simp_rw  [pow_add, pow_one, add_tsub_cancel_left]
   field_simp
-  ring
 
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
