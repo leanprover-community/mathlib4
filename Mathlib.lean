@@ -2508,6 +2508,8 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
 import Mathlib.CategoryTheory.Monoidal.DayConvolution.Braided
 import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.DayFunctor
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.Mon_
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.ExternalProduct
