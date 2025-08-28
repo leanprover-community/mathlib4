@@ -26,6 +26,7 @@ variable {x y : ℂ}
 
 namespace Complex
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 theorem sameRay_iff : SameRay ℝ x y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg := by
   rcases eq_or_ne x 0 with (rfl | hx)

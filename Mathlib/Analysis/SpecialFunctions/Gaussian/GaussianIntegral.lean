@@ -328,6 +328,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
     · norm_num
     · exact (div_pos pi_pos hb).le
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The special-value formula `Γ(1/2) = √π`, which is equivalent to the Gaussian integral. -/
 theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
