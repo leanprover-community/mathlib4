@@ -692,15 +692,6 @@ end CommRing
 
 -/
 
-set_option pp.mvars false in
-/--
-error: unsolved goals
-K : Type
-inst✝ : CommGroupWithZero K
-x y : K
-⊢ y * x ^ 3 * y ^ 3 / x = x ^ 2 * y ^ 5 / y
--/
-#guard_msgs in
 example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^ 2 * y ^ 5 / y := by
   field_simp
 
