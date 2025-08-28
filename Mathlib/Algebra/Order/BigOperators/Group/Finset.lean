@@ -365,10 +365,12 @@ section CanonicallyOrderedMul
 
 variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
 
+-- TODO: the namespace this theorem is in no longer exists as a typeclass.
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
 See also `Finset.single_le_prod'`. -/
-@[to_additive /-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
+@[to_additive _root_.CanonicallyOrderedAddCommMonoid.single_le_prod
+/-- In a canonically-ordered additive monoid, a sum bounds each of its terms.
 
 See also `Finset.single_le_sum`. -/]
 lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
