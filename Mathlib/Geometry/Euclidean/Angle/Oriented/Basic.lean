@@ -549,7 +549,7 @@ the product of the norms. -/
 theorem cos_oangle_eq_inner_div_norm_mul_norm {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     Real.Angle.cos (o.oangle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) := by
   rw [o.inner_eq_norm_mul_norm_mul_cos_oangle]
-  field_simp [norm_ne_zero_iff.2 hx, norm_ne_zero_iff.2 hy]
+  field_simp
 
 /-- The cosine of the oriented angle between two nonzero vectors equals that of the unoriented
 angle. -/
