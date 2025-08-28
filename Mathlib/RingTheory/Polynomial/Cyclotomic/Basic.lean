@@ -72,7 +72,7 @@ theorem cyclotomic'_one (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 1 R 
     IsPrimitiveRoot.primitiveRoots_one]
 
 /-- The second modified cyclotomic polynomial is `X + 1` if the characteristic of `R` is not `2`. -/
--- Cannot be @[simp] because `p` can not be inferred by `simp`.
+-- Cannot be @[simp] because `p` cannot be inferred by `simp`.
 theorem cyclotomic'_two (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [CharP R p] (hp : p ≠ 2) :
     cyclotomic' 2 R = X + 1 := by
   rw [cyclotomic']

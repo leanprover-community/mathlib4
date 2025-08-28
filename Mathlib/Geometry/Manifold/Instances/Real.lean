@@ -33,7 +33,7 @@ In the locale `Manifold`, we introduce the notations
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
-model with corners can not be implicit, see the discussion in
+model with corners cannot be implicit, see the discussion in
 `Geometry.Manifold.IsManifold`).
 
 ## Implementation notes
@@ -63,7 +63,7 @@ def EuclideanQuadrant (n : ℕ) : Type :=
 
 section
 
-/- Register class instances for Euclidean half-space and quadrant, that can not be noticed
+/- Register class instances for Euclidean half-space and quadrant, that cannot be noticed
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}

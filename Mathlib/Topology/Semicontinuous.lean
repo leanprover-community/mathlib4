@@ -12,7 +12,7 @@ import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 A function `f` from a topological space `α` to an ordered space `β` is lower semicontinuous at a
 point `x` if, for any `y < f x`, for any `x'` close enough to `x`, one has `f x' > y`. In other
-words, `f` can jump up, but it can not jump down.
+words, `f` can jump up, but it cannot jump down.
 
 Upper semicontinuous functions are defined similarly.
 

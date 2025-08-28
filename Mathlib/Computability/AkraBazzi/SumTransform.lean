@@ -526,7 +526,7 @@ variable (a b) in
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
--- Cannot be @[simp] because `T`, `g`, `r`, and `R` can not be inferred by `simp`.
+-- Cannot be @[simp] because `T`, `g`, `r`, and `R` cannot be inferred by `simp`.
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)

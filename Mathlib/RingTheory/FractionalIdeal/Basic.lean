@@ -293,7 +293,7 @@ section
 variable [loc : IsLocalization S P]
 
 variable (P) in
--- Cannot be @[simp] because `S` can not be inferred by `simp`.
+-- Cannot be @[simp] because `S` cannot be inferred by `simp`.
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩

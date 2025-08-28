@@ -74,7 +74,7 @@ strictly larger than the norm of an element of norm `> 1`. For a version without
 `riesz_lemma`.
 
 Since we are considering a general nontrivially normed field, there may be a gap in possible norms
-(for instance no element of norm in `(1,2)`). Hence, we can not allow `R` arbitrarily close to `1`,
+(for instance no element of norm in `(1,2)`). Hence, we cannot allow `R` arbitrarily close to `1`,
 and require `R > ‖c‖` for some `c : 𝕜` with norm `> 1`.
 -/
 theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) {F : Subspace 𝕜 E}

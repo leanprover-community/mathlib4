@@ -205,7 +205,7 @@ and then reuse the existing limit.
 -/
 instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
-  -- Porting note: Lean can not see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
+  -- Porting note: Lean cannot see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
   -- instance is added.
   let _ : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
