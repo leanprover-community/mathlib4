@@ -401,14 +401,13 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
       · apply ball_subset_ball' _ hy
         simp only [hz, norm_smul, abs_of_nonneg Dpos.le, abs_of_nonneg B.le, dist_zero_right,
           Real.norm_eq_abs, abs_div]
-        simp only [div_mul_eq_mul_div, div_add_div_same, div_le_iff₀ B]
-        ring_nf
-        rfl
+        field_simp
+        simp [div_le_iff₀ B]
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp only [Ne, B.ne', not_false_iff, div_sub', mul_one, neg_div', neg_sub,
-              add_tsub_cancel_right]
-          · simp only [Ne, B.ne', not_false_eq_true, div_sub', mul_one, sub_add_cancel_right]
+          · simp [field]
+          · field_simp
+            simp only [sub_add_cancel_right]
             apply div_nonpos_of_nonpos_of_nonneg _ B.le
             linarith only
         rw [← mem_closedBall_iff_norm']
