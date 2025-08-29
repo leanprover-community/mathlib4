@@ -130,6 +130,21 @@ lemma deGrootInfo_eq_min_sub_lintegral' {ζ : Measure 𝓧} [IsFiniteMeasure μ]
   rw [mul_min, mul_comm, mul_comm _ (π _ * _), mul_assoc, mul_assoc]
   congr
 
+lemma toReal_deGrootInfo_eq_min_sub_integral (μ ν : Measure 𝓧)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
+    (deGrootInfo μ ν π).toReal
+      = min (π.real {false} * μ.real univ) (π.real {true} * ν.real univ)
+        - ∫ x, min (π.real {false} * (μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal)
+          (π.real {true} * (ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal)
+        ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
+  rw [deGrootInfo_eq_min_sub, ENNReal.toReal_sub_of_le (bayesBinaryRisk_le_min μ ν π),
+    ENNReal.toReal_min (by finiteness) (by finiteness), ENNReal.toReal_mul, ENNReal.toReal_mul,
+    toReal_bayesBinaryRisk_eq_integral_min]
+  · rfl
+  · have hμ : π {false} * μ univ ≠ ⊤ := by finiteness
+    have hν : π {true} * ν univ ≠ ⊤ := by finiteness
+    simp [hμ, hν]
+
 lemma deGrootInfo_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ)
@@ -203,5 +218,30 @@ lemma deGrootInfo_eq_zero_iff [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFinit
     simp only [ENNReal.iSup_eq_zero, tsub_eq_zero_iff_le] at h
     exact h s hs
   · rw [deGrootInfo_eq_deGrootInfo_one_one, h, deGrootInfo_self]
+
+lemma toReal_deGrootInfo_eq_integral_abs_boolKernel (μ ν : Measure 𝓧)
+    [IsFiniteMeasure μ] [IsFiniteMeasure ν] {π : Measure Bool} [IsFiniteMeasure π] :
+    (deGrootInfo μ ν π).toReal
+      = 2⁻¹ * (-|π.real {false} * μ.real univ - π.real {true} * ν.real univ|
+        + ∫ x, |π.real {false} * (μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal
+          - π.real {true} * (ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal|
+          ∂(Kernel.boolKernel μ ν ∘ₘ π)) := by
+  rw [deGrootInfo_eq_min_sub, ENNReal.toReal_sub_of_le]
+  rotate_left
+  · exact bayesBinaryRisk_le_min μ ν π
+  · exact ne_top_of_le_ne_top (by finiteness) (min_le_left _ _)
+  rw [toReal_bayesBinaryRisk_eq_integral_abs,
+    ENNReal.toReal_min (by finiteness) (by finiteness), min_eq_add_sub_abs_sub]
+  simp only [ENNReal.toReal_mul, Measure.real]
+  ring
+
+-- -- used to show equality to an f-divergence
+-- lemma toReal_deGrootInfo_eq_integral_abs (μ ν : Measure 𝓧)
+--     [IsFiniteMeasure μ] [IsFiniteMeasure ν] {π : Measure Bool} [IsFiniteMeasure π] :
+--     (deGrootInfo μ ν π).toReal
+--       = 2⁻¹ * (-|(π {false} * μ univ).toReal - (π {true} * ν univ).toReal|
+--         + ∫ x, |(π {false} * (∂μ/∂ν) x).toReal - (π {true}).toReal| ∂ν
+--         + (π {false} * (μ.singularPart ν) univ).toReal) := by
+--   sorry
 
 end ProbabilityTheory

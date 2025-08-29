@@ -24,6 +24,20 @@ open MeasureTheory
 
 open scoped ENNReal NNReal
 
+section
+
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+
+lemma max_eq_add_add_abs_sub (a b : α) : max a b = 2⁻¹ * (a + b + |a - b|) := by
+  rw [← max_add_min a, ← max_sub_min_eq_abs', add_sub_left_comm, add_sub_cancel_right]
+  ring
+
+lemma min_eq_add_sub_abs_sub (a b : α) : min a b = 2⁻¹ * (a + b - |a - b|) := by
+  rw [← min_add_max a, ← max_sub_min_eq_abs', add_sub_assoc, sub_sub_cancel]
+  ring
+
+end
+
 namespace ProbabilityTheory
 
 variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : MeasurableSpace 𝓧}
@@ -251,5 +265,59 @@ lemma bayesBinaryRisk_eq_lintegral_min (μ ν : Measure 𝓧) [IsFiniteMeasure �
       (π {true} * ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x) ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
   simp [bayesBinaryRisk, bayesRisk_eq_of_hasGenBayesEstimator_binary .of_discrete,
     iInf_bool_eq, binaryLoss]
+
+lemma ENNReal.ofReal_min {a b : ℝ} : ENNReal.ofReal (min a b) = min (.ofReal a) (.ofReal b) := by
+  wlog hab : a ≤ b
+  · rw [min_comm a, min_comm (ENNReal.ofReal a)]
+    exact this (by linarith)
+  rw [min_eq_left hab, min_eq_left]
+  exact ENNReal.ofReal_le_ofReal hab
+
+lemma toReal_bayesBinaryRisk_eq_integral_min (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
+    (bayesBinaryRisk μ ν π).toReal
+      = ∫ x, min (π.real {false} * (μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal)
+        (π.real {true} * (ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal)
+        ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
+  rw [bayesBinaryRisk_eq_lintegral_min, integral_eq_lintegral_of_nonneg_ae]
+  rotate_left
+  · filter_upwards with x; positivity
+  · fun_prop
+  congr 1
+  apply lintegral_congr_ae
+  filter_upwards [μ.rnDeriv_ne_top _, ν.rnDeriv_ne_top _] with x hxμ hxν
+  rw [ENNReal.ofReal_min, ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_mul (by positivity),
+    ofReal_measureReal, ofReal_measureReal, ENNReal.ofReal_toReal (by finiteness),
+    ENNReal.ofReal_toReal (by finiteness)]
+
+@[fun_prop]
+lemma integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
+  integrable_toReal_of_lintegral_ne_top (by fun_prop)
+    (Measure.lintegral_rnDeriv_le.trans_lt (by simp)).ne
+
+lemma toReal_bayesBinaryRisk_eq_integral_abs (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
+    (bayesBinaryRisk μ ν π).toReal
+      = 2⁻¹ * (π.real {false} * μ.real .univ + π.real {true} * ν.real .univ
+        - ∫ x, |π.real {false} * (μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal
+          - π.real {true} * (ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x).toReal|
+          ∂(Kernel.boolKernel μ ν ∘ₘ π)) := by
+  simp_rw [toReal_bayesBinaryRisk_eq_integral_min, min_eq_add_sub_abs_sub, integral_const_mul]
+  congr
+  rw [integral_sub (by fun_prop) (by fun_prop), integral_add (by fun_prop) (by fun_prop)]
+  simp only [Measure.real, sub_left_inj, integral_const_mul]
+  calc
+    _ = (π {false}).toReal * (μ .univ).toReal + (π {true}).toReal
+        * ∫ (a : 𝓧), ((∂ν/∂Kernel.boolKernel μ ν ∘ₘ π) a).toReal ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
+      by_cases hπ_false : π {false} = 0
+      · simp [hπ_false]
+      rw [Measure.integral_toReal_rnDeriv (absolutelyContinuous_boolKernel_comp_left μ ν hπ_false)]
+      rfl
+    _ = (π {false}).toReal * (μ .univ).toReal + (π {true}).toReal * (ν .univ).toReal := by
+      by_cases hπ_true : π {true} = 0
+      · simp [hπ_true]
+      rw [Measure.integral_toReal_rnDeriv (absolutelyContinuous_boolKernel_comp_right μ ν hπ_true)]
+      rfl
 
 end ProbabilityTheory

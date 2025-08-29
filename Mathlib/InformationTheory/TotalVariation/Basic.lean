@@ -105,6 +105,9 @@ lemma mutuallySingular_iff_rnDeriv_eq_zero [SigmaFinite μ] [SigmaFinite ν] :
     left
     simpa [hx_pos.ne'] using hx_min
 
+lemma mutuallySingular_dirac_of_ne [MeasurableSingletonClass 𝓧] {x y : 𝓧} (h : x ≠ y) :
+    Measure.dirac x ⟂ₘ Measure.dirac y := ⟨{y}, measurableSet_singleton y, by simp [h]⟩
+
 /-- Total variation distance between two measures. -/
 noncomputable def tvDist (μ ν : Measure 𝓧) : ℝ := (deGrootInfo μ ν (boolMeasure 1 1)).toReal
 
@@ -243,5 +246,75 @@ lemma tvDist_eq_one_iff_mutuallySingular [IsProbabilityMeasure μ] [IsProbabilit
     <;> filter_upwards [h]
     <;> simp_rw [Pi.zero_apply, ← bot_eq_zero, min_eq_bot, bot_eq_zero]
     <;> exact fun x hx ↦ hx
+
+lemma tvDist_dirac_of_ne [MeasurableSingletonClass 𝓧] {x y : 𝓧} (h : x ≠ y) :
+    tvDist (Measure.dirac x) (Measure.dirac y) = 1 := by
+  rw [tvDist_eq_one_iff_mutuallySingular]
+  exact mutuallySingular_dirac_of_ne h
+
+lemma tvDist_eq_half_integral_abs_sub [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    tvDist μ ν = 2⁻¹ * ∫ x, |((∂μ/∂(μ + ν)) x).toReal - ((∂ν/∂(μ + ν)) x).toReal| ∂(μ + ν) := by
+  rw [tvDist, toReal_deGrootInfo_eq_integral_abs_boolKernel, add_comm μ ν]
+  simp [boolKernel_comp_measure, Measure.real]
+
+-- the l.h.s. is the Hellinger distance squared
+lemma hellinger_le_tvDist [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    1 - ∫ x, √((∂μ/∂(μ + ν)) x).toReal * √((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν) ≤ tvDist μ ν := by
+  have h_le {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) : (a - b) ^ 2 ≤ |a ^ 2 - b ^ 2| := by
+    calc (a - b) ^ 2
+    _ = |a - b| * |a - b| := by rw [← pow_two, sq_abs]
+    _ ≤ |a - b| * (a + b) := by
+      gcongr
+      wlog hab : a ≤ b
+      · rw [abs_sub_comm, add_comm]
+        exact this (μ := μ) (ν := ν) hb ha (by linarith)
+      · rw [abs_sub_comm, abs_of_nonneg (sub_nonneg.mpr hab)]
+        linarith
+    _ = |a ^ 2 - b ^ 2| := by
+      rw [sq_sub_sq, abs_mul, mul_comm, abs_of_nonneg (a := a + b) (by positivity)]
+  have h_le_rnDeriv x : (√((∂μ/∂(μ + ν)) x).toReal - √((∂ν/∂(μ + ν)) x).toReal) ^ 2
+      ≤ |((∂μ/∂(μ + ν)) x).toReal - ((∂ν/∂(μ + ν)) x).toReal| := by
+    refine (h_le (by positivity) (by positivity)).trans_eq ?_
+    rw [Real.sq_sqrt (by positivity), Real.sq_sqrt (by positivity)]
+  calc 1 - ∫ x, √((∂μ/∂(μ + ν)) x).toReal * √((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν)
+  _ = 2⁻¹ * (1 + 1 - ∫ x, 2 * √((∂μ/∂(μ + ν)) x).toReal * √((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν)) := by
+    simp_rw [mul_assoc]
+    rw [integral_const_mul]
+    ring
+  _ = 2⁻¹ * (∫ x, ((∂μ/∂(μ + ν)) x).toReal ∂(μ + ν) + ∫ x, ((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν)
+        - ∫ x, 2 * √((∂μ/∂(μ + ν)) x).toReal * √((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν)) := by
+    congr
+    · rw [Measure.integral_toReal_rnDeriv]
+      · simp
+      · exact (Measure.AbsolutelyContinuous.refl _).add_right _
+    · rw [Measure.integral_toReal_rnDeriv]
+      · simp
+      · rw [add_comm]
+        exact (Measure.AbsolutelyContinuous.refl _).add_right _
+  _ = 2⁻¹ * ∫ x, (√((∂μ/∂(μ + ν)) x).toReal - √((∂ν/∂(μ + ν)) x).toReal) ^ 2 ∂(μ + ν) := by
+    rw [← integral_add (by fun_prop) (by fun_prop), ← integral_sub (by fun_prop)]
+    swap
+    · refine integrable_of_le_of_le (g₁ := fun _ ↦ 0)
+        (g₂ := fun x ↦ ((∂μ/∂(μ + ν)) x).toReal + ((∂ν/∂(μ + ν)) x).toReal) (by fun_prop) ?_ ?_
+        (by fun_prop) (by fun_prop)
+      · exact ae_of_all _ fun _ ↦ by positivity
+      · refine ae_of_all _ fun x ↦ ?_
+        simp only
+        refine (two_mul_le_add_sq _ _).trans_eq ?_
+        rw [Real.sq_sqrt (by positivity), Real.sq_sqrt (by positivity)]
+    congr with x
+    rw [sub_sq, Real.sq_sqrt (by positivity), Real.sq_sqrt (by positivity)]
+    ring
+  _ ≤ 2⁻¹ * ∫ x, |((∂μ/∂(μ + ν)) x).toReal - ((∂ν/∂(μ + ν)) x).toReal| ∂(μ + ν) := by
+    gcongr
+    · refine integrable_of_le_of_le (g₁ := fun _ ↦ 0)
+        (g₂ := fun x ↦ |((∂μ/∂(μ + ν)) x).toReal - ((∂ν/∂(μ + ν)) x).toReal|) (by fun_prop) ?_ ?_
+        (by fun_prop) (by fun_prop)
+      · exact ae_of_all _ fun _ ↦ by positivity
+      · exact ae_of_all _ h_le_rnDeriv
+    · fun_prop
+    intro x
+    exact h_le_rnDeriv x
+  _ = tvDist μ ν := tvDist_eq_half_integral_abs_sub.symm
 
 end ProbabilityTheory

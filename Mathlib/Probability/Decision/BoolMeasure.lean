@@ -64,6 +64,9 @@ noncomputable
 def boolMeasure (a b : ℝ≥0∞) : Measure Bool := a • Measure.dirac false + b • Measure.dirac true
 
 @[simp]
+lemma boolMeasure_zero : boolMeasure 0 0 = 0 := by simp [boolMeasure]
+
+@[simp]
 lemma boolMeasure_apply_false (a b : ℝ≥0∞) : boolMeasure a b {false} = a := by simp [boolMeasure]
 
 @[simp]
