@@ -496,9 +496,8 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     have : NeZero P := ⟨under_ne_bot R hQ'⟩
     have : Q.LiesOver P := by simp [liesOver_iff, P]
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
-    have hp : Prime (p : ℤ) := by
-      rw [← Nat.prime_iff_prime_int]
-      exact Int.absNorm_under_prime _
+    have : Fact (p.Prime) := ⟨Nat.absNorm_under_prime _⟩
+    have hp : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp <| Nat.absNorm_under_prime _
     rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, absNorm_eq_pow_inertiaDeg Q hp,
       absNorm_eq_pow_inertiaDeg P hp, inertiaDeg_algebra_tower (span {(p : ℤ)}) P Q, pow_mul]
 
