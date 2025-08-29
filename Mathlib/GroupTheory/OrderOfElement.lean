@@ -1219,6 +1219,7 @@ variable {n} {α : (i : Fin n) → Type*}
   [∀ i, Monoid (α i)]
   {f : (i : Fin n) → α i}
 
+-- alternative name: `Tuple.orderOf_mk`
 @[to_additive]
 lemma Tuple.orderOf_eq : orderOf f = Finset.univ.lcm (fun i => orderOf (f i)) := by
   sorry
