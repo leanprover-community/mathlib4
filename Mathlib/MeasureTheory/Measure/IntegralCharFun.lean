@@ -81,7 +81,6 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     have hy : y ≠ 0 := fun hy ↦ hry (by simp [hy])
     norm_cast
     field_simp
-    ring_nf
   _ = 2 * r * ∫ x, sinc (r * x) ∂μ := by
     norm_cast
     rw [integral_complex_ofReal, ← integral_const_mul]
