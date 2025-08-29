@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Functor.Basic
 import Mathlib.Lean.Meta.Simp
 
 /-!
-To avoid an initialization order issue, we move the `IO.Ref` declaration and other declarationss
+To avoid an initialization order issue, we move the `IO.Ref` declaration and other declarations
 that it depends on into an earlier file.
 -/
 
@@ -80,4 +80,7 @@ with additional handlers. Handlers take a proof of the equation.
 The default handler is `reassocExprHom` for morphism reassociation.
 This will be extended in `Tactic.CategoryTheory.IsoReassoc` for isomorphism reassociation.
 -/
-initialize reassocImplRef : IO.Ref (Array (Expr → MetaM (Expr × Array MVarId))) ← IO.mkRef #[reassocExprHom]
+initialize reassocImplRef : IO.Ref (Array (Expr → MetaM (Expr × Array MVarId))) ←
+  IO.mkRef #[reassocExprHom]
+
+end CategoryTheory
