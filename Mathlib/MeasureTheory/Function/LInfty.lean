@@ -8,9 +8,23 @@ import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Function.Holder
 
 /-!
+# The `L∞` (i.e. `Lp _ ⊤`) API and pointwise multiplication
 
-This file contains basic results specific to `Lp R ∞ μ`, with `R` a `NormedRing`, notably
-results surrounding its multiplicative structure.
+This file develops the basic results specific to `Lp R ∞ μ` when `R` is a
+`NormedRing`.  The main goal is to equip `L∞` with its natural pointwise multiplicative
+structure (defined a.e.) and to register the constant embedding.  This is a small,
+self-contained layer intended to be imported later by files that build richer structure
+(e.g. the commutative C⋆-algebra structure when `R = 𝕜`).
+
+## Main definitions
+
+* `instance : Mul (Lp R ⊤ μ)` – pointwise (a.e.) multiplication on `L∞`.
+* `Linfty.const : R →+ Lp R ⊤ μ` – additive monoid hom sending a scalar to the corresponding
+  constant `L∞` function.
+
+## Tags
+
+Lp, L∞
 
 -/
 
