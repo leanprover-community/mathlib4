@@ -119,7 +119,7 @@ alias integral_finset_biUnion := integral_biUnion_finset
 theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
-  convert integral_finset_biUnion Finset.univ (fun i _ => hs i) _ fun i _ => hf i
+  convert integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
   · simp [pairwise_univ, h's]
 
