@@ -442,7 +442,7 @@ lemma limsup_measure_closed_le_of_forall_tendsto_measure
     fun n ↦ Metric.isOpen_thickening
   have key := fun (n : ℕ) ↦ h (Fthicks_open n).measurableSet (rs_null n)
   apply ENNReal.le_of_forall_pos_le_add
-  intros ε ε_pos μF_finite
+  intro ε ε_pos μF_finite
   have keyB := tendsto_measure_cthickening_of_isClosed (μ := μ) (s := F)
                 ⟨1, ⟨by simp only [gt_iff_lt, zero_lt_one], measure_ne_top _ _⟩⟩ F_closed
   have nhds : Iio (μ F + ε) ∈ 𝓝 (μ F) :=

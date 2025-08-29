@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.RowCol
 /-!
 # Permanent of a matrix
 
@@ -89,7 +89,7 @@ theorem permanent_smul (M : Matrix n n R) (c : R) :
   congr
   ext
   rw [mul_comm]
-  conv in ∏ _ , c * _ => simp [mul_comm c];
+  conv in ∏ _, c * _ => simp [mul_comm c];
   exact prod_mul_pow_card.symm
 
 @[simp]

@@ -21,7 +21,7 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 - define positive convex bodies, requiring the interior to be nonempty
 - introduce support sets
-- Characterise the interaction of the distance with algebraic operations, eg
+- Characterise the interaction of the distance with algebraic operations, e.g.
   `dist (a • K) (a • L) = ‖a‖ * dist K L`, `dist (a +ᵥ K) (a +ᵥ L) = dist K L`
 
 ## Tags

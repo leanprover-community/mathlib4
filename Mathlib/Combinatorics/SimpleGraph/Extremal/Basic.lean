@@ -3,9 +3,7 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
@@ -24,6 +22,7 @@ This file introduces basic definitions for extremal graph theory, including extr
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
 
+assert_not_exists Field
 
 open Finset Fintype
 

@@ -166,7 +166,6 @@ theorem coe_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩
 
 @[simp]
 theorem toLp_coeFn (f : Lp E p μ) (hf : MemLp f p μ) : hf.toLp f = f := by
-  cases f
   simp [MemLp.toLp]
 
 theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
@@ -911,5 +910,24 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
     (hε : ε ≠ 0) : μ {x | ε ≤ ‖f x‖₊} ≤ ε⁻¹ ^ p.toReal * ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top (Lp.aestronglyMeasurable f) hε (by simp)
+
+section Star
+
+variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+
+protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
+  star f := ⟨star (f : α →ₘ[μ] R),
+    by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
+
+lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ] star f :=
+    (f : α →ₘ[μ] R).coeFn_star
+
+noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
+  star_involutive _ := Subtype.ext <| star_involutive _
+
+noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
+  star_trivial _ := Subtype.ext <| star_trivial _
+
+end Star
 
 end MeasureTheory.Lp
