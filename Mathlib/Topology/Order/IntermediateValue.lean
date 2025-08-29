@@ -317,43 +317,21 @@ theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : Is
     (ha : a ∈ s) (hgt : ∀ x ∈ s ∩ Ico a b, ∀ y ∈ Ioi x, (s ∩ Ioc x y).Nonempty) : Icc a b ⊆ s := by
   intro y hy
   have : IsClosed (s ∩ Icc a y) := by
-    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y by
-      rw [this]
-      exact IsClosed.inter hs isClosed_Icc
-    rw [inter_assoc]
-    congr
-    exact (inter_eq_self_of_subset_right <| Icc_subset_Icc_right hy.2).symm
-  exact
-    IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx =>
-      hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
+    suffices s ∩ Icc a y = s ∩ Icc a b ∩ Icc a y from this ▸ hs.inter isClosed_Icc
+    grind [inter_assoc, inter_eq_self_of_subset_right, Icc_subset_Icc_right]
+  exact IsClosed.mem_of_ge_of_forall_exists_gt this ha hy.1 fun x hx ↦
+    hgt x ⟨hx.1, Ico_subset_Ico_right hy.2 hx.2⟩ y hx.2.2
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `b`, and the set `s ∩ (a, b]` has no minimal point, then `a ∈ s`. -/
 theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
-  suffices OrderDual.toDual a ∈ OrderDual.toDual '' s by exact inter_singleton_nonempty.mp this
-  have : IsClosed (OrderDual.toDual '' (s ∩ Icc a b)) := isClosedMap_toDual _ hs
-  rw [image_inter toDual.injective, image_equiv_eq_preimage_symm (Icc a b), toDual_symm_eq,
-    ←Icc_toDual ] at this
+  suffices OrderDual.toDual a ∈ ofDual ⁻¹' s by aesop
+  have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
+  rw [preimage_inter, ←Icc_toDual ] at this
   apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
-  rw [Ico_toDual, ← toDual_symm_eq, ← image_equiv_eq_preimage_symm, ←image_inter toDual.injective,
-    mem_image] at hx
+  rw [Ico_toDual, ← preimage_inter, preimage_equiv_eq_image_symm, mem_image] at hx
   aesop
-
-
-
-  -- let S := s ∩ Icc a b
-  -- replace hb : b ∈ S := ⟨hb, right_mem_Icc.2 hab⟩
-  -- have Sbd : BddBelow S := ⟨a, fun z hz => hz.2.1⟩
-  -- let c := sInf (s ∩ Icc a b)
-  -- have c_mem : c ∈ S := hs.csInf_mem ⟨_, hb⟩ Sbd
-  -- have le_c : a ≤ c := le_csInf ⟨_, hb⟩ fun x hx => hx.2.1
-  -- rcases eq_or_lt_of_le le_c with hc | hc
-  -- · exact hc ▸ c_mem.1
-  -- exfalso
-  -- rcases hgt c ⟨c_mem.1, hc, c_mem.2.2⟩ with ⟨x, xs, cx, xb⟩
-  -- refine not_lt_of_ge (csInf_le Sbd <| (Set.mem_inter_iff _ _ _).mpr ?_) xb
-  -- exact ⟨xs, Set.mem_Icc.mpr ⟨cx, le_trans (le_of_lt xb) (csInf_le Sbd hb)⟩⟩
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `b`, and for any `a ≤ y < x ≤ b`, `x ∈ s`, the set `s ∩ [y, x)`
@@ -362,15 +340,10 @@ theorem IsClosed.Icc_subset_of_forall_exists_lt {a b : α} {s : Set α} (hs : Is
     (hb : b ∈ s) (hgt : ∀ x ∈ s ∩ Ioc a b, ∀ y ∈ Iio x, (s ∩ Ico y x).Nonempty) : Icc a b ⊆ s := by
   intro y hy
   have : IsClosed (s ∩ Icc y b) := by
-    suffices s ∩ Icc y b = s ∩ Icc a b ∩ Icc y b by
-      rw [this]
-      exact IsClosed.inter hs isClosed_Icc
-    rw [inter_assoc]
-    congr
-    exact (inter_eq_self_of_subset_right <| Icc_subset_Icc_left hy.1).symm
-  refine
-    IsClosed.mem_of_ge_of_forall_exists_lt this hb hy.2 fun x hx =>
-      hgt x ⟨hx.1, Ioc_subset_Ioc_left hy.1 hx.2⟩ y hx.2.1
+    suffices s ∩ Icc y b = s ∩ Icc a b ∩ Icc y b from this ▸ hs.inter isClosed_Icc
+    grind [Icc_subset_Icc_left, inter_eq_self_of_subset_right, inter_assoc]
+  exact IsClosed.mem_of_ge_of_forall_exists_lt this hb hy.2 fun x hx ↦
+    hgt x ⟨hx.1, Ioc_subset_Ioc_left hy.1 hx.2⟩ y hx.2.1
 
 variable [DenselyOrdered α] {a b : α}
 
