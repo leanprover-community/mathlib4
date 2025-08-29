@@ -4,6 +4,7 @@ import Mathlib.Data.ENNReal.Operations
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Finiteness
 import Mathlib.Tactic.Group
 import Mathlib.Tactic.Linarith
@@ -129,6 +130,21 @@ example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
 example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
   simp
   nlinarith
+
+-- Test that `field_simp` is accepted as a follower of `simp`.
+/--
+warning: 'simp [h]' is a flexible tactic modifying '⊢'…
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: … and 'field_simp' uses '⊢'!
+-/
+#guard_msgs in
+example {K : Type*} [Field K] (x y z : K) (hy : 1 - y ≠ 0) (h : z = y) :
+    x / (1 - y) / (1 + y / (1 - z)) = x := by
+  simp [h]
+  field_simp
+  simp
 
 /-! ## followers/rigidifiers -/
 
