@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
@@ -338,6 +339,16 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
   let ⟨u, hu⟩ := h₁
   let ⟨l, hl⟩ := h₂
   (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
+
+open Metric in
+lemma _root_.IsOrderBornology.of_isCompactIcc (x : α)
+    (bddBelow_ball : ∀ r, BddBelow (closedBall x r))
+    (bddAbove_ball : ∀ r, BddAbove (closedBall x r)) : IsOrderBornology α where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨?_, fun hs ↦ Metric.isBounded_of_bddAbove_of_bddBelow hs.2 hs.1⟩
+    rw [Metric.isBounded_iff_subset_closedBall x]
+    rintro ⟨r, hr⟩
+    exact ⟨(bddBelow_ball _).mono hr, (bddAbove_ball _).mono hr⟩
 
 end CompactIccSpace
 
