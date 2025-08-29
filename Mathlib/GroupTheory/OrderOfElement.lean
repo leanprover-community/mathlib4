@@ -1213,18 +1213,18 @@ lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
 
 end Prod
 
-section Tuple
+section Pi
 
 variable {n} {α : (i : Fin n) → Type*}
   [∀ i, Monoid (α i)]
   {f : ∀ i, α i}
 
--- alternative name: `Tuple.orderOf_mk`
+-- alternative name: `Pi.orderOf_mk`
 @[to_additive]
-lemma Tuple.orderOf_eq : orderOf f = Finset.univ.lcm (fun i => orderOf (f i)) := by
+lemma Pi.orderOf_eq : orderOf f = Finset.univ.lcm (fun i => orderOf (f i)) := by
   sorry
 
-end Tuple
+end Pi
 
 /- TODO: I am not sure whether the `Tuple` section added is the corresponding `pi` lemmas
 that the original author of this comment below meant. Should this comment be removed? -/
