@@ -410,17 +410,18 @@ theorem zpow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {
         simp [zero_zpow a ha]
         intro x hx
         rw [hx, zero_zpow a ha]
-  · have : (ms.neg.pow a).Approximates ((-f)^a) := by
+  · have h_neg_approx : (ms.neg.pow a).Approximates ((-f)^a) := by
       rw [show (-f)^a = (-f)^(a : ℝ) by ext; simp]
       apply pow_Approximates h_basis (neg_WellOrdered h_wo) (neg_Approximates h_approx)
       · exact neg_Trimmed h_trimmed
       · simpa [neg_leadingTerm]
-    rw [show (-f)^a = fun t ↦ (f t)^a * (-1)^a by ext; simp [← mul_zpow]] at this
-    rw [neg_zpow] at this
+    rw [show (-f)^a = (-1 : ℝ)^a • fun t ↦ (f t)^a by ext; simp [← mul_zpow]] at h_neg_approx
+    rw [neg_zpow] at h_neg_approx
     have h_eq : ms.pow a = ((ms.pow a).mulConst ((-1)^a)).mulConst ((-1)^a) := by
       simp [← mul_zpow]
-    rw [h_eq, show f ^ a = fun x ↦ (f x) ^ a * (-1)^a * (-1)^a by ext; simp [mul_assoc, ← mul_zpow]]
-    apply mulConst_Approximates this
+    rw [h_eq, show f ^ a = (-1 : ℝ)^a • (-1 : ℝ)^a • fun x ↦ (f x) ^ a by
+      ext; rw [smul_smul, ← zpow_add₀ (by simp), Even.neg_one_zpow (by simp)]; simp]
+    apply mulConst_Approximates h_neg_approx
 
 end PreMS
 

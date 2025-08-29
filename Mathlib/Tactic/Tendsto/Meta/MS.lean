@@ -49,6 +49,18 @@ def const (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (c : Q(ℝ))
   h_basis := h_basis
   h_logBasis := h_logBasis
 
+def monomial_rpow (basis : Q(Basis)) (logBasis : Q(LogBasis $basis))
+    (n : Q(Fin (List.length $basis))) (r : Q(ℝ))
+    (h_basis : Q(WellFormedBasis $basis)) (h_logBasis : Q(LogBasis.WellFormed $logBasis)) : MS where
+  basis := basis
+  logBasis := logBasis
+  val := q(PreMS.monomial_rpow $basis $n $r)
+  f := q(fun x ↦ (List.get $basis $n x)^$r)
+  h_wo := q(PreMS.monomial_rpow_WellOrdered)
+  h_approx := q(PreMS.monomial_rpow_Approximates $h_basis)
+  h_basis := h_basis
+  h_logBasis := h_logBasis
+
 def monomial (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (n : Q(Fin (List.length $basis)))
     (h_basis : Q(WellFormedBasis $basis)) (h_logBasis : Q(LogBasis.WellFormed $logBasis)) : MS where
   basis := basis
@@ -59,6 +71,16 @@ def monomial (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (n : Q(Fin (List
   h_approx := q(PreMS.monomial_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
+
+def mulConst (x : MS) (c : Q(ℝ)) : MS where
+  basis := x.basis
+  logBasis := x.logBasis
+  val := q(PreMS.mulConst $x.val $c)
+  f := q($c • $x.f)
+  h_wo := q(PreMS.mulConst_WellOrdered $x.h_wo)
+  h_approx := q(PreMS.mulConst_Approximates $x.h_approx)
+  h_basis := x.h_basis
+  h_logBasis := x.h_logBasis
 
 def neg (x : MS) : MS where
   basis := x.basis

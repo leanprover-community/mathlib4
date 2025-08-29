@@ -65,6 +65,7 @@ def proveNeZero (ms : MS) : MetaM Q($ms.val ≠ PreMS.zero _) := do
   return q(PreMS.noConfusion_zero)
 
 -- assume that `x.basis = ... ++ y.basis`
+-- assume that `x` and `y` are not `nil`s
 def compare (x y : MS)
     (hx_trimmed : Q(PreMS.Trimmed $x.val))
     (hy_trimmed : Q(PreMS.Trimmed $y.val)) :
@@ -92,8 +93,11 @@ def compare (x y : MS)
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h =>
     let c : Q(ℝ) := q($x_coef / $y_coef)
-    let hc ← CompareReal.proveNeZero c
-    return .eq c hc q(sorry)
+    have hc := ← CompareReal.proveNeZero c
+    have : $x_coef =Q (PreMS.leadingTerm $x.val).coef := ⟨⟩
+    have : $y_coef =Q (PreMS.leadingTerm $y.val).coef := ⟨⟩
+    return .eq c hc q(PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
+      $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $hc ($h).symm)
 
 end MS
 

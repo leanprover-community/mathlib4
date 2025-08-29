@@ -92,6 +92,16 @@ theorem one_destruct : destruct (PreMS.one (basis_hd :: basis_tl)) =
     .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl) := by
   rfl
 
+theorem monomial_rpow_zero_destruct (r : ℝ) :
+     destruct (PreMS.monomial_rpow (basis_hd :: basis_tl) 0 r) =
+    .some ((r, PreMS.one _), @PreMS.nil basis_hd basis_tl) := by
+  rfl
+
+theorem monomial_rpow_succ_destruct (m : ℕ) (r : ℝ) :
+    destruct (PreMS.monomial_rpow (basis_hd :: basis_tl) (m + 1) r) =
+    .some ((0, PreMS.monomial_rpow basis_tl m r), @PreMS.nil basis_hd basis_tl) := by
+  rfl
+
 theorem monomial_zero_destruct : destruct (PreMS.monomial (basis_hd :: basis_tl) 0) =
     .some ((1, PreMS.one _), @PreMS.nil basis_hd basis_tl) := by
   rfl
@@ -328,6 +338,12 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
       }
     | ~q(PreMS.const _ $c) => simpWith q(@const_destruct $basis_hd $basis_tl $c)
     | ~q(PreMS.one _) => simpWith q(@one_destruct $basis_hd $basis_tl)
+    | ~q(PreMS.monomial_rpow _ $n $r) =>
+      -- dbg_trace f!"monomial {← ppExpr n}"
+      -- dbg_trace f!"reduced {← ppExpr (← withTransparency .all $ reduce n)}"
+      match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
+      | 0 => simpWith q(@monomial_rpow_zero_destruct $basis_hd $basis_tl $r)
+      | m + 1 => simpWith q(@monomial_rpow_succ_destruct $basis_hd $basis_tl $m $r)
     | ~q(PreMS.monomial _ $n) =>
       -- dbg_trace f!"monomial {← ppExpr n}"
       -- dbg_trace f!"reduced {← ppExpr (← withTransparency .all $ reduce n)}"

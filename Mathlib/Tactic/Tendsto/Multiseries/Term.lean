@@ -111,6 +111,14 @@ theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basi
   rw [ih, Real.rpow_add (h_pos _ (by simp))]
   ring
 
+theorem smul_toFun {t : Term} {basis : Basis} (c : ℝ) :
+    (mk (t.coef * c) t.exps).toFun basis = c • t.toFun basis := by
+  ext x
+  simp [toFun]
+  conv => lhs; rw [fold_eq_mul]
+  conv => rhs; rw [fold_eq_mul]
+  ring
+
 theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (fun x ↦ (t.toFun basis x)⁻¹) =ᶠ[atTop] fun x ↦ t.inv.toFun basis x := by
   unfold toFun

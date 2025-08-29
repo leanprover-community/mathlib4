@@ -419,6 +419,36 @@ theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis}
   congr 1
   rw [h_coef]
 
+theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
+    {ms1 : PreMS (left ++ right)} {ms2 : PreMS right} {f1 f2 : ℝ → ℝ}
+    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates f1) (h_approx2 : ms2.Approximates f2)
+    (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
+    (h_basis : WellFormedBasis (left ++ right))
+    (h_coef : ms1.leadingTerm.coef / ms2.leadingTerm.coef ≠ 0)
+    (h_exps : List.replicate left.length 0 ++ ms2.leadingTerm.exps = ms1.leadingTerm.exps) :
+    f1 ~[atTop] (ms1.leadingTerm.coef / ms2.leadingTerm.coef) • f2 := by
+  apply Asymptotics.IsEquivalent.trans
+    (IsEquivalent_leadingTerm h_wo1 h_approx1 h_trimmed1 h_basis)
+  trans (ms1.leadingTerm.coef / ms2.leadingTerm.coef) • (ms2.leadingTerm.toFun right)
+  swap
+  · have h_eq := (IsEquivalent_leadingTerm h_wo2 h_approx2 h_trimmed2 h_basis.of_append_right).symm
+    have : (fun (_ : ℝ) ↦ ms1.leadingTerm.coef / ms2.leadingTerm.coef) ~[atTop]
+        (fun _ ↦ ms1.leadingTerm.coef / ms2.leadingTerm.coef) := by
+      rfl
+    convert Asymptotics.IsEquivalent.smul this h_eq using 1
+  convert Asymptotics.IsEquivalent.refl using 1
+  let t2' : Term := ⟨ms2.leadingTerm.coef, List.replicate left.length 0 ++ ms2.leadingTerm.exps⟩
+  have : t2'.toFun (left ++ right) = Term.toFun ms2.leadingTerm right := by
+    apply Term.zeros_append_toFun
+    simp [leadingTerm_length]
+  rw [← this, ← Term.smul_toFun]
+  congr!
+  simp [t2']
+  rw [mul_div_cancel₀]
+  contrapose! h_coef
+  simp [h_coef]
+
 theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
     (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
     ms ≠ zero _ := by
@@ -436,13 +466,17 @@ theorem const_leadingTerm_eq {basis : Basis} {c : ℝ} :
   · simp [const, leadingTerm]
   · simp [const, leadingTerm, const_leadingTerm_eq, List.replicate_succ]
 
-theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
-    (PreMS.monomial basis n).leadingTerm = ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ := by
+theorem monomial_rpow_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
+    (PreMS.monomial_rpow basis n r).leadingTerm = ⟨1, List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0⟩ := by
   cases' basis with basis_hd basis_tl
   · simp at h
   cases' n with n
-  · simp [monomial, leadingTerm, one, const_leadingTerm_eq]
-  · simp [monomial, leadingTerm, monomial_leadingTerm_eq (by simpa using h), List.replicate_succ]
+  · simp [monomial_rpow, leadingTerm, one, const_leadingTerm_eq]
+  · simp [monomial_rpow, leadingTerm, monomial_rpow_leadingTerm_eq (by simpa using h) r, List.replicate_succ]
+
+theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
+    (PreMS.monomial basis n).leadingTerm = ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ :=
+  monomial_rpow_leadingTerm_eq h 1
 
 theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
     (ms.extendBasisEnd b).leadingTerm = ⟨ms.leadingTerm.coef, ms.leadingTerm.exps ++ [0]⟩ := by

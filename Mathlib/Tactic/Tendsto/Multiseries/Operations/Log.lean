@@ -264,7 +264,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         · exact WithBot.bot_lt_coe 0
         · simp at h_comp
           norm_cast
-      apply mulConst_Approximates
+      apply mulConst_Approximates'
       apply Approximates_of_EventuallyEq _ h_tl
       simp
       apply Eventually.mono h_coef
@@ -326,7 +326,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
           unfold leadingTerm at h_last
           simp at h_last
           simpa [List.getLast?_cons, h] using h_last
-        · apply mulConst_Approximates
+        · apply mulConst_Approximates'
           simp [LogBasis.WellFormed] at h_logBasis
           exact h_logBasis.right.left
       · rw [show (0 : ℝ) = 0 ⊔ 0 by simp]

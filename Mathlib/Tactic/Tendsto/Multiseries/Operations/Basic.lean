@@ -123,7 +123,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         use tl
 
 /-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
-theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
+theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
     (h_approx : ms.Approximates f) :
     (ms.mulConst c).Approximates (fun t ↦ f t * c) := by
   cases basis with
@@ -164,7 +164,7 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : 
         constructor
         · exact h_ms_eq
         constructor
-        · exact mulConst_Approximates hX_coef
+        · exact mulConst_Approximates' hX_coef
         constructor
         · apply majorated_of_EventuallyEq hf_eq
           exact mul_const_majorated hX_maj
@@ -181,6 +181,15 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : 
           conv => rhs; ext; rw [mul_comm]
           exact hf_eq
         · exact hX_tl
+
+/-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
+theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
+    (h_approx : ms.Approximates f) :
+    (ms.mulConst c).Approximates (c • f) := by
+  convert mulConst_Approximates' h_approx using 1
+  ext t
+  rw [mul_comm]
+  rfl
 
 theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ms ≠ zero _)
     (hc : c ≠ 0) : (ms.mulConst c) ≠ zero _ := by
@@ -245,7 +254,7 @@ theorem neg_WellOrdered {basis : Basis} {ms : PreMS basis}
 
 theorem neg_Approximates {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
     (h_approx : ms.Approximates f) : ms.neg.Approximates (-f) := by
-  rw [← mul_neg_one]
+  rw [← mul_neg_one, mul_comm]
   eta_expand
   simp only [Pi.one_apply, Pi.neg_apply, Pi.mul_apply]
   apply mulConst_Approximates h_approx

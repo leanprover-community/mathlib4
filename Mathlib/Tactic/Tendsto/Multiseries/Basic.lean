@@ -58,13 +58,18 @@ theorem noConfusion_zero_symm {basis_hd : ℝ → ℝ} {basis_tl : Basis} {hd : 
 def one (basis : Basis) : PreMS basis :=
   const basis 1
 
-/-- Multiseries representing `basis[n]`. -/
-def monomial (basis : Basis) (n : ℕ) : PreMS basis :=
+
+/-- Multiseries representing `basis[n] ^ r`. -/
+def monomial_rpow (basis : Basis) (n : ℕ) (r : ℝ) : PreMS basis :=
   match n, basis with
   | 0, [] => default
-  | 0, List.cons _ _ => .cons (1, one _) .nil
+  | 0, List.cons _ _ => .cons (r, one _) .nil
   | _ + 1, [] => default
-  | m + 1, List.cons _ basis_tl => .cons (0, monomial basis_tl m) .nil
+  | m + 1, List.cons _ basis_tl => .cons (0, monomial_rpow basis_tl m r) .nil
+
+/-- Multiseries representing `basis[n]`. -/
+def monomial (basis : Basis) (n : ℕ) : PreMS basis :=
+  monomial_rpow basis n 1
 
 /-- Constants are well-ordered. -/
 theorem const_WellOrdered {c : ℝ} {basis : Basis} :
@@ -123,30 +128,59 @@ theorem one_Approximates {basis : Basis} (h_wo : WellFormedBasis basis) :
   const_Approximates h_wo
 
 /-- `monomial` is well-ordered. -/
-theorem monomial_WellOrdered {basis : Basis} {n : ℕ} : (monomial basis n).WellOrdered := by
+theorem monomial_rpow_WellOrdered {basis : Basis} {n : ℕ} {r : ℝ} :
+    (monomial_rpow basis n r).WellOrdered := by
   cases basis with
   | nil =>
     cases n with
     | zero =>
-      simp [monomial]
       constructor
     | succ m =>
-      simp [monomial, default]
       apply zero_WellOrdered
   | cons basis_hd basis_tl =>
     cases n with
     | zero =>
-      simp [monomial]
       apply WellOrdered.cons
       · exact const_WellOrdered
       · simp [leadingExp, Ne.bot_lt]
       · exact WellOrdered.nil
     | succ m =>
-      simp [monomial]
       apply WellOrdered.cons
-      · exact monomial_WellOrdered
+      · exact monomial_rpow_WellOrdered
       · simp [leadingExp, Ne.bot_lt]
       · exact WellOrdered.nil
+
+/-- `monomial_rpow` approximates monomial function. -/
+theorem monomial_rpow_Approximates {basis : Basis} {n : Fin (List.length basis)} {r : ℝ}
+    (h_basis : WellFormedBasis basis) :
+    (monomial_rpow basis n r).Approximates (fun x ↦ (basis[n] x)^r) := by
+  cases basis with
+  | nil =>
+    cases' n with _ h
+    simp at h
+  | cons basis_hd basis_tl =>
+    cases n using Fin.cases with
+    | zero =>
+      apply Approximates.cons (fun _ ↦ 1)
+      · exact one_Approximates h_basis.tail
+      · apply PreMS.majorated_self
+        apply basis_tendsto_top h_basis
+        simp
+      · simp
+        apply Approximates.nil
+        rfl
+    | succ m =>
+      apply Approximates.cons
+      · exact monomial_rpow_Approximates h_basis.tail
+      · apply basis_tail_pow_majorated_head h_basis
+        apply List.getElem_mem
+      · simp
+        apply Approximates.nil
+        rfl
+
+/-- `monomial` is well-ordered. -/
+theorem monomial_WellOrdered {basis : Basis} {n : ℕ} : (monomial basis n).WellOrdered :=
+  monomial_rpow_WellOrdered
 
 /-- `monomial` approximates monomial function. -/
 theorem monomial_Approximates {basis : Basis} {n : Fin (List.length basis)}

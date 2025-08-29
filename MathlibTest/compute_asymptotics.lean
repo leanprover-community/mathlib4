@@ -189,8 +189,8 @@ example :
   compute_asymptotics
 
 example :
-    let f := fun (y : ℝ) ↦ Real.exp y;
-    Tendsto f atTop atTop := by
+    let f := fun (y : ℝ) ↦ Real.exp y / Real.exp y;
+    Tendsto f atTop (𝓝 1) := by
   compute_asymptotics
 
 example :
@@ -216,11 +216,14 @@ lemma lol :
 
 #print axioms lol
 
--- set_option maxHeartbeats 0 in
--- example :
---     let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp y;
---     Tendsto f atTop atTop := by
---   compute_asymptotics
+
+set_option maxHeartbeats 0 in
+lemma test1 :
+    let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp y;
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+#print axioms test1
 
 -- set_option trace.profiler true in
 -- set_option maxHeartbeats 0 in
@@ -229,11 +232,11 @@ lemma lol :
 --     Tendsto f atTop atTop := by
 --   compute_asymptotics
 
--- set_option maxHeartbeats 0 in
--- example :
---     let f := fun (y : ℝ) ↦ Real.exp (Real.log y) - y
---     Tendsto f atTop (𝓝 0):= by
---   compute_asymptotics
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (Real.log y) - y
+    Tendsto f atTop (𝓝 0):= by
+  compute_asymptotics
 
 --- end exp testing
 

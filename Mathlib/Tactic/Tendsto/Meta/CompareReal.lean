@@ -59,12 +59,10 @@ def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
     | .neg e => .neg q(Eq.subst (motive := fun x ↦ x < 0) (Eq.symm $pf) $e)
     | .zero e => .zero q(Eq.subst (motive := fun x ↦ x = 0) (Eq.symm $pf) $e)
 
-example (a : ℝ) (ha : a < 0) : 0 ≠ a := by exact ne_of_gt ha
-
-def proveNeZero (x : Q(ℝ)) : TacticM (Q(0 ≠ $x)) := do
+def proveNeZero (x : Q(ℝ)) : TacticM (Q($x ≠ 0)) := do
   match ← compareReal x with
-  | .pos h => return q(ne_of_lt $h)
-  | .neg h => return q(ne_of_gt $h)
+  | .pos h => return q((ne_of_lt $h).symm)
+  | .neg h => return q((ne_of_gt $h).symm)
   | .zero _ => panic! "proveNeZero: unexpected zero"
 
 end CompareReal

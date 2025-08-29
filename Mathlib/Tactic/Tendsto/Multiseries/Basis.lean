@@ -210,13 +210,13 @@ theorem basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0
       apply Tendsto.sub_const h1
     · exact Tendsto.comp Real.tendsto_log_atTop hg
 
-/-- Any function from well-formed basis' tail is majorated by basis' head with zero exponent. -/
-theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
-    (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) :
-    PreMS.majorated f hd 0 := by
+/-- Any power of function from well-formed basis' tail is majorated by
+basis' head with zero exponent. -/
+theorem basis_tail_pow_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
+    (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
+    PreMS.majorated (fun x ↦ (f x)^r) hd 0 := by
   simp [PreMS.majorated]
   intro exp h_exp
-  rw [show f = fun x ↦ (f x)^(1 : ℝ) by simp]
   apply basis_compare
   · apply (basis_eventually_pos h_basis.tail).mono
     intro x h
@@ -227,6 +227,14 @@ theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
   · simp [WellFormedBasis] at h_basis
     tauto
   · exact h_exp
+
+/-- Any function from well-formed basis' tail is majorated by basis' head with zero exponent. -/
+theorem basis_tail_majorated_head {hd f : ℝ → ℝ} {tl : Basis}
+    (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) :
+    PreMS.majorated f hd 0 := by
+  convert basis_tail_pow_majorated_head h_basis hf 1 using 1
+  ext t
+  simp
 
 /-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
 `ms : PreMS basis_tl`, then `fC` can be majorated by `basis_hd` with zero exponent. -/

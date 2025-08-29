@@ -59,23 +59,25 @@ theorem const_Trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (PreMS.const ba
   · exact const_Trimmed hc
   cases basis_tl <;> simp [const, zero, hc]
 
-theorem monomial_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) :
-    (PreMS.monomial basis n).Trimmed := by
+theorem monomial_rpow_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
+    (PreMS.monomial_rpow basis n r).Trimmed := by
   cases' basis with basis_hd basis_tl
   · constructor
   cases' n with n
-  · simp [monomial]
-    constructor
+  · constructor
     · simp [one]
       exact const_Trimmed (by simp)
     · cases basis_tl <;> simp [one, zero, const]
-  · simp [monomial]
-    constructor
-    · apply monomial_Trimmed
+  · constructor
+    · apply monomial_rpow_Trimmed
       simpa using h
     · cases basis_tl
       · simp at h
-      cases n <;> simp [monomial, zero]
+      cases n <;> simp [monomial_rpow, zero]
+
+theorem monomial_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) :
+    (PreMS.monomial basis n).Trimmed :=
+  monomial_rpow_Trimmed h 1
 
 theorem extendBasisEnd_ne_zero {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
     (h : ms ≠ zero _) : ms.extendBasisEnd b ≠ zero _ := by

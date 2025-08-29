@@ -61,6 +61,24 @@ partial def getLast {α : Q(Type)} (li : Q(List $α)) : MetaM <| Option <| Q($α
     | ~q(List.nil) => return .some hd
   | _ => panic! s!"getLast: unexpected list: {← ppExpr li}"
 
+partial def findIndexAux {α : Q(Type)} (li : Q(List $α)) (val : Q($α)) :
+    MetaM Nat := do
+  match li with
+  | ~q(List.nil) => panic! "findIndexAux: not found"
+  | ~q(List.cons $hd $tl) =>
+    if hd == val then
+      return 0
+    else
+      return 1 + (← findIndexAux tl val)
+  | _ => panic! s!"findIndexAux: unexpected list: {← ppExpr li}"
+
+partial def findIndex {α : Q(Type)} (li : Q(List $α)) (val : Q($α)) :
+    MetaM Q(Fin (List.length $li)) := do
+  haveI n : Q(Nat) := mkNatLit (← findIndexAux li val)
+  do
+  let hn : Q($n < List.length $li) := ← mkDecideProof q($n < List.length $li)
+  return q(Fin.mk $n $hn)
+
 /-- Assuming `basis = left ++ right`, returns `left`. -/
 def expressAsAppend (basis right : Q(Basis)) : MetaM Q(Basis) := do
   let leftLength := (← computeLength basis) - (← computeLength right)
@@ -108,7 +126,7 @@ mutual
     | ~q(List.cons $hd $tl) =>
       let tl' ← reduceBasis tl
       return q(List.cons $hd $tl')
-    | ~q(@BasisExtension.getBasis $basis' $ex) =>
+    | ~q(BasisExtension.getBasis ($ex : BasisExtension $basis')) =>
       let basis'' ← reduceBasis basis'
       haveI : $basis =Q $basis' := ⟨⟩
       return ← @reduceBasisExtension basis'' ex
@@ -116,6 +134,8 @@ mutual
       let left' ← reduceBasis left
       let right' ← reduceBasis right
       return ← reduceAppend (α := q(ℝ → ℝ)) left' right'
+    | _ =>
+      panic! s!"Unexpected basis in reduceBasis: {← ppExpr basis}"
 
 end
 
