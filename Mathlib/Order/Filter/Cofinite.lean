@@ -269,6 +269,10 @@ theorem Function.Injective.nat_tendsto_atTop {f : ℕ → ℕ} (hf : Injective f
     Tendsto f atTop atTop :=
   Nat.cofinite_eq_atTop ▸ hf.tendsto_cofinite
 
+lemma Function.update_eventuallyEq [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[𝓟 {a}ᶜ] f := by
+  filter_upwards [mem_principal_self _] with u hu using Function.update_of_ne hu _ _
+
 lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
-    Function.update f a b =ᶠ[cofinite] f := by
-  filter_upwards [eventually_cofinite_ne _] with u hu using Function.update_of_ne hu _ _
+    Function.update f a b =ᶠ[cofinite] f :=
+  (Function.update_eventuallyEq f a b).filter_mono (by simp)
