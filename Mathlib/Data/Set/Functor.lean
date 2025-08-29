@@ -57,6 +57,14 @@ theorem seq_eq_set_seq (s : Set (α → β)) (t : Set α) : s <*> t = s.seq t :=
 theorem pure_def (a : α) : (pure a : Set α) = {a} :=
   rfl
 
+@[simp]
+theorem failure_def : (failure : Set α) = ∅ :=
+  rfl
+
+@[simp]
+theorem orElse_def (s : Set α) (t : Set α) : (s <|> t) = s ∪ t :=
+  rfl
+
 /-- `Set.image2` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
 theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : Set β) :
@@ -142,6 +150,10 @@ end Set
 def SetM (α : Type u) := Set α
 
 instance : AlternativeMonad SetM := Set.monad
+
+instance : LawfulMonad SetM := Set.instLawfulMonad
+
+instance : LawfulAlternative SetM := Set.instLawfulAlternative
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/
