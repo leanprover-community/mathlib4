@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Decision.DeGrootInfo
+import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!
 # Total variation distance
@@ -335,5 +336,78 @@ lemma hellinger_le_tvDist [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     intro x
     exact h_le_rnDeriv x
   _ = tvDist μ ν := tvDist_eq_half_integral_abs_sub.symm
+
+lemma hellinger_le_tvDist' {ζ : Measure 𝓧} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    [SigmaFinite ζ] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
+    1 - ∫ x, √((∂μ/∂ζ) x).toReal * √((∂ν/∂ζ) x).toReal ∂ζ ≤ tvDist μ ν := by
+  refine le_trans (le_of_eq ?_) hellinger_le_tvDist
+  -- extract lemma
+  simp only [sub_right_inj]
+  symm
+  calc ∫ x, √((∂μ/∂(μ + ν)) x).toReal * √((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν)
+  _ = ∫ x, ((∂(μ + ν)/∂ζ) x).toReal
+      * √((∂μ/∂(μ + ν)) x).toReal * √((∂ν/∂(μ + ν)) x).toReal ∂ζ := by
+    rw [← integral_rnDeriv_smul (μ := μ + ν) (ν := ζ)]
+    · simp only [smul_eq_mul]
+      simp_rw [mul_assoc]
+    · exact Measure.AbsolutelyContinuous.add_left hμζ hνζ
+  _ = ∫ x, √((∂μ/∂(μ + ν)) x * (∂(μ + ν)/∂ζ) x).toReal
+      * √((∂ν/∂(μ + ν)) x * (∂(μ + ν)/∂ζ) x).toReal ∂ζ := by
+    congr with x
+    simp only [ENNReal.toReal_mul, ENNReal.toReal_nonneg, Real.sqrt_mul]
+    conv_lhs => rw [← Real.sq_sqrt (x := ((∂(μ + ν)/∂ζ) x).toReal) (by positivity)]
+    ring
+  _ = ∫ x, √((∂μ/∂ζ) x).toReal * √((∂ν/∂ζ) x).toReal ∂ζ := by
+    refine integral_congr_ae ?_
+    have h1 := Measure.rnDeriv_mul_rnDeriv (μ := μ) (ν := μ + ν) (κ := ζ) ?_
+    swap; · exact (Measure.AbsolutelyContinuous.refl _).add_right _
+    have h2 := Measure.rnDeriv_mul_rnDeriv (μ := ν) (ν := μ + ν) (κ := ζ) ?_
+    swap
+    · rw [add_comm]
+      exact (Measure.AbsolutelyContinuous.refl _).add_right _
+    filter_upwards [h1, h2] with x hx1 hx2
+    simp only [Pi.mul_apply] at hx1 hx2
+    rw [hx1, hx2]
+
+open Real
+
+-- todo: extract lemma about the hellinger dist
+lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
+    1 - exp (-((μ₁ - μ₂) ^ 2) / 8) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
+  refine le_trans (le_of_eq ?_) (hellinger_le_tvDist' (ζ := ℙ) ?_ ?_)
+  rotate_left
+  · exact gaussianReal_absolutelyContinuous _ (by simp)
+  · exact gaussianReal_absolutelyContinuous _ (by simp)
+  simp only [sub_right_inj]
+  symm
+  calc ∫ x, √((∂gaussianReal μ₁ 1/∂ℙ) x).toReal * √((∂gaussianReal μ₂ 1/∂ℙ) x).toReal
+  _ = ∫ x, √(gaussianPDFReal μ₁ 1 x) * √(gaussianPDFReal μ₂ 1 x) := by
+    refine integral_congr_ae ?_
+    filter_upwards [rnDeriv_gaussianReal μ₁ 1, rnDeriv_gaussianReal μ₂ 1] with x h1 h2
+    rw [h1, h2, toReal_gaussianPDF, toReal_gaussianPDF]
+  _ = ∫ x, √((√(2 * π))⁻¹ * exp (- (x - μ₁) ^ 2 / 2))
+      * √((√(2 * π))⁻¹ * exp (- (x - μ₂) ^ 2 / 2)) := by simp [gaussianPDFReal]
+  _ = ∫ x, (√(2 * π))⁻¹ * √(exp (- (x - μ₁) ^ 2 / 2)) * √(exp (- (x - μ₂) ^ 2 / 2)) := by
+    congr with x
+    conv_rhs => rw [← Real.sq_sqrt (x := √(2 * π)) (by positivity), ← inv_pow, ← sqrt_inv]
+    simp
+    ring
+  _ = ∫ x, (√(2 * π))⁻¹ * exp (- (x - μ₁) ^ 2 / 4 - (x - μ₂) ^ 2 / 4) := by
+    congr with x
+    rw [mul_assoc]
+    congr
+    simp_rw [sqrt_eq_rpow, ← exp_mul, ← exp_add]
+    ring_nf
+  _ = ∫ x, (√(2 * π))⁻¹ * exp (- (x - (μ₁ + μ₂) / 2) ^ 2 / 2 - (μ₁ - μ₂) ^ 2 / 8) := by
+    congr with x
+    congr 2
+    ring
+  _ = exp (- (μ₁ - μ₂) ^ 2 / 8) * ∫ x, gaussianPDFReal ((μ₁ + μ₂) / 2) 1 x := by
+    simp_rw [sub_eq_add_neg, exp_add, ← sub_eq_add_neg, ← mul_assoc]
+    rw [integral_mul_const, mul_comm (exp _), neg_div]
+    congr with x
+    simp [gaussianPDFReal]
+  _ = exp (-(μ₁ - μ₂) ^ 2 / 8) := by
+    rw [integral_gaussianPDFReal_eq_one _ (by simp), mul_one]
 
 end ProbabilityTheory
