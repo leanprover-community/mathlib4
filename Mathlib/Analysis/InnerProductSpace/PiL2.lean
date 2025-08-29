@@ -1201,4 +1201,33 @@ theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
 
+/-- The matrix representation of `(lsmul 𝕜 𝕜).flip x)` given by basis `b` is equal to the
+column `b.repr x`. -/
+theorem ContinuousLinearMap.lsmul_flip_apply_toMatrix {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] (b : Basis ι 𝕜 E) (x : E) :
+    ((lsmul 𝕜 𝕜).flip x).toMatrix (.singleton Unit 𝕜) b = replicateCol Unit (b.repr x) := by
+  ext; simp [LinearMap.toMatrix_apply]
+
+/-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` is equal to
+the conjugate transpose of the column `b.repr x`
+(in other words, it is the row `star (b.repr x)`). -/
+theorem innerSL_apply_toMatrix [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    (innerSL 𝕜 x).toMatrix b.toBasis (.singleton Unit 𝕜) = (replicateCol Unit (b.repr x))ᴴ := by
+  ext; simp [LinearMap.toMatrix_apply, b.repr_apply_apply]
+
+
 end Matrix
+
+namespace InnerProductSpace
+
+variable {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
+variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [Fintype ι] [Fintype ι'] [DecidableEq ι']
+
+theorem rankOne_toMatrix (x : E) (y : F) (b : Module.Basis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 F) :
+    (rankOne 𝕜 x y).toMatrix b'.toBasis b = Matrix.vecMulVec (b.repr x) (star (b'.repr y)) := by
+  simp [rankOne_def, LinearMap.toMatrix_comp _ (Module.Basis.singleton Unit 𝕜),
+    ContinuousLinearMap.lsmul_flip_apply_toMatrix, innerSL_apply_toMatrix, Matrix.vecMulVec_eq Unit]
+
+end InnerProductSpace

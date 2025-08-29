@@ -704,6 +704,20 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
   ext
   simp
 
+/-- The range of `f.smulRight x` is the span of `{x}`. -/
+theorem _root_.LinearMap.range_smulRight_apply {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]
+    [DivisionSemiring R] [Module R M] [Module R M₁] {f : M →ₗ[R] R} (hf : f ≠ 0) (x : M₁) :
+    range (f.smulRight x) = Submodule.span R {x} := Submodule.ext fun z => by
+  simp only [LinearMap.mem_range, LinearMap.smulRight_apply, Submodule.mem_span_singleton]
+  refine ⟨fun ⟨w, hw⟩ => ⟨f w, hw ▸ rfl⟩, fun ⟨w, hw⟩ => ?_⟩
+  obtain ⟨y, hy⟩ : ∃ y, f y ≠ 0 := by simpa [Ne, LinearMap.ext_iff] using hf
+  exact ⟨(w * (f y)⁻¹) • y, by simp [hw, mul_assoc, inv_mul_cancel₀ hy]⟩
+
+theorem range_smulRight_apply {R : Type*} [DivisionSemiring R] [Module R M₁] [Module R M₂]
+    [TopologicalSpace R] [ContinuousSMul R M₂] {f : M₁ →L[R] R} (hf : f ≠ 0) (x : M₂) :
+    range (f.smulRight x) = Submodule.span R {x} :=
+  LinearMap.range_smulRight_apply (by simpa [coe_inj, ← coe_zero] using hf) x
+
 section ToSpanSingleton
 
 variable (R₁)
