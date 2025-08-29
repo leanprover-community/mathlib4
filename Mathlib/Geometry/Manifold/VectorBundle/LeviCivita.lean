@@ -496,7 +496,6 @@ lemma leviCivita_rhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   -- simp; abel_nf
   -- sorry
 
-#exit
 lemma leviCivita_rhs'_smulZ [CompleteSpace E] {f : M → ℝ}
     (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     leviCivita_rhs' I X Y (f • Z) = f • leviCivita_rhs' I X Y Z := by
@@ -641,12 +640,14 @@ theorem isLeviCivita_uniqueness [FiniteDimensional ℝ E]
 noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
+  open scoped Classical in
   fun X Y x ↦
+  if hE : Subsingleton E then X x else
   -- Choose a trivialisation of `TM` near `x`.
+  -- Since `E` is non-trivial, `b` is non-empty.
   letI b := Basis.ofVectorSpace ℝ E
-  -- Case distinction: if E is trivial, there is only one choice anyway;
-  -- otherwise, b must be non-trivial.
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+  have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
   have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
     choose r wo using exists_wellOrder _
     exact r
@@ -670,61 +671,72 @@ variable (X Y) in
 -- using e on e.baseSet yields the same result as above.
 lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
     [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) :
-  lcCandidate I M X Y x = lcCandidate_aux I e X Y x := sorry
+    lcCandidate I M X Y x = lcCandidate_aux I e X Y x := by
+  by_cases hE : Subsingleton E
+  · simp [lcCandidate, lcCandidate_aux, hE]
+  · simp only [lcCandidate, lcCandidate_aux, hE, ↓reduceDIte]
+    -- Now, start the real proof.
+    sorry
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e) e.baseSet where
-  addX X X' σ x := by
+  addX X X' σ x hx := by
+    by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
     -- these three sorries seem to be necessary!
     have hX : MDiffAt (T% X) x := sorry
     have hX' : MDiffAt (T% X') x := sorry
     have hσ : MDiffAt (T% σ) x := sorry
-    intro hx
-    unfold lcCandidate_aux
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivita_rhs_addX_apply] <;> try assumption
-    · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
-      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-      set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
-      have : MDiffAt (T% f) x := -- missing API lemma!
-        (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
-          |>.mdifferentiableAt le_rfl
-      sorry -- convert this works, except for different local orders...
+    let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
+    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
+    set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
+    have : MDiffAt (T% f) x := -- missing API lemma!
+      (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
+        |>.mdifferentiableAt le_rfl
+    sorry -- convert this works, except for different local orders...
   smulX X σ g x hx := by
-    unfold lcCandidate_aux
-    dsimp
+    by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
     have hX : MDiff (T% X) := sorry -- might need this (hopefully not!)
     have hg : MDiff g := sorry -- might need this (hopefully not!)
     rw [Finset.smul_sum]
     congr; ext i
-    sorry -- TODO: fix this once all the smul computations are sorry-free!
-    --rw [leviCivita_rhs_smulX _ _ _ hg hX]
-    --simp [← smul_assoc]
+    rw [leviCivita_rhs_smulX] <;> try assumption
+    rotate_left
+    · sorry -- missing hyp!
+    · sorry -- missing hyp!
+    simp [← smul_assoc]
   smul_const_σ X σ a x hx := by
-    unfold lcCandidate_aux
-    dsimp
+    by_cases hE : Subsingleton E; · have : X x = 0 := sorry; simp [lcCandidate_aux, hE, this]
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
     -- want leviCivita_rhs_smulY (with a constant)
     sorry
   addσ X σ σ' x hσ hσ' hx := by
     have hX : MDiffAt (T% X) x := sorry -- missing assumption!
-    unfold lcCandidate_aux
-    dsimp
-    simp [← Finset.sum_add_distrib, ← add_smul]
+    by_cases hE : Subsingleton E; · have : X x = 0 := sorry; simp [lcCandidate_aux, hE, this]
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivita_rhs_addY_apply] <;> try assumption
-    · let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
-      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
-      set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
-      have : MDiffAt (T% f) x := -- missing API lemma!
-        (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
-          |>.mdifferentiableAt le_rfl
-      -- mismatch between different orders; the sorry above
-      convert this <;> sorry
-  leibniz := by
+    let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
+    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
+    set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
+    have : MDiffAt (T% f) x := -- missing API lemma!
+      (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
+        |>.mdifferentiableAt le_rfl
+    -- mismatch between different orders; the sorry above
+    convert this <;> sorry
+  leibniz X σ g x hσ hg hx := by
+    by_cases hE : Subsingleton E
+    · have : X x = 0 := sorry
+      simp [lcCandidate_aux, hE, this]
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
     sorry
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
