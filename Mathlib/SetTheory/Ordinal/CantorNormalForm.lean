@@ -224,7 +224,7 @@ theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o =
     · apply coeff_of_mem_CNF
       rw [CNF.of_le_one hb ho]
       simp
-    · rw [single_eq_of_ne ha.symm]
+    · rw [single_eq_of_ne ha]
       apply coeff_of_not_mem_CNF
       rw [CNF.of_le_one hb ho]
       simpa using ha

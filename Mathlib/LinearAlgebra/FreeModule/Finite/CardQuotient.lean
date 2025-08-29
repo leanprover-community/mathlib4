@@ -70,7 +70,7 @@ theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike 
       smul_eq_mul, mul_one]
     by_cases h : i = j
     · rw [h, Matrix.diagonal_apply_eq, Finsupp.single_eq_same]
-    · rw [Matrix.diagonal_apply_ne _ h, Finsupp.single_eq_of_ne (Ne.symm h)]
+    · rw [Matrix.diagonal_apply_ne _ h, Finsupp.single_eq_of_ne h]
   -- Now we map everything through the linear equiv `M ≃ₗ (ι → ℤ)`,
   -- which maps `(M ⧸ N)` to `Π i, ZMod (a i).nat_abs`.
   haveI : ∀ i, NeZero (a i).natAbs := fun i ↦
