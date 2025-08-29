@@ -2078,8 +2078,6 @@ import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP
-import Mathlib.CategoryTheory.Category.Type.Basic
-import Mathlib.CategoryTheory.Category.Type.Set
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Center.Basic
 import Mathlib.CategoryTheory.Center.Linear
@@ -2767,6 +2765,8 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Yoneda
+import Mathlib.CategoryTheory.Types.Basic
+import Mathlib.CategoryTheory.Types.Set
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Widesubcategory

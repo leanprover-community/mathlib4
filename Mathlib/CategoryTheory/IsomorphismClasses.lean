@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Category.Type.Basic
 import Mathlib.CategoryTheory.Groupoid
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Objects of a category up to an isomorphism

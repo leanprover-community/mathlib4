@@ -6,8 +6,8 @@ Authors: Simon Hudon, Sean Leather
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.CategoryTheory.Category.Type.Basic
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Control.Traversable.Instances
 import Mathlib.Control.Traversable.Lemmas
 import Mathlib.Tactic.AdaptationNote
