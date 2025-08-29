@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.GCDMonoid.Finset
+--import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Finite
@@ -1210,6 +1212,18 @@ lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
   (a, b).orderOf
 
 end Prod
+
+section Tuple
+
+variable {n} {α : (i : Fin n) → Type*}
+  [∀ i, Monoid (α i)]
+  {f : (i : Fin n) → α i}
+
+@[to_additive]
+lemma Tuple.orderOf_eq : orderOf f = Finset.univ.lcm (fun i => orderOf (f i)) := by
+  sorry
+
+end Tuple
 
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
 
