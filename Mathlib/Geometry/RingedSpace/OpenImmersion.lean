@@ -458,8 +458,11 @@ instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
       simp_rw [Category.id_comp]
       rintro (_ | _ | _) <;> symm
-      · erw [Category.comp_id]
-        exact limit.w (cospan f.base g.base) WalkingCospan.Hom.inl
+      · simp only [limit.cone_x, Functor.const_obj_obj, cospan_one, Functor.comp_obj, forget_obj,
+          Functor.mapCone_pt, Functor.mapCone_π_app, PullbackCone.condition_one, forget_map,
+          comp_base, cospan_left, cospan_right, Functor.comp_map, cospan_map_inl, cospan_map_inr,
+          diagramIsoCospan_hom_app, PullbackCone.fst_limit_cone]
+        tauto
       · exact Category.comp_id _
       · exact Category.comp_id _)
 
@@ -578,8 +581,7 @@ instance toLocallyRingedSpace_isOpenImmersion :
 
 @[simp]
 theorem locallyRingedSpace_toLocallyRingedSpace {X Y : LocallyRingedSpace} (f : X ⟶ Y)
-    [LocallyRingedSpace.IsOpenImmersion f] : toLocallyRingedSpace Y f.1 = X := by
-    cases X; delta toLocallyRingedSpace; simp
+    [LocallyRingedSpace.IsOpenImmersion f] : toLocallyRingedSpace Y f.1 = X := rfl
 
 end ToLocallyRingedSpace
 

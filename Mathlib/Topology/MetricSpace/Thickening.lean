@@ -353,7 +353,7 @@ theorem ediam_cthickening_le (ε : ℝ≥0) :
     edist x y ≤ edist x x' + edist y x' := edist_triangle_right _ _ _
     _ ≤ ε + δ + (infEdist y s + EMetric.diam s) :=
       add_le_add hxx'.le (edist_le_infEdist_add_ediam hx')
-    _ ≤ ε + δ + (ε + EMetric.diam s) := add_le_add_left (add_le_add_right hy _) _
+    _ ≤ ε + δ + (ε + EMetric.diam s) := by grw [hy]
     _ = _ := by rw [two_mul]; ac_rfl
 
 theorem ediam_thickening_le (ε : ℝ≥0) : EMetric.diam (thickening ε s) ≤ EMetric.diam s + 2 * ε :=

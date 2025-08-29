@@ -251,17 +251,9 @@ homomorphism.
 @[simps]
 def GradedRing.projZeroRingHom : A →+* A where
   toFun a := decompose 𝒜 a 0
-  map_one' :=
-    -- Porting note: qualified `one_mem`
-    decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
-  map_zero' := by
-    simp only -- Porting note: added
-    rw [decompose_zero]
-    rfl
-  map_add' _ _ := by
-    simp only -- Porting note: added
-    rw [decompose_add]
-    rfl
+  map_one' := decompose_of_mem_same 𝒜 SetLike.GradedOne.one_mem
+  map_zero' := by rw [decompose_zero]; rfl
+  map_add' _ _ := by rw [decompose_add]; rfl
   map_mul' := by
     refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
@@ -280,10 +272,8 @@ def GradedRing.projZeroRingHom : A →+* A where
           · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
           · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he
-        simp only at hd he -- Porting note: added
         simp only [mul_add, decompose_add, add_apply, AddMemClass.coe_add, hd, he]
     · rintro _ _ ha hb _
-      simp only at ha hb -- Porting note: added
       simp only [add_mul, decompose_add, add_apply, AddMemClass.coe_add, ha, hb]
 
 section GradeZero
