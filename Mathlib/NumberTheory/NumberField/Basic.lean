@@ -89,8 +89,6 @@ theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
     to_charZero := inferInstance
     to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
   }
-
-
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
 
