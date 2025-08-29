@@ -25,8 +25,8 @@ It does not (yet!) contain a proof; anyone is welcome to adopt this problem.
   Eisenstein series.
 
 ## References
-* https://arxiv.org/abs/1809.00533
-* https://doi.org/10.1007/s11139-017-9948-8
+* [Milla, *A detailed proof of the Chudnovsky formula*][Milla_2018]
+* [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
 
 -/
 
