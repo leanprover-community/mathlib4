@@ -12,42 +12,41 @@ import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 ## Main results
 
-* `IsUltraUniformity.completion_iff`: a hausdorff completion has a nonarchimedean uniformity
+* `IsUltraUniformity.completion_iff`: a Hausdorff completion has a nonarchimedean uniformity
   iff the underlying space has a nonarchimedean uniformity.
 
 -/
 
-variable {X Y : Type*}
+variable {X Y : Type*} [UniformSpace X] [UniformSpace Y]
 
 open Filter Set Topology Uniformity
 
-lemma IsUltraUniformity.of_isUniformInducing {Y : Type*} [UniformSpace X] [UniformSpace Y]
-    [IsUltraUniformity Y] {f : X → Y} (hf : IsUniformInducing f) :
-    IsUltraUniformity X :=
+lemma IsUniformInducing.isUltraUniformity [IsUltraUniformity Y] {f : X → Y}
+    (hf : IsUniformInducing f) : IsUltraUniformity X :=
   hf.comap_uniformSpace ▸ .comap inferInstance f
 
-lemma IsSymmetricRel.cauchyFilter_gen [UniformSpace X] {s : Set (X × X)} (h : IsSymmetricRel s) :
+lemma IsSymmetricRel.cauchyFilter_gen {s : Set (X × X)} (h : IsSymmetricRel s) :
     IsSymmetricRel (CauchyFilter.gen s) := by
   simp [IsSymmetricRel, CauchyFilter.gen, h.mem_filter_prod_comm]
 
-lemma IsTransitiveRel.cauchyFilter_gen [UniformSpace X] {s : Set (X × X)} (hs : IsTransitiveRel s) :
+lemma IsTransitiveRel.cauchyFilter_gen {s : Set (X × X)} (hs : IsTransitiveRel s) :
     IsTransitiveRel (CauchyFilter.gen s) := by
   simp only [IsTransitiveRel, CauchyFilter.gen, mem_setOf_eq]
   intro f g h hfg hgh
   exact hs.mem_filter_prod_comm hfg hgh
 
-instance IsUltraUniformity.cauchyFilter [UniformSpace X] [IsUltraUniformity X] :
+instance IsUltraUniformity.cauchyFilter [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
   apply mk_of_hasBasis (CauchyFilter.basis_uniformity IsUltraUniformity.hasBasis)
   · exact fun _ ⟨_, hU, _⟩ ↦ hU.cauchyFilter_gen
   · exact fun _ ⟨_, _, hU⟩ ↦ hU.cauchyFilter_gen
 
-lemma IsUltraUniformity.cauchyFilter_iff [UniformSpace X] :
+@[simp] lemma IsUltraUniformity.cauchyFilter_iff :
     IsUltraUniformity (CauchyFilter X) ↔ IsUltraUniformity X :=
-  ⟨fun h ↦ h.of_isUniformInducing CauchyFilter.isUniformInducing_pureCauchy,
+  ⟨fun _ ↦ CauchyFilter.isUniformInducing_pureCauchy.isUltraUniformity,
    fun _ ↦ inferInstance⟩
 
-instance IsUltraUniformity.separationQuotient [UniformSpace X] [IsUltraUniformity X] :
+instance IsUltraUniformity.separationQuotient [IsUltraUniformity X] :
     IsUltraUniformity (SeparationQuotient X) := by
   have := IsUltraUniformity.hasBasis.map
     (Prod.map SeparationQuotient.mk (SeparationQuotient.mk (X := X)))
@@ -65,16 +64,16 @@ instance IsUltraUniformity.separationQuotient [UniformSpace X] [IsUltraUniformit
       exact hc _ hU'
     exact ⟨a, d, hU (hU hab hbc) hcd, by simp, by simp⟩
 
-lemma IsUltraUniformity.separationQuotient_iff [UniformSpace X] :
+@[simp] lemma IsUltraUniformity.separationQuotient_iff :
     IsUltraUniformity (SeparationQuotient X) ↔ IsUltraUniformity X :=
-  ⟨fun h ↦ h.of_isUniformInducing SeparationQuotient.isUniformInducing_mk,
+  ⟨fun _ ↦ SeparationQuotient.isUniformInducing_mk.isUltraUniformity,
    fun _ ↦ inferInstance⟩
 
-lemma IsUltraUniformity.completion_iff [UniformSpace X] :
+@[simp] lemma IsUltraUniformity.completion_iff :
     IsUltraUniformity (UniformSpace.Completion X) ↔ IsUltraUniformity X := by
   rw [iff_comm, ← cauchyFilter_iff, ← separationQuotient_iff]
   exact Iff.rfl
 
-instance IsUltraUniformity.completion [UniformSpace X] [IsUltraUniformity X] :
+instance IsUltraUniformity.completion [IsUltraUniformity X] :
     IsUltraUniformity (UniformSpace.Completion X) :=
   completion_iff.2 inferInstance
