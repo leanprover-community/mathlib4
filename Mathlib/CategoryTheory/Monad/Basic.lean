@@ -269,15 +269,13 @@ variable {C}
 
 /-- An isomorphism of monads gives a natural isomorphism of the underlying functors.
 -/
-/- Porting note: removed `@[simps (rhsMd := semireducible)]`
-and replaced with `@[simps]` in the two declarations below -/
-@[simps!]
+@[simps (rhsMd := .default)]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h
 
 /-- An isomorphism of comonads gives a natural isomorphism of the underlying functors.
 -/
-@[simps!]
+@[simps (rhsMd := .default)]
 def ComonadIso.toNatIso {M N : Comonad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (comonadToFunctor C).mapIso h
 

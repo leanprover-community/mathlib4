@@ -13,9 +13,9 @@ This file contains basic results on applying big operators (product and sum) on 
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
+since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`.
 
 ## Tags

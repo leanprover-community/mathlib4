@@ -45,7 +45,7 @@ consisting of the even permutations.
 
 ## Instances
 
-* The alternating group is a characteristic subgroup of the permutaiton group.
+* The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
 alternating group permutation simple characteristic index
@@ -110,6 +110,13 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
+
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
 
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by

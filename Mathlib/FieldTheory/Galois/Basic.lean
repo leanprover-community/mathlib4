@@ -164,6 +164,12 @@ theorem isGalois_iff_isGalois_top : IsGalois F (⊤ : IntermediateField F E) ↔
 instance isGalois_bot : IsGalois F (⊥ : IntermediateField F E) :=
   (IntermediateField.botEquiv F E).transfer_galois.mpr (IsGalois.self F)
 
+theorem IsGalois.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
+    [Algebra.IsAlgebraic F E] [h : IsGalois F E] {f : F ≃+* M} {g : E ≃+* N}
+    (hcomp : (algebraMap M N).comp f = (g : E →+* N).comp (algebraMap F E)) :
+    IsGalois M N :=
+  isGalois_iff.mpr ⟨Algebra.IsSeparable.of_equiv_equiv f g hcomp, Normal.of_equiv_equiv hcomp⟩
+
 end IsGaloisTower
 
 section GaloisCorrespondence
@@ -478,8 +484,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
   · refine Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) ?_ h2
-    -- Porting note: use unification instead of synthesis for one argument of `algebraMap_eq`
-    rw [Polynomial.splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ _ (_) _ _]
+    rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
     exact sp.splits
 
 theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
