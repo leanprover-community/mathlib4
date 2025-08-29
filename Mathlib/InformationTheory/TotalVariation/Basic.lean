@@ -168,6 +168,16 @@ lemma tvDist_eq_one_sub_lintegral {ζ : Measure 𝓧} [IsProbabilityMeasure μ] 
     tvDist μ ν = 1 - (∫⁻ x, min ((∂μ/∂ζ) x) ((∂ν/∂ζ) x) ∂ζ).toReal := by
   simp [tvDist_eq_min_sub_lintegral hμζ hνζ]
 
+lemma tvDist_eq_min_sub_integral' [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    tvDist μ ν = min (μ.real .univ) (ν.real .univ)
+      - ∫ x, min ((∂μ/∂(μ + ν)) x).toReal ((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν) := by
+  rw [tvDist, toReal_deGrootInfo_eq_min_sub_integral, add_comm μ]
+  simp [Measure.real, boolKernel_comp_measure]
+
+lemma tvDist_eq_one_sub_integral' [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    tvDist μ ν = 1 - ∫ x, min ((∂μ/∂(μ + ν)) x).toReal ((∂ν/∂(μ + ν)) x).toReal ∂(μ + ν) := by
+  simp [tvDist_eq_min_sub_integral']
+
 lemma tvDist_eq_min_sub_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] :
     tvDist μ ν = min (μ.real .univ) (ν.real .univ)
@@ -222,12 +232,15 @@ lemma tvDist_eq_zero_of_le [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hνμ : ν
   rw [tvDist, ENNReal.toReal_eq_zero_iff]
   exact Or.inl <| deGrootInfo_eq_zero_of_le (by simpa)
 
+/-- The total variation between two probability measures is zero iff the measures are equal. -/
 @[simp]
 lemma tvDist_eq_zero_iff [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     tvDist μ ν = 0 ↔ μ = ν := by
   rw [tvDist, ENNReal.toReal_eq_zero_iff]
   simp [deGrootInfo_ne_top, deGrootInfo_eq_zero_iff]
 
+/-- The total variation between two probability measures is one iff the measures are mutually
+singular. -/
 lemma tvDist_eq_one_iff_mutuallySingular [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     tvDist μ ν = 1 ↔ μ ⟂ₘ ν := by
   rw [mutuallySingular_iff_rnDeriv_eq_zero]
@@ -252,6 +265,7 @@ lemma tvDist_eq_one_iff_mutuallySingular [IsProbabilityMeasure μ] [IsProbabilit
     <;> simp_rw [Pi.zero_apply, ← bot_eq_zero, min_eq_bot, bot_eq_zero]
     <;> exact fun x hx ↦ hx
 
+/-- The total variation between two Dirac distributions at different points is one. -/
 lemma tvDist_dirac_of_ne [MeasurableSingletonClass 𝓧] {x y : 𝓧} (h : x ≠ y) :
     tvDist (Measure.dirac x) (Measure.dirac y) = 1 := by
   rw [tvDist_eq_one_iff_mutuallySingular]
