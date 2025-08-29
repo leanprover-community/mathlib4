@@ -28,5 +28,3 @@ theorem Manifold.metrizableSpace {E : Type*} [NormedAddCommGroup E] [NormedSpace
   haveI := I.secondCountableTopology
   haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
   exact metrizableSpace_of_t3_secondCountable M
-@[deprecated (since := "2024-11-11")] alias ManifoldWithCorners.metrizableSpace :=
-  Manifold.metrizableSpace
