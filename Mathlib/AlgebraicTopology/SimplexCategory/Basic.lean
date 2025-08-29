@@ -122,7 +122,7 @@ lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
 def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe 0 ⟨n, n.lt_add_one⟩ (Fin.zero_le _)
+  mkOfLe 0 (Fin.last n) (Fin.zero_le _)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
