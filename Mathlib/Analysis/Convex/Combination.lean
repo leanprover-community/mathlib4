@@ -156,25 +156,26 @@ provided that all weights are non-negative, and the total weight is positive. -/
 theorem Convex.centerMass_mem (hs : Convex R s) :
     (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i ∈ t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s := by
   classical
-  induction' t using Finset.induction with i t hi ht
-  · simp
-  intro h₀ hpos hmem
-  have zi : z i ∈ s := hmem _ (mem_insert_self _ _)
-  have hs₀ : ∀ j ∈ t, 0 ≤ w j := fun j hj => h₀ j <| mem_insert_of_mem hj
-  rw [sum_insert hi] at hpos
-  by_cases hsum_t : ∑ j ∈ t, w j = 0
-  · have ws : ∀ j ∈ t, w j = 0 := (sum_eq_zero_iff_of_nonneg hs₀).1 hsum_t
-    have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
-    simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
-    simp only [hsum_t, add_zero] at hpos
-    rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
-    exact zi
-  · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
-    refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
-    · exact lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t)
-    · intro j hj
-      exact hmem j (mem_insert_of_mem hj)
-    · exact h₀ _ (mem_insert_self _ _)
+  induction t using Finset.induction with
+  | empty => simp
+  | insert i t hi ht =>
+    intro h₀ hpos hmem
+    have zi : z i ∈ s := hmem _ (mem_insert_self _ _)
+    have hs₀ : ∀ j ∈ t, 0 ≤ w j := fun j hj => h₀ j <| mem_insert_of_mem hj
+    rw [sum_insert hi] at hpos
+    by_cases hsum_t : ∑ j ∈ t, w j = 0
+    · have ws : ∀ j ∈ t, w j = 0 := (sum_eq_zero_iff_of_nonneg hs₀).1 hsum_t
+      have wz : ∑ j ∈ t, w j • z j = 0 := sum_eq_zero fun i hi => by simp [ws i hi]
+      simp only [centerMass, sum_insert hi, wz, hsum_t, add_zero]
+      simp only [hsum_t, add_zero] at hpos
+      rw [← mul_smul, inv_mul_cancel₀ (ne_of_gt hpos), one_smul]
+      exact zi
+    · rw [Finset.centerMass_insert _ _ _ hi hsum_t]
+      refine convex_iff_div.1 hs zi (ht hs₀ ?_ ?_) ?_ (sum_nonneg hs₀) hpos
+      · exact lt_of_le_of_ne (sum_nonneg hs₀) (Ne.symm hsum_t)
+      · intro j hj
+        exact hmem j (mem_insert_of_mem hj)
+      · exact h₀ _ (mem_insert_self _ _)
 
 theorem Convex.sum_mem (hs : Convex R s) (h₀ : ∀ i ∈ t, 0 ≤ w i) (h₁ : ∑ i ∈ t, w i = 1)
     (hz : ∀ i ∈ t, z i ∈ s) : (∑ i ∈ t, w i • z i) ∈ s := by

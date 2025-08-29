@@ -94,19 +94,24 @@ section OrderedRing
 
 variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
-/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
+/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval.
+This bijection sends the zeroth vertex `Pi.single 0 1` to `0` and
+the first vertex `Pi.single 1 1` to `1`. -/
 @[simps -fullyApplied]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
-  toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
+  toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
-  invFun x := ⟨![x, 1 - x], Fin.forall_fin_two.2 ⟨x.2.1, sub_nonneg.2 x.2.2⟩,
-    calc
-      ∑ i : Fin 2, ![(x : 𝕜), 1 - x] i = x + (1 - x) := Fin.sum_univ_two _
-      _ = 1 := add_sub_cancel _ _⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
-      calc
-        (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
-        _ = f.1 1 := add_sub_cancel_left _ _
+  invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
+  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| by
+    simp [← (show f.1 0 + f.1 1 = 1 by simpa using f.2.2)]
+
+@[simp]
+lemma stdSimplexEquivIcc_zero :
+    stdSimplexEquivIcc 𝕜 ⟨_, single_mem_stdSimplex 𝕜 0⟩ = 0 := rfl
+
+@[simp]
+lemma stdSimplexEquivIcc_one :
+    stdSimplexEquivIcc 𝕜 ⟨_, single_mem_stdSimplex 𝕜 1⟩ = 1 := rfl
 
 end OrderedRing
 
@@ -126,7 +131,14 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
       fun i _ => mem_range_self i
 
-variable {R}
+/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : `i`. -/
+theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
+    convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
+  convert convexHull_basis_eq_stdSimplex R ι
+  aesop
+
+variable {ι R}
+
 /-- The convex hull of a finite set is the image of the standard simplex in `s → ℝ`
 under the linear map sending each function `w` to `∑ x ∈ s, w x • x`.
 
@@ -136,14 +148,12 @@ to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {E : Type*} [AddCommGroup E] [Module R E]
     {s : Set E} (hs : s.Finite) : convexHull R s =
     haveI := hs.fintype
-    (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
+    (⇑(∑ x : s, (LinearMap.proj (R := R) x).smulRight x.1)) '' stdSimplex R s := by
   classical
   letI := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
-  simp_rw [Function.comp_def]
-  convert Subtype.range_coe.symm
-  simp [LinearMap.sum_apply, ite_smul, Finset.mem_univ]
+  aesop
 
 end Field
 
@@ -182,10 +192,18 @@ is homeomorphic to the unit interval. -/
 @[simps! -fullyApplied]
 def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := stdSimplexEquivIcc ℝ
-  continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _
+  continuous_toFun := .subtype_mk ((continuous_apply 1).comp continuous_subtype_val) _
   continuous_invFun := by
     apply Continuous.subtype_mk
     exact (continuous_pi <| Fin.forall_fin_two.2
-      ⟨continuous_subtype_val, continuous_const.sub continuous_subtype_val⟩)
+      ⟨continuous_const.sub continuous_subtype_val, continuous_subtype_val⟩)
+
+@[simp]
+lemma stdSimplexHomeomorphUnitInterval_zero :
+    stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 0⟩ = 0 := rfl
+
+@[simp]
+lemma stdSimplexHomeomorphUnitInterval_one :
+    stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
 
 end Topology
