@@ -125,7 +125,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         rcases le_sqrt_of_eq_mul e with hm | hk
         · exact a m m2 hm mdvd
         · rw [mul_comm] at e
-          exact a k (Nat.lt_of_mul_lt_mul_right (a := m) ((one_mul m).symm ▸ e ▸ l)) hk ⟨m, e⟩⟩
+          exact a k (Nat.lt_of_mul_lt_mul_right (a := m) (by rwa [one_mul, ← e])) e⟩
 
 theorem prime_iff_not_exists_mul_eq {p : ℕ} :
     p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by
