@@ -323,9 +323,9 @@ end operations
 /-- Bundled `n` times continuously differentiable sections of a vector bundle.
 Denoted as `Cₛ^n⟮I; F, V⟯` within the `Manifold` namespace. -/
 structure ContMDiffSection where
-  /-- The underlying function of this section. -/
+  /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
-  /-- Proof that this section is `C^n`. -/
+  /-- proof that this section is `C^n` -/
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 
