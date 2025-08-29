@@ -3,11 +3,8 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Order.Partition.Equipartition
 
 /-!
@@ -362,14 +359,14 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
     #(turanGraph n r).edgeFinset =
     (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by
   rcases r.eq_zero_or_pos with rfl | hr
-  · conv_rhs => tactic => norm_num
+  · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
     have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
     rw [Fintype.card_fin] at this; convert this; exact turanGraph_zero
   · have ring₁ : ∀ n, (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
         n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := fun n ↦ by
       nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
         show (n % r + r * (n / r) + n % r) * (r * (n / r)) * (r - 1) =
-          (2 * ((n % r) * (n / r) * (r - 1)) + r * (r - 1) * (n / r) ^ 2) * r by ring]
+          (2 * ((n % r) * (n / r) * (r - 1)) + r * (r - 1) * (n / r) ^ 2) * r by grind]
       rw [Nat.mul_div_mul_right _ _ hr, Nat.mul_add_div zero_lt_two]
     rcases lt_or_ge n r with h | h
     · rw [Nat.mod_eq_of_lt h, tsub_self, zero_mul, Nat.zero_div, zero_add]
@@ -385,7 +382,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [← Nat.div_mul_right_comm rd, ← Nat.div_mul_right_comm rd, ← Nat.choose_two_right]
       have ring₂ : n' % r * (n' / r + 1) * (r - 1) + r.choose 2 * (n' / r + 1) ^ 2 =
           n' % r * (n' / r + 1) * (r - 1) + r.choose 2 +
-          r.choose 2 * 2 * (n' / r) + r.choose 2 * (n' / r) ^ 2 := by ring
+          r.choose 2 * 2 * (n' / r) + r.choose 2 * (n' / r) ^ 2 := by grind
       rw [ring₂, ← add_assoc]; congr 1
       rw [← add_rotate, ← add_rotate _ _ (r.choose 2)]; congr 1
       rw [Nat.choose_two_right, Nat.div_mul_cancel rd, mul_add_one, add_mul, ← add_assoc,
@@ -394,35 +391,19 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
 
 /-- A looser (but simpler than `card_edgeFinset_turanGraph`) bound on the number of edges in
 `turanGraph n r`. -/
-theorem card_edgeFinset_turanGraph_le :
-    (#(turanGraph n r).edgeFinset : ℚ) ≤ (1 - 1 / r) * (n ^ 2 / 2) := by
-  have rd : ∀ {m}, 2 ∣ m * (m - 1) := fun {m} ↦ by
-    rw [← even_iff_two_dvd]; exact Nat.even_mul_pred_self m
-  rw [card_edgeFinset_turanGraph, Nat.cast_add, Nat.cast_div_charZero]; swap
-  · nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
-      show (n % r + r * (n / r) + n % r) * (r * (n / r)) * (r - 1) =
-        (2 * ((n % r) * (n / r) * (r - 1)) + r * (r - 1) * (n / r) ^ 2) * r by ring]
-    exact Nat.mul_dvd_mul_right
-      (Nat.dvd_add (Nat.dvd_mul_right ..) (Nat.dvd_mul_right_of_dvd rd _)) _
-  push_cast
-  rcases r.eq_zero_or_pos with rfl | hr
-  · norm_num
-    rw [Nat.choose_two_right, Nat.cast_div_charZero rd, Nat.cast_mul, Nat.cast_ofNat, sq]
-    gcongr; exact Nat.sub_le ..
-  have lm : (n % r) ^ 2 ≤ n ^ 2 := Nat.pow_le_pow_left (Nat.mod_le ..) 2
-  rw [Nat.cast_pred hr, mul_div_mul_comm, Nat.cast_sub lm, ← one_sub_div (by positivity), sub_div,
-    Nat.cast_pow, sub_mul, mul_comm, ← le_sub_iff_add_le]
-  apply sub_le_sub_left
-  rw [Nat.choose_two_right, Nat.cast_div_charZero rd]
-  push_cast
-  rw [sq, mul_comm (n % r : ℚ), mul_div_assoc, mul_div_assoc, ← mul_rotate]
-  gcongr
-  rcases (n % r).eq_zero_or_pos with hm | hm
-  · rw [hm]; norm_num
-  · rw [Nat.cast_pred hm, one_sub_mul, one_div]
-    apply sub_le_sub_left
-    rw [inv_mul_le_one₀ (mod_cast hr), Nat.cast_le]
-    exact (Nat.mod_lt _ hr).le
+theorem mul_card_edgeFinset_turanGraph_le :
+    2 * r * #(turanGraph n r).edgeFinset ≤ (r - 1) * n ^ 2 := by
+  rw [card_edgeFinset_turanGraph, mul_add]
+  apply (Nat.add_le_add_right (Nat.mul_div_le ..) _).trans
+  rw [tsub_mul, ← Nat.sub_add_comm]; swap
+  · exact mul_le_mul_right' (pow_le_pow_left' (Nat.mod_le ..) _) _
+  rw [Nat.sub_le_iff_le_add, mul_comm, Nat.add_le_add_iff_left, Nat.choose_two_right,
+    ← Nat.mul_div_assoc _ (Nat.even_mul_pred_self _).two_dvd, mul_assoc,
+    mul_div_cancel_left₀ _ two_ne_zero, ← mul_assoc, ← mul_rotate, sq, ← mul_rotate (r - 1)]
+  refine mul_le_mul_right' ?_ _
+  rcases r.eq_zero_or_pos with rfl | hr; · omega
+  rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
+  exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
 
 theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     let n := Fintype.card V;
