@@ -199,6 +199,25 @@ theorem T_natDegree [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n
   natDegree_eq_of_degree_eq_some (T_degree R hR n)
 
 @[simp]
+theorem T_leadingCoeff [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℤ) :
+  (T R n).leadingCoeff = 2^(n.natAbs - 1) := by
+  induction n using Chebyshev.induct' with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    have : leadingCoeff (2 : R[X]) = 2 := by
+      change leadingCoeff (C 2) = 2
+      rw [leadingCoeff_C]
+    rw [T_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih1,
+      leadingCoeff_mul, leadingCoeff_X, this]
+    · norm_cast; simp [pow_add, mul_comm]
+    · change (T R n).degree < (C 2 * X * T R (n + 1)).degree
+      rw [mul_assoc, degree_C_mul (Ring.two_ne_zero hR), mul_comm, degree_mul_X,
+        T_degree R hR n, T_degree R hR (n + 1)]
+      norm_cast; omega
+  | neg n ih => simp [T_neg, ih]
+
+@[simp]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -342,7 +361,7 @@ theorem U_degree_neg_one : (U R (-1)).degree = ⊥ := by simp
 theorem U_natDegree_neg_one : (U R (-1)).natDegree = 0 := by simp
 
 @[simp]
-theorem U_degree_nonzero [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2)
+theorem U_degree_ne_neg_one [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2)
   (n : ℤ) (hn : n ≠ -1) : (U R n).degree = ↑((n + 1).natAbs - 1) := by
   obtain ⟨m, hn⟩ := n.eq_nat_or_neg
   cases hn with
@@ -364,7 +383,27 @@ theorem U_natDegree [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n
   (U R n).natDegree = (n + 1).natAbs - 1 := by
   by_cases n = -1
   case pos hn => subst hn; simp
-  case neg hn => exact natDegree_eq_of_degree_eq_some (U_degree_nonzero R hR n hn)
+  case neg hn => exact natDegree_eq_of_degree_eq_some (U_degree_ne_neg_one R hR n hn)
+
+@[simp]
+theorem U_leadingCoeff_nat [Nontrivial R] [NoZeroDivisors R] (hR : ringChar R ≠ 2) (n : ℕ) :
+  (U R n).leadingCoeff = 2^n := by
+  have : leadingCoeff (2 : R[X]) = 2 := by
+    change leadingCoeff (C 2) = 2
+    rw [leadingCoeff_C]
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one => simp [this]
+  | more n ih1 ih2 =>
+    push_cast; push_cast at ih2
+    rw [U_add_two, leadingCoeff_sub_of_degree_lt, leadingCoeff_mul, ih2,
+      leadingCoeff_mul, leadingCoeff_X, this]
+    · norm_cast; rw [pow_add, pow_add]; ring_nf
+    · change (U R n).degree < (C 2 * X * U R (n + 1)).degree
+      norm_cast
+      rw [mul_assoc, degree_C_mul (Ring.two_ne_zero hR), mul_comm, degree_mul_X,
+        U_degree_nat R hR n, U_degree_nat R hR (n + 1)]
+      norm_cast; omega
 
 @[simp]
 theorem U_eval_neg (n : ℕ) (x : R) : (U R n).eval (-x) = (n : ℤ).negOnePow * (U R n).eval x := by

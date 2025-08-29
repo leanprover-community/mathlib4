@@ -6,6 +6,7 @@ Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Yuva
 import Mathlib.RingTheory.Polynomial.Chebyshev.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
 # Chebyshev polynomials
@@ -14,6 +15,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 * Trigonometric identities satisfied by Chebyshev polynomials:
   `Polynomial.Chebyshev.T_cos`, `Polynomial.Chebyshev.U_cos`
+* T is bounded in [-1, 1]: `Polynomial.Chebyshev.T_bounded`
 
 ## TODO
 
@@ -36,6 +38,13 @@ theorem T_cos (n : ℤ) (θ : ℝ) : (T ℝ n).eval (cos θ) = cos (n * θ) := b
     rw [Real.cos_add_cos, mul_assoc, mul_comm θ.cos, ←mul_assoc]
     push_cast; congr 3 <;> ring
   | neg n ih => simp [T_neg, ih]
+
+-- The converse also holds (for n ≠ 0) but is more difficult to prove
+theorem T_bounded (n : ℤ) (x : ℝ) (hx : x ∈ Set.Icc (-1) 1) :
+  (T ℝ n).eval x ∈ Set.Icc (-1) 1 := by
+  rw [Set.mem_Icc] at hx
+  rw [←cos_arccos hx.1 hx.2, T_cos]
+  apply cos_mem_Icc
 
 theorem U_cos (n : ℤ) (θ : ℝ) : (U ℝ n).eval (cos θ) * sin θ = sin ((n+1) * θ) := by
   induction n using Chebyshev.induct with
