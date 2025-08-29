@@ -42,7 +42,7 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 We define a few constructions of smooth manifolds:
 * every empty type is a smooth manifold
-* `IsManifold.of_discreteTopoloy`: a discrete space is a smooth manifold
+* `IsManifold.of_discreteTopology`: a discrete space is a smooth manifold
   (over the trivial model with corners on the trivial space)
 * the product of two smooth manifolds
 * the disjoint union of two manifolds (over the same charted space)
