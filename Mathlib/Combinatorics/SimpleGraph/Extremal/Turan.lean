@@ -313,7 +313,7 @@ theorem isTuranMaximal_iff_nonempty_iso_turanGraph (hr : 0 < r) :
 /-! ### Number of edges in the Turán graph -/
 
 private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
-    (∑ w ∈ range r, if c % r ≠ (n + w) % r then 1 else 0) = r - 1 := by
+    ∑ w ∈ range r, (if c % r ≠ (n + w) % r then 1 else 0) = r - 1 := by
   rcases r.eq_zero_or_pos with rfl | hr; · simp
   suffices #{i ∈ range r | c % r = (n + i) % r} = 1 by
     rw [← card_filter, ← this]; apply Nat.eq_sub_of_add_eq'
@@ -323,7 +323,7 @@ private lemma sum_ne_add_mod_eq_sub_one {c : ℕ} :
     rw [card_le_one_iff]; intro w x mw mx
     simp only [mem_filter, mem_range] at mw mx
     have := mw.2.symm.trans mx.2
-    rw [Nat.ModEq.add_left_cancel_iff] at this
+    rw [Nat.ModEq.add_iff_left rfl] at this
     change w % r = x % r at this
     rwa [Nat.mod_eq_of_lt mw.1, Nat.mod_eq_of_lt mx.1] at this
   · rw [one_le_card]; use ((r - 1) * n + c) % r

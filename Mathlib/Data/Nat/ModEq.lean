@@ -141,8 +141,9 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_left_cancel h
 
-protected theorem add_left_cancel_iff (c : ℕ) : c + a ≡ c + b [MOD n] ↔ a ≡ b [MOD n] :=
-  ⟨ModEq.add_left_cancel rfl, ModEq.add_left _⟩
+@[simp]
+protected theorem add_iff_left (h : a ≡ b [MOD n]) : a + c ≡ b + d [MOD n] ↔ c ≡ d [MOD n] :=
+  ⟨h.add_left_cancel, h.add⟩
 
 protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     a ≡ b [MOD n] := by
@@ -152,8 +153,9 @@ protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b 
 protected theorem add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_right_cancel h
 
-protected theorem add_right_cancel_iff (c : ℕ) : a + c ≡ b + c [MOD n] ↔ a ≡ b [MOD n] :=
-  ⟨ModEq.add_right_cancel rfl, ModEq.add_right _⟩
+@[simp]
+protected theorem add_iff_right (h : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] ↔ a ≡ b [MOD n] :=
+  ⟨h.add_right_cancel, (.add · h)⟩
 
 protected lemma sub' (h : c ≤ a ↔ d ≤ b) (hab : a ≡ b [MOD n]) (hcd : c ≡ d [MOD n]) :
     a - c ≡ b - d [MOD n] := by
