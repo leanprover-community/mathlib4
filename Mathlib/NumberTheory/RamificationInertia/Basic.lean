@@ -279,10 +279,12 @@ theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsMaximal] :
   nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
   rw [inertiaDeg, dif_pos (over_def P p).symm]
 
-theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S]
-    [P.LiesOver p] : 0 < inertiaDeg p P :=
+theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
   haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
+theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
+  (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
 
 lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
     inertiaDeg p (P.comap e) = inertiaDeg p P := by

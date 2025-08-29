@@ -203,10 +203,12 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
 /-- Explicit formula for the Beta function when second argument is a positive integer. -/
 theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) :
     betaIntegral u (n + 1) = n ! / ∏ j ∈ Finset.range (n + 1), (u + j) := by
-  induction' n with n IH generalizing u
-  · rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
+  induction n generalizing u with
+  | zero =>
+    rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
     simp
-  · have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
+  | succ n IH =>
+    have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
     swap; · rw [← ofReal_natCast, ofReal_re]; positivity
     rw [mul_comm u _, ← eq_div_iff] at this
     swap; · contrapose! hu; rw [hu, zero_re]
@@ -322,14 +324,15 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
   · intro n
     rw [ae_restrict_iff' measurableSet_Ioi]
     filter_upwards with x hx
-    dsimp only [f]
+    simp only [mem_Ioi, f] at hx ⊢
     rcases lt_or_ge (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
       exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le₀ hxn <| by positivity) _),
-          norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re, mul_le_mul_right (rpow_pos_of_pos hx _)]
+          norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
+      gcongr
       exact one_sub_div_pow_le_exp_neg hxn
 
 /-- Euler's limit formula for the complex Gamma function. -/
@@ -343,17 +346,15 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
     · refine (Nat.lt_floor_add_one _).trans_le ?_
       rw [sub_eq_neg_add, Nat.floor_add_one (neg_nonneg.mpr hs), Nat.cast_add_one]
   intro m
-  induction' m with m IH generalizing s
-  · -- Base case: `0 < re s`, so Gamma is given by the integral formula
-    intro hs
+  induction m generalizing s with intro hs
+  | zero => -- Base case: `0 < re s`, so Gamma is given by the integral formula
     rw [Nat.cast_zero, neg_zero] at hs
     rw [← Gamma_eq_GammaAux]
     · refine Tendsto.congr' ?_ (approx_Gamma_integral_tendsto_Gamma_integral hs)
       refine (eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn => ?_)
       exact (GammaSeq_eq_approx_Gamma_integral hs hn).symm
     · rwa [Nat.cast_zero, neg_lt_zero]
-  · -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
-    intro hs
+  | succ m IH => -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
     rw [Nat.cast_succ, neg_add, ← sub_eq_add_neg, sub_lt_iff_lt_add, ← one_re, ← add_re] at hs
     rw [GammaAux]
     have := @Tendsto.congr' _ _ _ ?_ _ _
