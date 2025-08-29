@@ -6,7 +6,6 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Module.End
 import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
