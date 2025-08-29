@@ -68,7 +68,7 @@ abbrev convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (C →ₗ[R] A)
 
 scoped[ConvolutionProduct] attribute [instance] LinearMap.convNonUnitalNonAssocSemiring
 
-@[simp] lemma toSpanSingleton_mul_toSpanSingleton (x y : A) :
+@[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toSpanSingleton R A x * toSpanSingleton R A y = toSpanSingleton R A (x * y) := by ext; simp
 
 end NonUnitalNonAssocSemiring
