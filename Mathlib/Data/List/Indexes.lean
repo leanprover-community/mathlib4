@@ -47,7 +47,6 @@ end MapIdx
 
 section MapIdxM'
 
--- Porting note: `[Applicative m] [LawfulApplicative m]` replaced by [Monad m] [LawfulMonad m]
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α) (arr : Array PUnit) :

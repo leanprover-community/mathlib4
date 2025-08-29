@@ -157,7 +157,7 @@ def destruct (s : Seq α) : Option (Seq1 α) :=
   (fun a' => (a', s.tail)) <$> get? s 0
 
 -- Porting note: needed universe annotation to avoid universe issues
-theorem head_eq_destruct (s : Seq α) : head.{u} s = Prod.fst.{u} <$> destruct.{u} s := by
+theorem head_eq_destruct (s : Seq α) : head s = Prod.fst <$> destruct.{u} s := by
   unfold destruct head; cases get? s 0 <;> rfl
 
 @[simp]
