@@ -136,7 +136,7 @@ theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E}
   apply norm_eq_zero.mp <| le_antisymm _ (norm_nonneg (f x))
   calc ‖f x‖
     _ ≤ gronwallBound 0 K 0 (x - a) :=
-    norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
+      norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
     _ = 0 := by rw [gronwallBound_ε0_δ0]
 
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
