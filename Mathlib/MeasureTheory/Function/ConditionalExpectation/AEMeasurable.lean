@@ -315,10 +315,6 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
     CompleteSpace (lpMeasSubgroup F m p μ) := by
   rw [(lpMeasSubgroupToLpTrimIso F p μ hm.elim).completeSpace_iff]; infer_instance
 
--- For now just no-lint this; lean4's tree-based logging will make this easier to debug.
--- One possible change might be to generalize `𝕜` from `RCLike` to `NormedField`, as this
--- result may well hold there.
--- Porting note: removed @[nolint fails_quickly]
 instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
     CompleteSpace (lpMeas F 𝕜 m p μ) := by
   rw [(lpMeasSubgroupToLpMeasIso F 𝕜 p μ).symm.completeSpace_iff]; infer_instance
