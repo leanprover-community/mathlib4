@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
@@ -292,7 +293,7 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   rintro x ⟨dx, hd⟩
   revert x dx
   rw [Multiplicative.ofAdd.surjective.forall₂]
-  intros x dx h
+  intro x dx h
   simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
   cases x
   · simp [isUnit_one]
@@ -478,6 +479,19 @@ example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
+
 end mod
 
 section num_den
@@ -496,6 +510,7 @@ example : Real.sqrt 25 = 5 := by norm_num
 example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (0.25) = 1/2 := by norm_num
 example : NNReal.sqrt 25 = 5 := by norm_num
+example : NNReal.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (-37) = 0 := by norm_num
 example : Real.sqrt (-5 / 3) = 0 := by norm_num
 example : Real.sqrt 0 = 0 := by norm_num

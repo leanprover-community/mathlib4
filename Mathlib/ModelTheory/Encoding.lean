@@ -218,7 +218,6 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
     induction l with
     | nil =>
-      rw [List.flatMap_nil]
       simp [listDecode]
     | cons φ l ih => rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩

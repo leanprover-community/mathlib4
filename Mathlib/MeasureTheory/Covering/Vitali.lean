@@ -145,14 +145,10 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
       · refine ⟨b, mem_insert _ _, hcb, ?_⟩
         calc
           δ c ≤ m := le_csSup bddA (mem_image_of_mem _ ⟨ct, H⟩)
-          _ = τ * (m / τ) := by field_simp [(zero_lt_one.trans hτ).ne']
+          _ = τ * (m / τ) := by field_simp
           _ ≤ τ * δ b := by gcongr
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
-
-@[deprecated (since := "2024-12-25")]
-alias exists_disjoint_subfamily_covering_enlargment :=
-  exists_disjoint_subfamily_covering_enlargement
 
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
@@ -188,10 +184,6 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
-
-@[deprecated (since := "2024-12-25")]
-alias exists_disjoint_subfamily_covering_enlargment_closedBall :=
-  exists_disjoint_subfamily_covering_enlargement_closedBall
 
 /-- The measurable **Vitali covering theorem**.
 
