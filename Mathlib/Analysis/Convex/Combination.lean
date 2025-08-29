@@ -457,45 +457,6 @@ theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
     convexHull R (∑ i ∈ s, t i) = ∑ i ∈ s, convexHull R (t i) :=
   map_sum (convexHullAddMonoidHom R E) _ _
 
-/-! ### `stdSimplex` -/
-
-
-variable (ι) [Fintype ι] {f : ι → R}
-
-/-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
-theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
-    convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
-  refine Subset.antisymm (convexHull_min ?_ (convex_stdSimplex R ι)) ?_
-  · rintro _ ⟨i, rfl⟩
-    exact ite_eq_mem_stdSimplex R i
-  · rintro w ⟨hw₀, hw₁⟩
-    rw [pi_eq_sum_univ w, ← Finset.univ.centerMass_eq_of_sum_1 _ hw₁]
-    exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
-      fun i _ => mem_range_self i
-
-variable {ι}
-
-/-- The convex hull of a finite set is the image of the standard simplex in `s → ℝ`
-under the linear map sending each function `w` to `∑ x ∈ s, w x • x`.
-
-Since we have no sums over finite sets, we use sum over `@Finset.univ _ hs.fintype`.
-The map is defined in terms of operations on `(s → ℝ) →ₗ[ℝ] ℝ` so that later we will not need
-to prove that this map is linear. -/
-theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull R s =
-    haveI := hs.fintype
-    (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
-  classical
-  letI := hs.fintype
-  rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
-  apply congr_arg
-  simp_rw [Function.comp_def]
-  convert Subtype.range_coe.symm
-  simp [LinearMap.sum_apply, ite_smul, Finset.mem_univ]
-
-/-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/
-theorem mem_Icc_of_mem_stdSimplex (hf : f ∈ stdSimplex R ι) (x) : f x ∈ Icc (0 : R) 1 :=
-  ⟨hf.1 x, hf.2 ▸ Finset.single_le_sum (fun y _ => hf.1 y) (Finset.mem_univ x)⟩
-
 /-- The convex hull of an affine basis is the intersection of the half-spaces defined by the
 corresponding barycentric coordinates. -/
 theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι R E) :

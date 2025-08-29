@@ -12,15 +12,12 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
-# Convex sets and functions in vector spaces
+# Convex sets
 
-In a 𝕜-vector space, we define the following objects and properties.
+In a 𝕜-vector space, we define the following property:
 * `Convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
-* `stdSimplex 𝕜 ι`: The standard simplex in `ι → 𝕜` (currently requires `Fintype ι`). It is the
-  intersection of the positive quadrant with the hyperplane `s.sum = 1`.
 
-We also provide various equivalent versions of the definitions above, prove that some specific sets
-are convex.
+We provide various equivalent versions, and prove that some specific sets are convex.
 
 ## TODO
 
@@ -583,93 +580,3 @@ protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K 
   K.convex K.zero_mem
 
 end Submodule
-
-/-! ### Simplex -/
-
-
-section Simplex
-
-section OrderedSemiring
-
-variable (𝕜) (ι : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [Fintype ι]
-
-/-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
-coordinates with total sum `1`. This is the free object in the category of convex spaces. -/
-def stdSimplex : Set (ι → 𝕜) :=
-  { f | (∀ x, 0 ≤ f x) ∧ ∑ x, f x = 1 }
-
-theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
-  ext f
-  simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
-
-theorem convex_stdSimplex [IsOrderedRing 𝕜] : Convex 𝕜 (stdSimplex 𝕜 ι) := by
-  refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
-  · apply_rules [add_nonneg, mul_nonneg, hf.1, hg.1]
-  · simp_rw [Pi.add_apply, Pi.smul_apply]
-    rwa [Finset.sum_add_distrib, ← Finset.smul_sum, ← Finset.smul_sum, hf.2, hg.2, smul_eq_mul,
-      smul_eq_mul, mul_one, mul_one]
-
-@[nontriviality] lemma stdSimplex_of_subsingleton [Subsingleton 𝕜] : stdSimplex 𝕜 ι = univ :=
-  eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
-
-/-- The standard simplex in the zero-dimensional space is empty. -/
-lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
-  eq_empty_of_forall_notMem <| by rintro f ⟨-, hf⟩; simp at hf
-
-lemma stdSimplex_unique [ZeroLEOneClass 𝕜] [Nonempty ι] [Subsingleton ι] :
-    stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
-  cases nonempty_unique ι
-  refine eq_singleton_iff_unique_mem.2 ⟨⟨fun _ ↦ zero_le_one, Fintype.sum_unique _⟩, ?_⟩
-  rintro f ⟨-, hf⟩
-  rw [Fintype.sum_unique] at hf
-  exact funext (Unique.forall_iff.2 hf)
-
-variable {ι} [DecidableEq ι] [ZeroLEOneClass 𝕜]
-
-theorem single_mem_stdSimplex (i : ι) : Pi.single i 1 ∈ stdSimplex 𝕜 ι :=
-  ⟨le_update_iff.2 ⟨zero_le_one, fun _ _ ↦ le_rfl⟩, by simp⟩
-
-theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ stdSimplex 𝕜 ι := by
-  simpa only [@eq_comm _ i, ← Pi.single_apply] using single_mem_stdSimplex 𝕜 i
-
-variable [IsOrderedRing 𝕜]
-
-#adaptation_note /-- nightly-2024-03-11
-we need a type annotation on the segment in the following two lemmas. -/
-
-/-- The edges are contained in the simplex. -/
-lemma segment_single_subset_stdSimplex (i j : ι) :
-    ([Pi.single i 1 -[𝕜] Pi.single j 1] : Set (ι → 𝕜)) ⊆ stdSimplex 𝕜 ι :=
-  (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
-
-lemma stdSimplex_fin_two :
-    stdSimplex 𝕜 (Fin 2) = ([Pi.single 0 1 -[𝕜] Pi.single 1 1] : Set (Fin 2 → 𝕜)) := by
-  refine Subset.antisymm ?_ (segment_single_subset_stdSimplex 𝕜 (0 : Fin 2) 1)
-  rintro f ⟨hf₀, hf₁⟩
-  rw [Fin.sum_univ_two] at hf₁
-  refine ⟨f 0, f 1, hf₀ 0, hf₀ 1, hf₁, funext <| Fin.forall_fin_two.2 ?_⟩
-  simp
-
-end OrderedSemiring
-
-section OrderedRing
-
-variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-
-/-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
-@[simps -fullyApplied]
-def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
-  toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
-    Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
-  invFun x := ⟨![x, 1 - x], Fin.forall_fin_two.2 ⟨x.2.1, sub_nonneg.2 x.2.2⟩,
-    calc
-      ∑ i : Fin 2, ![(x : 𝕜), 1 - x] i = x + (1 - x) := Fin.sum_univ_two _
-      _ = 1 := add_sub_cancel _ _⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| .intro rfl <|
-      calc
-        (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
-        _ = f.1 1 := add_sub_cancel_left _ _
-
-end OrderedRing
-
-end Simplex
