@@ -276,6 +276,9 @@ def Zag (j₁ j₂ : J) : Prop :=
 
 @[refl] theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
 
+/-- The same as `Zag.refl` but with the argument implicit -/
+theorem Zag.rfl {X : J} : Zag X X := Zag.refl X
+
 theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 
 @[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
@@ -298,6 +301,9 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
   (fun h g => Relation.transitive_reflTransGen h g)
 
 @[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
+
+/-- The same as `Zigzag.refl` but with the argument implicit. -/
+theorem Zigzag.rfl {X : J} : Zigzag X X := Zigzag.refl X
 
 @[symm] theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
 

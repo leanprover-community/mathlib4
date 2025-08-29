@@ -156,9 +156,9 @@ variable (T : Type*) [Category T]
 @[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]
 def associativityFunctorEquivNaturalityFunctorIso :
     ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
-      Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
+      Equivalence.rfl.prod <| Sum.functorEquiv _ _ B).functor ≅
         (Sum.functorEquiv (A ⊕ A') T B).trans
-          ((Sum.functorEquiv A A' B).prod Equivalence.refl)|>.trans
+          ((Sum.functorEquiv A A' B).prod Equivalence.rfl)|>.trans
             (prod.associativity _ _ _)|>.functor :=
   NatIso.ofComponents (fun E ↦ Iso.prod
     ((Functor.associator _ _ _).symm ≪≫

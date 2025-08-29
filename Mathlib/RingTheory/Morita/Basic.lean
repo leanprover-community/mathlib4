@@ -71,7 +71,7 @@ instance {A : Type u₁} [Ring A] [Algebra R A] {B : Type u₂} [Ring B] [Algebr
 For any `R`-algebra `A`, `A` is Morita equivalent to itself.
 -/
 def refl (A : Type u₁) [Ring A] [Algebra R A] : MoritaEquivalence R A A where
-  eqv := CategoryTheory.Equivalence.refl
+  eqv := CategoryTheory.Equivalence.rfl
   linear := Functor.instLinearId
 
 /--
