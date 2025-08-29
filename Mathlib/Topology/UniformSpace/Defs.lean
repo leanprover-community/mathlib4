@@ -214,12 +214,6 @@ def IsSymmetricRel (V : Set (α × α)) : Prop :=
 @[deprecated (since := "2025-03-05")]
 alias SymmetricRel := IsSymmetricRel
 
-lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
-  simp [IsSymmetricRel, idRel, eq_comm]
-
-lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) :=
-  preimage_univ
-
 /-- The maximal symmetric relation contained in a given relation. -/
 def symmetrizeRel (V : Set (α × α)) : Set (α × α) :=
   V ∩ Prod.swap ⁻¹' V
