@@ -477,7 +477,8 @@ theorem diophFn_compn :
                 reindex_diophFn inl df)
               fun v => by
                 dsimp
-                -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x` but that does not work.
+                -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x`
+                -- but that does not work.
                 congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
