@@ -140,7 +140,7 @@ variable {c₁ : Cocone K₁} (hc₁ : IsColimit c₁)
   (hc₃ : IsColimit c₃)
 
 /-- Characterize the inverse direction of the isomorphism
-`PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t the canonical maps to the colimit. -/
+`PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
 lemma ι_comp_isoObjConePointsOfIsColimit_inv (j : J₁ × J₂) :
     c₃.ι.app j ≫
@@ -150,7 +150,7 @@ lemma ι_comp_isoObjConePointsOfIsColimit_inv (j : J₁ × J₂) :
   cat_disch
 
 /-- Characterize the forward direction of the isomorphism
-`PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t the canonical maps to the colimit. -/
+`PreservesColimit₂.isoObjCoconePointsOfIsColimit` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
 lemma map_ι_comp_isoObjConePointsOfIsColimit_hom (j : J₁ × J₂) :
     (G.map (c₁.ι.app j.1)).app (K₂.obj j.2) ≫ (G.obj c₁.pt).map (c₂.ι.app j.2) ≫
@@ -176,7 +176,7 @@ noncomputable def isoColimitUncurryWhiskeringLeft₂ :
     (colimit.isColimit _) (colimit.isColimit _) (colimit.isColimit _)|>.symm
 
 /-- Characterize the forward direction of the isomorphism
-`PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` w.r.t the canonical maps to the colimit. -/
+`PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
 lemma ι_comp_isoColimitUncurryWhiskeringLeft₂_hom (j : J₁ × J₂) :
     colimit.ι (uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G)) j ≫
@@ -186,7 +186,7 @@ lemma ι_comp_isoColimitUncurryWhiskeringLeft₂_hom (j : J₁ × J₂) :
     (colimit.isColimit _) (colimit.isColimit _) (colimit.isColimit _) j
 
 /-- Characterize the forward direction of the isomorphism
-`PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` w.r.t the canonical maps to the colimit. -/
+`PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂` w.r.t. the canonical maps to the colimit. -/
 @[reassoc (attr := simp)]
 lemma map_ι_comp_isoColimitUncurryWhiskeringLeft₂_inv (j : J₁ × J₂) :
     (G.map (colimit.ι K₁ j.1)).app (K₂.obj j.2) ≫ (G.obj <| colimit K₁).map (colimit.ι K₂ j.2) ≫
@@ -268,7 +268,7 @@ variable {c₁ : Cone K₁} (hc₁ : IsLimit c₁)
   (hc₃ : IsLimit c₃)
 
 /-- Characterize the forward direction of the isomorphism
-`PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t the canonical maps to the limit. -/
+`PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]
 lemma isoObjConePointsOfIsLimit_hom_comp_π (j : J₁ × J₂) :
     (isoObjConePointsOfIsLimit G hc₁ hc₂ hc₃).hom ≫ c₃.π.app j =
@@ -277,7 +277,7 @@ lemma isoObjConePointsOfIsLimit_hom_comp_π (j : J₁ × J₂) :
   cat_disch
 
 /-- Characterize the inverse direction of the isomorphism
-`PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t the canonical maps to the limit. -/
+`PreservesLimit₂.isoObjConePointsOfIsLimit` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]
 lemma isoObjConePointsOfIsColimit_inv_comp_map_π (j : J₁ × J₂) :
     (isoObjConePointsOfIsLimit G hc₁ hc₂ hc₃).inv ≫
@@ -303,7 +303,7 @@ noncomputable def isoLimitUncurryWhiskeringLeft₂ :
     (limit.isLimit _) (limit.isLimit _) (limit.isLimit _)|>.symm
 
 /-- Characterize the inverse direction of the isomorphism
-`PreservesLimit₂.isoLimitUncurryWhiskeringLeft₂` w.r.t the canonical maps to the limit. -/
+`PreservesLimit₂.isoLimitUncurryWhiskeringLeft₂` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]
 lemma isoLimitUncurryWhiskeringLeft₂_inv_comp_π (j : J₁ × J₂) :
     (PreservesLimit₂.isoLimitUncurryWhiskeringLeft₂ K₁ K₂ G).inv ≫
@@ -313,7 +313,7 @@ lemma isoLimitUncurryWhiskeringLeft₂_inv_comp_π (j : J₁ × J₂) :
     (limit.isLimit _) (limit.isLimit _) (limit.isLimit _) _
 
 /-- Characterize the forward direction of the isomorphism
-`PreservesLimit₂.isoLimitUncurryWhiskeringLeft₂` w.r.t the canonical maps to the limit. -/
+`PreservesLimit₂.isoLimitUncurryWhiskeringLeft₂` w.r.t. the canonical maps to the limit. -/
 @[reassoc (attr := simp)]
 lemma isoLimitUncurryWhiskeringLeft₂_hom_comp_map_π (j : J₁ × J₂) :
     (PreservesLimit₂.isoLimitUncurryWhiskeringLeft₂ K₁ K₂ G).hom ≫

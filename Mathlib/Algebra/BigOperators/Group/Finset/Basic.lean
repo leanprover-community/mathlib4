@@ -382,8 +382,8 @@ lemma prod_congr_of_eq_on_inter {ι M : Type*} {s₁ s₂ : Finset ι} {f g : ι
     (h : ∀ a ∈ s₁, a ∈ s₂ → f a = g a) :
     ∏ a ∈ s₁, f a = ∏ a ∈ s₂, g a := by
   classical
-  conv_lhs => rw [← sdiff_union_inter s₁ s₂, prod_union_eq_right (by aesop)]
-  conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by aesop), inter_comm]
+  conv_lhs => rw [← sdiff_union_inter s₁ s₂, prod_union_eq_right (by simp_all)]
+  conv_rhs => rw [← sdiff_union_inter s₂ s₁, prod_union_eq_right (by simp_all), inter_comm]
   exact prod_congr rfl (by simpa)
 
 @[to_additive]
@@ -504,7 +504,7 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
     _ = ∏ x ∈ t, g x := prod_filter_ne_one _
   · grind
   · solve_by_elim
-  · intros b hb
+  · intro b hb
     refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩
@@ -960,10 +960,6 @@ theorem card_eq_sum_card_image [DecidableEq M] (f : ι → M) (s : Finset ι) :
     #s = ∑ b ∈ s.image f, #{a ∈ s | f a = b} :=
   card_eq_sum_card_fiberwise fun _ => mem_image_of_mem _
 
-theorem mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
-    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := by
-  induction s using Finset.cons_induction with grind
-
 end Nat
 end Finset
 
@@ -1042,8 +1038,13 @@ end List
 namespace Multiset
 
 @[simp]
-lemma mem_sum {s : Finset ι} {m : ι → Multiset ι} : a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
-  induction s using Finset.cons_induction <;> simp [*]
+lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
+    a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
+  induction s using Finset.cons_induction with grind
+
+@[deprecated Multiset.mem_sum (since := "2025-08-24")]
+theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
+    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
 
 variable [DecidableEq ι]
 

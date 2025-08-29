@@ -19,7 +19,7 @@ non-commutative monoids.
 ## Notations
 
 This file declares the notations:
-- `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the locale `nonZeroDivisors`.
+- `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the scope `nonZeroDivisors`.
 - `M₀⁰[M]` for the submonoid of non-zero smul-divisors of `M₀` with respect to `M`, in the locale
   `nonZeroSMulDivisors`
 
@@ -77,7 +77,7 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = {x : M₀ | x ≠ 0} := by
   ext x
   simp only [SetLike.mem_coe, mem_nonZeroDivisorsLeft_iff, mul_eq_zero, Set.mem_setOf_eq]
-  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
+  refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by simp_all⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
 
