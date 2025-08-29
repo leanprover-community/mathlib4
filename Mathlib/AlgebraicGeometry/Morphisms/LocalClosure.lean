@@ -8,7 +8,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 /-!
 # Local closure of morphism properties
 
-We define the source local closure of a property `P` wrt. a morphism property `W` and show it
+We define the source local closure of a property `P` w.r.t. a morphism property `W` and show it
 inherits stability properties from `P`.
 -/
 

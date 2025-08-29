@@ -140,12 +140,12 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       (by intro a ha; simp [ha.1])]
     rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
         (Eventually.of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
-    · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in (0)..x, r * rexp (-(r * a)) := by
+    · have : ∫ a in uIoc 0 x, r * rexp (-(r * a)) = ∫ a in 0..x, r * rexp (-(r * a)) := by
         rw [intervalIntegral.intervalIntegral_eq_integral_uIoc, smul_eq_mul, if_pos h, one_mul]
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
       rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
-      · rw [ENNReal.toReal_ofReal_eq_iff.2 (by norm_num; positivity)]
+      · rw [ENNReal.toReal_ofReal_eq_iff.2 (by simp; positivity)]
         norm_num; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
