@@ -3,6 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Nat.Prime.Basic
@@ -130,5 +132,11 @@ theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map 
 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
+
+variable {α : (i : Fin n) → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
+
+theorem Tuple.minimalPeriod :
+    minimalPeriod sorry x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
+  sorry
 
 end Function

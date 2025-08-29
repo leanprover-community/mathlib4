@@ -1217,7 +1217,7 @@ section Tuple
 
 variable {n} {α : (i : Fin n) → Type*}
   [∀ i, Monoid (α i)]
-  {f : (i : Fin n) → α i}
+  {f : ∀ i, α i}
 
 -- alternative name: `Tuple.orderOf_mk`
 @[to_additive]
