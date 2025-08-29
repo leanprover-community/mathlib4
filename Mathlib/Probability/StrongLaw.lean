@@ -457,11 +457,8 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         exact div_nonneg (variance_nonneg _ _) (sq_nonneg _)
       _ ≤ ENNReal.ofReal (ε⁻¹ ^ 2 * C) := by
         apply ENNReal.ofReal_le_ofReal
-        -- Porting note: do most of the rewrites under `conv` so as not to expand `variance`
-        conv_lhs =>
-          enter [2, i]
-          rw [div_eq_inv_mul, ← inv_pow, mul_inv, mul_comm _ ε⁻¹, mul_pow, mul_assoc]
-        rw [← mul_sum]
+        simp_rw [div_eq_inv_mul, ← inv_pow, mul_inv, mul_comm _ (ε⁻¹), mul_pow, mul_assoc,
+          ← mul_sum]
         refine mul_le_mul_of_nonneg_left ?_ (sq_nonneg _)
         conv_lhs => enter [2, i]; rw [inv_pow]
         exact I2 N
