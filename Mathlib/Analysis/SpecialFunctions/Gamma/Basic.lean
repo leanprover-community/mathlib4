@@ -54,9 +54,7 @@ theorem Gamma_integrand_isLittleO (s : ℝ) :
   have : (fun x : ℝ => exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
       (fun x : ℝ => exp (1 / 2 * x) / x ^ s)⁻¹ := by
     ext1 x
-    field_simp [exp_ne_zero, exp_neg, ← Real.exp_add]
-    left
-    ring
+    simp [field, ← exp_nsmul, exp_neg]
   rw [this]
   exact (tendsto_exp_mul_div_rpow_atTop s (1 / 2) one_half_pos).inv_tendsto_atTop
 
@@ -145,7 +143,7 @@ section GammaRecurrence
 
 /-- The indefinite version of the `Γ` function, `Γ(s, X) = ∫ x ∈ 0..X, exp(-x) x ^ (s - 1)`. -/
 def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
-  ∫ x in (0)..X, (-x).exp * x ^ (s - 1)
+  ∫ x in 0..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
     Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
