@@ -611,7 +611,7 @@ lemma CWComplex.Subcomplex.union {C : Set X} [CWComplex C] {E : Subcomplex C} :
   exact this
 
 /-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
-  that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
+that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
 @[simps -isSimp]
 def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComplex C D]
     (E : Set X) (I : Π n, Set (cell C n))
@@ -623,7 +623,7 @@ def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComple
     have hEC : (E : Set X) ⊆ C := by
       simp_rw [← union, ← union_iUnion_openCell_eq_complex (C := C)]
       exact union_subset_union_right D
-        (iUnion_mono fun n ↦ iUnion_subset fun i ↦ by apply subset_iUnion_of_subset ↑i; rfl)
+        (iUnion_mono fun n ↦ iUnion_subset fun i ↦ subset_iUnion _ (i : cell C n))
     apply isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell hEC
     · have : D ⊆ E := by
         rw [← union]
@@ -647,8 +647,8 @@ def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComple
       exact (disjoint_openCell_of_ne (by aesop)).inter_eq
   union' := union
 
-/-- An alternative version of `Subcomplex`: Instead of requiring that `E` is closed it requires
-  that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
 @[simps! -isSimp]
 def CWComplex.Subcomplex.mk' [T2Space X] (C : Set X) [CWComplex C] (E : Set X)
     (I : Π n, Set (cell C n))
@@ -656,8 +656,8 @@ def CWComplex.Subcomplex.mk' [T2Space X] (C : Set X) [CWComplex C] (E : Set X)
     (union : ⋃ (n : ℕ) (j : I n), openCell (C := C) n j = E) : Subcomplex C :=
   RelCWComplex.Subcomplex.mk' C E I closedCell_subset (by rw [empty_union]; exact union)
 
-/-- An alternative version of `Subcomplex`: Instead of requiring that `E` is closed it requires that
-  `E` is a CW-complex. -/
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that `E` is a CW-complex. -/
 @[simps -isSimp]
 def RelCWComplex.Subcomplex.mk'' [T2Space X] (C : Set X) {D : Set X} [RelCWComplex C D] (E : Set X)
     (I : Π n, Set (cell C n)) [RelCWComplex E D]
@@ -667,8 +667,8 @@ def RelCWComplex.Subcomplex.mk'' [T2Space X] (C : Set X) {D : Set X} [RelCWCompl
   closed' := isClosed
   union' := union
 
-/-- An alternative version of `Subcomplex`: Instead of requiring that `E` is closed it requires that
-  `E` is a CW-complex. -/
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that `E` is a CW-complex. -/
 @[simps -isSimp]
 def CWComplex.Subcomplex.mk'' [T2Space X] (C : Set X) [h : CWComplex C] (E : Set X)
     (I : Π n, Set (cell C n)) [CWComplex E]
@@ -683,9 +683,8 @@ def CWComplex.Subcomplex.mk'' [T2Space X] (C : Set X) [h : CWComplex C] (E : Set
 
 lemma RelCWComplex.Subcomplex.subset_complex {C D : Set X} [RelCWComplex C D] (E : Subcomplex C) :
     ↑E ⊆ C := by
-  simp_rw [← union, ← RelCWComplex.union]
-  exact union_subset_union_right _ (iUnion_mono
-    (fun i ↦ iUnion_mono' (fun ⟨j, hj⟩ ↦ ⟨j, openCell_subset_closedCell _ _⟩)))
+  simp_rw [← union, ← RelCWComplex.union_iUnion_openCell_eq_complex]
+  exact union_subset_union_right _ (iUnion_mono fun _ ↦ iUnion_mono' fun j ↦ ⟨j, subset_rfl⟩)
 
 lemma RelCWComplex.Subcomplex.base_subset {C D : Set X} [RelCWComplex C D] (E : Subcomplex C) :
     D ⊆ E := by
