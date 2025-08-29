@@ -212,7 +212,7 @@ theorem mul {f g : ℝ → ℝ} {a b : ℝ}
     _ = C * ∑ i ∈ Finset.range n, dist (g (I i).1) (g (I i).2) +
             D * ∑ i ∈ Finset.range n, dist (f (I i).1) (f (I i).2) := by dsimp [Real.dist_eq]
     _ < C * (ε / (C + D)) + D * (ε / (C + D)) := by gcongr
-    _ = ε := by field_simp; ring
+    _ = ε := by field_simp
 
 end AbsolutelyContinuousOnInterval
 
