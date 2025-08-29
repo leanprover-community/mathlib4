@@ -134,7 +134,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
 /-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : `i`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
-  convert convexHull_basis_eq_stdSimplex R ι with i j
+  convert convexHull_basis_eq_stdSimplex R ι
   aesop
 
 variable {ι R}
