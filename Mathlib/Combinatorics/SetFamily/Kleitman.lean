@@ -65,9 +65,9 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
   refine le_of_mul_le_mul_left ?_ (pow_pos (zero_lt_two' ℕ) <| Fintype.card α + 1)
   rw [pow_succ, mul_add, mul_assoc, mul_comm _ 2, mul_assoc]
   refine (add_le_add
-      ((mul_le_mul_left <| pow_pos (zero_lt_two' ℕ) _).2
+      ((mul_le_mul_iff_right₀ <| pow_pos (zero_lt_two' ℕ) _).2
       (hf₁ _ <| mem_cons_self _ _).2.2.card_le) <|
-      (mul_le_mul_left <| zero_lt_two' ℕ).2 <| IsUpperSet.card_inter_le_finset ?_ ?_).trans ?_
+      (mul_le_mul_iff_right₀ <| zero_lt_two' ℕ).2 <| IsUpperSet.card_inter_le_finset ?_ ?_).trans ?_
   · rw [coe_biUnion]
     exact isUpperSet_iUnion₂ fun i hi ↦ hf₂ _ <| subset_cons _ hi
   · rw [coe_compl]

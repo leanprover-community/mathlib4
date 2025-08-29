@@ -28,7 +28,7 @@ instance : TopologicalSpace ℍ :=
   instTopologicalSpaceSubtype
 
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
-  IsOpen.isOpenEmbedding_subtypeVal <| isOpen_lt continuous_const Complex.continuous_im
+  IsOpen.isOpenEmbedding_subtypeVal <| isOpen_upperHalfPlaneSet
 
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
@@ -168,7 +168,7 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
 
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
-  filter_upwards [(Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz] with x hx
+  filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
   simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk_subtype]
 
 end ofComplex

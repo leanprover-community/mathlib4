@@ -9,8 +9,8 @@ import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
