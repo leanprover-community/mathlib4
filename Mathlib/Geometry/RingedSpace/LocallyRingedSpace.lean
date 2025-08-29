@@ -440,7 +440,7 @@ variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : I
   (V : Opens U) (x : U) (hx : x ∈ V)
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
-of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`. -/
+of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`. -/
 noncomputable
 def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
   X.toPresheafedSpace.restrictStalkIso h x

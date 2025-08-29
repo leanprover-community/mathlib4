@@ -9,7 +9,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 /-!
 # Right-angled triangles
 
-This file proves basic geometrical results about distances and angles in (possibly degenerate)
+This file proves basic geometric results about distances and angles in (possibly degenerate)
 right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 ## Implementation notes

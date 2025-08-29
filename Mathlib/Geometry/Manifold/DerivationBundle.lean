@@ -122,9 +122,9 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [ChartedSpace H' M']
 
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
-Instead of taking a function as an argument this
-differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
-on where it has to be evaluated are equal but not definitionally equal. -/
+Instead of taking a function as an argument, this
+differential takes `h : f x = y`. It is particularly handy for situations where the points
+at which it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' y where
   toFun v :=

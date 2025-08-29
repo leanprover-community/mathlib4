@@ -51,9 +51,9 @@ variable (I G) in
 the word `AddGroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/]
 abbrev GroupLieAlgebra : Type _ := TangentSpace I (1 : G)
 
-/-- The invariant vector field associated to a vector `v` in the Lie alebra. At a point `g`, it
+/-- The invariant vector field associated to a vector `v` in the Lie algebra. At a point `g`, it
 is given by the image of `v` under left-multiplication by `g`. -/
-@[to_additive /-- The invariant vector field associated to a vector `v` in the Lie alebra. At a
+@[to_additive /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a
 point `g`, it is given by the image of `v` under left-addition by `g`. -/]
 noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
   mfderiv I I (g * ·) (1 : G) v
