@@ -226,6 +226,7 @@ import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.CharZero.AddMonoidHom
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Quotient
