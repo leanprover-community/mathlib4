@@ -19,8 +19,6 @@ Data-processing inequalities: if we compose the data generating kernel `P` with 
 `η : Kernel 𝓧 𝓧'`, then the Bayes risk increases.
 * `bayesRisk_le_bayesRisk_comp`: data-processing inequality for the Bayes risk
   with respect to a prior.
-* `supBayesRisk_le_supBayesRisk_comp`: data-processing inequality for the supremum of
-  the Bayes risk.
 
 ## TODO
 
