@@ -289,7 +289,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
-        DFinsupp.single_eq_of_ne hij.symm]
+        DFinsupp.single_eq_of_ne hij]
       exact hV.isOrtho hij.symm x.prop
   | add x y hx hy =>
     simp_rw [map_add]
