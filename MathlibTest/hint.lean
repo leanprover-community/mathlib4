@@ -38,9 +38,6 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 /--
 info: Try these:
   • 🎉 linarith
-  • field_simp
-    Remaining subgoals:
-    ⊢ a ≤ b
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
@@ -71,9 +68,6 @@ info: Try these:
   • ring_nf
     Remaining subgoals:
     ⊢ ∃ x, P x ∧ 0 ≤ x
-  • field_simp
-    Remaining subgoals:
-    ⊢ ∃ x, P x
   • norm_num
     Remaining subgoals:
     ⊢ ∃ x, P x
@@ -126,9 +120,6 @@ info: Try these:
   • ring_nf
     Remaining subgoals:
     ⊢ 2 ≤ 1
-  • field_simp
-    Remaining subgoals:
-    ⊢ False
   • norm_num
     Remaining subgoals:
     ⊢ False
@@ -156,8 +147,15 @@ end compute_degree
 section field_simp
 /--
 info: Try these:
-  • 🎉 field_simp
+  • 🎉 exact
+      Units.divp_add_divp_same a b u₁
   • ring_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • abel_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • norm_num
     Remaining subgoals:
     ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
