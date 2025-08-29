@@ -887,7 +887,7 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
     _ = (f ⋆[L₃, ν] g ⋆[L₄, μ] k) x₀ := rfl
 
 /-- Convolution is associative. This requires that
-* all maps are a.e. strongly measurable w.r.t one of the measures
+* all maps are a.e. strongly measurable w.r.t. one of the measures
 * `f ⋆[L, ν] g` exists almost everywhere
 * `‖g‖ ⋆[μ] ‖k‖` exists almost everywhere
 * `‖f‖ ⋆[ν] (‖g‖ ⋆[μ] ‖k‖)` exists at `x₀` -/

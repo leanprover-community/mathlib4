@@ -548,7 +548,7 @@ theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| �
   exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
-For fixed `n` this is just a linear map wrt `r`, and each map is a simple linear function
+For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function
 of the previous (see `expNear_succ`), with `expNear n x r ⟶ exp x` as `n ⟶ ∞`,
 for any `r`. -/
 noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=

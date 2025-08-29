@@ -485,7 +485,7 @@ theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Pri
   rw [mul_comm (p^n) (q^m)]
   exact padicValNat_mul_pow_left m n neq
 
-/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t `p`. -/
+/-- The p-adic valuation of `n` is less than or equal to its logarithm w.r.t. `p`. -/
 lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   rcases n with _ | n
   · simp
@@ -494,7 +494,7 @@ lemma padicValNat_le_nat_log (n : ℕ) : padicValNat p n ≤ Nat.log p n := by
   · simp
   exact Nat.le_log_of_pow_le p.one_lt_succ_succ (le_of_dvd n.succ_pos pow_padicValNat_dvd)
 
-/-- The p-adic valuation of `n` is equal to the logarithm w.r.t `p` iff
+/-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
