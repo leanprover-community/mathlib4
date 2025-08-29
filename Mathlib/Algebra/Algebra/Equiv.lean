@@ -226,6 +226,8 @@ instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
 theorem refl_toAlgHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
   rfl
 
+@[simp, norm_cast] lemma toRingHom_refl : refl (R := R) (A₁ := A₁) = RingHom.id A₁ := rfl
+
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
   rfl
@@ -376,6 +378,13 @@ theorem trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x
 theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x : A₃) :
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
+
+@[simp] lemma trans_symm_self (e : A₁ ≃ₐ[R] A₂) : e.trans e.symm = refl := by aesop
+@[simp] lemma symm_trans_self (e : A₁ ≃ₐ[R] A₂) : e.symm.trans e = refl := by aesop
+
+@[simp, norm_cast]
+lemma toRingHom_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
+    (e₁.trans e₂ : A₁ →+* A₃) = .comp e₂ (e₁ : A₁ →+* A₂) := rfl
 
 end trans
 
