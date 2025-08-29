@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kim Morrison
 -/
+import Batteries.Control.AlternativeMonad
 import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
@@ -167,10 +168,17 @@ section Alternative
 
 variable [∀ P, Decidable P]
 
-instance : Alternative Finset :=
-  { Finset.applicative with
-    orElse := fun s t => (s ∪ t ())
-    failure := ∅ }
+instance : AlternativeMonad Finset where
+  orElse s t := s ∪ t ()
+  failure := ∅
+
+instance : LawfulAlternative Finset where
+  map_failure _ := Finset.image_empty _
+  failure_seq _ := Finset.sup_empty
+  orElse_failure _ := Finset.union_empty _
+  failure_orElse _ := Finset.empty_union _
+  orElse_assoc _ _ _ := Finset.union_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := Finset.image_union _ _
 
 end Alternative
 

@@ -2989,7 +2989,6 @@ import Mathlib.Control.Functor
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Control.Lawful
 import Mathlib.Control.LawfulFix
-import Mathlib.Control.Monad.AlternativeMonad
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer

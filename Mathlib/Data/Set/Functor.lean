@@ -3,6 +3,7 @@ Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Batteries.Control.AlternativeMonad
 import Mathlib.Control.Basic
 import Mathlib.Data.Set.Defs
 import Mathlib.Data.Set.Lattice.Image
@@ -71,10 +72,17 @@ instance : LawfulMonad Set := LawfulMonad.mk'
 instance : CommApplicative (Set : Type u → Type u) :=
   ⟨fun s t => prod_image_seq_comm s t⟩
 
-instance : Alternative Set :=
-  { Set.monad with
-    orElse := fun s t => s ∪ (t ())
-    failure := ∅ }
+instance : AlternativeMonad Set where
+  orElse s t := s ∪ (t ())
+  failure := ∅
+
+instance : LawfulAlternative Set where
+  map_failure _ := Set.image_empty _
+  failure_seq _ := Set.image2_empty_left
+  orElse_failure _ := Set.union_empty _
+  failure_orElse _ := Set.empty_union _
+  orElse_assoc _ _ _ := Set.union_assoc _ _ _ |>.symm
+  map_orElse _ _ _ := Set.image_union _ _ _
 
 /-! ### Monadic coercion lemmas -/
 
