@@ -69,7 +69,7 @@ elab (name := field) "field" d:(discharger)? args:(simpArgs)? : tactic => withMa
       Meta.Tactic.TryThis.addSuggestion (← getRef) tacticStx
     catch _ =>
       -- If `field_simp` also doesn't do anything useful (maybe there are no denominators in the
-      -- goal) then we backtrack to where the `ring1` call failed, and report that error message
+      -- goal), then we backtrack to where the `ring1` call failed, and report that error message.
       s1.restore
       throw e
 
