@@ -519,7 +519,6 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
-  have : Module.Free ℤ L := module_free K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
