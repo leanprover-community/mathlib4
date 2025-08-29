@@ -439,6 +439,7 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
   Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
     dsimp
+    -- TODO: `apply iff_of_eq` is required here, even though `congr!` works on iff below.
     apply iff_of_eq
     congr 1
     ext x; cases x <;> rfl)
@@ -464,6 +465,7 @@ theorem diophFn_compn :
   | 0, S, d, f => fun _ =>
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
+      -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x` but that does not work.
       congr! 1
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
@@ -475,6 +477,7 @@ theorem diophFn_compn :
                 reindex_diophFn inl df)
               fun v => by
                 dsimp
+                -- TODO: `congr! 1; ext` should be equivalent to `congr! 1 with x` but that does not work.
                 congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
