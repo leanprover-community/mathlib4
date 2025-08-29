@@ -23,13 +23,14 @@ variable (S R) in
 `x ↦ u * x * star u`.
 
 This is the ⋆-algebra automorphism version of a specialized version of
-`MulSemiringAction.toRingEquiv`. -/
+`MulSemiringAction.toAlgAut`. -/
 def toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
   toFun u :=
-  { toRingEquiv := MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u)
-    map_smul' _ _ := by simp [smul_comm]
-    map_star' _ := by simp [HSMul.hSMul, SMul.smul, ConjAct.ofConjAct, mul_assoc,
-      ← unitary.star_eq_inv] }
+  { toRingEquiv := MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u)
+    map_smul' _ _ := smul_comm _ _ _ |>.symm
+    map_star' _ := by
+      dsimp [ConjAct.units_smul_def]
+      simp [mul_assoc, ← unitary.star_eq_inv] }
   map_one' := by ext; simp
   map_mul' g h := by ext; simp [mul_smul]
 
@@ -51,7 +52,7 @@ theorem toStarAlgAut_symm (u : unitary R) :
   ext; simp
 
 theorem toRingEquiv_toStarAlgAut (u : unitary R) :
-    (toStarAlgAut S R u).toRingEquiv = MulSemiringAction.toRingEquiv (ConjAct Rˣ) R (toUnits u) :=
+    (toStarAlgAut S R u).toRingEquiv = MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
 end unitary
