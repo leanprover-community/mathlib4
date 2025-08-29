@@ -35,25 +35,7 @@ This helps the heuristic of `@[to_additive]` by also transforming definitions if
 fixed type occurs as one of these arguments. -/
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-/-- An attribute that is automatically added to declarations tagged with `@[to_additive]`,
-if needed.
-
-This attribute tells which argument is the type where this declaration uses the multiplicative
-structure. If there are multiple arguments, we typically tag the first one.
-If this argument contains a fixed type, this declaration will not be additivized.
-See the Heuristics section of `to_additive.attr` for more details.
-
-If a declaration is not tagged, it is presumed that the first argument is relevant.
-`@[to_additive]` uses the function `to_additive.first_multiplicative_arg` to automatically tag
-declarations. It is ok to update it manually if the automatic tagging made an error.
-
-Implementation note: we only allow exactly 1 relevant argument, even though some declarations
-(like `prod.group`) have multiple arguments with a multiplicative structure on it.
-The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
-we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
-anyway.
-
-Warning: interactions between this and the `(reorder := ...)` argument are not well-tested. -/
+/-- This attribute is deprecated. Use `to_additive (relevant_arg := ...)` instead. -/
 syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
 
 /-- An attribute that stores all the declarations that deal with numeric literals on variable types.
@@ -93,6 +75,27 @@ the fifth argument before the third argument. This is used in `to_dual` to swap 
 -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /--
+the `relevant_arg := ...` option tells which argument is a type where this declaration uses the
+multiplicative structure. This is inferred automatically using the function `findMultiplicativeArg`,
+but it can also be overwritten using this syntax.
+
+If there are multiple arguments with a multiplicative structure, we typically tag the first one.
+If this argument contains a fixed type, this declaration will not be additivized.
+See the Heuristics section of the `to_additive` doc-string for more details.
+
+If a declaration is not tagged, it is presumed that the first argument is relevant.
+
+To indicate that there is no relevant argument, set it to a number that is out of bounds,
+i.e. larger than the number of arguments, e.g. `(relevant_arg := 100)`.
+
+Implementation note: we only allow exactly 1 relevant argument, even though some declarations
+(like `Prod.instGroup`) have multiple arguments with a multiplicative structure on it.
+The reason is that whether we additivize a declaration is an all-or-nothing decision, and
+we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
+anyway.
+-/
+syntax toAdditiveRelevantOption := &"relevant_arg" " := " num
+/--
 `dont_translate := ...` takes a list of type variables (separated by spaces) that should not be
 considered for translation. For example in
 ```
@@ -102,8 +105,8 @@ we can choose to only additivize `α` by writing `to_additive (dont_translate :=
 -/
 syntax toAdditiveDontTranslateOption := &"dont_translate" " := " ident+
 /-- Options to `to_additive`. -/
-syntax toAdditiveOption :=
-  "(" toAdditiveAttrOption <|> toAdditiveReorderOption <|> toAdditiveDontTranslateOption ")"
+syntax toAdditiveOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption <|>
+  toAdditiveRelevantOption <|> toAdditiveDontTranslateOption ")"
 /-- An `existing` or `self` name hint for `to_additive`. -/
 syntax toAdditiveNameHint := (ppSpace (&"existing" <|> &"self"))?
 /-- Remaining arguments of `to_additive`. -/
@@ -210,9 +213,9 @@ There are some exceptions to this heuristic:
 * Identifiers that have the `@[to_additive]` attribute are ignored.
   For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
   You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
-* If an identifier `d` has attribute `@[to_additive_relevant_arg n]` then the argument
+* If an identifier `d` has attribute `@[to_additive (relevant_arg := n)]` then the argument
   in position `n` is checked for a fixed type, instead of checking the first argument.
-  `@[to_additive]` will automatically add the attribute `@[to_additive_relevant_arg n]` to a
+  `@[to_additive]` will automatically add the attribute `(relevant_arg := n)` to a
   declaration when the first argument has no multiplicative type-class, but argument `n` does.
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
@@ -244,6 +247,8 @@ mismatch error.
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
     Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
+  * If none of the arguments have a multiplicative structure, then the heuristic should not apply at
+    all. This can be achieved by setting `relevant_arg` out of bounds, e.g. `(relevant_arg := 100)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
@@ -251,7 +256,7 @@ mismatch error.
     The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
     contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
     If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
-    should have automatically added the attribute `@[to_additive_relevant_arg]` to the declaration.
+    should have automatically added the attribute `(relevant_arg := ...)` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
     ```
       open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
@@ -259,7 +264,7 @@ mismatch error.
     The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
     with a multiplicative structure on it. `none` means `0`.
     If you get a different output (or a failure), you could add the attribute
-    `@[to_additive_relevant_arg n]` manually, where `n` is an (1-indexed) argument with a
+    `@[to_additive (relevant_arg := n)]` manually, where `n` is an (1-indexed) argument with a
     multiplicative structure.
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:
@@ -351,6 +356,11 @@ register_option linter.toAdditiveExisting : Bool := {
   descr := "Linter used by `@[to_additive]` that checks whether the user correctly specified that
     the additive declaration already exists" }
 
+/-- Linter to check that the `relevant_arg` attribute is not given manually -/
+register_option linter.toAdditiveRelevantArg : Bool := {
+  defValue := true
+  descr := "Linter to check that the `relevant_arg` attribute is not given manually." }
+
 
 @[inherit_doc to_additive_ignore_args]
 initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
@@ -376,7 +386,10 @@ initialize relevantArgAttr : NameMapExtension Nat ←
     descr := "Auxiliary attribute for `to_additive` stating \
       which arguments are the types with a multiplicative structure."
     add := fun
-    | _, `(attr| to_additive_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
+    | _, stx@`(attr| to_additive_relevant_arg $id) => do
+      Linter.logLintIf linter.toAdditiveRelevantArg stx
+        m!"This attribute is deprecated. Use `@[to_additive (relevant_arg := ...)]` instead."
+      pure <| id.getNat.pred
     | _, _ => throwUnsupportedSyntax }
 
 @[inherit_doc to_additive_dont_translate]
@@ -410,7 +423,7 @@ def findTranslation? (env : Environment) : Name → Option Name :=
 /-- Get the multiplicative → additive translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-def findPrefixTranslation? (env : Environment) (nm : Name) : Name :=
+def findPrefixTranslation (env : Environment) (nm : Name) : Name :=
   nm.mapPrefix (findTranslation? env)
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
@@ -423,6 +436,24 @@ def insertTranslation (src tgt : Name) (failIfExists := true) : CoreM Unit := do
       return
   modifyEnv (ToAdditive.translations.addEntry · (src, tgt))
   trace[to_additive] "Added translation {src} ↦ {tgt}"
+
+/-- `ArgInfo` stores information about how a constant should be translated. -/
+structure ArgInfo where
+  /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
+  reorder : List (List Nat) := []
+  /-- The argument used to determine whether this constant should be translated. -/
+  relevantArg : Nat := 0
+
+/-- Add a name translation to the translations map and add the `argInfo` information to `src`. -/
+def insertTranslationAndInfo (src tgt : Name) (argInfo : ArgInfo) (failIfExists := true) :
+    CoreM Unit := do
+  insertTranslation src tgt failIfExists
+  if argInfo.reorder != [] then
+    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} by {argInfo.reorder}."
+    reorderAttr.add src argInfo.reorder
+  if argInfo.relevantArg != 0 then
+    trace[to_additive_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
+    relevantArgAttr.add src argInfo.relevantArg
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -438,6 +469,8 @@ structure Config : Type where
   allowAutoName : Bool := false
   /-- The arguments that should be reordered by `to_additive`, using cycle notation. -/
   reorder : List (List Nat) := []
+  /-- The argument used to determine whether this constant should be translated. -/
+  relevantArg? : Option Nat := none
   /-- The attributes which we want to give to both the multiplicative and additive versions.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
@@ -555,7 +588,7 @@ where /-- Implementation of `applyReplacementFun`. -/
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
-      let n₁ := findPrefixTranslation? env n₀
+      let n₁ := findPrefixTranslation env n₀
       let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
@@ -619,7 +652,7 @@ where /-- Implementation of `applyReplacementFun`. -/
           pure (← r gf, ← gAllArgs.mapM r)
       return some <| mkAppN gfAdditive gAllArgsAdditive
     | .proj n₀ idx e => do
-      let n₁ := findPrefixTranslation? env n₀
+      let n₁ := findPrefixTranslation env n₀
       if trace then
         dbg_trace s!"applyReplacementFun: in projection {e}.{idx} of type {n₀}, \
           replace type with {n₁}"
@@ -963,11 +996,12 @@ def warnParametricAttr {β : Type} (stx : Syntax) (attr : ParametricAttribute β
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
 warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 
-/-- `additivizeLemmas names desc t` runs `t` on all elements of `names`
+/-- `additivizeLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
-    (names : Array Name) (desc : String) (t : Name → m (Array Name)) : m Unit := do
+    (names : Array Name) (argInfo : ArgInfo) (desc : String) (t : Name → m (Array Name)) :
+    m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
   for (nm, lemmas) in names.zip auxLemmas do
@@ -975,13 +1009,13 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslation srcLemma tgtLemma
+      insertTranslationAndInfo srcLemma tgtLemma argInfo
 
 /--
 Find the argument of `nm` that appears in the first multiplicative (type-class) argument.
 Returns 1 if there are no types with a multiplicative class as arguments.
 E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
-Note: we only consider the relevant argument (`to_additive_relevant_arg`) of each type-class.
+Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
 def findMultiplicativeArg (nm : Name) : MetaM Nat := do
@@ -1012,7 +1046,7 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName s
   let depth := cfg.tgt.getNumParts
-  let pre := findPrefixTranslation? (← getEnv) pre
+  let pre := findPrefixTranslation (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   if res == src then
@@ -1032,40 +1066,38 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
-def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
-  let srcFields ← f src
-  let tgtFields ← f tgt
+def proceedFieldsAux (src tgt : Name) (argInfo : ArgInfo) (f : Name → Array Name) : CoreM Unit := do
+  let srcFields := f src
+  let tgtFields := f tgt
   if srcFields.size != tgtFields.size then
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
   for srcField in srcFields, tgtField in tgtFields do
-    if findPrefixTranslation? (← getEnv) srcField != tgtField then
-      insertTranslation srcField tgtField
-    else
-      trace[to_additive] "Translation {srcField} ↦ {tgtField} is automatic."
+    insertTranslationAndInfo srcField tgtField argInfo
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (src tgt : Name) : CoreM Unit := do
-  let aux := @proceedFieldsAux src tgt
+def proceedFields (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
+  let env ← getEnv
+  let aux := proceedFieldsAux src tgt argInfo
   -- add translations for the structure fields
-  aux fun declName ↦ do
-    if isStructure (← getEnv) declName then
-      let info := getStructureInfo (← getEnv) declName
-      return Array.ofFn (n := info.fieldNames.size) (info.getProjFn? · |>.get!)
+  aux fun declName ↦
+    if isStructure env declName then
+      let info := getStructureInfo env declName
+      Array.ofFn (n := info.fieldNames.size) (info.getProjFn? · |>.get!)
     else
-      return #[]
+      #[]
   -- add translations for the automatically generated instances with `extend`.
-  aux fun declName ↦ do
-    if isStructure (← getEnv) declName then
-      return getStructureInfo (← getEnv) declName |>.parentInfo
+  aux fun declName ↦
+    if isStructure env declName then
+      getStructureInfo env declName |>.parentInfo
         |>.filterMap fun c ↦ if !c.subobject then c.projFn else none
     else
-      return #[]
+      #[]
   -- add translations for the constructors of an inductive type
-  aux fun declName ↦ do match (← getEnv).find? declName with
-    | some (ConstantInfo.inductInfo { ctors, .. }) => return ctors.toArray
-    | _ => pure #[]
+  aux fun declName ↦ match env.find? declName with
+    | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
+    | _ => #[]
 
 open Tactic.TryThis in
 open private addSuggestionCore in addSuggestion in
@@ -1075,6 +1107,7 @@ def elabToAdditive : Syntax → CoreM Config
       $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
+    let mut relevantArg? := none
     let mut dontTranslate := []
     for stx in opts do
       match stx with
@@ -1093,6 +1126,11 @@ def elabToAdditive : Syntax → CoreM Config
             | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
             | n+1 => pure n
           reorder := cycle :: reorder
+      | `(toAdditiveOption| (relevant_arg := $n)) =>
+        if let some arg := relevantArg? then
+          throwErrorAt stx "cannot specify `relevant_arg` multiple times"
+        else
+          relevantArg? := n.getNat.pred
       | `(toAdditiveOption| (dont_translate := $[$types:ident]*)) =>
         dontTranslate := dontTranslate ++ types.toList
       | _ => throwUnsupportedSyntax
@@ -1133,14 +1171,14 @@ def elabToAdditive : Syntax → CoreM Config
       tgt := match tgt with | some tgt => tgt.getId | none => Name.anonymous
       doc
       allowAutoName := false
-      attrs, reorder, dontTranslate, existing, self
+      attrs, reorder, relevantArg?, dontTranslate, existing, self
       ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name) :
-    TermElabM (Array Name) := do
+partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name)
+    (argInfo : ArgInfo) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
   -- Warn users if the multiplicative version has an attribute
@@ -1180,7 +1218,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   for attr in attrs do
     withRef attr.stx do withLogging do
     if attr.name == `simps then
-      additivizeLemmas allDecls "simps lemmas" (simpsTacFromSyntax · attr.stx)
+      additivizeLemmas allDecls argInfo "simps lemmas" (simpsTacFromSyntax · attr.stx)
       return
     let env ← getEnv
     match getAttributeImpl env attr.name with
@@ -1206,7 +1244,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
-partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
+partial def copyMetaData (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
+    CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
     unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
       for eqn in eqns do _ ← addToAdditiveAttr eqn cfg
@@ -1215,19 +1254,20 @@ partial def copyMetaData (cfg : Config) (src tgt : Name) : CoreM (Array Name) :=
     /- We need to generate all equation lemmas for `src` and `tgt`, even for non-recursive
     definitions. If we don't do that, the equation lemma for `src` might be generated later
     when doing a `rw`, but it won't be generated for `tgt`. -/
-    additivizeLemmas #[src, tgt] "equation lemmas" fun nm ↦
+    additivizeLemmas #[src, tgt] argInfo "equation lemmas" fun nm ↦
       (·.getD #[]) <$> MetaM.run' (getEqnsFor? nm)
   MetaM.run' <| Elab.Term.TermElabM.run' <|
-    applyAttributes cfg.ref cfg.attrs `to_additive src tgt
+    applyAttributes cfg.ref cfg.attrs `to_additive src tgt argInfo
 
 /--
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-partial def transformDecl (cfg : Config) (src tgt : Name) : CoreM (Array Name) := do
+partial def transformDecl (cfg : Config) (src tgt : Name) (argInfo : ArgInfo := {}) :
+    CoreM (Array Name) := do
   transformDeclAux cfg src tgt src
-  copyMetaData cfg src tgt
+  copyMetaData cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
 partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont : List Ident) :
@@ -1262,6 +1302,16 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
   if (kind != AttributeKind.global) then
     throwError "`to_additive` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
+  if let some tgt := findTranslation? (← getEnv) src then
+    -- we allow `to_additive (reorder := ...)` or `to_additive (relevant_arg := ...)` syntax
+    -- for updating this information on constants that are already tagged
+    -- for example, this is necessary for `HPow.hPow`
+    if cfg.reorder != [] then
+      modifyEnv (reorderAttr.addEntry · (src, cfg.reorder))
+      return #[tgt]
+    if let some relevantArg := cfg.relevantArg? then
+      modifyEnv (relevantArgAttr.addEntry · (src, relevantArg))
+      return #[tgt]
   let tgt ← targetName cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) then
@@ -1273,28 +1323,19 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
         "The additive declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
     MetaM.run' <| checkExistingType src tgt cfg.reorder cfg.dontTranslate
-  if cfg.reorder != [] then
-    trace[to_additive] "@[to_additive] will reorder the arguments of {tgt}."
-    reorderAttr.add src cfg.reorder
-    -- we allow using this attribute if it's only to add the reorder configuration
-    -- for example, this is necessary for `HPow.hPow`
-    if findTranslation? (← getEnv) src |>.isSome then
-      return #[tgt]
-  let relevantArg ← MetaM.run' <| findMultiplicativeArg src
-  if relevantArg != 0 then
-    trace[to_additive_detail] "Setting relevant_arg for {src} to be {relevantArg}."
-    relevantArgAttr.add src relevantArg
-  insertTranslation src tgt alreadyExists
+  let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findMultiplicativeArg src
+  let argInfo := { reorder := cfg.reorder, relevantArg }
+  insertTranslationAndInfo src tgt argInfo alreadyExists
   let nestedNames ←
     if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
-      proceedFields src tgt
-      copyMetaData cfg src tgt
+      proceedFields src tgt argInfo
+      copyMetaData cfg src tgt argInfo
     else
       -- tgt doesn't exist, so let's make it
-      transformDecl cfg src tgt
+      transformDecl cfg src tgt argInfo
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
