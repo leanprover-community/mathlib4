@@ -395,7 +395,7 @@ theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 := by
-  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne i j _ hij]
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne i j _ hij.symm]
 
 theorem IsInternal.ofBijective_coeLinearMap_of_mem (h : IsInternal A)
     {i : ι} {x : M} (hx : x ∈ A i) :

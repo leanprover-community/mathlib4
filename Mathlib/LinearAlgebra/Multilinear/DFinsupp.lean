@@ -126,7 +126,7 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
     (p : ∀ i, κ i) (m : ∀ i, M i (p i)) :
     dfinsuppFamily f (fun i => .single (p i) (m i)) = DFinsupp.single p (f p m) := by
   ext q
-  obtain rfl | hpq := eq_or_ne p q
+  obtain rfl | hpq := eq_or_ne q p
   · simp
   · rw [DFinsupp.single_eq_of_ne hpq]
     rw [Function.ne_iff] at hpq

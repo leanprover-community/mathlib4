@@ -713,7 +713,7 @@ theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
   rw [Basis.repr_self, Matrix.mulVec, dotProduct, Finset.sum_eq_single i, Finsupp.single_eq_same,
     mul_one]
   · intro i' _ i'_ne
-    rw [Finsupp.single_eq_of_ne i'_ne.symm, mul_zero]
+    rw [Finsupp.single_eq_of_ne i'_ne, mul_zero]
   · intros
     have := Finset.mem_univ i
     contradiction
