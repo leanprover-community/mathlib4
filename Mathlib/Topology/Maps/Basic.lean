@@ -353,6 +353,11 @@ theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.e
 
 end IsOpenMap
 
+lemma isOpenMap_iff_kernImage :
+    IsOpenMap f ↔ ∀ {u : Set X}, IsClosed u → IsClosed (kernImage f u) := by
+  rw [IsOpenMap, compl_surjective.forall]
+  simp [kernImage_eq_compl]
+
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 
@@ -420,6 +425,11 @@ theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
 
 end IsClosedMap
+
+lemma isClosedMap_iff_kernImage :
+    IsClosedMap f ↔ ∀ {u : Set X}, IsOpen u → IsOpen (kernImage f u) := by
+  rw [IsClosedMap, compl_surjective.forall]
+  simp [kernImage_eq_compl]
 
 lemma Topology.IsInducing.isClosedMap (hf : IsInducing f) (h : IsClosed (range f)) :
     IsClosedMap f := by
