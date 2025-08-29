@@ -3,9 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Uni Marx
 -/
-import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Category.Type.Basic
 import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Data.Rel
 

@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Category.Type.Basic
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Types
 import Mathlib.Order.SuccPred.Limit
 
 /-!
