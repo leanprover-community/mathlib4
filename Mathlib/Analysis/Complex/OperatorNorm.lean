@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Data.Complex.Determinant
+import Mathlib.LinearAlgebra.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 

@@ -5,9 +5,9 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.Data.Complex.Orientation
 import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
 
 /-!
