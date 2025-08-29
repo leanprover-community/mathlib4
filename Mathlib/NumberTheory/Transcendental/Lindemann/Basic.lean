@@ -227,7 +227,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
 theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
     LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) :=
   linearIndependent_iff'.mpr fun s v h ↦ by
-    simpa using linearIndependent_exp' (ι := s) (u ·) (u · |>.2)
+    simpa [funext_iff] using linearIndependent_exp' (ι := s) (u ·) (u · |>.2)
       (fun i j ↦ by simpa [Subtype.coe_inj] using @u_inj i j)
       (v ·) (v · |>.2) (by simpa [sum_attach _ fun x ↦ v x * cexp (u x)])
 
