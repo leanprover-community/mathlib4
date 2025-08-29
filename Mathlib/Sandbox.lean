@@ -6,6 +6,33 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.Algebra.GroupWithZero.Torsion
 import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 
+set_option linter.style.header false
+
+open scoped nonZeroDivisors
+
+example (A : Type*) [CommRing A] [IsDomain A] (K : Type*) [Field K] [Algebra A K]
+    [IsFractionRing A K] (r : A) (s : A⁰) :
+    FractionRing.algEquiv A K (Localization.mk r s) = algebraMap A K r / algebraMap A K s := by
+  simp [FractionRing.mk_eq_div]
+
+example (A : Type*) [CommRing A] (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] (x) :
+    (FractionRing.algEquiv A K).symm (algebraMap A K x) = algebraMap A (FractionRing A) x := by
+  simp only [AlgEquiv.commutes]
+
+
+
+-- set_option linter.style.header false
+
+-- variable {A B C K L M : Type*} [CommRing A] [CommRing B] [CommRing C] [CommRing K] [CommRing L]
+--   [CommRing M] [Algebra A K] [Algebra B L] [Algebra C M] [Algebra A B] [Algebra A C] [Algebra B C]
+--   [Algebra K L] [Algebra K M] [Algebra L M] [IsScalarTower K L M]
+
+-- example : IsScalarTower A B C := by
+--   refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
+
+
+#exit
+
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
 instance : IsMulTorsionFree (Ideal R) := inferInstance
