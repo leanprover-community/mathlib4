@@ -8,7 +8,8 @@ import Mathlib.Data.Seq.Defs
 /-!
 # Basic properties of sequences (possibly infinite lists)
 
-This file provides some basic lemmas about possibly infinite lists represented by the type `Seq`.
+This file provides some basic lemmas about possibly infinite lists represented by the
+type `Stream'.Seq`.
 -/
 
 universe u v w
