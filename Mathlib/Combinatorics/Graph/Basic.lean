@@ -339,6 +339,9 @@ def incidenceSet (x : α) : Set β := {e | G.Inc e x}
 theorem mem_incidenceSet (x : α) (e : β) : e ∈ G.incidenceSet x ↔ G.Inc e x :=
   Iff.rfl
 
+theorem incidenceSet_subset_edgeSet (x : α) : G.incidenceSet x ⊆ E(G) :=
+  fun _ ⟨_, hy⟩ ↦ hy.edge_mem
+
 /-- `G.loopSet x` is the set of loops at `x` in `G`. -/
 def loopSet (x : α) : Set β := {e | G.IsLoopAt e x}
 
