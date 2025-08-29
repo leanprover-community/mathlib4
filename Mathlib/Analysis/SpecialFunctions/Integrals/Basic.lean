@@ -448,7 +448,8 @@ theorem integral_sin_pow_odd :
   | succ k ih =>
     rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
     norm_cast
-    simp [-cast_add, field_simps]
+    field_simp
+    simp
 
 theorem integral_sin_pow_even :
     (∫ x in 0..π, sin x ^ (2 * n)) = π * ∏ i ∈ range n, (2 * (i : ℝ) + 1) / (2 * i + 2) := by
@@ -457,7 +458,8 @@ theorem integral_sin_pow_even :
   | succ k ih =>
     rw [prod_range_succ_comm, mul_left_comm, ← ih, mul_succ, integral_sin_pow]
     norm_cast
-    simp [-cast_add, field_simps]
+    field_simp
+    simp
 
 theorem integral_sin_pow_pos : 0 < ∫ x in 0..π, sin x ^ n := by
   rcases even_or_odd' n with ⟨k, rfl | rfl⟩ <;>
