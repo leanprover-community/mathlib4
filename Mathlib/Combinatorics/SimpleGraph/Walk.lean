@@ -567,23 +567,13 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
-theorem mem_support_concat_of_mem_support {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w)
-    {x : V} (hx : x ∈ p.support) : x ∈ (p.concat hadj).support := by
-  rw [concat_eq_append, mem_support_append_iff]
-  exact Or.inl hx
+theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support ⊆ (p.cons hadj).support := by
+  simp
 
-theorem start_mem_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
-    u ∈ (p.concat hadj).support :=
-  p.mem_support_concat_of_mem_support hadj p.start_mem_support
-
-theorem mem_end_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
-    w ∈ (p.concat hadj).support := by
-  rw [concat_eq_append, mem_support_append_iff]
-  exact Or.inr (cons hadj nil).end_mem_support
-
-theorem end_mem_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
-    v ∈ (p.concat hadj).support :=
-  p.mem_support_concat_of_mem_support hadj (end_mem_support p)
+theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support ⊆ (p.concat hadj).support := by
+  simp
 
 @[simp]
 theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
