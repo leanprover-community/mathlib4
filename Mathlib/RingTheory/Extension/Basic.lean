@@ -26,7 +26,7 @@ surjection `P →ₐ[R] R`.
   A hom between `P` and `P'` is a ring homomorphism that makes the two squares commute.
 
 - `Algebra.Extension.Cotangent`:
-  The cotangent space wrt an extension `P → S` by `I`, i.e. the space `I/I²`.
+  The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
 
