@@ -293,7 +293,7 @@ instance : HomeomorphClass (α ≃o β) α β where
 abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
   HomeomorphClass.toHomeomorph e
 
-theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e := by
+theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
   rfl --Simp can prove this too
 
 @[simp]
