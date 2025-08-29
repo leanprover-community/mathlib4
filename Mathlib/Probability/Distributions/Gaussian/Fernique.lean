@@ -35,9 +35,9 @@ lemma two_mul_le_add_mul_sq {R : Type*} [Field R] [LinearOrder R] [IsStrictOrder
     2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
   have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
   calc 2 * a * b
-  _ = (2 * (ε * a) * b) / ε := by field_simp; ring
+  _ = (2 * (ε * a) * b) / ε := by field_simp
   _ ≤ ((ε * a) ^ 2 + b ^ 2) / ε := by gcongr
-  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by field_simp; ring
+  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by field_simp
 
 end Aux
 

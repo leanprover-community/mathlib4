@@ -643,7 +643,8 @@ theorem absolutelyContinuous_map_add_cameronMartin (x : CameronMartin μ) :
   rw [map_add_cameronMartin_eq_withDensity x]
   exact withDensity_absolutelyContinuous _ _
 
--- defined in another PR. We state its properties here with `sorry` proofs.
+-- defined in another PR. We state its properties here with `sorry` proofs, but they are all proved
+-- there.
 def tvDist (μ ν : Measure E) : ℝ := sorry
 
 lemma tvDist_le_one {μ ν : Measure E} : tvDist μ ν ≤ 1 := by
@@ -658,12 +659,10 @@ lemma tvDist_map_le {F : Type*} {mF : MeasurableSpace F} {μ ν : Measure E}
     tvDist (μ.map f) (ν.map f) ≤ tvDist μ ν := by
   sorry
 
--- not proved yet. Comparison with a Hellinger divergence.
 lemma one_sub_exp_le_tvDist_gaussianReal (μ₁ μ₂ : ℝ) :
-    1 - Real.exp (- (μ₁ - μ₂) ^ 2 / 2) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
+    1 - Real.exp (- (μ₁ - μ₂) ^ 2 / 8) ≤ tvDist (gaussianReal μ₁ 1) (gaussianReal μ₂ 1) := by
   sorry
 
--- not proved yet.
 lemma tvDist_dirac_of_ne {x y : E} (hxy : x ≠ y) :
     tvDist (Measure.dirac x) (Measure.dirac y) = 1 := by
   sorry
@@ -684,13 +683,13 @@ lemma mutuallySingular_map_add_of_notMem_range_toInitialSpace (y : E)
   rw [mutuallySingular_iff_tvDist_eq_one]
   refine le_antisymm tvDist_le_one ?_
   refine le_of_forall_lt fun c hc ↦ ?_
-  obtain ⟨n, hcn⟩ : ∃ n : ℕ, c < 1 - Real.exp (- n ^ 2 / 2) := by
+  obtain ⟨n, hcn⟩ : ∃ n : ℕ, c < 1 - Real.exp (- n ^ 2 / 8) := by
     simp_rw [lt_sub_iff_add_lt, ← lt_sub_iff_add_lt']
-    suffices Tendsto (fun n : ℕ ↦ Real.exp (- n ^ 2 / 2)) atTop (𝓝 0) by
+    suffices Tendsto (fun n : ℕ ↦ Real.exp (- n ^ 2 / 8)) atTop (𝓝 0) by
       refine Eventually.exists (f := atTop) ?_
       refine this.eventually_lt_const ?_
       grind
-    change Tendsto ((fun x : ℝ ↦ Real.exp (- x ^ 2 / 2)) ∘ (Nat.cast : ℕ → ℝ)) atTop (𝓝 0)
+    change Tendsto ((fun x : ℝ ↦ Real.exp (- x ^ 2 / 8)) ∘ (Nat.cast : ℕ → ℝ)) atTop (𝓝 0)
     refine Tendsto.comp ?_ <| tendsto_natCast_atTop_atTop (R := ℝ)
     simp [tendsto_div_const_atBot_iff]
   refine hcn.trans_le ?_
