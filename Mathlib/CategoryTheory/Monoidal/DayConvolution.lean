@@ -37,7 +37,7 @@ a monoidal structure.
 
 ## TODOs (@robin-carlier)
 - Type alias for `C ⥤ V` with a `LawfulDayConvolutionMonoidalCategoryStruct`.
-- Characterization of lax monoidal functors out of a day convolution monoidal category.
+- Characterization of lax monoidal functors out of a Day convolution monoidal category.
 - Case `V = Type u` and its universal property.
 
 -/
@@ -84,7 +84,7 @@ instance leftKanExtension [DayConvolution F G] :
 
 variable {F G}
 
-/-- Two day convolution structures on the same functors gives an isomorphic functor. -/
+/-- Two Day convolution structures on the same functors gives an isomorphic functor. -/
 def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
     h.convolution ≅ h'.convolution :=
   Functor.leftKanExtensionUnique h.convolution h.unit h'.convolution h'.unit
@@ -133,7 +133,7 @@ section map
 
 variable {F' G' : C ⥤ V} [DayConvolution F' G']
 
-/-- The morphism between day convolutions (provided they exist) induced by a pair of morphisms. -/
+/-- The morphism between Day convolutions (provided they exist) induced by a pair of morphisms. -/
 def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
   Functor.descOfIsLeftKanExtension (F ⊛ G) (unit F G) (F' ⊛ G') <|
     (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G'
@@ -669,16 +669,14 @@ section
 variable (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [MonoidalCategory V]
 
-/--
-The class `DayConvolutionMonoidalCategory C V D` bundles the necessary data to
+/-- The class `DayConvolutionMonoidalCategory C V D` bundles the necessary data to
 turn a monoidal category `D` into a monoidal full subcategory of a category of
-functors `C ⥤ V` endowed with a day convolution monoidal structure.
+functors `C ⥤ V` endowed with a Day convolution monoidal structure.
 The design of this class is to bundle a fully faithful functor into `C ⥤ V` with
 left extensions on its values representing the fact that it maps tensors products
-in `D` to day convolutions, and furthermore ask that this data is "lawful", i.e that
+in `D` to Day convolutions, and furthermore ask that this data is "lawful", i.e that
 once realized in the functor category, the objects behave like the corresponding ones
-in the category of
--/
+in the category `C ⥤ V`. -/
 class LawfulDayConvolutionMonoidalCategoryStruct
     (C : Type u₁) [Category.{v₁} C] (V : Type u₂) [Category.{v₂} V]
     [MonoidalCategory C] [MonoidalCategory V]
@@ -816,7 +814,7 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
   exact associator_hom_unit_unit V _ _ _ _ _ _
 
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
-is a day convolution unit`. -/
+is a Day convolution unit`. -/
 def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
   can := unitUnit _ _ _
   isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit _ _ _
