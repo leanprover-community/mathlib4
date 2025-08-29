@@ -90,8 +90,11 @@ open MeasureTheory
 noncomputable
 def expMeasure (r : ℝ) : Measure ℝ := gammaMeasure 1 r
 
-lemma isProbabilityMeasureExponential {r : ℝ} (hr : 0 < r) :
+lemma isProbabilityMeasure_expMeasure {r : ℝ} (hr : 0 < r) :
     IsProbabilityMeasure (expMeasure r) := isProbabilityMeasure_gammaMeasure zero_lt_one hr
+
+@[deprecated (since := "2025-08-29")] alias isProbabilityMeasureExponential :=
+  isProbabilityMeasure_expMeasure
 
 section ExponentialCDF
 
