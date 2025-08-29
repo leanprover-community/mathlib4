@@ -533,10 +533,10 @@ lemma subgroupCongr_symm_apply (h : H = K) (x) :
     ((MulEquiv.subgroupCongr h).symm x : G) = x := rfl
 
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
-use `Subgroup.equiv_map_of_injective`. -/
+use `Subgroup.equivMapOfInjective`. -/
 @[to_additive
       /-- An additive subgroup is isomorphic to its image under an isomorphism. If you only
-      have an injective map, use `AddSubgroup.equiv_map_of_injective`. -/]
+      have an injective map, use `AddSubgroup.equivMapOfInjective`. -/]
 def subgroupMap (e : G ≃* G') (H : Subgroup G) : H ≃* H.map (e : G →* G') :=
   MulEquiv.submonoidMap (e : G ≃* G') H.toSubmonoid
 
