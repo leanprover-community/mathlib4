@@ -591,7 +591,7 @@ theorem det_matrixToStdBasis :
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine prod_congr (Eq.refl _) (fun _ _ => ?_)
-      field_simp; ring
+      simp [field]; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
 
@@ -629,7 +629,7 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
         empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
-      ring_nf; field_simp
+      ring_nf; simp [field]
 
 end stdBasis
 
