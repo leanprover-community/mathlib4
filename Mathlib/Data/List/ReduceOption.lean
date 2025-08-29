@@ -116,8 +116,12 @@ theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,
     reduceOption_length_eq_iff]
-  induction l <;> simp
-  rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
+  induction l
+  · simp
+  · simp only [mem_cons, forall_eq_or_imp, not_and, not_forall, Bool.not_eq_true,
+      Option.isSome_eq_false_iff, Option.isNone_iff_eq_none]
+    rw [@eq_comm _ none, ← Option.not_isSome_iff_eq_none, Decidable.imp_iff_not_or]
+    simp
 
 theorem reduceOption_singleton (x : Option α) : [x].reduceOption = x.toList := by cases x <;> rfl
 
