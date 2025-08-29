@@ -13,6 +13,12 @@ open Lean Meta
 
 namespace CategoryTheory
 
+/-
+#adaptation_note /- nightly-2025-08-25
+This used to be defined in Reassoc.lean as private directly before `registerReassocExpr`.
+-/
+-/
+
 /--
 IO ref for reassociation handlers `reassoc` attribute, so that it can be extended
 with additional handlers. Handlers take a proof of the equation.
@@ -20,4 +26,4 @@ with additional handlers. Handlers take a proof of the equation.
 The default handler is `reassocExprHom` for morphism reassociation.
 This will be extended in `Tactic.CategoryTheory.IsoReassoc` for isomorphism reassociation.
 -/
-initialize reassocImplRef : IO.Ref (Array (Expr → MetaM Expr)) ← IO.mkRef #[]
+initialize reassocImplRef : IO.Ref (Array (Expr → MetaM (Expr × Array MVarId))) ← IO.mkRef #[]
