@@ -8,7 +8,7 @@ import Mathlib.Geometry.RingedSpace.OpenImmersion
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 
 /-!
-# Gluing Structured spaces
+# Gluing structured spaces
 
 Given a family of gluing data of structured spaces (presheafed spaces, sheafed spaces, or locally
 ringed spaces), we may glue them together.
@@ -44,7 +44,7 @@ Since `Γ(𝒪_X, ι i '' U)` is the limit of `diagram_over_open`, the component
 sheaves of the spaces in the gluing diagram, we need to construct a map
 `ιInvApp_π_app : Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing diagram.
 
-We will refer to ![this diagram](https://i.imgur.com/P0phrwr.png) in the following doc strings.
+We will refer to ![this diagram](https://i.imgur.com/P0phrwr.png) in the following docstrings.
 The `X` is the glued space, and the dotted arrow is a partial inverse guaranteed by the fact
 that it is an open immersion. The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, _)` is given by the composition
 of the red arrows, and the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{V_{jk}}, _)` is given by the composition of the
