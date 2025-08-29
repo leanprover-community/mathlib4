@@ -65,6 +65,12 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [N
   ext
   simp
 
+/-- Decomposing `x : ι → R` as a sum along the canonical basis `Pi.single i 1` for `i : ι`. -/
+theorem pi_eq_sum_univ' {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
+    (x : ι → R) : x = ∑ i, (x i) • Pi.single (M := fun _ ↦ R) i 1 := by
+  convert pi_eq_sum_univ x
+  aesop
+
 section CommSemiring
 variable [CommSemiring R]
 

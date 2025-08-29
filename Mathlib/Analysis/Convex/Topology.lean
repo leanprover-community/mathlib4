@@ -43,10 +43,6 @@ end Real
 
 alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 
-/-! ### Standard simplex -/
-
-
-
 /-! ### Topological vector spaces -/
 section TopologicalSpace
 
