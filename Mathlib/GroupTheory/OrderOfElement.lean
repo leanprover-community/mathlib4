@@ -1225,6 +1225,8 @@ lemma Tuple.orderOf_eq : orderOf f = Finset.univ.lcm (fun i => orderOf (f i)) :=
 
 end Tuple
 
+/- TODO: I am not sure whether the `Tuple` section added is the corresponding `pi` lemmas
+that the original author of this comment below meant. Should this comment be removed? -/
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
 
 @[simp]
