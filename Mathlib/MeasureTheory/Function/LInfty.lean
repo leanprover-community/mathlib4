@@ -8,7 +8,7 @@ import Mathlib.MeasureTheory.Function.LpSpace.Basic
 import Mathlib.MeasureTheory.Function.Holder
 
 /-!
-# The `L∞` (i.e. `Lp _ ⊤`) API and pointwise multiplication
+# The API for multiplicative structure on `L∞`
 
 This file develops the basic results specific to `Lp R ∞ μ` when `R` is a
 `NormedRing`.  The main goal is to equip `L∞` with its natural pointwise multiplicative
