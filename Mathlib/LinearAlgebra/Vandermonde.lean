@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Vandermonde matrix
@@ -277,7 +278,7 @@ theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : F
       Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
 
 lemma det_vandermonde_id_eq_superFactorial (n : ℕ) :
-    (vandermonde fun (i : Fin (n + 1)) ↦ (i : R)).det = Nat.superFactorial n := by
+    (vandermonde fun i : Fin (n + 1) ↦ (i : R)).det = n.superFactorial := by
   induction' n with n hn
   · simp
   · rw [Nat.superFactorial, det_vandermonde, Fin.prod_univ_succAbove _ 0]
