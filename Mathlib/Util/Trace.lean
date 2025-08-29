@@ -14,8 +14,8 @@ namespace Mathlib.Meta
 
 /--
 A wrapper around `Lean.withTraceNode` where every node wraps a function `k : α → m β`.
-The resulting trace node includes output of the form `{a} ⇒ {(← k a)}` upon success,
-and `{a} ⇒ {err}` on error.
+The resulting trace node includes output of the form `{a} ==> {(← k a)}` upon success,
+and `{a} ==> {err}` on error.
 
 We do not include this result on the first line, as it would thwart attempts to group trace nodes
 from the same function name within the Firefox profiler data export.
@@ -25,7 +25,7 @@ Typically this should be used in extensible tactics like `norm_num` and `positiv
 def withTraceNodeApplication
   {α β : Type} {m : Type → Type} [Monad m] [MonadTrace m] [MonadRef m] [AddMessageContext m]
   [ToMessageData α] [ToMessageData β]
-  [MonadOptions m] [always : MonadAlwaysExcept Exception m] [MonadLiftT BaseIO m] (cls : Name)
+  [MonadOptions m] [MonadAlwaysExcept Exception m] [MonadLiftT BaseIO m] (cls : Name)
   (k_name : Name) (k : α → m β) (a : α) (collapsed : Bool := true) (tag : String := "") :
     m β :=
   withTraceNode cls
