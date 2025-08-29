@@ -173,6 +173,13 @@ example {a b : ℝ≥0∞} (ha : a = 0) (hb : b = a) : a + b + 3 < ∞ := by
   simp [hb]
   finiteness_nonterminal; simp [ha]
 
+-- `field_simp` is a rigidifier
+#guard_msgs in
+example {K : Type*} [Field K] (x y z : K) (hy : 1 - y ≠ 0) (h : x = z) (h' : (1 - y + y) = 1) :
+    x / (1 - y) / (1 + y / (1 - y)) = z := by
+  field_simp
+  rw [h', one_mul, h]
+
 --  `ring_nf` is a `rigidifier`: the "stain" of `simp` does not continue past `ring_nf`.
 -- So is `ring_nf!`.
 #guard_msgs in
