@@ -4716,6 +4716,7 @@ import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 import Mathlib.NumberTheory.Harmonic.GammaDeriv
 import Mathlib.NumberTheory.Harmonic.Int
 import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+import Mathlib.NumberTheory.IccSums
 import Mathlib.NumberTheory.JacobiSum.Basic
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.AbstractFuncEq
@@ -5017,7 +5018,6 @@ import Mathlib.Order.Interval.Finset.Box
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Interval.Finset.DenselyOrdered
 import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Order.Interval.Finset.IccSums
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Finset.SuccPred
 import Mathlib.Order.Interval.Lex
