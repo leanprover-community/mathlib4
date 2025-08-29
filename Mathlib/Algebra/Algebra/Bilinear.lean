@@ -261,6 +261,15 @@ end LinearMap
 
 open scoped RingTheory.LinearMap
 
+namespace NonUnitalAlgHom
+variable [CommSemiring R] [Semiring A] [Semiring B] [Module R A] [Module R B]
+  [SMulCommClass R A A] [IsScalarTower R A A] [SMulCommClass R B B] [IsScalarTower R B B]
+
+lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
+  TensorProduct.ext' <| by simp
+
+end NonUnitalAlgHom
+
 namespace AlgHom
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 

@@ -171,8 +171,12 @@ abbrev convSemiring : Semiring (C →ₗ[R] A) where
 
 scoped[ConvolutionProduct] attribute [instance] LinearMap.convSemiring
 
-lemma comp_mul_distrib (f g : C →ₗ[R] A) (h : A →ₐ B) :
-    h.toLinearMap.comp (f * g) = (.comp h.toLinearMap f) * (.comp h.toLinearMap g) := by
+lemma nonUnitalAlgHom_comp_convMul_distrib (f g : C →ₗ[R] A) (h : A →ₙₐ[R] B) :
+    (h : A →ₗ[R] B).comp (f * g) = .comp h f * .comp h g := by
+  simp only [convMul_def, map_comp, ← comp_assoc, NonUnitalAlgHom.comp_mul']
+
+lemma algHom_comp_convMul_distrib (f g : C →ₗ[R] A) (h : A →ₐ B) :
+    h.toLinearMap.comp (f * g) = h.toLinearMap.comp f * h.toLinearMap.comp g := by
   simp only [convMul_def, map_comp, ← comp_assoc, AlgHom.comp_mul']
 
 end Semiring

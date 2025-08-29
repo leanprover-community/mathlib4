@@ -370,6 +370,7 @@ protected def linearMap : R →ₗ[R] A :=
   { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
 
 @[inherit_doc] scoped[RingTheory.LinearMap] notation "η" => Algebra.linearMap _ _
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "η[" R "]" => Algebra.linearMap R _
 
 @[simp]
 theorem linearMap_apply (r : R) : Algebra.linearMap R A r = algebraMap R A r :=
