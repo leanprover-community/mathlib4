@@ -76,15 +76,11 @@ theorem Sphere.mk_radius (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).radius = r 
 theorem Sphere.mk_center_radius (s : Sphere P) : (⟨s.center, s.radius⟩ : Sphere P) = s := by
   ext <;> rfl
 
-/- Porting note: is a syntactic tautology
-theorem Sphere.coe_def (s : Sphere P) : (s : Set P) = Metric.sphere s.center s.radius :=
-  rfl -/
-
 @[simp]
 theorem Sphere.coe_mk (c : P) (r : ℝ) : ↑(⟨c, r⟩ : Sphere P) = Metric.sphere c r :=
   rfl
 
--- @[simp] -- Porting note: simp-normal form is `Sphere.mem_coe'`
+-- simp-normal form is `Sphere.mem_coe'`
 theorem Sphere.mem_coe {p : P} {s : Sphere P} : p ∈ (s : Set P) ↔ p ∈ s :=
   Iff.rfl
 

@@ -33,13 +33,13 @@ variable {σ R}
 
 lemma aevalMultiset_apply (m : Multiset S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R m p =
-      aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((esymmAlgEquiv R rfl).symm p) := rfl
+      aeval (fun i : Fin _ ↦ m.esymm (i + 1)) ((esymmAlgEquiv σ R rfl).symm p) := rfl
 
 theorem aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
     aevalMultiset σ R (Finset.univ.val.map f) p = aeval f (p : MvPolynomial σ R) := by
   rw [aevalMultiset_apply]
   conv_rhs =>
-    rw [← AlgEquiv.apply_symm_apply (esymmAlgEquiv R rfl) p]
+    rw [← AlgEquiv.apply_symm_apply (esymmAlgEquiv σ R rfl) p]
   simp_rw [esymmAlgEquiv_apply, esymmAlgHom_apply, ← aeval_esymm_eq_multiset_esymm σ R,
     ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
 
@@ -76,7 +76,7 @@ variable {σ R}
 lemma scaleAEvalRoots_apply (q : S[X]) (p : symmetricSubalgebra σ R) :
     scaleAEvalRoots σ R q p =
       aeval (fun i : Fin _ ↦ q.leadingCoeff ^ (i : ℕ) * (-1) ^ (↑i + 1 : ℕ) *
-        q.coeff (q.natDegree - (i + 1))) ((esymmAlgEquiv R rfl).symm p) :=
+        q.coeff (q.natDegree - (i + 1))) ((esymmAlgEquiv σ R rfl).symm p) :=
   rfl
 
 lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
@@ -87,7 +87,7 @@ lemma scaleAEvalRoots_eq_aevalMultiset (q : S[X]) (p : symmetricSubalgebra σ R)
   rw [scaleAEvalRoots_apply]
   trans aeval (fun i : Fin _ ↦ algebraMap S A (q.leadingCoeff ^ (i + 1 : ℕ)) *
     (q.map (algebraMap S A)).roots.esymm (↑i + 1))
-      ((esymmAlgEquiv R rfl).symm p)
+      ((esymmAlgEquiv σ R rfl).symm p)
   · simp_rw [← aeval_algebraMap_apply, Function.comp_def, map_mul, ← Polynomial.coeff_map]
     congr
     funext i

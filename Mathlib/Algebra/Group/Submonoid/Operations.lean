@@ -6,6 +6,7 @@ Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Faithful
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulAction
@@ -926,6 +927,60 @@ theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
   element. -/]
 theorem bot_or_exists_ne_one (S : Submonoid M) : S = ⊥ ∨ ∃ x ∈ S, x ≠ (1 : M) :=
   S.bot_or_nontrivial.imp_right S.nontrivial_iff_exists_ne_one.mp
+
+section Pi
+
+variable {ι : Type*} {M : ι → Type*} [∀ i, MulOneClass (M i)]
+
+/-- A version of `Set.pi` for submonoids. Given an index set `I` and a family of submodules
+`s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
+`f i` belongs to `Pi I s` whenever `i ∈ I`. -/
+@[to_additive /-- A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
+  of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
+  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
+def pi (I : Set ι) (S : ∀ i, Submonoid (M i)) : Submonoid (∀ i, M i) where
+  carrier := I.pi fun i => (S i).carrier
+  one_mem' i _ := (S i).one_mem
+  mul_mem' hp hq i hI := (S i).mul_mem (hp i hI) (hq i hI)
+
+@[to_additive]
+theorem coe_pi (I : Set ι) (S : ∀ i, Submonoid (M i)) :
+    (pi I S : Set (∀ i, M i)) = Set.pi I fun i => (S i : Set (M i)) :=
+  rfl
+
+@[to_additive]
+theorem mem_pi (I : Set ι) {S : ∀ i, Submonoid (M i)} {p : ∀ i, M i} :
+    p ∈ Submonoid.pi I S ↔ ∀ i, i ∈ I → p i ∈ S i :=
+  Iff.rfl
+
+@[to_additive]
+theorem pi_top (I : Set ι) : (pi I fun i => (⊤ : Submonoid (M i))) = ⊤ :=
+  ext fun x => by simp [mem_pi]
+
+@[to_additive]
+theorem pi_empty (H : ∀ i, Submonoid (M i)) : pi ∅ H = ⊤ :=
+  ext fun x => by simp [mem_pi]
+
+@[to_additive]
+theorem pi_bot : (pi Set.univ fun i => (⊥ : Submonoid (M i))) = ⊥ :=
+  ext fun x => by simp [mem_pi, funext_iff]
+
+@[to_additive]
+theorem le_pi_iff {I : Set ι} {S : ∀ i, Submonoid (M i)} {J : Submonoid (∀ i, M i)} :
+    J ≤ pi I S ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom M i) (S i) :=
+  Set.subset_pi_iff
+
+@[to_additive (attr := simp)]
+theorem mulSingle_mem_pi [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M i)} (i : ι) (x : M i) :
+    Pi.mulSingle i x ∈ pi I S ↔ i ∈ I → x ∈ S i :=
+  Set.update_mem_pi_iff_of_mem (one_mem (pi I _))
+
+@[to_additive]
+theorem pi_eq_bot_iff (S : ∀ i, Submonoid (M i)) : pi Set.univ S = ⊥ ↔ ∀ i, S i = ⊥ := by
+  simp_rw [SetLike.ext'_iff]
+  exact Set.univ_pi_eq_singleton_iff
+
+end Pi
 
 end Submonoid
 
