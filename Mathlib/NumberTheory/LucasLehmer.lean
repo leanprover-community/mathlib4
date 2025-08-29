@@ -505,9 +505,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
-  simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
-    simp only [add_tsub_cancel_right, ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_succ_pos,
-      cast_pred, cast_pow, cast_ofNat] at h
+  replace h : 2 ^ (p' + 2) - 1 ∣ s p' := by simpa [ZMod.intCast_zmod_eq_zero_iff_dvd] using h
   obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h
@@ -561,11 +559,9 @@ theorem order_ω (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
   -- the order of ω divides 2^p
   · exact Nat.prime_two
   · intro o
-    have ω_pow := orderOf_dvd_iff_pow_eq_one.1 o
-    replace ω_pow :=
-      congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) ω_pow
-    simp? at ω_pow says
-      simp only [Units.coeHom_apply, Units.val_pow_eq_pow_val, ωUnit_coe, Units.val_one] at ω_pow
+    have ω_pow :=
+      congr_arg (Units.coeHom (X (q (p' + 2))) : Units (X (q (p' + 2))) → X (q (p' + 2))) <|
+        orderOf_dvd_iff_pow_eq_one.1 o
     have h : (1 : ZMod (q (p' + 2))) = -1 :=
       congr_arg Prod.fst (ω_pow.symm.trans (ω_pow_eq_neg_one p' h))
     haveI : Fact (2 < (q (p' + 2) : ℕ)) := ⟨two_lt_q _⟩

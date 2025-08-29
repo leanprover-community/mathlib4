@@ -239,14 +239,14 @@ variable {ι 𝕜}
 abbrev EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
 
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a continuous linear map. -/
-abbrev EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 := PiLp.proj _ _ i
+abbrev EuclideanSpace.proj (i : ι) : StrongDual 𝕜 (EuclideanSpace 𝕜 ι) := PiLp.proj _ _ i
 
 section DecEq
 
 variable [DecidableEq ι]
 
 -- TODO : This should be generalized to `PiLp`.
-/-- The vector given in euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
+/-- The vector given in Euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
 all other coordinates. -/
 def EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι :=
   toLp _ (Pi.single i a)
@@ -321,7 +321,7 @@ section finAddEquivProd
 `EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
 
 See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
-where the RHS is equipped with the euclidean norm rather than the supremum norm. -/
+where the RHS is equipped with the Euclidean norm rather than the supremum norm. -/
 abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
