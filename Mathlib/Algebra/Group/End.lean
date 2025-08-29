@@ -32,7 +32,7 @@ end monoid, aut group
 
 assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
-variable {A M G α β : Type*}
+variable {A M G α β γ : Type*}
 
 /-! ### Type endomorphisms -/
 
@@ -274,17 +274,19 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/
 @[simp]
-theorem permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
   rfl
+
+@[deprecated (since := "2025-08-29")] alias permCongr_eq_mul := Equiv.permCongr_eq_mul
 
 @[simp]
 lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
     e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
   permCongr_trans e q p |>.symm
 
-def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β :=
-  { toEquiv := e.permCongr
-    map_mul' p q := e.permCongr_mul p q }
+def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
+  toEquiv := e.permCongr
+  map_mul' p q := e.permCongr_mul p q
 
 attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
 extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
@@ -292,12 +294,12 @@ extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`.
 @[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
 
 @[simp]
-theorem _root_.Equiv.permCongrHom_symm {α β : Type*} (e : α ≃ β) :
+theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
     e.permCongrHom.symm = e.symm.permCongrHom :=
   rfl
 
 @[simp]
-theorem _root_.Equiv.permCongrHom_trans {α β γ : Type*} (e : α ≃ β) (e' : β ≃ γ) :
+theorem _root_.Equiv.permCongrHom_trans (e : α ≃ β) (e' : β ≃ γ) :
     e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
   rfl
 
