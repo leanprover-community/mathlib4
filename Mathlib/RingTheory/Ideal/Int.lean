@@ -108,7 +108,4 @@ theorem Nat.absNorm_under_prime (P : Ideal R) [P.IsPrime] [NeZero P] :
     contrapose! this
     exact eq_bot_of_comap_eq_bot this
 
-instance Nat.prime_absNorm (P : Ideal R) [P.IsPrime] [NeZero P] :
-    Fact (absNorm (under ℤ P)).Prime := ⟨absNorm_under_prime P⟩
-
 end CommRing
