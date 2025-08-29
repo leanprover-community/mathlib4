@@ -86,11 +86,11 @@ See the Heuristics section of the `to_additive` doc-string for more details.
 If a declaration is not tagged, it is presumed that the first argument is relevant.
 
 To indicate that there is no relevant argument, set it to a number that is out of bounds,
-i.e. larger than the number of arguments, e.g. `(relevant_arg := 100)`
+i.e. larger than the number of arguments, e.g. `(relevant_arg := 100)`.
 
 Implementation note: we only allow exactly 1 relevant argument, even though some declarations
 (like `Prod.instGroup`) have multiple arguments with a multiplicative structure on it.
-The reason is that whether we additivize a declaration is an all-or-nothing decision, and if
+The reason is that whether we additivize a declaration is an all-or-nothing decision, and
 we will not be able to additivize declarations that (e.g.) talk about multiplication on `ℕ × α`
 anyway.
 -/
@@ -247,6 +247,8 @@ mismatch error.
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
     Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
+  * If none of the arguments have a multiplicative structure, then the heuristic should not apply at
+    all. This can be achieved by setting `relevant_arg` out of bounds, e.g. `(relevant_arg := 100)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
@@ -254,7 +256,7 @@ mismatch error.
     The reason is that `@[to_additive]` doesn't additivize declarations if their first argument
     contains fixed types like `ℕ` or `ℝ`. See section Heuristics.
     If the first argument is not the argument with a multiplicative type-class, `@[to_additive]`
-    should have automatically added the attribute `(relevant_arg := ...)]` to the declaration.
+    should have automatically added the attribute `(relevant_arg := ...)` to the declaration.
     You can test this by running the following (where `d` is the full name of the declaration):
     ```
       open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
