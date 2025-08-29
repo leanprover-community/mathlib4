@@ -9,7 +9,7 @@ import Mathlib.Data.Seq.Computation
 /-!
 # Possibly infinite lists
 
-This file provides a `Stream'.Seq α` type representing possibly infinite lists (referred here as
+This file provides `Stream'.Seq α`, a type representing possibly infinite lists (referred here as
 sequences). It is encoded as an infinite stream of options such that if `f n = none`, then
 `f m = none` for all `m ≥ n`.
 
