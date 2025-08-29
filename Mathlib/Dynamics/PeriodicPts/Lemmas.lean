@@ -136,7 +136,7 @@ theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map 
 variable {α : (i : Fin n) → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
 
 theorem Tuple.minimalPeriod :
-    minimalPeriod sorry x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
+    minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   sorry
 
 end Function
