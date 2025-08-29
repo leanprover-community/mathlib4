@@ -34,6 +34,8 @@ For `G : Graph α β`, ...
 * `G.Adj x y` means that there is an edge `e` having `x` and `y` as its ends.
 * `G.IsLoopAt e x` means that `e` is a loop edge with both ends equal to `x`.
 * `G.IsNonloopAt e x` means that `e` is a non-loop edge with one end equal to `x`.
+* `G.incidenceSet x` is the set of edges incident to `x`.
+* `G.loopSet x` is the set of loops with both ends equal to `x`.
 
 ## Implementation notes
 
@@ -327,5 +329,27 @@ protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
     G₁ = G₂ :=
   Graph.ext hV fun _ _ _ ↦ by simp_rw [isLink_iff_inc, h]
+
+/-! ### Sets of edges or loops incident to a vertex -/
+
+/-- `G.incidenceSet x` is the set of edges incident to `x` in `G`. -/
+def incidenceSet (x : α) : Set β := {e | G.Inc e x}
+
+@[simp]
+theorem mem_incidenceSet (x : α) (e : β) : e ∈ G.incidenceSet x ↔ G.Inc e x :=
+  Iff.rfl
+
+theorem incidenceSet_subset_edgeSet (x : α) : G.incidenceSet x ⊆ E(G) :=
+  fun _ ⟨_, hy⟩ ↦ hy.edge_mem
+
+/-- `G.loopSet x` is the set of loops at `x` in `G`. -/
+def loopSet (x : α) : Set β := {e | G.IsLoopAt e x}
+
+@[simp]
+theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
+  Iff.rfl
+
+/-- The loopSet is included in the incidenceSet. -/
+theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
 
 end Graph
