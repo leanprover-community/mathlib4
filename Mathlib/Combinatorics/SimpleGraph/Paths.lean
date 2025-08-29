@@ -251,7 +251,7 @@ lemma IsPath.mem_support_iff_exists_append {u v w : V} {p : G.Walk u v} (hp : p.
     exact ⟨q, r, hq, hr, hqr⟩
   · intro ⟨q, r, hq, hr, hqr⟩
     exact p.mem_support_iff_exists_append.mpr ⟨q, r, hqr⟩
-    
+
 lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (hpq : (p.append q).IsPath) (hq : ¬q.Nil) : p.support.Disjoint q.tail.support := by
   have hpq' := hpq.support_nodup
