@@ -548,7 +548,7 @@ theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| �
   exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
-For fixed `n` this is just a linear map wrt `r`, and each map is a simple linear function
+For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function
 of the previous (see `expNear_succ`), with `expNear n x r ⟶ exp x` as `n ⟶ ∞`,
 for any `r`. -/
 noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
@@ -571,7 +571,7 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  · field_simp [mul_comm]
+  · simp [field]
   · omega
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -598,6 +598,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
   field_simp [show (m : ℝ) ≠ 0 by norm_cast; omega]
+  simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
     |exp x - a| ≤ b := by simpa using h
