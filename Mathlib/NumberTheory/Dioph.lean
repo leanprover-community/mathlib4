@@ -481,8 +481,8 @@ theorem diophFn_compn :
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
-            congr! 1
-            ext x; obtain _ | _ | _ := x <;> rfl
+            congr! 3 with x
+            obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
     (df : VectorAllP DiophFn f) : Dioph {v | (fun i => f i v) ∈ S} :=
