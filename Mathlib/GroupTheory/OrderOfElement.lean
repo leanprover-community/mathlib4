@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.GCDMonoid.Finset
---import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Finite
@@ -374,7 +374,7 @@ lemma IsOfFinOrder.isUnit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : IsUnit 
 variable (x)
 
 @[to_additive]
-theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n := by
+theorem orderOf_pow' (h : n ≠ 0) : orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n := by
   unfold orderOf
   rw [← minimalPeriod_iterate_eq_div_gcd h, mul_left_iterate]
 
@@ -392,7 +392,7 @@ variable (n)
 
 @[to_additive]
 protected lemma IsOfFinOrder.orderOf_pow (h : IsOfFinOrder x) :
-    orderOf (x ^ n) = orderOf x / gcd (orderOf x) n := by
+    orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n := by
   unfold orderOf
   rw [← minimalPeriod_iterate_eq_div_gcd' h, mul_left_iterate]
 
@@ -434,7 +434,7 @@ theorem orderOf_dvd_lcm_mul (h : Commute x y) :
       _root_.pow_succ, mul_assoc]
   exact
     (((Commute.refl x).mul_right h).pow_left _).orderOf_mul_dvd_lcm.trans
-      (lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (dvd_lcm_left _ _), dvd_lcm_right _ _⟩)
+      (Nat.lcm_dvd_iff.2 ⟨(orderOf_pow_dvd _).trans (Nat.dvd_lcm_left _ _), Nat.dvd_lcm_right _ _⟩)
 
 @[to_additive addOrderOf_add_dvd_mul_addOrderOf]
 theorem orderOf_mul_dvd_mul_orderOf (h : Commute x y) :
@@ -466,10 +466,10 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsO
   have hoy := hy.orderOf_pos
   have hxy := dvd_of_forall_prime_mul_dvd hdvd
   apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
-  · exact h.orderOf_mul_dvd_lcm.trans (lcm_dvd hxy dvd_rfl)
+  · exact h.orderOf_mul_dvd_lcm.trans (Nat.lcm_dvd hxy dvd_rfl)
   refine fun p hp hpy hd => hp.ne_one ?_
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff_mul_dvd hpy]
-  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)
+  refine (orderOf_dvd_lcm_mul h).trans (Nat.lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 
@@ -811,7 +811,7 @@ automatic in the case of a finite cancellative monoid. -/
 @[to_additive /-- This is the same as `addOrderOf_nsmul'` and
 `addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid. -/]
-theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n :=
+theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / Nat.gcd (orderOf x) n :=
   (isOfFinOrder_of_finite _).orderOf_pow ..
 
 @[to_additive]
