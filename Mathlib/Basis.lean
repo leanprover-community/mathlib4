@@ -184,8 +184,7 @@ example {K : Type*} [Field K] [NumberField K] (E F : IntermediateField ℚ K)
     (h₁ : E.LinearDisjoint F)
     (h₂ : IsCoprime ((differentIdeal ℤ (𝓞 E)).map (algebraMap (𝓞 E) (𝓞 K)))
       ((differentIdeal ℤ (𝓞 F)).map (algebraMap (𝓞 F) (𝓞 K)))) (α : 𝓞 E) (β : 𝓞 F)
-    (hα : IsIntegralClosure (Algebra.adjoin ℤ {α}) ℤ E)
-    (hβ : IsIntegralClosure (Algebra.adjoin ℤ {β}) ℤ F) :
-    IsIntegralClosure (Algebra.adjoin ℤ
-      {algebraMap (𝓞 E) (𝓞 K) α, algebraMap (𝓞 F) (𝓞 K) β}) ℤ K := by
+    (hα : Algebra.adjoin ℤ {α} = ⊤)
+    (hβ : Algebra.adjoin ℤ {β} = ⊤) :
+    Algebra.adjoin ℤ {algebraMap (𝓞 E) (𝓞 K) α, algebraMap (𝓞 F) (𝓞 K) β} = ⊤ := by
   sorry
