@@ -58,6 +58,24 @@ variable {M X Y : C} [Mon_Class M]
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
+/-- Transfer `Mon_Class` along an isomorphism. -/
+def ofIso (e : M ≅ X) : Mon_Class X where
+  one := η[M] ≫ e.hom
+  mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
+  one_mul := by
+    rw [← cancel_epi (λ_ X).inv]
+    simp only [comp_whiskerRight, tensorHom_def, Category.assoc,
+      hom_inv_whiskerRight_assoc]
+    simp [← tensorHom_def_assoc, leftUnitor_inv_comp_tensorHom_assoc]
+  mul_one := by
+    rw [← cancel_epi (ρ_ X).inv]
+    simp only [MonoidalCategory.whiskerLeft_comp, tensorHom_def', Category.assoc,
+      whiskerLeft_hom_inv_assoc, Iso.inv_hom_id]
+    simp [← tensorHom_def'_assoc, rightUnitor_inv_comp_tensorHom_assoc]
+  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id, ← tensor_comp_assoc,
+      -associator_conjugation, associator_naturality_assoc] using
+      congr(((e.inv ⊗ₘ e.inv) ⊗ₘ e.inv) ≫ $(Mon_Class.mul_assoc M) ≫ e.hom)
+
 @[simps]
 instance : Mon_Class (𝟙_ C) where
   one := 𝟙 _
