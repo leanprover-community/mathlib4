@@ -28,13 +28,15 @@ variable {α β : Type u} {s : Set α} {f : α → Set β}
 This is not a global instance because it does not have computational content,
 so it does not make much sense using `do` notation in general.
 Plus, this would cause monad-related coercions and monad lifting logic to become activated.
-Either use `attribute [local instance] Set.monad` to make it be a local instance
-or use `SetM.run do ...` when `do` notation is wanted. -/
-protected def monad : Monad.{u} Set where
+Either use `attribute [local instance] Set.monad Set.instAlternativeMonad` to make it be a local
+instance or use `SetM.run do ...` when `do` notation is wanted. -/
+protected def monad : AlternativeMonad.{u} Set where
   pure a := {a}
   bind s f := ⋃ i ∈ s, f i
   seq s t := Set.seq s (t ())
   map := Set.image
+  orElse s t := s ∪ (t ())
+  failure := ∅
 
 section with_instance
 attribute [local instance] Set.monad
@@ -72,10 +74,6 @@ instance : LawfulMonad Set := LawfulMonad.mk'
 instance : CommApplicative (Set : Type u → Type u) :=
   ⟨fun s t => prod_image_seq_comm s t⟩
 
-instance : AlternativeMonad Set where
-  orElse s t := s ∪ (t ())
-  failure := ∅
-
 instance : LawfulAlternative Set where
   map_failure _ := Set.image_empty _
   failure_seq _ := Set.image2_empty_left
@@ -111,9 +109,10 @@ The `Monad` instance gives a coercion using the internal function `Lean.Internal
 In practice this is only used for applying the `Set` functor to `Subtype.val`,
 as was defined in `Data.Set.Notation`. -/
 
+attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
+    @Lean.Internal.coeM Set s α _ _ t = (t : Set α) := by
   change ⋃ (x ∈ t), {x.1} = _
   ext
   simp
@@ -142,7 +141,7 @@ end Set
 /-- This is `Set` but with a `Monad` instance. -/
 def SetM (α : Type u) := Set α
 
-instance : Monad SetM := Set.monad
+instance : AlternativeMonad SetM := Set.monad
 
 /-- Evaluates the `SetM` monad, yielding a `Set`.
 Implementation note: this is the identity function. -/
