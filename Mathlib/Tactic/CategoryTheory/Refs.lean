@@ -15,7 +15,7 @@ open Lean Meta
 
 namespace CategoryTheory
 
-#adaptation_note /- nightly-2025-08-25
+#adaptation_note /-- nightly-2025-08-25
 This used to be defined in Reassoc.lean before `registerReassocExpr`.
 -/
 
@@ -69,7 +69,7 @@ isomorphisms, provided that `Tactic.CategoryTheory.IsoReassoc` has been imported
 -/
 syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
-#adaptation_note /- nightly-2025-08-25
+#adaptation_note /-- nightly-2025-08-25
 This used to be private.
 -/
 
