@@ -362,8 +362,8 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
   · rw [Nat.mod_zero, tsub_self, zero_mul, Nat.zero_div, zero_add]
     have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
     rw [Fintype.card_fin] at this; convert this; exact turanGraph_zero
-  · have ring₁ : ∀ n, (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
-        n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := fun n ↦ by
+  · have ring₁ (n) : (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) =
+        n % r * (n / r) * (r - 1) + r * (r - 1) * (n / r) ^ 2 / 2 := by
       nth_rw 1 [← Nat.mod_add_div n r, Nat.sq_sub_sq, add_tsub_cancel_left,
         show (n % r + r * (n / r) + n % r) * (r * (n / r)) * (r - 1) =
           (2 * ((n % r) * (n / r) * (r - 1)) + r * (r - 1) * (n / r) ^ 2) * r by grind]
@@ -378,7 +378,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
       rw [n'r, card_edgeFinset_turanGraph_add, card_edgeFinset_turanGraph, ring₁, ring₁,
         add_rotate, ← add_assoc, Nat.add_mod_right, Nat.add_div_right _ hr]
       congr 1
-      have rd : 2 ∣ r * (r - 1) := by rw [← even_iff_two_dvd]; exact Nat.even_mul_pred_self r
+      have rd : 2 ∣ r * (r - 1) := (Nat.even_mul_pred_self _).two_dvd
       rw [← Nat.div_mul_right_comm rd, ← Nat.div_mul_right_comm rd, ← Nat.choose_two_right]
       have ring₂ : n' % r * (n' / r + 1) * (r - 1) + r.choose 2 * (n' / r + 1) ^ 2 =
           n' % r * (n' / r + 1) * (r - 1) + r.choose 2 +
