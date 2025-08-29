@@ -393,6 +393,11 @@ example {K : Type*} [Field K] (hK : ∀ x : K, x ^ 2 + 1 ≠ 0) (x : K) :
     1 / (x ^ 2 + 1) + x ^ 2 / (x ^ 2 + 1) = 1 := by
   field [hK]
 
+-- testing that mdata is cleared before parsing goal
+example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
+  have : 1 = 1 := rfl
+  field
+
 -- `field` will suggest `field_simp` on failure, if `field_simp` does anything.
 /--
 info: Try this: field_simp
