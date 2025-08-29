@@ -26,9 +26,10 @@ sequences). It is encoded as an infinite stream of options such that if `f n = n
 One can convert between sequences and other types: `List`, `Stream'`, `MLList` using corresponding
 functions defined in this file.
 
-There are also a number of operations on sequences mirroring those on lists: `Seq.map`, `Seq.zip`,
-`Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`, `Seq.splitAt`, `Seq.append`,
-`Seq.join`, `Seq.enum`, as well as a cases principle `Seq.recOn` which allows one to reason about
+There are also a number of operations and predicates on sequences mirroring those on lists:
+`Seq.map`, `Seq.zip`, `Seq.zipWith`, `Seq.unzip`, `Seq.fold`, `Seq.update`, `Seq.drop`,
+`Seq.splitAt`, `Seq.append`, `Seq.join`, `Seq.enum`, `Seq.All`, `Seq.Pairwire`,
+as well as a cases principle `Seq.recOn` which allows one to reason about
 sequences by cases (`nil` and `cons`).
 
 ## Main statements
@@ -350,7 +351,7 @@ attribute [nolint simpNF] BisimO.eq_3
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
--- If two streams are bisimilar, then they are equal
+/-- If two streams are bisimilar, then they are equal. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
@@ -376,6 +377,37 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         exact False.elim this
       · simp
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
+
+/-- Version of `eq_of_bisim` that looks more like an induction principle. -/
+theorem eq_of_bisim' {s₁ s₂ : Seq α}
+    (motive : Seq α → Seq α → Prop)
+    (base : motive s₁ s₂)
+    (step : ∀ s₁ s₂, motive s₁ s₂ →
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂') ∨
+      (s₁ = nil ∧ s₂ = nil)) : s₁ = s₂ := by
+  apply eq_of_bisim motive _ base
+  intro s₁ s₂ h
+  rcases step s₁ s₂ h with (⟨_, _, _, h₁, h₂, _⟩ | ⟨h_nil₁, h_nil₂⟩)
+  · simpa [h₁, h₂]
+  · simp [h_nil₁, h_nil₂]
+
+/-- Version of `eq_of_bisim'` that requires only `s₁ = s₂`
+instead of `s₁ = nil ∧ s₂ = nil` in `step`. -/
+theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
+    (motive : Seq α → Seq α → Prop)
+    (base : motive s₁ s₂)
+    (step : ∀ s₁ s₂, motive s₁ s₂ →
+      (s₁ = s₂) ∨
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ (motive s₁' s₂'))) : s₁ = s₂ := by
+  let motive' : Seq α → Seq α → Prop := fun s₁ s₂ => s₁ = s₂ ∨ motive s₁ s₂
+  apply eq_of_bisim' motive' (by grind)
+  intro s₁ s₂ ih
+  simp only [motive'] at ih ⊢
+  rcases ih with (rfl | ih)
+  · cases s₁ <;> grind
+  rcases step s₁ s₂ ih with (rfl | ⟨hd, s₁', s₂', _⟩)
+  · cases s₁ <;> grind
+  · grind
 
 end Bisim
 
@@ -510,6 +542,13 @@ instance : Membership α (Seq α) :=
 -- Cannot be @[simp] because `n` can not be inferred by `simp`.
 theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x ∈ s := ⟨n, h.symm⟩
 
+theorem mem_iff_exists_get? {s : Seq α} {x : α} : x ∈ s ↔ ∃ i, some x = s.get? i where
+  mp h := by
+    change (some x ∈ s.1) at h
+    rwa [Stream'.mem_iff_exists_get_eq] at h
+  mpr h := get?_mem h.choose_spec.symm
+
+@[simp]
 theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 
 @[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
@@ -745,6 +784,30 @@ def update (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
 (`s` terminates earlier), the sequence is left unchanged. -/
 def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
   update s n fun _ ↦ a
+
+/-!
+### Predicates on sequences
+-/
+
+/-- `s.All p` means that the predicate `p` is true on each element of `s`. -/
+def All (s : Seq α) (p : α → Prop) : Prop := ∀ x ∈ s, p x
+
+/--
+`Pairwise R s` means that all the elements with earlier indexes are
+`R`-related to all the elements with later indexes.
+```
+Pairwise R [1, 2, 3] ↔ R 1 2 ∧ R 1 3 ∧ R 2 3
+```
+For example if `R = (· ≠ ·)` then it asserts `s` has no duplicates,
+and if `R = (· < ·)` then it asserts that `s` is (strictly) sorted.
+-/
+def Pairwise (R : α → α → Prop) (s : Seq α) : Prop :=
+  ∀ i j x y, i < j → s.get? i = .some x → s.get? j = .some y → R x y
+
+/-- `s₁.AtLeastAsLongAs s₂` means that `s₁` has at least as many elements as sequence `s₂`.
+In particular, they both may be infinite. -/
+def AtLeastAsLongAs (a : Seq α) (b : Seq β) : Prop :=
+  ∀ n, a.TerminatedAt n → b.TerminatedAt n
 
 end Seq
 
