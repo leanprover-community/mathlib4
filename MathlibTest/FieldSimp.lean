@@ -273,6 +273,16 @@ example (hx : x ≠ 0) (hy : y ≠ 0) : P ((x * y) * (y * x)⁻¹) := by test_fi
 #guard_msgs in
 example (hy : y ≠ 0) : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
+/-- info: P (x / (1 - y + y)) -/
+#guard_msgs in
+example (hy : 1 - y ≠ 0): P (x / (1 - y) / (1 + y / (1 - y))) := by test_field_simp
+
+-- test `conv` tactic
+example (hy : 1 - y ≠ 0) : P (x / (1 - y) / (1 + y / (1 - y))) := by
+  conv => enter [1]; field_simp
+  guard_target = P (x / (1 - y + y))
+  exact test_sorry
+
 /-! ### Three atoms -/
 
 /-- info: P (x * y * z) -/
