@@ -915,12 +915,12 @@ end IsCommMon
 
 variable (M) in
 @[reassoc (attr := simp)]
-lemma Mon_Class.mul_mul_mul_comm [IsCommMon M] :
+lemma MonObj.mul_mul_mul_comm [IsCommMon M] :
     tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 variable (M) in
 @[reassoc (attr := simp)]
-lemma Mon_Class.mul_mul_mul_comm' [IsCommMon M] :
+lemma MonObj.mul_mul_mul_comm' [IsCommMon M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 end

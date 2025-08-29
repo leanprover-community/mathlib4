@@ -26,9 +26,13 @@ namespace MonObj
 instance : IsMon_Hom (toUnit M) where
 
 instance : IsMon_Hom η[M] where
+  mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
 theorem lift_lift_assoc {A : C} {B : C} [MonObj B] (f g h : A ⟶ B) :
     lift (lift f g ≫ μ) h ≫ μ = lift f (lift g h ≫ μ) ≫ μ := by
+  have := lift (lift f g) h ≫= mul_assoc B
+  rwa [lift_whiskerRight_assoc, lift_lift_associator_hom_assoc, lift_whiskerLeft_assoc] at this
+
 @[reassoc (attr := simp)]
 theorem lift_comp_one_left {A : C} {B : C} [MonObj B] (f : A ⟶ 𝟙_ C) (g : A ⟶ B) :
     lift (f ≫ η) g ≫ μ = g := by
