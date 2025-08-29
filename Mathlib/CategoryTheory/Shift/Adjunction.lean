@@ -532,7 +532,7 @@ instance : (Equivalence.refl C).inverse.CommShift A := by
 /--
 The identity equivalence is compatible with shifts.
 -/
-instance : (rfl (C := C)).CommShift A := by
+instance : (Equivalence.refl C).CommShift A := by
   dsimp [Equivalence.CommShift, refl_toAdjunction]
   infer_instance
 
