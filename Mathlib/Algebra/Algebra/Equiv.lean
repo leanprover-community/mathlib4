@@ -550,6 +550,15 @@ lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective
 lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
     AlgHomClass.toAlgHom (ofBijective f hf) = f := rfl
 
+lemma ofBijective_apply_symm_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₂) :
+    f ((ofBijective f hf).symm x) = x :=
+  (ofBijective f hf).apply_symm_apply x
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₁) :
+    (ofBijective f hf).symm (f x) = x :=
+  (ofBijective f hf).symm_apply_apply x
+
 section OfLinearEquiv
 
 variable (l : A₁ ≃ₗ[R] A₂) (map_one : l 1 = 1) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
