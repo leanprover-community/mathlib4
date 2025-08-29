@@ -10,7 +10,7 @@ import Mathlib.Algebra.Order.Archimedean.Class
 import Mathlib.Algebra.Order.Module.Basic
 
 /-!
-# Archimedean classes for ordered module.
+# Archimedean classes for ordered module
 
 ## Main definitions
 * `ArchimedeanClass.ball` are `ArchimedeanClass.ballAddSubgroup` as a submodules.
