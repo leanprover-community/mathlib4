@@ -284,9 +284,9 @@ lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
     e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
   permCongr_trans e q p |>.symm
 
-def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β :=
-  { toEquiv := e.permCongr
-    map_mul' p q := e.permCongr_mul p q }
+def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
+  toEquiv := e.permCongr
+  map_mul' p q := e.permCongr_mul p q
 
 attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
 extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
