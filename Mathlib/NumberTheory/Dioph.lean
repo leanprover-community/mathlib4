@@ -464,8 +464,7 @@ theorem diophFn_compn :
   | 0, S, d, f => fun _ =>
     ext (reindex_dioph _ (id ⊗ Fin2.elim0) d) fun v => by
       dsimp
-      apply iff_of_eq
-      congr 1
+      congr! 1
       ext x; obtain _ | _ | _ := x; rfl
   | succ n, S, d, f =>
     f.consElim fun f fl => by
@@ -476,15 +475,13 @@ theorem diophFn_compn :
                 reindex_diophFn inl df)
               fun v => by
                 dsimp
-                apply iff_of_eq
-                congr 1
+                congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
             @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
-            apply iff_of_eq
-            congr 1
+            congr! 1
             ext x; obtain _ | _ | _ := x <;> rfl
 
 theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α → ℕ) → ℕ) n)
