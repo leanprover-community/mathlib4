@@ -9,7 +9,7 @@ import Mathlib.Data.Int.Star
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
-import Mathlib.Order.Interval.Finset.IccSums
+import Mathlib.NumberTheory.IccSums
 
 /-!
 # Eisenstein Series E2
@@ -27,7 +27,6 @@ open ModularForm EisensteinSeries  TopologicalSpace  intervalIntegral
 open scoped Interval Real Topology BigOperators Nat
 
 noncomputable section
-
 
 /-- This is an auxilary summand used to define the Eisenstein serires `G2`. -/
 def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' (n : ℤ), eisSummand 2 ![m, n] z
@@ -131,8 +130,8 @@ lemma G2_q_exp (z : ℍ) : G2 z = (2 * riemannZeta 2) - 8 * π ^ 2 *
 
 section transform
 
-lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClass ℤ F] {f : ℤ → F}
-    (hc : CauchySeq fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
+private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClass ℤ F]
+    {f : ℤ → F} (hc : CauchySeq fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) N, f m) (hs : ∀ n , f n = f (-n)) :
     Tendsto f atTop (𝓝 0) := by
   simp only [cauchySeq_iff_le_tendsto_0, Metric.tendsto_atTop, gt_iff_lt, ge_iff_le,
     dist_zero_right, Real.norm_eq_abs] at *
@@ -140,8 +139,8 @@ lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClas
   intro ε hε
   obtain ⟨N, hN⟩ := (Hg (2 * ε) (by positivity))
   refine ⟨N + 1, fun n hn => ?_⟩
-  have H3 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
-  rw [sum_Icc_add_endpoints f (by omega)] at H3
+  have H2 := (H n.natAbs (n -1).natAbs N (by omega) (by omega))
+  rw [sum_Icc_add_endpoints f (by omega)] at H2
   have h1 : |n| = n := by
     rw [abs_eq_self]
     omega
@@ -151,7 +150,7 @@ lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [NormSMulClas
   have := norm_smul (2 : ℤ) (f n)
   simp only [Nat.cast_natAbs, h1, Int.cast_eq, ← hs n, (two_mul (f n)).symm, neg_sub, h2,
     Int.cast_sub, Int.cast_one, dist_add_self_left, zsmul_eq_mul, Int.cast_ofNat] at *
-  simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H3 (le_abs_self (g N)))
+  simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H2 (le_abs_self (g N)))
     (hN N (by rfl))
 
 lemma aux_tendsto_Ico (z : ℍ) : Tendsto (fun (N : ℕ) ↦ ∑ m ∈ Ico (-(N : ℤ)) N, e2Summand m z) atTop
@@ -175,11 +174,10 @@ lemma G2_Ico (z : ℍ) : G2 z = limUnder atTop (fun N : ℕ ↦ ∑ m ∈ Ico (-
     rw [Pi.sub_apply, sum_Icc_eq_sum_Ico_succ _ (by omega), sub_add_cancel_left]
   simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma aux_cauchySeq_Ico (z : ℍ) :
-  CauchySeq fun N : ℕ ↦ ∑ m ∈ Finset.Ico (-N : ℤ) N, e2Summand m z := by
-    apply Filter.Tendsto.cauchySeq
-    apply ((Filter.limUnder_eq_iff (Exists.intro _ (aux_tendsto_Ico z))).mp (G2_Ico z).symm).congr
-    simp
+lemma aux_cauchySeq_Ico (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
+  apply Filter.Tendsto.cauchySeq
+  apply ((Filter.limUnder_eq_iff (Exists.intro _ (aux_tendsto_Ico z))).mp (G2_Ico z).symm).congr
+  simp
 
 lemma limUnder_mul_const {α : Type*} [Preorder α] [(atTop : Filter α).NeBot] (f : α → ℂ)
     (hf : CauchySeq f) (c : ℂ) : c * (limUnder atTop f)= limUnder atTop (c • f) := by
@@ -197,21 +195,27 @@ theorem aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     rw [← tsum_mul_left, ← tsum_int_eq_tsum_neg]
     apply tsum_congr
     intro d
-    rw [← mul_inv]
-    congr 1
-    rw [show ((d : ℂ) * ↑z + ↑n) ^ 2 = (-↑d * ↑z - ↑n) ^ 2 by ring, ← mul_pow]
-    simp only [Int.cast_neg, neg_mul]
-    field_simp [mul_add, ne_zero z]
-    ring
+    rw [← mul_inv,  ← mul_pow, ← neg_pow_two]
+    congr
+    field_simp [ne_zero z]
+    simp
   · exact fun i hi =>
       EisensteinSeries.linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
-lemma G2_S_act (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) = limUnder (atTop)
+lemma G2_S_act (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) = limUnder atTop
     fun N : ℕ => (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2)) := by
   rw [modular_S_smul, G2_Ico, limUnder_mul_const _ (aux_cauchySeq_Ico _)]
   congr
   ext N
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk] using
     (aux_sum_Ico_S_indentity z N)
+
+lemma PS3 (z : ℍ) : limUnder atTop
+  (fun N : ℕ => ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)),
+    ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) = -2 * π * Complex.I / z := by sorry
+
+lemma PS2 (z : ℍ) : ∑' m : ℤ, (limUnder atTop
+    (fun N : ℕ => ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)),
+    (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1)))) = 0 := by sorry
 
 end transform
