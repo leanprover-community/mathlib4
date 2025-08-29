@@ -32,8 +32,15 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H K : Subgroup G) (S T : Set G)
 
 /-- `S` and `T` are complements if `(*) : S × T → G` is a bijection.
-  This notion generalizes left transversals, right transversals, and complementary subgroups. -/
-@[to_additive /-- `S` and `T` are complements if `(+) : S × T → G` is a bijection -/]
+This notion generalizes left transversals, right transversals, and complementary subgroups.
+
+If `S` and `T` are `SetLike`s such as `Subgroup`s, see `isComplement_iff_bijective` for a
+more ergonomic way to unfold.
+-/
+@[to_additive /-- `S` and `T` are complements if `(+) : S × T → G` is a bijection
+
+If `S` and `T` are `SetLike`s such as `AddSubgroup`s, see `isComplement_iff_bijective` for a
+more ergonomic way to unfold. -/]
 def IsComplement : Prop :=
   Function.Bijective fun x : S × T => x.1.1 * x.2.1
 
