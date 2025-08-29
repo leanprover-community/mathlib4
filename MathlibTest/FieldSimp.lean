@@ -373,6 +373,8 @@ example {a b : ℚ} (h : b ≠ 0) : a / b + 2 * a / b + (-a) / b + (- (2 * a)) /
 -- example from the `field` docstring
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field
 
+example {x : ℚ} : x ^ 2 / (x ^ 2 + 1) + 1 / (x ^ 2 + 1) = 1 := by field
+
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 = 1 := by
   field
@@ -434,31 +436,70 @@ example (a b : ℚ) (f : ℚ → ℚ) : f (a ^ 2 * b / a) - f (b ^ 2 * a / b) = 
   field_simp
   ring1
 
--- from `Analysis.Complex.UpperHalfPlane.MoebiusAction`
--- `field` does not fully clear denominators in this example, but calling different normalizations
+-- `field` does not fully clear denominators in these examples, but calling different normalizations
 -- in succession eventually succeeds
--- (This example is used in the `field` docstring.)
 
-example (a b c d z : ℚ) (H1 : c ≠ 0) (H2 : c * z + d ≠ 0) :
-    (a * z + b) / (c * z + d) - c⁻¹ * (z * c + d)⁻¹
-    = a / c - (c * d + c * c * z)⁻¹ - c⁻¹ * (z * c + d)⁻¹ * (a * d - b * c) := by
+-- This example is used in the `field` docstring.
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
   ring_nf at *
-  field_simp
-  ring
+  field
 
 /--
 info: Try this: field_simp
 ---
 error: unsolved goals
-a b c d z : ℚ
-H1 : c ≠ 0
-H2 : c * z + d ≠ 0
-⊢ ((a * z + b) * c - 1) / (z * c + d) = a - 1 / (d + z * c) - (a * d - b * c) / (z * c + d)
+a b : ℚ
+H : b + a ≠ 0
+⊢ (a + b) / (a + b) = 1
 -/
 #guard_msgs in
-example (a b c d z : ℚ) (H1 : c ≠ 0) (H2 : c * z + d ≠ 0) :
-    (a * z + b) / (c * z + d) - c⁻¹ * (z * c + d)⁻¹
-    = a / c - (c * d + c * c * z)⁻¹ - c⁻¹ * (z * c + d)⁻¹ * (a * d - b * c) := by
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  ring_nf
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : b + a ≠ 0
+⊢ a * (b + a) / (a + b) + b = b + a
+-/
+#guard_msgs in
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  field
+
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  field_simp
+  ring_nf at *
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : 1 + a + b ≠ 0
+⊢ a * (1 + a + b) / (a + b * 2 / (1 + b) + b ^ 2 / (1 + b) + 1 / (1 + b)) + b + 1 = 1 + a + b
+-/
+#guard_msgs in
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  ring_nf at *
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : a + b + 1 ≠ 0
+⊢ a / (a + (b + 1)) + (b + 1) / (b + a + 1) = 1
+-/
+#guard_msgs in
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
   field
 
 /-! ### Mid-proof use -/

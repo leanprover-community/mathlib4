@@ -46,11 +46,9 @@ The `field` tactic is built from the tactics `field_simp` (which clears the deno
 prove your goal, you may still be able to prove your goal by running the `field_simp` and `ring_nf`
 normalizations in some order.  For example, this statement:
 ```
-example (a b c d z : ℚ) (H1 : c ≠ 0) (H2 : c * z + d ≠ 0) :
-    (a * z + b) / (c * z + d) - c⁻¹ * (z * c + d)⁻¹
-    = a / c - (c * d + c * c * z)⁻¹ - c⁻¹ * (z * c + d)⁻¹ * (a * d - b * c)
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1
 ```
-is not proved by `field` but is proved by `ring_nf at *; field_simp; ring`. -/
+is not proved by `field` but is proved by `ring_nf at *; field`. -/
 elab (name := field) "field" d:(discharger)? args:(simpArgs)? : tactic => withMainContext do
   let disch ← parseDischarger d args
   let s0 ← saveState
