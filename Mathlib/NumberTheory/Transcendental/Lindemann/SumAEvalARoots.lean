@@ -13,12 +13,14 @@ open Finset
 
 namespace Polynomial
 
-theorem exists_smul_sum_map_aroots_aeval_eq {R A : Type*}
+/-- Given `k` a multiple of `p.leadingCoeff` and `e ≥ q.natDegree`,
+`∑ i ∈ p.aroots A, q.aeval i` lies in the base ring. -/
+theorem sum_map_aroots_aeval_mem_range_algebraMap {R A : Type*}
     [CommRing R] [CommRing A] [IsDomain A] [Algebra R A]
     (p : R[X]) (k : R) (e : ℕ) (q : R[X]) (hk : p.leadingCoeff ∣ k) (he : q.natDegree ≤ e)
     (inj : Function.Injective (algebraMap R A))
     (card_aroots : (p.aroots A).card = p.natDegree) :
-    ∃ c, k ^ e • ((p.aroots A).map (q.aeval ·)).sum = algebraMap R A c := by
+    k ^ e • ((p.aroots A).map (q.aeval ·)).sum ∈ Set.range (algebraMap R A) := by
   obtain ⟨k', rfl⟩ := hk; let k := p.leadingCoeff * k'
   have :
     (fun x : A => k ^ e • q.aeval x) =
@@ -39,6 +41,6 @@ theorem exists_smul_sum_map_aroots_aeval_eq {R A : Type*}
     rw [Fintype.card_fin]; exact (card_roots' _).trans natDegree_map_le
   rw [← MvPolynomial.symmetricSubalgebra.aevalMultiset_sumPolynomial _ _ h1,
     ← MvPolynomial.symmetricSubalgebra.scaleAEvalRoots_eq_aevalMultiset _ _ inj h2 card_aroots]
-  exact ⟨_, rfl⟩
+  exact Set.mem_range_self _
 
 end Polynomial

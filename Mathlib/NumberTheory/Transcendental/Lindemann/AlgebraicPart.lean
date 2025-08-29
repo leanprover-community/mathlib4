@@ -47,7 +47,6 @@ protected def liftFinsupp {α : Type*} {β : Type*} {s : Setoid α} [Zero β] (f
     (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
   Quot.liftFinsupp f
 
-set_option linter.docPrime false in -- Quotient.mk'
 @[simp]
 theorem liftFinsupp_mk' {α : Type*} {β : Type*} {_ : Setoid α} [Zero β] (f : α →₀ β)
     (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) : Quotient.liftFinsupp f h (Quotient.mk' x) = f x :=

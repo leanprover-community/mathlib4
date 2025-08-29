@@ -151,14 +151,15 @@ Given a polynomial `f` with integer coefficients, we can find a constant `c : �
 `p > |f₀|`, `nₚ : ℤ` and `gₚ : ℤ[X]` such that
 
 * `p` does not divide `nₚ`
-* `deg(gₚ) < p * deg(f)`
+* `deg(gₚ) ≤ p * deg(f) - 1`
+  (note: `deg(gₚ) < p * deg(f)` is not true if `f` is a nonzero constant polynomial)
 * all complex roots `r` of `f` satisfy `|nₚ * e ^ r - p * gₚ(r)| ≤ c ^ p / (p - 1)!`
 
 In the proof of Lindemann-Weierstrass, we will take `f` to be a polynomial whose complex roots
 are the algebraic numbers whose exponentials we want to prove to be linearly independent.
 
-Note: Jacobson (equation (68), page 285) writes `Nₚ` for our `nₚ` and `M` for our `c` (modulo a
-constant factor).
+Note: Jacobson (equation (68) / lemma 3, page 285) writes `Nₚ` for our `nₚ` and `M` for our `c`
+(modulo a constant factor).
 -/
 theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     ∃ c,
