@@ -17,6 +17,10 @@ Pattern a → b → c
 · p ∧ p → q
   and_imp
 
+Pattern ∀ (hp : p) (hq : q), r hp hq
+· p ∧ p → q
+  forall_and_index'
+
 Pattern ∀ (x : α), p x → b
 · (∃ x, p) → q
   exists_imp

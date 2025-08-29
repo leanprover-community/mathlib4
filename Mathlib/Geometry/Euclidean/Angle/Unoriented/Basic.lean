@@ -178,9 +178,8 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
       rw [hy, inner_zero_right, zero_mul, neg_zero]
-  · -- takes 600ms; squeezing the "equivalent" simp call yields an invalid result
-    field_simp [h]
-    ring_nf
+  · obtain ⟨hy, hx⟩ := mul_ne_zero_iff.mp h
+    field_simp
 
 /-- The angle between two vectors is zero if and only if they are
 nonzero and one is a positive multiple of the other. -/

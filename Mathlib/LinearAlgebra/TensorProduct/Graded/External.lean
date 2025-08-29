@@ -68,7 +68,7 @@ section gradedComm
 local notation "𝒜ℬ" => (fun i : ι × ι => 𝒜 (Prod.fst i) ⊗[R] ℬ (Prod.snd i))
 local notation "ℬ𝒜" => (fun i : ι × ι => ℬ (Prod.fst i) ⊗[R] 𝒜 (Prod.snd i))
 
-/-- Auxliary construction used to build `TensorProduct.gradedComm`.
+/-- Auxiliary construction used to build `TensorProduct.gradedComm`.
 
 This operates on direct sums of tensors instead of tensors of direct sums. -/
 def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
