@@ -362,7 +362,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₂', p₂) ← eval e₂
     let (e', p') ← evalAdd e₁' e₂'
     return (e', ← iapp ``subst_into_add #[e₁, e₂, e₁', e₂', e', p₁, p₂, p'])
-  | (``HSub.hSub, #[_, _, _ ,_, e₁, e₂]) => do
+  | (``HSub.hSub, #[_, _, _, _, e₁, e₂]) => do
     let e₂' ← mkAppM ``Neg.neg #[e₂]
     let e ← mkAppM ``HAdd.hAdd #[e₁, e₂']
     let (e', p) ← eval e

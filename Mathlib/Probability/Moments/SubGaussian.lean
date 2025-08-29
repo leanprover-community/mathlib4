@@ -404,7 +404,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
           (κ ω')[fun ω ↦ exp (t * Y ω) ^ (q : ℝ)] ^ (1 / (q : ℝ)) := by
         simp_rw [mul_add, exp_add]
         apply integral_mul_le_Lp_mul_Lq_of_nonneg
-        · exact ⟨by field_simp [p, q], by positivity, by positivity⟩
+        · exact ⟨by simp [field, p, q], by positivity, by positivity⟩
         · exact ae_of_all _ fun _ ↦ exp_nonneg _
         · exact ae_of_all _ fun _ ↦ exp_nonneg _
         · simpa using (hlX t)
@@ -417,8 +417,10 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
         · exact hmY (t * q)
       _ = exp ((cX.sqrt + cY.sqrt) ^ 2 * t ^ 2 / 2) := by
         simp_rw [← exp_mul, ← exp_add]
-        field_simp [p, q]
-        ring }
+        simp only [NNReal.coe_div, NNReal.coe_add, coe_sqrt, one_div, inv_div, exp_eq_exp, p, q]
+        field_simp
+        linear_combination t ^ 2 * (-√↑cY * Real.sq_sqrt cX.coe_nonneg
+            -√↑cX * Real.sq_sqrt cY.coe_nonneg) }
 
 variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
 
@@ -745,7 +747,7 @@ protected lemma mgf_le_of_mem_Icc_of_integral_eq_zero [IsProbabilityMeasure μ] 
     convert variance_le_sq_of_bounded ((tilted_absolutelyContinuous μ (u * X ·)) hb) _
     · exact isProbabilityMeasure_tilted (hi u)
     · exact hm.mono_ac (tilted_absolutelyContinuous μ (u * X ·))
-  _ = (‖b - a‖₊ / 2) ^ 2 := by field_simp
+  _ = (‖b - a‖₊ / 2) ^ 2 := by simp [field]
 
 /-- **Hoeffding's lemma**: with respect to a probability measure `μ`, if `X` is a random variable
 that has expectation zero and is almost surely in `Set.Icc a b` for some `a ≤ b`, then `X` has a
