@@ -266,7 +266,7 @@ structure groupoid (by composition in the source space and in the target space),
 expressing it in charted spaces does not depend on the element of the maximal atlas one uses
 both in the source and in the target manifolds, provided they are defined around `x` and `g x`
 respectively, and provided `g` is continuous within `s` at `x` (otherwise, the local behavior
-of `g` at `x` can not be captured with a chart in the target). -/
+of `g` at `x` cannot be captured with a chart in the target). -/
 theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source)
     (he' : e' ∈ G.maximalAtlas M) (xe' : x ∈ e'.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source)
@@ -426,9 +426,6 @@ theorem liftPropWithinAt_mono_of_mem_nhdsWithin
   simp_rw [← mem_map, (chartAt H x).symm.map_nhdsWithin_preimage_eq (mem_chart_target H x),
     (chartAt H x).left_inv (mem_chart_source H x), hst]
 
-@[deprecated (since := "2024-10-31")]
-alias liftPropWithinAt_mono_of_mem := liftPropWithinAt_mono_of_mem_nhdsWithin
-
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
   refine ⟨h.1.mono hts, mono (fun y hy ↦ ?_) h.2⟩
@@ -531,7 +528,7 @@ theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : Loca
     (hQ : ∀ y, Q id univ y) (U : Opens M) :
     LiftProp Q (Subtype.val : U → M) := by
   intro x
-  show LiftPropAt Q (id ∘ Subtype.val) x
+  change LiftPropAt Q (id ∘ Subtype.val) x
   rw [← hG.liftPropAt_iff_comp_subtype_val]
   apply hG.liftProp_id hQ
 
@@ -539,7 +536,7 @@ theorem liftProp_inclusion {Q : (H → H) → Set H → H → Prop} (hG : LocalI
     (hQ : ∀ y, Q id univ y) {U V : Opens M} (hUV : U ≤ V) :
     LiftProp Q (Opens.inclusion hUV : U → V) := by
   intro x
-  show LiftPropAt Q (id ∘ Opens.inclusion hUV) x
+  change LiftPropAt Q (id ∘ Opens.inclusion hUV) x
   rw [← hG.liftPropAt_iff_comp_inclusion hUV]
   apply hG.liftProp_id hQ
 
@@ -574,7 +571,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
         · exact closedUnderRestriction' heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef
-        · simp only [*, interior_interior, hu.interior_eq, mfld_simps]
+        · simp only [*, hu.interior_eq, mfld_simps]
     right_invariance' := by
       intro s x f e' he'G he'x h hx
       have hxs : x ∈ s := by simpa only [e'.left_inv he'x, mfld_simps] using hx
@@ -651,7 +648,7 @@ variable {H₁ : Type*} [TopologicalSpace H₁] {H₂ : Type*} [TopologicalSpace
 theorem HasGroupoid.comp
     (H : ∀ e ∈ G₂, LiftPropOn (IsLocalStructomorphWithinAt G₁) (e : H₂ → H₂) e.source) :
     @HasGroupoid H₁ _ H₃ _ (ChartedSpace.comp H₁ H₂ H₃) G₁ :=
-  let _ := ChartedSpace.comp H₁ H₂ H₃ -- Porting note: need this to synthesize `ChartedSpace H₁ H₃`
+  let _ := ChartedSpace.comp H₁ H₂ H₃
   { compatible := by
       rintro _ _ ⟨e, he, f, hf, rfl⟩ ⟨e', he', f', hf', rfl⟩
       apply G₁.locality

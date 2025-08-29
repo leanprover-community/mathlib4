@@ -74,13 +74,8 @@ open Finset
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] [Finite α] :
-    IsCoatomic α := by
-  refine IsCoatomic.mk fun b => or_iff_not_imp_left.2 fun ht => ?_
-  obtain ⟨c, hc, hmax⟩ :=
-    Set.Finite.exists_maximalFor id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
-  refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩
-  by_contra hyt
-  exact not_lt_iff_le_imp_ge.2 (hmax ⟨hc.1.trans hcy.le, hyt⟩) hcy
+    IsCoatomic α :=
+  IsStronglyCoatomic.toIsCoatomic α
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :

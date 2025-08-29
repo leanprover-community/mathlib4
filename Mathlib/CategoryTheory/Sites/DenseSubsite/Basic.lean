@@ -52,7 +52,7 @@ structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) w
   obj : C
   lift : V ⟶ G.obj obj
   map : G.obj obj ⟶ U
-  fac : lift ≫ map = f := by aesop_cat
+  fac : lift ≫ map = f := by cat_disch
 attribute [nolint docBlame] Presieve.CoverByImageStructure.obj Presieve.CoverByImageStructure.lift
   Presieve.CoverByImageStructure.map Presieve.CoverByImageStructure.fac
 
@@ -109,7 +109,7 @@ namespace IsCoverDense
 variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D)
 
--- this is not marked with `@[ext]` because `H` can not be inferred from the type
+-- this is not marked with `@[ext]` because `H` cannot be inferred from the type
 theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
   apply ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ.cond
@@ -160,7 +160,7 @@ theorem naturality_apply [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y)
       ℱ'.1.map (G.map i).op (α.app _ x) = α.app _ (ℱ.map (G.map i).op x) := by
     exact congr_fun (α.naturality i.op).symm x
   refine IsLocallyFull.ext G _ i fun V iVX iVY e ↦ ?_
-  simp only [comp_obj, types_comp_apply, ← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, ← e, this]
 
 @[reassoc]
 theorem naturality [G.IsLocallyFull K] {X Y : C} (i : G.obj X ⟶ G.obj Y) :
@@ -175,7 +175,7 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
 
 @[simp] theorem pushforwardFamily_def {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
-  ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
+    ℱ'.val.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
@@ -203,7 +203,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     exact this _ _ _ _ (by simpa only [Category.assoc] using e)
   introv e
   refine ext G _ _ fun V iVZ ↦ ?_
-  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, ← Functor.map_comp, naturality_apply,
+  simp only [← op_comp, ← FunctorToTypes.map_comp_apply, naturality_apply,
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
@@ -310,7 +310,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     intro Y' f' hf'
     change unop X ⟶ ℱ.obj (op (unop _)) at x
     dsimp
-    simp only [pushforwardFamily, Functor.comp_map, coyoneda_obj_map, homOver_app, Category.assoc]
+    simp only [Category.assoc]
     congr 1
     conv_lhs => rw [← hf'.some.fac]
     simp only [← Category.assoc, op_comp, Functor.map_comp]
@@ -390,7 +390,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   intro Y f hf
   conv_lhs => rw [← hf.some.fac]
   simp only [pushforwardFamily, Functor.comp_map, yoneda_map_app, coyoneda_obj_map, op_comp,
-    FunctorToTypes.map_comp_apply, homOver_app, ← Category.assoc]
+    FunctorToTypes.map_comp_apply, homOver_app]
   congr 1
   simp only [Category.assoc]
   congr 1
@@ -491,7 +491,7 @@ class IsDenseSubsite : Prop where
   isLocallyFaithful' : G.IsLocallyFaithful K := by infer_instance
   functorPushforward_mem_iff : ∀ {X : C} {S : Sieve X}, S.functorPushforward G ∈ K _ ↔ S ∈ J _
 
-lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K]:
+lemma functorPushforward_mem_iff {X : C} {S : Sieve X} [G.IsDenseSubsite J K] :
     S.functorPushforward G ∈ K _ ↔ S ∈ J _ := IsDenseSubsite.functorPushforward_mem_iff
 
 namespace IsDenseSubsite

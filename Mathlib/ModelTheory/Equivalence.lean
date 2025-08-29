@@ -235,7 +235,7 @@ lemma inf_not_iff_bot :
 
 lemma sup_not_iff_top :
     φ ⊔ ∼φ ⇔[T] ⊤ := fun M v xs => by
-  simp only [realize_iff, realize_sup, realize_not, realize_top, iff_true, or_not]
+  simp only [realize_iff, realize_sup, realize_not, realize_top, or_not]
 
 end BoundedFormula
 

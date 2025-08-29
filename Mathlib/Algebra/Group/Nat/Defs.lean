@@ -52,6 +52,8 @@ instance instCommMonoid : CommMonoid ℕ where
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
+set_option linter.style.commandStart false
+
 instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
 instance instMonoid           : Monoid ℕ           := by infer_instance
@@ -59,7 +61,12 @@ instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
 instance instSemigroup        : Semigroup ℕ        := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
-instance instOne : One ℕ := inferInstance
+instance instOne              : One ℕ              := inferInstance
+
+instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
+  nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
+
+set_option linter.style.commandStart true
 
 /-! ### Miscellaneous lemmas -/
 

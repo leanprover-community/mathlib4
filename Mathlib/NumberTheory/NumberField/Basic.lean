@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.CharZero.Equiv
+import Mathlib.Algebra.CharZero.AddMonoidHom
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
@@ -83,6 +83,7 @@ theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Fiel
   letI := Module.Finite.left K E L
   of_module_finite K E
 
+<<<<<<< HEAD
 def NumberField.ofRingEquiv {K L : Type*} [Field K] [Field L] (e : K ≃+* L) [NumberField K] :
     NumberField L where
   to_charZero := CharZero.ofAddMonoidEquiv (e := e.toAddEquiv) (by simp)
@@ -91,6 +92,14 @@ def NumberField.ofRingEquiv {K L : Type*} [Field K] [Field L] (e : K ≃+* L) [N
     let e' : K ≃ₐ[ℚ] L := { __ := e, commutes' r := by simp }
     e'.toLinearEquiv.finiteDimensional
 
+=======
+theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
+  letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
+  {
+    to_charZero := inferInstance
+    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+  }
+>>>>>>> master
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
 
@@ -176,8 +185,8 @@ def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
   map_add' x y:= by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
-/-- The ring isomorphsim `(𝓞 K) ≃+* (𝓞 L)` given by restricting
-  a ring isomorphsim `e : K ≃+* L` to `𝓞 K`. -/
+/-- The ring isomorphism `(𝓞 K) ≃+* (𝓞 L)` given by restricting
+  a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
 def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
     [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
@@ -186,7 +195,8 @@ def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
 
 end RingOfIntegers
 
-/-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
+/-- Given an algebra structure between two fields, this instance creates an algebra structure
+between their two rings of integers. -/
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
@@ -195,7 +205,7 @@ example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
 
-/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting a algebra homomorphism
+/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting an algebra homomorphism
   `f : K →ₐ[k] L` to `𝓞 K`. -/
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
@@ -336,7 +346,7 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-/-- Any extension between ring of integers of number fields is noetherian. -/
+/-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
 

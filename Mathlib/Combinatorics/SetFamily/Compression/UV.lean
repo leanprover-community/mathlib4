@@ -30,7 +30,7 @@ minimise the shadow.
 
 ## Notation
 
-`𝓒` (typed with `\MCC`) is notation for `UV.compression` in locale `FinsetFamily`.
+`𝓒` (typed with `\MCC`) is notation for `UV.compression` in scope `FinsetFamily`.
 
 ## Notes
 
@@ -176,7 +176,7 @@ theorem compress_mem_compression (ha : a ∈ s) : compress u v a ∈ 𝓒 u v s 
 theorem compress_mem_compression_of_mem_compression (ha : a ∈ 𝓒 u v s) :
     compress u v a ∈ 𝓒 u v s := by
   rw [mem_compression] at ha ⊢
-  simp only [compress_idem, exists_prop]
+  simp only [compress_idem]
   obtain ⟨_, ha⟩ | ⟨_, b, hb, rfl⟩ := ha
   · exact Or.inl ⟨ha, ha⟩
   · exact Or.inr ⟨by rwa [compress_idem], b, hb, (compress_idem _ _ _).symm⟩
@@ -293,7 +293,7 @@ lemma _root_.Set.Sized.uvCompression (huv : #u = #v) (h𝒜 : (𝒜 : Set (Finse
 
 private theorem aux (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
     v = ∅ → u = ∅ := by
-  rintro rfl; refine eq_empty_of_forall_notMem fun a ha ↦ ?_; obtain ⟨_, ⟨⟩, -⟩ := huv a ha
+  grind
 
 /-- UV-compression reduces the size of the shadow of `𝒜` if, for all `x ∈ u` there is `y ∈ v` such
 that `𝒜` is `(u.erase x, v.erase y)`-compressed. This is the key fact about compression for

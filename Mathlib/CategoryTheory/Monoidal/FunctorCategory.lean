@@ -38,7 +38,7 @@ Tensor product of functors `C ⥤ D`, when `D` is monoidal.
 @[simps]
 def tensorObj : C ⥤ D where
   obj X := F.obj X ⊗ G.obj X
-  map f := F.map f ⊗ G.map f
+  map f := F.map f ⊗ₘ G.map f
 
 variable {F G F' G'}
 variable (α : F ⟶ G) (β : F' ⟶ G')
@@ -48,7 +48,7 @@ Tensor product of natural transformations into `D`, when `D` is monoidal.
 -/
 @[simps]
 def tensorHom : tensorObj F F' ⟶ tensorObj G G' where
-  app X := α.app X ⊗ β.app X
+  app X := α.app X ⊗ₘ β.app X
   naturality X Y f := by dsimp; rw [← tensor_comp, α.naturality, β.naturality, tensor_comp]
 
 /-- (An auxiliary definition for `functorCategoryMonoidal`.) -/
@@ -98,12 +98,12 @@ theorem tensorObj_obj {F G : C ⥤ D} {X} : (F ⊗ G).obj X = F.obj X ⊗ G.obj 
   rfl
 
 @[simp]
-theorem tensorObj_map {F G : C ⥤ D} {X Y} {f : X ⟶ Y} : (F ⊗ G).map f = F.map f ⊗ G.map f :=
+theorem tensorObj_map {F G : C ⥤ D} {X Y} {f : X ⟶ Y} : (F ⊗ G).map f = F.map f ⊗ₘ G.map f :=
   rfl
 
 @[simp]
 theorem tensorHom_app {F G F' G' : C ⥤ D} {α : F ⟶ G} {β : F' ⟶ G'} {X} :
-    (α ⊗ β).app X = α.app X ⊗ β.app X :=
+    (α ⊗ₘ β).app X = α.app X ⊗ₘ β.app X :=
   rfl
 
 @[simp]

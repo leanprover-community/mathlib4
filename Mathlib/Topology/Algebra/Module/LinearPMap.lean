@@ -177,8 +177,7 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
   have h1 := Set.image_equiv_eq_preimage_symm f.graph (LinearEquiv.prodComm R E F).toEquiv
   have h2 := Set.image_equiv_eq_preimage_symm (_root_.closure f.graph)
     (LinearEquiv.prodComm R E F).toEquiv
-  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply,
-    LinearEquiv.coe_toEquiv_symm] at h1 h2
+  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply] at h1 h2
   rw [h1, h2]
   apply continuous_swap.closure_preimage_subset
 

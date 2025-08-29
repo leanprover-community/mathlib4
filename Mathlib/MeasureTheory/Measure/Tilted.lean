@@ -256,11 +256,8 @@ lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) 
       integral_exp_tilted f, Pi.add_apply, exp_add]
     congr 1
     simp only [Pi.add_apply]
-    field_simp
-    ring_nf
-    congr 1
-    rw [mul_assoc, mul_inv_cancel₀, mul_one]
-    exact (integral_exp_pos hf).ne'
+    have := (integral_exp_pos hf).ne'
+    simp [field]
 
 lemma tilted_comm (hf : Integrable (fun x ↦ exp (f x)) μ) {g : α → ℝ}
     (hg : Integrable (fun x ↦ exp (g x)) μ) :
@@ -334,7 +331,7 @@ lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFi
       =ᵐ[ν] fun x ↦ exp (- f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
   filter_upwards [rnDeriv_tilted_right μ ν hf] with x hx
   rw [hx]
-  simp only [ENNReal.toReal_mul, gt_iff_lt, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
+  simp only [ENNReal.toReal_mul, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]
   exact Or.inl (by positivity)
 
 variable (μ) in

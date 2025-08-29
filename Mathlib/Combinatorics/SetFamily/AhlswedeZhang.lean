@@ -53,7 +53,7 @@ private lemma binomial_sum_eq (h : n < m) :
   set f : ℕ → ℚ := fun i ↦ n.choose i * (m.choose i : ℚ)⁻¹ with hf
   suffices ∀ i ∈ range (n + 1), f i - f (i + 1) = n.choose i * (m - n) / ((m - i) * m.choose i) by
     rw [← sum_congr rfl this, sum_range_sub', hf]
-    simp [choose_self, choose_zero_right, choose_eq_zero_of_lt h]
+    simp [choose_zero_right]
   intro i h₁
   rw [mem_range] at h₁
   have h₁ := le_of_lt_succ h₁
@@ -69,8 +69,7 @@ private lemma binomial_sum_eq (h : n < m) :
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
   have : (m.choose i : ℚ) ≠ 0 := cast_ne_zero.2 (choose_pos h₂.le).ne'
-  field_simp
-  ring
+  simp [field, *]
 
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
@@ -79,7 +78,7 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
     (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
       card α / ((card α - x) * (card α).choose x) := by
-    intros n s hs
+    intro n s hs
     rw [mem_powersetCard_univ.1 hs]
   simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
     mul_comm, ← mul_div]
@@ -162,9 +161,9 @@ lemma truncatedSup_union (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t)
 
 lemma truncatedSup_union_left (hs : a ∈ lowerClosure s) (ht : a ∉ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup s a := by
-  simp only [mem_lowerClosure, mem_coe, exists_prop, not_exists, not_and] at ht
+  simp only [mem_lowerClosure, mem_coe, not_exists, not_and] at ht
   simp only [truncatedSup_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
-    lower_aux.2 (Or.inl hs), ht]
+    lower_aux.2 (Or.inl hs)]
 
 lemma truncatedSup_union_right (hs : a ∉ lowerClosure s) (ht : a ∈ lowerClosure t) :
     truncatedSup (s ∪ t) a = truncatedSup t a := by rw [union_comm, truncatedSup_union_left ht hs]
@@ -212,7 +211,7 @@ lemma truncatedInf_le : truncatedInf s a ≤ a := by
 
 @[simp] lemma truncatedInf_singleton (b a : α) : truncatedInf {b} a = if b ≤ a then b else ⊥ := by
   simp only [truncatedInf, coe_singleton, upperClosure_singleton, UpperSet.mem_Ici_iff,
-    filter_congr_decidable, id_eq]
+    id_eq]
   split_ifs <;> simp [Finset.filter_true_of_mem, *]
 
 lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
@@ -239,9 +238,9 @@ lemma truncatedInf_union (hs : a ∈ upperClosure s) (ht : a ∈ upperClosure t)
 
 lemma truncatedInf_union_left (hs : a ∈ upperClosure s) (ht : a ∉ upperClosure t) :
     truncatedInf (s ∪ t) a = truncatedInf s a := by
-  simp only [mem_upperClosure, mem_coe, exists_prop, not_exists, not_and] at ht
+  simp only [mem_upperClosure, mem_coe, not_exists, not_and] at ht
   simp only [truncatedInf_of_mem, hs, filter_union, filter_false_of_mem ht, union_empty,
-    upper_aux.2 (Or.inl hs), ht]
+    upper_aux.2 (Or.inl hs)]
 
 lemma truncatedInf_union_right (hs : a ∉ upperClosure s) (ht : a ∈ upperClosure t) :
     truncatedInf (s ∪ t) a = truncatedInf t a := by

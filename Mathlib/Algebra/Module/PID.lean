@@ -64,7 +64,7 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
     IsSemisimpleModule R (torsionBy R M a) :=
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
   letI := Ideal.Quotient.field (R ∙ a)
-  (submodule_torsionBy_orderIso a).complementedLattice
+  (isSemisimpleModule_iff ..).mpr (submodule_torsionBy_orderIso a).complementedLattice
 
 variable [IsDomain R]
 
@@ -218,7 +218,8 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
       simp only [s']; rw [← Function.comp_assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
-        (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
+        (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _),
+        Submodule.span_insert_zero] at hs'
       exact hs'
 
 end PTorsion
@@ -267,5 +268,21 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
       ⟨(lequivProdOfRightSplitExact (torsion R M).injective_subtype ?_ hf).symm.trans <|
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
+
+open LinearMap in
+theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
+    ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by
+  have ⟨m, ι, _, p, irr, n, ⟨e⟩⟩ := equiv_free_prod_directSum (R := R) (M := M)
+  refine ⟨e.symm (Finsupp.equivFunOnFinite.symm fun _ ↦ 1, DFinsupp.equivFunOnFintype.symm
+    fun _ ↦ mkQ _ 1), le_antisymm (fun x h ↦ ?_) fun x h ↦ mem_annihilator.mp h _⟩
+  rw [mem_ker, toSpanSingleton_apply, ← map_smul,
+    e.symm.map_eq_zero_iff, Prod.ext_iff, Finsupp.ext_iff, DFinsupp.ext_iff] at h
+  obtain _ | m := m
+  · rw [← mul_one x, ← smul_eq_mul, e.annihilator_eq, annihilator_prod]
+    simp_rw [annihilator_eq_top_iff.mpr inferInstance, DirectSum, annihilator_dfinsupp,
+      top_inf_eq, mem_iInf, Ideal.annihilator_quotient, ← Quotient.mk_eq_zero]
+    exact h.2
+  · rw [show x = 0 by simpa using h.1 0]
+    exact zero_mem _
 
 end Module
