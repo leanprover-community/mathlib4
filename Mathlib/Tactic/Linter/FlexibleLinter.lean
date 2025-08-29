@@ -264,6 +264,7 @@ def stoppers : Std.HashSet Name :=
     `Mathlib.Tactic.RingNF.ringNF,
     `Mathlib.Tactic.RingNF.tacticRing_nf!__,
     `Mathlib.Tactic.Group.group,
+    `Mathlib.Tactic.FieldSimp.fieldSimp,
     `finiteness_nonterminal,
     -- "continuators": the *effect* of these tactics is similar the "properly stoppers" above,
     -- though they typically wrap other tactics inside them.
@@ -282,7 +283,7 @@ def stoppers : Std.HashSet Name :=
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
   `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `omega`,
-  `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `norm_num`,
+  `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
   `fun_prop`, `continuity` and `measurability`, `positivity`, `finiteness`, `finiteness?`,
@@ -304,6 +305,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.RingNF.ring,
     `Mathlib.Tactic.RingNF.tacticRing!,
     `Mathlib.Tactic.Module.tacticModule,
+    `Mathlib.Tactic.FieldSimp.fieldSimp,
     `Mathlib.Tactic.Positivity.positivity,
     ``Lean.Parser.Tactic.grind,
     `Mathlib.Tactic.normNum,
