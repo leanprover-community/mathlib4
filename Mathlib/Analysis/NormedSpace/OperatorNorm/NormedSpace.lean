@@ -116,7 +116,7 @@ lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
 instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 
-/-- Continuous linear maps themselves form a normed space with respect tothe operator norm. -/
+/-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
 instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
@@ -132,7 +132,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
   rw [← norm_pos_iff] at hx
   have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
   apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
-  simpa only [hf, hx, mul_le_mul_right] using f.le_opNorm x
+  simpa only [hf, hx, mul_le_mul_iff_left₀] using f.le_opNorm x
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
@@ -212,7 +212,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
     simp [g.symm.toLinearIsometry.norm_toContinuousLinearMap]
 
 @[simp]
-theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
+theorem norm_smulRightL (c : StrongDual 𝕜 E) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E Fₗ‖ ≤ 1 :=

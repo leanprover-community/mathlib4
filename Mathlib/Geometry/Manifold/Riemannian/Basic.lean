@@ -43,8 +43,8 @@ tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 a
 automatic instances for these cases). One can require whatever regularity one wants in the
 `IsContMDiffRiemannianBundle` instance above, for example
 `[IsContMDiffRiemannianBundle I n E (fun (x : M) ↦ TangentSpace I x)]`, and one should also add
-`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean can not infer
-the latter from the former as it can not guess `n`).
+`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean cannot infer
+the latter from the former as it cannot guess `n`).
 -/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
@@ -93,7 +93,7 @@ two points is the infimum of the length of paths between these points.
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 variable (F) in
-/-- The standard riemannian metric on a vector space with an inner product, given by this inner
+/-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
@@ -386,7 +386,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
   it stays inside `u`, then by the derivative control its image in the extended chart has length
-  at most `r`, so it can not exit the ball of radius `r`, which means that in the manifold it is
+  at most `r`, so it cannot exit the ball of radius `r`, which means that in the manifold it is
   inside `v` (which is strictly inside `u`). This means that the path will stay inside `u` for
   a little bit longer, by openness of `v`. Iterating this argument, it follows that the path will
   remain inside `u` for the whole time interval `[0, 1]`. In particular, its right endpoint is
@@ -498,7 +498,7 @@ variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
 so that the topology is defeq to the original one.
 
-This should only be used when constructing data in specific situtations. To develop the theory,
+This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
 @[reducible] def PseudoEmetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
@@ -512,7 +512,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
 
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
 by definition the distance is the infimum of the length of paths between the points, i.e., the
-manifold satsifies the `IsRiemannianManifold I M` predicate. -/
+manifold satisfies the `IsRiemannianManifold I M` predicate. -/
 instance [RegularSpace M] :
     letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
     IsRiemannianManifold I M := by
