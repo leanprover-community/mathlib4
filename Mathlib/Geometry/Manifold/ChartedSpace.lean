@@ -124,7 +124,7 @@ the arrow. -/
 
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set OpenPartialHomeomorph Manifold  -- Porting note: Added `Manifold`
+open Set OpenPartialHomeomorph Manifold
 
 /-! ### Structure groupoids -/
 
@@ -393,12 +393,8 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      -- Porting note: was
-      -- convert he.2
-      -- rw [A.1]
-      -- rfl
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
-      exact he.2
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : OpenPartialHomeomorph H H} :
     e ∈ PG.groupoid ↔ PG.property e e.source ∧ PG.property e.symm e.target :=
@@ -513,15 +509,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
     convert closedUnderRestriction' G.id_mem hs
-    -- Porting note: was
-    -- change s = _ ∩ _
-    -- rw [hs.interior_eq]
-    -- simp only [mfld_simps]
-    ext
-    · rw [OpenPartialHomeomorph.restr_apply, OpenPartialHomeomorph.refl_apply, id, ofSet_apply,
-        id_eq]
-    · simp
-    · simp [hs.interior_eq]
+    ext <;> simp [hs.interior_eq]
   · intro h
     constructor
     intro e he s hs
@@ -593,7 +581,6 @@ section
 
 variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
--- Porting note: Added `(H := H)` to avoid typeclass instance problem.
 theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
   (chartAt H x).map_source (mem_chart_source _ _)
 
@@ -813,8 +800,6 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 
 section
-
--- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
   instInhabitedProd
