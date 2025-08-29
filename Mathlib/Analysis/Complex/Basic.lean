@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Complex.Order
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
