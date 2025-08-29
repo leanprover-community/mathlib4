@@ -58,7 +58,7 @@ def normalize' (l : AList (fun _ : ℕ => Bool)) :
       have ⟨e', he₁, he₂, he₃⟩ := normalize' (l.insert v false) e
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
-        · simp only [eval, apply_ite, ite_eq_iff']
+        · simp only [eval, apply_ite, ite_eq_iff_and]
           cases hfv : f v
           · simp +contextual only [cond_false, h, he₁]
             refine ⟨fun _ => ?_, fun _ => ?_⟩

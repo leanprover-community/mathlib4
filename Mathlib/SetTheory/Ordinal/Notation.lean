@@ -289,22 +289,22 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
     case eq =>
       intro IHe; dsimp at IHe; subst IHe
       unfold _root_.cmp; cases nh : cmpUsing (· < ·) (n₁ : ℕ) n₂ <;>
-      rw [cmpUsing, ite_eq_iff, not_lt] at nh
+      rw [cmpUsing, ite_eq_iff_or, not_lt] at nh
       case lt =>
         rcases nh with nh | nh
         · exact oadd_lt_oadd_2 h₁ nh.left
-        · rw [ite_eq_iff] at nh; rcases nh.right with nh | nh <;> cases nh <;> contradiction
+        · rw [ite_eq_iff_or] at nh; rcases nh.right with nh | nh <;> cases nh <;> contradiction
       case gt =>
         rcases nh with nh | nh
         · cases nh; contradiction
         · obtain ⟨_, nh⟩ := nh
-          rw [ite_eq_iff] at nh; rcases nh with nh | nh
+          rw [ite_eq_iff_or] at nh; rcases nh with nh | nh
           · exact oadd_lt_oadd_2 h₂ nh.left
           · cases nh; contradiction
       rcases nh with nh | nh
       · cases nh; contradiction
       obtain ⟨nhl, nhr⟩ := nh
-      rw [ite_eq_iff] at nhr
+      rw [ite_eq_iff_or] at nhr
       rcases nhr with nhr | nhr
       · cases nhr; contradiction
       obtain rfl := Subtype.eq (nhl.eq_of_not_lt nhr.1)

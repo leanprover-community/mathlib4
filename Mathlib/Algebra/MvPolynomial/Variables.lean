@@ -328,7 +328,7 @@ lemma leadingCoeff_toLex : p.leadingCoeff toLex = p.coeff (ofLex <| p.supDegree 
 
 lemma supDegree_toLex_C (r : R) : supDegree toLex (C (σ := σ) r) = 0 := by
   classical
-    exact (supDegree_single _ r).trans (ite_eq_iff'.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
+    exact (supDegree_single _ r).trans (ite_eq_iff_and.mpr ⟨fun _ => rfl, fun _ => rfl⟩)
 
 lemma leadingCoeff_toLex_C (r : R) : leadingCoeff toLex (C (σ := σ) r) = r :=
   leadingCoeff_single toLex.injective _ r

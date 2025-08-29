@@ -803,7 +803,7 @@ section ite
 variable {α : Sort*} {σ : α → Sort*} {P Q R : Prop} [Decidable P]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
-theorem apply_dite_iff_or (f : α → Prop) :
+theorem apply_dite_iff_exists (f : α → Prop) :
     f (dite P A B) ↔ (∃ h, f (A h)) ∨ (∃ h, f (B h)) := by
   by_cases h : P
   · rw [dif_pos h, exists_prop_of_true h, eq_false (exists_prop_of_false (· h)), or_false]
@@ -811,9 +811,9 @@ theorem apply_dite_iff_or (f : α → Prop) :
 
 theorem apply_ite_iff_or (f : α → Prop) :
     f (ite P a b) ↔ (P ∧ f a) ∨ (¬P ∧ f b) :=
-  .trans (apply_dite_iff_or f) (by simp only [exists_prop])
+  .trans (apply_dite_iff_exists f) (by simp only [exists_prop])
 
-theorem apply_dite_iff_and (f : α → Prop) :
+theorem apply_dite_iff_forall (f : α → Prop) :
     f (dite P A B) ↔ (∀ h, f (A h)) ∧ (∀ h, f (B h)) := by
   by_cases h : P
   · rw [dif_pos h, forall_prop_of_true h, forall_prop_of_false (· h), and_true]
@@ -821,32 +821,47 @@ theorem apply_dite_iff_and (f : α → Prop) :
 
 theorem apply_ite_iff_and (f : α → Prop) :
     f (ite P a b) ↔ (P → f a) ∧ (¬P → f b) :=
-  apply_dite_iff_and f
+  apply_dite_iff_forall f
 
--- in the future, we could possibly migrate the following names to the more descriptive
--- `dite_eq_iff_or` ..., `dite_eq_iff_and` ... rather than using `'`
+theorem dite_eq_iff_exists : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c :=
+  apply_dite_iff_exists (· = c)
 
-theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := apply_dite_iff_or (· = c)
+@[deprecated (since := "2025-08-29")] alias dite_eq_iff := dite_eq_iff_exists
 
-theorem eq_dite_iff : c = dite P A B ↔ (∃ h, c = A h) ∨ ∃ h, c = B h := apply_dite_iff_or (c = ·)
+theorem eq_dite_iff_exists : c = dite P A B ↔ (∃ h, c = A h) ∨ ∃ h, c = B h :=
+  apply_dite_iff_exists (c = ·)
 
-theorem ite_eq_iff : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c := apply_ite_iff_or (· = c)
+theorem ite_eq_iff_or : ite P a b = c ↔ P ∧ a = c ∨ ¬P ∧ b = c :=
+  apply_ite_iff_or (· = c)
 
-theorem eq_ite_iff : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c := apply_ite_iff_or (a = ·)
+@[deprecated (since := "2025-08-29")] alias ite_eq_iff := ite_eq_iff_or
 
-theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c := apply_dite_iff_and (· = c)
+theorem eq_ite_iff_or : a = ite P b c ↔ P ∧ a = b ∨ ¬P ∧ a = c :=
+  apply_ite_iff_or (a = ·)
 
-theorem eq_dite_iff' : c = dite P A B ↔ (∀ h, c = A h) ∧ ∀ h, c = B h := apply_dite_iff_and (c = ·)
+@[deprecated (since := "2025-08-29")] alias eq_ite_iff := eq_ite_iff_or
 
-theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := apply_ite_iff_and (· = c)
+theorem dite_eq_iff_forall : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
+  apply_dite_iff_forall (· = c)
 
-theorem eq_ite_iff' : a = ite P b c ↔ (P → a = b) ∧ (¬P → a = c) := apply_ite_iff_and (a = ·)
+@[deprecated (since := "2025-08-29")] alias dite_eq_iff' := dite_eq_iff_forall
+
+theorem eq_dite_iff_forall : c = dite P A B ↔ (∀ h, c = A h) ∧ ∀ h, c = B h :=
+  apply_dite_iff_forall (c = ·)
+
+theorem ite_eq_iff_and : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) :=
+  apply_ite_iff_and (· = c)
+
+@[deprecated (since := "2025-08-29")] alias ite_eq_iff' := ite_eq_iff_and
+
+theorem eq_ite_iff_and : a = ite P b c ↔ (P → a = b) ∧ (¬P → a = c) :=
+  apply_ite_iff_and (a = ·)
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
-  simp [apply_dite_iff_or (· ≠ a), eq_comm]
+  simp [apply_dite_iff_exists (· ≠ a), eq_comm]
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
-  simp [apply_dite_iff_or (· ≠ b)]
+  simp [apply_dite_iff_exists (· ≠ b)]
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
   dite_ne_left_iff.trans <| by rw [exists_prop]
@@ -855,10 +870,10 @@ theorem ite_ne_right_iff : ite P a b ≠ b ↔ P ∧ a ≠ b :=
   dite_ne_right_iff.trans <| by rw [exists_prop]
 
 protected theorem Ne.dite_eq_left_iff (h : ∀ h, a ≠ B h) : dite P (fun _ ↦ a) B = a ↔ P :=
-  by simp_all [apply_dite_iff_or (· = a), eq_comm]
+  by simp_all [apply_dite_iff_exists (· = a), eq_comm]
 
 protected theorem Ne.dite_eq_right_iff (h : ∀ h, A h ≠ b) : (dite P A fun _ ↦ b) = b ↔ ¬P :=
-  by simp_all [apply_dite_iff_or (· = b)]
+  by simp_all [apply_dite_iff_exists (· = b)]
 
 protected theorem Ne.ite_eq_left_iff (h : a ≠ b) : ite P a b = a ↔ P :=
   Ne.dite_eq_left_iff fun _ ↦ h
@@ -921,7 +936,7 @@ theorem ite_or : ite (P ∨ Q) a b = ite P a (ite Q a b) := by
 theorem dite_dite_comm {B : Q → α} {C : ¬P → ¬Q → α} (h : P → ¬Q) :
     (if p : P then A p else if q : Q then B q else C p q) =
      if q : Q then B q else if p : P then A p else C p q :=
-  dite_eq_iff'.2 ⟨
+  dite_eq_iff_forall.2 ⟨
     fun p ↦ by rw [dif_neg (h p), dif_pos p],
     fun np ↦ by congr; funext _; rw [dif_neg np]⟩
 
@@ -936,14 +951,18 @@ variable {P Q}
 
 theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬P ∧ R) := apply_ite_iff_or id
 
-theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} :
-    dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := apply_dite_iff_or id
+theorem dite_prop_iff_exists {Q : P → Prop} {R : ¬P → Prop} :
+    dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := apply_dite_iff_exists id
+
+@[deprecated (since := "2025-08-29")] alias dite_prop_iff_or := dite_prop_iff_exists
 
 -- TODO make this a simp lemma in a future PR
 theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬P → R)) := apply_ite_iff_and id
 
-theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} :
-    dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := apply_dite_iff_and id
+theorem dite_prop_iff_forall {Q : P → Prop} {R : ¬P → Prop} :
+    dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := apply_dite_iff_forall id
+
+@[deprecated (since := "2025-08-29")] alias dite_prop_iff_and := dite_prop_iff_forall
 
 section congr
 
@@ -976,11 +995,11 @@ variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
 
 theorem mem_dite {a : α} {s : p → β} {t : ¬p → β} :
     (a ∈ if h : p then s h else t h) ↔ (∀ h, a ∈ s h) ∧ (∀ h, a ∈ t h) :=
-  apply_dite_iff_and (a ∈ ·)
+  apply_dite_iff_forall (a ∈ ·)
 
 theorem dite_mem {a : p → α} {b : ¬p → α} {s : β} :
     (if h : p then a h else b h) ∈ s ↔ (∀ h, a h ∈ s) ∧ (∀ h, b h ∈ s) :=
-  apply_dite_iff_and (· ∈ s)
+  apply_dite_iff_forall (· ∈ s)
 
 theorem mem_ite {a : α} {s t : β} : (a ∈ if p then s else t) ↔ (p → a ∈ s) ∧ (¬p → a ∈ t) :=
   mem_dite
