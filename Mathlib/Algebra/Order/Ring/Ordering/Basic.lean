@@ -123,13 +123,14 @@ theorem neg_smul_mem [P.HasIdealSupport]
 
 end HasIdealSupport
 
-theorem hasIdealSupport_of_invertible_2 [Invertible (2 : R)] : P.HasIdealSupport := by
+instance hasIdealSupport_of_isUnit_2 [h2 : Fact (IsUnit (2 : R))] : P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
   intro x a _ _
-  set y := (1 + x) * ⅟2
-  set z := (1 - x) * ⅟2
+  rcases h2.out.exists_right_inv with ⟨half, h2⟩
+  set y := (1 + x) * half
+  set z := (1 - x) * half
   rw [show x = y ^ 2 - z ^ 2 by
-    linear_combination (- x - x * ⅟2 * 2) * invOf_mul_self (2 : R)]
+    linear_combination (- x - x * half * 2) * h2]
   ring_nf
   aesop (add simp sub_eq_add_neg)
 
@@ -184,14 +185,14 @@ end HasMemOrNegMem
 
 theorem isOrdering_iff :
     P.IsOrdering ↔ ∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P := by
-  refine ⟨fun _ a b h₁ => ?_, fun h => ?_⟩
+  refine ⟨fun _ a b _ => ?_, fun h => ?_⟩
   · by_contra
     have : a * b ∈ P := by simpa using mul_mem (by aesop : -a ∈ P) (by aesop : -b ∈ P)
     have : a ∈ P.support ∨ b ∈ P.support :=
       Ideal.IsPrime.mem_or_mem inferInstance (by simp_all [mem_support])
     simp_all [mem_support]
   · have : HasMemOrNegMem P := ⟨by simp [h]⟩
-    refine IsOrdering.mk' P (fun {x y} hxy => ?_)
+    refine IsOrdering.mk' P (fun {x y} _ => ?_)
     by_contra
     cases (by aesop : x ∈ P ∨ -x ∈ P) with
     | inl =>  have := h (-x) y
