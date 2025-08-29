@@ -484,8 +484,8 @@ lemma supDegree_mul
     exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd]
     exact hpq
-  · have := covariantClass_le_of_lt B B (· + ·)
-    have := covariantClass_le_of_lt B B (Function.swap (· + ·))
+  · have := addLeftMono_of_addLeftStrictMono B
+    have := addRightMono_of_addRightStrictMono B
     exact fun a ha => (Finset.le_sup ha).trans (supDegree_mul_le hadd)
 
 lemma Monic.supDegree_mul_of_ne_zero_left

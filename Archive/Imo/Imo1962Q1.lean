@@ -38,7 +38,7 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
 lemma without_digits {n : ℕ} (hn : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
   rcases n with - | n
-  · have hpp : ¬ProblemPredicate 0 := by norm_num [ProblemPredicate]
+  · have hpp : ¬ProblemPredicate 0 := by simp [ProblemPredicate]
     contradiction
   · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
       List.concat_eq_append] at hn
@@ -99,7 +99,7 @@ lemma case_more_digits {c n : ℕ} (hc : (digits 10 c).length ≥ 6) (hpp : Prob
     n ≥ 10 * c := le.intro hpp.left.symm
     _ ≥ 10 ^ (digits 10 c).length := base_pow_length_digits_le 10 c (by decide) hnz
     _ ≥ 10 ^ 6 := pow_right_mono₀ (by decide) hc
-    _ ≥ 153846 := by norm_num
+    _ ≥ 153846 := by simp
 
 /-!
 Now we combine these cases to show that 153846 is the smallest solution.

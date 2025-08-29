@@ -15,10 +15,6 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-open Bool Subtype
-
-open Nat
-
 namespace Nat
 variable {n : ℕ}
 
@@ -85,6 +81,10 @@ theorem not_prime_iff_exists_dvd_ne {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ �
 theorem not_prime_iff_exists_dvd_lt {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
   ⟨exists_dvd_of_not_prime2 h, fun ⟨_, h1, h2, h3⟩ => not_prime_of_dvd_of_lt h1 h2 h3⟩
 
+theorem not_prime_iff_exists_mul_eq {n : ℕ} (h : 2 ≤ n) :
+    (¬Prime n) ↔ ∃ a b, a < n ∧ b < n ∧ a * b = n := by
+  rw [prime_iff_not_exists_mul_eq, and_iff_right h, Classical.not_not]
+
 theorem dvd_of_forall_prime_mul_dvd {a b : ℕ}
     (hdvd : ∀ p : ℕ, p.Prime → p ∣ a → p * a ∣ b) : a ∣ b := by
   obtain rfl | ha := eq_or_ne a 1
@@ -102,8 +102,8 @@ theorem Prime.even_sub_one {p : ℕ} (hp : p.Prime) (h2 : p ≠ 2) : Even (p - 1
   let ⟨n, hn⟩ := hp.odd_of_ne_two h2; ⟨n, by rw [hn, Nat.add_sub_cancel, two_mul]⟩
 
 /-- A prime `p` satisfies `p % 2 = 1` if and only if `p ≠ 2`. -/
-theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} [Fact p.Prime] : p % 2 = 1 ↔ p ≠ 2 := by
-  refine ⟨fun h hf => ?_, (Nat.Prime.eq_two_or_odd <| @Fact.out p.Prime _).resolve_left⟩
+theorem Prime.mod_two_eq_one_iff_ne_two {p : ℕ} (hp : p.Prime) : p % 2 = 1 ↔ p ≠ 2 := by
+  refine ⟨fun h hf => ?_, hp.eq_two_or_odd.resolve_left⟩
   rw [hf] at h
   simp at h
 

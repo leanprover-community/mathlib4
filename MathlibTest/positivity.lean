@@ -1,10 +1,11 @@
 import Mathlib.Tactic.Positivity
-import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
@@ -233,6 +234,14 @@ example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
 
 end
 
+example (a b : ℕ) (ha : a ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℤ) (ha : a ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℕ) (hb : b ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℤ) (hb : b ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
+example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
+example (a : ℕ) (ha : a ≠ 0) : 0 < a.sqrt := by positivity
+example (a : ℕ) (ha : a ≠ 0) : 0 < a.totient := by positivity
 
 section ENNReal
 
@@ -373,7 +382,7 @@ example
 example (n : ℕ) : 0 < n.succ := by positivity
 example (n : ℕ+) : 0 < (↑n : ℕ) := by positivity
 example (n : ℕ) : 0 < n ! := by positivity
-example (n k : ℕ) : 0 < (n+1).ascFactorial k := by positivity
+example (n k : ℕ) : 0 < (n + 1).ascFactorial k := by positivity
 
 example {α : Type*} (s : Finset α) (hs : s.Nonempty) : 0 < #s := by positivity
 example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
@@ -418,6 +427,14 @@ example : 0 ≠ Real.log (-0.99) := by positivity
 example : 0 ≤ Real.log 1 := by positivity
 example : 0 ≤ Real.log 0 := by positivity
 example : 0 ≤ Real.log (-1) := by positivity
+
+example : 0 < Real.arctan 1.1 := by positivity
+example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.arctan r := by positivity
+example {r : ℝ} (hr : r ≠ 0) : Real.arctan r ≠ 0 := by positivity
+example (r : ℝ) : 0 < Real.cos (Real.arctan r) := by positivity
+example {r : ℝ} (hr : 0 < r) : 0 < Real.sin (Real.arctan r) := by positivity
+example {r : ℝ} (hr : r ≠ 0) : Real.sin (Real.arctan r) ≠ 0 := by positivity
+example {r : ℝ} (hr : 0 ≤ r) : 0 ≤ Real.sin (Real.arctan r) := by positivity
 
 end SpecialFunctions
 

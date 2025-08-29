@@ -27,7 +27,7 @@ This file defines the conversion between sesquilinear maps and matrices.
 ## TODO
 
 At the moment this is quite a literal port from `Matrix.BilinearForm`. Everything should be
-generalized to fully semibilinear forms.
+generalized to fully semi-bilinear forms.
 
 ## Tags
 
@@ -35,14 +35,10 @@ Sesquilinear form, Sesquilinear map, matrix, basis
 
 -/
 
+open Finset LinearMap Matrix Module
+open scoped RightActions
 
 variable {R R₁ S₁ R₂ S₂ M₁ M₂ M₁' M₂' N₂ n m n' m' ι : Type*}
-
-open Finset LinearMap Matrix
-
-open Matrix
-
-open scoped RightActions
 
 section AuxToLinearMap
 

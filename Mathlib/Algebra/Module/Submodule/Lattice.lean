@@ -101,7 +101,7 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
 -- FIXME: we default PUnit to PUnit.{1} here without the explicit universe annotation
 /-- The bottom submodule is linearly equivalent to punit as an `R`-module. -/
 @[simps]
-def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v+1} where
+def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v + 1} where
   toFun _ := PUnit.unit
   invFun _ := 0
   map_add' _ _ := rfl
@@ -298,8 +298,8 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
           apply le_sSup
           rw [Subtype.range_coe_subtype]
           exact ⟨p, hp, rfl⟩
-        | one => simpa only [smul_zero] using zero_mem _
-        | mul _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
+        | zero => simpa only [smul_zero] using zero_mem _
+        | add _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
   refine le_antisymm (?_ : sSup s ≤ p) ?_
   · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq

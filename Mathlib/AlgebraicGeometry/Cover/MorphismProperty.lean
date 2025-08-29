@@ -40,7 +40,7 @@ with target `X` all satisfying `P`.
 
 This is merely a coverage in the pretopology defined by `P`, and it would be optimal
 if we could reuse the existing API about pretopologies, However, the definitions of sieves and
-grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
+Grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
 obtain. Also, since such a coverage in the pretopology usually contains a proper class of
 immersions, it is quite hard to glue them, reason about finite covers, etc.
 
@@ -348,7 +348,7 @@ structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
   /-- The morphism between open subsets associated to a morphism of covers. -/
   app (j : 𝒰.J) : 𝒰.obj j ⟶ 𝒱.obj (idx j)
   app_prop (j : 𝒰.J) : P (app j) := by infer_instance
-  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by aesop_cat
+  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by cat_disch
 
 attribute [reassoc (attr := simp)] Cover.Hom.w
 
