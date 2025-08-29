@@ -1076,9 +1076,9 @@ theorem image_range_orderOf [DecidableEq G] :
 
 /- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive gcd_nsmul_card_eq_zero_iff]
-theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ gcd n (Fintype.card G) = 1 :=
+theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ Nat.gcd n (Fintype.card G) = 1 :=
   ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
-    let ⟨m, hm⟩ := gcd_dvd_left n (Fintype.card G)
+    let ⟨m, hm⟩ := Nat.gcd_dvd_left n (Fintype.card G)
     rw [hm, pow_mul, h, one_pow]⟩
 
 lemma smul_eq_of_le_smul
