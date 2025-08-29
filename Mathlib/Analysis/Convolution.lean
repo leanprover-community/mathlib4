@@ -1185,10 +1185,10 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     universe, which is why we make the assumption in the lemma that all the relevant spaces
     come from the same universe). -/
   induction n using ENat.nat_induction generalizing g E' F with
-  | h0 =>
+  | zero =>
     rw [WithTop.coe_zero, contDiffOn_zero] at hg ⊢
     exact continuousOn_convolution_right_with_param L hk hgs hf hg
-  | hsuc n ih =>
+  | succ n ih =>
     simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, WithTop.coe_add,
       WithTop.coe_natCast, WithTop.coe_one] at hg ⊢
     let f' : P → G → P × G →L[𝕜] F := fun p a =>
@@ -1215,7 +1215,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) :) B
       convert hg.2.2
-  | htop ih =>
+  | top ih =>
     rw [contDiffOn_infty] at hg ⊢
     exact fun n ↦ ih n L hgs (hg n)
 
