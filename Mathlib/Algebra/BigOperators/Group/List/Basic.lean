@@ -338,7 +338,8 @@ variable [CommGroup G]
 
 /-- This is the `List.prod` version of `mul_inv` -/
 @[to_additive /-- This is the `List.sum` version of `add_neg` -/]
-theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
+theorem prod_inv {K : Type*} [DivisionCommMonoid K] :
+    ∀ L : List K, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv xs]
 
@@ -480,6 +481,11 @@ end MonoidHom
 end MonoidHom
 
 namespace List
+
+theorem prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
+    l.prod ^ r = (map (fun x ↦ x ^ r) l).prod :=
+  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
+  map_list_prod fr l
 
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
