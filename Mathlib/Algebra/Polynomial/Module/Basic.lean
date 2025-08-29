@@ -36,15 +36,13 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
+deriving Inhabited, FunLike, CoeFun
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+noncomputable section
+deriving instance AddCommGroup for PolynomialModule
+end
 
--- The `Inhabited, AddCommGroup` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
-noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
-
-variable {M}
+variable (R : Type*) {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
@@ -53,12 +51,6 @@ namespace PolynomialModule
 @[nolint unusedArguments]
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
-
-instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
-  Finsupp.instFunLike
-
-instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
-  inferInstanceAs <| CoeFun (_ →₀ _) _
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
   Finsupp.zero_apply
@@ -251,6 +243,7 @@ theorem eval_single (r : R) (i : ℕ) (m : M) : eval r (single R i m) = r ^ i �
 theorem eval_lsingle (r : R) (i : ℕ) (m : M) : eval r (lsingle R i m) = r ^ i • m :=
   eval_single r i m
 
+@[simp]
 theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (p • q) = p.eval r • eval r q := by
   induction q using induction_linear with

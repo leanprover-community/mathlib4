@@ -136,7 +136,7 @@ lemma bijective_postcomp_of_weakEquivalence
     ext φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     simp
-  convert (bijective_postcomp_of_fibration_of_weakEquivalence X h.j).comp hi using 1
+  convert (bijective_postcomp_of_fibration_of_weakEquivalence X h.p).comp hi using 1
   ext φ
   obtain ⟨φ, rfl⟩ := φ.mk_surjective
   simp
@@ -176,7 +176,7 @@ lemma bijective_precomp_of_weakEquivalence
     [IsFibrant Z] (f : X ⟶ Y) [IsCofibrant X] [IsCofibrant Y] [WeakEquivalence f] :
     Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
   let h : CofibrantBrownFactorization f := Classical.arbitrary _
-  have hj : Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp h.j) := by
+  have hj : Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp h.p) := by
     rw [← Function.Bijective.of_comp_iff'
       (bijective_precomp_of_cofibration_of_weakEquivalence Z h.s)]
     convert Function.bijective_id

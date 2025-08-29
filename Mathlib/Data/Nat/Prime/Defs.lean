@@ -137,7 +137,7 @@ theorem prime_iff_not_exists_mul_eq {p : ℕ} :
   simp_rw [prime_def_lt, dvd_def, exists_imp]
   refine and_congr_right fun hp ↦ forall_congr' fun m ↦ (forall_congr' fun h ↦ ?_).trans forall_comm
   simp_rw [Ne, forall_comm (β := _ = _), eq_comm, imp_false, not_lt]
-  refine forall₂_congr fun n hp ↦ ⟨by aesop, fun hpn ↦ ?_⟩
+  refine forall₂_congr fun n hp ↦ ⟨by simp_all, fun hpn ↦ ?_⟩
   have := mul_ne_zero_iff.mp (hp ▸ show p ≠ 0 by omega)
   exact (Nat.mul_eq_right (by omega)).mp
     (hp.symm.trans (hpn.antisymm (hp ▸ Nat.le_mul_of_pos_left _ (by omega))))
@@ -428,8 +428,14 @@ theorem prime_iff {p : ℕ} : p.Prime ↔ _root_.Prime p :=
 
 alias ⟨Prime.prime, _root_.Prime.nat_prime⟩ := prime_iff
 
+instance instDecidablePredPrime : DecidablePred (_root_.Prime : ℕ → Prop) := fun n ↦
+  decidable_of_iff (Nat.Prime n) Nat.prime_iff
+
 theorem irreducible_iff_prime {p : ℕ} : Irreducible p ↔ _root_.Prime p :=
   prime_iff
+
+instance instDecidablePredIrreducible : DecidablePred (Irreducible : ℕ → Prop) :=
+  decidablePrime
 
 /-- The type of prime numbers -/
 def Primes :=

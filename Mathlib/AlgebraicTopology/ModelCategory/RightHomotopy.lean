@@ -157,7 +157,7 @@ lemma exists_good_pathObject {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
 
 /-- The homotopy extension theorem: if `p : A ⟶ X` is a cofibration,
 `l₀ : X ⟶ B` is a morphism, if there is a right homotopy `h` between
-the composition `f₀ := i ≫ l` and a morphism `f₁ : A ⟶ B`,
+the composition `f₀ := i ≫ l₀` and a morphism `f₁ : A ⟶ B`,
 then there exists a morphism `l₁ : X ⟶ B` and a right homotopy `h'` from
 `l₀` to `l₁` which is compatible with `h` (in particular, `i ≫ l₁ = f₁`). -/
 lemma homotopy_extension {A B X : C} {P : PathObject B} {f₀ f₁ : A ⟶ B}
@@ -255,7 +255,7 @@ lemma postcomp [ModelCategory C] {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomot
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_pathObject
   obtain ⟨Q, _⟩ := PathObject.exists_very_good Z
   have sq : CommSq (p ≫ Q.ι) P.ι Q.p (prod.lift (P.p₀ ≫ p) (P.p₁ ≫ p)) := { }
-  refine ⟨Q,
+  exact ⟨Q,
    ⟨{ h := h.h ≫ sq.lift
       h₀ := by
         have := sq.fac_right =≫ prod.fst
