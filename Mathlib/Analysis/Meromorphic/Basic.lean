@@ -182,6 +182,16 @@ lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x]
     MeromorphicAt f x ↔ MeromorphicAt g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
+@[simp]
+lemma update_iff [DecidableEq 𝕜] {f : 𝕜 → E} {z w : 𝕜} {e : E} :
+    MeromorphicAt (Function.update f w e) z ↔ MeromorphicAt f z :=
+  meromorphicAt_congr (Function.update_eventuallyEq_nhdsNE f w z e)
+
+@[fun_prop]
+lemma update [DecidableEq 𝕜] {f : 𝕜 → E} {z} (hf : MeromorphicAt f z) (w e) :
+    MeromorphicAt (Function.update f w e) z :=
+  update_iff.mpr hf
+
 @[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
