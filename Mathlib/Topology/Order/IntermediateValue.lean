@@ -331,18 +331,29 @@ theorem IsClosed.Icc_subset_of_forall_exists_gt {a b : α} {s : Set α} (hs : Is
 on a closed subset, contains `b`, and the set `s ∩ (a, b]` has no minimal point, then `a ∈ s`. -/
 theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsClosed (s ∩ Icc a b))
     (hb : b ∈ s) (hab : a ≤ b) (hgt : ∀ x ∈ s ∩ Ioc a b, (s ∩ Ico a x).Nonempty) : a ∈ s := by
-  let S := s ∩ Icc a b
-  replace hb : b ∈ S := ⟨hb, right_mem_Icc.2 hab⟩
-  have Sbd : BddBelow S := ⟨a, fun z hz => hz.2.1⟩
-  let c := sInf (s ∩ Icc a b)
-  have c_mem : c ∈ S := hs.csInf_mem ⟨_, hb⟩ Sbd
-  have le_c : a ≤ c := le_csInf ⟨_, hb⟩ fun x hx => hx.2.1
-  rcases eq_or_lt_of_le le_c with hc | hc
-  · exact hc ▸ c_mem.1
-  exfalso
-  rcases hgt c ⟨c_mem.1, hc, c_mem.2.2⟩ with ⟨x, xs, cx, xb⟩
-  refine not_lt_of_ge (csInf_le Sbd <| (Set.mem_inter_iff _ _ _).mpr ?_) xb
-  exact ⟨xs, Set.mem_Icc.mpr ⟨cx, le_trans (le_of_lt xb) (csInf_le Sbd hb)⟩⟩
+  suffices OrderDual.toDual a ∈ OrderDual.toDual '' s by exact inter_singleton_nonempty.mp this
+  have : IsClosed (OrderDual.toDual '' (s ∩ Icc a b)) := isClosedMap_toDual _ hs
+  rw [image_inter toDual.injective, image_equiv_eq_preimage_symm (Icc a b), toDual_symm_eq,
+    ←Icc_toDual ] at this
+  apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
+  rw [Ico_toDual, ← toDual_symm_eq, ← image_equiv_eq_preimage_symm, ←image_inter toDual.injective,
+    mem_image] at hx
+  obtain ⟨y, hy, hy'⟩ := hx
+  simpa [←hy', Set.Ioc_toDual, ←OrderDual.toDual_symm_eq, ←Set.image_equiv_eq_preimage_symm,
+    ←Set.image_inter toDual.injective, Set.image_nonempty] using hgt y hy
+
+  -- let S := s ∩ Icc a b
+  -- replace hb : b ∈ S := ⟨hb, right_mem_Icc.2 hab⟩
+  -- have Sbd : BddBelow S := ⟨a, fun z hz => hz.2.1⟩
+  -- let c := sInf (s ∩ Icc a b)
+  -- have c_mem : c ∈ S := hs.csInf_mem ⟨_, hb⟩ Sbd
+  -- have le_c : a ≤ c := le_csInf ⟨_, hb⟩ fun x hx => hx.2.1
+  -- rcases eq_or_lt_of_le le_c with hc | hc
+  -- · exact hc ▸ c_mem.1
+  -- exfalso
+  -- rcases hgt c ⟨c_mem.1, hc, c_mem.2.2⟩ with ⟨x, xs, cx, xb⟩
+  -- refine not_lt_of_ge (csInf_le Sbd <| (Set.mem_inter_iff _ _ _).mpr ?_) xb
+  -- exact ⟨xs, Set.mem_Icc.mpr ⟨cx, le_trans (le_of_lt xb) (csInf_le Sbd hb)⟩⟩
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `b`, and for any `a ≤ y < x ≤ b`, `x ∈ s`, the set `s ∩ [y, x)`
