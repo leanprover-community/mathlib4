@@ -418,10 +418,10 @@ noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
 def FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] : Grp_Class X where
   __ := hF.mon_Class X
   inv := hF.preimage ι[F.obj X]
-  left_inv := hF.map_injective
-    (by simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory])
-  right_inv := hF.map_injective
-    (by simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory])
+  left_inv := hF.map_injective <| by
+    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+  right_inv := hF.map_injective <| by
+    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
 
 end Functor
 
