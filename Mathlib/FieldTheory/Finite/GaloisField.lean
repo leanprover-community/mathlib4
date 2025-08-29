@@ -84,7 +84,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   suffices g_poly.rootSet (GaloisField p n) = Set.univ by
     simp_rw [this, ← Fintype.ofEquiv_card (Equiv.Set.univ _)] at key
     -- Porting note: prevents `card_eq_pow_finrank` from using a wrong instance for `Fintype`
-    rw [@Module.card_eq_pow_finrank (ZMod p) _ _ _ _ _ (_), ZMod.card] at key
+    rw [@Module.card_eq_pow_finrank (K := ZMod p), ZMod.card] at key
     exact Nat.pow_right_injective (Nat.Prime.one_lt' p).out key
   rw [Set.eq_univ_iff_forall]
   suffices ∀ (x) (hx : x ∈ (⊤ : Subalgebra (ZMod p) (GaloisField p n))),
