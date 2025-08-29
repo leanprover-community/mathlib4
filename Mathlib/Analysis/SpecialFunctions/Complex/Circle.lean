@@ -158,7 +158,6 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
   use m
   field_simp at hm
-  rw [← mul_right_inj' Real.two_pi_pos.ne']
   linarith
 
 /-- The homeomorphism between `AddCircle (2 * π)` and `Circle`. -/
