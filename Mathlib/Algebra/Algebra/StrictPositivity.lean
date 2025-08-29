@@ -83,24 +83,6 @@ protected lemma smul [Semifield 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A] [PosS
   have hnonneg : 0 ≤ c • a := smul_nonneg hc.le ha.1
   exact hunit.isStrictlyPositive hnonneg
 
-@[simp, grind]
-lemma _root_.isStrictlyPositive_natCast [Semifield 𝕜] [CharZero 𝕜] [Algebra 𝕜 A]
-    [StarRing A] [StarOrderedRing A] {n : ℕ} [NeZero n] :
-    IsStrictlyPositive (n : A) := by
-  rw [iff_of_unital]
-  refine ⟨Nat.cast_nonneg' _, ?_⟩
-  rw [isUnit_iff_exists]
-  refine ⟨(n : 𝕜)⁻¹ • 1, ?_⟩
-  simp only [Algebra.mul_smul_comm, mul_one, Algebra.smul_mul_assoc, one_mul, and_self]
-  conv =>
-    enter [1, 2]
-    rw [← Nat.smul_one_eq_cast, ← Nat.cast_smul_eq_nsmul (R := 𝕜) n 1]
-  rw [← smul_assoc, smul_eq_mul, inv_mul_cancel₀]
-  · simp
-  · intro h
-    rw [Nat.cast_eq_zero] at h
-    exact NeZero.ne n h
-
 lemma spectrum_pos [CommSemiring 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A]
     [NonnegSpectrumClass 𝕜 A] {a : A} (ha : IsStrictlyPositive a) {x : 𝕜}
     (hx : x ∈ spectrum 𝕜 a) : 0 < x := by
