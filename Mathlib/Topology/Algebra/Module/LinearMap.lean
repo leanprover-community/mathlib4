@@ -718,7 +718,6 @@ def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
   rfl
 
-@[simp]
 theorem toSpanSingleton_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
   one_smul _ _
 
