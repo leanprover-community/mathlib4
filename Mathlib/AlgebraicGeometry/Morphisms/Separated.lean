@@ -141,9 +141,9 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
   simp_rw [diagonalCover_map]
   change x ∈ Set.range _
   simp only [diagonalCover, openCoverOfBase_I₀,
-    Coverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
-    Coverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X, PreZeroHypercover.bind_X,
-    openCoverOfLeftRight_I₀, openCoverOfLeftRight_X]
+    Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+    Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
+    PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X]
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
@@ -161,8 +161,8 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd f (𝒰.map i))).base w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
   simp only [diagonalCover, openCoverOfBase_I₀,
-    Coverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
-    Cover.pullbackHom, Coverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
+    Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+    Cover.pullbackHom, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
     PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X,
     PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, comp_coeBase,
     TopCat.hom_comp, ContinuousMap.comp_apply, ContinuousMap.comp_assoc]

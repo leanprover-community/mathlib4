@@ -15,7 +15,7 @@ by jointly surjective families of morphisms satisfying `P`.
 
 ## Implementation details
 
-The pretopology is obtained from the coverage `AlgebraicGeometry.Scheme.coverage` defined in
+The pretopology is obtained from the precoverage `AlgebraicGeometry.Scheme.precoverage` defined in
 `Mathlib.AlgebraicGeometry.Sites.MorphismProperty`. The definition is postponed to this file,
 because the former does not have `HasPullbacks Scheme`.
 -/
@@ -32,7 +32,7 @@ satisfy `P`.
 -/
 def pretopology (P : MorphismProperty Scheme.{u}) [P.IsStableUnderBaseChange]
     [P.IsMultiplicative] : Pretopology Scheme.{u} :=
-  (coverage P).toPretopology
+  (precoverage P).toPretopology
 
 /-- The Grothendieck topology on the category of schemes induced by the pretopology defined by
 `P`-covers. -/
@@ -41,40 +41,35 @@ abbrev grothendieckTopology (P : MorphismProperty Scheme.{u}) [P.IsStableUnderBa
     GrothendieckTopology Scheme.{u} :=
   (pretopology P).toGrothendieck
 
+instance : jointlySurjectivePrecoverage.IsStableUnderBaseChange where
+  mem_coverings_of_isPullback {ι} S X f hf Y g T p₁ p₂ H x := by
+    obtain ⟨-, -, ⟨i⟩, y, hy⟩ := hf (g.base x)
+    clear Y
+    have := (H i).hasPullback
+    obtain ⟨w, hw⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop (P := ⊤)
+      trivial (f := g) x y hy.symm
+    use T i, p₁ i, ⟨i⟩, (H i).isoPullback.inv.base w
+    simpa [← Scheme.comp_base_apply]
+
 /-- The pretopology on the category of schemes defined by jointly surjective families. -/
-def jointlySurjectivePretopology : Pretopology Scheme.{u} where
-  coverings X S :=
-    ∀ x : X, ∃ (Y : Scheme.{u}) (y : Y) (f : Y ⟶ X) (hf : S f), f.base y = x
-  has_isos X Y f hf x := by
-    use Y, (inv f).base x, f
-    simp [← Scheme.comp_base_apply]
-  pullbacks X Y f S hS x := by
-    obtain ⟨Z, z, g, hg, hz⟩ := hS (f.base x)
-    obtain ⟨w, hw⟩ :=
-      IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop (P := ⊤) trivial z x hz
-    use pullback g f, w, pullback.snd g f
-    simpa [hw] using Presieve.pullbackArrows.mk Z g hg
-  transitive X S T hS hT x := by
-    obtain ⟨Y, y, f, hf, hy⟩ := hS x
-    obtain ⟨Z, z, g, hg, hz⟩ := hT f hf y
-    use Z, z, g ≫ f
-    simpa [hz, hy] using Presieve.bind_comp f hf hg
+def jointlySurjectivePretopology : Pretopology Scheme.{u} :=
+  jointlySurjectivePrecoverage.toPretopology
 
 variable {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange] [P.IsMultiplicative]
 
-lemma mem_iff_exists_cover {K : Coverage Scheme.{u}} {X : Scheme.{u}} {R : Presieve X} :
+lemma mem_iff_exists_cover {K : Precoverage Scheme.{u}} {X : Scheme.{u}} {R : Presieve X} :
     R ∈ K X ↔ ∃ (𝒰 : Cover.{u + 1} K X), R = Presieve.ofArrows 𝒰.X 𝒰.f :=
   K.mem_iff_exists_zeroHypercover
 
 lemma mem_pretopology {X : Scheme.{u}} {R : Presieve X} :
-    R ∈ pretopology P X ↔ ∃ (𝒰 : Cover.{u + 1} (coverage P) X), R = Presieve.ofArrows 𝒰.X 𝒰.f :=
-  (coverage P).mem_iff_exists_zeroHypercover
+    R ∈ pretopology P X ↔ ∃ (𝒰 : Cover.{u + 1} (precoverage P) X), R = Presieve.ofArrows 𝒰.X 𝒰.f :=
+  (precoverage P).mem_iff_exists_zeroHypercover
 
 alias ⟨exists_cover_of_mem_pretopology, _⟩ := mem_pretopology
 
 lemma mem_grothendieckTopology {X : Scheme.{u}} {S : Sieve X} :
     S ∈ grothendieckTopology P X ↔
-      ∃ (𝒰 : Cover.{u} (coverage P) X), Presieve.ofArrows 𝒰.X 𝒰.f ≤ S := by
+      ∃ (𝒰 : Cover.{u} (precoverage P) X), Presieve.ofArrows 𝒰.X 𝒰.f ≤ S := by
   simp_rw [grothendieckTopology, Pretopology.mem_toGrothendieck]
   refine ⟨fun ⟨R, hR, hle⟩ ↦ ?_, fun ⟨𝒰, hle⟩ ↦ ⟨.ofArrows 𝒰.X 𝒰.f, 𝒰.mem₀, hle⟩⟩
   rw [mem_pretopology] at hR
@@ -84,11 +79,11 @@ lemma mem_grothendieckTopology {X : Scheme.{u}} {S : Sieve X} :
 alias ⟨exists_cover_of_mem_grothendieckTopology, _⟩ := mem_grothendieckTopology
 
 @[grind ←]
-lemma Cover.mem_pretopology {X : Scheme.{u}} {𝒰 : X.Cover (coverage P)} :
+lemma Cover.mem_pretopology {X : Scheme.{u}} {𝒰 : X.Cover (precoverage P)} :
     Presieve.ofArrows 𝒰.X 𝒰.f ∈ pretopology P X := 𝒰.mem₀
 
 @[grind ←]
-lemma Cover.mem_grothendieckTopology {X : Scheme.{u}} {𝒰 : X.Cover (coverage P)} :
+lemma Cover.mem_grothendieckTopology {X : Scheme.{u}} {𝒰 : X.Cover (precoverage P)} :
     Sieve.ofArrows 𝒰.X 𝒰.f ∈ grothendieckTopology P X := by
   rw [Pretopology.mem_toGrothendieck]
   use Presieve.ofArrows 𝒰.X 𝒰.f, 𝒰.mem₀
@@ -110,7 +105,7 @@ surjective pretopology. -/
 def jointlySurjectiveTopology : GrothendieckTopology Scheme.{u} :=
   jointlySurjectivePretopology.toGrothendieck.copy (fun X s ↦ jointlySurjectivePretopology X ↑s) <|
     funext fun _ ↦ Set.ext fun s ↦
-      ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, y, u, hu, hyx⟩ := hp x; ⟨Y, y, u, hps _ hu, hyx⟩,
+      ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, u, hu, hmem⟩ := hp x; ⟨Y, u, hps _ hu, hmem⟩,
       fun hs ↦ ⟨s, hs, le_rfl⟩⟩
 
 theorem mem_jointlySurjectiveTopology_iff_jointlySurjectivePretopology
@@ -129,18 +124,9 @@ The pretopology defined by `P`-covers agrees with the
 the intersection of the pretopology of surjective families with the pretopology defined by `P`.
 -/
 lemma pretopology_eq_inf : pretopology P = jointlySurjectivePretopology ⊓ P.pretopology := by
-  refine le_antisymm ?_ ?_
-  · intro X R hR
-    refine ⟨?_, ?_⟩
-    · intro x
-      obtain ⟨Y, y, g, hg, hy⟩ := hR.1 x
-      use Y, y, g
-    · intro Y g hg
-      exact hR.2 _ hg
-  · intro X R hR
-    refine ⟨fun x ↦ ?_, fun {Y} g hg ↦ hR.2 hg⟩
-    obtain ⟨Y, y, g, hg, hy⟩ := hR.1 x
-    use Y, y, g
+  ext : 1
+  rw [pretopology, Precoverage.toPretopology_toPrecoverage]
+  rfl
 
 @[deprecated (since := "2025-08-28")]
 alias pretopology_le_inf := pretopology_eq_inf

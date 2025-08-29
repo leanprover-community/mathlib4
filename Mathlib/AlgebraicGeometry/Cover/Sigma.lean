@@ -23,24 +23,24 @@ variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsLocalAtSource P] 
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
 @[simps]
-noncomputable def sigma (𝒰 : Cover.{v} (coverage P) S) : S.Cover (coverage P) where
+noncomputable def sigma (𝒰 : Cover.{v} (precoverage P) S) : S.Cover (precoverage P) where
   I₀ := PUnit.{v + 1}
   X _ := ∐ 𝒰.X
   f _ := Sigma.desc 𝒰.f
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun s ↦ ?_, fun _ ↦ IsLocalAtSource.sigmaDesc 𝒰.map_prop⟩
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
     refine ⟨default, (Sigma.ι 𝒰.X i).base y, by simp [← Scheme.comp_base_apply]⟩
 
-variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (coverage P) S}
+variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 
 variable (𝒰) in
 instance : Unique 𝒰.sigma.I₀ := inferInstanceAs <| Unique PUnit.{v + 1}
 
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/
 @[simps]
-noncomputable def toSigma (𝒰 : Cover.{v} (coverage P) S) : 𝒰 ⟶ 𝒰.sigma where
+noncomputable def toSigma (𝒰 : Cover.{v} (precoverage P) S) : 𝒰 ⟶ 𝒰.sigma where
   idx _ := default
   app i := Sigma.ι _ i
   app_prop _ := IsLocalAtSource.of_isOpenImmersion _
@@ -61,7 +61,7 @@ noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma wher
 
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]
-noncomputable def sigmaFunctor : S.Cover (coverage P) ⥤ S.Cover (coverage P) where
+noncomputable def sigmaFunctor : S.Cover (precoverage P) ⥤ S.Cover (precoverage P) where
   obj 𝒰 := 𝒰.sigma
   map f := f.sigma
   map_id 𝒰 := Scheme.Cover.Hom.ext rfl <| by

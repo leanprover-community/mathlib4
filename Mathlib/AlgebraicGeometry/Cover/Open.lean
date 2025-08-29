@@ -30,10 +30,10 @@ namespace AlgebraicGeometry
 namespace Scheme
 
 instance : MorphismProperty.HasPullbacks IsOpenImmersion where
-  hasPullback _ _ _ := inferInstance
+  hasPullback _ _ := inferInstance
 
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
-abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} (coverage @IsOpenImmersion) X
+abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} (precoverage @IsOpenImmersion) X
 
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
@@ -47,7 +47,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   f x :=
     ⟨(X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
     use x
     simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
@@ -91,7 +91,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
       X := fun x => 𝒰.X (𝒰.idx x.1)
       f := fun x => 𝒰.f (𝒰.idx x.1)
       mem₀ := by
-        rw [presieve₀_mem_coverage_iff]
+        rw [presieve₀_mem_precoverage_iff]
         exact ⟨h, inferInstance⟩ }
 
 instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.I₀ := by
@@ -259,7 +259,7 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   X r := Spec(Localization.Away r)
   f r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ⟨1, ?_⟩, AlgebraicGeometry.Scheme.basic_open_isOpenImmersion⟩
     rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
@@ -282,7 +282,7 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.f ⟨x, r⟩).base =
       (X.affineCover.f x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  simp only [affineBasisCover, Coverage.ZeroHypercover.bind_toPreZeroHypercover,
+  simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover,
     PreZeroHypercover.bind_f, comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
   congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)

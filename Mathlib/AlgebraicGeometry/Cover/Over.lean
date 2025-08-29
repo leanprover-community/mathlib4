@@ -41,7 +41,7 @@ abbrev Hom.asOverProp {X Y : Scheme.{u}} (f : X.Hom Y) (S : Scheme.{u}) [X.Over 
 component maps commute with the structure morphisms. -/
 protected class Cover.Over {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange]
     [IsJointlySurjectivePreserving P] {X : Scheme.{u}} [X.Over S]
-    (𝒰 : X.Cover (coverage P)) where
+    (𝒰 : X.Cover (precoverage P)) where
   over (j : 𝒰.I₀) : (𝒰.X j).Over S := by infer_instance
   isOver_map (j : 𝒰.I₀) : (𝒰.f j).IsOver S := by infer_instance
 
@@ -56,7 +56,7 @@ instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 section
 
-variable {X W : Scheme.{u}} (𝒰 : X.Cover (coverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
+variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
   [𝒰.Over S] [f.IsOver S]
 
 /-- The pullback of a cover of `S`-schemes along a morphism of `S`-schemes. This is not
@@ -64,12 +64,12 @@ definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here 
 the pullback in `Over S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps]
-def Cover.pullbackCoverOver : W.Cover (coverage P) where
+def Cover.pullbackCoverOver : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback (f.asOver S) ((𝒰.f x).asOver S)).left
   f x := (pullback.fst (f.asOver S) ((𝒰.f x).asOver S)).left
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
     · obtain ⟨i, hy⟩ := (𝒰.pullbackCover f).exists_eq x
       use i
@@ -89,12 +89,12 @@ instance : (𝒰.pullbackCoverOver S f).Over S where
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOver` with the arguments in the
 fiber products flipped. -/
 @[simps]
-def Cover.pullbackCoverOver' : W.Cover (coverage P) where
+def Cover.pullbackCoverOver' : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback ((𝒰.f x).asOver S) (f.asOver S)).left
   f x := (pullback.snd ((𝒰.f x).asOver S) (f.asOver S)).left
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
     · obtain ⟨i, hy⟩ := (𝒰.pullbackCover' f).exists_eq x
       use i
@@ -121,13 +121,13 @@ definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here 
 the pullback in `Q.Over ⊤ S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
 @[simps -isSimp]
-def Cover.pullbackCoverOverProp : W.Cover (coverage P) where
+def Cover.pullbackCoverOverProp : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
     ((𝒰.f x).asOverProp (hX := hQ x) (hY := hX) S)).left
   f x := (pullback.fst (f.asOverProp S) ((𝒰.f x).asOverProp S)).left
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
     · obtain ⟨i, hy⟩ := (𝒰.pullbackCover f).exists_eq x
       use i
@@ -152,13 +152,13 @@ instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
 fiber products flipped. -/
 @[simps -isSimp]
-def Cover.pullbackCoverOverProp' : W.Cover (coverage P) where
+def Cover.pullbackCoverOverProp' : W.Cover (precoverage P) where
   I₀ := 𝒰.I₀
   X x := (pullback ((𝒰.f x).asOverProp (hX := hQ x) (hY := hX) S)
     (f.asOverProp (hX := hW) (hY := hX) S)).left
   f x := (pullback.snd ((𝒰.f x).asOverProp S) (f.asOverProp S)).left
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun j ↦ ?_⟩
     · obtain ⟨i, hy⟩ := (𝒰.pullbackCover' f).exists_eq x
       use i
@@ -183,13 +183,13 @@ instance : (𝒰.pullbackCoverOverProp' S f hX hW hQ).Over S where
 end
 
 variable [P.IsStableUnderComposition]
-variable {X : Scheme.{u}} (𝒰 : X.Cover (coverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (coverage P))
+variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
   [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S]
 
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
   inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
 
-instance {X : Scheme.{u}} (𝒰 : X.Cover (coverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (coverage P))
+instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
     [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
   over := fun ⟨i, j⟩ ↦ inferInstanceAs <| ((𝒱 i).X j).Over S
   isOver_map := fun ⟨i, j⟩ ↦ { comp_over := by simp }

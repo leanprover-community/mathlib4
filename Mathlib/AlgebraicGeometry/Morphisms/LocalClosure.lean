@@ -18,13 +18,12 @@ open CategoryTheory Limits MorphismProperty
 
 namespace AlgebraicGeometry
 
-variable (W : MorphismProperty Scheme.{u}) [W.IsStableUnderBaseChange]
-  [Scheme.IsJointlySurjectivePreserving W]
+variable (W : MorphismProperty Scheme.{u})
 
 /-- The source (Zariski-)local closure of `P` is satisfied if there exists
 an open cover of the source on which `P` is satisfied. -/
 def sourceLocalClosure (P : MorphismProperty Scheme.{u}) : MorphismProperty Scheme.{u} :=
-  fun X _ f ↦ ∃ (𝒰 : Scheme.Cover.{u} (Scheme.coverage W) X), ∀ (i : 𝒰.I₀), P (𝒰.f i ≫ f)
+  fun X _ f ↦ ∃ (𝒰 : Scheme.Cover.{u} (Scheme.precoverage W) X), ∀ (i : 𝒰.I₀), P (𝒰.f i ≫ f)
 
 namespace sourceLocalClosure
 
@@ -33,7 +32,7 @@ variable {W} {P Q : MorphismProperty Scheme.{u}} {X Y : Scheme.{u}}
 /-- A choice of open cover on which `P` is satisfied if `f` satisfies the source local closure
 of `P`. -/
 noncomputable def cover {f : X ⟶ Y} (hf : sourceLocalClosure W P f) :
-    Scheme.Cover.{u} (Scheme.coverage W) X :=
+    Scheme.Cover.{u} (Scheme.precoverage W) X :=
   hf.choose
 
 lemma property_coverMap_comp {f : X ⟶ Y} (hf : sourceLocalClosure W P f) (i : hf.cover.I₀) :

@@ -39,16 +39,17 @@ variable {P Q : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
   [P.IsStableUnderBaseChange]
 
 /-- The presieve defined by a `P`-cover of `S`-schemes. -/
-def Cover.toPresieveOver {X : Over S} (𝒰 : Cover.{u} (coverage P) X.left) [𝒰.Over S] : Presieve X :=
+def Cover.toPresieveOver {X : Over S} (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S] :
+    Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.obj i).asOver S) (fun i ↦ (𝒰.map i).asOver S)
 
 /-- The presieve defined by a `P`-cover of `S`-schemes with `Q`. -/
-def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (coverage P) X.left) [𝒰.Over S]
+def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S]
     (h : ∀ j, Q (𝒰.obj j ↘ S)) : Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.obj i).asOverProp S (h i)) (fun i ↦ (𝒰.map i).asOverProp S)
 
 lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
-    (𝒰 : Cover.{u} (coverage P) X.left)
+    (𝒰 : Cover.{u} (precoverage P) X.left)
     [𝒰.Over S] : Sieve.overEquiv X (Sieve.generate 𝒰.toPresieveOver) =
       Sieve.ofArrows 𝒰.obj 𝒰.map := by
   ext V f
@@ -63,7 +64,7 @@ lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
     simpa
 
 lemma Cover.toPresieveOver_le_arrows_iff {X : Over S} (R : Sieve X)
-    (𝒰 : Cover.{u} (coverage P) X.left) [𝒰.Over S] :
+    (𝒰 : Cover.{u} (precoverage P) X.left) [𝒰.Over S] :
     𝒰.toPresieveOver ≤ R.arrows ↔
       Presieve.ofArrows 𝒰.obj 𝒰.map ≤ (Sieve.overEquiv X R).arrows := by
   simp_rw [← Sieve.giGenerate.gc.le_iff_le, ← Sieve.overEquiv_le_overEquiv_iff]
@@ -76,7 +77,7 @@ variable (P Q S)
 /-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
 of `S`-schemes. -/
 def overPretopology : Pretopology (Over S) where
-  coverings Y R := ∃ (𝒰 : Cover.{u} (coverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
+  coverings Y R := ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
   has_isos {X Y} f _ := ⟨coverOfIsIso f.left, inferInstance, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h, rfl⟩
@@ -119,7 +120,7 @@ variable {S}
 
 lemma mem_overGrothendieckTopology (X : Over S) (R : Sieve X) :
     R ∈ S.overGrothendieckTopology P X ↔
-      ∃ (𝒰 : Cover.{u} (coverage P) X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
+      ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S), 𝒰.toPresieveOver ≤ R.arrows := by
   rw [overGrothendieckTopology_eq_toGrothendieck_overPretopology]
   constructor
   · rintro ⟨T, ⟨𝒰, h, rfl⟩, hle⟩
@@ -171,7 +172,7 @@ The most common case is `P = Q`. In this case, this is simply surjective familie
 in `S`-schemes with `P`. -/
 def smallPretopology : Pretopology (Q.Over ⊤ S) where
   coverings Y R :=
-    ∃ (𝒰 : Cover.{u} (coverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.J, Q (𝒰.obj j ↘ S)),
+    ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.J, Q (𝒰.obj j ↘ S)),
       R = 𝒰.toPresieveOverProp h
   has_isos {X Y} f := ⟨coverOfIsIso f.left, inferInstance, fun _ ↦ Y.prop,
     (Presieve.ofArrows_pUnit _).symm⟩
@@ -185,7 +186,7 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
   transitive := by
     rintro X _ T ⟨𝒰, h, p, rfl⟩ H
     choose V h pV hV using H
-    let 𝒱j (j : 𝒰.J) : (Cover (coverage P) ((𝒰.obj j).asOverProp S (p j)).left) :=
+    let 𝒱j (j : 𝒰.J) : (Cover (precoverage P) ((𝒰.obj j).asOverProp S (p j)).left) :=
       V ((𝒰.map j).asOverProp S) ⟨j⟩
     refine ⟨𝒰.bind (fun j ↦ 𝒱j j), inferInstance, fun j ↦ pV _ _ _, ?_⟩
     convert Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.map j).asOverProp S)) _
@@ -235,12 +236,12 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
       𝒰.map_prop _, hy⟩
     use 𝒰.idx x
   · choose Y f y hf hP hy using h
-    let 𝒰 : X.left.Cover (coverage P) :=
+    let 𝒰 : X.left.Cover (precoverage P) :=
       { I₀ := X.left,
         X := fun i ↦ (Y i).left
         f := fun i ↦ (f i).left
         mem₀ := by
-          rw [presieve₀_mem_coverage_iff]
+          rw [presieve₀_mem_precoverage_iff]
           refine ⟨fun x ↦ ⟨x, y x, hy x⟩, hP⟩ }
     letI : 𝒰.Over S :=
       { over := fun i ↦ inferInstance
@@ -252,7 +253,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
 
 lemma mem_smallGrothendieckTopology [P.HasOfPostcompProperty P] (X : P.Over ⊤ S) (R : Sieve X) :
     R ∈ S.smallGrothendieckTopology P X ↔
-      ∃ (𝒰 : Cover.{u} (coverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.obj j ↘ S)),
+      ∃ (𝒰 : Cover.{u} (precoverage P) X.left) (_ : 𝒰.Over S) (h : ∀ j, P (𝒰.obj j ↘ S)),
           𝒰.toPresieveOverProp h ≤ R.arrows := by
   rw [smallGrothendieckTopology_eq_toGrothendieck_smallPretopology]
   constructor

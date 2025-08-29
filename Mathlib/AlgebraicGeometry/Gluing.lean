@@ -252,7 +252,7 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   X := D.U
   f := D.ι
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     exact ⟨D.ι_jointly_surjective, inferInstance⟩
 
 end GlueData
@@ -455,7 +455,7 @@ lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
   let 𝒰 : X.OpenCover := {
     I₀ := X, X i := (U i), f i := (U i).ι,
     mem₀ := by
-      rw [presieve₀_mem_coverage_iff]
+      rw [presieve₀_mem_precoverage_iff]
       refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
 

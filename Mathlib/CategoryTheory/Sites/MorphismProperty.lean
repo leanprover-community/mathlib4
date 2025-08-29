@@ -125,6 +125,4 @@ end
 
 end HasPullbacks
 
-end
-
 end CategoryTheory.MorphismProperty

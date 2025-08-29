@@ -15,10 +15,6 @@ Given a multiplicative morphism property `P` that is stable under base change, w
 associated (pre)topology on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
 
-## TODO
-
-- Define the small site on `Over P Q X`.
-
 -/
 
 universe v u
@@ -65,55 +61,51 @@ instance : IsJointlySurjectivePreserving @IsOpenImmersion where
     use (PreservesPullback.iso Scheme.forgetToTop f g).inv a
     rwa [← TopCat.comp_app, Iso.inv_hom_id_assoc]
 
+/-- The precoverage on `Scheme` defined by jointly surjective families. -/
+def jointlySurjectivePrecoverage : Precoverage Scheme.{u} where
+  coverings X R := ∀ x : X, ∃ (Y : Scheme.{u}) (f : Y ⟶ X), R f ∧ x ∈ Set.range f.base
+
+instance : jointlySurjectivePrecoverage.IsStableUnderComposition where
+  comp_mem_coverings {ι} S X f hf σ Y g hg x := by
+    obtain ⟨-, -, ⟨i⟩, w, hw⟩ := hf x
+    obtain ⟨-, -, ⟨j⟩, z, hz⟩ := (hg i) w
+    clear Y; clear Y
+    use Y i j, g i j ≫ f i, .mk (Sigma.mk i j), z
+    simp [hz, hw]
+
+instance : jointlySurjectivePrecoverage.HasIsos where
+  mem_coverings_of_isIso {S T} f hf x := by
+    use S, f, ⟨⟩, (inv f).base x
+    simp [← Scheme.comp_base_apply]
+
 variable (P : MorphismProperty Scheme.{u})
-  [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
-  [P.HasPullbacks]
 
-structure IsCover {X : Scheme.{u}} (R : Presieve X) : Prop where
-  jointlySurjective : ∀ x : X, ∃ (Y : Scheme.{u}) (y : Y) (f : Y ⟶ X), R f ∧ f.base y = x
-  prop {Y : Scheme.{u}} (f : Y ⟶ X) : R f → P f
-
-def coverage : Coverage Scheme.{u} where
-  covering X S := IsCover P S
-  pullback X Y f S hS := by
-    have : S.HasPullback f := ⟨fun {W} p hp ↦ P.hasPullback _ _ (hS.prop p hp)⟩
-    refine ⟨.pullbackArrows f S, ⟨?_, ?_⟩, ?_⟩
-    · intro y
-      obtain ⟨Z, z, g, hg, hz⟩ := hS.jointlySurjective (f.base y)
-      have hPg : P g := hS.prop g hg
-      have : HasPullback g f := P.hasPullback _ _ hPg
-      obtain ⟨w, hw⟩ :=
-        IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop (P := P) hPg z y hz
-      exact ⟨pullback g f, w, pullback.snd g f, .mk Z g hg, hw⟩
-    · rintro Z g ⟨W, p, hp⟩
-      have : HasPullback p f := P.hasPullback _ _ (hS.prop p hp)
-      apply P.pullback_snd _ _ (hS.prop p hp)
-    · exact Presieve.FactorsThruAlong.pullbackArrows f S
+/-- The precoverage on `Scheme` induced by `P` is given by jointly surjective families of
+`P`-morphisms. -/
+def precoverage : Precoverage Scheme.{u} :=
+  jointlySurjectivePrecoverage ⊓ P.precoverage
 
 @[simp]
-lemma ofArrows_mem_coverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
+lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
     {f : ∀ i, X i ⟶ S} :
-    Presieve.ofArrows X f ∈ coverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i).base) ∧ ∀ i, P (f i) := by
-  refine ⟨fun hmem ↦ ⟨fun x ↦ ?_, fun i ↦ hmem.2 _ ⟨i⟩⟩,
+    .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i).base) ∧ ∀ i, P (f i) := by
+  refine ⟨fun hmem ↦ ⟨fun x ↦ ?_, fun i ↦ hmem.2 ⟨i⟩⟩,
       fun h ↦ ⟨fun x ↦ ?_, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
-  · obtain ⟨Y, y, g, ⟨i⟩, heq⟩ := hmem.1 x
-    use i, y
-  · obtain ⟨i, y, h⟩ := h.1 x
-    use X i, y, f i, ⟨i⟩
+  · obtain ⟨Y, g, ⟨i⟩, hrange⟩ := hmem.1 x
+    use i
+  · obtain ⟨i, h⟩ := h.1 x
+    use X i, f i, ⟨i⟩
 
-instance [P.IsStableUnderComposition] : (coverage P).IsStableUnderComposition where
-  mem_covering_comp {ι} S X f hf σ Y g hg := by
-    refine ⟨fun x ↦ ?_, fun {W} p ⟨i⟩ ↦ ?_⟩
-    · obtain ⟨-, w, -, ⟨i⟩, hw⟩ := hf.jointlySurjective x
-      obtain ⟨-, z, -, ⟨j⟩, hz⟩ := (hg i).jointlySurjective w
-      clear Y; clear Y
-      use Y i j, z, g i j ≫ f i,  .mk (Sigma.mk i j), ?_
-      simp [hz, hw]
-    · exact P.comp_mem _ _ ((hg i.1).prop _ (.mk i.snd)) (hf.prop _ (.mk i.1))
+instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
+  dsimp only [precoverage]; infer_instance
 
-instance : (coverage P).IsStableUnderBaseChange where
-  mem_covering_of_isPullback {ι} S X f hf Y g T p₁ p₂ H := by
-    rw [ofArrows_mem_coverage_iff] at hf ⊢
+instance [P.ContainsIdentities] [P.RespectsIso] : (precoverage P).HasIsos := by
+  dsimp only [precoverage]; infer_instance
+
+instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
+    (precoverage P).IsStableUnderBaseChange where
+  mem_coverings_of_isPullback {ι} S X f hf Y g T p₁ p₂ H := by
+    rw [ofArrows_mem_precoverage_iff] at hf ⊢
     refine ⟨fun x ↦ ?_, fun i ↦ P.of_isPullback (H i).flip (hf.2 i)⟩
     obtain ⟨i, y, hy⟩ := hf.1 (g.base x)
     have := (H i).hasPullback
@@ -121,12 +113,5 @@ instance : (coverage P).IsStableUnderBaseChange where
       (f := g) x y hy.symm
     use i, (H i).isoPullback.inv.base w
     simpa [← Scheme.comp_base_apply]
-
-instance [P.ContainsIdentities] : (coverage P).HasIsos where
-  mem_covering_of_isIso {S T} f hf := by
-    rw [← Presieve.ofArrows_pUnit, ofArrows_mem_coverage_iff]
-    refine ⟨fun x ↦ ?_, fun _ : Unit ↦ P.of_isIso f⟩
-    use (), (inv f).base x
-    simp [← Scheme.comp_base_apply]
 
 end AlgebraicGeometry.Scheme

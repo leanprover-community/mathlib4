@@ -169,7 +169,7 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
   X i := U i
   f i := (U i).ι
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
     have hx : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     rw [Opens.mem_iSup] at hx
@@ -275,7 +275,7 @@ def Scheme.Opens.iSupOpenCover {J : Type*} {X : Scheme} (U : J → X.Opens) :
   X i := U i
   f j := X.homOfLE (le_iSup _ _)
   mem₀ := by
-    rw [presieve₀_mem_coverage_iff]
+    rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, inferInstance⟩
     obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp x.2
     use i, ⟨x.1, hi⟩

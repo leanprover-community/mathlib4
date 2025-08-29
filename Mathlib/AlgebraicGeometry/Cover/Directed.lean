@@ -37,7 +37,7 @@ namespace Cover
 /-- A directed `P`-cover of a scheme `X` is a cover `𝒰` with an ordering
 on the indices and compatible transition maps `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j` such that
 every `x : 𝒰ᵢ ×[X] 𝒰ⱼ` comes from some `𝒰ₖ` for a `k ≤ i` and `k ≤ j`. -/
-class LocallyDirected (𝒰 : X.Cover P) [Category 𝒰.J] where
+class LocallyDirected (𝒰 : X.Cover (precoverage P)) [Category 𝒰.J] where
   /-- The transition map `𝒰ᵢ ⟶ 𝒰ⱼ` for `i ≤ j`. -/
   trans {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.obj i ⟶ 𝒰.obj j
   trans_id (i : 𝒰.J) : trans (𝟙 i) = 𝟙 (𝒰.obj i)
@@ -48,7 +48,7 @@ class LocallyDirected (𝒰 : X.Cover P) [Category 𝒰.J] where
       (pullback.lift (trans hki) (trans hkj) (by simp [w])).base y = x
   property_trans {i j : 𝒰.J} (hij : i ⟶ j) : P (trans hij) := by infer_instance
 
-variable (𝒰 : X.Cover P) [Category 𝒰.J] [𝒰.LocallyDirected]
+variable (𝒰 : X.Cover (precoverage P)) [Category 𝒰.J] [𝒰.LocallyDirected]
 
 /-- The transition maps of a directed cover. -/
 def trans {i j : 𝒰.J} (hij : i ⟶ j) : 𝒰.obj i ⟶ 𝒰.obj j := LocallyDirected.trans hij
@@ -74,19 +74,21 @@ lemma property_trans {i j : 𝒰.J} (hij : i ⟶ j) : P (𝒰.trans hij) :=
 
 /-- If `𝒰` is a directed cover of `X`, this is the cover of `𝒰ᵢ ×[X] 𝒰ⱼ` by `{𝒰ₖ}` where
 `k ≤ i` and `k ≤ j`. -/
-@[simps map]
+@[simps f]
 def intersectionOfLocallyDirected [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
-    (i j : 𝒰.J) : (pullback (𝒰.map i) (𝒰.map j)).Cover P where
-  J := Σ (k : 𝒰.J), (k ⟶ i) × (k ⟶ j)
-  obj k := 𝒰.obj k.1
-  map k := pullback.lift (𝒰.trans k.2.1) (𝒰.trans k.2.2) (by simp)
-  f x := ⟨(𝒰.exists_lift_trans_eq x).choose, (𝒰.exists_lift_trans_eq x).choose_spec.choose,
-    (𝒰.exists_lift_trans_eq x).choose_spec.choose_spec.choose⟩
-  covers x := (𝒰.exists_lift_trans_eq x).choose_spec.choose_spec.choose_spec
-  map_prop k := by
-    apply P.of_postcomp (W' := P) _ (pullback.fst _ _) (P.pullback_fst _ _ (𝒰.map_prop _))
-    rw [pullback.lift_fst]
-    exact 𝒰.property_trans _
+    (i j : 𝒰.J) : (pullback (𝒰.map i) (𝒰.map j)).Cover (precoverage P) where
+  I₀ := Σ (k : 𝒰.J), (k ⟶ i) × (k ⟶ j)
+  X k := 𝒰.obj k.1
+  f k := pullback.lift (𝒰.trans k.2.1) (𝒰.trans k.2.2) (by simp)
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, fun k ↦ ?_⟩
+    · use ⟨(𝒰.exists_lift_trans_eq x).choose, (𝒰.exists_lift_trans_eq x).choose_spec.choose,
+        (𝒰.exists_lift_trans_eq x).choose_spec.choose_spec.choose⟩
+      exact (𝒰.exists_lift_trans_eq x).choose_spec.choose_spec.choose_spec
+    · apply P.of_postcomp (W' := P) _ (pullback.fst _ _) (P.pullback_fst _ _ (𝒰.map_prop _))
+      rw [pullback.lift_fst]
+      exact 𝒰.property_trans _
 
 /-- The canonical diagram induced by a locally directed cover. -/
 @[simps]
@@ -116,7 +118,7 @@ def coconeOfLocallyDirected : Cocone 𝒰.functorOfLocallyDirected where
 
 section BaseChange
 
-variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover P)
+variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
     [Category 𝒰.J] [𝒰.LocallyDirected] {Y : Scheme.{u}} (f : Y ⟶ X)
 
 instance : Category (𝒰.pullbackCover f).J := inferInstanceAs <| Category 𝒰.J
@@ -151,7 +153,7 @@ instance locallyDirectedPullbackCover : (𝒰.pullbackCover f).LocallyDirected w
     let iso : pullback f (𝒰.map i) ≅ pullback (pullback.snd f (𝒰.map j)) (𝒰.trans hij) :=
       pullback.congrHom rfl (by simp) ≪≫ (pullbackLeftPullbackSndIso _ _ _).symm
     rw [← P.cancel_left_of_respectsIso iso.inv]
-    simp only [pullbackCover_obj, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
+    simp only [pullbackCover_X, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
     convert P.pullback_fst _ _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
@@ -264,14 +266,16 @@ end
 variable (X) in
 open TopologicalSpace.Opens in
 /-- The directed affine open cover of `X` given by all affine opens. -/
-@[simps J obj map]
+@[simps I₀ X f]
 def directedAffineCover : X.OpenCover where
-  J := X.affineOpens
-  obj U := U
-  map U := U.1.ι
-  f x := ⟨(isBasis_iff_nbhd.mp (isBasis_affine_open X) (mem_top x)).choose,
-    (isBasis_iff_nbhd.mp (isBasis_affine_open X) (mem_top x)).choose_spec.1⟩
-  covers x := by
+  I₀ := X.affineOpens
+  X U := U
+  f U := U.1.ι
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    use ⟨(isBasis_iff_nbhd.mp (isBasis_affine_open X) (mem_top x)).choose,
+      (isBasis_iff_nbhd.mp (isBasis_affine_open X) (mem_top x)).choose_spec.1⟩
     simpa using (isBasis_iff_nbhd.mp (isBasis_affine_open X) (mem_top x)).choose_spec.2.1
 
 instance : Preorder X.directedAffineCover.J := inferInstanceAs <| Preorder X.affineOpens

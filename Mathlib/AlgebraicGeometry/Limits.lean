@@ -333,7 +333,7 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
   X x := x.elim (fun _ ↦ X) (fun _ ↦ Y)
   f x := x.rec (fun _ ↦ coprod.inl) (fun _ ↦ coprod.inr)
   mem₀ := by
-    rw [Scheme.presieve₀_mem_coverage_iff]
+    rw [Scheme.presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ?_, fun x ↦ x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)⟩
     use ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
     obtain ⟨x, rfl⟩ := (coprodMk X Y).surjective x

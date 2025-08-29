@@ -106,9 +106,7 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
   use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
   rw [← Scheme.comp_base_apply, Limits.Sigma.ι_desc]
 
-instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange]
-    [Scheme.IsJointlySurjectivePreserving P]
-    (𝒰 : X.Cover (Scheme.coverage P)) :
+instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
   Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
 

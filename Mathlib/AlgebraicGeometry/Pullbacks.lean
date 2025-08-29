@@ -335,7 +335,7 @@ theorem lift_comp_ι (i : 𝒰.I₀) :
       (pullback.fst _ _ : pullback (p1 𝒰 f g) (𝒰.f i) ⟶ _) := by
   apply ((gluing 𝒰 f g).openCover.pullbackCover (pullback.fst _ _)).hom_ext
   intro j
-  dsimp only [Cover.pullbackCover, Coverage.ZeroHypercover.pullback₁,
+  dsimp only [Cover.pullbackCover, Precoverage.ZeroHypercover.pullback₁,
     PreZeroHypercover.pullback₁]
   trans pullbackFstιToV 𝒰 f g i j ≫ fV 𝒰 f g j i ≫ (gluing 𝒰 f g).ι _
   · rw [← show _ = fV 𝒰 f g j i ≫ _ from (gluing 𝒰 f g).glue_condition j i]
@@ -475,7 +475,7 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       (fun i => pullback.map _ _ _ _ (𝒰.f i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
       (Equiv.refl 𝒰.I₀) fun _ => Iso.refl _
   rintro i
-  dsimp [Coverage.ZeroHypercover.bind]
+  dsimp [Precoverage.ZeroHypercover.bind]
   apply pullback.hom_ext <;> simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
     GlueData.openCover, gluing_U, gluing_ι, p1, MultispanShape.prod_R, GlueData.diagram_right, p2,
     Category.id_comp, Category.assoc, limit.isoLimitCone_inv_π, colimit.ι_desc, Multicofork.ofπ_pt,
@@ -490,7 +490,7 @@ def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (fun i => pullback.map _ _ _ _ (𝟙 _) (𝒰.f i) (𝟙 _) (by simp) (Category.comp_id _))
       (Equiv.refl _) fun i => pullbackSymmetry _ _
   intro i
-  dsimp [Coverage.ZeroHypercover.bind]
+  dsimp [Precoverage.ZeroHypercover.bind]
   apply pullback.hom_ext <;> simp
 
 /-- Given an open cover `{ Xᵢ }` of `X` and an open cover `{ Yⱼ }` of `Y`, then
@@ -519,7 +519,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     @coverOfIsIso (P := @IsOpenImmersion) _ _ _ _ _
       (f := (pullbackSymmetry (pullback.snd f (𝒰.f i)) (pullback.snd g (𝒰.f i))).hom ≫
         (limit.isoLimitCone ⟨_, this.isLimit⟩).inv ≫
-        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) _ _ inferInstance
+        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_)
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
 
