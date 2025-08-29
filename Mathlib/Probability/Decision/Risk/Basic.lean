@@ -245,6 +245,12 @@ lemma bayesRisk_le_bayesRisk_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel
   rw [← κ.comp_assoc η]
   exact iInf_le_of_le (κ ∘ₖ η) (iInf_le_of_le inferInstance le_rfl)
 
+lemma bayesRisk_le_bayesRisk_map (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
+    (π : Measure Θ) {f : 𝓧 → 𝓧'} (hf : Measurable f) :
+    bayesRisk ℓ P π ≤ bayesRisk ℓ (P.map f) π := by
+  rw [← Kernel.deterministic_comp_eq_map hf]
+  exact bayesRisk_le_bayesRisk_comp _ _ _ _
+
 lemma bayesRisk_compProd_le_bayesRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
     [IsSFiniteKernel P] (π : Measure Θ) (η : Kernel (Θ × 𝓧) 𝓧') [IsMarkovKernel η] :
     bayesRisk ℓ (P ⊗ₖ η) π ≤ bayesRisk ℓ P π := by

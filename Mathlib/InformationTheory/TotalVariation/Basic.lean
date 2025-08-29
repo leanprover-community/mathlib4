@@ -141,6 +141,11 @@ lemma tvDist_comp_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ] (κ : Kernel �
     tvDist (κ ∘ₘ μ) (κ ∘ₘ ν) ≤ tvDist μ ν :=
   ENNReal.toReal_mono deGrootInfo_ne_top (deGrootInfo_comp_le _ _ _ _)
 
+/-- **Data processing inequality** for the total variation distance. -/
+lemma tvDist_map_le (μ ν : Measure 𝓧) [IsFiniteMeasure μ] {f : 𝓧 → 𝓨} (hf : Measurable f) :
+    tvDist (μ.map f) (ν.map f) ≤ tvDist μ ν :=
+  ENNReal.toReal_mono deGrootInfo_ne_top (deGrootInfo_map_le _ _ _ hf)
+
 lemma tvDist_eq_min_sub_lintegral {ζ : Measure 𝓧} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     [SigmaFinite ζ] (hμζ : μ ≪ ζ) (hνζ : ν ≪ ζ) :
     tvDist μ ν = min (μ.real .univ) (ν.real .univ)

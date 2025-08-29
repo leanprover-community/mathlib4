@@ -106,6 +106,13 @@ lemma riskIncrease_comp_le (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ �
   rw [← Kernel.comp_assoc]
   simp
 
+/-- **Data processing inequality** for the risk increase. -/
+lemma riskIncrease_map_le (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (π : Measure Θ)
+    {f : 𝓧 → 𝓧'} (hf : Measurable f) :
+    riskIncrease ℓ (P.map f) π ≤ riskIncrease ℓ P π := by
+  rw [← Kernel.deterministic_comp_eq_map hf]
+  exact riskIncrease_comp_le ℓ P π (Kernel.deterministic f hf)
+
 lemma riskIncrease_withDensity (hl : Measurable (uncurry ℓ))
     (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ)
     {f : Θ → ℝ≥0∞} (hf : Measurable f) :

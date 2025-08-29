@@ -81,6 +81,12 @@ lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kerne
   simp_rw [deGrootInfo_eq_riskIncrease, ← Kernel.comp_boolKernel]
   exact riskIncrease_comp_le binaryLoss (Kernel.boolKernel μ ν) π η
 
+/-- **Data processing inequality** for the statistical information. -/
+lemma deGrootInfo_map_le (μ ν : Measure 𝓧) (π : Measure Bool) {f : 𝓧 → 𝓨} (hf : Measurable f) :
+    deGrootInfo (μ.map f) (ν.map f) π ≤ deGrootInfo μ ν π := by
+  rw [← Measure.deterministic_comp_eq_map hf, ← Measure.deterministic_comp_eq_map hf]
+  exact deGrootInfo_comp_le μ ν π (Kernel.deterministic f hf)
+
 lemma deGrootInfo_eq_deGrootInfo_one_one :
     deGrootInfo μ ν π = deGrootInfo (π {false} • μ) (π {true} • ν) (boolMeasure 1 1) := by
   rw [deGrootInfo, bayesBinaryRisk_eq_bayesBinaryRisk_one_one]
