@@ -3,12 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Convex.StdSimplex
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological properties of convex sets
@@ -48,48 +46,6 @@ alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 /-! ### Standard simplex -/
 
 
-section stdSimplex
-
-variable [Fintype ι]
-
-/-- Every vector in `stdSimplex 𝕜 ι` has `max`-norm at most `1`. -/
-theorem stdSimplex_subset_closedBall : stdSimplex ℝ ι ⊆ Metric.closedBall 0 1 := fun f hf ↦ by
-  rw [Metric.mem_closedBall, dist_pi_le_iff zero_le_one]
-  intro x
-  rw [Pi.zero_apply, Real.dist_0_eq_abs, abs_of_nonneg <| hf.1 x]
-  exact (mem_Icc_of_mem_stdSimplex hf x).2
-
-variable (ι)
-
-/-- `stdSimplex ℝ ι` is bounded. -/
-theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
-  (Metric.isBounded_iff_subset_closedBall 0).2 ⟨1, stdSimplex_subset_closedBall⟩
-
-/-- `stdSimplex ℝ ι` is closed. -/
-theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
-  (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
-
-/-- `stdSimplex ℝ ι` is compact. -/
-theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=
-  Metric.isCompact_iff_isClosed_bounded.2 ⟨isClosed_stdSimplex ι, bounded_stdSimplex ι⟩
-
-instance stdSimplex.instCompactSpace_coe : CompactSpace ↥(stdSimplex ℝ ι) :=
-  isCompact_iff_compactSpace.mp <| isCompact_stdSimplex _
-
-/-- The standard one-dimensional simplex in `ℝ² = Fin 2 → ℝ`
-is homeomorphic to the unit interval. -/
-@[simps! -fullyApplied]
-def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
-  toEquiv := stdSimplexEquivIcc ℝ
-  continuous_toFun := .subtype_mk ((continuous_apply 0).comp continuous_subtype_val) _
-  continuous_invFun := by
-    apply Continuous.subtype_mk
-    exact (continuous_pi <| Fin.forall_fin_two.2
-      ⟨continuous_subtype_val, continuous_const.sub continuous_subtype_val⟩)
-
-end stdSimplex
 
 /-! ### Topological vector spaces -/
 section TopologicalSpace
