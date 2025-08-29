@@ -293,7 +293,6 @@ theorem circumsphere_eq_circumsphere_of_eq_of_eq_of_two_zsmul_oangle_eq {t₁ t�
     t₁.circumsphere = t₂.circumsphere := by
   rw [t₁.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
     t₂.circumsphere_eq_of_dist_of_oangle h₁₂ h₁₃ h₂₃,
-    -- Porting note: was `congrm ⟨((_ : ℝ)⁻¹ / 2) • _ +ᵥ _, _ / _ / 2⟩` and five more lines
     Real.Angle.tan_eq_of_two_zsmul_eq h₂, Real.Angle.abs_sin_eq_of_two_zsmul_eq h₂, h₁, h₃]
 
 /-- Given a triangle, and a fourth point such that twice the angle between two points of the

@@ -482,9 +482,6 @@ theorem algHom_ext_of_eq_adjoin {S : IntermediateField F E} {s : Set E} (hS : S 
 
 end
 
-/- Porting note (kmill): this notation is replacing the typeclass-based one I had previously
-written, and it gives true `{x₁, x₂, ..., xₙ}` sets in the `adjoin` term. -/
-
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/
 private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]

@@ -25,11 +25,7 @@ open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor Cate
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
--- Porting note: no tidy tactic
--- attribute [local tidy] tactic.auto_cases_opens
--- this could be replaced by
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
--- but it doesn't appear to be needed here.
 
 open TopCat.Presheaf
 
@@ -51,7 +47,7 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
-of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`.
+of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`.
 -/
 def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (X : TopCat.{v})}
     (h : IsOpenEmbedding f) (x : U) : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
