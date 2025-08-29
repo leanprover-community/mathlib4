@@ -3,7 +3,7 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.Matroid.IndepAxioms
+import Mathlib.Combinatorics.Matroid.IndepAxioms
 
 /-!
 # Matroid Duality
@@ -101,7 +101,7 @@ section dual
     exact heX (hJX heJ)
   subset_ground := by tauto
 
-/-- The dual of a matroid; the bases are the complements (w.r.t `M.E`) of the bases of `M`. -/
+/-- The dual of a matroid; the bases are the complements (w.r.t. `M.E`) of the bases of `M`. -/
 def dual (M : Matroid α) : Matroid α := M.dualIndepMatroid.matroid
 
 /-- The `✶` symbol, which denotes matroid duality.

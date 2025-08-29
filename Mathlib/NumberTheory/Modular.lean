@@ -27,7 +27,7 @@ The standard (closed) fundamental domain of the action of `SL(2,ℤ)` on `ℍ`, 
 The standard open fundamental domain of the action of `SL(2,ℤ)` on `ℍ`, denoted `𝒟ᵒ`:
 `fdo := {z | 1 < (z : ℂ).normSq ∧ |z.re| < (1 : ℝ) / 2}`
 
-These notations are localized in the `Modular` locale and can be enabled via `open scoped Modular`.
+These notations are localized in the `Modular` scope and can be enabled via `open scoped Modular`.
 
 ## Main results
 
