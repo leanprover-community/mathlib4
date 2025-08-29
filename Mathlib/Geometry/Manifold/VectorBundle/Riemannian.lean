@@ -16,11 +16,12 @@ We introduce a typeclass `[IsContMDiffRiemannianBundle IB n F E]` registering th
 Under this assumption, we show that the scalar product of two smooth maps into the same fibers of
 the bundle is a smooth function.
 
-If the fibers of a bundle `E` have a preexisting topology (like the tangent bundle), one can not
+If the fibers of a bundle `E` have a preexisting topology (like the tangent bundle), one cannot
 assume additionally `[∀ b, InnerProductSpace ℝ (E b)]` as this would create diamonds. Instead,
 use `[RiemannianBundle E]`, which endows the fibers with a scalar product while ensuring that
-there is no diamond. We provide a constructor for `[RiemannianBundle E]` from a smooth family
-of metrics, which registers automatically `[IsContMDiffRiemannianBundle IB n F E]`.
+there is no diamond (for this, the `Bundle` scope should be open). We provide a
+constructor for `[RiemannianBundle E]` from a smooth family of metrics, which registers
+automatically `[IsContMDiffRiemannianBundle IB n F E]`.
 
 The following code block is the standard way to say "Let `E` be a smooth vector bundle equipped with
 a `C^n` Riemannian structure over a `C^n` manifold `B`":

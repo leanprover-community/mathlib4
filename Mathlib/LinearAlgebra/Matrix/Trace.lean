@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.RowCol
-import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix
@@ -41,7 +41,7 @@ variable [AddCommMonoid R]
 def trace (A : Matrix n n R) : R :=
   ∑ i, diag A i
 
-lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
+@[simp] lemma trace_diagonal {o} [Fintype o] [DecidableEq o] (d : o → R) :
     trace (diagonal d) = ∑ i, d i := by
   simp only [trace, diag_apply, diagonal_apply_eq]
 
@@ -251,6 +251,32 @@ theorem trace_single_eq_same : trace (single i i c) = c := by
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
+theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
+    (i : n) (j : m) (a : R) (x : Matrix m n R) :
+    (single i j a * x).trace = a • x j i := by
+  simp [trace, mul_apply, single, ite_and]
+
+theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
+    (x : Matrix m n R) (i : n) (j : m) (a : R) :
+    (x * single i j a).trace = MulOpposite.op a • x j i := by
+  simp [trace, mul_apply, single, ite_and]
+
 end single
+
+/-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
+theorem ext_iff_trace_mul_left [NonAssocSemiring R] {A B : Matrix m n R} :
+    A = B ↔ ∀ x, (x * A).trace = (x * B).trace := by
+  refine ⟨fun h x => h ▸ rfl, fun h => ?_⟩
+  ext i j
+  classical
+  simpa [trace_single_mul] using h (single j i (1 : R))
+
+/-- Matrices `A` and `B` are equal iff `(A * x).trace = (B * x).trace` for all `x`. -/
+theorem ext_iff_trace_mul_right [NonAssocSemiring R] {A B : Matrix m n R} :
+    A = B ↔ ∀ x, (A * x).trace = (B * x).trace := by
+  refine ⟨fun h x => h ▸ rfl, fun h => ?_⟩
+  ext i j
+  classical
+  simpa [trace_mul_single] using h (single j i (1 : R))
 
 end Matrix

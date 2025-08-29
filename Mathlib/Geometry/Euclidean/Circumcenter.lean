@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Geometry.Euclidean.Projection
 import Mathlib.Geometry.Euclidean.Sphere.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
 
@@ -76,15 +77,12 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       rw [Sphere.mem_coe, mem_sphere, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
         Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))]
       rcases hp₁ with hp₁ | hp₁
-      · rw [hp₁]
-        rw [hpo,
+      · rw [hp₁, hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
           ← dist_eq_norm_vsub V p, dist_comm _ cc]
-        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
-        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-        simp (disch := field_simp_discharge) only [div_div, sub_div', one_mul, mul_div_assoc',
-          div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂]
+        simp only [ycc₂]
+        field_simp
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
@@ -131,13 +129,13 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         x * x + (1 - t₃) * (1 - t₃) * (y * y) = x * x + y * y - 2 * y * (t₃ * y) + t₃ * y * (t₃ * y)
         by ring,
       add_left_inj] at hcr₃
-    have ht₃ : t₃ = ycc₂ / y := by field_simp [ycc₂, ← hcr₃, hy0]
+    have ht₃ : t₃ = ycc₂ / y := by simp [ycc₂, ← hcr₃, hy0]
     subst ht₃
     change cc₃ = cc₂ at hcc₃''
     congr
     rw [hcr₃val]
     congr 2
-    field_simp [hy0]
+    field_simp
 
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
@@ -191,7 +189,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       convert ha.notMem_affineSpan_diff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
-      congr with j
+      congr 1 with j
       simp
 
 end EuclideanGeometry
