@@ -29,18 +29,13 @@ def withTraceNodeApplication
   (k_name : Name) (k : α → m β) (a : α) (collapsed : Bool := true) (tag : String := "") :
     m β :=
   withTraceNode cls
-    (return m!"{exceptEmoji ·} {.ofConstName k_name}")
+    (fun e => do
+      let ret_msg := match e with
+      | .ok b => toMessageData b
+      | .error err => err.toMessageData
+      Lean.trace cls fun _ => .group m!"{a}{Format.line}==> {.nest 2 ret_msg}"
+      return m!"{exceptEmoji e} {.ofConstName k_name}")
     (collapsed := collapsed) (tag := tag)
-    do
-      unless ← Lean.isTracingEnabledFor cls do
-        return ← k a
-      let _ := always.except
-      try
-        let b ← k a
-        Lean.addTrace cls <| .group m!"{a}{Format.line}==> {.nest 2 (toMessageData b)}"
-        return b
-      catch err =>
-        Lean.addTrace cls <| .group m!"{a}{Format.line}==> {.nest 2 err.toMessageData}"
-        throw err
+    (k a)
 
 end Mathlib.Meta
