@@ -131,17 +131,15 @@ and `‖f'(x)‖ ≤ K ‖f(x)‖` for some constant `K`. Then `f = 0` on `[a, b
 theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f f' : ℝ → E}
     {K a b : ℝ} (hf : ContinuousOn f (Set.Icc a b))
-    (hf' : ∀ x ∈ Set.Ico a b, HasDerivWithinAt f (f' x) (Set.Ici x) x)
-    (ha : f a = 0) (bound : ∀ x ∈ Set.Ico a b, ‖f' x‖ ≤ K * ‖f x‖) (x : ℝ) :
+    (hf' : ∀ x ∈ Ico a b, HasDerivWithinAt f (f' x) (Set.Ici x) x)
+    (ha : f a = 0) (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ K * ‖f x‖) (x : ℝ) :
     x ∈ Set.Icc a b → f x = 0 := by
   intro hx
   apply norm_eq_zero.mp <| le_antisymm _ (norm_nonneg (f x))
-  calc ‖f x‖ ≤ gronwallBound 0 K 0 (x - a) :=
-    norm_le_gronwallBound_of_norm_deriv_right_le hf hf' ?_ ?_ _ hx
+  calc ‖f x‖
+    _ ≤ gronwallBound 0 K 0 (x - a) :=
+    norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
     _ = 0 := by rw [gronwallBound_ε0_δ0]
-  · simp [ha]
-  · simpa using bound
-
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
