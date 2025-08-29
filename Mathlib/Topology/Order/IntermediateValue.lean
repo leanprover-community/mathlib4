@@ -338,9 +338,9 @@ theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsC
   apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
   rw [Ico_toDual, ← toDual_symm_eq, ← image_equiv_eq_preimage_symm, ←image_inter toDual.injective,
     mem_image] at hx
-  obtain ⟨y, hy, hy'⟩ := hx
-  simpa [←hy', Set.Ioc_toDual, ←OrderDual.toDual_symm_eq, ←Set.image_equiv_eq_preimage_symm,
-    ←Set.image_inter toDual.injective, Set.image_nonempty] using hgt y hy
+  aesop
+
+
 
   -- let S := s ∩ Icc a b
   -- replace hb : b ∈ S := ⟨hb, right_mem_Icc.2 hab⟩
