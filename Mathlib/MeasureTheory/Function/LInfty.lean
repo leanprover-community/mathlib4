@@ -14,7 +14,7 @@ This file develops the basic results specific to `Lp R ∞ μ` when `R` is a
 `NormedRing`.  The main goal is to equip `L∞` with its natural pointwise multiplicative
 structure (defined a.e.) and to register the constant embedding.  This is a small,
 self-contained layer intended to be imported later by files that build richer structure
-(e.g. the commutative C⋆-algebra structure when `R = 𝕜`).
+(e.g. the commutative C⋆-algebra structure when `R = 𝕜`, for `RCLike 𝕜`).
 
 ## Main definitions
 
