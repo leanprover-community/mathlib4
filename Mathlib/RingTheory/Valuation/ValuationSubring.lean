@@ -112,12 +112,12 @@ instance : ValuationRing A where
     · use ⟨a / b, hh⟩
       right
       ext
-      field_simp
+      simp [field]
     · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
-      field_simp
+      simp [field]
 
 instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
 
@@ -177,7 +177,7 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
-    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; field_simp⟩
+    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; simp [field]⟩
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -311,7 +311,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
         not_not]
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
-      ext; field_simp
+      ext; simp [field]
     · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
@@ -510,7 +510,7 @@ variable {A}
 /-- The elements of `A.nonunits` are those of the maximal ideal of `A` after coercion to `K`.
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
-at the expense of a more complicated right hand side.
+at the expense of a more complicated right-hand side.
 -/
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
@@ -523,7 +523,7 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 
 /-- The elements of `A.nonunits` are those of the maximal ideal of `A`.
 
-See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
+See also `coe_mem_nonunits_iff`, which has a simpler right-hand side but requires the element
 to be in `A` already.
 -/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :
