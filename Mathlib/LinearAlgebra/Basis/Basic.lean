@@ -54,7 +54,7 @@ theorem repr_support_subset_of_mem_span (s : Set ι) {m : M}
 
 theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.repr m).support ⊆ s :=
   ⟨repr_support_subset_of_mem_span _ _, fun h ↦
-    span_mono (image_subset _ h) (mem_span_repr_support b _)⟩
+    span_mono (Set.image_mono h) (mem_span_repr_support b _)⟩
 
 @[simp]
 theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :
@@ -67,6 +67,12 @@ protected theorem mem_span (x : M) : x ∈ span R (range b) :=
 @[simp]
 protected theorem span_eq : span R (range b) = ⊤ :=
   eq_top_iff.mpr fun x _ => b.mem_span x
+
+theorem _root_.Submodule.eq_top_iff_forall_basis_mem {p : Submodule R M} :
+    p = ⊤ ↔ ∀ i, b i ∈ p := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  replace h : range b ⊆ p := by rintro - ⟨i, rfl⟩; exact h i
+  simpa using span_mono (R := R) h
 
 theorem index_nonempty (b : Basis ι R M) [Nontrivial M] : Nonempty ι := by
   obtain ⟨x, y, ne⟩ : ∃ x y : M, x ≠ y := Nontrivial.exists_pair_ne
@@ -216,6 +222,11 @@ theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.sing
 @[simp]
 theorem singleton_repr (ι R : Type*) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
+
+@[simp]
+theorem coe_singleton {ι R : Type*} [Unique ι] [Semiring R] :
+    ⇑(Basis.singleton ι R) = 1 := by
+  ext; simp
 
 end Singleton
 

@@ -203,7 +203,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
       Disjoint.left_le_of_le_sup_right induce_le ?_⟩
     rw [disjoint_edge]
     rw [ConnectedComponent.adj_spanningCoe_toSimpleGraph]
-    aesop
+    simp_all
   push_neg at hxc
   have hacc := ((cycles.connectedComponentMk c).mem_supp_congr_adj hcac.symm).mp rfl
   have (G : SimpleGraph V) : LocallyFinite G := fun _ ↦ Fintype.ofFinite _
@@ -289,7 +289,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
     push_neg at h'
     obtain ⟨K, hK⟩ := h'
     obtain ⟨x, y, hxy⟩ := (not_isClique_iff _).mp hK
-    obtain ⟨p , hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
+    obtain ⟨p, hp⟩ := Reachable.exists_path_of_dist (K.connected_toSimpleGraph x y)
     obtain ⟨x, a, b, hxa, hxb, hnadjxb, hnxb⟩ := Walk.exists_adj_adj_not_adj_ne hp.2
       (p.reachable.one_lt_dist_of_ne_of_not_adj hxy.1 hxy.2)
     simp only [ConnectedComponent.toSimpleGraph, deleteUniversalVerts, universalVerts, ne_eq,
