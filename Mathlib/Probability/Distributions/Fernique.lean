@@ -155,7 +155,8 @@ lemma measure_le_mul_measure_gt_le_of_map_rotation_eq_self [SFinite μ]
     _ < (‖p.1 + p.2‖ - ‖p.1 - p.2‖) / 2 := by
       suffices b - a < ‖p.1 + p.2‖ / √2 - ‖p.1 - p.2‖ / √2 by
         calc (b - a) / √2 < (‖p.1 + p.2‖ / √2 - ‖p.1 - p.2‖ / √2) / √2 := by gcongr
-        _ = (‖p.1 + p.2‖ - ‖p.1 - p.2‖) / 2 := by field_simp
+        _ = (‖p.1 + p.2‖ - ‖p.1 - p.2‖) / 2 := by
+          field_simp; rw [Real.sq_sqrt (by positivity)]; ring
       calc b - a < ‖p.1 + p.2‖ / √2 - a := by gcongr
       _ ≤ ‖p.1 + p.2‖ / √2 - ‖p.1 - p.2‖ / √2 := by gcongr
     _ ≤ min ‖p.1‖ ‖p.2‖ := by
@@ -366,6 +367,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
     congr
     norm_cast
+    simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div, neg_mul]
     field_simp
     ring
 
@@ -396,7 +398,8 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
     _ = μ {x | ‖x‖ ≤ a} * .ofReal (rexp (logRatio c')) := by
       simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter]
       rw [mul_comm]
-      field_simp [C]
+      simp only [inv_pow, C]
+      field_simp
       congr with x
       simp
   by_cases ha : μ {x | ‖x‖ ≤ a} = 1
@@ -442,12 +445,12 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   refine (le_trans ?_ (lintegral_closedBall_diff_exp_logRatio_mul_sq_le h_rot
     (hc'_gt.trans_le hc') ha_lt n)).trans ?_
   · gcongr
-    field_simp [C]
+    simp only [inv_pow, C]
+    field_simp
     gcongr
     exact logRatio_mono hc'_gt ha_lt hc'
   gcongr _ * ENNReal.ofReal (rexp ?_)
-  simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff, Nat.ofNat_pos, pow_pos, mul_le_mul_right,
-    inv_pos, mul_le_mul_left]
+  simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff]
   gcongr
   · refine div_pos ?_ ?_
     all_goals rw [ENNReal.toReal_pos_iff]
