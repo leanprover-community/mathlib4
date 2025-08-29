@@ -767,9 +767,75 @@ noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
     apply isCovariantDerivativeOn_existence_candidate I _
 
+/-- The **Christoffel symbol** of a covariant derivative on a set `U ⊆ M`
+with respect to a local frame `(s_i)` on `U`: for each triple `(i, j, k)` of indices,
+this is a function `Γᵢⱼᵏ : M → ℝ`, whose value outside of `U` is meaningless. -/
+noncomputable def christoffelSymbol
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    {U : Set M} {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
+    (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
+  hs.repr k (f (s i) (s j))
+
+-- Lemma 4.3 in Lee, Chapter 5: first term still missing
+variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSpace I x}
+  {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+
+lemma foobar (hf : IsCovariantDerivativeOn E f U)
+    (hs : IsLocalFrameOn I E 1 s U) (x : M) :
+    f X Y x = ∑ k,
+      let S₁ := ∑ i, ∑ j, (hs.repr i X) * (hs.repr j Y) * (christoffelSymbol I f hs i j k)
+      let S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
+      S₁ x • s k x :=
+  -- straightforward computation: write Y = ∑ i, hs.repr i Y and use linearity and Leibniz rule
+  sorry
+
+/- TODO: prove some basic properties, such as
+- the Christoffel symbols are linear in cov
+- if (s_i) is a smooth local frame on U, then cov is smooth on U iff each Christoffel symbol is (?)
+- prove a `spec` equality
+- deduce: two covariant derivatives are equal iff their Christoffel symbols are equal
+-/
+
+-- Exercise 4.2(b) in Lee, Chapter 4
+/-- A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U` and
+any local coordinate frame, the Christoffel symbols `Γᵢⱼᵏ` are symmetric.
+
+TODO: figure out the right quantifiers here!
+right now, I just have one fixed coordinate frame... will this do??
+-/
+lemma isTorsionFree_iff_christoffelSymbols
+    (hf : IsCovariantDerivativeOn E f U) {x : M} :
+    cov.IsTorsionFree ↔
+      ∀ x ∈ U,
+      -- Let `{s_i}` be the coordinate frame at `x`: this statement is false for arbitrary frames.
+      -- TODO: does the following do what I want??
+      letI cs := christoffelSymbol I f
+          ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (trivializationAt E _ x))
+      ∀ i j k, cs i j k = cs j i k := by
+  sorry
+
 lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection := by
+  -- If `E` is trivial, the Levi-Civita connection is always zero and all proofs are trivial.
+  by_cases hE : Subsingleton E
+  · have (y : M) (X : TangentSpace I y) : X = 0 := by
+      have : Subsingleton (TangentSpace I y) := inferInstanceAs (Subsingleton E)
+      apply Subsingleton.eq_zero X
+    refine ⟨?_, ?_⟩
+    · intro X Y Z x
+      simp only [LeviCivitaConnection]
+      unfold lcCandidate
+      simp [this]
+    · simp only [isTorsionFree_def, LeviCivitaConnection]
+      unfold lcCandidate torsion
+      ext; simp [this]
+  simp only [LeviCivitaConnection]
+  unfold lcCandidate
+  simp only [lcCandidate_aux, hE, ↓reduceDIte]
   refine ⟨?_, ?_⟩
-  · sorry -- compatible
+  · intro X Y Z x
+    dsimp
+    simp [product_apply]
+    sorry -- compatible
   · sorry -- torsion-free
 
 end CovariantDerivative

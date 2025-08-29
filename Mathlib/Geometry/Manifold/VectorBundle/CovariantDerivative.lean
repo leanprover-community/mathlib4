@@ -1120,29 +1120,31 @@ end horiz
 section torsion
 namespace CovariantDerivative
 
-variable [h : IsManifold I ∞ M]
-
--- The torsion tensor of a covariant derivative on the tangent bundle `TM`.
-variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
-
-variable (cov) in
-noncomputable def torsion :
+/-- The torsion of a covariant derivative on the tangent bundle `TM` -/
+noncomputable def torsion
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
-  fun X Y ↦ cov X Y - cov Y X - VectorField.mlieBracket I X Y
+  fun X Y ↦ f X Y - f Y X - VectorField.mlieBracket I X Y
 
-variable {X X' Y : Π x : M, TangentSpace I x}
+variable
+  {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+  {X X' Y : Π x : M, TangentSpace I x}
 
-variable (X) in
-lemma torsion_self : torsion cov X X = 0 := by
+variable (f X) in
+lemma torsion_self : torsion f X X = 0 := by
   simp [torsion]
 
 variable (X Y) in
-lemma torsion_antisymm : torsion cov X Y = - torsion cov Y X := by
+lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
   simp only [torsion]
   rw [VectorField.mlieBracket_swap]
   module
 
-variable (X) in
+variable [h : IsManifold I ∞ M]
+-- The torsion tensor of a covariant derivative on the tangent bundle `TM`.
+variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
+
+variable (f X) in
 @[simp]
 lemma torsion_zero : torsion cov 0 X = 0 := by
   ext x
