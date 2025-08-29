@@ -807,10 +807,10 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
   | (n : ℕ∞) =>
     -- We prove this by induction on `n`
     induction n using ENat.nat_induction with
-    | h0 =>
+    | zero =>
       apply contDiffAt_zero.2
       exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
-    | hsuc n IH =>
+    | succ n IH =>
       obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
       apply contDiffAt_succ_iff_hasFDerivAt.2
       -- For showing `n.succ` times continuous differentiability (the main inductive step), it
@@ -847,7 +847,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
           norm_cast
           exact Nat.le_succ n
         exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
-    | htop Itop => exact contDiffAt_infty.mpr fun n ↦ Itop n (contDiffAt_infty.mp hf n)
+    | top Itop => exact contDiffAt_infty.mpr fun n ↦ Itop n (contDiffAt_infty.mp hf n)
 
 /-- If `f` is an `n` times continuously differentiable homeomorphism,
 and if the derivative of `f` at each point is a continuous linear equivalence,
