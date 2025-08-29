@@ -258,9 +258,13 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : ra
 
 /-- An open partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
 to vertical subspaces. -/
-def implicitToOpenPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
-    (hker : (ker f').ClosedComplemented) : OpenPartialHomeomorph E (F × ker f') :=
+def implicitToOpenPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a)
+    (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
+    OpenPartialHomeomorph E (F × ker f') :=
   (implicitFunctionDataOfComplemented f f' hf hf' hker).toOpenPartialHomeomorph
+
+@[deprecated (since := "2025-08-29")] noncomputable alias
+  implicitToPartialHomeomorphOfComplemented := implicitToOpenPartialHomeomorphOfComplemented
 
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
 def implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
@@ -275,11 +279,17 @@ theorem implicitToOpenPartialHomeomorphOfComplemented_fst (hf : HasStrictFDerivA
     (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker x).fst = f x :=
   rfl
 
+@[deprecated (since := "2025-08-29")] alias
+  implicitToPartialHomeomorphOfComplemented_fst := implicitToOpenPartialHomeomorphOfComplemented_fst
+
 theorem implicitToOpenPartialHomeomorphOfComplemented_apply (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) (y : E) :
     hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker y =
       (f y, Classical.choose hker (y - a)) :=
   rfl
+
+@[deprecated (since := "2025-08-29")] alias implicitToPartialHomeomorphOfComplemented_apply :=
+  implicitToOpenPartialHomeomorphOfComplemented_apply
 
 @[simp]
 theorem implicitToOpenPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictFDerivAt f f' a)
@@ -288,23 +298,36 @@ theorem implicitToOpenPartialHomeomorphOfComplemented_apply_ker (hf : HasStrictF
   simp only [implicitToOpenPartialHomeomorphOfComplemented_apply, add_sub_cancel_right,
     Classical.choose_spec hker]
 
+@[deprecated (since := "2025-08-29")] alias implicitToPartialHomeomorphOfComplemented_apply_ker :=
+  implicitToOpenPartialHomeomorphOfComplemented_apply_ker
+
 @[simp]
 theorem implicitToOpenPartialHomeomorphOfComplemented_self (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker a = (f a, 0) := by
   simp [hf.implicitToOpenPartialHomeomorphOfComplemented_apply]
 
+@[deprecated (since := "2025-08-29")] alias implicitToPartialHomeomorphOfComplemented_self :=
+  implicitToOpenPartialHomeomorphOfComplemented_self
+
 theorem mem_implicitToOpenPartialHomeomorphOfComplemented_source (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
     a ∈ (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).source :=
   ImplicitFunctionData.pt_mem_toOpenPartialHomeomorph_source _
 
+@[deprecated (since := "2025-08-29")] alias mem_implicitToPartialHomeomorphOfComplemented_source :=
+   mem_implicitToOpenPartialHomeomorphOfComplemented_source
+
 theorem mem_implicitToOpenPartialHomeomorphOfComplemented_target (hf : HasStrictFDerivAt f f' a)
     (hf' : range f' = ⊤) (hker : (ker f').ClosedComplemented) :
-    (f a, (0 : ker f')) ∈ (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).target := by
+    (f a, (0 : ker f')) ∈
+      (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).target := by
   simpa only [implicitToOpenPartialHomeomorphOfComplemented_self] using
     (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).map_source <|
       hf.mem_implicitToOpenPartialHomeomorphOfComplemented_source hf' hker
+
+@[deprecated (since := "2025-08-29")] alias mem_implicitToPartialHomeomorphOfComplemented_target :=
+   mem_implicitToOpenPartialHomeomorphOfComplemented_target
 
 /-- `HasStrictFDerivAt.implicitFunctionOfComplemented` sends `(z, y)` to a point in `f ⁻¹' z`. -/
 theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
