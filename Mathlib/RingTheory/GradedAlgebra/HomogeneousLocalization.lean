@@ -150,13 +150,13 @@ end SMul
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
+open GradedOne in
 instance : One (NumDenSameDeg 𝒜 x) where
   one :=
     { deg := 0
-      -- Porting note: Changed `one_mem` to `GradedOne.one_mem`
-      num := ⟨1, GradedOne.one_mem⟩
-      den := ⟨1, GradedOne.one_mem⟩
-      den_mem := Submonoid.one_mem _ }
+      num := ⟨1, one_mem⟩
+      den := ⟨1, one_mem⟩
+      den_mem := one_mem _ }
 
 @[simp]
 theorem deg_one : (1 : NumDenSameDeg 𝒜 x).deg = 0 :=
@@ -170,8 +170,9 @@ theorem num_one : ((1 : NumDenSameDeg 𝒜 x).num : A) = 1 :=
 theorem den_one : ((1 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 
+open GradedOne in
 instance : Zero (NumDenSameDeg 𝒜 x) where
-  zero := ⟨0, 0, ⟨1, GradedOne.one_mem⟩, Submonoid.one_mem _⟩
+  zero := ⟨0, 0, ⟨1, one_mem⟩, one_mem _⟩
 
 @[simp]
 theorem deg_zero : (0 : NumDenSameDeg 𝒜 x).deg = 0 :=
@@ -185,12 +186,12 @@ theorem num_zero : (0 : NumDenSameDeg 𝒜 x).num = 0 :=
 theorem den_zero : ((0 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 
+open GradedMul in
 instance : Mul (NumDenSameDeg 𝒜 x) where
   mul p q :=
     { deg := p.deg + q.deg
-      -- Porting note: Changed `mul_mem` to `GradedMul.mul_mem`
-      num := ⟨p.num * q.num, GradedMul.mul_mem p.num.prop q.num.prop⟩
-      den := ⟨p.den * q.den, GradedMul.mul_mem p.den.prop q.den.prop⟩
+      num := ⟨p.num * q.num, mul_mem p.num.prop q.num.prop⟩
+      den := ⟨p.den * q.den, mul_mem p.den.prop q.den.prop⟩
       den_mem := Submonoid.mul_mem _ p.den_mem q.den_mem }
 
 @[simp]

@@ -61,8 +61,6 @@ section Discr
 
 /-- Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we define
 `discr A ι b` as the determinant of `traceMatrix A ι b`. -/
--- Porting note: using `[DecidableEq ι]` instead of `by classical...` did not work in
--- mathlib3.
 noncomputable def discr (A : Type u) {B : Type v} [CommRing A] [CommRing B] [Algebra A B]
     [Fintype ι] (b : ι → B) := (traceMatrix A b).det
 
@@ -197,11 +195,10 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
   ring
 
 /-- Formula for the discriminant of a power basis using the norm of the field extension. -/
--- Porting note: `(minpoly K pb.gen).derivative` does not work anymore.
 theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     discr K pb.basis =
       (-1) ^ (n * (n - 1) / 2) *
-      norm K (aeval pb.gen (derivative (R := K) (minpoly K pb.gen))) := by
+      norm K (aeval pb.gen (minpoly K pb.gen).derivative) := by
   let E := AlgebraicClosure L
   letI := fun a b : E => Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
@@ -230,10 +227,8 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
   rw [Finset.prod_sigma', Finset.prod_sigma']
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
-  -- Porting note: `@mem_compl` was not necessary.
     <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def,
-      mem_roots',
-      mem_singleton, true_and, @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply,
+      mem_roots', mem_singleton, true_and, mem_compl, Sigma.forall, Equiv.apply_symm_apply,
       PowerBasis.lift_gen, implies_true, Equiv.symm_apply_apply,
       Sigma.ext_iff, Equiv.symm_apply_eq, heq_eq_eq, and_true] at *
   · simpa only [aeval_def, eval₂_eq_eval_map] using hσ.2.2

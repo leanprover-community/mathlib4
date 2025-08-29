@@ -134,9 +134,6 @@ theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsAr
 lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
--- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
--- attribute [local elab_as_elim] Finite.induction_empty_option
-
 open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
@@ -294,7 +291,6 @@ prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
 instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 
---Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
 

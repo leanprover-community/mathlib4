@@ -24,8 +24,6 @@ localization at an element.
 
 -/
 
-
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u
@@ -140,9 +138,6 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 /-! and that Rₘ and Sₘ are localizations of R and S at M. -/
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
-
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_unramified_and_smooth.mpr
