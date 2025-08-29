@@ -102,9 +102,6 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     have hu := hcccru ⟨cc₃', cr₃'⟩
     simp only at hu
     replace hu := hu ⟨hcc₃', hcr₃'⟩
-    -- Porting note: was
-    -- cases' hu with hucc hucr
-    -- substs hucc hucr
     cases hu
     have hcr₃val : cr₃ = √(cr * cr + t₃ * y * (t₃ * y)) := by
       obtain ⟨p0, hp0⟩ := hnps
@@ -170,9 +167,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       classical
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype {x | x ≠ i}]
-        · rw [Finset.filter_not]
-          -- Porting note: removed `simp_rw [eq_comm]` and used `filter_eq'` instead of `filter_eq`
-          rw [Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
+        · rw [Finset.filter_not, Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
             Finset.card_sdiff (Finset.subset_univ _), Finset.card_singleton, Finset.card_univ, hn]
           simp
         · simp
@@ -266,12 +261,8 @@ theorem eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     p = s.circumcenter := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, Sphere.ext_iff,
-    true_and] at h
-  -- Porting note: added the next three lines (`simp` less powerful)
-  rw [subset_sphere (s := ⟨p, r⟩)] at h
-  simp only [hr, forall_const,
-    Set.forall_mem_range, mem_sphere] at h
+  simp only [hp, hr, forall_const, subset_sphere (s := ⟨p, r⟩), Sphere.ext_iff,
+    Set.forall_mem_range, mem_sphere, true_and] at h
   exact h.1
 
 /-- Given a point in the affine span from which all the points are
@@ -280,10 +271,7 @@ theorem eq_circumradius_of_dist_eq {n : ℕ} (s : Simplex ℝ P n) {p : P}
     (hp : p ∈ affineSpan ℝ (Set.range s.points)) {r : ℝ} (hr : ∀ i, dist (s.points i) p = r) :
     r = s.circumradius := by
   have h := s.circumsphere_unique_dist_eq.2 ⟨p, r⟩
-  simp only [hp, Sphere.ext_iff] at h
-  -- Porting note: added the next three lines (`simp` less powerful)
-  rw [subset_sphere (s := ⟨p, r⟩)] at h
-  simp only [hr, forall_const,
+  simp only [hp, hr, forall_const, subset_sphere (s := ⟨p, r⟩), Sphere.ext_iff,
     Set.forall_mem_range, mem_sphere, true_and] at h
   exact h.2
 
@@ -589,9 +577,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
     reflectionCircumcenterWeightsWithCircumcenter, ite_smul, zero_smul, sub_zero,
     apply_ite₂ (· + ·), add_zero, ← add_smul, hc, zero_sub, neg_smul, sub_self, add_zero]
-  -- Porting note: was `convert sum_const_zero`
-  rw [← sum_const_zero]
-  congr
+  convert sum_const_zero
   norm_num
 
 end Simplex

@@ -25,11 +25,9 @@ universe u v w' w
 variable (C : Type u) [Category.{v} C]
 
 
--- Porting note: removed
--- local attribute [tidy] tactic.op_induction'
--- as it isn't needed here. If it is useful elsewhere
+-- We could enable the following line:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
--- should suffice, but may need
+-- but may need
 -- https://github.com/JLimperg/aesop/issues/59
 
 namespace AlgebraicGeometry
@@ -43,7 +41,6 @@ variable {C}
 
 namespace SheafedSpace
 
--- Porting note: use `CoeOut` for the coercion happens left to right
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
@@ -53,13 +50,7 @@ instance coeSort : CoeSort (SheafedSpace C) Type* where
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
--- Porting note: this is a syntactic tautology, so removed
--- @[simp]
--- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
---   rfl
-
--- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
--- so removed @[simp]
+/-- Not `@[simp]` since it already reduces to `carrier = carrier`. -/
 theorem mk_coe (carrier) (presheaf) (h) :
     (({ carrier
         presheaf
