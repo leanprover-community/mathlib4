@@ -128,7 +128,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 variable (k V) {p₁ p₂ : P}
 
 /-- The affine span of a single point, coerced to a set, contains just that point. -/
-@[simp 1001] -- Porting note: this needs to take priority over `coe_affineSpan`
+@[simp high] -- This needs to take priority over `coe_affineSpan`
 theorem coe_affineSpan_singleton (p : P) : (affineSpan k ({p} : Set P) : Set P) = {p} := by
   ext x
   rw [mem_coe, ← vsub_right_mem_direction_iff_mem (mem_affineSpan k (Set.mem_singleton p)) _,

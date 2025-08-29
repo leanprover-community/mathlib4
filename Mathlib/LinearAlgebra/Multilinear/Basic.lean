@@ -288,8 +288,6 @@ we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : #s = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
   toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
-  /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
-  but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_update_add' v i x y := by
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
