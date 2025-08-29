@@ -250,7 +250,7 @@ namespace ArithmeticFunction
 to the constant sequence `1`. -/
 lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
   ext s
-  exact (LSeries_congr s const_one_eq_zeta).symm
+  exact (LSeries_congr const_one_eq_zeta s).symm
 
 /-- The `LSeries` associated to the arithmetic function `ζ` converges at `s` if and only if
 `re s > 1`. -/
@@ -376,7 +376,7 @@ lemma LSeries_twist_vonMangoldt_eq {N : ℕ} (χ : DirichletCharacter ℂ N) {s 
   have hΛ : LSeriesSummable (↗χ * ↗Λ) s := LSeriesSummable_twist_vonMangoldt χ hs
   rw [eq_div_iff <| LSeries_ne_zero_of_one_lt_re χ hs, ← LSeries_convolution' hΛ hχ,
     convolution_twist_vonMangoldt, LSeries_deriv hs', neg_neg]
-  exact LSeries_congr s fun _ ↦ by simp [mul_comm, logMul]
+  exact LSeries_congr (fun _ ↦ by simp [mul_comm, logMul]) s
 
 end DirichletCharacter
 
@@ -386,7 +386,7 @@ open DirichletCharacter in
 /-- The L-series of the von Mangoldt function `Λ` equals the negative logarithmic derivative
 of the L-series of the constant sequence `1` on its domain of convergence `re s > 1`. -/
 lemma LSeries_vonMangoldt_eq {s : ℂ} (hs : 1 < s.re) : L ↗Λ s = - deriv (L 1) s / L 1 s := by
-  refine (LSeries_congr s fun {n} _ ↦ ?_).trans <|
+  refine (LSeries_congr (fun {n} _ ↦ ?_) s).trans <|
     LSeries_modOne_eq ▸ LSeries_twist_vonMangoldt_eq χ₁ hs
   simp [Subsingleton.eq_one (n : ZMod 1)]
 

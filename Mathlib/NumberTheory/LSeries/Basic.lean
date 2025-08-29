@@ -160,8 +160,8 @@ noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
 
--- TODO: change argument order in `LSeries_congr` to have `s` last.
-lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
+/-- Congruence for `LSeries` with the evaluation variable `s`. -/
+lemma LSeries_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : ℂ) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
 
@@ -226,7 +226,7 @@ lemma LSeriesHasSum_iff {f : ℕ → ℂ} {s a : ℂ} :
 
 lemma LSeriesHasSum_congr {f g : ℕ → ℂ} (s a : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesHasSum f s a ↔ LSeriesHasSum g s a := by
-  simp [LSeriesHasSum_iff, LSeriesSummable_congr s h, LSeries_congr s h]
+  simp [LSeriesHasSum_iff, LSeriesSummable_congr s h, LSeries_congr h s]
 
 lemma LSeriesSummable.of_re_le_re {f : ℕ → ℂ} {s s' : ℂ} (h : s.re ≤ s'.re)
     (hf : LSeriesSummable f s) : LSeriesSummable f s' := by
