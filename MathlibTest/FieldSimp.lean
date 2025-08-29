@@ -599,6 +599,15 @@ example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x 
     (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
     _ = x ^ 2 := by simp [hx]
 
+-- used in `field` simproc docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
+
 section
 
 -- TODO (new implementation): do we want `field_simp` to reduce this to `⊢ x * y = z * y ^ 2`?
