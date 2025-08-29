@@ -58,14 +58,21 @@ lemma _root_.IsUnit.isStrictlyPositive {a : A} (ha : IsUnit a) (ha₀ : 0 ≤ a)
 lemma isSelfAdjoint [StarRing A] [StarOrderedRing A] {a : A} (ha : IsStrictlyPositive a) :
     IsSelfAdjoint a := by cfc_tac
 
+@[simp, grind]
+lemma _root_.isStrictlyPositive_one [StarRing A] [StarOrderedRing A] :
+    IsStrictlyPositive (1 : A) := by
+  rw [iff_of_unital]
+  exact ⟨zero_le_one, isUnit_one⟩
+
 end basic
 
 section Algebra
 
-variable {𝕜 : Type*} [Semifield 𝕜] [PartialOrder 𝕜] [Ring A] [PartialOrder A] [Algebra 𝕜 A]
+variable {𝕜 : Type*} [Ring A] [PartialOrder A]
 
 @[grind ←, aesop safe apply]
-protected lemma smul [PosSMulMono 𝕜 A] {c : 𝕜} (hc : 0 < c) {a : A} (ha : IsStrictlyPositive a) :
+protected lemma smul [Semifield 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A] [PosSMulMono 𝕜 A] {c : 𝕜}
+    (hc : 0 < c) {a : A} (ha : IsStrictlyPositive a) :
     IsStrictlyPositive (c • a) := by
   have hunit : IsUnit (c • a) := by
     rw [isUnit_iff_exists]
@@ -76,7 +83,26 @@ protected lemma smul [PosSMulMono 𝕜 A] {c : 𝕜} (hc : 0 < c) {a : A} (ha : 
   have hnonneg : 0 ≤ c • a := smul_nonneg hc.le ha.1
   exact hunit.isStrictlyPositive hnonneg
 
-lemma spectrum_pos [NonnegSpectrumClass 𝕜 A] {a : A} (ha : IsStrictlyPositive a) {x : 𝕜}
+@[simp, grind]
+lemma _root_.isStrictlyPositive_natCast [Semifield 𝕜] [CharZero 𝕜] [Algebra 𝕜 A]
+    [StarRing A] [StarOrderedRing A] {n : ℕ} [NeZero n] :
+    IsStrictlyPositive (n : A) := by
+  rw [iff_of_unital]
+  refine ⟨Nat.cast_nonneg' _, ?_⟩
+  rw [isUnit_iff_exists]
+  refine ⟨(n : 𝕜)⁻¹ • 1, ?_⟩
+  simp only [Algebra.mul_smul_comm, mul_one, Algebra.smul_mul_assoc, one_mul, and_self]
+  conv =>
+    enter [1, 2]
+    rw [← Nat.smul_one_eq_cast, ← Nat.cast_smul_eq_nsmul (R := 𝕜) n 1]
+  rw [← smul_assoc, smul_eq_mul, inv_mul_cancel₀]
+  · simp
+  · intro h
+    rw [Nat.cast_eq_zero] at h
+    exact NeZero.ne n h
+
+lemma spectrum_pos [CommSemiring 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A]
+    [NonnegSpectrumClass 𝕜 A] {a : A} (ha : IsStrictlyPositive a) {x : 𝕜}
     (hx : x ∈ spectrum 𝕜 a) : 0 < x := by
   have h₁ : 0 ≤ x := by grind
   have h₂ : x ≠ 0 := by grind [= spectrum.zero_notMem_iff]

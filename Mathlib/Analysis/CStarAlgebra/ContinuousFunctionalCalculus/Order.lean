@@ -372,6 +372,20 @@ lemma rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
   rw [rpow_neg_one_eq_inv a (zero_le_one.trans ha)]
   exact inv_le_one ha
 
+protected lemma _root_.IsStrictlyPositive.of_le {a b : A} (ha : IsStrictlyPositive a)
+    (hab : a ≤ b) : IsStrictlyPositive b :=
+  ⟨ha.1.trans hab, CStarAlgebra.isUnit_of_le ha.2 ha.1 hab⟩
+
+@[grind ←, aesop 90% apply]
+lemma _root_.isStrictlyPositive_add {a b : A}
+    (h : IsStrictlyPositive a ∧ 0 ≤ b ∨ 0 ≤ a ∧ IsStrictlyPositive b) :
+    IsStrictlyPositive (a + b) := by
+  obtain h|h := h
+  case inl =>
+    exact IsStrictlyPositive.of_le (a := a) h.1 ((le_add_iff_nonneg_right a).mpr h.2)
+  case inr =>
+    exact IsStrictlyPositive.of_le (a := b) h.2 (le_add_of_nonneg_left h.1)
+
 end CStarAlgebra
 
 end Inv
