@@ -84,7 +84,7 @@ theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Fiel
   of_module_finite K E
 
 theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
-  letI := CharZero.of_addMonoidHom (e := e.toAddMonoidHom) (by simp) e.injective
+  letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
   {
     to_charZero := inferInstance
     to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
