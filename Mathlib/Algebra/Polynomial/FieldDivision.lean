@@ -163,7 +163,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
     (hroot : ∀ m ≤ n, (derivative^[m] p).IsRoot t) :
     n < p.rootMultiplicity t :=
   lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot <|
-    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| Nat.factorial_ne_zero n
+    mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 <| by positivity
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
     [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0) :
