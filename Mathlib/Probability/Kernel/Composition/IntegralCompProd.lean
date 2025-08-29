@@ -218,11 +218,8 @@ theorem Kernel.integral_integral_sub' ⦃f g : β × γ → E⦄ (hf : Integrabl
       ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a - ∫ x, ∫ y, g (x, y) ∂η (a, x) ∂κ a :=
   Kernel.integral_integral_sub hf hg
 
--- Porting note: couldn't get the `→₁[]` syntax to work
 theorem Kernel.continuous_integral_integral :
-    -- Continuous fun f : α × β →₁[(κ ⊗ₖ η) a] E => ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
-    Continuous fun f : (MeasureTheory.Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))) =>
-        ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
+    Continuous fun f : β × γ →₁[(κ ⊗ₖ η) a] E => ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   rw [continuous_iff_continuousAt]; intro g
   refine
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
