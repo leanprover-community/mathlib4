@@ -62,7 +62,7 @@ elab (name := field) "field" d:(discharger)? args:(simpArgs)? : tactic => withMa
   catch e =>
     try
       -- If `field` doesn't solve the goal, we first backtrack to the situation at the time of the
-      -- `field_simp` call, and suggest `field_simp` if `field_simp` does anything useful
+      -- `field_simp` call, and suggest `field_simp` if `field_simp` does anything useful.
       s0.restore
       let tacticStx ← `(tactic| field_simp $(d)? $(args)?)
       evalTactic tacticStx

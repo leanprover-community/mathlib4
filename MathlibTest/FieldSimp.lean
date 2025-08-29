@@ -393,7 +393,7 @@ example {K : Type*} [Field K] (hK : ∀ x : K, x ^ 2 + 1 ≠ 0) (x : K) :
     1 / (x ^ 2 + 1) + x ^ 2 / (x ^ 2 + 1) = 1 := by
   field [hK]
 
--- `field` will suggest `field_simp` on failure, if `field_simp` does anything
+-- `field` will suggest `field_simp` on failure, if `field_simp` does anything.
 /--
 info: Try this: field_simp
 ---
@@ -405,7 +405,7 @@ hx : x + y ≠ 0
 #guard_msgs in
 example {x y z : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = z := by field
 
--- If `field` fails but `field_simp` also fails, we just throw an error
+-- If `field` fails but `field_simp` also fails, we just throw an error.
 /--
 error: ring failed, ring expressions not equal
 x y z : ℚ
@@ -437,7 +437,7 @@ example (a b : ℚ) (f : ℚ → ℚ) : f (a ^ 2 * b / a) - f (b ^ 2 * a / b) = 
   ring1
 
 -- `field` does not fully clear denominators in these examples, but calling different normalizations
--- in succession eventually succeeds
+-- in succession eventually succeeds.
 
 -- This example is used in the `field` docstring.
 example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
