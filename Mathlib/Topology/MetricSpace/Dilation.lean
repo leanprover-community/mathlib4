@@ -59,6 +59,9 @@ variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace �
 
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
+  /-- The underlying function.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 
@@ -254,7 +257,7 @@ theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun 
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
 
 /-- A dilation from an emetric space is injective -/
-protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β]  [DilationClass F α β]
+protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β] [DilationClass F α β]
     (f : F) :
     Injective f :=
   (antilipschitz f).injective
@@ -423,9 +426,6 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
 theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
     IsEmbedding (f : α → β) :=
   (Dilation.isUniformEmbedding f).isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
 lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :

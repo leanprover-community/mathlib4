@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 import Mathlib.Topology.LocalAtTarget
 
@@ -86,7 +87,7 @@ instance stableUnderBaseChange :
   apply HasRingHomProperty.isStableUnderBaseChange
   apply RingHom.IsStableUnderBaseChange.mk
   · exact (HasRingHomProperty.isLocal_ringHomProperty @SurjectiveOnStalks).respectsIso
-  intros R S T _ _ _ _ _ H
+  intro R S T _ _ _ _ _ H
   exact H.baseChange
 
 variable {f} in
@@ -187,8 +188,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         inferInstance inferInstance inferInstance
     convert this using 7
     apply pullback.hom_ext <;>
-      simp [𝓤, ← pullback.condition, ← pullback.condition_assoc,
-        Scheme.Cover.pullbackHom]
+      simp [𝓤, Scheme.Cover.pullbackHom]
 
 end SurjectiveOnStalks
 

@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 # Strongly measurable and finitely strongly measurable functions
 
 This file contains some further development of strongly measurable and finitely strongly measurable
-functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
+functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.lean`.
 
 ## References
 
@@ -27,6 +27,7 @@ open MeasureTheory Filter Set ENNReal NNReal
 variable {α β γ : Type*} {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   [TopologicalSpace γ] {f g : α → β}
 
+@[fun_prop]
 lemma aestronglyMeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
     AEStronglyMeasurable f (Measure.dirac a) :=
   ⟨fun _ ↦ f a, stronglyMeasurable_const, ae_eq_dirac f⟩

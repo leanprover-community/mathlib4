@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Conv
+import Mathlib.Util.AtLocation
 
 /-!
 # The `push_neg` tactic
@@ -45,9 +46,9 @@ theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
 end LinearOrder
 
 theorem not_nonempty_eq (s : Set β) : (¬ s.Nonempty) = (s = ∅) := by
-  have A : ∀ (x : β), ¬(x ∈ (∅ : Set β)) := fun x ↦ id
+  have A : ∀ (x : β), x ∉ (∅ : Set β) := fun x ↦ id
   simp only [Set.Nonempty, not_exists, eq_iff_iff]
-  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
+  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, A]), fun h ↦ by rwa [h]⟩
 
 theorem ne_empty_eq_nonempty (s : Set β) : (s ≠ ∅) = s.Nonempty := by
   rw [ne_eq, ← not_nonempty_eq s, not_not]
@@ -144,7 +145,8 @@ partial def transformNegation (e : Expr) : SimpM Simp.Step := do
 
 /-- Common entry point to `push_neg` as a conv. -/
 def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
-  let myctx : Simp.Context ← Simp.mkContext { eta := true, zeta := false, proj := false }
+  let myctx : Simp.Context ← Simp.mkContext
+      { eta := true, zeta := false, proj := false, congrConsts := false }
       (simpTheorems := #[ ])
       (congrTheorems := (← getSimpCongrTheorems))
   (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })
@@ -184,26 +186,6 @@ which will print the `push_neg` form of `e`.
 -/
 macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
 
-/-- Execute main loop of `push_neg` at the main goal. -/
-def pushNegTarget : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let newGoal ← applySimpResultToTarget goal tgt (← pushNegCore tgt)
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
-
-
-/-- Execute main loop of `push_neg` at a local hypothesis. -/
-def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
-  let ldecl ← fvarId.getDecl
-  if ldecl.isAuxDecl then return
-  let tgt ← instantiateMVars ldecl.type
-  let goal ← getMainGoal
-  let myres ← pushNegCore tgt
-  let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
-
 /--
 Push negations into the conclusion of a hypothesis.
 For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
@@ -229,9 +211,6 @@ distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option pus
 -/
 elab "push_neg" loc:(location)? : tactic =>
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  withLocation loc
-    pushNegLocalDecl
-    pushNegTarget
-    (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+  transformAtLocation (pushNegCore ·) "push_neg" loc (failIfUnchanged := true) false
 
 end Mathlib.Tactic.PushNeg

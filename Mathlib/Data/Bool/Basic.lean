@@ -49,8 +49,6 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 
-#adaptation_note /-- nightly-2024-03-05
-this is no longer a simp lemma, as the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
@@ -135,7 +133,7 @@ theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by
 theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
   cases a <;> decide
 
-theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
+theorem bne_eq_xor : bne = xor := by constructor
 
 attribute [simp] xor_assoc
 
@@ -151,7 +149,7 @@ instance linearOrder : LinearOrder Bool where
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_le := by decide
+  lt_iff_le_not_ge := by decide
   max_def := by decide
   min_def := by decide
 

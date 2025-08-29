@@ -23,7 +23,7 @@ namespace Fin
 variable (n : ℕ)
 
 /-!
-### Locally finite order etc instances
+### Locally finite order etc. instances
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
@@ -334,45 +334,45 @@ theorem finsetImage_castAdd_Iio (m) (i : Fin n) : (Iio i).image (castAdd m) = Ii
 
 @[simp]
 theorem map_castAddEmb_Icc (m) (i j : Fin n) :
-    (Icc i j).map (castAddEmb m) = Icc (castAddEmb m i) (castAddEmb m j) :=
+    (Icc i j).map (castAddEmb m) = Icc (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Icc ..
 
 @[simp]
 theorem map_castAddEmb_Ico (m) (i j : Fin n) :
-    (Ico i j).map (castAddEmb m) = Ico (castAddEmb m i) (castAddEmb m j) :=
+    (Ico i j).map (castAddEmb m) = Ico (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Ico ..
 
 @[simp]
 theorem map_castAddEmb_Ioc (m) (i j : Fin n) :
-    (Ioc i j).map (castAddEmb m) = Ioc (castAddEmb m i) (castAddEmb m j) :=
+    (Ioc i j).map (castAddEmb m) = Ioc (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Ioc ..
 
 @[simp]
 theorem map_castAddEmb_Ioo (m) (i j : Fin n) :
-    (Ioo i j).map (castAddEmb m) = Ioo (castAddEmb m i) (castAddEmb m j) :=
+    (Ioo i j).map (castAddEmb m) = Ioo (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Ioo ..
 
 @[simp]
 theorem map_castAddEmb_uIcc (m) (i j : Fin n) :
-    (uIcc i j).map (castAddEmb m) = uIcc (castAddEmb m i) (castAddEmb m j) :=
+    (uIcc i j).map (castAddEmb m) = uIcc (castAdd m i) (castAdd m j) :=
   map_castLEEmb_uIcc ..
 
 @[simp]
 theorem map_castAddEmb_Ici (m) [NeZero m] (i : Fin n) :
-    (Ici i).map (castAddEmb m) = Ico (castAddEmb m i) (natAdd n 0) := by
+    (Ici i).map (castAddEmb m) = Ico (castAdd m i) (natAdd n 0) := by
   simp [map_eq_image]
 
 @[simp]
 theorem map_castAddEmb_Ioi (m) [NeZero m] (i : Fin n) :
-    (Ioi i).map (castAddEmb m) = Ioo (castAddEmb m i) (natAdd n 0) := by
+    (Ioi i).map (castAddEmb m) = Ioo (castAdd m i) (natAdd n 0) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_castAddEmb_Iic (m) (i : Fin n) : (Iic i).map (castAddEmb m) = Iic (castAddEmb m i) :=
+theorem map_castAddEmb_Iic (m) (i : Fin n) : (Iic i).map (castAddEmb m) = Iic (castAdd m i) :=
   map_castLEEmb_Iic i _
 
 @[simp]
-theorem map_castAddEmb_Iio (m) (i : Fin n) : (Iio i).map (castAddEmb m) = Iio (castAddEmb m i) :=
+theorem map_castAddEmb_Iio (m) (i : Fin n) : (Iio i).map (castAddEmb m) = Iio (castAdd m i) :=
   map_castLEEmb_Iio ..
 
 end castAdd

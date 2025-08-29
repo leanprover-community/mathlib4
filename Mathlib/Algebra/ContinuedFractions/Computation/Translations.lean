@@ -13,24 +13,24 @@ import Mathlib.Algebra.Order.Floor.Ring
 ## Summary
 
 This is a collection of simple lemmas between the different structures used for the computation
-of continued fractions defined in `Mathlib.Algebra.ContinuedFractions.Computation.Basic`.
+of continued fractions defined in `Mathlib/Algebra/ContinuedFractions/Computation/Basic.lean`.
 The file consists of three sections:
 1. Recurrences and inversion lemmas for `IntFractPair.stream`: these lemmas give us inversion
-   rules and recurrences for the computation of the stream of integer and fractional parts of
-   a value.
+  rules and recurrences for the computation of the stream of integer and fractional parts of
+  a value.
 2. Translation lemmas for the head term: these lemmas show us that the head term of the computed
-   continued fraction of a value `v` is `⌊v⌋` and how this head term is moved along the structures
-   used in the computation process.
+  continued fraction of a value `v` is `⌊v⌋` and how this head term is moved along the structures
+  used in the computation process.
 3. Translation lemmas for the sequence: these lemmas show how the sequences of the involved
-   structures (`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected,
-   i.e. how the values are moved along the structures and the termination of one sequence implies
-   the termination of another sequence.
+  structures (`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected,
+  i.e. how the values are moved along the structures and the termination of one sequence implies
+  the termination of another sequence.
 
 ## Main Theorems
 
-- `succ_nth_stream_eq_some_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
+- `succ_nth_stream_eq_some_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of non-termination.
-- `succ_nth_stream_eq_none_iff` gives as a recurrence to compute the `n + 1`th value of the sequence
+- `succ_nth_stream_eq_none_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of termination.
 - `get?_of_eq_some_of_succ_get?_intFractPair_stream` and
   `get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero` show how the entries of the sequence
@@ -86,7 +86,7 @@ theorem succ_nth_stream_eq_some_iff {ifp_succ_n : IntFractPair K} :
       ∃ ifp_n : IntFractPair K,
         IntFractPair.stream v n = some ifp_n ∧
           ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n := by
-  simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some]
+  simp [IntFractPair.stream, ite_eq_iff, Option.bind_eq_some_iff]
 
 /-- An easier to use version of one direction of
 `GenContFract.IntFractPair.succ_nth_stream_eq_some_iff`. -/
@@ -194,7 +194,7 @@ Let's first show how the termination of one sequence implies the termination of 
 
 theorem of_terminatedAt_iff_intFractPair_seq1_terminatedAt :
     (of v).TerminatedAt n ↔ (IntFractPair.seq1 v).snd.TerminatedAt n :=
-  Option.map_eq_none
+  Option.map_eq_none_iff
 
 theorem of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none :
     (of v).TerminatedAt n ↔ IntFractPair.stream v (n + 1) = none := by
@@ -237,12 +237,8 @@ fractional parts of the stream of integer and fractional parts.
 theorem get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_ne_zero : ifp_n.fr ≠ 0) :
     (of v).s.get? n = some ⟨1, (IntFractPair.of ifp_n.fr⁻¹).b⟩ :=
-  have : IntFractPair.stream v (n + 1) = some (IntFractPair.of ifp_n.fr⁻¹) := by
-    cases ifp_n
-    simp only [IntFractPair.stream, Nat.add_eq, add_zero, stream_nth_eq, Option.some_bind,
-      ite_eq_right_iff]
-    intro; contradiction
-  get?_of_eq_some_of_succ_get?_intFractPair_stream this
+  get?_of_eq_some_of_succ_get?_intFractPair_stream <|
+    IntFractPair.stream_succ_of_some stream_nth_eq nth_fr_ne_zero
 
 open Int IntFractPair
 
@@ -250,10 +246,9 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
     { a := 1
       b := p.b }) := by
   rw [of, IntFractPair.seq1]
-  simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
-    Stream'.Seq.get?, Stream'.map]
+  simp only [Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.get?, Stream'.map]
   rw [← Stream'.get_succ, Stream'.get, Option.map.eq_def]
-  split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
+  split <;> simp_all only [Option.bind_some, Option.bind_none, Function.comp_apply]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.
 -/

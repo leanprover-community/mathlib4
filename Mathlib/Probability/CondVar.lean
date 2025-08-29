@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
 import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.Probability.Variance
+import Mathlib.Probability.Moments.Variance
 
 /-!
 # Conditional variance
@@ -58,7 +58,7 @@ lemma condVar_of_sigmaFinite [SigmaFinite (μ.trim hm)] :
       else 0 := condExp_of_sigmaFinite _
 
 lemma condVar_of_stronglyMeasurable [SigmaFinite (μ.trim hm)]
-    (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
+    (hX : StronglyMeasurable[m] X) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
     Var[X; μ | m] = fun ω ↦ (X ω - (μ[X | m]) ω) ^ 2 :=
   condExp_of_stronglyMeasurable _ ((hX.sub stronglyMeasurable_condExp).pow _) hXint
 
@@ -72,7 +72,7 @@ lemma condVar_const (hm : m ≤ m₀) (c : ℝ) : Var[fun _ ↦ c; μ | m] = 0 :
   obtain rfl | hc := eq_or_ne c 0
   · simp [← Pi.zero_def]
   by_cases hμm : IsFiniteMeasure μ
-  · simp [condVar, hm, Pi.pow_def]
+  · simp [condVar, hm]
   · simp [condVar, condExp_of_not_integrable, integrable_const_iff_isFiniteMeasure hc,
       integrable_const_iff_isFiniteMeasure <| pow_ne_zero _ hc, hμm, Pi.pow_def]
 
@@ -83,7 +83,7 @@ lemma condVar_congr_ae (h : X =ᵐ[μ] Y) : Var[X; μ | m] =ᵐ[μ] Var[Y; μ | 
   condExp_congr_ae <| by filter_upwards [h, condExp_congr_ae h] with ω hω hω'; dsimp; rw [hω, hω']
 
 lemma condVar_of_aestronglyMeasurable [hμm : SigmaFinite (μ.trim hm)]
-    (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X | m]) ^ 2) μ) :
+    (hX : AEStronglyMeasurable[m] X μ) (hXint : Integrable ((X - μ[X|m]) ^ 2) μ) :
     Var[X; μ | m] =ᵐ[μ] (X - μ[X | m]) ^ 2 :=
   condExp_of_aestronglyMeasurable' _ ((continuous_pow _).comp_aestronglyMeasurable
     (hX.sub stronglyMeasurable_condExp.aestronglyMeasurable)) hXint
@@ -92,7 +92,7 @@ lemma integrable_condVar : Integrable Var[X; μ | m] μ := integrable_condExp
 
 /-- The integral of the conditional variance `Var[X | m]` over an `m`-measurable set is equal to
 the integral of `(X - μ[X | m]) ^ 2` on that set. -/
-lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X | m]) ^ 2) μ)
+lemma setIntegral_condVar [SigmaFinite (μ.trim hm)] (hX : Integrable ((X - μ[X|m]) ^ 2) μ)
     (hs : MeasurableSet[m] s) :
     ∫ ω in s, (Var[X; μ | m]) ω ∂μ = ∫ ω in s, (X ω - (μ[X | m]) ω) ^ 2 ∂μ :=
   setIntegral_condExp _ hX hs
@@ -115,7 +115,7 @@ lemma condVar_ae_eq_condExp_sq_sub_sq_condExp (hm : m ≤ m₀) [IsFiniteMeasure
         condExp_mul_of_stronglyMeasurable_right stronglyMeasurable_condExp aux₁
           ((hX.integrable one_le_two).const_mul _), condExp_ofNat (m := m) 2 X]
         with ω hω₀ hω₁ hω₂ hω₃
-      simp [hω₀, hω₁, hω₂, hω₃, condExp_const,
+      simp [hω₀, hω₁, hω₂, hω₃,
         condExp_of_stronglyMeasurable hm (stronglyMeasurable_condExp.pow _) aux₂]
       simp [mul_assoc, sq]
     _ = μ[X ^ 2 | m] - μ[X | m] ^ 2 := by ring
@@ -134,15 +134,15 @@ lemma integral_condVar_add_variance_condExp (hm : m ≤ m₀) [IsProbabilityMeas
     _ = μ[(μ[X ^ 2 | m] - μ[X | m] ^ 2 : Ω → ℝ)] + (μ[μ[X | m] ^ 2] - μ[μ[X | m]] ^ 2) := by
       congr 1
       · exact integral_congr_ae <| condVar_ae_eq_condExp_sq_sub_sq_condExp hm hX
-      · exact variance_def' hX.condExp
+      · exact variance_eq_sub hX.condExp
     _ = μ[X ^ 2] - μ[μ[X | m] ^ 2] + (μ[μ[X | m] ^ 2] - μ[X] ^ 2) := by
       rw [integral_sub' integrable_condExp, integral_condExp hm, integral_condExp hm]
       exact hX.condExp.integrable_sq
-    _ = Var[X; μ] := by rw [variance_def' hX]; ring
+    _ = Var[X; μ] := by rw [variance_eq_sub hX]; ring
 
 lemma condVar_bot' [NeZero μ] (X : Ω → ℝ) :
     Var[X; μ | ⊥] = fun _ => ⨍ ω, (X ω - ⨍ ω', X ω' ∂μ) ^ 2 ∂μ := by
-  ext ω; simp [condVar, condExp_bot', average, measureReal_def]
+  simp [condVar, condExp_bot', average, measureReal_def]
 
 lemma condVar_bot_ae_eq (X : Ω → ℝ) :
     Var[X; μ | ⊥] =ᵐ[μ] fun _ ↦ ⨍ ω, (X ω - ⨍ ω', X ω' ∂μ) ^ 2 ∂μ := by
@@ -168,7 +168,7 @@ lemma condVar_smul (c : ℝ) (X : Ω → ℝ) : Var[c • X; μ | m] =ᵐ[μ] c 
 @[simp] lemma condVar_neg (X : Ω → ℝ) : Var[-X; μ | m] =ᵐ[μ] Var[X; μ | m] := by
   refine condExp_congr_ae ?_
   filter_upwards [condExp_neg (m := m) X] with ω hω
-  simp [condVar, hω]
+  simp [hω]
   ring
 
 end ProbabilityTheory

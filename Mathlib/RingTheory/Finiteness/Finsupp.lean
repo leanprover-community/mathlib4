@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+import Mathlib.Algebra.MonoidAlgebra.Module
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.LinearAlgebra.Quotient.Basic
+import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions
@@ -100,7 +102,7 @@ theorem fg_of_fg_map_of_fg_inf_ker (f : M →ₗ[R] P) {s : Submodule R M}
 the first morphism is surjective. -/
 theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (hf1 : (LinearMap.ker f).FG) (hf2 : (LinearMap.ker g).FG)
-    (hsur : Function.Surjective f) : (g.comp f).ker.FG := by
+    (hsur : Function.Surjective f) : (LinearMap.ker (g.comp f)).FG := by
   rw [LinearMap.ker_comp]
   apply fg_of_fg_map_of_fg_inf_ker f
   · rwa [Submodule.map_comap_eq, LinearMap.range_eq_top.2 hsur, top_inf_eq]
@@ -124,3 +126,28 @@ instance Module.Finite.finsupp {ι : Type*} [_root_.Finite ι] [Module.Finite R 
   Module.Finite.equiv (Finsupp.linearEquivFunOnFinite R V ι).symm
 
 end
+
+namespace AddMonoidAlgebra
+variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+
+instance moduleFinite : Module.Finite R S[ι] := .finsupp
+
+end AddMonoidAlgebra
+
+namespace MonoidAlgebra
+variable {ι R S : Type*} [Finite ι] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
+
+instance moduleFinite : Module.Finite R (MonoidAlgebra S ι) := .finsupp
+
+end MonoidAlgebra
+
+namespace FreeAbelianGroup
+variable {σ : Type*} [Finite σ]
+
+instance : Module.Finite ℤ (FreeAbelianGroup σ) :=
+  .of_surjective _ (FreeAbelianGroup.equivFinsupp σ).toIntLinearEquiv.symm.surjective
+
+instance : AddMonoid.FG (FreeAbelianGroup σ) := by
+  rw [← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]; infer_instance
+
+end FreeAbelianGroup

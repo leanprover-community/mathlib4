@@ -127,23 +127,17 @@ theorem LiftR_def (x y : F α) :
           (TypeVec.prod.snd ⊚ subtypeVal R) <$$> u = y :=
   exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R) (by
     simp only [map_map, comp_assoc, subtypeVal_toSubtype']
-    simp (config := { unfoldPartialApp := true }) [comp])
+    simp +unfoldPartialApp [comp])
 
 end LiftP'
 
 end MvFunctor
 
-open Nat
-
 namespace MvFunctor
-
-open TypeVec
 
 section LiftPLastPredIff
 
 variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
-
-open MvFunctor
 
 variable {β : Type u}
 variable (pp : β → Prop)
@@ -153,7 +147,7 @@ private def f :
       (fun i : Fin2 (n + 1) => { p_1 // ofRepeat (PredLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 : (α ::: β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
+    ⟨x.val, cast (by grind [PredLast]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g :
@@ -172,12 +166,10 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     cases i <;> rfl
   · intros
     rw [MvFunctor.map_map]
-    dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
+    dsimp +unfoldPartialApp [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
-
-open Function
 
 variable (rr : β → β → Prop)
 
@@ -206,14 +198,9 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
   · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
-    simp (config := { unfoldPartialApp := true }) only [map_map, TypeVec.comp]
-    -- Porting note: proof was
-    -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
-    -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
-    suffices (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
-            ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd)) by
-      rw [this.1, this.2]
-    constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
+    simp +unfoldPartialApp only [map_map, TypeVec.comp]
+    apply iff_of_eq -- Switch to `eq` so we can use `ext`
+    congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 
 end LiftPLastPredIff
 

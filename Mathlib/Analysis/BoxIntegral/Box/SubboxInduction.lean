@@ -90,7 +90,7 @@ theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Se
 @[simp]
 theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
-  by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
+  by_cases i ∈ s <;> simp [field, splitCenterBox, *] <;> ring
 
 /-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
@@ -116,7 +116,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   by_contra hpI
   -- First we use `H_ind` to construct a decreasing sequence of boxes such that `∀ m, ¬p (J m)`.
   replace H_ind := fun J hJ ↦ not_imp_not.2 (H_ind J hJ)
-  simp only [exists_imp, not_forall] at H_ind
+  simp only [not_forall] at H_ind
   choose! s hs using H_ind
   set J : ℕ → Box ι := fun m ↦ (fun J ↦ splitCenterBox J (s J))^[m] I
   have J_succ : ∀ m, J (m + 1) = splitCenterBox (J m) (s <| J m) :=

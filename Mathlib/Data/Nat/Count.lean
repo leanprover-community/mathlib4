@@ -37,7 +37,7 @@ def count (n : ℕ) : ℕ :=
 theorem count_zero : count p 0 = 0 := by
   rw [count, List.range_zero, List.countP, List.countP.go]
 
-/-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
+/-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in scope `count` -/
 def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
   apply Fintype.ofFinset {x ∈ range n | p x}
   intro x
@@ -74,7 +74,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     rw [Finset.disjoint_left]
     simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
     rintro x hx ⟨c, _, rfl⟩
-    exact (Nat.le_add_right _ _).not_lt hx
+    exact (Nat.le_add_right _ _).not_gt hx
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
     filter_map, addLeftEmbedding, card_map]
   rfl
@@ -114,7 +114,7 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
   by_contra! h : m ≠ n
   wlog hmn : m < n
-  · exact this hn hm heq.symm h.symm (h.lt_or_lt.resolve_left hmn)
+  · exact this hn hm heq.symm h.symm (h.lt_or_gt.resolve_left hmn)
   · simpa [heq] using count_strict_mono hm hmn
 
 theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFinset := by
@@ -133,13 +133,22 @@ alias ⟨_, count_of_forall⟩ := count_iff_forall
 @[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
 
 theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := by
-  simpa [count_eq_card_filter_range, mem_range] using
-    card_filter_eq_zero_iff (p := p) (s := range n)
+  simp [count_eq_card_filter_range]
 
 alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 
+theorem count_ne_iff_exists {n : ℕ} : n.count p ≠ 0 ↔ ∃ m < n, p m := by
+  simp [Nat.count_iff_forall_not]
+
 @[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
   count_of_forall_not fun _ _ ↦ id
+
+lemma exists_of_count_lt_count {a b : ℕ} (h : a.count p < b.count p) : ∃ x ∈ Set.Ico a b, p x := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt (lt_of_count_lt_count h)
+  rw [add_assoc, count_add, Nat.lt_add_right_iff_pos] at h
+  obtain ⟨t, ht, hp⟩ := count_ne_iff_exists.mp h.ne'
+  simp_rw [Set.mem_Ico]
+  exact ⟨a + t, ⟨le_add_right _ _, by rwa [add_assoc _ k, Nat.add_lt_add_iff_left]⟩, hp⟩
 
 variable {q : ℕ → Prop}
 variable [DecidablePred q]
