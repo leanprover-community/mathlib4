@@ -35,7 +35,7 @@ theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
   refine iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 ?_
   simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   intro b _ a₂ h₂
-  have : a₁ ≠ a₂ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
+  have : a₂ ≠ a₁ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
   exact single_eq_of_ne this
 
 theorem iInf_ker_lapply_le_bot : ⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] M) ≤ ⊥ := by

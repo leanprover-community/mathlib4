@@ -155,17 +155,17 @@ lemma update_eq_single_add_erase (f : ι →₀ M) (a : ι) (b : M) :
     f.update a b = single a b + f.erase a := by
   classical
     ext j
-    rcases eq_or_ne a j with (rfl | h)
+    rcases eq_or_ne j a with (rfl | h)
     · simp
-    · simp [h, erase_ne, h.symm]
+    · simp [h, erase_ne]
 
 lemma update_eq_erase_add_single (f : ι →₀ M) (a : ι) (b : M) :
     f.update a b = f.erase a + single a b := by
   classical
     ext j
-    rcases eq_or_ne a j with (rfl | h)
+    rcases eq_or_ne j a with (rfl | h)
     · simp
-    · simp [h, erase_ne, h.symm]
+    · simp [h, erase_ne]
 
 lemma update_eq_single_add {f : ι →₀ M} {a : ι} (h : f a = 0) (b : M) :
     f.update a b = single a b + f := by
@@ -384,9 +384,9 @@ lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ sup
 
 lemma erase_eq_sub_single (f : ι →₀ G) (a : ι) : f.erase a = f - single a (f a) := by
   ext a'
-  rcases eq_or_ne a a' with (rfl | h)
+  rcases eq_or_ne a' a with (rfl | h)
   · simp
-  · simp [erase_ne h.symm, single_eq_of_ne h]
+  · simp [h]
 
 lemma update_eq_sub_add_single (f : ι →₀ G) (a : ι) (b : G) :
     f.update a b = f - single a (f a) + single a b := by
