@@ -34,7 +34,7 @@ We conclude that all intervals with distinct endpoints have cardinality continuu
 
 ## Notation
 
-* `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`, defined in `SetTheory.Continuum`.
+* `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`, defined in `SetTheory.Continuum`.
 
 ## Tags
 continuum, cardinality, reals, cardinality of the reals
@@ -210,8 +210,7 @@ theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
     convert @Iic_union_Ioi ℝ _ _
     exact Iio_union_right
   rw [← hu]
-  refine lt_of_le_of_lt (mk_union_le _ _) ?_
-  refine lt_of_le_of_lt (add_le_add_right (mk_union_le _ _) _) ?_
+  grw [mk_union_le, mk_union_le]
   have h2 : (fun x => a + a - x) '' Ioi a = Iio a := by
     convert @image_const_sub_Ioi ℝ _ _ _
     simp
