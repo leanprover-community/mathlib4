@@ -718,6 +718,10 @@ def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
   rfl
 
+@[simp]
+theorem toSpanSingleton_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
+  one_smul _ _
+
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
     toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y :=
   coe_inj.mp <| LinearMap.toSpanSingleton_add _ _
@@ -733,6 +737,7 @@ theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
 
+@[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :
     (toSpanSingleton R₁ x).toLinearMap = LinearMap.toSpanSingleton R₁ M₁ x := rfl
 
