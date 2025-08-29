@@ -382,7 +382,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       rw [norm_smul, norm_inv, hz, ← dist_eq_norm]
       refine mul_le_mul_of_nonneg_left (hδ _ ⟨?_, hzne⟩).le (inv_nonneg.2 hr0.le)
       rwa [mem_closedBall_iff_norm, hz]
-    _ = ε := by field_simp [hr0.ne', Real.two_pi_pos.ne']
+    _ = ε := by field_simp
 
 /--
 **Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous on a

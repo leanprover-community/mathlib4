@@ -136,18 +136,12 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     ← LinearMap.map_smul, weightedVSub_vadd_affineCombination]
   congr with i
   rw [Pi.add_apply, Pi.smul_apply, smul_eq_mul, Pi.sub_apply]
-  -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  have hn1 : (n + 1 : ℝ) ≠ 0 := n.cast_add_one_ne_zero
   cases i <;>
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
   · rw [if_pos (mem_univ _), sub_zero, add_zero, card_fin]
-    -- Porting note: replaced
-    -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-    have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
-    field_simp [hn1, hn3, mul_comm]
+    field_simp
   · simp [field]
     ring
 

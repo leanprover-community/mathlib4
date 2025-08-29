@@ -27,7 +27,7 @@ as a bilinear map.
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `⨯₃` for the cross product
 

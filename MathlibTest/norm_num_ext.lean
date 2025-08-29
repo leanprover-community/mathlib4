@@ -481,10 +481,16 @@ example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
 example : 10 ≡ 7 [MOD 3] := by norm_num1
 example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
 example : 10 ≡ 7 [ZMOD 3] := by norm_num1
 example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
 example : -3 ≡ 7 [ZMOD 5] := by norm_num1
 example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
 
 end mod
 
