@@ -211,7 +211,10 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
+    --Simp is inconsistent about using pow_pos or pow_succ_pos, which leads to noise in the
+    --"simp? says" linter everytime the environment changes a little. By adding pow_pos as
+    --an explicit argument, it takes priority and we avoid the noise.
+    simp? [ZMod.intCast_zmod_eq_zero_iff_dvd, pow_pos] at h says
       simp only [ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_pos, cast_pred,
         cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
