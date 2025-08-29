@@ -268,3 +268,7 @@ theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) 
 theorem Function.Injective.nat_tendsto_atTop {f : ℕ → ℕ} (hf : Injective f) :
     Tendsto f atTop atTop :=
   Nat.cofinite_eq_atTop ▸ hf.tendsto_cofinite
+
+lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[cofinite] f := by
+  filter_upwards [eventually_cofinite_ne _] with u hu using Function.update_of_ne hu _ _

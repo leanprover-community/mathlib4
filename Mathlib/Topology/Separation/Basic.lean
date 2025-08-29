@@ -834,14 +834,16 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   apply isClosed_set_pi
   simp [forall_update_iff, hs]
 
+lemma nhdsNE_le_cofinite {α : Type*} [TopologicalSpace α] [T1Space α] (a : α) :
+    𝓝[≠] a ≤ cofinite := by
+  refine le_cofinite_iff_compl_singleton_mem.mpr fun x ↦ ?_
+  rcases eq_or_ne a x with rfl | hx
+  exacts [self_mem_nhdsWithin, eventually_ne_nhdsWithin hx]
+
 lemma Function.update_eventuallyEq_nhdsNE
     {α β : Type*} [TopologicalSpace α] [T1Space α] [DecidableEq α] (f : α → β) (a a' : α) (b : β) :
-    Function.update f a b =ᶠ[𝓝[≠] a'] f := by
-  rcases eq_or_ne a' a with rfl | ha
-  · filter_upwards [eventually_mem_nhdsWithin] with u hu
-    apply Function.update_of_ne hu
-  · filter_upwards [eventually_ne_nhdsWithin ha] with u hu
-    apply Function.update_of_ne hu
+    Function.update f a b =ᶠ[𝓝[≠] a'] f :=
+  (Function.update_eventuallyEq_cofinite f a b).filter_mono (nhdsNE_le_cofinite a')
 
 /-! ### R₁ (preregular) spaces -/
 
