@@ -1090,8 +1090,10 @@ open UniqueFactorizationMonoid
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   ext n
-  refine recOnPosPrimePosCoprime ?_ ?_ ?_ ?_ n
-  · intro p n hp hn
+  induction n using recOnPosPrimePosCoprime with
+  | zero => rw [ZeroHom.map_zero, ZeroHom.map_zero]
+  | one => simp
+  | prime_pow p n hp hn =>
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
     simp_rw [Nat.pow_zero, moebius_apply_one,
       moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj, sum_ite_eq', mem_range,
@@ -1100,9 +1102,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
     rw [Ne, pow_eq_one_iff]
     · exact hp.ne_one
     · exact hn.ne'
-  · rw [ZeroHom.map_zero, ZeroHom.map_zero]
-  · simp
-  · intro a b _ha _hb hab ha' hb'
+  | coprime a b _ha _hb hab ha' hb' =>
     rw [IsMultiplicative.map_mul_of_coprime _ hab, ha', hb',
       IsMultiplicative.map_mul_of_coprime isMultiplicative_one hab]
     exact isMultiplicative_moebius.mul isMultiplicative_zeta.natCast
