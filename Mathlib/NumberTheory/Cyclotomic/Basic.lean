@@ -710,7 +710,6 @@ instance IsAlgClosedOfCharZero.isCyclotomicExtension [CharZero K] :
 
 end IsAlgClosed
 
-
 instance : Polynomial.IsSplittingField ℚ ℚ (Polynomial.cyclotomic 0 ℚ) := by
   simpa using Polynomial.isSplittingField_C 1
 
@@ -718,5 +717,5 @@ instance (n : ℕ) : NumberField (CyclotomicField n ℚ) :=
   match n with
   | 0 =>
     let e := Polynomial.IsSplittingField.algEquiv ℚ (Polynomial.cyclotomic 0 ℚ)
-    NumberField.ofRingEquiv e.toRingEquiv
+    NumberField.of_ringEquiv e.toRingEquiv
   | .succ _ => inferInstance
