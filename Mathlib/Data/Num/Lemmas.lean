@@ -599,7 +599,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
