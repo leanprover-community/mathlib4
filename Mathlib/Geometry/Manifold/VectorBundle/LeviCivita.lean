@@ -439,17 +439,47 @@ lemma leviCivita_rhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   simp [rhs_aux_smulX]
   rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
   beta_reduce
+
+  set A := rhs_aux I X Y Z x
+  set B := rhs_aux I Y Z X x
+  set C := rhs_aux I Z X Y x
+
+  -- Apply the product rule for the lie bracket.
   have h1 : VectorField.mlieBracket I X (f • Z) x =
       f x • VectorField.mlieBracket I X Z x + mfderiv% f x (X x) • Z x := by
     rw [VectorField.mlieBracket_smul_right hf hZ, add_comm]
   have h2 : VectorField.mlieBracket I (f • Z) Y x =
       -(mfderiv% f x (Y x)) • Z x + f x • VectorField.mlieBracket I Z Y x := by
     rw [VectorField.mlieBracket_smul_left hf hZ]
+  -- -- Again, we need to go into the product and back out again.
+  -- simp only [product_apply]
+  -- rw [h1, h2, inner_add_right, inner_smul_right_eq_smul]
+  -- simp only [← product_apply]
+
+  -- Let's try to encapsulate more.
+  have h1' : ⟪Y, mlieBracket I X (f • Z)⟫ x =
+      f x • ⟪Y, mlieBracket I X Z⟫ x + ⟪Y, mfderiv% f x (X x) • Z⟫ x := by
+    rw [product_apply, h1, inner_add_right, inner_smul_right]
+    congr
+  rw [h1']
+  set D := ⟪Y, mlieBracket I X Z⟫ x
+
+  set X'' := ⟪Y, (mfderiv I 𝓘(ℝ, ℝ) f x) (X x) • Z⟫ x
+
+
+  have aux : ⟪f • Z, mlieBracket I Y X⟫ x = f x • ⟪Z, mlieBracket I Y X⟫ x := by
+    rw [product_smul_left]; simp
+
+  rw [product_smul_left]
+  --simp_rw [product_smul_left]
+
+  --simp only [product_add_right_apply]
+  set D := ⟪Y, mlieBracket I X Z⟫ x
+  set E := ⟪Z, mlieBracket I Y X⟫ x
+  set F := ⟪X, mlieBracket I Z Y⟫ x
   --rw [h1, h2]; beta_reduce
   --simp only [smul_eq_mul, product_add_right_apply]
-  set A := rhs_aux I X Y Z x
-  set B := rhs_aux I Y Z X x
-  set C := rhs_aux I Z X Y x
+
   -- continue here!
   sorry
   -- simp_rw [product_apply]
@@ -466,6 +496,7 @@ lemma leviCivita_rhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
   -- simp; abel_nf
   -- sorry
 
+#exit
 lemma leviCivita_rhs'_smulZ [CompleteSpace E] {f : M → ℝ}
     (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
     leviCivita_rhs' I X Y (f • Z) = f • leviCivita_rhs' I X Y Z := by
