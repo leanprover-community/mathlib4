@@ -135,7 +135,11 @@ theorem isBipartiteWith_neighborSet_disjoint' (h : G.IsBipartiteWith s t) (hw : 
     Disjoint (G.neighborSet w) t :=
   Set.disjoint_of_subset_left (isBipartiteWith_neighborSet_subset' h hw) h.disjoint
 
-variable [Fintype V] {s t : Finset V} [DecidableRel G.Adj]
+variable {s t : Finset V} [DecidableRel G.Adj]
+
+section LocallyFinite
+
+variable [G.LocallyFinite]
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is the set of vertices
 in `s` adjacent to `v` in `G`. -/
@@ -157,6 +161,7 @@ theorem isBipartiteWith_neighborFinset_subset (h : G.IsBipartiteWith s t) (hv : 
   rw [isBipartiteWith_neighborFinset h hv]
   exact filter_subset (G.Adj v ·) t
 
+omit [DecidableRel G.Adj] in
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is disjoint to `s`. -/
 theorem isBipartiteWith_neighborFinset_disjoint (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     Disjoint (G.neighborFinset v) s := by
@@ -189,6 +194,7 @@ theorem isBipartiteWith_neighborFinset_subset' (h : G.IsBipartiteWith s t) (hw :
   rw [isBipartiteWith_neighborFinset' h hw]
   exact filter_subset (G.Adj · w) s
 
+omit [DecidableRel G.Adj] in
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is disjoint to `t`. -/
 theorem isBipartiteWith_neighborFinset_disjoint' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
     Disjoint (G.neighborFinset w) t := by
@@ -217,6 +223,10 @@ theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
   simp_rw [sum_attach s fun w ↦ #(bipartiteAbove G.Adj t w),
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
+
+end LocallyFinite
+
+variable [Fintype V]
 
 lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
