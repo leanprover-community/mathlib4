@@ -145,8 +145,8 @@ theorem degree_zero : m.degree (0 : MvPolynomial σ R) = 0 := by
   simp [degree]
 
 theorem ne_zero_of_degree_ne_zero {f : MvPolynomial σ R} (h : m.degree f ≠ 0) : f ≠ 0 := by
-  by_contra h'
-  exact h (h'.symm ▸ m.degree_zero)
+  rintro rfl
+  exact h m.degree_zero
 
 @[simp, nontriviality]
 theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
@@ -315,13 +315,8 @@ theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     exact ⟨bot_le, hd⟩
 
 theorem degree_eq_zero_iff {f : MvPolynomial σ R} :
-    m.degree f = 0 ↔ f = C (m.leadingCoeff f) := by
-  constructor
-  · intro h
-    apply MonomialOrder.eq_C_of_degree_eq_zero h
-  · intro h
-    rw [h]
-    simp
+    m.degree f = 0 ↔ f = C (m.leadingCoeff f) :=
+  ⟨MonomialOrder.eq_C_of_degree_eq_zero, fun h => by rw [h, MonomialOrder.degree_C]⟩
 
 theorem degree_add_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f + g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
@@ -336,6 +331,14 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     apply m.le_degree
     simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
+
+theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
+    (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x ↦ (m.toSyn <| m.degree <| f x) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s haA h =>
+    rw [Finset.sum_cons, Finset.sup_cons]
+    exact le_trans m.degree_add_le (max_le_max le_rfl h)
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.degree (f + g) = m.degree f := by
@@ -352,7 +355,7 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
     simp only [degree_zero, map_zero]
     apply bot_le
 
-theorem degree_add_eq_right_of_degree_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
+theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[m] m.degree g) :
     m.degree (f + g) = m.degree g := by
   rw [add_comm]
   exact degree_add_of_lt h
