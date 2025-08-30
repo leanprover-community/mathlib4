@@ -37,22 +37,44 @@ Bézout's lemma, Bezout's lemma
 
 namespace Nat
 
+private lemma xgcdAux_fuel_lemma {k r' fuel : ℕ} (hk : k ≠ 0) (hfuel : k < fuel + 1) :
+    r' % k < fuel :=
+  (Nat.mod_lt _ (Nat.pos_of_ne_zero hk)).trans_le (by omega)
+
 /-- Helper function for the extended GCD algorithm (`Nat.xgcd`). -/
-def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
-  | 0, _, _, r', s', t' => (r', s', t')
-  | succ k, s, t, r', s', t' =>
-    let q := r' / succ k
-    xgcdAux (r' % succ k) (s' - q * s) (t' - q * t) (succ k) s t
-termination_by k => k
-decreasing_by exact mod_lt _ <| (succ_pos _).gt
+def xgcdAux (k : ℕ) (s t : ℤ) (r' : ℕ) (s' t' : ℤ) : ℕ × ℤ × ℤ :=
+  let rec
+    /-- Auxiliary function performing recursion for  `Nat.xgcdAux`. -/
+    go (fuel : ℕ) (k : ℕ) (s t : ℤ) (r' : ℕ) (s' t' : ℤ) (hfuel : k < fuel) : ℕ × ℤ × ℤ :=
+    match fuel with
+    | 0 => by contradiction
+    | succ fuel =>
+      if hk : k = 0 then (r', s', t')
+      else
+        let q := r' / k
+        go fuel (r' % k) (s' - q * s) (t' - q * t) k s t (xgcdAux_fuel_lemma hk hfuel)
+  go (k + 1) k s t r' s' t' (Nat.lt_succ_self _)
+
+private theorem xgcdAux.go.fuel_congr {k s t r' s' t'} (fuel1 fuel2 : ℕ)
+    (h1 : k < fuel1) (h2 : k < fuel2) :
+    xgcdAux.go fuel1 k s t r' s' t' h1 = xgcdAux.go fuel2 k s t r' s' t' h2 := by
+  match fuel1, fuel2 with
+  | 0, _ => contradiction
+  | _, 0 => contradiction
+  | succ fuel1, succ fuel2 =>
+    simp only [xgcdAux.go]
+    split
+    case isTrue => rfl
+    case isFalse => apply xgcdAux.go.fuel_congr
 
 @[simp]
-theorem xgcd_zero_left {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by simp [xgcdAux]
+theorem xgcdAux_zero {s t r' s' t'} : xgcdAux 0 s t r' s' t' = (r', s', t') := by
+  rw [xgcdAux, xgcdAux.go, dif_pos rfl]
 
 theorem xgcdAux_rec {r s t r' s' t'} (h : 0 < r) :
     xgcdAux r s t r' s' t' = xgcdAux (r' % r) (s' - r' / r * s) (t' - r' / r * t) r s t := by
-  obtain ⟨r, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h.ne'
-  simp [xgcdAux]
+  rw [xgcdAux, xgcdAux.go, xgcdAux, dif_neg (by omega)]
+  apply xgcdAux.go.fuel_congr
 
 /-- Use the extended GCD algorithm to generate the `a` and `b` values
   satisfying `gcd x y = x * a + y * b`. -/
@@ -67,29 +89,29 @@ def gcdA (x y : ℕ) : ℤ :=
 def gcdB (x y : ℕ) : ℤ :=
   (xgcd x y).2
 
+theorem xgcd_zero_left {s : ℕ} : xgcd 0 s = (0, 1) := by
+  rw [xgcd, xgcdAux_zero]
+
 @[simp]
 theorem gcdA_zero_left {s : ℕ} : gcdA 0 s = 0 := by
-  unfold gcdA
-  rw [xgcd, xgcd_zero_left]
+  rw [gcdA, xgcd_zero_left]
 
 @[simp]
 theorem gcdB_zero_left {s : ℕ} : gcdB 0 s = 1 := by
-  unfold gcdB
-  rw [xgcd, xgcd_zero_left]
+  rw [gcdB, xgcd_zero_left]
+
+theorem xgcd_zero_right {s : ℕ} (h : s ≠ 0) : xgcd s 0 = (1, 0) := by
+  rw [← Nat.pos_iff_ne_zero] at h
+  rw [xgcd, xgcdAux_rec h]
+  simp
 
 @[simp]
 theorem gcdA_zero_right {s : ℕ} (h : s ≠ 0) : gcdA s 0 = 1 := by
-  unfold gcdA xgcd
-  obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rw [xgcdAux]
-  simp
+  rw [gcdA, xgcd_zero_right h]
 
 @[simp]
 theorem gcdB_zero_right {s : ℕ} (h : s ≠ 0) : gcdB s 0 = 0 := by
-  unfold gcdB xgcd
-  obtain ⟨s, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
-  rw [xgcdAux]
-  simp
+  rw [gcdB, xgcd_zero_right h]
 
 @[simp]
 theorem xgcdAux_fst (x y) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x y :=
