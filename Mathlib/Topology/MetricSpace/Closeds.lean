@@ -183,8 +183,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         start from a set `s` which is ε-dense in α. Then the subsets of `s`
         are finitely many, and ε-dense for the Hausdorff distance. -/
     refine
-      isCompact_of_totallyBounded_isClosed (EMetric.totallyBounded_iff.2 fun ε εpos => ?_)
-        isClosed_univ
+      (EMetric.totallyBounded_iff.2 fun ε εpos => ?_).isCompact_of_isClosed isClosed_univ
     rcases exists_between εpos with ⟨δ, δpos, δlt⟩
     obtain ⟨s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ y ∈ s, ball y δ⟩ :=
       EMetric.totallyBounded_iff.1
