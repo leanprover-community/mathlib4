@@ -57,6 +57,9 @@ theorem vec_zero [Zero R] : vec (0 : Matrix m n R) = 0 :=
   rfl
 
 @[simp]
+theorem vec_eq_zero_iff [Zero R] {A : Matrix m n R} : vec A = 0 ↔ A = 0 := Iff.symm vec_inj.symm
+
+@[simp]
 theorem vec_add [Add R] (A B : Matrix m n R) : vec (A + B) = vec A + vec B :=
   rfl
 
@@ -92,6 +95,10 @@ theorem star_vec_dotProduct_vec [AddCommMonoid R] [Mul R] [Star R] [Fintype m] [
   simp_rw [star_vec, vec_dotProduct_vec, ← conjTranspose_transpose, transpose_transpose]
 
 theorem vec_hadamard [Mul R] (A B : Matrix m n R) : vec (A ⊙ B) = vec A * vec B := rfl
+
+theorem vec_single [DecidableEq m] [DecidableEq n] [Zero R] (i : m) (j : n) (r : R) :
+    vec (Matrix.single i j r) = Pi.single (j, i) r := by
+  rw [single_eq_of_single_single, vec_of, uncurry_flip]
 
 section Kronecker
 open scoped Kronecker
