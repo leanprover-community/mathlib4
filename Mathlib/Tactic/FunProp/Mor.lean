@@ -3,7 +3,7 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Data.FunLike.Basic
+import Mathlib.Init
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
@@ -125,9 +125,8 @@ where
       let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
 
       go (.app (.app c f) x) as
-    | .app f a, as =>
-      go f (as.push { expr := a })
-    | f        , as => k f as.reverse
+    | .app f a, as => go f (as.push { expr := a })
+    | f, as => k f as.reverse
 
 
 /--

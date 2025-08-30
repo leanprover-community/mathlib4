@@ -98,6 +98,21 @@ lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃
   ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
    fun hA => hA.reindex _ _⟩
 
+/-- If `A` has no rows, then it is totally unimodular. -/
+@[simp]
+lemma emptyRows_isTotallyUnimodular [IsEmpty m] (A : Matrix m n R) :
+    A.IsTotallyUnimodular := by
+  intro k f _ _ _
+  cases k with
+  | zero => use 1; rw [submatrix_empty, det_fin_zero, SignType.coe_one]
+  | succ => exact (IsEmpty.false (f 0)).elim
+
+/-- If `A` has no columns, then it is totally unimodular. -/
+@[simp]
+lemma emptyCols_isTotallyUnimodular [IsEmpty n] (A : Matrix m n R) :
+    A.IsTotallyUnimodular :=
+  A.transpose.emptyRows_isTotallyUnimodular.transpose
+
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1` or
 a single `-1` then `fromRows A B` is totally unimodular. -/
 lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}

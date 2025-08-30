@@ -103,14 +103,3 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ
     simp
   · ext
     simp [mem_add, and_assoc]
-
-/-- `stdSimplex ℝ ι` is path connected. -/
-theorem isPathConnected_stdSimplex (ι : Type*) [Fintype ι] [Nonempty ι] :
-    IsPathConnected (stdSimplex ℝ ι) :=
-  (convex_stdSimplex ℝ ι).isPathConnected (by
-    classical
-    exact ⟨_, single_mem_stdSimplex ℝ (Classical.arbitrary ι)⟩)
-
-instance (ι : Type*) [Fintype ι] [Nonempty ι] :
-    PathConnectedSpace (stdSimplex ℝ ι) :=
-  isPathConnected_iff_pathConnectedSpace.1 (isPathConnected_stdSimplex _)

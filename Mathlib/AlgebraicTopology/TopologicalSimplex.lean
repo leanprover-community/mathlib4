@@ -1,12 +1,10 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Adam Topaz
+Authors: Johan Commelin, Adam Topaz, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.Analysis.Convex.StdSimplex
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Analysis.Convex.Topology
 import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
