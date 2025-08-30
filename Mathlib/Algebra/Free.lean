@@ -9,6 +9,8 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Lex
 
 /-!
 # Free constructions
@@ -492,6 +494,173 @@ theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.leng
 
 @[to_additive (attr := simp)]
 theorem length_of (x : α) : (of x).length = 1 := rfl
+
+@[to_additive]
+theorem length_pos {x : FreeSemigroup α} : 0 < x.length := Nat.zero_lt_succ _
+
+@[to_additive]
+theorem lt_length_mul_left {x y : FreeSemigroup α} :
+    x.length < (x * y).length := by
+  rw [length_mul, Nat.lt_add_right_iff_pos]
+  exact length_lt_zero _
+
+@[to_additive]
+theorem length_factor_lt_right (x y : FreeSemigroup α) :
+    y.length < (x * y).length := by
+  rw [length_mul, Nat.lt_add_left_iff_pos]
+  exact length_lt_zero _
+
+/--
+  converts a nonempty list to a free semi group.
+-/
+@[to_additive "converts a nonempty list to a free additive semi group."]
+def fromList : ∀ l : List α, ¬l.isEmpty → FreeSemigroup α
+  | [a], _ => of a
+  | a :: b :: l, _=> of a * fromList (b :: l) (by simp)
+
+@[to_additive (attr := simp)]
+theorem head_fromList {l : List α} (h : ¬l.isEmpty) :
+    (fromList l h).head = l.head
+      (Ne.symm (ne_of_apply_ne List.isEmpty fun a ↦ h (id (Eq.symm a)))
+    ) := by
+  match l with
+  | a :: l =>
+    simp only [fromList, List.isEmpty_eq_true, List.head_cons]
+    rw [apply_dite head]
+    simp only [List.isEmpty_eq_true, of_head, head_mul, dite_eq_ite, ite_self]
+
+@[to_additive (attr := simp)]
+theorem tail_fromList {l : List α} (h : ¬l.isEmpty) :
+    (fromList l h).tail = l.tail := by
+  match l with
+  | a :: l' =>
+    simp only [fromList, List.isEmpty_eq_true, List.tail_cons]
+    rw [apply_dite tail]
+    simp only [List.isEmpty_eq_true, of_tail, tail_mul, fromList_head, List.nil_append]
+    by_cases h : l'.isEmpty
+    · simp only [h, ↓reduceDIte, List.nil_eq]
+      exact List.isEmpty_iff.mp h
+    · simp only [h, Bool.false_eq_true, ↓reduceDIte]
+      rw [fromList_tail]
+      simp only [List.head_cons_tail]
+
+@[to_additive (attr := simp)]
+theorem length_fromList {l : List α} (h : ¬l.isEmpty) :
+    (fromList l h).length = l.length :=
+  match l with
+  | a :: l => if h : l.isEmpty then (
+    by
+      simp only [fromList, h, List.isEmpty_eq_true, List.length_cons]
+      exact Nat.self_eq_add_left.mpr <| List.isEmpty_iff_length_eq_zero.mp h
+  ) else (by
+    simp only [fromList, h, Bool.false_eq_true,
+    ↓reduceDIte, length_mul, length_of, List.length_cons]
+    rw [Nat.add_comm]
+    exact congr_arg₂ _ (fromList_length h) rfl
+  )
+
+@[to_additive (attr := simp)]
+theorem fromList_cons (a : α) (l : List α) :
+    fromList (a :: l) (ne_true_of_eq_false rfl)
+      = if h : l.isEmpty then of a else of a * fromList l h := rfl
+
+@[to_additive]
+theorem fromList_append {l₁ l₂ : List α}
+  (h₁ : ¬l₁.isEmpty) (h₂ : ¬l₂.isEmpty) :
+    fromList (l₁ ++ l₂) (by
+      simp_all only [List.isEmpty_eq_true, List.append_eq_nil_iff, and_self,
+        not_false_eq_true])
+    = fromList l₁ h₁ * fromList l₂ h₂ := by
+  match l₁ with
+  | x :: xs =>
+    simp only [List.cons_append, fromList_cons]
+    have : (xs ++ l₂).isEmpty = false := by
+      simp only [List.isEmpty_eq_false, ne_eq, List.append_eq_nil_iff, not_and]
+      intro a
+      subst a
+      simp_all only [List.isEmpty_eq_true, List.isEmpty_cons, Bool.false_eq_true, not_false_eq_true]
+    by_cases h' : xs.isEmpty <;> simp only [this, List.isEmpty_eq_true, List.append_eq_nil_iff, h',
+      Bool.false_eq_true, ↓reduceDIte]
+    · simp only [List.isEmpty_eq_true] at h'
+      simp only [h', List.nil_append]
+    · rw [mul_assoc]
+      apply congr_arg₂ _ rfl
+      exact fromList_append _ _
+
+/--
+  converts a free semigroup to a list.
+-/
+@[to_additive "converts a free additive semigroup to a list."]
+def toList : FreeSemigroup α → List α := fun x => x.head :: x.tail
+
+@[to_additive (attr := simp)]
+theorem toList_of (a : α) : toList (of a) = [a] := rfl
+
+@[to_additive (attr := simp)]
+theorem toList_mul (x y : FreeSemigroup α) :
+    toList (x * y) = toList x ++ toList y := rfl
+
+@[to_additive (attr := simp)]
+theorem toList_length (x : FreeSemigroup α) :
+  x.toList.length = x.length := rfl
+
+@[to_additive]
+theorem not_isEmpty_toList {x : FreeSemigroup α} : ¬x.toList.isEmpty := by
+  rw [toList]
+  simp only [List.isEmpty_cons, Bool.false_eq_true, not_false_eq_true]
+
+@[to_additive (attr := simp)]
+theorem fromList_toList (x : FreeSemigroup α) :
+    fromList (toList x) (toList_nonEmpty x) = x := by
+  simp only [toList, fromList, List.isEmpty_eq_true]
+  by_cases h : x.tail.isEmpty <;> simp only [h, Bool.false_eq_true, ↓reduceDIte]
+  · rw [List.isEmpty_iff] at h
+    exact FreeSemigroup.ext rfl (id (Eq.symm h))
+  · apply FreeSemigroup.ext
+    · simp only [head_mul, of_head]
+    · simp only [tail_mul, of_tail, List.nil_append]
+      set y := x.tail with hy
+      simp only [<- hy]
+      match y with
+      | a :: l =>
+        simp only [fromList_cons, List.isEmpty_eq_true, List.cons.injEq]
+        by_cases h : l.isEmpty
+        · simp only [h, ↓reduceDIte, of_head, of_tail, List.nil_eq, true_and]
+          exact List.isEmpty_iff.mp h
+        · simp only [h, Bool.false_eq_true, ↓reduceDIte, head_mul, of_head, tail_mul, of_tail,
+          fromList_head, fromList_tail, List.head_cons_tail, List.nil_append, and_self]
+
+@[to_additive]
+theorem toList_injective : Function.Injective (toList : FreeSemigroup α → List α) := by
+  intro x y h
+  rw [← fromList_toList x, ← fromList_toList y]
+  simp only [h, fromList_toList]
+
+@[to_additive]
+theorem toList_fromList (l : List α) (h : ¬l.isEmpty) :
+    toList (fromList l h) = l := by
+  match l with
+  | a :: l =>
+    simp only [fromList_cons, List.isEmpty_eq_true]
+    rw [apply_dite toList]
+    rw [toList_of]
+    simp only [List.isEmpty_eq_true, toList_mul, toList_of, toList_fromList, List.cons_append,
+      List.nil_append, dite_eq_ite, ite_eq_right_iff, List.cons.injEq, List.nil_eq, true_and,
+      imp_self]
+
+/--
+  defines a lexicographic order on free semi group.
+  Not a default instance because it should be better to declare it explicitly.
+-/
+@[to_additive "defines a lexicographic order on free additive semi group.
+  Not a default instance because it should be better to declare it explicitly."]
+def instLinearOrder [LinearOrder α] : LinearOrder (FreeSemigroup α) :=
+  LinearOrder.lift' (toList : FreeSemigroup α → List α) toList_injective
+
+@[to_additive]
+theorem LinearOrder_def [LinearOrder α] (x y : FreeSemigroup α) :
+    letI _ := @instLinearOrder α
+    x ≤ y ↔ toList x ≤ toList y := Iff.rfl
 
 @[to_additive]
 instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
