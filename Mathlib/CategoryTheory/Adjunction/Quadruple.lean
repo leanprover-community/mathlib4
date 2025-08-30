@@ -21,6 +21,12 @@ Currently the only two results are the following:
 This is in particular relevant for the adjoint quadruples `π₀ ⊣ disc ⊣ Γ ⊣ codisc` that appear in
 cohesive topoi, and can be found e.g. as proposition 2.7
 [here](https://ncatlab.org/nlab/show/cohesive+topos).
+
+Note that by `Triple.fullyFaithfulEquiv`, in an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` `L` is fully
+faithful iff `G` is and `F` is fully faithful iff `R` is; these lemmas thus cover all cases in which
+some of the functors are fully faithful. We opt to include only those typeclass assumptions that are
+needed for the theorem statements, so some lemmas require only e.g. `F` to be fully faithful when
+really this means `F` and `R` both must be.
 -/
 
 open CategoryTheory Limits Functor Adjunction Triple
@@ -73,8 +79,8 @@ section RightFullyFaithful
 
 variable [F.Full] [F.Faithful]
 
-/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful, all components
-of the natural transformation `G ⟶ L` are epimorphisms iff all components of the natural
+/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` (and hence also `R`) is fully faithful, all
+components of the natural transformation `G ⟶ L` are epimorphisms iff all components of the natural
 transformation `F ⟶ R` are monomorphisms. -/
 lemma epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app :
     (∀ X, Epi (q.leftTriple.rightToLeft.app X)) ↔ ∀ X, Mono (q.rightTriple.leftToRight.app X) := by
@@ -92,8 +98,8 @@ lemma epi_leftTriple_rightToLeft_app_iff_mono_rightTriple_leftToRight_app :
   simp [Function.comp_def, ← q.adj₂.homEquiv_symm_id, ← q.adj₂.homEquiv_naturality_right_symm,
     ← q.adj₃.homEquiv_id, ← q.adj₃.homEquiv_naturality_left]
 
-/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` and `R` are fully faithful and their domain
-and codomain have all pushouts resp. pullbacks, the natural transformation `G ⟶ L` is an
+/-- For an adjoint quadruple `L ⊣ F ⊣ G ⊣ R` where `F` (and hence also `R`) is fully faithful and
+its domain / codomain has all pushouts resp. pullbacks, the natural transformation `G ⟶ L` is an
 epimorphism iff the natural transformation `F ⟶ R` is a monomorphism. -/
 lemma epi_leftTriple_rightToLeft_iff_mono_rightTriple_leftToRight [HasPullbacks C] [HasPushouts D] :
     Epi q.leftTriple.rightToLeft ↔ Mono q.rightTriple.leftToRight := by
