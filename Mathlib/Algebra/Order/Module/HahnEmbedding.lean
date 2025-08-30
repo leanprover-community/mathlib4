@@ -58,10 +58,10 @@ open ArchimedeanClass DirectSum
 variable {K : Type*} [DivisionRing K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 variable [Module K M] [PosSMulMono K M]
-variable {R : Type*} [AddCommGroup R] [LinearOrder R] [IsOrderedAddMonoid R] [Archimedean R]
-variable [Module K R]
 
 variable (K M) in
+/-- Specify a family of submodules indexed by `ArchimedeanClass M` that
+are complements between `ArchimedeanClass.ball` and `ArchimedeanClass.closedBall`. -/
 structure ArchimedeanBallComplements where
   /-- For each `ArchimedeanClass`, specify a corresponding submodule. -/
   ballComplement : ArchimedeanClass M → Submodule K M
@@ -73,11 +73,10 @@ structure ArchimedeanBallComplements where
     ball K c ⊔ (ballComplement c) = closedBall K c
 
 namespace ArchimedeanBallComplements
-variable (seed : ArchimedeanBallComplements K M)
+variable (u : ArchimedeanBallComplements K M)
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
-theorem ballComplement_eq_bot_iff (c : ArchimedeanClass M) : seed.ballComplement c = ⊥ ↔ c = ⊤ := by
-  obtain hsup := seed.ball_sup_ballComplement_eq c
+theorem ballComplement_eq_bot_iff (c : ArchimedeanClass M) : u.ballComplement c = ⊥ ↔ c = ⊤ := by
+  obtain hsup := u.ball_sup_ballComplement_eq c
   constructor
   · rintro h
     rw [h] at hsup
@@ -90,39 +89,35 @@ theorem ballComplement_eq_bot_iff (c : ArchimedeanClass M) : seed.ballComplement
   · rintro rfl
     simpa using hsup
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
 theorem nontrivial_ballComplement {c : ArchimedeanClass M} (h : c ≠ ⊤) :
-    Nontrivial (seed.ballComplement c) :=
-  (Submodule.nontrivial_iff_ne_bot).mpr ((seed.ballComplement_eq_bot_iff c).ne.mpr h)
+    Nontrivial (u.ballComplement c) :=
+  (Submodule.nontrivial_iff_ne_bot).mpr ((u.ballComplement_eq_bot_iff c).ne.mpr h)
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
 theorem archimedeanClassMk_eq {c : ArchimedeanClass M} {a : M}
-    (ha : a ∈ seed.ballComplement c) (h0 : a ≠ 0) : ArchimedeanClass.mk a = c := by
+    (ha : a ∈ u.ballComplement c) (h0 : a ≠ 0) : ArchimedeanClass.mk a = c := by
   apply le_antisymm
   · have hc : c ≠ ⊤ := by
       contrapose! h0
-      rw [(seed.ballComplement_eq_bot_iff c).mpr h0] at ha
+      rw [(u.ballComplement_eq_bot_iff c).mpr h0] at ha
       simpa using ha
     contrapose! h0 with hlt
     have ha' : a ∈ ball K c := (mem_ball_iff K hc).mpr hlt
-    exact (Submodule.disjoint_def.mp (seed.disjoint_ball_ballComplement _)) _ ha' ha
+    exact (Submodule.disjoint_def.mp (u.disjoint_ball_ballComplement _)) _ ha' ha
   · apply (mem_closedBall_iff K).mp
-    rw [← seed.ball_sup_ballComplement_eq c]
+    rw [← u.ball_sup_ballComplement_eq c]
     exact Submodule.mem_sup_right ha
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
 instance archimedean_ballComplement (c : ArchimedeanClass M) :
-    Archimedean (seed.ballComplement c) := by
+    Archimedean (u.ballComplement c) := by
   apply archimedean_of_mk_eq_mk
   intro a ha b hb
   suffices ArchimedeanClass.mk a.val = ArchimedeanClass.mk b.val by
     rw [mk_eq_mk] at this ⊢
     exact this
-  rw [seed.archimedeanClassMk_eq a.prop (by simpa using ha)]
-  rw [seed.archimedeanClassMk_eq b.prop (by simpa using hb)]
+  rw [u.archimedeanClassMk_eq a.prop (by simpa using ha)]
+  rw [u.archimedeanClassMk_eq b.prop (by simpa using hb)]
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
-theorem iSupIndep_ballComplement : iSupIndep seed.ballComplement := by
+theorem iSupIndep_ballComplement : iSupIndep u.ballComplement := by
   rw [iSupIndep_def]
   intro c
   rw [Submodule.disjoint_def']
@@ -132,56 +127,57 @@ theorem iSupIndep_ballComplement : iSupIndep seed.ballComplement := by
   contrapose! hf' with h0
   rw [← hab, DFinsupp.sum]
   by_cases hnonempty : f.support.Nonempty
-  · have hmem (x : ArchimedeanClass M) : (f x).val ∈ seed.ballComplement x :=
+  · have hmem (x : ArchimedeanClass M) : (f x).val ∈ u.ballComplement x :=
       Set.mem_of_mem_of_subset (f x).prop (by simp)
     have hmono : StrictMonoOn (fun i ↦ ArchimedeanClass.mk (f i).val) f.support := by
       intro x hx y hy hxy
       change ArchimedeanClass.mk (f x).val < ArchimedeanClass.mk (f y).val
-      rw [seed.archimedeanClassMk_eq (hmem x) (by simpa using hx)]
-      rw [seed.archimedeanClassMk_eq (hmem y) (by simpa using hy)]
+      rw [u.archimedeanClassMk_eq (hmem x) (by simpa using hx)]
+      rw [u.archimedeanClassMk_eq (hmem y) (by simpa using hy)]
       exact hxy
     rw [mk_sum hnonempty hmono]
-    rw [seed.archimedeanClassMk_eq (hmem _)
+    rw [u.archimedeanClassMk_eq (hmem _)
       (by simpa using Finset.min'_mem f.support hnonempty)]
     by_contra!
     obtain h := this ▸ Finset.min'_mem f.support hnonempty
     contrapose! h
-    rw [DFinsupp.notMem_support_iff, seed.archimedeanClassMk_eq ha h0]
+    rw [DFinsupp.notMem_support_iff, u.archimedeanClassMk_eq ha h0]
     simpa using (f c).prop
   · rw [Finset.not_nonempty_iff_eq_empty.mp hnonempty]
     symm
     simpa using h0
 
 /-- The minimal submodule that contains all `ArchimedeanBallComplements.ballComplement`. -/
-def baseDomain := ⨆ c, seed.ballComplement c
+def baseDomain := ⨆ c, u.ballComplement c
 
 /-- `ArchimedeanBallComplements.ballComplement` as a submodule of
 `ArchimedeanBallComplements.baseDomain`. -/
-abbrev ballComplement' (c : ArchimedeanClass M) : Submodule K (baseDomain seed) :=
-  (seed.ballComplement c).comap seed.baseDomain.subtype
+abbrev ballComplement' (c : ArchimedeanClass M) : Submodule K (baseDomain u) :=
+  (u.ballComplement c).comap u.baseDomain.subtype
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
-theorem iSupIndep_ballComplement' : iSupIndep (seed.ballComplement') := by
-  apply (iSupIndep_map_orderIso_iff (Submodule.mapIic seed.baseDomain)).mp
+theorem iSupIndep_ballComplement' : iSupIndep (u.ballComplement') := by
+  apply (iSupIndep_map_orderIso_iff (Submodule.mapIic u.baseDomain)).mp
   apply iSupIndep.of_coe_Iic_comp
-  convert seed.iSupIndep_ballComplement
+  convert u.iSupIndep_ballComplement
   ext1 c
   simpa using le_iSup _ _
 
-omit [IsOrderedAddMonoid R] [Archimedean R] in
-theorem isInternal_ballComplement' : DirectSum.IsInternal (ballComplement' seed) := by
-  apply DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top (iSupIndep_ballComplement' seed)
-  apply Submodule.map_injective_of_injective (seed.baseDomain.subtype_injective)
-  suffices ⨆ i, seed.baseDomain ⊓ seed.ballComplement i = seed.baseDomain by simpa using this
+theorem isInternal_ballComplement' : DirectSum.IsInternal (ballComplement' u) := by
+  apply DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top (iSupIndep_ballComplement' u)
+  apply Submodule.map_injective_of_injective (u.baseDomain.subtype_injective)
+  suffices ⨆ i, u.baseDomain ⊓ u.ballComplement i = u.baseDomain by simpa using this
   apply iSup_congr
   intro c
   simpa using le_iSup _ _
 
 noncomputable
-instance : DirectSum.Decomposition (seed.ballComplement') :=
-  DirectSum.IsInternal.chooseDecomposition _ (isInternal_ballComplement' seed)
+instance : DirectSum.Decomposition (u.ballComplement') :=
+  DirectSum.IsInternal.chooseDecomposition _ (isInternal_ballComplement' u)
 
 end ArchimedeanBallComplements
+
+variable {R : Type*} [AddCommGroup R] [LinearOrder R] [IsOrderedAddMonoid R] [Archimedean R]
+variable [Module K R]
 
 variable (K M R) in
 /-- `HahnEmbeddingSeed` extends `ArchimedeanBallComplements` by specifying strictly monotone
