@@ -36,7 +36,7 @@ theorem IsNormal.continuous {f : α → β} (hf : IsNormal f) : Continuous f := 
       rw [hf.preimage_Iic h (ha ▸ bddAbove_Iio)]
       exact isClosed_Iic
 
-/-- A normal function between well-orders is equivalent to a strictly monotonic,
+/-- A normal function between well-orders is equivalent to a strictly monotone,
 continuous function. -/
 theorem isNormal_iff_strictMono_and_continuous {f : α → β} :
     IsNormal f ↔ StrictMono f ∧ Continuous f where
