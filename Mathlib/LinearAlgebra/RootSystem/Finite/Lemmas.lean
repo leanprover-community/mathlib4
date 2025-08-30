@@ -60,7 +60,7 @@ lemma coxeterWeightIn_le_four (S : Type*)
   rw [hsi'] at hsi
   rw [hsj'] at hsj
   have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
-    rw [mul_le_mul_left four_pos]
+    rw [mul_le_mul_iff_right₀ four_pos]
     refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
     intro x
     obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
@@ -72,7 +72,7 @@ lemma coxeterWeightIn_le_four (S : Type*)
     simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using
        P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
   simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
-  rwa [key, mul_le_mul_right (by positivity)] at cs
+  rwa [key, mul_le_mul_iff_left₀ (by positivity)] at cs
 
 variable [CharZero R] [P.IsCrystallographic] (i j : ι)
 
