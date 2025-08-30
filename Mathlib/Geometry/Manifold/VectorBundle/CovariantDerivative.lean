@@ -1144,6 +1144,9 @@ variable [h : IsManifold I ∞ M]
 -- The torsion tensor of a covariant derivative on the tangent bundle `TM`.
 variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
 
+variable {U : Set M} (hf : IsCovariantDerivativeOn E f U)
+
+-- TODO: prove applied versions of these, for IsCovariantDerivativeOn --- using tensoriality, later!
 variable (f X) in
 @[simp]
 lemma torsion_zero : torsion cov 0 X = 0 := by
@@ -1157,12 +1160,12 @@ lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_ze
 set_option linter.style.commandStart false -- new delaborators confuse the pretty-printer
 
 variable (Y) in
-lemma torsion_add_left_apply [CompleteSpace E] {x : M}
-    (hX : MDiffAt (T% X) x)
-    (hX' : MDiffAt (T% X') x) :
-    torsion cov (X + X') Y x = torsion cov X Y x + torsion cov X' Y x := by
-  simp [torsion, cov.isCovariantDerivativeOn.addX X X' (x := x)]
-  rw [cov.isCovariantDerivativeOn.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
+lemma _root_.IsCovariantDerivativeOn.torsion_add_left_apply [CompleteSpace E]
+    (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
+    torsion f (X + X') Y x = torsion f X Y x + torsion f X' Y x := by
+  simp [torsion, hf.addX X X' (x := x)]
+  rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
   module
 
 variable (Y) in
@@ -1170,14 +1173,14 @@ lemma torsion_add_left [CompleteSpace E]
     (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
     torsion cov (X + X') Y = torsion cov X Y + torsion cov X' Y := by
   ext x
-  exact cov.torsion_add_left_apply _ (hX x) (hX' x)
+  exact cov.isCovariantDerivativeOn.torsion_add_left_apply _ (by trivial) (hX x) (hX' x)
 
-lemma torsion_add_right_apply [CompleteSpace E] {x : M}
+lemma _root_.IsCovariantDerivativeOn.torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x)
     (hX' : MDiffAt (T% X') x) :
-    torsion cov Y (X + X') x = torsion cov Y X x + torsion cov Y X' x := by
+    torsion f Y (X + X') x = torsion f Y X x + torsion f Y X' x := by
   rw [torsion_antisymm, Pi.neg_apply,
-    cov.torsion_add_left_apply _ hX hX', torsion_antisymm Y, torsion_antisymm Y]
+    hf.torsion_add_left_apply _ hx hX hX', torsion_antisymm Y, torsion_antisymm Y]
   simp; abel
 
 lemma torsion_add_right [CompleteSpace E]
@@ -1186,11 +1189,14 @@ lemma torsion_add_right [CompleteSpace E]
   rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
 
 variable (Y) in
-lemma torsion_smul_left_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDiffAt f x)
-    (hX : MDiffAt (T% X) x) :
-    torsion cov (f • X) Y x = f x • torsion cov X Y x := by
-  simp only [torsion, cov.isCovariantDerivativeOn.smulX X Y f, Pi.sub_apply]
-  rw [cov.isCovariantDerivativeOn.leibniz Y hX hf, VectorField.mlieBracket_smul_left hf hX]
+lemma _root_.IsCovariantDerivativeOn.torsion_smul_left_apply [CompleteSpace E]
+    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
+    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
+    -- TODO: making hx an auto-param := by trivial doesn't fire at the application sites below
+    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
+    torsion F (f • X) Y x = f x • torsion F X Y x := by
+  simp only [torsion, Pi.sub_apply, hF.smulX X Y f]
+  rw [hF.leibniz Y hX hf hx, VectorField.mlieBracket_smul_left hf hX]
   simp [bar, smul_sub]
   abel
 
@@ -1198,20 +1204,22 @@ variable (Y) in
 lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
     torsion cov (f • X) Y = f • torsion cov X Y := by
   ext x
-  exact cov.torsion_smul_left_apply _ (hf x) (hX x)
+  exact cov.isCovariantDerivativeOn.torsion_smul_left_apply _ (by trivial) (hf x) (hX x)
 
 variable (X) in
-lemma torsion_smul_right_apply [CompleteSpace E] {f : M → ℝ} {x : M} (hf : MDiffAt f x)
-    (hX : MDiffAt (T% Y) x) :
-    torsion cov X (f • Y) x = f x • torsion cov X Y x := by
-  rw [torsion_antisymm, Pi.neg_apply, torsion_smul_left_apply X hf hX, torsion_antisymm X]
+lemma _root_.IsCovariantDerivativeOn.torsion_smul_right_apply [CompleteSpace E]
+    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
+    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
+    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) :
+    torsion F X (f • Y) x = f x • torsion F X Y x := by
+  rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hx hf hX, torsion_antisymm X]
   simp
 
 variable (X) in
 lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) :
     torsion cov X (f • Y) = f • torsion cov X Y := by
   ext x
-  apply cov.torsion_smul_right_apply _ (hf x) (hY x)
+  exact cov.isCovariantDerivativeOn.torsion_smul_right_apply _ (by trivial) (hf x) (hY x)
 
 /-- The torsion of a covariant derivative is tensorial:
 the value of `torsion cov X Y` at `x₀` depends only on `X x₀` and `Y x₀`. -/
@@ -1224,13 +1232,13 @@ def torsion_tensorial [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
     (torsion cov X Y) x₀ = (torsion cov X' Y') x₀ := by
   apply tensoriality_criterion₂ I E (TangentSpace I) E (TangentSpace I) hX hX' hY hY' hXX' hYY'
   · intro f σ τ hf hσ
-    exact cov.torsion_smul_left_apply _ hf hσ
+    exact cov.isCovariantDerivativeOn.torsion_smul_left_apply _ (by trivial) hf hσ
   · intro σ σ' τ hσ hσ'
-    exact cov.torsion_add_left_apply _ hσ hσ'
+    exact cov.isCovariantDerivativeOn.torsion_add_left_apply _ (by trivial) hσ hσ'
   · intros f σ σ' hf hσ'
-    exact cov.torsion_smul_right_apply _ hf hσ'
+    exact cov.isCovariantDerivativeOn.torsion_smul_right_apply _ (by trivial) hf hσ'
   · intro σ τ τ' hτ hτ'
-    exact cov.torsion_add_right_apply hτ hτ'
+    exact cov.isCovariantDerivativeOn.torsion_add_right_apply (by trivial) hτ hτ'
 
 -- TODO: define a torsion tensor of a covariant derivative,
 -- and related torsion-freeness to this
