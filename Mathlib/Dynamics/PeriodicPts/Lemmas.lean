@@ -119,6 +119,8 @@ end Function
 
 namespace Function
 
+section Prod
+
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
@@ -134,18 +136,27 @@ theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
 
+end Prod
+
+-- alternative: `namespace Pi`
+section Pi
+
 variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
 
-theorem Pi.minimalPeriod_eq :
+theorem minimalPeriod_piMap :
     minimalPeriod (Pi.map f) x = sInf {n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n} :=
   sorry
 
-theorem Pi.fintype_minimalPeriod_eq [Fintype ι] :
+-- alternative name: `minimalPeriod_piMap_fintype`
+theorem fintype_minimalPeriod_piMap [Fintype ι] :
     minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   sorry
 
-theorem Pi.minimalPeriod_single_dvd :
-    ∀ i, minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
+-- alternative name: `minimalPeriod_single_dvd`
+theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
+    minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
   sorry
+
+end Pi
 
 end Function
