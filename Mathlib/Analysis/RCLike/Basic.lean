@@ -11,7 +11,6 @@ import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Ring.Finite
 import Mathlib.Data.Real.Sqrt
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
