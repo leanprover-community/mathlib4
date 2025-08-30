@@ -98,7 +98,7 @@ def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
 in `Finset.encodable`. -/
 instance finset : Denumerable (Finset α) :=
   mk'
-    ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
+    ⟨fun s : Finset α => encode <| lower' (s.map (eqv α).toEmbedding).sort 0, fun n =>
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
       Finset.eq_of_veq <| by
         simp [-Multiset.map_coe, raise'Finset,
