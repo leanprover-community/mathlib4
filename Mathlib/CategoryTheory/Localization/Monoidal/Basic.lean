@@ -20,6 +20,8 @@ Here, the data `ε : L.obj (𝟙_ C) ≅ unit` is an isomorphism to some
 object `unit : D` which allows the user to provide a preferred choice
 of a unit object.
 
+The symmetric case is considered in the file `Mathlib.CategoryTheory.Localization.Monoidal.Braided`.
+
 -/
 
 namespace CategoryTheory
@@ -429,5 +431,24 @@ noncomputable instance : (toMonoidalCategory L W ε).Monoidal :=
       associativity X Y Z := by simp [associator_hom_app L W ε X Y Z]
       left_unitality Y := leftUnitor_hom_app L W ε Y
       right_unitality X := rightUnitor_hom_app L W ε X }
+
+local notation "L'" => toMonoidalCategory L W ε
+
+lemma associator_hom (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom =
+    (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
+      (Functor.LaxMonoidal.μ (L') (X ⊗ Y) Z) ≫
+        (L').map (α_ X Y Z).hom ≫
+          (Functor.OplaxMonoidal.δ (L') X (Y ⊗ Z)) ≫
+            ((L').obj X) ◁ (Functor.OplaxMonoidal.δ (L') Y Z) := by
+  simp
+
+lemma associator_inv (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv =
+    (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
+      (Functor.LaxMonoidal.μ (L') X (Y ⊗ Z)) ≫
+        (L').map (α_ X Y Z).inv ≫
+          (Functor.OplaxMonoidal.δ (L') (X ⊗ Y) Z) ≫
+            (Functor.OplaxMonoidal.δ (L') X Y) ▷ ((L').obj Z) := by
+  simp
+
 
 end CategoryTheory
