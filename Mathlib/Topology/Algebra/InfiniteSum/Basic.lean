@@ -235,7 +235,7 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive /-- A special case of `Summable.map_iff_of_leftInverse` for convenience -/]
 protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpace γ] {G}
-    [EquivLike G α γ] [MulEquivClass G α γ] (g : G) (hg : Continuous g)
+    [EquivLike G α γ] [MulHomClass G α γ] (g : G) (hg : Continuous g)
     (hg' : Continuous (EquivLike.inv g : γ → α)) : Multipliable (g ∘ f) ↔ Multipliable f :=
   Multipliable.map_iff_of_leftInverse g (g : α ≃* γ).symm hg hg' (EquivLike.left_inv g)
 

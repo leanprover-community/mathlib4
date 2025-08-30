@@ -72,7 +72,7 @@ lemma irreducible_mul_iff :
     · rwa [irreducible_isUnit_mul ha]
 
 section MulEquivClass
-variable [EquivLike F M N] [MulEquivClass F M N] (f : F)
+variable [EquivLike F M N] [MulHomClass F M N] (f : F)
 
 @[to_additive]
 lemma MulEquiv.irreducible_iff : Irreducible (f x) ↔ Irreducible x := by
