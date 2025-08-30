@@ -512,12 +512,12 @@ theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintyp
     [Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
   @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
 
-attribute [to_additive existing] exists_prime_orderOf_dvd_card
+attribute [to_additive existing exists_prime_addOrderOf_dvd_card] exists_prime_orderOf_dvd_card
 
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
-@[to_additive]
+@[to_additive exists_prime_addOrderOf_dvd_card']
 theorem _root_.exists_prime_orderOf_dvd_card' {G : Type*} [Group G] [Finite G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Nat.card G) : ∃ x : G, orderOf x = p := by
   have := Fintype.ofFinite G
