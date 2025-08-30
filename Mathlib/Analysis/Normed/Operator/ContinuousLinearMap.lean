@@ -98,47 +98,6 @@ theorem LinearMap.mkContinuousOfExistsBound_apply (h : ∃ C, ∀ x, ‖f x‖ �
     f.mkContinuousOfExistsBound h x = f x :=
   rfl
 
-instance (K E' : Type*) [NormedDivisionRing K] [NormedAddCommGroup E'] [Module K E'] [Module K F]
-  [NormSMulClass K E'] [NormSMulClass K F] [Nontrivial E'] [Nontrivial F] : Nontrivial (E' →L[K] F) := by
-  by_cases hv_span : ∃ v, Submodule.span K {v} = (⊤ : Submodule K E')
-  · obtain ⟨v, hv⟩ := hv_span
-    have hv₀ : v ≠ 0 := fun _ ↦ by simp_all
-    obtain ⟨w, hw⟩ := exists_ne (0 : F)
-    obtain ⟨g, -, hg⟩ := LinearMap.exists_extend_of_notMem (p := (⊥ : Submodule K E')) 0
-      (by simpa) w
-    have hg_cont : ∃ C, ∀ x, ‖g x‖ ≤ C * ‖x‖ := by
-      refine ⟨‖g v‖ * ‖v‖⁻¹, fun x ↦ ?_⟩
-      obtain ⟨r, hr⟩ := (Submodule.span_singleton_eq_top_iff K v).mp hv x
-      rw [← hr, map_smul, norm_smul, norm_smul, mul_assoc _ ‖v‖⁻¹, ← mul_assoc ‖v‖⁻¹,
-        mul_comm ‖v‖⁻¹, mul_assoc _ ‖v‖⁻¹, inv_mul_cancel₀ (by rwa [norm_ne_zero_iff])]
-      grind
-    exact ⟨g.mkContinuousOfExistsBound hg_cont, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
-  · obtain ⟨v, hv⟩ := exists_ne (0 : E')
-    let p := Submodule.span K {v}
-    have hp : p < ⊤ := sorry
-    obtain ⟨q, hq⟩ := Submodule.exists_isCompl p
-    have hq_ne : q < ⊤ := sorry
-    obtain ⟨g, -, hg⟩ := q.exists_le_ker_of_lt_top hq_ne
-    have hg_cont : ∃ C, ∀ x, ‖g x‖ ≤ C * ‖x‖ := by
-      refine ⟨‖g v‖ * ‖v‖⁻¹, fun y ↦ ?_⟩
-      obtain ⟨x, ⟨z, hz⟩, huz, -⟩ := Submodule.existsUnique_add_of_isCompl hq y
-      rw [← huz]
-      simp
-      erw [((g.toAddMonoidHom).mem_ker).mp (hg hz)]
-      simp
-      obtain ⟨r, hr⟩ := (Submodule.span_singleton_eq_top_iff K v).mp _ x
-
-      rw [← hr, map_smul, norm_smul,/-  norm_smul, -/ mul_assoc _ ‖v‖⁻¹, /- ← mul_assoc ‖v‖⁻¹, -/
-        mul_comm ‖v‖⁻¹,/-  mul_assoc _ ‖v‖⁻¹, -//-  inv_mul_cancel₀ (by rwa [norm_ne_zero_iff]) -/]
-      -- grind
-
-      --   simp
-      -- · sorry
-
-
-
-
-
 namespace ContinuousLinearMap
 
 theorem antilipschitz_of_bound (f : E →SL[σ] F) {K : ℝ≥0} (h : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
