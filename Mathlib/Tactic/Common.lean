@@ -115,6 +115,8 @@ import Mathlib.Util.PrintSorries
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 
+import Mathlib.Tactic.TacticAnalysis.FunProp
+
 /-!
 This file imports all tactics which do not have significant theory imports,
 and hence can be imported very low in the theory import hierarchy,
@@ -145,3 +147,6 @@ register_hint (priority := 1000) decide
 register_hint (priority := 200) omega
 
 end Hint
+
+set_option linter.tacticAnalysis.continuityToFunProp true
+set_option linter.tacticAnalysis.measurabilityToFunProp true
