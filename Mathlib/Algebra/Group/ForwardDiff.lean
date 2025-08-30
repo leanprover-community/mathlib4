@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Pi
 
 /-!
 # Forward difference operators and Newton series
@@ -211,7 +211,7 @@ We prove five key formulae about the forward difference operator
 -/
 
 
-open fwdDiff Polynomial fwdDiff_aux Nat Finset Function
+open fwdDiff fwdDiff_aux Nat Finset Function
 variable {R : Type*} [CommRing R]
 
 /--
