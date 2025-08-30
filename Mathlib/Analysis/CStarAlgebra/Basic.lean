@@ -217,7 +217,6 @@ theorem norm_coe_unitary_mul (U : unitary E) (A : E) : ‖(U : E) * A‖ = ‖A�
         exact norm_mul_le _ _
       _ = ‖(U : E) * A‖ := by rw [norm_star, norm_coe_unitary, one_mul]
 
-@[simp]
 theorem norm_unitary_smul (U : unitary E) (A : E) : ‖U • A‖ = ‖A‖ :=
   norm_coe_unitary_mul U A
 
