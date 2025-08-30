@@ -650,7 +650,7 @@ lemma resProdRight_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V
   · have : Set.Ici (0 + m) = (fun (i : ℕ) ↦ i + m)'' Set.univ := by
       rw [← Set.image_add_const_Ici]
       exact (Set.image_eq_image (add_left_injective m)).mpr (by aesop)
-    rw [this, finsum_mem_image (g := fun (i : ℕ) ↦ i + m) (by field_simp), finsum_mem_univ,
+    rw [this, finsum_mem_image (g := fun (i : ℕ) ↦ i + m) (by simp), finsum_mem_univ,
       ← coeff_apply_apply, coeff_eq_ncoeff]
     simp only [Module.End.smul_def, map_zsmul_unit, LinearMap.map_smul_of_tower,
       zsmul_eq_mul, Pi.smul_apply, Pi.mul_apply, Pi.intCast_apply, LinearMap.smul_apply,

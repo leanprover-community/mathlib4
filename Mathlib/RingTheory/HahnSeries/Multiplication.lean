@@ -1437,7 +1437,7 @@ def ofAddMonoidAlgebra {Γ} [PartialOrder Γ] [AddCancelCommMonoid Γ] [IsOrdere
     ext g
     by_cases h : g = 0
     · simp [h, algebraMap_apply]
-    · simp [Finsupp.single_eq_of_ne fun a ↦ h a.symm, algebraMap_apply, coeff_single_of_ne h]
+    · simp [algebraMap_apply, coeff_single_of_ne h]
 
 section Domain
 

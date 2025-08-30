@@ -136,9 +136,9 @@ instance (F : Type*) [SMul M X] [SMul N Y]
 /-- `MulActionEquivClass F M X Y` states that `F` is a type of
 isomorphisms which are equivariant with respect to actions of `M`
 This is an abbreviation of `MulActionSemiEquivClass`. -/
-@[to_additive "`MulActionEquivClass F M X Y` states that `F` is a type of
+@[to_additive /-- `MulActionEquivClass F M X Y` states that `F` is a type of
 isomorphisms which are equivariant with respect to actions of `M`
-This is an abbreviation of `MulActionSemiEquivClass`."]
+This is an abbreviation of `MulActionSemiEquivClass`. -/]
 abbrev MulActionEquivClass (F : Type*) (M : outParam Type*)
     (X Y : outParam Type*) [SMul M X] [SMul M Y] [EquivLike F X Y] :=
   MulActionSemiEquivClass F (Equiv.refl M) X Y
