@@ -146,7 +146,7 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
 
 lemma level_one (χ : DirichletCharacter R 1) : χ = 1 := by
   ext
-  simp [units_eq_one]
+  simp [Units.eq_one]
 
 lemma level_one' (hn : n = 1) : χ = 1 := by
   subst hn
