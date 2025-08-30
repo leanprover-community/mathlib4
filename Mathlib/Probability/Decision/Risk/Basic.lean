@@ -17,6 +17,14 @@ import Mathlib.Probability.Kernel.WithDensity
 * `bayesRisk_le_bayesRisk_comp`: data-processing inequality for the Bayes risk with respect to a
   prior: if we compose the data generating kernel `P` with a Markov kernel, then the Bayes risk
   increases.
+ * `bayesRisk_le_iInf`: for `P` a Markov kernel, the Bayes risk is less than `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
+
+In several cases, there is no information in the data about the parameter and the Bayes risk takes
+its maximal value.
+* `bayesRisk_const`: if the data generating kernel is constant, then the Bayes risk is equal to
+  `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
+* `bayesRisk_of_subsingleton`: if the observation space is a subsingleton, then the Bayes risk is
+  equal to `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
 
 ## TODO
 
@@ -74,7 +82,7 @@ lemma avgRisk_const_right (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧
 
 /-- See `bayesRisk_le_iInf` for a simpler result when `P` is a Markov kernel. -/
 lemma bayesRisk_le_iInf' (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧) (π : Measure Θ) :
-    bayesRisk ℓ P π ≤ ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
+    bayesRisk ℓ P π ≤ ⨅ y, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
   simp_rw [le_iInf_iff, bayesRisk]
   refine fun y ↦ iInf_le_of_le (Kernel.const _ (Measure.dirac y)) ?_
   simp only [iInf_pos, avgRisk_const_right, mul_comm]
@@ -84,14 +92,14 @@ lemma bayesRisk_le_iInf' (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧) (�
 /-- See `bayesRisk_le_iInf'` for a similar result when `P` is not a Markov kernel. -/
 lemma bayesRisk_le_iInf (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧) [IsMarkovKernel P]
     (π : Measure Θ) :
-    bayesRisk ℓ P π ≤ ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π :=
+    bayesRisk ℓ P π ≤ ⨅ y, ∫⁻ θ, ℓ θ y ∂π :=
   (bayesRisk_le_iInf' hl P π).trans_eq (by simp)
 
 lemma bayesRisk_const' (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [SFinite μ] (π : Measure Θ) [SFinite π]
     (hl_pos : μ .univ = ∞ → ⨅ y, ∫⁻ θ, ℓ θ y ∂π = 0 → ∃ y, ∫⁻ θ, ℓ θ y ∂π = 0)
     (h_zero : μ = 0 → Nonempty 𝓨) :
-    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
+    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
   refine le_antisymm ((bayesRisk_le_iInf' hl _ _).trans_eq (by simp)) ?_
   simp_rw [bayesRisk, le_iInf_iff]
   intro κ hκ
@@ -105,26 +113,27 @@ lemma bayesRisk_const' (hl : Measurable (uncurry ℓ))
 
 lemma bayesRisk_const_of_neZero (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [NeZero μ] [IsFiniteMeasure μ] (π : Measure Θ) [SFinite π] :
-    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * μ .univ ∂π :=
+    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π :=
   bayesRisk_const' hl μ π (by simp) (by simp [NeZero.out])
 
 lemma bayesRisk_const_of_nonempty [Nonempty 𝓨] (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [IsFiniteMeasure μ] (π : Measure Θ) [SFinite π] :
-    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * μ .univ ∂π :=
+    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π :=
   bayesRisk_const' hl μ π (by simp) (fun _ ↦ inferInstance)
 
 lemma bayesRisk_const (hl : Measurable (uncurry ℓ))
     (μ : Measure 𝓧) [IsProbabilityMeasure μ] (π : Measure Θ) [SFinite π] :
-    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π := by
+    bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y ∂π := by
   simp [bayesRisk_const_of_neZero hl μ π]
 
 end Const
 
+section Bounds
+
 /-- See `avgRisk_le_mul` for the usual case in which `κ` is a Markov kernel. -/
 lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ)
     {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ := by
-  rw [avgRisk]
+    avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ :=
   calc ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₖ P) θ ∂π
   _ ≤ ∫⁻ θ, ∫⁻ y, C ∂(κ ∘ₖ P) θ ∂π := by
     gcongr with θ y
@@ -159,13 +168,17 @@ lemma bayesRisk_lt_top [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
   refine (bayesRisk_le_mul P π hℓC).trans_lt ?_
   simp [ENNReal.mul_lt_top_iff, IsFiniteKernel.bound_lt_top P]
 
-section Subsingleton
+end Bounds
 
 lemma bayesRisk_discard (hl : Measurable (uncurry ℓ)) (π : Measure Θ) [SFinite π] :
-    bayesRisk ℓ (Kernel.discard Θ) π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π := by
+    bayesRisk ℓ (Kernel.discard Θ) π = ⨅ y, ∫⁻ θ, ℓ θ y ∂π := by
   rw [Kernel.discard_eq_const, bayesRisk_const hl]
 
-lemma bayesRisk_eq_iInf_measure_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] :
+section Subsingleton
+
+variable [Subsingleton 𝓧] [Nonempty 𝓨]
+
+lemma bayesRisk_eq_iInf_measure_of_subsingleton :
     bayesRisk ℓ P π
       = ⨅ (μ : Measure 𝓨) (_ : IsProbabilityMeasure μ), avgRisk ℓ P (Kernel.const 𝓧 μ) π := by
   rcases isEmpty_or_nonempty 𝓧 with hX | hX
@@ -180,9 +193,8 @@ lemma bayesRisk_eq_iInf_measure_of_subsingleton [Subsingleton 𝓧] [Nonempty �
   rw [← Equiv.iInf_comp e.symm]
   congr
 
-lemma bayesRisk_of_subsingleton' [Subsingleton 𝓧] [Nonempty 𝓨] [SFinite π]
-    (hl : Measurable (uncurry ℓ)) :
-    bayesRisk ℓ P π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
+lemma bayesRisk_of_subsingleton' [SFinite π] (hl : Measurable (uncurry ℓ)) :
+    bayesRisk ℓ P π = ⨅ y, ∫⁻ θ, ℓ θ y * P θ .univ ∂π := by
   refine le_antisymm (bayesRisk_le_iInf' hl _ _) ?_
   rw [bayesRisk_eq_iInf_measure_of_subsingleton]
   simp only [avgRisk_const_right, le_iInf_iff]
@@ -193,12 +205,11 @@ lemma bayesRisk_of_subsingleton' [Subsingleton 𝓧] [Nonempty 𝓨] [SFinite π
   · have := P.measurable_coe .univ
     fun_prop
 
-lemma bayesRisk_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨] [IsMarkovKernel P] [SFinite π]
-    (hl : Measurable (uncurry ℓ)) :
-    bayesRisk ℓ P π = ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂π := by
+lemma bayesRisk_of_subsingleton [IsMarkovKernel P] [SFinite π] (hl : Measurable (uncurry ℓ)) :
+    bayesRisk ℓ P π = ⨅ y, ∫⁻ θ, ℓ θ y ∂π := by
   simp [bayesRisk_of_subsingleton' hl]
 
-lemma bayesRisk_eq_bayesRisk_discard_of_subsingleton [Subsingleton 𝓧] [Nonempty 𝓨]
+lemma bayesRisk_eq_bayesRisk_discard_of_subsingleton
     [IsMarkovKernel P] [SFinite π] (hl : Measurable (uncurry ℓ)) :
     bayesRisk ℓ P π = bayesRisk ℓ (Kernel.discard Θ) π := by
   simp [bayesRisk_of_subsingleton hl]
@@ -223,6 +234,7 @@ lemma bayesRisk_withDensity (hl : Measurable (uncurry ℓ))
   congr! 3 with κ hκ
   rw [avgRisk_withDensity hl P κ π hf]
 
+
 section Compositions
 
 /-- **Data processing inequality** for the Bayes risk with respect to a prior: composition of the
@@ -235,6 +247,8 @@ lemma bayesRisk_le_bayesRisk_comp (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel
   rw [← κ.comp_assoc η]
   exact iInf_le_of_le (κ ∘ₖ η) (iInf_le_of_le inferInstance le_rfl)
 
+/-- **Data processing inequality** for the Bayes risk with respect to a prior: taking the map of
+the data generating kernel by a function increases the risk. -/
 lemma bayesRisk_le_bayesRisk_map (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧)
     (π : Measure Θ) {f : 𝓧 → 𝓧'} (hf : Measurable f) :
     bayesRisk ℓ P π ≤ bayesRisk ℓ (P.map f) π := by
