@@ -1250,8 +1250,10 @@ theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
 @[to_additive]
 theorem IsOfFinOrder.pi_mk : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
   simp only [← orderOf_pos_iff, pos_iff_ne_zero, Pi.orderOf_eq]
+  intro h -- TODO: try putting this into the parameter list
   simp [- orderOf_eq_zero_iff]
   simp [← Set.nonempty_iff_ne_empty]
+
   sorry
 
 end Pi
