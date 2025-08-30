@@ -35,7 +35,7 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
           throwTacticEx `changeLocalDecl mvarId
             m!"given type{indentExpr typeNew}\nis not definitionally equal to{indentExpr typeOld}"
     let finalize (targetNew : Expr) := do
-      return ((), fvars.map .some, ← mvarId.replaceTargetDefEq targetNew)
+      return ((), fvars.map some, ← mvarId.replaceTargetDefEq targetNew)
     match ← mvarId.getType with
     | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
     | .letE n t v b ndep => do check t; finalize (.letE n typeNew v b ndep)

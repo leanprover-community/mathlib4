@@ -188,7 +188,7 @@ def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let .some ps ← proveFinsetNonempty s | pure none
+      let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
       assumeInstancesCommute

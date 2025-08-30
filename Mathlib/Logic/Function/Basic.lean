@@ -601,8 +601,8 @@ lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [Decidabl
     (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
     Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
   Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
-    | _, _, .some _, h => (h _ rfl).elim
-    | _, _, .none, _ => rfl) _ _ _
+    | _, _, some _, h => (h _ rfl).elim
+    | _, _, none, _ => rfl) _ _ _
 
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
