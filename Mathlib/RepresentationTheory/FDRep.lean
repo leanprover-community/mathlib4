@@ -10,7 +10,7 @@ import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Rep
 
 /-!
-# `FDRep k G` is the category of finite dimensional `k`-linear representations of `G`.
+# `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
 
 If `V : FDRep k G`, there is a coercion that allows you to treat `V` as a type,
 and this type comes equipped with `Module k V` and `FiniteDimensional k V` instances.
@@ -221,7 +221,7 @@ noncomputable def dualTensorIsoLinHomAux :
   -- Porting note: had to make `V` explicit
   LinearEquiv.toFGModuleCatIso (V := (FDRep.of ρV.dual ⊗ W).V) (dualTensorHomEquiv k V W)
 
-/-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
+/-- When `V` and `W` are finite-dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (linHom ρV W.ρ) := by
   refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
