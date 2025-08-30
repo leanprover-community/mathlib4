@@ -11,8 +11,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Inv
 
 -/
 
-set_option linter.style.longLine false
-
 open Filter Asymptotics Topology
 
 namespace TendstoTactic
@@ -160,7 +158,8 @@ theorem exp_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
   obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
   obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
   simp at h_tl
-  convert_to ((expSeries.apply tl).mulMonomial coef.exp 0).Approximates (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
+  convert_to ((expSeries.apply tl).mulMonomial coef.exp 0).Approximates
+      (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
   · ext t
     simp [← Real.exp_add]
   apply mulMonomial_Approximates h_basis

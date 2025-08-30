@@ -24,7 +24,6 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
     match ms with
     | ~q(PreMS.nil) =>
       return q(⟨0, List.replicate (List.length ($basis_hd :: $basis_tl)) 0⟩)
-      -- throwError "Unexpected ms = nil in getLeadingTerm"
     | ~q(PreMS.cons ($exp, $coef) $tl) =>
       match ← getLeadingTerm coef with
       | ~q(⟨$coef_coef, $coef_exps⟩) =>
@@ -32,7 +31,6 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
       | _ =>
         return q(⟨Term.coef (PreMS.leadingTerm $coef), $exp :: Term.exps (PreMS.leadingTerm $coef)⟩)
     | _ =>
-      -- throwError f!"Unexpected ms in getLeadingTerm: {← ppExpr ms}"
       return q(PreMS.leadingTerm $ms)
   | _ => panic! "Unexpected basis in getLeadingTerm"
 

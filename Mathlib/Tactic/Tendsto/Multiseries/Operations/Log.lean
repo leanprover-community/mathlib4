@@ -12,8 +12,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.LogBasis
 
 -/
 
-set_option linter.style.longLine false
-
 open Filter Asymptotics Topology
 
 namespace TendstoTactic
@@ -38,7 +36,8 @@ theorem logSeriesFrom_eq_cons {n : ℕ} :
   nth_rw 1 [corec_cons]
   rfl
 
-theorem logSeriesFrom_get {n m : ℕ} : (logSeriesFrom n).get? m = some (-(-1 : ℝ)^(m + n) / (m + n)) := by
+theorem logSeriesFrom_get {n m : ℕ} :
+    (logSeriesFrom n).get? m = some (-(-1 : ℝ)^(m + n) / (m + n)) := by
   induction m generalizing n with
   | zero =>
     rw [logSeriesFrom_eq_cons]
@@ -48,13 +47,15 @@ theorem logSeriesFrom_get {n m : ℕ} : (logSeriesFrom n).get? m = some (-(-1 : 
     simp [ih]
     ring
 
-theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + t)) (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
+theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + t))
+    (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
   suffices HasFPowerSeriesAt Real.log (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 1 by
     rw [show (0 : ℝ) = 1 + (-1) by simp]
     conv => arg 1; ext t; rw [show 1 + t = t - (-1) by ring]
     exact HasFPowerSeriesAt.comp_sub this _
   suffices ((FormalMultilinearSeries.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) =
-      FormalMultilinearSeries.ofScalars ℝ (fun n ↦ iteratedDeriv n Real.log 1 / (n.factorial : ℝ))) by
+      FormalMultilinearSeries.ofScalars ℝ
+        (fun n ↦ iteratedDeriv n Real.log 1 / (n.factorial : ℝ))) by
     convert AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
     exact analyticAt_log (by simp)
   ext n v
@@ -68,7 +69,8 @@ theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + 
   move_mul [((n : ℝ) + 1)]
   simp
   left
-  suffices iteratedDeriv (n + 1) Real.log = fun (x : ℝ) ↦ (-1 : ℝ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) by
+  suffices iteratedDeriv (n + 1) Real.log =
+      fun (x : ℝ) ↦ (-1 : ℝ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) by
     rw [this]
     simp
   induction n with
@@ -81,7 +83,8 @@ theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + 
     simp [Nat.factorial_succ, pow_succ]
     ring_nf
 
-theorem logSeries_toFormalMultilinearSeries_eq : logSeries.toFormalMultilinearSeries = .ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n) := by
+theorem logSeries_toFormalMultilinearSeries_eq :
+    logSeries.toFormalMultilinearSeries = .ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n) := by
   simp [toFormalMultilinearSeries]
   suffices logSeries.coeff = (fun (n : ℕ) ↦ -(-1 : ℝ)^n / n) by
     rw [this]
@@ -218,8 +221,10 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
       simp [Approximates] at h_coef
       -- f = basis_hd t ^ exp * coef + (f t - basis_hd t ^ exp * coef)
-      --   = basis_hd t ^ exp * coef * (1 + basis_hd t ^ (-exp) * coef⁻¹ * (f t - basis_hd t ^ exp * coef))
-      -- log f = log coef + exp * log basis_hd + log (1 + basis_hd t ^ (-exp) * coef⁻¹ * (f t - basis_hd t ^ exp * coef))
+      --   = basis_hd t ^ exp * coef * (1 + basis_hd t ^ (-exp) * coef⁻¹ *
+      --                                       (f t - basis_hd t ^ exp * coef))
+      -- log f = log coef + exp * log basis_hd + log (1 + basis_hd t ^ (-exp) * coef⁻¹ *
+      --                                       (f t - basis_hd t ^ exp * coef))
       -- here exp = 0, so
       -- log f = log coef + log (1 + coef⁻¹ * (f t - coef))
       have h_tendsto_zero : Tendsto (fun t ↦ f t - coef) atTop (𝓝 0) := by
@@ -253,7 +258,8 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       apply add_Approximates
       · exact const_Approximates h_basis
       apply Approximates_of_EventuallyEq (f := logSeries.toFun ∘ fun t ↦ (f t - coef) * coef⁻¹)
-      · have := Filter.EventuallyEq.comp_tendsto logSeries_toFun (by simpa using h_tendsto_zero.mul_const coef⁻¹)
+      · have := Filter.EventuallyEq.comp_tendsto logSeries_toFun
+          (by simpa using h_tendsto_zero.mul_const coef⁻¹)
         apply Eventually.mono this
         simp
       apply apply_Approximates logSeries_analytic h_basis
@@ -293,7 +299,9 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       simp at h_pos
       apply eventually_pos_of_coef_pos h_pos h_coef_wo h_coef h_coef_trimmed h_basis.tail
     have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t := basis_head_eventually_pos h_basis
-    apply Approximates_of_EventuallyEq (f := fun t ↦ (Real.log (fC t) + Real.log (basis_hd t) * exp) + Real.log (1 + basis_hd t ^ (-exp) * (fC t)⁻¹ * (f t - (basis_hd t) ^ exp * fC t)))
+    apply Approximates_of_EventuallyEq
+        (f := fun t ↦ (Real.log (fC t) + Real.log (basis_hd t) * exp) +
+          Real.log (1 + basis_hd t ^ (-exp) * (fC t)⁻¹ * (f t - (basis_hd t) ^ exp * fC t)))
     · apply Eventually.mono (h_f_pos.and (h_fC_pos.and (h_basis_hd_pos)))
       intro x ⟨h_f, h_fC, h_basis_hd⟩
       simp
@@ -319,7 +327,8 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
     apply add_Approximates
     · apply Approximates.cons (fC := fun t ↦ Real.log (fC t) + Real.log (basis_hd t) * exp)
       · apply add_Approximates
-        · apply log_Approximates h_basis.tail (LogBasis.tail_WellFormed h_logBasis) h_coef_wo h_coef h_coef_trimmed
+        · apply log_Approximates h_basis.tail (LogBasis.tail_WellFormed h_logBasis) h_coef_wo
+            h_coef h_coef_trimmed
           · rwa [leadingTerm_cons_coef] at h_pos
           intro x h
           specialize h_last x
@@ -338,7 +347,8 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
             intro x h
             apply h_last
             rw [← h]
-            rw [List.getLast?_eq_getLast _ (leadingTerm_ne_nil), List.getLast?_eq_getLast _ (by simp)]
+            rw [List.getLast?_eq_getLast _ (leadingTerm_ne_nil),
+              List.getLast?_eq_getLast _ (by simp)]
             simp
             rw [List.getLast_cons]
           have := log_Approximates (ms := coef) (f := fC) h_basis.tail
@@ -357,7 +367,8 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       · apply Approximates.nil
         simp
         rfl
-    · have h_tendsto_zero : Tendsto (fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t)) atTop (𝓝 0) := by
+    · have h_tendsto_zero : Tendsto (fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) *
+          (f t - basis_hd t ^ exp * fC t)) atTop (𝓝 0) := by
         apply Tendsto.congr' (f₁ := fun t ↦ fC⁻¹ t * basis_hd t ^ (-exp) * f t - 1)
         · apply Eventually.mono (h_fC_pos.and h_basis_hd_pos)
           intro t ⟨h_fC, h_basis_hd⟩
@@ -385,7 +396,9 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
             intro h
             simp [h] at h_basis_hd_pos
           · exact h_basis_hd_pos.le
-      apply Approximates_of_EventuallyEq (f := logSeries.toFun ∘ fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) * (f t - basis_hd t ^ exp * fC t))
+      apply Approximates_of_EventuallyEq
+        (f := logSeries.toFun ∘ fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) *
+          (f t - basis_hd t ^ exp * fC t))
       · have := Filter.EventuallyEq.comp_tendsto logSeries_toFun h_tendsto_zero
         apply Eventually.mono this
         intro t ht

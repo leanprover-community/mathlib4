@@ -4635,6 +4635,7 @@ import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.Tendsto.Lemmas
 import Mathlib.Tactic.Tendsto.Main
+import Mathlib.Tactic.Tendsto.Meta.CompareMS
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
 import Mathlib.Tactic.Tendsto.Meta.ConstSimp
 import Mathlib.Tactic.Tendsto.Meta.Defs
@@ -4648,11 +4649,14 @@ import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.Multiseries.Defs
 import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
+import Mathlib.Tactic.Tendsto.Multiseries.LogBasis
 import Mathlib.Tactic.Tendsto.Multiseries.Operations
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Add
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Basic
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.Exp
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.ForPow
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Inv
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.Log
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Pow

@@ -10,6 +10,8 @@ import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
 # TODO
 -/
 
+set_option linter.docPrime false
+
 namespace TendstoTactic
 
 namespace MS
@@ -23,8 +25,6 @@ inductive CompareListsResult (x y : Q(List ℝ))
 | lt (h : Q($x < $y))
 | gt (h : Q($y < $x))
 | eq (h : Q($x = $y))
-
--- #eval [1, 2] < []
 
 lemma List.Lex.cons' {x y : ℝ} {x_tl y_tl : List ℝ} (h : x = y) (h_tl : x_tl < y_tl) :
     (x :: x_tl) < (y :: y_tl) := by
@@ -104,32 +104,12 @@ end MS
 
 open Filter Topology Asymptotics
 
-lemma log_left_none (left : Basis) (f : ℝ → ℝ) (h_none : left.getLast? = none) :
-    ∀ g ∈ left.getLast?, f =o[atTop] (Real.log ∘ g) := by
-  simp [h_none]
-
-lemma log_left_cons (left : Basis) (f last : ℝ → ℝ)
-    (h_some : left.getLast? = .some last)
-    (h : f =o[atTop] (Real.log ∘ last)) :
-    ∀ g ∈ left.getLast?,
-      f =o[atTop] (Real.log ∘ g) := by
-  simpa [h_some]
-  -- convert h
-  -- ext
-  -- simp
-
-lemma log_right_cons (right_hd : ℝ → ℝ) (right_tl : Basis) (f : ℝ → ℝ)
-    (h : (Real.log ∘ right_hd) =o[atTop] f) :
-    ∀ g ∈ (right_hd :: right_tl).head?,
-      (Real.log ∘ g) =o[atTop] (Real.log ∘ (Real.exp ∘ f)) := by
-  simp
-  convert h
-  ext
-  simp
+-- TODO: refactor below
 
 lemma log_congr_IsEquivalent_left (left : Basis) {f f' : ℝ → ℝ} (h_equiv : f ~[atTop] f')
     (h : ∀ g ∈ left.getLast?, f =o[atTop] (Real.log ∘ g)) :
-    ∀ (g : ℝ → ℝ), left.getLast? = some g → (Real.log ∘ Real.exp ∘ f') =o[atTop] (Real.log ∘ g) := by
+    ∀ (g : ℝ → ℝ), left.getLast? = some g → (Real.log ∘ Real.exp ∘ f') =o[atTop]
+      (Real.log ∘ g) := by
   peel h with _ _ h
   apply Asymptotics.IsEquivalent.trans_isLittleO _ h
   convert h_equiv.symm

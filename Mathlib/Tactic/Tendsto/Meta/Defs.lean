@@ -139,6 +139,7 @@ mutual
 
 end
 
+set_option linter.unusedVariables false in
 partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
     MetaM Q(LogBasis $basis) := do
   match logBasis.getAppFnArgs with

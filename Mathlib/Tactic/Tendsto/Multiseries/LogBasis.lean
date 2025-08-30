@@ -18,7 +18,8 @@ inductive LogBasis : Basis → Type
 | nil : LogBasis []
 | single (f : ℝ → ℝ) : LogBasis [f]
 | cons (basis_hd basis_tl_hd : ℝ → ℝ) (basis_tl_tl : Basis)
-    (logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)) (ms : PreMS (basis_tl_hd :: basis_tl_tl)) :
+    (logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl))
+    (ms : PreMS (basis_tl_hd :: basis_tl_tl)) :
     LogBasis (basis_hd :: basis_tl_hd :: basis_tl_tl)
 
 namespace LogBasis
@@ -73,7 +74,7 @@ noncomputable def extendBasisMiddle {right_hd : ℝ → ℝ} {left right_tl : Ba
     LogBasis (left ++ f :: right_hd :: right_tl) :=
   match left with
   | [] => .cons _ _ _ logBasis ms
-  | List.cons left_hd left_tl =>
+  | List.cons _ left_tl =>
     match left_tl with
     | [] =>
       match logBasis with

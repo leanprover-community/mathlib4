@@ -11,8 +11,6 @@ Here we find the limit of series by reducing the problem to computing limits for
 term.
 -/
 
-set_option linter.style.longLine false
-
 open Filter Asymptotics Topology
 
 namespace TendstoTactic
@@ -287,7 +285,8 @@ lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
     · unfold Term.toFun
       ext x
       conv => rhs; rw [Term.fold_eq_mul]
-    exact Term.IsLittleO_of_lt_exps h_basis.tail (by simpa using h1) (by simpa using h2) (by simpa) h
+    exact Term.IsLittleO_of_lt_exps h_basis.tail (by simpa using h1) (by simpa using h2)
+      (by simpa) h
   | rel h =>
     apply Asymptotics.isLittleO_of_tendsto'
     · apply (Term.toFun_ne_zero (t := ⟨coef2, exp2 :: exps2_tl⟩) h_basis (by simpa)).mono
@@ -392,7 +391,8 @@ theorem IsLittleO_of_lt_leadingTerm {basis : Basis}
     (h2 : ms2 ≠ zero _)
     (h_lt : ms1.leadingTerm.exps < ms2.leadingTerm.exps) :
     f1 =o[atTop] f2 :=
-  IsLittleO_of_lt_leadingTerm_left (left := []) h_wo1 h_wo2 h_approx1 h_approx2 h_trimmed1 h_trimmed2 h_basis h2 h_lt
+  IsLittleO_of_lt_leadingTerm_left (left := []) h_wo1 h_wo2 h_approx1 h_approx2 h_trimmed1
+    h_trimmed2 h_basis h2 h_lt
 
 theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis}
     {ms1 : PreMS (left ++ right)} {ms2 : PreMS right} {f1 f2 : ℝ → ℝ}
@@ -467,15 +467,18 @@ theorem const_leadingTerm_eq {basis : Basis} {c : ℝ} :
   · simp [const, leadingTerm, const_leadingTerm_eq, List.replicate_succ]
 
 theorem monomial_rpow_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) (r : ℝ) :
-    (PreMS.monomial_rpow basis n r).leadingTerm = ⟨1, List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0⟩ := by
+    (PreMS.monomial_rpow basis n r).leadingTerm =
+    ⟨1, List.replicate n 0 ++ r :: List.replicate (basis.length - n - 1) 0⟩ := by
   cases' basis with basis_hd basis_tl
   · simp at h
   cases' n with n
   · simp [monomial_rpow, leadingTerm, one, const_leadingTerm_eq]
-  · simp [monomial_rpow, leadingTerm, monomial_rpow_leadingTerm_eq (by simpa using h) r, List.replicate_succ]
+  · simp [monomial_rpow, leadingTerm, monomial_rpow_leadingTerm_eq (by simpa using h) r,
+      List.replicate_succ]
 
 theorem monomial_leadingTerm_eq {basis : Basis} {n : ℕ} (h : n < basis.length) :
-    (PreMS.monomial basis n).leadingTerm = ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ :=
+    (PreMS.monomial basis n).leadingTerm =
+      ⟨1, List.replicate n 0 ++ 1 :: List.replicate (basis.length - n - 1) 0⟩ :=
   monomial_rpow_leadingTerm_eq h 1
 
 theorem extendBasisEnd_leadingTerm_eq {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
@@ -507,14 +510,17 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   have h_wo' : ms'.WellOrdered := PreMS.extendBasisEnd_WellOrdered h_wo
   have h_approx' : ms'.Approximates f := PreMS.extendBasisEnd_Approximates h_basis' h_approx
   have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
-  let ms_log : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
+  let ms_log :
+      PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
     PreMS.monomial _ (basis_tl.length + 1)
   have h_log_wo : ms_log.WellOrdered := monomial_WellOrdered
-  have h_log_approx : ms_log.Approximates (Real.log ∘ ((basis_hd :: basis_tl).getLast (log_basis_getLast_IsLittleO_aux h_pos))) := by
+  have h_log_approx : ms_log.Approximates (Real.log ∘
+      ((basis_hd :: basis_tl).getLast (log_basis_getLast_IsLittleO_aux h_pos))) := by
     convert monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
     simp
   have h_log_trimmed : ms_log.Trimmed := monomial_Trimmed (by simp)
-  apply IsLittleO_of_lt_leadingTerm h_log_wo h_wo' h_log_approx h_approx' h_log_trimmed h_trimmed' h_basis'
+  apply IsLittleO_of_lt_leadingTerm h_log_wo h_wo' h_log_approx h_approx' h_log_trimmed
+    h_trimmed' h_basis'
   · exact extendBasisEnd_ne_zero (FirstIsPos_ne_zero h_pos)
   simp only [ms_log, ms']
   rw [monomial_leadingTerm_eq (by simp)]

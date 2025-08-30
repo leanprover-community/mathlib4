@@ -106,29 +106,6 @@ theorem WellFormedBasis.insert {left right : Basis} {f : ℝ → ℝ}
     · convert hf_tendsto
     · exact h.right _ (.inr hg)
 
--- theorem WellFormedBasis.insert_exp {left right_tl : Basis} {right_hd f : ℝ → ℝ}
---     (h : WellFormedBasis (left ++ right_hd :: right_tl))
---     -- (hf_tendsto : Tendsto f atTop atTop)
---     (hf_comp_left : ∀ g, left.getLast? = .some g → f =o[atTop] (Real.log ∘ g))
---     (hf_comp_right : (Real.log ∘ right_hd) =o[atTop] f) :
---     WellFormedBasis (left ++ (Real.exp ∘ f) :: right_hd :: right_tl) := by
---   apply WellFormedBasis.insert h
---   rotate_left
---   · intro g hg
---     specialize hf_comp_left g hg
---     convert hf_comp_left
---     ext
---     simp
---   · simp
---     convert hf_comp_right
---     ext
---     simp
---   --apply Tendsto.comp Real.tendsto_exp_atTop
---   simp [WellFormedBasis] at h
---   replace h := h.right right_hd (by simp)
---   replace h : Tendsto (Real.log ∘ right_hd) atTop atTop := by
---     apply Tendsto.comp Real.tendsto_log_atTop h
-
 theorem WellFormedBasis.push {basis : Basis} {f : ℝ → ℝ}
     (h : WellFormedBasis basis)
     (hf_tendsto : Tendsto f atTop atTop)
@@ -311,7 +288,8 @@ end BasisExtension
 -- TODO: refactor this using `WellFormedBasis.push`, and use the current proof to prove it
 theorem insertLastLog_WellFormedBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
-    WellFormedBasis ((basis_hd :: basis_tl) ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) := by
+    WellFormedBasis ((basis_hd :: basis_tl) ++
+      [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) := by
   simp only [WellFormedBasis]
   constructor
   · rw [List.pairwise_append]

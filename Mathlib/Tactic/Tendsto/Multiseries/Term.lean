@@ -617,26 +617,6 @@ theorem tendsto_bot_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
 
 -------------------------------
 
--- def compare (t1 t2 : List ℝ) : Prop :=
---   match t1, t2 with
---   | [], _ => True
---   | _ :: _, [] => False
---   | e1 :: tl1, e2 :: tl2 =>
---     e1 < e2 ∨ (e1 = e2 ∧ compare tl1 tl2)
-
--- theorem compare_refl (t : List ℝ) : compare t t := by
---   cases t <;> simp [compare, compare_refl]
-
--- theorem compare_trans (t1 t2 t3 : List ℝ) (h12 : compare t1 t2) (h23 : compare t2 t3) :
---     compare t1 t3 := by
---   cases' t1 with e1 t1 <;> cases' t2 with e2 t2 <;> cases' t3 with e3 t3 <;>
---     simp [compare] at h12 h23 ⊢
---   rcases h12 with (h12 | h12) <;> rcases h23 with (h23 | h23) <;> (try left; linarith)
---   right
---   constructor
---   · linarith
---   apply compare_trans _ _ _ h12.right h23.right
-
 -- TODO
 theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : t.exps.length = basis_tl.length)
