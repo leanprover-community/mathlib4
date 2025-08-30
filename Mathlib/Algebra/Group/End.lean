@@ -625,13 +625,10 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[reducible, to_additive /-- The group of additive automorphisms. -/, to_additive_dont_translate]
+@[to_additive (attr := reducible) /-- The group of additive automorphisms. -/,
+to_additive_dont_translate]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
-
--- Note that `(attr := reducible)` in `to_additive` currently doesn't work,
--- so we add the reducible attribute manually.
-attribute [reducible] AddAut
 
 namespace MulAut
 
@@ -680,8 +677,9 @@ theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
 @[to_additive (attr := simp) inv_symm]
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
+-- the type hint helps `to_additive` because it replaces `M ≃* M` with `MulAut M`
 @[to_additive (attr := simp) symm_inv]
-theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
+theorem symm_inv (e : MulAut M) : ((e.symm)⁻¹ : MulAut M) = e := rfl
 
 @[to_additive (attr := simp) inv_apply]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
