@@ -113,7 +113,7 @@ theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
   ext1
   refine (MemLp.coeFn_toLp q).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_smul _ _).symm
-  rw [condExpIndSMul_smul' hs hμs c x]
+  rw [condExpIndSMul_smul hs hμs c x]
   refine (Lp.coeFn_smul _ _).trans ?_
   refine (condExpIndL1Fin_ae_eq_condExpIndSMul hm hs hμs x).mono fun y hy => ?_
   simp only [Pi.smul_apply, hy]
