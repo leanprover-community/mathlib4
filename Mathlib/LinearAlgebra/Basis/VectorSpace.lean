@@ -287,6 +287,13 @@ theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v �
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
 
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
+
 @[deprecated (since := "2025-05-23")]
 alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
@@ -297,6 +304,7 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
   rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩
   rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
+
 
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
