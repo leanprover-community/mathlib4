@@ -551,6 +551,73 @@ lemma pullback₃.hom_ext [Faithful F] {Z : C} {φ φ' : Z ⟶ pullback₃ hf₁
 
 end Pullbacks₃
 
+section Diagonal
+/-
+In this section, we prove a criterion for the diagonal morphisms to be relatively representable.
+-/
+
+variable {F : C ⥤ D}
+variable [HasPullbacks C] [HasBinaryProducts C]
+variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
+variable [Full F]
+variable [PreservesLimitsOfShape WalkingCospan F]
+variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
+
+/-- Given an object `X` in `D`, when
+1. `C` has pullbacks and binary products,
+2. `D` has pullbacks, binary products and a terminal object, and
+3. `F : C ⥤ D` is full and preserves pullbacks and binary products,
+the diagonal morphism `X ⟶ X × X` is relatively representable if and only if every morphism of
+the form `F.obj a ⟶ X` is relatively representable.
+-/
+lemma diag_iff {X : D} : F.relativelyRepresentable (Limits.diag X) ↔
+    ∀ ⦃a : C⦄ (g : F.obj a ⟶ X), F.relativelyRepresentable g := by
+  rw [(by cat_disch : Limits.diag X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)]
+  constructor
+  · intro h a g a' g'
+    obtain ⟨_, ⟨left⟩⟩ := pullback_map_diagonal_isPullback g g' (terminal.from X)
+    let prodMap : F.obj (a ⨯ a') ⟶ X ⨯ X :=
+      (preservesLimitIso _ (pair _ _) ≪≫ HasLimit.isoOfNatIso (pairComp _ _ _)).hom ≫ prod.map g g'
+    let pbRepr :=
+      (h prodMap).choose_spec.choose_spec.choose_spec.isLimit'.some.conePointUniqueUpToIso <|
+      pasteHorizIsPullback rfl (IsPullback.of_vert_isIso_mono (snd := pullback.congrHom
+        (terminal.comp_from g) (terminal.comp_from g') ≪≫ (prodIsoPullback _ _).symm ≪≫
+        (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm|>.hom)
+      ⟨by cat_disch⟩).isLimit'.some left
+    exact ⟨_, ⟨_, ⟨_, IsPullback.of_iso_pullback (fst := pbRepr.hom ≫ pullback.fst g g')
+      (snd := F.map (Functor.preimage F (pbRepr.hom ≫ pullback.snd g g')))
+      ⟨by simp [pullback.condition]⟩ pbRepr (by cat_disch) (by cat_disch)⟩⟩⟩
+  · intro h
+    suffices F.relativelyRepresentable (pullback.lift (𝟙 _) (𝟙 _)) from
+      (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _ this
+    intro a g
+    set gFst : F.obj a ⟶ X := g ≫ pullback.fst _ _
+    set gSnd : F.obj a ⟶ X := g ≫ pullback.snd _ _
+    obtain ⟨_, ⟨_, ⟨_, pbRepr⟩⟩⟩ := h gFst gSnd
+    obtain ⟨_, ⟨bot⟩⟩ := IsPullback.of_iso_pullback ⟨by rw [assoc]; simp [pullback.condition]⟩
+      (pbRepr.isoPullback ≪≫ (pullbackDiagonalMapIdIso (g ≫ pullback.fst _ _) (g ≫ pullback.snd _ _)
+        (terminal.from X)).symm) rfl rfl
+    let liftToTerminal := pullback.lift (f := gFst ≫ terminal.from X) (g := gSnd ≫ terminal.from X)
+      (𝟙 _) (𝟙 _) (by cat_disch)
+    let hLiftRepr : F.relativelyRepresentable liftToTerminal := by
+      let pbIso := pullback.congrHom (by cat_disch : gFst ≫ terminal.from X = terminal.from _)
+        (by cat_disch : gSnd ≫ terminal.from X = terminal.from _) ≪≫ (prodIsoPullback _ _).symm ≪≫
+        (HasLimit.isoOfNatIso (pairComp _ _ _)).symm ≪≫ (preservesLimitIso _ (pair _ _)).symm
+      rw [(by cat_disch : liftToTerminal = (liftToTerminal ≫ pbIso.hom) ≫ pbIso.inv)]
+      apply (respectsIso F).toRespectsRight.postcomp _ (inferInstance : IsIso _) _
+      exact map_preimage F (liftToTerminal ≫ pbIso.hom) ▸ map F (F.preimage _)
+    obtain ⟨_, ⟨_, ⟨topMap, top⟩⟩⟩ := hLiftRepr <| (pbRepr.isoPullback ≪≫
+      (pullbackDiagonalMapIdIso gFst gSnd (terminal.from X)).symm).hom ≫ pullback.snd
+        (pullback.diagonal (terminal.from X))
+        (pullback.map _ _ _ _ _ _ (𝟙 _) (by cat_disch) (by cat_disch))
+    have hg : g = pullback.lift (𝟙 _) (𝟙 _) (by cat_disch) ≫ pullback.map (gFst ≫ terminal.from X)
+        (gSnd ≫ terminal.from X) _ _ gFst gSnd (𝟙 _) (by cat_disch) (by cat_disch) := by
+      apply Limits.pullback.hom_ext <;> simp [gFst, gSnd]
+    exact hg ▸ ⟨_, ⟨_, ⟨_, IsPullback.of_isLimit <| pasteVertIsPullback rfl bot
+      (map_preimage F topMap ▸ top).flip.isLimit'.some⟩⟩⟩
+
+end Diagonal
+
 end Functor.relativelyRepresentable
 
 end CategoryTheory
