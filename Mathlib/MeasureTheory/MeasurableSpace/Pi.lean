@@ -30,6 +30,16 @@ lemma MeasurableSpace.pi_eq_generateFrom_projections {mα : ∀ i, MeasurableSpa
   simp only [pi, ← generateFrom_iUnion_measurableSet, iUnion_setOf, measurableSet_comap]
 
 /-- Boxes formed by π-systems form a π-system. -/
+theorem IsPiSystem.pi_subset {C : ∀ i, Set (Set (α i))} (s : Set ι)
+    (hC : ∀ i ∈ s, IsPiSystem (C i)) : IsPiSystem (pi s '' pi s C) := by
+  rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
+  rw [← pi_inter_distrib] at hst ⊢; rw [pi_nonempty_iff] at hst
+  refine mem_image_of_mem _ fun i hi =>
+    hC i hi _ (hs₁ i hi) _ (hs₂ i hi) ?_
+  rcases hst i with ⟨x, a⟩
+  exact Set.nonempty_of_mem (a hi)
+
+/-- Boxes formed by π-systems form a π-system. -/
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
     IsPiSystem (pi univ '' pi univ C) := by
   rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
