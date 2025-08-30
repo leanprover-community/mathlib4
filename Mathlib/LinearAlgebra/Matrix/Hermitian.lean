@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.LinearAlgebra.Matrix.ZPow
-import Mathlib.Data.Matrix.ConjTranspose
 
 /-! # Hermitian matrices
 
@@ -93,7 +93,7 @@ theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔
   IsSelfAdjoint.star_iff
 
 /-- A block matrix `A.from_blocks B C D` is hermitian,
-    if `A` and `D` are hermitian and `Bᴴ = C`. -/
+if `A` and `D` are hermitian and `Bᴴ = C`. -/
 theorem IsHermitian.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsHermitian) (hBC : Bᴴ = C) (hD : D.IsHermitian) :
     (A.fromBlocks B C D).IsHermitian := by
@@ -194,9 +194,11 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
     (hA : A.IsHermitian) : (B * A * Bᴴ).IsHermitian := by
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 
-lemma commute_iff [Fintype n] {A B : Matrix n n α}
+lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+
+@[deprecated (since := "13-08-2025")] alias commute_iff := IsHermitian.commute_iff
 
 end NonUnitalSemiring
 

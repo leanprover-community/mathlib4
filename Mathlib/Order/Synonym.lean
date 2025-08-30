@@ -70,6 +70,8 @@ theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
 
 theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
 
+@[ext] lemma ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := h
+
 @[simp]
 theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a :=
   Iff.rfl
@@ -100,8 +102,8 @@ theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < 
 
 /-- Recursor for `αᵒᵈ`. -/
 @[elab_as_elim]
-protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
-  h₂
+protected def rec {motive : αᵒᵈ → Sort*} (toDual : ∀ a : α, motive (toDual a)) :
+    ∀ a : αᵒᵈ, motive a := toDual
 
 @[simp]
 protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=

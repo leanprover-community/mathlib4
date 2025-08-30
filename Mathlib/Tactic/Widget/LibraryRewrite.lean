@@ -108,7 +108,7 @@ where
   else
     guard (t == s); some swaps
 
-/-- Extract the left and right hand sides of an equality or iff statement. -/
+/-- Extract the left and right-hand sides of an equality or iff statement. -/
 @[inline] def eqOrIff? (e : Expr) : Option (Expr × Expr) :=
   match e.eq? with
   | some (_, lhs, rhs) => some (lhs, rhs)
@@ -552,7 +552,7 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
   return some <| "Pattern " ++ head ++ "\n" ++ rewrites
 
 /-- `#rw?? e` gives all possible rewrites of `e`. It is a testing command for the `rw??` tactic -/
-syntax (name := rw??Command) "#rw??" ("all")? term : command
+syntax (name := rw??Command) "#rw??" (&"all")? term : command
 
 open Elab
 /-- Elaborate a `#rw??` command. -/

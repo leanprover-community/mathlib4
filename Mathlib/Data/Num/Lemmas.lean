@@ -160,8 +160,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : PosNum} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h]
+    | Ordering.lt, h => by simp [h]
+    | Ordering.eq, h => by simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -279,8 +279,8 @@ theorem cmp_to_nat : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℕ) < n) (m = n
 theorem lt_to_nat {m n : Num} : (m : ℕ) < n ↔ m < n :=
   show (m : ℕ) < n ↔ cmp m n = Ordering.lt from
     match cmp m n, cmp_to_nat m n with
-    | Ordering.lt, h => by simp only at h; simp [h]
-    | Ordering.eq, h => by simp only at h; simp [h]
+    | Ordering.lt, h => by simp [h]
+    | Ordering.eq, h => by simp [h]
     | Ordering.gt, h => by simp [not_lt_of_gt h]
 
 @[norm_cast]
@@ -599,7 +599,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
   have := cmp_to_nat m n
   -- Porting note: `cases` didn't rewrite at `this`, so `revert` & `intro` are required.
   revert this; cases cmp m n <;> intro this <;> simp at this ⊢ <;> try { exact this } <;>
-    simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
+    simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
 theorem cast_lt [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
@@ -766,7 +766,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
     (pb1 : ∀ a m, p (PosNum.bit a m) 1 = bit (g a true) (cond (g true false) (pos m) 0))
     (pbb : ∀ a b m n, p (PosNum.bit a m) (PosNum.bit b n) = bit (g a b) (p m n)) :
     ∀ m n : Num, (f m n : ℕ) = Nat.bitwise g m n := by
-  intros m n
+  intro m n
   obtain - | m := m <;> obtain - | n := n <;>
       try simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
   · rw [f00, Nat.bitwise_zero]; rfl
@@ -796,7 +796,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 @[simp, norm_cast]
 theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
   apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
-   (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
+    (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
 
 @[simp, norm_cast]
 theorem castNum_and : ∀ m n : Num, ↑(m &&& n) = (↑m &&& ↑n : ℕ) := by

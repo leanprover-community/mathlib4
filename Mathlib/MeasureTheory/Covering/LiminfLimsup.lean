@@ -71,7 +71,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   suffices ∀ i, μ (atTop.blimsup Y₁ p \ Z i) = 0 by
     rwa [ae_le_set, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, diff_iInter,
       measure_iUnion_null_iff]
-  intros i
+  intro i
   set W := atTop.blimsup Y₁ p \ Z i
   by_contra contra
   obtain ⟨d, hd, hd'⟩ : ∃ d, d ∈ W ∧ ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ),
@@ -140,9 +140,9 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     rw [ENNReal.coe_inv hC, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_le_of_le_mul' hj₂
   have hj₃ : ↑C⁻¹ * μ (B j) + μ (W ∩ B j) ≤ μ (B j) := by
-    refine le_trans (add_le_add_right hj₂ _) ?_
+    grw [hj₂]
     rw [← measure_union' hj₁ measurableSet_closedBall]
-    exact measure_mono (union_subset (h₁ j) (h₂ j))
+    grw [union_subset (h₁ j) (h₂ j)]
   replace hj₃ := tsub_le_tsub_right hj₃ (↑C⁻¹ * μ (B j))
   rwa [ENNReal.add_sub_cancel_left hB] at hj₃
 
@@ -208,7 +208,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     · simp [r', hi]
     · simp only [r', hi, one_div, mem_Ioi, if_false, inv_pos]; positivity
   have h₀ : ∀ i, p i ∧ 0 < r i → cthickening (r i) (s i) = cthickening (r' i) (s i) := by
-    rintro i ⟨-, hi⟩; congr! 1; change r i = ite (0 < r i) (r i) _; simp [hi]
+    grind
   have h₁ : ∀ i, p i ∧ 0 < r i → cthickening (M * r i) (s i) = cthickening (M * r' i) (s i) := by
     rintro i ⟨-, hi⟩; simp only [r', hi, if_true]
   have h₂ : ∀ i, p i ∧ r i ≤ 0 → cthickening (M * r i) (s i) = cthickening (r i) (s i) := by

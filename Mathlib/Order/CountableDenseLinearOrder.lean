@@ -34,11 +34,9 @@ noncomputable section
 namespace Order
 
 variable {α β : Type*} [LinearOrder α] [LinearOrder β]
-
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and
-    suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
-    before `hi`. Then there is an element of `α` strictly between `lo`
-    and `hi`. -/
+suppose `lo`, `hi`, are finite subsets with all of `lo` strictly before `hi`.
+Then there is an element of `α` strictly between `lo` and `hi`. -/
 theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
     [NoMaxOrder α] [nonem : Nonempty α] (lo hi : Finset α) (lo_lt_hi : ∀ x ∈ lo, ∀ y ∈ hi, x < y) :
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
@@ -98,10 +96,9 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
 
 variable (α β)
 
--- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
-    A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
-    of pairs which should be identified. -/
+A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
+of pairs which should be identified. -/
 def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
@@ -166,7 +163,7 @@ protected def comm : PartialIso α β → PartialIso β α :=
 variable (β)
 
 /-- The set of partial isomorphisms defined at `a : α`, together with a proof that any
-    partial isomorphism can be extended to one defined at `a`. -/
+partial isomorphism can be extended to one defined at `a`. -/
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
@@ -186,7 +183,7 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
 variable (α) {β}
 
 /-- The set of partial isomorphisms defined at `b : β`, together with a proof that any
-    partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
+partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ a, (a, b) ∈ f.val}
@@ -202,14 +199,14 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
 variable {α}
 
 /-- Given an ideal which intersects `definedAtLeft β a`, pick `b : β` such that
-    some partial function in the ideal maps `a` to `b`. -/
+some partial function in the ideal maps `a` to `b`. -/
 def funOfIdeal [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α)
     (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtLeft β a ∧ f ∈ I) → { b // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨b, hb⟩, hf⟩ ↦ ⟨b, f, hf, hb⟩
 
 /-- Given an ideal which intersects `definedAtRight α b`, pick `a : α` such that
-    some partial function in the ideal maps `a` to `b`. -/
+some partial function in the ideal maps `a` to `b`. -/
 def invOfIdeal [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β)
     (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtRight α b ∧ f ∈ I) → { a // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=

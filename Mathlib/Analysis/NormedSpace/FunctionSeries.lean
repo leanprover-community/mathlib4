@@ -73,7 +73,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   simp only [comp_apply, Subtype.forall, imp_false]
   apply fun i hi => HN i ?_ x hx
   have :  i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
-  aesop
+  simp_all
 
 theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
     [CompleteSpace F] {f : ℕ → α → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set α}
@@ -121,5 +121,5 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
 function is. -/
 theorem continuous_tsum [TopologicalSpace β] {f : α → β → F} (hf : ∀ i, Continuous (f i))
     (hu : Summable u) (hfu : ∀ n x, ‖f n x‖ ≤ u n) : Continuous fun x => ∑' n, f n x := by
-  simp_rw [continuous_iff_continuousOn_univ] at hf ⊢
+  simp_rw [← continuousOn_univ] at hf ⊢
   exact continuousOn_tsum hf hu fun n x _ => hfu n x

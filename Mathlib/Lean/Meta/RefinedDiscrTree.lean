@@ -23,7 +23,7 @@ and includes many more features.
   we need to index both `p` and `q`. `Key.bvar` works the same as `Key.fvar`, but stores the
   De Bruijn index to identify the variable.
 
-  For example, this allows for more specific matching with the left hand side of
+  For example, this allows for more specific matching with the left-hand side of
   `∑ i ∈ Finset.range n, i = n * (n - 1) / 2`, which is indexed by
   `[⟨Finset.sum, 5⟩, ⟨Nat, 0⟩, ⟨Nat, 0⟩, *0, ⟨Finset.Range, 1⟩, *1, λ, ⟨#0, 0⟩]`.
 
@@ -38,7 +38,7 @@ and includes many more features.
   This score represents the number of keys that had to be the same for the unification to succeed.
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 2,
   since the pattern of `add_comm` is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
-  gives 1 point, and matching `*0` again after its first appearence gives another point.
+  gives 1 point, and matching `*0` again after its first appearance gives another point.
   Similarly, matching it with `Nat.add_comm` gives a score of 3, and `add_assoc` gives a score of 5.
 
 - Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
@@ -81,7 +81,7 @@ different lemmas anyways.
 
 #### Future work:
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
-`fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy strcture.
+`fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
 
 
 ## Matching vs Unification
