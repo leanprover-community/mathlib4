@@ -133,9 +133,12 @@ theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
 
-variable {α : (i : Fin n) → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
+variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
 
-theorem Tuple.minimalPeriod :
+theorem Pi.minimalPeriod_eq : minimalPeriod (Pi.map f) x = sorry :=
+  sorry
+
+theorem Pi.fintype_minimalPeriod_eq [Fintype ι] :
     minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   sorry
 
