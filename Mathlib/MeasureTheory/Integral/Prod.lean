@@ -552,17 +552,23 @@ variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : Measur
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
+  {L : E × F →L[ℝ] G}
 
-lemma integrable_continuousLinearMap_prod {L : E × F →L[ℝ] G}
+lemma integrable_continuousLinearMap_prod'
     (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
     Integrable L (μ.prod ν) := by
   change Integrable (fun v ↦ L v) (μ.prod ν)
   simp_rw [← L.comp_inl_add_comp_inr]
   exact (hLμ.comp_fst ν).add (hLν.comp_snd μ)
 
+lemma integrable_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrable id ν) :
+    Integrable L (μ.prod ν) :=
+  integrable_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
+    (ContinuousLinearMap.integrable_comp _ hν)
+
 variable [CompleteSpace G]
 
-lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
+lemma integral_continuousLinearMap_prod'
     (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
     ∫ p, L p ∂(μ.prod ν) = ∫ x, L.comp (.inl ℝ E F) x ∂μ + ∫ y, L.comp (.inr ℝ E F) y ∂ν := by
   simp_rw [← L.comp_inl_add_comp_inr]
@@ -571,8 +577,7 @@ lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
   rw [integral_add hLμ hLν, integral_prod _ hLμ, integral_prod _ hLν]
   simp
 
-lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
-    (hμ : Integrable id μ) (hν : Integrable id ν) :
+lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrable id ν) :
     ∫ p, L p ∂(μ.prod ν) = ∫ x, L.comp (.inl ℝ E F) x ∂μ + ∫ y, L.comp (.inr ℝ E F) y ∂ν :=
   integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
     (ContinuousLinearMap.integrable_comp _ hν)
