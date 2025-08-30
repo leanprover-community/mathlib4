@@ -3,8 +3,6 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
-
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
@@ -202,7 +200,7 @@ theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R] [ZeroHomClass F
   obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna
     (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
   simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
-    if_true, forall_true_left] at hm_lt
+    forall_true_left] at hm_lt
   refine ⟨m, hm_lt, ?_⟩
   simp only [← add_pow] at hM
   rw [mul_comm] at hM

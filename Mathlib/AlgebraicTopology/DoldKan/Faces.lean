@@ -87,11 +87,10 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
       dsimp [Fin.natAdd, Fin.cast]
       omega
     · intro h
-      rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
-      dsimp [Fin.cast] at h
+      replace h : a + 3 + k = 1 := by simp [Fin.ext_iff] at h
       omega
     · dsimp [Fin.cast, Fin.pred]
-      rw [Nat.add_right_comm, Nat.add_sub_assoc (by norm_num : 1 ≤ 3)]
+      rw [Nat.add_right_comm, Nat.add_sub_assoc (by simp : 1 ≤ 3)]
       omega
   simp only [assoc]
   conv_lhs =>
@@ -163,7 +162,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   rw [v.comp_Hσ_eq (show n = a + q by omega), neg_comp, add_neg_eq_zero, assoc, assoc]
   rcases n with - | m
   -- the boundary case n=0
-  · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero, Fin.mk_one,
+  · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero,
       δ_comp_σ_succ, comp_id]
     rfl
   -- in the other case, we need to write n as m+1

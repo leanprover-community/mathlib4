@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Monotonicity of scalar multiplication by positive elements
@@ -116,6 +118,8 @@ This file acts as a substitute for `Mathlib/Algebra/Order/SMul.lean`. We now nee
 * generalise (most of) the lemmas from `Mathlib/Algebra/Order/Module.lean` to here
 * rethink `OrderedSMul`
 -/
+
+assert_not_exists Field
 
 open OrderDual
 
@@ -251,6 +255,18 @@ instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE �
   elim _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
 
 end Mul
+
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulMono ℕ M where
+  elim _n _ _m₁ _m₂ hm := nsmul_le_nsmul_right hm _
+
+instance {M : Type*} [PartialOrder M] [AddCancelCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulStrictMono ℕ M where
+  elim _n hn _m₁ _m₂ := nsmul_lt_nsmul_right hn.ne'
+
+instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+    PosSMulStrictMono ℤ G where
+  elim _n hn _m₁ _m₂ := zsmul_lt_zsmul_right hn
 
 section SMul
 variable [SMul α β]
@@ -808,6 +824,7 @@ lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
   obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
+  assumption
 
 /-- Binary **rearrangement inequality**. -/
 lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
@@ -825,6 +842,7 @@ lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
   obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
   rw [add_smul, add_smul, add_left_comm]
   gcongr
+  assumption
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :
@@ -941,8 +959,7 @@ lemma smul_nonpos_iff : a • b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 
   rw [← neg_nonneg, ← smul_neg, smul_nonneg_iff, neg_nonneg, neg_nonpos]
 
 lemma smul_nonneg_iff_pos_imp_nonneg : 0 ≤ a • b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) :=
-  smul_nonneg_iff.trans <| by
-    simp_rw [← not_le, ← or_iff_not_imp_left]; have := le_total a 0; have := le_total b 0; tauto
+  smul_nonneg_iff.trans <| by grind
 
 lemma smul_nonneg_iff_neg_imp_nonpos : 0 ≤ a • b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
   rw [← neg_smul_neg, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
@@ -954,56 +971,6 @@ lemma smul_nonpos_iff_neg_imp_nonneg : a • b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧
   rw [← neg_nonneg, ← neg_smul, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]
 
 end LinearOrderedRing
-
-section LinearOrderedSemifield
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [AddCommGroup β] [PartialOrder β]
-
--- See note [lower instance priority]
-instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
-    PosSMulReflectLE α β where
-  elim _a ha b₁ b₂ h := by
-    simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg.2 ha.le
-
--- See note [lower instance priority]
-instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZero α β]
-    [PosSMulStrictMono α β] : PosSMulReflectLT α β :=
-  PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦ by
-    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos.2 ha
-
-end LinearOrderedSemifield
-
-section Field
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β] {a : α} {b₁ b₂ : β}
-
-section PosSMulMono
-variable [PosSMulMono α β]
-
-lemma inv_smul_le_iff_of_neg (h : a < 0) : a⁻¹ • b₁ ≤ b₂ ↔ a • b₂ ≤ b₁ := by
-  rw [← smul_le_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
-
-lemma smul_inv_le_iff_of_neg (h : a < 0) : b₁ ≤ a⁻¹ • b₂ ↔ b₂ ≤ a • b₁ := by
-  rw [← smul_le_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
-
-variable (β)
-
-/-- Left scalar multiplication as an order isomorphism. -/
-@[simps!]
-def OrderIso.smulRightDual (ha : a < 0) : β ≃o βᵒᵈ where
-  toEquiv := (Equiv.smulRight ha.ne).trans toDual
-  map_rel_iff' := (@OrderDual.toDual_le_toDual β).trans <| smul_le_smul_iff_of_neg_left ha
-
-end PosSMulMono
-
-variable [PosSMulStrictMono α β]
-
-lemma inv_smul_lt_iff_of_neg (h : a < 0) : a⁻¹ • b₁ < b₂ ↔ a • b₂ < b₁ := by
-  rw [← smul_lt_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
-
-lemma smul_inv_lt_iff_of_neg (h : a < 0) : b₁ < a⁻¹ • b₂ ↔ b₂ < a • b₁ := by
-  rw [← smul_lt_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
-
-end Field
 
 namespace Pi
 variable {ι : Type*} {β : ι → Type*} [Zero α] [∀ i, Zero (β i)]
@@ -1147,58 +1114,3 @@ instance StrictOrderedSemiring.toSMulPosStrictMonoNat
 end Nat
 
 -- TODO: Instances for `Int` and `Rat`
-
-namespace Mathlib.Meta.Positivity
-section OrderedSMul
-variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
-  {b : β}
-
-private theorem smul_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b :=
-  smul_nonneg ha.le hb
-
-private theorem smul_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b :=
-  smul_nonneg ha hb.le
-
-end OrderedSMul
-
-section NoZeroSMulDivisors
-variable [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] {a : α} {b : β}
-
-private theorem smul_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 :=
-  smul_ne_zero ha.ne' hb
-
-private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder β] (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 :=
-  smul_ne_zero ha hb.ne'
-
-end NoZeroSMulDivisors
-
-open Lean.Meta Qq
-
-/-- Positivity extension for HSMul, i.e. (_ • _). -/
-@[positivity HSMul.hSMul _ _]
-def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
-  let .app (.app (.app (.app (.app (.app
-        (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
-          (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
-  let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
-  let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
-  -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
-  -- required typeclasses. Ideally we could tell `q()` to do this automatically.
-  match ← core zM pM a, ← core zα pα b with
-  | .positive pa, .positive pb =>
-      pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
-  | .positive pa, .nonnegative pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
-  | .nonnegative pa, .positive pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
-  | .nonnegative pa, .nonnegative pb =>
-      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
-  | .positive pa, .nonzero pb =>
-      pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
-  | .nonzero pa, .positive pb =>
-      pure (.nonzero (← mkAppM ``smul_ne_zero_of_ne_zero_of_pos #[pa, pb]))
-  | .nonzero pa, .nonzero pb =>
-      pure (.nonzero (← mkAppM ``smul_ne_zero #[pa, pb]))
-  | _, _ => pure .none
-
-end Mathlib.Meta.Positivity

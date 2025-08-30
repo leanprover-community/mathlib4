@@ -84,7 +84,7 @@ instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : T
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
 
 namespace SubringClass
@@ -156,9 +156,6 @@ add_decl_doc Subring.toSubsemiring
 add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
-
--- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
--- projection `s.toSubmonoid`
 
 instance : SetLike (Subring R) R where
   coe s := s.carrier

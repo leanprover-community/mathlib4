@@ -49,11 +49,10 @@ of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
 def FirstObj : Type max v u :=
-  ∏ᶜ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
+  ∏ᶜ fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
 variable {P R}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
@@ -67,15 +66,14 @@ variable (P R)
 /-- Show that `FirstObj` is isomorphic to `FamilyOfElements`. -/
 @[simps]
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
-  hom t _ _ hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
+  hom t _ _ hf := Pi.π (fun f : Σ Y, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f x => x _ f.2.2
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
--- Porting note: was not needed in mathlib
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
-  (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
+  inferInstanceAs <| Inhabited (FirstObj P (⊥ : Presieve X))
 
 /--
 The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
@@ -101,7 +99,6 @@ def SecondObj : Type max v u :=
 
 variable {P S}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
@@ -115,7 +112,7 @@ variable (P S)
 /-- The map `p` of Equations (3,4) [MM92]. -/
 def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg =>
-    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : ΣY, { f : Y ⟶ X // S f })
+    Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
 
 instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
   ⟨firstMap _ _ default⟩
@@ -138,7 +135,7 @@ theorem compatible_iff (x : FirstObj P S.arrows) :
   constructor
   · intro t
     apply SecondObj.ext
-    intros Y Z g f hf
+    intro Y Z g f hf
     simpa [firstMap, secondMap] using t _ g hf
   · intro t Y Z f g hf
     rw [Types.limit_ext_iff'] at t
@@ -183,7 +180,7 @@ contains the data used to check a family of elements for a presieve is compatibl
 -/
 @[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
 def SecondObj : Type max v u :=
-  ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
+  ∏ᶜ fun fg : (Σ Y, { f : Y ⟶ X // R f }) × Σ Z, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 

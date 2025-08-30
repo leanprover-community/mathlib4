@@ -51,7 +51,7 @@ theorem dfinsupp_ext [∀ i, DecidableEq (κ i)]
       f.compLinearMap (fun i => DFinsupp.lsingle (p i)) =
       g.compLinearMap (fun i => DFinsupp.lsingle (p i))) : f = g := by
   ext x
-  show f (fun i ↦ x i) = g (fun i ↦ x i)
+  change f (fun i ↦ x i) = g (fun i ↦ x i)
   classical
   cases nonempty_fintype ι
   rw [funext (fun i ↦ Eq.symm (DFinsupp.sum_single (f := x i)))]
@@ -126,7 +126,7 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
     (p : ∀ i, κ i) (m : ∀ i, M i (p i)) :
     dfinsuppFamily f (fun i => .single (p i) (m i)) = DFinsupp.single p (f p m) := by
   ext q
-  obtain rfl | hpq := eq_or_ne p q
+  obtain rfl | hpq := eq_or_ne q p
   · simp
   · rw [DFinsupp.single_eq_of_ne hpq]
     rw [Function.ne_iff] at hpq

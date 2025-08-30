@@ -18,7 +18,7 @@ It also provides the expected value for specific probability mass functions.
 
 namespace PMF
 
-open MeasureTheory ENNReal TopologicalSpace
+open MeasureTheory NNReal ENNReal TopologicalSpace
 
 section General
 
@@ -50,7 +50,7 @@ theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
 
 end General
 
-theorem bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
+theorem bernoulli_expectation {p : ℝ≥0} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
 
 end PMF

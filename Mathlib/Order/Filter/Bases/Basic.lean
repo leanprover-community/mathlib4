@@ -20,7 +20,7 @@ to `B.filter` if and only if it contains an element of `B`.
 
 Given an indexing type `ι`, a predicate `p : ι → Prop`, and a map `s : ι → Set α`,
 the proposition `h : Filter.IsBasis p s` makes sure the range of `s` bounded by `p`
-(ie. `s '' setOf p`) defines a filter basis `h.filterBasis`.
+(i.e. `s '' setOf p`) defines a filter basis `h.filterBasis`.
 
 If one already has a filter `l` on `α`, `Filter.HasBasis l p s` (where `p : ι → Prop`
 and `s : ι → Set α` as above) means that a set belongs to `l` if and
@@ -161,7 +161,7 @@ theorem eq_iInf_principal (B : FilterBasis α) : B.filter = ⨅ s : B.sets, 𝓟
     rintro ⟨U, U_in⟩ ⟨V, V_in⟩
     rcases B.inter_sets U_in V_in with ⟨W, W_in, W_sub⟩
     use ⟨W, W_in⟩
-    simp only [le_principal_iff, mem_principal, Subtype.coe_mk]
+    simp only [le_principal_iff, mem_principal]
     exact subset_inter_iff.mp W_sub
   ext U
   simp [mem_filter_iff, mem_iInf_of_directed this]
@@ -226,7 +226,7 @@ protected theorem HasBasis.nonempty (h : l.HasBasis p s) : Nonempty ι :=
   h.ex_mem.nonempty
 
 protected theorem IsBasis.hasBasis (h : IsBasis p s) : HasBasis h.filter p s :=
-  ⟨fun t => by simp only [h.mem_filter_iff, exists_prop]⟩
+  ⟨fun t => by simp only [h.mem_filter_iff]⟩
 
 protected theorem HasBasis.mem_of_superset (hl : l.HasBasis p s) (hi : p i) (ht : s i ⊆ t) :
     t ∈ l :=
@@ -400,7 +400,7 @@ theorem HasBasis.inf {ι ι' : Type*} {p : ι → Prop} {s : ι → Set α} {p' 
 theorem hasBasis_iInf_of_directed' {ι : Type*} {ι' : ι → Sort _} [Nonempty ι] {l : ι → Filter α}
     (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop) (hl : ∀ i, (l i).HasBasis (p i) (s i))
     (h : Directed (· ≥ ·) l) :
-    (⨅ i, l i).HasBasis (fun ii' : Σi, ι' i => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
+    (⨅ i, l i).HasBasis (fun ii' : Σ i, ι' i => p ii'.1 ii'.2) fun ii' => s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
   rw [mem_iInf_of_directed h, Sigma.exists]
   exact exists_congr fun i => (hl i).mem_iff
@@ -416,7 +416,7 @@ theorem hasBasis_iInf_of_directed {ι : Type*} {ι' : Sort _} [Nonempty ι] {l :
 theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Sort _} {dom : Set ι}
     (hdom : dom.Nonempty) {l : ι → Filter α} (s : ∀ i, ι' i → Set α) (p : ∀ i, ι' i → Prop)
     (hl : ∀ i ∈ dom, (l i).HasBasis (p i) (s i)) (h : DirectedOn (l ⁻¹'o GE.ge) dom) :
-    (⨅ i ∈ dom, l i).HasBasis (fun ii' : Σi, ι' i => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
+    (⨅ i ∈ dom, l i).HasBasis (fun ii' : Σ i, ι' i => ii'.1 ∈ dom ∧ p ii'.1 ii'.2) fun ii' =>
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Sigma.exists]
@@ -440,6 +440,10 @@ theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (h
     exact ⟨b, ⟨hi, hb⟩, hbt⟩
   · rintro ⟨b, ⟨hi, hb⟩, hibt⟩
     exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
+
+lemma hasBasis_top :
+    (⊤ : Filter α).HasBasis (fun _ : Unit ↦ True) (fun _ ↦ Set.univ) :=
+  ⟨fun U => by simp⟩
 
 theorem hasBasis_principal (t : Set α) : (𝓟 t).HasBasis (fun _ : Unit => True) fun _ => t :=
   ⟨fun U => by simp⟩
@@ -465,13 +469,13 @@ theorem hasBasis_iSup {ι : Sort*} {ι' : ι → Type*} {l : ι → Filter α} {
     {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨆ i, l i).HasBasis (fun f : ∀ i, ι' i => ∀ i, p i (f i)) fun f : ∀ i, ι' i => ⋃ i, s i (f i) :=
   hasBasis_iff.mpr fun t => by
-    simp only [hasBasis_iff, (hl _).mem_iff, Classical.skolem, forall_and, iUnion_subset_iff,
+    simp only [(hl _).mem_iff, Classical.skolem, forall_and, iUnion_subset_iff,
       mem_iSup]
 
 theorem HasBasis.sup_principal (hl : l.HasBasis p s) (t : Set α) :
     (l ⊔ 𝓟 t).HasBasis p fun i => s i ∪ t :=
   ⟨fun u => by
-    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true,
+    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, and_true,
       Unique.exists_iff]⟩
 
 theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :
@@ -535,7 +539,7 @@ theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟
 theorem disjoint_principal_left {f : Filter α} {s : Set α} : Disjoint (𝓟 s) f ↔ sᶜ ∈ f := by
   rw [disjoint_comm, disjoint_principal_right]
 
-@[simp 1100] -- Porting note: higher priority for linter
+@[simp high] -- This should fire before `disjoint_principal_left` and `disjoint_principal_right`.
 theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t) ↔ Disjoint s t := by
   rw [← subset_compl_iff_disjoint_left, disjoint_principal_left, mem_principal]
 
@@ -567,7 +571,7 @@ theorem inf_neBot_iff_frequently_right {f g : Filter α} :
   exact inf_neBot_iff_frequently_left
 
 theorem HasBasis.eq_biInf (h : l.HasBasis p s) : l = ⨅ (i) (_ : p i), 𝓟 (s i) :=
-  eq_biInf_of_mem_iff_exists_mem fun {_} => by simp only [h.mem_iff, mem_principal, exists_prop]
+  eq_biInf_of_mem_iff_exists_mem fun {_} => by simp only [h.mem_iff, mem_principal]
 
 theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s i) := by
   simpa only [iInf_true] using h.eq_biInf
@@ -639,7 +643,7 @@ structure HasAntitoneBasis (l : Filter α) (s : ι'' → Set α) : Prop
 
 protected theorem HasAntitoneBasis.map {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : α → β) : HasAntitoneBasis (map m l) (m '' s ·) :=
-  ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_subset _ <| hf.2 h⟩
+  ⟨HasBasis.map _ hf.toHasBasis, fun _ _ h => image_mono <| hf.2 h⟩
 
 protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=

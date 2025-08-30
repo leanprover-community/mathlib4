@@ -454,12 +454,14 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
     (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =
       iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s x (init m) (m (last n)) := by
-  induction' n with n IH generalizing x
-  · rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp,
+  induction n generalizing x with
+  | zero =>
+    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp,
       iteratedFDerivWithin_zero_apply, Function.comp_apply,
       LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
     rfl
-  · let I := (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm
+  | succ n IH =>
+    let I := (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm
     have A : ∀ y ∈ s, iteratedFDerivWithin 𝕜 n.succ f s y =
         (I ∘ iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) y := fun y hy ↦ by
       ext m
@@ -615,9 +617,10 @@ with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
 theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
-  induction' m with m IH generalizing x
-  · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp, comp_apply]
-  · have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
+  induction m generalizing x with
+  | zero => rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp, comp_apply]
+  | succ m IH =>
+    have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=
@@ -698,7 +701,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
       rw [← hasFDerivWithinAt_univ]
       exact H.fderivWithin m hm x (mem_univ x)
     · intro m hm
-      rw [continuous_iff_continuousOn_univ]
+      rw [← continuousOn_univ]
       exact H.cont m hm
   · intro H
     constructor
@@ -707,7 +710,7 @@ theorem hasFTaylorSeriesUpToOn_univ_iff :
       rw [hasFDerivWithinAt_univ]
       exact H.fderiv m hm x
     · intro m hm
-      rw [← continuous_iff_continuousOn_univ]
+      rw [continuousOn_univ]
       exact H.cont m hm
 
 theorem HasFTaylorSeriesUpTo.hasFTaylorSeriesUpToOn (h : HasFTaylorSeriesUpTo n f p) (s : Set E) :
@@ -718,17 +721,14 @@ theorem HasFTaylorSeriesUpTo.of_le (h : HasFTaylorSeriesUpTo n f p) (hmn : m ≤
     HasFTaylorSeriesUpTo m f p := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h ⊢; exact h.of_le hmn
 
-@[deprecated (since := "2024-11-07")]
-alias HasFTaylorSeriesUpTo.ofLe := HasFTaylorSeriesUpTo.of_le
-
 theorem HasFTaylorSeriesUpTo.continuous (h : HasFTaylorSeriesUpTo n f p) : Continuous f := by
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   exact h.continuousOn
 
 theorem hasFTaylorSeriesUpTo_zero_iff :
     HasFTaylorSeriesUpTo 0 f p ↔ Continuous f ∧ ∀ x, (p x 0).curry0 = f x := by
-  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuous_iff_continuousOn_univ,
+  simp [hasFTaylorSeriesUpToOn_univ_iff.symm, continuousOn_univ,
     hasFTaylorSeriesUpToOn_zero_iff]
 
 theorem hasFTaylorSeriesUpTo_top_iff (hN : ∞ ≤ N) :
@@ -764,9 +764,6 @@ theorem hasFTaylorSeriesUpTo_succ_nat_iff_right {n : ℕ} :
             (p x).shift := by
   simp only [hasFTaylorSeriesUpToOn_succ_nat_iff_right, ← hasFTaylorSeriesUpToOn_univ_iff, mem_univ,
     forall_true_left, hasFDerivWithinAt_univ]
-
-@[deprecated (since := "2024-11-07")]
-alias hasFTaylorSeriesUpTo_succ_iff_right := hasFTaylorSeriesUpTo_succ_nat_iff_right
 
 /-! ### Iterated derivative -/
 
@@ -849,6 +846,14 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
   | succ n IH =>
     ext x m
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
+
+variable (𝕜) in
+/-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
+theorem Filter.EventuallyEq.iteratedFDeriv
+    {f₁ f₂ : E → F} {x : E} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
+    iteratedFDeriv 𝕜 n f₁ =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f₂ := by
+  simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ,
+    Filter.EventuallyEq.iteratedFDerivWithin]
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :

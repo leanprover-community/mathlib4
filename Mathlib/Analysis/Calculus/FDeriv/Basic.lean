@@ -160,7 +160,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l :
     (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
       c n • (f (x + d n) - f x) := by
     ext n
-    simp [smul_add, smul_sub]
+    simp [smul_sub]
   rwa [this, zero_add] at L3
 
 /-- If `f'` and `f₁'` are two derivatives of `f` within `s` at `x`, then they are equal on the
@@ -218,9 +218,6 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
-
-@[deprecated (since := "2024-10-31")]
-alias HasFDerivWithinAt.mono_of_mem := HasFDerivWithinAt.mono_of_mem_nhdsWithin
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -473,9 +470,6 @@ theorem DifferentiableWithinAt.mono_of_mem_nhdsWithin
     DifferentiableWithinAt 𝕜 f t x :=
   (h.hasFDerivWithinAt.mono_of_mem_nhdsWithin hst).differentiableWithinAt
 
-@[deprecated (since := "2024-10-31")]
-alias DifferentiableWithinAt.mono_of_mem := DifferentiableWithinAt.mono_of_mem_nhdsWithin
-
 theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
     (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
   h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
@@ -544,9 +538,6 @@ theorem fderivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWi
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   ((DifferentiableWithinAt.hasFDerivWithinAt h).mono_of_mem_nhdsWithin st).fderivWithin ht
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin_of_mem := fderivWithin_of_mem_nhdsWithin
-
 theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
@@ -607,6 +598,55 @@ nonrec theorem DifferentiableAt.isBigO_sub {f : E → F} {x₀ : E} (h : Differe
 
 end FDerivProperties
 
+/-! ### Being differentiable on a union of open sets can be tested on each set -/
+section differentiableOn_union
+
+/-- If a function is differentiable on two open sets, it is also differentiable on their union. -/
+lemma DifferentiableOn.union_of_isOpen
+    (hf : DifferentiableOn 𝕜 f s) (hf' : DifferentiableOn 𝕜 f t)
+    (hs : IsOpen s) (ht : IsOpen t) :
+    DifferentiableOn 𝕜 f (s ∪ t) := by
+  intro x hx
+  obtain (hx | hx) := hx
+  · exact (hf x hx).differentiableAt (hs.mem_nhds hx) |>.differentiableWithinAt
+  · exact (hf' x hx).differentiableAt (ht.mem_nhds hx) |>.differentiableWithinAt
+
+/-- A function is differentiable on two open sets iff it is differentiable on their union. -/
+lemma differentiableOn_union_iff_of_isOpen (hs : IsOpen s) (ht : IsOpen t) :
+    DifferentiableOn 𝕜 f (s ∪ t) ↔ DifferentiableOn 𝕜 f s ∧ DifferentiableOn 𝕜 f t :=
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩,
+    fun ⟨hfs, hft⟩ ↦ DifferentiableOn.union_of_isOpen hfs hft hs ht⟩
+
+lemma differentiable_of_differentiableOn_union_of_isOpen (hf : DifferentiableOn 𝕜 f s)
+    (hf' : DifferentiableOn 𝕜 f t) (hst : s ∪ t = univ) (hs : IsOpen s) (ht : IsOpen t) :
+    Differentiable 𝕜 f := by
+  rw [← differentiableOn_univ, ← hst]
+  exact hf.union_of_isOpen hf' hs ht
+
+/-- If a function is differentiable on open sets `s i`, it is differentiable on their union. -/
+lemma DifferentiableOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hf : ∀ i : ι, DifferentiableOn 𝕜 f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    DifferentiableOn 𝕜 f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).differentiableAt ((hs i).mem_nhds hxsi) |>.differentiableWithinAt
+
+/-- A function is differentiable on a union of open sets `s i`
+iff it is differentiable on each `s i`. -/
+lemma differentiableOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hs : ∀ i, IsOpen (s i)) :
+    DifferentiableOn 𝕜 f (⋃ i, s i) ↔ ∀ i : ι, DifferentiableOn 𝕜 f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ DifferentiableOn.iUnion_of_isOpen h hs⟩
+
+lemma differentiable_of_differentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hf : ∀ i : ι, DifferentiableOn 𝕜 f (s i))
+    (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    Differentiable 𝕜 f := by
+  rw [← differentiableOn_univ, ← hs']
+  exact DifferentiableOn.iUnion_of_isOpen hf hs
+
+end differentiableOn_union
+
 section Continuous
 
 /-! ### Deducing continuity from differentiability -/
@@ -620,7 +660,7 @@ theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilte
     exact tendsto_id.sub tendsto_const_nhds
   have := this.add (tendsto_const_nhds (x := f x))
   rw [zero_add (f x)] at this
-  exact this.congr (by simp only [sub_add_cancel, eq_self_iff_true, forall_const])
+  exact this.congr (by simp only [sub_add_cancel, forall_const])
 
 theorem HasFDerivWithinAt.continuousWithinAt (h : HasFDerivWithinAt f f' s x) :
     ContinuousWithinAt f s x :=
@@ -692,9 +732,11 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
 /-- Variant with `fun x => x` rather than `id` -/
-@[simp]
-theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
+@[simp, fun_prop]
+theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
+
+@[deprecated (since := "2025-06-25")] alias differentiableAt_id' := differentiableAt_fun_id
 
 @[fun_prop]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
@@ -709,8 +751,10 @@ theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s 
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
 
 /-- Variant with `fun x => x` rather than `id` -/
-@[simp]
-theorem differentiable_id' : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
+@[simp, fun_prop]
+theorem differentiable_fun_id : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
+
+@[deprecated (since := "2025-06-25")] alias differentiable_id' := differentiable_fun_id
 
 @[fun_prop]
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=

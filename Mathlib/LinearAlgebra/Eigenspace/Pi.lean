@@ -36,7 +36,7 @@ theorem mem_iInf_maxGenEigenspace_iff (χ : ι → R) (m : M) :
   simp
 
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
-submodule `p` which is invariant wrt every `f i`, the intersection of `p` with the simultaneous
+submodule `p` which is invariant w.r.t. every `f i`, the intersection of `p` with the simultaneous
 maximal generalised eigenspace (taken over all `i`), is the same as the simultaneous maximal
 generalised eigenspace of the `f i` restricted to `p`. -/
 lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R}
@@ -48,7 +48,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {μ : ι → R
   · simp_rw [inf_iInf, p.inf_genEigenspace _ (hfp _), Submodule.map_iInf _ p.injective_subtype]
 
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
-distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant wrt every `f j`,
+distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant w.r.t. every `f j`,
 taking simultaneous maximal generalised eigenspaces is unaffected by first restricting to the
 distinguished generalised `μ i`-eigenspace. -/
 lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
@@ -129,10 +129,8 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     exact h l χ₁
   · rw [map_add, hk, zero_add]
     suffices (s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i))).map (g ^ k) ≤
-        s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i)) by
-      refine this (Submodule.mem_map_of_mem ?_)
-      simp_rw [Finset.sup_eq_iSup, ← Finset.sup_eq_iSup] at hz
-      exact hz
+        s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i)) from
+      this (Submodule.mem_map_of_mem hz)
     simp_rw [Finset.sup_eq_iSup, Submodule.map_iSup (ι := ι → R), Submodule.map_iSup (ι := _ ∈ s)]
     refine iSup₂_mono fun χ _ ↦ ?_
     rintro - ⟨u, hu, rfl⟩
@@ -141,7 +139,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     exact h l χ
 
 /-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal
-generalised eigenspace of `f i` is invariant wrt `f j`, if each `f i` is triangularizable, the
+generalised eigenspace of `f i` is invariant w.r.t. `f j`, if each `f i` is triangularizable, the
 family is simultaneously triangularizable. -/
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo [FiniteDimensional K M]
     (f : ι → End K M)
