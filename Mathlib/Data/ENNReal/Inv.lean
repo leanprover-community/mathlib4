@@ -226,21 +226,25 @@ protected theorem div_le_iff' {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ �
 
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
-  induction' b with b
-  · replace ha : a ≠ 0 := ha.neg_resolve_right rfl
+  induction b with
+  | top =>
+    replace ha : a ≠ 0 := ha.neg_resolve_right rfl
     simp [ha]
-  induction' a with a
-  · replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
-    simp [hb]
-  by_cases h'a : a = 0
-  · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne,
-      not_false_iff, ENNReal.coe_zero, ENNReal.inv_eq_zero]
-  by_cases h'b : b = 0
-  · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne, not_false_iff,
-      mul_zero, ENNReal.coe_zero, ENNReal.inv_eq_zero]
-  rw [← ENNReal.coe_mul, ← ENNReal.coe_inv, ← ENNReal.coe_inv h'a, ← ENNReal.coe_inv h'b, ←
-    ENNReal.coe_mul, mul_inv_rev, mul_comm]
-  simp [h'a, h'b]
+  | coe b =>
+    induction a with
+    | top =>
+      replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
+      simp [hb]
+    | coe a =>
+      by_cases h'a : a = 0
+      · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne,
+          not_false_iff, ENNReal.coe_zero, ENNReal.inv_eq_zero]
+      by_cases h'b : b = 0
+      · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne, not_false_iff,
+          mul_zero, ENNReal.coe_zero, ENNReal.inv_eq_zero]
+      rw [← ENNReal.coe_mul, ← ENNReal.coe_inv, ← ENNReal.coe_inv h'a, ← ENNReal.coe_inv h'b, ←
+        ENNReal.coe_mul, mul_inv_rev, mul_comm]
+      simp [h'a, h'b]
 
 protected theorem inv_div {a b : ℝ≥0∞} (htop : b ≠ ∞ ∨ a ≠ ∞) (hzero : b ≠ 0 ∨ a ≠ 0) :
     (a / b)⁻¹ = b / a := by
@@ -354,15 +358,17 @@ protected lemma div_div_cancel {a b : ℝ≥0∞} (h₀ : a ≠ 0) (h₁ : a ≠
 
 protected theorem le_div_iff_mul_le (h0 : b ≠ 0 ∨ c ≠ 0) (ht : b ≠ ∞ ∨ c ≠ ∞) :
     a ≤ c / b ↔ a * b ≤ c := by
-  induction' b with b
-  · lift c to ℝ≥0 using ht.neg_resolve_left rfl
+  induction b with
+  | top =>
+    lift c to ℝ≥0 using ht.neg_resolve_left rfl
     rw [div_top, nonpos_iff_eq_zero]
     rcases eq_or_ne a 0 with (rfl | ha) <;> simp [*]
-  rcases eq_or_ne b 0 with (rfl | hb)
-  · have hc : c ≠ 0 := h0.neg_resolve_left rfl
-    simp [div_zero hc]
-  · rw [← coe_ne_zero] at hb
-    rw [← ENNReal.mul_le_mul_right hb coe_ne_top, ENNReal.div_mul_cancel hb coe_ne_top]
+  | coe b =>
+    rcases eq_or_ne b 0 with (rfl | hb)
+    · have hc : c ≠ 0 := h0.neg_resolve_left rfl
+      simp [div_zero hc]
+    · rw [← coe_ne_zero] at hb
+      rw [← ENNReal.mul_le_mul_right hb coe_ne_top, ENNReal.div_mul_cancel hb coe_ne_top]
 
 protected theorem div_le_iff_le_mul (hb0 : b ≠ 0 ∨ c ≠ ∞) (hbt : b ≠ ∞ ∨ c ≠ 0) :
     a / b ≤ c ↔ a ≤ c * b := by
@@ -910,9 +916,11 @@ theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
   rw [div_eq_mul_inv, div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy.le), ofReal_inv_of_pos hy]
 
 @[simp] theorem toNNReal_inv (a : ℝ≥0∞) : a⁻¹.toNNReal = a.toNNReal⁻¹ := by
-  induction' a with a; · simp
-  rcases eq_or_ne a 0 with (rfl | ha); · simp
-  rw [← coe_inv ha, toNNReal_coe, toNNReal_coe]
+  induction a with
+  | top => simp
+  | coe a =>
+    rcases eq_or_ne a 0 with (rfl | ha); · simp
+    rw [← coe_inv ha, toNNReal_coe, toNNReal_coe]
 
 @[simp] theorem toNNReal_div (a b : ℝ≥0∞) : (a / b).toNNReal = a.toNNReal / b.toNNReal := by
   rw [div_eq_mul_inv, toNNReal_mul, toNNReal_inv, div_eq_mul_inv]
