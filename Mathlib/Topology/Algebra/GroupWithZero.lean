@@ -156,6 +156,14 @@ lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
     Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
   simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, Function.comp_def, inv_inv]
 
+theorem IsCompact.inv₀ {s : Set G₀} (hs : IsCompact s) (hs' : 0 ∉ s) : IsCompact s⁻¹ := by
+  rw [← Set.image_inv_eq_inv]
+  refine hs.image_of_continuousOn ?_
+  refine continuousOn_of_forall_continuousAt ?_
+  intro x hx
+  refine continuousAt_inv₀ ?_
+  grind
+
 end NhdsInv
 
 /-!
