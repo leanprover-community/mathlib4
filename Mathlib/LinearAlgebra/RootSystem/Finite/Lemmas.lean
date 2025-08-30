@@ -42,6 +42,38 @@ variable (P : RootPairing ι R M N) [Finite ι]
 local notation "Φ" => range P.root
 local notation "α" => P.root
 
+/-- SGA3 XXI Prop. 2.3.1 -/
+lemma coxeterWeightIn_le_four (S : Type*)
+    [CommRing S] [LinearOrder S] [IsStrictOrderedRing S] [Algebra S R] [FaithfulSMul S R]
+    [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] (i j : ι) :
+    P.coxeterWeightIn S i j ≤ 4 := by
+  have : Fintype ι := Fintype.ofFinite ι
+  let ri : span S Φ := ⟨α i, Submodule.subset_span (mem_range_self _)⟩
+  let rj : span S Φ := ⟨α j, Submodule.subset_span (mem_range_self _)⟩
+  set li := (P.posRootForm S).rootLength i
+  set lj := (P.posRootForm S).rootLength j
+  set lij := (P.posRootForm S).posForm ri rj
+  obtain ⟨si, hsi, hsi'⟩ := (P.posRootForm S).exists_pos_eq i
+  obtain ⟨sj, hsj, hsj'⟩ := (P.posRootForm S).exists_pos_eq j
+  replace hsi' : si = li := algebraMap_injective S R <| by simpa [li] using hsi'
+  replace hsj' : sj = lj := algebraMap_injective S R <| by simpa [lj] using hsj'
+  rw [hsi'] at hsi
+  rw [hsj'] at hsj
+  have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
+    rw [mul_le_mul_iff_right₀ four_pos]
+    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
+    intro x
+    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
+    change _ = (P.posRootForm S).form x x at hs'
+    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
+    rwa [← hs']
+  have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
+    apply algebraMap_injective S R
+    simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using
+       P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
+  simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
+  rwa [key, mul_le_mul_iff_left₀ (by positivity)] at cs
+
 variable [CharZero R] [P.IsCrystallographic] (i j : ι)
 
 lemma coxeterWeightIn_mem_set_of_isCrystallographic :

@@ -814,7 +814,6 @@ def strongInduction {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) →
       strongInduction H t
   termination_by s => #s
 
-@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p t) → p s)
     (s : Finset α) : strongInduction H s = H s fun t _ => strongInduction H t := by
   rw [strongInduction]
@@ -824,7 +823,6 @@ theorem strongInduction_eq {p : Finset α → Sort*} (H : ∀ s, (∀ t ⊂ s, p
 def strongInductionOn {p : Finset α → Sort*} (s : Finset α) :
     (∀ s, (∀ t ⊂ s, p t) → p s) → p s := fun H => strongInduction H s
 
-@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ s, (∀ t ⊂ s, p t) → p s) :
     s.strongInductionOn H = H s fun t _ => t.strongInductionOn H := by
@@ -872,7 +870,6 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
       strongDownwardInduction H t ht
   termination_by s => n - #s
 
-@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongDownwardInduction_eq {p : Finset α → Sort*}
     (H : ∀ t₁, (∀ {t₂ : Finset α}, #t₂ ≤ n → t₁ ⊂ t₂ → p t₂) → #t₁ ≤ n → p t₁)
     (s : Finset α) :
@@ -886,7 +883,6 @@ def strongDownwardInductionOn {p : Finset α → Sort*} (s : Finset α)
     #s ≤ n → p s :=
   strongDownwardInduction H s
 
-@[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem strongDownwardInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, #t₂ ≤ n → t₁ ⊂ t₂ → p t₂) → #t₁ ≤ n → p t₁) :
     s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht := by
