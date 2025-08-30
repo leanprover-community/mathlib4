@@ -1329,7 +1329,7 @@ lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
 /-- We can test torsion-freeness on a set using a local frame. -/
 lemma _root_.IsCovariantDerivativeOn.isTorsionFreeOn_iff_localFrame
     {ι : Type*} [Fintype ι] [CompleteSpace E]
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
     {U : Set M} {s : ι → (x : M) → TangentSpace I x}
     (hf: IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) :
     IsTorsionFreeOn f U ↔ ∀ i j, ∀ x ∈ U, torsion f (s i) (s j) x = 0 := by

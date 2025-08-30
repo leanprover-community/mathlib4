@@ -799,13 +799,28 @@ lemma foobar (hf : IsCovariantDerivativeOn E f U)
 /-- Let `{s i}` be a local frame on `U` such that `[s i, s j] = 0` on `U` for all `i, j`.
 A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U`,
 the Christoffel symbols `Γᵢⱼᵏ` w.r.t. `{s i}` are symmetric. -/
-lemma isTorsionFree_iff_christoffelSymbols
-    (hf : IsCovariantDerivativeOn E f U) {U : Set M}
-    {ι : Type*} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
+lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fintype ι]
+    (hf : IsCovariantDerivativeOn E f U)
+    {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
-    cov.IsTorsionFree ↔
-      ∀ x ∈ U, ∀ i j k, christoffelSymbol I f hs i j k = christoffelSymbol I f hs j i k := by
-  sorry
+    IsTorsionFreeOn f U ↔
+      ∀ i j k, ∀ x ∈ U, christoffelSymbol I f hs i j k x = christoffelSymbol I f hs j i k x := by
+  rw [hf.isTorsionFreeOn_iff_localFrame (n := n) hs]
+  have (i j : ι) {x} (hx : x ∈ U) :
+      torsion f (s i) (s j) x = f (s i) (s j) x - f (s j) (s i) x := by
+    simp [torsion, hs'' i j ⟨x, hx⟩]
+  peel with i j
+  refine ⟨?_, ?_⟩
+  · intro h k x hx
+    simp only [christoffelSymbol]
+    apply hs.repr_congr
+    specialize h x hx
+    rw [this i j hx, sub_eq_zero] at h
+    exact h
+  · intro h x hx
+    rw [this i j hx]
+    -- equal Christoffel symbols means equal function: separate lemma, using frames
+    sorry
 
 -- Exercise 4.2(b) in Lee, Chapter 4
 /-- A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U` and
@@ -816,7 +831,7 @@ right now, I just have one fixed coordinate frame... will this do??
 -/
 lemma isTorsionFree_iff_christoffelSymbols'
     (hf : IsCovariantDerivativeOn E f U) :
-    cov.IsTorsionFree ↔
+    IsTorsionFreeOn f U ↔
       ∀ x ∈ U,
       -- Let `{s_i}` be the coordinate frame at `x`: this statement is false for arbitrary frames.
       -- TODO: does the following do what I want??
@@ -845,9 +860,9 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
   simp only [lcCandidate_aux, hE, ↓reduceDIte]
   refine ⟨?_, ?_⟩
   · intro X Y Z x
-    dsimp
     simp [product_apply]
     sorry -- compatible
-  · sorry -- torsion-free
+  · -- prove this on local base sets, then use `isTorsionFree_iff_christoffelSymbols'`
+    sorry
 
 end CovariantDerivative
