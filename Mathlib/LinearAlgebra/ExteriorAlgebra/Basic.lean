@@ -111,6 +111,12 @@ theorem lift_ι_apply (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (x) :
     lift R ⟨f, cond⟩ (ι R x) = f x :=
   CliffordAlgebra.lift_ι_apply f _ x
 
+/-- See note [partially-applied ext lemmas]. -/
+@[ext]
+theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
+    (h : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g :=
+  CliffordAlgebra.hom_ext h
+
 -- removing `@[simp]` because the LHS is not in simp normal form
 theorem lift_unique (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = 0) (g : ExteriorAlgebra R M →ₐ[R] A) :
     g.toLinearMap.comp (ι R) = f ↔ g = lift R ⟨f, cond⟩ :=
@@ -123,11 +129,6 @@ theorem lift_comp_ι (g : ExteriorAlgebra R M →ₐ[R] A) :
     lift R ⟨g.toLinearMap.comp (ι R), comp_ι_sq_zero _⟩ = g :=
   CliffordAlgebra.lift_comp_ι g
 
-/-- See note [partially-applied ext lemmas]. -/
-@[ext]
-theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
-    (h : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g :=
-  CliffordAlgebra.hom_ext h
 
 /-- If `C` holds for the `algebraMap` of `r : R` into `ExteriorAlgebra R M`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `ExteriorAlgebra R M`.
