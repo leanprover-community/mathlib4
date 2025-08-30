@@ -142,4 +142,7 @@ theorem Pi.fintype_minimalPeriod_eq [Fintype ι] :
     minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   sorry
 
+theorem Pi.minimalPeriod_single_dvd : ∀ i, minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
+  sorry
+
 end Function
