@@ -228,7 +228,7 @@ def of_isTorsionFreeOn_of_open_cover {ι : Type*} {s : ι → Set M}
 
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
--- This should be obvious, I'm doing something wrong.
+-- This should be obvious; am I doing something wrong?
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
     ∀ X Y, cov X Y - cov Y X = VectorField.mlieBracket I X Y := by
   simp [IsTorsionFree]

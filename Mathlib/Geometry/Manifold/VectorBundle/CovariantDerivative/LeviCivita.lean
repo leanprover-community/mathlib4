@@ -856,14 +856,24 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
     · simp only [isTorsionFree_def, LeviCivitaConnection]
       unfold lcCandidate torsion
       ext; simp [this]
-  simp only [LeviCivitaConnection]
-  unfold lcCandidate
-  simp only [lcCandidate_aux, hE, ↓reduceDIte]
+  --simp only [LeviCivitaConnection]
+  --unfold lcCandidate
+  --simp only [lcCandidate_aux, hE, ↓reduceDIte]
   refine ⟨?_, ?_⟩
-  · intro X Y Z x
-    simp [product_apply]
+  · --intro X Y Z x
+    --simp [product_apply]
     sorry -- compatible
-  · -- prove this on local base sets, then use `isTorsionFree_iff_christoffelSymbols'`
+  · let s : M → Set M := fun x ↦ (trivializationAt E (fun (x : M) ↦ TangentSpace I x) x).baseSet
+    apply (LeviCivitaConnection I M).of_isTorsionFreeOn_of_open_cover (s := s)
+    swap; · sorry
+    intro x
+    simp only [s]
+    set t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x with t_eq
+    change IsTorsionFreeOn (LeviCivitaConnection I M) (t x).baseSet
+    have : IsCovariantDerivativeOn E (LeviCivitaConnection I M) (t x).baseSet := sorry -- shown above
+    rw [isTorsionFree_iff_christoffelSymbols' _ this]
+    intro x' hx' i j k
+    -- Now, compute christoffel symbols and be happy.
     sorry
 
 end CovariantDerivative
