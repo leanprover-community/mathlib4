@@ -321,6 +321,10 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
+section trace
+variable {R : Type*} [PartialOrder R] [NonUnitalRing R]
+  [StarRing R] [StarOrderedRing R] [NoZeroDivisors R]
+
 theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} :
     (Aᴴ * A).trace = 0 ↔ A = 0 := by
   rw [← star_vec_dotProduct_vec, dotProduct_star_self_eq_zero, vec_eq_zero_iff]
@@ -328,6 +332,8 @@ theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} :
 theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n R} :
     (A * Aᴴ).trace = 0 ↔ A = 0 := by
   simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
+
+end trace
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
