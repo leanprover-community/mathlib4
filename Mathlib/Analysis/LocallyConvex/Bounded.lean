@@ -525,7 +525,7 @@ instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
 theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
     [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=
-  isCompact_closure_of_totallyBounded_of_isComplete_closure hs
+  hs.closure.isCompact_of_isComplete
     (QuasiCompleteSpace.quasiComplete (TotallyBounded.isVonNBounded 𝕜 (TotallyBounded.closure hs))
     isClosed_closure)
 
