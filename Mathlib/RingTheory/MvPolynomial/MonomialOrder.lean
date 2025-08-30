@@ -113,8 +113,6 @@ variable (m) in
 def leadingCoeff (f : MvPolynomial σ R) : R :=
   f.coeff (m.degree f)
 
-@[deprecated (since := "2025-01-31")] alias lCoeff := leadingCoeff
-
 variable (m) in
 /-- A multivariate polynomial is `Monic` with respect to a monomial order
 if its leading coefficient (for that monomial order) is 1. -/
@@ -157,8 +155,6 @@ theorem degree_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
 theorem leadingCoeff_zero : m.leadingCoeff (0 : MvPolynomial σ R) = 0 := by
   simp [degree, leadingCoeff]
 
-@[deprecated (since := "2025-01-31")] alias lCoeff_zero := leadingCoeff_zero
-
 theorem Monic.ne_zero [Nontrivial R] {f : MvPolynomial σ R} (hf : m.Monic f) :
     f ≠ 0 := by
   rintro rfl
@@ -195,8 +191,6 @@ theorem leadingCoeff_monomial {d : σ →₀ ℕ} (c : R) :
   classical
   simp only [leadingCoeff, degree_monomial]
   split_ifs with hc <;> simp [hc]
-
-@[deprecated (since := "2025-01-31")] alias lCoeff_monomial := leadingCoeff_monomial
 
 @[simp] theorem monic_monomial_one {d : σ →₀ ℕ} :
     m.Monic (monomial d (1 : R)) :=
@@ -258,20 +252,15 @@ theorem leadingCoeff_ne_zero_iff {f : MvPolynomial σ R} :
       exact hd
     exact Finset.sup_mem_of_nonempty hf
 
-@[deprecated (since := "2025-01-31")] alias lCoeff_ne_zero_iff := leadingCoeff_ne_zero_iff
-
 @[simp]
 theorem leadingCoeff_eq_zero_iff {f : MvPolynomial σ R} :
     leadingCoeff m f = 0 ↔ f = 0 := by
   simp only [← not_iff_not, leadingCoeff_ne_zero_iff]
 
-@[deprecated (since := "2025-01-31")] alias lCoeff_eq_zero_iff := leadingCoeff_eq_zero_iff
-
 theorem coeff_degree_ne_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) ≠ 0 ↔ f ≠ 0 :=
   m.leadingCoeff_ne_zero_iff
 
-variable (m) in
 theorem degree_mem_support_iff (f : MvPolynomial σ R) : m.degree f ∈ f.support ↔ f ≠ 0 :=
   mem_support_iff.trans coeff_degree_ne_zero_iff
 
@@ -363,8 +352,6 @@ theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[
 theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingCoeff (f + g) = m.leadingCoeff f := by
   simp only [leadingCoeff, m.degree_add_of_lt h, coeff_add, coeff_eq_zero_of_lt h, add_zero]
-
-@[deprecated (since := "2025-01-31")] alias lCoeff_add_of_lt := leadingCoeff_add_of_lt
 
 theorem Monic.add_of_lt {f g : MvPolynomial σ R} (hf : m.Monic f) (h : m.degree g ≺[m] m.degree f) :
     m.Monic (f + g) := by
@@ -464,9 +451,6 @@ theorem leadingCoeff_mul_of_isRegular_left {f g : MvPolynomial σ R}
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   simp only [leadingCoeff, degree_mul_of_isRegular_left hf hg, coeff_mul_of_degree_add]
 
-@[deprecated (since := "2025-01-31")]
-alias lCoeff_mul_of_isRegular_left := leadingCoeff_mul_of_isRegular_left
-
 /-- Monomial degree of product -/
 theorem degree_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.leadingCoeff g)) :
@@ -478,9 +462,6 @@ theorem leadingCoeff_mul_of_isRegular_right {f g : MvPolynomial σ R}
     (hf : f ≠ 0) (hg : IsRegular (m.leadingCoeff g)) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   simp only [leadingCoeff, degree_mul_of_isRegular_right hf hg, coeff_mul_of_degree_add]
-
-@[deprecated (since := "2025-01-31")]
-alias lCoeff_mul_of_isRegular_right := leadingCoeff_mul_of_isRegular_right
 
 theorem Monic.mul {f g : MvPolynomial σ R} (hf : m.Monic f) (hg : m.Monic g) :
     m.Monic (f * g) := by
@@ -501,8 +482,6 @@ theorem degree_mul [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f ≠ 0) 
 theorem leadingCoeff_mul [IsCancelMulZero R] {f g : MvPolynomial σ R} (hf : f ≠ 0) (hg : g ≠ 0) :
     m.leadingCoeff (f * g) = m.leadingCoeff f * m.leadingCoeff g := by
   rw [leadingCoeff, degree_mul hf hg, ← coeff_mul_of_degree_add]
-
-@[deprecated (since := "2025-01-31")] alias lCoeff_mul := leadingCoeff_mul
 
 /-- Monomial degree of powers -/
 theorem degree_pow_le {f : MvPolynomial σ R} (n : ℕ) :
@@ -759,8 +738,6 @@ theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     · simpa [hl, toSyn_lt_iff_ne_zero]
     · exact m.degree_sub_leadingTerm_lt_degree hl
 
-@[deprecated (since := "2025-01-31")] alias lCoeff_sub_of_lt := leadingCoeff_sub_of_lt
-
 end Ring
 
 section Field
@@ -770,8 +747,6 @@ variable {R : Type*} [Field R]
 theorem isUnit_leadingCoeff {f : MvPolynomial σ R} :
     IsUnit (m.leadingCoeff f) ↔ f ≠ 0 := by
   simp only [isUnit_iff_ne_zero, ne_eq, leadingCoeff_eq_zero_iff]
-
-@[deprecated (since := "2025-01-31")] alias lCoeff_is_unit_iff := isUnit_leadingCoeff
 
 end Field
 

@@ -110,7 +110,7 @@ theorem _root_.Function.extend_val_apply {p : β → Prop} {g : {x // p x} → �
   val_injective.extend_apply g j ⟨b, hb⟩
 
 theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → γ} {j : β → γ}
-    {b : β} (hb : ¬ p b) : val.extend g j b = j b := by
+    {b : β} (hb : ¬p b) : val.extend g j b = j b := by
   refine Function.extend_apply' g j b ?_
   rintro ⟨a, rfl⟩
   exact hb a.2

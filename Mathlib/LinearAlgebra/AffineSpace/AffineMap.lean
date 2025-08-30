@@ -223,8 +223,8 @@ theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.l
   rfl
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
-  IsCentralScalar R (P1 →ᵃ[k] V2) where
-    op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar R (P1 →ᵃ[k] V2) where
+  op_smul_eq_smul _r _x := ext fun _ => op_smul_eq_smul _ _
 
 end SMul
 
@@ -523,7 +523,6 @@ theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = l
 
 theorem lineMap_symm (p₀ p₁ : P1) :
     lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
-  rw [comp_lineMap]
   simp
 
 @[simp]

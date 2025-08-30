@@ -80,7 +80,7 @@ class Coalgebra (R : Type u) (A : Type v)
 
 namespace Coalgebra
 variable {R : Type u} {A : Type v}
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A] {a : A}
 
 @[simp]
 theorem coassoc_apply (a : A) :
@@ -116,13 +116,13 @@ lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
     ∑ i ∈ repr.index, (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = a ⊗ₜ[R] 1 := by
   simpa [← repr.eq, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
 
--- Cannot be @[simp] because `a₂` can not be inferred by `simp`.
+-- Cannot be @[simp] because `a₂` cannot be inferred by `simp`.
 lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
     (a₁ : (i : repr.ι) → Repr R (repr.left i)) (a₂ : (i : repr.ι) → Repr R (repr.right i)) :
     ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
-      (a₁ i).left j ⊗ₜ[R] (a₁ i).right j ⊗ₜ[R] repr.right i
+      (a₁ i).left j ⊗ₜ[R] ((a₁ i).right j ⊗ₜ[R] repr.right i)
       = ∑ i ∈ repr.index, ∑ j ∈ (a₂ i).index,
-      repr.left i ⊗ₜ[R] (a₂ i).left j ⊗ₜ[R] (a₂ i).right j := by
+      repr.left i ⊗ₜ[R] ((a₂ i).left j ⊗ₜ[R] (a₂ i).right j) := by
   simpa [(a₂ _).eq, ← (a₁ _).eq, ← TensorProduct.tmul_sum,
     TensorProduct.sum_tmul, ← repr.eq] using congr($(coassoc (R := R)) a)
 
@@ -142,7 +142,7 @@ theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
   apply_fun LinearMap.rTensor R (f : A →ₗ[R] B) at this
   simp_all only [map_sum, LinearMap.rTensor_tmul, LinearMap.coe_coe]
 
--- Cannot be @[simp] because `a₁` can not be inferred by `simp`.
+-- Cannot be @[simp] because `a₁` cannot be inferred by `simp`.
 theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f g h : F) (a : A) {repr : Repr R a}
     {a₁ : (i : repr.ι) → Repr R (repr.left i)} {a₂ : (i : repr.ι) → Repr R (repr.right i)} :
@@ -154,6 +154,20 @@ theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
   apply_fun TensorProduct.map (f : A →ₗ[R] B)
     (TensorProduct.map (g : A →ₗ[R] B) (h : A →ₗ[R] B)) at this
   simp_all only [map_sum, TensorProduct.map_tmul, LinearMap.coe_coe]
+
+lemma sum_counit_smul (𝓡 : Repr R a) :
+    ∑ x ∈ 𝓡.index, counit (R := R) (𝓡.left x) • 𝓡.right x = a := by
+  simpa only [map_sum, TensorProduct.lift.tmul, LinearMap.lsmul_apply, one_smul]
+    using congr(TensorProduct.lift (LinearMap.lsmul R A) $(sum_counit_tmul_eq (R := R) 𝓡))
+
+lemma lift_lsmul_comp_counit_comp_comul :
+    TensorProduct.lift (.lsmul R A ∘ₗ counit) ∘ₗ comul = .id := by
+  have := rTensor_counit_comp_comul (R := R) (A := A)
+  apply_fun (TensorProduct.lift (LinearMap.lsmul R A) ∘ₗ ·) at this
+  rw [LinearMap.rTensor, ← LinearMap.comp_assoc, TensorProduct.lift_comp_map, LinearMap.compl₂_id]
+    at this
+  ext
+  simp [this]
 
 variable (R A) in
 /-- A coalgebra `A` is cocommutative if its comultiplication `δ : A → A ⊗ A` commutes with the
