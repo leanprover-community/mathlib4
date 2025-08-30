@@ -305,14 +305,6 @@ theorem mem_permutationsAux_of_perm :
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 
--- Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq [DecidableEq α] :
-    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
-  congr_arg BEq.mk <| by
-    funext l₁ l₂
-    change (l₁ == l₂) = _
-    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
-
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~
       (permutations'Aux b l).flatMap (permutations'Aux a) := by
@@ -325,7 +317,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (map (cons c) (permutations'Aux a l)).flatMap (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
-    intros a' b'
+    intro a' b'
     simp only [flatMap_map, permutations'Aux]
     change (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
@@ -398,6 +390,14 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s).get ⟨n, hn⟩ = s.insertIdx n x := by
   simp [getElem_permutations'Aux]
+
+-- Porting note: temporary theorem to solve diamond issue
+private theorem DecEq_eq [DecidableEq α] :
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
+  congr_arg BEq.mk <| by
+    funext l₁ l₂
+    change (l₁ == l₂) = _
+    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by

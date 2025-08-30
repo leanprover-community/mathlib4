@@ -243,7 +243,7 @@ lemma ω_mul_e [Fintype ι] (i : b.support) :
   · simp [ω, e, f]
   · simp only [ω, e, f, mul_ite, mul_zero, Fintype.sum_sum_type, Matrix.mul_apply, Matrix.of_apply,
       Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₂, Finset.sum_ite_eq']
-    rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by aesop)]
+    rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by simp_all)]
     simp [← ite_and, and_comm, - indexNeg_neg, neg_eq_iff_eq_neg]
   · simp [ω, e, f]
   · simp only [ω, e, f, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₁,

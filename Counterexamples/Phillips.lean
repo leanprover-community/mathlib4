@@ -451,7 +451,7 @@ end
 
 We construct a subset of `ℝ²`, given as a family of sets, which is large along verticals (i.e.,
 it only misses a countable set along each vertical) but small along horizontals (it is countable
-along horizontals). Such a set can not be measurable as it would contradict Fubini theorem.
+along horizontals). Such a set cannot be measurable as it would contradict Fubini theorem.
 We need the continuum hypothesis to construct it.
 -/
 

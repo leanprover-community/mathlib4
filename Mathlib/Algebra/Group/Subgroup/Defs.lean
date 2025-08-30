@@ -73,6 +73,18 @@ class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop 
 
 export NegMemClass (neg_mem)
 
+/-- Typeclass for substructures `s` such that `s ∪ -s = G`. -/
+class HasMemOrNegMem {S G : Type*} [Neg G] [SetLike S G] (s : S) : Prop where
+  mem_or_neg_mem (s) (a : G) : a ∈ s ∨ -a ∈ s
+
+/-- Typeclass for substructures `s` such that `s ∪ s⁻¹ = G`. -/
+@[to_additive]
+class HasMemOrInvMem {S G : Type*} [Inv G] [SetLike S G] (s : S) : Prop where
+  mem_or_inv_mem (s) (a : G) : a ∈ s ∨ a⁻¹ ∈ s
+
+export HasMemOrNegMem (mem_or_neg_mem)
+export HasMemOrInvMem (mem_or_inv_mem)
+
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
 class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G] : Prop
     extends SubmonoidClass S G, InvMemClass S G
@@ -250,14 +262,13 @@ theorem inclusion_inclusion {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  simp only [inclusion, MonoidHom.mk'_apply]
+theorem coe_inclusion {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
+  Set.coe_inclusion h a
 
 @[to_additive (attr := simp)]
-theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
-    (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
-  ext
-  simp only [MonoidHom.comp_apply, coe_subtype, coe_inclusion]
+theorem subtype_comp_inclusion {H K : S} (h : H ≤ K) :
+    (SubgroupClass.subtype K).comp (inclusion h) = SubgroupClass.subtype H :=
+  rfl
 
 end SubgroupClass
 
@@ -565,8 +576,8 @@ def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  simp only [inclusion, coe_mk, MonoidHom.mk'_apply]
+theorem coe_inclusion {H K : Subgroup G} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
+  Set.coe_inclusion h a
 
 @[to_additive]
 theorem inclusion_injective {H K : Subgroup G} (h : H ≤ K) : Function.Injective <| inclusion h :=
