@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -167,6 +168,34 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   refine ⟨fun h => h.isSymmetric, fun h => ⟨h, fun x => ?_⟩⟩
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
+
+theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
+    IsPositive (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap) ↔ IsPositive T := by
+  simp_rw [IsPositive, isSymmetric_linearIsometryEquiv_conj_iff, and_congr_right_iff,
+    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.coe_symm_toLinearEquiv,
+    Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
+  exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
+
+open scoped ComplexOrder
+
+/-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
+theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
+    {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
+  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
+    EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
+    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff, RCLike.nonneg_iff (K:=𝕜)]
+  intro hA
+  simp_rw [hA.im_star_dotProduct_mulVec_self, and_true]
+  rfl
+
+/-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
+theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
+    (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
+  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
+    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
+      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
