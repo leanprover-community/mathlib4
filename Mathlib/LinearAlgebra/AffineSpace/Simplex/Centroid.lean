@@ -145,7 +145,7 @@ theorem eq_centroid_iff_sum_vsub_eq_zero [CharZero k] {s : Simplex k P n} {p : P
 the points. -/
 @[simp]
 theorem face_centroid_eq_centroid {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
-    (h : #fs = m + 1) : (s.face h).centroid = fs.centroid k s.points := by
+    (h : #fs = m + 1) : Finset.univ.centroid k (s.face h).points = fs.centroid k s.points := by
   convert (Finset.univ.centroid_map k (fs.orderEmbOfFin h).toEmbedding s.points).symm
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_univ, Set.image_univ]
   simp
