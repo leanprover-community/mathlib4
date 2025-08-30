@@ -29,8 +29,8 @@ We also characterize Jacobson radicals of ideals in such rings.
 namespace Ideal
 open Matrix
 
-variable {R : Type*} [Semiring R]
-         (n : Type*) [Fintype n] [DecidableEq n]
+variable {R : Type*} [Mul R] [AddCommMonoid R]
+         (n : Type*) [Fintype n]
 
 /-- The left ideal of matrices with entries in `I ≤ R`. -/
 def matrix (I : Ideal R) : Ideal (Matrix n n R) where
@@ -66,7 +66,7 @@ theorem matrix_strictMono_of_nonempty [Nonempty n] :
 matrix_strictMono_of_nonempty
 
 @[simp]
-theorem matrix_bot : (⊥ : Ideal R).matrix n = ⊥ := by
+theorem matrix_bot {R} [NonUnitalNonAssocSemiring R] : (⊥ : Ideal R).matrix n = ⊥ := by
   ext M
   simp only [mem_matrix, mem_bot]
   constructor

@@ -36,11 +36,13 @@ variable {R S M : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
-variable [SMul S R] [IsScalarTower S R M]
-variable {p q : Submodule R M}
+variable [AddCommMonoid M]
 
 namespace Submodule
+
+section Bot
+
+variable [SMulZeroClass R M]
 
 /-!
 ## Bottom element of a submodule
@@ -50,7 +52,7 @@ namespace Submodule
 instance : Bot (Submodule R M) :=
   ⟨{ (⊥ : AddSubmonoid M) with
       carrier := {0}
-      smul_mem' := by simp }⟩
+      smul_mem' := by simp [smul_zero] }⟩
 
 instance inhabited' : Inhabited (Submodule R M) :=
   ⟨⊥⟩
@@ -101,11 +103,14 @@ theorem exists_mem_ne_zero_of_ne_bot {p : Submodule R M} (h : p ≠ ⊥) : ∃ b
 -- FIXME: we default PUnit to PUnit.{1} here without the explicit universe annotation
 /-- The bottom submodule is linearly equivalent to punit as an `R`-module. -/
 @[simps]
-def botEquivPUnit : (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v + 1} where
+def botEquivPUnit {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
+    (⊥ : Submodule R M) ≃ₗ[R] PUnit.{v + 1} where
   toFun _ := PUnit.unit
   invFun _ := 0
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+variable {p : Submodule R M}
 
 theorem subsingleton_iff_eq_bot : Subsingleton p ↔ p = ⊥ := by
   rw [subsingleton_iff, Submodule.eq_bot_iff]
@@ -117,6 +122,12 @@ theorem eq_bot_of_subsingleton [Subsingleton p] : p = ⊥ :=
 
 theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
   rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
+
+end Bot
+
+variable [SMul R M]
+
+section Top
 
 /-!
 ## Top element of a submodule
@@ -155,11 +166,13 @@ theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
 
 This is the module version of `AddSubmonoid.topEquiv`. -/
 @[simps]
-def topEquiv : (⊤ : Submodule R M) ≃ₗ[R] M where
+def topEquiv {R M} [Semiring R] [AddCommMonoid M] [Module R M] : (⊤ : Submodule R M) ≃ₗ[R] M where
   toFun x := x
   invFun x := ⟨x, mem_top⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+end Top
 
 /-!
 ## Infima & suprema in a submodule
@@ -178,29 +191,33 @@ private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ 
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
-instance : Min (Submodule R M) :=
-  ⟨fun p q ↦
+instance : SupSet (Submodule R M) where
+  sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
+
+instance : Lattice (Submodule R M) where
+  sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
+  le_sup_left := fun _ _ ↦ le_sInf' fun _ ⟨h, _⟩ ↦ h
+  le_sup_right := fun _ _ ↦ le_sInf' fun _ ⟨_, h⟩ ↦ h
+  sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
+  inf p q :=
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
       add_mem' := by simp +contextual [add_mem]
-      smul_mem' := by simp +contextual [smul_mem] }⟩
+      smul_mem' := by simp +contextual [smul_mem] }
+  le_inf := fun _ _ _ ↦ Set.subset_inter
+  inf_le_left := fun _ _ ↦ Set.inter_subset_left
+  inf_le_right := fun _ _ ↦ Set.inter_subset_right
 
-instance completeLattice : CompleteLattice (Submodule R M) :=
+instance completeLattice {R M : Type*} [AddCommMonoid M] [SMulZeroClass R M] :
+    CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
-    sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun _ _ ↦ le_sInf' fun _ ⟨h, _⟩ ↦ h
-    le_sup_right := fun _ _ ↦ le_sInf' fun _ ⟨_, h⟩ ↦ h
-    sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
-    le_inf := fun _ _ _ ↦ Set.subset_inter
-    inf_le_left := fun _ _ ↦ Set.inter_subset_left
-    inf_le_right := fun _ _ ↦ Set.inter_subset_right
-    sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
     sInf_le := fun _ _ ↦ sInf_le' }
+
+variable {p q : Submodule R M}
 
 @[simp]
 theorem inf_coe : ↑(p ⊓ q) = (p ∩ q : Set M) :=
@@ -262,6 +279,10 @@ theorem sub_mem_sup {R' M' : Type*} [Ring R'] [AddCommGroup M'] [Module R' M']
   rw [sub_eq_add_neg]
   exact add_mem_sup hs (neg_mem ht)
 
+section SMulZeroClass
+
+variable {M : Type*} [AddCommMonoid M] [SMulZeroClass R M]
+
 theorem mem_iSup_of_mem {ι : Sort*} {b : M} {p : ι → Submodule R M} (i : ι) (h : b ∈ p i) :
     b ∈ ⨆ i, p i :=
   (le_iSup p i) h
@@ -283,27 +304,6 @@ theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s �
   rw [LE.le] at this
   exact this
 
-@[simp]
-theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
-    (sSup s).toAddSubmonoid = sSup (toAddSubmonoid '' s) := by
-  let p : Submodule R M :=
-    { toAddSubmonoid := sSup (toAddSubmonoid '' s)
-      smul_mem' := fun t {m} h ↦ by
-        simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
-        induction h using AddSubmonoid.iSup_induction' with
-        | mem p x hx =>
-          obtain ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ := p
-          suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' s, (q : AddSubmonoid M) by
-            exact this (smul_mem p t hx)
-          apply le_sSup
-          rw [Subtype.range_coe_subtype]
-          exact ⟨p, hp, rfl⟩
-        | zero => simpa only [smul_zero] using zero_mem _
-        | add _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
-  refine le_antisymm (?_ : sSup s ≤ p) ?_
-  · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
-  · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
-
 variable (R)
 
 @[simp]
@@ -324,7 +324,8 @@ variable {R}
 instance [Subsingleton M] : Unique (Submodule R M) :=
   ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
 
-instance unique' [Subsingleton R] : Unique (Submodule R M) := by
+instance unique' {R M} [MonoidWithZero R] [AddCommMonoid M] [MulActionWithZero R M]
+    [Subsingleton R] : Unique (Submodule R M) := by
   haveI := Module.subsingleton R M; infer_instance
 
 instance [Nontrivial M] : Nontrivial (Submodule R M) :=
@@ -342,7 +343,8 @@ theorem disjoint_def' {p p' : Submodule R M} :
   disjoint_def.trans
     ⟨fun h x hx _ hy hxy ↦ h x hx <| hxy.symm ▸ hy, fun h x hx hx' ↦ h _ hx x hx' rfl⟩
 
-theorem eq_zero_of_coe_mem_of_disjoint (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 :=
+theorem eq_zero_of_coe_mem_of_disjoint {p q : Submodule R M}
+    (hpq : Disjoint p q) {a : p} (ha : (a : M) ∈ q) : a = 0 :=
   mod_cast disjoint_def.mp hpq a (coe_mem a) ha
 
 theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p} :
@@ -352,6 +354,29 @@ theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p
 theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
     (x : M) ∈ p ↔ x = 0 :=
   ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
+
+end SMulZeroClass
+
+@[simp]
+theorem toAddSubmonoid_sSup {R M} [AddCommMonoid M] [DistribSMul R M] (s : Set (Submodule R M)) :
+    (sSup s).toAddSubmonoid = sSup (toAddSubmonoid '' s) := by
+  let p : Submodule R M :=
+    { toAddSubmonoid := sSup (toAddSubmonoid '' s)
+      smul_mem' := fun t {m} h ↦ by
+        simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
+        induction h using AddSubmonoid.iSup_induction' with
+        | mem p x hx =>
+          obtain ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ := p
+          suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' s, (q : AddSubmonoid M) by
+            exact this (smul_mem p t hx)
+          apply le_sSup
+          rw [Subtype.range_coe_subtype]
+          exact ⟨p, hp, rfl⟩
+        | zero => simpa only [smul_zero] using zero_mem _
+        | add _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
+  refine le_antisymm (?_ : sSup s ≤ p) ?_
+  · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
+  · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
 
 end Submodule
 
