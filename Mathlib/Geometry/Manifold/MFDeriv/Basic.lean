@@ -510,6 +510,13 @@ theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferent
 @[deprecated (since := "2025-03-08")]
 alias MDifferentiableAt.prod_mk := MDifferentiableAt.prodMk
 
+/-- `HasMFDerivAt` of `x ↦ (f x, g x)` is `df.prod dg`. -/
+theorem HasMFDerivAt.prodMk {f : M → M'} {g : M → M''}
+    {df : TangentSpace I x →L[𝕜] TangentSpace I' (f x)} (hf : HasMFDerivAt I I' f x df)
+    {dg : TangentSpace I x →L[𝕜] TangentSpace I'' (g x)} (hg : HasMFDerivAt I I'' g x dg) :
+    HasMFDerivAt I (I'.prod I'') (fun y ↦ (f y, g y)) x (df.prod dg) :=
+  ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
+
 theorem MDifferentiableWithinAt.prodMk_space {f : M → E'} {g : M → E''}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s x)
     (hg : MDifferentiableWithinAt I 𝓘(𝕜, E'') g s x) :
