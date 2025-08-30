@@ -1275,6 +1275,62 @@ lemma isTorsionFree_iff : IsTorsionFree cov ↔
     apply congr_fun
     simp_all [torsion]
 
+-- OTDO: torsion-free iff on open cover!
+
+variable {n} in
+lemma aux1 {ι : Type*} [Fintype ι]
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+    {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
+    (X Y : (x : M) → TangentSpace I x) :
+    torsion f X Y x = ∑ i, (hs.repr i) X x • torsion f (s i) Y x :=
+  have hU : U ∈ 𝓝 x := sorry
+  have aux := hs.repr_spec X hU
+  have hX : X x = ∑ i, (hs.repr i) X x • s i x := sorry
+  calc torsion f X Y x
+    _ = torsion f (fun x ↦ ∑ i, (hs.repr i) X x • s i x) Y x := by
+      sorry -- tensoriality and [hX]
+    _ = ∑ i, (torsion f (fun x ↦ (hs.repr i) X x • s i x) Y x) := sorry
+    _ = ∑ i, (hs.repr i) X x • (torsion f (s i) Y x) := sorry
+
+variable {n} in
+lemma aux2 {ι : Type*} [Fintype ι]
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+    {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
+    (X Y : (x : M) → TangentSpace I x) :
+    torsion f X Y x = ∑ i, (hs.repr i) Y x • torsion f X (s i) x :=
+  have hU : U ∈ 𝓝 x := sorry
+  have aux := hs.repr_spec Y hU
+  have hY : Y x = ∑ i, (hs.repr i) Y x • s i x := hs.repr_sum_eq Y hx
+  calc torsion f X Y x
+    _ = torsion f X (fun x ↦ ∑ i, (hs.repr i) Y x • s i x) x := by
+      sorry -- tensoriality and [hY]
+    _ = ∑ i, (torsion f X (fun x ↦ (hs.repr i) Y x • s i x) x) := sorry
+    _ = ∑ i, (hs.repr i) Y x • (torsion f X (s i) x) := by
+      congr with i
+      -- rw [torsion_smul_left_apply] -- generalise this lemma!
+      sorry
+
+/-- We can test torsion-freeness on a set using a local frame. -/
+lemma foo {ι : Type*} [Fintype ι]
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) :
+    IsTorsionFreeOn f U ↔ ∀ i j, ∀ x ∈ U, torsion f (s i) (s j) x = 0 := by
+  rw [IsTorsionFreeOn]
+  refine ⟨fun h i j x hx ↦ h x hx (s i) (s j), fun h ↦ ?_⟩
+  intro x hx X Y
+  rw [aux1 hs hx]
+  calc
+    _ = ∑ i, (hs.repr i) X x • ∑ j, (hs.repr j) Y x • torsion f (s i) (s j) x := by
+      congr!
+      rw [aux2 hs hx]
+    _ = ∑ i, (hs.repr i) X x • ∑ j, (hs.repr j) Y x • 0 := by
+      congr! with i _ j _
+      exact h i j x hx
+    _ = 0 := by simp
+
+
+#exit
+
 -- lemma the trivial connection on a normed space is torsion-free
 -- lemma trivial.isTorsionFree : IsTorsionFree (TangentBundle 𝓘(ℝ, E) E) := sorry
 
