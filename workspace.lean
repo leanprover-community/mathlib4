@@ -102,26 +102,66 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     simp only [hr, gt_iff_lt, norm_pos_iff, ne_eq]
     intro nh
     simp [nh, zero_in] at notin
+  have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦ by
+    by_contra! nh
+    have := RCLike.balanced Balanced_K x hx (by linarith) (f x₀) ⟨norm_nonneg (f x₀), nh⟩
+    contradiction
   have compact_K : IsCompact K := by
     refine Metric.isCompact_of_isClosed_isBounded isClosed_closure ?_
     refine (Metric.isBounded_iff_subset_ball 0 (s := K)).mpr ?_
-    use r
-    by_contra! nh
-    obtain ⟨z, hz⟩ : ∃ z ∈ K, z ∉ Metric.ball 0 r := Set.not_subset.mp nh
-    have : ‖z‖ ≥ r := by
-      by_contra! nh
-      exact hz.2 (mem_ball_zero_iff.mpr nh)
-    have := RCLike.balanced Balanced_K z hz.1 (by linarith) (f x₀) ⟨norm_nonneg (f x₀), by linarith⟩
-    contradiction
+    exact ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
+  have ne : f x₀ ≠ 0 := fun nh ↦ by
+    simp [nh] at hr
+    simp [hr] at r_gt_zero
   /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
-  have : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
+  obtain ⟨s, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ ≤ s) := by
     set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
-    set s := sSup (g '' K) with hs
     obtain ⟨x, hx⟩ : sSup (g '' K) ∈ g '' K := by
       apply IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ?_
       simp
       use 0
-
-    sorry
+    have g_le : ∀ z ∈ K, g z ≤ sSup (g '' K) := fun z hz ↦ by
+      apply le_csSup ?_ (Set.mem_image_of_mem g hz)
+      use r
+      intro y ⟨x, hx, hy⟩
+      simp [← hy, g]
+      linarith [norm_lt_r x hx]
+    by_cases ch : ‖x‖ = 0
+    · have : sSup (g '' K) = 0 := by
+        simp [← hx.2, g, ch]
+      use r / 2
+      simp [r_gt_zero]
+      intro z hz
+      have : g z ≤ 0 := by
+        rw [this] at g_le
+        exact g_le z hz
+      simp [g] at this
+      simp [this]
+      linarith
+    · use sSup (g '' K)
+      simp at ch
+      simp [← hx.2, g, ch, norm_lt_r x hx.1]
+      simpa [g, ← hx.2] using g_le
   /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
-  sorry
+  have eq1 : |r| = r := abs_norm (f x₀)
+  have eq2 : |s| = s := abs_of_pos hs.1
+  use (r / (s * (f x₀))) • f
+  constructor
+  · simp
+    have : |r| / (|s| * ‖f x₀‖) * ‖f x₀‖ = |r| / |s| := by
+      field_simp
+      refine mul_div_mul_right |r| |s| ?_
+      simp [ne]
+    rw [this, eq1, eq2, propext (one_lt_div hs.1)]
+    exact hs.2.1
+  · intro b hb
+    simp
+    rw [@div_mul_eq_mul_div₀]
+    have : |s| * ‖f x₀‖ > 0 := by
+      refine Left.mul_pos ?_ r_gt_zero
+      exact abs_pos_of_pos hs.1
+    rw [div_le_one this, ← hr, mul_comm, eq1, eq2]
+    refine (mul_le_mul_iff_of_pos_right r_gt_zero).mpr ?_
+    have : f b ∈ K := by
+      simpa [K] using subset_closure (Set.mem_image_of_mem (⇑f) hb)
+    exact hs.2.2 (f b) this
