@@ -106,12 +106,9 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
   have Balanced_K : Balanced 𝕜 K := by
     refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
     exact ⟨a • t, Balanced.smul_mem hs₃ ha ht, by simp_all⟩
-  have zero_in : 0 ∈ K :=
-    have : 0 ∈ f '' B := ⟨0, by simpa using Balanced.zero_mem hs₃ hs₄⟩
-    subset_closure this
+  have zero_in : 0 ∈ K := subset_closure ⟨0, by simpa using Balanced.zero_mem hs₃ hs₄⟩
   set r := ‖f x₀‖ with hr
-  have ne : f x₀ ≠ 0 := fun nh ↦ by simp [nh, zero_in] at notin
-  have r_pos : r > 0 := by simp [hr, ne]
+  have r_pos : r > 0 := by simpa [hr] using fun nh ↦ by simp [nh, zero_in] at notin
   have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦ by
     by_contra! nh
     have := RCLike.balanced Balanced_K x hx (by linarith) (f x₀) ⟨norm_nonneg (f x₀), nh⟩
@@ -125,15 +122,13 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     closed_balanced_sep compact_K zero_in norm_lt_r
   /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
   use (r / (s * (f x₀))) • f
-  have (x : E): ‖((r / (s * f x₀)) • f) x‖ = (r * ‖f x‖) / (s * ‖f x₀‖) := by
+  have (x : E): ‖((r / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
     have eq1 : |r| = r := abs_norm (f x₀)
     have eq2 : |s| = s := abs_of_pos s_pos
-    simp [div_mul_eq_mul_div₀, eq1, eq2]
-  have mul_pos : s * ‖f x₀‖ > 0 := Left.mul_pos s_pos r_pos
+    field_simp [eq1, eq2, hr, mul_assoc, mul_comm]
   constructor
-  · rw [this, mul_comm]
-    exact (one_lt_div₀ mul_pos).mpr ((mul_lt_mul_iff_of_pos_right r_pos).mpr s_lt)
+  · rw [this]
+    exact (one_lt_div₀ s_pos).mpr s_lt
   · intro b hb
-    rw [this, hr, mul_comm, div_lt_one₀ mul_pos]
-    refine (mul_lt_mul_iff_of_pos_right r_pos).mpr ?_
+    rw [this, div_lt_one₀ s_pos]
     exact hs (f b) (subset_closure (Set.mem_image_of_mem (⇑f) hb))
