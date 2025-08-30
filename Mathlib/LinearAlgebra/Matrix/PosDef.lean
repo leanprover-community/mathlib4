@@ -171,6 +171,11 @@ lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
 
+theorem trace_nonneg {A : Matrix n n 𝕜} (hA : A.PosSemidef) : 0 ≤ A.trace := by
+  classical
+  simp [hA.isHermitian.trace_eq_sum_eigenvalues, ← map_sum,
+    Finset.sum_nonneg (fun _ _ => hA.eigenvalues_nonneg _)]
+
 theorem det_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
     0 ≤ M.det := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
@@ -314,6 +319,19 @@ theorem posSemidef_conjTranspose_mul_self [StarOrderedRing R] (A : Matrix m n R)
 theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R) :
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+
+theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n 𝕜} :
+    (Aᴴ * A).trace = 0 ↔ A = 0 := by
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
+  have hA := posSemidef_conjTranspose_mul_self A
+  classical
+  simpa [hA.isHermitian.trace_eq_sum_eigenvalues, Finset.sum_eq_zero_iff_of_nonneg
+    (fun _ _ => RCLike.ofReal_nonneg.mpr <| hA.eigenvalues_nonneg _),
+    ← conjTranspose_mul_self_eq_zero, ← hA.isHermitian.eigenvalues_eq_zero_iff, funext_iff] using h
+
+theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n 𝕜} :
+    (A * Aᴴ).trace = 0 ↔ A = 0 := by
+  simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
@@ -527,6 +545,11 @@ lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : 
   refine (posDef_diagonal_iff.mpr <| by simpa using h).mul_mul_conjTranspose_same ?_
   rw [vecMul_injective_iff_isUnit, ← unitary.val_toUnits_apply]
   exact Units.isUnit _
+
+theorem trace_pos [Nonempty n] {A : Matrix n n 𝕜} (hA : A.PosDef) : 0 < A.trace := by
+  classical
+  simp [hA.isHermitian.trace_eq_sum_eigenvalues, ← map_sum,
+    Finset.sum_pos (fun _ _ => hA.eigenvalues_pos _)]
 
 theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]

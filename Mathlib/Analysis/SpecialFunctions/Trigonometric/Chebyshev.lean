@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Complex.Trigonometric
-import Mathlib.Data.Complex.Module
+import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
