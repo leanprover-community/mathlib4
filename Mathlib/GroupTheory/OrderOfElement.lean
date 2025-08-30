@@ -1248,7 +1248,10 @@ theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
   hx.mono (orderOf_single_dvd_orderOf i)
 
 @[to_additive]
-theorem IsOfFinOrder.pi_mk : ∀ i, IsOfFinOrder (x i) → IsOfFinOrder x := by
+theorem IsOfFinOrder.pi_mk : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+  simp only [← orderOf_pos_iff, pos_iff_ne_zero, Pi.orderOf_eq]
+  simp [- orderOf_eq_zero_iff]
+  simp [← Set.nonempty_iff_ne_empty]
   sorry
 
 end Pi

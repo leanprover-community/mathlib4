@@ -105,6 +105,8 @@ theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ 0 ∈ f '' s := by
   simp only [Multiset.mem_map, lcm_def, Multiset.lcm_eq_zero_iff, Set.mem_image, mem_coe, ←
     Finset.mem_def]
 
+
+
 end lcm
 
 /-! ### gcd -/
