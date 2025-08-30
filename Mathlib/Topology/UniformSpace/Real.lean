@@ -43,6 +43,7 @@ instance : TopologicalSpace ℝ≥0 := inferInstance
 instance : CompleteSpace ℝ≥0 :=
   isClosed_Ici.completeSpace_coe
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 

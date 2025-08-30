@@ -823,4 +823,15 @@ lemma cfcₙ_eq_cfc [ContinuousMapZero.UniqueHom R A] {f : R → R} {a : A}
     congr
   · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]
 
+/-- The **spectral mapping theorem** for the non-unital continuous functional calculus applied
+to the unital case. -/
+lemma cfcₙ_map_spectrum [ContinuousMapZero.UniqueHom R A] (f : R → R) (a : A)
+    (ha : p a := by cfc_tac)
+    (hf : ContinuousOn f (spectrum R a ∪ {0}) := by cfc_cont_tac) (hf0 : f 0 = 0) :
+    spectrum R (cfcₙ f a) = f '' spectrum R a := by
+  have hf' : ContinuousOn f (σₙ R a) := by rwa [quasispectrum_eq_spectrum_union_zero]
+  have hf'' : ContinuousOn f (spectrum R a) := hf.mono <| by grind
+  rw [cfcₙ_eq_cfc]
+  exact cfc_map_spectrum f a ha hf''
+
 end UnitalToNonUnital
