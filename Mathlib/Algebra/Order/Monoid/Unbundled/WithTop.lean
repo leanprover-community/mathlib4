@@ -334,7 +334,7 @@ instance existsAddOfLE [LE α] [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (With
 -- instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
 --     CanonicallyOrderedAddCommMonoid (WithTop α) :=
 --   { WithTop.orderBot, WithTop.orderedAddCommMonoid, WithTop.existsAddOfLE with
---     le_self_add := fun a b =>
+--     le_self_add a b :=
 --       match a, b with
 --       | ⊤, ⊤ => le_rfl
 --       | (a : α), ⊤ => le_top
