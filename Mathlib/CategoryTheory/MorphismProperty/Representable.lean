@@ -553,11 +553,10 @@ end Pullbacks₃
 
 section Diagonal
 /-
-In this section, given an object `X` in `D`, we prove a criterion for the diagonal morphism
-`X ⟶ X × X` to be relatively representable.
+In this section, we prove a criterion for the diagonal morphisms to be relatively representable.
 -/
 
-variable {F : C ⥤ D} {X : D}
+variable {F : C ⥤ D}
 variable [HasPullbacks C] [HasBinaryProducts C]
 variable [HasPullbacks D] [HasBinaryProducts D] [HasTerminal D]
 variable [Full F]
@@ -571,7 +570,7 @@ variable [PreservesLimitsOfShape (Discrete WalkingPair) F]
 the diagonal morphism `X ⟶ X × X` is relatively representable if and only if every morphism of
 the form `F.obj a ⟶ X` is relatively representable.
 -/
-lemma diag_iff : F.relativelyRepresentable (Limits.diag X) ↔
+lemma diag_iff {X : D} : F.relativelyRepresentable (Limits.diag X) ↔
     ∀ ⦃a : C⦄ (g : F.obj a ⟶ X), F.relativelyRepresentable g := by
   rw [(by cat_disch : Limits.diag X = pullback.lift (𝟙 X) (𝟙 X) ≫ (prodIsoPullback X X).inv)]
   constructor
