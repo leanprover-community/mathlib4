@@ -322,6 +322,8 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 section trace
+-- TODO: move these results to an earlier file
+
 variable {R : Type*} [PartialOrder R] [NonUnitalRing R]
   [StarRing R] [StarOrderedRing R] [NoZeroDivisors R]
 
