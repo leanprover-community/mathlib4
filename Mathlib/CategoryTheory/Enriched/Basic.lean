@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
@@ -254,21 +254,29 @@ theorem ForgetEnrichment.homOf_homTo {X Y : ForgetEnrichment W C} (f : X ⟶ Y) 
 
 /-- The identity in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_id (X : ForgetEnrichment W C) :
+theorem ForgetEnrichment.homTo_id (X : ForgetEnrichment W C) :
     ForgetEnrichment.homTo W (𝟙 X) = eId W (ForgetEnrichment.to W X : C) :=
   Category.id_comp _
 
+@[deprecated (since := "2025-07-29")] alias forgetEnrichment_id := ForgetEnrichment.homTo_id
+
 @[simp]
-theorem forgetEnrichment_id' (X : C) :
-    ForgetEnrichment.homOf W (eId W X) = 𝟙 (ForgetEnrichment.of W X : C) :=
-  (forgetEnrichment_id W (ForgetEnrichment.of W X)).symm
+theorem ForgetEnrichment.homOf_eid (X : C) :
+    ForgetEnrichment.homOf W (eId W X) = 𝟙 (of W X : C) :=
+  (homTo_id W (ForgetEnrichment.of W X)).symm
+
+@[deprecated (since := "2025-07-29")] alias forgetEnrichment_id' := ForgetEnrichment.homOf_eid
 
 /-- Composition in the "underlying" category of an enriched category. -/
 @[simp]
-theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    ForgetEnrichment.homTo W (f ≫ g) =
-      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
-        eComp W _ _ _ :=
+theorem ForgetEnrichment.homTo_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    homTo W (f ≫ g) = ((λ_ (𝟙_ W)).inv ≫ (homTo W f ⊗ₘ homTo W g)) ≫ eComp W _ _ _ :=
+  rfl
+
+@[deprecated (since := "2025-07-29")] alias forgetEnrichment_comp := ForgetEnrichment.homTo_comp
+
+theorem ForgetEnrichment.homOf_comp {X Y Z : C} (f : 𝟙_ W ⟶ (X ⟶[W] Y)) (g : 𝟙_ W ⟶ (Y ⟶[W] Z)) :
+    homOf W (((λ_ _).inv ≫ (f ⊗ₘ g)) ≫ eComp W ..) = homOf W f ≫ homOf W g :=
   rfl
 
 @[simp]
@@ -343,7 +351,7 @@ def EnrichedFunctor.forget {C : Type u₁} {D : Type u₂} [EnrichedCategory W C
     dsimp
     apply_fun ForgetEnrichment.homTo W
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
-        ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, forgetEnrichment_comp]
+        ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 
