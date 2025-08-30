@@ -279,6 +279,10 @@ lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
         (IsScalarTower.toAlgHom _ _ _) (fun _ _ ↦ Commute.all ..)
     exact RingHom.domain_nontrivial f.toRingHom
 
+lemma RingHom.strictMono_specComap_of_surjective {S : Type*} [CommRing S]
+    {f : R →+* S} (hf : Function.Surjective f) : StrictMono f.specComap :=
+  fun _ _ h ↦ (Ideal.relIsoOfSurjective _ hf).strictMono h
+
 end SpecOfSurjective
 
 section ResidueField
