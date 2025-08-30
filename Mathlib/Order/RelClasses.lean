@@ -53,6 +53,11 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
+instance isPartialOrder.eq (α : Type*) : IsPartialOrder α Eq where
+  refl _ := rfl
+  trans _ _ _ := Eq.trans
+  antisymm _ _ _ := Eq.symm
+
 theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 

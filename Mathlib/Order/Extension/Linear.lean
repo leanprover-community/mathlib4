@@ -4,18 +4,37 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Order.Zorn
+import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Tactic.Spread
 
 /-!
 # Extend a partial order to a linear order
 
 This file constructs a linear order which is an extension of the given partial order, using Zorn's
-lemma.
+lemma. It then uses this construction to show that every preorder is an extension of a partial
+order, and every total preorder is an extension of a linear order.
+
+Using this fact about total preorders, we show that certain types can be enumerated in a way that
+is consistent with an ordering.
+
+## Main results
+
+- `extend_partialOrder`: Every partial order can be extended to a linear order.
+
+- `exists_eq_extend_partialOrder`: Every preorder is an extension of a partial order.
+
+- `exists_eq_extend_linearOrder`: Every total preorder is an extension of a linear order.
+
+- `exists_nat_equiv_monotone`: For every lower-bounded, total, locally finite preorder on
+  an infinite type `α`, there is a `Monotone` equivalence `e : ℕ ≃ α`.
 -/
 
 
 universe u
 
 open Set
+
+section PartialOrder
 
 /-- **Szpilrajn extension theorem**: any partial order can be extended to a linear order. -/
 theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
@@ -87,3 +106,118 @@ noncomputable def toLinearExtension {α : Type u} [PartialOrder α] : α →o Li
 
 instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
   ⟨(default : α)⟩
+
+end PartialOrder
+
+section Preorder
+
+variable {α : Type*}
+
+/-- Given two orderings `r` and `s`, the ordering that first compares two elements using `r`,
+  then breaks ties with `s`. Most reasonable when `r` is a preorder and `s` is a linear order. -/
+def RefineBy (r s : α → α → Prop) (a b : α) :=
+    (r a b) ∧ (r b a → s a b)
+
+instance {α : Type*} (r s : α → α → Prop) [IsPreorder α r] [IsLinearOrder α s] :
+    IsPartialOrder α (RefineBy r s) where
+  refl _ := ⟨refl _, fun _ ↦ refl _⟩
+  trans _ _ _ h h' := ⟨trans_of _ h.1 h'.1,
+    fun hca ↦ trans_of _ (h.2 (trans_of _ h'.1 hca)) (h'.2 (trans_of _ hca h.1))⟩
+  antisymm _ _ h h' := antisymm_of _ (h.2 h'.1) (h'.2 h.1)
+
+instance {α : Type*} (r s : α → α → Prop) [IsPreorder α r] [IsTotal α r] [IsLinearOrder α s] :
+    IsLinearOrder α (RefineBy r s) where
+  __ := instIsPartialOrderRefineByOfIsPreorderOfIsLinearOrder r s
+  total a b := by
+    simp_rw [RefineBy]
+    have hr := total_of r a b
+    have hs := total_of s a b
+    tauto
+
+/-- Using choice, every preorder is an extension of some partial order. -/
+theorem exists_eq_extend_partialOrder (r : α → α → Prop) [IsPreorder α r] :
+    ∃ (s : α → α → Prop), IsPartialOrder α s ∧ s ≤ r := by
+  obtain ⟨s, hs, -⟩ := extend_partialOrder (@Eq α)
+  exact ⟨RefineBy r s, inferInstance, fun _ _ h ↦ h.1⟩
+
+/-- Using choice, every total preorder is an extension of some linear order. -/
+theorem exists_eq_extend_linearOrder (r : α → α → Prop) [IsPreorder α r] [IsTotal α r] :
+    ∃ (s : α → α → Prop), IsLinearOrder α s ∧ s ≤ r := by
+  obtain ⟨s, hs, -⟩ := extend_partialOrder (@Eq α)
+  exact ⟨RefineBy r s, inferInstance, fun _ _ h ↦ h.1⟩
+
+/-- A type synonym for some partial order on `α` refining a given preorder on `α`. -/
+def PartialOrderRefinement (α : Type*) := α
+
+instance [Preorder α] : PartialOrder (PartialOrderRefinement α) where
+  le := Classical.choose (exists_eq_extend_partialOrder (α := α) (· ≤ ·))
+  le_refl := (exists_eq_extend_partialOrder (α := α) (· ≤ ·)).choose_spec.1.refl
+  le_trans := (exists_eq_extend_partialOrder (α := α) (· ≤ ·)).choose_spec.1.trans
+  le_antisymm := (exists_eq_extend_partialOrder (α := α) (· ≤ ·)).choose_spec.1.antisymm
+
+/-- The order homomorphism from `PartialOrderRefinement α` to `α` -/
+def partialOrderRefinement_orderHom (α : Type*) [Preorder α] : PartialOrderRefinement α →o α where
+  toFun a := a
+  monotone' := (exists_eq_extend_partialOrder (α := α) (· ≤ ·)).choose_spec.2
+
+/-- A type synonym for some linear order on `α` refining a given total preorder on `α`. -/
+def LinearOrderRefinement (α : Type*) := α
+
+noncomputable instance [Preorder α] [IsTotal α (· ≤ ·)] :
+    LinearOrder (LinearOrderRefinement α) where
+  le := Classical.choose (exists_eq_extend_linearOrder (α := α) (· ≤ ·))
+  le_refl := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.refl
+  le_trans := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.trans
+  le_antisymm := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.antisymm
+  le_total := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.1.total
+  toDecidableLE := Classical.decRel _
+
+/-- The order homomorphism from `LinearOrderRefinement α` to `α` -/
+def linearOrderRefinement_orderHom (α : Type*) [Preorder α] [IsTotal α (· ≤ ·)] :
+    LinearOrderRefinement α →o α where
+  toFun a := a
+  monotone' := (exists_eq_extend_linearOrder (α := α) (· ≤ ·)).choose_spec.2
+
+end Preorder
+
+section Enumeration
+
+/-- For every total, lower-bounded, locally finite preorder on an infinite type, there is a monotone
+  bijection from `ℕ`. -/
+theorem exists_nat_equiv_monotone (α : Type*) [Infinite α] [Preorder α] [LocallyFiniteOrderBot α]
+    [IsTotal α (· ≤ ·)] : ∃ (e : ℕ ≃ α), Monotone e := by
+  have hfin : ∀ (a : LinearOrderRefinement α), (Iic a).Finite := fun (a : α) ↦
+    (finite_Iic a).subset (fun b h ↦ (linearOrderRefinement_orderHom α).mono h)
+  have h' : Infinite (LinearOrderRefinement α) := ‹_›
+  have _ := LocallyFiniteOrder.ofFiniteIcc (fun a b ↦ (hfin b).subset Icc_subset_Iic_self)
+  have _ := LocallyFiniteOrderBot.ofIic _ (fun a ↦ (hfin a).toFinset) (by simp)
+  have _ := LocallyFiniteOrderBot.orderBot (LinearOrderRefinement α)
+  have _ : NoMaxOrder (LinearOrderRefinement α) := {
+    exists_gt := fun a ↦ by simpa using (hfin a).exists_notMem }
+  have : PredOrder (LinearOrderRefinement α) := LinearLocallyFiniteOrder.predOrder _
+  have : SuccOrder (LinearOrderRefinement α) := LinearLocallyFiniteOrder.succOrder _
+  set e := (orderIsoNatOfLinearSuccPredArch (ι := LinearOrderRefinement α)).symm
+  exact ⟨e.toEquiv, fun _ _ h ↦ (linearOrderRefinement_orderHom α).monotone (e.monotone h)⟩
+
+/-- If `α` is infinite, `β` is a locally finite preorder, and `r : α → β` has finite fibers,
+    then we can find a bijection `e : ℕ ≃ α` so that `i ≤ j → r (e i) ≤ r (e j)`. -/
+theorem exists_nat_equiv_monotone_comp {α β : Type*} [Infinite α] [Preorder β]
+    [LocallyFiniteOrderBot β] [IsTotal β (· ≤ ·)] (r : α → β) (hr : ∀ b, (r ⁻¹' {b}).Finite) :
+    ∃ (e : ℕ ≃ α), Monotone (r ∘ e) := by
+  classical
+  set p : Preorder α := {
+    le := fun x y ↦ r x ≤ r y
+    le_refl := by simp
+    le_trans := fun _ _ _ (h : r _ ≤ r _) ↦ h.trans }
+  set ht : IsTotal α (· ≤ ·) := {
+    total := fun a b ↦ total_of (· ≤ ·) (r a) (r b) }
+
+  have hIicβ : ∀ b, (r ⁻¹' (Iic b)).Finite := fun b ↦
+    ((finite_Iic b).biUnion (fun i _ ↦ hr i)).subset fun x (hx : r x ≤ b) ↦ mem_biUnion hx rfl
+
+  have hIic : ∀ a : α, (Iic a).Finite := fun a ↦ (hIicβ (r a)).subset (fun _ ↦ id)
+
+  have _ := LocallyFiniteOrderBot.ofIic' _ (fun x ↦ (hIic x).toFinset) (by simp)
+  exact exists_nat_equiv_monotone α
+
+end Enumeration
