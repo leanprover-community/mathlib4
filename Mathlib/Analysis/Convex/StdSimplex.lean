@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
 import Mathlib.Analysis.Convex.Combination
-import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
 import Mathlib.Topology.UnitInterval
 
@@ -17,7 +17,6 @@ coordinates with total sum `1`.
 
 When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
-In the case `𝕜 := ℝ`, we show that these maps are continuous.
 
 -/
 
@@ -282,18 +281,11 @@ lemma map_vertex [DecidableEq X] [DecidableEq Y] (f : X → Y) (x : X) :
     map (S := S) f (vertex x) = vertex (f x) := by
   aesop
 
-end
-
-lemma _root_.FunOnFinite.continuous_linearMap (f : X → Y) :
-    Continuous (FunOnFinite.linearMap ℝ ℝ f) := by
-  classical
-  refine continuous_pi (fun y ↦ ?_)
-  simp only [FunOnFinite.linearMap_apply_apply]
-  apply continuous_finset_sum
-  continuity
-
 @[continuity]
-lemma continuous_map (f : X → Y) : Continuous (map (S := ℝ) f) :=
-  Continuous.subtype_mk ((FunOnFinite.continuous_linearMap f).comp continuous_induced_dom) _
+lemma continuous_map [TopologicalSpace S] [IsTopologicalSemiring S] (f : X → Y) :
+    Continuous (map (S := S) f) :=
+  Continuous.subtype_mk ((FunOnFinite.continuous_linearMap S S f).comp continuous_induced_dom) _
+
+end
 
 end stdSimplex

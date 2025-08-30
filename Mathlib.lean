@@ -6268,6 +6268,7 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Monoid.AddChar
 import Mathlib.Topology.Algebra.Monoid.Defs
+import Mathlib.Topology.Algebra.Monoid.FunOnFinite
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.MvPolynomial
 import Mathlib.Topology.Algebra.NonUnitalAlgebra
