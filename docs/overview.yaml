@@ -415,6 +415,7 @@ Geometry:
   Differentiable manifolds:
     smooth or analytic manifold (with boundary and corners): 'IsManifold'
     smooth map between manifolds: 'ContMDiff'
+    smooth immersion: 'IsImmersion'
     product of manifolds: 'IsManifold.prod'
     disjoint union of manifolds: 'IsManifold.disjointUnion'
     interior of a manifold: 'ModelWithCorners.interior'
@@ -436,6 +437,11 @@ Geometry:
     general linear group as a Lie group: 'Units.instLieGroupModelWithCornersSelf'
     discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
     0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
+
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
 
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
