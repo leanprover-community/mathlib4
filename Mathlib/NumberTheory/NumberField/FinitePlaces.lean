@@ -307,11 +307,7 @@ open NumberField.FinitePlace NumberField.RingOfIntegers
 open scoped NumberField
 
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
-    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
-  have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
-    change v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
-    exact (Equiv.apply_symm_apply _ v).symm
-  convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
+    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
 
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 (WithVal (v.valuation K))}
