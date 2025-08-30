@@ -8,7 +8,11 @@ import Mathlib.Data.Set.Lattice
 /-!
 # Accumulate
 
-The function `Accumulate` takes a set `s` and returns `⋃ y ≤ x, s y`.
+The function `Accumulate` takes `s : α → Set β` with `LE α` and returns `⋃ y ≤ x, s y`.
+
+In large parts, this file is parallel to `Mathlib.Data.Set.Dissipate`, where
+`Dissipate s := ⋂ y ≤ x, s y` is defined.
+
 -/
 
 
