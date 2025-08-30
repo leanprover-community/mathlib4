@@ -397,6 +397,9 @@ theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
   rw [← get?_tail, ← dropn_tail]; apply IH
 
 @[simp]
+theorem drop_zero {s : Seq α} : s.drop 0 = s := rfl
+
+@[simp]
 theorem drop_succ_cons {x : α} {s : Seq α} {n : ℕ} :
     (cons x s).drop (n + 1) = s.drop n := by
   simp [← dropn_tail]
@@ -602,6 +605,273 @@ theorem drop_set_of_lt (s : Seq α) {m n : ℕ} (h : m < n) : (s.set m x).drop n
   simp [get?_set_of_ne _ _ (show n + i ≠ m by omega)]
 
 end Update
+
+section All
+
+@[simp]
+theorem All.nil (p : α → Prop) : nil.All p := by
+  simp [All]
+
+theorem All.cons {p : α → Prop} {hd : α} {tl : Seq α} (h_hd : p hd) (h_tl : tl.All p) :
+    ((cons hd tl).All p) := by
+  simp only [All, mem_cons_iff, forall_eq_or_imp] at *
+  exact ⟨h_hd, h_tl⟩
+
+@[simp]
+theorem All_cons_iff {p : α → Prop} {hd : α} {tl : Seq α} :
+    ((cons hd tl).All p) ↔ p hd ∧ tl.All p := by
+  simp [All]
+
+theorem All_get {p : α → Prop} {s : Seq α} (h : s.All p) {n : ℕ} {x : α} (hx : s.get? n = .some x) :
+    p x := by
+  unfold All at h
+  exact h _ (get?_mem hx)
+
+theorem All_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some x → p x) :
+    s.All p := by
+  simp only [All, mem_iff_exists_get?]
+  grind
+
+set_option linter.dupNamespace false in
+private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
+    motive (s.drop n) := by
+  induction n with
+  | zero => simpa
+  | succ m ih =>
+    simp only [drop]
+    generalize s.drop m = t at *
+    cases t
+    · simpa
+    · exact step _ _ ih
+
+/-- Coinductive principle for `All`. -/
+theorem All.coind {s : Seq α} {p : α → Prop}
+    (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl)
+    : s.All p := by
+  apply All_of_get
+  intro n
+  have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right) n
+  rw [← head_dropn]
+  generalize s.drop n = s' at this
+  cases s' with
+  | nil => simp
+  | cons hd tl => simp [(step hd tl this).left]
+
+theorem All_mp {p q : α → Prop} (h : ∀ a, p a → q a) {s : Seq α} (hp : s.All p) :
+    s.All q := by
+  simp only [All] at *
+  grind
+
+theorem map_All_iff {β : Type u} {f : α → β} {p : β → Prop} {s : Seq α} :
+    (s.map f).All p ↔ s.All (p ∘ f) := by
+  simp [All]
+  refine ⟨fun _ _ hx ↦ ?_, fun _ _ hx ↦ ?_⟩
+  · solve_by_elim [mem_map f hx]
+  · obtain ⟨_, _, hx'⟩ := exists_of_mem_map hx
+    rw [← hx']
+    solve_by_elim
+
+theorem take_All {s : Seq α} {p : α → Prop} (h_all : s.All p) {n : ℕ} {x : α} (hx : x ∈ s.take n) :
+    p x := by
+  induction n generalizing s with
+  | zero => simp [take] at hx
+  | succ m ih =>
+    cases s with
+    | nil => simp at hx
+    | cons hd tl =>
+      simp only [take_succ_cons, List.mem_cons, All_cons_iff] at hx h_all
+      rcases hx with (rfl | hx)
+      exacts [h_all.left, ih h_all.right hx]
+
+theorem set_All {p : α → Prop} {s : Seq α} (h_all : s.All p) {n : ℕ} {x : α}
+    (hx : p x) : (s.set n x).All p := by
+  apply All_of_get
+  intro m
+  rcases eq_or_ne n m with (rfl | h_nm)
+  · by_cases h_term : s.TerminatedAt n
+    · simp [get?_set_of_terminatedAt _ h_term]
+    · simpa [get?_set_of_not_terminatedAt _ h_term]
+  · rw [get?_set_of_ne]
+    exacts [fun x hx ↦ All_get h_all hx, h_nm.symm]
+
+end All
+
+section Pairwise
+
+@[simp]
+theorem Pairwise.nil {R : α → α → Prop} : Pairwise R (@nil α) := by
+  simp [Pairwise]
+
+theorem Pairwise.cons {R : α → α → Prop} {hd : α} {tl : Seq α}
+    (h_hd : tl.All (R hd ·))
+    (h_tl : Pairwise R tl) : Pairwise R (cons hd tl) := by
+  simp only [Pairwise] at *
+  intro i j x y h_ij hx hy
+  cases j with
+  | zero => simp at h_ij
+  | succ k =>
+    simp only [get?_cons_succ] at hy
+    cases i with
+    | zero =>
+      simp only [get?_cons_zero, Option.some.injEq] at hx
+      exact hx ▸ All_get h_hd hy
+    | succ n => exact h_tl n k x y (by omega) hx hy
+
+theorem Pairwise.cons_elim {R : α → α → Prop} {hd : α} {tl : Seq α}
+    (h : Pairwise R (.cons hd tl)) : tl.All (R hd ·) ∧ Pairwise R tl := by
+  simp only [Pairwise] at *
+  refine ⟨?_, fun i j x y h_ij hx hy ↦ h (i + 1) (j + 1) x y (by omega) hx hy⟩
+  apply All_of_get
+  intro n
+  specialize h 0 (n + 1) hd
+  simp only [Nat.zero_lt_succ, get?_cons_zero, get?_cons_succ, forall_const] at h
+  cases h_tl : tl.get? n with
+  | none => simp
+  | some y => simp [h y h_tl]
+
+@[simp]
+theorem Pairwise_cons_nil {R : α → α → Prop} {hd : α} : Pairwise R (cons hd nil) := by
+  apply Pairwise.cons <;> simp
+
+theorem Pairwise_cons_cons_head {R : α → α → Prop} {hd tl_hd : α} {tl_tl : Seq α}
+    (h : Pairwise R (cons hd (cons tl_hd tl_tl))) :
+    R hd tl_hd := by
+  simp only [Pairwise] at h
+  simpa using h 0 1 hd tl_hd Nat.one_pos
+
+theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd tl_hd : α} {tl_tl : Seq α}
+    (h_hd : R hd tl_hd)
+    (h_tl : Pairwise R (.cons tl_hd tl_tl)) : Pairwise R (.cons hd (.cons tl_hd tl_tl)) := by
+  apply Pairwise.cons _ h_tl
+  rw [All_cons_iff]
+  exact ⟨h_hd, All_mp (fun x h ↦ trans_of _ h_hd h) h_tl.cons_elim.left⟩
+
+/-- Coinductive principle for `Pairwise`. -/
+theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
+    (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → tl.All (R hd ·) ∧ motive tl) : Pairwise R s := by
+  simp only [Pairwise]
+  intro i j x y h_ij hx hy
+  obtain ⟨k, hj⟩ := Nat.exists_eq_add_of_lt h_ij
+  rw [← head_dropn] at hx
+  rw [hj, ← head_dropn, Nat.add_assoc, dropn_add, head_dropn] at hy
+  have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right) i
+  generalize s.drop i = s' at *
+  cases s' with
+  | nil => simp at hx
+  | cons hd tl =>
+    simp at hx hy
+    exact hx ▸ All_get (step hd tl this).left hy
+
+/-- Coinductive principle for `Pairwise` that assumes that `R` is transitive. It allows to prove
+`R hd tl.head` instead of `tl.All (R hd ·)` in `step`. -/
+theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans α R] {s : Seq α}
+    (motive : Seq α → Prop) (base : motive s)
+    (step : ∀ hd tl, motive (.cons hd tl) → (∀ x ∈ tl.head, R hd x) ∧ motive tl) :
+    Pairwise R s := by
+  have h_succ {n} {x y} (hx : s.get? n = some x) (hy : s.get? (n + 1) = some y) : R x y := by
+    rw [← head_dropn] at hx
+    have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right)
+    exact (step x (s.drop (n + 1)) (head_eq_some hx ▸ this n)).left _ (by simpa)
+  simp only [Pairwise]
+  intro i j x y h_ij hx hy
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt h_ij
+  clear h_ij
+  induction k generalizing y with
+  | zero => exact h_succ hx hy
+  | succ k ih =>
+    obtain ⟨z, hz⟩ := ge_stable (m := i + k + 1) _ (by omega) hy
+    exact _root_.trans (ih z hz) <| h_succ hz hy
+
+theorem Pairwise_tail {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) :
+    s.tail.Pairwise R := by
+  cases s
+  · simp
+  · simp [h.cons_elim.right]
+
+theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {n : ℕ} :
+    (s.drop n).Pairwise R := by
+  induction n with
+  | zero => simpa
+  | succ m ih => simp [drop, Pairwise_tail ih]
+
+end Pairwise
+
+section AtLeastAsLongAs
+
+theorem AtLeastAsLongAs.nil {a : Seq α} :
+    a.AtLeastAsLongAs (@nil β) := by
+  unfold AtLeastAsLongAs
+  simp [terminatedAt_nil]
+
+theorem AtLeastAsLongAs.cons {a_hd : α} {a_tl : Seq α} {b_hd : β} {b_tl : Seq β}
+    (h : a_tl.AtLeastAsLongAs b_tl) :
+    (Seq.cons a_hd a_tl).AtLeastAsLongAs (Seq.cons b_hd b_tl) := by
+  simp only [AtLeastAsLongAs] at *
+  intro n
+  cases n with
+  | zero => simp
+  | succ m => simpa using h m
+
+theorem AtLeastAsLongAs.cons_elim {a : Seq α} {hd : β} {tl : Seq β}
+    (h : a.AtLeastAsLongAs (.cons hd tl)) : ∃ hd' tl', a = .cons hd' tl' := by
+  cases a with
+  | nil =>
+    unfold AtLeastAsLongAs at h
+    simp only [terminatedAt_nil, forall_const] at h
+    specialize h 0
+    simp [TerminatedAt] at h
+  | cons hd' tl' => use hd', tl'
+
+/-- Coinductive principle for `AtLeastAsLongAs`. -/
+theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
+    (motive : Seq α → Seq β → Prop) (base : motive a b)
+    (step : ∀ a b, motive a b →
+      (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl))
+    : a.AtLeastAsLongAs b := by
+  simp only [AtLeastAsLongAs, TerminatedAt, ← head_dropn]
+  intro n
+  have (hb : b.drop n ≠ .nil) : motive (a.drop n) (b.drop n) := by
+    induction n with
+    | zero => simpa
+    | succ m ih =>
+      simp only [drop] at hb ⊢
+      generalize b.drop m = tb at *
+      cases tb with
+      | nil => simp at hb
+      | cons tb_hd tb_tl =>
+        simp only [ne_eq, cons_ne_nil, not_false_eq_true, forall_const] at ih
+        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := step (a.drop m) (.cons tb_hd tb_tl) ih _ _ (by rfl)
+        simpa [ha]
+  contrapose
+  rw [head_eq_none_iff]
+  generalize b.drop n = tb at *
+  cases tb
+  · simp
+  · intro hb
+    obtain ⟨a_hd, a_tl, ha, _⟩ := step _ _ (this hb) _ _ (by rfl)
+    simp [ha]
+
+@[simp]
+theorem cons_AtLeastAsLongAs_cons_iff {a_hd : α} {a_tl : Seq α} {b_hd : β}
+    {b_tl : Seq β} :
+    (cons a_hd a_tl).AtLeastAsLongAs (cons b_hd b_tl) ↔ a_tl.AtLeastAsLongAs b_tl where
+  mp h := by
+    simp [AtLeastAsLongAs] at *
+    intro n
+    simpa using h (n + 1)
+  mpr := AtLeastAsLongAs.cons
+
+theorem map_AtLeastAsLongAs_self {α : Type v} {γ : Type w} {f : β → γ} {a : Seq α}
+    {b : Seq β} (h : a.AtLeastAsLongAs b) :
+    a.AtLeastAsLongAs (b.map f) := by
+  simp only [AtLeastAsLongAs, terminatedAt_map_iff] at *
+  intro n ha
+  simpa [TerminatedAt] using h n ha
+
+end AtLeastAsLongAs
 
 instance : Functor Seq where map := @map
 
