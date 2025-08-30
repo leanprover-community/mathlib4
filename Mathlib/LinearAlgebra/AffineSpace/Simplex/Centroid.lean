@@ -70,7 +70,7 @@ theorem centroid_eq_affine_combination (s : Simplex k P n) :
     s.centroid = affineCombination k univ s.points (centroidWeights k univ) := by rfl
 
 /-- The centroid does not lie in the affine span of the simplex's points with one vertex removed. -/
-theorem centroid_not_mem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
+theorem centroid_notMem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := by
   intro h
   rw [s.centroid_eq_affine_combination] at h
@@ -201,7 +201,7 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
 theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     AffineIndependent k (Function.update s.points i s.centroid) := by
-  have h : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := centroid_not_mem_affineSpan_compl s i
+  have h : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := centroid_notMem_affineSpan_compl s i
   exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent h
 
 variable [NeZero n]
@@ -351,7 +351,7 @@ theorem centroid_vsub_point_eq_smul_vsub [CharZero k]
   rw [← neg_vsub_eq_vsub_rev, point_vsub_centroid_eq_smul_vsub, ← neg_smul_neg,
     neg_vsub_eq_vsub_rev, ← neg_smul, neg_neg]
 
-/-- The vector from `centroid` to a vertex corresponding `faceOppositeCentroid` is `(1 / n)` of the
+/-- The vector from `centroid` to a vertex corresponding `faceOppositeCentroid` is `n⁻¹` of the
 vector from the vertex to the centroid. -/
 theorem faceOppositeCentroid_vsub_centroid_eq_smul_vsub [CharZero k]
     (s : Simplex k P n) (i : Fin (n + 1)) :
@@ -373,7 +373,7 @@ theorem centroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k P n) (i : F
   rw [← centroid_vsub_point_eq_smul_vsub, vsub_vadd]
 
 /-- The point `faceOppositeCentroid` of an n-simplex can be obtained from
-the centroid by adding `(1 / n)` times the vector from the vertex to the centroid. -/
+the centroid by adding `n⁻¹` times the vector from the vertex to the centroid. -/
 theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i = (n : k)⁻¹ • (s.centroid -ᵥ s.points i) +ᵥ s.centroid := by
