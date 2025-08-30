@@ -162,16 +162,17 @@ lemma log_pow' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] 
 
 variable [CompleteSpace A]
 
+open NormedSpace in
 @[grind =]
-lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
+lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (exp ℝ a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
 
+open NormedSpace in
 @[grind =]
 lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (a : A)
-    (ha : IsStrictlyPositive a := by cfc_tac) :
-    NormedSpace.exp ℝ (log a) = a := by
+    (ha : IsStrictlyPositive a := by cfc_tac) : exp ℝ (log a) = a := by
   have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
     rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
     grind
