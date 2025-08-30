@@ -6136,6 +6136,7 @@ import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simproc.Divisors
+import Mathlib.Tactic.Simproc.DivisorsAntidiag
 import Mathlib.Tactic.Simproc.ExistsAndEq
 import Mathlib.Tactic.Simproc.Factors
 import Mathlib.Tactic.Simps.Basic
