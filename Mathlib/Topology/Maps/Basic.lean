@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Order
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
@@ -361,12 +362,19 @@ lemma isOpenMap_iff_kernImage :
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 
-theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
+theorem isOpenMap_iff_image_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
     subset_interior_iff_isOpen.mp <|
       calc
         f '' u = f '' interior u := by rw [hu.interior_eq]
         _ ⊆ interior (f '' u) := hs u⟩
+
+@[deprecated (since := "2025-08-30")] alias isOpenMap_iff_interior := isOpenMap_iff_image_interior
+
+lemma isOpenMap_iff_closure_kernImage :
+    IsOpenMap f ↔ ∀ {s : Set X}, closure (kernImage f s) ⊆ kernImage f (closure s) := by
+  rw [isOpenMap_iff_image_interior, compl_surjective.forall]
+  simp [kernImage_eq_compl]
 
 /-- An inducing map with an open range is an open map. -/
 protected lemma Topology.IsInducing.isOpenMap (hi : IsInducing f) (ho : IsOpen (range f)) :
@@ -446,6 +454,11 @@ theorem isClosedMap_iff_closure_image :
         closure (f '' c) ⊆ f '' closure c := hs c
         _ = f '' c := by rw [hc.closure_eq]⟩
 
+theorem isClosedMap_iff_kernImage_interior :
+    IsClosedMap f ↔ ∀ {s : Set X}, kernImage f (interior s) ⊆ interior (kernImage f s) := by
+  rw [isClosedMap_iff_closure_image, compl_surjective.forall]
+  simp [kernImage_eq_compl]
+
 /-- A map `f : X → Y` is closed if and only if for all sets `s`, any cluster point of `f '' s` is
 the image by `f` of some cluster point of `s`.
 If you require this for all filters instead of just principal filters, and also that `f` is
@@ -454,6 +467,51 @@ theorem isClosedMap_iff_clusterPt :
     IsClosedMap f ↔ ∀ s y, MapClusterPt y (𝓟 s) f → ∃ x, f x = y ∧ ClusterPt x (𝓟 s) := by
   simp [MapClusterPt, isClosedMap_iff_closure_image, subset_def, mem_closure_iff_clusterPt,
     and_comm]
+
+theorem isClosedMap_iff_comap_nhdsSet_le :
+    IsClosedMap f ↔ ∀ {s : Set Y}, comap f (𝓝ˢ s) ≤ 𝓝ˢ (f ⁻¹' s) := by
+  simp_rw [Filter.le_def, mem_comap'', ← subset_interior_iff_mem_nhdsSet,
+    ← subset_kernImage_iff, isClosedMap_iff_kernImage_interior]
+  exact ⟨fun H s t hst ↦ hst.trans H, fun H s ↦ H _ subset_rfl⟩
+
+alias ⟨IsClosedMap.comap_nhdsSet_le, _⟩ := isClosedMap_iff_comap_nhdsSet_le
+
+theorem isClosedMap_iff_comap_nhds_le :
+    IsClosedMap f ↔ ∀ {y : Y}, comap f (𝓝 y) ≤ 𝓝ˢ (f ⁻¹' {y}) := by
+  rw [isClosedMap_iff_comap_nhdsSet_le]
+  constructor
+  · exact fun H y ↦ nhdsSet_singleton (x := y) ▸ H
+  · intro H s
+    rw [← Set.biUnion_of_singleton s]
+    simp_rw [preimage_iUnion, nhdsSet_iUnion, comap_iSup, nhdsSet_singleton]
+    exact iSup₂_mono fun _ _ ↦ H
+
+alias ⟨IsClosedMap.comap_nhds_le, _⟩ := isClosedMap_iff_comap_nhds_le
+
+/-- Assume `f` is a closed map. If some property `p` holds around every point in the fiber of `f`
+    at `y₀`, then for any `y` close enough to `y₀` we have that `p` holds on the fiber at `y`. -/
+theorem IsClosedMap.eventually_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} (y₀ : Y)
+    (H : ∀ x₀ ∈ f ⁻¹' {y₀}, ∀ᶠ x in 𝓝 x₀, p x) :
+    ∀ᶠ y in 𝓝 y₀, ∀ x ∈ f ⁻¹' {y}, p x := by
+  rw [← eventually_nhdsSet_iff_forall] at H
+  replace H := H.filter_mono hf.comap_nhds_le
+  rwa [eventually_comap] at H
+
+/-- Assume `f` is a closed map. If there are points `y` arbitrarily close to `y₀` such that `p`
+    holds for at least some `x ∈ f ⁻¹' {y}`, then one can find `x₀ ∈ f ⁻¹' {y₀}` such that there
+    are points `x` arbitrarily close to `x₀` which satisfy `p`. -/
+theorem IsClosedMap.frequently_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} (y₀ : Y)
+    (H : ∃ᶠ y in 𝓝 y₀, ∃ x ∈ f ⁻¹' {y}, p x) :
+    ∃ x₀ ∈ f ⁻¹' {y₀}, ∃ᶠ x in 𝓝 x₀, p x := by
+  /-
+  Note: this result could also be seen as a reformulation of `isClosedMap_iff_clusterPt`.
+  One would then be able to deduce the `eventually` statement,
+  and then go back to `isClosedMap_iff_comap_nhdsSet_le`.
+  Ultimately, this makes no difference.
+  -/
+  revert H
+  contrapose
+  simpa only [not_frequently, not_exists, not_and] using hf.eventually_nhds_fiber y₀
 
 theorem IsClosedMap.closure_image_eq_of_continuous
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set X) :
