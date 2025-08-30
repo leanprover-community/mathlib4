@@ -440,10 +440,8 @@ theorem head?_append_of_ne_nil :
   | _ :: _, _, _ => rfl
 
 theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
-    tail (l ++ [a]) = tail l ++ [a] := by
-  induction l
-  · contradiction
-  · rw [tail, cons_append, tail]
+    tail (l ++ [a]) = tail l ++ [a] :=
+  tail_append_of_ne_nil h
 
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
