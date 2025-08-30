@@ -768,6 +768,11 @@ noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
     exact isCovariantDerivativeOn_lcCandidate I _
 
+section
+
+omit [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
+omit [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
 /-- The **Christoffel symbol** of a covariant derivative on a set `U ⊆ M`
 with respect to a local frame `(s_i)` on `U`: for each triple `(i, j, k)` of indices,
 this is a function `Γᵢⱼᵏ : M → ℝ`, whose value outside of `U` is meaningless. -/
@@ -776,6 +781,18 @@ noncomputable def christoffelSymbol
     {U : Set M} {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
   hs.repr k (f (s i) (s j))
+
+
+lemma christoffelSymbol_zero (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
+    (hs : IsLocalFrameOn I E n s U) (i j k : ι) : christoffelSymbol I 0 hs i j k = 0 := by
+  simp [christoffelSymbol]
+
+@[simp]
+lemma christoffelSymbol_zero_apply (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
+    (hs : IsLocalFrameOn I E n s U) (i j k : ι) (x) : christoffelSymbol I 0 hs i j k x = 0 := by
+  simp [christoffelSymbol_zero]
+
+end
 
 -- Lemma 4.3 in Lee, Chapter 5: first term still missing
 variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSpace I x}
@@ -848,6 +865,21 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     ∀ {x'}, x' ∈ t.baseSet → ∀ (i j k : ↑(Basis.ofVectorSpaceIndex ℝ E)),
       christoffelSymbol I (LeviCivitaConnection I M) hs i j k x' =
         christoffelSymbol I (LeviCivitaConnection I M) hs j i k x' := by
+  by_cases hE : Subsingleton E
+  · have (y : M) (X : TangentSpace I y) : X = 0 := by
+      have : Subsingleton (TangentSpace I y) := inferInstanceAs (Subsingleton E)
+      apply Subsingleton.eq_zero X
+    have (X : Π y : M, TangentSpace I y) : X = 0 := sorry
+    intro hx''
+    intro i j k
+    simp only [LeviCivitaConnection]
+    unfold lcCandidate
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+
+    letI t := trivializationAt E (TangentSpace I) x;
+    letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
+    have : christoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
+    sorry -- this should do it!
   sorry
 
 lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection := by
@@ -864,11 +896,10 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
     · simp only [isTorsionFree_def, LeviCivitaConnection]
       unfold lcCandidate torsion
       ext; simp [this]
-  --simp only [LeviCivitaConnection]
-  --unfold lcCandidate
-  --simp only [lcCandidate_aux, hE, ↓reduceDIte]
   refine ⟨?_, ?_⟩
-  · --intro X Y Z x
+  · intro X Y Z x
+    unfold LeviCivitaConnection lcCandidate
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
     --simp [product_apply]
     sorry -- compatible
   · let s : M → Set M := fun x ↦ (trivializationAt E (fun (x : M) ↦ TangentSpace I x) x).baseSet
@@ -876,7 +907,6 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
     intro x
     simp only [s]
     set t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x with t_eq
-    --change IsTorsionFreeOn (LeviCivitaConnection I M) (t x).baseSet
     have : IsCovariantDerivativeOn E (LeviCivitaConnection I M) (t x).baseSet :=
       isCovariantDerivativeOn_lcCandidate _ (t x)
     rw [isTorsionFree_iff_christoffelSymbols' _ this]
