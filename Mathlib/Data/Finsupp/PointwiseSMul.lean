@@ -53,7 +53,7 @@ theorem mem_vaddAntidiagonal_of_addGroup [AddGroup G] [AddAction G P] [Zero R] [
     (f : G →₀ R) (x : P → V) (p : P) (gh : G × P) :
     gh ∈ vaddAntidiagonal f x p ↔ (f gh.1) ≠ 0 ∧ (x gh.2) ≠ 0 ∧ gh.2 = -gh.1 +ᵥ p := by
   rw [mem_vaddAntidiagonal_iff]
-  exact and_congr_right' <| and_congr_right' <| vadd_eq_iff_eq_neg_vadd gh.1
+  exact and_congr_right' <| and_congr_right' <| eq_neg_vadd_iff.symm
 
 /-- A convolution-type scalar multiplication of finitely supported functions on formal functions. -/
 scoped instance [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SMulWithZero R V] :
