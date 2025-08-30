@@ -21,18 +21,15 @@ open Bundle Filter Module Topology Set
 open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] (n : WithTop ℕ∞) {V : M → Type*}
   [TopologicalSpace (TotalSpace F V)] [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
 
-namespace CovariantDerivative
-
+-- TODO: where is a good namespace for this?
 /-- The torsion of a covariant derivative on the tangent bundle `TM` -/
-noncomputable def torsion
+noncomputable def Bundle.torsion
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   fun X Y ↦ f X Y - f Y X - VectorField.mlieBracket I X Y
@@ -51,6 +48,61 @@ lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
   rw [VectorField.mlieBracket_swap]
   module
 
+set_option linter.style.commandStart false -- new delaborators confuse the pretty-printer
+
+namespace IsCovariantDerivativeOn
+
+variable [h : IsManifold I ∞ M]
+variable {U : Set M} (hf : IsCovariantDerivativeOn E f U)
+
+variable (Y) in
+lemma torsion_add_left_apply [CompleteSpace E]
+    (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
+    torsion f (X + X') Y x = torsion f X Y x + torsion f X' Y x := by
+  simp [torsion, hf.addX X X' (x := x)]
+  rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
+  module
+
+lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
+    (hX : MDiffAt (T% X) x)
+    (hX' : MDiffAt (T% X') x) :
+    torsion f Y (X + X') x = torsion f Y X x + torsion f Y X' x := by
+  rw [torsion_antisymm, Pi.neg_apply,
+    hf.torsion_add_left_apply _ hx hX hX', torsion_antisymm Y, torsion_antisymm Y]
+  simp; abel
+
+variable (Y) in
+lemma torsion_smul_left_apply [CompleteSpace E]
+    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
+    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
+    -- TODO: making hx an auto-param := by trivial doesn't fire at the application sites below
+    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
+    torsion F (f • X) Y x = f x • torsion F X Y x := by
+  simp only [torsion, Pi.sub_apply, hF.smulX X Y f]
+  rw [hF.leibniz Y hX hf hx, VectorField.mlieBracket_smul_left hf hX]
+  simp [bar, smul_sub]
+  abel
+
+variable (X) in
+lemma torsion_smul_right_apply [CompleteSpace E]
+    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
+    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
+    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) :
+    torsion F X (f • Y) x = f x • torsion F X Y x := by
+  rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hx hf hX, torsion_antisymm X]
+  simp
+
+/-- `f` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
+noncomputable def IsTorsionFreeOn
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    (U : Set M) : Prop :=
+  ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion f X Y x = 0
+
+end IsCovariantDerivativeOn
+
+namespace CovariantDerivative
+
 variable [h : IsManifold I ∞ M]
 -- The torsion tensor of a covariant derivative on the tangent bundle `TM`.
 variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
@@ -67,50 +119,6 @@ lemma torsion_zero : torsion cov 0 X = 0 := by
 variable (X) in
 @[simp]
 lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_zero]; simp
-
-set_option linter.style.commandStart false -- new delaborators confuse the pretty-printer
-
-section
-
-variable (Y) in
-lemma _root_.IsCovariantDerivativeOn.torsion_add_left_apply [CompleteSpace E]
-    (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
-    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
-    torsion f (X + X') Y x = torsion f X Y x + torsion f X' Y x := by
-  simp [torsion, hf.addX X X' (x := x)]
-  rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
-  module
-
-lemma _root_.IsCovariantDerivativeOn.torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
-    (hX : MDiffAt (T% X) x)
-    (hX' : MDiffAt (T% X') x) :
-    torsion f Y (X + X') x = torsion f Y X x + torsion f Y X' x := by
-  rw [torsion_antisymm, Pi.neg_apply,
-    hf.torsion_add_left_apply _ hx hX hX', torsion_antisymm Y, torsion_antisymm Y]
-  simp; abel
-
-variable (Y) in
-lemma _root_.IsCovariantDerivativeOn.torsion_smul_left_apply [CompleteSpace E]
-    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
-    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
-    -- TODO: making hx an auto-param := by trivial doesn't fire at the application sites below
-    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
-    torsion F (f • X) Y x = f x • torsion F X Y x := by
-  simp only [torsion, Pi.sub_apply, hF.smulX X Y f]
-  rw [hF.leibniz Y hX hf hx, VectorField.mlieBracket_smul_left hf hX]
-  simp [bar, smul_sub]
-  abel
-
-variable (X) in
-lemma _root_.IsCovariantDerivativeOn.torsion_smul_right_apply [CompleteSpace E]
-    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
-    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
-    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) :
-    torsion F X (f • Y) x = f x • torsion F X Y x := by
-  rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hx hf hX, torsion_antisymm X]
-  simp
-
-end
 
 variable (Y) in
 lemma torsion_add_left [CompleteSpace E]
@@ -160,12 +168,6 @@ def torsion_tensorial [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
 -- (That will not work for torsion-freeness on a set, though.)
 
 set_option linter.style.commandStart true
-
-/-- `f` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
-noncomputable def IsTorsionFreeOn
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
-    (U : Set M) : Prop :=
-  ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion f X Y x = 0
 
 -- TODO: generalise tensoriality result above to `IsCovariantDerivativeOn`,
 -- so it would apply here as well
