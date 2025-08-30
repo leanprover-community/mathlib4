@@ -617,6 +617,12 @@ theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
     (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
   rfl
 
+/-- The natural `IsometryEquiv` `(Fin m → ℝ) × (Fin l → ℝ) ≃ᵢ (Fin n → ℝ)` when `m + l = n`. -/
+@[simps!]
+def _root_.Fin.appendIsometryOfEq {n m l : ℕ} (hmln : m + l = n) :
+    (Fin m → α) × (Fin l → α) ≃ᵢ (Fin n → α) :=
+  (Fin.appendIsometry m l).trans (IsometryEquiv.piCongrLeft (Y := fun _ ↦ α) (finCongr hmln))
+
 variable (ι α)
 
 /-- `Equiv.funUnique` as an `IsometryEquiv`. -/
