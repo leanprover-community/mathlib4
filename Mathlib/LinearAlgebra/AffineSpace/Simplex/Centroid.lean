@@ -197,47 +197,14 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
       (fun _ _ _ _ he => AffineIndependent.injective s₂.independent he) h
 
 
-variable [NeZero n]
-
-/-- Replacing any vertex of a simplex with its centroid yields an affine independent set. -/
-theorem affineIndependent_centroid_replace_point [CharZero k] (s : Simplex k P n)
+/-- Replacing a vertex of a simplex by its centroid preserves affine independence. -/
+theorem affineIndependent_points_update_centroid [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
-    AffineIndependent k fun x => if x = i then s.centroid else s.points x := by
-  set p : Fin (n + 1) → P := fun x => if x = i then s.centroid else s.points x with hp
-  have hi : p i ∉ affineSpan k (p '' {x : Fin (n+1) | x ≠ i}) := by
-    simp_rw [hp, if_pos]
-    have h : (p '' {x : Fin (n+1) | x ≠ i}) = s.points '' {i}ᶜ := by ext x; simp; grind
-    rw [h]
-    exact centroid_not_mem_affineSpan_compl s i
-  apply AffineIndependent.affineIndependent_of_notMem_span ?_ hi
-  have hsub := (s.faceOpposite i).independent.range
-  set q : {y // y ≠ i} → P := fun x => if x.val = i then s.centroid else s.points x
-  have hq : Set.range q = Set.range (s.faceOpposite i).points := by
-    rw [range_faceOpposite_points]
-    ext x
-    unfold q
-    constructor
-    · intro hx
-      simp at hx
-      obtain ⟨a, ha1, ha2⟩ := hx
-      rw [if_neg (by simp [ha1])] at ha2
-      rw [← ha2]
-      tauto
-    · intro hx
-      simp at hx
-      obtain ⟨a, ha⟩ := hx
-      simp only [ne_eq, Set.mem_range, Subtype.exists]
-      grind
-  rw [← hq] at hsub
-  refine AffineIndependent.of_set_of_injective hsub ?_
-  have q_inj : Function.Injective q := by
-    unfold q
-    intro x y hxy
-    simp at hxy
-    rw [if_neg (by grind), if_neg (by grind)] at hxy
-    apply s.independent.injective at hxy
-    grind
-  exact q_inj
+    AffineIndependent k (Function.update s.points i s.centroid) := by
+  have h : s.centroid ∉ affineSpan k (s.points '' {i}ᶜ) := centroid_not_mem_affineSpan_compl s i
+  exact AffineIndependent.affineIndependent_update_of_notMem_affineSpan s.independent h
+
+variable [NeZero n]
 
 /-- The faceOppositeCentroid is the centroid of the face opposite to the vertex indexed by `i`. -/
 def faceOppositeCentroid (s : Affine.Simplex k P n) (i : Fin (n + 1)) : P :=
@@ -490,8 +457,10 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
       Submodule.smul_mem, Submodule.mem_span_singleton_self]
   have hi : LinearIndependent k u := by
     set p : Fin (n + 1) → P := fun x => if x = i₀ then s.centroid else s.points x
-    have h1 := (affineIndependent_iff_linearIndependent_vsub k p i₀).mp
-      (affineIndependent_centroid_replace_point s i₀)
+    have hindep : AffineIndependent k p := by
+      have := affineIndependent_points_update_centroid s i₀
+      unfold Function.update at this; simp at this; exact this
+    have h1 := (affineIndependent_iff_linearIndependent_vsub k p i₀).mp hindep
     simp_rw [ne_eq, p] at h1
     set f : {x // x ∈ ({i₀}ᶜ : Finset (Fin (n+1)))} → {x // x ≠ i₀} :=
       have h (x : {x // x ∈ ({i₀}ᶜ : Finset (Fin (n+1)))}) : x.val ≠ i₀ := by
