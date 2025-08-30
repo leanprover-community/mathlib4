@@ -17,42 +17,9 @@ import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 noncomputable section
 
-open scoped AddMonoidAlgebra BigOperators Polynomial
+open scoped AddMonoidAlgebra
 
 open Finset Polynomial
-
-variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Algebra R A]
-
-namespace Quot
-
-open Classical in
-protected def liftFinsupp {α : Type*} {r : α → α → Prop} {β : Type*} [Zero β] (f : α →₀ β)
-    (h : ∀ a b, r a b → f a = f b) : Quot r →₀ β := by
-  refine ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨?_, ?_⟩⟩
-  · rw [mem_image]; rintro ⟨b, hb, rfl⟩; exact Finsupp.mem_support_iff.mp hb
-  · induction a using Quot.ind
-    rw [lift_mk _ h]
-    exact fun hb => mem_image_of_mem _ (Finsupp.mem_support_iff.mpr hb)
-
-theorem liftFinsupp_mk {α : Type*} {r : α → α → Prop} {γ : Type*} [Zero γ] (f : α →₀ γ)
-    (h : ∀ a₁ a₂, r a₁ a₂ → f a₁ = f a₂) (a : α) : Quot.liftFinsupp f h (Quot.mk r a) = f a :=
-  rfl
-
-end Quot
-
-namespace Quotient
-
-@[reducible]
-protected def liftFinsupp {α : Type*} {β : Type*} {s : Setoid α} [Zero β] (f : α →₀ β) :
-    (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
-  Quot.liftFinsupp f
-
-@[simp]
-theorem liftFinsupp_mk' {α : Type*} {β : Type*} {_ : Setoid α} [Zero β] (f : α →₀ β)
-    (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) : Quotient.liftFinsupp f h (Quotient.mk' x) = f x :=
-  rfl
-
-end Quotient
 
 section mapDomainFixed
 
