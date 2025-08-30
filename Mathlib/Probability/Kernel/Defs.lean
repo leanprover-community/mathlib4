@@ -155,20 +155,29 @@ for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.Kernel.mea
 
 TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
 Should it be an `NNReal` number? -/
-noncomputable def IsFiniteKernel.bound (κ : Kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
-  h.exists_univ_le.choose
+noncomputable def IsFiniteKernel.bound (κ : Kernel α β) : ℝ≥0∞ :=
+  sInf {C : ℝ≥0∞ | ∀ a, κ a Set.univ ≤ C}
 
 theorem IsFiniteKernel.bound_lt_top (κ : Kernel α β) [h : IsFiniteKernel κ] :
-    IsFiniteKernel.bound κ < ∞ :=
-  h.exists_univ_le.choose_spec.1
+    IsFiniteKernel.bound κ < ∞ := by
+  obtain ⟨C, hC, hle⟩ := h.exists_univ_le
+  exact lt_of_le_of_lt (sInf_le hle) hC
 
 theorem IsFiniteKernel.bound_ne_top (κ : Kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel.bound κ ≠ ∞ :=
   (IsFiniteKernel.bound_lt_top κ).ne
 
-theorem Kernel.measure_le_bound (κ : Kernel α β) [h : IsFiniteKernel κ] (a : α) (s : Set β) :
+theorem Kernel.measure_le_bound (κ : Kernel α β) (a : α) (s : Set β) :
     κ a s ≤ IsFiniteKernel.bound κ :=
-  (measure_mono (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
+  (measure_mono (Set.subset_univ s)).trans <| le_sInf fun _ hC ↦ hC a
+
+@[simp]
+lemma IsFiniteKernel.bound_eq_zero_of_isEmpty [IsEmpty α] (κ : Kernel α β) :
+    IsFiniteKernel.bound κ = 0 := by simp [IsFiniteKernel.bound]
+
+@[simp]
+lemma IsFiniteKernel.bound_eq_zero_of_isEmpty' [IsEmpty β] (κ : Kernel α β) :
+    IsFiniteKernel.bound κ = 0 := by simp [bound, Subsingleton.elim _ (0 : Measure β)]
 
 instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
@@ -184,7 +193,8 @@ instance IsFiniteKernel.add (κ η : Kernel α β) [IsFiniteKernel κ] [IsFinite
 
 lemma isFiniteKernel_of_le {κ ν : Kernel α β} [hν : IsFiniteKernel ν] (hκν : κ ≤ ν) :
     IsFiniteKernel κ := by
-  refine ⟨hν.bound, hν.bound_lt_top, fun a ↦ (hκν _ _).trans (Kernel.measure_le_bound ν a Set.univ)⟩
+  refine ⟨IsFiniteKernel.bound ν, hν.bound_lt_top,
+    fun a ↦ (hκν _ _).trans (Kernel.measure_le_bound ν a Set.univ)⟩
 
 variable {κ η : Kernel α β}
 
@@ -212,6 +222,14 @@ instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMark
   rcases eq_zero_or_isMarkovKernel κ with rfl | _h'
   · infer_instance
   · exact ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
+
+@[simp]
+lemma IsMarkovKernel.bound_eq_one [Nonempty α] (κ : Kernel α β) [IsMarkovKernel κ] :
+    IsFiniteKernel.bound κ = 1 := by
+  refine le_antisymm ?_ ?_
+  · refine sInf_le fun a => by simp
+  · simp only [IsFiniteKernel.bound, measure_univ, le_sInf_iff, Set.mem_setOf_eq]
+    exact fun _ hC ↦ hC (Nonempty.some ‹_›)
 
 namespace Kernel
 

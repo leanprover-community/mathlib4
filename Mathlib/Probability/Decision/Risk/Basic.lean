@@ -14,11 +14,9 @@ import Mathlib.Probability.Kernel.WithDensity
 ## Main statements
 
 * `iSup_bayesRisk_le_minimaxRisk`: the maximal Bayes risk is less than or equal to the minimax risk.
-
-Data-processing inequalities: if we compose the data generating kernel `P` with a Markov kernel
-`η : Kernel 𝓧 𝓧'`, then the Bayes risk increases.
-* `bayesRisk_le_bayesRisk_comp`: data-processing inequality for the Bayes risk
-  with respect to a prior.
+* `bayesRisk_le_bayesRisk_comp`: data-processing inequality for the Bayes risk with respect to a
+  prior: if we compose the data generating kernel `P` with a Markov kernel, then the Bayes risk
+  increases.
 
 ## TODO
 
@@ -140,25 +138,15 @@ lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 
     exact Kernel.measure_le_bound P θ Set.univ
   _ = C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ := by simp
 
--- todo : change `IsFiniteKernel.bound` to be the least upper bound, to reuse the previous lemma
 lemma avgRisk_le_mul (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ]
     (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound P * π Set.univ := by
-  rw [avgRisk]
-  calc ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₖ P) θ ∂π
-  _ ≤ ∫⁻ θ, ∫⁻ y, C ∂(κ ∘ₖ P) θ ∂π := by
-    gcongr with θ y
-    exact hℓC θ y
-  _ = ∫⁻ θ, C * P θ .univ ∂π := by simp [Kernel.comp_apply' _ _ _ .univ]
-  _ ≤ ∫⁻ θ, C * IsFiniteKernel.bound P ∂π := by
-    conv_lhs => simp only [lintegral_const, ← mul_assoc]
-    gcongr with θ
-    exact Kernel.measure_le_bound P θ Set.univ
-  _ = C * IsFiniteKernel.bound P * π Set.univ := by simp
+  refine (avgRisk_le_mul' P κ π hℓC).trans_eq ?_
+  rcases isEmpty_or_nonempty 𝓧 <;> simp
 
 lemma bayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
     [IsFiniteKernel P] (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    bayesRisk ℓ P π ≤ C * (IsFiniteKernel.bound P) * π Set.univ := by
+    bayesRisk ℓ P π ≤ C * IsFiniteKernel.bound P * π Set.univ := by
   refine iInf₂_le_of_le (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) inferInstance ?_
   exact avgRisk_le_mul P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π hℓC
 
