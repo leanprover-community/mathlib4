@@ -796,6 +796,17 @@ lemma foobar (hf : IsCovariantDerivativeOn E f U)
 - deduce: two covariant derivatives are equal iff their Christoffel symbols are equal
 -/
 
+/-- Let `{s i}` be a local frame on `U` such that `[s i, s j] = 0` on `U` for all `i, j`.
+A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U`,
+the Christoffel symbols `Γᵢⱼᵏ` w.r.t. `{s i}` are symmetric. -/
+lemma isTorsionFree_iff_christoffelSymbols
+    (hf : IsCovariantDerivativeOn E f U) {U : Set M}
+    {ι : Type*} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
+    (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
+    cov.IsTorsionFree ↔
+      ∀ x ∈ U, ∀ i j k, christoffelSymbol I f hs i j k = christoffelSymbol I f hs j i k := by
+  sorry
+
 -- Exercise 4.2(b) in Lee, Chapter 4
 /-- A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U` and
 any local coordinate frame, the Christoffel symbols `Γᵢⱼᵏ` are symmetric.
@@ -803,8 +814,8 @@ any local coordinate frame, the Christoffel symbols `Γᵢⱼᵏ` are symmetric.
 TODO: figure out the right quantifiers here!
 right now, I just have one fixed coordinate frame... will this do??
 -/
-lemma isTorsionFree_iff_christoffelSymbols
-    (hf : IsCovariantDerivativeOn E f U) {x : M} :
+lemma isTorsionFree_iff_christoffelSymbols'
+    (hf : IsCovariantDerivativeOn E f U) :
     cov.IsTorsionFree ↔
       ∀ x ∈ U,
       -- Let `{s_i}` be the coordinate frame at `x`: this statement is false for arbitrary frames.
@@ -812,6 +823,7 @@ lemma isTorsionFree_iff_christoffelSymbols
       letI cs := christoffelSymbol I f
           ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (trivializationAt E _ x))
       ∀ i j k, cs i j k = cs j i k := by
+  -- TODO: check that the Lie bracket of any two coordinate vector fields is zero!
   sorry
 
 lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection := by
