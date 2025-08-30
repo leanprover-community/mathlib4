@@ -57,6 +57,8 @@ instance : Inhabited (Function.End α) := ⟨1⟩
 
 namespace Equiv.Perm
 
+attribute [to_additive_dont_translate] Perm
+
 instance instOne : One (Perm α) where one := Equiv.refl _
 instance instMul : Mul (Perm α) where mul f g := Equiv.trans g f
 instance instInv : Inv (Perm α) where inv := Equiv.symm
@@ -572,69 +574,50 @@ theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
 
 end Swap
 
-section AddGroup
-variable [AddGroup α] (a b : α)
-
--- we can't use `to_additive`, because it tries to translate `1` into `0`
-
-@[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
-
-@[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
-
-@[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
-  ext <| add_assoc _ _
-
-@[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
-  ext fun _ ↦ (add_assoc _ _ _).symm
-
-@[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
-
-@[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
-
-@[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
-  ext; simp [Perm.coe_pow]
-
-@[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
-  ext; simp [Perm.coe_pow]
-
-@[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
-  (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
-    α →+ Additive (Perm α)) _ _).symm
-
-@[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
-  | Int.ofNat n => by simp
-  | Int.negSucc n => by simp
-
-end AddGroup
-
 section Group
 variable [Group α] (a b : α)
 
-@[simp] lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+@[to_additive (attr := simp)]
+lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
 
-@[simp] lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
+@[to_additive (attr := simp)]
+lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 
-@[simp] lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
+@[to_additive (attr := simp)]
+lemma mulLeft_mul : Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
   ext <| mul_assoc _ _
 
-@[simp] lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
+@[to_additive (attr := simp)]
+lemma mulRight_mul : Equiv.mulRight (a * b) = Equiv.mulRight b * Equiv.mulRight a :=
   ext fun _ ↦ (mul_assoc _ _ _).symm
 
-@[simp] lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
+@[to_additive (attr := simp) inv_addLeft]
+lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[simp] lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
+@[to_additive (attr := simp) inv_addRight]
+lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[simp] lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
+@[to_additive (attr := simp) pow_addLeft]
+lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[simp] lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
+@[to_additive (attr := simp) pow_addRight]
+lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
+-- we can't use `to_additive`, because it tries to translate `MonoidHom α (Perm α)`
+lemma zpow_addLeft {α : Type*} [AddGroup α] (a : α) (n : ℤ) :
+    Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
+  (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
+    α →+ Additive (Perm α)) _ _).symm
+
+@[to_additive existing (attr := simp) zpow_addLeft]
+lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
               α →* Perm α) _ _).symm
 
-@[simp] lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
+@[to_additive (attr := simp) zpow_addRight]
+lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
 
@@ -642,7 +625,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[reducible, to_additive /-- The group of additive automorphisms. -/]
+@[reducible, to_additive /-- The group of additive automorphisms. -/, to_additive_dont_translate]
 def MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
@@ -657,7 +640,8 @@ variable (M) [Mul M]
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (MulAut M) where
+@[to_additive instGroup]
+instance instGroup : Group (MulAut M) where
   mul g h := MulEquiv.trans h g
   one := MulEquiv.refl _
   inv := MulEquiv.symm
@@ -666,54 +650,62 @@ instance : Group (MulAut M) where
   mul_one _ := rfl
   inv_mul_cancel := MulEquiv.self_trans_symm
 
+@[to_additive]
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
 
-@[simp]
+@[to_additive (attr := simp) coe_mul]
 theorem coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp) coe_one]
 theorem coe_one : ⇑(1 : MulAut M) = id :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp) coe_inv]
 theorem coe_inv (e : MulAut M) : ⇑e⁻¹ = e.symm := rfl
 
+@[to_additive mul_def]
 theorem mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
+@[to_additive one_def]
 theorem one_def : (1 : MulAut M) = MulEquiv.refl _ :=
   rfl
 
+@[to_additive inv_def]
 theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp) inv_symm]
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
-@[simp]
+@[to_additive (attr := simp) symm_inv]
 theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
 
-@[simp]
+@[to_additive (attr := simp) inv_apply]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
   rw [inv_def]
 
-@[simp]
+@[to_additive (attr := simp) mul_apply]
 theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp) one_apply]
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
+@[to_additive apply_inv_self]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
+@[to_additive inv_apply_self]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
 /-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
+@[to_additive /--
+Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/]
 def toPerm : MulAut M →* Equiv.Perm M where
   toFun := MulEquiv.toEquiv
   map_one' := rfl
@@ -762,72 +754,6 @@ end MulAut
 namespace AddAut
 
 variable (A) [Add A]
-
-/-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
--/
-instance group : Group (AddAut A) where
-  mul g h := AddEquiv.trans h g
-  one := AddEquiv.refl _
-  inv := AddEquiv.symm
-  mul_assoc _ _ _ := rfl
-  one_mul _ := rfl
-  mul_one _ := rfl
-  inv_mul_cancel := AddEquiv.self_trans_symm
-
-attribute [to_additive AddAut.instGroup] MulAut.instGroup
-
-instance : Inhabited (AddAut A) :=
-  ⟨1⟩
-
-@[simp]
-theorem coe_mul (e₁ e₂ : AddAut A) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
-  rfl
-
-@[simp]
-theorem coe_one : ⇑(1 : AddAut A) = id :=
-  rfl
-
-@[simp]
-theorem coe_inv (e : AddAut A) : ⇑e⁻¹ = e.symm := rfl
-
-theorem mul_def (e₁ e₂ : AddAut A) : e₁ * e₂ = e₂.trans e₁ :=
-  rfl
-
-theorem one_def : (1 : AddAut A) = AddEquiv.refl _ :=
-  rfl
-
-theorem inv_def (e₁ : AddAut A) : e₁⁻¹ = e₁.symm :=
-  rfl
-
-@[simp]
-theorem mul_apply (e₁ e₂ : AddAut A) (a : A) : (e₁ * e₂) a = e₁ (e₂ a) :=
-  rfl
-
-@[simp]
-theorem one_apply (a : A) : (1 : AddAut A) a = a :=
-  rfl
-
-@[simp]
-theorem inv_symm (e : AddAut A) : e⁻¹.symm = e := rfl
-
-@[simp]
-theorem symm_inv (e : AddAut A) : e.symm⁻¹ = e := rfl
-
-@[simp]
-theorem inv_apply (e : AddAut A) (a : A) : e⁻¹ a = e.symm a := rfl
-
-theorem apply_inv_self (e : AddAut A) (a : A) : e⁻¹ (e a) = a :=
-  AddEquiv.apply_symm_apply _ _
-
-theorem inv_apply_self (e : AddAut A) (a : A) : e (e⁻¹ a) = a :=
-  AddEquiv.apply_symm_apply _ _
-
-/-- Monoid hom from the group of multiplicative automorphisms to the group of permutations. -/
-def toPerm : AddAut A →* Equiv.Perm A where
-  toFun := AddEquiv.toEquiv
-  map_one' := rfl
-  map_mul' _ _ := rfl
 
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
 homomorphism mapping addition in `G` into multiplication in the automorphism group `AddAut G`
