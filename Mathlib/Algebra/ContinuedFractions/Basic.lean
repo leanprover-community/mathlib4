@@ -87,6 +87,7 @@ end coe
 
 end GenContFract.Pair
 
+set_option linter.style.docString false in -- special indentation not recognised
 /-- A *generalised continued fraction* (gcf) is a potentially infinite expression of the form
 $$
   h + \dfrac{a_0}
@@ -167,6 +168,7 @@ end coe
 
 end GenContFract
 
+set_option linter.style.docString false in -- special indentation not recognised
 /-- A generalized continued fraction is a *simple continued fraction* if all partial numerators are
 equal to one.
 $$
@@ -181,6 +183,7 @@ def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
 
+set_option linter.style.docString false in -- special indentation not recognised
 variable (α) in
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.

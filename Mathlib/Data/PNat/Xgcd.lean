@@ -14,6 +14,7 @@ Given `0 < a, b`, it computes the unique `(w, x, y, z, d)` such that the followi
 * `a = (w + x) d`
 * `b = (y + z) d`
 * `w * z = x * y + 1`
+
 `d` is then the gcd of `a` and `b`, and `a' := a / d = w + x` and `b' := b / d = y + z` are coprime.
 
 This story is closely related to the structure of SL₂(ℕ) (as a free monoid on two generators) and
