@@ -35,7 +35,7 @@ noncomputable def Bundle.torsion
   fun X Y ↦ f X Y - f Y X - VectorField.mlieBracket I X Y
 
 variable
-  {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
   {X X' Y : Π x : M, TangentSpace I x}
 
 variable (f X) in
@@ -93,13 +93,48 @@ lemma torsion_smul_right_apply [CompleteSpace E]
   rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hx hf hX, torsion_antisymm X]
   simp
 
+end IsCovariantDerivativeOn
+
 /-- `f` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
 noncomputable def IsTorsionFreeOn
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
     (U : Set M) : Prop :=
   ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion f X Y x = 0
 
-end IsCovariantDerivativeOn
+namespace IsTorsionFreeOn
+
+section changing_set
+
+/-! Changing set
+In this changing we change `s` in `IsTorsionFreeOn F f s`.
+-/
+
+lemma mono {s t : Set M} (hf : IsTorsionFreeOn f t) (hst : s ⊆ t) : IsTorsionFreeOn f s :=
+  fun _ hx _ _ ↦ hf _ (hst hx) ..
+
+lemma iUnion {ι : Type*} {s : ι → Set M} (hf : ∀ i, IsTorsionFreeOn f (s i)) :
+    IsTorsionFreeOn f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, hi⟩, hxsi⟩ X Y
+  exact hf i x (by simp [hi, hxsi]) X Y
+
+end changing_set
+
+/- Congruence properties -/
+section
+
+-- unused?
+lemma congr {s : Set M} (h : IsTorsionFreeOn f s)
+    (hfg : ∀ {X Y : Π x : M, TangentSpace I x}, ∀ {x}, x ∈ s → f X Y x = g X Y x) :
+    IsTorsionFreeOn g s := by
+  intro x hx X Y
+  specialize h x hx X Y
+  -- now, use torsion congruence lemma, i.e. tensoriality of sorts!
+  -- TODO: generalise tensoriality to the local setting!
+  sorry
+
+end
+
+end IsTorsionFreeOn
 
 namespace CovariantDerivative
 
@@ -183,6 +218,14 @@ lemma isTorsionFreeOn_univ : IsTorsionFreeOn cov univ ↔ IsTorsionFree cov := b
   ext X Y x
   simp [h x]
 
+/-- If a covariant derivative `cov` is torsion-free on each set in an open cover,
+it is torsion-free. -/
+def of_isTorsionFreeOn_of_open_cover {ι : Type*} {s : ι → Set M}
+    (hf : ∀ i, IsTorsionFreeOn cov (s i)) (hs : ⋃ i, s i = Set.univ) :
+    IsTorsionFree cov := by
+  rw [← isTorsionFreeOn_univ, ← hs]
+  exact IsTorsionFreeOn.iUnion hf
+
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
 -- This should be obvious, I'm doing something wrong.
@@ -199,8 +242,6 @@ lemma isTorsionFree_iff : IsTorsionFree cov ↔
     specialize h X Y
     apply congr_fun
     simp_all [torsion]
-
--- OTDO: torsion-free iff on open cover!
 
 variable {n} in
 lemma aux1 {ι : Type*} [Fintype ι]
