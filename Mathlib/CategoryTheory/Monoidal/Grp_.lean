@@ -417,7 +417,7 @@ instance : (forget₂Mon C).Monoidal where
   «η» := 𝟙 _
   δ G H := 𝟙 _
 
-attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
+attribute [local simp] one_eq_one mul_eq_mul comp_mul in
 instance instBraidedCategory : BraidedCategory (Grp C) :=
   .ofFaithful (forget₂Mon C) fun G H ↦ Grp.mkIso (β_ G.X H.X)
 
@@ -432,7 +432,10 @@ variable
   {E : Type u₃} [Category.{v₃} E] [CartesianMonoidalCategory E]
 
 namespace Functor
-variable {F F' : C ⥤ D} [F.Monoidal] [F'.Monoidal] {G : D ⥤ E} [G.Monoidal]
+variable {F F' : C ⥤ D} {G : D ⥤ E}
+
+section Monoidal
+variable [F.Monoidal] [F'.Monoidal] [G.Monoidal]
 
 open scoped Obj
 
@@ -543,6 +546,27 @@ same on group objects as on objects. -/
     let : GrpObj H := (FullyFaithful.ofFullyFaithful F).grpObj H
     refine ⟨⟨H⟩, ⟨Grp.mkIso e ?_ ?_⟩⟩ <;> simp
 
+end Monoidal
+
+section Braided
+variable [BraidedCategory C] [BraidedCategory D] (F : C ⥤ D) [F.Braided]
+
+open Monoidal LaxMonoidal
+
+noncomputable instance mapGrp.instMonoidal : F.mapGrp.Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+  { εIso := (Grp_.fullyFaithfulForget₂Mon _).preimageIso (εIso F.mapMon)
+    μIso X Y := (Grp_.fullyFaithfulForget₂Mon _).preimageIso (μIso F.mapMon X.toMon Y.toMon)
+    μIso_hom_natural_left f Z := by convert μ_natural_left F.mapMon f Z.toMon using 1
+    μIso_hom_natural_right Z f := by convert μ_natural_right F.mapMon Z.toMon f using 1
+    associativity X Y Z := by convert associativity F.mapMon X.toMon Y.toMon Z.toMon using 1
+    left_unitality X := by convert left_unitality F.mapMon X.toMon using 1
+    right_unitality X := by convert right_unitality F.mapMon X.toMon using 1 }
+
+noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
+  braided X Y := by convert Braided.braided (F := F.mapMon) X.toMon Y.toMon using 1
+
+end Braided
 end Functor
 
 open Functor
