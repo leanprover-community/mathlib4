@@ -197,10 +197,11 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
--- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
-
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
+@[to_additive (dont_translate := R) automorphize_smul_left /--
+Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
+`R`-scalar multiplication. -/]
 lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
     (g : Quotient (MulAction.orbitRel α β) → R) :
     MulAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
@@ -215,25 +216,6 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
     apply (@Quotient.eq _ (MulAction.orbitRel α β) (a • b) b).mpr
     use a
   change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
-  simp_rw [H₁]
-  exact tsum_const_smul'' _
-
-/-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
-`R`-scalar multiplication. -/
-lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β → M)
-    (g : Quotient (AddAction.orbitRel α β) → R) :
-    AddAction.automorphize ((g ∘ (@Quotient.mk' _ (_))) • f)
-      = g • (AddAction.automorphize f : Quotient (AddAction.orbitRel α β) → M) := by
-  ext x
-  apply @Quotient.inductionOn' β (AddAction.orbitRel α β) _ x _
-  intro b
-  simp only [automorphize, Pi.smul_apply', comp_apply]
-  set π : β → Quotient (AddAction.orbitRel α β) := Quotient.mk (AddAction.orbitRel α β)
-  have H₁ : ∀ a : α, π (a +ᵥ b) = π b := by
-    intro a
-    apply (@Quotient.eq _ (AddAction.orbitRel α β) (a +ᵥ b) b).mpr
-    use a
-  change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
