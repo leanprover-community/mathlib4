@@ -75,7 +75,7 @@ for all $x \in B$, but $\Lambda x_0 > 1$.
 theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] [AddCommGroup E]
     [Module ℝ E] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E] {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
-     (hs₃ : Balanced 𝕜 B) (x₀ : E) (hx : x₀ ∉ B) :
+     (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
     ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ ≤ 1 := by
   /- proof. Since $B$ is closed and convex, we can apply (b) of Theorem 3.4, with $A= {x_0}$,
   to obtain $\Lambda_1 \in X^*$ such that $\Lambda_1 x_0=r e^{i \theta}$ lies outside the
@@ -94,33 +94,34 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
   have Balanced_K : Balanced 𝕜 K := by
     refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht⟩, _⟩⟩ ↦ ?_)
     exact ⟨a • t, Balanced.smul_mem hs₃ ha ht.1, by simp_all⟩
-  /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
+  have zero_in : 0 ∈ K :=
+    have : 0 ∈ f '' B := ⟨0, by simpa using Balanced.zero_mem hs₃ hs₄⟩
+    subset_closure this
   set r := ‖f x₀‖ with hr
+  have r_gt_zero : r > 0 := by
+    simp only [hr, gt_iff_lt, norm_pos_iff, ne_eq]
+    intro nh
+    simp [nh, zero_in] at notin
+  have compact_K : IsCompact K := by
+    refine Metric.isCompact_of_isClosed_isBounded isClosed_closure ?_
+    refine (Metric.isBounded_iff_subset_ball 0 (s := K)).mpr ?_
+    use r
+    by_contra! nh
+    obtain ⟨z, hz⟩ : ∃ z ∈ K, z ∉ Metric.ball 0 r := Set.not_subset.mp nh
+    have : ‖z‖ ≥ r := by
+      by_contra! nh
+      exact hz.2 (mem_ball_zero_iff.mpr nh)
+    have := RCLike.balanced Balanced_K z hz.1 (by linarith) (f x₀) ⟨norm_nonneg (f x₀), by linarith⟩
+    contradiction
+  /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
   have : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
     set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
-    have : Continuous g := continuous_norm
     set s := sSup (g '' K) with hs
-    have ffff: K ⊆ Metric.ball 0 r := by
-      by_contra! nh
-      obtain ⟨z, hz⟩ : ∃ z ∈ K, z ∉ Metric.ball 0 r := Set.not_subset.mp nh
-      have := hz.2
-      have : ‖z‖ ≥ r := by
-        by_contra! nh
-        have : z ∈ Metric.ball 0 r := mem_ball_zero_iff.mpr nh
-        contradiction
-      #check RCLike.balanced Balanced_K
-      sorry
-    have : IsClosed K := isClosed_closure
-    have : IsCompact K := by
-      refine Metric.isCompact_of_isClosed_isBounded this ?_
-      refine (Metric.isBounded_iff_subset_ball 0 (s := K)).mpr ?_
-      use r
-    have : sSup (g '' K) ∈ g '' K := by
-      apply IsCompact.sSup_mem ?_ ?_
-      (expose_names; exact IsCompact.image this this_3)
+    obtain ⟨x, hx⟩ : sSup (g '' K) ∈ g '' K := by
+      apply IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ?_
       simp
       use 0
-      sorry
+
     sorry
   /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
   sorry
