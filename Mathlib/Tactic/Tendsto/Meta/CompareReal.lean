@@ -52,7 +52,6 @@ def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
   match ← preproces x with
   | none => return ← compareRealCore x
   | some ⟨x', pf⟩ =>
-    -- dbg_trace f!"preprocessed : {← ppExpr x'}" -- TODO: the whole thing does not work
     let r ← compareRealCore x'
     return match r with
     | .pos e => .pos q(Eq.subst (motive := fun x ↦ 0 < x) (Eq.symm $pf) $e)

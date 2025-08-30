@@ -209,21 +209,45 @@ example :
   compute_asymptotics
 
 set_option maxHeartbeats 0 in
-lemma lol :
+example :
     let f := fun (y : ℝ) ↦ Real.exp (y^2) / Real.exp y;
     Tendsto f atTop atTop := by
   compute_asymptotics
 
-#print axioms lol
-
-
-set_option maxHeartbeats 0 in
-lemma test1 :
+example :
     let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp y;
     Tendsto f atTop atTop := by
   compute_asymptotics
 
-#print axioms test1
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (2 * y) - Real.exp y;
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (2 * y) - Real.exp y * Real.exp y;
+    Tendsto f atTop (𝓝 0) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ (Real.log (Real.exp (2 * y) - Real.exp (y))) * y⁻¹;
+    Tendsto f atTop (𝓝 2) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (-y);
+    Tendsto f atTop (𝓝 0) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (-Real.log y) * y;
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (Real.exp y - Real.exp (-y)) / Real.exp (Real.exp y)
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
 
 -- set_option trace.profiler true in
 -- set_option maxHeartbeats 0 in
@@ -377,7 +401,6 @@ example :
   Tendsto f atTop atTop := by
   simp only
   compute_asymptotics
-
 
 ---- log testing
 
@@ -589,5 +612,11 @@ example :
 --     Tendsto f (𝓝[≠] 0) (𝓝 2) := by
 --   compute_asymptotics
 --   all_goals sorry
+
+-- TODO: fix
+-- example :
+--     let f := fun (y : ℝ) ↦ (Real.log (Real.exp (2 * y) - Real.exp (y))) * y⁻¹;
+--     Tendsto f atTop (𝓝 1) := by
+--   compute_asymptotics
 
 end DifferentFilters

@@ -294,9 +294,7 @@ def simpWith (pf : Expr) : SimpM Simp.Step := do
 
 simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
   let (``Stream'.Seq.destruct, #[_, target]) := e.getAppFnArgs | return .continue
-  -- let ⟨1, α, e⟩ ← inferTypeQ e | return .continue
   let ⟨1, targetType, target⟩ := ← inferTypeQ target | return .continue
-  -- dbg_trace f!"destructing {← ppExpr target}"
   match targetType with
   | ~q(PreMS.LazySeries) =>
     match target with
@@ -339,14 +337,10 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.const _ $c) => simpWith q(@const_destruct $basis_hd $basis_tl $c)
     | ~q(PreMS.one _) => simpWith q(@one_destruct $basis_hd $basis_tl)
     | ~q(PreMS.monomial_rpow _ $n $r) =>
-      -- dbg_trace f!"monomial {← ppExpr n}"
-      -- dbg_trace f!"reduced {← ppExpr (← withTransparency .all $ reduce n)}"
       match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
       | 0 => simpWith q(@monomial_rpow_zero_destruct $basis_hd $basis_tl $r)
       | m + 1 => simpWith q(@monomial_rpow_succ_destruct $basis_hd $basis_tl $m $r)
     | ~q(PreMS.monomial _ $n) =>
-      -- dbg_trace f!"monomial {← ppExpr n}"
-      -- dbg_trace f!"reduced {← ppExpr (← withTransparency .all $ reduce n)}"
       match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
       | 0 => simpWith q(@monomial_zero_destruct $basis_hd $basis_tl)
       | m + 1 => simpWith q(@monomial_succ_destruct $basis_hd $basis_tl $m)
