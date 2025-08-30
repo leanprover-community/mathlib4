@@ -100,6 +100,7 @@ import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB
@@ -6739,6 +6740,7 @@ import Mathlib.Topology.UniformSpace.ProdApproximation
 import Mathlib.Topology.UniformSpace.Real
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.UniformSpace.Ultra.Basic
+import Mathlib.Topology.UniformSpace.Ultra.Completion
 import Mathlib.Topology.UniformSpace.Ultra.Constructions
 import Mathlib.Topology.UniformSpace.UniformApproximation
 import Mathlib.Topology.UniformSpace.UniformConvergence
