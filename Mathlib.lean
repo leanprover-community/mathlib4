@@ -6750,6 +6750,7 @@ import Mathlib.Topology.UrysohnsBounded
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Constructions
+import Mathlib.Topology.VectorBundle.GramSchmidtOrtho
 import Mathlib.Topology.VectorBundle.Hom
 import Mathlib.Topology.VectorBundle.Riemannian
 import Mathlib.Util.AddRelatedDecl
