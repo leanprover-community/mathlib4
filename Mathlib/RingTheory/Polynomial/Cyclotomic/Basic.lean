@@ -72,7 +72,7 @@ theorem cyclotomic'_one (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 1 R 
     IsPrimitiveRoot.primitiveRoots_one]
 
 /-- The second modified cyclotomic polynomial is `X + 1` if the characteristic of `R` is not `2`. -/
--- Cannot be @[simp] because `p` can not be inferred by `simp`.
+-- Cannot be @[simp] because `p` cannot be inferred by `simp`.
 theorem cyclotomic'_two (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [CharP R p] (hp : p ≠ 2) :
     cyclotomic' 2 R = X + 1 := by
   rw [cyclotomic']
@@ -314,6 +314,15 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
     (cyclotomic n R).natDegree = Nat.totient n := by
   rw [natDegree, degree_cyclotomic]; norm_cast
+
+/-- The natural degree of `cyclotomic n` is at most `totient n`.
+
+If the base ring is nontrivial, then the degree is exactly `φ n`,
+otherwise it's zero. -/
+lemma natDegree_cyclotomic_le {R : Type*} [Ring R] {n : ℕ} :
+    natDegree (cyclotomic n R) ≤ n.totient := by
+  nontriviality R
+  rw [natDegree_cyclotomic]
 
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
