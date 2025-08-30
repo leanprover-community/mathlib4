@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Star.Pi
 import Mathlib.LinearAlgebra.Matrix.RowCol
-import Mathlib.LinearAlgebra.Matrix.Vec
 
 /-!
 # Dot product of two vectors
@@ -105,14 +104,6 @@ theorem dotProduct_self_star_eq_zero {v : n → R} : v ⬝ᵥ star v = 0 ↔ v =
     by simp [funext_iff, mul_eq_zero]
 
 namespace Matrix
-
-theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} :
-    (Aᴴ * A).trace = 0 ↔ A = 0 := by
-  rw [← star_vec_dotProduct_vec, dotProduct_star_self_eq_zero, vec_eq_zero_iff]
-
-theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n R} :
-    (A * Aᴴ).trace = 0 ↔ A = 0 := by
-  simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
 
 @[simp]
 lemma conjTranspose_mul_self_eq_zero {n} {A : Matrix m n R} : Aᴴ * A = 0 ↔ A = 0 :=
