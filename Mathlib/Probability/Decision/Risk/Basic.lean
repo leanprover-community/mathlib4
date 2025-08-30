@@ -57,12 +57,12 @@ end BayesRiskLeMinimaxRisk
 
 section Const
 
-/-- See `avgRisk_const_left` for a similar result with integrals swapped. -/
+/-- See `avgRisk_const_left'` for a similar result with integrals swapped. -/
 lemma avgRisk_const_left (ℓ : Θ → 𝓨 → ℝ≥0∞) (μ : Measure 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ) :
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₘ μ) ∂π := by
   simp [avgRisk]
 
-/-- See `avgRisk_const_left'` for a similar result with integrals swapped. -/
+/-- See `avgRisk_const_left` for a similar result with integrals swapped. -/
 lemma avgRisk_const_left' (hl : Measurable (uncurry ℓ)) (μ : Measure 𝓧) [SFinite μ]
     (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [SFinite π] :
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∫⁻ y, ∫⁻ θ, ℓ θ y ∂π ∂(κ ∘ₘ μ) := by
@@ -120,8 +120,9 @@ lemma bayesRisk_const (hl : Measurable (uncurry ℓ))
 
 end Const
 
-lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsFiniteKernel κ]
-    (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
+/-- See `avgRisk_le_mul` for the usual case in which `κ` is a Markov kernel. -/
+lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ)
+    {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ := by
   rw [avgRisk]
   calc ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₖ P) θ ∂π
@@ -138,14 +139,15 @@ lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 
     exact Kernel.measure_le_bound P θ Set.univ
   _ = C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ := by simp
 
-lemma avgRisk_le_mul (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ]
+lemma avgRisk_le_mul (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ]
     (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound P * π Set.univ := by
   refine (avgRisk_le_mul' P κ π hℓC).trans_eq ?_
   rcases isEmpty_or_nonempty 𝓧 <;> simp
 
-lemma bayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
-    [IsFiniteKernel P] (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
+/-- For a bounded loss, the Bayes risk with respect to a prior is bounded by a constant. -/
+lemma bayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧) (π : Measure Θ)
+    {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     bayesRisk ℓ P π ≤ C * IsFiniteKernel.bound P * π Set.univ := by
   refine iInf₂_le_of_le (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) inferInstance ?_
   exact avgRisk_le_mul P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π hℓC
