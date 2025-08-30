@@ -1229,7 +1229,7 @@ section Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
 
 @[to_additive]
-lemma Pi.orderOf_eq : orderOf x = sorry := by
+lemma Pi.orderOf_eq : orderOf x = sInf {n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n} := by
   sorry
 
 @[to_additive]

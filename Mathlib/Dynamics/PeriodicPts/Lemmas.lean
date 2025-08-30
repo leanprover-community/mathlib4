@@ -7,6 +7,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Set.Lattice.Image
@@ -135,14 +136,16 @@ theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map 
 
 variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
 
-theorem Pi.minimalPeriod_eq : minimalPeriod (Pi.map f) x = sorry :=
+theorem Pi.minimalPeriod_eq :
+    minimalPeriod (Pi.map f) x = sInf {n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n} :=
   sorry
 
 theorem Pi.fintype_minimalPeriod_eq [Fintype ι] :
     minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
   sorry
 
-theorem Pi.minimalPeriod_single_dvd : ∀ i, minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
+theorem Pi.minimalPeriod_single_dvd :
+    ∀ i, minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
   sorry
 
 end Function
