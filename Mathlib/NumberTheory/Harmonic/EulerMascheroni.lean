@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.Data.Complex.ExponentialBounds
-import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 # The Euler-Mascheroni constant `γ`
@@ -91,8 +91,8 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
     ← log_inv]
   refine (log_lt_sub_one_of_pos ?_ ?_).trans_le (le_of_eq ?_)
   · positivity
-  · field_simp
-  · field_simp
+  · simp [field]
+  · simp [field]
 
 lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := by
   have h1 : eulerMascheroniSeq' 6 = 49 / 20 - log 6 := by

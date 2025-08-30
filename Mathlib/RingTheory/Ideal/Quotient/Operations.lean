@@ -336,9 +336,7 @@ instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) 
 
 instance {A} [CommRing A] [Algebra R₁ A] (I : Ideal A) : Algebra R₁ (A ⧸ I) := inferInstance
 
--- Lean can struggle to find this instance later if we don't provide this shortcut
--- Porting note: this can probably now be deleted
--- update: maybe not - removal causes timeouts
+-- This instance can be inferred, but is kept around as a useful shortcut.
 instance Quotient.isScalarTower [SMul R₁ R₂] [IsScalarTower R₁ R₂ A] (I : Ideal A) :
     IsScalarTower R₁ R₂ (A ⧸ I) := inferInstance
 
@@ -830,15 +828,6 @@ theorem quotQuotEquivComm_comp_quotQuotMk :
 
 @[simp]
 theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivComm J I := by
-  /-  Porting note: this proof used to just be rfl but currently rfl opens up a bottomless pit
-  of processor cycles. Synthesizing instances does not seem to be an issue.
-  -/
-  change (((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm ..))).trans
-    (quotQuotEquivQuotSup J I).symm).symm =
-      ((quotQuotEquivQuotSup J I).trans (quotEquivOfEq (sup_comm ..))).trans
-        (quotQuotEquivQuotSup I J).symm
-  ext r
-  dsimp
   rfl
 
 variable {I J}
@@ -988,10 +977,7 @@ def quotQuotEquivCommₐ :
 theorem quotQuotEquivCommₐ_toRingEquiv :
     (quotQuotEquivCommₐ R I J : _ ⧸ J.map (Quotient.mkₐ R I) ≃+* _ ⧸ I.map (Quotient.mkₐ R J)) =
       quotQuotEquivComm I J :=
-  -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
-  -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
-  -- and timing out.
-  RingEquiv.ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuotEquivComm I J) :=
@@ -999,12 +985,7 @@ theorem coe_quotQuotEquivCommₐ : ⇑(quotQuotEquivCommₐ R I J) = ⇑(quotQuo
 
 @[simp]
 theorem quotQuotEquivComm_symmₐ : (quotQuotEquivCommₐ R I J).symm = quotQuotEquivCommₐ R J I := by
-  -- Porting note: should just be `rfl` but `AlgEquiv.toRingEquiv` and `AlgEquiv.ofRingEquiv`
-  -- involve repacking everything in the structure, so Lean ends up unfolding `quotQuotEquivComm`
-  -- and timing out.
-  ext
-  unfold quotQuotEquivCommₐ
-  congr
+  rfl
 
 @[simp]
 theorem quotQuotEquivComm_comp_quotQuotMkₐ :
