@@ -92,8 +92,8 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
   have notin : f x₀ ∉ K := fun h ↦ by linarith [le_on_closure_of_lt continuous_re h3 (f x₀) h]
   /- Since $B$ is balanced, so is $K$.-/
   have Balanced_K : Balanced 𝕜 K := by
-    refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht⟩, _⟩⟩ ↦ ?_)
-    exact ⟨a • t, Balanced.smul_mem hs₃ ha ht.1, by simp_all⟩
+    refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
+    exact ⟨a • t, Balanced.smul_mem hs₃ ha ht, by simp_all⟩
   have zero_in : 0 ∈ K :=
     have : 0 ∈ f '' B := ⟨0, by simpa using Balanced.zero_mem hs₃ hs₄⟩
     subset_closure this
@@ -114,7 +114,7 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     simp [nh] at hr
     simp [hr] at r_gt_zero
   /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
-  obtain ⟨s, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
+  obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
     set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
     obtain ⟨x, xin, eq⟩ : sSup (g '' K) ∈ g '' K :=
       IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ⟨0, 0, zero_in, norm_zero⟩
@@ -122,29 +122,20 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
       refine le_csSup ?_ (Set.mem_image_of_mem g hz)
       exact ⟨r, fun y ⟨x, hx, _⟩ ↦ by linarith [norm_lt_r x hx]⟩
     use (sSup (g '' K) + r) / 2
-    have :  sSup (g '' K) < (sSup (g '' K) + r) / 2 := by
-      linarith [norm_lt_r x xin]
     refine ⟨by rw [← eq]; linarith [norm_nonneg x],
-          by linarith [norm_lt_r x xin], fun z hz ↦ ?_⟩
-    linarith [g_le z hz]
+            by linarith [norm_lt_r x xin], fun z hz ↦ ?_⟩
+    linarith [norm_lt_r x xin, g_le z hz]
   /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
   have eq1 : |r| = r := abs_norm (f x₀)
-  have eq2 : |s| = s := abs_of_pos hs.1
+  have eq2 : |s| = s := abs_of_pos s_pos
   use (r / (s * (f x₀))) • f
+  have (x : E): ‖((r / (s * f x₀)) • f) x‖ = (r * ‖f x‖) / (s * ‖f x₀‖) := by
+    simp [div_mul_eq_mul_div₀, eq1, eq2]
+  have mul_pos : s * ‖f x₀‖ > 0 := Left.mul_pos s_pos r_gt_zero
   constructor
-  · simp
-    have : |r| / (|s| * ‖f x₀‖) * ‖f x₀‖ = |r| / |s| := by
-      field_simp
-      refine mul_div_mul_right |r| |s| ?_
-      simp [ne]
-    rw [this, eq1, eq2, propext (one_lt_div hs.1)]
-    exact hs.2.1
+  · rw [this, mul_comm]
+    exact (one_lt_div₀ mul_pos).mpr ((mul_lt_mul_iff_of_pos_right r_gt_zero).mpr s_lt)
   · intro b hb
-    simp
-    have : |s| * ‖f x₀‖ > 0 := by
-      refine Left.mul_pos ?_ r_gt_zero
-      exact abs_pos_of_pos hs.1
-    rw [div_mul_eq_mul_div₀ , div_le_one this, ← hr, mul_comm, eq1, eq2]
-    refine (mul_le_mul_iff_of_pos_right r_gt_zero).mpr ?_
-    have : f b ∈ K := subset_closure (Set.mem_image_of_mem (⇑f) hb)
-    exact hs.2.2 (f b) this
+    rw [this, hr, mul_comm, div_lt_one₀ mul_pos]
+    refine (mul_lt_mul_iff_of_pos_right r_gt_zero).mpr ?_
+    exact hs (f b) (subset_closure (Set.mem_image_of_mem (⇑f) hb))
