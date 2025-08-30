@@ -1424,9 +1424,7 @@ def ofAddMonoidAlgebra {Γ} [PartialOrder Γ] [AddCancelCommMonoid Γ] [IsOrdere
   toFun := ofFinsupp
   map_one' := by
     ext g
-    by_cases h : g = 0
-    · simp [h, AddMonoidAlgebra.one_def]
-    · simpa [h] using Finsupp.single_eq_of_ne fun a ↦ h a.symm
+    by_cases h : g = 0 <;> simp [h, AddMonoidAlgebra.one_def]
   map_mul' x y := by
       ext g
       rw [← of_symm_smul_of_eq_mul,

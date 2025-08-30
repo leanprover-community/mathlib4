@@ -479,7 +479,7 @@ theorem ofFinsupp_single (g : Γ) (r : R) : ofFinsupp (Finsupp.single g r) = sin
   ext g'
   by_cases h : g = g'
   · simp [h]
-  · simp [Finsupp.single_eq_of_ne h, coeff_single_of_ne fun a ↦ h a.symm]
+  · simp [coeff_single_of_ne fun a ↦ h a.symm, Finsupp.single_eq_of_ne fun a ↦ h a.symm]
 
 end Finsupp
 
