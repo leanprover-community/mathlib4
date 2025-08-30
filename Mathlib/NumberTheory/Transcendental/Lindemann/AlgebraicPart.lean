@@ -401,11 +401,8 @@ theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
   rw [Equiv.sum_comp q.equivFin.symm,
     sum_coe_sort _ (fun c ↦ w' c • ((c.minpoly.aroots S).map (φ <| .ofAdd ·)).sum)]
   refine sum_congr rfl fun c _hc => ?_
-  have : c.minpoly.aroots S = (c.minpoly.aroots K).map (algebraMap K S) := by
-    change roots _ = _
-    rw [← roots_map, Polynomial.map_map, IsScalarTower.algebraMap_eq F K S]
-    rw [splits_map_iff, RingHom.id_comp]; exact c.splits_minpoly
-  rw [this, c.aroots_minpoly_eq_carrier_val, Multiset.map_map]; rfl
+  rw [← Polynomial.aroots_map_of_splits c.splits_minpoly, c.aroots_minpoly_eq_carrier_val]
+  simp
 
 theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
     [CommRing R] [Nontrivial R] [Field F] [Algebra R F] [IsFractionRing R F]

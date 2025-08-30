@@ -565,6 +565,13 @@ theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
   · simp_rw [nextCoeff_X_sub_C, Multiset.sum_map_neg']
   · simp only [monic_X_sub_C, implies_true]
 
+theorem aroots_map_of_splits [Algebra K L] [IsScalarTower R K L] {f : R[X]}
+    (hf : Splits (algebraMap R K) f) :
+    (f.aroots K).map (algebraMap K L) = f.aroots L := by
+  rw [← Polynomial.splits_id_iff_splits] at hf
+  rw [← aroots_map L K]
+  simp_rw [aroots_def, roots_map _ hf]
+
 end Splits
 
 end Polynomial

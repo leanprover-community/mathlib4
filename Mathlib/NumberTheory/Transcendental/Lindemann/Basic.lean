@@ -80,10 +80,9 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
   have aroots_K_eq_aroots_ℂ (j) (f : ℂ → ℂ) :
       (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) =
         (((p j).aroots ℂ).map f) := by
-    have : (p j).aroots ℂ = ((p j).aroots K).map (algebraMap K ℂ) := by
-      rw [← aroots_map ℂ K, ← roots_map _ (splits_p j)]
-    rw [this, Multiset.map_map]
-    simp_rw [Function.comp_def]
+    rw [← Polynomial.aroots_map_of_splits (L := ℂ)
+        (by simpa [Polynomial.splits_id_iff_splits] using splits_p j),
+      Multiset.map_map, Function.comp_def]
   simp_rw [← aroots_K_eq_aroots_ℂ] at h
 
   -- The following roughly matches Jacobson, p. 286.
