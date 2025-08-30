@@ -54,8 +54,6 @@ def valueGroup₀_OrderEmbedding' : valueGroup₀ f ↪o B :=
 lemma valueGroup₀_OrderEmbedding'_apply (x : valueGroup₀ f) :
     valueGroup₀_OrderEmbedding' x =
       OrderIso.withZeroUnits.toOrderEmbedding (WithZero.map' (valueGroup f).subtype x) := rfl
-
-
 lemma valueGroup₀_OrderEmbedding'_mul (x y : valueGroup₀ f) :
     valueGroup₀_OrderEmbedding' (x * y) =
       valueGroup₀_OrderEmbedding' x * valueGroup₀_OrderEmbedding' y := by
