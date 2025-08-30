@@ -171,6 +171,11 @@ lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
 
+theorem trace_nonneg {A : Matrix n n 𝕜} (hA : A.PosSemidef) : 0 ≤ A.trace := by
+  classical
+  simp [hA.isHermitian.trace_eq_sum_eigenvalues, ← map_sum,
+    Finset.sum_nonneg (fun _ _ => hA.eigenvalues_nonneg _)]
+
 theorem det_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
     0 ≤ M.det := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
@@ -276,10 +281,7 @@ include hA in
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B ^ 2 := by
   simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
 
-include hA in
-@[deprecated eq_sqrt_iff_sq_eq (since := "2025-05-07")]
-lemma eq_sqrt_of_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B) : A = hB.sqrt :=
-  eq_sqrt_iff_sq_eq hA hB |>.2 hAB
+@[deprecated (since := "2025-05-07")] alias ⟨_, eq_sqrt_of_sq_eq⟩ := eq_sqrt_iff_sq_eq
 
 @[simp]
 lemma sqrt_eq_zero_iff : hA.sqrt = 0 ↔ A = 0 := by
@@ -318,6 +320,19 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
+theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n 𝕜} :
+    (Aᴴ * A).trace = 0 ↔ A = 0 := by
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
+  have hA := posSemidef_conjTranspose_mul_self A
+  classical
+  simpa [hA.isHermitian.trace_eq_sum_eigenvalues, Finset.sum_eq_zero_iff_of_nonneg
+    (fun _ _ => RCLike.ofReal_nonneg.mpr <| hA.eigenvalues_nonneg _),
+    ← conjTranspose_mul_self_eq_zero, ← hA.isHermitian.eigenvalues_eq_zero_iff, funext_iff] using h
+
+theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n 𝕜} :
+    (A * Aᴴ).trace = 0 ↔ A = 0 := by
+  simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
+
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
   (posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg _
@@ -337,11 +352,16 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
 @[deprecated (since := "2025-05-07")]
 alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
-lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
-    (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
+/-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
+lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : IsHermitian A) : PosSemidef A ↔ 0 ≤ hA.eigenvalues := by
+  refine ⟨fun h => h.eigenvalues_nonneg, fun h => ?_⟩
   rw [hA.spectral_theorem]
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
+
+@[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
+  IsHermitian.posSemidef_iff_eigenvalues_nonneg
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
@@ -465,9 +485,7 @@ protected lemma add_posSemidef [AddLeftMono R]
 protected lemma posSemidef_add [AddLeftMono R]
     {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosSemidef) (hB : B.PosDef) : (A + B).PosDef :=
-  ⟨hA.isHermitian.add hB.isHermitian, fun x hx => by
-    rw [add_mulVec, dotProduct_add]
-    exact add_pos_of_nonneg_of_pos (hA.2 x) (hB.2 x hx)⟩
+  add_comm A B ▸ hB.add_posSemidef hA
 
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
@@ -519,27 +537,50 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
+/-- A Hermitian matrix is positive-definite if and only if its eigenvalues are positive. -/
+lemma _root_.Matrix.IsHermitian.posDef_iff_eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
+    (hA : A.IsHermitian) : A.PosDef ↔ ∀ i, 0 < hA.eigenvalues i := by
+  refine ⟨fun h => h.eigenvalues_pos, fun h => ?_⟩
+  rw [hA.spectral_theorem]
+  refine (posDef_diagonal_iff.mpr <| by simpa using h).mul_mul_conjTranspose_same ?_
+  rw [vecMul_injective_iff_isUnit, ← unitary.val_toUnits_apply]
+  exact Units.isUnit _
+
+theorem trace_pos [Nonempty n] {A : Matrix n n 𝕜} (hA : A.PosDef) : 0 < A.trace := by
+  classical
+  simp [hA.isHermitian.trace_eq_sum_eigenvalues, ← map_sum,
+    Finset.sum_pos (fun _ _ => hA.eigenvalues_pos _)]
+
 theorem det_pos [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : 0 < det M := by
   rw [hM.isHermitian.det_eq_prod_eigenvalues]
   apply Finset.prod_pos
   intro i _
   simpa using hM.eigenvalues_pos i
 
-theorem isUnit [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : IsUnit M :=
-  isUnit_iff_isUnit_det _ |>.2 <| hM.det_pos.ne'.isUnit
+section Field
+variable {K : Type*} [Field K] [PartialOrder K] [StarRing K]
 
-protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M⁻¹.PosDef := by
+theorem isUnit [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : IsUnit M := by
+  by_contra h
+  obtain ⟨a, ha, ha2⟩ : ∃ a ≠ 0, M *ᵥ a = 0 := by
+    obtain ⟨a, b, ha⟩ := Function.not_injective_iff.mp <| mulVec_injective_iff_isUnit.not.mpr h
+    exact ⟨a - b, by simp [sub_eq_zero, ha, mulVec_sub]⟩
+  simpa [ha2] using hM.2 _ ha
+
+protected theorem inv [DecidableEq n] {M : Matrix n n K} (hM : M.PosDef) : M⁻¹.PosDef := by
   have := hM.mul_mul_conjTranspose_same (B := M⁻¹) ?_
   · let _ := hM.isUnit.invertible
     simpa using this.conjTranspose
   · simp only [Matrix.vecMul_injective_iff_isUnit, isUnit_nonsing_inv_iff, hM.isUnit]
 
 @[simp]
-theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
+theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
     Matrix.inv_inv_of_invertible M ▸ h.inv, (·.inv)⟩
+
+end Field
 
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef hM.posSemidef.sqrt := by

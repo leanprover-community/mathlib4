@@ -168,7 +168,6 @@ lemma shiftFunctorZero_hom_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).hom.app (F.obj X) =
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_hom_app_obj]
 
 @[simp]
@@ -176,7 +175,6 @@ lemma shiftFunctorZero_inv_app_obj_of_induced (X : C) :
     letI := HasShift.induced F A s i
     (shiftFunctorZero D A).inv.app (F.obj X) =
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorZero_eq, HasShift.Induced.zero_inv_app_obj]
 
 variable {A}
@@ -189,7 +187,6 @@ lemma shiftFunctorAdd_hom_app_obj_of_induced (a b : A) (X : C) :
         F.map ((shiftFunctorAdd C a b).hom.app X) ≫
         (i b).inv.app ((shiftFunctor C a).obj X) ≫
         (s b).map ((i a).inv.app X) := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_hom_app_obj]
 
 @[simp]
@@ -200,7 +197,6 @@ lemma shiftFunctorAdd_inv_app_obj_of_induced (a b : A) (X : C) :
       (i b).hom.app ((shiftFunctor C a).obj X) ≫
       F.map ((shiftFunctorAdd C a b).inv.app X) ≫
       (i (a + b)).inv.app X := by
-  letI := HasShift.induced F A s i
   simp only [ShiftMkCore.shiftFunctorAdd_eq, HasShift.Induced.add_inv_app_obj]
 
 variable (A)

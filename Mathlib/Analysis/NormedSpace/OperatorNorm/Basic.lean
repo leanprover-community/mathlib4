@@ -188,7 +188,7 @@ theorem opNorm_zero : ‖(0 : E →SL[σ₁₂] F)‖ = 0 :=
 
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the space is trivial
-where it is `0`. It means that one can not do better than an inequality in general. -/
+where it is `0`. It means that one cannot do better than an inequality in general. -/
 theorem norm_id_le : ‖id 𝕜 E‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 
@@ -304,7 +304,7 @@ alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitz⟩ := opNorm_le_iff_
 We use this seminorm to define a `SeminormedGroup` structure on `E →SL[σ] F`,
 but we have to override the projection `UniformSpace`
 so that it is definitionally equal to the one coming from the topologies on `E` and `F`. -/
-protected def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
+protected noncomputable def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le opNorm_smul_le
 
 private lemma uniformity_eq_seminorm :
