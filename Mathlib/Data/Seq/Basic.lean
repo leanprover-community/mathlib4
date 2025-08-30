@@ -73,7 +73,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
           simp [List.getElem?_cons_succ, Nat.add_lt_add_iff_right, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
-    (h_get : s.get? m = .some x) : x ∈ s.take n := by
+    (h_get : s.get? m = some x) : x ∈ s.take n := by
   induction m generalizing n s with
   | zero =>
     obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
@@ -82,7 +82,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
   | succ k ih =>
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
     subst hl
-    have : ∃ y, s.get? 0 = .some y := by
+    have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp
     obtain ⟨y, hy⟩ := this
