@@ -60,14 +60,22 @@ lemma le_on_closure_of_lt {E : Type u_2} [TopologicalSpace E] {f : E → ℝ} (h
     simp
     linarith [hb x hx]
 
+lemma RCLike.balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K) (x : 𝕜)
+    (hx : x ∈ K) (h0 : ‖x‖ > 0) : ∀ z : 𝕜, 0 ≤ ‖z‖ ∧ ‖z‖ ≤ ‖x‖ → z ∈ K := fun z ⟨t1, t2⟩ ↦ by
+  have : ‖z / x‖ ≤ 1 := by calc
+    _ = ‖z‖ / ‖x‖ := by rw [norm_div]
+    _ ≤ _ := (div_le_one₀ h0).mpr t2
+  have ne : x ≠ 0 := fun nh ↦ by simp [nh] at h0
+  simpa [ne] using balanced_iff_smul_mem.mp Balanced_K this hx
+
 /-- Rudin 3.7 Theorem Suppose B is a convex, balanced, closed set in a locally convex space $X,
 x_0 \in X$, but $x_0 \notin B$. Then there exists $\Lambda \in X^*$ such that $|\Lambda x| \leq 1$
 for all $x \in B$, but $\Lambda x_0 > 1$.
 -/
-theorem RCLike.geometric_hahn_b.{u_1, u_2} {𝕜 : Type u_1} {E : Type u_2} [TopologicalSpace E]
-    [AddCommGroup E] [Module ℝ E] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
-    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E] {B : Set E}
-    (hs₁ : Convex ℝ B) (hs₂ : IsClosed B) (hs₃ : Balanced 𝕜 B) (x₀ : E) (hx : x₀ ∉ B) :
+theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] [AddCommGroup E]
+    [Module ℝ E] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
+    [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E] {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
+     (hs₃ : Balanced 𝕜 B) (x₀ : E) (hx : x₀ ∉ B) :
     ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ ≤ 1 := by
   /- proof. Since $B$ is closed and convex, we can apply (b) of Theorem 3.4, with $A= {x_0}$,
   to obtain $\Lambda_1 \in X^*$ such that $\Lambda_1 x_0=r e^{i \theta}$ lies outside the
@@ -80,13 +88,11 @@ theorem RCLike.geometric_hahn_b.{u_1, u_2} {𝕜 : Type u_1} {E : Type u_2} [Top
   have h3 : ∀ z ∈ f '' B, v < re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ by
     rw [← eq]
     exact h3 y hy
-  have : f x₀ ∉ closure (f '' B) := fun h ↦ by
-    linarith [le_on_closure_of_lt continuous_re h3 (f x₀) h]
+  set K := closure (⇑f '' B)
+  have notin : f x₀ ∉ K := fun h ↦ by linarith [le_on_closure_of_lt continuous_re h3 (f x₀) h]
   /- Since $B$ is balanced, so is $K$.-/
-  set K := closure (⇑f '' B) with hk
   have Balanced_K : Balanced 𝕜 K := by
-    refine Balanced.closure ?_
-    intro a ha z ⟨w, ⟨⟨t, ht⟩, hw⟩⟩
+    refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht⟩, _⟩⟩ ↦ ?_)
     exact ⟨a • t, Balanced.smul_mem hs₃ ha ht.1, by simp_all⟩
   /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
   set r := ‖f x₀‖ with hr
@@ -94,32 +100,17 @@ theorem RCLike.geometric_hahn_b.{u_1, u_2} {𝕜 : Type u_1} {E : Type u_2} [Top
     set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
     have : Continuous g := continuous_norm
     set s := sSup (g '' K) with hs
-    have imp (x : 𝕜) (hx : x ∈ K) (h0 : ‖x‖ > 0) : ∀ z : 𝕜, 0 ≤ ‖z‖ ∧ ‖z‖ ≤ ‖x‖ → z ∈ K := by
-      intro z ⟨t1, t2⟩
-      have ttt : ‖z / x‖ ≤ 1 := by calc
-        _ = ‖z‖ / ‖x‖ := by simp
-        _ ≤ _ := (div_le_one₀ h0).mpr t2
-      have ne : x ≠ 0 := by
-        by_contra! nh
-        simp [nh] at h0
-      simpa [ne] using balanced_iff_smul_mem.mp Balanced_K ttt hx
     have ffff: K ⊆ Metric.ball 0 r := by
       by_contra! nh
-      obtain ⟨z, hz⟩ : ∃ z ∈ K, z ∉ Metric.ball 0 r := by
-        exact Set.not_subset.mp nh
+      obtain ⟨z, hz⟩ : ∃ z ∈ K, z ∉ Metric.ball 0 r := Set.not_subset.mp nh
       have := hz.2
       have : ‖z‖ ≥ r := by
         by_contra! nh
-        have : z ∈ Metric.ball 0 r := by
-          exact mem_ball_zero_iff.mpr nh
+        have : z ∈ Metric.ball 0 r := mem_ball_zero_iff.mpr nh
         contradiction
-      -- have : r > 0 := by
-      --   sorry
-      -- have := imp z hz.1 (by linarith) z ⟨by linarith, by linarith⟩
-
+      #check RCLike.balanced Balanced_K
       sorry
-    have : IsClosed K := by
-      exact isClosed_closure
+    have : IsClosed K := isClosed_closure
     have : IsCompact K := by
       refine Metric.isCompact_of_isClosed_isBounded this ?_
       refine (Metric.isBounded_iff_subset_ball 0 (s := K)).mpr ?_
@@ -131,9 +122,5 @@ theorem RCLike.geometric_hahn_b.{u_1, u_2} {𝕜 : Type u_1} {E : Type u_2} [Top
       use 0
       sorry
     sorry
+  /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
   sorry
-
-/-
-   The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$
-  has the desired properties.
-  -/
