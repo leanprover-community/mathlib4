@@ -241,7 +241,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
-  rw [← s.toSet.biUnion_of_singleton]
+  rw [← (s : Set α).biUnion_of_singleton]
   simp [integrableOn_finset_iUnion, measure_lt_top]
 
 lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]

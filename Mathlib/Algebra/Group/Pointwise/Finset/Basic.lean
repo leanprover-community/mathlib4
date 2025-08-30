@@ -880,7 +880,8 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
-  simp [← mem_coe, coe_pow, Set.mem_pow]
+  rw [← mem_coe, coe_pow, Set.mem_pow]
+  simp
 
 @[to_additive]
 lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n
