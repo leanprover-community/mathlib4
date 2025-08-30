@@ -301,6 +301,35 @@ lemma inv_sqrt : hA.sqrt⁻¹ = hA.inv.sqrt := by
 
 end sqrt
 
+variable [DecidableEq n]
+
+open UnitaryGroup in
+theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff'
+    (U : unitaryGroup n R) (x : Matrix n n R) :
+    PosSemidef ((star U : Matrix n n R) * x * (U : Matrix n n R)) ↔ x.PosSemidef := by
+  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_unitary_conjugate_iff',
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
+    ← dotProduct_mulVec]
+  exact fun h => ⟨fun H y => by simpa using H (star U *ᵥ y), fun H _ => H _⟩
+
+theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff
+    (U : unitaryGroup n R) (x : Matrix n n R) :
+    PosSemidef ((U : Matrix n n R) * x * (star U : Matrix n n R)) ↔ x.PosSemidef := by
+  simpa using UnitaryGroup.posSemidef_conjugate_iff' (star U) _
+
+open scoped Kronecker in
+theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
+    (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
+  rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
+  simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
+   ← star_eq_conjTranspose]
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
+    : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
+  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
+    UnitaryGroup.posSemidef_conjugate_iff, diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
+  exact fun _ => mul_nonneg (RCLike.ofReal_nonneg.mpr <| hx.eigenvalues_nonneg _)
+    (RCLike.ofReal_nonneg.mpr <| hy.eigenvalues_nonneg _)
+
 end PosSemidef
 
 @[simp]
@@ -613,6 +642,37 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
   contrapose! hv
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
+
+open UnitaryGroup in
+theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff' [DecidableEq n]
+    (U : unitaryGroup n R) {x : Matrix n n R} :
+    PosDef ((star U : Matrix n n R) * x * (U : Matrix n n R)) ↔ x.PosDef := by
+  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_unitary_conjugate_iff',
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose,
+    ← star_mulVec, ← dotProduct_mulVec]
+  refine fun h => ⟨fun h x hx => ?_, fun h x hx => ?_⟩
+  · simpa [UnitaryGroup.toLinearEquiv] using
+      h _ (map_ne_zero_iff _ (UnitaryGroup.toLinearEquiv U⁻¹).injective |>.mpr hx)
+  · simpa [UnitaryGroup.toLinearEquiv] using
+      h _ (map_ne_zero_iff _ (UnitaryGroup.toLinearEquiv U).injective |>.mpr hx)
+
+theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff [DecidableEq n]
+    (U : unitaryGroup n R) {x : Matrix n n R} :
+    PosDef ((U : Matrix n n R) * x * (star U : Matrix n n R)) ↔ x.PosDef := by
+  simpa using UnitaryGroup.posDef_conjugate_iff' (star U)
+
+open scoped Kronecker in
+theorem kronecker [DecidableEq n] [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
+    (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
+  rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
+  simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
+   ← star_eq_conjTranspose]
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
+    : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
+  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
+    UnitaryGroup.posDef_conjugate_iff, diagonal_kronecker_diagonal, posDef_diagonal_iff]
+  exact fun _ => mul_pos (RCLike.ofReal_pos.mpr <| hx.eigenvalues_pos _)
+    (RCLike.ofReal_pos.mpr <| hy.eigenvalues_pos _)
 
 end PosDef
 
