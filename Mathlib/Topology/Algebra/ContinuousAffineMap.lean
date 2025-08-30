@@ -238,6 +238,42 @@ instance [Semiring S] [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S 
 
 end ModuleValuedMaps
 
+section Prod
+
+variable {k P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*} [Ring k]
+  [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
+  [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
+  [AddCommGroup V₃] [Module k V₃] [AddTorsor V₃ P₃] [TopologicalSpace P₃]
+  [AddCommGroup V₄] [Module k V₄] [AddTorsor V₄ P₄] [TopologicalSpace P₄]
+
+/-- The product of two continuous affine maps is a continuous affine map. -/
+@[simps toAffineMap]
+def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P₂ × P₃ where
+  __ := AffineMap.prod f g
+  cont := by eta_expand; dsimp; fun_prop
+
+theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
+  rfl
+
+@[simp]
+theorem prod_apply (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) (p : P₁) : prod f g p = (f p, g p) :=
+  rfl
+
+/-- `Prod.map` of two continuous affine maps. -/
+@[simps toAffineMap]
+def prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) : P₁ × P₃ →ᴬ[k] P₂ × P₄ where
+  __ := AffineMap.prodMap f g
+  cont := by eta_expand; dsimp; fun_prop
+
+theorem coe_prodMap (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) : ⇑(f.prodMap g) = Prod.map f g :=
+  rfl
+
+@[simp]
+theorem prodMap_apply (f : P₁ →ᴬ[k] P₂) (g : P₃ →ᴬ[k] P₄) (x) : f.prodMap g x = (f x.1, g x.2) :=
+  rfl
+
+end Prod
+
 end ContinuousAffineMap
 
 namespace ContinuousLinearMap
