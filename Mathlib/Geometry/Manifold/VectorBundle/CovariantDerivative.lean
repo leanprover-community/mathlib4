@@ -1232,11 +1232,31 @@ def torsion_tensorial [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
   · intro σ τ τ' hτ hτ'
     exact cov.torsion_add_right_apply hτ hτ'
 
+-- TODO: define a torsion tensor of a covariant derivative,
+-- and related torsion-freeness to this
+-- (That will not work for torsion-freeness on a set, though.)
+
 set_option linter.style.commandStart true
+
+/-- `f` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
+noncomputable def IsTorsionFreeOn
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    (U : Set M) : Prop :=
+  ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion f X Y x = 0
+
+-- TODO: generalise tensoriality result above to `IsCovariantDerivativeOn`,
+-- so it would apply here as well
 
 variable (cov) in
 /-- A covariant derivation is called **torsion-free** iff its torsion tensor vanishes. -/
 def IsTorsionFree : Prop := torsion cov = 0
+
+@[simp]
+lemma isTorsionFreeOn_univ : IsTorsionFreeOn cov univ ↔ IsTorsionFree cov := by
+  simp only [IsTorsionFree, IsTorsionFreeOn]
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext X Y x
+  simp [h x]
 
 lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTorsionFree]
 
