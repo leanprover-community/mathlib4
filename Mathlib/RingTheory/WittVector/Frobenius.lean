@@ -166,16 +166,10 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [C_inj]
   simp only [invOf_eq_inv, eq_intCast, inv_pow, Int.cast_natCast, Nat.cast_mul, Int.cast_mul]
   rw [Rat.natCast_div _ _ (map_frobeniusPoly.key₁ p (n - i) j hj)]
-  simp only [Nat.cast_pow, pow_add, pow_one]
-  suffices
-    (((p ^ (n - i)).choose (j + 1) : ℚ) * (p : ℚ) ^ (j - v p (j + 1)) * p * (p ^ n : ℚ))
-      = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
-        (p : ℚ) ^ (n - i - v p (j + 1)) by
-    have aux : ∀ k : ℕ, (p : ℚ) ^ k ≠ 0 := by
-      intro; apply pow_ne_zero; exact mod_cast hp.1.ne_zero
-    simpa [aux, -one_div, -pow_eq_zero_iff', field_simps] using this.symm
-  rw [mul_comm _ (p : ℚ), mul_assoc, mul_assoc, ← pow_add,
-    map_frobeniusPoly.key₂ p hi.le hj, Nat.cast_mul, Nat.cast_pow]
+  push_cast
+  linear_combination (norm := skip) -p / p ^ n / p ^ (n - i - v p (j + 1))
+    * (p ^ (n - i)).choose (j + 1) * congr((p:ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
+  field_simp [hp.1.ne_zero]
   ring
 
 theorem frobeniusPoly_zmod (n : ℕ) :

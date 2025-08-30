@@ -117,7 +117,7 @@ variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
   [DecidablePred fun b : B ↦ b = 0]
 
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
-def valueGroup₀_MulWithZeroEmbedding : valueGroup₀ f →*₀ B :=
+def valueGroup₀.embedding : valueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
 
@@ -130,7 +130,7 @@ variable (f) in
 in `valueMonoid₀ f` because in general `f a` needs not be a unit, so it will not be in
 `valueMonoid₀ f`. -/
 @[simps!]
-def restrict₀ : A →*₀ (valueGroup₀ f) where
+def restrict₀ : A →*₀ valueGroup₀ f where
   toFun a :=
     if h : f a ≠ 0 then (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) else 0
   map_one' := by simp; rfl

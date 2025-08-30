@@ -500,9 +500,9 @@ def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k
   · simp [h₀]
-  · simp [single_eq_of_ne hk]
+  · simp [hk]
   · simp [h₀]
-  · simp [single_eq_of_ne hk]
+  · simp [hk]
 
 theorem Finsupp.linearCombination_comp_addSingleEquiv (v : ι → M) :
     linearCombination R v ∘ₗ addSingleEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by

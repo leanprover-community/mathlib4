@@ -231,9 +231,10 @@ theorem rpow_sum_of_pos {ι : Type*} {a : ℝ} (ha : 0 < a) (f : ι → ℝ) (s 
 
 theorem rpow_sum_of_nonneg {ι : Type*} {a : ℝ} (ha : 0 ≤ a) {s : Finset ι} {f : ι → ℝ}
     (h : ∀ x ∈ s, 0 ≤ f x) : (a ^ ∑ x ∈ s, f x) = ∏ x ∈ s, a ^ f x := by
-  induction' s using Finset.cons_induction with i s hi ihs
-  · rw [sum_empty, Finset.prod_empty, rpow_zero]
-  · rw [forall_mem_cons] at h
+  induction s using Finset.cons_induction with
+  | empty => rw [sum_empty, Finset.prod_empty, rpow_zero]
+  | cons i s hi ihs =>
+    rw [forall_mem_cons] at h
     rw [sum_cons, prod_cons, ← ihs h.2, rpow_add_of_nonneg ha h.1 (sum_nonneg h.2)]
 
 /-- See also `rpow_neg` for a version with `(x ^ y)⁻¹` in the RHS. -/
@@ -636,7 +637,7 @@ theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
 theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
   have x_pos : 0 < x := lt_trans zero_lt_one hx
   rw [← log_le_log_iff (rpow_pos_of_pos x_pos y) (rpow_pos_of_pos x_pos z), log_rpow x_pos,
-    log_rpow x_pos, mul_le_mul_right (log_pos hx)]
+    log_rpow x_pos, mul_le_mul_iff_left₀ (log_pos hx)]
 
 @[simp]
 theorem rpow_lt_rpow_left_iff (hx : 1 < x) : x ^ y < x ^ z ↔ y < z := by

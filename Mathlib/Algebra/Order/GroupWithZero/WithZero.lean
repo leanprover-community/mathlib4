@@ -94,24 +94,7 @@ lemma WithZero.withZeroUnitsEquiv_strictMono :
 between `WithZero αˣ` with `α`. -/
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
-  map_rel_iff' {a b} := by
-    cases a <;> cases b <;>
-    simp
-
-/-- Given any linearly ordered commutative group with zero `α`, this is the inclusion of
-`WithZero αˣ` into `α` as an ordered embedding. -/
-@[simps!]
-def OrderEmbedding.withZeroUnits : WithZero αˣ ↪o α := OrderIso.withZeroUnits.toOrderEmbedding
-
--- @[simp]
--- lemma OrderEmbedding.withZeroUnits_apply (x : WithZero αˣ) :
---     OrderEmbedding.withZeroUnits x = withZeroUnitsEquiv x := rfl
---
--- lemma OrderEmbedding.withZeroUnits_mul (x y : WithZero αˣ) :
---     OrderEmbedding.withZeroUnits (x * y) = withZeroUnitsEquiv x * withZeroUnitsEquiv y := by
---   simp [map_mul]
-
-
+  map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
 lemma OrderIso.withZeroUnits_apply (x : WithZero αˣ) :
     OrderIso.withZeroUnits x = withZeroUnitsEquiv x := rfl
 
