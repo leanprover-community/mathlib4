@@ -228,8 +228,8 @@ theorem isBipartiteWith_sum_degrees_eq [G.LocallyFinite] (h : G.IsBipartiteWith 
 
 variable [Fintype V]
 
-lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V]
-    (h : G.IsBipartiteWith s t) : ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
+lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
+    ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartiteWith_support_subset h
   rw [← coe_union, ← Set.toFinset_subset] at hsub
   rw [← Finset.sum_subset hsub, ← sum_degrees_support_eq_twice_card_edges]
