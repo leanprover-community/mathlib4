@@ -40,7 +40,7 @@ Polynomials are defined using `R[ℕ]`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
 `X * p = p * X`.  The relationship to `R[ℕ]` is through a structure
 to make polynomials irreducible from the point of view of the kernel. Most operations
-are irreducible since Lean can not compute anyway with `AddMonoidAlgebra`. There are two
+are irreducible since Lean cannot compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:
 * The zero polynomial, so that its coefficients are definitionally equal to `0`.
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance
@@ -596,7 +596,7 @@ theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
 theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
   Finsupp.single_eq_same
 
-theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : n ≠ m) : (monomial n c).coeff m = 0 :=
+theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).coeff m = 0 :=
   Finsupp.single_eq_of_ne h
 
 @[simp]
@@ -940,18 +940,15 @@ irreducible_def erase (n : ℕ) : R[X] → R[X]
 
 @[simp]
 theorem toFinsupp_erase (p : R[X]) (n : ℕ) : toFinsupp (p.erase n) = p.toFinsupp.erase n := by
-  rcases p with ⟨⟩
   simp only [erase_def]
 
 @[simp]
 theorem ofFinsupp_erase (p : R[ℕ]) (n : ℕ) :
     (⟨p.erase n⟩ : R[X]) = (⟨p⟩ : R[X]).erase n := by
-  rcases p with ⟨⟩
   simp only [erase_def]
 
 @[simp]
 theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).erase n := by
-  rcases p with ⟨⟩
   simp only [support, erase_def, Finsupp.support_erase]
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=

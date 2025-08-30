@@ -30,7 +30,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
 module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
-`M.ofModule` is the associociated representation seen as a homomorphism.
+`M.ofModule` is the associated representation seen as a homomorphism.
 -/
 
 open MonoidAlgebra (lift of)
@@ -526,7 +526,7 @@ lemma leftRegular_norm_apply :
       linearCombination _ (fun _ => 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
-    (Group.mulRight_bijective i) (by aesop) (by aesop)
+    (Group.mulRight_bijective i) (by simp_all) (by simp_all)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
     (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by

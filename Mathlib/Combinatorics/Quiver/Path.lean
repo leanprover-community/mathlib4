@@ -78,6 +78,9 @@ theorem eq_nil_of_length_zero (p : Path a a) (hzero : p.length = 0) : p = nil :=
   · rfl
   · simp at hzero
 
+@[simp]
+lemma length_toPath {a b : V} (e : a ⟶ b) : e.toPath.length = 1 := rfl
+
 /-- Composition of paths. -/
 def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
   | _, p, nil => p

@@ -173,7 +173,7 @@ theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 
-theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
+theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x ∈ s, f x = 0 := by
   rw [gcd_def, Multiset.gcd_eq_zero_iff]
   constructor <;> intro h
   · intro b bs
@@ -185,6 +185,9 @@ theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
     rw [Multiset.mem_map] at as
     rcases as with ⟨b, ⟨bs, rfl⟩⟩
     apply h b (mem_def.1 bs)
+
+theorem gcd_ne_zero_iff : s.gcd f ≠ 0 ↔ ∃ x ∈ s, f x ≠ 0 := by
+  simp [gcd_eq_zero_iff]
 
 theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
