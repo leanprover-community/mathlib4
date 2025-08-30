@@ -458,15 +458,6 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
   have k0' : 0 < bit1 k := bit1_pos (Nat.zero_le _)
   have dn' : bit1 n' ∣ bit1 n := ⟨_, hn'.symm⟩
   have dk : bit1 k ∣ bit1 n := ⟨_, ((mul_comm _ _).trans hn').symm⟩
-  have : bit1 n / bit1 k = bit1 n' := by rw [← hn', Nat.mul_div_cancel _ k0']
-  have k2 : 2 ≤ bit1 k := Nat.succ_le_succ (bit0_pos k0)
-  have pk : (bit1 k).Prime := by
-    refine' Nat.prime_def_minFac.2 ⟨k2, le_antisymm (Nat.minFac_le k0') _⟩
-    exact ih _ (Nat.minFac_prime (ne_of_gt k2)) (dvd_trans (Nat.minFac_dvd _) dk)
-  have dkk' : ¬bit1 k ∣ bit1 n' := by
-    rw [Nat.dvd_iff_mod_eq_zero, hc]
-    exact ne_of_gt c0
-  have dkk : ¬bit1 k * bit1 k ∣ bit1 n := by rwa [← Nat.dvd_div_iff_mul_dvd dk, this]
   refine' @Nat.minSqFacProp_div _ _ pk dk dkk none _
   rw [this]
   refine' H (Nat.succ_pos _) fun p pp dp => _
@@ -483,9 +474,6 @@ theorem squarefreeHelper_4 (n k k' : ℕ) (e : bit1 k * bit1 k = k') (hd : bit1 
   refine' fun k0 ih => Irreducible.squarefree (Nat.prime_def_le_sqrt.2 ⟨bit1_lt_bit1.2 h, _⟩)
   intro m m2 hm md
   obtain ⟨p, pp, hp⟩ := Nat.exists_prime_and_dvd (ne_of_gt m2)
-  have :=
-    (ih p pp (dvd_trans hp md)).trans
-      (le_trans (Nat.le_of_dvd (lt_of_lt_of_le (by decide) m2) hp) hm)
   rw [Nat.le_sqrt] at this
   exact not_le_of_gt hd this
 
