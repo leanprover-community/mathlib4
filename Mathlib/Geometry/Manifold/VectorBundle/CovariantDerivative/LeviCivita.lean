@@ -847,7 +847,7 @@ any local coordinate frame, the Christoffel symbols `Γᵢⱼᵏ` are symmetric.
 TODO: figure out the right quantifiers here!
 right now, I just have one fixed coordinate frame... will this do??
 -/
-lemma isTorsionFree_iff_christoffelSymbols'
+lemma isTorsionFree_iff_christoffelSymbols' [FiniteDimensional ℝ E] [IsManifold I ∞ M]
     (hf : IsCovariantDerivativeOn E f U) :
     IsTorsionFreeOn f U ↔
       ∀ x ∈ U,
@@ -856,8 +856,14 @@ lemma isTorsionFree_iff_christoffelSymbols'
       letI cs := christoffelSymbol I f
           ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (trivializationAt E _ x))
       ∀ i j k, cs i j k x = cs j i k x := by
+  letI t := (trivializationAt E (fun (x : M) ↦ TangentSpace I x))
+  have hs (x) :=
+    ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (t x))
+
   -- TODO: check that the Lie bracket of any two coordinate vector fields is zero!
-  sorry
+  rw [isTorsionFreeOn_iff_christoffelSymbols (ι := (↑(Basis.ofVectorSpaceIndex ℝ E))) I hf]
+  -- issues with quantifier order in the statement... prove both directions separately, at each x?
+  repeat sorry
 
 theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x : M) :
     letI t := trivializationAt E (TangentSpace I) x;

@@ -258,6 +258,7 @@ lemma aux1 {ι : Type*} [Fintype ι]
     _ = ∑ i, (torsion f (fun x ↦ (hs.repr i) X x • s i x) Y x) := sorry
     _ = ∑ i, (hs.repr i) X x • (torsion f (s i) Y x) := sorry
 
+-- Weaker hypotheses possible, e.g. local frame on U ∈ 𝓝 x, while a cov. derivative on s ∋ x
 variable {n} in
 lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
     {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
