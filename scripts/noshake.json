@@ -50,6 +50,8 @@
   "Mathlib.Data.Sym.Sym2.Init",
   "Mathlib.Data.Vector.Basic",
   "Mathlib.Geometry.Manifold.Instances.Real",
+  "Mathlib.Geometry.Manifold.Elaborators",
+  "Mathlib.Geometry.Manifold.Traces",
   "Mathlib.Init",
   "Mathlib.LinearAlgebra.AffineSpace.Basic",
   "Mathlib.LinearAlgebra.Matrix.Notation",
@@ -411,6 +413,8 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Geometry.Manifold.Elaborators":
+  ["Mathlib.Geometry.Manifold.ContMDiff.Defs", "Mathlib.Geometry.Manifold.MFDeriv.Defs"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
