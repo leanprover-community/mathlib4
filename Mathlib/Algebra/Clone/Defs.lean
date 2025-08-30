@@ -1,0 +1,99 @@
+/-
+Copyright (c) 2024 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg
+-/
+import Mathlib.Data.One.Defs
+import Mathlib.Tactic.TypeStar
+
+/-!
+# Clones
+
+This file defines the notation typeclass `Superposable` used for working with `Clone`.
+There is a version with bare types `{n m : ℕ} : A n → (T n → A m) → A m`, and a version
+for Sigma types `(x : Sigma A) (y : T x.fst → A m) : Sigma A`. In both of these,
+`A : ι → Type*` is the carrier. A prototypical could have `ι := ℕ`, `T := Fin`, and `A i`
+as some `i`-arity functions.
+
+This also defines the `OneGradedOne` type class, which gives a graded `One (A 1)`. This
+lets us write "1" for the unary projector of a `Clone`, which is a two-sided identity.
+
+The primary application of this will be in describing
+[Post's Lattice](https://en.wikipedia.org/wiki/Post's_lattice), which classifies
+Boolean functions closed under composition. This is one particular Clone. Another example
+of a Clone is `List`, where the superposition operation is inserting `k` new Lists between
+the `k-1` elements of another given List; and the `One` would be the empty list. Clones
+are in Galois correspondence to relational invariants, which leads to their importance in the
+[CSP Dichotomy Theorem](https://www.math.uwaterloo.ca/~rdwillar/documents/Slides/willard-BLAST19-tut1-handout.pdf).
+Closely related objects are operads,
+[minions](https://www.sciencedirect.com/science/article/pii/S0012365X01002977), and
+[clonoids](https://arxiv.org/abs/1403.7938).
+
+Classes:
+- `Superposable`: A `superpose` operation `A n → (T n → A m) → A m`. This is the type of
+  operation used in Clones.
+- `OneGradedOne`: There is a distinguished `1` element at grade 1, a notion of identity.
+
+Definitions:
+- `superpose` bundles the action of `Superposable.superpose` into `Sigma A`.
+
+Notations:
+- `x ∘⚟ y` for `Superposable.superpose x y`. The typography is meant to suggest
+  "many arguments into one".
+- `x ∘∈ y` for `superpose x y`, the variant for Sigma types.
+
+## References
+- Wikipedia: ["Post's Lattice"](https://en.wikipedia.org/wiki/Post%27s_lattice)
+- D. Lau, [Function algebras on finite sets: Basic course on many-valued logic and clone theory](https://link.springer.com/book/10.1007/3-540-36023-9)
+-/
+
+/-- A Superposable is a structure that allows "superposition": given an n-arity object
+ and n many m-arity objects, they can all enter and share arguments to make a new m-arity
+object. `Clone` is the canonical example. -/
+class Superposable {ι : Type*} (T : ι → Type*) (A : ι → Type*) where
+  /-- Compose the (n+1)-arity object at location p on the m-arity object. -/
+  superpose {n m} : A n → (T n → A m) → A m
+
+variable {ι : Type*} {T A : ι → Type*} {i : ι}
+
+/-- Upgrade `Superposable.superpose` to an operation on Sigma types. -/
+def Sigma.superpose [Superposable T A] (x : Sigma A) (y : T x.fst → A i) : Sigma A :=
+  ⟨i, Superposable.superpose x.snd y⟩
+
+namespace Superposable
+
+/-- Notation for `Superposable.superpose` for working with graded superposition. -/
+scoped infixr:70 " ∘⚟ " => Superposable.superpose
+
+variable [Superposable T A] {i : ι}
+
+@[simp]
+theorem superpose_fst (x : Sigma A) (y : T x.fst → A i) : (x.superpose y).fst = i :=
+  rfl
+
+@[simp]
+theorem superpose_snd (x : Sigma A) (y : T x.fst → A i) : (x.superpose y).snd = x.snd ∘⚟ y :=
+  rfl
+
+end Superposable
+
+/-- Families that have a "one" at grading 1. -/
+class OneGradedOne {ι : Type*} [One ι] (A : ι → Type*) extends One (A 1) where
+
+namespace OneGradedOne
+
+variable [One ι] [OneGradedOne A]
+
+/-- `OneGradedOne` yields a `One (Sigma A)` -/
+instance OneGradedOne_toOne : One (Sigma A) :=
+  ⟨⟨1, 1⟩⟩
+
+@[simp]
+theorem snd : (1 : Sigma A).snd = 1 :=
+  rfl
+
+@[simp]
+theorem fst : (1 : Sigma A).fst = 1 :=
+  rfl
+
+end OneGradedOne
