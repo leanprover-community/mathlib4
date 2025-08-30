@@ -203,6 +203,9 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 @[inherit_doc Quotient.mk]
 notation3:arg "⟦" a "⟧" => Quotient.mk _ a
 
+instance instNonemptyQuotient (s : Setoid α) [h : Nonempty α] : Nonempty (Quotient s) :=
+  h.map (⟦·⟧)
+
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
 
