@@ -148,10 +148,11 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     emultiplicity p (p * n)! = emultiplicity p n ! + n := by
-  induction' n with n ih
-  · simp
-  · simp only [hp, emultiplicity_factorial_mul_succ, ih, factorial_succ, emultiplicity_mul,
-    cast_add, cast_one, ← add_assoc]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [hp, emultiplicity_factorial_mul_succ, ih, factorial_succ, emultiplicity_mul,
+      cast_add, cast_one, ← add_assoc]
     congr 1
     rw [add_comm, add_assoc]
 

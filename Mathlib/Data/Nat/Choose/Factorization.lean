@@ -236,9 +236,11 @@ theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) 
   · rw [two_mul, add_tsub_cancel_left]
 
 theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
-  induction' n with n hn; · simp
-  rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
-    Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
+      Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]

@@ -34,9 +34,10 @@ theorem cast_ascFactorial : a.ascFactorial b = (ascPochhammer S b).eval (a : S) 
 theorem cast_descFactorial :
     a.descFactorial b = (ascPochhammer S b).eval (a - (b - 1) : S) := by
   rw [← ascPochhammer_eval_cast, ascPochhammer_nat_eq_descFactorial]
-  induction' b with b
-  · simp
-  · simp_rw [add_succ, Nat.add_one_sub_one]
+  induction b with
+  | zero => simp
+  | succ b =>
+    simp_rw [add_succ, Nat.add_one_sub_one]
     obtain h | h := le_total a b
     · rw [descFactorial_of_lt (lt_succ_of_le h), descFactorial_of_lt (lt_succ_of_le _)]
       rw [tsub_eq_zero_iff_le.mpr h, zero_add]
