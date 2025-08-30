@@ -57,6 +57,7 @@ import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Disjoint
 import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Pi
@@ -728,6 +729,7 @@ import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Algebra.Module.ULift
 import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Algebra.Module.ZLattice.Covolume
+import Mathlib.Algebra.Module.ZLattice.Summable
 import Mathlib.Algebra.Module.ZMod
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
