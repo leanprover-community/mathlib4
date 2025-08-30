@@ -741,7 +741,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     sorry
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
-lemma isCovariantDerivativeOn_existence_candidate [FiniteDimensional ℝ E]
+lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (lcCandidate I M) e.baseSet := by
   apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidate_aux I e)
@@ -766,7 +766,7 @@ noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     rw [← iUnion_source_chartAt H M]
     let t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x
     apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
-    apply isCovariantDerivativeOn_existence_candidate I _
+    exact isCovariantDerivativeOn_lcCandidate I _
 
 /-- The **Christoffel symbol** of a covariant derivative on a set `U ⊆ M`
 with respect to a local frame `(s_i)` on `U`: for each triple `(i, j, k)` of indices,
@@ -838,8 +838,16 @@ lemma isTorsionFree_iff_christoffelSymbols'
       -- TODO: does the following do what I want??
       letI cs := christoffelSymbol I f
           ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (trivializationAt E _ x))
-      ∀ i j k, cs i j k = cs j i k := by
+      ∀ i j k, cs i j k x = cs j i k x := by
   -- TODO: check that the Lie bracket of any two coordinate vector fields is zero!
+  sorry
+
+theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x : M) :
+    letI t := trivializationAt E (TangentSpace I) x;
+    letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
+    ∀ {x'}, x' ∈ t.baseSet → ∀ (i j k : ↑(Basis.ofVectorSpaceIndex ℝ E)),
+      christoffelSymbol I (LeviCivitaConnection I M) hs i j k x' =
+        christoffelSymbol I (LeviCivitaConnection I M) hs j i k x' := by
   sorry
 
 lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection := by
@@ -864,16 +872,17 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
     --simp [product_apply]
     sorry -- compatible
   · let s : M → Set M := fun x ↦ (trivializationAt E (fun (x : M) ↦ TangentSpace I x) x).baseSet
-    apply (LeviCivitaConnection I M).of_isTorsionFreeOn_of_open_cover (s := s)
-    swap; · sorry
+    apply (LeviCivitaConnection I M).of_isTorsionFreeOn_of_open_cover (s := s) ?_ (by aesop)
     intro x
     simp only [s]
     set t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x with t_eq
-    change IsTorsionFreeOn (LeviCivitaConnection I M) (t x).baseSet
-    have : IsCovariantDerivativeOn E (LeviCivitaConnection I M) (t x).baseSet := sorry -- shown above
+    --change IsTorsionFreeOn (LeviCivitaConnection I M) (t x).baseSet
+    have : IsCovariantDerivativeOn E (LeviCivitaConnection I M) (t x).baseSet :=
+      isCovariantDerivativeOn_lcCandidate _ (t x)
     rw [isTorsionFree_iff_christoffelSymbols' _ this]
     intro x' hx' i j k
     -- Now, compute christoffel symbols and be happy.
-    sorry
+    have := LeviCivitaConnection.christoffelSymbol_symm I x hx' i j k
+    sorry -- almost there, except x vs x' convert this
 
 end CovariantDerivative
