@@ -1213,22 +1213,25 @@ lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
 
 end Prod
 
+/-
+The comment below is added by @YaelDillies at https://github.com/leanprover-community/mathlib3/blob/65a1391a0106c9204fe45bc73a039f056558cb83/src/group_theory/order_of_element.lean#L981
+and ported by @Parcly-Taxel.
+I'm not sure whether the added theorems include all "corresponding `pi` lemmas" meant by @YaelDillies.
+-/
+-- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+
 section Pi
 
 variable {n} {α : (i : Fin n) → Type*}
   [∀ i, Monoid (α i)]
   {f : ∀ i, α i}
 
--- alternative name: `Pi.orderOf_mk`
+-- alternative name: `Pi.orderOf`, `Pi.orderOf_mk`
 @[to_additive]
 lemma Pi.orderOf_eq : orderOf f = Finset.univ.lcm (fun i => orderOf (f i)) := by
   sorry
 
 end Pi
-
-/- TODO: I am not sure whether the `Tuple` section added is the corresponding `pi` lemmas
-that the original author of this comment below meant. Should this comment be removed? -/
--- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
 
 @[simp]
 lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
