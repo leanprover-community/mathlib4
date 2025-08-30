@@ -272,7 +272,7 @@ lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
 
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
-lemma optiontest (x : Option α) : x.elim .none Option.some = x := by
+lemma optiontest (x : Option α) : x.elim none some = x := by
   cases x <;> rw [Option.elim]
 
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/

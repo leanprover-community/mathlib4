@@ -35,7 +35,7 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
     intro K (hK : IsCompact K) U (hU : IsOpen U) hfKU
     simp only [TopologicalSpace.nhds_generateFrom]
     obtain ⟨t, htT, htf, hTU, hKT⟩ : ∃ t ⊆ T, t.Finite ∧ (∀ V ∈ t, V ⊆ U) ∧ f '' K ⊆ ⋃₀ t := by
-      rw [hT.open_eq_sUnion' hU, mapsTo', sUnion_eq_biUnion] at hfKU
+      rw [hT.open_eq_sUnion' hU, mapsTo_iff_image_subset, sUnion_eq_biUnion] at hfKU
       obtain ⟨t, ht, hfin, htK⟩ :=
         (hK.image (map_continuous f)).elim_finite_subcover_image (fun V hV ↦ hT.isOpen hV.1) hfKU
       refine ⟨t, fun _ h ↦ (ht h).1, hfin, fun _ h ↦ (ht h).2, ?_⟩
