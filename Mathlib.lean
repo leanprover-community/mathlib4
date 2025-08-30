@@ -100,6 +100,7 @@ import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
 import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.Grp.AB
@@ -2768,7 +2769,8 @@ import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 import Mathlib.CategoryTheory.Triangulated.TriangleShift
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Triangulated.Yoneda
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
+import Mathlib.CategoryTheory.Types.Set
 import Mathlib.CategoryTheory.UnivLE
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Widesubcategory
@@ -2921,6 +2923,7 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+import Mathlib.Combinatorics.SimpleGraph.Turan
 import Mathlib.Combinatorics.SimpleGraph.Tutte
 import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Combinatorics.SimpleGraph.Walk
@@ -3513,6 +3516,7 @@ import Mathlib.Data.SProd
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Seq.Basic
 import Mathlib.Data.Seq.Computation
+import Mathlib.Data.Seq.Defs
 import Mathlib.Data.Seq.Parallel
 import Mathlib.Data.Seq.Seq
 import Mathlib.Data.Seq.WSeq
@@ -3538,7 +3542,6 @@ import Mathlib.Data.Set.Finite.Powerset
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
-import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Inclusion
 import Mathlib.Data.Set.Insert
@@ -6736,6 +6739,7 @@ import Mathlib.Topology.UniformSpace.ProdApproximation
 import Mathlib.Topology.UniformSpace.Real
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.UniformSpace.Ultra.Basic
+import Mathlib.Topology.UniformSpace.Ultra.Completion
 import Mathlib.Topology.UniformSpace.Ultra.Constructions
 import Mathlib.Topology.UniformSpace.UniformApproximation
 import Mathlib.Topology.UniformSpace.UniformConvergence
