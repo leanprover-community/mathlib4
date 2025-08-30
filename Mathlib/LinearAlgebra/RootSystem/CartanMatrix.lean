@@ -164,6 +164,13 @@ lemma neighbor_disjoint (i : b.support) {s : Set b.support} (hs : s ⊆ (b.neigh
     Disjoint s {i} :=
   fun _ h1 h2 _ h3 ↦ ((b.self_notMem_neighbor i) ((h2 h3) ▸ (hs (h1 h3)))).elim
 
+lemma pairingIn_of_neighbor [Finite ι] [IsDomain R] {i j : b.support} (hj : j ∈ b.neighbor i) :
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(-1, -1), (-1, -2), (-2, -1), (-1, -3), (-3, -1),
+      (-4, -1), (-1, -4), (-2, -2)} : Set (ℤ × ℤ)) := by
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  have : P.pairingIn ℤ i j < 0 := hj
+  aesop
+
 lemma pairingIn_smul_rootLength_le [Fintype ι] {i j : b.support} (h : j ∈ b.neighbor i) :
     P.pairingIn ℤ i j • (P.posRootForm ℤ).rootLength j ≤ - (P.posRootForm ℤ).rootLength j := by
   rw [Int.neg_eq_neg_one_mul, ← smul_eq_mul]
@@ -482,6 +489,16 @@ lemma isOrthogonal_of_neighbor [IsDomain R] [Fintype ι] {i j k : b.support} (hj
     rw [← RootPositiveForm.rootLength, ← RootPositiveForm.rootLength, ← RootPositiveForm.rootLength]
     linarith
 
+lemma rootLength_le_four_mul_rootLength [Fintype ι] {i j : b.support} (hij : j ∈ b.neighbor i) :
+    (P.posRootForm ℤ).rootLength i ≤ 4 * (P.posRootForm ℤ).rootLength j := by
+  have hi := RootPositiveForm.rootLength_pos (P.posRootForm ℤ) i
+  have hj := RootPositiveForm.rootLength_pos (P.posRootForm ℤ) j
+  have h := (P.posRootForm ℤ).pairingIn_mul_eq_pairingIn_mul_swap i j
+  obtain h₁ | h₂ | h₃ | h₄ | h₅ | h₆ | h₇ | h₈ := b.pairingIn_of_neighbor hij
+  all_goals
+    simp_all only [Int.reduceNeg, Prod.mk.injEq, ge_iff_le, neg_mul, one_mul, neg_inj]
+    grind
+
 /-!
 lemma notMem_neighbor_of_neighbor_neighbor_neighbor' [Fintype ι] {i j₁ j₂ j₃ k : b.support}
     (hi₁ : j₁ ∈ b.neighbor i) (hi₂ : j₂ ∈ b.neighbor i) (hi₃ : j₃ ∈ b.neighbor i) (h₁₂ : j₁ ≠ j₂)
@@ -489,33 +506,75 @@ lemma notMem_neighbor_of_neighbor_neighbor_neighbor' [Fintype ι] {i j₁ j₂ j
     k ∉ b.neighbor i := by
   have hp {f : b.support →₀ ℤ} (hf : f ≠ 0) := b.finsupp_base_posForm_pos hf
   contrapose! hp
-  let f : b.support →₀ ℤ := Finsupp.single i 2 + Finsupp.single j₁ 1 + Finsupp.single j₂ 1 +
-    Finsupp.single j₃ 1 + Finsupp.single k 1
+  let f₀ : b.support →₀ ℤ := Finsupp.single i 2
+  let f₁ : b.support →₀ ℤ := f₀ + Finsupp.single j₁ 1
+  let f₂ : b.support →₀ ℤ := f₁ + Finsupp.single j₂ 1
+  let f₃ : b.support →₀ ℤ := f₂ + Finsupp.single j₃ 1
+  let f : b.support →₀ ℤ := f₃ + Finsupp.single k 1
+  have hpos₀ : 0 ≤ f₀ := Finsupp.single_nonneg.mpr <| Int.zero_le_ofNat 2
+  have hpos₁ : 0 ≤ f₁ := add_nonneg hpos₀ <| Finsupp.single_nonneg.mpr Int.one_nonneg
+  have hpos₂ : 0 ≤ f₂ := add_nonneg hpos₁ <| Finsupp.single_nonneg.mpr Int.one_nonneg
+  have hpos₃ : 0 ≤ f₃ := add_nonneg hpos₂ <| Finsupp.single_nonneg.mpr Int.one_nonneg
+  have hpos : 0 ≤ f := add_nonneg hpos₃ <| Finsupp.single_nonneg.mpr Int.one_nonneg
   use f
   constructor
   · refine Finsupp.ne_iff.mpr ?_
     use i
-    simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same, Finsupp.coe_zero, f]
-    simp [Finsupp.single_eq_of_ne (neq_of_neighbor b hi₁).symm,
-      Finsupp.single_eq_of_ne (neq_of_neighbor b hi₂).symm,
-      Finsupp.single_eq_of_ne (neq_of_neighbor b hi₃).symm,
-      Finsupp.single_eq_of_ne (neq_of_neighbor b hp).symm]
-  · let f₁ : b.support →₀ ℤ := Finsupp.single i 2 + Finsupp.single j₁ 1 + Finsupp.single j₂ 1 +
-      Finsupp.single j₃ 1
+    simp only [Finsupp.coe_add, Pi.add_apply, Finsupp.single_eq_same, Finsupp.coe_zero,
+      f, f₀, f₁, f₂, f₃]
+    simp [Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₁).symm,
+      Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₂).symm,
+      Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₃).symm,
+      Finsupp.single_eq_of_ne (b.neq_of_neighbor hp).symm]
+  · have hkf₃ : k ∉ f₃.support := by
+      simp [f₃, f₂, f₁, f₀, Finsupp.single_eq_of_ne hk₂.symm, Finsupp.single_eq_of_ne hk₃.symm,
+        Finsupp.single_eq_of_ne hk₁.symm, Finsupp.single_eq_of_ne (b.neq_of_neighbor hp)]
+    suffices (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₃) (b.rootCombination ℤ f₃) ≤
+        (P.posRootForm ℤ).rootLength k by
+      have := b.posForm_apply_add_single_le (f := f₃) (g := f) (j := i) (i := k) hkf₃ hpos₃ rfl
+        (by simp [f₃, f₂, f₁, f₀, Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₁).symm,
+          Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₂).symm,
+          Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₃).symm]) ((b.neighbor_symm i k).mp hp)
+      linarith
+    have hkf₂ : j₃ ∉ f₂.support := by
+      simp [f₂, f₁, f₀, Finsupp.single_eq_of_ne h₂₃, Finsupp.single_eq_of_ne h₁₃,
+        Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₃)]
+    suffices (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₂) (b.rootCombination ℤ f₂) ≤
+        (P.posRootForm ℤ).rootLength j₃ + (P.posRootForm ℤ).rootLength k by
+      have := b.posForm_apply_add_single_le (f := f₂) (g := f₃) (j := i) (i := j₃) hkf₂ hpos₂ rfl
+        (by simp [f₂, f₁, f₀, Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₁).symm,
+          Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₂).symm]) ((b.neighbor_symm i j₃).mp hi₃)
+      linarith
+    have hkf₁ : j₂ ∉ f₁.support := by
+      simp [f₁, f₀, Finsupp.single_eq_of_ne h₁₂, Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₂)]
     suffices (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₁) (b.rootCombination ℤ f₁) ≤
-        (P.posRootForm ℤ).rootLength i by
-      have hk : k ∉ f₁.support := by
-        simp [f₁, Finsupp.single_eq_of_ne hk₂.symm, Finsupp.single_eq_of_ne hk₁.symm,
-          Finsupp.single_eq_of_ne hk₃.symm, Finsupp.single_eq_of_ne (neq_of_neighbor b hp)]
-      have hf₁ : 0 ≤ f₁ := by
-        refine add_nonneg ?_ ?_
-        · refine add_nonneg ?_ ?_
-          · refine add_nonneg ?_ ?_
-            · exact Finsupp.single_nonneg.mpr <| Int.zero_le_ofNat 2
-            · exact Finsupp.single_nonneg.mpr Int.one_nonneg
-          · exact Finsupp.single_nonneg.mpr Int.one_nonneg
-        · exact Finsupp.single_nonneg.mpr Int.one_nonneg
-      have := b.posForm_apply_add_single_le hk hf₁ rfl (j := i)
+        (P.posRootForm ℤ).rootLength j₂ + (P.posRootForm ℤ).rootLength j₃ +
+          (P.posRootForm ℤ).rootLength k by
+      have := b.posForm_apply_add_single_le (f := f₁) (g := f₂) (j := i) (i := j₂) hkf₁ hpos₁ rfl
+        (by simp [f₁, f₀, Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₁).symm])
+        ((b.neighbor_symm i j₂).mp hi₂)
+      linarith
+    have hkf₀ : j₁ ∉ f₀.support := by
+      simp [f₀, Finsupp.single_eq_of_ne (b.neq_of_neighbor hi₁)]
+    suffices (P.posRootForm ℤ).posForm (b.rootCombination ℤ f₀) (b.rootCombination ℤ f₀) ≤
+        (P.posRootForm ℤ).rootLength j₁ + (P.posRootForm ℤ).rootLength j₂ +
+        (P.posRootForm ℤ).rootLength j₃ + (P.posRootForm ℤ).rootLength k by
+      have := b.posForm_apply_add_single_le (f := f₀) (g := f₁) (j := i) (i := j₁) hkf₀ hpos₀ rfl
+        (by simp [f₀]) ((b.neighbor_symm i j₁).mp hi₁)
+      linarith
+    have := b.rootLength_le_four_mul_rootLength hi₁
+    have := b.rootLength_le_four_mul_rootLength hi₂
+    have := b.rootLength_le_four_mul_rootLength hi₃
+    have := b.rootLength_le_four_mul_rootLength hp
+    have : ((P.posRootForm ℤ).posForm (b.rootCombination ℤ f₀)) (b.rootCombination ℤ f₀) =
+        4 • (P.posRootForm ℤ).rootLength i := by
+      rw [rootCombination_single, LinearMap.BilinForm.smul_right, LinearMap.BilinForm.smul_left,
+        RootPositiveForm.rootLength, ← mul_assoc]
+      norm_cast
+    rw [this]
+    --linarith
+    sorry
+    --  have := b.posForm_apply_add_single_le hk hf₁ rfl (j := i)
 
 
 lemma notMem_neighbor_of_neighbor_neighbor_neighbor [Fintype ι] {i j₁ j₂ j₃ k : b.support}
