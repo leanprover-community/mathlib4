@@ -118,6 +118,16 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
+theorem logEmbedding_ker :
+    (logEmbedding K).ker = (torsion K).toAddSubgroup := by
+  ext x
+  rw [AddMonoidHom.mem_ker, ← ofMul_toMul x, logEmbedding_eq_zero_iff]
+  rfl
+
+theorem map_logEmbedding_sup_torsion (s : AddSubgroup (Additive (𝓞 K)ˣ)) :
+    (s ⊔ (torsion K).toAddSubgroup).map (logEmbedding K) = s.map (logEmbedding K) := by
+  rw [← logEmbedding_ker, AddSubgroup.map_eq_map_iff, sup_right_idem]
+
 open scoped Classical in
 theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
     (w : {w : InfinitePlace K // w ≠ w₀}) : |logEmbedding K (Additive.ofMul x) w| ≤ r := by
@@ -494,6 +504,17 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
     simp only [ζ, ← fun_eq_repr K h_tors' hf, Prod.mk.injEq, Subtype.mk.injEq, and_true]
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
+
+/--
+The units of the fundamental system and the torsion of `K` generate the full group of units of `K`.
+-/
+theorem closure_fundSystem_sup_torsion_eq_top :
+    Subgroup.closure (Set.range (fundSystem K)) ⊔ torsion K = ⊤ := by
+  rw [Subgroup.eq_top_iff', sup_comm]
+  intro x
+  obtain ⟨c, rfl, _⟩ := exist_unique_eq_mul_prod K x
+  exact Subgroup.mul_mem_sup (SetLike.coe_mem c.1) <| Subgroup.prod_mem _
+    fun i _ ↦ Subgroup.zpow_mem _ (Subgroup.subset_closure (Set.mem_range_self i)) _
 
 end statements
 
