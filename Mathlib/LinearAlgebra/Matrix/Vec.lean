@@ -56,6 +56,10 @@ theorem vec_map (A : Matrix m n R) (f : R → S) : vec (A.map f) = f ∘ vec A :
 theorem vec_zero [Zero R] : vec (0 : Matrix m n R) = 0 :=
   rfl
 
+theorem vec_eq_zero_iff [Zero R] {A : Matrix m n R} :
+    A.vec = 0 ↔ A = 0 := by
+  rw [← vec_zero, vec_inj]
+
 @[simp]
 theorem vec_add [Add R] (A B : Matrix m n R) : vec (A + B) = vec A + vec B :=
   rfl
