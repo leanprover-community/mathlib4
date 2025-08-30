@@ -15,6 +15,8 @@ import Mathlib.Topology.Order.MonotoneConvergence
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
 
+assert_not_exists Cardinal
+
 open Finset Filter Function
 
 variable {ι κ α : Type*}
