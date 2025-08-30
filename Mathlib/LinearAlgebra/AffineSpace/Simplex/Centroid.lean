@@ -6,7 +6,6 @@ Authors: Joseph Myers, Chu Zheng
 import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Centroid of a simplex in affine space
@@ -82,9 +81,9 @@ theorem centroid_notMem_affineSpan_compl [CharZero k] (s : Simplex k P n) (i : F
   have h1 := AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan s.independent hw h
     (by simp) hi
   have h2 : w i = (1 : k) / (n+1) := by
-    field_simp [wdef, centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add,
+    simp [wdef, centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add,
       Nat.cast_one]
-  field_simp [h2] at h1
+  simp [h2] at h1
   norm_cast at h1
 
 /-- The vector from any point to the centroid is the average of vectors to the simplex vertices. -/
@@ -111,8 +110,7 @@ theorem smul_centroid_vsub_point_eq_sum_vsub [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     ((n : k) + 1) • (s.centroid -ᵥ s.points i) = ∑ x, (s.points x -ᵥ s.points i) := by
   rw [centroid_eq_smul_sum_vsub_vadd s i, vadd_vsub, smul_smul]
-  field_simp
-  rw [div_self (by norm_cast), one_smul]
+  rw [mul_inv_cancel₀ (by norm_cast), one_smul]
 
 /-- The sum of vectors from the centroid to each vertex is zero. -/
 theorem centroid_weighted_vsub_eq_zero [CharZero k] (s : Simplex k P n) :
@@ -247,12 +245,9 @@ theorem faceOppositeCentroid_vsub_point_eq_smul_sum_vsub [CharZero k] (s : Affin
       rw [← Finset.sum_compl_add_sum {i}]
       simp
     rw [h i]
-    field_simp
     rw [smul_sum]
   simp [sum_const, card_compl]
-  field_simp
-  rw [div_self]
-  exact NeZero.ne (n : k)
+  rw [mul_inv_cancel₀ (NeZero.ne (n : k))]
 
 /-- The `faceOppositeCentroid` equals the average displacement from a vertex plus that vertex. -/
 theorem faceOppositeCentroid_eq_sum_vsub_vadd [CharZero k] (s : Affine.Simplex k P n)
@@ -272,7 +267,7 @@ theorem point_vsub_faceOppositeCentroid_eq_smul_sum_vsub [CharZero k] (s : Affin
 theorem smul_faceOppositeCentroid_vsub_point_eq_sum_vsub [CharZero k] (s : Affine.Simplex k P n)
     (i : Fin (n + 1)) :
     (n : k) • (s.faceOppositeCentroid i -ᵥ s.points i) =  ∑ x, (s.points x -ᵥ s.points i) := by
-  field_simp [faceOppositeCentroid_eq_sum_vsub_vadd, smul_smul, div_self (NeZero.ne (n : k)),
+  simp [faceOppositeCentroid_eq_sum_vsub_vadd, smul_smul, mul_inv_cancel₀ (NeZero.ne (n : k)),
     one_smul]
 
 theorem smul_centroid_vsub_point_eq_smul_faceOppositeCentroid_vsub_point [CharZero k]
@@ -295,17 +290,14 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
     apply sum_congr rfl
     simp
   simp_rw [h1 i, h1 j, sum_sub_distrib]
-  field_simp
-  rw [smul_sub, smul_sub, one_div, sub_sub_sub_cancel_left, ← smul_sub, ← smul_sub,
-    vsub_sub_vsub_cancel_right]
+  rw [smul_sub, smul_sub, sub_sub_sub_cancel_left, ← smul_sub, ← sum_sub_distrib,
+    vsub_sub_vsub_cancel_right, sum_const, card_univ, Fintype.card_fin]
   have : (s.points i -ᵥ s.points j) = -(s.points j -ᵥ s.points i) := by simp
   rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add , one_smul, smul_add, add_comm]
-  field_simp
-  have : ((1 : k) / ↑n) • n • (s.points j -ᵥ s.points i) = (n : k)⁻¹ •
+  have : (n : k)⁻¹ • n • (s.points j -ᵥ s.points i) = (n : k)⁻¹ •
       (n : k) • (s.points j -ᵥ s.points i) := by
     norm_cast0
     congr 1
-    rw [one_div]
   rw [this, smul_smul, inv_eq_one_div, one_div_mul_cancel (NeZero.ne (n : k)), one_smul]
 
 /-- The vector from a vertex to its `faceOppositeCentroid` is `(n+1)` times the vector from the
@@ -318,9 +310,9 @@ theorem faceOppositeCentroid_vsub_point_eq_smul_vsub [CharZero k] (s : Simplex k
     faceOppositeCentroid_vsub_point_eq_smul_sum_vsub, centroid_vsub_point_eq_smul_sum_vsub,
     ← sub_smul, smul_smul]
   congr
-  field_simp [mul_sub]
-  rw [add_div, one_div, div_self (NeZero.ne (n : k)), div_self (by norm_cast)]
-  norm_num
+  rw [mul_sub, add_mul, mul_inv_cancel₀ (NeZero.ne (n : k)), mul_inv_cancel₀ (by norm_cast),
+    one_mul]
+  grind
 
 theorem point_vsub_faceOppositeCentroid_eq_smul_vsub [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
@@ -341,8 +333,10 @@ theorem point_vsub_centroid_eq_smul_vsub [CharZero k] (s : Simplex k P n) (i : F
   congr
   simp_rw [mul_sub, sub_eq_iff_eq_add, neg_add_eq_sub]
   symm
-  field_simp [sub_eq_iff_eq_add, NeZero.ne (n : k)]
-  rw [div_self (by norm_cast)]
+  rw [sub_eq_iff_eq_add, mul_inv_cancel₀ (NeZero.ne (n : k))]
+  have : (↑n + (1 : k))⁻¹ = 1 * (↑n + (1 : k))⁻¹ :=by simp
+  nth_rw 2 [this]
+  rw [← add_mul, mul_inv_cancel₀ (by norm_cast)]
 
 /-- Reverse version of `point_vsub_centroid_eq_smul_vsub`. -/
 theorem centroid_vsub_point_eq_smul_vsub [CharZero k]
@@ -356,15 +350,13 @@ vector from the vertex to the centroid. -/
 theorem faceOppositeCentroid_vsub_centroid_eq_smul_vsub [CharZero k]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     s.faceOppositeCentroid i -ᵥ s.centroid = (n : k)⁻¹ • (s.centroid -ᵥ s.points i) := by
-  rw [centroid_vsub_point_eq_smul_vsub, smul_smul]
-  field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
+  rw [centroid_vsub_point_eq_smul_vsub, smul_smul, inv_mul_cancel₀ (NeZero.ne (n : k)), one_smul]
 
 /-- Reverse version of `faceOppositeCentroid_vsub_centroid_eq_smul_vsub` -/
 theorem centroid_vsub_faceOppositeCentroid_eq_smul_vsub [CharZero k]
     (s : Simplex k P n) (i : Fin (n + 1)) :
     s.centroid -ᵥ s.faceOppositeCentroid i = (n : k)⁻¹ • (s.points i -ᵥ s.centroid) := by
-  rw [point_vsub_centroid_eq_smul_vsub, smul_smul]
-  field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
+  rw [point_vsub_centroid_eq_smul_vsub, smul_smul, inv_mul_cancel₀ (NeZero.ne (n : k)), one_smul]
 
 /-- The centroid of an n-simplex can be obtained from a vertex by adding
 `n` times the vector from the centroid to the `faceOppositeCentroid`. -/
@@ -377,8 +369,8 @@ the centroid by adding `n⁻¹` times the vector from the vertex to the centroid
 theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k P n)
     (i : Fin (n + 1)) :
     s.faceOppositeCentroid i = (n : k)⁻¹ • (s.centroid -ᵥ s.points i) +ᵥ s.centroid := by
-  rw [centroid_vsub_point_eq_smul_vsub, eq_vadd_iff_vsub_eq, smul_smul]
-  field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
+  rw [centroid_vsub_point_eq_smul_vsub, eq_vadd_iff_vsub_eq, smul_smul,
+    inv_mul_cancel₀ (NeZero.ne (n : k)), one_smul]
 
 /-- The centroid, a vertex, and the corresponding `faceOppositeCentroid` of a simplex are collinear.
 -/
@@ -434,7 +426,7 @@ theorem median_eq_affineSpan_point_centroid [CharZero k] (s : Simplex k P n) (i 
       have : -(s.points i -ᵥ s.centroid) = (-1 : k) • (s.points i -ᵥ s.centroid) := by simp
       rw [this, smul_smul]
       congr 1
-      field_simp [div_eq_inv_mul, NeZero.ne (n : k)]
+      rw [mul_neg_one, inv_eq_one_div, neg_div]
     rw [h]
     exact smul_vsub_rev_vadd_mem_affineSpan_pair _ _ _
   have h2 : affineSpan k {s.points i, s.centroid} ≤ s.median i := by
@@ -471,7 +463,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
     have f_inj : Function.Injective f := by intro x y hxy; grind
     have h2 := h1.comp f f_inj
     convert h2 using 1
-    grind only [if_neg, mem_compl, Finset.notMem_singleton]
+    grind only [mem_compl, Finset.notMem_singleton]
   have he : ∃ i j : s', i ≠ j := by
     simp only [ne_eq, Subtype.exists, Subtype.mk.injEq, exists_prop]
     have hcard : s'.card = n := by
