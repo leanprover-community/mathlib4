@@ -28,10 +28,21 @@ lemma adjoint_Invertible_iff_Invertible {α β : Type*} [NormedAddCommGroup α] 
   constructor
   · exact fun a => adjoint_Invertible_of_Invertible f a
   · intro h
-    have := adjoint_Invertible_of_Invertible (f†) h
-    simpa using this
+    simpa using adjoint_Invertible_of_Invertible (f†) h
+
+lemma eq_zero_of_inner_right {α : Type*} [NormedAddCommGroup α] [InnerProductSpace ℝ α] (x : α) :
+    x = 0 ↔ ∀ (y : α), inner ℝ y x = 0 := by
+  constructor
+  · simp_all
+  · exact fun h ↦ Dense.eq_zero_of_inner_right (K := ⊤) (by simp) (fun v ↦ h v)
 
 lemma adjoint_range_ker_complement {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β]
     [InnerProductSpace ℝ α] [InnerProductSpace ℝ β] [CompleteSpace α] [CompleteSpace β]
-    (A : α →L[ℝ] β) : LinearMap.range (A†) = (LinearMap.ker A)ᗮ := by
-  sorry
+    (A : α →L[ℝ] β) : LinearMap.ker (A†) = (LinearMap.range A)ᗮ := by
+  refine Submodule.ext fun x ↦ ?_
+  calc
+  _ ↔ (A†) x = 0 := LinearMap.mem_ker
+  _ ↔ ∀ y , inner ℝ y ((A†) x) = 0 := eq_zero_of_inner_right ((ContinuousLinearMap.adjoint A) x)
+  _ ↔ ∀ y , inner ℝ (A y) x = 0 := by simp [ContinuousLinearMap.adjoint_inner_right]
+  _ ↔ ∀ z ∈ LinearMap.range A, inner ℝ z x = 0 := Iff.symm Set.forall_mem_range
+  _ ↔ _ := (Submodule.mem_orthogonal (LinearMap.range A) x).symm
