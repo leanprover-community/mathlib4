@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -129,6 +131,8 @@ theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
   isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
 
+lemma isOpen_singleton (h : γ ≠ 0) : IsOpen {γ} := by simp [isOpen_iff, h.symm]
+
 /-!
 ### Instances
 -/
@@ -182,5 +186,139 @@ scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
+
+scoped instance : DiscreteTopology Γ₀ˣ := by
+  simp [discreteTopology_iff_singleton_mem_nhds, nhds_induced, nhds_prod_eq, Units.val_inj]
+
+lemma isOpenEmbedding_units_val : IsOpenEmbedding (Units.val : Γ₀ˣ → Γ₀) where
+  eq_induced := by
+    simp [← isInducing_iff, isInducing_iff_nhds, ← Set.image_singleton,
+      Units.val_injective.preimage_image]
+  injective := Units.val_injective
+  isOpen_range := by simp [isOpen_iff]
+
+lemma locallyCompactSpace_of_compact_Iic {x : Γ₀} (hx : x ≠ 0)
+    (h : IsCompact (Iic x)) : LocallyCompactSpace Γ₀ where
+  local_compact_nhds y s hy := by
+    rcases (GroupWithZero.eq_zero_or_unit y).symm with ⟨y, rfl⟩ | rfl
+    · use {y.val}
+      simpa using hy
+    · simp only [hasBasis_nhds_zero.mem_iff, ne_eq] at hy ⊢
+      obtain ⟨r, hr', hr⟩ := hy
+      lift x to Γ₀ˣ using IsUnit.mk0 _ hx
+      lift r to Γ₀ˣ using IsUnit.mk0 _ hr'
+      rcases subsingleton_or_nontrivial Γ₀ˣ with _ | _
+      · refine ⟨s, ⟨r, hr', hr⟩, subset_refl _, ?_⟩
+        have : IsCompact (Units.val ⁻¹' s) := subsingleton_of_subsingleton.isCompact
+        convert (this.image Units.continuous_val).insert 0
+        ext x
+        rcases GroupWithZero.eq_zero_or_unit x with rfl | ⟨y, hy⟩
+        · simp only [mem_insert_iff, mem_image, mem_preimage, Units.ne_zero, and_false,
+          exists_const, or_false, iff_true]
+          refine hr ?_
+          simp [zero_lt_iff]
+        · simp [hy, Units.val_inj]
+      obtain ⟨z, hz⟩ : ∃ z : Γ₀ˣ, (z : Γ₀) < 1 := exists_lt 1
+      refine ⟨Iic (Units.val (min (min z x) r) ^ 2), ⟨_, ?_, Iio_subset_Iic_self⟩, hr.trans' ?_,
+        h.of_isClosed_subset isClosed_Iic (Iic_subset_Iic.mpr ?_)⟩
+      · simp [← zero_lt_iff]
+      · simp only [le_eq_subset, Iic_subset_Iio, Units.val_lt_val, ← Units.val_pow_eq_pow_val]
+        refine (pow_lt_self_of_lt_one₀ (by simp) ?_ one_lt_two).trans_le ?_ <;>
+        simp [hz]
+      · simp only [← Units.val_pow_eq_pow_val, Units.val_le_val]
+        refine (pow_le_of_le_one (by simp) ?_ two_ne_zero).trans ?_ <;>
+        simp [hz.le]
+
+lemma locallyCompactSpace_iff_locallyFiniteOrder_units :
+    LocallyCompactSpace Γ₀ ↔ Nonempty (LocallyFiniteOrder Γ₀ˣ) := by
+  constructor
+  · intro h
+    refine ⟨LocallyFiniteOrder.ofFiniteIcc ?_⟩
+    suffices ∀ x : Γ₀ˣ, (Icc x 1).Finite by
+      rintro x y
+      rcases lt_trichotomy y x with hxy | rfl | hxy
+      · rw [Set.Icc_eq_empty_of_lt]
+        · exact Set.finite_empty
+        · simp [hxy]
+      · simp
+      wlog h : x ≤ 1 generalizing x y
+      · push_neg at h
+        specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
+        refine (this.image (· ⁻¹)).subset ?_
+        simp
+      generalize_proofs _ _ _ _ hxu hyu
+      rcases le_total y 1 with hy | hy
+      · exact (this x).subset (Set.Icc_subset_Icc_right hy)
+      · have H : (Set.Icc y⁻¹ 1).Finite := this _
+        refine ((this x).union H.inv).subset (le_of_eq ?_)
+        rw [Set.inv_Icc, inv_one, Set.Icc_union_Icc_eq_Icc] <;>
+        simp [h, hy]
+    intro z
+    obtain ⟨t, ht, ht', ht''⟩ := local_compact_nhds (x := 0) (n := Iio z.val)
+      (by simp [hasBasis_nhds_zero.mem_of_mem])
+    rw [hasBasis_nhds_zero.mem_iff] at ht
+    obtain ⟨y, hy', hy⟩ := ht
+    lift y to Γ₀ˣ using IsUnit.mk0 _ hy'
+    rw [← Set.image_subset_image_iff (OrderIso.mulLeft₀ y.val⁻¹ (by simp)).injective,
+      (OrderIso.mulLeft₀ _ _).image_Iio]
+      at hy
+    simp only [OrderIso.mulLeft₀_apply, ne_eq, Units.ne_zero, not_false_eq_true,
+      inv_mul_cancel₀] at hy
+    have : IsCompact (Iic (1 : Γ₀)) := by
+      refine ((ht''.image (continuous_mul_left y.val⁻¹)).insert 1).of_isClosed_subset
+        isClosed_Iic ?_
+      simp [← Iio_insert, insert_subset_insert_iff, hy]
+    let f : Γ₀ → Set Γ₀ := fun x ↦ if x < z then Iio z else {x}
+    have := this.elim_finite_subcover f ?_ ?_
+    · obtain ⟨s, hs⟩ := this
+      suffices (Icc z.val 1).Finite from this.preimage (Units.val_injective.injOn)
+      refine (s.finite_toSet).subset (
+        ((Set.inter_subset_inter_right (Icc z.val 1) hs).trans ?_).trans' ?_)
+      · intro x
+        simp only [mem_inter_iff, mem_Icc, mem_iUnion, mem_ite, mem_Iio, not_lt, mem_singleton_iff,
+          exists_and_left, exists_prop, Finset.mem_coe, and_imp, forall_exists_index, f]
+        intro hzx
+        simp only [hzx.not_gt, imp_false, not_lt]
+        grind
+      · simp [Icc_subset_Iic_self]
+    · intro x
+      simp only [f]
+      split_ifs with hx
+      · exact isOpen_Iio
+      · refine isOpen_singleton ?_
+        push_neg at hx
+        rw [← zero_lt_iff]
+        refine hx.trans_lt' ?_
+        simp
+    · intro x
+      simp only [mem_iUnion, f]
+      intro
+      use x
+      simp [mem_ite]
+  · rintro ⟨_⟩
+    apply locallyCompactSpace_of_compact_Iic one_ne_zero
+    refine isCompact_of_finite_subcover ?_
+    intro ι f hf hs
+    choose g hg hg' using hs
+    choose i hi using hg
+    simp only at hi
+    simp only [isOpen_iff, ne_eq] at hf
+    obtain ⟨y, hy', hy⟩ := (hf (i zero_le_one)).neg_resolve_left (hi zero_le_one ▸ hg' zero_le_one)
+    classical
+    refine ⟨{i zero_le_one} ∪ (Finset.Icc (Units.mk0 _ hy') 1).attach.image
+      (fun z ↦ @i z.val ?_), ?_⟩
+    · have := z.prop
+      rw [Finset.mem_Icc] at this
+      simpa [← Units.val_lt_val] using this.right
+    · intro z
+      simp only [mem_Iic, Finset.singleton_union, Finset.mem_insert, Finset.mem_image,
+        Finset.mem_attach, true_and, Subtype.exists, Finset.mem_Icc, ← Units.val_le_val,
+        Units.val_mk0, Units.val_one, iUnion_iUnion_eq_or_left, iUnion_exists, biUnion_and',
+        iUnion_iUnion_eq', mem_union, mem_iUnion]
+      intro hzx
+      rcases lt_or_ge z y with hzy | hzy
+      · exact Or.inl (hy (by simp [hzy]))
+      · refine Or.inr ⟨Units.mk0 z (ne_of_gt (hzy.trans_lt' (zero_lt_iff.mpr hy'))), ?_⟩
+        simp [hzy, hzx, hi, hg']
 
 end WithZeroTopology
