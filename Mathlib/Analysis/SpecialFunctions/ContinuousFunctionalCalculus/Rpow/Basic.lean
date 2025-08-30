@@ -623,8 +623,6 @@ lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc
     IsUnit (sqrt a) :=
   (isUnit_sqrt_iff a ha).mpr ha_unit
 
-attribute [fun_prop] NNReal.continuous_coe
-
 @[aesop safe apply]
 lemma _root_.IsStrictlyPositive.nnrpow {a : A} {y : ℝ≥0} (ha : IsStrictlyPositive a) (hy : y ≠ 0) :
     IsStrictlyPositive (a ^ y) := by grind
