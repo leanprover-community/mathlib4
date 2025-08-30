@@ -258,8 +258,7 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
       exact (h2φ.mono inter_subset_left).clm_comp (h2φ'.mono inter_subset_right)
     · apply FiberwiseLinear.source_trans_partialHomeomorph
     · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_partialHomeomorph_apply
-  -- Porting note: without introducing `e` first, the first `simp only` fails
-  symm' := fun e ↦ by
+  symm' e := by
     simp only [mem_aux]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
     refine ⟨fun b => (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
@@ -282,8 +281,6 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 
-@[deprecated (since := "2025-01-09")] alias smoothFiberwiseLinear := contMDiffFiberwiseLinear
-
 @[simp]
 theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeomorph (B × F) (B × F)) :
     e ∈ contMDiffFiberwiseLinear B F IB n ↔
@@ -293,5 +290,3 @@ theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeom
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux
 
-@[deprecated (since := "2025-01-09")]
-alias mem_smoothFiberwiseLinear_iff := mem_contMDiffFiberwiseLinear_iff

@@ -38,25 +38,17 @@ assert_not_exists Field
 
 deriving instance Zero, CommSemiring, Nontrivial,
   LinearOrder, Bot, Sub,
-  LinearOrderedAddCommMonoidWithTop
+  LinearOrderedAddCommMonoidWithTop,
+  IsOrderedRing, CanonicallyOrderedAdd,
+  OrderBot, OrderTop, OrderedSub, SuccOrder,
+  WellFoundedLT,
+  CharZero
   for ENat
--- The `CanonicallyOrderedAdd, OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLT, CharZero`
--- instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
 
 -- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
 -- and it seems to work without.
 
 namespace ENat
-
-instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
-instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
-instance : OrderBot ℕ∞ := WithTop.orderBot
-instance : OrderTop ℕ∞ := WithTop.orderTop
-instance : OrderedSub ℕ∞ := inferInstanceAs (OrderedSub (WithTop ℕ))
-instance : SuccOrder ℕ∞ := inferInstanceAs (SuccOrder (WithTop ℕ))
-instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
-instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 
 variable {a b c m n : ℕ∞}
 
@@ -257,10 +249,11 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
-  cases a <;> cases b <;> simp
+  cases a <;> cases b
+  · simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
-  · rw [← coe_mul, toNat_coe]
+  · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
@@ -308,11 +301,12 @@ lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
-theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
-    (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
-  have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
+theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
+    (succ : ∀ n : ℕ, motive n → motive n.succ)
+    (top : (∀ n : ℕ, motive n) → motive ⊤) : motive a := by
+  have A : ∀ n : ℕ, motive n := fun n => Nat.recOn n zero succ
   cases a
-  · exact htop A
+  · exact top A
   · exact A _
 
 lemma add_one_pos : 0 < n + 1 :=

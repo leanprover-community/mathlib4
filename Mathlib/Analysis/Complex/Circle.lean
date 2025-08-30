@@ -21,7 +21,7 @@ We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)`
 
 We define two additive characters onto the circle:
 * `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the
-  notation `𝐞` in the locale `FourierTransform`). This uses the analyst convention that there is a
+  notation `𝐞` in the scope `FourierTransform`). This uses the analyst convention that there is a
   `2 * π` in the exponent.
 * `Real.probChar`: The character `fun x ↦ exp (x * I)`, which uses the probabilist convention that
   there is no `2 * π` in the exponent.
@@ -146,8 +146,7 @@ variable {e : AddChar ℝ Circle}
 @[simp]
 lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
-  · simp only [Circle.coe_inv] at h
-    simp [← h, e.map_neg_eq_inv]
+  · simp [← h, e.map_neg_eq_inv]
   · simp only [Submonoid.unitSphere, SetLike.coe_mem]
 
 @[simp]

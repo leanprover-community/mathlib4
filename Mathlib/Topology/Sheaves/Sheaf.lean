@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Sites.Spaces
 We define sheaves on a topological space, with values in an arbitrary category.
 
 A presheaf on a topological space `X` is a sheaf precisely when it is a sheaf under the
-grothendieck topology on `opens X`, which expands out to say: For each open cover `{ Uᵢ }` of
+Grothendieck topology on `opens X`, which expands out to say: For each open cover `{ Uᵢ }` of
 `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an `A : X`, there exists a unique
 gluing `A ⟶ F(U)` compatible with the restriction.
 
@@ -40,13 +40,13 @@ variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 namespace Presheaf
 
 /-- The sheaf condition has several different equivalent formulations.
-The official definition chosen here is in terms of grothendieck topologies so that the results on
+The official definition chosen here is in terms of Grothendieck topologies so that the results on
 sites could be applied here easily, and this condition does not require additional constraints on
 the value category.
 The equivalent formulations of the sheaf condition on `presheaf C X` are as follows :
 
 1. `TopCat.Presheaf.IsSheaf`: (the official definition)
-  It is a sheaf with respect to the grothendieck topology on `opens X`, which is to say:
+  It is a sheaf with respect to the Grothendieck topology on `opens X`, which is to say:
   For each open cover `{ Uᵢ }` of `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an
   `A : X`, there exists a unique gluing `A ⟶ F(U)` compatible with the restriction.
 
@@ -103,11 +103,7 @@ satisfying the sheaf condition.
 -/
 nonrec def Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance SheafCat : Category (Sheaf C X) :=
-  show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
+deriving Category
 
 variable {C X}
 

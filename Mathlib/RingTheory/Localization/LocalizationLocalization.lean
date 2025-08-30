@@ -36,8 +36,8 @@ section
 variable [Algebra S T] [IsScalarTower R S T]
 
 -- This should only be defined when `S` is the localization `M⁻¹R`, hence the nolint.
-/-- Localizing wrt `M ⊆ R` and then wrt `N ⊆ S = M⁻¹R` is equal to the localization of `R` wrt this
-module. See `localization_localization_isLocalization`.
+/-- Localizing w.r.t. `M ⊆ R` and then w.r.t. `N ⊆ S = M⁻¹R` is equal to the localization of `R`
+w.r.t. this module. See `localization_localization_isLocalization`.
 -/
 @[nolint unusedArguments]
 def localizationLocalizationSubmodule : Submonoid R :=
@@ -223,7 +223,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       exact ⟨a, 1, by convert e using 1 <;> simp⟩ }
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the
-localization at `N` is equal to the localizaton of `M`. -/
+localization at `N` is equal to the localization of `M`. -/
 theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization M S] (h : M ≤ N)
     (h' : ∀ x : N, ∃ m : R, m * x ∈ M) : IsLocalization N S :=
   { map_units' := fun y => by

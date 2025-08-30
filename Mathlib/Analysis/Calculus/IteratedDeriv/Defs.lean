@@ -63,6 +63,10 @@ theorem iteratedDerivWithin_univ : iteratedDerivWithin n f univ = iteratedDeriv 
   ext x
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_univ]
 
+theorem iteratedDerivWithin_eq_iteratedDeriv (hs : UniqueDiffOn 𝕜 s) (h : ContDiffAt 𝕜 n f x)
+    (hx : x ∈ s) : iteratedDerivWithin n f s x = iteratedDeriv n f x := by
+  rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_eq_iteratedFDeriv hs h hx]
+
 /-! ### Properties of the iterated derivative within a set -/
 
 
@@ -335,4 +339,4 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   left
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
-  exact Nat.factorial_ne_zero _
+  positivity

@@ -44,7 +44,7 @@ namespace ProbabilityTheory
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure Ω}
 
 variable (X μ) in
--- Porting note: Consider if `evariance` or `eVariance` is better. Also,
+-- TODO: Consider if `evariance` or `eVariance` is better. Also,
 -- consider `eVariationOn` in `Mathlib.Analysis.BoundedVariation`.
 /-- The `ℝ≥0∞`-valued variance of a real-valued random variable defined as the Lebesgue integral of
 `‖X - 𝔼[X]‖^2`. -/
@@ -153,9 +153,6 @@ lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) 
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by
   simp [variance_eq_integral hX, hXint]
 
-@[deprecated (since := "2025-01-23")]
-alias _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero := variance_of_integral_eq_zero
-
 @[simp]
 theorem evariance_zero : evariance 0 μ = 0 := by simp [evariance]
 
@@ -198,7 +195,7 @@ theorem variance_smul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 theorem variance_smul' {A : Type*} [CommSemiring A] [Algebra A ℝ] (c : A) (X : Ω → ℝ)
     (μ : Measure Ω) : variance (c • X) μ = c ^ 2 • variance X μ := by
   convert variance_smul (algebraMap A ℝ c) X μ using 1
-  · congr; simp only [algebraMap_smul]
+  · simp only [algebraMap_smul]
   · simp only [Algebra.smul_def, map_pow]
 
 theorem variance_eq_sub [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2 μ) :
@@ -307,8 +304,7 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
     Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
-  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv]
-  rfl
+  simp_rw [variance, evariance, lintegral_map_equiv, integral_map_equiv, Function.comp_apply]
 
 lemma variance_id_map (hX : AEMeasurable X μ) : Var[id; μ.map X] = Var[X; μ] := by
   simp [variance_map measurable_id.aemeasurable hX]
@@ -381,7 +377,6 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
   · rw [ENNReal.ofReal_pow hc.le]
     rfl
 
--- Porting note: supplied `MeasurableSpace Ω` argument of `h` by unification
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
 nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
     (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
@@ -392,7 +387,6 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
   rw [variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
--- Porting note: supplied `MeasurableSpace Ω` argument of `hs`, `h` by unification
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
 nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
@@ -453,7 +447,7 @@ lemma variance_le_sub_mul_sub [IsProbabilityMeasure μ] {a b : ℝ} {X : Ω → 
       linarith
     _ = (b - μ[X]) * (μ[X] - a) := by ring
 
-/-- **Popoviciu's inequality on variance**
+/-- **Popoviciu's inequality on variances**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most
 `((b - a) / 2) ^ 2`. -/

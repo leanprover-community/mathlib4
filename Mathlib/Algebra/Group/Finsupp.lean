@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finsupp.Single
 import Mathlib.Tactic.FastInstance
@@ -155,17 +155,25 @@ lemma update_eq_single_add_erase (f : ι →₀ M) (a : ι) (b : M) :
     f.update a b = single a b + f.erase a := by
   classical
     ext j
-    rcases eq_or_ne a j with (rfl | h)
+    rcases eq_or_ne j a with (rfl | h)
     · simp
-    · simp [h, erase_ne, h.symm]
+    · simp [h, erase_ne]
 
 lemma update_eq_erase_add_single (f : ι →₀ M) (a : ι) (b : M) :
     f.update a b = f.erase a + single a b := by
   classical
     ext j
-    rcases eq_or_ne a j with (rfl | h)
+    rcases eq_or_ne j a with (rfl | h)
     · simp
-    · simp [h, erase_ne, h.symm]
+    · simp [h, erase_ne]
+
+lemma update_eq_single_add {f : ι →₀ M} {a : ι} (h : f a = 0) (b : M) :
+    f.update a b = single a b + f := by
+  rw [update_eq_single_add_erase, erase_of_notMem_support (by simpa)]
+
+lemma update_eq_add_single {f : ι →₀ M} {a : ι} (h : f a = 0) (b : M) :
+    f.update a b = f + single a b := by
+  rw [update_eq_erase_add_single, erase_of_notMem_support (by simpa)]
 
 lemma single_add_erase (a : ι) (f : ι →₀ M) : single a (f a) + f.erase a = f := by
   rw [← update_eq_single_add_erase, update_self]
@@ -289,8 +297,15 @@ variable [AddMonoid M]
 unless `F i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
 
+@[simp, norm_cast] lemma coe_nsmul (n : ℕ) (f : ι →₀ M) : ⇑(n • f) = n • ⇑f := rfl
+
+lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
+
 instance instAddMonoid : AddMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+
+instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
+  DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
 
 end AddMonoid
 
@@ -369,9 +384,9 @@ lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ sup
 
 lemma erase_eq_sub_single (f : ι →₀ G) (a : ι) : f.erase a = f - single a (f a) := by
   ext a'
-  rcases eq_or_ne a a' with (rfl | h)
+  rcases eq_or_ne a' a with (rfl | h)
   · simp
-  · simp [erase_ne h.symm, single_eq_of_ne h]
+  · simp [h]
 
 lemma update_eq_sub_add_single (f : ι →₀ G) (a : ι) (b : G) :
     f.update a b = f - single a (f a) + single a b := by
