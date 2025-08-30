@@ -167,6 +167,11 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   rw [mem_bot, single_eq_zero] at this
   exact hy this
 
+lemma codisjoint_supported_supported {s t : Set α} (h : Codisjoint s t) :
+    Codisjoint (supported M R s) (supported M R t) := by
+  rw [codisjoint_iff, eq_top_iff, ← supported_union,
+    show s ∪ t = .univ from codisjoint_iff.mp h, supported_univ]
+
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
