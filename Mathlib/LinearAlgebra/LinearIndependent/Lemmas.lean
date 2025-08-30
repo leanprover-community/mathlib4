@@ -323,7 +323,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
       refine ⟨c • 1, -a • 1, ?_, by aesop⟩
       simp only [smul_assoc, one_smul, neg_smul]
       module
-    refine ⟨d • 1, -b • 1, ?_, by contrapose! hbd; aesop⟩
+    refine ⟨d • 1, -b • 1, ?_, by contrapose! hbd; simp_all⟩
     simp only [smul_add, smul_assoc, one_smul, smul_smul, mul_comm d, h]
     module
   refine ⟨fun h' ↦ ⟨?_, h⟩, fun ⟨h₁, h₂⟩ ↦ pair_add_smul_add_smul_iff_aux _ _ _ _ h₂ h₁⟩
@@ -516,7 +516,7 @@ theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u'} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
@@ -777,9 +777,9 @@ theorem exists_of_linearIndepOn_of_finite_span {s : Set V} {t : Finset V}
       have hb₁s' : b₁ ∉ s' := fun h => hb₁s <| hs' h
       have hst : s ∩ ↑t = ∅ :=
         eq_empty_of_subset_empty <|
-          -- Porting note: `-inter_subset_left, -subset_inter_iff` required.
+          -- Porting note: `-subset_inter_iff` required.
           Subset.trans
-            (by simp [inter_subset_inter, -inter_subset_left, -subset_inter_iff])
+            (by simp [inter_subset_inter, -subset_inter_iff])
             (le_of_eq hst)
       Classical.by_cases (p := s ⊆ (span K ↑(s' ∪ t) : Submodule K V))
         (fun this =>

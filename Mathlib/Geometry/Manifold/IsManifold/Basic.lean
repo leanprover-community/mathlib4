@@ -42,7 +42,7 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 We define a few constructions of smooth manifolds:
 * every empty type is a smooth manifold
-* `IsManifold.of_discreteTopoloy`: a discrete space is a smooth manifold
+* `IsManifold.of_discreteTopology`: a discrete space is a smooth manifold
   (over the trivial model with corners on the trivial space)
 * the product of two smooth manifolds
 * the disjoint union of two manifolds (over the same charted space)
@@ -51,7 +51,7 @@ As specific examples of models with corners, we define (in `Geometry.Manifold.In
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
   define `n`-dimensional real manifolds without boundary
-  (with notation `𝓡 n` in the locale `Manifold`)
+  (with notation `𝓡 n` in the scope `Manifold`)
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
@@ -132,7 +132,17 @@ noncomputable section
 
 universe u v w u' v' w'
 
-open Set Filter Function
+namespace PartialEquiv
+
+/- This lemma is here in this file, because in `PartialEquiv.basic` it would
+have required to import some topology, and it did not look right. -/
+@[fun_prop]
+lemma Continuous.invFun {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (e : PartialEquiv α β) (he : Continuous e.symm) : Continuous e.invFun := he
+
+end PartialEquiv
+
+open Set Filter Function PartialEquiv
 
 open scoped Manifold Topology ContDiff
 
@@ -145,7 +155,7 @@ define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require that, when the field is `ℝ` or `ℂ`, the range is `ℝ`-convex, as this is what is needed
 to do calculus and covers the standard examples of manifolds with boundary. Over other fields,
-we require that the range is `univ`, as there is no relevant notion of manifold of boundary there.
+we require that the range is `univ`, as there is no relevant notion of manifold with boundary there.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
@@ -162,8 +172,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
       Convex ℝ (range toPartialEquiv)
     else range toPartialEquiv = univ
   nonempty_interior' : (interior (range toPartialEquiv)).Nonempty
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 
 lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) :
@@ -250,7 +260,7 @@ theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
     (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous : Continuous I :=
   I.continuous_toFun
 
@@ -260,7 +270,7 @@ protected theorem continuousAt {x} : ContinuousAt I x :=
 protected theorem continuousWithinAt {s x} : ContinuousWithinAt I s x :=
   I.continuousAt.continuousWithinAt
 
-@[continuity]
+@[fun_prop]
 theorem continuous_symm : Continuous I.symm :=
   I.continuous_invFun
 
@@ -982,8 +992,7 @@ all the smooth bundle structure when defining manifold derivatives. -/
 
 set_option linter.unusedVariables false in
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
-`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
-kernel.
+`(tangentBundleCore I M).toFiberBundleCore.fiber x`, but we use `E` to help the kernel.
 
 The definition of `TangentSpace` is not reducible so that type class inference
 does not pick wrong instances.

@@ -134,8 +134,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   rw [div_eq_div_iff] at h
   rotate_left
   · simpa
-  · apply pow_ne_zero
-    simp [y]
+  · simp [y]
   replace h : a * y ^ d = x ^ d * b := by
     qify
     assumption
@@ -266,8 +265,8 @@ def findNotPowerCertificateCore (m n : ℕ) : Option ℕ := Id.run do
     else
       right := middle
   if left ^ n < m then
-    return .some left
-  return .none
+    return some left
+  return none
 
 /-- Finds `NotPowerCertificate` showing that `m` is not `n`-power. -/
 def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := do
@@ -275,7 +274,7 @@ def findNotPowerCertificate (m n : Q(ℕ)) : MetaM (NotPowerCertificate m n) := 
   let .isNat (_ : Q(AddMonoidWithOne ℕ)) n _ := ← derive n | failure
   let mVal := m.natLit!
   let nVal := n.natLit!
-  let .some k := findNotPowerCertificateCore mVal nVal | failure
+  let some k := findNotPowerCertificateCore mVal nVal | failure
   let .isBool true pf_left ← derive q($k ^ $n < $m) | failure
   let .isBool true pf_right ← derive q($m < ($k + 1) ^ $n) | failure
   return ⟨q($k), pf_left, pf_right⟩
