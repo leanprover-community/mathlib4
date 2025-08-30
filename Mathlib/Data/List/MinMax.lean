@@ -7,7 +7,7 @@ import Mathlib.Data.List.Basic
 import Mathlib.Order.BoundedOrder.Lattice
 import Mathlib.Data.List.Induction
 import Mathlib.Order.MinMax
-import Mathlib.Order.WithBot
+import Mathlib.Order.WithBot.Basic
 
 /-!
 # Minimum and maximum of lists
@@ -248,12 +248,12 @@ variable [Preorder α] [DecidableLT α] {l : List α} {a m : α}
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]` -/
 def maximum (l : List α) : WithBot α :=
-  argmax id l
+  WithBot.equivOption.symm (argmax id l)
 
 /-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]` -/
 def minimum (l : List α) : WithTop α :=
-  argmin id l
+  WithTop.equivOption.symm (argmin id l)
 
 @[simp]
 theorem maximum_nil : maximum ([] : List α) = ⊥ :=
@@ -271,25 +271,26 @@ theorem maximum_singleton (a : α) : maximum [a] = a :=
 theorem minimum_singleton (a : α) : minimum [a] = a :=
   rfl
 
-theorem maximum_mem {l : List α} {m : α} : (maximum l : WithTop α) = m → m ∈ l :=
-  argmax_mem
+theorem maximum_mem {l : List α} {m : α} (h : (maximum l : WithTop α) = m) : m ∈ l :=
+  argmax_mem (WithTop.equivOption.symm.injective h)
 
-theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m ∈ l :=
-  argmin_mem
+theorem minimum_mem {l : List α} {m : α} (h : (minimum l : WithBot α) = m) : m ∈ l :=
+  argmin_mem (WithBot.equivOption.symm.injective h)
 
 @[simp]
-theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
-  argmax_eq_none
+theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] := by
+  grind [maximum, argmax_eq_none]
 
 @[simp]
 theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
-  argmin_eq_none
+  @maximum_eq_bot αᵒᵈ _ _ _
 
-theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
-  not_lt_of_mem_argmax
+theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a := by
+  rw [maximum, WithBot.equivOption_symm_eq_coe]
+  exact not_lt_of_mem_argmax
 
 theorem not_lt_minimum_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
-  not_lt_of_mem_argmin
+  @not_maximum_lt_of_mem αᵒᵈ _ _ _ _ _
 
 theorem not_maximum_lt_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum <;> simp_all [not_maximum_lt_of_mem ha]
@@ -306,14 +307,16 @@ variable [LinearOrder α] {l : List α} {a m : α}
 theorem maximum_concat (a : α) (l : List α) : maximum (l ++ [a]) = max (maximum l) a := by
   simp only [maximum, argmax_concat, id]
   cases argmax id l
-  · exact (max_eq_right bot_le).symm
-  · simp [WithBot.some_eq_coe, max_def_lt, WithBot.coe_lt_coe]
+  case none => exact (max_eq_right bot_le).symm
+  case some val =>
+    by_cases h : val < a <;> simp [*, max_def_lt]
 
-theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m :=
-  le_of_mem_argmax
+theorem le_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → a ≤ m := by
+  rw [maximum, WithBot.equivOption_symm_eq_coe]
+  exact le_of_mem_argmax
 
 theorem minimum_le_of_mem : a ∈ l → (minimum l : WithTop α) = m → m ≤ a :=
-  le_of_mem_argmin
+  @le_maximum_of_mem αᵒᵈ _ _ _ _
 
 theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
   le_of_not_gt <| not_maximum_lt_of_mem' ha
@@ -360,7 +363,7 @@ theorem minimum_anti {l₁ l₂ : List α} (h : l₁ ⊆ l₂) : l₂.minimum �
   @maximum_mono αᵒᵈ _ _ _ h
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
-  rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
+  rw [maximum, WithBot.equivOption_symm_eq_coe, argmax_eq_some_iff]
   simp only [id_eq, and_congr_right_iff, and_iff_left_iff_imp]
   intro _ h a hal hma
   rw [_root_.le_antisymm hma (h a hal)]
