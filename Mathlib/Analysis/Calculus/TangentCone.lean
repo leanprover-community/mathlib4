@@ -514,7 +514,7 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   refine ⟨(dense_pi univ fun i _ => (h i).1).mono ?_, fun i _ => (h i).2⟩
   norm_cast
   simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
-    ← mapsTo']
+    ← mapsTo_iff_image_subset]
   exact fun i => (mapsTo_tangentConeAt_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 
 theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)

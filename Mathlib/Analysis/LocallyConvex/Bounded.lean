@@ -169,7 +169,8 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
     IsVonNBounded 𝕜 S ↔ Tendsto (· • S : 𝕜 → Set E) (𝓝 0) (𝓝 0).smallSets := by
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun V hV ↦ ?_
-  simp only [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo', image_smul]
+  simp only [absorbs_iff_eventually_nhds_zero (mem_of_mem_nhds hV), mapsTo_iff_image_subset,
+    image_smul]
 
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
 

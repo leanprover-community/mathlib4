@@ -272,7 +272,7 @@ lemma line_mapsTo {x y : Hollom} (hxy : (ofHollom x).2.2 = (ofHollom y).2.2) :
   induction x with | h a b c =>
   induction y with | h d e f =>
   obtain rfl : c = f := by simpa using hxy
-  rw [Set.mapsTo']
+  rw [Set.mapsTo_iff_image_subset]
   intro n
   simp only [Set.mem_image, Set.mem_Icc, «exists», line_toHollom, Prod.exists, exists_and_right,
     forall_exists_index, and_imp]
