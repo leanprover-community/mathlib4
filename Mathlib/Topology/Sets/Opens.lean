@@ -258,7 +258,8 @@ theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
-theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α) : U = ⊥ ∨ U = ⊤ := by
+theorem eq_bot_or_top {α} [t : TopologicalSpace α] [IndiscreteTopology α] (U : Opens α) :
+    U = ⊥ ∨ U = ⊤ := by
   subst h; letI : TopologicalSpace α := ⊤
   rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
   exact U.2

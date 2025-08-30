@@ -897,6 +897,19 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [edist_nndist, nndist_mulIndicator]
 
+variable (E) in
+@[to_additive exists_nnnorm_ne_zero]
+theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 := by
+  obtain ⟨x, y, h⟩ := TopologicalSpace.nontrivial_iff_exists_not_inseparable.1 ‹_›
+  refine ⟨x / y, mt ?_ h⟩
+  rw [← nndist_eq_nnnorm_div, Metric.inseparable_iff_nndist]
+  exact id
+
+variable (E) in
+@[to_additive exists_norm_ne_zero]
+theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :=
+  exists_nnnorm_ne_zero' E |>.imp fun _ h h' => h <| NNReal.eq h'
+
 end NNNorm
 
 section ENorm
