@@ -312,10 +312,8 @@ section
 theorem mono_of_kernel_ι_eq_zero (h : kernel.ι f = 0) : Mono f :=
   mono_of_kernel_zero h
 
-theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f := by
-  apply NormalMonoCategory.epi_of_zero_cokernel _ (cokernel f)
-  simp_rw [← h]
-  exact IsColimit.ofIsoColimit (colimit.isColimit (parallelPair f 0)) (isoOfπ _)
+theorem epi_of_cokernel_π_eq_zero (h : cokernel.π f = 0) : Epi f :=
+  epi_of_cokernel_zero h
 
 end
 
