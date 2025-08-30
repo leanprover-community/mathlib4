@@ -1,5 +1,6 @@
 import Lean.Linter.Sets -- for the definition of linter sets
 import Mathlib.Tactic.Linter.CommandStart
+import Mathlib.Tactic.Linter.DeprecatedAttr
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
