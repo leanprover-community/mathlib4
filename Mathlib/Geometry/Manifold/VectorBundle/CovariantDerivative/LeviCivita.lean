@@ -776,7 +776,7 @@ omit [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 /-- The **Christoffel symbol** of a covariant derivative on a set `U ⊆ M`
 with respect to a local frame `(s_i)` on `U`: for each triple `(i, j, k)` of indices,
 this is a function `Γᵢⱼᵏ : M → ℝ`, whose value outside of `U` is meaningless. -/
-noncomputable def christoffelSymbol
+noncomputable def ChristoffelSymbol
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
     {U : Set M} {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
@@ -784,12 +784,12 @@ noncomputable def christoffelSymbol
 
 
 lemma christoffelSymbol_zero (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
-    (hs : IsLocalFrameOn I E n s U) (i j k : ι) : christoffelSymbol I 0 hs i j k = 0 := by
-  simp [christoffelSymbol]
+    (hs : IsLocalFrameOn I E n s U) (i j k : ι) : ChristoffelSymbol I 0 hs i j k = 0 := by
+  simp [ChristoffelSymbol]
 
 @[simp]
 lemma christoffelSymbol_zero_apply (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
-    (hs : IsLocalFrameOn I E n s U) (i j k : ι) (x) : christoffelSymbol I 0 hs i j k x = 0 := by
+    (hs : IsLocalFrameOn I E n s U) (i j k : ι) (x) : ChristoffelSymbol I 0 hs i j k x = 0 := by
   simp [christoffelSymbol_zero]
 
 end
@@ -801,7 +801,7 @@ variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSp
 lemma foobar (hf : IsCovariantDerivativeOn E f U)
     (hs : IsLocalFrameOn I E 1 s U) (x : M) :
     f X Y x = ∑ k,
-      let S₁ := ∑ i, ∑ j, (hs.repr i X) * (hs.repr j Y) * (christoffelSymbol I f hs i j k)
+      let S₁ := ∑ i, ∑ j, (hs.repr i X) * (hs.repr j Y) * (ChristoffelSymbol I f hs i j k)
       let S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
       S₁ x • s k x :=
   -- straightforward computation: write Y = ∑ i, hs.repr i Y and use linearity and Leibniz rule
@@ -822,7 +822,7 @@ lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fin
     {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
     IsTorsionFreeOn f U ↔
-      ∀ i j k, ∀ x ∈ U, christoffelSymbol I f hs i j k x = christoffelSymbol I f hs j i k x := by
+      ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I f hs j i k x := by
   rw [hf.isTorsionFreeOn_iff_localFrame (n := n) hs]
   have (i j : ι) {x} (hx : x ∈ U) :
       torsion f (s i) (s j) x = f (s i) (s j) x - f (s j) (s i) x := by
@@ -830,7 +830,7 @@ lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fin
   peel with i j
   refine ⟨?_, ?_⟩
   · intro h k x hx
-    simp only [christoffelSymbol]
+    simp only [ChristoffelSymbol]
     apply hs.repr_congr
     specialize h x hx
     rw [this i j hx, sub_eq_zero] at h
@@ -853,7 +853,7 @@ lemma isTorsionFree_iff_christoffelSymbols' [FiniteDimensional ℝ E] [IsManifol
       ∀ x ∈ U,
       -- Let `{s_i}` be the coordinate frame at `x`: this statement is false for arbitrary frames.
       -- TODO: does the following do what I want??
-      letI cs := christoffelSymbol I f
+      letI cs := ChristoffelSymbol I f
           ((Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 (trivializationAt E _ x))
       ∀ i j k, cs i j k x = cs j i k x := by
   letI t := (trivializationAt E (fun (x : M) ↦ TangentSpace I x))
@@ -869,8 +869,8 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
     ∀ {x'}, x' ∈ t.baseSet → ∀ (i j k : ↑(Basis.ofVectorSpaceIndex ℝ E)),
-      christoffelSymbol I (LeviCivitaConnection I M) hs i j k x' =
-        christoffelSymbol I (LeviCivitaConnection I M) hs j i k x' := by
+      ChristoffelSymbol I (LeviCivitaConnection I M) hs i j k x' =
+        ChristoffelSymbol I (LeviCivitaConnection I M) hs j i k x' := by
   by_cases hE : Subsingleton E
   · have (y : M) (X : TangentSpace I y) : X = 0 := by
       have : Subsingleton (TangentSpace I y) := inferInstanceAs (Subsingleton E)
@@ -884,7 +884,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
 
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
-    have : christoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
+    have : ChristoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
     sorry -- this should do it!
   sorry
 
