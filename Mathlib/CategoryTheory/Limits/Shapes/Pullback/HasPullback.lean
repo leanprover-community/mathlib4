@@ -21,7 +21,7 @@ pullacks.
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
 ```
-  pullback f g ---pullback.snd f g---> Y
+  pullback f g ---pullback.fst f g---> Y
       |                                |
       |                                |
 pullback.snd f g                       g
