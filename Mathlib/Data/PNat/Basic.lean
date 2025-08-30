@@ -7,6 +7,8 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Order.SuccPred.Basic
+import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.PNat.Equiv
 
 /-!
@@ -369,5 +371,21 @@ theorem pos_of_div_pos {n : ℕ+} {a : ℕ} (h : a ∣ n) : 0 < a := by
   intro hzero
   rw [hzero] at h
   exact PNat.ne_zero n (eq_zero_of_zero_dvd h)
+
+
+/-- Order related instances for `ℕ+`.
+-/
+
+instance instSuccOrder : SuccOrder ℕ+ :=
+  SuccOrder.ofSuccLeIff (fun n => succPNat n) (by rfl)
+
+instance instSuccAddOrder : SuccAddOrder ℕ+ where
+  succ_eq_add_one x := by rfl
+
+instance instNoMaxOrder : NoMaxOrder ℕ+ where
+  exists_gt n := ⟨succPNat n, lt_succ_self n⟩
+
+@[simp]
+lemma succ_eq_succPNat (n : ℕ+) : Order.succ n = succPNat n := rfl
 
 end PNat
