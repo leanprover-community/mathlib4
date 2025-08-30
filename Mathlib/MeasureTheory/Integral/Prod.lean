@@ -306,6 +306,16 @@ theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCom
       simp [lintegral_const_mul', lintegral_mul_const', hg.2.ne, mul_assoc]
     _ < ∞ := by apply_rules [ENNReal.mul_lt_top, hf.2, hg.2, ENNReal.ofReal_lt_top]
 
+lemma Integrable.comp_fst {f : α → E} (hf : Integrable f μ) (ν : Measure β) [IsFiniteMeasure ν] :
+    Integrable (fun x ↦ f x.1) (μ.prod ν) := by
+  rw [← memLp_one_iff_integrable] at hf ⊢
+  exact hf.comp_fst ν
+
+lemma Integrable.comp_snd {f : β → E} (hf : Integrable f ν) (μ : Measure α) [IsFiniteMeasure μ] :
+    Integrable (fun x ↦ f x.2) (μ.prod ν) := by
+  rw [← memLp_one_iff_integrable] at hf ⊢
+  exact hf.comp_snd μ
+
 omit [SFinite ν] in
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -540,8 +550,17 @@ section ContinuousLinearMap
 
 variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G} [CompleteSpace G]
+  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
+
+lemma integrable_continuousLinearMap_prod {L : E × F →L[ℝ] G}
+    (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
+    Integrable L (μ.prod ν) := by
+  change Integrable (fun v ↦ L v) (μ.prod ν)
+  simp_rw [← L.comp_inl_add_comp_inr]
+  exact (hLμ.comp_fst ν).add (hLν.comp_snd μ)
+
+variable [CompleteSpace G]
 
 lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
     (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
