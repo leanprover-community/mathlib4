@@ -108,11 +108,12 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   rcases m.eq_zero_or_pos with (rfl | hm)
   · simpa using irreducible_X_sub_C (1 : R)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
-  induction' k with k hk
-  · simpa using h
-  have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
-  rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-  exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
+  induction k with
+  | zero => simpa using h
+  | succ k hk =>
+    have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
+    rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
+    exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
 theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]

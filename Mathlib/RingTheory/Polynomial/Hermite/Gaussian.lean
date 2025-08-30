@@ -39,9 +39,10 @@ theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
     deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x =
     (-1 : ℝ) ^ n * aeval x (hermite n) * Real.exp (-(x ^ 2 / 2)) := by
   rw [mul_assoc]
-  induction' n with n ih generalizing x
-  · rw [Function.iterate_zero_apply, pow_zero, one_mul, hermite_zero, C_1, map_one, one_mul]
-  · replace ih : deriv^[n] _ = _ := _root_.funext ih
+  induction n generalizing x with
+  | zero => rw [Function.iterate_zero_apply, pow_zero, one_mul, hermite_zero, C_1, map_one, one_mul]
+  | succ n ih =>
+    replace ih : deriv^[n] _ = _ := _root_.funext ih
     have deriv_gaussian :
       deriv (fun y => Real.exp (-(y ^ 2 / 2))) x = -x * Real.exp (-(x ^ 2 / 2)) := by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [mul_comm, ← neg_mul]`
