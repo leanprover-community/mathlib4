@@ -68,22 +68,34 @@ lemma RCLike.balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : 
   have ne : x ≠ 0 := fun nh ↦ by simp [nh] at h0
   simpa [ne] using balanced_iff_smul_mem.mp Balanced_K this hx
 
+theorem closed_balanced_sep {𝕜 : Type*} [RCLike 𝕜] {r : ℝ} {K : Set 𝕜} (compact_K : IsCompact K)
+    (zero_in : 0 ∈ K) (norm_lt_r : ∀ x ∈ K, ‖x‖ < r) :
+    ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
+  set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
+  obtain ⟨x, xin, eq⟩ : sSup (g '' K) ∈ g '' K :=
+    IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ⟨0, 0, zero_in, norm_zero⟩
+  have g_le : ∀ z ∈ K, g z ≤ g x := fun z hz ↦ by
+    rw [eq]
+    refine le_csSup ?_ (Set.mem_image_of_mem g hz)
+    exact ⟨r, fun y ⟨x, hx, _⟩ ↦ by linarith [norm_lt_r x hx]⟩
+  obtain ⟨s, hs₁, hs₂⟩ : ∃ s, g x < s ∧ s < r := exists_between (by simp only [norm_lt_r x xin, g])
+  exact ⟨s, by linarith [norm_nonneg x], hs₂, fun z hz ↦ by linarith [norm_lt_r x xin, g_le z hz]⟩
+
 /-- Rudin 3.7 Theorem Suppose B is a convex, balanced, closed set in a locally convex space $X,
 x_0 \in X$, but $x_0 \notin B$. Then there exists $\Lambda \in X^*$ such that $|\Lambda x| \leq 1$
-for all $x \in B$, but $\Lambda x_0 > 1$.
--/
+for all $x \in B$, but $\Lambda x_0 > 1$. -/
 theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] [AddCommGroup E]
     [Module ℝ E] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E] {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
-     (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
+    (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
     ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ < 1 := by
   /- proof. Since $B$ is closed and convex, we can apply (b) of Theorem 3.4, with $A= {x_0}$,
   to obtain $\Lambda_1 \in X^*$ such that $\Lambda_1 x_0=r e^{i \theta}$ lies outside the
   closure $K$ of $\Lambda_1(B)$. -/
   obtain ⟨f, u, v, h1, h2, h3⟩ : ∃ (f : StrongDual 𝕜 E) (u v : ℝ),
       (∀ a ∈ ({x₀} : Set E), re (f a) < u) ∧ u < v ∧ ∀ b ∈ B, v < re (f b) :=
-    RCLike.geometric_hahn_banach_compact_closed (t := B) (s := {x₀}) (convex_singleton x₀)
-      isCompact_singleton hs₁ hs₂ (Set.disjoint_singleton_left.mpr hx)
+    RCLike.geometric_hahn_banach_compact_closed (convex_singleton x₀) isCompact_singleton hs₁ hs₂
+      (Set.disjoint_singleton_left.mpr hx)
   have : re (f x₀) < u := h1 x₀ rfl
   have h3 : ∀ z ∈ f '' B, v < re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ by
     rw [← eq]
@@ -98,10 +110,8 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     have : 0 ∈ f '' B := ⟨0, by simpa using Balanced.zero_mem hs₃ hs₄⟩
     subset_closure this
   set r := ‖f x₀‖ with hr
-  have r_gt_zero : r > 0 := by
-    simp only [hr, gt_iff_lt, norm_pos_iff, ne_eq]
-    intro nh
-    simp [nh, zero_in] at notin
+  have ne : f x₀ ≠ 0 := fun nh ↦ by simp [nh, zero_in] at notin
+  have r_pos : r > 0 := by simp [hr, ne]
   have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦ by
     by_contra! nh
     have := RCLike.balanced Balanced_K x hx (by linarith) (f x₀) ⟨norm_nonneg (f x₀), nh⟩
@@ -110,32 +120,20 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     refine Metric.isCompact_of_isClosed_isBounded isClosed_closure ?_
     refine (Metric.isBounded_iff_subset_ball 0 (s := K)).mpr ?_
     exact ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
-  have ne : f x₀ ≠ 0 := fun nh ↦ by
-    simp [nh] at hr
-    simp [hr] at r_gt_zero
   /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
-  obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
-    set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
-    obtain ⟨x, xin, eq⟩ : sSup (g '' K) ∈ g '' K :=
-      IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ⟨0, 0, zero_in, norm_zero⟩
-    have g_le : ∀ z ∈ K, g z ≤ sSup (g '' K) := fun z hz ↦ by
-      refine le_csSup ?_ (Set.mem_image_of_mem g hz)
-      exact ⟨r, fun y ⟨x, hx, _⟩ ↦ by linarith [norm_lt_r x hx]⟩
-    use (sSup (g '' K) + r) / 2
-    refine ⟨by rw [← eq]; linarith [norm_nonneg x],
-            by linarith [norm_lt_r x xin], fun z hz ↦ ?_⟩
-    linarith [norm_lt_r x xin, g_le z hz]
+  obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
+    closed_balanced_sep compact_K zero_in norm_lt_r
   /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
-  have eq1 : |r| = r := abs_norm (f x₀)
-  have eq2 : |s| = s := abs_of_pos s_pos
   use (r / (s * (f x₀))) • f
   have (x : E): ‖((r / (s * f x₀)) • f) x‖ = (r * ‖f x‖) / (s * ‖f x₀‖) := by
+    have eq1 : |r| = r := abs_norm (f x₀)
+    have eq2 : |s| = s := abs_of_pos s_pos
     simp [div_mul_eq_mul_div₀, eq1, eq2]
-  have mul_pos : s * ‖f x₀‖ > 0 := Left.mul_pos s_pos r_gt_zero
+  have mul_pos : s * ‖f x₀‖ > 0 := Left.mul_pos s_pos r_pos
   constructor
   · rw [this, mul_comm]
-    exact (one_lt_div₀ mul_pos).mpr ((mul_lt_mul_iff_of_pos_right r_gt_zero).mpr s_lt)
+    exact (one_lt_div₀ mul_pos).mpr ((mul_lt_mul_iff_of_pos_right r_pos).mpr s_lt)
   · intro b hb
     rw [this, hr, mul_comm, div_lt_one₀ mul_pos]
-    refine (mul_lt_mul_iff_of_pos_right r_gt_zero).mpr ?_
+    refine (mul_lt_mul_iff_of_pos_right r_pos).mpr ?_
     exact hs (f b) (subset_closure (Set.mem_image_of_mem (⇑f) hb))
