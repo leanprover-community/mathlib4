@@ -243,7 +243,7 @@ theorem linearIndependent_iff'ₛ :
           _ = ∑ j ∈ s, (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single j (f j)) :=
             Eq.symm <|
               Finset.sum_eq_single i
-                (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
+                (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne' hji])
                 fun hnis => hnis.elim his
           _ = (∑ j ∈ s, Finsupp.single j (f j)) i := (map_sum ..).symm
       rw [this f, this g, h],
