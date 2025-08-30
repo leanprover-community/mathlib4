@@ -76,9 +76,7 @@ theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by
     refine lt_of_not_ge fun h => ?_
     obtain ⟨k, e⟩ := le.dest h
     injection s.symm.trans (psub_eq_some.2 <| (add_comm _ _).trans e)
-  · simp only [eq_comm, reduceCtorEq, false_iff, not_lt]
-    rw [← psub_eq_some.1 s]
-    apply Nat.le_add_left
+  · grind [psub_eq_some]
 
 theorem ppred_eq_pred {n} (h : 0 < n) : ppred n = some (pred n) :=
   ppred_eq_some.2 <| succ_pred_eq_of_pos h
