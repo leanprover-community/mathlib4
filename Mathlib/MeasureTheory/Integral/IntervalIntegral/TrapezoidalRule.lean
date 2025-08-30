@@ -45,8 +45,6 @@ theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N
   field_simp
   ring
 
-example {a b c : ℝ} : a * (b / c) = (a / c) * b := by exact Eq.symm (mul_comm_div a c b)
-
 /-- The absolute error of the trapezoidal rule does not change when the endpoints are swapped. -/
 theorem trapezoidal_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     trapezoidal_error f N a b = -trapezoidal_error f N b a := by
@@ -165,9 +163,10 @@ lemma trapezoidal_error_two_points {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_l
   let g (t : ℝ) := trapezoidal_error f 1 a (a + t)
   let h := b - a
   have h_gt_zero := sub_pos.mpr a_lt_b
-  -- Hand-computed expressions for g' and g''.
+  -- Hand-computed expressions for g' and g''. We will differentiate g twice, find that
+  -- g''(t) ≤ (ζ / 2) * t, and then integrate twice.
   let dg (t : ℝ) :=
-      (1 / 2) * (f (a) + f (a + t))
+      (1 / 2) * (f a + f (a + t))
       + (t / 2) * (derivWithin f (Icc a b) (a + t)) - f (a + t)
   let ddg (t : ℝ) := (t / 2) * (iteratedDerivWithin 2 f (Icc a b) (a + t))
   -- This particular lemma will come in handy a couple of times.
@@ -290,13 +289,12 @@ lemma trapezoidal_error_two_points {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_l
   -- Finally, we run our `power_bound` logic twice, turning our bound on ddg into a bound on dg
   -- and then into a bound on g.  (This does require proving continuity of g and dg, which we can
   -- do straightforwardly by using our previous derivative results, and integrability of dg and
-  -- ddg.  The first of these is also straightforward, while the second needs a little bit of
-  -- work.)
-  have gk_continuous : ContinuousOn (g) (Icc 0 h) := by
+  -- ddg.)
+  have gk_continuous : ContinuousOn g (Icc 0 h) := by
     intro y hy
     apply HasDerivWithinAt.continuousWithinAt
     exact h_dg y hy
-  have dgk_continuous : ContinuousOn (dg) (Icc 0 h) := by
+  have dgk_continuous : ContinuousOn dg (Icc 0 h) := by
     intro y hy
     apply HasDerivWithinAt.continuousWithinAt
     exact h_ddg y hy
@@ -304,11 +302,8 @@ lemma trapezoidal_error_two_points {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_l
     ContinuousOn.intervalIntegrable_of_Icc (le_of_lt h_gt_zero) dgk_continuous
   have ddgk_integrable : IntervalIntegrable ddg volume 0 h := by
     apply IntervalIntegrable.continuousOn_mul
-    · have : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume (a) (a + h) := by
-        apply IntervalIntegrable.mono h_ddf_integrable _ (le_refl volume)
-        rw [uIcc_of_lt a_lt_b, uIcc_of_lt (lt_add_of_pos_right (a) h_gt_zero)]
-        exact Set.Icc_subset_Icc (le_refl a) (by linarith)
-      have := IntervalIntegrable.comp_add_left this (a)
+    · have : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a (a + h) := by simpa [h]
+      have := IntervalIntegrable.comp_add_left (this) a
       simpa
     · fun_prop
   have := power_bound (integral_from_zero h_ddg (by unfold dg; ring_nf: dg 0 = 0)
@@ -353,21 +348,61 @@ lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_
     exact (ak_bound hk (left_mem_Icc.mpr (le_of_lt h_gt_zero))).left
   have ak_h_lt_b {k : ℕ} (hk: k < N) : ak k + h ≤ b := by
     exact (ak_bound (hk) (right_mem_Icc.mpr (le_of_lt h_gt_zero))).right
-  -- We will differentiate g twice, find that g''(t) ≤ (ζ / 2) * t, and then integrate twice.
+  -- We now want to use what should be a simple application of `trapezoidal_error_two_points`.
+  -- However, this requires a little bit of extra work in order to handle the intervals: our axioms
+  -- about `f` and its derivatives are all with respect to `Icc a b`, so bringing them into
+  -- `Icc (ak k) (ak k + h)` is not trivial.
   have two_point_bound (k : ℕ) (h_range : k ∈ range N) :
       |trapezoidal_error f 1 (ak k) (ak (k + 1))| ≤ (ζ / 12) * h ^ 3 := by
     have h_k_le_n : k < N := List.mem_range.mp h_range
     have : ak (k + 1) = ak k + h := by unfold ak; field_simp; ring
     rw [this]
-    have ak_interval : Icc (ak k) ((ak k) + h) ⊆ Icc a b :=
+    have ak_interval : Icc (ak k) (ak k + h) ⊆ Icc a b :=
       Icc_subset_Icc (a_lt_ak h_k_le_n) (ak_h_lt_b h_k_le_n)
+    have ak_uInt : [[ak k, ak k + h]] ⊆ [[a, b]] := by
+      rwa [uIcc_of_lt a_lt_b, uIcc_of_lt (lt_add_of_pos_right _ h_gt_zero)]
     nth_rw 2 [← add_sub_cancel_left (ak k) h]
+    have derivWithin_interval {g : ℝ → ℝ} (h_dg : DifferentiableOn ℝ g (Icc a b)) (x : ℝ)
+        (hx : x ∈ Icc (ak k) (ak k + h)):
+        derivWithin g (Icc (ak k) (ak k + h)) x = derivWithin g (Icc a b) x := by
+      apply derivWithin_subset ak_interval ?_ (h_dg x (ak_interval hx))
+      apply UniqueDiffOn.uniqueDiffWithinAt ?_ hx
+      exact uniqueDiffOn_Icc (lt_add_of_pos_right _ h_gt_zero)
+    have iteratedDerivWithin_interval (x : ℝ) (hx : x ∈ Icc (ak k) (ak k + h)) :
+        iteratedDerivWithin 2 f (Icc (ak k) (ak k + h)) x
+          = iteratedDerivWithin 2 f (Icc a b) x := by
+        rw [iteratedDerivWithin_succ', iteratedDerivWithin_one,
+            derivWithin_congr (derivWithin_interval h_df), derivWithin_interval h_ddf x hx]
+        · rw [← iteratedDerivWithin_one, ← iteratedDerivWithin_succ']
+        · exact derivWithin_interval h_df x hx
     apply trapezoidal_error_two_points
     · exact lt_add_of_pos_right _ h_gt_zero
     · exact h_df.mono ak_interval
-    · sorry
-    · sorry
-    · sorry
+    · apply DifferentiableOn.congr ?_ (derivWithin_interval h_df)
+      exact h_ddf.mono ak_interval
+    · have := h_ddf_integrable.mono ak_uInt (le_refl _)
+      refine IntervalIntegrable.congr this ?_
+      apply Filter.eventuallyEq_of_mem (s := Icc (ak k) (ak k + h))
+      · rw [MeasureTheory.mem_ae_iff, MeasureTheory.Measure.restrict_apply]
+        · have : Ι (ak k) (ak k + h) ⊆ Icc (ak k) (ak k + h) := by
+            rw [uIoc_of_le (by grind)]
+            exact Ioc_subset_Icc_self
+          have : (Icc (ak k) (ak k + h))ᶜ ∩ Ι (ak k) (ak k + h) = ∅ := by grind
+          rw [this]
+          exact OuterMeasureClass.measure_empty volume
+        · exact MeasurableSet.compl measurableSet_Icc
+      · intro x hx
+        exact Eq.symm (iteratedDerivWithin_interval x hx)
+    · intro x
+      rcases Classical.em (x ∈ Icc (ak k) (ak k + h)) with hx | _
+      · rw [iteratedDerivWithin_interval x hx]
+        exact fpp_bound x
+      · rw [iteratedDerivWithin_succ, derivWithin_zero_of_notMem_closure]
+        · calc
+            _ = 0                             := abs_zero
+            _ ≤ |iteratedDerivWithin 2 f _ 0| := abs_nonneg _
+            _ ≤ _                             := fpp_bound 0
+        · rwa [closure_Icc]
   have f_integrable : IntervalIntegrable f volume a b :=
     ContinuousOn.intervalIntegrable_of_Icc (le_of_lt a_lt_b) h_cf
   have : b = a + N * h := by
