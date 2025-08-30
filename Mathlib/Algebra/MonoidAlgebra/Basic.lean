@@ -259,7 +259,7 @@ theorem mapDomain_algebraMap {F : Type*} [FunLike F G H] [MonoidHomClass F G H] 
 `Finsupp.mapDomain f` is an algebra homomorphism between their monoid algebras. -/
 @[to_additive (attr := simps!) /--
 If `f : G → H` is an additive homomorphism between two additive monoids, then
-`Finsupp.mapDomain f` is an algebra homomorphism between their add monoid algebras. -/]
+`Finsupp.mapDomain f` is an algebra homomorphism between their additive monoid algebras. -/]
 def mapDomainAlgHom (k A : Type*) [CommSemiring k] [Semiring A] [Algebra k A] {H F : Type*}
     [Monoid H] [FunLike F G H] [MonoidHomClass F G H] (f : F) :
     MonoidAlgebra A G →ₐ[k] MonoidAlgebra A H :=
@@ -281,7 +281,7 @@ variable (k A)
 /-- If `e : G ≃* H` is a multiplicative equivalence between two monoids, then
 `MonoidAlgebra.domCongr e` is an algebra equivalence between their monoid algebras. -/
 @[to_additive /-- If `e : G ≃+ H` is an additive equivalence between two additive monoids, then
-`AddMonoidAlgebra.domCongr e` is an algebra equivalence between their add monoid algebras. -/]
+`AddMonoidAlgebra.domCongr e` is an algebra equivalence between their additive monoid algebras. -/]
 def domCongr (e : G ≃* H) : MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A H :=
   AlgEquiv.ofLinearEquiv
     (Finsupp.domLCongr e : (G →₀ A) ≃ₗ[k] (H →₀ A))
