@@ -9,7 +9,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Real.Embedding
 import Mathlib.Algebra.Order.GroupWithZero.Range
 import Mathlib.Data.NNReal.Defs
-import Mathlib.RingTheory.Valuation.Basic.Basic
+import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Rank one valuations
