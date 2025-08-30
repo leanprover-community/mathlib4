@@ -127,7 +127,7 @@ lemma repr_eq_inner' (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : 
 -- variable (t) in
 -- lemma repr_eq_inner (hs : IsOrthonormalFrameOn IB F n s u) (hx : x ∈ u) (i : ι) :
 --     hs.repr i t x = ⟪s i x, t x⟫ / (‖s i x‖ ^ 2) := by
---   sorry -- need a versio of b.repr_apply_apply for *orthogonal* bases
+--   sorry -- need a version of b.repr_apply_apply for *orthogonal* bases
 
 /-- If `t` is `C^k` at `x`, so is its coefficient `hs.repr i t` in a local frame s near `x` -/
 lemma contMDiffWithinAt_repr (ht : CMDiffAt[u] n (T% t) x) (hx : x ∈ u) (i : ι) :

@@ -3,7 +3,6 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -768,10 +767,11 @@ noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
     exact isCovariantDerivativeOn_lcCandidate I _
 
+-- TODO: move this section to `Torsion.lean`
 section
 
-omit [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
-omit [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+--omit [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
+--omit [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 /-- The **Christoffel symbol** of a covariant derivative on a set `U ⊆ M`
 with respect to a local frame `(s_i)` on `U`: for each triple `(i, j, k)` of indices,
@@ -782,6 +782,49 @@ noncomputable def ChristoffelSymbol
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
   hs.repr k (f (s i) (s j))
 
+variable {U : Set M}
+  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+  {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
+
+-- Note that this result is false if `{s i}` is merely a local frame.
+lemma eq_product_apply [Fintype ι]
+    (hf : IsCovariantDerivativeOn E f U)
+    (hs : IsOrthonormalFrameOn I E n s U)
+    (i j k : ι) (hx : x ∈ U) :
+    ChristoffelSymbol I f hs.toIsLocalFrameOn i j k x = ⟪f (s i) (s j), (s k)⟫ x := by
+  -- Choose a linear order on ι: which one really does not matter for our result.
+  have : LinearOrder ι := by
+    choose r wo using exists_wellOrder _
+    exact r
+  have : LocallyFiniteOrderBot ι := by sorry
+  rw [ChristoffelSymbol, hs.repr_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
+
+lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
+    (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
+    (hs : IsLocalFrameOn I E n s U)
+    (hfg : ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I g hs i j k x) :
+    ∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x := by
+  have (i j : ι) : ∀ x ∈ U, f (s i) (s j) x = g (s i) (s j) x := by
+    intro x hx
+    rw [hs.eq_iff_repr hx]
+    exact fun k ↦ hfg i j k x hx
+  intro X Y x hx
+  -- use linearity now, another separate lemma!
+  sorry
+
+/-- Two covariant derivatives on `U` are equal on `U` if and only if all of their
+covariant derivatives w.r.t. some local frame on `U` are equal on `U`. -/
+lemma _root_.IsCovariantDerivativeOn.congr_iff_christoffelSymbol_eq [Fintype ι]
+    (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
+    (hs : IsLocalFrameOn I E n s U) :
+    (∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x) ↔
+    ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I g hs i j k x :=
+  ⟨fun hfg _i _j _k _x hx ↦ hs.repr_congr (hfg _ _ _ hx ) ..,
+    fun h X Y x hx ↦ hf.congr_of_christoffelSymbol_eq I hg hs h X Y x hx⟩
+
+-- TODO: global version for convenience, with an alias for the interesting direction!
+
+variable (hs : IsLocalFrameOn I E n s U)
 
 lemma christoffelSymbol_zero (U : Set M) {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : ChristoffelSymbol I 0 hs i j k = 0 := by
@@ -814,12 +857,13 @@ lemma foobar (hf : IsCovariantDerivativeOn E f U)
 - deduce: two covariant derivatives are equal iff their Christoffel symbols are equal
 -/
 
+-- errors: omit [IsContMDiffRiemannianBundle I 1 E fun x ↦ TangentSpace I x] in
 /-- Let `{s i}` be a local frame on `U` such that `[s i, s j] = 0` on `U` for all `i, j`.
 A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U`,
 the Christoffel symbols `Γᵢⱼᵏ` w.r.t. `{s i}` are symmetric. -/
 lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fintype ι]
     (hf : IsCovariantDerivativeOn E f U)
-    {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
+    {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) -- (hx : x ∈ U)
     (hs'' : ∀ i j, ∀ x : U, VectorField.mlieBracket I (s i) (s j) x = 0) :
     IsTorsionFreeOn f U ↔
       ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I f hs j i k x := by
@@ -836,9 +880,8 @@ lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fin
     rw [this i j hx, sub_eq_zero] at h
     exact h
   · intro h x hx
-    rw [this i j hx]
-    -- equal Christoffel symbols means equal function: separate lemma, using frames
-    sorry
+    rw [this i j hx, sub_eq_zero, hs.eq_iff_repr hx]
+    exact fun k ↦ h k x hx
 
 -- Exercise 4.2(b) in Lee, Chapter 4
 /-- A covariant derivative on `U` is torsion-free on `U` iff for each `x ∈ U` and
