@@ -89,4 +89,23 @@ lemma toSimpleGraphStrict_bot : (⊥ : Digraph V).toSimpleGraphStrict = ⊥ := b
 
 end toSimpleGraph
 
+/--
+The digraph `output` is an orientation of the simple graph `input`.
+-/
+def IsOrientation (D : Digraph V) (G : SimpleGraph V) : Prop :=
+  ∀ v w : V, (G.Adj w v) ↔ (D.Adj w v ∧ ¬ D.Adj v w) ∨ (¬ D.Adj w v ∧ D.Adj v w)
+
+lemma isOrientation_left_unique (D : Digraph V) (G₁ G₂ : SimpleGraph V) (hn : G₁ ≠ G₂) :
+    ¬ (D.IsOrientation G₁ ∧ D.IsOrientation G₂) := by
+  rw [not_and]
+  intro h
+  contrapose! hn
+  ext w v
+  rw [h v w, hn v w]
+
+lemma eq_of_isOrientation (D : Digraph V) (G₁ G₂ : SimpleGraph V)
+    (h : D.IsOrientation G₁ ∧ D.IsOrientation G₂) :
+    G₁ = G₂ :=
+  not_not.mp <| mt (isOrientation_left_unique D G₁ G₂) <| not_not.mpr h
+
 end Digraph
