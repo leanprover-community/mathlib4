@@ -129,6 +129,35 @@ end
 
 end Fiber
 
+section IsDiscrete
+
+open Fiber
+
+variable {J : Type u₁} [Category.{v₁} J]
+  {D : Type u₂} [Category.{v₂} D] [IsDiscrete D] (F : J ⥤ D)
+
+instance (d : D) {j₁ j₂ : F.Fiber d} (f : j₁.1 ⟶ j₂.1) : F.IsHomLift (𝟙 d) f :=
+  IsHomLift.of_fac _ _ _ j₁.2 j₂.2 (Subsingleton.elim _ _)
+
+/-- Casting a morphism in `J` to a morphism in the category `F.Fiber d`. -/
+@[simps!] def fiberPreimageOfIsDiscrete {d : D} (j₁ j₂ : F.Fiber d) (f : j₁.1 ⟶ j₂.1) : j₁ ⟶ j₂ :=
+  homMk F d f
+
+/-- The inclusion functor from `F.Fiber d` to `J` is fully faithful when `D` is discrete. -/
+@[simps] def fullyFaithfulFiberInclusionOfIsDiscrete (d : D) :
+    FullyFaithful (fiberInclusion (p := F) (S := d)) where
+  preimage {j₁ j₂} := F.fiberPreimageOfIsDiscrete j₁ j₂
+
+instance (d : D) : Full (fiberInclusion (p := F) (S := d)) :=
+  (fullyFaithfulFiberInclusionOfIsDiscrete F d).full
+
+@[elab_as_elim] lemma fiber_inductionOn_of_isDiscrete {motive : ∀ {j₁ j₂ : J}, (j₁ ⟶ j₂) → Prop}
+    {j₁ j₂ : J} (f : j₁ ⟶ j₂) (ih : ∀ d : D, ∀ {j₁ j₂ : F.Fiber d} (f : j₁ ⟶ j₂), motive f.1) :
+    motive f :=
+  ih _ (F.fiberPreimageOfIsDiscrete (.mk (IsDiscrete.eq_of_hom (F.map f))) (.mk rfl) f)
+
+end IsDiscrete
+
 end Functor
 
 end CategoryTheory
