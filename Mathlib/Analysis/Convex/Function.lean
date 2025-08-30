@@ -1068,7 +1068,7 @@ lemma StrictConvexOn.eq_of_isMinOn (hf : StrictConvexOn 𝕜 s f) (hfx : IsMinOn
   have hz : z ∈ s := hf.1 hx hy (by simp) (by simp) <| by norm_num
   refine lt_irrefl (f z) ?_
   calc
-    f z < _ := hf.2 hx hy hxy (by norm_num) (by norm_num) <| by norm_num
+    f z < _ := hf.2 hx hy hxy (by simp) (by simp) <| by norm_num
     _ ≤ (2 : 𝕜)⁻¹ • f z + (2 : 𝕜)⁻¹ • f z := by gcongr; exacts [hfx hz, hfy hz]
     _ = f z := by rw [← _root_.add_smul]; norm_num
 
