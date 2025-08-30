@@ -1245,7 +1245,7 @@ theorem orderOf_single_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
 
 @[to_additive]
 theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
-  sorry
+  hx.mono (orderOf_single_dvd_orderOf i)
 
 @[to_additive]
 theorem IsOfFinOrder.pi_mk : ∀ i, IsOfFinOrder (x i) → IsOfFinOrder x := by
