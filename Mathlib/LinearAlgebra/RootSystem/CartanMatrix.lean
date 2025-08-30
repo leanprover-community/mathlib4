@@ -390,7 +390,7 @@ lemma notMem_neighbor_left_of_pairing_neg_three [Fintype ι] {i j k : b.support}
   constructor
   · refine Finsupp.ne_iff.mpr ?_
     use i
-    simp [f, Finsupp.single_eq_of_ne hnij.symm, Finsupp.single_eq_of_ne fun a ↦ hik a.symm]
+    simp [f, Finsupp.single_eq_of_ne hnij, Finsupp.single_eq_of_ne hik]
   · rw [b.posForm_self_of_add (Finsupp.single i 2 + Finsupp.single j 3) (Finsupp.single k 1) f rfl,
       b.posForm_of_pairing_neg_three 2 3 hij]
     simp only [Int.reduceMul, Int.reduceAdd, Int.reduceSub, rootCombination_single,
@@ -434,7 +434,7 @@ lemma notMem_neighbor_right_of_pairing_neg_three [Fintype ι] {i j k : b.support
   constructor
   · refine Finsupp.ne_iff.mpr ?_
     use j
-    simp [f, Finsupp.single_eq_of_ne hnij, Finsupp.single_eq_of_ne fun a ↦ hjk a.symm]
+    simp [f, Finsupp.single_eq_of_ne hnij.symm, Finsupp.single_eq_of_ne hjk]
   · rw [b.posForm_self_of_add (Finsupp.single i 1 + Finsupp.single j 2) (Finsupp.single k 1) f rfl,
       b.posForm_of_pairing_neg_three 1 2 hij]
     simp only [Int.reduceMul, mul_one, one_mul, Int.reduceAdd, Int.reduceSub,
@@ -472,7 +472,7 @@ lemma isOrthogonal_of_neighbor [IsDomain R] [Fintype ι] {i j k : b.support} (hj
   constructor
   · refine Finsupp.ne_iff.mpr ?_
     use i
-    simp [f, Finsupp.single_eq_of_ne hnij.symm, Finsupp.single_eq_of_ne fun a ↦ hik a.symm]
+    simp [f, Finsupp.single_eq_of_ne hnij, Finsupp.single_eq_of_ne hik]
   · rw [b.posForm_self_of_add (Finsupp.single i 1 + Finsupp.single j 1) (Finsupp.single k 1) f rfl,
       b.posForm_self_of_add (Finsupp.single i 1) (Finsupp.single j 1) _ rfl]
     have := (P.posRootForm ℤ).pairingIn_mul_eq_pairingIn_mul_swap i j
