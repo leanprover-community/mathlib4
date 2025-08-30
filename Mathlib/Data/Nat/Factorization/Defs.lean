@@ -178,11 +178,13 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]
 theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factorization := by
-  induction' k with k ih; · simp
-  rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-  rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
-    add_smul, one_smul, add_comm]
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rcases eq_or_ne n 0 with (rfl | hn)
+    · simp
+    rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
+      add_smul, one_smul, add_comm]
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
