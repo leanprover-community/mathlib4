@@ -228,7 +228,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
   (`Mathlib.Logic, `Mathlib.Data),
