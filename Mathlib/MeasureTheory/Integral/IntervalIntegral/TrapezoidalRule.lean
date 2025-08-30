@@ -15,7 +15,8 @@ an error bound in terms of a bound on the second derivative of the integrand.
 - `trapezoidal_error_le`: the convergence theorem for the trapezoidal rule.
 
 ## References
-We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule].
+We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
+bound.
 -/
 
 open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
@@ -61,6 +62,7 @@ theorem trapezoidal_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) : trapezoi
 theorem trapezoidal_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) : trapezoidal_error f N a a = 0 := by
   simp [trapezoidal_error]
 
+/-- An exact formula for integration with a single trapezoid (the "midpoint rule"). -/
 @[simp]
 theorem trapezoidal_integral_one (f : ℝ → ℝ) (a b : ℝ) :
     trapezoidal_integral f 1 a b = (b - a) / 2 * (f a + f b) := by
