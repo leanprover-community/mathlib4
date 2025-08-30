@@ -1229,19 +1229,19 @@ section Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
 
 @[to_additive]
-lemma Pi.orderOf_eq : orderOf x = sInf {n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n} := by
-  sorry
+lemma Pi.orderOf_eq : orderOf x = sInf {n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n} :=
+  minimalPeriod_piMap
 
 /- alternative name: `Pi.orderOf_eq_fintype`, `Pi.orderOf_eq_for_fintype`,
 `Pi.orderOf_eq_inexed_by_fintype` -/
 @[to_additive]
-lemma Pi.fintype_orderOf_eq [Fintype ι] : orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) := by
-  sorry
+lemma Pi.fintype_orderOf_eq [Fintype ι] : orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
+  fintype_minimalPeriod_piMap
 
 -- alternative name: `Pi.orderOf_single_dvd_orderOf`
 @[to_additive]
 theorem orderOf_single_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
-  sorry
+  minimalPeriod_single_dvd_minimalPeriod_piMap
 
 @[to_additive]
 theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
