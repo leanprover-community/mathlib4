@@ -1301,9 +1301,10 @@ lemma aux1 {ι : Type*} [Fintype ι]
     _ = ∑ i, (hs.repr i) X x • (torsion f (s i) Y x) := sorry
 
 variable {n} in
-lemma aux2 {ι : Type*} [Fintype ι]
+lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
     {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
-    {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
+    {U : Set M} {s : ι → (x : M) → TangentSpace I x}
+    (hf : IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (X Y : (x : M) → TangentSpace I x) :
     torsion f X Y x = ∑ i, (hs.repr i) Y x • torsion f X (s i) x :=
   have hU : U ∈ 𝓝 x := sorry
@@ -1315,13 +1316,17 @@ lemma aux2 {ι : Type*} [Fintype ι]
     _ = ∑ i, (torsion f X (fun x ↦ (hs.repr i) Y x • s i x) x) := sorry
     _ = ∑ i, (hs.repr i) Y x • (torsion f X (s i) x) := by
       congr with i
-      -- rw [torsion_smul_left_apply] -- generalise this lemma!
-      sorry
+      have hsi : MDiffAt (hs.repr i Y) x := sorry
+      have hsi' : MDiffAt (T% (s i)) x := sorry
+      have := hf.torsion_smul_right_apply (X := X) (Y := s i) (f := (hs.repr i) Y) hx hsi hsi'
+      rw [← this]
+      congr
 
 /-- We can test torsion-freeness on a set using a local frame. -/
-lemma foo {ι : Type*} [Fintype ι]
+lemma foo {ι : Type*} [Fintype ι] [CompleteSpace E]
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
-    {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) :
+    {U : Set M} {s : ι → (x : M) → TangentSpace I x}
+    (hf: IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) :
     IsTorsionFreeOn f U ↔ ∀ i j, ∀ x ∈ U, torsion f (s i) (s j) x = 0 := by
   rw [IsTorsionFreeOn]
   refine ⟨fun h i j x hx ↦ h x hx (s i) (s j), fun h ↦ ?_⟩
@@ -1330,14 +1335,11 @@ lemma foo {ι : Type*} [Fintype ι]
   calc
     _ = ∑ i, (hs.repr i) X x • ∑ j, (hs.repr j) Y x • torsion f (s i) (s j) x := by
       congr!
-      rw [aux2 hs hx]
+      rw [aux2 hf hs hx]
     _ = ∑ i, (hs.repr i) X x • ∑ j, (hs.repr j) Y x • 0 := by
       congr! with i _ j _
       exact h i j x hx
     _ = 0 := by simp
-
-
-#exit
 
 -- lemma the trivial connection on a normed space is torsion-free
 -- lemma trivial.isTorsionFree : IsTorsionFree (TangentBundle 𝓘(ℝ, E) E) := sorry
