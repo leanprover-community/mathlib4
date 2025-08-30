@@ -76,7 +76,7 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     [Module ℝ E] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
     [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E] {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
      (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
-    ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ ≤ 1 := by
+    ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ < 1 := by
   /- proof. Since $B$ is closed and convex, we can apply (b) of Theorem 3.4, with $A= {x_0}$,
   to obtain $\Lambda_1 \in X^*$ such that $\Lambda_1 x_0=r e^{i \theta}$ lies outside the
   closure $K$ of $\Lambda_1(B)$. -/
@@ -114,34 +114,19 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     simp [nh] at hr
     simp [hr] at r_gt_zero
   /- Hence there exists $s, 0 < s < r$ , so that $|z| \leq s$ for all $z \in K$. -/
-  obtain ⟨s, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ ≤ s) := by
+  obtain ⟨s, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
     set g : 𝕜 → ℝ := fun x ↦ ‖x‖ with hg
-    obtain ⟨x, hx⟩ : sSup (g '' K) ∈ g '' K := by
-      apply IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ?_
-      simp
-      use 0
+    obtain ⟨x, xin, eq⟩ : sSup (g '' K) ∈ g '' K :=
+      IsCompact.sSup_mem (IsCompact.image compact_K continuous_norm) ⟨0, 0, zero_in, norm_zero⟩
     have g_le : ∀ z ∈ K, g z ≤ sSup (g '' K) := fun z hz ↦ by
-      apply le_csSup ?_ (Set.mem_image_of_mem g hz)
-      use r
-      intro y ⟨x, hx, hy⟩
-      simp [← hy, g]
-      linarith [norm_lt_r x hx]
-    by_cases ch : ‖x‖ = 0
-    · have : sSup (g '' K) = 0 := by
-        simp [← hx.2, g, ch]
-      use r / 2
-      simp [r_gt_zero]
-      intro z hz
-      have : g z ≤ 0 := by
-        rw [this] at g_le
-        exact g_le z hz
-      simp [g] at this
-      simp [this]
-      linarith
-    · use sSup (g '' K)
-      simp at ch
-      simp [← hx.2, g, ch, norm_lt_r x hx.1]
-      simpa [g, ← hx.2] using g_le
+      refine le_csSup ?_ (Set.mem_image_of_mem g hz)
+      exact ⟨r, fun y ⟨x, hx, _⟩ ↦ by linarith [norm_lt_r x hx]⟩
+    use (sSup (g '' K) + r) / 2
+    have :  sSup (g '' K) < (sSup (g '' K) + r) / 2 := by
+      linarith [norm_lt_r x xin]
+    refine ⟨by rw [← eq]; linarith [norm_nonneg x],
+          by linarith [norm_lt_r x xin], fun z hz ↦ ?_⟩
+    linarith [g_le z hz]
   /- The functional $\Lambda=s^{-1} e^{-i \theta} \Lambda_1$ has the desired properties.-/
   have eq1 : |r| = r := abs_norm (f x₀)
   have eq2 : |s| = s := abs_of_pos hs.1
@@ -156,12 +141,10 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     exact hs.2.1
   · intro b hb
     simp
-    rw [@div_mul_eq_mul_div₀]
     have : |s| * ‖f x₀‖ > 0 := by
       refine Left.mul_pos ?_ r_gt_zero
       exact abs_pos_of_pos hs.1
-    rw [div_le_one this, ← hr, mul_comm, eq1, eq2]
+    rw [div_mul_eq_mul_div₀ , div_le_one this, ← hr, mul_comm, eq1, eq2]
     refine (mul_le_mul_iff_of_pos_right r_gt_zero).mpr ?_
-    have : f b ∈ K := by
-      simpa [K] using subset_closure (Set.mem_image_of_mem (⇑f) hb)
+    have : f b ∈ K := subset_closure (Set.mem_image_of_mem (⇑f) hb)
     exact hs.2.2 (f b) this
