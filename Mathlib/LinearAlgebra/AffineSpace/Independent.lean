@@ -731,6 +731,32 @@ theorem affineIndependent_of_ne_of_notMem_of_mem_of_mem {s : AffineSubspace k P}
 alias affineIndependent_of_ne_of_not_mem_of_mem_of_mem :=
   affineIndependent_of_ne_of_notMem_of_mem_of_mem
 
+/-- If a family is affinely independent, we update any one point with a new point does not lie in
+the affine span of that family, the new family is affinely independent. -/
+theorem AffineIndependent.affineIndependent_update_of_notMem_affineSpan [DecidableEq ι]
+    {p : ι → P} (ha : AffineIndependent k p) {i : ι} {p₀ : P}
+    (hp₀ : p₀ ∉ affineSpan k (p '' {x | x ≠ i})) :
+    AffineIndependent k (Function.update p i p₀) := by
+  unfold Function.update
+  simp only [eq_rec_constant, dite_eq_ite]
+  set f : ι → P := fun x => if x = i then p₀ else p x with hf
+  have he : ∀ x : {x | x ≠ i}, p ↑x = f ↑x := by
+    intro x
+    simp [hf, Set.mem_setOf.mp x.prop]
+  have heq : p '' {x | x ≠ i} = f '' {x | x ≠ i} := by
+    simp at he
+    exact Set.image_congr he
+  have ha : AffineIndependent k fun x : {x | x ≠ i} => f ↑x  := by
+    conv =>
+      enter [2]
+      ext x
+      rw [← he x]
+    apply AffineIndependent.subtype ha
+  apply AffineIndependent.affineIndependent_of_notMem_span ha
+  rw [← heq]
+  simp [hf]
+  exact hp₀
+
 end DivisionRing
 
 section Ordered
