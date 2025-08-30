@@ -390,6 +390,21 @@ def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.ma
 
 end LaxMonoidal
 
+section OplaxMonoidal
+variable [F.OplaxMonoidal]
+
+open scoped Mon_Class in
+/-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
+abbrev FullyFaithful.mon_Class (hF : F.FullyFaithful) (X : C) [Mon_Class (F.obj X)] :
+    Mon_Class X where
+  one := hF.preimage <| OplaxMonoidal.η F ≫ η[F.obj X]
+  mul := hF.preimage <| OplaxMonoidal.δ F X X ≫ μ[F.obj X]
+  one_mul := hF.map_injective <| by simp [← δ_natural_left_assoc]
+  mul_one := hF.map_injective <| by simp [← δ_natural_right_assoc]
+  mul_assoc := hF.map_injective <| by simp [← δ_natural_left_assoc, ← δ_natural_right_assoc]
+
+end OplaxMonoidal
+
 section Monoidal
 variable [F.Monoidal]
 
