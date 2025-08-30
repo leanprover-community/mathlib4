@@ -14,7 +14,7 @@ In this file, we collect a few results regarding integrability, on a measure spa
 of a `C(Y, E)`-valued function, where `Y` is a compact topological space and `E` is a normed group.
 
 These are all elementary from a mathematical point of view, but they require a bit of care in order
-to be conveniently usable. In particular, to accomodate the need of families `f : X → Y → E` which
+to be conveniently usable. In particular, to accommodate the need of families `f : X → Y → E` which
 such that `f x` is only continuous for *almost every* `x`, we give a variety of results about the
 integrability of `fun x ↦ ContinuousMap.mkD (f x) g` whose assumption only mention `f` (so that
 user don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g` by hand).
@@ -28,7 +28,7 @@ user don't have to convert between `f` and `fun x ↦ ContinuousMap.mkD (f x) g`
   that `f x` is continuous for almost every `x`, as well as a bound as above, we prove
   `HasFiniteIntegral (fun x ↦ mkD (f x) g)`. Note that, conveniently, `mkD` only appears in the
   result.
-* `aeStronglyMeasurable_mkD_of_uncurry`: if now `X` is a topological space with the borel σ-algebra,
+* `aeStronglyMeasurable_mkD_of_uncurry`: if now `X` is a topological space with the Borel σ-algebra,
   and `f : X → Y → E` is continuous on `X × Y`, then `fun x ↦ mkD (f x) g` is
   `AEStronglyMeasurable`. Note that this is far from optimal: this function is in fact continuous,
   and one could avoid `mkD` entirely since `f x` is always continuous in that case. Nevertheless,

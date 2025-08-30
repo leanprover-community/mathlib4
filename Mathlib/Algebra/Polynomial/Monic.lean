@@ -90,8 +90,8 @@ theorem monic_X_pow_add {n : ℕ} (H : degree p < n) : Monic (X ^ n + p) :=
 
 variable (a) in
 theorem monic_X_pow_add_C {n : ℕ} (h : n ≠ 0) : (X ^ n + C a).Monic :=
-   monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
-     (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
+  monic_X_pow_add <| (lt_of_le_of_lt degree_C_le
+    (by simp only [Nat.cast_pos, Nat.pos_iff_ne_zero, ne_eq, h, not_false_eq_true]))
 
 theorem monic_X_add_C (x : R) : Monic (X + C x) :=
   pow_one (X : R[X]) ▸ monic_X_pow_add_C x one_ne_zero
@@ -351,8 +351,7 @@ lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.
       · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
           Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
         ring
-      · rw [mem_Ioc, natDegree_X_add_C _]
-        simp
+      · simp
   · rintro rfl
     simp [natDegree_one] at hnd
 
@@ -372,13 +371,7 @@ theorem Monic.natDegree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Moni
 @[simp]
 theorem Monic.degree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) (f : R →+* S) :
     (P.map f).degree = P.degree := by
-  by_cases hP : P = 0
-  · simp [hP]
-  · refine le_antisymm degree_map_le ?_
-    rw [degree_eq_natDegree hP]
-    refine le_degree_of_ne_zero ?_
-    rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
-    exact one_ne_zero
+  simp_all
 
 section Injective
 

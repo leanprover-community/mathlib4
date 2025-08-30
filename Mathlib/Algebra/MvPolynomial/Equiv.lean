@@ -368,7 +368,7 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
       map_mul, mul_assoc]
     apply congr_arg₂ _ rfl
     simp only [mul_comm, map_finsuppProd, map_pow]
-  · intros; simp
+  · simp
   · intros; rw [pow_add]
 
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
@@ -597,7 +597,7 @@ lemma totalDegree_coeff_finSuccEquiv_add_le (f : MvPolynomial (Fin (n + 1)) R) (
   have ⟨σ, hσ1, hσ2⟩ := Finset.exists_mem_eq_sup (support _) hf'_sup
                           (fun s => Finsupp.sum s fun _ e => e)
   -- Then cons i σ is a monomial index of p with total degree equal to the desired bound
-  let σ' : Fin (n+1) →₀ ℕ := cons i σ
+  let σ' : Fin (n + 1) →₀ ℕ := cons i σ
   convert le_totalDegree (s := σ') _
   · rw [totalDegree, hσ2, sum_cons, add_comm]
   · rw [← support_coeff_finSuccEquiv]
@@ -616,8 +616,6 @@ theorem support_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     refine ⟨tail m, ?_⟩
     rwa [← coeff, zero_apply, ← mem_support_iff, support_coeff_finSuccEquiv, cons_tail]
 
-@[deprecated (since := "2024-11-05")] alias finSuccEquiv_support := support_finSuccEquiv
-
 theorem mem_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {x} :
     x ∈ (finSuccEquiv R n f).support ↔ x ∈ (fun m : Fin (n + 1) →₀ _ ↦ m 0) '' f.support := by
   simpa using congr(x ∈ $(support_finSuccEquiv f))
@@ -631,15 +629,11 @@ theorem image_support_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} 
     ext
     rw [mem_support_iff, finSuccEquiv_coeff_coeff, Ne]
   constructor
-  · rintro ⟨m', ⟨h, hm'⟩⟩
-    simp only [← hm']
-    exact ⟨h, by rw [cons_zero]⟩
+  · grind [cons_zero]
   · intro h
     use tail m
     rw [← h.2, cons_tail]
     simp [h.1]
-
-@[deprecated (since := "2024-11-05")] alias finSuccEquiv_support' := image_support_finSuccEquiv
 
 lemma mem_image_support_coeff_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} {x} :
     x ∈ Finsupp.cons i '' ((finSuccEquiv R n f).coeff i).support ↔

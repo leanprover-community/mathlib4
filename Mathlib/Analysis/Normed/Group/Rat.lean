@@ -15,8 +15,7 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
 
-@[norm_cast, simp 1001]
--- Porting note: increase priority to prevent the left-hand side from simplifying
+@[norm_cast, simp high] -- increase priority to prevent the left-hand side from simplifying
 theorem norm_cast_real (r : ℚ) : ‖(r : ℝ)‖ = ‖r‖ :=
   rfl
 

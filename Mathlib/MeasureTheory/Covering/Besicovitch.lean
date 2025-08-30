@@ -109,7 +109,7 @@ construction for the Besicovitch covering theorem. It depends on some parameter 
 This is a family of balls (indexed by `i : Fin N.succ`, with center `c i` and radius `r i`) such
 that the last ball intersects all the other balls (condition `inter`),
 and given any two balls there is an order between them, ensuring that the first ball does not
-contain the center of the other one, and the radius of the second ball can not be larger than
+contain the center of the other one, and the radius of the second ball cannot be larger than
 the radius of the first ball (up to a factor `τ`). This order corresponds to the order of choice
 in the inductive construction: otherwise, the second ball would have been chosen before.
 This is the condition `h`.
@@ -987,7 +987,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
           let F : S i ≃ ((↑) : s' → α) '' S i := this.bijOn_image.equiv _
           exact (F.tsum_eq fun x => μ (closedBall x (r x))).symm
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by
-          congr 1; ext x; have : (x : α) ∈ s' := x.1.2; simp only [s', r, if_pos this]
+          grind
         _ = μ (⋃ x : S i, closedBall x (r1 x)) := by
           haveI : Encodable (S i) := (S_count i).toEncodable
           rw [measure_iUnion]

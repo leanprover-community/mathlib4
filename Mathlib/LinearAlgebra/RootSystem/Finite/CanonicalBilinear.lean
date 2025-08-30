@@ -92,14 +92,14 @@ lemma corootForm_apply_apply (x y : N) : P.CorootForm x y =
     ∑ i, P.root' i x * P.root' i y :=
   P.flip.rootForm_apply_apply x y
 
-lemma toPerfectPairing_apply_apply_Polarization (x y : M) :
-    P.toPerfectPairing y (P.Polarization x) = P.RootForm x y := by
+lemma toLinearMap_apply_apply_Polarization (x y : M) :
+    P.toLinearMap y (P.Polarization x) = P.RootForm x y := by
   simp [RootForm]
 
-lemma toPerfectPairing_apply_CoPolarization (x : N) :
-    P.toPerfectPairing (P.CoPolarization x) = P.CorootForm x := by
+lemma toLinearMap_apply_CoPolarization (x : N) :
+    P.toLinearMap (P.CoPolarization x) = P.CorootForm x := by
   ext y
-  exact P.flip.toPerfectPairing_apply_apply_Polarization x y
+  exact P.flip.toLinearMap_apply_apply_Polarization x y
 
 lemma flip_comp_polarization_eq_rootForm :
     P.flip.toLinearMap ∘ₗ P.Polarization = P.RootForm := by
@@ -112,10 +112,9 @@ lemma self_comp_coPolarization_eq_corootForm :
 lemma polarization_apply_eq_zero_iff (m : M) :
     P.Polarization m = 0 ↔ P.RootForm m = 0 := by
   rw [← flip_comp_polarization_eq_rootForm]
-  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
-  change P.toDualRight (P.Polarization m) = 0 at h
-  simp only [EmbeddingLike.map_eq_zero_iff] at h
-  exact h
+  refine ⟨fun h ↦ by simp [h], ?_⟩
+  rintro (h : P.flip.toPerfPair (P.Polarization m) = 0)
+  simpa only [EmbeddingLike.map_eq_zero_iff] using h
 
 lemma coPolarization_apply_eq_zero_iff (n : N) :
     P.CoPolarization n = 0 ↔ P.CorootForm n = 0 :=
@@ -131,7 +130,7 @@ lemma ker_copolarization_eq_ker_corootForm :
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
+  simp [LinearMap.isSymm_def, mul_comm, rootForm_apply_apply]
 
 @[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
@@ -155,19 +154,18 @@ theorem range_polarization_domRestrict_le_span_coroot :
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
   refine (Submodule.mem_span_range_iff_exists_fun R).mpr ?_
-  use fun i => (P.toPerfectPairing x) (P.coroot i)
+  use fun i => P.toLinearMap x (P.coroot i)
   simp
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm ≤ LinearMap.ker P.RootForm := by
+    (P.corootSpan R).dualAnnihilator.map P.toPerfPair.symm ≤ LinearMap.ker P.RootForm := by
   rw [P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot']
   intro x hx
   ext y
-  simp only [coroot', Submodule.mem_iInf, LinearMap.mem_ker, PerfectPairing.flip_apply_apply] at hx
-  simp [rootForm_apply_apply, hx]
+  simp_all [coroot', rootForm_apply_apply]
 
 theorem rootSpan_dualAnnihilator_le_ker_rootForm :
-    (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm ≤ LinearMap.ker P.CorootForm :=
+    (P.rootSpan R).dualAnnihilator.map P.flip.toPerfPair.symm ≤ LinearMap.ker P.CorootForm :=
   P.flip.corootSpan_dualAnnihilator_le_ker_rootForm
 
 end Fintype
@@ -189,10 +187,9 @@ lemma PolarizationIn_apply (x : P.rootSpan S) :
 lemma PolarizationIn_eq (x : P.rootSpan S) :
     P.PolarizationIn S x = P.Polarization x := by
   simp only [PolarizationIn, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
-    LinearMap.toSpanSingleton_apply, Polarization_apply, PerfectPairing.flip_apply_apply]
+    LinearMap.toSpanSingleton_apply, Polarization_apply]
   refine Finset.sum_congr rfl fun i hi ↦ ?_
-  rw [algebra_compatible_smul R (P.coroot'In S i x) (P.coroot i), algebraMap_coroot'In_apply,
-    PerfectPairing.flip_apply_apply]
+  rw [algebra_compatible_smul R (P.coroot'In S i x) (P.coroot i), algebraMap_coroot'In_apply]
 
 lemma range_polarizationIn :
     Submodule.map P.Polarization (P.rootSpan R) = LinearMap.range (P.PolarizationIn R) := by
@@ -223,11 +220,11 @@ lemma algebraMap_rootFormIn (x y : P.rootSpan S) :
     (algebraMap S R) (P.RootFormIn S x y) = P.RootForm x y := by
   simp [RootFormIn, rootForm_apply_apply]
 
-lemma toPerfectPairing_apply_PolarizationIn (x y : P.rootSpan S) :
-    P.toPerfectPairing y (P.PolarizationIn S x) =
+lemma toLinearMap_apply_PolarizationIn (x y : P.rootSpan S) :
+    P.toLinearMap y (P.PolarizationIn S x) =
       (algebraMap S R) (P.RootFormIn S x y) := by
   rw [PolarizationIn_eq, algebraMap_rootFormIn]
-  exact toPerfectPairing_apply_apply_Polarization P x y
+  exact toLinearMap_apply_apply_Polarization P x y
 
 omit [IsScalarTower S R N] in
 lemma range_polarizationIn_le_span_coroot :
@@ -284,7 +281,7 @@ lemma rootForm_self_smul_coroot (i : ι) :
     (P.RootForm (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have : (algebraMap R R) ((P.RootFormIn R) (P.rootSpanMem R i) (P.rootSpanMem R i)) • P.coroot i =
       2 • P.Polarization (P.root i) := by
-    rw [Algebra.id.map_eq_self, P.rootFormIn_self_smul_coroot R i, PolarizationIn_eq]
+    rw [Algebra.algebraMap_self_apply, P.rootFormIn_self_smul_coroot R i, PolarizationIn_eq]
   rw [← this, algebraMap_rootFormIn]
 
 lemma corootForm_self_smul_root (i : ι) :
@@ -301,13 +298,13 @@ lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
     4 • (P.RootForm (P.root i) (P.root j)) ^ 2 = P.coxeterWeight i j •
       (P.RootForm (P.root i) (P.root i) * P.RootForm (P.root j) (P.root j)) := by
   have hij : 4 • (P.RootForm (P.root i)) (P.root j) =
-      2 • P.toPerfectPairing (P.root j) (2 • P.Polarization (P.root i)) := by
-    rw [← toPerfectPairing_apply_apply_Polarization, LinearMap.map_smul_of_tower, ← smul_assoc,
+      2 • P.toLinearMap (P.root j) (2 • P.Polarization (P.root i)) := by
+    rw [← toLinearMap_apply_apply_Polarization, LinearMap.map_smul_of_tower, ← smul_assoc,
       Nat.nsmul_eq_mul]
   have hji : 2 • (P.RootForm (P.root i)) (P.root j) =
-      P.toPerfectPairing (P.root i) (2 • P.Polarization (P.root j)) := by
+      P.toLinearMap (P.root i) (2 • P.Polarization (P.root j)) := by
     rw [show (P.RootForm (P.root i)) (P.root j) = (P.RootForm (P.root j)) (P.root i) by
-      apply rootForm_symmetric, ← toPerfectPairing_apply_apply_Polarization,
+      apply (rootForm_symmetric P).eq, ← toLinearMap_apply_apply_Polarization,
       LinearMap.map_smul_of_tower]
   rw [sq, nsmul_eq_mul, ← mul_assoc, ← nsmul_eq_mul, hij, ← rootForm_self_smul_coroot,
     smul_mul_assoc 2, ← mul_smul_comm, hji, ← rootForm_self_smul_coroot, map_smul, ← pairing,
@@ -345,7 +342,6 @@ def posRootForm : P.RootPositiveForm S where
 
 lemma algebraMap_posRootForm_posForm (x y : span S (range P.root)) :
     (algebraMap S R) ((P.posRootForm S).posForm x y) = P.RootForm x y := by
-  rw [RootPositiveForm.algebraMap_posForm]
   simp [posRootForm]
 
 @[simp]

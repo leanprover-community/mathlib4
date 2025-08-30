@@ -244,7 +244,7 @@ variable (α)
 instance : OrderedSub (Π₀ i, α i) :=
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (Π₀ i, α i) where
+instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) where
   exists_add_of_le := by
     intro f g h
     exists g - f
@@ -257,7 +257,7 @@ variable {α} [DecidableEq ι]
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
