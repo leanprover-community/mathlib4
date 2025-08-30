@@ -37,7 +37,7 @@ noncomputable def toTop : SimplexCategory ⥤ TopCat.{u} :=
 
 instance (n : SimplexCategory) : Nonempty (toTop₀.obj n) := by dsimp; infer_instance
 instance (n : SimplexCategory) : Nonempty (toTop.{u}.obj n) := inferInstanceAs (Nonempty (ULift _))
-instance : Unique (toTop₀.obj ⦋0⦌) := by dsimp; infer_instance
+instance : Unique (toTop₀.obj ⦋0⦌) := inferInstanceAs (Unique (stdSimplex ℝ (Fin 1)))
 instance : Unique (toTop.{u}.obj ⦋0⦌) := inferInstanceAs (Unique (ULift _))
 instance (n : SimplexCategory) : PathConnectedSpace (toTop₀.obj n) := by dsimp; infer_instance
 instance (n : SimplexCategory) : PathConnectedSpace (toTop.{u}.obj n) :=
