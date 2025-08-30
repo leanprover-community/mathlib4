@@ -473,7 +473,7 @@ theorem arg_cos_add_sin_mul_I_sub (θ : ℝ) :
 
 theorem arg_mul_cos_add_sin_mul_I_coe_angle {r : ℝ} (hr : 0 < r) (θ : Real.Angle) :
     (arg (r * (Real.Angle.cos θ + Real.Angle.sin θ * I)) : Real.Angle) = θ := by
-  induction' θ using Real.Angle.induction_on with θ
+  induction θ using Real.Angle.induction_on with | _ θ
   rw [Real.Angle.cos_coe, Real.Angle.sin_coe, Real.Angle.angle_eq_iff_two_pi_dvd_sub]
   use ⌊(π - θ) / (2 * π)⌋
   exact mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ
