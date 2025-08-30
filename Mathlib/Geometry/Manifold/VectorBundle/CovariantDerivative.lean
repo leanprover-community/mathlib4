@@ -1159,6 +1159,8 @@ lemma torsion_zero' : torsion cov X 0 = 0 := by rw [torsion_antisymm, torsion_ze
 
 set_option linter.style.commandStart false -- new delaborators confuse the pretty-printer
 
+section
+
 variable (Y) in
 lemma _root_.IsCovariantDerivativeOn.torsion_add_left_apply [CompleteSpace E]
     (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
@@ -1168,13 +1170,6 @@ lemma _root_.IsCovariantDerivativeOn.torsion_add_left_apply [CompleteSpace E]
   rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
   module
 
-variable (Y) in
-lemma torsion_add_left [CompleteSpace E]
-    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
-    torsion cov (X + X') Y = torsion cov X Y + torsion cov X' Y := by
-  ext x
-  exact cov.isCovariantDerivativeOn.torsion_add_left_apply _ (by trivial) (hX x) (hX' x)
-
 lemma _root_.IsCovariantDerivativeOn.torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x)
     (hX' : MDiffAt (T% X') x) :
@@ -1182,11 +1177,6 @@ lemma _root_.IsCovariantDerivativeOn.torsion_add_right_apply [CompleteSpace E] (
   rw [torsion_antisymm, Pi.neg_apply,
     hf.torsion_add_left_apply _ hx hX hX', torsion_antisymm Y, torsion_antisymm Y]
   simp; abel
-
-lemma torsion_add_right [CompleteSpace E]
-    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
-    torsion cov Y (X + X') = torsion cov Y X + torsion cov Y X' := by
-  rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
 
 variable (Y) in
 lemma _root_.IsCovariantDerivativeOn.torsion_smul_left_apply [CompleteSpace E]
@@ -1200,12 +1190,6 @@ lemma _root_.IsCovariantDerivativeOn.torsion_smul_left_apply [CompleteSpace E]
   simp [bar, smul_sub]
   abel
 
-variable (Y) in
-lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
-    torsion cov (f • X) Y = f • torsion cov X Y := by
-  ext x
-  exact cov.isCovariantDerivativeOn.torsion_smul_left_apply _ (by trivial) (hf x) (hX x)
-
 variable (X) in
 lemma _root_.IsCovariantDerivativeOn.torsion_smul_right_apply [CompleteSpace E]
     {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
@@ -1214,6 +1198,26 @@ lemma _root_.IsCovariantDerivativeOn.torsion_smul_right_apply [CompleteSpace E]
     torsion F X (f • Y) x = f x • torsion F X Y x := by
   rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hx hf hX, torsion_antisymm X]
   simp
+
+end
+
+variable (Y) in
+lemma torsion_add_left [CompleteSpace E]
+    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
+    torsion cov (X + X') Y = torsion cov X Y + torsion cov X' Y := by
+  ext x
+  exact cov.isCovariantDerivativeOn.torsion_add_left_apply _ (by trivial) (hX x) (hX' x)
+
+lemma torsion_add_right [CompleteSpace E]
+    (hX : MDiff (T% X)) (hX' : MDiff (T% X')) :
+    torsion cov Y (X + X') = torsion cov Y X + torsion cov Y X' := by
+  rw [torsion_antisymm, torsion_add_left _ hX hX', torsion_antisymm X, torsion_antisymm X']; module
+
+variable (Y) in
+lemma torsion_smul_left [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hX : MDiff (T% X)) :
+    torsion cov (f • X) Y = f • torsion cov X Y := by
+  ext x
+  exact cov.isCovariantDerivativeOn.torsion_smul_left_apply _ (by trivial) (hf x) (hX x)
 
 variable (X) in
 lemma torsion_smul_right [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) :
@@ -1323,7 +1327,8 @@ lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
       congr
 
 /-- We can test torsion-freeness on a set using a local frame. -/
-lemma foo {ι : Type*} [Fintype ι] [CompleteSpace E]
+lemma _root_.IsCovariantDerivativeOn.isTorsionFreeOn_iff_localFrame
+    {ι : Type*} [Fintype ι] [CompleteSpace E]
     (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
     {U : Set M} {s : ι → (x : M) → TangentSpace I x}
     (hf: IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) :
