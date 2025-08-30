@@ -3769,6 +3769,7 @@ import Mathlib.Geometry.Manifold.Traces
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.LeviCivita
+import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 import Mathlib.Geometry.Manifold.VectorBundle.GramSchmidtOrtho
 import Mathlib.Geometry.Manifold.VectorBundle.Hom
