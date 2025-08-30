@@ -57,8 +57,7 @@ theorem vec_zero [Zero R] : vec (0 : Matrix m n R) = 0 :=
   rfl
 
 @[simp]
-theorem vec_eq_zero_iff [Zero R] {A : Matrix m n R} : A.vec = 0 ↔ A = 0 := by
-  rw [← vec_zero, vec_inj]
+theorem vec_eq_zero_iff [Zero R] {A : Matrix m n R} : A.vec = 0 ↔ A = 0 := vec_inj (B:=0)
 
 @[simp]
 theorem vec_add [Add R] (A B : Matrix m n R) : vec (A + B) = vec A + vec B :=
