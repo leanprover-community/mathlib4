@@ -517,8 +517,7 @@ class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [S
 
 variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing 𝕜] [SMul 𝕜 E]
 
-/- A complete space with zero is quasi-complete with respect to scalar multiplication by a
-seminormed ring. -/
+/-- A complete space is quasi-complete with respect to any scalar ring. -/
 instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
   quasiComplete _ _ := IsClosed.isComplete
 
