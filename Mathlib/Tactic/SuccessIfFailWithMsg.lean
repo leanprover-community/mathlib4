@@ -39,10 +39,10 @@ def successIfFailWithMessage {s α : Type} {m : Type → Type} [Monad m] [MonadL
   restoreState s
   if let some err := err then
     unless msg.trim == err.trim do
-      if let .some msgref := msgref then
+      if let some msgref := msgref then
         let suggestion : TryThis.Suggestion :=
           { suggestion := s!"\"{err.trim}\""
-            toCodeActionTitle? := .some (fun _ => "Update with tactic error message")}
+            toCodeActionTitle? := some (fun _ => "Update with tactic error message")}
         TryThis.addSuggestion msgref suggestion (header := "Update with tactic error message: ")
 
       if let some ref := ref then

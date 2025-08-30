@@ -137,8 +137,8 @@ elab "guard_decl" na:ident mod:ident : command => do
   let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
-  let .some dcli := env.getModuleIdxFor? dcl | unreachable!
-  let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
+  let some dcli := env.getModuleIdxFor? dcl | unreachable!
+  let some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
   unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
 guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex
