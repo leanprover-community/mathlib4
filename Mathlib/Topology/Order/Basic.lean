@@ -83,6 +83,11 @@ instance [t : OrderTopology α] : OrderTopology αᵒᵈ :=
     convert OrderTopology.topology_eq_generate_intervals (α := α) using 6
     apply or_comm⟩
 
+protected theorem OrderTopology.continuous_iff [OrderTopology α] [TopologicalSpace β] {f : β → α} :
+    Continuous f ↔ ∀ a, IsOpen (f ⁻¹' Ioi a) ∧ IsOpen (f ⁻¹' Iio a) := by
+  simp_rw [OrderTopology.topology_eq_generate_intervals, continuous_generateFrom_iff]
+  aesop
+
 theorem isOpen_iff_generate_intervals [t : OrderTopology α] {s : Set α} :
     IsOpen s ↔ GenerateOpen { s | ∃ a, s = Ioi a ∨ s = Iio a } s := by
   rw [t.topology_eq_generate_intervals]; rfl
