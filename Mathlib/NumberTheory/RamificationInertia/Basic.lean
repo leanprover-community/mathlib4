@@ -110,6 +110,10 @@ theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
 theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P = 0 :=
   ramificationIdx_spec (by simp) (by simpa using h)
 
+theorem ramificationIdx_bot' (hp : p ≠ ⊥) (hf : Function.Injective f) :
+    ramificationIdx f p ⊥ = 0 :=
+  ramificationIdx_of_not_le <| le_bot_iff.not.mpr <| (map_eq_bot_iff_of_injective hf).not.mpr hp
+
 theorem ramificationIdx_ne_zero {e : ℕ} (he : e ≠ 0) (hle : map f p ≤ P ^ e)
     (hnle : ¬map f p ≤ P ^ (e + 1)) : ramificationIdx f p P ≠ 0 := by
   rwa [ramificationIdx_spec hle hnle]
@@ -186,6 +190,17 @@ lemma ramificationIdx_eq_one_of_map_localization
   rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_eq_bot_iff_of_injective] at this
   · exact hp this
   · exact IsLocalization.injective _ hp'
+
+theorem ramificationIdx_map_self_eq_one_of_isPrincipal [IsPrincipalIdealRing S] [IsDomain S]
+    (h₁ : map f p ≠ ⊥) (h₂ : map f p ≠ ⊤) :
+    ramificationIdx f p (map f p) = 1 := by
+  refine ramificationIdx_spec (by simp) ?_
+  obtain ⟨x, hx⟩ := IsPrincipalIdealRing.principal (map f p)
+  rw [hx, submodule_span_eq, span_singleton_pow, span_singleton_le_span_singleton]
+  have h₃ : x ≠ 0 := by rwa [ne_eq, hx, submodule_span_eq, span_singleton_eq_bot] at h₁
+  have h₄ : ¬ IsUnit x := by rwa [ne_eq, hx, submodule_span_eq, span_singleton_eq_top] at h₂
+  convert (pow_dvd_pow_iff h₃ h₄).not.mpr (by linarith : ¬ 2 ≤ 1)
+  rw [pow_one]
 
 namespace IsDedekindDomain
 
