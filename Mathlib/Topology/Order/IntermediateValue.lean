@@ -589,6 +589,26 @@ theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ioo_subset_Icc_self)
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioo_subset_Icc_self)
 
+theorem intermediate_value_uIoo_le {a b : α} (hab : a ≤ b) {f : α → δ}
+    (hf : ContinuousOn f (uIcc a b)) : uIoo (f a) (f b) ⊆ f '' uIoo a b := by
+  rw [uIcc_of_le hab] at hf
+  by_cases hfab : f a ≤ f b
+  · have h := intermediate_value_Ioo hab hf
+    rw [←uIoo_of_le hab, ←uIoo_of_le hfab] at h
+    exact h
+  · have h := intermediate_value_Ioo' hab hf
+    rw [←uIoo_of_le hab, ←uIoo_of_le (le_of_not_ge hfab), uIoo_comm] at h
+    exact h
+
+theorem intermediate_value_uIoo {a b : α} {f : α → δ} (hf : ContinuousOn f (uIcc a b)) :
+    uIoo (f a) (f b) ⊆ f '' uIoo a b := by
+  by_cases hab : a ≤ b
+  · exact intermediate_value_uIoo_le hab hf
+  · rw [uIcc_comm] at hf
+    have h := intermediate_value_uIoo_le (le_of_not_ge hab) hf
+    simp only [uIoo_comm] at h
+    exact h
+
 /-- **Intermediate value theorem**: if `f` is continuous on an order-connected set `s` and `a`,
 `b` are two points of this set, then `f` sends `s` to a superset of `Icc (f x) (f y)`. -/
 theorem ContinuousOn.surjOn_Icc {s : Set α} [hs : OrdConnected s] {f : α → δ}
