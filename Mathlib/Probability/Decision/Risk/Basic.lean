@@ -17,6 +17,14 @@ import Mathlib.Probability.Kernel.WithDensity
 * `bayesRisk_le_bayesRisk_comp`: data-processing inequality for the Bayes risk with respect to a
   prior: if we compose the data generating kernel `P` with a Markov kernel, then the Bayes risk
   increases.
+ * `bayesRisk_le_iInf`: for `P` a Markov kernel, the Bayes risk is less than `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
+
+In several cases, there is no information in the data about the parameter and the Bayes risk takes
+its maximal value.
+* `bayesRisk_const`: if the data generating kernel is constant, then the Bayes risk is equal to
+  `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
+* `bayesRisk_of_subsingleton`: if the observation space is a subsingleton, then the Bayes risk is
+  equal to `⨅ y, ∫⁻ θ, ℓ θ y ∂π`.
 
 ## TODO
 
