@@ -445,8 +445,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
   apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
-  · apply tendsto_inf_left
-    simp only [tendsto_const_nhds_iff]
+  · simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
   · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
     convert ContinuousWithinAt.tendsto _ using 2
