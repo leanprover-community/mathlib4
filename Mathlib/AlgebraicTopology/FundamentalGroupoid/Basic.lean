@@ -348,4 +348,24 @@ fundamental groupoid of that space. -/
 abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 
+/-- Variation of `fromPath` that uses `Path` instead of `Path.Homotopic.Quotient`. -/
+abbrev fromPath' {X : Type*} [TopologicalSpace X] {x₀ x₁ : X} (f : Path x₀ x₁) : mk x₀ ⟶ mk x₁ :=
+  Quotient.mk _ f
+
+@[simp] lemma fromPath'_refl {X : Type*} [TopologicalSpace X] {x : X} :
+    fromPath' (Path.refl x) = 𝟙 _ := rfl
+
+@[simp] lemma fromPath'_symm {X : Type*} [TopologicalSpace X] {x₀ x₁ : X} (f : Path x₀ x₁) :
+    fromPath' f.symm = inv (fromPath' f) := by
+  rw [← Groupoid.inv_eq_inv]
+  rfl
+
+@[simp] lemma fromPath'_trans {X : Type*} [TopologicalSpace X] {x₀ x₁ x₂ : X} (f : Path x₀ x₁)
+    (g : Path x₁ x₂) : fromPath' (f.trans g) = (fromPath' f) ≫ (fromPath' g) := rfl
+
+/-- Two paths are equal in the fundamental groupoid if and only if they are homotopic. -/
+theorem fromPath'_eq_iff_homotopic {X : Type*} [TopologicalSpace X] {x₀ x₁ : X}
+    (f : Path x₀ x₁) (g : Path x₀ x₁) : fromPath' f = fromPath' g ↔ f.Homotopic g :=
+  ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
+
 end FundamentalGroupoid
