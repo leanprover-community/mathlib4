@@ -296,8 +296,17 @@ theorem image_interior_subset (hf : IsOpenMap f) (s : Set X) :
     f '' interior s ⊆ interior (f '' s) :=
   (hf.mapsTo_interior (mapsTo_image f s)).image_subset
 
-theorem nhds_le (hf : IsOpenMap f) (x : X) : 𝓝 (f x) ≤ (𝓝 x).map f :=
+theorem nhds_le (hf : IsOpenMap f) (x : X) : 𝓝 (f x) ≤ map f (𝓝 x) :=
   le_map fun _ => hf.image_mem_nhds
+
+theorem map_nhds_eq (hf : IsOpenMap f) {x : X} (hf' : ContinuousAt f x) : map f (𝓝 x) = 𝓝 (f x) :=
+  le_antisymm hf' (hf.nhds_le x)
+
+theorem map_nhdsSet_eq (hf : IsOpenMap f) (hf' : Continuous f) (s : Set X) :
+    map f (𝓝ˢ s) = 𝓝ˢ (f '' s) := by
+  rw [← biUnion_of_singleton s]
+  simp_rw [image_iUnion, nhdsSet_iUnion, map_iSup, image_singleton, nhdsSet_singleton,
+    hf.map_nhds_eq hf'.continuousAt]
 
 theorem of_nhds_le (hf : ∀ x, 𝓝 (f x) ≤ map f (𝓝 x)) : IsOpenMap f := fun _s hs =>
   isOpen_iff_mem_nhds.2 fun _y ⟨_x, hxs, hxy⟩ => hxy ▸ hf _ (image_mem_map <| hs.mem_nhds hxs)
@@ -487,6 +496,20 @@ theorem isClosedMap_iff_comap_nhds_le :
     exact iSup₂_mono fun _ _ ↦ H
 
 alias ⟨IsClosedMap.comap_nhds_le, _⟩ := isClosedMap_iff_comap_nhds_le
+
+theorem IsClosedMap.comap_nhds_eq (hf : IsClosedMap f) (hf' : Continuous f) (y : Y) :
+    comap f (𝓝 y) = 𝓝ˢ (f ⁻¹' {y}) :=
+  le_antisymm (isClosedMap_iff_comap_nhds_le.mp hf)
+  -- Note: below should be an application of `Continuous.tendsto_nhdsSet_nhds`, but this is only
+  -- proven later...
+    (nhdsSet_le.mpr fun x hx ↦ hx ▸ (hf'.tendsto x).le_comap)
+
+theorem IsClosedMap.comap_nhdsSet_eq (hf : IsClosedMap f) (hf' : Continuous f) (s : Set Y) :
+    comap f (𝓝ˢ s) = 𝓝ˢ (f ⁻¹' s) :=
+  le_antisymm (isClosedMap_iff_comap_nhdsSet_le.mp hf)
+  -- Note: below should be an application of `Continuous.tendsto_nhdsSet_nhdsSet`, but this is only
+  -- proven later...
+    (nhdsSet_le.mpr fun x hx ↦ (hf'.tendsto x).le_comap.trans (comap_mono (nhds_le_nhdsSet hx)))
 
 /-- Assume `f` is a closed map. If some property `p` holds around every point in the fiber of `f`
     at `y₀`, then for any `y` close enough to `y₀` we have that `p` holds on the fiber at `y`. -/
