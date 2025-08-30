@@ -90,15 +90,14 @@ protected lemma add_mem ⦃x⦄ (hx : x ∈ C) ⦃y⦄ (hy : y ∈ C) : x + y �
 
 instance : AddMemClass (ConvexCone R M) M where add_mem ha hb := add_mem' _ ha hb
 
-instance : Min (ConvexCone R M) :=
-  ⟨fun S T =>
-    ⟨S ∩ T, fun _ hc _ hx => ⟨S.smul_mem hc hx.1, T.smul_mem hc hx.2⟩, fun _ hx _ hy =>
-      ⟨S.add_mem hx.1 hy.1, T.add_mem hx.2 hy.2⟩⟩⟩
+/-- Copy of a convex cone with a new `carrier` equal to the old one. Useful to fix definitional
+equalities. -/
+@[simps] protected def copy (C : ConvexCone R M) (s : Set M) (hs : s = C) : ConvexCone R M where
+  carrier := s
+  add_mem' := hs.symm ▸ C.add_mem'
+  smul_mem' := by simpa [hs] using C.smul_mem'
 
-variable (C₁ C₂) in
-@[simp, norm_cast] lemma coe_inf : (C₁ ⊓ C₂) = (C₁ ∩ C₂ : Set M) := rfl
-
-@[simp] lemma mem_inf : x ∈ C₁ ⊓ C₂ ↔ x ∈ C₁ ∧ x ∈ C₂ := .rfl
+lemma copy_eq (C : ConvexCone R M) (s : Set M) (hs) : C.copy s hs = C := SetLike.coe_injective hs
 
 instance : InfSet (ConvexCone R M) where
   sInf S :=
@@ -119,6 +118,30 @@ theorem coe_iInf {ι : Sort*} (f : ι → ConvexCone R M) : ↑(iInf f) = ⋂ i,
 lemma mem_iInf {ι : Sort*} {f : ι → ConvexCone R M} : x ∈ iInf f ↔ ∀ i, x ∈ f i :=
   mem_iInter₂.trans <| by simp
 
+instance : CompleteSemilatticeInf (ConvexCone R M) where
+  sInf_le C C hC := by rw [← SetLike.coe_subset_coe, coe_sInf]; exact biInter_subset_of_mem hC
+  le_sInf C C hC := by rw [← SetLike.coe_subset_coe, coe_sInf]; exact subset_iInter₂ hC
+
+variable (R s) in
+/-- The cone hull of a set. The smallest convex cone containing that set. -/
+def hull : ConvexCone R M := sInf {C : ConvexCone R M | s ⊆ C}
+
+lemma subset_hull : s ⊆ hull R s := by simp [hull]
+
+lemma hull_min (hsC : s ⊆ C) : hull R s ≤ C := sInf_le hsC
+
+lemma hull_le_iff : hull R s ≤ C ↔ s ⊆ C := ⟨subset_hull.trans, hull_min⟩
+
+lemma gc_hull_coe : GaloisConnection (hull R : Set M → ConvexCone R M) (↑) :=
+  fun _C _s ↦ hull_le_iff
+
+/-- Galois insertion between `ConvexCone` and `SetLike.coe`. -/
+protected def gi : GaloisInsertion (hull R : Set M → ConvexCone R M) (↑)  where
+  gc := gc_hull_coe
+  le_l_u _ := subset_hull
+  choice s hs := (hull R s).copy s <| subset_hull.antisymm hs
+  choice_eq _ _ := copy_eq _ _ _
+
 instance : Bot (ConvexCone R M) :=
   ⟨⟨∅, fun _ _ _ => False.elim, fun _ => False.elim⟩⟩
 
@@ -133,35 +156,23 @@ theorem mem_bot (x : M) : (x ∈ (⊥ : ConvexCone R M)) = False :=
 @[simp, norm_cast]
 lemma coe_eq_empty : (C : Set M) = ∅ ↔ C = ⊥ := by rw [← coe_bot (R := R)]; norm_cast
 
-instance : Top (ConvexCone R M) :=
-  ⟨⟨univ, fun _ _ _ _ => mem_univ _, fun _ _ _ _ => mem_univ _⟩⟩
+instance : CompleteLattice (ConvexCone R M) where
+  bot := ⊥
+  bot_le _ := empty_subset _
+  __ := instCompleteSemilatticeInf
+  __ := ConvexCone.gi.liftCompleteLattice
+
+variable (C₁ C₂) in
+@[simp, norm_cast] lemma coe_inf : (C₁ ⊓ C₂) = (C₁ ∩ C₂ : Set M) := rfl
+
+@[simp] lemma mem_inf : x ∈ C₁ ⊓ C₂ ↔ x ∈ C₁ ∧ x ∈ C₂ := .rfl
 
 @[simp] lemma mem_top : x ∈ (⊤ : ConvexCone R M) := mem_univ x
 
 @[simp, norm_cast] lemma coe_top : ↑(⊤ : ConvexCone R M) = (univ : Set M) := rfl
 
-instance : CompleteLattice (ConvexCone R M) :=
-  { SetLike.instPartialOrder with
-    le := (· ≤ ·)
-    lt := (· < ·)
-    bot := ⊥
-    bot_le := fun _ _ => False.elim
-    top := ⊤
-    le_top _ _ _ := mem_top
-    inf := (· ⊓ ·)
-    sInf := InfSet.sInf
-    sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
-    sSup := fun s => sInf { T | ∀ S ∈ s, S ≤ T }
-    le_sup_left := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.1 hx
-    le_sup_right := fun _ _ => fun _ hx => mem_sInf.2 fun _ hs => hs.2 hx
-    sup_le := fun _ _ c ha hb _ hx => mem_sInf.1 hx c ⟨ha, hb⟩
-    le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_sSup := fun _ p hs _ hx => mem_sInf.2 fun _ ht => ht p hs hx
-    sSup_le := fun _ p hs _ hx => mem_sInf.1 hx p hs
-    le_sInf := fun _ _ ha _ hx => mem_sInf.2 fun t ht => ha t ht hx
-    sInf_le := fun _ _ ha _ hx => mem_sInf.1 hx _ ha }
+@[simp, norm_cast] lemma disjoint_coe : Disjoint (C₁ : Set M) C₂ ↔ Disjoint C₁ C₂ := by
+  simp [disjoint_iff, ← coe_inf]
 
 instance : Inhabited (ConvexCone R M) := ⟨⊥⟩
 
@@ -390,6 +401,42 @@ end Module
 
 end OrderedSemiring
 
+section Field
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup M] [Module 𝕜 M]
+  {C : ConvexCone 𝕜 M} {s : Set M} {x : M}
+
+/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
+lemma mem_hull_of_convex (hs : Convex 𝕜 s) : x ∈ hull 𝕜 s ↔ ∃ r : 𝕜, 0 < r ∧ x ∈ r • s where
+  mp hx := hull_min (C := {
+              carrier := {y | ∃ r : 𝕜, 0 < r ∧ y ∈ r • s}
+              smul_mem' := by
+                intro r₁ hr₁ y ⟨r₂, hr₂, hy⟩
+                refine ⟨r₁ * r₂, mul_pos hr₁ hr₂, ?_⟩
+                rw [mul_smul]
+                exact smul_mem_smul_set hy
+              add_mem' := by
+                rintro y₁ ⟨r₁, hr₁, hy₁⟩ y₂ ⟨r₂, hr₂, hy₂⟩
+                refine ⟨r₁ + r₂, add_pos hr₁ hr₂, ?_⟩
+                rw [hs.add_smul hr₁.le hr₂.le]
+                exact add_mem_add hy₁ hy₂
+            }) (fun y hy ↦ ⟨1, by simpa⟩) hx
+  mpr := by rintro ⟨r, hr, y, hy, rfl⟩; exact (hull 𝕜 s).smul_mem hr <| subset_hull hy
+
+/-- The cone hull of a convex set is simply the union of the open halflines through that set. -/
+lemma coe_hull_of_convex (hs : Convex 𝕜 s) : hull 𝕜 s = {x | ∃ r : 𝕜, 0 < r ∧ x ∈ r • s} := by
+  ext; exact mem_hull_of_convex hs
+
+lemma disjoint_hull_left_of_convex (hs : Convex 𝕜 s) : Disjoint (hull 𝕜 s) C ↔ Disjoint s C where
+  mp := by rw [← disjoint_coe]; exact .mono_left subset_hull
+  mpr := by
+    simp_rw [← disjoint_coe, disjoint_left, SetLike.mem_coe, mem_hull_of_convex hs]
+    rintro hsC _ ⟨r, hr, y, hy, rfl⟩
+    exact (C.smul_mem_iff hr).not.mpr (hsC hy)
+
+lemma disjoint_hull_right_of_convex (hs : Convex 𝕜 s) : Disjoint C (hull 𝕜 s) ↔ Disjoint ↑C s := by
+  rw [disjoint_comm, disjoint_hull_left_of_convex hs, disjoint_comm]
+
+end Field
 end ConvexCone
 
 namespace Submodule
