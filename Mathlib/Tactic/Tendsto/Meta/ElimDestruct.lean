@@ -373,8 +373,8 @@ macro_rules
         first
         | simp only [elimDestruct, PreMS_const, LogBasis.tail]
         | simp only [↓reduceIte, PreMS_const]
-        | simp only [LogBasis.insertLastLog, LogBasis.extendBasisEnd]
-        | rewrite [updateBasis_const]
+        -- | simp only [LogBasis.insertLastLog, LogBasis.extendBasisEnd]
+        -- | rewrite [updateBasis_const]
       ) <;> norm_num1
     )
 

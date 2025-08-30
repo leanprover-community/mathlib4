@@ -374,7 +374,7 @@ theorem extendBasisEnd_Approximates {basis : Basis} {f b : ℝ → ℝ} {ms : Pr
   simp [motive]
   use tl
 
-@[reducible]
+-- @[reducible]
 def updateBasis {basis : Basis} (ex : BasisExtension basis) (ms : PreMS basis) :
     PreMS ex.getBasis :=
   match ex with

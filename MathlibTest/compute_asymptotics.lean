@@ -131,7 +131,8 @@ example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
 example : destruct (TendstoTactic.PreMS.updateBasis
     (TendstoTactic.BasisExtension.insert (Real.log ∘ fun x => x) TendstoTactic.BasisExtension.nil) 1) =
     some ((0, PreMS.updateBasis BasisExtension.nil 1), nil) := by
-  simp [PreMS_const]
+  elim_destruct
+  rfl
 
 end ElimDestruct
 
@@ -467,17 +468,23 @@ example :
     Tendsto f atTop (𝓝 1) := by
   compute_asymptotics
 
--- set_option trace.profiler true in
--- set_option maxHeartbeats 0 in
--- example :
---     let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
---     Tendsto f atTop atTop := by
---   compute_asymptotics
-
+set_option trace.profiler true in
 set_option maxHeartbeats 0 in
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
 example :
     let f := fun (y : ℝ) ↦ Real.exp (Real.log y) - y
     Tendsto f atTop (𝓝 0):= by
+  compute_asymptotics
+
+set_option profiler true in
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (y : ℝ) ↦ Real.exp y - Real.exp (y^3) + Real.exp (y^2)
+    Tendsto f atTop atBot:= by
   compute_asymptotics
 
 end exp

@@ -37,7 +37,7 @@ def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) :
     | ~q(Option.none) =>
       return ⟨q(@PreMS.nil $basis_hd $basis_tl), q(PreMS.nil_of_destruct $h_eq)⟩
     | ~q(@Option.some ((Seq1 (ℝ × PreMS «$basis_tl»))) ($hd, $tl)) =>
-      -- why do i need explicitly put the type?
+      -- why do i need explicitly put the type above?
       return ⟨q(PreMS.cons $hd $tl), q(PreMS.cons_of_destruct $h_eq)⟩
     | _ =>
       throwError f!"Unexpected destruct_res in extractMS:\n{← ppExpr destruct_res.consumeMData}"
@@ -104,7 +104,7 @@ structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
 def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $ms))
     (destructStepsLeft := 20) : TacticM (TrimmingResult ms) := do
   match destructStepsLeft with
-  | 0 => throwError "No destruction steps left"
+  | 0 => throwError "trim: no destruction steps left"
   | destructStepsLeftNext + 1 =>
   match basis with
   | ~q(List.nil) => -- const
@@ -211,7 +211,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
     (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 20) :
     TacticM (PartialTrimmingResult ms) := do
   match destructStepsLeft with
-  | 0 => throwError "No destruction steps left"
+  | 0 => throwError "trimPartial: no destruction steps left"
   | destructStepsLeftNext + 1 =>
   match basis with
   | ~q(List.nil) => -- const
@@ -317,7 +317,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
             h_trimmed := coef_trimmed.h_trimmed.map fun h_trimmed ↦
               q(PreMS.Trimmed.cons $h_trimmed $h_coef_ne_zero)
           }
-        | _ => throwError "trim returned wrong ms"
+        | _ => throwError "trimPartial returned wrong ms"
       | _ => throwError "Unexpected basis_tl in trim"
     | _ => throwError "extractMS returned wrong ms"
 
