@@ -942,6 +942,18 @@ lemma Mon_Class.mul_mul_mul_comm' [IsCommMon M] :
 
 end
 
+section SymmetricCategory
+variable [SymmetricCategory C] {M N W X Y Z : C} [Mon_Class M] [Mon_Class N]
+
+instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
+  mul_comm := by
+    simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
+      ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, ← tensor_comp,
+      Mon_Class.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
+
+end SymmetricCategory
+
 /-!
 Projects:
 * Check that `Mon_ MonCat ≌ CommMonCat`, via the Eckmann-Hilton argument.
