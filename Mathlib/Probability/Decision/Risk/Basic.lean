@@ -6,7 +6,6 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 
 import Mathlib.Probability.Decision.Risk.Defs
 import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.WithDensity
 
 /-!
 # Basic properties of the risk of an estimator
