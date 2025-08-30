@@ -82,8 +82,8 @@ actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialE
 While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
 @[coe] def toFun' : X → Y := e.toFun
 
-/-- Coercion of a `OpenPartialHomeomorph` to function.
-Note that a `OpenPartialHomeomorph` is not `DFunLike`. -/
+/-- Coercion of an `OpenPartialHomeomorph` to function.
+Note that an `OpenPartialHomeomorph` is not `DFunLike`. -/
 instance : CoeFun (OpenPartialHomeomorph X Y) fun _ => X → Y :=
   ⟨fun e => e.toFun'⟩
 
@@ -190,7 +190,7 @@ protected theorem surjOn : SurjOn e e.source e.target :=
 
 end Basic
 
-/-- Interpret a `Homeomorph` as a `OpenPartialHomeomorph` by restricting it
+/-- Interpret a `Homeomorph` as an `OpenPartialHomeomorph` by restricting it
 to an open set `s` in the domain and to `t` in the codomain. -/
 @[simps! -fullyApplied apply symm_apply toPartialEquiv,
   simps! -isSimp source target]
@@ -560,7 +560,7 @@ theorem isOpen_iff (h : e.IsImage s t) : IsOpen (e.source ∩ s) ↔ IsOpen (e.t
   ⟨fun hs => h.symm_preimage_eq' ▸ e.symm.isOpen_inter_preimage hs, fun hs =>
     h.preimage_eq' ▸ e.isOpen_inter_preimage hs⟩
 
-/-- Restrict a `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
+/-- Restrict an `OpenPartialHomeomorph` to a pair of corresponding open sets. -/
 @[simps toPartialEquiv]
 def restr (h : e.IsImage s t) (hs : IsOpen (e.source ∩ s)) : OpenPartialHomeomorph X Y where
   toPartialEquiv := h.toPartialEquiv.restr
@@ -1098,7 +1098,7 @@ theorem continuous_iff_continuous_comp_left {f : Z → X} (h : f ⁻¹' e.source
 
 end Continuity
 
-/-- The homeomorphism obtained by restricting a `OpenPartialHomeomorph` to a subset of the source.
+/-- The homeomorphism obtained by restricting an `OpenPartialHomeomorph` to a subset of the source.
 -/
 @[simps]
 def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) (ht : e '' s = t) :

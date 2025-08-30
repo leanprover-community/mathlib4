@@ -14,7 +14,7 @@ has an invertible strict derivative `f'` at `a`, then it is locally invertible,
 and the inverse function has derivative `f' ⁻¹`.
 
 We define `HasStrictFDerivAt.toOpenPartialHomeomorph` that repacks a function `f`
-with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into a `OpenPartialHomeomorph`.
+with a `hf : HasStrictFDerivAt f f' a`, `f' : E ≃L[𝕜] F`, into an `OpenPartialHomeomorph`.
 The `toFun` of this `OpenPartialHomeomorph` is defeq to `f`, so one can apply theorems
 about `OpenPartialHomeomorph` to `hf.toOpenPartialHomeomorph f`, and get statements about `f`.
 
@@ -103,7 +103,7 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
 variable (f)
 variable [CompleteSpace E]
 
-/-- Given a function with an invertible strict derivative at `a`, returns a `OpenPartialHomeomorph`
+/-- Given a function with an invertible strict derivative at `a`, returns an `OpenPartialHomeomorph`
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
 The other part `HasStrictFDerivAt.to_localInverse` states that the inverse function
 of this `OpenPartialHomeomorph` has derivative `f'.symm`. -/

@@ -17,9 +17,9 @@ When `f'` is onto, we show that `f` is locally onto.
 
 When `f'` is a continuous linear equiv, we show that `f` is a homeomorphism
 between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toOpenPartialHomeomorph`
-to be a `OpenPartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
+to be an `OpenPartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
 between `s` and `f '' s`. More precisely, we define `ApproximatesLinearOn.toOpenPartialHomeomorph`
-to be a `OpenPartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
+to be an `OpenPartialHomeomorph` with `toFun = f`, `source = s`, and `target = f '' s`.
 
 Maps of this type naturally appear in the proof of the inverse function theorem (see next section),
 and `ApproximatesLinearOn.toOpenPartialHomeomorph` will imply that the locally inverse function

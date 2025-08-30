@@ -125,7 +125,7 @@ end strips
 
 section ofComplex
 
-/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as a `OpenPartialHomeomorph`. -/
+/-- A section `ℂ → ℍ` of the natural inclusion map, bundled as an `OpenPartialHomeomorph`. -/
 def ofComplex : OpenPartialHomeomorph ℂ ℍ := (isOpenEmbedding_coe.toOpenPartialHomeomorph _).symm
 
 /-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
