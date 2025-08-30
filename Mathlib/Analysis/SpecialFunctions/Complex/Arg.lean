@@ -36,13 +36,17 @@ theorem cos_arg {x : ℂ} (hx : x ≠ 0) : Real.cos (arg x) = x.re / ‖x‖ := 
   rw [arg]
   split_ifs with h₁ h₂
   · rw [Real.cos_arcsin]
-    field_simp [Real.sqrt_sq, (norm_pos_iff.mpr hx).le, *]
+    field_simp
+    simp [Real.sqrt_sq, (norm_pos_iff.mpr hx).le, *]
+    field_simp
   · rw [Real.cos_add_pi, Real.cos_arcsin]
-    field_simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs,
-      _root_.abs_of_neg (not_le.1 h₁), *]
+    field_simp
+    simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
+    field_simp
   · rw [Real.cos_sub_pi, Real.cos_arcsin]
-    field_simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs,
-      _root_.abs_of_neg (not_le.1 h₁), *]
+    field_simp
+    simp [Real.sqrt_div (sq_nonneg _), Real.sqrt_sq_eq_abs, _root_.abs_of_neg (not_le.1 h₁), *]
+    field_simp
 
 @[simp]
 theorem norm_mul_exp_arg_mul_I (x : ℂ) : ‖x‖ * exp (arg x * I) = x := by
@@ -469,7 +473,7 @@ theorem arg_cos_add_sin_mul_I_sub (θ : ℝ) :
 
 theorem arg_mul_cos_add_sin_mul_I_coe_angle {r : ℝ} (hr : 0 < r) (θ : Real.Angle) :
     (arg (r * (Real.Angle.cos θ + Real.Angle.sin θ * I)) : Real.Angle) = θ := by
-  induction' θ using Real.Angle.induction_on with θ
+  induction θ using Real.Angle.induction_on with | _ θ
   rw [Real.Angle.cos_coe, Real.Angle.sin_coe, Real.Angle.angle_eq_iff_two_pi_dvd_sub]
   use ⌊(π - θ) / (2 * π)⌋
   exact mod_cast arg_mul_cos_add_sin_mul_I_sub hr θ

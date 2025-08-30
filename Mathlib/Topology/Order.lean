@@ -618,6 +618,21 @@ theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
 
+/-- In the trivial topology no points are separable.
+
+The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
+@[simp]
+theorem inseparable_top (x y : α) : @Inseparable α ⊤ x y := nhds_top.trans nhds_top.symm
+
+theorem TopologicalSpace.eq_top_iff_forall_inseparable {t : TopologicalSpace α} :
+    t = ⊤ ↔ (∀ x y : α, Inseparable x y) where
+  mp h := h ▸ inseparable_top
+  mpr h := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+
+theorem TopologicalSpace.ne_top_iff_exists_not_inseparable {t : TopologicalSpace α} :
+    t ≠ ⊤ ↔ ∃ x y : α, ¬Inseparable x y := by
+  simpa using eq_top_iff_forall_inseparable.not
+
 open TopologicalSpace
 
 variable {γ : Type*} {f : α → β} {ι : Sort*}

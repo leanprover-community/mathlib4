@@ -26,14 +26,14 @@ More specifically, we introduce
 
 ## Notations
 
-In the locale `Manifold`, we introduce the notations
+In the scope `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
 * `𝓡∂ n` for `modelWithCornersEuclideanHalfSpace n`.
 
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
-model with corners can not be implicit, see the discussion in
+model with corners cannot be implicit, see the discussion in
 `Geometry.Manifold.IsManifold`).
 
 ## Implementation notes
@@ -63,7 +63,7 @@ def EuclideanQuadrant (n : ℕ) : Type :=
 
 section
 
-/- Register class instances for Euclidean half-space and quadrant, that can not be noticed
+/- Register class instances for Euclidean half-space and quadrant, that cannot be noticed
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}
@@ -169,7 +169,7 @@ end
 
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
-a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
+a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
 -/
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
