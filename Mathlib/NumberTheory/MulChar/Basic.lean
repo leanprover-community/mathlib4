@@ -465,8 +465,8 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · -- Porting note: was `by norm_cast`
-    have : (-1 : R') = (-1 : R'ˣ) := by rw [Units.val_neg, Units.val_one]
+  · have : (-1 : R') = (-1 : R'ˣ) := by
+      simp -- Porting note: was `by norm_cast`
     rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
     rfl
 
