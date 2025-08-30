@@ -787,13 +787,11 @@ theorem tensorObj_mul (X Y : Mon_ C) :
 
 @[simp]
 theorem whiskerLeft_hom {X Y : Mon_ C} (f : X ⟶ Y) (Z : Mon_ C) :
-    (f ▷ Z).hom = f.hom ▷ Z.X := by
-  rfl
+    (f ▷ Z).hom = f.hom ▷ Z.X := rfl
 
 @[simp]
 theorem whiskerRight_hom (X : Mon_ C) {Y Z : Mon_ C} (f : Y ⟶ Z) :
-    (X ◁ f).hom = X.X ◁ f.hom := by
-  rfl
+    (X ◁ f).hom = X.X ◁ f.hom := rfl
 
 @[simp]
 theorem leftUnitor_hom_hom (X : Mon_ C) : (λ_ X).hom.hom = (λ_ X.X).hom := rfl

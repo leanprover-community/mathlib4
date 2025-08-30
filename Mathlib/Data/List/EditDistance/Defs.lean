@@ -178,8 +178,7 @@ theorem suffixLevenshtein_length (xs : List α) (ys : List β) :
 
 -- This is only used in keeping track of estimates.
 theorem suffixLevenshtein_eq (xs : List α) (y ys) :
-    impl C xs y (suffixLevenshtein C xs ys) = suffixLevenshtein C xs (y :: ys) := by
-  rfl
+    impl C xs y (suffixLevenshtein C xs ys) = suffixLevenshtein C xs (y :: ys) := rfl
 
 variable (C)
 
@@ -201,8 +200,7 @@ def levenshtein (xs : List α) (ys : List β) : δ :=
 
 variable {C}
 
-theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := by
-  rfl
+theorem suffixLevenshtein_nil_nil : (suffixLevenshtein C [] []).1 = [0] := rfl
 
 -- Not sure if this belongs in the main `List` API, or can stay local.
 theorem List.eq_of_length_one (x : List α) (w : x.length = 1) :

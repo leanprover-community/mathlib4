@@ -355,8 +355,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
 
 open Classical in
 @[simp]
-theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := by
-  rfl
+theorem coe_single (i : ι) (s : Set X) : ⇑(BumpCovering.single i s) = Pi.single i 1 := rfl
 
 instance [Inhabited ι] : Inhabited (BumpCovering ι X s) :=
   ⟨BumpCovering.single default s⟩

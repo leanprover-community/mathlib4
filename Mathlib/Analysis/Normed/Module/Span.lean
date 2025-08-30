@@ -108,7 +108,6 @@ noncomputable def toSpanUnitSingleton (x : E) (hx : ‖x‖ = 1) :
     rw [LinearEquiv.toSpanNonzeroSingleton_homothety, hx, one_mul]
 
 @[simp] theorem toSpanUnitSingleton_apply (x : E) (hx : ‖x‖ = 1) (r : 𝕜) :
-    toSpanUnitSingleton x hx r = (⟨r • x, by aesop⟩ : 𝕜 ∙ x) := by
-  rfl
+    toSpanUnitSingleton x hx r = (⟨r • x, by aesop⟩ : 𝕜 ∙ x) := rfl
 
 end LinearIsometryEquiv
