@@ -150,18 +150,17 @@ theorem eq_zero_or_isMarkovKernel
     κ = 0 ∨ IsMarkovKernel κ :=
   h.eq_zero_or_isMarkovKernel'
 
-/-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
-for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.Kernel.measure_le_bound κ a s`).
-
-TODO: does it make sense to make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
-Should it be an `NNReal` number? -/
+/-- A constant `C : ℝ≥0∞` such that `C < ∞` for a finite kernel
+(`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and for all `a : α` and `s : Set β`,
+`κ a s ≤ C` (`ProbabilityTheory.Kernel.measure_le_bound κ a s`). -/
 noncomputable def IsFiniteKernel.bound (κ : Kernel α β) : ℝ≥0∞ :=
-  sInf {C : ℝ≥0∞ | ∀ a, κ a Set.univ ≤ C}
+  ⨆ a, κ a Set.univ
 
 theorem IsFiniteKernel.bound_lt_top (κ : Kernel α β) [h : IsFiniteKernel κ] :
     IsFiniteKernel.bound κ < ∞ := by
   obtain ⟨C, hC, hle⟩ := h.exists_univ_le
-  exact lt_of_le_of_lt (sInf_le hle) hC
+  refine lt_of_le_of_lt ?_ hC
+  simp [bound, hle]
 
 theorem IsFiniteKernel.bound_ne_top (κ : Kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel.bound κ ≠ ∞ :=
@@ -169,7 +168,7 @@ theorem IsFiniteKernel.bound_ne_top (κ : Kernel α β) [IsFiniteKernel κ] :
 
 theorem Kernel.measure_le_bound (κ : Kernel α β) (a : α) (s : Set β) :
     κ a s ≤ IsFiniteKernel.bound κ :=
-  (measure_mono (Set.subset_univ s)).trans <| le_sInf fun _ hC ↦ hC a
+  (measure_mono (Set.subset_univ s)).trans <| le_iSup (f := fun a ↦ κ a .univ) a
 
 @[simp]
 lemma IsFiniteKernel.bound_eq_zero_of_isEmpty [IsEmpty α] (κ : Kernel α β) :
@@ -225,11 +224,7 @@ instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMark
 
 @[simp]
 lemma IsMarkovKernel.bound_eq_one [Nonempty α] (κ : Kernel α β) [IsMarkovKernel κ] :
-    IsFiniteKernel.bound κ = 1 := by
-  refine le_antisymm ?_ ?_
-  · refine sInf_le fun a => by simp
-  · simp only [IsFiniteKernel.bound, measure_univ, le_sInf_iff, Set.mem_setOf_eq]
-    exact fun _ hC ↦ hC (Nonempty.some ‹_›)
+    IsFiniteKernel.bound κ = 1 := by simp [IsFiniteKernel.bound]
 
 namespace Kernel
 
