@@ -671,7 +671,7 @@ def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
 noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-  { inner := fun x y => (M * xᴴ * y).trace
+  { inner := fun x y => (y * M * xᴴ).trace
     conj_inner_symm := fun _ _ => by
       simp only [mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
         conjTranspose_conjTranspose, hM.isHermitian.eq]
