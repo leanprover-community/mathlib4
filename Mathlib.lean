@@ -6201,6 +6201,7 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.FilterBasisNew
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.Group.Compact
@@ -6274,6 +6275,7 @@ import Mathlib.Topology.Algebra.NonUnitalAlgebra
 import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Topology.Algebra.Nonarchimedean.BasesNew
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 import Mathlib.Topology.Algebra.Nonarchimedean.TotallyDisconnected
