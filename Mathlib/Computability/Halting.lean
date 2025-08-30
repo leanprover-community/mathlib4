@@ -57,6 +57,59 @@ theorem merge' {f g} (hf : Nat.Partrec f) (hg : Nat.Partrec g) :
     · exact ⟨x, by simp only [e, Option.mem_def, Option.orElse_eq_orElse, Option.orElse_none]⟩
     · exact ⟨y, by simp only [Option.orElse_eq_orElse, Option.orElse_some, Option.mem_def]⟩
 
+/-- If a partial recursive function on pairs depends only on the first component,
+it can be represented as a partial recursive function omitting the second argument. -/
+lemma projection {f : ℕ →. ℕ} (hf : Nat.Partrec f)
+    (unif : ∀ {m n₁ n₂ a₁ a₂ : ℕ}, a₁ ∈ f (m.pair n₁) → a₂ ∈ f (m.pair n₂) → a₁ = a₂) :
+    ∃ g : ℕ →. ℕ, Nat.Partrec g ∧ ∀ a m, (a ∈ g m ↔ ∃ z, a ∈ f (m.pair z)) := by
+  obtain ⟨cf, rfl⟩ := Code.exists_code.1 hf
+  let F : ℕ → ℕ → Option ℕ := fun m n ↦
+    Nat.rec .none (fun x ih ↦ ih.casesOn (cf.evaln n (m.pair x)) .some) n
+  have : Primrec₂ F := .to₂
+    <| Primrec.nat_rec' Primrec.snd (.const Option.none)
+      (Primrec.option_casesOn (Primrec.snd.comp .snd)
+        (Code.primrec_evaln.comp
+          <| _root_.Primrec.pair
+            (_root_.Primrec.pair (Primrec.snd.comp .fst) (.const cf))
+            (Primrec₂.natPair.comp (Primrec.fst.comp .fst) (Primrec.fst.comp .snd)))
+        (Primrec.option_some.comp .snd).to₂).to₂
+  have hF : ∀ {m n a}, a ∈ F m n ↔ ∃ x < n, a ∈ cf.evaln n (m.pair x) := by
+    suffices ∀ m n s a : ℕ,
+      Nat.rec Option.none
+        (fun x ih ↦ ih.casesOn (cf.evaln s (m.pair x)) Option.some) n = Option.some a ↔
+      ∃ x < n, cf.evaln s (m.pair x) = .some a from fun m n a ↦ this m n n a
+    intro m n s a
+    induction n generalizing a
+    case zero => simp
+    case succ n ih =>
+      cases hC :
+        @Nat.rec (fun _ ↦ Option ℕ) Option.none
+          (fun x ih ↦ ih.rec (cf.evaln s (m.pair x)) Option.some) n
+      · simp only [hC]
+        grind
+      · simp only [hC, Option.some.injEq]
+        constructor
+        · grind
+        · rintro ⟨x, _, Hx⟩
+          rcases (ih _).mp hC with ⟨y, _, Hy⟩
+          exact unif (Nat.Partrec.Code.evaln_sound Hy) (Nat.Partrec.Code.evaln_sound Hx)
+  have mono : ∀ {a m n₁ n₂ : ℕ}, n₁ ≤ n₂ → a ∈ F m n₁ → a ∈ F m n₂ := by
+    intro a m n₁ n₂ hn h₁
+    rcases hF.mp h₁ with ⟨x, hx, H⟩
+    apply hF.mpr ⟨x, lt_of_lt_of_le hx hn, Code.evaln_mono hn H⟩
+  have : Partrec (fun m ↦ rfindOpt (F m)) := Partrec.nat_iff.1 <| Partrec.rfindOpt <| this.to_comp
+  refine ⟨_, this, fun a m ↦ ?_⟩
+  rw [Nat.rfindOpt_mono mono]
+  constructor
+  · rintro ⟨n, H⟩
+    obtain ⟨x, _, H⟩ := hF.mp H
+    exact ⟨x, Code.evaln_sound H⟩
+  · rintro ⟨x, H⟩
+    obtain ⟨s, Hs⟩ := Code.evaln_complete.mp H
+    exact ⟨max s x + 1, (@hF m (max s x + 1) a).mpr
+      ⟨x, by simp [Nat.lt_succ],
+        Code.evaln_mono (le_trans (Nat.le_max_left s x) (le_add_right (max s x) 1)) Hs⟩⟩
+
 end Nat.Partrec
 
 namespace Partrec
@@ -130,6 +183,33 @@ nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α
 
 @[deprecated (since := "2025-02-21")] alias sum_casesOn := Partrec.sumCasesOn
 
+lemma projection {f : α → β →. γ} (hf : Partrec₂ f)
+    (unif : ∀ {a b₁ b₂ c₁ c₂}, c₁ ∈ f a b₁ → c₂ ∈ f a b₂ → c₁ = c₂) :
+    ∃ g : α →. γ, Partrec g ∧ ∀ c a, c ∈ g a ↔ ∃ b, c ∈ f a b := by
+  have := Nat.Partrec.projection (Partrec.bind_decode₂_iff.mp hf)
+    (by intro m n₁ n₂ c₁ c₂; simp [decode₂_eq_some]; aesop)
+  rcases this with ⟨g, hg, H⟩
+  let g' : α →. γ := fun a ↦ (g (encode a)).bind fun n ↦ decode (α := γ) n
+  refine ⟨g',
+    ((nat_iff.2 hg).comp Computable.encode).bind
+    (Computable.decode.ofOption.comp Computable.snd).to₂, ?_⟩
+  have H : ∀ {c a : ℕ}, c ∈ g a ↔ ∃ a' b, encode a' = a ∧ ∃ c' ∈ f a' b, encode c' = c := by
+    have H : ∀ c a : ℕ,
+      c ∈ g a ↔ ∃ z a' b, (encode a' = a ∧ encode b = z) ∧ ∃ c' ∈ f a' b, encode c' = c := by
+      simpa [Encodable.decode₂_eq_some] using H
+    intro c a
+    constructor <;> grind
+  intro c a
+  suffices (∃ c' ∈ g (encode a), decode c' = Option.some c) ↔ ∃ b, c ∈ f a b by simpa [g']
+  constructor
+  · rintro ⟨c', h, hc⟩
+    rcases H.mp h with ⟨a, b, ae, c, habc, rfl⟩;
+    rcases by simpa using hc
+    rcases Encodable.encode_inj.mp ae
+    exact ⟨b, habc⟩
+  · rintro ⟨b, habc⟩
+    exact ⟨encode c, H.mpr ⟨a, b, rfl, c, habc, rfl⟩, by simp⟩
+
 end Partrec
 
 /-- A computable predicate is one whose indicator function is computable. -/
@@ -179,6 +259,46 @@ theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β
 theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : ComputablePred p)
     (H : ∀ a, p a ↔ q a) : ComputablePred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
+
+namespace REPred
+
+variable {α β : Type*} [Primcodable α] [Primcodable β] {p q : α → Prop}
+
+@[simp] protected lemma const (p : Prop) : REPred fun _ : α ↦ p := by
+  by_cases h : p
+  · simpa [h] using Partrec.some.dom_re
+  · simpa [h] using (Partrec.none (α := α) (σ := α)).dom_re
+
+lemma _root_.rePred_iff : REPred p ↔ ∃ f : α →. Unit, Partrec f ∧ p = fun x ↦ (f x).Dom :=
+  ⟨fun h ↦ ⟨_, h, by ext x; simp [Part.assert]⟩, by rintro ⟨f, hf, rfl⟩; exact hf.dom_re⟩
+
+lemma inter : REPred p → REPred q → REPred fun x ↦ p x ∧ q x := by
+  simp_rw [rePred_iff]
+  rintro ⟨f, hf, rfl⟩ ⟨g, hg, rfl⟩
+  let h : α →. Unit := fun x ↦ (f x).bind fun _ ↦ (g x).map fun _ ↦ ()
+  refine ⟨fun x ↦ (f x).bind fun _ ↦ (g x).map fun _ ↦ (), ?_, by funext x; simp⟩
+  exact hf.bind <| .to₂ <| .map (hg.comp .fst) (Computable.const ()).to₂
+
+lemma union : REPred p → REPred q → REPred fun x ↦ p x ∨ q x := by
+  simp_rw [rePred_iff]
+  rintro ⟨f, hf, rfl⟩ ⟨g, hg, rfl⟩
+  rcases hf.merge hg (by intro a x; simp) with ⟨k, hk, h⟩
+  exact ⟨k, hk, by funext x; simp [Part.dom_iff_mem, h, Unique.exists_iff]⟩
+
+lemma projection {p : α × β → Prop} : REPred p → REPred fun x ↦ ∃ y, p (x, y) := by
+  simp_rw [rePred_iff]
+  rintro ⟨f, hf, rfl⟩
+  have : Partrec₂ fun a b ↦ f (a, b) := hf.comp <| Computable.pair .fst .snd
+  obtain ⟨g, hg, Hg⟩ := Partrec.projection this (by simp)
+  exact ⟨g, hg, by funext x; simp [Part.dom_iff_mem, exists_comm (β := Unit), Hg]⟩
+
+lemma comp {f : α → β} (hf : Computable f) {p : β → Prop} :
+    REPred p → REPred fun x ↦ p (f x) := by
+  simp_rw [rePred_iff]
+  rintro ⟨p, pp, rfl⟩
+  exact ⟨_, pp.comp hf, by ext x; simp⟩
+
+end REPred
 
 namespace ComputablePred
 
