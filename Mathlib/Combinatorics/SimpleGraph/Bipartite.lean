@@ -137,9 +137,9 @@ theorem isBipartiteWith_neighborSet_disjoint' (h : G.IsBipartiteWith s t) (hw : 
 
 variable {s t : Finset V} [DecidableRel G.Adj]
 
-section LocallyFinite
+section
 
-variable [G.LocallyFinite]
+variable [Fintype ↑(G.neighborSet v)] [Fintype ↑(G.neighborSet w)]
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is the set of vertices
 in `s` adjacent to `v` in `G`. -/
@@ -207,11 +207,13 @@ theorem isBipartiteWith_degree_le' (h : G.IsBipartiteWith s t) (hw : w ∈ t) : 
   rw [← card_neighborFinset_eq_degree]
   exact card_le_card (isBipartiteWith_neighborFinset_subset' h hw)
 
+end
+
 /-- If `G.IsBipartiteWith s t`, then the sum of the degrees of vertices in `s` is equal to the sum
 of the degrees of vertices in `t`.
 
 See `Finset.sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow`. -/
-theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
+theorem isBipartiteWith_sum_degrees_eq [G.LocallyFinite] (h : G.IsBipartiteWith s t) :
     ∑ v ∈ s, G.degree v = ∑ w ∈ t, G.degree w := by
   simp_rw [← sum_attach t, ← sum_attach s, ← card_neighborFinset_eq_degree]
   conv_lhs =>
@@ -224,12 +226,10 @@ theorem isBipartiteWith_sum_degrees_eq (h : G.IsBipartiteWith s t) :
     sum_attach t fun v ↦ #(bipartiteBelow G.Adj s v)]
   exact sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow G.Adj
 
-end LocallyFinite
-
 variable [Fintype V]
 
-lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V] (h : G.IsBipartiteWith s t) :
-    ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
+lemma isBipartiteWith_sum_degrees_eq_twice_card_edges [DecidableEq V]
+    (h : G.IsBipartiteWith s t) : ∑ v ∈ s ∪ t, G.degree v = 2 * #G.edgeFinset := by
   have hsub : G.support ⊆ ↑s ∪ ↑t := isBipartiteWith_support_subset h
   rw [← coe_union, ← Set.toFinset_subset] at hsub
   rw [← Finset.sum_subset hsub, ← sum_degrees_support_eq_twice_card_edges]
