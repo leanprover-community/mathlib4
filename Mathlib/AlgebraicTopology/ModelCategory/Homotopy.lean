@@ -15,7 +15,7 @@ morphisms `X ⟶ Y` in model categories. In particular, if `X` is cofibrant
 and `Y` is fibrant, these notions coincide (for arbitrary choices of good
 cylinders or good path objects).
 
-Using the lemma by K. S. Brown, we deduce versions of the Whitehead
+Using the factorization lemma by K. S. Brown, we deduce versions of the Whitehead
 theorem (`LeftHomotopyClass.whitehead` and `RightHomotopyClass.whitehead`)
 which assert that when both `X` and `Y` are fibrant and cofibrant,
 then any weak equivalence `X ⟶ Y` is a homotopy equivalence.
