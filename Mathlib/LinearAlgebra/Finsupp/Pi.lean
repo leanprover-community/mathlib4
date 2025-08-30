@@ -165,10 +165,7 @@ lemma map_apply_apply [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : 
   rw [Finsupp.mapDomain_finset_sum]
   simp [Finset.sum_filter]
   congr
-  ext x
-  by_cases hx : f x = y
-  · simp [hx]
-  · rw [if_neg hx, Finsupp.single_eq_of_ne hx]
+  aesop
 
 @[simp]
 lemma map_piSingle [Finite X] [Finite Y] [DecidableEq X] [DecidableEq Y]
