@@ -290,7 +290,7 @@ The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
 A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
 -/
 
-theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (P : R):
+theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (P : R) :
     Δ_[1]^[n + 1] (fun (r : R) => ∑ k ∈ Finset.range (n + 1), P • r ^ k) = 0 := by
   induction n with
   | zero =>
@@ -341,7 +341,7 @@ Any function `f` defined by a polynomial can be expressed as a sum of its forwar
 differences at `0`, weighted by binomial coefficients.
 `f(x) = ∑_{k=0..p} (p choose k) * (Δ^k f)(0)`.
 -/
-theorem sum_fwdDiff_iter_at_zero_trans {n p : ℕ} (P : R):
+theorem sum_fwdDiff_iter_at_zero_trans {n p : ℕ} (P : R) :
     ∑ k ∈ Finset.range (n + 1), P * (p ^ k) = ∑ k ∈ Finset.range (p + 1), p.choose k *
       ( Δ_[1]^[k]) (fun (r : R) ↦ ∑ k ∈ Finset.range (n + 1), P • (r ^ k)) 0 := by
   obtain h := shift_eq_sum_fwdDiff_iter (n := p) (y := 0)
