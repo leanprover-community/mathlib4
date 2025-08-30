@@ -5,7 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.GroupTheory.Torsion
+import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Units of a number field
@@ -89,7 +89,25 @@ theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
 
 end coe
 
+variable {K}
+
+/--
+The group homomorphism `(𝓞 K)ˣ →* ℂˣ` induced by a complex embedding of `K`.
+-/
+protected def complexEmbedding (φ : K →+* ℂ) : (𝓞 K)ˣ →* ℂˣ :=
+  (map φ).comp (map (algebraMap (𝓞 K) K).toMonoidHom)
+
+@[simp]
+protected theorem complexEmbedding_apply (φ : K →+* ℂ) (u : (𝓞 K)ˣ) :
+    Units.complexEmbedding φ u = φ u := rfl
+
+protected theorem complexEmbedding_injective (φ : K →+* ℂ) :
+    Function.Injective (Units.complexEmbedding φ) :=
+  (map_injective φ.injective).comp (map_injective RingOfIntegers.coe_injective)
+
 open NumberField.InfinitePlace
+
+variable (K)
 
 @[simp]
 protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
@@ -150,7 +168,7 @@ theorem torsionOrder_pos [NumberField K] :
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
+theorem rootsOfUnity_eq_one {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
     {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
   rw [mem_rootsOfUnity]
   refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
@@ -164,7 +182,7 @@ theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (tors
 
 /-- The group of roots of unity of order dividing `torsionOrder` is equal to the torsion
 group. -/
-theorem rootsOfUnity_eq_torsion [NumberField K] :
+theorem rootsOfUnity_eq_torsion :
     rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
   ext ζ
   rw [torsion, mem_rootsOfUnity]
@@ -172,6 +190,20 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨torsionOrder K, torsionOrder_pos K, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
+
+/--
+The image of `torsion K` by a complex embedding is the group of complex roots of unity of
+order `torsionOrder K`.
+-/
+theorem map_complexEmbedding_torsion (φ : K →+* ℂ) :
+    (torsion K).map (Units.complexEmbedding φ) = rootsOfUnity (torsionOrder K : ℕ) ℂ := by
+  apply Subgroup.eq_of_le_of_card_ge
+  · rw [← rootsOfUnity_eq_torsion]
+    exact map_rootsOfUnity _ (torsionOrder K)
+  · let e := ((torsion K).equivMapOfInjective (Units.complexEmbedding φ)
+      (Units.complexEmbedding_injective φ)).symm.toEquiv
+    rw [Nat.card_eq_fintype_card, Complex.card_rootsOfUnity, Nat.card_congr e, torsionOrder,
+      Nat.card_eq_fintype_card]
 
 theorem even_torsionOrder [NumberField K] :
     Even (torsionOrder K) := by
@@ -185,7 +217,7 @@ section odd
 
 variable {K}
 
-theorem torsion_eq_one_or_neg_one_of_odd_finrank [NumberField K]
+theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases hc : 2 < orderOf (x : (𝓞 K)ˣ)
   · rw [← orderOf_units, ← orderOf_submonoid] at hc
@@ -198,8 +230,8 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank [NumberField K]
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
       simp [← Units.val_inj, ← Units.val_inj, Units.val_neg, Units.val_one, hi]
 
-theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
-    (h : Odd (Module.finrank ℚ K)) : torsionOrder K = 2 := by
+theorem torsionOrder_eq_two_of_odd_finrank (h : Odd (Module.finrank ℚ K)) :
+    torsionOrder K = 2 := by
   classical
   refine (Finset.card_eq_two.2 ⟨1, ⟨-1, neg_one_mem_torsion⟩,
     by simp [← Subtype.coe_ne_coe], Finset.ext fun x ↦ ⟨fun _ ↦ ?_, fun _ ↦ Finset.mem_univ _⟩⟩)
