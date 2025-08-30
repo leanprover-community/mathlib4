@@ -1216,11 +1216,11 @@ end Prod
 /-
 The comment below is added by @YaelDillies at https://github.com/leanprover-community/mathlib3/blob/65a1391a0106c9204fe45bc73a039f056558cb83/src/group_theory/order_of_element.lean#L981
 and ported by @Parcly-Taxel.
-The "import cycles" issue seems to have been resolved.
+The mentioned "import cycles" issue seems to have been resolved.
 However, I'm not sure whether the added theorems include all "corresponding `pi` lemmas" meant by
 @YaelDillies.
 TODO: remove the comment below along with this comment if all "corresponding `pi` lemmas" are
-included.
+considered included.
 -/
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
 
