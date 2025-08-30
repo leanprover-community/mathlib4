@@ -58,7 +58,7 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
   |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
     rw [← List.Pi.cons_eta q]
-    induction' List.Pi.head q using Quotient.ind with a
+    induction List.Pi.head q using Quotient.ind with | _ a
     refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
     intro as
     rw [List.Pi.cons_map a as (fun i ↦ Quotient.mk (S i))]
