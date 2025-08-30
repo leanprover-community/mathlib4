@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Data.Set.Function
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
 
@@ -948,6 +948,10 @@ lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
     StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
   lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by omega)
 
+lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
+    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by omega)
+
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
   rw [zpow_add_one₀ (zero_lt_one.trans_le ha).ne']
@@ -1299,6 +1303,14 @@ lemma inv_lt_one_iff₀ : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
 
 lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
+
+lemma zpow_left_injOn₀ [MulPosMono G₀] : ∀ {n : ℤ}, n ≠ 0 → {a | 0 ≤ a}.InjOn fun a : G₀ ↦ a ^ n
+  | (n + 1 : ℕ), _ => by simpa using mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+  | .negSucc n, _ => by
+    simpa using inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+
+lemma zpow_left_inj₀ [MulPosMono G₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
+    a ^ n = b ^ n ↔ a = b := (zpow_left_injOn₀ hn).eq_iff ha hb
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
   obtain ha₁ | ha₁ := ha₁.lt_or_gt
