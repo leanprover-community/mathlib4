@@ -1083,7 +1083,7 @@ end Continuity
 @[simps]
 def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) (ht : e '' s = t) :
     s ≃ₜ t :=
-  have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
+  have h₁ : MapsTo e s t := mapsTo_iff_image_subset.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_mono hs
   have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
