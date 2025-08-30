@@ -8,15 +8,8 @@ import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
-# Isomorphisms between free groups come from equivalences of their generators
+# Isomorphisms between free groups imply equivalences of their generators
 
-This file proves that an isomorphism `e : G ≃* H` between free groups `G` and `H` is induced by an
-equivalence of generators.
-
-## TODO
-
-We currently construct the equivalence of generators, but don't show that it induces the isomorphism
-of groups.
 -/
 
 noncomputable section

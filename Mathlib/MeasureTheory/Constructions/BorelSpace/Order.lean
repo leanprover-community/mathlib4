@@ -168,7 +168,7 @@ section LinearOrder
 
 variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
--- we open this locale only here to avoid issues with list being treated as intervals above
+-- we open this scope only here to avoid issues with list being treated as intervals above
 open Interval
 
 @[simp, measurability]
@@ -668,9 +668,6 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
       exact False.elim (hx.2 this)
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
-@[deprecated (since := "2024-12-22")]
-alias measurableSet_of_mem_nhdsWithin_Ioi_aux := MeasurableSet.of_mem_nhdsGT_aux
-
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
@@ -688,9 +685,6 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push_neg at H
     exact H
-
-@[deprecated (since := "2024-12-22")]
-alias measurableSet_of_mem_nhdsWithin_Ioi := MeasurableSet.of_mem_nhdsGT
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by

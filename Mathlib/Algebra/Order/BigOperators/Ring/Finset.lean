@@ -196,9 +196,7 @@ lemma sum_sq_le_sum_mul_sum_of_sq_eq_mul [CommSemiring R] [LinearOrder R] [IsStr
       _ ≤ ∑ i ∈ s, (f i * (∑ j ∈ s, g j) ^ 2 + g i * (∑ j ∈ s, r j) ^ 2) := by
           gcongr with i hi
           have ht : (r i * (∑ j ∈ s, g j) * (∑ j ∈ s, r j)) ^ 2 =
-              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by
-            conv_rhs => rw [mul_mul_mul_comm, ← ht i hi]
-            ring
+              (f i * (∑ j ∈ s, g j) ^ 2) * (g i * (∑ j ∈ s, r j) ^ 2) := by grind
           refine le_of_eq_of_le ?_ (two_mul_le_add_of_sq_eq_mul
             (mul_nonneg (hf i hi) (sq_nonneg _)) (mul_nonneg (hg i hi) (sq_nonneg _)) ht)
           repeat rw [mul_assoc]
@@ -294,7 +292,7 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     if let some p_pos := p_pos then return .positive p_pos
     -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
-      let .some pbody := rbody.toNonneg
+      let some pbody := rbody.toNonneg
         | return none -- Fail if the body is not provably nonnegative
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.

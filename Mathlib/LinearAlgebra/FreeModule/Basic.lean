@@ -84,6 +84,7 @@ noncomputable def chooseBasis : Basis (ChooseBasisIndex R M) R M :=
   ((Module.free_iff_set R M).mp ‹_›).choose_spec.some
 
 /-- The isomorphism `M ≃ₗ[R] (ChooseBasisIndex R M →₀ R)`. -/
+@[deprecated Module.Free.chooseBasis (since := "2025-08-01")]
 noncomputable def repr : M ≃ₗ[R] ChooseBasisIndex R M →₀ R :=
   (chooseBasis R M).repr
 
@@ -110,7 +111,7 @@ theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
 instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
-  .of_injective _ (Module.Free.repr R M).symm.injective
+  .of_injective _ (chooseBasis R M).repr.symm.injective
 
 variable {R M N}
 
@@ -171,12 +172,11 @@ open Finset
 
 variable {S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
+variable {R} in
 /-- If `B` is a basis of the `R`-algebra `S` such that `B i = 1` for some index `i`, then
 each `r : R` gets represented as `s • B i` as an element of `S`. -/
-theorem repr_algebraMap {ι : Type*} [DecidableEq ι] {B : Basis ι R S} {i : ι} (hBi : B i = 1)
-    (r : R) : B.repr ((algebraMap R S) r) = fun j : ι ↦ if i = j then r else 0 := by
-  ext j
-  rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hBi, Finsupp.smul_apply, B.repr_self_apply]
-  simp
+theorem repr_algebraMap {ι : Type*} {B : Basis ι R S} {i : ι} (hBi : B i = 1) (r : R) :
+    B.repr (algebraMap R S r) = Finsupp.single i r := by
+  ext j; simp [Algebra.algebraMap_eq_smul_one, ← hBi]
 
 end Module.Basis

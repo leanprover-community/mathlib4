@@ -53,7 +53,7 @@ section case1
 open ZMod
 
 private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
-    castHom (show 3 ∣ 9 by norm_num) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
+    castHom (show 3 ∣ 9 by simp) (ZMod 3) n ≠ 0 → n ^ 3 = 1 ∨ n ^ 3 = 8 := by
   revert n; decide
 
 private lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
@@ -647,7 +647,8 @@ private lemma formula2 :
     calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ):= by push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
-  · field_simp [u₄_def]
+  · simp only [u₄_def, inv_eq_one_div, mul_div_assoc', mul_one, val_div_eq_divp, Units.val_mul,
+      IsUnit.unit_spec, divp_mul_eq_mul_divp, divp_eq_iff_mul_eq]
     ring
 
 private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by
@@ -703,7 +704,7 @@ noncomputable def Solution'_descent : Solution' hζ where
   coprime := (isCoprime_mul_unit_left_right S.u₄.isUnit _ _).2 S.isCoprime_Y_Z
   hcdvd := by
     refine dvd_mul_of_dvd_left (dvd_pow_self _ (fun h ↦ ?_)) _
-    rw [Nat.sub_eq_iff_eq_add (le_trans (by norm_num) S.two_le_multiplicity), zero_add] at h
+    rw [Nat.sub_eq_iff_eq_add (le_trans (by simp) S.two_le_multiplicity), zero_add] at h
     simpa [h] using S.two_le_multiplicity
   H := formula3 S
 

@@ -125,6 +125,7 @@ lemma sqrt_lt' : sqrt m < n ↔ m < n ^ 2 := by simp only [← not_le, le_sqrt']
 
 lemma sqrt_le_self (n : ℕ) : sqrt n ≤ n := le_trans (le_mul_self _) (sqrt_le n)
 
+@[gcongr]
 lemma sqrt_le_sqrt (h : m ≤ n) : sqrt m ≤ sqrt n := le_sqrt.2 (le_trans (sqrt_le _) h)
 
 @[simp, grind =] lemma sqrt_zero : sqrt 0 = 0 := rfl
@@ -159,8 +160,10 @@ lemma sqrt_add_eq (n : ℕ) (h : a ≤ n + n) : sqrt (n * n + a) = n :=
 lemma sqrt_add_eq' (n : ℕ) (h : a ≤ n + n) : sqrt (n ^ 2 + a) = n := by
   simpa [Nat.pow_two] using sqrt_add_eq n h
 
+@[simp]
 lemma sqrt_eq (n : ℕ) : sqrt (n * n) = n := sqrt_add_eq n (zero_le _)
 
+@[simp]
 lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
 
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
@@ -197,5 +200,10 @@ lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t *
 
 lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := by
   simpa only [Nat.pow_two] using not_exists_sq
+
+lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a.sqrt := by
+  rcases le_total b c with bc | cb
+  · exact Or.inl <| le_sqrt.mpr <| h ▸ mul_le_mul_left b bc
+  · exact Or.inr <| le_sqrt.mpr <| h ▸ mul_le_mul_right c cb
 
 end Nat

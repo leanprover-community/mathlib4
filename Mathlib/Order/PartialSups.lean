@@ -129,6 +129,9 @@ lemma comp_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : 
     partialSups (g ∘ f) = g ∘ partialSups f := by
   funext _; simp [partialSups]
 
+lemma map_partialSups {F : Type*} [FunLike F α β] [SupHomClass F α β] (f : F) (g : ι → α) (i : ι) :
+    partialSups (fun j ↦ f (g j)) i = f (partialSups g i) := congr($(comp_partialSups ..) i)
+
 end Preorder
 
 @[simp]
@@ -272,10 +275,10 @@ section Set
 
 lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
-  ext; simp [partialSups_eq_biSup, Nat.lt_succ_iff]
+  simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
-  ext; simp [partialSups_eq_biSup, Nat.lt_succ]
+  simp [partialSups_eq_biSup, Nat.lt_succ]
 
 end Set

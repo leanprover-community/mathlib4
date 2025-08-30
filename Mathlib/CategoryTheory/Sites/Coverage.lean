@@ -68,10 +68,11 @@ def FactorsThruAlong {X Y : C} (S : Presieve Y) (T : Presieve X) (f : Y ⟶ X) :
   ∀ ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄, S g →
   ∃ (W : C) (i : Z ⟶ W) (e : W ⟶ X), T e ∧ i ≫ e = g ≫ f
 
-lemma FactorsThruAlong.pullbackArrows [HasPullbacks C] {X Y : C} (f : X ⟶ Y)
-    (R : Presieve Y) :
+lemma FactorsThruAlong.pullbackArrows {X Y : C} (f : X ⟶ Y)
+    (R : Presieve Y) [R.HasPullbacks f] :
     (Presieve.pullbackArrows f R).FactorsThruAlong R f := by
   intro Z g ⟨W, b, hb⟩
+  have := R.hasPullback f hb
   refine ⟨_, pullback.fst _ _, b, hb, pullback.condition⟩
 
 /--
@@ -154,7 +155,7 @@ structure Coverage where
   /-- The collection of covering presieves for an object `X`. -/
   covering : ∀ (X : C), Set (Presieve X)
   /-- Given any covering sieve `S` on `X` and a morphism `f : Y ⟶ X`, there exists
-    some covering sieve `T` on `Y` such that `T` factors through `S` along `f`. -/
+  some covering sieve `T` on `Y` such that `T` factors through `S` along `f`. -/
   pullback : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Presieve X) (_ : S ∈ covering X),
     ∃ (T : Presieve Y), T ∈ covering Y ∧ T.FactorsThruAlong S f
 

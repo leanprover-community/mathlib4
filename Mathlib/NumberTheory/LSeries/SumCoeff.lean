@@ -56,7 +56,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
   simp_rw [LSeriesSummable, funext (LSeries.term_def₀ hf s), mul_comm (f _)]
   refine summable_mul_of_bigO_atTop' (f := fun t ↦ (t : ℂ) ^ (-s))
     (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ h₃ ?_ ?_ ?_ ?_
-  · refine (integrableOn_Ici_iff_integrableOn_Ioi.mpr
+  · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi
       (integrableOn_Ioi_deriv_norm_ofReal_cpow zero_lt_one ?_)).locallyIntegrableOn
     exact neg_re _ ▸ neg_nonpos.mpr <| hr.trans hs.le
   · refine (IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow _ _ _ ?_ hO h₂).congr_right (by simp)
@@ -113,7 +113,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
     · ring_nf
     · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
-  · refine (integrableOn_Ici_iff_integrableOn_Ioi.mpr <|
+  · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi <|
       integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one
         (by simpa using hr.trans_lt hs)).locallyIntegrableOn
   · have hlim : Tendsto (fun n : ℕ ↦ (n : ℝ) ^ (-(s.re - r))) atTop (𝓝 0) :=
@@ -137,7 +137,7 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
     (by filter_upwards [eventually_ne_atTop 0] with n h using if_neg h)] at hS
   have (n : _) : ∑ k ∈ Icc 1 n, (if k = 0 then 0 else f k) = ∑ k ∈ Icc 1 n, f k :=
     Finset.sum_congr rfl fun k hk ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp hk).1).ne']
-  rw [← LSeries_congr _ (fun _ ↦ if_neg _), LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
+  rw [← LSeries_congr fun _ ↦ if_neg _, LSeries_eq_mul_integral_aux (if_pos rfl) hr hs hS] <;>
   simp_all
 
 /-- A version of `LSeries_eq_mul_integral` where we use the stronger condition that the partial sums
@@ -242,7 +242,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T 
         Real.rpow_nonneg (zero_le_one.trans ht.le) _
     _ = ε := by
       rw [integral_Ioi_rpow_of_lt (by rwa [neg_lt_neg_iff]) zero_lt_one, Real.one_rpow]
-      field_simp [show -s + 1 ≠ 0 by linarith, hε.ne']
+      field_simp [show -s + 1 ≠ 0 by linarith]
       ring
 
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃

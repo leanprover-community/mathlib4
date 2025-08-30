@@ -495,9 +495,9 @@ and a `B`-module `M`, `S`-module `P`, `R`-module `Q`, then
 -/
 def rightComm : (M ⊗[S] P) ⊗[R] Q ≃ₗ[B] (M ⊗[R] Q) ⊗[S] P :=
   LinearEquiv.ofLinear
-    (lift (lift (LinearMap.lflip ∘ₗ
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
       (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
-    (lift (lift (LinearMap.lflip ∘ₗ
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ
       (AlgebraTensorModule.mk _ _ _ _).compr₂ (AlgebraTensorModule.mk _ _ _ _))))
     (by ext; simp) (by ext; simp)
 
@@ -609,7 +609,6 @@ theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTens
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
-  -- Porting note: added `-baseChange_tmul`
   simp [baseChange_eq_ltensor, -baseChange_tmul]
 
 @[simp]
@@ -620,7 +619,7 @@ theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
 @[simp]
 theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   ext
-  simp [baseChange_tmul]
+  simp
 
 @[simp]
 lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by
