@@ -17,6 +17,12 @@ Note: this can become very expensive because it is using `isDefEq`.
 For performance reasons, consider whether `Lean.Meta.Canonicalizer.canon` can be used instead.
 After canonicalizing, a `HashMap Expr Nat` suffices to keep track of previously seen atoms,
 and is much faster as it uses `Expr` equality rather than `isDefEq`.
+
+Note: To address the aforementioned issue, `CanonAtomM` is implemented with the same function in
+PR #22614, and the performance is further tested in PR #22618, where `ring` and `module` are
+refactored to use this new version. The performance did not improve as expected, so this note is
+created to record this attempt. Both PRs are closed without merging, and further information can be
+found in the comments and zulip discussions.
 -/
 
 namespace Mathlib.Tactic
