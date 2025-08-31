@@ -119,7 +119,7 @@ section Group
 variable [CommGroup M] [IsOrderedCancelMonoid M]
 
 @[to_additive]
-theorem exists_pow_gt_of_lt_one (hx : x < 1) (n : ℕ) : ∃ y : M, y < 1 ∧ x < y ^ n := by
+theorem exists_lt_pow_of_lt_one (hx : x < 1) (n : ℕ) : ∃ y : M, y < 1 ∧ x < y ^ n := by
   obtain ⟨y, hy, hy'⟩ := exists_pow_lt_of_one_lt (one_lt_inv_of_inv hx) n
   use y⁻¹, inv_lt_one_of_one_lt hy
   simpa [lt_inv'] using hy'
