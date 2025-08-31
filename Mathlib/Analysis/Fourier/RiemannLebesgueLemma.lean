@@ -90,7 +90,7 @@ theorem fourierIntegral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
     (Real.fourierIntegral_convergent_iff w).2 (hf.comp_add_right _)]
 
 /-- Riemann-Lebesgue Lemma for continuous and compactly-supported functions: the integral
-`∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 wrt `cocompact V`. Note that this is primarily
+`∫ v, exp (-2 * π * ⟪w, v⟫ * I) • f v` tends to 0 w.r.t. `cocompact V`. Note that this is primarily
 of interest as a preparatory step for the more general result
 `tendsto_integral_exp_inner_smul_cocompact` in which `f` can be arbitrary. -/
 theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support (hf1 : Continuous f)
@@ -262,7 +262,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   simp [Aₘ]
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
-pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and
+pairing in the definition of `fourierIntegral` taken to be the canonical pairing between `V` and
 its dual space). -/
 theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaarMeasure] :
     Tendsto (VectorFourier.fourierIntegral 𝐞 μ (topDualPairing ℝ V).flip f)

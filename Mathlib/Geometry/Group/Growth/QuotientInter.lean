@@ -10,8 +10,8 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 /-!
 # Growth in the quotient and intersection with a subgroup
 
-For a group `G` and a subgroup `H ≤ G`, this file upper and lower bounds the growth of a finset by
-its growth in `H` and `G ⧸ H`.
+For a group `G` and a subgroup `H ≤ G`, this file gives upper and lower bounds on the growth of a
+finset by its growth in `H` and `G ⧸ H`.
 -/
 
 open Finset Function
