@@ -143,14 +143,17 @@ section Pi
 
 variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
 
+-- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
 theorem minimalPeriod_piMap :
     minimalPeriod (Pi.map f) x = sInf {n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n} :=
+
   sorry
 
+-- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
 -- alternative name: `minimalPeriod_piMap_fintype`
 theorem fintype_minimalPeriod_piMap [Fintype ι] :
     minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
-  sorry
+  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd]
 
 -- alternative name: `minimalPeriod_single_dvd`
 theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :

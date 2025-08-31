@@ -1196,11 +1196,11 @@ theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 
 @[to_additive]
-theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
+theorem IsOfFinOrder.fst (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
   hx.mono orderOf_fst_dvd_orderOf
 
 @[to_additive]
-theorem IsOfFinOrder.snd {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
+theorem IsOfFinOrder.snd (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
   hx.mono orderOf_snd_dvd_orderOf
 
 @[to_additive IsOfFinAddOrder.prod_mk]
@@ -1228,6 +1228,7 @@ section Pi
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
 
+-- TODO: make `x` explicit similar to `Prod.orderOf`?
 @[to_additive]
 lemma Pi.orderOf_eq : orderOf x = sInf {n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n} :=
   minimalPeriod_piMap
