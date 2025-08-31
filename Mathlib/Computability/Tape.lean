@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Data.List.GetD
 
