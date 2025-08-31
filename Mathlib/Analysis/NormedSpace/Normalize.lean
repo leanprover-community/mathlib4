@@ -15,7 +15,7 @@ Function that returns unit length vector that points in the same direction
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
-/-- The a nonzero vector `x`, `normalize x` is the unit-length vector that points
+/-- For a nonzero vector `x`, `normalize x` is the unit-length vector that points
 in the same direction as `x`. If `x = 0`, then `normalize x = 0`. -/
 noncomputable def NormedSpace.normalize (x : V) : V := ‖x‖⁻¹ • x
 
