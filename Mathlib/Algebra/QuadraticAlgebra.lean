@@ -37,7 +37,7 @@ structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
   /-- Imaginary part of an element in quadratic algebra -/
   im : R
 deriving DecidableEq
-
+initialize_simps_projections QuadraticAlgebra (as_prefix re, as_prefix im)
 variable {R : Type*}
 namespace QuadraticAlgebra
 
