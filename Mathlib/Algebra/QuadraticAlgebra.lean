@@ -230,7 +230,7 @@ theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
     (↑(s • r) : QuadraticAlgebra R a b) = s • (r : QuadraticAlgebra R a b) :=
   QuadraticAlgebra.ext rfl (smul_zero _).symm
 
-instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := by
+instance [AddMonoid R] : AddMonoid (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
 instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
@@ -238,20 +238,18 @@ instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
   smul_zero _ := by ext <;> simp
   smul_add _ _ _ := by ext <;> simp
 
-instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) where
+instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% {
   __ := inferInstanceAs (AddMonoid (QuadraticAlgebra R a b))
-  add_comm _ _ := by ext <;> simp [add_comm]
+  add_comm _ _ := by ext <;> simp [add_comm] }
 
 instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
   add_smul r s x := by ext <;> simp[add_smul]
   zero_smul x := by ext <;> simp
 
-instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := by
+instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
 
 instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
-  __ := inferInstanceAs (AddGroup (QuadraticAlgebra R a b))
-  __ := inferInstanceAs (AddCommMonoid (QuadraticAlgebra R a b))
 
 section AddCommGroupWithOne
 
@@ -345,7 +343,8 @@ instance : Module.Free R (QuadraticAlgebra R a b) := .of_basis (basis a b)
 theorem rank_eq_two [StrongRankCondition R] : Module.rank R (QuadraticAlgebra R a b) = 2 := by
   simp [rank_eq_card_basis (basis a b)]
 
-theorem finrank_eq_two [StrongRankCondition R] : Module.finrank R (QuadraticAlgebra R a b) = 2 := by
+theorem finrank_eq_two [StrongRankCondition R] :
+    Module.finrank R (QuadraticAlgebra R a b) = 2 := by
   simp [Module.finrank, rank_eq_two]
 
 @[simp, norm_cast]
@@ -383,7 +382,8 @@ theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 
 theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] : NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
+instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
+    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
   ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 @[norm_cast, simp]
