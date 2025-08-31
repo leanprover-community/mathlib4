@@ -165,7 +165,8 @@ lemma abs_signedDist_le_dist : |signedDist v p q| ≤ dist p q := by
   by_cases h : v = 0
   · simp [h]
   · convert abs_real_inner_le_norm (‖v‖⁻¹ • v) (q -ᵥ p)
-    field_simp [norm_smul, dist_eq_norm_vsub']
+    simp [norm_smul, dist_eq_norm_vsub']
+    field_simp
 
 lemma signedDist_le_dist : signedDist v p q ≤ dist p q :=
   le_trans (le_abs_self _) (abs_signedDist_le_dist _ _ _)
