@@ -52,7 +52,7 @@ We define this as the supremum of the cardinalities of linearly independent subs
 The supremum may not be attained, see https://mathoverflow.net/a/263053.
 
 For a free module over any ring satisfying the strong rank condition
-(e.g. left-noetherian rings, commutative rings, and in particular division rings and fields),
+(e.g. left-Noetherian rings, commutative rings, and in particular division rings and fields),
 this is the same as the dimension of the space (i.e. the cardinality of any basis).
 
 In particular this agrees with the usual notion of the dimension of a vector space.

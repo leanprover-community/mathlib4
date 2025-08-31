@@ -122,8 +122,9 @@ lemma support_subset_of_isClosed {t : Set X} (ht : IsClosed t) (h : t ∈ ae μ)
   Set.compl_subset_compl.mp <| subset_compl_support_of_isOpen ht.isOpen_compl h
 
 lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧ μ t = 0} := by
-  ext x; simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
-     nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
+  ext x
+  simp only [Set.mem_compl_iff, Set.mem_sUnion, Set.mem_setOf_eq, and_right_comm,
+    nhds_basis_opens x |>.notMem_measureSupport, fun t ↦ and_comm (b := x ∈ t)]
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   convert congr($(compl_support_eq_sUnion (μ := μ))ᶜ)

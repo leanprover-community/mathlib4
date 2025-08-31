@@ -27,7 +27,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 ## Notation
 
-`ℚ≥0` is notation for `NNRat` in locale `NNRat`.
+`ℚ≥0` is notation for `NNRat` in scope `NNRat`.
 
 ## Huge warning
 

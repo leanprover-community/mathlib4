@@ -436,7 +436,7 @@ private theorem a_soln_is_unique (ha : F.eval a = 0) (z' : ℤ_[p]) (hz' : F.eva
   have : (F.derivative.eval a + q * h) * h = 0 :=
     Eq.symm
       (calc
-        0 = F.eval (a + h) := show 0 = F.eval (a + (z' - a)) by rw [add_comm]; simp [hz']
+        0 = F.eval (a + h) := show 0 = F.eval (a + (z' - a)) by simp [hz']
         _ = F.derivative.eval a * h + q * h ^ 2 := by rw [hq, ha, zero_add]
         _ = (F.derivative.eval a + q * h) * h := by rw [sq, right_distrib, mul_assoc]
         )
