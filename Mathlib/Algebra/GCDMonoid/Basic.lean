@@ -414,7 +414,7 @@ theorem gcd_mul_left' [GCDMonoid α] (a b c : α) :
   obtain ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
   apply associated_of_dvd_dvd
   · rw [eq]
-    apply mul_dvd_mul_left
+    gcongr
     exact
       dvd_gcd ((mul_dvd_mul_iff_left ha).1 <| eq ▸ gcd_dvd_left _ _)
         ((mul_dvd_mul_iff_left ha).1 <| eq ▸ gcd_dvd_right _ _)
@@ -664,7 +664,7 @@ theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ 
   by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
       simp +contextual only [iff_def, lcm_zero_left, lcm_zero_right,
-        zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true, imp_true_iff]
+        zero_dvd_iff, dvd_zero, and_true, imp_true_iff]
   · obtain ⟨h1, h2⟩ := not_or.1 h
     have h : gcd a b ≠ 0 := fun H => h1 ((gcd_eq_zero_iff _ _).1 H).1
     rw [← mul_dvd_mul_iff_left h, (gcd_mul_lcm a b).dvd_iff_dvd_left, ←
@@ -1215,7 +1215,7 @@ variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
   normUnit_zero := dif_pos rfl
-  normUnit_mul {x y} x0 y0 := Units.eq_iff.1 (by simp [x0, y0, mul_comm])
+  normUnit_mul {x y} x0 y0 := Units.ext <| by simp [x0, y0, mul_comm]
   normUnit_coe_units u := by simp
   gcd a b := if a = 0 ∧ b = 0 then 0 else 1
   lcm a b := if a = 0 ∨ b = 0 then 0 else 1

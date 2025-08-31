@@ -125,7 +125,7 @@ theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=
       (i := ⟨σ, hσ⟩) x (le_iSup (toSubalgebra <| t ·) ⟨σ, hσ⟩)⟩
 
 theorem carrier_union : (union c hc).carrier = ⨆ i : c, i.1.carrier :=
-  le_antisymm (iSup_le <| by rintro ⟨i, rfl|hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
+  le_antisymm (iSup_le <| by rintro ⟨i, rfl | hi⟩; exacts [bot_le, le_iSup_of_le ⟨i, hi⟩ le_rfl]) <|
     iSup_le fun i ↦ le_iSup_of_le ⟨i, .inr i.2⟩ le_rfl
 
 /-- A chain of lifts has an upper bound. -/
@@ -235,7 +235,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
     adjoin_le_iff.mpr fun s h ↦ ?_), AlgHom.ext hfφ.2⟩
   letI := (inclusion hfφ.1).toAlgebra
   letI : SMul L φ.carrier := Algebra.toSMul
-  have : IsScalarTower L φ.carrier E := ⟨(smul_assoc · (· : E))⟩
+  have : IsScalarTower L φ.carrier E := ⟨fun x y ↦ smul_assoc x (y : E)⟩
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this
     exact (hφ h1).1 h2

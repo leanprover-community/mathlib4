@@ -175,7 +175,7 @@ theorem xgcdAux_fst (x y : R) : ∀ s t s' t', (xgcdAux x s t y s' t').1 = gcd x
       intros
       rw [xgcd_zero_left, gcd_zero_left])
     fun x y h IH s t s' t' => by
-    simp only [xgcdAux_rec h, if_neg h, IH]
+    simp only [xgcdAux_rec h, IH]
     rw [← gcd_val]
 
 theorem xgcdAux_val (x y : R) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
@@ -255,9 +255,11 @@ theorem lcm_dvd {x y z : R} (hxz : x ∣ z) (hyz : y ∣ z) : lcm x y ∣ z := b
   rw [gcd_eq_gcd_ab, mul_add]
   apply dvd_add
   · rw [mul_left_comm]
-    exact mul_dvd_mul_left _ (hyz.mul_right _)
+    gcongr
+    apply hyz.mul_right
   · rw [mul_left_comm, mul_comm]
-    exact mul_dvd_mul_left _ (hxz.mul_right _)
+    gcongr
+    apply hxz.mul_right
 
 @[simp]
 theorem lcm_dvd_iff {x y z : R} : lcm x y ∣ z ↔ x ∣ z ∧ y ∣ z :=
@@ -306,8 +308,7 @@ section Div
 theorem mul_div_mul_cancel {a b c : R} (ha : a ≠ 0) (hcb : c ∣ b) : a * b / (a * c) = b / c := by
   by_cases hc : c = 0; · simp [hc]
   refine eq_div_of_mul_eq_right hc (mul_left_cancel₀ ha ?_)
-  rw [← mul_assoc, ← mul_div_assoc _ (mul_dvd_mul_left a hcb),
-    mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
+  rw [← mul_assoc, ← mul_div_assoc _ (by gcongr), mul_div_cancel_left₀ _ (mul_ne_zero ha hc)]
 
 theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b) :
     a * b / (c * d) = a / c * (b / d) := by
@@ -384,7 +385,7 @@ theorem div_eq_iff_eq_mul_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) :
     x / y = z ↔ x = y * z := by
   obtain ⟨a, ha⟩ := h2
   rw [ha, mul_div_cancel_left₀ _ h1]
-  simp only [mul_eq_mul_left_iff, mul_eq_zero, h1, or_self, or_false]
+  simp only [mul_eq_mul_left_iff, h1, or_false]
 
 theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
     x = y / z ↔ z * x = y := by

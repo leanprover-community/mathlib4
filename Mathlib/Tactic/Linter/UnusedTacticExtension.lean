@@ -53,6 +53,7 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `by,
     `null,
     `«]»,
+    `Lean.Parser.Tactic.show,
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     `Mathlib.Tactic.successIfFailWithMsg,
     `Mathlib.Tactic.failIfNoProgress,

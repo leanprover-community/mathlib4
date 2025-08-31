@@ -96,7 +96,7 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
   -- this point `y` will be the desired point. We will check that it belongs to all
   -- `f n` and to `ball x ε`.
   use y
-  simp only [exists_prop, Set.mem_iInter]
+  simp only [Set.mem_iInter]
   have I : ∀ n, ∀ m ≥ n, closedBall (c m) (r m) ⊆ closedBall (c n) (r n) := by
     intro n
     refine Nat.le_induction ?_ fun m _ h => ?_
@@ -113,5 +113,5 @@ instance (priority := 100) BaireSpace.of_pseudoEMetricSpace_completeSpace : Bair
     have : closedBall (c (n + 1)) (r (n + 1)) ⊆ f n :=
       Subset.trans (incl n) inter_subset_right
     exact this (yball (n + 1))
-  show edist y x ≤ ε
+  change edist y x ≤ ε
   exact le_trans (yball 0) (min_le_left _ _)

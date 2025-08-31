@@ -293,7 +293,7 @@ section
 variable [loc : IsLocalization S P]
 
 variable (P) in
--- Cannot be @[simp] because `S` can not be inferred by `simp`.
+-- Cannot be @[simp] because `S` cannot be inferred by `simp`.
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩
@@ -464,6 +464,12 @@ theorem coe_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I +
 theorem mem_add (I J : FractionalIdeal S P) (x : P) :
     x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
   rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
+
+@[simp, norm_cast]
+lemma coeIdeal_inf [FaithfulSMul R P] (I J : Ideal R) :
+    (↑(I ⊓ J) : FractionalIdeal S P) = ↑I ⊓ ↑J := by
+  apply coeToSubmodule_injective
+  exact Submodule.map_inf (Algebra.linearMap R P) (FaithfulSMul.algebraMap_injective R P)
 
 @[simp, norm_cast]
 theorem coeIdeal_sup (I J : Ideal R) : ↑(I ⊔ J) = (I + J : FractionalIdeal S P) :=

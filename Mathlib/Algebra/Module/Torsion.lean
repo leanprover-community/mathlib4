@@ -117,9 +117,6 @@ theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.Independent.linear_independent' := iSupIndep.linearIndependent'
-
 end TorsionOf
 
 section
@@ -254,8 +251,8 @@ theorem mem_torsionBySet_iff (x : M) : x ∈ torsionBySet R M s ↔ ∀ a : s, (
 @[simp]
 theorem torsionBySet_singleton_eq : torsionBySet R M {a} = torsionBy R M a := by
   ext x
-  simp only [mem_torsionBySet_iff, SetCoe.forall, Subtype.coe_mk, Set.mem_singleton_iff,
-    forall_eq, mem_torsionBy_iff]
+  simp only [mem_torsionBySet_iff, SetCoe.forall, Set.mem_singleton_iff, forall_eq,
+    mem_torsionBy_iff]
 
 theorem torsionBySet_le_torsionBySet_of_subset {s t : Set R} (st : s ⊆ t) :
     torsionBySet R M t ≤ torsionBySet R M s :=
@@ -634,7 +631,7 @@ instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy
     (Module.isTorsionBySet_span_singleton_iff a).mpr <| torsionBy_isTorsionBy a
 
 instance (a : R) : Module (R ⧸ Ideal.span {a}) (torsionBy R M a) :=
-   inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
+  inferInstanceAs <| Module (R ⧸ R ∙ a) (torsionBy R M a)
 
 @[simp]
 theorem torsionBy.mk_ideal_smul (a b : R) (x : torsionBy R M a) :
@@ -936,7 +933,7 @@ lemma torsionBy.nsmul_iff {x : A} :
     x ∈ A[n] ↔ n • x = 0 :=
   Nat.cast_smul_eq_nsmul ℤ n x ▸ Submodule.mem_torsionBy_iff ..
 
-lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n])  :
+lemma torsionBy.mod_self_nsmul (s : ℕ) (x : A[n]) :
     s • x = (s % n) • x :=
   nsmul_eq_mod_nsmul s (torsionBy.nsmul x)
 

@@ -105,9 +105,9 @@ end Lattice
 
 instance instDistribLattice [DistribLattice α] [DistribLattice β] : DistribLattice (α ⊕ₗ β) where
   le_sup_inf := by
-    simp only [Lex.forall, Sum.forall, inl_le_inl_iff, inr_le_inr_iff, sup_le_iff,
-      le_sup_left, true_and, inl_le_inr, not_inr_le_inl, le_inf_iff, sup_of_le_right, and_self,
-      inf_of_le_left, le_refl, implies_true, and_true, inf_of_le_right, sup_of_le_left, ← inl_sup,
+    simp only [Lex.forall, Sum.forall, inr_le_inr_iff,
+      le_sup_left, inl_le_inr, sup_of_le_right, and_self,
+      inf_of_le_left, implies_true, inf_of_le_right, sup_of_le_left, ← inl_sup,
       ← inr_sup, ← inl_inf, ← inr_inf, sup_inf_left, le_rfl]
 
 end Sum.Lex

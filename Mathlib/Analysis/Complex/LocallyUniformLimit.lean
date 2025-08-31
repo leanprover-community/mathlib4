@@ -56,8 +56,7 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
   refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
-  field_simp [abs_of_nonneg Real.pi_pos.le]
-  ring
+  simp [field, abs_of_nonneg Real.pi_pos.le]
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
     (hg : ContinuousOn g (sphere z r)) : cderiv r (f - g) z = cderiv r f z - cderiv r g z := by
@@ -171,7 +170,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
-  exact DifferentiableOn.sum fun i _ => hf i
+  exact DifferentiableOn.fun_sum fun i _ => hf i
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
 summable function, then the sum of `deriv F i` at a point in `U` is the derivative of the
@@ -183,9 +182,9 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   convert (hc.deriv (Eventually.of_forall fun s =>
-    DifferentiableOn.sum fun i _ => hf i) hU).tendsto_at hz using 1
+    DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
-  exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
+  exact (deriv_fun_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
 
 end Tsums
 
@@ -193,7 +192,7 @@ section LogDeriv
 
 /-- The logarithmic derivative of a sequence of functions converging locally uniformly to a
 function is the logarithmic derivative of the limit function. -/
-theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} (f : ι → ℂ → ℂ) (g : ℂ → ℂ)
+theorem logDeriv_tendsto {ι : Type*} {p : Filter ι} {f : ι → ℂ → ℂ} {g : ℂ → ℂ}
     {s : Set ℂ} (hs : IsOpen s) (x : s) (hF : TendstoLocallyUniformlyOn f g p s)
     (hf : ∀ᶠ n : ι in p, DifferentiableOn ℂ (f n) s) (hg : g x ≠ 0) :
     Tendsto (fun n : ι => logDeriv (f n) x) p (𝓝 ((logDeriv g) x)) := by

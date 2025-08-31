@@ -6,6 +6,7 @@ Authors: Markus Himmel, Alex Keizer
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
@@ -51,7 +52,7 @@ lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 
 @[simp]
 lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
   unfold bitwise
-  simp only [ite_self, decide_false, Nat.zero_div, ite_true, ite_eq_right_iff]
+  simp only [ite_self, Nat.zero_div, ite_true, ite_eq_right_iff]
   rintro ⟨⟩
   split_ifs <;> rfl
 
@@ -62,7 +63,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
-    simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
+    simp only [mod_two_of_bodd]; cases bodd x <;> rfl
   simp only [hn, hm, mod_two_iff_bod, ite_false, bit, two_mul, Bool.cond_eq_ite]
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
@@ -79,9 +80,9 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
-  simp only [bit, ite_apply, Bool.cond_eq_ite]
+  simp only [bit, Bool.cond_eq_ite]
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
-  cases a <;> cases b <;> simp [h4] <;> split_ifs
+  cases a <;> cases b <;> simp <;> split_ifs
     <;> simp_all +decide [two_mul]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
@@ -132,6 +133,14 @@ theorem bit_false : bit false = (2 * ·) :=
 theorem bit_true : bit true = (2 * · + 1) :=
   rfl
 
+@[simp]
+theorem bit_false_apply (n) : bit false n = (2 * n) :=
+  rfl
+
+@[simp]
+theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
+  rfl
+
 theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
   simp
 
@@ -143,7 +152,7 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
   rw [← bit_ne_zero_iff] at ham hbn
-  simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
+  simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit,
     ite_false]
   conv_rhs => simp only [bit, two_mul, Bool.cond_eq_ite]
 
@@ -176,7 +185,7 @@ theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
   induction i generalizing n with
   | zero =>
-    simp only [testBit, zero_eq, shiftRight_zero, one_and_eq_mod_two, mod_two_of_bodd,
+    simp only [testBit, shiftRight_zero, one_and_eq_mod_two, mod_two_of_bodd,
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   | succ i ih =>
@@ -223,15 +232,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
         simp only [testBit_bit_succ] at hn hm
         have := hn' _ hn hm fun j hj => by
           convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
-        have this' : 2 * n < 2 * m := Nat.mul_lt_mul_of_le_of_lt (le_refl _) this Nat.two_pos
-        cases b <;> cases b'
-        <;> simp only [bit_false, bit_true]
-        · exact this'
-        · exact Nat.lt_add_right 1 this'
-        · calc
-            2 * n + 1 < 2 * n + 2 := lt.base _
-            _ ≤ 2 * m := mul_le_mul_left 2 this
-        · exact Nat.succ_lt_succ this'
+        exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
@@ -245,7 +246,7 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     simp [bitwise_of_ne_zero, ih]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
-    is also commutative. -/
+is also commutative. -/
 theorem bitwise_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b' b) (n m : ℕ) :
     bitwise f n m = bitwise f m n :=
   suffices bitwise f = swap (bitwise f) by conv_lhs => rw [this]
@@ -264,8 +265,8 @@ lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   obtain rfl | hij := Decidable.eq_or_ne i j <;> cases h : n.testBit i
   · simp [h]
   · simp [h]
-  · simp [h, testBit_two_pow_of_ne hij]
-  · simp [h, testBit_two_pow_of_ne hij]
+  · simp [testBit_two_pow_of_ne hij]
+  · simp [testBit_two_pow_of_ne hij]
 
 lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
   rw [mul_comm, land_comm, and_two_pow]
@@ -362,9 +363,6 @@ theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
-
-@[deprecated bitwise_lt_two_pow (since := "2024-12-28")]
-alias bitwise_lt := bitwise_lt_two_pow
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

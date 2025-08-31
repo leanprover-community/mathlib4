@@ -22,13 +22,6 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-#adaptation_note /-- nightly-2024-03-16
-Because of changes in how equation lemmas are generated,
-`@[eqns]` will only work properly when used immediately after the definition
-(and when none of the default equation lemmas are needed).
-Thus this usage is no longer allowed: -/
--- attribute [eqns flip_def] flip
-
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
 @[inline, reducible]
@@ -82,6 +75,7 @@ theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijecti
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
 /-- `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. -/
+@[grind]
 def LeftInverse (g : β → α) (f : α → β) : Prop :=
   ∀ x, g (f x) = x
 
@@ -90,6 +84,7 @@ def HasLeftInverse (f : α → β) : Prop :=
   ∃ finv : β → α, LeftInverse finv f
 
 /-- `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. -/
+@[grind]
 def RightInverse (g : β → α) (f : α → β) : Prop :=
   LeftInverse f g
 

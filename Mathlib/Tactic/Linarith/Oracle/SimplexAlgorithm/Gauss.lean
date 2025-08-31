@@ -12,7 +12,7 @@ The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding init
 solution which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
 
-namespace Linarith.SimplexAlgorithm.Gauss
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
 
 /-- The monad for the Gaussian Elimination algorithm. -/
 abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateT (matType n m) Lean.CoreM
@@ -24,7 +24,7 @@ def findNonzeroRow (rowStart col : Nat) : GaussM n m matType <| Option Nat := do
   for i in [rowStart:n] do
     if (← get)[(i, col)]! != 0 then
       return i
-  return .none
+  return none
 
 /-- Implementation of `getTableau` in `GaussM` monad. -/
 def getTableauImp : GaussM n m matType <| Tableau matType := do
@@ -37,11 +37,11 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
   while row < n && col < m do
     Lean.Core.checkSystem decl_name%.toString
     match ← findNonzeroRow row col with
-    | .none =>
+    | none =>
       free := free.push col
       col := col + 1
       continue
-    | .some rowToSwap =>
+    | some rowToSwap =>
       modify fun mat => swapRows mat row rowToSwap
 
     modify fun mat => divideRow mat row mat[(row, col)]!
@@ -63,9 +63,9 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
   let ansMatrix : matType basic.size free.size := ← do
     let vals := getValues (← get) |>.filterMap fun (i, j, v) =>
       if j == basic[i]! then
-        .none
+        none
       else
-        .some (i, free.findIdx? (· == j) |>.get!, -v)
+        some (i, free.findIdx? (· == j) |>.get!, -v)
     return ofValues vals
 
   return ⟨basic, free, ansMatrix⟩
@@ -78,4 +78,4 @@ ones.
 def getTableau (A : matType n m) : Lean.CoreM (Tableau matType) := do
   return (← getTableauImp.run A).fst
 
-end Linarith.SimplexAlgorithm.Gauss
+end Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss

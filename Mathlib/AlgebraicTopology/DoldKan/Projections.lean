@@ -106,7 +106,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
       have hnaq : n = a + q := by omega
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by omega⟩ (by
-        simp only [hnaq, Nat.succ_eq_add_one, add_assoc]
+        simp only [hnaq, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq
       simp only [eq, zero_comp]
@@ -124,7 +124,7 @@ theorem comp_P_eq_self_iff {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} :
 
 @[reassoc (attr := simp)]
 theorem P_f_idem (q n : ℕ) : ((P q).f n : X _⦋n⦌ ⟶ _) ≫ (P q).f n = (P q).f n := by
-  rcases n with (_|n)
+  rcases n with (_ | n)
   · rw [P_f_0_eq q, comp_id]
   · exact (HigherFacesVanish.of_P q n).comp_P_eq_self
 

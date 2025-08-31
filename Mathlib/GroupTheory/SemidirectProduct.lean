@@ -181,7 +181,7 @@ def equivProd : N ⋊[φ] G ≃ N × G where
 
 /-- The group isomorphism between a semidirect product with respect to the trivial map
   and the product. -/
-@[simps (config := { rhsMd := .default })]
+@[simps (rhsMd := .default)]
 def mulEquivProd : N ⋊[1] G ≃* N × G :=
   { equivProd with map_mul' _ _ := rfl }
 

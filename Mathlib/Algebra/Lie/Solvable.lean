@@ -129,8 +129,7 @@ open TensorProduct in
       (derivedSeriesOfIdeal R L k I).baseChange A := by
   induction k with
   | zero => simp
-  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, ← LieSubmodule.baseChange_top,
-    LieSubmodule.lie_baseChange]
+  | succ k ih => simp only [derivedSeriesOfIdeal_succ, ih, LieSubmodule.lie_baseChange]
 
 open TensorProduct in
 @[simp] theorem derivedSeries_baseChange {A : Type*} [CommRing A] [Algebra R A] (k : ℕ) :
@@ -235,7 +234,7 @@ theorem coe_derivedSeries_eq_int (k : ℕ) :
     rw [LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.lieIdeal_oper_eq_linear_span']
     rw [Set.ext_iff] at ih
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule] at ih
-    simp only [Subtype.exists, exists_prop, ih]
+    simp only [ih]
     apply le_antisymm
     · exact coe_derivedSeries_eq_int_aux _ _ L k ih
     · simp only [← ih]

@@ -112,7 +112,7 @@ open Nat
 theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
-  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_natCast]
+  simp only [cast_mul, cast_pow, ← Real.rpow_natCast, cast_ofNat]
   refine _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   gcongr
   · have n2_pos : 0 < 2 * n := by positivity

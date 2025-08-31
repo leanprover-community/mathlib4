@@ -146,7 +146,7 @@ theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
     zero_add, choose_self]
 
 theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
-  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, ge_iff_le, le_refl,
+  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, le_refl,
     tsub_eq_zero_of_le, choose_zero_right, Finset.prod_const_one]
 
 theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :

@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Order.Atoms
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Defs
 
@@ -325,8 +325,10 @@ def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
     simpa [vadd_vsub_assoc] using
       direction.add_mem (direction.smul_mem c (direction.sub_mem hp₁ hp₂)) hp₃
 
+/-- A point lies in an affine subspace constructed from another point and a direction if and only
+if their difference is in that direction. -/
 @[simp]
-theorem mem_mk' (p q : P) (direction : Submodule k V) : q ∈ mk' p direction ↔ q -ᵥ p ∈ direction :=
+theorem mem_mk' {p q : P} {direction : Submodule k V} : q ∈ mk' p direction ↔ q -ᵥ p ∈ direction :=
   Iff.rfl
 
 /-- An affine subspace constructed from a point and a direction contains that point. -/
@@ -354,15 +356,7 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
     simpa using direction.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
 
-/-- A point lies in an affine subspace constructed from another point and a direction if and only
-if their difference is in that direction. -/
-theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
-    p₂ ∈ mk' p₁ direction ↔ p₂ -ᵥ p₁ ∈ direction := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [← direction_mk' p₁ direction]
-    exact vsub_mem_direction h (self_mem_mk' _ _)
-  · rw [← vsub_vadd p₂ p₁]
-    exact vadd_mem_mk' p₁ h
+@[deprecated (since := "2025-08-15")] alias mem_mk'_iff_vsub_mem := mem_mk'
 
 /-- Constructing an affine subspace from a point in a subspace and that subspace's direction
 yields the original subspace. -/
@@ -607,7 +601,7 @@ theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
 
 @[simp] lemma mk'_top (p : P) : mk' p (⊤ : Submodule k V) = ⊤ := by
   ext x
-  simp [mem_mk'_iff_vsub_mem]
+  simp [mem_mk']
 
 variable (P)
 
@@ -705,6 +699,13 @@ theorem nonempty_iff_ne_bot (Q : AffineSubspace k P) : (Q : Set P).Nonempty ↔ 
 theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).Nonempty := by
   rw [nonempty_iff_ne_bot]
   apply eq_or_ne
+
+instance [Subsingleton P] : IsSimpleOrder (AffineSubspace k P) where
+  eq_bot_or_eq_top (s : AffineSubspace k P) := by
+    rw [← coe_eq_bot_iff, ← coe_eq_univ_iff]
+    rcases (s : Set P).eq_empty_or_nonempty with h | h
+    · exact .inl h
+    · exact .inr h.eq_univ
 
 /-- A nonempty affine subspace is `⊤` if and only if its direction is `⊤`. -/
 @[simp]
@@ -858,6 +859,11 @@ theorem bot_lt_affineSpan : ⊥ < affineSpan k s ↔ s.Nonempty := by
   rw [bot_lt_iff_ne_bot, nonempty_iff_ne_empty]
   exact (affineSpan_eq_bot _).not
 
+@[simp]
+lemma affineSpan_eq_top_iff_nonempty_of_subsingleton [Subsingleton P] :
+    affineSpan k s = ⊤ ↔ s.Nonempty := by
+  rw [← bot_lt_affineSpan k, IsSimpleOrder.bot_lt_iff_eq_top]
+
 end
 
 variable {k}
@@ -990,7 +996,7 @@ lemma affineSpan_subset_span {s : Set V} :
     (affineSpan k s : Set V) ⊆  Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
 
--- TODO: We want this to be simp, but `affineSpan` gets simped away to `spanPoints`!
+-- TODO: We want this to be simp, but `affineSpan` gets simp-ed away to `spanPoints`!
 -- Let's delete `spanPoints`
 lemma affineSpan_insert_zero (s : Set V) :
     (affineSpan k (insert 0 s) : Set V) = Submodule.span k s := by

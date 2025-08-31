@@ -56,4 +56,10 @@ lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
   simp only [eval_image_piFinset_const, card_filter_piFinset_const s, ite_smul, zero_smul, smul_sum,
     Finset.sum_ite_mem, inter_self]
 
+@[simp]
+lemma sum_single_smul
+    {R : Type*} [Semiring R] [Module R α] (f : ι → α) (r : R) (i₀ : ι) :
+    ∑ i, (Pi.single (M := fun _ ↦ R) i₀ r i) • f i = r • f i₀ := by
+  rw [Finset.sum_eq_single i₀, Pi.single_eq_same] <;> aesop
+
 end Fintype

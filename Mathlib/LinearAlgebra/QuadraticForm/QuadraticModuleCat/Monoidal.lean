@@ -24,8 +24,6 @@ For now, we simplify by insisting both universe levels are the same.
 This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
 
-suppress_compilation
-
 open CategoryTheory
 open scoped MonoidalCategory
 
@@ -41,13 +39,13 @@ namespace instMonoidalCategory
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`. -/
 @[simps! form]
-noncomputable abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
+abbrev tensorObj (X Y : QuadraticModuleCat.{u} R) : QuadraticModuleCat.{u} R :=
   of (X.form.tmul Y.form)
 
 /-- Auxiliary definition used to build `QuadraticModuleCat.instMonoidalCategory`.
 
 We want this up front so that we can re-use it to define `whiskerLeft` and `whiskerRight`. -/
-noncomputable abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
+abbrev tensorHom {W X Y Z : QuadraticModuleCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ⟨f.toIsometry.tmul g.toIsometry⟩
 
@@ -79,7 +77,7 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
-noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
+instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
     { μIso := fun _ _ => Iso.refl _
@@ -100,10 +98,10 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
         rfl
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
-        simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom,
-          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.tensor_id]
+        simp only [Iso.refl_symm, Iso.trans_hom,
+          MonoidalCategory.tensorIso_hom, Iso.refl_hom, MonoidalCategory.id_tensorHom_id]
         dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
-        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
+        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.id_tensorHom_id,
           Category.id_comp] }
 
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a monoidal functor. -/
