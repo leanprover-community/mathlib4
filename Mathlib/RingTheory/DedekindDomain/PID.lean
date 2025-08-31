@@ -86,7 +86,7 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
     rw [Subtype.ext_iff, val_eq_coe, coe_mul, val_eq_coe, coe_one] at hinv
     apply Submodule.map_comap_eq_self
     rw [← Submodule.one_eq_range, ← hinv]
-    exact Submodule.mul_le_mul_right ((Submodule.span_singleton_le_iff_mem _ _).2 hv)
+    exact mul_le_mul_right ((Submodule.span_singleton_le_iff_mem _ _).2 hv)
   have : (1 : A) ∈ ↑I * Submodule.span R {v} := by
     rw [← hJ, h, IsLocalization.coeSubmodule_top, Submodule.mem_one]
     exact ⟨1, (algebraMap R _).map_one⟩

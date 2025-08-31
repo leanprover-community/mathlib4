@@ -250,11 +250,11 @@ variable {M}
 theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
   smul_mono hmp hnq
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
-  smul_mono_left h
+instance : MulLeftMono (Submodule R A) where
+  mul_le_mul_left _ _ _ := smul_mono_left
 
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
-  smul_mono_right _ h
+instance : MulRightMono (Submodule R A) where
+  mul_le_mul_right _ _ _ := smul_mono_right
 
 theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
   toAddSubmonoid_injective <| AddSubmonoid.mul_comm_of_commute h
