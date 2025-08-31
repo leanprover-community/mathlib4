@@ -90,35 +90,38 @@ end DenselyOrdered
 variable {M : Type*} [LinearOrder M] [DenselyOrdered M] {x : M}
 
 section Monoid
-variable [AddCommMonoid M] [ExistsAddOfLE M] [IsOrderedCancelAddMonoid M]
+variable [CommMonoid M] [ExistsMulOfLE M] [IsOrderedCancelMonoid M]
 
-private theorem exists_two_nsmul_le_of_pos (hx : 0 < x) : ∃ y : M, 0 < y ∧ 2 • y ≤ x := by
+@[to_additive]
+private theorem exists_pow_two_le_of_one_lt (hx : 1 < x) : ∃ y : M, 1 < y ∧ y ^ 2 ≤ x := by
   obtain ⟨y, hy, hyx⟩ := exists_between hx
-  obtain hyx | hxy := le_total (2 • y) x
+  obtain hyx | hxy := le_total (y ^ 2) x
   · exact ⟨y, hy, hyx⟩
-  obtain ⟨z, hz, rfl⟩ := exists_pos_add_of_lt' hyx
-  exact ⟨z, hz, by simpa [two_nsmul] using hxy⟩
+  obtain ⟨z, hz, rfl⟩ := exists_one_lt_mul_of_lt' hyx
+  exact ⟨z, hz, by simpa [pow_succ] using hxy⟩
 
-theorem exists_nsmul_lt_of_pos (hx : 0 < x) : ∀ n : ℕ, ∃ y : M, 0 < y ∧ n • y < x
+@[to_additive]
+theorem exists_pow_lt_of_one_lt (hx : 1 < x) : ∀ n : ℕ, ∃ y : M, 1 < y ∧ y ^ n < x
   | 0 => ⟨x, by simpa⟩
   | 1 => by simpa using exists_between hx
   | n + 2 => by
-    obtain ⟨y, hy, hyx⟩ := exists_nsmul_lt_of_pos hx (n + 1)
-    obtain ⟨z, hz, hzy⟩ := exists_two_nsmul_le_of_pos hy
+    obtain ⟨y, hy, hyx⟩ := exists_pow_lt_of_one_lt hx (n + 1)
+    obtain ⟨z, hz, hzy⟩ := exists_pow_two_le_of_one_lt hy
     refine ⟨z, hz, hyx.trans_le' ?_⟩
-    calc (n + 2) • z
-      _ ≤ (2 * (n + 1)) • z := nsmul_left_monotone hz.le (by omega)
-      _ = (n + 1) • 2 • z := by rw [← mul_nsmul]
-      _ ≤ (n + 1) • y := nsmul_le_nsmul_right hzy _
+    calc z ^ (n + 2)
+      _ ≤ z ^ (2 * (n + 1)) := pow_right_monotone hz.le (by omega)
+      _ = (z ^ 2) ^ (n + 1) := by rw [pow_mul]
+      _ ≤ y ^ (n + 1) := pow_le_pow_left' hzy (n + 1)
 
 end Monoid
 
 section Group
-variable [AddCommGroup M] [IsOrderedCancelAddMonoid M]
+variable [CommGroup M] [IsOrderedCancelMonoid M]
 
-theorem exists_nsmul_gt_of_neg (hx : x < 0) (n : ℕ) : ∃ y : M, y < 0 ∧ x < n • y := by
-  obtain ⟨y, hy, hy'⟩ := exists_nsmul_lt_of_pos (neg_pos_of_neg hx) n
-  use -y, neg_neg_of_pos hy
-  simpa [lt_neg] using hy'
+@[to_additive]
+theorem exists_pow_gt_of_lt_one (hx : x < 1) (n : ℕ) : ∃ y : M, y < 1 ∧ x < y ^ n := by
+  obtain ⟨y, hy, hy'⟩ := exists_pow_lt_of_one_lt (one_lt_inv_of_inv hx) n
+  use y⁻¹, inv_lt_one_of_one_lt hy
+  simpa [lt_inv'] using hy'
 
 end Group
