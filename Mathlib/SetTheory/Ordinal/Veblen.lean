@@ -158,7 +158,7 @@ theorem left_le_veblenWith (hp : 0 < f 0) (o a : Ordinal) : o ≤ veblenWith f o
 theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) := by
   rw [isNormal_iff_strictMono_limit]
   refine ⟨veblenWith_zero_strictMono hf hp, fun o ho a IH ↦ ?_⟩
-  rw [veblenWith_of_ne_zero f ho.pos.ne', derivFamily_zero fun _ ↦ hf.veblenWith _]
+  rw [veblenWith_of_ne_zero f ho.ne_bot, derivFamily_zero fun _ ↦ hf.veblenWith _]
   apply nfpFamily_le fun l ↦ ?_
   suffices ∃ b < o, List.foldr _ 0 l ≤ veblenWith f b 0 by
     obtain ⟨b, hb, hb'⟩ := this
