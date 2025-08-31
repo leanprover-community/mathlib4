@@ -34,7 +34,7 @@ a structure with two fields, `re` and `im`. When `R` is a commutative ring, this
 structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
   /-- Real part of an element in quadratic algebra -/
   re : R
-  /-- Imaginaty part of an element in quadratic algerba -/
+  /-- Imaginary part of an element in quadratic algebra -/
   im : R
 deriving DecidableEq
 
