@@ -332,6 +332,8 @@ def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
     · simp only [mem_range]
       exact ⟨Fin.succ (c.index i), Fin.cast (by simp) (c.invEmbedding i), by simp⟩
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 @[simp] lemma range_extendLeft_zero (c : OrderedFinpartition n) :
     range (c.extendLeft.emb 0) = {0} := by
   simp only [extendLeft, cases_zero]
