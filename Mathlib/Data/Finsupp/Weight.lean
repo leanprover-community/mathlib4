@@ -31,7 +31,7 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 - `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
-- `NonTorsionWeight`: all values `w s` are non torsion in `M`.
+- `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
   `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.

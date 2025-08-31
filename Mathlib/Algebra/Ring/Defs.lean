@@ -386,7 +386,7 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-/-- A domain is a nontrivial semiring such that multiplication by a non zero element
+/-- A domain is a nontrivial semiring such that multiplication by a nonzero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
 `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
 `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.
