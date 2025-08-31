@@ -245,8 +245,8 @@ variable [Semiring A] [DecidableEq ι]
 variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
-/-- If `A` is graded by a canonically ordered add monoid, then the projection map `x ↦ x₀` is a ring
-homomorphism.
+/-- If `A` is graded by a canonically ordered additive monoid, then the projection map `x ↦ x₀`
+is a ring homomorphism.
 -/
 @[simps]
 def GradedRing.projZeroRingHom : A →+* A where
