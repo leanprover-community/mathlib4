@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn, Hannah Scholz
+-/
+
 import Mathlib.Topology.CWComplex.Classical.Finite
 import Mathlib.Analysis.NormedSpace.Real
 
@@ -8,7 +14,7 @@ In this file we discuss subcomplexes of CW complexes.
 The definintion of subcomplexes is in the file `Topology.CWComplex.Classical.Basic`.
 
 ## Main results
-* `RelCWComplex.Subcomplex.instRelCWComplex`: s subcomplex of a (relative) CW complex is again a
+* `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a
   (relative) CW complex.
 
 ## References
