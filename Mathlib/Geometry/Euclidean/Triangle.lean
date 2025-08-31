@@ -70,16 +70,16 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
   · simp [angle_self hx]
   have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
-    field_simp [sin_angle_mul_norm_mul_norm]
+    simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
-  field_simp [mul_assoc, inner_sub_left, inner_sub_right, real_inner_comm x y, hsub]
+  simp [field, inner_sub_left, inner_sub_right, real_inner_comm x y]
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy : x - y ≠ 0) :
     Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
-  field_simp [sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
+  simp [field, sin_angle_mul_norm_eq_sin_angle_mul_norm x y]
 
 /-- **Pons asinorum**, vector angle form. -/
 theorem angle_sub_eq_angle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
@@ -151,10 +151,7 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
       Real.mul_self_sqrt (sub_nonneg_of_le (real_inner_mul_inner_self_le x y)),
       real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
-    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [sub_div', div_div, mul_div_assoc',
-      div_mul_eq_mul_div, div_sub', neg_div', neg_sub, eq_div_iff, div_eq_iff]
+    field_simp
     ring
 
 /-- The sine of the sum of two angles in a possibly degenerate
@@ -194,10 +191,7 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
       inner_sub_right, inner_sub_right, inner_sub_right, inner_sub_right, real_inner_comm x y, H3,
       H4, real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
-    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [mul_div_assoc', div_mul_eq_mul_div, div_div,
-      sub_div', Real.sqrt_div', Real.sqrt_mul_self, add_div', div_add', eq_div_iff, div_eq_iff]
+    field_simp
     ring
 
 /-- The cosine of the sum of the angles of a possibly degenerate
@@ -298,19 +292,20 @@ theorem sin_angle_mul_dist_eq_sin_angle_mul_dist (p₁ p₂ p₃ : P) :
 
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- A variant of the law of sines, angle-at-point form. -/
 theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23 : p₂ ≠ p₃) (h31 : p₃ ≠ p₁) :
     Real.sin (∠ p₁ p₂ p₃) / dist p₃ p₁ = Real.sin (∠ p₃ p₁ p₂) / dist p₂ p₃ := by
-  field_simp [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31]
+  simp [field, dist_ne_zero.mpr h23, dist_ne_zero.mpr h31, mul_comm (dist ..)]
   exact law_sin _ _ _
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/
 theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}
     (h : ¬Collinear ℝ ({p₁, p₂, p₃} : Set P)) :
     dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) := by
-  have sin_gt_zero : 0 < Real.sin (∠ p₁ p₂ p₃) := by
-    apply sin_pos_of_not_collinear h
-  field_simp [sin_gt_zero]
+  have sin_gt_zero : 0 < Real.sin (∠ p₁ p₂ p₃) := sin_pos_of_not_collinear h
+  field_simp
   rw [mul_comm, mul_comm (dist p₃ p₁), law_sin]
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/
@@ -388,18 +383,10 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
-        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
-        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-        simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
-          mul_div_assoc', add_div', div_div, eq_div_iff]
-        ring
+        field_simp
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
         rw [hm]
-        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
-        -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-        simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
-          mul_div_assoc', div_div, add_div', div_pow, eq_div_iff, div_eq_iff]
-        ring
+        field_simp
 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
