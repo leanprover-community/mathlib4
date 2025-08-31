@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 /-!
 # Krull dimensions of (commutative) rings
 
-Given a commutative ring, its ring theoretic Krull dimension is the order theoretic Krull dimension
+Given a commutative ring, its ring-theoretic Krull dimension is the order-theoretic Krull dimension
 of its prime spectrum. Unfolding this definition, it is the length of the longest sequence(s) of
 prime ideals ordered by strict inclusion.
 -/
@@ -22,7 +22,7 @@ prime ideals ordered by strict inclusion.
 open Order
 
 /--
-The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
+The ring-theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
 noncomputable def ringKrullDim (R : Type*) [CommSemiring R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
