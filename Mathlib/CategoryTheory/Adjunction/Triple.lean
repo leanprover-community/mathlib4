@@ -3,6 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Ben Eltschig
 -/
+import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Monad.Adjunction
 /-!
@@ -90,6 +91,12 @@ noncomputable def fullyFaithfulEquiv : F.FullyFaithful ≃ H.FullyFaithful where
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
+/-- The adjoint triple `H.op ⊣ G.op ⊣ F.op` dual to an adjoint triple `F ⊣ G ⊣ H`. -/
+@[simps]
+protected def op : Triple H.op G.op F.op where
+  adj₁ := t.adj₂.op
+  adj₂ := t.adj₁.op
+
 section InnerFullyFaithful
 
 variable [G.Full] [G.Faithful]
@@ -140,6 +147,15 @@ lemma adj₁_counit_app_rightToLeft_app (X : C) :
 lemma rightToLeft_app_adj₂_unit_app (X : C) :
     t.rightToLeft.app X ≫ t.adj₂.unit.app (F.obj X) = H.map (t.adj₁.unit.app X) :=
   G.map_injective (by simp [← cancel_mono (t.adj₂.counit.app _)])
+
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
+`F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is dual to the natural
+transformation `H ⟶ F`. -/
+@[simp]
+lemma op_rightToLeft : t.op.rightToLeft = NatTrans.op t.rightToLeft  := by
+  ext
+  rw [rightToLeft_eq_units, rightToLeft_eq_counits]
+  simp
 
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
 `H ⟶ F` is epic at `X` iff the image of the unit of the adjunction `F ⊣ G` under `H` is. -/
@@ -227,6 +243,15 @@ omit [H.Full] [H.Faithful] in
 lemma leftToRight_app_map_adj₁_unit_app (X : C) :
     t.leftToRight.app X ≫ H.map (t.adj₁.unit.app X) = t.adj₂.unit.app (F.obj X) := by
   simp [leftToRight_app]
+
+/-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
+transformation `H.op ⟶ F.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is
+dual to the natural transformation `F ⟶ H`. -/
+@[simp]
+lemma leftToRight_op : t.op.leftToRight = NatTrans.op t.leftToRight := by
+  ext
+  rw [leftToRight, leftToRight_eq_counits]
+  simp
 
 omit [H.Full] [H.Faithful] in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
