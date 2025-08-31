@@ -84,7 +84,7 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
           simp only [inv_eq_one_div]
           rw [div_sub_div _ _ (by omega) (by omega)]
           simp
-      _ = t ^ p / t * x / (t + x) := by field_simp
+      _ = t ^ p / t * x / (t + x) := by simp [field]
       _ = t ^ (p - 1) * x / (t + x) := by congr; exact (Real.rpow_sub_one ht' p).symm
   case pos =>
     simp only [mem_Ioo] at hp
@@ -202,11 +202,10 @@ lemma rpowIntegrand₀₁_eqOn_mul_rpowIntegrand₀₁_one (ht : 0 < t) :
     (Ici 0).EqOn (rpowIntegrand₀₁ p t)
       (fun x => t ^ (p - 1) * (rpowIntegrand₀₁ p 1 (t⁻¹ • x))) := by
   intro x hx
-  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by field_simp [rpowIntegrand₀₁]
+  calc _ = t ^ p * (t⁻¹ - t⁻¹ * (1 + x * t⁻¹)⁻¹) := by simp [field, rpowIntegrand₀₁]
     _ = t ^ (p - 1) * (1 - (1 + x * t⁻¹)⁻¹) := by
-          have : t ≠ 0 := ne_of_gt ht
-          rw [Real.rpow_sub_one this, div_eq_mul_inv, mul_assoc]
-          field_simp [this]
+          rw [Real.rpow_sub_one ht.ne']
+          field_simp
     _ = _ := by simp [mul_comm, smul_eq_mul, rpowIntegrand₀₁]
 
 /- This lemma is private because it is strictly weaker than `integrableOn_rpowIntegrand₀₁_Ioi` -/

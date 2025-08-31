@@ -62,7 +62,7 @@ instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
 instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
-(ie. the image of zero). -/
+(i.e. the image of zero). -/
 def π {n : ℕ} : Q n.succ → Q n := fun p => p ∘ Fin.succ
 
 namespace Q

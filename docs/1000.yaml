@@ -305,6 +305,10 @@ Q282331:
 
 Q282649:
   title: Pentagonal number theorem
+  url: https://github.com/wwylele/PentagonalNumberTheorem
+  authors: Weiyi Wang
+  comment: Formal power series only. Missing power series over complex numbers.
+  date: 2025-08-24
 
 Q283690:
   title: Arrival theorem

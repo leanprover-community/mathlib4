@@ -213,7 +213,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
     map_one' := by simp
     map_mul' := by
       intro a b
-      field_simp
+      simp [field_simps]
       trans (↑((a * b).num * a.den * b.den) : R)
       · simp_rw [Int.cast_mul, Int.cast_natCast]
         ring
@@ -221,7 +221,7 @@ noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸
       simp
     map_add' := by
       intro a b
-      field_simp
+      simp [field_simps]
       trans (↑((a + b).num * a.den * b.den) : R)
       · simp_rw [Int.cast_mul, Int.cast_natCast]
         ring

@@ -185,7 +185,7 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   let t := Finset.univ.filter fun p : JudgePair J => p.Distinct
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
-    ext p; constructor <;> intros hp
+    ext p; constructor <;> intro hp
     · unfold s t at hp
       aesop
     · unfold s t

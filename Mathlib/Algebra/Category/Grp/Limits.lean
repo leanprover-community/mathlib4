@@ -479,7 +479,6 @@ theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGrp.{u}} (f : G ⟶ H) :
 @[simp]
 theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).inv ≫ kernel.ι f = ofHom (AddSubgroup.subtype f.hom.ker) := by
-  ext
   simp [kernelIsoKer]
 
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,

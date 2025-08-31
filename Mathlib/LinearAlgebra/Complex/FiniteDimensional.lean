@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Complex.Cardinality
+import Mathlib.Analysis.Complex.Cardinality
 import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.Order.Interval.Set.Infinite

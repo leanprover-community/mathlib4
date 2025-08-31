@@ -63,6 +63,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
             (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
           _ = (∑ i ∈ r, (1 / 2 : ℝ) ^ i) * ε := by
             rw [Finset.sum_mul]
+            simp
             field_simp
           _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
       have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by

@@ -351,8 +351,7 @@ lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.
       · rw [p.as_sum_range_C_mul_X_pow, hnd, Finset.sum_range_succ, Finset.sum_range_succ,
           Finset.sum_range_one, ← hnd, hm.coeff_natDegree, hnd, hmul, hadd, C_mul, C_add, C_1]
         ring
-      · rw [mem_Ioc, natDegree_X_add_C _]
-        simp
+      · simp
   · rintro rfl
     simp [natDegree_one] at hnd
 

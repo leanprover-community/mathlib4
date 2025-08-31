@@ -88,8 +88,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne, single_eq_of_ne hj]
       simpa using hj
-  · rw [single_eq_of_ne, single_eq_of_ne hi, zero_apply]
-    simp [hi]
+  · simp [hi]
 
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
@@ -148,8 +147,7 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne hj, single_eq_of_ne]
       simpa using hj
-  · rw [single_eq_of_ne hi, single_eq_of_ne, zero_apply]
-    simp [hi]
+  · simp [hi]
 
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 

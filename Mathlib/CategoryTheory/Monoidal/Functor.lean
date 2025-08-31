@@ -68,7 +68,7 @@ class LaxMonoidal (F : C ⥤ D) where
       F.map f ▷ F.obj X' ≫ μ Y X' = μ X X' ≫ F.map (f ▷ X') := by
     cat_disch
   μ_natural_right (F) :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       F.obj X' ◁ F.map f ≫ μ X' Y = μ X' X ≫ F.map (X' ◁ f) := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -123,22 +123,22 @@ theorem associativity_inv (X Y Z : C) :
 @[reassoc]
 lemma ε_tensorHom_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X = 𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom ≫ F.map (λ_ X).inv := by
-  rw [left_unitality]; simp [tensorHom_def']
+  simp [tensorHom_def']
 
 @[reassoc]
 lemma tensorHom_ε_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     (f ⊗ₘ ε F) ≫ μ F X (𝟙_ C) = f ▷ 𝟙_ D ≫ (ρ_ (F.obj X)).hom ≫ F.map (ρ_ X).inv := by
-  rw [right_unitality]; simp [tensorHom_def]
+  simp [tensorHom_def]
 
 @[reassoc]
 lemma tensorUnit_whiskerLeft_comp_leftUnitor_hom {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom = (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X ≫ F.map (λ_ X).hom := by
-  rw [left_unitality]; simp [tensorHom_def']
+  simp [tensorHom_def']
 
 @[reassoc]
 lemma whiskerRight_tensorUnit_comp_rightUnitor_hom {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     f ▷ 𝟙_ D ≫ (ρ_ (F.obj X)).hom = (f ⊗ₘ ε F) ≫ μ F X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
-  rw [right_unitality]; simp [tensorHom_def]
+  simp [tensorHom_def]
 
 @[reassoc]
 lemma μ_whiskerRight_comp_μ (X Y Z : C) :
@@ -241,7 +241,7 @@ class OplaxMonoidal (F : C ⥤ D) where
       δ X X' ≫ F.map f ▷ F.obj X' = F.map (f ▷ X') ≫ δ Y X' := by
     cat_disch
   δ_natural_right (F) :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       δ X' X ≫ F.obj X' ◁ F.map f = F.map (X' ◁ f) ≫ δ X' Y := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -302,12 +302,12 @@ theorem associativity_inv (X Y Z : C) :
 @[reassoc]
 lemma δ_comp_η_tensorHom {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     δ F (𝟙_ C) X ≫ (η F ⊗ₘ f) = F.map (λ_ X).hom ≫ (λ_ (F.obj X)).inv ≫ 𝟙_ D ◁ f := by
-  rw [left_unitality]; simp [tensorHom_def]
+  simp [tensorHom_def]
 
 @[reassoc]
 lemma δ_comp_tensorHom_η {X : C} {Y : D} (f : F.obj X ⟶ Y) :
     δ F X (𝟙_ C) ≫ (f ⊗ₘ η F) = F.map (ρ_ X).hom ≫ (ρ_ (F.obj X)).inv ≫ f ▷ 𝟙_ D := by
-  rw [right_unitality]; simp [tensorHom_def']
+  simp [tensorHom_def']
 
 @[reassoc]
 lemma δ_comp_δ_whiskerRight (X Y Z : C) :
@@ -566,7 +566,7 @@ structure CoreMonoidal where
       F.map f ▷ F.obj X' ≫ (μIso Y X').hom = (μIso X X').hom ≫ F.map (f ▷ X') := by
     cat_disch
   μIso_hom_natural_right :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       F.obj X' ◁ F.map f ≫ (μIso X' Y).hom = (μIso X' X).hom ≫ F.map (X' ◁ f) := by
     cat_disch
   /-- associativity of the tensorator -/

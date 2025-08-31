@@ -19,9 +19,14 @@ open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory M
 
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
-  {M N X Y : C} [Mon_Class M] [Mon_Class N]
+  {M N O X Y : C} [Mon_Class M] [Mon_Class N] [Mon_Class O]
 
 namespace Mon_Class
+
+instance : IsMon_Hom (toUnit M) where
+
+instance : IsMon_Hom η[M] where
+  mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
 theorem lift_lift_assoc {A : C} {B : C} [Mon_Class B] (f g h : A ⟶ B) :
     lift (lift f g ≫ μ) h ≫ μ = lift f (lift g h ≫ μ) ≫ μ := by
@@ -40,7 +45,43 @@ theorem lift_comp_one_right {A : C} {B : C} [Mon_Class B] (f : A ⟶ B) (g : A �
   have := lift f g ≫= mul_one B
   rwa [lift_whiskerLeft_assoc, lift_rightUnitor_hom] at this
 
+variable [BraidedCategory C]
+
+attribute [local simp] tensorObj.one_def tensorObj.mul_def
+
+instance : IsMon_Hom (fst M N) where
+instance : IsMon_Hom (snd M N) where
+
+instance foo {f : M ⟶ N} {g : M ⟶ O} [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (lift f g) where
+  mul_hom := by ext <;> simp [← tensor_comp_assoc]
+
+instance [IsCommMon M] : IsMon_Hom μ[M] where
+  one_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
+
 end Mon_Class
+
+namespace Mon_
+variable [BraidedCategory C]
+
+attribute [local simp] tensorObj.one_def tensorObj.mul_def
+
+instance : CartesianMonoidalCategory (Mon_ C) where
+  isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
+  fst M N := .mk (fst M.X N.X)
+  snd M N := .mk (snd M.X N.X)
+  tensorProductIsBinaryProduct M N :=
+    BinaryFan.IsLimit.mk _ (fun {T} f g ↦ ⟨lift f.hom g.hom⟩)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  fst_def M N := by ext; simp [fst_def]; congr
+  snd_def M N := by ext; simp [snd_def]; congr
+
+variable {M N₁ N₂ : Mon_ C}
+
+@[simp] lemma lift_hom (f : M ⟶ N₁) (g : M ⟶ N₂) : (lift f g).hom = lift f.hom g.hom := rfl
+@[simp] lemma fst_hom (M N : Mon_ C) : (fst M N).hom = fst M.X N.X := rfl
+@[simp] lemma snd_hom (M N : Mon_ C) : (snd M N).hom = snd M.X N.X := rfl
+
+end Mon_
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/

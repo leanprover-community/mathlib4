@@ -52,7 +52,7 @@ variable (p)
 /-- Turn a perfect pairing between `M` and `N` into an isomorphism between `M` and the dual of `N`.
 -/
 noncomputable def toPerfPair : M ≃ₗ[R] Dual R N :=
-  .ofBijective { toFun := _, map_add' x y := by ext; simp, map_smul' r x := by ext; simp } <|
+  .ofBijective { toFun := _, map_add' x y := by simp, map_smul' r x := by simp } <|
     IsPerfPair.bijective_left p
 
 @[simp] lemma toLinearMap_toPerfPair (x : M) : p.toPerfPair x = p x := rfl

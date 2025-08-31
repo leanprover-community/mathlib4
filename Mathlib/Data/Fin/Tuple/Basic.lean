@@ -788,8 +788,8 @@ lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ P (last n) ∧ ∀ i : Fin n, P i.castSucc :=
   ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
 
-/-- A finite sequence of properties P holds for {0 , ... , m + n - 1} iff
-it holds separately for both {0 , ... , m - 1} and {m, ..., m + n - 1}. -/
+/-- A finite sequence of properties P holds for {0, ..., m + n - 1} iff
+it holds separately for both {0, ..., m - 1} and {m, ..., m + n - 1}. -/
 theorem forall_fin_add {m n} (P : Fin (m + n) → Prop) :
     (∀ i, P i) ↔ (∀ i, P (castAdd _ i)) ∧ (∀ j, P (natAdd _ j)) :=
   ⟨fun h => ⟨fun _ => h _, fun _ => h _⟩, fun ⟨hm, hn⟩ => Fin.addCases hm hn⟩

@@ -423,6 +423,10 @@ noncomputable def surjInv {f : α → β} (h : Surjective f) (b : β) : α :=
 theorem surjInv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
   Classical.choose_spec (h b)
 
+@[simp]
+lemma comp_surjInv (hf : f.Surjective) : f ∘ f.surjInv hf = id :=
+  funext (Function.surjInv_eq _)
+
 theorem rightInverse_surjInv (hf : Surjective f) : RightInverse (surjInv hf) f :=
   surjInv_eq hf
 

@@ -251,7 +251,7 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
   | nil => simp
   | cons a l ih =>
     by_cases hl : l = []
-    · aesop
+    · simp_all
     · simp_all only [List.tail_reverse, List.nodup_reverse,
         List.dropLast_cons_of_ne_nil hl, List.tail_cons]
       simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem,
