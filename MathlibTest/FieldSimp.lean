@@ -692,6 +692,8 @@ end CommRing
 
 -/
 
+/-! ## Algebraic structures weaker than `Field` -/
+
 example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^ 2 * y ^ 5 / y := by
   field_simp
 
