@@ -144,25 +144,13 @@ lemma convOne_def : (1 : C →ₗ[R] A) = Algebra.linearMap R A ∘ₗ counit :=
 
 @[simp] lemma convOne_apply (c : C) : (1 : C →ₗ[R] A) c = algebraMap R A (counit c) := rfl
 
-private lemma convOne_convMul (f : C →ₗ[R] A) : 1 * f = f := calc
-      μ ∘ₗ ((η ∘ₗ ε) ⊗ₘ f) ∘ₗ δ
-  _ = μ ∘ₗ ((η ⊗ₘ f) ∘ₗ rTensor C ε) ∘ₗ δ  := by simp only [map_comp_rTensor]
-  _ = μ ∘ₗ (η ⊗ₘ f) ∘ₗ (rTensor C ε) ∘ₗ δ := by rw [comp_assoc]
-  _ = μ ∘ₗ (rTensor A η ∘ₗ lTensor R f) ∘ₗ rTensor C ε ∘ₗ δ := by simp
-  _ = (μ ∘ₗ rTensor A η) ∘ₗ lTensor R f ∘ₗ (rTensor C ε ∘ₗ δ) := by simp only [comp_assoc]
-  _ = (μ ∘ₗ rTensor A η) ∘ₗ lTensor R f ∘ₗ ((TensorProduct.mk R R C) 1) := by
-    rw [rTensor_counit_comp_comul]
-  _ = f := by ext; simp
+private lemma convOne_convMul (f : C →ₗ[R] A) : 1 * f = f := by
+  rw [convOne_def, convMul_def, ← map_comp_rTensor, comp_assoc]
+  ext; simp
 
-private lemma convMul_convOne (f : C →ₗ[R] A) : f * 1 = f := calc
-      μ ∘ₗ (f ⊗ₘ (η ∘ₗ ε)) ∘ₗ δ
-  _ = μ ∘ₗ ((f ⊗ₘ η) ∘ₗ lTensor C ε) ∘ₗ δ  := by simp only [map_comp_lTensor]
-  _ = μ ∘ₗ (f ⊗ₘ η) ∘ₗ lTensor C ε ∘ₗ δ := by rw [comp_assoc]
-  _ = μ ∘ₗ (lTensor A η ∘ₗ rTensor R f) ∘ₗ lTensor C ε ∘ₗ δ := by simp
-  _ = (μ ∘ₗ lTensor A η) ∘ₗ rTensor R f ∘ₗ (lTensor C ε ∘ₗ δ) := by simp only [comp_assoc]
-  _ = (μ ∘ₗ lTensor A η) ∘ₗ rTensor R f ∘ₗ ((TensorProduct.mk R C R).flip 1) := by
-    rw [lTensor_counit_comp_comul]
-  _ = f := by ext; simp
+private lemma convMul_convOne (f : C →ₗ[R] A) : f * 1 = f := by
+  rw [convOne_def, convMul_def, ← map_comp_lTensor, comp_assoc]
+  ext; simp
 
 /-- Convolution semiring structure on linear maps from a coalgebra to an algebra. -/
 abbrev convSemiring : Semiring (C →ₗ[R] A) where
