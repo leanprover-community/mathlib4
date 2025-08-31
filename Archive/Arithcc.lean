@@ -313,7 +313,7 @@ theorem compiler_correctness
     have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := calc
       ζ₃ = outcome (compile map e_s₂ (t + 1)) ζ₂ := by simp_all
       _ ≃[t + 1] { ζ₂ with ac := ν₂ } := by apply e_ih_s₂ <;> assumption
-      _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simp [StateEq]; apply hζ₂
+      _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simpa [StateEq]
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by simp_all [StateEq]
     have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
       simp [StateEq, StateEqRs] at hζ₃ ⊢
