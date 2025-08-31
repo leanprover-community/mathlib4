@@ -418,6 +418,27 @@ theorem div_lt_of_lt_mul (h : a < b * c) : a / c < b :=
 theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
   div_lt_of_lt_mul <| by rwa [mul_comm]
 
+protected lemma div_lt_div_iff_left (hc₀ : c ≠ 0) (hc : c ≠ ∞) : a / c < b / c ↔ a < b :=
+  ENNReal.mul_lt_mul_right (by simpa) (by simpa)
+
+protected lemma div_lt_div_iff_right (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a / b < a / c ↔ c < b :=
+  (ENNReal.mul_lt_mul_left ha₀ ha).trans (by simp)
+
+@[gcongr]
+protected lemma div_lt_div_right (hc₀ : c ≠ 0) (hc : c ≠ ∞) (hab : a < b) : a / c < b / c :=
+  (ENNReal.div_lt_div_iff_left hc₀ hc).2 hab
+
+@[gcongr]
+protected lemma div_lt_div_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) (hcb : c < b) : a / b < a / c :=
+  (ENNReal.div_lt_div_iff_right ha₀ ha).2 hcb
+
+protected lemma exists_pos_mul_lt (ha : a ≠ ∞) (hb₀ : b ≠ 0) : ∃ c, 0 < c ∧ c * a < b := by
+  obtain rfl | hb := eq_or_ne b ∞
+  · exact ⟨1, by simpa [lt_top_iff_ne_top]⟩
+  refine ⟨b / (a + 1), ENNReal.div_pos hb₀ (by finiteness), ENNReal.mul_lt_of_lt_div ?_⟩
+  gcongr
+  exacts [hb, ENNReal.lt_add_right ha one_ne_zero]
+
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
   exacts [or_not_of_imp h₁, not_or_of_imp h₂]
