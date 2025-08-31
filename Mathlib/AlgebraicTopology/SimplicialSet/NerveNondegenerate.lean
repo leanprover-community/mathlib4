@@ -51,9 +51,7 @@ lemma mem_nerve_degenerate_of_eq (s : (nerve X) _⦋n + 1⦌) {i : Fin (n + 1)}
 lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
     s ∈ (nerve X).nonDegenerate n ↔ StrictMono s.obj := by
   obtain _ | n := n
-  · simp only [SSet.nondegenerate_zero, Set.mem_univ, true_iff]
-    intro i j h
-    grind
+  · grind [SSet.nondegenerate_zero, StrictMono]
   · rw [← not_iff_not, ← SSet.mem_degenerate_iff_notMem_nonDegenerate,
       Fin.strictMono_iff_lt_succ, SSet.degenerate_eq_iUnion_range_σ, Set.mem_iUnion]
     simp only [mem_range_nerve_σ_iff, not_forall]
