@@ -25,10 +25,10 @@ in general, but we can still register them as `PartialEquiv`.
 ## Main results
 
 * `contDiffOn_extend_coord_change`: if `f` and `f'` lie in the maximal atlas on `M`,
-`f.extend I ∘ (f'.extend I).symm` is continuous on its source
+  `f.extend I ∘ (f'.extend I).symm` is continuous on its source
 
 * `contDiffOn_ext_coord_change`: for `x x : M`, the coordinate change
-`(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
+  `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
 
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
@@ -86,9 +86,9 @@ lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
-  rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
+  rw [mapsTo_iff_image_subset, extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
-  exact image_subset _ inter_subset_right
+  exact image_mono inter_subset_right
 
 theorem extend_left_inv {x : M} (hxf : x ∈ f.source) : (f.extend I).symm (f.extend I x) = x :=
   (f.extend I).left_inv <| by rwa [f.extend_source]
@@ -272,6 +272,11 @@ theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M �
     ← map_extend_nhdsWithin]
   exacts [hs hx, hs hx, hs]
 
+theorem extend_preimage_mem_nhds_of_mem_nhdsWithin {s : Set E} {x : M} (hx : x ∈ f.source)
+    (hs : s ∈ 𝓝[range I] (f.extend I x)) :
+    (f.extend I) ⁻¹' s ∈ 𝓝 x := by
+  rwa [← map_extend_nhds (I := I) f hx] at hs
+
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
 theorem extend_preimage_mem_nhdsWithin {x : M} (h : x ∈ f.source) (ht : t ∈ 𝓝[s] x) :
@@ -291,7 +296,7 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
--- Porting note: an `aux` lemma that is no longer needed. Delete?
+@[deprecated "Removed without replacement" (since := "2025-08-27")]
 theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
       ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
@@ -491,10 +496,6 @@ theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
   exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
 
-@[deprecated (since := "2024-11-27")] alias
-extChartAt_target_union_comp_range_mem_nhds_of_mem :=
-extChartAt_target_union_compl_range_mem_nhds_of_mem
-
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
   simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
@@ -655,6 +656,12 @@ theorem map_extChartAt_symm_nhdsWithin_range (x : M) :
     map (extChartAt I x).symm (𝓝[range I] extChartAt I x x) = 𝓝 x :=
   map_extChartAt_symm_nhdsWithin_range' (mem_extChartAt_source x)
 
+theorem extChartAt_preimage_mem_nhds_of_mem_nhdsWithin {s : Set E} {x x' : M}
+    (hx : x' ∈ (extChartAt I x).source)
+    (hs : s ∈ 𝓝[range I] (extChartAt I x x')) :
+    (extChartAt I x) ⁻¹' s ∈ 𝓝 x' :=
+  extend_preimage_mem_nhds_of_mem_nhdsWithin _ (by simpa using hx) hs
+
 /-- Technical lemma ensuring that the preimage under an extended chart of a neighborhood of a point
 in the source is a neighborhood of the preimage, within a set. -/
 theorem extChartAt_preimage_mem_nhdsWithin' {x x' : M} (h : x' ∈ (extChartAt I x).source)
@@ -765,8 +772,6 @@ variable {𝕜}
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
-  -- Porting note: `simp` can't use `PartialEquiv.prod_trans` here because of a type
-  -- synonym
   rw [PartialEquiv.prod_trans]
 
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :

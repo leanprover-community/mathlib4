@@ -40,12 +40,22 @@ namespace Graph
 def addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
-/-- Constructs a directed `Graph` using `≤` facts. -/
-def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) : MetaM Graph := do
+/-- Constructs a directed `Graph` using `≤` facts. It also creates edges from `⊥`
+(if present) to all vertices and from all vertices to `⊤` (if present). -/
+def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact)
+    (idxToAtom : Std.HashMap Nat Expr) : MetaM Graph := do
   let mut res : Graph := Array.replicate nVertexes #[]
   for fact in facts do
     if let .le lhs rhs proof := fact then
       res := res.addEdge ⟨lhs, rhs, proof⟩
+    else if let .isTop idx := fact then
+      for i in [:nVertexes] do
+        if i != idx then
+          res := res.addEdge ⟨i, idx, ← mkAppOptM ``le_top #[none, none, none, idxToAtom.get! i]⟩
+    else if let .isBot idx := fact then
+      for i in [:nVertexes] do
+        if i != idx then
+          res := res.addEdge ⟨idx, i, ← mkAppOptM ``bot_le #[none, none, none, idxToAtom.get! i]⟩
   return res
 
 /-- State for the DFS algorithm. -/
@@ -64,9 +74,9 @@ partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
     let u := edge.dst
     if !(← get).visited[u]! then
       match ← buildTransitiveLeProofDFS g u t tExpr with
-      | .some pf => return .some <| ← mkAppM ``le_trans #[edge.proof, pf]
-      | .none => continue
-  return .none
+      | some pf => return some <| ← mkAppM ``le_trans #[edge.proof, pf]
+      | none => continue
+  return none
 
 /-- Given a `≤`-graph `g`, finds a proof of `s ≤ t` using transitivity. -/
 def buildTransitiveLeProof (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (s t : Nat) :

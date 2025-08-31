@@ -223,7 +223,7 @@ def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
 
 @[simp]
 theorem splitMany_empty (I : Box ι) : splitMany I ∅ = ⊤ :=
-  Finset.inf_empty
+  rfl
 
 open scoped Classical in
 @[simp]
@@ -247,9 +247,9 @@ theorem iUnion_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : (splitMany I s)
 theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)) :
     π ⊓ splitMany I s = π.biUnion fun J => splitMany J s := by
   classical
-  induction' s using Finset.induction_on with p s _ ihp
-  · simp
-  · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert p s _ ihp => simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
 
 open scoped Classical in
 /-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as

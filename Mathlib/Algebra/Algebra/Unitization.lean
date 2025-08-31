@@ -562,12 +562,12 @@ instance instAlgebra : Algebra S (Unitization R A) where
   commutes' := fun s x => by
     induction x with
     | inl_add_inr =>
-      show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
+      change inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
       rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
   smul_def' := fun s x => by
     induction x with
     | inl_add_inr =>
-      show _ = inl (algebraMap S R s) * _
+      change _ = inl (algebraMap S R s) * _
       rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
         smul_one_mul, inl_smul, inr_smul, smul_one_smul]
 
@@ -732,7 +732,6 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 { toFun := fun φ ↦
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
     map_star' := fun x => by
-      induction x
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by ext; simp,
@@ -836,5 +835,13 @@ instance instIsStarNormal (a : A) [IsStarNormal a] :
   isStarNormal_inr.mpr ‹_›
 
 end StarNormal
+
+@[simp]
+lemma isIdempotentElem_inr_iff (R : Type*) {A : Type*} [MulZeroClass R]
+    [AddZeroClass A] [Mul A] [SMulWithZero R A] {a : A} :
+    IsIdempotentElem (a : Unitization R A) ↔ IsIdempotentElem a := by
+  simp only [IsIdempotentElem, ← inr_mul, inr_injective.eq_iff]
+
+alias ⟨_, IsIdempotentElem.inr⟩ := isIdempotentElem_inr_iff
 
 end Unitization

@@ -116,6 +116,18 @@ lemma ofLp_surjective : Function.Surjective (@ofLp p V) :=
 lemma toLp_surjective : Function.Surjective (@toLp p V) :=
   Function.RightInverse.surjective <| toLp_ofLp _
 
+lemma ofLp_injective : Function.Injective (@ofLp p V) :=
+  Function.LeftInverse.injective <| toLp_ofLp _
+
+lemma toLp_injective : Function.Injective (@toLp p V) :=
+  Function.LeftInverse.injective <| ofLp_toLp _
+
+lemma ofLp_bijective : Function.Bijective (@ofLp p V) :=
+  ⟨ofLp_injective p, ofLp_surjective p⟩
+
+lemma toLp_bijective : Function.Bijective (@toLp p V) :=
+  ⟨toLp_injective p, toLp_surjective p⟩
+
 section AddCommGroup
 variable [AddCommGroup V]
 
@@ -182,7 +194,7 @@ theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -W
   rfl
 
 @[deprecated toLp_neg (since := "2025-06-08")]
-theorem equiv_symm_neg [AddCommGroup V] (x' : V):
+theorem equiv_symm_neg [AddCommGroup V] (x' : V) :
     (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 

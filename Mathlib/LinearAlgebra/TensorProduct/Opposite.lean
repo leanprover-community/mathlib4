@@ -13,8 +13,6 @@ The main result in this file is:
 * `Algebra.TensorProduct.opAlgEquiv R S A B : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ`
 -/
 
-suppress_compilation
-
 open scoped TensorProduct
 
 variable (R S A B : Type*)

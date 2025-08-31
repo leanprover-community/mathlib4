@@ -216,7 +216,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   Formatter.node.formatter k p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
-    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
+    let some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
     .ok ⟨s⟩)
   match transformed with
   | .error err =>
@@ -303,7 +303,7 @@ initialize register_parser_alias subscript
 /-- Returns true if every character in `stx : Syntax` can be superscripted
 (or subscripted). -/
 private partial def Superscript.isValid (m : Mapping) : Syntax → Bool
-  | .node _ kind args => !(scripted kind) && args.all (isValid m)
+  | .node _ kind args => kind == hygieneInfoKind || (!(scripted kind) && args.all (isValid m))
   | .atom _ s => valid s
   | .ident _ _ s _ => valid s.toString
   | _ => false

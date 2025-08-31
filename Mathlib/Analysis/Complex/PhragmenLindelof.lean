@@ -153,9 +153,9 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
           (Real.cos_pos_of_mem_Ioo <| abs_lt.1 <| (abs_of_pos (mul_pos hd₀ hb)).symm ▸ hb'),
         fun w hw => ?_⟩
     replace hw : |im (aff w)| ≤ d * b := by
-      rw [← Real.closedBall_eq_Icc] at hw
-      rwa [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀,
-        mul_le_mul_left hd₀]
+      rw [← Real.closedBall_eq_Icc, mem_closedBall, Real.dist_eq] at hw
+      rw [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀]
+      gcongr
     simpa only [aff, re_ofReal_mul, _root_.abs_mul, abs_of_pos hd₀, sub_re, mul_I_re, ofReal_im,
       zero_mul, neg_zero, sub_zero] using
       norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le
@@ -164,7 +164,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     refine fun w hw => (hδ <| hw.by_cases ?_ ?_).trans (Real.exp_le_one_iff.2 ?_)
     exacts [fun h => h.symm ▸ left_mem_Icc.2 hab.le, fun h => h.symm ▸ right_mem_Icc.2 hab.le,
       mul_nonpos_of_nonpos_of_nonneg δ₀.le (Real.exp_pos _).le]
-  /- Our apriori estimate on `f` implies that `g ε w • f w → 0` as `|w.re| → ∞` along the strip. In
+  /- Our a priori estimate on `f` implies that `g ε w • f w → 0` as `|w.re| → ∞` along the strip. In
     particular, its norm is less than or equal to `C` for sufficiently large `|w.re|`. -/
   obtain ⟨R, hzR, hR⟩ :
     ∃ R : ℝ, |z.re| < R ∧ ∀ w, |re w| = R → im w ∈ Ioo (a - b) (a + b) → ‖g ε w • f w‖ ≤ C := by

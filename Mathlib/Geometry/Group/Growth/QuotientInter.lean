@@ -10,8 +10,8 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 /-!
 # Growth in the quotient and intersection with a subgroup
 
-For a group `G` and a subgroup `H ≤ G`, this file upper and lower bounds the growth of a finset by
-its growth in `H` and `G ⧸ H`.
+For a group `G` and a subgroup `H ≤ G`, this file gives upper and lower bounds on the growth of a
+finset by its growth in `H` and `G ⧸ H`.
 -/
 
 open Finset Function
@@ -46,7 +46,7 @@ lemma card_pow_quotient_mul_pow_inter_subgroup_le :
       have hπa₂ : π a₂ = 1 := (QuotientGroup.eq_one_iff _).2 ha₂
       have hπb : π b₁ = π b₂ := by
         simpa [hπφ, Set.mem_image_of_mem π, hb₁, hb₂, hπa₁, hπa₂] using congr(π $hab)
-      aesop
+      simp_all
     _ ≤ #(A ^ (m + n)) := by
       gcongr
       simp only [mul_subset_iff, mem_image, exists_exists_and_eq_and, Finset.mem_filter, and_imp,

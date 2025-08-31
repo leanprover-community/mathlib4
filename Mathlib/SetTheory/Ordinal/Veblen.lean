@@ -164,7 +164,7 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     obtain ⟨b, hb, hb'⟩ := this
     exact hb'.trans (IH b hb)
   induction l with
-  | nil => use 0; simp [ho.pos]
+  | nil => use 0; simpa using ho.bot_lt
   | cons a l IH =>
     obtain ⟨b, hb, hb'⟩ := IH
     refine ⟨_, ho.succ_lt (max_lt a.2 hb), ((veblenWith_right_strictMono hf _).monotone <|
@@ -175,7 +175,7 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     exact le_max_left _ b
 
 theorem cmp_veblenWith :
-  cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
+    cmp (veblenWith f o₁ a) (veblenWith f o₂ b) =
     match cmp o₁ o₂ with
     | .eq => cmp a b
     | .lt => cmp a (veblenWith f o₂ b)
@@ -300,7 +300,7 @@ theorem isNormal_veblen_zero : IsNormal (veblen · 0) :=
   (isNormal_opow one_lt_omega0).veblenWith_zero (by simp)
 
 theorem cmp_veblen : cmp (veblen o₁ a) (veblen o₂ b) =
-  match cmp o₁ o₂ with
+    match cmp o₁ o₂ with
     | .eq => cmp a b
     | .lt => cmp a (veblen o₂ b)
     | .gt => cmp (veblen o₁ a) b :=

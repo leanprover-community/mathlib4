@@ -85,7 +85,7 @@ theorem isReflection_inv : cs.IsReflection t⁻¹ := by rwa [ht.inv]
 
 theorem odd_length : Odd (ℓ t) := by
   suffices cs.lengthParity t = Multiplicative.ofAdd 1 by
-    simpa [lengthParity_eq_ofAdd_length, ZMod.eq_one_iff_odd]
+    simpa [lengthParity_eq_ofAdd_length, ZMod.natCast_eq_one_iff_odd]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
 
@@ -262,7 +262,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
       simp [ih j']
 
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
-    (ris ω)[j]'(by simp[h]) =
+    (ris ω)[j]'(by simp [h]) =
     (π (ω.drop (j + 1)))⁻¹
       * (Option.map (cs.simple) ω[j]?).getD 1
       * π (ω.drop (j + 1)) := by
@@ -286,7 +286,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       simp [← mul_assoc, wordProd_cons]
 
 lemma getElem_leftInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
-    (lis ω)[j]'(by simp[h]) =
+    (lis ω)[j]'(by simp [h]) =
     cs.wordProd (List.take j ω) * s ω[j] * (cs.wordProd (List.take j ω))⁻¹ := by
   rw [← List.getD_eq_getElem (lis ω) 1, getD_leftInvSeq]
   simp [h]
@@ -422,16 +422,13 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append_eq_append_drop, drop_of_length_le (by simp [j_lt_j'.le]), length_take,
-      drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
+      drop_append, drop_of_length_le (by simp [j_lt_j'.le]), length_take, drop_drop,
+      nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
       ← add_assoc, Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
     show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
     rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
-    congr
-    show j + 1 + (j' - 1 - List.length (List.take j ω)) = j'
-    rw [length_take]
-    omega
+    grind
   have h₄ : t * t' = 1                                := by
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
@@ -445,15 +442,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
     ω.length = ℓ (π ω)                                    := rω.symm
     _        = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1)))   := congrArg cs.length h₅
     _        ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length  := cs.length_wordProd_le _
-  have h₇ := add_le_add_right (add_le_add_right h₆ 1) 1
-  have h₈ : j' - 1 < List.length (eraseIdx ω j)           := by
-    apply (@Nat.add_lt_add_iff_right 1).mp
-    rw [Nat.sub_add_cancel (by omega)]
-    rw [length_eraseIdx_add_one (by omega)]
-    omega
-  rw [length_eraseIdx_add_one h₈] at h₇
-  rw [length_eraseIdx_add_one (by omega)] at h₇
-  omega
+  grind
 
 theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, nodup_reverse]
@@ -464,8 +453,8 @@ lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simpa using h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
-  rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
-    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[]; omega)]
+  rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp [h]),
+    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp; omega)]
   simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
     mul_inv_rev, inv_simple, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk,
     mul_right_inj, mul_left_inj]

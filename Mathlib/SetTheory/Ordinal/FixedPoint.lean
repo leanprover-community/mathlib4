@@ -200,7 +200,7 @@ theorem derivFamily_succ [Small.{u} ι] (H : ∀ i, IsNormal (f i)) (o) :
 
 @[deprecated isNormal_derivFamily (since := "2025-07-01")]
 theorem derivFamily_limit [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {o} :
-    IsLimit o → derivFamily f o = ⨆ b : Set.Iio o, derivFamily f b :=
+    IsSuccLimit o → derivFamily f o = ⨆ b : Set.Iio o, derivFamily f b :=
   (isNormal_derivFamily H).apply_of_isLimit
 
 end

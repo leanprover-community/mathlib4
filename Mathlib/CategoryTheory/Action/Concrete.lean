@@ -125,7 +125,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
       ext (x : G ⧸ N)
       induction' x using Quotient.inductionOn with x
       simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
-      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
+      change Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
       simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
       rfl
   }
@@ -138,7 +138,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
     apply Action.hom_ext
     ext (x : G ⧸ N)
     induction' x using Quotient.inductionOn with x
-    show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
+    change ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
     rw [mul_inv_rev, mul_assoc]
 
 @[simp]
@@ -190,10 +190,10 @@ instance instMulAction {G : Type*} [Monoid G] (X : Action V G) :
     MulAction G (ToType X) where
   smul g x := ConcreteCategory.hom (X.ρ g) x
   one_smul x := by
-    show ConcreteCategory.hom (X.ρ 1) x = x
+    change ConcreteCategory.hom (X.ρ 1) x = x
     simp
   mul_smul g h x := by
-    show ConcreteCategory.hom (X.ρ (g * h)) x =
+    change ConcreteCategory.hom (X.ρ (g * h)) x =
       ConcreteCategory.hom (X.ρ g) ((ConcreteCategory.hom (X.ρ h)) x)
     simp
 
