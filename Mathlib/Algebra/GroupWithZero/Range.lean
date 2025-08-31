@@ -117,13 +117,9 @@ variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
   [DecidablePred fun b : B ↦ b = 0]
 
 /-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
-def valueGroup₀.embedding : valueGroup₀ f →*₀ B :=
+@[simps!]def valueGroup₀.embedding : valueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
-
-@[simp]
-lemma valueGroup₀_MulWithZeroEmbedding_apply_coe {y : valueGroup f} {x : A} :
-    valueGroup₀_MulWithZeroEmbedding (y : valueGroup₀ f) = f x ↔ y.val = f x := by rfl
 
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. It cannot land
@@ -151,7 +147,7 @@ lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
 
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
 
-lemma restrict₀_eq (a : A) : valueGroup₀_MulWithZeroEmbedding (restrict₀ f a) = f a := by
+lemma restrict₀_eq (a : A) : valueGroup₀.embedding (restrict₀ f a) = f a := by
   simp [restrict₀_apply]
   split_ifs <;>
   simp_all
