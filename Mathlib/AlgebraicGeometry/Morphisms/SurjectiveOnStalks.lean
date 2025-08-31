@@ -130,25 +130,25 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover
-  let 𝒱 (i) := ((𝒰.pullbackCover f).obj i).affineOpenCover.openCover
-  let 𝒲 (i) := ((𝒰.pullbackCover g).obj i).affineOpenCover.openCover
-  let U (ijk : Σ i, (𝒱 i).J × (𝒲 i).J) : TopologicalSpace.Opens (X.carrier × Y) :=
-    ⟨{ P | P.1 ∈ ((𝒱 ijk.1).map ijk.2.1 ≫ (𝒰.pullbackCover f).map ijk.1).opensRange ∧
-          P.2 ∈ ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange },
-      (continuous_fst.1 _ ((𝒱 ijk.1).map ijk.2.1 ≫
-      (𝒰.pullbackCover f).map ijk.1).opensRange.2).inter (continuous_snd.1 _
-      ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange.2)⟩
+  let 𝒱 (i) := ((𝒰.pullbackCover f).X i).affineOpenCover.openCover
+  let 𝒲 (i) := ((𝒰.pullbackCover g).X i).affineOpenCover.openCover
+  let U (ijk : Σ i, (𝒱 i).I₀ × (𝒲 i).I₀) : TopologicalSpace.Opens (X.carrier × Y) :=
+    ⟨{ P | P.1 ∈ ((𝒱 ijk.1).f ijk.2.1 ≫ (𝒰.pullbackCover f).f ijk.1).opensRange ∧
+          P.2 ∈ ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullbackCover g).f ijk.1).opensRange },
+      (continuous_fst.1 _ ((𝒱 ijk.1).f ijk.2.1 ≫
+      (𝒰.pullbackCover f).f ijk.1).opensRange.2).inter (continuous_snd.1 _
+      ((𝒲 ijk.1).f ijk.2.2 ≫ (𝒰.pullbackCover g).f ijk.1).opensRange.2)⟩
   have : Set.range L ⊆ (iSup U :) := by
-    simp only [Scheme.Cover.pullbackCover_J, Scheme.Cover.pullbackCover_obj, Set.range_subset_iff]
+    simp only [Scheme.Cover.pullbackCover_I₀, Scheme.Cover.pullbackCover_X, Set.range_subset_iff]
     intro z
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]
     obtain ⟨is, s, hsx⟩ := 𝒰.exists_eq (f.base ((pullback.fst f g).base z))
-    have hsy : (𝒰.map is).base s = g.base ((pullback.snd f g).base z) := by
+    have hsy : (𝒰.f is).base s = g.base ((pullback.snd f g).base z) := by
       rwa [← Scheme.comp_base_apply, ← pullback.condition, Scheme.comp_base_apply]
-    obtain ⟨x : (𝒰.pullbackCover f).obj is, hx⟩ :=
+    obtain ⟨x : (𝒰.pullbackCover f).X is, hx⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsx.symm
-    obtain ⟨y : (𝒰.pullbackCover g).obj is, hy⟩ :=
+    obtain ⟨y : (𝒰.pullbackCover g).X is, hy⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ hsy.symm
     obtain ⟨ix, x, rfl⟩ := (𝒱 is).exists_eq x
@@ -156,8 +156,8 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     refine ⟨is, ix, iy, ⟨x, hx⟩, ⟨y, hy⟩⟩
   let 𝓤 := (Scheme.Pullback.openCoverOfBase 𝒰 f g).bind
     (fun i ↦ Scheme.Pullback.openCoverOfLeftRight (𝒱 i) (𝒲 i) _ _)
-  refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (fun i ↦ (𝓤.map i).base)
-    (fun i ↦ (𝓤.map i).continuous) ?_ ?_
+  refine isEmbedding_of_iSup_eq_top_of_preimage_subset_range _ ?_ U this _ (fun i ↦ (𝓤.f i).base)
+    (fun i ↦ (𝓤.f i).continuous) ?_ ?_
   · fun_prop
   · rintro i x ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     obtain ⟨x₁', hx₁'⟩ :=
@@ -169,7 +169,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨z, hz⟩ :=
       Scheme.IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
         (P := @IsOpenImmersion) inferInstance _ _ (hx₁'.trans hx₂'.symm)
-    refine ⟨(pullbackFstFstIso _ _ _ _ _ _ (𝒰.map i.1) ?_ ?_).hom.base z, ?_⟩
+    refine ⟨(pullbackFstFstIso _ _ _ _ _ _ (𝒰.f i.1) ?_ ?_).hom.base z, ?_⟩
     · simp [pullback.condition]
     · simp [pullback.condition]
     · dsimp only
@@ -178,13 +178,13 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       congr 5
       apply pullback.hom_ext <;> simp [𝓤, ← pullback.condition, ← pullback.condition_assoc]
   · intro i
-    have := H (S.affineOpenCover.obj i.1) (((𝒰.pullbackCover f).obj i.1).affineOpenCover.obj i.2.1)
-        (((𝒰.pullbackCover g).obj i.1).affineOpenCover.obj i.2.2)
-        ((𝒱 i.1).map i.2.1 ≫ 𝒰.pullbackHom f i.1)
-        ((𝒲 i.1).map i.2.2 ≫ 𝒰.pullbackHom g i.1)
-        ((𝒱 i.1).map i.2.1 ≫ (𝒰.pullbackCover f).map i.1)
-        ((𝒲 i.1).map i.2.2 ≫ (𝒰.pullbackCover g).map i.1)
-        (𝒰.map i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
+    have := H (S.affineOpenCover.obj i.1) (((𝒰.pullbackCover f).X i.1).affineOpenCover.obj i.2.1)
+        (((𝒰.pullbackCover g).X i.1).affineOpenCover.obj i.2.2)
+        ((𝒱 i.1).f i.2.1 ≫ 𝒰.pullbackHom f i.1)
+        ((𝒲 i.1).f i.2.2 ≫ 𝒰.pullbackHom g i.1)
+        ((𝒱 i.1).f i.2.1 ≫ (𝒰.pullbackCover f).f i.1)
+        ((𝒲 i.1).f i.2.2 ≫ (𝒰.pullbackCover g).f i.1)
+        (𝒰.f i.1) (by simp [pullback.condition]) (by simp [pullback.condition])
         inferInstance inferInstance inferInstance
     convert this using 7
     apply pullback.hom_ext <;>

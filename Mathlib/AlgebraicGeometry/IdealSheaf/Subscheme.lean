@@ -477,9 +477,9 @@ def subschemeCover : I.subscheme.AffineOpenCover where
   J := X.affineOpens
   obj U := .of <| Γ(X, U) ⧸ I.ideal U
   map U := I.glueData.ι U ≫ I.subschemeIso.inv
-  f x := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).f x.1
+  f x := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).idx x.1
   covers x := by
-    let U := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).f x.1
+    let U := (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).idx x.1
     obtain ⟨⟨y, hy : y ∈ U.1⟩, rfl : y = x.1⟩ :=
       (X.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top X)).covers x.1
     exact (I.opensRange_glueData_ι_subschemeIso_inv U).ge hy
@@ -574,8 +574,8 @@ def inclusion {I J : IdealSheafData X} (h : I ≤ J) :
   J.subschemeCover.openCover.glueMorphisms (fun U ↦ glueDataObjHom h U ≫ I.subschemeCover.map U)
   (by
     intro U V
-    simp only [← cancel_mono I.subschemeι, AffineOpenCover.openCover_obj, glueDataObjHom_ι_assoc,
-      AffineOpenCover.openCover_map, Category.assoc, subschemeCover_map_subschemeι]
+    simp only [← cancel_mono I.subschemeι, AffineOpenCover.openCover_X, glueDataObjHom_ι_assoc,
+      AffineOpenCover.openCover_f, Category.assoc, subschemeCover_map_subschemeι]
     rw [← subschemeCover_map_subschemeι, pullback.condition_assoc, subschemeCover_map_subschemeι])
 
 @[reassoc (attr := simp)]

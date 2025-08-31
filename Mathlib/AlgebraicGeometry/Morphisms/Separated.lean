@@ -126,39 +126,47 @@ lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
   rw [← top_le_iff]
   rintro x -
-  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
-    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
     hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
-  let i := 𝒰.f (f.base ((pullback.fst f f).base x))
+  let i := 𝒰.idx (f.base ((pullback.fst f f).base x))
   obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base _⟩ :=
     𝒰.covers (f.base ((pullback.fst f f).base x))
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
-  let j := (𝒱 i).f z
+  let j := (𝒱 i).idx z
   obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   change x ∈ Set.range _
-  dsimp only [diagonalCover, Cover.bind_obj, openCoverOfLeftRight_obj]
+  simp only [diagonalCover, openCoverOfBase_I₀,
+    Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+    Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
+    PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X]
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
-  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
-    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
-  let i := 𝒰.f (f.base x)
+  let i := 𝒰.idx (f.base x)
   obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base x⟩ := 𝒰.covers (f.base x)
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
-  let j := (𝒱 i).f z
+  let j := (𝒱 i).idx z
   obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd f (𝒰.map i))).base w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
-  dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_obj, openCoverOfLeftRight_obj]
-  rw [← Scheme.comp_base_apply]
+  simp only [diagonalCover, openCoverOfBase_I₀,
+    Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+    Cover.pullbackHom, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, openCoverOfBase_X,
+    PreZeroHypercover.bind_X, openCoverOfLeftRight_I₀, openCoverOfLeftRight_X,
+    PreZeroHypercover.bind_f, openCoverOfLeftRight_f, openCoverOfBase_f, comp_coeBase,
+    TopCat.hom_comp, ContinuousMap.comp_apply, ContinuousMap.comp_assoc]
+  simp_rw [← Scheme.comp_base_apply]
   congr 5
   apply pullback.hom_ext <;> simp
 
