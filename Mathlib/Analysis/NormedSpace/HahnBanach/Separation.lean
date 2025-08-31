@@ -5,11 +5,9 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.RCLike.Lemmas
-
 
 /-!
 # Separation Hahn-Banach theorem
@@ -347,7 +345,7 @@ theorem closed_balanced_sep {𝕜 : Type*} [RCLike 𝕜] {r : ℝ} {K : Set 𝕜
 /-- Following [Rudin, *Functional Analysis* (Theorem 3.7)][rudin1991]
 -/
 theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
-    (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
+    (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) {x₀ : E} (hx : x₀ ∉ B) :
     ∃ (f : StrongDual 𝕜 E) (s : ℝ), 0 < s ∧ s < ‖(f x₀)‖ ∧ ∀ b ∈ B, ‖f b‖ < s := by
   obtain ⟨f, u, v, h1, h2, h3⟩ : ∃ (f : StrongDual 𝕜 E) (u v : ℝ),
       (∀ a ∈ ({x₀} : Set E), re (f a) < u) ∧ u < v ∧ ∀ b ∈ B, v < re (f b) :=
@@ -378,19 +376,16 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
   obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
     closed_balanced_sep compact_K zero_in norm_lt_r
   use f, s
-  simp [← hr, s_lt, s_pos]
-  intro b hb
-  linarith [hs (f b) (subset_closure (mem_image_of_mem (⇑f) hb))]
+  simpa [← hr, s_lt, s_pos] using fun b hb ↦hs (f b) (subset_closure (mem_image_of_mem (⇑f) hb))
 
 theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
     (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
     ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ < 1 := by
-  obtain ⟨f, s, h1, h2, h3⟩ := geometric_hahn_banach hs₁ hs₂ hs₃ hs₄ x₀ hx
+  obtain ⟨f, s, h1, h2, h3⟩ := geometric_hahn_banach hs₁ hs₂ hs₃ hs₄ hx
   use (‖f x₀‖ / (s * (f x₀))) • f
-  have : ‖f x₀‖ > 0 := by linarith
   have (x : E): ‖((‖f x₀‖ / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
-    have : |s| = s := abs_of_pos h1
-    simp [this]
+    simp [abs_of_pos h1]
+    have : ‖f x₀‖ > 0 := by linarith
     field_simp
   constructor
   · rw [this]
