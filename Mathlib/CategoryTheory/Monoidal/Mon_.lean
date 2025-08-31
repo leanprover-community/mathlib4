@@ -16,6 +16,13 @@ We define monoids in a monoidal category `C` and show that the category of monoi
 the category of lax monoidal functors from the unit monoidal category to `C`.  We also show that if
 `C` is braided, then the category of monoids is naturally monoidal.
 
+## Simp set for monoid object tautologies
+
+In this file, we also provide a simp set called `mon_tauto` whose goal is to prove all tautologies
+about morphisms from some (tensor) power of `M` to `M`, where `M` is a (commutative) monoid object
+in a (braided) monoidal category.
+
+Please read the documentation in `Mathlib/Tactic/Attr/Register.lean` for full details.
 -/
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃ u
@@ -42,6 +49,7 @@ class Mon_Class (X : C) where
   mul_assoc (X) : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by cat_disch
 
 namespace Mon_Class
+variable {M X Y : C} [Mon_Class M]
 
 @[inherit_doc] scoped notation "μ" => Mon_Class.mul
 @[inherit_doc] scoped notation "μ["M"]" => Mon_Class.mul (X := M)
@@ -49,6 +57,25 @@ namespace Mon_Class
 @[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
+
+/-- Transfer `Mon_Class` along an isomorphism. -/
+@[simps]
+def ofIso (e : M ≅ X) : Mon_Class X where
+  one := η[M] ≫ e.hom
+  mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
+  one_mul := by
+    rw [← cancel_epi (λ_ X).inv]
+    simp only [comp_whiskerRight, tensorHom_def, Category.assoc,
+      hom_inv_whiskerRight_assoc]
+    simp [← tensorHom_def_assoc, leftUnitor_inv_comp_tensorHom_assoc]
+  mul_one := by
+    rw [← cancel_epi (ρ_ X).inv]
+    simp only [MonoidalCategory.whiskerLeft_comp, tensorHom_def', Category.assoc,
+      whiskerLeft_hom_inv_assoc, Iso.inv_hom_id]
+    simp [← tensorHom_def'_assoc, rightUnitor_inv_comp_tensorHom_assoc]
+  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id, ← tensor_comp_assoc,
+      -associator_conjugation, associator_naturality_assoc] using
+      congr(((e.inv ⊗ₘ e.inv) ⊗ₘ e.inv) ≫ $(Mon_Class.mul_assoc M) ≫ e.hom)
 
 @[simps]
 instance : Mon_Class (𝟙_ C) where
@@ -68,7 +95,59 @@ end Mon_Class
 
 open scoped Mon_Class
 
-variable {M N O : C} [Mon_Class M] [Mon_Class N] [Mon_Class O]
+namespace Mathlib.Tactic.MonTauto
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
+  {M W X X₁ X₂ X₃ Y Y₁ Y₂ Y₃ Z Z₁ Z₂ : C} [Mon_Class M]
+
+attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
+  id_tensorHom_id tensorμ tensorδ
+  leftUnitor_tensor_hom leftUnitor_tensor_hom_assoc
+  leftUnitor_tensor_inv leftUnitor_tensor_inv_assoc
+  rightUnitor_tensor_hom rightUnitor_tensor_hom_assoc
+  rightUnitor_tensor_inv rightUnitor_tensor_inv_assoc
+
+attribute [mon_tauto ←] tensorHom_id id_tensorHom tensor_comp tensor_comp_assoc
+
+@[reassoc (attr := mon_tauto)]
+lemma associator_hom_comp_tensorHom_tensorHom (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) :
+    (α_ X₁ Y₁ Z₁).hom ≫ (f ⊗ₘ g ⊗ₘ h) = ((f ⊗ₘ g) ⊗ₘ h) ≫ (α_ X₂ Y₂ Z₂).hom := by simp
+
+@[reassoc (attr := mon_tauto)]
+lemma associator_inv_comp_tensorHom_tensorHom (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) :
+    (α_ X₁ Y₁ Z₁).inv ≫ ((f ⊗ₘ g) ⊗ₘ h) = (f ⊗ₘ g ⊗ₘ h) ≫ (α_ X₂ Y₂ Z₂).inv := by simp
+
+@[reassoc (attr := mon_tauto)]
+lemma associator_hom_comp_tensorHom_tensorHom_comp (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂)
+    (gh : Y₂ ⊗ Z₂ ⟶ W) :
+    (α_ X₁ Y₁ Z₁).hom ≫ (f ⊗ₘ ((g ⊗ₘ h) ≫ gh)) =
+      ((f ⊗ₘ g) ⊗ₘ h) ≫ (α_ X₂ Y₂ Z₂).hom ≫ (𝟙 _ ⊗ₘ gh) := by simp [tensorHom_def]
+
+@[reassoc (attr := mon_tauto)]
+lemma associator_inv_comp_tensorHom_tensorHom_comp (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂)
+    (fg : X₂ ⊗ Y₂ ⟶ W) :
+    (α_ X₁ Y₁ Z₁).inv ≫ (((f ⊗ₘ g) ≫ fg) ⊗ₘ h) =
+      (f ⊗ₘ g ⊗ₘ h) ≫ (α_ X₂ Y₂ Z₂).inv ≫ (fg ⊗ₘ 𝟙 _) := by simp [tensorHom_def']
+
+@[mon_tauto] lemma eq_one_mul : (λ_ M).hom = (η ⊗ₘ 𝟙 M) ≫ μ := by simp
+@[mon_tauto] lemma eq_mul_one : (ρ_ M).hom = (𝟙 M ⊗ₘ η) ≫ μ := by simp
+
+@[reassoc (attr := mon_tauto)] lemma leftUnitor_inv_one_tensor_mul (f : X₁ ⟶ M) :
+    (λ_ _).inv ≫ (η ⊗ₘ f) ≫ μ = f := by simp [tensorHom_def']
+
+@[reassoc (attr := mon_tauto)] lemma rightUnitor_inv_tensor_one_mul (f : X₁ ⟶ M) :
+    (ρ_ _).inv ≫ (f ⊗ₘ η) ≫ μ = f := by simp [tensorHom_def]
+
+@[reassoc (attr := mon_tauto)]
+lemma mul_assoc_hom (f : X ⟶ M) :
+    (α_ X M M).hom ≫ (f ⊗ₘ μ) ≫ μ = ((f ⊗ₘ 𝟙 M) ≫ μ ⊗ₘ 𝟙 M) ≫ μ := by simp [tensorHom_def]
+
+@[reassoc (attr := mon_tauto)]
+lemma mul_assoc_inv (f : X ⟶ M) :
+    (α_ M M X).inv ≫ (μ ⊗ₘ f) ≫ μ = (𝟙 M ⊗ₘ (𝟙 M ⊗ₘ f) ≫ μ) ≫ μ  := by simp [tensorHom_def']
+
+end Mathlib.Tactic.MonTauto
+
+variable {M N O X : C} [Mon_Class M] [Mon_Class N] [Mon_Class O]
 
 /-- The property that a morphism between monoid objects is a monoid morphism. -/
 class IsMon_Hom (f : M ⟶ N) : Prop where
@@ -81,9 +160,14 @@ instance : IsMon_Hom (𝟙 M) where
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
-instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] : IsMon_Hom f.inv where
+instance isMon_Hom_ofIso (e : M ≅ X) : letI := Mon_Class.ofIso e; IsMon_Hom e.hom := by
+  letI := Mon_Class.ofIso e; exact { }
+
+instance (f : M ≅ N) [IsMon_Hom f.hom] : IsMon_Hom f.inv where
   one_hom := by simp [Iso.comp_inv_eq]
   mul_hom := by simp [Iso.comp_inv_eq]
+
+instance {f : M ⟶ N} [IsIso f] [IsMon_Hom f] : IsMon_Hom (asIso f).hom := ‹_›
 
 variable (C) in
 /-- A monoid object internal to a monoidal category.
@@ -329,6 +413,21 @@ def mapMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapMon ≅ F'.ma
   NatIso.ofComponents fun X ↦ Mon_.mkIso (e.app _)
 
 end LaxMonoidal
+
+section OplaxMonoidal
+variable [F.OplaxMonoidal]
+
+open scoped Mon_Class in
+/-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
+abbrev FullyFaithful.mon_Class (hF : F.FullyFaithful) (X : C) [Mon_Class (F.obj X)] :
+    Mon_Class X where
+  one := hF.preimage <| OplaxMonoidal.η F ≫ η[F.obj X]
+  mul := hF.preimage <| OplaxMonoidal.δ F X X ≫ μ[F.obj X]
+  one_mul := hF.map_injective <| by simp [← δ_natural_left_assoc]
+  mul_one := hF.map_injective <| by simp [← δ_natural_right_assoc]
+  mul_assoc := hF.map_injective <| by simp [← δ_natural_left_assoc, ← δ_natural_right_assoc]
+
+end OplaxMonoidal
 
 section Monoidal
 variable [F.Monoidal]
@@ -842,14 +941,40 @@ open scoped Mon_Class
 
 namespace IsCommMon
 
-attribute [reassoc (attr := simp)] mul_comm
+attribute [reassoc (attr := simp, mon_tauto)] mul_comm
+
+variable (M) in
+@[reassoc (attr := simp, mon_tauto)]
+lemma mul_comm' [IsCommMon M] : (β_ M M).inv ≫ μ = μ := by simp [← cancel_epi (β_ M M).hom]
 
 instance : IsCommMon (𝟙_ C) where
   mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal]
 
 end IsCommMon
 
+variable (M) in
+@[reassoc (attr := simp)]
+lemma Mon_Class.mul_mul_mul_comm [IsCommMon M] :
+    tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
+
+variable (M) in
+@[reassoc (attr := simp)]
+lemma Mon_Class.mul_mul_mul_comm' [IsCommMon M] :
+    tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
+
 end
+
+section SymmetricCategory
+variable [SymmetricCategory C] {M N W X Y Z : C} [Mon_Class M] [Mon_Class N]
+
+instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
+  mul_comm := by
+    simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
+      ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, ← tensor_comp,
+      Mon_Class.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
+
+end SymmetricCategory
 
 /-!
 Projects:
