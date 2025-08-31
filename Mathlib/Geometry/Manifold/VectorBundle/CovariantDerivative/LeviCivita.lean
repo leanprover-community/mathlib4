@@ -452,66 +452,37 @@ lemma leviCivita_rhs_addZ [CompleteSpace E]
 lemma leviCivita_rhs'_smulZ_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
     leviCivita_rhs' I X Y (f • Z) x = f x • leviCivita_rhs' I X Y Z x := by
-  simp only [leviCivita_rhs']
-  simp [rhs_aux_smulX]
+  simp only [leviCivita_rhs', rhs_aux_smulX, Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulY_apply _ _ hf hZ hX, rhs_aux_smulZ_apply _ _ hf hY hZ]
-  beta_reduce
 
   set A := rhs_aux I X Y Z x
   set B := rhs_aux I Y Z X x
   set C := rhs_aux I Z X Y x
 
   -- Apply the product rule for the lie bracket.
-  have h1 : VectorField.mlieBracket I X (f • Z) x =
-      f x • VectorField.mlieBracket I X Z x + mfderiv% f x (X x) • Z x := by
-    rw [VectorField.mlieBracket_smul_right hf hZ, add_comm]
-  have h2 : VectorField.mlieBracket I (f • Z) Y x =
-      -(mfderiv% f x (Y x)) • Z x + f x • VectorField.mlieBracket I Z Y x := by
-    rw [VectorField.mlieBracket_smul_left hf hZ]
-  -- -- Again, we need to go into the product and back out again.
-  -- simp only [product_apply]
-  -- rw [h1, h2, inner_add_right, inner_smul_right_eq_smul]
-  -- simp only [← product_apply]
-
-  -- Let's try to encapsulate more.
-  have h1' : ⟪Y, mlieBracket I X (f • Z)⟫ x =
+  -- Let's encapsulate the going into the product and back out again.
+  have h1 : ⟪Y, mlieBracket I X (f • Z)⟫ x =
       f x • ⟪Y, mlieBracket I X Z⟫ x + ⟪Y, mfderiv% f x (X x) • Z⟫ x := by
-    rw [product_apply, h1, inner_add_right, inner_smul_right]
+    rw [product_apply, VectorField.mlieBracket_smul_right hf hZ, inner_add_right, add_comm,
+      inner_smul_right]
     congr
-  rw [h1']
+  have h2 : letI dfY : ℝ :=  (mfderiv% f x) (Y x);
+      ⟪X, mlieBracket I (f • Z) Y⟫ x = - dfY • ⟪X, Z⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
+    rw [product_apply, VectorField.mlieBracket_smul_left hf hZ, inner_add_right, inner_smul_right,
+      inner_smul_right]
+    congr
+  rw [h1, h2, product_smul_left, product_swap I X Z]
+  erw [product_smul_right]
+  simp
+
   set D := ⟪Y, mlieBracket I X Z⟫ x
-
-  set X'' := ⟪Y, (mfderiv I 𝓘(ℝ, ℝ) f x) (X x) • Z⟫ x
-
-
-  have aux : ⟪f • Z, mlieBracket I Y X⟫ x = f x • ⟪Z, mlieBracket I Y X⟫ x := by
-    rw [product_smul_left]; simp
-
-  rw [product_smul_left]
-  --simp_rw [product_smul_left]
-
-  --simp only [product_add_right_apply]
-  set D := ⟪Y, mlieBracket I X Z⟫ x
-  set E := ⟪Z, mlieBracket I Y X⟫ x
+  set E := ⟪Z, mlieBracket I Y X⟫ x with E_eq
   set F := ⟪X, mlieBracket I Z Y⟫ x
-  --rw [h1, h2]; beta_reduce
-  --simp only [smul_eq_mul, product_add_right_apply]
-
-  -- continue here!
-  sorry
-  -- simp_rw [product_apply]
-  -- set D' := (mfderiv% f x) (X x)
-  -- set D := (fun x ↦ (mfderiv% f x) (X x)) • Z
-
-  -- --rw [product_add_right, product_add_right]
-  -- -- These are all science fiction, and not fully true!
-  -- rw [product_smul_left, product_smul_right, product_smul_right]
-  -- set E := ⟪Z, VectorField.mlieBracket I X Y⟫
-  -- set F := ⟪Y, VectorField.mlieBracket I X Z⟫
-  -- set G := ⟪X, VectorField.mlieBracket I Z Y⟫
-  -- -- apart from science fiction mistakes, this is "an easy computation"
-  -- simp; abel_nf
-  -- sorry
+  letI dfX : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (X x)
+  set G := dfX * ⟪Y, Z⟫ x
+  letI dfY : ℝ := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+  set H := dfY * ⟪X, Z⟫ x
+  ring
 
 lemma leviCivita_rhs'_smulZ [CompleteSpace E] {f : M → ℝ}
     (hf : MDiff f) (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
@@ -524,38 +495,6 @@ lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ}
     leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
   simp only [leviCivita_rhs]
   rw [smul_comm, leviCivita_rhs'_smulZ I hf hX hY hZ]
-/- old proof attempt was:
-lemma leviCivita_rhs_smulZ [CompleteSpace E] {f : M → ℝ} (hf : MDiff f) (hZ : MDiff (T% Z)) :
-    leviCivita_rhs I X Y (f • Z) = f • leviCivita_rhs I X Y Z := by
-  simp only [leviCivita_rhs, leviCivita_rhs']
-  simp [rhs_aux_smulX]--, rhs_aux_smulY, rhs_aux_smulZ]
-  ext x
-  simp only [Pi.mul_apply, Pi.add_apply]
-  have h1 : VectorField.mlieBracket I X (f • Z) =
-      f • VectorField.mlieBracket I X Z + (fun x ↦ mfderiv% f x (X x)) • Z := by
-    ext x
-    rw [VectorField.mlieBracket_smul_right (hf x) (hZ x), add_comm]
-    simp
-  have h2 : VectorField.mlieBracket I (f • Z) Y =
-      -(fun x ↦ mfderiv% f x (Y x)) • Z + f • VectorField.mlieBracket I Z Y := by
-    ext x
-    rw [VectorField.mlieBracket_smul_left (hf x) (hZ x)]
-    simp
-  simp only [h1, Pi.smul_apply, Pi.sub_apply, Pi.add_apply, Pi.mul_apply, smul_eq_mul, h2]
-  set A := rhs_aux I X Y Z x
-  set B := rhs_aux I Y Z X x
-  set C := rhs_aux I Z X Y x
-  set D := (fun x ↦ (mfderiv% f x) (X x)) • Z
-
-  rw [product_add_right, product_add_right]
-  -- These are all science fiction, and not fully true!
-  rw [product_smul_left, product_smul_right, product_smul_right]
-  set E := ⟪Z, VectorField.mlieBracket I X Y⟫
-  set F := ⟪Y, VectorField.mlieBracket I X Z⟫
-  set G := ⟪X, VectorField.mlieBracket I Z Y⟫
-  -- apart from science fiction mistakes, this is "an easy computation"
-  simp; abel_nf
-  sorry -/
 
 end leviCivita_rhs
 
