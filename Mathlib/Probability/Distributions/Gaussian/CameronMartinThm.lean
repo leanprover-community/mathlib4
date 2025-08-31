@@ -320,7 +320,7 @@ lemma hasLaw_cameronMartinRKHS (x : cameronMartinRKHS μ) :
     have h := x.2
     rw [Submodule.mem_topologicalClosure_iff, mem_closure_iff_seq_limit] at h
     obtain ⟨L, hL_mem, hL_tendsto⟩ := h
-    simp only [Submodule.map_top, SetLike.mem_coe, LinearMap.mem_range] at hL_mem
+    simp only [SetLike.mem_coe, LinearMap.mem_range] at hL_mem
     have hL_ne_zero : ∀ᶠ n in atTop, L n ≠ 0 := hL_tendsto.eventually_ne (by simp [hx0])
     let L' := fun n ↦ (‖x‖ / ‖L n‖) • L n
     have hL'_mem n : ∃ y, StrongDual.centeredToLp μ 2 y = L' n := by

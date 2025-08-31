@@ -306,7 +306,7 @@ section CameronMartinSpace
 This is a separable Hilbert space. -/
 noncomputable
 def CameronMartin (μ : Measure E) [IsFiniteMeasure μ] :=
-  Completion (Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
+  Completion (LinearMap.range (StrongDual.centeredToLp μ 2))
 
 noncomputable instance [IsFiniteMeasure μ] : NormedAddCommGroup (CameronMartin μ) := by
   unfold CameronMartin
@@ -322,7 +322,7 @@ noncomputable instance [IsFiniteMeasure μ] : CompleteSpace (CameronMartin μ) :
 
 instance [SecondCountableTopology E] (μ : Measure E) [IsFiniteMeasure μ] :
     SecondCountableTopology (CameronMartin μ) := by
-  suffices SecondCountableTopology (Submodule.map (StrongDual.centeredToLp μ 2) ⊤) by
+  suffices SecondCountableTopology (LinearMap.range (StrongDual.centeredToLp μ 2)) by
     unfold CameronMartin
     infer_instance
   have : Fact (2 ≠ ∞) := ⟨by simp⟩
@@ -332,37 +332,35 @@ namespace CameronMartin
 
 noncomputable
 instance [IsFiniteMeasure μ] :
-    Coe (Submodule.map (StrongDual.centeredToLp μ 2) ⊤) (CameronMartin μ) :=
+    Coe (LinearMap.range (StrongDual.centeredToLp μ 2)) (CameronMartin μ) :=
   ⟨Completion.coe'⟩
 
 omit [CompleteSpace E] in
 @[norm_cast]
-lemma inner_coe [IsFiniteMeasure μ] (x y : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+lemma inner_coe [IsFiniteMeasure μ] (x y : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     ⟪(x : CameronMartin μ), (y : CameronMartin μ)⟫_ℝ = ⟪x, y⟫_ℝ := Completion.inner_coe _ _
 
 omit [CompleteSpace E] in
 @[norm_cast]
-lemma coe_add [IsFiniteMeasure μ] (x y : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
-    ((x + y : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : CameronMartin μ) = x + y := by
+lemma coe_add [IsFiniteMeasure μ] (x y : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    ((x + y : LinearMap.range (StrongDual.centeredToLp μ 2)) : CameronMartin μ) = x + y := by
   simp only [Completion.coe_add]
 
 omit [CompleteSpace E] in
 @[norm_cast]
-lemma coe_smul [IsFiniteMeasure μ] (r : ℝ) (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
-    ((r • x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : CameronMartin μ) = r • x := by
+lemma coe_smul [IsFiniteMeasure μ] (r : ℝ) (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    ((r • x : LinearMap.range (StrongDual.centeredToLp μ 2)) : CameronMartin μ) = r • x := by
   simp only [Completion.coe_smul]
 
 omit [CompleteSpace E] in
 @[norm_cast]
-lemma norm_coe [IsFiniteMeasure μ] (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+lemma norm_coe [IsFiniteMeasure μ] (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     ‖(x : CameronMartin μ)‖ = ‖x‖ := Completion.norm_coe _
 
--- todo: turn into a coe?
 /-- Inclusion from the StrongDual into the Cameron-Martin space, as a linear map. -/
 noncomputable
 def ofDual (μ : Measure E) [IsFiniteMeasure μ] : StrongDual ℝ E →ₗ[ℝ] CameronMartin μ :=
-  Completion.toComplL.toLinearMap.comp (((StrongDual.centeredToLp μ 2).submoduleMap ⊤).comp
-    (Submodule.topEquiv (R := ℝ) (M := StrongDual ℝ E)).symm.toLinearMap)
+  Completion.toComplL.toLinearMap.comp ((StrongDual.centeredToLp μ 2).toLinearMap.rangeRestrict)
 
 noncomputable
 instance [IsFiniteMeasure μ] : Coe (StrongDual ℝ E) (CameronMartin μ) :=
@@ -372,9 +370,8 @@ variable [HasTwoMoments μ]
 
 omit [CompleteSpace E] in
 lemma ofDual_apply (L : StrongDual ℝ E) :
-    ofDual μ L
-      = (⟨StrongDual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ :
-        Submodule.map (StrongDual.centeredToLp μ 2) ⊤) := rfl
+    ofDual μ L = (⟨StrongDual.centeredToLp μ 2 L, LinearMap.mem_range.mpr ⟨L, rfl⟩⟩ :
+        LinearMap.range (StrongDual.centeredToLp μ 2)) := rfl
 
 lemma ofDual_inner (L₁ L₂ : StrongDual ℝ E) :
     ⟪ofDual μ L₁, ofDual μ L₂⟫_ℝ = covarianceBilin μ L₁ L₂ := by
@@ -406,8 +403,8 @@ namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 This is an auxiliary definition for `CameronMartin.eval`. -/
 noncomputable
 def evalL2 (μ : Measure E) [HasTwoMoments μ] (y : E)
-    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : ℝ :=
-  (Submodule.mem_map.mp x.2).choose y
+    (x : LinearMap.range (StrongDual.centeredToLp μ 2)) : ℝ :=
+  (LinearMap.mem_range.mp x.2).choose y
 
 lemma norm_eval_le_norm_centeredToLp_mul (hy : ∃ M, ∀ L : StrongDual ℝ E, Var[L; μ] ≤ 1 → L y ≤ M)
     (L : StrongDual ℝ E) :
@@ -418,11 +415,11 @@ lemma norm_eval_le_norm_centeredToLp_mul (hy : ∃ M, ∀ L : StrongDual ℝ E, 
   exact norm_eval_le_norm_mul_ciSup (StrongDual.centeredToLp μ 2).toLinearMap hy L
 
 lemma norm_evalL2_le (hy : ∃ M, ∀ L : StrongDual ℝ E, Var[L; μ] ≤ 1 → L y ≤ M)
-    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+    (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     ‖evalL2 μ y x‖ ≤ ‖x‖ * ⨆ (L : StrongDual ℝ E) (_ : Var[L; μ] ≤ 1), L y := by
   simp only [AddSubgroupClass.coe_norm]
-  conv_rhs => rw [← (Submodule.mem_map.mp x.2).choose_spec.2]
-  exact norm_eval_le_norm_centeredToLp_mul hy (Submodule.mem_map.mp x.2).choose
+  conv_rhs => rw [← (LinearMap.mem_range.mp x.2).choose_spec]
+  exact norm_eval_le_norm_centeredToLp_mul hy (LinearMap.mem_range.mp x.2).choose
 
 lemma eval_eq_of_centeredToLp_eq (hy : ∃ M, ∀ L : StrongDual ℝ E, Var[L; μ] ≤ 1 → L y ≤ M)
     (L L' : StrongDual ℝ E) (hL : StrongDual.centeredToLp μ 2 L = StrongDual.centeredToLp μ 2 L') :
@@ -434,16 +431,16 @@ lemma eval_eq_of_centeredToLp_eq (hy : ∃ M, ∀ L : StrongDual ℝ E, Var[L; �
   simp [hL]
 
 lemma evalL2_eq (hy : ∃ M, ∀ L : StrongDual ℝ E, Var[L; μ] ≤ 1 → L y ≤ M)
-    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
+    (x : LinearMap.range (StrongDual.centeredToLp μ 2))
     {L : StrongDual ℝ E} (hL : StrongDual.centeredToLp μ 2 L = x) :
     evalL2 μ y x = L y := by
   rw [evalL2]
-  refine eval_eq_of_centeredToLp_eq hy (Submodule.mem_map.mp x.2).choose L ?_
-  rw [hL, (Submodule.mem_map.mp x.2).choose_spec.2]
+  refine eval_eq_of_centeredToLp_eq hy (LinearMap.mem_range.mp x.2).choose L ?_
+  rw [hL, (LinearMap.mem_range.mp x.2).choose_spec]
 
 lemma evalL2_centeredToLp_eq (hy : ∃ M, ∀ L : StrongDual ℝ E, Var[L; μ] ≤ 1 → L y ≤ M)
     (L : StrongDual ℝ E) :
-    evalL2 μ y ⟨StrongDual.centeredToLp μ 2 L, Submodule.mem_map.mpr ⟨L, by simp, rfl⟩⟩ = L y :=
+    evalL2 μ y ⟨StrongDual.centeredToLp μ 2 L, LinearMap.mem_range.mpr ⟨L, rfl⟩⟩ = L y :=
   evalL2_eq hy _ (by simp)
 
 end CameronMartinAux
@@ -464,13 +461,13 @@ def eval (μ : Measure E) [HasTwoMoments μ] (y : E)
   LinearMap.mkContinuous
     { toFun x := evalL2 μ y x
       map_add' x₁ x₂ := by
-        obtain ⟨L₁, -, hL₁⟩ := Submodule.mem_map.mp x₁.2
-        obtain ⟨L₂, -, hL₂⟩ := Submodule.mem_map.mp x₂.2
+        obtain ⟨L₁, hL₁⟩ := LinearMap.mem_range.mp x₁.2
+        obtain ⟨L₂, hL₂⟩ := LinearMap.mem_range.mp x₂.2
         rw [evalL2_eq hy x₁ hL₁, evalL2_eq hy x₂ hL₂, evalL2_eq hy (x₁ + x₂) (L := L₁ + L₂)]
         · simp
         · simp [hL₁, hL₂]
       map_smul' r x := by
-        obtain ⟨L, -, hL⟩ := Submodule.mem_map.mp x.2
+        obtain ⟨L, hL⟩ := LinearMap.mem_range.mp x.2
         rw [evalL2_eq hy x hL, evalL2_eq hy (r • x) (L := r • L)]
         · simp
         · simp [hL] }
@@ -527,50 +524,50 @@ namespace CameronMartinAux -- namespace for auxiliary definitions and lemmas
 This is an auxiliary definition for `CameronMartin.toInitialSpace`. -/
 noncomputable
 def toInit (μ : Measure E) [IsFiniteMeasure μ]
-    (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : E :=
-  ∫ y, (Submodule.mem_map.mp x.2).choose (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ
+    (x : LinearMap.range (StrongDual.centeredToLp μ 2)) : E :=
+  ∫ y, (LinearMap.mem_range.mp x.2).choose (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ
 
 omit [SecondCountableTopology E] in
-lemma toInit_eq (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) {L : StrongDual ℝ E}
+lemma toInit_eq (x : LinearMap.range (StrongDual.centeredToLp μ 2)) {L : StrongDual ℝ E}
     (hL : StrongDual.centeredToLp μ 2 L = x) :
     toInit μ x = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ :=
   calc toInit μ x
   _ = ∫ y, x.1 y • (y - ∫ z, z ∂μ) ∂μ := by
     rw [toInit]
-    conv_rhs => rw [← (Submodule.mem_map.mp x.2).choose_spec.2]
+    conv_rhs => rw [← (LinearMap.mem_range.mp x.2).choose_spec]
     refine integral_congr_ae ?_
-    filter_upwards [centeredToLp_apply memLp_two_id (Submodule.mem_map.mp x.2).choose] with y hy
+    filter_upwards [centeredToLp_apply memLp_two_id (LinearMap.mem_range.mp x.2).choose] with y hy
     rw [hy]
   _ = ∫ y, StrongDual.centeredToLp μ 2 L y • (y - ∫ z, z ∂μ) ∂μ := by rw [hL]
   _ = ∫ y, L (y - ∫ z, z ∂μ) • (y - ∫ z, z ∂μ) ∂μ := by
     refine integral_congr_ae ?_
     filter_upwards [centeredToLp_apply memLp_two_id L] with y hy using by rw [hy]
 
-lemma apply_toInit (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) (L : StrongDual ℝ E) :
+lemma apply_toInit (x : LinearMap.range (StrongDual.centeredToLp μ 2)) (L : StrongDual ℝ E) :
     L (toInit μ x)
-      = ∫ y, (Submodule.mem_map.mp x.2).choose (y - ∫ z, z ∂μ) * L (y - ∫ z, z ∂μ) ∂μ := by
+      = ∫ y, (LinearMap.mem_range.mp x.2).choose (y - ∫ z, z ∂μ) * L (y - ∫ z, z ∂μ) ∂μ := by
   rw [toInit, ← L.integral_comp_comm]
   · simp
   rw [← integrable_norm_iff (by fun_prop)]
-  simp only [Submodule.mem_top, true_and, map_sub, norm_smul]
+  simp only [map_sub, norm_smul]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
   · rw [memLp_norm_iff (by fun_prop)]
     exact (ContinuousLinearMap.memLp_two _).sub (memLp_const _)
   · rw [memLp_norm_iff (by fun_prop)]
     exact MemLp.sub memLp_two_id (memLp_const _)
 
-lemma apply_toInit_eq_inner (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤)
+lemma apply_toInit_eq_inner (x : LinearMap.range (StrongDual.centeredToLp μ 2))
     (L : StrongDual ℝ E) :
     L (toInit μ x) = ⟪StrongDual.centeredToLp μ 2 L, x⟫_ℝ := by
-  rw [← (Submodule.mem_map.mp x.2).choose_spec.2, L2.inner_def, apply_toInit]
+  rw [← (LinearMap.mem_range.mp x.2).choose_spec, L2.inner_def, apply_toInit]
   simp only [RCLike.inner_apply, conj_trivial]
   refine integral_congr_ae ?_
   filter_upwards [centeredToLp_apply memLp_two_id L,
-    centeredToLp_apply memLp_two_id (Submodule.mem_map.mp x.2).choose]
+    centeredToLp_apply memLp_two_id (LinearMap.mem_range.mp x.2).choose]
     with y hy₁ hy₂
   rw [hy₁, hy₂]
 
-lemma norm_toInit_le (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+lemma norm_toInit_le (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     ‖toInit μ x‖ ≤ ‖StrongDual.centeredToLp μ 2‖ * ‖x‖ := by
   refine norm_le_dual_bound ℝ _ (by positivity) fun L ↦ ?_
   calc ‖L (toInit μ x)‖
@@ -626,7 +623,7 @@ lemma eq_zero_of_toInitialSpace_eq_zero {x : CameronMartin μ}
     exact this x
   rw [← funext_iff]
   refine Completion.ext (by fun_prop) (by fun_prop) fun L ↦ ?_
-  obtain ⟨L', -, hL'⟩ := Submodule.mem_map.mp L.2
+  obtain ⟨L', hL'⟩ := LinearMap.mem_range.mp L.2
   have : ofDual μ L' = L := by rw [ofDual_apply]; congr
   rw [← this, ← apply_toInitialSpace_eq_inner, h]
   simp
@@ -714,7 +711,7 @@ lemma inner_le_mul_ciSup (x y : CameronMartin μ) :
   | hp =>
     exact isClosed_le (by fun_prop) (by fun_prop)
   | ih a =>
-    obtain ⟨L, -, hL⟩ := Submodule.mem_map.mp a.2
+    obtain ⟨L, hL⟩ := LinearMap.mem_range.mp a.2
     have : (a : CameronMartin μ) = CameronMartin.ofDual μ L := by
       simp_rw [CameronMartin.ofDual_apply, hL]
     rw [this]
@@ -807,29 +804,29 @@ lemma coeClosure_smul {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] 
 
 noncomputable
 def cameronMartinRKHS (μ : Measure E) [HasTwoMoments μ] : Submodule ℝ (Lp ℝ 2 μ) :=
-  (Submodule.map (StrongDual.centeredToLp μ 2) ⊤).topologicalClosure
+  (LinearMap.range (StrongDual.centeredToLp μ 2)).topologicalClosure
 
 variable [HasTwoMoments μ]
 
 @[coe]
-noncomputable def coeRKHS (L : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+noncomputable def coeRKHS (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     cameronMartinRKHS μ := coeClosure L
 
 noncomputable
-instance : Coe (Submodule.map (StrongDual.centeredToLp μ 2) ⊤) (cameronMartinRKHS μ) :=
+instance : Coe (LinearMap.range (StrongDual.centeredToLp μ 2)) (cameronMartinRKHS μ) :=
   ⟨coeRKHS⟩
 
 omit [CompleteSpace E] in
 @[simp, norm_cast]
-lemma coeRKHS_add (x y : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
-    ((x + y : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : cameronMartinRKHS μ)
+lemma coeRKHS_add (x y : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    ((x + y : LinearMap.range (StrongDual.centeredToLp μ 2)) : cameronMartinRKHS μ)
       = (x : cameronMartinRKHS μ) + (y : cameronMartinRKHS μ) := by
   simp [coeRKHS]
 
 omit [CompleteSpace E] in
 @[simp, norm_cast]
-lemma coeRKHS_smul (r : ℝ) (x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
-    ((r • x : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) : cameronMartinRKHS μ)
+lemma coeRKHS_smul (r : ℝ) (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    ((r • x : LinearMap.range (StrongDual.centeredToLp μ 2)) : cameronMartinRKHS μ)
       = r • (x : cameronMartinRKHS μ) := by
   simp [coeRKHS]
 
@@ -837,12 +834,12 @@ noncomputable
 def cameronMartinRKHSEquiv (μ : Measure E) [HasTwoMoments μ] :
     CameronMartin μ ≃ᵤ cameronMartinRKHS μ :=
   AbstractCompletion.compareEquiv
-    (UniformSpace.Completion.cPkg (α := Submodule.map (StrongDual.centeredToLp μ 2) ⊤))
-    (abstractCompletionClosure (Submodule.map (StrongDual.centeredToLp μ 2) ⊤).carrier)
+    (UniformSpace.Completion.cPkg (α := LinearMap.range (StrongDual.centeredToLp μ 2)))
+    (abstractCompletionClosure (LinearMap.range (StrongDual.centeredToLp μ 2)).carrier)
 
 omit [CompleteSpace E] in
 @[simp]
-lemma cameronMartinRKHSEquiv_coe (L : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+lemma cameronMartinRKHSEquiv_coe (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     cameronMartinRKHSEquiv μ L = L := by
   simp [cameronMartinRKHSEquiv, AbstractCompletion.compareEquiv]
   exact AbstractCompletion.compare_coe _ _ _
@@ -883,7 +880,7 @@ def cmIsometryEquiv (μ : Measure E) [HasTwoMoments μ] :
 
 omit [CompleteSpace E] in
 @[simp]
-lemma cmIsometryEquiv_coe (L : Submodule.map (StrongDual.centeredToLp μ 2) ⊤) :
+lemma cmIsometryEquiv_coe (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     cmIsometryEquiv μ L = L := by simp [cmIsometryEquiv]
 
 omit [CompleteSpace E] in
