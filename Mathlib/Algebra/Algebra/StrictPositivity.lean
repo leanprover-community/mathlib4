@@ -10,10 +10,11 @@ import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
-# Strictly positive elements of a C⋆-algebra
+# Strictly positive elements of an algebra
 
-This file introduces strictly positive elements of a C⋆-algebra (also known as positive definite
-elements).
+This file introduces strictly positive elements of an algebra (also known as positive definite
+elements). This is mostly used for C⋆-algebras, but the basic definition makes sense in a more
+general context.
 
 ## Implementation notes
 
@@ -27,7 +28,7 @@ Thus, it is best to avoid unfolding the definition and only use the API provided
 + Generalize the definition to non-unital algebras.
 -/
 
-/-- An element of a C⋆-algebra is *strictly positive* if it is nonnegative and invertible.
+/-- An element of an ordered algebra is *strictly positive* if it is nonnegative and invertible.
 
 NOTE: This definition will be generalized to the non-unital case in the future; do not unfold
 the definition and use the API provided instead to avoid breakage when the refactor happens. -/
@@ -95,9 +96,3 @@ grind_pattern IsStrictlyPositive.spectrum_pos => x ∈ spectrum 𝕜 a, IsStrict
 end Algebra
 
 end IsStrictlyPositive
-
-/-
-TODO:
-+ Depend only on `NonnegSpectrumClass`
-+ Add stuff to `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`
--/
