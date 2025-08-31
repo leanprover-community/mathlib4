@@ -397,7 +397,7 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     Finset.prod_range_add_one_eq_factorial, Nat.cast_pow,
     (by intros; ring : ∀ a b c d : ℂ, a * b * (c * d) = a * (d * (b * c))), ← div_div,
     mul_div_cancel_right₀, ← div_div, mul_comm z _, mul_one_div]
-  exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| Nat.factorial_ne_zero n)
+  exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| by positivity)
 
 /-- Euler's reflection formula for the complex Gamma function. -/
 theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
