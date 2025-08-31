@@ -171,8 +171,10 @@ def natToInt : GlobalBranchingPreprocessor where
         let indices_b ← (getNatComparisons b).mapM getIndices
         pure <| (es.insertMany indices_a).insertMany indices_b
       catch _ => pure es
-    pure [(g, ((← nonnegs.toList.filterMapM fun p => do
-      mk_natCast_nonneg_prf ((← get).atoms[p.1]!, (← get).atoms[p.2]!)) ++ l : List Expr))]
+    let atoms : Array Expr := (← get).atoms
+    let nonneg_pfs : List Expr ← nonnegs.toList.filterMapM fun p => do
+      mk_natCast_nonneg_prf (atoms[p.1]!, atoms[p.2]!)
+    pure [(g, nonneg_pfs ++ l)]
 
 end natToInt
 
