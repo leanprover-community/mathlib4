@@ -57,7 +57,7 @@ to learn about it as well!
   Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
 - `githelper.py`
   The subcommand `githelper.py fix` helps contributors fix their git repository setup
-  by step-by-step converting it from its current state to a well defined target state.
+  by step-by-step converting it from its current state to a well-defined target state.
   The target state mostly matches the state after of a freshly cloned fork (`gh repo clone <fork>`)
   and looks like this:
 
