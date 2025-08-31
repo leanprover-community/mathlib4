@@ -37,7 +37,9 @@ structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
   /-- Imaginary part of an element in quadratic algebra -/
   im : R
 deriving DecidableEq
+
 initialize_simps_projections QuadraticAlgebra (as_prefix re, as_prefix im)
+
 variable {R : Type*}
 namespace QuadraticAlgebra
 
@@ -58,7 +60,6 @@ instance [Subsingleton R] : Subsingleton (QuadraticAlgebra R a b) := (equivProd 
 instance [Nontrivial R] : Nontrivial (QuadraticAlgebra R a b) := (equivProd a b).nontrivial
 
 section Zero
-
 variable [Zero R]
 
 /-- Coercion `R → QuadraticAlgebra R a b`. -/
@@ -125,7 +126,6 @@ theorem mk_add_mk (z w : QuadraticAlgebra R a b) :
 end Add
 
 section AddZeroClass
-
 variable [AddZeroClass R]
 
 @[simp]
@@ -134,7 +134,6 @@ theorem coe_add (x y : R) : ((x + y : R) : QuadraticAlgebra R a b) = x + y := by
 end AddZeroClass
 
 section Neg
-
 variable [Neg R]
 
 instance : Neg (QuadraticAlgebra R a b) where neg z := ⟨-z.re, -z.im⟩
@@ -176,7 +175,6 @@ theorem coe_sub (r1 r2 : R) [SubNegZeroMonoid R] :
 end AddGroup
 
 section Mul
-
 variable [Mul R] [Add R]
 
 instance : Mul (QuadraticAlgebra R a b) where
@@ -196,7 +194,6 @@ theorem mk_mul_mk (x1 y1 x2 y2 : R) :
 end Mul
 
 section SMul
-
 variable [SMul S R] [SMul T R] (s : S)
 
 instance : SMul S (QuadraticAlgebra R a b) where smul s z := ⟨s • z.re, s • z.im⟩
@@ -296,7 +293,6 @@ theorem coe_intCast (n : ℤ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 end AddCommGroupWithOne
 
 section Semiring
-
 variable (a b) [Semiring R]
 
 /-- `QuadraticAlgebra.re` as a `LinearMap` -/
@@ -352,7 +348,6 @@ theorem coe_mul (x y : R) : ↑(x * y) = (↑x * ↑y : QuadraticAlgebra R a b) 
 end Semiring
 
 section CommSemiring
-
 variable [CommSemiring R]
 
 instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
