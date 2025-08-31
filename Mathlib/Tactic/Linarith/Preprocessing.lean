@@ -165,11 +165,11 @@ def natToInt : GlobalBranchingPreprocessor where
     let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?
-        let cmps_a ← (getNatComparisons a).mapM fun p =>
+        let getIndices (p : Expr × Expr) : AtomM (ℕ × ℕ) := do
           return ((← AtomM.addAtom p.1).1, (← AtomM.addAtom p.2).1)
-        let cmps_b ← (getNatComparisons b).mapM fun p =>
-          return ((← AtomM.addAtom p.1).1, (← AtomM.addAtom p.2).1)
-        pure <| (es.insertMany cmps_a).insertMany cmps_b
+        let indices_a ← (getNatComparisons a).mapM getIndices
+        let indices_b ← (getNatComparisons b).mapM getIndices
+        pure <| (es.insertMany indices_a).insertMany indices_b
       catch _ => pure es
     pure [(g, ((← nonnegs.toList.filterMapM fun p => do
       mk_natCast_nonneg_prf ((← get).atoms[p.1]!, (← get).atoms[p.2]!)) ++ l : List Expr))]
