@@ -435,6 +435,10 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
   isSuccLimit_iff
 
+@[simp]
+protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
+  not_isSuccLimit_bot
+
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
 Note that `ℵ₀` is a strong limit by this definition. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
@@ -448,6 +452,10 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
+
+@[simp]
+theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
+  fun h ↦ h.ne_zero rfl
 
 /-! ### Indexed cardinal `sum` -/
 
