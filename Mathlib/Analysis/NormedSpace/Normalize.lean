@@ -8,15 +8,15 @@ import Mathlib.Analysis.RCLike.Basic
 /-!
 # Normalized vector
 
-Function that calculates unit length vector from a vector
+Function that returns unit length vector that points in the same direction
 (if the given vector is nonzero vector) or returns zero vector
 (if the given vector is zero vector).
 -/
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
-/-- The normalized vector from a given vector. `normalize 0 = 0`, otherwise it is
-the corresponding unit length vector. -/
+/-- The a nonzero vector `x`, `normalize x` is the unit-length vector that points
+in the same direction as `x`. If `x = 0`, then `normalize x = 0`. -/
 noncomputable def NormedSpace.normalize (x : V) : V := ‖x‖⁻¹ • x
 
 namespace NormedSpace
