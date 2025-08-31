@@ -295,6 +295,26 @@ theorem coe_intCast (n : ℤ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 
 end AddCommGroupWithOne
 
+section NonUnitalNonAssocSemiring
+variable [NonUnitalNonAssocSemiring R]
+
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlgebra R a b) where
+  left_distrib _ _ _ := by ext <;> simpa using by simp [mul_add]; abel
+  right_distrib _ _ _ := by ext <;> simpa using by simp [mul_add, add_mul]; abel
+  zero_mul _ := by ext <;> simp
+  mul_zero _ := by ext <;> simp
+
+end NonUnitalNonAssocSemiring
+
+section NonAssocSemiring
+variable [NonAssocSemiring R]
+
+instance instNonAssocSemiring : NonAssocSemiring (QuadraticAlgebra R a b) where
+  one_mul _ := by ext <;> simp
+  mul_one _ := by ext <;> simp
+
+end NonAssocSemiring
+
 section Semiring
 
 variable (a b) [Semiring R]
@@ -356,14 +376,7 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
-  __ := inferInstanceAs (AddCommMonoidWithOne (QuadraticAlgebra R a b))
-  left_distrib _ _ _ := by ext <;> simpa using by ring
-  right_distrib _ _ _ := by ext <;> simpa using by ring
-  zero_mul _ := by ext <;> simp
-  mul_zero _ := by ext <;> simp
   mul_assoc _ _ _ := by ext <;> simpa using by ring
-  one_mul _ := by ext <;> simp
-  mul_one _ := by ext <;> simp
   mul_comm _ _ := by ext <;> simpa using by ring
 
 instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
@@ -408,8 +421,6 @@ end CommSemiring
 section CommRing
 
 instance instCommRing [CommRing R] : CommRing (QuadraticAlgebra R a b) where
-  __ := inferInstanceAs (AddCommGroupWithOne (QuadraticAlgebra R a b))
-  __ := inferInstanceAs (CommSemiring (QuadraticAlgebra R a b))
 
 end CommRing
 
