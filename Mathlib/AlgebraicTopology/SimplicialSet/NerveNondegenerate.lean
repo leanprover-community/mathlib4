@@ -59,14 +59,10 @@ lemma mem_nerve_nonDegenerate_iff_strictMono (s : (nerve X) _⦋n⦌) :
   · rw [← not_iff_not, ← SSet.mem_degenerate_iff_notMem_nonDegenerate,
       Fin.strictMono_iff_lt_succ, SSet.degenerate_eq_iUnion_range_σ, Set.mem_iUnion]
     simp only [mem_range_nerve_σ_iff, not_forall]
-    constructor
-    · rintro ⟨i, hi⟩
-      exact ⟨i, hi.not_lt⟩
-    · rintro ⟨i, hi⟩
-      refine ⟨i, ?_⟩
-      obtain h | h := (s.monotone i.castSucc_le_succ).lt_or_eq
-      · exact (hi h).elim
-      · exact h
+    apply exists_congr
+    intro i
+    have := s.monotone i.castSucc_le_succ
+    grind [SimplexCategory.len_mk, lt_self_iff_false, LE.le.lt_or_eq]
 
 lemma mem_nerve_nonDegenerate_iff_injective (s : (nerve X) _⦋n⦌) :
     s ∈ (nerve X).nonDegenerate n ↔ Function.Injective s.obj := by
