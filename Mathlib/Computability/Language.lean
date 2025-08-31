@@ -226,7 +226,13 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction n generalizing x with
-  | zero => simp
+  | zero =>
+    simp only [mem_one, pow_zero, length_eq_zero_iff]
+    constructor
+    · rintro rfl
+      exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
+    · rintro ⟨_, rfl, rfl, _⟩
+      rfl
   | succ n ihn =>
     simp only [pow_succ', mem_mul, ihn]
     constructor
@@ -239,7 +245,11 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
   simp only [mem_kstar, mem_iSup, mem_pow]
-  grind
+  constructor
+  · rintro ⟨S, rfl, hS⟩
+    exact ⟨_, S, rfl, rfl, hS⟩
+  · rintro ⟨_, S, rfl, rfl, hS⟩
+    exact ⟨S, rfl, hS⟩
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by

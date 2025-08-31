@@ -43,7 +43,7 @@ structure Karoubi where
   /-- an endomorphism of the object -/
   p : X ⟶ X
   /-- the condition that the given endomorphism is an idempotent -/
-  idem : p ≫ p = p := by cat_disch
+  idem : p ≫ p = p := by aesop_cat
 
 namespace Karoubi
 
@@ -69,7 +69,7 @@ structure Hom (P Q : Karoubi C) where
   /-- a morphism between the underlying objects -/
   f : P.X ⟶ Q.X
   /-- compatibility of the given morphism with the given idempotents -/
-  comm : P.p ≫ f ≫ Q.p = f := by cat_disch
+  comm : P.p ≫ f ≫ Q.p = f := by aesop_cat
 
 instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩

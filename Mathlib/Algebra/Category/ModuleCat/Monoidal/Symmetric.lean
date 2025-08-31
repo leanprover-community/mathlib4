@@ -10,6 +10,8 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 # The symmetric monoidal structure on `Module R`.
 -/
 
+suppress_compilation
+
 universe v w x u
 
 open CategoryTheory MonoidalCategory
@@ -77,7 +79,7 @@ instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   symmetry _ _ := by
     ext : 1
     apply TensorProduct.ext'
-    cat_disch
+    aesop_cat
 
 @[simp]
 theorem braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :

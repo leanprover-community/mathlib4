@@ -47,7 +47,7 @@ structure Modification (η θ : F ⟶ G) where
   naturality :
     ∀ {a b : B} (f : a ⟶ b),
       F.map f ◁ app b ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f := by
-    cat_disch
+    aesop_cat
 
 attribute [reassoc (attr := simp)] Modification.naturality
 

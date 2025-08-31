@@ -10,7 +10,6 @@ import Mathlib.LinearAlgebra.Basis.Defs
 # Lemmas about bilinear maps with a basis over each argument
 -/
 
-open Module
 
 namespace LinearMap
 

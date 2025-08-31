@@ -55,7 +55,6 @@ instance (priority := 100) CreatesLimits.createsFiniteLimits (F : C ⥤ D)
     [CreatesLimits F] : CreatesFiniteLimits F :=
   CreatesLimitsOfSize.createsFiniteLimits F
 
-attribute [local instance] uliftCategory in
 /-- If `F` creates finite limits in any universe, then it creates finite limits. -/
 def createsFiniteLimitsOfCreatesFiniteLimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesLimitsOfShape J F) :
@@ -144,7 +143,6 @@ instance (priority := 100) CreatesColimits.createsFiniteColimits (F : C ⥤ D)
     [CreatesColimits F] : CreatesFiniteColimits F :=
   CreatesColimitsOfSize.createsFiniteColimits F
 
-attribute [local instance] uliftCategory in
 /-- If `F` creates finite colimits in any universe, then it creates finite colimits. -/
 def createsFiniteColimitsOfCreatesFiniteColimitsOfSize (F : C ⥤ D)
     (h : ∀ (J : Type w) {_ : SmallCategory J} (_ : FinCategory J), CreatesColimitsOfShape J F) :

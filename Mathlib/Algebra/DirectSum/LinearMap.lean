@@ -16,7 +16,7 @@ domain and codomain.
 
 -/
 
-open DirectSum Module Set
+open Set DirectSum
 
 namespace LinearMap
 

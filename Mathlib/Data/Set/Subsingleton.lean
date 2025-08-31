@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Data.Set.Insert
-import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton
@@ -16,7 +15,7 @@ elements.
 
 -/
 
-assert_not_exists HeytingAlgebra RelIso
+assert_not_exists RelIso
 
 open Function
 
@@ -112,11 +111,6 @@ For the corresponding result for `Subtype`, see `subtype.subsingleton`. -/
 instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsingleton s := by
   rw [s.subsingleton_coe]
   exact subsingleton_of_subsingleton
-
-lemma Subsingleton.denselyOrdered {s : Set α} [LT α] (hs : s.Subsingleton) :
-    DenselyOrdered s :=
-  have := (subsingleton_coe _).mpr hs
-  ⟨fun _ _ h ↦ ⟨_, h.trans_eq (Subsingleton.elim _ _), h⟩⟩
 
 end Subsingleton
 
@@ -237,7 +231,7 @@ theorem nontrivial_univ_iff : (univ : Set α).Nontrivial ↔ Nontrivial α :=
 
 @[simp]
 theorem singleton_ne_univ [Nontrivial α] (a : α) : {a} ≠ univ :=
-  fun h ↦ nontrivial_univ.not_subset_singleton h.superset
+  nonempty_compl.mp (nonempty_compl_of_nontrivial a)
 
 @[simp]
 theorem singleton_ssubset_univ [Nontrivial α] (a : α) : {a} ⊂ univ :=

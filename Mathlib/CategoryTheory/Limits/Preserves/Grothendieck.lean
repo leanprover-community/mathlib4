@@ -18,8 +18,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor
-
 namespace Limits
 
 noncomputable section
@@ -42,9 +40,9 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
        (limitCompWhiskeringLeftIsoCompLimit K (Grothendieck.ι F c)).symm ≪≫
       preservesLimitIso colim _ ≪≫
       HasLimit.isoOfNatIso
-        (associator _ _ _ ≪≫
+        (Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (fiberwiseColimCompEvaluationIso _).symm ≪≫
-        (associator _ _ _).symm) ≪≫
+        (Functor.associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
     fun {c₁ c₂} f => by
       simp only [fiberwiseColimit_obj, fiberwiseColimit_map, Iso.trans_hom, Iso.symm_hom,
@@ -75,7 +73,7 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
           preservesLimitIso colim (K ⋙ fiberwiseColim _ _)
     _ ≅ limit (K ⋙ colim) :=
       HasLimit.isoOfNatIso
-       (associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
+       (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
     convert Iso.isIso_hom i₂
     ext

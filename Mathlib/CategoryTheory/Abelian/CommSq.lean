@@ -57,7 +57,7 @@ lemma hom_eq_add_up_to_refinements (h : IsPushout t l r b) {T : C} (x₄ : T ⟶
   refine ⟨T', π, inferInstance, u ≫ biprod.fst, u ≫ biprod.snd, ?_⟩
   simp only [hu, assoc, ← Preadditive.comp_add]
   congr
-  cat_disch
+  aesop_cat
 
 /--
 Given a commutative diagram in an abelian category

@@ -59,7 +59,7 @@ dropping the augmentation corresponds to precomposition with
 @[simps!]
 def equivAugmentedCosimplicialObjectFunctorCompDropIso :
     equivAugmentedCosimplicialObject.functor ⋙ CosimplicialObject.Augmented.drop ≅
-    (Functor.whiskeringLeft _ _ C).obj inclusion :=
+    (whiskeringLeft _ _ C).obj inclusion :=
   .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
@@ -93,7 +93,7 @@ dropping the augmentation corresponds to precomposition with
 @[simps!]
 def equivAugmentedSimplicialObjectFunctorCompDropIso :
     equivAugmentedSimplicialObject.functor ⋙ SimplicialObject.Augmented.drop ≅
-    (Functor.whiskeringLeft _ _ C).obj inclusion.op :=
+    (whiskeringLeft _ _ C).obj inclusion.op :=
   .refl _
 
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,

@@ -732,7 +732,11 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
   let Q : Matrix n n 𝕜 → Prop := fun N => det N ≠ 0 ∧ P N
   have : Q M := by
     apply diagonal_transvection_induction Q M
-    · grind
+    · intro D hD
+      have detD : det (diagonal D) ≠ 0 := by
+        rw [hD]
+        exact hMdet
+      exact ⟨detD, hdiag _ detD⟩
     · intro t
       exact ⟨by simp, htransvec t⟩
     · intro A B QA QB

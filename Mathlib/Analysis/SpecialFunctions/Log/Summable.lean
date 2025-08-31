@@ -87,8 +87,7 @@ lemma summable_log_one_add_of_summable (hf : Summable f) :
   rw [ofReal_log, ofReal_add, ofReal_one]
   linarith
 
-protected lemma multipliable_one_add_of_summable (hf : Summable f) :
-    Multipliable (fun i ↦ 1 + f i) := by
+lemma multipliable_one_add_of_summable (hf : Summable f) : Multipliable (fun i ↦ 1 + f i) := by
   refine multipliable_of_summable_log' ?_ (summable_log_one_add_of_summable hf)
   filter_upwards [hf.tendsto_cofinite_zero.eventually_const_lt neg_one_lt_zero] with i hi
   linarith

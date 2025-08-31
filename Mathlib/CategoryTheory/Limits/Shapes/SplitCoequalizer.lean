@@ -60,13 +60,13 @@ structure IsSplitCoequalizer {Z : C} (π : Y ⟶ Z) where
   /-- A map in the opposite direction to `f` and `g` -/
   leftSection : Y ⟶ X
   /-- Composition of `π` with `f` and with `g` agree -/
-  condition : f ≫ π = g ≫ π := by cat_disch
+  condition : f ≫ π = g ≫ π := by aesop_cat
   /-- `rightSection` splits `π` -/
-  rightSection_π : rightSection ≫ π = 𝟙 Z := by cat_disch
+  rightSection_π : rightSection ≫ π = 𝟙 Z := by aesop_cat
   /-- `leftSection` splits `g` -/
-  leftSection_bottom : leftSection ≫ g = 𝟙 Y := by cat_disch
+  leftSection_bottom : leftSection ≫ g = 𝟙 Y := by aesop_cat
   /-- `leftSection` composed with `f` is `pi` composed with `rightSection` -/
-  leftSection_top : leftSection ≫ f = π ≫ rightSection := by cat_disch
+  leftSection_top : leftSection ≫ f = π ≫ rightSection := by aesop_cat
 
 instance {X : C} : Inhabited (IsSplitCoequalizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := { rightSection := 𝟙 X, leftSection := 𝟙 X }

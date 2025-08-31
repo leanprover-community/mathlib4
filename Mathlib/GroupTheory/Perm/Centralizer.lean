@@ -207,7 +207,8 @@ structure Basis (g : Equiv.Perm α) where
   /-- For each cycle, the chosen element belongs to the cycle -/
   (mem_support_self' : ∀ (c : g.cycleFactorsFinset), toFun c ∈ c.val.support)
 
-instance (g : Perm α) : FunLike (Basis g) g.cycleFactorsFinset α where
+instance (g : Perm α) :
+    DFunLike (Basis g) (g.cycleFactorsFinset) (fun _ => α) where
   coe a := a.toFun
   coe_injective' a a' _ := by cases a; cases a'; congr
 
@@ -667,7 +668,7 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
       ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
   rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff,
     ← exists_with_cycleType_iff, not_exists]
-  simp
+  aesop
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({g | g.cycleType = m} : Finset (Perm α)) *

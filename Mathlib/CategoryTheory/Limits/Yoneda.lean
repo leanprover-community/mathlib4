@@ -33,7 +33,7 @@ variable {C : Type u} [Category.{v} C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := by cat_disch }
+  ι := { app := by aesop_cat }
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
 -/

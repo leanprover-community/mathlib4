@@ -104,6 +104,9 @@ abbrev Topology.IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : 
     (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
   .replaceTopology (.induced f h.injective m) h.eq_induced
 
+@[deprecated (since := "2024-10-26")]
+alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
+
 instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
     MetricSpace (Subtype p) :=
   .induced Subtype.val Subtype.coe_injective ‹_›
@@ -140,10 +143,10 @@ section Pi
 
 open Finset
 
-variable {X : β → Type*} [Fintype β] [∀ b, MetricSpace (X b)]
+variable {π : β → Type*} [Fintype β] [∀ b, MetricSpace (π b)]
 
 /-- A finite product of metric spaces is a metric space, with the sup distance. -/
-instance metricSpacePi : MetricSpace (∀ b, X b) := .ofT0PseudoMetricSpace _
+instance metricSpacePi : MetricSpace (∀ b, π b) := .ofT0PseudoMetricSpace _
 
 end Pi
 

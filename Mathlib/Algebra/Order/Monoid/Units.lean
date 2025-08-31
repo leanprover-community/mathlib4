@@ -29,17 +29,17 @@ theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a <
 
 @[to_additive]
 instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
-  PartialOrder.lift val val_injective
+  PartialOrder.lift val Units.ext
 
 @[to_additive]
 instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
-  LinearOrder.lift' val val_injective
+  LinearOrder.lift' val Units.ext
 
 /-- `val : αˣ → α` as an order embedding. -/
 @[to_additive (attr := simps -fullyApplied)
-  /-- `val : add_units α → α` as an order embedding. -/]
+  "`val : add_units α → α` as an order embedding."]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
-  ⟨⟨val, val_injective⟩, .rfl⟩
+  ⟨⟨val, ext⟩, Iff.rfl⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=

@@ -83,7 +83,7 @@ variable (M)
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
-    (by ext; simp [FixedBy.subfield])
+    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf]; rfl)
 
 instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
   smul_mem g x hx g' := by rw [hx, hx]
@@ -296,6 +296,8 @@ theorem cardinalMk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Ring
     [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
   (linearIndependent_toLinearMap K V W).cardinalMk_le_finrank
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom := cardinalMk_algHom
 
 noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype (V ≃ₐ[K] V) :=

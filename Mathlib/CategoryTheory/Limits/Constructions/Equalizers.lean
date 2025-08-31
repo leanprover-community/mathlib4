@@ -59,7 +59,9 @@ abbrev equalizerCone (F : WalkingParallelPair ⥤ C) : Cone F :=
 
 /-- Show the equalizing cone is a limit -/
 def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCone F) where
-  lift c := pullback.lift (c.π.app _) (c.π.app _)
+  lift := by
+    intro c; apply pullback.lift (c.π.app _) (c.π.app _)
+    ext <;> simp
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c _ J
@@ -148,7 +150,9 @@ abbrev coequalizerCocone (F : WalkingParallelPair ⥤ C) : Cocone F :=
 
 /-- Show the equalizing cocone is a colimit -/
 def coequalizerCoconeIsColimit (F : WalkingParallelPair ⥤ C) : IsColimit (coequalizerCocone F) where
-  desc c := pushout.desc (c.ι.app _) (c.ι.app _)
+  desc := by
+    intro c; apply pushout.desc (c.ι.app _) (c.ι.app _)
+    ext <;> simp
   fac := by rintro c (_ | _) <;> simp
   uniq := by
     intro c m J

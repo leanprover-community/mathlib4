@@ -373,7 +373,7 @@ end add_and_sum
 section add_and_sum
 
 variable {α : Type*} {R : Type*} [LinearOrder R] [Add R] {f : Filter α} [f.NeBot]
-  [AddLeftMono R] [AddRightMono R]
+  [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
   {u v : α → R}
 
 lemma isCoboundedUnder_ge_add (hu : f.IsBoundedUnder (· ≤ ·) u)

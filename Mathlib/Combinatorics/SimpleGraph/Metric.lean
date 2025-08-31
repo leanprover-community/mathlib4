@@ -230,7 +230,8 @@ theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
 lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
-  simp
+  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
+  push_neg; rfl
 
 lemma Reachable.of_dist_ne_zero (h : G.dist u v ≠ 0) : G.Reachable u v :=
   (dist_ne_zero_iff_ne_and_reachable.mp h).2

@@ -25,7 +25,7 @@ namespace Subgroup
 
 section SchurZassenhausAbelian
 
-open MulOpposite MulAction Subgroup.leftTransversals
+open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsMulCommutative H] [FiniteIndex H]
   (α β : H.LeftTransversal)

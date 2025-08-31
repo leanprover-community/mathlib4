@@ -69,7 +69,11 @@ theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
       · have hx : x = {False} := by
           ext p
           refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hF⟩
-          grind
+          by_contra hpneg
+          simp only [eq_iff_iff, iff_false, not_not] at hpneg
+          refine hT ?_
+          convert hp
+          simpa
         refine Or.inr <| Or.inr <| Or.inl <| ?_
         simp [hx, compl_def]
       · refine Or.inl <| subset_antisymm ?_ <| empty_subset _

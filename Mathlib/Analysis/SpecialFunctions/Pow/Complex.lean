@@ -56,7 +56,14 @@ theorem zero_cpow_eq_iff {x : ℂ} {a : ℂ} : (0 : ℂ) ^ x = a ↔ x ≠ 0 ∧
   constructor
   · intro hyp
     simp only [cpow_def, if_true] at hyp
-    grind
+    by_cases h : x = 0
+    · subst h
+      simp only [if_true] at hyp
+      right
+      exact ⟨rfl, hyp.symm⟩
+    · rw [if_neg h] at hyp
+      left
+      exact ⟨h, hyp.symm⟩
   · rintro (⟨h, rfl⟩ | ⟨rfl, rfl⟩)
     · exact zero_cpow h
     · exact cpow_zero _

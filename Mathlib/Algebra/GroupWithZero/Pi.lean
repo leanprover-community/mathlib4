@@ -15,6 +15,8 @@ This file defines monoid with zero, group with zero, and related structure insta
 
 assert_not_exists DenselyOrdered Ring
 
+open Function Pi
+
 variable {ι : Type*} {α : ι → Type*}
 
 namespace Pi

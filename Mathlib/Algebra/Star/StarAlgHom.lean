@@ -7,6 +7,8 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Star.Prod
+import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.StarRingHom
 
 /-!

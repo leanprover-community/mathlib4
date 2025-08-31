@@ -3,7 +3,6 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Tactic.Positivity
 
@@ -421,7 +420,13 @@ lemma infix_of_le (h : p ≤ q) : p.toList <:+: q.toList := by
       rwa [mq] at ih
     · have : [U] ++ r.insidePart ++ [D] ++ r.outsidePart = r :=
         DyckWord.ext_iff.mp (nest_insidePart_add_outsidePart hr)
-      grind
+      rcases mq with hm | hm
+      · have : r.insidePart <:+: r.toList := by
+          use [U], [D] ++ r.outsidePart; rwa [← append_assoc]
+        exact ih.trans (hm ▸ this)
+      · have : r.outsidePart <:+: r.toList := by
+          use [U] ++ r.insidePart ++ [D], []; rwa [append_nil]
+        exact ih.trans (hm ▸ this)
 
 lemma le_of_suffix (h : p.toList <:+ q.toList) : p ≤ q := by
   obtain ⟨r', h⟩ := h

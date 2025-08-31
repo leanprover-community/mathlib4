@@ -23,7 +23,7 @@ Given a natural transformation `η : F ⟶ G`, we obtain a natural transformatio
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Functor
+open CategoryTheory.Limits
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -101,7 +101,7 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       | WalkingMulticospan.right _ => Iso.refl _)
     (by
       rintro (a | b) (a | b) (f | f | f)
-      all_goals cat_disch)
+      all_goals aesop_cat)
 
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)

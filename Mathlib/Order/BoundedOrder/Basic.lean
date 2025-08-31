@@ -26,6 +26,8 @@ instances for `Prop` and `fun`.
 
 assert_not_exists Monotone
 
+open Function OrderDual
+
 universe u v
 
 variable {α : Type u} {β : Type v}
@@ -121,7 +123,7 @@ alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
-  le_top.ge_iff_eq
+  le_top.le_iff_eq.trans eq_comm
 
 theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h
@@ -293,7 +295,7 @@ alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
-  bot_le.ge_iff_eq'
+  bot_le.le_iff_eq
 
 theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
@@ -312,7 +314,7 @@ theorem not_bot_lt_iff : ¬⊥ < a ↔ a = ⊥ :=
   bot_lt_iff_ne_bot.not_left
 
 theorem eq_bot_or_bot_lt (a : α) : a = ⊥ ∨ ⊥ < a :=
-  bot_le.eq_or_lt'
+  bot_le.eq_or_gt
 
 theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
   (eq_bot_or_bot_lt a).resolve_right (h ⊥)

@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi Functor
+open Category Karoubi
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
 
@@ -104,7 +104,7 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
         { hom := { f := (F.obj X).p }
           inv := { f := (F.obj X).p } })
       (fun {X Y} f => by simp))
-    (by cat_disch)
+    (by aesop_cat)
 
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
@@ -181,7 +181,7 @@ def functorExtension₂CompWhiskeringLeftToKaroubiIso :
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } })
       (by simp))
-    (by cat_disch)
+    (by aesop_cat)
 
 section IsIdempotentComplete
 

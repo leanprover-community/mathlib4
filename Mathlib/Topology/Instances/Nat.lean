@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Instances.Int
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Topology on the natural numbers
@@ -58,6 +59,6 @@ instance : ProperSpace ℕ :=
     exact (Set.finite_Icc _ _).isCompact⟩
 
 instance : NoncompactSpace ℕ :=
-  noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]
+  noncompactSpace_of_neBot <| by simp [Filter.atTop_neBot]
 
 end Nat

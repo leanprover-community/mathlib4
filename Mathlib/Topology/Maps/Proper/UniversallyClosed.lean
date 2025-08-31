@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
 import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Compactification.StoneCech
+import Mathlib.Topology.StoneCech
 
 /-!
 # A map is proper iff it is continuous and universally closed

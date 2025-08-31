@@ -16,7 +16,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory
 
-open Sum Functor
+open Sum
 
 namespace CategoryTheory.sum
 
@@ -48,13 +48,13 @@ theorem associator_map_inl_inl {X Y : C} (f : X ⟶ Y) :
 @[simp]
 theorem associator_map_inl_inr {X Y : D} (f : X ⟶ Y) :
     (associator C D E).map ((inl_ _ _).map ((inr_ _ _).map f)) =
-    (inr_ _ _).map ((inl_ _ _).map f) := by
-  simp [associator]
+    (inr_ _ _).map ((inl_ _ _).map f) :=
+  rfl
 
 @[simp]
 theorem associator_map_inr {X Y : E} (f : X ⟶ Y) :
-    (associator C D E).map ((inr_ _ _).map f) = (inr_ _ _).map ((inr_ _ _).map f) := by
-  simp [associator]
+    (associator C D E).map ((inr_ _ _).map f) = (inr_ _ _).map ((inr_ _ _).map f) :=
+  rfl
 
 /-- Characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
@@ -98,14 +98,14 @@ theorem inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (
 
 @[simp]
 theorem inverseAssociator_map_inl {X Y : C} (f : X ⟶ Y) :
-    (inverseAssociator C D E).map ((inl_ _ _).map f) = (inl_ _ _).map ((inl_ _ _).map f) := by
-  simp [inverseAssociator]
+    (inverseAssociator C D E).map ((inl_ _ _).map f) = (inl_ _ _).map ((inl_ _ _).map f) :=
+  rfl
 
 @[simp]
 theorem inverseAssociator_map_inr_inl {X Y : D} (f : X ⟶ Y) :
     (inverseAssociator C D E).map ((inr_ _ _).map ((inl_ _ _).map f)) =
-    (inl_ _ _).map ((inr_ _ _).map f) := by
-  simp [inverseAssociator]
+    (inl_ _ _).map ((inr_ _ _).map f) :=
+  rfl
 
 @[simp]
 theorem inverseAssociator_map_inr_inr {X Y : E} (f : X ⟶ Y) :
@@ -149,11 +149,9 @@ def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
     (Functor.sumIsoExt
       ((Functor.associator _ _ _).symm ≪≫ Functor.rightUnitor _ ≪≫
         (isoWhiskerRight (inlCompInlCompAssociator C D E) (inverseAssociator C D E) ≪≫
-          inlCompInverseAssociator C D E).symm ≪≫ Functor.associator _ _ _ ≪≫
-          isoWhiskerLeft _ (Functor.associator _ _ _))
+          inlCompInverseAssociator C D E).symm ≪≫ Functor.associator _ _ _)
       ((Functor.associator _ _ _).symm ≪≫ Functor.rightUnitor _ ≪≫
         (isoWhiskerRight (inrCompInlCompAssociator C D E) (inverseAssociator C D E) ≪≫
-          Functor.associator _ _ _ ≪≫
           inlCompInrCompInverseAssociator C D E).symm ≪≫
         Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.associator _ _ _)))
     (Functor.rightUnitor _ ≪≫
@@ -168,8 +166,7 @@ def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
       ((Functor.associator _ _ _).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (Functor.associator _ _ _ ≪≫
           inlCompInrCompInverseAssociator C D E) (associator C D E) ≪≫
-        Functor.associator _ _ _ ≪≫ inrCompInlCompAssociator C D E ≪≫
-        (Functor.rightUnitor _).symm ≪≫ Functor.associator _ _ _)
+        Functor.associator _ _ _ ≪≫ inrCompInlCompAssociator C D E ≪≫ (Functor.rightUnitor _).symm)
       ((Functor.associator _ _ _).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (Functor.associator _ _ _ ≪≫
           inrCompInrCompInverseAssociator C D E) (associator C D E) ≪≫

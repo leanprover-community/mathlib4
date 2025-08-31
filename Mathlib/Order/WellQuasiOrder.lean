@@ -91,9 +91,7 @@ theorem wellQuasiOrdered_le [LE α] [h : WellQuasiOrderedLE α] : @WellQuasiOrde
 section Preorder
 variable [Preorder α]
 
--- This was previously a global instance,
--- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
-lemma Finite.to_wellQuasiOrderedLE [Finite α] : WellQuasiOrderedLE α where
+instance (priority := 100) Finite.to_wellQuasiOrderedLE [Finite α] : WellQuasiOrderedLE α where
   wqo := Finite.wellQuasiOrdered _
 
 instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrderedLE α] :

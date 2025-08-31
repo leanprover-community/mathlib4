@@ -19,7 +19,7 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 * `Matrix.instNormedRingL2Op`: the (necessarily unique) normed ring structure on `Matrix n n 𝕜`
   which ensure it is a `CStarRing` in `Matrix.instCStarRing`. This is a scoped instance in the
-  namespace `Matrix.Norms.L2Operator` in order to avoid choosing a global norm for `Matrix`.
+  namespace `Matrix.L2OpNorm` in order to avoid choosing a global norm for `Matrix`.
 
 ## Main statements
 
@@ -75,7 +75,8 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   rw [← sq_le_one_iff₀ (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
 
-open scoped Matrix.Norms.Elementwise in
+attribute [local instance] Matrix.normedAddCommGroup
+
 /-- The entrywise sup norm of a unitary matrix is at most 1. -/
 theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
     ‖U‖ ≤ 1 := by
@@ -96,7 +97,7 @@ open LinearMap
 variable [RCLike 𝕜]
 variable [Fintype m] [Fintype n] [DecidableEq n] [Fintype l] [DecidableEq l]
 
-/-- The natural star algebra equivalence between matrices and continuous linear endomorphisms
+/-- The natural star algebra equivalence between matrices and continuous linear endomoporphisms
 of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
 
 This is a more-bundled version of `Matrix.toEuclideanLin`, for the special case of square matrices,
@@ -162,9 +163,9 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
     rw [← @IsUniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
     rw [@IsUniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpMetricSpace
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpMetricSpace
 
-open scoped Matrix.Norms.L2Operator
+open scoped Matrix.L2OpNorm
 
 /-- The norm structure on `Matrix m n 𝕜` arising from the operator norm given by the identification
 with (continuous) linear maps of `EuclideanSpace`. -/
@@ -172,7 +173,7 @@ def instL2OpNormedAddCommGroup : NormedAddCommGroup (Matrix m n 𝕜) where
   norm := l2OpNormedAddCommGroupAux.norm
   dist_eq := l2OpNormedAddCommGroupAux.dist_eq
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedAddCommGroup
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAddCommGroup
 
 lemma l2_opNorm_def (A : Matrix m n 𝕜) :
     ‖A‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖ := rfl
@@ -225,7 +226,7 @@ def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
     rw [l2_opNorm_def, LinearEquiv.map_smul]
     exact norm_smul_le r ((toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x)
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedSpace
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedSpace
 
 /-- The normed ring structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
@@ -233,7 +234,7 @@ def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
   dist_eq := l2OpNormedRingAux.dist_eq
   norm_mul_le := l2OpNormedRingAux.norm_mul_le
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedRing
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 
 /-- This is the same as `Matrix.l2_opNorm_def`, but with a more bundled RHS for square matrices. -/
 lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖ := rfl
@@ -247,14 +248,14 @@ identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`.
 def instL2OpNormedAlgebra : NormedAlgebra 𝕜 (Matrix n n 𝕜) where
   norm_smul_le := norm_smul_le
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedAlgebra
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAlgebra
 
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
 endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
 lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
   norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 
-scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instCStarRing
+scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instCStarRing
 
 end Matrix
 

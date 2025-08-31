@@ -79,7 +79,8 @@ section
 variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
-  .ofFaithful (Action.forget V G) fun X Y ↦ mkIso (β_ _ _) fun g ↦ by simp
+  braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
+    (fun g => by simp)) (by simp)
 
 @[simp]
 theorem β_hom_hom {X Y : Action V G} : (β_ X Y).hom.hom = (β_ X.V Y.V).hom := rfl

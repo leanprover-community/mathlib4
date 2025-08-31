@@ -352,7 +352,13 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · intro _ this
         rw [destruct_nil, destruct_cons] at this
         exact False.elim this
-      · simp
+      · intro _ this
+        rw [destruct_cons, destruct_cons] at this
+        rw [head_cons, head_cons, tail_cons, tail_cons]
+        obtain ⟨h1, h2⟩ := this
+        constructor
+        · rw [h1]
+        · exact h2
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 end Bisim

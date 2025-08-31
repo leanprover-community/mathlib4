@@ -183,7 +183,7 @@ the homology functor on `HomotopyCategory C c`. -/
 noncomputable def homologyFunctorFactorsh (i : ι) :
     Qh ⋙ homologyFunctor C c i ≅ HomotopyCategory.homologyFunctor C c i :=
   Quotient.natIsoLift _ ((Functor.associator _ _ _).symm ≪≫
-    Functor.isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
+    isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
     homologyFunctorFactors C c i  ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
 section

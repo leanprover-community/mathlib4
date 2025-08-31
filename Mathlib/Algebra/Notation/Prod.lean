@@ -8,18 +8,15 @@ import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Prod.Basic
 
 /-!
-# Arithmetic operators on (pairwise) product types
+# `Zero` and `One` instances on `M × N`
 
-This file provides only the notation for (componentwise) `0`, `1`, `+`, `*`, `•`, `^`, `⁻¹` on
-(pairwise) product types. See `Mathlib/Algebra/Group/Prod.lean` for the `Monoid` and `Group`
-instances. There is also an instance of the `Star` notation typeclass, but no default notation is
-included.
-
+In this file we define `0` and `1` on `M × N` as the pair `(0, 0)` and `(1, 1)` respectively.
+We also prove trivial `simp` lemmas:
 -/
 
 assert_not_exists Monoid DenselyOrdered
 
-variable {G H M N P R S : Type*}
+variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
 namespace Prod
 
@@ -170,22 +167,5 @@ lemma pow_def (p : α × β) (c : E) : p ^ c = (p.1 ^ c, p.2 ^ c) := rfl
 lemma pow_swap (p : α × β) (c : E) : (p ^ c).swap = p.swap ^ c := rfl
 
 end Pow
-
-section Star
-
-variable [Star R] [Star S]
-
-instance : Star (R × S) where star x := (star x.1, star x.2)
-
-@[simp]
-theorem fst_star (x : R × S) : (star x).1 = star x.1 := rfl
-
-@[simp]
-theorem snd_star (x : R × S) : (star x).2 = star x.2 := rfl
-
-theorem star_def (x : R × S) : star x = (star x.1, star x.2) := rfl
-
-end Star
-
 
 end Prod

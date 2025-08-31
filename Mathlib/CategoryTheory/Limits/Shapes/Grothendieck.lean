@@ -24,8 +24,6 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Functor
-
 namespace Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -41,7 +39,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), HasColimit (F.map f ⋙ Grothendieck.ι F
 @[local instance]
 lemma hasColimit_ι_comp : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
   fun X => hasColimit_of_iso (F := F.map (𝟙 _) ⋙ Grothendieck.ι F X ⋙ G) <|
-    (leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
+    (Functor.leftUnitor (Grothendieck.ι F X ⋙ G)).symm ≪≫
     (isoWhiskerRight (eqToIso (F.map_id X).symm) (Grothendieck.ι F X ⋙ G))
 
 /-- A functor taking a colimit on each fiber of a functor `G : Grothendieck F ⥤ H`. -/
@@ -49,7 +47,7 @@ lemma hasColimit_ι_comp : ∀ X, HasColimit (Grothendieck.ι F X ⋙ G) :=
 def fiberwiseColimit : C ⥤ H where
   obj X := colimit (Grothendieck.ι F X ⋙ G)
   map {X Y} f := colimMap (whiskerRight (Grothendieck.ιNatTrans f) G ≫
-    (associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f)
+    (Functor.associator _ _ _).hom) ≫ colimit.pre (Grothendieck.ι F Y ⋙ G) (F.map f)
   map_id X := by
     ext d
     simp only [Functor.comp_obj, Grothendieck.ιNatTrans, Grothendieck.ι_obj, ι_colimMap_assoc,
@@ -115,7 +113,7 @@ def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) 
          naturality := fun _ _ f => by dsimp; ext; simp }
 
 variable {G} in
-/-- If `c` is a colimit cocone on `G : Grothendieck F ⥤ H`, then the induced cocone on the
+/-- If `c` is a colimit cocone on `G : Grockendieck F ⥤ H`, then the induced cocone on the
 fiberwise colimit on `G` is a colimit cocone, too. -/
 def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     IsColimit (coconeFiberwiseColimitOfCocone c) where

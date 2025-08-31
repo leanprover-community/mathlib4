@@ -26,7 +26,7 @@ homotopy category of cochain complexes (TODO), and also on the derived category 
 
 -/
 
-open CategoryTheory Category Functor
+open CategoryTheory Category
 
 namespace CategoryTheory
 

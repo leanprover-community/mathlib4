@@ -95,19 +95,21 @@ open scoped Classical in
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
-theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) [Decidable (n ∈ s)] :
-    coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 := by
-  convert coeff_mk _ _
+open scoped Classical in
+theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
+    coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
+  coeff_mk _ _
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) [Decidable (n ∈ s)] :
+theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
     coeff α n (indicatorSeries _ s) = 1 := by rw [coeff_indicator, if_pos h]
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) [Decidable (n ∈ s)] :
+theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 
-theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] [Decidable (0 ∈ s)] :
-    constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 := by
-  simp [indicatorSeries]
+open scoped Classical in
+theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
+    constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
+  rfl
 
 theorem two_series (i : ℕ) [Semiring α] :
     1 + (X : PowerSeries α) ^ i.succ = indicatorSeries α {0, i.succ} := by
@@ -128,7 +130,7 @@ theorem num_series' [Field α] (i : ℕ) :
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
         LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
-      rw [sum_ite, sum_ite]
+      rw [sum_ite (hp := fun _ ↦ Classical.propDecidable _), sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
         sub_eq_iff_eq_add, zero_add]
       symm
@@ -184,7 +186,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [φ, mem_filter]
     rw [mem_finsuppAntidiag]
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
-    rw [mem_filter_univ] at ha
+    simp only [mem_univ, mem_filter, true_and] at ha
     refine ⟨⟨?_, fun i ↦ ?_⟩, fun i _ ↦ ⟨a.parts.count i, ha.1 i, rfl⟩⟩
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
@@ -197,7 +199,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
-    rw [mem_filter_univ] at hp₁ hp₂
+    simp only [true_and, mem_univ, mem_filter] at hp₁ hp₂
     ext i
     simp only [φ, ne_eq, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
@@ -209,7 +211,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     · rw [← mul_left_inj' hi]
       rw [funext_iff] at h
       exact h.2 i
-  · simp_rw [φ, mem_filter_univ, mem_filter, mem_finsuppAntidiag, exists_prop, and_assoc]
+  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ finsuppAntidiag s n := mem_finsuppAntidiag.mpr ⟨hf, hf₃⟩
     simp only [mem_finsuppAntidiag] at hf'

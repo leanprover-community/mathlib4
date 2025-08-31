@@ -294,7 +294,14 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · grind
+          · have hwf : U.flatten.length < (List.cons a x).length := by
+              rw [hsum.1, hsum.2]
+              simp only [List.length_append, List.length_flatten, List.length]
+              omega
+            rw [IH _ hwf]
+            refine ⟨U, rfl, fun t h => helem t ?_⟩
+            right
+            assumption
   termination_by t => (P, t.length)
 
 @[simp]

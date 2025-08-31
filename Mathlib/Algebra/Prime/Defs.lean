@@ -93,16 +93,8 @@ theorem not_prime_one : ¬Prime (1 : M) := fun h => h.not_unit isUnit_one
 
 end Prime
 
-theorem Irreducible.not_dvd_isUnit [CommMonoid M] {p u : M} (hp : Irreducible p) (hu : IsUnit u) :
-    ¬p ∣ u :=
-  mt (isUnit_of_dvd_unit · hu) hp.not_isUnit
-
 theorem Irreducible.not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬p ∣ 1 :=
-  hp.not_dvd_isUnit isUnit_one
-
-theorem Irreducible.not_dvd_unit [CommMonoid M] {p : M} (u : Mˣ) (hp : Irreducible p) :
-    ¬ p ∣ u :=
-  hp.not_dvd_isUnit u.isUnit
+  mt (isUnit_of_dvd_one ·) hp.not_isUnit
 
 @[simp]
 theorem not_irreducible_zero [MonoidWithZero M] : ¬Irreducible (0 : M)

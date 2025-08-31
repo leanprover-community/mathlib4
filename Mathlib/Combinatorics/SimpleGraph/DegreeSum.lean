@@ -131,8 +131,9 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
       convert h
       exact ZMod.ne_zero_iff_odd.symm
     · intro v
-      rw [mem_filter_univ, Ne, ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, ← Nat.not_even_iff_odd]
-      tauto
+      simp only [true_and, mem_filter, mem_univ, Ne]
+      rw [ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, ← Nat.not_even_iff_odd, imp_self]
+      trivial
 
 theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : Odd #{w | w ≠ v ∧ Odd (G.degree w)} := by
@@ -140,7 +141,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   have hk : 0 < k := by
     have hh : Finset.Nonempty {v : V | Odd (G.degree v)} := by
       use v
-      rw [mem_filter_univ]
+      simp only [true_and, mem_filter, mem_univ]
       exact h
     rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
@@ -150,8 +151,10 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   simp only [hc]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
   · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
+    rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
+    congr
     omega
-  · rwa [mem_filter_univ]
+  · simpa only [true_and, mem_filter, mem_univ]
 
 theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
@@ -161,7 +164,7 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
     rw [hg]
     apply Nat.succ_pos
   rcases card_pos.mp hg' with ⟨w, hw⟩
-  rw [mem_filter_univ] at hw
+  simp only [true_and, mem_filter, mem_univ, Ne] at hw
   exact ⟨w, hw⟩
 
 end SimpleGraph

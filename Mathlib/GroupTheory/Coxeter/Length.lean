@@ -169,7 +169,11 @@ theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
   intro eq
   have length_mod_two := cs.length_mul_mod_two w (s i)
   rw [eq, length_simple] at length_mod_two
-  omega
+  rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
+  · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
+    contradiction
+  · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
+    contradiction
 
 theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
   convert cs.length_mul_simple_ne w⁻¹ i using 1

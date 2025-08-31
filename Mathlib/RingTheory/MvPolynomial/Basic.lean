@@ -38,7 +38,7 @@ Generalise to noncommutative (semi)rings
 
 noncomputable section
 
-open Set LinearMap Module Submodule
+open Set LinearMap Submodule
 
 universe u v
 

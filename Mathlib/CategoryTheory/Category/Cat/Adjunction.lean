@@ -47,7 +47,7 @@ def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
       naturality := fun _ _ _  ↦  Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
-            cat_disch ) } }
+            aesop_cat ) } }
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
@@ -67,10 +67,10 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
         naturality := fun _ _ _ =>
           funext (fun xcc => by
             obtain ⟨x,h⟩ := Quotient.exists_rep xcc
-            cat_disch) }
+            aesop_cat) }
     homEquiv_counit := fun {C X G} => by
       funext cc
       obtain ⟨_, _⟩ := Quotient.exists_rep cc
-      cat_disch }
+      aesop_cat }
 
 end CategoryTheory.Cat

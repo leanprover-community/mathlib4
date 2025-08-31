@@ -17,9 +17,9 @@ It is formalized as a `Prop` valued typeclass `ReflectsIsomorphisms F`.
 Any fully faithful functor reflects isomorphisms.
 -/
 
-namespace CategoryTheory
+open CategoryTheory CategoryTheory.Functor
 
-open Functor
+namespace CategoryTheory
 
 variable {C : Type*} [Category C]
   {D : Type*} [Category D]

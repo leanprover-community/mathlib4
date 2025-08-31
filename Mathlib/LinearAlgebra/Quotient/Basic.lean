@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Quotients by submodules
@@ -24,8 +25,6 @@ import Mathlib.LinearAlgebra.Span.Basic
   in `q`
 
 -/
-
-assert_not_exists Cardinal
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -104,6 +103,11 @@ variable (p)
 
 noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
+
+theorem card_eq_card_quotient_mul_card (S : Submodule R M) :
+    Nat.card M = Nat.card S * Nat.card (M ⧸ S) := by
+  rw [mul_comm, ← Nat.card_prod]
+  exact Nat.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 
 section
 

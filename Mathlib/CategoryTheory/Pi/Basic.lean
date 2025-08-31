@@ -17,8 +17,6 @@ We define the pointwise category structure on indexed families of objects in a c
 
 namespace CategoryTheory
 
-open Functor
-
 universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
@@ -286,7 +284,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro _ i
     exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
-    exact ⟨fun i => inv (f i), by cat_disch, by cat_disch⟩
+    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
 
 variable (C)
 
@@ -315,18 +313,18 @@ attribute [local simp] eqToHom_map
 @[simps]
 noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
     (∀ j, C (e j)) ≌ (∀ i, C i) where
-  functor := pi' (fun i => Pi.eval _ (e.symm i) ⋙
+  functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
     (Pi.eqToEquivalence C (by simp)).functor)
   inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => leftUnitor _ ≪≫
+  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
     (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
     isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
-    (pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (pi'CompEval _ _).symm ≪≫
-    (associator _ _ _).symm)
-  counitIso := NatIso.pi' (fun i => (associator _ _ _).symm ≪≫
-    isoWhiskerRight (pi'CompEval _ _) _ ≪≫
+    (Functor.pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'CompEval _ _).symm ≪≫
+    (Functor.associator _ _ _).symm)
+  counitIso := NatIso.pi' (fun i => (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (Functor.pi'CompEval _ _) _ ≪≫
     Pi.evalCompEqToEquivalenceFunctor C (e.apply_symm_apply i) ≪≫
-    (leftUnitor _).symm)
+    (Functor.leftUnitor _).symm)
 
 /-- A product of categories indexed by `Option J` identifies to a binary product. -/
 @[simps]

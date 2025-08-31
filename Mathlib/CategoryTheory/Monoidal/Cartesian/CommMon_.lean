@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 # Yoneda embedding of `CommMon_ C`
 -/
 
-assert_not_exists MonoidWithZero
-
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u

@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.LinearMap
 # Continuous linear maps on products and Pi types
 -/
 
-assert_not_exists TrivialStar
+assert_not_exists Star.star
 
 open LinearMap (ker range)
 open Topology Filter Pointwise

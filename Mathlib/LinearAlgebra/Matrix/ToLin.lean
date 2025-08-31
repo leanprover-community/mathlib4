@@ -68,7 +68,7 @@ linear_map, matrix, linear_equiv, diagonal, det, trace
 
 noncomputable section
 
-open LinearMap Matrix Module Set Submodule
+open LinearMap Matrix Set Submodule
 
 section ToMatrixRight
 
@@ -273,26 +273,6 @@ lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype 
 
 end mulVec
 
-section vecMulVec
-variable {m n R S A : Type*}
-variable [Semiring R] [Semiring S] [NonUnitalSemiring A] [Module R A] [Module S A]
-variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
-
-variable (R S) in
-/-- `vecMulVec` as a bilinear map.
-
-When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecLinear A Aᵐᵒᵖ`. -/
-@[simps]
-def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
-  toFun x :=
-    { toFun y := vecMulVec x y
-      map_add' _ _ := vecMulVec_add _ _ _
-      map_smul' _ _ := vecMulVec_smul _ _ _ }
-  map_add' _ _ := LinearMap.ext fun _ => add_vecMulVec _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => smul_vecMulVec _ _ _
-
-end vecMulVec
-
 section ToMatrix'
 
 variable {R : Type*} [CommSemiring R]
@@ -355,11 +335,6 @@ theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v
   rfl
 
 @[simp]
-theorem LinearMap.toMatrix'_mulVec (f : (n → R) →ₗ[R] m → R) (v : n → R) :
-    LinearMap.toMatrix' f *ᵥ v = f v := by
-  rw [← toLin'_apply, toLin'_toMatrix']
-
-@[simp]
 theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
   Matrix.mulVecLin_one
 
@@ -376,13 +351,6 @@ theorem LinearMap.toMatrix'_one : LinearMap.toMatrix' (1 : (n → R) →ₗ[R] n
 theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Matrix m n R) :
     Matrix.toLin' (M * N) = (Matrix.toLin' M).comp (Matrix.toLin' N) :=
   Matrix.mulVecLin_mul _ _
-
-@[simp]
-theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
-    (M ^ k).toLin' = M.toLin' ^ k := by
-  induction k with
-  | zero => rw [pow_zero, toLin'_one]; exact rfl
-  | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_eq_comp]
 
 @[simp]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
@@ -496,14 +464,6 @@ theorem LinearMap.toMatrixAlgEquiv'_mul (f g : (n → R) →ₗ[R] n → R) :
       LinearMap.toMatrixAlgEquiv' f * LinearMap.toMatrixAlgEquiv' g :=
   LinearMap.toMatrixAlgEquiv'_comp f g
 
-@[simp]
-theorem LinearMap.isUnit_toMatrix'_iff {f : (n → R) →ₗ[R] n → R} : IsUnit f.toMatrix' ↔ IsUnit f :=
-  isUnit_map_iff LinearMap.toMatrixAlgEquiv' f
-
-@[simp]
-theorem Matrix.isUnit_toLin'_iff {M : Matrix n n R} : IsUnit M.toLin' ↔ IsUnit M :=
-  isUnit_map_iff LinearMap.toMatrixAlgEquiv'.symm M
-
 end ToMatrix'
 
 section ToMatrix
@@ -522,7 +482,7 @@ def LinearMap.toMatrix : (M₁ →ₗ[R] M₂) ≃ₗ[R] Matrix m n R :=
 
 /-- `LinearMap.toMatrix'` is a particular case of `LinearMap.toMatrix`, for the standard basis
 `Pi.basisFun R n`. -/
-@[simp] theorem LinearMap.toMatrix_eq_toMatrix' :
+theorem LinearMap.toMatrix_eq_toMatrix' :
     LinearMap.toMatrix (Pi.basisFun R n) (Pi.basisFun R n) = LinearMap.toMatrix' :=
   rfl
 
@@ -661,20 +621,13 @@ theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
     have := Finset.mem_univ i
     contradiction
 
-theorem Matrix.toLin_apply_eq_zero_iff {R M₁ M₂ : Type*} [CommRing R]
-    [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
-    {v₁ : Basis n R M₁} {v₂ : Basis m R M₂} {A : Matrix m n R} {x : M₁} :
-    A.toLin v₁ v₂ x = 0 ↔ ∀ j, (A *ᵥ v₁.repr x) j = 0 := by
-  rw [toLin_apply]
-  exact ⟨Fintype.linearIndependent_iff.mp v₂.linearIndependent _, fun h ↦ by simp [h]⟩
-
 variable {M₃ : Type*} [AddCommMonoid M₃] [Module R M₃] (v₃ : Basis l R M₃)
 
 theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M₃) (g : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ v₃ (f.comp g) =
     LinearMap.toMatrix v₂ v₃ f * LinearMap.toMatrix v₁ v₂ g := by
-  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply]
-  rw [LinearEquiv.arrowCongr_comp _ v₂.equivFun, LinearMap.toMatrix'_comp]
+  simp_rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearEquiv.arrowCongr_comp _ v₂.equivFun,
+    LinearMap.toMatrix'_comp]
 
 theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
@@ -692,13 +645,6 @@ theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matr
   haveI : DecidableEq l := fun _ _ ↦ Classical.propDecidable _
   rw [LinearMap.toMatrix_comp v₁ v₂ v₃]
   repeat' rw [LinearMap.toMatrix_toLin]
-
-@[simp]
-theorem Matrix.toLin_pow (A : Matrix n n R) (k : ℕ) :
-    (A ^ k).toLin v₁ v₁ = (A.toLin v₁ v₁) ^ k := by
-  induction k with
-  | zero => simp only [pow_zero, toLin_one]; rfl
-  | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_eq_comp]
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
 theorem Matrix.toLin_mul_apply [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R)
@@ -802,14 +748,6 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
   convert Matrix.toLin_mul v₁ v₁ v₁ A B
 
 @[simp]
-theorem LinearMap.isUnit_toMatrix_iff {f : M₁ →ₗ[R] M₁} : IsUnit (f.toMatrix v₁ v₁) ↔ IsUnit f :=
-  isUnit_map_iff (LinearMap.toMatrixAlgEquiv _) f
-
-@[simp]
-theorem Matrix.isUnit_toLin_iff {M : Matrix n n R} : IsUnit (M.toLin v₁ v₁) ↔ IsUnit M :=
-  isUnit_map_iff (LinearMap.toMatrixAlgEquiv _).symm M
-
-@[simp]
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
       (a * x.fst + b * x.snd, c * x.fst + d * x.snd) := by
@@ -834,7 +772,7 @@ lemma LinearMap.toMatrix_prodMap [DecidableEq m] [DecidableEq (n ⊕ m)]
     (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) :
     toMatrix (v₁.prod v₂) (v₁.prod v₂) (φ₁.prodMap φ₂) =
       Matrix.fromBlocks (toMatrix v₁ v₁ φ₁) 0 0 (toMatrix v₂ v₂ φ₂) := by
-  ext (i | i) (j | j) <;> simp [toMatrix]
+  ext (i|i) (j|j) <;> simp [toMatrix]
 
 end ToMatrix
 
@@ -874,7 +812,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   commutes' r := by
     ext
     rw [lmul_algebraMap, toMatrix_lsmul, algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.algebraMap_self_apply]
+      Algebra.id.map_eq_self]
 
 theorem leftMulMatrix_apply (x : S) : leftMulMatrix b x = LinearMap.toMatrix b b (lmul R S x) :=
   rfl
@@ -963,7 +901,9 @@ variable [SMul R S] [IsScalarTower R S M₁] [IsScalarTower R S M₂]
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/
 def algEquivMatrix' [Fintype n] : Module.End R (n → R) ≃ₐ[R] Matrix n n R :=
-  LinearMap.toMatrixAlgEquiv'
+  { LinearMap.toMatrix' with
+    map_mul' := LinearMap.toMatrix'_comp
+    commutes' := LinearMap.toMatrix'_algebraMap }
 
 variable (R) in
 /-- A linear equivalence of two modules induces an equivalence of algebras of their
@@ -979,7 +919,7 @@ def algEquivMatrix [Fintype n] (h : Basis n R M) : Module.End R M ≃ₐ[R] Matr
 
 end
 
-namespace Module.Basis
+namespace Basis
 
 variable {R M M₁ M₂ ι ι₁ ι₂ : Type*} [CommSemiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
@@ -1024,7 +964,7 @@ where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
 @[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
-abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
+abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b
 
 attribute [simp] end_repr_apply
@@ -1035,7 +975,7 @@ lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBas
 lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
   linearMap_apply_apply b b ij k
 
-end Module.Basis
+end Basis
 
 section
 

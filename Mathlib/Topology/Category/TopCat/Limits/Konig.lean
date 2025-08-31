@@ -120,7 +120,10 @@ theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{ma
       partialSections.closed F _
   use u
   intro X Y f
-  let G : FiniteDiagram J := ⟨{X, Y}, {⟨X, Y, by grind, by grind, f⟩}⟩
+  let G : FiniteDiagram J :=
+    ⟨{X, Y},
+      {⟨X, Y, by simp only [true_or, Finset.mem_insert], by
+          simp only [or_true, Finset.mem_insert, Finset.mem_singleton], f⟩}⟩
   exact hu _ ⟨G, rfl⟩ (Finset.mem_singleton_self _)
 
 end TopologicalKonig

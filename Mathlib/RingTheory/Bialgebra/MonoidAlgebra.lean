@@ -22,7 +22,7 @@ coalgebra structure.
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
 -/
 
-noncomputable section
+suppress_compilation
 
 open Bialgebra
 

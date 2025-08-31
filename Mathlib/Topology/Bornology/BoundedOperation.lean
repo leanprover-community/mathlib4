@@ -62,7 +62,13 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
   isBounded_sub {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
     convert lip.isBounded_image bdd
-    simp
+    ext p
+    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
+    constructor
+    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
+      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
+    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
+      simpa [← eq_p] using Set.sub_mem_sub a_in_s b_in_t
 
 end bounded_sub
 

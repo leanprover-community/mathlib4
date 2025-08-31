@@ -18,8 +18,6 @@ the product side.
 
 namespace CategoryTheory
 
-open Functor
-
 universe v u
 
 variable (A : Type*) [Category A] (A' : Type*) [Category A']
@@ -107,7 +105,7 @@ def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
     natTransOfWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
-  cat_disch
+  aesop_cat
 
 @[simp]
 lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
@@ -115,7 +113,7 @@ lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
     (ν₁ : Sum.inl_ A A' ⋙ G ⟶ Sum.inl_ A A' ⋙ H) (ν₂ : Sum.inr_ A A' ⋙ G ⟶ Sum.inr_ A A' ⋙ H) :
     natTransOfWhiskerLeftInlInr (η₁ ≫ ν₁) (η₂ ≫ ν₂) = natTransOfWhiskerLeftInlInr η₁ η₂ ≫
       natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
-  cat_disch
+  aesop_cat
 
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
@@ -132,7 +130,7 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
       (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
       (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
-  cat_disch
+  aesop_cat
 
 namespace Swap
 

@@ -278,14 +278,12 @@ theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) 
     calc
       iteratedFDerivWithin 𝕜 (i + 1) (-f) s x h =
           fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (-f) s) s x (h 0) (Fin.tail h) :=
-        iteratedFDerivWithin_succ_apply_left _
+        rfl
       _ = fderivWithin 𝕜 (-iteratedFDerivWithin 𝕜 i f s) s x (h 0) (Fin.tail h) := by
-        rw [fderivWithin_congr' (@hi) hx, Pi.neg_def]
+        rw [fderivWithin_congr' (@hi) hx]; rfl
       _ = -(fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i f s) s) x (h 0) (Fin.tail h) := by
-        rw [fderivWithin_neg (hu x hx), ContinuousLinearMap.neg_apply,
-          ContinuousMultilinearMap.neg_apply]
-      _ = -(iteratedFDerivWithin 𝕜 (i + 1) f s) x h := by
-        rw [iteratedFDerivWithin_succ_apply_left]
+        rw [fderivWithin_neg (hu x hx)]; rfl
+      _ = -(iteratedFDerivWithin 𝕜 (i + 1) f s) x h := rfl
 
 theorem iteratedFDeriv_neg_apply {i : ℕ} {f : E → F} :
     iteratedFDeriv 𝕜 i (-f) x = -iteratedFDeriv 𝕜 i f x := by

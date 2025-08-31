@@ -22,12 +22,13 @@ variable (f s) in
 a submonoid `s` of `G`, `s.divPairs f` is the submonoid of pairs `(a, b)`
 such that `f a / f b ∈ s`. -/
 @[to_additive
-/-- Given an additive commutative monoid `M`, a localization map `f` to its Grothendieck group `G`
-and a submonoid `s` of `G`, `s.subPairs f` is the submonoid of pairs `(a, b)`
-such that `f a - f b ∈ s`. -/]
-def divPairs : Submonoid (M × M) := s.comap <| divMonoidHom.comp <| .prodMap f f
+"Given an additive commutative monoid `M`, a localization map `f` to its Grothendieck group `G` and
+a submonoid `s` of `G`, `s.subPairs f` is the submonoid of pairs `(a, b)`
+such that `f a - f b ∈ s`."]
+def divPairs : Submonoid (M × M) := s.comap <| divMonoidHom.comp <| f.toMap.prodMap f.toMap
 
-@[to_additive (attr := simp)] lemma mem_divPairs : x ∈ divPairs f s ↔ f x.1 / f x.2 ∈ s := .rfl
+@[to_additive (attr := simp)]
+lemma mem_divPairs : x ∈ divPairs f s ↔ f.toMap x.1 / f.toMap x.2 ∈ s := .rfl
 
 --TODO(Yaël): make simp once `LocalizationMap.toMonoidHom` is simp nf
 variable (f g s) in

@@ -36,8 +36,6 @@ generators and relations.
 
 -/
 
-assert_not_exists Cardinal
-
 universe w' w'' w₀ w₁ v'' v' v u
 
 namespace Module

@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
-import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Integral closure of Dedekind domains
@@ -36,10 +35,10 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-open Algebra Module
-open scoped nonZeroDivisors Polynomial
 
 variable (A K : Type*) [CommRing A] [Field K]
+
+open scoped nonZeroDivisors Polynomial
 
 section IsIntegralClosure
 
@@ -49,6 +48,8 @@ We show that an integral closure of a Dedekind domain in a finite separable
 field extension is again a Dedekind domain. This implies the ring of integers
 of a number field is a Dedekind domain. -/
 
+
+open Algebra
 
 variable [Algebra A K] [IsFractionRing A K]
 variable (L : Type*) [Field L] (C : Type*) [CommRing C]
@@ -246,8 +247,8 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
   integralClosure.isDedekindDomain A (FractionRing A) L
 
 attribute [local instance] FractionRing.liftAlgebra in
-instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
-    FiniteDimensional (FractionRing A) (FractionRing C) :=
-  .of_isLocalization A C A⁰
+instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
+  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
 
 end IsIntegralClosure

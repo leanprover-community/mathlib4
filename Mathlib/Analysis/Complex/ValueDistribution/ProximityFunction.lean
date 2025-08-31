@@ -101,9 +101,10 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
   ext R
   simp only [proximity, ↓reduceDIte, Pi.inv_apply, norm_inv, Pi.sub_apply]
   rw [← circleAverage_sub]
-  · simp_rw [← posLog_sub_posLog_inv, Pi.sub_def]
+  · simp_rw [← posLog_sub_posLog_inv]
+    rfl
   · apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.mono_set (by tauto))
   · simp_rw [← norm_inv]
-    apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.inv.mono_set (by tauto))
+    apply circleIntegrable_posLog_norm_meromorphicOn  (h₁f.inv.mono_set (by tauto))
 
 end ValueDistribution

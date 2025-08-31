@@ -108,7 +108,10 @@ theorem lmarginal_congr {x y : ∀ i, X i} (f : (∀ i, X i) → ℝ≥0∞)
 theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
     (f : (∀ i, X i) → ℝ≥0∞) (x : ∀ i, X i) (y : X i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∂μ) x := by
-  grind [Function.update_of_ne, MeasureTheory.lmarginal_congr]
+  apply lmarginal_congr
+  intro j hj
+  have : j ≠ i := by rintro rfl; exact hj hi
+  apply update_of_ne this
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, X i) → ℝ≥0∞) (i : δ) :

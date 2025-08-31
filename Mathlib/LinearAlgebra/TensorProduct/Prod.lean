@@ -24,6 +24,8 @@ See `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` for arbitrary products.
 
 variable (R S M₁ M₂ M₃ : Type*)
 
+suppress_compilation
+
 namespace TensorProduct
 
 variable [CommSemiring R] [Semiring S] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]

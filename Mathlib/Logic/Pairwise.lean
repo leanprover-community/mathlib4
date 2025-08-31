@@ -17,7 +17,8 @@ This file defines pairwise relations.
 * `Set.Pairwise`: `s.Pairwise r` states that `r i j` for all `i ≠ j` with `i, j ∈ s`.
 -/
 
-open Function
+
+open Set Function
 
 variable {α β ι : Type*} {r p : α → α → Prop}
 

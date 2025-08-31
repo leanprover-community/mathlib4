@@ -10,4 +10,3 @@ See the `Mathlib.Analysis.Convex.Cone` folder for the topological results.
 The convex cone topics currently covered are:
 * Convex cones
 * Pointed cones
-* Dual cone along a bilinear pairing

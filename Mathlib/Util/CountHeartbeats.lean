@@ -215,6 +215,8 @@ end Mathlib
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
 
+open Lean Elab Command
+
 namespace Mathlib.Linter
 
 /--

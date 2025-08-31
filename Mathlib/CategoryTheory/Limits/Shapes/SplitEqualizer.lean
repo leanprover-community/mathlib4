@@ -64,13 +64,13 @@ structure IsSplitEqualizer {W : C} (ι : W ⟶ X) where
   /-- A map in the opposite direction to `f` and `g` -/
   rightRetraction : Y ⟶ X
   /-- Composition of `ι` with `f` and with `g` agree -/
-  condition : ι ≫ f = ι ≫ g := by cat_disch
+  condition : ι ≫ f = ι ≫ g := by aesop_cat
   /-- `leftRetraction` splits `ι` -/
-  ι_leftRetraction : ι ≫ leftRetraction = 𝟙 W := by cat_disch
+  ι_leftRetraction : ι ≫ leftRetraction = 𝟙 W := by aesop_cat
   /-- `rightRetraction` splits `g` -/
-  bottom_rightRetraction : g ≫ rightRetraction = 𝟙 X := by cat_disch
+  bottom_rightRetraction : g ≫ rightRetraction = 𝟙 X := by aesop_cat
   /-- `f` composed with `rightRetraction` is `leftRetraction` composed with `ι` -/
-  top_rightRetraction : f ≫ rightRetraction = leftRetraction ≫ ι := by cat_disch
+  top_rightRetraction : f ≫ rightRetraction = leftRetraction ≫ ι := by aesop_cat
 
 instance {X : C} : Inhabited (IsSplitEqualizer (𝟙 X) (𝟙 X) (𝟙 X)) where
   default := { leftRetraction := 𝟙 X, rightRetraction := 𝟙 X }

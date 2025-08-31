@@ -58,7 +58,7 @@ compile_inductive% Lists'
 corresponding to an element of `α`, or a "proper" ZFA list, inductively defined from the empty ZFA
 list and from appending a ZFA list to a proper ZFA list. -/
 def Lists (α : Type*) :=
-  Σ b, Lists' α b
+  Σb, Lists' α b
 
 namespace Lists'
 

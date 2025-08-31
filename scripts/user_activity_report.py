@@ -465,7 +465,7 @@ def main():
                     except ValueError:
                         # If we can't parse the date, treat as old
                         should_remove = True
-                        reason = "unparsable commit date"
+                        reason = "unparseable commit date"
 
                 if should_remove:
                     cmd = f"gh api repos/{owner}/{repo}/collaborators/{username} -X DELETE"

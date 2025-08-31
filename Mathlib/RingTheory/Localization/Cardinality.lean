@@ -44,6 +44,8 @@ theorem cardinalMk_le {L : Type u} [CommSemiring L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] : #L ≤ #R := by
   simpa using lift_cardinalMk_le (L := L) S
 
+@[deprecated (since := "2024-10-30")] alias card_le := cardinalMk_le
+
 end IsLocalization
 
 end CommSemiring
@@ -56,7 +58,11 @@ namespace Localization
 
 theorem cardinalMk {S : Submonoid R} (hS : S ≤ R⁰) : #(Localization S) = #R := by
   apply OreLocalization.cardinalMk
-  rwa [nonZeroDivisorsLeft_eq_nonZeroDivisors]
+  convert hS using 1
+  ext x
+  rw [mem_nonZeroDivisorsRight_iff, mem_nonZeroDivisors_iff]
+  congr! 3
+  rw [mul_comm]
 
 end Localization
 
@@ -73,6 +79,8 @@ theorem lift_cardinalMk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰)
 theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L]
     (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) : #L = #R := by
   simpa using lift_cardinalMk L S hS
+
+@[deprecated (since := "2024-10-30")] alias card := cardinalMk
 
 end IsLocalization
 

@@ -62,7 +62,10 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 /-- Some basic API lemmas -/
 theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 := by
   simp only [quadraticCharFun]
-  grind
+  by_cases ha : a = 0
+  · simp only [ha, if_true]
+  · simp only [ha, if_false]
+    split_ifs <;> simp only [one_ne_zero]
 
 @[simp]
 theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
@@ -221,8 +224,8 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       have h₁ : s = [b, -b].toFinset := by
         ext1
         rw [← pow_two] at h
-        simp_rw [s, Set.toFinset_setOf, mem_filter_univ, h, List.toFinset_cons, List.toFinset_nil,
-          insert_empty_eq, mem_insert, mem_singleton]
+        simp only [Set.toFinset_setOf, h, mem_filter, mem_univ, true_and, List.toFinset_cons,
+          List.toFinset_nil, insert_empty_eq, mem_insert, mem_singleton, s]
         exact sq_eq_sq_iff_eq_or_eq_neg
       norm_cast
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]

@@ -31,8 +31,6 @@ import Mathlib.RingTheory.Trace.Quotient
 - Show properties of the different ideal
 -/
 
-open Module
-
 universe u
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
@@ -86,11 +84,11 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma restrictScalars_traceDual {I : Submodule B L} :
-    Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
 @[simp]
 lemma traceDual_bot :
-    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simp [mem_traceDual, -RingHom.mem_range]
+    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
 
 open scoped Classical in
 lemma traceDual_top' :
@@ -474,7 +472,7 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
+  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
   simp
 
@@ -651,7 +649,8 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   have : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
     IsIntegralClosure.isLocalization _ (FractionRing A) _ _
-  have : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
+  have : FiniteDimensional (FractionRing A) (FractionRing B) :=
+    Module.Finite_of_isLocalization A B _ _ A⁰
   by_cases he : e = 0
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
@@ -664,7 +663,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   by_cases hp : p = ⊥
   · subst hp
     simp only [Ideal.map_bot, Ideal.mul_eq_bot] at hP
-    obtain (rfl | rfl) := hP
+    obtain (rfl|rfl) := hP
     · rw [← Ideal.zero_eq_bot, zero_dvd_iff]
       exact differentIdeal_ne_bot
     · obtain rfl := hxQ
@@ -676,7 +675,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
+  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
   rw [Ideal.dvd_iff_le]
   intro H
   replace H := (mul_le_mul_right' H Q).trans_eq hP
@@ -767,7 +766,8 @@ lemma dvd_differentIdeal_of_not_isSeparable
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
+  have : FiniteDimensional K L :=
+    Module.Finite_of_isLocalization A B _ _ A⁰
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
@@ -826,7 +826,7 @@ theorem not_dvd_differentIdeal_iff
     simp only [Submodule.zero_eq_bot, differentIdeal_ne_bot, not_false_eq_true, true_iff]
     let K := FractionRing A
     let L := FractionRing B
-    have : FiniteDimensional K L := .of_isLocalization A B A⁰
+    have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
       convert (inferInstanceAs
         (IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B))))

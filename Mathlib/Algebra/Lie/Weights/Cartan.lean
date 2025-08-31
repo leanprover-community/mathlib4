@@ -26,6 +26,8 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 -/
 
+suppress_compilation
+
 open Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -86,7 +88,11 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
       map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
-      map_smul' := fun t m => by simp }
+      map_smul' := fun t m => by
+        conv_lhs =>
+          congr
+          rw [LieSubmodule.coe_smul, lie_smul]
+        rfl }
   map_add' x y := by
     ext m
     simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,

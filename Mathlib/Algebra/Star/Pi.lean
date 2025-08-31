@@ -4,14 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.Notation.Pi.Defs
 import Mathlib.Algebra.Ring.Pi
 
 /-!
-# Basic Results about Star on Pi Types
+# `star` on pi types
 
-This file provides basic results about the star on product types defined in
-`Mathlib/Algebra/Notation/Pi/Defs.lean`.
+We put a `Star` structure on pi types that operates elementwise, such that it describes the
+complex conjugation of vectors.
 -/
 
 
@@ -24,6 +23,15 @@ variable {f : I → Type v}
 
 -- The family of types already equipped with instances
 namespace Pi
+
+instance [∀ i, Star (f i)] : Star (∀ i, f i) where star x i := star (x i)
+
+@[simp]
+theorem star_apply [∀ i, Star (f i)] (x : ∀ i, f i) (i : I) : star x i = star (x i) :=
+  rfl
+
+theorem star_def [∀ i, Star (f i)] (x : ∀ i, f i) : star x = fun i => star (x i) :=
+  rfl
 
 instance [∀ i, Star (f i)] [∀ i, TrivialStar (f i)] : TrivialStar (∀ i, f i) where
   star_trivial _ := funext fun _ => star_trivial _

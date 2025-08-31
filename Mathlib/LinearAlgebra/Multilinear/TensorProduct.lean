@@ -10,6 +10,8 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
 # Constructions relating multilinear maps and tensor products.
 -/
 
+suppress_compilation
+
 namespace MultilinearMap
 
 section DomCoprod

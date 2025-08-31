@@ -8,7 +8,7 @@ import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
 /-!
-# Ring-theoretic results in terms of categorical language
+# Ring-theoretic results in terms of categorical languages
 -/
 
 universe u

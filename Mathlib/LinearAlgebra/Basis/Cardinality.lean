@@ -14,7 +14,7 @@ import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 section Finite
 
-open Module Basis Cardinal Set Submodule Finsupp
+open Basis Cardinal Set Submodule Finsupp
 
 universe u v w w'
 

@@ -108,6 +108,8 @@ def Aₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
+set_option maxHeartbeats 400000 in
+-- Requires more heartbeats after nightly-2025-03-25.
 /-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:

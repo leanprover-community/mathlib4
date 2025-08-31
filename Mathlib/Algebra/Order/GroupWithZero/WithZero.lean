@@ -20,14 +20,14 @@ which is `PosMulStrictMono (WithZero α)`.
 
 ## Application
 
-The type `ℤᵐ⁰ := WithZero (Multiplicative ℤ)` is used a lot in mathlib's valuation
-theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
+The type `ℤₘ₀ := WithZero (Multiplicative ℤ)` is used a lot in mathlib's valuation
+theory. These instances enable lemmas such as `mul_pos` to fire on `ℤₘ₀`.
 
 -/
 
 assert_not_exists Ring
 
--- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤᵐ⁰`
+-- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
 instance {α : Type*} [Mul α] [Preorder α] [MulLeftStrictMono α] :
     PosMulStrictMono (WithZero α) where
   elim := @fun
@@ -63,7 +63,7 @@ instance {α : Type*} [Mul α] [Preorder α] [MulLeftMono α] :
         norm_cast at h ⊢
         exact mul_le_mul_left' h x
 
--- This makes `lt_mul_of_le_of_one_lt'` work on `ℤᵐ⁰`
+-- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
 open Function in
 instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
     MulPosMono (WithZero α) where
@@ -78,28 +78,3 @@ instance {α : Type*} [Mul α] [Preorder α] [MulRightMono α] :
         dsimp only at h ⊢
         norm_cast at h ⊢
         exact mul_le_mul_right' h x
-
-section Units
-
-variable {α : Type*} [LinearOrderedCommGroupWithZero α]
-
-open WithZero
-
-lemma WithZero.withZeroUnitsEquiv_strictMono :
-    StrictMono (withZeroUnitsEquiv (G := α)) := by
-  intro a b
-  cases a <;> cases b <;>
-  simp
-
-/-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
-between `WithZero αˣ` with `α`. -/
-@[simps!]
-def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
-  __ := withZeroUnitsEquiv
-  map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
-
-lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
-    StrictMono (withZeroUnitsEquiv (G := α)).symm :=
-  OrderIso.withZeroUnits.symm.strictMono
-
-end Units

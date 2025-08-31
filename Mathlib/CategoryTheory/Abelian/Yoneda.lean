@@ -44,7 +44,7 @@ theorem preadditiveCoyonedaObj_map_surjective {G : C} [Projective G] (hG : IsSep
   · simp only [ShortComplex.map_f]
     infer_instance
   · suffices φ.map.Surjective by simpa [AddCommGrp.epi_iff_surjective, Functor.coe_mapAddHom]
-    exact fun f => ⟨f (𝟙 G), by cat_disch⟩
+    exact fun f => ⟨f (𝟙 G), by aesop_cat⟩
   · simp [AddCommGrp.mono_iff_injective, Functor.coe_mapAddHom, Functor.map_injective]
 
 end

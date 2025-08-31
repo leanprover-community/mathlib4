@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
-# Characteristic of quotient rings
+# Characteristic of quotients rings
 -/
 
 

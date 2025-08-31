@@ -23,7 +23,7 @@ universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
-open Limits Functor
+open Limits
 
 namespace Localization
 

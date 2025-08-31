@@ -18,9 +18,9 @@ We also characterize Jacobson radicals of ideals in such rings.
 
 ## Main results
 
-* `TwoSidedIdeal.equivMatrix` and `TwoSidedIdeal.orderIsoMatrix`
+* `TwoSidedIdeal.equivMatricesOver` and `TwoSidedIdeal.orderIsoMatricesOver`
   establish an order isomorphism between two-sided ideals in $R$ and those in $Mₙ(R)$.
-* `TwoSidedIdeal.jacobson_matrix` shows that $J(Mₙ(I)) = Mₙ(J(I))$
+* `TwoSidedIdeal.jacobson_matricesOver` shows that $J(Mₙ(I)) = Mₙ(J(I))$
   for any two-sided ideal $I ≤ R$.
 -/
 
@@ -33,8 +33,10 @@ variable {R : Type*} [Semiring R]
          (n : Type*) [Fintype n] [DecidableEq n]
 
 /-- The left ideal of matrices with entries in `I ≤ R`. -/
-def matrix (I : Ideal R) : Ideal (Matrix n n R) where
-  __ := I.toAddSubmonoid.matrix
+def matricesOver (I : Ideal R) : Ideal (Matrix n n R) where
+  carrier := { M | ∀ i j, M i j ∈ I }
+  add_mem' ha hb i j := I.add_mem (ha i j) (hb i j)
+  zero_mem' _ _ := I.zero_mem
   smul_mem' M N hN := by
     intro i j
     rw [smul_eq_mul, mul_apply]
@@ -42,44 +44,31 @@ def matrix (I : Ideal R) : Ideal (Matrix n n R) where
     intro k _
     apply I.mul_mem_left _ (hN k j)
 
-@[deprecated (since := "2025-07-28")] alias matricesOver := matrix
-
 @[simp]
-theorem mem_matrix (I : Ideal R) (M : Matrix n n R) :
-    M ∈ I.matrix n ↔ ∀ i j, M i j ∈ I := by rfl
+theorem mem_matricesOver (I : Ideal R) (M : Matrix n n R) :
+    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I := by rfl
 
-@[deprecated (since := "2025-07-28")] alias mem_matricesOver := mem_matrix
-
-theorem matrix_monotone : Monotone (matrix (R := R) n) :=
+theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
   fun _ _ IJ _ MI i j => IJ (MI i j)
 
-@[deprecated (since := "2025-07-28")] alias matricesOver_monotone := matrix_monotone
-
-theorem matrix_strictMono_of_nonempty [Nonempty n] :
-    StrictMono (matrix (R := R) n) :=
-  matrix_monotone n |>.strictMono_of_injective <| fun I J eq => by
+theorem matricesOver_strictMono_of_nonempty [Nonempty n] :
+    StrictMono (matricesOver (R := R) n) :=
+  matricesOver_monotone n |>.strictMono_of_injective <| fun I J eq => by
     ext x
     have : (∀ _ _, x ∈ I) ↔ (∀ _ _, x ∈ J) := congr((Matrix.of fun _ _ => x) ∈ $eq)
     simpa only [forall_const] using this
 
-@[deprecated (since := "2025-07-28")] alias matricesOver_strictMono_of_nonempty :=
-matrix_strictMono_of_nonempty
-
 @[simp]
-theorem matrix_bot : (⊥ : Ideal R).matrix n = ⊥ := by
+theorem matricesOver_bot : (⊥ : Ideal R).matricesOver n = ⊥ := by
   ext M
-  simp only [mem_matrix, mem_bot]
+  simp only [mem_matricesOver, mem_bot]
   constructor
   · intro H; ext; apply H
   · intro H; simp [H]
 
-@[deprecated (since := "2025-07-28")] alias matricesOver_bot := matrix_bot
-
 @[simp]
-theorem matrix_top : (⊤ : Ideal R).matrix n = ⊤ := by
+theorem matricesOver_top : (⊤ : Ideal R).matricesOver n = ⊤ := by
   ext; simp
-
-@[deprecated (since := "2025-07-28")] alias matricesOver_top := matrix_top
 
 end Ideal
 
@@ -92,8 +81,8 @@ variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
 /-- A standard basis matrix is in $J(Mₙ(I))$
 as long as its one possibly non-zero entry is in $J(I)$. -/
-theorem single_mem_jacobson_matrix (I : Ideal R) :
-    ∀ x ∈ I.jacobson, ∀ (i j : n), single i j x ∈ (I.matrix n).jacobson := by
+theorem single_mem_jacobson_matricesOver (I : Ideal R) :
+    ∀ x ∈ I.jacobson, ∀ (i j : n), single i j x ∈ (I.matricesOver n).jacobson := by
   -- Proof generalized from example 8 in
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
   simp_rw [Ideal.mem_jacobson_iff]
@@ -111,23 +100,18 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
   · simp [N, qj, sum_apply, mul_apply]
 
 @[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_mem_jacobson_matricesOver := single_mem_jacobson_matrix
-
-@[deprecated (since := "2025-07-28")] alias single_mem_jacobson_matricesOver :=
-single_mem_jacobson_matrix
+alias stdBasisMatrix_mem_jacobson_matricesOver := single_mem_jacobson_matricesOver
 
 /-- For any left ideal $I ≤ R$, we have $Mₙ(J(I)) ≤ J(Mₙ(I))$. -/
-theorem matrix_jacobson_le (I : Ideal R) :
-    I.jacobson.matrix n ≤ (I.matrix n).jacobson := by
+theorem matricesOver_jacobson_le (I : Ideal R) :
+    I.jacobson.matricesOver n ≤ (I.matricesOver n).jacobson := by
   intro M MI
   rw [matrix_eq_sum_single M]
   apply sum_mem
   intro i _
   apply sum_mem
   intro j _
-  apply single_mem_jacobson_matrix I _ (MI i j)
-
-@[deprecated (since := "2025-07-28")] alias matricesOver_jacobson_le := matrix_jacobson_le
+  apply single_mem_jacobson_matricesOver I _ (MI i j)
 
 end Ideal
 
@@ -267,41 +251,28 @@ variable [NonUnitalNonAssocRing R] [Fintype n]
 
 /-- The two-sided ideal of matrices with entries in `I ≤ R`. -/
 @[simps]
-def matrix (I : TwoSidedIdeal R) : TwoSidedIdeal (Matrix n n R) where
+def matricesOver (I : TwoSidedIdeal R) : TwoSidedIdeal (Matrix n n R) where
   ringCon := I.ringCon.matrix n
 
-@[deprecated (since := "2025-07-28")] alias matricesOver := matrix
-
 @[simp]
-lemma mem_matrix (I : TwoSidedIdeal R) (M : Matrix n n R) :
-    M ∈ I.matrix n ↔ ∀ i j, M i j ∈ I := Iff.rfl
+lemma mem_matricesOver (I : TwoSidedIdeal R) (M : Matrix n n R) :
+    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I := Iff.rfl
 
-@[deprecated (since := "2025-07-28")] alias mem_matricesOver := mem_matrix
-
-theorem matrix_monotone : Monotone (matrix (R := R) n) :=
+theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
   fun _ _ IJ _ MI i j => IJ (MI i j)
 
-@[deprecated (since := "2025-07-28")] alias matricesOver_monotone := matrix_monotone
-
-theorem matrix_strictMono_of_nonempty [h : Nonempty n] :
-    StrictMono (matrix (R := R) n) :=
-  matrix_monotone n |>.strictMono_of_injective <|
+theorem matricesOver_strictMono_of_nonempty [h : Nonempty n] :
+    StrictMono (matricesOver (R := R) n) :=
+  matricesOver_monotone n |>.strictMono_of_injective <|
     .comp (fun _ _ => mk.inj) <| (RingCon.matrix_injective n).comp ringCon_injective
 
-@[deprecated (since := "2025-07-28")] alias matricesOver_strictMono_of_nonempty :=
-matrix_strictMono_of_nonempty
-
 @[simp]
-theorem matrix_bot : (⊥ : TwoSidedIdeal R).matrix n = ⊥ :=
+theorem matricesOver_bot : (⊥ : TwoSidedIdeal R).matricesOver n = ⊥ :=
   ringCon_injective <| RingCon.matrix_bot _
 
-@[deprecated (since := "2025-07-28")] alias matricesOver_bot := matrix_bot
-
 @[simp]
-theorem matrix_top : (⊤ : TwoSidedIdeal R).matrix n = ⊤ :=
+theorem matricesOver_top : (⊤ : TwoSidedIdeal R).matricesOver n = ⊤ :=
   ringCon_injective <| RingCon.matrix_top _
-
-@[deprecated (since := "2025-07-28")] alias matricesOver_top := matrix_top
 
 end NonUnitalNonAssocRing
 
@@ -316,38 +287,33 @@ Given an ideal $I ≤ R$, we send it to $Mₙ(I)$.
 Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 -/
 @[simps]
-def equivMatrix [Nonempty n] [DecidableEq n] :
+def equivMatricesOver [Nonempty n] [DecidableEq n] :
     TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
-  toFun I := I.matrix n
+  toFun I := I.matricesOver n
   invFun J := { ringCon := J.ringCon.ofMatrix }
   right_inv _ := ringCon_injective <| RingCon.matrix_ofMatrix _
   left_inv _ := ringCon_injective <| RingCon.ofMatrix_matrix _
 
-@[deprecated (since := "2025-07-28")] alias equivMatricesOver := equivMatrix
-
-theorem coe_equivMatrix_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) :
-    equivMatrix.symm I = {N i j | N ∈ I} := by
+theorem coe_equivMatricesOver_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) :
+    equivMatricesOver.symm I = {N i j | N ∈ I} := by
   ext r
   constructor
   · intro h
     exact ⟨single i j r, by simpa using h i j, by simp⟩
   · rintro ⟨n, hn, rfl⟩
-    rw [SetLike.mem_coe, mem_iff, equivMatrix_symm_apply_ringCon,
+    rw [SetLike.mem_coe, mem_iff, equivMatricesOver_symm_apply_ringCon,
       RingCon.coe_ofMatrix_eq_relationMap i j]
     exact ⟨n, 0, (I.mem_iff n).mp hn, rfl, rfl⟩
 
-@[deprecated (since := "2025-07-28")] alias coe_equivMatricesOver_symm_apply :=
-coe_equivMatrix_symm_apply
-
 /--
 Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
-See also `equivMatrix`.
+See also `equivMatricesOver`.
 -/
 @[simps!]
-def orderIsoMatrix : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
-  __ := equivMatrix
+def orderIsoMatricesOver : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
+  __ := equivMatricesOver
   map_rel_iff' {I J} := by
-    simp only [equivMatrix_apply]
+    simp only [equivMatricesOver_apply]
     constructor
     · intro le x xI
       specialize @le (of fun _ _ => x) (by simp [xI])
@@ -355,18 +321,14 @@ def orderIsoMatrix : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
     · intro IJ M MI i j
       exact IJ <| MI i j
 
-@[deprecated (since := "2025-07-28")] alias orderIsoMatricesOver := orderIsoMatrix
-
 end NonAssocRing
 
 section Ring
 variable [Ring R] [Fintype n]
 
-theorem asIdeal_matrix [DecidableEq n] (I : TwoSidedIdeal R) :
-    asIdeal (I.matrix n) = (asIdeal I).matrix n := by
+theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
+    asIdeal (I.matricesOver n) = (asIdeal I).matricesOver n := by
   ext; simp
-
-@[deprecated (since := "2025-07-28")] alias asIdeal_matricesOver := asIdeal_matrix
 
 end Ring
 
@@ -379,8 +341,8 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
-    (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
+private lemma jacobson_matricesOver_le (I : TwoSidedIdeal R) :
+    (I.matricesOver n).jacobson ≤ I.jacobson.matricesOver n := by
   -- Proof generalized from example 8 in
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
   intro M Mmem p q
@@ -394,22 +356,16 @@ private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
   use N p p
   simpa [mul_apply, single, ite_and] using NxMI p p
 
-@[deprecated (since := "2025-07-28")] alias jacobson_matricesOver_le := jacobson_matrix_le
-
 /-- For any two-sided ideal $I ≤ R$, we have $J(Mₙ(I)) = Mₙ(J(I))$. -/
-theorem jacobson_matrix (I : TwoSidedIdeal R) :
-    (I.matrix n).jacobson = I.jacobson.matrix n := by
+theorem jacobson_matricesOver (I : TwoSidedIdeal R) :
+    (I.matricesOver n).jacobson = I.jacobson.matricesOver n := by
   apply le_antisymm
-  · apply jacobson_matrix_le
-  · change asIdeal (I.matrix n).jacobson ≥ asIdeal (I.jacobson.matrix n)
-    simp [asIdeal_jacobson, asIdeal_matrix, Ideal.matrix_jacobson_le]
+  · apply jacobson_matricesOver_le
+  · change asIdeal (I.matricesOver n).jacobson ≥ asIdeal (I.jacobson.matricesOver n)
+    simp [asIdeal_jacobson, asIdeal_matricesOver, Ideal.matricesOver_jacobson_le]
 
-@[deprecated (since := "2025-07-28")] alias jacobson_matricesOver := jacobson_matrix
-
-theorem matrix_jacobson_bot :
-    (⊥ : TwoSidedIdeal R).jacobson.matrix n = (⊥ : TwoSidedIdeal (Matrix n n R)).jacobson :=
-  matrix_bot n (R := R) ▸ (jacobson_matrix _).symm
-
-@[deprecated (since := "2025-07-28")] alias matricesOver_jacobson_bot := matrix_jacobson_bot
+theorem matricesOver_jacobson_bot :
+    (⊥ : TwoSidedIdeal R).jacobson.matricesOver n = (⊥ : TwoSidedIdeal (Matrix n n R)).jacobson :=
+  matricesOver_bot n (R := R) ▸ (jacobson_matricesOver _).symm
 
 end TwoSidedIdeal

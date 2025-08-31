@@ -173,7 +173,4 @@ instance [IsIntegral X] (x : X) :
   .isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
     (Scheme.functionField X)
 
-instance [IsIntegral X] {x : X} : IsDomain (X.presheaf.stalk x) :=
-  Function.Injective.isDomain _ (IsFractionRing.injective (X.presheaf.stalk x) (X.functionField))
-
 end AlgebraicGeometry

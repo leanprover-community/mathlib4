@@ -5,12 +5,11 @@ Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.Grp.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Ring.Shrink
 
 /-!
 # Category of $R$-modules has enough injectives
 
-We lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint functors
+we lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint functors
 `restrictScalars ⊣ coextendScalars`
 -/
 

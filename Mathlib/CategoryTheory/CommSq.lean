@@ -41,7 +41,7 @@ is a commuting square.
 -/
 structure CommSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop where
   /-- The square commutes. -/
-  w : f ≫ h = g ≫ i := by cat_disch
+  w : f ≫ h = g ≫ i
 
 attribute [reassoc] CommSq.w
 
@@ -158,9 +158,9 @@ structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/
   l : B ⟶ X
   /-- The upper left triangle commutes. -/
-  fac_left : i ≫ l = f := by cat_disch
+  fac_left : i ≫ l = f := by aesop_cat
   /-- The lower right triangle commutes. -/
-  fac_right : l ≫ p = g := by cat_disch
+  fac_right : l ≫ p = g := by aesop_cat
 
 namespace LiftStruct
 
@@ -187,17 +187,17 @@ in the opposite category. -/
 def opEquiv (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.op where
   toFun := op
   invFun := unop
-  left_inv := by cat_disch
-  right_inv := by cat_disch
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 
-/-- Equivalences of `LiftStruct` for a square in the opposite category and
+/-- Equivalences of `LiftStruct` for a square in the oppositive category and
 the corresponding square in the original category. -/
 def unopEquiv {A B X Y : Cᵒᵖ} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
     (sq : CommSq f i p g) : LiftStruct sq ≃ LiftStruct sq.unop where
   toFun := unop
   invFun := op
-  left_inv := by cat_disch
-  right_inv := by cat_disch
+  left_inv := by aesop_cat
+  right_inv := by aesop_cat
 
 end LiftStruct
 

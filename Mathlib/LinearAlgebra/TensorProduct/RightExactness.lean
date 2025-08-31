@@ -84,8 +84,6 @@ to compute some kernels.
 
 -/
 
-assert_not_exists Cardinal
-
 section Modules
 
 open TensorProduct LinearMap

@@ -23,7 +23,6 @@ mathematical arguments go: one doesn't change weights, but merely adds some. Thi
 lemmas unconditional on the sum of the weights being `1`.
 -/
 
-assert_not_exists Cardinal
 
 open Set Function Pointwise
 
@@ -209,7 +208,9 @@ theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
     exact hy
   · convert h {x, y} (fun z => if z = y then b else a) _ _ _
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial]
-    · grind
+    · intro i _
+      simp only
+      split_ifs <;> assumption
     · simp only [sum_pair h_cases, if_neg h_cases, if_pos trivial, hab]
     · intro i hi
       simp only [Finset.mem_singleton, Finset.mem_insert] at hi
