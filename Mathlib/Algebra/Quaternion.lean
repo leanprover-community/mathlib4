@@ -649,8 +649,6 @@ theorem imK_star : (star a).imK = -a.imK :=
 theorem im_star : (star a).im = -a.im :=
   QuaternionAlgebra.ext neg_zero.symm rfl rfl rfl
 
-@[deprecated (since := "2025-08-31")] alias star_im := im_star
-
 @[simp]
 theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) =
     ⟨a₁ + c₂ * a₂, -a₂, -a₃, -a₄⟩ := rfl
@@ -683,8 +681,6 @@ instance : IsStarNormal a :=
 theorem star_coe : star (x : ℍ[R,c₁,c₂,c₃]) = x := by ext <;> simp
 
 @[simp] theorem star_im : star a.im = -a.im + c₂ * a.imI := by ext <;> simp
-
-@[deprecated (since := "2025-08-31")] alias im_star := star_im
 
 @[simp]
 theorem star_smul [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
@@ -1148,8 +1144,6 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 
 @[simp] theorem im_star : (star a).im = -a.im := QuaternionAlgebra.im_star a
 
-@[deprecated (since := "2025-08-31")] alias star_im := im_star
-
 nonrec theorem self_add_star' : a + star a = ↑(2 * a.re) := by
   simp [a.self_add_star', Quaternion.coe]
 
@@ -1171,8 +1165,6 @@ theorem star_coe : star (x : ℍ[R]) = x :=
 
 @[simp]
 theorem star_im : star a.im = -a.im := by ext <;> simp
-
-@[deprecated (since := "2025-08-31")] alias im_star := star_im
 
 @[simp]
 theorem star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R]) :
