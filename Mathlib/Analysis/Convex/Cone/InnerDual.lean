@@ -28,7 +28,7 @@ We prove the following theorems:
 ## Implementation notes
 
 We do not provide `ConvexCone`- nor `PointedCone`-valued versions of `ProperCone.innerDual` since
-the inner dual cone of any set is always closed and contains `0`, ie is a proper cone.
+the inner dual cone of any set is always closed and contains `0`, i.e. is a proper cone.
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < ⟪x, y⟫}` is a candidate to the name
 `ConvexCone.innerDual`.
 -/

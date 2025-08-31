@@ -239,8 +239,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   associator_naturality f g h := Quiver.Hom.unmop_inj <| by simp
   leftUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
   rightUnitor_naturality f := Quiver.Hom.unmop_inj <| by simp
-  -- Porting note: Changed `by coherence` to `by simp` below
-  triangle X Y := Quiver.Hom.unmop_inj <| by simp
+  triangle X Y := Quiver.Hom.unmop_inj <| by dsimp; monoidal_coherence
   pentagon W X Y Z := Quiver.Hom.unmop_inj <| by dsimp; monoidal_coherence
 
 -- it would be nice if we could autogenerate all of these somehow
