@@ -10,7 +10,8 @@ import Batteries.Data.Rat.Float
 # Chudnovsky's formula for π
 
 This file defines the infinite sum in Chudnovsky's formula for computing π⁻¹.
-It does not (yet!) contain a proof; anyone is welcome to adopt this problem.
+It does not (yet!) contain a proof; anyone is welcome to adopt this problem,
+but at present we are a long way off.
 
 ## Main definitions
 
@@ -18,7 +19,8 @@ It does not (yet!) contain a proof; anyone is welcome to adopt this problem.
 
 ## Future work
 
-* Prove the sum equals π⁻¹, as stated using `proof_wanted` below.
+* Use this formula to given approximations for `π`.
+* Prove the sum equals `π⁻¹`, as stated using `proof_wanted` below.
 * Show that each imaginary quadratic field of class number 1 (corresponding to Heegner numbers)
   gives a Ramanujan type formula, and that this is the formula coming from 163,
   with $$j(\frac{1+\sqrt{-163}}{2}) = -640320^3$$, and the other magic constants coming from
@@ -41,7 +43,7 @@ def chudnovskyNum (n : ℕ) : ℤ :=
 def chudnovskyDenom (n : ℕ) : ℕ :=
   (3 * n)! * (n)! ^ 3 * 640320 ^ (3 * n)
 
-/-- The term at index n in Chudnovsky's series for π⁻¹ -/
+/-- The term at index n in Chudnovsky's series for `π⁻¹` -/
 def chudnovskyTerm (n : ℕ) : ℚ :=
   chudnovskyNum n / chudnovskyDenom n
 
@@ -51,9 +53,9 @@ def chudnovskyTerm (n : ℕ) : ℚ :=
 #eval 1 / (12 / (640320 : Float) ^ (3 / 2) *
   (List.ofFn fun n : Fin 37 => (chudnovskyTerm n).toFloat).sum)
 
-/-- The infinite sum in Chudnovsky's formula for π⁻¹ -/
+/-- The infinite sum in Chudnovsky's formula for `π⁻¹` -/
 noncomputable def chudnovskySum : ℝ :=
   12 / (640320 : ℝ) ^ (3 / 2) * ∑' n : ℕ, (chudnovskyTerm n : ℝ)
 
-/-- **Chudnovsky's formula**: The sum equals π⁻¹ -/
+/-- **Chudnovsky's formula**: The sum equals `π⁻¹` -/
 proof_wanted chudnovskySum_eq_pi_inv : chudnovskySum = π⁻¹
