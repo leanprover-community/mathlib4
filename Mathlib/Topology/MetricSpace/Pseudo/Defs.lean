@@ -184,9 +184,6 @@ theorem dist_comm (x y : α) : dist x y = dist y x :=
 theorem edist_dist (x y : α) : edist x y = ENNReal.ofReal (dist x y) :=
   PseudoMetricSpace.edist_dist x y
 
-@[simp] lemma ofReal_dist {X : Type*} [PseudoMetricSpace X] (x y : X) :
-  .ofReal (dist x y) = edist x y := by simp [edist_dist]
-
 @[bound]
 theorem dist_triangle (x y z : α) : dist x z ≤ dist x y + dist y z :=
   PseudoMetricSpace.dist_triangle x y z
