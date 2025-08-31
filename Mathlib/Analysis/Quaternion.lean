@@ -52,7 +52,7 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
       re_inner_nonneg := fun _ => normSq_nonneg
       definite := fun _ => normSq_eq_zero.1
-      add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
+      add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
       smul_left := fun x y r => by simp [inner_def] }
 
 noncomputable instance : InnerProductSpace ℝ ℍ :=
@@ -98,19 +98,19 @@ instance : CStarRing ℍ where
 instance : Coe ℂ ℍ := ⟨coeComplex⟩
 
 @[simp, norm_cast]
-theorem coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
+theorem re_coeComplex (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
 
 @[simp, norm_cast]
-theorem coeComplex_imI (z : ℂ) : (z : ℍ).imI = z.im :=
+theorem imI_coeComplex (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
 
 @[simp, norm_cast]
-theorem coeComplex_imJ (z : ℂ) : (z : ℍ).imJ = 0 :=
+theorem imJ_coeComplex (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
 
 @[simp, norm_cast]
-theorem coeComplex_imK (z : ℂ) : (z : ℍ).imK = 0 :=
+theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
   rfl
 
 @[simp, norm_cast]
@@ -189,7 +189,7 @@ theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
-  simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
+  simpa only [← sub_re_self] using continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
   haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
@@ -212,7 +212,7 @@ theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summ
   simpa only using
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)
-      (continuous_algebraMap _ _) continuous_re coe_re
+      (continuous_algebraMap _ _) continuous_re re_coe
 
 @[norm_cast]
 theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
