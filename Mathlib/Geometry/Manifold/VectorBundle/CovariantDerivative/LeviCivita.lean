@@ -43,7 +43,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 The left hand side is the pushforward of the function `⟨Y, Z⟩` along the vector field `X`:
 the left hand side at `X` is `df(X x)`, where `f := ⟨Y, Z⟩`. -/
 
-variable {X X' Y Y' Z Z' : Π x : M, TangentSpace I x}
+variable {X X' X'' Y Y' Y'' Z Z' : Π x : M, TangentSpace I x}
 
 /-- The scalar product of two vector fields -/
 noncomputable abbrev product (X Y : Π x : M, TangentSpace I x) : M → ℝ :=
@@ -119,6 +119,25 @@ lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product
   simp [product, real_inner_smul_right]
 
 end product
+
+-- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
+-- only hold point-wise. They abstract the expanding and unexpanding of `product`.
+omit [IsManifold I ∞ M] in
+lemma product_congr_left {x} (h : X x = X' x) : product I X Y x = product I X' Y x := by
+  rw [product_apply, h, ← product_apply]
+
+omit [IsManifold I ∞ M] in
+lemma product_congr_left₂ {x} (h : X x = X' x + X'' x) :
+    product I X Y x = product I X' Y x + product I X'' Y x := by
+  rw [product_apply, h, inner_add_left, ← product_apply]
+omit [IsManifold I ∞ M] in
+lemma product_congr_right {x} (h : Y x = Y' x) : product I X Y x = product I X Y' x := by
+  rw [product_apply, h, ← product_apply]
+
+omit [IsManifold I ∞ M] in
+lemma product_congr_right₂ {x} (h : Y x = Y' x + Y'' x) :
+    product I X Y x = product I X Y' x + product I X Y'' x := by
+  rw [product_apply, h, inner_add_right, ← product_apply]
 
 set_option linter.style.commandStart false -- custom elaborators not handled well yet
 
@@ -289,10 +308,10 @@ lemma leviCivita_rhs'_addX_apply [CompleteSpace E]
   simp only [leviCivita_rhs', rhs_aux_addX, Pi.add_apply, Pi.sub_apply]
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
-  simp_rw [product_apply, VectorField.mlieBracket_add_right (V := Y) hX hX',
-    VectorField.mlieBracket_add_left (W := Z) hX hX', inner_add_right, ← product_apply,
-    product_add_left_apply]
-  rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
+  -- Fortunately, the `product_congr_right₂` lemma abstracts this very well.
+  rw [product_congr_right₂ I (VectorField.mlieBracket_add_right (V := Y) hX hX'),
+    product_congr_right₂ I (VectorField.mlieBracket_add_left (W := Z) hX hX'),
+    product_add_left_apply, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   abel
 
 lemma leviCivita_rhs'_addX [CompleteSpace E]
@@ -323,6 +342,7 @@ lemma leviCivita_rhs'_smulX_apply [CompleteSpace E] {f : M → ℝ}
   unfold leviCivita_rhs'
   simp only [Pi.add_apply, Pi.sub_apply]
   rw [rhs_aux_smulX, rhs_aux_smulY_apply, rhs_aux_smulZ_apply] <;> try assumption
+  -- TODO: add the right congr_right lemma to avoid the product_apply, ← product_apply dance!
   simp only [product_apply, mlieBracket_smul_left (W := Z) hf hX,
     mlieBracket_smul_right (V := Y) hf hX, inner_add_right]
   -- Combining this line with the previous one fails.
@@ -382,11 +402,9 @@ lemma leviCivita_rhs'_addY_apply [CompleteSpace E]
   rw [rhs_aux_addX, rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   -- We have to rewrite back and forth: the Lie bracket is only additive at x,
   -- as we are only asking for differentiability at x.
-  simp only [product_apply]
-  simp only [Pi.add_apply, mlieBracket_add_left (W := X) hY hY',
-    VectorField.mlieBracket_add_right (V := Z) hY hY', inner_add_right, ← product_apply]
-  have : mlieBracket I (Y + Y') X x = mlieBracket I (Y) X x + mlieBracket I Y' X x := by
-    exact mlieBracket_add_left (W := X) hY hY'
+  rw [product_congr_right₂ I (mlieBracket_add_left (W := X) hY hY')]
+  rw [product_congr_right₂ I (VectorField.mlieBracket_add_right (V := Z) hY hY')]
+  simp only [Pi.add_apply]
   abel
 
 lemma leviCivita_rhs_addY_apply [CompleteSpace E]
@@ -407,10 +425,9 @@ lemma leviCivita_rhs'_addZ_apply [CompleteSpace E]
     leviCivita_rhs' I X Y (Z + Z') x =
       leviCivita_rhs' I X Y Z x + leviCivita_rhs' I X Y Z' x := by
   simp only [leviCivita_rhs', rhs_aux_addX, Pi.add_apply, Pi.sub_apply, product_add_left_apply]
-  rw [rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
-  simp only [product_apply]
-  simp only [VectorField.mlieBracket_add_right (V := X) hZ hZ',
-    VectorField.mlieBracket_add_left (W := Y) hZ hZ', inner_add_right, ← product_apply]
+  rw [product_congr_right₂ I (VectorField.mlieBracket_add_right (V := X) hZ hZ'),
+    product_congr_right₂ I (VectorField.mlieBracket_add_left (W := Y) hZ hZ'),
+    rhs_aux_addY_apply, rhs_aux_addZ_apply] <;> try assumption
   abel
 
 lemma leviCivita_rhs'_addZ [CompleteSpace E]
