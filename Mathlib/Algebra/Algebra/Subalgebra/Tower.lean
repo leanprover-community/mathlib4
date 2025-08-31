@@ -82,7 +82,7 @@ def restrictScalars (U : Subalgebra S A) : Subalgebra R A :=
       rw [algebraMap_apply R S A]
       exact U.algebraMap_mem _ }
 
-@[simp, norm_cast]
+@[simp]
 theorem coe_restrictScalars {U : Subalgebra S A} : (restrictScalars R U : Set A) = (U : Set A) :=
   rfl
 
