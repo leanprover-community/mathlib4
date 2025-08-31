@@ -12,7 +12,8 @@ import Mathlib.Tactic.NormNum.Eq
 /-!
 # Divisible Group and rootable group
 
-In this file, we define a divisible add monoid and a rootable monoid with some basic properties.
+In this file, we define a divisible additive monoid and a rootable monoid with some basic
+properties.
 
 ## Main definition
 
