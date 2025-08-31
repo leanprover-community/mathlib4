@@ -143,7 +143,7 @@ def CWComplex.mkFiniteType.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
   continuousOn := continuousOn
   continuousOn_symm := continuousOn_symm
   pairwiseDisjoint' := pairwiseDisjoint'
-  mapsTo_iff_image_subset n i := by
+  mapsTo' n i := by
     use fun m ↦ finite_univ.toFinset (s := (univ : Set (cell m)))
     simp only [Finite.mem_toFinset, mem_univ, iUnion_true]
     exact mapsTo n i
