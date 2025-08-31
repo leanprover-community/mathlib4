@@ -532,8 +532,10 @@ variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i,
 
 -- TODO: make `x` explicit similar to `isFixedPt_prodMap`?
 @[simp]
-theorem isFixedPt_piMap : IsFixedPt (Pi.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) :=
-  sorry
+theorem isFixedPt_piMap : IsFixedPt (Pi.map f) x ↔ ∀ i, IsFixedPt (f i) (x i) := by
+  simp [IsFixedPt]
+  --unfold Pi.map
+  exact funext_iff
 
 theorem IsFixedPt.piMap (h : ∀ i, IsFixedPt (f i) (x i)) : IsFixedPt (Pi.map f) x :=
   isFixedPt_piMap.mpr h
