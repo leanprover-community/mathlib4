@@ -410,7 +410,6 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
           have tmp := mul_lt_mul_of_pos_right hp.1 qpos
-          simp at tmp
           have : (q : ℝ) ≠ 0 := (ne_of_lt qpos).symm
           have asdfasfd : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
             _ = q - (q : ℝ)⁻¹ * (q : ℝ) := by ring

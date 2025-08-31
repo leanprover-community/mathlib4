@@ -660,7 +660,6 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
   · intro x hx
     simp only [Finset.sum_apply, Pi.one_apply]
     have h := f.sum_eq_one' x hx
-    simp at h
     rw [finsum_eq_sum (fun i => (f.toFun i) x)
       (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))] at h
     rwa [Fintype.sum_subset (by simp)] at h

@@ -151,7 +151,9 @@ theorem arctan_eq_arcsin (x : ℝ) : arctan x = arcsin (x / √(1 + x ^ 2)) :=
 theorem arcsin_eq_arctan (h : x ∈ Ioo (-(1 : ℝ)) 1) :
     arcsin x = arctan (x / √(1 - x ^ 2)) := by
   rw_mod_cast [arctan_eq_arcsin, div_pow, sq_sqrt, one_add_div, div_div, ← sqrt_mul,
-    mul_div_cancel₀, sub_add_cancel, sqrt_one, div_one] <;> simp at h <;> nlinarith [h.1, h.2]
+    mul_div_cancel₀, sub_add_cancel, sqrt_one, div_one] <;>
+      simp only [Int.reduceNegSucc, Int.cast_neg, Int.cast_one, mem_Ioo] at h <;>
+      nlinarith [h.1, h.2]
 
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
