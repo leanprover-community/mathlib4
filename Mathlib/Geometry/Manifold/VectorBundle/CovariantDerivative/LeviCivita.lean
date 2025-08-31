@@ -604,13 +604,13 @@ noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
   if hE : Subsingleton E then X x else
   -- Choose a trivialisation of `TM` near `x`.
   -- Since `E` is non-trivial, `b` is non-empty.
-  letI b := Basis.ofVectorSpace ℝ E
+  let b := Basis.ofVectorSpace ℝ E
   have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
   have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
     choose r wo using exists_wellOrder _
     exact r
-  haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
   letI frame := b.orthonormalFrame e
   -- The coefficient of the desired tangent vector `∇ X Y x` w.r.t. `s i`
   -- is given by `leviCivitaRhs X Y (s i)`.
@@ -652,10 +652,13 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     congr; ext i
     rw [leviCivitaRhs_addX_apply] <;> try assumption
     let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
-    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := sorry
-    set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+    let b := Basis.ofVectorSpace ℝ E
+    have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+    set f := b.orthonormalFrame e i
     have : MDiffAt (T% f) x := -- missing API lemma!
-      (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
+      (contMDiffAt_orthonormalFrame_of_mem b e i hx)
         |>.mdifferentiableAt le_rfl
     sorry -- convert this works, except for different local orders...
   smulX X σ g x hx := by
@@ -683,11 +686,15 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivitaRhs_addY_apply] <;> try assumption
+
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+    let b := Basis.ofVectorSpace ℝ E
+    have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
-    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := by sorry
-    set f := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
+    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+    set f := b.orthonormalFrame e i
     have : MDiffAt (T% f) x := -- missing API lemma!
-      (contMDiffAt_orthonormalFrame_of_mem (Basis.ofVectorSpace ℝ E) e i hx)
+      (contMDiffAt_orthonormalFrame_of_mem b e i hx)
         |>.mdifferentiableAt le_rfl
     -- mismatch between different orders; the sorry above
     convert this <;> sorry
