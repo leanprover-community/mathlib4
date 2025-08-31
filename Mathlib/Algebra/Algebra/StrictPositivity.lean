@@ -60,7 +60,7 @@ lemma isSelfAdjoint [StarRing A] [StarOrderedRing A] {a : A} (ha : IsStrictlyPos
     IsSelfAdjoint a := by cfc_tac
 
 @[simp, grind]
-lemma _root_.isStrictlyPositive_one [StarRing A] [StarOrderedRing A] :
+lemma _root_.isStrictlyPositive_one [ZeroLEOneClass A] :
     IsStrictlyPositive (1 : A) := by
   rw [iff_of_unital]
   exact ⟨zero_le_one, isUnit_one⟩
@@ -83,6 +83,13 @@ protected lemma smul [Semifield 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A] [PosS
     simp [smul_smul, h₁, h₂]
   have hnonneg : 0 ≤ c • a := smul_nonneg hc.le ha.1
   exact hunit.isStrictlyPositive hnonneg
+
+@[grind ←, aesop safe apply]
+lemma _root_.isStrictlyPositive_algebraMap [ZeroLEOneClass A] [Semifield 𝕜] [PartialOrder 𝕜]
+    [Algebra 𝕜 A] [PosSMulMono 𝕜 A] {c : 𝕜} (hc : 0 < c) :
+    IsStrictlyPositive (algebraMap 𝕜 A c) := by
+  rw [Algebra.algebraMap_eq_smul_one]
+  exact IsStrictlyPositive.smul hc isStrictlyPositive_one
 
 lemma spectrum_pos [CommSemiring 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A]
     [NonnegSpectrumClass 𝕜 A] {a : A} (ha : IsStrictlyPositive a) {x : 𝕜}
