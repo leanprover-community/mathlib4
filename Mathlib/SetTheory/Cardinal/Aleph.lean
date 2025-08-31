@@ -568,13 +568,20 @@ theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
   simpa using preBeth_inj (o₂ := 0)
 
-theorem isStrongLimit_preBeth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (preBeth o) := by
-  refine ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩
-  rw [preBeth_limit H.isSuccPrelimit] at ha
-  rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-  have := power_le_power_left two_ne_zero ha.le
-  rw [← preBeth_succ] at this
-  exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
+theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSuccLimit o := by
+  by_cases H : IsSuccLimit o
+  · refine iff_of_true ⟨by simpa using H.ne_bot, fun a ha ↦ ?_⟩ H
+    rw [preBeth_limit H.isSuccPrelimit] at ha
+    rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+    have := power_le_power_left two_ne_zero ha.le
+    rw [← preBeth_succ] at this
+    exact this.trans_lt (preBeth_strictMono (H.succ_lt hi))
+  · apply iff_of_false _ H
+    rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff'] at H
+    obtain ho | ⟨a, rfl⟩ := H
+    · simp [ho.eq_bot]
+    · intro h
+      simpa using h.two_power_lt (preBeth_strictMono (lt_succ a))
 
 /-- The Beth function is defined so that `beth 0 = ℵ₀'`, `beth (succ o) = 2 ^ beth o`, and that for
 a limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
@@ -635,9 +642,7 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
 
-theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
-  apply isStrongLimit_preBeth
-  simp_rw [isSuccLimit_add_iff, isSuccLimit_omega0, isSuccLimit_iff]
-  tauto
+theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
+  rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
 
 end Cardinal
