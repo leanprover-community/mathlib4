@@ -367,7 +367,7 @@ theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S
 
 /-- Lift a ring homomorphism that maps polynomials `φ : R[X] →+* S[X]`
 to a `RatFunc R →+* RatFunc S`,
-on the condition that `φ` maps non-zero-divisors to non-zero divisors,
+on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def mapRingHom [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ) :
     RatFunc R →+* RatFunc S :=
