@@ -411,7 +411,7 @@ lemma erase_sub (a : ι) (f₁ f₂ : ι →₀ G) : erase a (f₁ - f₂) = era
 end AddGroup
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
-  fast_instance%  DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
+  fast_instance% DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
 end Finsupp
