@@ -885,7 +885,7 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
-  comp' (mono hg (Set.mapsTo'.mp st)) hf
+  comp' (mono hg (Set.mapsTo_iff_image_subset.mp st)) hf
 
 lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
