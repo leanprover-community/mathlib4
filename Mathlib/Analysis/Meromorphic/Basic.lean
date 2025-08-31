@@ -216,9 +216,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
         have : (z - x) ^ n * g z ≠ 0 := mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz_ne)) hg_ne'
         rw [← hfg, mul_ne_zero_iff] at this
         exact this.2
-      simp [field]
-      rw [pow_succ', mul_assoc, hfg]
-      ring
+      simp [field, pow_succ', mul_assoc, hfg]
 
 @[fun_prop]
 lemma fun_inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt (fun z ↦ (f z)⁻¹) x :=
