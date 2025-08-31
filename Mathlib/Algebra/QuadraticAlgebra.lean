@@ -179,8 +179,8 @@ section Mul
 
 variable [Mul R] [Add R]
 
-instance : Mul (QuadraticAlgebra R a b) :=
-  ⟨fun z w => ⟨z.1 * w.1 + a * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + b * z.2 * w.2⟩⟩
+instance : Mul (QuadraticAlgebra R a b) where
+  mul z w := ⟨z.1 * w.1 + a * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + b * z.2 * w.2⟩
 
 @[simp] theorem re_mul (z w : QuadraticAlgebra R a b) :
     (z * w).re = z.re * w.re + a * z.im * w.im := rfl
