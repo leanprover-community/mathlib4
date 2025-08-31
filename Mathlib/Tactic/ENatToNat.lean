@@ -59,7 +59,7 @@ elab "cases_first_enat" : tactic => focus do
         return Option.some decl
       else
         return Option.none
-    let .some decl := decl? | throwError "No ENats"
+    let some decl := decl? | throwError "No ENats"
     let isInaccessible := ctx.inaccessibleFVars.find? (·.fvarId == decl.fvarId) |>.isSome
     if isInaccessible then
       let name : Name := `enat_to_nat_aux
