@@ -168,10 +168,7 @@ def adj : T.free ⊣ T.forget :=
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
 -/
 theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
-  ⟨⟨{   f := inv f.f
-        h := by
-          simp },
-      by cat_disch⟩⟩
+  ⟨⟨{ f := inv f.f, h := by simp }, by cat_disch⟩⟩
 
 instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
   -- Porting note: Is this the right approach to introduce instances?

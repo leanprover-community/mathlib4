@@ -551,11 +551,14 @@ lemma apply_eq_of_leftRegular_eq_of_generator (g : G) (hg : ∀ x, x ∈ Subgrou
     (x : G →₀ k) (hx : leftRegular k G g x = x) (γ : G) :
     x γ = x g := by
   rcases hg γ with ⟨i, rfl⟩
-  induction i with | zero => _ | succ n h => _ | pred n h => _
-  · simpa using (Finsupp.ext_iff.1 hx g)
-  · simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
+  induction i with
+  | zero =>
+    simpa using (Finsupp.ext_iff.1 hx g)
+  | succ n h =>
+    simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
       (Finsupp.ext_iff.1 hx (g ^ (n + 1))).symm
-  · simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
+  | pred n h =>
+    simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
       using Finsupp.ext_iff.1 hx (g ^ (-n : ℤ))
 
 end Cyclic
