@@ -487,10 +487,10 @@ def insertTranslationAndInfo (b : BundledExts) (src tgt : Name) (argInfo : ArgIn
   insertTranslation b src tgt failIfExists
   if argInfo.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} by {argInfo.reorder}."
-    reorderAttr.add src argInfo.reorder
+    b.reorderAttr.add src argInfo.reorder
   if argInfo.relevantArg != 0 then
     trace[to_additive_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
-    relevantArgAttr.add src argInfo.relevantArg
+    b.relevantArgAttr.add src argInfo.relevantArg
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -1065,7 +1065,7 @@ def findMultiplicativeArg (b : BundledExts) (nm : Name) : MetaM Nat := do
     let multArg? (tgt : Expr) : Option Nat := do
       let c ← tgt.getAppFn.constName?
       guard (findTranslation? env b c).isSome
-      let relevantArg := (relevantArgAttr.find? env c).getD 0
+      let relevantArg := (b.relevantArgAttr.find? env c).getD 0
       let arg ← tgt.getArg? relevantArg
       xs.findIdx? (arg.containsFVar ·.fvarId!)
     -- run the above check on all hypotheses and on the conclusion
@@ -1346,10 +1346,10 @@ partial def addToAdditiveAttr (b : BundledExts) (src : Name) (cfg : Config)
     -- for updating this information on constants that are already tagged
     -- for example, this is necessary for `HPow.hPow`
     if cfg.reorder != [] then
-      modifyEnv (reorderAttr.addEntry · (src, cfg.reorder))
+      modifyEnv (b.reorderAttr.addEntry · (src, cfg.reorder))
       return #[tgt]
     if let some relevantArg := cfg.relevantArg? then
-      modifyEnv (relevantArgAttr.addEntry · (src, relevantArg))
+      modifyEnv (b.relevantArgAttr.addEntry · (src, relevantArg))
       return #[tgt]
   let tgt ← targetName b cfg src
   let alreadyExists := (← getEnv).contains tgt
