@@ -48,11 +48,13 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 namespace MonoidalLinear
 
 @[simp]
-lemma tensorHom_smul (r : R) {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ (r • g) = r • (f ⊗ g) := by
+lemma tensorHom_smul (r : R) {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
+    f ⊗ₘ (r • g) = r • (f ⊗ₘ g) := by
   simp only [tensorHom_def, MonoidalLinear.whiskerLeft_smul, Linear.comp_smul]
 
 @[simp]
-lemma smul_tensorHom (r : R) {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : (r • f) ⊗ g = r • (f ⊗ g) := by
+lemma smul_tensorHom (r : R) {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
+    (r • f) ⊗ₘ g = r • (f ⊗ₘ g) := by
   simp only [tensorHom_def, MonoidalLinear.smul_whiskerRight, Linear.smul_comp]
 
 end MonoidalLinear

@@ -182,8 +182,8 @@ lemma carrier_of_tensorObj_of {X Y : Type u} [AddCommGroup X] [Module R X]
   rfl
 
 @[simp]
-lemma hom_tensorHom {W X Y Z: ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
-    (f ⊗ g).hom = TensorProduct.map f.hom g.hom :=
+lemma hom_tensorHom {W X Y Z : ModuleCat R} (f : W ⟶ X) (g : Y ⟶ Z) :
+    (f ⊗ₘ g).hom = TensorProduct.map f.hom g.hom :=
   rfl
 
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
@@ -251,7 +251,7 @@ lemma hom_ofHom_whiskerRight_of {Z W : Type u}
 
 @[simp]
 lemma hom_of_whiskerLeft_ofHom (X : Type u) [AddCommGroup X] [Module R X]
-    { Z W : Type u} [AddCommGroup Z] [Module R Z] [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
+    {Z W : Type u} [AddCommGroup Z] [Module R Z] [AddCommGroup W] [Module R W] (f : Z →ₗ[R] W) :
     (ModuleCat.of R X ◁ ModuleCat.ofHom f).hom = f.lTensor X :=
   rfl
 

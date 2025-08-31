@@ -6,7 +6,7 @@ Authors: Jakob von Raumer
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.Tactic.CategoryTheory.Coherence
 /-!
 # Linear categories as `ModuleCat R`-enriched categories
@@ -47,27 +47,24 @@ category `C`. -/
 noncomputable abbrev enrichedOrdinaryCategoryModuleCat :
     EnrichedOrdinaryCategory (ModuleCat R) C where
   Hom X Y := .of R (X ⟶ Y)
-  id X := ModuleCat.ofHom <| (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm (𝟙 X)
+  id X := ModuleCat.ofHom <| (LinearMap.ringLmapEquivSelf R R (X ⟶ X)).symm <| 𝟙 X
   comp X Y Z := ModuleCat.ofHom <| lift (Linear.comp X Y Z)
   id_comp X Y := by
     ext f
-    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp,
-      ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
-      LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    rw [ModuleCat.MonoidalCategory.leftUnitor_inv_hom_apply]
-    simp [ModuleCat.MonoidalCategory.tensorUnit_eq]
+    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp, hom_ofHom,
+      MonoidalCategory.hom_ofHom_whiskerRight_of, LinearMap.coe_comp, Function.comp_apply]
+    erw [lift.tmul']
+    simp
   comp_id X Y := by
     ext f
-    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp,
-      ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
-      LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_id, LinearMap.id_coe, id_eq] at f ⊢
-    rw [ModuleCat.MonoidalCategory.rightUnitor_inv_hom_apply]
-    simp [ModuleCat.MonoidalCategory.tensorUnit_eq]
+    simp only [LinearMap.ringLmapEquivSelf_symm_apply, ModuleCat.hom_comp, hom_ofHom,
+      MonoidalCategory.hom_of_whiskerLeft_ofHom, LinearMap.coe_comp, Function.comp_apply]
+    erw [lift.tmul']
+    simp
   assoc W X Y Z := by
     ext f
-    change _ ⊗[R] _ ⊗[R] _ at f
-    simp only [ModuleCat.hom_comp, ModuleCat.MonoidalCategory.carrier_of_tensorObj_of, hom_ofHom,
-      LinearMap.coe_comp, Function.comp_apply] at f ⊢
+    change (ModuleCat.of ..) ⊗[R] ((ModuleCat.of ..) ⊗[R] (ModuleCat.of ..)) at f
+    simp only [ModuleCat.hom_comp, hom_ofHom, LinearMap.coe_comp, Function.comp_apply] at f ⊢
     erw [lift_comp_lift_comp_rTensor_eq]
     congr
     exact (TensorProduct.assoc R (W ⟶ X) (X ⟶ Y) (Y ⟶ Z)).right_inv f
@@ -79,9 +76,10 @@ noncomputable abbrev enrichedOrdinaryCategoryModuleCat :
     change (LinearMap.toSpanSingleton R (X ⟶ Z) (f ≫ g)) 1 =
       (lift (Linear.comp X Y Z))
         ((ModuleCat.Hom.hom
-          (ModuleCat.ofHom (LinearMap.toSpanSingleton R (X ⟶ Y) f) ⊗
-            ModuleCat.ofHom (LinearMap.toSpanSingleton R (Y ⟶ Z) g)))
+          (ModuleCat.ofHom (.toSpanSingleton ..) ⊗ₘ
+            ModuleCat.ofHom (.toSpanSingleton R (Y ⟶ Z) g)))
           (1 ⊗ₜ 1))
+    erw [lift.tmul']
     simp
 
 end EnrichedOfLinear
