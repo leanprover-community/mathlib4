@@ -85,8 +85,7 @@ lemma zpow'_mul (a : α) (m n : ℤ) : zpow' a (m * n) = zpow' (zpow' a m) n := 
   by_cases hm : m = 0
   · rw [hm]
     simp [zpow', ha]
-  simp [zpow', ha, hm, hn]
-  exact zpow_mul a m n
+  simpa [zpow', ha, hm, hn] using zpow_mul a m n
 
 lemma zpow'_ofNat (a : α) {n : ℕ} (hn : n ≠ 0) : zpow' a n = a ^ n := by
   rw [zpow'_of_ne_zero_right]
@@ -101,8 +100,7 @@ lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
   · simp [ha]
   by_cases hb : b = 0
   · simp [hb]
-  simp [zpow', ha, hb]
-  exact mul_zpow a b n
+  simpa [zpow', ha, hb] using mul_zpow a b n
 
 theorem list_prod_zpow' [CommGroupWithZero α] {r : ℤ} {l : List α} :
     zpow' (prod l) r = prod (map (fun x ↦ zpow' x r) l) :=
@@ -202,13 +200,13 @@ theorem mul_eq_eval₁ [CommGroupWithZero M] (a₁ : ℤ × M) {a₂ : ℤ × M}
 theorem mul_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
     (h : l₁.eval * l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
-  simp [zpow'_add, ← h]
+  simp only [eval_cons, ← h, zpow'_add]
   ac_rfl
 
 theorem mul_eq_eval₃ [CommGroupWithZero M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
-  simp [← h]
+  simp only [eval_cons, ← h]
   ac_rfl
 
 theorem mul_eq_eval [GroupWithZero M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
