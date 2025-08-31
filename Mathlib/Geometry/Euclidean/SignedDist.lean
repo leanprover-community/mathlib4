@@ -225,7 +225,7 @@ lemma signedInfDist_def :
   rfl
 
 variable {s p q} in
-lemma signedInfDist_eq_signedDist (h : q ∈ s) :
+lemma signedInfDist_eq_signedDist_of_mem (h : q ∈ s) :
     s.signedInfDist p = signedDist (p -ᵥ orthogonalProjection s p) q := by
   apply signedDist_left_congr
   apply s.direction.inner_left_of_mem_orthogonal
@@ -234,7 +234,7 @@ lemma signedInfDist_eq_signedDist (h : q ∈ s) :
 
 lemma signedInfDist_eq_signedDist_orthogonalProjection {x : P} : s.signedInfDist p x =
     signedDist (p -ᵥ orthogonalProjection s p) ↑(orthogonalProjection s x) x := by
-  rw [signedInfDist_eq_signedDist (orthogonalProjection_mem x)]
+  rw [signedInfDist_eq_signedDist_of_mem (orthogonalProjection_mem x)]
 
 @[simp] lemma signedInfDist_apply_self : s.signedInfDist p p = ‖p -ᵥ orthogonalProjection s p‖ := by
   rw [signedInfDist_eq_signedDist_orthogonalProjection, signedDist_vsub_self, dist_eq_norm_vsub']
@@ -260,7 +260,7 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
 
 lemma signedInfDist_singleton :
     (affineSpan ℝ ({q} : Set P)).signedInfDist p = signedDist (p -ᵥ q) q := by
-  simpa using signedInfDist_eq_signedDist (mem_affineSpan ℝ (Set.mem_singleton q))
+  simpa using signedInfDist_eq_signedDist_of_mem (mem_affineSpan ℝ (Set.mem_singleton q))
 
 end AffineSubspace
 
