@@ -232,11 +232,11 @@ lemma Gleason (X : CompHaus.{u}) :
     Projective X ↔ ExtremallyDisconnected X := by
   constructor
   · intro h
-    change ExtremallyDisconnected X.toStonean
+    show ExtremallyDisconnected X.toStonean
     infer_instance
   · intro h
     let X' : Stonean := ⟨X.toTop, inferInstance⟩
-    change Projective X'.compHaus
+    show Projective X'.compHaus
     apply Stonean.instProjectiveCompHausCompHaus
 
 end CompHaus
@@ -286,7 +286,7 @@ lemma lift_lifts {X Y : Profinite} {Z : Stonean} (e : Stonean.toProfinite.obj Z 
 
 lemma projective_of_extrDisc {X : Profinite.{u}} (hX : ExtremallyDisconnected X) :
     Projective X := by
-  change Projective (Stonean.toProfinite.obj ⟨X.toTop, inferInstance⟩)
+  show Projective (Stonean.toProfinite.obj ⟨X.toTop, inferInstance⟩)
   exact inferInstance
 
 end Profinite

@@ -602,8 +602,7 @@ def get_pr_comments_summary(pr_number: int) -> Optional[str]:
             # Skip bot comments (usernames ending with -bot, except 'FR-vdash-bot')
             if author.endswith('-bot') and not author == 'FR-vdash-bot':
                 continue
-            # These are bots posting about merge conflicts and benchmark summaries, respectively.
-            if author in ['leanprover-community-bot-assistant', 'github-actions']:
+            if author == 'leanprover-community-bot-assistant':
                 continue
 
             created_at = comment.get('createdAt', '')

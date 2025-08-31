@@ -14,8 +14,7 @@ set_option linter.style.setOption true
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option pp.all'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option pp.all true
@@ -24,8 +23,7 @@ set_option pp.all true
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option profiler'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option profiler false
@@ -34,8 +32,7 @@ set_option profiler false
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option pp.all'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option pp.all false
@@ -44,8 +41,7 @@ set_option pp.all false
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option profiler.threshold'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option profiler.threshold 50
@@ -54,8 +50,7 @@ set_option profiler.threshold 50
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option trace.profiler.output'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option trace.profiler.output "foo"
@@ -64,8 +59,7 @@ set_option trace.profiler.output "foo"
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option debug.moduleNameAtTimeout'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option debug.moduleNameAtTimeout false
@@ -79,8 +73,7 @@ set_option autoImplicit false
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option pp.all'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 lemma tactic : True := by
@@ -91,8 +84,7 @@ lemma tactic : True := by
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option pp.raw.maxDepth'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 lemma tactic2 : True := by
@@ -103,8 +95,7 @@ lemma tactic2 : True := by
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option pp.all'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 lemma tactic3 : True := by
@@ -115,8 +106,7 @@ lemma tactic3 : True := by
 warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
 for development and not for final code. If you intend to submit this contribution to the
 Mathlib project, please remove 'set_option trace.profiler.output'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 lemma tactic4 : True := by
@@ -137,8 +127,7 @@ set_option maxHeartbeats in
 -- comment explaining why this is necessary
 example : ... := ...
 ```
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option maxHeartbeats 20
@@ -156,8 +145,7 @@ set_option synthInstance.maxHeartbeats in
 -- comment explaining why this is necessary
 example : ... := ...
 ```
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
+note: this linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 20
@@ -176,16 +164,13 @@ set_option linter.style.cdot true
 set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
 attribute [instance] Int.add in
@@ -197,32 +182,27 @@ instance : Inhabited Nat where
 
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
 example : Add Nat where add := (. + ·)
 
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
 example : Add Nat where add := (. + ·)
 
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
-
-Note: This linter can be disabled with `set_option linter.style.cdot false`
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
 example : Nat := by
@@ -251,12 +231,10 @@ set_option linter.style.dollarSyntax true
 set_option linter.globalAttributeIn false in
 /--
 warning: Please use '<|' instead of '$' for the pipe operator.
-
-Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 ---
 warning: Please use '<|' instead of '$' for the pipe operator.
-
-Note: This linter can be disabled with `set_option linter.style.dollarSyntax false`
+note: this linter can be disabled with `set_option linter.style.dollarSyntax false`
 -/
 #guard_msgs in
 attribute [instance] Int.add in
@@ -273,8 +251,7 @@ set_option linter.style.lambdaSyntax true
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
 example : ℕ → ℕ := λ _ ↦ 0
@@ -282,8 +259,7 @@ example : ℕ → ℕ := λ _ ↦ 0
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
 def foo : Bool := by
@@ -295,8 +271,7 @@ example : ℕ → ℕ := fun n ↦ n - 1
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
 example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
@@ -306,18 +281,15 @@ warning: declaration uses 'sorry'
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
 example : ℕ → ℕ → ℕ → ℕ := by
@@ -329,18 +301,15 @@ example : ℕ → ℕ → ℕ → ℕ := by
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
 example : True := by
@@ -361,8 +330,7 @@ example : True := by
 /--
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
-
-Note: This linter can be disabled with `set_option linter.style.lambdaSyntax false`
+note: this linter can be disabled with `set_option linter.style.lambdaSyntax false`
 -/
 #guard_msgs in
 example : ℕ → ℕ := λ _ ↦ 0
@@ -376,8 +344,7 @@ end lambdaSyntaxLinter
 set_option linter.style.longLine true
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
-
-Note: This linter can be disabled with `set_option linter.style.longLine false`
+note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in
 /-!                                                                                                -/
@@ -390,8 +357,7 @@ set_option linter.style.longLine true
 -- The *argument* of `#guard_msgs` is *not* exempt from the linter.
 /--
 warning: This line exceeds the 100 character limit, please shorten it!
-
-Note: This linter can be disabled with `set_option linter.style.longLine false`
+note: this linter can be disabled with `set_option linter.style.longLine false`
 -/
 #guard_msgs in                                                                            #guard true
 
@@ -420,8 +386,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Classical
@@ -431,8 +396,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Nat Classical Nat
@@ -442,8 +406,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Classical hiding choose
@@ -453,8 +416,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Classical hiding choose axiomOfChoice
@@ -464,8 +426,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Classical renaming choose -> foo, byCases -> bar
@@ -476,8 +437,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Classical (choose)
@@ -489,8 +449,7 @@ warning: please avoid 'open (scoped) Classical' statements: this can hide theore
 which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open scoped Classical
@@ -499,14 +458,12 @@ open scoped Classical
 warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 ---
 warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open scoped Int Classical Nat Classical
@@ -526,8 +483,7 @@ def baz : Nat := 1
 warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-
-Note: This linter can be disabled with `set_option linter.style.openClassical false`
+note: this linter can be disabled with `set_option linter.style.openClassical false`
 -/
 #guard_msgs in
 open Classical
@@ -539,51 +495,3 @@ def aux : Nat := 1
 def aux' : Nat := 1
 
 end openClassical
-
-/- Tests for the `show` linter -/
-section showLinter
-
-set_option linter.style.show true
-
--- The linter doesn't complain if the goal stays the same
-
-#guard_msgs in
-example : 1 + 2 = 3 := by
-  show 1 + 2 = 3
-  rfl
-
--- Binder names are ignored
-
-#guard_msgs in
-example : ∀ a : Nat, a = a := by
-  show ∀ b : Nat, b = b
-  intro
-  rfl
-
--- Goal changes are linted
-
-/--
-warning: The `show` tactic should only be used to indicate intermediate goal states for readability.
-However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
-
-Note: This linter can be disabled with `set_option linter.style.show false`
--/
-#guard_msgs in
-example : (fun a => a) 1 = 1 := by
-  show 1 = 1
-  rfl
-
--- Assigning meta-variables in the goal is also linted
-
-/--
-warning: The `show` tactic should only be used to indicate intermediate goal states for readability.
-However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
-
-Note: This linter can be disabled with `set_option linter.style.show false`
--/
-#guard_msgs in
-example := by
-  show 1 = 1
-  rfl
-
-end showLinter

@@ -21,8 +21,7 @@ theorem foo : True := by
 
 /--
 warning: Please remove stream-of-consciousness `obtain` syntax
-
-Note: This linter can be disabled with `set_option linter.oldObtain false`
+note: this linter can be disabled with `set_option linter.oldObtain false`
 -/
 #guard_msgs in
 theorem foo' : True := by
@@ -32,8 +31,7 @@ theorem foo' : True := by
 
 /--
 warning: Please remove stream-of-consciousness `obtain` syntax
-
-Note: This linter can be disabled with `set_option linter.oldObtain false`
+note: this linter can be disabled with `set_option linter.oldObtain false`
 -/
 #guard_msgs in
 theorem foo'' : True := by

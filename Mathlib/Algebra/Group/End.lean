@@ -93,7 +93,7 @@ def _root_.MonoidHom.toHomPerm {G : Type*} [Group G] (f : G →* Function.End α
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
 
 theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
-  rfl
+  Equiv.trans_apply _ _ _
 
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
@@ -149,19 +149,19 @@ theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
 
 @[simp]
 theorem one_symm : (1 : Perm α).symm = 1 :=
-  rfl
+  Equiv.refl_symm
 
 @[simp]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
-  rfl
+  Equiv.refl_symm
 
 @[simp]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
-  rfl
+  Equiv.refl_trans e
 
 @[simp]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
-  rfl
+  Equiv.refl_trans e
 
 @[simp]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
@@ -198,7 +198,7 @@ theorem sumCongr_mul {α β : Type*} (e : Perm α) (f : Perm β) (g : Perm α) (
 @[simp]
 theorem sumCongr_inv {α β : Type*} (e : Perm α) (f : Perm β) :
     (sumCongr e f)⁻¹ = sumCongr e⁻¹ f⁻¹ :=
-  rfl
+  sumCongr_symm e f
 
 @[simp]
 theorem sumCongr_one {α β : Type*} : sumCongr (1 : Perm α) (1 : Perm β) = 1 :=
@@ -237,17 +237,17 @@ theorem sumCongr_one_swap {α β : Type*} [DecidableEq α] [DecidableEq β] (i j
 @[simp]
 theorem sigmaCongrRight_mul {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a))
     (G : ∀ a, Perm (β a)) : sigmaCongrRight F * sigmaCongrRight G = sigmaCongrRight (F * G) :=
-  rfl
+  sigmaCongrRight_trans G F
 
 @[simp]
 theorem sigmaCongrRight_inv {α : Type*} {β : α → Type*} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F)⁻¹ = sigmaCongrRight fun a => (F a)⁻¹ :=
-  rfl
+  sigmaCongrRight_symm F
 
 @[simp]
 theorem sigmaCongrRight_one {α : Type*} {β : α → Type*} :
     sigmaCongrRight (1 : ∀ a, Equiv.Perm <| β a) = 1 :=
-  rfl
+  sigmaCongrRight_refl
 
 /-- `Equiv.Perm.sigmaCongrRight` as a `MonoidHom`.
 
@@ -705,7 +705,7 @@ def conj [Group G] : G →* MulAut G where
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
   map_mul' g₁ g₂ := by
     ext h
-    change g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
+    show g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
     simp only [mul_assoc, mul_inv_rev]
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 
@@ -818,7 +818,7 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
-    change g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
     apply Additive.toMul.injective; ext

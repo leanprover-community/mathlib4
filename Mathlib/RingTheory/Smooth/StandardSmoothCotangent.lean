@@ -99,7 +99,7 @@ lemma cotangentComplexAux_injective [Finite σ] : Function.Injective P.cotangent
     have := this c.support (fun i ↦ aeval P.val (c i))
       (by intro i; simp only [Finsupp.mem_support_iff, ne_eq, not_not]; intro h; simp [h]) heq2
     exact this i
-  change _ ∈ P.ker ^ 2
+  show _ ∈ P.ker ^ 2
   rw [← hc]
   apply Ideal.sum_mem
   intro i hi

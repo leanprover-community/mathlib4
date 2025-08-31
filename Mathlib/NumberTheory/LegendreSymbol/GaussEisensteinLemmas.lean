@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Lemmas of Gauss and Eisenstein

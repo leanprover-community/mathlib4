@@ -9,8 +9,7 @@ set_option linter.unusedVariables false
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'exact h' uses 'h'!
 -/
@@ -37,14 +36,12 @@ example {a b : Nat} (h : a = b) : a + 0 = b := by
 -- `induction` does not use the goal
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'assumption' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'assumption' uses '⊢'!
 -/
@@ -56,8 +53,7 @@ example {a b : Nat} (h : a = b) : a + 0 = b := by
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'exact h' uses 'h'!
 -/
@@ -71,14 +67,12 @@ example (h : 0 = 0 ∨ 0 = 0) : True := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'on_goal 2 => · contradiction' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 -/
@@ -94,14 +88,12 @@ example {a : Nat} : a + 1 + 0 = 1 + a := by simp; all_goals omega
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 ---
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 -/
@@ -113,14 +105,12 @@ example (h : 0 = 1 ∨ 0 = 1) : 0 = 1 ∧ 0 = 1 := by
 
 /--
 warning: 'simp at h k' is a flexible tactic modifying 'k'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at k' uses 'k'!
 ---
 warning: 'simp at h k' is a flexible tactic modifying 'h'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -149,8 +139,7 @@ example : (0 + 2 : Rat) + 1 = 3 := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [add_comm]' uses '⊢'!
 -/
@@ -163,8 +152,7 @@ example {a : Rat} : a + (0 + 2 + 1 : Rat) = 3 + a := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'exact h.symm' uses '⊢'!
 -/
@@ -209,8 +197,7 @@ example {a b : Nat} : a + b = b + a + 0 := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'contradiction' uses '⊢'!
 -/
@@ -235,8 +222,7 @@ example (n : Nat) : n + 1 = 1 + n := by
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -252,14 +238,12 @@ example {h : 0 = 0} {k : 1 = 1} : ¬ ¬ True := by
 
 /--
 warning: 'simp at h k' is a flexible tactic modifying 'k'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at k' uses 'k'!
 ---
 warning: 'simp at h k' is a flexible tactic modifying 'h'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -275,8 +259,7 @@ example {h : 0 = 0} {k : 1 = 1} : True := by
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [← Classical.not_not (a := True)] at h' uses 'h'!
 -/
@@ -291,8 +274,7 @@ example {h : 0 = 0} : True := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/
@@ -305,8 +287,7 @@ example {h : False} : 0 = 1 := by
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
-
-Note: This linter can be disabled with `set_option linter.flexible false`
+note: this linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rwa [← Classical.not_not (a := False)]' uses '⊢'!
 -/

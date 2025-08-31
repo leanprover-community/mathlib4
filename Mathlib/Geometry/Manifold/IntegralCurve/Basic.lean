@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Winston Yin. All rights reserved.
+Copyright (c) 2025 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
@@ -32,6 +32,9 @@ Let `v : M → TM` be a vector field on `M`, and let `γ : ℝ → M`.
 For `IsMIntegralCurveOn γ v s` and `IsMIntegralCurveAt γ v t₀`, even though `γ` is defined for all
 time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered
 junk.
+
+These definitions mirror the definitions of `IsIntegralCurve`, `IsIntegralCurveOn`, and
+`IsIntegralCurveAt`.
 
 ## TODO
 
@@ -100,9 +103,11 @@ lemma isMIntegralCurveAt_iff :
     rw [IsMIntegralCurveAt, Filter.eventually_iff_exists_mem] at h
     obtain ⟨s, hs, h⟩ := h
     exact ⟨s, hs, fun t ht ↦ (h t ht).hasMFDerivWithinAt⟩
-  · rintro ⟨s, hs, h⟩
+  · intro h
     rw [IsMIntegralCurveAt, Filter.eventually_iff_exists_mem]
-    obtain ⟨s', h1, h2, h3⟩ := mem_nhds_iff.mp hs
+    obtain ⟨s, hs, h⟩ := h
+    rw [mem_nhds_iff] at hs
+    obtain ⟨s', h1, h2, h3⟩ := hs
     refine ⟨s', h2.mem_nhds h3, ?_⟩
     intro t ht
     apply (h t (h1 ht)).hasMFDerivAt
@@ -120,7 +125,9 @@ lemma isMIntegralCurveAt_iff' :
   · intro ⟨s, hs, h⟩
     rw [Metric.mem_nhds_iff] at hs
     obtain ⟨ε, hε, hε'⟩ := hs
-    refine ⟨ε, hε, fun t ht ↦ (h t (hε' ht)).mono hε'⟩
+    refine ⟨ε, hε, ?_⟩
+    intro t ht
+    exact (h t (hε' ht)).mono hε'
   · intro ⟨ε, hε, h⟩
     exact ⟨Metric.ball t₀ ε, Metric.ball_mem_nhds _ hε, h⟩
 

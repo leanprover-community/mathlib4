@@ -124,7 +124,7 @@ open PrimeSpectrum
 /-- `Spec S → Spec R` is generalizing if `R →+* S` is flat. -/
 lemma generalizingMap_comap {f : R →+* S} (hf : f.Flat) : GeneralizingMap (comap f) := by
   algebraize [f]
-  change GeneralizingMap (comap (algebraMap R S))
+  show GeneralizingMap (comap (algebraMap R S))
   rw [← Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap]
   infer_instance
 

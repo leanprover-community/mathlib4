@@ -54,7 +54,8 @@ theorem uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
 @[simp low]
 theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
     (f : Function.FromTypes p τ) (args : (i : Fin (n + 1)) → p i) :
-    uncurry f args = uncurry (f (args 0)) (Fin.tail args) := rfl
+    uncurry f args = uncurry (f (args 0)) (Fin.tail args) :=
+  @uncurry_apply_cons n (p 0) (vecTail p) τ f (args 0) (Fin.tail args)
 
 @[simp]
 theorem curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}

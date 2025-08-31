@@ -128,8 +128,7 @@ warning: Imports increased to
 
 New imports: [Init.Guard, Mathlib.Data.Int.Notation]
 
-
-Note: This linter can be disabled with `set_option linter.minImports false`
+note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
 #guard (0 : ℤ) = 0
@@ -147,8 +146,7 @@ warning: Imports increased to
 
 New imports: [Init.Guard, Mathlib.Data.Int.Notation]
 
-
-Note: This linter can be disabled with `set_option linter.minImports false`
+note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
 -- again, the imports pick-up, after the reset
@@ -160,8 +158,7 @@ warning: Imports increased to
 
 New imports: [Mathlib.Tactic.Linter.MinImports]
 
-
-Note: This linter can be disabled with `set_option linter.minImports false`
+note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
 #reset_min_imports
@@ -174,8 +171,7 @@ New imports: [Mathlib.Tactic.FunProp.Attr, Mathlib.Tactic.NormNum.Basic]
 
 Now redundant: [Mathlib.Tactic.Linter.MinImports]
 
-
-Note: This linter can be disabled with `set_option linter.minImports false`
+note: this linter can be disabled with `set_option linter.minImports false`
 -/
 #guard_msgs in
 run_cmd
@@ -190,8 +186,7 @@ set_option linter.upstreamableDecl true
 
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 theorem propose_to_move_this_theorem : (0 : ℕ) = 0 := rfl
@@ -202,8 +197,7 @@ def dont_propose_to_move_this_def : ℕ := 0
 set_option linter.upstreamableDecl.defs true in
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 def propose_to_move_this_def : ℕ := 0
@@ -226,8 +220,7 @@ private theorem private_theorem : (0 : ℕ) = 0 := rfl
 set_option linter.upstreamableDecl.private true in
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 private theorem propose_to_move_this_private_theorem : (0 : ℕ) = 0 := rfl
@@ -241,8 +234,7 @@ set_option linter.upstreamableDecl.defs true in
 set_option linter.upstreamableDecl.private true in
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 private def propose_to_move_this_private_def : ℕ := 0
@@ -262,8 +254,7 @@ set_option linter.upstreamableDecl.defs true
 /--
 
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 structure ProposeToMoveThisStructure where
@@ -271,8 +262,7 @@ structure ProposeToMoveThisStructure where
 
 /--
 warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
-
-Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
+note: this linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
 #guard_msgs in
 inductive ProposeToMoveThisInductive where

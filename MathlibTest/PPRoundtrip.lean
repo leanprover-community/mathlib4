@@ -7,8 +7,7 @@ warning: source context
 'al "    a '
 'al " a a\n'
 pretty-printed context
-
-Note: This linter can be disabled with `set_option linter.ppRoundtrip false`
+note: this linter can be disabled with `set_option linter.ppRoundtrip false`
 -/
 #guard_msgs in
 set_option linter.ppRoundtrip true in
@@ -19,8 +18,7 @@ warning: source context
 'rd ¬   fa'
 'rd ¬false'
 pretty-printed context
-
-Note: This linter can be disabled with `set_option linter.ppRoundtrip false`
+note: this linter can be disabled with `set_option linter.ppRoundtrip false`
 -/
 #guard_msgs in
 set_option linter.ppRoundtrip true in
@@ -31,8 +29,7 @@ warning: source context
 'le {a: Nat'
 'le {a : Na'
 pretty-printed context
-
-Note: This linter can be disabled with `set_option linter.ppRoundtrip false`
+note: this linter can be disabled with `set_option linter.ppRoundtrip false`
 -/
 #guard_msgs in
 set_option linter.ppRoundtrip true in
@@ -43,8 +40,7 @@ warning: source context
 ' {a :Nat}'
 ' {a : Nat}'
 pretty-printed context
-
-Note: This linter can be disabled with `set_option linter.ppRoundtrip false`
+note: this linter can be disabled with `set_option linter.ppRoundtrip false`
 -/
 #guard_msgs in
 set_option linter.ppRoundtrip true in
@@ -57,8 +53,7 @@ warning: source context
 'k (·+·) '
 'k (· + ·'
 pretty-printed context
-
-Note: This linter can be disabled with `set_option linter.ppRoundtrip false`
+note: this linter can be disabled with `set_option linter.ppRoundtrip false`
 -/
 #guard_msgs in
 set_option linter.ppRoundtrip true in

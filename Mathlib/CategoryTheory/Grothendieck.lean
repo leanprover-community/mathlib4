@@ -129,7 +129,7 @@ instance : Category (Grothendieck F) where
 
 @[simp]
 theorem id_base (X : Grothendieck F) :
-    Hom.base (𝟙 X) = 𝟙 X.base :=
+    Hom.base (𝟙 X) = 𝟙 X.base := by
   rfl
 
 @[simp]

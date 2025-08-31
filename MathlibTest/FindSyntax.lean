@@ -47,9 +47,8 @@ In `Init.Notation`:
 #find_syntax "~~~" approx  -- a `prefix`
 
 /--
-info: Found 5 uses among over 600 syntax declarations
+info: Found 4 uses among over 600 syntax declarations
 In `Init.Tactics`:
-  Lean.Parser.Tactic.mrefineMacro: 'mrefine'
   Lean.Parser.Tactic.refine: 'refine'
   Lean.Parser.Tactic.refine': 'refine''
   Lean.Parser.Tactic.tacticRefine_lift'_: 'refine_lift''

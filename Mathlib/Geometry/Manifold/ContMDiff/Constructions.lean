@@ -108,6 +108,23 @@ theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I �
 @[deprecated (since := "2025-03-08")]
 alias ContMDiff.prod_mk_space := ContMDiff.prodMk_space
 
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_mk := ContMDiffWithinAt.prod_mk
+
+@[deprecated (since := "2024-11-20")]
+alias SmoothWithinAt.prod_mk_space := ContMDiffWithinAt.prod_mk_space
+
+@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_mk := ContMDiffAt.prod_mk
+
+@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_mk_space := ContMDiffAt.prod_mk_space
+
+@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_mk := ContMDiffOn.prod_mk
+
+@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_mk_space := ContMDiffOn.prod_mk_space
+
+@[deprecated (since := "2024-11-20")] alias Smooth.prod_mk := ContMDiff.prod_mk
+
+@[deprecated (since := "2024-11-20")] alias Smooth.prod_mk_space := ContMDiff.prod_mk_space
+
 end ProdMk
 
 section Projections
@@ -140,6 +157,14 @@ theorem contMDiffOn_fst {s : Set (M × N)} : ContMDiffOn (I.prod J) I n Prod.fst
 
 theorem contMDiff_fst : ContMDiff (I.prod J) I n (@Prod.fst M N) := fun _ => contMDiffAt_fst
 
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_fst := contMDiffWithinAt_fst
+
+@[deprecated (since := "2024-11-20")] alias smoothAt_fst := contMDiffAt_fst
+
+@[deprecated (since := "2024-11-20")] alias smoothOn_fst := contMDiffOn_fst
+
+@[deprecated (since := "2024-11-20")] alias smooth_fst := contMDiff_fst
+
 theorem ContMDiffAt.fst {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
     ContMDiffAt J I n (fun x => (f x).1) x :=
   contMDiffAt_fst.comp x hf
@@ -147,6 +172,10 @@ theorem ContMDiffAt.fst {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod 
 theorem ContMDiff.fst {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
     ContMDiff J I n fun x => (f x).1 :=
   contMDiff_fst.comp hf
+
+@[deprecated (since := "2024-11-20")] alias SmoothAt.fst := ContMDiffAt.fst
+
+@[deprecated (since := "2024-11-20")] alias Smooth.fst := ContMDiff.fst
 
 theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
     ContMDiffWithinAt (I.prod J) J n Prod.snd s p := by
@@ -176,6 +205,14 @@ theorem contMDiffOn_snd {s : Set (M × N)} : ContMDiffOn (I.prod J) J n Prod.snd
 
 theorem contMDiff_snd : ContMDiff (I.prod J) J n (@Prod.snd M N) := fun _ => contMDiffAt_snd
 
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_snd := contMDiffWithinAt_snd
+
+@[deprecated (since := "2024-11-20")] alias smoothAt_snd := contMDiffAt_snd
+
+@[deprecated (since := "2024-11-20")] alias smoothOn_snd := contMDiffOn_snd
+
+@[deprecated (since := "2024-11-20")] alias smooth_snd := contMDiff_snd
+
 theorem ContMDiffAt.snd {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
     ContMDiffAt J I' n (fun x => (f x).2) x :=
   contMDiffAt_snd.comp x hf
@@ -183,6 +220,10 @@ theorem ContMDiffAt.snd {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod 
 theorem ContMDiff.snd {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
     ContMDiff J I' n fun x => (f x).2 :=
   contMDiff_snd.comp hf
+
+@[deprecated (since := "2024-11-20")] alias SmoothAt.snd := ContMDiffAt.snd
+
+@[deprecated (since := "2024-11-20")] alias Smooth.snd := ContMDiff.snd
 
 end Projections
 
@@ -238,6 +279,12 @@ theorem contMDiff_prod_assoc :
       fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
   contMDiff_fst.fst.prodMk <| contMDiff_fst.snd.prodMk contMDiff_snd
 
+@[deprecated (since := "2024-11-20")] alias smoothAt_prod_iff := contMDiffAt_prod_iff
+
+@[deprecated (since := "2024-11-20")] alias smooth_prod_iff := contMDiff_prod_iff
+
+@[deprecated (since := "2024-11-20")] alias smooth_prod_assoc := contMDiff_prod_assoc
+
 section prodMap
 
 variable {g : N → N'} {r : Set N} {y : N}
@@ -291,6 +338,14 @@ theorem ContMDiff.prodMap (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
 @[deprecated (since := "2025-03-08")]
 alias ContMDiff.prod_map := ContMDiff.prodMap
 
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_map := ContMDiffWithinAt.prod_map
+
+@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_map := ContMDiffAt.prod_map
+
+@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_map := ContMDiffOn.prod_map
+
+@[deprecated (since := "2024-11-20")] alias Smooth.prod_map := ContMDiff.prod_map
+
 end prodMap
 
 section PiSpace
@@ -324,6 +379,14 @@ theorem contMDiffAt_pi_space :
 theorem contMDiff_pi_space :
     ContMDiff I 𝓘(𝕜, ∀ i, Fi i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Fi i) n fun x => φ x i :=
   ⟨fun h i x => contMDiffAt_pi_space.1 (h x) i, fun h x => contMDiffAt_pi_space.2 fun i => h i x⟩
+
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_pi_space := contMDiffWithinAt_pi_space
+
+@[deprecated (since := "2024-11-20")] alias smoothAt_pi_space := contMDiffAt_pi_space
+
+@[deprecated (since := "2024-11-20")] alias smoothOn_pi_space := contMDiffOn_pi_space
+
+@[deprecated (since := "2024-11-20")] alias smooth_pi_space := contMDiff_pi_space
 
 end PiSpace
 

@@ -490,8 +490,8 @@ Q528987:
   title: Von Neumann bicommutant theorem
 
 Q530152:
-  title: Picard–Lindelöf theorem
-  decl: IsPicardLindelof.exists_eq_forall_mem_Icc_hasDerivWithinAt
+  title: Picard&ndash;Lindelöf theorem
+  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
 
 Q535366:
   title: Montel's theorem

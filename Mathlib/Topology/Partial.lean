@@ -68,7 +68,7 @@ theorem pcontinuous_iff' {f : X →. Y} :
     have : PTendsto' f (𝓝 x) (𝓝 y) := hf fxy
     rw [ptendsto'_def] at this
     exact this s hs
-  change f.preimage s ∈ 𝓝 x
+  show f.preimage s ∈ 𝓝 x
   apply h'
   rw [mem_nhds_iff]
   exact ⟨s, Set.Subset.refl _, os, ys⟩

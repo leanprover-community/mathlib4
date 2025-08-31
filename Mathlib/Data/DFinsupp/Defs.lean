@@ -172,11 +172,12 @@ def piecewise : Π₀ i, β i :=
   zipWith (fun i x y => if i ∈ s then x else y) (fun _ => ite_self 0) x y
 
 theorem piecewise_apply (i : ι) : x.piecewise y s i = if i ∈ s then x i else y i :=
-  rfl
+  zipWith_apply _ _ x y i
 
 @[simp, norm_cast]
-theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y :=
-  rfl
+theorem coe_piecewise : ⇑(x.piecewise y s) = s.piecewise x y := by
+  ext
+  apply piecewise_apply
 
 end Piecewise
 

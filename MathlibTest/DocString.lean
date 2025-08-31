@@ -14,8 +14,7 @@ example : True := by
 
 /--
 warning: error: doc-strings should start with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /--Missing space -/
@@ -23,8 +22,7 @@ example : Nat := 1
 
 /--
 warning: error: doc-strings should end with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /-- Missing ending space-/
@@ -32,8 +30,7 @@ example : Nat := 1
 
 /--
 warning: error: doc-strings should start with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /--  Two starting spaces -/
@@ -41,8 +38,7 @@ example : Nat := 1
 
 /--
 warning: error: doc-strings should end with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /--
@@ -51,8 +47,7 @@ example : Nat := 1
 
 /--
 warning: error: doc-strings should end with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /-- Let's give an example.
@@ -66,8 +61,7 @@ example : Nat := 1
 
 /--
 warning: error: doc-strings should not end with a comma
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /-- Let's give an example ending in a comma, -/
@@ -75,12 +69,10 @@ example : Nat := 1
 
 /--
 warning: error: doc-strings should start with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 ---
 warning: error: doc-strings should start with a single space or newline
-
-Note: This linter can be disabled with `set_option linter.style.docString false`
+note: this linter can be disabled with `set_option linter.style.docString false`
 -/
 #guard_msgs in
 /-- The structure `X`. -/

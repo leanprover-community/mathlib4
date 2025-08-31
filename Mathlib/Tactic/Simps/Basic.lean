@@ -997,13 +997,14 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
-  prependError "Failed to add projection lemma {declName}:" do
+  try
     addDecl <| .thmDecl {
       name := declName
       levelParams := univs
       type := declType
       value := declValue }
-  inferDefEqAttr declName
+  catch ex =>
+    throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
   addDeclarationRangesFromSyntax declName (← getRef) ref
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName

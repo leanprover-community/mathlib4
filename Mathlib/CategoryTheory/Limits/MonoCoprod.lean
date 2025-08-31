@@ -227,7 +227,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
   binaryCofan_inl {A B} c h := by
     let c' := BinaryCofan.mk (F.map c.inl) (F.map c.inr)
     apply mono_of_mono_map F
-    change Mono c'.inl
+    show Mono c'.inl
     apply MonoCoprod.binaryCofan_inl
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h

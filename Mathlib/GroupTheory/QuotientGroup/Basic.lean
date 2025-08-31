@@ -79,7 +79,7 @@ def kerLift : G ⧸ ker φ →* H :=
 
 @[to_additive (attr := simp)]
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
-  rfl
+  lift_mk _ _ _
 
 @[to_additive (attr := simp)]
 theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=

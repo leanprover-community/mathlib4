@@ -18,28 +18,28 @@ as term-mode and do-elem syntax (like for example `let` or `have`).
 
 namespace Mathlib.Tactic.HaveI
 
-local syntax "haveIDummy" letDecl : term
+local syntax "haveIDummy" haveDecl : term
 macro_rules
-  | `(assert! haveIDummy $hd:letDecl; $body) => `(haveI $hd:letDecl; $body)
+  | `(assert! haveIDummy $hd:haveDecl; $body) => `(haveI $hd:haveDecl; $body)
 
 /--
-`haveI'` behaves like `have`, but inlines the value instead of producing a `have` term.
+`haveI'` behaves like `have`, but inlines the value instead of producing a `let_fun` term.
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
-macro "haveI' " hd:letDecl : doElem =>
-  `(doElem| assert! haveIDummy $hd:letDecl)
+macro "haveI' " hd:haveDecl : doElem =>
+  `(doElem| assert! haveIDummy $hd:haveDecl)
 
-local syntax "letIDummy" letDecl : term
+local syntax "letIDummy" haveDecl : term
 macro_rules
-  | `(assert! letIDummy $hd:letDecl; $body) => `(letI $hd:letDecl; $body)
+  | `(assert! letIDummy $hd:haveDecl; $body) => `(letI $hd:haveDecl; $body)
 
 /--
-`letI` behaves like `let`, but inlines the value instead of producing a `let` term.
+`letI` behaves like `let`, but inlines the value instead of producing a `let_fun` term.
 
 (This is the do-notation version of the term-mode `haveI`.)
 -/
-macro "letI' " hd:letDecl : doElem =>
-  `(doElem| assert! letIDummy $hd:letDecl)
+macro "letI' " hd:haveDecl : doElem =>
+  `(doElem| assert! letIDummy $hd:haveDecl)
 
 end Mathlib.Tactic.HaveI

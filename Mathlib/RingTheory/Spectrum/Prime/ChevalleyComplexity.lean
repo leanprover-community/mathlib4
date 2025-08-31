@@ -476,7 +476,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
           · rfl
       refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ SetLike.le_def.mp ?_ ((hS' C hC).2 k)⟩
-      change c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
+      show c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
       delta powBound
       suffices hij : c'.coeffSubmodule R₀ ≤ c.coeffSubmodule R₀ ^ (c.val j).degree.succ by
         by_cases hi' : c.val i = 1
@@ -670,7 +670,7 @@ lemma chevalley_mvPolynomialC
   induction' n with n IH generalizing k M
   · refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
-      change _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
+      show _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
       rw [← OrderIso.image_eq_preimage]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
@@ -740,12 +740,12 @@ lemma chevalley_mvPolynomialC
   have : ∀ i < n + 1, i.casesOn (1 + d.count 0) (1 + (B.map Fin.val).count ·) ≤
       1 + (d.map Fin.val).count i := by
     intro t ht
-    change _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
+    show _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
     rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
     obtain - | t := t
     · exact le_rfl
     · simp only [add_lt_add_iff_right] at ht
-      change 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
+      show 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
       rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
       simp [B]
   refine ⟨U, ?_, fun C hCU ↦ ⟨(hU₂ C hCU).1.trans ?_,
@@ -753,7 +753,7 @@ lemma chevalley_mvPolynomialC
   · unfold S' at hT₁
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
-    change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
+    show _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
     rw [← OrderIso.image_eq_preimage, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!

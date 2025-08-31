@@ -16,6 +16,8 @@ open Nat
 
 namespace Int
 
+export private decNonneg from Init.Data.Int.Basic
+
 theorem le.elim {a b : ℤ} (h : a ≤ b) {P : Prop} (h' : ∀ n : ℕ, a + ↑n = b → P) : P :=
   Exists.elim (le.dest h) h'
 

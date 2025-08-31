@@ -46,7 +46,7 @@ noncomputable section
 
 open Set Function
 
-open scoped Manifold ContDiff ENNReal
+open scoped Manifold ContDiff
 
 /-- The half-space in `ℝ^n`, used to model manifolds with boundary. We only define it when
 `1 ≤ n`, as the definition only makes sense in this case.
@@ -115,9 +115,10 @@ instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
   EuclideanQuadrant.convex.locPathConnectedSpace
 
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
-    range (Subtype.val : EuclideanHalfSpace n → _) = { y | 0 ≤ y 0 } :=
+    (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
 
+open ENNReal in
 @[simp]
 theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a < y i } := by
@@ -128,6 +129,7 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 
 @[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
 
+open ENNReal in
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
@@ -138,6 +140,7 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 
 @[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
+open ENNReal in
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a < y i } = { y | a ≤ y i } := by
@@ -148,6 +151,7 @@ theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) 
 
 @[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
 
+open ENNReal in
 @[simp]
 theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
@@ -157,21 +161,8 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 @[deprecated (since := "2024-11-12")] alias frontier_halfspace := frontier_halfSpace
 
 theorem range_euclideanQuadrant (n : ℕ) :
-    range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
+    (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
-
-theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
-    interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
-      { y | ∀ i : Fin n, a < y i } := by
-  let f : Fin n → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
-  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
-    ext; simp; rfl
-  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
-    ext; simp; rfl
-  rw [h, h', interior_iInter_of_finite]
-  apply iInter_congr fun i ↦ ?_
-  rw [(f i).interior_preimage, interior_Ici]
-  apply Function.surjective_eval
 
 end
 
@@ -192,14 +183,12 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact ⟨max_eq_left xprop, fun i _ => rfl⟩
   right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
-  convex_range' := by
-    simp only [instIsRCLikeNormedField, ↓reduceDIte]
-    apply Convex.convex_isRCLikeNormedField
-    rw [range_euclideanHalfSpace n]
-    exact EuclideanHalfSpace.convex (n := n)
-  nonempty_interior' := by
-    rw [range_euclideanHalfSpace, interior_halfSpace]
-    refine ⟨fun i ↦ 1, by simp⟩
+  uniqueDiffOn' := by
+    have : UniqueDiffOn ℝ _ :=
+      UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
+        uniqueDiffOn_Ici 0
+    simpa only [singleton_pi] using this
+  target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
     exact (continuous_id.update 0 <| (continuous_apply 0).max continuous_const).subtype_mk _
@@ -218,14 +207,16 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   left_inv' x _ := by ext i; simp only [x.2 i, max_eq_left]
   right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
   source_eq := rfl
-  convex_range' := by
-    simp only [instIsRCLikeNormedField, ↓reduceDIte]
-    apply Convex.convex_isRCLikeNormedField
-    rw [range_euclideanQuadrant]
-    exact EuclideanQuadrant.convex
-  nonempty_interior' := by
-    rw [range_euclideanQuadrant, interior_euclideanQuadrant]
-    exact ⟨fun i ↦ 1, by simp⟩
+  uniqueDiffOn' := by
+    have this : UniqueDiffOn ℝ _ :=
+      UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
+    simpa only [pi_univ_Ici] using this
+  target_subset_closure_interior := by
+    have : {x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i}
+      = Set.pi univ (fun i ↦ Ici 0) := by aesop
+    simp only [this, interior_pi_set finite_univ]
+    rw [closure_pi_set]
+    simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
@@ -514,6 +505,7 @@ section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
+instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by
+  infer_instance
 
 end

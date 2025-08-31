@@ -427,10 +427,10 @@ This is `Equiv.prodUnique` as a continuous linear equivalence. -/
 def prodUnique : (M × N) ≃L[R] M where
   toLinearEquiv := LinearEquiv.prodUnique
   continuous_toFun := by
-    change Continuous (Equiv.prodUnique M N)
+    show Continuous (Equiv.prodUnique M N)
     dsimp; fun_prop
   continuous_invFun := by
-    change Continuous fun x ↦ (x, default)
+    show Continuous fun x ↦ (x, default)
     fun_prop
 
 @[simp]
@@ -447,10 +447,10 @@ This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
 def uniqueProd : (N × M) ≃L[R] M where
   toLinearEquiv := LinearEquiv.uniqueProd
   continuous_toFun := by
-    change Continuous (Equiv.uniqueProd M N)
+    show Continuous (Equiv.uniqueProd M N)
     dsimp; fun_prop
   continuous_invFun := by
-    change Continuous fun x ↦ (default, x)
+    show Continuous fun x ↦ (default, x)
     fun_prop
 
 @[simp]

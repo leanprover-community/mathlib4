@@ -131,7 +131,6 @@ import hierarchy.
 
 section Hint
 
-register_hint grind
 register_hint trivial
 register_hint tauto
 register_hint split
