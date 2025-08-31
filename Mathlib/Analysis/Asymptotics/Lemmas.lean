@@ -677,7 +677,7 @@ namespace OpenPartialHomeomorph
 variable {α : Type*} {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 variable {E : Type*} [Norm E] {F : Type*} [Norm F]
 
-/-- Transfer `IsBigOWith` over a `OpenPartialHomeomorph`. -/
+/-- Transfer `IsBigOWith` over an `OpenPartialHomeomorph`. -/
 theorem isBigOWith_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} {C : ℝ} : IsBigOWith C (𝓝 b) f g ↔ IsBigOWith C (𝓝 (e.symm b)) (f ∘ e) (g ∘ e) :=
   ⟨fun h =>
@@ -689,13 +689,13 @@ theorem isBigOWith_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ 
       ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg f hx)
       ((e.eventually_right_inverse hb).mono fun _ hx => congr_arg g hx)⟩
 
-/-- Transfer `IsBigO` over a `OpenPartialHomeomorph`. -/
+/-- Transfer `IsBigO` over an `OpenPartialHomeomorph`. -/
 theorem isBigO_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsBigO_def]
   exact exists_congr fun C => e.isBigOWith_congr hb
 
-/-- Transfer `IsLittleO` over a `OpenPartialHomeomorph`. -/
+/-- Transfer `IsLittleO` over an `OpenPartialHomeomorph`. -/
 theorem isLittleO_congr (e : OpenPartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
   simp only [IsLittleO_def]

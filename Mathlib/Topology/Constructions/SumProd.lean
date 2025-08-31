@@ -334,7 +334,7 @@ theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f
   exact hf.prodMap hg
 
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
-  rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
+  rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]
 
 theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
