@@ -207,7 +207,7 @@ theorem mul_num_den' (q r : ℚ) :
   nth_rw 1 [c_mul_den]
   rw [Int.mul_assoc, Int.mul_assoc, mul_eq_mul_left_iff, or_iff_not_imp_right]
   intro
-  have h : _ = s := divInt_mul_divInt q.num r.num (mod_cast q.den_ne_zero) (mod_cast r.den_ne_zero)
+  have h : _ = s := divInt_mul_divInt q.num r.num
   rw [num_divInt_den, num_divInt_den] at h
   rw [h, mul_comm, ← Rat.eq_iff_mul_eq_mul, ← divInt_eq_div]
 

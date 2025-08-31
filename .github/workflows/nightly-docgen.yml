@@ -51,7 +51,7 @@ jobs:
           packagesDir = "../.lake/packages"
 
           [[require]]
-          name = "$NAME"
+          name = "mathlib"
           path = "../"
 
           [[require]]
@@ -107,7 +107,7 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: 'Mathlib status updates'
+          topic: 'Docgen status updates'
           content: |
             ✅ The docgen run for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
 
@@ -120,7 +120,7 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: 'Mathlib status updates'
+          topic: 'Docgen status updates'
           content: |
             ❌ The docgen run for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
             This likely indicates an issue with the nightly Lean build, or a required update in doc-gen4.

@@ -41,7 +41,7 @@ jobs:
     - name: add linarithToGrind linter option
       run: |
         # Reset contents of the lakefile, so we don't leave the wrong options enabled.
-        git checkout -- lakefile.lean
+        git checkout HEAD -- lakefile.lean
 
         # we disable checking for backticks inside single quotes with the next line
         # shellcheck disable=SC2016
@@ -89,7 +89,7 @@ jobs:
     - name: add omegaToGrind linter option
       run: |
         # Reset contents of the lakefile, so we don't leave the wrong options enabled.
-        git checkout -- lakefile.lean
+        git checkout HEAD -- lakefile.lean
 
         # we disable checking for backticks inside single quotes with the next line
         # shellcheck disable=SC2016
@@ -131,7 +131,7 @@ jobs:
     - name: add ringToGrind linter option
       run: |
         # Reset contents of the lakefile, so we don't leave the wrong options enabled.
-        git checkout -- lakefile.lean
+        git checkout HEAD -- lakefile.lean
 
         # we disable checking for backticks inside single quotes with the next line
         # shellcheck disable=SC2016

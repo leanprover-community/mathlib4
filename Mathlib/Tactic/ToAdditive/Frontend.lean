@@ -1099,8 +1099,6 @@ def proceedFields (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
     | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
     | _ => #[]
 
-open Tactic.TryThis in
-open private addSuggestionCore in addSuggestion in
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $existing?
@@ -1147,16 +1145,17 @@ def elabToAdditive : Syntax → CoreM Config
       | `(str|$doc:str) => open Linter in do
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
         if getLinterValue linter.deprecated (← getLinterOptions) then
+          let hintSuggestion := {
+            diffGranularity := .none
+            toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trim ++ " -/" }
+          }
+          let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc
+            (codeActionPrefix? := "Update to: ") (forceList := false)
           logWarningAt doc <| .tagged ``Linter.deprecatedAttr
             m!"String syntax for `to_additive` docstrings is deprecated: Use \
-              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
-          addSuggestionCore doc
-            (header := "Update deprecated syntax to:\n")
-            (codeActionPrefix? := "Update to: ")
-            (isInline := true)
-            #[{
-              suggestion := "/-- " ++ doc.getString.trim ++ " -/"
-            }]
+              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)\n\
+              \n\
+              Update deprecated syntax to:{sugg}"
         return doc.getString
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support

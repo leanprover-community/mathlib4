@@ -53,8 +53,6 @@ lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ cong
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
-@[simp high, norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℚ) = n ↔ m = n :=
-  natCast_injective.eq_iff
 @[simp high, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
 @[simp high, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
 @[simp high, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
@@ -106,18 +104,6 @@ lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_div
 
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 
-attribute [simp] divInt_sub_divInt
-
-@[simp]
-lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /. d₂) = (n₁ * n₂) /. (d₁ * d₂) := by
-  obtain rfl | h₁ := eq_or_ne d₁ 0
-  · simp
-  obtain rfl | h₂ := eq_or_ne d₂ 0
-  · simp
-  exact divInt_mul_divInt _ _ h₁ h₂
-
-attribute [simp] mkRat_mul_mkRat
-
 lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂) (h₁₂ : n₁.natAbs.Coprime d₂)
     (h₂₁ : n₂.natAbs.Coprime d₁) :
     mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
@@ -151,7 +137,7 @@ lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
 
 @[simp] lemma divInt_div_divInt (n₁ d₁ n₂ d₂) :
     (n₁ /. d₁) / (n₂ /. d₂) = (n₁ * d₂) /. (d₁ * n₂) := by
-  rw [div_def, inv_divInt, divInt_mul_divInt']
+  rw [div_def, inv_divInt, divInt_mul_divInt]
 
 lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
@@ -159,7 +145,6 @@ lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
 variable (a b c : ℚ)
 
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
-@[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, Rat.intCast_one]
 
@@ -192,7 +177,7 @@ instance addCommGroup : AddCommGroup ℚ where
     rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_one, Rat.one_mul]
     rfl
   zsmul_zero' := Rat.zero_mul
-  zsmul_succ' _ _ := by simp [Rat.add_mul, Rat.intCast_one]
+  zsmul_succ' _ _ := by simp [Rat.add_mul]
   zsmul_neg' _ _ := by rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
 
 instance addGroup : AddGroup ℚ := by infer_instance
@@ -280,9 +265,7 @@ protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
     rw [divInt_add_divInt _ _ h h, divInt_eq_divInt_iff h (Int.mul_ne_zero h h)]
     simp [Int.add_mul, Int.mul_assoc]
 
-theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by simp [div_def']
-
-lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / d = n /. d := by rw [divInt_eq_div]
+lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / (d) = n /. d := by rw [divInt_eq_div]
 
 theorem natCast_div_eq_divInt (n d : ℕ) : (n : ℚ) / d = n /. d := Rat.intCast_div_eq_divInt n d
 
@@ -290,7 +273,7 @@ theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x *
   by_cases hd : d = 0
   · rw [hd]
     simp
-  rw [divInt_mul_divInt _ _ hx hd, x.mul_comm, divInt_mul_right hx]
+  rw [divInt_mul_divInt, x.mul_comm, divInt_mul_right hx]
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← num_divInt_den q, hq]
