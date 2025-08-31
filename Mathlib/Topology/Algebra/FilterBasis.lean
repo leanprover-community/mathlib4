@@ -60,8 +60,7 @@ class AddGroupFilterBasis (A : Type u) [AddGroup A] extends FilterBasis A where
   neg' : ∀ {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ -x) ⁻¹' U
   conj' : ∀ x₀, ∀ {U}, U ∈ sets → ∃ V ∈ sets, V ⊆ (fun x ↦ x₀ + x + -x₀) ⁻¹' U
 
-attribute [to_additive existing] GroupFilterBasis GroupFilterBasis.conj'
-  GroupFilterBasis.toFilterBasis
+attribute [to_additive] GroupFilterBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
 @[to_additive /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
@@ -327,7 +326,7 @@ def topology' {R M : Type*} [CommRing R] {_ : TopologicalSpace R} [AddCommGroup 
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 
-/-- A topological add group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
+/-- A topological additive group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
 is a topological module.
 
 This lemma is mathematically useless because one could obtain such a result by applying

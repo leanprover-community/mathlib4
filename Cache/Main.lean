@@ -52,9 +52,9 @@ Valid arguments are:
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
-/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
+/-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
 def leanTarArgs : List String :=
-  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
+  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup"]
 
 /-- Parses an optional `--repo` option. -/
 def parseRepo (args : List String) : IO (Option String × List String) := do

@@ -26,7 +26,7 @@ for that purpose.
 
 ## Notes
 
-The original aim of this file is to provide a measure theoretic method of describing the
+The original aim of this file is to provide a measure-theoretic method of describing the
 probability an element of a set `s` satisfies some predicate `P`. Our current formulation still
 allow us to describe this by abusing the definitional equality of sets and predicates by simply
 writing `uniformOn s P`. We should avoid this however as none of the lemmas are written for
@@ -182,12 +182,10 @@ theorem uniformOn_disjoint_union (hs : s.Finite) (ht : t.Finite) (hst : Disjoint
 theorem uniformOn_add_compl_eq (u t : Set Ω) (hs : s.Finite) :
     uniformOn (s ∩ u) t * uniformOn s u + uniformOn (s ∩ uᶜ) t * uniformOn s uᶜ =
       uniformOn s t := by
-  -- Porting note: The original proof used `conv_rhs`. However, that tactic timed out.
-  have : uniformOn s t = (uniformOn (s ∩ u) t * uniformOn (s ∩ u ∪ s ∩ uᶜ) (s ∩ u) +
-      uniformOn (s ∩ uᶜ) t * uniformOn (s ∩ u ∪ s ∩ uᶜ) (s ∩ uᶜ)) := by
-    rw [uniformOn_disjoint_union (hs.inter_of_left _) (hs.inter_of_left _)
-      (disjoint_compl_right.mono inf_le_right inf_le_right), Set.inter_union_compl]
-  rw [this]
+  conv_rhs =>
+    rw [(by simp : s = s ∩ u ∪ s ∩ uᶜ),
+      ← uniformOn_disjoint_union (hs.inter_of_left _) (hs.inter_of_left _)
+      (disjoint_compl_right.mono inf_le_right inf_le_right)]
   simp [uniformOn_inter_self hs]
 
 end ProbabilityTheory

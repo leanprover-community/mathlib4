@@ -50,7 +50,7 @@ open sets in `Proj`, more specifically:
       `ProjIsoSpecTopComponent.FromSpec.carrier.relevant`;
     * This ideal is prime, the proof can be found in
       `ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.prime`.
-    Hence we have a well defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
+    Hence we have a well-defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
     `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function, we need
     to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities; these are achieved in
     `ProjIsoSpecTopComponent.fromSpec_toSpec` and `ProjIsoSpecTopComponent.toSpec_fromSpec`.
