@@ -52,7 +52,7 @@ def stirlingFirst : ℕ → ℕ → ℕ
   | n + 1, k + 1 => n * stirlingFirst n (k + 1) + stirlingFirst n k
 
 @[simp]
-theorem stirlingFirst_zero: stirlingFirst 0 0 = 1 :=
+theorem stirlingFirst_zero : stirlingFirst 0 0 = 1 :=
   rfl
 
 @[simp]
