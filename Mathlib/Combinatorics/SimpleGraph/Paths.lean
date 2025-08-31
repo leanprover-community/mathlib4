@@ -238,6 +238,28 @@ theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
+lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) (hq : ¬q.Nil) : p.support.Disjoint q.tail.support := by
+  have hpq' := hpq.support_nodup
+  rw [support_append] at hpq'
+  rw [support_tail_of_not_nil q hq]
+  exact List.disjoint_of_nodup_append hpq'
+
+lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
+    x ≠ y := by
+  intro hxy
+  subst hxy
+  have hq : ¬q.Nil := by
+    intro hq
+    simp only [nil_iff_support_eq.mp hq, List.mem_cons, List.not_mem_nil, or_false] at hy
+    exact hyv hy
+  have hx' : x ∈ q.tail.support := by
+    rw [support_tail_of_not_nil q hq]
+    rw [mem_support_iff] at hy
+    exact (or_iff_right hyv).mp hy
+  exact IsPath.disjoint_support_of_append hpq hq hx hx'
+
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
 
@@ -307,7 +329,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     Set.InjOn p.getVert {i | i ≤ p.length} := by
   intro n hn m hm hnm
   induction p generalizing n m with
-  | nil => aesop
+  | nil => simp_all
   | @cons v w u h p ihp =>
     simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
@@ -316,7 +338,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
       have hvp : v ∉ p.support := by aesop
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
     · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by aesop
+      have hvp : v ∉ p.support := by simp_all
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
     · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
       have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
@@ -325,7 +347,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
-  refine ⟨?_, by aesop⟩
+  refine ⟨?_, by simp_all⟩
   intro h
   by_cases hi : i = 0
   · exact hi

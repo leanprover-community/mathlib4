@@ -722,6 +722,7 @@ protected noncomputable def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
+@[simps]
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
@@ -736,17 +737,6 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
 
 variable {A B C}
-
-/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
-simplify. -/
-theorem homEquiv_apply_hom (f : A ⊗ B ⟶ C) :
-    (homEquiv A B C f).hom = ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip := rfl
-
-/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
-simplify. -/
-theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
-    ((homEquiv A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry k A B C f.hom.hom.flip) := rfl
 
 instance : MonoidalClosed (Rep k G) where
   closed A :=

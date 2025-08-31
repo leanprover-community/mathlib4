@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.IsNormal
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -994,6 +993,13 @@ theorem isSuccLimit_add_iff {a b : Ordinal} :
   rcases h with (h | ⟨rfl, h⟩)
   · exact isSuccLimit_add a h
   · simpa only [add_zero]
+
+theorem isSuccLimit_add_iff_of_isSuccLimit {a b : Ordinal} (h : IsSuccLimit a) :
+    IsSuccLimit (a + b) ↔ IsSuccPrelimit b := by
+  rw [isSuccLimit_add_iff]
+  obtain rfl | hb := eq_or_ne b 0
+  · simpa
+  · simp [hb, isSuccLimit_iff]
 
 @[deprecated (since := "2025-07-09")]
 alias isLimit_add_iff := isSuccLimit_add_iff

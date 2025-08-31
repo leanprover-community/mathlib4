@@ -30,13 +30,13 @@ semiring structure.
 * Cardinals form a `CanonicallyOrderedAdd` `OrderedCommSemiring` with the aforementioned sum and
   product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
-* The less than relation on cardinals forms a well-order.
+* The less-than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
   `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
   and `sInf` for the minimum of a set of cardinals.
 
-## Main Statements
+## Main statements
 
 * Cantor's theorem: `Cardinal.cantor c : c < 2 ^ c`.
 * König's theorem: `Cardinal.sum_lt_prod`
@@ -128,7 +128,7 @@ theorem lift_mk_le {α : Type v} {β : Type w} :
     ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_le` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
+Because Lean often cannot realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β ↔ Nonempty (α ↪ β) :=
@@ -435,6 +435,10 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
   isSuccLimit_iff
 
+@[simp]
+protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
+  not_isSuccLimit_bot
+
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
 Note that `ℵ₀` is a strong limit by this definition. -/
 structure IsStrongLimit (c : Cardinal) : Prop where
@@ -448,6 +452,10 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
+
+@[simp]
+theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
+  fun h ↦ h.ne_zero rfl
 
 /-! ### Indexed cardinal `sum` -/
 

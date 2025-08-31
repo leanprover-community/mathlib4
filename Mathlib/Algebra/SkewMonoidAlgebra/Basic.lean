@@ -213,9 +213,7 @@ theorem coeff_add (p q : SkewMonoidAlgebra k G) (a : G) :
 @[simp]
 theorem coeff_smul {S} [SMulZeroClass S k] (r : S) (p : SkewMonoidAlgebra k G) (a : G) :
     coeff (r • p) a = r • coeff p a := by
-  rcases p
-  simp_rw [← ofFinsupp_smul, coeff]
-  exact Finsupp.smul_apply _ _ _
+  rfl
 
 end Coeff
 
@@ -448,7 +446,7 @@ theorem induction_on {p : SkewMonoidAlgebra k G → Prop} (f : SkewMonoidAlgebra
     (zero : p 0) (single : ∀ g a, p (single g a)) (add : ∀ f g :
     SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f := by
   rw [← sum_single f, sum_def']
-  exact Finset.sum_induction _ _ add zero (by aesop)
+  exact Finset.sum_induction _ _ add zero (by simp_all)
 
 /-- Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`. -/
 @[induction_eliminator]

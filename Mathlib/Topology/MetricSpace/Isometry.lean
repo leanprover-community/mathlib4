@@ -217,7 +217,6 @@ theorem diam_range (hf : Isometry f) : Metric.diam (range f) = Metric.diam (univ
 
 theorem preimage_setOf_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
-  ext y
   simp [hf.dist_eq]
 
 theorem preimage_closedBall (hf : Isometry f) (x : α) (r : ℝ) :
