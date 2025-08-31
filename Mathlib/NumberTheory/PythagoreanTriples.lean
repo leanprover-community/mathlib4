@@ -432,9 +432,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     simp [field, v, w]
     simp only [sq]
     norm_cast
-  have hvz : v ≠ 0 := by
-    simp [field, v, -mul_eq_zero, -div_eq_zero_iff]
-    exact h0
+  have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0]
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq
