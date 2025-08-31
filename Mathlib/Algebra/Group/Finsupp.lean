@@ -141,7 +141,7 @@ lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
   rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
   simp [AddEquiv.finsuppUnique]
 
-theorem addCommute_iff_inter {M} [DecidableEq M] {f g : M →₀ N} :
+theorem addCommute_iff_inter [DecidableEq ι] {f g : ι →₀ M} :
     AddCommute f g ↔ ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x) where
   mp h := fun x _ ↦ Finsupp.ext_iff.1 h x
   mpr h := by
@@ -152,7 +152,7 @@ theorem addCommute_iff_inter {M} [DecidableEq M] {f g : M →₀ N} :
       · simp_all
     · simp_all
 
-theorem addCommute_of_disjoint {M} {f g : M →₀ N} (h : Disjoint f.support g.support) :
+theorem addCommute_of_disjoint {f g : ι →₀ M} (h : Disjoint f.support g.support) :
     AddCommute f g := by
   classical simp_all [addCommute_iff_inter, Finset.disjoint_iff_inter_eq_empty]
 
