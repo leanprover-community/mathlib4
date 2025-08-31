@@ -14,7 +14,7 @@ This file provides lemmas relating sums of constants to the cardinality of the d
 
 ## TODO
 
-+ Once we have a topology on `ENat`, provide an `ENat` valued version
++ Once we have a topology on `ENat`, provide an `ENat`-valued version
 + Once we replace `PartENat` entirely with `ENat` (and replace `PartENat.card` with a `ENat.card`),
   provide versions which sum over the whole type.
 -/
