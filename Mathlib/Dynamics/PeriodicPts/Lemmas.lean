@@ -155,7 +155,10 @@ theorem fintype_minimalPeriod_piMap [Fintype ι] :
 -- alternative name: `minimalPeriod_single_dvd`
 theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
     minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
-  sorry
+  simp [minimalPeriod_piMap]
+  by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
+  · exact (Nat.sInf_mem h).2 i
+  · simp [not_nonempty_iff_eq_empty.mp h]
 
 end Pi
 
