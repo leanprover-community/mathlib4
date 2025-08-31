@@ -32,9 +32,10 @@ open scoped ComplexOrder
 
 namespace Matrix
 
-variable {m n R 𝕜 : Type*}
+variable {m n R R' 𝕜 : Type*}
 variable [Fintype m] [Fintype n]
-variable [CommRing R] [PartialOrder R] [StarRing R]
+variable [Ring R] [PartialOrder R] [StarRing R]
+variable [CommRing R'] [PartialOrder R'] [StarRing R']
 variable [RCLike 𝕜]
 open scoped Matrix
 
@@ -89,13 +90,13 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
   simpa only [conjTranspose_submatrix, conjTranspose_one] using
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 
-theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
+theorem transpose {M : Matrix n n R'} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
   convert hM.2 (star x) using 1
   rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 @[simp]
-theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
+theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R'} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
   ⟨(by simpa using ·.transpose), .transpose⟩
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
@@ -115,8 +116,7 @@ protected lemma one [StarOrderedRing R] [DecidableEq n] : PosSemidef (1 : Matrix
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
     PosSemidef (d : Matrix n n R) :=
   ⟨isHermitian_natCast _, fun x => by
-    simp only [natCast_mulVec, dotProduct_smul]
-    rw [Nat.cast_smul_eq_nsmul]
+    rw [natCast_mulVec, Nat.cast_smul_eq_nsmul, dotProduct_smul]
     exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
@@ -126,8 +126,7 @@ protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeast
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
     PosSemidef (d : Matrix n n R) :=
   ⟨isHermitian_intCast _, fun x => by
-    simp only [intCast_mulVec, dotProduct_smul]
-    rw [Int.cast_smul_eq_zsmul]
+    rw [intCast_mulVec, Int.cast_smul_eq_zsmul, dotProduct_smul]
     exact zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
@@ -146,15 +145,15 @@ protected lemma pow [StarOrderedRing R] [DecidableEq n]
     rw [pow_succ, pow_succ']
     simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
-protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
+protected lemma inv [DecidableEq n] {M : Matrix n n R'} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
   by_cases h : IsUnit M.det
   · have := (conjTranspose_mul_mul_same hM M⁻¹).conjTranspose
     rwa [mul_nonsing_inv_cancel_right _ _ h, conjTranspose_conjTranspose] at this
   · rw [nonsing_inv_apply_not_isUnit _ h]
     exact .zero
 
-protected lemma zpow [StarOrderedRing R] [DecidableEq n]
-    {M : Matrix n n R} (hM : M.PosSemidef) (z : ℤ) :
+protected lemma zpow [StarOrderedRing R'] [DecidableEq n]
+    {M : Matrix n n R'} (hM : M.PosSemidef) (z : ℤ) :
     (M ^ z).PosSemidef := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · simpa using hM.pow n
@@ -408,13 +407,13 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 
-theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
+theorem transpose {M : Matrix n n R'} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 @[simp]
-theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosDef ↔ M.PosDef :=
+theorem transpose_iff {M : Matrix n n R'} : Mᵀ.PosDef ↔ M.PosDef :=
   ⟨(by simpa using ·.transpose), .transpose⟩
 
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -446,8 +445,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) (hd : d ≠ 0) :
     PosDef (d : Matrix n n R) :=
   ⟨isHermitian_natCast _, fun x hx => by
-    simp only [natCast_mulVec, dotProduct_smul]
-    rw [Nat.cast_smul_eq_nsmul]
+    rw [natCast_mulVec, Nat.cast_smul_eq_nsmul, dotProduct_smul]
     exact nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
@@ -465,8 +463,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℤ) (hd : 0 < d) :
     PosDef (d : Matrix n n R) :=
   ⟨isHermitian_intCast _, fun x hx => by
-    simp only [intCast_mulVec, dotProduct_smul]
-    rw [Int.cast_smul_eq_zsmul]
+    rw [intCast_mulVec, Int.cast_smul_eq_zsmul, dotProduct_smul]
     exact zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
