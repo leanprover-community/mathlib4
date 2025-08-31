@@ -528,7 +528,7 @@ end completeMultipartiteGraph
 theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
     (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
   contrapose! nhc with hc'
-  rw [not_not] at hc'
+  rw [not_free] at hc'
   exact ⟨hc.some.comp hc'.some.toHom⟩
 
 end SimpleGraph
