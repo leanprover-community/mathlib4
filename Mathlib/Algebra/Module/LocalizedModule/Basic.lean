@@ -19,9 +19,9 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S`: the localized module by `S`.
 * `LocalizedModule.mk`: the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
-* `LocalizedModule.liftOn`: any well defined function `f : M × S → α` respecting `r` descents to
+* `LocalizedModule.liftOn`: any well-defined function `f : M × S → α` respecting `r` descents to
   a function `LocalizedModule M S → α`
-* `LocalizedModule.liftOn₂`: any well defined function `f : M × S → M × S → α` respecting `r`
+* `LocalizedModule.liftOn₂`: any well-defined function `f : M × S → M × S → α` respecting `r`
   descents to a function `LocalizedModule M S → LocalizedModule M S`
 * `LocalizedModule.mk_add_mk`: in the localized module
   `mk m s + mk m' s' = mk (s' • m + s • m') (s * s')`
