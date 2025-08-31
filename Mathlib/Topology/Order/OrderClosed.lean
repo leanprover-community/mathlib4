@@ -655,6 +655,13 @@ theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : 
   have : s ⊆ { y ∈ closure s | f y ≤ g y } := fun y hy => ⟨subset_closure hy, h y hy⟩
   (closure_minimal this (isClosed_closure.isClosed_le hf hg) hx).2
 
+lemma le_on_closure_of_lt {E : Type u_2} [TopologicalSpace E] {f : E → ℝ} (hf : Continuous f)
+    {B : Set E} {s : ℝ} (hb : ∀ x ∈ B, s ≤ f x) : ∀ x ∈ closure B, s ≤ f x := by
+  refine le_on_closure (f := fun x ↦ s) ?_ continuousOn_const (Continuous.continuousOn hf)
+  · intro x hx
+    simp
+    linarith [hb x hx]
+
 theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ f p.1 ≤ p.2 } :=
   (hs.preimage continuous_fst).isClosed_le (hf.comp continuousOn_fst Subset.rfl) continuousOn_snd

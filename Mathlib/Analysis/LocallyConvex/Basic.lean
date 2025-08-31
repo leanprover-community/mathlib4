@@ -290,4 +290,12 @@ theorem balanced_iff_neg_mem (hs : Convex ℝ s) : Balanced ℝ s ↔ ∀ ⦃x�
   exact hs (h hx) hx (div_nonneg (sub_nonneg_of_le ha.2) zero_le_two)
     (div_nonneg (sub_nonneg_of_le ha.1) zero_le_two) (by ring)
 
+lemma RCLike.balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K) (x : 𝕜)
+    (hx : x ∈ K) (h0 : ‖x‖ > 0) : ∀ z : 𝕜, 0 ≤ ‖z‖ ∧ ‖z‖ ≤ ‖x‖ → z ∈ K := fun z ⟨t1, t2⟩ ↦ by
+  have : ‖z / x‖ ≤ 1 := by calc
+    _ = ‖z‖ / ‖x‖ := by rw [norm_div]
+    _ ≤ _ := (div_le_one₀ h0).mpr t2
+  have ne : x ≠ 0 := fun nh ↦ by simp [nh] at h0
+  simpa [ne] using balanced_iff_smul_mem.mp Balanced_K this hx
+
 end Real
