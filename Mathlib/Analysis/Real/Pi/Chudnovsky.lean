@@ -55,7 +55,7 @@ def chudnovskyTerm (n : ℕ) : ℚ :=
 
 /-- The infinite sum in Chudnovsky's formula for `π⁻¹` -/
 noncomputable def chudnovskySum : ℝ :=
-  12 / (640320 : ℝ) ^ (3 / 2) * ∑' n : ℕ, (chudnovskyTerm n : ℝ)
+  12 / (640320 : ℝ) ^ (3 / 2 : ℝ) * ∑' n : ℕ, (chudnovskyTerm n : ℝ)
 
 /-- **Chudnovsky's formula**: The sum equals `π⁻¹` -/
 proof_wanted chudnovskySum_eq_pi_inv : chudnovskySum = π⁻¹
