@@ -169,12 +169,12 @@ theorem mem_range_derivFamily_iff [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {o}
   rw [range_derivFamily H]
   simp [IsFixedPt]
 
-@[deprecated mem_range_derivFamily_iff (since := "2025-07-01")]
+@[deprecated mem_range_derivFamily_iff (since := "2025-08-31")]
 theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily f o = a := by
   simpa [(H _).le_iff_eq] using (mem_range_derivFamily_iff H).symm
 
-@[deprecated mem_range_derivFamily_iff (since := "2025-07-01")]
+@[deprecated mem_range_derivFamily_iff (since := "2025-08-31")]
 theorem fp_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a = a) ↔ ∃ o, derivFamily f o = a := by
   simpa using (mem_range_derivFamily_iff H).symm
@@ -198,7 +198,7 @@ theorem derivFamily_succ [Small.{u} ι] (H : ∀ i, IsNormal (f i)) (o) :
   · simpa using derivFamily_strictMono H (lt_succ o)
   · exact fun i ↦ (derivFamily_fp H _).le
 
-@[deprecated isNormal_derivFamily (since := "2025-07-01")]
+@[deprecated isNormal_derivFamily (since := "2025-08-31")]
 theorem derivFamily_limit [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {o} :
     IsSuccLimit o → derivFamily f o = ⨆ b : Set.Iio o, derivFamily f b :=
   (isNormal_derivFamily H).apply_of_isLimit
@@ -295,7 +295,7 @@ This is defined as `Ordinal.derivFamily` applied to a trivial family consisting 
 def deriv (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
   derivFamily fun _ : Unit => f
 
-@[deprecated "use `rw [deriv]` instead" (since := "2025-07-01")]
+@[deprecated "use `rw [deriv]` instead" (since := "2025-08-31")]
 theorem deriv_eq_derivFamily (f : Ordinal → Ordinal) : deriv f = derivFamily fun _ : Unit => f :=
   rfl
 
@@ -313,7 +313,7 @@ theorem deriv_strictMono (H : IsNormal f) : StrictMono (deriv f) :=
 
 protected alias IsNormal.deriv_strictMono := deriv_strictMono
 
-@[deprecated "on normal functions, `nfp f = id` implies `f = id`" (since := "2025-07-01")]
+@[deprecated "on normal functions, `nfp f = id` implies `f = id`" (since := "2025-08-31")]
 theorem deriv_id_of_nfp_id (h : nfp f = id) (H : IsNormal f) : deriv f = id := by
   apply_fun Set.range at h
   rw [Set.range_id, range_nfp H] at h
@@ -329,11 +329,11 @@ theorem mem_range_deriv_iff (H : IsNormal f) {o} : o ∈ Set.range (deriv f) ↔
   simpa using mem_range_derivFamily_iff fun _ : Unit ↦ H
 
 set_option linter.deprecated false in
-@[deprecated mem_range_deriv_iff (since := "2025-07-01")]
+@[deprecated mem_range_deriv_iff (since := "2025-08-31")]
 theorem IsNormal.fp_iff_deriv {f} (H : IsNormal f) {a} : f a = a ↔ ∃ o, deriv f o = a := by
   simpa using fp_iff_derivFamily fun _ : Unit ↦ H
 
-@[deprecated (since := "2025-07-01")]
+@[deprecated (since := "2025-08-31")]
 alias deriv_eq_id_of_nfp_eq_id := deriv_id_of_nfp_id
 
 theorem deriv_zero_right (H : IsNormal f) : deriv f 0 = nfp f 0 :=
@@ -343,7 +343,7 @@ theorem deriv_succ (H : IsNormal f) : ∀ o, deriv f (succ o) = nfp f (succ (der
   derivFamily_succ fun _ ↦ H
 
 set_option linter.deprecated false in
-@[deprecated IsNormal.deriv (since := "2025-07-01")]
+@[deprecated IsNormal.deriv (since := "2025-08-31")]
 theorem deriv_limit (H : IsNormal f) {o} :
     IsLimit o → deriv f o = ⨆ b : Set.Iio o, deriv f b :=
   derivFamily_limit fun _ ↦ H
