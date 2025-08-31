@@ -140,7 +140,7 @@ class CWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) where
     (univ : Set (Σ n, cell n)).PairwiseDisjoint (fun ni ↦ map ni.1 ni.2 '' ball 0 1)
   /-- The boundary of a cell is contained in a finite union of closed cells of a lower dimension.
   Use `CWComplex.mapsTo` or `CWComplex.cellFrontier_subset_finite_closedCell` instead. -/
-  protected mapsTo_iff_image_subset (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
+  protected mapsTo' (n : ℕ) (i : cell n) : ∃ I : Π m, Finset (cell m),
     MapsTo (map n i) (sphere 0 1) (⋃ (m < n) (j ∈ I m), map m j '' closedBall 0 1)
   /-- A CW complex has weak topology, i.e. a set `A` in `X` is closed iff its intersection with
   every closed cell is closed. Use `CWComplex.closed` instead. -/
@@ -159,7 +159,7 @@ instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalS
   continuousOn_symm := CWComplex.continuousOn_symm
   pairwiseDisjoint' := CWComplex.pairwiseDisjoint'
   disjointBase' := by simp [disjoint_empty]
-  mapsTo := by simpa only [empty_union] using CWComplex.mapsTo_iff_image_subset
+  mapsTo := by simpa only [empty_union] using CWComplex.mapsTo'
   closed' := by simpa only [inter_empty, isClosed_empty, and_true] using CWComplex.closed'
   isClosedBase := isClosed_empty
   union' := by simpa only [empty_union] using CWComplex.union'
@@ -174,7 +174,7 @@ def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCW
   continuousOn := continuousOn
   continuousOn_symm := continuousOn_symm
   pairwiseDisjoint' := pairwiseDisjoint'
-  mapsTo_iff_image_subset := by simpa using mapsTo (C := C)
+  mapsTo' := by simpa using mapsTo (C := C)
   closed' := by simpa using closed' (C := C)
   union' := by simpa using union' (C := C)
 
