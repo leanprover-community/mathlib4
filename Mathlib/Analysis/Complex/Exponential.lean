@@ -562,7 +562,7 @@ set_option linter.flexible false in
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      Nat.factorial]
+    Nat.factorial]
   ac_rfl
 
 theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
