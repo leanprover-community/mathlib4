@@ -322,8 +322,9 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 
-lemma RCLike.mem_norm_le_of_balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K) (x : 𝕜)
-    (hx : x ∈ K) (h0 : ‖x‖ > 0) : ∀ z : 𝕜, 0 ≤ ‖z‖ ∧ ‖z‖ ≤ ‖x‖ → z ∈ K := fun z ⟨t1, t2⟩ ↦ by
+lemma RCLike.mem_norm_le_of_balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K)
+    {x : 𝕜} (hx : x ∈ K) (h0 : ‖x‖ > 0) : ∀ z : 𝕜, 0 ≤ ‖z‖ ∧ ‖z‖ ≤ ‖x‖ → z ∈ K :=
+    fun z ⟨t1, t2⟩ ↦ by
   have : ‖z / x‖ ≤ 1 := by calc
     _ = ‖z‖ / ‖x‖ := by rw [norm_div]
     _ ≤ _ := (div_le_one₀ h0).mpr t2
@@ -355,11 +356,12 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
     RCLike.geometric_hahn_banach_compact_closed (convex_singleton x₀) isCompact_singleton hs₁ hs₂
       (Set.disjoint_singleton_left.mpr hx)
   have : re (f x₀) < u := h1 x₀ rfl
-  have h3 : ∀ z ∈ f '' B, v < re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ by
+  have h3 : ∀ z ∈ f '' B, v ≤ re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ by
     rw [← eq]
-    exact h3 y hy
+    linarith [h3 y hy]
   set K := closure (⇑f '' B)
-  have notin : f x₀ ∉ K := fun h ↦ by linarith [le_on_closure_of_lt continuous_re h3 (f x₀) h]
+  have notin : f x₀ ∉ K := fun h ↦ by
+    linarith [le_on_closure_of_lt (f := fun z ↦ re z) h3 continuous_re.continuousOn h]
   have Balanced_K : Balanced 𝕜 K := by
     refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
     exact ⟨a • t, Balanced.smul_mem hs₃ ha ht, by simp_all⟩
@@ -368,7 +370,7 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
   have r_pos : r > 0 := by simpa [hr] using fun nh ↦ by simp [nh, zero_in] at notin
   have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦ by
     by_contra! nh
-    have := RCLike.mem_norm_le_of_balanced Balanced_K x hx (by linarith) (f x₀)
+    have := RCLike.mem_norm_le_of_balanced Balanced_K hx (by linarith) (f x₀)
       ⟨norm_nonneg (f x₀), nh⟩
     contradiction
   have compact_K : IsCompact K := by
@@ -388,5 +390,6 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
   · intro b hb
     rw [this, div_lt_one₀ s_pos]
     exact hs (f b) (subset_closure (Set.mem_image_of_mem (⇑f) hb))
+
 
 end RCLike
