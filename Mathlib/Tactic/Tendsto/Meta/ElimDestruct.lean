@@ -6,7 +6,7 @@ Authors: Vasilii Nesterov
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Tendsto.Meta.Defs
 import Mathlib.Tactic.Tendsto.Meta.ConstSimp
-import Qq
+import Mathlib.Tactic.Tendsto.Meta.CompareReal
 
 /-!
 # TODO
@@ -363,6 +363,82 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | _ => return .continue
   | _ => return .continue
 
+#check Nat
+
+#check reduceIte
+
+-- simproc ↓ reduceNumIte (ite _ _ _) := fun e => do
+--   let_expr f@ite α c i tb eb ← e | return .continue
+--   let g_true :=  ← mkFreshExprMVar c
+--   let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
+--   if res.isEmpty then
+
+--   let r ← Mathlib.Meta.NormNum.deriveSimp c
+--   if r.expr.isTrue then
+--     let pr    := mkApp (mkApp5 (mkConst ``ite_cond_eq_true f.constLevels!) α c i tb eb)
+--       (← r.getProof)
+--     return .visit { expr := tb, proof? := pr }
+--   if r.expr.isFalse then
+--     let pr    := mkApp (mkApp5 (mkConst ``ite_cond_eq_false f.constLevels!) α c i tb eb)
+--       (← r.getProof)
+--     return .visit { expr := eb, proof? := pr }
+--   return .continue
+
+universe u in
+lemma ite_cond_eq_true' {α : Type u} (P : Prop) [Decidable P] (rhs tb eb : α) (hc : P)
+    (h : tb = rhs) :
+    ite P tb eb = rhs := by
+  simp [hc, h]
+
+universe u in
+lemma ite_cond_eq_false' {α : Type u} (P : Prop) [Decidable P] (rhs tb eb : α) (hc : ¬ P)
+    (h : eb = rhs) :
+    ite P tb eb = rhs := by
+  simp [hc, h]
+
+-- TODO: rewrite this hack
+elab "reduce_num_ite" : tactic => Lean.Elab.Tactic.withMainContext do
+  let g ← getMainGoal
+  let e ← getMainTarget
+  let_expr Eq _ lhs rhs := e |
+    -- dbg_trace f!"not an equality goal: {← ppExpr e}"
+    throwError "not an equality goal"
+  let_expr ite α c i tb eb := lhs |
+    -- dbg_trace f!"not an ite lhs: {lhs}"
+    throwError "not an ite lhs"
+  -- dbg_trace ← ppExpr c
+  let g_true ← mkFreshExprMVar c
+  let res ← evalTacticAt (← `(tactic| compare_real)) g_true.mvarId!
+  if res.isEmpty then
+    let g_new ← mkFreshExprMVar (← mkAppM ``Eq #[tb, rhs])
+    g.assign (← mkAppM ``ite_cond_eq_true' #[c, rhs, tb, eb, g_true, g_new])
+    replaceMainGoal [g_new.mvarId!]
+    return
+  let g_false ← mkFreshExprMVar (← mkAppM ``Not #[c])
+  let res ← evalTacticAt (← `(tactic| compare_real)) g_false.mvarId!
+  if res.isEmpty then
+    let g_new ← mkFreshExprMVar (← mkAppM ``Eq #[eb, rhs])
+    g.assign (← mkAppM ``ite_cond_eq_false' #[c, rhs, tb, eb, g_false, g_new])
+    replaceMainGoal [g_new.mvarId!]
+    return
+  throwError "reduce_num_ite can't neither prove the condition nor disprove it"
+
+open Real in
+example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
+  let ε : ℝ := 1;
+  let f := fun (x : ℝ) ↦
+    (1 - 1 / (b * (log x)^(1 + ε)))^p *
+    (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
+    (1 + 1 / (log x)^(ε / 2));
+    (if 0 * p + -2 + 0 + 0 < 0 * p + 0 + 0 + -(1 / 2) then 4 else 2) = 2 := by
+  intro ε f
+  -- reduce_num_ite
+
+  have : (if 0 < 0 * p + 0 + 0 then 4 else 2) = ?_ := by
+    reduce_num_ite
+    exact Eq.refl _
+  sorry
+
 -- TODO: rewrite without macro?
 syntax "elim_destruct" : tactic
 macro_rules
@@ -373,9 +449,9 @@ macro_rules
         first
         | simp only [elimDestruct, PreMS_const, LogBasis.tail]
         | simp only [↓reduceIte, PreMS_const]
-        -- | simp only [LogBasis.insertLastLog, LogBasis.extendBasisEnd]
-        -- | rewrite [updateBasis_const]
-      ) <;> norm_num1
+        | reduce_num_ite
+      ) <;>
+      norm_num1
     )
 
 end ElimDestruct

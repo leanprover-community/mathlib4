@@ -31,19 +31,23 @@ def preproces (x : Q(ℝ)) : MetaM <| Option ((x' : Q(ℝ)) × Q($x = $x')) := d
   return pf?.map fun pf =>
     ⟨x', pf⟩
 
+syntax "compare_real" : tactic
+macro_rules
+| `(tactic| compare_real) => `(tactic| norm_num; try linarith)
+
 def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
   let e ← mkFreshExprMVar q(0 < $x)
-  let res ← evalTacticAt (← `(tactic| norm_num; try linarith)) e.mvarId!
+  let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
   if res.isEmpty then
     return .pos e
 
   let e ← mkFreshExprMVar q($x < 0)
-  let res ← evalTacticAt (← `(tactic| norm_num; try linarith)) e.mvarId!
+  let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
   if res.isEmpty then
     return .neg e
 
   let e ← mkFreshExprMVar q($x = 0)
-  let res ← evalTacticAt (← `(tactic| norm_num; try linarith)) e.mvarId!
+  let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
   if res.isEmpty then
     return .zero e
   throwError f!"Cannot compare real number {← ppExpr x} with zero"

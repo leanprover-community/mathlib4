@@ -468,7 +468,6 @@ example :
     Tendsto f atTop (𝓝 1) := by
   compute_asymptotics
 
-set_option trace.profiler true in
 set_option maxHeartbeats 0 in
 example :
     let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
@@ -480,7 +479,6 @@ example :
     Tendsto f atTop (𝓝 0):= by
   compute_asymptotics
 
-set_option profiler true in
 set_option maxHeartbeats 0 in
 example :
     let f := fun (y : ℝ) ↦ Real.exp y - Real.exp (y^3) + Real.exp (y^2)
@@ -610,3 +608,21 @@ example :
 --   compute_asymptotics
 
 end DifferentFilters
+
+-- TODO
+-- example from the paper. Used in the proof of Akkra-Bazzi theorem.
+open Real in
+-- set_option pp.analyze true in
+-- set_option pp.maxSteps 100000 in
+-- set_option maxHeartbeats 0 in
+example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
+  let ε : ℝ := 1;
+  let f := fun (x : ℝ) ↦
+    (1 - 1 / (b * (log x)^(1 + ε)))^p *
+    (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
+    (1 + 1 / (log x)^(ε / 2));
+  Tendsto f atTop (𝓝 0) := by
+  intro ε f
+  dsimp only [ε, f]
+  -- sorry
+  compute_asymptotics
