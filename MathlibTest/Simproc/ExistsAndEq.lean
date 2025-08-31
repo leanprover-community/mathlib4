@@ -1,11 +1,13 @@
 import Mathlib.Tactic.Simproc.ExistsAndEq
 
 universe u v
-variable (α : Type u) (p q : α → Prop)
 
-example (a : α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = a) ∧ q b := by
+variable (α : Type u) (β : Type v)
+
+example (P Q : α → Prop) (a : α) (hp : P a) (hq : Q a) :
+    ∃ b : α, (P b ∧ b = a) ∧ Q b := by
   simp only [existsAndEq]
-  guard_target = (p a ∧ True) ∧ q a
+  guard_target = (P a ∧ True) ∧ Q a
   exact ⟨⟨hp, trivial⟩, hq⟩
 
 example (a : α) : ∃ b : α, b = a := by
@@ -26,17 +28,17 @@ example {β : α → Type v} (a : α) :
     ∃ x, ∃ y : β x, x = a := by
   simp only [existsAndEq]
 
-example {α β : Type} (f : β → α) {p q : β → Prop} :
-    (∃ y b, p b ∧ f b = y ∧ q b) ↔ ∃ b, p b ∧ q b := by
+example (f : β → α) {P Q : β → Prop} :
+    (∃ y b, P b ∧ f b = y ∧ Q b) ↔ ∃ b, P b ∧ Q b := by
   simp only [existsAndEq, true_and]
 
-example {α β : Type} (f : β → α) {p q : β → Prop} :
-    (∃ x b, p b ∧ (∃ c, f c = x) ∧ (∃ d, q d ∧ f d = x) ∧ q b) =
-    ∃ b c, p b ∧ f c = f c ∧ (∃ d, q d ∧ f d = f c) ∧ q b := by
+example (f : β → α) {P Q : β → Prop} :
+    (∃ x b, P b ∧ (∃ c, f c = x) ∧ (∃ d, Q d ∧ f d = x) ∧ Q b) =
+    ∃ b c, P b ∧ f c = f c ∧ (∃ d, Q d ∧ f d = f c) ∧ Q b := by
   simp only [existsAndEq]
 
-example {α β : Type} (f : β → α) {p : α → Prop} :
-    (∃ a, p a ∧ ∃ b, a = f b) ↔ ∃ b, p (f b) := by
+example (f : β → α) {P : α → Prop} :
+    (∃ a, P a ∧ ∃ b, a = f b) ↔ ∃ b, P (f b) := by
   simp only [existsAndEq, and_true]
 
 /--
@@ -51,18 +53,17 @@ example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
 /--
 error: unsolved goals
 α : Type u
-p q : α → Prop
-X Y : Type
-P Q : X × Y → Prop
-a : X × Y
+β : Type v
+P Q : α × β → Prop
+a : α × β
 ⊢ (∃ a_1 b, (P (a_1, b) ∧ (a_1, b) = a) ∧ Q (a_1, b)) ↔ P a ∧ Q a
 -/
 #guard_msgs in
 set_option linter.unusedSimpArgs false in
-example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
-    (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
+example (P Q : α × β → Prop) (a : α × β) :
+    (∃ b : (α × β), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp only [Prod.exists, existsAndEq]
 
-example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
-    (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
+example (P Q : α × β → Prop) (a : α × β) :
+    (∃ b : (α × β), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
   simp
