@@ -389,12 +389,12 @@ lemma covariance_cameronMartinRKHS (x y : cameronMartinRKHS μ) :
 
 lemma isProbabilityMeasure_withDensity_cameronMartin (x : CameronMartin μ) :
     IsProbabilityMeasure (μ.withDensity fun y ↦
-      .ofReal (.exp ((cmIsometryEquiv μ x : E → ℝ) y - ‖x‖ ^ 2 / 2))) where
+      .ofReal (.exp (cmIsometryEquiv μ x y - ‖x‖ ^ 2 / 2))) where
   measure_univ := by
     rw [withDensity_apply _ .univ, setLIntegral_univ]
-    calc ∫⁻ a, .ofReal (.exp ((cmIsometryEquiv μ x : E → ℝ) a - ‖x‖ ^ 2 / 2)) ∂μ
+    calc ∫⁻ a, .ofReal (.exp (cmIsometryEquiv μ x a - ‖x‖ ^ 2 / 2)) ∂μ
     _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2))
-        * ∫⁻ a, .ofReal (.exp ((cmIsometryEquiv μ x : E → ℝ) a)) ∂μ := by
+        * ∫⁻ a, .ofReal (.exp (cmIsometryEquiv μ x a)) ∂μ := by
       simp_rw [sub_eq_add_neg, Real.exp_add, ENNReal.ofReal_mul (Real.exp_nonneg _)]
       rw [lintegral_mul_const _ (by fun_prop), mul_comm, neg_div]
     _ = .ofReal (.exp (- ‖x‖ ^ 2 / 2))
@@ -417,8 +417,8 @@ lemma isProbabilityMeasure_withDensity_cameronMartin (x : CameronMartin μ) :
       simp
 
 lemma todo_ae_eq (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
-    (cmIsometryEquiv μ (L - t • x) : E → ℝ)
-      =ᵐ[μ] fun u ↦ L u - μ[L] - t * (cmIsometryEquiv μ x : E → ℝ) u := by
+    cmIsometryEquiv μ (L - t • x)
+      =ᵐ[μ] fun u ↦ L u - μ[L] - t * cmIsometryEquiv μ x u := by
   simp only [map_sub, map_smul, AddSubgroupClass.coe_sub, cmIsometryEquiv_ofDual, SetLike.val_smul]
   filter_upwards [centeredToLp_apply (μ := μ) memLp_two_id L,
     AEEqFun.coeFn_sub (γ := ℝ) (StrongDual.centeredToLp μ 2 L) (t • (cmIsometryEquiv μ x)),
@@ -428,21 +428,18 @@ lemma todo_ae_eq (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
   simp
 
 lemma some_equality_in_Real'' (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
-    ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
-      = exp (- ‖x‖ ^ 2 / 2)
-        * ∫ u, exp ((cmIsometryEquiv μ (L - t • x) : E → ℝ) u * I + μ[L] * I) ∂μ := by
-  calc ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
-  _ = exp (- ‖x‖ ^ 2 / 2)
-      * ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ := by
+    ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
+      = exp (- ‖x‖ ^ 2 / 2) * ∫ u, exp (cmIsometryEquiv μ (L - t • x) u * I + μ[L] * I) ∂μ := by
+  calc ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
+  _ = exp (- ‖x‖ ^ 2 / 2) * ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I) ∂μ := by
     simp_rw [sub_eq_add_neg, exp_add]
     rw [integral_mul_const, mul_comm (exp _), neg_div]
   _ = exp (- ‖x‖ ^ 2 / 2)
-      * ∫ u, exp ((L u - μ[L] - t * (cmIsometryEquiv μ x : E → ℝ) u) * I + μ[L] * I) ∂μ := by
+      * ∫ u, exp ((L u - μ[L] - t * cmIsometryEquiv μ x u) * I + μ[L] * I) ∂μ := by
     congr with u
     congr
     ring
-  _ = exp (- ‖x‖ ^ 2 / 2)
-      * ∫ u, exp ((cmIsometryEquiv μ (L - t • x) : E → ℝ) u * I + μ[L] * I) ∂μ := by
+  _ = exp (- ‖x‖ ^ 2 / 2) * ∫ u, exp (cmIsometryEquiv μ (L - t • x) u * I + μ[L] * I) ∂μ := by
     congr 1
     refine integral_congr_ae ?_
     filter_upwards [todo_ae_eq x L t] with u hu
@@ -450,12 +447,11 @@ lemma some_equality_in_Real'' (x : CameronMartin μ) (L : StrongDual ℝ E) (t :
     simp
 
 lemma some_equality_in_Real' (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
-    ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
+    ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
       = exp (- ‖x‖ ^ 2 / 2 + μ[L] * I)
         * ∫ u : ℝ, exp (u * I) ∂(gaussianReal 0 (‖L - t • x‖₊ ^ 2)) := by
-  calc ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
-  _ = exp (- ‖x‖ ^ 2 / 2)
-      * ∫ u, exp ((cmIsometryEquiv μ (L - t • x) : E → ℝ) u * I + μ[L] * I) ∂μ :=
+  calc ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
+  _ = exp (- ‖x‖ ^ 2 / 2) * ∫ u, exp (cmIsometryEquiv μ (L - t • x) u * I + μ[L] * I) ∂μ :=
     some_equality_in_Real'' x L t
   _ = exp (- ‖x‖ ^ 2 / 2)
       * ∫ u : ℝ, exp (u * I + μ[L] * I) ∂(μ.map (cmIsometryEquiv μ (L - t • x))) := by
@@ -472,10 +468,10 @@ lemma some_equality_in_Real' (x : CameronMartin μ) (L : StrongDual ℝ E) (t : 
     rw [integral_mul_const, mul_comm _ (exp _)]
 
 lemma some_equality_in_Real (x : CameronMartin μ) (L : StrongDual ℝ E) (t : ℝ) :
-    ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
+    ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
       = exp (t * L x.toInitialSpace - (1 + t ^ 2) / 2 * ‖x‖ ^ 2
         + μ[L] * I - Var[L; μ] / 2) := by
-  calc ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
+  calc ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
   _ = exp (- ‖x‖ ^ 2 / 2 + μ[L] * I)
       * ∫ u : ℝ, exp (u * I) ∂(gaussianReal 0 (‖L - t • x‖₊ ^ 2)) := some_equality_in_Real' x L t
   _ = exp (- ‖x‖ ^ 2 / 2 + μ[L] * I - ‖L - t • x‖ ^ 2 / 2) := by
@@ -498,21 +494,20 @@ lemma some_equality_in_Real (x : CameronMartin μ) (L : StrongDual ℝ E) (t : �
 
 lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     HasDerivAt
-      (fun z ↦ ∫ u, exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ)
-      (∫ u, - (cmIsometryEquiv μ x : E → ℝ) u * I
-        * exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ) z := by
+      (fun z ↦ ∫ u, exp ((L u - z * cmIsometryEquiv μ x u) * I) ∂μ)
+      (∫ u, - cmIsometryEquiv μ x u * I * exp ((L u - z * cmIsometryEquiv μ x u) * I) ∂μ) z := by
   refine (hasDerivAt_integral_of_dominated_loc_of_deriv_le
-    (bound := fun ω ↦ |(cmIsometryEquiv μ x : E → ℝ) ω|
-      * Real.exp (z.im * (cmIsometryEquiv μ x : E → ℝ) ω + |(cmIsometryEquiv μ x : E → ℝ) ω|))
-    (F := fun z ω ↦ cexp ((L ω - z * (cmIsometryEquiv μ x : E → ℝ) ω) * I))
-    (F' := fun z ω ↦ - (cmIsometryEquiv μ x : E → ℝ) ω * I
-        * exp ((L ω - z * (cmIsometryEquiv μ x : E → ℝ) ω) * I)) zero_lt_one ?_ ?_ ?_ ?_ ?_ ?_).2
+    (bound := fun ω ↦ |cmIsometryEquiv μ x ω|
+      * Real.exp (z.im * cmIsometryEquiv μ x ω + |cmIsometryEquiv μ x ω|))
+    (F := fun z ω ↦ cexp ((L ω - z * cmIsometryEquiv μ x ω) * I))
+    (F' := fun z ω ↦ - cmIsometryEquiv μ x ω * I
+        * exp ((L ω - z * cmIsometryEquiv μ x ω) * I)) zero_lt_one ?_ ?_ ?_ ?_ ?_ ?_).2
   · exact .of_forall fun z ↦ by fun_prop
   · rw [← integrable_norm_iff (by fun_prop)]
     simp only [norm_exp, mul_re, sub_re, ofReal_re, ofReal_im, mul_zero, sub_zero, I_re, sub_im,
       mul_im, zero_add, zero_sub, I_im, mul_one, sub_neg_eq_add]
-    change Integrable ((fun a ↦ Real.exp (z.im * a)) ∘ (cmIsometryEquiv μ x : E → ℝ)) μ
-    rw [← integrable_map_measure (f := fun ω ↦ (cmIsometryEquiv μ x : E → ℝ) ω) (by fun_prop)
+    change Integrable ((fun a ↦ Real.exp (z.im * a)) ∘ (cmIsometryEquiv μ x)) μ
+    rw [← integrable_map_measure (f := fun ω ↦ cmIsometryEquiv μ x ω) (by fun_prop)
       (by fun_prop), (hasLaw_cameronMartinRKHS (cmIsometryEquiv μ x)).map_eq]
     exact integrable_exp_mul_gaussianReal (μ := 0) (v := ‖cmIsometryEquiv μ x‖₊ ^ 2) z.im
   · fun_prop
@@ -527,14 +522,14 @@ lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     gcongr _ + ?_
     refine (le_abs_self _).trans ?_
     rw [abs_mul]
-    conv_rhs => rw [← one_mul (|(cmIsometryEquiv μ x : E → ℝ) ω|)]
+    conv_rhs => rw [← one_mul (|cmIsometryEquiv μ x ω|)]
     gcongr
     refine (abs_im_le_norm _).trans ?_
     simp only [Metric.mem_ball, dist_eq_norm] at hε
     exact hε.le
   · change Integrable
-      ((fun ω ↦ |ω| * Real.exp (z.im * ω + |ω|)) ∘ (cmIsometryEquiv μ x : E → ℝ)) μ
-    rw [← integrable_map_measure (f := fun ω ↦ (cmIsometryEquiv μ x : E → ℝ) ω) (by fun_prop)
+      ((fun ω ↦ |ω| * Real.exp (z.im * ω + |ω|)) ∘ (cmIsometryEquiv μ x)) μ
+    rw [← integrable_map_measure (f := cmIsometryEquiv μ x) (by fun_prop)
       (by fun_prop), (hasLaw_cameronMartinRKHS (cmIsometryEquiv μ x)).map_eq]
     have h := integrable_pow_abs_mul_exp_add_of_integrable_exp_mul (x := 1) (v := z.im) (X := id)
       (t := 2) (μ := gaussianReal 0 (‖cmIsometryEquiv μ x‖₊ ^ 2)) ?_ ?_ zero_le_one (by simp) 1
@@ -547,7 +542,7 @@ lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
     refine HasDerivAt.const_mul _ ?_
     simp_rw [neg_mul, mul_comm _ (_ * I), ← neg_mul]
     simp_rw [← smul_eq_mul, Complex.exp_eq_exp_ℂ]
-    convert hasDerivAt_exp_smul_const (-(cmIsometryEquiv μ x : E → ℝ) ω * I : ℂ) ε using 1
+    convert hasDerivAt_exp_smul_const (-cmIsometryEquiv μ x ω * I : ℂ) ε using 1
     · ext ω
       congr 1
       simp only [smul_eq_mul, neg_mul, mul_neg, neg_inj]
@@ -560,14 +555,14 @@ lemma todo_hasDerivAt (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
 
 lemma todo_analytic (x : CameronMartin μ) (L : StrongDual ℝ E) :
     AnalyticOnNhd ℂ
-      (fun z ↦ ∫ u, exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I) ∂μ) Set.univ := by
+      (fun z ↦ ∫ u, exp ((L u - z * cmIsometryEquiv μ x u) * I) ∂μ) Set.univ := by
   refine DifferentiableOn.analyticOnNhd (fun z hz ↦ ?_) isOpen_univ
   have h := todo_hasDerivAt x L z
   rw [hasDerivAt_iff_hasFDerivAt] at h
   exact h.hasFDerivWithinAt.differentiableWithinAt
 
 lemma some_equality_in_Complex (x : CameronMartin μ) (L : StrongDual ℝ E) (z : ℂ) :
-    ∫ u, exp ((L u - z * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
+    ∫ u, exp ((L u - z * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
       = exp (z * L x.toInitialSpace - (1 + z ^ 2) / 2 * ‖x‖ ^ 2 + μ[L] * I - Var[L; μ] / 2) := by
   revert z
   refine funext_iff.mp ?_
@@ -588,7 +583,7 @@ lemma some_equality_in_Complex (x : CameronMartin μ) (L : StrongDual ℝ E) (z 
   -- todo: extract lemma: frequently around a point in ℝ implies frequently around the point in ℂ.
   -- This is also used in ComplexMGF
   have h_real : ∃ᶠ (t : ℝ) in 𝓝[≠] 0,
-      ∫ u, exp ((L u - t * (cmIsometryEquiv μ x : E → ℝ) u) * I - ‖x‖ ^ 2 / 2) ∂μ
+      ∫ u, exp ((L u - t * cmIsometryEquiv μ x u) * I - ‖x‖ ^ 2 / 2) ∂μ
         = .exp (t * L x.toInitialSpace - (1 + t ^ 2) / 2 * ‖x‖ ^ 2 + μ[L] * I - Var[L; μ] / 2) :=
     .of_forall fun y ↦ some_equality_in_Real x L y
   rw [frequently_iff_seq_forall] at h_real ⊢
@@ -602,7 +597,7 @@ lemma some_equality_in_Complex (x : CameronMartin μ) (L : StrongDual ℝ E) (z 
   · simp [hx_eq]
 
 lemma cor_for_z_eq_I (x : CameronMartin μ) (L : StrongDual ℝ E) :
-    ∫ u, exp (L u * I + (cmIsometryEquiv μ x : E → ℝ) u - ‖x‖ ^ 2 / 2) ∂μ
+    ∫ u, exp (L u * I + cmIsometryEquiv μ x u - ‖x‖ ^ 2 / 2) ∂μ
       = exp ((μ[L] + L x.toInitialSpace) * I - Var[L; μ] / 2) := by
   have h := some_equality_in_Complex x L I
   simp only [I_sq, add_neg_cancel, zero_div, zero_mul, sub_zero] at h
@@ -614,11 +609,11 @@ lemma cor_for_z_eq_I (x : CameronMartin μ) (L : StrongDual ℝ E) :
 
 lemma charFunDual_withDensity_cameronMartin (x : CameronMartin μ) (L : StrongDual ℝ E) :
     charFunDual
-        (μ.withDensity fun y ↦ .ofReal (.exp ((cmIsometryEquiv μ x : E → ℝ) y - ‖x‖ ^ 2 / 2))) L
+        (μ.withDensity fun y ↦ .ofReal (.exp (cmIsometryEquiv μ x y - ‖x‖ ^ 2 / 2))) L
       = exp ((μ[L] + L x.toInitialSpace) * I - Var[L; μ] / 2) := by
   calc charFunDual
-        (μ.withDensity fun y ↦ .ofReal (.exp ((cmIsometryEquiv μ x : E → ℝ) y - ‖x‖ ^ 2 / 2))) L
-  _ = ∫ u, exp (L u * I + (cmIsometryEquiv μ x : E → ℝ) u - ‖x‖ ^ 2 / 2) ∂μ := by
+        (μ.withDensity fun y ↦ .ofReal (.exp (cmIsometryEquiv μ x y - ‖x‖ ^ 2 / 2))) L
+  _ = ∫ u, exp (L u * I + cmIsometryEquiv μ x u - ‖x‖ ^ 2 / 2) ∂μ := by
     rw [charFunDual_apply, integral_withDensity_eq_integral_toReal_smul (by fun_prop)]
     swap; · exact ae_of_all _ (by finiteness)
     congr with u
@@ -629,7 +624,7 @@ lemma charFunDual_withDensity_cameronMartin (x : CameronMartin μ) (L : StrongDu
 
 theorem map_add_cameronMartin_eq_withDensity (x : CameronMartin μ) :
     μ.map (fun y ↦ y + x.toInitialSpace)
-      = μ.withDensity (fun y ↦ .ofReal (.exp ((cmIsometryEquiv μ x : E → ℝ) y - ‖x‖ ^ 2 / 2))) := by
+      = μ.withDensity (fun y ↦ .ofReal (.exp (cmIsometryEquiv μ x y - ‖x‖ ^ 2 / 2))) := by
   have := isProbabilityMeasure_withDensity_cameronMartin x
   refine Measure.ext_of_charFunDual ?_
   ext L

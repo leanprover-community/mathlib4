@@ -808,6 +808,10 @@ def cameronMartinRKHS (μ : Measure E) [HasTwoMoments μ] : Submodule ℝ (Lp �
 
 variable [HasTwoMoments μ]
 
+noncomputable
+instance instCoeFun : CoeFun (cameronMartinRKHS μ) (fun _ ↦ E → ℝ) :=
+  ⟨fun f => (f : E → ℝ)⟩
+
 @[coe]
 noncomputable def coeRKHS (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
     cameronMartinRKHS μ := coeClosure L
