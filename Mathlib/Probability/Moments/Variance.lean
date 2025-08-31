@@ -314,6 +314,13 @@ lemma variance_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
   · refine AEStronglyMeasurable.pow ?_ _
     exact AEMeasurable.aestronglyMeasurable (by fun_prop)
 
+lemma _root_.MeasureTheory.MeasurePreserving.variance_fun_comp {Ω' : Type*}
+    {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {X : Ω → Ω'}
+    (hX : MeasurePreserving X μ ν) {f : Ω' → ℝ} (hf : AEMeasurable f ν) :
+    Var[fun ω ↦ f (X ω); μ] = Var[f; ν] := by
+  rw [← hX.map_eq, variance_map (hX.map_eq ▸ hf) hX.aemeasurable]
+  rfl
+
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :
     Var[X; μ.map Y] = Var[X ∘ Y; μ] := by
@@ -400,6 +407,11 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
   rw [variance_add hX hY, h.covariance_eq_zero hX hY]
   simp
 
+/-- The variance of the sum of two independent random variables is the sum of the variances. -/
+lemma IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
+    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
+  h.variance_add hX hY
+
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
 nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
@@ -478,59 +490,27 @@ variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
   [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
   {X : Ω → ℝ} {Y : Ω' → ℝ}
 
-lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
-    cov[fun p ↦ X p.1, fun p ↦ Y p.2; μ.prod ν] = 0 :=
-  (indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable).covariance_eq_zero
-    (hfμ.comp_fst ν) (hgν.comp_snd μ)
-
 lemma variance_add_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
     Var[fun p ↦ X p.1 + Y p.2; μ.prod ν] = Var[X; μ] + Var[Y; ν] := by
-  rw [variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ)]
-  simp only [covariance_fst_snd_prod hfμ hgν, mul_zero, add_zero]
-  have h_map1 : (μ.prod ν).map Prod.fst = μ := by simp
-  have h_map2 : (μ.prod ν).map Prod.snd = ν := by simp
-  conv_rhs => rw [← h_map1]
-              rhs
-              rw [← h_map2]
-  rw [variance_map _ (by fun_prop), variance_map _ (by fun_prop)]
-  · rfl
-  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact hgν.aemeasurable
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact hfμ.aemeasurable
+  refine (IndepFun.variance_fun_add (hfμ.comp_fst ν) (hgν.comp_snd μ) ?_).trans ?_
+  · exact indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable
+  · rw [measurePreserving_fst.variance_fun_comp hfμ.aemeasurable,
+      measurePreserving_snd.variance_fun_comp hgν.aemeasurable]
 
 end Prod
 
 section NormedSpace
 
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G} [CompleteSpace G]
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
-  {p : ℝ≥0∞}
-
-lemma integral_continuousLinearMap_prod' {L : E × F →L[ℝ] G}
-    (hLμ : Integrable (L.comp (.inl ℝ E F)) μ) (hLν : Integrable (L.comp (.inr ℝ E F)) ν) :
-    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
-  simp_rw [← L.comp_inl_add_comp_inr]
-  replace hLμ := ((memLp_one_iff_integrable.mpr hLμ).comp_fst ν).integrable le_rfl
-  replace hLν := ((memLp_one_iff_integrable.mpr hLν).comp_snd μ).integrable le_rfl
-  rw [integral_add hLμ hLν, integral_prod _ hLμ, integral_prod _ hLν]
-  simp
-
-lemma integral_continuousLinearMap_prod {L : E × F →L[ℝ] G}
-    (hμ : Integrable id μ) (hν : Integrable id ν) :
-    (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] :=
-  integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
-    (ContinuousLinearMap.integrable_comp _ hν)
 
 lemma variance_dual_prod' {L : StrongDual ℝ (E × F)}
     (hLμ : MemLp (L.comp (.inl ℝ E F)) 2 μ) (hLν : MemLp (L.comp (.inr ℝ E F)) 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
   have : L = fun x : E × F ↦ L.comp (.inl ℝ E F) x.1 + L.comp (.inr ℝ E F) x.2 := by
     ext; rw [L.comp_inl_add_comp_inr]
-  conv_lhs => rw [this]
-  rw [variance_add_prod hLμ hLν]
+  rw [this, variance_add_prod hLμ hLν]
 
 lemma variance_dual_prod {L : StrongDual ℝ (E × F)} (hLμ : MemLp id 2 μ) (hLν : MemLp id 2 ν) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] :=

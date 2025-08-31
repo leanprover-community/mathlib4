@@ -430,7 +430,7 @@ theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Ma
 theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
     (M ^ k).toLin' = M.toLin' ^ k := by
   induction k with
-  | zero => rw [pow_zero, toLin'_one]; exact rfl
+  | zero => simp [End.one_eq_id]
   | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_eq_comp]
 
 @[simp]
@@ -713,7 +713,7 @@ theorem Matrix.toLin_self (M : Matrix m n R) (i : n) :
   rw [Basis.repr_self, Matrix.mulVec, dotProduct, Finset.sum_eq_single i, Finsupp.single_eq_same,
     mul_one]
   · intro i' _ i'_ne
-    rw [Finsupp.single_eq_of_ne i'_ne.symm, mul_zero]
+    rw [Finsupp.single_eq_of_ne i'_ne, mul_zero]
   · intros
     have := Finset.mem_univ i
     contradiction
@@ -754,7 +754,7 @@ theorem Matrix.toLin_mul [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matr
 theorem Matrix.toLin_pow (A : Matrix n n R) (k : ℕ) :
     (A ^ k).toLin v₁ v₁ = (A.toLin v₁ v₁) ^ k := by
   induction k with
-  | zero => simp only [pow_zero, toLin_one]; rfl
+  | zero => simp only [pow_zero, toLin_one, End.one_eq_id]
   | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_eq_comp]
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
