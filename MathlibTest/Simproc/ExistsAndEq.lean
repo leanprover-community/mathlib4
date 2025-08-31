@@ -19,7 +19,7 @@ example (f : α → α) : ∃ a : α, a = f a := by
   simp only [existsAndEq]
 
 /--
-error: simp made no progress
+error: `simp` made no progress
 -/
 #guard_msgs in
 example {β : α → Type v} (a : α) :
@@ -40,7 +40,7 @@ example {α β : Type} (f : β → α) {p : α → Prop} :
   simp only [existsAndEq, and_true]
 
 /--
-error: simp made no progress
+error: `simp` made no progress
 -/
 #guard_msgs in
 example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
