@@ -235,3 +235,26 @@ theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ �
   | a :: l => by rw [length_cons, foldr, foldr_const f b l, iterate_succ_apply']
 
 end List
+
+namespace Pi
+
+variable {ι : Type*}
+
+/-- adapted from `Prod.map_id` -/
+@[simp] theorem map_id {α : ι → Type*} : Pi.map (fun i => @id (α i)) = id := rfl
+
+/-- adapted from `Prod.map_id'` -/
+@[simp] theorem map_id' {α : ι → Type*} : Pi.map (fun i (a : α i) => a) = fun x ↦ x := rfl
+
+/-- adapted from `Prod.map_comp_map` -/
+theorem map_comp_map {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
+    Pi.map g ∘ Pi.map f = Pi.map fun i => g i ∘ f i :=
+  rfl
+
+/-- adapted from `Prod.map_iterate` -/
+@[simp]
+theorem map_iterate {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
+    (Pi.map f)^[n] = Pi.map fun i => (f i)^[n] := by
+  induction n <;> simp [*, map_comp_map]
+
+end Pi

@@ -540,8 +540,8 @@ theorem IsFixedPt.piMap (h : ∀ i, IsFixedPt (f i) (x i)) : IsFixedPt (Pi.map f
 
 -- TODO: make `x` explicit similar to `isPeriodicPt_prodMap`?
 @[simp]
-theorem isPeriodicPt_piMap : IsPeriodicPt (Pi.map f) n x ↔ ∀ i, IsPeriodicPt (f i) n (x i) :=
-  sorry
+theorem isPeriodicPt_piMap : IsPeriodicPt (Pi.map f) n x ↔ ∀ i, IsPeriodicPt (f i) n (x i) := by
+  simp [IsPeriodicPt]
 
 theorem IsPeriodicPt.piMap (h : ∀ i, IsPeriodicPt (f i) n (x i)) : IsPeriodicPt (Pi.map f) n x :=
   isPeriodicPt_piMap.mpr h
