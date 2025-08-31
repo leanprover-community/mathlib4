@@ -363,7 +363,7 @@ theorem pointwise_smul_def {a : α} (S : Subgroup G) :
     a • S = S.map (MulDistribMulAction.toMonoidEnd _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Subgroup G) : ↑(a • S) = a • (S : Set G) :=
   rfl
 

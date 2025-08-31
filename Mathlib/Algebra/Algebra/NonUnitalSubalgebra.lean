@@ -158,7 +158,7 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
-@[simp]
+@[simp, norm_cast]]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     (S.copy s hs : Set A) = s :=
   rfl
@@ -705,7 +705,7 @@ lemma _root_.NonUnitalAlgHom.map_adjoin_singleton [IsScalarTower R B B] [SMulCom
 
 variable {R A}
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : NonUnitalSubalgebra R A) : Set A) = Set.univ :=
   rfl
 
@@ -829,7 +829,7 @@ theorem toSubmodule_bot : (⊥ : NonUnitalSubalgebra R A).toSubmodule = ⊥ := b
   ext
   simp only [mem_bot, NonUnitalSubalgebra.mem_toSubmodule, Submodule.mem_bot]
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : NonUnitalSubalgebra R A) : Set A) = {0} := by
   simp [Set.ext_iff, NonUnitalAlgebra.mem_bot]
 
@@ -896,7 +896,7 @@ def prod : NonUnitalSubalgebra R (A × B) :=
     carrier := S ×ˢ S₁
     smul_mem' := fun r _x hx => ⟨SMulMemClass.smul_mem r hx.1, SMulMemClass.smul_mem r hx.2⟩ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ S₁ :=
   rfl
 
@@ -1075,6 +1075,7 @@ They form a non-unital subalgebra. -/
 def center : NonUnitalSubalgebra R A :=
   { NonUnitalSubsemiring.center A with smul_mem' := Set.smul_mem_center }
 
+@[norm_cast]
 theorem coe_center : (center R A : Set A) = Set.center A :=
   rfl
 
