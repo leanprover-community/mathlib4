@@ -330,7 +330,9 @@ lemma mapRangeRingHom_comp_algebraMap (f : R →+* S) :
 
 variable (M) in
 /-- The algebra homomorphism of monoid algebras induced by a homomorphism of the base algebras. -/
-@[to_additive]
+@[to_additive
+/-- The algebra homomorphism of additive monoid algebras induced by a homomorphism of the base
+algebras. -/]
 noncomputable def mapRangeAlgHom (f : A →ₐ[R] B) : MonoidAlgebra A M →ₐ[R] MonoidAlgebra B M where
   __ := mapRangeRingHom M f
   commutes' := by simp
@@ -351,7 +353,9 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
 
 variable (M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
-@[to_additive (attr := simps apply)]
+@[to_additive (attr := simps apply)
+/-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
+algebras. -/]
 noncomputable def mapRangeAlgEquiv (f : A ≃ₐ[R] B) :
     MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
   __ := mapRangeAlgHom M f
