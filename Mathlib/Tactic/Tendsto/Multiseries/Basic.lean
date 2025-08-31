@@ -18,6 +18,8 @@ namespace PreMS
 
 open Stream'
 
+open Filter
+
 /-- Multiseries representing constant. -/
 def const (basis : Basis) (c : ℝ) : PreMS basis :=
   match basis with
@@ -121,6 +123,17 @@ theorem zero_Approximates {basis : Basis} :
   | cons =>
     simp [zero]
     exact Approximates.nil (by rfl)
+
+theorem zero_Approximates_iff {basis : Basis} {f : ℝ → ℝ} :
+    (zero basis).Approximates f ↔ (f =ᶠ[atTop] 0) where
+  mp h := by
+    cases basis with
+    | nil =>
+      simpa [zero, Approximates] using h
+    | cons basis_hd basis_tl =>
+      simp [zero] at h
+      exact Approximates_nil h
+  mpr h := Approximates_of_EventuallyEq h.symm zero_Approximates
 
 /-- `one` approximates unit function. -/
 theorem one_Approximates {basis : Basis} (h_wo : WellFormedBasis basis) :

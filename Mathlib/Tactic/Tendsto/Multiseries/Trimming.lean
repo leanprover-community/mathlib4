@@ -105,6 +105,29 @@ theorem extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : 
     · simp [extendBasisEnd, const, zero]
     · exact extendBasisEnd_ne_zero (Trimmed_cons h_trimmed).right
 
+theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → ℝ}
+    {ms : PreMS (left ++ right_hd :: right_tl)}
+    (h_trimmed : ms.Trimmed) (h_ne_zero : ms ≠ zero _) : (ms.extendBasisMiddle b).Trimmed := by
+  -- sorry
+  cases' left with left_hd left_tl
+  · cases' ms with exp coef tl
+    · simp [zero] at h_ne_zero
+    simp [extendBasisMiddle]
+    constructor
+    · exact h_trimmed
+    · simp [zero]
+  · cases' ms with exp coef tl
+    · simp [zero] at h_ne_zero
+    simp [extendBasisMiddle]
+    apply Trimmed_cons at h_trimmed
+    constructor
+    · exact extendBasisMiddle_Trimmed h_trimmed.left h_trimmed.right
+    · cases' left_tl with left_tl_hd left_tl_tl
+      · simp [extendBasisMiddle, zero]
+      · cases' coef with coef_exp coef_coef coef_tl
+        · simp [zero] at h_trimmed
+        simp [extendBasisMiddle, zero]
+
 -- TODO: Where should I put it? Trimming is not needed here.
 /-- If `f` can be approximated by multiseries with negative leading exponent, then
 it tends to zero. -/

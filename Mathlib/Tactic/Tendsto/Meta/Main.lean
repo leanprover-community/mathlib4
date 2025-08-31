@@ -122,7 +122,7 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     let h_basis' : Q(WellFormedBasis ($right_hd :: $right_tl)) :=
       q(WellFormedBasis.tail (WellFormedBasis.of_append_right $ms.h_basis))
     let log_hd' : MS := {
-      basis := _
+      basis := q($right_hd :: $right_tl)
       logBasis := _
       val := q($log_hd)
       f := q(Real.log ∘ $cur)
@@ -131,8 +131,7 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
       h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
-    let ⟨log_hd', h_log_hd_trimmed⟩ ← trimMS log_hd'
-    match ← MS.compare ms log_hd' h_trimmed q($h_log_hd_trimmed) with
+    match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_Trimmed $h_logBasis) with
     | .gt h => -- `ms` grows faster than `log cur` => we stop here, `left` is maximal
       let left' := ← reduceBasis left
       have : $left' =Q $left := ⟨⟩
@@ -324,7 +323,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis $G.h_wo
-        (PreMS.Approximates_log_exp $G.h_approx)) : Expr)
+        (PreMS.Approximates_log_exp $G.h_approx) sorry) : Expr)
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -348,7 +347,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
-        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx)) : Expr)
+        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx) sorry) : Expr)
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -473,18 +472,33 @@ partial def createMSImp (body : Expr) : BasisM MS := do
       return MS.div ms1' ms2 h_trimmed ⟨⟩
     else
       return MS.div ms1 ms2 h_trimmed ⟨⟩
-  | (``HPow.hPow, #[_, t, _, _, arg, exp]) =>
+  | (``HPow.hPow, #[_, t, _, _, (arg : Q(ℝ)), exp]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
-    if t == q(ℕ) then
-      return MS.npow ms exp h_trimmed
-    else if t == q(ℤ) then
-      return MS.zpow ms exp h_trimmed
-    else if t == q(ℝ) then
-      let .some h_pos ← getLeadingTermCoefPos ms.val
-        | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
-      return MS.rpow ms exp h_trimmed h_pos
+    let is_constant := arg.hasLooseBVars
+    if !arg.hasLooseBVars then
+      if t == q(ℕ) then
+        return MS.npow ms exp h_trimmed
+      else if t == q(ℤ) then
+        return MS.zpow ms exp h_trimmed
+      else if t == q(ℝ) then
+        let .some h_pos ← getLeadingTermCoefPos ms.val
+          | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
+        return MS.rpow ms exp h_trimmed h_pos
+      else
+        throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℕ, ℤ and ℝ are supported."
     else
-      throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℕ, ℤ and ℝ are supported."
+      if t == q(ℝ) then
+        let .some h_pos ← getLeadingTermCoefPos ms.val
+          | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
+        let exp : Q(ℝ) := exp
+        let res ← createMSImp q(Real.exp ((Real.log $arg) * $exp))
+        -- let kek := mkLam
+        return {res with
+          f := .lam .anonymous q(ℝ) q($arg ^ $exp) .default
+          h_approx := ← mkAppM ``PreMS.exp_Approximates_pow_of_pos #[ms.h_basis, ms.h_wo, ms.h_approx, h_trimmed, h_pos, res.h_approx]
+        }
+      else
+        throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℝ is supported for non-constant exponents"
   | (``Real.log, #[arg]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
     let leading ← getLeadingTerm ms.val

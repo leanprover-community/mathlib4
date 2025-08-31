@@ -138,6 +138,17 @@ end ElimDestruct
 
 open Filter Topology
 
+section pow_fun
+
+-- the second remarkable limit
+example :
+    let f := fun (y : ℝ) ↦ (1 + y⁻¹) ^ y;
+    Tendsto f atTop (𝓝 (Real.exp 1)) := by
+  have : 0 < Real.exp 1 := Real.exp_pos 1
+  compute_asymptotics
+
+end pow_fun
+
 example :
   let f := fun (y : ℝ) ↦ y;
   Tendsto f atTop atTop := by
@@ -468,6 +479,7 @@ example :
     Tendsto f atTop (𝓝 1) := by
   compute_asymptotics
 
+set_option trace.profiler true in
 set_option maxHeartbeats 0 in
 example :
     let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
