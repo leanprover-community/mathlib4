@@ -383,7 +383,7 @@ theorem algebraMap_eq (r : R) : algebraMap R (QuadraticAlgebra R a b) r = ⟨r, 
 theorem algebraMap_injective : (algebraMap R (QuadraticAlgebra R a b) : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R (QuadraticAlgebra R a b) :=
+instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] : NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
   ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
 
 @[norm_cast, simp]
