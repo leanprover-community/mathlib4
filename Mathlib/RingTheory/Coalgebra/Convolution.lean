@@ -61,8 +61,8 @@ lemma _root_.Coalgebra.Repr.convMul_apply {a : C} (𝓡 : Coalgebra.Repr R a) (f
 /-- Non-unital and non-associative convolution semiring structure on linear maps from a
 coalgebra to a non-unital non-associative algebra. -/
 abbrev convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (C →ₗ[R] A) where
-  left_distrib f g h := by ext; simp [TensorProduct.map_add_right]
-  right_distrib f g h := by ext; simp [TensorProduct.map_add_left]
+  left_distrib f g h := by ext; simp [map_add_right]
+  right_distrib f g h := by ext; simp [map_add_left]
   zero_mul f := by ext; simp
   mul_zero f := by ext; simp
 
@@ -145,12 +145,10 @@ lemma convOne_def : (1 : C →ₗ[R] A) = Algebra.linearMap R A ∘ₗ counit :=
 @[simp] lemma convOne_apply (c : C) : (1 : C →ₗ[R] A) c = algebraMap R A (counit c) := rfl
 
 private lemma convOne_convMul (f : C →ₗ[R] A) : 1 * f = f := by
-  rw [convOne_def, convMul_def, ← map_comp_rTensor, comp_assoc]
-  ext; simp
+  ext; simp [convOne_def, ← map_comp_rTensor]
 
 private lemma convMul_convOne (f : C →ₗ[R] A) : f * 1 = f := by
-  rw [convOne_def, convMul_def, ← map_comp_lTensor, comp_assoc]
-  ext; simp
+  ext; simp [convOne_def, ← map_comp_lTensor]
 
 /-- Convolution semiring structure on linear maps from a coalgebra to an algebra. -/
 abbrev convSemiring : Semiring (C →ₗ[R] A) where
