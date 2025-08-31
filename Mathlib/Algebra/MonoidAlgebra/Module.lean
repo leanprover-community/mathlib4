@@ -204,10 +204,6 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
 instance module [Semiring R] [Semiring k] [Module R k] : Module R k[G] :=
   Finsupp.module G k
 
-instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
-    SMulCommClass R S k[G] :=
-  Finsupp.smulCommClass G k
-
 /-! It is hard to state the equivalent of `DistribMulAction G k[G]`
 because we've never discussed actions of additive groups. -/
 

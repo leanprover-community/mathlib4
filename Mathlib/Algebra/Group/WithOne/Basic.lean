@@ -46,7 +46,8 @@ section lift
 variable [Mul α] [MulOneClass β]
 
 /-- Lift a semigroup homomorphism `f` to a bundled monoid homomorphism. -/
-@[to_additive /-- Lift an add semigroup homomorphism `f` to a bundled add monoid homomorphism. -/]
+@[to_additive /--
+Lift an additive semigroup homomorphism `f` to a bundled additive monoid homomorphism. -/]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
@@ -78,7 +79,7 @@ variable [Mul α] [Mul β] [Mul γ]
 
 /-- Given a multiplicative map from `α → β` returns a monoid homomorphism
   from `WithOne α` to `WithOne β` -/
-@[to_additive /-- Given an additive map from `α → β` returns an add monoid homomorphism from
+@[to_additive /-- Given an additive map from `α → β` returns an additive monoid homomorphism from
 `WithZero α` to `WithZero β` -/]
 def mapMulHom (f : α →ₙ* β) : WithOne α →* WithOne β :=
   lift (coeMulHom.comp f)

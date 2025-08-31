@@ -1101,7 +1101,7 @@ section PowIsSubgroup
 
 /-- A nonempty idempotent subset of a finite cancellative monoid is a submonoid -/
 @[to_additive
-/-- A nonempty idempotent subset of a finite cancellative add monoid is a submonoid -/]
+/-- A nonempty idempotent subset of a finite cancellative additive monoid is a submonoid -/]
 def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M)
     (hS1 : S.Nonempty) (hS2 : S * S = S) : Submonoid M :=
   have pow_mem (a : M) (ha : a ∈ S) (n : ℕ) : a ^ (n + 1) ∈ S := by
@@ -1118,7 +1118,7 @@ def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M
     mul_mem' := fun ha hb => (congr_arg₂ (· ∈ ·) rfl hS2).mp (Set.mul_mem_mul ha hb) }
 
 /-- A nonempty idempotent subset of a finite group is a subgroup -/
-@[to_additive /-- A nonempty idempotent subset of a finite add group is a subgroup -/]
+@[to_additive /-- A nonempty idempotent subset of a finite additive group is a subgroup -/]
 def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.Nonempty)
     (hS2 : S * S = S) : Subgroup G :=
   { submonoidOfIdempotent S hS1 hS2 with
@@ -1129,7 +1129,7 @@ def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.N
 
 /-- If `S` is a nonempty subset of a finite group `G`, then `S ^ |G|` is a subgroup -/
 @[to_additive (attr := simps!) smulCardAddSubgroup
-  /-- If `S` is a nonempty subset of a finite add group `G`, then `|G| • S` is a subgroup -/]
+  /-- If `S` is a nonempty subset of a finite additive group `G`, then `|G| • S` is a subgroup -/]
 def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonempty) : Subgroup G :=
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS
