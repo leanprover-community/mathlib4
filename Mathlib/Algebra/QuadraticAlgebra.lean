@@ -349,7 +349,7 @@ theorem finrank_eq_two [StrongRankCondition R] : Module.finrank R (QuadraticAlge
   simp [Module.finrank, rank_eq_two]
 
 @[simp, norm_cast]
-theorem coe_mul (x y : R) : ((x * y : R) : QuadraticAlgebra R a b) = x * y := by ext <;> simp
+theorem coe_mul (x y : R) : ↑(x * y) = (↑x * ↑y : QuadraticAlgebra R a b) := by ext <;> simp
 
 end Semiring
 
