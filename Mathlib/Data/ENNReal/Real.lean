@@ -274,6 +274,7 @@ theorem lt_ofReal_iff_toReal_lt {a : ℝ≥0∞} {b : ℝ} (ha : a ≠ ∞) :
 theorem toReal_lt_of_lt_ofReal {b : ℝ} (h : a < ENNReal.ofReal b) : ENNReal.toReal a < b :=
   (lt_ofReal_iff_toReal_lt h.ne_top).1 h
 
+@[simp]
 theorem ofReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     ENNReal.ofReal (p * q) = ENNReal.ofReal p * ENNReal.ofReal q := by
   simp only [ENNReal.ofReal, ← coe_mul, Real.toNNReal_mul hp]
@@ -282,6 +283,7 @@ theorem ofReal_mul' {p q : ℝ} (hq : 0 ≤ q) :
     ENNReal.ofReal (p * q) = ENNReal.ofReal p * ENNReal.ofReal q := by
   rw [mul_comm, ofReal_mul hq, mul_comm]
 
+@[simp]
 theorem ofReal_pow {p : ℝ} (hp : 0 ≤ p) (n : ℕ) :
     ENNReal.ofReal (p ^ n) = ENNReal.ofReal p ^ n := by
   rw [ofReal_eq_coe_nnreal hp, ← coe_pow, ← ofReal_coe_nnreal, NNReal.coe_pow, NNReal.coe_mk]

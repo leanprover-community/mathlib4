@@ -611,6 +611,7 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
+@[simp]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 
