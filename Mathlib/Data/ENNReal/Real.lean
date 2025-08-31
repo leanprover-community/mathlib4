@@ -173,9 +173,7 @@ theorem ofReal_pos {p : ℝ} : 0 < ENNReal.ofReal p ↔ 0 < p := by simp [ENNRea
 theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [ENNReal.ofReal]
 
 @[simp] lemma ofReal_min (x y : ℝ) : ENNReal.ofReal (min x y) = min (.ofReal x) (.ofReal y) := ofReal_mono.map_min
-
-@[simp] lemma ofReal_max (x y : ℝ) : ENNReal.ofReal (max x y) = max (.ofReal x) (.ofReal y) :=
-  ofReal_mono.map_max
+@[simp] lemma ofReal_max (x y : ℝ) : ENNReal.ofReal (max x y) = max (.ofReal x) (.ofReal y) := ofReal_mono.map_max
 
 @[simp] lemma min_eq_zero {x y : ℝ≥0∞} : min x y = 0 ↔ x = 0 ∨ y = 0 := min_eq_bot
 
