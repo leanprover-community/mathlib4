@@ -60,8 +60,8 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k  := by
   by_cases h : n = 0
-  · simp [h]
-    positivity
+  · have : 0 < b ^ k := by positivity
+    simpa [h]
   rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
   exact add_one_le_iff
 
@@ -143,6 +143,8 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
+-- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
+set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/

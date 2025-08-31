@@ -163,6 +163,8 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
 
+-- Fix the non-terminal simp!
+set_option linter.flexible false in
 theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ n) (hq' : 1 < q) :
     (q - 1) ^ totient n < (cyclotomic n ℝ).eval q := by
   have hn : 0 < n := pos_of_gt hn'
@@ -254,7 +256,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
       apply Complex.ext <;> simp [hζ₀, h.2]
   have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by simpa using (cyclotomic_pos' n hq').ne.symm
   suffices Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) <
-      Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith) ^ totient n by
+      Units.mk0 (Real.toNNReal (q + 1)) (by simp; positivity) ^ totient n by
     simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
       coe_nnnorm, NNReal.coe_pow,
       Real.coe_toNNReal'] at this
@@ -266,7 +268,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
     nnnorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod' (M := NNRealˣ) _ _
-  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith only [hq'])
+  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; positivity)
   · simp [Complex.card_primitiveRoots]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,

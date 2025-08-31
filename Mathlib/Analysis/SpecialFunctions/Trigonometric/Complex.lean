@@ -77,6 +77,8 @@ See also `Complex.tan_eq_zero_iff` for a version that takes into account junk va
 theorem tan_eq_zero_iff' {θ : ℂ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k : ℤ, k * π = θ := by
   simp only [tan, hθ, div_eq_zero_iff, sin_eq_zero_iff]; simp [eq_comm]
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 theorem cos_eq_cos_iff {x y : ℂ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
   calc
     cos x = cos y ↔ cos x - cos y = 0 := sub_eq_zero.symm
@@ -191,9 +193,7 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 theorem cos_eq_iff_quadratic {z w : ℂ} :
     cos z = w ↔ exp (z * I) ^ 2 - 2 * w * exp (z * I) + 1 = 0 := by
   rw [← sub_eq_zero]
-  simp [field, cos, exp_neg]
-  refine Eq.congr ?_ rfl
-  ring
+  simpa [field, cos, exp_neg] using Eq.congr (by ring) rfl
 
 theorem cos_surjective : Function.Surjective cos := by
   intro x

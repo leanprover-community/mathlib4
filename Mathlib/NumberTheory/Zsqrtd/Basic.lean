@@ -635,6 +635,8 @@ instance preorder : Preorder (ℤ√d) where
   lt := (· < ·)
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
+-- There is a non-terminal simp, followed by trivial
+set_option linter.flexible false in
 open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
@@ -646,7 +648,7 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   rcases y with - | y
-  · simp
+  · simp only [Nat.cast_zero, mul_zero, add_zero, sub_self]
     trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)

@@ -342,6 +342,8 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
     · simp only [Sum.elim_inr, coprodMk_inr, exists_apply_eq_apply]
   map_prop x := x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)
 
+-- TODO: should infer_instance be considered normalising?
+set_option linter.flexible false in
 /-- If `X` and `Y` are open disjoint and covering open subschemes of `S`,
 `S` is the disjoint union of `X` and `Y`. -/
 lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}

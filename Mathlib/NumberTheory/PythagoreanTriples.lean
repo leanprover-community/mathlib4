@@ -243,6 +243,8 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 
 variable {K : Type*} [Field K]
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
@@ -432,9 +434,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     simp [field, v, w]
     simp only [sq]
     norm_cast
-  have hvz : v ≠ 0 := by
-    simp [field, v, -mul_eq_zero, -div_eq_zero_iff]
-    exact h0
+  have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0]
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq
