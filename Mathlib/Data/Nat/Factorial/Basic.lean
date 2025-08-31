@@ -457,4 +457,86 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
       Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
+
+/-!
+# Optimized Factorial Implementations
+
+We now provide optimized implementations of factorial computation:
+* `Nat.factorialFold`: Using `Nat.fold` rather than the default non-tail-recursive implementation.
+* `Nat.factorialBinarySplitting`: Using binary splitting.
+
+We prove these are equal to the standard factorial and mark them `@[csimp]`.
+
+We could proceed further, with either Legendre or Luschny methods.
+-/
+
+/-!
+This is the highest factorial I can `#eval` using the naive implementation without a stack overflow:
+```
+/-- info: 114716 -/
+#guard_msgs in
+#eval 9718 ! |>.log2
+```
+-/
+
+/-- Factorial implemented using `Nat.fold`, which is tail-recursive. -/
+def factorialFold (n : Nat) := Nat.fold n (fun i _ acc => (i+1) * acc) 1
+
+/-- Theorem: `factorialFold` equals the standard `factorial`. -/
+@[csimp]
+theorem factorial_eq_factorialFold : @factorial = @factorialFold := by
+  ext n
+  rw [factorialFold]
+  induction n with
+  | zero =>
+    grind [factorial_zero]
+  | succ n ih =>
+    grind [fold_succ, factorial_succ]
+
+/-!
+Now we can go much further,. We're limited now by speed, not stack space.
+```
+#time -- Approx 2s:
+#eval (10^5) ! |>.log2
+```
+-/
+
+/-- Factorial implemented using binary splitting. -/
+def factorialBinarySplitting (n : Nat) : Nat :=
+  prodRange 1 (n + 1)
+where
+  prodRange (lo hi : Nat) : Nat :=
+    if hi ≤ lo then 1
+    else if hi = lo + 1 then lo
+    else
+      let mid := (lo + hi) / 2
+      prodRange lo mid * prodRange mid hi
+
+theorem factorialBinarySplitting.factorial_mul_prodRange (lo hi : Nat) (h : lo ≤ hi) :
+    lo ! * prodRange (lo + 1) (hi + 1) = hi ! := by
+  rw [prodRange]
+  split
+  · grind
+  · split
+    · grind [factorial_succ]
+    · dsimp only
+      rw [← Nat.mul_assoc]
+      rw [show (lo + 1 + (hi + 1)) / 2 = (lo + hi) / 2 + 1 by grind]
+      rw [factorial_mul_prodRange, factorial_mul_prodRange]
+      all_goals grind
+
+@[csimp]
+theorem factorialBinarySplitting_eq_factorial : @factorial = @factorialBinarySplitting := by
+  ext n
+  rw [factorialBinarySplitting, ← factorialBinarySplitting.factorial_mul_prodRange 0 n (by grind)]
+  simp
+
+/-! This is again much faster.
+```
+#time -- Less than 1s, for 10x further.
+#eval (10^6) ! |>.log2
+```
+-/
+
+
 end Nat
