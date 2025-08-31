@@ -104,6 +104,7 @@ lemma comp' {A₁ A₂ A₃ : Grp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
 end Grp_
 
 namespace Grp_Class
+variable {G X : C} [Grp_Class G]
 
 variable {A : C} {B : C}
 
@@ -155,6 +156,14 @@ theorem lift_left_mul_ext [Grp_Class B] {f g : A ⟶ B} (i : A ⟶ B)
 theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
+
+/-- Transfer `Grp_Class` along an isomorphism. -/
+@[simps!]
+abbrev ofIso (e : G ≅ X) : Grp_Class X where
+  toMon_Class := .ofIso e
+  inv := e.inv ≫ ι[G] ≫ e.hom
+  left_inv := by simp [Mon_Class.ofIso]
+  right_inv := by simp [Mon_Class.ofIso]
 
 instance (A : C) [Grp_Class A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
