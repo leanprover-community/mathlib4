@@ -238,9 +238,8 @@ instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
   smul_zero _ := by ext <;> simp
   smul_add _ _ _ := by ext <;> simp
 
-instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% {
-  __ := inferInstanceAs (AddMonoid (QuadraticAlgebra R a b))
-  add_comm _ _ := by ext <;> simp [add_comm] }
+instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% by
+  refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
 instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
   add_smul r s x := by ext <;> simp[add_smul]
