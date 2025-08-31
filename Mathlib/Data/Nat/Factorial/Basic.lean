@@ -505,6 +505,7 @@ Now we can go much further,. We're limited now by speed, not stack space.
 def factorialBinarySplitting (n : Nat) : Nat :=
   prodRange 1 (n + 1)
 where
+  /-- `prodRange lo hi` is the product of the range `lo` to `hi`, computed by binary splitting.-/
   prodRange (lo hi : Nat) : Nat :=
     if hi ≤ lo then 1
     else if hi = lo + 1 then lo
