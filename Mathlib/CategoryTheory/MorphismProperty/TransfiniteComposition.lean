@@ -11,7 +11,7 @@ import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
-Given a well ordered type `J`, `W : MorphismProperty C` and
+Given a well-ordered type `J`, `W : MorphismProperty C` and
 a morphism `f : X ⟶ Y`, we define a structure `W.TransfiniteCompositionOfShape J f`
 which expresses that `f` is a transfinite composition of shape `J` of morphisms in `W`.
 This structures extends `CategoryTheory.TransfiniteCompositionOfShape` which was
@@ -23,7 +23,7 @@ In particular, if `J := ℕ`, we define `W.IsStableUnderInfiniteComposition`,
 
 Finally, we introduce the class `W.IsStableUnderTransfiniteComposition`
 which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
-holds for any well ordered type `J` in a certain universe `w`.
+holds for any well-ordered type `J` in a certain universe `w`.
 
 -/
 

@@ -38,7 +38,7 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## TODO
 
-* Prove that `s` is partial well ordered iff it has no infinite descending chain or antichain.
+* Prove that `s` is partially well-ordered iff it has no infinite descending chain or antichain.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
@@ -877,7 +877,7 @@ end Set.PartiallyWellOrderedOn
 ordered, when `σ` is a `Fintype` and each `α s` is a linear well order.
 This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
 Some generalizations would be possible based on this proof, to include cases where the target is
-partially well ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
+partially well-ordered, and also to consider the case of `Set.PartiallyWellOrderedOn` instead of
 `Set.IsPWO`. -/
 theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellOrder (α i) (· < ·)]
     [Finite ι] (s : Set (∀ i, α i)) : s.IsPWO := by
