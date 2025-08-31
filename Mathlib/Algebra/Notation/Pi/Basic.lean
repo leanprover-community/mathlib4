@@ -96,15 +96,14 @@ lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
 lemma mulSingle_comm (i : ι) (x : M) (j : ι) :
     (mulSingle i x : ι → M) j = (mulSingle j x : ι → M) i := by simp [mulSingle_apply, eq_comm]
 
-
 variable [DecidableEq ι']
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem curry_mulSingle (i : ι × ι') (b : M) :
     curry (Pi.mulSingle i b) = Pi.mulSingle i.1 (Pi.mulSingle i.2 b) :=
   curry_update _ _ _
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem uncurry_mulSingle_mulSingle (i : ι) (i' : ι') (b : M) :
     uncurry (Pi.mulSingle i (Pi.mulSingle i' b)) = Pi.mulSingle (i, i') b :=
   uncurry_update_update _ _ _ _

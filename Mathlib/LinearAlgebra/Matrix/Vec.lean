@@ -98,7 +98,7 @@ theorem vec_hadamard [Mul R] (A B : Matrix m n R) : vec (A ⊙ B) = vec A * vec 
 
 theorem vec_single [DecidableEq m] [DecidableEq n] [Zero R] (i : m) (j : n) (r : R) :
     vec (Matrix.single i j r) = Pi.single (j, i) r := by
-  rw [single_eq_of_single_single, vec_of, uncurry_flip]
+  rw [single_eq_of_single_single, vec_of, Function.uncurry_flip, Pi.uncurry_single_single]
 
 section Kronecker
 open scoped Kronecker
