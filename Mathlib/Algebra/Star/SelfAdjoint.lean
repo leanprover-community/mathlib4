@@ -188,7 +188,7 @@ lemma _root_.isSelfAdjoint_conjugate_iff_of_isUnit {a u : R} (hu : IsUnit u) :
   simp [IsSelfAdjoint, mul_assoc, hu.mul_right_inj, hu.star.mul_left_inj]
 
 @[simp]
-lemma _root_.isSelfAdjoint_unitary_conjugate_iff' {a u : R} (hu : IsUnit u) :
+lemma _root_.isSelfAdjoint_conjugate'_iff_of_isUnit {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
   simpa using isSelfAdjoint_conjugate_iff_of_isUnit hu.star
 
