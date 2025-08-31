@@ -511,10 +511,10 @@ lemma isolate_aux {α : Type*} [AddCommGroup α]
     A + A = X + Y - Z - D - E + F := by
   rw [h]; abel
 
-variable (X Y Z) in
+variable (X Y Z) {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
-lemma isLeviCivitaConnection_uniqueness_aux (h : cov.IsLeviCivitaConnection) :
+lemma IsLeviCivitaConnection.eq_leviCivita_rhs (h : cov.IsLeviCivitaConnection) :
     ⟪cov X Y, Z⟫ = leviCivita_rhs I X Y Z := by
   set A := ⟪cov X Y, Z⟫
   set B := ⟪cov Z X, Y⟫
@@ -581,7 +581,7 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
 -- (probably not everywhere, as addition rules apply only for differentiable vector fields?)
-theorem isLeviCivita_uniqueness [FiniteDimensional ℝ E]
+theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     {cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _)}
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection) :
     -- almost, only agree on smooth functions
@@ -590,8 +590,8 @@ theorem isLeviCivita_uniqueness [FiniteDimensional ℝ E]
   apply congrFun
   apply congr_of_forall_product fun Z ↦ ?_
   trans leviCivita_rhs I X σ Z
-  · exact cov.isLeviCivitaConnection_uniqueness_aux I X σ Z hcov
-  · exact (cov'.isLeviCivitaConnection_uniqueness_aux I X σ Z hcov').symm
+  · exact hcov.eq_leviCivita_rhs I X σ Z
+  · exact (hcov'.eq_leviCivita_rhs I X σ Z ).symm
 
 noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
