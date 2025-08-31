@@ -107,7 +107,6 @@ end One
 end Zero
 
 section Add
-
 variable [Add R]
 
 instance : Add (QuadraticAlgebra R a b) where
