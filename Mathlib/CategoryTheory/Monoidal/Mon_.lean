@@ -141,9 +141,11 @@ instance : IsMon_Hom (𝟙 M) where
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
-instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] : IsMon_Hom f.inv where
+instance (f : M ≅ N) [IsMon_Hom f.hom] : IsMon_Hom f.inv where
   one_hom := by simp [Iso.comp_inv_eq]
   mul_hom := by simp [Iso.comp_inv_eq]
+
+instance {f : M ⟶ N} [IsIso f] [IsMon_Hom f] : IsMon_Hom (asIso f).hom := ‹_›
 
 variable (C) in
 /-- A monoid object internal to a monoidal category.
@@ -939,6 +941,18 @@ lemma Mon_Class.mul_mul_mul_comm' [IsCommMon M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 end
+
+section SymmetricCategory
+variable [SymmetricCategory C] {M N W X Y Z : C} [Mon_Class M] [Mon_Class N]
+
+instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
+  mul_comm := by
+    simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
+      ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, ← tensor_comp,
+      Mon_Class.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
+
+end SymmetricCategory
 
 /-!
 Projects:
