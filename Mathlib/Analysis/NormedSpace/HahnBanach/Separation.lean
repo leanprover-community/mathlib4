@@ -320,6 +320,14 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 
+lemma RCLike.mem_norm_le_of_balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K) (x : 𝕜)
+    (hx : x ∈ K) (h0 : ‖x‖ > 0) : ∀ z : 𝕜, 0 ≤ ‖z‖ ∧ ‖z‖ ≤ ‖x‖ → z ∈ K := fun z ⟨t1, t2⟩ ↦ by
+  have : ‖z / x‖ ≤ 1 := by calc
+    _ = ‖z‖ / ‖x‖ := by rw [norm_div]
+    _ ≤ _ := (div_le_one₀ h0).mpr t2
+  have ne : x ≠ 0 := fun nh ↦ by simp [nh] at h0
+  simpa [ne] using balanced_iff_smul_mem.mp Balanced_K this hx
+
 theorem closed_balanced_sep {𝕜 : Type*} [RCLike 𝕜] {r : ℝ} {K : Set 𝕜} (compact_K : IsCompact K)
     (zero_in : 0 ∈ K) (norm_lt_r : ∀ x ∈ K, ‖x‖ < r) :
     ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
@@ -358,7 +366,8 @@ theorem RCLike.geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] 
   have r_pos : r > 0 := by simpa [hr] using fun nh ↦ by simp [nh, zero_in] at notin
   have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦ by
     by_contra! nh
-    have := RCLike.balanced Balanced_K x hx (by linarith) (f x₀) ⟨norm_nonneg (f x₀), nh⟩
+    have := RCLike.mem_norm_le_of_balanced Balanced_K x hx (by linarith) (f x₀)
+      ⟨norm_nonneg (f x₀), nh⟩
     contradiction
   have compact_K : IsCompact K := by
     refine Metric.isCompact_of_isClosed_isBounded isClosed_closure ?_
