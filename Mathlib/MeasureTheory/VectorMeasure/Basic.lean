@@ -11,8 +11,8 @@ import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 # Vector valued measures
 
-This file defines vector valued measures, which are σ-additive functions from a set to an add monoid
-`M` such that it maps the empty set and non-measurable sets to zero. In the case
+This file defines vector valued measures, which are σ-additive functions from a set to an
+additive monoid `M` such that it maps the empty set and non-measurable sets to zero. In the case
 that `M = ℝ`, we called the vector measure a signed measure and write `SignedMeasure α`.
 Similarly, when `M = ℂ`, we call the measure a complex measure and write `ComplexMeasure α`
 (defined in `MeasureTheory/Measure/Complex`).
@@ -53,7 +53,7 @@ namespace MeasureTheory
 variable {α β : Type*} {m : MeasurableSpace α}
 
 /-- A vector measure on a measurable space `α` is a σ-additive `M`-valued function (for some `M`
-an add monoid) such that the empty set and non-measurable sets are mapped to zero. -/
+an additive monoid) such that the empty set and non-measurable sets are mapped to zero. -/
 structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMonoid M]
     [TopologicalSpace M] where
   /-- The measure of sets -/

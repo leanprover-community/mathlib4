@@ -20,7 +20,7 @@ group naturally induces a uniform structure.
 ## Main results
 
 * `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
-  to construct a canonical uniformity for a topological add group.
+  to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 -/
