@@ -174,7 +174,11 @@ theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [
 
 @[simp] lemma ofReal_min (x y : ℝ) : ENNReal.ofReal (min x y) = min (.ofReal x) (.ofReal y) := ofReal_mono.map_min
 
+@[simp] lemma ofReal_max (x y : ℝ) : ENNReal.ofReal (max x y) = max (.ofReal x) (.ofReal y) :=
+  ofReal_mono.map_max
+
 @[simp] lemma min_eq_zero {x y : ℝ≥0∞} : min x y = 0 ↔ x = 0 ∨ y = 0 := min_eq_bot
+
 @[simp] lemma max_eq_zero {x y : ℝ≥0∞} : max x y = 0 ↔ x = 0 ∧ y = 0 := max_eq_bot
 
 theorem ofReal_ne_zero_iff {r : ℝ} : ENNReal.ofReal r ≠ 0 ↔ 0 < r := by
