@@ -83,6 +83,8 @@ theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E �
     _ ≤ ‖c ^ n‖⁻¹ * 1 := by gcongr; exact (hε _ hlt).le
     _ ≤ ε⁻¹ * ‖c‖ * ‖f x‖ := by rwa [mul_one]
 
+instance [Nontrivial E] : Nontrivial (E → E) := sorry
+
 end LinearMap
 
 namespace ContinuousLinearMap
