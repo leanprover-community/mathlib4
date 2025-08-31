@@ -185,7 +185,7 @@ Another alternative to a TODO list in the doc-strings is adding Github issues.
 -/
 
 
-library_note "reducible non-instances"/--
+library_note "reducible noninstances"/--
 Some definitions that define objects of a class cannot be instances, because they have an
 explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
 function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.

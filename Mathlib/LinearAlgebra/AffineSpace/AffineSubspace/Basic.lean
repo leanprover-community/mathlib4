@@ -59,7 +59,7 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
   rw [mem_direction_iff_eq_vsub_left hp]
   simp
 
--- See note [reducible non instances]
+-- See note [reducible noninstances]
 /-- This is not an instance because it loops with `AddTorsor.nonempty`. -/
 abbrev toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩

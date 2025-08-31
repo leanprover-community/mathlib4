@@ -1324,7 +1324,7 @@ end LocallyFiniteOrderBot
 end Set
 
 /-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
--- See note [reducible non instances]
+-- See note [reducible noninstances]
 abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
     [EquivLike F M N] [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
     LocallyFiniteOrder M where

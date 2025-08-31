@@ -599,7 +599,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- See note [reducible non instances]
+-- See note [reducible noninstances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
