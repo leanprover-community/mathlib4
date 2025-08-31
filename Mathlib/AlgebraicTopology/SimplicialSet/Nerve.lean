@@ -60,11 +60,11 @@ namespace nerve
 variable {C : Type*} [Category C] {n : ℕ}
 
 lemma δ_obj {n : ℕ} (i : Fin (n + 2)) (x : (nerve C) _⦋n + 1⦌) (j : Fin (n + 1)) :
-    ((nerve C).δ i x).obj j = x.obj (i.succAbove j) := by
+    ((nerve C).δ i x).obj j = x.obj (i.succAbove j) :=
   rfl
 
 lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : (nerve C) _⦋n⦌) (j : Fin (n + 2)) :
-    ((nerve C).σ i x).obj j = x.obj (i.predAbove j) := by
+    ((nerve C).σ i x).obj j = x.obj (i.predAbove j) :=
   rfl
 
 lemma δ₀_eq {x : nerve C _⦋n + 1⦌} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
