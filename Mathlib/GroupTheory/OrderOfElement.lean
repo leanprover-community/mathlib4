@@ -1251,11 +1251,7 @@ theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
 @[to_additive]
 theorem IsOfFinOrder.pi_mk [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
   simp only [← orderOf_pos_iff, pos_iff_ne_zero, Pi.fintype_orderOf_eq]
-  have : Finset.univ.lcm (fun i => orderOf (x i)) ≠ 0 ↔ ∀ i, orderOf (x i) ≠ 0 := by
-    convert not_congr Finset.lcm_eq_zero_iff
-    · simp
-    · exact Nat.instNontrivial
-  simp [this]
+  simp [Finset.lcm_eq_zero_iff]
 
 end Pi
 
