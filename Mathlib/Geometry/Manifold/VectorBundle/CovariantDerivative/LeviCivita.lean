@@ -556,15 +556,17 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
     have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
     apply Subsingleton.allEq _
   ext x
-  letI b := Basis.ofVectorSpace ℝ E
-  letI t := trivializationAt E (TangentSpace I : M → Type _) x
+  let b := Basis.ofVectorSpace ℝ E
+  let t := trivializationAt E (TangentSpace I : M → Type _) x
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+  -- The linear ordering on the indexing set of `b` is only used in this proof,
+  -- so our choice does not matter.
   have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
     choose r wo using exists_wellOrder _
     exact r
-  haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
 
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let real := b.orthonormalFrame t
@@ -611,7 +613,7 @@ noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
   haveI : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
   letI frame := b.orthonormalFrame e
   -- The coefficient of the desired tangent vector `∇ X Y x` w.r.t. `s i`
-  -- is given by `leviCivitaRhs X Y s i`.
+  -- is given by `leviCivitaRhs X Y (s i)`.
   ∑ i, ((leviCivitaRhs I X Y (frame i)) x) • (frame i x)
 
 variable (M) in
