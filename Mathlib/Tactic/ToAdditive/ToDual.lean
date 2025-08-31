@@ -177,7 +177,7 @@ def nameDict : String → List String
 def guessToDualName : String → String := guessName nameDict id
 
 /-- The bundle of environment extensions for `to_dual` -/
-def toDualBundle : BundledExtensions where
+def toDualBundle : BundledExts where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
   relevantArgAttr := relevantArgAttr

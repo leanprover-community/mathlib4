@@ -419,10 +419,10 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
-/-- `BundledExtensions` is a structure that holds all environment extensions related to a
+/-- `BundledExts` is a structure that holds all environment extensions related to a
 `to_additive`-like attribute. This allows us to use the `to_additive` machinery for other
 attributes, such as `to_dual`. -/
-structure BundledExtensions : Type where
+structure BundledExts : Type where
   ignoreArgsAttr : NameMapExtension (List Nat)
   /-- `reorderAttr` stores the declarations that need their arguments reordered when tranlating.
   This is speicified using the `(reorder := ...)` syntax. -/
@@ -440,23 +440,22 @@ structure BundledExtensions : Type where
   isDual : Bool
   /-- `guessName` tries to guess how a lemma name should be translated. -/
   guessName : String → String
-attribute [inherit_doc to_additive_ignore_args] BundledExtensions.ignoreArgsAttr
-attribute [inherit_doc to_additive_relevant_arg] BundledExtensions.relevantArgAttr
-attribute [inherit_doc to_additive_dont_translate] BundledExtensions.dontTranslateAttr
+attribute [inherit_doc to_additive_ignore_args] BundledExts.ignoreArgsAttr
+attribute [inherit_doc to_additive_relevant_arg] BundledExts.relevantArgAttr
+attribute [inherit_doc to_additive_dont_translate] BundledExts.dontTranslateAttr
 
 /-- Get the multiplicative → additive translation for the given name. -/
-def findTranslation? (env : Environment) (b : BundledExtensions) : Name → Option Name :=
+def findTranslation? (env : Environment) (b : BundledExts) : Name → Option Name :=
   (b.translations.getState env).find?
 
 /-- Get the multiplicative → additive translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-def findPrefixTranslation (env : Environment) (nm : Name) (b : BundledExtensions) : Name :=
+def findPrefixTranslation (env : Environment) (nm : Name) (b : BundledExts) : Name :=
   nm.mapPrefix (findTranslation? env b)
 
 /-- Add a (multiplicative → additive) name translation to the translations map. -/
-def insertTranslation (b : BundledExtensions)
-    (src tgt : Name) (failIfExists := true) : CoreM Unit := do
+def insertTranslation (b : BundledExts) (src tgt : Name) (failIfExists := true) : CoreM Unit := do
   if let some tgt' := findTranslation? (← getEnv) b src then
     if failIfExists then
       throwError "The translation {src} ↦ {tgt'} already exists"
@@ -483,7 +482,7 @@ structure ArgInfo where
   relevantArg : Nat := 0
 
 /-- Add a name translation to the translations map and add the `argInfo` information to `src`. -/
-def insertTranslationAndInfo (b : BundledExtensions) (src tgt : Name) (argInfo : ArgInfo)
+def insertTranslationAndInfo (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo)
     (failIfExists := true) : CoreM Unit := do
   insertTranslation b src tgt failIfExists
   if argInfo.reorder != [] then
@@ -542,7 +541,7 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
-unsafe def additiveTestUnsafe (env : Environment) (b : BundledExtensions) (e : Expr)
+unsafe def additiveTestUnsafe (env : Environment) (b : BundledExts) (e : Expr)
     (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
   let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
     if e.isConst then
@@ -580,7 +579,7 @@ constants if `additiveTest` applied to their relevant argument returns `true`.
 This means we will replace expression applied to e.g. `α` or `α × β`, but not when applied to
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
-def additiveTest (env : Environment) (b : BundledExtensions) (e : Expr)
+def additiveTest (env : Environment) (b : BundledExts) (e : Expr)
     (dontTranslate : Array FVarId := #[]) : Option (Name ⊕ FVarId) :=
   unsafe additiveTestUnsafe env b e dontTranslate
 
@@ -607,7 +606,7 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (b : BundledExtensions) (e : Expr) (dontTranslate : Array FVarId := #[]) :
+def applyReplacementFun (b : BundledExts) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
   let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
@@ -706,7 +705,7 @@ def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
 They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
 It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
-def expand (b : BundledExtensions) (e : Expr) : MetaM Expr := do
+def expand (b : BundledExts) (e : Expr) : MetaM Expr := do
   let env ← getEnv
   let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
@@ -742,7 +741,7 @@ def expand (b : BundledExtensions) (e : Expr) : MetaM Expr := do
   return e₂
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (b : BundledExtensions) (src : Expr) : Expr :=
+def renameBinderNames (b : BundledExts) (src : Expr) : Expr :=
   src.mapForallBinderNames fun
     | .str p s => .str p (b.guessName s)
     | n => n
@@ -776,7 +775,7 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
 
 /-- Run `applyReplacementFun` on an expression `∀ x₁ .. xₙ, e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
-def applyReplacementForall (b : BundledExtensions) (dontTranslate : List Nat) (e : Expr) :
+def applyReplacementForall (b : BundledExts) (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
     forallBoundedTelescope e (some (maxDont + 1)) fun xs e => do
@@ -793,7 +792,7 @@ def applyReplacementForall (b : BundledExtensions) (dontTranslate : List Nat) (e
 
 /-- Run `applyReplacementFun` on an expression `fun x₁ .. xₙ ↦ e`,
 making sure not to translate type-classes on `xᵢ` if `i` is in `dontTranslate`. -/
-def applyReplacementLambda (b : BundledExtensions) (dontTranslate : List Nat) (e : Expr) :
+def applyReplacementLambda (b : BundledExts) (dontTranslate : List Nat) (e : Expr) :
     MetaM Expr := do
   if let some maxDont := dontTranslate.max? then
     lambdaBoundedTelescope e (maxDont + 1) fun xs e => do
@@ -835,7 +834,7 @@ def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := d
       return (xs.idxOf? fvarId).get!
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
-def updateDecl (b : BundledExtensions) (tgt : Name) (srcDecl : ConstantInfo)
+def updateDecl (b : BundledExts) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : List (List Nat)) (dont : List Ident) : MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
@@ -860,8 +859,7 @@ def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
     return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
-def findTargetName (env : Environment) (b : BundledExtensions) (src pre tgt_pre : Name) :
-    CoreM Name :=
+def findTargetName (env : Environment) (b : BundledExts) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
   if let some post := pre.isPrefixOf? src then
     return tgt_pre ++ post
@@ -903,8 +901,8 @@ using the transforms dictionary.
 
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
-partial def transformDeclAux (b : BundledExtensions)
-    (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+partial def transformDeclAux (b : BundledExts) (cfg : Config) (pre tgt_pre : Name) :
+    Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[to_additive_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -1041,7 +1039,7 @@ warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
 def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
-    (b : BundledExtensions) (names : Array Name) (argInfo : ArgInfo) (desc : String)
+    (b : BundledExts) (names : Array Name) (argInfo : ArgInfo) (desc : String)
     (t : Name → m (Array Name)) : m Unit := do
   let auxLemmas ← names.mapM t
   let nLemmas := auxLemmas[0]!.size
@@ -1059,7 +1057,7 @@ E.g. `Prod.instGroup` returns 1, and `Pi.instOne` returns 2.
 Note: we only consider the relevant argument (`(relevant_arg := ...)`) of each type-class.
 E.g. `[Pow A N]` is a multiplicative type-class on `A`, not on `N`.
 -/
-def findMultiplicativeArg (b : BundledExtensions) (nm : Name) : MetaM Nat := do
+def findMultiplicativeArg (b : BundledExts) (nm : Name) : MetaM Nat := do
   forallTelescopeReducing (← getConstInfo nm).type fun xs ty ↦ do
     let env ← getEnv
     -- check if `tgt` has a multiplicative type argument, and if so,
@@ -1078,8 +1076,7 @@ def findMultiplicativeArg (b : BundledExtensions) (nm : Name) : MetaM Nat := do
     return arg.getD 0
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
-def targetName (b : BundledExtensions)
-    (cfg : Config) (src : Name) : CoreM Name := do
+def targetName (b : BundledExts) (cfg : Config) (src : Name) : CoreM Name := do
   if cfg.self then
     if cfg.tgt != .anonymous then
       logWarning m!"`{b.attrName} self` ignores the provided name {cfg.tgt}"
@@ -1107,7 +1104,7 @@ def targetName (b : BundledExtensions)
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
 will insert translations from `a_i` to `b_i`. -/
-def proceedFieldsAux (b : BundledExtensions) (src tgt : Name) (argInfo : ArgInfo)
+def proceedFieldsAux (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo)
     (f : Name → Array Name) : CoreM Unit := do
   let srcFields := f src
   let tgtFields := f tgt
@@ -1119,7 +1116,7 @@ def proceedFieldsAux (b : BundledExtensions) (src tgt : Name) (argInfo : ArgInfo
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
-def proceedFields (b : BundledExtensions) (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
+def proceedFields (b : BundledExts) (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
   let env ← getEnv
   let aux := proceedFieldsAux b src tgt argInfo
   -- add translations for the structure fields
@@ -1218,7 +1215,7 @@ def elabToAdditive (stx : Syntax) : CoreM Config :=
 
 mutual
 /-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (b : BundledExtensions) (stx : Syntax) (rawAttrs : Array Syntax)
+partial def applyAttributes (b : BundledExts) (stx : Syntax) (rawAttrs : Array Syntax)
     (thisAttr src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := do
   -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
   copyInstanceAttribute src tgt
@@ -1285,8 +1282,8 @@ partial def applyAttributes (b : BundledExtensions) (stx : Syntax) (rawAttrs : A
 /--
 Copies equation lemmas and attributes from `src` to `tgt`
 -/
-partial def copyMetaData (b : BundledExtensions) (cfg : Config) (src tgt : Name)
-    (argInfo : ArgInfo) : CoreM (Array Name) := do
+partial def copyMetaData (b : BundledExts) (cfg : Config) (src tgt : Name) (argInfo : ArgInfo) :
+    CoreM (Array Name) := do
   if let some eqns := eqnsAttribute.find? (← getEnv) src then
     unless (eqnsAttribute.find? (← getEnv) tgt).isSome do
       for eqn in eqns do
@@ -1306,13 +1303,13 @@ Make a new copy of a declaration, replacing fragments of the names of identifier
 the body using the `translations` dictionary.
 This is used to implement `@[to_additive]`.
 -/
-partial def transformDecl (b : BundledExtensions) (cfg : Config) (src tgt : Name)
+partial def transformDecl (b : BundledExts) (cfg : Config) (src tgt : Name)
     (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
   transformDeclAux b cfg src tgt src
   copyMetaData b cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (b : BundledExtensions) (src tgt : Name) (reorder : List (List Nat))
+partial def checkExistingType (b : BundledExts) (src tgt : Name) (reorder : List (List Nat))
     (dont : List Ident) : MetaM Unit := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
@@ -1339,9 +1336,8 @@ partial def checkExistingType (b : BundledExtensions) (src tgt : Name) (reorder 
 See the attribute implementation for more details.
 It returns an array with names of additive declarations (usually 1, but more if there are nested
 `to_additive` calls. -/
-partial def addToAdditiveAttr (b : BundledExtensions)
-    (src : Name) (cfg : Config) (kind := AttributeKind.global) :
-    AttrM (Array Name) := do
+partial def addToAdditiveAttr (b : BundledExts) (src : Name) (cfg : Config)
+    (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`{b.attrName}` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
@@ -1391,7 +1387,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
 end
 
 /-- The bundle of environment extensions for `to_additive` -/
-def toAdditiveBundle : BundledExtensions where
+def toAdditiveBundle : BundledExts where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
   relevantArgAttr := relevantArgAttr
