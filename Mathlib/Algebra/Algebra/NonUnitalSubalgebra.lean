@@ -158,7 +158,7 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
-@[simp, norm_cast]]
+@[simp, norm_cast]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     (S.copy s hs : Set A) = s :=
   rfl
