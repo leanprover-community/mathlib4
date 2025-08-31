@@ -79,8 +79,11 @@ theorem IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hp : IsSheaf J P) (R : Pres
 theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology C} :
     J₁ ≤ J₂ → IsSheaf J₂ P → IsSheaf J₁ P := fun h t _ S hS => t S (h _ hS)
 
-theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
+variable {J} in
+theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
+
+@[deprecated (since := "28-08-2025")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
 
 section
 
