@@ -69,7 +69,7 @@ instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `CommBialgCat` back into a `BialgHom`. -/
-abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := CommBialgCat R) f
+abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f
 
 /-- Typecheck a `BialgHom` as a morphism in `CommBialgCat R`. -/
 abbrev ofHom {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
@@ -86,13 +86,9 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 -/
 
 @[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
-
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-/- Provided for rewriting. -/
+lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
 lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
 
 @[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
@@ -230,5 +226,5 @@ lemma commBialgCatEquivComonCommAlgCat_inverse_map_unop_hom
     f.unop.hom.unop.hom := rfl
 
 instance {A : CommBialgCat.{u} R} [IsCocomm R A] :
-    IsCommMon ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X := by
-  dsimp; infer_instance
+    IsCommMon ((commBialgCatEquivComonCommAlgCat R).functor.obj A).unop.X :=
+  inferInstanceAs <| IsCommMon <| op <| CommAlgCat.of R A
