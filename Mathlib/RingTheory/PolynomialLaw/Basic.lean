@@ -13,7 +13,7 @@ A polynomial law `f : PolynomialLaw R M N`, with notation `f : M →ₚₗₗ[R]
 is a “law” that assigns a natural map `PolynomialLaw.toFun' f S : S ⊗[R] M → S ⊗[R] N`
 for every `R`-algebra `S`.
 
-For type theoretic reasons, if `R : Type u`, then the definition of the polynomial map `f`
+For type-theoretic reasons, if `R : Type u`, then the definition of the polynomial map `f`
 is restricted to `R`-algebras `S` such that `S : Type u`.
 Using the fact that a module is the direct limit of its finitely generated submodules, that a
 finitely generated subalgebra is a quotient of a polynomial ring in the universe `u`, plus
