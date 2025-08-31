@@ -504,8 +504,21 @@ theorem invVeblen₂_zero : invVeblen₂ 0 = 0 := by
   simp
 
 theorem invVeblen₂_veblen (ho : o ≠ 0) (h : a < veblen o a) : invVeblen₂ (veblen o a) = a := by
-  rw [invVeblen₂_eq_iff, invVeblen₁_veblen h, ← veblen_zero_apply, veblen_veblen_of_lt ]
+  rw [invVeblen₂_eq_iff, invVeblen₁_veblen h, ← veblen_zero_apply, veblen_veblen_of_lt]
   exact ho.bot_lt
+
+theorem veblen_eq_opow_iff (h : a < veblen o a) :
+    veblen o a = ω ^ x ↔ invVeblen₁ x = o ∧ invVeblen₂ x = a := by
+  refine ⟨?_, fun ⟨hx, ha⟩ ↦ ?_⟩
+  · obtain rfl | ho := eq_zero_or_pos o
+    · rw [veblen_zero] at h
+      have := invVeblen₁_of_lt_opow h
+      have := invVeblen₂_of_lt_opow h
+      aesop
+    · rw [← veblen_veblen_of_lt ho, veblen_zero_apply, opow_right_inj one_lt_omega0]
+      rintro rfl
+      simp [invVeblen₁_veblen h, invVeblen₂_veblen ho.ne' h]
+  · convert ← veblen_invVeblen₁_invVeblen₂ x
 
 /-! ### Epsilon function -/
 
