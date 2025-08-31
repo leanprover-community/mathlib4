@@ -364,47 +364,6 @@ register_option linter.toAdditiveRelevantArg : Bool := {
   defValue := true
   descr := "Linter to check that the `relevant_arg` attribute is not given manually." }
 
-
-@[inherit_doc to_additive_ignore_args]
-initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
-  registerNameMapAttribute {
-    name  := `to_additive_ignore_args
-    descr :=
-      "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
-    add   := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
-
-/-- An extension that stores all the declarations that need their arguments reordered when
-applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
-initialize reorderAttr : NameMapExtension (List (List Nat)) ←
-  registerNameMapExtension _
-
-@[inherit_doc to_additive_relevant_arg]
-initialize relevantArgAttr : NameMapExtension Nat ←
-  registerNameMapAttribute {
-    name := `to_additive_relevant_arg
-    descr := "Auxiliary attribute for `to_additive` stating \
-      which arguments are the types with a multiplicative structure."
-    add := fun
-    | _, stx@`(attr| to_additive_relevant_arg $id) => do
-      Linter.logLintIf linter.toAdditiveRelevantArg stx
-        m!"This attribute is deprecated. Use `@[to_additive (relevant_arg := ...)]` instead."
-      pure <| id.getNat.pred
-    | _, _ => throwUnsupportedSyntax }
-
-@[inherit_doc to_additive_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
-    name := `to_additive_dont_translate
-    descr := "Auxiliary attribute for `to_additive` stating \
-      that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_additive_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
-
 @[inherit_doc to_additive_change_numeral]
 initialize changeNumeralAttr : NameMapExtension (List Nat) ←
   registerNameMapAttribute {
@@ -415,9 +374,6 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
     | _, `(attr| to_additive_change_numeral $[$arg]*) =>
       pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
-
-/-- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- `BundledExts` is a structure that holds all environment extensions related to a
 `to_additive`-like attribute. This allows us to use the `to_additive` machinery for other
@@ -1385,6 +1341,49 @@ partial def addToAdditiveAttr (b : BundledExts) (src : Name) (cfg : Config)
   return nestedNames.push tgt
 
 end
+
+@[inherit_doc to_additive_ignore_args]
+initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
+  registerNameMapAttribute {
+    name := `to_additive_ignore_args
+    descr :=
+      "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
+    add := fun _ stx ↦ do
+        let ids ← match stx with
+          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
+          | _ => throwUnsupportedSyntax
+        return ids.toList }
+
+/-- An extension that stores all the declarations that need their arguments reordered when
+applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
+initialize reorderAttr : NameMapExtension (List (List Nat)) ←
+  registerNameMapExtension _
+
+@[inherit_doc to_additive_relevant_arg]
+initialize relevantArgAttr : NameMapExtension Nat ←
+  registerNameMapAttribute {
+    name := `to_additive_relevant_arg
+    descr := "Auxiliary attribute for `to_additive` stating \
+      which arguments are the types with a multiplicative structure."
+    add := fun
+    | _, stx@`(attr| to_additive_relevant_arg $id) => do
+      Linter.logLintIf linter.toAdditiveRelevantArg stx
+        m!"This attribute is deprecated. Use `@[to_additive (relevant_arg := ...)]` instead."
+      pure <| id.getNat.pred
+    | _, _ => throwUnsupportedSyntax }
+
+@[inherit_doc to_additive_dont_translate]
+initialize dontTranslateAttr : NameMapExtension Unit ←
+  registerNameMapAttribute {
+    name := `to_additive_dont_translate
+    descr := "Auxiliary attribute for `to_additive` stating \
+      that the operations on this type should not be translated."
+    add := fun
+    | _, `(attr| to_additive_dont_translate) => return
+    | _, _ => throwUnsupportedSyntax }
+
+/-- Maps multiplicative names to their additive counterparts. -/
+initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
 /-- The bundle of environment extensions for `to_additive` -/
 def toAdditiveBundle : BundledExts where
