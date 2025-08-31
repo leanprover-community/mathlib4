@@ -61,15 +61,15 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   im : K →+ ℝ
   /-- Imaginary unit in `K`. Meant to be set to `0` for `K = ℝ`. -/
   I : K
-  I_re_ax : re I = 0
+  re_I_ax : re I = 0
   I_mul_I_ax : I = 0 ∨ I * I = -1
   re_add_im_ax : ∀ z : K, 𝓚 (re z) + 𝓚 (im z) * I = z
-  ofReal_re_ax : ∀ r : ℝ, re (𝓚 r) = r
-  ofReal_im_ax : ∀ r : ℝ, im (𝓚 r) = 0
-  mul_re_ax : ∀ z w : K, re (z * w) = re z * re w - im z * im w
-  mul_im_ax : ∀ z w : K, im (z * w) = re z * im w + im z * re w
-  conj_re_ax : ∀ z : K, re (conj z) = re z
-  conj_im_ax : ∀ z : K, im (conj z) = -im z
+  re_ofReal_ax : ∀ r : ℝ, re (𝓚 r) = r
+  im_ofReal_ax : ∀ r : ℝ, im (𝓚 r) = 0
+  re_mul_ax : ∀ z w : K, re (z * w) = re z * re w - im z * im w
+  re_im_ax : ∀ z w : K, im (z * w) = re z * im w + im z * re w
+  re_conj_ax : ∀ z : K, re (conj z) = re z
+  im_conj_ax : ∀ z : K, im (conj z) = -im z
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
@@ -114,19 +114,19 @@ theorem re_add_im (z : K) : (re z : K) + im z * I = z :=
 
 @[simp, norm_cast, rclike_simps]
 theorem ofReal_re : ∀ r : ℝ, re (r : K) = r :=
-  RCLike.ofReal_re_ax
+  RCLike.re_ofReal_ax
 
 @[simp, norm_cast, rclike_simps]
 theorem ofReal_im : ∀ r : ℝ, im (r : K) = 0 :=
-  RCLike.ofReal_im_ax
+  RCLike.im_ofReal_ax
 
 @[simp, rclike_simps]
 theorem mul_re : ∀ z w : K, re (z * w) = re z * re w - im z * im w :=
-  RCLike.mul_re_ax
+  RCLike.re_mul_ax
 
 @[simp, rclike_simps]
 theorem mul_im : ∀ z w : K, im (z * w) = re z * im w + im z * re w :=
-  RCLike.mul_im_ax
+  RCLike.re_im_ax
 
 theorem ext_iff {z w : K} : z = w ↔ re z = re w ∧ im z = im w :=
   ⟨fun h => h ▸ ⟨rfl, rfl⟩, fun ⟨h₁, h₂⟩ => re_add_im z ▸ re_add_im w ▸ h₁ ▸ h₂ ▸ rfl⟩
@@ -261,7 +261,7 @@ lemma ofReal_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) (i : ι) :
 /-- The imaginary unit. -/
 @[simp, rclike_simps]
 theorem I_re : re (I : K) = 0 :=
-  I_re_ax
+  re_I_ax
 
 @[simp, rclike_simps]
 theorem I_im (z : K) : im z * im (I : K) = im z :=
@@ -284,11 +284,11 @@ lemma I_eq_zero_or_im_I_eq_one : (I : K) = 0 ∨ im (I : K) = 1 :=
 
 @[simp, rclike_simps]
 theorem conj_re (z : K) : re (conj z) = re z :=
-  RCLike.conj_re_ax z
+  RCLike.re_conj_ax z
 
 @[simp, rclike_simps]
 theorem conj_im (z : K) : im (conj z) = -im z :=
-  RCLike.conj_im_ax z
+  RCLike.im_conj_ax z
 
 @[simp, rclike_simps]
 theorem conj_I : conj (I : K) = -I :=
@@ -751,16 +751,16 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
   re := AddMonoidHom.id ℝ
   im := 0
   I := 0
-  I_re_ax := by simp only [AddMonoidHom.map_zero]
+  re_I_ax := by simp only [AddMonoidHom.map_zero]
   I_mul_I_ax := Or.intro_left _ rfl
   re_add_im_ax z := by
     simp only [add_zero, mul_zero, Algebra.algebraMap_self, RingHom.id_apply, AddMonoidHom.id_apply]
-  ofReal_re_ax _ := rfl
-  ofReal_im_ax _ := rfl
-  mul_re_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
-  mul_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
-  conj_re_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
-  conj_im_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
+  re_ofReal_ax _ := rfl
+  im_ofReal_ax _ := rfl
+  re_mul_ax z w := by simp only [sub_zero, mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
+  re_im_ax z w := by simp only [add_zero, zero_mul, mul_zero, AddMonoidHom.zero_apply]
+  re_conj_ax z := by simp only [starRingEnd_apply, star_id_of_comm]
+  im_conj_ax _ := by simp only [neg_zero, AddMonoidHom.zero_apply]
   conj_I_ax := by simp only [RingHom.map_zero, neg_zero]
   norm_sq_eq_def_ax z := by simp only [sq, Real.norm_eq_abs, ← abs_mul, abs_mul_self z, add_zero,
     mul_zero, AddMonoidHom.zero_apply, AddMonoidHom.id_apply]
@@ -1251,15 +1251,15 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   re := by subst h''; exact h.re
   im := by subst h''; exact h.im
   I := h.I
-  I_re_ax := by subst h''; exact h.I_re_ax
+  re_I_ax := by subst h''; exact h.re_I_ax
   I_mul_I_ax := by subst h''; exact h.I_mul_I_ax
   re_add_im_ax := by subst h''; exact h.re_add_im_ax
-  ofReal_re_ax := by subst h''; exact h.ofReal_re_ax
-  ofReal_im_ax := by subst h''; exact h.ofReal_im_ax
-  mul_re_ax := by subst h''; exact h.mul_re_ax
-  mul_im_ax := by subst h''; exact h.mul_im_ax
-  conj_re_ax := by subst h''; exact h.conj_re_ax
-  conj_im_ax := by subst h''; exact h.conj_im_ax
+  re_ofReal_ax := by subst h''; exact h.re_ofReal_ax
+  im_ofReal_ax := by subst h''; exact h.im_ofReal_ax
+  re_mul_ax := by subst h''; exact h.re_mul_ax
+  re_im_ax := by subst h''; exact h.re_im_ax
+  re_conj_ax := by subst h''; exact h.re_conj_ax
+  im_conj_ax := by subst h''; exact h.im_conj_ax
   conj_I_ax := by subst h''; exact h.conj_I_ax
   norm_sq_eq_def_ax := by subst h''; exact h.norm_sq_eq_def_ax
   mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
