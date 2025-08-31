@@ -917,7 +917,16 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     have : LinearOrder ι := by
       choose r wo using exists_wellOrder _
       exact r
-    have : LocallyFiniteOrderBot ι := by sorry
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+    have : Nonempty ι := b.index_nonempty
+    -- The linear ordering on the indexing set of `b` is only used in this proof,
+    -- so our choice does not matter.
+    have : LinearOrder ι := by
+      choose r wo using exists_wellOrder _
+      exact r
+    have : Fintype ι := sorry
+    -- why does this fail? are there two different orders in play?
+    have : LocallyFiniteOrderBot ι := sorry
     have : ∑ k', inner ℝ
       (leviCivitaRhs I (s i) (s j)
             (b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k') x' •
