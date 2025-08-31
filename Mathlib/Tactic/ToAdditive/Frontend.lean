@@ -906,7 +906,7 @@ partial def transformDeclAux
     MetaM.run' <| check value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed. \
-      Type mismatch in additive declaration. For help, see the docstring \
+      The translated value is not type correct. For help, see the docstring \
       of `to_additive.attr`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
@@ -1097,8 +1097,8 @@ def elabToAdditive : Syntax → CoreM Config
     let mut reorder := []
     let mut relevantArg? := none
     let mut dontTranslate := []
-    for stx in opts do
-      match stx with
+    for opt in opts do
+      match opt with
       | `(toAdditiveOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
       | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
@@ -1116,7 +1116,7 @@ def elabToAdditive : Syntax → CoreM Config
           reorder := cycle :: reorder
       | `(toAdditiveOption| (relevant_arg := $n)) =>
         if let some arg := relevantArg? then
-          throwErrorAt stx "cannot specify `relevant_arg` multiple times"
+          throwErrorAt opt "cannot specify `relevant_arg` multiple times"
         else
           relevantArg? := n.getNat.pred
       | `(toAdditiveOption| (dont_translate := $[$types:ident]*)) =>
