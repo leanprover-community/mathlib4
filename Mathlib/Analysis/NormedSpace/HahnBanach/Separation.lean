@@ -5,13 +5,9 @@ Authors: Bhavik Mehta, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.Module.LocallyConvex
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
+import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.RCLike.Lemmas
 
 
@@ -350,11 +346,9 @@ theorem closed_balanced_sep {𝕜 : Type*} [RCLike 𝕜] {r : ℝ} {K : Set 𝕜
 
 /-- Following [Rudin, *Functional Analysis* (Theorem 3.7)][rudin1991]
 -/
-theorem geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] [AddCommGroup E]
-    [Module ℝ E] [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E] [IsTopologicalAddGroup E]
-    [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E] {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
+theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
     (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
-    ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ < 1 := by
+    ∃ (f : StrongDual 𝕜 E) (s : ℝ), 0 < s ∧ s < ‖(f x₀)‖ ∧ ∀ b ∈ B, ‖f b‖ < s := by
   obtain ⟨f, u, v, h1, h2, h3⟩ : ∃ (f : StrongDual 𝕜 E) (u v : ℝ),
       (∀ a ∈ ({x₀} : Set E), re (f a) < u) ∧ u < v ∧ ∀ b ∈ B, v < re (f b) :=
     RCLike.geometric_hahn_banach_compact_closed (convex_singleton x₀) isCompact_singleton hs₁ hs₂
@@ -364,12 +358,9 @@ theorem geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] [AddCom
     rw [← eq]
     exact h3 y hy
   set K := closure (⇑f '' B)
-  have : ∀ x ∈ K, v ≤ re x := fun x hx ↦ by
-    refine le_on_closure_of_lt (f := fun (z : 𝕜) ↦ (re z)) ?_ continuous_re.continuousOn hx
-    intro x hx
-    linarith [h3 x hx]
-  have notin : f x₀ ∉ K := fun h ↦ by linarith [this (f x₀) h]
-  /- Since $B$ is balanced, so is $K$.-/
+  have notin : f x₀ ∉ K := fun h ↦ by
+    have : v ≤ re (f x₀) := le_on_closure_of_lt (by grind) continuous_re.continuousOn h
+    linarith
   have Balanced_K : Balanced 𝕜 K := by
     refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
     exact ⟨a • t, Balanced.smul_mem hs₃ ha ht, by simp_all⟩
@@ -386,17 +377,26 @@ theorem geometric_hahn_b {𝕜 : Type*} {E : Type*} [TopologicalSpace E] [AddCom
     exact ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
   obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
     closed_balanced_sep compact_K zero_in norm_lt_r
-  use (r / (s * (f x₀))) • f
-  have (x : E): ‖((r / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
-    have eq1 : |r| = r := abs_norm (f x₀)
-    have eq2 : |s| = s := abs_of_pos s_pos
-    simp [eq1, eq2, ← hr]
+  use f, s
+  simp [← hr, s_lt, s_pos]
+  intro b hb
+  linarith [hs (f b) (subset_closure (mem_image_of_mem (⇑f) hb))]
+
+theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
+    (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
+    ∃ (f : StrongDual 𝕜 E), (‖(f x₀)‖ > 1) ∧ ∀ b ∈ B, ‖f b‖ < 1 := by
+  obtain ⟨f, s, h1, h2, h3⟩ := geometric_hahn_banach hs₁ hs₂ hs₃ hs₄ x₀ hx
+  use (‖f x₀‖ / (s * (f x₀))) • f
+  have : ‖f x₀‖ > 0 := by linarith
+  have (x : E): ‖((‖f x₀‖ / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
+    have : |s| = s := abs_of_pos h1
+    simp [this]
     field_simp
   constructor
   · rw [this]
-    exact (one_lt_div₀ s_pos).mpr s_lt
+    exact (one_lt_div₀ h1).mpr h2
   · intro b hb
-    rw [this, div_lt_one₀ s_pos]
-    exact hs (f b) (subset_closure (Set.mem_image_of_mem (⇑f) hb))
+    rw [this, div_lt_one₀ h1]
+    exact h3 b hb
 
 end RCLike
