@@ -465,7 +465,7 @@ end affineSpan
 namespace AffineSubspace
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-  [S : AffineSpace V P] {ι : Type*}
+  [S : AffineSpace V P] {ι : Sort*}
 
 instance : CompleteLattice (AffineSubspace k P) :=
   {
