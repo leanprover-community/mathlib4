@@ -67,10 +67,10 @@ variable [Zero R]
 instance : Coe R (QuadraticAlgebra R a b) := ⟨coe⟩
 
 @[simp, norm_cast]
-theorem coe_re : (r : QuadraticAlgebra R a b).re = r := rfl
+theorem re_coe : (r : QuadraticAlgebra R a b).re = r := rfl
 
 @[simp, norm_cast]
-theorem coe_im : (r : QuadraticAlgebra R a b).im = 0 := rfl
+theorem im_coe : (r : QuadraticAlgebra R a b).im = 0 := rfl
 
 theorem coe_injective : Function.Injective (coe : R → QuadraticAlgebra R a b) :=
   fun _ _ h => congr_arg re h
@@ -81,9 +81,9 @@ theorem coe_inj {x y : R} : (x : QuadraticAlgebra R a b) = y ↔ x = y :=
 
 instance : Zero (QuadraticAlgebra R a b) := ⟨⟨0, 0⟩⟩
 
-@[simp] theorem zero_re : (0 : QuadraticAlgebra R a b).re = 0 := rfl
+@[simp] theorem re_zero : (0 : QuadraticAlgebra R a b).re = 0 := rfl
 
-@[simp] theorem zero_im : (0 : QuadraticAlgebra R a b).im = 0 := rfl
+@[simp] theorem im_zero : (0 : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : QuadraticAlgebra R a b) = 0 := rfl
@@ -95,9 +95,9 @@ variable [One R]
 
 instance : One (QuadraticAlgebra R a b) := ⟨⟨1, 0⟩⟩
 
-@[scoped simp] theorem one_re : (1 : QuadraticAlgebra R a b).re = 1 := rfl
+@[scoped simp] theorem re_one : (1 : QuadraticAlgebra R a b).re = 1 := rfl
 
-@[scoped simp] theorem one_im : (1 : QuadraticAlgebra R a b).im = 0 := rfl
+@[scoped simp] theorem im_one : (1 : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : QuadraticAlgebra R a b) = 1 := rfl
@@ -113,10 +113,10 @@ variable [Add R]
 instance : Add (QuadraticAlgebra R a b) where
   add z w := ⟨z.re + w.re, z.im + w.im⟩
 
-@[simp] theorem add_re (z w : QuadraticAlgebra R a b) :
+@[simp] theorem re_add (z w : QuadraticAlgebra R a b) :
     (z + w).re = z.re + w.re := rfl
 
-@[simp] theorem add_im (z w : QuadraticAlgebra R a b) :
+@[simp] theorem im_add (z w : QuadraticAlgebra R a b) :
     (z + w).im = z.im + w.im := rfl
 
 @[simp]
@@ -140,9 +140,9 @@ variable [Neg R]
 
 instance : Neg (QuadraticAlgebra R a b) where neg z := ⟨-z.re, -z.im⟩
 
-@[simp] theorem neg_re (z : QuadraticAlgebra R a b) : (-z).re = -z.re := rfl
+@[simp] theorem re_neg (z : QuadraticAlgebra R a b) : (-z).re = -z.re := rfl
 
-@[simp] theorem neg_im (z : QuadraticAlgebra R a b) : (-z).im = -z.im := rfl
+@[simp] theorem im_neg (z : QuadraticAlgebra R a b) : (-z).im = -z.im := rfl
 
 @[simp]
 theorem neg_mk (x y : R) :
@@ -159,10 +159,10 @@ theorem coe_neg [NegZeroClass R] (x : R) :
 instance [Sub R] : Sub (QuadraticAlgebra R a b) where
   sub z w := ⟨z.re - w.re, z.im - w.im⟩
 
-@[simp] theorem sub_re [Sub R] (z w : QuadraticAlgebra R a b) :
+@[simp] theorem re_sub [Sub R] (z w : QuadraticAlgebra R a b) :
     (z - w).re = z.re - w.re := rfl
 
-@[simp] theorem sub_im [Sub R] (z w : QuadraticAlgebra R a b) :
+@[simp] theorem im_sub [Sub R] (z w : QuadraticAlgebra R a b) :
     (z - w).im = z.im - w.im := rfl
 
 @[simp]
@@ -183,10 +183,10 @@ variable [Mul R] [Add R]
 instance : Mul (QuadraticAlgebra R a b) :=
   ⟨fun z w => ⟨z.1 * w.1 + a * z.2 * w.2, z.1 * w.2 + z.2 * w.1 + b * z.2 * w.2⟩⟩
 
-@[simp] theorem mul_re (z w : QuadraticAlgebra R a b) :
+@[simp] theorem re_mul (z w : QuadraticAlgebra R a b) :
     (z * w).re = z.re * w.re + a * z.im * w.im := rfl
 
-@[simp] theorem mul_im (z w : QuadraticAlgebra R a b) :
+@[simp] theorem im_mul (z w : QuadraticAlgebra R a b) :
     (z * w).im = z.re * w.im + z.im * w.re + b * z.im * w.im := rfl
 
 @[simp]
@@ -208,9 +208,9 @@ instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticAlgebra 
 instance [SMulCommClass S T R] : SMulCommClass S T (QuadraticAlgebra R a b) where
   smul_comm s t z := by ext <;> exact smul_comm _ _ _
 
-@[simp] theorem smul_re (s : S) (z : QuadraticAlgebra R a b) : (s • z).re = s • z.re := rfl
+@[simp] theorem re_smul (s : S) (z : QuadraticAlgebra R a b) : (s • z).re = s • z.re := rfl
 
-@[simp] theorem smul_im (s : S) (z : QuadraticAlgebra R a b) : (s • z).im = s • z.im := rfl
+@[simp] theorem im_smul (s : S) (z : QuadraticAlgebra R a b) : (s • z).im = s • z.im := rfl
 
 @[simp]
 theorem smul_mk (s : S) (x y : R) :
@@ -274,25 +274,25 @@ instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
   intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, coe_neg]; norm_cast
 
 @[simp, norm_cast]
-theorem natCast_re (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
+theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
 
 @[simp, norm_cast]
-theorem natCast_im (n : ℕ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
+theorem im_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 
 @[simp, norm_cast]
-theorem intCast_re (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
+theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
 
 @[scoped simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).re = ofNat(n) := rfl
+theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).re = ofNat(n) := rfl
 
 @[scoped simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).im = 0 := rfl
+theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[simp, norm_cast]
-theorem intCast_im (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
+theorem im_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[norm_cast]
 theorem coe_intCast (n : ℤ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
