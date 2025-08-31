@@ -901,6 +901,7 @@ lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] 
     c • sSup s = ⨆ a ∈ s, c • a := by
   simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
 
+@[simp]
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
