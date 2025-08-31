@@ -495,11 +495,12 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩
   change Monotone (fun a : A => a ^ (q : ℝ))
-  by_cases hq : q > 0
-  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+  cases (zero_le q).lt_or_eq' with
+  | inl hq =>
+    simp_rw [← CFC.nnrpow_eq_rpow hq]
     exact monotone_nnrpow hp
-  · have hq : q = 0 := by simpa using hq
-    simp [hq]
+  | inr hq =>
+    simp only [hq, NNReal.coe_zero]
     intro a b hab
     by_cases ha : 0 ≤ a
     · have hb : 0 ≤ b := ha.trans hab
