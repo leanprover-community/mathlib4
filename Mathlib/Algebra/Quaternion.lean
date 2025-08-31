@@ -120,17 +120,25 @@ def im (x : ℍ[R,c₁,c₂,c₃]) : ℍ[R,c₁,c₂,c₃] :=
 theorem re_im : a.im.re = 0 :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias im_re := re_im
+
 @[simp]
 theorem imI_im : a.im.imI = a.imI :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias im_imI := imI_im
 
 @[simp]
 theorem imJ_im : a.im.imJ = a.imJ :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias im_imJ := imJ_im
+
 @[simp]
 theorem imK_im : a.im.imK = a.imK :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias im_imK := imK_im
 
 @[simp]
 theorem im_idem : a.im.im = a.im :=
@@ -144,14 +152,22 @@ instance : CoeTC R ℍ[R,c₁,c₂,c₃] := ⟨coe⟩
 @[simp, norm_cast]
 theorem re_coe : (x : ℍ[R,c₁,c₂,c₃]).re = x := rfl
 
+@[deprecated (since := "2025-08-31")] alias coe_re := re_coe
+
 @[simp, norm_cast]
 theorem imI_coe : (x : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias coe_imI := imI_coe
 
 @[simp, norm_cast]
 theorem imJ_coe : (x : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias coe_imJ := imJ_coe
+
 @[simp, norm_cast]
 theorem imK_coe : (x : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias coe_imK := imK_coe
 
 theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂,c₃]) := fun _ _ h => congr_arg re h
 
@@ -163,6 +179,8 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
 instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[scoped simp] theorem im_zero : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias zero_im := im_zero
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂,c₃]) = 0 := rfl
@@ -176,6 +194,8 @@ variable [One R]
 instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
 
 @[scoped simp] theorem im_one : (1 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias one_im := im_one
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂,c₃]) = 1 := rfl
@@ -203,6 +223,8 @@ variable [AddZeroClass R]
 @[simp] theorem im_add : (a + b).im = a.im + b.im :=
   QuaternionAlgebra.ext (zero_add _).symm rfl rfl rfl
 
+@[deprecated (since := "2025-08-31")] alias add_im := im_add
+
 @[simp, norm_cast]
 theorem coe_add : ((x + y : R) : ℍ[R,c₁,c₂,c₃]) = x + y := by ext <;> simp
 
@@ -226,6 +248,8 @@ variable [AddGroup R]
 @[simp] theorem im_neg : (-a).im = -a.im :=
   QuaternionAlgebra.ext neg_zero.symm rfl rfl rfl
 
+@[deprecated (since := "2025-08-31")] alias neg_im := im_neg
+
 @[simp, norm_cast]
 theorem coe_neg : ((-x : R) : ℍ[R,c₁,c₂,c₃]) = -x := by ext <;> simp
 
@@ -235,6 +259,8 @@ instance : Sub ℍ[R,c₁,c₂,c₃] :=
 
 @[simp] theorem im_sub : (a - b).im = a.im - b.im :=
   QuaternionAlgebra.ext (sub_zero _).symm rfl rfl rfl
+
+@[deprecated (since := "2025-08-31")] alias sub_im := im_sub
 
 @[simp]
 theorem mk_sub_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
@@ -246,6 +272,8 @@ theorem mk_sub_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
 theorem im_coe : (x : ℍ[R,c₁,c₂,c₃]).im = 0 :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias coe_im := im_coe
+
 @[simp]
 theorem re_add_im : ↑a.re + a.im = a :=
   QuaternionAlgebra.ext (add_zero _) (zero_add _) (zero_add _) (zero_add _)
@@ -254,9 +282,13 @@ theorem re_add_im : ↑a.re + a.im = a :=
 theorem sub_im_self : a - a.im = a.re :=
   QuaternionAlgebra.ext (sub_zero _) (sub_self _) (sub_self _) (sub_self _)
 
+@[deprecated (since := "2025-08-31")] alias sub_self_im := sub_im_self
+
 @[simp]
 theorem sub_re_self : a - a.re = a.im :=
   QuaternionAlgebra.ext (sub_self _) (sub_zero _) (sub_zero _) (sub_zero _)
+
+@[deprecated (since := "2025-08-31")] alias sub_self_re := sub_re_self
 
 end AddGroup
 
@@ -307,6 +339,8 @@ instance [SMulCommClass S T R] : SMulCommClass S T ℍ[R,c₁,c₂,c₃] where
 @[simp] theorem im_smul {S} [CommRing R] [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   QuaternionAlgebra.ext (smul_zero s).symm rfl rfl rfl
 
+@[deprecated (since := "2025-08-31")] alias smul_im := im_smul
+
 @[simp]
 theorem smul_mk (re im_i im_j im_k : R) :
     s • (⟨re, im_i, im_j, im_k⟩ : ℍ[R,c₁,c₂,c₃]) = ⟨s • re, s • im_i, s • im_j, s • im_k⟩ :=
@@ -340,21 +374,31 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
 theorem re_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).re = n :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias natCast_re := re_natCast
+
 @[simp, norm_cast]
 theorem imI_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).imI = 0 :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias natCast_imI := imI_natCast
 
 @[simp, norm_cast]
 theorem imJ_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).imJ = 0 :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias natCast_imJ := imJ_natCast
+
 @[simp, norm_cast]
 theorem imK_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).imK = 0 :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias natCast_imK := imK_natCast
+
 @[simp, norm_cast]
 theorem im_natCast (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).im = 0 :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias natCast_im := im_natCast
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
@@ -364,36 +408,56 @@ theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
 theorem re_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias intCast_re := re_intCast
+
 @[scoped simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).re = ofNat(n) := rfl
+
+@[deprecated (since := "2025-08-31")] alias ofNat_re := re_ofNat
 
 @[scoped simp]
 theorem imI_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias ofNat_imI := imI_ofNat
+
 @[scoped simp]
 theorem imJ_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias ofNat_imJ := imJ_ofNat
 
 @[scoped simp]
 theorem imK_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias ofNat_imK := imK_ofNat
+
 @[scoped simp]
 theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias ofNat_im := im_ofNat
 
 @[simp, norm_cast]
 theorem imI_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imI = 0 :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias intCast_imI := imI_intCast
+
 @[simp, norm_cast]
 theorem imJ_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imJ = 0 :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias intCast_imJ := imJ_intCast
 
 @[simp, norm_cast]
 theorem imK_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imK = 0 :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias intCast_imK := imK_intCast
+
 @[simp, norm_cast]
 theorem im_intCast (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).im = 0 :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias intCast_im := im_intCast
 
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂,c₃]) :=
@@ -561,21 +625,31 @@ instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂,c₃] where star a :=
 
 @[simp] theorem re_star : (star a).re = a.re + c₂ * a.imI := rfl
 
+@[deprecated (since := "2025-08-31")] alias star_re := re_star
+
 @[simp]
 theorem imI_star : (star a).imI = -a.imI :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias star_imI := imI_star
 
 @[simp]
 theorem imJ_star : (star a).imJ = -a.imJ :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias star_imJ := imJ_star
+
 @[simp]
 theorem imK_star : (star a).imK = -a.imK :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias star_imK := imK_star
+
 @[simp]
 theorem im_star : (star a).im = -a.im :=
   QuaternionAlgebra.ext neg_zero.symm rfl rfl rfl
+
+@[deprecated (since := "2025-08-31")] alias star_im := im_star
 
 @[simp]
 theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R,c₁,c₂,c₃]) =
@@ -609,6 +683,8 @@ instance : IsStarNormal a :=
 theorem star_coe : star (x : ℍ[R,c₁,c₂,c₃]) = x := by ext <;> simp
 
 @[simp] theorem star_im : star a.im = -a.im + c₂ * a.imI := by ext <;> simp
+
+@[deprecated (since := "2025-08-31")] alias im_star := star_im
 
 @[simp]
 theorem star_smul [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
@@ -731,11 +807,19 @@ nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 
 @[simp] theorem re_im : a.im.re = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias im_re := re_im
+
 @[simp] theorem imI_im : a.im.imI = a.imI := rfl
+
+@[deprecated (since := "2025-08-31")] alias im_imI := imI_im
 
 @[simp] theorem imJ_im : a.im.imJ = a.imJ := rfl
 
+@[deprecated (since := "2025-08-31")] alias im_imJ := imJ_im
+
 @[simp] theorem imK_im : a.im.imK = a.imK := rfl
+
+@[deprecated (since := "2025-08-31")] alias im_imK := imK_im
 
 @[simp] theorem im_idem : a.im.im = a.im := rfl
 
@@ -743,58 +827,102 @@ nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 
 @[simp] nonrec theorem sub_im_self : a - a.im = a.re := a.sub_im_self
 
+@[deprecated (since := "2025-08-31")] alias sub_self_im := sub_im_self
+
 @[simp] nonrec theorem sub_re_self : a - ↑a.re = a.im := a.sub_re_self
+
+@[deprecated (since := "2025-08-31")] alias sub_self_re := sub_re_self
 
 @[simp, norm_cast]
 theorem re_coe : (x : ℍ[R]).re = x := rfl
 
+@[deprecated (since := "2025-08-31")] alias coe_re := re_coe
+
 @[simp, norm_cast]
 theorem imI_coe : (x : ℍ[R]).imI = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias coe_imI := imI_coe
 
 @[simp, norm_cast]
 theorem imJ_coe : (x : ℍ[R]).imJ = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias coe_imJ := imJ_coe
+
 @[simp, norm_cast]
 theorem imK_coe : (x : ℍ[R]).imK = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias coe_imK := imK_coe
 
 @[simp, norm_cast]
 theorem im_coe : (x : ℍ[R]).im = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias coe_im := im_coe
+
 @[scoped simp] theorem re_zero : (0 : ℍ[R]).re = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias zero_re := re_zero
 
 @[scoped simp] theorem imI_zero : (0 : ℍ[R]).imI = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias zero_imI := imI_zero
+
 @[scoped simp] theorem imJ_zero : (0 : ℍ[R]).imJ = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias zero_imJ := imJ_zero
 
 @[scoped simp] theorem imK_zero : (0 : ℍ[R]).imK = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias zero_imK := imK_zero
+
 @[scoped simp] theorem im_zero : (0 : ℍ[R]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias zero_im := im_zero
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R]) = 0 := rfl
 
 @[scoped simp] theorem re_one : (1 : ℍ[R]).re = 1 := rfl
 
+@[deprecated (since := "2025-08-31")] alias one_re := re_one
+
 @[scoped simp] theorem imI_one : (1 : ℍ[R]).imI = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias one_imI := imI_one
 
 @[scoped simp] theorem imJ_one : (1 : ℍ[R]).imJ = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias one_imJ := imJ_one
+
 @[scoped simp] theorem imK_one : (1 : ℍ[R]).imK = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias one_imK := imK_one
+
 @[scoped simp] theorem im_one : (1 : ℍ[R]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias one_im := im_one
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
 
 @[simp] theorem re_add : (a + b).re = a.re + b.re := rfl
 
+@[deprecated (since := "2025-08-31")] alias add_re := re_add
+
 @[simp] theorem imI_add : (a + b).imI = a.imI + b.imI := rfl
+
+@[deprecated (since := "2025-08-31")] alias add_imI := imI_add
 
 @[simp] theorem imJ_add : (a + b).imJ = a.imJ + b.imJ := rfl
 
+@[deprecated (since := "2025-08-31")] alias add_imJ := imJ_add
+
 @[simp] theorem imK_add : (a + b).imK = a.imK + b.imK := rfl
 
+@[deprecated (since := "2025-08-31")] alias add_imK := imK_add
+
 @[simp] nonrec theorem im_add : (a + b).im = a.im + b.im := a.im_add b
+
+@[deprecated (since := "2025-08-31")] alias add_im := im_add
 
 @[simp, norm_cast]
 theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
@@ -802,13 +930,23 @@ theorem coe_add : ((x + y : R) : ℍ[R]) = x + y :=
 
 @[simp] theorem re_neg : (-a).re = -a.re := rfl
 
+@[deprecated (since := "2025-08-31")] alias neg_re := re_neg
+
 @[simp] theorem imI_neg : (-a).imI = -a.imI := rfl
+
+@[deprecated (since := "2025-08-31")] alias neg_imI := imI_neg
 
 @[simp] theorem imJ_neg : (-a).imJ = -a.imJ := rfl
 
+@[deprecated (since := "2025-08-31")] alias neg_imJ := imJ_neg
+
 @[simp] theorem imK_neg : (-a).imK = -a.imK := rfl
 
+@[deprecated (since := "2025-08-31")] alias neg_imK := imK_neg
+
 @[simp] nonrec theorem im_neg : (-a).im = -a.im := a.im_neg
+
+@[deprecated (since := "2025-08-31")] alias neg_im := im_neg
 
 @[simp, norm_cast]
 theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
@@ -816,13 +954,23 @@ theorem coe_neg : ((-x : R) : ℍ[R]) = -x :=
 
 @[simp] theorem re_sub : (a - b).re = a.re - b.re := rfl
 
+@[deprecated (since := "2025-08-31")] alias sub_re := re_sub
+
 @[simp] theorem imI_sub : (a - b).imI = a.imI - b.imI := rfl
+
+@[deprecated (since := "2025-08-31")] alias sub_imI := imI_sub
 
 @[simp] theorem imJ_sub : (a - b).imJ = a.imJ - b.imJ := rfl
 
+@[deprecated (since := "2025-08-31")] alias sub_imJ := imJ_sub
+
 @[simp] theorem imK_sub : (a - b).imK = a.imK - b.imK := rfl
 
+@[deprecated (since := "2025-08-31")] alias sub_imK := imK_sub
+
 @[simp] nonrec theorem im_sub : (a - b).im = a.im - b.im := a.im_sub b
+
+@[deprecated (since := "2025-08-31")] alias sub_im := im_sub
 
 @[simp, norm_cast]
 theorem coe_sub : ((x - y : R) : ℍ[R]) = x - y :=
@@ -832,17 +980,25 @@ theorem coe_sub : ((x - y : R) : ℍ[R]) = x - y :=
 theorem re_mul : (a * b).re = a.re * b.re - a.imI * b.imI - a.imJ * b.imJ - a.imK * b.imK :=
   (QuaternionAlgebra.re_mul a b).trans <| by simp [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
 
+@[deprecated (since := "2025-08-31")] alias mul_re := re_mul
+
 @[simp]
 theorem imI_mul : (a * b).imI = a.re * b.imI + a.imI * b.re + a.imJ * b.imK - a.imK * b.imJ :=
   (QuaternionAlgebra.imI_mul a b).trans <| by ring
+
+@[deprecated (since := "2025-08-31")] alias mul_imI := imI_mul
 
 @[simp]
 theorem imJ_mul : (a * b).imJ = a.re * b.imJ - a.imI * b.imK + a.imJ * b.re + a.imK * b.imI :=
   (QuaternionAlgebra.imJ_mul a b).trans <| by ring
 
+@[deprecated (since := "2025-08-31")] alias mul_imJ := imJ_mul
+
 @[simp]
 theorem imK_mul : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a.imK * b.re :=
   (QuaternionAlgebra.imK_mul a b).trans <| by ring
+
+@[deprecated (since := "2025-08-31")] alias mul_imK := imK_mul
 
 @[simp, norm_cast]
 theorem coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y
@@ -854,17 +1010,27 @@ theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R]) = (x : ℍ[R]) ^ n :=
 @[simp, norm_cast]
 theorem re_natCast (n : ℕ) : (n : ℍ[R]).re = n := rfl
 
+@[deprecated (since := "2025-08-31")] alias natCast_re := re_natCast
+
 @[simp, norm_cast]
 theorem imI_natCast (n : ℕ) : (n : ℍ[R]).imI = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias natCast_imI := imI_natCast
 
 @[simp, norm_cast]
 theorem imJ_natCast (n : ℕ) : (n : ℍ[R]).imJ = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias natCast_imJ := imJ_natCast
+
 @[simp, norm_cast]
 theorem imK_natCast (n : ℕ) : (n : ℍ[R]).imK = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias natCast_imK := imK_natCast
+
 @[simp, norm_cast]
 theorem im_natCast (n : ℕ) : (n : ℍ[R]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias natCast_im := im_natCast
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R]) := rfl
@@ -872,17 +1038,27 @@ theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R]) := rfl
 @[simp, norm_cast]
 theorem re_intCast (z : ℤ) : (z : ℍ[R]).re = z := rfl
 
+@[deprecated (since := "2025-08-31")] alias intCast_re := re_intCast
+
 @[simp, norm_cast]
 theorem imI_intCast (z : ℤ) : (z : ℍ[R]).imI = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias intCast_imI := imI_intCast
 
 @[simp, norm_cast]
 theorem imJ_intCast (z : ℤ) : (z : ℍ[R]).imJ = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias intCast_imJ := imJ_intCast
+
 @[simp, norm_cast]
 theorem imK_intCast (z : ℤ) : (z : ℍ[R]).imK = 0 := rfl
 
+@[deprecated (since := "2025-08-31")] alias intCast_imK := imK_intCast
+
 @[simp, norm_cast]
 theorem im_intCast (z : ℤ) : (z : ℍ[R]).im = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias intCast_im := im_intCast
 
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R]) := rfl
@@ -898,15 +1074,25 @@ theorem coe_inj {x y : R} : (x : ℍ[R]) = y ↔ x = y :=
 theorem re_smul [SMul S R] (s : S) : (s • a).re = s • a.re :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias smul_re := re_smul
+
 @[simp] theorem imI_smul [SMul S R] (s : S) : (s • a).imI = s • a.imI := rfl
+
+@[deprecated (since := "2025-08-31")] alias smul_imI := imI_smul
 
 @[simp] theorem imJ_smul [SMul S R] (s : S) : (s • a).imJ = s • a.imJ := rfl
 
+@[deprecated (since := "2025-08-31")] alias smul_imJ := imJ_smul
+
 @[simp] theorem imK_smul [SMul S R] (s : S) : (s • a).imK = s • a.imK := rfl
+
+@[deprecated (since := "2025-08-31")] alias smul_imK := imK_smul
 
 @[simp]
 nonrec theorem im_smul [SMulZeroClass S R] (s : S) : (s • a).im = s • a.im :=
   a.im_smul s
+
+@[deprecated (since := "2025-08-31")] alias smul_im := im_smul
 
 @[simp, norm_cast]
 theorem coe_smul [SMulZeroClass S R] (s : S) (r : R) : (↑(s • r) : ℍ[R]) = s • (r : ℍ[R]) :=
@@ -946,13 +1132,23 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 @[simp] theorem re_star : (star a).re = a.re := by
   rw [QuaternionAlgebra.re_star, zero_mul, add_zero]
 
+@[deprecated (since := "2025-08-31")] alias star_re := re_star
+
 @[simp] theorem imI_star : (star a).imI = -a.imI := rfl
+
+@[deprecated (since := "2025-08-31")] alias star_imI := imI_star
 
 @[simp] theorem imJ_star : (star a).imJ = -a.imJ := rfl
 
+@[deprecated (since := "2025-08-31")] alias star_imJ := imJ_star
+
 @[simp] theorem imK_star : (star a).imK = -a.imK := rfl
 
+@[deprecated (since := "2025-08-31")] alias star_imK := imK_star
+
 @[simp] theorem im_star : (star a).im = -a.im := QuaternionAlgebra.im_star a
+
+@[deprecated (since := "2025-08-31")] alias star_im := im_star
 
 nonrec theorem self_add_star' : a + star a = ↑(2 * a.re) := by
   simp [a.self_add_star', Quaternion.coe]
@@ -975,6 +1171,8 @@ theorem star_coe : star (x : ℍ[R]) = x :=
 
 @[simp]
 theorem star_im : star a.im = -a.im := by ext <;> simp
+
+@[deprecated (since := "2025-08-31")] alias im_star := star_im
 
 @[simp]
 theorem star_smul [Monoid S] [DistribMulAction S R] (s : S) (a : ℍ[R]) :
@@ -1137,6 +1335,8 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 @[simp, norm_cast] lemma imI_ratCast (q : ℚ) : (q : ℍ[R]).imI = 0 := rfl
 @[simp, norm_cast] lemma imJ_ratCast (q : ℚ) : (q : ℍ[R]).imJ = 0 := rfl
 @[simp, norm_cast] lemma imK_ratCast (q : ℚ) : (q : ℍ[R]).imK = 0 := rfl
+
+@[deprecated (since := "2025-08-31")] alias ratCast_imK := re_ratCast
 
 @[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
 
