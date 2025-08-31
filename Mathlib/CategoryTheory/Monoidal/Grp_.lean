@@ -158,7 +158,8 @@ theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
 /-- Transfer `Grp_Class` along an isomorphism. -/
-def ofIso (e : G ≅ X) : Grp_Class X where
+@[simps!]
+abbrev ofIso (e : G ≅ X) : Grp_Class X where
   toMon_Class := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
   left_inv := by simp [Mon_Class.ofIso]
