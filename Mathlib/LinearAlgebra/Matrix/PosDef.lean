@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
 import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.LinearAlgebra.Matrix.Vec
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-! # Positive Definite Matrices
@@ -319,18 +320,21 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
-theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n 𝕜} :
-    (Aᴴ * A).trace = 0 ↔ A = 0 := by
-  refine ⟨fun h => ?_, fun h => by simp [h]⟩
-  have hA := posSemidef_conjTranspose_mul_self A
-  classical
-  simpa [hA.isHermitian.trace_eq_sum_eigenvalues, Finset.sum_eq_zero_iff_of_nonneg
-    (fun _ _ => RCLike.ofReal_nonneg.mpr <| hA.eigenvalues_nonneg _),
-    ← conjTranspose_mul_self_eq_zero, ← hA.isHermitian.eigenvalues_eq_zero_iff, funext_iff] using h
+section trace
+-- TODO: move these results to an earlier file
 
-theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n 𝕜} :
+variable {R : Type*} [PartialOrder R] [NonUnitalRing R]
+  [StarRing R] [StarOrderedRing R] [NoZeroDivisors R]
+
+theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} :
+    (Aᴴ * A).trace = 0 ↔ A = 0 := by
+  rw [← star_vec_dotProduct_vec, dotProduct_star_self_eq_zero, vec_eq_zero_iff]
+
+theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n R} :
     (A * Aᴴ).trace = 0 ↔ A = 0 := by
   simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
+
+end trace
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
