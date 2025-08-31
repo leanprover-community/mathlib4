@@ -194,6 +194,7 @@ noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv% ⟪Y, Z⟫ x (X 
 
 section rhs_aux
 
+variable (Y Z) in
 omit [IsManifold I ∞ M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
@@ -765,7 +766,7 @@ lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
     rw [hs.eq_iff_repr hx]
     exact fun k ↦ hfg i j k x hx
   intro X Y x hx
-  -- use linearity now, another separate lemma!
+  -- use linearity (=formula for f in terms of Christoffel symbols) now, another separate lemma!
   sorry
 
 /-- Two covariant derivatives on `U` are equal on `U` if and only if all of their
@@ -867,7 +868,7 @@ lemma isTorsionFree_iff_christoffelSymbols' [FiniteDimensional ℝ E] [IsManifol
 theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x : M) :
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
-    ∀ {x'}, x' ∈ t.baseSet → ∀ (i j k : ↑(Basis.ofVectorSpaceIndex ℝ E)),
+    ∀ x', x' ∈ t.baseSet → ∀ (i j k : ↑(Basis.ofVectorSpaceIndex ℝ E)),
       ChristoffelSymbol I (LeviCivitaConnection I M) hs i j k x' =
         ChristoffelSymbol I (LeviCivitaConnection I M) hs j i k x' := by
   by_cases hE : Subsingleton E
@@ -883,8 +884,65 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
 
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
-    have : ChristoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
+    --have : ChristoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
     sorry -- this should do it!
+  -- Note that hs is not necessarily an orthonormal frame, so we cannot simply rewrite
+  -- the Christoffel symbols as Γᵢⱼᵏ = ⟪∇ᵍ X Y, Z⟫`: however, the result we wants to prove boils
+  -- down to proving the same.
+  intro x' hx' i j
+  set t := trivializationAt E (TangentSpace I) x
+  set b := (Basis.ofVectorSpace ℝ E)
+  set s := b.localFrame t
+  set ι := ↑(Basis.ofVectorSpaceIndex ℝ E)
+  -- Same computation as above; extract as lemma!
+  let O : (x : M) → TangentSpace I x := fun x ↦ 0
+  have need : ∀ i j, VectorField.mlieBracket I (s i) (s j) x' = O x' := sorry
+  have aux : ∀ k, ⟪LeviCivitaConnection I M (s i) (s j), (s k)⟫ x'
+      = ⟪LeviCivitaConnection I M (s j) (s i), (s k)⟫ x' := by
+    intro k
+    simp only [LeviCivitaConnection]
+    unfold lcCandidate
+    rw [product_apply, product_apply]
+    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    -- Choose a linear order on ι: which one really does not matter for our result.
+    have : LinearOrder ι := by
+      choose r wo using exists_wellOrder _
+      exact r
+    have : LocallyFiniteOrderBot ι := by sorry
+    have : ∑ k', inner ℝ
+      (leviCivitaRhs I (s i) (s j)
+            (b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k') x' •
+          b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k' x')
+      (s k x') =
+       ∑ k', inner ℝ (
+        leviCivitaRhs I (s j) (s i)
+          (b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k') x' •
+          b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k' x')
+        (s k x') := by
+      congr with k'
+      simp only [leviCivitaRhs]
+      set sij := b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k' x'
+      rw [inner_smul_left, inner_smul_left]
+      congr
+      simp [leviCivitaRhs']
+      set S := b.orthonormalFrame (trivializationAt E (TangentSpace I) x') k'
+      have need' : ∀ i, VectorField.mlieBracket I (s i) S x' = O x' := by
+        -- expand the definition of Gram-Schmidt and use need and linearity
+        sorry
+      have need'' : ∀ i, VectorField.mlieBracket I S (s i) x' = O x' := by
+        sorry -- swap and use need', or so
+      rw [product_congr_right I (need i j), product_congr_right I (need j i),
+        product_congr_right I (need' i), product_congr_right I (need'' i),
+        product_congr_right I (need' j), product_congr_right I (need'' j),
+        rhs_aux_swap I (s i) (s j), rhs_aux_swap I (s j) S, rhs_aux_swap I S (s i)]
+      simp [O]
+      abel
+    -- now, just rewrite `inner` to take out a sum: same lemma twice
+    convert this
+    sorry
+    sorry
+
+  -- deduce the goal from `aux`
   sorry
 
 lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection := by
@@ -917,7 +975,7 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
     rw [isTorsionFree_iff_christoffelSymbols' _ this]
     intro x' hx' i j k
     -- Now, compute christoffel symbols and be happy.
-    have := LeviCivitaConnection.christoffelSymbol_symm I x hx' i j k
+    have := LeviCivitaConnection.christoffelSymbol_symm I x  x' hx' i j k
     sorry -- almost there, except x vs x' convert this
 
 end CovariantDerivative
