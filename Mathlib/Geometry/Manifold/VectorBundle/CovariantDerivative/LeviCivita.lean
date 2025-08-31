@@ -114,7 +114,19 @@ lemma product_smul_left (f : M → ℝ) : product I (f • X) Y = f • product 
   simp [product, real_inner_smul_left]
 
 variable (X Y) in
+@[simp]
+lemma product_smul_const_left (a : ℝ) : product I (a • X) Y = a • product I X Y := by
+  ext x
+  simp [product, real_inner_smul_left]
+
+variable (X Y) in
 lemma product_smul_right (f : M → ℝ) : product I X (f • Y) = f • product I X Y := by
+  ext x
+  simp [product, real_inner_smul_right]
+
+variable (X Y) in
+@[simp]
+lemma product_smul_const_right (a : ℝ) : product I X (a • Y) = a • product I X Y := by
   ext x
   simp [product, real_inner_smul_right]
 
@@ -258,6 +270,20 @@ lemma rhs_aux_smulY {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDi
   simp [rhs_aux_smulY_apply I X (hf x) (hY x) (hZ x)]
 
 variable (X) in
+lemma rhs_aux_smulY_const_apply {a : ℝ} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    rhs_aux I X (a • Y) Z x = a • rhs_aux I X Y Z x := by
+  let f : M → ℝ := fun _ ↦ a
+  have h1 : rhs_aux I X (a • Y) Z x = rhs_aux I X (f • Y) Z x := by simp only [f]; congr
+  rw [h1, rhs_aux_smulY_apply I X mdifferentiableAt_const hY hZ]
+  simp [mfderiv_const]
+
+variable (X) in
+lemma rhs_aux_smulY_const {a : ℝ} (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    rhs_aux I X (a • Y) Z = a • rhs_aux I X Y Z := by
+  ext x
+  apply rhs_aux_smulY_const_apply I X (hY x) (hZ x)
+
+variable (X) in
 lemma rhs_aux_smulZ_apply {f : M → ℝ}
     (hf : MDiffAt f x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     letI A (x) : ℝ := (mfderiv% f x) (X x)
@@ -271,6 +297,20 @@ lemma rhs_aux_smulZ {f : M → ℝ} (hf : MDiff f) (hY : MDiff (T% Y)) (hZ : MDi
     rhs_aux I X Y (f • Z) = f • rhs_aux I X Y Z + A • ⟪Y, Z⟫ := by
   rw [rhs_aux_swap, rhs_aux_smulY, rhs_aux_swap, product_swap]
   exacts [hf, hZ, hY]
+
+variable (X) in
+lemma rhs_aux_smulZ_const_apply {a : ℝ} (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    rhs_aux I X Y (a • Z) x = a • rhs_aux I X Y Z x := by
+  let f : M → ℝ := fun _ ↦ a
+  have h1 : rhs_aux I X Y (a • Z) x = rhs_aux I X Y (f • Z) x := by simp only [f]; congr
+  rw [h1, rhs_aux_smulZ_apply I X mdifferentiableAt_const hY hZ]
+  simp [mfderiv_const]
+
+variable (X) in
+lemma rhs_aux_smulZ_const {a : ℝ} (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    rhs_aux I X Y (a • Z) = a • rhs_aux I X Y Z := by
+  ext x
+  exact rhs_aux_smulZ_const_apply I X (hY x) (hZ x)
 
 end rhs_aux
 
@@ -419,6 +459,46 @@ lemma leviCivitaRhs_addY [CompleteSpace E]
     leviCivitaRhs I X (Y + Y') Z = leviCivitaRhs I X Y Z + leviCivitaRhs I X Y' Z := by
   ext x
   simp [leviCivitaRhs_addY_apply I (hX x) (hY x) (hY' x) (hZ x)]
+
+variable {I} in
+lemma leviCivitaRhs'_smulY_const_apply [CompleteSpace E] {a : ℝ}
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    leviCivitaRhs' I X (a • Y) Z x = a • leviCivitaRhs' I X Y Z x := by
+  simp only [leviCivitaRhs']
+  simp only [product_smul_const_left, Pi.add_apply, Pi.sub_apply, Pi.smul_apply]
+  rw [rhs_aux_smulY_const_apply I X hY hZ]
+  -- TODO: clean up this proof!
+  let f : M → ℝ := fun _ ↦ a
+  have : rhs_aux I (a • Y) Z X x = a • rhs_aux I Y Z X x := by
+    trans rhs_aux I (f • Y) Z X x
+    · rfl
+    rw [rhs_aux_smulX I Y (f := f) (Y := Z) (Z := X)]
+    rfl
+  rw [this, rhs_aux_smulZ_const_apply I _ hX hY]
+  -- is there a better abstraction for "Lie bracket conv mode"?
+  have : ⟪Z, mlieBracket I (a • Y) X⟫ x = a • ⟪Z, mlieBracket I Y X⟫ x := by
+    simp_rw [product_apply, mlieBracket_const_smul_left (W := X) hY, inner_smul_right_eq_smul]
+  rw [this]
+  have aux2 : ⟪X, mlieBracket I Z (a • Y)⟫ x = a • ⟪X, mlieBracket I Z Y⟫ x := by
+    simp_rw [product_apply,  mlieBracket_const_smul_right (V := Z) hY, inner_smul_right_eq_smul]
+  rw [aux2]
+  simp
+  ring
+
+variable {I} in
+lemma leviCivitaRhs_smulY_const_apply [CompleteSpace E] {a : ℝ}
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    leviCivitaRhs I X (a • Y) Z x = a • leviCivitaRhs I X Y Z x := by
+  simp_rw [leviCivitaRhs, Pi.smul_apply]; rw [smul_comm]
+  congr
+  exact leviCivitaRhs'_smulY_const_apply hX hY hZ
+
+variable {I} in
+lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
+    (hX : MDiff (T% X)) (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) :
+    leviCivitaRhs I X (a • Y) Z = a • leviCivitaRhs I X Y Z := by
+  ext x
+  exact leviCivitaRhs_smulY_const_apply (hX x) (hY x) (hZ x)
 
 lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
@@ -674,11 +754,23 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     · sorry -- missing hyp!
     simp [← smul_assoc]
   smul_const_σ X σ a x hx := by
-    by_cases hE : Subsingleton E; · have : X x = 0 := sorry; simp [lcCandidate_aux, hE, this]
+    by_cases hE : Subsingleton E
+    · have : X x = 0 := by
+        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+        exact Subsingleton.eq_zero (X x)
+      simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
-    -- want leviCivitaRhs_smulY (with a constant)
-    sorry
+    have hX : MDiffAt (T% X) x := sorry
+    have hσ : MDiffAt (T% σ) x := sorry
+    -- missing helper lemma
+    --have : MDiffAt (T% ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)) x := sorry
+    rw [leviCivitaRhs_smulY_const_apply (I := I)]
+    rotate_left
+    · apply hX
+    · apply hσ
+    · sorry -- orthonormal frame is diff at x
+    rw [← smul_assoc]
   addσ X σ σ' x hσ hσ' hx := by
     have hX : MDiffAt (T% X) x := sorry -- missing assumption!
     by_cases hE : Subsingleton E; · have : X x = 0 := sorry; simp [lcCandidate_aux, hE, this]
