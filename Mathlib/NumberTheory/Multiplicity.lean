@@ -258,8 +258,8 @@ theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
 
 lemma Int.eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
   rcases hk with ⟨m, rfl⟩
-  have eq : (2 * m + 1) ^ 2 - 1 = 4 * m * (m + 1) := by ring
-  simpa [eq, mul_assoc] using (Int.mul_dvd_mul_iff_left (by norm_num)).mpr (two_dvd_mul_add_one m)
+  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by ring
+  simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
 
 lemma Nat.eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
   rcases hk with ⟨m, rfl⟩
