@@ -92,7 +92,7 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter {p₁ p₂ p₃ : P} {s
     mem_sphere.mp hd.right_mem]
   exact eq_comm
 
-/-- For three distinct points, the angle at the second point
+/-- **Thales' theorem**: For three distinct points, the angle at the second point
 is a right angle if and only if the second point lies on the sphere having the first and third
 points as diameter endpoints. -/
 theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
@@ -102,10 +102,6 @@ theorem angle_eq_pi_div_two_iff_mem_sphere_ofDiameter {p₁ p₂ p₃ : P} :
 alias thales_theorem := angle_eq_pi_div_two_iff_mem_sphere_of_isDiameter
 
 end Sphere
-
-end EuclideanGeometry
-
-namespace EuclideanGeometry
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
