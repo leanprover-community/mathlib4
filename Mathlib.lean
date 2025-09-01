@@ -249,6 +249,7 @@ import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.Translations
+import Mathlib.Algebra.CrossProductAlgebra.Defs
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Algebra.DirectSum.Algebra
