@@ -44,9 +44,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 end NonUnitalSubalgebraClass
 
 end NonUnitalSubalgebraClass
