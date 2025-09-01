@@ -69,7 +69,7 @@ def esymm (s : Multiset R) (n : ℕ) : R :=
 theorem _root_.Finset.esymm_map_val {σ} (f : σ → R) (s : Finset σ) (n : ℕ) :
     (s.val.map f).esymm n = (s.powersetCard n).sum fun t => t.prod f := by
   simp only [esymm, powersetCard_map, ← Finset.map_val_val_powersetCard, map_map]
-  rfl
+  simp only [Function.comp_apply, Finset.prod_map_val, Finset.sum_map_val]
 
 lemma pow_smul_esymm {S : Type*} [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
     [SMulCommClass S R R] (s : S) (n : ℕ) (m : Multiset R) :
@@ -213,8 +213,7 @@ theorem esymm_eq_sum_subtype (n : ℕ) :
 /-- We can define `esymm σ R n` as a sum over explicit monomials -/
 theorem esymm_eq_sum_monomial (n : ℕ) :
     esymm σ R n = ∑ t ∈ powersetCard n univ, monomial (∑ i ∈ t, Finsupp.single i 1) 1 := by
-  simp_rw [monomial_sum_one]
-  rfl
+  simp_rw [monomial_sum_one, esymm, ← X_pow_eq_monomial, pow_one]
 
 @[simp]
 theorem esymm_zero : esymm σ R 0 = 1 := by
@@ -237,10 +236,7 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
     rename e (esymm σ R n) = ∑ x ∈ powersetCard n univ, ∏ i ∈ x, X (e i) := by
       simp_rw [esymm, map_sum, map_prod, rename_X]
     _ = ∑ t ∈ powersetCard n (univ.map e.toEmbedding), ∏ i ∈ t, X i := by
-      simp [powersetCard_map, -map_univ_equiv]
-      -- Porting note: Why did `mapEmbedding_apply` not work?
-      dsimp [mapEmbedding, OrderEmbedding.ofMapLEIff]
-      simp
+      simp [powersetCard_map, -map_univ_equiv, (mapEmbedding_apply)]
     _ = ∑ t ∈ powersetCard n univ, ∏ i ∈ t, X i := by rw [map_univ_equiv]
 
 theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
@@ -262,7 +258,7 @@ theorem support_esymm'' [DecidableEq σ] [Nontrivial R] (n : ℕ) :
   have := congr_arg Finsupp.support h
   rw [Finsupp.support_sum_eq_biUnion, Finsupp.support_sum_eq_biUnion] at this
   · have hsingle : ∀ s : Finset σ, ∀ x : σ, x ∈ s → (Finsupp.single x 1).support = {x} := by
-      intros _ x _
+      intro _ x _
       rw [Finsupp.support_single_ne_zero x one_ne_zero]
     have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
     have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
@@ -293,11 +289,7 @@ theorem degrees_esymm [Nontrivial R] {n : ℕ} (hpos : 0 < n) (hn : n ≤ Fintyp
     rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetCard n univ) val := by
-      refine comp_sup_eq_sup_comp _ ?_ ?_
-      · intros
-        simp only [union_val, sup_eq_union]
-        congr
-      · rfl
+      refine comp_sup_eq_sup_comp _ ?_ ?_ <;> simp
     rw [← this]
     obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hpos.ne'
     simpa using powersetCard_sup _ _ (Nat.lt_of_succ_le hn)

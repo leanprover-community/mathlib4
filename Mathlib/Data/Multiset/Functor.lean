@@ -53,7 +53,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       (fun a b (l : List β') ↦ (↑(a :: b :: l) : Multiset β')) <$> f y <*> f x =
         (fun a b l ↦ ↑(a :: b :: l)) <$> f x <*> f y := by
       rw [CommApplicative.commutative_map]
-      congr
+      congr 2
       funext a b l
       simpa [flip] using Perm.swap a b l
     simp [Function.comp_def, this, functor_norm]

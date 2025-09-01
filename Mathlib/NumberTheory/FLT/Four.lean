@@ -143,14 +143,10 @@ theorem Int.isCoprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r 
   rw [sq, sq]
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 
-@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum := Int.isCoprime_of_sq_sum
-
 theorem Int.isCoprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
     IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.isCoprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.isCoprime_of_sq_sum h
-
-@[deprecated (since := "2025-01-23")] alias Int.coprime_of_sq_sum' := Int.isCoprime_of_sq_sum'
 
 namespace Fermat42
 

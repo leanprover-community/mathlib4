@@ -213,7 +213,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
-    congr
+    congr 2
     funext
     apply key
 

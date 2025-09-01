@@ -87,7 +87,7 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
       interior_mono this (preimage_interior_subset_interior_preimage hfc hf1)
     simp at h1
   intro c hc
-  rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_right hr]
+  rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_iff_left₀ hr]
   simpa [f, dist_eq_norm, norm_smul] using hc
 
 theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
