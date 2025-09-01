@@ -238,17 +238,6 @@ instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
 instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
-instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
-  add_smul r s x := by ext <;> simp[add_smul]
-  zero_smul x := by ext <;> simp
-
-instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
-  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
-
-instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
-
-
-
 section AddCommMonoidWithOne
 
 instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
@@ -280,6 +269,15 @@ theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).
 
 end AddCommMonoidWithOne
 
+instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
+  add_smul r s x := by ext <;> simp[add_smul]
+  zero_smul x := by ext <;> simp
+
+instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
+  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
+
+instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
+
 section AddCommGroupWithOne
 
 variable [AddCommGroupWithOne R]
@@ -299,7 +297,6 @@ theorem im_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 theorem coe_intCast (n : ℤ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 
 end AddCommGroupWithOne
-
 section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R]
 
