@@ -383,9 +383,8 @@ theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClo
   obtain ⟨f, s, h1, h2, h3⟩ := geometric_hahn_banach hs₁ hs₂ hs₃ hs₄ hx
   use (‖f x₀‖ / (s * (f x₀))) • f
   have (x : E): ‖((‖f x₀‖ / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
-    simp [abs_of_pos h1]
     have : ‖f x₀‖ > 0 := by linarith
-    field_simp
+    simp [abs_of_pos h1, field]
   constructor
   · rw [this]
     exact (one_lt_div₀ h1).mpr h2
