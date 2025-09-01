@@ -253,7 +253,7 @@ elab_rules : command
     let comment := comment.map (⟨·.raw.unsetTrailing⟩)
     let stx ← `(command|#create_deprecated_module $fnameStx:str $[$comment:str]? $[rename_to $rename?:str]? write)
     liftTermElabM do Meta.liftMetaM do
-      Meta.Tactic.TryThis.addSuggestion tk
+      Meta.Tactic.TryThis.addSuggestion (← getRef).unsetTrailing
         { preInfo? := "Confirm that you are happy with the information below before continuing!\n\n"
           suggestion := stx
           postInfo? :=
@@ -278,7 +278,7 @@ the deprecations later on.
 If the number of commits is not explicitly given, `#find_deleted_files` defaults to `2`,
 namely, the commit just prior to the current one.
 -/
-elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
+elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? &"%"? : command => do
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   if n == 0 then
     logWarningAt (nc.getD default) "The number of commits to look back must be at least 1!"
@@ -314,7 +314,7 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? : command => do
     return
   let mut suggestions : Array Meta.Tactic.TryThis.Suggestion := #[]
   let ref := .ofRange {tk.getRange?.get! with stop := tk.getPos?.get!}
-  let dict ← mkRenamesDict 100
+  let dict ← mkRenamesDict (pct.getD (Syntax.mkNumLit "100")).getNat
   for fname in onlyPastFiles do
     let fnameStx := Syntax.mkStrLit fname
     let stx ← if let some newName := dict[fname]? then
