@@ -326,7 +326,6 @@ theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
       have h₆ : b.digits (Nat.ofDigits b (List.drop i (b.digits n))) = (List.drop i (b.digits n)) :=
        Nat.digits_ofDigits b h (List.drop i (b.digits n)) h₄ h₅
       rw [h₆] at h₃
-      symm
       have h₇ := List.cons_getElem_drop_succ (l:=(b.digits n)) (n := i) (h := iLtDig)
       have h₈ := List.getElem?_eq_getElem (l := (b.digits n)) iLtDig
       rw [h₃, ← h₇,List.head!_cons, h₈]
