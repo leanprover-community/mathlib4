@@ -34,11 +34,17 @@ theorem isInt_abs {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing �
   constructor
   simp
 
-theorem isNNRat_abs {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+theorem isNNRat_abs {α : Type*} [DivisionRing α] [LinearOrder α] [IsStrictOrderedRing α]
     {a : α} {num den : ℕ}
     (ra : IsNNRat a num den) :
     IsNNRat |a| num den := by
-  sorry
+  obtain ⟨ha1, rfl⟩ := ra
+  refine ⟨ha1, ?_⟩
+  have : 0 ≤ ↑num * ⅟(den : α) := by
+    apply mul_nonneg
+    · exact Nat.cast_nonneg' num
+    · simp_all only [invOf_eq_inv, inv_nonneg, Nat.cast_nonneg]
+  exact abs_of_nonneg this
 
 /-- The `norm_num` extension which identifies expressions of the form `|a|`,
 such that `norm_num` successfully recognises `a`. -/
@@ -60,12 +66,14 @@ such that `norm_num` successfully recognises `a`. -/
     let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
     haveI' : $e =Q |$a| := ⟨⟩
     assumeInstancesCommute
-    return .isNat _ _ q(isInt_abs $pa)
+    return .isNat q(«$rα».toAddGroupWithOne.toAddMonoidWithOne) _ q(isInt_abs $pa)
   | .isNNRat dsα' qe' nume' dene' pe' =>
+    let rα : Q(DivisionRing $α) ← synthInstanceQ q(DivisionRing $α)
+    let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
+    let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
+    haveI' : $e =Q |$a| := ⟨⟩
     assumeInstancesCommute
-    failure
-    --return .isNNRat dsα' _ _ _ q(isNNRat_abs $pe')
+    return .isNNRat _ qe' _ _ q(isNNRat_abs $pe')
   | .isNegNNRat dα' qe' nume' dene' pe' => failure
-
 
 end Mathlib.Meta.NormNum
