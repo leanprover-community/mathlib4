@@ -238,7 +238,7 @@ theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n :
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨(h.toColoring (by simp)).comp f⟩
 
-@[deprecated "Use `SimpleGraph.Colorable.of_hom` instead." (since := "2025-09-01")]
+@[deprecated SimpleGraph.Colorable.of_hom (since := "2025-09-01")]
 theorem Colorable.of_embedding {V' : Type*} {G' : SimpleGraph V'} (f : G ↪g G') {n : ℕ}
     (h : G'.Colorable n) : G.Colorable n :=
   Colorable.of_hom f h
@@ -370,7 +370,7 @@ theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'}
     (f : G →g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ => Colorable.of_hom f
 
-@[deprecated "Use `SimpleGraph.chromaticNumber_mono_of_hom` instead." (since := "2025-09-01")]
+@[deprecated SimpleGraph.chromaticNumber_mono_of_hom (since := "2025-09-01")]
 theorem chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'}
     (f : G ↪g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_mono_of_hom f
