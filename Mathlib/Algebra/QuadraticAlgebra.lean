@@ -238,19 +238,27 @@ instance [Monoid S] [AddMonoid R] [DistribMulAction S R] :
 instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_instance% by
   refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
-section AddCommMonoidWithOne
+instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
+  add_smul r s x := by ext <;> simp[add_smul]
+  zero_smul x := by ext <;> simp
 
-instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
+instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
+  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
+
+instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
+
+section AddCommMonoidWithOne
+variable [AddCommMonoidWithOne R]
+
+instance : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
   natCast n := ((n : R) : QuadraticAlgebra R a b)
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
 
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] [AddCommMonoidWithOne R] :
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : R) : QuadraticAlgebra R a b) = (ofNat(n) : QuadraticAlgebra R a b) := by
   ext <;> rfl
-
-variable [AddCommMonoidWithOne R]
 
 @[simp, norm_cast]
 theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
@@ -269,17 +277,7 @@ theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).
 
 end AddCommMonoidWithOne
 
-instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
-  add_smul r s x := by ext <;> simp[add_smul]
-  zero_smul x := by ext <;> simp
-
-instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
-  refine (equivProd a b).injective.addGroup _ rfl ?_ ?_ ?_ ?_ ?_ <;> intros <;> rfl
-
-instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
-
 section AddCommGroupWithOne
-
 variable [AddCommGroupWithOne R]
 
 instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
