@@ -468,11 +468,20 @@ open MonoidWithZeroHom in
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : (valueGroup₀ v)ˣ) : AddSubgroup R where
   carrier := { x | v.restrict x < γ }
   zero_mem' := by simp
-  add_mem' {x y} x_in y_in := sorry--lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
+  add_mem' {x y} x_in y_in := by
+    rcases (eq_zero_or_neZero (v x)).symm, (eq_zero_or_neZero (v y)).symm with ⟨hx₀ | _, hy₀ | _⟩
+    · simp only [restrict_def, restrict₀_apply, Set.mem_setOf_eq]
+      split_ifs with h
+      · exact Units.zero_lt γ
+      apply lt_of_le_of_lt _ (max_lt x_in y_in)
+      simp only [restrict_def, restrict₀_of_ne_zero hx₀.ne, restrict₀_of_ne_zero hy₀.ne, le_sup_iff,
+        WithZero.coe_le_coe]
+      exact v.map_add' ..
+    all_goals simp_all [v.map_add_of_left_eq_zero, v.map_add_of_right_eq_zero]
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
 
 @[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
-    x ∈ ltAddSubgroup v γ ↔ v x < γ :=
+    x ∈ ltAddSubgroup v γ ↔ v.restrict x < γ :=
   Iff.rfl
 
 end Group
