@@ -218,4 +218,55 @@ lemma PS2 (z : ℍ) : ∑' m : ℤ, (limUnder atTop
     (fun N : ℕ => ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)),
     (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1)))) = 0 := by sorry
 
+
+def δ (a b : ℤ) : ℂ := if a = 0 ∧ b = 0 then 1 else if a = 0 ∧ b = -1 then 2 else 0
+
+@[simp]
+lemma δ_eq : δ 0 0 = 1 := by simp [δ]
+
+@[simp]
+lemma δ_eq2 : δ 0 (-1) = 2 := by simp [δ]
+
+lemma δ_neq (a b : ℤ) (h : a ≠ 0) : δ a b = 0 := by
+  simp [δ, h]
+
+
+--this sum is now abs convergent. Idea is to subtract PS1 from the G₂ defn.
+lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m : ℤ, ∑' n : ℤ, (1 / (((m : ℂ)* z +n)^2 * (m * z + n +1)) + δ m n) := by
+    rw [G2]
+    have :=  PS2 z
+    set t :=  ∑' m : ℤ, ∑' n : ℤ, (1 / (((m : ℂ)* z +n)^2 * (m * z + n +1)) + δ m n)
+    rw [show t = t + 0 by ring, ← this]
+    simp only [t]
+    rw [← Summable.tsum_add]
+    · rw [tsum_limUnder_atTop]
+      · congr
+        ext n
+        congr
+        ext m
+        rw [tsum_limUnder_atTop, tsum_limUnder_atTop, auxr z m]
+        · have H := G2_prod_summable1_δ z m
+          simpa using H
+        · have H := G2_summable_aux m z 2 (by norm_num)
+          simpa using H
+      · have H := G_2_alt_summable_δ z
+        rw [← (finTwoArrowEquiv _).symm.summable_iff] at H
+        have ha := H.prod
+        apply ha.congr
+        intro b
+        simpa using PS1 z b
+    · have H := G_2_alt_summable_δ z
+      rw [← (finTwoArrowEquiv _).symm.summable_iff] at H
+      have ha := H.prod
+      apply ha.congr
+      intro b
+      simp only [Fin.isValue, one_div, mul_inv_rev, finTwoArrowEquiv_symm_apply, comp_apply,
+        Matrix.cons_val_zero, Matrix.cons_val_one]
+    · have HS : Summable fun m : ℤ => (0 : ℂ) := by apply summable_zero
+      apply HS.congr
+      intro b
+      symm
+      apply PS1 z b
+
+
 end transform
