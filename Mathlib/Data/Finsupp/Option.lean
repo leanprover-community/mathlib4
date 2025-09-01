@@ -71,13 +71,7 @@ theorem some_single_some (a : α) (m : M) :
     simp [single_apply]
 
 @[simp]
-lemma some_update_none (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
-  classical
-  ext
-  simp
-
-@[simp]
-theorem some_update_none (f : Option α →₀ M) (a : M) :
+theorem some_update_none [Zero M] (f : Option α →₀ M) (a : M) :
     (f.update none a).some = f.some := by
   ext
   simp [Finsupp.update]
