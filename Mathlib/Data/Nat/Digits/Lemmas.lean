@@ -284,7 +284,7 @@ theorem ofDigits_neg_one :
     ring
 
 /-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
-theorem digits_getD (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n / b ^ i % b := by
+theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n / b ^ i % b := by
   simp only [List.getD_eq_getElem?_getD]
   have split : n = 0 ∨ 0 < n := Nat.eq_zero_or_pos n
   cases split with
