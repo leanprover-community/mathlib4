@@ -86,8 +86,7 @@ theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} 
   have : ∑ x ∈ range (K + 1), f (a + x * h) = f a + ∑ x ∈ range K, f (a + (x + 1) * h) := by
     induction' K with k hk
     · simp
-    · nth_rw 2 [sum_range_succ]
-      rw [sum_range_succ, hk, add_assoc]
+    · rw [sum_range_succ (n := k), sum_range_succ (n := k + 1), hk, add_assoc]
       norm_cast
   rw [(Nat.sub_eq_iff_eq_add N_nonzero).mp rfl, add_tsub_cancel_right, this,
     sum_range_succ]
