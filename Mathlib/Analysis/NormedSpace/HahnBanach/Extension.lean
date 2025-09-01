@@ -139,10 +139,6 @@ lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
   ⟨g, DFunLike.congr_fun hg.symm⟩
 
-#where
-instance [Nontrivial E] : Nontrivial (E → L[𝕜]F) := sorry
-
-
 end RCLike
 
 section DualVector
@@ -189,5 +185,15 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
     simp [hx]
   · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩
     exact ⟨g, g_norm.le, g_eq⟩
+
+variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+instance  [Nontrivial E] [Nontrivial F] : Nontrivial (E →L[𝕜] F) := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : E)
+  obtain ⟨φ, hφ_norm, hφ_eval⟩ := exists_dual_vector 𝕜 _ hv
+  obtain ⟨w, hw⟩ := exists_ne (0 : F)
+  refine ⟨0, (𝕜 ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
+    (toSpanNonzeroSingleton 𝕜 _ hw) ∘L φ, sorry⟩
+
 
 end DualVector
