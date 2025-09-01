@@ -314,7 +314,7 @@ end TopologicalSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜]
+variable [Field 𝕜] [PartialOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
