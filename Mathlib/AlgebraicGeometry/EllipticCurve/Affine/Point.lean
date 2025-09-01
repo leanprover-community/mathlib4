@@ -85,13 +85,6 @@ namespace Affine
 
 /-! ## The affine coordinate ring -/
 
--- Porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
--- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
--- circumstances this might be extremely slow, because all instances in its definition are unified
--- exponentially many times. In this case, one solution is to manually add the local attribute
--- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
--- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
--- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
 abbrev CoordinateRing : Type r :=
   AdjoinRoot W'.polynomial
@@ -277,6 +270,8 @@ lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolyn
   C_simp
   ring1
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     XYIdeal W x₂ (C y₂) = XYIdeal W x₂ (linePolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
@@ -285,7 +280,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
     · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
       rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
       simp [linePolynomial]
-    · field_simp [linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
+    · simp [field, linePolynomial, slope_of_X_ne hx, sub_ne_zero_of_ne hx]
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]

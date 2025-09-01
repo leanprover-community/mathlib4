@@ -210,7 +210,7 @@ variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrd
   [WellFoundedLT J]
 
 /-- Let `C` be a Grothendieck abelian category with a generator (`hG`),
-`X : C`, `A₀ : Subobject X`. Let `J` be a well ordered type. This is
+`X : C`, `A₀ : Subobject X`. Let `J` be a well-ordered type. This is
 the functor `J ⥤ MonoOver X` which corresponds to the evaluation
 at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/
@@ -226,7 +226,7 @@ noncomputable abbrev functor : J ⥤ C :=
 
 instance : (functor hG A₀ J).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
-    have : Nonempty (Set.Iio m) := ⟨⟨⊥, Ne.bot_lt (by simpa using hm.not_isMin)⟩⟩
+    have := hm.nonempty_Iio.to_subtype
     let c := (Set.principalSegIio m).cocone (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _)
     have : Mono c.pt.hom := by dsimp [c]; infer_instance
     apply IsGrothendieckAbelian.isColimitMapCoconeOfSubobjectMkEqISup

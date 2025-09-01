@@ -235,7 +235,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₂ le_rfl
   use n
-  intros m hm
+  intro m hm
   rw [← tsub_add_cancel_of_le hm]
   simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
     pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,

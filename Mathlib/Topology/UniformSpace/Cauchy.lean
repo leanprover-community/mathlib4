@@ -423,7 +423,7 @@ theorem cauchySeq_tendsto_of_complete [Preorder β] [CompleteSpace α] {u : β �
     (H : CauchySeq u) : ∃ x, Tendsto u atTop (𝓝 x) :=
   CompleteSpace.complete H
 
-/-- If `K` is a complete subset, then any cauchy sequence in `K` converges to a point in `K` -/
+/-- If `K` is a complete subset, then any Cauchy sequence in `K` converges to a point in `K` -/
 theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsComplete K)
     {u : β → α} (h₂ : ∀ n, u n ∈ K) (h₃ : CauchySeq u) : ∃ v ∈ K, Tendsto u atTop (𝓝 v) :=
   h₁ _ h₃ <| le_principal_iff.2 <| mem_map_iff_exists_image.2
