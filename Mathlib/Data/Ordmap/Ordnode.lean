@@ -106,7 +106,7 @@ def ratio :=
 
 /-- O(1). Construct a singleton set containing value `a`.
 
-     singleton 3 = {3} -/
+  singleton 3 = {3} -/
 @[inline]
 protected def singleton (a : α) : Ordnode α :=
   node 1 nil a nil
@@ -132,8 +132,8 @@ def size : Ordnode α → ℕ
 
 /-- O(1). Is the set empty?
 
-     empty ∅ = tt
-     empty {1, 2, 3} = ff -/
+  empty ∅ = tt
+  empty {1, 2, 3} = ff -/
 @[inline]
 def empty : Ordnode α → Bool
   | nil => true
@@ -158,7 +158,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
-     repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
+  repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
 def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
@@ -298,8 +298,8 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 
 /-- O(n). Does every element of the map satisfy property `P`?
 
-     All (fun x ↦ x < 5) {1, 2, 3} = True
-     All (fun x ↦ x < 5) {1, 2, 3, 5} = False -/
+  All (fun x ↦ x < 5) {1, 2, 3} = True
+  All (fun x ↦ x < 5) {1, 2, 3, 5} = False -/
 def All (P : α → Prop) : Ordnode α → Prop
   | nil => True
   | node _ l x r => All P l ∧ P x ∧ All P r
@@ -313,8 +313,8 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
-     Any (fun x ↦ x < 2) {1, 2, 3} = True
-     Any (fun x ↦ x < 2) {2, 3, 5} = False -/
+  Any (fun x ↦ x < 2) {1, 2, 3} = True
+  Any (fun x ↦ x < 2) {2, 3, 5} = False -/
 def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
@@ -363,40 +363,40 @@ instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Am
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
 
-     findMin' 37 {1, 2, 3} = 1
-     findMin' 37 ∅ = 37 -/
+  findMin' 37 {1, 2, 3} = 1
+  findMin' 37 ∅ = 37 -/
 def findMin' : Ordnode α → α → α
   | nil, x => x
   | node _ l x _, _ => findMin' l x
 
 /-- O(log n). Return the minimum element of the tree, if it exists.
 
-     findMin {1, 2, 3} = some 1
-     findMin ∅ = none -/
+  findMin {1, 2, 3} = some 1
+  findMin ∅ = none -/
 def findMin : Ordnode α → Option α
   | nil => none
   | node _ l x _ => some (findMin' l x)
 
 /-- O(log n). Return the maximum element of the tree, or the provided default value.
 
-     findMax' 37 {1, 2, 3} = 3
-     findMax' 37 ∅ = 37 -/
+  findMax' 37 {1, 2, 3} = 3
+  findMax' 37 ∅ = 37 -/
 def findMax' : α → Ordnode α → α
   | x, nil => x
   | _, node _ _ x r => findMax' x r
 
 /-- O(log n). Return the maximum element of the tree, if it exists.
 
-     findMax {1, 2, 3} = some 3
-     findMax ∅ = none -/
+  findMax {1, 2, 3} = some 3
+  findMax ∅ = none -/
 def findMax : Ordnode α → Option α
   | nil => none
   | node _ _ x r => some (findMax' x r)
 
 /-- O(log n). Remove the minimum element from the tree, or do nothing if it is already empty.
 
-     eraseMin {1, 2, 3} = {2, 3}
-     eraseMin ∅ = ∅ -/
+  eraseMin {1, 2, 3} = {2, 3}
+  eraseMin ∅ = ∅ -/
 def eraseMin : Ordnode α → Ordnode α
   | nil => nil
   | node _ nil _ r => r
@@ -404,8 +404,8 @@ def eraseMin : Ordnode α → Ordnode α
 
 /-- O(log n). Remove the maximum element from the tree, or do nothing if it is already empty.
 
-     eraseMax {1, 2, 3} = {1, 2}
-     eraseMax ∅ = ∅ -/
+  eraseMax {1, 2, 3} = {1, 2}
+  eraseMax ∅ = ∅ -/
 def eraseMax : Ordnode α → Ordnode α
   | nil => nil
   | node _ l _ nil => l
@@ -422,8 +422,8 @@ def splitMin' : Ordnode α → α → Ordnode α → α × Ordnode α
 
 /-- O(log n). Extract and remove the minimum element from the tree, if it exists.
 
-     split_min {1, 2, 3} = some (1, {2, 3})
-     split_min ∅ = none -/
+  split_min {1, 2, 3} = some (1, {2, 3})
+  split_min ∅ = none -/
 def splitMin : Ordnode α → Option (α × Ordnode α)
   | nil => none
   | node _ l x r => splitMin' l x r
@@ -439,8 +439,8 @@ def splitMax' : Ordnode α → α → Ordnode α → Ordnode α × α
 
 /-- O(log n). Extract and remove the maximum element from the tree, if it exists.
 
-     split_max {1, 2, 3} = some ({1, 2}, 3)
-     split_max ∅ = none -/
+  split_max {1, 2, 3} = some ({1, 2}, 3)
+  split_max ∅ = none -/
 def splitMax : Ordnode α → Option (Ordnode α × α)
   | nil => none
   | node _ x l r => splitMax' x l r
@@ -461,8 +461,8 @@ def glue : Ordnode α → Ordnode α → Ordnode α
 
 /-- O(log(m + n)). Concatenate two trees that are ordered with respect to each other.
 
-     merge {1, 2} {3, 4} = {1, 2, 3, 4}
-     merge {3, 4} {1, 2} = precondition violation -/
+  merge {1, 2} {3, 4} = {1, 2, 3, 4}
+  merge {3, 4} {1, 2} = precondition violation -/
 def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
   (Ordnode.recOn (motive := fun _ => Ordnode α → Ordnode α) l fun r => r)
     fun ls ll lx lr _ IHlr r =>
@@ -476,8 +476,8 @@ def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
 /-- O(log n). Insert an element above all the others, without any comparisons.
 (Assumes that the element is in fact above all the others).
 
-    insertMax {1, 2} 4 = {1, 2, 4}
-    insertMax {1, 2} 0 = precondition violation -/
+  insertMax {1, 2} 4 = {1, 2, 4}
+  insertMax {1, 2} 0 = precondition violation -/
 def insertMax : Ordnode α → α → Ordnode α
   | nil, x => ι x
   | node _ l y r, x => balanceR l y (insertMax r x)
@@ -485,8 +485,8 @@ def insertMax : Ordnode α → α → Ordnode α
 /-- O(log n). Insert an element below all the others, without any comparisons.
 (Assumes that the element is in fact below all the others).
 
-    insertMin {1, 2} 0 = {0, 1, 2}
-    insertMin {1, 2} 4 = precondition violation -/
+  insertMin {1, 2} 0 = {0, 1, 2}
+  insertMin {1, 2} 4 = precondition violation -/
 def insertMin (x : α) : Ordnode α → Ordnode α
   | nil => ι x
   | node _ l y r => balanceR (insertMin x l) y r
@@ -494,8 +494,8 @@ def insertMin (x : α) : Ordnode α → Ordnode α
 /-- O(log(m+n)). Build a tree from an element between two trees, without any
 assumption on the relative sizes.
 
-    link {1, 2} 4 {5, 6} = {1, 2, 4, 5, 6}
-    link {1, 3} 2 {5} = precondition violation -/
+  link {1, 2} 4 {5, 6} = {1, 2, 4, 5, 6}
+  link {1, 3} 2 {5} = precondition violation -/
 def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
   match l with
   | nil => insertMin x
@@ -509,8 +509,8 @@ def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
 
 /-- O(n). Filter the elements of a tree satisfying a predicate.
 
-     filter (fun x ↦ x < 3) {1, 2, 4} = {1, 2}
-     filter (fun x ↦ x > 5) {1, 2, 4} = ∅ -/
+  filter (fun x ↦ x < 3) {1, 2, 4} = {1, 2}
+  filter (fun x ↦ x > 5) {1, 2, 4} = ∅ -/
 def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then
@@ -519,7 +519,7 @@ def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 
 /-- O(n). Split the elements of a tree into those satisfying, and not satisfying, a predicate.
 
-     partition (fun x ↦ x < 3) {1, 2, 4} = ({1, 2}, {3}) -/
+  partition (fun x ↦ x < 3) {1, 2, 4} = ({1, 2}, {3}) -/
 def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
   | node _ l x r =>
@@ -530,15 +530,15 @@ def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α ×
 /-- O(n). Map a function across a tree, without changing the structure. Only valid when
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
-     partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-     partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
+  partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
+  partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
 
 /-- O(n). Fold a function across the structure of a tree.
 
-     fold z f {1, 2, 4} = f (f z 1 z) 2 (f z 4 z)
+  fold z f {1, 2, 4} = f (f z 1 z) 2 (f z 4 z)
 
 The exact structure of function applications depends on the tree and so
 is unspecified. -/
@@ -548,29 +548,29 @@ def fold {β} (z : β) (f : β → α → β → β) : Ordnode α → β
 
 /-- O(n). Fold a function from left to right (in increasing order) across the tree.
 
-     foldl f z {1, 2, 4} = f (f (f z 1) 2) 4 -/
+  foldl f z {1, 2, 4} = f (f (f z 1) 2) 4 -/
 def foldl {β} (f : β → α → β) : β → Ordnode α → β
   | z, nil => z
   | z, node _ l x r => foldl f (f (foldl f z l) x) r
 
 /-- O(n). Fold a function from right to left (in decreasing order) across the tree.
 
-     foldr f {1, 2, 4} z = f 1 (f 2 (f 4 z)) -/
+  foldr f {1, 2, 4} z = f 1 (f 2 (f 4 z)) -/
 def foldr {β} (f : α → β → β) : Ordnode α → β → β
   | nil, z => z
   | node _ l x r, z => foldr f l (f x (foldr f r z))
 
 /-- O(n). Build a list of elements in ascending order from the tree.
 
-     toList {1, 2, 4} = [1, 2, 4]
-     toList {2, 1, 1, 4} = [1, 2, 4] -/
+  toList {1, 2, 4} = [1, 2, 4]
+  toList {2, 1, 1, 4} = [1, 2, 4] -/
 def toList (t : Ordnode α) : List α :=
   foldr List.cons t []
 
 /-- O(n). Build a list of elements in descending order from the tree.
 
-     toRevList {1, 2, 4} = [4, 2, 1]
-     toRevList {2, 1, 1, 4} = [4, 2, 1] -/
+  toRevList {1, 2, 4} = [4, 2, 1]
+  toRevList {2, 1, 1, 4} = [4, 2, 1] -/
 def toRevList (t : Ordnode α) : List α :=
   foldl (flip List.cons) [] t
 
@@ -582,8 +582,8 @@ instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
 
 /-- O(n). True if the trees have the same elements, ignoring structural differences.
 
-     Equiv {1, 2, 4} {2, 1, 1, 4} = true
-     Equiv {1, 2, 4} {1, 2, 3} = false -/
+  Equiv {1, 2, 4} {2, 1, 1, 4} = true
+  Equiv {1, 2, 4} {1, 2, 3} = false -/
 def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 
@@ -592,27 +592,27 @@ instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
-     powerset {1, 2, 3} = {∅, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3}} -/
+  powerset {1, 2, 3} = {∅, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3}} -/
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
   insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
 
 /-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
-     prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
+  prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
   fold nil (fun s₁ a s₂ => merge s₁ <| merge (map (Prod.mk a) t₂) s₂) t₁
 
 /-- O(m + n). Build a set on the disjoint union by combining sets on the factors.
 `Or.inl a ∈ s.copair t` iff `a ∈ s`, and `Or.inr b ∈ s.copair t` iff `b ∈ t`.
 
-    copair {1, 2} {2, 3} = {inl 1, inl 2, inr 2, inr 3} -/
+  copair {1, 2} {2, 3} = {inl 1, inl 2, inr 2, inr 3} -/
 protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α ⊕ β) :=
   merge (map Sum.inl t₁) (map Sum.inr t₂)
 
 /-- O(n). Map a partial function across a set. The result depends on a proof
 that the function is defined on all members of the set.
 
-    pmap (fin.mk : ∀ n, n < 4 → fin 4) {1, 2} H = {(1 : fin 4), (2 : fin 4)} -/
+  pmap (fin.mk : ∀ n, n < 4 → fin 4) {1, 2} H = {(1 : fin 4), (2 : fin 4)} -/
 def pmap {P : α → Prop} {β} (f : ∀ a, P a → β) : ∀ t : Ordnode α, All P t → Ordnode β
   | nil, _ => nil
   | node s l x r, ⟨hl, hx, hr⟩ => node s (pmap f l hl) (f x hx) (pmap f r hr)
@@ -620,14 +620,14 @@ def pmap {P : α → Prop} {β} (f : ∀ a, P a → β) : ∀ t : Ordnode α, Al
 /-- O(n). "Attach" the information that every element of `t` satisfies property
 P to these elements inside the set, producing a set in the subtype.
 
-    attach' (fun x ↦ x < 4) {1, 2} H = ({1, 2} : Ordnode {x // x<4}) -/
+  attach' (fun x ↦ x < 4) {1, 2} H = ({1, 2} : Ordnode {x // x<4}) -/
 def attach' {P : α → Prop} : ∀ t, All P t → Ordnode { a // P a } :=
   pmap Subtype.mk
 
 /-- O(log n). Get the `i`th element of the set, by its index from left to right.
 
-     nth {a, b, c, d} 2 = some c
-     nth {a, b, c, d} 5 = none -/
+  nth {a, b, c, d} 2 = some c
+  nth {a, b, c, d} 5 = none -/
 def nth : Ordnode α → ℕ → Option α
   | nil, _ => none
   | node _ l x r, i =>
@@ -638,8 +638,8 @@ def nth : Ordnode α → ℕ → Option α
 
 /-- O(log n). Remove the `i`th element of the set, by its index from left to right.
 
-     remove_nth {a, b, c, d} 2 = {a, b, d}
-     remove_nth {a, b, c, d} 5 = {a, b, c, d} -/
+  remove_nth {a, b, c, d} 2 = {a, b, d}
+  remove_nth {a, b, c, d} 5 = {a, b, c, d} -/
 def removeNth : Ordnode α → ℕ → Ordnode α
   | nil, _ => nil
   | node _ l x r, i =>
@@ -651,8 +651,8 @@ def removeNth : Ordnode α → ℕ → Ordnode α
 /-- Auxiliary definition for `take`. (Can also be used in lieu of `take` if you know the
 index is within the range of the data structure.)
 
-    takeAux {a, b, c, d} 2 = {a, b}
-    takeAux {a, b, c, d} 5 = {a, b, c, d} -/
+  takeAux {a, b, c, d} 2 = {a, b}
+  takeAux {a, b, c, d} 5 = {a, b, c, d} -/
 def takeAux : Ordnode α → ℕ → Ordnode α
   | nil, _ => nil
   | node _ l x r, i =>
@@ -665,16 +665,16 @@ def takeAux : Ordnode α → ℕ → Ordnode α
 
 /-- O(log n). Get the first `i` elements of the set, counted from the left.
 
-     take 2 {a, b, c, d} = {a, b}
-     take 5 {a, b, c, d} = {a, b, c, d} -/
+  take 2 {a, b, c, d} = {a, b}
+  take 5 {a, b, c, d} = {a, b, c, d} -/
 def take (i : ℕ) (t : Ordnode α) : Ordnode α :=
   if size t ≤ i then t else takeAux t i
 
 /-- Auxiliary definition for `drop`. (Can also be used in lieu of `drop` if you know the
 index is within the range of the data structure.)
 
-    drop_aux {a, b, c, d} 2 = {c, d}
-    drop_aux {a, b, c, d} 5 = ∅ -/
+  drop_aux {a, b, c, d} 2 = {c, d}
+  drop_aux {a, b, c, d} 5 = ∅ -/
 def dropAux : Ordnode α → ℕ → Ordnode α
   | nil, _ => nil
   | t@(node _ l x r), i =>
@@ -687,16 +687,16 @@ def dropAux : Ordnode α → ℕ → Ordnode α
 
 /-- O(log n). Remove the first `i` elements of the set, counted from the left.
 
-     drop 2 {a, b, c, d} = {c, d}
-     drop 5 {a, b, c, d} = ∅ -/
+  drop 2 {a, b, c, d} = {c, d}
+  drop 5 {a, b, c, d} = ∅ -/
 def drop (i : ℕ) (t : Ordnode α) : Ordnode α :=
   if size t ≤ i then nil else dropAux t i
 
 /-- Auxiliary definition for `splitAt`. (Can also be used in lieu of `splitAt` if you know the
 index is within the range of the data structure.)
 
-    splitAtAux {a, b, c, d} 2 = ({a, b}, {c, d})
-    splitAtAux {a, b, c, d} 5 = ({a, b, c, d}, ∅) -/
+  splitAtAux {a, b, c, d} 2 = ({a, b}, {c, d})
+  splitAtAux {a, b, c, d} 5 = ({a, b, c, d}, ∅) -/
 def splitAtAux : Ordnode α → ℕ → Ordnode α × Ordnode α
   | nil, _ => (nil, nil)
   | t@(node _ l x r), i =>
@@ -713,8 +713,8 @@ def splitAtAux : Ordnode α → ℕ → Ordnode α × Ordnode α
 
 /-- O(log n). Split a set at the `i`th element, getting the first `i` and everything else.
 
-     splitAt 2 {a, b, c, d} = ({a, b}, {c, d})
-     splitAt 5 {a, b, c, d} = ({a, b, c, d}, ∅) -/
+  splitAt 2 {a, b, c, d} = ({a, b}, {c, d})
+  splitAt 5 {a, b, c, d} = ({a, b, c, d}, ∅) -/
 def splitAt (i : ℕ) (t : Ordnode α) : Ordnode α × Ordnode α :=
   if size t ≤ i then (t, nil) else splitAtAux t i
 
@@ -730,8 +730,8 @@ def takeWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 /-- O(log n). Remove an initial segment of the set that satisfies the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
 
-    dropWhile (fun x ↦ x < 4) {1, 2, 3, 4, 5} = {4, 5}
-    dropWhile (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
+  dropWhile (fun x ↦ x < 4) {1, 2, 3, 4, 5} = {4, 5}
+  dropWhile (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
 def dropWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then dropWhile p r else link (dropWhile p l) x r
@@ -739,8 +739,8 @@ def dropWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 /-- O(log n). Split the set into those satisfying and not satisfying the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
 
-    span (fun x ↦ x < 4) {1, 2, 3, 4, 5} = ({1, 2, 3}, {4, 5})
-    span (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
+  span (fun x ↦ x < 4) {1, 2, 3, 4, 5} = ({1, 2, 3}, {4, 5})
+  span (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
 def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
   | node _ l x r =>
@@ -782,8 +782,8 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
 
 /-- O(n). Build a set from a list which is already sorted. Performs no comparisons.
 
-     ofAscList [1, 2, 3] = {1, 2, 3}
-     ofAscList [3, 2, 1] = precondition violation -/
+  ofAscList [1, 2, 3] = {1, 2, 3}
+  ofAscList [3, 2, 1] = precondition violation -/
 def ofAscList : List α → Ordnode α
   | [] => nil
   | x :: xs => ofAscListAux₂ xs (ι x) 1
@@ -795,13 +795,13 @@ variable [LE α] [DecidableLE α]
 /-- O(log n). Does the set (approximately) contain the element `x`? That is,
 is there an element that is equivalent to `x` in the order?
 
-    1 ∈ {1, 2, 3} = true
-    4 ∈ {1, 2, 3} = false
+  1 ∈ {1, 2, 3} = true
+  4 ∈ {1, 2, 3} = false
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    (1, 1) ∈ {(0, 1), (1, 2)} = true
-    (3, 1) ∈ {(0, 1), (1, 2)} = false -/
+  (1, 1) ∈ {(0, 1), (1, 2)} = true
+  (3, 1) ∈ {(0, 1), (1, 2)} = false -/
 def mem (x : α) : Ordnode α → Bool
   | nil => false
   | node _ l y r =>
@@ -813,13 +813,13 @@ def mem (x : α) : Ordnode α → Bool
 /-- O(log n). Retrieve an element in the set that is equivalent to `x` in the order,
 if it exists.
 
-    find 1 {1, 2, 3} = some 1
-    find 4 {1, 2, 3} = none
+  find 1 {1, 2, 3} = some 1
+  find 4 {1, 2, 3} = none
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    find (1, 1) {(0, 1), (1, 2)} = some (1, 2)
-    find (3, 1) {(0, 1), (1, 2)} = none -/
+  find (1, 1) {(0, 1), (1, 2)} = some (1, 2)
+  find (3, 1) {(0, 1), (1, 2)} = none -/
 def find (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r =>
@@ -838,13 +838,13 @@ instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
 If an equivalent element is already in the set, the function `f` is used to generate
 the element to insert (being passed the current value in the set).
 
-    insertWith f 0 {1, 2, 3} = {0, 1, 2, 3}
-    insertWith f 1 {1, 2, 3} = {f 1, 2, 3}
+  insertWith f 0 {1, 2, 3} = {0, 1, 2, 3}
+  insertWith f 1 {1, 2, 3} = {f 1, 2, 3}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    insertWith f (1, 1) {(0, 1), (1, 2)} = {(0, 1), f (1, 2)}
-    insertWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
+  insertWith f (1, 1) {(0, 1), (1, 2)} = {(0, 1), f (1, 2)}
+  insertWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
 def insertWith (f : α → α) (x : α) : Ordnode α → Ordnode α
   | nil => ι x
   | node sz l y r =>
@@ -857,13 +857,13 @@ def insertWith (f : α → α) (x : α) : Ordnode α → Ordnode α
 doing nothing if the key is not found.
 Note that the element returned by `f` must be equivalent to `x`.
 
-    adjustWith f 0 {1, 2, 3} = {1, 2, 3}
-    adjustWith f 1 {1, 2, 3} = {f 1, 2, 3}
+  adjustWith f 0 {1, 2, 3} = {1, 2, 3}
+  adjustWith f 1 {1, 2, 3} = {f 1, 2, 3}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    adjustWith f (1, 1) {(0, 1), (1, 2)} = {(0, 1), f (1, 2)}
-    adjustWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)} -/
+  adjustWith f (1, 1) {(0, 1), (1, 2)} = {(0, 1), f (1, 2)}
+  adjustWith f (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)} -/
 def adjustWith (f : α → α) (x : α) : Ordnode α → Ordnode α
   | nil => nil
   | _t@(node sz l y r) =>
@@ -872,13 +872,14 @@ def adjustWith (f : α → α) (x : α) : Ordnode α → Ordnode α
     | Ordering.eq => node sz l (f y) r
     | Ordering.gt => node sz l y (adjustWith f x r)
 
+set_option linter.style.docString false in
 /-- O(log n). Modify an element in the set with the given function,
 doing nothing if the key is not found.
 Note that the element returned by `f` must be equivalent to `x`.
 
-    updateWith f 0 {1, 2, 3} = {1, 2, 3}
-    updateWith f 1 {1, 2, 3} = {2, 3}     if f 1 = none
-                              = {a, 2, 3}  if f 1 = some a -/
+  updateWith f 0 {1, 2, 3} = {1, 2, 3}
+  updateWith f 1 {1, 2, 3} = {2, 3}     if f 1 = none
+                           = {a, 2, 3}  if f 1 = some a -/
 def updateWith (f : α → Option α) (x : α) : Ordnode α → Ordnode α
   | nil => nil
   | _t@(node sz l y r) =>
@@ -894,10 +895,10 @@ def updateWith (f : α → Option α) (x : α) : Ordnode α → Ordnode α
 doing nothing if the key is not found.
 Note that the element returned by `f` must be equivalent to `x`.
 
-    alter f 0 {1, 2, 3} = {1, 2, 3}     if f none = none
-                        = {a, 1, 2, 3}  if f none = some a
-    alter f 1 {1, 2, 3} = {2, 3}     if f 1 = none
-                        = {a, 2, 3}  if f 1 = some a -/
+  alter f 0 {1, 2, 3} = {1, 2, 3}     if f none = none
+                      = {a, 1, 2, 3}  if f none = some a
+  alter f 1 {1, 2, 3} = {2, 3}     if f 1 = none
+                      = {a, 2, 3}  if f 1 = some a -/
 def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
   | nil => Option.recOn (f none) nil Ordnode.singleton
   | _t@(node sz l y r) =>
@@ -912,13 +913,13 @@ def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
 If an equivalent element is already in the set, this replaces it.
 
-    insert 1 {1, 2, 3} = {1, 2, 3}
-    insert 4 {1, 2, 3} = {1, 2, 3, 4}
+  insert 1 {1, 2, 3} = {1, 2, 3}
+  insert 4 {1, 2, 3} = {1, 2, 3, 4}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    insert (1, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 1)}
-    insert (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
+  insert (1, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 1)}
+  insert (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
 protected def insert (x : α) : Ordnode α → Ordnode α
   | nil => ι x
   | node sz l y r =>
@@ -933,13 +934,13 @@ instance : Insert α (Ordnode α) :=
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
 If an equivalent element is already in the set, the set is returned as is.
 
-    insert' 1 {1, 2, 3} = {1, 2, 3}
-    insert' 4 {1, 2, 3} = {1, 2, 3, 4}
+  insert' 1 {1, 2, 3} = {1, 2, 3}
+  insert' 4 {1, 2, 3} = {1, 2, 3, 4}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    insert' (1, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)}
-    insert' (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
+  insert' (1, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)}
+  insert' (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2), (3, 1)} -/
 def insert' (x : α) : Ordnode α → Ordnode α
   | nil => ι x
   | t@(node _ l y r) =>
@@ -951,14 +952,14 @@ def insert' (x : α) : Ordnode α → Ordnode α
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it.
 If an element equivalent to `x` is in the set, it is discarded.
 
-    split 2 {1, 2, 4} = ({1}, {4})
-    split 3 {1, 2, 4} = ({1, 2}, {4})
-    split 4 {1, 2, 4} = ({1, 2}, ∅)
+  split 2 {1, 2, 4} = ({1}, {4})
+  split 3 {1, 2, 4} = ({1, 2}, {4})
+  split 4 {1, 2, 4} = ({1, 2}, ∅)
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    split (1, 1) {(0, 1), (1, 2)} = ({(0, 1)}, ∅)
-    split (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, ∅) -/
+  split (1, 1) {(0, 1), (1, 2)} = ({(0, 1)}, ∅)
+  split (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, ∅) -/
 def split (x : α) : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
   | node _ l y r =>
@@ -974,14 +975,14 @@ def split (x : α) : Ordnode α → Ordnode α × Ordnode α
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it,
 plus an element equivalent to `x`, if it exists.
 
-    split3 2 {1, 2, 4} = ({1}, some 2, {4})
-    split3 3 {1, 2, 4} = ({1, 2}, none, {4})
-    split3 4 {1, 2, 4} = ({1, 2}, some 4, ∅)
+  split3 2 {1, 2, 4} = ({1}, some 2, {4})
+  split3 3 {1, 2, 4} = ({1, 2}, none, {4})
+  split3 4 {1, 2, 4} = ({1, 2}, some 4, ∅)
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    split3 (1, 1) {(0, 1), (1, 2)} = ({(0, 1)}, some (1, 2), ∅)
-    split3 (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, none, ∅) -/
+  split3 (1, 1) {(0, 1), (1, 2)} = ({(0, 1)}, some (1, 2), ∅)
+  split3 (3, 1) {(0, 1), (1, 2)} = ({(0, 1), (1, 2)}, none, ∅) -/
 def split3 (x : α) : Ordnode α → Ordnode α × Option α × Ordnode α
   | nil => (nil, none, nil)
   | node _ l y r =>
@@ -997,13 +998,13 @@ def split3 (x : α) : Ordnode α → Ordnode α × Option α × Ordnode α
 /-- O(log n). Remove an element from the set equivalent to `x`. Does nothing if there
 is no such element.
 
-    erase 1 {1, 2, 3} = {2, 3}
-    erase 4 {1, 2, 3} = {1, 2, 3}
+  erase 1 {1, 2, 3} = {2, 3}
+  erase 4 {1, 2, 3} = {1, 2, 3}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    erase (1, 1) {(0, 1), (1, 2)} = {(0, 1)}
-    erase (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)} -/
+  erase (1, 1) {(0, 1), (1, 2)} = {(0, 1)}
+  erase (3, 1) {(0, 1), (1, 2)} = {(0, 1), (1, 2)} -/
 def erase (x : α) : Ordnode α → Ordnode α
   | nil => nil
   | _t@(node _ l y r) =>
@@ -1019,9 +1020,9 @@ def findLtAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the largest element in the tree that is `< x`.
 
-     findLt 2 {1, 2, 4} = some 1
-     findLt 3 {1, 2, 4} = some 2
-     findLt 0 {1, 2, 4} = none -/
+  findLt 2 {1, 2, 4} = some 1
+  findLt 3 {1, 2, 4} = some 2
+  findLt 0 {1, 2, 4} = none -/
 def findLt (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r => if x ≤ y then findLt x l else some (findLtAux x r y)
@@ -1033,9 +1034,9 @@ def findGtAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the smallest element in the tree that is `> x`.
 
-     findGt 2 {1, 2, 4} = some 4
-     findGt 3 {1, 2, 4} = some 4
-     findGt 4 {1, 2, 4} = none -/
+  findGt 2 {1, 2, 4} = some 4
+  findGt 3 {1, 2, 4} = some 4
+  findGt 4 {1, 2, 4} = none -/
 def findGt (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r => if y ≤ x then findGt x r else some (findGtAux x l y)
@@ -1051,9 +1052,9 @@ def findLeAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the largest element in the tree that is `≤ x`.
 
-     findLe 2 {1, 2, 4} = some 2
-     findLe 3 {1, 2, 4} = some 2
-     findLe 0 {1, 2, 4} = none -/
+  findLe 2 {1, 2, 4} = some 2
+  findLe 3 {1, 2, 4} = some 2
+  findLe 0 {1, 2, 4} = none -/
 def findLe (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r =>
@@ -1073,9 +1074,9 @@ def findGeAux (x : α) : Ordnode α → α → α
 
 /-- O(log n). Get the smallest element in the tree that is `≥ x`.
 
-     findGe 2 {1, 2, 4} = some 2
-     findGe 3 {1, 2, 4} = some 4
-     findGe 5 {1, 2, 4} = none -/
+  findGe 2 {1, 2, 4} = some 2
+  findGe 3 {1, 2, 4} = some 4
+  findGe 5 {1, 2, 4} = none -/
 def findGe (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r =>
@@ -1096,9 +1097,9 @@ def findIndexAux (x : α) : Ordnode α → ℕ → Option ℕ
 /-- O(log n). Get the index, counting from the left,
 of an element equivalent to `x` if it exists.
 
-    findIndex 2 {1, 2, 4} = some 1
-    findIndex 4 {1, 2, 4} = some 2
-    findIndex 5 {1, 2, 4} = none -/
+  findIndex 2 {1, 2, 4} = some 1
+  findIndex 4 {1, 2, 4} = some 2
+  findIndex 5 {1, 2, 4} = none -/
 def findIndex (x : α) (t : Ordnode α) : Option ℕ :=
   findIndexAux x t 0
 
@@ -1112,15 +1113,15 @@ def isSubsetAux : Ordnode α → Ordnode α → Bool
 
 /-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`?
 
-     is_subset {1, 4} {1, 2, 4} = tt
-     is_subset {1, 3} {1, 2, 4} = ff -/
+  is_subset {1, 4} {1, 2, 4} = tt
+  is_subset {1, 3} {1, 2, 4} = ff -/
 def isSubset (t₁ t₂ : Ordnode α) : Bool :=
   decide (size t₁ ≤ size t₂) && isSubsetAux t₁ t₂
 
 /-- O(m + n). Is every element of `t₁` not equivalent to any element of `t₂`?
 
-     disjoint {1, 3} {2, 4} = tt
-     disjoint {1, 2} {2, 4} = ff -/
+  disjoint {1, 3} {2, 4} = tt
+  disjoint {1, 2} {2, 4} = ff -/
 def disjoint : Ordnode α → Ordnode α → Bool
   | nil, _ => true
   | _, nil => true
@@ -1131,12 +1132,12 @@ def disjoint : Ordnode α → Ordnode α → Bool
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. The union of two sets, preferring members of
   `t₁` over those of `t₂` when equivalent elements are encountered.
 
-    union {1, 2} {2, 3} = {1, 2, 3}
-    union {1, 3} {2} = {1, 2, 3}
+  union {1, 2} {2, 3} = {1, 2, 3}
+  union {1, 3} {2} = {1, 2, 3}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    union {(1, 1)} {(0, 1), (1, 2)} = {(0, 1), (1, 1)} -/
+  union {(1, 1)} {(0, 1), (1, 2)} = {(0, 1), (1, 1)} -/
 def union : Ordnode α → Ordnode α → Ordnode α
   | t₁, nil => t₁
   | nil, t₂ => t₂
@@ -1150,8 +1151,8 @@ def union : Ordnode α → Ordnode α → Ordnode α
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. Difference of two sets.
 
-    diff {1, 2} {2, 3} = {1}
-    diff {1, 2, 3} {2} = {1, 3} -/
+  diff {1, 2} {2, 3} = {1}
+  diff {1, 2, 3} {2} = {1, 3} -/
 def diff : Ordnode α → Ordnode α → Ordnode α
   | t₁, nil => t₁
   | t₁, t₂@(node _ l₂ x r₂) =>
@@ -1164,8 +1165,8 @@ def diff : Ordnode α → Ordnode α → Ordnode α
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. Intersection of two sets, preferring members of
 `t₁` over those of `t₂` when equivalent elements are encountered.
 
-    inter {1, 2} {2, 3} = {2}
-    inter {1, 3} {2} = ∅ -/
+  inter {1, 2} {2, 3} = {2}
+  inter {1, 3} {2} = ∅ -/
 def inter : Ordnode α → Ordnode α → Ordnode α
   | nil, _ => nil
   | t₁@(node _ l₁ x r₁), t₂ =>
@@ -1178,20 +1179,20 @@ def inter : Ordnode α → Ordnode α → Ordnode α
 /-- O(n * log n). Build a set from a list, preferring elements that appear earlier in the list
 in the case of equivalent elements.
 
-    ofList [1, 2, 3] = {1, 2, 3}
-    ofList [2, 1, 1, 3] = {1, 2, 3}
+  ofList [1, 2, 3] = {1, 2, 3}
+  ofList [2, 1, 1, 3] = {1, 2, 3}
 
 Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
 
-    ofList [(1, 1), (0, 1), (1, 2)] = {(0, 1), (1, 1)} -/
+  ofList [(1, 1), (0, 1), (1, 2)] = {(0, 1), (1, 1)} -/
 def ofList (l : List α) : Ordnode α :=
   l.foldr insert nil
 
 /-- O(n * log n). Adaptively chooses between the linear and log-linear algorithm depending
   on whether the input list is already sorted.
 
-    ofList' [1, 2, 3] = {1, 2, 3}
-    ofList' [2, 1, 1, 3] = {1, 2, 3} -/
+  ofList' [1, 2, 3] = {1, 2, 3}
+  ofList' [2, 1, 1, 3] = {1, 2, 3} -/
 def ofList' : List α → Ordnode α
   | [] => nil
   | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
@@ -1200,8 +1201,8 @@ def ofList' : List α → Ordnode α
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.
 Equivalent elements are selected with a preference for smaller source elements.
 
-    image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
-    image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
+  image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
+  image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
 def image {α β} [LE β] [DecidableLE β] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 

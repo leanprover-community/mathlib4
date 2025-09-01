@@ -63,7 +63,7 @@ three axioms:
 1. For every object `X`, the maximal sieve is in `J X`.
 2. If `S ∈ J X` then its pullback along any `h : Y ⟶ X` is in `J Y`.
 3. If `S ∈ J X` and `R` is a sieve on `X`, then provided that the pullback of `R` along any arrow
-   `f : Y ⟶ X` in `S` is in `J Y`, we have that `R` itself is in `J X`.
+  `f : Y ⟶ X` in `S` is in `J Y`, we have that `R` itself is in `J X`.
 
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 

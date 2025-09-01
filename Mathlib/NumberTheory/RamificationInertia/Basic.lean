@@ -31,6 +31,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation

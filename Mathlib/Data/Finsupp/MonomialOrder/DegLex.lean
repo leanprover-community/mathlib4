@@ -11,8 +11,8 @@ import Mathlib.Data.Finsupp.Weight
 /-! Homogeneous lexicographic monomial ordering
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
-For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
-(This last property is automatic when `σ` is finite).
+  For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
+  (This last property is automatic when `σ` is finite).
 
 The type synonym is `DegLex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.degLex_le_iff`
 and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.
