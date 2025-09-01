@@ -267,13 +267,18 @@ elab_rules : command
   logInfoAt tk <| .joinSep msgs.toList "\n"
 
 /--
-`#find_deleted_files (nc)?` takes an optional natural number input `nc`.
+`#find_deleted_files (nc)? (pct%)?` takes an optional natural number input `nc` and an optional
+percentage `pct%`.
 
-Using `#find_deleted_files 5`
+Using `#find_deleted_files 5 80%`
 It looks at the `lean` files in `Mathlib` that existed `4` commits ago
 (i.e. the commit that you see with `git log -5`) and that are no longer present.
 It then proposes `Try these:` suggestions calling the `#create_deprecated_module`
 to finalize the deprecation.
+
+The percentage `pct` is used to detect renames: if a file was renamed with similarity
+at least `pct`, then the `#create_deprecated_module` suggestion will use the new name
+in the `import` command, rather than copying over the imports from the deleted file.
 
 Unlike what usually happens with `Try these:`, the original `#find_deleted_files` does not get
 replaced by the suggestion, which means that you can click on multiple suggestions and proceed with
