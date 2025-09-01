@@ -497,7 +497,7 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
   hA.add_posSemidef hB.posSemidef
 
 protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
-    [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulMono α R] [PosSMulStrictMono α R]
+    [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
     {x : Matrix n n R} (hx : x.PosDef) {a : α} (ha : 0 < a) : (a • x).PosDef := by
   refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha.le) hx.1, fun y hy => ?_⟩
   simp only [smul_mulVec, dotProduct_smul]
