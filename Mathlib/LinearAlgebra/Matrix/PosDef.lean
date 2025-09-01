@@ -311,13 +311,12 @@ theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff' {U x : Matrix n n R} (hU 
   obtain ⟨V, hV⟩ := hU.exists_right_inv
   exact fun h => ⟨fun H y => by simpa [hV] using H (V *ᵥ y), fun H _ => H _⟩
 
-open Matrix in
+open Matrix
+
 theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff {U x : Matrix n n R} (hU : IsUnit U) :
-    PosSemidef (U * x * star U) ↔ x.PosSemidef := by
-  simpa using hU.star.posSemidef_conjugate_iff'
+    PosSemidef (U * x * star U) ↔ x.PosSemidef := by simpa using hU.star.posSemidef_conjugate_iff'
 
 open scoped Kronecker in
-open Matrix in
 theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
@@ -660,13 +659,12 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : Is
   refine fun h => ⟨fun h x hx => ?_, fun h x hx => h _ (hVV _ hx)⟩
   simpa [hW] using h _ (hWW _ hx)
 
-open Matrix in
+open Matrix
+
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff {x U : Matrix n n R} (hU : IsUnit U) :
-    PosDef (U * x * star U) ↔ x.PosDef := by
-  simpa using hU.star.posDef_conjugate_iff'
+    PosDef (U * x * star U) ↔ x.PosDef := by simpa using hU.star.posDef_conjugate_iff'
 
 open scoped Kronecker in
-open Matrix in
 theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
