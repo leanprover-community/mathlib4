@@ -410,7 +410,7 @@ end veblen
 
 /-- For any given `x`, there exists a unique pair `(o, a)` such that `ω ^ x = veblen o a` and
 `a < ω ^ x`. `invVeblen₁ x` and `invVeblen₂ x` return the first and second entries of this pair,
-respectively.
+respectively. See `veblen_eq_opow_iff` for a proof.
 
 Composing this function with `Ordinal.CNF` yields a predicative ordinal notation up to `Γ₀`. -/
 def invVeblen₁ (x : Ordinal) : Ordinal :=
@@ -431,7 +431,7 @@ theorem lt_veblen_iff_invVeblen₁_le : a < veblen o a ↔ invVeblen₁ a ≤ o 
     simpa
   · simpa [(lt_veblen_invVeblen₁ a).trans_le (veblen_left_monotone _ h)]
 
-theorem mem_range_veblen_le_invVeblen₁ : ω ^ x ∈ range (veblen o) ↔ o ≤ invVeblen₁ x := by
+theorem mem_range_veblen_iff_le_invVeblen₁ : ω ^ x ∈ range (veblen o) ↔ o ≤ invVeblen₁ x := by
   obtain h | rfl | h := lt_trichotomy o (invVeblen₁ x)
   · exact iff_of_true ⟨_, veblen_opow_eq_opow_iff.2 <| veblen_eq_of_lt_invVeblen₁ h⟩ h.le
   · apply iff_of_true _ le_rfl
@@ -448,7 +448,7 @@ theorem mem_range_veblen_le_invVeblen₁ : ω ^ x ∈ range (veblen o) ↔ o ≤
 theorem invVeblen₁_veblen (h : a < veblen o a) : invVeblen₁ (veblen o a) = o := by
   apply le_antisymm
   · rwa [← lt_veblen_iff_invVeblen₁_le, veblen_lt_veblen_iff_right]
-  · rw [← mem_range_veblen_le_invVeblen₁]
+  · rw [← mem_range_veblen_iff_le_invVeblen₁]
     obtain rfl | ho := eq_zero_or_pos o
     · simp
     · rw [← veblen_zero_apply, veblen_veblen_of_lt ho]
@@ -458,17 +458,16 @@ theorem invVeblen₁_of_lt_opow (h : a < ω ^ a) : invVeblen₁ a = 0 := by
   rwa [← Ordinal.le_zero, ← lt_veblen_iff_invVeblen₁_le, veblen_zero]
 
 @[simp]
-theorem invVeblen₁_zero : invVeblen₁ 0 = 0 := by
-  apply invVeblen₁_of_lt_opow
-  simp
+theorem invVeblen₁_zero : invVeblen₁ 0 = 0 :=
+  invVeblen₁_of_lt_opow <| by simp
 
 @[inherit_doc invVeblen₁]
 def invVeblen₂ (x : Ordinal) : Ordinal :=
-  Classical.choose ((mem_range_veblen_le_invVeblen₁ (x := x)).2 le_rfl)
+  Classical.choose ((mem_range_veblen_iff_le_invVeblen₁ (x := x)).2 le_rfl)
 
 @[simp]
 theorem veblen_invVeblen₁_invVeblen₂ (x : Ordinal) : veblen (invVeblen₁ x) (invVeblen₂ x) = ω ^ x :=
-  Classical.choose_spec (mem_range_veblen_le_invVeblen₁.2 le_rfl)
+  Classical.choose_spec (mem_range_veblen_iff_le_invVeblen₁.2 le_rfl)
 
 theorem invVeblen₂_eq_iff : invVeblen₂ x = a ↔ ω ^ x = veblen (invVeblen₁ x) a := by
   rw [← veblen_inj (o := x.invVeblen₁), veblen_invVeblen₁_invVeblen₂]
