@@ -883,8 +883,6 @@ end Set
 namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
--- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩

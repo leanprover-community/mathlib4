@@ -376,7 +376,7 @@ segment `openSegment 𝕜 x y` is included in the union of the open segments `op
 theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x y : 𝕜 → E)) :
     openSegment 𝕜 x y ⊆ insert z (openSegment 𝕜 x z ∪ openSegment 𝕜 z y) := by
   rcases hz with ⟨c, rfl⟩
-  simp only [openSegment_eq_image_lineMap, ← mapsTo']
+  simp only [openSegment_eq_image_lineMap, ← mapsTo_iff_image_subset]
   rintro a ⟨h₀, h₁⟩
   rcases lt_trichotomy a c with (hac | rfl | hca)
   · right
