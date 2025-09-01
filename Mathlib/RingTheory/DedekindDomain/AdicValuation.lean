@@ -417,10 +417,6 @@ lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
   Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
--- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
---   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
