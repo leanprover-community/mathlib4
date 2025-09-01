@@ -65,23 +65,22 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, hj, not_lt, add_le_iff_nonpos_right,
           nonpos_iff_eq_zero] at h
         rw [← add_left_inj 1, hj, left_eq_add, h]
-      rcases n with _|n
+      rcases n with _ | n
       · fin_cases i
         dsimp at h hi
         rw [show q = 0 by omega]
         change X.σ 0 ≫ (P 1).f 1 = 0
         simp only [P_succ, HomologicalComplex.add_f_apply, comp_add,
-          HomologicalComplex.id_f, AlternatingFaceMapComplex.obj_d_eq, Hσ,
+          AlternatingFaceMapComplex.obj_d_eq, Hσ,
           HomologicalComplex.comp_f, Homotopy.nullHomotopicMap'_f (c_mk 2 1 rfl) (c_mk 1 0 rfl),
           comp_id]
         rw [hσ'_eq' (zero_add 0).symm, hσ'_eq' (add_zero 1).symm]
         dsimp [P_zero]
         rw [comp_id, Fin.sum_univ_two,
           Fin.sum_univ_succ, Fin.sum_univ_two]
-        simp only [Fin.val_zero, pow_zero, pow_one, pow_add, one_smul, neg_smul, Fin.mk_one,
-          Fin.val_succ, Fin.val_one, P_zero, HomologicalComplex.id_f,
-          Fin.val_two, pow_two, mul_neg, one_mul, neg_mul, neg_neg, id_comp, add_comp,
-          comp_add, Fin.mk_zero, neg_comp, comp_neg, Fin.succ_zero_eq_one]
+        simp only [Fin.val_zero, pow_zero, pow_one, pow_add, one_smul, neg_smul, Fin.val_succ,
+          Fin.val_one, mul_neg, one_mul, neg_mul, neg_neg, id_comp, add_comp, comp_add, neg_comp,
+          comp_neg, Fin.succ_zero_eq_one]
         rw [← Fin.castSucc_one, SimplicialObject.δ_comp_σ_self, ← Fin.castSucc_zero (n := 1),
           SimplicialObject.δ_comp_σ_self_assoc,
           SimplicialObject.δ_comp_σ_succ, comp_id, ← Fin.castSucc_zero (n := 2),
@@ -109,12 +108,12 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
         have eq := hq j.rev.succ (by
-          simp only [← hk, Fin.rev_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
+          simp only [← hk, Fin.rev_eq j hk.symm, Fin.succ_mk, Fin.val_mk]
           omega)
         rw [assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
-        simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
+        simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val]
         omega
 
 @[reassoc (attr := simp)]

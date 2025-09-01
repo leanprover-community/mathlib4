@@ -114,7 +114,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
   convention. The interesting case is `a ≠ 0` -/
-  rcases eq_or_ne a 0 with rfl|ha
+  rcases eq_or_ne a 0 with rfl | ha
   · by_cases hE : CompleteSpace E
     · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
     · simp [integral, mellin, hE]
@@ -171,7 +171,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
 theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
     HasMellin (fun t => c • f t) s  (c • mellin f s) :=
-  ⟨hf.const_smul c, by simp [HasMellin, mellin, smul_comm, hf.integral_smul]⟩
+  ⟨hf.const_smul c, by simp [mellin, smul_comm, hf.integral_smul]⟩
 
 end Defs
 
@@ -230,13 +230,13 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
   simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
   obtain ⟨ε, hε, hε'⟩ := hd'
-  refine ⟨ε, hε, integrableOn_Ioc_iff_integrableOn_Ioo.mpr ⟨?_, ?_⟩⟩
+  refine ⟨ε, hε, Iff.mpr integrableOn_Ioc_iff_integrableOn_Ioo ⟨?_, ?_⟩⟩
   · refine AEStronglyMeasurable.mul ?_ (hfc.mono_set Ioo_subset_Ioi_self)
     refine (continuousOn_of_forall_continuousAt fun t ht => ?_).aestronglyMeasurable
       measurableSet_Ioo
     exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
   · apply HasFiniteIntegral.mono'
-    · show HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
+    · change HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
       refine (Integrable.hasFiniteIntegral ?_).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
@@ -266,7 +266,7 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
     rw [union_assoc, Ioc_union_Ioi (le_max_right _ _),
       Ioc_union_Ioi ((min_le_left _ _).trans (le_max_right _ _)), min_eq_left (lt_min hc2 hc1).le]
   rw [this, integrableOn_union, integrableOn_union]
-  refine ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc.mp ?_⟩, hc1'⟩
+  refine ⟨⟨hc2', Iff.mp integrableOn_Icc_iff_integrableOn_Ioc ?_⟩, hc1'⟩
   refine
     (hfc.continuousOn_mul ?_ isOpen_Ioi.isLocallyClosed).integrableOn_compact_subset
       (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
@@ -347,7 +347,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => ?_
-    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
+    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc, norm_eq_abs]
     gcongr
     rw [norm_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_gt 1 t with h | h

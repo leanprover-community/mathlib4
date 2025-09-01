@@ -51,19 +51,21 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
     exact lt_one_add _
   map_target' _ _ := trivial
   left_inv' x _ := by
-    field_simp [norm_smul, smul_smul, (zero_lt_one_add_norm_sq x).ne', sq_abs,
-      Real.sq_sqrt (zero_lt_one_add_norm_sq x).le, ← Real.sqrt_div (zero_lt_one_add_norm_sq x).le]
+    match_scalars
+    simp [norm_smul]
+    field_simp
+    simp [sq_abs, Real.sq_sqrt (zero_lt_one_add_norm_sq x).le]
   right_inv' y hy := by
     have : 0 < 1 - ‖y‖ ^ 2 := by nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
-    field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le,
-      ← Real.sqrt_div this.le]
+    match_scalars
+    simp [norm_smul]
+    field_simp
+    simp [field, sq_abs, Real.sq_sqrt this.le]
   open_source := isOpen_univ
   open_target := isOpen_ball
   continuousOn_toFun := by
-    suffices Continuous fun (x : E) => (√(1 + ‖x‖ ^ 2))⁻¹
-     from (this.smul continuous_id).continuousOn
-    refine Continuous.inv₀ ?_ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
-    fun_prop
+    suffices Continuous fun (x : E) => (√(1 + ‖x‖ ^ 2))⁻¹ by fun_prop
+    exact Continuous.inv₀ (by fun_prop) fun x => Real.sqrt_ne_zero'.mpr (by positivity)
   continuousOn_invFun := by
     have : ∀ y ∈ ball (0 : E) 1, √(1 - ‖(y : E)‖ ^ 2) ≠ 0 := fun y hy ↦ by
       rw [Real.sqrt_ne_zero']
@@ -143,7 +145,7 @@ theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0
 
 @[continuity]
 theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
-  simpa [continuous_iff_continuousOn_univ] using (univBall c r).continuousOn
+  simpa [continuousOn_univ] using (univBall c r).continuousOn
 
 theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
   (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r

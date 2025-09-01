@@ -47,7 +47,7 @@ class RegularMono (f : X ⟶ Y) where
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right := by aesop_cat
+  w : f ≫ left = f ≫ right := by cat_disch
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 
@@ -77,7 +77,7 @@ instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono 
   isLimit := isSplitMonoEqualizes f
 
 /-- If `f` is a regular mono, then any map `k : W ⟶ Y` equalizing `RegularMono.left` and
-    `RegularMono.right` induces a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
+`RegularMono.right` induces a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
 def RegularMono.lift' {W : C} (f : X ⟶ Y) [RegularMono f] (k : W ⟶ Y)
     (h : k ≫ (RegularMono.left : Y ⟶ @RegularMono.Z _ _ _ _ f _) = k ≫ RegularMono.right) :
     { l : W ⟶ X // l ≫ f = k } :=
@@ -132,7 +132,7 @@ instance (priority := 100) strongMono_of_regularMono (f : X ⟶ Y) [RegularMono 
         simp only [Category.assoc, RegularMono.w]
       obtain ⟨t, ht⟩ := RegularMono.lift' _ _ this
       refine CommSq.HasLift.mk' ⟨t, (cancel_mono f).1 ?_, ht⟩
-      simp only [Arrow.mk_hom, Arrow.homMk'_left, Category.assoc, ht, sq.w])
+      simp only [Category.assoc, ht, sq.w])
 
 /-- A regular monomorphism is an isomorphism if it is an epimorphism. -/
 theorem isIso_of_regularMono_of_epi (f : X ⟶ Y) [RegularMono f] [Epi f] : IsIso f :=
@@ -147,12 +147,10 @@ class IsRegularMonoCategory : Prop where
   /-- Every monomorphism is a regular monomorphism -/
   regularMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (RegularMono f)
 
-@[deprecated (since := "2024-11-27")] alias RegularMonoCategory := IsRegularMonoCategory
-
 end
 
 /-- In a category in which every monomorphism is regular, we can express every monomorphism as
-    an equalizer. This is not an instance because it would create an instance loop. -/
+an equalizer. This is not an instance because it would create an instance loop. -/
 def regularMonoOfMono [IsRegularMonoCategory C] (f : X ⟶ Y) [Mono f] : RegularMono f :=
   (IsRegularMonoCategory.regularMonoOfMono _).some
 
@@ -175,7 +173,7 @@ class RegularEpi (f : X ⟶ Y) where
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f := by aesop_cat
+  w : left ≫ f = right ≫ f := by cat_disch
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 
@@ -213,7 +211,7 @@ instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : 
   isColimit := isSplitEpiCoequalizes f
 
 /-- If `f` is a regular epi, then every morphism `k : X ⟶ W` coequalizing `RegularEpi.left` and
-    `RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
+`RegularEpi.right` induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def RegularEpi.desc' {W : C} (f : X ⟶ Y) [RegularEpi f] (k : X ⟶ W)
     (h : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ k = RegularEpi.right ≫ k) :
     { l : Y ⟶ W // f ≫ l = k } :=
@@ -270,7 +268,7 @@ instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] 
         CommSq.HasLift.mk'
           ⟨t, ht,
             (cancel_epi f).1
-              (by simp only [← Category.assoc, ht, ← sq.w, Arrow.mk_hom, Arrow.homMk'_right])⟩)
+              (by simp only [← Category.assoc, ht, ← sq.w])⟩)
 
 /-- A regular epimorphism is an isomorphism if it is a monomorphism. -/
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) [RegularEpi f] [Mono f] : IsIso f :=
@@ -285,12 +283,10 @@ class IsRegularEpiCategory : Prop where
   /-- Everyone epimorphism is a regular epimorphism -/
   regularEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (RegularEpi f)
 
-@[deprecated (since := "2024-11-27")] alias RegularEpiCategory := IsRegularEpiCategory
-
 end
 
 /-- In a category in which every epimorphism is regular, we can express every epimorphism as
-    a coequalizer. This is not an instance because it would create an instance loop. -/
+a coequalizer. This is not an instance because it would create an instance loop. -/
 def regularEpiOfEpi [IsRegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f :=
   (IsRegularEpiCategory.regularEpiOfEpi _).some
 

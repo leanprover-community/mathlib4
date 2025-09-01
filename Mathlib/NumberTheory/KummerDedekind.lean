@@ -3,18 +3,21 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Kummer-Dedekind theorem
 
-This file proves the monogenic version of the Kummer-Dedekind theorem on the splitting of prime
-ideals in an extension of the ring of integers. This states that if `I` is a prime ideal of
-Dedekind domain `R` and `S = R[α]` for some `α` that is integral over `R` with minimal polynomial
-`f`, then the prime factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the
-same number of prime factors, and each prime factors of `I * S` can be paired with a prime factor
-of `f mod I` in a way that ensures multiplicities match (in fact, this pairing can be made explicit
+This file proves the Kummer-Dedekind theorem on the splitting of prime ideals in an extension of
+the ring of integers. This states the following: assume we are given
+  - A prime ideal `I` of Dedekind domain `R`
+  - An `R`-algebra `S` that is a Dedekind Domain
+  - An `α : S` such that that is integral over `R` with minimal polynomial `f`
+If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
+factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
+prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
+a way that ensures multiplicities match (in fact, this pairing can be made explicit
 with a formula).
 
 ## Main definitions
@@ -25,7 +28,7 @@ with a formula).
 
 ## Main results
 
-* `normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map` : The Kummer-Dedekind
+* `normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map` : The Kummer-Dedekind
   theorem.
 * `Ideal.irreducible_map_of_irreducible_minpoly` : `I.map (algebraMap R S)` is irreducible if
   `(map (Ideal.Quotient.mk I) (minpoly R pb.gen))` is irreducible, where `pb` is a power basis
@@ -37,8 +40,6 @@ with a formula).
     `span (I.map (algebraMap R S) ∪ {Q.aeval x})`.
 
 ## TODO
-
-* Prove the Kummer-Dedekind theorem in full generality.
 
 * Prove the converse of `Ideal.irreducible_map_of_irreducible_minpoly`.
 
@@ -59,10 +60,10 @@ open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
 
 /-- Let `S / R` be a ring extension and `x : S`, then the conductor of `R<x>` is the
-    biggest ideal of `S` contained in `R<x>`. -/
+biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simp only [zero_mul, zero_mem]
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 
@@ -187,7 +188,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     apply Ideal.le_comap_map
 
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
-    when `I` and `(conductor R x) ∩ R` are coprime. -/
+when `I` and `(conductor R x) ∩ R` are coprime. -/
 noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (h_alg : Function.Injective (algebraMap R<x> S)) :
     R<x> ⧸ I.map (algebraMap R R<x>) ≃+* S ⧸ I.map (algebraMap R S) := by
@@ -266,9 +267,9 @@ lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap
     coe_aeval_mk_apply]
 
 open Classical in
-/-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
-    factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
-    over `R`, taken `mod I`. -/
+/-- The first half of the **Kummer-Dedekind Theorem**, stating that the prime
+factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
+over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
@@ -283,8 +284,8 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
 open Classical in
-/-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
-    bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
+/-- The second half of the **Kummer-Dedekind Theorem**, stating that the
+bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
 theorem emultiplicity_factors_map_eq_emultiplicity
     (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) {J : Ideal S}

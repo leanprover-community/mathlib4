@@ -189,7 +189,7 @@ theorem HasFDerivAt.hasDerivAt {f' : 𝕜 →L[𝕜] F} : HasFDerivAt f f' x →
 
 theorem hasStrictFDerivAt_iff_hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
     HasStrictFDerivAt f f' x ↔ HasStrictDerivAt f (f' 1) x := by
-  simp [HasStrictDerivAt, HasStrictFDerivAt]
+  simp [HasStrictDerivAt]
 
 protected theorem HasStrictFDerivAt.hasStrictDerivAt {f' : 𝕜 →L[𝕜] F} :
     HasStrictFDerivAt f f' x → HasStrictDerivAt f (f' 1) x :=
@@ -351,9 +351,6 @@ theorem HasDerivWithinAt.mono_of_mem_nhdsWithin (h : HasDerivWithinAt f f' t x) 
     HasDerivWithinAt f f' s x :=
   HasFDerivWithinAt.mono_of_mem_nhdsWithin h hst
 
-@[deprecated (since := "2024-10-31")]
-alias HasDerivWithinAt.mono_of_mem := HasDerivWithinAt.mono_of_mem_nhdsWithin
-
 theorem HasDerivAt.hasDerivAtFilter (h : HasDerivAt f f' x) (hL : L ≤ 𝓝 x) :
     HasDerivAtFilter f f' x L :=
   HasFDerivAt.hasFDerivAtFilter h hL
@@ -460,8 +457,6 @@ theorem HasDerivWithinAt.deriv_eq_zero (hd : HasDerivWithinAt f 0 s x)
 theorem derivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=
   ((DifferentiableWithinAt.hasDerivWithinAt h).mono_of_mem_nhdsWithin st).derivWithin ht
-
-@[deprecated (since := "2024-10-31")] alias derivWithin_of_mem := derivWithin_of_mem_nhdsWithin
 
 theorem derivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : derivWithin f s x = derivWithin f t x :=

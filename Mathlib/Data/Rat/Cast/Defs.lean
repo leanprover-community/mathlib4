@@ -57,8 +57,7 @@ lemma cast_comm (q : ℚ≥0) (a : α) : q * a = a * q := cast_commute _ _
     obtain ⟨k, rfl⟩ : d ∣ b := by simpa [Int.natCast_dvd_natCast, this] using Rat.den_dvd a b
     simp [*]
   have hb' : b ≠ 0 := by rintro rfl; exact hb Nat.cast_zero
-  have hd' : d ≠ 0 := by rintro rfl; exact hd Nat.cast_zero
-  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' hd'] at e
+  simp_rw [Rat.mk'_eq_divInt, mk_divInt, divNat_inj hb' h] at e
   rw [cast_def]
   dsimp
   rw [Commute.div_eq_div_iff _ hd hb]

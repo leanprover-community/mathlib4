@@ -92,9 +92,9 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       apply LinearMap.ext
       intro np'
       induction' np' using Submodule.Quotient.induction_on with np
-      show to_res np = 0
+      change to_res np = 0
       apply inj1
-      show f np = _
+      change f np = _
       simp [eq0]
     absurd hom0
     let _ := Module.finitePresentation_of_finite R N

@@ -144,7 +144,7 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
   { ‹sInfHomClass F α β› with
     map_inf := fun f a b => by
       rw [← sInf_pair, map_sInf, Set.image_pair]
-      simp only [Set.image_pair, sInf_insert, sInf_singleton]
+      simp only [sInf_insert, sInf_singleton]
     map_top := fun f => by
       rw [← sInf_empty, map_sInf, Set.image_empty, sInf_empty] }
 
@@ -328,7 +328,7 @@ instance : Bot (sSupHom α β) :=
 
 instance : OrderBot (sSupHom α β) where
   bot := ⊥
-  bot_le := fun _ _ ↦ CompleteLattice.bot_le _
+  bot_le := fun _ _ ↦ OrderBot.bot_le _
 
 @[simp]
 theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=
@@ -449,7 +449,7 @@ instance : Top (sInfHom α β) :=
 
 instance : OrderTop (sInfHom α β) where
   top := ⊤
-  le_top := fun _ _ => CompleteLattice.le_top _
+  le_top := fun _ _ => OrderTop.le_top _
 
 @[simp]
 theorem coe_top : ⇑(⊤ : sInfHom α β) = ⊤ :=

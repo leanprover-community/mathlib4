@@ -36,7 +36,7 @@ lemma orderSucc_apply {n : ℕ} (i : Fin (n + 1)) :
     Order.succ i = Fin.lastCases (Fin.last n) Fin.succ i := rfl
 
 @[simp]
-lemma orderSucc_last (n : ℕ)  :
+lemma orderSucc_last (n : ℕ) :
     Order.succ (Fin.last n) = Fin.last n := by
   simp [orderSucc_apply]
 
