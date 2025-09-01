@@ -196,8 +196,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     have h := (dvd_prime_pow (show Prime (c 1) from ?_) i).1 this
     · rcases h with ⟨u, hu, hu'⟩
       refine Finset.mem_image.mpr ⟨⟨u, Nat.lt_succ_of_le hu⟩, Finset.mem_univ _, ?_⟩
-      rw [associated_iff_eq] at hu'
-      rw [hu']
+      rwa [associated_iff_eq, eq_comm] at hu'
     · rw [← irreducible_iff_prime]
       exact second_of_chain_is_irreducible hn h₁ (@h₂) hq
 
