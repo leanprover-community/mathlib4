@@ -94,7 +94,7 @@ class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyComp
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
 open scoped Classical in
-/-- A well founded linear order is conditionally complete, with a bottom element. -/
+/-- A well-founded linear order is conditionally complete, with a bottom element. -/
 noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Type*)
     [i₁ : LinearOrder α] [i₂ : OrderBot α] [h : WellFoundedLT α] :
     ConditionallyCompleteLinearOrderBot α :=
