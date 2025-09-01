@@ -108,7 +108,7 @@ immediate predecessors and what conditions are added to each of them.
 Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixins for
 relating the order structures and ring structures are added as needed.
 
-TODO: the mixin assumptiosn can be relaxed in most cases
+TODO: the mixin assumptions can be relaxed in most cases
 
 -/
 
