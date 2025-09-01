@@ -425,11 +425,25 @@ lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
 variable {A B}
 
 @[simp]
-theorem Algebra.intNorm_map_algEquiv (x : B) (σ : B ≃ₐ[A] B) :
-    Algebra.intNorm A B (σ x) = Algebra.intNorm A B x := by
+theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Module.Finite A B₂]
+    [NoZeroSMulDivisors A B₂] [Algebra.IsSeparable (FractionRing A) (FractionRing B₂)] (x : B)
+    (σ : B ≃ₐ[A] B₂) :
+    Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
-  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
-    ← galRestrict_symm_algebraMap_apply A (FractionRing A), norm_eq_of_algEquiv]
+  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing]
+  let τ : FractionRing B ≃ₐ[FractionRing A] FractionRing B₂ := by
+    refine AlgEquiv.ofAlgHom ?_ ?_ ?_ ?_
+    · exact galLift (A := A) (B := B) (B₂ := B₂) (FractionRing A) (FractionRing B)
+        (FractionRing B₂) σ
+    · exact galLift (A := A) (B := B₂) (B₂ := B) (FractionRing A) (FractionRing B₂) (FractionRing B)
+        σ.symm
+    · ext x
+      exact x.ind fun ⟨r, s⟩ ↦ by simp
+    · ext x
+      exact x.ind fun ⟨r, s⟩ ↦ by simp
+  have : algebraMap B₂ (FractionRing B₂) (σ x) = τ (algebraMap B (FractionRing B) x) := by
+    simp [τ]
+  rw [this, norm_eq_of_algEquiv]
 
 @[simp]
 lemma Algebra.intNorm_eq_zero {x : B} : Algebra.intNorm A B x = 0 ↔ x = 0 := by
