@@ -676,7 +676,8 @@ theorem kronecker [DecidableEq n] [DecidableEq m] {x : Matrix n n 𝕜} {y : Mat
    ← star_eq_conjTranspose]
   have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
     : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
-  have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) := (unitary.toUnits U).isUnit
+  have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) :=
+    (unitary.toUnits U).isUnit
   rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
     (this _).posDef_conjugate_iff, diagonal_kronecker_diagonal, posDef_diagonal_iff]
   exact fun _ => mul_pos (RCLike.ofReal_pos.mpr <| hx.eigenvalues_pos _)
