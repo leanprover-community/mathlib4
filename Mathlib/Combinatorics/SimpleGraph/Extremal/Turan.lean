@@ -399,7 +399,7 @@ theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     simp_rw [zero_tsub, mul_zero, Nat.mod_zero, Nat.div_zero, zero_add]
     exact card_edgeFinset_le_card_choose_two
   · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
-    convert maxH.2 _ cf
+    convert maxH.2 cf
     rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
       card_edgeFinset_turanGraph]
 
