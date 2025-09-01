@@ -304,12 +304,15 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
   have ⟨has, hbt, hav, hbv, haw, hbw⟩ : a ∈ s ∧ b ∈ t ∧ a ≠ v ∧ b ≠ v ∧ a ≠ w₂ ∧ b ≠ w₁ := by grind
   have ⟨hxv, hxw₁, hxw₂⟩ : v ≠ x ∧ w₁ ≠ x ∧ w₂ ≠ x := by
     refine ⟨?_, ?_, ?_⟩
-    · by_cases hax : x = a <;> rintro rfl <;> try grind
-      exact haj <| hw.isNClique_left.1 (mem_insert_self ..) (mem_insert_of_mem has) hax
-    · by_cases hax : x = a <;> rintro rfl <;> try grind
-      exact haj <| hw.isNClique_fst_left.1 (mem_insert_self ..) (mem_insert_of_mem has) hax
-    · by_cases hbx : x = b <;> rintro rfl <;> try grind
-      exact hbj <| hw.isNClique_snd_right.1 (mem_insert_self ..) (mem_insert_of_mem hbt) hbx
+    · by_cases hax : x = a <;> rintro rfl
+      · grind
+      · exact haj <| hw.isNClique_left.1 (mem_insert_self ..) (mem_insert_of_mem has) hax
+    · by_cases hax : x = a <;> rintro rfl
+      · grind
+      · exact haj <| hw.isNClique_fst_left.1 (mem_insert_self ..) (mem_insert_of_mem has) hax
+    · by_cases hbx : x = b <;> rintro rfl
+      · grind
+      · exact hbj <| hw.isNClique_snd_right.1 (mem_insert_self ..) (mem_insert_of_mem hbt) hbx
   -- Since `x` is not adjacent to `a` and `b` but is adjacent to all but at most two vertices
   -- from `W` we have `∀ w ∈ W, w ≠ a → w ≠ b → G.Adj w x`
   have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by
@@ -320,24 +323,24 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
                          mem_filter.2 ⟨hz, by rwa [adj_comm] at hf⟩, hab, haz.symm, hbz.symm⟩
   have ⟨h1s, h2t⟩ : insert w₁ s ⊆ W ∧ insert w₂ t ⊆ W := by grind
   -- We now check that we can build a `Wᵣ,ₖ₊₁` by inserting `x` and erasing `a` and `b`
-  refine ⟨a, b, ⟨hw.isPathGraph3Compl, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩⟩
-    <;> try rw [mem_insert, not_or] <;> try grind
+  refine ⟨a, b, ⟨by grind, by grind, by grind, by grind, by grind, ?h5, ?h6, ?h7, ?h8, ?h9⟩⟩
   -- Check that the new cliques are indeed cliques
-  · exact hw.isNClique_left.insert_insert_erase has hw.notMem_left fun _ hz hZ ↦
-            wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz) hZ
-              fun h ↦ hbv <| (mem_insert.1 (h ▸ hz)).resolve_right hbs
-  · exact hw.isNClique_fst_left.insert_insert_erase has hw.fst_notMem fun _ hz hZ ↦
-            wa (h1s hz) hZ fun h ↦ hbw <| (mem_insert.1 (h ▸ hz)).resolve_right hbs
-  · exact hw.isNClique_right.insert_insert_erase hbt hw.notMem_right fun _ hz hZ ↦
-            wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz)
-              (fun h ↦ hav <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
-  · exact hw.isNClique_snd_right.insert_insert_erase hbt hw.snd_notMem
-            fun _ hz hZ ↦ wa (h2t hz) (fun h ↦  haw <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
-  · -- Finally check that this new `IsFiveWheelLike` structure has `k + 1` common clique
+  case h5 => exact hw.isNClique_left.insert_insert_erase has hw.notMem_left fun _ hz hZ ↦
+               wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz) hZ
+                 fun h ↦ hbv <| (mem_insert.1 (h ▸ hz)).resolve_right hbs
+  case h6 => exact hw.isNClique_fst_left.insert_insert_erase has hw.fst_notMem fun _ hz hZ ↦
+               wa (h1s hz) hZ fun h ↦ hbw <| (mem_insert.1 (h ▸ hz)).resolve_right hbs
+  case h7 => exact hw.isNClique_right.insert_insert_erase hbt hw.notMem_right fun _ hz hZ ↦
+               wa ((insert_subset_insert _ fun _ hx ↦ (by simp [hx])) hz)
+                 (fun h ↦ hav <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
+  case h8 => exact hw.isNClique_snd_right.insert_insert_erase hbt hw.snd_notMem fun _ hz hZ ↦
+               wa (h2t hz) (fun h ↦  haw <| (mem_insert.1 (h ▸ hz)).resolve_right hat) hZ
+  case h9 =>
+    -- Finally check that this new `IsFiveWheelLike` structure has `k + 1` common clique
     -- vertices i.e. `#((insert x (s.erase a)) ∩ (insert x (s.erase b))) = k + 1`.
     rw [← insert_inter_distrib, erase_inter, inter_erase, erase_eq_of_notMem <|
         notMem_mono inter_subset_left hbs, erase_eq_of_notMem <| notMem_mono inter_subset_right hat,
-        card_insert_of_notMem (fun h ↦ G.loopless _ (hW h)), hw.card_inter]
+        card_insert_of_notMem (fun h ↦ G.irrefl (hW h)), hw.card_inter]
 
 /--
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
