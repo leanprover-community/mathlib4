@@ -753,7 +753,7 @@ theorem direction_inf_of_mem_inf {s₁ s₂ : AffineSubspace k P} {p : P} (h : p
   direction_inf_of_mem ((mem_inf_iff p s₁ s₂).1 h).1 ((mem_inf_iff p s₁ s₂).1 h).2
 
 @[simp]
-theorem sInf_coe (t : Set (AffineSubspace k P)) :
+theorem coe_sInf (t : Set (AffineSubspace k P)) :
     ((sInf t : AffineSubspace k P) : Set P) = ⋂ s ∈ t, s :=
   rfl
 
@@ -780,9 +780,9 @@ theorem direction_sInf_of_mem_sInf (t : Set (AffineSubspace k P)) (p : P) (h : p
   direction_sInf_of_mem t p <| (mem_sInf_iff p t).mp h
 
 @[simp]
-theorem iInf_coe (s : ι → AffineSubspace k P) :
+theorem coe_iInf (s : ι → AffineSubspace k P) :
     ((iInf s : AffineSubspace k P) : Set P) = ⋂ i, s i := by
-  rw [iInf, sInf_coe, Set.biInter_range]
+  rw [iInf, coe_sInf, Set.biInter_range]
 
 theorem mem_iInf_iff (s : ι → AffineSubspace k P) (p : P) : p ∈ iInf s ↔ ∀ i, p ∈ s i := by
   rw [iInf, mem_sInf_iff, Set.forall_mem_range]
