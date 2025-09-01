@@ -247,7 +247,9 @@ instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
 
 instance [AddCommGroup R] : AddCommGroup (QuadraticAlgebra R a b) where
 
-section AddCommGroupWithOne
+
+
+section AddCommMonoidWithOne
 
 instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (QuadraticAlgebra R a b) where
   natCast n := ((n : R) : QuadraticAlgebra R a b)
@@ -259,12 +261,7 @@ theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] [AddCommMonoidWithOne R] :
     ((ofNat(n) : R) : QuadraticAlgebra R a b) = (ofNat(n) : QuadraticAlgebra R a b) := by
   ext <;> rfl
 
-variable [AddCommGroupWithOne R]
-
-instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
-  intCast n := ((n : R) : QuadraticAlgebra R a b)
-  intCast_ofNat n := by norm_cast
-  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, coe_neg]; norm_cast
+variable [AddCommMonoidWithOne R]
 
 @[simp, norm_cast]
 theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
@@ -275,14 +272,25 @@ theorem im_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 
-@[simp, norm_cast]
-theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
-
 @[scoped simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).re = ofNat(n) := rfl
 
 @[scoped simp]
 theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).im = 0 := rfl
+
+end AddCommMonoidWithOne
+
+section AddCommGroupWithOne
+
+variable [AddCommGroupWithOne R]
+
+instance : AddCommGroupWithOne (QuadraticAlgebra R a b) where
+  intCast n := ((n : R) : QuadraticAlgebra R a b)
+  intCast_ofNat n := by norm_cast
+  intCast_negSucc n := by rw [Int.negSucc_eq, Int.cast_neg, coe_neg]; norm_cast
+
+@[simp, norm_cast]
+theorem re_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).re = n := rfl
 
 @[simp, norm_cast]
 theorem im_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
