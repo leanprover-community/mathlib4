@@ -44,7 +44,7 @@ theorem bit_eq_zero_iff {n : Nat} {b : Bool} : bit b n = 0 ↔ n = 0 ∧ b = fal
 /-- For a predicate `motive : Nat → Sort u`, if instances can be
   constructed for natural numbers of the form `bit b n`,
   they can be constructed for any given natural number. -/
-@[elab_as_elim, inline]
+@[inline]
 def bitCasesOn {motive : Nat → Sort u} (n) (bit : ∀ b n, motive (bit b n)) : motive n :=
   -- `1 &&& n != 0` is faster than `n.testBit 0`. This may change when we have faster `testBit`.
   let x := bit (1 &&& n != 0) (n >>> 1)
@@ -113,10 +113,10 @@ theorem testBit_bit_zero (b n) : (bit b n).testBit 0 = b := by
 variable {motive : Nat → Sort u}
 
 @[simp]
-theorem bitCasesOn_bit (bit : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
-    bitCasesOn (n.bit b) bit = bit b n := by
-  change congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one ▸ bit _ _ = bit b n
-  generalize congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one = e; revert e
+theorem bitCasesOn_bit (h : ∀ b n, motive (bit b n)) (b : Bool) (n : Nat) :
+    bitCasesOn (bit b n) h = h b n := by
+  change congrArg motive (bit b n).bit_testBit_zero_shiftRight_one ▸ h _ _ = h b n
+  generalize congrArg motive (bit b n).bit_testBit_zero_shiftRight_one = e; revert e
   rw [testBit_bit_zero, bit_shiftRight_one]
   intros; rfl
 
