@@ -358,7 +358,7 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.abs_le_abs_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'

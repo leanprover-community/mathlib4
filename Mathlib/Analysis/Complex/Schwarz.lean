@@ -28,7 +28,7 @@ In this file we prove several versions of the Schwarz lemma.
   center `c` of this disk to itself, then for any point `z` of this disk we have
   `dist (f z) c ≤ dist z c`;
 
-* `Complex.abs_le_abs_of_mapsTo_ball_self`: if `f : ℂ → ℂ` sends an open disk with center `0` to
+* `Complex.norm_le_norm_of_mapsTo_ball_self`: if `f : ℂ → ℂ` sends an open disk with center `0` to
   itself, then for any point `z` of this disk we have `abs (f z) ≤ abs z`.
 
 ## Implementation notes
