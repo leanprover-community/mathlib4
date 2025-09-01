@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Noetherian.Basic
 * `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
 * `Polynomial.isNoetherianRing`:
-  Hilbert basis theorem, that if a ring is noetherian then so is its polynomial ring.
+  Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
 
 noncomputable section
@@ -572,7 +572,7 @@ theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤
   rcases hr with ⟨p, hpI, hpdeg, rfl⟩
   refine ⟨p * X ^ (n - m), I.mul_mem_right _ hpI, ?_, leadingCoeff_mul_X_pow⟩
   refine le_trans (degree_mul_le _ _) ?_
-  refine le_trans (add_le_add hpdeg (degree_X_pow_le _)) ?_
+  grw [hpdeg, degree_X_pow_le]
   rw [← Nat.cast_add, add_tsub_cancel_of_le H]
 
 theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.leadingCoeff p = x := by
@@ -997,8 +997,8 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
       (MvPolynomial.finSuccEquiv _ n).toRingEquiv.symm
       (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ isNoetherianRing_fin)
 
-/-- The multivariate polynomial ring in finitely many variables over a noetherian ring
-is itself a noetherian ring. -/
+/-- The multivariate polynomial ring in finitely many variables over a Noetherian ring
+is itself a Noetherian ring. -/
 instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ

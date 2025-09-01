@@ -30,7 +30,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
 module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
-`M.ofModule` is the associociated representation seen as a homomorphism.
+`M.ofModule` is the associated representation seen as a homomorphism.
 -/
 
 open MonoidAlgebra (lift of)
@@ -526,7 +526,7 @@ lemma leftRegular_norm_apply :
       linearCombination _ (fun _ => 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
-    (Group.mulRight_bijective i) (by aesop) (by aesop)
+    (Group.mulRight_bijective i) (by simp_all) (by simp_all)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
     (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by
@@ -551,11 +551,14 @@ lemma apply_eq_of_leftRegular_eq_of_generator (g : G) (hg : ∀ x, x ∈ Subgrou
     (x : G →₀ k) (hx : leftRegular k G g x = x) (γ : G) :
     x γ = x g := by
   rcases hg γ with ⟨i, rfl⟩
-  induction i with | zero => _ | succ n h => _ | pred n h => _
-  · simpa using (Finsupp.ext_iff.1 hx g)
-  · simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
+  induction i with
+  | zero =>
+    simpa using (Finsupp.ext_iff.1 hx g)
+  | succ n h =>
+    simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
       (Finsupp.ext_iff.1 hx (g ^ (n + 1))).symm
-  · simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
+  | pred n h =>
+    simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
       using Finsupp.ext_iff.1 hx (g ^ (-n : ℤ))
 
 end Cyclic

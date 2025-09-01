@@ -678,7 +678,7 @@ theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by
   ext x
-  simp [mem_ker, Ideal.mem_iInf, funext_iff]
+  simp [mem_ker, funext_iff]
 
 @[simp]
 theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
@@ -998,11 +998,10 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
 
 lemma IsMaximal.map_of_surjective_of_ker_le {f : F} (hf : Function.Surjective f) {m : Ideal R}
     [m.IsMaximal] (hk : RingHom.ker f ≤ m) : (m.map f).IsMaximal := by
-  obtain h | h := m.map_eq_top_or_isMaximal_of_surjective f hf ‹_›
-  · apply congr_arg (comap f) at h
-    rw [comap_map_of_surjective _ hf, comap_top] at h
-    exact (IsMaximal.ne_top ‹_› (eq_top_iff.mpr <| h ▸ sup_le (le_of_eq rfl) hk)).elim
-  · exact h
+  refine m.map_eq_top_or_isMaximal_of_surjective f hf ‹_› |>.resolve_left fun h => ?_
+  apply congr_arg (comap f) at h
+  rw [comap_map_of_surjective _ hf, comap_top, ← RingHom.ker_eq_comap_bot, sup_of_le_left hk] at h
+  exact IsMaximal.ne_top ‹_› h
 
 end Ring
 
