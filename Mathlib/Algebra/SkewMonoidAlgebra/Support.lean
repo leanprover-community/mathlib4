@@ -53,7 +53,7 @@ end AddCommGroup
 
 section AddCommMonoidWithOne
 
-variable [AddCommMonoidWithOne k] [One G]
+variable [One G] [AddCommMonoidWithOne k]
 
 lemma support_one_subset : (1 : SkewMonoidAlgebra k G).support ⊆ 1 :=
   Finsupp.support_single_subset
