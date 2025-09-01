@@ -502,6 +502,9 @@
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Adjunction.Basic":
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
+  "Mathlib.Analysis.Real.Pi.Chudnovsky":
+  ["Batteries.Data.Rat.Float",
+   "Mathlib.Analysis.SpecialFunctions.Integrals.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.Normed.Group.AddCircle":
