@@ -1,15 +1,34 @@
+/-
+Copyright (c) 2025 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Yunzhou Xie, Jujian Zhang
+-/
 import Mathlib.Data.Finsupp.Pointwise
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
+
 # Cross product algebra
 
 This file constructs the cross product algebra associated to a 2-cocycle of a field extension
-`K / F` and shows that it is a central simple `F`-algebra of dimension `dim(K / F) ^ 2`.
+`K / F` and shows that it is indeed an `F`-algebra.
+
+## TODOs
+
+* Prove the cross product algebra is a central simple algebra over `F` of degree `n`
+  where `n` is the degree of the extension `K / F`.
+
+* Show that there is a map induced from `H^2 (Gal(K/F), Kˣ)` to Brauer group `Br(F)`, and the map
+  is in fact a group homomorphism.
 
 ## References
 
 * [*Advanced Algebra*]
+
+## Tags
+
+Non-commutative algebra, galois cohomology, cross product algebra
+
 -/
 
 open groupCohomology Function Module
@@ -18,8 +37,12 @@ suppress_compilation
 
 variable {R S F K : Type*} [Field F] [Field K] [Algebra F K] {f : (K ≃ₐ[F] K) × (K ≃ₐ[F] K) → Kˣ}
 
+/-- Similarly to `MonoidAlgebra`, the underlying type/set is all finitely supported functions from
+  `Gal(K/F)` to `K` and we give the multiplication structure by
+  `single σ c * single τ d = f (σ, τ) • single (σ * τ) (c * σ d)` -/
 @[ext]
 structure CrossProductAlgebra (f : (K ≃ₐ[F] K) × (K ≃ₐ[F] K) → Kˣ) where
+  /-- the underlying type -/
   val : (K ≃ₐ[F] K) →₀ K
 
 namespace CrossProductAlgebra
@@ -70,6 +93,7 @@ instance [Semiring R] [Module R K] : SMul R (CrossProductAlgebra f) where
 instance addCommGroup : AddCommGroup (CrossProductAlgebra f) :=
   val_injective.addCommGroup val val_zero val_add val_neg val_sub (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
+/-- Any cross product algerba over `F` is isomorphic to its underlying type as an `AddEquiv` -/
 @[simps]
 def valAddEquiv : CrossProductAlgebra f ≃+ ((K ≃ₐ[F] K) →₀ K) where
   toFun := val
@@ -90,11 +114,13 @@ instance [Semiring R] [Semiring S] [Module R K] [Module S K] [Module R S] [IsSca
     IsScalarTower R S (CrossProductAlgebra f) where
   smul_assoc r s x := by ext; simp [smul_assoc]
 
+/-- Any cross product algerba over `F` is linearly isomorphic to its underlying type -/
 @[simps]
 def valLinearEquiv [Semiring R] [Module R K] : CrossProductAlgebra f ≃ₗ[R] ((K ≃ₐ[F] K) →₀ K) where
   __ := valAddEquiv
   map_smul' := val_smul
 
+/-- `Finsupp.single` forms a `K`-basis of `CrossProductAlgebra` -/
 @[simps]
 def basis : Basis (K ≃ₐ[F] K) K (CrossProductAlgebra f) where
   repr := valLinearEquiv
@@ -103,6 +129,7 @@ lemma basis_val (σ : (K ≃ₐ[F] K)) : (basis (f := f) σ).val = .single σ 1 
 lemma mk_single_one (σ : (K ≃ₐ[F] K)) : mk (.single σ 1) = basis (f := f) σ := rfl
 
 variable (f) in
+/-- The multiplication of `CrossProductAlgebra` induced by multiplication for basis elements. -/
 def mulLinearMap : ((K ≃ₐ[F] K) →₀ K) →ₗ[F] ((K ≃ₐ[F] K) →₀ K) →ₗ[F] ((K ≃ₐ[F] K) →₀ K) :=
   Finsupp.lsum F fun σ =>
   { toFun c := Finsupp.lsum F fun τ =>
