@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
@@ -339,7 +340,34 @@ theorem isBounded_of_bddAbove_of_bddBelow {s : Set α} (h₁ : BddAbove s) (h₂
   let ⟨l, hl⟩ := h₂
   (isBounded_Icc l u).subset (fun _x hx => mem_Icc.mpr ⟨hl hx, hu hx⟩)
 
+open Metric in
+lemma _root_.IsOrderBornology.of_isCompactIcc (x : α)
+    (bddBelow_ball : ∀ r, BddBelow (closedBall x r))
+    (bddAbove_ball : ∀ r, BddAbove (closedBall x r)) : IsOrderBornology α where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨?_, fun hs ↦ Metric.isBounded_of_bddAbove_of_bddBelow hs.2 hs.1⟩
+    rw [Metric.isBounded_iff_subset_closedBall x]
+    rintro ⟨r, hr⟩
+    exact ⟨(bddBelow_ball _).mono hr, (bddAbove_ball _).mono hr⟩
+
 end CompactIccSpace
+
+section CompactIccSpace_abs
+
+variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
+  [CompactIccSpace α]
+
+lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
+  convert Metric.isBounded_Icc (-C) C
+  ext1 x
+  simp [abs_le]
+
+lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
+  convert Metric.isBounded_Ioo (-C) C
+  ext1 x
+  simp [abs_lt]
+
+end CompactIccSpace_abs
 
 end Bounded
 
@@ -546,6 +574,8 @@ def evalDiam : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
+section
+
 open Metric
 
 variable [PseudoMetricSpace α]
@@ -575,3 +605,39 @@ theorem Metric.finite_isBounded_inter_isClosed [ProperSpace α] {K s : Set α} [
   refine Set.Finite.subset (IsCompact.finite ?_ ?_) (Set.inter_subset_inter_left s subset_closure)
   · exact hK.isCompact_closure.inter_right hs
   · exact DiscreteTopology.of_subset inferInstance Set.inter_subset_right
+
+end
+
+namespace Continuous
+
+variable {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α]
+  [PseudoMetricSpace β] [ProperSpace β]
+
+/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+into a linearly ordered space takes values `≤ f x₀` is bounded for some `x₀`,
+then `f` has a global minimum (under suitable topological assumptions).
+
+This is a convenient combination of `Continuous.exists_forall_le'` and
+`Metric.isCompact_of_isClosed_isBounded`. -/
+theorem exists_forall_le_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
+    (h : Bornology.IsBounded {x : β | f x ≤ f x₀}) :
+    ∃ x, ∀ y, f x ≤ f y := by
+  refine hf.exists_forall_le' (x₀ := x₀) ?_
+  have hU : {x : β | f x₀ < f x} ∈ Filter.cocompact β := by
+    refine Filter.mem_cocompact'.mpr ⟨_, ?_, fun ⦃_⦄ a ↦ a⟩
+    simp only [Set.compl_setOf, not_lt]
+    exact Metric.isCompact_of_isClosed_isBounded (isClosed_le (by fun_prop) (by fun_prop)) h
+  filter_upwards [hU] with x hx using hx.le
+
+/-- A version of the **Extreme Value Theorem**: if the set where a continuous function `f`
+into a linearly ordered space takes values `≥ f x₀` is bounded for some `x₀`,
+then `f` has a global maximum (under suitable topological assumptions).
+
+This is a convenient combination of `Continuous.exists_forall_ge'` and
+`Metric.isCompact_of_isClosed_isBounded`. -/
+theorem exists_forall_ge_of_isBounded {f : β → α} (hf : Continuous f) (x₀ : β)
+    (h : Bornology.IsBounded {x : β | f x₀ ≤ f x}) :
+    ∃ x, ∀ y, f y ≤ f x :=
+  hf.exists_forall_le_of_isBounded (α := αᵒᵈ) x₀ h
+
+end Continuous
