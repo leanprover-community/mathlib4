@@ -755,7 +755,7 @@ instance : Mul (MonoidAlgebra' Nat G) where
 
 -- Unfortunately, `relevant_arg` information isn't passed to `*.casesOn`:
 /--
-error: @[to_additive] failed. Type mismatch in additive declaration. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
+error: @[to_additive] failed. The translated value is not type correct. For help, see the docstring of `to_additive.attr`, section `Troubleshooting`. Failed to add declaration
 instAddAddMonoidAlgebra'Nat_1.match_1:
 Application type mismatch: The argument
   fun x => motive x x✝
