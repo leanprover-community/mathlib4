@@ -292,16 +292,6 @@ theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
     have split : n < b ^ i ∨ b ^ i ≤ n := Nat.lt_or_ge n (b ^ i)
     cases split with
     | inl hl =>
-      have split := Nat.eq_zero_or_pos i
-      cases split with
-      | inl hll =>
-        repeat rw [hll]
-        simp only [pow_zero, Nat.div_one]
-        have digCons := Nat.digits_of_two_le_of_pos h n0r
-        rw [digCons]
-        simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
-          getElem?_pos, List.getElem_cons_zero, Option.getD_some]
-      | inr _ =>
         have h₁ : (b.digits n).length ≤ i := by
           have dl := Nat.digits_len b n h ne0
           rw [dl]
