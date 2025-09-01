@@ -287,7 +287,9 @@ the deprecations later on.
 If the number of commits is not explicitly given, `#find_deleted_files` defaults to `2`,
 namely, the commit just prior to the current one.
 -/
-elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? &"%"? : command => do
+elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : command => do
+  if pct.isSome && bang.isNone then
+    throwError m!"Please add a '%' after the percentage {pct.getD default}"
   let n := nc.getD (Syntax.mkNumLit "2") |>.getNat
   if n == 0 then
     logWarningAt (nc.getD default) "The number of commits to look back must be at least 1!"
