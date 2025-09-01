@@ -736,3 +736,40 @@ end findSquares
 -- `Expr.mdata` should be ignored by linarith
 example (x : Int) (h : x = -2) : x = no_index(-2) := by
   linarith [h]
+
+/-!
+From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472
+-/
+namespace metavariables
+
+theorem foo {i m : ℕ} : i ∣ 2 ^ m → m = m := fun _ => rfl
+
+variable (k a i : ℕ)
+
+theorem base (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+-- It's not clear which of the following should succeed and which should fail.
+-- For now this primarily serves to record behavior changes.
+
+theorem before_i (useless : i ≤ i) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem before_k (useless : k ≤ k) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem after_i_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : i ≤ i) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+theorem after_k_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : k ≤ k) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+end metavariables
