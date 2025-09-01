@@ -765,8 +765,6 @@ lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
   have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
       hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv.base _).2
-  have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalizedModule P.primeCompl _ :=
-    (@isLocalizedModule_iff_isLocalization' ..).mpr (this P)
   refine Submodule.mem_of_localization_maximal
       (fun P hP ↦ X.presheaf.stalk (hU.fromSpec.base ⟨P, hP.isPrime⟩))
       (fun P hP ↦ Algebra.linearMap _ _) _ _ ?_
