@@ -6,6 +6,7 @@ Authors: Vasilii Nesterov
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Tendsto.Meta.ConstSimp
 
 /-!
 # TODO
@@ -20,16 +21,14 @@ inductive CompareResult (x : Q(Real))
 | neg (pf : Q($x < 0))
 | zero (pf : Q($x = 0))
 
-open Mathlib.Meta.NormNum
+open Mathlib.Meta.NormNum Parser Tactic
 
-def preproces (x : Q(ℝ)) : MetaM <| Option ((x' : Q(ℝ)) × Q($x = $x')) := do
-  let simpCtx : Simp.Context := {
-    congrTheorems := (← getSimpCongrTheorems)
-    config        := Simp.neutralConfig
-  }
+-- #check simpArgs
+
+def preproces (x : Q(ℝ)) : TacticM <| (x' : Q(ℝ)) × (Option Q($x = $x')) := do
+  let simpCtx : Simp.Context := ← getSimpContext (← `(config | (config := { })) ) (← `(simpArgs | [PreMS_const])) -- now to pass no config?
   let ⟨x', pf?, _⟩ ← deriveSimp simpCtx true x
-  return pf?.map fun pf =>
-    ⟨x', pf⟩
+  return ⟨x', pf?⟩
 
 syntax "compare_real" : tactic
 macro_rules
@@ -53,14 +52,14 @@ def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
   throwError f!"Cannot compare real number {← ppExpr x} with zero"
 
 def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
-  match ← preproces x with
-  | none => return ← compareRealCore x
-  | some ⟨x', pf⟩ =>
-    let r ← compareRealCore x'
-    return match r with
-    | .pos e => .pos q(Eq.subst (motive := fun x ↦ 0 < x) (Eq.symm $pf) $e)
-    | .neg e => .neg q(Eq.subst (motive := fun x ↦ x < 0) (Eq.symm $pf) $e)
-    | .zero e => .zero q(Eq.subst (motive := fun x ↦ x = 0) (Eq.symm $pf) $e)
+  let ⟨x', pf?⟩ ← preproces x
+  haveI' : $x =Q $x' := ⟨⟩
+  let pf : Q($x = $x') := pf?.getD q(rfl)
+  let r ← compareRealCore x'
+  return match r with
+  | .pos e => .pos q(Eq.subst (motive := fun x ↦ 0 < x) (Eq.symm $pf) $e)
+  | .neg e => .neg q(Eq.subst (motive := fun x ↦ x < 0) (Eq.symm $pf) $e)
+  | .zero e => .zero q(Eq.subst (motive := fun x ↦ x = 0) (Eq.symm $pf) $e)
 
 def proveNeZero (x : Q(ℝ)) : TacticM (Q($x ≠ 0)) := do
   match ← compareReal x with

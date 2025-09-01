@@ -22,33 +22,11 @@ open scoped Nat
 
 -- exp (x) = 1 + x/1! + x^2/2! + x^3/3! + ...
 
-noncomputable def expSeriesFrom (n : ℕ) : LazySeries :=
-  let g : ℕ → Option (ℝ × ℕ) := fun n =>
-    some ((n ! : ℝ)⁻¹, n + 1)
-  Seq.corec g n
-
 noncomputable def expSeries : LazySeries :=
-  expSeriesFrom 0
-
-theorem expSeriesFrom_eq_cons {n : ℕ} :
-    expSeriesFrom n = Seq.cons (n ! : ℝ)⁻¹ (expSeriesFrom (n + 1)) := by
-  unfold expSeriesFrom
-  nth_rw 1 [corec_cons]
-  rfl
-
-theorem expSeriesFrom_get {n m : ℕ} : (expSeriesFrom n).get? m = some ((m + n) ! : ℝ)⁻¹ := by
-  induction m generalizing n with
-  | zero =>
-    rw [expSeriesFrom_eq_cons]
-    simp
-  | succ m ih =>
-    rw [expSeriesFrom_eq_cons]
-    simp [ih]
-    congr 1
-    omega
+  ofFn fun n ↦ (n ! : ℝ)⁻¹
 
 theorem expSeries_get {n : ℕ} : expSeries.get? n = some ((n ! : ℝ)⁻¹) := by
-  simp [expSeries, expSeriesFrom_get]
+  simp [expSeries]
 
 theorem expSeries_toFormalMultilinearSeries_eq :
     expSeries.toFormalMultilinearSeries = NormedSpace.expSeries ℝ ℝ := by
@@ -100,7 +78,7 @@ noncomputable def exp {basis : Basis} (ms : PreMS basis) : PreMS basis :=
 theorem exp_WellOrdered {basis : Basis} {ms : PreMS basis}
     (h : ms.WellOrdered)
     (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
-    (ms.exp).WellOrdered := by
+    ms.exp.WellOrdered := by
   cases' basis with basis_hd basis_tl
   · apply WellOrdered.const
   cases' ms with exp coef tl
@@ -130,7 +108,7 @@ theorem exp_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered)
     (h_approx : ms.Approximates f)
     (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
-    (ms.exp).Approximates (Real.exp ∘ f) := by
+    ms.exp.Approximates (Real.exp ∘ f) := by
   cases' basis with basis_hd basis_tl
   · simp [exp, Approximates] at h_approx ⊢
     apply h_approx.mono

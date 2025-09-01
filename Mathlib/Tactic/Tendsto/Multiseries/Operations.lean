@@ -11,6 +11,7 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Pow
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Log
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Exp
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.PowFun
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.TrigonometricFunctions
 
 /-!
 # Operations for multiseries

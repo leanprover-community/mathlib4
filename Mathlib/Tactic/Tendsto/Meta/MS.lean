@@ -241,6 +241,26 @@ def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+def cos (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exps)) : MS where
+  basis := x.basis
+  logBasis := x.logBasis
+  val := q(PreMS.cos $x.val)
+  f := q(Real.cos ∘ $x.f)
+  h_wo := q(PreMS.cos_WellOrdered $x.h_wo $h_nonpos)
+  h_approx := q(PreMS.cos_Approximates $x.h_basis $x.h_wo $x.h_approx $h_nonpos)
+  h_basis := x.h_basis
+  h_logBasis := x.h_logBasis
+
+def sin (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exps)): MS where
+  basis := x.basis
+  logBasis := x.logBasis
+  val := q(PreMS.sin $x.val)
+  f := q(Real.sin ∘ $x.f)
+  h_wo := q(PreMS.sin_WellOrdered $x.h_wo $h_nonpos)
+  h_approx := q(PreMS.sin_Approximates $x.h_basis $x.h_wo $x.h_approx $h_nonpos)
+  h_basis := x.h_basis
+  h_logBasis := x.h_logBasis
+
 end MS
 
 end TendstoTactic

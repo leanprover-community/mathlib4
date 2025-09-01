@@ -35,6 +35,32 @@ def recOn {motive : LazySeries → Sort v} (s : LazySeries) (nil : motive nil)
     motive s :=
   Stream'.Seq.recOn s nil cons
 
+def ofFnFrom (f : ℕ → ℝ) (n : ℕ) : LazySeries :=
+  ⟨fun i ↦ some (f (n + i)), by simp [IsSeq]⟩
+
+def ofFn (f : ℕ → ℝ) : LazySeries :=
+  ofFnFrom f 0
+
+theorem ofFnFrom_eq_cons {f : ℕ → ℝ} {n : ℕ} :
+    ofFnFrom f n = Seq.cons (f n) (ofFnFrom f (n + 1)) := by
+  ext i x
+  simp [ofFnFrom]
+  cases i with
+  | zero =>
+    simp
+  | succ i =>
+    simp
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> (convert h using 2; ring)
+
+@[simp]
+theorem ofFnFrom_get {f : ℕ → ℝ} {n m : ℕ} : (ofFnFrom f n).get? m = some (f (n + m)) := by
+  simp [ofFnFrom]
+
+@[simp]
+theorem ofFn_get {f : ℕ → ℝ} {n : ℕ} : (ofFn f).get? n = some (f n) := by
+  convert ofFnFrom_get
+  omega
+
 noncomputable def apply_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) × LazySeries →
     Option ((PreMS (basis_hd :: basis_tl)) × (PreMS (basis_hd :: basis_tl) × LazySeries)) :=

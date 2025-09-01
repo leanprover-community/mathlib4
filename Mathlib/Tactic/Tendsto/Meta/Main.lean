@@ -131,7 +131,10 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
       h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
-    match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_Trimmed $h_logBasis) with
+    dbg_trace ← ppExpr log_hd
+    let ⟨log_hd', h_log_hd_trimmed⟩ ← trimMS log_hd'
+    -- match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_Trimmed $h_logBasis) with
+    match ← MS.compare ms log_hd' h_trimmed h_log_hd_trimmed with
     | .gt h => -- `ms` grows faster than `log cur` => we stop here, `left` is maximal
       let left' := ← reduceBasis left
       have : $left' =Q $left := ⟨⟩
@@ -323,7 +326,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis $G.h_wo
-        (PreMS.Approximates_log_exp $G.h_approx) sorry) : Expr)
+        (PreMS.Approximates_log_exp $G.h_approx) $hG_trimmed) : Expr)
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -347,7 +350,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
-        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx) sorry) : Expr)
+        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx) (PreMS.neg_Trimmed $hG_trimmed)) : Expr)
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -474,8 +477,7 @@ partial def createMSImp (body : Expr) : BasisM MS := do
       return MS.div ms1 ms2 h_trimmed ⟨⟩
   | (``HPow.hPow, #[_, t, _, _, (arg : Q(ℝ)), exp]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
-    let is_constant := arg.hasLooseBVars
-    if !arg.hasLooseBVars then
+    if !exp.hasLooseBVars then
       if t == q(ℕ) then
         return MS.npow ms exp h_trimmed
       else if t == q(ℤ) then
@@ -492,7 +494,6 @@ partial def createMSImp (body : Expr) : BasisM MS := do
           | throwError f!"Cannot prove that argument of rpow is eventually positive: {← ppExpr arg}"
         let exp : Q(ℝ) := exp
         let res ← createMSImp q(Real.exp ((Real.log $arg) * $exp))
-        -- let kek := mkLam
         return {res with
           f := .lam .anonymous q(ℝ) q($arg ^ $exp) .default
           h_approx := ← mkAppM ``PreMS.exp_Approximates_pow_of_pos #[ms.h_basis, ms.h_wo, ms.h_approx, h_trimmed, h_pos, res.h_approx]
@@ -527,6 +528,20 @@ partial def createMSImp (body : Expr) : BasisM MS := do
   | (``Real.exp, #[arg]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
     return ← createExpMS ms h_trimmed
+  | (``Real.cos, #[arg]) =>
+    let ⟨ms, _⟩ ← trimMS (← createMSImp arg)
+    let leading ← getLeadingTerm ms.val
+    let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
+    let .wrong h_nonpos ← getFirstIsPos exps |
+      throwError f!"Cannot prove that argument of cos is eventually bounded: {← ppExpr arg}"
+    return MS.cos ms h_nonpos
+  | (``Real.sin, #[arg]) =>
+    let ⟨ms, _⟩ ← trimMS (← createMSImp arg)
+    let leading ← getLeadingTerm ms.val
+    let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
+    let .wrong h_nonpos ← getFirstIsPos exps |
+      throwError f!"Cannot prove that argument of sin is eventually bounded: {← ppExpr arg}"
+    return MS.sin ms h_nonpos
   | _ =>
     if body.hasLooseBVars then
       throwError f!"Unsupported body in createMS: {body}"

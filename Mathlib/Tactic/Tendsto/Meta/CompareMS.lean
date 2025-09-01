@@ -73,8 +73,8 @@ def compare (x y : MS)
     TacticM <| CompareResult q($x.f) q($y.f) := do
   let left ← expressAsAppend x.basis y.basis
   have : $x.basis =Q $left ++ $y.basis := ⟨⟩
-  let ⟨tx, _⟩ ← getLeadingTermWithProof x.val
-  let ⟨ty, _⟩ ← getLeadingTermWithProof y.val
+  let tx ← getLeadingTerm x.val
+  let ty ← getLeadingTerm y.val
   let ~q(⟨$x_coef, $x_exps⟩) := tx | panic! "Unexpected x in compareLeadingTerms"
   let ~q(⟨$y_coef, $y_exps⟩) := ty | panic! "Unexpected y in compareLeadingTerms"
   let n : Nat := (← computeLength x.basis) - (← computeLength y.basis)

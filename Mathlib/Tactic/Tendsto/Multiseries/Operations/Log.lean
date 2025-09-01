@@ -22,30 +22,8 @@ open LazySeries Stream' Seq
 
 -- log (1 + x) = x - x^2/2 + x^3/3 - ...
 
-noncomputable def logSeriesFrom (n : ℕ) : LazySeries :=
-  let g : ℕ → Option (ℝ × ℕ) := fun n =>
-    some (-(-1)^n / n, n + 1)
-  Seq.corec g n
-
 noncomputable def logSeries : LazySeries :=
-  logSeriesFrom 0
-
-theorem logSeriesFrom_eq_cons {n : ℕ} :
-    logSeriesFrom n = Seq.cons (-(-1 : ℝ)^n/n) (logSeriesFrom (n + 1)) := by
-  unfold logSeriesFrom
-  nth_rw 1 [corec_cons]
-  rfl
-
-theorem logSeriesFrom_get {n m : ℕ} :
-    (logSeriesFrom n).get? m = some (-(-1 : ℝ)^(m + n) / (m + n)) := by
-  induction m generalizing n with
-  | zero =>
-    rw [logSeriesFrom_eq_cons]
-    simp
-  | succ m ih =>
-    rw [logSeriesFrom_eq_cons]
-    simp [ih]
-    ring
+  ofFn fun n ↦ -(-1 : ℝ)^n / n
 
 theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + t))
     (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
@@ -89,7 +67,7 @@ theorem logSeries_toFormalMultilinearSeries_eq :
   suffices logSeries.coeff = (fun (n : ℕ) ↦ -(-1 : ℝ)^n / n) by
     rw [this]
   ext n
-  simp [LazySeries.coeff, logSeries, logSeriesFrom_get]
+  simp [LazySeries.coeff, logSeries]
 
 theorem logSeries_analytic : logSeries.analytic := by
   apply analytic_of_HasFPowerSeriesAt

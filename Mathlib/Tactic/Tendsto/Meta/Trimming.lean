@@ -321,6 +321,8 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
       | _ => throwError "Unexpected basis_tl in trim"
     | _ => throwError "extractMS returned wrong ms"
 
+-- TODO: rename? because `trimMS` not just creates a trimmed MS approximating the same function, but
+-- but also is in the normal form as expression.
 def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo
   let newMs : MS := {

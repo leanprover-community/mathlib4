@@ -138,6 +138,22 @@ end ElimDestruct
 
 open Filter Topology
 
+section trig
+
+-- the first remarkable limit
+example :
+    let f := fun (y : ℝ) ↦ Real.sin y / y;
+    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.sin (Real.sin y / y);
+    Tendsto f (𝓝[≠] 0) (𝓝 (Real.sin 1)) := by
+  have : 0 < Real.sin 1 := sorry -- TODO: why needed?
+  compute_asymptotics
+
+end trig
+
 section pow_fun
 
 -- the second remarkable limit
@@ -622,19 +638,19 @@ example :
 end DifferentFilters
 
 -- TODO
--- example from the paper. Used in the proof of Akkra-Bazzi theorem.
-open Real in
--- set_option pp.analyze true in
--- set_option pp.maxSteps 100000 in
--- set_option maxHeartbeats 0 in
-example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
-  let ε : ℝ := 1;
-  let f := fun (x : ℝ) ↦
-    (1 - 1 / (b * (log x)^(1 + ε)))^p *
-    (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
-    (1 + 1 / (log x)^(ε / 2));
-  Tendsto f atTop (𝓝 0) := by
-  intro ε f
-  dsimp only [ε, f]
-  -- sorry
-  compute_asymptotics
+-- example from the paper. It's used in the proof of Akkra-Bazzi theorem.
+-- open Real in
+-- -- set_option pp.analyze true in
+-- -- set_option pp.maxSteps 100000 in
+-- -- set_option maxHeartbeats 0 in
+-- example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
+--   let ε : ℝ := 1;
+--   let f := fun (x : ℝ) ↦
+--     (1 - 1 / (b * (log x)^(1 + ε)))^p *
+--     (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
+--     (1 + 1 / (log x)^(ε / 2));
+--   Tendsto f atTop (𝓝 0) := by
+--   intro ε f
+--   dsimp only [ε, f]
+--   -- sorry
+--   compute_asymptotics

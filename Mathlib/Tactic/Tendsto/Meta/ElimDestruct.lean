@@ -12,73 +12,11 @@ import Mathlib.Tactic.Tendsto.Meta.CompareReal
 # TODO
 -/
 
-open Filter Asymptotics TendstoTactic Stream' Seq
+open Filter Asymptotics TendstoTactic Stream' Seq PreMS
 
 namespace TendstoTactic
 
 namespace ElimDestruct
-
-section Const
-
-@[PreMS_const]
-theorem const_const (c : ℝ) : PreMS.const [] c = c := rfl
-
-@[PreMS_const]
-theorem one_const : PreMS.one [] = 1 := rfl
-
-@[PreMS_const]
-theorem neg_const (x : PreMS []) : (x.neg) = -x := by simp [PreMS.neg, PreMS.mulConst]
-
-@[PreMS_const]
-theorem add_const (x y : PreMS []) : (PreMS.add x y) = x + y := rfl
-
-@[PreMS_const]
-theorem mul_const (x y : PreMS []) : (PreMS.mul x y) = x * y := by simp [PreMS.mul]
-
-@[PreMS_const]
-theorem mulConst_const (x : PreMS []) (c : ℝ) : (PreMS.mulConst x c) = x * c := rfl
-
-@[PreMS_const]
-theorem inv_const (x : PreMS []) : (PreMS.inv x) = x⁻¹ := rfl
-
-@[PreMS_const]
-theorem pow_const (x : PreMS []) (a : ℝ) : (PreMS.pow x a) = x^a := rfl
-
-@[PreMS_const]
-theorem extendBasisEnd_const (f : ℝ → ℝ) (x : PreMS []) : (PreMS.extendBasisEnd f x) =
-    PreMS.const [f] x := rfl
-
-@[PreMS_const]
-theorem updateBasis_const (ms : PreMS []) (ex : BasisExtension []) :
-    (PreMS.updateBasis ex ms) = PreMS.const _ ms := by
-  cases ex with
-  | nil =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
-  | insert f ex_tl =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
-    rw [updateBasis_const]
-
-@[PreMS_const]
-theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
-    (PreMS.updateBasis ex ms) = PreMS.const _ ms := by
-  cases ex with
-  | nil =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
-  | insert f ex_tl =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const]
-    rw [updateBasis_const]
-
-@[PreMS_const]
-theorem BasisExtension.nil_getBasis : BasisExtension.nil.getBasis = [] := rfl
-
-@[PreMS_const]
-theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis x) =
-    Real.log x := rfl
-
-@[PreMS_const]
-theorem exp_const (x : PreMS []) : (PreMS.exp x) = Real.exp x := rfl
-
-end Const
 
 section Destruct
 
@@ -232,7 +170,46 @@ theorem exp_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.exp =
   · simp [PreMS.exp]
     rfl
   · simp [PreMS.exp]
-    split_ifs with h_if <;> simp [h_if]
+    split_ifs with h_if <;> rfl
+
+theorem cos_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.cos =
+    match destruct ms with
+    | .none => .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl)
+    | .some ((exp, coef), tl) =>
+      if exp < 0 then
+        destruct (PreMS.cosSeries.apply ms)
+      else
+        destruct (
+          PreMS.sub
+          ((PreMS.cosSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.cos 0)
+          ((PreMS.sinSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.sin 0)
+        ) := by
+  cases' ms with exp coef tl
+  · simp [PreMS.cos]
+    rfl
+  · simp [PreMS.cos]
+    split_ifs with h_if <;> rfl
+
+theorem sin_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.sin =
+    match destruct ms with
+    | .none => .none
+    | .some ((exp, coef), tl) =>
+      if exp < 0 then
+        destruct (PreMS.sinSeries.apply ms)
+      else
+        destruct (
+          PreMS.add
+          ((PreMS.cosSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.sin 0)
+          ((PreMS.sinSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.cos 0)
+        ) := by
+  cases' ms with exp coef tl
+  · simp [PreMS.sin]
+  · simp [PreMS.sin]
+    split_ifs with h_if <;> rfl
+
+theorem ofFnFrom_destruct (f : ℕ → ℝ) (n : ℕ) : destruct (PreMS.LazySeries.ofFnFrom f n) =
+    .some ((f n), PreMS.LazySeries.ofFnFrom f (n + 1)) := by
+  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
 
 theorem invSeries_destruct : destruct PreMS.invSeries = .some (1, PreMS.invSeries) := by
   conv => lhs; rw [PreMS.invSeries_eq_cons_self]; simp
@@ -247,21 +224,32 @@ theorem powSeries_destruct (x : ℝ) :
   unfold PreMS.powSeries
   simp [powSeriesFrom_destruct]
 
-theorem logSeriesFrom_destruct (n : ℕ) :
-    destruct (PreMS.logSeriesFrom n) = .some (-(-1)^n / n, PreMS.logSeriesFrom (n + 1)) := by
-  rw [PreMS.logSeriesFrom_eq_cons]
+theorem logSeries_destruct : destruct PreMS.logSeries =
+    .some (0, PreMS.LazySeries.ofFnFrom (fun n ↦ -(-1) ^ n / n) 1) := by
+  simp [PreMS.logSeries, PreMS.LazySeries.ofFn]
+  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
+  congr
   simp
 
-theorem logSeries_destruct : destruct PreMS.logSeries = .some (0, PreMS.logSeriesFrom 1) := by
-  simp [PreMS.logSeries, logSeriesFrom_destruct]
-
-theorem expSeriesFrom_destruct (n : ℕ) : destruct (PreMS.expSeriesFrom n) =
-    .some ((n.factorial : ℝ)⁻¹, PreMS.expSeriesFrom (n + 1)) := by
-  rw [PreMS.expSeriesFrom_eq_cons]
+theorem expSeries_destruct : destruct PreMS.expSeries =
+    .some (1, PreMS.LazySeries.ofFnFrom (fun n ↦ (↑n.factorial)⁻¹) 1) := by
+  simp [PreMS.expSeries, PreMS.LazySeries.ofFn]
+  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
+  congr
   simp
 
-theorem expSeries_destruct : destruct PreMS.expSeries = .some (1, PreMS.expSeriesFrom 1) := by
-  simp [PreMS.expSeries, expSeriesFrom_destruct]
+theorem cosSeries_destruct : destruct PreMS.cosSeries =
+    .some (1, PreMS.LazySeries.ofFnFrom (fun n ↦ if n % 2 = 0 then (-1 : ℝ) ^ (n / 2) * (n.factorial : ℝ)⁻¹ else 0) 1) := by
+  simp [PreMS.cosSeries, PreMS.LazySeries.ofFn]
+  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
+  congr
+  simp
+
+theorem sinSeries_destruct : destruct PreMS.sinSeries =
+    .some (0, PreMS.LazySeries.ofFnFrom (fun n ↦ if n % 2 = 1 then (-1) ^ ((n - 1) / 2) * (n.factorial : ℝ)⁻¹ else 0) 1) := by
+  simp [PreMS.sinSeries, PreMS.LazySeries.ofFn]
+  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
+  rfl
 
 theorem extendBasisEnd_destruct (f : ℝ → ℝ) (ms : PreMS (basis_hd :: basis_tl)) :
     destruct (ms.extendBasisEnd f) =
@@ -303,13 +291,14 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
   match targetType with
   | ~q(PreMS.LazySeries) =>
     match target with
+    | ~q(PreMS.LazySeries.ofFnFrom $f $n) => simpWith q(ofFnFrom_destruct $f $n)
     | ~q(PreMS.invSeries) => simpWith q(invSeries_destruct)
     | ~q(PreMS.powSeriesFrom $x $acc $n) => simpWith q(powSeriesFrom_destruct $x $acc $n)
     | ~q(PreMS.powSeries $x) => simpWith q(powSeries_destruct $x)
-    | ~q(PreMS.logSeriesFrom $n) => simpWith q(logSeriesFrom_destruct $n)
     | ~q(PreMS.logSeries) => simpWith q(logSeries_destruct)
-    | ~q(PreMS.expSeriesFrom $n) => simpWith q(expSeriesFrom_destruct $n)
     | ~q(PreMS.expSeries) => simpWith q(expSeries_destruct)
+    | ~q(PreMS.cosSeries) => simpWith q(cosSeries_destruct)
+    | ~q(PreMS.sinSeries) => simpWith q(sinSeries_destruct)
     | _ => return .continue
   | ~q(PreMS $basis) =>
     let basis' : Q(Basis) ← reduceBasis basis
@@ -360,10 +349,12 @@ simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
     | ~q(PreMS.pow $arg $exp) => simpWith q(pow_destruct $arg $exp)
     | ~q(PreMS.log $logBasis $arg) => simpWith q(log_destruct $arg $logBasis)
     | ~q(PreMS.exp $arg) => simpWith q(exp_destruct $arg)
+    | ~q(PreMS.cos $arg) => simpWith q(cos_destruct $arg)
+    | ~q(PreMS.sin $arg) => simpWith q(sin_destruct $arg)
     | _ => return .continue
   | _ => return .continue
 
-#check Nat
+-- #check Nat
 
 #check reduceIte
 
@@ -437,7 +428,7 @@ example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
   have : (if 0 < 0 * p + 0 + 0 then 4 else 2) = ?_ := by
     reduce_num_ite
     exact Eq.refl _
-  sorry
+  admit
 
 -- TODO: rewrite without macro?
 syntax "elim_destruct" : tactic
