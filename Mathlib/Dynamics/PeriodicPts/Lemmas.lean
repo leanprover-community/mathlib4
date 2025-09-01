@@ -151,8 +151,20 @@ for possibly infinite sets and types. -/
 -- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
 theorem minimalPeriod_piMap :
     minimalPeriod (Pi.map f) x = sInf {n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n} := by
+  --set s := {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}
   by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
-  · sorry
+  · exact eq_of_forall_dvd <| by
+      simp [← isPeriodicPt_iff_minimalPeriod_dvd]
+      intro n
+      set inf := sInf {n | 0 < n ∧ ∀ (i : ι), IsPeriodicPt (f i) n (x i)}
+      constructor
+      ·
+        sorry
+      · intro dvd_n i
+        have : minimalPeriod (f i) (x i) ∣ inf := (Nat.sInf_mem h).2 i
+        simp [isPeriodicPt_iff_minimalPeriod_dvd]
+
+        sorry
   · --replace h := not_nonempty_iff_eq_empty.mp h
     simp [not_nonempty_iff_eq_empty.mp h] --simp [h]
     apply minimalPeriod_eq_zero_of_notMem_periodicPts
