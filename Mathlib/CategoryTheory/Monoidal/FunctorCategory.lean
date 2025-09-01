@@ -189,4 +189,24 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
 
 end SymmetricCategory
 
+@[simps]
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
+    ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
+  ε := { app X := Functor.LaxMonoidal.ε L }
+  μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
+
+@[simps]
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
+    ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
+  η := { app X := Functor.OplaxMonoidal.η L }
+  δ F G := { app X := Functor.OplaxMonoidal.δ L (F.obj X) (G.obj X) }
+  oplax_left_unitality := by aesop
+  oplax_right_unitality := by aesop
+
+instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+    [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
+    ((Functor.whiskeringRight C D E).obj L).Monoidal where
+
 end CategoryTheory.Monoidal
