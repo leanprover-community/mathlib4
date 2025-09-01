@@ -286,12 +286,8 @@ theorem ofDigits_neg_one :
 /-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
 theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n / b ^ i % b := by
   simp only [List.getD_eq_getElem?_getD]
-  have split : n = 0 ∨ 0 < n := Nat.eq_zero_or_pos n
-  cases split with
-  | inl n0l =>
-    repeat rw [n0l]
-    simp
-  | inr n0r =>
+  obtain (n0l | n0r) := Nat.eq_zero_or_pos n
+  · simp [n0l]
     have ne0 : n ≠ 0 := Nat.ne_zero_of_lt n0r
     have split : n < b ^ i ∨ b ^ i ≤ n := Nat.lt_or_ge n (b ^ i)
     cases split with
