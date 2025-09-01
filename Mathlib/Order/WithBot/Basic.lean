@@ -35,6 +35,11 @@ instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
 
 open Function
 
+/-- Decidable equality with `⊥`. This is not an instance to avoid conflicts with other instances. -/
+def instDecidableEqBot : (x : WithBot α) → Decidable (x = ⊥)
+  | .bot => isTrue rfl
+  | .some _ => isFalse (by simp)
+
 theorem coe_injective : Injective ((↑) : α → WithBot α) := by grind [Injective]
 
 @[simp, norm_cast]
@@ -575,6 +580,11 @@ end WithBot
 namespace WithTop
 
 variable {a b : α}
+
+/-- Decidable equality with `⊤`. This is not an instance to avoid conflicts with other instances. -/
+def instDecidableEqTop : (x : WithTop α) → Decidable (x = ⊤)
+  | .bot => isTrue rfl
+  | .some _ => isFalse (by rintro ⟨⟩)
 
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   WithBot.nontrivial
