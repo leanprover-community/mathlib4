@@ -639,7 +639,7 @@ lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :
   calc
     x ^ (z % (orderOf x : ℤ)) = x ^ (z % orderOf x + orderOf x * (z / orderOf x) : ℤ) := by
         simp [zpow_add, zpow_mul, pow_orderOf_eq_one]
-    _ = x ^ z := by rw [Int.emod_add_ediv]
+    _ = x ^ z := by rw [Int.emod_add_mul_ediv]
 
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
