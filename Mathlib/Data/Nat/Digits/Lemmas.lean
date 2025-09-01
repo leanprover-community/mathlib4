@@ -319,8 +319,7 @@ theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (Nat.digits b n).getD i 0 = n 
           exact Nat.digits_lt_base h hy
         intro y hy
         exact hi y (List.mem_of_mem_drop hy)
-      have h₅: ∀ (h : List.drop i (b.digits n) ≠ []), (List.drop i (b.digits n)).getLast h ≠ 0 := by
-        intro hi
+      have h₅ (hi : List.drop i (b.digits n) ≠ []) : (List.drop i (b.digits n)).getLast h ≠ 0 := by
         have hi₁ := List.getLast_drop hi
         rw [hi₁]
         exact Nat.getLast_digit_ne_zero b mne0
