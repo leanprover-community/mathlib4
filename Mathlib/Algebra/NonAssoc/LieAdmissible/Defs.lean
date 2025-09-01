@@ -53,7 +53,7 @@ section instances
 
 variable {R L : Type*} [CommRing R]
 
-namespace LieAdmissibleRing 
+namespace LieAdmissibleRing
 
 /-- By definition, every `LieAdmissibleRing` yields a `LieRing` with the commutator bracket. -/
 instance instLieRing [LieAdmissibleRing L] : LieRing L where
