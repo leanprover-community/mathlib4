@@ -303,18 +303,16 @@ end sqrt
 
 variable [DecidableEq n]
 
-theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff'
-    {U x : Matrix n n R} (hU : IsUnit U) :
+theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff' {U x : Matrix n n R} (hU : IsUnit U) :
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
   simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit' hU,
-    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
-    star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
+    ← dotProduct_mulVec]
   obtain ⟨V, hV⟩ := hU.exists_right_inv
   exact fun h => ⟨fun H y => by simpa [hV] using H (V *ᵥ y), fun H _ => H _⟩
 
 open Matrix in
-theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff
-    {U x : Matrix n n R} (hU : IsUnit U) :
+theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff {U x : Matrix n n R} (hU : IsUnit U) :
     PosSemidef (U * x * star U) ↔ x.PosSemidef := by
   simpa using hU.star.posSemidef_conjugate_iff'
 
@@ -324,13 +322,13 @@ theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
   simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
-   ← star_eq_conjTranspose]
-  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
-    : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
+    ← star_eq_conjTranspose]
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩ :
+      unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
   have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) :=
     (unitary.toUnits U).isUnit
-  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
-    (this _).posSemidef_conjugate_iff, diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
+  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,(this _).posSemidef_conjugate_iff,
+    diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
   exact fun _ => mul_nonneg (RCLike.ofReal_nonneg.mpr <| hx.eigenvalues_nonneg _)
     (RCLike.ofReal_nonneg.mpr <| hy.eigenvalues_nonneg _)
 
@@ -648,12 +646,13 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
-theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' [DecidableEq n]
-    {x U : Matrix n n R} (hU : IsUnit U) :
+variable [DecidableEq n]
+
+theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
   simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit' hU,
-    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
-    star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
+    ← dotProduct_mulVec]
   obtain ⟨V, hV⟩ := hU.exists_left_inv
   obtain ⟨W, hW⟩ := hU.exists_right_inv
   have hVV (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(V *ᵥ $h)
@@ -662,24 +661,23 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' [DecidableEq n]
   simpa [hW] using h _ (hWW _ hx)
 
 open Matrix in
-theorem _root_.Matrix.IsUnit.posDef_conjugate_iff [DecidableEq n]
-    {x U : Matrix n n R} (hU : IsUnit U) :
+theorem _root_.Matrix.IsUnit.posDef_conjugate_iff {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (U * x * star U) ↔ x.PosDef := by
   simpa using hU.star.posDef_conjugate_iff'
 
 open scoped Kronecker in
 open Matrix in
-theorem kronecker [DecidableEq n] [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
+theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
   simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
-   ← star_eq_conjTranspose]
-  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
-    : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
+    ← star_eq_conjTranspose]
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩ :
+      unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
   have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) :=
     (unitary.toUnits U).isUnit
-  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
-    (this _).posDef_conjugate_iff, diagonal_kronecker_diagonal, posDef_diagonal_iff]
+  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary, (this _).posDef_conjugate_iff,
+    diagonal_kronecker_diagonal, posDef_diagonal_iff]
   exact fun _ => mul_pos (RCLike.ofReal_pos.mpr <| hx.eigenvalues_pos _)
     (RCLike.ofReal_pos.mpr <| hy.eigenvalues_pos _)
 
