@@ -603,10 +603,9 @@ theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
 theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ finiteIndex_of_finite_quotient⟩
 
--- Porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
-  @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)
+  finiteIndex_of_finite_quotient
 
 variable (H) in
 @[to_additive]

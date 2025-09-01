@@ -120,11 +120,11 @@ variable {β : Type v} [AddCommGroup β] (f : α → β)
 
 open FreeAbelianGroup
 
--- Porting note: needed to add `(β := Multiplicative β)` and `using 1`.
+-- Porting note: needed to add `(β := Multiplicative β)`
 @[simp]
 theorem lift_apply_of (x : α) : lift f (of x) = f x := by
   convert Abelianization.lift_apply_of
-     (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x) using 1
+     (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
 @[deprecated (since := "2025-07-23")] protected alias lift.of := lift_apply_of
