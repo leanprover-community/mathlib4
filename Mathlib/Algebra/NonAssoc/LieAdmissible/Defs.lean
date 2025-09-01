@@ -54,19 +54,16 @@ namespace LieAdmissibleRing
 /-- By definition, every `LieAdmissibleRing` yields a `LieRing` with the commutator bracket. -/
 instance instLieRing [LieAdmissibleRing L] : LieRing L where
   add_lie x y z := by
-    simp [Ring.lie_def, mul_add, add_mul]
+    simp only [Ring.lie_def, mul_add, add_mul]
     abel
   lie_add x y z := by
-    simp [Ring.lie_def, mul_add, add_mul]
+    simp only [Ring.lie_def, mul_add, add_mul]
     abel
   lie_self := by simp [Ring.lie_def]
   leibniz_lie x y z := by
-    apply sub_eq_zero.mp
-    simp [Ring.lie_def, mul_sub, sub_mul]
-    have assoc := LieAdmissibleRing.assoc_def x y z
-    apply sub_eq_zero_of_eq at assoc
-    simp [associator_apply] at assoc
-    grind
+    have := LieAdmissibleRing.assoc_def x y z
+    simp only [associator_apply] at this
+    grind [Ring.lie_def, mul_sub, sub_mul]
 
 end LieAdmissibleRing
 
