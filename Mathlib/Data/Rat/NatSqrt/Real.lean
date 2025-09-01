@@ -25,8 +25,7 @@ theorem realSqrt_lt_ratSqrt_add_inv_prec (x : ℕ) {prec : ℕ} (h : 0 < prec) :
   have := lt_ratSqrt_add_inv_prec_sq (x := x) h
   have : (x : ℝ) < ↑((x.ratSqrt prec + 1 / prec) ^ 2 : ℚ) := by norm_cast
   have := Real.sqrt_lt_sqrt (by simp) this
-  rw [Rat.cast_pow] at this
-  rw [Real.sqrt_sq] at this
+  rw [Rat.cast_pow, Real.sqrt_sq] at this
   · push_cast at this
     exact this
   · push_cast
