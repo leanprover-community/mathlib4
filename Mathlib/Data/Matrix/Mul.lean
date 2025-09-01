@@ -784,6 +784,16 @@ theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x :
   simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
     smul_eq_mul, Finset.sum_mul, mul_assoc]
 
+theorem mul_vecMulVec [Fintype m] (M : Matrix n m α) (x : m → α) (y : n → α) :
+    M * vecMulVec x y = vecMulVec (M *ᵥ x) y := by
+  ext
+  simp_rw [mul_apply, vecMulVec_apply, mulVec, dotProduct, Finset.sum_mul, mul_assoc]
+
+theorem vecMulVec_mul [Fintype n] (M : Matrix n m α) (x : m → α) (y : n → α) :
+    vecMulVec x y * M = vecMulVec x (y ᵥ* M) := by
+  ext
+  simp_rw [mul_apply, vecMulVec_apply, vecMul, dotProduct, Finset.mul_sum, mul_assoc]
+
 lemma mul_right_injective_iff_mulVec_injective [Fintype m] [Nonempty n] {A : Matrix l m α} :
     Function.Injective (fun B : Matrix m n α => A * B) ↔ Function.Injective A.mulVec := by
   refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_col fun j => ha congr(($hBC).col j)⟩
