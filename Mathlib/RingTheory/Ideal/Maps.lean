@@ -400,9 +400,10 @@ theorem map_evalRingHom_pi {I : Π i, Ideal (R i)} (i : ι) :
 /-- Ideals in a finite direct product semiring `Πᵢ Rᵢ` are identified with tuples of ideals
 in the individual semirings, in an order-preserving way.
 
+(Note that this is not in general true for infinite direct products: 
 If infinitely many of the `Rᵢ` are nontrivial, then there exists an ideal of `Πᵢ Rᵢ` that
 is not of the form `Πᵢ Iᵢ`, namely the ideal of finitely supported elements of `Πᵢ Rᵢ`
-(it is also not a principal ideal). -/
+(it is also not a principal ideal).) -/
 @[simps!] def piOrderIso [Finite ι] : Ideal (Π i, R i) ≃o Π i, Ideal (R i) := .symm
 { toFun := pi
   invFun I i := I.map (Pi.evalRingHom R i)
