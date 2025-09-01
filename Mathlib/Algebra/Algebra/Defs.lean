@@ -331,6 +331,16 @@ theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α 
     [SMulCommClass α R A] (a : α) (r : R) : a • algebraMap R A r = algebraMap R A r := by
   rw [algebraMap_eq_smul_one, smul_comm a r (1 : A), smul_one]
 
+/-- A variant of `add_sq` that does not require `A` to be commutative. -/
+lemma add_smul_one_sq (x : A) (r : R) :
+    (x + r • 1) ^ 2 = x ^ 2 + 2 * x * (r • 1) + (r • 1) ^ 2 := by
+    simp [sq, add_mul, mul_add, smul_add, smul_smul, two_mul, add_assoc]
+
+/-- A variant of `sub_sq` that does not require `A` to be commutative. -/
+lemma sub_smul_one_sq {A R : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) (r : R) :
+    (x - r • 1) ^ 2 = x ^ 2 - 2 * x * (r • 1) + (r • 1) ^ 2 := by
+    simp [sq, sub_mul, mul_sub, smul_sub, smul_smul, two_mul, ← sub_sub, ← sub_add]
+
 section compHom
 
 variable (A) (f : S →+* R)
