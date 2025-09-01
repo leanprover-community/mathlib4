@@ -848,7 +848,7 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
   ⟨fun n hmem g => ⟨hH.conj_mem n hmem.1 g, hK.conj_mem n hmem.2 g⟩⟩
 
 @[to_additive]
-theorem normal_iInf_normal {ι : Type*} {a : ι → Subgroup G}
+theorem normal_iInf_normal {ι : Sort*} {a : ι → Subgroup G}
     (norm : ∀ i : ι, (a i).Normal) : (iInf a).Normal := by
   constructor
   intro g g_in_iInf h

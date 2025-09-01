@@ -124,7 +124,7 @@ theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
     (p ⊓ q).map f = p.map f ⊓ q.map f :=
   SetLike.coe_injective <| Set.image_inter hf
 
-lemma map_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
+lemma map_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
     (⨅ i, p i).map f = ⨅ i, (p i).map f :=
   SetLike.coe_injective <| by simpa only [map_coe, iInf_coe] using hf.injOn.image_iInter_eq
 
