@@ -133,7 +133,6 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- It will be useful to repackage the Engel subalgebras
   set Ex : {engel K x | x ∈ U} := ⟨engel K x, x, hxU, rfl⟩
   set Ey : {engel K y | y ∈ U} := ⟨engel K y, y, hyU, rfl⟩
-  replace hUle : U ≤ Ex := hUle
   replace hmin : ∀ E, E ≤ Ex → Ex ≤ E := @hmin
   -- We also repackage the Engel subalgebra `engel K x`
   -- as Lie submodule `E` of `L` over the Lie algebra `U`.
