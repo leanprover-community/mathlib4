@@ -93,7 +93,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       dsimp
       conv_rhs => rw [← Submonoid.smul_def]
       conv_lhs => rw [← LinearMap.map_smul_of_tower]
-      rw [← Submonoid.smul_def, IsLocalizedModule.mk'_cancel', IsLocalizedModule.mk'_cancel']
+      rw [IsLocalizedModule.mk'_cancel', Submonoid.smul_def, IsLocalizedModule.mk'_cancel']
       apply LinearMap.restrictScalars_injective R
       apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
       · exact IsLocalizedModule.map_units (LocalizedModule.mkLinearMap I.primeCompl N)
@@ -108,7 +108,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       refine ⟨f.comp g, ⟨g, rfl⟩, s, ?_⟩
       apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
          (LocalizedModule.map I.primeCompl) s).injective
-      simp only [Module.algebraMap_end_apply, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel',
+      simp only [Module.algebraMap_end_apply, IsLocalizedModule.mk'_cancel',
         ← LinearMap.map_smul_of_tower]
       apply LinearMap.restrictScalars_injective R
       apply IsLocalizedModule.ext I.primeCompl (LocalizedModule.mkLinearMap I.primeCompl N)
