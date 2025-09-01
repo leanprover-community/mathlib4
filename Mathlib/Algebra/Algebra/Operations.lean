@@ -246,15 +246,11 @@ protected theorem one_mul : (1 : Submodule R A) * M = M :=
 
 variable {M}
 
-@[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  smul_mono hmp hnq
-
 instance : MulLeftMono (Submodule R A) where
-  mul_le_mul_left _ _ _ := smul_mono_left
+  elim _M _N _P hNP := smul_mono_right _ hNP
 
 instance : MulRightMono (Submodule R A) where
-  mul_le_mul_right _ _ _ := smul_mono_right
+  elim _ _ _ := smul_mono_left
 
 theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
   toAddSubmonoid_injective <| AddSubmonoid.mul_comm_of_commute h
@@ -767,7 +763,7 @@ theorem setSemiring_smul_def (s : SetSemiring A) (P : Submodule R A) :
 theorem smul_le_smul {s t : SetSemiring A} {M N : Submodule R A}
     (h₁ : SetSemiring.down (α := A) s ⊆ SetSemiring.down (α := A) t)
     (h₂ : M ≤ N) : s • M ≤ t • N :=
-  mul_le_mul (span_mono h₁) h₂
+  mul_le_mul' (span_mono h₁) h₂
 
 theorem singleton_smul (a : A) (M : Submodule R A) :
     Set.up ({a} : Set A) • M = M.map (LinearMap.mulLeft R a) := by
@@ -819,7 +815,7 @@ theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
   refine (mul_one I).symm.trans_le ?_
-  apply mul_le_mul_right (one_le_one_div.mpr hI)
+  apply mul_le_mul_right' (one_le_one_div.mpr hI)
 
 theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
   rw [Submodule.mul_le]
