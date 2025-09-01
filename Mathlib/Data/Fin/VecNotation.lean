@@ -319,6 +319,11 @@ theorem empty_vecAppend (v : Fin n → α) : vecAppend n.zero_add.symm ![] v = v
   simp [vecAppend_eq_ite]
 
 @[simp]
+theorem vecAppend_empty (v : Fin n → α) : vecAppend rfl v ![] = v := by
+  ext
+  simp [vecAppend_eq_ite]
+
+@[simp]
 theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by omega) u v) := by
   ext i
