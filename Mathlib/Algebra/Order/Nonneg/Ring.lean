@@ -80,8 +80,8 @@ instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsS
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } where
-  le_add_self := fun _ b => le_add_of_nonneg_left b.2
-  le_self_add := fun _ b => le_add_of_nonneg_right b.2
+  le_add_self _ b := le_add_of_nonneg_left b.2
+  le_self_add _ b := le_add_of_nonneg_right b.2
   exists_add_of_le := fun {a b} h =>
     ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩
 

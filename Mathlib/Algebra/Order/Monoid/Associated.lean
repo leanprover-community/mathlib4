@@ -21,8 +21,6 @@ We also define an equivalence relation `Associated`
 saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
-
-TODO: almost none of this docstring is true anymore?
 -/
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
