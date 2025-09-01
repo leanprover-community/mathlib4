@@ -15,7 +15,7 @@ We construct the subscheme associated to an ideal sheaf.
 ## Main definition
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
-* `AlgebraicGeometry.Scheme.Hom.image`: The scheme theoretical image of a morphism.
+* `AlgebraicGeometry.Scheme.Hom.image`: The scheme-theoretic image of a morphism.
 * `AlgebraicGeometry.Scheme.kerAdjunction`:
   The adjunction between taking kernels and taking the associated subscheme.
 
@@ -110,8 +110,7 @@ lemma isLocalization_away {U V : X.affineOpens}
   refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
     Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl
-  · subst hU
-    simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
+  · simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
 
 instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
     IsOpenImmersion (I.glueDataObjMap (X.affineBasicOpen_le f)) := by
@@ -614,10 +613,10 @@ open Limits
 
 variable {X Y : Scheme.{u}} (f : X.Hom Y) (U : Y.affineOpens)
 
-/-- The scheme theoretic image of a morphism. -/
+/-- The scheme-theoretic image of a morphism. -/
 abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 
-/-- The embedding from the scheme theoretic image to the codomain. -/
+/-- The embedding from the scheme-theoretic image to the codomain. -/
 abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
@@ -643,7 +642,7 @@ def Hom.toImageAux : X ⟶ f.image :=
   ((Y.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top Y)).pullbackCover f).glueMorphisms
     (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
       (by exact ideal_ker_le_ker_ΓSpecIso_inv_comp f U) ≫ f.ker.subschemeCover.map U) (by
-    intros U V
+    intro U V
     rw [← cancel_mono f.imageι]
     simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc,
       ← pullback.condition, ← pullback.condition_assoc])
@@ -655,7 +654,7 @@ private lemma Hom.toImageAux_spec :
   simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
 
-/-- The morphism from the domain to the scheme theoretic image. -/
+/-- The morphism from the domain to the scheme-theoretic image. -/
 noncomputable
 def Hom.toImage : X ⟶ f.image :=
   f.toImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)

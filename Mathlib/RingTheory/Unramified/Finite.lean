@@ -112,7 +112,7 @@ lemma finite_of_free_aux (I) [DecidableEq I] (b : Basis I R S)
   simp_rw [map_finsuppSum, map_smul, h₁, Finsupp.sum, Finset.sum_comm (t := f.support),
     TensorProduct.smul_tmul', ← TensorProduct.sum_tmul, ← Finset.smul_sum, h₂]
   apply Finset.sum_congr rfl
-  intros i hi
+  intro i hi
   apply Finset.sum_subset_zero_on_sdiff
   · exact Finset.subset_biUnion_of_mem (fun i ↦ (a i).support) hi
   · simp only [a, Finset.mem_sdiff, Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_not,
@@ -175,7 +175,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     (fun j ↦ not_imp_comm.mp fun hj ↦ by simp [Finsupp.notMem_support_iff.mp hj])
   have hG : ∀ j ∉ (Finset.biUnion f.support fun i ↦ (a i).support),
       b.repr (f.sum (fun i y ↦ a i j • y)) = 0 := by
-    intros j hj
+    intro j hj
     simp only [Finset.mem_biUnion, Finsupp.mem_support_iff, ne_eq, not_exists, not_and,
       not_not] at hj
     simp only [Finsupp.sum]

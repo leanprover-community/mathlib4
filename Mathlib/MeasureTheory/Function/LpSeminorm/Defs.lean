@@ -62,7 +62,7 @@ deduce it for `eLpNorm`, and translate it in terms of `MemLp`.
 this quantity is finite.
 
 Note: this is a purely auxiliary quantity; lemmas about `eLpNorm'` should only be used to
-prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm'` version. -/
+prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm` version. -/
 def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 

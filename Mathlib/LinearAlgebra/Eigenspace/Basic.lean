@@ -271,7 +271,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
-  congr
+  congr 1
   aesop
 
 lemma genEigenspace_le_genEigenspace_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M)
