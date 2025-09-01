@@ -307,7 +307,6 @@ theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
   rcases exists_le_ker_of_notMem hpv with ⟨f, hfv, hpf⟩
   exact ⟨f, ne_of_apply_ne (· v) hfv, hpf⟩
 
-
 theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × p) ≃ₗ[K] V) :=
   let ⟨q, hq⟩ := p.exists_isCompl
   Nonempty.intro <|
