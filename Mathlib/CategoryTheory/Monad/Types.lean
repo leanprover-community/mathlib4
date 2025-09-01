@@ -6,8 +6,7 @@ Authors: Johannes Hölzl, Bhavik Mehta
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Kleisli
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.Control.Basic
 
 /-!
