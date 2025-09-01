@@ -114,12 +114,15 @@ namespace IsPathGraph3Compl
 
 variable {v w₁ w₂ : α}
 
+@[grind]
 lemma ne_fst (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₁ :=
   fun h ↦ h2.not_adj_snd (h.symm ▸ h2.adj)
 
+@[grind]
 lemma ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₂ :=
   fun h ↦ h2.not_adj_fst (h ▸ h2.adj.symm)
 
+@[grind]
 lemma fst_ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : w₁ ≠ w₂ := h2.adj.ne
 
 @[symm] lemma symm (h : G.IsPathGraph3Compl v w₁ w₂) : G.IsPathGraph3Compl v w₂ w₁ := by
