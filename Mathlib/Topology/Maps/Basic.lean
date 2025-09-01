@@ -443,6 +443,11 @@ theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
 
 end IsClosedMap
 
+/-- A map is closed if and only if the `Set.kernImage` of every *open* set is open.
+
+One way to understand this result is that `f : X → Y` is closed if and only if its fibers vary in an
+**upper hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
+`f ⁻¹' {y} ⊆ U` is open in `Y`. -/
 lemma isClosedMap_iff_kernImage :
     IsClosedMap f ↔ ∀ {u : Set X}, IsOpen u → IsOpen (kernImage f u) := by
   rw [IsClosedMap, compl_surjective.forall]
