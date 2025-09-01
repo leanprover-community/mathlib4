@@ -16,6 +16,7 @@ open scoped nonZeroDivisors
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 
+-- Inline
 theorem FractionRing.algEquiv_algebraMap_commutes (A B : Type*) [CommRing A] [IsDomain A]
     [CommRing B] [IsDomain B] (K L : Type*) [Field K]
     [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
