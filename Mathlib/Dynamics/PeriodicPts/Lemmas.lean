@@ -42,6 +42,18 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     iff_self_and]
   exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
 
+#synth InfSet ℕ
+
+theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
+    minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
+  /- simp [minimalPeriod, periodicPts, sInf]
+  congr
+  ext h
+  congr -/
+  --unfold minimalPeriod periodicPts sInf
+  dsimp [minimalPeriod, periodicPts, sInf]
+  grind -- don't know why `rfl` doesn't work here
+
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
     (hfix : ¬IsFixedPt f x) : minimalPeriod f x = p :=
@@ -151,6 +163,8 @@ for possibly infinite sets and types. -/
 -- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
 theorem minimalPeriod_piMap :
     minimalPeriod (Pi.map f) x = sInf {n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n} := by
+  simp [minimalPeriod]
+
   --set s := {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}
   by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
   · exact eq_of_forall_dvd <| by
