@@ -77,13 +77,10 @@ lemma some_update_none (f : Option α →₀ M) (y : M) : (update f none y).some
   simp
 
 @[simp]
-lemma some_update_some (f : Option α →₀ M) (x : α) (y : M) :
-    (f.update (Option.some x) y).some = (f.some.update x y) := by
-  ext a
-  classical
-  by_cases h : a = x
-  · simp [h]
-  · simp [h]
+theorem some_update_none (f : Option α →₀ M) (a : M) :
+    (f.update none a).some = f.some := by
+  ext
+  simp [Finsupp.update]
 
 @[simp] lemma some_embDomain_some (f : α →₀ M) : (f.embDomain .some).some = f := by
   ext; rw [some_apply]; exact embDomain_apply _ _ _
@@ -95,14 +92,15 @@ lemma some_update_some (f : Option α →₀ M) (x : α) (y : M) :
 theorem embDomain_some_some (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
   simp [← Function.Embedding.some_apply]
 
+
 /-- `Finsupp`s from `Option` are equivalent to
 pairs of an element and a `Finsupp` on the original type. -/
 @[simps]
 noncomputable
-def optionEquiv : (Option α →₀ M) ≃ M × (α →₀ M) where
-  toFun P := (P .none, P.some)
-  invFun P := (P.2.embDomain .some).update .none P.1
-  left_inv P := by ext (_|a) <;> simp [Finsupp.update]
+def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
+  toFun P := (P none, P.some)
+  invFun P := (P.2.embDomain .some).update none P.1
+  left_inv P := by ext (_ | a) <;> simp [Finsupp.update]
   right_inv P := by ext <;> simp [Finsupp.update]
 
 /--

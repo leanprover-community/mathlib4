@@ -44,8 +44,8 @@ theorem exponent_eq_one_iff : exponent θ = 1 ↔ Algebra.adjoin ℤ {θ} = ⊤ 
   rw [exponent, absNorm_eq_one_iff, comap_eq_top_iff, conductor_eq_top_iff_adjoin_eq_top]
 
 theorem not_dvd_exponent_iff {p : ℕ} [Fact (Nat.Prime p)] :
-    ¬ p ∣ exponent θ ↔ comap (algebraMap ℤ (𝓞 K)) (conductor ℤ θ) ⊔ span {(p : ℤ)} = ⊤ := by
-  rw [sup_comm, IsCoatom.sup_eq_top_iff, ← under_def, ← Ideal.dvd_iff_le,
+    ¬ p ∣ exponent θ ↔ Codisjoint (comap (algebraMap ℤ (𝓞 K)) (conductor ℤ θ)) (span {↑p}) := by
+  rw [codisjoint_comm, ← IsCoatom.not_le_iff_codisjoint, ← under_def, ← Ideal.dvd_iff_le,
     ← Int.ideal_span_absNorm_eq_self (under ℤ (conductor ℤ θ)),
     span_singleton_dvd_span_singleton_iff_dvd, Int.natCast_dvd_natCast, exponent]
   exact isMaximal_def.mp <| Int.ideal_span_isMaximal_of_prime p
@@ -63,19 +63,19 @@ def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
       𝓞 K ⧸ span {(p : 𝓞 K)} :=
   (quotientEquivAlgOfEq ℤ (by simp [Ideal.map_span, Polynomial.map_map])).toRingEquiv.trans
     ((quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl).symm.trans
-      ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp) θ.isIntegral).symm.trans
+      ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm.trans
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
 
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
-  (ZModXQuotSpanEquivQuotSpan hp)
-    (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
+    (ZModXQuotSpanEquivQuotSpan hp)
+      (Ideal.Quotient.mk (span {map (Int.castRingHom (ZMod p)) (minpoly ℤ θ)})
       (map (Int.castRingHom (ZMod p)) Q)) = Ideal.Quotient.mk (span {(p : 𝓞 K)}) (aeval θ Q) := by
   simp only [ZModXQuotSpanEquivQuotSpan, AlgEquiv.toRingEquiv_eq_coe, algebraMap_int_eq,
     RingEquiv.trans_apply, AlgEquiv.coe_ringEquiv, quotientEquivAlgOfEq_mk,
     quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply,
     Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom]
   exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
-    quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp) θ.isIntegral Q
+    quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
 
 variable (p θ) in
 /--

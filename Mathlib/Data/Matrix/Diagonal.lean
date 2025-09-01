@@ -3,9 +3,11 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Matrix.Defs
 import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.LinearAlgebra.Matrix.Defs
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices
@@ -19,7 +21,7 @@ This file defines diagonal matrices and the `AddCommMonoidWithOne` structure on 
 * `Matrix.instAddCommMonoidWithOne`: matrices are an additive commutative monoid with one
 -/
 
-assert_not_exists Algebra Star
+assert_not_exists Algebra TrivialStar
 
 universe u u' v w
 
@@ -107,6 +109,12 @@ theorem diagonal_sub [SubNegZeroMonoid α] (d₁ d₂ : n → α) :
   by_cases h : i = j <;>
   simp [h]
 
+theorem diagonal_mem_matrix_iff [Zero α] {S : Set α} (hS : 0 ∈ S) {d : n → α} :
+    Matrix.diagonal d ∈ S.matrix ↔ ∀ i, d i ∈ S := by
+  simp only [Set.mem_matrix, diagonal, of_apply]
+  conv_lhs => intro _ _; rw [ite_mem]
+  simp [hS]
+
 instance [Zero α] [NatCast α] : NatCast (Matrix n n α) where
   natCast m := diagonal fun _ => m
 
@@ -185,6 +193,10 @@ instance one : One (Matrix n n α) :=
 
 @[simp]
 theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
+  rfl
+
+@[simp]
+theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
   rfl
 
 theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=

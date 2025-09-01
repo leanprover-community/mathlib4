@@ -229,7 +229,7 @@ lemma norm_inner_le {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
     _ = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
                 simp only [norm_eq_sqrt_norm_inner_self (A := A), norm_nonneg, Real.sq_sqrt]
     _ = (‖x‖ * ‖y‖) ^ 2 := by simp only [mul_pow]
-  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by norm_num)).mp this
+  refine (pow_le_pow_iff_left₀ (norm_nonneg ⟪x, y⟫_A) ?_ (by simp)).mp this
   exact mul_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 
 include A in
@@ -245,7 +245,7 @@ protected lemma norm_triangle (x y : E) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := b
       _ = ‖x‖ ^ 2 + ‖y‖ * ‖x‖ + ‖x‖ * ‖y‖ + ‖y‖ ^ 2 := by
           simp [norm_eq_sqrt_norm_inner_self (A := A)]
       _ = (‖x‖ + ‖y‖) ^ 2 := by simp only [add_pow_two, add_left_inj]; ring
-  refine (pow_le_pow_iff_left₀ (CStarModule.norm_nonneg A) ?_ (by norm_num)).mp h
+  refine (pow_le_pow_iff_left₀ (CStarModule.norm_nonneg A) ?_ (by simp)).mp h
   exact add_nonneg (CStarModule.norm_nonneg A) (CStarModule.norm_nonneg A)
 
 include A in

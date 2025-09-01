@@ -60,19 +60,19 @@ polynomial if there is a primitive `n`-th root of unity in `R`. -/
 def cyclotomic' (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] : R[X] :=
   ∏ μ ∈ primitiveRoots n R, (X - C μ)
 
-/-- The zeroth modified cyclotomic polyomial is `1`. -/
+/-- The zeroth modified cyclotomic polynomial is `1`. -/
 @[simp]
 theorem cyclotomic'_zero (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 0 R = 1 := by
   simp only [cyclotomic', Finset.prod_empty, primitiveRoots_zero]
 
-/-- The first modified cyclotomic polyomial is `X - 1`. -/
+/-- The first modified cyclotomic polynomial is `X - 1`. -/
 @[simp]
 theorem cyclotomic'_one (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 1 R = X - 1 := by
   simp only [cyclotomic', Finset.prod_singleton, RingHom.map_one,
     IsPrimitiveRoot.primitiveRoots_one]
 
-/-- The second modified cyclotomic polyomial is `X + 1` if the characteristic of `R` is not `2`. -/
--- Cannot be @[simp] because `p` can not be inferred by `simp`.
+/-- The second modified cyclotomic polynomial is `X + 1` if the characteristic of `R` is not `2`. -/
+-- Cannot be @[simp] because `p` cannot be inferred by `simp`.
 theorem cyclotomic'_two (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [CharP R p] (hp : p ≠ 2) :
     cyclotomic' 2 R = X + 1 := by
   rw [cyclotomic']
@@ -271,12 +271,12 @@ theorem cyclotomic.eval_apply {R S : Type*} (q : R) (n : ℕ) [Ring R] [Ring S] 
     eval (q : ℂ) (cyclotomic n ℂ) = (eval q (cyclotomic n ℝ)) :=
   cyclotomic.eval_apply q n (algebraMap ℝ ℂ)
 
-/-- The zeroth cyclotomic polyomial is `1`. -/
+/-- The zeroth cyclotomic polynomial is `1`. -/
 @[simp]
 theorem cyclotomic_zero (R : Type*) [Ring R] : cyclotomic 0 R = 1 := by
   simp only [cyclotomic, dif_pos]
 
-/-- The first cyclotomic polyomial is `X - 1`. -/
+/-- The first cyclotomic polynomial is `X - 1`. -/
 @[simp]
 theorem cyclotomic_one (R : Type*) [Ring R] : cyclotomic 1 R = X - 1 := by
   have hspec : map (Int.castRingHom ℂ) (X - 1) = cyclotomic' 1 ℂ := by
@@ -314,6 +314,15 @@ theorem degree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
 theorem natDegree_cyclotomic (n : ℕ) (R : Type*) [Ring R] [Nontrivial R] :
     (cyclotomic n R).natDegree = Nat.totient n := by
   rw [natDegree, degree_cyclotomic]; norm_cast
+
+/-- The natural degree of `cyclotomic n` is at most `totient n`.
+
+If the base ring is nontrivial, then the degree is exactly `φ n`,
+otherwise it's zero. -/
+lemma natDegree_cyclotomic_le {R : Type*} [Ring R] {n : ℕ} :
+    natDegree (cyclotomic n R) ≤ n.totient := by
+  nontriviality R
+  rw [natDegree_cyclotomic]
 
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
@@ -382,25 +391,23 @@ theorem cyclotomic_dvd_geom_sum_of_dvd (R) [Ring R] {d n : ℕ} (hdn : d ∣ n) 
   simp [hd, hdn, hn.ne']
 
 theorem X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
-    (h : d ∈ n.properDivisors) :
+    (hdvd : d ∣ n) (hn : n ≠ 0) :
     ((X ^ d - 1) * ∏ x ∈ n.divisors \ d.divisors, cyclotomic x R) = X ^ n - 1 := by
-  obtain ⟨hd, hdn⟩ := Nat.mem_properDivisors.mp h
-  have h0n : 0 < n := pos_of_gt hdn
-  have h0d : 0 < d := Nat.pos_of_dvd_of_pos hd h0n
-  rw [← prod_cyclotomic_eq_X_pow_sub_one h0d, ← prod_cyclotomic_eq_X_pow_sub_one h0n, mul_comm,
-    Finset.prod_sdiff (Nat.divisors_subset_of_dvd h0n.ne' hd)]
+  have h0d : 0 < d := Nat.pos_of_dvd_of_pos hdvd (by positivity)
+  rw [← prod_cyclotomic_eq_X_pow_sub_one h0d,
+    ← prod_cyclotomic_eq_X_pow_sub_one (by positivity), mul_comm,
+    Finset.prod_sdiff (by gcongr)]
 
 theorem X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd (R) [CommRing R] {d n : ℕ}
     (h : d ∈ n.properDivisors) : (X ^ d - 1) * cyclotomic n R ∣ X ^ n - 1 := by
-  have hdn := (Nat.mem_properDivisors.mp h).2
+  rw [Nat.mem_properDivisors] at h
   use ∏ x ∈ n.properDivisors \ d.divisors, cyclotomic x R
-  symm
-  convert X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd R h using 1
-  rw [mul_assoc]
-  congr 1
-  rw [← Nat.insert_self_properDivisors hdn.ne_bot, insert_sdiff_of_notMem, prod_insert]
+  rw [← X_pow_sub_one_mul_prod_cyclotomic_eq_X_pow_sub_one_of_dvd R h.1 h.2.ne_bot,
+    ← Nat.insert_self_properDivisors, Finset.insert_sdiff_of_notMem,
+    Finset.prod_insert, mul_assoc]
   · exact Finset.notMem_sdiff_of_notMem_left Nat.self_notMem_properDivisors
-  · exact fun hk => hdn.not_ge <| Nat.divisor_le hk
+  · exact fun hk => h.2.not_ge <| Nat.divisor_le hk
+  · exact h.2.ne_bot
 
 section ArithmeticFunction
 

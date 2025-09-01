@@ -116,7 +116,7 @@ theorem trivial_def {V : Type u} [AddCommGroup V] [Module k V] (g : G) :
 variable (k G) in
 /-- The functor equipping a module with the trivial representation. -/
 @[simps! obj_V map_hom]
-noncomputable def trivialFunctor : ModuleCat k ⥤ Rep k G where
+def trivialFunctor : ModuleCat k ⥤ Rep k G where
   obj V := trivial k G V
   map f := { hom := f, comm := fun _ => rfl }
 
@@ -134,6 +134,26 @@ instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) 
 instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
     Representation.IsTrivial ((Rep.of ρ).ρ.comp f) := ‹_›
+
+section Commutative
+
+variable {k G : Type u} [CommRing k] [CommMonoid G]
+variable (A : Rep k G)
+
+/-- Given a representation `A` of a commutative monoid `G`, the map `ρ_A(g)` is a representation
+morphism `A ⟶ A` for any `g : G`. -/
+@[simps]
+def applyAsHom (g : G) : A ⟶ A where
+  hom := ModuleCat.ofHom (A.ρ g)
+  comm _ := by ext; simp [← Module.End.mul_apply, ← map_mul, mul_comm]
+
+@[reassoc, elementwise]
+lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
+    A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
+  ext
+  simp [hom_comm_apply]
+
+end Commutative
 
 section
 
@@ -181,10 +201,10 @@ def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
   comm _ := rfl
 
 -- Porting note: the two following instances were found automatically in mathlib3
-noncomputable instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesLimits_forget _ _
 
-noncomputable instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
+instance : PreservesColimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesColimits_forget _ _
 
 theorem epi_iff_surjective {A B : Rep k G} (f : A ⟶ B) : Epi f ↔ Function.Surjective f.hom :=
@@ -208,7 +228,11 @@ open MonoidalCategory in
 theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 
 @[simp]
-lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
+lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) :
+    ρ ((Action.res _ f).obj A) = A.ρ.comp f := rfl
+
+@[simp]
+lemma coe_res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
 section Linearization
@@ -217,7 +241,7 @@ variable (k G)
 
 /-- The monoidal functor sending a type `H` with a `G`-action to the induced `k`-linear
 `G`-representation on `k[H].` -/
-noncomputable def linearization : (Action (Type u) G) ⥤ (Rep k G) :=
+def linearization : (Action (Type u) G) ⥤ (Rep k G) :=
   (ModuleCat.free k).mapAction G
 
 instance : (linearization k G).Monoidal := by
@@ -290,22 +314,22 @@ variable (k G)
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
 @[simps! hom_hom inv_hom]
-noncomputable def linearizationTrivialIso (X : Type u) :
+def linearizationTrivialIso (X : Type u) :
     (linearization k G).obj (Action.mk X 1) ≅ trivial k G (X →₀ k) :=
   Action.mkIso (Iso.refl _) fun _ => ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext
     fun _ => linearization_single ..
 
 /-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
 `G →* End(k[H])` as a term of type `Rep k G`. -/
-noncomputable abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
+abbrev ofMulAction (H : Type u) [MulAction G H] : Rep k G :=
   of <| Representation.ofMulAction k G H
 
 /-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-noncomputable abbrev leftRegular : Rep k G :=
+abbrev leftRegular : Rep k G :=
   ofMulAction k G G
 
 /-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-noncomputable abbrev diagonal (n : ℕ) : Rep k G :=
+abbrev diagonal (n : ℕ) : Rep k G :=
   ofMulAction k G (Fin n → G)
 
 /-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
@@ -329,7 +353,7 @@ def ofMulActionSubsingletonIsoTrivial
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
-noncomputable def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
+def linearizationOfMulActionIso (H : Type u) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Iso.refl _
 
@@ -383,7 +407,7 @@ theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
 representation morphisms `Hom(k[G], A)` and `A`. -/
 @[simps]
-noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A where
+def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A where
   toFun f := f.hom (Finsupp.single 1 1)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -574,7 +598,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
 variable [DecidableEq (Fin n → G)]
 
 variable (k G n) in
-/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
+/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=
@@ -605,7 +629,7 @@ variable (n) (A : Rep k G)
 
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
-noncomputable def diagonalHomEquiv :
+def diagonalHomEquiv :
     (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k (diagonalSuccIsoFree k G n) (Iso.refl _) ≪≫ₗ
     freeLiftLEquiv (Fin n → G) A
@@ -647,6 +671,31 @@ theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fi
   ext
   rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
 
+section
+
+variable [Fintype G] (A : Rep k G)
+
+/-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
+`A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+@[simps]
+def norm : End A where
+  hom := ModuleCat.ofHom <| Representation.norm A.ρ
+  comm g := by ext; simp
+
+@[reassoc, elementwise]
+lemma norm_comm {A B : Rep k G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
+  ext
+  simp [Representation.norm, hom_comm_apply]
+
+/-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
+`x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
+@[simps]
+def normNatTrans : End (𝟭 (Rep k G)) where
+  app := norm
+  naturality _ _ := norm_comm
+
+end
+
 section MonoidalClosed
 open MonoidalCategory Action
 
@@ -656,7 +705,7 @@ variable (A B C : Rep k G)
 `(B, ρ₂)` to the representation `Homₖ(A, B)` that maps `g : G` and `f : A →ₗ[k] B` to
 `(ρ₂ g) ∘ₗ f ∘ₗ (ρ₁ g⁻¹)`. -/
 @[simps]
-protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
+protected noncomputable def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
     { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom.hom)
@@ -673,6 +722,7 @@ protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
 /-- Given a `k`-linear `G`-representation `A`, this is the Hom-set bijection in the adjunction
 `A ⊗ - ⊣ ihom(A, -)`. It sends `f : A ⊗ B ⟶ C` to a `Rep k G` morphism defined by currying the
 `k`-linear map underlying `f`, giving a map `A →ₗ[k] B →ₗ[k] C`, then flipping the arguments. -/
+@[simps]
 def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) where
   toFun f :=
     { hom := ModuleCat.ofHom <| (TensorProduct.curry f.hom.hom).flip
@@ -687,17 +737,6 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
 
 variable {A B C}
-
-/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
-simplify. -/
-theorem homEquiv_apply_hom (f : A ⊗ B ⟶ C) :
-    (homEquiv A B C f).hom = ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip := rfl
-
-/-- Porting note: if we generate this with `@[simps]` the linter complains some types in the LHS
-simplify. -/
-theorem homEquiv_symm_apply_hom (f : B ⟶ (Rep.ihom A).obj C) :
-    ((homEquiv A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry k A B C f.hom.hom.flip) := rfl
 
 instance : MonoidalClosed (Rep k G) where
   closed A :=
@@ -804,8 +843,6 @@ example : MonoidalPreadditive (Rep k G) := by infer_instance
 
 example : MonoidalLinear k (Rep k G) := by infer_instance
 
-noncomputable section
-
 /-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
 theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V W : Type*)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
@@ -870,8 +907,7 @@ def counitIso (M : ModuleCat.{u} (MonoidAlgebra k G)) :
     { counitIsoAddEquiv with
       map_smul' := fun r x => by
         dsimp [counitIsoAddEquiv]
-        erw [@Representation.ofModule_asAlgebraHom_apply_apply k G _ _ _ _ (_)]
-        exact AddEquiv.symm_apply_apply _ _}
+        simp }
 
 theorem unit_iso_comm (V : Rep k G) (g : G) (x : V) :
     unitIsoAddEquiv ((V.ρ g).toFun x) = ((ofModuleMonoidAlgebra.obj
@@ -893,11 +929,10 @@ def unitIso (V : Rep k G) : V ≅ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgeb
 def equivalenceModuleMonoidAlgebra : Rep k G ≌ ModuleCat.{u} (MonoidAlgebra k G) where
   functor := toModuleMonoidAlgebra
   inverse := ofModuleMonoidAlgebra
-  unitIso := NatIso.ofComponents (fun V => unitIso V) (by aesop_cat)
-  counitIso := NatIso.ofComponents (fun M => counitIso M) (by aesop_cat)
+  unitIso := NatIso.ofComponents (fun V => unitIso V) (by cat_disch)
+  counitIso := NatIso.ofComponents (fun M => counitIso M) (by cat_disch)
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
-end
 
 instance : EnoughProjectives (Rep k G) :=
   equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives.{u}

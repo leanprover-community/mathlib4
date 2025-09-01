@@ -214,7 +214,7 @@ def map (f : A →⋆ₐ[R] B) (S : StarSubalgebra R A) : StarSubalgebra R B :=
       exact map_star f a ▸ Set.mem_image_of_mem _ (S.star_mem' ha) }
 
 theorem map_mono {S₁ S₂ : StarSubalgebra R A} {f : A →⋆ₐ[R] B} : S₁ ≤ S₂ → S₁.map f ≤ S₂.map f :=
-  Set.image_subset f
+  Set.image_mono
 
 theorem map_injective {f : A →⋆ₐ[R] B} (hf : Function.Injective f) : Function.Injective (map f) :=
   fun _S₁ _S₂ ih =>
@@ -461,6 +461,7 @@ protected def gi : GaloisInsertion (adjoin R : Set A → StarSubalgebra R A) (�
 theorem adjoin_le {S : StarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
   StarAlgebra.gc.l_le hs
 
+@[simp]
 theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   StarAlgebra.gc _ _
 
@@ -468,6 +469,7 @@ theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S �
 theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   StarAlgebra.gc.monotone_l H
 
+@[simp]
 lemma adjoin_eq (S : StarSubalgebra R A) : adjoin R (S : Set A) = S :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R (S : Set A))
 
