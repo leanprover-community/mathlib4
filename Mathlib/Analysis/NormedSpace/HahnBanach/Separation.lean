@@ -351,14 +351,13 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
       (∀ a ∈ ({x₀} : Set E), re (f a) < u) ∧ u < v ∧ ∀ b ∈ B, v < re (f b) :=
     RCLike.geometric_hahn_banach_compact_closed (convex_singleton x₀) isCompact_singleton hs₁ hs₂
       (Set.disjoint_singleton_left.mpr hx)
-  have : re (f x₀) < u := h1 x₀ rfl
   have h3 : ∀ z ∈ f '' B, v < re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ by
     rw [← eq]
     exact h3 y hy
   set K := closure (⇑f '' B)
   have notin : f x₀ ∉ K := fun h ↦ by
     have : v ≤ re (f x₀) := le_on_closure_of_lt (by grind) continuous_re.continuousOn h
-    linarith
+    linarith [h1 x₀ rfl]
   have Balanced_K : Balanced 𝕜 K := by
     refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
     exact ⟨a • t, Balanced.smul_mem hs₃ ha ht, by simp_all⟩
@@ -376,7 +375,7 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
   obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
     closed_balanced_sep compact_K zero_in norm_lt_r
   use f, s
-  simpa [← hr, s_lt, s_pos] using fun b hb ↦hs (f b) (subset_closure (mem_image_of_mem (⇑f) hb))
+  simpa [← hr, s_lt, s_pos] using fun b hb ↦ hs (f b) (subset_closure (mem_image_of_mem (⇑f) hb))
 
 theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
     (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
