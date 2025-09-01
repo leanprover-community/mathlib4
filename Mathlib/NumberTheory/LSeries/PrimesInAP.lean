@@ -3,10 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Data.ZMod.Coprime
 import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.Nonvanishing
-import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
