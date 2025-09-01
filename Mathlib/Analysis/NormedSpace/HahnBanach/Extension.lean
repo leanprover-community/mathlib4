@@ -186,7 +186,7 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
     exact ⟨g, g_norm.le, g_eq⟩
 
 /-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
-`RCLike` field `𝕜`, there are nontrivial continuous linear operator between them. -/
+`RCLike` field `𝕜`, there are nontrivial continuous linear operators between them. -/
 instance (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] [Nontrivial F] :
     Nontrivial (E →L[𝕜] F) := by
   obtain ⟨v, hv⟩ := exists_ne (0 : E)
