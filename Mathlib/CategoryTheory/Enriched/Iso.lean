@@ -1,0 +1,89 @@
+/-
+Copyright (c) 2025 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
+import Mathlib.CategoryTheory.Enriched.Basic
+
+/-!
+# Isomorphisms in ordinary categories
+
+We define the notion of `V`-enriched isomorphisms in `V`-enriched categories and relate them
+to the isomorphisms in the category `ForgetEnrichment V C`.
+-/
+
+
+universe w v u₁
+
+namespace CategoryTheory
+
+open MonoidalCategory
+
+variable (V : Type v) [Category.{w} V] [MonoidalCategory V]
+
+variable {C : Type u₁} [EnrichedCategory V C]
+
+/-- Isomorphisms in a `V`-enriched category `C`consist of a morphism
+`𝟙_ V ⟶ X ⟶[V] Y`, an inverse `𝟙_ V ⟶ Y ⟶[V] X`, and proofs that these compose to the identity
+morphism. -/
+@[ext]
+structure EnrichedIso (X Y : C) where
+  /-- The forward direction of an isomorphism. -/
+  hom : 𝟙_ V ⟶ X ⟶[V] Y
+  /-- The backward direction of an isomorphism. -/
+  inv : 𝟙_ V ⟶ Y ⟶[V] X
+  hom_inv : (λ_ _).inv ≫ (hom ⊗ₘ inv) ≫ eComp V X Y X = eId V X := by aesop_cat
+  inv_hom : (λ_ _).inv ≫ (inv ⊗ₘ hom) ≫ eComp V Y X Y = eId V Y := by aesop_cat
+
+attribute [reassoc (attr := simp)] EnrichedIso.hom_inv
+
+attribute [reassoc (attr := simp)] EnrichedIso.inv_hom
+
+@[inherit_doc EnrichedIso]
+notation X " ≅[" V "] " Y:10 => EnrichedIso V X Y
+
+variable {V}
+
+namespace EnrichedIso
+
+/-- The identity isomorphism in a `V`-enriched category. -/
+@[refl, simps]
+def refl (X : C) : X ≅[V] X where
+  hom := eId V X
+  inv := eId V X
+  hom_inv := by simp [tensorHom_def']
+  inv_hom := by simp [tensorHom_def']
+
+/-- The inverse isomorphism of an isomorphism in a `V`-enriched category. -/
+@[symm, simps]
+def symm {X Y : C} (I : X ≅[V] Y) : Y ≅[V] X where
+  hom := I.inv
+  inv := I.hom
+
+open EnrichedCategory
+
+lemma trans_hom_inv {X Y Z : C} (I : X ≅[V] Y) (J : Y ≅[V] Z) :
+    (λ_ (𝟙_ V)).inv ≫ ((λ_ (𝟙_ V)).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z ⊗ₘ (λ_ (𝟙_ V)).inv ≫
+      (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X) ≫ eComp V X Z X = eId V X := by
+  rw [tensor_comp, tensor_comp, tensorHom_def (eComp V X Y Z), Category.assoc, Category.assoc,
+    Category.assoc, ← e_assoc, associator_inv_naturality_left_assoc,
+    ← comp_whiskerRight_assoc, ← e_assoc', associator_inv_naturality_assoc,
+    tensorHom_def' (g := I.inv), Category.assoc, ← comp_whiskerRight_assoc,
+    associator_naturality_assoc, tensorHom_def (f := I.hom), Category.assoc,
+    ← whiskerLeft_comp_assoc, (Iso.inv_comp_eq _).mp J.hom_inv, ← I.hom_inv,
+    tensorHom_def' I.hom]
+  simp only [whiskerLeft_comp, Category.comp_id, Category.assoc, Iso.inv_hom_id_assoc,
+    whiskerRight_tensor, whiskerRight_id, triangle_assoc, e_comp_id]
+  monoidal
+
+/-- The composition of to isomorphisms in a `V`-enriched category. -/
+@[trans, simps]
+def trans {X Y Z : C} (I : X ≅[V] Y) (J : Y ≅[V] Z) : X ≅[V] Z where
+  hom := (λ_ _).inv ≫ (I.hom ⊗ₘ J.hom) ≫ eComp V X Y Z
+  inv := (λ_ _).inv ≫ (J.inv ⊗ₘ I.inv) ≫ eComp V Z Y X
+  hom_inv := trans_hom_inv I J
+  inv_hom := trans_hom_inv J.symm I.symm
+
+end EnrichedIso
+
+end CategoryTheory
