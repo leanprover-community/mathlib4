@@ -201,13 +201,11 @@ end ContinuousConstSMul
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 open AffineMap
-
-variable [IsStrictOrderedRing 𝕜]
 
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
