@@ -266,13 +266,12 @@ section Uniqueness
 variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
   {P : RootSystem ι R M N} [P.IsCrystallographic] [P.IsReduced] (b : P.Base)
   {P₂ : RootSystem ι₂ R M₂ N₂} [P₂.IsCrystallographic] (b₂ : P₂.Base)
-  (e : b.support ≃ b₂.support) (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j)
-
-include he
+  (e : b.support ≃ b₂.support)
 
 lemma apply_mem_range_root_of_cartanMatrixEq
     (f : M ≃ₗ[R] M₂) (hf : ∀ i : b.support, f (P.root i) = P₂.root (e i))
-    (m : M) (hm : m ∈ range P.root) :
+    (m : M) (hm : m ∈ range P.root)
+    (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
     f m ∈ range P₂.root := by
   have (k : b.support) : (P.reflection k).trans f = f.trans (P₂.reflection (e k)) := by
     suffices ∀ j : b.support,
@@ -293,14 +292,15 @@ lemma apply_mem_range_root_of_cartanMatrixEq
     exact mem_range_self _
 
 /-- A root system is determined by its Cartan matrix. -/
-def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsReduced] :
+def equivOfCartanMatrixEq [Finite ι₂] [P₂.IsReduced]
+    (he : ∀ i j, b₂.cartanMatrix (e i) (e j) = b.cartanMatrix i j) :
     P.Equiv P₂.toRootPairing :=
   let f : M ≃ₗ[R] M₂ := b.toWeightBasis.equiv b₂.toWeightBasis e
   have hf : ∀ m, f m ∈ range P₂.root ↔ m ∈ range P.root := by
     refine fun m ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · simpa using apply_mem_range_root_of_cartanMatrixEq _ b e.symm (by simp [(he _ _).symm]) f.symm
-        (by simp [f, Module.Basis.equiv]) (f m) h
-    · exact apply_mem_range_root_of_cartanMatrixEq b b₂ e he f (by simp [f, Module.Basis.equiv]) m h
+    · simpa using apply_mem_range_root_of_cartanMatrixEq _ b e.symm f.symm
+        (by simp [f, Module.Basis.equiv]) (f m) h (by simp [(he _ _).symm])
+    · exact apply_mem_range_root_of_cartanMatrixEq b b₂ e f (by simp [f, Module.Basis.equiv]) m h he
   let : Fintype ι := Fintype.ofFinite _
   let : Fintype ι₂ := Fintype.ofFinite _
   have : DecidableEq M := Classical.typeDecidableEq M
