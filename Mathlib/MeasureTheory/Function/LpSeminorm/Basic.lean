@@ -1353,6 +1353,22 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
     rwa [coe_le_enorm]
   · simp [Set.indicator_of_notMem hxs]
 
+section Star
+
+variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+
+@[simp]
+theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} : eLpNorm (star f) p μ = eLpNorm f p μ :=
+  eLpNorm_congr_norm_ae <| .of_forall <| by simp
+
+@[simp]
+theorem AEEqFun.eLpNorm_star {p : ℝ≥0∞} {f : α →ₘ[μ] R} : eLpNorm (star f : α →ₘ[μ] R) p μ =
+    eLpNorm f p μ := eLpNorm_congr_ae (coeFn_star f) |>.trans <| by simp
+
+protected theorem MemLp.star {p : ℝ≥0∞} {f : α → R} (hf : MemLp f p μ) : MemLp (star f) p μ :=
+  ⟨hf.1.star, by simpa using hf.2⟩
+
+end Star
 section RCLike
 
 variable {𝕜 : Type*} [RCLike 𝕜] {f : α → 𝕜}
