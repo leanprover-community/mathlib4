@@ -67,6 +67,7 @@ theorem isFiniteLength_of_exists_compositionSeries
 
 theorem isFiniteLength_iff_isNoetherian_isArtinian :
     IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=
+  open scoped IsSimpleOrder in
   ⟨fun h ↦ h.rec (fun {M} _ _ _ ↦ ⟨inferInstance, inferInstance⟩) fun M _ _ {N} _ _ ⟨_, _⟩ ↦
     ⟨(isNoetherian_iff_submodule_quotient N).mpr ⟨‹_›, isNoetherian_iff'.mpr inferInstance⟩,
       (isArtinian_iff_submodule_quotient N).mpr ⟨‹_›, inferInstance⟩⟩,
@@ -79,6 +80,7 @@ theorem isFiniteLength_iff_exists_compositionSeries :
     exists_compositionSeries_of_isNoetherian_isArtinian R M,
     isFiniteLength_of_exists_compositionSeries⟩
 
+open scoped IsSimpleOrder in
 theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
     List.TFAE [Module.Finite R M, IsNoetherian R M, IsArtinian R M, IsFiniteLength R M,
       ∃ s : Set (Submodule R M), s.Finite ∧ sSupIndep s ∧
