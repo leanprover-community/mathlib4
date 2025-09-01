@@ -124,6 +124,19 @@ lemma IsPiSystem.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsPiSystem C) 
   rw [prod_inter_prod] at hst ⊢; rw [prod_nonempty_iff] at hst
   exact mem_image2_of_mem (hC _ hs₁ _ hs₂ hst.1) (hD _ ht₁ _ ht₂ hst.2)
 
+/-- A nonempty finite intersection of sets in a π-system belongs to the π-system. -/
+lemma IsPiSystem.biInter_mem {S : Set (Set α)} (h_pi : IsPiSystem S) {t : Finset (Set α)}
+    (t_ne : t.Nonempty) (ht : ∀ s ∈ t, s ∈ S) (h' : (⋂ s ∈ t, s).Nonempty) :
+    (⋂ s ∈ t, s) ∈ S := by
+  classical
+  induction t_ne using Finset.Nonempty.cons_induction with
+  | singleton a => simpa using ht
+  | cons a t hat t_ne ih =>
+    simp only [Finset.cons_eq_insert, Finset.mem_insert, iInter_iInter_eq_or_left] at h' ht ⊢
+    refine h_pi _ (ht a (Or.inl rfl)) _ ?_ h'
+    refine ih (fun s hs ↦ ?_) h'.right
+    exact ht s (Or.inr hs)
+
 section Order
 
 variable {ι ι' : Sort*} [LinearOrder α]
@@ -306,7 +319,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
         revert h2
         rw [Subtype.val_injective.extend_apply]
         apply id
-  · intros b h_b
+  · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     obtain ⟨h_b_w, h_b_h⟩ := h_b

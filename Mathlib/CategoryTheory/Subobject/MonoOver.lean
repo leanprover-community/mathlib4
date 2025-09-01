@@ -125,18 +125,18 @@ theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
 abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
-    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
+    (w : h ≫ g.arrow = f.arrow := by cat_disch) : f ⟶ g :=
   Over.homMk h w
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
 def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
-    (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
+    (w : h.hom ≫ g.arrow = f.arrow := by cat_disch) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
-    package it as an isomorphism. -/
+package it as an isomorphism. -/
 @[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
@@ -305,7 +305,7 @@ section
 variable (X)
 
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
-    `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
+`MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
 def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
@@ -394,9 +394,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     fac := Over.w k }
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by
-            ext
-            simp } }
+          right_inv := fun k => by simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

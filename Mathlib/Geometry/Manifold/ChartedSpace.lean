@@ -9,7 +9,7 @@ import Mathlib.Topology.Connected.LocPathConnected
 /-!
 # Charted spaces
 
-A smooth manifold is a topological space `M` locally modelled on a euclidean space (or a euclidean
+A smooth manifold is a topological space `M` locally modelled on a Euclidean space (or a Euclidean
 half-space for manifolds with boundaries, or an infinite dimensional vector space for more general
 notions of manifolds), i.e., the manifold is covered by open subsets on which there are local
 homeomorphisms (the charts) going to a model space `H`, and the changes of charts should be smooth
@@ -104,7 +104,7 @@ can be several model spaces for a given topological space. For instance, a compl
 
 ## Notations
 
-In the locale `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
+In the scope `Manifold`, we denote the composition of partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
 
@@ -124,7 +124,7 @@ the arrow. -/
 
 @[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
-open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
+open Set PartialHomeomorph Manifold
 
 /-! ### Structure groupoids -/
 
@@ -342,7 +342,7 @@ one gets a groupoid. `Pregroupoid` bundles the properties needed for this constr
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
   /-- Property describing membership in this groupoid: the pregroupoid "contains"
-    all functions `H → H` having the pregroupoid property on some `s : Set H` -/
+  all functions `H → H` having the pregroupoid property on some `s : Set H` -/
   property : (H → H) → Set H → Prop
   /-- The pregroupoid property is stable under composition -/
   comp : ∀ {f g u v}, property f u → property g v →
@@ -390,12 +390,8 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      -- Porting note: was
-      -- convert he.2
-      -- rw [A.1]
-      -- rfl
+      convert he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
-      exact he.2
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : PartialHomeomorph H H} :
     e ∈ PG.groupoid ↔ PG.property e e.source ∧ PG.property e.symm e.target :=
@@ -510,14 +506,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
     convert closedUnderRestriction' G.id_mem hs
-    -- Porting note: was
-    -- change s = _ ∩ _
-    -- rw [hs.interior_eq]
-    -- simp only [mfld_simps]
-    ext
-    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
-    · simp
-    · simp [hs.interior_eq]
+    ext <;> simp [hs.interior_eq]
   · intro h
     constructor
     intro e he s hs
@@ -589,7 +578,6 @@ section
 
 variable (H) [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
 
--- Porting note: Added `(H := H)` to avoid typeclass instance problem.
 theorem mem_chart_target (x : M) : chartAt H x x ∈ (chartAt H x).target :=
   (chartAt H x).map_source (mem_chart_source _ _)
 
@@ -809,8 +797,6 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
   ∀ i, H i
 
 section
-
--- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
   instInhabitedProd
@@ -1290,9 +1276,8 @@ lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : PartialHomeomorph s H} (he :
 every chart of `t` is the restriction of some chart on `H`. -/
 -- XXX: can I unify this with `chart_eq`?
 lemma chart_eq' {t : Opens H} (ht : Nonempty t) {e' : PartialHomeomorph t H}
-    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht := by
-  rcases he' with ⟨xset, ⟨x, hx⟩, he'⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert he')⟩
+    (he' : e' ∈ atlas H t) : ∃ x : t, e' = (chartAt H ↑x).subtypeRestr ht :=
+  chart_eq ht he'
 
 /-- If a groupoid `G` is `ClosedUnderRestriction`, then an open subset of a space which is
 `HasGroupoid G` is naturally `HasGroupoid G`. -/

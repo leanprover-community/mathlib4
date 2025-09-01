@@ -90,7 +90,7 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
     congr
   fac s j := by
     cases j
-    aesop_cat
+    cat_disch
 
 /-- The coproduct is homeomorphic to the disjoint union of the topological spaces.
 -/

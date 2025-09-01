@@ -263,7 +263,7 @@ theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
 
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
-  simp only [mem_cons, or_imp, forall_and, forall_eq]
+  grind
 
 /-- Useful in proofs by induction. -/
 theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
@@ -332,7 +332,7 @@ def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α}
   invFun := prodPiCons f has
   left_inv _ := by grind [prodPiCons, consPiProd]
   right_inv _ := by
-    -- I'm surpised `grind` next this `ext` step: it is just `Prod.ext` and `funext`.
+    -- I'm surprised `grind` needs this `ext` step: it is just `Prod.ext` and `funext`.
     ext _ hi <;> grind [prodPiCons, consPiProd]
 
 end Cons
@@ -395,7 +395,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a => by simp⟩
 
 @[simp]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
@@ -450,7 +450,7 @@ theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
 
 @[simp] theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
 
-@[gcongr]
+@[gcongr, simp]
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t := by
   grind
 

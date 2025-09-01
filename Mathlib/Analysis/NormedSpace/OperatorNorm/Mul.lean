@@ -192,10 +192,17 @@ theorem lsmul_apply (c : R) (x : E) : lsmul 𝕜 R c x = c • x :=
   rfl
 
 variable {𝕜} in
-theorem comp_lsmul_flip_apply {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-    (f : E →L[𝕜] F) (x : E) :
-    f ∘L (lsmul 𝕜 𝕜).flip x = (lsmul 𝕜 𝕜).flip (f x) := by
-  ext; simp
+@[simp]
+theorem lsmul_flip_apply (x : E) :
+    (lsmul 𝕜 𝕜).flip x = toSpanSingleton 𝕜 x :=
+  rfl
+
+@[deprecated (since := "29-08-2025")] alias comp_lsmul_flip_apply := comp_toSpanSingleton
+
+variable {𝕜} in
+theorem lsmul_flip_inj {x y : E} :
+    (lsmul 𝕜 R).flip x = (lsmul 𝕜 R).flip y ↔ x = y :=
+  ⟨fun h => by simpa using congr($h 1), fun h => h ▸ rfl⟩
 
 variable {R}
 

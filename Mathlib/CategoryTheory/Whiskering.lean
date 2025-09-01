@@ -251,7 +251,7 @@ lemma isoWhiskerRight_symm {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) :
 @[simp]
 lemma isoWhiskerRight_refl (F : C ⥤ D) (G : D ⥤ E) :
     isoWhiskerRight (Iso.refl F) G = Iso.refl _ := by
-  aesop_cat
+  cat_disch
 
 instance isIso_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
     IsIso (whiskerLeft F α) :=
@@ -297,45 +297,45 @@ variable {B : Type u₄} [Category.{v₄} B]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) =
     (Functor.associator _ _ _).inv ≫ whiskerLeft (F ⋙ G) α ≫ (Functor.associator _ _ _).hom := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem whiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ⟶ K) :
     whiskerRight (whiskerRight α F) G =
     (Functor.associator _ _ _).hom ≫ whiskerRight α (F ⋙ G) ≫ (Functor.associator _ _ _).inv := by
-  aesop_cat
+  cat_disch
 
 theorem whiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ⟶ H) (K : D ⥤ E) :
     whiskerRight (whiskerLeft F α) K =
     (Functor.associator _ _ _).hom ≫ whiskerLeft F (whiskerRight α K) ≫
       (Functor.associator _ _ _).inv := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem isoWhiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ≅ K) :
     isoWhiskerLeft F (isoWhiskerLeft G α) =
     (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft (F ⋙ G) α ≪≫ Functor.associator _ _ _ := by
-  aesop_cat
+  cat_disch
 
 @[simp, reassoc]
 theorem isoWhiskerRight_twice {H K : B ⥤ C} (F : C ⥤ D) (G : D ⥤ E) (α : H ≅ K) :
     isoWhiskerRight (isoWhiskerRight α F) G =
     Functor.associator _ _ _ ≪≫ isoWhiskerRight α (F ⋙ G) ≪≫ (Functor.associator _ _ _).symm := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem isoWhiskerRight_left (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
     isoWhiskerRight (isoWhiskerLeft F α) K =
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft F (isoWhiskerRight α K) ≪≫
       (Functor.associator _ _ _).symm := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem isoWhiskerLeft_right (F : B ⥤ C) {G H : C ⥤ D} (α : G ≅ H) (K : D ⥤ E) :
     isoWhiskerLeft F (isoWhiskerRight α K) =
     (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (isoWhiskerLeft F α) K ≪≫
       Functor.associator _ _ _ := by
-  aesop_cat
+  cat_disch
 
 end
 
@@ -348,22 +348,22 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 @[reassoc]
 theorem triangleIso :
     associator F (𝟭 B) G ≪≫ isoWhiskerLeft F (leftUnitor G) =
-      isoWhiskerRight (rightUnitor F) G := by aesop_cat
+      isoWhiskerRight (rightUnitor F) G := by cat_disch
 
 @[reassoc]
 theorem pentagonIso :
     isoWhiskerRight (associator F G H) K ≪≫
         associator F (G ⋙ H) K ≪≫ isoWhiskerLeft F (associator G H K) =
-      associator (F ⋙ G) H K ≪≫ associator F G (H ⋙ K) := by aesop_cat
+      associator (F ⋙ G) H K ≪≫ associator F G (H ⋙ K) := by cat_disch
 
 theorem triangle :
     (associator F (𝟭 B) G).hom ≫ whiskerLeft F (leftUnitor G).hom =
-      whiskerRight (rightUnitor F).hom G := by aesop_cat
+      whiskerRight (rightUnitor F).hom G := by cat_disch
 
 theorem pentagon :
     whiskerRight (associator F G H).hom K ≫
         (associator F (G ⋙ H) K).hom ≫ whiskerLeft F (associator G H K).hom =
-      (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by aesop_cat
+      (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by cat_disch
 
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category D₁] [Category D₂] [Category D₃] (E : Type*) [Category E]

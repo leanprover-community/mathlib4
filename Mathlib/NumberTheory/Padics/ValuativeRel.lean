@@ -33,7 +33,8 @@ lemma valuation_p_ne_zero : v p ≠ 0 := by
 
 @[simp]
 lemma valuation_p_lt_one : v p < 1 := by
-  simp [(isEquiv v (Padic.mulValuation)).lt_one_iff_lt_one, hp.out.ne_zero, ← lt_log_iff_exp_lt]
+  simp [(isEquiv v (Padic.mulValuation)).lt_one_iff_lt_one, hp.out.ne_zero, inv_lt_one₀,
+    ← log_lt_iff_lt_exp]
 
 instance : IsNontrivial ℚ_[p] where
   condition := ⟨ValuativeRel.valuation _ p, valuation_p_ne_zero _, (valuation_p_lt_one _).ne⟩

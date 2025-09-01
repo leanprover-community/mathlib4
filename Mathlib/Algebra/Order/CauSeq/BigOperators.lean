@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Field.GeomSum
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.CauSeq.Basic
@@ -44,9 +44,8 @@ lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
   · simp [abv_zero abv]
   simp only [Nat.succ_add, Nat.succ_eq_add_one, Finset.sum_range_succ_comm]
   simp only [add_assoc, sub_eq_add_neg]
-  refine le_trans (abv_add _ _ _) ?_
   simp only [sub_eq_add_neg] at hi
-  exact add_le_add (hm _ (le_add_of_nonneg_of_le (Nat.zero_le _) (le_max_left _ _))) hi
+  grw [abv_add abv, hm _ (by omega), hi]
 
 lemma of_abv (hf : IsCauSeq abs fun m ↦ ∑ n ∈ range m, abv (f n)) :
     IsCauSeq abv fun m ↦ ∑ n ∈ range m, f n :=
@@ -127,7 +126,7 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         ∑ i ∈ range K with max N M + 1 ≤ i, abv (f i) * (2 * Q) := by
         gcongr
         rw [sub_eq_add_neg]
-        refine le_trans (abv_add _ _ _) ?_
+        grw [abv_add abv]
         rw [two_mul, abv_neg abv]
         gcongr <;> exact le_of_lt (hQ _)
     _ < ε / (4 * Q) * (2 * Q) := by

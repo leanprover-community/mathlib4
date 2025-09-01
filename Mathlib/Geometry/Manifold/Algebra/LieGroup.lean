@@ -117,15 +117,15 @@ section
 variable (I n)
 
 /-- In a Lie group, inversion is `C^n`. -/
-@[to_additive "In an additive Lie group, inversion is a smooth map."]
+@[to_additive /-- In an additive Lie group, inversion is a smooth map. -/]
 theorem contMDiff_inv : ContMDiff I I n fun x : G => x⁻¹ :=
   LieGroup.contMDiff_inv
 
 include I n in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-@[to_additive "An additive Lie group is an additive topological group. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]."]
+@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
+for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
@@ -209,8 +209,6 @@ class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} 
     [Inv G] [Zero G] [TopologicalSpace G] [ChartedSpace H G] : Prop where
   /-- Inversion is `C^n` away from `0`. -/
   contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → ContMDiffAt I I n (fun y ↦ y⁻¹) x
-
-@[deprecated (since := "2025-01-09")] alias SmoothInv₀ := ContMDiffInv₀
 
 instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by

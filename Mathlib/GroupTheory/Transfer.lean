@@ -38,7 +38,7 @@ open scoped Pointwise
 variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
-@[to_additive "The difference of two left transversals"]
+@[to_additive /-- The difference of two left transversals -/]
 noncomputable def diff : A :=
   let α := S.2.leftQuotientEquiv
   let β := T.2.leftQuotientEquiv
@@ -138,8 +138,8 @@ open MulAction Subgroup Subgroup.leftTransversals
 
 /-- Given `ϕ : H →* A` from `H : Subgroup G` to a commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →* A`. -/
-@[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
-the transfer homomorphism is `transfer ϕ : G →+ A`."]
+@[to_additive /-- Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
+the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
@@ -213,7 +213,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
-    congr
+    congr 2
     funext
     apply key
 

@@ -58,7 +58,7 @@ namespace GromovHausdorff
 
 /-! In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
-Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
+Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any nonempty
 compact type to `GHSpace`. -/
 section GHSpace
 
@@ -489,8 +489,8 @@ end GHSpace --section
 end GromovHausdorff
 
 /-- In particular, nonempty compacts of a metric space map to `GHSpace`.
-    We register this in the `TopologicalSpace` namespace to take advantage
-    of the notation `p.toGHSpace`. -/
+We register this in the `TopologicalSpace` namespace to take advantage
+of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=
   GromovHausdorff.toGHSpace p

@@ -62,7 +62,7 @@ lemma hasEigenvalue_toLin_diagonal_iff (d : n → R) {μ : R} [NoZeroSMulDivisor
     exact this i
 
 /-- Eigenvalues of a diagonal linear operator with respect to standard basis
-    are the diagonal entries. -/
+are the diagonal entries. -/
 lemma hasEigenvalue_toLin'_diagonal_iff [NoZeroDivisors R] (d : n → R) {μ : R} :
     HasEigenvalue (toLin' (diagonal d)) μ ↔ (∃ i, d i = μ) :=
   hasEigenvalue_toLin_diagonal_iff _ <| Pi.basisFun R n
@@ -93,7 +93,7 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace :
   obtain ⟨k, hk⟩ := (mem_maxGenEigenspace _ _ _).mp hx
   replace hk (j : n) : b.repr x j = 0 ∨ d j = μ ∧ k ≠ 0 := by
     have aux : (diagonal d).toLin b b - μ • 1 = (diagonal (d - μ • 1)).toLin b b := by
-      change _ = (diagonal fun i ↦ d i - _).toLin b b; rw [← diagonal_sub]; simp [one_eq_id]
+      rw [Pi.sub_def, ← diagonal_sub]; simp [one_eq_id]
     rw [aux, ← toLin_pow, diagonal_pow, toLin_apply_eq_zero_iff] at hk
     simpa [mulVec_eq_sum, diagonal_apply, sub_eq_zero] using hk j
   have aux (j : n) : (b.repr x j * d j) • b j = μ • (b.repr x j • b j) := by
