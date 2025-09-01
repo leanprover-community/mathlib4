@@ -188,12 +188,14 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-instance  [Nontrivial E] [Nontrivial F] : Nontrivial (E →L[𝕜] F) := by
+instance [Nontrivial E] [Nontrivial F] : Nontrivial (E →L[𝕜] F) := by
   obtain ⟨v, hv⟩ := exists_ne (0 : E)
   obtain ⟨φ, hφ_norm, hφ_eval⟩ := exists_dual_vector 𝕜 _ hv
   obtain ⟨w, hw⟩ := exists_ne (0 : F)
-  refine ⟨0, (𝕜 ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
-    (toSpanNonzeroSingleton 𝕜 _ hw) ∘L φ, sorry⟩
+  refine ⟨(𝕜 ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
+    (toSpanNonzeroSingleton 𝕜 _ hw) ∘L φ, 0, DFunLike.ne_iff.mpr ⟨v, by simp [hφ_eval, hv, hw]⟩⟩
+
+
 
 
 end DualVector

@@ -61,6 +61,7 @@ variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
 continuous linear equivalence from `𝕜` to the span of `x`. -/
+@[simps!]
 noncomputable def toSpanNonzeroSingleton (x : E) (h : x ≠ 0) : 𝕜 ≃L[𝕜] 𝕜 ∙ x :=
   ofHomothety (LinearEquiv.toSpanNonzeroSingleton 𝕜 E x h) ‖x‖ (norm_pos_iff.mpr h)
     (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h)
