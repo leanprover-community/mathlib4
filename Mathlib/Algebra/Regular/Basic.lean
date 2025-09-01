@@ -209,4 +209,12 @@ lemma IsRightRegular.pow_iff (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRe
   mp h := ⟨(IsLeftRegular.pow_iff n0).mp h.left, (IsRightRegular.pow_iff n0).mp h.right⟩
   mpr h := ⟨.pow n h.left, .pow n h.right⟩
 
+@[to_additive (attr := simp)] lemma IsLeftRegular.mul_left_eq_self_iff (ha : IsLeftRegular a) :
+    a * b = a ↔ b = 1 :=
+  ⟨fun h ↦ by rwa [← ha.eq_iff, mul_one], fun h ↦ by rw [h, mul_one]⟩
+
+@[to_additive (attr := simp)] lemma IsRightRegular.mul_right_eq_self_iff (ha : IsRightRegular a) :
+    b * a = a ↔ b = 1 :=
+  ⟨fun h ↦ by rwa [← ha.eq_iff, one_mul], fun h ↦ by rw [h, one_mul]⟩
+
 end Monoid
