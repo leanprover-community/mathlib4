@@ -305,16 +305,16 @@ variable [DecidableEq n]
 
 open UnitaryGroup in
 theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff'
-    (U : unitaryGroup n R) (x : Matrix n n R) :
-    PosSemidef ((star U : Matrix n n R) * x * (U : Matrix n n R)) ↔ x.PosSemidef := by
+    (U : unitaryGroup n R') (x : Matrix n n R') :
+    PosSemidef ((star U : Matrix n n R') * x * (U : Matrix n n R')) ↔ x.PosSemidef := by
   simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit'
       (unitary.toUnits _).isUnit, and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
     star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
   exact fun h => ⟨fun H y => by simpa using H (star U *ᵥ y), fun H _ => H _⟩
 
 theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff
-    (U : unitaryGroup n R) (x : Matrix n n R) :
-    PosSemidef ((U : Matrix n n R) * x * (star U : Matrix n n R)) ↔ x.PosSemidef := by
+    (U : unitaryGroup n R') (x : Matrix n n R') :
+    PosSemidef ((U : Matrix n n R') * x * (star U : Matrix n n R')) ↔ x.PosSemidef := by
   simpa using UnitaryGroup.posSemidef_conjugate_iff' (star U) _
 
 open scoped Kronecker in
@@ -646,8 +646,8 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
 
 open UnitaryGroup in
 theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff' [DecidableEq n]
-    (U : unitaryGroup n R) {x : Matrix n n R} :
-    PosDef ((star U : Matrix n n R) * x * (U : Matrix n n R)) ↔ x.PosDef := by
+    (U : unitaryGroup n R') {x : Matrix n n 'R} :
+    PosDef ((star U : Matrix n n R') * x * (U : Matrix n n R')) ↔ x.PosDef := by
   simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit'
       (unitary.toUnits _).isUnit, and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
     star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
@@ -658,8 +658,8 @@ theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff' [DecidableEq n]
       h _ (map_ne_zero_iff _ (UnitaryGroup.toLinearEquiv U).injective |>.mpr hx)
 
 theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff [DecidableEq n]
-    (U : unitaryGroup n R) {x : Matrix n n R} :
-    PosDef ((U : Matrix n n R) * x * (star U : Matrix n n R)) ↔ x.PosDef := by
+    (U : unitaryGroup n R') {x : Matrix n n R'} :
+    PosDef ((U : Matrix n n R') * x * (star U : Matrix n n R')) ↔ x.PosDef := by
   simpa using UnitaryGroup.posDef_conjugate_iff' (star U)
 
 open scoped Kronecker in
