@@ -74,36 +74,23 @@ of this one. -/
 theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
     (N_nonzero : 0 < N) : ∑ i ∈ range N, trapezoidal_integral f 1 (a + i * h) (a + (i + 1) * h)
       = trapezoidal_integral f N a (a + N * h) := by
-  simp only [trapezoidal_integral_one]
-  unfold trapezoidal_integral
-  simp only [add_sub_cancel_left]
+  simp only [trapezoidal_integral, add_sub_cancel_left]
   field_simp
   rw [sum_mul]
-  field_simp
-  have (x : ℕ) : (x + 1) * h - x * h = h := by ring
-  simp_rw [this]
-  have (x : ℕ) : (a * N + (x + 1) * (N * h)) / N = a + (x + 1) * h := by
+  have l1 (x : ℕ) : (x + 1) * h - x * h = h := by ring
+  have l2 (x : ℕ) : (a * N + (x + 1) * (N * h)) / N = a + (x + 1) * h := by
     field_simp
     ring
-  simp_rw [this]
-  rw [← mul_sum, sum_add_distrib]
-  congr 1
+  simp_rw [div_mul_cancel_of_invertible, l1, l2, ← mul_sum, sum_add_distrib]
   let K := N - 1 -- We'll use an induction, so use K to allow us to start from 0, not 1.
-  rw [((Nat.sub_eq_iff_eq_add N_nonzero).mp rfl : N = K + 1)]
-  simp only [add_tsub_cancel_right]
   have : ∑ x ∈ range (K + 1), f (a + x * h) = f a + ∑ x ∈ range K, f (a + (x + 1) * h) := by
     induction' K with k hk
     · simp
-    · rw [sum_range_succ]
-      nth_rw 2 [sum_range_succ]
-      rw [hk, add_assoc]
+    · nth_rw 2 [sum_range_succ]
+      rw [sum_range_succ, hk, add_assoc]
       norm_cast
-  rw [this]
-  have : ∑ x ∈ Finset.range (K + 1), f (a + (x + 1) * h)
-      = f (a + (K + 1) * h) + ∑ x ∈ range K, f (a + (x + 1) * h) := by
-    rw [sum_range_succ]
-    ring
-  rw [this]
+  rw [(Nat.sub_eq_iff_eq_add N_nonzero).mp rfl, add_tsub_cancel_right, this,
+    sum_range_succ]
   norm_cast
   ring
 
