@@ -21,7 +21,11 @@ associator x y z + associator z x y + associator y z x =
 
 ## Main results
   * `LieAdmissibleRing.instLieRing`: a Lie-admissible ring as a Lie ring
+  * `LeftPreLieRing.instLieAdmissibleRing`: a left pre-Lie ring as a Lie admissible ring
+  * `RightPreLieRing.instLieAdmissibleRing`: a right pre-Lie ring as a Lie admissible ring
   * `LieAdmissibleAlgebra.instLieAlgebra`: a Lie-admissible algebra as a Lie algebra
+  * `LeftPreLieAlgebra.instLieAdmissibleAlgebra`: a left pre-Lie ring as a Lie admissible algebra
+  * `RightPreLieAlgebra.instLieAdmissibleAlgebra`: a right pre-Lie ring as a Lie admissible algebra
 
 ## Implementation Notes
 Algebras are implemented as extending `Module`, `IsScalarTower` and `SMulCommClass` following the
@@ -39,8 +43,8 @@ class LieAdmissibleRing (L : Type*) extends NonUnitalNonAssocRing L where
   assoc_def (x y z : L) : associator x y z + associator z x y + associator y z x =
     associator y x z + associator z y x + associator x z y
 
-/-- `LieAdmissibleAlgebras` are `LieAdmissibleRings` with a compatible action by scalars in a
-commutative ring. -/
+/-- A `LieAdmissibleAlgebra` is a `LieAdmissibleRing` equipped with a compatible action by scalars
+from a commutative ring. -/
 @[ext]
 class LieAdmissibleAlgebra (R L : Type*) [CommRing R] [LieAdmissibleRing L]
   extends Module R L, IsScalarTower R L L, SMulCommClass R L L
@@ -82,7 +86,7 @@ namespace LeftPreLieRing
 
 variable {L : Type*} [LeftPreLieRing L]
 
-/-- `LeftPreLieRings` are an example of `LieAdmissibleRings` by the commutatitvity assumption on the
+/-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on the
 associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
@@ -105,7 +109,7 @@ namespace RightPreLieRing
 
 variable {L : Type*} [RightPreLieRing L]
 
-/-- `RightPreLieRings` are an example of `LieAdmissibleRings` by the commutatitvity assumption on
+/-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on
 the associator. -/
 instance instLieAdmissibleRing : LieAdmissibleRing L where
   assoc_def x y z := by
