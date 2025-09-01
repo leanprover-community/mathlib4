@@ -214,9 +214,6 @@ We prove five key formulae about the forward difference operator applied to poly
 
 variable {R : Type*} [CommRing R]
 
-/--
-The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
--/
 lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
     Δ_[h]^[n] (fun r ↦ f (r + m)) y = (Δ_[h]^[n] f) (y + m) := by
   simp [fwdDiff_iter_eq_sum_shift, add_right_comm]
@@ -225,6 +222,9 @@ lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
     Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
   fwdDiff_iter_comp_add h f m 1 y
 
+/--
+The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
+-/
 theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ r ^ j) = 0 := by
   induction n generalizing j with
