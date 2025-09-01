@@ -100,8 +100,7 @@ over the topological ring `R`. -/
 structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
     [TopologicalSpace A] (B : Type*) [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
     extends A →ₐ[R] B where
--- TODO: replace with `fun_prop` when that is stable
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 @[inherit_doc]
 notation:25 A " →A[" R "] " B => ContinuousAlgHom R A B
