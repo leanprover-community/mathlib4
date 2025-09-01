@@ -41,9 +41,6 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.comapPseudoMetricSpace := IsInducing.comapPseudoMetricSpace
-
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/

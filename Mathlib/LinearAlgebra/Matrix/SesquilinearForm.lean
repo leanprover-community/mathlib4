@@ -27,7 +27,7 @@ This file defines the conversion between sesquilinear maps and matrices.
 ## TODO
 
 At the moment this is quite a literal port from `Matrix.BilinearForm`. Everything should be
-generalized to fully semibilinear forms.
+generalized to fully semi-bilinear forms.
 
 ## Tags
 

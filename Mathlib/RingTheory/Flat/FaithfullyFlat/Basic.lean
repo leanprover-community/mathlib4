@@ -546,8 +546,6 @@ theorem trans : FaithfullyFlat R M := by
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
 
-@[deprecated (since := "2024-11-08")] alias comp := trans
-
 end trans
 
 /-- Faithful flatness is preserved by arbitrary base change. -/

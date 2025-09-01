@@ -81,7 +81,7 @@ series. -/
 theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.leftInv i x = p.leftInv i x := by
   ext1 n
-  induction' n using Nat.strongRec' with n IH
+  induction n using Nat.strongRec' with | _ n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
   | 1 => simp -- TODO: why?
@@ -145,9 +145,9 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       ext c
       congr
       ext k
-      simp [h, Function.comp_def]
+      simp [h]
     simp [FormalMultilinearSeries.comp, A, Finset.sum_union B,
-      applyComposition_ones, C, D, -Set.toFinset_setOf]
+      applyComposition_ones, C, D, -Set.toFinset_setOf, -Finset.union_singleton]
 
 /-! ### The right inverse of a formal multilinear series -/
 
@@ -186,7 +186,7 @@ series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.rightInv i x = p.rightInv i x := by
   ext1 n
-  induction' n using Nat.strongRec' with n IH
+  induction n using Nat.strongRec' with | _ n IH
   match n with
   | 0 => simp only [rightInv_coeff_zero]
   | 1 => simp only [rightInv_coeff_one]
@@ -222,7 +222,7 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     apply p.congr (Composition.single_length hn) fun j hj1 _ => ?_
     simp [applyComposition_single]
   simp [FormalMultilinearSeries.comp, A, Finset.sum_union B, C, -Set.toFinset_setOf,
-    -add_right_inj, -Composition.single_length]
+    -add_right_inj, -Composition.single_length, -Finset.union_singleton]
 
 theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) (n : ℕ)
     (v : Fin (n + 2) → F) :

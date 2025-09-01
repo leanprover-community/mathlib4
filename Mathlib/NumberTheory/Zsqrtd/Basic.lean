@@ -331,8 +331,6 @@ theorem isCoprime_of_dvd_isCoprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.
       exact ⟨hzdvdu, hzdvdv⟩
     exact hcoprime.isUnit_of_dvd' ha hb
 
-@[deprecated (since := "2025-01-23")] alias coprime_of_dvd_coprime := isCoprime_of_dvd_isCoprime
-
 theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
     ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
@@ -767,7 +765,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
           _ = g * g * (d * (n * n)) := by ring
       have co2 :=
         let co1 := co.mul_right co
-        co1.mul co1
+        co1.mul_left co1
       exact
         Nonsquare.ns d m
           (Nat.dvd_antisymm (by rw [this]; apply dvd_mul_right) <|

@@ -22,7 +22,7 @@ that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactor
 
 ## Implementation
 
-As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
+As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ`,
 we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
 In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
 `n` is a sufficiently large non-positive integer.

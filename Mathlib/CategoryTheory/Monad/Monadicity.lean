@@ -21,7 +21,7 @@ show three versions of Beck's monadicity theorem, and the reflexive (crude) mona
 * `G` creates `G`-split coequalizers, see
   `CategoryTheory.Monad.monadicOfCreatesGSplitCoequalizers`
   (The converse of this is also shown, see
-   `CategoryTheory.Monad.createsGSplitCoequalizersOfMonadic`)
+  `CategoryTheory.Monad.createsGSplitCoequalizersOfMonadic`)
 * `D` has and `G` preserves `G`-split coequalizers, and `G` reflects isomorphisms, see
   `CategoryTheory.Monad.monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms`
 * `D` has and `G` preserves reflexive coequalizers, and `G` reflects isomorphisms, see

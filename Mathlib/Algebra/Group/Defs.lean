@@ -52,11 +52,11 @@ section Mul
 variable [Mul G]
 
 /-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive "`leftAdd g` denotes left addition by `g`"]
+@[to_additive /-- `leftAdd g` denotes left addition by `g` -/]
 def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 
 /-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive "`rightAdd g` denotes right addition by `g`"]
+@[to_additive /-- `rightAdd g` denotes right addition by `g` -/]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 
 attribute [deprecated HMul.hMul "Use (g * ·) instead" (since := "2025-04-08")] leftMul
@@ -82,7 +82,7 @@ class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
   /-- Addition is left cancellative (i.e. left regular). -/
   protected add_left_cancel (a : G) : IsAddLeftRegular a
 
-attribute [to_additive IsLeftCancelAdd] IsLeftCancelMul
+attribute [to_additive] IsLeftCancelMul
 attribute [to_additive] isLeftCancelMul_iff
 
 /-- A mixin for right cancellative addition. -/
@@ -90,15 +90,15 @@ class IsRightCancelAdd (G : Type u) [Add G] : Prop where
   /-- Addition is right cancellative (i.e. right regular). -/
   protected add_right_cancel (a : G) : IsAddRightRegular a
 
-attribute [to_additive IsRightCancelAdd] IsRightCancelMul
+attribute [to_additive] IsRightCancelMul
 attribute [to_additive] isRightCancelMul_iff
 
 /-- A mixin for cancellative addition. -/
 @[mk_iff]
 class IsCancelAdd (G : Type u) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
 
-attribute [to_additive IsCancelAdd] IsCancelMul
-attribute [to_additive] isCancelMul_iff
+attribute [to_additive] IsCancelMul
+attribute [to_additive existing] isCancelMul_iff
 
 section Regular
 
@@ -110,17 +110,17 @@ variable {R : Type*}
   exact forall_congr' fun _ ↦ isRegular_iff.symm
 
 /-- If all multiplications cancel on the left then every element is left-regular. -/
-@[to_additive "If all additions cancel on the left then every element is add-left-regular."]
+@[to_additive /-- If all additions cancel on the left then every element is add-left-regular. -/]
 theorem IsLeftRegular.all [Mul R] [IsLeftCancelMul R] (g : R) : IsLeftRegular g :=
   (isLeftCancelMul_iff R).mp ‹_› _
 
 /-- If all multiplications cancel on the right then every element is right-regular. -/
-@[to_additive "If all additions cancel on the right then every element is add-right-regular."]
+@[to_additive /-- If all additions cancel on the right then every element is add-right-regular. -/]
 theorem IsRightRegular.all [Mul R] [IsRightCancelMul R] (g : R) : IsRightRegular g :=
   (isRightCancelMul_iff R).mp ‹_› _
 
 /-- If all multiplications cancel then every element is regular. -/
-@[to_additive "If all additions cancel then every element is add-regular."]
+@[to_additive /-- If all additions cancel then every element is add-regular. -/]
 theorem IsRegular.all [Mul R] [IsCancelMul R] (g : R) : IsRegular g := ⟨.all g, .all g⟩
 
 end Regular
@@ -233,28 +233,28 @@ variable [CommMagma G]
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsLeftCancelMul G`. -/
-@[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd "Any `AddCommMagma G` that satisfies
-`IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`."]
+@[to_additive AddCommMagma.IsRightCancelAdd.toIsLeftCancelAdd /-- Any `AddCommMagma G` that
+satisfies `IsRightCancelAdd G` also satisfies `IsLeftCancelAdd G`. -/]
 lemma CommMagma.IsRightCancelMul.toIsLeftCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsLeftCancelMul G :=
   ⟨fun _ _ _ h => mul_right_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsRightCancelMul G`. -/
-@[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd "Any `AddCommMagma G` that satisfies
-`IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`."]
+@[to_additive AddCommMagma.IsLeftCancelAdd.toIsRightCancelAdd /-- Any `AddCommMagma G` that
+satisfies `IsLeftCancelAdd G` also satisfies `IsRightCancelAdd G`. -/]
 lemma CommMagma.IsLeftCancelMul.toIsRightCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
     IsRightCancelMul G :=
   ⟨fun _ _ _ h => mul_left_cancel <| (mul_comm _ _).trans (h.trans (mul_comm _ _))⟩
 
 /-- Any `CommMagma G` that satisfies `IsLeftCancelMul G` also satisfies `IsCancelMul G`. -/
-@[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
-`IsLeftCancelAdd G` also satisfies `IsCancelAdd G`."]
+@[to_additive AddCommMagma.IsLeftCancelAdd.toIsCancelAdd /-- Any `AddCommMagma G` that satisfies
+`IsLeftCancelAdd G` also satisfies `IsCancelAdd G`. -/]
 lemma CommMagma.IsLeftCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsLeftCancelMul G] :
     IsCancelMul G := { CommMagma.IsLeftCancelMul.toIsRightCancelMul G with }
 
 /-- Any `CommMagma G` that satisfies `IsRightCancelMul G` also satisfies `IsCancelMul G`. -/
-@[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd "Any `AddCommMagma G` that satisfies
-`IsRightCancelAdd G` also satisfies `IsCancelAdd G`."]
+@[to_additive AddCommMagma.IsRightCancelAdd.toIsCancelAdd /-- Any `AddCommMagma G` that satisfies
+`IsRightCancelAdd G` also satisfies `IsCancelAdd G`. -/]
 lemma CommMagma.IsRightCancelMul.toIsCancelMul (G : Type u) [CommMagma G] [IsRightCancelMul G] :
     IsCancelMul G := { CommMagma.IsRightCancelMul.toIsLeftCancelMul G with }
 
@@ -447,13 +447,13 @@ the `npow` field when defining multiplicative objects.
 -/
 
 /-- Exponentiation by repeated squaring. -/
-@[to_additive "Scalar multiplication by repeated self-addition,
-the additive version of exponentiation by repeated squaring."]
+@[to_additive /-- Scalar multiplication by repeated self-addition,
+the additive version of exponentiation by repeated squaring. -/]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
   npowBinRec.go k 1
 where
   /-- Auxiliary tail-recursive implementation for `npowBinRec`. -/
-  @[to_additive nsmulBinRec.go "Auxiliary tail-recursive implementation for `nsmulBinRec`."]
+  @[to_additive nsmulBinRec.go /-- Auxiliary tail-recursive implementation for `nsmulBinRec`. -/]
   go (k : ℕ) : M → M → M :=
     k.binaryRec (fun y _ ↦ y) fun bn _n fn y x ↦ fn (cond bn (y * x) y) (x * x)
 
@@ -533,9 +533,9 @@ so that we can use `@[csimp]` to replace it with an implementation by repeated s
 in compiled code.
 -/
 @[to_additive
-"An abbreviation for `nsmulRec` with an additional typeclass assumptions on associativity
+/-- An abbreviation for `nsmulRec` with an additional typeclass assumptions on associativity
 so that we can use `@[csimp]` to replace it with an implementation by repeated doubling in compiled
-code as an automatic parameter."]
+code as an automatic parameter. -/]
 abbrev npowRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
   npowRec k m
 
@@ -544,9 +544,9 @@ An abbreviation for `npowBinRec` with an additional typeclass assumption on asso
 so that we can use it in `@[csimp]` for more performant code generation.
 -/
 @[to_additive
-"An abbreviation for `nsmulBinRec` with an additional typeclass assumption on associativity
+/-- An abbreviation for `nsmulBinRec` with an additional typeclass assumption on associativity
 so that we can use it in `@[csimp]` for more performant code generation
-as an automatic parameter."]
+as an automatic parameter. -/]
 abbrev npowBinRecAuto {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) : M :=
   npowBinRec k m
 
@@ -662,6 +662,19 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
 
 end Monoid
 
+/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
+injective. -/
+@[mk_iff]
+class IsAddTorsionFree (M : Type*) [AddMonoid M] where
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
+
+/-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
+@[to_additive, mk_iff]
+class IsMulTorsionFree (M : Type*) [Monoid M] where
+  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
+
+attribute [to_additive existing] isMulTorsionFree_iff
+
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
@@ -732,7 +745,7 @@ instance (priority := 100) CancelCommMonoid.toCancelMonoid (M : Type u) [CancelC
   { CommMagma.IsLeftCancelMul.toIsRightCancelMul M with }
 
 /-- Any `CancelMonoid G` satisfies `IsCancelMul G`. -/
-@[to_additive toIsCancelAdd "Any `AddCancelMonoid G` satisfies `IsCancelAdd G`."]
+@[to_additive /-- Any `AddCancelMonoid G` satisfies `IsCancelAdd G`. -/]
 instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid M] :
     IsCancelMul M where
 
@@ -948,8 +961,8 @@ attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 
 This is a duplicate of `DivInvMonoid.div_eq_mul_inv` ensuring that the types unfold better.
 -/
-@[to_additive "Subtracting an element is the same as adding by its negative.
-This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unfold better."]
+@[to_additive /-- Subtracting an element is the same as adding by its negative.
+This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unfold better. -/]
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 

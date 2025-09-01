@@ -93,9 +93,6 @@ lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R))
   eq_induced := rfl
   injective _ _ h := ext fun x ↦ congr($(h) x)
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMap := isEmbedding_toContinuousMap
-
 instance [T0Space R] : T0Space C(X, R)₀ := isEmbedding_toContinuousMap.t0Space
 instance [R0Space R] : R0Space C(X, R)₀ := isEmbedding_toContinuousMap.r0Space
 instance [T1Space R] : T1Space C(X, R)₀ := isEmbedding_toContinuousMap.t1Space

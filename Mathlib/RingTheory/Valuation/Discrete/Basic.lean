@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
@@ -26,7 +25,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 
 ## Main Definitions
 * `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if if there is
-an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
+  an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
   a uniformizer if `v π` is a generator of the value group that is `<1`.
 * `Valuation.Uniformizer`: A structure bundling an element of a ring and a proof that it is a

@@ -40,6 +40,11 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
 
+/-- Useful if `rw [← map_ofFn]` complains that `g ∘ f` is not the same as `fun i => g (f i)`. -/
+theorem ofFn_comp' {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
+    ofFn (fun i => g (f i)) = map g (ofFn f) :=
+  (map_ofFn f g).symm
+
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
     ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
@@ -130,17 +135,6 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=
   getLast_ofFn _
-
-@[deprecated getLast_ofFn (since := "2024-11-06")]
-theorem last_ofFn {n : ℕ} (f : Fin n → α) (h : ofFn f ≠ [])
-    (hn : n - 1 < n := Nat.pred_lt <| ofFn_eq_nil_iff.not.mp h) :
-    getLast (ofFn f) h = f ⟨n - 1, hn⟩ := by simp [getLast_eq_getElem]
-
-@[deprecated getLast_ofFn_succ (since := "2024-11-06")]
-theorem last_ofFn_succ {n : ℕ} (f : Fin n.succ → α)
-    (h : ofFn f ≠ [] := mt ofFn_eq_nil_iff.mp (Nat.succ_ne_zero _)) :
-    getLast (ofFn f) h = f (Fin.last _) :=
-  getLast_ofFn_succ _
 
 lemma ofFn_cons {n} (a : α) (f : Fin n → α) : ofFn (Fin.cons a f) = a :: ofFn f := by
   rw [ofFn_succ]

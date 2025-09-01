@@ -11,7 +11,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 This file defines algebraic functions as the image of the `algebraMap R[X] (R → S)`.
 -/
 
-assert_not_exists IsIntegralClosure LinearIndependent LocalRing MvPolynomial
+assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 
 open Polynomial
 
