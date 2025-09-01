@@ -696,7 +696,6 @@ lemma isCompactElement_lieSpan_singleton (m : M) :
 @[simp]
 lemma sSup_image_lieSpan_singleton : sSup ((fun x ↦ lieSpan R L {x}) '' N) = N := by
   refine le_antisymm (sSup_le <| by simp) ?_
-  simp_rw [← toSubmodule_le_toSubmodule, sSup_toSubmodule, Set.mem_image, SetLike.mem_coe]
   refine fun m hm ↦ Submodule.mem_sSup.mpr fun N' hN' ↦ ?_
   replace hN' : ∀ m ∈ N, lieSpan R L {m} ≤ N' := by simpa using hN'
   exact hN' _ hm (subset_lieSpan rfl)

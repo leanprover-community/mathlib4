@@ -113,7 +113,6 @@ theorem list_prod_singleton {M : Type*} [Monoid M] (s : List M) :
 theorem multiset_prod_mem_multiset_prod (t : Multiset ι) (f : ι → Set α) (g : ι → α)
     (hg : ∀ i ∈ t, g i ∈ f i) : (t.map g).prod ∈ (t.map f).prod := by
   induction t using Quotient.inductionOn
-  simp_rw [Multiset.quot_mk_to_coe, Multiset.map_coe, Multiset.prod_coe]
   exact list_prod_mem_list_prod _ _ _ hg
 
 /-- An n-ary version of `Set.mul_subset_mul`. -/
@@ -121,7 +120,6 @@ theorem multiset_prod_mem_multiset_prod (t : Multiset ι) (f : ι → Set α) (g
 theorem multiset_prod_subset_multiset_prod (t : Multiset ι) (f₁ f₂ : ι → Set α)
     (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : (t.map f₁).prod ⊆ (t.map f₂).prod := by
   induction t using Quotient.inductionOn
-  simp_rw [Multiset.quot_mk_to_coe, Multiset.map_coe, Multiset.prod_coe]
   exact list_prod_subset_list_prod _ _ _ hf
 
 @[to_additive]
