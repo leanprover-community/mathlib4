@@ -570,10 +570,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
     rintro ⟨h1, -⟩
     exact ⟨n / a, mem_divisors.mpr ⟨div_dvd_of_dvd h1, hn⟩, Nat.div_div_self h1 hn⟩
 
-/- Porting note: Removed simp; simp_nf linter:
-Left-hand side does not simplify, when using the simp lemma on itself.
-This usually means that it will never apply. -/
-@[to_additive sum_div_divisors]
+@[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
     (∏ d ∈ n.divisors, f (n / d)) = n.divisors.prod f := by
   by_cases hn : n = 0; · simp [hn]
