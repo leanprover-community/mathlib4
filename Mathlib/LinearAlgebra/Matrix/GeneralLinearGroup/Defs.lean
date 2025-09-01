@@ -151,16 +151,13 @@ variable (f : R →+* S)
 
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
-  ext
-  simp only [map_one, Units.val_one]
+  simp only [map_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
-  ext
-  simp only [map_mul, Units.val_mul]
+  simp only [map_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
-  ext
-  simp only [map_inv, coe_units_inv]
+  simp only [map_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by

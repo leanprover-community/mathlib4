@@ -68,7 +68,7 @@ class LaxMonoidal (F : C ⥤ D) where
       F.map f ▷ F.obj X' ≫ μ Y X' = μ X X' ≫ F.map (f ▷ X') := by
     cat_disch
   μ_natural_right (F) :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       F.obj X' ◁ F.map f ≫ μ X' Y = μ X' X ≫ F.map (X' ◁ f) := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -241,7 +241,7 @@ class OplaxMonoidal (F : C ⥤ D) where
       δ X X' ≫ F.map f ▷ F.obj X' = F.map (f ▷ X') ≫ δ Y X' := by
     cat_disch
   δ_natural_right (F) :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       δ X' X ≫ F.obj X' ◁ F.map f = F.map (X' ◁ f) ≫ δ X' Y := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -566,7 +566,7 @@ structure CoreMonoidal where
       F.map f ▷ F.obj X' ≫ (μIso Y X').hom = (μIso X X').hom ≫ F.map (f ▷ X') := by
     cat_disch
   μIso_hom_natural_right :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       F.obj X' ◁ F.map f ≫ (μIso X' Y).hom = (μIso X' X).hom ≫ F.map (X' ◁ f) := by
     cat_disch
   /-- associativity of the tensorator -/
