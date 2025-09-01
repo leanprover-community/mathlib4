@@ -583,12 +583,12 @@ theorem Continuous.image_connectedComponentIn_subset [TopologicalSpace β] {f : 
 
 theorem Continuous.mapsTo_connectedComponent [TopologicalSpace β] {f : α → β} (h : Continuous f)
     (a : α) : MapsTo f (connectedComponent a) (connectedComponent (f a)) :=
-  mapsTo'.2 <| h.image_connectedComponent_subset a
+  mapsTo_iff_image_subset.2 <| h.image_connectedComponent_subset a
 
 theorem Continuous.mapsTo_connectedComponentIn [TopologicalSpace β] {f : α → β} {s : Set α}
     (h : Continuous f) {a : α} (hx : a ∈ s) :
     MapsTo f (connectedComponentIn s a) (connectedComponentIn (f '' s) (f a)) :=
-  mapsTo'.2 <| image_connectedComponentIn_subset h hx
+  mapsTo_iff_image_subset.2 <| image_connectedComponentIn_subset h hx
 
 theorem irreducibleComponent_subset_connectedComponent {x : α} :
     irreducibleComponent x ⊆ connectedComponent x :=

@@ -262,14 +262,13 @@ theorem inclusion_inclusion {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : S} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  simp only [inclusion, MonoidHom.mk'_apply]
+theorem coe_inclusion {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
+  Set.coe_inclusion h a
 
 @[to_additive (attr := simp)]
-theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
-    (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
-  ext
-  simp only [MonoidHom.comp_apply, coe_subtype, coe_inclusion]
+theorem subtype_comp_inclusion {H K : S} (h : H ≤ K) :
+    (SubgroupClass.subtype K).comp (inclusion h) = SubgroupClass.subtype H :=
+  rfl
 
 end SubgroupClass
 
@@ -577,8 +576,8 @@ def inclusion {H K : Subgroup G} (h : H ≤ K) : H →* K :=
   MonoidHom.mk' (fun x => ⟨x, h x.2⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : Subgroup G} {h : H ≤ K} (a : H) : (inclusion h a : G) = a := by
-  simp only [inclusion, coe_mk, MonoidHom.mk'_apply]
+theorem coe_inclusion {H K : Subgroup G} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
+  Set.coe_inclusion h a
 
 @[to_additive]
 theorem inclusion_injective {H K : Subgroup G} (h : H ≤ K) : Function.Injective <| inclusion h :=

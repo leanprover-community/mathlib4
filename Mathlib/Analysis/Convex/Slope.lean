@@ -30,14 +30,15 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
     linarith
   set a := (z - y) / (z - x)
   set b := (y - x) / (z - x)
-  have hy : a • x + b • z = y := by field_simp [a, b]; ring
+  have hy : a • x + b • z = y := by simp [field, a, b]; ring
   have key :=
     hf.2 hx hz (show 0 ≤ a by apply div_nonneg <;> linarith)
       (show 0 ≤ b by apply div_nonneg <;> linarith)
-      (show a + b = 1 by field_simp [a, b])
+      (show a + b = 1 by simp [field, a, b])
   rw [hy] at key
   replace key := mul_le_mul_of_nonneg_left key hxz.le
-  field_simp [a, b, mul_comm (z - x) _] at key ⊢
+  simp [a, b] at key ⊢
+  field_simp at key ⊢
   rw [div_le_div_iff_of_pos_right]
   · linarith
   · positivity
@@ -64,13 +65,14 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
     linarith
   set a := (z - y) / (z - x)
   set b := (y - x) / (z - x)
-  have hy : a • x + b • z = y := by field_simp [a, b]; ring
+  have hy : a • x + b • z = y := by simp [field, a, b]; ring
   have key :=
     hf.2 hx hz hxz' (div_pos hyz hxz) (div_pos hxy hxz)
-      (show a + b = 1 by field_simp [a, b])
+      (show a + b = 1 by simp [field, a, b])
   rw [hy] at key
   replace key := mul_lt_mul_of_pos_left key hxz
-  field_simp [mul_comm (z - x) _] at key ⊢
+  simp at key ⊢
+  field_simp at key ⊢
   rw [div_lt_div_iff_of_pos_right]
   · linarith
   · positivity
@@ -95,10 +97,12 @@ theorem convexOn_of_slope_mono_adjacent (hs : Convex 𝕜 s)
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
-      exact add_lt_add_left ((mul_lt_mul_left hb).2 hxz) _
+      unfold y
+      gcongr
     have hyz : y < z := by
       rw [← one_mul z, ← hab, add_mul]
-      exact add_lt_add_right ((mul_lt_mul_left ha).2 hxz) _
+      unfold y
+      gcongr
     have : (f y - f x) * (z - y) ≤ (f z - f y) * (y - x) :=
       (div_le_div_iff₀ (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
@@ -232,6 +236,7 @@ theorem ConvexOn.secant_mono_aux1 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : 
     field_simp
     ring
   · field_simp
+    ring
   · field_simp
 
 theorem ConvexOn.secant_mono_aux2 (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s) (hz : z ∈ s)
@@ -278,6 +283,7 @@ theorem StrictConvexOn.secant_strict_mono_aux1 (hf : StrictConvexOn 𝕜 s f) {x
     field_simp
     ring
   · field_simp
+    ring
   · field_simp
 
 theorem StrictConvexOn.secant_strict_mono_aux2 (hf : StrictConvexOn 𝕜 s f) {x y z : 𝕜} (hx : x ∈ s)
