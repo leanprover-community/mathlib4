@@ -240,7 +240,7 @@ theorem mem_finset_inf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
   simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_iInter]
 
-lemma inf_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
+lemma inf_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
     q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=
   SetLike.coe_injective <| by simpa only [inf_coe, iInf_coe] using Set.inter_iInter _ _
 
