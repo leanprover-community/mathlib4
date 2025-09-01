@@ -1120,6 +1120,9 @@ theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = Al
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
   AlgHom.ext <| one_mul
 
+lemma lmul'_comp_map (f : A →ₐ[R] S) (g : B →ₐ[R] S) :
+    (lmul' R).comp (map f g) = lift f g (fun _ _ ↦ .all _ _) := by ext <;> rfl
+
 variable (R S) in
 /-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
 then `lmul''` is an isomorphism. -/
