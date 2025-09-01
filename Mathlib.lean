@@ -497,6 +497,7 @@ import Mathlib.Algebra.GroupWithZero.Shrink
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
 import Mathlib.Algebra.GroupWithZero.Submonoid.Primal
+import Mathlib.Algebra.GroupWithZero.Torsion
 import Mathlib.Algebra.GroupWithZero.TransferInstance
 import Mathlib.Algebra.GroupWithZero.ULift
 import Mathlib.Algebra.GroupWithZero.Units.Basic
