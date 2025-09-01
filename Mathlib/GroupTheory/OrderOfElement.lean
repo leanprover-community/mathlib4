@@ -1234,7 +1234,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α 
 lemma Pi.orderOf_eq : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
   minimalPeriod_piMap
 
-/- alternative name: `Pi.orderOf_eq_fintype`, `Pi.orderOf_eq_for_fintype`,
+/- alternative names: `Pi.orderOf_eq_fintype`, `Pi.orderOf_eq_for_fintype`,
 `Pi.orderOf_eq_inexed_by_fintype` -/
 @[to_additive]
 lemma Pi.fintype_orderOf_eq [Fintype ι] : orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
