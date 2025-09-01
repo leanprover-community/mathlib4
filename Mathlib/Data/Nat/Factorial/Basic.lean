@@ -459,13 +459,9 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
 
 
 /-!
-# Optimized Factorial Implementations
+# Factorial via binary splitting.
 
-We now provide optimized implementations of factorial computation:
-* `Nat.factorialFold`: Using `Nat.fold` rather than the default non-tail-recursive implementation.
-* `Nat.factorialBinarySplitting`: Using binary splitting.
-
-We prove these are equal to the standard factorial and mark them `@[csimp]`.
+We prove this is equal to the standard factorial and mark it `@[csimp]`.
 
 We could proceed further, with either Legendre or Luschny methods.
 -/
@@ -477,28 +473,9 @@ This is the highest factorial I can `#eval` using the naive implementation witho
 #guard_msgs in
 #eval 9718 ! |>.log2
 ```
--/
 
-/-- Factorial implemented using `Nat.fold`, which is tail-recursive. -/
-def factorialFold (n : Nat) := Nat.fold n (fun i _ acc => (i+1) * acc) 1
-
-/-- Theorem: `factorialFold` equals the standard `factorial`. -/
-@[csimp]
-theorem factorial_eq_factorialFold : @factorial = @factorialFold := by
-  ext n
-  rw [factorialFold]
-  induction n with
-  | zero =>
-    grind [factorial_zero]
-  | succ n ih =>
-    grind [fold_succ, factorial_succ]
-
-/-!
-Now we can go much further,. We're limited now by speed, not stack space.
-```
-#time -- Approx 2s:
-#eval (10^5) ! |>.log2
-```
+We could implement a tail-recursive version (or just use `Nat.fold`),
+but instead lets jump straight to binary splitting.
 -/
 
 /-- Factorial implemented using binary splitting. -/
@@ -532,9 +509,12 @@ theorem factorialBinarySplitting_eq_factorial : @factorial = @factorialBinarySpl
   rw [factorialBinarySplitting, ← factorialBinarySplitting.factorial_mul_prodRange 0 n (by grind)]
   simp
 
-/-! This is again much faster.
+/-!
+We are now limited by time, not stack space,
+and this is much faster than even the tail-recursive version.
+
 ```
-#time -- Less than 1s, for 10x further.
+#time -- Less than 1s. (Tail-recursive version takes longer for `(10^5) !`.)
 #eval (10^6) ! |>.log2
 ```
 -/
