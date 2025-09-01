@@ -72,7 +72,7 @@ theorem trapezoidal_integral_one (f : ℝ → ℝ) (a b : ℝ) :
 general theorems are certainly possible, but many of them can be derived from repeated applications
 of this one. -/
 theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
-    (N_nonzero : N > 0) : ∑ i ∈ range N, trapezoidal_integral f 1 (a + i * h) (a + (i + 1) * h)
+    (N_nonzero : 0 < N) : ∑ i ∈ range N, trapezoidal_integral f 1 (a + i * h) (a + (i + 1) * h)
       = trapezoidal_integral f N a (a + N * h) := by
   simp only [trapezoidal_integral_one]
   unfold trapezoidal_integral
@@ -108,7 +108,7 @@ theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} 
   ring
 
 /-- A simplified version of the previous theorem, for use in proofs by induction and the like. -/
-theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : N > 0) :
+theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
     trapezoidal_integral f N a (a + N * h) + trapezoidal_integral f 1 (a + N * h) (a + (N + 1) * h)
       = trapezoidal_integral f (N + 1) a (a + (N + 1) * h) := by
   norm_cast
@@ -120,7 +120,7 @@ theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonz
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and trapezoidal integration,
 it's natural to combine them into a similar formula for the error.  This theorem is in particular
 used in the proof of the general error bound. -/
-theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : N > 0)
+theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N)
     (h_f_int : IntervalIntegrable f volume a (a + N * h)) :
     ∑ i ∈ range N, trapezoidal_error f 1 (a + i * h) (a + (i + 1) * h)
       = trapezoidal_error f N a (a + N * h) := by
@@ -134,7 +134,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
     rcases lt_trichotomy h 0 with h_neg | h_zero | h_pos
     · field_simp
       have : N * h < 0 := mul_neg_of_pos_of_neg (Nat.cast_pos'.mpr N_nonzero) h_neg
-      have : a > a + N * h := add_lt_iff_neg_left.mpr this
+      have : a + N * h < a := add_lt_iff_neg_left.mpr this
       have : [[a, a + N * h]] = Icc (a + N * h) a := uIcc_of_gt this
       rw [this]
       refine Icc_subset_Icc ?_ ?_
@@ -143,7 +143,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
       · nlinarith
     · grind
     · field_simp
-      have : N * h > 0 := mul_pos (Nat.cast_pos'.mpr N_nonzero) h_pos
+      have : 0 < N * h := mul_pos (Nat.cast_pos'.mpr N_nonzero) h_pos
       have : a < a + N * h := lt_add_of_pos_right a this
       have : [[a, a + N * h]] = Icc a (a + N * h) := uIcc_of_lt this
       rw [this]
