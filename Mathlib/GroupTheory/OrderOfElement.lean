@@ -1252,7 +1252,7 @@ theorem IsOfFinOrder.single {i} (hx : IsOfFinOrder x) : IsOfFinOrder (x i) :=
 -- alternative names: `IsOfFinOrder.fintype_pi_mk`, `IsOfFinOrder.pi_mk_fintype`
 @[to_additive]
 theorem IsOfFinOrder.pi_mk [Fintype ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
-  simp only [← orderOf_pos_iff, pos_iff_ne_zero, Pi.fintype_orderOf_eq]
+  simp only [← orderOf_ne_zero_iff, Pi.fintype_orderOf_eq]
   simp [Finset.lcm_eq_zero_iff]
 
 end Pi
