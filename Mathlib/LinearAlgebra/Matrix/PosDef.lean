@@ -317,7 +317,7 @@ theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff' {U x : Matrix n n R} (hU 
     and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec]
   obtain ⟨V, hV⟩ := hU.exists_right_inv
-  exact fun h => ⟨fun H y => by simpa [hV] using H (V *ᵥ y), fun H _ => H _⟩
+  exact fun _ => ⟨fun H y => by simpa [hV] using H (V *ᵥ y), fun H _ => H _⟩
 
 open Matrix
 
@@ -670,7 +670,7 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : Is
   obtain ⟨W, hW⟩ := hU.exists_right_inv
   have hVV (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(V *ᵥ $h)
   have hWW (y : n → R) (hy : y ≠ 0) : W *ᵥ y ≠ 0 := fun h => by simpa [hy, hW] using congr(U *ᵥ $h)
-  exact fun h => ⟨fun h x hx => by simpa [hW] using h _ (hWW _ hx), fun h x hx => h _ (hVV _ hx)⟩
+  exact fun _ => ⟨fun h x hx => by simpa [hW] using h _ (hWW _ hx), fun h x hx => h _ (hVV _ hx)⟩
 
 open Matrix
 
