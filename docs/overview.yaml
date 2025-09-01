@@ -437,6 +437,11 @@ Geometry:
     discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
     0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
 
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
+
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
     (smooth) vector bundle: 'ContMDiffVectorBundle'
