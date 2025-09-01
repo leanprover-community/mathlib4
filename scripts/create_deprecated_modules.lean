@@ -245,6 +245,10 @@ elab_rules : command
     return
   let (msgs, deprecatedFile) ← deprecateFilePath fname (rename?.map (·.getString)) (comment.map (·.getString))
   if write?.isSome then
+    if let some dir := System.FilePath.parent fname then
+      if !(← System.FilePath.pathExists dir) then
+        logInfoAt fnameStx m!"Creating directory {dir}"
+        IO.FS.createDirAll dir
     IO.FS.writeFile fname deprecatedFile
   if write?.isNone then
     -- We strip trailing comments from `fnameStx` and `comment` to avoid them showing up in the
