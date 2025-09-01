@@ -359,7 +359,7 @@ noncomputable def basis : Module.Basis (Fin 2) R (QuadraticAlgebra R a b) :=
   .ofEquivFun <| linearEquivTuple a b
 
 @[simp]
-theorem coe_basis_repr (x : QuadraticAlgebra R a b) :
+theorem basis_repr_apply (x : QuadraticAlgebra R a b) :
     (basis a b).repr x = ![x.re, x.im] := rfl
 
 instance : Module.Finite R (QuadraticAlgebra R a b) := .of_basis (basis a b)
