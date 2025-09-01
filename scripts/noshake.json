@@ -439,9 +439,6 @@
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Nat.Basic": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
-  "Mathlib.Combinatorics.Matroid.Rank.ENat": ["Mathlib.Tactic.TautoSet"],
-  "Mathlib.Combinatorics.Matroid.Minor.Contract": ["Mathlib.Tactic.TautoSet"],
-  "Mathlib.Combinatorics.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
@@ -473,6 +470,9 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Combinatorics.Matroid.Rank.ENat": ["Mathlib.Tactic.TautoSet"],
+  "Mathlib.Combinatorics.Matroid.Minor.Contract": ["Mathlib.Tactic.TautoSet"],
+  "Mathlib.Combinatorics.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Combinatorics.Graph.Basic": ["Mathlib.Data.Set.Basic"],
   "Mathlib.Combinatorics.Additive.ApproximateSubgroup":
   ["Mathlib.Tactic.Bound"],
@@ -498,6 +498,9 @@
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Adjunction.Basic":
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
+  "Mathlib.Analysis.Real.Pi.Chudnovsky":
+  ["Batteries.Data.Rat.Float",
+   "Mathlib.Analysis.SpecialFunctions.Integrals.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.Normed.Group.AddCircle":
