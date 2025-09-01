@@ -101,7 +101,7 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
 /- Therefore, if a bonza function is not identity, then every $f x$ is a pow of two
 -/
 lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x) :
-    ∀ n, n > 0 → ∃ a, f n = 2 ^ a := fun n hn ↦ by
+    ∀ n, n > 0 → ∃ a, f n = 2 ^ a := fun n hn ↦
   have : ∀ {p}, p.Prime → p ∣ f n → p = 2 := fun {p} pp hp ↦ by
     by_contra nh
     have dvd : (p : ℤ) ∣ p ^ n - 1 := by calc
@@ -112,8 +112,7 @@ lemma bonza_not_id_two_pow (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 0 → f x = x
         rwa [bonza_apply_prime_gt_two_eq_one hf hnf p p_gt_two pp, Nat.cast_one, one_pow] at this
     have : (p : ℤ) ∣ p ^ n := dvd_pow (Int.dvd_refl p) (Nat.ne_zero_of_lt hn)
     exact (Nat.Prime.not_dvd_one pp) (ofNat_dvd.mp ((Int.dvd_iff_dvd_of_dvd_sub dvd).mp this))
-  use (f n).primeFactorsList.length
-  exact Nat.eq_prime_pow_of_unique_prime_dvd (Nat.ne_zero_of_lt (hf.2 n hn)) this
+  ⟨(f n).primeFactorsList.length, eq_prime_pow_of_unique_prime_dvd (ne_zero_of_lt (hf.2 n hn)) this⟩
 
 /-- An example of a bonza function achieving the maximum number of values of `c`.
 -/
@@ -125,7 +124,7 @@ def fExample : ℕ → ℕ := fun x ↦
 lemma LTE_lemma_of_pow_sub {a b : ℕ} (h1b : 1 < b) (hb : ¬2 ∣ b) (ha : a ≠ 0) (Evena : Even a) :
     (padicValNat 2 a + 2) ≤ padicValNat 2 (b ^ a - 1) := by
   have : padicValNat 2 ((b + 1) * (b - 1)) ≥ 3 := by
-    refine (padicValNat_dvd_iff_le (hp := fact_prime_two) (by grind [mul_ne_zero])).mp ?_
+    refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
     simpa [← Nat.pow_two_sub_pow_two b 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := padicValNat.pow_two_sub_pow h1b (by grind) hb ha Evena
   grind [← padicValNat.mul]
@@ -165,9 +164,7 @@ lemma bonza_fExample : fExample ∈ bonza := by
       · refine dvd_sub ?_ ?_
         · have : 2 ∣ (b : ℤ) := by grind
           simpa using pow_dvd_pow_of_dvd this 2
-        · refine Dvd.dvd.pow ?_ (by norm_num)
-          use 2 ^ padicValNat 2 b
-          ring
+        · exact Dvd.dvd.pow ⟨2 ^ padicValNat 2 b, by ring⟩ (zero_ne_add_one 3).symm
     · simp [fExample, ch1, ch2]
       split_ifs with hb1 hb2
       · by_cases lt : b = 1
