@@ -48,10 +48,11 @@ lemma limUnder.neg {f : α → X} [Nonempty X] [Neg X] [ContinuousNeg X] (hf : C
   nth_rw 2 [Tendsto.limUnder_eq]
   exact Tendsto.neg (CauchySeq.tendsto_limUnder hf)
 
-lemma limUnder.sub [AddGroup X] [IsUniformAddGroup X] (f g : α → X) (hf : CauchySeq f)
-    (hg : CauchySeq g) : (limUnder atTop f) - (limUnder atTop g) = limUnder atTop (f - g) := by
+@[to_additive]
+lemma limUnder.div [Group X] [IsUniformGroup X] {f g : α → X} (hf : CauchySeq f)
+    (hg : CauchySeq g) : (limUnder atTop f) / (limUnder atTop g) = limUnder atTop (f / g) := by
   nth_rw 3 [Tendsto.limUnder_eq]
-  exact Tendsto.sub (hf.tendsto_limUnder) (hg.tendsto_limUnder)
+  exact Tendsto.div' (hf.tendsto_limUnder) (hg.tendsto_limUnder)
 
 lemma limUnder_congr_eventually [Nonempty X] (f g : α → X) (h : ∀ᶠ n in atTop, f n = g n)
   (hf : CauchySeq f) (hg : CauchySeq g) : limUnder atTop f = limUnder atTop g := by
