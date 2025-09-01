@@ -26,9 +26,8 @@ satisfying `RCLike 𝕜`.
 
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
-of `𝕜`).
--/
-
+of `𝕜`). Using this, we prova that if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, there are nontrivial continuous linear operator between them. -/
 
 universe u v
 
@@ -186,16 +185,15 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
   · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩
     exact ⟨g, g_norm.le, g_eq⟩
 
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-instance [Nontrivial E] [Nontrivial F] : Nontrivial (E →L[𝕜] F) := by
+/-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, there are nontrivial continuous linear operator between them. -/
+instance (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] [Nontrivial F] :
+    Nontrivial (E →L[𝕜] F) := by
   obtain ⟨v, hv⟩ := exists_ne (0 : E)
   obtain ⟨φ, hφ_norm, hφ_eval⟩ := exists_dual_vector 𝕜 _ hv
   obtain ⟨w, hw⟩ := exists_ne (0 : F)
   refine ⟨(𝕜 ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
     (toSpanNonzeroSingleton 𝕜 _ hw) ∘L φ, 0, DFunLike.ne_iff.mpr ⟨v, by simp [hφ_eval, hv, hw]⟩⟩
-
-
 
 
 end DualVector

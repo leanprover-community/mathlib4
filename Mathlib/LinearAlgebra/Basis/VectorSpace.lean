@@ -287,6 +287,8 @@ theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v �
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
 
+/-- If `V` and `V'` are nontrivial vector spaces over a field `K`, the space of `K`-linear maps is
+nontrivial. -/
 instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨w, hw⟩ := exists_ne (0 : V')
