@@ -87,7 +87,9 @@ theorem bonza_apply_prime_gt_two_eq_one (hf : f ∈ bonza) (hnf : ¬ ∀ x, x > 
         rw [ha2, Int.natCast_pow q k]
         exact dvd_pow_self (q : ℤ) ch
       _ ∣ _ := apply_dvd_pow_sub (zero_lt_of_lt hq) pp hp
-    obtain ⟨p, hp⟩ := Nat.exists_prime_gt_modEq_neg_one N (NeZero.of_gt hq)
+    obtain ⟨p, hp⟩ : ∃ p > N, Nat.Prime p ∧ p ≡ -1 [ZMOD q] :=
+      haveI := NeZero.of_gt hq
+      forall_exists_prime_gt_and_modEq N isCoprime_one_left.neg_left
     have : 1 ≡ -1 [ZMOD q] := by calc
       _ ≡ p ^ q [ZMOD q] := by grind [Int.modEq_iff_dvd]
       _ ≡ p [ZMOD q] := ModEq.pow_prime_eq_self qp p
