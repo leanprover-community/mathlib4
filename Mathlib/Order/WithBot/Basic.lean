@@ -104,6 +104,20 @@ theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
 @[deprecated (since := "2025-02-06")]
 alias unbot'_eq_unbot'_iff := unbotD_eq_unbotD_iff
 
+/-- Apply a function to non-`⊥` elements, and send `⊥` to `d`. -/
+-- (If you think `WithBot` is equivalent to `Option`, this is the equivalent of `Option.elim`.)
+def mapD (d : β) (f : α → β) : WithBot α → β
+| .bot => d
+| .some a => f a
+
+@[simp, grind =]
+theorem mapD_bot (d : β) (f : α → β) : mapD d f ⊥ = d :=
+  rfl
+
+@[simp, grind =]
+theorem mapD_coe (d : β) (f : α → β) (a : α) : mapD d f a = f a :=
+  rfl
+
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. -/
 def map (f : α → β) : WithBot α → WithBot β
 | .bot => .bot
@@ -692,6 +706,20 @@ theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
 @[deprecated (since := "2025-02-06")]
 alias untop'_eq_untop'_iff := untopD_eq_untopD_iff
 
+/-- Apply a function to non-`⊥` elements, and send `⊥` to `d`. -/
+-- (If you think `WithTop` is equivalent to `Option`, this is the equivalent of `Option.elim`.)
+def mapD (d : β) (f : α → β) : WithTop α → β
+| .top => d
+| .some a => f a
+
+@[simp, grind =]
+theorem mapD_bot (d : β) (f : α → β) : mapD d f ⊤ = d :=
+  rfl
+
+@[simp, grind =]
+theorem mapD_coe (d : β) (f : α → β) (a : α) : mapD d f a = f a :=
+  rfl
+
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
   WithBot.map f
@@ -841,8 +869,8 @@ namespace Equiv
 def withTopCongr (e : α ≃ β) : WithTop α ≃ WithTop β where
   toFun := WithTop.map e
   invFun := WithTop.map e.symm
-  left_inv x := by sorry -- grind -- grind won't case bash through the type synonym
-  right_inv x := by sorry -- grind
+  left_inv x := by cases x <;> grind -- Unfortunately `grind` `cases` doesn't work with synonyms.
+  right_inv x := by cases x <;> grind
 
 attribute [grind =] withTopCongr_apply
 
