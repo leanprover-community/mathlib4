@@ -376,16 +376,6 @@ end UnitaryConjugate
 
 end unitary
 
-@[simp]
-lemma isSelfAdjoint_unitary_conjugate_iff [Monoid R] [StarMul R] {a : R} (u : unitary R) :
-    IsSelfAdjoint (u * a * (star u : R)) ↔ IsSelfAdjoint a := by
-  simp [IsSelfAdjoint, mul_assoc, unitary.mul_right_inj, ← unitary.coe_star, unitary.mul_left_inj]
-
-@[simp]
-lemma isSelfAdjoint_unitary_conjugate_iff' [Monoid R] [StarMul R] {a : R} (u : unitary R) :
-    IsSelfAdjoint ((star u : R) * a * u) ↔ IsSelfAdjoint a := by
-  simpa using isSelfAdjoint_unitary_conjugate_iff (star u)
-
 theorem IsStarProjection.two_mul_sub_one_mem_unitary {R : Type*} [Ring R] [StarRing R] {p : R}
     (hp : IsStarProjection p) : 2 * p - 1 ∈ unitary R := by
   simp only [two_mul, unitary.mem_iff, star_sub, star_add,
