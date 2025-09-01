@@ -217,6 +217,14 @@ variable {R : Type*} [CommRing R]
 /--
 The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
 -/
+lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
+    Δ_[h]^[n] (fun r ↦ f (r + m)) y = (Δ_[h]^[n] f) (y + m) := by
+  simp [fwdDiff_iter_eq_sum_shift, add_right_comm]
+
+lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
+    Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
+  fwdDiff_iter_comp_add h f m 1 y
+
 theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ r ^ j) = 0 := by
   induction n generalizing j with
@@ -231,16 +239,8 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
 
 lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ j) = 0 := by
-  induction n generalizing j with
-  | zero => aesop
-  | succ n ih =>
-    have : (Δ_[1] fun (r : R) ↦ (r + 1) ^ j) =
-      ∑ i ∈ range j, j.choose i • fun r ↦ (r + 1) ^ i := by
-      ext x
-      simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
-    rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
-    exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
+  ext
+  rw [fwdDiff_iter_comp_add 1 (· ^ j), fwdDiff_iter_pow_eq_zero_of_lt h, Pi.zero_def]
 
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
