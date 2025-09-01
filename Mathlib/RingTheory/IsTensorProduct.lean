@@ -177,11 +177,8 @@ def IsBaseChange : Prop :=
   IsTensorProduct
     (((Algebra.linearMap S <| Module.End S (M →ₗ[R] N)).flip f).restrictScalars R)
 
--- Porting note: split `variable`
-variable {S f}
-variable (h : IsBaseChange S f)
-variable {P Q : Type*} [AddCommMonoid P] [Module R P]
-variable [AddCommMonoid Q] [Module S Q]
+variable {S f} (h : IsBaseChange S f)
+variable {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module S Q]
 
 section
 
@@ -258,10 +255,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, Module.End.mul_apply,
-          LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
-          smul_tmul', LinearMap.coe_restrictScalars, LinearMap.flip_apply]
+        simp [smul_tmul', Algebra.linearMap_apply, smul_comm r x]
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 

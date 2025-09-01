@@ -500,9 +500,7 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
       Set.range fun x : R => single (algebraMap R S x) 1)
 
 unsuppress_compilation in
--- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
--- but not having `DFunLike.coe` leads to `kerTotal_mkQ_single_smul` failing.
-local notation3 x "𝖣" y => DFunLike.coe (KaehlerDifferential.kerTotal R S).mkQ (single y x)
+local notation3 x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
@@ -645,11 +643,9 @@ theorem KaehlerDifferential.kerTotal_map [Algebra R B] [IsScalarTower R A B] [Is
     map_one, map_add, map_mul]
   simp_rw [sup_assoc, ← (h.prodMap h).range_comp]
   congr!
-  -- Porting note: new
-  simp_rw [← IsScalarTower.algebraMap_apply R A B]
   rw [sup_eq_right]
   apply Submodule.span_mono
-  simp_rw [IsScalarTower.algebraMap_apply R S B]
+  simp_rw [← IsScalarTower.algebraMap_apply R A B, IsScalarTower.algebraMap_apply R S B]
   exact Set.range_comp_subset_range (algebraMap R S)
     fun x => Finsupp.single (algebraMap S B x) (1 : B)
 
