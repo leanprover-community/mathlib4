@@ -122,6 +122,22 @@ theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
   AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B₂ A L₂
     (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
 
+variable [Algebra.IsAlgebraic K L₂] [IsFractionRing B₂ L₂] [IsFractionRing B L]
+
+/--
+A version of `galLift` for `AlgEquiv`.
+-/
+@[simps! apply symm_apply]
+noncomputable
+def galLiftEquiv (σ : B ≃ₐ[A] B₂) : L ≃ₐ[K] L₂ :=
+  AlgEquiv.ofAlgHom (galLift K L L₂ σ.toAlgHom) (galLift K L₂ L σ.symm.toAlgHom)
+  (AlgHom.coe_ringHom_injective <| IsFractionRing.ringHom_ext (A := B₂) fun x ↦ by simp)
+  (AlgHom.coe_ringHom_injective <| IsFractionRing.ringHom_ext (A := B) fun x ↦ by simp)
+
+theorem galLiftEquiv_algebraMap_apply (σ : B ≃ₐ[A] B₂) (x : B) :
+    galLiftEquiv K L L₂ σ (algebraMap B L x) = algebraMap B₂ L₂ (σ x) := by
+  simp [galLiftEquiv]
+
 end galLift
 
 /-- The restriction `End(L/K) → End(B/A)` in an AKLB setup.
@@ -430,20 +446,8 @@ theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [
     (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
-  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing]
-  let τ : FractionRing B ≃ₐ[FractionRing A] FractionRing B₂ := by
-    refine AlgEquiv.ofAlgHom ?_ ?_ ?_ ?_
-    · exact galLift (A := A) (B := B) (B₂ := B₂) (FractionRing A) (FractionRing B)
-        (FractionRing B₂) σ
-    · exact galLift (A := A) (B := B₂) (B₂ := B) (FractionRing A) (FractionRing B₂) (FractionRing B)
-        σ.symm
-    · ext x
-      exact x.ind fun ⟨r, s⟩ ↦ by simp
-    · ext x
-      exact x.ind fun ⟨r, s⟩ ↦ by simp
-  have : algebraMap B₂ (FractionRing B₂) (σ x) = τ (algebraMap B (FractionRing B) x) := by
-    simp [τ]
-  rw [this, norm_eq_of_algEquiv]
+  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
+    ← galLiftEquiv_algebraMap_apply (FractionRing A) (FractionRing B), norm_eq_of_algEquiv]
 
 @[simp]
 lemma Algebra.intNorm_eq_zero {x : B} : Algebra.intNorm A B x = 0 ↔ x = 0 := by
