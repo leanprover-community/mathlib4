@@ -833,8 +833,6 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 section NormedSpace
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
 protected theorem padicNormE.mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r‖ := by simp [Norm.norm, map_mul]
 
 protected theorem padicNormE.is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
@@ -864,13 +862,11 @@ theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
   exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
+@[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
   rw [norm_zpow, norm_p, zpow_neg, inv_zpow]
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
+@[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_natCast]
 
@@ -1047,11 +1043,9 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    -- Porting note: was `contrapose! hf`
-    intro hf'
-    apply hf
+    contrapose! hf
     apply Quotient.sound
-    simpa using hf'
+    simpa using hf
 
 @[simp]
 lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q := by
