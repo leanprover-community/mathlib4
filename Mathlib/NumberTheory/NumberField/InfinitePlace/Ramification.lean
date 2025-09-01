@@ -205,7 +205,7 @@ lemma IsUnramified.comap {w : InfinitePlace F} (h : IsUnramified k w) :
 variable {K}
 
 /--
-An infinite place is not unramified (ie. ramified) iff it is a complex place above a real place.
+An infinite place is not unramified (i.e. ramified) iff it is a complex place above a real place.
 -/
 lemma not_isUnramified_iff :
     ¬ IsUnramified k w ↔ IsComplex w ∧ IsReal (w.comap (algebraMap k K)) := by

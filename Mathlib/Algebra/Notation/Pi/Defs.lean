@@ -14,13 +14,21 @@ See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances
 an instance of the `Star` notation typeclass, but no default notation is included.
 -/
 
-assert_not_exists Set.range Monoid DenselyOrdered
+assert_not_exists Set.range Monoid Preorder
 
 open Function
 
 variable {ι α β : Type*} {G M R : ι → Type*}
 
 namespace Pi
+
+-- TODO: Do we really need this definition? If so, where to put it?
+/-- The mapping into a product type built from maps into each component. -/
+@[simp]
+protected def prod {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) : α i × β i := (f i, g i)
+
+lemma prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id := rfl
+lemma prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap := rfl
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 

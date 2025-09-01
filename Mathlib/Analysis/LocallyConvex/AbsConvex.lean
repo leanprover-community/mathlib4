@@ -287,7 +287,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
     convexHull ℝ (s ∪ -s) = absConvexHull ℝ s := by
   rw [absConvexHull_eq_convexHull_balancedHull]
   exact le_antisymm (convexHull_mono (union_subset (subset_balancedHull ℝ)
-    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; simp_all)))
     (by
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)

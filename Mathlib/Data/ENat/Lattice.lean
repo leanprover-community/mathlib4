@@ -21,12 +21,9 @@ assert_not_exists Field
 
 open Set
 
--- The `CompleteLinearOrder` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
--- `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
-noncomputable instance : CompleteLinearOrder ENat :=
-  inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
+noncomputable section
+deriving instance CompleteLinearOrder for ℕ∞
+end
 
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))

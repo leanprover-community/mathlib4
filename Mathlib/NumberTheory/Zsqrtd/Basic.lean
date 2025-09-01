@@ -331,8 +331,6 @@ theorem isCoprime_of_dvd_isCoprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.
       exact ⟨hzdvdu, hzdvdv⟩
     exact hcoprime.isUnit_of_dvd' ha hb
 
-@[deprecated (since := "2025-01-23")] alias coprime_of_dvd_coprime := isCoprime_of_dvd_isCoprime
-
 theorem exists_coprime_of_gcd_pos {a : ℤ√d} (hgcd : 0 < Int.gcd a.re a.im) :
     ∃ b : ℤ√d, a = ((Int.gcd a.re a.im : ℤ) : ℤ√d) * b ∧ IsCoprime b.re b.im := by
   obtain ⟨re, im, H1, Hre, Him⟩ := Int.exists_gcd_one hgcd
@@ -736,14 +734,13 @@ protected theorem mul_nonneg (a b : ℤ√d) : 0 ≤ a → 0 ≤ b → 0 ≤ a *
 theorem not_sqLe_succ (c d y) (h : 0 < c) : ¬SqLe (y + 1) c 0 d :=
   not_le_of_gt <| mul_pos (mul_pos h <| Nat.succ_pos _) <| Nat.succ_pos _
 
--- Porting note: renamed field and added theorem to make `x` explicit
 /-- A nonsquare is a natural number that is not equal to the square of an
   integer. This is implemented as a typeclass because it's a necessary condition
   for much of the Pell equation theory. -/
 class Nonsquare (x : ℕ) : Prop where
-  ns' : ∀ n : ℕ, x ≠ n * n
+  ns (x) : ∀ n : ℕ, x ≠ n * n
 
-theorem Nonsquare.ns (x : ℕ) [Nonsquare x] : ∀ n : ℕ, x ≠ n * n := ns'
+@[deprecated (since := "2025-08-28")] alias Nonsquare.ns' := Nonsquare.ns
 
 variable [dnsq : Nonsquare d]
 
@@ -759,12 +756,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by
         refine mul_left_cancel₀ (mul_pos gpos gpos).ne' ?_
-        -- Porting note: was `simpa [mul_comm, mul_left_comm] using h`
-        calc
-          g * g * (m * m)
-          _ = m * g * (m * g) := by ring
-          _ = d * (n * g) * (n * g) := h
-          _ = g * g * (d * (n * n)) := by ring
+        simpa [mul_comm, mul_left_comm, mul_assoc] using h
       have co2 :=
         let co1 := co.mul_right co
         co1.mul_left co1
