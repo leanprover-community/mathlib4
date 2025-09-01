@@ -149,6 +149,11 @@ def eval₂Hom (f : R →+* S₁) (g : σ → S₁) : MvPolynomial σ R →+* S�
   map_zero' := eval₂_zero f g
   map_add' _ _ := eval₂_add _ _
 
+@[gcongr]
+lemma eval₂_dvd (f : R →+* S₁) (g : σ → S₁) {p q : MvPolynomial σ R} (h : p ∣ q) :
+    p.eval₂ f g ∣ q.eval₂ f g :=
+  map_dvd (eval₂Hom f g) h
+
 @[simp]
 theorem coe_eval₂Hom (f : R →+* S₁) (g : σ → S₁) : ⇑(eval₂Hom f g) = eval₂ f g :=
   rfl
