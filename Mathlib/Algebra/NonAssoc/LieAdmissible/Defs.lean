@@ -30,9 +30,6 @@ documentation of `Algebra`.
 ## References
 1. [Munthe-Kaas, H.Z., Lundervold, A. *On Post-Lie Algebras, Lie–Butcher Series and Moving
 Frames.*][munthe-kaas_lundervold_2013]
-
-## Tags
-lie admissible, jacobi identity, lie algebra
 -/
 
 /-- A `LieAdmissibleRing` is a `NonUnitalNonAssocRing` such that the canonical bracket
