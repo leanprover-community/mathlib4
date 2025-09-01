@@ -10,8 +10,8 @@ import Mathlib.RingTheory.Ideal.NatInt
 
 In this file we first define a predicate for Frobenius numbers, then solve the 2-variable variant
 of this problem. We also show the Frobenius number exists for any set of coprime natural numbers
-that doesn't contain 1. This is closely related to the facts that all ideals of ℕ are finitely
-generated, and that the game of Sylver coinage always ends, which we also prove in this file.
+that doesn't contain 1. This is closely related to the fact that all ideals of ℕ are finitely
+generated, which we also prove in this file.
 
 ## Theorem Statement
 
@@ -225,60 +225,3 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
     · exact of_not_not (findGreatest_is_greatest gt le)
     · exact hn k le (h.1.dvd.trans <| one_dvd k)
 
-namespace SylverCoinage
-
-/-! [Sylver coinage](https://en.wikipedia.org/wiki/Sylver_coinage) is a mathematical game for
-two players, invented by John H. Conway. The two players take turns naming positive integers
-that are not the sum of nonnegative multiples of previously named integers.
-The player who names 1 loses. -/
-
-/-- `SylverCoinage.Rel t s` means that `s ⟶ t` is a valid move in the game of Sylver coinage.
-We forbid naming 1 as a move to turn a misère game into a game in normal-play convention, which
-simplies the definition of `IsPPosition`. -/
-protected inductive Rel : Set ℕ → Set ℕ → Prop
-  | move (s : Set ℕ) (n : ℕ) (hns : n ∉ Ideal.span s) (h1 : n ≠ 1) :
-      SylverCoinage.Rel (insert n s) s
-
-/-- Sylver coinage is a well-founded game, i.e. it always terminates. -/
-theorem wellFounded_rel : WellFounded SylverCoinage.Rel :=
-  Subrelation.wf (fun {_ s} ⟨_, n, hns, _⟩ ↦ SetLike.lt_iff_le_and_exists.mpr
-      ⟨Ideal.span_mono (Set.subset_insert ..), n, Ideal.subset_span (Set.mem_insert ..), hns⟩)
-    (InvImage.wf Ideal.span wellFounded_gt)
-
-/-- A position in the game of Sylver coinage is a P-position (i.e., a win for the previous player)
-if every move leads to an N-position (i.e., a win for the next player). -/
-def IsPPosition (s : Set ℕ) : Prop :=
-  ∀ t, SylverCoinage.Rel t s → ¬ IsPPosition t
-termination_by wellFounded_rel.wrap s
-
-variable {s : Set ℕ}
-
-lemma isPPosition_iff : IsPPosition s ↔
-    ∀ n, n ∉ Ideal.span s → n ≠ 1 → ¬ IsPPosition (insert n s) := by
-  rw [IsPPosition]
-  refine ⟨fun h n hns h1 ↦ h _ ⟨_, n, hns, h1⟩, ?_⟩
-  rintro h _ ⟨_, n, hns, h1⟩; exact h n hns h1
-
-lemma not_isPPosition_iff : ¬ IsPPosition s ↔
-    ∃ n, n ∉ Ideal.span s ∧ n ≠ 1 ∧ IsPPosition (insert n s) := by
-  rw [isPPosition_iff]; simp
-
-lemma isPPosition_two_three : IsPPosition {2, 3} := by
-  refine isPPosition_iff.mpr fun x hx h1 ↦ (hx ?_).elim
-  rwa [← maximalIdeal_eq_span_two_three, mem_maximalIdeal_iff]
-
-lemma not_isPPosition_two : ¬ IsPPosition {2} :=
-  not_isPPosition_iff.mpr ⟨3, by rw [Ideal.mem_span_singleton]; norm_num, by norm_num,
-    Set.pair_comm .. ▸ isPPosition_two_three⟩
-
-lemma not_isPPosition_three : ¬ IsPPosition {3} :=
-  not_isPPosition_iff.mpr ⟨2, by rw [Ideal.mem_span_singleton]; norm_num,
-    by norm_num, isPPosition_two_three⟩
-
-/- TODO: Hutchings' Theorem and corollaries:
-* If `a` and `b` are coprime and {a, b} ≠ {2, 3} then {a, b} is an N-position (strategy stealing).
-* If `p ≥ 5` is prime, then {p} is an P-position.
-* If `n` is a composite number not of the form `2^a * 3^b`, then {n} is an N-position.
-Reference: https://www.math.cmu.edu/users/math/mslusky/presentations/Sylver_Coinage.pdf -/
-
-end SylverCoinage
