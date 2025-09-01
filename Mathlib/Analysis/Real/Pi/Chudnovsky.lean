@@ -9,17 +9,17 @@ import Batteries.Data.Rat.Float
 /-!
 # Chudnovsky's formula for π
 
-This file defines the infinite sum in Chudnovsky's formula for computing π⁻¹.
+This file defines the infinite sum in Chudnovsky's formula for computing `π⁻¹`.
 It does not (yet!) contain a proof; anyone is welcome to adopt this problem,
 but at present we are a long way off.
 
 ## Main definitions
 
-* `chudnovskySum` : The infinite sum in Chudnovsky's formula
+* `chudnovskySum`: The infinite sum in Chudnovsky's formula
 
 ## Future work
 
-* Use this formula to given approximations for `π`.
+* Use this formula to give approximations for `π`.
 * Prove the sum equals `π⁻¹`, as stated using `proof_wanted` below.
 * Show that each imaginary quadratic field of class number 1 (corresponding to Heegner numbers)
   gives a Ramanujan type formula, and that this is the formula coming from 163,
@@ -43,7 +43,7 @@ def chudnovskyNum (n : ℕ) : ℤ :=
 def chudnovskyDenom (n : ℕ) : ℕ :=
   (3 * n)! * (n)! ^ 3 * 640320 ^ (3 * n)
 
-/-- The term at index n in Chudnovsky's series for `π⁻¹` -/
+/-- The term at index `n` in Chudnovsky's series for `π⁻¹` -/
 def chudnovskyTerm (n : ℕ) : ℚ :=
   chudnovskyNum n / chudnovskyDenom n
 
