@@ -217,6 +217,125 @@ lemma norm_eval_le_norm_mul_ciSup {E G : Type*}
   contrapose! hL_zero
   exact hL_zero_of_L2 hL_zero
 
+def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
+    (s : Set α) :
+    AbstractCompletion s where
+  space := closure s
+  coe x := ⟨x, subset_closure x.2⟩
+  uniformStruct := inferInstance
+  complete := isClosed_closure.isComplete.completeSpace_coe
+  separation := inferInstance
+  isUniformInducing := by
+    constructor
+    simp only [uniformity_subtype, Filter.comap_comap]
+    congr
+  dense := by
+    rw [DenseRange, Subtype.dense_iff]
+    refine closure_mono fun x hx ↦ ?_
+    simp [hx, subset_closure hx]
+
+@[simp]
+lemma Submodule.mem_topologicalClosure_iff {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (x : M) :
+    x ∈ s.topologicalClosure ↔ x ∈ closure s := by
+  simp only [Submodule.topologicalClosure, AddSubmonoid.topologicalClosure,
+    Submodule.coe_toAddSubmonoid, Submodule.mem_mk, AddSubmonoid.mem_mk,
+    AddSubsemigroup.mem_mk]
+
+lemma Submodule.mem_closure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (L : s) :
+    (L : M) ∈ s.topologicalClosure := by
+  rw [Submodule.mem_topologicalClosure_iff]
+  exact subset_closure L.2
+
+instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] (s : Submodule R M) :
+    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
+
+instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] [ContinuousAdd M] (s : ClosedSubmodule R M) :
+    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
+
+@[coe] def coeClosure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
+    s → s.topologicalClosure := fun L ↦ ⟨L, Submodule.mem_closure s L⟩
+
+instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
+    Coe s s.topologicalClosure :=
+  ⟨coeClosure⟩
+
+@[simp, norm_cast]
+lemma coeClosure_add {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (x y : s) :
+    ((x + y : s) : s.topologicalClosure)
+      = (x : s.topologicalClosure) + (y : s.topologicalClosure) := by
+  simp [coeClosure]
+
+@[simp, norm_cast]
+lemma coeClosure_smul {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (r : R) (x : s) :
+    ((r • x : s) : s.topologicalClosure) = r • (x : s.topologicalClosure) := by
+  simp [coeClosure]
+
+noncomputable
+def completionClosureEquiv {M R : Type*} [Ring R] [NormedAddCommGroup M] [CompleteSpace M]
+    [Module R M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
+    Completion s ≃ᵤ s.topologicalClosure :=
+  AbstractCompletion.compareEquiv (UniformSpace.Completion.cPkg (α := s))
+    (abstractCompletionClosure s.carrier)
+
+@[simp]
+lemma completionClosureEquiv_coe {M R : Type*} [Ring R] [NormedAddCommGroup M] [CompleteSpace M]
+    [Module R M] [UniformContinuousConstSMul R M] {s : Submodule R M} (L : s) :
+    completionClosureEquiv s L = L := by
+  simp [completionClosureEquiv, AbstractCompletion.compareEquiv]
+  exact AbstractCompletion.compare_coe _ _ _
+
+instance {M R : Type*} [Ring R] [NormedAddCommGroup M] [Module R M] [UniformContinuousConstSMul R M]
+    (s : Submodule R M) :
+    UniformContinuousConstSMul R s where
+  uniformContinuous_const_smul r :=
+    ((uniformContinuous_const_smul r).comp uniformContinuous_subtype_val).subtype_mk _
+
+noncomputable
+def completionClosureLinearIsometry {M R : Type*} [Ring R] [NormedAddCommGroup M] [Module R M]
+    [CompleteSpace M] [UniformContinuousConstSMul R M] (s : Submodule R M) :
+    Completion s ≃ₗᵢ[R] s.topologicalClosure where
+  toEquiv := completionClosureEquiv s
+  map_add' x y := by
+    refine Completion.induction_on₂ x y ?_ fun x' y' ↦ ?_
+    · have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
+      exact isClosed_eq (by fun_prop) (by fun_prop)
+    · rw [← Completion.coe_add]
+      simp
+  map_smul' r x := by
+    simp only [RingHom.id_apply]
+    induction x using Completion.induction_on with
+    | hp =>
+      have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
+      exact isClosed_eq (this.comp (continuous_const_smul _)) (by fun_prop)
+    | ih x =>
+      rw [← Completion.coe_smul]
+      simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, completionClosureEquiv_coe]
+      norm_cast
+  norm_map' x := by
+    simp only [LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, AddSubgroupClass.coe_norm]
+    induction x using Completion.induction_on with
+    | hp =>
+      have : Continuous (completionClosureEquiv s) := UniformEquiv.continuous _
+      exact isClosed_eq (by fun_prop) (by fun_prop)
+    | ih a =>
+      simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, completionClosureEquiv_coe,
+        Completion.norm_coe, AddSubgroupClass.coe_norm]
+      norm_cast
+
+@[simp]
+lemma completionClosureLinearIsometry_coe {M R : Type*} [Ring R] [NormedAddCommGroup M]
+    [CompleteSpace M] [Module R M] [UniformContinuousConstSMul R M] {s : Submodule R M} (L : s) :
+    completionClosureLinearIsometry s L = L := by
+  simp [completionClosureLinearIsometry]
+
 namespace ProbabilityTheory
 
 /-- A finite measure has two moments if `∫ x, x ^ 2 ∂μ < ∞`, that is if `MemLp id 2 μ`. -/
@@ -299,6 +418,42 @@ lemma sq_norm_centeredToLp_two [HasTwoMoments μ] (L : StrongDual ℝ E) :
     covarianceBilin_self_eq_variance memLp_two_id]
 
 end centeredToLp
+
+section RKHS
+
+noncomputable
+def cameronMartinRKHS (μ : Measure E) [HasTwoMoments μ] : Submodule ℝ (Lp ℝ 2 μ) :=
+  (LinearMap.range (StrongDual.centeredToLp μ 2)).topologicalClosure
+
+variable [HasTwoMoments μ]
+
+noncomputable
+instance instCoeFun : CoeFun (cameronMartinRKHS μ) (fun _ ↦ E → ℝ) :=
+  ⟨fun f => (f : E → ℝ)⟩
+
+@[coe]
+noncomputable def coeRKHS (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    cameronMartinRKHS μ := coeClosure L
+
+noncomputable
+instance : Coe (LinearMap.range (StrongDual.centeredToLp μ 2)) (cameronMartinRKHS μ) :=
+  ⟨coeRKHS⟩
+
+omit [CompleteSpace E] in
+@[simp, norm_cast]
+lemma coeRKHS_add (x y : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    ((x + y : LinearMap.range (StrongDual.centeredToLp μ 2)) : cameronMartinRKHS μ)
+      = (x : cameronMartinRKHS μ) + (y : cameronMartinRKHS μ) := by
+  simp [coeRKHS]
+
+omit [CompleteSpace E] in
+@[simp, norm_cast]
+lemma coeRKHS_smul (r : ℝ) (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
+    ((r • x : LinearMap.range (StrongDual.centeredToLp μ 2)) : cameronMartinRKHS μ)
+      = r • (x : cameronMartinRKHS μ) := by
+  simp [coeRKHS]
+
+end RKHS
 
 section CameronMartinSpace
 
@@ -739,153 +894,29 @@ lemma norm_ofBounded {y : E} [Decidable (∃ M, ∀ L : StrongDual ℝ E, Var[L;
 
 end CameronMartin
 
-section RKHS
-
-def abstractCompletionClosure {α : Type*} [UniformSpace α] [T0Space α] [CompleteSpace α]
-    (s : Set α) :
-    AbstractCompletion s where
-  space := closure s
-  coe x := ⟨x, subset_closure x.2⟩
-  uniformStruct := inferInstance
-  complete := isClosed_closure.isComplete.completeSpace_coe
-  separation := inferInstance
-  isUniformInducing := by
-    constructor
-    simp only [uniformity_subtype, Filter.comap_comap]
-    congr
-  dense := by
-    rw [DenseRange, Subtype.dense_iff]
-    refine closure_mono fun x hx ↦ ?_
-    simp [hx, subset_closure hx]
-
-@[simp]
-lemma Submodule.mem_topologicalClosure_iff {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (x : M) :
-    x ∈ s.topologicalClosure ↔ x ∈ closure s := by
-  simp only [Submodule.topologicalClosure, AddSubmonoid.topologicalClosure,
-    Submodule.coe_toAddSubmonoid, Submodule.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk]
-
-lemma Submodule.mem_closure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M] (s : Submodule R M) (L : s) :
-    (L : M) ∈ s.topologicalClosure := by
-  rw [Submodule.mem_topologicalClosure_iff]
-  exact subset_closure L.2
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] (s : Submodule R M) :
-    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] [ContinuousAdd M] (s : ClosedSubmodule R M) :
-    ContinuousAdd s := AddSubmonoid.continuousAdd s.toAddSubmonoid
-
-@[coe] def coeClosure {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
-    s → s.topologicalClosure := fun L ↦ ⟨L, Submodule.mem_closure s L⟩
-
-instance {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} :
-    Coe s s.topologicalClosure :=
-  ⟨coeClosure⟩
-
-@[simp, norm_cast]
-lemma coeClosure_add {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (x y : s) :
-    ((x + y : s) : s.topologicalClosure)
-      = (x : s.topologicalClosure) + (y : s.topologicalClosure) := by
-  simp [coeClosure]
-
-@[simp, norm_cast]
-lemma coeClosure_smul {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-    [ContinuousAdd M] [ContinuousConstSMul R M] {s : Submodule R M} (r : R) (x : s) :
-    ((r • x : s) : s.topologicalClosure) = r • (x : s.topologicalClosure) := by
-  simp [coeClosure]
-
-noncomputable
-def cameronMartinRKHS (μ : Measure E) [HasTwoMoments μ] : Submodule ℝ (Lp ℝ 2 μ) :=
-  (LinearMap.range (StrongDual.centeredToLp μ 2)).topologicalClosure
-
-variable [HasTwoMoments μ]
-
-noncomputable
-instance instCoeFun : CoeFun (cameronMartinRKHS μ) (fun _ ↦ E → ℝ) :=
-  ⟨fun f => (f : E → ℝ)⟩
-
-@[coe]
-noncomputable def coeRKHS (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
-    cameronMartinRKHS μ := coeClosure L
-
-noncomputable
-instance : Coe (LinearMap.range (StrongDual.centeredToLp μ 2)) (cameronMartinRKHS μ) :=
-  ⟨coeRKHS⟩
-
-omit [CompleteSpace E] in
-@[simp, norm_cast]
-lemma coeRKHS_add (x y : LinearMap.range (StrongDual.centeredToLp μ 2)) :
-    ((x + y : LinearMap.range (StrongDual.centeredToLp μ 2)) : cameronMartinRKHS μ)
-      = (x : cameronMartinRKHS μ) + (y : cameronMartinRKHS μ) := by
-  simp [coeRKHS]
-
-omit [CompleteSpace E] in
-@[simp, norm_cast]
-lemma coeRKHS_smul (r : ℝ) (x : LinearMap.range (StrongDual.centeredToLp μ 2)) :
-    ((r • x : LinearMap.range (StrongDual.centeredToLp μ 2)) : cameronMartinRKHS μ)
-      = r • (x : cameronMartinRKHS μ) := by
-  simp [coeRKHS]
+section RKHSEquiv
 
 noncomputable
 def cameronMartinRKHSEquiv (μ : Measure E) [HasTwoMoments μ] :
     CameronMartin μ ≃ᵤ cameronMartinRKHS μ :=
-  AbstractCompletion.compareEquiv
-    (UniformSpace.Completion.cPkg (α := LinearMap.range (StrongDual.centeredToLp μ 2)))
-    (abstractCompletionClosure (LinearMap.range (StrongDual.centeredToLp μ 2)).carrier)
+  completionClosureEquiv (LinearMap.range (StrongDual.centeredToLp μ 2))
+
+variable [HasTwoMoments μ]
 
 omit [CompleteSpace E] in
 @[simp]
 lemma cameronMartinRKHSEquiv_coe (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
-    cameronMartinRKHSEquiv μ L = L := by
-  simp [cameronMartinRKHSEquiv, AbstractCompletion.compareEquiv]
-  exact AbstractCompletion.compare_coe _ _ _
+    cameronMartinRKHSEquiv μ L = L := completionClosureEquiv_coe L
 
 noncomputable
 def cmIsometryEquiv (μ : Measure E) [HasTwoMoments μ] :
-    CameronMartin μ ≃ₗᵢ[ℝ] cameronMartinRKHS μ where
-  toFun := cameronMartinRKHSEquiv μ
-  invFun := (cameronMartinRKHSEquiv μ).symm
-  left_inv := (cameronMartinRKHSEquiv μ).left_inv
-  right_inv := (cameronMartinRKHSEquiv μ).right_inv
-  map_add' x y := by
-    refine Completion.induction_on₂ x y ?_ fun x' y' ↦ ?_
-    · have : Continuous (cameronMartinRKHSEquiv μ) := UniformEquiv.continuous _
-      exact isClosed_eq (by fun_prop) (by fun_prop)
-    · rw [← CameronMartin.coe_add]
-      simp
-  map_smul' r x := by
-    simp only [RingHom.id_apply]
-    induction x using Completion.induction_on with
-    | hp =>
-      have : Continuous (cameronMartinRKHSEquiv μ) := UniformEquiv.continuous _
-      exact isClosed_eq (this.comp (continuous_const_smul _)) (by fun_prop)
-    | ih x =>
-      rw [← CameronMartin.coe_smul]
-      simp only [cameronMartinRKHSEquiv_coe]
-      norm_cast
-  norm_map' x := by
-    simp only [LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, AddSubgroupClass.coe_norm]
-    induction x using Completion.induction_on with
-    | hp =>
-      have : Continuous (cameronMartinRKHSEquiv μ) := UniformEquiv.continuous _
-      exact isClosed_eq (by fun_prop) (by fun_prop)
-    | ih a =>
-      simp only [cameronMartinRKHSEquiv_coe]
-      rw [CameronMartin.norm_coe, AddSubgroupClass.coe_norm]
-      norm_cast
+    CameronMartin μ ≃ₗᵢ[ℝ] cameronMartinRKHS μ :=
+  completionClosureLinearIsometry (LinearMap.range (StrongDual.centeredToLp μ 2))
 
 omit [CompleteSpace E] in
 @[simp]
 lemma cmIsometryEquiv_coe (L : LinearMap.range (StrongDual.centeredToLp μ 2)) :
-    cmIsometryEquiv μ L = L := by simp [cmIsometryEquiv]
+    cmIsometryEquiv μ L = L := completionClosureLinearIsometry_coe L
 
 omit [CompleteSpace E] in
 @[simp]
@@ -894,6 +925,6 @@ lemma cmIsometryEquiv_ofDual (L : StrongDual ℝ E) :
   rw [CameronMartin.ofDual_apply, cmIsometryEquiv_coe]
   rfl
 
-end RKHS
+end RKHSEquiv
 
 end ProbabilityTheory
