@@ -16,9 +16,9 @@ import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
-# Continuity of functors from well ordered types
+# Continuity of functors from well-ordered types
 
-Let `F : J ⥤ C` be functor from a well ordered type `J`.
+Let `F : J ⥤ C` be functor from a well-ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
