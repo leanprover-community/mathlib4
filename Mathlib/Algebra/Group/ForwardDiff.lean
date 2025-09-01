@@ -207,7 +207,7 @@ We prove five key formulae about the forward difference operator applied to poly
 * `fwdDiff_iter_succ_sum_eq_zero` :
   The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
 * `sum_fwdDiff_iter_at_zero_trans` :
-  **Newton's series** for a polynomial  This is another definition.
+  **Newton's series** for a polynomial. This is another definition.
 * `sum_sum_fwdDiff_iter_at_zero_trans` :
   A generalization of **Faulhaber's formula**.
 -/
@@ -217,24 +217,22 @@ variable {R : Type*} [CommRing R]
 /--
 The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
 -/
-
 theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ r ^ j) = 0 := by
   induction n generalizing j with
-  | zero => contradiction
+  | zero => aesop
   | succ n ih =>
     have : (Δ_[1] fun (r : R) ↦ r ^ j) = ∑ i ∈ range j, j.choose i • fun r ↦ r ^ i := by
       ext x
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
     rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
     exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_const_smul, ih (by have :=mem_range.1 hi; omega), nsmul_zero]
-
+      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
 
 lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ j) = 0 := by
   induction n generalizing j with
-  | zero => contradiction
+  | zero => aesop
   | succ n ih =>
     have : (Δ_[1] fun (r : R) ↦ (r + 1) ^ j) =
       ∑ i ∈ range j, j.choose i • fun r ↦ (r + 1) ^ i := by
@@ -244,13 +242,13 @@ lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     exact sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
 
-
-/-- The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`. -/
+/--
+The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
+-/
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     Δ_[1]^[n] (fun (r : R) ↦ r ^ n) = n.factorial := by
   induction' n with n IH
-  · ext r
-    simp only [pow_zero, iterate_zero, id_eq, factorial_zero, Pi.natCast_apply, cast_one]
+  · aesop
   · have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
       ∑ i ∈ range (n + 1), (n + 1).choose i • fun r ↦ r ^ i := by
       ext x
@@ -258,7 +256,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     simp_rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul,
        sum_range_succ]
     simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := Finset.mem_range.1 hi; omega), mul_zero]
+      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), mul_zero]
 
 lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
     Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ n) = n.factorial := by
@@ -273,21 +271,18 @@ lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
     norm_num
     rw [sum_range_succ, choose_succ_self_right, cast_add, cast_one, IH]
     norm_cast
-    simp [← Nat.factorial_succ]
+    simp [← factorial_succ]
     exact sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_pow_eq_zero_of_lt' (by have := mem_range.1 hi; omega), mul_zero]
-
 
 /--
 The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
 A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
 -/
 theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (P : ℕ → R) :
-    Δ_[1]^[n + 1] (fun (r : R) => ∑ k ∈ Finset.range (n + 1), P k • r ^ k) = 0 := by
+    Δ_[1]^[n + 1] (fun (r : R) => ∑ k ∈ range (n + 1), P k • r ^ k) = 0 := by
   induction n with
-  | zero =>
-    ext r
-    simp
+  | zero => aesop
   | succ n IH =>
     have : Δ_[1]^[n + 1] (fun (r : R) => ∑ k ∈ range (n + 1), P k • r ^ k) =
       ∑ k ∈ range (n + 1), Δ_[1]^[n + 1] (P k • fun (r : R) => r ^ k) := by
@@ -324,8 +319,6 @@ theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (P : ℕ → R) :
     exact sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_pow_eq_zero_of_lt' (by have := mem_range.1 hi; omega), smul_zero]
 
-
-
 /--
 **Newton's series** for a polynomial
 Any function `f` defined by a polynomial can be expressed as a sum of its forward
@@ -343,7 +336,6 @@ theorem sum_fwdDiff_iter_at_zero_trans {n p : ℕ} (P : ℕ → R) :
     have _ := mem_range.1 hk
     congr 1
 
-
 /--
 A formula for the sum of a polynomial sequence `∑_{k=0..p} P(k)`, which
 generalizes **Faulhaber's formula**.
@@ -352,7 +344,7 @@ theorem sum_sum_fwdDiff_iter_at_zero_trans {p n : ℕ} (P : ℕ → R) :
     ∑ k ∈ range (p + 1), (∑ m ∈ range (n + 1), P m * k ^ m) =
     ∑ k ∈ range (p + 1), ((p + 1).choose (k + 1)) *
       ((Δ_[1]^[k] (fun (r : R) ↦ ∑ i ∈ range (n + 1), P i • r ^ i) 0)) := by
-  conv => enter [1, 2, x]; rw [sum_fwdDiff_iter_at_zero_trans]; simp
+  conv => enter [1, 2, x]; rw [sum_fwdDiff_iter_at_zero_trans]; simp only [smul_eq_mul]
   have sum_extend_inner_range : ∑ x ∈ range (p + 1), ∑ k ∈ range (x + 1),
      (x.choose k) * ((Δ_[1]^[k]) fun x ↦ ∑ m ∈ range (n + 1), P m * x ^ m) 0 =
     ∑ x ∈ range (p + 1), ∑ k ∈ range (p + 1),
@@ -362,15 +354,15 @@ theorem sum_sum_fwdDiff_iter_at_zero_trans {p n : ℕ} (P : ℕ → R) :
     have sum_sum_eq_zero : ∑ k ∈ Ico (x + 1) (p + 1),
       (x.choose k) * (Δ_[1]^[k] fun x ↦ ∑ m ∈ range (n + 1), P m * x ^ m) 0 = 0 := by
       rw [sum_Ico_eq_sum_range]
-      simp
+      simp only [reduceSubDiff]
       simp at hx
       have : ∑ k ∈ range (p - x), 0 = (0 : R) := by simp only [sum_const_zero]
       rw [← this]
       apply sum_congr rfl
       intro y hy; simp only [mem_range] at hy
       have : x + 1 + y > x := by omega
-      rw [Nat.choose_eq_zero_of_lt this]
-      simp
+      rw [choose_eq_zero_of_lt this]
+      simp only [cast_zero, sum_const_zero, zero_mul]
     nth_rw 1 3 [range_eq_Ico]
     have hx' : 0 ≤ (x + 1) := by omega
     have hxp' : x + 1 ≤ p + 1 := by
@@ -392,5 +384,5 @@ theorem sum_sum_fwdDiff_iter_at_zero_trans {p n : ℕ} (P : ℕ → R) :
     exact choose_eq_zero_iff.mpr (by omega)
   have l2 : ∑ x ∈ Ico k (p + 1), x.choose k = (p + 1).choose (k + 1) := by
     rw [sum_Ico_succ_top (by omega), sum_Ico_add_eq_sum_Icc (by omega),
-      Nat.sum_Icc_choose]
-  simp_rw [l1, l2, Nat.zero_add]
+      sum_Icc_choose]
+  simp_rw [l1, l2, zero_add]
