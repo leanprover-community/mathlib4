@@ -261,6 +261,10 @@ theorem dist_algebraMap (x y : 𝕜) :
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
+@[simp]
+theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
+  rw [← Algebra.algebraMap_eq_smul_one, norm_algebraMap']
+
 /-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
@@ -283,6 +287,10 @@ theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ 
 @[simp]
 theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
+
+@[simp]
+lemma Algebra.norm_smul_one_eq_abs (x : ℝ) : ‖x • (1 : 𝕜')‖ = |x| := by
+  rw [norm_smul_one_eq_norm, x.norm_eq_abs]
 
 end NNReal
 
