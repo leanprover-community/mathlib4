@@ -37,7 +37,7 @@ variable {C : Type u} [Category.{v} C]
   {α : J → Type t} {A B : (j : J) → α j → C}
   (basicCell : (j : J) → (i : α j) → A j i ⟶ B j i) {X Y : C} (f : X ⟶ Y)
 
-/-- Let `J` be a well ordered type. Assume that for each `j : J`, we
+/-- Let `J` be a well-ordered type. Assume that for each `j : J`, we
 have a family `basicCell j` of morphisms. A relative cell complex
 is a morphism `f : X ⟶ Y` which is a transfinite composition of morphisms
 in such a way that at the step `j : J`, we attach cells in the family `basicCell j`. -/

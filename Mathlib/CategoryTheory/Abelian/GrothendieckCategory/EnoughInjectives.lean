@@ -210,7 +210,7 @@ variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrd
   [WellFoundedLT J]
 
 /-- Let `C` be a Grothendieck abelian category with a generator (`hG`),
-`X : C`, `A₀ : Subobject X`. Let `J` be a well ordered type. This is
+`X : C`, `A₀ : Subobject X`. Let `J` be a well-ordered type. This is
 the functor `J ⥤ MonoOver X` which corresponds to the evaluation
 at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/
