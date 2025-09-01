@@ -3,11 +3,14 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+import Mathlib.Algebra.Order.Archimedean.Submonoid
+import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Data.Int.WithZero
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
@@ -26,6 +29,8 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
   unfolded.
 * `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
   `K` is different from 1 for at most finitely many `v`.
+*  The valuation subrings of the field at the `v`-valuation and it's adic completion are
+   discrete valuation rings.
 
 ## Tags
 number field, places, finite places
@@ -34,6 +39,49 @@ number field, places, finite places
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
 open scoped WithZero NNReal
+
+section DVR
+
+variable (A : Type*) [CommRing A] [IsDedekindDomain A]
+    (K : Type*) [Field K] [Algebra A K] [IsFractionRing A K]
+    (v : HeightOneSpectrum A) (hv : Finite (A ⧸ v.asIdeal))
+
+instance : IsPrincipalIdealRing (v.valuation K).integer := by
+  rw [(Valuation.integer.integers (v.valuation K)).isPrincipalIdealRing_iff_not_denselyOrdered,
+    WithZero.denselyOrdered_set_iff_subsingleton]
+  simpa using (v.valuation K).toMonoidWithZeroHom.range_nontrivial
+
+-- TODO: make this inferred from `IsRankOneDiscrete`
+instance : IsDiscreteValuationRing (v.valuation K).integer where
+  not_a_field' := by
+    simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
+      Valuation.Integer.not_isUnit_iff_valuation_lt_one, Ideal.mem_bot, Subtype.forall, not_forall]
+    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    use π
+    simp [Valuation.mem_integer_iff, ← WithZero.coe_one, ← ofAdd_zero, - ofAdd_neg,
+          Subtype.ext_iff, ← (v.valuation K).map_eq_zero_iff, hπ, ← WithZero.coe_one,
+          ← ofAdd_zero]
+
+instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
+  unfold HeightOneSpectrum.adicCompletionIntegers
+  rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
+    WithZero.denselyOrdered_set_iff_subsingleton]
+  simpa using Valued.v.range_nontrivial
+
+-- TODO: make this inferred from `IsRankOneDiscrete`, or
+-- develop the API for a  completion of a base `IsDVR` ring
+instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
+  not_a_field' := by
+    unfold HeightOneSpectrum.adicCompletionIntegers
+    simp only [ne_eq, Ideal.ext_iff, Valuation.mem_maximalIdeal_iff, Ideal.mem_bot, Subtype.ext_iff,
+      ZeroMemClass.coe_zero, Subtype.forall, Valuation.mem_valuationSubring_iff, not_forall,
+      exists_prop]
+    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    use π
+    simp [hπ, - ofAdd_neg, ← WithZero.coe_one, ← ofAdd_zero,
+          ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
+
+end DVR
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
 
