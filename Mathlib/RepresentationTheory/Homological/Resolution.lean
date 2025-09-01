@@ -131,20 +131,11 @@ def ofMulActionBasisAux :
     map_smul' := fun r x => by
       rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
       congr 1
-      /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
-      · simp only [smul_zero]
-      · simp only [TensorProduct.smul_tmul']
-        show (r * x) ⊗ₜ y = _
-        rw [← ofMulAction_self_smul_eq_mul, smul_tprod_one_asModule]
-      · rw [smul_add, hz, hy, smul_add] -/
-      change _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
-        (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
       refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
-      · rw [smul_zero, map_zero]
+      · simp only [smul_zero]
       · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
         exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
-      · rw [smul_add, hz, hy, map_add] }
+      · rw [smul_add, hz, hy, smul_add] }
 
 /-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
 `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
