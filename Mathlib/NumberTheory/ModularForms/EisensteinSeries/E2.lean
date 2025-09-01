@@ -230,7 +230,7 @@ lemma δ_eq2 : δ 0 (-1) = 2 := by simp [δ]
 lemma δ_neq (a b : ℤ) (h : a ≠ 0) : δ a b = 0 := by
   simp [δ, h]
 
-
+/-
 --this sum is now abs convergent. Idea is to subtract PS1 from the G₂ defn.
 lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m : ℤ, ∑' n : ℤ, (1 / (((m : ℂ)* z +n)^2 * (m * z + n +1)) + δ m n) := by
     rw [G2]
@@ -266,7 +266,7 @@ lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m : ℤ, ∑' n : ℤ, (1 / (((m : ℂ)*
       apply HS.congr
       intro b
       symm
-      apply PS1 z b
+      apply PS1 z b -/
 
 
 end transform
