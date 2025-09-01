@@ -48,14 +48,14 @@ theorem logMahlerMeasure_one : (1 : ℂ[X]).logMahlerMeasure = 0 := by simp [log
 
 @[simp]
 theorem logMahlerMeasure_C (z : ℂ) : (C z).logMahlerMeasure = log ‖z‖ := by
-  field_simp [logMahlerMeasure_def]
+  simp [logMahlerMeasure_def, mul_assoc]
 
 @[simp]
 theorem logMahlerMeasure_X : X.logMahlerMeasure = 0 := by simp [logMahlerMeasure_def]
 
 @[simp]
 theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahlerMeasure = log ‖z‖ := by
-  field_simp [logMahlerMeasure_def]
+  simp [logMahlerMeasure_def, mul_assoc]
 
 /-- The Mahler measure of a polynomial `p` defined as `e ^ p.logMahlerMeasure` if `p` is nonzero
 and `0` otherwise -/
