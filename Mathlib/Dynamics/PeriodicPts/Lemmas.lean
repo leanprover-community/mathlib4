@@ -42,15 +42,8 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     iff_self_and]
   exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
 
-#synth InfSet ℕ
-
 theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
     minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
-  /- simp [minimalPeriod, periodicPts, sInf]
-  congr
-  ext h
-  congr -/
-  --unfold minimalPeriod periodicPts sInf
   dsimp [minimalPeriod, periodicPts, sInf]
   grind -- don't know why `rfl` doesn't work here
 
