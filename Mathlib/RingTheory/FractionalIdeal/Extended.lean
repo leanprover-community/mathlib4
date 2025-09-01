@@ -34,7 +34,7 @@ open IsLocalization FractionalIdeal Submodule
 
 namespace FractionalIdeal
 
-section Localization
+section RingHom
 
 variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] {f : A →+* B}
 variable {K : Type*} {M : Submonoid A} [CommRing K] [Algebra A K] [IsLocalization M K]
@@ -117,6 +117,7 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
 /--
 The ring homomorphism version of `FractionalIdeal.extended`.
 -/
+@[simps]
 def extendedHom : FractionalIdeal M K →+* FractionalIdeal N L where
   toFun := extended L hf
   map_one' := extended_one L hf
@@ -124,7 +125,7 @@ def extendedHom : FractionalIdeal M K →+* FractionalIdeal N L where
   map_mul' := extended_mul L hf
   map_add' := extended_add L hf
 
-end Localization
+end RingHom
 
 section Algebra
 
@@ -138,7 +139,7 @@ variable (A K L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [
 The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
 `A ⊆ B` an extension of domains.
 -/
-def extendedₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+def extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   have hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
   extendedHom L hs
 
