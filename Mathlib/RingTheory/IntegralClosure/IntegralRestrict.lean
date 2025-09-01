@@ -56,6 +56,12 @@ lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] L₂) (x : B) :
     algebraMap B₂ L₂ (galRestrict' A B B₂ σ x) = σ (algebraMap B L x) := by
   simp [galRestrict', galRestrict', Subalgebra.algebraMap_eq]
 
+@[simp]
+theorem galRestrict'_id : galRestrict' A B B (.id K L) = .id A B := by
+  ext
+  apply IsIntegralClosure.algebraMap_injective B A L
+  simp
+
 theorem galRestrict'_comp (σ : L →ₐ[K] L₂) (σ' : L₂ →ₐ[K] L₃) :
     galRestrict' A B B₃ (σ'.comp σ) = (galRestrict' A B₂ B₃ σ').comp (galRestrict' A B B₂ σ) := by
   ext x
