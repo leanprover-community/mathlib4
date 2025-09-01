@@ -436,7 +436,8 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- a contradiction.
     have hD := hw.minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ hmcf.1 <| hm _ <| lt_add_one _
     have : (2 * (r + 1) + k) * ‖α‖ / (2 * (r + 1) + k + 3) ≤ (3 * r + 2) * ‖α‖ / (3 * r + 5) := by
-      apply (Nat.le_div_iff_mul_le <| Nat.succ_pos _).2 <| (mul_le_mul_left (_ + 2).succ_pos).1 _
+      apply (Nat.le_div_iff_mul_le <| Nat.succ_pos _).2
+              <| (mul_le_mul_iff_right₀ (_ + 2).succ_pos).1 _
       rw [← mul_assoc, mul_comm (2 * r + 2 + k + 3), mul_comm _ (_ * ‖α‖)]
       apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
       nlinarith
