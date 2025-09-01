@@ -204,6 +204,9 @@ instance [SMul S T] [IsScalarTower S T R] : IsScalarTower S T (QuadraticAlgebra 
 instance [SMulCommClass S T R] : SMulCommClass S T (QuadraticAlgebra R a b) where
   smul_comm s t z := by ext <;> exact smul_comm _ _ _
 
+instance [SMul Sᵐᵒᵖ R] [IsCentralScalar S R] : IsCentralScalar S (QuadraticAlgebra R a b) where
+  op_smul_eq_smul s z := by ext <;> exact op_smul_eq_smul _ _
+
 @[simp] theorem re_smul (s : S) (z : QuadraticAlgebra R a b) : (s • z).re = s • z.re := rfl
 
 @[simp] theorem im_smul (s : S) (z : QuadraticAlgebra R a b) : (s • z).im = s • z.im := rfl
