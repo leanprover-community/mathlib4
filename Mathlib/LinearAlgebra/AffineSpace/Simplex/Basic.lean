@@ -423,13 +423,9 @@ lemma affineCombination_mem_interior_face_iff_pos [IsOrderedAddMonoid k] {n : �
     Finset.univ.affineCombination k s.points w ∈ (s.face h).interior ↔
       (∀ i ∈ fs, 0 < w i) ∧ (∀ i ∉ fs, w i = 0) := by
   rw [s.affineCombination_mem_interior_face_iff_mem_Ioo h hw]
-  refine ⟨fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ (hii i hi).1, hi0⟩,
-    fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
-  have hw' : ∑ i ∈ fs, w i = 1 := by
-    rw [← hw, Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
-  rw [← hw']
-  have h1 : 1 < #fs := by have := NeZero.ne m; omega
-  obtain ⟨j, hj, hji⟩ := fs.exists_mem_ne h1 i
+  refine ⟨by grind, fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
+  rw [← hw, ← Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
+  obtain ⟨j, hj, hji⟩ := fs.exists_mem_ne (by grind [→ NeZero.ne]) i
   exact Finset.single_lt_sum hji hi hj (hii j hj) fun t ht _ ↦ (hii t ht).le
 
 lemma affineCombination_mem_closedInterior_face_iff_nonneg [IsOrderedAddMonoid k] {n : ℕ}
