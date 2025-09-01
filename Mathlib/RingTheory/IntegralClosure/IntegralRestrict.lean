@@ -98,6 +98,10 @@ theorem galLift_algebraMap_apply (σ : B →ₐ[A] B₂) (x : B) :
     galLift K L L₂ σ (algebraMap B L x) = algebraMap B₂ L₂ (σ x) := by
   simp [galLift]
 
+@[simp]
+theorem galLift_id : galLift K L L (.id A B) = .id K L := by
+  ext; simp [galLift]
+
 omit [IsIntegralClosure B₃ A L₃] in
 theorem galLift_comp [Algebra.IsAlgebraic K L₂] (σ : B →ₐ[A] B₂) (σ' : B₂ →ₐ[A] B₃) :
     galLift K L L₃ (σ'.comp σ) = (galLift K L₂ L₃ σ').comp (galLift K L L₂ σ) :=
@@ -122,19 +126,16 @@ theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
   AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B₂ A L₂
     (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
 
-variable [Algebra.IsAlgebraic K L₂] [IsFractionRing B₂ L₂] [IsFractionRing B L]
-
 /--
 A version of `galLift` for `AlgEquiv`.
 -/
-@[simps! apply symm_apply]
+@[simps! -fullyApplied apply symm_apply]
 noncomputable
-def galLiftEquiv (σ : B ≃ₐ[A] B₂) : L ≃ₐ[K] L₂ :=
+def galLiftEquiv [Algebra.IsAlgebraic K L₂] (σ : B ≃ₐ[A] B₂) : L ≃ₐ[K] L₂ :=
   AlgEquiv.ofAlgHom (galLift K L L₂ σ.toAlgHom) (galLift K L₂ L σ.symm.toAlgHom)
-  (AlgHom.coe_ringHom_injective <| IsFractionRing.ringHom_ext (A := B₂) fun x ↦ by simp)
-  (AlgHom.coe_ringHom_injective <| IsFractionRing.ringHom_ext (A := B) fun x ↦ by simp)
+  (by simp [← galLift_comp]) (by simp [← galLift_comp])
 
-theorem galLiftEquiv_algebraMap_apply (σ : B ≃ₐ[A] B₂) (x : B) :
+theorem galLiftEquiv_algebraMap_apply [Algebra.IsAlgebraic K L₂] (σ : B ≃ₐ[A] B₂) (x : B) :
     galLiftEquiv K L L₂ σ (algebraMap B L x) = algebraMap B₂ L₂ (σ x) := by
   simp [galLiftEquiv]
 
