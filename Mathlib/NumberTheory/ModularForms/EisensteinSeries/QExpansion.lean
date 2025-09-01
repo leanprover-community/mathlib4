@@ -12,7 +12,9 @@ import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.CompletelyRegular
+import Mathlib.Topology.UniformSpace.LimUnder
 import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
+
 
 /-!
 # Einstein series Q-expansions
