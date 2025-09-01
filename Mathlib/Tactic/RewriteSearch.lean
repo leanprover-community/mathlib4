@@ -3,7 +3,7 @@ Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic
+import Lean.Elab.Tactic.Basic
 
 /-!
 # The `rw_search` tactic has been removed from Mathlib.
