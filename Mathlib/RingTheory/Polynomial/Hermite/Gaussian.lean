@@ -55,13 +55,13 @@ theorem deriv_gaussian_eq_hermite_mul_gaussian (n : ℕ) (x : ℝ) :
 theorem hermite_eq_deriv_gaussian (n : ℕ) (x : ℝ) : aeval x (hermite n) =
     (-1 : ℝ) ^ n * deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x / Real.exp (-(x ^ 2 / 2)) := by
   rw [deriv_gaussian_eq_hermite_mul_gaussian]
-  field_simp [Real.exp_ne_zero]
+  field_simp
   rw [← pow_mul]
   simp
 
 theorem hermite_eq_deriv_gaussian' (n : ℕ) (x : ℝ) : aeval x (hermite n) =
     (-1 : ℝ) ^ n * deriv^[n] (fun y => Real.exp (-(y ^ 2 / 2))) x * Real.exp (x ^ 2 / 2) := by
   rw [hermite_eq_deriv_gaussian, Real.exp_neg]
-  field_simp [Real.exp_ne_zero]
+  field_simp
 
 end Polynomial

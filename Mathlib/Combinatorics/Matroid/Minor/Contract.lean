@@ -3,7 +3,7 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.Matroid.Minor.Delete
+import Mathlib.Combinatorics.Matroid.Minor.Delete
 import Mathlib.Tactic.TautoSet
 
 /-!

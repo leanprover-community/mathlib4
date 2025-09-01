@@ -49,11 +49,13 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     the spaces of linear maps that appear in the induction should be in the same universe as the
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
-  induction' n with n IH generalizing Eu Fu Gu
-  · simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+  induction n generalizing Eu Fu Gu with
+  | zero =>
+    simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
-  · have In : (n : WithTop ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
+  | succ n IH =>
+    have In : (n : WithTop ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
     have I1 :
         ‖iteratedFDerivWithin 𝕜 n (fun y : Du => B.precompR Du (f y) (fderivWithin 𝕜 g s y)) s x‖ ≤
           ‖B‖ * ∑ i ∈ Finset.range (n + 1), n.choose i * ‖iteratedFDerivWithin 𝕜 i f s x‖ *
@@ -354,9 +356,11 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     As composition of linear maps is a bilinear map, one may use
     `ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear_of_le_one` to get from these a bound
     on `D^n (g ' ∘ f ⬝ f')`. -/
-  induction' n using Nat.case_strong_induction_on with n IH generalizing Gu
-  · simpa [norm_iteratedFDerivWithin_zero, Nat.factorial_zero, algebraMap.coe_one, one_mul,
+  induction n using Nat.case_strong_induction_on generalizing Gu with
+  | hz =>
+    simpa [norm_iteratedFDerivWithin_zero, Nat.factorial_zero, algebraMap.coe_one, one_mul,
       pow_zero, mul_one, comp_apply] using hC 0 le_rfl
+  | hi n IH =>
   have M : (n : WithTop ℕ∞) < n.succ := Nat.cast_lt.2 n.lt_succ_self
   have Cnonneg : 0 ≤ C := (norm_nonneg _).trans (hC 0 bot_le)
   have Dnonneg : 0 ≤ D := by
