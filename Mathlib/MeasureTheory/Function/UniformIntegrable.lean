@@ -421,7 +421,6 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
     convert hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
-open Fin.NatCast -- TODO: refactor the proof to avoid needing this
 /-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
 all sequences indexed by a finite type. -/
 theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
@@ -431,20 +430,16 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
   | zero => exact fun {f} hf ↦ unifIntegrable_subsingleton hp_one hp_top hf
   | succ n h =>
     intro f hfLp ε hε
-    let g : Fin n → α → β := fun k => f k
-    have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
+    let g : Fin n → α → β := fun k => f k.castSucc
+    have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i.castSucc
     obtain ⟨δ₁, hδ₁pos, hδ₁⟩ := h hgLp hε
-    obtain ⟨δ₂, hδ₂pos, hδ₂⟩ := (hfLp n).eLpNorm_indicator_le hp_one hp_top hε
+    obtain ⟨δ₂, hδ₂pos, hδ₂⟩ := (hfLp (Fin.last n)).eLpNorm_indicator_le hp_one hp_top hε
     refine ⟨min δ₁ δ₂, lt_min hδ₁pos hδ₂pos, fun i s hs hμs => ?_⟩
     by_cases hi : i.val < n
     · rw [(_ : f i = g ⟨i.val, hi⟩)]
       · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
       · simp [g]
-    · obtain rfl : i = n := by
-        have hi' := Fin.is_lt i
-        rw [Nat.lt_succ_iff] at hi'
-        rw [not_lt] at hi
-        simp [← le_antisymm hi' hi]
+    · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm (Fin.is_le i) (not_lt.mp hi))
       exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
