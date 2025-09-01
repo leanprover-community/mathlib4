@@ -2067,7 +2067,12 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
-  # TODO: does mathlib have these?
+  decls:
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime
+    - Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap
+    - Algebra.HasGoingDown.of_specComap_localRingHom_surjective
+  date: 2025
 
 Q2394548:
   title: Hurewicz theorem
