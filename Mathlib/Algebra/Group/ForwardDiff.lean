@@ -246,7 +246,7 @@ lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
 -/
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
-    Δ_[1]^[n] (fun (r : R) ↦ r ^ n) = n.factorial := by
+    Δ_[1]^[n] (fun (r : R) ↦ r ^ n) = n ! := by
   induction' n with n IH
   · aesop
   · have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
@@ -259,7 +259,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
       rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), mul_zero]
 
 lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
-    Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ n) = n.factorial := by
+    Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ n) = n ! := by
   induction' n with n IH
   · aesop
   · have : (Δ_[1] fun (r : R) ↦ (r + 1) ^ (n + 1)) =
