@@ -334,7 +334,7 @@ theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
       unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
   have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) :=
     (unitary.toUnits U).isUnit
-  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,(this _).posSemidef_conjugate_iff,
+  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary, (this _).posSemidef_conjugate_iff,
     diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
   exact fun _ => mul_nonneg (RCLike.ofReal_nonneg.mpr <| hx.eigenvalues_nonneg _)
     (RCLike.ofReal_nonneg.mpr <| hy.eigenvalues_nonneg _)
@@ -670,8 +670,7 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : Is
   obtain ⟨W, hW⟩ := hU.exists_right_inv
   have hVV (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(V *ᵥ $h)
   have hWW (y : n → R) (hy : y ≠ 0) : W *ᵥ y ≠ 0 := fun h => by simpa [hy, hW] using congr(U *ᵥ $h)
-  refine fun h => ⟨fun h x hx => ?_, fun h x hx => h _ (hVV _ hx)⟩
-  simpa [hW] using h _ (hWW _ hx)
+  exact fun h => ⟨fun h x hx => by simpa [hW] using h _ (hWW _ hx), fun h x hx => h _ (hVV _ hx)⟩
 
 open Matrix
 
