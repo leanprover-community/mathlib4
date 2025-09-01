@@ -166,11 +166,12 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     rw [add_mulVec, dotProduct_add]
     exact add_nonneg (hA.2 x) (hB.2 x)⟩
 
-protected theorem smul [StarOrderedRing R'] {x : Matrix n n R'} (hx : x.PosSemidef) {a : R'}
+protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α] [StarOrderedRing α]
+     [Algebra α R] [StarModule α R] [PosSMulMono α R] {x : Matrix n n R} (hx : x.PosSemidef) {a : α}
     (ha : 0 ≤ a) : (a • x).PosSemidef := by
   refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha) hx.1, fun y => ?_⟩
-  simp only [smul_mulVec, dotProduct_smul, smul_eq_mul]
-  exact mul_nonneg ha (hx.2 _)
+  simp only [smul_mulVec, dotProduct_smul]
+  exact smul_nonneg ha (hx.2 _)
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
