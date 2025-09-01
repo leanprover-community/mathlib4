@@ -625,25 +625,17 @@ instance instStarQuaternionAlgebra : Star ℍ[R,c₁,c₂,c₃] where star a :=
 
 @[simp] theorem re_star : (star a).re = a.re + c₂ * a.imI := rfl
 
-@[deprecated (since := "2025-08-31")] alias star_re := re_star
-
 @[simp]
 theorem imI_star : (star a).imI = -a.imI :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias star_imI := imI_star
 
 @[simp]
 theorem imJ_star : (star a).imJ = -a.imJ :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias star_imJ := imJ_star
-
 @[simp]
 theorem imK_star : (star a).imK = -a.imK :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias star_imK := imK_star
 
 @[simp]
 theorem im_star : (star a).im = -a.im :=
@@ -1328,7 +1320,11 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 @[simp, norm_cast] lemma imJ_ratCast (q : ℚ) : (q : ℍ[R]).imJ = 0 := rfl
 @[simp, norm_cast] lemma imK_ratCast (q : ℚ) : (q : ℍ[R]).imK = 0 := rfl
 
-@[deprecated (since := "2025-08-31")] alias ratCast_imK := re_ratCast
+@[deprecated (since := "2025-08-31")] alias ratCast_re := re_ratCast
+@[deprecated (since := "2025-08-31")] alias ratCast_im := im_ratCast
+@[deprecated (since := "2025-08-31")] alias ratCast_imI := imI_ratCast
+@[deprecated (since := "2025-08-31")] alias ratCast_imJ := imJ_ratCast
+@[deprecated (since := "2025-08-31")] alias ratCast_imK := imK_ratCast
 
 @[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
 
