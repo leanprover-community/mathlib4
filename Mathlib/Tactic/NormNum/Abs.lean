@@ -55,8 +55,7 @@ theorem isNegNNRat_abs {α : Type*} [DivisionRing α] [LinearOrder α] [IsStrict
     apply mul_nonneg
     · exact Nat.cast_nonneg' num
     · simp_all only [invOf_eq_inv, inv_nonneg, Nat.cast_nonneg]
-  simp only [Int.cast_negOfNat]
-  simp only [neg_mul, abs_neg]
+  simp only [Int.cast_negOfNat, neg_mul, abs_neg]
   exact abs_of_nonneg this
 
 /-- The `norm_num` extension which identifies expressions of the form `|a|`,
