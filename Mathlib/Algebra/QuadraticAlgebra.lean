@@ -301,6 +301,12 @@ instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlg
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
 
+theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
+    (r * x : QuadraticAlgebra R a b) = r • x := by ext <;> simp
+
+@[simp, norm_cast]
+theorem coe_mul (x y : R) : ↑(x * y) = (↑x * ↑y : QuadraticAlgebra R a b) := by ext <;> simp
+
 end NonUnitalNonAssocSemiring
 
 section NonAssocSemiring
@@ -362,9 +368,6 @@ theorem finrank_eq_two [StrongRankCondition R] :
     Module.finrank R (QuadraticAlgebra R a b) = 2 := by
   simp [Module.finrank, rank_eq_two]
 
-@[simp, norm_cast]
-theorem coe_mul (x y : R) : ↑(x * y) = (↑x * ↑y : QuadraticAlgebra R a b) := by ext <;> simp
-
 end Semiring
 
 section CommSemiring
@@ -397,9 +400,6 @@ instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
 theorem coe_pow (n : ℕ) (r : R) : ((r ^ n : R) : QuadraticAlgebra R a b) =
     (r : QuadraticAlgebra R a b) ^ n :=
   (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
-
-theorem coe_mul_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
-    (r * x : QuadraticAlgebra R a b) = r • x := Algebra.smul_def r x |>.symm
 
 theorem mul_coe_eq_smul (r : R) (x : QuadraticAlgebra R a b) :
     (x * r : QuadraticAlgebra R a b) = r • x := by
