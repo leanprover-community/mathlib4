@@ -226,25 +226,12 @@ protected theorem div_le_iff' {x y z : ℝ≥0∞} (h1 : y ≠ 0) (h2 : y ≠ �
 
 protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : a ≠ ∞ ∨ b ≠ 0) :
     (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
-  cases b with
-  | top =>
-    replace ha : a ≠ 0 := ha.neg_resolve_right rfl
-    simp [ha]
-  | coe b => ?_
-  cases a with
-  | top =>
-    replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
-    simp [hb]
-  | coe a => ?_
-  by_cases h'a : a = 0
-  · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne,
-      not_false_iff, ENNReal.coe_zero, ENNReal.inv_eq_zero]
-  by_cases h'b : b = 0
-  · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne, not_false_iff,
-      mul_zero, ENNReal.coe_zero, ENNReal.inv_eq_zero]
-  rw [← ENNReal.coe_mul, ← ENNReal.coe_inv, ← ENNReal.coe_inv h'a, ← ENNReal.coe_inv h'b, ←
-    ENNReal.coe_mul, mul_inv_rev, mul_comm]
-  simp [h'a, h'b]
+  cases b
+  case top => grind [mul_top, mul_zero, inv_top, ENNReal.inv_eq_zero]
+  cases a
+  case top => grind [top_mul, zero_mul, inv_top, ENNReal.inv_eq_zero]
+  grind [_=_ coe_mul, coe_zero, inv_zero, = mul_inv, coe_ne_top, ENNReal.inv_eq_zero,
+    =_ coe_inv, zero_mul, = mul_eq_zero, mul_top, mul_zero, top_mul]
 
 protected theorem inv_div {a b : ℝ≥0∞} (htop : b ≠ ∞ ∨ a ≠ ∞) (hzero : b ≠ 0 ∨ a ≠ 0) :
     (a / b)⁻¹ = b / a := by
