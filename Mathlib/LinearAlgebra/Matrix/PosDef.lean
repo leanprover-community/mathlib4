@@ -303,21 +303,23 @@ end sqrt
 
 variable [DecidableEq n]
 
-open UnitaryGroup in
-theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff'
-    (U : unitaryGroup n R') (x : Matrix n n R') :
-    PosSemidef ((star U : Matrix n n R') * x * (U : Matrix n n R')) ↔ x.PosSemidef := by
-  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit'
-      (unitary.toUnits _).isUnit, and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
+theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff'
+    {U x : Matrix n n R} (hU : IsUnit U) :
+    PosSemidef (star U * x * U) ↔ x.PosSemidef := by
+  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit' hU,
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
     star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
-  exact fun h => ⟨fun H y => by simpa using H (star U *ᵥ y), fun H _ => H _⟩
+  obtain ⟨V, hV⟩ := hU.exists_right_inv
+  exact fun h => ⟨fun H y => by simpa [hV] using H (V *ᵥ y), fun H _ => H _⟩
 
-theorem _root_.Matrix.UnitaryGroup.posSemidef_conjugate_iff
-    (U : unitaryGroup n R') (x : Matrix n n R') :
-    PosSemidef ((U : Matrix n n R') * x * (star U : Matrix n n R')) ↔ x.PosSemidef := by
-  simpa using UnitaryGroup.posSemidef_conjugate_iff' (star U) _
+open Matrix in
+theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff
+    {U x : Matrix n n R} (hU : IsUnit U) :
+    PosSemidef (U * x * star U) ↔ x.PosSemidef := by
+  simpa using hU.star.posSemidef_conjugate_iff'
 
 open scoped Kronecker in
+open Matrix in
 theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
   rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
@@ -325,8 +327,10 @@ theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
    ← star_eq_conjTranspose]
   have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩
     : unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
+  have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) :=
+    (unitary.toUnits U).isUnit
   rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary,
-    UnitaryGroup.posSemidef_conjugate_iff, diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
+    (this _).posSemidef_conjugate_iff, diagonal_kronecker_diagonal, posSemidef_diagonal_iff]
   exact fun _ => mul_nonneg (RCLike.ofReal_nonneg.mpr <| hx.eigenvalues_nonneg _)
     (RCLike.ofReal_nonneg.mpr <| hy.eigenvalues_nonneg _)
 
@@ -646,10 +650,11 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
 
 open UnitaryGroup in
 theorem _root_.Matrix.UnitaryGroup.posDef_conjugate_iff' [DecidableEq n]
-    (U : unitaryGroup n R') {x : Matrix n n 'R} :
+    (U : unitaryGroup n R') {x : Matrix n n R'} :
     PosDef ((star U : Matrix n n R') * x * (U : Matrix n n R')) ↔ x.PosDef := by
-  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit'
-      (unitary.toUnits _).isUnit, and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
+  have : IsUnit (U : Matrix n n R') := (unitary.toUnits U).isUnit
+  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit' this,
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec,
     star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
   refine fun h => ⟨fun h x hx => ?_, fun h x hx => ?_⟩
   · simpa [UnitaryGroup.toLinearEquiv] using
