@@ -475,7 +475,7 @@ This is the highest factorial I can `#eval` using the naive implementation witho
 ```
 
 We could implement a tail-recursive version (or just use `Nat.fold`),
-but instead lets jump straight to binary splitting.
+but instead let's jump straight to binary splitting.
 -/
 
 /-- Factorial implemented using binary splitting. -/
