@@ -385,8 +385,8 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
   · obtain ⟨w', hw', he⟩ := eq_affineCombination_of_mem_affineSpan_of_fintype
       (Set.mem_of_mem_of_subset hi setInterior_subset_affineSpan)
     rw [he, affineCombination_mem_setInterior_iff hw'] at hi
-    have he' := s.independent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype
-      hw hw' (fs.orderEmbOfFin h).toEmbedding he
+    have he' := s.independent.indicator_extend_eq_of_affineCombination_comp_embedding_eq_of_fintype
+      hw hw' (fs.orderEmbOfFin h).toEmbedding he.symm
     simp_rw [he'.symm]
     refine ⟨fun i hi ↦ ?_, fun i hi ↦ by simp [hi]⟩
     simp only [RelEmbedding.coe_toEmbedding, range_orderEmbOfFin, mem_coe, hi, Set.indicator_of_mem]

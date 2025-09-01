@@ -340,9 +340,9 @@ lemma AffineIndependent.eq_zero_of_affineCombination_mem_affineSpan {p : ι → 
   rw [Set.indicator_apply_eq_zero] at hi'
   exact hi' (Finset.mem_coe.2 hifs)
 
-lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq {ι₂ : Type*} {p : ι → P}
-    (ha : AffineIndependent k p) {s₁ : Finset ι} {s₂ : Finset ι₂} {w₁ : ι → k} {w₂ : ι₂ → k}
-    (hw₁ : ∑ i ∈ s₁, w₁ i = 1) (hw₂ : ∑ i ∈ s₂, w₂ i = 1) (e : ι₂ ↪ ι)
+lemma AffineIndependent.indicator_extend_eq_of_affineCombination_comp_embedding_eq {ι₂ : Type*}
+    {p : ι → P} (ha : AffineIndependent k p) {s₁ : Finset ι} {s₂ : Finset ι₂} {w₁ : ι → k}
+    {w₂ : ι₂ → k} (hw₁ : ∑ i ∈ s₁, w₁ i = 1) (hw₂ : ∑ i ∈ s₂, w₂ i = 1) (e : ι₂ ↪ ι)
     (h : s₂.affineCombination k (p ∘ e) w₂ = s₁.affineCombination k p w₁) :
     Set.indicator (s₂.map e) (extend e w₂ 0) = Set.indicator s₁ w₁ := by
   have hw₂e : extend e w₂ 0 ∘ e = w₂ := extend_comp e.injective _ _
@@ -352,12 +352,12 @@ lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq {ι�
   convert hw₂ with i hi
   exact e.injective.extend_apply _ _ _
 
-lemma AffineIndependent.indicator_eq_of_affineCombination_comp_embedding_eq_of_fintype [Fintype ι]
-    {ι₂ : Type*} [Fintype ι₂] {p : ι → P} (ha : AffineIndependent k p) {w₁ : ι → k} {w₂ : ι₂ → k}
-    (hw₁ : ∑ i, w₁ i = 1) (hw₂ : ∑ i, w₂ i = 1) (e : ι₂ ↪ ι)
-    (h : Finset.univ.affineCombination k p w₁ = Finset.univ.affineCombination k (p ∘ e) w₂) :
+lemma AffineIndependent.indicator_extend_eq_of_affineCombination_comp_embedding_eq_of_fintype
+    [Fintype ι] {ι₂ : Type*} [Fintype ι₂] {p : ι → P} (ha : AffineIndependent k p) {w₁ : ι → k}
+    {w₂ : ι₂ → k} (hw₁ : ∑ i, w₁ i = 1) (hw₂ : ∑ i, w₂ i = 1) (e : ι₂ ↪ ι)
+    (h : Finset.univ.affineCombination k (p ∘ e) w₂ = Finset.univ.affineCombination k p w₁) :
     Set.indicator (Set.range e) (extend e w₂ 0) = w₁ := by
-  simpa using ha.indicator_eq_of_affineCombination_comp_embedding_eq hw₁ hw₂ e h
+  simpa using ha.indicator_extend_eq_of_affineCombination_comp_embedding_eq hw₁ hw₂ e h
 
 section Composition
 
