@@ -998,6 +998,16 @@ theorem pi_eq_bot_iff (S : ∀ i, Submonoid (M i)) : pi Set.univ S = ⊥ ↔ ∀
   simp_rw [SetLike.ext'_iff]
   exact Set.univ_pi_eq_singleton_iff
 
+@[to_additive]
+theorem le_comap_mulSingle_pi [DecidableEq ι] (S : ∀ i, Submonoid (M i)) {I i} :
+    S i ≤ comap (MonoidHom.mulSingle M i) (pi I S) :=
+  fun x hx => by simp [hx]
+
+@[to_additive]
+theorem iSup_map_mulSingle_le [DecidableEq ι] {I : Set ι} {S : ∀ i, Submonoid (M i)} :
+    ⨆ i, map (MonoidHom.mulSingle M i) (S i) ≤ pi I S :=
+  iSup_le fun _ => map_le_iff_le_comap.mpr (le_comap_mulSingle_pi _)
+
 end Pi
 
 end Submonoid
