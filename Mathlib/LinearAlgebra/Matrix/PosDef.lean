@@ -313,7 +313,7 @@ variable [DecidableEq n]
 
 theorem _root_.Matrix.IsUnit.posSemidef_conjugate_iff' {U x : Matrix n n R} (hU : IsUnit U) :
     PosSemidef (star U * x * U) ↔ x.PosSemidef := by
-  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit' hU,
+  simp_rw [PosSemidef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate',
     and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
     ← dotProduct_mulVec]
   obtain ⟨V, hV⟩ := hU.exists_right_inv
@@ -664,9 +664,8 @@ variable [DecidableEq n]
 
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
-  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, isSelfAdjoint_conjugate_iff_of_isUnit' hU,
-    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
-    ← dotProduct_mulVec]
+  simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate', and_congr_right_iff,
+    ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec, ← dotProduct_mulVec]
   obtain ⟨V, hV⟩ := hU.exists_left_inv
   obtain ⟨W, hW⟩ := hU.exists_right_inv
   have hVV (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(V *ᵥ $h)
