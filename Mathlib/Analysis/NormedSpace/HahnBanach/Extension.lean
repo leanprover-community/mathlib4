@@ -26,8 +26,8 @@ satisfying `RCLike 𝕜`.
 
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
-of `𝕜`). Using this, we prova that if `E` and `F` are nontrivial normed vector spaces over an
-`RCLike` field `𝕜`, there are nontrivial continuous linear operator between them. -/
+of `𝕜`). Using this, we prove that if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, then the space of continuous linear operators between them is nontrivial. -/
 
 universe u v
 
