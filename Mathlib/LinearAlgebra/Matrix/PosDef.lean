@@ -3,6 +3,7 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
+import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Matrix.Vec
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
@@ -165,6 +166,13 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
   ⟨hA.isHermitian.add hB.isHermitian, fun x => by
     rw [add_mulVec, dotProduct_add]
     exact add_nonneg (hA.2 x) (hB.2 x)⟩
+
+protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
+    [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulMono α R] {x : Matrix n n R}
+    (hx : x.PosSemidef) {a : α} (ha : 0 ≤ a) : (a • x).PosSemidef := by
+  refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha) hx.1, fun y => ?_⟩
+  simp only [smul_mulVec, dotProduct_smul]
+  exact smul_nonneg ha (hx.2 _)
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
@@ -491,6 +499,13 @@ protected lemma posSemidef_add [AddLeftMono R]
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
+
+protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
+    [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
+    {x : Matrix n n R} (hx : x.PosDef) {a : α} (ha : 0 < a) : (a • x).PosDef := by
+  refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha.le) hx.1, fun y hy => ?_⟩
+  simp only [smul_mulVec, dotProduct_smul]
+  exact smul_pos ha (hx.2 _ hy)
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
     (hB : Function.Injective B.mulVec) :
