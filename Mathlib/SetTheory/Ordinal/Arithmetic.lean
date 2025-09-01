@@ -622,7 +622,7 @@ alias isLimit_sub := isSuccLimit_sub
 
 /-! ### Multiplication of ordinals -/
 
-/-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
+/-- The multiplication of ordinals `o₁` and `o₂` is the (well-founded) lexicographic order on
 `o₂ × o₁`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
