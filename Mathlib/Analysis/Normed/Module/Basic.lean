@@ -288,10 +288,6 @@ theorem norm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖ 
 theorem nnnorm_algebraMap_nnreal (x : ℝ≥0) : ‖algebraMap ℝ≥0 𝕜' x‖₊ = x :=
   Subtype.ext <| norm_algebraMap_nnreal 𝕜' x
 
-@[simp]
-lemma Algebra.norm_smul_one_eq_abs (x : ℝ) : ‖x • (1 : 𝕜')‖ = |x| := by
-  rw [norm_smul_one_eq_norm, x.norm_eq_abs]
-
 end NNReal
 
 variable (𝕜)
