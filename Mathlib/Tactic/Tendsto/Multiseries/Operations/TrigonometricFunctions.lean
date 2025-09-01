@@ -152,99 +152,99 @@ end
 
 mutual
 
-theorem sin_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
-    (h_basis : WellFormedBasis basis)
-    (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates f)
-    (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
-    ms.sin.Approximates (Real.sin ∘ f) := by
-  cases' basis with basis_hd basis_tl
-  · simp [sin, Approximates] at h_approx ⊢
-    apply h_approx.mono
-    simp +contextual
-  cases' ms with exp coef tl
-  · simp [sin]
-    apply Approximates_nil at h_approx
-    apply Approximates_of_EventuallyEq (f := fun _ ↦ 0)
-    · apply h_approx.mono
+  theorem sin_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
+      (h_basis : WellFormedBasis basis)
+      (h_wo : ms.WellOrdered)
+      (h_approx : ms.Approximates f)
+      (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
+      ms.sin.Approximates (Real.sin ∘ f) := by
+    cases' basis with basis_hd basis_tl
+    · simp [sin, Approximates] at h_approx ⊢
+      apply h_approx.mono
       simp +contextual
-    apply Approximates.nil
-    rfl
-  simp [sin]
-  split_ifs with h_if
-  · rw [← sinSeries_toFun]
-    exact apply_Approximates sinSeries_analytic h_basis h_wo (by simpa) h_approx
-  have h_exp : exp = 0 := by
-    unfold leadingTerm at h_nonpos
-    simp at h_nonpos
-    contrapose! h_nonpos
-    constructor
-    simp at h_if
-    exact lt_of_le_of_ne h_if h_nonpos.symm
-  subst h_exp
-  clear h_if
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-  obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
-  simp at h_tl
-  convert_to (((cosSeries.apply tl).mulMonomial coef.sin 0).add ((sinSeries.apply tl).mulMonomial coef.cos 0)).Approximates
-    (fun t ↦ Real.cos (f t - fC t) * Real.sin (fC t) + Real.sin (f t - fC t) * Real.cos (fC t))
-  · ext t
-    rw [add_comm, ← Real.sin_add]
-    simp
-  apply add_Approximates
-  · sorry
+    cases' ms with exp coef tl
+    · simp [sin]
+      apply Approximates_nil at h_approx
+      apply Approximates_of_EventuallyEq (f := fun _ ↦ 0)
+      · apply h_approx.mono
+        simp +contextual
+      apply Approximates.nil
+      rfl
+    simp [sin]
+    split_ifs with h_if
+    · rw [← sinSeries_toFun]
+      exact apply_Approximates sinSeries_analytic h_basis h_wo (by simpa) h_approx
+    have h_exp : exp = 0 := by
+      unfold leadingTerm at h_nonpos
+      simp at h_nonpos
+      contrapose! h_nonpos
+      constructor
+      simp at h_if
+      exact lt_of_le_of_ne h_if h_nonpos.symm
+    subst h_exp
+    clear h_if
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+    obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
+    simp at h_tl
+    convert_to (((cosSeries.apply tl).mulMonomial coef.sin 0).add ((sinSeries.apply tl).mulMonomial coef.cos 0)).Approximates
+      (fun t ↦ Real.cos (f t - fC t) * Real.sin (fC t) + Real.sin (f t - fC t) * Real.cos (fC t))
+    · ext t
+      rw [add_comm, ← Real.sin_add]
+      simp
+    apply add_Approximates
+    · sorry
+      -- apply mulMonomial_Approximates h_basis
+      -- · rw [← expSeries_toFun]
+      --   exact apply_Approximates expSeries_analytic h_basis h_tl_wo h_comp h_tl
+      -- apply exp_Approximates h_basis.tail h_coef_wo h_coef
+      -- contrapose! h_nonpos
+      -- exact Term.FirstIsPos_of_tail rfl h_nonpos
+    · sorry
+
+  theorem cos_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
+      (h_basis : WellFormedBasis basis)
+      (h_wo : ms.WellOrdered)
+      (h_approx : ms.Approximates f)
+      (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
+      ms.cos.Approximates (Real.cos ∘ f) := by
+    cases' basis with basis_hd basis_tl
+    · simp [cos, Approximates] at h_approx ⊢
+      apply h_approx.mono
+      simp +contextual
+    cases' ms with exp coef tl
+    · simp [cos]
+      apply Approximates_nil at h_approx
+      apply Approximates_of_EventuallyEq (f := fun _ ↦ 1)
+      · apply h_approx.mono
+        simp +contextual
+      exact one_Approximates h_basis
+    simp [cos]
+    split_ifs with h_if
+    · rw [← cosSeries_toFun]
+      exact apply_Approximates cosSeries_analytic h_basis h_wo (by simpa) h_approx
+    have h_exp : exp = 0 := by
+      unfold leadingTerm at h_nonpos
+      simp at h_nonpos
+      contrapose! h_nonpos
+      constructor
+      simp at h_if
+      exact lt_of_le_of_ne h_if h_nonpos.symm
+    subst h_exp
+    clear h_if
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+    obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
+    simp at h_tl
+    sorry
+    -- convert_to ((sinSeries.apply tl).mulMonomial coef.sin 0).Approximates
+    --     (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
+    -- · ext t
+    --   simp [← Real.exp_add]
     -- apply mulMonomial_Approximates h_basis
     -- · rw [← expSeries_toFun]
     --   exact apply_Approximates expSeries_analytic h_basis h_tl_wo h_comp h_tl
     -- apply exp_Approximates h_basis.tail h_coef_wo h_coef
     -- contrapose! h_nonpos
     -- exact Term.FirstIsPos_of_tail rfl h_nonpos
-  · sorry
-
-theorem cos_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
-    (h_basis : WellFormedBasis basis)
-    (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates f)
-    (h_nonpos : ¬ Term.FirstIsPos ms.leadingTerm.exps) :
-    ms.cos.Approximates (Real.cos ∘ f) := by
-  cases' basis with basis_hd basis_tl
-  · simp [cos, Approximates] at h_approx ⊢
-    apply h_approx.mono
-    simp +contextual
-  cases' ms with exp coef tl
-  · simp [cos]
-    apply Approximates_nil at h_approx
-    apply Approximates_of_EventuallyEq (f := fun _ ↦ 1)
-    · apply h_approx.mono
-      simp +contextual
-    exact one_Approximates h_basis
-  simp [cos]
-  split_ifs with h_if
-  · rw [← cosSeries_toFun]
-    exact apply_Approximates cosSeries_analytic h_basis h_wo (by simpa) h_approx
-  have h_exp : exp = 0 := by
-    unfold leadingTerm at h_nonpos
-    simp at h_nonpos
-    contrapose! h_nonpos
-    constructor
-    simp at h_if
-    exact lt_of_le_of_ne h_if h_nonpos.symm
-  subst h_exp
-  clear h_if
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-  obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
-  simp at h_tl
-  sorry
-  -- convert_to ((sinSeries.apply tl).mulMonomial coef.sin 0).Approximates
-  --     (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
-  -- · ext t
-  --   simp [← Real.exp_add]
-  -- apply mulMonomial_Approximates h_basis
-  -- · rw [← expSeries_toFun]
-  --   exact apply_Approximates expSeries_analytic h_basis h_tl_wo h_comp h_tl
-  -- apply exp_Approximates h_basis.tail h_coef_wo h_coef
-  -- contrapose! h_nonpos
-  -- exact Term.FirstIsPos_of_tail rfl h_nonpos
 
 end
 
