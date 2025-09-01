@@ -434,11 +434,8 @@ lemma affineCombination_mem_closedInterior_face_iff_nonneg [IsOrderedAddMonoid k
     Finset.univ.affineCombination k s.points w ∈ (s.face h).closedInterior ↔
       (∀ i ∈ fs, 0 ≤ w i) ∧ (∀ i ∉ fs, w i = 0) := by
   rw [s.affineCombination_mem_closedInterior_face_iff_mem_Icc h hw]
-  refine ⟨fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ (hii i hi).1, hi0⟩,
-    fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
-  have hw' : ∑ i ∈ fs, w i = 1 := by
-    rw [← hw, Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
-  rw [← hw']
+  refine ⟨by grind, fun ⟨hii, hi0⟩ ↦ ⟨fun i hi ↦ ⟨hii i hi, ?_⟩, hi0⟩⟩
+  rw [← hw, ← Finset.sum_subset (Finset.subset_univ fs) fun j _ ↦ hi0 j]
   exact Finset.single_le_sum (fun t ht ↦ (hii t ht)) hi
 
 end Simplex
