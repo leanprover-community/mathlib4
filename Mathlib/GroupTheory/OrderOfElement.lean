@@ -1230,7 +1230,8 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α 
 
 -- TODO: make `x` explicit similar to `Prod.orderOf`?
 @[to_additive]
-lemma Pi.orderOf_eq : orderOf x = sInf {n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n} :=
+-- alternative set expression: `{ n | 0 < n ∧ ∀ i, orderOf (x i) ∣ n }`
+lemma Pi.orderOf_eq : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
   minimalPeriod_piMap
 
 /- alternative name: `Pi.orderOf_eq_fintype`, `Pi.orderOf_eq_for_fintype`,

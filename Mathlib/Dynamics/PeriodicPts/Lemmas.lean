@@ -43,6 +43,7 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
   exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
 
 theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
+    -- alternative set expression: `{ n | 0 < n ∧ IsPeriodicPt f n x }`
     minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
   dsimp [minimalPeriod, periodicPts, sInf]
   grind -- don't know why `rfl` doesn't work here
@@ -148,65 +149,14 @@ section Pi
 
 variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
 
--- TODO: use this?
-#check isEmpty_or_nonempty
-
 /-- This `sInf` can be regarded as a generalized version of LCM
 for possibly infinite sets and types. -/
 -- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
 theorem minimalPeriod_piMap :
-    minimalPeriod (Pi.map f) x = sInf {n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n} := by
-  simp [minimalPeriod]
-
-  --set s := {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}
-  by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
-  · exact eq_of_forall_dvd <| by
-      simp [← isPeriodicPt_iff_minimalPeriod_dvd]
-      intro n
-      set inf := sInf {n | 0 < n ∧ ∀ (i : ι), IsPeriodicPt (f i) n (x i)}
-      constructor
-      ·
-        sorry
-      · intro dvd_n i
-        have : minimalPeriod (f i) (x i) ∣ inf := (Nat.sInf_mem h).2 i
-        simp [isPeriodicPt_iff_minimalPeriod_dvd]
-
-        sorry
-  · --replace h := not_nonempty_iff_eq_empty.mp h
-    simp [not_nonempty_iff_eq_empty.mp h] --simp [h]
-    apply minimalPeriod_eq_zero_of_notMem_periodicPts
-    simp [← isPeriodicPt_iff_minimalPeriod_dvd] at h
-    /- have : IsEmpty {n | 0 < n ∧ ∀ (i : ι), IsPeriodicPt (f i) n (x i)} := by
-      exact not_nonempty_iff.mp h -/
-    --simp [not_nonempty_iff.mp] at h
-    --simp [periodicPts]
-    have : ¬ Nonempty {n | 0 < n ∧ ∀ (i : ι), IsPeriodicPt (f i) n (x i)} := by
-      intro h2
-      have : {n | 0 < n ∧ ∀ (i : ι), IsPeriodicPt (f i) n (x i)}.Nonempty := by
-        exact nonempty_coe_sort.mp h2
-      exact h this
-    simp at this
-    simp [periodicPts]
-    exact this
-    --exact h
-    /-
-    intro x_mem_periodicPts
-    simp [periodicPts] at x_mem_periodicPts
-    exact h x_mem_periodicPts
-    -/
-  /- eq_of_forall_dvd <| by
-    by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
-    · simp [← isPeriodicPt_iff_minimalPeriod_dvd]
-      --simp [IsPeriodicPt, IsFixedPt]
-      intro n
-      set inf := sInf {n | 0 < n ∧ ∀ (i : ι), IsPeriodicPt (f i) n (x i)}
-      constructor
-      ·
-        sorry
-      ·
-        sorry
-    · simp [not_nonempty_iff_eq_empty.mp h]
-      sorry -/
+    -- alternative set expression: `{ n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n }`
+    minimalPeriod (Pi.map f) x = sInf { n > 0 | ∀ i, minimalPeriod (f i) (x i) ∣ n } := by
+  conv_lhs => simp [minimalPeriod_eq_sInf_n_pos_IsPeriodicPt]
+  simp [← isPeriodicPt_iff_minimalPeriod_dvd]
 
 -- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
 -- alternative name: `minimalPeriod_piMap_fintype`
