@@ -3068,6 +3068,7 @@ import Mathlib.Data.Fin.FlagRange
 import Mathlib.Data.Fin.Parity
 import Mathlib.Data.Fin.Pigeonhole
 import Mathlib.Data.Fin.Rev
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.Data.Fin.SuccPredOrder
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Fin.Tuple.BubbleSortInduction
