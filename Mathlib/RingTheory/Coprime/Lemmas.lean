@@ -87,9 +87,9 @@ theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (h
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 
--- Porting note: removed names of things due to linter, but they seem helpful
 theorem Finset.prod_dvd_of_coprime :
-    (t : Set I).Pairwise (IsCoprime on s) → (∀ i ∈ t, s i ∣ z) → (∏ x ∈ t, s x) ∣ z := by
+    (Hs : (t : Set I).Pairwise (IsCoprime on s)) → (Hs1 : (∀ i ∈ t, s i ∣ z)) →
+    (∏ x ∈ t, s x) ∣ z := by
   classical
   exact Finset.induction_on t (fun _ _ ↦ one_dvd z)
     (by
@@ -131,18 +131,13 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
           @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
-        dsimp -- Porting note: terms were showing as sort of `HAdd.hadd` instead of `+`
-        -- this whole proof pretty much breaks and has to be rewritten from scratch
-        rw [add_mul]
-        congr 1
+        convert add_mul (R := R) _ _ _ using 2
         · by_cases hx : x = h.choose
           · rw [hx, Pi.single_eq_same, Pi.single_eq_same]
           · rw [Pi.single_eq_of_ne hx, Pi.single_eq_of_ne hx, zero_mul]
-        · rw [mul_assoc]
-          congr
-          rw [prod_eq_prod_diff_singleton_mul (mem x hx) _, mul_comm]
-          congr 2
-          rw [sdiff_sdiff_comm, sdiff_singleton_eq_erase a, erase_insert hat]
+        · convert (mul_assoc _ _ _).symm
+          rw [prod_eq_prod_diff_singleton_mul (mem x hx), mul_comm, sdiff_sdiff_comm,
+            sdiff_singleton_eq_erase a, erase_insert hat]
       · have : IsCoprime (s b) (s a) :=
           ⟨μ a * ∏ i ∈ t \ {b}, s i, ∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j, ?_⟩
         · exact ⟨this.symm, this⟩
@@ -180,8 +175,7 @@ theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
   refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
-    refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
-    -- Porting note: is there a better way compared to the old `congr_arg coe h`?
+    refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (Subtype.coe_inj.mpr h).symm
   · rintro ⟨i, hi⟩ ⟨j, hj⟩ h
     apply IsCoprime.prod_right_iff.mp (hp i hi)
     exact Finset.mem_sdiff.mpr ⟨hj, fun f ↦ h <| Subtype.ext (Finset.mem_singleton.mp f).symm⟩
