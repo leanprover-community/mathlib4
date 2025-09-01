@@ -104,14 +104,12 @@ open scoped Pointwise
 /-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
 and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
 theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
-    {G α : Type*} [Group G] [MulAction G α] [Finite α]
     (hG : IsPreprimitive G α) {s : Set α} {n : ℕ}
     (hsn : s.ncard = n + 1) (hsn' : n + 2 < Nat.card α) :
     (IsPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s)
       → IsMultiplyPretransitive G α 2)
     ∧ (IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)
       → IsMultiplyPreprimitive G α 2) := by
-  classical
   induction' n using Nat.strong_induction_on with n hrec generalizing α G
   have hs_ne_top : s ≠ ⊤ := by
     intro hs

@@ -419,33 +419,22 @@ section Index
 
 open SubMulAction
 
-variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
-
-/-- Cardinal vs index of stabilizers, for a pretransitive action, in nat.card -/
-theorem stabilizer_index_of_pretransitive [IsPretransitive G α] (a : α) :
-    (stabilizer G a).index = Nat.card α := by
-  rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- For a multiply pretransitive action, computes the index
 of the fixing_subgroup of a subset of adequate cardinality -/
-private theorem index_of_fixingSubgroup_aux
+@[simp]
+theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     [Finite α]
     {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
     {s : Set α} (hs : s.ncard = k) :
     (fixingSubgroup G s).index * (Nat.card α - s.ncard).factorial =
       (Nat.card α).factorial := by
-  revert G α
-  induction k with
+  induction k generalizing G α with
   | zero =>
-    intro G _ α _ _ _ s hs
-    simp only [hs, tsub_zero]
     rw [Set.ncard_eq_zero] at hs
-    simp only [hs]
-    suffices fixingSubgroup G ∅ = ⊤ by
-      rw [this, Subgroup.index_top, one_mul]
-    exact GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc G α)
+    simp [hs]
   | succ k hrec =>
-    intro G _ α _ _ hmk s hs
     have hGX : IsPretransitive G α := by
       rw [← is_one_pretransitive_iff]
       apply isMultiplyPretransitive_of_le (n := k + 1)
@@ -466,9 +455,8 @@ private theorem index_of_fixingSubgroup_aux
       rw [hat, Set.insert_diff_singleton, Set.insert_eq_of_mem has]
     have hfs := SubMulAction.fixingSubgroup_of_insert a t
     rw [← hat'] at hfs
-    rw [hfs]
-    rw [Subgroup.index_map]
-    rw [(MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
+    rw [hfs, Subgroup.index_map,
+      (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
     have hscard : s.ncard = 1 + t.ncard := by
@@ -490,24 +478,23 @@ private theorem index_of_fixingSubgroup_aux
         (Nat.card α - 1).factorial by
       · rw [mul_comm] at this
         rw [hscard, mul_comm, ← mul_assoc, mul_comm, Nat.sub_add_eq, this,
-          stabilizer_index_of_pretransitive G a]
+          index_stabilizer_of_transitive G a]
         exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
     · rw [add_comm] at hscard
       have := Nat.sub_eq_of_eq_add hscard
       simp only [hs] at this
-      convert hrec (stabilizer G a) (α := SubMulAction.ofStabilizer G a)
-        (ofStabilizer.isMultiplyPretransitive.mp hmk) htcard
+      convert hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
       all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
 /-- For a multiply pretransitive action,
   computes the index of the `fixingSubgroup` of a subset
   of adequate cardinality. -/
-theorem index_of_fixingSubgroup_eq_of_isMultiplyPretransitive
+theorem IsMultiplyPretransitive.index_of_fixingSubgroup_eq
     [Finite α] (s : Set α) (hMk : IsMultiplyPretransitive G α s.ncard) :
     (fixingSubgroup G s).index =
       Nat.choose (Nat.card α) s.ncard * s.ncard.factorial := by
   apply Nat.eq_of_mul_eq_mul_right (Nat.factorial_pos _)
-  rw [index_of_fixingSubgroup_aux G hMk rfl, Nat.choose_mul_factorial_mul_factorial]
+  rw [hMk.index_of_fixingSubgroup_mul rfl, Nat.choose_mul_factorial_mul_factorial]
   rw [← ncard_univ]
   exact ncard_le_ncard (subset_univ s)
 
@@ -714,11 +701,8 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
       (by rw [Set.ncard_univ]; exact sub_le (Nat.card α) 2)
   rw [← hs] at hmt
   -- The index of (fixingSubgroup G s) is (card α)!/2
-  have := MulAction.index_of_fixingSubgroup_eq_of_isMultiplyPretransitive G s hmt
-  rw [hs,
-    ← Nat.mul_right_cancel_iff (factorial_pos (Nat.card α - (Nat.card α - 2))),
-    Nat.choose_mul_factorial_mul_factorial (Nat.sub_le _ _),
-    Nat.sub_sub_self hα, factorial_two] at this
+  have := hmt.index_of_fixingSubgroup_mul rfl
+  rw [hs, Nat.sub_sub_self hα, factorial_two] at this
   -- conclude
   rw [← mul_le_mul_iff_of_pos_left (a := Nat.card G) card_pos,
     Subgroup.card_mul_index, ← (fixingSubgroup G s).index_mul_card,
