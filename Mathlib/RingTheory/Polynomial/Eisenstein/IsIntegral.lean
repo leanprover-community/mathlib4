@@ -279,7 +279,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         (mem_range_succ_iff.2
           (le_trans (mem_range_succ_iff.1 hk) (succ_le_iff.1 (mem_range_succ_iff.1 hj)).le)),
         Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, mul_assoc]
-    -- Since `minpoly R B.gen` is Eiseinstein, we can find `f : ℕ → L` such that
+    -- Since `minpoly R B.gen` is Eisenstein, we can find `f : ℕ → L` such that
     -- `(map (algebraMap R L) (minpoly R B.gen)).nat_degree ≤ i` implies `f i ∈ adjoin R {B.gen}`
     -- and `(algebraMap R L) p * f i = B.gen ^ i`. We will also need `hf₁`, a reformulation of this
     -- property.

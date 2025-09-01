@@ -41,7 +41,7 @@ https://stacks.math.columbia.edu/tag/04GE
 
 ## TODO
 
-After a good API for etale ring homomorphisms has been developed,
+After a good API for étale ring homomorphisms has been developed,
 we can give more equivalent characterization of Henselian rings.
 
 In particular, this can give a proof that factorizations into coprime polynomials can be lifted
