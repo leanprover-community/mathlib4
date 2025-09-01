@@ -17,6 +17,9 @@ import Mathlib.Topology.UniformSpace.Cauchy
 This file provides some lemmas about arithmetic of `limUnder` functions, such as how it behaves
 with respect to addition, multiplication, scalar multiplication, negation and subtraction.
 
+We also provide lemmas about `limUnder` and infinite sums over non-symmetric intervals, relating
+them to the usual infinite sums.
+
 -/
 
 open Filter
@@ -52,7 +55,7 @@ lemma limUnder.sub [AddGroup X] [IsUniformAddGroup X] (f g : α → X) (hf : Cau
 
 lemma limUnder_congr_eventually [Nonempty X] (f g : α → X) (h : ∀ᶠ n in atTop, f n = g n)
   (hf : CauchySeq f) (hg : CauchySeq g) : limUnder atTop f = limUnder atTop g := by
-  rw [Tendsto.limUnder_eq (x := (limUnder atTop f)) hf.tendsto_limUnder, Tendsto.limUnder_eq ]
+  rw [Tendsto.limUnder_eq hf.tendsto_limUnder, Tendsto.limUnder_eq ]
   exact Tendsto.congr' (EventuallyEq.symm h) (hg.tendsto_limUnder)
 
 section InfiniteSums
