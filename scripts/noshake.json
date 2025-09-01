@@ -430,6 +430,7 @@
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Data.Rat.NatSqrt.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Ordmap.Ordnode": ["Mathlib.Data.Option.Basic"],
