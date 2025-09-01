@@ -26,7 +26,8 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
+-- Porting note: `aesop cases` does not work on type synonyms like `WidePullbackShape`
+-- attribute [local aesop safe cases] WidePullbackShape WalkingPair
 
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
 `WidePullbackShape`. -/
@@ -117,7 +118,7 @@ abbrev Hom.id (X : WalkingSpan) : X ⟶ X :=
   WidePushoutShape.Hom.id X
 
 instance (X Y : WalkingSpan) : Subsingleton (X ⟶ Y) := by
-  constructor; intros a b; simp [eq_iff_true_of_subsingleton]
+  constructor; intro a b; simp [eq_iff_true_of_subsingleton]
 
 end WalkingSpan
 
@@ -218,16 +219,14 @@ theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
--- @[simps (rhsMd := semireducible)]  Porting note: no semireducible
-@[simps!]
+@[simps (rhsMd := default)]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
   NatIso.ofComponents
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
--- @[simps (rhsMd := semireducible)]  Porting note: no semireducible
-@[simps!]
+@[simps (rhsMd := default)]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
   NatIso.ofComponents
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))

@@ -106,17 +106,12 @@ structure IsInducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   eq_induced : tX = tY.induced f
 
-@[deprecated (since := "2024-10-28")] alias Inducing := IsInducing
-
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
 @[mk_iff]
 structure IsEmbedding (f : X → Y) : Prop extends IsInducing f where
   /-- A topological embedding is injective. -/
   injective : Function.Injective f
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding := IsEmbedding
 
 /-- An open embedding is an embedding with open range. -/
 @[mk_iff]
@@ -137,8 +132,5 @@ structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : 
     (f : X → Y) : Prop where
   surjective : Function.Surjective f
   eq_coinduced : tY = tX.coinduced f
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap := IsQuotientMap
 
 end Topology

@@ -239,7 +239,7 @@ instance isMonoidalDistrib.of_symmetric_monoidal_closed [SymmetricCategory C] [M
     IsMonoidalDistrib C := by
   apply SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
-/-- The inverse of distributivity isomorphism from the closed monoidal strurcture -/
+/-- The inverse of distributivity isomorphism from the closed monoidal structure -/
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =
       uncurry (coprod.desc (curry coprod.inl) (curry coprod.inr)) := by

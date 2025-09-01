@@ -66,7 +66,7 @@ inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
   /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
-  than humand-readable output -/
+  than human-readable output -/
   | exceptionsFile : ErrorFormat
   /-- Produce output suitable for Github error annotations: in particular,
   duplicate the file path, line number and error code -/
@@ -139,7 +139,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
   let errorMessage := errctx.error.errorMessage
   match style with
   | ErrorFormat.github =>
-   -- We are outputting for github: duplicate file path, line number and error code,
+    -- We are outputting for github: duplicate file path, line number and error code,
     -- so that they are also visible in the plain text output.
     let path := errctx.path
     let nr := errctx.lineNumber
@@ -250,7 +250,7 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
       fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
-   return (errors, if errors.size > 0 then some fixedLines else none)
+  return (errors, if errors.size > 0 then some fixedLines else none)
 
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.

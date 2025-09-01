@@ -13,8 +13,8 @@ import Mathlib.RingTheory.Extension.Presentation.Basic
 In this file we define standard smooth algebras. For this we introduce
 the notion of a `PreSubmersivePresentation`. This is a presentation `P` that has
 fewer relations than generators. More precisely there exists an injective map from `σ`
-to `ι`. To such a presentation we may associate a jacobian. `P` is then a submersive
-presentation, if its jacobian is invertible.
+to `ι`. To such a presentation we may associate a Jacobian. `P` is then a submersive
+presentation, if its Jacobian is invertible.
 
 Finally, a standard smooth algebra is an algebra that admits a submersive presentation.
 
@@ -40,7 +40,7 @@ For a presubmersive presentation `P` of `S` over `R` we make the following defin
 - `PreSubmersivePresentation.jacobiMatrix`: If `σ` has a `Fintype` instance, we may form
   the matrix corresponding to `P.differential`. Its determinant is `P.jacobian`.
 - `SubmersivePresentation`: A submersive presentation is a finite, presubmersive presentation `P`
-  with in `S` invertible jacobian.
+  with in `S` invertible Jacobian.
 
 Furthermore, for algebras we define:
 
@@ -62,11 +62,11 @@ Finally, for ring homomorphisms we define:
 
 ## TODO
 
-- Show that the module of Kaehler differentials of a standard smooth `R`-algebra `S` of relative
+- Show that the module of Kähler differentials of a standard smooth `R`-algebra `S` of relative
   dimension `n` is `S`-free of rank `n`. In particular this shows that the relative dimension
   is independent of the choice of the standard smooth presentation.
 - Show that standard smooth algebras are smooth. This relies on the computation of the module of
-  Kaehler differentials.
+  Kähler differentials.
 - Show that locally on the target, smooth algebras are standard smooth.
 
 ## Implementation details
@@ -130,7 +130,7 @@ The `j`-th standard basis vector, corresponding to the `j`-th relation of `P`, i
 to the vector of partial derivatives of `P.relation j` with respect
 to the coordinates `P.map i` for all `i : σ`.
 
-The determinant of this map is the jacobian of `P` used to define when a `PreSubmersivePresentation`
+The determinant of this map is the Jacobian of `P` used to define when a `PreSubmersivePresentation`
 is submersive. See `PreSubmersivePresentation.jacobian`.
 -/
 noncomputable def differential : (σ → P.Ring) →ₗ[P.Ring] (σ → P.Ring) :=
@@ -148,7 +148,7 @@ lemma aevalDifferential_single [DecidableEq σ] (i j : σ) :
   dsimp only [aevalDifferential]
   rw [← Pi.basisFun_apply, Basis.constr_basis]
 
-/-- The jacobian of a `P : PreSubmersivePresentation` is the determinant
+/-- The Jacobian of a `P : PreSubmersivePresentation` is the determinant
 of `P.differential` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
   algebraMap P.Ring S <| LinearMap.det P.differential
@@ -266,10 +266,10 @@ section
 ### Jacobian of composition
 
 Let `S` be an `R`-algebra and `T` be an `S`-algebra with presentations `P` and `Q` respectively.
-In this section we compute the jacobian of the composition of `Q` and `P` to be
-the product of the jacobians. For this we use a block decomposition of the jacobi matrix and show
-that the upper-right block vanishes, the upper-left block has determinant jacobian of `Q` and
-the lower-right block has determinant jacobian of `P`.
+In this section we compute the Jacobian of the composition of `Q` and `P` to be
+the product of the Jacobians. For this we use a block decomposition of the Jacobi matrix and show
+that the upper-right block vanishes, the upper-left block has determinant Jacobian of `Q` and
+the lower-right block has determinant Jacobian of `P`.
 
 -/
 
@@ -345,7 +345,7 @@ end P
 
 end
 
-/-- The jacobian of the composition of presentations is the product of the jacobians. -/
+/-- The Jacobian of the composition of presentations is the product of the Jacobians. -/
 @[simp]
 lemma comp_jacobian_eq_jacobian_smul_jacobian [Finite σ] [Finite σ'] :
     (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
@@ -401,7 +401,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
 end BaseChange
 
 /-- Given a pre-submersive presentation `P` and equivalences `ι' ≃ ι` and
-`σ' ≃ σ`, this is the induced pre-sumbersive presentation with variables indexed
+`σ' ≃ σ`, this is the induced pre-submersive presentation with variables indexed
 by `ι` and relations indexed by `κ -/
 @[simps toPresentation, simps -isSimp map]
 noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
@@ -474,7 +474,7 @@ end PreSubmersivePresentation
 variable [Finite σ]
 
 /--
-A `PreSubmersivePresentation` is submersive if its jacobian is a unit in `S`
+A `PreSubmersivePresentation` is submersive if its Jacobian is a unit in `S`
 and the presentation is finite.
 -/
 @[nolint checkUnivs]
@@ -546,7 +546,7 @@ end BaseChange
 
 variable {R S ι σ} in
 /-- Given a submersive presentation `P` and equivalences `ι' ≃ ι` and
-`σ' ≃ σ`, this is the induced sumbersive presentation with variables indexed
+`σ' ≃ σ`, this is the induced submersive presentation with variables indexed
 by `ι'` and relations indexed by `σ'` -/
 @[simps toPreSubmersivePresentation]
 noncomputable def reindex (P : SubmersivePresentation R S ι σ)

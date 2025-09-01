@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
 import Mathlib.Data.Nat.Factorization.LCM
+import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.PNat.Prime
 import Mathlib.NumberTheory.Cyclotomic.Basic
 import Mathlib.RingTheory.Adjoin.PowerBasis
@@ -26,7 +27,7 @@ details section.
   `IsCyclotomicExtension {n} K L`, then `IsPrimitiveRoot.powerBasis`
   gives a `K`-power basis for `L` given a primitive root `ζ`.
 * `IsPrimitiveRoot.embeddingsEquivPrimitiveRoots`: the equivalence between `L →ₐ[K] A`
-  and `primitiveroots n A` given by the choice of `ζ`.
+  and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Main results
 * `IsCyclotomicExtension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.

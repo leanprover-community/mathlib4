@@ -32,8 +32,9 @@ theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a 
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
-/-- Compact hausdorff topological fields are finite. -/
-instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
+/-- Compact Hausdorff topological fields are finite. This is not an instance, as it would apply to
+every `Finite` goal, causing slowly failing typeclass search in some cases. -/
+theorem DivisionRing.finite_of_compactSpace_of_t2Space {K} [DivisionRing K] [TopologicalSpace K]
     [IsTopologicalRing K] [CompactSpace K] [T2Space K] : Finite K := by
   suffices DiscreteTopology K by
     exact finite_of_compact_of_discrete
@@ -43,7 +44,7 @@ instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
 variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
-    continuous, including inversion. -/
+continuous, including inversion. -/
 class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
 
 @[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
