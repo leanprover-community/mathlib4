@@ -54,13 +54,11 @@ kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
 
 
-variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S} {I : Ideal R}
 
 open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 
 namespace KummerDedekind
-
-open scoped Polynomial
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
