@@ -29,7 +29,7 @@ instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (F.ColimitType) :=
 
 variable (F : J ⥤ Type u)
 
-/-- If `F : J ⥤ Type u`, then the data of a "type theoretic" cocone of `F`
+/-- If `F : J ⥤ Type u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `Type u` is the same as the data of a cocone (in a categorical sense). -/
 @[simps]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where

@@ -163,7 +163,7 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     let etailn_whnf : Q(ℕ) ← Meta.whnfD etailn
     if let Expr.lit (.natVal length) := etailn_whnf then
       pure (length, false, q(OfNat.ofNat $etailn_whnf))
-    else if let .some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
+    else if let some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
       let offset_e : Q(ℕ) := mkNatLit offset
       pure (offset, true, q($base + $offset))
     else
@@ -263,7 +263,7 @@ def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin 
   loop 0 q(vecEmpty)
 where
   /-- The core logic of `loop` is that `loop 0 ![] = ![a 0, a 1, a 2] = loop 1 ![a 2]`, where
-  recursion starts from the end. In this example, on the right hand side, the variable `rest := 1`
+  recursion starts from the end. In this example, on the right-hand side, the variable `rest := 1`
   tracks the length of the current generated notation `![a 2]`, and the last used index is
   `n - rest` (`= 3 - 1 = 2`). -/
   loop (i : ℕ) (rest : Q(Fin $i → $α)) : Q(Fin $n → $α) :=
