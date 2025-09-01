@@ -487,6 +487,9 @@ theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
   obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (setOf_prime_and_eq_mod_infinite ha) n
   exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
 
+/-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
+integer and `a : ℤ` is coürime to `q`, then there are infinitely many prime numbers `p`
+such that `p ≡ a mod q`. -/
 theorem forall_exists_prime_gt_and_modEq (n : ℕ) {a : ℤ} (h : IsCoprime a q) :
     ∃ p > n, p.Prime ∧ p ≡ a [ZMOD q] := by
   have : IsUnit (a : ZMod q) := by
