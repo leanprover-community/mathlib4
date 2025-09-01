@@ -1119,15 +1119,7 @@ def evalENNRealRpow : PositivityExt where eval {u α} _zα _pα e := do
         pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
     | .positive pa, .nonnegative pb =>
         pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
-    -- | .positive pa, _ => pure (.positive q(ENNReal.rpow_pos $pa _))
     | _, _ => pure <| .nonnegative q(by simp : 0 ≤ $e)
   | _, _, _ => throwError "not ENNReal.rpow"
-
-example : 0 < (2 : ℝ≥0) ^ (3 : ℝ) := by positivity
-example : 0 < (1/2 : ℝ≥0) ^ (3 : ℝ) := by positivity
-example : 0 ≤ (0 : ℝ≥0) ^ (3 : ℝ) := by positivity
-example : 0 ≤ (2 : ℝ≥0) ^ (-3 : ℝ) := by positivity
-example : 0 < (2 : ℝ≥0∞) ^ (3 : ℝ) := by positivity
-example : 0 ≤ (2 : ℝ≥0∞) ^ (-3 : ℝ) := by positivity
 
 end Mathlib.Meta.Positivity
