@@ -41,7 +41,7 @@ variable {α : Type u} {β : Type v}
 /-- **The Schröder-Bernstein Theorem**:
 Given injections `α → β` and `β → α` that satisfy a pointwise property `R`, we can get a bijection
 `α → β` that satisfies that same pointwise property. -/
-theorem schroeder_bernstein' {f : α → β} {g : β → α} (hf : Function.Injective f)
+theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) (R : α → β → Prop) (hp₁ : ∀ a : α, R a (f a))
     (hp₂ : ∀ b : β, R (g b) b) :
     ∃ h : α → β, Bijective h ∧ ∀ a : α, R a (h a) := by
@@ -75,10 +75,10 @@ theorem schroeder_bernstein' {f : α → β} {g : β → α} (hf : Function.Inje
   simp only [h, Set.piecewise, g']
   split
   · exact hp₁ a
-  · have : a = g (invFun g a) := by
+  · have : g (invFun g a) = a := by
       have : a ∈ g '' (f '' s)ᶜ := by grind
       obtain ⟨x, _, hx⟩ := mem_image _ _ _ |>.mp this
-      exact Function.invFun_eq ⟨x, hx⟩ |>.symm
+      exact Function.invFun_eq ⟨x, hx⟩
     grind
 
 /-- **The Schröder-Bernstein Theorem**:
