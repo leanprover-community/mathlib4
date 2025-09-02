@@ -198,9 +198,7 @@ lemma mem_closure_iff_of_isClosed {x : M} {s : Submodule R M} (hs : IsClosed s.c
 @[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R M} : s.toSubmodule.closure = s := by
   ext x
-  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
-  rw [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
-  exact SetLike.mem_coe
+  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
 
 lemma mem_toSubmodule_iff {x : M} {t : ClosedSubmodule R M} :
     x ∈ t.toSubmodule ↔ x ∈ t.toSubmodule.closure := by
