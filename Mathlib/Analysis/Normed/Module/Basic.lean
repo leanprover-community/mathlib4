@@ -263,7 +263,7 @@ theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 �
 
 @[simp]
 theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
-  rw [← Algebra.algebraMap_eq_smul_one, norm_algebraMap']
+  simp [norm_smul]
 
 /-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
