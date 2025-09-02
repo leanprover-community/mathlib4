@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.Precoverage
 
 /-!
 # Grothendieck pretopologies
@@ -56,9 +57,8 @@ See: https://ncatlab.org/nlab/show/Grothendieck+pretopology or [MM92] Chapter II
 Section 2, Definition 2. -/
 @[ext, stacks 00VH "Note that Stacks calls a category together with a pretopology a site,
 and [MM92] calls this a basis for a topology."]
-structure Pretopology where
+structure Pretopology extends Precoverage C where
   /-- For all `X : C`, the coverings of `X` (sets of families of morphisms with target `X`) -/
-  coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y
   transitive :
@@ -68,7 +68,7 @@ structure Pretopology where
 namespace Pretopology
 
 instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
-  ⟨coverings⟩
+  ⟨fun J ↦ J.coverings⟩
 
 variable {C}
 
@@ -206,7 +206,7 @@ theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
 
 instance : InfSet (Pretopology C) where
   sInf T := {
-    coverings := sInf (coverings '' T)
+    coverings := sInf ((fun J ↦ J.coverings) '' T)
     has_isos := fun X Y f _ ↦ by
       simp only [sInf_apply, Set.iInf_eq_iInter, Set.iInter_coe_set, Set.mem_image,
         Set.iInter_exists,
@@ -227,7 +227,7 @@ instance : InfSet (Pretopology C) where
 
 lemma mem_sInf (T : Set (Pretopology C)) {X : C} (S : Presieve X) :
     S ∈ sInf T X ↔ ∀ t ∈ T, S ∈ t X := by
-  change S ∈ sInf (Pretopology.coverings '' T) X ↔ _
+  change S ∈ sInf ((fun J : Pretopology C ↦ J.coverings) '' T) X ↔ _
   simp
 
 lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :
@@ -236,7 +236,7 @@ lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :
   simp [mem_sInf, mem_ofGrothendieck, GrothendieckTopology.mem_sInf]
 
 lemma isGLB_sInf (T : Set (Pretopology C)) : IsGLB T (sInf T) :=
-  IsGLB.of_image (f := coverings) Iff.rfl (_root_.isGLB_sInf _)
+  IsGLB.of_image (f := fun J ↦ J.coverings) Iff.rfl (_root_.isGLB_sInf _)
 
 /-- The complete lattice structure on pretopologies. This is induced by the `InfSet` instance, but
 with good definitional equalities for `⊥`, `⊤` and `⊓`. -/
@@ -263,5 +263,36 @@ lemma mem_inf (t₁ t₂ : Pretopology C) {X : C} (S : Presieve X) :
   Iff.rfl
 
 end Pretopology
+
+/-- If `J` is a precoverage that has isomorphisms and is stable under composition and
+base change, it defines a pretopology. -/
+@[simps toPrecoverage]
+def Precoverage.toPretopology [HasPullbacks C] (J : Precoverage C) [J.HasIsos]
+    [J.IsStableUnderBaseChange] [J.IsStableUnderComposition] : Pretopology C where
+  __ := J
+  has_isos X Y f hf := mem_coverings_of_isIso f
+  pullbacks X Y f R hR := by
+    obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+    rw [← Presieve.ofArrows_pullback]
+    exact mem_coverings_of_isPullback _ hR _ _ _ fun i ↦ (IsPullback.of_hasPullback _ _).flip
+  transitive X R Ti hR hTi := by
+    obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+    choose κ W p hp using fun ⦃Y⦄ (f : Y ⟶ X) hf ↦ (Ti f hf).exists_eq_ofArrows
+    have : (Presieve.ofArrows Z g).bind Ti =
+        .ofArrows (fun ij : Σ i, κ (g i) ⟨i⟩ ↦ W _ _ ij.2) (fun ij ↦ p _ _ ij.2 ≫ g ij.1) := by
+      apply le_antisymm
+      · rintro T u ⟨S, v, w, ⟨i⟩, hv, rfl⟩
+        rw [hp] at hv
+        obtain ⟨j⟩ := hv
+        exact .mk <| Sigma.mk (β := fun i : ι ↦ κ (g i) ⟨i⟩) i j
+      · rintro T u ⟨ij⟩
+        use Z ij.1, p (g ij.1) ⟨ij.1⟩ ij.2, g ij.1, ⟨ij.1⟩
+        rw [hp]
+        exact ⟨⟨_⟩, rfl⟩
+    rw [this]
+    refine J.comp_mem_coverings (Y := fun (i : ι) (j : κ (g i) ⟨i⟩) ↦ W _ _ j)
+      (g := fun i j ↦ p _ _ j) _ hR fun i ↦ ?_
+    rw [← hp]
+    exact hTi _ _
 
 end CategoryTheory
