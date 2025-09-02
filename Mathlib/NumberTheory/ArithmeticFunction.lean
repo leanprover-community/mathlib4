@@ -893,19 +893,10 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
 
 @[simp]
 theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 1 := by
-  by_cases hn0 : n = 0
-  · subst hn0
-    simp
-  rw [Nat.card_divisors hn0, Finset.prod_eq_one_iff]
-  constructor
-  · intro h
-    simp only [Nat.mem_primeFactors, ne_eq, Nat.add_eq_right, and_imp] at h
-    by_contra hn1
-    exact Nat.factorization_minFac_ne_zero (by omega)
-            (h n.minFac (Nat.minFac_prime hn1) (Nat.minFac_dvd n) hn0)
-  · intro h _ _
-    subst h
-    simp
+    rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+    exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
 
 /-- `sigma_eq_one_iff` is to be preferred. -/
 private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
