@@ -140,6 +140,10 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
 
+lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
+  rw [← Complex.exp_nsmul]
+  ring_nf
+
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
   | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
@@ -455,7 +459,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
     refine (IsAbsoluteValue.abv_sum norm ..).trans_eq ?_
     congr with i
-    simp [Complex.norm_pow]
+    simp [Complex.norm_pow, Complex.norm_natCast]
   _ ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
     gcongr
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
