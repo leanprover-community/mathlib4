@@ -117,7 +117,8 @@ lemma Subgroup.mem_map_subtype {G : Type*} [Group G] {H : Subgroup G} {K : Subgr
   simp
 
 /-- `map H.subtype K` is isomorphic to `K`. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+    /-- `map H.subtype K` is isomorphic to `K`. -/]
 def Subgroup.mapSubtypeEquiv {G : Type*} [Group G] {H : Subgroup G} (K : Subgroup ↥H) :
     ↥(map H.subtype K) ≃* K where
   toFun g := ⟨⟨g.1, mem_map_subtype.mp g.2 |>.fst⟩, mem_map_subtype.mp g.2 |>.snd⟩
@@ -125,13 +126,15 @@ def Subgroup.mapSubtypeEquiv {G : Type*} [Group G] {H : Subgroup G} (K : Subgrou
   map_mul' _ _ := rfl
 
 /-- If `map H.subtype K₁ = K₂` then `K₁` is isomorphic to `K₂`. -/
-@[to_additive]
+@[to_additive
+    /-- If `map H.subtype K₁ = K₂` then `K₁` is isomorphic to `K₂`. -/]
 abbrev MulEquiv.mapSubtypeCongr {G : Type*} [Group G] {H : Subgroup G} {K₁ : Subgroup ↥H}
     {K₂ : Subgroup G} (hK : map H.subtype K₁ = K₂) : K₁ ≃* K₂ :=
   mapSubtypeEquiv K₁ |>.symm.trans <| MulEquiv.subgroupCongr hK
 
 /-- If `map H₁.subtype K₁ = map H₂.subtype K₂` then `K₁` is isomorphic to `K₂`. -/
-@[to_additive]
+@[to_additive
+    /-- If `map H₁.subtype K₁ = map H₂.subtype K₂` then `K₁` is isomorphic to `K₂`. -/]
 abbrev MulEquiv.mapSubtypeCongr₂ {G : Type*} [Group G] {H₁ H₂ : Subgroup G}
     {K₁ : Subgroup ↥H₁} {K₂ : Subgroup ↥H₂} (hK : map H₁.subtype K₁ = map H₂.subtype K₂) :
     K₁ ≃* K₂ :=
