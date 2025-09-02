@@ -353,7 +353,6 @@ lemma mem_mapEquiv_iff (x : M) : f x ∈ (s.mapEquiv f) ↔ x ∈ s := by
   simp [mapEquiv]
   exact Eq.to_iff rfl
 
-@[simp]
 lemma mem_mapEquiv_iff' (x : N) : x ∈ (s.mapEquiv f) ↔ f.symm x ∈ s := by
   have := f.right_inv x
   simp only [LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.coe_symm_toLinearEquiv,
