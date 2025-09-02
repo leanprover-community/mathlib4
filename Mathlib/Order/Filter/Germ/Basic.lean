@@ -109,11 +109,13 @@ instance : CoeTC (α → β) (Germ l β) :=
   ⟨ofFun⟩
 
 /-- Germ of the constant function `fun x : α ↦ c` at a filter `l`. -/
-@[coe] -- Porting note: removed `HasLiftT` instance
+@[coe]
 def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 
-instance coeTC : CoeTC β (Germ l β) :=
+instance coeTail : CoeTail β (Germ l β) :=
   ⟨const⟩
+
+@[deprecated (since := "2025-08-28")] alias coeTC := coeTail
 
 /-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
 def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
@@ -241,10 +243,7 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
     (f : Germ l β).compTendsto g hg = f ∘ g :=
   rfl
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp can't match the LHS.
--- It seems the side condition `hg` is not applied by `simpNF`.
-@[simp, nolint simpNF]
+@[simp]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl

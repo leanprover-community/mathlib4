@@ -43,7 +43,7 @@ jobs:
       test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run:
-        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
+        shell: landrun --rox /usr --ro /etc/timezone --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
     steps:
       - name: cleanup
         shell: bash    # This *just* deletes old files, so is safe to run outside landrun.
@@ -181,7 +181,7 @@ jobs:
         # - we give --rox access to `~/.elan` and `~/actions-runner/_work` (GitHub CI needs this)
         # - we give --unrestricted-network as we need this to download dependencies
         # - git needs read only access to `/etc`.
-        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
+        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
         run: |
           cd pr-branch
           lake env
