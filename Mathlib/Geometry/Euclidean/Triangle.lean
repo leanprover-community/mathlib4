@@ -444,4 +444,29 @@ theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)
       exact angle_pos_of_not_collinear h
     linarith
 
+theorem angle_lt_iff_dist_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
+    ∠ a c b < ∠ a b c ↔ dist a b < dist a c := by
+  constructor
+  case mp =>
+    exact dist_lt_of_angle_lt h
+  case mpr =>
+    intro h1
+    by_contra! w
+    rcases w.eq_or_lt with h2 | h3
+    · have h4 : dist a b = dist a c := by
+        apply dist_eq_of_angle_eq_angle_of_angle_ne_pi h2
+        rw [show ({a, b, c} : Set P) = {b, a, c} by exact Set.insert_comm a b {c}] at h
+        linarith [angle_lt_pi_of_not_collinear h]
+      linarith
+    · rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
+      have h5 := dist_lt_of_angle_lt h h3
+      linarith
+
+theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
+    ∠ a c b ≤ ∠ a b c ↔ dist a b ≤ dist a c := by
+  rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
+  have h1 := (angle_lt_iff_dist_lt h).not
+  simp at h1
+  exact h1
+
 end EuclideanGeometry
