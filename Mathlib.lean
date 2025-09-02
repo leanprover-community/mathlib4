@@ -3255,9 +3255,6 @@ import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Destutter
 import Mathlib.Data.List.DropRight
 import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.EditDistance.Bounds
-import Mathlib.Data.List.EditDistance.Defs
-import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Flatten
@@ -3646,7 +3643,6 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.AnalyticManifold
-import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
