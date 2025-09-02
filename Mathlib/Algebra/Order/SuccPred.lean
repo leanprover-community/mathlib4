@@ -67,6 +67,10 @@ theorem covBy_add_one [NoMaxOrder α] (x : α) : x ⋖ x + 1 := by
   rw [← succ_eq_add_one]
   exact covBy_succ x
 
+@[simp]
+theorem lt_add_one [NoMaxOrder α] (x : α) : x < x + 1 :=
+  (covBy_add_one x).lt
+
 end Add
 
 section Sub
@@ -95,6 +99,10 @@ theorem sub_one_wcovBy (x : α) : x - 1 ⩿ x := by
 theorem sub_one_covBy [NoMinOrder α] (x : α) : x - 1 ⋖ x := by
   rw [← pred_eq_sub_one]
   exact pred_covBy x
+
+@[simp]
+theorem pred_one_lt [NoMinOrder α] (x : α) : x - 1 < x :=
+  (sub_one_covBy x).lt
 
 end Sub
 
@@ -139,6 +147,16 @@ theorem covBy_iff_sub_one_eq [Sub α] [One α] [PredSubOrder α] [NoMinOrder α]
     x ⋖ y ↔ y - 1 = x := by
   rw [← pred_eq_sub_one]
   exact pred_eq_iff_covBy.symm
+
+@[simp]
+theorem add_one_pos [AddZeroClass α] [One α] [NoMaxOrder α] [CanonicallyOrderedAdd α]
+    [SuccAddOrder α] (x : α) : 0 < x + 1 :=
+  (lt_add_one x).trans_le' (isBot_zero x)
+
+@[simp]
+theorem add_one_ne_zero [AddZeroClass α] [One α] [NoMaxOrder α] [CanonicallyOrderedAdd α]
+    [SuccAddOrder α] (x : α) : x + 1 ≠ 0 :=
+  (add_one_pos x).ne'
 
 theorem IsSuccPrelimit.add_one_lt [Add α] [One α] [SuccAddOrder α]
     (hx : IsSuccPrelimit x) (hy : y < x) : y + 1 < x := by
@@ -220,6 +238,14 @@ theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) : x < y + 1 ↔ x ≤ y :=
 theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
   lt_add_one_iff_of_not_isMax (not_isMax y)
 
+@[simp]
+theorem add_one_le_add_one_iff [NoMaxOrder α] : x + 1 ≤ y + 1 ↔ x ≤ y := by
+  rw [add_one_le_iff, lt_add_one_iff]
+
+@[simp]
+theorem add_one_lt_add_one_iff [NoMaxOrder α] : x + 1 < y + 1 ↔ x < y := by
+  rw [← le_iff_le_iff_lt_iff_lt, add_one_le_add_one_iff]
+
 end Add
 
 section Sub
@@ -236,11 +262,40 @@ theorem sub_one_lt_iff_of_not_isMin (hx : ¬ IsMin x) : x - 1 < y ↔ x ≤ y :=
 theorem sub_one_lt_iff [NoMinOrder α] : x - 1 < y ↔ x ≤ y :=
   sub_one_lt_iff_of_not_isMin (not_isMin x)
 
+@[simp]
+theorem sub_one_le_sub_one_iff [NoMinOrder α] : x - 1 ≤ y - 1 ↔ x ≤ y := by
+  rw [le_sub_one_iff, sub_one_lt_iff]
+
+@[simp]
+theorem sub_one_lt_sub_one_iff [NoMinOrder α] : x - 1 < y - 1 ↔ x < y := by
+  rw [← le_iff_le_iff_lt_iff_lt, sub_one_le_sub_one_iff]
+
 end Sub
 
-theorem lt_one_iff_nonpos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
+theorem lt_one_iff_nonpos [AddZeroClass α] [One α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : x < 1 ↔ x ≤ 0 := by
   rw [← lt_succ_iff_of_not_isMax not_isMax_zero, succ_eq_add_one, zero_add]
+
+theorem lt_one_iff [AddZeroClass α] [One α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    [CanonicallyOrderedAdd α] [SuccAddOrder α] : x < 1 ↔ x = 0 := by
+  rw [lt_one_iff_nonpos, nonpos_iff_eq_zero]
+
+theorem le_one_iff [AddZeroClass α] [One α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    [CanonicallyOrderedAdd α] [SuccAddOrder α] : x ≤ 1 ↔ x = 0 ∨ x = 1 := by
+  rw [le_iff_lt_or_eq, lt_one_iff]
+
+@[simp]
+theorem add_natCast_le_add_natCast_iff [AddMonoidWithOne α] [ZeroLEOneClass α] [NoMaxOrder α]
+     [NeZero (1 : α)] [SuccAddOrder α] : ∀ {n : ℕ}, x + n ≤ y + n ↔ x ≤ y
+  | 0 => by simp
+  | n + 1 => by
+      simp_rw [Nat.cast_add_one, ← add_assoc, add_one_le_add_one_iff]
+      exact add_natCast_le_add_natCast_iff
+
+@[simp]
+theorem add_natCast_lt_add_natCast_iff [AddMonoidWithOne α] [ZeroLEOneClass α] [NoMaxOrder α]
+     [NeZero (1 : α)] [SuccAddOrder α] {n : ℕ} : x + n < y + n ↔ x < y := by
+  rw [← le_iff_le_iff_lt_iff_lt, add_natCast_le_add_natCast_iff]
 
 end LinearOrder
 
