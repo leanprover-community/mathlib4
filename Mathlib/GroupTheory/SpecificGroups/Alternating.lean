@@ -5,8 +5,7 @@ Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Perm.Cycle.Concrete
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Alternating Groups
