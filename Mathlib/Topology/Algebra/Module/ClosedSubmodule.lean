@@ -139,12 +139,10 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 @[simp] lemma mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := .rfl
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
-  sInf_le s a := by
-    intro ha _
+  sInf_le s a ha _ := by
     simp only [toSubmodule_sInf, Submodule.mem_iInf]
     exact fun h ↦ h a ha
-  le_sInf s a := by
-    intro ha b
+  le_sInf s a ha b := by
     simp only [toSubmodule_sInf, Submodule.mem_iInf]
     exact fun a i hi ↦ ha i hi a
 
