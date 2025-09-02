@@ -72,7 +72,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 
 ## Tags
 
-spectral, spectral norm, spectral value, seminorm, norm, non-Archimedean
+spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean, non-Archimedean
 -/
 
 open Polynomial

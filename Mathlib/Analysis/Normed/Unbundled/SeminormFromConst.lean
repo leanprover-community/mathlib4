@@ -33,7 +33,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 ## Tags
 
-SeminormFromConst, Seminorm, Non-Archimedean
+SeminormFromConst, Seminorm, nonarchimedean, non-Archimedean
 -/
 
 noncomputable section

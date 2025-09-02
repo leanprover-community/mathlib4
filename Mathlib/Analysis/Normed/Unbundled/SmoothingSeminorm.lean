@@ -37,7 +37,7 @@ seminorm on `R`.
 
 ## Tags
 
-smoothingSeminorm, seminorm, non-Archimedean
+smoothingSeminorm, seminorm, nonarchimedean, non-Archimedean
 -/
 
 noncomputable section

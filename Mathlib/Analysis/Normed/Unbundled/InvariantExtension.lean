@@ -34,7 +34,7 @@ comments, `‖ ⬝ ‖` denotes any power-multiplicative `K`-algebra norm on `L`
 
 ## Tags
 
-algNormOfAlgEquiv, invariantExtension, norm, non-Archimedean, nonarchimedean
+algNormOfAlgEquiv, invariantExtension, norm, nonarchimedean, non-Archimedean
 -/
 
 open scoped NNReal

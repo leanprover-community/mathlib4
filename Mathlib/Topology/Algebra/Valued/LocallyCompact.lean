@@ -20,7 +20,7 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 ## Tags
 
-norm, non-Archimedean, rank one, compact, locally compact
+norm, nonarchimedean, non-Archimedean, rank one, compact, locally compact
 -/
 
 open NNReal

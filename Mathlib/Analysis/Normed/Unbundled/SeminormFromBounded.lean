@@ -38,7 +38,7 @@ this condition holds.
 
 ## Tags
 
-seminormFromBounded, RingSeminorm, Non-Archimedean
+seminormFromBounded, RingSeminorm, nonarchimedean, Non-Archimedean
 -/
 
 noncomputable section

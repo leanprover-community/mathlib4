@@ -29,7 +29,7 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ## Tags
 
-ultrametric, non-Archimedean
+ultrametric, nonarchimedean, non-Archimedean
 -/
 open Metric NNReal
 

@@ -33,7 +33,7 @@ Instead, we use weakest pre-existing typeclass that implies both
 
 ## Tags
 
-ultrametric, non-Archimedean
+ultrametric, nonarchimedean, non-Archimedean
 -/
 open Metric NNReal
 

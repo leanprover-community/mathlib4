@@ -20,7 +20,7 @@ Nontrivial non-Archimedean norms correspond to rank one valuations.
 
 ## Tags
 
-norm, non-Archimedean, nontrivial, valuation, rank one
+norm, nonarchimedean, non-Archimedean, nontrivial, valuation, rank one
 -/
 
 

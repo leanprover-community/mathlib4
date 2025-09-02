@@ -35,7 +35,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
 
 ## Tags
 
-Basis.norm, non-Archimedean
+Basis.norm, nonarchimedean, non-Archimedean
 -/
 
 noncomputable section

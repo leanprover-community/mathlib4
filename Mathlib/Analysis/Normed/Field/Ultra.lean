@@ -28,7 +28,7 @@ to be able to be applied in noncommutative division rings.
 
 ## Tags
 
-ultrametric, non-Archimedean
+ultrametric, nonarchimedean, non-Archimedean
 -/
 open Metric NNReal
 
