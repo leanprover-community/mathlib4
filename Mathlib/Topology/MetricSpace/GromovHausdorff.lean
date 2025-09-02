@@ -58,7 +58,7 @@ namespace GromovHausdorff
 
 /-! In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
-Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
+Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any nonempty
 compact type to `GHSpace`. -/
 section GHSpace
 

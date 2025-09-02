@@ -5,6 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Diagonal
 
@@ -23,7 +24,7 @@ This file defines vector and matrix multiplication
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `⬝ᵥ` for `dotProduct`
 * `*ᵥ` for `Matrix.mulVec`
@@ -765,24 +766,53 @@ theorem mulVec_mulVec [Fintype n] [Fintype o] (v : o → α) (M : Matrix m n α)
 theorem mul_mul_apply [Fintype n] (A B C : Matrix n n α) (i j : n) :
     (A * B * C) i j = A i ⬝ᵥ B *ᵥ (Cᵀ j) := by
   rw [Matrix.mul_assoc]
-  simp only [mul_apply, dotProduct, mulVec]
-  rfl
+  simp [mul_apply, dotProduct, mulVec]
 
 theorem vecMul_vecMulVec [Fintype m] (u v : m → α) (w : n → α) :
-      u ᵥ* vecMulVec v w = (u ⬝ᵥ v) • w := by
+    u ᵥ* vecMulVec v w = (u ⬝ᵥ v) • w := by
   ext i
   simp [vecMul, dotProduct, vecMulVec, Finset.sum_mul, mul_assoc]
 
 theorem vecMulVec_mulVec [Fintype n] (u : m → α) (v w : n → α) :
-      vecMulVec u v *ᵥ w = MulOpposite.op (v ⬝ᵥ w) • u := by
+    vecMulVec u v *ᵥ w = MulOpposite.op (v ⬝ᵥ w) • u := by
   ext i
   simp [mulVec, dotProduct, vecMulVec, Finset.mul_sum, mul_assoc]
 
 theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x : n → α) :
-      vecMulVec u v * vecMulVec w x = vecMulVec u ((v ⬝ᵥ w) • x) := by
+    vecMulVec u v * vecMulVec w x = vecMulVec u ((v ⬝ᵥ w) • x) := by
   ext i j
   simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
     smul_eq_mul, Finset.sum_mul, mul_assoc]
+
+lemma mul_right_injective_iff_mulVec_injective [Fintype m] [Nonempty n] {A : Matrix l m α} :
+    Function.Injective (fun B : Matrix m n α => A * B) ↔ Function.Injective A.mulVec := by
+  refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_col fun j => ha congr(($hBC).col j)⟩
+  inhabit n
+  -- `replicateRow` is not available yet
+  suffices (of fun i j => v i) = (of fun i j => w i) from
+    funext fun i => congrFun₂ this i (default : n)
+  exact ha <| ext fun _ _ => congrFun hvw _
+
+lemma mul_left_injective_iff_vecMul_injective [Nonempty l] [Fintype m] {A : Matrix m n α} :
+    Function.Injective (fun B : Matrix l m α => B * A) ↔ Function.Injective A.vecMul := by
+  refine ⟨fun ha v w hvw => ?_, fun ha B C hBC => ext_row fun i => ha congr(($hBC).row i)⟩
+  inhabit l
+  --  `replicateCol` is not available yet
+  suffices (of fun i j => v j) = (of fun i j => w j) from
+    funext fun j => congrFun₂ this (default : l) j
+  exact ha <| ext fun _ _ => congrFun hvw _
+
+lemma isLeftRegular_iff_mulVec_injective [Fintype m] {A : Matrix m m α} :
+    IsLeftRegular A ↔ Function.Injective A.mulVec := by
+  cases isEmpty_or_nonempty m
+  · simp [IsLeftRegular, Function.injective_of_subsingleton]
+  exact mul_right_injective_iff_mulVec_injective
+
+lemma isRightRegular_iff_vecMul_injective [Fintype m] {A : Matrix m m α} :
+    IsRightRegular A ↔ Function.Injective A.vecMul := by
+  cases isEmpty_or_nonempty m
+  · simp [IsRightRegular, Function.injective_of_subsingleton]
+  exact mul_left_injective_iff_vecMul_injective
 
 end NonUnitalSemiring
 
@@ -900,7 +930,7 @@ theorem sub_vecMulVec (w₁ w₂ : m → α) (v : n → α) :
   ext fun _ _ => sub_mul _ _ _
 
 theorem vecMulVec_sub (w : m → α) (v₁ v₂ : n → α) :
-    vecMulVec w (v₁ - v₂) = vecMulVec w v₁ - vecMulVec w v₂  :=
+    vecMulVec w (v₁ - v₂) = vecMulVec w v₁ - vecMulVec w v₂ :=
   ext fun _ _ => mul_sub _ _ _
 
 end NonUnitalNonAssocRing
@@ -930,16 +960,12 @@ section Semiring
 variable [Semiring R]
 
 lemma mulVec_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
-    (ha : IsUnit A) : Function.Injective A.mulVec := by
-  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
-  intro x y hxy
-  simpa [hBr] using congrArg B.mulVec hxy
+    (ha : IsUnit A) : Function.Injective A.mulVec :=
+  isLeftRegular_iff_mulVec_injective.1 ha.isRegular.left
 
 lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
-    (ha : IsUnit A) : Function.Injective A.vecMul := by
-  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
-  intro x y hxy
-  simpa [hBl] using congrArg B.vecMul hxy
+    (ha : IsUnit A) : Function.Injective A.vecMul :=
+  isRightRegular_iff_vecMul_injective.1 ha.isRegular.right
 
 lemma pow_row_eq_zero_of_le [Fintype n] [DecidableEq n] {M : Matrix n n R} {k l : ℕ} {i : n}
     (h : (M ^ k).row i = 0) (h' : k ≤ l) :

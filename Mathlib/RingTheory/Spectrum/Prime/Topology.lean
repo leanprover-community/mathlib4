@@ -6,16 +6,11 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Order.Ring.Idempotent
 import Mathlib.Order.Heyting.Hom
 import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.Ideal.GoingUp
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
-import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Spectral.Basic
@@ -1196,7 +1191,7 @@ lemma vanishingIdeal_irreducibleComponents :
 lemma zeroLocus_minimalPrimes :
     zeroLocus ∘ (↑) '' minimalPrimes R = irreducibleComponents (PrimeSpectrum R) := by
   rw [← vanishingIdeal_irreducibleComponents, ← Set.image_comp, Set.EqOn.image_eq_self]
-  intros s hs
+  intro s hs
   simpa [zeroLocus_vanishingIdeal_eq_closure, closure_eq_iff_isClosed]
     using isClosed_of_mem_irreducibleComponents s hs
 

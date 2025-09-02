@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Positivity
-import Mathlib.Data.Complex.Trigonometric
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
@@ -234,6 +234,14 @@ example (hq : 0 ≤ q) : 0 ≤ q.num := by positivity
 
 end
 
+example (a b : ℕ) (ha : a ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℤ) (ha : a ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℕ) (hb : b ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℤ) (hb : b ≠ 0) : 0 < a.gcd b := by positivity
+example (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
+example (a b : ℤ) (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a.lcm b := by positivity
+example (a : ℕ) (ha : a ≠ 0) : 0 < a.sqrt := by positivity
+example (a : ℕ) (ha : a ≠ 0) : 0 < a.totient := by positivity
 
 section ENNReal
 

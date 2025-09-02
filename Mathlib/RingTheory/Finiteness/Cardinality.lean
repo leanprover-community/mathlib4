@@ -5,8 +5,8 @@ Authors: Johan Commelin
 -/
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
@@ -83,3 +83,21 @@ lemma not_finite_of_infinite_basis [Nontrivial R] {ι} [Infinite ι] (b : Basis 
 end Module
 
 end ModuleAndAlgebra
+
+namespace Module.Finite
+
+universe u
+variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M] [Module.Finite R M]
+
+/-- The kernel of a random surjective linear map from a finite free module
+to a given finite module. -/
+noncomputable def kerRepr := LinearMap.ker (Finite.exists_fin' R M).choose_spec.choose
+
+/-- A representative of a finite module in the same universe as the ring. -/
+protected abbrev repr : Type u := _ ⧸ kerRepr R M
+
+/-- The representative is isomorphic to the original module. -/
+noncomputable def reprEquiv : Finite.repr R M ≃ₗ[R] M :=
+  LinearMap.quotKerEquivOfSurjective _ (Finite.exists_fin' R M).choose_spec.choose_spec
+
+end Module.Finite
