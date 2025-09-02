@@ -113,6 +113,8 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
+/-- The stabilizer on a permulation group is equivalent to a permutation group on elements
+except the given element. -/
 @[simps apply symm_apply_coe]
 def Equiv.Perm.stabilizerEquiv (a : α) :
     ↥(stabilizer (Perm α) a) ≃* Perm { b // b ≠ a } where
@@ -122,6 +124,8 @@ def Equiv.Perm.stabilizerEquiv (a : α) :
   right_inv σ := by simp
   map_mul' _ _ := by simp
 
+/-- The stabilizer on an alternating group is equivalent to an alternating group on elements
+except the given element. -/
 axiom alternatingGroup.stabilizerEquiv (a : α) :
     ↥(stabilizer ↥(alternatingGroup α) a) ≃* ↥(alternatingGroup { b // b ≠ a })
 
