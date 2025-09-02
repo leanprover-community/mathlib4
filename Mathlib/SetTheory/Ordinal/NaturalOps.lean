@@ -164,7 +164,7 @@ theorem toNatOrdinal_min (a b : Ordinal) :
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
-guarantees we only need to open the `NaturalOps` locale once. -/
+guarantees we only need to open the `NaturalOps` scope once. -/
 
 /-- Natural addition on ordinals `a ♯ b`, also known as the Hessenberg sum, is recursively defined
 as the least ordinal greater than `a' ♯ b` and `a ♯ b'` for all `a' < a` and `b' < b`. In contrast

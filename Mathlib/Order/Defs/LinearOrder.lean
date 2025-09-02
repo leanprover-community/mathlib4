@@ -255,16 +255,16 @@ lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   case _ _ h => rwa [false_iff]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
-  cases h : compare a b <;> simp
-  · exact le_of_lt <| compare_lt_iff_lt.1 h
-  · exact le_of_eq <| compare_eq_iff_eq.1 h
-  · exact compare_gt_iff_gt.1 h
+  cases h : compare a b
+  · simpa using le_of_lt <| compare_lt_iff_lt.1 h
+  · simpa using le_of_eq <| compare_eq_iff_eq.1 h
+  · simpa using compare_gt_iff_gt.1 h
 
 lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
-  cases h : compare a b <;> simp
-  · exact compare_lt_iff_lt.1 h
-  · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
-  · exact le_of_lt <| compare_gt_iff_gt.1 h
+  cases h : compare a b
+  · simpa using compare_lt_iff_lt.1 h
+  · simpa using le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · simpa using le_of_lt <| compare_gt_iff_gt.1 h
 
 lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
   cases o <;> simp only [Ordering.Compares]
