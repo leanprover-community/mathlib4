@@ -317,6 +317,8 @@
   ["Mathlib.CategoryTheory.Category.Cat"],
   "Mathlib.Tactic.CategoryTheory.Slice":
   ["Mathlib.CategoryTheory.Category.Basic"],
+  "Mathlib.Tactic.CategoryTheory.Refs":
+  ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Monoidal":
@@ -480,6 +482,7 @@
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
   "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
+  "Mathlib.CategoryTheory.NatTrans": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Monoidal.Mon_":
@@ -491,6 +494,7 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Iso": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Functor.Basic":
   ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
