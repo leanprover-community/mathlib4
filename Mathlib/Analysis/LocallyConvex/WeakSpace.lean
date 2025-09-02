@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.RCLike.Lemmas
 
 /-! # Closures of convex sets in locally convex spaces
 
@@ -57,7 +58,7 @@ theorem toWeakSpace_closedConvexHull_eq [ContinuousSMul 𝕜 𝕜] {s : Set E} :
     (toWeakSpace 𝕜 E) '' (closedConvexHull 𝕜 s) =
     closedConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
   rw [closedConvexHull_eq_closure_convexHull (𝕜 := 𝕜)]
-  rw [Convex.toWeakSpace_closure _ (convex_real_iff_convex_RCLike.mp (convex_convexHull 𝕜 s))]
+  rw [Convex.toWeakSpace_closure _ (convex_RCLike_iff_convex_real.mp (convex_convexHull 𝕜 s))]
   have : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) := WeakBilin.instContinuousSMul _
   rw [closedConvexHull_eq_closure_convexHull (𝕜 := 𝕜)]
   congr
