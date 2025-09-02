@@ -261,11 +261,11 @@ theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
     ← mul_assoc]
   rw [sum_comm]
   conv_lhs => enter [2]; ext y; rw [← sum_mul, mul_comm]
-  conv_lhs => enter [2]; ext y; enter [2 , 2]; ext i; rw [show (i :R)= i • 1 by simp,
+  conv_lhs => enter [2]; ext y; enter [2 , 2]; ext i; rw [show (i : R) = i • 1 by simp,
     show (-1) ^ (d + 1 - i) * ↑((d + 1).choose i) * (x + i • 1) ^ y =
       ((-1) ^ (d + 1 - i) * ↑((d + 1).choose i)) • (x + i • 1) ^ y by simp]
   conv_lhs => enter [2]; ext y; rw [← fwdDiff_iter_eq_sum_shift
-    (n :=d + 1) (f := fun i => i ^ y) (h := 1) (y := x)]
+    (n := d + 1) (f := fun i => i ^ y) (h := 1) (y := x)]
   apply sum_eq_zero
   intro i hi
   rw [fwdDiff_iter_pow_eq_zero_of_lt (h := by
