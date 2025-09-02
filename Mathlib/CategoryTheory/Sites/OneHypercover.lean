@@ -127,6 +127,23 @@ def multifork (F : Cᵒᵖ ⥤ A) :
     dsimp
     simp only [← F.map_comp, ← op_comp, E.w])
 
+noncomputable
+def toMultiequalizer (F : Cᵒᵖ ⥤ A) [HasMultiequalizer (E.multicospanIndex F)] :
+    F.obj (Opposite.op S) ⟶ multiequalizer (E.multicospanIndex F) :=
+  limit.lift _ (E.multifork F)
+
+-- if we don't have it, generalise this accordingly
+lemma nonempty_isLimit_multifork_iff_isIso (F : Cᵒᵖ ⥤ A)
+    [HasMultiequalizer (E.multicospanIndex F)] :
+    Nonempty (IsLimit (E.multifork F)) ↔ IsIso (E.toMultiequalizer F) := by
+  refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ?_⟩
+  · let c : E.multifork F ⟶ limit.cone _ := (limit.isLimit _).liftConeMorphism _
+    have : IsIso c := h.hom_isIso (limit.isLimit _) _
+    exact (Cones.forget _).map_isIso c
+  · constructor
+    have : IsIso ((limit.isLimit (E.multicospanIndex F).multicospan).lift (E.multifork F)) := h
+    apply IsLimit.ofPointIso (limit.isLimit _)
+
 section Category
 
 /-- A morphism of pre-`1`-hypercovers of `S` is a family of refinement morphisms commuting
@@ -172,6 +189,69 @@ instance : Category (PreOneHypercover S) where
   Hom := Hom
   id E := Hom.id E
   comp f g := f.comp g
+
+lemma Hom.ext' {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
+    {f g : E.Hom F} (h : f.toHom = g.toHom)
+    (hs₁ : ∀ {i j} (k : E.I₁ i j), f.s₁ k = h ▸ g.s₁ k)
+    (hh₁ : ∀ {i j} (k : E.I₁ i j),
+      f.h₁ k = g.h₁ k ≫ eqToHom (by rw [hs₁]; congr 1 <;> simp [h])) :
+    f = g := by
+  cases f
+  cases g
+  simp at h
+  subst h
+  simp only [mk.injEq, heq_eq_eq, true_and]
+  simp at hs₁
+  simp at hh₁
+  refine ⟨?_, ?_⟩
+  · ext k
+    apply hs₁
+  · apply Function.hfunext rfl
+    intro i j hij
+    simp at hij
+    subst hij
+    apply Function.hfunext rfl
+    intro j j' hjj'
+    simp at hjj'
+    subst hjj'
+    apply Function.hfunext rfl
+    intro k k' hkk'
+    simp at hkk'
+    subst hkk'
+    rw [hh₁ k]
+    simp
+
+lemma Hom.ext'' {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
+    {f g : E.Hom F} (hs₀ : f.s₀ = g.s₀) (hh₀ : ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by rw [hs₀]))
+    (hs₁ : ∀ {i j} (k : E.I₁ i j), f.s₁ k = hs₀ ▸ g.s₁ k)
+    (hh₁ : ∀ {i j} (k : E.I₁ i j),
+      f.h₁ k = g.h₁ k ≫ eqToHom (by rw [hs₁]; congr 1 <;> simp [hs₀])) :
+    f = g := by
+  have : f.toHom = g.toHom := PreZeroHypercover.Hom.ext' hs₀ hh₀
+  cases f
+  cases g
+  simp at this
+  subst this
+  simp only [mk.injEq, heq_eq_eq, true_and]
+  simp at hs₁
+  simp at hh₁
+  refine ⟨?_, ?_⟩
+  · ext k
+    apply hs₁
+  · apply Function.hfunext rfl
+    intro i j hij
+    simp at hij
+    subst hij
+    apply Function.hfunext rfl
+    intro j j' hjj'
+    simp at hjj'
+    subst hjj'
+    apply Function.hfunext rfl
+    intro k k' hkk'
+    simp at hkk'
+    subst hkk'
+    rw [hh₁ k]
+    simp
 
 /-- The forgetful functor from pre-`1`-hypercovers to pre-`0`-hypercovers. -/
 @[simps]
@@ -224,7 +304,41 @@ lemma Homotopy.mapMultiforkOfIsLimit_eq {E F : PreOneHypercover.{w} S}
     multicospanIndex_fst, multicospanShape_snd, multicospanIndex_snd] at heq
   simp [-Homotopy.wl, -Homotopy.wr, ← H.wl, ← H.wr, reassoc_of% heq]
 
-variable [Limits.HasPullbacks C] (f g : E.Hom F)
+noncomputable
+def Hom.mapMultifork {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
+    (f : E.Hom F) (P : Cᵒᵖ ⥤ A) [HasMultiequalizer (E.multicospanIndex P)]
+    [HasMultiequalizer (F.multicospanIndex P)] :
+    multiequalizer (F.multicospanIndex P) ⟶ multiequalizer (E.multicospanIndex P) :=
+  f.mapMultiforkOfIsLimit P (limit.isLimit _) (Multiequalizer.multifork (F.multicospanIndex P))
+
+lemma Homotopy.mapMultifork {E F : PreOneHypercover.{w} S} {f g : E.Hom F} (H : Homotopy f g)
+    (P : Cᵒᵖ ⥤ A) [HasMultiequalizer (E.multicospanIndex P)]
+    [HasMultiequalizer (F.multicospanIndex P)] : f.mapMultifork P = g.mapMultifork P :=
+  H.mapMultiforkOfIsLimit_eq P _ _
+
+@[reassoc (attr := simp)]
+lemma Hom.mapMultifork_ι {E F : PreOneHypercover.{w} S} (f : E.Hom F) (P : Cᵒᵖ ⥤ A)
+    [HasMultiequalizer (E.multicospanIndex P)] [HasMultiequalizer (F.multicospanIndex P)]
+    (a : E.I₀) :
+    f.mapMultifork P ≫ Multiequalizer.ι (E.multicospanIndex P) a =
+      Multiequalizer.ι (F.multicospanIndex P) (f.s₀ a) ≫ P.map (f.h₀ a).op :=
+  f.mapMultiforkOfIsLimit_ι _ _ _ a
+
+@[simp]
+lemma Hom.mapMultifork_id (P : Cᵒᵖ ⥤ A) [HasMultiequalizer (E.multicospanIndex P)] :
+    (𝟙 E : E ⟶ E).mapMultifork P = 𝟙 _ := by
+  apply Multiequalizer.hom_ext
+  simp
+
+@[simp]
+lemma Hom.mapMultifork_comp {E F : PreOneHypercover.{w} S} (f : E ⟶ F) (g : F ⟶ G) (P : Cᵒᵖ ⥤ A)
+    [HasMultiequalizer (E.multicospanIndex P)] [HasMultiequalizer (F.multicospanIndex P)]
+    [HasMultiequalizer (G.multicospanIndex P)] :
+    (f ≫ g).mapMultifork P = g.mapMultifork P ≫ f.mapMultifork P := by
+  apply Multiequalizer.hom_ext
+  simp
+
+variable (f g : E.Hom F) [HasPullbacks C]
 
 /-- (Implementation): The covering object of `cylinder f g`. -/
 noncomputable
@@ -341,6 +455,250 @@ lemma exists_nonempty_homotopy (f g : E.Hom F) :
 
 end Category
 
+variable {S : C} {E F G : PreOneHypercover S}
+
+@[simps! toPreZeroHypercover p₁ p₂ I₁ Y]
+noncomputable
+def pullback₁ {T : C} (f : T ⟶ S) (E : PreOneHypercover S) [∀ (i : E.I₀), HasPullback f (E.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback f (E.p₁ k ≫ E.f i)] :
+    PreOneHypercover T where
+  __ := E.toPreZeroHypercover.pullback₁ f
+  I₁ := E.I₁
+  Y i _ k := pullback f (E.p₁ k ≫ E.f i)
+  p₁ _ _ k := pullback.map _ _ _ _ (𝟙 T) (E.p₁ k) (𝟙 S) (by simp) (by simp)
+  p₂ _ _ k := pullback.map _ _ _ _ (𝟙 T) (E.p₂ k) (𝟙 S) (by simp) (by simp [E.w])
+  w := by simp
+
+section
+
+variable [HasPullbacks C]
+  {W T : C} (g : W ⟶ T) (f : T ⟶ S) (E : PreOneHypercover S)
+
+@[simps!]
+noncomputable
+def pullback₁IdInv : E ⟶ E.pullback₁ (𝟙 S) where
+  __ := E.toPreZeroHypercover.pullback₁Id.inv
+  s₁ := id
+  h₁ k := pullback.lift (E.p₁ k ≫ E.f _) (𝟙 _) (by simp)
+  w₁₁ {i j} k := by apply pullback.hom_ext <;> simp
+  w₁₂ {i j} k := by apply pullback.hom_ext <;> simp [E.w]
+
+@[simps!]
+noncomputable
+def pullback₁Id : E.pullback₁ (𝟙 S) ≅ E where
+  hom.toHom := E.toPreZeroHypercover.pullback₁Id.hom
+  hom.s₁ := id
+  hom.h₁ k := pullback.snd _ _
+  inv := pullback₁IdInv E
+  hom_inv_id := by
+    apply Hom.ext'' (by rfl)
+    · intro
+      apply pullback.hom_ext <;> simp [← pullback.condition]
+    · intro i j k
+      apply pullback.hom_ext <;> simp [← pullback.condition]
+    · simp
+  inv_hom_id := Hom.ext'' (by rfl) (by simp) (by simp) (by simp)
+
+@[simps!]
+noncomputable
+def pullback₁CompHom [HasPullbacks C] : E.pullback₁ (g ≫ f) ⟶ (E.pullback₁ f).pullback₁ g where
+  __ := (E.toPreZeroHypercover.pullback₁Comp _ _).hom
+  s₁ := id
+  h₁ {i j} k := (pullbackRightPullbackFstIso _ _ _).inv ≫ (pullback.congrHom rfl (by simp)).hom
+  w₁₁ {i j} k := by
+    apply pullback.hom_ext
+    · simp
+    · apply pullback.hom_ext <;> simp
+  w₁₂ {i j} k := by
+    apply pullback.hom_ext
+    · simp
+    · apply pullback.hom_ext <;> simp
+
+@[simps!]
+noncomputable
+def pullback₁CompInv [HasPullbacks C] : (E.pullback₁ f).pullback₁ g ⟶ E.pullback₁ (g ≫ f) where
+  __ := (E.toPreZeroHypercover.pullback₁Comp _ _).inv
+  s₁ := id
+  h₁ {i j} k := (pullback.congrHom rfl (by simp)).inv ≫ (pullbackRightPullbackFstIso _ _ _).hom
+
+@[simps!]
+noncomputable
+def pullback₁Comp [HasPullbacks C] : E.pullback₁ (g ≫ f) ≅ (E.pullback₁ f).pullback₁ g where
+  hom := pullback₁CompHom g f E
+  inv := pullback₁CompInv g f E
+  hom_inv_id := by
+    apply Hom.ext'' (by rfl) (by simp) (by simp)
+    intros
+    apply pullback.hom_ext <;> simp
+  inv_hom_id := by
+    apply Hom.ext'' (by rfl) (by simp) (by simp)
+    intros
+    apply pullback.hom_ext <;> simp
+
+end
+
+lemma sieve₁_pullback₁ {T : C} (f : T ⟶ S) (E : PreOneHypercover S)
+    [∀ (i : E.I₀), HasPullback f (E.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback f (E.p₁ k ≫ E.f i)]
+    {i j : E.I₀} {W : C} (p₁ : W ⟶ pullback f (E.f i)) (p₂ : W ⟶ pullback f (E.f j))
+    (w : p₁ ≫ pullback.fst _ _ = p₂ ≫ pullback.fst _ _) :
+    (E.pullback₁ f).sieve₁ p₁ p₂ = E.sieve₁ (p₁ ≫ pullback.snd _ _) (p₂ ≫ pullback.snd _ _) := by
+  ext U g
+  refine ⟨fun ⟨k, a, h₁, h₂⟩ ↦ ?_, fun ⟨k, a, h₁, h₂⟩ ↦ ?_⟩
+  · refine ⟨k, a ≫ pullback.snd _ _, ?_, ?_⟩
+    · simpa using congr($(h₁) ≫ pullback.snd f (E.f i))
+    · simpa using congr($(h₂) ≫ pullback.snd f (E.f j))
+  · refine ⟨k, pullback.lift (g ≫ p₁ ≫ pullback.fst _ _) a
+      (by simp [pullback.condition, reassoc_of% h₁]), ?_, ?_⟩
+    · apply pullback.hom_ext <;> simp [h₁]
+    · apply pullback.hom_ext
+      · simp [w]
+      · simp [h₂]
+
+@[simps toHom s₁ h₁]
+noncomputable
+def Hom.pullback₁ {T : C} (g : T ⟶ S) (f : E ⟶ F) [∀ (i : E.I₀), HasPullback g (E.f i)]
+    [∀ (i : F.I₀), HasPullback g (F.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback g (E.p₁ k ≫ E.f i)]
+    [∀ (i j : F.I₀) (k : F.I₁ i j), HasPullback g (F.p₁ k ≫ F.f i)] :
+    E.pullback₁ g ⟶ F.pullback₁ g where
+  s₀ := f.s₀
+  h₀ i := pullback.map _ _ _ _ (𝟙 T) (f.h₀ i) (𝟙 S) (by simp) (by simp)
+  s₁ {i j} k := f.s₁ k
+  h₁ {i j} k := pullback.map _ _ _ _ (𝟙 T) (f.h₁ k) (𝟙 S) (by simp)
+    (by rw [f.w₁₁_assoc, Category.assoc, Category.comp_id, f.w₀])
+  w₀ i := by simp
+  w₁₁ {i j} k := by
+    apply pullback.hom_ext
+    · simp
+    · simp only [PreOneHypercover.pullback₁_Y,
+        PreOneHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+        PreOneHypercover.pullback₁_p₁, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+        PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right]
+      rw [f.w₁₁ k]
+  w₁₂ {i j} k := by
+    apply pullback.hom_ext
+    · simp
+    · simp only [PreOneHypercover.pullback₁_Y,
+        PreOneHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+        PreOneHypercover.pullback₁_p₂, Category.assoc, limit.lift_π, PullbackCone.mk_pt,
+        PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right]
+      rw [f.w₁₂ k]
+
+section
+
+variable {T : C} (g : T ⟶ S) (f : E ⟶ F) (h : F ⟶ G)
+    [∀ (i : E.I₀), HasPullback g (E.f i)] [∀ (i : F.I₀), HasPullback g (F.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback g (E.p₁ k ≫ E.f i)]
+    [∀ (i j : F.I₀) (k : F.I₁ i j), HasPullback g (F.p₁ k ≫ F.f i)]
+
+lemma Hom.pullback₁_id : (𝟙 E : E ⟶ E).pullback₁ g = 𝟙 (E.pullback₁ g) :=
+  Hom.ext'' (by rfl) (by simp) (by simp) (by simp)
+
+variable [∀ (i : G.I₀), HasPullback g (G.f i)]
+  [∀ (i j : G.I₀) (k : G.I₁ i j), HasPullback g (G.p₁ k ≫ G.f i)]
+
+lemma Hom.pullback₁_comp : (f ≫ h).pullback₁ g = f.pullback₁ g ≫ h.pullback₁ g :=
+  Hom.ext'' (by rfl) (fun _ ↦ by apply pullback.hom_ext <;> simp) (by simp)
+    (fun _ ↦ by apply pullback.hom_ext <;> simp)
+
+end
+
+noncomputable
+def Homotopy.pullback₁ {T : C} (g : T ⟶ S) {u v : E.Hom F} (H : Homotopy u v)
+    [∀ (i : E.I₀), HasPullback g (E.f i)] [∀ (i : F.I₀), HasPullback g (F.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback g (E.p₁ k ≫ E.f i)]
+    [∀ (i j : F.I₀) (k : F.I₁ i j), HasPullback g (F.p₁ k ≫ F.f i)] :
+    Homotopy (u.pullback₁ g) (v.pullback₁ g) where
+  H := H.H
+  a i := pullback.map _ _ _ _ (𝟙 T) (H.a i) (𝟙 S) (by simp) (by simp)
+  wl i := by apply pullback.hom_ext <;> simp
+  wr i := by apply pullback.hom_ext <;> simp
+
+/-- A refinement data of a pre-`1`-hypercover `{Uᵢ} is a pre-`0`-hypercover for every `Uᵢ`
+and coverings of the intersections. -/
+structure Refinement (E : PreOneHypercover.{w} S) where
+  cover (i : E.I₀) : PreZeroHypercover.{w} (E.X i)
+  I {i j : E.I₀} (k : E.I₁ i j) (a : (cover i).I₀) (b : (cover j).I₀) : Type w
+  Z {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) : C
+  p {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    Z k l ⟶ E.Y k
+  q₁ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    Z k l ⟶ (cover i).X a
+  q₂ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    Z k l ⟶ (cover j).X b
+  w {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    q₁ k l ≫ (cover _).f _ ≫ E.f _ = q₂ k l ≫ (cover _).f _ ≫ E.f _
+  w_self {i : E.I₀} (k : E.I₁ i i) {a : (cover i).I₀} {b : (cover i).I₀} (l : I k a b) :
+    q₁ k l ≫ (cover _).f _ = q₂ k l ≫ (cover _).f _
+  w₁ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    p k l ≫ E.p₁ k = q₁ k l ≫ (cover i).f a
+  w₂ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    p k l ≫ E.p₂ k = q₂ k l ≫ (cover j).f b
+
+attribute [reassoc (attr := grind _=_)] Refinement.w Refinement.w_self Refinement.w₁ Refinement.w₂
+
+namespace Refinement
+
+variable {E : PreOneHypercover.{w} S}
+
+@[simps! toPreZeroHypercover I₁ Y p₁ p₂]
+def cover₁ (R : E.Refinement) (i : E.I₀) : PreOneHypercover.{w} (E.X i) where
+  __ := R.cover i
+  I₁ a b := Σ (k : E.I₁ i i), R.I k a b
+  Y _ _ p := R.Z p.1 p.2
+  p₁ _ _ _ := R.q₁ _ _
+  p₂ _ _ _ := R.q₂ _ _
+  w _ _ _ := R.w_self _ _
+
+@[simps!]
+def bind (R : E.Refinement) : PreOneHypercover.{w} S where
+  __ := E.toPreZeroHypercover.bind
+    fun i ↦ (R.cover i)
+  I₁ i j := Σ (k : E.I₁ i.1 j.1), R.I k i.2 j.2
+  Y _ _ p := R.Z p.1 p.2
+  p₁ _ _ p := R.q₁ p.1 p.2
+  p₂ _ _ p := R.q₂ p.1 p.2
+  w _ _ p := R.w p.1 p.2
+
+-- TODO: move this close to PreZeroHypercover.bind
+lemma presieve₀_bind (R : E.Refinement) :
+    R.bind.presieve₀ = Presieve.bindOfArrows E.X E.f fun i ↦ (R.cover i).presieve₀ := by
+  refine le_antisymm ?_ ?_
+  · intro X f ⟨i⟩
+    exact Presieve.bindOfArrows.mk i.1 _ ⟨i.2⟩
+  · rintro X f ⟨i, g, ⟨j⟩⟩
+    exact .mk (Sigma.mk _ _)
+
+def sieve₁ (R : E.Refinement) {i j : E.I₀} {a : (R.cover i).I₀} {b : (R.cover j).I₀} {W : C}
+    (v₁ : W ⟶ (R.cover i).X a) (v₂ : W ⟶ (R.cover j).X b) : Sieve W :=
+  R.bind.sieve₁ (W := W) (i₁ := ⟨i, a⟩) (i₂ := ⟨j, b⟩) v₁ v₂
+
+@[simps]
+def toBase (R : E.Refinement) : R.bind ⟶ E where
+  s₀ i := i.1
+  h₀ i := (R.cover i.1).f i.2
+  s₁ p := p.1
+  h₁ p := R.p p.1 p.2
+  w₀ _ := rfl
+  w₁₁ _ := R.w₁ _ _
+  w₁₂ _ := R.w₂ _ _
+
+attribute [local grind =] Category.assoc Category.id_comp
+
+@[simps]
+noncomputable
+def homPullback₁ [HasPullbacks C] (R : E.Refinement) (i : E.I₀) :
+    R.cover₁ i ⟶ R.bind.pullback₁ (E.f i) where
+  s₀ a := ⟨i, a⟩
+  h₀ a := pullback.lift ((R.cover i).f a) (𝟙 _)
+  s₁ := id
+  h₁ {a b} p := pullback.lift (R.p _ _ ≫ E.p₁ _) (𝟙 _) <| by simp [w_self_assoc, w₁_assoc]
+  w₁₁ {a b} p := by apply pullback.hom_ext <;> simp [w₁, w_self]
+  w₁₂ {a b} p := by apply pullback.hom_ext <;> simp [w₁, w_self]
+
+end Refinement
+
 end PreOneHypercover
 
 namespace GrothendieckTopology
@@ -448,6 +806,54 @@ lemma exists_nonempty_homotopy (f g : E.Hom F) :
   ⟨cylinder f g, PreOneHypercover.cylinderHom f g, ⟨PreOneHypercover.cylinderHomotopy f g⟩⟩
 
 end Category
+
+@[simps! toPreOneHypercover]
+noncomputable
+def pullback₁ {S T : C} (f : T ⟶ S) (E : J.OneHypercover S) [∀ (i : E.I₀), HasPullback f (E.f i)]
+    [∀ (i j : E.I₀) (k : E.I₁ i j), HasPullback f (E.p₁ k ≫ E.f i)] :
+    J.OneHypercover T where
+  __ := E.toPreOneHypercover.pullback₁ f
+  mem₀ := by
+    simp only [PreOneHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.sieve₀_pullback₁]
+    exact J.pullback_stable _ E.mem₀
+  mem₁ i₁ i₂ W p₁ p₂ h := by
+    simp only [PreOneHypercover.pullback₁_toPreZeroHypercover, PreZeroHypercover.pullback₁_X,
+      PreZeroHypercover.pullback₁_f] at h
+    rw [PreOneHypercover.sieve₁_pullback₁ _ _ _ _ h]
+    apply E.mem₁
+    rw [Category.assoc, Category.assoc, ← pullback.condition, ← pullback.condition, reassoc_of% h]
+
+variable {S : C}
+
+structure Refinement (E : OneHypercover.{w} J S) extends E.toPreOneHypercover.Refinement where
+  mem₀ (i : E.I₀) : (cover i).sieve₀ ∈ J (E.X i)
+  mem₁ {i j : E.I₀} {a : (cover i).I₀} {b : (cover j).I₀} {W : C} (v₁ : W ⟶ (cover i).X a)
+    (v₂ : W ⟶ (cover j).X b) (h : v₁ ≫ (cover i).f _ ≫ E.f _ = v₂ ≫ (cover j).f _ ≫ E.f _) :
+    toRefinement.sieve₁ v₁ v₂ ∈ J W
+
+namespace Refinement
+
+variable {E : OneHypercover.{w} J S}
+
+@[simps toPreOneHypercover]
+def cover₁ (R : E.Refinement) (i : E.I₀) : J.OneHypercover (E.X i) where
+  __ := R.toRefinement.cover₁ i
+  mem₀ := R.mem₀ i
+  mem₁ i₁ i₂ W v₁ v₂ hv₁₂ := by
+    apply R.mem₁
+    simp only [PreOneHypercover.Refinement.cover₁_toPreZeroHypercover] at hv₁₂
+    rw [reassoc_of% hv₁₂]
+
+@[simps toPreOneHypercover]
+def bind (R : E.Refinement) : J.OneHypercover S where
+  __ := R.toRefinement.bind
+  mem₀ := by
+    rw [PreZeroHypercover.sieve₀, Sieve.ofArrows, ← PreZeroHypercover.presieve₀,
+      PreOneHypercover.Refinement.presieve₀_bind]
+    exact J.bindOfArrows E.mem₀ R.mem₀
+  mem₁ i₁ i₂ W v₁ v₂ hv₁₂ := R.mem₁ v₁ v₂ hv₁₂
+
+end Refinement
 
 end OneHypercover
 
