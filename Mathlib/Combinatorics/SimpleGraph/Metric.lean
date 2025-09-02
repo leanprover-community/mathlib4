@@ -280,17 +280,14 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
 
 lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
-  by_contra! hh
-  cases hh.lt_or_gt
-  · have := SimpleGraph.dist_le p₂
-    omega
-  · obtain ⟨ru, rv, h⟩ := h₂
-    obtain ⟨s, _⟩ := p₂.reachable.exists_path_of_dist
-    let r := ru.append s |>.append rv
-    have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
-    have : r.length = ru.length + s.length + rv.length := by simp [r]
-    have := SimpleGraph.dist_le r
-    omega
+  refine (dist_le _).eq_of_not_lt' fun hh ↦ ?_
+  obtain ⟨ru, rv, h⟩ := h₂
+  obtain ⟨s, _⟩ := p₂.reachable.exists_path_of_dist
+  let r := ru.append s |>.append rv
+  have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
+  have : r.length = ru.length + s.length + rv.length := by simp [r]
+  have := dist_le r
+  omega
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
