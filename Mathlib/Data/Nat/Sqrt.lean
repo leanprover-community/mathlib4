@@ -169,8 +169,14 @@ lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| (have := sqrt_le_add n; by grind)
 
+@[simp]
+lemma log2_two : (2 : ℕ).log2 = 1 := by rfl
+
+@[simp]
+lemma sqrt_two : sqrt 2 = 1 := by simp [sqrt, sqrt.iter]
+
 lemma add_one_sqrt_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) : (n + 1).sqrt ≤ n :=
-  le_induction le_rfl (fun n _ ih ↦ le_trans n.succ.sqrt_succ_le_succ_sqrt (succ_le_succ ih)) n
+  le_induction (by simp) (fun n _ ih ↦ le_trans n.succ.sqrt_succ_le_succ_sqrt (succ_le_succ ih)) n
     (Nat.pos_of_ne_zero hn)
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
@@ -200,5 +206,10 @@ lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t *
 
 lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := by
   simpa only [Nat.pow_two] using not_exists_sq
+
+lemma le_sqrt_of_eq_mul {a b c : ℕ} (h : a = b * c) : b ≤ a.sqrt ∨ c ≤ a.sqrt := by
+  rcases le_total b c with bc | cb
+  · exact Or.inl <| le_sqrt.mpr <| h ▸ mul_le_mul_left b bc
+  · exact Or.inr <| le_sqrt.mpr <| h ▸ mul_le_mul_right c cb
 
 end Nat
