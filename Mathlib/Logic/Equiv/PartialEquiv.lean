@@ -919,6 +919,16 @@ noncomputable def InjOn.toPartialEquiv [Nonempty α] (f : α → β) (s : Set α
 
 end Set
 
+namespace Function
+
+/-- Any injective function induces a partial equivalence from its domain to its range. -/
+@[simps! -fullyApplied]
+noncomputable def Injective.toPartialEquiv
+    {α β : Type*} [Nonempty α] {f : α → β} (hf : f.Injective) : PartialEquiv α β :=
+  hf.injOn.toPartialEquiv f univ
+
+end Function
+
 namespace Equiv
 
 /- `Equiv`s give rise to `PartialEquiv`s. We set up simp lemmas to reduce most properties of the
@@ -984,5 +994,11 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
   simp only [transEquiv_eq_trans, trans_assoc]
+
+/-- `Subtype.val` induces a partial equivalence from `univ : Set (Subtype p)` to `p`. -/
+@[simps! -fullyApplied]
+noncomputable def subtype {α : Type*} (p : α → Prop) [Nonempty (Subtype p)] :
+    PartialEquiv (Subtype p) α :=
+  Subtype.val_injective.injOn.toPartialEquiv Subtype.val univ
 
 end PartialEquiv
