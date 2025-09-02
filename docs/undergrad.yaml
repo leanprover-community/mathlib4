@@ -364,7 +364,7 @@ Single Variable Real Analysis:
 
 # 7.
 Single Variable Complex Analysis:
-  complex-valued series:
+  Complex-valued series:
     radius of convergence: 'FormalMultilinearSeries.radius'
 #    properties of sums of complex-valued series on their disks of convergence: (this is a heading?)
     continuity: 'HasFPowerSeriesOnBall.continuousOn'
