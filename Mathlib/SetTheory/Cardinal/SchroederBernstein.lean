@@ -85,7 +85,7 @@ theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Functio
 Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
-  obtain ⟨f, hf, _⟩ := schroeder_bernstein' hf hg (fun x y ↦ True) (by simp) (by simp)
+  obtain ⟨f, hf, _⟩ := schroeder_bernstein_of_rel hf hg (fun x y ↦ True) (by simp) (by simp)
   exact ⟨f, hf⟩
 
 /-- **The Schröder-Bernstein Theorem**: Given embeddings `α ↪ β` and `β ↪ α`, there exists an
