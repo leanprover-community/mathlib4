@@ -23,7 +23,7 @@ section SameSpace
 
 variable {α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
   [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+  [TopologicalSpace ε'] [AddMonoid ε'] [ESeminormedAddMonoid ε']
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :

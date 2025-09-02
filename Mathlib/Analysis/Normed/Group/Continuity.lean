@@ -101,11 +101,6 @@ instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
-@[to_additive]
-instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
-  __ := NormedGroup.toENormedMonoid
-  __ := ‹NormedCommGroup E›
-
 end Instances
 
 section SeminormedGroup
