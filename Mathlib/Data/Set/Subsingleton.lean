@@ -292,6 +292,21 @@ theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=
     rw [mem_insert_iff, mem_singleton_iff]
     exact Classical.propComplete x
 
+@[simp]
+theorem univ_set_of_isEmpty [h : IsEmpty α] : @univ (Set α) = {∅} := by
+  ext S
+  rw [Set.mem_singleton_iff, eq_true (Set.mem_univ S), true_iff]
+  ext a
+  exact IsEmpty.elim h a
+
+@[simp]
+theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α  := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
+  by_contra H
+  rw [not_isEmpty_iff] at H
+  suffices {Classical.ofNonempty} ∈ (Set.univ  : Set (Set α)) by aesop
+  trivial
+
 end Nontrivial
 section Monotonicity
 

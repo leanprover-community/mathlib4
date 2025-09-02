@@ -613,11 +613,28 @@ end Multiset
 
 namespace Finset
 
-theorem mem_union_of_disjoint {α : Type*} [DecidableEq α]
+variable {α : Type*}
+
+theorem mem_union_of_disjoint [DecidableEq α]
     {s t : Finset α} (h : Disjoint s t) {x : α} :
     x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
   rw [Finset.mem_union, Xor']
   have := disjoint_left.1 h
   tauto
+
+@[simp]
+theorem univ_finset_of_isEmpty [h : IsEmpty α] : (Set.univ : Set (Finset α)) = {∅} := by
+  ext S
+  rw [Set.mem_singleton_iff, eq_true (Set.mem_univ S), true_iff]
+  ext a
+  exact IsEmpty.elim h a
+
+@[simp]
+theorem univ_finset_eq_singleton_empty_iff : @Set.univ (Finset α) = {∅} ↔ IsEmpty α  := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
+  by_contra H
+  rw [not_isEmpty_iff] at H
+  suffices {Classical.ofNonempty} ∈ (Set.univ  : Set (Finset α)) by aesop
+  trivial
 
 end Finset
