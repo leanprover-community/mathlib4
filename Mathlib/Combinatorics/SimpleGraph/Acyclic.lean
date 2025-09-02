@@ -214,7 +214,7 @@ theorem IsAcyclic.isPath_iff_chain' [DecidableEq V] (hG : G.IsAcyclic) {v w : V}
       have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
       simp [this, snd_takeUntil head.ne]
 
-theorem IsAcyclic.isPath_iff_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} {p : G.Walk v w} :
+theorem IsAcyclic.isTrail_iff_isPath [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
     p.IsTrail ↔ p.IsPath :=
   ⟨fun h ↦ hG.isPath_iff_chain' p |>.mpr <| List.Pairwise.chain' <| p.isTrail_def.mp h,
    IsPath.toIsTrail⟩
