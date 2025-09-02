@@ -285,28 +285,15 @@ instance : SemilatticeSup (ClosedSubmodule R N) where
   sup_le _ _ _ ha hb := Submodule.closure_le.mpr <| sup_le_iff.mpr ⟨ha, hb⟩
 
 instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
-  le_sSup s a := by
-    intro ha x
-    simp only [toSubmodule_sSup]
-    intro hx
-    apply subset_closure
-    simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe]
-    apply Submodule.mem_iSup_of_mem
-    exact Submodule.mem_iSup_of_mem ha hx
-  sSup_le s a := by
-    intro h x
-    simp only [toSubmodule_sSup]
+  le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
+    Submodule.mem_iSup_of_mem ha hx
+  sSup_le s a h x := by
     nth_rw 2 [Submodule.mem_toSubmodule_iff]
     apply closure_mono
     simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
     intro y hy
-    simp only [SetLike.mem_coe] at hy
-    rw [Submodule.mem_iSup] at hy
-    apply hy
-    intro b z hz
-    rw [Submodule.mem_iSup] at hz
-    apply hz
-    exact fun hb ↦ h b hb
+    simp only [SetLike.mem_coe, Submodule.mem_iSup] at hy
+    exact hy a fun b _ hz ↦ Submodule.mem_iSup _ |>.mp hz _ <| fun hb ↦ h b hb
 
 instance : Lattice (ClosedSubmodule R N) where
 
