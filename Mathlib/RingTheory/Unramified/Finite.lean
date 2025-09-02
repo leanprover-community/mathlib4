@@ -241,14 +241,14 @@ def sec :
       LinearMap.flip_apply, TensorProduct.AlgebraTensorModule.mapBilinear_apply, RingHom.id_apply]
     trans (TensorProduct.AlgebraTensorModule.map (LinearMap.id (R := S) (M := S))
       ((LinearMap.flip (AlgHom.toLinearMap (lsmul R R M))) m)) ((1 ⊗ₜ r) * elem R S)
-    · induction' elem R S using TensorProduct.induction_on
+    · induction elem R S using TensorProduct.induction_on
       · simp
       · simp [smul_comm r]
       · simp only [map_add, mul_add, *]
     · have := one_tmul_sub_tmul_one_mul_elem (R := R) r
       rw [sub_mul, sub_eq_zero] at this
       rw [this]
-      induction' elem R S using TensorProduct.induction_on
+      induction elem R S using TensorProduct.induction_on
       · simp
       · simp [TensorProduct.smul_tmul']
       · simp only [map_add, smul_add, mul_add, *]

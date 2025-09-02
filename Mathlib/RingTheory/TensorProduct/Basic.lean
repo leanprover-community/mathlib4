@@ -285,9 +285,9 @@ instance instSemiring : Semiring (A ⊗[R] B) where
 
 @[simp]
 theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
-  induction' k with k ih
-  · simp [one_def]
-  · simp [pow_succ, ih]
+  induction k with
+  | zero => simp [one_def]
+  | succ k ih => simp [pow_succ, ih]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 @[simps]
