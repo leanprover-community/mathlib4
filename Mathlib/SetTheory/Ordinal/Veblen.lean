@@ -199,11 +199,7 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
 
 theorem veblenWith_veblenWith_eq_veblenWith_iff (h : o₂ ≤ o₁) :
     veblenWith f o₁ (veblenWith f o₂ a) = veblenWith f o₂ a ↔ veblenWith f o₁ a = a := by
-  constructor
-  all_goals
-    intro h'
-    have := veblenWith_eq_self_of_le hf h h'
-    simp_all
+  grind [veblenWith_inj, → veblenWith_eq_self_of_le]
 
 theorem veblenWith_lt_veblenWith_veblenWith_iff (h : o₂ ≤ o₁) :
     veblenWith f o₂ a < veblenWith f o₁ (veblenWith f o₂ a) ↔ a < veblenWith f o₁ a := by
