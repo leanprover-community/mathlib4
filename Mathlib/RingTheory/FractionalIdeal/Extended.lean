@@ -132,16 +132,16 @@ section Algebra
 open scoped nonZeroDivisors
 
 variable (A K L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B]
-  [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
-  [Algebra A B] [NoZeroSMulDivisors A B]
+  [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
+  [IsFractionRing B L]
 
 /--
 The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
 `A ⊆ B` an extension of domains.
 -/
-def extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
-  have hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-  extendedHom L hs
+abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+  extendedHom L <|
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 
 end Algebra
 
