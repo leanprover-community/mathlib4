@@ -202,7 +202,6 @@ lemma sigmaMk_mk (i) (x : f i) :
     (colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map (Sigma.ι f i) x
   congr 2
-  refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.sigmaCofanIsColimit _⟩ _ _).trans ?_
   exact ι_comp_sigmaComparison Scheme.forgetToTop _ _
 
 open scoped Function in
@@ -313,7 +312,6 @@ lemma coprodMk_inl (x : X) :
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inl x
   congr 2
-  refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
   exact coprodComparison_inl Scheme.forgetToTop
 
 @[simp]
@@ -323,7 +321,6 @@ lemma coprodMk_inr (x : Y) :
     (colimit.isoColimitCocone ⟨_, TopCat.binaryCofanIsColimit _ _⟩).inv ≫ _) x =
       Scheme.forgetToTop.map coprod.inr x
   congr 2
-  refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
   exact coprodComparison_inr Scheme.forgetToTop
 
 /-- The open cover of the coproduct of two schemes. -/
