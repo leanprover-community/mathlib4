@@ -1788,6 +1788,10 @@ import Mathlib.Analysis.Normed.Lp.PiLp
 import Mathlib.Analysis.Normed.Lp.ProdLp
 import Mathlib.Analysis.Normed.Lp.WithLp
 import Mathlib.Analysis.Normed.Lp.lpSpace
+import Mathlib.Analysis.Normed.Module.Ball.Action
+import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Module.Complemented
 import Mathlib.Analysis.Normed.Module.Completion
@@ -1828,7 +1832,6 @@ import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import Mathlib.Analysis.NormedSpace.Alternating.Basic
 import Mathlib.Analysis.NormedSpace.Alternating.Curry
-import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.Connected
 import Mathlib.Analysis.NormedSpace.ENormedSpace
@@ -1838,8 +1841,8 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.Analysis.NormedSpace.HomeomorphBall
 import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.NormedSpace.Multilinear.Curry
@@ -1854,11 +1857,9 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
-import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Analysis.Oscillation
