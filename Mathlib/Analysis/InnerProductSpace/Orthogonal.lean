@@ -11,6 +11,7 @@ import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 # Orthogonal complements of submodules
 
 In this file, the `orthogonal` complement of a submodule `K` is defined, and basic API established.
+We make duplicates for `Submodule` and `ClosedSubmodule`.
 Some of the more subtle results about the orthogonal complement are delayed to
 `Analysis.InnerProductSpace.Projection`.
 
