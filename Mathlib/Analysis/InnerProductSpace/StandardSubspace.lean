@@ -1,22 +1,54 @@
+/-
+Copyright (c) Yoh Tanimoto. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yoh Tanimoto
+-/
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 
-open Set ContinuousLinearMap
+/-!
+# Standard subspaces of a Hilbert space
+
+This files defines standard subspaces of a complex Hilbert space: a standard subspace `S` of `H` is
+a closed real subspace `S` such that `S ⊓ i S = ⊥` and `S ⊔ i S = ⊤`. For a standard subspace, one
+can define a closable operator `x + i y ↦ x - i y` and develop an analogue of the Tomita-Takesaki
+modular theory for von Neumann algebras. By considering inclusions of standard subspaces, one can
+obtain unitary representations of various Lie groups.
+
+## Main definitions and results
+
+* `instance : InnerProductSpace ℝ H` for `InnerProductSpace ℂ H`, by restricting the scalar product
+to its real part
+
+* `StandardSubspace` as a structure with a `ClosedSubmodule` for `InnerProductSpace ℝ H` satisfying
+`IsCyclic` and `IsSeparating`. Actually the interesting cases need `CompleteSpace H`, but the
+definition is given for a general case.
+
+* `symplComp` as a `StandardSubspace` of the symplectic complement of a standard subspace with
+respect to `⟪⬝, ⬝⟫.im`
+
+* `symplComp_symplComp_eq` the double symplectic complement is equal to itself
+
+## References
+
+* [Chap. 2 of Lecture notes by R. Longo](https://www.mat.uniroma2.it/longo/Lecture-Notes_files/LN-Part1.pdf)
+
+* [Oberwolfach report](https://ems.press/content/serial-article-files/48171)
+
+## TODO
+
+Define the Tomita conjugation, prove Tomita's theorem, prove the KMS condition.
+-/
+
+open ContinuousLinearMap
 open scoped ComplexInnerProductSpace
 
-instance : NeZero Complex.I := neZero_iff.mpr Complex.I_ne_zero
+local instance : NeZero Complex.I := neZero_iff.mpr Complex.I_ne_zero
 
-section ScalarSMulCLM
+section ScalarSMulCLE
 
 variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
-def scalarSMulCLM : ℂ →L[ℂ] H →L[ℝ] H where
-  toFun c := c • (id ℝ H)
-  map_add' _ _ := Module.add_smul _ _ (id ℝ H)
-  map_smul' _ _ := IsScalarTower.smul_assoc _ _ (id ℝ H)
-
-@[simp]
-lemma scalarSMulCLM_apply (c : ℂ) (x : H) : scalarSMulCLM H c x = c • x := rfl
-
+/-- the scalar product by a non-zero complex number as a continuous real-linear equivalence. -/
 noncomputable def scalarSMulCLE (c : ℂ) [h : NeZero c] : H ≃L[ℝ] H where
   toFun := c • (id ℝ H)
   continuous_toFun := by
@@ -46,13 +78,7 @@ lemma scalarSMulCLE_apply (c : ℂ) [NeZero c] (x : H) : scalarSMulCLE H c x = c
 lemma scalarSMulCLE_symm_apply (c : ℂ) [NeZero c] (x : H) :
     (scalarSMulCLE H c).symm x = c⁻¹ • x := rfl
 
-lemma IsInvertible_scalarSMulCLM_of_neZero (c : ℂ) [NeZero c] :
-    IsInvertible (scalarSMulCLM H c) := by
-  use scalarSMulCLE H c
-  ext x
-  simp
-
-end ScalarSMulCLM
+end ScalarSMulCLE
 
 section RestrictScalar
 
@@ -69,22 +95,20 @@ noncomputable instance : InnerProductSpace ℝ H where
   add_left x y z := by simp
   smul_left c x y := by simp
 
-lemma aaa (x y : H) : inner ℝ x y = ⟪x, y⟫.re := rfl
+lemma inner_real_eq_re_inner (x y : H) : inner ℝ x y = ⟪x, y⟫.re := rfl
 
 end RestrictScalar
 
-namespace Submodule
-
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
-
-end Submodule
-
 namespace ClosedSubmodule
 
-variable {H : Type*} [NormedAddCommGroup H] [ipc : InnerProductSpace ℂ H] [CompleteSpace H]
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
+/-- The image of a closed submodule by the multiplication by `Complex.I`. -/
 noncomputable abbrev mulI (S : ClosedSubmodule ℝ H) := S.mapEquiv (scalarSMulCLE H Complex.I)
 
+/-- The symplectic complement of a closed submodule with respect to `⟪⬝, ⬝⟫.im`, defined as the
+image of `mulI` and `orthogonal`. The proof that this is the symplectic complement is given by
+`mem_symplComp`. -/
 noncomputable abbrev symplComp (S : ClosedSubmodule ℝ H) := (S.mulI)ᗮ
 
 lemma mem_iff (S : ClosedSubmodule ℝ H) {x : H} : x ∈ S ↔ x ∈ S.toSubmodule.carrier := by
@@ -99,13 +123,13 @@ lemma mem_symplComp_iff {x : H} {S : ClosedSubmodule ℝ H} :
     have hiy := h (Complex.I • y)
     simp [← smul_assoc] at hiy
     have hxy := hiy hy
-    rw [aaa] at hxy
+    rw [inner_real_eq_re_inner] at hxy
     simp only [CStarModule.inner_op_smul_left, RCLike.star_def, Complex.conj_I, mul_neg,
       Complex.neg_re, Complex.mul_re, Complex.I_re, mul_zero, Complex.I_im, mul_one, zero_sub,
       neg_neg] at hxy
     exact hxy
   · intro h y hy
-    rw [aaa]
+    rw [inner_real_eq_re_inner]
     have hiy := h _ hy
     simp only [inner_neg_left, Complex.neg_im, neg_eq_zero] at hiy
     rw [inner_smul_left] at hiy
@@ -117,7 +141,7 @@ lemma orthogonal_mulI_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.s
   ext x
   rw [← mem_iff, ← mem_iff, mem_symplComp_iff]
   simp only [mem_mapEquiv_iff', scalarSMulCLE_symm_apply, Complex.inv_I, neg_smul]
-  simp_rw [mem_orthogonal, aaa]
+  simp_rw [mem_orthogonal, inner_real_eq_re_inner]
   constructor
   · intro h y hy
     have hxy := h y hy
@@ -137,7 +161,6 @@ lemma orthogonal_mulI_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.s
 lemma mulI_symplComp_eq_symplComp_mulI {S : ClosedSubmodule ℝ H} :
     S.mulI.symplComp = S.symplComp.mulI := by
   rw [symplComp, symplComp, orthogonal_mulI_eq_symplComp]
-
 
 @[simp]
 lemma mulI_mulI_eq (S : ClosedSubmodule ℝ H) : S.mulI.mulI = S := by
@@ -164,10 +187,10 @@ lemma mulI_mulI_eq (S : ClosedSubmodule ℝ H) : S.mulI.mulI = S := by
     exact hx
 
 @[simp]
-lemma symplComp_symplComp_eq {S : ClosedSubmodule ℝ H} : S.symplComp.symplComp = S := by
+lemma symplComp_symplComp_eq [CompleteSpace H] {S : ClosedSubmodule ℝ H} :
+    S.symplComp.symplComp = S := by
   rw [symplComp, ← mulI_symplComp_eq_symplComp_mulI, symplComp]
   simp only [eq_orthogonal_orthogonal, mulI_mulI_eq]
-
 
 lemma sup_mulI_eq_mulI_sup (S T : ClosedSubmodule ℝ H) :
     (S ⊔ T).mulI = S.mulI ⊔ T.mulI := by
@@ -182,64 +205,73 @@ lemma inf_symplComp_eq_symplcomp_sup (S T : ClosedSubmodule ℝ H) :
   rw [symplComp, symplComp, symplComp, sup_mulI_eq_mulI_sup]
   exact Eq.symm (inf_orthogonal S.mulI T.mulI)
 
-lemma sup_symplComp_eq_symplcomp_inf (S T : ClosedSubmodule ℝ H) :
+lemma sup_symplComp_eq_symplcomp_inf [CompleteSpace H] (S T : ClosedSubmodule ℝ H) :
     (S ⊓ T).symplComp = S.symplComp ⊔ T.symplComp := by
   rw [symplComp, symplComp, symplComp, inf_mulI_eq_mulI_inf]
   exact Eq.symm (sup_orthogonal S.mulI T.mulI)
 
 end ClosedSubmodule
 
-section StandardSubspace
+section Def
 
-variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
+/-- A standard subspace `S` of a complex Hilbert space (or just an inner product space) `H` is a
+closed real subspace `S` such that `S ⊓ i S = ⊥` and `S ⊔ i S = ⊤`. -/
 @[ext]
 structure StandardSubspace where
-  toSubspace : ClosedSubmodule ℝ H
-  separating : toSubspace ⊓ toSubspace.mulI = ⊥
-  cyclic : toSubspace ⊔ toSubspace.mulI = ⊤
+  toClosedSubmodule : ClosedSubmodule ℝ H
+  IsSeparating : toClosedSubmodule ⊓ toClosedSubmodule.mulI = ⊥
+  IsCyclic : toClosedSubmodule ⊔ toClosedSubmodule.mulI = ⊤
+
+end Def
 
 namespace StandardSubspace
 
-lemma standardSubspace_eq_iff {S T : StandardSubspace H} : S = T ↔ S.toSubspace = T.toSubspace := by
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+
+lemma standardSubspace_eq_iff {S T : StandardSubspace H} :
+    S = T ↔ S.toClosedSubmodule = T.toClosedSubmodule := by
   constructor
   · intro h
-    exact congrArg StandardSubspace.toSubspace h
+    exact congrArg StandardSubspace.toClosedSubmodule h
   · intro h
     ext x
     simp only [Submodule.carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, SetLike.mem_coe]
     exact Eq.to_iff (congrFun (congrArg Membership.mem h) x)
 
+/-- The image of a standard subspace by the multiplication by `Complex.I`, bundled as a
+`StandardSubspace`. -/
 noncomputable def mulI (S : StandardSubspace H) : StandardSubspace H where
-  toSubspace := S.toSubspace.mulI
-  separating := by
+  toClosedSubmodule := S.toClosedSubmodule.mulI
+  IsSeparating := by
     simp only [ClosedSubmodule.mulI_mulI_eq]
     rw [inf_comm]
-    exact S.separating
-  cyclic := by
+    exact S.IsSeparating
+  IsCyclic := by
     simp only [ClosedSubmodule.mulI_mulI_eq]
     rw [sup_comm]
-    exact S.cyclic
+    exact S.IsCyclic
 
-noncomputable def symplComp (S : StandardSubspace H) : StandardSubspace H where
-  toSubspace := S.toSubspace.symplComp
-  separating := by
+/-- The symplectic complement of a standard subspace, bundled as a `StandardSubspace`. -/
+noncomputable def symplComp [CompleteSpace H] (S : StandardSubspace H) : StandardSubspace H where
+  toClosedSubmodule := S.toClosedSubmodule.symplComp
+  IsSeparating := by
     rw [← ClosedSubmodule.mulI_symplComp_eq_symplComp_mulI,
-      ← ClosedSubmodule.inf_symplComp_eq_symplcomp_sup, S.cyclic, ClosedSubmodule.symplComp,
+      ← ClosedSubmodule.inf_symplComp_eq_symplcomp_sup, S.IsCyclic, ClosedSubmodule.symplComp,
       ClosedSubmodule.mulI]
     simp
-  cyclic := by
+  IsCyclic := by
     rw [← ClosedSubmodule.mulI_symplComp_eq_symplComp_mulI,
-      ← ClosedSubmodule.sup_symplComp_eq_symplcomp_inf, S.separating, ClosedSubmodule.symplComp,
+      ← ClosedSubmodule.sup_symplComp_eq_symplcomp_inf, S.IsSeparating, ClosedSubmodule.symplComp,
       ClosedSubmodule.mulI]
     simp
 
 @[simp]
-theorem symplComp_symplComp_eq (S : StandardSubspace H) : S.symplComp.symplComp = S := by
-  refine (standardSubspace_eq_iff H).mpr ?_
+theorem symplComp_symplComp_eq [CompleteSpace H] (S : StandardSubspace H) :
+    S.symplComp.symplComp = S := by
+  apply standardSubspace_eq_iff.mpr
   simp only [symplComp]
   exact ClosedSubmodule.symplComp_symplComp_eq
-
-end StandardSubspace
 
 end StandardSubspace
