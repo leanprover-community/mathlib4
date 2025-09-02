@@ -3,7 +3,7 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.Analysis.Normed.Group.Indicator
 import Mathlib.Data.Fintype.Order
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
