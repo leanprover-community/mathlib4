@@ -16,6 +16,9 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
   `IsLocalization M K` and `IsLocalization N L`. Let `f : A →+* B` be a ring homomorphism with
   `hf : M ≤ Submonoid.comap f N`. If `I : FractionalIdeal M K`, then the extension of `I` along
   `f` is `extended L hf I : FractionalIdeal N L`.
+* `FractionalIdeal.extendedHom`: The ring homomorphism version of `FractionalIdeal.extended`.
+* `FractionalIdeal.extendedHomₐ`: For `A ⊆ B` an extension of domains, the ring homomorphism that
+  sends a fractional ideal of `A` to a fractional ideal of `B`.
 
 ## Main results
 
@@ -30,6 +33,8 @@ fractional ideal, fractional ideals, extended, extension
 open IsLocalization FractionalIdeal Submodule
 
 namespace FractionalIdeal
+
+section RingHom
 
 variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] {f : A →+* B}
 variable {K : Type*} {M : Submonoid A} [CommRing K] [Algebra A K] [IsLocalization M K]
@@ -108,5 +113,36 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
       exact smul_mem _ (f a) hy
   · rcases Set.mem_mul.mp h with ⟨y, ⟨i, hi, rfl⟩, z, ⟨j, hj, rfl⟩, rfl⟩
     exact Submodule.subset_span ⟨i * j, mul_mem_mul hi hj, by simp⟩
+
+/--
+The ring homomorphism version of `FractionalIdeal.extended`.
+-/
+@[simps]
+def extendedHom : FractionalIdeal M K →+* FractionalIdeal N L where
+  toFun := extended L hf
+  map_one' := extended_one L hf
+  map_zero' := extended_zero L hf
+  map_mul' := extended_mul L hf
+  map_add' := extended_add L hf
+
+end RingHom
+
+section Algebra
+
+open scoped nonZeroDivisors
+
+variable (A K L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Algebra A B]
+  [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
+  [IsFractionRing B L]
+
+/--
+The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
+`A ⊆ B` an extension of domains.
+-/
+abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+  extendedHom L <|
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
+
+end Algebra
 
 end FractionalIdeal
