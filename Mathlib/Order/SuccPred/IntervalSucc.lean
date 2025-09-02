@@ -12,7 +12,7 @@ import Mathlib.Order.SuccPred.Archimedean
 
 In this file we prove
 
-* `Monotone.biUnion_Ico_Ioc_map_succ`: if `α` is a linear archimedean succ order and `β` is a linear
+* `Monotone.biUnion_Ico_Ioc_map_succ`: if `α` is a linear Archimedean succ order and `β` is a linear
   order, then for any monotone function `f` and `m n : α`, the union of intervals
   `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`, is equal to `Set.Ioc (f m) (f n)`;
 
@@ -30,7 +30,7 @@ variable {α β : Type*} [LinearOrder α]
 
 namespace Monotone
 
-/-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone
+/-- If `α` is a linear Archimedean succ order and `β` is a linear order, then for any monotone
 function `f` and `m n : α`, the union of intervals `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`,
 is equal to `Set.Ioc (f m) (f n)` -/
 theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}

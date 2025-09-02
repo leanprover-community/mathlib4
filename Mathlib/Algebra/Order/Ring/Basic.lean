@@ -100,7 +100,7 @@ end IsOrderedRing
 
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : ℕ}
 
-/-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
+/-- A function `f : α → R` is non-Archimedean if it satisfies the ultrametric inequality
   `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
 def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
 

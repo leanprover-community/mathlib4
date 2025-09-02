@@ -19,7 +19,7 @@ This file defines a function field and the ring of integers corresponding to it.
   i.e. it is a finite extension of the field of rational functions in one variable over `Fq`.
 - `FunctionField.ringOfIntegers` defines the ring of integers corresponding to a function field
   as the integral closure of `Fq[X]` in the function field.
-- `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the nonarchimedean
+- `FunctionField.inftyValuation` : The place at infinity on `Fq(t)` is the non-Archimedean
   valuation on `Fq(t)` with uniformizer `1/t`.
 - `FunctionField.FqtInfty` : The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the
   valuation at infinity.
@@ -145,7 +145,7 @@ open Multiplicative WithZero
 
 variable [DecidableEq (RatFunc Fq)]
 
-/-- The valuation at infinity is the nonarchimedean valuation on `Fq(t)` with uniformizer `1/t`.
+/-- The valuation at infinity is the non-Archimedean valuation on `Fq(t)` with uniformizer `1/t`.
 Explicitly, if `f/g ∈ Fq(t)` is a nonzero quotient of polynomials, its valuation at infinity is
 `exp (degree(f) - degree(g))`. -/
 def inftyValuationDef (r : RatFunc Fq) : ℤᵐ⁰ :=

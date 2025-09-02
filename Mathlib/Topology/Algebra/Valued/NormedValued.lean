@@ -9,18 +9,18 @@ import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
-# Correspondence between nontrivial nonarchimedean norms and rank one valuations
+# Correspondence between nontrivial non-Archimedean norms and rank one valuations
 
-Nontrivial nonarchimedean norms correspond to rank one valuations.
+Nontrivial non-Archimedean norms correspond to rank one valuations.
 
 ## Main Definitions
-* `NormedField.toValued` : the valued field structure on a nonarchimedean normed field `K`,
+* `NormedField.toValued` : the valued field structure on a non-Archimedean normed field `K`,
   determined by the norm.
 * `Valued.toNormedField` : the normed field structure determined by a rank one valuation.
 
 ## Tags
 
-norm, nonarchimedean, nontrivial, valuation, rank one
+norm, non-Archimedean, nontrivial, valuation, rank one
 -/
 
 
@@ -36,7 +36,7 @@ variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
 
 namespace NormedField
 
-/-- The valuation on a nonarchimedean normed field `K` defined as `nnnorm`. -/
+/-- The valuation on a non-Archimedean normed field `K` defined as `nnnorm`. -/
 def valuation : Valuation K ℝ≥0 where
   toFun           := nnnorm
   map_zero'       := nnnorm_zero
@@ -47,7 +47,7 @@ def valuation : Valuation K ℝ≥0 where
 @[simp]
 theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 
-/-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
+/-- The valued field structure on a non-Archimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     inferInstanceAs (IsUniformAddGroup K) with

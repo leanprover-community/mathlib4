@@ -99,7 +99,7 @@ class MulLEAddHomClass (F : Type*) (α β : outParam Type*) [Mul α] [Add β] [L
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 
-/-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-archimedean morphisms. -/
+/-- `NonarchimedeanHomClass F α β` states that `F` is a type of non-Archimedean morphisms. -/
 class NonarchimedeanHomClass (F : Type*) (α β : outParam Type*)
     [Add α] [LinearOrder β] [FunLike F α β] : Prop where
   /-- the image of a sum is less or equal than the maximum of the images. -/

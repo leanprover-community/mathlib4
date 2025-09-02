@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
-# Nonnegative elements are archimedean
+# Nonnegative elements are Archimedean
 
 This file defines instances and prove some properties about the nonnegative elements
 `{x : α // 0 ≤ x}` of an arbitrary type `α`.

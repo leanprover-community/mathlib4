@@ -22,7 +22,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 ## Main Results
 * `seminormFromConst_isNonarchimedean` : the function `seminormFromConst' hf1 hc hpm`
-  is nonarchimedean when f is nonarchimedean.
+  is non-Archimedean when f is non-Archimedean.
 * `seminormFromConst_isPowMul` : the function `seminormFromConst' hf1 hc hpm`
   is power-multiplicative.
 * `seminormFromConst_const_mul` : for every `x : R`, `seminormFromConst' hf1 hc hpm (c * x)`
@@ -33,7 +33,7 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 ## Tags
 
-SeminormFromConst, Seminorm, Nonarchimedean
+SeminormFromConst, Seminorm, Non-Archimedean
 -/
 
 noncomputable section
@@ -164,7 +164,7 @@ theorem seminormFromConst_def (x : R) :
 theorem seminormFromConst_one_le : seminormFromConst' hf1 hc hpm 1 ≤ 1 :=
   le_of_eq (seminormFromConst_one hf1 hc hpm)
 
-/-- The function `seminormFromConst' hf1 hc hpm` is nonarchimedean. -/
+/-- The function `seminormFromConst' hf1 hc hpm` is non-Archimedean. -/
 theorem seminormFromConst_isNonarchimedean (hna : IsNonarchimedean f) :
     IsNonarchimedean (seminormFromConst' hf1 hc hpm) := fun x y ↦ by
   apply le_of_tendsto_of_tendsto' (seminormFromConst_isLimit hf1 hc hpm (x + y))

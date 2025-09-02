@@ -17,12 +17,12 @@ is positive-semidefinite and subadditive. A norm further only maps zero to zero.
 * `AddGroupSeminorm`: A function `f` from an additive group `G` to the reals that preserves zero,
   takes nonnegative values, is subadditive and such that `f (-x) = f x` for all `x`.
 * `NonarchAddGroupSeminorm`: A function `f` from an additive group `G` to the reals that
-  preserves zero, takes nonnegative values, is nonarchimedean and such that `f (-x) = f x`
+  preserves zero, takes nonnegative values, is non-Archimedean and such that `f (-x) = f x`
   for all `x`.
 * `GroupSeminorm`: A function `f` from a group `G` to the reals that sends one to zero, takes
   nonnegative values, is submultiplicative and such that `f x⁻¹ = f x` for all `x`.
 * `AddGroupNorm`: A seminorm `f` such that `f x = 0 → x = 0` for all `x`.
-* `NonarchAddGroupNorm`: A nonarchimedean seminorm `f` such that `f x = 0 → x = 0` for all `x`.
+* `NonarchAddGroupNorm`: A non-Archimedean seminorm `f` such that `f x = 0 → x = 0` for all `x`.
 * `GroupNorm`: A seminorm `f` such that `f x = 0 → x = 1` for all `x`.
 
 ## Notes
@@ -79,8 +79,8 @@ structure GroupSeminorm (G : Type*) [Group G] where
   /-- The seminorm is invariant under inversion. -/
   protected inv' : ∀ x, toFun x⁻¹ = toFun x
 
-/-- A nonarchimedean seminorm on an additive group `G` is a function `f : G → ℝ` that preserves
-zero, is nonarchimedean and such that `f (-x) = f x` for all `x`. -/
+/-- A non-Archimedean seminorm on an additive group `G` is a function `f : G → ℝ` that preserves
+zero, is non-Archimedean and such that `f (-x) = f x` for all `x`. -/
 structure NonarchAddGroupSeminorm (G : Type*) [AddGroup G] extends ZeroHom G ℝ where
   /-- The seminorm applied to a sum is dominated by the maximum of the function applied to the
   addends. -/
@@ -106,13 +106,13 @@ structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is one. -/
   protected eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
 
-/-- A nonarchimedean norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
-nonarchimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
+/-- A non-Archimedean norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
+non-Archimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
 structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 
-/-- `NonarchAddGroupSeminormClass F α` states that `F` is a type of nonarchimedean seminorms on
+/-- `NonarchAddGroupSeminormClass F α` states that `F` is a type of non-Archimedean seminorms on
 the additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
@@ -124,7 +124,7 @@ class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
   /-- The seminorm is invariant under negation. -/
   protected map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
 
-/-- `NonarchAddGroupNormClass F α` states that `F` is a type of nonarchimedean norms on the
+/-- `NonarchAddGroupNormClass F α` states that `F` is a type of non-Archimedean norms on the
 additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupNorm`. -/

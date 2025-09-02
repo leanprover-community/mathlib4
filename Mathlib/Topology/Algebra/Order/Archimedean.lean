@@ -9,23 +9,23 @@ import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Topology.Order.Basic
 
 /-!
-# Topology on archimedean groups and fields
+# Topology on Archimedean groups and fields
 
 In this file we prove the following theorems:
 
-- `Rat.denseRange_cast`: the coercion from `ℚ` to a linear ordered archimedean field has dense
+- `Rat.denseRange_cast`: the coercion from `ℚ` to a linear ordered Archimedean field has dense
   range;
 
 - `AddSubgroup.dense_of_not_isolated_zero`, `AddSubgroup.dense_of_no_min`: two sufficient conditions
-  for a subgroup of an archimedean linear ordered additive commutative group to be dense;
+  for a subgroup of an Archimedean linear ordered additive commutative group to be dense;
 
-- `AddSubgroup.dense_or_cyclic`: an additive subgroup of an archimedean linear ordered additive
+- `AddSubgroup.dense_or_cyclic`: an additive subgroup of an Archimedean linear ordered additive
   commutative group `G` with order topology either is dense in `G` or is a cyclic subgroup.
 -/
 
 open Set
 
-/-- Rational numbers are dense in a linear ordered archimedean field. -/
+/-- Rational numbers are dense in a linear ordered Archimedean field. -/
 theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜]
     [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
@@ -37,10 +37,10 @@ variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
   [TopologicalSpace G] [OrderTopology G]
   [MulArchimedean G]
 
-/-- A subgroup of an archimedean linear ordered multiplicative commutative group with order
+/-- A subgroup of an Archimedean linear ordered multiplicative commutative group with order
 topology is dense provided that for all `ε > 1` there exists an element of the subgroup
 that belongs to `(1, ε)`. -/
-@[to_additive /-- An additive subgroup of an archimedean linear ordered additive commutative group
+@[to_additive /-- An additive subgroup of an Archimedean linear ordered additive commutative group
 with order topology is dense provided that for all positive `ε` there exists a positive element of
 the subgroup that is less than `ε`. -/]
 theorem dense_of_not_isolated_one (S : Subgroup G) (hS : ∀ ε > 1, ∃ g ∈ S, g ∈ Ioo 1 ε) :
@@ -56,10 +56,10 @@ theorem dense_of_not_isolated_one (S : Subgroup G) (hS : ∀ ε > 1, ∃ g ∈ S
   refine ⟨g ^ m, zpow_mem hgS _, hm.1, hm.2.trans_lt ?_⟩
   rwa [lt_div_iff_mul_lt'] at hg
 
-/-- Let `S` be a nontrivial subgroup in an archimedean linear ordered multiplicative commutative
+/-- Let `S` be a nontrivial subgroup in an Archimedean linear ordered multiplicative commutative
 group `G` with order topology. If the set of elements of `S` that are greater than one
 does not have a minimal element, then `S` is dense `G`. -/
-@[to_additive /-- Let `S` be a nontrivial additive subgroup in an archimedean linear ordered
+@[to_additive /-- Let `S` be a nontrivial additive subgroup in an Archimedean linear ordered
 additive commutative group `G` with order topology. If the set of positive elements of `S` does not
 have a minimal element, then `S` is dense `G`. -/]
 theorem dense_of_no_min (S : Subgroup G) (hbot : S ≠ ⊥)
@@ -68,10 +68,10 @@ theorem dense_of_no_min (S : Subgroup G) (hbot : S ≠ ⊥)
   contrapose! H
   exact exists_isLeast_one_lt hbot ε1 (disjoint_left.2 H)
 
-/-- A subgroup of an archimedean linear ordered multiplicative commutative group `G` with order
+/-- A subgroup of an Archimedean linear ordered multiplicative commutative group `G` with order
 topology either is dense in `G` or is a cyclic subgroup. -/
 @[to_additive dense_or_cyclic
-/-- An additive subgroup of an archimedean linear ordered additive commutative group `G`
+/-- An additive subgroup of an Archimedean linear ordered additive commutative group `G`
 with order topology either is dense in `G` or is a cyclic subgroup. -/]
 theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
   refine (em _).imp (dense_of_not_isolated_one S) fun h => ?_
@@ -81,12 +81,12 @@ theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = 
 
 variable [Nontrivial G] [DenselyOrdered G]
 
-/-- In a nontrivial densely linear ordered archimedean topological multiplicative group,
+/-- In a nontrivial densely linear ordered Archimedean topological multiplicative group,
 a subgroup is either dense or is cyclic, but not both.
 
 For a non-exclusive `Or` version with weaker assumptions, see `Subgroup.dense_or_cyclic` above. -/
 @[to_additive dense_xor'_cyclic
-/-- In a nontrivial densely linear ordered archimedean topological additive group,
+/-- In a nontrivial densely linear ordered Archimedean topological additive group,
 a subgroup is either dense or is cyclic, but not both.
 
 For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense_or_cyclic` above.

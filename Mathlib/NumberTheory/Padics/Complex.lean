@@ -24,7 +24,7 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
-* `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
+* `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is non-Archimedean.
 
 ## Notation
 
@@ -60,7 +60,7 @@ theorem coe_eq : (Coe.coe : ℚ_[p] → PadicAlgCl p) = algebraMap ℚ_[p] (Padi
 spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
 instance normedField : NormedField (PadicAlgCl p) := spectralNorm.normedField ℚ_[p] (PadicAlgCl p)
 
-/-- The norm on `PadicAlgCl p` is nonarchimedean. -/
+/-- The norm on `PadicAlgCl p` is non-Archimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (norm : PadicAlgCl p → ℝ) :=
   isNonarchimedean_spectralNorm (K := ℚ_[p]) (L := PadicAlgCl p)
 
@@ -176,7 +176,7 @@ theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
 /-- The `ℝ≥0`-valued norm on `ℂ_[p]` extends that on `PadicAlgCl p`. -/
 theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by ext; exact norm_extends p x
 
-/-- The norm on `ℂ_[p]` is nonarchimedean. -/
+/-- The norm on `ℂ_[p]` is non-Archimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun x y ↦ by
   refine UniformSpace.Completion.induction_on₂ x y
     (isClosed_le (continuous_norm.comp continuous_add) (by fun_prop)) (fun a b ↦ ?_)

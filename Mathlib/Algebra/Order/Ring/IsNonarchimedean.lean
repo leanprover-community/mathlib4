@@ -7,25 +7,25 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
-# Nonarchimedean functions
+# Non-Archimedean functions
 
-A function `f : α → R` is nonarchimedean if it satisfies the strong triangle inequality
+A function `f : α → R` is non-Archimedean if it satisfies the strong triangle inequality
 `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. This file proves basic properties of
-nonarchimedean functions.
+non-Archimedean functions.
 -/
 
 namespace IsNonarchimedean
 
 variable {R : Type*} [Semiring R] [LinearOrder R] {a b : R} {m n : ℕ}
 
-/-- A nonnegative nonarchimedean function satisfies the triangle inequality. -/
+/-- A nonnegative non-Archimedean function satisfies the triangle inequality. -/
 theorem add_le [IsStrictOrderedRing R] {α : Type*} [Add α] {f : α → R} (hf : ∀ x : α, 0 ≤ f x)
     (hna : IsNonarchimedean f) {a b : α} : f (a + b) ≤ f a + f b := by
   apply le_trans (hna _ _)
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
   exact ⟨hf _, hf _⟩
 
-/-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
+/-- If `f` is a nonnegative non-Archimedean function `α → R` such that `f 0 = 0`, then for every
   `n : ℕ` and `a : α`, we have `f (n • a) ≤ (f a)`. -/
 theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F α R]
     [NonnegHomClass F α R] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
@@ -37,7 +37,7 @@ theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F 
     apply le_trans <| hna (n • a) (1 • a)
     simpa
 
-/-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
+/-- If `f` is a nonnegative non-Archimedean function `α → R` such that `f 0 = 0`, then for every
   `n : ℕ` and `a : α`, we have `f (n * a) ≤ (f a)`. -/
 theorem nmul_le {F α : Type*} [NonAssocSemiring α] [FunLike F α R] [ZeroHomClass F α R]
     [NonnegHomClass F α R] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
@@ -51,7 +51,7 @@ lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [AddMonoidWithOne 
   rw [← nsmul_one n, ← map_one f]
   exact nsmul_le hna
 
-/-- If `f` is a nonarchimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
+/-- If `f` is a non-Archimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
   we have `f n ≤ 1`. -/
 theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
     {F α : Type*} [AddGroupWithOne α] [FunLike F α R]
@@ -88,7 +88,7 @@ lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
       apply max_lt (lt_of_le_of_ne h1 h) h_lt
     _   = f x := max_self (f x)
 
-/-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
+/-- If `f` is a non-Archimedean additive group seminorm on `α` and `x y : α` are such that
   `f x ≠ f y`, then `f (x + y) = max (f x) (f y)`. -/
 theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
@@ -100,7 +100,7 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     exact (max_eq_left_of_lt h_lt).symm
 
 omit [Semiring R] in
-/-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty multiset
+/-- Given a non-Archimedean function `α → R`, a function `g : β → α` and a nonempty multiset
   `s : Multiset β`, we can always find `b : β` belonging to `s` such that
   `f (t.sum g) ≤ f (g b)` . -/
 theorem multiset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonempty β] {f : α → R}
@@ -118,7 +118,7 @@ theorem multiset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonem
       · exact .inr ⟨w, h2, le_trans h4 h3⟩
 
 omit [Semiring R] in
-/-- Given a nonarchimedean function `α → R`, a function `g : β → α` and a nonempty finset
+/-- Given a non-Archimedean function `α → R`, a function `g : β → α` and a nonempty finset
   `t : Finset β`, we can always find `b : β` belonging to `t` such that `f (t.sum g) ≤ f (g b)` . -/
 theorem finset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonempty β] {f : α → R}
     (hna : IsNonarchimedean f) (g : β → α) {t : Finset β} (ht : t.Nonempty) :
@@ -126,7 +126,7 @@ theorem finset_image_add_of_nonempty {α β : Type*} [AddCommMonoid α] [Nonempt
   apply multiset_image_add_of_nonempty hna
   simp_all [Finset.nonempty_iff_ne_empty]
 
-/-- Given a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
+/-- Given a nonnegative non-Archimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
   and a multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (s.sum g) ≤ f (g b)` . -/
 theorem multiset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R] [ZeroHomClass F α R]
@@ -139,7 +139,7 @@ theorem multiset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
       hna g Multiset.cons_ne_zero
     exact ⟨b, fun _ ↦ hb1, hb2⟩
 
-/-- Given a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
+/-- Given a nonnegative non-Archimedean function `α → R` such that `f 0 = 0`, a function `g : β → α`
   and a finset `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty,
   such that `f (t.sum g) ≤ f (g b)` . -/
 theorem finset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
@@ -191,7 +191,7 @@ lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
 
-/-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
+/-- If `f` is a non-Archimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
   `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
 theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R] [ZeroHomClass F α R]

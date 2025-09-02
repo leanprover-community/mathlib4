@@ -20,7 +20,7 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 
 ## Tags
 
-norm, nonarchimedean, rank one, compact, locally compact
+norm, non-Archimedean, rank one, compact, locally compact
 -/
 
 open NNReal
@@ -215,7 +215,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
     Subtype.coe_lt_coe.mpr z0'
   have a0 : 0 < v a := by simp [ha, z0]
   -- Construct our cover, which has an inner closed ball, and spheres for each element
-  -- outside of the closed ball. These are all open sets by the nonarchimedean property.
+  -- outside of the closed ball. These are all open sets by the non-Archimedean property.
   let U : K → Set K := fun y ↦ if v (y : K) ≤ z
     then {w | v (w : K) ≤ z}
     else {w | v (w : K) = v (y : K)}

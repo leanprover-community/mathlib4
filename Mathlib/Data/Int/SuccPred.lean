@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.SuccPred
 /-!
 # Successors and predecessors of integers
 
-In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
+In this file, we show that `ℤ` is both an Archimedean `SuccOrder` and an Archimedean `PredOrder`.
 -/
 
 

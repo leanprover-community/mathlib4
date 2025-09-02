@@ -108,7 +108,7 @@ section fwdDiff
 variable {M G : Type*}
 
 /-- Bound for iterated forward differences of a continuous function from a compact space to a
-nonarchimedean seminormed group. -/
+non-Archimedean seminormed group. -/
 lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [CompactSpace M]
     [AddCommMonoid M] [SeminormedAddCommGroup G] [IsUltrametricDist G]
     (h : M) (f : C(M, G)) (m : M) (n : ℕ) : ‖Δ_[h]^[n] f m‖ ≤ ‖f‖ := by
@@ -344,7 +344,7 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
 variable (E) in
 /--
 The isometric equivalence from `C(ℤ_[p], E)` to the space of sequences in `E` tending to `0` given
-by Mahler's theorem, for `E` a nonarchimedean `ℚ_[p]`-Banach space.
+by Mahler's theorem, for `E` a non-Archimedean `ℚ_[p]`-Banach space.
 -/
 noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℤ_[p]] C₀(ℕ, E) where
   toFun f := ⟨⟨(Δ_[1]^[·] f 0), continuous_of_discreteTopology⟩,

@@ -13,15 +13,15 @@ import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Tactic.Qify
 
 /-!
-# Embedding of archimedean groups into reals
+# Embedding of Archimedean groups into reals
 
-This file provides embedding of any archimedean groups into reals.
+This file provides embedding of any Archimedean groups into reals.
 
 ## Main declarations
-* `Archimedean.embedReal` defines an injective `M →+o ℝ` for archimedean group `M` with a positive
+* `Archimedean.embedReal` defines an injective `M →+o ℝ` for Archimedean group `M` with a positive
   `1` element. `1` is preserved by the map.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
-  for any archimedean group `M` without specifying the `1` element in `M`.
+  for any Archimedean group `M` without specifying the `1` element in `M`.
 -/
 
 
@@ -195,7 +195,7 @@ theorem embedRealFun_strictMono : StrictMono (embedRealFun (M := M)) := by
   exact lt_csSup_of_lt (ratLt'_bddAbove (y - x)) this (by simp [← Rat.num_pos])
 
 variable (M) in
-/-- The bundled `M →+o ℝ` for archimedean `M` that preserves `1`. -/
+/-- The bundled `M →+o ℝ` for Archimedean `M` that preserves `1`. -/
 noncomputable
 def embedReal : M →+o ℝ where
   toFun := embedRealFun

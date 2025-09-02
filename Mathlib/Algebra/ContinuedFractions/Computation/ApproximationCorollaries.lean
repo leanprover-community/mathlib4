@@ -70,7 +70,7 @@ open Nat
 theorem of_convergence_epsilon :
     ∀ ε > (0 : K), ∃ N : ℕ, ∀ n ≥ N, |v - (of v).convs n| < ε := by
   intro ε ε_pos
-  -- use the archimedean property to obtain a suitable N
+  -- use the Archimedean property to obtain a suitable N
   rcases (exists_nat_gt (1 / ε) : ∃ N' : ℕ, 1 / ε < N') with ⟨N', one_div_ε_lt_N'⟩
   let N := max N' 5
   -- set minimum to 5 to have N ≤ fib N work
@@ -98,7 +98,7 @@ theorem of_convergence_epsilon :
     have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
     suffices 1 < ε * (B * nB) from (div_lt_iff₀ zero_lt_mul_conts).mpr this
-    -- use that `N' ≥ n` was obtained from the archimedean property to show the following
+    -- use that `N' ≥ n` was obtained from the Archimedean property to show the following
     calc 1 < ε * (N' : K) := (div_lt_iff₀' ε_pos).mp one_div_ε_lt_N'
       _ ≤ ε * (B * nB) := ?_
     -- cancel `ε`

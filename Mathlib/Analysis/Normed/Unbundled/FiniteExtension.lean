@@ -14,7 +14,7 @@ import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 # Basis.norm
 
 In this file, we prove [BGR, Lemma 3.2.1./3][bosch-guntzer-remmert] : if `K` is a normed field
-with a nonarchimedean power-multiplicative norm and `L/K` is a finite extension, then there exists
+with a non-Archimedean power-multiplicative norm and `L/K` is a finite extension, then there exists
 at least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
@@ -26,7 +26,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
   multiplication. That is, `∃ (c : ℝ), c > 0` such that
   ` ∀ (x y : L), B.norm (x * y) ≤ c * B.norm x * B.norm y`.
 * `exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional` : if `K` is a normed field with a
-  nonarchimedean power-multiplicative norm and `L/K` is a finite extension, then there exists at
+  non-Archimedean power-multiplicative norm and `L/K` is a finite extension, then there exists at
   least one power-multiplicative `K`-algebra norm on `L` extending the norm on `K`. This is
   [BGR, Lemma 3.2.1./3].
 
@@ -35,7 +35,7 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
 
 ## Tags
 
-Basis.norm, nonarchimedean
+Basis.norm, non-Archimedean
 -/
 
 noncomputable section
@@ -82,7 +82,7 @@ theorem norm_extends {i : ι} (hBi : B i = (1 : L)) (x : K) :
   · aesop
   · exact le_sup'_of_le _ (mem_univ i) (by simp)
 
-/-- For any `K`-basis of `L`, if the norm on `K` is nonarchimedean, then so is `B.norm`. -/
+/-- For any `K`-basis of `L`, if the norm on `K` is non-Archimedean, then so is `B.norm`. -/
 theorem norm_isNonarchimedean (hna : IsNonarchimedean (Norm.norm : K → ℝ)) :
     IsNonarchimedean B.norm := fun x y ↦ by
   obtain ⟨ixy, _, hixy⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖(B.repr (x + y)) i‖)
@@ -174,8 +174,8 @@ section Field
 
 variable {K L : Type*} [NormedField K] [Field L] [Algebra K L]
 
-/-- If `K` is a nonarchimedean normed field `L/K` is a finite extension, then there exists a
-power-multiplicative nonarchimedean `K`-algebra norm on `L` extending the norm on `K`. -/
+/-- If `K` is a non-Archimedean normed field `L/K` is a finite extension, then there exists a
+power-multiplicative non-Archimedean `K`-algebra norm on `L` extending the norm on `K`. -/
 theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : FiniteDimensional K L)
     (hna : IsNonarchimedean (norm : K → ℝ)) :
     ∃ f : AlgebraNorm K L, IsPowMul f ∧ (∀ (x : K), f ((algebraMap K L) x) = ‖x‖) ∧
@@ -198,7 +198,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   have hg_nonneg : ∀ x : L, 0 ≤ g x := fun x ↦ by simp only [g, Basis.norm]; simp
   -- g extends the norm on K
   have hg_ext : ∀ (x : K), g ((algebraMap K L) x) = ‖x‖ := Basis.norm_extends hB1
-  -- g is nonarchimedean
+  -- g is non-Archimedean
   have hg_na : IsNonarchimedean g := Basis.norm_isNonarchimedean hna
   -- g satisfies the triangle inequality
   have hg_add : ∀ a b : L, g (a + b) ≤ g a + g b :=

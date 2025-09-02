@@ -7,20 +7,20 @@ Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu, Johan Commelin
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
-# Total separatedness of nonarchimedean groups
+# Total separatedness of non-Archimedean groups
 
-In this file, we prove that a nonarchimedean group is a totally separated topological space.
-The fact that a nonarchimedean group is a totally disconnected topological space
-is implied by the fact that a nonarchimedean group is totally separated.
+In this file, we prove that a non-Archimedean group is a totally separated topological space.
+The fact that a non-Archimedean group is a totally disconnected topological space
+is implied by the fact that a non-Archimedean group is totally separated.
 
 ## Main results
 
 - `NonarchimedeanGroup.instTotallySeparated`:
-  A nonarchimedean group is a totally separated topological space.
+  A non-Archimedean group is a totally separated topological space.
 
 ## Notation
 
-- `G` : Is a nonarchimedean group.
+- `G` : Is a non-Archimedean group.
 - `V` : Is an open subgroup which is a neighbourhood of the identity in `G`.
 
 ## References

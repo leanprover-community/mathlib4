@@ -28,7 +28,7 @@ this condition holds.
 ## Main Results
 
 * `seminormFromBounded_isNonarchimedean` : if `f : R → ℝ` is a nonnegative, multiplicatively
-  bounded, nonarchimedean function, then `seminormFromBounded' f` is nonarchimedean.
+  bounded, non-Archimedean function, then `seminormFromBounded' f` is non-Archimedean.
 * `seminormFromBounded_of_mul_is_mul` : if `f : R → ℝ` is a nonnegative, multiplicatively bounded
   function and `x : R` is multiplicative for `f`, then `x` is multiplicative for
   `seminormFromBounded' f`.
@@ -38,7 +38,7 @@ this condition holds.
 
 ## Tags
 
-seminormFromBounded, RingSeminorm, Nonarchimedean
+seminormFromBounded, RingSeminorm, Non-Archimedean
 -/
 
 noncomputable section
@@ -254,8 +254,8 @@ def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
   mul_le'   := seminormFromBounded_mul f_nonneg f_mul
   neg'      := seminormFromBounded_neg f_neg
 
-/-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, nonarchimedean function, then
-  `seminormFromBounded' f` is nonarchimedean. -/
+/-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, non-Archimedean function, then
+  `seminormFromBounded' f` is non-Archimedean. -/
 theorem seminormFromBounded_isNonarchimedean (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
     (hna : IsNonarchimedean f) : IsNonarchimedean (seminormFromBounded' f) := by

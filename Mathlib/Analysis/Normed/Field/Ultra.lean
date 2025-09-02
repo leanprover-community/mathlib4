@@ -28,7 +28,7 @@ to be able to be applied in noncommutative division rings.
 
 ## Tags
 
-ultrametric, nonarchimedean
+ultrametric, non-Archimedean
 -/
 open Metric NNReal
 
@@ -94,7 +94,7 @@ lemma isUltrametricDist_of_forall_pow_norm_le_nsmul_pow_max_one_norm
   refine le_of_pow_le_pow_left₀ (fun h ↦ ?_) (zero_lt_one.trans ha').le ((h _ _).trans hm.le)
   simp only [h, zero_add, pow_zero, max_self, one_smul, lt_self_iff_false] at hm
 
-/-- To prove that a normed division ring is nonarchimedean, it suffices to prove that the norm
+/-- To prove that a normed division ring is non-Archimedean, it suffices to prove that the norm
 of the image of any natural is less than or equal to one. -/
 lemma isUltrametricDist_of_forall_norm_natCast_le_one
     (h : ∀ n : ℕ, ‖(n : R)‖ ≤ 1) : IsUltrametricDist R := by

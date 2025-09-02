@@ -13,23 +13,23 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 /-!
 # smoothingSeminorm
 In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert] : if `μ` is a
-nonarchimedean seminorm on a commutative ring `R`, then `
-`iInf (fun (n : PNat), (μ(x ^ (n : ℕ))) ^ (1 / (n : ℝ)))` is a power-multiplicative nonarchimedean
+non-Archimedean seminorm on a commutative ring `R`, then `
+`iInf (fun (n : PNat), (μ(x ^ (n : ℕ))) ^ (1 / (n : ℝ)))` is a power-multiplicative non-Archimedean
 seminorm on `R`.
 
 ## Main Definitions
 * `smoothingSeminormSeq` : the `ℝ`-valued sequence sending `n` to `((f( (x ^ n)) ^ (1 / n : ℝ)`.
 * `smoothingFun` : the iInf of the sequence `n ↦ f(x ^ (n : ℕ))) ^ (1 / (n : ℝ)`.
-* `smoothingSeminorm` : if `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun`
+* `smoothingSeminorm` : if `μ 1 ≤ 1` and `μ` is non-Archimedean, then `smoothingFun`
   is a ring seminorm.
 
 ## Main Results
 
 * `tendsto_smoothingFun_of_map_one_le_one` : if `μ 1 ≤ 1`, then `smoothingFun μ x` is the limit
   of `smoothingSeminormSeq μ x` as `n` tends to infinity.
-* `isNonarchimedean_smoothingFun` : if `μ 1 ≤ 1` and `μ` is nonarchimedean, then
-  `smoothingFun` is nonarchimedean.
-* `isPowMul_smoothingFun` : if `μ 1 ≤ 1` and `μ` is nonarchimedean, then
+* `isNonarchimedean_smoothingFun` : if `μ 1 ≤ 1` and `μ` is non-Archimedean, then
+  `smoothingFun` is non-Archimedean.
+* `isPowMul_smoothingFun` : if `μ 1 ≤ 1` and `μ` is non-Archimedean, then
   `smoothingFun μ` is power-multiplicative.
 
 ## References
@@ -37,7 +37,7 @@ seminorm on `R`.
 
 ## Tags
 
-smoothingSeminorm, seminorm, nonarchimedean
+smoothingSeminorm, seminorm, non-Archimedean
 -/
 
 noncomputable section
@@ -271,14 +271,14 @@ theorem smoothingFun_le_self (x : R) : smoothingFun μ x ≤ μ x := by
   apply (smoothingFun_le μ x 1).trans
   rw [PNat.one_coe, pow_one, cast_one, div_one, rpow_one]
 
-/- In this section, we prove that if `μ` is nonarchimedean, then `smoothingFun μ` is
-  nonarchimedean. -/
+/- In this section, we prove that if `μ` is non-Archimedean, then `smoothingFun μ` is
+  non-Archimedean. -/
 section IsNonarchimedean
 
 variable {x y : R} (hn : ∀ n : ℕ, ∃ m < n + 1, μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
   (μ (x ^ m) * μ (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)))
 
-/-- Auxiliary sequence for the proof that `smoothingFun` is nonarchimedean. -/
+/-- Auxiliary sequence for the proof that `smoothingFun` is non-Archimedean. -/
 private def mu : ℕ → ℕ := fun n => Classical.choose (hn n)
 
 private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
@@ -418,7 +418,7 @@ theorem tendsto_smoothingFun_comp (hμ1 : μ 1 ≤ 1) (x : R) {ψ : ℕ → ℕ}
   have hψ_lim' : Tendsto ψ atTop atTop := StrictMono.tendsto_atTop hψ_mono
   (tendsto_smoothingFun_of_map_one_le_one μ hμ1 x).comp hψ_lim'
 
-/-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun μ` is nonarchimedean. -/
+/-- If `μ 1 ≤ 1` and `μ` is non-Archimedean, then `smoothingFun μ` is non-Archimedean. -/
 theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) :
     IsNonarchimedean (smoothingFun μ) := by
   -- Fix `x, y : R`.
@@ -512,7 +512,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
 
 end IsNonarchimedean
 
-/-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun` is a ring seminorm. -/
+/-- If `μ 1 ≤ 1` and `μ` is non-Archimedean, then `smoothingFun` is a ring seminorm. -/
 def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSeminorm R where
   toFun     := smoothingFun μ
   map_zero' := by
@@ -543,12 +543,12 @@ def smoothingSeminorm (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) : RingSemi
     rw [← mul_rpow (apply_nonneg μ _) (apply_nonneg μ _), mul_pow]
     exact rpow_le_rpow (apply_nonneg μ _) (map_mul_le_mul μ _ _) hn
 
-/-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingSeminorm μ 1 ≤ 1`. -/
+/-- If `μ 1 ≤ 1` and `μ` is non-Archimedean, then `smoothingSeminorm μ 1 ≤ 1`. -/
 theorem smoothingSeminorm_map_one_le_one (hμ1 : μ 1 ≤ 1)
     (hna : IsNonarchimedean μ) : smoothingSeminorm μ hμ1 hna 1 ≤ 1 :=
   smoothingFun_one_le μ hμ1
 
-/-- If `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun μ` is
+/-- If `μ 1 ≤ 1` and `μ` is non-Archimedean, then `smoothingFun μ` is
   power-multiplicative. -/
 theorem isPowMul_smoothingFun (hμ1 : μ 1 ≤ 1) : IsPowMul (smoothingFun μ) := by
   intro x m hm
@@ -596,7 +596,7 @@ theorem smoothingFun_apply_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R}
     rw [← mul_one (x ^ n), pow_mul_apply_eq_pow_mul μ hx, ← rpow_natCast, h1, mul_one,
       ← rpow_mul (apply_nonneg μ _), mul_one_div_cancel hn0, rpow_one]
 
-/-- If `μ 1 ≤ 1`, `μ` is nonarchimedean, and `∀ y : R, μ (x * y) = μ x * μ y`, then
+/-- If `μ 1 ≤ 1`, `μ` is non-Archimedean, and `∀ y : R, μ (x * y) = μ x * μ y`, then
   `smoothingSeminorm μ x = μ x`. -/
 theorem smoothingSeminorm_apply_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) {x : R}
     (hx : ∀ y : R, μ (x * y) = μ x * μ y) : smoothingSeminorm μ hμ1 hna x = μ x :=
@@ -621,7 +621,7 @@ theorem smoothingFun_of_map_mul_eq_mul (hμ1 : μ 1 ≤ 1) {x : R} (hx : ∀ y :
     (apply_nonneg μ _), ← rpow_natCast, ← rpow_mul (apply_nonneg μ _), mul_one_div_cancel hn0,
     rpow_one]
 
-/-- If `μ 1 ≤ 1`, `μ` is nonarchimedean, and `x` is multiplicative for `μ`, then `x` is
+/-- If `μ 1 ≤ 1`, `μ` is non-Archimedean, and `x` is multiplicative for `μ`, then `x` is
   multiplicative for `smoothingSeminorm`. -/
 theorem smoothingSeminorm_of_mul (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedean μ) {x : R}
     (hx : ∀ y : R, μ (x * y) = μ x * μ y) (y : R) :

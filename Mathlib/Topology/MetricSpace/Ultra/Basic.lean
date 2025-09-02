@@ -31,7 +31,7 @@ TODO: Generalize to ultrametric uniformities
 
 ## Tags
 
-ultrametric, nonarchimedean
+ultrametric, non-Archimedean
 -/
 
 variable {X : Type*}

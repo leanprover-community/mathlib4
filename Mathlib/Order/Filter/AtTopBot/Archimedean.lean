@@ -9,9 +9,9 @@ import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Tactic.GCongr
 
 /-!
-# `Filter.atTop` filter and archimedean (semi)rings/fields
+# `Filter.atTop` filter and Archimedean (semi)rings/fields
 
-In this file we prove that for a linear ordered archimedean semiring `R` and a function `f : α → ℕ`,
+In this file we prove that for a linear ordered Archimedean semiring `R` and a function `f : α → ℕ`,
 the function `Nat.cast ∘ f : α → R` tends to `Filter.atTop` along a filter `l` if and only if so
 does `f`. We also prove that `Nat.cast : ℕ → R` tends to `Filter.atTop` along `Filter.atTop`, as
 well as version of these two results for `ℤ` (and a ring `R`) and `ℚ` (and a field `R`).
@@ -151,7 +151,7 @@ section LinearOrderedSemiring
 variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R]
 
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
-constant (on the left) also tends to infinity. The archimedean assumption is convenient to get a
+constant (on the left) also tends to infinity. The Archimedean assumption is convenient to get a
 statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a version in ordered fields is
 given in `Filter.Tendsto.const_mul_atTop`). -/
 theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
@@ -169,7 +169,7 @@ theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
     _ ≤ r * f x := by gcongr
 
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
-constant (on the right) also tends to infinity. The archimedean assumption is convenient to get a
+constant (on the right) also tends to infinity. The Archimedean assumption is convenient to get a
 statement that works on `ℕ`, `ℤ` and `ℝ`, although not necessary (a version in ordered fields is
 given in `Filter.Tendsto.atTop_mul_const`). -/
 theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :

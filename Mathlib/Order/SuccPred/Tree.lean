@@ -29,7 +29,7 @@ section DecidableEq
 variable [DecidableEq α]
 
 /--
-The unique atom less than an element in an `OrderBot` with archimedean predecessor.
+The unique atom less than an element in an `OrderBot` with Archimedean predecessor.
 -/
 def findAtom (r : α) : α :=
   Order.pred^[Nat.find (bot_le (a := r)).exists_pred_iterate - 1] r
@@ -107,7 +107,7 @@ structure RootedTree where
   [orderBot : OrderBot α]
   /-- The type should have a predecessor for every element, its parent. -/
   [predOrder : PredOrder α]
-  /-- The predecessor relationship should be archimedean. -/
+  /-- The predecessor relationship should be Archimedean. -/
   [isPredArchimedean : IsPredArchimedean α]
 
 attribute [coe] RootedTree.α

@@ -122,7 +122,7 @@ theorem adicAbv_def {x : K} : adicAbv v x = toNNReal (absNorm_ne_zero v) (v.valu
 
 @[deprecated (since := "2025-02-28")] alias vadicAbv_def := adicAbv_def
 
-/-- The `v`-adic absolute value is nonarchimedean -/
+/-- The `v`-adic absolute value is non-Archimedean -/
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv v) :=
   v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
 

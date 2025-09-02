@@ -17,9 +17,9 @@ This file contains results on the behavior of norms in ultrametric groups.
 ## Main results
 
 * `IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm`:
-  a normed additive group has an ultrametric iff the norm is nonarchimedean
+  a normed additive group has an ultrametric iff the norm is non-Archimedean
 * `IsUltrametricDist.nonarchimedeanGroup` and its additive version: instance showing that a
-  commutative group with a nonarchimedean seminorm is a nonarchimedean topological group (i.e.
+  commutative group with a non-Archimedean seminorm is a non-Archimedean topological group (i.e.
   there is a neighbourhood basis of the identity consisting of open subgroups).
 
 ## Implementation details
@@ -29,7 +29,7 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ## Tags
 
-ultrametric, nonarchimedean
+ultrametric, non-Archimedean
 -/
 open Metric NNReal
 
@@ -190,18 +190,18 @@ section CommGroup
 
 variable {M ι : Type*} [SeminormedCommGroup M] [IsUltrametricDist M]
 
-/-- A commutative group with an ultrametric group seminorm is nonarchimedean (as a topological
+/-- A commutative group with an ultrametric group seminorm is non-Archimedean (as a topological
 group, i.e. every neighborhood of 1 contains an open subgroup). -/
-@[to_additive /-- A commutative additive group with an ultrametric group seminorm is nonarchimedean
+@[to_additive /-- A commutative additive group with an ultrametric group seminorm is non-Archimedean
 (as a topological group, i.e. every neighborhood of 0 contains an open subgroup). -/]
 instance nonarchimedeanGroup : NonarchimedeanGroup M where
   is_nonarchimedean := by simpa only [Metric.mem_nhds_iff]
     using fun U ⟨ε, hεp, hεU⟩ ↦ ⟨ball_openSubgroup M hεp, hεU⟩
 
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product.
+/-- Non-Archimedean norm of a product is less than or equal the norm of any term in the product.
 This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
 operating over an `OrderBot`, which `ℝ` is not. -/
-@[to_additive /-- Nonarchimedean norm of a sum is less than or equal the norm of any term in the
+@[to_additive /-- Non-Archimedean norm of a sum is less than or equal the norm of any term in the
 sum. This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
 operating over an `OrderBot`, which `ℝ` is not. -/]
 lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
@@ -216,9 +216,9 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
       · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
-/-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
+/-- Non-Archimedean norm of a product is less than or equal to the largest norm of a term in the
 product. -/
-@[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term
+@[to_additive /-- Non-Archimedean norm of a sum is less than or equal to the largest norm of a term
 in the sum. -/]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by

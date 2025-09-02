@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 /-!
 # The spectral norm and the norm extension theorem
 
-This file shows that if `K` is a nonarchimedean normed field and `L/K` is an algebraic extension,
+This file shows that if `K` is a non-Archimedean normed field and `L/K` is an algebraic extension,
 then there is a natural extension of the norm on `K` to a `K`-algebra norm on `L`, the so-called
 *spectral norm*. The spectral norm of an element of `L` only depends on its minimal polynomial
 over `K`, so for `K ⊆ L ⊆ M` are two extensions of `K`, the spectral norm on `M` restricts to the
@@ -26,15 +26,15 @@ algebraic closure of `ℚ_[p]`, for example.
 
 We define the spectral value and the spectral norm. We prove the norm extension theorem
 [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Theorem 3.2.1/2)]
-[bosch-guntzer-remmert] : given a nonarchimedean normed field `K` and an algebraic
+[bosch-guntzer-remmert] : given a non-Archimedean normed field `K` and an algebraic
 extension `L/K`, the spectral norm is a power-multiplicative `K`-algebra norm on `L` extending
 the norm on `K`. All `K`-algebra automorphisms of `L` are isometries with respect to this norm.
 If `L/K` is finite, we get a formula relating the spectral norm on `L` with any other
 power-multiplicative norm on `L` extending the norm on `K`.
 
 Moreover, we also prove the unique norm extension theorem: if `K` is a field complete with respect
-to a nontrivial nonarchimedean multiplicative norm and `L/K` is an algebraic extension, then the
-spectral norm on `L` is a nonarchimedean multiplicative norm, and any power-multiplicative
+to a nontrivial non-Archimedean multiplicative norm and `L/K` is an algebraic extension, then the
+spectral norm on `L` is a non-Archimedean multiplicative norm, and any power-multiplicative
 `K`-algebra norm on `L` coincides with the spectral norm. More over, if `L/K` is finite, then `L`
 is a complete space. This result is [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Theorem 3.2.4/2)][bosch-guntzer-remmert].
@@ -59,7 +59,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 * `spectralNorm_eq_iSup_of_finiteDimensional_normal` : if `L/K` is finite and normal, then
   `spectralNorm K L x = iSup (fun (σ : L ≃ₐ[K] L) ↦ f (σ x))`.
 * `isPowMul_spectralNorm` : the spectral norm is power-multiplicative.
-* `isNonarchimedean_spectralNorm` : the spectral norm is nonarchimedean.
+* `isNonarchimedean_spectralNorm` : the spectral norm is non-Archimedean.
 * `spectralNorm_extends` : the spectral norm extends the norm on `K`.
 * `spectralNorm_unique` : any power-multiplicative `K`-algebra norm on `L` coincides with the
   spectral norm.
@@ -72,7 +72,7 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 
 ## Tags
 
-spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean
+spectral, spectral norm, spectral value, seminorm, norm, non-Archimedean
 -/
 
 open Polynomial
@@ -105,7 +105,7 @@ theorem spectralValueTerms_of_natDegree_le (p : R[X]) {n : ℕ} (hn : p.natDegre
     spectralValueTerms p n = 0 := by simp only [spectralValueTerms, if_neg (not_lt.mpr hn)]
 
 /-- The spectral value of a polynomial in `R[X]`, where `R` is a seminormed ring. One motivation
-  for the spectral value: if the norm on `R` is nonarchimedean, and if a monic polynomial
+  for the spectral value: if the norm on `R` is non-Archimedean, and if a monic polynomial
   splits into linear factors, then its spectral value is the norm of its largest root.
   See `max_norm_root_eq_spectralValue`. -/
 def spectralValue (p : R[X]) : ℝ := iSup (spectralValueTerms p)
@@ -264,7 +264,7 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 
 open Multiset
 
-/-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
+/-- If `f` is a non-Archimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
 (Proposition 3.1.2/1(2))][bosch-guntzer-remmert]. -/
@@ -520,7 +520,7 @@ def spectralAlgNorm_of_finiteDimensional_normal [IsUltrametricDist K] : AlgebraN
 theorem spectralAlgNorm_of_finiteDimensional_normal_def [IsUltrametricDist K] (x : L) :
     spectralAlgNorm_of_finiteDimensional_normal K L x = spectralNorm K L x := rfl
 
-/-- The spectral norm is nonarchimedean when `L/K` is finite and normal.
+/-- The spectral norm is non-Archimedean when `L/K` is finite and normal.
   See also `isNonarchimedean_spectralNorm` for a more general result. -/
 theorem isNonarchimedean_spectralNorm_of_finiteDimensional_normal
     [IsUltrametricDist K] : IsNonarchimedean (spectralNorm K L) := by
@@ -625,7 +625,7 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   exact isPowMul_spectralNorm_of_finiteDimensional_normal _ _
     ((algebraMap ↥K⟮x⟯ ↥(normalClosure K (↥K⟮x⟯) (AlgebraicClosure ↥K⟮x⟯))) g) hn
 
-/-- The spectral norm is nonarchimedean. -/
+/-- The spectral norm is non-Archimedean. -/
 theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := by
   intro x y
   set E := K⟮x, y⟯
@@ -674,7 +674,7 @@ universe u v
 variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+/-- If `K` is a field complete with respect to a nontrivial non-Archimedean multiplicative norm and
   `L/K` is an algebraic extension, then any power-multiplicative `K`-algebra norm on `L` coincides
   with the spectral norm. -/
 theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsPowMul f) :
@@ -745,7 +745,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
     forall_and.mpr ⟨fun y ↦ hC2 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩,
       fun y ↦ hC1 ⟨y, (IntermediateField.algebra_adjoin_le_adjoin K _) y.2⟩⟩⟩
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+/-- If `K` is a field complete with respect to a nontrivial non-Archimedean multiplicative norm and
   `L/K` is an algebraic extension, then any multiplicative ring norm on `L` extending the norm on
   `K` coincides with the spectral norm. -/
 theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
@@ -789,7 +789,7 @@ theorem algNormFromConst_def (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1)
       seminormFromConst h1 (ne_of_gt (spectralNorm_zero_lt hx (Algebra.IsAlgebraic.isAlgebraic x)))
         isPowMul_spectralNorm y := rfl
 
-/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+/-- If `K` is a field complete with respect to a nontrivial non-Archimedean multiplicative norm and
   `L/K` is an algebraic extension, then the spectral norm on `L` is multiplicative. -/
 theorem spectralAlgNorm_mul [CompleteSpace K] (x y : L) :
     spectralAlgNorm K L (x * y) = spectralAlgNorm K L x * spectralAlgNorm K L y := by

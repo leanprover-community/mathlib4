@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # algNormOfAlgEquiv and invariantExtension
 
-Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extension. In the comments,
+Let `K` be a non-Archimedean normed field and `L/K` be a finite algebraic extension. In the comments,
 `‖ ⬝ ‖` denotes any power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
 
 ## Main Definitions
@@ -22,10 +22,10 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 
 ## Main Results
 * `IsUltrametricDist.isPowMul_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is power-multiplicative.
-* `IsUltrametricDist.isNonarchimedean_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is nonarchimedean.
+* `IsUltrametricDist.isNonarchimedean_algNormOfAlgEquiv` : `algNormOfAlgEquiv` is non-Archimedean.
 * `IsUltrametricDist.algNormOfAlgEquiv_extends` : `algNormOfAlgEquiv` extends the norm on `K`.
 * `IsUltrametricDist.isPowMul_invariantExtension` : `invariantExtension` is power-multiplicative.
-* `IsUltrametricDist.isNonarchimedean_invariantExtension` : `invariantExtension` is nonarchimedean.
+* `IsUltrametricDist.isNonarchimedean_invariantExtension` : `invariantExtension` is non-Archimedean.
 * `IsUltrametricDist.invariantExtension_extends` : `invariantExtension` extends the norm on `K`.
 
 ## References
@@ -33,7 +33,7 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 
 ## Tags
 
-algNormOfAlgEquiv, invariantExtension, norm, nonarchimedean
+algNormOfAlgEquiv, invariantExtension, norm, non-Archimedean
 -/
 
 open scoped NNReal
@@ -73,7 +73,7 @@ theorem isPowMul_algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
   exact (Classical.choose_spec (exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional
     h_fin hu.isNonarchimedean_norm)).1 _ hn
 
-/-- The algebra norm `algNormOfAlgEquiv` is nonarchimedean. -/
+/-- The algebra norm `algNormOfAlgEquiv` is non-Archimedean. -/
 theorem isNonarchimedean_algNormOfAlgEquiv (σ : L ≃ₐ[K] L) :
     IsNonarchimedean (algNormOfAlgEquiv σ) := by
   intro x y
@@ -129,7 +129,7 @@ theorem isPowMul_invariantExtension :
     (fun σ ↦ apply_nonneg (algNormOfAlgEquiv σ) x)]
   exact iSup_congr fun σ ↦ isPowMul_algNormOfAlgEquiv σ _ hn
 
-/-- The algebra norm `invariantExtension` is nonarchimedean. -/
+/-- The algebra norm `invariantExtension` is non-Archimedean. -/
 theorem isNonarchimedean_invariantExtension :
     IsNonarchimedean (invariantExtension K L) := fun x y ↦
   ciSup_le fun σ ↦ le_trans (isNonarchimedean_algNormOfAlgEquiv σ x y)

@@ -197,7 +197,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
       rw [← Left.one_le_inv_iff, ← zpow_neg]
       exact one_le_zpow ha (by simp [hk])
 
-/-- If an element of a linearly ordered archimedean additive group is the least positive element,
+/-- If an element of a linearly ordered Archimedean additive group is the least positive element,
 then the whole group is isomorphic (and order-isomorphic) to the integers. -/
 noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos {G : Type*}
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] {x : G}
@@ -217,7 +217,7 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)
 
-/-- If an element of a linearly ordered mul-archimedean group is the least element greater than 1,
+/-- If an element of a linearly ordered mul-Archimedean group is the least element greater than 1,
 then the whole group is isomorphic (and order-isomorphic) to the multiplicative integers. -/
 noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_isLeast_one_lt
     {x : G} (h : IsLeast {y : G | 1 < y} x) : G ≃*o Multiplicative ℤ := by
@@ -225,13 +225,13 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
 
-/-- Any locally finite linear additive group is archimedean. -/
+/-- Any locally finite linear additive group is Archimedean. -/
 lemma Archimedean.of_locallyFiniteOrder {G : Type*} [AddCommGroup G] [LinearOrder G]
     [IsOrderedAddMonoid G] [LocallyFiniteOrder G] :
     Archimedean G :=
   .comap (LocallyFiniteOrder.addMonoidHom G) LocallyFiniteOrder.orderAddMonoidHom_strictMono
 
-/-- Any locally finite linear group is mul-archimedean. -/
+/-- Any locally finite linear group is mul-Archimedean. -/
 @[to_additive existing]
 lemma MulArchimedean.of_locallyFiniteOrder {G : Type*} [CommGroup G] [LinearOrder G]
     [IsOrderedMonoid G] [LocallyFiniteOrder G] :
@@ -239,7 +239,7 @@ lemma MulArchimedean.of_locallyFiniteOrder {G : Type*} [CommGroup G] [LinearOrde
   .comap (LocallyFiniteOrder.orderMonoidHom G).toMonoidHom
     LocallyFiniteOrder.orderMonoidHom_strictMono
 
-/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
+/-- Any linearly ordered Archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
@@ -258,7 +258,7 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     · simp [hz.left]
     · simpa [lt_sub_iff_add_lt'] using hz.right
 
-/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
+/-- Any linearly ordered Archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered, exclusively. -/
 lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
@@ -274,7 +274,7 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
   omega
 
 variable (G) in
-/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
+/-- Any linearly ordered mul-Archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
 lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ∨ DenselyOrdered G := by
@@ -283,7 +283,7 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
   exact ⟨AddEquiv.toMultiplicative' f, hf⟩
 
 variable (G) in
-/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
+/-- Any linearly ordered mul-Archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered, exclusively. -/
 lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
@@ -294,7 +294,7 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
   · exact ⟨MulEquiv.toAdditive' f, by simp⟩
   · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
 
-/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-Archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
@@ -306,7 +306,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
 
 open WithZero in
-/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-Archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered, exclusively -/
 lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :

@@ -12,22 +12,22 @@ import Mathlib.Data.Rat.Floor
 /-!
 # Archimedean groups and fields.
 
-This file defines the archimedean property for ordered groups and proves several results connected
-to this notion. Being archimedean means that for all elements `x` and `y>0` there exists a natural
+This file defines the Archimedean property for ordered groups and proves several results connected
+to this notion. Being Archimedean means that for all elements `x` and `y>0` there exists a natural
 number `n` such that `x ≤ n • y`.
 
 ## Main definitions
 
-* `Archimedean` is a typeclass for an ordered additive commutative monoid to have the archimedean
+* `Archimedean` is a typeclass for an ordered additive commutative monoid to have the Archimedean
   property.
-* `MulArchimedean` is a typeclass for an ordered commutative monoid to have the "mul-archimedean
+* `MulArchimedean` is a typeclass for an ordered commutative monoid to have the "mul-Archimedean
   property" where for `x` and `y > 1`, there exists a natural number `n` such that `x ≤ y ^ n`.
-* `Archimedean.floorRing` defines a floor function on an archimedean linearly ordered ring making
+* `Archimedean.floorRing` defines a floor function on an Archimedean linearly ordered ring making
   it into a `floorRing`.
 
 ## Main statements
 
-* `ℕ`, `ℤ`, and `ℚ` are archimedean.
+* `ℕ`, `ℤ`, and `ℚ` are Archimedean.
 -/
 
 assert_not_exists Finset
@@ -89,9 +89,9 @@ section LinearOrderedCommGroup
 
 variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
-/-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
+/-- An Archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
 `a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
-@[to_additive /-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the
+@[to_additive /-- An Archimedean decidable linearly ordered `AddCommGroup` has a version of the
 floor: for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/]
 theorem existsUnique_zpow_near_of_one_lt {a : G} (ha : 1 < a) (g : G) :
     ∃! k : ℤ, a ^ k ≤ g ∧ g < a ^ (k + 1) := by
@@ -452,7 +452,7 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 <
   exact ⟨q, lt_of_le_of_ne (by positivity) fun q0 ↦
     (le_sup_right.trans_lt xqn).ne <| q0 ▸ (zero_pow hn).symm, le_sup_left.trans_lt xqn, qny⟩
 
-/-- There is a rational power between any two positive elements of an archimedean ordered field. -/
+/-- There is a rational power between any two positive elements of an Archimedean ordered field. -/
 theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :
     ∃ q : ℚ, 0 < q ∧ x < (q : K) ^ n ∧ (q : K) ^ n < y := by
   obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
@@ -523,7 +523,7 @@ instance Nonneg.instMulArchimedean [CommSemiring R] [PartialOrder R] [IsStrictOr
 instance : Archimedean NNRat := Nonneg.instArchimedean
 instance : MulArchimedean NNRat := Nonneg.instMulArchimedean
 
-/-- A linear ordered archimedean ring is a floor ring. This is not an `instance` because in some
+/-- A linear ordered Archimedean ring is a floor ring. This is not an `instance` because in some
 cases we have a computable `floor` function. -/
 noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
     [Archimedean R] : FloorRing R :=
@@ -531,7 +531,7 @@ noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOr
     (Classical.choose_spec (exists_floor a) z).symm
 
 -- see Note [lower instance priority]
-/-- A linear ordered field that is a floor ring is archimedean. -/
+/-- A linear ordered field that is a floor ring is Archimedean. -/
 instance (priority := 100) FloorRing.archimedean (K) [Field K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorRing K] :
     Archimedean K := by

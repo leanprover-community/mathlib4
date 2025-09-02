@@ -16,7 +16,7 @@ import Mathlib.Order.UpperLower.Principal
 /-!
 # Archimedean classes of a linearly ordered group
 
-This file defines archimedean classes of a given linearly ordered group. Archimedean classes
+This file defines Archimedean classes of a given linearly ordered group. Archimedean classes
 measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`
 in the same class are "equivalent" in the sense that there exist two natural numbers
 `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`. An element `a` in a higher class than `b`
@@ -24,18 +24,18 @@ is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural nu
 
 ## Main definitions
 
-* `ArchimedeanClass` is the archimedean class for additive linearly ordered group.
-* `MulArchimedeanClass` is the archimedean class for multiplicative linearly ordered group.
+* `ArchimedeanClass` is the Archimedean class for additive linearly ordered group.
+* `MulArchimedeanClass` is the Archimedean class for multiplicative linearly ordered group.
 * `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
-  archimedean classes lifted from ordered group homomorphisms.
+  Archimedean classes lifted from ordered group homomorphisms.
 * `ArchimedeanClass.ballAddSubgroup` and `MulArchimedeanClass.ballSubgroup` are subgroups
-  formed by an open interval of archimedean classes
+  formed by an open interval of Archimedean classes
 * `ArchimedeanClass.closedBallAddSubgroup` and `MulArchimedeanClass.closedBallSubgroup` are
-  subgroups formed by a closed interval of archimedean classes.
+  subgroups formed by a closed interval of Archimedean classes.
 
 ## Main statements
 
-The following theorems state that an ordered commutative group is (mul-)archimedean if and only if
+The following theorems state that an ordered commutative group is (mul-)Archimedean if and only if
 all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`:
 * `ArchimedeanClass.archimedean_of_mk_eq_mk` / `MulArchimedeanClass.mulArchimedean_of_mk_eq_mk`
 * `ArchimedeanClass.mk_eq_mk_of_archimedean` / `MulArchimedeanClass.mk_eq_mk_of_mulArchimedean`
@@ -152,19 +152,19 @@ variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
-/-- `MulArchimedeanClass M` is the quotient of the group `M` by multiplicative archimedean
+/-- `MulArchimedeanClass M` is the quotient of the group `M` by multiplicative Archimedean
 equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`. -/
 @[to_additive ArchimedeanClass
-/-- `ArchimedeanClass M` is the quotient of the additive group `M` by additive archimedean
+/-- `ArchimedeanClass M` is the quotient of the additive group `M` by additive Archimedean
 equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`. -/]
 def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
 
 namespace MulArchimedeanClass
 
-/-- The archimedean class of a given element. -/
-@[to_additive /-- The archimedean class of a given element. -/]
+/-- The Archimedean class of a given element. -/
+@[to_additive /-- The Archimedean class of a given element. -/]
 def mk (a : M) : MulArchimedeanClass M := toAntisymmetrization _ (MulArchimedeanOrder.of a)
 
 /-- An induction principle for `MulArchimedeanClass`. -/
@@ -216,8 +216,8 @@ theorem lift₂_mk {α : Type*} (f : M → M → α)
   unfold lift₂
   exact Quotient.lift₂_mk f (fun _ _ _ _ h₁ h₂ ↦ h _ _ _ _ (mk_eq_mk.mpr h₁) (mk_eq_mk.mpr h₂)) a b
 
-/-- Choose a representative element from a given archimedean class. -/
-@[to_additive /-- Choose a representative element from a given archimedean class. -/]
+/-- Choose a representative element from a given Archimedean class. -/
+@[to_additive /-- Choose a representative element from a given Archimedean class. -/]
 noncomputable
 def out (A : MulArchimedeanClass M) : M := (Quotient.out A).val
 
@@ -420,9 +420,9 @@ theorem mk_eq_mk_of_mulArchimedean [MulArchimedean M] (ha : a ≠ 1) (hb : b ≠
 section Hom
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
-/-- An `OrderMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/
+/-- An `OrderMonoidHom` can be lifted to an `OrderHom` over Archimedean classes. -/
 @[to_additive
-/-- An `OrderAddMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/]
+/-- An `OrderAddMonoidHom` can be lifted to an `OrderHom` over Archimedean classes. -/]
 noncomputable
 def orderHom (f : M →*o N) : MulArchimedeanClass M →o MulArchimedeanClass N :=
   (MulArchimedeanOrder.orderHom f).antisymmetrization
@@ -460,9 +460,9 @@ section LiftHom
 
 variable {α : Type*} [PartialOrder α]
 
-/-- Lift a function `M → α` that's monotone along archimedean classes to a
+/-- Lift a function `M → α` that's monotone along Archimedean classes to a
 monotone function `MulArchimedeanClass M →o α`. -/
-@[to_additive /-- Lift a function `M → α` that's monotone along archimedean classes to a
+@[to_additive /-- Lift a function `M → α` that's monotone along Archimedean classes to a
 monotone function `ArchimedeanClass M →o α`. -/]
 noncomputable
 def liftOrderHom (f : M → α) (h : ∀ a b, mk a ≤ mk b → f a ≤ f b) :
@@ -591,22 +591,22 @@ end MulArchimedeanClass
 
 variable (M) in
 /-- `FiniteMulArchimedeanClass M` is the quotient of the non-one elements of the group `M` by
-multiplicative archimedean equivalence, where two elements `a` and `b` are in the same class iff
+multiplicative Archimedean equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n : ℕ, |a|ₘ ≤ |b|ₘ ^ n)`.
 
 It is defined as the subtype of non-top elements of `MulArchimedeanClass M`
-(`⊤ : MulArchimedeanClass M` is the archimedean class of `1`).
+(`⊤ : MulArchimedeanClass M` is the Archimedean class of `1`).
 
-This is useful since the family of non-top archimedean classes is linearly independent. -/
+This is useful since the family of non-top Archimedean classes is linearly independent. -/
 @[to_additive FiniteArchimedeanClass
 /-- `FiniteArchimedeanClass M` is the quotient of the non-zero elements of the additive group `M` by
-additive archimedean equivalence, where two elements `a` and `b` are in the same class iff
+additive Archimedean equivalence, where two elements `a` and `b` are in the same class iff
 `(∃ m : ℕ, |b| ≤ m • |a|) ∧ (∃ n : ℕ, |a| ≤ n • |b|)`.
 
 It is defined as the subtype of non-top elements of `ArchimedeanClass M`
-(`⊤ : ArchimedeanClass M` is the archimedean class of `0`).
+(`⊤ : ArchimedeanClass M` is the Archimedean class of `0`).
 
-This is useful since the family of non-top archimedean classes is linearly independent. -/]
+This is useful since the family of non-top Archimedean classes is linearly independent. -/]
 abbrev FiniteMulArchimedeanClass := {A : MulArchimedeanClass M // A ≠ ⊤}
 
 namespace FiniteMulArchimedeanClass
@@ -667,9 +667,9 @@ theorem lift_mk {α : Type*} (f : {a : M // a ≠ 1} → α)
     {a : M} (ha : a ≠ 1) :
     lift f h (mk a ha) = f ⟨a, ha⟩ := by simp [lift, mk, ha]
 
-/-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean classes to a
+/-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along Archimedean classes to a
 monotone function `FiniteMulArchimedeanClass M →o α`. -/
-@[to_additive /-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along archimedean
+@[to_additive /-- Lift a function `{a : M // a ≠ 1} → α` that's monotone along Archimedean
 classes to a monotone function `FiniteArchimedeanClass M₁ →o α`. -/]
 noncomputable
 def liftOrderHom {α : Type*} [PartialOrder α]

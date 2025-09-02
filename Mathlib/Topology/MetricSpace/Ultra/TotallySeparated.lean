@@ -14,7 +14,7 @@ In a metric space with an ultrametric, the space is totally separated, hence tot
 
 ## Tags
 
-ultrametric, nonarchimedean, totally separated, totally disconnected
+ultrametric, non-Archimedean, totally separated, totally disconnected
 -/
 open Metric IsUltrametricDist
 
