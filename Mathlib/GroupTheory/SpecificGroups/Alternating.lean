@@ -406,6 +406,12 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
       decide
   · contradiction
 
+lemma _root_.Finset.subset_compl_iff_disjoint_right {α : Type*} {s t : Finset α}
+    [Fintype α] [DecidableEq α] : s ⊆ tᶜ ↔ Disjoint s t :=
+  le_compl_iff_disjoint_right (α := Finset α)
+
+attribute [local grind =]
+  Cycle.nodup_coe_iff Finset.disjoint_insert_right Finset.disjoint_singleton_right support_inv in
 /-- A key lemma to prove $A_n(5 \leq n)$ is simple. It shows that any nontrivial normal subgroup of
 an alternating group on at least 6 elements contains a nontrivial element that fixes a specific
 element. -/
@@ -434,7 +440,8 @@ theorem normal_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
     rw [Finset.card_pair hσa.symm, card_support_eq_two] at hσs
     rw [mem_alternatingGroup, hσs.sign_eq] at hσ
     contradiction
-  simp_rw [Finset.not_subset, mem_support] at hσs; obtain ⟨j, hjσ, hja⟩ := hσs
+  simp_rw [Finset.not_subset, mem_support] at hσs
+  obtain ⟨j, hjσ, hja⟩ := hσs
   have hxy := calc (2 : ℕ)
     _ = 6 - Multiset.card {a, σ a, j, σ j} := rfl
     _ ≤ card α - Multiset.card {a, σ a, j, σ j} := by
@@ -445,12 +452,12 @@ theorem normal_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
       simp
     _ ≤ ({a, σ a, j, σ j}ᶜ : Finset α).card := by
       rw [Finset.card_compl]
-  simp_rw [Finset.le_card_iff_exists_subset_card, Finset.card_eq_two] at hxy
+  simp_rw [Finset.le_card_iff_exists_subset_card, Finset.card_eq_two,
+    Finset.subset_compl_iff_disjoint_right] at hxy
   obtain ⟨_, hxys, x, y, hnxy, rfl⟩ := hxy
-  have hcnd : (↑[j, x, y] : Cycle α).Nodup := by
-    rw [Finset.subset_compl_comm, Finset.subset_iff] at hxys; simp at hxys ⊢; tauto
+  have hcnd : (↑[j, x, y] : Cycle α).Nodup := by grind
   have hcnt : (↑[j, x, y] : Cycle α).Nontrivial := by
-    rw [Cycle.nontrivial_coe_nodup_iff hcnd]; simp
+    simp [Cycle.nontrivial_coe_nodup_iff hcnd]
   let c := Cycle.formPerm (↑[j, x, y] : Cycle α) hcnd
   have ecs : c.support = {j, x, y} := by
     rw [Cycle.support_formPerm _ hcnd hcnt, Cycle.coe_toFinset]; simp
@@ -461,11 +468,8 @@ theorem normal_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
   use mul_mem (mul_mem hcma hσ) (inv_mem hcma)
   use iH.conj_mem _ hσH ⟨c, hcma⟩
   use by
-    have hanmcs : a ∉ (c⁻¹).support := by
-      simp_rw [support_inv, ecs]
-      simp [Finset.subset_iff] at hja hxys ⊢; tauto
-    have hσanmcs : σ a ∉ c.support := by
-      simp [ecs, Finset.subset_iff] at hja hxys ⊢; tauto
+    have hanmcs : a ∉ (c⁻¹).support := by grind
+    have hσanmcs : σ a ∉ c.support := by grind
     simp [notMem_support.mp hanmcs, notMem_support.mp hσanmcs]
   rw [DFunLike.ne_iff]; use j
   have ecij : c⁻¹ j = y := by
@@ -474,15 +478,16 @@ theorem normal_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
       Cycle.formPerm_apply_mem_eq_next (↑[y, x, j])
         (Cycle.nodup_reverse_iff.mpr hcnd) j (by simp)]
     simp only [Cycle.next, Cycle.ofList, Quot.hrecOn, Quot.recOn, Quot.rec]
-    apply List.next_getLast_cons <;> [simp; skip; rfl; skip] <;>
-      simp [Finset.subset_iff] at hxys ⊢ <;> tauto
+    apply List.next_getLast_cons <;> [simp; skip; rfl; skip] <;> grind
   simp_rw [Perm.mul_apply, ecij]
   by_cases hσy : σ y ∈ c.support
   case neg =>
-    rw [notMem_support.mp hσy, σ.injective.ne_iff]; simp [Finset.subset_iff] at hxys; tauto
+    rw [notMem_support.mp hσy, σ.injective.ne_iff]
+    grind
   case pos =>
-    intro ecσy; rw [← apply_mem_support, ecσy, ecs] at hσy
-    revert hσy; simp [Finset.subset_iff] at hxys ⊢; tauto
+    intro ecσy
+    rw [← apply_mem_support, ecσy, ecs] at hσy
+    grind
 
 lemma isSimpleGroup_of_card_eq_three (h3 : card α = 3) : IsSimpleGroup ↥(alternatingGroup α) := by
   haveI : Nontrivial α := Fintype.one_lt_card_iff_nontrivial.1 (by rw [h3]; omega)
