@@ -102,10 +102,6 @@ theorem isSimpleGroup_five : IsSimpleGroup ↥(alternatingGroup (Fin 5)) :=
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
 
-lemma _root_.Finset.subset_compl_iff_disjoint_right {α : Type*} {s t : Finset α}
-    [Fintype α] [DecidableEq α] : s ⊆ tᶜ ↔ Disjoint s t :=
-  le_compl_iff_disjoint_right (α := Finset α)
-
 attribute [local grind =]
   Cycle.nodup_coe_iff Finset.disjoint_insert_right Finset.disjoint_singleton_right support_inv in
 /-- A key lemma to prove $A_n(5 \leq n)$ is simple. It shows that any nontrivial normal subgroup of
