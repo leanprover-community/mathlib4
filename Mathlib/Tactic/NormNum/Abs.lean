@@ -11,6 +11,8 @@ import Mathlib.Algebra.Order.Ring.Rat
 
 /-!
 # `norm_num` plugin for `abs`
+
+TODO: plugin for `mabs`
 -/
 
 namespace Mathlib.Meta.NormNum
@@ -37,7 +39,6 @@ theorem isNNRat_abs_nonneg {α : Type*} [DivisionRing α] [LinearOrder α]
   apply mul_nonneg
   · exact Nat.cast_nonneg' num
   · simp_all only [invOf_eq_inv, inv_nonneg, Nat.cast_nonneg]
-
 
 theorem isNNRat_abs_neg {α : Type*} [DivisionRing α] [LinearOrder α] [IsStrictOrderedRing α]
     {a : α} {num den : ℕ} (ra : IsRat a (.negOfNat num) den) : IsNNRat |a| num den := by
@@ -77,7 +78,6 @@ such that `norm_num` successfully recognises `a`. -/
     assumeInstancesCommute
     return .isNNRat _ qe' _ _ q(isNNRat_abs_nonneg $pe')
   | .isNegNNRat dα' qe' nume' dene' pe' =>
-    let rα : Q(DivisionRing $α) ← synthInstanceQ q(DivisionRing $α)
     let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
     let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
     haveI' : $e =Q |$a| := ⟨⟩
