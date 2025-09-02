@@ -430,6 +430,11 @@ lemma heq_of_eq_cast (e : β = α) : a = cast e b → a ≍ b := by rintro rfl; 
 
 lemma eq_cast_iff_heq : a = cast e b ↔ a ≍ b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
 
+lemma heq_iff_exists_eq_cast {α β : Sort u} (a : α) (b : β) :
+    a ≍ b ↔ ∃ (h : β = α), a = cast h b :=
+  ⟨fun h ↦ ⟨type_eq_of_heq h.symm, eq_cast_iff_heq.mpr h⟩,
+    by rintro ⟨rfl, h⟩; rw [h, cast_eq]⟩
+
 end Equality
 
 /-! ### Declarations about quantifiers -/
