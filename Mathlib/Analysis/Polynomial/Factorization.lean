@@ -20,9 +20,6 @@ This file contains two main results:
   a monic polynomial of degree two times another monic factor.
 -/
 
--- For the time being, so that CI does not fail.
-set_option linter.directoryDependency false
-
 namespace Polynomial
 
 /-- If `f : F[X]` is monic of degree `≥ 1` and `F` is an algebraically closed field,
