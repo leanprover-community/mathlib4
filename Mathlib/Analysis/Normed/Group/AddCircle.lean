@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!

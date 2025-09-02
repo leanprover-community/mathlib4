@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.NormedSpace.BallAction
+import Mathlib.Analysis.Normed.Module.Ball.Action
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
