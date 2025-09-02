@@ -76,8 +76,7 @@ theorem norm_eq {x : ℝ} : ‖(x : AddCircle p)‖ = |x - round (p⁻¹ * x) * 
     rw [le_norm_iff] at hr
     constructor
     · simpa [abs_of_nonneg] using hr (fract x)
-    · simpa [abs_sub_comm (fract x)]
-        using hr (fract x - 1) (by simp)
+    · simpa [abs_sub_comm (fract x)] using hr (fract x - 1) (by simp)
   · simpa [zmultiples, QuotientAddGroup.eq, zsmul_eq_mul, mul_one, mem_mk, mem_range, and_imp,
       forall_exists_index, eq_neg_add_iff_add_eq, ← eq_sub_iff_add_eq, forall_swap (α := ℕ)]
       using round_le _
