@@ -340,7 +340,7 @@ protected theorem LinearMap.linearIndependent_iff_of_injOn (f : M →ₗ[R] M')
     LinearIndependent R (f ∘ v) ↔ LinearIndependent R v := by
   simp_rw [LinearIndependent, Finsupp.linearCombination_linear_comp, coe_comp]
   rw [hf_inj.injective_iff]
-  rw [← Finsupp.range_linearCombination, LinearMap.range_coe]
+  rw [← Finsupp.range_linearCombination, LinearMap.coe_range]
 
 protected theorem LinearMap.linearIndepOn_iff_of_injOn (f : M →ₗ[R] M')
     (hf_inj : Set.InjOn f (span R (v '' s))) :
