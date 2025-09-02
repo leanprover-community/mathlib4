@@ -7,7 +7,6 @@ import Mathlib.Analysis.Complex.Order
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.BigOperators
 import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
@@ -79,9 +78,6 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 @[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
 
-@[deprecated (since := "2025-02-16")] alias comap_abs_nhds_zero := comap_norm_nhds_zero
-@[deprecated (since := "2025-02-16")] alias continuous_abs := continuous_norm
-
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
   simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).pow 2
@@ -128,9 +124,6 @@ theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
 
 instance : ProperSpace ℂ := lipschitz_equivRealProd.properSpace
   equivRealProdCLM.toHomeomorph.isProperMap
-
-@[deprecated (since := "2025-02-16")] alias tendsto_abs_cocompact_atTop :=
-  tendsto_norm_cocompact_atTop
 
 /-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
@@ -507,10 +500,6 @@ end tsum
 end RCLike
 
 namespace Complex
-
-@[deprecated (since := "2025-02-16")] alias hasProd_abs := HasProd.norm
-@[deprecated (since := "2025-02-16")] alias multipliable_abs := Multipliable.norm
-@[deprecated (since := "2025-02-16")] alias abs_tprod := norm_tprod
 
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic
