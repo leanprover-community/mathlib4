@@ -199,8 +199,6 @@ theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem norm_polarCoord_symm (p : ℝ × ℝ) :
     ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
 
-@[deprecated (since := "2025-02-17")] alias polarCoord_symm_abs := norm_polarCoord_symm
-
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by

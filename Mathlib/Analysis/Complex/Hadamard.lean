@@ -112,8 +112,6 @@ lemma norm_invInterpStrip {ε : ℝ} (hε : ε > 0) :
   repeat rw [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _]
   simp
 
-@[deprecated (since := "2025-02-17")] alias abs_invInterpStrip := norm_invInterpStrip
-
 /-- The function `invInterpStrip` is `diffContOnCl`. -/
 lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
     DiffContOnCl ℂ (fun z ↦ invInterpStrip f z ε) (verticalStrip 0 1) := by

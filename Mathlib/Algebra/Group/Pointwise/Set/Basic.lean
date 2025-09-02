@@ -694,8 +694,6 @@ lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
 
-@[deprecated (since := "2025-02-17")] alias sum_nsmul := nsmul_prod
-
 end Monoid
 
 section IsLeftCancelMul

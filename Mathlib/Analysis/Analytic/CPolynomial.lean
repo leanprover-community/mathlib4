@@ -120,8 +120,6 @@ lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
 
 lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
-@[deprecated (since := "2025-02-15")] alias cpolyomialOn := cpolynomialOn
-
 lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolynomialOn.analyticOnNhd
 
 lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn

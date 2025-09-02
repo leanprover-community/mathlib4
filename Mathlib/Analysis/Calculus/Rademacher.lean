@@ -66,9 +66,6 @@ theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
   memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_lineDeriv := memLp_lineDeriv
-
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
 theorem ae_lineDifferentiableAt

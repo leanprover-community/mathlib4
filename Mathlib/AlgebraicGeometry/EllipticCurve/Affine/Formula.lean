@@ -134,16 +134,10 @@ lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y :
   congr! 1
   ring1
 
-@[deprecated (since := "2025-02-01")] alias equation_neg_of := equation_neg
-@[deprecated (since := "2025-02-01")] alias equation_neg_iff := equation_neg
-
 lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
   rw [nonsingular_iff, equation_neg, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
   exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
     not_congr <| and_congr_left fun h => by rw [← h]
-
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
-@[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
 
 /-! ## Slope formulae in affine coordinates -/
 

@@ -173,19 +173,6 @@ lemma isLE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsLE X n] : t.IsLE Y n wh
 lemma isGE_of_iso {X Y : C} (e : X ≅ Y) (n : ℤ) [t.IsGE X n] : t.IsGE Y n where
   ge := (t.ge n).prop_of_iso e (t.ge_of_isGE X n)
 
-@[deprecated (since := "2025-02-25")] alias LE := le
-@[deprecated (since := "2025-02-25")] alias GE := ge
-@[deprecated (since := "2025-02-25")] alias LE_shift := le_shift
-@[deprecated (since := "2025-02-25")] alias GE_shift := ge_shift
-@[deprecated (since := "2025-02-25")] alias LE_zero_le := le_zero_le
-@[deprecated (since := "2025-02-25")] alias GE_one_le := ge_one_le
-@[deprecated (since := "2025-02-25")] alias predicateShift_LE := shift_le
-@[deprecated (since := "2025-02-25")] alias predicateShift_GE := shift_ge
-@[deprecated (since := "2025-02-25")] alias LE_monotone := le_monotone
-@[deprecated (since := "2025-02-25")] alias GE_antitone := ge_antitone
-@[deprecated (since := "2025-02-25")] alias mem_of_isLE := le_of_isLE
-@[deprecated (since := "2025-02-25")] alias mem_of_isGE := ge_of_isGE
-
 end TStructure
 
 end Triangulated

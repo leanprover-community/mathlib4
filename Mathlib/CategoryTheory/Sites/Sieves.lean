@@ -574,9 +574,6 @@ theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
 theorem mem_iff_pullback_eq_top (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
   rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
 
-@[deprecated (since := "2025-02-28")]
-alias pullback_eq_top_iff_mem := mem_iff_pullback_eq_top
-
 theorem pullback_eq_top_of_mem (S : Sieve X) {f : Y ⟶ X} : S f → S.pullback f = ⊤ :=
   (mem_iff_pullback_eq_top f).1
 
