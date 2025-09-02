@@ -294,6 +294,32 @@ lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
   rw [fwdDiff_iter_comp_add 1 (· ^ n), fwdDiff_iter_eq_factorial]
   simp_all only [Pi.natCast_apply]
 
+theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
+    Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := by
+  ext x
+  simp only [fwdDiff_iter_eq_sum_shift, leadingCoeff]
+  conv_lhs => enter [2]; ext k; rw [Polynomial.eval_eq_sum_range]
+  simp only [Int.reduceNeg, nsmul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
+    Int.cast_neg, Int.cast_one, Int.cast_natCast]
+  set d := P.natDegree with hd_def
+  conv_lhs => enter [2]; ext k; rw [mul_sum]; enter [2]; ext i; rw [mul_comm (a := P.coeff i),
+    ← mul_assoc]
+  rw [sum_comm]
+  conv_lhs => enter [2]; ext y; rw [← sum_mul, mul_comm]
+  conv_lhs => enter [2]; ext y; enter [2 , 2]; ext i; rw [show (i : R) = i • 1 by simp,
+    show (-1) ^ (d - i) * ↑(d.choose i) * (x + i • 1) ^ y =
+      ((-1) ^ (d - i) * ↑(d.choose i)) • (x + i • 1) ^ y by simp]
+  conv_lhs => enter [2]; ext y; rw [← fwdDiff_iter_eq_sum_shift
+    (n := d) (f := fun i => i ^ y) (h := 1) (y := x)]
+  simp only [Pi.smul_apply, Pi.natCast_apply, smul_eq_mul]
+  rw [sum_range_succ]
+  have : ∑ k ∈ range d, P.coeff k * Δ_[1]^[d] (fun i ↦ i ^ k) x = 0 := by
+    apply sum_eq_zero
+    intro i hi
+    rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), Pi.zero_apply, mul_zero]
+  rw [this, zero_add, fwdDiff_iter_eq_factorial]
+  rfl
+
 /--
 The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
 A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
