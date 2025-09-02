@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Properties of pointwise scalar multiplication of sets in normed spaces.

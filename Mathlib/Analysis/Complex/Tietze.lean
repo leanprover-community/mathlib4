@@ -7,7 +7,7 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 /-!
 # Finite dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 

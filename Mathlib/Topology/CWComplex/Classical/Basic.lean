@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
 
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
