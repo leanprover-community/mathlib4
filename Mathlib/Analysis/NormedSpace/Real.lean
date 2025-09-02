@@ -100,6 +100,15 @@ theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r)
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
 
+/-- In a real nontrivially-seimnormed space, a sphere is nonempty if and only if its radius is
+nonnegative. -/
+@[simp]
+theorem NormedSpace.sphere_nonempty_of_nontrivial_seminorm {x : E} {r : ℝ} (h : ∃ x : E, ‖x‖ ≠ 0) :
+    (sphere x r).Nonempty ↔ 0 ≤ r := by
+  refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr => ?_⟩
+  obtain ⟨y, hy⟩ := h
+  exact ⟨x + r • ‖y‖⁻¹ • y, by simpa [norm_smul, inv_mul_cancel₀ hy] using hr⟩
+
 end Seminormed
 
 section Normed
@@ -131,10 +140,8 @@ variable {E} in
 /-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
 nonnegative. -/
 @[simp]
-theorem NormedSpace.sphere_nonempty {x : E} {r : ℝ} : (sphere x r).Nonempty ↔ 0 ≤ r := by
-  refine ⟨fun h => nonempty_closedBall.1 (h.mono sphere_subset_closedBall), fun hr => ?_⟩
-  obtain ⟨y, hy⟩ := exists_norm_eq E hr
-  exact ⟨x + y, by simpa using hy⟩
+theorem NormedSpace.sphere_nonempty {x : E} {r : ℝ} : (sphere x r).Nonempty ↔ 0 ≤ r :=
+  sphere_nonempty_of_nontrivial_seminorm <| (exists_ne 0).imp fun _ => norm_ne_zero_iff.2
 
 end Surj
 
