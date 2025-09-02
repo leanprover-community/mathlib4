@@ -4,7 +4,6 @@ open Real
 
 namespace Real
 
-@[simp]
 lemma sign_mul_abs (x : ℝ) : sign x * |x| = x := by
   rcases lt_trichotomy x 0 with hx | rfl | hx <;>
   simp [*, sign_of_pos, sign_zero, sign_of_neg, abs_of_pos, abs_of_neg]
