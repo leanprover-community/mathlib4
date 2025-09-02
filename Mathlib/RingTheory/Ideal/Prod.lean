@@ -197,3 +197,11 @@ theorem ideal_prod_prime (I : Ideal (R × S)) :
     · exact isPrime_ideal_prod_top'
 
 end Ideal
+
+open Submodule.IsPrincipal in
+instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
+  principal I := by
+    rw [I.ideal_prod_eq, ← span_singleton_generator (I.map _),
+      ← span_singleton_generator (I.map (RingHom.snd R S)), ← Ideal.span, ← Ideal.span,
+      ← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
+    exact ⟨_, rfl⟩
