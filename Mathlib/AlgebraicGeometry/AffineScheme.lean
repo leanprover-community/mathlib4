@@ -361,9 +361,6 @@ lemma isoSpec_hom_appTop :
   have := (Scheme.Γ.map_inv hU.isoSpec.inv.op).trans this
   rwa [← op_inv, IsIso.Iso.inv_inv] at this
 
-@[deprecated (since := "2024-11-16")] alias isoSpec_inv_app_top := isoSpec_inv_appTop
-@[deprecated (since := "2024-11-16")] alias isoSpec_hom_app_top := isoSpec_hom_appTop
-
 /-- The open immersion `Spec Γ(X, U) ⟶ X` for an affine `U`. -/
 def fromSpec :
     Spec Γ(X, U) ⟶ X :=
@@ -768,8 +765,6 @@ lemma mem_ideal_iff {s : Γ(X, U)} {I : Ideal Γ(X, U)} :
     TopCat.Presheaf.algebra_section_stalk X.presheaf _
   have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalization.AtPrime _ P :=
       hU.isLocalization_stalk' ⟨P, hP⟩ (hU.isoSpec.inv.base _).2
-  have (P : Ideal Γ(X, U)) [hP : P.IsPrime] : IsLocalizedModule P.primeCompl _ :=
-    (@isLocalizedModule_iff_isLocalization' ..).mpr (this P)
   refine Submodule.mem_of_localization_maximal
       (fun P hP ↦ X.presheaf.stalk (hU.fromSpec.base ⟨P, hP.isPrime⟩))
       (fun P hP ↦ Algebra.linearMap _ _) _ _ ?_
@@ -968,9 +963,6 @@ lemma toSpecΓ_preimage_zeroLocus (s : Set Γ(X, ⊤)) :
     X.toSpecΓ.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
   LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
 
-@[deprecated (since := "2025-01-17")] alias toΓSpec_preimage_zeroLocus_eq :=
-  toSpecΓ_preimage_zeroLocus
-
 /-- If `X` is affine, the image of the zero locus of global sections of `X` under `X.isoSpec`
 is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
 lemma isoSpec_image_zeroLocus [IsAffine X]
@@ -994,9 +986,6 @@ lemma isoSpec_inv_image_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
     X.isoSpec.inv.base '' PrimeSpectrum.zeroLocus s = X.zeroLocus s := by
   rw [← isoSpec_inv_preimage_zeroLocus, Set.image_preimage_eq]
   exact (bijective_of_isIso X.isoSpec.inv.base).surjective
-
-@[deprecated (since := "2025-01-17")] alias toΓSpec_image_zeroLocus_eq_of_isAffine :=
-  Scheme.isoSpec_image_zeroLocus
 
 /-- If `X` is an affine scheme, every closed set of `X` is the zero locus
 of a set of global sections. -/

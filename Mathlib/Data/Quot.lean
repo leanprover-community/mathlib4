@@ -321,8 +321,10 @@ theorem Quotient.liftOn_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a 
   rfl
 
 @[simp]
-theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α → α → β)
-    (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
+theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
+    (f : α → β → γ)
+    (h : ∀ (a₁ : α) (b₁ : β) (a₂ : α) (b₂ : β), a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂)
+    (x : α) (y : β) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
   rfl
 
@@ -689,8 +691,6 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
   rfl
 
 /-- A version of `Quotient.map₂` using curly braces and unification. -/
-@[deprecated (since := "2024-12-01")] protected alias map₂' := Quotient.map₂
-
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=
   Quotient.exact

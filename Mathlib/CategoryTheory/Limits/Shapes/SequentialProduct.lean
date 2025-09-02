@@ -130,7 +130,7 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
       all_goals simp
 
 lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
-  Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
+    Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
     f m ≫ eqToHom (functorObj_eq_neg h).symm := rfl
 
 @[reassoc]

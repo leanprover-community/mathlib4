@@ -23,7 +23,9 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
--- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
+open Module
+
+-- TODO: Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
 
 namespace NumberField
@@ -52,7 +54,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
-  congr
+  congr 1
   ext
   simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
     Basis.map_apply]

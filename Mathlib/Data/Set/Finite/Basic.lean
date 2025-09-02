@@ -705,9 +705,6 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
   rw [insert_subset_iff] at haS
   exact insert haS.1 haS.2 has (hCs haS.2)
 
-@[deprecated (since := "2025-01-03")] alias Finite.induction_on' := Finite.induction_on_subset
-@[deprecated (since := "2025-01-03")] alias Finite.dinduction_on := Finite.induction_on
-
 section
 
 attribute [local instance] Nat.fintypeIio
@@ -865,7 +862,7 @@ protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 theorem infinite_of_injOn_mapsTo {s : Set α} {t : Set β} {f : α → β} (hi : InjOn f s)
     (hm : MapsTo f s t) (hs : s.Infinite) : t.Infinite :=
-  ((infinite_image_iff hi).2 hs).mono (mapsTo'.mp hm)
+  ((infinite_image_iff hi).2 hs).mono (mapsTo_iff_image_subset.mp hm)
 
 theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α → β} (hs : s.Infinite)
     (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
@@ -906,6 +903,14 @@ lemma exists_card_eq [Infinite α] : ∀ n : ℕ, ∃ s : Finset α, s.card = n
     obtain ⟨s, rfl⟩ := exists_card_eq n
     obtain ⟨a, ha⟩ := s.exists_notMem
     exact ⟨insert a s, card_insert_of_notMem ha⟩
+
+/-- `Finset` version of `Set.SurjOn.exists_subset_injOn_image_eq`. -/
+lemma exists_subset_injOn_image_eq_of_surjOn [DecidableEq β] {f : α → β}
+    (s : Set α) (t : Finset β) (hfs : s.SurjOn f t) :
+    ∃ u : Finset α, ↑u ⊆ s ∧ Set.InjOn f u ∧ u.image f = t := by
+  obtain ⟨u, hus, hf, himg⟩ := hfs.exists_subset_injOn_image_eq
+  refine ⟨(Finite.of_finite_image (by simp [himg]) hf).toFinset, by simpa, by simpa, ?_⟩
+  simpa [← Finset.coe_inj]
 
 end Finset
 

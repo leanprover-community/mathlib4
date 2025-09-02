@@ -21,12 +21,10 @@ finiteness of the class group for number fields and function fields.
   its integral closure has a finite class group
 -/
 
+open Module Ring
 open scoped nonZeroDivisors
 
 namespace ClassGroup
-
-open Ring
-
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]

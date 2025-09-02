@@ -100,7 +100,7 @@ theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
 
 theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp [hn.ne]
   · exact degree_eq_iff_natDegree_eq h
 

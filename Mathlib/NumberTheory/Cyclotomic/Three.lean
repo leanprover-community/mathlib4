@@ -18,10 +18,10 @@ and `λ = η - 1`.
 
 ## Main results
 * `IsCyclotomicExtension.Rat.Three.Units.mem`: Given a unit `u : (𝓞 K)ˣ`, we have that
-`u ∈ {1, -1, η, -η, η^2, -η^2}`.
+  `u ∈ {1, -1, η, -η, η^2, -η^2}`.
 
 * `IsCyclotomicExtension.Rat.Three.eq_one_or_neg_one_of_unit_of_congruent`: Given a unit
-`u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
+  `u : (𝓞 K)ˣ`, if `u` is congruent to an integer modulo `3`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
 Theorem 5.36

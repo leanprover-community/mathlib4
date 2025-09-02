@@ -30,13 +30,13 @@ section
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
-  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
+  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
+  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
 namespace Mon_Class
 
 @[inherit_doc] scoped notation "ι" => Grp_Class.inv
-@[inherit_doc] scoped notation "ι["M"]" => Grp_Class.inv (X := M)
+@[inherit_doc] scoped notation "ι["G"]" => Grp_Class.inv (X := G)
 
 end Mon_Class
 
@@ -104,6 +104,7 @@ lemma comp' {A₁ A₂ A₃ : Grp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
 end Grp_
 
 namespace Grp_Class
+variable {G X : C} [Grp_Class G]
 
 variable {A : C} {B : C}
 
@@ -155,6 +156,14 @@ theorem lift_left_mul_ext [Grp_Class B] {f g : A ⟶ B} (i : A ⟶ B)
 theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
+
+/-- Transfer `Grp_Class` along an isomorphism. -/
+@[simps!]
+abbrev ofIso (e : G ≅ X) : Grp_Class X where
+  toMon_Class := .ofIso e
+  inv := e.inv ≫ ι[G] ≫ e.hom
+  left_inv := by simp [Mon_Class.ofIso]
+  right_inv := by simp [Mon_Class.ofIso]
 
 instance (A : C) [Grp_Class A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
@@ -252,11 +261,17 @@ lemma toMon_Class_injective {X : C} :
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[ext]
-lemma _root_.Grp_Class.ext {X : C} (h₁ h₂ : Grp_Class X)
-    (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
+lemma ext {X : C} (h₁ h₂ : Grp_Class X) (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
   Grp_Class.toMon_Class_injective H
 
-end Grp_Class
+namespace tensorObj
+variable [BraidedCategory C] {G H : C} [Grp_Class G] [Grp_Class H]
+
+@[simps inv]
+instance : Grp_Class (G ⊗ H) where
+  inv := ι ⊗ₘ ι
+
+end Grp_Class.tensorObj
 
 namespace Grp_
 
@@ -265,6 +280,7 @@ section
 variable (C)
 
 /-- The forgetful functor from group objects to monoid objects. -/
+@[simps! obj_X]
 def forget₂Mon_ : Grp_ C ⥤ Mon_ C :=
   inducedFunctor Grp_.toMon_
 
@@ -301,21 +317,24 @@ instance : (forget C).Faithful where
 @[simp]
 theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
 
-end
-
-section
-
-variable {M N : Grp_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
-
-/-- Constructor for isomorphisms in the category `Grp_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
-
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
+instance {G H : Grp_ C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
 
 end
+
+/-- Construct an isomorphism of group objects by giving a monoid isomorphism between the underlying
+objects. -/
+@[simps!]
+def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [Grp_Class H] [IsMon_Hom e.hom] : mk G ≅ mk H :=
+  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso' e)
+
+/-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
+objects and checking compatibility with unit and multiplication only in the forward direction. -/
+@[simps!]
+abbrev mkIso {G H : Grp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
+  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
 instance uniqueHomFromTrivial (A : Grp_ C) : Unique (trivial C ⟶ A) :=
   Mon_.uniqueHomFromTrivial A.toMon_
@@ -338,7 +357,7 @@ open Monoidal
 variable (F) in
 /-- A finite-product-preserving functor takes group objects to group objects. -/
 @[simps!]
-noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
+def mapGrp : Grp_ C ⥤ Grp_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
       grp :=
@@ -350,6 +369,18 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
   map f := F.mapMon.map f
+
+protected instance Faithful.mapGrp [F.Faithful] : F.mapGrp.Faithful where
+  map_injective hfg := F.mapMon.map_injective hfg
+
+protected instance Full.mapGrp [F.Full] [F.Faithful] : F.mapGrp.Full where
+  map_surjective := F.mapMon.map_surjective
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
+faithful too. -/
+@[simps]
+protected def FullyFaithful.mapGrp (hF : F.FullyFaithful) : F.mapGrp.FullyFaithful where
+  preimage f := .mk <| hF.preimage f.hom
 
 @[simp]
 theorem mapGrp_id_one (A : Grp_ C) :
@@ -373,24 +404,22 @@ theorem comp_mapGrp_mul (A : Grp_ C) :
 
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
-noncomputable def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp)
-    (by simp))
+def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp_ C) :=
+  NatIso.ofComponents fun X ↦ Grp_.mkIso (.refl _)
 
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]
-noncomputable def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
-  NatIso.ofComponents (fun X ↦ Grp_.mkIso (.refl _) (by simp [ε_of_cartesianMonoidalCategory])
-    (by simp [μ_of_cartesianMonoidalCategory]))
+def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
+  NatIso.ofComponents fun X ↦ Grp_.mkIso (.refl _)
 
 /-- Natural transformations between functors lift to group objects. -/
 @[simps!]
-noncomputable def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
+def mapGrpNatTrans (f : F ⟶ F') : F.mapGrp ⟶ F'.mapGrp where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to group objects. -/
 @[simps!]
-noncomputable def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
+def mapGrpNatIso (e : F ≅ F') : F.mapGrp ≅ F'.mapGrp :=
   NatIso.ofComponents fun X ↦ Grp_.mkIso (e.app _)
 
 attribute [local instance] Monoidal.ofChosenFiniteProducts in
@@ -400,6 +429,15 @@ noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
   map {F G} α := { app A := .mk' (α.app A.X) }
 
+/-- Pullback a group object along a fully faithful monoidal functor. -/
+def FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] : Grp_Class X where
+  __ := hF.mon_Class X
+  inv := hF.preimage ι[F.obj X]
+  left_inv := hF.map_injective <| by
+    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+  right_inv := hF.map_injective <| by
+    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+
 end Functor
 
 open Functor
@@ -408,7 +446,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
-@[simps] noncomputable def mapGrp : F.mapGrp ⊣ G.mapGrp where
+@[simps] def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
   counit := mapGrpCompIso.inv ≫ mapGrpNatTrans a.counit ≫ mapGrpIdIso.hom
 
@@ -418,7 +456,7 @@ namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
-@[simps] noncomputable def mapGrp : Grp_ C ≌ Grp_ D where
+@[simps] def mapGrp : Grp_ C ≌ Grp_ D where
   functor := e.functor.mapGrp
   inverse := e.inverse.mapGrp
   unitIso := mapGrpIdIso.symm ≪≫ mapGrpNatIso e.unitIso ≪≫ mapGrpCompIso
