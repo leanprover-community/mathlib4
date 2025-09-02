@@ -144,7 +144,7 @@ theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
 noncomputable def simpleSubobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) : C :=
   (exists_simple_subobject h).choose
 
-/-- The monomorphism from the arbitrary simple subobject of a non-zero artinian object. -/
+/-- The monomorphism from the arbitrary simple subobject of a non-zero Artinian object. -/
 noncomputable def simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     simpleSubobject h ⟶ X :=
   (exists_simple_subobject h).choose.arrow

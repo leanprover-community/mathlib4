@@ -127,12 +127,12 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     (hd : Pairwise fun i j ↦ Disjoint (f i).support (f j).support) :
     (⨆ i, f i).IsMatching := by
   intro v hv
-  obtain ⟨i , hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)
-  obtain ⟨w , hw⟩ := hM i hi
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)
+  obtain ⟨w, hw⟩ := hM i hi
   use w
   refine ⟨iSup_adj.mpr ⟨i, hw.1⟩, ?_⟩
   intro y hy
-  obtain ⟨i' , hi'⟩ := iSup_adj.mp hy
+  obtain ⟨i', hi'⟩ := iSup_adj.mp hy
   by_cases heq : i = i'
   · exact hw.2 y (heq.symm ▸ hi')
   · have := hd heq
@@ -298,7 +298,7 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv
     obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
-    obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
+    obtain ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ := hv
     use w
     have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
     refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
