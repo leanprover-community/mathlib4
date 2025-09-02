@@ -702,11 +702,13 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
   __ := AdjoinRoot.liftAlgHom g _ pb.gen h₂
   toFun := AdjoinRoot.liftAlgHom g _ pb.gen h₂
   invFun := pb.lift (root g) h₁
-  left_inv x := AdjoinRoot.induction_on _ x fun x => by rw [liftHom_mk, pb.lift_aeval, aeval_eq]
+  left_inv x := AdjoinRoot.induction_on _ x fun x => by
+    change pb.lift _ _ (aeval _ _) = _; rw [pb.lift_aeval, aeval_eq]
   right_inv x := by
     nontriviality S
     obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
     rw [pb.lift_aeval, aeval_eq, liftAlgHom_mk]
+    rfl
 
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem equiv'_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
