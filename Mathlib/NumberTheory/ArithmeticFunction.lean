@@ -834,11 +834,7 @@ theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
 
 theorem sigma_pos (k n : ℕ) (hn0 : n ≠ 0) : 0 < σ k n := by
   rw [sigma_apply]
-  apply Finset.sum_pos
-  · intro d hd
-    replace hd : d ≠ 0 := ne_zero_of_dvd_ne_zero hn0 (dvd_of_mem_divisors hd)
-    positivity
-  exact nonempty_divisors.mpr hn0
+  exact sum_pos (fun d hd ↦ pow_pos (pos_of_mem_divisors hd) k) (nonempty_divisors.mpr hn0)
 
 theorem sigma_mono (k k' n : ℕ) (hk : k ≤ k') : σ k n ≤ σ k' n := by
   by_cases hn0 : n = 0
