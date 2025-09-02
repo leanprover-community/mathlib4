@@ -203,7 +203,7 @@ lemma closure_toSubmodule_eq {s : ClosedSubmodule R M} : s.toSubmodule.closure =
 lemma mem_toSubmodule_iff {x : M} {t : ClosedSubmodule R M} :
     x ∈ t.toSubmodule ↔ x ∈ t.toSubmodule.closure := by
   simp only [closure_toSubmodule_eq]
-  exact Eq.to_iff rfl
+  exact Iff.rfl
 
 end Submodule
 
