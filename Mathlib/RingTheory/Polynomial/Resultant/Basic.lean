@@ -65,7 +65,8 @@ the leading coefficient of `f`. Important because its determinant is (up to a si
 discriminant of `f`.
 -/
 noncomputable def
-sylvester_deriv (f : R[X]) : Matrix (Fin (2 * f.natDegree - 1)) (Fin (2 * f.natDegree - 1)) R :=
+sylvester_deriv (f : R[X]) :
+    Matrix (Fin (f.natDegree - 1 + f.natDegree)) (Fin (f.natDegree - 1 + f.natDegree)) R :=
   letI n := f.natDegree
   .of fun i j ↦
     if i < 2 * n - 2 then
@@ -77,19 +78,17 @@ by multiplying the last row by the leading coefficient of `f`. -/
 lemma sylvester_deriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     (sylvester_deriv f).updateRow ⟨2 * f.natDegree - 2, by omega⟩
       (f.leadingCoeff • (sylvester_deriv f ⟨2 * f.natDegree - 2, by omega⟩)) =
-    (sylvester f f.derivative f.natDegree (f.natDegree - 1)).reindex
-      (finCongr (by omega)) (finCongr (by omega)) := by
+    (sylvester f f.derivative f.natDegree (f.natDegree - 1)) := by
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
   · -- Top part of matrix
     simp [sylvester_deriv, Matrix.updateRow_apply, if_neg hi',
       if_pos (show i < 2 * f.natDegree - 2 by omega)]
   · -- Bottom row
-    simp only [sylvester_deriv, sylvester, Fin.addCases, mem_Icc, coeff_derivative, Fin.cast_mk,
-      eq_rec_constant, Matrix.of_apply, Fin.castLT_mk, Fin.subNat_mk, Matrix.submatrix_apply,
-      tsub_le_iff_right, dite_eq_ite, leadingCoeff, Matrix.updateRow_self, Pi.smul_apply,
-      lt_self_iff_false, ↓reduceIte, smul_eq_mul, mul_ite, mul_one, mul_zero, Matrix.reindex_apply,
-      finCongr_symm, finCongr_apply]
+    simp only [sylvester_deriv, sylvester, Fin.addCases, mem_Icc, coeff_derivative, eq_rec_constant,
+      Matrix.of_apply, Fin.castLT_mk, Fin.cast_mk, Fin.subNat_mk, tsub_le_iff_right, dite_eq_ite,
+      leadingCoeff, Matrix.updateRow_self, Pi.smul_apply, lt_self_iff_false, ↓reduceIte,
+      smul_eq_mul, mul_ite, mul_one, mul_zero]
     split_ifs with h₁ h₂ h₃ h₄ h₅ h₆
     on_goal 2 => rw [show f.natDegree = 1 by omega]
     on_goal 3 =>
@@ -134,13 +133,13 @@ noncomputable def disc (f : R[X]) : R :=
 
 /-- The discriminant of a constant polynomial is `1`. -/
 lemma disc_const (r : R) : disc (C r) = 1 := by
-  let e : Fin (2 * (C r).natDegree - 1) ≃ Fin 0 := finCongr (by simp)
+  let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)
   simp [disc, ← Matrix.det_reindex_self e]
 
 /-- The discriminant of a linear polynomial is `1`. -/
 lemma disc_linear {f : R[X]} (hf : f.degree = 1) : disc f = 1 := by
   rw [← Nat.cast_one, degree_eq_iff_natDegree_eq_of_pos one_pos] at hf
-  let e : Fin (2 * f.natDegree - 1) ≃ Fin 1 := finCongr (by omega)
+  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 1 := finCongr (by omega)
   have : f.sylvester_deriv.reindex e e = !![1] := by
     ext i j
     simp [e, sylvester_deriv, mul_comm, hf]
@@ -150,7 +149,7 @@ lemma disc_linear {f : R[X]} (hf : f.degree = 1) : disc f = 1 := by
 lemma disc_quadratic {f : R[X]} (hf : f.degree = 2) :
     disc f = f.coeff 1 ^ 2 - 4 * f.coeff 0 * f.coeff 2 := by
   rw [← Nat.cast_two, degree_eq_iff_natDegree_eq_of_pos two_pos] at hf
-  let e : Fin (2 * f.natDegree - 1) ≃ Fin 3 := finCongr (by omega)
+  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 3 := finCongr (by omega)
   rw [disc, ← Matrix.det_reindex_self e]
   have : f.sylvester_deriv.reindex e e =
     !![f.coeff 0,     f.coeff 1,         0;
@@ -160,9 +159,8 @@ lemma disc_quadratic {f : R[X]} (hf : f.degree = 2) :
     fin_cases i <;> fin_cases j <;>
       simp [e, sylvester_deriv, sylvester, coeff_derivative, mul_comm, Fin.addCases,
         one_add_one_eq_two, hf]
-  simp only [this, hf, Matrix.det_fin_three,
-    Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero,
-    Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val]
+  simp only [this, Matrix.det_fin_three, Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero,
+    Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val, hf]
   ring_nf
 
 /-- Relation between the resultant and the discriminant.
@@ -173,10 +171,8 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
     resultant f f.derivative f.natDegree (f.natDegree - 1) =
       (-1) ^ (f.natDegree * (f.natDegree - 1) / 2) * f.leadingCoeff * f.disc := by
   rw [← natDegree_pos_iff_degree_pos] at hf
-  let e : Fin ((f.natDegree - 1) + f.natDegree) ≃ Fin (2 * f.natDegree - 1) :=
-    finCongr (by omega)
-  rw [resultant, ← Matrix.det_reindex_self e, ← sylvester_deriv_updateRow f hf,
-    Matrix.det_updateRow_smul, Matrix.updateRow_eq_self, disc]
+  rw [resultant, ← sylvester_deriv_updateRow f hf, Matrix.det_updateRow_smul,
+    Matrix.updateRow_eq_self, disc]
   suffices ∀ (r s : R), s * r = s * r * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2 * 2) by
     ring_nf
     apply this
