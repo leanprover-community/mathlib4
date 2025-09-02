@@ -449,7 +449,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   obtain ⟨Wy, h_Wy⟩ := hgt (M + span R {y}) (lt_add _ hy)
   use Wx + Wy
   rw [Multiset.map_add, Multiset.prod_add]
-  apply le_trans (Submodule.mul_le_mul h_Wx h_Wy)
+  apply le_trans (mul_le_mul' h_Wx h_Wy)
   rw [add_mul]
   apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_right)
   rw [mul_add]
