@@ -274,10 +274,12 @@ def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofCompone
     Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homEquivFunctor
 
 /-- The n-simplex is isomorphic to the nerve of the ordinal category `ULiftFin (n + 1)`. -/
-def simplexIsNerveULiftFin (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{u} (n + 1)) :=
-  NatIso.ofComponents fun i ↦
-    Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homEquivFunctorULiftRight
+def simplexIsNerveULiftFin (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{0, u} (n + 1)) :=
+  NatIso.ofComponents
+    (fun i ↦ Equiv.toIso <| stdSimplex.objEquiv.trans SimplexCategory.homEquivFunctorULiftRight)
 
+/-- The n-simplex is isomorphic to the nerve of the ordinal category `ULiftFin (n + 1)`. -/
+def simplexIsNerveULiftFin' (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{u, u} (n + 1)) := sorry
 section Examples
 
 open Simplicial
