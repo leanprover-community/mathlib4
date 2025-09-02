@@ -286,12 +286,12 @@ theorem one_bits : Nat.bits 1 = [true] := by
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h _ => simp [bodd_bit, bits_append_bit _ _ h]
+  | zero => simp
+  | bit _ _ h => simp [bodd_bit, bits_append_bit _ _ h]
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h _ => simp [div2_bit, bits_append_bit _ _ h]
+  | zero => simp
+  | bit _ _ h => simp [div2_bit, bits_append_bit _ _ h]
 
 end Nat

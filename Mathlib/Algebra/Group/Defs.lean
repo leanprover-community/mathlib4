@@ -519,9 +519,9 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   generalize hk : k + 1 = k'
   replace hk : k' ≠ 0 := by omega
   induction k' using Nat.binaryRecFromOne generalizing n m with
-  | z₀ => simp at hk
-  | z₁ => simp [npowRec']
-  | f b k' k'0 ih =>
+  | zero => simp at hk
+  | one => simp [npowRec']
+  | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
     rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
