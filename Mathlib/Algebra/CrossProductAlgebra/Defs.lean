@@ -23,7 +23,7 @@ This file constructs the cross product algebra associated to a 2-cocycle of a fi
 
 ## References
 
-* [*Advanced Algebra*]
+* [Anthony W. Knapp, *Advanced Algebra*][anthony2016]
 
 ## Tags
 
