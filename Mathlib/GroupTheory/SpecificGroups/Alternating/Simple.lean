@@ -215,7 +215,7 @@ theorem isSimpleGroup_iff_card_eq_three_or_card_ge_five :
   mp := by
     conv => rw [← not_imp_not]; arg 1; equals card α ≤ 2 ∨ card α = 4 => ext1; omega
     refine Or.rec (fun h2 => ?_) not_isSimpleGroup_of_card_eq_four
-    simp [Subgroup.isSimpleGroup_iff, eq_bot_of_card_le_two h2]
+    simp [↓isSimpleGroup_iff, ↓nontrivial_iff_ne_bot, eq_bot_of_card_le_two h2]
   mpr := Or.rec isSimpleGroup_of_card_eq_three isSimpleGroup_of_five_le_card
 
 end alternatingGroup
