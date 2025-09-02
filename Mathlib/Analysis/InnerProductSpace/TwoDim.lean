@@ -471,8 +471,6 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by
   · positivity
   · positivity
 
-@[deprecated (since := "2025-02-17")] alias abs_kahler := norm_kahler
-
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
   rcases eq_zero_or_eq_zero_of_mul_eq_zero this with h | h

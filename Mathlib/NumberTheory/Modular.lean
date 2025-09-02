@@ -60,7 +60,7 @@ those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_r
 -/
 
 
-open Complex hiding abs_two
+open Complex
 
 open Matrix hiding mul_smul
 

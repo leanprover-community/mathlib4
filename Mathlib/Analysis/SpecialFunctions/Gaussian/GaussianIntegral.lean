@@ -25,7 +25,7 @@ open Real Set MeasureTheory Filter Asymptotics
 
 open scoped Real Topology
 
-open Complex hiding exp abs_of_nonneg
+open Complex hiding exp
 
 theorem exp_neg_mul_rpow_isLittleO_exp_neg {p b : ℝ} (hb : 0 < b) (hp : 1 < p) :
     (fun x : ℝ => exp (- b * x ^ p)) =o[atTop] fun x : ℝ => exp (-x) := by

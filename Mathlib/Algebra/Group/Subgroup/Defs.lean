@@ -220,11 +220,6 @@ lemma subtype_injective :
 theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) := by
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-@[deprecated (since := "2025-02-18")]
-alias _root_.AddSubgroupClass.coeSubtype := _root_.AddSubgroupClass.coe_subtype
-
 variable {H}
 
 @[to_additive (attr := simp, norm_cast)]
@@ -563,11 +558,6 @@ lemma subtype_injective (s : Subgroup G) :
 @[to_additive (attr := simp)]
 theorem coe_subtype : ⇑H.subtype = ((↑) : H → G) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-@[deprecated (since := "2025-02-18")]
-alias _root_.AddSubgroup.coeSubtype := AddSubgroup.coe_subtype
 
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive

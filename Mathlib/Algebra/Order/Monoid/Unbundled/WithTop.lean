@@ -50,12 +50,6 @@ theorem untop_one : (1 : WithTop α).untop coe_ne_top = 1 :=
 theorem untopD_one (d : α) : (1 : WithTop α).untopD d = 1 :=
   rfl
 
-@[deprecated (since := "2025-02-06")]
-alias untop_zero' := untopD_zero
-
-@[to_additive existing, deprecated (since := "2025-02-06")]
-alias untop_one' := untopD_one
-
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] {a : α} : 1 ≤ (a : WithTop α) ↔ 1 ≤ a :=
   coe_le_coe
@@ -129,9 +123,6 @@ lemma add_left_inj [IsLeftCancelAdd α] (hx : x ≠ ⊤) : x + y = x + z ↔ y =
 
 lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊤) (h : x + y = x + z) : y = z :=
   (WithTop.add_left_inj hx).1 h
-
-@[deprecated (since := "2025-02-19")] alias add_left_cancel_iff := add_left_inj
-@[deprecated (since := "2025-02-19")] alias add_right_cancel_iff := add_right_inj
 
 instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithTop α) where
   elim x y z := by
@@ -396,12 +387,6 @@ theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
 theorem unbotD_one (d : α) : (1 : WithBot α).unbotD d = 1 :=
   rfl
 
-@[deprecated (since := "2025-02-06")]
-alias unbot_zero' := unbotD_zero
-
-@[to_additive existing, deprecated (since := "2025-02-06")]
-alias unbot_one' := unbotD_one
-
 @[to_additive (attr := simp, norm_cast) coe_nonneg]
 theorem one_le_coe [LE α] : 1 ≤ (a : WithBot α) ↔ 1 ≤ a := coe_le_coe
 
@@ -470,9 +455,6 @@ lemma add_left_inj [IsLeftCancelAdd α] (hx : x ≠ ⊥) : x + y = x + z ↔ y =
 
 lemma add_left_cancel [IsLeftCancelAdd α] (hx : x ≠ ⊥) (h : x + y = x + z) : y = z :=
   (WithBot.add_left_inj hx).1 h
-
-@[deprecated (since := "2025-02-19")] alias add_left_cancel_iff := add_left_inj
-@[deprecated (since := "2025-02-19")] alias add_right_cancel_iff := add_right_inj
 
 instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithBot α) where
   elim x y z := by

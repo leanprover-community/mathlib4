@@ -58,9 +58,4 @@ theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
 theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
 
-@[deprecated (since := "2025-02-17")] alias abs_add_eq_iff := norm_add_eq_iff
-@[deprecated (since := "2025-02-17")] alias abs_sub_eq_iff := norm_sub_eq_iff
-@[deprecated (since := "2025-02-17")] alias abs_add_eq := norm_add_eq
-@[deprecated (since := "2025-02-17")] alias abs_sub_eq := norm_sub_eq
-
 end Complex
