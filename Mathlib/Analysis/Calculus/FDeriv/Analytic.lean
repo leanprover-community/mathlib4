@@ -13,9 +13,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
-# Frechet derivatives of analytic functions.
+# Fréchet derivatives of analytic functions.
 
-A function expressible as a power series at a point has a Frechet derivative there.
+A function expressible as a power series at a point has a Fréchet derivative there.
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
 
 As an application, we show that continuous multilinear maps are smooth. We also compute their
@@ -708,9 +708,6 @@ theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
       ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
   rw [f.iteratedFDeriv_eq]
   exact f.norm_iteratedFDeriv_le' n x
-
-@[deprecated (since := "2025-02-15")] alias cPolynomialAt := cpolynomialAt
-@[deprecated (since := "2025-02-15")] alias cPolynomialOn := cpolynomialOn
 
 end ContinuousMultilinearMap
 

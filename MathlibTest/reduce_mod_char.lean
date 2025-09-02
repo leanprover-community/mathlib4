@@ -121,3 +121,14 @@ example : (2 : ZMod' 2) = 0 := by
   reduce_mod_char!
 
 end InferInstance
+
+def test (_ : ZMod 37) : Type := ℕ
+
+-- wildcard `*` is supposed to ignore dependent and non-`Prop` hypotheses
+set_option linter.unusedVariables false in
+set_option linter.unusedTactic false in
+example (a : test 100) : ℕ := by
+  let x : ZMod 2 := 100
+  reduce_mod_char at *
+  guard_hyp a : test 100
+  exact 0

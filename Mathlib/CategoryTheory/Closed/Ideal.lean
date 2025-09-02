@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Subterminal
 # Exponential ideals
 
 An exponential ideal of a cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
-`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring theoretic ideals. We
+`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring-theoretic ideals. We
 define the notion here for inclusion functors `i : D ⥤ C` rather than explicit subcategories to
 preserve the principle of equivalence.
 
@@ -100,9 +100,10 @@ section
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D]
 variable (i : D ⥤ C)
 
--- Porting note: this used to be used as a local instance,
--- now it can instead be used as a have when needed
--- we assume HasFiniteProducts D as a hypothesis below
+/- This cannot be a local instance since it has free variables,
+it can instead be used as a have when needed.
+We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+-/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 
@@ -237,18 +238,17 @@ noncomputable def bijection (A B : C) (X : D) :
 
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
-  dsimp [bijection]
+  simp only [bijection, Equiv.trans_def, curriedTensor_obj_obj, Equiv.symm_trans_apply,
+    Equiv.symm_symm, Functor.FullyFaithful.homEquiv_apply, Functor.map_id, Iso.homCongr_symm,
+    Iso.symm_symm_eq, Iso.refl_symm, Iso.homCongr_apply, Iso.refl_hom, comp_id,
+    unitCompPartialBijective_symm_apply, Functor.id_obj, Functor.comp_obj, Iso.symm_inv]
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
-  rw [comp_id, comp_id, comp_id, i.map_id, comp_id, unitCompPartialBijective_symm_apply,
-    unitCompPartialBijective_symm_apply, uncurry_natural_left, uncurry_curry,
-    uncurry_natural_left, uncurry_curry, ← BraidedCategory.braiding_naturality_left_assoc]
-  erw [SymmetricCategory.symmetry_assoc, ← MonoidalCategory.whisker_exchange_assoc]
-  -- Porting note: added
-  dsimp only [Functor.comp_obj]
-  rw [← tensorHom_def'_assoc, Adjunction.homEquiv_symm_apply,
-    ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
-  rw [prodComparisonIso_hom i ((reflector i).obj A) ((reflector i).obj B)]
+  rw [uncurry_natural_left, uncurry_curry, uncurry_natural_left, uncurry_curry,
+    ← BraidedCategory.braiding_naturality_left_assoc, SymmetricCategory.symmetry_assoc,
+    ← MonoidalCategory.whisker_exchange_assoc, ← tensorHom_def'_assoc,
+    Adjunction.homEquiv_symm_apply, ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc,
+    prodComparisonIso_hom i ((reflector i).obj A) ((reflector i).obj B)]
   apply hom_ext
   · rw [tensorHom_fst, assoc, assoc, prodComparison_fst, ← i.map_comp,
     prodComparison_fst]
