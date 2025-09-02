@@ -38,9 +38,6 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 /--
 info: Try these:
   • 🎉 linarith
-  • field_simp
-    Remaining subgoals:
-    ⊢ a ≤ b
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
@@ -71,9 +68,6 @@ info: Try these:
   • ring_nf
     Remaining subgoals:
     ⊢ ∃ x, P x ∧ 0 ≤ x
-  • field_simp
-    Remaining subgoals:
-    ⊢ ∃ x, P x
   • norm_num
     Remaining subgoals:
     ⊢ ∃ x, P x
