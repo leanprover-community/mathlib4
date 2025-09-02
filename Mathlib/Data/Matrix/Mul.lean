@@ -783,7 +783,7 @@ theorem mul_vecMulVec [Fintype m] (M : Matrix l m α) (x : m → α) (y : n → 
   ext
   simp_rw [mul_apply, vecMulVec_apply, mulVec, dotProduct, Finset.sum_mul, mul_assoc]
 
-theorem vecMulVec_mul [Fintype n] (x : l → α) (y : m → α) (M : Matrix m n α) :
+theorem vecMulVec_mul [Fintype m] (x : l → α) (y : m → α) (M : Matrix m n α) :
     vecMulVec x y * M = vecMulVec x (y ᵥ* M) := by
   ext
   simp_rw [mul_apply, vecMulVec_apply, vecMul, dotProduct, Finset.mul_sum, mul_assoc]
