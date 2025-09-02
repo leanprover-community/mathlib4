@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
 
-import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Resultant of two polynomials
