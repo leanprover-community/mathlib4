@@ -268,7 +268,7 @@ lemma coe_sSup (S : Set (ClosedSubmodule R N)) :
 @[simp, norm_cast]
 lemma coe_iSup (f : ι → ClosedSubmodule R N) :
     ↑(⨆ i, f i) = closure (⨆ i, (f i).toSubmodule).carrier := by
-  simp [← coe_toSubmodule]
+  simp only [← coe_toSubmodule, toSubmodule_iSup, Submodule.carrier_eq_coe]
   rfl
 
 @[simp] lemma mem_sSup {S : Set (ClosedSubmodule R N)} :
