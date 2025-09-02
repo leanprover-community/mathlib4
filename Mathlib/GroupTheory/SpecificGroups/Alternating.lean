@@ -100,7 +100,7 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
-/-- The stabilizer on a permulation group is equivalent to a permutation group on elements
+/-- The stabilizer on a permulation group is isomorphic to a permutation group on elements
 except the given element. -/
 @[simps apply symm_apply_coe]
 def Equiv.Perm.stabilizerEquiv (a : α) :
@@ -111,17 +111,47 @@ def Equiv.Perm.stabilizerEquiv (a : α) :
   right_inv σ := by simp
   map_mul' _ _ := by simp
 
-/-- The stabilizer on an alternating group is equivalent to an alternating group on elements
+@[to_additive]
+lemma Subgroup.mem_map_subtype {G : Type*} [Group G] {H : Subgroup G} {K : Subgroup ↥H}
+    {g : G} : g ∈ map H.subtype K ↔ ∃ (hg : g ∈ H), ⟨g, hg⟩ ∈ K := by
+  simp
+
+/-- `map H.subtype K` is isomorphic to `K`. -/
+@[to_additive (attr := simps)]
+def Subgroup.mapSubtypeEquiv {G : Type*} [Group G] {H : Subgroup G} (K : Subgroup ↥H) :
+    ↥(map H.subtype K) ≃* K where
+  toFun g := ⟨⟨g.1, mem_map_subtype.mp g.2 |>.fst⟩, mem_map_subtype.mp g.2 |>.snd⟩
+  invFun g := ⟨g.1, mem_map_of_mem _ g.2⟩
+  map_mul' _ _ := rfl
+
+/-- If `map H.subtype K₁ = K₂` then `K₁` is isomorphic to `K₂`. -/
+@[to_additive]
+abbrev MulEquiv.mapSubtypeCongr {G : Type*} [Group G] {H : Subgroup G} {K₁ : Subgroup ↥H}
+    {K₂ : Subgroup G} (hK : map H.subtype K₁ = K₂) : K₁ ≃* K₂ :=
+  mapSubtypeEquiv K₁ |>.symm.trans <| MulEquiv.subgroupCongr hK
+
+/-- If `map H₁.subtype K₁ = map H₂.subtype K₂` then `K₁` is isomorphic to `K₂`. -/
+@[to_additive]
+abbrev MulEquiv.mapSubtypeCongr₂ {G : Type*} [Group G] {H₁ H₂ : Subgroup G}
+    {K₁ : Subgroup ↥H₁} {K₂ : Subgroup ↥H₂} (hK : map H₁.subtype K₁ = map H₂.subtype K₂) :
+    K₁ ≃* K₂ :=
+  mapSubtypeEquiv K₁ |>.symm.trans <| MulEquiv.subgroupCongr hK |>.trans <| mapSubtypeEquiv K₂
+
+/-- The stabilizer on an alternating group is isomorphic to an alternating group on elements
 except the given element. -/
-axiom alternatingGroup.stabilizerEquiv (a : α) :
-    ↥(stabilizer ↥(alternatingGroup α) a) ≃* ↥(alternatingGroup { b // b ≠ a })
+@[simps ! apply_coe symm_apply_coe_coe]
+def alternatingGroup.stabilizerEquiv (a : α) :
+    ↥(stabilizer ↥(alternatingGroup α) a) ≃* ↥(alternatingGroup { b // b ≠ a }) :=
+  MulEquiv.symm <| Perm.stabilizerEquiv a |>.symm.subgroupMap _ |>.trans <|
+    MulEquiv.mapSubtypeCongr₂ <| by
+      ext1; simp +contextual [Subgroup.map_equiv_eq_comap_symm, sign_subtypePerm, not_imp_not]
 
 /-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
 @[simps ! apply_coe]
 def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
     ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
   e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
-    MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
+    MulEquiv.subgroupCongr <| by ext1; simp [Subgroup.map_equiv_eq_comap_symm]
 
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
