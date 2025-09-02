@@ -129,7 +129,7 @@ lemma lt_or_le_of_codirected [SuccOrder α] [IsSuccArchimedean α] {r v₁ v₂ 
 /--
 This isn't an instance due to a loop with `LinearOrder`.
 -/
--- See note [reducible noninstances]
+-- See note [reducible non-instances]
 abbrev IsSuccArchimedean.linearOrder [SuccOrder α] [IsSuccArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirected α (· ≥ ·)] : LinearOrder α where
@@ -151,7 +151,7 @@ lemma lt_or_le_of_directed [PredOrder α] [IsPredArchimedean α] {r v₁ v₂ : 
 /--
 This isn't an instance due to a loop with `LinearOrder`.
 -/
--- See note [reducible noninstances]
+-- See note [reducible non-instances]
 abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirected α (· ≤ ·)] : LinearOrder α :=
