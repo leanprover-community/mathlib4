@@ -272,8 +272,7 @@ lemma coe_iSup (f : ι → ClosedSubmodule R N) :
   rfl
 
 @[simp] lemma mem_sSup {S : Set (ClosedSubmodule R N)} :
-    x ∈ sSup S ↔ x ∈ closure (⨆ s ∈ S, s.toSubmodule).carrier := by
-  simp [← SetLike.mem_coe]
+    x ∈ sSup S ↔ x ∈ closure (⨆ s ∈ S, s.toSubmodule).carrier := Iff.rfl
 
 @[simp] lemma mem_iSup {f : ι → ClosedSubmodule R N} :
     x ∈ ⨆ i, f i ↔ x ∈ closure (⨆ i, (f i).toSubmodule).carrier := by
