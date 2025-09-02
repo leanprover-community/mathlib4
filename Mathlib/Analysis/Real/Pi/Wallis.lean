@@ -67,7 +67,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
     ring_nf
 
 theorem W_eq_integral_sin_pow_div_integral_sin_pow (k : ℕ) : (π / 2)⁻¹ * W k =
-    (∫ x : ℝ in (0)..π, sin x ^ (2 * k + 1)) / ∫ x : ℝ in (0)..π, sin x ^ (2 * k) := by
+    (∫ x : ℝ in 0..π, sin x ^ (2 * k + 1)) / ∫ x : ℝ in 0..π, sin x ^ (2 * k) := by
   rw [integral_sin_pow_even, integral_sin_pow_odd, mul_div_mul_comm, ← prod_div_distrib, inv_div]
   simp_rw [div_div_div_comm, div_div_eq_mul_div, mul_div_assoc]
   rfl
