@@ -610,17 +610,17 @@ variable {S P}
 
 section Order
 
-instance : AddLeftMono (Submodule R A) where
-  add_le_add_left _ _ _ := sup_le_sup_left
+instance : AddLeftMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := sup_le_sup_left hIJ _
 
-instance : AddRightMono (Submodule R A) where
-  add_le_add_right _ _ _ := sup_le_sup_right
+instance : AddRightMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := sup_le_sup_right hIJ _
 
-instance : MulLeftMono (Submodule R A) where
-  mul_le_mul_left _ _ _ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul hk (hIJ hj)
+instance : MulLeftMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul hk (hIJ hj)
 
-instance : MulRightMono (Submodule R A) where
-  mul_le_mul_right _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul (hIJ hk) hj
+instance : MulRightMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul (hIJ hk) hj
 
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I := by
   convert mul_left_mono I hI
