@@ -580,3 +580,34 @@ protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K 
   K.convex K.zero_mem
 
 end Submodule
+
+section
+
+variable {R : Type*} [CommSemiring R]
+variable (A : Type*) [Semiring A] [Algebra R A]
+variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [PartialOrder R] [PartialOrder A]
+
+lemma convex_of_nonneg_algebraMap {s : Set M} (halg : ∀ ⦃r : R⦄, 0 ≤ r → 0 ≤ algebraMap R A r)
+    (hs : Convex A s) : Convex R s := by
+  simp only [Convex, StarConvex] at hs ⊢
+  intro u hu v hv a b ha hb hab
+  convert hs hu hv (halg ha) (halg hb) (by rw [← algebraMap.coe_add, hab, algebraMap.coe_one])
+    using 2
+  · rw [algebraMap_smul]
+  · rw [algebraMap_smul]
+
+lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
+    (halg : ∀ ⦃a : A⦄, 0 ≤ a → ∃ (r : R), 0 ≤ r ∧ algebraMap R A r = a) (hs : Convex R s) :
+    Convex A s := by
+  simp only [Convex, StarConvex] at hs ⊢
+  intro u hu v hv a b ha hb hab
+  obtain ⟨c, hc1, hc2⟩ := halg ha
+  obtain ⟨d, hd1, hd2⟩ := halg hb
+  convert hs hu hv hc1 hd1 _ using 2
+  · rw [← hc2, algebraMap_smul]
+  · rw [← hd2, algebraMap_smul]
+  rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab
+  exact (FaithfulSMul.algebraMap_eq_one_iff R A).mp hab
+
+end
