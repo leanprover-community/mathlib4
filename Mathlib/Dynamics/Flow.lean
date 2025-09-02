@@ -49,8 +49,7 @@ variable (ϕ : τ → α → α) (s : Set α)
 theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo']
 
-/-- A set `s ⊆ α` is forward invariant under `ϕ : τ → α → α` if
-    `ϕ t s ⊆ s` for all `t ≥ 0`. -/
+/-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
 def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
