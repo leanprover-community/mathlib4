@@ -73,6 +73,7 @@ instance : IsFibered (forget F) :=
 
 variable (F) (S : 𝒮)
 
+attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The inclusion map from `F(S)` into `∫ᶜ F`. -/
 @[simps]
 def ι : F.obj ⟨op S⟩ ⥤ ∫ᶜ F where

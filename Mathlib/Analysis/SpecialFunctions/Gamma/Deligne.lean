@@ -29,7 +29,7 @@ formula which is an important input in functional equations of (un-completed) Di
 -/
 
 open Filter Topology Asymptotics Real Set MeasureTheory
-open Complex hiding abs_of_nonneg
+open Complex
 
 namespace Complex
 

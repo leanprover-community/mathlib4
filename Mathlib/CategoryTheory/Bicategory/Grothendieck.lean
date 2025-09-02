@@ -109,6 +109,7 @@ lemma Hom.congr {a b : ∫ᶜ F} {f g : a ⟶ b} (h : f = g) :
 
 end
 
+attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The category structure on `∫ᶜ F`. -/
 instance category : Category (∫ᶜ F) where
   toCategoryStruct := Pseudofunctor.CoGrothendieck.categoryStruct
