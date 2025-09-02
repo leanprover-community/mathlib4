@@ -301,11 +301,10 @@ instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
       rw [card_fin]
       exact le_add_left (le_refl 3))
 
-lemma eq_bot_iff_card_le_two : alternatingGroup α = ⊥ ↔ card α ≤ 2 where
+lemma nontrivial_iff_three_le_card : Nontrivial ↥(alternatingGroup α) ↔ 3 ≤ card α where
   mp := by
-    conv => rw [← not_imp_not, ← ne_eq, ← nontrivial_iff_ne_bot, not_le, ← Nat.succ_le_iff]
-    exact nontrivial_of_three_le_card
-  mpr := eq_bot_of_card_le_two
+    convert mt (eq_bot_of_card_le_two (α := α)) <;> [apply nontrivial_iff_ne_bot; omega]
+  mpr := nontrivial_of_three_le_card
 
 lemma isCyclic_of_card_le_three (h3 : card α ≤ 3) : IsCyclic ↥(alternatingGroup α) := by
   rw [le_iff_lt_or_eq, Nat.lt_succ] at h3

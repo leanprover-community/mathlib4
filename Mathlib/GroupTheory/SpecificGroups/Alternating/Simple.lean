@@ -189,7 +189,7 @@ theorem isSimpleGroup_of_five_le {n} (h5 : 5 ≤ n) :
   | base => exact isSimpleGroup_five
   | succ m hmn hm =>
     simp_rw [isSimpleGroup_iff, Classical.or_iff_not_imp_left, ← ne_eq]; constructor
-    · rw [nontrivial_iff_ne_bot, ne_eq, eq_bot_iff_card_le_two]; grind
+    · rw [nontrivial_iff_three_le_card]; grind
     intro H hHn hHb
     simp_rw [(altCongrHom (finSuccAboveEquiv (last m))).isSimpleGroup_congr,
       (stabilizerEquiv _).symm.isSimpleGroup_congr, Subgroup.isSimpleGroup_iff,
@@ -212,10 +212,8 @@ instance isSimpleGroup_add_five (n : ℕ) : IsSimpleGroup ↥(alternatingGroup (
 /-- $A_n$ is simple if and only if $n = 3$ or $5 \leq n$. -/
 theorem isSimpleGroup_iff_card_eq_three_or_card_ge_five :
     IsSimpleGroup ↥(alternatingGroup α) ↔ card α = 3 ∨ 5 ≤ card α where
-  mp := by
-    conv => rw [← not_imp_not]; arg 1; equals card α ≤ 2 ∨ card α = 4 => ext1; omega
-    refine Or.rec (fun h2 => ?_) not_isSimpleGroup_of_card_eq_four
-    simp [↓isSimpleGroup_iff, ↓nontrivial_iff_ne_bot, eq_bot_of_card_le_two h2]
+  mp hα := by
+    grind [= isSimpleGroup_iff, = nontrivial_iff_three_le_card, ← not_isSimpleGroup_of_card_eq_four]
   mpr := Or.rec isSimpleGroup_of_card_eq_three isSimpleGroup_of_five_le_card
 
 end alternatingGroup
