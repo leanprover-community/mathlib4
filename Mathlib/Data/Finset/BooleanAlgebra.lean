@@ -117,6 +117,12 @@ theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
 
 lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl (α := Finset α)
 
+lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
+  le_compl_iff_disjoint_right (α := Finset α)
+
+lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
+  le_compl_iff_disjoint_left (α := Finset α)
+
 @[simp] lemma subset_compl_singleton : s ⊆ {a}ᶜ ↔ a ∉ s := by
   rw [subset_compl_comm, singleton_subset_iff, mem_compl]
 
