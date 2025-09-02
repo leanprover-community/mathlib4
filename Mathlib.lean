@@ -249,7 +249,6 @@ import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Algebra.ContinuedFractions.Translations
-import Mathlib.Algebra.CrossProductAlgebra.Defs
 import Mathlib.Algebra.CubicDiscriminant
 import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Algebra.DirectSum.Algebra
@@ -5249,6 +5248,7 @@ import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Coinvariants
+import Mathlib.RepresentationTheory.CrossProductAlgebra.Defs
 import Mathlib.RepresentationTheory.FDRep
 import Mathlib.RepresentationTheory.FiniteIndex
 import Mathlib.RepresentationTheory.GroupCohomology.Basic
