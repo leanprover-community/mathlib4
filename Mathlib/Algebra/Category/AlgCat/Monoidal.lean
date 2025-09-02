@@ -84,11 +84,11 @@ theorem hom_inv_rightUnitor {M : AlgCat.{u} R} :
   rfl
 
 theorem hom_hom_associator {M N K : AlgCat.{u} R} :
-    (α_ M N K).hom.hom = (Algebra.TensorProduct.assoc _ _ _ _).toAlgHom :=
+    (α_ M N K).hom.hom = (Algebra.TensorProduct.assoc R R M N K).toAlgHom :=
   rfl
 
 theorem hom_inv_associator {M N K : AlgCat.{u} R} :
-    (α_ M N K).inv.hom = (Algebra.TensorProduct.assoc _ _ _ _).symm.toAlgHom :=
+    (α_ M N K).inv.hom = (Algebra.TensorProduct.assoc R R M N K).symm.toAlgHom :=
   rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
