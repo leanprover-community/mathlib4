@@ -361,7 +361,7 @@ def downloadFiles
           | code? =>
             failed := failed + 1
             let mkFailureMsg code? fn? msg? : String := Id.run do
-              let mut msg := ""
+              let mut msg := "File download failed"
               if let .ok fn := fn? then
                 msg := s!"{fn}: {msg}"
               if let .ok code := code? then
