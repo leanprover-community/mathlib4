@@ -245,8 +245,7 @@ lemma coe_sup :
   simp only [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
 
 @[simp] lemma mem_sup :
-    x ∈ s ⊔ t ↔ x ∈ closure (s.toSubmodule ⊔ t.toSubmodule).carrier := by
-  simp [← SetLike.mem_coe]
+    x ∈ s ⊔ t ↔ x ∈ closure (s.toSubmodule ⊔ t.toSubmodule).carrier := Iff.rfl
 
 instance : SupSet (ClosedSubmodule R N) where
   sSup S := ⟨(⨆ s ∈ S, s.toSubmodule).closure, isClosed_closure⟩
