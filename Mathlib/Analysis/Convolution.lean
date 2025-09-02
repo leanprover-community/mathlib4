@@ -71,7 +71,7 @@ Versions of these statements for functions depending on a parameter are also giv
   argument. This is specialized to bump functions in `ContDiffBump.convolution_tendsto_right`.
 
 # Notation
-The following notations are localized in the locale `Convolution`:
+The following notations are localized in the scope `Convolution`:
 * `f ⋆[L, μ] g` for the convolution. Note: you have to use parentheses to apply the convolution
   to an argument: `(f ⋆[L, μ] g) x`.
 * `f ⋆[L] g := f ⋆[L, volume] g`
@@ -887,7 +887,7 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
     _ = (f ⋆[L₃, ν] g ⋆[L₄, μ] k) x₀ := rfl
 
 /-- Convolution is associative. This requires that
-* all maps are a.e. strongly measurable w.r.t one of the measures
+* all maps are a.e. strongly measurable w.r.t. one of the measures
 * `f ⋆[L, ν] g` exists almost everywhere
 * `‖g‖ ⋆[μ] ‖k‖` exists almost everywhere
 * `‖f‖ ⋆[ν] (‖g‖ ⋆[μ] ‖k‖)` exists at `x₀` -/
@@ -1185,10 +1185,10 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
     universe, which is why we make the assumption in the lemma that all the relevant spaces
     come from the same universe). -/
   induction n using ENat.nat_induction generalizing g E' F with
-  | h0 =>
+  | zero =>
     rw [WithTop.coe_zero, contDiffOn_zero] at hg ⊢
     exact continuousOn_convolution_right_with_param L hk hgs hf hg
-  | hsuc n ih =>
+  | succ n ih =>
     simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, WithTop.coe_add,
       WithTop.coe_natCast, WithTop.coe_one] at hg ⊢
     let f' : P → G → P × G →L[𝕜] F := fun p a =>
@@ -1215,7 +1215,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         exact hgs p y hp hy
       apply ih (L.precompR (P × G) :) B
       convert hg.2.2
-  | htop ih =>
+  | top ih =>
     rw [contDiffOn_infty] at hg ⊢
     exact fun n ↦ ih n L hgs (hg n)
 

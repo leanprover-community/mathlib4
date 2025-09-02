@@ -397,7 +397,6 @@ theorem zeta_eq_zero {x : ℕ} : ζ x = 0 ↔ x = 0 := by simp [zeta]
 
 theorem zeta_pos {x : ℕ} : 0 < ζ x ↔ 0 < x := by simp [Nat.pos_iff_ne_zero]
 
--- Porting note: removed `@[simp]`, LHS not in normal form
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
@@ -407,6 +406,15 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
     rw [natCoe_apply, zeta_apply_ne (left_ne_zero_of_mul h), cast_one, one_smul]
   · rw [← map_div_left_divisors, sum_map, Function.Embedding.coeFn_mk]
+
+/-- `@[simp]`-normal form of `coe_zeta_smul_apply`. -/
+@[simp]
+theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
+    {f : ArithmeticFunction M} {x : ℕ} :
+    (∑ x ∈ x.divisorsAntidiagonal, if x.1 = 0 then (0 : R) • f x.2 else f x.2) =
+      ∑ i ∈ divisors x, f i := by
+  rw [← coe_zeta_smul_apply (R := R)]
+  simp
 
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (↑ζ * f) x = ∑ i ∈ divisors x, f i :=
@@ -1114,8 +1122,10 @@ open UniqueFactorizationMonoid
 @[simp]
 theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   ext n
-  refine recOnPosPrimePosCoprime ?_ ?_ ?_ ?_ n
-  · intro p n hp hn
+  induction n using recOnPosPrimePosCoprime with
+  | zero => rw [ZeroHom.map_zero, ZeroHom.map_zero]
+  | one => simp
+  | prime_pow p n hp hn =>
     rw [coe_mul_zeta_apply, sum_divisors_prime_pow hp, sum_range_succ']
     simp_rw [Nat.pow_zero, moebius_apply_one,
       moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj, sum_ite_eq', mem_range,
@@ -1124,9 +1134,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
     rw [Ne, pow_eq_one_iff]
     · exact hp.ne_one
     · exact hn.ne'
-  · rw [ZeroHom.map_zero, ZeroHom.map_zero]
-  · simp
-  · intro a b _ha _hb hab ha' hb'
+  | coprime a b _ha _hb hab ha' hb' =>
     rw [IsMultiplicative.map_mul_of_coprime _ hab, ha', hb',
       IsMultiplicative.map_mul_of_coprime isMultiplicative_one hab]
     exact isMultiplicative_moebius.mul isMultiplicative_zeta.natCast

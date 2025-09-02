@@ -73,7 +73,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
-  /-- only an instance in the `ComplexOrder` locale -/
+  /-- only an instance in the `ComplexOrder` scope -/
   [toPartialOrder : PartialOrder K]
   le_iff_re_im {z w : K} : z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
@@ -524,7 +524,8 @@ theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 :=
 theorem inv_I : (I : K)⁻¹ = -I := by
   by_cases h : (I : K) = 0
   · simp [h]
-  · field_simp [I_mul_I_of_nonzero h]
+  · field_simp
+    linear_combination I_mul_I_of_nonzero h
 
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]

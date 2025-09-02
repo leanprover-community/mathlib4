@@ -132,7 +132,7 @@ theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[�
   rw [← norm_pos_iff] at hx
   have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
   apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
-  simpa only [hf, hx, mul_le_mul_right] using f.le_opNorm x
+  simpa only [hf, hx, mul_le_mul_iff_left₀] using f.le_opNorm x
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/
