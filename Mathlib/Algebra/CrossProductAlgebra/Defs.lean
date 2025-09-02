@@ -38,8 +38,8 @@ suppress_compilation
 variable {R S F K : Type*} [Field F] [Field K] [Algebra F K] {f : (K ≃ₐ[F] K) × (K ≃ₐ[F] K) → Kˣ}
 
 /-- Similarly to `MonoidAlgebra`, the underlying type/set is all finitely supported functions from
-  `Gal(K/F)` to `K` and we give the multiplication structure by
-  `single σ c * single τ d = f (σ, τ) • single (σ * τ) (c * σ d)` -/
+`Gal(K/F)` to `K` and we give the multiplication structure by
+`single σ c * single τ d = f (σ, τ) • single (σ * τ) (c * σ d)` -/
 @[ext]
 structure CrossProductAlgebra (f : (K ≃ₐ[F] K) × (K ≃ₐ[F] K) → Kˣ) where
   /-- the underlying type -/
