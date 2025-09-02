@@ -10,7 +10,7 @@ import Mathlib.Order.Defs.LinearOrder
 /-!
 # Booleans
 
-This file proves various trivial lemmas about booleans and their
+This file proves various trivial lemmas about Booleans and their
 relation to decidable propositions.
 
 ## Tags
@@ -23,8 +23,8 @@ namespace Bool
 section
 
 /-!
-This section contains lemmas about booleans which were present in core Lean 3.
-The remainder of this file contains lemmas about booleans from mathlib 3.
+This section contains lemmas about Booleans which were present in core Lean 3.
+The remainder of this file contains lemmas about Booleans from mathlib 3.
 -/
 
 theorem true_eq_false_eq_False : ¬true = false := by decide
@@ -139,7 +139,7 @@ attribute [simp] xor_assoc
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
-/-! ### De Morgan's laws for booleans -/
+/-! ### De Morgan's laws for Booleans -/
 
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide
