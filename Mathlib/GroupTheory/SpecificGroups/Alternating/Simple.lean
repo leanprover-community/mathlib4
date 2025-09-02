@@ -46,7 +46,9 @@ theorem not_isSimpleGroup_of_card_eq_four (h4 : card α = 4) :
   refine ⟨kleinFour α, normal_kleinFour h4, ?ne_bot, ?ne_top⟩
   all_goals
     apply ne_of_apply_ne (fun S : Subgroup ↥(alternatingGroup α) => Nat.card ↥S)
-    simp only [kleinFour_card_of_card_eq_four h4, Nat.card_unique]
+    simp only [kleinFour_card_of_card_eq_four h4, Nat.card_unique, card_top,
+      card_of_card_eq_four h4]
+    decide
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
 on its cycle type that its normal closure is all of $A_5$.
