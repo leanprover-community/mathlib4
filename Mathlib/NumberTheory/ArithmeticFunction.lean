@@ -837,15 +837,9 @@ theorem sigma_pos (k n : ℕ) (hn0 : n ≠ 0) : 0 < σ k n := by
   exact sum_pos (fun d hd ↦ pow_pos (pos_of_mem_divisors hd) k) (nonempty_divisors.mpr hn0)
 
 theorem sigma_mono (k k' n : ℕ) (hk : k ≤ k') : σ k n ≤ σ k' n := by
-  by_cases hn0 : n = 0
-  · subst hn0
-    simp
   simp_rw [sigma_apply]
   apply Finset.sum_le_sum
-  intro d hd
-  gcongr
-  rw [one_le_iff_ne_zero]
-  exact ne_zero_of_dvd_ne_zero hn0 (dvd_of_mem_divisors hd)
+  exact fun d hd ↦ Nat.pow_le_pow_right (Nat.pos_of_mem_divisors hd) hk
 
 theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   ext
