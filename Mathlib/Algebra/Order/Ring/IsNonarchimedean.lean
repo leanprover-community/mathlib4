@@ -51,8 +51,8 @@ lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [AddMonoidWithOne 
   rw [← nsmul_one n, ← map_one f]
   exact nsmul_le hna
 
-/-- If `f` is a non-Archimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
-  we have `f n ≤ 1`. -/
+/-- If `f` is a non-Archimedean additive group seminorm on `α` with `f 1 = 1`, then for every
+  `n : ℤ` we have `f n ≤ 1`. -/
 theorem apply_intCast_le_one_of_isNonarchimedean [IsStrictOrderedRing R]
     {F α : Type*} [AddGroupWithOne α] [FunLike F α R]
     [AddGroupSeminormClass F α R] [OneHomClass F α R] {f : F}

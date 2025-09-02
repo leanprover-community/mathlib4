@@ -10,8 +10,9 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # algNormOfAlgEquiv and invariantExtension
 
-Let `K` be a non-Archimedean normed field and `L/K` be a finite algebraic extension. In the comments,
-`‖ ⬝ ‖` denotes any power-multiplicative `K`-algebra norm on `L` extending the norm on `K`.
+Let `K` be a non-Archimedean normed field and `L/K` be a finite algebraic extension. In the
+comments, `‖ ⬝ ‖` denotes any power-multiplicative `K`-algebra norm on `L` extending the norm on
+`K`.
 
 ## Main Definitions
 
@@ -33,7 +34,7 @@ Let `K` be a non-Archimedean normed field and `L/K` be a finite algebraic extens
 
 ## Tags
 
-algNormOfAlgEquiv, invariantExtension, norm, non-Archimedean
+algNormOfAlgEquiv, invariantExtension, norm, non-Archimedean, nonarchimedean
 -/
 
 open scoped NNReal

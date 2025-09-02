@@ -106,8 +106,8 @@ structure GroupNorm (G : Type*) [Group G] extends GroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is one. -/
   protected eq_one_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 1
 
-/-- A non-Archimedean norm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
-non-Archimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
+/-- A non-Archimedean norm on an additive group `G` is a function `f : G → ℝ` that preserves zero,
+is non-Archimedean and such that `f (-x) = f x` and `f x = 0 → x = 0` for all `x`. -/
 structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSeminorm G where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
