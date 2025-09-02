@@ -185,8 +185,8 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
   t.isClosed.closure_subset_iff
 
 @[simp]
-lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure := by
-  exact Eq.to_iff rfl
+lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
+  Iff.rfl
 
 lemma mem_closure_iff' {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.closure.toSubmodule := by
   rfl
