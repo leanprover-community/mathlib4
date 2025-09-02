@@ -148,10 +148,23 @@ example : natDegree ((X + 1) : Nat[X]) ≤ 1 := by hint
 end compute_degree
 
 section field_simp
+#adaptation_note
+/--
+As of nightly-2025-08-27,
+this test no longer reports `field_simp` amongst the successful tactics.
+-/
+
 /--
 info: Try these:
-  • 🎉 field_simp
+  • 🎉 exact
+      Units.divp_add_divp_same a b u₁
   • ring_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • abel_nf
+    Remaining subgoals:
+    ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
+  • norm_num
     Remaining subgoals:
     ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
