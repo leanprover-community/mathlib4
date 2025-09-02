@@ -126,9 +126,9 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
 
 @[simp]
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
-  induction' k with k hi
-  · simp
-  rw [pow_succ', content_X_mul, hi]
+  induction k with
+  | zero => simp
+  | succ k hi => rw [pow_succ', content_X_mul, hi]
 
 @[simp]
 theorem content_X : content (X : R[X]) = 1 := by rw [← mul_one X, content_X_mul, content_one]
@@ -321,11 +321,13 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       apply h
       apply lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 (Nat.lt_succ_self _))
     intro n
-    induction' n with n ih
-    · intro p q hpq
+    induction n with
+    | zero =>
+      intro p q hpq
       rw [Nat.cast_zero,
         Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp
+    | succ n ih => ?_
     intro p q hpq
     by_cases p0 : p = 0
     · simp [p0]

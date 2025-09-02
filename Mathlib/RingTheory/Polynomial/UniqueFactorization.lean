@@ -112,10 +112,12 @@ variable (d : ℕ)
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
-    induction' Fintype.card σ with d hd
-    · apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
+    induction Fintype.card σ with
+    | zero =>
+      apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
-    · apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
+    | succ d hd =>
+      apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 
 instance (priority := 100) uniqueFactorizationMonoid :
