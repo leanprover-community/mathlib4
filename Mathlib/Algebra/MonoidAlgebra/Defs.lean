@@ -231,7 +231,8 @@ i.e. the function that is `1` at `1` and `0` elsewhere. -/
 i.e. the function that is `1` at `1` and `0` elsewhere. -/]
 instance one : One (MonoidAlgebra R M) where one := single 1 1
 
-@[to_additive (dont_translate := R)] lemma one_def : (1 : MonoidAlgebra R M) = single 1 1 := rfl
+@[to_additive (dont_translate := R) one_def]
+lemma one_def : (1 : MonoidAlgebra R M) = single 1 1 := rfl
 
 end One
 
@@ -343,11 +344,11 @@ lemma single_mul_apply_aux (H : ∀ m' ∈ x.support, m * m' = m₁ ↔ m' = m�
       dsimp [Finsupp.sum]; congr! 2; simp [*]
     _ = r * x m₂ := by simp +contextual [Finsupp.sum_eq_single m₂]
 
-@[to_additive (attr := simp) (dont_translate := R) _mul_single_apply_of_forall_add_ne]
+@[to_additive (attr := simp) (dont_translate := R) mul_single_apply_of_not_exists_add]
 lemma mul_single_apply_of_not_exists_mul (r : R) (x : MonoidAlgebra R M) (h : ¬ ∃ d, m' = d * m) :
     (x * single m r) m' = 0 := by classical simp_all [mul_apply, eq_comm]
 
-@[to_additive (attr := simp) (dont_translate := R) coeff_single_mul_of_forall_add_ne]
+@[to_additive (attr := simp) (dont_translate := R) single_mul_apply_of_not_exists_add]
 lemma single_mul_apply_of_not_exists_mul (r : R) (x : MonoidAlgebra R M) (h : ¬ ∃ d, m' = m * d) :
     (single m r * x) m' = 0 := by classical simp_all [mul_apply, eq_comm]
 
@@ -396,7 +397,7 @@ lemma mul_single_one_apply (x : MonoidAlgebra R M) (r : R) (m : M) :
     (x * single 1 r : MonoidAlgebra R M) m = x m * r :=
   x.mul_single_apply_aux (by simp)
 
-@[to_additive (dont_translate := R) single_mul_zero_apply]
+@[to_additive (dont_translate := R) single_zero_mul_apply]
 lemma single_one_mul_apply (x : MonoidAlgebra R M) (r : R) (m : M) :
     (single 1 r * x : MonoidAlgebra R M) m = r * x m :=
   x.single_mul_apply_aux (by simp)
@@ -464,7 +465,7 @@ variable [Monoid M]
 @[to_additive]
 instance semiring : Semiring (MonoidAlgebra R M) where
 
-@[to_additive (attr := simp) (dont_translate := R)]
+@[to_additive (attr := simp) (dont_translate := R) single_pow]
 lemma single_pow (m : M) (r : R) : ∀ n : ℕ, single m r ^ n = single (m ^ n) (r ^ n)
   | 0 => by simp [one_def]
   | n + 1 => by simp [pow_succ, single_pow _ _ n]
