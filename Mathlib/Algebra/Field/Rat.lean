@@ -46,10 +46,6 @@ protected lemma inv_nonneg {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by
 protected lemma div_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg ha (Rat.inv_nonneg hb)
 
-protected lemma zpow_nonneg {a : ℚ} (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
-  | Int.ofNat n => by simp [ha]
-  | Int.negSucc n => by simpa using Rat.inv_nonneg (pow_nonneg ha (n + 1))
-
 end Rat
 
 namespace NNRat
@@ -61,7 +57,7 @@ instance instDiv : Div ℚ≥0 where
   div x y := ⟨x / y, Rat.div_nonneg x.2 y.2⟩
 
 instance instZPow : Pow ℚ≥0 ℤ where
-  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.2 n⟩
+  pow x n := ⟨x ^ n, Rat.zpow_nonneg x.2⟩
 
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
 @[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl

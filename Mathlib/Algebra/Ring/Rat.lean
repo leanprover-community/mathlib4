@@ -63,9 +63,6 @@ instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
-lemma mkRat_eq_div (n : ℤ) (d : ℕ) : mkRat n d = n / d := by
-  simp only [mkRat_eq_divInt, divInt_eq_div, Int.cast_natCast]
-
 lemma divInt_div_divInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     n /. x / (d /. x) = n /. d := by
   rw [div_eq_mul_inv, inv_divInt, divInt_mul_divInt_cancel hx]
@@ -88,7 +85,7 @@ lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast
 @[simp] lemma mul_den_eq_num (q : ℚ) : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by simp_all
   have : (q.den : ℤ) ≠ 0 := mod_cast q.den_ne_zero
-  rw [divInt_mul_divInt _ _ this Int.one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
+  rw [divInt_mul_divInt, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
