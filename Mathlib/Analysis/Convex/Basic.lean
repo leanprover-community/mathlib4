@@ -581,7 +581,7 @@ protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K 
 
 end Submodule
 
-section
+section CommSemiring
 
 variable {R : Type*} [CommSemiring R]
 variable (A : Type*) [Semiring A] [Algebra R A]
@@ -610,4 +610,16 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab
   exact (FaithfulSMul.algebraMap_eq_one_iff R A).mp hab
 
-end
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R]
+variable (A : Type*) [Ring A] [Algebra R A]
+variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
+variable [PartialOrder R] [IsOrderedRing R] [PartialOrder A] [IsOrderedRing A] [OrderedSMul R A]
+
+lemma convex_ordered_ring_of_convex_ordered_algebra {s : Set M} (hs : Convex A s) : Convex R s :=
+  convex_of_nonneg_algebraMap A (fun ⦃_⦄ ↦ algebraMap_nonneg A) hs
+
+end CommRing
