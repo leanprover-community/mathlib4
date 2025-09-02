@@ -4,6 +4,11 @@ import Mathlib.Data.Rat.NatSqrt.Real
 
 open Nat
 
+/-
+Unfortunately this test run extremely slowly under `lake test`, despite on taking a few seconds
+in VSCode or under `lake build MathlibTest` or `lake env lean MathlibTest/sqrt.lean`.
+
+While we investigate, we'll turn off the test.
 /--
 Compute an explicit rational approximation of `√10005`, accurate to 2 million decimal places.
 
@@ -21,3 +26,5 @@ theorem sqrt_10005 :
               (sqrt_10005_approx + 1 / 10^(2 * 10^6) : ℝ) := by
   rw [sqrt_10005_approx_eq]
   exact_mod_cast realSqrt_mem_Ico 10005 (by norm_num)
+
+-/
