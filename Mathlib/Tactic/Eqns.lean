@@ -3,10 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Init
 import Lean.Meta.Eqns
-import Std.Lean.NameMapAttribute
-import Std.CodeAction.Attr
-import Std.Tactic.Lint.Basic
+import Batteries.Lean.NameMapAttribute
+import Lean.Elab.Exception
+import Lean.Elab.InfoTree.Main
 
 /-! # The `@[eqns]` attribute
 
@@ -38,10 +39,11 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     descr := "Overrides the equation lemmas for a declaration to the provided list"
     add   := fun
     | declName, `(attr| eqns $[$names]*) => do
-      if let some _ := Meta.eqnsExt.getState (← getEnv) |>.map.find? declName then
-        throwError "There already exist stored eqns for '{declName}'; registering new equations \
-          will not have the desired effect."
-      names.mapM resolveGlobalConstNoOverloadWithInfo
+      -- We used to be able to check here if equational lemmas have already been registered in
+      -- Leans `eqsnExt`, but that has been removed in #8519, so no warning in that case.
+      -- Now we just hope that the `GetEqnsFn` registered below will always run before
+      -- Lean’s.
+      names.mapM realizeGlobalConstNoOverloadWithInfo
     | _, _ => Lean.Elab.throwUnsupportedSyntax }
 
 initialize Lean.Meta.registerGetEqnsFn (fun name => do

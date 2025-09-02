@@ -1,0 +1,10 @@
+name = "DownstreamTest"
+version = "0.1.0"
+defaultTargets = ["DownstreamTest"]
+
+[[require]]
+name = "mathlib"
+path = "../"
+
+[[lean_lib]]
+name = "DownstreamTest"

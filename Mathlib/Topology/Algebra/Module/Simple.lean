@@ -3,10 +3,8 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleModule.Basic
 import Mathlib.Topology.Algebra.Module.Basic
-
-#align_import topology.algebra.module.simple from "leanprover-community/mathlib"@"f430769b562e0cedef59ee1ed968d67e0e0c86ba"
 
 /-!
 # The kernel of a linear function is closed or dense
@@ -28,8 +26,7 @@ dense. Applies, e.g., to the case when `R = N` is a division ring. -/
 theorem LinearMap.isClosed_or_dense_ker (l : M →ₗ[R] N) :
     IsClosed (LinearMap.ker l : Set M) ∨ Dense (LinearMap.ker l : Set M) := by
   rcases l.surjective_or_eq_zero with (hl | rfl)
-  · exact l.ker.isClosed_or_dense_of_isCoatom (LinearMap.isCoatom_ker_of_surjective hl)
+  · exact (LinearMap.ker l).isClosed_or_dense_of_isCoatom (LinearMap.isCoatom_ker_of_surjective hl)
   · rw [LinearMap.ker_zero]
     left
     exact isClosed_univ
-#align linear_map.is_closed_or_dense_ker LinearMap.isClosed_or_dense_ker

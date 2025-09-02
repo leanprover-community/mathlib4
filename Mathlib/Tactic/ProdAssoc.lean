@@ -21,7 +21,7 @@ namespace Lean.Expr
 
 open Lean Meta
 
-/-- A helper type to keep track of universe levels and types in iterated produts. -/
+/-- A helper type to keep track of universe levels and types in iterated products. -/
 inductive ProdTree where
   | type (tp : Expr) (l : Level)
   | prod (fst snd : ProdTree) (lfst lsnd : Level)
@@ -37,7 +37,7 @@ def ProdTree.size : ProdTree → Nat
   | type _ _ => 1
   | prod fst snd _ _ => fst.size + snd.size
 
-/-- The components of an interated product, presented as a `ProdTree`. -/
+/-- The components of an iterated product, presented as a `ProdTree`. -/
 def ProdTree.components : ProdTree → List Expr
   | type tp _ => [tp]
   | prod fst snd _ _ => fst.components ++ snd.components

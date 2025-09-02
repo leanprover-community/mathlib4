@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 
-import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-! # Geometric distributions over ℕ
 
@@ -29,7 +29,6 @@ namespace ProbabilityTheory
 variable {p : ℝ}
 
 section GeometricPMF
-
 
 /-- The pmf of the geometric distribution depending on its success probability. -/
 noncomputable
@@ -67,11 +66,11 @@ def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
       (fun n ↦ geometricPMFReal_nonneg hp_pos hp_le_one)⟩
 
 /-- The geometric pmf is measurable. -/
-@[measurability]
+@[fun_prop, measurability]
 lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
-  measurability
+  fun_prop
 
-@[measurability]
+@[fun_prop, measurability]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
   stronglyMeasurable_iff_measurable.mpr measurable_geometricPMFReal
 
@@ -82,8 +81,11 @@ noncomputable
 def geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : Measure ℕ :=
   (geometricPMF hp_pos hp_le_one).toMeasure
 
-lemma isProbabilityMeasureGeometric (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
+lemma isProbabilityMeasure_geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     IsProbabilityMeasure (geometricMeasure hp_pos hp_le_one) :=
   PMF.toMeasure.isProbabilityMeasure (geometricPMF hp_pos hp_le_one)
+
+@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGeometric :=
+  isProbabilityMeasure_geometricMeasure
 
 end ProbabilityTheory

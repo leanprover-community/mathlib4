@@ -4,17 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.Data.Complex.ExponentialBounds
-import Mathlib.NumberTheory.Harmonic.Defs
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 # The Euler-Mascheroni constant `γ`
 
 We define the constant `γ`, and give upper and lower bounds for it.
 
-## Main definitions and results
+## Main definitions and results
 
 * `Real.eulerMascheroniConstant`: the constant `γ`
 * `Real.tendsto_harmonic_sub_log`: the sequence `n ↦ harmonic n - log n` tends to `γ` as `n → ∞`
@@ -84,15 +84,15 @@ lemma strictAnti_eulerMascheroniSeq' : StrictAnti eulerMascheroniSeq' := by
   refine strictAnti_nat_of_succ_lt (fun n ↦ ?_)
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [eulerMascheroniSeq']
-  simp_rw [eulerMascheroniSeq', (by simp : (n + 1 = 0) = False), eq_false_intro hn.ne', if_false]
+  simp_rw [eulerMascheroniSeq', eq_false_intro hn.ne', reduceCtorEq, if_false]
   rw [← sub_pos, sub_sub_sub_comm,
     harmonic_succ, Rat.cast_add, ← sub_sub, sub_self, zero_sub, sub_eq_add_neg, neg_sub,
     ← sub_eq_neg_add, sub_pos, ← log_div (by positivity) (by positivity), ← neg_lt_neg_iff,
     ← log_inv]
   refine (log_lt_sub_one_of_pos ?_ ?_).trans_le (le_of_eq ?_)
   · positivity
-  · field_simp
-  · field_simp
+  · simp [field]
+  · simp [field]
 
 lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := by
   have h1 : eulerMascheroniSeq' 6 = 49 / 20 - log 6 := by
@@ -100,12 +100,12 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
     norm_num
   rw [h1, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', lt_log_iff_exp_lt (by positivity)]
   norm_num
-  have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by norm_num : (0 : ℝ) < 107 / 60)
+  have := rpow_lt_rpow (exp_pos _).le exp_one_lt_d9 (by simp : (0 : ℝ) < 107 / 60)
   rw [exp_one_rpow] at this
   refine lt_trans this ?_
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
-    ← Nat.cast_ofNat, rpow_nat_cast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_nat_cast]
-  norm_num
+    ← Nat.cast_ofNat, rpow_natCast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_natCast]
+  · norm_num
   all_goals positivity
 
 lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
@@ -127,8 +127,8 @@ noncomputable def eulerMascheroniConstant : ℝ := limUnder atTop eulerMascheron
 lemma tendsto_eulerMascheroniSeq :
     Tendsto eulerMascheroniSeq atTop (𝓝 eulerMascheroniConstant) := by
   have := tendsto_atTop_ciSup strictMono_eulerMascheroniSeq.monotone ?_
-  rwa [eulerMascheroniConstant, this.limUnder_eq]
-  exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
+  · rwa [eulerMascheroniConstant, this.limUnder_eq]
+  · exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
 
 lemma tendsto_harmonic_sub_log_add_one :
     Tendsto (fun n : ℕ ↦ harmonic n - log (n + 1)) atTop (𝓝 eulerMascheroniConstant) :=
@@ -139,15 +139,10 @@ lemma tendsto_eulerMascheroniSeq' :
   suffices Tendsto (fun n ↦ eulerMascheroniSeq' n - eulerMascheroniSeq n) atTop (𝓝 0) by
     simpa using this.add tendsto_eulerMascheroniSeq
   suffices Tendsto (fun x : ℝ ↦ log (x + 1) - log x) atTop (𝓝 0) by
-    apply (this.comp tendsto_nat_cast_atTop_atTop).congr'
+    apply (this.comp tendsto_natCast_atTop_atTop).congr'
     filter_upwards [eventually_ne_atTop 0] with n hn
     simp [eulerMascheroniSeq, eulerMascheroniSeq', eq_false_intro hn]
-  suffices Tendsto (fun x : ℝ ↦ log (1 + 1 / x)) atTop (𝓝 0) by
-    apply this.congr'
-    filter_upwards [eventually_gt_atTop 0] with x hx
-    rw [← log_div (by positivity) (by positivity), add_div, div_self hx.ne']
-  simpa only [add_zero, log_one] using
-    ((tendsto_const_nhds.div_atTop tendsto_id).const_add 1).log (by positivity)
+  exact tendsto_log_comp_add_sub_log 1
 
 lemma tendsto_harmonic_sub_log :
     Tendsto (fun n : ℕ ↦ harmonic n - log n) atTop (𝓝 eulerMascheroniConstant) := by
