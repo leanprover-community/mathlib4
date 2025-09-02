@@ -40,20 +40,18 @@ lemma Algebra.TensorProduct.includeLeft_map_center_le :
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨b, hb0, rfl⟩ := hx
   intro bc
-  induction bc using TensorProduct.induction_on with
-  | zero => simp
-  | tmul b' c => simp [hb0]
-  | add _ _ _ _ => simp_all [add_mul, mul_add]
+  dsimp
+  tensor_induction bc with b' c
+  simp [hb0]
 
 lemma Algebra.TensorProduct.includeRight_map_center_le :
     (Subalgebra.center K C).map includeRight ≤ Subalgebra.center K (B ⊗[K] C) := fun x hx ↦ by
   simp only [Subalgebra.mem_map, Subalgebra.mem_center_iff] at hx ⊢
   obtain ⟨c, hc0, rfl⟩ := hx
   intro bc
-  induction bc using TensorProduct.induction_on with
-  | zero => simp
-  | tmul b c' => simp [hc0]
-  | add _ _ _ _ => simp_all [add_mul, mul_add]
+  dsimp
+  tensor_induction bc with b c'
+  simp [hc0]
 
 namespace Algebra.IsCentral
 
