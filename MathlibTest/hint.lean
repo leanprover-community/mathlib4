@@ -120,9 +120,6 @@ info: Try these:
   • ring_nf
     Remaining subgoals:
     ⊢ 2 ≤ 1
-  • field_simp
-    Remaining subgoals:
-    ⊢ False
   • norm_num
     Remaining subgoals:
     ⊢ False
