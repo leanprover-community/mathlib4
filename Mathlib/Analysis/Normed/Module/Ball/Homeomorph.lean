@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Oliver Nash
 -/
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Data.Real.Sqrt
 
 /-!
