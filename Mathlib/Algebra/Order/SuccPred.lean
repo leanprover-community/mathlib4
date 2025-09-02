@@ -67,8 +67,7 @@ theorem covBy_add_one [NoMaxOrder α] (x : α) : x ⋖ x + 1 := by
   rw [← succ_eq_add_one]
   exact covBy_succ x
 
-@[simp]
-theorem lt_add_one [NoMaxOrder α] (x : α) : x < x + 1 :=
+protected theorem lt_add_one [NoMaxOrder α] (x : α) : x < x + 1 :=
   (covBy_add_one x).lt
 
 end Add
@@ -100,8 +99,7 @@ theorem sub_one_covBy [NoMinOrder α] (x : α) : x - 1 ⋖ x := by
   rw [← pred_eq_sub_one]
   exact pred_covBy x
 
-@[simp]
-theorem pred_one_lt [NoMinOrder α] (x : α) : x - 1 < x :=
+protected theorem sub_one_lt [NoMinOrder α] (x : α) : x - 1 < x :=
   (sub_one_covBy x).lt
 
 end Sub
@@ -151,7 +149,7 @@ theorem covBy_iff_sub_one_eq [Sub α] [One α] [PredSubOrder α] [NoMinOrder α]
 @[simp]
 theorem add_one_pos [AddZeroClass α] [One α] [NoMaxOrder α] [CanonicallyOrderedAdd α]
     [SuccAddOrder α] (x : α) : 0 < x + 1 :=
-  (lt_add_one x).trans_le' (isBot_zero x)
+  (Order.lt_add_one x).trans_le' (isBot_zero x)
 
 @[simp]
 theorem add_one_ne_zero [AddZeroClass α] [One α] [NoMaxOrder α] [CanonicallyOrderedAdd α]
