@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
 
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
