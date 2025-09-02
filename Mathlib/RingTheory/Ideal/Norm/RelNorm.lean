@@ -302,11 +302,8 @@ theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J
 
 variable {R}
 
-/--
-See `relNorm_map_algEquiv` for a version that shows equality between both sides.
--/
-theorem relNorm_map_algEquiv_le {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
-    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDomain T]
+    [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
     [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) ≤ relNorm R I :=
   span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨σ.toRingEquiv.symm x,
@@ -318,10 +315,16 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
     [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
     [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
-  refine le_antisymm (relNorm_map_algEquiv_le σ I) ?_
-  convert relNorm_map_algEquiv_le σ.symm (I.map σ)
+  refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
+  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
   simp [map_mapₐ]
+
+@[simp]
+theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal T) :
+    relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
 
 variable (R)
 
