@@ -673,8 +673,7 @@ theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded
     (hc : IsComplete s) : IsCompact s := isCompact_iff_totallyBounded_isComplete.mpr ⟨ht, hc⟩
 
 theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
-    (hc : IsClosed s) : IsCompact s :=
-  ht.isCompact_of_isComplete hc.isComplete
+    (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
 
 @[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
     TotallyBounded.isCompact_of_isClosed
