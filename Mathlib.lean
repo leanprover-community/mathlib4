@@ -1790,7 +1790,7 @@ import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.Module.Ball.Action
 import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.Normed.Module.Ball.SphereEquiv
+import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Module.Complemented
 import Mathlib.Analysis.Normed.Module.Completion
