@@ -339,9 +339,8 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
     simp only [inv_intCast_den_of_pos gt]
     exact Int.eq_natAbs_of_nonneg (by omega)
 
-@[simp]
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
-  simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
+  simp
 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
@@ -354,12 +353,6 @@ theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAb
   norm_cast
   rw [one_mul, inv_intCast_num, Int.natAbs_mul, Int.natAbs_sign_of_ne_zero hq', mul_one,
     Int.natAbs_cast, q.reduced.symm, Nat.div_one]
-
-theorem num_inv (q : ℚ) : (q⁻¹).num = q.num.sign * q.den := by
-  rw [Rat.inv_def, Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_num, Rat.inv_intCast_num]
-  norm_cast
-  rw [one_mul, inv_intCast_den, Int.natAbs_mul, Int.natAbs_cast]
-  split <;> simp_all [Int.natAbs_sign_of_ne_zero, q.reduced.symm, mul_comm]
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, b ≠ 0 → p (a / b) where
   mp h _ _ _ := h _
