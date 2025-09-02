@@ -10,6 +10,11 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 
+
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Eval.Degree
+
 /-!
 # Forward difference operators and Newton series
 
@@ -241,6 +246,31 @@ lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ j) = 0 := by
   ext
   rw [fwdDiff_iter_comp_add 1 (· ^ j), fwdDiff_iter_pow_eq_zero_of_lt h, Pi.zero_def]
+
+open Polynomial
+
+theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
+    Δ_[1]^[P.natDegree + 1] P.eval = 0 := by
+  ext x
+  simp only [Pi.zero_apply, fwdDiff_iter_eq_sum_shift]
+  conv_lhs => enter [2]; ext k; rw [Polynomial.eval_eq_sum_range]
+  simp only [Int.reduceNeg, nsmul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
+    Int.cast_neg, Int.cast_one, Int.cast_natCast]
+  set d := P.natDegree with hd_def
+  conv_lhs => enter [2]; ext k; rw [mul_sum]; enter [2]; ext i; rw [mul_comm (a := P.coeff i),
+    ← mul_assoc]
+  rw [sum_comm]
+  conv_lhs => enter [2]; ext y; rw [← sum_mul, mul_comm]
+  conv_lhs => enter [2]; ext y; enter [2 , 2]; ext i; rw [show (i :R)= i • 1 by simp,
+    show (-1) ^ (d + 1 - i) * ↑((d + 1).choose i) * (x + i • 1) ^ y =
+      ((-1) ^ (d + 1 - i) * ↑((d + 1).choose i)) • (x + i • 1) ^ y by simp]
+  conv_lhs => enter [2]; ext y; rw [← fwdDiff_iter_eq_sum_shift
+    (n :=d + 1) (f := fun i => i ^ y) (h := 1) (y := x)]
+  apply sum_eq_zero
+  intro i hi
+  rw [fwdDiff_iter_pow_eq_zero_of_lt (h := by
+    have := mem_range.1 hi
+    omega), Pi.zero_apply, mul_zero]
 
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
