@@ -166,8 +166,8 @@ theorem sSup_unitClosedBall_eq_nnnorm (f : E →SL[σ₁₂] F) :
     exact f.unit_le_opNorm x (mem_closedBall_zero_iff.1 hx)
   refine le_antisymm (csSup_le ((nonempty_closedBall.mpr zero_le_one).image _) hbdd) ?_
   rw [← sSup_unit_ball_eq_nnnorm]
-  exact csSup_le_csSup ⟨‖f‖₊, hbdd⟩ ((nonempty_ball.2 zero_lt_one).image _)
-    (Set.image_mono ball_subset_closedBall)
+  gcongr
+  exacts [⟨‖f‖₊, hbdd⟩, ball_subset_closedBall]
 
 theorem sSup_unitClosedBall_eq_norm (f : E →SL[σ₁₂] F) :
     sSup ((fun x => ‖f x‖) '' closedBall 0 1) = ‖f‖ := by

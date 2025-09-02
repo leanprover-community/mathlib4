@@ -21,13 +21,13 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 
 ## Main results
 - `IsArtinianRing.finite_of_compactSpace_of_t2Space`:
-  Compact Hausdorff artinian rings are finite (and thus discrete).
+  Compact Hausdorff Artinian rings are finite (and thus discrete).
 - `Ideal.isOpen_of_isMaximal`:
-  Maximal ideals are open in compact Hausdorff noetherian rings.
+  Maximal ideals are open in compact Hausdorff Noetherian rings.
 - `IsLocalRing.isOpen_iff_finite_quotient`:
-  An ideal in a compact Hausdorff noetherian local ring is open iff it has finite index.
+  An ideal in a compact Hausdorff Noetherian local ring is open iff it has finite index.
 - `IsDedekindDomain.isOpen_iff`:
-  An ideal in a compact Hausdorff dedekind domain (that is not a field) is open iff it is non-zero.
+  An ideal in a compact Hausdorff Dedekind domain (that is not a field) is open iff it is non-zero.
 
 ## Future projects
 Show that compact Hausdorff rings are totally disconnected and linearly topologized.
@@ -43,7 +43,7 @@ variable [IsTopologicalRing R] [CompactSpace R] [T2Space R]
 
 namespace IsArtinianRing
 
-/-- Compact Hausdorff artinian (commutative) rings are finite. This is not an instance, as it would
+/-- Compact Hausdorff Artinian (commutative) rings are finite. This is not an instance, as it would
 apply to every `Finite` goal, causing slowly failing typeclass search in some cases. -/
 theorem finite_of_compactSpace_of_t2Space [IsArtinianRing R] :
     Finite R := by
