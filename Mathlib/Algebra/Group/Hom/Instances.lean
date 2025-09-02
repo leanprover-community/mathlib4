@@ -63,13 +63,13 @@ lemma MonoidHom.pow_apply [MulOneClass M] [CommMonoid N] (f : M →* N) (n : ℕ
   rfl
 
 /-- `OneHom M N` is a `Monoid` if `N` is. -/
-@[to_additive "`ZeroHom M N` is an `AddMonoid` if `N` is."]
+@[to_additive /-- `ZeroHom M N` is an `AddMonoid` if `N` is. -/]
 instance OneHom.instMonoid [One M] [Monoid N] : Monoid (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.monoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 /-- `OneHom M N` is a `CommMonoid` if `N` is commutative. -/
-@[to_additive "`ZeroHom M N` is an `AddCommMonoid` if `N` is commutative."]
+@[to_additive /-- `ZeroHom M N` is an `AddCommMonoid` if `N` is commutative. -/]
 instance OneHom.instCommMonoid [One M] [CommMonoid N] : CommMonoid (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.commMonoid DFunLike.coe rfl (fun _ _ => rfl) (fun _ _ => rfl)
@@ -115,14 +115,14 @@ lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ
   rfl
 
 /-- If `G` is a group, then so is `OneHom M G`. -/
-@[to_additive "If `G` is an additive group, then so is `ZeroHom M G`."]
+@[to_additive /-- If `G` is an additive group, then so is `ZeroHom M G`. -/]
 instance OneHom.instGroup [One M] [Group N] : Group (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.group DFunLike.coe
       rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 /-- If `G` is a commutative group, then so is `OneHom M G`. -/
-@[to_additive "If `G` is an additive commutative group, then so is `ZeroHom M G`."]
+@[to_additive /-- If `G` is an additive commutative group, then so is `ZeroHom M G`. -/]
 instance OneHom.instCommGroup [One M] [CommGroup N] : CommGroup (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe

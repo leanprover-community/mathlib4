@@ -71,8 +71,8 @@ namespace OneHom
 
 /-- Given two one-preserving morphisms `f`, `g`,
 `f * g` is the one-preserving morphism sending `x` to `f x * g x`. -/
-@[to_additive "Given two zero-preserving morphisms `f`, `g`,
-`f + g` is the zero-preserving morphism sending `x` to `f x + g x`."]
+@[to_additive /-- Given two zero-preserving morphisms `f`, `g`,
+`f + g` is the zero-preserving morphism sending `x` to `f x + g x`. -/]
 instance [One M] [MulOneClass N] : Mul (OneHom M N) where
   mul f g :=
     { toFun m := f m * g m
@@ -91,8 +91,8 @@ theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : O
 
 /-- Given a one-preserving morphism `f`,
 `f⁻¹` is the one-preserving morphism sending `x` to `(f x)⁻¹`. -/
-@[to_additive "Given a zero-preserving morphism `f`,
-`-f` is the zero-preserving morphism sending `x` to `-f x`."]
+@[to_additive /-- Given a zero-preserving morphism `f`,
+`-f` is the zero-preserving morphism sending `x` to `-f x`. -/]
 instance [One M] [InvOneClass N] : Inv (OneHom M N) where
   inv f :=
     { toFun m := (f m)⁻¹
@@ -111,8 +111,8 @@ theorem inv_comp [One M] [One N] [InvOneClass P] (g : OneHom N P) (f : OneHom M 
 
 /-- Given two one-preserving morphisms `f`, `g`,
 `f / g` is the one-preserving morphism sending `x` to `f x / g x`. -/
-@[to_additive "Given two zero-preserving morphisms `f`, `g`,
-`f - g` is the additive morphism sending `x` to `f x - g x`."]
+@[to_additive /-- Given two zero-preserving morphisms `f`, `g`,
+`f - g` is the additive morphism sending `x` to `f x - g x`. -/]
 instance [One M] [DivisionMonoid N] : Div (OneHom M N) where
   div f g :=
     { toFun m := f m / g m
