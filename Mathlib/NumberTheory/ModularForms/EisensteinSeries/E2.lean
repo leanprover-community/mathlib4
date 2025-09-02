@@ -11,6 +11,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 import Mathlib.NumberTheory.IccSums
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+import Mathlib.Analysis.Normed.Group.Tannery
 
 /-!
 # Eisenstein Series E2
@@ -254,10 +255,7 @@ theorem int_tsum_pNat {α : Type*} [UniformSpace α] [CommRing α] [IsUniformAdd
   ∑' n, f n = f 0 + ∑' n : ℕ+, f n + ∑' m : ℕ+, f (-m) := by
   rw [summable_int_iff_summable_nat_and_neg_add_zero] at hf2
   rw [tsum_of_add_one_of_neg_add_one]
-  · have h0 := tsum_pnat_eq_tsum_succ (fun n => f n)
-    have h1 := tsum_pnat_eq_tsum_succ (fun n => f (-n))
-    rw [h0, h1]
-    simp
+  · simp [tsum_pnat_eq_tsum_succ (fun n => f n), tsum_pnat_eq_tsum_succ (fun n => f (-n))]
     ring
   · have hf21 := hf2.1
     rw [← summable_nat_add_iff (k := 1)] at hf21
@@ -265,19 +263,17 @@ theorem int_tsum_pNat {α : Type*} [UniformSpace α] [CommRing α] [IsUniformAdd
   · simpa using hf2.2
 
 
-lemma summable_pnats (f : ℕ → ℂ) : Summable (fun n : ℕ+ => f n) ↔ Summable f := by
+lemma summable_pnat_iff_summable_nat {G : Type*} [AddCommGroup G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] {f : ℕ → G} : Summable (fun n : ℕ+ => f n) ↔ Summable f := by
   rw [pnat_summable_iff_summable_succ , summable_nat_add_iff]
 
-
-lemma linear_sub_linear_eq (z : ℍ) (a b m : ℤ) (hm : m ≠ 0) :
-    (1 / ((m : ℂ) * ↑z + a) - 1 / (↑m * ↑z + b)) =
-    (b - a) * (1 / (((m : ℂ) * ↑z + a) * (↑m * ↑z + b))) := by
+private lemma linear_sub_linear_eq (z : ℍ) (a b m : ℤ) (hm : m ≠ 0) :
+    1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
   rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
   · simp
     ring
   · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, a]) (by simp [hm])
   · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, b]) (by simp [hm])
-
 
 lemma summable_linear_sub_mul_linear_add' {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
@@ -285,198 +281,140 @@ lemma summable_linear_sub_mul_linear_add' {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : 
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa using (linear_inv_isBigO_left c₂ hz).mul (linear_inv_isBigO_left c₁ hz)
 
-lemma auxsummm (z : ℍ) (a b : ℤ) :
-    Summable fun m : ℤ ↦ 1 / (↑m * (z : ℂ) + a) - 1 / (↑m * ↑z + b) := by
+lemma summable_one_div_linear_sub_one_div_linear (z : ℍ) (a b : ℤ) :
+    Summable fun m : ℤ ↦ 1 / (m * (z : ℂ) + a) - 1 / (m * z + b) := by
   have := Summable.mul_left  (b - a : ℂ) (summable_linear_sub_mul_linear_add' (ne_zero z) a b)
   rw [← Finset.summable_compl_iff (s := {0})] at *
   apply this.congr
   intro m
-  rw [linear_sub_linear_eq z a b m (by aesop)]
+  rw [linear_sub_linear_eq z a b m (by grind)]
   simp
 
+example (a b c : ℂ) : a + b = c ↔  b = -a + c := by
+  exact Iff.symm eq_neg_add_iff_add_eq
 
-lemma sum_int_pnatt (z : ℍ) (d : ℕ+) :
-  2/ d + ∑' (m : ℤ), (1 / ((m : ℂ) * ↑z - d) - 1 / (↑m * ↑z + d))  =
-  ∑' m : ℕ+, ((1 / ((m : ℂ) * ↑z - d) + 1 / (-↑m * ↑z + -d)) -
-  (1 / ((m : ℂ) * ↑z + d)) - 1 / (-↑m * ↑z + d)) := by
+private lemma aux_tsum_identity_2 (z : ℍ) (d : ℕ+) :
+    ∑' (m : ℤ), (1 / ((m : ℂ) * z - d) - 1 / (m * z + d)) = -(2 / d) +
+    ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - 1 / ((m : ℂ) * z + d) -
+    1 / (-m * z + d)) := by
+  rw [eq_neg_add_iff_add_eq (b := 2 / (d : ℂ))]
   rw [int_tsum_pNat]
   · simp only [Int.cast_zero, zero_mul, zero_sub, one_div, zero_add, Int.cast_natCast, Int.cast_neg,
       neg_mul]
     ring_nf
     rw [←  Summable.tsum_add]
-    · congr
-      funext m
-      ring
-    · have := auxsummm z (-d) d
-      rw [summable_int_iff_summable_nat_and_neg] at this
-      have ht := (this.1)
-      rw [← summable_pnats] at ht
-      apply ht.congr
-      intro b
-      simp
-      ring
-    · have := (auxsummm z (-d) d)
-      rw [summable_int_iff_summable_nat_and_neg] at this
-      have ht := (this.2)
-      rw [← summable_pnats] at ht
-      apply ht.congr
-      intro b
-      simp
-      ring
-  · have := auxsummm z (-d) d
-    apply this.congr
-    intro b
-    simp
-    ring
-
-
-
-lemma sum_int_pnat2_pnat (z : ℍ) (d : ℕ+) :
-  ∑' (m : ℤ), (1 / ((m : ℂ) * ↑z - d) - 1 / (↑m * ↑z + d))  = -2/d + ∑' m : ℕ+,
-    ((1 / ((m : ℂ) * ↑z - d) + 1 / (-↑m * ↑z + -d)) -
-    (1 / ((m : ℂ) * ↑z + d)) - 1 / (-↑m * ↑z + d)) := by
-  rw [← sum_int_pnatt]
-  ring
-
+    · grind
+    · apply (summable_pnat_iff_summable_nat.mpr ((summable_int_iff_summable_nat_and_neg.mp
+        (summable_one_div_linear_sub_one_div_linear z (-d) d)).1)).congr
+      grind [Int.cast_natCast, Int.cast_neg, one_div]
+    · apply (summable_pnat_iff_summable_nat.mpr ((summable_int_iff_summable_nat_and_neg.mp
+        (summable_one_div_linear_sub_one_div_linear z (-d) d)).2)).congr
+      grind [Int.cast_neg, Int.cast_natCast, neg_mul, one_div]
+  · apply (summable_one_div_linear_sub_one_div_linear z (-d) d).congr
+    grind [Int.cast_neg, Int.cast_natCast, one_div, sub_left_inj, inv_inj]
 
 lemma nat_tendsto_pnat (f : ℕ → ℂ) (x : ℂ) (hf : Tendsto f atTop (𝓝 x)) :
   Tendsto (fun n : ℕ+ => f n) atTop (𝓝 x) := tendsto_comp_val_Ioi_atTop.mpr hf
 
-lemma arg1 (a b c d e f g h : ℂ) : e/ f + g /h  - a / b - c / d = e / f + g / h + a / -b + c / -d := by
-  ring
-
-lemma sum_int_pnat3 (z : ℍ) (d : ℤ) :
-    ∑' m : ℕ+, ((1 / ((m : ℂ) * ↑z - d) + 1 / (-↑m * ↑z + -d)) - (1 / ((m : ℂ) * ↑z + d)) -
-    1 / (-↑m * ↑z + d)) = (2 / z) * ∑' m : ℕ+, ((1 / (-(d : ℂ)/↑z - m) + 1 / (-d/↑z + m))) := by
-  rw [← Summable.tsum_mul_left ]
+private lemma aux_tsum_identity_3 (z : ℍ) (d : ℕ+) :
+    ∑' m : ℕ+, ((1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d)) - (1 / (m * z + d)) -
+    1 / (-m * z + d)) = (2 / z) * ∑' m : ℕ+, ((1 / (-(d : ℂ) / z - m) + 1 / (-d / z + m))) := by
+  rw [← Summable.tsum_mul_left]
   · congr
     funext m
-    have he : ∀ m d : ℂ , ((m : ℂ) * z + d) = z * ((d : ℂ)/z + m) := by
-      intro m
-      ring_nf
-      have : (z : ℂ) ≠ (0 : ℂ) := by
-        exact ne_zero z
-      field_simp
-      simp
-    rw [arg1]
+    simp_rw [sub_eq_add_neg, ← div_neg]
     ring_nf
     rw [add_comm]
-    have h4 := ne_zero z
-    simp [UpperHalfPlane.coe] at *
-    congr 1
-    · field_simp
-    · field_simp
-  · by_cases hd : d = 0
-    · simp [hd]
-      apply summable_zero
-    · have := (Summable_cotTerm (x := -d / (z : ℂ)) ?_)
-      · simp [cotTerm] at this
-        conv at this =>
-          enter [1]
-          ext n
-          rw [show ((n : ℂ) + 1) = (n + 1 : ℕ) by simp]
-        have hr := summable_nat_add_iff (k := 1)
-          (f := fun n => (-↑d / (z : ℂ) - ↑(n))⁻¹ + (-↑d / (z : ℂ) + ↑(n))⁻¹)
-        rw [hr] at this
-        simp at *
-        apply this.subtype
-      · simpa using int_div_upperHalfPlane_mem_integerComplement z (-d) (by omega)
+    field_simp [ne_zero z]
+  · have := (Summable_cotTerm (x := -d / (z : ℂ))
+      (by simpa using int_div_upperHalfPlane_mem_integerComplement z (-d) (by simp at *)))
+    simp only [cotTerm, one_div] at *
+    conv at this =>
+      enter [1]
+      ext n
+      rw [show ((n : ℂ) + 1) = (n + 1 : ℕ) by simp]
+    rw [summable_nat_add_iff (k := 1)
+      (f := fun n => (-↑d / (z : ℂ) - ↑(n))⁻¹ + (-↑d / (z : ℂ) + ↑(n))⁻¹)] at this
+    apply this.subtype
 
-lemma aux1 (z : ℍ) : Tendsto (fun N : ℕ+ => ∑' (n : ℕ+), cexp (2 * ↑π * I * (N / z)) ^ (n : ℕ))
-    atTop (𝓝 0) := by
+lemma pnat_div_upper (n : ℕ+) (z : ℍ) : 0 < (-(n : ℂ) / z).im := by
+  simp only [div_im, neg_im, natCast_im, neg_zero, coe_re, zero_mul,
+    zero_div, neg_re, natCast_re, coe_im, neg_mul, zero_sub, Left.neg_pos_iff, div_neg_iff]
+  right
+  simpa using ⟨z.2, ne_zero z⟩
 
-  sorry
-
-
-theorem extracted_12 (z : ℍ) :
-    Tendsto (fun n : ℕ => (2 / (z : ℂ) * ∑' (m : ℕ+),
-    (1 / (-(n : ℂ) / ↑z - ↑↑m) + 1 / (-↑↑n / ↑z + ↑↑m)))) atTop (𝓝 (-2 * ↑π * Complex.I / ↑z)) := by
-    sorry
-/-
-  have : Tendsto (fun n : ℕ+ => (2 / (z : ℂ) * ∑' (m : ℕ+),
-     (1 / (-(n : ℂ) / ↑z - ↑↑m) + 1 / (-↑↑n / ↑z + ↑↑m)))) atTop (𝓝 (-2 * ↑π * Complex.I / ↑z))  := by
-    have : (fun n : ℕ+ => (2 / (z : ℂ) * ∑' (m : ℕ+),
-     (1 / (-(n : ℂ) / ↑z - ↑↑m) + 1 / (-↑↑n / ↑z + ↑↑m)))) = (fun N : ℕ+ =>
-      (2 / (z : ℂ) * (↑π * Complex.I - 2 * ↑π * Complex.I *
-      ∑' n : ℕ, Complex.exp (2 * ↑π * Complex.I * (-N / z) * n) - z / -N))) := by
-      funext N
-      set Z : ℍ := ⟨-N / z, sorry⟩
-      have h1 := pi_mul_cot_pi_q_exp Z
-      have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement Z)
-      rw [h1] at h2
-
-
-      have hS := series_eql' Z
-      simp [Z] at *
-      rw [← sub_eq_iff_eq_add'] at hS
-      left
-      have hSS := hS.symm
-      apply hSS
+lemma aux_tendsto_tsum_cexp_pnat (z : ℍ) :
+    Tendsto (fun N : ℕ+ => ∑' (n : ℕ+), cexp (2 * ↑π * I * (-N / z)) ^ (n : ℕ)) atTop (𝓝 0) := by
+  have := tendsto_tsum_of_dominated_convergence (𝓕 := atTop) (g := fun (n : ℕ+) => (0 : ℂ))
+    (f := fun d : ℕ+ => fun n : ℕ+ => cexp (2 * ↑π * Complex.I * (-↑↑d / ↑z)) ^ (n : ℕ) )
+    (bound := fun n : ℕ+ => (‖(cexp (2 * ↑π * Complex.I * (-1 / ↑z)))^ (Subtype.val n)‖))
+  simp only [tsum_zero] at this
+  apply this
+  · have hs : Summable fun n : ℕ ↦ ‖cexp (2 * ↑π * Complex.I * (-1 / ↑z)) ^ n‖ := by
+      simpa using (norm_exp_two_pi_I_lt_one ⟨-1 / z, by simpa using (pnat_div_upper 1 z)⟩)
+    apply Summable.subtype hs
+  · intro k
+    have : (fun x : ℕ+ ↦ cexp (2 * ↑π * Complex.I * (-↑↑(x : ℂ) / ↑z)) ^ (k : ℕ)) =
+    (fun x : ℕ+ ↦ (cexp (2 * ↑π * Complex.I * (-↑↑(k : ℂ) / ↑z)))  ^ (x : ℕ)) := by
+      ext n
+      simp_rw [← exp_nsmul]
+      ring_nf
     rw [this]
-    have h3 : (fun N : ℕ+ =>
-        (2 / (z : ℂ) * (↑π * Complex.I - 2 * ↑π * Complex.I *
-        ∑' n : ℕ, Complex.exp (2 * ↑π * Complex.I * (-N / z) * n) - z / -N)))  =
-        (fun N : ℕ+ => ((2 / (z : ℂ)) * ↑π * Complex.I - ((2 / z) * 2 * ↑π * Complex.I *
-          ∑' n : ℕ, Complex.exp (2 * ↑π * Complex.I * (-N / z) * n)) - 2 / -N)) := by
-        funext N
-        have hz : 2 / -(N : ℂ) = (2 / z) * (z / -N) := by
-          have : (z : ℂ) ≠ 0 := ne_zero z
-          field_simp
-        rw [hz]
-        ring
-    rw [h3]
-    rw [show -2 * ↑π * Complex.I / ↑z =  2 * ↑π * Complex.I / ↑z - 4 * ↑π * Complex.I / ↑z - 0 by ring]
-    apply Tendsto.sub
-    apply Tendsto.sub
-    simp only [tendsto_const_nhds_iff]
-    ring
-    apply tsum_exp_tendsto_zero
-    have := tendsto_const_div_pow 2 1 (Nat.one_ne_zero)
-    rw [Metric.tendsto_atTop] at *
-    simp only [one_div, gt_iff_lt, ge_iff_le, pow_one, dist_zero_right, norm_div, Real.norm_ofNat,
-      Real.norm_natCast, norm_ofNat, norm_neg, norm_natCast] at *
-    intro ε hε
-    have ht := this ε hε
-    obtain ⟨N,HN ⟩ := ht
-    use ⟨(N + 1), Nat.zero_lt_succ N⟩
-    intro n hn
-    apply HN n ?_
-    rw [← PNat.coe_le_coe ] at hn
-    simp at hn
-    omega
-  rw [Metric.tendsto_atTop] at *
-  simp only [gt_iff_lt, ge_iff_le, one_div, neg_mul] at *
-  intro ε hε
-  have th := this ε hε
-  obtain ⟨N, hN⟩ := th
-  use N
-  intro n hn
-  have hn0 : 0 < n := by
-   have l := N.2
-   simp only [gt_iff_lt] at *
-   apply Nat.lt_of_lt_of_le l hn
-  have HNN := hN ⟨n, hn0⟩ ?_
-  simp only [PNat.mk_coe, gt_iff_lt] at *
-  exact HNN
-  norm_cast
- -/
+    have ht : Tendsto (fun x : ℕ ↦ cexp (2 * ↑π * Complex.I * (-↑k / ↑z)) ^ ↑x) atTop (𝓝 0) := by
+      rw [tendsto_zero_iff_norm_tendsto_zero]
+      simpa using norm_exp_two_pi_I_lt_one ⟨-k / z, by simpa using (pnat_div_upper k z)⟩
+    apply tendsto_comp_val_Ioi_atTop.mpr ht
+  · simp only [eventually_atTop, ge_iff_le]
+    refine ⟨1, fun b hb k => ?_⟩
+    have : cexp (2 * ↑π * Complex.I * (-↑↑b / ↑z)) ^(k : ℕ) =
+      ((cexp (2 * ↑π * Complex.I * (- 1 / ↑z)) ^ (k: ℕ)) ^ (b : ℕ)) := by
+      simp_rw [← exp_nsmul]
+      grind
+    simp only [this, norm_pow, ge_iff_le, ← pow_mul]
+    apply Bound.pow_le_pow_right_of_le_one_or_one_le ?_
+    right
+    exact ⟨by apply norm_nonneg, ⟨(UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨- 1 / z,
+      by simpa using (pnat_div_upper 1 z)⟩).le, Nat.le_mul_of_pos_right k hb⟩⟩
 
-theorem PS3tn22 (z : ℍ) :
-  Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Finset.Ico (-↑N : ℤ) ↑N,
-    ∑' (m : ℤ), (1 / ((m : ℂ) * ↑z + ↑n) - 1 / (↑m * ↑z + ↑n + 1))) atTop
-    (𝓝 (-2 * ↑π * Complex.I / ↑z)) := by
-  have : (fun N : ℕ+ => ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)),
-    ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) =
-    (fun N : ℕ+ =>
-    ∑' m : ℤ ,  ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)), (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) := by
+private theorem aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ => (2 / (z : ℂ) * ∑' (m : ℕ+),
+    (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) atTop (𝓝 (-2 * ↑π *I / z)) := by
+  suffices Tendsto (fun n : ℕ+ => (2 / (z : ℂ) * ∑' (m : ℕ+),
+      (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) atTop (𝓝 (-2 * π * I / z)) by
+    rw [← tendsto_comp_val_Ioi_atTop]
+    apply this
+  have H0 : (fun n : ℕ+ => (2 / z * ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) =
+      (fun N : ℕ+ => (-2 * π * I / z) - (2 / z * (2 * π * I)) *
+      (∑' n : ℕ+, cexp (2 * π * I * (-N / z)) ^ (n : ℕ)) - 2 / z * (z / -N)) := by
+    ext N
+    let Z : ℍ := ⟨-N / z, pnat_div_upper N z⟩
+    have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement Z)
+    rw [pi_mul_cot_pi_q_exp , ← sub_eq_iff_eq_add'] at h2
+    simp only [coe_mk_subtype, one_div, inv_div, neg_mul, Z] at *
+    rw [← h2, ← tsum_zero_pnat_eq_tsum_nat _
+      (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, pnat_div_upper N z⟩), mul_sub]
+    ring
+  rw [H0]
+  nth_rw 2 [show -2 * π * I / z = (-2 * π * I / z) -
+    (2 / z * (2 * π * I)) * 0 - -2*0 by ring]
+  apply Tendsto.sub (Tendsto.sub (by simp) ((aux_tendsto_tsum_cexp_pnat z).const_mul _))
+  field_simp [ne_zero z]
+  apply Tendsto.neg
+  apply Tendsto.const_mul
+  have H4 : Tendsto (fun x : ℕ ↦ 1 / (x : ℂ)) atTop (𝓝 0) := by
+    simpa using tendstozero_inv_linear z 0
+  rw [← tendsto_comp_val_Ioi_atTop] at H4
+  simpa using H4
+
+theorem PS3tn22 (z : ℍ) : Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
+    ∑' (m : ℤ), (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
+  have : (fun N : ℕ+ => ∑ n ∈ (Ico (-(N : ℤ)) (N : ℤ)),
+      ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) = (fun N : ℕ+ =>
+      ∑' m : ℤ ,  ∑ n ∈ Ico (-(N : ℤ)) N, (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) := by
     ext n
     rw [Summable.tsum_finsetSum]
     intro i hi
-    have :=  auxsummm z ((i : ℤ)) (i + 1 : ℤ)
-    apply this.congr
-    intro m
-    simp
-    ring
+    apply (summable_one_div_linear_sub_one_div_linear z ((i : ℤ)) (i + 1 : ℤ)).congr
+    grind [one_div, Int.cast_add, Int.cast_one, sub_right_inj, inv_inj]
   conv at this =>
     enter [2]
     ext
@@ -484,7 +422,7 @@ theorem PS3tn22 (z : ℍ) :
       enter [1]
       ext m
       rw [telescope_aux z]
-  have hp := sum_int_pnat2_pnat z
+  have hp := aux_tsum_identity_2 z
   conv at this =>
     enter [2]
     ext m
@@ -493,8 +431,9 @@ theorem PS3tn22 (z : ℍ) :
   rw [this]
   rw [show -2 * ↑π * Complex.I / ↑z = 0 + -2 * ↑π * Complex.I / ↑z by ring]
   apply Tendsto.add
-  · have : Tendsto (fun x : ℕ ↦ -2 / (x : ℂ)) atTop (𝓝 0) := by
-        have := Filter.Tendsto.const_div_atTop (g := fun n : ℕ => ‖(n : ℂ)‖) (r := 2) (l := atTop) ?_
+  · have : Tendsto (fun x : ℕ ↦ -(2 / (x : ℂ))) atTop (𝓝 0) := by
+        have := Filter.Tendsto.const_div_atTop (g := fun n : ℕ => ‖(n : ℂ)‖) (r := 2)
+          (l := atTop) ?_
         rw [tendsto_zero_iff_norm_tendsto_zero]
         simpa using this
         simpa using tendsto_natCast_atTop_atTop
@@ -502,14 +441,17 @@ theorem PS3tn22 (z : ℍ) :
   · conv =>
       enter [1]
       ext n
-      rw [show (n : ℂ) = (n : ℤ) by simp]
-      rw [sum_int_pnat3]
-    have := nat_tendsto_pnat _ _ (extracted_12 z)
+      rw [show (n : ℂ) = (n : ℕ+) by simp]
+      rw [aux_tsum_identity_3]
+    have := nat_tendsto_pnat _ _ (aux_tendsto_tsum z)
     exact this
 
 lemma PS3 (z : ℍ) : limUnder atTop
   (fun N : ℕ => ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)),
-    ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) = -2 * π * Complex.I / z := by sorry
+    ∑' m : ℤ , (1 / ((m : ℂ) * z + n) -  1 / (m * z + n + 1))) = -2 * π * Complex.I / z := by
+  apply Filter.Tendsto.limUnder_eq
+  rw [← tendsto_comp_val_Ioi_atTop]
+  apply PS3tn22
 
 lemma PS2 (z : ℍ) : ∑' m : ℤ, (limUnder atTop
     (fun N : ℕ => ∑ n ∈ (Finset.Ico (-(N : ℤ)) (N : ℤ)),
@@ -517,7 +459,6 @@ lemma PS2 (z : ℍ) : ∑' m : ℤ, (limUnder atTop
   convert tsum_zero
   next m =>
   apply PS1
-
 
 def δ (a b : ℤ) : ℂ := if a = 0 ∧ b = 0 then 1 else if a = 0 ∧ b = -1 then 2 else 0
 
