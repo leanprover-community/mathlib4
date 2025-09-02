@@ -786,8 +786,6 @@ lemma aeval_sumElim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ →
   | add p q hp hq => simp [hp, hq]
   | mul_X p i h => cases i <;> simp [h]
 
-@[deprecated (since := "2025-02-21")] alias aeval_sum_elim := aeval_sumElim
-
 end CommSemiring
 
 section Algebra

@@ -39,12 +39,3 @@ theorem UpperHalfPlane.norm_qParam_lt_one (n : ℕ) [NeZero n] (τ : ℍ) : ‖�
 theorem UpperHalfPlane.norm_exp_two_pi_I_lt_one (τ : ℍ) :
     ‖(Complex.exp (2 * π * Complex.I * τ))‖ < 1 := by
   simpa [Function.Periodic.norm_qParam, Complex.norm_exp] using τ.norm_qParam_lt_one 1
-
-@[deprecated (since := "2025-02-17")] alias Function.Periodic.im_invQParam_pos_of_abs_lt_one :=
-  Function.Periodic.im_invQParam_pos_of_norm_lt_one
-@[deprecated (since := "2025-02-17")] alias Function.Periodic.abs_qParam_le_of_one_half_le_im :=
-  Function.Periodic.norm_qParam_le_of_one_half_le_im
-@[deprecated (since := "2025-02-17")] alias UpperHalfPlane.abs_qParam_lt_one :=
-  UpperHalfPlane.norm_qParam_lt_one
-@[deprecated (since := "2025-02-17")] alias UpperHalfPlane.abs_exp_two_pi_I_lt_one :=
-  UpperHalfPlane.norm_exp_two_pi_I_lt_one
