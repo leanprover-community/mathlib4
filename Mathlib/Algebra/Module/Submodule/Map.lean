@@ -126,7 +126,7 @@ theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
 
 lemma map_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
     (⨅ i, p i).map f = ⨅ i, (p i).map f :=
-  SetLike.coe_injective <| by simpa only [map_coe, iInf_coe] using hf.injOn.image_iInter_eq
+  SetLike.coe_injective <| by simpa only [map_coe, coe_iInf] using hf.injOn.image_iInter_eq
 
 theorem range_map_nonempty (N : Submodule R M) :
     (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
