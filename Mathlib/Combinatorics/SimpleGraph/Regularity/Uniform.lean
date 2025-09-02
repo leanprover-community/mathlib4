@@ -22,7 +22,7 @@ The literature contains several definitions which are equivalent up to scaling `
 when the partition is equitable.
 
 A partition `P` of the vertices is `ε`-uniform if the proportion of `ε`-uniform pairs of parts is
-at least `(1 - ε)`.
+greater than `(1 - ε)`.
 
 ## Main declarations
 
