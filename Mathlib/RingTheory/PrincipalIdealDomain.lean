@@ -82,13 +82,6 @@ section Semiring
 
 variable [Semiring R] [Module R M]
 
-/-- `generator I`, if `I` is a principal submodule, is an `x ∈ M` such that `span R {x} = I` -/
-noncomputable def generator (S : Submodule R M) [S.IsPrincipal] : M :=
-  Classical.choose (principal S)
-
-theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {generator S} = S :=
-  Eq.symm (Classical.choose_spec (principal S))
-
 @[simp]
 theorem _root_.Ideal.span_singleton_generator (I : Ideal R) [I.IsPrincipal] :
     Ideal.span ({generator I} : Set R) = I :=
@@ -379,18 +372,16 @@ theorem IsPrincipalIdealRing.of_surjective [IsPrincipalIdealRing R] (f : F)
     (hf : Function.Surjective f) : IsPrincipalIdealRing S :=
   ⟨fun I => Ideal.IsPrincipal.of_comap f hf I⟩
 
-instance [IsPrincipalIdealRing R] [IsPrincipalIdealRing S] : IsPrincipalIdealRing (R × S) where
-  principal I := by
-    rw [I.ideal_prod_eq, ← (I.map _).span_singleton_generator,
-      ← (I.map (RingHom.snd R S)).span_singleton_generator,
-      ← Ideal.span_prod (iff_of_true (by simp) (by simp)), Set.singleton_prod_singleton]
-    exact ⟨_, rfl⟩
-
 theorem isPrincipalIdealRing_prod_iff :
     IsPrincipalIdealRing (R × S) ↔ IsPrincipalIdealRing R ∧ IsPrincipalIdealRing S where
   mp h := ⟨h.of_surjective (RingHom.fst R S) Prod.fst_surjective,
     h.of_surjective (RingHom.snd R S) Prod.snd_surjective⟩
   mpr := fun ⟨_, _⟩ ↦ inferInstance
+
+theorem isPrincipalIdealRing_pi_iff {ι} [Finite ι] {R : ι → Type*} [∀ i, Semiring (R i)] :
+    IsPrincipalIdealRing (Π i, R i) ↔ ∀ i, IsPrincipalIdealRing (R i) where
+  mp h i := h.of_surjective (Pi.evalRingHom R i) (Function.surjective_eval _)
+  mpr _ := inferInstance
 
 end Surjective
 
