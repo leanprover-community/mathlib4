@@ -50,7 +50,7 @@ $$
 $$
 The classical version is proven as a special case of this inequality for $w_i=\frac{1}{n}$.
 
-The inequalities are proven only for complex-valued positive functions on `Finset`s, and namespaced in
+The inequalities are proven only for real-valued positive functions on `Finset`s, and namespaced in
 `Real`. The weighted version follows as a corollary of the weighted AM-GM inequality.
 
 ### Young's inequality
