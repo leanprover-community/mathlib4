@@ -190,7 +190,7 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
     ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
 
 /-- If a measurable space is countably generated and separates points, it arises as
-the borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
+the Borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
 theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
     [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
     ∃ _ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
