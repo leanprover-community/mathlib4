@@ -1,5 +1,5 @@
 /-
-Copyright (c) Yoh Tanimoto. All rights reserved.
+Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
@@ -220,8 +220,11 @@ variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 closed real subspace `S` such that `S ⊓ i S = ⊥` and `S ⊔ i S = ⊤`. -/
 @[ext]
 structure StandardSubspace where
+  /-- A real closed subspace `S`. -/
   toClosedSubmodule : ClosedSubmodule ℝ H
+  /-- `S` is separating, that is, `S ⊓ i S` is the trivial subspace. -/
   IsSeparating : toClosedSubmodule ⊓ toClosedSubmodule.mulI = ⊥
+  /-- `S` is cyclic, that is, `S ⊔ i S` is the whole space. -/
   IsCyclic : toClosedSubmodule ⊔ toClosedSubmodule.mulI = ⊤
 
 end Def
