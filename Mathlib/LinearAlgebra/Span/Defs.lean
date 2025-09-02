@@ -51,6 +51,17 @@ class IsPrincipal (S : Submodule R M) : Prop where
 
 instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
 
+namespace IsPrincipal
+
+/-- `generator I`, if `I` is a principal submodule, is an `x ∈ M` such that `span R {x} = I` -/
+noncomputable def generator (S : Submodule R M) [S.IsPrincipal] : M :=
+  Classical.choose (principal S)
+
+theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {generator S} = S :=
+  (Classical.choose_spec (principal S)).symm
+
+end IsPrincipal
+
 end
 
 variable {s t : Set M}
