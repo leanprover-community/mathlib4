@@ -285,9 +285,9 @@ instance instSemiring : Semiring (A ⊗[R] B) where
 
 @[simp]
 theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
-  induction' k with k ih
-  · simp [one_def]
-  · simp [pow_succ, ih]
+  induction k with
+  | zero => simp [one_def]
+  | succ k ih => simp [pow_succ, ih]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 @[simps]
@@ -1119,6 +1119,9 @@ theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = Al
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
   AlgHom.ext <| one_mul
+
+lemma lmul'_comp_map (f : A →ₐ[R] S) (g : B →ₐ[R] S) :
+    (lmul' R).comp (map f g) = lift f g (fun _ _ ↦ .all _ _) := by ext <;> rfl
 
 variable (R S) in
 /-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
