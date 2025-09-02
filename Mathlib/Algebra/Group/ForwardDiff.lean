@@ -290,20 +290,9 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
 
 lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
     Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ n) = n ! := by
-  induction' n with n IH
-  · aesop
-  · have : (Δ_[1] fun (r : R) ↦ (r + 1) ^ (n + 1)) =
-      ∑ i ∈ range (n + 1), (n + 1).choose i • fun r ↦ (r + 1) ^ i := by
-      ext x
-      simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
-    rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
-    conv_lhs => enter [2]; ext k; rw [fwdDiff_iter_const_smul]
-    norm_num
-    rw [sum_range_succ, choose_succ_self_right, cast_add, cast_one, IH]
-    norm_cast
-    simp [← factorial_succ]
-    exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_pow_eq_zero_of_lt' (by have := mem_range.1 hi; omega), mul_zero]
+  ext
+  rw [fwdDiff_iter_comp_add 1 (· ^ n), fwdDiff_iter_eq_factorial]
+  simp_all only [Pi.natCast_apply]
 
 /--
 The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
