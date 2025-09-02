@@ -113,7 +113,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
   unfold trapezoidal_error
   rw [sum_sub_distrib, sum_trapezoidal_integral_adjacent_intervals N_nonzero]
   norm_cast
-  rw [sum_integral_adjacent_intervals (a := (a + · * h))]
+  rw [sum_integral_adjacent_intervals]
   · simp
   · intro k hk
     apply IntervalIntegrable.mono h_f_int ?_ (le_refl volume)
@@ -138,6 +138,125 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
       · rw [add_le_add_iff_left, mul_le_mul_iff_of_pos_right h_pos]
         norm_cast
 
+/-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
+the general error bound later on. Using it directly is not recommended. -/
+lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
+    (h_df : DifferentiableOn ℝ f (Icc a b))
+    (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
+    (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b)
+    (fpp_bound : ∀ x, |iteratedDerivWithin 2 f (Icc a b) x| ≤ ζ) :
+    |trapezoidal_error f 1 a b| ≤ (b - a) ^ 3 * ζ / 12 := by
+  rw [mul_div_assoc, mul_comm]
+  let g (t : ℝ) := trapezoidal_error f 1 a t
+  -- Hand-computed expressions for g' and g''.
+  let dg (t : ℝ) := (1 / 2) * (f a + f t) + ((t - a) / 2) * (derivWithin f (Icc a b) t) - f t
+  let ddg (t : ℝ) := ((t - a) / 2) * (iteratedDerivWithin 2 f (Icc a b) t)
+  -- Compute g' by applying standard derivative identities.
+  have h_dg (y : ℝ) (hy: y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
+    unfold g trapezoidal_error trapezoidal_integral
+    simp only [Nat.cast_one, div_one, tsub_self, Finset.range_zero, sum_empty, add_zero]
+    simp_rw [← mul_comm_div]
+    refine fun_sub (fun_mul (div_const (sub_const _ (hasDerivWithinAt_id _ _)) _)
+      (const_add _ (h_df y hy).hasDerivWithinAt)) ?_
+    have := Fact.mk hy -- Needed for integral_hasDerivWithinAt_right
+    apply integral_hasDerivWithinAt_right
+    · apply ContinuousOn.intervalIntegrable_of_Icc hy.left
+      apply h_df.continuousOn.mono
+      exact Set.Icc_subset_Icc (le_refl a) hy.right
+    · exact h_df.continuousOn.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc y
+    · exact h_df.continuousOn.continuousWithinAt hy
+  -- Compute g'', once again applying standard derivative identities.
+  have h_ddg (y : ℝ) (hx: y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
+    -- The eventual expression for g'' has several terms that cancel, which we have to undo here
+    -- so that the various HasDerivWithinAt theorems will have everything they need.
+    let dfaky := derivWithin f (Icc a b) y
+    rw [(by ring: ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
+    refine fun_sub (fun_add (const_mul _ (const_add _ (h_df y hx).hasDerivWithinAt))
+      (fun_mul (div_const (sub_const _ (hasDerivWithinAt_id _ _)) _) ?_))
+      (h_df y hx).hasDerivWithinAt
+    rw [iteratedDerivWithin_eq_iterate]
+    exact (h_ddf y hx).hasDerivWithinAt
+  -- Technically this would work for all x ≥ a, but we only need it for x ∈ Icc a b (and it makes
+  -- more pure-mathematical sense that way).
+  have bound_ddg : ∀ x ∈ Icc a b, |ddg x| ≤ (ζ / 2) * ((x - a) ^ 1) := by
+    intro x hx
+    calc
+      _ = |(x - a) / 2| * |iteratedDerivWithin 2 f (Icc a b) x| := abs_mul _ _
+      _ ≤ |(x - a) / 2| * ζ := mul_le_mul_of_nonneg_left (fpp_bound _) (abs_nonneg _)
+      _ = ((x - a) / 2) * ζ := by rw [abs_div, abs_two, abs_of_nonneg (sub_nonneg.mpr hx.1)]
+      _ = _ := by ring
+  -- Now that we have our bound on ddg, we want to turn that into a bound on g.  Our first lemma
+  -- is a specialized Fundamental Theorem of Calculus.
+  have integral_from_zero {r r': ℝ → ℝ}
+      (h_deriv: ∀ x ∈ Icc a b, HasDerivWithinAt r (r' x) (Icc a b) x) (h_zero: r a = 0)
+      (h_cont_r: ContinuousOn r (Icc a b))
+      (h_int_r': IntervalIntegrable r' volume a b) :
+      ∀ t ∈ Icc a b, ∫ x in a..t, r' x = r t := by
+    intro t ht
+    have subset_icc := Icc_subset_Icc_right (a := a) ht.right
+    rw [(by rw [h_zero, sub_zero]: r t = r t - r a)]
+    apply integral_eq_sub_of_hasDerivAt_of_le ht.left
+    · exact ContinuousOn.mono (h_cont_r) subset_icc
+    · intro x hx
+      apply HasDerivWithinAt.hasDerivAt (s := Icc a t)
+      · apply HasDerivWithinAt.mono (t := Icc a b)
+        · exact h_deriv x (subset_icc (mem_Icc_of_Ioo hx))
+        · exact Icc_subset_Icc_right ht.right
+      · exact Icc_mem_nhds_iff.mpr hx
+    · apply IntervalIntegrable.mono h_int_r' ?_ (le_refl volume)
+      rwa [uIcc_of_le ht.left, uIcc_of_lt a_lt_b]
+  -- The second lemma exists largely to specialize an extremely general standard integral result:
+  -- that the norm of the integral is bounded below by the integral of the norm.
+  have abs_int_leq_int_abs {φ ψ : ℝ → ℝ} {t : ℝ} (ht: t ∈ Icc a b) (cont: ContinuousOn ψ [[a, b]])
+      (abs_bound: ∀ x ∈ Icc a b, |φ x| ≤ ψ x) :
+      |∫ (x : ℝ) in a..t, φ x| ≤ ∫ (x : ℝ) in a..t, ψ x := by
+    have : ∀ x ∈ Ioc a t, ‖φ x‖ ≤ ψ x := by
+      intro x hx
+      rw [Real.norm_eq_abs]
+      apply abs_bound x (mem_Icc_of_Ioc ?_)
+      exact ⟨hx.left, le_trans hx.right ht.right⟩
+    apply norm_integral_le_of_norm_le ht.left (ae_of_all _ this)
+    apply ContinuousOn.intervalIntegrable_of_Icc ht.left
+    apply ContinuousOn.mono cont (s := [[a, b]])
+    rw [uIcc_of_lt a_lt_b]
+    apply Set.Icc_subset_Icc (le_refl a) ht.2
+  -- Now we put all this together and do a bit more calculus: if |f' t| < c * t ^ n, then
+  -- |f t| < c / (n + 1) * t ^ (n + 1).  The bound is phrased in this exact way, including
+  -- universal quantifiers, so that it can be composed with itself.
+  have power_bound {φ φ' : ℝ → ℝ} (h_int: ∀ t ∈ Icc a b, ∫ x in a..t, φ' x = φ t) {c: ℝ} {n : ℕ}
+      (h_bound: ∀ t ∈ Icc a b, |φ' t| ≤ c * (t - a) ^ n) :
+      ∀ t ∈ Icc a b, |φ t| ≤ c / (n + 1) * (t - a) ^ (n + 1) := by
+    intro t ht
+    rw [← h_int t ht]
+    calc
+      _ ≤ ∫ x in a..t, c * ((x - a) ^ n)  := abs_int_leq_int_abs ht (by fun_prop) h_bound
+      _ = c * ∫ x in a..t, (x - a) ^ n    := integral_const_mul _ _
+      _ = c * ((t - a) ^ (n + 1) / (n + 1)) := by simp [integral_comp_sub_right (· ^ n) a]
+      _ = _                           := by ring_nf
+  -- Finally, we run our `power_bound` logic twice, turning our bound on ddg into a bound on dg
+  -- and then into a bound on g.  (This does require proving continuity of g and dg, which we can
+  -- do straightforwardly by using our previous derivative results, and integrability of dg and
+  -- ddg.  The first of these is also straightforward, while the second needs a little bit of
+  -- work.)
+  have gk_continuous : ContinuousOn g (Icc a b) := fun y hy ↦ (h_dg y hy).continuousWithinAt
+  have dgk_continuous : ContinuousOn dg (Icc a b) := fun y hy ↦ (h_ddg y hy).continuousWithinAt
+  have dgk_integrable : IntervalIntegrable dg volume a b :=
+    dgk_continuous.intervalIntegrable_of_Icc a_lt_b.le
+  have ddgk_integrable : IntervalIntegrable ddg volume a b := by
+    apply IntervalIntegrable.continuousOn_mul
+    · have : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b := by
+        apply IntervalIntegrable.mono h_ddf_integrable _ (le_refl volume)
+        rw [uIcc_of_lt a_lt_b]
+      have := IntervalIntegrable.comp_add_left this a
+      simpa
+    · fun_prop
+  have := power_bound (integral_from_zero h_ddg (by unfold dg; ring_nf: dg a = 0)
+    dgk_continuous ddgk_integrable) bound_ddg
+  have := power_bound (integral_from_zero h_dg (by simp [g]) gk_continuous dgk_integrable) this
+  specialize this b (right_mem_Icc.mpr a_lt_b.le)
+  refine this.trans_eq ?_
+  ring_nf
+
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. -/
 lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
@@ -148,197 +267,48 @@ lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_
     {N : ℕ} (N_nonzero : 0 < N) :
     |trapezoidal_error f N a b| ≤ (b - a) ^ 3 * ζ / (12 * N ^ 2) := by
   let h := (b - a) / N
-  -- Make continuity of f explicit so that fun_prop can use it in a couple of places later on.
-  have h_cf : ContinuousOn f (Icc a b) := DifferentiableOn.continuousOn h_df
-  -- Make it explicit that 0 < h.
-  have h_gt_zero : 0 < h := div_pos (sub_pos.mpr a_lt_b) (Nat.cast_pos.mpr N_nonzero)
-  -- Let a_k (written ak k) be the k-th integration point for the trapezoidal rule, and define
-  -- (g k)(t) to be the error of integrating from a_k to a_k + t using a linear approximation.
   let ak (k : ℕ) := a + k * h
-  -- Verify that [ak k, ak k + h] is still within the bounds of integration for sensible k.
-  have ak_bound {k : ℕ} (hk: k < N) {t : ℝ} (ht: t ∈ Icc 0 h) : ak k + t ∈ Icc a b := by
-    unfold ak h at *
-    rw [Set.mem_Icc] at ht ⊢
-    rw [← Nat.add_one_le_iff] at hk
-    constructor
-    · nlinarith
-    · grw [add_assoc, ← le_sub_iff_add_le', ht.2, ← add_one_mul, ← Nat.cast_add_one, hk,
-        mul_div_cancel₀ _ (by positivity)]
-  -- We will mostly use ak_bound in these simplified forms.  (There is one use later on which does
-  -- need it, so we do have prove it in full.)
-  have a_lt_ak {k : ℕ} (hk: k < N): a ≤ ak k := by
-    rw [← add_zero (ak k)]
-    exact (ak_bound hk (left_mem_Icc.mpr (le_of_lt h_gt_zero))).left
-  have ak_h_lt_b {k : ℕ} (hk: k < N) : ak k + h ≤ b := by
-    exact (ak_bound (hk) (right_mem_Icc.mpr (le_of_lt h_gt_zero))).right
-  -- The main part of the proof, containing almost all the calculus: the bound on the integration
-  -- error of a single trapezoid from `ak k` to `ak (k + 1)`.  We phrase both the assumptions and
-  -- conclusion in a very specific way so that we can use this directly with `sum_le_sum` later on.
-  have two_point_bound (k : ℕ) (h_range : k ∈ range N) :
-      |trapezoidal_error f 1 (ak k) (ak (k + 1))| ≤ (ζ / 12) * h ^ 3 := by
-    have hk : k < N := List.mem_range.mp h_range
-    -- We will differentiate g twice, find that g''(t) ≤ (ζ / 2) * t, and then integrate twice.
-    let g (t : ℝ) := trapezoidal_error f 1 (ak k) (ak k + t)
-    -- Hand-computed expressions for g' and g''.
-    let dg (t : ℝ) :=
-        (1 / 2) * (f (ak k) + f (ak k + t))
-        + (t / 2) * (derivWithin f (Icc a b) (ak k + t)) - f (ak k + t)
-    let ddg (t : ℝ) := (t / 2) * (iteratedDerivWithin 2 f (Icc a b) (ak k + t))
-    -- This particular lemma will come in handy a couple of times.
-    have comp_deriv {f : ℝ → ℝ} (h_df: DifferentiableOn ℝ f (Icc a b)) {y : ℝ}
-        (hy: y ∈ Icc 0 h) : HasDerivWithinAt (fun x ↦ f (ak k + x))
-        (derivWithin f (Icc a b) (ak k + y)) (Icc 0 h) y := by
-      apply HasDerivWithinAt.mono (t := Icc (a - ak k) (b - ak k))
-      pick_goal 2
-      · apply Set.Icc_subset_Icc
-        · exact tsub_nonpos.mpr (a_lt_ak hk)
-        · exact le_tsub_of_add_le_left (ak_h_lt_b hk)
-      have : derivWithin f (Icc a b) (ak k + y) =
-          derivWithin (fun x ↦ f (ak k + x)) (Icc (a - ak k) (b - ak k)) y := by
-        simp [derivWithin_comp_const_add f (ak k) (Icc (a - ak k) (b - ak k)) y]
-      rw [this]
-      apply DifferentiableWithinAt.hasDerivWithinAt
-      apply DifferentiableWithinAt.comp (t := Icc a b)
-      · exact h_df (ak k + y) (ak_bound hk hy)
-      · fun_prop
-      · intro x hx
-        exact ⟨tsub_le_iff_left.mp hx.left, le_sub_iff_add_le'.mp hx.right⟩
-    -- Compute g' by applying standard derivative identities.
-    have h_dg (y : ℝ) (hy: y ∈ Icc 0 h) : HasDerivWithinAt g (dg y) (Icc 0 h) y := by
-      unfold g trapezoidal_error trapezoidal_integral
-      simp only [add_sub_cancel_left, Nat.cast_one, div_one, tsub_self, Finset.range_zero,
-        sum_empty, add_zero]
-      simp_rw [← mul_comm_div]
-      refine fun_sub (fun_mul (div_const (hasDerivWithinAt_id _ _) _)
-        (const_add _ (comp_deriv h_df hy))) ?_
-      · nth_rewrite 1 [← add_zero (ak k)]
-        simp_rw [← integral_comp_add_left f (ak k)]
-        -- We now want to apply FToC and be done with it, but we'll need to verify a few extra
-        -- properties of our function to complete the proof.
-        have h_cont : ContinuousOn (fun x ↦ f (ak k + x)) (Icc 0 h) :=
-          h_cf.comp' (by fun_prop) fun t ↦ ak_bound hk
-        have := Fact.mk hy -- Needed for integral_hasDerivWithinAt_right
-        apply integral_hasDerivWithinAt_right
-        · apply ContinuousOn.intervalIntegrable_of_Icc hy.left
-          apply ContinuousOn.mono h_cont
-          exact Set.Icc_subset_Icc (le_refl 0) hy.right
-        · exact ContinuousOn.stronglyMeasurableAtFilter_nhdsWithin h_cont measurableSet_Icc y
-        · exact ContinuousOn.continuousWithinAt h_cont hy
-    -- Compute g'', once again applying standard derivative identities.
-    have h_ddg (y : ℝ) (hx: y ∈ Icc 0 h) : HasDerivWithinAt dg (ddg y) (Icc 0 h) y := by
-      -- The eventual expression for g'' has several terms that cancel, which we have to undo here
-      -- so that the various HasDerivWithinAt theorems will have everything they need.
-      let dfaky := derivWithin f (Icc a b) (ak k + y)
-      rw [(by ring: ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
-      refine fun_sub (fun_add (const_mul _ (const_add _ (comp_deriv h_df hx)))
-        (fun_mul (div_const (hasDerivWithinAt_id _ _) _) ?_)) (comp_deriv h_df hx)
-      rw [iteratedDerivWithin_eq_iterate]
-      exact comp_deriv h_ddf hx
-    -- Technically this would work for all x ≥ 0, but we only need it for x ∈ Icc 0 h (and it makes
-    -- more pure-mathematical sense that way).
-    have bound_ddg : ∀ x ∈ Icc 0 h, |ddg x| ≤ (ζ / 2) * (x ^ 1) := by
-      intro x hx
-      calc
-        _ = |x / 2| * |iteratedDerivWithin 2 f (Icc a b) (ak k + x)| := abs_mul _ _
-        _ ≤ |x / 2| * ζ := mul_le_mul_of_nonneg_left (fpp_bound _) (abs_nonneg _)
-        _ = (x / 2) * ζ := by rw [abs_div, abs_two, abs_of_nonneg hx.left]
-        _ = _ := by ring
-    -- Now that we have our bound on ddg, we want to turn that into a bound on g.  Our first lemma
-    -- is a specialized Fundamental Theorem of Calculus.
-    have integral_from_zero {r r': ℝ → ℝ}
-        (h_deriv: ∀ x ∈ Icc 0 h, HasDerivWithinAt r (r' x) (Icc 0 h) x) (h_zero: r 0 = 0)
-        (h_cont_r: ContinuousOn r (Icc 0 h))
-        (h_int_r': IntervalIntegrable r' volume 0 h) :
-        ∀ t ∈ Icc 0 h, ∫ x in (0)..t, r' x = r t := by
-      intro t ht
-      have subset_icc := Icc_subset_Icc_right (a := 0) ht.right
-      rw [(by rw [h_zero, sub_zero]: r t = r t - r 0)]
-      apply integral_eq_sub_of_hasDerivAt_of_le ht.left
-      · exact ContinuousOn.mono (h_cont_r) subset_icc
-      · intro x hx
-        apply HasDerivWithinAt.hasDerivAt (s := Icc 0 t)
-        · apply HasDerivWithinAt.mono (t := Icc 0 h)
-          · exact h_deriv x (subset_icc (mem_Icc_of_Ioo hx))
-          · exact Icc_subset_Icc_right ht.right
-        · exact Icc_mem_nhds_iff.mpr hx
-      · apply IntervalIntegrable.mono h_int_r' ?_ (le_refl volume)
-        rwa [uIcc_of_le ht.left, uIcc_of_lt h_gt_zero]
-    -- The second lemma exists largely to specialize an extremely general standard integral result:
-    -- that the norm of the integral is bounded below by the integral of the norm.
-    have abs_int_leq_int_abs {φ ψ : ℝ → ℝ} {t : ℝ} (ht: t ∈ Icc 0 h) (cont: ContinuousOn ψ [[0, h]])
-        (abs_bound: ∀ x ∈ Icc 0 h, |φ x| ≤ ψ x) :
-        |∫ (x : ℝ) in (0)..t, φ x| ≤ ∫ (x : ℝ) in (0)..t, ψ x := by
-      have : ∀ x ∈ Ioc 0 t, ‖φ x‖ ≤ ψ x := by
-        intro x hx
-        rw [Real.norm_eq_abs]
-        apply abs_bound x (mem_Icc_of_Ioc ?_)
-        exact ⟨hx.left, le_trans hx.right ht.right⟩
-      apply norm_integral_le_of_norm_le ht.left (ae_of_all _ this)
-      apply ContinuousOn.intervalIntegrable_of_Icc ht.left
-      apply ContinuousOn.mono cont (s := [[0, h]])
-      field_simp
-      grind
-    -- Now we put all this together and do a bit more calculus: if |f' t| < c * t ^ n, then
-    -- |f t| < c / (n + 1) * t ^ (n + 1).  The bound is phrased in this exact way, including
-    -- universal quantifiers, so that it can be composed with itself.
-    have power_bound {φ φ' : ℝ → ℝ} (h_int: ∀ t ∈ Icc 0 h, ∫ x in (0)..t, φ' x = φ t) {c: ℝ} {n : ℕ}
-        (h_bound: ∀ t ∈ Icc 0 h, |φ' t| ≤ c * t ^ n) :
-        ∀ t ∈ Icc 0 h, |φ t| ≤ c / (n + 1) * t ^ (n + 1) := by
-      intro t ht
-      rw [← h_int t ht]
-      calc
-        _ ≤ ∫ x in (0)..t, c * (x ^ n)  := abs_int_leq_int_abs ht (by fun_prop) h_bound
-        _ = c * ∫ x in (0)..t, x ^ n    := integral_const_mul _ _
-        _ = c * (t ^ (n + 1) / (n + 1)) := by simp
-        _ = _                           := by ring_nf
-    -- Finally, we run our `power_bound` logic twice, turning our bound on ddg into a bound on dg
-    -- and then into a bound on g.  (This does require proving continuity of g and dg, which we can
-    -- do straightforwardly by using our previous derivative results, and integrability of dg and
-    -- ddg.  The first of these is also straightforward, while the second needs a little bit of
-    -- work.)
-    have gk_continuous : ContinuousOn g (Icc 0 h) := by
-      intro y hy
-      apply HasDerivWithinAt.continuousWithinAt
-      exact h_dg y hy
-    have dgk_continuous : ContinuousOn dg (Icc 0 h) := by
-      intro y hy
-      apply HasDerivWithinAt.continuousWithinAt
-      exact h_ddg y hy
-    have dgk_integrable : IntervalIntegrable dg volume 0 h :=
-      ContinuousOn.intervalIntegrable_of_Icc (le_of_lt h_gt_zero) dgk_continuous
-    have ddgk_integrable : IntervalIntegrable ddg volume 0 h := by
-      apply IntervalIntegrable.continuousOn_mul
-      · have : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume (ak k) (ak k + h) := by
-          apply IntervalIntegrable.mono h_ddf_integrable _ (le_refl volume)
-          rw [uIcc_of_lt a_lt_b, uIcc_of_lt (lt_add_of_pos_right (ak k) h_gt_zero)]
-          exact Set.Icc_subset_Icc (a_lt_ak hk) (ak_h_lt_b hk)
-        have := IntervalIntegrable.comp_add_left this (ak k)
-        simpa
-      · fun_prop
-    have := power_bound (integral_from_zero h_ddg (by unfold dg; ring_nf: dg 0 = 0)
-      dgk_continuous ddgk_integrable) bound_ddg
-    have := power_bound (integral_from_zero h_dg (by simp [g]: g 0 = 0) gk_continuous
-      dgk_integrable) this
-    have := this h (right_mem_Icc.mpr (le_of_lt h_gt_zero))
-    ring_nf at this ⊢
-    have : ak (1 + k) = ak k + h := by unfold ak; simp; ring
-    rwa [this]
-  -- Finally, we verify integrability of f and combine our single-trapezoid bound with the
-  -- `sum_trapezoidal_error_adjacent_intervals` theorem.
-  have f_integrable : IntervalIntegrable f volume a b :=
-    ContinuousOn.intervalIntegrable_of_Icc (le_of_lt a_lt_b) h_cf
-  have : b = a + N * h := by
-    unfold h
-    field_simp
-  rw [this] at f_integrable
-  nth_rw 1 [this, ← sum_trapezoidal_error_adjacent_intervals N_nonzero f_integrable]
+  have h0 : ∀ k : ℕ, ak (k + 1) - ak k = h := by simp [ak, ← sub_mul]
+  have hab : 0 < b - a := sub_pos.mpr a_lt_b
+  have hpos : 0 < h := by positivity
+  have hb : b = a + N * h := by unfold h; field_simp
+  rw [hb, ← sum_trapezoidal_error_adjacent_intervals N_nonzero
+    (hb ▸ h_df.continuousOn.intervalIntegrable_of_Icc a_lt_b.le)]
   grw [abs_sum_le_sum_abs]
-  unfold ak at two_point_bound
-  norm_cast
-  calc
-    _ ≤ ∑ x ∈ range N, ζ / 12 * h ^ 3 := sum_le_sum two_point_bound
-    _ = N * (ζ / 12 * h ^ 3)          := by simp [sum_const]
-    _ = _                             := by unfold h; field_simp; ring
+  suffices ∀ k ∈ range N, |trapezoidal_error f 1 (ak k) (ak (k + 1))| ≤ (ζ / 12) * h ^ 3 by
+    norm_cast
+    calc
+      _ ≤ ∑ k ∈ range N, ζ / 12 * h ^ 3 := sum_le_sum this
+      _ = N * (ζ / 12 * h ^ 3)          := by simp [sum_const]
+      _ = _                             := by unfold h; field_simp; ring
+  intro k hk
+  rw [Finset.mem_range] at hk
+  have h1 : a ≤ ak k := by simp only [ak, le_add_iff_nonneg_right]; positivity
+  have h2 : ak (k + 1) ≤ b := by simp only [ak, hb]; grw [Nat.lt_iff_add_one_le.mp hk]
+  have h3 : Icc (ak k) (ak (k + 1)) ⊆ Icc a b := Icc_subset_Icc h1 h2
+  have h4 : ak k < ak (k + 1) := by rwa [← sub_pos, h0]
+  have h5 : EqOn (derivWithin f (Icc a b))
+      (derivWithin f (Icc (ak k) (ak (k + 1)))) (Icc (ak k) (ak (k + 1))) := by
+    intro x hx
+    rw [← derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))]
+  have h6 : EqOn (iteratedDerivWithin 2 f (Icc a b))
+    (iteratedDerivWithin 2 f (Icc (ak k) (ak (k + 1)))) (Icc (ak k) (ak (k + 1))) := by
+    intro x hx
+    simp only [iteratedDerivWithin_succ', iteratedDerivWithin_zero]
+    rw [← derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_ddf x (h3 hx))]
+    exact derivWithin_congr h5 (h5 hx)
+  have h7 (x : ℝ) : |iteratedDerivWithin 2 f (Set.Icc (ak k) (ak (k + 1))) x| ≤ ζ := by
+    by_cases hx : x ∈ Icc (ak k) (ak (k + 1))
+    · grw [← h6 hx, fpp_bound]
+    · rw [iteratedDerivWithin_succ, derivWithin_zero_of_notMem_closure
+        (by rwa [closure_Icc]), abs_zero]
+      exact (abs_nonneg _).trans (fpp_bound 0)
+  refine (trapezoidal_error_le_of_lt' (ζ := ζ) h4 (h_df.mono h3) ?_ ?_ h7).trans_eq ?_
+  · refine h_ddf.congr_mono (fun x hx ↦ ?_) h3
+    exact derivWithin_subset h3 (uniqueDiffOn_Icc h4 x hx) (h_df x (h3 hx))
+  · exact (h_ddf_integrable.mono_set (by rwa [Set.uIcc_of_lt h4, Set.uIcc_of_lt a_lt_b])).congr'
+      (h6.mono (Set.uIoc_subset_uIcc.trans_eq (Set.uIcc_of_lt h4)))
+  · rw [h0, mul_div_assoc, mul_comm]
 
 /-- The standard error bound for trapezoidal integration on the general interval `[[a, b]]`. -/
 theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
