@@ -280,21 +280,9 @@ lemma coe_iSup (f : ι → ClosedSubmodule R N) :
 
 instance : SemilatticeSup (ClosedSubmodule R N) where
   sup s t := s ⊔ t
-  le_sup_left s t := by
-    intro x hx
-    apply subset_closure
-    simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe]
-    exact Submodule.mem_sup_left hx
-  le_sup_right s t := by
-    intro x hx
-    apply subset_closure
-    simp only [Submodule.coe_toAddSubmonoid, SetLike.mem_coe]
-    exact Submodule.mem_sup_right hx
-  sup_le a b c := by
-    intro ha hb
-    apply Submodule.closure_le.mpr
-    simp only [sup_le_iff, toSubmodule_le_toSubmodule]
-    exact ⟨ha, hb⟩
+  le_sup_left _ _ _ hx := subset_closure <| Submodule.mem_sup_left hx
+  le_sup_right _ _ _ hx := subset_closure <| Submodule.mem_sup_right hx
+  sup_le _ _ _ ha hb := Submodule.closure_le.mpr <| sup_le_iff.mpr ⟨ha, hb⟩
 
 instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
   le_sSup s a := by
