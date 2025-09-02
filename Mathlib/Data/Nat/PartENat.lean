@@ -61,6 +61,8 @@ open Part hiding some
 def PartENat : Type :=
   Part ℕ
 
+set_option linter.deprecated false
+
 namespace PartENat
 
 /-- The computable embedding `ℕ → PartENat`.
