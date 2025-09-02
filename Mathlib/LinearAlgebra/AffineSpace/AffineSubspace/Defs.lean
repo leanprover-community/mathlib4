@@ -722,8 +722,10 @@ theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set 
 /-- The inf of two affine subspaces, coerced to a set, is the intersection of the two sets of
 points. -/
 @[simp]
-theorem inf_coe (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
+theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
 theorem mem_inf_iff (p : P) (s₁ s₂ : AffineSubspace k P) : p ∈ s₁ ⊓ s₂ ↔ p ∈ s₁ ∧ p ∈ s₂ :=
