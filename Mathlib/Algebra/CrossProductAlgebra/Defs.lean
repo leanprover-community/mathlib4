@@ -236,6 +236,17 @@ instance : Ring (CrossProductAlgebra f) where
   sub_eq_add_neg := by intros; ext; simp [sub_eq_add_neg]
   neg_add_cancel := by intros; ext; simp
 
+@[simp]
+lemma val_natCast (n : ℕ) : (n : CrossProductAlgebra f).val = n • .single 1 (f (1, 1))⁻¹ := by
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, add_smul]
+
+@[simp]
+lemma val_intCast (n : ℤ) :
+    (n : CrossProductAlgebra f).val = n • .single 1 (f (1, 1))⁻¹ := by
+  cases n <;> simp [val_natCast, ← sub_eq_add_neg, sub_mul]
+
 instance algebra [CommSemiring R] [Algebra R F] [Module R K] [IsScalarTower R F K] :
     Algebra R (CrossProductAlgebra f) := by
   refine .ofModule ?_ ?_ <;> intros <;> ext <;> simp
