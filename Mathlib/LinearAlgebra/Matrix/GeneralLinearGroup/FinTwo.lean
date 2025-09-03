@@ -123,13 +123,13 @@ namespace GeneralLinearGroup
 variable {R K : Type*} [CommRing R] [Field K]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
-@[reducible] def IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
+abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
 
 /-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
-@[reducible] def IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
+abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
 
 /-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
-@[reducible] def IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
+abbrev IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
 
 /-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
 
