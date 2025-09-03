@@ -715,8 +715,8 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
     { hom := f.hom
       w := by --sorry --by rintro (_ | _) <;> simp
         rintro (_ | _)
-        { simp }
-        { simp } }
+        · simp
+        · simp }
 
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
