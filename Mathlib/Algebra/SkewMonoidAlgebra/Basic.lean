@@ -26,7 +26,7 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 ## TODO
-- lifting lemmas (see #10541)
+- Define update and delete for skew monoids algebras
 -/
 
 
