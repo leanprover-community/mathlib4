@@ -84,9 +84,10 @@ theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} 
   simp_rw [div_mul_cancel_of_invertible, l1, l2, ← mul_sum, sum_add_distrib]
   let K := N - 1 -- We'll use an induction, so use K to allow us to start from 0, not 1.
   have : ∑ x ∈ range (K + 1), f (a + x * h) = f a + ∑ x ∈ range K, f (a + (x + 1) * h) := by
-    induction' K with k hk
-    · simp
-    · rw [sum_range_succ (n := k), sum_range_succ (n := k + 1), hk, add_assoc]
+    induction K with
+    | zero => simp
+    | succ k hk =>
+      rw [sum_range_succ (n := k), sum_range_succ (n := k + 1), hk, add_assoc]
       norm_cast
   rw [(Nat.sub_eq_iff_eq_add N_nonzero).mp rfl, add_tsub_cancel_right, this,
     sum_range_succ]
