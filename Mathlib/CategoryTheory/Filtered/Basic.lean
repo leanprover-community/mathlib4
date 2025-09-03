@@ -206,9 +206,10 @@ variable [IsFiltered C]
 -/
 theorem sup_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (X ⟶ S) := by
   classical
-  induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsFiltered.nonempty, by simp⟩
-  · obtain ⟨S', w'⟩ := h
+  induction O using Finset.induction with
+  | empty => exact ⟨Classical.choice IsFiltered.nonempty, by simp⟩
+  | insert X O' nm h =>
+    obtain ⟨S', w'⟩ := h
     use max X S'
     rintro Y mY
     obtain rfl | h := eq_or_ne Y X
@@ -228,10 +229,12 @@ theorem sup_exists :
         (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
           f ≫ T mY = T mX := by
   classical
-  induction' H using Finset.induction with h' H' nmf h''
-  · obtain ⟨S, f⟩ := sup_objs_exists O
+  induction H using Finset.induction with
+  | empty =>
+    obtain ⟨S, f⟩ := sup_objs_exists O
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
-  · obtain ⟨X, Y, mX, mY, f⟩ := h'
+  | insert h' H' nmf h'' =>
+    obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
     refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), ?_⟩
     intro X' Y' mX' mY' f' mf'
@@ -660,9 +663,10 @@ variable [IsCofiltered C]
 -/
 theorem inf_objs_exists (O : Finset C) : ∃ S : C, ∀ {X}, X ∈ O → Nonempty (S ⟶ X) := by
   classical
-  induction' O using Finset.induction with X O' nm h
-  · exact ⟨Classical.choice IsCofiltered.nonempty, by simp⟩
-  · obtain ⟨S', w'⟩ := h
+  induction O using Finset.induction with
+  | empty => exact ⟨Classical.choice IsCofiltered.nonempty, by simp⟩
+  | insert X O' nm h =>
+    obtain ⟨S', w'⟩ := h
     use min X S'
     rintro Y mY
     obtain rfl | h := eq_or_ne Y X
@@ -682,10 +686,12 @@ theorem inf_exists :
         (⟨X, Y, mX, mY, f⟩ : Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H →
           T mX ≫ f = T mY := by
   classical
-  induction' H using Finset.induction with h' H' nmf h''
-  · obtain ⟨S, f⟩ := inf_objs_exists O
+  induction H using Finset.induction with
+  | empty =>
+    obtain ⟨S, f⟩ := inf_objs_exists O
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
-  · obtain ⟨X, Y, mX, mY, f⟩ := h'
+  | insert h' H' nmf h'' =>
+    obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
     refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, ?_⟩
     intro X' Y' mX' mY' f' mf'

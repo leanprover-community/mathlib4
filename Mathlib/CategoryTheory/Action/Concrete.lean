@@ -123,7 +123,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
       simpa [mul_assoc] using Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
     comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
-      induction' x using Quotient.inductionOn with x
+      induction x using Quotient.inductionOn with | _ x
       simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
       change Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
       simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
@@ -132,12 +132,12 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   map_one' := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with x
+    induction x using Quotient.inductionOn
     simp
   map_mul' σ τ := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with x
+    induction x using Quotient.inductionOn with | _ x
     change ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
     rw [mul_inv_rev, mul_assoc]
 
@@ -148,7 +148,7 @@ variable {N} in
 lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
   apply Action.hom_ext
   ext (x : G ⧸ N)
-  induction' x using Quotient.inductionOn with μ
+  induction x using Quotient.inductionOn
   exact Quotient.sound ((QuotientGroup.leftRel_apply).mpr <| by simpa)
 
 /-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
@@ -169,7 +169,7 @@ def quotientToQuotientOfLE [Fintype (G ⧸ H)] (h : N ≤ H) : (G ⧸ₐ N) ⟶ 
     (QuotientGroup.leftRel_apply).mpr (h <| (QuotientGroup.leftRel_apply).mp hab)
   comm g := by
     ext (x : G ⧸ N)
-    induction' x using Quotient.inductionOn with μ
+    induction x using Quotient.inductionOn
     rfl
 
 @[simp]

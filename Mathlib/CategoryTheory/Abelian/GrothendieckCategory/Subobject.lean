@@ -62,8 +62,8 @@ lemma subobjectMk_of_isColimit_eq_iSup :
   apply le_antisymm
   · rw [le_iSup_iff]
     intro s H
-    induction' s using Subobject.ind with Z g _
-    let c' : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _) := Cocone.mk Z
+    induction s using Subobject.ind with | _ g
+    let c' : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _) := Cocone.mk _
       { app j := Subobject.ofMkLEMk _ _ (H j)
         naturality j j' f := by
           dsimp
