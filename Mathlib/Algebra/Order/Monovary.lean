@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Order.Monotone.Monovary
 
 /-!
@@ -16,7 +16,7 @@ of functions.
 
 ## See also
 
-`Algebra.Order.Rearrangement` for the n-ary rearrangement inequality
+`Mathlib.Algebra.Order.Rearrangement` for the n-ary rearrangement inequality
 -/
 
 variable {ι α β : Type*}

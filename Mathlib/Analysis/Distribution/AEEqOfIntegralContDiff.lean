@@ -86,14 +86,14 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
           rw [Real.norm_of_nonneg this.1]
           exact this.2
         exact mul_le_of_le_one_left (norm_nonneg _) this
-      · have : g n x = 0 := by rw [← nmem_support, g_supp]; contrapose! hxK; exact vK n hxK
+      · have : g n x = 0 := by rw [← notMem_support, g_supp]; contrapose! hxK; exact vK n hxK
         simp [this]
     have D : ∀ᵐ x ∂μ, Tendsto (fun n => g n x • f x) atTop (𝓝 (s.indicator f x)) := by
       filter_upwards with x
       by_cases hxs : x ∈ s
       · have : ∀ n, g n x = 1 := fun n ↦ hg n x hxs
         simp [this, indicator_of_mem hxs f]
-      · simp_rw [indicator_of_not_mem hxs f]
+      · simp_rw [indicator_of_notMem hxs f]
         apply tendsto_const_nhds.congr'
         suffices H : ∀ᶠ n in atTop, g n x = 0 by
           filter_upwards [H] with n hn using by simp [hn]
@@ -101,7 +101,7 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
           rw [← hs.isClosed.closure_eq, closure_eq_iInter_thickening s] at hxs
           simpa using hxs
         filter_upwards [(tendsto_order.1 u_lim).2 _ εpos] with n hn
-        rw [← nmem_support, g_supp]
+        rw [← notMem_support, g_supp]
         contrapose! hε
         exact thickening_mono hn.le s hε
     exact tendsto_integral_of_dominated_convergence bound A B C D

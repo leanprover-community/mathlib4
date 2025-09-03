@@ -173,10 +173,6 @@ lemma posPart_eq_self (a : A) : a⁺ = a ↔ 0 ≤ a := by
   refine cfcₙ_congr (fun x hx ↦ ?_)
   simpa [_root_.posPart_def] using quasispectrum_nonneg_of_nonneg a ha x hx
 
-@[deprecated posPart_eq_self (since := "2024-11-18")]
-lemma eq_posPart_iff (a : A) : a = a⁺ ↔ 0 ≤ a := by
-  rw [eq_comm, posPart_eq_self]
-
 lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     a⁻ = 0 ↔ 0 ≤ a := by
   rw [← posPart_eq_self, eq_comm (b := a)]
@@ -195,10 +191,6 @@ lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
     spectrum.neg_eq, ← Unitization.inr_neg, ← Unitization.quasispectrum_eq_spectrum_inr ℝ] at hx
   rw [← neg_eq_iff_eq_neg, eq_comm]
   simpa using quasispectrum_nonneg_of_nonneg _ ha _ hx
-
-@[deprecated negPart_eq_neg (since := "2024-11-18")]
-lemma eq_negPart_iff (a : A) : a = -a⁻ ↔ a ≤ 0 := by
-  rw [← neg_inj, neg_neg, eq_comm, negPart_eq_neg]
 
 lemma posPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     a⁺ = 0 ↔ a ≤ 0 := by
@@ -238,8 +230,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
   have hs : CompactSpace s := by
     refine isCompact_iff_compactSpace.mp <| (IsCompact.union ?_ ?_).union ?_
     all_goals exact isCompact_quasispectrum _
-  obtain ⟨has, hbs, hcs⟩ : σₙ ℝ a ⊆ s ∧ σₙ ℝ b ⊆ s ∧ σₙ ℝ (-c) ⊆ s := by
-    refine ⟨?_, ?_, ?_⟩; all_goals intro; aesop
+  obtain ⟨has, hbs, hcs⟩ : σₙ ℝ a ⊆ s ∧ σₙ ℝ b ⊆ s ∧ σₙ ℝ (-c) ⊆ s := by grind
   let zero : Zero s := ⟨0, by aesop⟩
   have s0 : (0 : s) = (0 : ℝ) := rfl
   /- The continuous functional calculi for functions `f g : C(s, ℝ)₀` applied to `b` and `(-c)`
@@ -304,7 +295,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     _ = a⁺ := by
       refine cfcₙ_congr fun x hx ↦ ?_
       lift x to σₙ ℝ a using hx
-      simp [zero, Subtype.val_injective.extend_apply, f]
+      simp [zero, f]
 
 end CFC
 
@@ -358,7 +349,6 @@ section SpanNonneg
 variable {A : Type*} [NonUnitalRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 variable [StarRing A] [TopologicalSpace A] [StarModule ℂ A]
 variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [PartialOrder A] [StarOrderedRing A]
 
 open Submodule Complex
 open scoped ComplexStarModule
@@ -367,6 +357,8 @@ lemma CStarAlgebra.linear_combination_nonneg (x : A) :
     ((ℜ x : A)⁺ - (ℜ x : A)⁻) + (I • (ℑ x : A)⁺ - I • (ℑ x : A)⁻) = x := by
   rw [CFC.posPart_sub_negPart _ (ℜ x).2, ← smul_sub, CFC.posPart_sub_negPart _ (ℑ x).2,
     realPart_add_I_smul_imaginaryPart x]
+
+variable [PartialOrder A] [StarOrderedRing A]
 
 /-- A C⋆-algebra is spanned by its nonnegative elements. -/
 lemma CStarAlgebra.span_nonneg : Submodule.span ℂ {a : A | 0 ≤ a} = ⊤ := by

@@ -68,14 +68,14 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
-instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace (Spec (.of R)) :=
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace Spec(R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
 nonrec lemma LocallyOfFiniteType.jacobsonSpace
-  (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
+    (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
   wlog hY : ∃ S, Y = Spec S
   · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullbackCover f)).jacobsonSpace_iff]
     intro i
@@ -84,8 +84,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
     have inst : JacobsonSpace (Y.affineCover.obj i) :=
       .of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
-    let e := Homeomorph.ofIsEmbedding _
-      ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding
+    let e := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.isEmbedding.toHomeomorph
     have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨R, rfl⟩ := hY
@@ -94,7 +93,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
     intro i
     have := this _ (X.affineCover.map i ≫ f) ⟨_, rfl⟩
-    let e := Homeomorph.ofIsEmbedding _ (X.affineCover.map i).isOpenEmbedding.isEmbedding
+    let e := (X.affineCover.map i).isOpenEmbedding.isEmbedding.toHomeomorph
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f

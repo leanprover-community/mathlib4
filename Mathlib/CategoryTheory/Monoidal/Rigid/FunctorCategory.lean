@@ -57,12 +57,10 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
     { evaluation' :=
         { app := fun _ => ε_ _ _
           naturality := fun X Y f => by
-            dsimp
             simp [tensorHom_def, leftAdjointMate_comp_evaluation] }
       coevaluation' :=
         { app := fun _ => η_ _ _
           naturality := fun X Y f => by
-            dsimp
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where

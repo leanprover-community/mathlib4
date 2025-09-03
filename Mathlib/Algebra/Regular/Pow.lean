@@ -11,7 +11,7 @@ import Mathlib.Algebra.Regular.Basic
 
 ## TODO
 
-Move to `Mathlib.Algebra.BigOperators.Group.Finset.Basic`?
+Move to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`?
 -/
 
 

@@ -43,7 +43,7 @@ namespace Ideal
 variable [Semiring α] (I : Ideal α) {a b : α}
 
 /-- A left ideal `I : Ideal R` is two-sided if it is also a right ideal. -/
-class IsTwoSided : Prop where
+@[mk_iff] class IsTwoSided : Prop where
   mul_mem_of_left {a : α} (b : α) : a ∈ I → a * b ∈ I
 
 protected theorem zero_mem : (0 : α) ∈ I :=

@@ -31,7 +31,7 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
 * `Polynomial.aeval_iterate_derivative_of_lt`, `Polynomial.aeval_iterate_derivative_self`,
   `Polynomial.aeval_iterate_derivative_of_ge`: applying `Polynomial.aeval` to iterated derivatives
 * `Polynomial.aeval_sumIDeriv`, `Polynomial.aeval_sumIDeriv_of_pos`: applying `Polynomial.aeval` to
-   `Polynomial.sumIDeriv`
+  `Polynomial.sumIDeriv`
 
 -/
 
@@ -243,10 +243,10 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     · rw [smul_sum, sum_congr rfl]
       intro k hk
       exact hc k (mem_Ico.mp hk).1 r
-  · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_not_mem]
+  · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem]
     intro x hx
     rw [mem_inter, mem_Ico, mem_Ico] at hx
-    exact hx.1.2.not_le hx.2.1
+    exact hx.1.2.not_ge hx.2.1
 
 end CommSemiring
 

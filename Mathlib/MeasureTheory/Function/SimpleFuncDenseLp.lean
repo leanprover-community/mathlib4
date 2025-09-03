@@ -212,8 +212,6 @@ theorem tendsto_approxOn_L1_enorm [OpensMeasurableSpace E] {f : β → E} (hf : 
     tendsto_approxOn_Lp_eLpNorm hf h₀ one_ne_top hμ
       (by simpa [eLpNorm_one_eq_lintegral_enorm] using hi)
 
-@[deprecated (since := "2025-01-21")] alias tendsto_approxOn_L1_nnnorm := tendsto_approxOn_L1_enorm
-
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by
@@ -227,9 +225,6 @@ theorem tendsto_approxOn_range_L1_enorm [OpensMeasurableSpace E] {f : β → E} 
   apply tendsto_approxOn_L1_enorm fmeas
   · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
-
-@[deprecated (since := "2025-01-21")]
-alias tendsto_approxOn_range_L1_nnnorm := tendsto_approxOn_range_L1_enorm
 
 theorem integrable_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     [SeparableSpace (range f ∪ {0} : Set E)] (hf : Integrable f μ) (n : ℕ) :
@@ -382,19 +377,19 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 variable (E)
 
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
-    function. -/
+function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where
   carrier := { f : Lp E p μ | ∃ s : α →ₛ E, (AEEqFun.mk s s.aestronglyMeasurable : α →ₘ[μ] E) = f }
   zero_mem' := ⟨0, rfl⟩
   add_mem' := by
     rintro f g ⟨s, hs⟩ ⟨t, ht⟩
     use s + t
-    simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add, AEEqFun.mk_eq_mk,
+    simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add,
       SimpleFunc.coe_add]
   neg_mem' := by
     rintro f ⟨s, hs⟩
     use -s
-    simp only [← hs, AEEqFun.neg_mk, SimpleFunc.coe_neg, AEEqFun.mk_eq_mk, AddSubgroup.coe_neg]
+    simp only [← hs, AEEqFun.neg_mk, SimpleFunc.coe_neg, AddSubgroup.coe_neg]
 
 variable {E p μ}
 
@@ -657,13 +652,8 @@ protected theorem uniformContinuous : UniformContinuous ((↑) : Lp.simpleFunc E
 lemma isUniformEmbedding : IsUniformEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   isUniformEmbedding_comap Subtype.val_injective
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 theorem isUniformInducing : IsUniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   simpleFunc.isUniformEmbedding.isUniformInducing
-
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
 
 lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
     IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
@@ -709,12 +699,13 @@ end CoeToLp
 
 section Order
 
-variable {G : Type*} [NormedLatticeAddCommGroup G]
+variable {G : Type*} [NormedAddCommGroup G]
 
-theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
+theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instAddLeftMono : AddLeftMono (Lp.simpleFunc G p μ) := by
+instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
+    AddLeftMono (Lp.simpleFunc G p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   exact add_le_add_left hg₁₂ f
 
@@ -725,6 +716,8 @@ theorem coeFn_zero : (0 : Lp.simpleFunc G p μ) =ᵐ[μ] (0 : α → G) :=
 
 variable {p μ G}
 
+variable [PartialOrder G]
+
 theorem coeFn_nonneg (f : Lp.simpleFunc G p μ) : (0 : α → G) ≤ᵐ[μ] f ↔ 0 ≤ f := by
   rw [← Subtype.coe_le_coe, Lp.coeFn_nonneg, AddSubmonoid.coe_zero]
 
@@ -732,8 +725,11 @@ theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f)
     ∃ f' : α →ₛ G, 0 ≤ f' ∧ f =ᵐ[μ] f' := by
   rcases f with ⟨⟨f, hp⟩, g, (rfl : _ = f)⟩
   change 0 ≤ᵐ[μ] g at hf
-  refine ⟨g ⊔ 0, le_sup_right, (AEEqFun.coeFn_mk _ _).trans ?_⟩
-  exact hf.mono fun x hx ↦ (sup_of_le_left hx).symm
+  classical
+  refine ⟨g.map ({x : G | 0 ≤ x}.piecewise id 0), fun x ↦ ?_, (AEEqFun.coeFn_mk _ _).trans ?_⟩
+  · simpa using Set.indicator_apply_nonneg id
+  · filter_upwards [hf] with x (hx : 0 ≤ g x)
+    simpa using Set.indicator_of_mem hx id |>.symm
 
 variable (p μ G)
 
@@ -747,7 +743,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   rw [mem_closure_iff_seq_limit]
   have hg_memLp : MemLp (g : α → G) p μ := Lp.memLp (g : Lp G p μ)
   have zero_mem : (0 : G) ∈ (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } := by
-    simp only [union_singleton, mem_inter_iff, mem_insert_iff, eq_self_iff_true, true_or,
+    simp only [union_singleton, mem_inter_iff, mem_insert_iff, true_or,
       mem_setOf_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace
@@ -849,7 +845,7 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : 
     apply SimpleFunc.induction
     · intro c s hs h
       by_cases hc : c = 0
-      · subst hc; convert indicator 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
+      · subst hc; convert indicator 0 MeasurableSet.empty (by simp) using 1; ext; simp
       have hp_pos : p ≠ 0 := (lt_of_lt_of_le zero_lt_one _i.elim).ne'
       exact indicator c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg

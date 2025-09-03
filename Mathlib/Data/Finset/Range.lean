@@ -14,7 +14,7 @@ import Mathlib.Order.Interval.Set.Defs
 
 ### Finset constructions
 
-* `Finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ... , n - 1} ⊆ ℕ`.
+* `Finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ..., n - 1} ⊆ ℕ`.
   This convention is consistent with other languages and normalizes `card (range n) = n`.
   Beware, `n` is not in `range n`.
 
@@ -53,7 +53,7 @@ def range (n : ℕ) : Finset ℕ :=
 theorem range_val (n : ℕ) : (range n).1 = Multiset.range n :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_range : m ∈ range n ↔ m < n :=
   Multiset.mem_range
 
@@ -70,13 +70,15 @@ theorem range_one : range 1 = {0} :=
   rfl
 
 theorem range_succ : range (succ n) = insert n (range n) :=
-  eq_of_veq <| (Multiset.range_succ n).trans <| (ndinsert_of_not_mem not_mem_range_self).symm
+  eq_of_veq <| (Multiset.range_succ n).trans <| (ndinsert_of_notMem notMem_range_self).symm
 
 theorem range_add_one : range (n + 1) = insert n (range n) :=
   range_succ
 
-theorem not_mem_range_self : n ∉ range n :=
-  Multiset.not_mem_range_self
+theorem notMem_range_self : n ∉ range n :=
+  Multiset.notMem_range_self
+
+@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   Multiset.self_mem_range_succ n

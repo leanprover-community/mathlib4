@@ -15,7 +15,7 @@ numbers. More generally, we give formulae for any Hurwitz zeta functions at any 
 integer in terms of Bernoulli polynomials.
 
 (Note that most of the actual work for these formulae is done elsewhere, in
-`Mathlib.NumberTheory.ZetaValues`. This file has only those results which really need the
+`Mathlib/NumberTheory/ZetaValues.lean`. This file has only those results which really need the
 definition of Hurwitz zeta and related functions, rather than working directly with the defining
 sums in the convergence range.)
 
@@ -216,8 +216,8 @@ theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
   convert congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
-  · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by norm_num,
-      zeta_nat_eq_tsum_of_gt_one (by norm_num : 1 < 4)]
+  · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by simp,
+      zeta_nat_eq_tsum_of_gt_one (by simp : 1 < 4)]
     simp only [push_cast]
   · norm_cast
 

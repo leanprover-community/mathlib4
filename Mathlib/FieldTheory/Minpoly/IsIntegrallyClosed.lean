@@ -14,15 +14,15 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 ## Main results
 
- * `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
-    polynomial over the ring is the same as the minimal polynomial over the fraction field.
+* `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
+  polynomial over the ring is the same as the minimal polynomial over the fraction field.
 
- * `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
-    any primitive polynomial that has the integral element as root.
+* `minpoly.isIntegrallyClosed_dvd`: For integrally closed domains, the minimal polynomial divides
+  any primitive polynomial that has the integral element as root.
 
- * `IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
-    uniquely characterized by its defining property: if there is another monic polynomial of minimal
-    degree that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
+* `IsIntegrallyClosed.Minpoly.unique`: The minimal polynomial of an element `x` is uniquely
+  characterized by its defining property: if there is another monic polynomial of minimal degree
+  that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
 
@@ -118,7 +118,7 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_lt ?_
+  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_gt ?_
   refine degree_sub_lt ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
@@ -141,14 +141,20 @@ variable {x : S}
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
-  rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
-    isIntegrallyClosed_dvd_iff hx, ← AdjoinRoot.mk_eq_zero] at hP₁
+  simp_all [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx]
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
-@[simps!]
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
   AlgEquiv.ofBijective (Minpoly.toAdjoin R x)
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
+
+@[simp]
+theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) : equivAdjoin hx = Minpoly.toAdjoin R x := rfl
+
+@[simp]
+theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.toAdjoin R x := rfl
+
+@[deprecated (since := "2025-07-21")] alias equivAdjoin_apply := coe_equivAdjoin
 
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/

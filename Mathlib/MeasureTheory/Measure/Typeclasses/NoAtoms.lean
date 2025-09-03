@@ -54,13 +54,16 @@ theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [N
   rw [← biUnion_of_singleton s, measure_biUnion_null_iff h]
   simp
 
-theorem _root_.Set.Countable.ae_not_mem (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
+theorem _root_.Set.Countable.ae_notMem (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     ∀ᵐ x ∂μ, x ∉ s := by
   simpa only [ae_iff, Classical.not_not] using h.measure_zero μ
 
+@[deprecated (since := "2025-05-23")]
+alias _root_.Set.Countable.ae_not_mem := _root_.Set.Countable.ae_notMem
+
 lemma _root_.Set.Countable.measure_restrict_compl (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
     μ.restrict sᶜ = μ :=
-  restrict_eq_self_of_ae_mem <| h.ae_not_mem μ
+  restrict_eq_self_of_ae_mem <| h.ae_notMem μ
 
 @[simp]
 lemma restrict_compl_singleton (a : α) : μ.restrict ({a}ᶜ) = μ :=
@@ -131,6 +134,7 @@ end
 
 open Interval
 
+open scoped Interval in
 theorem uIoc_ae_eq_interval [LinearOrder α] {a b : α} : Ι a b =ᵐ[μ] [[a, b]] :=
   Ioc_ae_eq_Icc
 

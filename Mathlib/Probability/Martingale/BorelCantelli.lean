@@ -87,7 +87,7 @@ theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → 
     (hπn : ∀ ω, π ω ≤ n) : stoppedValue (fun i => stoppedValue f (leastGE f r i)) π =
       stoppedValue (stoppedProcess f (leastGE f r n)) π := by
   ext1 ω
-  simp (config := { unfoldPartialApp := true }) only [stoppedProcess, stoppedValue]
+  simp +unfoldPartialApp only [stoppedProcess, stoppedValue]
   rw [leastGE_eq_min _ _ _ hπn]
 
 theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
@@ -118,8 +118,8 @@ theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     exact add_nonneg hr R.coe_nonneg
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero heq
     rw [hk, add_comm, ← sub_le_iff_le_add]
-    have := not_mem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
-    simp only [Set.mem_union, Set.mem_Iic, Set.mem_Ici, not_or, not_le] at this
+    have := notMem_of_lt_hitting (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
+    simp only [Set.mem_Ici, not_le] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
 
 theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -158,7 +158,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     intro n
     rw [leastGE]; unfold hitting; rw [stoppedValue]
     rw [if_neg]
-    simp only [Set.mem_Icc, Set.mem_union, Set.mem_Ici]
+    simp only [Set.mem_Icc, Set.mem_Ici]
     push_neg
     exact fun j _ => hib j
   simp only [← heq, hω i]
@@ -249,13 +249,13 @@ theorem Martingale.ae_not_tendsto_atTop_atTop [IsFiniteMeasure μ] (hf : Marting
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ¬Tendsto (fun n => f n ω) atTop atTop := by
   filter_upwards [hf.bddAbove_range_iff_bddBelow_range hbdd] with ω hω htop using
-    unbounded_of_tendsto_atTop htop (hω.2 <| bddBelow_range_of_tendsto_atTop_atTop htop)
+    not_bddAbove_of_tendsto_atTop htop (hω.2 <| bddBelow_range_of_tendsto_atTop_atTop htop)
 
 theorem Martingale.ae_not_tendsto_atTop_atBot [IsFiniteMeasure μ] (hf : Martingale f ℱ μ)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, ¬Tendsto (fun n => f n ω) atTop atBot := by
   filter_upwards [hf.bddAbove_range_iff_bddBelow_range hbdd] with ω hω htop using
-    unbounded_of_tendsto_atBot htop (hω.1 <| bddAbove_range_of_tendsto_atTop_atBot htop)
+    not_bddBelow_of_tendsto_atBot htop (hω.1 <| bddAbove_range_of_tendsto_atTop_atBot htop)
 
 namespace BorelCantelli
 
@@ -269,7 +269,7 @@ variable {s : ℕ → Set Ω}
 theorem process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
 
 theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hk =>
+  Finset.stronglyMeasurable_sum _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :

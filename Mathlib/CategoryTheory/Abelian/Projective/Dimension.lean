@@ -3,8 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 
 /-!
 # Projective dimension
@@ -89,6 +88,13 @@ lemma Limits.IsZero.hasProjectiveDimensionLT_zero (hX : IsZero X) :
 instance : HasProjectiveDimensionLT (0 : C) 0 :=
   (isZero_zero C).hasProjectiveDimensionLT_zero
 
+lemma isZero_of_hasProjectiveDimensionLT_zero [HasProjectiveDimensionLT X 0] : IsZero X := by
+  letI := HasExt.standard C
+  rw [IsZero.iff_id_eq_zero]
+  apply Ext.homEquiv₀.symm.injective
+  simpa only [Ext.homEquiv₀_symm_apply, Ext.mk₀_zero]
+    using Abelian.Ext.eq_zero_of_hasProjectiveDimensionLT _ 0 (by rfl)
+
 lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
     [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X m := by
@@ -108,6 +114,14 @@ instance [HasProjectiveDimensionLT X n] (k : ℕ) :
 instance [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X n.succ :=
   inferInstanceAs (HasProjectiveDimensionLT X (n + 1))
+
+instance [Projective X] : HasProjectiveDimensionLT X 1 := by
+  letI := HasExt.standard C
+  rw [hasProjectiveDimensionLT_iff]
+  intro i hi Y e
+  obtain _ | i := i
+  · simp at hi
+  · exact e.eq_zero_of_projective
 
 end
 
@@ -169,9 +183,7 @@ lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
     (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by omega))
   rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by omega), Ext.comp_zero]
 
--- When we know `HasProjectiveDimensionLT S.X₂ 1` is equivalent to `Projective S.X₂`,
--- the assumption `h₂` can be changed to `h₂ : Projective S.X₂`.
-lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : HasProjectiveDimensionLT S.X₂ 1) :
+lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Projective S.X₂) :
     HasProjectiveDimensionLT S.X₃ (n + 2) ↔ HasProjectiveDimensionLT S.X₁ (n + 1) :=
   ⟨fun _ ↦ hS.hasProjectiveDimensionLT_X₁ (n + 1) inferInstance inferInstance,
     fun _ ↦ hS.hasProjectiveDimensionLT_X₃ (n + 1) inferInstance inferInstance⟩

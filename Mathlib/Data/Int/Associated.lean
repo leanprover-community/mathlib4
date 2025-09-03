@@ -12,7 +12,7 @@ This file contains some results on equality up to units in the integers.
 
 ## Main results
 
- * `Int.natAbs_eq_iff_associated`: the absolute value is equal iff integers are associated
+* `Int.natAbs_eq_iff_associated`: the absolute value is equal iff integers are associated
 -/
 
 

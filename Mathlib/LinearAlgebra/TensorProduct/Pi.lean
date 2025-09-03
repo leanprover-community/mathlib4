@@ -22,7 +22,7 @@ and it is packaged as `TensorProduct.piRight`. Also a special case for when `M�
 
 ## Notes
 
-See `Mathlib.LinearAlgebra.TensorProduct.Prod` for binary products.
+See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
 
 -/
 
@@ -39,16 +39,16 @@ section
 
 variable {ι} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-private noncomputable def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
+private def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
   toFun n := LinearMap.pi (fun i ↦ mk R N (M i) n ∘ₗ LinearMap.proj i)
   map_add' _ _ := by
     ext
-    simp [add_tmul]
+    simp
   map_smul' _ _ := rfl
 
 /-- For any `R`-module `N`, index type `ι` and family of `R`-modules `Mᵢ`, there is a natural
 linear map `N ⊗[R] (∀ i, M i) →ₗ ∀ i, N ⊗[R] M i`. This map is an isomorphism if `ι` is finite. -/
-noncomputable def piRightHom : N ⊗[R] (∀ i, M i) →ₗ[S] ∀ i, N ⊗[R] M i :=
+def piRightHom : N ⊗[R] (∀ i, M i) →ₗ[S] ∀ i, N ⊗[R] M i :=
   AlgebraTensorModule.lift <| piRightHomBil R S N M
 
 @[simp]
@@ -58,7 +58,7 @@ lemma piRightHom_tmul (x : N) (f : ∀ i, M i) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private noncomputable
+private
 def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
   LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S <| fun i ↦
     AlgebraTensorModule.map LinearMap.id (single R M i)
@@ -83,7 +83,7 @@ private lemma piRightInv_single (x : N) (i : ι) (m : M i) :
   simp
 
 /-- Tensor product commutes with finite products on the right. -/
-noncomputable def piRight : N ⊗[R] (∀ i, M i) ≃ₗ[S] ∀ i, N ⊗[R] M i :=
+def piRight : N ⊗[R] (∀ i, M i) ≃ₗ[S] ∀ i, N ⊗[R] M i :=
   LinearEquiv.ofLinear
     (piRightHom R S N M)
     (piRightInv R S N M)
@@ -121,7 +121,7 @@ private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) wh
 
 /-- For any `R`-module `N` and index type `ι`, there is a natural
 linear map `N ⊗[R] (ι → R) →ₗ (ι → N)`. This map is an isomorphism if `ι` is finite. -/
-noncomputable def piScalarRightHom : N ⊗[R] (ι → R) →ₗ[S] (ι → N) :=
+def piScalarRightHom : N ⊗[R] (ι → R) →ₗ[S] (ι → N) :=
   AlgebraTensorModule.lift <| piScalarRightHomBil R S N ι
 
 @[simp]
@@ -132,7 +132,7 @@ lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private noncomputable
+private
 def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
   LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1
@@ -147,7 +147,7 @@ private lemma piScalarRightInv_single (x : N) (i : ι) :
 
 /-- For any `R`-module `N` and finite index type `ι`, `N ⊗[R] (ι → R)` is canonically
 isomorphic to `ι → N`. -/
-noncomputable def piScalarRight : N ⊗[R] (ι → R) ≃ₗ[S] (ι → N) :=
+def piScalarRight : N ⊗[R] (ι → R) ≃ₗ[S] (ι → N) :=
   LinearEquiv.ofLinear
     (piScalarRightHom R S N ι)
     (piScalarRightInv R S N ι)

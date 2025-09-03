@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Will Sawin
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -85,11 +86,11 @@ Now say `φ : A →ₗ[R] B` is an `R`-linear map between `R`-modules equipped w
 the module topology.
 
 * `IsModuleTopology.continuous_of_linearMap φ` is the proof that `φ` is automatically
-continuous.
+  continuous.
 * `IsModuleTopology.isQuotientMap_of_surjective (hφ : Function.Surjective φ)`
-is the proof that if furthermore `φ` is surjective then it is a quotient map,
-that is, the module topology on `B` is the pushforward of the module topology
-on `A`.
+  is the proof that if furthermore `φ` is surjective then it is a quotient map,
+  that is, the module topology on `B` is the pushforward of the module topology
+  on `A`.
 
 Now say `ψ : A →ₗ[R] B →ₗ[R] C` is an `R`-bilinear map between `R`-modules equipped with
 the module topology.
@@ -134,6 +135,14 @@ theorem eq_moduleTopology [τA : TopologicalSpace A] [IsModuleTopology R A] :
     τA = moduleTopology R A :=
   IsModuleTopology.eq_moduleTopology' (R := R) (A := A)
 
+/--
+Note that the topology isn't part of the discrimination key so this gets tried on every
+`IsModuleTopology` goal and hence the low priority.
+-/
+instance (priority := low) {R : Type*} [TopologicalSpace R] {A : Type*} [Add A] [SMul R A] :
+    letI := moduleTopology R A; IsModuleTopology R A :=
+  letI := moduleTopology R A; ⟨rfl⟩
+
 /-- Scalar multiplication `• : R × A → A` is continuous if `R` is a topological
 ring, and `A` is an `R` module with the module topology. -/
 theorem ModuleTopology.continuousSMul : @ContinuousSMul R A _ _ (moduleTopology R A) :=
@@ -154,7 +163,7 @@ theorem ModuleTopology.continuousAdd : @ContinuousAdd A (moduleTopology R A) _ :
 instance IsModuleTopology.toContinuousSMul [TopologicalSpace A] [IsModuleTopology R A] :
     ContinuousSMul R A := eq_moduleTopology R A ▸ ModuleTopology.continuousSMul R A
 
--- this can't be an instance because typclass inference can't be expected to find `R`.
+-- this can't be an instance because typeclass inference can't be expected to find `R`.
 theorem IsModuleTopology.toContinuousAdd [TopologicalSpace A] [IsModuleTopology R A] :
     ContinuousAdd A := eq_moduleTopology R A ▸ ModuleTopology.continuousAdd R A
 
@@ -205,7 +214,7 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     let h' : B →+ A := e.symm
     simp_rw [e.toHomeomorph.symm.isInducing.1, eq_moduleTopology R A, moduleTopology, induced_sInf]
     apply congr_arg
-    ext τ -- from this point on the definitions of `g`, `g'` etc above don't work without `@`.
+    ext τ -- from this point on the definitions of `g`, `g'` etc. above don't work without `@`.
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
@@ -406,12 +415,38 @@ theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology
       rw [← (IsOpenQuotientMap.prodMap hφo hφo).continuous_comp_iff, hφ2]
       exact Continuous.comp hφo.continuous hA
 
+/-- A linear surjection between modules with the module topology is an open quotient map. -/
+theorem isOpenQuotientMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    IsOpenQuotientMap φ :=
+  have := toContinuousAdd R A
+  AddMonoidHom.isOpenQuotientMap_of_isQuotientMap <| isQuotientMap_of_surjective hφ
+
+omit [IsModuleTopology R A] in
+/-- A linear surjection to a module with the module topology is open. -/
+theorem isOpenMap_of_surjective [TopologicalSpace B] [IsModuleTopology R B]
+    [ContinuousAdd A] [ContinuousSMul R A] {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    IsOpenMap φ := by
+  have hOpenMap :=
+    letI : TopologicalSpace A := moduleTopology R A
+    have : IsModuleTopology R A := ⟨rfl⟩
+    isOpenQuotientMap_of_surjective hφ |>.isOpenMap
+  intro U hU
+  exact hOpenMap U <| moduleTopology_le R A U hU
+
 lemma _root_.ModuleTopology.eq_coinduced_of_surjective
     {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     moduleTopology R B = TopologicalSpace.coinduced φ inferInstance := by
   letI : TopologicalSpace B := moduleTopology R B
   haveI : IsModuleTopology R B := ⟨rfl⟩
   exact (isQuotientMap_of_surjective hφ).eq_coinduced
+
+instance instQuot (S : Submodule R A) : IsModuleTopology R (A ⧸ S) := by
+  constructor
+  have := toContinuousAdd R A
+  have quot := (Submodule.isOpenQuotientMap_mkQ S).isQuotientMap.eq_coinduced
+  have module := ModuleTopology.eq_coinduced_of_surjective <| Submodule.mkQ_surjective S
+  rw [quot, module]
 
 end surjection
 

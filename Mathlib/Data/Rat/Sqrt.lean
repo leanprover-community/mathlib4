@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Int.Sqrt
 

@@ -47,7 +47,7 @@ lemma mem_inf [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α} :
 
 end Finset
 
-open Finset Function
+open Finset
 
 theorem Finite.exists_max [Finite α] [Nonempty α] [LinearOrder β] (f : α → β) :
     ∃ x₀ : α, ∀ x, f x ≤ f x₀ := by

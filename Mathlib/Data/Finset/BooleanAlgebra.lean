@@ -104,7 +104,9 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 @[simp]
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
-theorem not_mem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
+theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
@@ -114,6 +116,12 @@ theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=
 @[simp] lemma compl_ssubset_compl : sᶜ ⊂ tᶜ ↔ t ⊂ s := @compl_lt_compl_iff_lt (Finset α) _ _ _
 
 lemma subset_compl_comm : s ⊆ tᶜ ↔ t ⊆ sᶜ := le_compl_iff_le_compl (α := Finset α)
+
+lemma subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
+  le_compl_iff_disjoint_right (α := Finset α)
+
+lemma subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
+  le_compl_iff_disjoint_left (α := Finset α)
 
 @[simp] lemma subset_compl_singleton : s ⊆ {a}ᶜ ↔ a ∉ s := by
   rw [subset_compl_comm, singleton_subset_iff, mem_compl]

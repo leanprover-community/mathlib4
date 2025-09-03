@@ -60,7 +60,7 @@ variable [RingHomIsometric σ₂₃]
 
 theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ} (h0 : 0 ≤ C)
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f‖ ≤ C :=
-  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
+  f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (by positivity) <| hC x
 
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
@@ -161,6 +161,8 @@ theorem flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f 
 theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ = ‖f‖ :=
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 
+@[simp]
+lemma flip_zero : flip (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) = 0 := rfl
 
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
@@ -300,7 +302,7 @@ variable (Eₗ) {𝕜 E Fₗ Gₗ}
 /-- Apply `L(x,-)` pointwise to bilinear maps, as a continuous bilinear map -/
 @[simps! apply]
 def precompR (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : E →L[𝕜] (Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ :=
-  (compL 𝕜 Eₗ Fₗ Gₗ).comp L
+  compL 𝕜 Eₗ Fₗ Gₗ ∘L L
 
 /-- Apply `L(-,y)` pointwise to bilinear maps, as a continuous bilinear map -/
 def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ :=
@@ -312,7 +314,7 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
+    _ ≤ 1 * ‖L‖ := by gcongr; apply norm_compL_le
     _ = ‖L‖ := by rw [one_mul]
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
@@ -342,6 +344,18 @@ theorem bilinearComp_apply (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' 
     (x : E') (y : F') : f.bilinearComp gE gF x y = f (gE x) (gF y) :=
   rfl
 
+@[simp]
+lemma bilinearComp_zero {gE : E' →SL[σ₁'] E} {gF : F' →SL[σ₂'] F} :
+    bilinearComp (0 : E →SL[σ₁₃] F →SL[σ₂₃] G) gE gF = 0 := rfl
+
+@[simp]
+lemma bilinearComp_zero_left {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gF : F' →SL[σ₂'] F} :
+    bilinearComp f (0 : E' →SL[σ₁'] E) gF = 0 := by ext; simp
+
+@[simp]
+lemma bilinearComp_zero_right {f : E →SL[σ₁₃] F →SL[σ₂₃] G} {gE : E' →SL[σ₁'] E} :
+    bilinearComp f gE (0 : F' →SL[σ₂'] F) = 0 := by ext; simp
+
 variable [RingHomIsometric σ₁₃] [RingHomIsometric σ₁'] [RingHomIsometric σ₂']
 
 /-- Derivative of a continuous bilinear map `f : E →L[𝕜] F →L[𝕜] G` interpreted as a map `E × F → G`
@@ -362,17 +376,17 @@ theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : F
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
 is the product of the norms. -/
 @[simp]
-theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
+theorem norm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
   refine le_antisymm ?_ ?_
-  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
+  · refine opNorm_le_bound _ (by positivity) fun x => ?_
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
+      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := by gcongr; apply le_opNorm
       _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
-  · obtain hf | hf := (norm_nonneg f).eq_or_gt
+  · obtain hf | hf := (norm_nonneg f).eq_or_lt'
     · simp [hf]
     · rw [← le_div_iff₀ hf]
-      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
+      refine opNorm_le_bound _ (by positivity) fun x => ?_
       rw [div_mul_eq_mul_div, le_div_iff₀ hf]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
@@ -382,13 +396,13 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
 /-- The non-negative norm of the tensor product of a scalar linear map and of an element of a normed
 space is the product of the non-negative norms. -/
 @[simp]
-theorem nnnorm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
+theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
   NNReal.eq <| c.norm_smulRight_apply f
 
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL (c : E →L[𝕜] 𝕜) (f : F) (x : E) = c x • f`. -/
-def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
+`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`. -/
+def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂
     { toFun := smulRightₗ
       map_add' := fun c₁ c₂ => by
@@ -404,7 +418,7 @@ def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] F�
 
 
 @[simp]
-theorem norm_smulRightL_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
+theorem norm_smulRightL_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
   norm_smulRight_apply c f
 
 end ContinuousLinearMap

@@ -22,15 +22,15 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
 
 ## Main definitions / results:
 
- * `Module.End.exists_isNilpotent_isSemisimple`: an endomorphism of a finite-dimensional vector
-   space over a perfect field may be written as a sum of nilpotent and semisimple endomorphisms.
-   Moreover these nilpotent and semisimple components are polynomial expressions in the original
-   endomorphism.
+* `Module.End.exists_isNilpotent_isSemisimple`: an endomorphism of a finite-dimensional vector
+  space over a perfect field may be written as a sum of nilpotent and semisimple endomorphisms.
+  Moreover these nilpotent and semisimple components are polynomial expressions in the original
+  endomorphism.
 
 ## TODO
 
- * Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphims is
-   semisimple, this will follow from `Module.End.eq_zero_of_isNilpotent_isSemisimple`).
+* Uniqueness of decomposition (once we prove that the sum of commuting semisimple endomorphisms is
+  semisimple, this will follow from `Module.End.eq_zero_of_isNilpotent_isSemisimple`).
 
 -/
 

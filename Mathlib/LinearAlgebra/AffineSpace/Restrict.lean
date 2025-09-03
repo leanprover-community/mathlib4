@@ -44,7 +44,7 @@ def AffineMap.restrict (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁} {F
     rw [← Submodule.map_le_iff_le_comap, ← AffineSubspace.map_direction]
     exact AffineSubspace.direction_le hEF
   · intro p v
-    simp only [Subtype.ext_iff, Subtype.coe_mk, AffineSubspace.coe_vadd]
+    simp only [Subtype.ext_iff, AffineSubspace.coe_vadd]
     apply AffineMap.map_vadd
 
 theorem AffineMap.restrict.coe_apply (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}
@@ -66,7 +66,7 @@ theorem AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.
     {E : AffineSubspace k P₁} {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F]
     (hEF : E.map φ ≤ F) : Function.Injective (AffineMap.restrict φ hEF) := by
   intro x y h
-  simp only [Subtype.ext_iff, Subtype.coe_mk, AffineMap.restrict.coe_apply] at h ⊢
+  simp only [Subtype.ext_iff, AffineMap.restrict.coe_apply] at h ⊢
   exact hφ h
 
 theorem AffineMap.restrict.surjective (φ : P₁ →ᵃ[k] P₂) {E : AffineSubspace k P₁}

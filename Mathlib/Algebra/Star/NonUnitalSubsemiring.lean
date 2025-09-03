@@ -15,7 +15,7 @@ In this file we define `NonUnitalStarSubsemiring`s and the usual operations on t
 
 ## Implementation
 
-This file is heavily inspired by `Mathlib.Algebra.Star.NonUnitalSubalgebra`.
+This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`.
 
 -/
 
@@ -46,11 +46,37 @@ section NonUnitalStarSubsemiring
 
 namespace NonUnitalStarSubsemiring
 
-variable {R : Type v} [NonUnitalNonAssocSemiring R] [StarRing R]
-
-instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
+instance instSetLike {R : Type v} [NonUnitalNonAssocSemiring R] [Star R] :
+    SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+
+initialize_simps_projections NonUnitalStarSubsemiring (carrier → coe, as_prefix coe)
+
+variable {R : Type v} [NonUnitalNonAssocSemiring R] [StarRing R]
+
+/-- The actual `NonUnitalStarSubsemiring` obtained from an element of a type satisfying
+`NonUnitalSubsemiringClass` and `StarMemClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] [SetLike S R]
+    [NonUnitalSubsemiringClass S R] [StarMemClass S R] (s : S) : NonUnitalStarSubsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  star_mem' := star_mem
+
+instance (priority := 100) : CanLift (Set R) (NonUnitalStarSubsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
+      ∀ {x}, x ∈ s → star x ∈ s)
+    where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2.1
+        star_mem' := h.2.2.2 },
+      rfl ⟩
 
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalStarSubsemiring R) R where
@@ -70,7 +96,7 @@ protected def copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) 
     NonUnitalStarSubsemiring R :=
   { S.toNonUnitalSubsemiring.copy s hs with
     star_mem' := fun {x} (hx : x ∈ s) => by
-      show star x ∈ s
+      change star x ∈ s
       rw [hs] at hx ⊢
       exact S.star_mem' hx }
 

@@ -42,13 +42,13 @@ theorem sSup_def {s : Set ℕ} (h : ∃ n, ∀ a ∈ s, a ≤ n) :
 theorem _root_.Set.Infinite.Nat.sSup_eq_zero {s : Set ℕ} (h : s.Infinite) : sSup s = 0 :=
   dif_neg fun ⟨n, hn⟩ ↦
     let ⟨k, hks, hk⟩ := h.exists_gt n
-    (hn k hks).not_lt hk
+    (hn k hks).not_gt hk
 
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   cases eq_empty_or_nonempty s with
   | inl h => subst h
-             simp only [or_true, eq_self_iff_true, iInf, InfSet.sInf,
+             simp only [or_true, InfSet.sInf,
                         mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
   | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
 
@@ -72,11 +72,13 @@ theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by
   rw [Nat.sInf_def h]
   exact Nat.find_spec h
 
-theorem not_mem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s := by
+theorem notMem_of_lt_sInf {s : Set ℕ} {m : ℕ} (hm : m < sInf s) : m ∉ s := by
   classical
   cases eq_empty_or_nonempty s with
-  | inl h => subst h; apply not_mem_empty
+  | inl h => subst h; apply notMem_empty
   | inr h => rw [Nat.sInf_def h] at hm; exact Nat.find_min h hm
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_sInf := notMem_of_lt_sInf
 
 protected theorem sInf_le {s : Set ℕ} {m : ℕ} (hm : m ∈ s) : sInf s ≤ m := by
   classical
@@ -133,7 +135,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       trivial
     csSup_of_not_bddAbove := by
       intro s hs
-      simp only [mem_univ, forall_true_left, sSup,
+      simp only [sSup,
         mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
       rw [dif_neg]
       · exact le_antisymm (zero_le _) (find_le trivial)
@@ -167,8 +169,8 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine
     le_csInf ⟨m + n, ?_⟩ fun b hb ↦
-      le_of_not_lt fun hbn ↦
-        ne_of_mem_of_not_mem ?_ (not_mem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
+      le_of_not_gt fun hbn ↦
+        ne_of_mem_of_not_mem ?_ (notMem_of_lt_sInf h) (Nat.sub_eq_zero_of_le hbn.le)
   · dsimp
     rwa [Nat.add_sub_cancel_right]
   · exact hb

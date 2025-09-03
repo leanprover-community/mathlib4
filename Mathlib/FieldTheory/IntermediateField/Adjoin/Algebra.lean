@@ -24,6 +24,31 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 theorem algebra_adjoin_le_adjoin : Algebra.adjoin F S ≤ (adjoin F S).toSubalgebra :=
   Algebra.adjoin_le (subset_adjoin _ _)
 
+namespace algebraAdjoinAdjoin
+
+/-- `IntermediateField.adjoin` as an algebra over `Algebra.adjoin`. -/
+scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
+  (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
+
+scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
+    IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
+  Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
+
+scoped instance (X) [MulAction E X] : IsScalarTower (Algebra.adjoin F S) (adjoin F S) X :=
+  Subalgebra.inclusion.isScalarTower_right (algebra_adjoin_le_adjoin F S) _
+
+scoped instance : FaithfulSMul (Algebra.adjoin F S) (adjoin F S) :=
+  Subalgebra.inclusion.faithfulSMul (algebra_adjoin_le_adjoin F S)
+
+scoped instance : IsFractionRing (Algebra.adjoin F S) (adjoin F S) :=
+  .of_field _ _ fun ⟨_, h⟩ ↦ have ⟨x, hx, y, hy, eq⟩ := mem_adjoin_iff_div.mp h
+    ⟨⟨x, hx⟩, ⟨y, hy⟩, Subtype.ext eq⟩
+
+scoped instance : Algebra.IsAlgebraic (Algebra.adjoin F S) (adjoin F S) :=
+  IsLocalization.isAlgebraic _ (nonZeroDivisors (Algebra.adjoin F S))
+
+end algebraAdjoinAdjoin
+
 theorem adjoin_eq_algebra_adjoin (inv_mem : ∀ x ∈ Algebra.adjoin F S, x⁻¹ ∈ Algebra.adjoin F S) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
   le_antisymm
@@ -61,10 +86,27 @@ theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} := by
-  apply adjoin_algebraic_toSubalgebra
-  rintro x (rfl : x = α)
-  rwa [isAlgebraic_iff_isIntegral]
+    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+  adjoin_algebraic_toSubalgebra <| by simpa [isAlgebraic_iff_isIntegral]
+
+lemma _root_.Algebra.adjoin_eq_top_of_intermediateField {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x)
+    (hS₂ : IntermediateField.adjoin F S = ⊤) : Algebra.adjoin F S = ⊤ := by
+  simp [*, ← IntermediateField.adjoin_algebraic_toSubalgebra hS]
+
+lemma _root_.Algebra.adjoin_eq_top_of_primitive_element {α : E} (hα : IsIntegral F α)
+    (hα₂ : F⟮α⟯ = ⊤) : Algebra.adjoin F {α} = ⊤ :=
+  Algebra.adjoin_eq_top_of_intermediateField (by simpa [isAlgebraic_iff_isIntegral]) hα₂
+
+lemma finite_of_fg_of_isAlgebraic
+    (h : IntermediateField.FG (⊤ : IntermediateField F E)) [Algebra.IsAlgebraic F E] :
+    Module.Finite F E := by
+  obtain ⟨s, hs⟩ := h
+  have : Algebra.FiniteType F E := by
+    use s
+    rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+      (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
+    simpa [← IntermediateField.toSubalgebra_inj] using hs
+  exact Algebra.IsIntegral.finite
 
 section Supremum
 
@@ -154,8 +196,6 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   obtain ⟨t, ht⟩ := h
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
-
-@[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra
 
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian

@@ -23,9 +23,9 @@ in the file where we declare `@[simps]`. For further documentation, see `Tactic.
 and this notation should be used instead of projections by `@[simps]`.
   * This is only important if the projection is written differently using notation, e.g.
     `+` uses `HAdd.hAdd`, not `Add.add` and `0` uses `OfNat.ofNat` not `Zero.zero`.
-    We also add it to non-heterogenous notation classes, like `Neg`, but it doesn't do much for any
+    We also add it to non-heterogeneous notation classes, like `Neg`, but it doesn't do much for any
     class that extends `Neg`.
-  * `@[notation_class * <projName> Simps.findCoercionArgs]` is used to configure the
+  * `@[notation_class* <projName> Simps.findCoercionArgs]` is used to configure the
     `SetLike` and `DFunLike` coercions.
   * The first name argument is the projection name we use as the key to search for this class
     (default: name of first projection of the class).
@@ -92,8 +92,8 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
-    class as hypothesis during type-class synthesis. -/
+  (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
+  class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/
   findArgs : Name := `Simps.defaultfindArgs

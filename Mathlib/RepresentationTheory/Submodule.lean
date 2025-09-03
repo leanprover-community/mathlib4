@@ -61,7 +61,7 @@ lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ 
   apply x.induction_on <;> aesop
 
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
-def mapSubmodule :
+noncomputable def mapSubmodule :
     ρ.invtSubmodule ≃o Submodule (MonoidAlgebra k G) ρ.asModule where
   toFun p :=
     { toAddSubmonoid := (p : Submodule k V).toAddSubmonoid.map ρ.asModuleEquiv.symm

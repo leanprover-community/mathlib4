@@ -34,7 +34,7 @@ instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} 
   rw [isOpenImmersion_SpecMap_iff_of_surjective _ (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)]
   apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp
   apply (Ideal.cotangent_subsingleton_iff _).mp
-  exact inferInstanceAs <| Subsingleton (Ω[S⁄R])
+  exact inferInstanceAs <| Subsingleton Ω[S⁄R]
 
 namespace AlgebraicGeometry
 
@@ -108,8 +108,8 @@ instance : MorphismProperty.IsStableUnderBaseChange @FormallyUnramified :=
 
 open MorphismProperty in
 /-- The diagonal of a formally unramified morphism of finite type is an open immersion. -/
-lemma AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [FormallyUnramified f] [LocallyOfFiniteType f] : IsOpenImmersion (pullback.diagonal f) := by
+instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f] :
+    IsOpenImmersion (pullback.diagonal f) := by
   wlog hX : (∃ S, X = Spec S) ∧ ∃ R, Y = Spec R
   · let 𝒰Y := Y.affineCover
     let 𝒰X (j : (Y.affineCover.pullbackCover f).J) :
@@ -132,6 +132,9 @@ lemma AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal {X Y : Schem
   rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_Spec_map R S,
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
   infer_instance
+
+@[deprecated (since := "2025-05-03")]
+alias AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal := isOpenImmersion_diagonal
 
 end FormallyUnramified
 

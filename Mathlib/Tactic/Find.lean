@@ -26,7 +26,7 @@ or the `find` tactic which looks for lemmas which are `apply`able against the cu
 open Lean Std
 open Lean.Meta
 open Lean.Elab
-open Lean.Elab
+
 open Batteries.Tactic
 
 namespace Mathlib.Tactic.Find
@@ -104,8 +104,8 @@ elab "#find " t:term : command =>
     findType t
 
 /- (Note that you'll get an error trying to run these here:
-   ``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
-   but they will work fine in a new file!) -/
+``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
+but they will work fine in a new file!) -/
 -- #find _ + _ = _ + _
 -- #find _ + _ = _ + _
 -- #find ?n + _ = _ + ?n

@@ -34,14 +34,14 @@ structure BundledHom where
   comp : ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ), hom Iβ Iγ → hom Iα Iβ → hom Iα Iγ
   /-- a bundled morphism is determined by the underlying map -/
   hom_ext : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), Function.Injective (toFun Iα Iβ) := by
-   aesop_cat
+    cat_disch
   /-- compatibility with identities -/
-  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by aesop_cat
+  id_toFun : ∀ {α : Type u} (I : c α), toFun I I (id I) = _root_.id := by cat_disch
   /-- compatibility with the composition -/
   comp_toFun :
     ∀ {α β γ : Type u} (Iα : c α) (Iβ : c β) (Iγ : c γ) (f : hom Iα Iβ) (g : hom Iβ Iγ),
       toFun Iα Iγ (comp Iα Iβ Iγ g f) = toFun Iβ Iγ g ∘ toFun Iα Iβ f := by
-   aesop_cat
+    cat_disch
 
 attribute [class] BundledHom
 
@@ -62,16 +62,16 @@ instance category : Category (Bundled c) where
   id := fun X => BundledHom.id 𝒞 (α := X) X.str
   comp := fun {X Y Z} f g => BundledHom.comp 𝒞 (α := X) (β := Y) (γ := Z) X.str Y.str Z.str g f
   comp_id _ := by apply 𝒞.hom_ext; simp
-  assoc _ _ _ := by apply 𝒞.hom_ext; aesop_cat
+  assoc _ _ _ := by apply 𝒞.hom_ext; cat_disch
   id_comp _ := by apply 𝒞.hom_ext; simp
 
 /-- A category given by `BundledHom` is a concrete category. -/
 instance hasForget : HasForget.{u} (Bundled c) where
   forget :=
     { obj := fun X => X
-      map := @fun X Y f => 𝒞.toFun X.str Y.str f
+      map := fun {X Y} f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
-      map_comp := fun f g => by erw [𝒞.comp_toFun];rfl }
+      map_comp := fun f g => by erw [𝒞.comp_toFun]; rfl }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 
 /-- This unification hint helps `rw` to figure out how to apply statements about abstract
@@ -91,7 +91,7 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
     (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑(map f) = ⇑f) :
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
-    intros X Y f
+    intro X Y f
     rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
 
 variable {d : Type u → Type u}

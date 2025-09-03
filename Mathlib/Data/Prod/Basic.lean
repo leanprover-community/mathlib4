@@ -43,8 +43,6 @@ theorem snd_comp_mk (x : α) : Prod.snd ∘ (Prod.mk x : β → α × β) = id :
 theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Function.const β x :=
   rfl
 
-@[deprecated (since := "2024-10-17")] alias map_mk := map_apply
-
 attribute [mfld_simps] map_apply
 
 -- This was previously a `simp` lemma, but no longer is on the basis that it destructures the pair.
@@ -169,7 +167,7 @@ theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α 
   | (_, _), (_, _), (_, _), right _ hxy₂,   right _ hyz₂   => right _ (_root_.trans hxy₂ hyz₂)
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
-  IsTrans (α × β) (Prod.Lex r s) :=
+    IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
 instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
@@ -194,7 +192,7 @@ instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTric
     · exact Or.inr (.left _ _ hji) ⟩
 
 instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
-  IsTrichotomous (α × β) (Prod.Lex r s) :=
+    IsTrichotomous (α × β) (Prod.Lex r s) :=
 ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }

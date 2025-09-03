@@ -6,6 +6,7 @@ Authors: Calle Sönne, Adam Topaz
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 
@@ -109,9 +110,6 @@ theorem proj_surjective : Function.Surjective S.proj :=
 
 theorem proj_isQuotientMap : IsQuotientMap S.proj :=
   isQuotientMap_quot_mk
-
-@[deprecated (since := "2024-10-22")]
-alias proj_quotientMap := proj_isQuotientMap
 
 theorem proj_continuous : Continuous S.proj :=
   S.proj_isQuotientMap.continuous
