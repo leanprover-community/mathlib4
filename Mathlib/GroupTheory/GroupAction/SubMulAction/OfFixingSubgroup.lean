@@ -38,7 +38,7 @@ and permit to manipulate them in a relatively smooth way:
 
   * `SubMulAction.conjMap_ofFixingSubgroup`:
   the equivariant map between `SubMulAction.ofFixingSubgroup M t`
-  and `SubMulAction.ofFIxingSubgroup M s`
+  and `SubMulAction.ofFixingSubgroup M s`
   induced by `g : M` such that `g • t = s`.
 
   * `SubMulAction.ofFixingSubgroup_of_inclusion`:
@@ -47,7 +47,7 @@ and permit to manipulate them in a relatively smooth way:
   as an equivariant map.
 
   * `SubMulAction.ofFixingSubgroup_of_singleton`:
-  the identity map from `SubMulAction.ofStablizer M a`
+  the identity map from `SubMulAction.ofStabilizer M a`
   to `SubMulAction.ofFixingSubgroup M {a}`.
 
   * `SubMulAction.ofFixingSubgroup_of_eq`:
