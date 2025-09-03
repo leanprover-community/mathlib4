@@ -668,7 +668,7 @@ theorem lowerSemicontinuous_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, Lowe
 end
 
 /-!
-### upper-semicontinuous functions
+### Upper-semicontinuous functions
 -/
 
 
