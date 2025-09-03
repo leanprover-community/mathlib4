@@ -5,6 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Family
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Natural operations on ordinals
@@ -159,7 +164,7 @@ theorem toNatOrdinal_min (a b : Ordinal) :
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
-guarantees we only need to open the `NaturalOps` locale once. -/
+guarantees we only need to open the `NaturalOps` scope once. -/
 
 /-- Natural addition on ordinals `a ♯ b`, also known as the Hessenberg sum, is recursively defined
 as the least ordinal greater than `a' ♯ b` and `a ♯ b'` for all `a' < a` and `b' < b`. In contrast
