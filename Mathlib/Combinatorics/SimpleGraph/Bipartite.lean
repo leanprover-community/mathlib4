@@ -277,45 +277,36 @@ end IsBipartite
 
 section CompleteBipartiteSubgraph
 
-variable [Fintype V] {α β γ δ : Type*} [Fintype α] [Fintype β]
+variable {α β : Type*} [Fintype α] [Fintype β]
 
 /-- A complete bipartite subgraph of `s` and `t` parts is a "left" subset of `s` vertices and a
 "right" subset of `t` vertices such that every vertex in the "left" subset is adjacent to every
 vertex in the "right" subset. -/
-structure completeBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
-  /-- The "left" subset of size `s`. -/
-  left : @univ.powersetCard V s
+structure CompleteBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
+  /-- The "left" subset is size `s`. -/
+  left : Finset V
+  card_left : #left = s
   /-- The "right" subset of size `t`. -/
-  right : @univ.powersetCard V t
-  Adj : ∀ v₁ ∈ left.val, ∀ v₂ ∈ right.val, G.Adj v₁ v₂
+  right : Finset V
+  card_right : #right = t
+  Adj : ∀ v₁ ∈ left, ∀ v₂ ∈ right, G.Adj v₁ v₂
 
-namespace completeBipartiteSubgraph
+namespace CompleteBipartiteSubgraph
 
-variable {s t : ℕ} (B : G.completeBipartiteSubgraph s t)
-
-/-- The size of the left part of a `G.completeBipartiteSubgraph s t` is `s`. -/
-theorem card_left : #B.left.val = s := by
-  have h := B.left.prop
-  rwa [mem_powersetCard_univ] at h
-
-/-- The size of the right part of a `G.completeBipartiteSubgraph s t` is `t`. -/
-theorem card_right : #B.right.val = t := by
-  have h := B.right.prop
-  rwa [mem_powersetCard_univ] at h
+variable {s t : ℕ} (B : G.CompleteBipartiteSubgraph s t)
 
 /-- A complete bipartite subgraph gives rise to a copy of a complete bipartite graph. -/
 noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
-  haveI : Nonempty (Fin s ↪ B.left) := by
+  have : Nonempty (Fin s ↪ B.left) := by
     apply Function.Embedding.nonempty_of_card_le
     rw [Fintype.card_fin, card_coe, card_left]
   let fs : Fin s ↪ B.left := Classical.arbitrary (Fin s ↪ B.left)
-  haveI : Nonempty (Fin t ↪ B.right) := by
+  have : Nonempty (Fin t ↪ B.right) := by
     apply Function.Embedding.nonempty_of_card_le
     rw [Fintype.card_fin, card_coe, card_right]
   let ft : Fin t ↪ B.right := Classical.arbitrary (Fin t ↪ B.right)
   let f : Fin s ⊕ Fin t ↪ V := by
-    use Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft)
-    intro st₁ st₂
+    refine ⟨Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft), fun st₁ st₂ ↦ ?_⟩
     match st₁, st₂ with
     | Sum.inl s₁, Sum.inl s₂ => simp [← Subtype.ext_iff_val]
     | Sum.inr t₁, Sum.inl s₂ =>
@@ -323,8 +314,7 @@ noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
     | Sum.inl s₁, Sum.inr t₂ =>
       simpa using (B.Adj (fs s₁) (fs s₁).prop (ft t₂) (ft t₂).prop).symm.ne'
     | Sum.inr t₁, Sum.inr t₂ => simp [← Subtype.ext_iff_val]
-  use ⟨f.toFun, ?_⟩, f.injective
-  intro st₁ st₂ hadj
+  refine ⟨⟨f.toFun, fun {st₁ st₂} hadj ↦ ?_⟩, f.injective⟩
   rcases hadj with ⟨hst₁, hst₂⟩ | ⟨hst₁, hst₂⟩
   all_goals dsimp [f]
   · rw [← Sum.inl_getLeft st₁ hst₁, ← Sum.inr_getRight st₂ hst₂,
@@ -336,28 +326,25 @@ noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
 
 /-- A copy of a complete bipartite graph identifies a complete bipartite subgraph. -/
 def ofCopy (f : Copy (completeBipartiteGraph α β) G) :
-    G.completeBipartiteSubgraph (card α) (card β) where
-  left := by
-    use univ.map ⟨f ∘ Sum.inl, f.injective.comp Sum.inl_injective⟩
-    rw [mem_powersetCard_univ, card_map, card_univ]
-  right := by
-    use univ.map ⟨f ∘ Sum.inr, f.injective.comp Sum.inr_injective⟩
-    rw [mem_powersetCard_univ, card_map, card_univ]
-  Adj := by
-    intro v₁ hv₁ v₂ hv₂
-    rw [mem_map] at hv₁ hv₂
-    obtain ⟨a, _, ha⟩ := hv₁
-    obtain ⟨b, _, hb⟩ := hv₂
-    rw [← ha, ← hb]
+    G.CompleteBipartiteSubgraph (card α) (card β) where
+  left := univ.map ⟨f ∘ Sum.inl, f.injective.comp Sum.inl_injective⟩
+  card_left := by rw [card_map, card_univ]
+  right := univ.map ⟨f ∘ Sum.inr, f.injective.comp Sum.inr_injective⟩
+  card_right := by rw [card_map, card_univ]
+  Adj _ h₁ _ h₂ := by
+    rw [mem_map] at h₁ h₂
+    obtain ⟨_, _, h₁⟩ := h₁
+    obtain ⟨_, _, h₂⟩ := h₂
+    rw [← h₁, ← h₂]
     exact f.toHom.map_adj (by simp)
 
-end completeBipartiteSubgraph
+end CompleteBipartiteSubgraph
 
 /-- Simple graphs contain a copy of a `completeBipartiteGraph α β` iff
-`G.completeBipartiteSubgraph (card α) (card β)` is nonempty. -/
+`G.CompleteBipartiteSubgraph (card α) (card β)` is nonempty. -/
 theorem completeBipartiteGraph_isContained_iff :
-    completeBipartiteGraph α β ⊑ G ↔ Nonempty (G.completeBipartiteSubgraph (card α) (card β)) :=
-  ⟨fun ⟨f⟩ ↦ ⟨completeBipartiteSubgraph.ofCopy f⟩,
+    completeBipartiteGraph α β ⊑ G ↔ Nonempty (G.CompleteBipartiteSubgraph (card α) (card β)) :=
+  ⟨fun ⟨f⟩ ↦ ⟨CompleteBipartiteSubgraph.ofCopy f⟩,
     fun ⟨B⟩ ↦ ⟨B.toCopy.comp <| Iso.toCopy ⟨(equivFin α).sumCongr (equivFin β), by simp⟩⟩⟩
 
 end CompleteBipartiteSubgraph
