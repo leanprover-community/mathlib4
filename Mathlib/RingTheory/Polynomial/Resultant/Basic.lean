@@ -132,7 +132,7 @@ noncomputable def disc (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
 /-- The discriminant of a constant polynomial is `1`. -/
-lemma disc_const (r : R) : disc (C r) = 1 := by
+@[simp] lemma disc_C (r : R) : disc (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)
   simp [disc, ← Matrix.det_reindex_self e]
 
