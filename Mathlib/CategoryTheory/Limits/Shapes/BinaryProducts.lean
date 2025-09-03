@@ -124,6 +124,9 @@ theorem pair_obj_left (X Y : C) : (pair X Y).obj ⟨left⟩ = X :=
 theorem pair_obj_right (X Y : C) : (pair X Y).obj ⟨right⟩ = Y :=
   rfl
 
+lemma pair_eq (F : Discrete WalkingPair ⥤ C) : F = pair (F.obj ⟨left⟩) (F.obj ⟨right⟩) := by
+  ext i; cases i <;> simp
+
 section
 
 variable {F G : Discrete WalkingPair ⥤ C} (f : F.obj ⟨left⟩ ⟶ G.obj ⟨left⟩)

@@ -1,20 +1,23 @@
 /-
 Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sina Hazratpour, Joël Riou
+Authors: Fernando Chu, Sina Hazratpour, Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # (Co)limits in a preorder category
 
-We provide basic results about the nullary and binary (co)products in the associated category of
-a preordered type.
+We provide basic results about (co)limits in the associated category of a preordered type.
+- We show that a functor `F` has a (co)limit iff it has a greatest lower bound (least upper bound).
+- We show maximal (minimal) elements correspond to terminal (initial) objects.
+- We show that (co)products correspond to infima (suprema).
 
 -/
 
-universe u
+universe v u u'
 
 open CategoryTheory Limits
 
@@ -22,17 +25,88 @@ namespace Preorder
 
 variable (C : Type u)
 
-section OrderBot
+section
 
-variable [Preorder C] [OrderBot C]
+variable {C : Type u} [Preorder C]
+variable {J : Type u'} [Category.{v} J]
+variable (F : J ⥤ C)
 
-/-- The least element in a preordered type is initial in the category
-associated to this preorder. -/
-def isInitialBot : IsInitial (⊥ : C) := IsInitial.ofUnique _
+/-- The cone associated to a lower bound of a functor. -/
+def coneOfLowerBound (x : lowerBounds (Set.range F.obj)) : Cone F where
+  pt := x
+  π := {
+    app i := by apply homOfLE; apply x.prop; simp
+  }
 
-instance : HasInitial C := hasInitial_of_unique ⊥
+/-- The lower bound associated to a cone of a functor. -/
+def lowerBoundOfCone (c : Cone F) : lowerBounds (Set.range F.obj) where
+  val := c.pt
+  property x p := by
+    obtain ⟨i, p⟩ := p
+    rw [← p]
+    exact (c.π.app i).le
 
-end OrderBot
+/-- If a cone is a limit, its point is a glb. -/
+lemma isGLB_IsLimit (c : Cone F) (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
+  ⟨(lowerBoundOfCone F c).prop, fun i k ↦ (h.lift (coneOfLowerBound F ⟨i, k⟩)).le⟩
+
+/-- If the point of cone is a glb, the cone is a limi.t -/
+def isLimitOfIsGLB (c : Cone F) (h : IsGLB (Set.range F.obj) c.pt) : IsLimit c where
+  lift d := (h.2 (lowerBoundOfCone F d).prop).hom
+
+/-- A functor has a limit iff there exists a glb. -/
+lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x := by
+  constructor <;> intro h
+  · let limitCone := getLimitCone F
+    exact ⟨limitCone.cone.pt, isGLB_IsLimit F _ limitCone.isLimit⟩
+  · obtain ⟨l, isGLB⟩ := h
+    exact ⟨⟨⟨coneOfLowerBound F ⟨l, isGLB.1⟩, isLimitOfIsGLB F _ isGLB⟩⟩⟩
+
+/-- The cocone associated to an upper bound of a func.tor -/
+def coconeOfUpperBound (x : upperBounds (Set.range F.obj)) : Cocone F where
+  pt := x
+  ι := {
+    app i := by apply homOfLE; apply x.prop; simp
+  }
+
+/-- The upper bound associated to a cocone of a funct.or -/
+def upperBoundOfCocone (c : Cocone F) : upperBounds (Set.range F.obj) where
+  val := c.pt
+  property x p := by
+    obtain ⟨i, p⟩ := p
+    rw [← p]
+    exact (c.ι.app i).le
+
+/-- If a cocone is a limit, its point is a lub. -/
+lemma isLUB_IsColimit (c : Cocone F) (h : IsColimit c) :
+    IsLUB (Set.range F.obj) c.pt :=
+  ⟨(upperBoundOfCocone F c).prop, fun i k ↦ (h.desc (coconeOfUpperBound F ⟨i, k⟩)).le⟩
+
+/-- If the point of cocone is a lub, the cocone is a .colimit -/
+def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) :
+    IsColimit c where
+  desc d := (h.2 (upperBoundOfCocone F d).prop).hom
+
+/-- A functor has a colimit iff there exists a lub. -/
+lemma hasColimit_iff_hasLUB :
+    HasColimit F ↔ ∃ x, IsLUB (Set.range F.obj) x := by
+  constructor <;> intro h
+  · let limitCocone := getColimitCocone F
+    exact ⟨limitCocone.cocone.pt, isLUB_IsColimit F _ limitCocone.isColimit⟩
+  · obtain ⟨l, isLUB⟩ := h
+    exact ⟨⟨⟨coconeOfUpperBound F ⟨l, isLUB.1⟩, isColimitOfIsLUB F _ isLUB⟩⟩⟩
+
+end
+
+noncomputable section HasTerminal
+
+variable [Preorder C] [HasTerminal C]
+
+instance (priority := low) : OrderTop C where
+  top := ⊤_ C
+  le_top x := leOfHom (Limits.terminal.from x)
+
+end HasTerminal
 
 section OrderTop
 
@@ -42,9 +116,44 @@ variable [Preorder C] [OrderTop C]
 associated to this preorder. -/
 def isTerminalTop : IsTerminal (⊤ : C) := IsTerminal.ofUnique _
 
-instance : HasTerminal C := hasTerminal_of_unique ⊤
+instance (priority := low) : HasTerminal C := hasTerminal_of_unique ⊤
 
 end OrderTop
+
+noncomputable section HasInitial
+
+variable [Preorder C] [HasInitial C]
+
+instance (priority := low) : OrderBot C where
+  bot := ⊥_ C
+  bot_le x := leOfHom (Limits.initial.to x)
+
+end HasInitial
+
+section OrderBot
+
+variable [Preorder C] [OrderBot C]
+
+/-- The least element in a preordered type is initial in the category
+associated to this preorder. -/
+def isInitialBot : IsInitial (⊥ : C) := IsInitial.ofUnique _
+
+instance (priority := low) : HasInitial C := hasInitial_of_unique ⊥
+
+end OrderBot
+
+noncomputable section HasBinaryProducts
+
+variable [PartialOrder C] [HasBinaryProducts C]
+
+/-- If a partial order has binary products, then it is a inf-semilattice -/
+def semilatticeInfOfHasBinaryProducts : SemilatticeInf C where
+  inf X Y := X ⨯ Y
+  inf_le_left _ _ := leOfHom prod.fst
+  inf_le_right _ _ := leOfHom prod.snd
+  le_inf _ _ _ le_fst le_snd := leOfHom (prod.lift (homOfLE le_fst) (homOfLE le_snd))
+
+end HasBinaryProducts
 
 section SemilatticeInf
 
@@ -57,7 +166,25 @@ def isLimitBinaryFan (X Y : C) :
   BinaryFan.isLimitMk (fun s ↦ homOfLE (le_inf (leOfHom s.fst) (leOfHom s.snd)))
     (by intros; rfl) (by intros; rfl) (by intros; rfl)
 
+instance (priority := low) : HasBinaryProducts C where
+  has_limit F := by
+    rw [Limits.pair_eq F]
+    exact ⟨⟨⟨_, isLimitBinaryFan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
+
 end SemilatticeInf
+
+noncomputable section HasBinaryCoproducts
+
+variable [PartialOrder C] [HasBinaryCoproducts C]
+
+/-- If a partial order has binary coproducts, then it is a sup-semilattice -/
+def semilatticeSupOfHasBinaryCoproducts : SemilatticeSup C where
+  sup X Y := X ⨿ Y
+  le_sup_left _ _ := leOfHom coprod.inl
+  le_sup_right _ _ := leOfHom coprod.inr
+  sup_le _ _ _ le_inl le_inr := leOfHom (coprod.desc (homOfLE le_inl) (homOfLE le_inr))
+
+end HasBinaryCoproducts
 
 section SemilatticeSup
 
@@ -69,6 +196,11 @@ def isColimitBinaryCofan (X Y : C) :
     IsColimit (BinaryCofan.mk (P := X ⊔ Y) (homOfLE le_sup_left) (homOfLE le_sup_right)) :=
   BinaryCofan.isColimitMk (fun s ↦ homOfLE (sup_le (leOfHom s.inl) (leOfHom s.inr)))
     (by intros; rfl) (by intros; rfl) (by intros; rfl)
+
+instance (priority := low) : HasBinaryCoproducts C where
+  has_colimit F := by
+    rw [Limits.pair_eq F]
+    exact ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
 
 end SemilatticeSup
 
