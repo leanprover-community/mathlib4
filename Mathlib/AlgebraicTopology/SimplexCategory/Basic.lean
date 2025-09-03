@@ -122,7 +122,7 @@ lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the "diagonal composite" edge -/
 def diag (n : ℕ) : ⦋1⦌ ⟶ ⦋n⦌ :=
-  mkOfLe 0 (Fin.ofNat (n + 1) n) (Fin.zero_le _)
+  mkOfLe 0 (Fin.last n) (Fin.zero_le _)
 
 /-- The morphism `⦋1⦌ ⟶ ⦋n⦌` that picks out the edge spanning the interval from `j` to `j + l`. -/
 def intervalEdge {n} (j l : ℕ) (hjl : j + l ≤ n) : ⦋1⦌ ⟶ ⦋n⦌ :=
@@ -180,38 +180,15 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
   unfold subinterval mkOfSucc
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
-      OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply, Fin.castSucc_mk,
-      Fin.succ_mk]
-    rw [← Nat.add_comm j _]
-    rfl
+  ext (i : Fin 2)
+  match i with | 0 | 1 => simp; omega
 
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
   unfold subinterval intervalEdge diag mkOfLe
-  ext i
-  match i with
-  | 0 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    rfl
-  | 1 =>
-    simp only [len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom,
-      Hom.toOrderHom_mk, OrderHom.mk_comp_mk, Fin.isValue, OrderHom.coe_mk, Function.comp_apply]
-    rw [Nat.add_comm]
-    simp only [Fin.isValue, Fin.ofNat_eq_cast, Fin.natCast_eq_last]
-    rfl
+  ext (i : Fin 2)
+  match i with | 0 | 1 => simp <;> omega
 
 instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ ⦋0⦌) where
   allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
@@ -375,7 +352,6 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   | cast k =>
     cases k using Fin.cases with
     | zero =>
-      ext
       simp
     | succ k =>
       rcases le_or_gt i k with (h | h)

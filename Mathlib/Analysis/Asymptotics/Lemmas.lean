@@ -533,11 +533,7 @@ theorem IsBigO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
 
 theorem isLittleO_pow_sub_pow_sub (x₀ : E') {n m : ℕ} (h : n < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => ‖x - x₀‖ ^ n :=
-  haveI : Tendsto (fun x => ‖x - x₀‖) (𝓝 x₀) (𝓝 0) := by
-    apply tendsto_norm_zero.comp
-    rw [← sub_self x₀]
-    exact tendsto_id.sub tendsto_const_nhds
-  (isLittleO_pow_pow h).comp_tendsto this
+  (isLittleO_pow_pow h).comp_tendsto (tendsto_norm_sub_self x₀)
 
 theorem isLittleO_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => x - x₀ := by

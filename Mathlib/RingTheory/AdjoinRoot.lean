@@ -428,12 +428,8 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
           simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
-      -- Porting note: another proof that I converted to tactic mode
-      left_inv := by
-        intro f
-        induction f using AdjoinRoot.induction_on
+      left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
-        refine (mk_eq_mk.mpr ?_).symm
         rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
         exact dvd_mul_right _ _
       right_inv := fun x =>
@@ -608,10 +604,7 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
   { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
-    -- Porting note: another term-mode proof converted to tactic-mode.
-    left_inv := fun x => by
-      induction x using AdjoinRoot.induction_on
-      rw [liftHom_mk, pb.lift_aeval, aeval_eq]
+    left_inv x := AdjoinRoot.induction_on _ x fun x => by rw [liftHom_mk, pb.lift_aeval, aeval_eq]
     right_inv := fun x => by
       nontriviality S
       obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
@@ -646,7 +639,7 @@ end Field
 
 end Equiv
 
--- Porting note: consider splitting the file here.  In the current mathlib3, the only result
+-- TODO: consider splitting the file here.  In the current mathlib3, the only result
 -- that depends any of these lemmas was
 -- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `NumberTheory.KummerDedekind`
 -- that uses
@@ -768,9 +761,8 @@ noncomputable def quotEquivQuotMap (f : R[X]) (I : Ideal R) :
         algebraMap R (AdjoinRoot f ⧸ Ideal.map (of f) I) x =
           Ideal.Quotient.mk (Ideal.map (AdjoinRoot.of f) I) ((mk f) (C x)) :=
         rfl
-      rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C]
-      -- Porting note: the following `rfl` was not needed
-      rfl)
+      rw [this, quotAdjoinRootEquivQuotPolynomialQuot_mk_of, map_C, Quotient.alg_map_eq]
+      simp only [RingHom.comp_apply, Quotient.algebraMap_eq, Polynomial.algebraMap_apply])
 
 @[simp]
 theorem quotEquivQuotMap_apply_mk (f g : R[X]) (I : Ideal R) :

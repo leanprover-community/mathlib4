@@ -435,6 +435,34 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
     exists_exists_and_eq_and, ← f.linearMap_vsub]
   grind
 
+/-- The product of two affine maps is an affine map. -/
+@[simps linear]
+def prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : P1 →ᵃ[k] P2 × P3 where
+  toFun := Pi.prod f g
+  linear := f.linear.prod g.linear
+  map_vadd' := by simp
+
+theorem coe_prod (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) : prod f g = Pi.prod f g :=
+  rfl
+
+@[simp]
+theorem prod_apply (f : P1 →ᵃ[k] P2) (g : P1 →ᵃ[k] P3) (p : P1) : prod f g p = (f p, g p) :=
+  rfl
+
+/-- `Prod.map` of two affine maps. -/
+@[simps linear]
+def prodMap (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) : P1 × P3 →ᵃ[k] P2 × P4 where
+  toFun := Prod.map f g
+  linear := f.linear.prodMap g.linear
+  map_vadd' := by simp
+
+theorem coe_prodMap (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) : ⇑(f.prodMap g) = Prod.map f g :=
+  rfl
+
+@[simp]
+theorem prodMap_apply (f : P1 →ᵃ[k] P2) (g : P3 →ᵃ[k] P4) (x) : f.prodMap g x = (f x.1, g x.2) :=
+  rfl
+
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
@@ -523,7 +551,6 @@ theorem snd_lineMap (p₀ p₁ : P1 × P2) (c : k) : (lineMap p₀ p₁ c).2 = l
 
 theorem lineMap_symm (p₀ p₁ : P1) :
     lineMap p₀ p₁ = (lineMap p₁ p₀).comp (lineMap (1 : k) (0 : k)) := by
-  rw [comp_lineMap]
   simp
 
 @[simp]
