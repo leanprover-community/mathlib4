@@ -147,7 +147,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
   rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
   rw [hn 0 <| zero_lt_succ n]
   apply add_lt_add_left
-  rw [mul_lt_mul_left h1]
+  rw [mul_lt_mul_iff_right₀ h1]
   exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
 
 /-- `cantorFunction c` is injective if `0 < c < 1/2`. -/

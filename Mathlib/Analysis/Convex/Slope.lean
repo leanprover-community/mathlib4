@@ -144,10 +144,10 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
-      exact add_lt_add_left ((mul_lt_mul_left hb).2 hxz) _
+      gcongr
     have hyz : y < z := by
       rw [← one_mul z, ← hab, add_mul]
-      exact add_lt_add_right ((mul_lt_mul_left ha).2 hxz) _
+      gcongr
     have : (f y - f x) * (z - y) < (f z - f y) * (y - x) :=
       (div_lt_div_iff₀ (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)
