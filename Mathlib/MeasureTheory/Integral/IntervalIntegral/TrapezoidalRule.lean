@@ -140,7 +140,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
 
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
 the general error bound later on. Using it directly is not recommended. -/
-lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
+private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (h_df : DifferentiableOn ℝ f (Icc a b))
     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
     (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b)
@@ -258,8 +258,9 @@ lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt
   ring_nf
 
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
-interval with ordered endpoints. -/
-lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
+interval with ordered endpoints. This lemma is used in the proof of the general error bound later
+on; using it directly is not recommended. -/
+private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
     (h_df : DifferentiableOn ℝ f (Icc a b))
     (h_ddf : DifferentiableOn ℝ (derivWithin f (Icc a b)) (Icc a b))
     (h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b)
