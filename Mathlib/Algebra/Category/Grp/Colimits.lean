@@ -80,14 +80,12 @@ def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
 @[simp]
 lemma Quot.ι_desc [DecidableEq J] (j : J) (x : F.obj j) :
     Quot.desc F c (Quot.ι F j x) = c.ι.app j x := by
-  dsimp [desc, ι]
   erw [QuotientAddGroup.lift_mk']
   simp
 
 @[simp]
 lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
     Quot.ι F j' (F.map f x) = Quot.ι F j x := by
-  dsimp [ι]
   refine eq_of_sub_eq_zero ?_
   erw [← (QuotientAddGroup.mk' (Relations F)).map_sub, ← AddMonoidHom.mem_ker]
   rw [QuotientAddGroup.ker_mk']
@@ -112,11 +110,10 @@ def quotToQuotUlift [DecidableEq J] : Quot F →+ Quot (F ⋙ uliftFunctor.{u'})
 
 lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
     quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
-  dsimp [quotToQuotUlift, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations F))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
   simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp,
-    AddMonoidHom.coe_coe, Function.comp_apply]
+    Function.comp_apply]
   rfl
 
 /--
@@ -132,11 +129,10 @@ def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F
 
 lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
     quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
-  dsimp [quotUliftToQuot, Quot.ι]
   conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations (F ⋙ uliftFunctor)))
     (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
   simp only [Functor.comp_obj, uliftFunctor_obj, DFinsupp.singleAddHom_apply,
-    DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply]
+    DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, Function.comp_apply]
   rfl
 
 /--
