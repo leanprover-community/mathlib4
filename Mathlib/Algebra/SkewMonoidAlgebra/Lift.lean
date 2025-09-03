@@ -21,6 +21,7 @@ section lift
 variable [CommSemiring k] [Monoid G] [Monoid H]
 variable {A B : Type*} [Semiring A] [Algebra k A] [Semiring B] [Algebra k B]
 
+/-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom [MulSemiringAction G A] [SMulCommClass G k A] (f : A →ₐ[k] B)
   (g : G →* B) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
     SkewMonoidAlgebra A G →ₐ[k] B :=
