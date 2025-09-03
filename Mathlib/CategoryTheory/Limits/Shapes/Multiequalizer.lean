@@ -715,13 +715,8 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
     { hom := f.hom
       w := by --sorry --by rintro (_ | _) <;> simp
         rintro (_ | _)
-        -- porting note; in mathlib3, `simp` worked. What seems to be happening is that
-        -- the `simp` set is not confluent, and mathlib3 found
-        -- `Multicofork.ofSigmaCofork_ι_app_left` before `Multicofork.fst_app_right`,
-        -- but mathlib4 finds `Multicofork.fst_app_right` first.
-        { simp [-Multicofork.fst_app_right] }
-        -- Porting note: similarly here, the `simp` set seems to be non-confluent
-        { simp [-Multicofork.ofSigmaCofork_pt] } }
+        · simp
+        · simp }
 
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
@@ -850,11 +845,11 @@ abbrev multicofork : Multicofork I :=
 theorem multicofork_π (b) : (Multicoequalizer.multicofork I).π b = Multicoequalizer.π I b :=
   rfl
 
--- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
 theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
+/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=
