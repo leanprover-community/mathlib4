@@ -115,9 +115,6 @@ lemma AnalyticAt.analyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
 @[deprecated (since := "2025-05-03")]
 alias AnalyticAt.order_ne_top_iff := AnalyticAt.analyticOrderAt_ne_top
 
-@[deprecated (since := "2025-02-03")]
-alias AnalyticAt.order_neq_top_iff := AnalyticAt.analyticOrderAt_ne_top
-
 lemma analyticOrderAt_eq_zero : analyticOrderAt f z₀ = 0 ↔ ¬ AnalyticAt 𝕜 f z₀ ∨ f z₀ ≠ 0 := by
   by_cases hf : AnalyticAt 𝕜 f z₀
   · rw [← ENat.coe_zero, hf.analyticOrderAt_eq_natCast]

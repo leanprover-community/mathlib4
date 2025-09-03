@@ -306,8 +306,7 @@ theorem inner_smul_ofReal_right (x y : F) {t : ℝ} : ⟪x, (t : 𝕜) • y⟫ 
 
 theorem re_inner_smul_ofReal_smul_self (x : F) {t : ℝ} :
     re ⟪(t : 𝕜) • x, (t : 𝕜) • x⟫ = normSqF x * t * t := by
-  apply ofReal_injective (K := 𝕜)
-  simp [inner_self_ofReal_re, inner_smul_ofReal_left, inner_smul_ofReal_right, normSq]
+  simp [inner_smul_ofReal_left, inner_smul_ofReal_right, normSq]
 
 /-- An auxiliary equality useful to prove the **Cauchy–Schwarz inequality**. Here we use the
 standard argument involving the discriminant of quadratic form. -/
@@ -329,8 +328,8 @@ lemma cauchy_schwarz_aux' (x y : F) (t : ℝ) : 0 ≤ normSqF x * t * t + 2 * re
 
 /-- Another auxiliary equality related with the **Cauchy–Schwarz inequality**: the square of the
 seminorm of `⟪x, y⟫ • x - ⟪x, x⟫ • y` is equal to `‖x‖ ^ 2 * (‖x‖ ^ 2 * ‖y‖ ^ 2 - ‖⟪x, y⟫‖ ^ 2)`.
-We use `InnerProductSpace.ofCore.normSq x` etc (defeq to `is_R_or_C.re ⟪x, x⟫`) instead of `‖x‖ ^ 2`
-etc to avoid extra rewrites when applying it to an `InnerProductSpace`. -/
+We use `InnerProductSpace.ofCore.normSq x` etc. (defeq to `is_R_or_C.re ⟪x, x⟫`) instead of
+`‖x‖ ^ 2` etc. to avoid extra rewrites when applying it to an `InnerProductSpace`. -/
 theorem cauchy_schwarz_aux (x y : F) : normSqF (⟪x, y⟫ • x - ⟪x, x⟫ • y)
     = normSqF x * (normSqF x * normSqF y - ‖⟪x, y⟫‖ ^ 2) := by
   rw [← @ofReal_inj 𝕜, ofReal_normSq_eq_inner_self]
@@ -360,10 +359,9 @@ theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ 
   · have hzero' : ‖⟪x, y⟫‖ ≠ 0 := norm_ne_zero_iff.2 hzero
     convert cauchy_schwarz_aux' (𝕜 := 𝕜) (⟪x, y⟫ • x) y (t / ‖⟪x, y⟫‖) using 3
     · field_simp
-      rw [← sq, normSq, normSq, inner_smul_right, inner_smul_left, ← mul_assoc _ _ ⟪x, x⟫,
+      rw [normSq, normSq, inner_smul_right, inner_smul_left, ← mul_assoc _ _ ⟪x, x⟫,
         mul_conj]
-      nth_rw 2 [sq]
-      rw [← ofReal_mul, re_ofReal_mul]
+      rw [← ofReal_pow, re_ofReal_mul]
       ring
     · field_simp
       rw [inner_smul_left, mul_comm _ ⟪x, y⟫_𝕜, mul_conj, ← ofReal_pow, ofReal_re]

@@ -145,7 +145,7 @@ theorem range_toLp :
   have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
   convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
   rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
-    LinearMap.range_coe]
+    LinearMap.coe_range]
 
 variable {p}
 

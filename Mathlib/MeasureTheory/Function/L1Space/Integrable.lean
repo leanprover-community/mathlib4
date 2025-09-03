@@ -352,6 +352,11 @@ theorem MeasurePreserving.integrable_comp {ν : Measure δ} {g : δ → ε} {f :
   rw [← hf.map_eq] at hg ⊢
   exact (integrable_map_measure hg hf.measurable.aemeasurable).symm
 
+theorem MeasurePreserving.integrable_comp_of_integrable {ν : Measure δ} {g : δ → ε} {f : α → δ}
+    (hf : MeasurePreserving f μ ν) (hg : Integrable g ν) :
+    Integrable (g ∘ f) μ :=
+  hf.integrable_comp hg.aestronglyMeasurable |>.mpr hg
+
 theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : MeasurePreserving f μ ν)
     (h₂ : MeasurableEmbedding f) {g : δ → ε} : Integrable (g ∘ f) μ ↔ Integrable g ν :=
   h₁.map_eq ▸ Iff.symm h₂.integrable_map_iff

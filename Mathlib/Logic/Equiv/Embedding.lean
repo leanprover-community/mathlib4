@@ -46,7 +46,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     cases x <;> simp!
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
     simp only
-    constructor
+    rfl
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
 This is `Function.Embedding.codRestrict` as an equiv. -/
