@@ -1177,12 +1177,15 @@ theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o :=
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
 
+@[simp]
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
+@[simp]
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
+@[simp]
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
 
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by
