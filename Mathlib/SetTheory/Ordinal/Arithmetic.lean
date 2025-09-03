@@ -148,11 +148,6 @@ alias not_zero_isLimit := not_isSuccLimit_zero
 @[deprecated (since := "2025-07-09")]
 alias not_succ_isLimit := not_isSuccLimit_succ
 
-set_option linter.deprecated false in
-@[deprecated not_isSuccLimit_succ (since := "2025-07-09")]
-theorem not_succ_of_isLimit {o} (h : IsLimit o) : ¬∃ a, o = succ a
-  | ⟨a, e⟩ => not_succ_isLimit a (e ▸ h)
-
 @[deprecated (since := "2025-07-09")]
 alias succ_lt_of_isLimit := IsSuccLimit.succ_lt_iff
 
@@ -176,16 +171,6 @@ theorem isSuccLimit_lift {o : Ordinal} : IsSuccLimit (lift.{u, v} o) ↔ IsSuccL
 @[deprecated (since := "2025-07-09")]
 alias lift_isLimit := isSuccLimit_lift
 
-set_option linter.deprecated false in
-@[deprecated IsSuccLimit.bot_lt (since := "2025-07-09")]
-theorem IsLimit.pos {o : Ordinal} (h : IsLimit o) : 0 < o :=
-  IsSuccLimit.bot_lt h
-
-set_option linter.deprecated false in
-@[deprecated IsSuccLimit.ne_bot (since := "2025-07-09")]
-theorem IsLimit.ne_zero {o : Ordinal} (h : IsLimit o) : o ≠ 0 :=
-  h.pos.ne'
-
 theorem natCast_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) (n : ℕ) : n < o := by
   simpa using h.add_natCast_lt h.bot_lt n
 
@@ -200,16 +185,6 @@ alias IsLimit.one_lt := one_lt_of_isSuccLimit
 
 theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
   simpa using isMin_or_mem_range_succ_or_isSuccLimit o
-
-set_option linter.deprecated false in
-@[deprecated zero_or_succ_or_isSuccLimit (since := "2025-07-09")]
-theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ IsLimit o := by
-  simpa [eq_comm] using isMin_or_mem_range_succ_or_isSuccLimit o
-
-set_option linter.deprecated false in
-@[deprecated zero_or_succ_or_isSuccLimit (since := "2025-07-09")]
-theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
-    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
 
 @[deprecated (since := "2025-07-09")]
 alias IsLimit.sSup_Iio := IsSuccLimit.sSup_Iio
