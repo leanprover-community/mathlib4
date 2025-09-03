@@ -16,13 +16,6 @@ jobs:
           ## fetch the whole repository, as we want to push to it later
           fetch-depth: 0
 
-      # - name: Configure Lean
-      #   uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
-      #   with:
-      #     auto-config: false
-      #     use-github-cache: false
-      #     use-mathlib-cache: false
-
       - name: remove deprecations
         id: remove
         shell: bash
@@ -30,6 +23,13 @@ jobs:
           # requirements:
           # - must leave the mathlib4 repo in a state that is ready to commit and push
           # - must assign a step output named `deprecation_date` containing the cutoff date for removed deprecations
+
+          # Calculate cutoff date (6 months ago)
+          CUTOFF_DATE=$(date -d '6 months ago' +%Y-%m-%d)
+          echo "Removing deprecated aliases older than ${CUTOFF_DATE}..."
+          echo "deprecation_date=${CUTOFF_DATE}" >> $GITHUB_OUTPUT
+
+          python scripts/remove_deprecated_decls.py "${CUTOFF_DATE}"
 
       - name: configure git setup
         run: |
