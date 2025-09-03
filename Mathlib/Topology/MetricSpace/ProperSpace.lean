@@ -88,10 +88,6 @@ instance (priority := 100) locallyCompact_of_proper [ProperSpace α] : LocallyCo
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
 
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")]
-alias locally_compact_of_proper := locallyCompact_of_proper
-
 -- see Note [lower instance priority]
 /-- A proper space is complete -/
 instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace α :=

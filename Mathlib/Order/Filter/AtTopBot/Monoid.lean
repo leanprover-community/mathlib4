@@ -162,8 +162,8 @@ alias tendsto_atBot_of_add_const_right := Tendsto.atBot_of_add_const
 
 /-- If `f` is eventually bounded from above along `l` and `f * g` tends to `+∞`,
 then `g` tends to `+∞`. -/
-@[to_additive "If `f` is eventually bounded from above along `l` and `f + g` tends to `+∞`,
-then `g` tends to `+∞`."]
+@[to_additive /-- If `f` is eventually bounded from above along `l` and `f + g` tends to `+∞`,
+then `g` tends to `+∞`. -/]
 theorem Tendsto.atTop_of_isBoundedUnder_le_mul (hf : IsBoundedUnder (· ≤ ·) l f)
     (hfg : Tendsto (fun x => f x * g x) l atTop) : Tendsto g l atTop := by
   obtain ⟨C, hC⟩ := hf

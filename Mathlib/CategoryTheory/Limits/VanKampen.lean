@@ -154,7 +154,7 @@ theorem IsVanKampenColimit.of_iso {F : J ⥤ C} {c c' : Cocone F} (H : IsVanKamp
 theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsVanKampenColimit c) :
     IsVanKampenColimit ((Cocones.precompose α).obj c) := by
-  intros F' c' α' f e hα
+  intro F' c' α' f e hα
   refine (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
     (hα.comp (NatTrans.equifibered_of_isIso _))).trans ?_
   apply forall_congr'
@@ -169,7 +169,7 @@ theorem IsVanKampenColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIs
 theorem IsUniversalColimit.precompose_isIso {F G : J ⥤ C} (α : F ⟶ G) [IsIso α]
     {c : Cocone G} (hc : IsUniversalColimit c) :
     IsUniversalColimit ((Cocones.precompose α).obj c) := by
-  intros F' c' α' f e hα H
+  intro F' c' α' f e hα H
   apply (hc c' (α' ≫ α) f ((Category.assoc _ _ _).trans e)
     (hα.comp (NatTrans.equifibered_of_isIso _)))
   intro j
@@ -298,7 +298,7 @@ theorem IsUniversalColimit.map_reflective
     IsUniversalColimit (Gl.mapCocone c) := by
   have := adj.rightAdjoint_preservesLimits
   have : PreservesColimitsOfSize.{u', v'} Gl := adj.leftAdjoint_preservesColimits
-  intros F' c' α f h hα hc'
+  intro F' c' α f h hα hc'
   have : HasPullback (Gl.map (Gr.map f)) (Gl.map (adj.unit.app c.pt)) :=
     ⟨⟨_, isLimitPullbackConeMapOfIsLimit _ pullback.condition
       (IsPullback.of_hasPullback _ _).isLimit⟩⟩
@@ -329,7 +329,7 @@ theorem IsUniversalColimit.map_reflective
       rw [Gl.map_comp, hα'']
       dsimp
       simp only [Category.assoc, Functor.map_comp, adj.right_triangle_components_assoc]
-    · intros i j g
+    · intro i j g
       dsimp [α']
       ext
       all_goals simp only [Category.comp_id, Category.id_comp, Category.assoc,
@@ -630,7 +630,7 @@ theorem isUniversalColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
   rintro ⟨j⟩
   simp only [limit.lift_π, PullbackCone.mk_pt,
     PullbackCone.mk_π_app, Category.comp_id]
-  induction' j using Fin.inductionOn
+  induction j using Fin.inductionOn
   · simp only [Fin.cases_zero]
   · simp only [Fin.cases_succ]
 
@@ -684,13 +684,14 @@ theorem isVanKampenColimit_extendCofan {n : ℕ} (f : Fin (n + 1) → C)
         (fun i ↦ Sigma.ι (fun (j : Fin n) ↦ (Discrete.functor F').obj ⟨j.succ⟩) _ ≫ f₂))) _ ?_
       intro ⟨j⟩
       simp only [Discrete.functor_obj, Cofan.mk_pt, Functor.const_obj_obj, Cofan.mk_ι_app]
-      induction' j using Fin.inductionOn with j _
+      induction j using Fin.inductionOn
       · simp only [Fin.cases_zero, m₁]
       · simp only [← m₂, colimit.ι_desc_assoc, Discrete.functor_obj,
           Cofan.mk_pt, Cofan.mk_ι_app, Fin.cases_succ]
-  induction' j using Fin.inductionOn with j _
-  · exact t₂' ⟨WalkingPair.left⟩
-  · have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
+  induction j using Fin.inductionOn with
+  | zero => exact t₂' ⟨WalkingPair.left⟩
+  | succ j _ =>
+    have t₁' := (@t₁ (Discrete.functor (fun j ↦ F.obj ⟨j.succ⟩)) (Cofan.mk _ _) (Discrete.natTrans
       fun i ↦ α.app _) (Sigma.desc (fun j ↦ α.app _ ≫ c₁.inj _)) ?_
       (NatTrans.equifibered_of_discrete _)).mp ⟨coproductIsCoproduct _⟩ ⟨j⟩
     rotate_left
@@ -774,9 +775,9 @@ include hau in
 lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_left
     (s : ∀ i, PullbackCone v (f i)) (hs : ∀ i, IsLimit (s i))
     (t : PullbackCone v u) (ht : IsLimit t) (d : Cofan (fun i : ι ↦ (s i).pt)) (e : d.pt ≅ t.pt)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ t.fst = (s i).fst := by aesop_cat)
-    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ t.snd = (s i).snd ≫ a.inj i := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ t.fst = (s i).fst := by cat_disch)
+    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ t.snd = (s i).snd ≫ a.inj i := by cat_disch) :
     Nonempty (IsColimit d) := by
   let iso : d ≅ (Cofan.mk _ fun i : ι ↦ PullbackCone.IsLimit.lift ht
       (s i).fst ((s i).snd ≫ a.inj i) (by simp [hu, (s i).condition])) :=
@@ -802,9 +803,9 @@ include hau hP in
 lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_left
     {Z : C} {p₁ : Z ⟶ B} {p₂ : Z ⟶ a.pt} (h : IsPullback p₁ p₂ v u)
     (d : Cofan P) (e : d.pt ≅ Z)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ p₁ = q₁ i := by aesop_cat)
-    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ p₂ = q₂ i ≫ a.inj i := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ p₁ = q₁ i := by cat_disch)
+    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ p₂ = q₂ i ≫ a.inj i := by cat_disch) :
     Nonempty (IsColimit d) :=
   hau.nonempty_isColimit_of_pullbackCone_left f u v (fun i ↦ (hP i).cone)
     (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
@@ -813,7 +814,7 @@ include hau hP in
 /-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
 `∐ (B ×[S] Xᵢ) ≅ B ×[S] (∐ Xᵢ)`. -/
 lemma IsUniversalColimit.isPullback_of_isColimit_left {d : Cofan P} (hd : IsColimit d)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
     [HasPullback v u] :
     IsPullback (Cofan.IsColimit.desc hd q₁) (Cofan.IsColimit.desc hd (q₂ · ≫ a.inj _))
       v u := by
@@ -837,9 +838,9 @@ include hau in
 lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
     (s : ∀ i, PullbackCone (f i) v) (hs : ∀ i, IsLimit (s i))
     (t : PullbackCone u v) (ht : IsLimit t) (d : Cofan (fun i : ι ↦ (s i).pt)) (e : d.pt ≅ t.pt)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ t.fst = (s i).fst ≫ a.inj i := by aesop_cat)
-    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ t.snd = (s i).snd := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ t.fst = (s i).fst ≫ a.inj i := by cat_disch)
+    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ t.snd = (s i).snd := by cat_disch) :
     Nonempty (IsColimit d) := by
   let iso : d ≅ (Cofan.mk _ fun i : ι ↦ PullbackCone.IsLimit.lift ht
       ((s i).fst ≫ a.inj i) ((s i).snd) (by simp [hu, (s i).condition])) :=
@@ -865,9 +866,9 @@ include hau hP in
 lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_right
     {Z : C} {p₁ : Z ⟶ a.pt} {p₂ : Z ⟶ B} (h : IsPullback p₁ p₂ u v)
     (d : Cofan P) (e : d.pt ≅ Z)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ p₁ = q₁ i ≫ a.inj i := by aesop_cat)
-    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ p₂ = q₂ i := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ p₁ = q₁ i ≫ a.inj i := by cat_disch)
+    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ p₂ = q₂ i := by cat_disch) :
     Nonempty (IsColimit d) :=
   hau.nonempty_isColimit_of_pullbackCone_right f u v (fun i ↦ (hP i).cone)
     (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
@@ -876,7 +877,7 @@ include hau hP in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism
 `∐ (Xᵢ ×[S] B) ≅ (∐ Xᵢ) ×[S] B`. -/
 lemma IsUniversalColimit.isPullback_of_isColimit_right {d : Cofan P} (hd : IsColimit d)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
     [HasPullback u v] :
     IsPullback (Cofan.IsColimit.desc hd (q₁ · ≫ a.inj _)) (Cofan.IsColimit.desc hd q₂)
       u v := by
@@ -905,10 +906,10 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
     (s : ∀ (i : ι) (j : ι'), PullbackCone (f i) (g j))
     (hs : ∀ i j, IsLimit (s i j)) (t : PullbackCone u v) (ht : IsLimit t)
     {d : Cofan (fun p : ι × ι' ↦ (s p.1 p.2).pt)} (e : d.pt ≅ t.pt)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (hv : ∀ i, b.inj i ≫ v = g i := by aesop_cat)
-    (he₁ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ t.fst = (s _ _).fst ≫ a.inj _ := by aesop_cat)
-    (he₂ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ t.snd = (s _ _).snd ≫ b.inj _ := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (hv : ∀ i, b.inj i ≫ v = g i := by cat_disch)
+    (he₁ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ t.fst = (s _ _).fst ≫ a.inj _ := by cat_disch)
+    (he₂ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ t.snd = (s _ _).snd ≫ b.inj _ := by cat_disch) :
     Nonempty (IsColimit d) := by
   let c (i : ι) : Cofan (fun j : ι' ↦ (s i j).pt) :=
     Cofan.mk (pullback (f i) v) fun j ↦ pullback.lift (s i j).fst ((s i j).snd ≫ b.inj j)
@@ -936,10 +937,10 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_isPullback
     (hP : ∀ i j, IsPullback (q₁ i j) (q₂ i j) (f i) (g j))
     {Z : C} {p₁ : Z ⟶ a.pt} {p₂ : Z ⟶ b.pt} (h : IsPullback p₁ p₂ u v)
     {d : Cofan P} (e : d.pt ≅ Z)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (hv : ∀ i, b.inj i ≫ v = g i := by aesop_cat)
-    (he₁ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ p₁ = q₁ _ _ ≫ a.inj _ := by aesop_cat)
-    (he₂ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ p₂ = q₂ _ _ ≫ b.inj _ := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (hv : ∀ i, b.inj i ≫ v = g i := by cat_disch)
+    (he₁ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ p₁ = q₁ _ _ ≫ a.inj _ := by cat_disch)
+    (he₂ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ p₂ = q₂ _ _ ≫ b.inj _ := by cat_disch) :
     Nonempty (IsColimit d) :=
   IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone hau hbu f g u v
     (fun i j ↦ (hP i j).cone) (fun i j ↦ (hP i j).isLimit) h.cone h.isLimit e
@@ -948,8 +949,8 @@ include hau hbu in
 lemma IsUniversalColimit.isPullback_prod_of_isColimit [HasPullback u v]
     {P : ι × ι' → C} {q₁ : ∀ i j, P (i, j) ⟶ X i} {q₂ : ∀ i j, P (i, j) ⟶ Y j}
     (hP : ∀ i j, IsPullback (q₁ i j) (q₂ i j) (f i) (g j)) (d : Cofan P) (hd : IsColimit d)
-    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
-    (hv : ∀ i, b.inj i ≫ v = g i := by aesop_cat) :
+    (hu : ∀ i, a.inj i ≫ u = f i := by cat_disch)
+    (hv : ∀ i, b.inj i ≫ v = g i := by cat_disch) :
     IsPullback
       (Cofan.IsColimit.desc hd (fun p ↦ q₁ p.1 p.2 ≫ a.inj _))
       (Cofan.IsColimit.desc hd (fun p ↦ q₂ p.1 p.2 ≫ b.inj _)) u v := by

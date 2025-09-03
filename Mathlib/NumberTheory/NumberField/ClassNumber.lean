@@ -1,13 +1,13 @@
 /-
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Riccardo Brasca, Xavier Roblot
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
 import Mathlib.NumberTheory.ClassNumber.Finite
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.RingTheory.Ideal.IsPrincipal
-import Mathlib.NumberTheory.RamificationInertia.Basic
+import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Class numbers of number fields
@@ -17,18 +17,25 @@ the class group of its ring of integers. It also proves some elementary results
 on the class number.
 
 ## Main definitions
+We denote by `M K` the Minkowski bound of a number field `K`, defined as
+`(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`.
 - `NumberField.classNumber`: the class number of a number field is the (finite)
-  cardinality of the class group of its ring of integers
-- `isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOver_of_mem_Icc`: let `K`
-  be a number field and let `M K` be the Minkowski bound of `K` (by definition it is
-  `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
-  To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
+cardinality of the class group of its ring of integers
+- `isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc`: let `K`
+  be a number field. To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
   `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
   `p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
   that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
-
-The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
-to deal with the finite number of primes `p` in the interval.
+  The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
+  to deal with the finite number of primes `p` in the interval.
+- `isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc`: let `K`
+  be a number field such that `K/ℚ` is Galois. To show that `𝓞 K` is a PID it is enough to show
+  that, for all (natural) primes `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such
+  that either `⌊(M K)⌋₊ < p ^ (span ({p}).inertiaDeg P)` or `P` is principal. This is the standard
+  technique to prove that `𝓞 K` is principal in the Galois case, see [marcus1977number], discussion
+  after Theorem 37.
+  The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
+  to deal with the finite number of primes `p` in the interval.
 -/
 
 open scoped nonZeroDivisors Real
@@ -118,16 +125,19 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_norm_le_of_isPrime
     absNorm_dvd_absNorm_of_le <| le_of_dvd <|
       UniqueFactorizationMonoid.dvd_of_mem_normalizedFactors hJ).trans hI
 
-/-- Let `K` be a number field and let `M K` be the Minkowski bound of `K` (by definition it is
-`(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
+set_option linter.style.longLine false in
+/-- Let `K` be a number field and let `M K` be the Minkowski bound of `K`.
 To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
 `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
 `p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
 that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
+If `K/ℚ` is Galois, one can use the more convenient
+`RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc`
+below.
 
 The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval. -/
-theorem isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOver_of_mem_Icc
+theorem isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
     (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime → ∀ (P : Ideal (𝓞 K)),
       P ∈ primesOver (span {(p : ℤ)}) (𝓞 K) → p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ≤ ⌊(M K)⌋₊ →
       Submodule.IsPrincipal P) : IsPrincipalIdealRing (𝓞 K) := by
@@ -154,6 +164,32 @@ theorem isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOv
       hpprime (hP.under _))).isMaximal <| by simp [((hpprime (hP.under _))).ne_zero]
     exact hspan ▸ inertiaDeg_pos ..
   · exact hspan ▸ hlies
+
+/-- Let `K` be a number field such that `K/ℚ` is Galois and let `M K` be the Minkowski bound of `K`.
+To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
+`p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, there is an ideal `P` above `p` such that
+either `⌊(M K)⌋₊ < p ^ (span ({p}).inertiaDeg P)` or `P` is principal. This is the standard
+technique to prove that `𝓞 K` is principal in the Galois case, see [marcus1977number], discussion
+after Theorem 37.
+
+The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
+to deal with the finite number of primes `p` in the interval. -/
+theorem isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc
+    [IsGalois ℚ K] (h : ∀ p ∈ Finset.Icc 1 ⌊(M K)⌋₊, p.Prime →
+      ∃ P ∈ primesOver (span {(p : ℤ)}) (𝓞 K),
+        ⌊(M K)⌋₊ < p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P) ∨
+          Submodule.IsPrincipal P) :
+      IsPrincipalIdealRing (𝓞 K) := by
+  refine isPrincipalIdealRing_of_isPrincipal_of_pow_le_of_mem_primesOver_of_mem_Icc
+    (fun p hpmem hp P ⟨hP1, hP2⟩ hple ↦ ?_)
+  obtain ⟨Q, ⟨hQ1, hQ2⟩, H⟩ := h p hpmem hp
+  have := (isPrime_of_prime (prime_span_singleton_iff.mpr (prime_iff_prime_int.mp hp))).isMaximal
+    (by simp [hp.ne_zero])
+  by_cases h : ⌊(M K)⌋₊ < p ^ ((span ({↑p} : Set ℤ)).inertiaDeg P)
+  · linarith
+  rw [inertiaDeg_eq_of_isGalois _ Q P ℚ K] at H
+  obtain ⟨σ, rfl⟩ := exists_map_eq_of_isGalois (span ({↑p} : Set ℤ)) Q P ℚ K
+  exact (H.resolve_left h).map_ringHom σ
 
 theorem isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ nrComplexPlaces K *

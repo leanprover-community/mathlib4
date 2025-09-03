@@ -337,7 +337,7 @@ lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSp
 lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
     [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
   ext p
-  let e : Localization.AtPrime p.asIdeal ⊗[R] M ⊗[R] N ≃ₗ[Localization.AtPrime p.asIdeal]
+  let e : Localization.AtPrime p.asIdeal ⊗[R] (M ⊗[R] N) ≃ₗ[Localization.AtPrime p.asIdeal]
       (Localization.AtPrime p.asIdeal ⊗[R] M) ⊗[Localization.AtPrime p.asIdeal]
         (Localization.AtPrime p.asIdeal ⊗[R] N) :=
     (AlgebraTensorModule.assoc _ _ _ _ _ _).symm ≪≫ₗ

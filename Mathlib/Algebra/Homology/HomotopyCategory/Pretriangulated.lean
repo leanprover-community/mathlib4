@@ -247,8 +247,8 @@ noncomputable def rotateHomotopyEquiv :
 
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
-  Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
-    (inr (CochainComplex.mappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
+    Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
+      (inr (CochainComplex.mappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
       ⟨-(snd φ).comp (inl (inr φ)) (zero_add (-1)), by
         ext p
         dsimp [rotateHomotopyEquiv]

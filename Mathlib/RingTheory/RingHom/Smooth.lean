@@ -34,15 +34,13 @@ lemma FormallySmooth.toAlgebra {f : R →+* S} (hf : FormallySmooth f) :
 
 lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
-  delta FormallySmooth
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FormallySmooth, toAlgebra_algebraMap]
 
 lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
   fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
 lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth := by
-  intros R S T _ _ _ f g hf hg
+  intro R S T _ _ _ f g hf hg
   algebraize [f, g, g.comp f]
   exact .comp R S T
 
@@ -51,8 +49,7 @@ lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
 
 lemma FormallySmooth.isStableUnderBaseChange : IsStableUnderBaseChange @FormallySmooth := by
   refine .mk respectsIso ?_
-  intros R S T _ _ _ _ _ H
-  change (algebraMap _ _).FormallySmooth
+  introv H
   rw [formallySmooth_algebraMap] at H ⊢
   infer_instance
 
@@ -71,9 +68,7 @@ lemma Smooth.toAlgebra {f : R →+* S} (hf : Smooth f) :
 
 lemma smooth_algebraMap [Algebra R S] :
     (algebraMap R S).Smooth ↔ Algebra.Smooth R S := by
-  simp only [RingHom.Smooth]
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.Smooth, toAlgebra_algebraMap]
 
 lemma smooth_def {f : R →+* S} : f.Smooth ↔ f.FormallySmooth ∧ f.FinitePresentation :=
   letI := f.toAlgebra
