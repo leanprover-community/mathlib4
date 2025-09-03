@@ -146,10 +146,6 @@ instance groupoid : Groupoid (Quotient r) where
 
 end
 
-<<<<<<< HEAD
-=======
-
->>>>>>> FreeGroupoid1
 /-- The functor from a category to its quotient. -/
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
