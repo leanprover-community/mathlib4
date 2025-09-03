@@ -291,9 +291,25 @@ structure CompleteBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
   card_right : #right = t
   Adj : ∀ v₁ ∈ left, ∀ v₂ ∈ right, G.Adj v₁ v₂
 
+variable {s t : ℕ} (B : G.CompleteBipartiteSubgraph s t)
+
 namespace CompleteBipartiteSubgraph
 
-variable {s t : ℕ} (B : G.CompleteBipartiteSubgraph s t)
+/-- The "left" and "right" parts in a `G.CompleteBipartiteSubgraph s t` are disjoint. -/
+theorem disjoint_left_right : Disjoint B.left B.right := by
+  rw [disjoint_left]
+  intro v h₁
+  have nhadj : ¬G.Adj v v := G.loopless v
+  contrapose! nhadj with h₂
+  exact B.Adj v h₁ v h₂
+
+/-- The finset of vertices in a `G.CompleteBipartiteSubgraph s t`. -/
+@[simp]
+abbrev verts : Finset V := disjUnion B.left B.right B.disjoint_left_right
+
+/-- There are `s + t` vertices in a complete bipartite subgraph with `s` vertices in the "left"
+part and `t` vertices in the "right" part. -/
+theorem card_verts : #B.verts = s + t := by simp [card_left, card_right]
 
 /-- A complete bipartite subgraph gives rise to a copy of a complete bipartite graph. -/
 noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
