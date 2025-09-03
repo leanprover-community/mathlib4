@@ -61,7 +61,6 @@ Skew Polynomials, Twisted Polynomials.
 
 ## TODO :
   - Add algebra instance (need the algebra instance in `SkewMonoidAlgebra`)
-  - Add definition of `monomial` and related theorems (need `lsingle` in `SkewMonoidAlgebra`)
   - Add `ext` lemma in terms of `Coeff`.
 -/
 
@@ -93,8 +92,7 @@ instance {S₁ S₂ : Type*} [Semiring S₁] [Semiring S₂] [Module S₁ R] [Mo
     [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ (SkewPolynomial R) :=
   SkewMonoidAlgebra.instSMulCommClass
 
-instance {S : Type*} [SMulZeroClass S R] :
-    SMulZeroClass S (SkewPolynomial R) :=
+instance {S : Type*} [SMulZeroClass S R] : SMulZeroClass S (SkewPolynomial R) :=
   SkewMonoidAlgebra.instSMulZeroClass
 
 instance {S₁ S₂ : Type*} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
@@ -137,6 +135,29 @@ lemma φ_iterate_apply (n : ℕ) (a : R) : (φ^[n] a) = ((ofAdd n) • a) := by
       ← mul_smul, mul_comm]
 
 end phi
+
+/-- `monomial s a` is the monomial `a * X^s` -/
+def monomial (n : ℕ) : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
+
+lemma monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 := single_zero _
+
+lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] :
+  monomial (0 : ℕ) (1 : R) = 1 := by rfl
+
+lemma monomial_def (n : ℕ) (a : R) : monomial n a = single (ofAdd n) a := rfl
+
+lemma monomial_add (n : ℕ) (r s : R) :
+    monomial n (r + s) = monomial n r + monomial n s :=
+  single_add ..
+
+lemma smul_monomial {S} [Semiring S] [Module S R] (a : S) (n : ℕ) (b : R) :
+    a • monomial n b = monomial n (a • b) :=
+  smul_single ..
+
+lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : ℕ) (r s : R) :
+    monomial n r * monomial m s = monomial (n + m) (r * (φ^[n] s)) := by
+  rw [φ_iterate_apply]
+  exact SkewMonoidAlgebra.single_mul_single
 
 end Semiring
 
