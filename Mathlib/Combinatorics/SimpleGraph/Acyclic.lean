@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Tactic.Linarith
 
 /-!
 
@@ -244,7 +243,8 @@ lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivi
       exact le_trans q (G.minDegree_le_degree _)
     rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
     omega
-  · linarith [h.isConnected.preconnected.minDegree_pos_of_nontrivial]
+  · have := h.isConnected.preconnected.minDegree_pos_of_nontrivial
+    omega
 
 /-- A nontrivial tree has a vertex of degree one. -/
 lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
