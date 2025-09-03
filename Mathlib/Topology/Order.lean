@@ -256,8 +256,7 @@ theorem TopologicalSpace.not_nontrivial_iff [TopologicalSpace α] :
 end nontriviality
 
 /-- The only open sets in the indiscrete topology are the empty set and the whole space. -/
-theorem IndiscreteTopology.isOpen_iff
-    {α} [TopologicalSpace α] [IndiscreteTopology α] (U : Set α) :
+theorem IndiscreteTopology.isOpen_iff [IndiscreteTopology α] (U : Set α) :
     IsOpen U ↔ U = ∅ ∨ U = univ := by
   cases IndiscreteTopology.eq_top α
   refine ⟨fun h => ?_, ?_⟩
@@ -269,6 +268,9 @@ theorem IndiscreteTopology.isOpen_iff
     | sUnion _ _ ih => exact sUnion_mem_empty_univ ih
   · rintro (rfl | rfl)
     exacts [@isOpen_empty _ ⊤, @isOpen_univ _ ⊤]
+
+theorem TopologicalSpace.isOpen_top_iff {α} (U : Set α) : IsOpen[⊤] U ↔ U = ∅ ∨ U = univ :=
+  letI : TopologicalSpace α := ⊤; IndiscreteTopology.isOpen_iff _
 
 /-- A topological space is discrete if every set is open, that is,
   its topology equals the discrete topology `⊥`. -/
@@ -660,14 +662,19 @@ theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
     IsOpen[t₁ ⊔ t₂] s ↔ IsOpen[t₁] s ∧ IsOpen[t₂] s :=
   Iff.rfl
 
+
+theorem IndiscreteTopology.nhds_eq [TopologicalSpace α] [IndiscreteTopology α] (a : α) :
+    nhds a = ⊤ := by
+  cases IndiscreteTopology.eq_top α
+  exact nhds_top
+
 /-- In the indiscrete topology no points are separable.
 
 The corresponding `bot` lemma is handled more generally by `inseparable_iff_eq`. -/
 @[simp]
 theorem Inseparable.all [TopologicalSpace α] [IndiscreteTopology α] (x y : α) :
-    Inseparable x y := by
-  cases IndiscreteTopology.eq_top α
-  exact nhds_top.trans nhds_top.symm
+    Inseparable x y :=
+  (IndiscreteTopology.nhds_eq _).trans (IndiscreteTopology.nhds_eq _).symm
 
 theorem IndiscreteTopology.of_forall_inseparable [TopologicalSpace α]
     (h : ∀ x y : α, Inseparable x y) : IndiscreteTopology α where
