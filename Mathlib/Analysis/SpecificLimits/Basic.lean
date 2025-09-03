@@ -412,7 +412,6 @@ lemma tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
 
 lemma tsum_geometric_lt_top {r : ℝ≥0∞} : ∑' n, r ^ n < ∞ ↔ r < 1 := by simp
 
-variable (ι) in
 lemma tsum_geometric_encode_lt_top {r : ℝ≥0∞} (hr : r < 1) {ι : Type*} [Encodable ι] :
     ∑' i : ι, (r : ℝ≥0∞) ^ encode i < ∞ :=
   (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_lt <| by simpa
