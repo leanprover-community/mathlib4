@@ -38,6 +38,10 @@ that the composition of this embedding with the measurable embedding from a stan
   with the measurable embedding from a standard Borel space `α` to `ℝ` is a measurable embedding
   from `α` to `I`.
 
+## TODO
+
+Show that `sigmoid : ℝ → ℝ` is in fact analytic and continuously differentiable.
+
 ## Tags
 sigmoid, embedding, measurable embedding, topological embedding
 -/
