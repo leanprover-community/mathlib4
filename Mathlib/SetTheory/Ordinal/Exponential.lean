@@ -120,12 +120,15 @@ theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) := by
   · simpa only [mul_one, opow_succ] using fun b ↦ (mul_lt_mul_iff_left (opow_pos b ha)).2 h
   · simp [IsLUB, IsLeast, upperBounds, lowerBounds, ← opow_le_of_isSuccLimit ha.ne' hl]
 
+@[simp]
 theorem opow_lt_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b < a ^ c ↔ b < c :=
   (isNormal_opow a1).lt_iff
 
+@[simp]
 theorem opow_le_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b ≤ a ^ c ↔ b ≤ c :=
   (isNormal_opow a1).le_iff
 
+@[simp]
 theorem opow_right_inj {a b c : Ordinal} (a1 : 1 < a) : a ^ b = a ^ c ↔ b = c :=
   (isNormal_opow a1).inj
 
