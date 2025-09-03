@@ -28,6 +28,8 @@ import Mathlib.RingTheory.MvPolynomial
 This file closely mirrors the corresponding file for `TensorAlgebra`.
 -/
 
+open Module
+
 namespace SymmetricAlgebra
 
 universe uκ uR uM
@@ -63,7 +65,7 @@ theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
 
 /-- A basis on `M` can be lifted to a basis on `SymmetricAlgebra R M`. -/
 @[simps! repr_apply]
-noncomputable def _root_.Basis.symmetricAlgebra (b : Basis κ R M) :
+noncomputable def _root_.Module.Basis.symmetricAlgebra (b : Basis κ R M) :
     Basis (κ →₀ ℕ) R (SymmetricAlgebra R M) :=
   (MvPolynomial.basisMonomials κ R).map <| (SymmetricAlgebra.equivMvPolynomial b).symm.toLinearEquiv
 

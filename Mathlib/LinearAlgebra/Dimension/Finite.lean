@@ -137,20 +137,20 @@ section
 variable [StrongRankCondition R]
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
-theorem Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
+theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Nonempty (Fintype ι) := by
   rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
-noncomputable def Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
+noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
 
 /-- If a module has a finite dimension, all bases are indexed by a finite set. -/
-theorem Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
+theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
     (h : Module.rank R M < ℵ₀) : s.Finite :=
-  finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
+  Set.finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
 
 end
 
@@ -161,8 +161,6 @@ theorem cardinalMk_le_finrank [Module.Finite R M]
     {ι : Type w} {b : ι → M} (h : LinearIndependent R b) : #ι ≤ finrank R M := by
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_finrank := cardinalMk_le_finrank
 
 theorem fintype_card_le_finrank [Module.Finite R M]
     {ι : Type*} [Fintype ι] {b : ι → M} (h : LinearIndependent R b) :
@@ -258,9 +256,6 @@ theorem iSupIndep.subtype_ne_bot_le_rank [Nontrivial R]
   choose v hvV hv using hI
   have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
   exact this.cardinal_lift_le_rank
-
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.Independent.subtype_ne_bot_le_rank := iSupIndep.subtype_ne_bot_le_rank
 
 variable [Module.Finite R M] [StrongRankCondition R]
 

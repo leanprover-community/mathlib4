@@ -206,7 +206,7 @@ end
 
 /-- Any free, nontrivial `R`-module is flat. -/
 instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
-  of_linearEquiv _ _ (Free.repr R M)
+  of_linearEquiv _ _ (Free.chooseBasis R M).repr
 
 section
 
@@ -545,8 +545,6 @@ theorem trans : FaithfullyFlat R M := by
   ext m n
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
-
-@[deprecated (since := "2024-11-08")] alias comp := trans
 
 end trans
 

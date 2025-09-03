@@ -3,12 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Coverage
+import Mathlib.CategoryTheory.Sites.Precoverage
 
 /-!
 # 0-hypercovers
 
-Given a coverage `J` on a category `C`, we define the tyoe
+Given a coverage `J` on a category `C`, we define the type
 of `0`-hypercovers of an object `S : C`. They consists of a covering family
 of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve is in `J`.
 
@@ -102,7 +102,7 @@ structure Hom (E : PreZeroHypercover.{w} S) (F : PreZeroHypercover.{w'} S) where
   s₀ (i : E.I₀) : F.I₀
   /-- The refinement morphisms between objects in the coverings of `S`. -/
   h₀ (i : E.I₀) : E.X i ⟶ F.X (s₀ i)
-  w₀ (i : E.I₀) : h₀ i ≫ F.f (s₀ i) = E.f i := by aesop_cat
+  w₀ (i : E.I₀) : h₀ i ≫ F.f (s₀ i) = E.f i := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.w₀
 
@@ -130,9 +130,9 @@ end Category
 
 end PreZeroHypercover
 
-namespace Coverage
+namespace Precoverage
 
-variable (J : Coverage C)
+variable (J : Precoverage C)
 
 /-- The type of `0`-hypercovers of an object `S : C` in a category equipped with a
 coverage `J`. This can be constructed from a covering of `S`. -/
@@ -158,7 +158,7 @@ def pullback₁ [J.IsStableUnderBaseChange] [Limits.HasPullbacks C] (f : S ⟶ T
     (E : ZeroHypercover.{w} J T) :
     J.ZeroHypercover S where
   __ := E.toPreZeroHypercover.pullback₁ f
-  mem₀ := J.mem_covering_of_isPullback E.f E.mem₀ f _
+  mem₀ := J.mem_coverings_of_isPullback E.f E.mem₀ f _
     (fun _ ↦ pullback.snd _ _) fun i ↦ IsPullback.of_hasPullback f (E.f i)
 
 /-- Pullback of a `0`-hypercover along a morphism. The components are `pullback (E.f i) f`. -/
@@ -168,7 +168,7 @@ def pullback₂ [J.IsStableUnderBaseChange] [Limits.HasPullbacks C] (f : S ⟶ T
     (E : ZeroHypercover.{w} J T) :
     J.ZeroHypercover S where
   __ := E.toPreZeroHypercover.pullback₂ f
-  mem₀ := J.mem_covering_of_isPullback E.f E.mem₀ f _
+  mem₀ := J.mem_coverings_of_isPullback E.f E.mem₀ f _
     (fun _ ↦ pullback.fst _ _) fun i ↦ (IsPullback.of_hasPullback (E.f i) f).flip
 
 /-- Refining each component of a `0`-hypercover yields a refined `0`-hypercover of the base. -/
@@ -177,7 +177,7 @@ def bind [J.IsStableUnderComposition] (E : ZeroHypercover.{w} J T)
     ZeroHypercover.{max w w'} J T where
   __ := E.toPreZeroHypercover.bind (fun i ↦ (F i).toPreZeroHypercover)
   mem₀ :=
-    mem_covering_comp (f := E.f) (g := fun i j ↦ (F i).f j) E.mem₀ (fun i ↦ (F i).mem₀)
+    comp_mem_coverings (f := E.f) (g := fun i j ↦ (F i).f j) E.mem₀ (fun i ↦ (F i).mem₀)
 
 /-- A morphism of `0`-hypercovers is a morphism of the underlying pre-`0`-hypercovers. -/
 abbrev Hom (E : ZeroHypercover.{w} J S) (F : ZeroHypercover.{w'} J S) :=
@@ -191,6 +191,6 @@ instance : Category (ZeroHypercover.{w} J S) where
 
 end ZeroHypercover
 
-end Coverage
+end Precoverage
 
 end CategoryTheory

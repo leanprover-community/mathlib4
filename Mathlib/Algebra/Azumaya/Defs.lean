@@ -20,7 +20,7 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 ## Reference
 
-* [Benson Farb , R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
+* [Benson Farb, R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
 
 ## Tags
 
@@ -32,8 +32,7 @@ variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 open TensorProduct MulOpposite
 
 /-- `A` as a `A ⊗[R] Aᵐᵒᵖ`-module (or equivalently, an `A`-`A` bimodule). -/
-abbrev instModuleTensorProductMop :
-  Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
+abbrev instModuleTensorProductMop : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
   `a ⊗ b` maps to `f : x ↦ a * x * b`. -/

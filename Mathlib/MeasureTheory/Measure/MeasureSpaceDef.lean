@@ -52,7 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
-assert_not_exists Basis
+assert_not_exists Module.Basis
 
 noncomputable section
 
@@ -146,6 +146,8 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
   simpa only [μ.trimmed] using OuterMeasure.le_trim_iff (m₂ := μ.1)
+
+lemma mono_null ⦃s t : Set α⦄ (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := measure_mono_null h ht
 
 end Measure
 
@@ -436,14 +438,20 @@ theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : 
     (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
 
-variable {δ : Type*} [Countable δ] {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
+variable {δ : Type*} {X : δ → Type*} {mX : ∀ a, MeasurableSpace (X a)}
+
+@[measurability]
+protected theorem AEMeasurable.eval {g : α → Π a, X a} (hg : AEMeasurable g μ) (a : δ) :
+    AEMeasurable (fun x ↦ g x a) μ := by
+  use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
+  exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+
+variable [Countable δ]
 
 theorem aemeasurable_pi_iff {g : α → Π a, X a} :
     AEMeasurable g μ ↔ ∀ a, AEMeasurable (fun x ↦ g x a) μ := by
   constructor
-  · intro hg a
-    use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
-    exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  · exact AEMeasurable.eval
   · intro h
     use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
     exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h

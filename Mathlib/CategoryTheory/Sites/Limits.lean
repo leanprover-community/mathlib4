@@ -81,7 +81,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
         dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
-        aesop_cat }
+        cat_disch }
 
 variable [HasLimitsOfShape K D]
 
@@ -213,7 +213,7 @@ instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sh
 
 /--
 If every cocone on a diagram of sheaves which is a colimit on the level of presheaves satisfies
-the condition that the cocone point is a sheaf, then the functor from sheaves to preseheaves
+the condition that the cocone point is a sheaf, then the functor from sheaves to presheaves
 creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
 topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).

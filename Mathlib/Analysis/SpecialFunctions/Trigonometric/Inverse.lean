@@ -395,7 +395,7 @@ theorem tan_arccos (x : ℝ) : tan (arccos x) = √(1 - x ^ 2) / x := by
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arcsin {x : ℝ} (h : 0 ≤ x) : arccos x = arcsin (√(1 - x ^ 2)) :=
   (arcsin_eq_of_sin_eq (sin_arccos _)
-      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by norm_num))).trans (arccos_nonneg _),
+      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by simp))).trans (arccos_nonneg _),
         arccos_le_pi_div_two.2 h⟩).symm
 
 -- The junk values for `arcsin` and `sqrt` make this true even for `1 < x`.

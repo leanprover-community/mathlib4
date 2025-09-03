@@ -29,7 +29,7 @@ instance [Small.{u} J] (F : J ⥤ Type u) : Small.{u} (F.ColimitType) :=
 
 variable (F : J ⥤ Type u)
 
-/-- If `F : J ⥤ Type u`, then the data of a "type theoretic" cocone of `F`
+/-- If `F : J ⥤ Type u`, then the data of a "type-theoretic" cocone of `F`
 with a point in `Type u` is the same as the data of a cocone (in a categorical sense). -/
 @[simps]
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
@@ -176,7 +176,7 @@ theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
-   congr_fun (colimit.ι_desc s j) x
+  congr_fun (colimit.ι_desc s j) x
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)] (α : F ⟶ G) (j : J)

@@ -47,7 +47,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- Consider an open covering `S : Set (Set α)`
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
-  -- choose a well founded order on `S`
+  -- choose a well-founded order on `S`
   obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)

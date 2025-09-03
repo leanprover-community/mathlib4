@@ -75,7 +75,7 @@ instance (priority := 100) NormalMono.regularMono (f : X ⟶ Y) [I : NormalMono 
     w := by simpa using I.w }
 
 /-- If `f` is a normal mono, then any map `k : W ⟶ Y` such that `k ≫ normal_mono.g = 0` induces
-    a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
+a morphism `l : W ⟶ X` such that `l ≫ f = k`. -/
 def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf : NormalMono f] (k : W ⟶ Y) (h : k ≫ hf.g = 0) :
     { l : W ⟶ X // l ≫ f = k } :=
   KernelFork.IsLimit.lift' NormalMono.isLimit _ h
@@ -119,12 +119,10 @@ class IsNormalMonoCategory : Prop where
 
 attribute [inherit_doc IsNormalMonoCategory] IsNormalMonoCategory.normalMonoOfMono
 
-@[deprecated (since := "2024-11-27")] alias NormalMonoCategory := IsNormalMonoCategory
-
 end
 
 /-- In a category in which every monomorphism is normal, we can express every monomorphism as
-    a kernel. This is not an instance because it would create an instance loop. -/
+a kernel. This is not an instance because it would create an instance loop. -/
 def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
   (IsNormalMonoCategory.normalMonoOfMono _).some
 
@@ -173,7 +171,7 @@ instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] 
     w := by simpa using I.w }
 
 /-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `NormalEpi.g ≫ k = 0`
-    induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
+induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h : nef.g ≫ k = 0) :
     { l : Y ⟶ W // f ≫ l = k } :=
   CokernelCofork.IsColimit.desc' NormalEpi.isColimit _ h
@@ -259,12 +257,10 @@ class IsNormalEpiCategory : Prop where
 
 attribute [inherit_doc IsNormalEpiCategory] IsNormalEpiCategory.normalEpiOfEpi
 
-@[deprecated (since := "2024-11-27")] alias NormalEpiCategory := IsNormalEpiCategory
-
 end
 
 /-- In a category in which every epimorphism is normal, we can express every epimorphism as
-    a kernel. This is not an instance because it would create an instance loop. -/
+a kernel. This is not an instance because it would create an instance loop. -/
 def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
   (IsNormalEpiCategory.normalEpiOfEpi _).some
 

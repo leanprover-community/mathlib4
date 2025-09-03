@@ -29,8 +29,8 @@ variable [CommMonoid α]
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
-@[to_additive (attr := simps) "Multiplication by a natural `n` on a commutative additive monoid,
-considered as a morphism of additive monoids."]
+@[to_additive (attr := simps) /-- Multiplication by a natural `n` on a commutative additive monoid,
+considered as a morphism of additive monoids. -/]
 def powMonoidHom (n : ℕ) : α →* α where
   toFun := (· ^ n)
   map_one' := one_pow _
@@ -44,16 +44,16 @@ variable [DivisionCommMonoid α]
 
 /-- The `n`-th power map (for an integer `n`) on a commutative group, considered as a group
 homomorphism. -/
-@[to_additive (attr := simps) "Multiplication by an integer `n` on a commutative additive group,
-considered as an additive group homomorphism."]
+@[to_additive (attr := simps) /-- Multiplication by an integer `n` on a commutative additive group,
+considered as an additive group homomorphism. -/]
 def zpowGroupHom (n : ℤ) : α →* α where
   toFun := (· ^ n)
   map_one' := one_zpow n
   map_mul' a b := mul_zpow a b n
 
 /-- Inversion on a commutative group, considered as a monoid homomorphism. -/
-@[to_additive "Negation on a commutative additive group, considered as an additive monoid
-homomorphism."]
+@[to_additive /-- Negation on a commutative additive group, considered as an additive monoid
+homomorphism. -/]
 def invMonoidHom : α →* α where
   toFun := Inv.inv
   map_one' := inv_one
@@ -71,8 +71,8 @@ namespace MulHom
 
 /-- Given two mul morphisms `f`, `g` to a commutative semigroup, `f * g` is the mul morphism
 sending `x` to `f x * g x`. -/
-@[to_additive "Given two additive morphisms `f`, `g` to an additive commutative semigroup,
-`f + g` is the additive morphism sending `x` to `f x + g x`."]
+@[to_additive /-- Given two additive morphisms `f`, `g` to an additive commutative semigroup,
+`f + g` is the additive morphism sending `x` to `f x + g x`. -/]
 instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
@@ -103,9 +103,9 @@ variable [Group G]
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
 For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`. -/
 @[to_additive
-  "A homomorphism from an additive group to an additive monoid is injective iff
+  /-- A homomorphism from an additive group to an additive monoid is injective iff
   its kernel is trivial. For the iff statement on the triviality of the kernel,
-  see `injective_iff_map_eq_zero'`."]
+  see `injective_iff_map_eq_zero'`. -/]
 theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 → a = 1 :=
@@ -116,9 +116,9 @@ theorem _root_.injective_iff_map_eq_one {G H} [Group G] [MulOneClass H]
 stated as an iff on the triviality of the kernel.
 For the implication, see `injective_iff_map_eq_one`. -/
 @[to_additive
-  "A homomorphism from an additive group to an additive monoid is injective iff its
+  /-- A homomorphism from an additive group to an additive monoid is injective iff its
   kernel is trivial, stated as an iff on the triviality of the kernel. For the implication, see
-  `injective_iff_map_eq_zero`."]
+  `injective_iff_map_eq_zero`. -/]
 theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
     [FunLike F G H] [MonoidHomClass F G H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
@@ -129,9 +129,9 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
 `fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.
 -/
 @[to_additive
-  "Makes an additive group homomorphism from a proof that the map preserves
+  /-- Makes an additive group homomorphism from a proof that the map preserves
   the operation `fun a b => a + -b`. See also `AddMonoidHom.ofMapSub` for a version using
-  `fun a b => a - b`."]
+  `fun a b => a - b`. -/]
 def ofMapMulInv {H : Type*} [Group H] (f : G → H)
     (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : G →* H :=
   (mk' f) fun x y =>
@@ -144,11 +144,11 @@ def ofMapMulInv {H : Type*} [Group H] (f : G → H)
 
 @[to_additive (attr := simp)]
 theorem coe_of_map_mul_inv {H : Type*} [Group H] (f : G → H)
-    (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) :
-  ↑(ofMapMulInv f map_div) = f := rfl
+    (map_div : ∀ a b : G, f (a * b⁻¹) = f a * (f b)⁻¹) : ↑(ofMapMulInv f map_div) = f :=
+  rfl
 
 /-- Define a morphism of additive groups given a map which respects ratios. -/
-@[to_additive "Define a morphism of additive groups given a map which respects difference."]
+@[to_additive /-- Define a morphism of additive groups given a map which respects difference. -/]
 def ofMapDiv {H : Type*} [Group H] (f : G → H) (hf : ∀ x y, f (x / y) = f x / f y) : G →* H :=
   ofMapMulInv f (by simpa only [div_eq_mul_inv] using hf)
 
@@ -193,8 +193,8 @@ variable [MulOneClass M] [MulOneClass N] [CommGroup G] [CommGroup H]
 
 /-- If `f` is a monoid homomorphism to a commutative group, then `f⁻¹` is the homomorphism sending
 `x` to `(f x)⁻¹`. -/
-@[to_additive "If `f` is an additive monoid homomorphism to an additive commutative group,
-then `-f` is the homomorphism sending `x` to `-(f x)`."]
+@[to_additive /-- If `f` is an additive monoid homomorphism to an additive commutative group,
+then `-f` is the homomorphism sending `x` to `-(f x)`. -/]
 instance : Inv (M →* G) where
   inv f := mk' (fun g ↦ (f g)⁻¹) fun a b ↦ by simp_rw [← mul_inv, f.map_mul]
 
@@ -210,8 +210,8 @@ theorem comp_inv (φ : G →* H) (ψ : M →* G) : φ.comp ψ⁻¹ = (φ.comp ψ
 
 /-- If `f` and `g` are monoid homomorphisms to a commutative group, then `f / g` is the homomorphism
 sending `x` to `(f x) / (g x)`. -/
-@[to_additive "If `f` and `g` are monoid homomorphisms to an additive commutative group,
-then `f - g` is the homomorphism sending `x` to `(f x) - (g x)`."]
+@[to_additive /-- If `f` and `g` are monoid homomorphisms to an additive commutative group,
+then `f - g` is the homomorphism sending `x` to `(f x) - (g x)`. -/]
 instance : Div (M →* G) where
   div f g := mk' (fun x ↦ f x / g x) fun a b ↦ by
     simp [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm]

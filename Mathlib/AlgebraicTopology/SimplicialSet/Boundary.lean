@@ -43,8 +43,4 @@ lemma boundary_eq_iSup (n : ℕ) :
   simp [stdSimplex.face_obj, boundary, Function.Surjective]
   tauto
 
-/-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated boundary (since := "2025-01-26")]
-abbrev boundaryInclusion (n : ℕ) : (∂Δ[n] : SSet.{u}) ⟶ Δ[n] := ∂Δ[n].ι
-
 end SSet
