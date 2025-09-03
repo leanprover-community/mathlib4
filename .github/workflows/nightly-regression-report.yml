@@ -68,7 +68,7 @@ jobs:
         # Use a temporary file to ensure we don't overflow max variable size.
         lean_outfile=$(mktemp)
         # Show the stdout in the GitHub build logs, while we process it from the file.
-        lake build | tee "${lean_outfile}" || true
+        (lake build || true) | tee "${lean_outfile}"
 
         # Skip the lines about build progress.
         filtered_out=$(grep -v '^✔' "${lean_outfile}" | grep -v '^trace: ')
