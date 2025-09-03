@@ -5,7 +5,7 @@ Authors: Joseph Hua
 -/
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Core
-import Mathlib.CategoryTheory.Monad.Limits
+import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # The forgetful-core adjunction
