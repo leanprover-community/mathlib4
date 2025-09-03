@@ -1204,4 +1204,58 @@ theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlg
 
 end DistribMulActionHom
 
+section CommSemiring
+
+variable [Monoid G] [CommSemiring k]
+variable {A : Type*} [Semiring A] [Algebra k A]
+
+/-- The instance `Algebra k (SkewMonoidAlgebra A G)` whenever we have `Algebra k A`.
+  In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`.
+  This requires `SmulTrivAction G k A`. -/
+instance algebra [MulSemiringAction G A]
+    [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) where
+  algebraMap := singleOneRingHom.comp (algebraMap k A)
+  smul_def' r a := by
+    simp only [RingHom.coe_comp, comp_apply]
+    ext
+    simp only [coeff_smul, Algebra.smul_def, singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe,
+      ZeroHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, coeff_single_one_mul];
+  commutes' r f := by
+    simp only [RingHom.coe_comp, comp_apply]
+    ext
+    simp only [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
+      MonoidHom.coe_mk, OneHom.coe_mk, coeff_single_one_mul, Algebra.commutes, coeff_mul_single_one,
+      smul_algebraMap]
+
+@[simp]
+theorem coe_algebraMap [MulSemiringAction G A] [SMulCommClass G k A] :
+    ⇑(algebraMap k (SkewMonoidAlgebra A G)) = single 1 ∘ algebraMap k A :=
+  rfl
+
+theorem single_eq_algebraMap_mul_of [MulSemiringAction G k] [SMulCommClass G k k] (a : G) (b : k) :
+    single a b = algebraMap k (SkewMonoidAlgebra k G) b * of k G a := by
+  simp [coe_algebraMap, comp_apply, of_apply, single_mul_single, one_mul, smul_one, mul_one]
+
+theorem single_algebraMap_eq_algebraMap_mul_of (a : G) (b : k) [MulSemiringAction G A]
+    [SMulCommClass G k A] :
+    single a (algebraMap k A b) = algebraMap k (SkewMonoidAlgebra A G) b * of A G a := by
+  simp [coe_algebraMap, comp_apply, of_apply, single_mul_single, one_mul, smul_one, mul_one]
+
+/- Hypotheses needed for `k`-algebra homomorphism from `SkewMonoidAlgebra k G`-/
+variable [MulSemiringAction G k] [SMulCommClass G k k]
+
+/-- A `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
+values on the functions `single a 1`. -/
+theorem algHom_ext ⦃φ₁ φ₂ : AlgHom k (SkewMonoidAlgebra k G) A⦄
+    (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
+    AlgHom.toLinearMap_injective (lhom_ext' fun a => (LinearMap.ext_ring (h a)))
+
+@[ext high]
+theorem algHom_ext' ⦃φ₁ φ₂ : AlgHom k (SkewMonoidAlgebra k G) A⦄
+    (h : (φ₁ : SkewMonoidAlgebra k G →* A).comp (of k G) =
+      (φ₂ : SkewMonoidAlgebra k G →* A).comp (of k G)) :
+    φ₁ = φ₂ := algHom_ext <| DFunLike.congr_fun h
+
+end CommSemiring
+
 end SkewMonoidAlgebra
