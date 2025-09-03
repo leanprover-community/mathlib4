@@ -8,10 +8,10 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
-# Left exactness of functors between preadditive categories
+# Left-exactness of functors between preadditive categories
 
 We show that a functor is left exact in the sense that it preserves finite limits, if it
-preserves kernels. The dual result holds for right exact functors and cokernels.
+preserves kernels. The dual result holds for right-exact functors and cokernels.
 
 ## Main results
 

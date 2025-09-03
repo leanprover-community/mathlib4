@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 /-!
 # Preservation of finite (co)limits.
 
-These functors are also known as left exact (flat) or right exact functors when the categories
+These functors are also known as lef-exact (flat) or right-exact functors when the categories
 involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
@@ -79,7 +79,7 @@ lemma preservesFiniteLimits_of_preservesFiniteLimitsOfSize (F : C ⥤ D)
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesLimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
-/-- The composition of two left exact functors is left exact. -/
+/-- The composition of two left-exact functors is left exact. -/
 lemma comp_preservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits F]
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
@@ -235,7 +235,7 @@ lemma preservesFiniteColimits_of_preservesFiniteColimitsOfSize (F : C ⥤ D)
         haveI := h (ULiftHom (ULift J)) CategoryTheory.finCategoryUlift
         exact preservesColimitsOfShape_of_equiv (ULiftHomULiftCategory.equiv J).symm F
 
-/-- The composition of two right exact functors is right exact. -/
+/-- The composition of two right-exact functors is right exact. -/
 lemma comp_preservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩

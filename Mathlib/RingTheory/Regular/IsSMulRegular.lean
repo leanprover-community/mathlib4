@@ -103,7 +103,7 @@ alias isSMulRegular_on_quot_iff_smul_mem_implies_mem := isSMulRegular_quotient_i
 @[deprecated (since := "2025-08-04")]
 alias mem_of_isSMulRegular_on_quot_of_smul_mem := mem_of_isSMulRegular_quotient_of_smul_mem
 
-/-- Given a left exact sequence `0 → M → M' → M''`, if `r` is regular on both
+/-- Given a left-exact sequence `0 → M → M' → M''`, if `r` is regular on both
 `M` and `M''` it's regular `M'` too. -/
 lemma isSMulRegular_of_range_eq_ker {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
     (hf : Function.Injective f) (hfg : LinearMap.range f = LinearMap.ker g)

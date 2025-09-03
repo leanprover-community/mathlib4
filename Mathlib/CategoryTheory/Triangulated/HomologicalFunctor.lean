@@ -23,10 +23,10 @@ we have isomorphisms `(F.shift n).obj X ≅ F.obj (X⟦n⟧)`, but through the c
 Given a triangle `T` in `C`, we define a connecting homomorphism
 `F.homologySequenceδ T n₀ n₁ h : (F.shift n₀).obj T.obj₃ ⟶ (F.shift n₁).obj T.obj₁`
 under the assumption `h : n₀ + 1 = n₁`. When `T` is distinguished, this connecting
-homomorphism is part of a long exact sequence
+homomorphism is part of a long-exact sequence
 `... ⟶ (F.shift n₀).obj T.obj₁ ⟶ (F.shift n₀).obj T.obj₂ ⟶ (F.shift n₀).obj T.obj₃ ⟶ ...`
 
-The exactness of this long exact sequence is given by three lemmas
+The exactness of this long-exact sequence is given by three lemmas
 `F.homologySequence_exact₁`, `F.homologySequence_exact₂` and `F.homologySequence_exact₃`.
 
 If `F` is a homological functor, we define the strictly full triangulated subcategory
@@ -163,7 +163,7 @@ end Pretriangulated
 
 section
 
-/-- The connecting homomorphism in the long exact sequence attached to an homological
+/-- The connecting homomorphism in the long-exact sequence attached to an homological
 functor and a distinguished triangle. -/
 noncomputable def homologySequenceδ
     [F.ShiftSequence ℤ] (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :

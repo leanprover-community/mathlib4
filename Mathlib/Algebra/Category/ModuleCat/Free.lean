@@ -13,13 +13,13 @@ This file proves results about linear independence and span in exact sequences o
 
 ## Main theorems
 
-* `linearIndependent_shortExact`: Given a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of
+* `linearIndependent_shortExact`: Given a short-exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of
   `R`-modules and linearly independent families `v : ι → X₁` and `w : ι' → X₃`, we get a linearly
   independent family `ι ⊕ ι' → X₂`
 * `span_rightExact`: Given an exact sequence `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and spanning
   families `v : ι → X₁` and `w : ι' → X₃`, we get a spanning family `ι ⊕ ι' → X₂`
 * Using `linearIndependent_shortExact` and `span_rightExact`, we prove `free_shortExact`: In a
-  short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` where `X₁` and `X₃` are free, `X₂` is free as well.
+  short-exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` where `X₁` and `X₃` are free, `X₂` is free as well.
 
 ## Tags
 linear algebra, module, free
@@ -74,7 +74,7 @@ theorem linearIndependent_leftExact : LinearIndependent R u := by
 end
 
 include hS' hv in
-/-- Given a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and linearly independent
+/-- Given a short-exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and linearly independent
 families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
 theorem linearIndependent_shortExact {w : ι' → S.X₃} (hw : LinearIndependent R w) :
     LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w)) := by
@@ -148,7 +148,7 @@ theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
 
 end Span
 
-/-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, given bases for `X₁` and `X₃`
+/-- In a short-exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, given bases for `X₁` and `X₃`
 indexed by `ι` and `ι'` respectively, we get a basis for `X₂` indexed by `ι ⊕ ι'`. -/
 noncomputable
 def Basis.ofShortExact
@@ -158,7 +158,7 @@ def Basis.ofShortExact
 
 include hS'
 
-/-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
+/-- In a short-exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
 then `X₂` is free. -/
 theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
     Module.Free R S.X₂ :=

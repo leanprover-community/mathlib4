@@ -27,11 +27,11 @@ The right map in the exact sequence     |`Linear_CC'`
 ```
 
 When comparing the proof of the successor case in Theorem 5.4 in [scholze2019condensed] with this
-proof, one should read the phrase "is a basis" as "is linearly independent". Also, the short exact
+proof, one should read the phrase "is a basis" as "is linearly independent". Also, the short-exact
 sequence in [scholze2019condensed] is only proved to be left exact here (indeed, that is enough
 since we are only proving linear independence).
 
-This section is split into two sections. The first one, `ExactSequence` defines the left exact
+This section is split into two sections. The first one, `ExactSequence` defines the left-exact
 sequence mentioned in the previous paragraph (see `succ_mono` and `succ_exact`). It corresponds to
 the penultimate paragraph of the proof in [scholze2019condensed]. The second one, `GoodProducts`
 corresponds to the last paragraph in the proof in [scholze2019condensed].

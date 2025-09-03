@@ -269,7 +269,7 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
-/-- Turn a left exact functor into an additive functor. -/
+/-- Turn a left-exact functor into an additive functor. -/
 def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
   ObjectProperty.ιOfLE fun F ⟨_⟩ =>
     Functor.additive_of_preservesBinaryBiproducts F
@@ -277,7 +277,7 @@ def AdditiveFunctor.ofLeftExact : (C ⥤ₗ D) ⥤ C ⥤+ D :=
 instance : (AdditiveFunctor.ofLeftExact C D).Full := ObjectProperty.full_ιOfLE _
 instance : (AdditiveFunctor.ofLeftExact C D).Faithful := ObjectProperty.faithful_ιOfLE _
 
-/-- Turn a right exact functor into an additive functor. -/
+/-- Turn a right-exact functor into an additive functor. -/
 def AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
   ObjectProperty.ιOfLE fun F ⟨_⟩ =>
     Functor.additive_of_preservesBinaryBiproducts F

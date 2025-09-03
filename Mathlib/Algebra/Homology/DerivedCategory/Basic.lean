@@ -47,7 +47,7 @@ instance should be obtained at the beginning of the proof, using the term
 
 ## TODO (@joelriou)
 
-- construct the distinguished triangle associated to a short exact sequence
+- construct the distinguished triangle associated to a short-exact sequence
 of cochain complexes (done), and compare the associated connecting homomorphism
 with the one defined in `Algebra.Homology.HomologySequence`.
 

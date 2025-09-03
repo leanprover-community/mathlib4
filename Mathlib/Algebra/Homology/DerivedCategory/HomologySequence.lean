@@ -11,7 +11,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 In this file, we construct `homologyFunctor C n : DerivedCategory C ⥤ C` for all `n : ℤ`,
 show that they are homological functors which form a shift sequence, and construct
-the long exact homology sequences associated to distinguished triangles in the
+the long-exact homology sequences associated to distinguished triangles in the
 derived category.
 
 -/

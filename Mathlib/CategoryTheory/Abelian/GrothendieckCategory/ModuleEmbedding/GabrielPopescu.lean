@@ -133,7 +133,7 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     · rw [ModuleCat.mono_iff_injective]
       cat_disch
 
-/-- Right exactness follows because `tensorObj G` is a left adjoint. -/
+/-- Right-exactness follows because `tensorObj G` is a left adjoint. -/
 theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :
     PreservesFiniteLimits (tensorObj G) := by
   have := preservesInjectiveObjects G hG
