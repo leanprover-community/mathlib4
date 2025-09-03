@@ -404,7 +404,7 @@ lemma ENNReal.tsum_two_zpow_neg_add_one :
 
 open Encodable
 
-lemma tsum_geometric_ENNReal_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n = 2 := by simp
+lemma ENNReal.tsum_geometric_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n = 2 := by simp
 
 lemma tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
     ∑' i : ι, (2⁻¹ : ℝ≥0∞) ^ encode i ≤ 2 :=
