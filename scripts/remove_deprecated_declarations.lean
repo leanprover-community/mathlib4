@@ -36,6 +36,16 @@ def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
         return some {module := mod, rgStart := rg.pos, rgStop := rg.endPos, since := since}
   return none
 
+def cleanUpRanges (fin : Array String.Range) : Array String.Range :=
+  fin.foldl (init := #[]) fun tot n =>
+    if let some back := tot.back? then
+      if back.start ≤ n.start && n.stop ≤ back.stop then
+        tot.pop.push n
+      else
+        tot.push n
+    else
+        tot.push n
+
 def deprecatedHashMap (deprecateFrom : String) :
     CommandElabM (Std.HashMap String (Array String.Range)) := do
   let mut fin := ∅
@@ -59,10 +69,11 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
   let mut fileSubstring := file.toSubstring
   let mut tot := ""
   for next in rgs do
+    if next.start < curr then continue
     let part := {fileSubstring with stopPos := next.start}.toString
     tot := tot ++ part
     curr := next.start
-    fileSubstring := {fileSubstring with startPos := next.stop}.trimLeft
+    fileSubstring := ({fileSubstring with startPos := next.stop}.dropWhile (!·.isWhitespace)).trimLeft
   return tot
 
 open Lean Elab Command in
@@ -70,15 +81,16 @@ elab "#remove_deprecated_declarations " date:str really?:("really")? : command =
   let deprecateFrom := date.getString
   let dmap ← deprecatedHashMap deprecateFrom
   dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size} deprecations among {dmap.size} files"
-  for (mod, rgs) in dmap do
+  for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
     let mod1 := "Mathlib" ++ (mod.splitOn "Mathlib").getLast!
-    --dbg_trace "From '{mod}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+    let rgs := cleanUpRanges rgs
+    dbg_trace "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
     let num := rgs.size - 1
     dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
     if really?.isSome then
       IO.FS.writeFile mod (← removeDeprecations mod rgs)
 
-#remove_deprecated_declarations "2025-02-31"
+#remove_deprecated_declarations "2025-02-31" --really
 /--
 info: import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Order.RelClasses
