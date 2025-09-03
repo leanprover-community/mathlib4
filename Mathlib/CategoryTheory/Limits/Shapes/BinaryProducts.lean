@@ -280,7 +280,7 @@ section
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
+-- TODO: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
