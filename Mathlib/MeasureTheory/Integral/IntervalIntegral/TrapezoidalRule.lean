@@ -116,8 +116,8 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
   rw [sum_integral_adjacent_intervals]
   · simp
   · intro k hk
-    suffices H : ∀ {k : ℕ}, k ≤ N → a + k * h ∈ [[a, a + N * h]] from
-      IntervalIntegrable.mono h_f_int (Set.uIcc_subset_uIcc (H hk.le) (H hk)) le_rfl
+    suffices ∀ {k : ℕ}, k ≤ N → a + k * h ∈ [[a, a + N * h]] from
+      IntervalIntegrable.mono h_f_int (Set.uIcc_subset_uIcc (this hk.le) (this hk)) le_rfl
     rcases le_total h 0 with h_neg | h_pos <;> intro k hk <;> rw [← Nat.cast_le (α := ℝ)] at hk
     · exact Set.mem_uIcc_of_ge (add_le_add_left (mul_le_mul_of_nonpos_right hk h_neg) a)
         (add_le_of_nonpos_right (mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg))
@@ -306,8 +306,7 @@ theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
   -- Slightly trickier case: a > b (requires flipping the direction and sign of the true and
   -- approximate integrals)
   · rw [uIcc_of_gt h_gt] at *
-    rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub]
-    rw [trapezoidal_error_symm f N_nonzero a b, abs_neg]
+    rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub, trapezoidal_error_symm f N_nonzero a b, abs_neg]
     exact trapezoidal_error_le_of_lt h_gt h_df h_ddf h_ddf_integrable.symm fpp_bound N_nonzero
 
 /-- The error bound for trapezoidal integration in the slightly weaker, but very common, case where
@@ -324,7 +323,7 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
   have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 one_le_two
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
-    rw [(funext₂ fun _ _ ↦ symm iteratedDerivWithin_one : derivWithin f = iteratedDerivWithin 1 f)]
+    rw [(funext₂ fun _ _ ↦ iteratedDerivWithin_one.symm : derivWithin f = iteratedDerivWithin 1 f)]
     exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
   have h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b :=
     (ContDiffOn.continuousOn_iteratedDerivWithin h_f_c2 (le_refl 2) ud).intervalIntegrable
