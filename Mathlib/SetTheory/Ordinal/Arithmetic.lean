@@ -341,15 +341,9 @@ theorem pred_le_iff_le_succ {a b} : pred a ≤ b ↔ a ≤ succ b := by
   · simp
   · rw [ha.ordinalPred_eq, ha.le_succ_iff]
 
-@[deprecated pred_le_iff_le_succ (since := "2025-02-11")]
-alias pred_le := pred_le_iff_le_succ
-
 @[simp]
 theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
   le_iff_le_iff_lt_iff_lt.1 pred_le_iff_le_succ
-
-@[deprecated lt_pred_iff_succ_lt (since := "2025-02-11")]
-alias lt_pred := lt_pred_iff_succ_lt
 
 theorem pred_le_self (o) : pred o ≤ o := by
   simpa using le_succ o

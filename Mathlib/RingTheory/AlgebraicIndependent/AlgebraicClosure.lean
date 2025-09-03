@@ -62,8 +62,6 @@ theorem extendScalars_of_isIntegral [Algebra.IsIntegral R S] : AlgebraicIndepend
 
 @[deprecated (since := "2025-02-08")] alias extendScalars_of_isSimpleRing := extendScalars
 @[deprecated (since := "2025-02-08")] protected alias subalgebra := extendScalars
-@[deprecated (since := "2025-02-08")] alias subalgebra_of_isIntegral := extendScalars_of_isIntegral
-
 theorem subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors A] :
     AlgebraicIndependent (Subalgebra.algebraicClosure R A) x :=
   hx.extendScalars _
