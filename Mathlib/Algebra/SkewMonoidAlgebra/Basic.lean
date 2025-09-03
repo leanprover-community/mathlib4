@@ -140,7 +140,7 @@ instance : AddMonoid (SkewMonoidAlgebra k G) where
 section Support
 
 /-- For `f : SkewMonoidAlgebra k G`, `f.support` is the set of all `a ∈ G` such that
-`f a ≠ 0`. -/
+`f.coeff a ≠ 0`. -/
 def support : SkewMonoidAlgebra k G → Finset G
   | ⟨p⟩ => p.support
 
