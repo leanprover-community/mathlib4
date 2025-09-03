@@ -35,12 +35,18 @@ open ENNReal
 variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
 variable {R : Type*} [NormedRing R]
 
+namespace Linfty
 section Mul
 
+/-- We use the existing `HSMul (Lp R ∞ μ) (Lp R ∞ μ) (Lp R ∞ μ)` instance to define
+   `Mul (Lp R ∞ μ)`, to ensure compatibility of the former with the latter. -/
 noncomputable instance : Mul (Lp R ∞ μ) where
   mul f g := f • g
 
-lemma Linfty.coeFn_mul (f g : Lp R ∞ μ) : f * g =ᵐ[μ] ⇑f * g :=
+/-- Check for diamonds, to guard against future refactors that try to change the def of `Mul`. -/
+example : (· * ·) = (· • · : Lp R ∞ μ → Lp R ∞ μ → Lp R ∞ μ) := by with_reducible_and_instances rfl
+
+lemma coeFn_mul (f g : Lp R ∞ μ) : f * g =ᵐ[μ] ⇑f * g :=
   Lp.coeFn_lpSMul f g
 
 end Mul
@@ -48,7 +54,7 @@ end Mul
 section Const
 
 /-- Note: Unlike for general Lp, this does not require `IsFiniteMeasure` instance. -/
-theorem memLinfty_const (c : R) : MemLp (fun _ : α => c) ∞ μ := by
+theorem memLp_const (c : R) : MemLp (fun _ : α => c) ∞ μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
   by_cases hμ : μ = 0
   · simp [hμ]
@@ -57,10 +63,10 @@ theorem memLinfty_const (c : R) : MemLp (fun _ : α => c) ∞ μ := by
 
 theorem const_mem_Linfty (c : R) :
     @AEEqFun.const α _ _ μ _ c ∈ Lp R ∞ μ :=
-  (memLinfty_const c).eLpNorm_mk_lt_top
+  (memLp_const c).eLpNorm_mk_lt_top
 
 /-- The constant L∞ function. -/
-def Linfty.const : R →+ Lp R ∞ μ where
+def const : R →+ Lp R ∞ μ where
   toFun c := ⟨AEEqFun.const α c, const_mem_Linfty c⟩
   map_zero' := rfl
   map_add' _ _ := rfl
