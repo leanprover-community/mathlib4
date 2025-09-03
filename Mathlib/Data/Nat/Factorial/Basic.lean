@@ -485,7 +485,7 @@ the big-integer operands to each are much smaller. -/
 def factorialBinarySplitting (n : Nat) : Nat :=
   if _ : n = 0 then 1 else prodRange 1 (n + 1)
 where
-  /-- 
+  /--
   `prodRange lo hi` is the product of the range `lo` to `hi` (exclusive),
   computed by binary splitting.
   -/
