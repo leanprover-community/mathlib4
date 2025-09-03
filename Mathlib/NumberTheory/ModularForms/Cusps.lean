@@ -89,7 +89,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} :
     · simp only [map_mul, map_inv, GeneralLinearGroup.IsParabolic, Units.val_mul,
          isParabolic_conj_iff]
       refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr_fun₂ ha 0 1), ?_⟩
-      simp [disc, trace_fin_two, det_fin_two, ModularGroup.T]
+      simp [disc_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · simp [← Rat.coe_castHom, OnePoint.map_smul, MulAction.mul_smul,
         a.map_mapGL (by rfl : _ = Rat.castHom ℝ),
