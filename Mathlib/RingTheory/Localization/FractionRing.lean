@@ -66,7 +66,7 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
 
 /-- As a corollary, `Rat` is also a localization at only positive integers. -/
 instance : IsLocalization (Submonoid.pos ℤ) ℚ where
-  map_units' y := by simpa using ne_of_gt y.prop
+  map_units' y := by simpa using y.prop.ne'
   surj' z := by
     obtain ⟨⟨x1, x2⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors ℤ) z
     obtain hx2 | hx2 := lt_or_gt_of_ne (show x2.val ≠ 0 by simp)
