@@ -183,7 +183,6 @@ theorem sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
 /-- The sine of the angle between `x` and `x + y`. -/
 theorem sin_angle_add {x y : V} (hx : x ≠ 0) (hy : x + y ≠ 0) :
     Real.sin (angle x (x + y)) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖x + y‖) := by
-  -- replace hy := sub_ne_zero.mpr hy
   rw [sin_angle hx hy]
   field_simp
   simp only [inner_add_left, inner_add_right, real_inner_comm]
