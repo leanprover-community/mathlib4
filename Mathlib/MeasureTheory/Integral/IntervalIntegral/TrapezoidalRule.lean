@@ -147,7 +147,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     apply integral_hasDerivWithinAt_right
     · apply ContinuousOn.intervalIntegrable_of_Icc hy.left
       apply h_df.continuousOn.mono
-      exact Set.Icc_subset_Icc (le_refl a) hy.right
+      exact Icc_subset_Icc (le_refl a) hy.right
     · exact h_df.continuousOn.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc y
     · exact h_df.continuousOn.continuousWithinAt hy
   -- Compute g'', once again applying standard derivative identities.
@@ -204,7 +204,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     apply ContinuousOn.intervalIntegrable_of_Icc ht.left
     apply ContinuousOn.mono cont (s := [[a, b]])
     rw [uIcc_of_lt a_lt_b]
-    apply Set.Icc_subset_Icc (le_refl a) ht.2
+    apply Icc_subset_Icc (le_refl a) ht.2
   -- Now we put all this together and do a bit more calculus: if |f' t| < c * t ^ n, then
   -- |f t| < c / (n + 1) * t ^ (n + 1).  The bound is phrased in this exact way, including
   -- universal quantifiers, so that it can be composed with itself.
@@ -221,20 +221,13 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
   -- Finally, we run our `power_bound` logic twice, turning our bound on ddg into a bound on dg
   -- and then into a bound on g.  (This does require proving continuity of g and dg, which we can
   -- do straightforwardly by using our previous derivative results, and integrability of dg and
-  -- ddg.  The first of these is also straightforward, while the second needs a little bit of
-  -- work.)
+  -- ddg.)
   have gk_continuous : ContinuousOn g (Icc a b) := fun y hy ↦ (h_dg y hy).continuousWithinAt
   have dgk_continuous : ContinuousOn dg (Icc a b) := fun y hy ↦ (h_ddg y hy).continuousWithinAt
   have dgk_integrable : IntervalIntegrable dg volume a b :=
     dgk_continuous.intervalIntegrable_of_Icc a_lt_b.le
-  have ddgk_integrable : IntervalIntegrable ddg volume a b := by
-    apply IntervalIntegrable.continuousOn_mul
-    · have : IntervalIntegrable (iteratedDerivWithin 2 f (Icc a b)) volume a b := by
-        apply IntervalIntegrable.mono h_ddf_integrable _ (le_refl volume)
-        rw [uIcc_of_lt a_lt_b]
-      have := IntervalIntegrable.comp_add_left this a
-      simpa
-    · fun_prop
+  have ddgk_integrable : IntervalIntegrable ddg volume a b :=
+    h_ddf_integrable.continuousOn_mul (by fun_prop)
   have := power_bound (integral_from_zero h_ddg (by unfold dg; ring_nf: dg a = 0)
     dgk_continuous ddgk_integrable) bound_ddg
   have := power_bound (integral_from_zero h_dg (by simp [g]) gk_continuous dgk_integrable) this
