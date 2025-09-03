@@ -48,6 +48,103 @@ in general), and `ι` is countable.
   the uniformity is definitionally the product uniformity. Not registered as an instance.
 -/
 
+namespace PseudoEMetricSpace
+
+open ENNReal
+
+variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
+
+/-- Build new pseudoemetric space from an old one where the edistance uniform structure is provably
+(but typically non-definitionally) equal to some given distance structure. Below are convenience
+versions for PseudoMetric, Emetric and Metric spaces. -/
+-- See note [forgetful inheritance]
+-- See note [reducible non-instances]
+abbrev replaceEDist : PseudoEMetricSpace X where
+  edist := d
+  edist_self := by simp [hd]
+  edist_comm := by simp [hd, edist_comm]
+  edist_triangle := by simp [hd, edist_triangle]
+  uniformity_edist := by simp [hd, uniformity_edist]
+  __ := m
+
+lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible dsimp [replaceEDist]
+
+end PseudoEMetricSpace
+
+namespace PseudoMetricSpace
+variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = dist)
+
+/-- Build new pseudometric space from an old one as above -/
+abbrev replaceDist : PseudoMetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  edist_dist := by simp [hd, edist_dist]
+  uniformity_dist := by simp [hd, uniformity_dist]
+  cobounded_sets := by simp [hd, cobounded_sets]
+  __ := m
+
+lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible dsimp [replaceDist]
+
+-- Check Bornology is unchanged
+example : (replaceDist m d hd).toBornology = m.toBornology := by
+  with_reducible dsimp [replaceDist]
+
+end PseudoMetricSpace
+
+namespace EMetricSpace
+
+open ENNReal
+
+variable {X : Type*} (m : EMetricSpace X) (d : X → X → ℝ≥0∞) (hd : d = edist)
+
+/-- Build new emetric space from an old one as above -/
+abbrev replaceEDist : EMetricSpace X where
+  edist := d
+  edist_self := by simp [hd]
+  edist_comm := by simp [hd, edist_comm]
+  edist_triangle := by simp [hd, edist_triangle]
+  eq_of_edist_eq_zero := by simp [hd]
+
+lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible simp [replaceEDist_eq]
+
+end EMetricSpace
+
+namespace MetricSpace
+variable {X : Type*} (m : MetricSpace X) (d : X → X → ℝ) (hd : d = dist)
+
+/-- Build new metric space from an old one as above -/
+abbrev replaceDist : MetricSpace X where
+  dist := d
+  dist_self := by simp [hd]
+  dist_comm := by simp [hd, dist_comm]
+  dist_triangle := by simp [hd, dist_triangle]
+  eq_of_dist_eq_zero := by simp [hd]
+
+lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
+
+-- Check uniformity is unchanged
+example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
+  with_reducible simp [replaceDist_eq]
+
+-- Check Bornology is unchanged
+example : (replaceDist m d hd).toBornology = m.toBornology := by
+  with_reducible simp [replaceDist_eq]
+
+end MetricSpace
 noncomputable section
 
 open Topology TopologicalSpace Set Metric Filter Function
