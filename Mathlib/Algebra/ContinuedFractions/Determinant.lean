@@ -59,7 +59,6 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
       have gp_a_eq_one : gp.a = 1 := s.property _ _ (partNum_eq_s_a s_nth_eq)
       rw [gp_a_eq_one, this.symm]
       ring
-    suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by grind
     suffices ppA * pB - ppB * pA = (-1) ^ n by grind
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
