@@ -623,18 +623,15 @@ theorem mem_union_of_disjoint [DecidableEq α]
   tauto
 
 @[simp]
-theorem univ_finset_of_isEmpty [h : IsEmpty α] : (Set.univ : Set (Finset α)) = {∅} := by
-  ext S
-  rw [Set.mem_singleton_iff, eq_true (Set.mem_univ S), true_iff]
-  ext a
-  exact IsEmpty.elim h a
+theorem univ_finset_of_isEmpty [h : IsEmpty α] : (Set.univ : Set (Finset α)) = {∅} :=
+  subset_antisymm (fun S hS ↦ by simp [Finset.eq_empty_of_isEmpty S]) (by simp)
+
+theorem isEmpty_of_forall_eq_empty (H : ∀ s : Finset α, s = ∅) : IsEmpty α :=
+  isEmpty_iff.mpr fun a ↦ by specialize H {a}; aesop
 
 @[simp]
-theorem univ_finset_eq_singleton_empty_iff : @Set.univ (Finset α) = {∅} ↔ IsEmpty α  := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
-  by_contra H
-  rw [not_isEmpty_iff] at H
-  suffices {Classical.ofNonempty} ∈ (Set.univ  : Set (Finset α)) by aesop
-  trivial
+theorem univ_finset_eq_singleton_empty_iff : @Set.univ (Finset α) = {∅} ↔ IsEmpty α :=
+  ⟨fun h ↦ isEmpty_of_forall_eq_empty fun s ↦ Set.mem_singleton_iff.mp
+    (Set.ext_iff.mp h s |>.mp (Set.mem_univ s)), fun _ ↦ by simp⟩
 
 end Finset
