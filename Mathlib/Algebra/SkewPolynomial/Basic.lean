@@ -36,7 +36,7 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 
 ## Implementation notes
 
-The implementation uses `Muliplicative ℕ` instead of `ℕ` and some notion
+The implementation uses `Muliplicative ℕ` instead of `ℕ` as some notion
 of `AddSkewMonoidAlgebra` like the current implementation of `Polynomials` in Mathlib.
 
 This decision was made for two reasons:
