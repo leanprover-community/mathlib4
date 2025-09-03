@@ -567,6 +567,14 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
+theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support ⊆ (p.cons hadj).support := by
+  simp
+
+theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support ⊆ (p.concat hadj).support := by
+  simp
+
 @[simp]
 theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
@@ -1493,3 +1501,5 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700
