@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Hannah Scholz
 -/
 
 import Mathlib.Topology.CWComplex.Classical.Finite
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Subcomplexes
