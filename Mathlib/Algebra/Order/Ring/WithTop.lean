@@ -113,8 +113,8 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction x with | top => simp [hy, this] | coe x => ?_
-      induction y with
+      cases x with | top => simp [hy, this] | coe x => ?_
+      cases y with
       | top =>
         have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
