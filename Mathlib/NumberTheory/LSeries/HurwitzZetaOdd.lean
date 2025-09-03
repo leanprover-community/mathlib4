@@ -65,8 +65,6 @@ lemma jacobiTheta₂''_conj (z τ : ℂ) :
 /-- Restatement of `jacobiTheta₂'_add_left'`: the function `jacobiTheta₂''` is 1-periodic in `z`. -/
 lemma jacobiTheta₂''_add_left (z τ : ℂ) : jacobiTheta₂'' (z + 1) τ = jacobiTheta₂'' z τ := by
   simp only [jacobiTheta₂'', add_mul z 1, one_mul, jacobiTheta₂'_add_left', jacobiTheta₂_add_left']
-  generalize jacobiTheta₂ (z * τ) τ = J
-  generalize jacobiTheta₂' (z * τ) τ = J'
   -- clear denominator
   simp_rw [div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc]
   refine congr_arg (· / (2 * π * I)) ?_
