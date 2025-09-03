@@ -448,8 +448,8 @@ instance : Inhabited (Cycle α) :=
 
 /-- An induction principle for `Cycle`. Use as `induction s`. -/
 @[elab_as_elim, induction_eliminator]
-theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
-    (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
+theorem induction_on {motive : Cycle α → Prop} (s : Cycle α) (nil : motive nil)
+    (cons : ∀ (a) (l : List α), motive ↑l → motive ↑(a :: l)) : motive s :=
   Quotient.inductionOn' s fun l => by
     refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
@@ -848,8 +848,9 @@ theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Pro
   Chain.imp hab
 
 theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
-  induction' s with a l _
-  · exact fun _ => Cycle.Chain.nil r
+  induction s with
+  | nil => exact fun _ ↦ Cycle.Chain.nil r
+  | cons a l => ?_
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
   have Hl : ∀ {b} (_hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
@@ -873,8 +874,9 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
-    induction' s with a l _
-    · exact fun _ b hb => (notMem_nil _ hb).elim
+    induction s with
+    | nil => exact fun _ b hb ↦ (notMem_nil _ hb).elim
+    | cons a l => ?_
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
@@ -887,9 +889,10 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
-  induction' s with a l _ h
-  · rfl
-  · have ha : a ∈ a :: l := mem_cons_self
+  induction s with
+  | nil => rfl
+  | cons a l h =>
+    have ha : a ∈ a :: l := mem_cons_self
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
 
 theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=
