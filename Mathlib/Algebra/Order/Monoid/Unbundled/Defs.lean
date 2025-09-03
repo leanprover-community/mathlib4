@@ -253,6 +253,10 @@ abbrev AddRightReflectLE [Add M] [LE M] : Prop :=
 
 attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
+instance [Add M] [Preorder M] [i₁ : AddRightMono M] [i₂ : AddRightReflectLE M] :
+    Lean.Grind.OrderedAdd M where
+  add_le_left_iff := fun c => ⟨i₁.elim c, i₂.elim c⟩
+
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩

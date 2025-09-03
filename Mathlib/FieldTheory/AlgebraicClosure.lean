@@ -38,8 +38,8 @@ def algebraicClosure : IntermediateField F E :=
 
 variable {F E}
 
-theorem algebraicClosure_toSubalgebra :
-  (algebraicClosure F E).toSubalgebra = integralClosure F E := rfl
+theorem algebraicClosure_toSubalgebra : (algebraicClosure F E).toSubalgebra = integralClosure F E :=
+  rfl
 
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
 it is an integral element. -/
