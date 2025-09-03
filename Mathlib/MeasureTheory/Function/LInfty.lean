@@ -72,11 +72,13 @@ def const : R →+ Lp R ∞ μ where
   map_add' _ _ := rfl
 
 @[simp]
-lemma Linfty.const_val (c : R) : (Linfty.const c).1 = AEEqFun.const (β := R) (μ := μ) α c := rfl
+lemma const_val (c : R) : (Linfty.const c).1 = AEEqFun.const (β := R) (μ := μ) α c := rfl
 
-lemma Linfty.coeFn_const (c : R) : Linfty.const (μ := μ) c =ᵐ[μ] Function.const α c :=
+lemma coeFn_const (c : R) : Linfty.const (μ := μ) c =ᵐ[μ] Function.const α c :=
   AEEqFun.coeFn_const α c
 
 end Const
+
+end Linfty
 
 end MeasureTheory
