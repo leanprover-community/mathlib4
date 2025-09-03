@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Continuous affine maps between normed spaces.
