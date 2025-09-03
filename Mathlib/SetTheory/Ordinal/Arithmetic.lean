@@ -124,13 +124,6 @@ theorem right_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : b = 0 :=
 
 /-! ### Limit ordinals -/
 
-/-- A limit ordinal is an ordinal which is not zero and not a successor.
-
-Deprecated: use `Order.IsSuccLimit` instead. -/
-@[deprecated IsSuccLimit (since := "2025-02-09")]
-def IsLimit (o : Ordinal) : Prop :=
-  IsSuccLimit o
-
 theorem isSuccLimit_iff {o : Ordinal} : IsSuccLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
   simp [IsSuccLimit]
 
@@ -363,38 +356,12 @@ theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   · simpa using (lt_succ a).ne
   · simp_rw [ho.ordinalPred_eq, ho]
 
-@[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
-theorem pred_eq_iff_not_succ {o} : pred o = o ↔ ¬∃ a, o = succ a := by
-  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_eq_iff_isSuccPrelimit
-
-@[deprecated pred_eq_iff_isSuccPrelimit (since := "2025-02-11")]
-theorem pred_eq_iff_not_succ' {o} : pred o = o ↔ ∀ a, o ≠ succ a := by
-  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_eq_iff_isSuccPrelimit
-
 theorem pred_lt_iff_not_isSuccPrelimit {o} : pred o < o ↔ ¬ IsSuccPrelimit o := by
   rw [(pred_le_self o).lt_iff_ne]
   exact pred_eq_iff_isSuccPrelimit.not
 
-@[deprecated pred_lt_iff_not_isSuccPrelimit (since := "2025-02-11")]
-theorem pred_lt_iff_is_succ {o} : pred o < o ↔ ∃ a, o = succ a := by
-  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using pred_lt_iff_not_isSuccPrelimit
-
 theorem succ_pred_eq_iff_not_isSuccPrelimit {o} : succ (pred o) = o ↔ ¬ IsSuccPrelimit o := by
   rw [← (self_le_succ_pred o).ge_iff_eq', succ_le_iff, pred_lt_iff_not_isSuccPrelimit]
-
-@[deprecated succ_pred_iff_is_succ (since := "2025-02-11")]
-theorem succ_pred_iff_is_succ {o} : succ (pred o) = o ↔ ∃ a, o = succ a := by
-  simpa [eq_comm, isSuccPrelimit_iff_succ_ne] using succ_pred_eq_iff_not_isSuccPrelimit
-
-@[deprecated IsSuccPrelimit.succ_lt_iff (since := "2025-02-11")]
-theorem succ_lt_of_not_succ {o b : Ordinal} (h : ¬∃ a, o = succ a) : succ b < o ↔ b < o := by
-  apply (isSuccPrelimit_of_succ_ne _).succ_lt_iff
-  simpa [eq_comm] using h
-
-@[deprecated isSuccPrelimit_lift (since := "2025-02-11")]
-theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a := by
-  simpa [eq_comm, not_isSuccPrelimit_iff', - isSuccPrelimit_lift] using
-    isSuccPrelimit_lift.not
 
 @[simp]
 theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := by

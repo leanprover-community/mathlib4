@@ -916,7 +916,6 @@ theorem negAt_apply_norm_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     ‖(negAt s x).1 w‖ = ‖x.1 w‖ := by
   by_cases hw : w ∈ s <;> simp [hw]
 
-@[deprecated (since := "2025-02-28")] alias negAt_apply_abs_of_isReal := negAt_apply_norm_isReal
 @[deprecated (since := "2025-03-01")] alias negAt_apply_abs_isReal := negAt_apply_norm_isReal
 
 open MeasureTheory Classical in
