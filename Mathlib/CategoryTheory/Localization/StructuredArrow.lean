@@ -102,10 +102,10 @@ lemma induction_structuredArrow
   apply induction_structuredArrow' W P'
   · convert hP₀
     simp
-  · intros Y₁ Y₂ f φ hφ
+  · intro Y₁ Y₂ f φ hφ
     convert hP₁ f (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp]
-  · intros Y₁ Y₂ w hw φ hφ
+  · intro Y₁ Y₂ w hw φ hφ
     convert hP₂ w hw (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp, homEquiv_isoOfHom_inv]
 

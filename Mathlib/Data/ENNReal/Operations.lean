@@ -39,7 +39,8 @@ protected lemma pow_le_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n �
 protected lemma pow_lt_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
   (ENNReal.pow_right_strictMono hn).lt_iff_lt
 
-@[mono, gcongr] protected alias ⟨_, pow_le_pow_left⟩ := ENNReal.pow_le_pow_left_iff
+@[mono, gcongr] protected lemma pow_le_pow_left {n : ℕ} (h : a ≤ b) : a ^ n ≤ b ^ n :=
+  pow_le_pow_left' h n
 @[mono, gcongr] protected alias ⟨_, pow_lt_pow_left⟩ := ENNReal.pow_lt_pow_left_iff
 
 -- TODO: generalize to `WithTop`
@@ -355,6 +356,19 @@ protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
   refine ENNReal.eq_sub_of_add_eq b_ne_top ?_
   simp only [add_assoc, add_comm c b]
   simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
+
+lemma add_sub_add_eq_sub_right (hc : c ≠ ∞ := by finiteness) : (a + c) - (b + c) = a - b := by
+  lift c to ℝ≥0 using hc
+  cases a <;> cases b
+  · simp
+  · simp
+  · simp
+  · norm_cast
+    rw [add_tsub_add_eq_tsub_right]
+
+lemma add_sub_add_eq_sub_left (hc : c ≠ ∞ := by finiteness) : (c + a) - (c + b) = a - b := by
+  simp_rw [add_comm c]
+  exact ENNReal.add_sub_add_eq_sub_right hc
 
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞

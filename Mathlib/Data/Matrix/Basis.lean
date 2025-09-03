@@ -84,7 +84,7 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
     Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
   simp only [Set.mem_matrix, single, of_apply]
-  conv_lhs => intro _ _; rw[ite_mem]
+  conv_lhs => intro _ _; rw [ite_mem]
   simp [hS]
 
 end Zero
@@ -118,7 +118,6 @@ theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Mat
 
 theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     single i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
-  ext i' j'
   simp [-mul_ite, single, vecMulVec, ite_and, Pi.single_apply, eq_comm]
 
 @[deprecated (since := "2025-05-05")]
@@ -209,16 +208,23 @@ def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R
   LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
     LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
 
+-- not `simp` to let `liftLinear_single` fire instead
+theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
+    liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
+  simp [liftLinear, map_sum, LinearEquiv.congrLeft]
+
 @[simp]
-theorem liftLinear_piSingle (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
+theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
   dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
   simp_rw [of_symm_single, LinearMap.lsum_piSingle]
 
+@[deprecated (since := "2025-08-13")] alias liftLinear_piSingle := liftLinear_single
+
 @[simp]
 theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
     liftLinear S f ∘ₗ Matrix.singleLinearMap _ i j = f i j :=
-  LinearMap.ext <| liftLinear_piSingle S f i j
+  LinearMap.ext <| liftLinear_single S f i j
 
 @[simp]
 theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :
@@ -353,7 +359,7 @@ variable [Fintype n] [Semiring α]
 theorem row_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
   have := ext_iff.mpr hM i k
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
@@ -361,7 +367,7 @@ alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
 theorem col_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hki : k ≠ i) : M k i = 0 := by
   have := ext_iff.mpr hM k j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
@@ -369,7 +375,7 @@ alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
 theorem diag_eq_of_commute_single {i j : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) : M i i = M j j := by
   have := ext_iff.mpr hM i j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias diag_eq_of_commute_stdBasisMatrix := diag_eq_of_commute_single

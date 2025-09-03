@@ -28,8 +28,6 @@ class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     extends ContMDiffAdd I n R where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
 
-@[deprecated (since := "2025-01-09")] alias SmoothRing := ContMDiffRing
-
 -- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Semiring R] [TopologicalSpace R] [ChartedSpace H R] [h : ContMDiffRing I n R] :
@@ -66,6 +64,3 @@ see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_contMDiffRing [Semiring R] [ContMDiffRing I n R] :
     IsTopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }
-
-@[deprecated (since := "2025-01-09")]
-alias topologicalSemiring_of_smooth := topologicalSemiring_of_contMDiffRing

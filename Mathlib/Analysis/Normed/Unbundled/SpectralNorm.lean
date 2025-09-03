@@ -852,11 +852,11 @@ def seminormedAddCommGroup [CompleteSpace K] : SeminormedAddCommGroup L := by
 
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
 def normedSpace [CompleteSpace K] : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
-   letI _ := seminormedAddCommGroup K L
-   {(inferInstance : Module K L) with
-     norm_smul_le r x := by
-       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
-       exact le_of_eq (map_smul_eq_mul _ _ _)}
+  letI _ := seminormedAddCommGroup K L
+  {(inferInstance : Module K L) with
+    norm_smul_le r x := by
+      change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
+      exact le_of_eq (map_smul_eq_mul _ _ _)}
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def metricSpace [CompleteSpace K] : MetricSpace L := (normedField K L).toMetricSpace

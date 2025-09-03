@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.List.GetD
 
 /-!
@@ -120,7 +120,7 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
 theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
     toFinsupp l = (l.mapIdx fun n r => Finsupp.single n r).sum := by
-  /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `induction` fails to substitute `l = []` in
+  /- Porting note: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with

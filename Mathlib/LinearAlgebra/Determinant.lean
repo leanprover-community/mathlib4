@@ -299,11 +299,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
 
 /-- If a linear map is invertible, so is its determinant. -/
 theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
-    IsUnit (LinearMap.det f) := by
-  obtain ⟨g, hg⟩ : ∃ g, f.comp g = 1 := hf.exists_right_inv
-  have : LinearMap.det f * LinearMap.det g = 1 := by
-    simp only [← LinearMap.det_comp, hg, MonoidHom.map_one]
-  exact isUnit_of_mul_eq_one _ _ this
+    IsUnit (LinearMap.det f) := IsUnit.map LinearMap.det hf
 
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
 theorem finiteDimensional_of_det_ne_one {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M →ₗ[𝕜] M)
@@ -430,10 +426,12 @@ theorem LinearEquiv.isUnit_det' {A : Type*} [CommRing A] [Module A M] (f : M ≃
     IsUnit (LinearMap.det (f : M →ₗ[A] M)) :=
   isUnit_of_mul_eq_one _ _ f.det_mul_det_symm
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The determinant of `f.symm` is the inverse of that of `f` when `f` is a linear equiv. -/
 theorem LinearEquiv.det_coe_symm {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] (f : M ≃ₗ[𝕜] M) :
     LinearMap.det (f.symm : M →ₗ[𝕜] M) = (LinearMap.det (f : M →ₗ[𝕜] M))⁻¹ := by
-  field_simp [IsUnit.ne_zero f.isUnit_det']
+  simp [field, IsUnit.ne_zero f.isUnit_det']
 
 /-- Builds a linear equivalence from a linear map whose determinant in some bases is a unit. -/
 @[simps]
@@ -593,6 +591,13 @@ theorem det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M') (f 
 theorem det_basis (b : Basis ι A M) (b' : Basis ι A M) :
     LinearMap.det (b'.equiv b (Equiv.refl ι)).toLinearMap = b'.det b :=
   (b.det_comp_basis b' (LinearMap.id)).symm
+
+theorem det_mul_det (b b' b'' : Basis ι A M) :
+    b.det b' * b'.det b'' = b.det b'' := by
+  have : b'' = (b'.equiv b'' (Equiv.refl ι)).toLinearMap ∘ b'  := by
+    ext; simp
+  conv_rhs =>
+    rw [this, Basis.det_comp, det_basis, mul_comm]
 
 theorem det_inv (b : Basis ι A M) (b' : Basis ι A M) :
     (b.isUnit_det b').unit⁻¹ = b'.det b := by

@@ -174,7 +174,7 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
-@[to_additive] -- `(attr := simp)` can not be used here because `a` can not be inferred by `simp`.
+@[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
 
@@ -362,7 +362,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
-  "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
+  /-- In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma -/]
 theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 
