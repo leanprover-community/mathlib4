@@ -32,69 +32,59 @@ variable {J : Type u'} [Category.{v} J]
 variable (F : J ⥤ C)
 
 /-- The cone associated to a lower bound of a functor. -/
-def coneOfLowerBound (x : lowerBounds (Set.range F.obj)) : Cone F where
+def coneOfLowerBound {x : C} (h : x ∈ lowerBounds (Set.range F.obj)) : Cone F where
   pt := x
   π := {
-    app i := by apply homOfLE; apply x.prop; simp
+    app i := homOfLE (h (Set.mem_range_self _))
   }
 
-/-- The lower bound associated to a cone of a functor. -/
-def lowerBoundOfCone (c : Cone F) : lowerBounds (Set.range F.obj) where
-  val := c.pt
-  property x p := by
-    obtain ⟨i, p⟩ := p
-    rw [← p]
-    exact (c.π.app i).le
+/-- The point of a cone is a lower bound. -/
+lemma lowerBoundOfCone (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.obj) := by
+  intro x ⟨i, p⟩; rw [← p]; exact (c.π.app i).le
 
 /-- If a cone is a limit, its point is a glb. -/
 lemma isGLB_of_isLimit {c : Cone F} (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
-  ⟨(lowerBoundOfCone F c).prop, fun i k ↦ (h.lift (coneOfLowerBound F ⟨i, k⟩)).le⟩
+  ⟨(lowerBoundOfCone F c), fun _ k ↦ (h.lift (coneOfLowerBound F k)).le⟩
 
 /-- If the point of cone is a glb, the cone is a limi.t -/
 def isLimitOfIsGLB (c : Cone F) (h : IsGLB (Set.range F.obj) c.pt) : IsLimit c where
-  lift d := (h.2 (lowerBoundOfCone F d).prop).hom
+  lift d := (h.2 (lowerBoundOfCone F d)).hom
 
 /-- A functor has a limit iff there exists a glb. -/
 lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x := by
   constructor <;> intro h
   · let limitCone := getLimitCone F
-    exact ⟨limitCone.cone.pt, isGLB_IsLimit F _ limitCone.isLimit⟩
+    exact ⟨limitCone.cone.pt, isGLB_of_isLimit F limitCone.isLimit⟩
   · obtain ⟨l, isGLB⟩ := h
-    exact ⟨⟨⟨coneOfLowerBound F ⟨l, isGLB.1⟩, isLimitOfIsGLB F _ isGLB⟩⟩⟩
+    exact ⟨⟨⟨coneOfLowerBound F isGLB.1, isLimitOfIsGLB F _ isGLB⟩⟩⟩
 
-/-- The cocone associated to an upper bound of a func.tor -/
-def coconeOfUpperBound (x : upperBounds (Set.range F.obj)) : Cocone F where
+/-- The cocone associated to an upper bound of a functor -/
+def coconeOfUpperBound {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
   pt := x
   ι := {
-    app i := by apply homOfLE; apply x.prop; simp
+    app i := homOfLE (h (Set.mem_range_self _))
   }
 
-/-- The upper bound associated to a cocone of a funct.or -/
-def upperBoundOfCocone (c : Cocone F) : upperBounds (Set.range F.obj) where
-  val := c.pt
-  property x p := by
-    obtain ⟨i, p⟩ := p
-    rw [← p]
-    exact (c.ι.app i).le
+/-- The point of a cocone is an upper bound. -/
+lemma upperBoundOfCocone (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj) := by
+  intro x ⟨i, p⟩; rw [← p]; exact (c.ι.app i).le
 
-/-- If a cocone is a limit, its point is a lub. -/
-lemma isLUB_IsColimit (c : Cocone F) (h : IsColimit c) :
-    IsLUB (Set.range F.obj) c.pt :=
-  ⟨(upperBoundOfCocone F c).prop, fun i k ↦ (h.desc (coconeOfUpperBound F ⟨i, k⟩)).le⟩
+/-- If a cocone is a colimit, its point is a lub. -/
+lemma isLUB_of_isColimit {c : Cocone F} (h : IsColimit c) : IsLUB (Set.range F.obj) c.pt :=
+  ⟨(upperBoundOfCocone F c), fun _ k ↦ (h.desc (coconeOfUpperBound F k)).le⟩
 
 /-- If the point of cocone is a lub, the cocone is a .colimit -/
-def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) :
-    IsColimit c where
-  desc d := (h.2 (upperBoundOfCocone F d).prop).hom
+def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) : IsColimit c where
+  desc d := (h.2 (upperBoundOfCocone F d)).hom
 
 /-- A functor has a colimit iff there exists a lub. -/
 lemma hasColimit_iff_hasLUB :
     HasColimit F ↔ ∃ x, IsLUB (Set.range F.obj) x := by
   constructor <;> intro h
   · let limitCocone := getColimitCocone F
-    exact ⟨limitCocone.cocone.pt, isLUB_IsColimit F _ limitCocone.isColimit⟩
+    exact ⟨limitCocone.cocone.pt, isLUB_of_isColimit F limitCocone.isColimit⟩
   · obtain ⟨l, isLUB⟩ := h
-    exact ⟨⟨⟨coconeOfUpperBound F ⟨l, isLUB.1⟩, isColimitOfIsLUB F _ isLUB⟩⟩⟩
+    exact ⟨⟨⟨coconeOfUpperBound F isLUB.1, isColimitOfIsLUB F _ isLUB⟩⟩⟩
 
 end
 
@@ -102,7 +92,7 @@ noncomputable section HasTerminal
 
 variable [Preorder C] [HasTerminal C]
 
-instance (priority := low) : OrderTop C where
+def orderTopOfHasTerminal : OrderTop C where
   top := ⊤_ C
   le_top x := leOfHom (Limits.terminal.from x)
 
@@ -124,7 +114,7 @@ noncomputable section HasInitial
 
 variable [Preorder C] [HasInitial C]
 
-instance (priority := low) : OrderBot C where
+def orderBotOfHasInitial : OrderBot C where
   bot := ⊥_ C
   bot_le x := leOfHom (Limits.initial.to x)
 
