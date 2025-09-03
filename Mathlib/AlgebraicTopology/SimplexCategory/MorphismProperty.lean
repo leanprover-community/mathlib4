@@ -33,8 +33,8 @@ lemma Truncated.morphismProperty_eq_top
     W = ⊤ := by
   ext ⟨a, ha⟩ ⟨b, hb⟩ f
   simp only [MorphismProperty.top_apply, iff_true]
-  induction' a using SimplexCategory.rec with a
-  induction' b using SimplexCategory.rec with b
+  induction a using SimplexCategory.rec with | _ a
+  induction b using SimplexCategory.rec with | _ b
   dsimp at ha hb
   generalize h : a + b = c
   induction c generalizing a b with
@@ -62,7 +62,8 @@ lemma Truncated.morphismProperty_eq_top
         exact W.comp_mem _ _ (σ_mem _ (by omega) _) (hc _ _ _ _ _ (by omega))
     rw [← epi_iff_surjective] at h₁
     rw [← mono_iff_injective] at h₂
-    obtain rfl : a = b := le_antisymm (len_le_of_mono h₂) (len_le_of_epi h₁)
+    have := isIso_of_mono_of_epi f'
+    obtain rfl : a = b := len_eq_of_isIso f'
     obtain rfl : f = 𝟙 _ := eq_id_of_mono f'
     apply W.id_mem
 

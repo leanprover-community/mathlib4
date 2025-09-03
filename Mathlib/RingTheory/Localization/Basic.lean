@@ -371,11 +371,11 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
     ring
 
-variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommRing Rₘ] [CommRing Sₙ] [CommRing Rₘ'] [CommRing Sₙ']
-  [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ] [Algebra Rₘ Sₙ]
-  [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ] [IsLocalization N Sₙ]
-  [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ] [IsScalarTower R S Sₙ]
-  [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
+variable (Rₘ Sₙ Rₘ' Sₙ' : Type*) [CommSemiring Rₘ] [CommSemiring Sₙ] [CommSemiring Rₘ']
+  [CommSemiring Sₙ'] [Algebra R Rₘ] [Algebra S Sₙ] [Algebra R Rₘ'] [Algebra S Sₙ'] [Algebra R Sₙ]
+  [Algebra Rₘ Sₙ] [Algebra Rₘ' Sₙ'] [Algebra R Sₙ'] (N : Submonoid S) [IsLocalization M Rₘ]
+  [IsLocalization N Sₙ] [IsLocalization M Rₘ'] [IsLocalization N Sₙ'] [IsScalarTower R Rₘ Sₙ]
+  [IsScalarTower R S Sₙ] [IsScalarTower R Rₘ' Sₙ'] [IsScalarTower R S Sₙ']
 
 theorem algEquiv_comp_algebraMap : (algEquiv N Sₙ Sₙ' : _ →+* Sₙ').comp (algebraMap Rₘ Sₙ) =
       (algebraMap Rₘ' Sₙ').comp (algEquiv M Rₘ Rₘ') := by
@@ -441,48 +441,6 @@ lemma coe_algEquiv_symm :
 
 end Localization
 
-end CommSemiring
-
-section CommRing
-
-variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
-namespace IsLocalization
-
-variable (M) in
-/--
-Another version of `IsLocalization.map_injective_of_injective` that requires that there is no zero
-divisors but is more general for the choice of the localization submodule.
--/
-theorem map_injective_of_injective' {f : R →+* S}
-    {Rₘ : Type*} [CommRing Rₘ] [IsDomain Rₘ] [Algebra R Rₘ] [NoZeroSMulDivisors R Rₘ]
-    [IsLocalization M Rₘ] (Sₘ : Type*) {N : Submonoid S} [CommRing Sₘ] [IsDomain Sₘ] [Algebra S Sₘ]
-    [NoZeroSMulDivisors S Sₘ] [IsLocalization N Sₘ] (hf : M ≤ Submonoid.comap f N)
-    (hf' : Function.Injective f) :
-    Function.Injective (map Sₘ f hf : Rₘ →+* Sₘ) := by
-  by_cases hM : 0 ∈ M
-  · have hRₘ : Unique Rₘ := uniqueOfZeroMem hM
-    obtain ⟨x, y, h⟩ : ∃ x y : Rₘ, x ≠ y := nontrivial_iff.mp inferInstance
-    simp [hRₘ.uniq x, hRₘ.uniq y] at h
-  refine (injective_iff_map_eq_zero (map Sₘ f hf)).mpr fun x h ↦ ?_
-  have h₁ : (sec M x).1 = 0 := by
-    simpa [map, lift, Submonoid.LocalizationWithZeroMap.lift_apply,
-      _root_.map_eq_zero_iff f hf'] using h
-  have h₂ : ((sec M x).2 : R) ≠ 0 := ne_of_mem_of_not_mem (SetLike.coe_mem (sec M x).2) hM
-  simpa [h₁, map_zero, mul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff, h₂, or_false] using
-    sec_spec M x
-
-end IsLocalization
-
-variable [Algebra R S] {P : Type*} [CommRing P]
-
-namespace Localization
-
-theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
-  simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-end Localization
-
 open IsLocalization
 
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
@@ -506,7 +464,7 @@ theorem Field.localization_map_bijective {K Kₘ : Type*} [Field K] [CommRing K�
 -- way round causes issues with defeq of instances, so this is actually easier.
 section Algebra
 
-variable {S} {Rₘ Sₘ : Type*} [CommRing Rₘ] [CommRing Sₘ]
+variable {Rₘ Sₘ : Type*} [CommSemiring Rₘ] [CommSemiring Sₘ]
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 variable [Algebra S Sₘ] [i : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
 include S
@@ -610,5 +568,40 @@ theorem localizationAlgebra_injective (hRS : Function.Injective (algebraMap R S)
   IsLocalization.map_injective_of_injective _ _ _ hRS
 
 end Algebra
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
+
+namespace IsLocalization
+
+variable (M) in
+/--
+Another version of `IsLocalization.map_injective_of_injective` that requires that there is no zero
+divisors but is more general for the choice of the localization submodule.
+-/
+theorem map_injective_of_injective' {f : R →+* S}
+    {Rₘ : Type*} [CommRing Rₘ] [IsDomain Rₘ] [Algebra R Rₘ] [NoZeroSMulDivisors R Rₘ]
+    [IsLocalization M Rₘ] (Sₘ : Type*) {N : Submonoid S} [CommRing Sₘ] [IsDomain Sₘ] [Algebra S Sₘ]
+    [NoZeroSMulDivisors S Sₘ] [IsLocalization N Sₘ] (hf : M ≤ Submonoid.comap f N)
+    (hf' : Function.Injective f) :
+    Function.Injective (map Sₘ f hf : Rₘ →+* Sₘ) := by
+  by_cases hM : 0 ∈ M
+  · have hRₘ : Unique Rₘ := uniqueOfZeroMem hM
+    obtain ⟨x, y, h⟩ : ∃ x y : Rₘ, x ≠ y := nontrivial_iff.mp inferInstance
+    simp [hRₘ.uniq x, hRₘ.uniq y] at h
+  refine (injective_iff_map_eq_zero (map Sₘ f hf)).mpr fun x h ↦ ?_
+  have h₁ : (sec M x).1 = 0 := by
+    simpa [map, lift, Submonoid.LocalizationMap.lift₀_apply, _root_.map_eq_zero_iff f hf'] using h
+  have h₂ : ((sec M x).2 : R) ≠ 0 := ne_of_mem_of_not_mem (SetLike.coe_mem (sec M x).2) hM
+  simpa [h₁, map_zero, mul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff, h₂, or_false] using
+    sec_spec M x
+
+end IsLocalization
+
+theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
+  simpa using mk_algebraMap (R := R) (A := ℤ) _
 
 end CommRing
