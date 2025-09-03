@@ -3,7 +3,7 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -16,10 +16,7 @@ namespace Matrix
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
-
-/-- The discriminant of a `2 × 2` matrix. -/
-noncomputable def disc : R := m.trace ^ 2 - 4 * m.det
+variable {R : Type*} [CommRing R] [Nontrivial R] (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *parabolic* if it is non-scalar and its discriminant is 0. -/
 def IsParabolic : Prop := m ∉ Set.range (scalar _) ∧ m.disc = 0
@@ -32,7 +29,7 @@ variable {m}
 -- `g⁻¹.val`, but `g⁻¹.val` is more convenient in this theory
 
 lemma disc_conj : (g * m * g⁻¹).disc = m.disc := by
-  simp only [disc, trace_units_conj, det_units_conj]
+  simp only [disc_fin_two, trace_units_conj, det_units_conj]
 
 lemma disc_conj' : (g⁻¹ * m * g).disc = m.disc := by
   simpa using disc_conj g⁻¹
@@ -54,8 +51,8 @@ variable {K : Type*} [Field K] {m : Matrix (Fin 2) (Fin 2) K}
 
 lemma sub_scalar_sq_eq_disc [NeZero (2 : K)] :
     (m - scalar _ (m.trace / 2)) ^ 2 = scalar _ (m.disc / 4) := by
-  simp only [Matrix.scalar_apply, Matrix.trace_fin_two, disc, Matrix.trace_fin_two,
-    Matrix.det_fin_two, sq, (by norm_num : (4 : K) = 2 * 2)]
+  simp only [scalar_apply, trace_fin_two, disc_fin_two, trace_fin_two,
+    det_fin_two, sq, (by norm_num : (4 : K) = 2 * 2)]
   ext i j
   fin_cases i <;>
   fin_cases j <;>
@@ -96,7 +93,7 @@ end Field
 
 section LinearOrderedRing
 
-variable {R : Type*} [CommRing R] [Preorder R]
+variable {R : Type*} [CommRing R] [Nontrivial R] [Preorder R]
   (m : Matrix (Fin 2) (Fin 2) R) (g : GL (Fin 2) R)
 
 /-- A `2 × 2` matrix is *hyperbolic* if its discriminant is strictly positive. -/
@@ -156,8 +153,9 @@ lemma fixpointPolynomial_eq_zero_iff {g : GL (Fin 2) R} :
 
 lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsParabolic g) :
     g.val.parabolicEigenvalue ≠ 0 := by
+  have : g.val.trace ^ 2 = 4 * g.val.det := by simpa [sub_eq_zero, disc_fin_two] using hg.2
   rw [parabolicEigenvalue, div_ne_zero_iff, eq_true_intro (two_ne_zero' K), and_true,
-    Ne, ← sq_eq_zero_iff, sub_eq_zero.mp hg.2, show (4 : K) = 2 ^ 2 by norm_num, mul_eq_zero,
+    Ne, ← sq_eq_zero_iff, this, show (4 : K) = 2 ^ 2 by norm_num, mul_eq_zero,
     sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
