@@ -77,7 +77,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
     (n : ℕ) : ∀ (X : C), n = Nat.card (F.obj X) → ∃ (ι : Type) (f : ι → C)
     (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  induction' n using Nat.strongRecOn with n hi
+  induction n using Nat.strongRecOn with | _ n hi
   intro X hn
   by_cases h : IsConnected X
   · exact has_decomp_connected_components_aux_conn X
