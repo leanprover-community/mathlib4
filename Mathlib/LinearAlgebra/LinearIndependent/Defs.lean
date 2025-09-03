@@ -243,7 +243,7 @@ theorem linearIndependent_iff'ₛ :
           _ = ∑ j ∈ s, (Finsupp.lapply i : (ι →₀ R) →ₗ[R] R) (Finsupp.single j (f j)) :=
             Eq.symm <|
               Finset.sum_eq_single i
-                (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne hji])
+                (fun j _hjs hji => by rw [Finsupp.lapply_apply, Finsupp.single_eq_of_ne' hji])
                 fun hnis => hnis.elim his
           _ = (∑ j ∈ s, Finsupp.single j (f j)) i := (map_sum ..).symm
       rw [this f, this g, h],
@@ -340,7 +340,7 @@ protected theorem LinearMap.linearIndependent_iff_of_injOn (f : M →ₗ[R] M')
     LinearIndependent R (f ∘ v) ↔ LinearIndependent R v := by
   simp_rw [LinearIndependent, Finsupp.linearCombination_linear_comp, coe_comp]
   rw [hf_inj.injective_iff]
-  rw [← Finsupp.range_linearCombination, LinearMap.range_coe]
+  rw [← Finsupp.range_linearCombination, LinearMap.coe_range]
 
 protected theorem LinearMap.linearIndepOn_iff_of_injOn (f : M →ₗ[R] M')
     (hf_inj : Set.InjOn f (span R (v '' s))) :
