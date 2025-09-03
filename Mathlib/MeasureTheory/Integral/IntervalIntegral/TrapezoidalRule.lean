@@ -229,10 +229,10 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     intro t ht
     rw [← h_int t ht]
     calc
-      _ ≤ ∫ x in a..t, c * ((x - a) ^ n)  := abs_int_leq_int_abs ht (by fun_prop) h_bound
-      _ = c * ∫ x in a..t, (x - a) ^ n    := integral_const_mul _ _
+      _ ≤ ∫ x in a..t, c * ((x - a) ^ n)    := abs_int_leq_int_abs ht (by fun_prop) h_bound
+      _ = c * ∫ x in a..t, (x - a) ^ n      := integral_const_mul _ _
       _ = c * ((t - a) ^ (n + 1) / (n + 1)) := by simp [integral_comp_sub_right (· ^ n) a]
-      _ = _                           := by ring_nf
+      _ = _                                 := by ring_nf
   -- Finally, we run our `power_bound` logic twice, turning our bound on ddg into a bound on dg
   -- and then into a bound on g.  (This does require proving continuity of g and dg, which we can
   -- do straightforwardly by using our previous derivative results, and integrability of dg and
