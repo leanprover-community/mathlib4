@@ -47,7 +47,7 @@ instance (priority := 900) {M : Type*} [Group M] [TopologicalSpace M] [Continuou
   isOpenEmbedding_unitsVal := toUnits_homeomorph.symm.isOpenEmbedding
 
 instance (priority := 900) {M : Type*} [GroupWithZero M]
-    [TopologicalSpace M] [HasContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
+    [TopologicalSpace M] [ContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
   isOpenEmbedding_unitsVal := by
     refine ⟨Units.isEmbedding_val₀, ?_⟩
     convert (isClosed_singleton (X := M) (x := 0)).isOpen_compl
