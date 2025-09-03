@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: clean up
         run: |
-          rm -rf docs
+          rm -rf docbuild
           rm -rf "$HOME/.elan"
           rm -rf "$HOME/.cache/mathlib"
 
@@ -38,7 +38,7 @@ jobs:
       - name: create dummy docs project
         run: |
           # Build HTML documentation for the project
-          # The output will be located in docs/docs
+          # The output will be located in docbuild/docs
 
           # Create a temporary docbuild folder
           mkdir -p docbuild
@@ -66,7 +66,7 @@ jobs:
           # No need to reinstall packages if we can just copy them from Mathlib.
           mkdir -p .lake/packages
           cp -r ../.lake/packages/* .lake/packages
-          lake update
+          cp ../lean-toolchain . # Use Mathlib's (nightly) toolchain.
 
           # Disable an error message due to a non-blocking bug. See Zulip
           MATHLIB_NO_CACHE_ON_UPDATE=1 lake update "$NAME"
@@ -76,7 +76,7 @@ jobs:
           cp ../docs/references.bib docs/references.bib
 
       - name: build doc-gen4
-        working-directory: docs
+        working-directory: docbuild
         run: |
           env DISABLE_EQUATIONS=1 lake build doc-gen4
 
@@ -86,7 +86,7 @@ jobs:
           lake exe graph mathlib.html
 
       - name: generate docs
-        working-directory: docs
+        working-directory: docbuild
         run: |
           lake build Batteries:docs Qq:docs Aesop:docs ProofWidgets:docs Mathlib:docs Archive:docs Counterexamples:docs docs:docs
           lake build Mathlib:docsHeader
@@ -94,7 +94,7 @@ jobs:
       - name: clean up
         if: always()
         run: |
-          rm -rf docs
+          rm -rf docbuild
           rm -rf "$HOME/.elan"
           rm -rf "$HOME/.cache/mathlib"
 
