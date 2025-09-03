@@ -100,7 +100,6 @@ theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
   Iff.rfl
 
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
-  apply not_iff_not.mp
   simp [mem_iff]
 
 @[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
