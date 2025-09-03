@@ -331,10 +331,8 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
   have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 one_le_two
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
-    have : derivWithin f [[a, b]] = iteratedDerivWithin 1 f [[a, b]] := by
-      ext x
-      rw [iteratedDerivWithin_one]
-    rw [this]
+    rw [(funext (fun _ ↦ funext (fun _ ↦ symm iteratedDerivWithin_one)) :
+      derivWithin f = iteratedDerivWithin 1 f)]
     exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
   have h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b :=
     (ContDiffOn.continuousOn_iteratedDerivWithin h_f_c2 (le_refl 2) ud).intervalIntegrable
