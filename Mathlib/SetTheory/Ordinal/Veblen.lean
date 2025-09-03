@@ -31,6 +31,10 @@ The following notation is scoped to the `Ordinal` namespace.
 - Prove that `ε₀` and `Γ₀` are countable.
 - Prove that the exponential principal ordinals are the epsilon ordinals (and 0, 1, 2, ω).
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
+
+## References
+
+* [Larry W. Miller, Normal functions and constructive ordinal notations][Miller_1976]
 -/
 
 noncomputable section
