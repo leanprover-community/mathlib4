@@ -1,0 +1,127 @@
+/-
+Copyright (c) 2025 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+import Mathlib.Deprecated.Order
+--import Mathlib.Geometry.Convex.Cone.Basic
+--import Mathlib.Data.Real.Cardinality
+--import Mathlib.Analysis.Real.Cardinality
+--set_option linter.style.header false
+--set_option linter.directoryDependency false
+/-!
+d
+-/
+
+#check Lean.Linter.deprecatedAttr -- for `deprecated` attribute
+#check Lean.Linter.deprecatedAttr
+
+open Lean Elab Command
+
+structure DeprecationInfo where
+  module : Name
+  rgStart : Position
+  rgStop : Position
+  since : String
+
+def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
+    CommandElabM (Option DeprecationInfo) := do
+  let env ← getEnv
+  -- if there is a `since` in the deprecation
+  if let some {since? := some since, ..} := Linter.deprecatedAttr.getParam? env nm
+  then
+    -- retrieve the `range` for the declaration
+    if let some {range := rg, ..} ← findDeclarationRanges? nm
+    then
+      -- retrieve the module where the declaration is located
+      if let some mod ← findModuleOf? nm
+      then
+        if verbose? then
+          logInfo
+            s!"In the module '{mod}', the declaration {nm} at {rg.pos}--{rg.endPos} \
+              is deprecated since {since}"
+        return some {module := mod, rgStart := rg.pos, rgStop := rg.endPos, since := since}
+  return none
+  --throwError "No deprecation info for {nm}"
+
+def deprecatedHashMap (deprecateFrom : String) :
+    CommandElabM (Std.HashMap String (Array String.Range)) := do
+  let mut fin := ∅
+  for (nm, _) in (← getEnv).constants.map₁ do
+    if let some ⟨modName, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
+    then
+      if since < deprecateFrom then
+        continue
+      let lean ← findLean (← getSrcSearchPath) modName
+      let file ← IO.FS.readFile lean
+      let fm := FileMap.ofString file
+      let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
+      fin := fin.alter file fun a =>
+        (a.getD #[⟨fm.positions.back!, default⟩]).binInsert (·.1 < ·.1) rg
+  return fin
+
+
+
+/--
+info: import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Order.RelClasses
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module (since := "2025-09-02")
+
+whatsnew in
+whatsnew in
+theorem NotDeprecated : True := trivial
+-/
+#guard_msgs in
+run_cmd
+  let modName : Name := `Mathlib.Deprecated.Order
+  let deprecateFrom := "2025-09-02"
+  let dmap ← deprecatedHashMap deprecateFrom
+  let lean ← findLean (← getSrcSearchPath) modName
+  let file ← IO.FS.readFile lean
+  for (d, rgs) in dmap do
+    if d != file then continue
+    else
+/-
+  let fm := FileMap.ofString file
+  --dbg_trace file
+
+  let mut rgs := #[]
+  --for nm in #[``X, ``Y, ``Z, ``NotDeprecated] do
+  for (nm, _) in (← getEnv).constants.map₁ do
+    --if nm == ``X then dbg_trace "found {nm}"
+    if let some ⟨mod, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
+    then
+      if mod != modName then
+        --if nm == ``X then dbg_trace "wrong mod {mod}"
+        continue
+      if since < deprecateFrom then
+        --if nm == ``X then dbg_trace "wrong since {since}"
+        continue
+      let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
+      rgs := rgs.binInsert (·.1 < ·.1) rg
+  --dbg_trace rgs.size
+  --dbg_trace rgs.map fun | {start := a, stop := b} => (a, b)
+  --let rgs : Array String.Range := #[]
+  rgs := rgs.push (⟨fm.positions.back!, default⟩)
+-/
+  let mut curr : String.Pos := 0
+  let mut fileSubstring := file.toSubstring
+  let mut tot := ""
+  for next in rgs do
+    let part := {fileSubstring with stopPos := next.start}.toString
+    tot := tot ++ part
+    curr := next.start
+    fileSubstring := {fileSubstring with startPos := next.stop}.trimLeft
+  dbg_trace tot
+
+
+
+run_cmd
+  for nm in #[``X, ``Y, ``Z] do
+    let ⟨mod, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm true
+#eval do
+  findLean (← getSrcSearchPath) `Mathlib.Deprecated.Order
+
+#check findModuleOf?
