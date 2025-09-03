@@ -171,7 +171,7 @@ section Ring
 variable [Ring A] [AddCommMonoid C] [Algebra R A] [Module R C] [Coalgebra R C]
 
 /-- Convolution ring structure on linear maps from a coalgebra to an algebra. -/
-instance convRing : Ring (C →ₗ[R] A) where
+abbrev convRing : Ring (C →ₗ[R] A) where
 
 scoped[ConvolutionProduct] attribute [instance] LinearMap.convRing
 
