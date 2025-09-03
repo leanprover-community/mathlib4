@@ -379,12 +379,11 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
       simpa using f.injective h
     exact univ.map (fᵣ i)
   card_parts i := by simp
-  Adj := by
-    intro _ _ hne _ hv₁ _ hv₂
-    rw [mem_map] at hv₁ hv₂
-    obtain ⟨_, _, hb₁⟩ := hv₁
-    obtain ⟨_, _, hb₂⟩ := hv₂
-    rw [← hb₁, ← hb₂]
+  Adj _ _ hne _ h₁ _ h₂ := by
+    rw [mem_map] at h₁ h₂
+    obtain ⟨_, _, h₁⟩ := h₁
+    obtain ⟨_, _, h₂⟩ := h₂
+    rw [← h₁, ← h₂]
     exact f.toHom.map_adj hne
 
 end CompleteEquipartiteSubgraph
@@ -401,7 +400,7 @@ in `s` are adjacent to the vertices in `A`. -/
 theorem completeEquipartiteGraph_succ_isContained_iff {n : ℕ} :
   completeEquipartiteGraph (n + 1) t ⊑ G
     ↔ ∃ᵉ (A : G.CompleteEquipartiteSubgraph n t) (s : Finset V),
-      #s = t ∧ ∀ v₁ ∈ s.val, ∀ i, ∀ v₂ ∈ (A.parts i).val, G.Adj v₁ v₂ := by
+      #s = t ∧ ∀ v₁ ∈ s, ∀ i, ∀ v₂ ∈ A.parts i, G.Adj v₁ v₂ := by
   rw [completeEquipartiteGraph_isContained_iff]
   refine ⟨fun ⟨A'⟩ ↦ ?_, fun ⟨A, s, hs, hadj⟩ ↦ ?_⟩
   · let A : G.CompleteEquipartiteSubgraph n t := by
