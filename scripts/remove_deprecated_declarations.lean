@@ -4,17 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Deprecated.Order
---import Mathlib.Geometry.Convex.Cone.Basic
---import Mathlib.Data.Real.Cardinality
---import Mathlib.Analysis.Real.Cardinality
---set_option linter.style.header false
---set_option linter.directoryDependency false
+
 /-!
 d
 -/
-
-#check Lean.Linter.deprecatedAttr -- for `deprecated` attribute
-#check Lean.Linter.deprecatedAttr
 
 open Lean Elab Command
 
@@ -42,7 +35,6 @@ def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
               is deprecated since {since}"
         return some {module := mod, rgStart := rg.pos, rgStop := rg.endPos, since := since}
   return none
-  --throwError "No deprecation info for {nm}"
 
 def deprecatedHashMap (deprecateFrom : String) :
     CommandElabM (Std.HashMap String (Array String.Range)) := do
@@ -50,18 +42,38 @@ def deprecatedHashMap (deprecateFrom : String) :
   for (nm, _) in (← getEnv).constants.map₁ do
     if let some ⟨modName, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
-      if since < deprecateFrom then
+      if modName.getRoot != `Mathlib then continue
+      if deprecateFrom < since then
         continue
       let lean ← findLean (← getSrcSearchPath) modName
       let file ← IO.FS.readFile lean
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
-      fin := fin.alter file fun a =>
+      fin := fin.alter lean.toString fun a =>
         (a.getD #[⟨fm.positions.back!, default⟩]).binInsert (·.1 < ·.1) rg
   return fin
 
+def removeDeprecations (fname : String) (rgs : Array String.Range) : CommandElabM String := do
+  let file ← IO.FS.readFile fname
+  let mut curr : String.Pos := 0
+  let mut fileSubstring := file.toSubstring
+  let mut tot := ""
+  for next in rgs do
+    let part := {fileSubstring with stopPos := next.start}.toString
+    tot := tot ++ part
+    curr := next.start
+    fileSubstring := {fileSubstring with startPos := next.stop}.trimLeft
+  return tot
 
+open Lean Elab Command in
+elab "#remove_deprecated_declarations " date:str really?:("really")? : command => do
+  let deprecateFrom := date.getString
+  let dmap ← deprecatedHashMap deprecateFrom
+  if really?.isNone then
+    for (mod, rgs) in dmap do
+      dbg_trace "From '{mod}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
 
+#remove_deprecated_declarations "2025-02-22"
 /--
 info: import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Order.RelClasses
