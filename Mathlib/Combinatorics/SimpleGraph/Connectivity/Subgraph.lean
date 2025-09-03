@@ -590,7 +590,8 @@ end induced_subgraphs
 theorem Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
     (toSubgraph H h).Connected := by
   obtain ⟨hpreconn, _⟩ := hconn
-  simp_all [Subgraph.connected_iff_forall_exists_walk_subgraph]
+  simp_all only [Subgraph.connected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
+    Set.univ_nonempty, Set.mem_univ, forall_const, true_and]
   intro u v
   obtain ⟨p, _⟩ := hpreconn.set_univ_walk_nonempty u v
   use p.transfer G (fun e he ↦ edgeSet_subset_edgeSet.mpr h (p.edges_subset_edgeSet he))
@@ -606,7 +607,9 @@ lemma Connected_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (hconn : G
     (Subgraph.coeSubgraph G'').Connected := by
   obtain ⟨hpreconn, _⟩ := Subgraph.connected_iff.mp hconn
   have := hpreconn.coe.set_univ_walk_nonempty
-  simp_all [connected_iff_forall_exists_walk_subgraph]
+  simp_all only [connected_iff_forall_exists_walk_subgraph, Subtype.forall, true_and, map_verts,
+    hom_apply, Set.image_nonempty, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+    forall_exists_index]
   intro u v hu' hu'' hv' hv''
   obtain ⟨p'', _⟩ := this u hu' hu'' v hv' hv''
   use p''.map {
@@ -616,7 +619,8 @@ lemma Connected_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (hconn : G
       exact Subgraph.coe_adj_sub _ _ _ (h''.adj_sub' ..)
   }
   constructor
-  all_goals simp
+  all_goals simp only [Walk.toSubgraph_map, map_verts, RelHom.coeFn_mk, Walk.verts_toSubgraph,
+    hom_apply, Set.image_subset_iff]
   · grind
   · intro _ _ ⟨x'', y'', h'', _, _⟩
     use x''.val, y''.val
