@@ -131,7 +131,6 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
       h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
-    dbg_trace ← ppExpr log_hd
     let ⟨log_hd', h_log_hd_trimmed⟩ ← trimMS log_hd'
     -- match ← MS.compare ms log_hd' h_trimmed q(LogBasis.WellFormed_cons_Trimmed $h_logBasis) with
     match ← MS.compare ms log_hd' h_trimmed h_log_hd_trimmed with

@@ -83,8 +83,7 @@ theorem logSeries_toFun : logSeries.toFun =ᶠ[𝓝 0] (fun t ↦ Real.log (1 + 
 -- here we assume that the last exponent is 0
 noncomputable def log {basis : Basis}
     (logBasis : LogBasis basis)
-    (ms : PreMS basis)
-    :
+    (ms : PreMS basis) :
     PreMS basis :=
   match basis with
   | [] => Real.log ms

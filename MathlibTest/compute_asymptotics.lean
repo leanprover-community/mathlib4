@@ -526,6 +526,15 @@ example :
     Tendsto f atTop atBot:= by
   compute_asymptotics
 
+-- from Gruntz
+-- TODO
+open Real in
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦ exp x * (exp (1/x - exp (-x)) - exp (1/x))
+    Tendsto f atTop (𝓝 (-1)) := by
+  compute_asymptotics
+
 end exp
 
 example :

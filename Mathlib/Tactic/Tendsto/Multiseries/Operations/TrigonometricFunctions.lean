@@ -187,19 +187,22 @@ mutual
     obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
     simp at h_tl
     convert_to (((cosSeries.apply tl).mulMonomial coef.sin 0).add ((sinSeries.apply tl).mulMonomial coef.cos 0)).Approximates
-      (fun t ↦ Real.cos (f t - fC t) * Real.sin (fC t) + Real.sin (f t - fC t) * Real.cos (fC t))
+      (fun t ↦  Real.sin (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.cos (f t - fC t) + Real.cos (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.sin (f t - fC t))
     · ext t
-      rw [add_comm, ← Real.sin_add]
-      simp
+      simp [← Real.sin_add]
     apply add_Approximates
-    · sorry
-      -- apply mulMonomial_Approximates h_basis
-      -- · rw [← expSeries_toFun]
-      --   exact apply_Approximates expSeries_analytic h_basis h_tl_wo h_comp h_tl
-      -- apply exp_Approximates h_basis.tail h_coef_wo h_coef
-      -- contrapose! h_nonpos
-      -- exact Term.FirstIsPos_of_tail rfl h_nonpos
-    · sorry
+    · apply mulMonomial_Approximates h_basis
+      · rw [← cosSeries_toFun]
+        exact apply_Approximates cosSeries_analytic h_basis h_tl_wo h_comp h_tl
+      apply sin_Approximates h_basis.tail h_coef_wo h_coef
+      contrapose! h_nonpos
+      exact Term.FirstIsPos_of_tail rfl h_nonpos
+    · apply mulMonomial_Approximates h_basis
+      · rw [← sinSeries_toFun]
+        exact apply_Approximates sinSeries_analytic h_basis h_tl_wo h_comp h_tl
+      apply cos_Approximates h_basis.tail h_coef_wo h_coef
+      contrapose! h_nonpos
+      exact Term.FirstIsPos_of_tail rfl h_nonpos
 
   theorem cos_Approximates {f : ℝ → ℝ} {basis : Basis} {ms : PreMS basis}
       (h_basis : WellFormedBasis basis)
@@ -234,18 +237,50 @@ mutual
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
     simp at h_tl
-    sorry
-    -- convert_to ((sinSeries.apply tl).mulMonomial coef.sin 0).Approximates
-    --     (fun t ↦ (Real.exp ∘ fC) t * basis_hd t ^ (0 : ℝ) * (Real.exp ∘ (fun s ↦ f s - fC s)) t)
-    -- · ext t
-    --   simp [← Real.exp_add]
-    -- apply mulMonomial_Approximates h_basis
-    -- · rw [← expSeries_toFun]
-    --   exact apply_Approximates expSeries_analytic h_basis h_tl_wo h_comp h_tl
-    -- apply exp_Approximates h_basis.tail h_coef_wo h_coef
-    -- contrapose! h_nonpos
-    -- exact Term.FirstIsPos_of_tail rfl h_nonpos
+    convert_to (((cosSeries.apply tl).mulMonomial coef.cos 0).sub ((sinSeries.apply tl).mulMonomial coef.sin 0)).Approximates
+      (fun t ↦  Real.cos (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.cos (f t - fC t) - Real.sin (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.sin (f t - fC t))
+    · ext t
+      simp [← Real.cos_add]
+    apply sub_Approximates
+    · apply mulMonomial_Approximates h_basis
+      · rw [← cosSeries_toFun]
+        exact apply_Approximates cosSeries_analytic h_basis h_tl_wo h_comp h_tl
+      apply cos_Approximates h_basis.tail h_coef_wo h_coef
+      contrapose! h_nonpos
+      exact Term.FirstIsPos_of_tail rfl h_nonpos
+    · apply mulMonomial_Approximates h_basis
+      · rw [← sinSeries_toFun]
+        exact apply_Approximates sinSeries_analytic h_basis h_tl_wo h_comp h_tl
+      apply sin_Approximates h_basis.tail h_coef_wo h_coef
+      contrapose! h_nonpos
+      exact Term.FirstIsPos_of_tail rfl h_nonpos
 
 end
+
+theorem tan_Approximates_of_sin_cos
+    {basis : Basis} {ms1 ms2 : PreMS basis}
+    {f : ℝ → ℝ}
+    (h_basis : WellFormedBasis basis)
+    (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates (Real.sin ∘ f))
+    (h_approx2 : ms2.Approximates (Real.cos ∘ f))
+    (h_trimmed2 : ms2.Trimmed) :
+    (ms1.div ms2).Approximates (Real.tan ∘ f) := by
+  convert div_Approximates h_basis h_wo2 h_trimmed2 h_approx1 h_approx2 using 1
+  ext t
+  simp [Real.tan_eq_sin_div_cos]
+
+theorem cot_Approximates_of_sin_cos
+    {basis : Basis} {ms1 ms2 : PreMS basis}
+    {f : ℝ → ℝ}
+    (h_basis : WellFormedBasis basis)
+    (h_wo2 : ms2.WellOrdered)
+    (h_approx1 : ms1.Approximates (Real.cos ∘ f))
+    (h_approx2 : ms2.Approximates (Real.sin ∘ f))
+    (h_trimmed2 : ms2.Trimmed) :
+    (ms1.div ms2).Approximates (Real.cot ∘ f) := by
+  convert div_Approximates h_basis h_wo2 h_trimmed2 h_approx1 h_approx2 using 1
+  ext t
+  simp [Real.cot_eq_cos_div_sin]
 
 end TendstoTactic.PreMS
