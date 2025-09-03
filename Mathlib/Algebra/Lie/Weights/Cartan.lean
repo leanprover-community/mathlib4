@@ -165,10 +165,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   use k
   let f : Module.End R H := toEnd R H H y
   let g : Module.End R L := toEnd R H L y
-  have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := by
-    ext z
-    simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.coe_comp]
-    rfl
+  have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
   rw [Module.End.commute_pow_left_of_commute hfg k]
   have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
