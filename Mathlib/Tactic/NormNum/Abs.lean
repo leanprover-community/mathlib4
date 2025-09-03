@@ -10,7 +10,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 /-!
 # `norm_num` plugin for `abs`
 
-TODO: plugin for `mabs`
+TODO: plugins for `mabs`, `norm`, `nnorm`, and `enorm`.
 -/
 
 namespace Mathlib.Meta.NormNum
