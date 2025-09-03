@@ -132,8 +132,7 @@ lemma sigmoid_symm_eq_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
         field_simp [exp_ne_zero (-x)]
       _ = (1 + exp x)⁻¹ := by
         rw [← exp_neg]
-        ring
-
+        ring_nf
 
 end unitInterval
 
