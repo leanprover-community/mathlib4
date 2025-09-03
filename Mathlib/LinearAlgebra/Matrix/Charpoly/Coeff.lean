@@ -81,6 +81,7 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
 
 @[deprecated (since := "2025-08-14")] alias det_of_card_zero := det_eq_one_of_card_eq_zero
 
+@[simp]
 theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.degree = Fintype.card n := by
   by_cases h : Fintype.card n = 0
@@ -228,6 +229,26 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
     det (1 + r • M) =
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
   simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
+
+lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
+    M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
+  have : Nonempty n := by rw [← Fintype.card_pos_iff]; omega
+  ext i
+  by_cases hi : i ∈ Finset.range 3
+  · fin_cases hi
+    · simp [det_eq_sign_charpoly_coeff, hn]
+    · simp [trace_eq_neg_charpoly_coeff, hn]
+    · simpa [leadingCoeff, charpoly_natDegree_eq_dim, hn, coeff_X] using
+        M.charpoly_monic.leadingCoeff
+  · rw [Finset.mem_range, not_lt, Nat.succ_le] at hi
+    suffices M.charpoly.coeff i = 0 by
+      simpa [show i ≠ 2 by omega, show 1 ≠ i by omega, show i ≠ 0 by omega, coeff_X, coeff_C]
+    apply coeff_eq_zero_of_natDegree_lt
+    simpa [charpoly_natDegree_eq_dim, hn] using hi
+
+lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
+    M.charpoly = X ^ 2 - C M.trace * X + C M.det :=
+  M.charpoly_of_card_eq_two <| Fintype.card_fin _
 
 end Matrix
 
