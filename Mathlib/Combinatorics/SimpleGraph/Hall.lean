@@ -116,7 +116,7 @@ theorem exists_IsPerfectMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
   use hall_subgraph (fun v ↦ b v) (fun v hv ↦ h₁.disjoint.notMem_of_mem_right (b ⟨v, hv⟩).property)
     (fun v hv ↦ hb₂ ⟨v, hv⟩)
-  have : p₁ ∪ (Set.range (fun v ↦ (b v).1)) = Set.univ := by
+  have : p₁ ∪ Set.range (fun v ↦ (b v).1) = Set.univ := by
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
   refine ⟨fun v _ ↦ ?_, by simp [Subgraph.IsSpanning, this]⟩
