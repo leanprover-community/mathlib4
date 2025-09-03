@@ -232,7 +232,7 @@ end ContinuousMap
 def IsFactorOf (ψ : Flow τ β) (ϕ : Flow τ α) : Prop :=
   ∃ π : ContinuousMap α β, ContinuousMap.IsSemiconjugacy π ϕ ψ
 
-theorem IsSemiconjugacy.isFactorOf {π : ContinuousMap α β}
+theorem _root_.ContinuousMap.IsSemiconjugacy.isFactorOf {π : ContinuousMap α β}
     (h : ContinuousMap.IsSemiconjugacy π ϕ ψ) : IsFactorOf ψ ϕ := ⟨π, h⟩
 
 /-- Transitivity of factors of flows. -/
