@@ -229,20 +229,27 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by
   simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
 
-lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
-    M.charpoly = X ^ 2 - C (M.trace) * X + C (M.det) := by
+lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
+    M.charpoly = X ^ 2 - M.trace • X + C (M.det) := by
+  have : Nonempty n := by
+    rw [← not_isEmpty_iff, ← Fintype.card_eq_zero_iff, hn] -- Should be easier: missing API?
+    omega
   ext i
   by_cases hi : i ∈ Finset.range 3
   · fin_cases hi
-    · simp [det_eq_sign_charpoly_coeff]
-    · simp [trace_eq_neg_charpoly_coeff]
-    · simpa [leadingCoeff, charpoly_natDegree_eq_dim, Fintype.card_fin] using
+    · simp [det_eq_sign_charpoly_coeff, hn]
+    · simp [trace_eq_neg_charpoly_coeff, hn]
+    · simpa [leadingCoeff, charpoly_natDegree_eq_dim, hn, coeff_X] using
         M.charpoly_monic.leadingCoeff
   · rw [Finset.mem_range, not_lt, Nat.succ_le] at hi
     suffices M.charpoly.coeff i = 0 by
       simpa [show i ≠ 2 by omega, show 1 ≠ i by omega, show i ≠ 0 by omega, coeff_X, coeff_C]
     apply coeff_eq_zero_of_natDegree_lt
-    simpa [charpoly_natDegree_eq_dim] using hi
+    simpa [charpoly_natDegree_eq_dim, hn] using hi
+
+lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
+    M.charpoly = X ^ 2 - M.trace • X + C (M.det) :=
+  M.charpoly_of_card_eq_two <| Fintype.card_fin _
 
 end Matrix
 
