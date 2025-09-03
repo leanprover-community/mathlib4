@@ -123,6 +123,7 @@ noncomputable section
 
 variable {G : Type*} [Groupoid G] (r : HomRel G)
 
+/-- Inverse of a map in the quotient category of a groupoid. -/
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun f' => Quot.mk _ (inv f')) (fun _ _ con => by
     rcases con with ⟨ _, f, g, _, hfg ⟩
@@ -137,6 +138,7 @@ theorem inv_mk {X Y : Quotient r} (f : X.as ⟶ Y.as) :
     Quotient.inv r (Quot.mk _ f) = Quot.mk _ (inv f) :=
   rfl
 
+/-- The quotient of a groupoid is a groupoid. -/
 instance groupoid : Groupoid (Quotient r) where
   inv f := Quotient.inv r f
   inv_comp f := Quot.inductionOn f <| by simp [CategoryStruct.comp, CategoryStruct.id]
