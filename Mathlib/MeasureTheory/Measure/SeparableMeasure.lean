@@ -150,10 +150,10 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     calc
       ‖c‖ * μ.real (s ∆ t) ^ (1 / p.toReal)
         < ‖c‖ * (ENNReal.ofReal ((ε / ‖c‖) ^ p.toReal)).toReal ^ (1 / p.toReal) := by
+          have := toReal_pos p_pos.ne.symm p_ne_top.elim
+          rw [measureReal_def]
           gcongr
-          refine Real.rpow_lt_rpow (by simp) ?_
-            (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
-          rwa [measureReal_def, toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+          exact ofReal_ne_top
       _ = ε := by
         rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
           one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
