@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 /-!
 # Preservation of finite (co)limits.
 
-These functors are also known as lef-exact (flat) or right-exact functors when the categories
+These functors are also known as left-exact (flat) or right-exact functors when the categories
 involved are abelian, or more generally, finitely (co)complete.
 
 ## Related results
