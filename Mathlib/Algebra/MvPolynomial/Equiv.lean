@@ -366,7 +366,6 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
       map_mul, mul_assoc]
-    apply congr_arg₂ _ rfl
     simp only [mul_comm, map_finsuppProd, map_pow]
   · simp
   · intros; rw [pow_add]
