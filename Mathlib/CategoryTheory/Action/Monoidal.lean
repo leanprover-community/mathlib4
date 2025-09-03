@@ -268,7 +268,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n 
       ofMulAction_V]
   | succ n hn =>
     funext x
-    induction' x using Fin.cases
+    induction x using Fin.cases
     <;> simp_all only [diagonalSuccIsoTensorTrivial, Iso.trans_inv, comp_hom,
         tensorObj_V, types_comp_apply, leftRegularTensorIso_inv_hom, tensor_ρ, tensor_apply,
         ofMulAction_apply]
