@@ -58,6 +58,7 @@ namespace unitInterval
 
 open Real
 
+/-- The sigmoid function from `ℝ` to `I`. -/
 noncomputable def sigmoid (x : ℝ) : I := ⟨(1 + exp (-x))⁻¹,
   ⟨by positivity, inv_le_one_of_one_le₀ <| (by bound)⟩⟩
 
@@ -138,6 +139,7 @@ end unitInterval
 
 namespace Real
 
+/-- The sigmoid function from `ℝ` to `ℝ`. -/
 noncomputable def sigmoid (x : ℝ) := (unitInterval.sigmoid x).1
 
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
