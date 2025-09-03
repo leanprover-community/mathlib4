@@ -209,6 +209,7 @@ def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
 variable {C} in
+/-- Convenience constructor for `ThinSkeleton`. -/
 abbrev ThinSkeleton.mk (c : C) : ThinSkeleton C := Quotient.mk' c
 
 instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
