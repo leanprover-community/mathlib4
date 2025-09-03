@@ -230,7 +230,7 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
   simpa [eval_det, ← smul_eq_mul_diagonal] using congr_arg (eval r) (Matrix.det_one_add_X_smul M)
 
 lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
-    M.charpoly = X ^ 2 - M.trace • X + C (M.det) := by
+    M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
   have : Nonempty n := by
     rw [← not_isEmpty_iff, ← Fintype.card_eq_zero_iff, hn] -- Should be easier: missing API?
     omega
@@ -248,7 +248,7 @@ lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     simpa [charpoly_natDegree_eq_dim, hn] using hi
 
 lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
-    M.charpoly = X ^ 2 - M.trace • X + C (M.det) :=
+    M.charpoly = X ^ 2 - C M.trace * X + C M.det :=
   M.charpoly_of_card_eq_two <| Fintype.card_fin _
 
 end Matrix
