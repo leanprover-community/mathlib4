@@ -3,7 +3,7 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Deprecated.Order
+import Mathlib --.Deprecated.Order
 
 /-!
 d
@@ -53,7 +53,7 @@ def deprecatedHashMap (deprecateFrom : String) :
         (a.getD #[⟨fm.positions.back!, default⟩]).binInsert (·.1 < ·.1) rg
   return fin
 
-def removeDeprecations (fname : String) (rgs : Array String.Range) : CommandElabM String := do
+def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String := do
   let file ← IO.FS.readFile fname
   let mut curr : String.Pos := 0
   let mut fileSubstring := file.toSubstring
@@ -69,13 +69,16 @@ open Lean Elab Command in
 elab "#remove_deprecated_declarations " date:str really?:("really")? : command => do
   let deprecateFrom := date.getString
   let dmap ← deprecatedHashMap deprecateFrom
-  if really?.isNone then
-    for (mod, rgs) in dmap do
-      --dbg_trace "From '{mod}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
-      dbg_trace "From '{mod}' remove\n{rgs.size - 1} declarations"
+  dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size} deprecations among {dmap.size} files"
+  for (mod, rgs) in dmap do
+    let mod1 := "Mathlib" ++ (mod.splitOn "Mathlib").getLast!
+    --dbg_trace "From '{mod}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+    let num := rgs.size - 1
+    dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
+    if really?.isSome then
+      IO.FS.writeFile mod (← removeDeprecations mod rgs)
 
-
-#remove_deprecated_declarations "2025-02-22"
+#remove_deprecated_declarations "2025-02-31"
 /--
 info: import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Order.RelClasses
