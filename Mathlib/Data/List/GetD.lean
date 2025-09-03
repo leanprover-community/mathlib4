@@ -28,22 +28,12 @@ section getD
 variable (d : α)
 
 theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
-  induction l generalizing n with
-  | nil => simp at hn
-  | cons head tail ih =>
-    cases n
-    · exact getD_cons_zero
-    · exact ih _
+  grind
 
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
-  induction l generalizing n with
-  | nil => exact getD_nil
-  | cons head tail ih =>
-    cases n
-    · simp at hn
-    · exact ih (Nat.le_of_succ_le_succ hn)
+  grind
 
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by

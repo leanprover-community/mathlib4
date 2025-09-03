@@ -12,7 +12,8 @@ import Mathlib.Tactic.NormNum.Eq
 /-!
 # Divisible Group and rootable group
 
-In this file, we define a divisible add monoid and a rootable monoid with some basic properties.
+In this file, we define a divisible additive monoid and a rootable monoid with some basic
+properties.
 
 ## Main definition
 
@@ -218,8 +219,9 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    -- Porting note: replaced `norm_num`
-    simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    norm_num at this
+    exact this
 
 end Group
 
