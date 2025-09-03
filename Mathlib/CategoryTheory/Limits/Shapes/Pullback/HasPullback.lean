@@ -24,10 +24,10 @@ pullacks.
   pullback f g ---pullback.fst f g---> X
       |                                |
       |                                |
-pullback.snd f g                       g
+pullback.snd f g                       f
       |                                |
       v                                v
-      Y --------------f--------------> Z
+      Y --------------g--------------> Z
 ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
