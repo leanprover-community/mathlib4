@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.Normed.Module.Span
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
+import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operator norm for maps on normed spaces

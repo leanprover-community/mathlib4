@@ -3,8 +3,8 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
+import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operators on complete normed spaces
