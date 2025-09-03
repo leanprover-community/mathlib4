@@ -25,12 +25,14 @@ the base change `S ⊗[R] B` as an `S`-coalgebra.
 open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
-    [Algebra R S] [Module R A] [Module S A] [Module R B] [Coalgebra R B]
-    [Coalgebra S A] [IsScalarTower R S A]
+    [Algebra R S] [Module R A] [Module S A] [Module R B] [IsScalarTower R S A]
 
 namespace TensorProduct
 
 open Coalgebra
+
+section CoalgebraStruct
+variable [CoalgebraStruct R B] [CoalgebraStruct S A]
 
 noncomputable
 instance instCoalgebraStruct : CoalgebraStruct S (A ⊗[R] B) where
@@ -62,6 +64,10 @@ lemma comul_tmul (x : A) (y : B) :
 @[simp]
 lemma counit_tmul (x : A) (y : B) :
     counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
+
+end CoalgebraStruct
+
+variable [Coalgebra R B] [Coalgebra S A]
 
 open Lean.Parser.Tactic in
 /-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by
