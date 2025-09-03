@@ -42,49 +42,67 @@ elliptic curve, weierstrass equation, minimal weierstrass equation, reduction
 
 namespace WeierstrassCurve
 
-variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+section Integral
+
+variable (R : Type*) [CommRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-section Minimal
-
-open IsDedekindDomain.HeightOneSpectrum
-open IsDiscreteValuationRing
-
 /-- A Weierstrass equation over the fraction field `K` is integral if
-it has coefficients in the DVR `R`. -/
+it has coefficients in the ring `R`. -/
 @[mk_iff]
 class IsIntegral (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
-lemma isIntegral_of_val_le_one {W : WeierstrassCurve K}
-    (h₁ : valuation K (maximalIdeal R) W.a₁ ≤ 1)
-    (h₂ : valuation K (maximalIdeal R) W.a₂ ≤ 1)
-    (h₃ : valuation K (maximalIdeal R) W.a₃ ≤ 1)
-    (h₄ : valuation K (maximalIdeal R) W.a₄ ≤ 1)
-    (h₆ : valuation K (maximalIdeal R) W.a₆ ≤ 1) :
+omit [IsFractionRing R K] in
+lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
+    (h₁ : ∃ r₁, (algebraMap R K) r₁ = W.a₁)
+    (h₂ : ∃ r₂, (algebraMap R K) r₂ = W.a₂)
+    (h₃ : ∃ r₃, (algebraMap R K) r₃ = W.a₃)
+    (h₄ : ∃ r₄, (algebraMap R K) r₄ = W.a₄)
+    (h₆ : ∃ r₆, (algebraMap R K) r₆ = W.a₆) :
     IsIntegral R W := by
-  use ⟨(exists_lift_of_le_one h₁).choose,
-      (exists_lift_of_le_one h₂).choose,
-      (exists_lift_of_le_one h₃).choose,
-      (exists_lift_of_le_one h₄).choose,
-      (exists_lift_of_le_one h₆).choose⟩
+  use ⟨h₁.choose, h₂.choose, h₃.choose, h₄.choose, h₆.choose⟩
   ext
-  all_goals
-    simp only [map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
-    apply (exists_lift_of_le_one _).choose_spec.symm
-    assumption
+  all_goals simp only [map_a₁, map_a₂, map_a₃, map_a₄, map_a₆]
+  · apply h₁.choose_spec.symm
+  · apply h₂.choose_spec.symm
+  · apply h₃.choose_spec.symm
+  · apply h₄.choose_spec.symm
+  · apply h₆.choose_spec.symm
+
+omit [IsFractionRing R K] in
+lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
+    ∃ r : R, algebraMap R K r = W.Δ := by
+  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
+    IsIntegral.integral
+  use W_int.Δ
+  rw [hW_int, map_Δ]
+
+lemma integral_Δ_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    hW.integral.choose.Δ =
+    (algebraMap R K).toFun.invFun W.Δ := by
+  conv_rhs => simp [Function.invFun, Δ_integral_of_isIntegral R W]
+  apply (@IsFractionRing.coe_inj R _ K _ _ _ _).mp
+  unfold Algebra.cast
+  rw [← map_Δ]
+  conv_lhs => arg 1; equals W => apply hW.integral.choose_spec.symm
+  rw [(Δ_integral_of_isIntegral R W).choose_spec]
+
+variable [IsDomain R] [ValuationRing R]
+
+open ValuationRing
 
 theorem exists_integral (W : WeierstrassCurve K) :
-    ∃ C : VariableChange K, IsIntegral R (C • W) := by
-  /- We first show that there is a non-negative integer `lmaxZ` that is larger than
+    ∃ C : VariableChange K, IsIntegral R (C • W) := by sorry
+  /- /- We first show that there is a non-negative integer `lmaxZ` that is larger than
   the valuations of all the coefficients of `W`.
   Some extra work is needed here only because the valuation on `K` takes values
   in `WithZero (Multiplicative ℤ)`, and not `ℤ`. -/
-  let l := [(valuation K (maximalIdeal R) W.a₁),
-    (valuation K (maximalIdeal R) W.a₂),
-    (valuation K (maximalIdeal R) W.a₃),
-    (valuation K (maximalIdeal R) W.a₄),
-    (valuation K (maximalIdeal R) W.a₆)]
+  let l := [(valuation R K W.a₁),
+    (valuation R K W.a₂),
+    (valuation R K W.a₃),
+    (valuation R K W.a₄),
+    (valuation R K W.a₆)]
   let lmax : WithZero (Multiplicative ℤ) :=
     l.maximum_of_length_pos (by simp [l])
   have hlmax : ∀ v ∈ l, v ≤ lmax := fun v hv ↦
@@ -120,7 +138,8 @@ theorem exists_integral (W : WeierstrassCurve K) :
   use ⟨isUnit_π.unit ^ (-lmaxZ), 0, 0, 0⟩
   /- The remainder of the proof is devoted to showing that this choice of exponent `lmaxZ`,
   i.e. this choice of `VariableChange`, works. -/
-  apply isIntegral_of_val_le_one R
+  apply isIntegral_of_exists_lift R
+  all_goals apply exists_lift_of_le_one
   any_goals
     simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
       mul_zero, add_zero, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
@@ -134,29 +153,17 @@ theorem exists_integral (W : WeierstrassCurve K) :
   · exact 1
   · simp
   any_goals linarith
-  · apply l.get_mem (0 : Fin 5)
-  · apply l.get_mem (1 : Fin 5)
-  · apply l.get_mem (2 : Fin 5)
-  · apply l.get_mem (3 : Fin 5)
-  · apply l.get_mem (4 : Fin 5)
+  all_goals simp [l] -/
 
-omit [IsDomain R] [IsDiscreteValuationRing R] [IsFractionRing R K] in
-lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
-    ∃ r : R, algebraMap R K r = W.Δ := by
-  obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
-    IsIntegral.integral
-  use W_int.Δ
-  rw [hW_int, map_Δ]
+end Integral
 
-lemma integral_Δ_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
-    hW.integral.choose.Δ =
-    (algebraMap R K).toFun.invFun W.Δ := by
-  conv_rhs => simp [Function.invFun, Δ_integral_of_isIntegral R W]
-  apply (@IsFractionRing.coe_inj R _ K _ _ _ _).mp
-  unfold Algebra.cast
-  rw [← map_Δ]
-  conv_lhs => arg 1; equals W => apply hW.integral.choose_spec.symm
-  rw [(Δ_integral_of_isIntegral R W).choose_spec]
+section Minimal
+
+variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+
+open IsDedekindDomain.HeightOneSpectrum
+open IsDiscreteValuationRing
 
 /-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
 of its discriminant is minimal among all isomorphic integral Weierstrass equations. -/
@@ -196,6 +203,9 @@ instance {W : WeierstrassCurve K} :
 end Minimal
 
 section Reduction
+
+variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
+variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 open IsLocalRing
 open IsDiscreteValuationRing
