@@ -16,6 +16,13 @@ We compute the cardinality of `ℙ k V` if `k` is a finite field.
 
 -/
 
+lemma Module.stabilizer_units_eq_bot_of_ne_zero (R : Type*) {M : Type*} [Ring R] [AddCommGroup M]
+    [Module R M] [NoZeroSMulDivisors R M] {x : M} (hx : x ≠ 0) : MulAction.stabilizer Rˣ x = ⊥ := by
+  rw [eq_bot_iff]
+  intro g (hg : g.val • x = x)
+  ext
+  rw [← sub_eq_zero, ← smul_eq_zero_iff_left hx, Units.val_one, sub_smul, hg, one_smul, sub_self]
+
 namespace Projectivization
 
 open scoped LinearAlgebra.Projectivization
