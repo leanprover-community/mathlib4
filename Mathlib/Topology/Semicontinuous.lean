@@ -14,7 +14,7 @@ A function `f` from a topological space `α` to an ordered space `β` is lower s
 point `x` if, for any `y < f x`, for any `x'` close enough to `x`, one has `f x' > y`. In other
 words, `f` can jump up, but it cannot jump down.
 
-Upper semicontinuous functions are defined similarly.
+Upper-semicontinuous functions are defined similarly.
 
 This file introduces these notions, and a basic API around them mimicking the API for continuous
 functions.
@@ -32,13 +32,13 @@ We build a basic API using dot notation around these notions, and we prove that
 * `indicator s (fun _ ↦ y)` is lower semicontinuous when `s` is open and `0 ≤ y`,
   or when `s` is closed and `y ≤ 0`;
 * continuous functions are lower semicontinuous;
-* left composition with a continuous monotone functions maps lower semicontinuous functions to lower
-  semicontinuous functions. If the function is anti-monotone, it instead maps lower semicontinuous
-  functions to upper semicontinuous functions;
+* left composition with a continuous monotone functions maps lower-semicontinuous functions to lower
+  semicontinuous functions. If the function is anti-monotone, it instead maps lower-semicontinuous
+  functions to upper-semicontinuous functions;
 * right composition with continuous functions preserves lower and upper semicontinuity;
-* a sum of two (or finitely many) lower semicontinuous functions is lower semicontinuous;
-* a supremum of a family of lower semicontinuous functions is lower semicontinuous;
-* An infinite sum of `ℝ≥0∞`-valued lower semicontinuous functions is lower semicontinuous.
+* a sum of two (or finitely many) lower-semicontinuous functions is lower semicontinuous;
+* a supremum of a family of lower-semicontinuous functions is lower semicontinuous;
+* An infinite sum of `ℝ≥0∞`-valued lower-semicontinuous functions is lower semicontinuous.
 
 Similar results are stated and proved for upper semicontinuity.
 
@@ -55,8 +55,8 @@ restrictions on the order on the codomain):
 
 ## Implementation details
 
-All the nontrivial results for upper semicontinuous functions are deduced from the corresponding
-ones for lower semicontinuous functions using `OrderDual`.
+All the nontrivial results for upper-semicontinuous functions are deduced from the corresponding
+ones for lower-semicontinuous functions using `OrderDual`.
 
 ## References
 
@@ -125,7 +125,7 @@ def UpperSemicontinuous (f : α → β) :=
   ∀ x, UpperSemicontinuousAt f x
 
 /-!
-### Lower semicontinuous functions
+### lower-semicontinuous functions
 -/
 
 
@@ -418,7 +418,7 @@ section
 variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
   [TopologicalSpace γ] [OrderTopology γ]
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontinuousWithinAt f s x)
@@ -480,7 +480,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
         y < f x + g x := h this
         _ ≤ f z + g z := add_le_add (hx₁ (f z)) (hx₂ (g z))
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem LowerSemicontinuousAt.add' {f g : α → γ} (hf : LowerSemicontinuousAt f x)
@@ -490,7 +490,7 @@ theorem LowerSemicontinuousAt.add' {f g : α → γ} (hf : LowerSemicontinuousAt
   simp_rw [← lowerSemicontinuousWithinAt_univ_iff] at *
   exact hf.add' hg hcont
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem LowerSemicontinuousOn.add' {f g : α → γ} (hf : LowerSemicontinuousOn f s)
@@ -499,7 +499,7 @@ theorem LowerSemicontinuousOn.add' {f g : α → γ} (hf : LowerSemicontinuousOn
     LowerSemicontinuousOn (fun z => f z + g z) s := fun x hx =>
   (hf x hx).add' (hg x hx) (hcont x hx)
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with an
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem LowerSemicontinuous.add' {f g : α → γ} (hf : LowerSemicontinuous f)
@@ -509,7 +509,7 @@ theorem LowerSemicontinuous.add' {f g : α → γ} (hf : LowerSemicontinuous f)
 
 variable [ContinuousAdd γ]
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem LowerSemicontinuousWithinAt.add {f g : α → γ} (hf : LowerSemicontinuousWithinAt f s x)
@@ -517,21 +517,21 @@ theorem LowerSemicontinuousWithinAt.add {f g : α → γ} (hf : LowerSemicontinu
     LowerSemicontinuousWithinAt (fun z => f z + g z) s x :=
   hf.add' hg continuous_add.continuousAt
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem LowerSemicontinuousAt.add {f g : α → γ} (hf : LowerSemicontinuousAt f x)
     (hg : LowerSemicontinuousAt g x) : LowerSemicontinuousAt (fun z => f z + g z) x :=
   hf.add' hg continuous_add.continuousAt
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem LowerSemicontinuousOn.add {f g : α → γ} (hf : LowerSemicontinuousOn f s)
     (hg : LowerSemicontinuousOn g s) : LowerSemicontinuousOn (fun z => f z + g z) s :=
   hf.add' hg fun _x _hx => continuous_add.continuousAt
 
-/-- The sum of two lower semicontinuous functions is lower semicontinuous. Formulated with
+/-- The sum of two lower-semicontinuous functions is lower semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem LowerSemicontinuous.add {f g : α → γ} (hf : LowerSemicontinuous f)
@@ -668,7 +668,7 @@ theorem lowerSemicontinuous_tsum {f : ι → α → ℝ≥0∞} (h : ∀ i, Lowe
 end
 
 /-!
-### Upper semicontinuous functions
+### upper-semicontinuous functions
 -/
 
 
@@ -921,7 +921,7 @@ section
 variable {ι : Type*} {γ : Type*} [AddCommMonoid γ] [LinearOrder γ] [IsOrderedAddMonoid γ]
   [TopologicalSpace γ] [OrderTopology γ]
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontinuousWithinAt f s x)
@@ -930,7 +930,7 @@ theorem UpperSemicontinuousWithinAt.add' {f g : α → γ} (hf : UpperSemicontin
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
   LowerSemicontinuousWithinAt.add' (γ := γᵒᵈ) hf hg hcont
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem UpperSemicontinuousAt.add' {f g : α → γ} (hf : UpperSemicontinuousAt f x)
@@ -940,7 +940,7 @@ theorem UpperSemicontinuousAt.add' {f g : α → γ} (hf : UpperSemicontinuousAt
   simp_rw [← upperSemicontinuousWithinAt_univ_iff] at *
   exact hf.add' hg hcont
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem UpperSemicontinuousOn.add' {f g : α → γ} (hf : UpperSemicontinuousOn f s)
@@ -949,7 +949,7 @@ theorem UpperSemicontinuousOn.add' {f g : α → γ} (hf : UpperSemicontinuousOn
     UpperSemicontinuousOn (fun z => f z + g z) s := fun x hx =>
   (hf x hx).add' (hg x hx) (hcont x hx)
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with an
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with an
 explicit continuity assumption on addition, for application to `EReal`. The unprimed version of
 the lemma uses `[ContinuousAdd]`. -/
 theorem UpperSemicontinuous.add' {f g : α → γ} (hf : UpperSemicontinuous f)
@@ -959,7 +959,7 @@ theorem UpperSemicontinuous.add' {f g : α → γ} (hf : UpperSemicontinuous f)
 
 variable [ContinuousAdd γ]
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem UpperSemicontinuousWithinAt.add {f g : α → γ} (hf : UpperSemicontinuousWithinAt f s x)
@@ -967,21 +967,21 @@ theorem UpperSemicontinuousWithinAt.add {f g : α → γ} (hf : UpperSemicontinu
     UpperSemicontinuousWithinAt (fun z => f z + g z) s x :=
   hf.add' hg continuous_add.continuousAt
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem UpperSemicontinuousAt.add {f g : α → γ} (hf : UpperSemicontinuousAt f x)
     (hg : UpperSemicontinuousAt g x) : UpperSemicontinuousAt (fun z => f z + g z) x :=
   hf.add' hg continuous_add.continuousAt
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem UpperSemicontinuousOn.add {f g : α → γ} (hf : UpperSemicontinuousOn f s)
     (hg : UpperSemicontinuousOn g s) : UpperSemicontinuousOn (fun z => f z + g z) s :=
   hf.add' hg fun _x _hx => continuous_add.continuousAt
 
-/-- The sum of two upper semicontinuous functions is upper semicontinuous. Formulated with
+/-- The sum of two upper-semicontinuous functions is upper semicontinuous. Formulated with
 `[ContinuousAdd]`. The primed version of the lemma uses an explicit continuity assumption on
 addition, for application to `EReal`. -/
 theorem UpperSemicontinuous.add {f g : α → γ} (hf : UpperSemicontinuous f)
