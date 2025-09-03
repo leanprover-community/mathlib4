@@ -26,7 +26,7 @@ More specifically, we introduce
 
 ## Notations
 
-In the locale `Manifold`, we introduce the notations
+In the scope `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
 * `𝓡∂ n` for `modelWithCornersEuclideanHalfSpace n`.
 
@@ -169,7 +169,7 @@ end
 
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
-a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
+a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
 -/
 def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
