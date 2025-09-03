@@ -116,27 +116,12 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
   rw [sum_integral_adjacent_intervals]
   · simp
   · intro k hk
-    apply IntervalIntegrable.mono h_f_int ?_ (le_refl volume)
-    rcases lt_trichotomy h 0 with h_neg | h_zero | h_pos
-    · field_simp
-      have : N * h < 0 := mul_neg_of_pos_of_neg (Nat.cast_pos'.mpr N_nonzero) h_neg
-      have : a + N * h < a := add_lt_iff_neg_left.mpr this
-      have : [[a, a + N * h]] = Icc (a + N * h) a := uIcc_of_gt this
-      rw [this]
-      refine Icc_subset_Icc ?_ ?_
-      · rw [add_le_add_iff_left, mul_le_mul_right_of_neg h_neg]
-        norm_cast
-      · nlinarith
-    · grind
-    · field_simp
-      have : 0 < N * h := mul_pos (Nat.cast_pos'.mpr N_nonzero) h_pos
-      have : a < a + N * h := lt_add_of_pos_right a this
-      have : [[a, a + N * h]] = Icc a (a + N * h) := uIcc_of_lt this
-      rw [this]
-      refine Icc_subset_Icc ?_ ?_
-      · nlinarith
-      · rw [add_le_add_iff_left, mul_le_mul_iff_of_pos_right h_pos]
-        norm_cast
+    suffices H : ∀ {k : ℕ}, k ≤ N → a + k * h ∈ [[a, a + N * h]] from
+      IntervalIntegrable.mono h_f_int (Set.uIcc_subset_uIcc (H hk.le) (H hk)) le_rfl
+    rcases le_total h 0 with h_neg | h_pos <;> intro k hk <;> rw [← Nat.cast_le (α := ℝ)] at hk
+    · exact Set.mem_uIcc_of_ge (add_le_add_left (mul_le_mul_of_nonpos_right hk h_neg) a)
+        (add_le_of_nonpos_right (mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg))
+    · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
 the general error bound later on. Using it directly is not recommended. -/
@@ -320,22 +305,17 @@ theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     |trapezoidal_error f N a b| ≤ |b - a| ^ 3 * ζ / (12 * N ^ 2) := by
   rcases lt_trichotomy a b with h_lt | h_eq | h_gt
   -- Standard case: a < b
-  · have : [[a, b]] = Icc a b := uIcc_of_lt h_lt
-    rw [this] at h_df h_ddf h_ddf_integrable fpp_bound
-    have : |b - a| = b - a := abs_of_pos (sub_pos.mpr h_lt)
-    rw [this]
+  · rw [uIcc_of_lt h_lt] at *
+    rw [abs_of_pos (sub_pos.mpr h_lt)]
     exact trapezoidal_error_le_of_lt h_lt h_df h_ddf h_ddf_integrable fpp_bound N_nonzero
   -- Trivial case: a = b
   · simp [h_eq]
   -- Slightly trickier case: a > b (requires flipping the direction and sign of the true and
   -- approximate integrals)
-  · have : [[a, b]] = Icc b a := uIcc_of_gt h_gt
-    rw [this] at h_df h_ddf h_ddf_integrable fpp_bound
-    have : |b - a| = a - b := by rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub]
-    rw [this]
+  · rw [uIcc_of_gt h_gt] at *
+    rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub]
     rw [trapezoidal_error_symm f N_nonzero a b, abs_neg]
-    exact trapezoidal_error_le_of_lt h_gt h_df h_ddf (IntervalIntegrable.symm h_ddf_integrable)
-            fpp_bound N_nonzero
+    exact trapezoidal_error_le_of_lt h_gt h_df h_ddf h_ddf_integrable.symm fpp_bound N_nonzero
 
 /-- The error bound for trapezoidal integration in the slightly weaker, but very common, case where
 `f` is `C^2`. -/
@@ -356,7 +336,6 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
       rw [iteratedDerivWithin_one]
     rw [this]
     exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud
-  have h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b := by
-    apply ContinuousOn.intervalIntegrable
-    exact ContDiffOn.continuousOn_iteratedDerivWithin h_f_c2 (le_refl 2) ud
+  have h_ddf_integrable : IntervalIntegrable (iteratedDerivWithin 2 f [[a, b]]) volume a b :=
+    (ContDiffOn.continuousOn_iteratedDerivWithin h_f_c2 (le_refl 2) ud).intervalIntegrable
   exact trapezoidal_error_le h_df h_ddf h_ddf_integrable fpp_bound N_nonzero
