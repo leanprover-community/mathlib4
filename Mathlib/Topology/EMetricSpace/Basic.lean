@@ -202,7 +202,7 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
   rwa [mem_closedBall, edist_comm] at hy
 
 -- TODO: generalize to metrizable spaces
-/-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
+/-- A compact set in a pseudo-emetric space is separable, i.e., it is a subset of the closure of a
 countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
@@ -217,7 +217,7 @@ section SecondCountable
 open TopologicalSpace
 
 variable (α) in
-/-- A sigma compact pseudo emetric space has second countable topology. -/
+/-- A sigma compact pseudo-emetric space has second countable topology. -/
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
     SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
