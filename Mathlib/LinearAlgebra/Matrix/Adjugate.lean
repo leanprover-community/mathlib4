@@ -200,7 +200,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   intro σ _
   congr 1
   by_cases h : i = σ j
-  · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
+  · -- Everything except `(i, j)` (= `(σ j, j)`) is given by A, and the rest is a single `1`.
     congr
     ext j'
     subst h
@@ -275,7 +275,7 @@ if the determinant is not a unit. A sufficient (but still not necessary) conditi
 divides `b`. -/
 @[simp]
 theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
-  rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec_assoc, one_mulVec]
+  rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec, one_mulVec]
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
@@ -452,7 +452,7 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
     intro
     rw [RingHom.map_adjugate, f'_inv]
   have f'_g_mul : ∀ M N : Matrix n n α, f' (g M * g N) = M * N := by
-    intros M N
+    intro M N
     rw [RingHom.map_mul, f'_inv, f'_inv]
   have hu : ∀ M : Matrix n n α, IsRegular (g M).det := by
     intro M

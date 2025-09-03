@@ -257,11 +257,11 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (i : ℕ) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
       (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
-  induction' i with i IH generalizing x
-  · ext1 m
+  induction i generalizing x with ext1 m
+  | zero =>
     simp only [iteratedFDerivWithin_zero_apply, comp_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, coe_coe]
-  · ext1 m
+  | succ i IH =>
     rw [iteratedFDerivWithin_succ_apply_left]
     have Z : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (g ∘ f) s) s x =
         fderivWithin 𝕜 (g.continuousMultilinearMapCongrRight (fun _ : Fin i => E) ∘
@@ -419,11 +419,11 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_right (g : G ≃L[𝕜] 
     (hs : UniqueDiffOn 𝕜 s) {x : G} (hx : g x ∈ s) (i : ℕ) :
     iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s) x =
       (iteratedFDerivWithin 𝕜 i f s (g x)).compContinuousLinearMap fun _ => g := by
-  induction' i with i IH generalizing x
-  · ext1
+  induction i generalizing x with ext1 m
+  | zero =>
     simp only [iteratedFDerivWithin_zero_apply, comp_apply,
-     ContinuousMultilinearMap.compContinuousLinearMap_apply]
-  · ext1 m
+      ContinuousMultilinearMap.compContinuousLinearMap_apply]
+  | succ i IH =>
     simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply,
       ContinuousLinearEquiv.coe_coe, iteratedFDerivWithin_succ_apply_left]
     have : fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (f ∘ g) (g ⁻¹' s)) (g ⁻¹' s) x =
@@ -1052,22 +1052,22 @@ theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
   isBoundedBilinearMap_apply.contDiff.comp₂_contDiffWithinAt hf hg
 
 @[fun_prop]
-theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
+theorem ContDiff.smulRight {f : E → StrongDual 𝕜 F} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
   isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p => p.1.smulRight p.2) hf hg
 
 @[fun_prop]
-theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.smulRight {f : E → StrongDual 𝕜 F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x).smulRight (g x)) s :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp₂_contDiffOn hf hg
 
 @[fun_prop]
-theorem ContDiffAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
+theorem ContDiffAt.smulRight {f : E → StrongDual 𝕜 F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x).smulRight (g x)) x :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp₂_contDiffAt hf hg
 
 @[fun_prop]
-theorem ContDiffWithinAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G}
+theorem ContDiffWithinAt.smulRight {f : E → StrongDual 𝕜 F} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (fun x => (f x).smulRight (g x)) s x :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp₂_contDiffWithinAt hf hg
@@ -1162,7 +1162,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
   · intro z hz
     have := hvf' (z, g z) hz.1
     refine this.comp _ (hasFDerivAt_prodMk_right _ _).hasFDerivWithinAt ?_
-    exact mapsTo'.mpr (image_prodMk_subset_prod_right hz.2)
+    exact mapsTo_iff_image_subset.mpr (image_prodMk_subset_prod_right hz.2)
   · exact (hf'.continuousLinearMap_comp <| (ContinuousLinearMap.compL 𝕜 F (E × F) G).flip
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
       (contDiffWithinAt_id.prodMk hg) hst
@@ -1250,11 +1250,13 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
 theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
-  induction' i with i hi generalizing m
-  · simp only [CharP.cast_eq_zero, add_zero] at hmn
+  induction i generalizing m with
+  | zero =>
+    simp only [CharP.cast_eq_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
-  · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
+  | succ i hi =>
+    rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
     exact ((hi hmn).fderivWithin_right hs le_rfl hx₀s).continuousLinearMap_comp
       ((continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (i+1) ↦ E) F).symm :
         _ →L[𝕜] E [×(i+1)]→L[𝕜] F)

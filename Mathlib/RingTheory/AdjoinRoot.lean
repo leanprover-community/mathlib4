@@ -131,6 +131,15 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
+/- TODO : generalise base ring -/
+/-- `R`-algebra homomorphism from `R[x]` to `AdjoinRoot f` sending `X` to the `root`. -/
+def mkₐ : R[X] →ₐ[R] AdjoinRoot f :=
+  Ideal.Quotient.mkₐ R _
+
+@[simp, norm_cast] theorem mkₐ_toRingHom : ↑(mkₐ f) = mk f := rfl
+
+@[simp] theorem coe_mkₐ : ⇑(mkₐ f) = mk f := rfl
+
 @[simp]
 theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
@@ -141,7 +150,7 @@ theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
   rfl
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
-  (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
+  .of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
 
 theorem finitePresentation : Algebra.FinitePresentation R (AdjoinRoot f) :=
   (Algebra.FinitePresentation.polynomial R).quotient (Submodule.fg_span_singleton f)
@@ -156,7 +165,7 @@ instance hasCoeT : CoeTC R (AdjoinRoot f) :=
   ⟨of f⟩
 
 /-- Two `R`-`AlgHom` from `AdjoinRoot f` to the same `R`-algebra are the same iff
-    they agree on `root f`. -/
+they agree on `root f`. -/
 @[ext]
 theorem algHom_ext [Semiring S] [Algebra R S] {g₁ g₂ : AdjoinRoot f →ₐ[R] S}
     (h : g₁ (root f) = g₂ (root f)) : g₁ = g₂ :=

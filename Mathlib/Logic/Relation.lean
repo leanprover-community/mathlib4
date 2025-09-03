@@ -320,9 +320,10 @@ theorem cases_tail : ReflTransGen r a b → b = a ∨ ∃ c, ReflTransGen r a c 
   (cases_tail_iff r a b).1
 
 @[elab_as_elim]
-theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α} (h : ReflTransGen r a b)
-    (refl : P b refl)
-    (head : ∀ {a c} (h' : r a c) (h : ReflTransGen r c b), P c h → P a (h.head h')) : P a h := by
+theorem head_induction_on {motive : ∀ a : α, ReflTransGen r a b → Prop} {a : α}
+    (h : ReflTransGen r a b) (refl : motive b refl)
+    (head : ∀ {a c} (h' : r a c) (h : ReflTransGen r c b), motive c h → motive a (h.head h')) :
+    motive a h := by
   induction h with
   | refl => exact refl
   | @tail b c _ hbc ih =>
@@ -331,13 +332,14 @@ theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α}
   · exact fun h1 h2 ↦ head h1 (h2.tail hbc)
 
 @[elab_as_elim]
-theorem trans_induction_on {P : ∀ {a b : α}, ReflTransGen r a b → Prop} {a b : α}
-    (h : ReflTransGen r a b) (ih₁ : ∀ a, @P a a refl) (ih₂ : ∀ {a b} (h : r a b), P (single h))
-    (ih₃ : ∀ {a b c} (h₁ : ReflTransGen r a b) (h₂ : ReflTransGen r b c), P h₁ → P h₂ →
-     P (h₁.trans h₂)) : P h := by
+theorem trans_induction_on {motive : ∀ {a b : α}, ReflTransGen r a b → Prop} {a b : α}
+    (h : ReflTransGen r a b) (refl : ∀ a, @motive a a refl)
+    (single : ∀ {a b} (h : r a b), motive (single h))
+    (trans : ∀ {a b c} (h₁ : ReflTransGen r a b) (h₂ : ReflTransGen r b c), motive h₁ → motive h₂ →
+      motive (h₁.trans h₂)) : motive h := by
   induction h with
-  | refl => exact ih₁ a
-  | tail hab hbc ih => exact ih₃ hab (single hbc) ih (ih₂ hbc)
+  | refl => exact refl a
+  | tail hab hbc ih => exact trans hab (.single hbc) ih (single hbc)
 
 theorem cases_head (h : ReflTransGen r a b) : a = b ∨ ∃ c, r a c ∧ ReflTransGen r c b := by
   induction h using Relation.ReflTransGen.head_induction_on <;> grind
@@ -388,24 +390,26 @@ theorem head (hab : r a b) (hbc : TransGen r b c) : TransGen r a c :=
   head' hab hbc.to_reflTransGen
 
 @[elab_as_elim]
-theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h : TransGen r a b)
-    (base : ∀ {a} (h : r a b), P a (single h))
-    (ih : ∀ {a c} (h' : r a c) (h : TransGen r c b), P c h → P a (h.head h')) : P a h := by
+theorem head_induction_on {motive : ∀ a : α, TransGen r a b → Prop} {a : α} (h : TransGen r a b)
+    (single : ∀ {a} (h : r a b), motive a (single h))
+    (head : ∀ {a c} (h' : r a c) (h : TransGen r c b), motive c h → motive a (h.head h')) :
+    motive a h := by
   induction h with
-  | single h => exact base h
+  | single h => exact single h
   | @tail b c _ hbc h_ih =>
   apply h_ih
-  · exact fun h ↦ ih h (single hbc) (base hbc)
-  · exact fun hab hbc ↦ ih hab _
+  · exact fun h ↦ head h (.single hbc) (single hbc)
+  · exact fun hab hbc ↦ head hab _
 
 @[elab_as_elim]
-theorem trans_induction_on {P : ∀ {a b : α}, TransGen r a b → Prop} {a b : α} (h : TransGen r a b)
-    (base : ∀ {a b} (h : r a b), P (single h))
-    (ih : ∀ {a b c} (h₁ : TransGen r a b) (h₂ : TransGen r b c), P h₁ → P h₂ → P (h₁.trans h₂)) :
-    P h := by
+theorem trans_induction_on {motive : ∀ {a b : α}, TransGen r a b → Prop} {a b : α}
+    (h : TransGen r a b) (single : ∀ {a b} (h : r a b), motive (single h))
+    (trans : ∀ {a b c} (h₁ : TransGen r a b) (h₂ : TransGen r b c), motive h₁ → motive h₂ →
+      motive (h₁.trans h₂)) :
+    motive h := by
   induction h with
-  | single h => exact base h
-  | tail hab hbc h_ih => exact ih hab (single hbc) h_ih (base hbc)
+  | single h => exact single h
+  | tail hab hbc h_ih => exact trans hab (.single hbc) h_ih (single hbc)
 
 theorem trans_right (hab : ReflTransGen r a b) (hbc : TransGen r b c) : TransGen r a c := by
   induction hbc with

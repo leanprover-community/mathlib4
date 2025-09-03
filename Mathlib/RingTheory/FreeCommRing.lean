@@ -73,14 +73,7 @@ with coefficients in the integers and variables indexed by `α`.
 -/
 def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
--- The `CommRing, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
-  delta FreeCommRing; infer_instance
-
-instance FreeCommRing.instInhabited : Inhabited (FreeCommRing α) := by
-  delta FreeCommRing; infer_instance
+deriving CommRing, Inhabited
 
 namespace FreeCommRing
 
@@ -124,9 +117,7 @@ protected theorem induction_on {motive : FreeCommRing α → Prop} (z : FreeComm
   have neg : ∀ x, motive x → motive (-x) := fun x ih => neg_one_mul x ▸ mul _ _ neg_one ih
   have one : motive 1 := neg_neg (1 : FreeCommRing α) ▸ neg _ neg_one
   FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ add _ _ neg_one one)
-    (fun m => Multiset.induction_on m one fun a m ih => by
-      convert mul (FreeCommRing.of a) _ (of a) ih
-      apply of_cons)
+    (fun m => Multiset.induction_on m one fun a _ ih => mul (FreeCommRing.of a) _ (of a) ih)
     (fun _ ih => neg _ ih) add
 
 section lift

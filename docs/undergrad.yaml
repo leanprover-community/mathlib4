@@ -148,14 +148,14 @@ Ring Theory:
     principal ideal domain: 'Submodule.IsPrincipal'
     Euclidean rings: 'EuclideanDomain'
     Euclid's' algorithm: 'Nat.xgcd'
-    $\Z$ is a euclidean ring: 'Int.euclideanDomain'
+    $\Z$ is a Euclidean ring: 'Int.euclideanDomain'
     congruence in $\Z$: 'Int.ModEq'
     prime numbers: 'Prime'
     Bézout's identity: 'exists_gcd_eq_mul_add_mul'
     $\Z/n\Z$ and its invertible elements: 'ZMod.unitOfCoprime'
     Euler's totient function ($\varphi$): 'Nat.totient'
   Polynomial rings:
-    $K[X]$ is a euclidean ring when $K$ is a field: 'Polynomial.instEuclideanDomain'
+    $K[X]$ is a Euclidean ring when $K$ is a field: 'Polynomial.instEuclideanDomain'
     irreducible polynomial: 'Irreducible'
     cyclotomic polynomials in $\Q[X]$: 'Polynomial.cyclotomic'
     Eisenstein's criterion: 'Polynomial.irreducible_of_eisenstein_criterion'
@@ -175,7 +175,7 @@ Ring Theory:
     Subfields: 'field_theory/subfield.html'
     Frobenius morphisms: 'frobenius'
     field $\Q$ of rational numbers: 'Rat.instField'
-    field $\R$ of real numbers: 'Real.field'
+    field $\R$ of real numbers: 'Real.instField'
     field $\C$ of complex numbers: 'Complex.instField'
     $\C$ is algebraically closed: 'Complex.exists_root'
     field of fractions of an integral domain: 'IsFractionRing'
@@ -213,7 +213,7 @@ Bilinear and Quadratic Forms Over a Vector Space:
   Euclidean and Hermitian spaces:
     Euclidean vector spaces: 'InnerProductSpace'
     Hermitian vector spaces: 'InnerProductSpace'
-    dual isomorphism in the euclidean case: 'InnerProductSpace.toDual'
+    dual isomorphism in the Euclidean case: 'InnerProductSpace.toDual'
     orthogonal complement: 'Submodule.orthogonal'
     Cauchy-Schwarz inequality: 'inner_mul_inner_self_le'
     norm: 'InnerProductSpace.Core.toNorm'
@@ -268,7 +268,7 @@ Affine and Euclidean Geometry:
     regular polygons: ''
     metric relations in the triangle: ''
     using complex numbers in plane geometry: ''
-  Application of quadratic forms to study proper conic sections of the affine euclidean plane:
+  Application of quadratic forms to study proper conic sections of the affine Euclidean plane:
     focus: ''
     eccentricity: ''
     quadric surfaces in 3-dimensional Euclidean affine spaces: ''
@@ -277,7 +277,7 @@ Affine and Euclidean Geometry:
 Single Variable Real Analysis:
   Real numbers:
     definition of $\R$: 'Real'
-    field structure: 'Real.field'
+    field structure: 'Real.instField'
     order: 'Real.linearOrder'
   Sequences of real numbers:
     convergence: 'Filter.Tendsto'
@@ -436,7 +436,7 @@ Topology:
   Hilbert spaces:
     Hilbert projection theorem: 'exists_norm_eq_iInf_of_complete_convex'
     orthogonal projection onto closed vector subspaces: 'Submodule.orthogonalProjection'
-    dual space: 'NormedSpace.Dual'
+    dual space: 'StrongDual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
     completeness of $l^2$: 'lp.completeSpace'
@@ -577,8 +577,8 @@ Probability Theory:
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
     almost surely convergence: 'MeasureTheory.ae'
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
-    Chebychev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
-    Levy's theorem: ''
+    Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
+    Lévy's theorem: ''
     weak law of large numbers: ''
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
     central limit theorem: ''
@@ -606,7 +606,7 @@ Distribution calculus:
     Schwartz space of rapidly decreasing functions: 'SchwartzMap'
     stability by derivation: 'SchwartzMap.fderivCLM'
     stability by multiplication by a slowly growing smooth function: ''
-    gaussian functions: ''
+    Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: ''
     convolution of two functions of $\mathcal{S}(\R^d)$: ''
   Tempered distributions:

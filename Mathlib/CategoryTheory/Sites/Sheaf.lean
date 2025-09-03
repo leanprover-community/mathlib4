@@ -291,7 +291,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
-/-- The category of sheaves taking values in `A` on a grothendieck topology. -/
+/-- The category of sheaves taking values in `A` on a Grothendieck topology. -/
 structure Sheaf where
   /-- the underlying presheaf -/
   val : Cᵒᵖ ⥤ A
@@ -478,7 +478,7 @@ theorem Sheaf.Hom.add_app (f g : P ⟶ Q) (U) : (f + g).1.app U = f.1.app U + g.
 instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
   Function.Injective.addCommGroup (fun f : Sheaf.Hom P Q => f.1)
     (fun _ _ h => Sheaf.Hom.ext h) rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
+    (fun _ _ => by cat_disch) (fun _ _ => by cat_disch)
 
 instance : Preadditive (Sheaf J A) where
   homGroup _ _ := Sheaf.Hom.addCommGroup
@@ -701,9 +701,9 @@ For a concrete category `(A, s)` where the forgetful functor `s : A ⥤ Type v` 
 reflects isomorphisms, and `A` has limits, an `A`-valued presheaf `P : Cᵒᵖ ⥤ A` is a sheaf iff its
 underlying `Type`-valued presheaf `P ⋙ s : Cᵒᵖ ⥤ Type` is a sheaf.
 
-Note this lemma applies for "algebraic" categories, eg groups, abelian groups and rings, but not
-for the category of topological spaces, topological rings, etc since reflecting isomorphisms doesn't
-hold.
+Note this lemma applies for "algebraic" categories, e.g. groups, abelian groups and rings, but not
+for the category of topological spaces, topological rings, etc. since reflecting isomorphisms does
+not hold.
 -/
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by

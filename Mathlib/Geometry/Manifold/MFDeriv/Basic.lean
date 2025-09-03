@@ -573,8 +573,8 @@ variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 protected nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
-  -- Porting note: didn't need `convert` because of finding instances by unification
-  convert U.eq h.2 h₁.2
+  -- `by apply` because the instances can be found in the term but not in the goal.
+  apply U.eq h.2 h₁.2
 
 protected theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' :=
@@ -1039,15 +1039,8 @@ theorem MDifferentiableWithinAt.congr_of_eventuallyEq_insert
   (h.insert.congr_of_eventuallyEq_of_mem h₁ (mem_insert x s)).of_insert
 
 theorem Filter.EventuallyEq.mdifferentiableWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
-    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f₁ s x := by
-  constructor
-  · intro h
-    apply h.congr_of_eventuallyEq h₁ hx
-  · intro h
-    apply h.congr_of_eventuallyEq _ hx.symm
-    apply h₁.mono
-    intro y
-    apply Eq.symm
+    MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f₁ s x :=
+  mdifferentiablefWithinAt_iff h₁.symm hx.symm
 
 theorem MDifferentiableWithinAt.congr_mono (h : MDifferentiableWithinAt I I' f s x)
     (ht : ∀ x ∈ t, f₁ x = f x) (hx : f₁ x = f x) (h₁ : t ⊆ s) :
