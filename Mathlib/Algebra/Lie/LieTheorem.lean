@@ -212,7 +212,6 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
   lift A to LieIdeal k L
   · intros
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
-  change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', _⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
   exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L
