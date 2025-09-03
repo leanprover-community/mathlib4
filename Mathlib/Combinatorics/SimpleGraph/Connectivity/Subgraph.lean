@@ -625,6 +625,8 @@ lemma Connected_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (hconn : G
     use x''.val, y''.val
     simp_all [← coe_adj, h''.adj_sub]
 
+/-- The graph resulting from removing a vertex of degree one from a nontrivial connected graph is
+connected. -/
 lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [DecidableEq V]
     {H : G.Subgraph} (hconn : H.Connected) {v : V} [Fintype ↑(H.neighborSet v)]
     (hdeg : H.degree v = 1) [Nontrivial H.verts] : (H.deleteVerts {v}).Connected := by
@@ -681,6 +683,7 @@ lemma Connected.connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial [
     use .append puw.toPath.reverse (pux.toPath : G.Walk u x)
     simpa using ⟨p_le_H' w_mem_H' puw_le_H, p_le_H' x_mem_H' pux_le_H⟩
 
+/-- A nontrivial connected graph contains a vertex that leaves the graph connected if removed. -/
 lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [DecidableEq V]
     [Fintype V] {H : G.Subgraph} [Nontrivial H.verts] (h : H.Connected) :
     ∃ v ∈ H.verts, (H.deleteVerts {v}).Connected := by
