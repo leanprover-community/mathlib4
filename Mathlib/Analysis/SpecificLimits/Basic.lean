@@ -406,7 +406,7 @@ open Encodable
 
 lemma ENNReal.tsum_geometric_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n = 2 := by simp
 
-lemma tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
+lemma ENNReal.tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
     ∑' i : ι, (2⁻¹ : ℝ≥0∞) ^ encode i ≤ 2 :=
   (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_eq tsum_geometric_ENNReal_two
 
