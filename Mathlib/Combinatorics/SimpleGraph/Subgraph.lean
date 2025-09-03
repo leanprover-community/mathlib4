@@ -805,7 +805,7 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
 
 @[simp]
 lemma _root_.SimpleGraph.toSubgraph.degree (H : SimpleGraph V) (h : H ≤ G) {v : V}
-    [Fintype ↑(H.neighborSet v)] [Fintype ↑((toSubgraph H h).neighborSet v)] :
+    [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
     (toSubgraph H h).degree v = H.degree v := by
   refine (Finset.card_eq_of_equiv_fintype ?_).symm
   aesop

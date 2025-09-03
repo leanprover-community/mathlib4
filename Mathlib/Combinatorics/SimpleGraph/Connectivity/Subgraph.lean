@@ -265,8 +265,7 @@ lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toS
 
 lemma verts_toSubgraph_toPath_subset {u v : V} {p : G.Walk u v} [DecidableEq V] :
     (p.toPath : G.Walk u v).toSubgraph.verts ⊆ p.toSubgraph.verts := by
-  simp
-  exact p.support_toPath_subset
+  simpa using p.support_toPath_subset
 
 lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
     p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
@@ -275,7 +274,7 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
 
 lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
     (hp : (p.toPath : G.Walk u v).toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
-  simp_all [adj_toSubgraph_iff_mem_edges]
+  simp_all only [adj_toSubgraph_iff_mem_edges]
   exact p.edges_toPath_subset hp
 
 lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
@@ -699,7 +698,8 @@ lemma Connected.exists_vertex_connected_deleteVerts_singleton_of_nontrivial [Dec
     · intro _ _ ⟨_, _, ⟨_, _, _⟩, _, _⟩
       aesop
   · aesop
-  · have : Nontrivial (toSubgraph T T_le_H).verts := by simp_all
+  · have : Nontrivial (toSubgraph T T_le_H).verts := by
+      simp_all only [Set.nontrivial_coe_sort, toSubgraph_verts, Set.nontrivial_univ_iff]
     have : Fintype ((toSubgraph T T_le_H).neighborSet v) := @Fintype.ofFinite _ Subtype.finite
     apply Connected_coeSubgraph
     apply connected_deleteVerts_singleton_of_degree_eq_one_of_nontrivial (T_conn.toSubgraph T_le_H)
