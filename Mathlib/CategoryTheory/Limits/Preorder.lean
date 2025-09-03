@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fernando Chu, Sina Hazratpour, Joël Riou
+Authors: Sina Hazratpour, Joël Riou, Fernando Chu
 -/
 
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
@@ -47,7 +47,7 @@ def lowerBoundOfCone (c : Cone F) : lowerBounds (Set.range F.obj) where
     exact (c.π.app i).le
 
 /-- If a cone is a limit, its point is a glb. -/
-lemma isGLB_IsLimit (c : Cone F) (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
+lemma isGLB_of_isLimit {c : Cone F} (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
   ⟨(lowerBoundOfCone F c).prop, fun i k ↦ (h.lift (coneOfLowerBound F ⟨i, k⟩)).le⟩
 
 /-- If the point of cone is a glb, the cone is a limi.t -/
