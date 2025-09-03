@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fin.Basic
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # Successors and predecessor operations of `Fin n`

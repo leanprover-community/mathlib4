@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Int.DivMod
-import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.Lattice
 import Mathlib.Tactic.Common
 
 /-!
