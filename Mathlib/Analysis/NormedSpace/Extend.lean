@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Analysis.RCLike.Basic
 
 /-!

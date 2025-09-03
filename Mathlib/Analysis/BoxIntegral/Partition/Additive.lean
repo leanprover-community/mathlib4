@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Split
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Box additive functions

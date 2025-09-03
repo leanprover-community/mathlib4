@@ -5,7 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Bounded linear maps

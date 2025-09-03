@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
+import Mathlib.Analysis.Normed.Operator.Prod
 import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
