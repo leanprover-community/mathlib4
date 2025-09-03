@@ -91,7 +91,6 @@ lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
   refine eq_of_sub_eq_zero ?_
   erw [← (QuotientAddGroup.mk' (Relations F)).map_sub, ← AddMonoidHom.mem_ker]
   rw [QuotientAddGroup.ker_mk']
-  simp only [DFinsupp.singleAddHom_apply]
   exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
 
 /--

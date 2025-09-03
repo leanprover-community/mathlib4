@@ -917,8 +917,6 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
   grw [eq_top_iff.1 ht]
   refine map_le_iff_le_comap.2 (normalClosure_le_normal ?_)
   rw [Set.singleton_subset_iff, SetLike.mem_coe]
-  simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply,
-    MonoidHom.restrict_apply, mem_comap]
   exact subset_normalClosure (Set.mem_singleton _)
 
 end IsConj

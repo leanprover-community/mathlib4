@@ -466,7 +466,6 @@ lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     simp only [AlgHom.commutes]
     use r
   · rintro ⟨r, hr, rfl⟩
-    simp only [Submonoid.mem_map]
     use (algebraMap R A r)
     simp only [AlgHom.commutes, and_true]
     use r

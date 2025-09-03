@@ -285,7 +285,6 @@ theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * 
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
     (A : Set G) * ↑(B ⊓ C) = (A : Set G) * (B : Set G) ∩ C := by
   ext
-  simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, hy, z, ⟨hzB, hzC⟩, rfl⟩
     refine ⟨?_, mul_mem (h hy) hzC⟩
@@ -299,7 +298,6 @@ theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
 theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
     ((A ⊓ B : Subgroup G) : Set G) * C = (A : Set G) ∩ (↑B * ↑C) := by
   ext
-  simp only [coe_inf, Set.mem_mul, Set.mem_inter_iff]
   constructor
   · rintro ⟨y, ⟨hyA, hyB⟩, z, hz, rfl⟩
     refine ⟨A.mul_mem hyA (h hz), ?_⟩
