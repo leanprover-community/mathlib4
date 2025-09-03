@@ -3,7 +3,7 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
+import Mathlib.Analysis.Normed.Operator.Bilinear
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
