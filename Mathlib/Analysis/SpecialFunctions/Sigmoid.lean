@@ -106,7 +106,7 @@ lemma continuous_sigmoid : Continuous sigmoid := by
 
 open Topology Filter
 
-lemma sigmoid_tendsto_nhds_1_atTop : Tendsto sigmoid atTop (𝓝 1) := by
+lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   unfold sigmoid
   nth_rw 2 [← inv_one]
   rw [tendsto_inv_iff₀ (by simp)]
