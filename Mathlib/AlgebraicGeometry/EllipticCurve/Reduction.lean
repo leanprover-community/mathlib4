@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Wang
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.Valuation.Discrete.Basic
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Reduction of Weierstrass curves over local fields
@@ -145,7 +145,6 @@ section Minimal
 variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-open IsDedekindDomain.HeightOneSpectrum
 open IsDiscreteValuationRing
 
 /-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
@@ -190,8 +189,7 @@ section Reduction
 variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-open IsLocalRing
-open IsDiscreteValuationRing
+open IsDiscreteValuationRing IsLocalRing
 
 /-- The reduction of a Weierstrass curve over `K` given by a minimal Weierstrass equation,
 which is a Weierstrass curve over the residue field of `R`. -/
