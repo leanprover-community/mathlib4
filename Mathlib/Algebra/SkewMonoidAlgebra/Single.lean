@@ -5,7 +5,7 @@ Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
-# Modifying Skew Monoid Algebra at exactly one point
+# Modifying skew monoid algebra at exactly one point
 
 This file contains basic results on updating/erasing an element of a skew monoid algebras using
 one point of the domain.
