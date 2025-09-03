@@ -92,6 +92,7 @@ noncomputable section HasTerminal
 
 variable [Preorder C] [HasTerminal C]
 
+/-- A preorder with a terminal object has a greatest element. -/
 def orderTopOfHasTerminal : OrderTop C where
   top := ⊤_ C
   le_top x := leOfHom (Limits.terminal.from x)
@@ -114,6 +115,7 @@ noncomputable section HasInitial
 
 variable [Preorder C] [HasInitial C]
 
+/-- A preorder with an initial object has a least element. -/
 def orderBotOfHasInitial : OrderBot C where
   bot := ⊥_ C
   bot_le x := leOfHom (Limits.initial.to x)
