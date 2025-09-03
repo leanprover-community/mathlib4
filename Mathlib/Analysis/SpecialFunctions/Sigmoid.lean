@@ -113,7 +113,7 @@ lemma tendsto_sigmoid_atTop : Tendsto sigmoid atTop (𝓝 1) := by
   nth_rw 2 [← AddMonoid.add_zero 1]
   exact tendsto_const_nhds.add tendsto_exp_neg_atTop_nhds_zero
 
-lemma sigmoid_tendsto_nhds_0_atBot : Tendsto sigmoid atBot (𝓝 0) := by
+lemma tendsto_sigmoid_atBot : Tendsto sigmoid atBot (𝓝 0) := by
   unfold sigmoid
   refine Tendsto.inv_tendsto_atTop <| tendsto_const_nhds.add_atTop ?_
   exact tendsto_exp_comp_atTop.mpr tendsto_neg_atBot_atTop
