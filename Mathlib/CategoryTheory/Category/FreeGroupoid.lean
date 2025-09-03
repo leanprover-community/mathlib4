@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
-import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Adjunction.Reflective
 
