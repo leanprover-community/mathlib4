@@ -102,18 +102,6 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       rintro rfl
       exact opNorm_zero)
 
-
-/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-@[simp]
-theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 :=
-  
-
-@[simp]
-lemma nnnorm_id [Nontrivial E] : ‖id 𝕜 E‖₊ = 1 := NNReal.eq norm_id
-
-instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
-  ⟨norm_id⟩
-
 /-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
 instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
   NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
