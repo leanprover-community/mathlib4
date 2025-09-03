@@ -73,7 +73,7 @@ def ofIso (e : M ≅ X) : Mon_Class X where
     simp only [MonoidalCategory.whiskerLeft_comp, tensorHom_def', Category.assoc,
       whiskerLeft_hom_inv_assoc, Iso.inv_hom_id]
     simp [← tensorHom_def'_assoc, rightUnitor_inv_comp_tensorHom_assoc]
-  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id, ← tensor_comp_assoc,
+  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id,
       -associator_conjugation, associator_naturality_assoc] using
       congr(((e.inv ⊗ₘ e.inv) ⊗ₘ e.inv) ≫ $(Mon_Class.mul_assoc M) ≫ e.hom)
 
@@ -101,12 +101,13 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   id_tensorHom_id tensorμ tensorδ
+  tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc
   leftUnitor_tensor_hom leftUnitor_tensor_hom_assoc
   leftUnitor_tensor_inv leftUnitor_tensor_inv_assoc
   rightUnitor_tensor_hom rightUnitor_tensor_hom_assoc
   rightUnitor_tensor_inv rightUnitor_tensor_inv_assoc
 
-attribute [mon_tauto ←] tensorHom_id id_tensorHom tensor_comp tensor_comp_assoc
+attribute [mon_tauto ←] tensorHom_id id_tensorHom
 
 @[reassoc (attr := mon_tauto)]
 lemma associator_hom_comp_tensorHom_tensorHom (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) :
@@ -973,7 +974,7 @@ instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
   mul_comm := by
     simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
       ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
-      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, ← tensor_comp,
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft,
       Mon_Class.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
 
 end SymmetricCategory
