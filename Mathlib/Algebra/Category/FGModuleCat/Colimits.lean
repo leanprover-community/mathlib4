@@ -25,21 +25,19 @@ open CategoryTheory Limits
 
 namespace FGModuleCat
 
-variable {J : Type} [SmallCategory J] [FinCategory J]
-variable {k : Type u} [Ring k]
+variable {J : Type} [SmallCategory J] [FinCategory J] {k : Type u} [Ring k]
 
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite k (Z j)] :
     Module.Finite k (∐ fun j => Z j : ModuleCat.{v} k) := by
   classical
-  haveI : Module.Finite k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
-  exact (Module.Finite.equiv_iff (ModuleCat.coprodIsoDirectSum Z).toLinearEquiv).mpr inferInstance
+exact (Module.Finite.equiv_iff (ModuleCat.coprodIsoDirectSum Z).toLinearEquiv).mpr inferInstance
 
 /-- Finite colimits of finite modules are finite, because we can realise them as quotients
 of a finite coproduct. -/
 instance (F : J ⥤ FGModuleCat k) :
     Module.Finite k (colimit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=
-  haveI : ∀ j, Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
-    intro j; change Module.Finite k (F.obj j); infer_instance
+have (j : J) : Module.Finite k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
+    change Module.Finite k (F.obj j); infer_instance
   Module.Finite.of_surjective
     (colimitQuotientCoproduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k))).hom
     ((ModuleCat.epi_iff_surjective _).1 inferInstance)
