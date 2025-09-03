@@ -298,6 +298,7 @@ theorem im_intCast (n : ℤ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 theorem coe_intCast (n : ℤ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
 
 end AddCommGroupWithOne
+
 section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R]
 
