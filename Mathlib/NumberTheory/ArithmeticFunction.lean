@@ -893,7 +893,7 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
 
 @[simp]
 theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 1 := by
-    rcases eq_or_ne n 0 with rfl | hn
+  rcases eq_or_ne n 0 with rfl | hn
   · simp
   · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
