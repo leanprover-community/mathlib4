@@ -155,7 +155,7 @@ private theorem add_pf_add_overlap_zero (h₀ : n₁ + n₂ = 0) (h₁ : a₁ = 
 
 private theorem add_pf_add_overlap (_ : a₁ = b₁) (_ : a₂ + b₂ = c₂) :
     (n₁ • a₁ + a₂ : L) + (n₂ • b₁ + b₂) = (n₁ + n₂) • a₁ + c₂ := by
-  subst_vars; simp [add_assoc, add_left_comm, ← add_assoc, add_comm, add_assoc, ← add_smul]
+  subst_vars; simp [add_assoc, add_left_comm, add_comm, add_assoc, ← add_smul]
 
 /-- This function evaluates the sum of two `ExSum` expressions and reduce it to the normal form. The
 "monomials" are sorted in the order of `ExLie.cmp`. -/
