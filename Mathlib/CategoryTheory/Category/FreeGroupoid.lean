@@ -20,11 +20,15 @@ Given a type `C` and a category instance on `C`:
 
 - `CategoryTheory.Category.FreeGroupoid C`: the underlying type of the free groupoid on `C`.
 - `CategoryTheory.Category.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid C`.
-- `CategoryTheory.Category.lift`: the lifting of a functor `C ⥤ G` where `G` is a groupoid,
-  to a functor `CategoryTheory.Category.FreeGroupoid C ⥤ G`.
-- `CategoryTheory.Category.lift_spec` and `CategoryTheory.Category.lift_unique`:
-  the proofs that, respectively, `CategoryTheory.Category.lift` indeed is a lifting
+- `CategoryTheory.Category.FreeGroupoid.lift`: the lifting of a functor `C ⥤ G` where `G` is a
+  groupoid, to a functor `CategoryTheory.Category.FreeGroupoid C ⥤ G`.
+- `CategoryTheory.Category.FreeGroupoid.lift_spec` and
+  `CategoryTheory.Category.FreeGroupoid.lift_unique`:
+  the proofs that, respectively, `CategoryTheory.Category.FreeGroupoid.lift` indeed is a lifting
   and is the unique one.
+- `CategoryTheory.Category.Grpd.free`: the free functor from `Grpd` to `Cat`
+- `CategoryTheory.Category.Grpd.freeForgetAdjunction`: that `free` is left adjoint to
+  `Grpd.forgetToCat`.
 
 ## Implementation notes
 
