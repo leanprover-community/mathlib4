@@ -405,11 +405,8 @@ theorem dual_eq_dual_mul_dual (C M : Type*) [CommRing C] [IsDedekindDomain C] [F
     [IsScalarTower B L M] [IsScalarTower K L M] [IsIntegralClosure C A M] [IsIntegralClosure C B M]
     [NoZeroSMulDivisors B C] [FiniteDimensional K M] [FiniteDimensional L M] [FiniteDimensional K L]
     [Algebra.IsSeparable K M] [Algebra.IsSeparable L M] :
-    haveI h : B⁰ ≤ Submonoid.comap (algebraMap B C) C⁰ :=
-      nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
-        FaithfulSMul.algebraMap_injective _ _
     dual A K (1 : FractionalIdeal C⁰ M) = dual B L (1 : FractionalIdeal C⁰ M) *
-        (dual A K (1 : FractionalIdeal B⁰ L)).extended M h := by
+        (dual A K (1 : FractionalIdeal B⁰ L)).extendedHomₐ M C := by
   have : Module.Finite L M := Module.Finite.right K L M
   have : Module.Finite K L := Module.Finite.left K L M
   have : Algebra.IsSeparable L M := isSeparable_tower_top_of_isSeparable K L M
@@ -422,14 +419,15 @@ theorem dual_eq_dual_mul_dual (C M : Type*) [CommRing C] [IsDedekindDomain C] [F
   · intro x hx
     dsimp only [val_eq_coe]
     rw [mem_coe, ← spanSingleton_le_iff_mem]
-    suffices spanSingleton C⁰ x * ((dual A K (1 : FractionalIdeal B⁰ L)).extended M h)⁻¹ ≤
+    suffices spanSingleton C⁰ x * ((dual A K (1 : FractionalIdeal B⁰ L)).extendedHomₐ M C)⁻¹ ≤
           dual B L (1 : FractionalIdeal C⁰ M) by
-      have h' : (dual A K (1 : FractionalIdeal B⁰ L)).extended M h ≠ 0 :=
-        extended_ne_zero _ _ (FaithfulSMul.algebraMap_injective _ _) (by simp)
-      simpa [inv_mul_cancel_right₀ h'] using
-        mul_right_mono ((dual A K (1 : FractionalIdeal B⁰ L)).extended M h) this
+      have h' : (dual A K (1 : FractionalIdeal B⁰ L)).extendedHomₐ M C ≠ 0 := by
+        exact (extendedHomₐ_eq_zero_iff M C).not.mpr (by simp)
+      have := mul_right_mono ((dual A K (1 : FractionalIdeal B⁰ L)).extendedHomₐ M C) this
+      dsimp only at this
+      rwa [inv_mul_cancel_right₀ h'] at this
     refine spanSingleton_mul_le_iff.mpr fun z hz ↦ ?_
-    rw [← extended_inv _ (by simp), ← mem_coe, coe_extended_eq_span,
+    rw [← map_inv₀, ← mem_coe, extendedHom_apply, coe_extended_eq_span,
       Submodule.mem_span_image_iff_exists_fun] at hz
     obtain ⟨s, hs, _, rfl⟩ := hz
     simp_rw [Finset.mul_sum, mul_smul_comm]
@@ -449,7 +447,7 @@ theorem dual_eq_dual_mul_dual (C M : Type*) [CommRing C] [IsDedekindDomain C] [F
     refine (mem_dual (by simp)).mp this _ <| (mem_one_iff _).mpr ?_
     exact ⟨algebraMap B C b, by
       rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]⟩
-  · simp only [val_eq_coe, coe_mul, coe_dual_one, coe_extended_eq_span] at hx ⊢
+  · simp only [val_eq_coe, coe_mul, coe_dual_one] at hx ⊢
     induction hx using Submodule.mul_induction_on' with
     | mem_mul_mem m hm n hn =>
         obtain ⟨s, hs, _, rfl⟩ := (Submodule.mem_span_image_iff_exists_fun _).mp hn
@@ -580,10 +578,9 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
     isSeparable_tower_bot_of_isSeparable _ _ (FractionRing C)
   rw [← coeIdeal_inj (K := FractionRing C), coeIdeal_mul, coeIdeal_differentIdeal A
-    (FractionRing A), coeIdeal_differentIdeal B (FractionRing B),
-    ← extended_coeIdeal_eq_map_algebraMap (K := (FractionRing B)) (FractionRing C),
-    coeIdeal_differentIdeal A (FractionRing A), extended_inv _ (by simp), ← mul_inv,
-    ← inv_eq_iff_eq_inv, inv_inv]
+    (FractionRing A), coeIdeal_differentIdeal B (FractionRing B)]
+  rw [← extendedHomₐ_coeIdeal_eq_map (K := FractionRing B), coeIdeal_differentIdeal A
+    (FractionRing A), map_inv₀, ← mul_inv, ← inv_eq_iff_eq_inv, inv_inv]
   exact dual_eq_dual_mul_dual A (FractionRing A) (FractionRing B) B C (FractionRing C)
 
 variable {B L}
