@@ -27,7 +27,7 @@ termination_by l.length
 decreasing_by
   simp_wf
   rw [← length_reverse (as := l), h, length_cons]
-  simp [Nat.lt_succ]
+  simp
 
 @[simp]
 theorem reverseRecOn_nil {motive : List α → Sort*} (nil : motive [])
@@ -45,7 +45,7 @@ theorem reverseRecOn_concat {motive : List α → Sort*} (x : α) (xs : List α)
         cast (by simp [(reverse_reverse _).symm.trans h])
           (append_singleton _ x (reverseRecOn (motive := motive) ys nil append_singleton)) by
     exact this _ (reverse_reverse xs)
-  intros ys hy
+  intro ys hy
   conv_lhs => unfold reverseRecOn
   split
   next h => simp at h

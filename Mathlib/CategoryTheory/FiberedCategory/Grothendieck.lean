@@ -73,6 +73,7 @@ instance : IsFibered (forget F) :=
 
 variable (F) (S : 𝒮)
 
+attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The inclusion map from `F(S)` into `∫ F`. -/
 @[simps]
 def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
@@ -82,7 +83,7 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
     ext
     · simp
     · simp [← (F.mapId ⟨op S⟩).inv.naturality_assoc ψ, F.whiskerRight_mapId_inv_app,
-        Strict.leftUnitor_eqToIso, Strict.rightUnitor_eqToIso]
+        Strict.leftUnitor_eqToIso]
 
 /-- The natural isomorphism encoding `comp_const`. -/
 @[simps!]

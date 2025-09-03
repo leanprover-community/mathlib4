@@ -98,7 +98,7 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
-  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
+  · simp only [sum_cons, untrop_add, map_cons, inf_cons, ← IH]
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by

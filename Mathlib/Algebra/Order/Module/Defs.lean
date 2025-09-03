@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
@@ -254,6 +255,18 @@ instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE �
   elim _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
 
 end Mul
+
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulMono ℕ M where
+  elim _n _ _m₁ _m₂ hm := nsmul_le_nsmul_right hm _
+
+instance {M : Type*} [PartialOrder M] [AddCancelCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulStrictMono ℕ M where
+  elim _n hn _m₁ _m₂ := nsmul_lt_nsmul_right hn.ne'
+
+instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+    PosSMulStrictMono ℤ G where
+  elim _n hn _m₁ _m₂ := zsmul_lt_zsmul_right hn
 
 section SMul
 variable [SMul α β]
@@ -946,8 +959,7 @@ lemma smul_nonpos_iff : a • b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 
   rw [← neg_nonneg, ← smul_neg, smul_nonneg_iff, neg_nonneg, neg_nonpos]
 
 lemma smul_nonneg_iff_pos_imp_nonneg : 0 ≤ a • b ↔ (0 < a → 0 ≤ b) ∧ (0 < b → 0 ≤ a) :=
-  smul_nonneg_iff.trans <| by
-    simp_rw [← not_le, ← or_iff_not_imp_left]; have := le_total a 0; have := le_total b 0; tauto
+  smul_nonneg_iff.trans <| by grind
 
 lemma smul_nonneg_iff_neg_imp_nonpos : 0 ≤ a • b ↔ (a < 0 → b ≤ 0) ∧ (b < 0 → a ≤ 0) := by
   rw [← neg_smul_neg, smul_nonneg_iff_pos_imp_nonneg]; simp only [neg_pos, neg_nonneg]

@@ -481,7 +481,7 @@ variable [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)]
 
 namespace IsLocallyDirected
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The intersection `V` in the glue data associated to a locally directed diagram. -/
 noncomputable
 def V (i j : J) : (F.obj i).Opens := ⨆ (k : Σ k, (k ⟶ i) × (k ⟶ j)), (F.map k.2.1).opensRange
@@ -511,7 +511,7 @@ lemma exists_of_pullback_V_V {i j k : J} (x : pullback (C := Scheme) (V F i j).�
         (le_iSup_of_le ⟨l, hli ≫ k₁.2.1, hli ≫ k₁.2.2⟩ le_rfl))
       ((F.map (hli ≫ k₁.2.1)).isoOpensRange.hom ≫ Scheme.homOfLE _
         (le_iSup_of_le ⟨l, hli ≫ k₁.2.1, hlk ≫ k₂.2.2⟩ le_rfl))
-      (by simp [← cancel_mono (Scheme.Opens.ι _)])
+      (by simp)
   have : IsOpenImmersion α := by
     apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_comp
     · exact inferInstanceAs (IsOpenImmersion (pullback.fst _ _))
@@ -555,15 +555,15 @@ lemma fst_inv_eq_snd_inv
     exact .of_comp _ (pullback.fst _ _)
   have : α.base y = x := by
     simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, comp_coeBase,
-      TopCat.hom_comp, ContinuousMap.comp_apply, α] at hy₁
+      TopCat.hom_comp, ContinuousMap.comp_apply] at hy₁
     apply (pullback.fst ((F.obj i).homOfLE h₁) _).isOpenEmbedding.injective
-    simp only [← Scheme.comp_base_apply, Category.assoc, α, pullback.lift_fst]
+    simp only [← Scheme.comp_base_apply, α, pullback.lift_fst]
     simp [hy₁]
   refine ⟨α.opensRange, ⟨y, this⟩, ?_⟩
   rw [← cancel_epi α.isoOpensRange.hom]
   simp [α, ← Functor.map_comp, Subsingleton.elim (hli ≫ k₁.2.2) (hlj ≫ k₂.2.2)]
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The inclusion map `V i j ⟶ F j` in the glue data associated to a locally directed diagram. -/
 def tAux (i j : J) : (V F i j).toScheme ⟶ F.obj j :=
   (Scheme.Opens.iSupOpenCover _).glueMorphisms
@@ -577,13 +577,13 @@ lemma homOfLE_tAux (i j : J) {k : J} (fi : k ⟶ i) (fj : k ⟶ j) :
       tAux F i j = (F.map fi).isoOpensRange.inv ≫ F.map fj :=
   (Scheme.Opens.iSupOpenCover (J := Σ k, (k ⟶ i) × (k ⟶ j)) _).ι_glueMorphisms _ _ ⟨k, fi, fj⟩
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The transition map `V i j ⟶ V j i` in the glue data associated to a locally directed diagram. -/
 def t (i j : J) : (V F i j).toScheme ⟶ (V F j i).toScheme :=
   IsOpenImmersion.lift (V F j i).ι (tAux F i j) (by
     rintro _ ⟨x, rfl⟩
     obtain ⟨l, x, rfl⟩ := (Scheme.Opens.iSupOpenCover _).exists_eq x
-    simp only [V, tAux, ← Scheme.comp_base_apply, Category.assoc, Cover.ι_glueMorphisms]
+    simp only [V, tAux, ← Scheme.comp_base_apply, Cover.ι_glueMorphisms]
     simp only [Opens.range_ι, iSup_mk, carrier_eq_coe, Hom.coe_opensRange, coe_mk, comp_coeBase,
       TopCat.hom_comp, ContinuousMap.comp_apply]
     exact Set.mem_iUnion.mpr ⟨⟨l.1, l.2.2, l.2.1⟩, ⟨_, rfl⟩⟩)
@@ -598,7 +598,7 @@ variable [Small.{u} J]
 
 local notation3:max "↓"j:arg => Equiv.symm (equivShrink _) j
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The glue data associated to a locally directed diagram.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -628,12 +628,10 @@ def glueData : Scheme.GlueData where
     obtain ⟨l, fi, fj, fk, α, z, hα, hα₁, hα₂, e⟩ := this -- doing them in the same step times out.
     refine ⟨α.opensRange, ⟨_, e⟩, ?_⟩
     rw [← cancel_mono (pullback.snd _ _), ← cancel_mono (Scheme.Opens.ι _)]
-    simp only [t, Category.assoc, limit.lift_π, Scheme.comp_coeBase, TopCat.hom_comp,
-      ContinuousMap.coe_comp, id_eq, PullbackCone.mk_pt, PullbackCone.mk_π_app, limit.lift_π_assoc,
-      cospan_left, IsOpenImmersion.lift_fac, Category.id_comp]
+    simp only [t, Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+      limit.lift_π_assoc, cospan_left, IsOpenImmersion.lift_fac, Category.id_comp]
     rw [IsOpenImmersion.comp_lift_assoc]
-    simp only [limit.lift_π_assoc, Scheme.comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp,
-      id_eq, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app]
+    simp only [limit.lift_π_assoc, PullbackCone.mk_pt, cospan_left, PullbackCone.mk_π_app]
     rw [← cancel_epi α.isoOpensRange.hom]
     simp_rw [Scheme.Hom.isoOpensRange_hom_ι_assoc, IsOpenImmersion.comp_lift_assoc]
     simp only [reassoc_of% hα₁, homOfLE_tAux F _ _ fi fj, Iso.hom_inv_id_assoc, reassoc_of% hα₂]
@@ -670,7 +668,7 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
   rw [← cancel_mono (Opens.ι _)]
   simp [V, InducedCategory.category, Shrink.instCategoryShrink]
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The cocone associated to a locally directed diagram.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -679,10 +677,10 @@ def cocone : Cocone F where
   pt := (glueData F).glued
   ι.app j := F.map (eqToHom (by simp)) ≫ (glueData F).ι (equivShrink _ j)
   ι.naturality {i j} f := by
-    simp only [Category.assoc, ← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
+    simp only [← IsIso.inv_comp_eq, ← Functor.map_inv, ← Functor.map_comp_assoc,
       glueDataι_naturality, Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -705,7 +703,7 @@ def isColimit : IsColimit (cocone F) where
     simp [← hm ↓i, cocone, reassoc_of% glueDataι_naturality]
     rfl
 
-/-- (Implemetation detail)
+/-- (Implementation detail)
 The cocone associated to a locally directed diagram is a colimit as locally ringed spaces.
 
 One usually does not want to use this directly, and instead use the generic `colimit` API.
@@ -717,7 +715,7 @@ def isColimitForgetToLocallyRingedSpace :
     Multicoequalizer.desc _ _ (fun i ↦ s.ι.app ↓i) (by
       rintro ⟨i, j⟩
       dsimp [glueData, GlueData.diagram]
-      simp only [t, IsOpenImmersion.lift_fac, ← Category.assoc, ← Scheme.comp_toLRSHom]
+      simp only [t, IsOpenImmersion.lift_fac, ← Scheme.comp_toLRSHom]
       rw [← cancel_epi (Scheme.Opens.iSupOpenCover _).ulift.fromGlued.toLRSHom,
         ← cancel_epi (Scheme.Opens.iSupOpenCover _).ulift.gluedCover.isoLocallyRingedSpace.inv]
       refine Multicoequalizer.hom_ext _ _ _ fun ⟨k, hk⟩ ↦ ?_
@@ -755,7 +753,7 @@ def openCover : (colimit F).OpenCover :=
     fun i ↦ (glueData F).openCover).copy J F.obj (colimit.ι F)
     ((equivShrink J).trans <| (Equiv.uniqueSigma fun (_ : Unit) ↦ Shrink J).symm)
     (fun _ ↦ F.mapIso (eqToIso (by simp [GlueData.openCover, glueData]))) fun i ↦ by
-  show colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
+  change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
 
 @[simp] lemma openCover_J : (openCover F).J = J := rfl
@@ -790,7 +788,7 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
 
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=
-  have (i) : Mono ((F ⋙ forget).map (.init i)) :=
+  have (i : _) : Mono ((F ⋙ forget).map (.init i)) :=
     (mono_iff_injective _).mpr (F.map _).isOpenEmbedding.injective
   inferInstance
 
