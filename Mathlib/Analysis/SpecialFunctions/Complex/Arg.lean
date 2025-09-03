@@ -75,12 +75,6 @@ theorem norm_eq_one_iff (z : ℂ) : ‖z‖ = 1 ↔ ∃ θ : ℝ, exp (θ * I) =
   · rintro ⟨θ, rfl⟩
     exact Complex.norm_exp_ofReal_mul_I θ
 
-@[deprecated (since := "2025-02-16")] alias abs_mul_exp_arg_mul_I := norm_mul_exp_arg_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_mul_cos_add_sin_mul_I := norm_mul_cos_add_sin_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_mul_cos_arg := norm_mul_cos_arg
-@[deprecated (since := "2025-02-16")] alias abs_mul_sin_arg := norm_mul_sin_arg
-@[deprecated (since := "2025-02-16")] alias abs_eq_one_iff := norm_eq_one_iff
-
 @[simp]
 theorem range_exp_mul_I : (Set.range fun x : ℝ => exp (x * I)) = Metric.sphere 0 1 := by
   ext x
@@ -128,9 +122,6 @@ theorem ext_norm_arg {x y : ℂ} (h₁ : ‖x‖ = ‖y‖) (h₂ : x.arg = y.ar
 
 theorem ext_norm_arg_iff {x y : ℂ} : x = y ↔ ‖x‖ = ‖y‖ ∧ arg x = arg y :=
   ⟨fun h => h ▸ ⟨rfl, rfl⟩, and_imp.2 ext_norm_arg⟩
-
-@[deprecated (since := "2025-02-16")] alias ext_abs_arg := ext_norm_arg
-@[deprecated (since := "2025-02-16")] alias ext_abs_arg_iff := ext_norm_arg_iff
 
 theorem arg_mem_Ioc (z : ℂ) : arg z ∈ Set.Ioc (-π) π := by
   have hπ : 0 < π := Real.pi_pos
@@ -331,8 +322,6 @@ lemma norm_eq_one_iff' : ‖x‖ = 1 ↔ ∃ θ ∈ Set.Ioc (-π) π, exp (θ * 
       ofReal_zsmul, ofReal_mul, ofReal_ofNat, exp_mul_I_periodic.sub_zsmul_eq]
   · rintro ⟨θ, _, rfl⟩
     exact ⟨θ, rfl⟩
-
-@[deprecated (since := "2025-02-16")] alias abs_eq_one_iff' := norm_eq_one_iff'
 
 lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π) π = sphere 0 1 := by
   ext; simpa using norm_eq_one_iff'.symm
