@@ -9,9 +9,9 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# First Order Language of Rings
+# First-Order Language of Rings
 
-This file defines the first order language of rings, as well as defining instance of `Add`, `Mul`,
+This file defines the first-order language of rings, as well as defining instance of `Add`, `Mul`,
 etc. on terms in the language.
 
 ## Main Definitions
