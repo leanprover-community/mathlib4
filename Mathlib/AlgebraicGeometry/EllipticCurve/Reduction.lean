@@ -93,67 +93,50 @@ variable [IsDomain R] [ValuationRing R]
 open ValuationRing
 
 theorem exists_integral (W : WeierstrassCurve K) :
-    ∃ C : VariableChange K, IsIntegral R (C • W) := by sorry
-  /- /- We first show that there is a non-negative integer `lmaxZ` that is larger than
-  the valuations of all the coefficients of `W`.
-  Some extra work is needed here only because the valuation on `K` takes values
-  in `WithZero (Multiplicative ℤ)`, and not `ℤ`. -/
-  let l := [(valuation R K W.a₁),
-    (valuation R K W.a₂),
-    (valuation R K W.a₃),
-    (valuation R K W.a₄),
-    (valuation R K W.a₆)]
-  let lmax : WithZero (Multiplicative ℤ) :=
-    l.maximum_of_length_pos (by simp [l])
+    ∃ C : VariableChange K, IsIntegral R (C • W) := by
+  let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
+  let l := l₀.map (fun a ↦ valuation R K a)
+  let lmax : ValueGroup R K :=
+    l.maximum_of_length_pos (by simp [l₀, l])
+  have hlmax_mem : lmax ∈ l :=
+    List.maximum_of_length_pos_mem (by simp [l₀, l])
   have hlmax : ∀ v ∈ l, v ≤ lmax := fun v hv ↦
-      List.le_maximum_of_length_pos_of_mem hv (by simp [l])
-  let lmaxZ : ℤ := if h : lmax = 0 then 0 else max 0 (WithZero.unzero h)
-  have zero_le_lmaxZ : 0 ≤ lmaxZ := by unfold lmaxZ; by_cases h : lmax = 0; all_goals simp [h]
-  have lmax_le_lmaxZ : lmax ≤ Multiplicative.ofAdd lmaxZ := by
-    unfold lmaxZ; by_cases h : lmax = 0
-    all_goals simp only [h, ↓reduceDIte, ofAdd_zero, WithZero.coe_one, zero_le']
-    conv_lhs => rw [← WithZero.coe_unzero h]
-    simp only [WithZero.coe_le_coe]
-    calc
-      WithZero.unzero h = Multiplicative.ofAdd (WithZero.unzero h) := rfl
-      Multiplicative.ofAdd (WithZero.unzero h) ≤
-      Multiplicative.ofAdd (max (0 : ℤ) (WithZero.unzero h)) := by
-        apply Multiplicative.ofAdd_le.mpr; simp
-  have h (n : ℕ) (hn : 1 ≤ n) :
-      ∀ v ∈ l, v ≤ (Multiplicative.ofAdd (n * lmaxZ)) :=
-    fun v hv => calc
-      v ≤ lmax := hlmax v hv
-      lmax ≤ Multiplicative.ofAdd lmaxZ := lmax_le_lmaxZ
-      (((Multiplicative.ofAdd lmaxZ) : Multiplicative ℤ) : WithZero (Multiplicative ℤ)) ≤
-      (((Multiplicative.ofAdd (n * lmaxZ)) : Multiplicative ℤ) : WithZero (Multiplicative ℤ)) := by
-        simp only [WithZero.coe_le_coe, Multiplicative.ofAdd_le]
-        convert Int.mul_le_mul_of_nonneg_right (Int.ofNat_le.mpr hn) zero_le_lmaxZ
-        simp
-  /- It suffices to take a sufficiently large (negative) power of the uniformizer `π`
-  in the `VariableChange`, to ensure that the new coefficients are all integral.
-  In this case the exponent `lmaxZ` is large enough. -/
-  obtain ⟨π, hπ⟩ := valuation_exists_uniformizer K (maximalIdeal R)
-  have isUnit_π : IsUnit π :=
-    IsUnit.mk0 π ((Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hπ WithZero.coe_ne_zero))
-  use ⟨isUnit_π.unit ^ (-lmaxZ), 0, 0, 0⟩
-  /- The remainder of the proof is devoted to showing that this choice of exponent `lmaxZ`,
-  i.e. this choice of `VariableChange`, works. -/
-  apply isIntegral_of_exists_lift R
-  all_goals apply exists_lift_of_le_one
-  any_goals
-    simp only [zpow_neg, variableChange_def, inv_inv, Units.val_zpow_eq_zpow_val, IsUnit.unit_spec,
-      mul_zero, add_zero, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
-      zero_pow, map_mul, map_pow, map_zpow₀, hπ, Int.reduceNeg, ofAdd_neg, WithZero.coe_inv,
-      inv_zpow', zpow_neg, inv_pow]
-    refine inv_mul_le_one_of_le₀ ?_ zero_le'
-  any_goals rw [← WithZero.coe_zpow, ← ofAdd_zsmul, zsmul_int_one];
-  any_goals rw [← WithZero.coe_pow, ← ofAdd_nsmul]; simp only [Int.nsmul_eq_mul, Nat.cast_ofNat]
-  any_goals convert h _ _ _ _
-  swap
-  · exact 1
-  · simp
-  any_goals linarith
-  all_goals simp [l] -/
+    List.le_maximum_of_length_pos_of_mem hv (by simp [l₀, l])
+  by_cases hlmax_le_1 : lmax ≤ 1
+  · use ⟨1, 0, 0, 0⟩
+    apply isIntegral_of_exists_lift R
+    all_goals
+      apply (mem_integer_iff _ _ _).mp
+      simp only [variableChange_def, inv_one, Units.val_one, mul_zero, add_zero, one_mul, one_pow,
+        zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
+      apply (Valuation.mem_integer_iff _ _).mpr
+      exact (hlmax _ (by simp [l₀, l])).trans hlmax_le_1
+  · have hlmax_ge_1 : lmax ≥ 1 := le_of_not_ge hlmax_le_1
+    have h : ∃ a : K, valuation R K a = lmax := by
+      let i : ℕ := l.idxOf lmax
+      have hi : i < l.length := List.idxOf_lt_length_of_mem hlmax_mem
+      use l₀[i]
+      have hi₁ : (valuation R K) l₀[i] = l[i] := by simp [l]
+      simpa only [hi₁] using (List.getElem_idxOf hi)
+    choose a ha using h
+    have ha₀ : a ≠ 0 := by
+      by_contra ha₀; simp only [ha₀, map_zero] at ha
+      exact (ha ▸ hlmax_le_1) zero_le_one
+    have isUnit_a : IsUnit a := IsUnit.mk0 a ha₀
+    use ⟨isUnit_a.unit, 0, 0, 0⟩
+    apply isIntegral_of_exists_lift R
+    all_goals
+      apply (mem_integer_iff _ _ _).mp
+      simp only [variableChange_def, Units.val_inv_eq_inv_val, IsUnit.unit_spec, mul_zero, add_zero,
+        inv_pow, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
+      apply (Valuation.mem_integer_iff _ _).mpr
+      simp only [map_mul, map_inv₀, map_pow, ha]
+      refine inv_mul_le_one_of_le₀ ?_ zero_le'
+      refine (hlmax _ (by simp [l₀, l])).trans ?_
+    any_goals
+      apply le_self_pow hlmax_ge_1.le
+      linarith
+    rfl
 
 end Integral
 
