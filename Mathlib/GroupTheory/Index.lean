@@ -28,8 +28,8 @@ Several theorems proved in this file are known as Lagrange's theorem.
 # Main results
 
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
-- `index_mul_card` : `H.index * Fintype.card H = Fintype.card G`
-- `index_dvd_card` : `H.index ∣ Fintype.card G`
+- `index_mul_card` : `H.index * Nat.card H = Nat.card G`
+- `index_dvd_card` : `H.index ∣ Nat.card G`
 - `relindex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relindex_mul_relindex` : `relindex` is multiplicative in towers
