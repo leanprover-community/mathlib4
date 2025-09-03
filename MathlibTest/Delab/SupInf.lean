@@ -65,7 +65,7 @@ info: fun α [ConditionallyCompleteLinearOrder α] a b =>
 -- In this section we check that the delaborator respects the options `pp.explicit` and `pp.notation`.
 section
 
-variable [Lattice α] (a b c : α)
+variable [Min α] [Max α] (a b c : α)
 
 /-- info: (a ⊔ b) ⊓ c : α -/
 #guard_msgs in
@@ -77,10 +77,7 @@ set_option pp.notation false in
 #check min (max a b) c
 
 set_option pp.explicit true in
-/--
-info: @min α (@SemilatticeInf.toMin α (@Lattice.toSemilatticeInf α inst✝))
-  (@max α (@SemilatticeSup.toMax α (@Lattice.toSemilatticeSup α inst✝)) a b) c : α
--/
+/-- info: @min α inst✝¹ (@max α inst✝ a b) c : α -/
 #guard_msgs in
 #check min (max a b) c
 
