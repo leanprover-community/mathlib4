@@ -45,7 +45,7 @@ namespace SimpleGraph
 
 open Walk
 
-variable {V : Type u} (G : SimpleGraph V)
+variable {V : Type u} {V' : Type v} (G : SimpleGraph V) (H : SimpleGraph V')
 
 /-- A graph is *acyclic* (or a *forest*) if it has no cycles. -/
 def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle
@@ -58,7 +58,7 @@ structure IsTree : Prop where
   /-- Graph is acyclic. -/
   protected IsAcyclic : G.IsAcyclic
 
-variable {G}
+variable {G} {H}
 
 @[simp] lemma isAcyclic_bot : IsAcyclic (⊥ : SimpleGraph V) := fun _a _w hw ↦ hw.ne_bot rfl
 
@@ -122,6 +122,20 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
 
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
+
+theorem IsAcyclic.comap (f : G →g H) (hf : Function.Injective f) (hG : H.IsAcyclic) :
+    G.IsAcyclic := by
+  simp only [IsAcyclic] at ⊢ hG
+  intro v w
+  have := w.map_isCycle_iff_of_injective hf
+  grind
+
+@[mono]
+theorem IsAcyclic.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G'.IsAcyclic) : G.IsAcyclic := by
+  simp only [IsAcyclic] at ⊢ hG
+  intro v w
+  contrapose! hG
+  exact ⟨v, w.mapLe h, hG.mapLe h⟩
 
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
@@ -253,5 +267,13 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   use v
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
+
+theorem Iso.isAcyclic_iff (e : G ≃g H) : G.IsAcyclic ↔ H.IsAcyclic :=
+  ⟨fun h ↦ h.comap e.symm.toHom e.symm.toEquiv.injective,
+   fun h ↦ h.comap e.toHom e.toEquiv.injective⟩
+
+theorem Iso.isTree_iff (e : G ≃g H) : G.IsTree ↔ H.IsTree :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ ⟨e.connected_iff.mp h₁, e.isAcyclic_iff.mp h₂⟩,
+   fun ⟨h₁, h₂⟩ ↦ ⟨e.connected_iff.mpr h₁, e.isAcyclic_iff.mpr h₂⟩⟩
 
 end SimpleGraph
