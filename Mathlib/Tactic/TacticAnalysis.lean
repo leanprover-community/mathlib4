@@ -276,22 +276,21 @@ from the start of the sequence. -/
 def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
     (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
     CommandElabM Unit := do
-  /- We use `mkNullNode tacticSeq` to attach correct position info to `stx`. Otherwise, the
-  position info of the current ref (i.e. the whole command) is attached, and we log the message on
-  the wrong range. See also [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/SourceInfo.20in.20quoted.20but.20not.20parsed.20syntax/with/535927774) -/
-  let stx ← withRef (mkNullNode tacticSeq) `(tactic| $tacticSeq;*)
-  withRef stx do
-  -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-  if let [goal] := i.goalsBefore then
-    let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
-      try
-        Lean.Elab.runTactic goal stx
-      catch e =>
-        logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-        return ([goal], {})
-    let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-    if let some msg := config.tell stx (old.1.1, old.2) new then
-      logWarningAt stx msg
+  /- Syntax quotations use the current ref's position info even for nodes which do not usually
+  carry position info. We set the ref here to ensure we log messages on the correct range. -/
+  withRef (mkNullNode tacticSeq) do
+    let stx ← `(tactic| $tacticSeq;*)
+    -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+    if let [goal] := i.goalsBefore then
+      let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
+        try
+          Lean.Elab.runTactic goal stx
+        catch e =>
+          logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
+          return ([goal], {})
+      let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
+      if let some msg := config.tell stx (old.1.1, old.2) new then
+        logWarning msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
 subsequences should be `test`ed. -/
