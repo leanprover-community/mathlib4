@@ -136,14 +136,11 @@ theorem traceDual_eq_span_traceDual [IsDedekindDomain A] [Module.Finite A B₂] 
   · have := IsIntegralClosure.isLocalization A K L₂ B₂
     exact traceDual_le_span_traceDual A C B₁ B₂ h₁ h₂
 
+variable [IsDedekindDomain A] [IsScalarTower A L₂ M] [IsScalarTower A B₁ M] [Module.Free A B₂]
+  [Module.Finite A B₂] [NoZeroSMulDivisors A B₂]
+
 variable (A C B₁ B₂) in
 theorem span_eq_range
-    [IsDedekindDomain A]
-    [IsScalarTower A L₂ M]
-    [IsScalarTower A B₁ M]
-    [Module.Free A B₂]
-    [Module.Finite A B₂]
-    [NoZeroSMulDivisors A B₂]
     (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
     (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
       ((differentIdeal A B₂).map (algebraMap B₂ C)))
@@ -178,6 +175,24 @@ theorem span_eq_range
       rw [Function.comp_apply, h₁.basisOfBasisRight_apply]
     · rw [hb]
   · ext; simp
+
+noncomputable example (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) {ι : Type*} (b : Basis ι A B₂) :
+    Basis ι B₁ C := by
+  let v := fun i : ι ↦ algebraMap B₂ C (b i)
+  refine Basis.mk (v := v) ?_ ?_
+  · -- unfold v
+    refine linearIndependent_iff''.mpr ?_
+
+    sorry
+  · rw [top_le_iff]
+    rw [SetLike.ext'_iff]
+    let f : Set C → Set M := by exact?
+
+    sorry
+
+
 
 open NumberField
 
