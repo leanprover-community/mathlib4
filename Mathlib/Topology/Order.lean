@@ -669,14 +669,21 @@ theorem Inseparable.all [TopologicalSpace α] [IndiscreteTopology α] (x y : α)
   cases IndiscreteTopology.eq_top α
   exact nhds_top.trans nhds_top.symm
 
+theorem IndiscreteTopology.of_forall_inseparable [TopologicalSpace α]
+    (h : ∀ x y : α, Inseparable x y) : IndiscreteTopology α where
+  eq_top := ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs
+
 theorem TopologicalSpace.indiscrete_iff_forall_inseparable {t : TopologicalSpace α} :
     IndiscreteTopology α ↔ (∀ x y : α, Inseparable x y) where
   mp _ := Inseparable.all
-  mpr h := ⟨ext_nhds fun x => nhds_top ▸ top_unique fun _ hs a => mem_of_mem_nhds <| h x a ▸ hs⟩
+  mpr := .of_forall_inseparable
 
 theorem TopologicalSpace.nontrivial_iff_exists_not_inseparable {t : TopologicalSpace α} :
     NontrivialTopology α ↔ ∃ x y : α, ¬Inseparable x y := by
   simpa using indiscrete_iff_forall_inseparable.not
+
+alias ⟨NontrivialTopology.exists_not_inseparable, NontrivialTopology.of_exists_not_inseparable⟩ :=
+  TopologicalSpace.nontrivial_iff_exists_not_inseparable
 
 open TopologicalSpace
 

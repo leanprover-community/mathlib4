@@ -897,18 +897,39 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [edist_nndist, nndist_mulIndicator]
 
+@[to_additive nontrivialTopology_iff_exists_nnnorm_ne_zero]
+theorem nontrivialTopology_iff_exists_nnnorm_ne_zero' :
+    NontrivialTopology E ↔ ∃ x : E, ‖x‖₊ ≠ 0 := by
+  simp_rw [TopologicalSpace.nontrivial_iff_exists_not_inseparable, Metric.inseparable_iff_nndist,
+    nndist_eq_nnnorm_div]
+  exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
+
 variable (E) in
 @[to_additive exists_nnnorm_ne_zero]
-theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 := by
-  obtain ⟨x, y, h⟩ := TopologicalSpace.nontrivial_iff_exists_not_inseparable.1 ‹_›
-  refine ⟨x / y, mt ?_ h⟩
-  rw [← nndist_eq_nnnorm_div, Metric.inseparable_iff_nndist]
-  exact id
+theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 :=
+  nontrivialTopology_iff_exists_nnnorm_ne_zero'.1 ‹_›
+
+alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
+  nontrivialTopology_iff_exists_nnnorm_ne_zero'
+alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
+  nontrivialTopology_iff_exists_nnnorm_ne_zero
+attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
+  NontrivialTopology.of_exists_nnnorm_ne_zero'
+
+@[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
+theorem nontrivialTopology_iff_exists_norm_ne_zero' :
+    NontrivialTopology E ↔ ∃ x : E, ‖x‖ ≠ 0 := by
+  simp [nontrivialTopology_iff_exists_nnnorm_ne_zero', ← NNReal.ne_iff]
 
 variable (E) in
 @[to_additive exists_norm_ne_zero]
 theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :=
-  exists_nnnorm_ne_zero' E |>.imp fun _ h h' => h <| NNReal.eq h'
+  nontrivialTopology_iff_exists_norm_ne_zero'.1 ‹_›
+
+alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
+  nontrivialTopology_iff_exists_norm_ne_zero'
+alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
+  nontrivialTopology_iff_exists_norm_ne_zero
 
 end NNNorm
 
