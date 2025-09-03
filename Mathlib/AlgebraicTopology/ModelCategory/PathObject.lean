@@ -14,7 +14,8 @@ It consists of an object `P`, a weak equivalence `ι : A ⟶ P` equipped with tw
 `p₀` and `p₁`. This notion shall be important in the definition of "right homotopies"
 in model categories.
 
-This file dualizes the definitions in the file `AlgebraicTopology.ModelCategory.Cylinder`.
+This file dualizes the definitions in the file
+`Mathlib/AlgebraicTopology/ModelCategory/Cylinder.lean`.
 
 ## Implementation notes
 

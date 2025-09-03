@@ -24,7 +24,7 @@ For most uses, typically `Submodule R M` is more powerful.
 * `SubMulAction.mulAction'` - the `MulAction S M` transferred to the subtype when
   `IsScalarTower S R M`.
 * `SubMulAction.isScalarTower` - the `IsScalarTower S R M` transferred to the subtype.
-* `SubMulAction.inclusion` — the inclusion of a submulaction, as an equivariant map
+* `SubMulAction.inclusion` — the inclusion of a `SubMulAction`, as an equivariant map
 
 ## Tags
 
@@ -102,14 +102,10 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
--- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
--- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
   rfl
@@ -473,7 +469,7 @@ end SubMulAction
 
 namespace SubMulAction
 
-/- The inclusion of a SubMulaction, as an equivariant map -/
+/- The inclusion of a `SubMulAction`, as an equivariant map -/
 variable {M α : Type*} [Monoid M] [MulAction M α]
 
 

@@ -799,7 +799,7 @@ def numDenom (x : RatFunc K) : K[X] × K[X] :=
         ⟨Polynomial.C (q / r).leadingCoeff⁻¹ * (p / r),
           Polynomial.C (q / r).leadingCoeff⁻¹ * (q / r)⟩)
   (by
-      intros p q a hq ha
+      intro p q a hq ha
       dsimp
       rw [if_neg hq, if_neg (mul_ne_zero ha hq)]
       have ha' : a.leadingCoeff ≠ 0 := Polynomial.leadingCoeff_ne_zero.mpr ha
