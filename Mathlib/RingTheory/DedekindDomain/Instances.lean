@@ -189,6 +189,10 @@ instance [NoZeroSMulDivisors S T] : NoZeroSMulDivisors Sₚ Tₚ :=
     algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _ <|
       Ideal.primeCompl_le_nonZeroDivisors P
 
+instance [Algebra.IsIntegral R S] : Algebra.IsIntegral Rₚ Sₚ :=
+  Algebra.isIntegral_def.mpr <| (algebraMap_eq_map_map_submonoid P.primeCompl S Rₚ Sₚ ▸
+    isIntegral_localization : (algebraMap Rₚ Sₚ).IsIntegral)
+
 variable [NoZeroSMulDivisors R T]
 
 instance : IsScalarTower Rₚ Sₚ Tₚ := by
