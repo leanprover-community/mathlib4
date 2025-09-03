@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Periodic
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Topological properties of ℝ
@@ -87,6 +88,15 @@ theorem Real.exists_seq_rat_strictMono_tendsto (x : ℝ) :
 theorem Real.exists_seq_rat_strictAnti_tendsto (x : ℝ) :
     ∃ u : ℕ → ℚ, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto (u · : ℕ → ℝ) atTop (𝓝 x) :=
   Rat.denseRange_cast.exists_seq_strictAnti_tendsto Rat.cast_strictMono.monotone x
+
+lemma Real.tendsto_mul_const_zero (c : ℝ) (f : ℕ → ℝ) (h : Tendsto f atTop (𝓝 0)) :
+    Tendsto (c * f ·) atTop (𝓝 0) := by
+  by_cases hc : c = 0; · simp [hc]
+  rw [NormedAddCommGroup.tendsto_atTop'] at ⊢ h
+  intro ε hε
+  obtain ⟨N, h⟩ := h (ε / ‖c‖) (by simp [hε,hc])
+  use N
+  simp_all [sub_zero, norm_eq_abs, ←lt_div_iff₀' (abs_pos.mpr hc)]
 
 section
 
