@@ -71,7 +71,9 @@ elab "#remove_deprecated_declarations " date:str really?:("really")? : command =
   let dmap ← deprecatedHashMap deprecateFrom
   if really?.isNone then
     for (mod, rgs) in dmap do
-      dbg_trace "From '{mod}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+      --dbg_trace "From '{mod}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+      dbg_trace "From '{mod}' remove\n{rgs.size - 1} declarations"
+
 
 #remove_deprecated_declarations "2025-02-22"
 /--
