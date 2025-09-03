@@ -360,6 +360,7 @@ theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
   le_antisymm (norm_id_le V) <| by
     let ⟨x, hx⟩ := exists_norm_ne_zero V

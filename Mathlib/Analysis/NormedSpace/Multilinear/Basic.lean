@@ -1294,11 +1294,12 @@ instance normedAddCommGroup' :
 
 variable (𝕜 G)
 
-theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+theorem norm_ofSubsingleton_id [Subsingleton ι] [NontrivialTopology G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖ = 1 := by
   simp
+  rw [ContinuousLinearMap.norm_id]
 
-theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
+theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [NontrivialTopology G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id ..
 

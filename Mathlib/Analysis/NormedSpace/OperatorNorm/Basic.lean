@@ -342,6 +342,7 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem nnnorm_id [NontrivialTopology E] : ‖id 𝕜 E‖₊ = 1 :=
   NNReal.eq norm_id
 
