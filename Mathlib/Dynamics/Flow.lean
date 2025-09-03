@@ -159,6 +159,7 @@ section Orbit
 /-- The orbit of a point under a flow. -/
 def orbit (x : α) : Set α := ϕ.toAddAction.orbit _ x
 
+@[simp]
 theorem orbit_eq_range (x : α) : ϕ.orbit x = Set.range (fun t => ϕ t x) := rfl
 
 theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
@@ -189,6 +190,7 @@ def fw : Flow (AddSubmonoid.nonneg τ) α := ϕ.toAddSubmonoidFlow (AddSubmonoid
 /-- The forward orbit of a point under a flow. -/
 def fwOrbit (x : α) : Set α := ϕ.fw.orbit x
 
+@[simp]
 theorem fwOrbit_eq_nonneg_range (x : α) :
     ϕ.fwOrbit x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
 
