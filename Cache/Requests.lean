@@ -307,6 +307,13 @@ def downloadFile (repo : String) (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
+private structure DownloadState where
+  last : Nat
+  success : Nat
+  failed : Nat
+  done : Nat
+  speed : Nat
+
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Exit the process with exit code 1 if any files failed to download. -/
 def downloadFiles
@@ -324,9 +331,18 @@ def downloadFiles
           "--silent",
           "--retry", "5", "--retry-all-errors", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let (_, success, failed, done) ←
-          IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
-        let mut (last, success, failed, done) := a
+      let mkStatus success failed done speed := Id.run do
+          let speed :=
+            if speed != 0 then
+              s!", {speed / 1000} KB/s"
+            else ""
+          let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%{speed}]"
+          if failed != 0 then
+            msg := msg ++ s!", {failed} failed"
+          return msg
+      let init : DownloadState := ⟨← IO.monoMsNow, 0, 0, 0, 0⟩
+      let {success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
+        let mut {last, success, failed, done, speed} := a
         -- output errors other than 404 and remove corresponding partial downloads
         let line := line.trim
         if !line.isEmpty then
@@ -338,29 +354,35 @@ def downloadFiles
                 IO.FS.rename fn (fn.dropRight 5)
             success := success + 1
           | .ok 404 => pure ()
-          | _ =>
+          | code? =>
             failed := failed + 1
-            if let .ok e := result.getObjValAs? String "errormsg" then
-              IO.println e
-            -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
+            let mkFailureMsg code? fn? msg? : String := Id.run do
+              let mut msg := "File download failed"
+              if let .ok fn := fn? then
+                msg := s!"{fn}: {msg}"
+              if let .ok code := code? then
+                msg := s!"{msg} (error code: {code})"
+              if let .ok errMsg := msg? then
+                msg := s!"{msg}: {errMsg}"
+              return msg
+            let msg? := result.getObjValAs? String "errormsg"
+            let fn? :=  result.getObjValAs? String "filename_effective"
+            IO.println (mkFailureMsg code? fn? msg?)
+            if let .ok fn := fn? then
+              -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
               if (← System.FilePath.pathExists fn) then
                 IO.FS.removeFile fn
           done := done + 1
           let now ← IO.monoMsNow
           if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
-            if failed != 0 then
-              msg := msg ++ s!", {failed} failed"
-            IO.eprint msg
+            speed := match result.getObjValAs? Nat "speed_download" with
+              | .ok speed => speed | .error _ => speed
+            IO.eprint (mkStatus success failed done speed)
             last := now
-        pure (last, success, failed, done)
+        pure {last, success, failed, done, speed}
       if done > 0 then
         -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
-        if failed != 0 then
-          msg := msg ++ s!", {failed} failed"
-        IO.eprintln msg
+        IO.eprintln (mkStatus success failed done speed)
       IO.FS.removeFile IO.CURLCFG
       if warnOnMissing && success + failed < done then
         IO.eprintln "Warning: some files were not found in the cache."

@@ -45,10 +45,6 @@ lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 
-@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
-
-@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
-
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
@@ -120,9 +116,6 @@ lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) :
 
 lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
   rw [pow_def, mk_eq_divInt, Int.natCast_pow]
-
-@[simp] lemma num_pow (q : ℚ) (n : ℕ) : (q ^ n).num = q.num ^ n := rfl
-@[simp] lemma den_pow (q : ℚ) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
 @[simp] lemma mk'_pow (num : ℤ) (den : ℕ) (hd hdn) (n : ℕ) :
     mk' num den hd hdn ^ n = mk' (num ^ n) (den ^ n)
