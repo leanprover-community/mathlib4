@@ -71,22 +71,22 @@ jobs:
         (lake build || true) | tee "${lean_outfile}"
 
         # Skip the lines about build progress.
-        filtered_out=$(grep -v '^✔' "${lean_outfile}" | grep -v '^trace: ')
+        filtered_out=$((grep -v '^✔' "${lean_outfile}" | grep -v '^trace: ') || true)
         echo "$(wc -l <<<"${filtered_out}") lines of output"
 
         # Categorize the output.
-        error_lines=$(grep '^error: ' <<<"${filtered_out}")
+        error_lines=$(grep '^error: ' <<<"${filtered_out}" || true)
         error_descriptions=$(sed 's/^error: [^:]*:[0-9]*:[0-9]*: //' <<<"${error_lines}")
         echo "$(wc -l <<<"${error_lines}") lines of errors"
-        warning_lines=$(grep '^warning: ' <<<"${filtered_out}")
+        warning_lines=$(grep '^warning: ' <<<"${filtered_out}" || true)
         warning_descriptions=$(sed 's/^warning: [^:]*:[0-9]*:[0-9]*: //' <<<"${warning_lines}")
         echo "$(wc -l <<<"${warning_lines}") lines of warnings"
         # Panics are reported as an info message.
         # They should be very prominent when debugging, so treat them differently.
-        panic_lines=$(grep '^info: .*PANIC at ' <<<"${filtered_out}")
+        panic_lines=$(grep '^info: .*PANIC at ' <<<"${filtered_out}" || true)
         panic_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${panic_lines}")
         echo "$(wc -l <<<"${panic_lines}") lines of panic"
-        info_lines=$(grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at ')
+        info_lines=$((grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at ') || true)
         info_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${info_lines}")
         echo "$(wc -l <<<"${info_lines}") lines of info"
 
