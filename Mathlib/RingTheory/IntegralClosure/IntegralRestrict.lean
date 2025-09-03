@@ -56,6 +56,12 @@ lemma algebraMap_galRestrict'_apply (σ : L →ₐ[K] L₂) (x : B) :
     algebraMap B₂ L₂ (galRestrict' A B B₂ σ x) = σ (algebraMap B L x) := by
   simp [galRestrict', galRestrict', Subalgebra.algebraMap_eq]
 
+@[simp]
+theorem galRestrict'_id : galRestrict' A B B (.id K L) = .id A B := by
+  ext
+  apply IsIntegralClosure.algebraMap_injective B A L
+  simp
+
 theorem galRestrict'_comp (σ : L →ₐ[K] L₂) (σ' : L₂ →ₐ[K] L₃) :
     galRestrict' A B B₃ (σ'.comp σ) = (galRestrict' A B₂ B₃ σ').comp (galRestrict' A B B₂ σ) := by
   ext x
@@ -98,6 +104,10 @@ theorem galLift_algebraMap_apply (σ : B →ₐ[A] B₂) (x : B) :
     galLift K L L₂ σ (algebraMap B L x) = algebraMap B₂ L₂ (σ x) := by
   simp [galLift]
 
+@[simp]
+theorem galLift_id : galLift K L L (.id A B) = .id K L := by
+  ext; simp [galLift]
+
 omit [IsIntegralClosure B₃ A L₃] in
 theorem galLift_comp [Algebra.IsAlgebraic K L₂] (σ : B →ₐ[A] B₂) (σ' : B₂ →ₐ[A] B₃) :
     galLift K L L₃ (σ'.comp σ) = (galLift K L₂ L₃ σ').comp (galLift K L L₂ σ) :=
@@ -121,6 +131,19 @@ theorem galRestrict'_galLift (σ : B →ₐ[A] B₂) :
   have := IsIntegralClosure.isLocalization A K L B
   AlgHom.ext fun x ↦ IsIntegralClosure.algebraMap_injective B₂ A L₂
     (by simp [galRestrict', Subalgebra.algebraMap_eq, galLift])
+
+/--
+A version of `galLift` for `AlgEquiv`.
+-/
+@[simps! -fullyApplied apply symm_apply]
+noncomputable
+def galLiftEquiv [Algebra.IsAlgebraic K L₂] (σ : B ≃ₐ[A] B₂) : L ≃ₐ[K] L₂ :=
+  AlgEquiv.ofAlgHom (galLift K L L₂ σ.toAlgHom) (galLift K L₂ L σ.symm.toAlgHom)
+  (by simp [← galLift_comp]) (by simp [← galLift_comp])
+
+theorem galLiftEquiv_algebraMap_apply [Algebra.IsAlgebraic K L₂] (σ : B ≃ₐ[A] B₂) (x : B) :
+    galLiftEquiv K L L₂ σ (algebraMap B L x) = algebraMap B₂ L₂ (σ x) := by
+  simp [galLiftEquiv]
 
 end galLift
 
@@ -164,6 +187,11 @@ lemma galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
 lemma algebraMap_galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
+
+variable (K) in
+lemma galRestrict_symm_algebraMap_apply (σ : B ≃ₐ[A] B) (x : B) :
+    (galRestrict A K L B).symm σ (algebraMap B L x) = algebraMap B L (σ x) :=
+  galRestrictHom_symm_algebraMap_apply A K L B σ x
 
 end galois
 
@@ -418,6 +446,15 @@ lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
   simp
 
 variable {A B}
+
+@[simp]
+theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Module.Finite A B₂]
+    [NoZeroSMulDivisors A B₂] [Algebra.IsSeparable (FractionRing A) (FractionRing B₂)] (x : B)
+    (σ : B ≃ₐ[A] B₂) :
+    Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
+  apply FaithfulSMul.algebraMap_injective A (FractionRing A)
+  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
+    ← galLiftEquiv_algebraMap_apply (FractionRing A) (FractionRing B), norm_eq_of_algEquiv]
 
 @[simp]
 lemma Algebra.intNorm_eq_zero {x : B} : Algebra.intNorm A B x = 0 ↔ x = 0 := by
