@@ -29,9 +29,8 @@ variable {X Z α : Type*} [UniformSpace X] [CompleteSpace X]
 
 @[to_additive]
 lemma limUnder.mul [Group X] [IsUniformGroup X] {f g : α → X} (hf : CauchySeq f)
-    (hg : CauchySeq g) : (limUnder atTop f) * (limUnder atTop g) = limUnder atTop (f * g) := by
-  nth_rw 3 [Tendsto.limUnder_eq]
-  exact Tendsto.mul (hf.tendsto_limUnder) (hg.tendsto_limUnder)
+    (hg : CauchySeq g) : (limUnder atTop f) * (limUnder atTop g) = limUnder atTop (f * g) :=
+  (hf.tendsto_limUnder.mul hg.tendsto_limUnder).limUnder_eq.symm
 
 lemma limUnder.smul_const {Y : Type*} [Nonempty X] [SMul Y X] [ContinuousConstSMul Y X]
     (f : α → X) (hf : CauchySeq f) (c : Y) : c • (limUnder atTop f)= limUnder atTop (c • f) := by
