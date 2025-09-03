@@ -95,7 +95,7 @@ lemma sigmoid_monotone : Monotone sigmoid := sigmoid_strictMono.monotone
 lemma sigmoid_injective : Injective sigmoid := sigmoid_strictMono.injective
 
 @[simp]
-lemma sigmoid_eq_sigmoid {a b : ℝ} : sigmoid a = sigmoid b ↔ a = b := sigmoid_injective.eq_iff
+lemma sigmoid_inj {a b : ℝ} : sigmoid a = sigmoid b ↔ a = b := sigmoid_injective.eq_iff
 
 @[fun_prop]
 lemma continuous_sigmoid : Continuous sigmoid := by
