@@ -57,8 +57,8 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
   induction n using binaryRec with
-  | z => simp
-  | f b n hs =>
+  | zero => simp
+  | bit b n hs =>
     suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
       cases b <;> simpa [List.Sorted, bit_false, bit_true, List.pairwise_map]
     exact List.Pairwise.imp (by simp) hs
@@ -76,8 +76,8 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem twoPowSum_bitIndices (n : ℕ) : (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
   induction n using binaryRec with
-  | z => simp
-  | f b n hs =>
+  | zero => simp
+  | bit b n hs =>
     have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
       ext i; simp [pow_add, mul_comm]
     cases b
