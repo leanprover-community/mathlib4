@@ -89,6 +89,18 @@ theorem of_val (a : MulArchimedeanOrder M) : of (val a) = a := rfl
 @[to_additive (attr := simp)]
 theorem val_of (a : M) : val (of a) = a := rfl
 
+@[to_additive]
+instance [Nonempty M] : Nonempty (MulArchimedeanOrder M) :=
+  inferInstanceAs (Nonempty M)
+
+@[to_additive]
+instance [Inhabited M] : Inhabited (MulArchimedeanOrder M) :=
+  ⟨of default⟩
+
+@[to_additive]
+instance [Subsingleton M] : Subsingleton (MulArchimedeanOrder M) :=
+  inferInstanceAs (Subsingleton M)
+
 variable [Group M] [Lattice M]
 
 @[to_additive]
@@ -237,6 +249,10 @@ theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
   mk_eq_mk.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
 @[to_additive]
+instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
+  inferInstanceAs (Subsingleton (Antisymmetrization ..))
+
+@[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) := by
   classical
@@ -259,6 +275,9 @@ instance : OrderTop (MulArchimedeanClass M) where
     induction A using ind with | mk a
     rw [mk_le_mk]
     exact ⟨1, by simp⟩
+
+@[to_additive]
+instance : Inhabited (MulArchimedeanClass M) := ⟨⊤⟩
 
 @[to_additive (attr := simp)]
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl

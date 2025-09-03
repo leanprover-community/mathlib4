@@ -121,11 +121,10 @@ variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
 theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
   rw [← mk_one, orderHom_mk]
 
-variable [NeZero (1 : S)]
-
 @[simp]
-theorem mk_eq_zero_of_archimedean [Archimedean S] {x : S} (h : x ≠ 0) : mk x = 0 :=
-  mk_eq_mk_of_archimedean h one_ne_zero
+theorem mk_eq_zero_of_archimedean [Archimedean S] {x : S} (h : x ≠ 0) : mk x = 0 := by
+  have : Nontrivial S := ⟨_, _, h⟩
+  exact mk_eq_mk_of_archimedean h one_ne_zero
 
 theorem eq_zero_or_top_of_archimedean [Archimedean S] (x : ArchimedeanClass S) : x = 0 ∨ x = ⊤ := by
   induction x with | mk x
@@ -142,8 +141,10 @@ theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x �
   simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
 
 @[simp]
-theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 :=
-  mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
+theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
+  obtain _ | _ := subsingleton_or_nontrivial S
+  · exact Subsingleton.allEq ..
+  · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
 @[simp]
 theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : S) = 0 := by
