@@ -93,7 +93,7 @@ theorem IntervalIntegrable.congr {g : ℝ → ε} (hf : IntervalIntegrable f μ 
 theorem IntervalIntegrable.congr' {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : Set.EqOn f g (Set.uIoc a b)) :
     IntervalIntegrable g μ a b :=
-  hf.congr (Filter.eventuallyEq_of_mem (MeasureTheory.self_mem_ae_restrict measurableSet_uIoc) h)
+  hf.congr (eventuallyEq_of_mem (self_mem_ae_restrict measurableSet_uIoc) h)
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
