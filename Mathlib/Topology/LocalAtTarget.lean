@@ -216,7 +216,6 @@ end LocalAtSource
 
 end TopologicalSpace.IsOpenCover
 
-variable (hU : iSup U = ⊤)
 
 /--
 Given a continuous map `f : X → Y` between topological spaces.
