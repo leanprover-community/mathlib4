@@ -10,7 +10,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 This file defines the extension of a fractional ideal along a ring homomorphism.
 
-## Main definition
+## Main definitions
 
 * `FractionalIdeal.extended`: Let `A` and `B` be commutative rings with respective localizations
   `IsLocalization M K` and `IsLocalization N L`. Let `f : A →+* B` be a ring homomorphism with
@@ -22,8 +22,9 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 
 ## Main results
 
-* `extended_add` says that extension commutes with addition.
-* `extended_mul` says that extension commutes with multiplication.
+* `FractionalIdeal.extendedHomₐ_injective`: the map `FractionalIdeal.extendedHomₐ` is injective.
+* `Ideal.map_algebraMap_injective`: For `A ⊆ B` an extension of Dedekind domains, the map that
+  sends an ideal `I` of `A` to `I·B` is injective.
 
 ## Tags
 
