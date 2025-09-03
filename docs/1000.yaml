@@ -318,6 +318,9 @@ Q284960:
 
 Q285719:
   title: Thales's theorem
+  decl: EuclideanGeometry.Sphere.thales_theorem
+  authors: Li Jiale
+  date: 2025
 
 Q287347:
   title: Gradient theorem
