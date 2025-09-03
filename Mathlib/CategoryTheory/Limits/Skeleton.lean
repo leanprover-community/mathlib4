@@ -7,12 +7,18 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # (Co)limits of the skeleton of a category
 
 The skeleton of a category inherits all (co)limits the category has.
+
+## Implementation notes
+
+Because the category instance of `ThinSkeleton C` comes from its `Preorder` instance, it is not the
+case that `HasLimits C` iff `HasLimits (ThinSkeleton C)`, as the homs live in different universes.
+If this is something we really want, we should consider changing the category instance of
+`ThinSkeleton C`.
 -/
 
 noncomputable section
