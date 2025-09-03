@@ -1762,8 +1762,10 @@ import Mathlib.Analysis.Normed.Group.Completion
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.Analysis.Normed.Group.ControlledClosure
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.HomCompletion
+import Mathlib.Analysis.Normed.Group.Indicator
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Lemmas
@@ -1798,6 +1800,8 @@ import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Analysis.Normed.Module.Ray
 import Mathlib.Analysis.Normed.Module.Span
 import Mathlib.Analysis.Normed.Module.WeakDual
@@ -1835,15 +1839,14 @@ import Mathlib.Analysis.NormedSpace.Alternating.Curry
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.Analysis.NormedSpace.DualNumber
 import Mathlib.Analysis.NormedSpace.ENormedSpace
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.NormedSpace.HomeomorphBall
-import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.NormedSpace.Int
 import Mathlib.Analysis.NormedSpace.MStructure
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
@@ -1860,8 +1863,6 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Analysis.NormedSpace.Real
 import Mathlib.Analysis.NormedSpace.RieszLemma
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.ODE.Gronwall
