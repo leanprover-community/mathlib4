@@ -86,9 +86,9 @@ theorem exists_integral (W : WeierstrassCurve K) :
     (valuation K (maximalIdeal R) W.a₄),
     (valuation K (maximalIdeal R) W.a₆)]
   let lmax : WithZero (Multiplicative ℤ) :=
-    l.maximum_of_length_pos (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
+    l.maximum_of_length_pos (by simp [l])
   have hlmax : ∀ v ∈ l, v ≤ lmax := fun v hv ↦
-      List.le_maximum_of_length_pos_of_mem hv (List.length_pos_of_mem (l.get_mem (0 : Fin 5)))
+      List.le_maximum_of_length_pos_of_mem hv (by simp [l])
   let lmaxZ : ℤ := if h : lmax = 0 then 0 else max 0 (WithZero.unzero h)
   have zero_le_lmaxZ : 0 ≤ lmaxZ := by unfold lmaxZ; by_cases h : lmax = 0; all_goals simp [h]
   have lmax_le_lmaxZ : lmax ≤ Multiplicative.ofAdd lmaxZ := by
@@ -141,16 +141,14 @@ theorem exists_integral (W : WeierstrassCurve K) :
   · apply l.get_mem (4 : Fin 5)
 
 omit [IsDomain R] [IsDiscreteValuationRing R] [IsFractionRing R K] in
-lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K)
-    [IsIntegral R W] :
+lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
     ∃ r : R, algebraMap R K r = W.Δ := by
   obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
     IsIntegral.integral
   use W_int.Δ
   rw [hW_int, map_Δ]
 
-lemma integral_Δ_eq_of_isIntegral (W : WeierstrassCurve K)
-    [hW : IsIntegral R W] :
+lemma integral_Δ_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     hW.integral.choose.Δ =
     (algebraMap R K).toFun.invFun W.Δ := by
   conv_rhs => simp [Function.invFun, Δ_integral_of_isIntegral R W]
