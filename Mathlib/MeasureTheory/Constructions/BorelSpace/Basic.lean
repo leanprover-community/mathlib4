@@ -571,9 +571,12 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     AEMeasurable (fun a => c (f a) (g a)) μ :=
   h.measurable.comp_aemeasurable (hf.prodMk hg)
 
-instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
-    [HasContinuousInv₀ γ] : MeasurableInv γ :=
+instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
+    [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
+
+@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
+  ContinuousInv₀.measurableInv
 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]

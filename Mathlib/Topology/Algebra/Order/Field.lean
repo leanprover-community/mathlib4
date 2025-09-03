@@ -89,8 +89,8 @@ theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
   simpa only [h, neg_neg] using tendsto_pow_neg_atTop hn.ne'
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsStrictOrderedRing.toHasContinuousInv₀ [ContinuousMul 𝕜] :
-    HasContinuousInv₀ 𝕜 := .of_nhds_one <| tendsto_order.2 <| by
+instance (priority := 100) IsStrictOrderedRing.toContinuousInv₀ [ContinuousMul 𝕜] :
+    ContinuousInv₀ 𝕜 := .of_nhds_one <| tendsto_order.2 <| by
   refine ⟨fun x hx => ?_, fun x hx => ?_⟩
   · obtain ⟨x', h₀, hxx', h₁⟩ : ∃ x', 0 < x' ∧ x ≤ x' ∧ x' < 1 :=
       ⟨max x (1 / 2), one_half_pos.trans_le (le_max_right _ _), le_max_left _ _,
@@ -99,6 +99,9 @@ instance (priority := 100) IsStrictOrderedRing.toHasContinuousInv₀ [Continuous
     exact hxx'.trans_lt <| lt_inv_of_lt_inv₀ hy.1 hy.2
   · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
     exact inv_lt_of_inv_lt₀ (by positivity) hy
+
+@[deprecated (since := "2025-09-01")] alias IsStrictOrderedRing.toHasContinuousInv₀ :=
+  IsStrictOrderedRing.toContinuousInv₀
 
 end Semifield
 

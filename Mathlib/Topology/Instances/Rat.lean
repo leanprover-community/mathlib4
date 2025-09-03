@@ -121,6 +121,6 @@ instance : ContinuousSub ℚ≥0 :=
       continuous_const).subtype_mk _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
-instance : HasContinuousInv₀ ℚ≥0 := inferInstance
+instance : ContinuousInv₀ ℚ≥0 := inferInstance
 
 end NNRat
