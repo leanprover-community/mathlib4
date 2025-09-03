@@ -478,7 +478,10 @@ We could implement a tail-recursive version (or just use `Nat.fold`),
 but instead let's jump straight to binary splitting.
 -/
 
-/-- Factorial implemented using binary splitting. -/
+/-- Factorial implemented using binary splitting.
+
+While this still performs the same number of multiplications,
+the big-integer operands to each are much smaller. -/
 def factorialBinarySplitting (n : Nat) : Nat :=
   if _ : n = 0 then 1 else prodRange 1 (n + 1)
 where
