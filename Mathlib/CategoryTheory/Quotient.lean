@@ -151,8 +151,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
-  · intro hfg
-    induction' hfg with m m' hm
+  · rintro ⟨hfg⟩
     exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
   · exact CompClosure.of _ _ _
 
