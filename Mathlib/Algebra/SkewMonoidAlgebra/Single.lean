@@ -42,7 +42,7 @@ theorem support_erase [DecidableEq α] : (f.erase a).support = f.support.erase a
   simp only [support, erase, Finset.mem_erase, Finsupp.mem_support_iff]
 
 @[simp]
-theorem erase_same [DecidableEq α] : (f.erase a).coeff a = 0 := by
+theorem erase_same : (f.erase a).coeff a = 0 := by
   simp [erase]
 
 @[simp]
