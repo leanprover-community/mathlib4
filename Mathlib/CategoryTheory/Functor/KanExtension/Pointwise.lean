@@ -225,7 +225,15 @@ def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
 namespace IsPointwiseLeftKanExtensionAt
 
 variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
-  [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
+
+@[reassoc]
+lemma comp_homEquiv_symm {Z : H}
+    (φ : CostructuredArrow.proj L Y ⋙ F ⟶ (Functor.const _).obj Z)
+    (g : CostructuredArrow L Y) :
+    E.hom.app g.left ≫ E.right.map g.hom ≫ h.homEquiv.symm φ = φ.app g := by
+  simpa using h.ι_app_homEquiv_symm φ g
+
+variable [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
 
 /-- A pointwise left Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
 `colimit (CostructuredArrow.proj L Y ⋙ F)`. -/

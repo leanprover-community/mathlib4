@@ -39,8 +39,6 @@ structure Subpresheaf (F : Cᵒᵖ ⥤ Type w) where
   `F i x` is in `F(V)`. -/
   map : ∀ {U V : Cᵒᵖ} (i : U ⟶ V), obj U ⊆ F.map i ⁻¹' obj V
 
-@[deprecated (since := "2025-01-08")] alias GrothendieckTopology.Subpresheaf := Subpresheaf
-
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 
 instance : PartialOrder (Subpresheaf F) :=
@@ -202,7 +200,5 @@ theorem nat_trans_naturality (f : F' ⟶ G.toPresheaf) {U V : Cᵒᵖ} (i : U �
   congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
 
 end Subpresheaf
-
-@[deprecated (since := "2025-01-23")] alias top_subpresheaf_obj := Subpresheaf.top_obj
 
 end CategoryTheory

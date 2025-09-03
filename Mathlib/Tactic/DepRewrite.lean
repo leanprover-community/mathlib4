@@ -77,7 +77,7 @@ structure Config where
   /-- Which occurrences to rewrite. -/
   occs : Occurrences := .all
   /-- The cast mode specifies when `rw!` is permitted to insert casts
-  in order to correct subterms that become type-incorect
+  in order to correct subterms that become type-incorrect
   as a result of rewriting.
 
   For example, given `P : Nat → Prop`, `f : (n : Nat) → P n → Nat` and `h : P n₀`,

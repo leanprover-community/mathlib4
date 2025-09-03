@@ -19,7 +19,7 @@ boundary.
 
 ## Notation
 
-`∂ a` is notation for `Coheyting.boundary a` in locale `Heyting`.
+`∂ a` is notation for `Coheyting.boundary a` in scope `Heyting`.
 -/
 
 assert_not_exists RelIso

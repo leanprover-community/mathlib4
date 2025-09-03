@@ -47,6 +47,16 @@ instance : MonoidWithZero R[S⁻¹] where
     induction' x using OreLocalization.ind with r s
     rw [OreLocalization.zero_def, mul_div_one, mul_zero, zero_oreDiv', zero_oreDiv']
 
+theorem subsingleton_iff :
+    Subsingleton R[S⁻¹] ↔ 0 ∈ S := by
+  rw [← subsingleton_iff_zero_eq_one, OreLocalization.one_def,
+    OreLocalization.zero_def, oreDiv_eq_iff]
+  simp
+
+theorem nontrivial_iff :
+    Nontrivial R[S⁻¹] ↔ 0 ∉ S := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
+
 end MonoidWithZero
 
 section CommMonoidWithZero
@@ -144,7 +154,7 @@ theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ ⟨sb * s, h'⟩ := by
   with_unfolding_all exact add''_char r s r' s' rb sb h h'
 
-/-- A characterization of the addition on the Ore localizaion, allowing for arbitrary Ore
+/-- A characterization of the addition on the Ore localization, allowing for arbitrary Ore
 numerator and Ore denominator. -/
 theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb * s') :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ (sb * s) :=
