@@ -423,12 +423,11 @@ variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- For a multiply pretransitive action, computes the index
 of the fixing_subgroup of a subset of adequate cardinality -/
-@[simp]
 theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     [Finite α]
     {k : ℕ} (Hk : IsMultiplyPretransitive G α k)
     {s : Set α} (hs : s.ncard = k) :
-    (fixingSubgroup G s).index * (Nat.card α - s.ncard).factorial =
+    (fixingSubgroup G s).index * (Nat.card α - k).factorial =
       (Nat.card α).factorial := by
   induction k generalizing G α with
   | zero =>
@@ -459,32 +458,24 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       (MonoidHom.ker_eq_bot_iff (stabilizer G a).subtype).mpr
         (by simp only [Subgroup.coe_subtype, Subtype.coe_injective])]
     simp only [sup_bot_eq, Subgroup.range_subtype]
-    have hscard : s.ncard = 1 + t.ncard := by
-      rw [hat']
+    have htcard : t.ncard = k := by
+      rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hat', eq_comm]
       suffices ¬ a ∈ (Subtype.val '' t) by
-        rw [add_comm]
         convert Set.ncard_insert_of_notMem this ?_
         rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
       obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
       apply hb
-      simp only [Set.mem_singleton_iff]
-      rw [← hb']
-    have htcard : t.ncard = k := by
-      rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hscard, add_comm]
+      simp only [← hb', Set.mem_singleton_iff]
     suffices (fixingSubgroup (stabilizer G a) t).index *
-      (Nat.card α - 1 - t.ncard).factorial =
+      (Nat.card α - 1 - k).factorial =
         (Nat.card α - 1).factorial by
-      · rw [mul_comm] at this
-        rw [hscard, mul_comm, ← mul_assoc, mul_comm, Nat.sub_add_eq, this,
-          index_stabilizer_of_transitive G a]
-        exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
-    · rw [add_comm] at hscard
-      have := Nat.sub_eq_of_eq_add hscard
-      simp only [hs] at this
-      convert hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
-      all_goals { rw [nat_card_ofStabilizer_eq G a] }
+      rw [add_comm k, Nat.mul_right_comm, ← Nat.sub_sub, this, mul_comm,
+        index_stabilizer_of_transitive G a]
+      exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
+    convert hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
+    all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
 /-- For a multiply pretransitive action,
   computes the index of the `fixingSubgroup` of a subset
