@@ -131,7 +131,9 @@ variable {R K : Type*} [CommRing R] [Field K]
 /-- Synonym of `Matrix.IsHyperbolic`, for dot-notation. -/
 @[reducible] def IsHyperbolic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsHyperbolic
 
-/-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation. -/
+/-- Polynomial whose roots are the fixed points of `g` considered as a Möbius transformation.
+
+See `Matrix.GeneralLinearGroup.fixpointPolynomial_aeval_eq_zero_iff`. -/
 noncomputable def fixpointPolynomial (g : GL (Fin 2) R) : R[X] :=
   C (g 1 0) * X ^ 2 + C (g 1 1 - g 0 0) * X - C (g 0 1)
 
