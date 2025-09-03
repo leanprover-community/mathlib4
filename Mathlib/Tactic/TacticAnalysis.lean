@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
-import Batteries.Data.Array.Merge
 import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
 import Lean.Server.InfoUtils
