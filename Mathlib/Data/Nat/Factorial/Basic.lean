@@ -480,34 +480,33 @@ but instead let's jump straight to binary splitting.
 
 /-- Factorial implemented using binary splitting. -/
 def factorialBinarySplitting (n : Nat) : Nat :=
-  prodRange 1 (n + 1)
+  if _ : n = 0 then 1 else prodRange 1 (n + 1)
 where
   /-- `prodRange lo hi` is the product of the range `lo` to `hi`, computed by binary splitting.-/
-  prodRange (lo hi : Nat) : Nat :=
-    if hi ≤ lo then 1
-    else if hi = lo + 1 then lo
+  prodRange (lo hi : Nat) (h : lo < hi := by grind) : Nat :=
+    if _ : hi = lo + 1 then lo
     else
       let mid := (lo + hi) / 2
       prodRange lo mid * prodRange mid hi
 
-theorem factorialBinarySplitting.factorial_mul_prodRange (lo hi : Nat) (h : lo ≤ hi) :
+theorem factorialBinarySplitting.factorial_mul_prodRange (lo hi : Nat) (h : lo < hi) :
     lo ! * prodRange (lo + 1) (hi + 1) = hi ! := by
   rw [prodRange]
   split
-  · grind
-  · split
-    · grind [factorial_succ]
-    · dsimp only
-      rw [← Nat.mul_assoc]
-      rw [show (lo + 1 + (hi + 1)) / 2 = (lo + hi) / 2 + 1 by grind]
-      rw [factorial_mul_prodRange, factorial_mul_prodRange]
-      all_goals grind
+  · grind [factorial_succ]
+  · dsimp only
+    rw [← Nat.mul_assoc]
+    simp_rw [show (lo + 1 + (hi + 1)) / 2 = (lo + hi) / 2 + 1 by grind]
+    rw [factorial_mul_prodRange, factorial_mul_prodRange]
+    all_goals grind
 
 @[csimp]
 theorem factorialBinarySplitting_eq_factorial : @factorial = @factorialBinarySplitting := by
   ext n
-  rw [factorialBinarySplitting, ← factorialBinarySplitting.factorial_mul_prodRange 0 n (by grind)]
-  simp
+  by_cases h : n = 0
+  · simp [h, factorialBinarySplitting]
+  · rw [factorialBinarySplitting, ← factorialBinarySplitting.factorial_mul_prodRange 0 n (by grind)]
+    simp [h]
 
 /-!
 We are now limited by time, not stack space,
