@@ -17,13 +17,13 @@ namespace Mathlib.Meta.NormNum
 
 open Lean.Meta Qq
 
-theorem isNat_abs_nonneg {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+theorem isNat_abs_nonneg {α : Type*} [Ring α] [Lattice α] [IsStrictOrderedRing α]
     {a : α} {na : ℕ} (pa : IsNat a na) : IsNat |a| na := by
   rw [pa.out, Nat.abs_cast]
   constructor
   rfl
 
-theorem isNat_abs_neg {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+theorem isNat_abs_neg {α : Type*} [Ring α] [Lattice α] [IsStrictOrderedRing α]
     {a : α} {na : ℕ} (pa : IsInt a (.negOfNat na)) : IsNat |a| na := by
   rw [pa.out]
   constructor
@@ -56,14 +56,14 @@ such that `norm_num` successfully recognises `a`. -/
   | .isBool ..  => failure
   | .isNat sα na pa =>
     let rα : Q(Ring $α) ← synthInstanceQ q(Ring $α)
-    let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
+    let lα : Q(Lattice $α) ← synthInstanceQ q(Lattice $α)
     let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
     haveI' : $e =Q |$a| := ⟨⟩
     assumeInstancesCommute
     return .isNat sα na q(isNat_abs_nonneg $pa)
   | .isNegNat sα na pa =>
     let rα : Q(Ring $α) ← synthInstanceQ q(Ring $α)
-    let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
+    let lα : Q(Lattice $α) ← synthInstanceQ q(Lattice $α)
     let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
     haveI' : $e =Q |$a| := ⟨⟩
     assumeInstancesCommute
