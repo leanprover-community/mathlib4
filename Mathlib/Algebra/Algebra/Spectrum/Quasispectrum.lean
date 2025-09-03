@@ -365,7 +365,6 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
     quasispectrum R (a : Unitization S A) = quasispectrum R a := by
   rw [quasispectrum_eq_spectrum_union_zero, quasispectrum_eq_spectrum_inr' R S]
-  apply Set.union_eq_self_of_subset_right
   simpa using zero_mem_spectrum_inr _ _ _
 
 end Unitization
