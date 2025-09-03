@@ -618,8 +618,7 @@ lemma Connected_coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (hconn : G
       exact coe_adj_sub _ _ _ (h''.adj_sub' ..)
   }
   constructor
-  all_goals simp only [Walk.toSubgraph_map, map_verts, RelHom.coeFn_mk, Walk.verts_toSubgraph,
-    hom_apply, Set.image_subset_iff]
+  all_goals simp only [Walk.toSubgraph_map, map_verts, RelHom.coeFn_mk, hom_apply]
   · grind
   · intro _ _ ⟨x'', y'', h'', _, _⟩
     use x''.val, y''.val
