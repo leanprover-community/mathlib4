@@ -18,7 +18,7 @@ def threeFour : Simproc := fun e ↦ do
 open Lean.Elab.Tactic Lean.Parser.Tactic
 
 elab "rw_3_4 " loc:(location)? : tactic =>
-  Simproc.apply threeFour (loc.map expandLocation)
+  Simproc.apply threeFour "three_to_four" (loc.map expandLocation)
 
 example (h : 4 = 5) : 3 = 5 := by
   rw_3_4
@@ -26,12 +26,16 @@ example (h : 4 = 5) : 3 = 5 := by
 
 example : 3 = 4 := by
   rw_3_4
+  guard_target =ₛ 4 = 4
+  rfl
 
 example : 4 = 3 := by
   rw_3_4
+  guard_target =ₛ 4 = 4
+  rfl
 
 example : False :=
-  absurd (by rw_3_4 : 3 = 4) (by decide)
+  absurd (by rw_3_4; rfl : 3 = 4) (by decide)
 
 example (i : Fin 3) : Fin 4 := by
   rw_3_4 at i
@@ -39,7 +43,7 @@ example (i : Fin 3) : Fin 4 := by
   exact i
 
 set_option linter.unusedVariables false in
-example (i : Fin 3) (h : 2 + 3 = 6) : Vector Int 4 := by
+example (i : Fin 3) (h : 2 + 3 = 6) : Vector Int 3 := by
   rw_3_4 at i h ⊢
   guard_hyp i :ₛ Fin 4
   guard_hyp h :ₛ 2 + 4 = 6
