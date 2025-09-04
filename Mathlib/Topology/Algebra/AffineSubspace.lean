@@ -24,8 +24,6 @@ namespace AffineSubspace
 variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
   [AddTorsor V P]
 
-attribute [local instance] toAddTorsor
-
 /-- Embedding of an affine subspace to the ambient space, as a continuous affine map. -/
 def subtypeA (s : AffineSubspace R P) [Nonempty s] : s →ᴬ[R] P where
   toAffineMap := s.subtype
