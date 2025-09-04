@@ -129,22 +129,15 @@ open WithZero
 
 /-- An alternative constructor that takes a function `R → Γ` satisfying certain axioms and outputs
 a `Valuation R (WithZero Γ)`. -/
-@[simps] noncomputable def mk₀ {R Γ : Type*} [Ring R] [IsDomain R]
+@[simps!] noncomputable def mk₀ {R Γ : Type*} [Ring R] [IsDomain R]
     [CommMonoid Γ] [LinearOrder Γ] [IsOrderedMonoid Γ]
     (v : R → Γ) (one : v 1 = 1)
     (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x * v y)
     (add : ∀ {x y}, x ≠ 0 → y ≠ 0 → x + y ≠ 0 → v (x + y) ≤ max (v x) (v y)) :
     Valuation R (WithZero Γ) where
-  toFun x := open Classical in if x = 0 then 0 else v x
-  map_zero' := by simp
-  map_one' := by simp [one]
-  map_mul' x y := by
-    by_cases hx0 : x = 0
-    · rw [hx0, zero_mul, if_pos rfl, zero_mul]
-    · by_cases hy0 : y = 0
-      · rw [hy0, mul_zero, if_pos rfl, mul_zero]
-      · rw [mul_eq_zero, if_neg (by tauto), if_neg hx0, if_neg hy0, mul hx0 hy0, WithZero.coe_mul]
+  __ := MonoidWithZeroHom.mk₀ v one mul
   map_add_le_max' x y := by
+    dsimp only [MonoidWithZeroHom.mk₀]
     by_cases hx0 : x = 0
     · rw [hx0, zero_add, if_pos rfl, ← bot_eq_zero'', max_bot_left]
     · by_cases hy0 : y = 0
