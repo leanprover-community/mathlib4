@@ -11,7 +11,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Tactic.Rify
 
 /-!
 # Chebyshev polynomials
@@ -21,7 +20,7 @@ import Mathlib.Tactic.Rify
 * Trigonometric identities satisfied by Chebyshev polynomials:
   `Polynomial.Chebyshev.T_cos`, `Polynomial.Chebyshev.U_cos`
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]
-* Zeroes of T and U [COMPLETE!]
+* Zeroes of T and U
 * Extrema of T
 
 ## TODO
@@ -236,60 +235,62 @@ theorem T_eq_zero_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     use k
     field_simp; ring
 
-noncomputable def T_zeroes {n : ℕ} (hn : n ≠ 0) : Finset ℝ := Finset.map
-  {
-    toFun (k : Finset.Icc 0 (n - 1)) := cos ((2 * k + 1) * π / (2 * n))
-    inj' k₁ k₂ := by
-      have hk₁ := Finset.mem_Icc.mp k₁.property
-      have hk₂ := Finset.mem_Icc.mp k₂.property
-      intro h
-      have : (2 * k₁ + 1) * π / (2 * n) = (2 * k₂ + 1) * π / (2 * n) := by
-        apply injOn_cos
-        · apply Set.mem_Icc.mpr
-          constructor
-          · positivity
-          calc (2 * k₁ + 1) * π / (2 * n) ≤ (2 * (n - 1) + 1) * π / (2 * n) := by
-            { gcongr
-              have := hk₁.2; zify at this
-              rw [Nat.cast_sub (by omega)] at this
-              sorry }
-            _ ≤ (2 * n) * π / (2 * n) := by gcongr; linarith
-            _ = π := by field_simp
-        · apply Set.mem_Icc.mpr
-          constructor
-          · positivity
-          calc (2 * k₂ + 1) * π / (2 * n) ≤ (2 * (n - 1) + 1) * π / (2 * n) := by
-            { gcongr
-              have := hk₂.2; zify at this
-              rw [Nat.cast_sub (by omega)] at this
-              sorry }
-            _ ≤ (2 * n) * π / (2 * n) := by gcongr; linarith
-            _ = π := by field_simp
-        exact h
-      have : (2 * k₁.val + 1 : ℝ) = (2 * k₂.val + 1 : ℝ) := by
-        linear_combination (norm := (field_simp; ring)) this * ((2 * n) / π)
-      aesop
-  }
-  Finset.univ
+noncomputable def T_zeroes (n : ℕ) : Finset ℝ :=
+  (Finset.Ico 0 n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))
 
 @[simp]
-theorem T_zeroes_card {n : ℕ} (hn : n ≠ 0) : (T_zeroes hn).card = n := by
+theorem T_zeroes_card (n : ℕ) : (T_zeroes n).card = n := by
   unfold T_zeroes
-  simp; omega
+  rw [Finset.card_image_of_injOn]
+  · simp
+  intro k₁ hk₁ k₂ hk₂
+  dsimp
+  by_cases n = 0
+  case pos hn => simp [hn] at hk₁
+  case neg hn =>
+  have hnℝ : (n : ℝ) ≠ 0 := by contrapose! hn; exact Nat.cast_eq_zero.mp hn
+  have {k : ℕ} (hk : k ∈ Finset.Ico 0 n) :
+    (2 * k + 1) * π / (2 * n) ∈ Set.Icc 0 π := by
+    apply Set.mem_Icc.mpr
+    constructor
+    · positivity
+    calc
+      (2 * k + 1) * π / (2 * n) ≤ (2 * (n - 1) + 1) * π / (2 * n) := by
+        gcongr
+        have := @Nat.cast_sub ℝ _ 1 n (by omega)
+        push_cast at this
+        rw [←this]
+        apply Nat.cast_le.mpr
+        have := Finset.mem_Ico.mp hk
+        omega
+      _ ≤ (2 * n) * π / (2 * n) := by gcongr; linarith
+      _ ≤ π := by
+        rw [mul_div_assoc, mul_div_cancel₀]
+        contrapose! hnℝ
+        linarith
+  intro h
+  have : (2 * k₁ + 1) * π / (2 * n) = (2 * k₂ + 1) * π / (2 * n) := by
+    apply injOn_cos
+    exact this hk₁
+    exact this hk₂
+    exact h
+  field_simp at this
+  exact this
 
-theorem T_roots {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_zeroes hn).val := by
-  have hS : ∀ x ∈ T_zeroes hn, (T ℝ n).eval x = 0 := by
+theorem T_roots {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_zeroes n).val := by
+  have hS : ∀ x ∈ T_zeroes n, (T ℝ n).eval x = 0 := by
     intro x hx
     unfold T_zeroes at hx
-    simp [Finset.mem_map] at hx
+    rw [Finset.mem_image] at hx
     obtain ⟨k, hk, hx⟩ := hx
-    have hn' : (n : ℤ) ≠ 0 := by contrapose! hn; norm_cast at hn
-    apply (T_eq_zero_iff hn' x).mpr
-    use k
-    rw [←hx]
-    push_cast; rfl
-  have hcard : (T_zeroes hn).card = (T ℝ n).degree := by
-    rw [T_zeroes_card hn, T_degree] <;> simp
+    apply (T_eq_zero_iff ?_ x).mpr
+    · use k
+      rw [←hx]
+      push_cast; rfl
+    contrapose! hn
+    exact Int.ofNat_eq_zero.mp hn
+  have hcard : (T_zeroes n).card = (T ℝ n).degree := by
+    rw [T_zeroes_card n, T_degree] <;> simp
   apply roots_of_zeroes_of_card hS hcard
 
 theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
@@ -424,45 +425,46 @@ theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
         _ = (n + 1) := by rw [one_mul]
     linarith
 
-noncomputable def U_zeroes (n : ℕ) : Finset ℝ := Finset.map
-  {
-    toFun (k : Finset.Icc 1 n) := cos (k * π / (n + 1))
-    inj' k₁ k₂ := by
-      have hk₁ := Finset.mem_Icc.mp k₁.property
-      have hk₂ := Finset.mem_Icc.mp k₂.property
-      intro h
-      have : k₁ * π / (n + 1) = (k₂ * π) / (n + 1) := by
-        apply injOn_cos
-        · apply Set.mem_Icc.mpr
-          constructor
-          · positivity
-          calc k₁ * π / (n + 1) ≤ n * π / (n + 1) := by gcongr; exact hk₁.2
-            _ ≤ (n + 1) * π / (n + 1) := by gcongr; linarith
-            _ = π := by field_simp
-        · apply Set.mem_Icc.mpr
-          constructor
-          · positivity
-          calc k₂ * π / (n + 1) ≤ n * π / (n + 1) := by gcongr; exact hk₂.2
-            _ ≤ (n + 1) * π / (n + 1) := by gcongr; linarith
-            _ = π := by field_simp
-        exact h
-      have : (k₁.val : ℝ) = (k₂.val : ℝ) := by
-        linear_combination (norm := (field_simp; ring)) this * ((n + 1) / π)
-      aesop
-  }
-  Finset.univ
+noncomputable def U_zeroes (n : ℕ) : Finset ℝ :=
+  (Finset.Icc 1 n).image (fun (k : ℕ) => cos (k * π / (n + 1)))
 
 @[simp]
 theorem U_zeroes_card (n : ℕ) : (U_zeroes n).card = n := by
   unfold U_zeroes
-  simp
+  rw [Finset.card_image_of_injOn]
+  · simp
+  intro k₁ hk₁ k₂ hk₂
+  dsimp
+  have {k : ℕ} (hk : k ∈ Finset.Icc 1 n) :
+    k * π / (n + 1) ∈ Set.Icc 0 π := by
+    apply Set.mem_Icc.mpr
+    constructor
+    · positivity
+    calc
+      k * π / (n + 1) ≤ n * π / (n + 1) := by
+        gcongr
+        apply Nat.cast_le.mpr
+        exact (Finset.mem_Icc.mp hk).2
+      _ ≤ (n + 1) * π / (n + 1) := by gcongr; linarith
+      _ ≤ π := by
+        rw [mul_div_assoc, mul_div_cancel₀]
+        positivity
+  intro h
+  have : k₁ * π / (n + 1) = k₂ * π / (n + 1) := by
+    apply injOn_cos
+    exact this hk₁
+    exact this hk₂
+    exact h
+  field_simp at this
+  exact this
 
 theorem U_roots (n : ℕ) : (U ℝ n).roots = (U_zeroes n).val := by
   have hS : ∀ x ∈ U_zeroes n, (U ℝ n).eval x = 0 := by
     intro x hx
     unfold U_zeroes at hx
-    simp [Finset.mem_map] at hx
+    rw [Finset.mem_image] at hx
     obtain ⟨k, hk, hx⟩ := hx
+    replace hk := Finset.mem_Icc.mp hk
     rw [←hx]
     apply U_eq_zero_if n hk.1 hk.2
   have hcard : (U_zeroes n).card = (U ℝ n).degree := by
@@ -478,15 +480,14 @@ theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
     simp [h] at this
   rw [←(U ℝ n).mem_roots this, U_roots n]
   unfold U_zeroes
-  rw [Finset.mem_val, Finset.mem_map]
-  simp only [Finset.univ_eq_attach, Finset.mem_attach, Function.Embedding.coeFn_mk, true_and,
-    Subtype.exists, Finset.mem_Icc, exists_prop]
+  rw [Finset.mem_val, Finset.mem_image]
   constructor
   · intro ⟨k, hk, hx⟩
+    replace hk := Finset.mem_Icc.mp hk
     use k
     exact ⟨hk.1, hk.2, hx.symm⟩
   · intro ⟨k, hk₁, hk₂, hx⟩
     use k
-    exact ⟨⟨hk₁, hk₂⟩, hx.symm⟩
+    exact ⟨Finset.mem_Icc.mpr ⟨hk₁, hk₂⟩, hx.symm⟩
 
 end Polynomial.Chebyshev
