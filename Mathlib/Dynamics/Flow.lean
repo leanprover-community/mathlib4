@@ -183,7 +183,7 @@ theorem orbit_restrict (s : Set α) (hs : IsInvariant ϕ s) (x : s) :
 
 variable [Preorder τ] [AddLeftMono τ]
 
-/-- Restrict a flow by `τ` to a flow by the submonoid of nonnegative elements of `τ`. -/
+/-- Restrict a flow by `τ` to a flow by the additive submonoid of nonnegative elements of `τ`. -/
 def fw : Flow (AddSubmonoid.nonneg τ) α := ϕ.restrictAddSubmonoid (AddSubmonoid.nonneg τ)
 
 /-- The forward orbit of a point under a flow. -/
