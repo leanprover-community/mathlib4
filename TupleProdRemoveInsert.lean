@@ -26,8 +26,14 @@ namespace List
 
 @[to_additive (attr := simp), simp]
 theorem prod_insertIdx {l : List M} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod := by
-  --exact?
-  sorry
+  induction i generalizing l
+  case zero => rfl
+  case succ i ih =>
+    rcases l, h with _ | ⟨hd, tl⟩
+    · contradiction
+    · specialize @ih tl (Nat.le_of_lt_succ h)
+      simp [ih]
+      exact mul_left_comm hd a tl.prod
 
 end List
 namespace List.Vector
