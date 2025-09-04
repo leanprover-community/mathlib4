@@ -271,6 +271,32 @@ theorem coeff_monomial_zero_mul (p : R[X]) (d : ℕ) (r : R) :
 theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 
+theorem mul_X_pow_cancel {k : ℕ} {p q : R[X]} (h : p * X ^ k = q * X ^ k) :
+    p = q := by
+  rw [Polynomial.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + k)
+
+theorem mul_X_pow_injective {k : ℕ} : Function.Injective (· * X ^ k : R[X] → R[X]) :=
+  fun _ _ ↦ mul_X_pow_cancel
+
+theorem mul_X_pow_inj {k : ℕ} {p q : R[X]} :
+    p * X ^ k = q * X ^ k ↔ p = q :=
+  mul_X_pow_injective.eq_iff
+
+theorem X_pow_mul_cancel {k : ℕ} {p q : R[X]} (h : X ^ k * p = X ^ k * q) :
+    p = q := by
+  rw [Polynomial.ext_iff] at h ⊢
+  intro n
+  simpa using h (n + k)
+
+theorem X_pow_mul_injective {k : ℕ} : Function.Injective (X ^ k * · : R[X] → R[X]) :=
+  fun _ _ ↦ X_pow_mul_cancel
+
+theorem X_pow_mul_inj {k : ℕ} {p q : R[X]} :
+    X ^ k * p = X ^ k * q ↔ p = q :=
+  X_pow_mul_injective.eq_iff
+
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
   suffices IsLeftRegular (X^n : R[X]) from
     ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
