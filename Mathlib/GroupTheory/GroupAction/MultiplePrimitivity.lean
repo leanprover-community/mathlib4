@@ -135,7 +135,7 @@ theorem is_one_preprimitive_iff :
       exact fun h ↦ by simp [h] at hs
 
 /-- The action of `stabilizer M a` is one-less preprimitive -/
-@[to_additive "The action of `stabilizer M a` is one-less preprimitive"]
+@[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
     [IsPretransitive M α] {n : ℕ} {a : α} [IsMultiplyPreprimitive M α n.succ] :
     IsMultiplyPreprimitive (stabilizer M a) (SubMulAction.ofStabilizer M a) n := by

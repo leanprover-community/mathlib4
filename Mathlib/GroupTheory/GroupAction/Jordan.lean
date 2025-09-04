@@ -436,7 +436,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isThreeCycle_mem
       Subgroup.index_mul_card, Nat.card_perm]
     apply le_trans (Nat.factorial_le hα4)
     rw [show Nat.factorial 3 = 2 * 3 by simp [Nat.factorial]]
-    simp only [mul_le_mul_left, Nat.succ_pos]
+    simp only [mul_le_mul_iff_right₀, Nat.succ_pos]
     apply Nat.le_of_dvd Nat.card_pos
     suffices 3 = orderOf (⟨g, hg⟩ : G) by
       rw [this, Nat.card_eq_fintype_card]
