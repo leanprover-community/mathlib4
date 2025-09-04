@@ -50,23 +50,18 @@ variable (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
 /-- the scalar product by a non-zero complex number as a continuous real-linear equivalence. -/
 noncomputable def scalarSMulCLE (c : ℂ) [h : NeZero c] : H ≃L[ℝ] H where
-  toFun := c • (id ℝ H)
+  toFun := lsmul ℂ ℂ c
   continuous_toFun := by
     have : Continuous (fun (x : H) => c • x) := continuous_const_smul c
     congr
   map_add' x y := by simp
   map_smul' a x := by
-    simp only [coe_id', Pi.smul_apply, id_eq, RingHom.id_apply]
     exact smul_comm c a x
   invFun := c⁻¹ • (id ℝ H)
   left_inv := by
-    intro x
-    simp only [coe_id', Pi.smul_apply, id_eq]
-    exact inv_smul_smul₀ h.out x
+    exact fun x => inv_smul_smul₀ h.out x
   right_inv := by
-    intro x
-    simp only [coe_id', Pi.smul_apply, id_eq]
-    refine smul_inv_smul₀ h.out x
+    exact fun x => smul_inv_smul₀ h.out x
   continuous_invFun := by
     have : Continuous (fun (x : H) => c⁻¹ • x) := continuous_const_smul c⁻¹
     congr
