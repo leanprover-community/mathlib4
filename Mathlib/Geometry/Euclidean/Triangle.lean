@@ -118,137 +118,74 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
 
 /-- The cosine of the sum of two angles in a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
-theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
-    Real.cos (angle x (x - y) + angle y (y - x)) = -Real.cos (angle x y) := by
-  by_cases hxy : x = y
-  · rw [hxy, angle_self hy]
-    simp
-  · rw [Real.cos_add, cos_angle, cos_angle, cos_angle]
-    have hxn : ‖x‖ ≠ 0 := fun h => hx (norm_eq_zero.1 h)
-    have hyn : ‖y‖ ≠ 0 := fun h => hy (norm_eq_zero.1 h)
-    have hxyn : ‖x - y‖ ≠ 0 := fun h => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
-    apply mul_right_cancel₀ hxn
-    apply mul_right_cancel₀ hyn
-    apply mul_right_cancel₀ hxyn
-    apply mul_right_cancel₀ hxyn
-    have H1 :
-      Real.sin (angle x (x - y)) * Real.sin (angle y (y - x)) * ‖x‖ * ‖y‖ * ‖x - y‖ * ‖x - y‖ =
-        Real.sin (angle x (x - y)) * (‖x‖ * ‖x - y‖) *
-          (Real.sin (angle y (y - x)) * (‖y‖ * ‖x - y‖)) := by
-      ring
-    have H2 :
-      ⟪x, x⟫ * (⟪x, x⟫ - ⟪x, y⟫ - (⟪x, y⟫ - ⟪y, y⟫)) - (⟪x, x⟫ - ⟪x, y⟫) * (⟪x, x⟫ - ⟪x, y⟫) =
-        ⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫ := by
-      ring
-    have H3 :
-      ⟪y, y⟫ * (⟪y, y⟫ - ⟪x, y⟫ - (⟪x, y⟫ - ⟪x, x⟫)) - (⟪y, y⟫ - ⟪x, y⟫) * (⟪y, y⟫ - ⟪x, y⟫) =
-        ⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫ := by
-      ring
-    rw [mul_sub_right_distrib, mul_sub_right_distrib, mul_sub_right_distrib, mul_sub_right_distrib,
-      H1, sin_angle_mul_norm_mul_norm, norm_sub_rev x y, sin_angle_mul_norm_mul_norm,
-      norm_sub_rev y x, inner_sub_left, inner_sub_left, inner_sub_right, inner_sub_right,
-      inner_sub_right, inner_sub_right, real_inner_comm x y, H2, H3,
-      Real.mul_self_sqrt (sub_nonneg_of_le (real_inner_mul_inner_self_le x y)),
-      real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
-      real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    field_simp
+private theorem cos_angle_eq_cos_angle_add_add_angle_add {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Real.cos (angle x y) = Real.cos (angle x (x + y) + angle y (y + x)) := by
+  rcases eq_or_ne x (-y) with (rfl | hxy)
+  · simp [hy]
+  · rw [Real.cos_add, cos_angle, cos_angle, cos_angle, sin_angle_add hx (by grind),
+      sin_angle_add hy (by grind), mul_comm ⟪y, y⟫ ⟪x, x⟫, real_inner_comm x y, add_comm y x]
+    have : x + y ≠ 0 := by grind
+    simp only [field] -- non-recursive `field_simp`
+    rw [Real.sq_sqrt (sub_nonneg_of_le (real_inner_mul_inner_self_le x y))]
+    simp only [← real_inner_self_eq_norm_sq, inner_add_right, inner_add_left, real_inner_comm]
     ring
 
 /-- The sine of the sum of two angles in a possibly degenerate
 triangle (where two given sides are nonzero), vector angle form. -/
-theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
-    Real.sin (angle x (x - y) + angle y (y - x)) = Real.sin (angle x y) := by
-  by_cases hxy : x = y
-  · rw [hxy, angle_self hy]
-    simp
-  · rw [Real.sin_add, cos_angle, cos_angle]
-    have hxn : ‖x‖ ≠ 0 := fun h => hx (norm_eq_zero.1 h)
-    have hyn : ‖y‖ ≠ 0 := fun h => hy (norm_eq_zero.1 h)
-    have hxyn : ‖x - y‖ ≠ 0 := fun h => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 h))
-    apply mul_right_cancel₀ hxn
-    apply mul_right_cancel₀ hyn
-    apply mul_right_cancel₀ hxyn
-    apply mul_right_cancel₀ hxyn
-    have H1 :
-      Real.sin (angle x (x - y)) * (⟪y, y - x⟫ / (‖y‖ * ‖y - x‖)) * ‖x‖ * ‖y‖ * ‖x - y‖ =
-        Real.sin (angle x (x - y)) * (‖x‖ * ‖x - y‖) * (⟪y, y - x⟫ / (‖y‖ * ‖y - x‖)) * ‖y‖ := by
-      ring
-    have H2 :
-      ⟪x, x - y⟫ / (‖x‖ * ‖y - x‖) * Real.sin (angle y (y - x)) * ‖x‖ * ‖y‖ * ‖y - x‖ =
-        ⟪x, x - y⟫ / (‖x‖ * ‖y - x‖) * (Real.sin (angle y (y - x)) * (‖y‖ * ‖y - x‖)) * ‖x‖ := by
-      ring
-    have H3 :
-      ⟪x, x⟫ * (⟪x, x⟫ - ⟪x, y⟫ - (⟪x, y⟫ - ⟪y, y⟫)) - (⟪x, x⟫ - ⟪x, y⟫) * (⟪x, x⟫ - ⟪x, y⟫) =
-        ⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫ := by
-      ring
-    have H4 :
-      ⟪y, y⟫ * (⟪y, y⟫ - ⟪x, y⟫ - (⟪x, y⟫ - ⟪x, x⟫)) - (⟪y, y⟫ - ⟪x, y⟫) * (⟪y, y⟫ - ⟪x, y⟫) =
-        ⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫ := by
-      ring
-    rw [right_distrib, right_distrib, right_distrib, right_distrib, H1, sin_angle_mul_norm_mul_norm,
-      norm_sub_rev x y, H2, sin_angle_mul_norm_mul_norm, norm_sub_rev y x,
-      mul_assoc (Real.sin (angle x y)), sin_angle_mul_norm_mul_norm, inner_sub_left, inner_sub_left,
-      inner_sub_right, inner_sub_right, inner_sub_right, inner_sub_right, real_inner_comm x y, H3,
-      H4, real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
-      real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    field_simp
-    ring
+private theorem sin_angle_eq_sin_angle_add_add_angle_add {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+    Real.sin (angle x y) = Real.sin (angle x (x + y) + angle y (y + x)) := by
+  rcases eq_or_ne x (-y) with (rfl | hxy)
+  · simp [hy]
+  · rw [Real.sin_add, cos_angle, cos_angle, sin_angle_add hx (by grind),
+      sin_angle_add hy (by grind), sin_angle hx hy, add_comm y x]
+    have : x + y ≠ 0 := by grind
+    simp only [field] -- non-recursive `field_simp`
+    simp only [← real_inner_self_eq_norm_sq, inner_add_right, inner_add_left, real_inner_comm]
+    ring_nf
 
-/-- The cosine of the sum of the angles of a possibly degenerate
-triangle (where two given sides are nonzero), vector angle form. -/
-theorem cos_angle_add_angle_sub_add_angle_sub_eq_neg_one {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
-    Real.cos (angle x y + angle x (x - y) + angle y (y - x)) = -1 := by
-  rw [add_assoc, Real.cos_add, cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle hx hy,
-    sin_angle_sub_add_angle_sub_rev_eq_sin_angle hx hy, mul_neg, ← neg_add', add_comm, ← sq, ← sq,
-    Real.sin_sq_add_cos_sq]
-
-/-- The sine of the sum of the angles of a possibly degenerate
-triangle (where two given sides are nonzero), vector angle form. -/
-theorem sin_angle_add_angle_sub_add_angle_sub_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
-    Real.sin (angle x y + angle x (x - y) + angle y (y - x)) = 0 := by
-  rw [add_assoc, Real.sin_add, cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle hx hy,
-    sin_angle_sub_add_angle_sub_rev_eq_sin_angle hx hy]
-  ring
+/-- In a paralellogram, the two parts of the inner angle add to the inner angle,
+vector angle form. -/
+theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
+    angle x y = angle x (x + y) + angle y (x + y) := by
+  rcases eq_or_ne x 0 with (rfl | hx)
+  · simp [hy]
+  have h := Real.Angle.cos_sin_inj
+    (cos_angle_eq_cos_angle_add_add_angle_add hx hy)
+    (sin_angle_eq_sin_angle_add_add_angle_add hx hy)
+  rw [add_comm y x] at h
+  obtain ⟨_, ⟨n, rfl⟩, h⟩ := (QuotientAddGroup.mk'_eq_mk' _).mp h
+  simp only at h
+  have : -1 < n := by
+    replace h := h.ge
+    contrapose! h
+    grw [h, neg_smul, one_smul, angle_le_pi, ← angle_nonneg, ← angle_nonneg]
+    linear_combination Real.pi_pos
+  have : n < 1 := by
+    replace h := h.le
+    by_contra! hn
+    grw [← hn, one_smul, ← angle_nonneg x y, zero_add, two_mul] at h
+    have h' := h.trans_eq (add_comm _ _)
+    grw [angle_le_pi] at h' h
+    rw [add_le_add_iff_left, (angle_le_pi _ _).ge_iff_eq, angle_comm, angle_eq_pi_iff] at h' h
+    obtain ⟨hxy, r₁, r₁_pos, hr₁⟩ := h'
+    obtain ⟨-, r₂, r₂_pos, hr₂⟩ := h
+    have : (r₁ + r₂ - 1) • (x + y) = 0 := by
+      rw [sub_smul, add_smul, one_smul, ← hr₁, ← hr₂, sub_eq_zero]
+    cases eq_zero_or_eq_zero_of_smul_eq_zero this
+    · linarith
+    · contradiction
+  obtain rfl : n = 0 := by omega
+  simpa using h
 
 /-- The sum of the angles of a possibly degenerate triangle (where one of the
 two given sides is nonzero), vector angle form. -/
 theorem angle_add_angle_sub_add_angle_sub_eq_pi (x : V) {y : V} (hy : y ≠ 0) :
     angle x y + angle x (x - y) + angle y (y - x) = π := by
-  by_cases hx : x = 0
-  · simp [hx, hy]
-  have hcos := cos_angle_add_angle_sub_add_angle_sub_eq_neg_one hx hy
-  have hsin := sin_angle_add_angle_sub_add_angle_sub_eq_zero hx hy
-  rw [Real.sin_eq_zero_iff] at hsin
-  obtain ⟨n, hn⟩ := hsin
-  symm at hn
-  have h0 : 0 ≤ angle x y + angle x (x - y) + angle y (y - x) :=
-    add_nonneg (add_nonneg (angle_nonneg _ _) (angle_nonneg _ _)) (angle_nonneg _ _)
-  have h3lt : angle x y + angle x (x - y) + angle y (y - x) < π + π + π := by
-    by_contra hnlt
-    have hxy : angle x y = π := by
-      by_contra hxy
-      exact hnlt (add_lt_add_of_lt_of_le (add_lt_add_of_lt_of_le (lt_of_le_of_ne
-        (angle_le_pi _ _) hxy) (angle_le_pi _ _)) (angle_le_pi _ _))
-    rw [hxy] at hnlt
-    rw [angle_eq_pi_iff] at hxy
-    rcases hxy with ⟨hx, ⟨r, ⟨hr, hxr⟩⟩⟩
-    rw [hxr, ← one_smul ℝ x, ← mul_smul, mul_one, ← sub_smul, one_smul, sub_eq_add_neg,
-      angle_smul_right_of_pos _ _ (add_pos zero_lt_one (neg_pos_of_neg hr)), angle_self hx,
-      add_zero] at hnlt
-    apply hnlt
-    rw [add_assoc]
-    exact add_lt_add_left (lt_of_le_of_lt (angle_le_pi _ _) (lt_add_of_pos_right π Real.pi_pos)) _
-  have hn0 : 0 ≤ n := by
-    rw [hn, mul_nonneg_iff_left_nonneg_of_pos Real.pi_pos] at h0
-    norm_cast at h0
-  have hn3 : n < 3 := by
-    rw [hn, show π + π + π = 3 * π by ring] at h3lt
-    replace h3lt := lt_of_mul_lt_mul_right h3lt (le_of_lt Real.pi_pos)
-    norm_cast at h3lt
-  interval_cases n
-  · simp [hn] at hcos
-  · norm_num [hn]
-  · simp [hn] at hcos
+  have h := angle_eq_angle_add_add_angle_add (x - y) hy
+  rw [sub_add_cancel] at h
+  rw [← neg_sub x y, angle_neg_right]
+  simp only [angle_comm] at h ⊢
+  linear_combination -h
 
 end InnerProductGeometry
 
