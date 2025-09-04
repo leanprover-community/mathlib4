@@ -494,19 +494,19 @@ theorem map_rightUnitor_inv (X : C) :
 
 /-- The tensorator as a natural isomorphism. -/
 @[simps!]
-noncomputable def μNatIso :
+def μNatIso :
     Functor.prod F F ⋙ tensor D ≅ tensor C ⋙ F :=
   NatIso.ofComponents (fun _ ↦ μIso F _ _)
 
 /-- Monoidal functors commute with left tensoring up to isomorphism -/
 @[simps!]
-noncomputable def commTensorLeft (X : C) :
+def commTensorLeft (X : C) :
     F ⋙ tensorLeft (F.obj X) ≅ tensorLeft X ⋙ F :=
   NatIso.ofComponents (fun Y => μIso F X Y)
 
 /-- Monoidal functors commute with right tensoring up to isomorphism -/
 @[simps!]
-noncomputable def commTensorRight (X : C) :
+def commTensorRight (X : C) :
     F ⋙ tensorRight (F.obj X) ≅ tensorRight X ⋙ F :=
   NatIso.ofComponents (fun Y => μIso F Y X)
 
