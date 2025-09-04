@@ -92,8 +92,6 @@ theorem orthogonalProjectionFn_vsub_mem_direction_orthogonal {s : AffineSubspace
   direction_mk' p s.directionᗮ ▸
     vsub_mem_direction (orthogonalProjectionFn_mem_orthogonal p) (self_mem_mk' _ _)
 
-attribute [local instance] AffineSubspace.toAddTorsor
-
 /-- Auxiliary definition for setting up the orthogonal projection. This one is a bundled affine
 map; the final `orthogonalProjection` is a continuous affine map. -/
 nonrec def orthogonalProjectionAux (s : AffineSubspace ℝ P) [Nonempty s]
