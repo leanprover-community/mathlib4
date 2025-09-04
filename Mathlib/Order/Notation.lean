@@ -100,7 +100,7 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
-def delabSup : Delab := do
+def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr f@Max.max α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
   if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
@@ -112,7 +112,7 @@ def delabSup : Delab := do
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
-def delabInf : Delab := do
+def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr f@Min.min α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
   if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
