@@ -343,4 +343,67 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
     exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
+/-- In a triangle, the smaller angle is opposite the smaller side. -/
+theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
+    ∠ a c b < ∠ a b c → dist a b < dist a c := by
+  have hsin := law_sin c b a
+  rw [dist_comm b a, angle_comm c b a] at hsin
+  have hac : dist a c > 0 := dist_pos.mpr (ne₁₃_of_not_collinear h)
+  have hsinabc : Real.sin (∠ a b c) ≥ 0 := by
+    apply Real.sin_nonneg_of_mem_Icc
+    simp [angle_nonneg, angle_le_pi]
+  intro h1
+  by_cases h2 : ∠ a b c ≤ π / 2
+  · have h3 : Real.sin (∠ a c b) < Real.sin (∠ a b c) := by
+      exact Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h2 h1
+    by_contra! w
+    have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
+      exact mul_lt_mul h3 w hac hsinabc
+    linarith
+  · push_neg at h2
+    by_contra! w
+    have h3 : Real.sin (∠ a b c) ≤ Real.sin (∠ a c b) := by
+      by_contra! w1
+      have h4 : Real.sin (∠ a c b) * dist a c < Real.sin (∠ a b c) * dist a b := by
+        exact mul_lt_mul w1 w hac hsinabc
+      linarith
+    rw [← Real.sin_pi_sub (∠ a b c)] at h3
+    have h5 : π - ∠ a b c < π / 2 := by linarith
+    have h6 : π - ∠ a b c ≤ ∠ a c b := by
+      by_contra! w1
+      have := Real.sin_lt_sin_of_lt_of_le_pi_div_two (by linarith [angle_nonneg a c b]) h5.le w1
+      linarith
+    have h7 := angle_add_angle_add_angle_eq_pi c (ne₁₂_of_not_collinear h).symm
+    rw [angle_comm b c a] at h7
+    have h8 : ∠ c a b > 0 := by
+      rw [angle_comm]
+      rw [show ({a, b, c} : Set P) = {b, a, c} by exact Set.insert_comm a b {c}] at h
+      exact angle_pos_of_not_collinear h
+    linarith
+
+theorem angle_lt_iff_dist_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
+    ∠ a c b < ∠ a b c ↔ dist a b < dist a c := by
+  constructor
+  case mp =>
+    exact dist_lt_of_angle_lt h
+  case mpr =>
+    intro h1
+    by_contra! w
+    rcases w.eq_or_lt with h2 | h3
+    · have h4 : dist a b = dist a c := by
+        apply dist_eq_of_angle_eq_angle_of_angle_ne_pi h2
+        rw [show ({a, b, c} : Set P) = {b, a, c} by exact Set.insert_comm a b {c}] at h
+        linarith [angle_lt_pi_of_not_collinear h]
+      linarith
+    · rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
+      have h5 := dist_lt_of_angle_lt h h3
+      linarith
+
+theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
+    ∠ a c b ≤ ∠ a b c ↔ dist a b ≤ dist a c := by
+  rw [show ({a, b, c} : Set P) = {a, c, b} by grind] at h
+  have h1 := (angle_lt_iff_dist_lt h).not
+  simp at h1
+  exact h1
+
 end EuclideanGeometry
