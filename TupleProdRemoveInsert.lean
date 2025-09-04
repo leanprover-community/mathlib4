@@ -30,7 +30,7 @@ theorem prod_insertIdx {l : List M} (h : i ≤ l.length) : (l.insertIdx i a).pro
   case zero => rfl
   case succ i ih =>
     obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt h)
-    simp [@ih tl (Nat.le_of_lt_succ h), mul_left_comm]
+    simp [ih (Nat.le_of_lt_succ h), mul_left_comm]
 
 end List
 namespace List.Vector
