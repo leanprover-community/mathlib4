@@ -16,7 +16,7 @@ import Mathlib.Util.AtLocation
 The `push` tactic pushes a given constant inside expressions: it can be applied to goals as well
 as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for `push Not`.
 
-The `pull` tactic does the reverse: it pulls the given constant towards the root of the expression.
+The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
 
 namespace Mathlib.Tactic.Push
@@ -192,7 +192,7 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
   (·.2) <$> tacticToDischarge stx.raw[3]
 
 /--
-`push` pushes the given constant away from the root of the expression. For example
+`push` pushes the given constant away from the head of the expression. For example
 - `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 - `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
 - `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
@@ -204,7 +204,7 @@ In addition to constants, `push` can be used to push `fun` and `∀` binders:
 
 The `push` tactic can be extended using the `@[push]` attribute.
 
-To instead move a constant closer to the root of the expression, use the `pull` tactic.
+To instead move a constant closer to the head of the expression, use the `pull` tactic.
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
@@ -242,14 +242,16 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 
 /--
 `pull` is the inverse tactic to `push`.
-It pulls the given constant towards the root of the expression. For example
+It pulls the given constant towards the head of the expression. For example
 - `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 - `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
 
 A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
-that actually moves the given constant away from the root. For example
+that actually moves the given constant away from the head. For example
 - `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma, but `not_not : ¬ ¬ p ↔ p` is not.
 - `log_mul : log (x * y) = log x + log y` is a `pull` lemma, but `log_abs : log |x| = log x` is not.
+- `Pi.mul_def : f * g = fun (i : ι) => f i * g i` and `Pi.one_def : 1 = fun (x : ι) => 1` are both
+  `pull` lemmas for `fun`, because every `push fun _ ↦ _` lemma is also considered a `pull` lemma.
 
 TODO: add a `@[pull]` attribute to add `pull` lemmas without using `@[push]`.
 -/
