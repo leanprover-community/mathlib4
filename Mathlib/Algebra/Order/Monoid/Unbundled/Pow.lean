@@ -113,7 +113,7 @@ theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ 
 
 /-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/
 @[to_additive
-"This lemma is useful in non-cancellative monoids, like sets under pointwise operations."]
+/-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/]
 lemma pow_le_pow_mul_of_sq_le_mul [MulLeftMono M] {a b : M} (hab : a ^ 2 ≤ b * a) :
     ∀ {n}, n ≠ 0 → a ^ n ≤ b ^ (n - 1) * a
   | 1, _ => by simp

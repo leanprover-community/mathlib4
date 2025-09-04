@@ -177,7 +177,7 @@ register_option linter.style.cdot : Bool := {
 the character `·`. -/
 def isCDot? : Syntax → Bool
   | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
-  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "·"
+  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
   | _ => false
 
 /--

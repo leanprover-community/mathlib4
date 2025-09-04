@@ -326,6 +326,14 @@ theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Mo
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 
+theorem surjective_comp_linearProjOfIsCompl (h : IsCompl p q) [Module R M] :
+    Function.Surjective (comp (p.linearProjOfIsCompl q h) : (M →ₗ[R] E) → _) :=
+  fun f ↦ ⟨p.subtype ∘ₗ f, by ext; simp⟩
+
+theorem surjective_comp_subtype_of_isComplemented (h : IsComplemented p) [Module R M] :
+    Function.Surjective fun f : E →ₗ[R] M ↦ f ∘ₗ p.subtype :=
+  have ⟨q, h⟩ := h; fun f ↦ ⟨f ∘ₗ p.linearProjOfIsCompl q h, by ext; simp⟩
+
 @[simp]
 theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     range (ofIsCompl hpq φ ψ) = range φ ⊔ range ψ := by
@@ -470,8 +478,6 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
   refine ⟨fun ⟨p, hp⟩ => ?_, fun h => ⟨_, IsIdempotentElem.isProj_range _ h⟩⟩
   ext x
   exact hp.map_id (f x) (hp.map_mem x)
-
-@[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
 namespace IsProj
 

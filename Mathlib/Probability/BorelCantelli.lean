@@ -58,10 +58,6 @@ theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, Measurab
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
 
-@[deprecated (since := "2025-01-21")]
-alias iIndepSet.condexp_indicator_filtrationOfSet_ae_eq :=
-  iIndepSet.condExp_indicator_filtrationOfSet_ae_eq
-
 open Filter
 
 /-- **The second Borel-Cantelli lemma**: Given a sequence of independent sets `(sₙ)` such that

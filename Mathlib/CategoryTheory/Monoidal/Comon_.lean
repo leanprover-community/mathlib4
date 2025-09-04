@@ -57,7 +57,7 @@ attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : Comon_Class (𝟙_ C) where
   counit := 𝟙 _
   comul := (λ_ _).inv
-  counit_comul := by monoidal_coherence
+  counit_comul := by simp
   comul_counit := by monoidal_coherence
   comul_assoc := by monoidal_coherence
 

@@ -62,9 +62,9 @@ alias smul_preimage_set_leₛₗ := smul_preimage_set_subsetₛₗ
 /-- General version of `preimage_smul_setₛₗ`.
 This version assumes that the scalar multiplication by `c` is surjective
 while the scalar multiplication by `σ c` is injective. -/
-@[to_additive "General version of `preimage_vadd_setₛₗ`.
+@[to_additive /-- General version of `preimage_vadd_setₛₗ`.
 This version assumes that the vector addition of `c` is surjective
-while the vector addition of `σ c` is injective."]
+while the vector addition of `σ c` is injective. -/]
 theorem preimage_smul_setₛₗ' {c : M}
     (hc : Function.Surjective (fun (m : α) ↦ c • m))
     (hc' : Function.Injective (fun (n : β) ↦ σ c • n)) :
