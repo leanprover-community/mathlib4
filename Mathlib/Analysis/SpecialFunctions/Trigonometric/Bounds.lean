@@ -233,8 +233,8 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
 lemma sin_monotone (n : ℤ) : MonotoneOn sin (Icc (n * (2 * π) - π / 2) (n * (2 * π) + π / 2)) := by
   apply monotoneOn_of_deriv_nonneg
   · apply convex_Icc
-  · exact Continuous.continuousOn (by continuity)
-  · exact differentiable_sin.differentiableOn
+  · fun_prop
+  · fun_prop
   · intro x m
     simp only [interior_Icc, mem_Ioo, deriv_sin] at m ⊢
     rw [← cos_sub_int_mul_two_pi _ n]
@@ -254,8 +254,8 @@ lemma sin_antitone (n : ℤ) :
 lemma cos_monotone (n : ℤ) : MonotoneOn cos (Icc (n * (2 * π) - π) (n * (2 * π))) := by
   apply monotoneOn_of_deriv_nonneg
   · apply convex_Icc
-  · exact Continuous.continuousOn (by continuity)
-  · exact differentiable_cos.differentiableOn
+  · fun_prop
+  · fun_prop
   · intro x m
     simp only [interior_Icc, mem_Ioo, deriv_cos, Left.nonneg_neg_iff] at m ⊢
     rw [← sin_sub_int_mul_two_pi _ n]

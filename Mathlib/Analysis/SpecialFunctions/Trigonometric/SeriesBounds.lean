@@ -80,10 +80,7 @@ lemma Real.sin_series_bound {x : ℝ} (x1 : |x| ≤ 1) (n : ℕ) :
     |sin x - x * ∑ k ∈ Finset.range n, (-1) ^ k * x ^ (2 * k) / (2 * k + 1).factorial| ≤
       |x| ^ (2 * n + 1) * ((2 * n + 2) / ((2 * n + 1).factorial * (2 * n + 1))) := by
   have b := Complex.sin_series_bound (z := x) (by simpa only [Complex.norm_real]) n
-  simp only [← Complex.ofReal_sin, ← Complex.ofReal_pow, ← Complex.ofReal_one,
-    ← Complex.ofReal_neg, ← Complex.ofReal_mul, ← Complex.ofReal_natCast, ← Complex.ofReal_div,
-    ← Complex.ofReal_sum, ← Complex.ofReal_sub, Complex.norm_real] at b
-  exact b
+  convert b <;> norm_cast
 
 lemma Real.cos_series_bound {x : ℝ} (x1 : |x| ≤ 1) {n : ℕ} (n0 : 0 < n) :
     |cos x - ∑ k ∈ Finset.range n, (-1) ^ k * x ^ (2 * k) / (2 * k).factorial| ≤
