@@ -53,9 +53,9 @@ lemma re_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.re - z.re) =O[𝓝 z] fun w ↦
   use 1
   filter_upwards
   intro w
-  simp only [Real.norm_eq_abs, Complex.norm_eq_abs, one_mul]
+  simp only [Real.norm_eq_abs, one_mul]
   rw [← Complex.sub_re]
-  exact Complex.abs_re_le_abs (w - z)
+  exact abs_re_le_norm (w - z)
 
 /-- As `w → z`, `w.im - z.im` is big-O of `w - z`. -/
 lemma im_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦ w - z := by
@@ -63,9 +63,9 @@ lemma im_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦
   use 1
   filter_upwards
   intro w
-  simp only [Real.norm_eq_abs, Complex.norm_eq_abs, one_mul]
+  simp only [Real.norm_eq_abs, one_mul]
   rw [← Complex.sub_im]
-  exact Complex.abs_im_le_abs (w - z)
+  exact abs_im_le_norm (w - z)
 
 end Asymptotics
 
@@ -99,7 +99,7 @@ lemma cornerRectangle_in_disc {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r
   apply lt_of_le_of_lt ?_ hz
   rw [dist_eq_re_im, Real.dist_eq]
   apply Real.le_sqrt_of_sq_le
-  simp only [_root_.sq_abs, le_add_iff_nonneg_right, ge_iff_le, sub_nonneg]
+  simp only [_root_.sq_abs, le_add_iff_nonneg_right]
   exact sq_nonneg _
 
 end Rectangle
@@ -128,10 +128,7 @@ lemma mem_ball_re_aux' {c : ℂ} {r : ℝ} {z : ℂ} {x : ℝ}
   have s_ball : s ×ℂ {z.im} ⊆ ball c r := s_ball₁.trans (by apply ball_subset_ball'; simp [r₁])
   apply s_ball
   rw [mem_reProdIm]
-  simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
-    add_zero, gt_iff_lt, not_lt, ge_iff_le, mem_Ioo, add_im, mul_im, zero_add, mem_singleton_iff,
-    and_true]
-  apply hx
+  simp [hx]
 
 lemma mem_closedBall_aux {c : ℂ} {r : ℝ} {z : ℂ} (z_in_ball : z ∈ closedBall c r)
     {y : ℝ} (y_in_I : y ∈ Ι c.im z.im) : z.re + y * I ∈ closedBall c r := by
@@ -174,8 +171,10 @@ end Complex
 section ContinuousOn_Aux
 /- Auxiliary lemmata about continuity of various occurring functions -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {c : ℂ} {r : ℝ}
+variable {E : Type*} [NormedAddCommGroup E] {c : ℂ} {r : ℝ}
   {f : ℂ → E} (hf : ContinuousOn f (ball c r))
+
+include hf
 
 lemma ContinuousOn.re_aux_1 {z : ℂ} :
     ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I))
@@ -212,7 +211,7 @@ end ContinuousOn_Aux
 
 namespace Complex
 
-variable {E : Type*} [NormedRing E] [NormedSpace ℂ E] [NormOneClass E] [CompleteSpace E]
+variable {E : Type*} [NormedRing E] [NormedSpace ℂ E]
 
 section MainDefinitions
 
@@ -247,6 +246,8 @@ section WedgeIntDeriv
 variable {c : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)) {z : ℂ}
   (hz : z ∈ ball c r)
 
+include f_cont hz
+
 /-- If a function `f` `VanishesOnRectanglesInDisc` of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
@@ -255,7 +256,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
       WedgeInt c w f - WedgeInt c z f = WedgeInt z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
   let r₁ := r - dist z c
-  have r₁_pos : 0 < r₁ := by simp only [mem_ball, gt_iff_lt, r₁] at hz ⊢; linarith
+  have r₁_pos : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
   have z_ball : ball z r₁ ⊆ ball c r := ball_subset_ball' (by simp [r₁])
   filter_upwards [ball_mem_nhds z r₁_pos]
   intro w w_in_z_ball
@@ -298,7 +299,11 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
       convert hf (z.re + c.im * I) (w.re + z.im * I) (cornerRectangle_in_disc hz) wzInBall
           (by simpa using hz) (by simpa using wcInBall) using 1
       rw [RectangleIntegral]
-      congr <;> simp
+      congr
+      · simp [intVII]
+      · simp [intV]
+      · simp [intVIII]
+      · simp [intIV]
     rw [← this]
     abel
   rw [intIdecomp, intIIdecomp, rectZero]
@@ -307,10 +312,11 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
 open MeasureTheory in
 /-- The integral of a continuous function `f` from `z` to `x + z.im * I` is equal to
   `(x - z.re) * f z` up to `o(x - z.re)`. -/
-lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z)
-    =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
+lemma deriv_of_wedgeInt_re' [CompleteSpace E] :
+    (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z)
+      =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
   let r₁ := r - dist z c
-  have r₁_pos : 0 < r₁ := by simp only [mem_ball, gt_iff_lt, r₁] at hz ⊢; linarith
+  have r₁_pos : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have s_open : IsOpen s := isOpen_Ioo
@@ -324,7 +330,7 @@ lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im 
   have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
     s_open.continuousOn_iff.mp f_contOn zRe_mem_s
   have := @intervalIntegral.integral_hasDerivAt_right (f := fun (x : ℝ) ↦ f (x + z.im * I))
-    (a := z.re) (b := z.re) _ _ _ int1 int2 int3
+    (a := z.re) (b := z.re) _ _ _ _ int1 int2 int3
   dsimp [HasDerivAt, HasDerivAtFilter] at this
   rw [hasFDerivAtFilter_iff_isLittleO] at this
   simp only [intervalIntegral.integral_same, sub_zero, re_add_im, map_sub] at this
@@ -333,7 +339,7 @@ lemma deriv_of_wedgeInt_re' : (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im 
 
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_re :
+lemma deriv_of_wedgeInt_re [CompleteSpace E] :
     (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) • f z)
       =o[𝓝 z] (fun w ↦ w - z) := by
   have zReTendsTo : Filter.Tendsto (fun (w : ℂ) ↦ w.re) (𝓝 z) (𝓝 z.re) :=
@@ -341,6 +347,8 @@ lemma deriv_of_wedgeInt_re :
   have := (deriv_of_wedgeInt_re' f_cont hz).comp_tendsto zReTendsTo
   have := this.trans_isBigO re_isBigO
   convert this using 2
+
+variable [NormOneClass E]
 
 /-- If `f` is continuous on a ball containing `z`, then the integral from `z.im` to `w.im` of
   `f (w.re + y * I)` is equal to `(w - z).im * f z` up to `o(w - z)`, as `w` tends to `z`. -/
@@ -353,7 +361,7 @@ lemma deriv_of_wedgeInt_im' : (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) -
   rw [Asymptotics.IsLittleO] at this ⊢
   intro ε ε_pos
   have := this ε_pos
-  simp only [Asymptotics.isBigOWith_iff, Pi.one_apply, norm_one, mul_one ] at this ⊢
+  simp only [Asymptotics.isBigOWith_iff, norm_one, mul_one ] at this ⊢
   have : ∀ᶠ (w : ℂ) in 𝓝 z, ∀ y ∈ Ι z.im w.im, ‖f (w.re + y * I) - f z‖ ≤ ε := by
     rw [Metric.nhds_basis_closedBall.eventually_iff] at this ⊢
     obtain ⟨i, i_pos, hi⟩ := this
@@ -362,9 +370,11 @@ lemma deriv_of_wedgeInt_im' : (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) -
   calc
     _ ≤ ε * |w.im - z.im|  := intervalIntegral.norm_integral_le_of_norm_le_const hw
     _ = ε * |(w - z).im| := by simp
-    _ ≤ ε  * ‖w - z‖ := by gcongr; apply abs_im_le_abs
+    _ ≤ ε  * ‖w - z‖ := by gcongr; exact abs_im_le_norm _
 
-/--   The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
+variable [CompleteSpace E]
+
+/-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z)
     =o[𝓝 z] fun w ↦ w - z := by
@@ -374,7 +384,7 @@ lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) 
     _ =ᶠ[𝓝 z] (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) := ?_
     _ =o[𝓝 z] fun w ↦ w - z := deriv_of_wedgeInt_im' f_cont hz
   let r₁ := r - dist z c
-  have : 0 < r₁ := by simp only [mem_ball, gt_iff_lt, r₁] at hz ⊢; linarith
+  have : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
   filter_upwards [ball_mem_nhds z this]
   intro w hw
   rw [intervalIntegral.integral_sub ?_ continuousOn_const.intervalIntegrable]
@@ -394,7 +404,7 @@ theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
   · filter_upwards [VanishesOnRectanglesInDisc.diff_of_wedges f_cont hz hf]
     exact fun _ ha ↦ by rw [ha]; congr
   ext1 w
-  simp only [WedgeInt, smul_eq_mul, sub_re, ofReal_sub, sub_im, Pi.add_apply, Pi.smul_apply]
+  simp only [WedgeInt, sub_re, sub_im, Pi.add_apply, Pi.smul_apply]
   set intI := ∫ (x : ℝ) in z.re..w.re, f (x + z.im * I)
   set intII := ∫ (y : ℝ) in z.im..w.im, f (w.re + y * I)
   calc
@@ -408,13 +418,6 @@ theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
 
 end WedgeIntDeriv
 
-/-- *** Morera's theorem *** A function which is continuous on a disc and whose integral on
-  rectangles in the disc vanishes has a primitive on the disc. -/
-theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
-    (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
-    ∃ g : ℂ → E, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
-  ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
-
 /-- If `f` is holomorphic a set `U`, then the rectangle integral of `f` vanishes, for any
   rectangle in `U`. -/
 theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → E} {U : Set ℂ} {z w : ℂ}
@@ -427,6 +430,15 @@ theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ �
     (f_holo : HolomorphicOn f (ball c r)) :
     VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
   f_holo.vanishesOnRectangle (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
+
+variable [CompleteSpace E] [NormOneClass E]
+
+/-- *** Morera's theorem *** A function which is continuous on a disc and whose integral on
+  rectangles in the disc vanishes has a primitive on the disc. -/
+theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
+    (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
+    ∃ g : ℂ → E, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
+  ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
 
 /-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disc has
   primitives. -/

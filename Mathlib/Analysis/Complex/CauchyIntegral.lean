@@ -585,8 +585,8 @@ theorem _root_.DifferentiableOn.analyticOnNhd {s : Set ℂ} {f : ℂ → E} (hd 
     (hs : IsOpen s) : AnalyticOnNhd ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
 
 theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : HolomorphicOn f s)
-    (hs : IsOpen s) : AnalyticOn ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
-#align differentiable_on.analytic_on DifferentiableOn.analyticOn
+    (hs : IsOpen s) : AnalyticOn ℂ f s :=
+  fun _z hz => (hd.analyticAt (hs.mem_nhds hz)).analyticWithinAt
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
