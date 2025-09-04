@@ -85,8 +85,6 @@ instance : MulOneClass (SubMulAction R M) where
     rintro ⟨r, y, hy, rfl⟩
     exact smul_mem _ _ hy
 
-@[deprecated (since := "04-06-2025")] alias mulOneClass := instMulOneClass
-
 end MulOneClass
 
 section Semigroup
@@ -96,8 +94,6 @@ variable [Monoid R] [MulAction R M] [Semigroup M] [IsScalarTower R M M]
 instance : Semigroup (SubMulAction R M) where
   mul := (· * ·)
   mul_assoc _ _ _ := SetLike.coe_injective (mul_assoc (_ : Set _) _ _)
-
-@[deprecated (since := "04-06-2025")] alias semiGroup := instSemigroup
 
 end Semigroup
 

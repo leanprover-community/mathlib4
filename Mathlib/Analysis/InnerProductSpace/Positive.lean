@@ -174,10 +174,6 @@ theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSym
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
 
-/-- A star projection operator is positive. -/
-@[deprecated (since := "19-08-2025")]
-alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
-
 end LinearMap
 
 namespace ContinuousLinearMap

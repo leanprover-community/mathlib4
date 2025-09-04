@@ -316,8 +316,6 @@ theorem list_getElem?₁ : ∀ l : List α, Primrec (l[·]? : ℕ → Option α)
       (casesOn1 (encode a).succ <| dom_denumerable.1 <| list_getElem?₁ l).of_eq fun n => by
         cases n <;> simp
 
-@[deprecated (since := "2025-02-14")] alias list_get?₁ := list_getElem?₁
-
 end Primrec
 
 /-- `Primrec₂ f` means `f` is a binary primitive recursive function.
@@ -867,9 +865,6 @@ theorem sumInl : Primrec (@Sum.inl α β) :=
 theorem sumInr : Primrec (@Sum.inr α β) :=
   encode_iff.1 <| nat_double_succ.comp Primrec.encode
 
-@[deprecated (since := "2025-02-21")] alias sum_inl := Primrec.sumInl
-@[deprecated (since := "2025-02-21")] alias sum_inr := Primrec.sumInr
-
 theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ → σ} (hf : Primrec f)
     (hg : Primrec₂ g) (hh : Primrec₂ h) : @Primrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) (h a) :=
   option_some_iff.1 <|
@@ -877,8 +872,6 @@ theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ 
           (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hh)
           (option_map (Primrec.decode.comp <| nat_div2.comp <| encode_iff.2 hf) hg)).of_eq
       fun a => by rcases f a with b | c <;> simp [Nat.div2_val, encodek]
-
-@[deprecated (since := "2025-02-21")] alias sum_casesOn := Primrec.sumCasesOn
 
 theorem list_cons : Primrec₂ (@List.cons α) :=
   list_cons' (Primcodable.prim _)
@@ -950,7 +943,6 @@ theorem list_getElem? : Primrec₂ ((·[·]? : List α → ℕ → Option α)) :
         induction l <;> simp_all
       · simpa using IH ..
 
-@[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
   simp only [List.getD_eq_getElem?_getD]
   exact option_getD.comp₂ list_getElem? (const _)

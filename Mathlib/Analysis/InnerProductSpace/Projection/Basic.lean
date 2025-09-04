@@ -263,13 +263,6 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
 
 @[deprecated (since := "2025-07-07")] alias orthogonalProjection_minimal := starProjection_minimal
 
-/-- The orthogonal projections onto equal subspaces are coerced back to the same point in `E`. -/
-@[deprecated "As there are no subtypes causing dependent type issues, there is no need for this
-result as `simp` will suffice" (since := "12-07-2025")]
-theorem eq_starProjection_of_eq_submodule {K' : Submodule 𝕜 E} [K'.HasOrthogonalProjection]
-    (h : K = K') (u : E) : K.starProjection u = K'.starProjection u := by
-  simp [h]
-
 @[deprecated (since := "2025-07-07")] alias eq_orthogonalProjection_of_eq_submodule :=
   eq_starProjection_of_eq_submodule
 
