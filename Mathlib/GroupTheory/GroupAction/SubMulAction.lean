@@ -87,6 +87,10 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 
+@[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
+    SMulCommClass T R s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 @[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
@@ -148,6 +152,12 @@ theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
 theorem smul_of_tower_def (r : M) (x : s) :
     r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
   rfl
+
+@[to_additive] instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
+@[to_additive] instance (priority := 50) [SMulCommClass N M α] : SMulCommClass N M s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
 end OfTower
 
