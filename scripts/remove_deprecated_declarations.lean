@@ -130,7 +130,7 @@ elab "#remove_deprecated_declarations " date:str really?:("really")? : command =
     if really?.isSome then
       IO.FS.writeFile mod (← removeDeprecations mod rgs)
 
-#remove_deprecated_declarations "2025-02-31" really
+#remove_deprecated_declarations "2025-02-31" --really
 
 
 
