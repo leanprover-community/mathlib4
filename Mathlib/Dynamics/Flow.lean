@@ -143,15 +143,15 @@ def toAddAction : AddAction τ α where
   add_vadd  := ϕ.map_add'
   zero_vadd := ϕ.map_zero'
 
-/-- Convert a flow by `τ` to a flow by an additive submonoid of `τ`. -/
-def toAddSubmonoidFlow (S : AddSubmonoid τ) : Flow S α where
+/-- Restrict a flow by `τ` to a flow by an additive submonoid of `τ`. -/
+def restrictAddSubmonoid (S : AddSubmonoid τ) : Flow S α where
   toFun t x := ϕ t x
   cont' := ϕ.continuous (continuous_subtype_val.comp continuous_fst) continuous_snd
   map_add' t₁ t₂ x := ϕ.map_add' t₁ t₂ x
   map_zero' := ϕ.map_zero'
 
-theorem toAddSubmonoidFlow_apply (S : AddSubmonoid τ) (t : S) (x : α) :
-    toAddSubmonoidFlow ϕ S t x = ϕ t x := rfl
+theorem restrictAddSubmonoid_apply (S : AddSubmonoid τ) (t : S) (x : α) :
+    restrictAddSubmonoid ϕ S t x = ϕ t x := rfl
 
 section Orbit
 
@@ -183,8 +183,8 @@ theorem orbit_restrict (s : Set α) (hs : IsInvariant ϕ s) (x : s) :
 
 variable [Preorder τ] [AddLeftMono τ]
 
-/-- Convert a flow by `τ` to a flow by the submonoid of nonnegative elements of `τ`. -/
-def fw : Flow (AddSubmonoid.nonneg τ) α := ϕ.toAddSubmonoidFlow (AddSubmonoid.nonneg τ)
+/-- Restrict a flow by `τ` to a flow by the submonoid of nonnegative elements of `τ`. -/
+def fw : Flow (AddSubmonoid.nonneg τ) α := ϕ.restrictAddSubmonoid (AddSubmonoid.nonneg τ)
 
 /-- The forward orbit of a point under a flow. -/
 def fwOrbit (x : α) : Set α := ϕ.fw.orbit x
