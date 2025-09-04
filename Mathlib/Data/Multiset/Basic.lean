@@ -167,15 +167,4 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
     (subsingletonEquiv α : List α → Multiset α) = ofList :=
   rfl
 
-section SizeOf
-
-set_option linter.deprecated false in
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Multiset α} (hx : x ∈ s) :
-    SizeOf.sizeOf x < SizeOf.sizeOf s := by
-  induction s using Quot.inductionOn
-  exact List.sizeOf_lt_sizeOf_of_mem hx
-
-end SizeOf
-
 end Multiset
