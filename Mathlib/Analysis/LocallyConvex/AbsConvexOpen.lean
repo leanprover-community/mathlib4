@@ -37,8 +37,8 @@ variable {𝕜 E : Type*}
 section AbsolutelyConvexSets
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
-variable [SMul 𝕜 E] [SMul ℝ E]
-variable (𝕜 E)
+variable [SMul 𝕜 E]
+variable (𝕜 E) [PartialOrder 𝕜]
 
 /-- The type of absolutely convex open sets. -/
 def AbsConvexOpenSets :=
@@ -63,7 +63,7 @@ theorem coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :
 theorem coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
   s.2.2.2.1
 
-theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
+theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex 𝕜 (s : Set E) :=
   s.2.2.2.2
 
 end AbsConvexOpenSets
@@ -81,6 +81,8 @@ variable [AddCommGroup E] [TopologicalSpace E]
 variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 variable [ContinuousSMul ℝ E]
 variable (𝕜 E)
+
+open ComplexOrder
 
 /-- The family of seminorms defined by the gauges of absolute convex open sets. -/
 noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets 𝕜 E) := fun s =>
