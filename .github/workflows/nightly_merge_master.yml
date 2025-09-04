@@ -46,7 +46,7 @@ jobs:
           git merge upstream/master --strategy-option ours --no-commit --allow-unrelated-histories || true
           # We aggressively run `lake update`, to avoid having to do this by hand.
           # When Batteries changes break Mathlib, this will likely show up on nightly-testing first.
-          lake update
+          lake update -v
           git add .
           # If there's nothing to do (because there are no new commits from master),
           # that's okay, hence the '|| true'.
