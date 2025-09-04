@@ -707,7 +707,6 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
 @[simp]
 theorem toStarRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv = e := rfl
 
-@[simp]
 theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
   rfl
 
