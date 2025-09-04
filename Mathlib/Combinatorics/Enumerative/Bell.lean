@@ -184,14 +184,22 @@ which counts the number of partitions of a set of cardinality `n`.
 Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
 over all multisets `m : Multiset ℕ` such that `m.sum = n`.
 -/
+
 protected def bell : ℕ → ℕ
   | 0 => 1
-  | n + 1 => ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)
+  | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)
 
 theorem bell_succ (n : ℕ) :
-    Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k *
-      Nat.bell (n - k) := by
-  simp [Nat.bell]
+  Nat.bell (n + 1) = ∑ i : Fin n.succ, Nat.choose n i *
+    Nat.bell (n - i) := by
+  rw [Nat.bell]
+
+theorem bell_succ' (n : ℕ) :
+  Nat.bell (n + 1) = ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 *
+    Nat.bell ij.2 := by
+  rw [Nat.bell_succ, Finset.Nat.sum_antidiagonal_eq_sum_range_succ
+    (fun x y => Nat.choose n x * Nat.bell y) n, Finset.sum_range]
+
 
 @[simp]
 theorem bell_zero : Nat.bell 0 = 1 := by
@@ -203,6 +211,6 @@ theorem bell_one : Nat.bell 1 = 1 := by
 
 @[simp]
 theorem bell_two : Nat.bell 2 = 2 := by
-  simp [Nat.bell, Finset.range]
+  simp [Nat.bell]
 
 end Nat
