@@ -39,16 +39,16 @@ def coneOfLowerBound {x : C} (h : x ∈ lowerBounds (Set.range F.obj)) : Cone F 
   }
 
 /-- The point of a cone is a lower bound. -/
-lemma lowerBoundOfCone (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.obj) := by
+lemma conePt_mem_lowerBounds (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.obj) := by
   intro x ⟨i, p⟩; rw [← p]; exact (c.π.app i).le
 
 /-- If a cone is a limit, its point is a glb. -/
 lemma isGLB_of_isLimit {c : Cone F} (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
-  ⟨(lowerBoundOfCone F c), fun _ k ↦ (h.lift (coneOfLowerBound F k)).le⟩
+  ⟨(conePt_mem_lowerBounds F c), fun _ k ↦ (h.lift (coneOfLowerBound F k)).le⟩
 
 /-- If the point of cone is a glb, the cone is a limi.t -/
 def isLimitOfIsGLB (c : Cone F) (h : IsGLB (Set.range F.obj) c.pt) : IsLimit c where
-  lift d := (h.2 (lowerBoundOfCone F d)).hom
+  lift d := (h.2 (conePt_mem_lowerBounds F d)).hom
 
 /-- A functor has a limit iff there exists a glb. -/
 lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x := by
@@ -59,7 +59,7 @@ lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x := b
     exact ⟨⟨⟨coneOfLowerBound F isGLB.1, isLimitOfIsGLB F _ isGLB⟩⟩⟩
 
 /-- The cocone associated to an upper bound of a functor -/
-def coconeOfUpperBound {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
+def coconePt_mem_upperBounds {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
   pt := x
   ι := {
     app i := homOfLE (h (Set.mem_range_self _))
@@ -71,7 +71,7 @@ lemma upperBoundOfCocone (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj)
 
 /-- If a cocone is a colimit, its point is a lub. -/
 lemma isLUB_of_isColimit {c : Cocone F} (h : IsColimit c) : IsLUB (Set.range F.obj) c.pt :=
-  ⟨(upperBoundOfCocone F c), fun _ k ↦ (h.desc (coconeOfUpperBound F k)).le⟩
+  ⟨(upperBoundOfCocone F c), fun _ k ↦ (h.desc (coconePt_mem_upperBounds F k)).le⟩
 
 /-- If the point of cocone is a lub, the cocone is a .colimit -/
 def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) : IsColimit c where
@@ -84,7 +84,7 @@ lemma hasColimit_iff_hasLUB :
   · let limitCocone := getColimitCocone F
     exact ⟨limitCocone.cocone.pt, isLUB_of_isColimit F limitCocone.isColimit⟩
   · obtain ⟨l, isLUB⟩ := h
-    exact ⟨⟨⟨coconeOfUpperBound F isLUB.1, isColimitOfIsLUB F _ isLUB⟩⟩⟩
+    exact ⟨⟨⟨coconePt_mem_upperBounds F isLUB.1, isColimitOfIsLUB F _ isLUB⟩⟩⟩
 
 end
 
