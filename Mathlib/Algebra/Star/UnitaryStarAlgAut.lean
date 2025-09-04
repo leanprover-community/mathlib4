@@ -10,8 +10,8 @@ import Mathlib.Algebra.Star.Unitary
 /-!
 # The ⋆-algebra automorphism given by a unitary
 
-This file defines the ⋆-algebra automorphism on `R` given by a unitary `u` such that
-`x ↦ u * x * star u`.
+This file defines the ⋆-algebra automorphism on `R` given by a unitary `u`,
+`unitary.toStarAlgAut S R u`, such that `x ↦ u * x * star u`.
 -/
 
 namespace unitary
@@ -24,7 +24,7 @@ variable (S R) in
 
 This is the ⋆-algebra automorphism version of a specialized version of
 `MulSemiringAction.toAlgAut`. -/
-def toStarAlgAut : (unitary R) →* (R ≃⋆ₐ[S] R) where
+def toStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
   toFun u :=
   { toRingEquiv := MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u)
     map_smul' _ _ := smul_comm _ _ _ |>.symm
