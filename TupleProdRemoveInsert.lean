@@ -14,3 +14,7 @@ example (p : Fin n → ℕ) : ∏ j, insertNth i x p j = x * ∏ j, p j := by
 example (l : List ℕ) (h : i < l.length) : (l.insertIdx i a).prod = a * l.prod := by
   --exact?
   sorry
+
+example (v : List.Vector ℕ n) : (v.insertIdx a i).toList.prod = a * v.toList.prod := by
+  --exact?
+  sorry
