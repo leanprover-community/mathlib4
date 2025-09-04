@@ -124,11 +124,8 @@ theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.P
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 
 theorem IsAcyclic.comap (f : G →g H) (hf : Function.Injective f) (hG : H.IsAcyclic) :
-    G.IsAcyclic := by
-  simp only [IsAcyclic] at ⊢ hG
-  intro v w
-  have := w.map_isCycle_iff_of_injective hf
-  grind
+    G.IsAcyclic :=
+  fun _ w ↦ (iff_false_right <| hG _).mp (w.map_isCycle_iff_of_injective hf).symm
 
 @[mono]
 theorem IsAcyclic.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G'.IsAcyclic) : G.IsAcyclic := by
