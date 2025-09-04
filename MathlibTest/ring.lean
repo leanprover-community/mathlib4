@@ -209,6 +209,14 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
 
 end
 
+-- new behaviour as of #27562
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
+/-- error: ring_nf made no progress at h -/
+#guard_msgs in
+example {R : Type*} [CommSemiring R] {x y : R} : True := by
+  have h : x + y = 3 := test_sorry
+  ring_nf at h
+
 -- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
 set_option linter.unusedTactic false in
 example (x : ℝ) (f : ℝ → ℝ) : True := by
