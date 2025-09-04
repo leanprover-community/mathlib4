@@ -14,8 +14,9 @@ import Mathlib.Analysis.Complex.Trigonometric
 ## Main statements
 
 We prove Taylor series bounds with optimal remainder for `sin` and `cos`, over both `ℂ` and `ℝ`.
-See `Trigonometric.Bounds` for simpler inequalities and monotonicity in various intervals, and
-`Trigonometric.Basic` for even even simpler inequalities and monotonicity results.
+See `Mathlib/Analysis/SpecialFunctions/Trigonometric/Bounds.lean` for simpler inequalities and
+monotonicity in various intervals, and `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
+for even even simpler inequalities and monotonicity results.
 
 ## Tags
 
@@ -45,8 +46,8 @@ lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
     refine Finset.sum_congr rfl fun k _ ↦ ?_
     rcases Nat.even_or_odd' k with ⟨a, e | e⟩
     · simp only [e, even_two, Even.mul_right, ↓reduceIte, ne_eq, OfNat.ofNat_ne_zero,
-      not_false_eq_true, mul_div_cancel_left₀, pow_mul, pow_succ', pow_zero, mul_one, mul_pow,
-      neg_mul, mul_neg, neg_neg]
+        not_false_eq_true, mul_div_cancel_left₀, pow_mul, pow_succ', pow_zero, mul_one, mul_pow,
+        neg_mul, mul_neg, neg_neg]
       ring_nf
       simp only [mul_comm _ 2, pow_mul, I_sq, mul_neg]
       simp only [neg_mul, neg_neg, mul_one]
@@ -72,7 +73,7 @@ lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 
     rcases Nat.even_or_odd' k with ⟨a, e | e⟩
     · simp only [e, even_two, Even.mul_right, ↓reduceIte, ne_eq, OfNat.ofNat_ne_zero,
         not_false_eq_true, mul_div_cancel_left₀, pow_mul, mul_pow, I_sq, mul_neg, mul_one, neg_mul,
-        Even.neg_pow, ← add_div, neg_pow' (z^2), mul_comm _ ((-1 : ℂ) ^ a), ← add_mul]
+        Even.neg_pow, ← add_div, neg_pow' (z ^ 2), mul_comm _ ((-1 : ℂ) ^ a), ← add_mul]
       ring
     · simp [e, pow_mul, pow_add, mul_pow, neg_div]
   have r : ∀ a b c d : ℂ, (a + b) - (c + d) = (a - c) + (b - d) := fun _ _ _ _ ↦ by ring
@@ -97,7 +98,4 @@ lemma Real.cos_series_bound {x : ℝ} (x1 : |x| ≤ 1) {n : ℕ} (n0 : 0 < n) :
     |cos x - ∑ k ∈ Finset.range n, (-1) ^ k * x ^ (2 * k) / (2 * k).factorial| ≤
       |x| ^ (2 * n) * ((2 * n + 1) / ((2 * n).factorial * (2 * n))) := by
   have b := Complex.cos_series_bound (z := x) (by simpa only [Complex.norm_real]) n0
-  simp only [← Complex.ofReal_cos, ← Complex.ofReal_pow, ← Complex.ofReal_one,
-    ← Complex.ofReal_neg, ← Complex.ofReal_mul, ← Complex.ofReal_natCast, ← Complex.ofReal_div,
-    ← Complex.ofReal_sum, ← Complex.ofReal_sub, Complex.norm_real] at b
-  exact b
+  convert b <;> norm_cast
