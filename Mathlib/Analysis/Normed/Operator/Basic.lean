@@ -383,6 +383,15 @@ lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   gcongr
   exact f.le_opNorm x
 
+variable {f} in
+theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}
+    (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
+  obtain ⟨x, hx⟩ := exists_norm_ne_zero E
+  replace hx : 0 < ‖x‖ := lt_of_le_of_ne' (norm_nonneg _) hx
+  have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
+  apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
+  simpa only [hf, hx, mul_le_mul_iff_left₀] using f.le_opNorm x
+
 end OpNorm
 
 section RestrictScalars
