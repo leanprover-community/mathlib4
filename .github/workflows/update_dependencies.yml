@@ -56,7 +56,7 @@ jobs:
 
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: lake update
+        run: lake update -v
 
       - name: Check if lean-toolchain was modified
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}

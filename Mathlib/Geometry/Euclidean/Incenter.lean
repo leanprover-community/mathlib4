@@ -127,7 +127,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
                 (altitudeFoot_mem_affineSpan  _ _),
             ?_⟩
     rw [vectorSpan_range_eq_span_range_vsub_right_ne _ _ 0, Submodule.span_range_eq_iSup,
-      ← Submodule.iInf_orthogonal, Submodule.iInf_coe, Set.mem_iInter]
+      ← Submodule.iInf_orthogonal, Submodule.coe_iInf, Set.mem_iInter]
     intro i
     rcases i with ⟨i, hi⟩
     simpa only [SetLike.mem_coe, Submodule.mem_orthogonal_singleton_iff_inner_right, inner_sum]
