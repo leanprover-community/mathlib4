@@ -35,7 +35,7 @@ jobs:
           # - must leave the mathlib4 repo in a state that is ready to commit and push
           # - must assign a step output named `deprecation_date` containing the cutoff date for removed deprecations
 
-          if [ "${{ inputs.cutoff_date }}" =~ "[0-9]{4}-[0-9]{2}-[0-9]{2}" ]; then
+          if [[ "${{ inputs.cutoff_date }}" =~ [0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
             echo "Using date from workflow_dispatch input"
             CUTOFF_DATE="${{ inputs.cutoff_date }}"
           else
@@ -43,7 +43,7 @@ jobs:
             CUTOFF_DATE=$(date -d '6 months ago' +%Y-%m-%d)
           fi
           echo "Removing deprecated declarations older than ${CUTOFF_DATE}..."
-          echo "deprecation_date=${CUTOFF_DATE}" >> $GITHUB_OUTPUT
+          echo "deprecation_date=${CUTOFF_DATE}" >> "$GITHUB_OUTPUT"
 
           dry_run_arg=""
           if [ "${{ toJson(inputs.dry_run) }}" = "true" ]; then
