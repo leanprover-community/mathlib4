@@ -62,9 +62,6 @@ theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 
   · simp_rw [insert_eq_of_mem hm]
   · rw [prod_insert hm, h hm, one_mul]
 
-@[deprecated (since := "2025-05-23")]
-alias sum_insert_of_eq_zero_if_not_mem := sum_insert_of_eq_zero_if_notMem
-
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
 
@@ -114,8 +111,6 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 /-- In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`. -/]
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
   induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
-
-@[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
 
 @[to_additive]
 theorem prod_disjUnion (h) :

@@ -33,5 +33,3 @@ theorem Module.Basis.ext_multilinear [Finite Î¹] {f g : MultilinearMap R M N} {Î
   simp_rw [(e _).repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum,
     map_sum_finset, map_smul_univ, h]
 
-@[deprecated (since := "2025-05-12")]
-alias Basis.ext_multilinear_fin := Module.Basis.ext_multilinear

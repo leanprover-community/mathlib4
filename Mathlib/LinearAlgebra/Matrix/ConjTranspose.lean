@@ -47,8 +47,6 @@ lemma conjTranspose_single [DecidableEq n] [DecidableEq m] [AddMonoid α]
   change (single i j a).transpose.map starAddEquiv = single j i (star a)
   simp
 
-@[deprecated (since := "2025-05-05")] alias conjTranspose_stdBasisMatrix := conjTranspose_single
-
 section Diagonal
 
 variable [DecidableEq n]

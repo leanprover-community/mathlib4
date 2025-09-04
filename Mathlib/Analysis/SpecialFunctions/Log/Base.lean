@@ -430,28 +430,16 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
 theorem tendsto_logb_nhdsNE_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[≠] 0) atBot :=
   tendsto_log_nhdsNE_zero.atBot_div_const (log_pos hb)
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero := tendsto_logb_nhdsNE_zero
-
 theorem tendsto_logb_nhdsNE_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[≠] 0) atTop :=
   tendsto_log_nhdsNE_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero_of_base_lt_one := tendsto_logb_nhdsNE_zero_of_base_lt_one
-
 lemma tendsto_logb_nhdsGT_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
   tendsto_log_nhdsGT_zero.atBot_div_const (log_pos hb)
-
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero_right := tendsto_logb_nhdsGT_zero
 
 lemma tendsto_logb_nhdsGT_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[>] 0) atTop :=
   tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
-
-@[deprecated (since := "2025-03-18")]
-alias tendsto_logb_nhdsWithin_zero_right_of_base_lt_one := tendsto_logb_nhdsGT_zero_of_base_lt_one
 
 /--
 The function `|logb b x|` tends to `+∞` as `x` tendsto `+∞`.

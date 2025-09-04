@@ -163,9 +163,6 @@ theorem _root_.SubmonoidClass.finsuppProd_mem {S : Type*} [SetLike S N] [Submono
     (s : S) (f : α →₀ M) (g : α → M → N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _i hi => h _ (Finsupp.mem_support_iff.mp hi)
 
-@[deprecated (since := "2025-04-06")]
-alias _root_.SubmonoidClass.finsupp_prod_mem := _root_.SubmonoidClass.finsuppProd_mem
-
 @[to_additive]
 theorem prod_congr {f : α →₀ M} {g1 g2 : α → M → N} (h : ∀ x ∈ f.support, g1 x (f x) = g2 x (f x)) :
     f.prod g1 = f.prod g2 :=
@@ -200,27 +197,15 @@ theorem map_finsuppProd [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
     (h : H) (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_prod h _ _
 
-@[deprecated (since := "2025-04-06")] alias map_finsupp_prod := map_finsuppProd
-@[deprecated (since := "2025-04-06")] alias map_finsupp_sum := map_finsuppSum
-
 @[to_additive]
 theorem MonoidHom.coe_finsuppProd [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) : ⇑(f.prod g) = f.prod fun i fi => ⇑(g i fi) :=
   MonoidHom.coe_finset_prod _ _
 
-@[deprecated (since := "2025-04-06")] alias MonoidHom.coe_finsupp_prod := MonoidHom.coe_finsuppProd
-@[deprecated (since := "2025-04-06")]
-alias AddMonoidHom.coe_finsupp_sum := AddMonoidHom.coe_finsuppSum
-
 @[to_additive (attr := simp)]
 theorem MonoidHom.finsuppProd_apply [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) (x : N) : f.prod g x = f.prod fun i fi => g i fi x :=
   MonoidHom.finset_prod_apply _ _ _
-
-@[deprecated (since := "2025-04-06")]
-alias MonoidHom.finsupp_prod_apply := MonoidHom.finsuppProd_apply
-@[deprecated (since := "2025-04-06")]
-alias AddMonoidHom.finsupp_sum_apply := AddMonoidHom.finsuppSum_apply
 
 namespace Finsupp
 
@@ -607,8 +592,5 @@ theorem prod_pow_pos_of_zero_notMem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.
     0 < f.prod (· ^ ·) :=
   Nat.pos_iff_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr fun _ hf =>
     pow_ne_zero _ fun H => by subst H; exact nhf hf
-
-@[deprecated (since := "2025-05-23")]
-alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_support
 
 end Nat

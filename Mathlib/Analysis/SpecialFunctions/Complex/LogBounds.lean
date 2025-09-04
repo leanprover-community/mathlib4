@@ -377,9 +377,6 @@ theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
       (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
         .of_eq <| funext fun _ => mul_comm _ _
 
-@[deprecated (since := "2025-05-22")]
-alias tendsto_mul_log_one_plus_div_atTop := tendsto_mul_log_one_add_div_atTop
-
 /-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
@@ -401,9 +398,6 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
 
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_rpow_exp := tendsto_one_add_div_rpow_exp
-
 /-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `n * g n`. -/
 lemma tendsto_nat_mul_log_one_add_of_tendsto {g : ℕ → ℝ} {t : ℝ}
@@ -424,9 +418,6 @@ lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
 lemma tendsto_one_add_div_pow_exp (t : ℝ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_pow_exp := tendsto_one_add_div_pow_exp
 
 end Real
 

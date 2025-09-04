@@ -33,8 +33,6 @@ lemma mulSupport_eq_preimage (f : ι → M) : mulSupport f = f ⁻¹' {1}ᶜ := 
 @[to_additive]
 lemma notMem_mulSupport : x ∉ mulSupport f ↔ f x = 1 := not_not
 
-@[deprecated (since := "2025-05-24")] alias nmem_support := notMem_support
-
 @[to_additive existing, deprecated (since := "2025-05-24")]
 alias nmem_mulSupport := notMem_mulSupport
 

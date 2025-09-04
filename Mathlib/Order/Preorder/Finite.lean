@@ -45,8 +45,6 @@ lemma exists_le_maximal (s : Finset α) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maxi
 lemma exists_le_minimal (s : Finset α) (ha : a ∈ s) : ∃ b ≤ a, Minimal (· ∈ s) b :=
   exists_le_maximal (α := αᵒᵈ) s ha
 
-@[deprecated (since := "2025-05-04")] alias exists_minimal_le := exists_le_minimal
-
 end Finset
 
 namespace Set
@@ -77,11 +75,6 @@ lemma Finite.exists_maximalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finit
 is finite rather than `s` itself. -/
 lemma Finite.exists_minimalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finite) (hs : s.Nonempty) :
     ∃ i, MinimalFor (· ∈ s) f i := h.exists_maximalFor' (α := αᵒᵈ) f s hs
-
-@[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt := Finite.exists_maximalFor
-@[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt := Finite.exists_minimalFor
-@[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt' := Finite.exists_maximalFor'
-@[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt' := Finite.exists_minimalFor'
 
 lemma Finite.exists_le_maximal (hs : s.Finite) (ha : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b := by
   lift s to Finset α using hs; exact s.exists_le_maximal ha

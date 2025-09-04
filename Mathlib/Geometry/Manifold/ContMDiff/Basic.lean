@@ -260,9 +260,6 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
     (image_eq_one_of_notMem_mulTSupport hx)
 
-@[deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
-
 @[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
 alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
 
@@ -271,9 +268,6 @@ alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mu
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
-
-@[deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
 
 @[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
 alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport

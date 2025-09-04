@@ -115,14 +115,6 @@ lemma AEStronglyMeasurable.of_subsingleton_dom [Subsingleton α] : AEStronglyMea
 lemma AEStronglyMeasurable.of_subsingleton_cod [Subsingleton β] : AEStronglyMeasurable[m] f μ :=
   StronglyMeasurable.of_subsingleton_cod.aestronglyMeasurable
 
-@[deprecated AEStronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
-theorem Subsingleton.aestronglyMeasurable [Subsingleton β] (f : α → β) : AEStronglyMeasurable f μ :=
-  .of_subsingleton_cod
-
-@[deprecated AEStronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
-lemma Subsingleton.aestronglyMeasurable' [Subsingleton α] (f : α → β) : AEStronglyMeasurable f μ :=
-  .of_subsingleton_dom
-
 @[fun_prop, simp]
 theorem aestronglyMeasurable_zero_measure (f : α → β) :
     AEStronglyMeasurable[m] f (0 : Measure[m₀] α) := by
@@ -139,9 +131,6 @@ namespace AEStronglyMeasurable
 @[fun_prop]
 lemma of_discrete [Countable α] [MeasurableSingletonClass α] : AEStronglyMeasurable f μ :=
   StronglyMeasurable.of_discrete.aestronglyMeasurable
-
-@[deprecated of_discrete (since := "2025-04-09")]
-lemma of_finite [DiscreteMeasurableSpace α] [Finite α] : AEStronglyMeasurable f μ := .of_discrete
 
 section Mk
 
@@ -234,9 +223,6 @@ protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasura
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (fun x => (f x, g x)) μ :=
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
-
-@[deprecated (since := "2025-03-05")]
-protected alias prod_mk := AEStronglyMeasurable.prodMk
 
 /-- The composition of a continuous function of two variables and two ae strongly measurable
 functions is ae strongly measurable. -/
@@ -386,11 +372,6 @@ theorem _root_.List.aestronglyMeasurable_prod (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.List.aestronglyMeasurable_sum' := List.aestronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.List.aestronglyMeasurable_prod' := List.aestronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.aestronglyMeasurable_fun_prod
     (l : List (α → M)) (hl : ∀ f ∈ l, AEStronglyMeasurable f μ) :
@@ -409,11 +390,6 @@ theorem _root_.Multiset.aestronglyMeasurable_prod (l : Multiset (α → M))
   rcases l with ⟨l⟩
   simpa using l.aestronglyMeasurable_prod (by simpa using hl)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.Multiset.aestronglyMeasurable_sum' := Multiset.aestronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Multiset.aestronglyMeasurable_prod' := Multiset.aestronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Multiset.aestronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, AEStronglyMeasurable f μ) :
@@ -426,11 +402,6 @@ theorem _root_.Finset.aestronglyMeasurable_prod {ι : Type*} {f : ι → α → 
   Multiset.aestronglyMeasurable_prod _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
-
-@[deprecated (since := "2025-05-30")]
-alias _root_.Finset.aestronglyMeasurable_sum' := Finset.aestronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Finset.aestronglyMeasurable_prod' := Finset.aestronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Finset.aestronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)

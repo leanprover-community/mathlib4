@@ -292,9 +292,6 @@ lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
 @[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
 
-@[deprecated (since := "2025-04-24")]
-alias inv_neg' := inv_neg
-
 lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
 
 end DivisionMonoid

@@ -195,8 +195,6 @@ end ScaleRoots
 
 namespace IsEisensteinAt
 
-@[deprecated (since := "2025-05-23")] alias not_mem := notMem
-
 section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
@@ -204,19 +202,12 @@ variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 theorem _root_.Polynomial.Monic.leadingCoeff_notMem (hf : f.Monic) (h : 𝓟 ≠ ⊤) :
     f.leadingCoeff ∉ 𝓟 := hf.leadingCoeff.symm ▸ (Ideal.ne_top_iff_one _).1 h
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Polynomial.Monic.leadingCoeff_not_mem := _root_.Polynomial.Monic.leadingCoeff_notMem
-
 theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem (hf : f.Monic) (h : 𝓟 ≠ ⊤)
     (hmem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟) (hnotMem : f.coeff 0 ∉ 𝓟 ^ 2) :
     f.IsEisensteinAt 𝓟 :=
   { leading := Polynomial.Monic.leadingCoeff_notMem hf h
     mem := fun hn => hmem hn
     notMem := hnotMem }
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_not_mem :=
-  _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem
 
 theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=
   ⟨fun h => hf.mem h⟩

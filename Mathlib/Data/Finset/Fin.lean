@@ -77,14 +77,6 @@ lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : ∀ m
 /-- Given a finset `s` of natural numbers and a bound `n`,
 `s.fin n` is the finset of all elements of `s` less than `n`.
 
-This definition was introduced to define a `LocallyFiniteOrder` instance on `Fin n`.
-Later, this instance was rewritten using a more efficient `attachFin`.
-Since this definition had no other uses in the library, it was deprecated.
--/
-@[deprecated attachFin (since := "2025-04-08")]
-protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
-  (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
-
 set_option linter.deprecated false
 
 @[simp, deprecated mem_attachFin (since := "2025-04-08")]
@@ -103,11 +95,5 @@ theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ 
 @[simp, deprecated map_valEmbedding_attachFin (since := "2025-04-08")]
 theorem fin_map {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
-
-@[deprecated "No replacement" (since := "2025-04-08")]
-theorem attachFin_eq_fin {s : Finset ℕ} (h : ∀ m ∈ s, m < n) :
-    attachFin s h = s.fin n := by
-  ext
-  simp
 
 end Finset

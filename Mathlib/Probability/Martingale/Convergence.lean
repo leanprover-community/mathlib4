@@ -232,9 +232,6 @@ theorem Submartingale.memLp_limitProcess {p : ℝ≥0∞} (hf : Submartingale f 
   memLp_limitProcess_of_eLpNorm_bdd
     (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd
 
-@[deprecated (since := "2025-02-21")]
-alias Submartingale.memℒp_limitProcess := Submartingale.memLp_limitProcess
-
 end AeConvergence
 
 section L1Convergence

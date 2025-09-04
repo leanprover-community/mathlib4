@@ -180,10 +180,6 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_notMem {t : Set α} {x : α}
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
 
-@[deprecated (since := "2025-05-23")]
-alias IsLUB.exists_seq_strictMono_tendsto_of_not_mem :=
-  IsLUB.exists_seq_strictMono_tendsto_of_notMem
-
 theorem IsLUB.exists_seq_monotone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsLUB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Monotone u ∧ (∀ n, u n ≤ x) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t := by
@@ -261,10 +257,6 @@ theorem IsGLB.exists_seq_strictAnti_tendsto_of_notMem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (notMem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
   IsLUB.exists_seq_strictMono_tendsto_of_notMem (α := αᵒᵈ) htx notMem ht
-
-@[deprecated (since := "2025-05-23")]
-alias IsGLB.exists_seq_strictAnti_tendsto_of_not_mem :=
-  IsGLB.exists_seq_strictAnti_tendsto_of_notMem
 
 theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsGLB t x) (ht : t.Nonempty) :

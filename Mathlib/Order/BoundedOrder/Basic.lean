@@ -155,8 +155,6 @@ theorem ne_top_of_le_ne_top (hb : b ≠ ⊤) (hab : a ≤ b) : a ≠ ⊤ :=
 lemma top_notMem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
   ⟨fun h x hx ↦ Ne.lt_top (fun hx' : x = ⊤ ↦ h (hx' ▸ hx)), fun h h₀ ↦ (h ⊤ h₀).false⟩
 
-@[deprecated (since := "2025-05-23")] alias top_not_mem_iff := top_notMem_iff
-
 variable [Nontrivial α]
 
 theorem not_isMin_top : ¬IsMin (⊤ : α) := fun h =>
@@ -328,8 +326,6 @@ theorem ne_bot_of_le_ne_bot (hb : b ≠ ⊥) (hab : b ≤ a) : a ≠ ⊥ :=
 
 lemma bot_notMem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
   top_notMem_iff (α := αᵒᵈ)
-
-@[deprecated (since := "2025-05-23")] alias bot_not_mem_iff := bot_notMem_iff
 
 variable [Nontrivial α]
 

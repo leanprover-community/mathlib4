@@ -107,8 +107,6 @@ theorem inter_cons_of_mem (l₁ : List α) (h : a ∈ l₂) : (a :: l₁) ∩ l�
 theorem inter_cons_of_notMem (l₁ : List α) (h : a ∉ l₂) : (a :: l₁) ∩ l₂ = l₁ ∩ l₂ := by
   simp [Inter.inter, List.inter, h]
 
-@[deprecated (since := "2025-05-23")] alias inter_cons_of_not_mem := inter_cons_of_notMem
-
 @[simp]
 theorem inter_nil' (l : List α) : l ∩ [] = [] := by
   induction l with

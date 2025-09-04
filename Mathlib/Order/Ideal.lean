@@ -157,8 +157,6 @@ theorem isProper_of_notMem {I : Ideal P} {p : P} (notMem : p ∉ I) : IsProper I
     rw [← hp] at this
     exact notMem this⟩
 
-@[deprecated (since := "2025-05-23")] alias isProper_of_not_mem := isProper_of_notMem
-
 /-- An ideal is maximal if it is maximal in the collection of proper ideals.
 
 Note that `IsCoatom` is less general because ideals only have a top element when `P` is directed
@@ -238,8 +236,6 @@ theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
   exact iff_of_true (I.lower le_top h) trivial
 
 theorem IsProper.top_notMem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
-
-@[deprecated (since := "2025-05-23")] alias IsProper.top_not_mem := IsProper.top_notMem
 
 end OrderTop
 
@@ -391,9 +387,6 @@ theorem mem_sup : x ∈ I ⊔ J ↔ ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j :=
 theorem lt_sup_principal_of_notMem (hx : x ∉ I) : I < I ⊔ principal x :=
   le_sup_left.lt_of_ne fun h ↦ hx <| by simpa only [left_eq_sup, principal_le_iff] using h
 
-@[deprecated (since := "2025-05-23")]
-alias lt_sup_principal_of_not_mem := lt_sup_principal_of_notMem
-
 end SemilatticeSupDirected
 
 section SemilatticeSupOrderBot
@@ -461,15 +454,9 @@ theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x �
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
-@[deprecated (since := "2025-05-23")]
-alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
-
 theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
-
-@[deprecated (since := "2025-05-23")]
-alias IsProper.not_mem_or_compl_not_mem := IsProper.notMem_or_compl_notMem
 
 end BooleanAlgebra
 

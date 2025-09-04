@@ -307,9 +307,6 @@ theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-@[deprecated (since := "2025-02-06")]
-alias getLast_append' := getLast_append_of_right_ne_nil
-
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
@@ -331,9 +328,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
     (replicate (m + 1) a).getLast (ne_nil_of_length_eq_add_one length_replicate) = a := by
   simp only [replicate_succ']
   exact getLast_append_singleton _
-
-@[deprecated (since := "2025-02-07")]
-alias getLast_filter' := getLast_filter_of_pos
 
 /-! ### getLast? -/
 
@@ -465,8 +459,6 @@ theorem get_eq_getElem? (l : List α) (i : Fin l.length) :
     l.get i = l[i]?.get (by simp) := by
   simp
 
-@[deprecated (since := "2025-02-15")] alias get_eq_get? := get_eq_getElem?
-
 theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp only [mem_iff_getElem]
@@ -499,9 +491,6 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
-@[deprecated (since := "2025-02-07")]
-alias sublist_nil_iff_eq_nil := sublist_nil
-
 @[simp] lemma sublist_singleton {l : List α} {a : α} : l <+ [a] ↔ l = [] ∨ l = [a] := by
   constructor <;> rintro (_ | _) <;> aesop
 
@@ -533,8 +522,6 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
   idxOf_eq_length_iff.2
 
-@[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
-
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
   induction l₁ with
   | nil =>
@@ -553,8 +540,6 @@ theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
   | cons d₁ t₁ ih =>
     rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
       ih (not_mem_of_not_mem_cons h), Nat.succ_add]
-
-@[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
 end IndexOf
 
@@ -585,9 +570,6 @@ theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.l
   · exact h' n hn
   · simp_all [Nat.max_le]
 
-@[deprecated (since := "2025-02-15")] alias ext_get?' := ext_getElem?'
-@[deprecated (since := "2025-02-15")] alias ext_get?_iff := List.ext_getElem?_iff
-
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
   constructor
@@ -599,8 +581,6 @@ theorem ext_get_iff {l₁ l₂ : List α} :
 theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
   ⟨by rintro rfl _ _; rfl, ext_getElem?'⟩
-
-@[deprecated (since := "2025-02-15")] alias ext_get?_iff' := ext_getElem?_iff'
 
 /-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
 then the lists are equal. -/
@@ -624,8 +604,6 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
   rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
-
-@[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -799,9 +777,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
-@[deprecated foldr_cons_nil (since := "2025-02-10")]
-theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil
-
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
   simp
 
@@ -842,8 +817,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
       ⟨c, rfl, ⟨rfl, rfl, rfl⟩ | ⟨d, rfl, rfl⟩⟩) <;> simp_all
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
-
-@[deprecated (since := "2025-05-23")] alias append_cons_inj_of_not_mem := append_cons_inj_of_notMem
 
 section FoldlEqFoldr
 
@@ -949,18 +922,7 @@ end FoldlMFoldrM
 
 /-! ### intersperse -/
 
-@[deprecated (since := "2025-02-07")] alias intersperse_singleton := intersperse_single
-@[deprecated (since := "2025-02-07")] alias intersperse_cons_cons := intersperse_cons₂
-
 /-! ### map for partial functions -/
-
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
-    SizeOf.sizeOf x < SizeOf.sizeOf l := by
-  induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · omega
-  · specialize ih ‹_›
-    omega
 
 /-! ### filter -/
 
@@ -1019,8 +981,6 @@ theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩
 
-@[deprecated (since := "2025-02-07")] alias monotone_filter_left := filter_subset
-
 variable (p)
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
@@ -1042,8 +1002,6 @@ lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
-
-@[deprecated (since := "2025-02-07")] alias map_filter' := map_filter
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
@@ -1138,9 +1096,6 @@ variable [DecidableEq α]
 theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (l₁.diff l₂) = (map f l₁).diff (map f l₂) := by
   simp only [diff_eq_foldl, foldl_map, map_foldl_erase finj]
-
-@[deprecated (since := "2025-04-10")]
-alias erase_diff_erase_sublist_of_sublist := Sublist.erase_diff_erase_sublist
 
 end Diff
 

@@ -345,9 +345,6 @@ theorem isLocalization_basicOpen_of_qcqs {X : Scheme} {U : X.Opens} (hU : IsComp
     refine ⟨⟨_, n, rfl⟩, ?_⟩
     simpa [mul_comm z] using e
 
-@[deprecated (since := "2025-03-01")]
-alias is_localization_basicOpen_of_qcqs := isLocalization_basicOpen_of_qcqs
-
 lemma exists_of_res_eq_of_qcqs {X : Scheme.{u}} {U : TopologicalSpace.Opens X}
     (hU : IsCompact U.carrier) (hU' : IsQuasiSeparated U.carrier)
     {f g s : Γ(X, U)} (hfg : f |_ X.basicOpen s = g |_ X.basicOpen s) :

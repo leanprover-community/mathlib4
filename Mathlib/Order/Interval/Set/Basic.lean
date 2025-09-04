@@ -82,57 +82,33 @@ theorem right_mem_Iic : a ∈ Iic a := by simp
 theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
   rfl
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Ici := Ici_toDual
-
 @[simp]
 theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
   rfl
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Iic := Iic_toDual
 
 @[simp]
 theorem Ioi_toDual : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
   rfl
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Ioi := Ioi_toDual
-
 @[simp]
 theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
   rfl
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Iio := Iio_toDual
 
 @[simp]
 theorem Icc_toDual : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
   Set.ext fun _ => and_comm
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Icc := Icc_toDual
-
 @[simp]
 theorem Ioc_toDual : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
   Set.ext fun _ => and_comm
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Ioc := Ioc_toDual
 
 @[simp]
 theorem Ico_toDual : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
   Set.ext fun _ => and_comm
 
-@[deprecated (since := "2025-03-20")]
-alias dual_Ico := Ico_toDual
-
 @[simp]
 theorem Ioo_toDual : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
   Set.ext fun _ => and_comm
-
-@[deprecated (since := "2025-03-20")]
-alias dual_Ioo := Ioo_toDual
 
 @[simp]
 theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=
@@ -556,43 +532,23 @@ theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
 
 theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_ge h.1
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_lt := notMem_Icc_of_lt
-
 theorem notMem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_ge h.2
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_gt := notMem_Icc_of_gt
 
 theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_lt := notMem_Ico_of_lt
-
 theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_ge h.2
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_gt := notMem_Ioc_of_gt
 
 theorem notMem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioi_self := notMem_Ioi_self
-
 theorem notMem_Iio_self : b ∉ Iio b := lt_irrefl _
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iio_self := notMem_Iio_self
 
 theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_le := notMem_Ioc_of_le
-
 theorem notMem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_ge := notMem_Ico_of_ge
 
 theorem notMem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioo_of_le := notMem_Ioo_of_le
-
 theorem notMem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioo_of_ge := notMem_Ioo_of_ge
 
 section matched_intervals
 

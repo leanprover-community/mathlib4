@@ -45,8 +45,6 @@ theorem dedup_cons_of_mem {a : α} {s : Multiset α} : a ∈ s → dedup (a ::�
 theorem dedup_cons_of_notMem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::ₘ s) = a ::ₘ dedup s :=
   Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_notMem m
 
-@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
-
 theorem dedup_le (s : Multiset α) : dedup s ≤ s :=
   Quot.induction_on s fun _ => (dedup_sublist _).subperm
 

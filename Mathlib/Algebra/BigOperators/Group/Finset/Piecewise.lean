@@ -219,8 +219,6 @@ theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i �
     exact h hj
   simp [this]
 
-@[deprecated (since := "2025-05-23")] alias sum_update_of_not_mem := sum_update_of_notMem
-
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias prod_update_of_not_mem := prod_update_of_notMem
 

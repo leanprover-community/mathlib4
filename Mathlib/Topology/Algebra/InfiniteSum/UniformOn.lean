@@ -160,12 +160,6 @@ lemma hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
   tendstoLocallyUniformlyOn_of_forall_exists_nhds <| by
     simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn] using h
 
-@[deprecated (since := "2025-05-22")] alias hasProdLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  hasProdLocallyUniformlyOn_of_of_forall_exists_nhds
-
-@[deprecated (since := "2025-05-22")] alias hasSumLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  hasSumLocallyUniformlyOn_of_of_forall_exists_nhds
-
 @[to_additive]
 lemma HasProdUniformlyOn.hasProdLocallyUniformlyOn (h : HasProdUniformlyOn f g {s}) :
     HasProdLocallyUniformlyOn f g s := by
@@ -194,14 +188,6 @@ lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds [T2Space α]
     MultipliableLocallyUniformlyOn f s :=
   (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
   | ⟨t, ht, htr⟩ => ⟨t, ht, htr.hasProdUniformlyOn⟩).multipliableLocallyUniformlyOn
-
-@[deprecated (since := "2025-05-22")]
-alias multipliableLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
-
-@[deprecated (since := "2025-05-22")]
-alias summableLocallyUniformlyOn_of_of_forall_exists_nhd :=
-  summableLocallyUniformlyOn_of_of_forall_exists_nhds
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.hasProd (h : HasProdLocallyUniformlyOn f g s) (hx : x ∈ s) :

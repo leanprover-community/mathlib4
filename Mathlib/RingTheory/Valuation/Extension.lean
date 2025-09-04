@@ -58,8 +58,6 @@ class HasExtension : Prop where
   /-- The valuation `vR` on `R` is equivalent to the comap of the valuation `vA` on `A` -/
   val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
 
-@[deprecated (since := "2025-04-02")] alias _root_.IsValExtension := HasExtension
-
 namespace HasExtension
 
 section algebraMap

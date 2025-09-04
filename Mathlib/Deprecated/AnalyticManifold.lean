@@ -42,49 +42,6 @@ analytic on the interior, and map the interior to itself.  This allows us to def
 
 section analyticGroupoid
 
-variable (I) in
-/-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
-`H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
-rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
-@[deprecated "use instead `contDiffPregroupoid ω`" (since := "2025-04-13")]
-def analyticPregroupoid : Pregroupoid H where
-  property f s := AnalyticOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
-  comp {f g u v} hf hg _ _ _ := by
-    have : I ∘ (g ∘ f) ∘ I.symm = (I ∘ g ∘ I.symm) ∘ I ∘ f ∘ I.symm := by ext x; simp
-    simp only [this]
-    apply hg.comp
-    · exact hf.mono fun _ ⟨hx1, hx2⟩ ↦ ⟨hx1.1, hx2⟩
-    · rintro x ⟨hx1, _⟩
-      simpa only [mfld_simps] using hx1.2
-  id_mem := by
-    apply analyticOn_id.congr
-    rintro x ⟨_, hx2⟩
-    obtain ⟨y, hy⟩ := mem_range.1 hx2
-    simp only [mfld_simps, ← hy]
-  locality {f u} _ H := by
-    apply analyticOn_of_locally_analyticOn
-    rintro y ⟨hy1, hy2⟩
-    obtain ⟨x, hx⟩ := mem_range.1 hy2
-    simp only [mfld_simps, ← hx] at hy1 ⊢
-    obtain ⟨v, v_open, xv, hv⟩ := H x hy1
-    have : I.symm ⁻¹' (u ∩ v) ∩ range I = I.symm ⁻¹' u ∩ range I ∩ I.symm ⁻¹' v := by
-      rw [preimage_inter, inter_assoc, inter_assoc, inter_comm _ (range I)]
-    exact ⟨I.symm ⁻¹' v, v_open.preimage I.continuous_symm, by simpa, this ▸ hv⟩
-  congr {f g u} _ fg hf := by
-    apply hf.congr
-    rintro y ⟨hy1, hy2⟩
-    obtain ⟨x, hx⟩ := mem_range.1 hy2
-    simp only [mfld_simps, ← hx] at hy1 ⊢
-    rw [fg _ hy1]
-
-variable (I) in
-/-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
-`H` as the maps that are `AnalyticOn` when read in `E` through `I`.  Using `AnalyticOn`
-rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
-@[deprecated "use instead `contDiffGroupoid ω`" (since := "2025-04-13")]
-def analyticGroupoid : StructureGroupoid H :=
-  (analyticPregroupoid I).groupoid
-
 /-- An identity partial homeomorphism belongs to the analytic groupoid. -/
 theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
     PartialHomeomorph.ofSet s hs ∈ analyticGroupoid I := by
@@ -146,12 +103,6 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
 end analyticGroupoid
 
 section AnalyticManifold
-
-/-- An analytic manifold w.r.t. a model `I : ModelWithCorners 𝕜 E H` is a charted space over `H`
-s.t. all extended chart conversion maps are analytic. -/
-@[deprecated "use instead `IsManifold ω`" (since := "2025-04-13")]
-class AnalyticManifold (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M]
-  [ChartedSpace H M] : Prop extends HasGroupoid M (analyticGroupoid I)
 
 /-- Normed spaces are analytic manifolds over themselves. -/
 instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where

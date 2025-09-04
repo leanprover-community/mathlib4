@@ -130,9 +130,6 @@ theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
 @[to_additive (attr := simp) zero_prod_zero]
 lemma one_prod_one [One β] : (1 ×ˢ 1 : Set (α × β)) = 1 := by ext; simp [Prod.ext_iff]
 
-@[deprecated (since := "2025-03-11")]
-alias zero_sum_zero := zero_prod_zero
-
 end One
 
 /-! ### Set negation/inversion -/
@@ -186,9 +183,6 @@ theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
 
 @[to_additive (attr := simp) neg_prod]
 lemma inv_prod [Inv β] (s : Set α) (t : Set β) : (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := rfl
-
-@[deprecated (since := "2025-03-11")]
-alias neg_sum := neg_prod
 
 end Inv
 
@@ -391,9 +385,6 @@ theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
 @[to_additive (attr := simp) prod_add_prod_comm]
 lemma prod_mul_prod_comm [Mul β] (s₁ s₂ : Set α) (t₁ t₂ : Set β) :
     (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
-
-@[deprecated (since := "2025-03-11")]
-alias sum_add_sum_comm := prod_add_prod_comm
 
 end Mul
 
@@ -845,16 +836,11 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
 theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
-
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias not_one_mem_div_iff := one_notMem_div_iff
 
 @[to_additive]
 lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
-
-@[deprecated (since := "2025-05-23")]
-alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
@@ -862,9 +848,6 @@ alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 alias ⟨_, _root_.Disjoint.one_notMem_div_set⟩ := one_notMem_div_iff
 
 attribute [to_additive] Disjoint.one_notMem_div_set
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.zero_not_mem_sub_set := Disjoint.zero_notMem_sub_set
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias _root_.Disjoint.one_not_mem_div_set := Disjoint.one_notMem_div_set

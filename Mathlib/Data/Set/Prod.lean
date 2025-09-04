@@ -224,8 +224,6 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
 theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
 
-@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
-
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
   ext <| by simp [range]
@@ -258,18 +256,9 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
 theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
     (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
 
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod := image_prodMk_subset_prod
-
 theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by grind
 
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod_left := image_prodMk_subset_prod_left
-
 theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by grind
-
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod_right := image_prodMk_subset_prod_right
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
   inter_subset_left
@@ -721,8 +710,6 @@ theorem pi_update_of_notMem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (a
     rw [update_of_ne]
     exact fun h => hi (h ▸ hj)
 
-@[deprecated (since := "2025-05-23")] alias pi_update_of_not_mem := pi_update_of_notMem
-
 theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (s.pi fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
@@ -767,8 +754,6 @@ lemma eval_image_pi_of_notMem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
   · rintro ⟨x, hx⟩
     refine ⟨Function.update x i xᵢ, ?_⟩
     simpa +contextual [(ne_of_mem_of_not_mem · hi)]
-
-@[deprecated (since := "2025-05-23")] alias eval_image_pi_of_not_mem := eval_image_pi_of_notMem
 
 @[simp]
 theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :

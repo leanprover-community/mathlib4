@@ -151,9 +151,6 @@ abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Ref
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
           simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
-@[deprecated (since := "2025-05-15")]
-noncomputable alias reflectiveChosenFiniteProducts := CartesianMonoidalCategory.ofReflective
-
 variable [CartesianMonoidalCategory C] [Reflective i] [CartesianClosed C]
   [CartesianMonoidalCategory D]
 
@@ -304,9 +301,6 @@ lemma Limits.PreservesFiniteProducts.of_exponentialIdeal : PreservesFiniteProduc
   have := preservesBinaryProducts_of_exponentialIdeal i
   have : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
   .of_preserves_binary_and_terminal _
-
-@[deprecated (since := "2025-04-22")]
-alias preservesFiniteProducts_of_exponentialIdeal := PreservesFiniteProducts.of_exponentialIdeal
 
 end
 

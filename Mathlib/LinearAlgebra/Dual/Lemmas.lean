@@ -147,10 +147,6 @@ instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
 
 end Module
 
-@[deprecated (since := "2025-04-11")] alias Basis.dual_free := Module.dual_free
-@[deprecated (since := "2025-04-11")] alias Basis.dual_projective := Module.dual_projective
-@[deprecated (since := "2025-04-11")] alias Basis.dual_finite := Module.dual_finite
-
 end CommSemiring
 
 end
@@ -301,9 +297,6 @@ theorem exists_dual_map_eq_bot_of_notMem {x : M} (hx : x ∉ p) (hp' : Free R (M
     obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
   rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
     ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
-
-@[deprecated (since := "2025-05-24")]
-alias exists_dual_map_eq_bot_of_nmem := exists_dual_map_eq_bot_of_notMem
 
 theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by

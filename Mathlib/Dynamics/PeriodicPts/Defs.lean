@@ -207,9 +207,6 @@ theorem periodicPts_subset_range : periodicPts f ⊆ range f := by
   rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
   exact h
 
-@[deprecated (since := "2025-04-27")]
-alias periodicPts_subset_image := periodicPts_subset_range
-
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
@@ -227,9 +224,6 @@ theorem bUnion_ptsOfPeriod : ⋃ n > 0, ptsOfPeriod f n = periodicPts f :=
 
 theorem iUnion_pnat_ptsOfPeriod : ⋃ n : ℕ+, ptsOfPeriod f n = periodicPts f :=
   iSup_subtype.trans <| bUnion_ptsOfPeriod f
-
-@[deprecated (since := "2025-04-27")]
-alias iUnion_pNat_ptsOfPeriod := iUnion_pnat_ptsOfPeriod
 
 variable {f}
 
@@ -272,9 +266,6 @@ theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < mi
 theorem minimalPeriod_eq_zero_of_notMem_periodicPts (hx : x ∉ periodicPts f) :
     minimalPeriod f x = 0 := by simp only [minimalPeriod, dif_neg hx]
 
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_of_nmem_periodicPts := minimalPeriod_eq_zero_of_notMem_periodicPts
-
 theorem IsPeriodicPt.minimalPeriod_pos (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     0 < minimalPeriod f x :=
   minimalPeriod_pos_of_mem_periodicPts <| mk_mem_periodicPts hn hx
@@ -286,9 +277,6 @@ theorem minimalPeriod_pos_iff_mem_periodicPts : 0 < minimalPeriod f x ↔ x ∈ 
 theorem minimalPeriod_eq_zero_iff_notMem_periodicPts :
     minimalPeriod f x = 0 ↔ x ∉ periodicPts f := by
   rw [← minimalPeriod_pos_iff_mem_periodicPts, not_lt, nonpos_iff_eq_zero]
-
-@[deprecated (since := "2025-05-24")]
-alias minimalPeriod_eq_zero_iff_nmem_periodicPts := minimalPeriod_eq_zero_iff_notMem_periodicPts
 
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     minimalPeriod f x ≤ n := by
@@ -503,9 +491,6 @@ theorem isFixedPt_prodMap (x : α × β) :
     IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
   Prod.ext_iff
 
-@[deprecated (since := "2025-04-18")]
-alias isFixedPt_prod_map := isFixedPt_prodMap
-
 theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
     IsFixedPt (Prod.map f g) (a, b) :=
   (isFixedPt_prodMap _).mpr ⟨ha, hb⟩
@@ -514,9 +499,6 @@ theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
 theorem isPeriodicPt_prodMap (x : α × β) :
     IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
   simp [IsPeriodicPt]
-
-@[deprecated (since := "2025-04-18")]
-alias isPeriodicPt_prod_map := isPeriodicPt_prodMap
 
 theorem IsPeriodicPt.prodMap (ha : IsPeriodicPt f n a) (hb : IsPeriodicPt g n b) :
     IsPeriodicPt (Prod.map f g) n (a, b) :=

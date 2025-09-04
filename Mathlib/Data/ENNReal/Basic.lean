@@ -262,29 +262,17 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 
 @[simp] theorem toNNReal_top : ∞.toNNReal = 0 := rfl
 
-@[deprecated (since := "2025-03-20")] alias top_toNNReal := toNNReal_top
-
 @[simp] theorem toReal_top : ∞.toReal = 0 := rfl
-
-@[deprecated (since := "2025-03-20")] alias top_toReal := toReal_top
 
 @[simp] theorem toReal_one : (1 : ℝ≥0∞).toReal = 1 := rfl
 
-@[deprecated (since := "2025-03-20")] alias one_toReal := toReal_one
-
 @[simp] theorem toNNReal_one : (1 : ℝ≥0∞).toNNReal = 1 := rfl
-
-@[deprecated (since := "2025-03-20")] alias one_toNNReal := toNNReal_one
 
 @[simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
 
 @[simp] theorem toNNReal_zero : (0 : ℝ≥0∞).toNNReal = 0 := rfl
 
-@[deprecated (since := "2025-03-20")] alias zero_toNNReal := toNNReal_zero
-
 @[simp] theorem toReal_zero : (0 : ℝ≥0∞).toReal = 0 := rfl
-
-@[deprecated (since := "2025-03-20")] alias zero_toReal := toReal_zero
 
 @[simp] theorem ofReal_zero : ENNReal.ofReal (0 : ℝ) = 0 := by simp [ENNReal.ofReal]
 
@@ -534,16 +522,12 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
   rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 
-@[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
-
 theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
   toNNReal_natCast n
 
 @[simp, norm_cast]
 theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
-
-@[deprecated (since := "2025-02-19")] alias toReal_nat := toReal_natCast
 
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
   toReal_natCast n

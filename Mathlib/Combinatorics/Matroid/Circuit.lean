@@ -56,8 +56,6 @@ namespace Matroid
 /-- `M.IsCircuit C` means that `C` is a minimal dependent set in `M`. -/
 def IsCircuit (M : Matroid α) := Minimal M.Dep
 
-@[deprecated (since := "2025-02-14")] alias Circuit := IsCircuit
-
 lemma isCircuit_def : M.IsCircuit C ↔ Minimal M.Dep C := Iff.rfl
 
 lemma IsCircuit.dep (hC : M.IsCircuit C) : M.Dep C :=
@@ -230,9 +228,6 @@ lemma fundCircuit_eq_of_notMem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e
     simpa [subset_antisymm_iff, fundCircuit]
   simp_rw [← M.closure_inter_ground {e}, singleton_inter_eq_empty.2 heX]
   exact fun a haX h ↦ by simpa using h ∅ (empty_subset X) rfl.subset
-
-@[deprecated (since := "2025-05-23")]
-alias fundCircuit_eq_of_not_mem_ground := fundCircuit_eq_of_notMem_ground
 
 lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     M.IsCircuit (M.fundCircuit e I) := by
@@ -682,18 +677,12 @@ lemma fundCocircuit_eq_of_notMem_ground (X : Set α) (he : e ∉ M.E) :
     M.fundCocircuit e X = {e} := by
   rwa [fundCocircuit, fundCircuit_eq_of_notMem_ground]
 
-@[deprecated (since := "2025-05-23")]
-alias fundCocircuit_eq_of_not_mem_ground := fundCocircuit_eq_of_notMem_ground
-
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ X` -/
 lemma fundCocircuit_eq_of_notMem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
   by_cases he : e ∈ M.E
   · rw [fundCocircuit, fundCircuit_eq_of_mem]
     exact ⟨he, heX⟩
   rw [fundCocircuit_eq_of_notMem_ground _ he]
-
-@[deprecated (since := "2025-05-23")]
-alias fundCocircuit_eq_of_not_mem := fundCocircuit_eq_of_notMem
 
 /-- For every element `e` of an independent set `I`,
 there is a cocircuit whose intersection with `I` is `{e}`. -/

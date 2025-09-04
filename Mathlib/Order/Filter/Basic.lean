@@ -351,15 +351,11 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
 @[simp]
 theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty_of_mem h).ne_empty rfl
 
-@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
-
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
   Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
 theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
-
-@[deprecated (since := "2025-05-23")] alias compl_not_mem := compl_notMem
 
 theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
@@ -946,9 +942,6 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
     hg.mono <| by
       intros
       simp only [*]
-
-@[deprecated (since := "2025-03-10")]
-alias EventuallyEq.prod_mk := EventuallyEq.prodMk
 
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.

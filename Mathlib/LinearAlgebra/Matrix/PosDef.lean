@@ -289,8 +289,6 @@ include hA in
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : hA.sqrt = B ↔ A = B ^ 2 := by
   simpa [eq_comm] using eq_sqrt_iff_sq_eq hB hA
 
-@[deprecated (since := "2025-05-07")] alias ⟨_, eq_sqrt_of_sq_eq⟩ := eq_sqrt_iff_sq_eq
-
 @[simp]
 lemma sqrt_eq_zero_iff : hA.sqrt = 0 ↔ A = 0 := by
   rw [sqrt_eq_iff_eq_sq _ .zero, zero_pow two_ne_zero]
@@ -359,9 +357,6 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
   refine ⟨fun hA ↦ ⟨hA.sqrt, ?_⟩, fun ⟨B, hB⟩ ↦ (hB ▸ posSemidef_conjTranspose_mul_self B)⟩
   simp_rw [← PosSemidef.sq_sqrt hA, pow_two]
   rw [hA.posSemidef_sqrt.1]
-
-@[deprecated (since := "2025-05-07")]
-alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
 /-- A Hermitian matrix is positive semi-definite if and only if its eigenvalues are non-negative. -/
 lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}

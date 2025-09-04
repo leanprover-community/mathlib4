@@ -47,8 +47,6 @@ instance [Preorder α] : Lean.Grind.Preorder α where
   le_trans := Preorder.le_trans _ _ _
   lt_iff_le_not_le := Preorder.lt_iff_le_not_ge _ _
 
-@[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
-
 variable [Preorder α] {a b c : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
@@ -62,19 +60,12 @@ lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
 
 lemma lt_iff_le_not_ge : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_ge _ _
 
-@[deprecated (since := "2025-05-11")] alias lt_iff_le_not_le := lt_iff_le_not_ge
-
 lemma lt_of_le_not_ge (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_ge.2 ⟨hab, hba⟩
-
-@[deprecated (since := "2025-05-11")] alias lt_of_le_not_le := lt_of_le_not_ge
 
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_ge.1 hab).1
 lemma not_le_of_gt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_ge.1 hab).2
 lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
-
-@[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
-@[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
 
 alias LT.lt.not_ge := not_le_of_gt
 alias LE.le.not_gt := not_lt_of_ge
@@ -109,8 +100,6 @@ lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
 alias not_lt_of_gt := lt_asymm
-
-@[deprecated (since := "2025-05-11")] alias not_lt_of_lt := not_lt_of_gt
 
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt

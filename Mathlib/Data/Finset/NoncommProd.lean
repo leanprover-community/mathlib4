@@ -292,9 +292,6 @@ theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem := noncommSum_insert_of_notMem
-
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias noncommProd_insert_of_not_mem := noncommProd_insert_of_notMem
 
@@ -304,9 +301,6 @@ theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) 
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
-
-@[deprecated (since := "2025-05-23")]
-alias noncommSum_insert_of_not_mem' := noncommSum_insert_of_notMem'
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias noncommProd_insert_of_not_mem' := noncommProd_insert_of_notMem'
