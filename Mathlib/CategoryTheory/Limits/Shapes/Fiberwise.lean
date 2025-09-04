@@ -53,14 +53,14 @@ we can construct a cocone over `diagram` using the following algorithm:
 @[simps] def coconeOfFiberOfIsDiscrete : Cocone diagram where
   pt := cofan.pt
   ι :=
-  { app j := (fiberwiseCocone (F.obj j)).ι.app (.mk rfl) ≫ cofan.inj (F.obj j)
-    naturality j₁ j₂ f := by
-      simp only [const_obj_obj, const_obj_map, comp_id]
-      refine F.fiber_inductionOn_of_isDiscrete f fun d j₁ j₂ f ↦ ?_
-      rw [← (fiberwiseCocone (F.obj j₁.1)).w (F.fiberPreimageOfIsDiscrete (.mk rfl)
-        (.mk (j₂.2.trans j₁.2.symm)) f.1), Functor.comp_map, assoc]
-      congr 1
-      grind }
+    { app j := (fiberwiseCocone (F.obj j)).ι.app (.mk rfl) ≫ cofan.inj (F.obj j)
+      naturality j₁ j₂ f := by
+        simp only [const_obj_obj, const_obj_map, comp_id]
+        refine F.fiber_inductionOn_of_isDiscrete f fun d j₁ j₂ f ↦ ?_
+        rw [← (fiberwiseCocone (F.obj j₁.1)).w (F.fiberPreimageOfIsDiscrete (.mk rfl)
+          (.mk (j₂.2.trans j₁.2.symm)) f.1), Functor.comp_map, assoc]
+        congr 1
+        grind }
 
 variable (fiberwiseColimit : ∀ d : D, IsColimit (fiberwiseCocone d))
   (colimitCofan : IsColimit cofan)

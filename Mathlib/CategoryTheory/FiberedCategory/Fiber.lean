@@ -139,11 +139,13 @@ variable {J : Type u₁} [Category.{v₁} J]
 instance (d : D) {j₁ j₂ : F.Fiber d} (f : j₁.1 ⟶ j₂.1) : F.IsHomLift (𝟙 d) f :=
   IsHomLift.of_fac _ _ _ j₁.2 j₂.2 (Subsingleton.elim _ _)
 
-/-- Casting a morphism in `J` to a morphism in the category `F.Fiber d`. -/
+/-- Casting a morphism in the total category to a morphism in the category fiber when
+the base is a discrete category. -/
 @[simps!] def fiberPreimageOfIsDiscrete {d : D} (j₁ j₂ : F.Fiber d) (f : j₁.1 ⟶ j₂.1) : j₁ ⟶ j₂ :=
   homMk F d f
 
-/-- The inclusion functor from `F.Fiber d` to `J` is fully faithful when `D` is discrete. -/
+/-- The inclusion functor from the fiber to the total category is fully faithful when the base
+category is discrete. -/
 @[simps] def fullyFaithfulFiberInclusionOfIsDiscrete (d : D) :
     FullyFaithful (fiberInclusion (p := F) (S := d)) where
   preimage {j₁ j₂} := F.fiberPreimageOfIsDiscrete j₁ j₂
@@ -151,7 +153,7 @@ instance (d : D) {j₁ j₂ : F.Fiber d} (f : j₁.1 ⟶ j₂.1) : F.IsHomLift (
 instance (d : D) : Full (fiberInclusion (p := F) (S := d)) :=
   (fullyFaithfulFiberInclusionOfIsDiscrete F d).full
 
-@[elab_as_elim] lemma fiber_inductionOn_of_isDiscrete {motive : ∀ {j₁ j₂ : J}, (j₁ ⟶ j₂) → Prop}
+@[elab_as_elim] def fiber_inductionOn_of_isDiscrete {motive : ∀ {j₁ j₂ : J}, (j₁ ⟶ j₂) → Sort*}
     {j₁ j₂ : J} (f : j₁ ⟶ j₂) (ih : ∀ d : D, ∀ {j₁ j₂ : F.Fiber d} (f : j₁ ⟶ j₂), motive f.1) :
     motive f :=
   ih _ (F.fiberPreimageOfIsDiscrete (.mk (IsDiscrete.eq_of_hom (F.map f))) (.mk rfl) f)
