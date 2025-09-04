@@ -814,7 +814,7 @@ theorem quadratic_root_cos_pi_div_five :
     rw [ne_eq, sin_eq_zero_iff, hθ]
     push_neg
     intro n hn
-    replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
+    replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
     omega
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
@@ -1245,8 +1245,5 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
         (hb.trans <| half_le_self <| Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
-
-@[deprecated (since := "2025-02-16")] alias abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le :=
-  norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex

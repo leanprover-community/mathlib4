@@ -29,7 +29,7 @@ Kleene star.
 
 ## Notation
 
-`a∗` is notation for `kstar a` in locale `Computability`.
+`a∗` is notation for `kstar a` in scope `Computability`.
 
 ## References
 

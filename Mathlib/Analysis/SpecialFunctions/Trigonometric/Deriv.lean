@@ -1034,6 +1034,46 @@ theorem differentiable_iteratedDeriv_cosh (n : ℕ) :
   | 1 => by simp
   | n + 2 => by simp [differentiable_iteratedDeriv_cosh]
 
+@[simp]
+theorem iteratedDerivWithin_sin_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n sin (Icc a b) x = iteratedDeriv n sin x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_sin.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cos_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n cos (Icc a b) x = iteratedDeriv n cos x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_cos.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_sinh_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n sinh (Icc a b) x = iteratedDeriv n sinh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_sinh.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cosh_Icc (n : ℕ) {a b : ℝ} (h : a < b) {x : ℝ} (hx : x ∈ Icc a b) :
+    iteratedDerivWithin n cosh (Icc a b) x = iteratedDeriv n cosh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Icc h) contDiff_cosh.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_sin_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n sin (Ioo a b) x = iteratedDeriv n sin x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_sin.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cos_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n cos (Ioo a b) x = iteratedDeriv n cos x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_cos.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_sinh_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n sinh (Ioo a b) x = iteratedDeriv n sinh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_sinh.contDiffAt hx
+
+@[simp]
+theorem iteratedDerivWithin_cosh_Ioo (n : ℕ) {a b x : ℝ} (hx : x ∈ Ioo a b) :
+    iteratedDerivWithin n cosh (Ioo a b) x = iteratedDeriv n cosh x :=
+  iteratedDerivWithin_eq_iteratedDeriv (uniqueDiffOn_Ioo a b) contDiff_cosh.contDiffAt hx
+
 end Real
 
 end iteratedDeriv
