@@ -63,10 +63,9 @@ lemma eq_isMonicOfDegree_two_mul_isMonicOfDegree {f : ℝ[X]} {n : ℕ}
   all_goals rw [h, add_comm] at hf
   · have hg₂ := of_mul_left hd₁ <| (show 2 + n = 1 + (n + 1) by omega) ▸ hf
     obtain ⟨p₁, p₂, hp₁ | hp₂, h'⟩ := hg₂.eq_isMonicOfDegree_one_or_two_mul
-    all_goals rw [h'] at h hf
-    · rw [← mul_assoc] at h hf
+    · rw [h', ← mul_assoc] at h hf
       exact ⟨g₁ * p₁, p₂, hd₁.mul hp₁, (hd₁.mul hp₁).of_mul_left hf, h⟩
-    · rw [mul_left_comm] at h hf
+    · rw [h', mul_left_comm] at h hf
       exact ⟨p₁, g₁ * p₂, hp₂, of_mul_left hp₂ hf, h⟩
   · exact ⟨g₁, g₂, hd₂, of_mul_left hd₂ hf, h⟩
 
