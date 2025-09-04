@@ -87,8 +87,8 @@ lemma eqvGen_ringQuot_mul_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) 
 
 /-- To prove a relation between two products, it suffices to prove that
 the relation is multiplicative and holds on factors. -/
-@[to_additive "To prove a relation between two sums, it suffices to prove that
-the relation is additive and holds on summands."]
+@[to_additive /-- To prove a relation between two sums, it suffices to prove that
+the relation is additive and holds on summands.-/]
 lemma Finset.relation_prod_induction {α : Type*} {s : Finset α} [DecidableEq α]
     {M : Type*} [CommMonoid M] (f : α → M) (g : α → M) (r : M → M → Prop)
     (hom : ∀ (a b c d : M), r a b → r c d → r (a * c) (b * d)) (unit : r 1 1)
@@ -101,7 +101,7 @@ lemma Finset.relation_prod_induction {α : Type*} {s : Finset α} [DecidableEq �
 lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι]
     [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
     [(i : ι) → (x : ↥(A i)) → Decidable (x ≠ 0)] (r r' : DirectSum ι fun i ↦ ↥(A i))
-    {S T: Finset ι} (hS : DFinsupp.support r ⊆ S) (hT : DFinsupp.support r' ⊆ T)
+    {S T : Finset ι} (hS : DFinsupp.support r ⊆ S) (hT : DFinsupp.support r' ⊆ T)
     (p : ι × ι → Prop) [DecidablePred p] :
     ∑ ij ∈ Finset.filter p (DFinsupp.support r ×ˢ DFinsupp.support r'), ((r ij.1) * (r' ij.2) : R) =
     ∑ ij ∈ Finset.filter p (S ×ˢ T), ((r ij.1) * (r' ij.2) : R) := by
@@ -230,7 +230,7 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
       RingHom.coe_coe, decomposeRingEquiv_apply, toSemiring_apply, SetLike.coe_eq_coe]
     rw [← map_eq_toAddMonoid]
     apply Subtype.ext
-    show (RingQuot.mkRingHom rel) (GradedRing.proj 𝒜 j x) =
+    change (RingQuot.mkRingHom rel) (GradedRing.proj 𝒜 j x) =
       (RingQuot.mkRingHom rel) (GradedRing.proj 𝒜 j y)
     have := ‹IsHomogeneousRelation 𝒜 rel›.is_homogeneous' h j
     suffices h : ∀ u v : A, Relation.EqvGen rel u v →
@@ -285,9 +285,9 @@ instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :
     congr 1; ext
     exact map_mul (RingQuot.mkAlgHom R rel) _ _
   · intro x y h; ext j
-    simp [lof_eq_of, LinearMap.coe_addMonoidHom_comp, ← map_eq_toAddMonoid]
+    simp [LinearMap.coe_addMonoidHom_comp, ← map_eq_toAddMonoid]
     apply Subtype.ext
-    show (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j x) =
+    change (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j x) =
       (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j y)
     have := ‹IsHomogeneousRelation 𝒜 rel›.is_homogeneous' h j
     suffices h : ∀ u v : A, Relation.EqvGen rel u v →
