@@ -52,7 +52,7 @@ noncomputable def den (x : K) : nonZeroDivisors A :=
 theorem num_den_reduced (x : K) : IsRelPrime (num A x) (den A x) :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).1
 
--- @[simp] -- Porting note: LHS reduces to give the simp lemma below
+-- `@[simp]` normal form is called `mk'_num_den'`.
 theorem mk'_num_den (x : K) : mk' K (num A x) (den A x) = x :=
   (Classical.choose_spec (Classical.choose_spec (exists_reduced_fraction A x))).2
 

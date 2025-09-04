@@ -660,13 +660,13 @@ variable (K)
 
 /-- `RatFunc K` is the field of fractions of the polynomials over `K`. -/
 instance : IsFractionRing K[X] (RatFunc K) where
-  map_units' y := by
+  map_units y := by
     rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
   exists_of_eq {x y} := by
     rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
     exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
-  surj' := by
+  surj := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
