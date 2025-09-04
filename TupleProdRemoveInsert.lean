@@ -25,7 +25,7 @@ namespace List
 #check prod_cons
 
 @[to_additive (attr := simp), simp]
-theorem prod_insertIdx (l : List M) (h : i < l.length) : (l.insertIdx i a).prod = a * l.prod := by
+theorem prod_insertIdx {l : List M} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod := by
   --exact?
   sorry
 
@@ -36,12 +36,14 @@ section MulOne
 
 variable {M} [Mul M] [One M]
 
-theorem prod_cons (v : List.Vector M n) : (cons a v).toList.prod = a * v.toList.prod := rfl
+theorem prod_cons {v : List.Vector M n} : (cons a v).toList.prod = a * v.toList.prod := rfl
 
 end MulOne
 
 @[to_additive (attr := simp), simp]
-theorem prod_insertIdx (v : List.Vector M n) : (v.insertIdx a i).toList.prod = a * v.toList.prod := by
-  sorry
+theorem prod_insertIdx {v : List.Vector M n} : (v.insertIdx a i).toList.prod = a * v.toList.prod := by
+  apply List.prod_insertIdx
+  rw [length_val]
+  exact is_le i
 
 end List.Vector
