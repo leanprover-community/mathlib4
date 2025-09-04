@@ -1,13 +1,24 @@
-name: Remove outdated deprecations
+name: Remove outdated deprecated declarations
 
 on:
   schedule:
     - cron: "5 4 * * 1" # At 04:05, on Monday
   workflow_dispatch:
+    inputs:
+      cutoff_date:
+        description: 'cutoff date (YYYY-MM-DD): remove deprecated declarations older than this (6 months ago by default)'
+        required: false
+        default: ''
+        type: string
+      dry_run:
+        description: 'if true, only log the outdated declarations, do not remove them and open a PR'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build:
-    name: Remove deprecations
+    name: Remove outdated deprecated declarations
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
@@ -16,7 +27,7 @@ jobs:
           ## fetch the whole repository, as we want to push to it later
           fetch-depth: 0
 
-      - name: remove deprecations
+      - name: remove outdated deprecated declarations
         id: remove
         shell: bash
         run: |
@@ -24,12 +35,22 @@ jobs:
           # - must leave the mathlib4 repo in a state that is ready to commit and push
           # - must assign a step output named `deprecation_date` containing the cutoff date for removed deprecations
 
-          # Calculate cutoff date (6 months ago)
-          CUTOFF_DATE=$(date -d '6 months ago' +%Y-%m-%d)
-          echo "Removing deprecated aliases older than ${CUTOFF_DATE}..."
+          if [ "${{ inputs.cutoff_date }}" =~ "[0-9]{4}-[0-9]{2}-[0-9]{2}" ]; then
+            echo "Using date from workflow_dispatch input"
+            CUTOFF_DATE="${{ inputs.cutoff_date }}"
+          else
+            echo "Using default date (6 months ago)"
+            CUTOFF_DATE=$(date -d '6 months ago' +%Y-%m-%d)
+          fi
+          echo "Removing deprecated declarations older than ${CUTOFF_DATE}..."
           echo "deprecation_date=${CUTOFF_DATE}" >> $GITHUB_OUTPUT
 
-          python scripts/remove_deprecated_decls.py "${CUTOFF_DATE}"
+          dry_run_arg=""
+          if [ "${{ toJson(inputs.dry_run) }}" = "true" ]; then
+            dry_run_arg="--dry-run"
+          fi
+          # use parameter expansion to avoid giving the script an empty argument
+          python scripts/remove_deprecated_decls.py ${dry_run_arg:+"$dry_run_arg"} "${CUTOFF_DATE}"
 
       - name: configure git setup
         run: |
@@ -42,9 +63,9 @@ jobs:
           # github using a different username.
           git config --unset http.https://github.com/.extraheader
 
-      - name: file a new PR to remove deprecations
+      - name: file a new PR to remove outdated deprecated declarations
         id: pr
-        run: ./scripts/remove_deprecations_CI.sh
+        run: ./scripts/remove_deprecated_decls_CI.sh
         env:
           DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
           DEPRECATION_DATE: ${{ steps.remove.outputs.deprecation_date }}
@@ -57,6 +78,6 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'nightly-testing'
           type: 'stream'
-          topic: 'Mathlib `remove deprecations`'
+          topic: 'Mathlib `remove outdated deprecated declarations`'
           content: |
             ${{ steps.pr.outputs.message }}

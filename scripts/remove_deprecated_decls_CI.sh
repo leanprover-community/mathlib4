@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Check if there are removed deprecations and file a PR if necessary.
+# Check if there are removed deprecated declarations and file a PR if necessary.
 # Also set an output parameter 'message' containing a Zulip message
 # DO NOT run this as a human; this is meant only for automation usage!
 
@@ -12,15 +12,15 @@ IFS=$'\n\t'
 set -x
 
 remote_name=origin-bot
-branch_name=deprecations
+branch_name=deprecated-decls
 owner_name=leanprover-community
 
 # Exit if the branch already exists
 git fetch --quiet "$remote_name"
 git rev-parse --verify --quiet "refs/remotes/${remote_name}/${branch_name}" && exit 0
 
-pr_title="chore: remove deprecations older than $DEPRECATION_DATE"
-pr_body='I am happy to remove some deprecations for you!'
+pr_title="chore: remove deprecated declarations older than $DEPRECATION_DATE"
+pr_body='I am happy to remove some deprecated declarations for you!'
 
 git checkout -b "$branch_name"
 git add -A
@@ -45,4 +45,4 @@ pr_id=$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r 
 EOF
 )
 
-printf $'message=\'Please review #%s, which removes deprecations older than %s.\'\n' "${pr_id}" "${DEPRECATION_DATE}" | tee -a "${GITHUB_OUTPUT}"
+printf $'message=\'Please review #%s, which removes deprecated declarations older than %s.\'\n' "${pr_id}" "${DEPRECATION_DATE}" | tee -a "${GITHUB_OUTPUT}"

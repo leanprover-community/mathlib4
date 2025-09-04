@@ -13,8 +13,8 @@ def is_date_older_than_cutoff(date_str, cutoff_str):
     except ValueError:
         return False
 
-def find_deprecated_aliases_to_remove(content, cutoff_date):
-    """Find deprecated aliases that would be removed, returning list of matches"""
+def find_deprecated_declarations_to_remove(content, cutoff_date):
+    """Find deprecated declarations that would be removed, returning list of matches"""
     pattern = r'@\[deprecated[^]]*since[^]]*"(\d{4}-\d{2}-\d{2})"[^]]*\]\s*(?:noncomputable\s+)?(?:protected\s+)?alias\s+[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*\s*:=\s*[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*'
 
     matches_to_remove = []
@@ -38,9 +38,9 @@ def find_deprecated_aliases_to_remove(content, cutoff_date):
 
     return matches_to_remove
 
-def remove_old_deprecated_aliases(content, cutoff_date):
-    """Remove deprecated aliases older than cutoff_date"""
-    # Pattern to match deprecated aliases with expanded character set
+def remove_old_deprecated_declarations(content, cutoff_date):
+    """Remove deprecated declarations older than cutoff_date"""
+    # Pattern to match deprecated declarations with expanded character set
     pattern = r'@\[deprecated[^]]*since[^]]*"(\d{4}-\d{2}-\d{2})"[^]]*\]\s*(?:noncomputable\s+)?(?:protected\s+)?alias\s+[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*\s*:=\s*[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*'
 
     def replacement_func(match):
@@ -66,7 +66,7 @@ def process_file(filepath, cutoff_date, dry_run=False):
 
         if dry_run:
             # Find what would be removed
-            matches_to_remove = find_deprecated_aliases_to_remove(content, cutoff_date)
+            matches_to_remove = find_deprecated_declarations_to_remove(content, cutoff_date)
             if matches_to_remove:
                 print(f"\n{filepath}:")
                 for i, match in enumerate(matches_to_remove, 1):
@@ -80,7 +80,7 @@ def process_file(filepath, cutoff_date, dry_run=False):
             return 0
         else:
             # Actually perform the removal
-            new_content = remove_old_deprecated_aliases(content, cutoff_date)
+            new_content = remove_old_deprecated_declarations(content, cutoff_date)
 
             # Only write if content changed
             if new_content != content:
@@ -94,7 +94,7 @@ def process_file(filepath, cutoff_date, dry_run=False):
         return False
 
 def main():
-    parser = argparse.ArgumentParser(description='Remove deprecated aliases older than a specified date')
+    parser = argparse.ArgumentParser(description='Remove deprecated declarations older than a specified date')
     parser.add_argument('cutoff_date', help='Cutoff date in YYYY-MM-DD format')
     parser.add_argument('--dry-run', action='store_true',
                        help='Show what would be removed without actually making changes')
@@ -105,32 +105,37 @@ def main():
     dry_run = args.dry_run
 
     if dry_run:
-        print(f"DRY RUN: Would remove deprecated aliases older than {cutoff_date}")
+        print(f"DRY RUN: Would remove deprecated declarations older than {cutoff_date}")
     else:
-        print(f"Removing deprecated aliases older than {cutoff_date}")
-
-    # Find all .lean files in Mathlib directory
-    mathlib_path = Path("Mathlib")
-    if not mathlib_path.exists():
-        print("Error: Mathlib directory not found", file=sys.stderr)
-        sys.exit(1)
+        print(f"Removing deprecated declarations older than {cutoff_date}")
 
     processed_count = 0
     total_matches = 0
 
-    for lean_file in mathlib_path.rglob("*.lean"):
-        result = process_file(lean_file, cutoff_date, dry_run)
-        if dry_run:
-            if result > 0:
-                processed_count += 1
-                total_matches += result
-        else:
-            if result:
-                processed_count += 1
+    for directory in ["Mathlib", "Archive", "Counterexamples", "MathlibTest"]:
+        # Find all .lean files in directory
+        directory_path = Path(directory)
+        if not directory_path.exists():
+            print(f"Error: {directory} directory not found", file=sys.stderr)
+            sys.exit(1)
+
+        print(f"::group::checking {directory}")
+
+        for lean_file in directory_path.rglob("*.lean"):
+            result = process_file(lean_file, cutoff_date, dry_run)
+            if dry_run:
+                if result > 0:
+                    processed_count += 1
+                    total_matches += result
+            else:
+                if result:
+                    processed_count += 1
+
+        print(f"::endgroup::")
 
     if dry_run:
         print(f"\nDRY RUN SUMMARY:")
-        print(f"Found {total_matches} deprecated aliases to remove in {processed_count} files")
+        print(f"Found {total_matches} deprecated declarations to remove in {processed_count} files")
     else:
         print(f"Processed {processed_count} files")
 
