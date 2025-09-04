@@ -204,6 +204,7 @@ theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
 theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
     Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
 
+/-- A version of `scalar_commute` for rectangular matrices. -/
 theorem scalar_comm (r : α) (hr : ∀ r', Commute r r') (M : Matrix m n α) :
     scalar m r * M = M * scalar n r := by
   ext; simp [Matrix.mul_apply, Matrix.diagonal, (hr · |>.eq)]
