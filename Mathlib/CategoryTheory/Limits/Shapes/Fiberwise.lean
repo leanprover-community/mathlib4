@@ -62,7 +62,7 @@ we can construct a cocone over `diagram` using the following algorithm:
         congr 1
         grind }
 
-variable (fiberwiseColimit : ∀ d : D, IsColimit (fiberwiseCocone d))
+variable {fiberwiseCocone cofan} (fiberwiseColimit : ∀ d : D, IsColimit (fiberwiseCocone d))
   (colimitCofan : IsColimit cofan)
 
 /-- Given a functor `F : J ⥤ D` to a discrete category, the colimit of any diagram `J ⥤ C` can
@@ -89,7 +89,7 @@ theorem hasColimit_of_fiber_of_isDiscrete
     [HasColimit (Discrete.functor fun d ↦
       colimit (fiberInclusion (p := F) (S := d) ⋙ diagram))] :
     HasColimit diagram :=
-  ⟨⟨⟨_, colimitOfFiberOfIsDiscrete F diagram _ _
+  ⟨⟨⟨_, colimitOfFiberOfIsDiscrete F diagram
     (fun d ↦ colimit.isColimit (fiberInclusion (p := F) (S := d) ⋙ diagram))
     (coproductIsCoproduct fun d ↦ colimit (fiberInclusion (p := F) (S := d) ⋙ diagram))⟩⟩⟩
 
