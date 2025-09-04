@@ -127,7 +127,8 @@ noncomputable def codomainUniqueUpToIso {b' : 𝒳} (φ' : a ⟶ b') [IsCocartes
     apply IsCocartesian.ext p (p.map φ') φ'
     simp only [fac_assoc, fac, comp_id]
 
-/-- Postcomposing a co-Cartesian morphism with an isomorphism lifting the identity is co-Cartesian. -/
+/-- Postcomposing a co-Cartesian morphism with an isomorphism lifting the identity is
+co-Cartesian. -/
 instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
     IsCocartesian p f (φ ≫ φ'.hom) where
   universal_property := by
@@ -139,7 +140,8 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     apply map_uniq
     exact ((assoc φ _ _) ▸ hτ₂)
 
-/-- Precomposing a co-Cartesian morphism with an isomorphism lifting the identity is co-Cartesian. -/
+/-- Precomposing a co-Cartesian morphism with an isomorphism lifting the identity is
+co-Cartesian. -/
 instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom] :
     IsCocartesian p f (φ'.hom ≫ φ) where
   universal_property := by
