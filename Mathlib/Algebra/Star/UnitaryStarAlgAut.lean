@@ -55,4 +55,9 @@ theorem toRingEquiv_toStarAlgAut (u : unitary R) :
     = MulSemiringAction.toRingEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
   rfl
 
+theorem toAlgEquiv_toStarAlgAut {S : Type*} [CommSemiring S] [Algebra S R] (u : unitary R) :
+    (toStarAlgAut S R u).toAlgEquiv
+    = MulSemiringAction.toAlgEquiv _ R (ConjAct.toConjAct <| toUnits u) :=
+  rfl
+
 end unitary
