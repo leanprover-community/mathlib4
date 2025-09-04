@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Real.Embedding
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Rank one valuations
@@ -165,5 +165,11 @@ lemma ValuativeRel.isRankLeOne_iff_mulArchimedean :
       rcases eq_or_ne a 1 with rfl | ha'
       · exact ⟨⟨b, (H.trans' zero_lt_one).ne', H.ne'⟩⟩
       · exact ⟨⟨a, ha, ha'⟩⟩
+
+lemma ValuativeRel.IsRankLeOne.of_compatible_mulArchimedean [MulArchimedean Γ₀]
+    (v : Valuation R Γ₀) [v.Compatible] :
+    ValuativeRel.IsRankLeOne R := by
+  rw [isRankLeOne_iff_mulArchimedean]
+  exact .comap (ValueGroupWithZero.embed v).toMonoidHom (ValueGroupWithZero.embed_strictMono v)
 
 end ValuativeRel

@@ -90,7 +90,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
       set U := ⨆ k : ℕ, U' k
       suffices Submodule.map (T χ w) U ≤ U from this <| Submodule.mem_map_of_mem hx
       rw [Submodule.map_iSup, iSup_le_iff]
-      rintro (_|i)
+      rintro (_ | i)
       · simp [U']
       · exact (T_apply_succ w i).trans (le_iSup _ _) }
   have hzU (x : V) (hx : x ∈ U) : (π z) x ∈ U := by
@@ -204,7 +204,7 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
     [IsSolvable L] [LieModule.IsTriangularizable k L V] [Module.Finite k L] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   obtain H|⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
-  · obtain _|_ := subsingleton_or_nontrivial L
+  · obtain _ | _ := subsingleton_or_nontrivial L
     · use 0
       simpa [mem_weightSpace, nontrivial_iff] using exists_pair_ne V
     · rw [LieSubmodule.toSubmodule_eq_top] at H
@@ -212,7 +212,6 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
   lift A to LieIdeal k L
   · intros
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
-  change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', _⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
   exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L

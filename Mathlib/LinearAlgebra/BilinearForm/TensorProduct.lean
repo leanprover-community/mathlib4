@@ -50,7 +50,7 @@ def tensorDistrib :
     (BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂) →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
   ((LinearMap.llcomp A _ _ _).flip
-   (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
+    (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A M₁ M₂ M₁ M₂).toLinearMap)
   ∘ₗ TensorProduct.AlgebraTensorModule.homTensorHomMap R _ _ _ _ _ _
   ∘ₗ (TensorProduct.AlgebraTensorModule.congr
     (TensorProduct.lift.equiv A M₁ M₁ N₁)
@@ -125,7 +125,7 @@ lemma _root_.LinearMap.IsSymm.tmul {B₁ : BilinForm A M₁} {B₂ : BilinForm R
     (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) : (B₁.tmul B₂).IsSymm := by
   rw [LinearMap.isSymm_iff_eq_flip]
   ext x₁ x₂ y₁ y₂
-  exact congr_arg₂ (HSMul.hSMul) (hB₂ x₂ y₂) (hB₁ x₁ y₁)
+  exact congr_arg₂ (HSMul.hSMul) (hB₂.eq x₂ y₂) (hB₁.eq x₁ y₁)
 
 variable (A) in
 /-- The base change of a bilinear form. -/
@@ -141,7 +141,7 @@ theorem baseChange_tmul (B₂ : BilinForm R M₂) (a : A) (m₂ : M₂)
 variable (A) in
 /-- The base change of a symmetric bilinear form is symmetric. -/
 lemma IsSymm.baseChange {B₂ : BilinForm R M₂} (hB₂ : B₂.IsSymm) : (B₂.baseChange A).IsSymm :=
-  IsSymm.tmul mul_comm hB₂
+  IsSymm.tmul ⟨mul_comm⟩ hB₂
 
 end BilinForm
 

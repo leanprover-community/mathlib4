@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.Submodule.Ker
 
 # Iterate maps and comaps of submodules
 
-Some preliminary work for establishing the strong rank condition for noetherian rings.
+Some preliminary work for establishing the strong rank condition for Noetherian rings.
 
 Given two linear maps `f i : N →ₗ[R] M` and a submodule `K : Submodule R N`, we can define
 `LinearMap.iterateMapComap f i n K : Submodule R N` to be `f⁻¹(i(⋯(f⁻¹(i(K)))))` (`n` times).
@@ -23,7 +23,7 @@ In particular, by taking `n = 0`, the kernel of `f` is contained in `K`
 which is a consequence of `LinearMap.ker_le_comap`.
 As a special case, if one can take `K` to be zero,
 then `f` is injective. This is the key result for establishing the strong rank condition
-for noetherian rings.
+for Noetherian rings.
 
 The construction here is adapted from the proof in Djoković's paper
 *Epimorphisms of modules which must be isomorphisms* [djokovic1973].
@@ -52,8 +52,8 @@ theorem iterateMapComap_le_succ (K : Submodule R N) (h : K.map f ≤ K.map i) (n
     simp_rw [iterateMapComap, iterate_succ', Function.comp_apply]
     calc
       _ ≤ (f.iterateMapComap i n K).map i := map_comap_le _ _
-      _ ≤ (((f.iterateMapComap i n K).map f).comap f).map i := map_mono (le_comap_map _ _)
-      _ ≤ _ := map_mono (comap_mono ih)
+      _ ≤ (((f.iterateMapComap i n K).map f).comap f).map i := by grw [← le_comap_map]
+      _ ≤ _ := by gcongr; exact ih
 
 /-- If `f` is surjective, `i` is injective, and there exists some `m` such that
 `LinearMap.iterateMapComap f i m K = LinearMap.iterateMapComap f i (m + 1) K`,
@@ -84,7 +84,7 @@ then the kernel of `f` is contained in `K`.
 This is a corollary of `LinearMap.iterateMapComap_eq_succ` and `LinearMap.ker_le_comap`.
 As a special case, if one can take `K` to be zero,
 then `f` is injective. This is the key result for establishing the strong rank condition
-for noetherian rings. -/
+for Noetherian rings. -/
 theorem ker_le_of_iterateMapComap_eq_succ (K : Submodule R N)
     (m : ℕ) (heq : f.iterateMapComap i m K = f.iterateMapComap i (m + 1) K)
     (hf : Surjective f) (hi : Injective i) : LinearMap.ker f ≤ K := by

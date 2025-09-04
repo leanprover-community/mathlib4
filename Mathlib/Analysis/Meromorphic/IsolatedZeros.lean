@@ -47,7 +47,7 @@ that is codiscrete within `U`, then `f` vanishes in a punctured neighbourhood of
 
 For a typical application, let `U` be a path in the complex plane and let `x` be one of the end
 points. If `f` is meromorphic at `x` and vanishes on `U`, then it will vanish in a punctured
-neighbourhood of `x`, which intersects `U` non-trivally but is not contained in `U`.
+neighbourhood of `x`, which intersects `U` non-trivially but is not contained in `U`.
 
 The assumption that `x` is not an isolated point of `U` is expressed as `AccPt x (𝓟 U)`. See
 `accPt_iff_frequently` and `accPt_iff_frequently_nhdsNE` for useful reformulations.

@@ -20,8 +20,8 @@ variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Constructs a `SeminormedGroup` structure from a `GroupSeminormClass` on a `Group`. -/
 -- See note [reducible non-instances]
-@[to_additive "Constructs a `SeminormedAddGroup` structure from an `AddGroupSeminormClass` on an
-`AddGroup`."]
+@[to_additive /-- Constructs a `SeminormedAddGroup` structure from an `AddGroupSeminormClass` on an
+`AddGroup`. -/]
 abbrev GroupSeminormClass.toSeminormedGroup [Group α] [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedGroup α where
   norm := f
@@ -37,8 +37,8 @@ lemma GroupSeminormClass.toSeminormedGroup_norm_eq [Group α] [GroupSeminormClas
 
 /-- Constructs a `SeminormedCommGroup` structure from a `GroupSeminormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive "Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass` on an
-`AddCommGroup`."]
+@[to_additive /-- Constructs a `SeminormedAddCommGroup` structure from an `AddGroupSeminormClass`
+on an `AddCommGroup`. -/]
 abbrev GroupSeminormClass.toSeminormedCommGroup [CommGroup α] [GroupSeminormClass F α ℝ]
     (f : F) : SeminormedCommGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f
@@ -50,8 +50,8 @@ lemma GroupSeminormClass.toSeminormedCommGroup_norm_eq [CommGroup α] [GroupSemi
 
 /-- Constructs a `NormedGroup` structure from a `GroupNormClass` on a `Group`. -/
 -- See note [reducible non-instances]
-@[to_additive "Constructs a `NormedAddGroup` structure from an `AddGroupNormClass` on an
-`AddGroup`."]
+@[to_additive /-- Constructs a `NormedAddGroup` structure from an `AddGroupNormClass` on an
+`AddGroup`. -/]
 abbrev GroupNormClass.toNormedGroup [Group α] [GroupNormClass F α ℝ]
     (f : F) : NormedGroup α where
   __ := GroupSeminormClass.toSeminormedGroup f
@@ -63,8 +63,8 @@ lemma GroupNormClass.toNormedGroup_norm_eq [Group α] [GroupNormClass F α ℝ]
 
 /-- Constructs a `NormedCommGroup` structure from a `GroupNormClass` on a `CommGroup`. -/
 -- See note [reducible non-instances]
-@[to_additive "Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
-`AddCommGroup`."]
+@[to_additive /-- Constructs a `NormedAddCommGroup` structure from an `AddGroupNormClass` on an
+`AddCommGroup`. -/]
 abbrev GroupNormClass.toNormedCommGroup [CommGroup α] [GroupNormClass F α ℝ]
     (f : F) : NormedCommGroup α where
   __ := GroupNormClass.toNormedGroup f
