@@ -270,7 +270,7 @@ theorem re_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).re = n := rfl
 theorem im_natCast (n : ℕ) : (n : QuadraticAlgebra R a b).im = 0 := rfl
 
 @[norm_cast]
-theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : QuadraticAlgebra R a b) := rfl
+theorem coe_natCast (n : ℕ) : ↑(↑n : R) = (↑n : QuadraticAlgebra R a b) := rfl
 
 @[scoped simp]
 theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : QuadraticAlgebra R a b).re = ofNat(n) := rfl
