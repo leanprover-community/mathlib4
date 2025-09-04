@@ -216,7 +216,6 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     rw [← Nat.cast_pow, sq, ← card_product, card_eq_sum_card_fiberwise h₃, Nat.cast_sum]
     refine (sum_lt_sum_of_nonempty (by simp [h₀]) h₂).trans_eq' ?_
     simp only [sum_const, nsmul_eq_mul, mul_comm]
-  have : (0 : ℚ) < #A := by simpa [card_pos]
   rw [← Nat.cast_lt (α := ℚ), Nat.cast_mul, Nat.cast_two]
   -- passing between ℕ- and ℚ-inequalities is annoying, here and above
   nlinarith
