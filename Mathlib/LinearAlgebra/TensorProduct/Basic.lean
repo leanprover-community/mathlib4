@@ -769,10 +769,19 @@ lemma map_map (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : 
     (x : M₁ ⊗ N₁) : map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) x :=
   DFunLike.congr_fun (map_comp ..).symm x
 
+lemma range_map_mono {a : M₁ →ₗ[R] M₂} {b : M₃ →ₗ[R] M₂} {c : N₁ →ₗ[R] N₂} {d : N₃ →ₗ[R] N₂}
+    (hab : range a ≤ range b) (hcd : range c ≤ range d) : range (map a c) ≤ range (map b d) := by
+  rintro _ ⟨x, rfl⟩
+  induction' x using TensorProduct.induction_on with e f _ _ h₁ h₂
+  · exact map_zero (map a c) ▸ Submodule.zero_mem _
+  · obtain ⟨g, hg⟩ := hab (mem_range_self a e)
+    obtain ⟨h, hh⟩ := hcd (mem_range_self c f)
+    exact ⟨g ⊗ₜ h, map_tmul a c _ _ ▸ hh ▸ hg ▸ map_tmul b d _ _⟩
+  · exact map_add (map a c) _ _ ▸ Submodule.add_mem _ h₁ h₂
+
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
-    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
-  simp_rw [range_mapIncl]
-  exact Submodule.span_mono (Set.image2_subset hp hq)
+    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') :=
+  range_map_mono (by simpa) (by simpa)
 
 theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
