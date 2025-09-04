@@ -15,8 +15,11 @@ namespace Fin
 
 @[to_additive (attr := simp), simp]
 theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j := by
-  --exact?
-  sorry
+  induction i using Fin.induction
+  case zero => simp only [insertNth_zero', prod_cons]
+  case succ _ i ih =>
+    convert ih using 1
+    sorry
 
 end Fin
 
