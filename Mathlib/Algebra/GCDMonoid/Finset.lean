@@ -101,21 +101,11 @@ theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
   Eq.symm <| lcm_image _
 
-/- Should this be deprecated and replaced by the one below
-since `0 ∈ f '' s` is not in simp normal form? -/
-theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ 0 ∈ f '' s := by
-  simp only [Multiset.mem_map, lcm_def, Multiset.lcm_eq_zero_iff, Set.mem_image, mem_coe, ←
-    Finset.mem_def]
+theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 := by
+  simp only [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
 
-theorem lcm_eq_zero_iff' [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 :=
-  lcm_eq_zero_iff
-
--- Similar issue: the type is aligned with `lcm_eq_zero_iff` but not in simp normal form.
-theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ 0 ∉ f '' s :=
-  not_congr lcm_eq_zero_iff
-
-theorem lcm_ne_zero_iff' [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
-  simp [lcm_ne_zero_iff]
+theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
+  simp [lcm_eq_zero_iff]
 
 end lcm
 
