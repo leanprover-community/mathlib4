@@ -33,7 +33,7 @@ the roots of the minimal polynomial of `s` over `R`.
   algebraically closed field
 * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
   bilinear form
-* `traceForm_dualBasis_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+* `traceForm_dualBasis_powerBasis_eq`: The dual basis of a power basis `{1, x, x²...}` under the
   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
@@ -529,7 +529,7 @@ theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K 
 variable {K L}
 
 /--
-The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
+The dual basis of a power basis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
 with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
 lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSeparable K L]
