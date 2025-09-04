@@ -138,11 +138,11 @@ theorem pi_div_two_le_two : π / 2 ≤ 2 := by
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by simp)).1
+  (div_le_div_iff_of_pos_right (zero_lt_two' ℝ)).1
     (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (zero_lt_two' ℝ)).1
     (calc
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
