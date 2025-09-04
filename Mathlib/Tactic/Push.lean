@@ -156,7 +156,7 @@ def resolvePushId? (stx : Term) : TermElabM (Option Expr) := do
     -- but for example `∑ x, _` expands to `Finset.sum Finset.univ fun _ ↦ _`,
     -- in which `Finset.univ` is not an underscore. So instead
     -- we only insist that the last argument is an underscore.
-    if isUnderscore args.back! then
+    if args.back?.all isUnderscore then
       try resolveId? f catch _ => return none
     else
       return none
