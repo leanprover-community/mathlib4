@@ -644,7 +644,6 @@ theorem isMultiplyPretransitive :
     have h : x i ∈ Finset.univ.image x := Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩
     rw [← Finset.notMem_compl, hs, Finset.mem_insert, Finset.mem_singleton, not_or] at h
     simp [Equiv.swap_apply_of_ne_of_ne h.1 h.2, ← hg]
-              coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
 
 /-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
   contains `alternatingGroup α`. -/
