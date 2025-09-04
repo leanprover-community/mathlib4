@@ -29,11 +29,11 @@ theorem prod_insertIdx {l : List M} (h : i ≤ l.length) : (l.insertIdx i a).pro
   induction i generalizing l
   case zero => rfl
   case succ i ih =>
-    rcases l, h with _ | ⟨hd, tl⟩
-    · contradiction
+    have : l.length > 0 := by exact Nat.zero_lt_of_lt h
+    have := exists_cons_of_length_pos this
+    obtain ⟨hd, tl, rfl⟩ := this
     · specialize @ih tl (Nat.le_of_lt_succ h)
-      simp [ih]
-      exact mul_left_comm hd a tl.prod
+      simp [ih, mul_left_comm]
 
 end List
 namespace List.Vector
