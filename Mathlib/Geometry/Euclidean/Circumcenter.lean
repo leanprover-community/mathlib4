@@ -335,8 +335,6 @@ theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
 
-attribute [local instance] AffineSubspace.toAddTorsor
-
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)
     (h₁' : ↑(s.orthogonalProjectionSpan p₁) = s.circumcenter)
