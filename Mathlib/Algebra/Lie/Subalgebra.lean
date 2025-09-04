@@ -283,8 +283,10 @@ def range : LieSubalgebra R L₂ :=
         exact ⟨⁅x, y⁆, f.map_lie x y⟩ }
 
 @[simp]
-theorem range_coe : (f.range : Set L₂) = Set.range f :=
-  LinearMap.range_coe (f : L →ₗ[R] L₂)
+theorem coe_range : (f.range : Set L₂) = Set.range f :=
+  LinearMap.coe_range (f : L →ₗ[R] L₂)
+
+@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
 
 @[simp]
 theorem mem_range (x : L₂) : x ∈ f.range ↔ ∃ y : L, f y = x :=
@@ -428,14 +430,16 @@ instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
-        simp only [Submodule.mem_carrier, mem_iInter, Submodule.sInf_coe, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_setOf_eq,
           forall_apply_eq_imp_iff₂, exists_imp, and_imp] at hx hy ⊢
         intro K hK
         exact K.lie_mem (hx K hK) (hy K hK) }⟩
 
 @[simp]
-theorem inf_coe : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
+theorem coe_inf : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 @[simp]
 theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
@@ -443,17 +447,19 @@ theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
   rfl
 
 @[simp]
-theorem sInf_coe (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
-  rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.sInf_coe]
+theorem coe_sInf (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
+  rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext x
   simp
+
+@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
 
 theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
   have h : ∀ K K' : LieSubalgebra R L, (K : Set L) ≤ K' ↔ K ≤ K' := by
     intros
     exact Iff.rfl
   apply IsGLB.of_image @h
-  simp only [sInf_coe]
+  simp only [coe_sInf]
   exact isGLB_biInf
 
 /-- The set of Lie subalgebras of a Lie algebra form a complete lattice.
@@ -598,7 +604,7 @@ def lieSpan : LieSubalgebra R L :=
 variable {R L s}
 
 theorem mem_lieSpan {x : L} : x ∈ lieSpan R L s ↔ ∀ K : LieSubalgebra R L, s ⊆ K → x ∈ K := by
-  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
+  rw [← SetLike.mem_coe, lieSpan, coe_sInf]
   exact Set.mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
