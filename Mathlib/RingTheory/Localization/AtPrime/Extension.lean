@@ -3,10 +3,7 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.DedekindDomain.Instances
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-
+import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Primes in an extension of localization at prime
@@ -105,29 +102,3 @@ theorem primesOverEquivPrimesOver_apply (P : p.primesOver S) :
     primesOverEquivPrimesOver p Rₚ Sₚ P = Ideal.map (algebraMap S Sₚ) P := rfl
 
 end IsLocalization.AtPrime
-
-section sanity_check
-
-variable {R S : Type*} [CommRing R] [CommRing S] [IsDedekindDomain R] [IsDedekindDomain S]
-  [Algebra R S] (p : Ideal R) [p.IsPrime]
-variable (P : Ideal S) [hPp : P.LiesOver p] [NoZeroSMulDivisors R S]
-
-open Ideal Algebra IsLocalRing IsLocalization AtPrime
-
-local notation3 "Rₚ" => Localization.AtPrime p
-local notation3 "Sₚ" => Localization  (algebraMapSubmonoid S p.primeCompl)
-
--- mem_primesOver_of_isPrime
-example {Q : Ideal Sₚ} [Algebra.IsIntegral R S] [Q.IsPrime] (hQ : Q ≠ ⊥) :
-    Q ∈ (maximalIdeal Rₚ).primesOver Sₚ := mem_primesOver_of_isPrime Rₚ Sₚ hQ
-
--- exists_primesOver_map_eq_of_primesOver
-example (Q : (maximalIdeal Rₚ).primesOver Sₚ) :
-    ∃ q : p.primesOver S, q.val.map (algebraMap S Sₚ) = Q :=
-  exists_primesOver_map_eq_of_primesOver p Rₚ Sₚ Q
-
--- primesOverEquivPrimesOver
-noncomputable example [NeZero p] : p.primesOver S ≃ (maximalIdeal Rₚ).primesOver Sₚ :=
-  primesOverEquivPrimesOver p _ _
-
-end sanity_check
