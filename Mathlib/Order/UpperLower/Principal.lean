@@ -98,6 +98,10 @@ nonrec lemma Ici_injective : Injective (Ici : α → UpperSet α) := fun _a _b h
 
 lemma Ici_ne_Ici : Ici a ≠ Ici b ↔ a ≠ b := Ici_inj.not
 
+@[simp]
+theorem Ioi_eq_top [OrderTop α] {a : α} : Ioi a = ⊤ ↔ a = ⊤ := by
+  simp [UpperSet.ext_iff]
+
 end PartialOrder
 
 @[simp]
@@ -196,6 +200,10 @@ nonrec lemma Iic_injective : Injective (Iic : α → LowerSet α) := fun _a _b h
 @[simp] lemma Iic_inj : Iic a = Iic b ↔ a = b := Iic_injective.eq_iff
 
 lemma Iic_ne_Iic : Iic a ≠ Iic b ↔ a ≠ b := Iic_inj.not
+
+@[simp]
+theorem Iio_eq_bot [OrderBot α] {a : α} : Iio a = ⊥ ↔ a = ⊥ := by
+  simp [LowerSet.ext_iff]
 
 end PartialOrder
 

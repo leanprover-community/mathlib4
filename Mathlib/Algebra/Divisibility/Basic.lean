@@ -36,7 +36,7 @@ section Semigroup
 variable [Semigroup α] {a b c : α}
 
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
-    This matches the convention for ordinals. -/
+This matches the convention for ordinals. -/
 instance (priority := 100) semigroupDvd : Dvd α :=
   Dvd.mk fun a b => ∃ c, b = a * c
 
@@ -101,6 +101,9 @@ theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
   obtain ⟨d, rfl⟩ := h
   use d
   rw [mul_assoc]
+
+theorem IsLeftRegular.dvd_cancel_left (h : IsLeftRegular a) : a * b ∣ a * c ↔ b ∣ c :=
+  ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd; ⟨d, h (eq.trans <| mul_assoc ..)⟩, mul_dvd_mul_left a⟩
 
 end Semigroup
 

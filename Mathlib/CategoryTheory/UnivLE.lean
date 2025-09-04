@@ -3,9 +3,9 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
+import Mathlib.Logic.UnivLE
 
 /-!
 # Universe inequalities and essential surjectivity of `uliftFunctor`.

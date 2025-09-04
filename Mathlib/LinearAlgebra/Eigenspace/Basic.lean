@@ -271,7 +271,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
-  congr
+  congr 1
   aesop
 
 lemma genEigenspace_le_genEigenspace_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M)
@@ -519,7 +519,7 @@ theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
   genEigenspace_top_eq_maxUnifEigenspaceIndex _ _
 
 /-- A generalized eigenvalue for some exponent `k` is also
-    a generalized eigenvalue for exponents larger than `k`. -/
+a generalized eigenvalue for exponents larger than `k`. -/
 theorem hasGenEigenvalue_of_hasGenEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
     {m : ℕ} (hm : k ≤ m) (hk : f.HasGenEigenvalue μ k) :
     f.HasGenEigenvalue μ m :=
@@ -672,7 +672,7 @@ theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
   (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
-    independent. -/
+independent. -/
 theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
     (f : End R M) (μ : ι → R) (hμ : Function.Injective μ) (v : ι → M)
     (h_eigenvec : ∀ i, f.HasEigenvector (μ i) (v i)) : LinearIndependent R v :=
@@ -680,18 +680,18 @@ theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
     (fun i ↦ h_eigenvec i |>.left) (fun i ↦ h_eigenvec i |>.right)
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
-    independent. (Lemma 5.10 of [axler2015])
+independent. (Lemma 5.10 of [axler2015])
 
-    We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
-    eigenvalue in the image of `xs`.
-    See `Module.End.eigenvectors_linearIndependent'` for an indexed variant. -/
+We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
+eigenvalue in the image of `xs`.
+See `Module.End.eigenvectors_linearIndependent'` for an indexed variant. -/
 theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
     (f : End R M) (μs : Set R) (xs : μs → M)
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
   f.eigenvectors_linearIndependent' (fun μ : μs ↦ μ) Subtype.coe_injective _ h_eigenvec
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
-    of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
+of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
 theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (μ : R)
     (hfp : ∀ x : M, x ∈ p → f x ∈ p) :
     genEigenspace (LinearMap.restrict f hfp) μ k =

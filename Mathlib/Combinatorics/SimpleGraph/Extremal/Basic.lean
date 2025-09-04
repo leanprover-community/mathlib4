@@ -3,9 +3,7 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
@@ -24,6 +22,7 @@ This file introduces basic definitions for extremal graph theory, including extr
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
 
+assert_not_exists Field
 
 open Finset Fintype
 
@@ -173,6 +172,17 @@ theorem isExtremal_free_iff :
 
 lemma card_edgeFinset_of_isExtremal_free (h : G.IsExtremal H.Free) :
     #G.edgeFinset = extremalNumber (card V) H := (isExtremal_free_iff.mp h).2
+
+/-- If `G` is `H.Free`, then `G.deleteIncidenceSet v` is also `H.Free` and has at most
+`extremalNumber (card V-1) H` many edges. -/
+theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
+    [DecidableEq V] (h : H.Free G) (v : V) :
+    #(G.deleteIncidenceSet v).edgeFinset ≤ extremalNumber (card V - 1) H := by
+  rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
+  apply card_edgeFinset_le_extremalNumber
+  contrapose! h
+  rw [not_free] at h ⊢
+  exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber
 
