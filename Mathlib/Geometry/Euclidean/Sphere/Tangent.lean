@@ -197,6 +197,18 @@ lemma IsTangentAt.isTangent {s : Sphere P} {p : P} {as : AffineSubspace ℝ P}
   · rw [center_mem_orthRadius_iff] at hsp
     rwa [← hsp] at hs
 
+lemma IsTangent.radius_le_dist_center {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as)
+    {p : P} (hp : p ∈ as) : s.radius ≤ dist p s.center := by
+  obtain ⟨x, h⟩ := h
+  refine le_of_sq_le_sq ?_ dist_nonneg
+  rw [h.dist_sq_eq_of_mem hp, le_add_iff_nonneg_right]
+  exact sq_nonneg _
+
+lemma IsTangent.notMem_of_dist_lt {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as)
+    {p : P} (hp : dist p s.center < s.radius) : p ∉ as := by
+  contrapose! hp
+  exact h.radius_le_dist_center hp
+
 lemma IsTangent.infDist_eq_radius {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as) :
     Metric.infDist s.center as = s.radius := by
   obtain ⟨p, h⟩ := h
@@ -205,14 +217,9 @@ lemma IsTangent.infDist_eq_radius {s : Sphere P} {as : AffineSubspace ℝ P} (h 
     rw [mem_sphere'.1 h.mem_sphere]
   · rw [Metric.infDist_eq_iInf]
     have : Nonempty as := ⟨⟨p, h.mem_space⟩⟩
-    refine le_ciInf fun x ↦ le_of_sq_le_sq ?_ dist_nonneg
-    rw [dist_comm, h.dist_sq_eq_of_mem x.property, le_add_iff_nonneg_right]
-    exact sq_nonneg _
-
-lemma IsTangent.notMem_of_dist_lt {s : Sphere P} {as : AffineSubspace ℝ P} (h : s.IsTangent as)
-    {p : P} (hp : dist s.center p < s.radius) : p ∉ as := by
-  rw [← h.infDist_eq_radius] at hp
-  exact Metric.notMem_of_dist_lt_infDist hp
+    refine le_ciInf fun x ↦ ?_
+    rw [dist_comm]
+    exact h.isTangent.radius_le_dist_center x.property
 
 lemma dist_orthogonalProjection_eq_radius_iff_isTangentAt {s : Sphere P} {as : AffineSubspace ℝ P}
     [Nonempty as] [as.direction.HasOrthogonalProjection] :
