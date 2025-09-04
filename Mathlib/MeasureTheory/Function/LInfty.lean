@@ -49,6 +49,8 @@ end Mul
 
 section Const
 
+/- We just found  `memLp_top_const`, so the following theorem isn't needed. -/
+
 /-- Note: Unlike for general Lp, this does not require `IsFiniteMeasure` instance. -/
 theorem memLinfty_const (c : R) : MemLp (fun _ : α => c) ∞ μ := by
   refine ⟨aestronglyMeasurable_const, ?_⟩
@@ -57,9 +59,11 @@ theorem memLinfty_const (c : R) : MemLp (fun _ : α => c) ∞ μ := by
   · rw [eLpNorm_const c (ENNReal.top_ne_zero) hμ]
     simp
 
+/- There is `memLp_top_const` with `IsFiniteMeasure` assumption, in the `LpSpace.Basic` file.
+Should this go there, as well? How to square with our new `Const` instance? -/
 theorem const_mem_Linfty (c : R) :
     @AEEqFun.const α _ _ μ _ c ∈ Lp R ∞ μ :=
-  (memLinfty_const c).eLpNorm_mk_lt_top
+  (memLp_top_const c).eLpNorm_mk_lt_top
 
 /-- The constant L∞ function. -/
 def Linfty.const : R →+ Lp R ∞ μ where
