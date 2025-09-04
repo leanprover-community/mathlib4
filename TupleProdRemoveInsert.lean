@@ -4,23 +4,45 @@ open Fin
 open Finset
 open List
 
+variable [CommMonoid M]
+
+namespace Fin
+
 #check Fin.cons
 #check Fin.snoc
 
 #check Fin.prod_cons
 
-example (p : Fin n → ℕ) : ∏ j, insertNth i x p j = x * ∏ j, p j := by
+@[to_additive (attr := simp), simp]
+theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j := by
   --exact?
   sorry
+
+end Fin
+
+namespace List
 
 #check List.prod_cons
 
-example (l : List ℕ) (h : i < l.length) : (l.insertIdx i a).prod = a * l.prod := by
+@[to_additive (attr := simp), simp]
+theorem prod_insertIdx (l : List M) (h : i < l.length) : (l.insertIdx i a).prod = a * l.prod := by
   --exact?
   sorry
 
-#check List.Vector.prod_cons
+end List
+namespace List.Vector
 
-example (v : List.Vector ℕ n) : (v.insertIdx a i).toList.prod = a * v.toList.prod := by
+section MulOne
+
+variable {M} [Mul M] [One M]
+
+theorem prod_cons (v : List.Vector M n) : (cons a v).toList.prod = a * v.toList.prod := rfl
+
+end MulOne
+
+@[to_additive (attr := simp), simp]
+theorem prod_insertIdx (v : List.Vector M n) : (v.insertIdx a i).toList.prod = a * v.toList.prod := by
   --exact?
   sorry
+
+end List.Vector
