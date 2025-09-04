@@ -147,7 +147,7 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 
 theorem codRestrict_range_surjective (f : ι → α) :
-    ((range f).codRestrict f fun _ => by simp).Surjective := by
+    ((range f).codRestrict f mem_range_self).Surjective := by
   rintro ⟨b, ⟨a, rfl⟩⟩
   exact ⟨a, rfl⟩
 
