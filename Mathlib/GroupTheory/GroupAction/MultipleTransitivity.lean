@@ -628,39 +628,22 @@ theorem isMultiplyPretransitive :
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
   have h2le : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
-  exact {
-    exists_smul_eq x y := by
-      have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
-        Equiv.Perm.isMultiplyPretransitive α _
-      obtain ⟨x', hx'⟩ := Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) x
-      obtain ⟨y', hy'⟩ := Fin.Embedding.restrictSurjective_of_le_natCard h2le (le_refl _) y
-      obtain ⟨g , hg⟩ := exists_smul_eq (Equiv.Perm α) x' y'
-      rcases Int.units_eq_one_or (Equiv.Perm.sign g) with h | h
-      · use ⟨g, h⟩
-        ext i
-        simp only [← hx', subgroup_smul_def, smul_apply,
-          Function.Embedding.trans_apply, castLEEmb_apply, ← hy']
-        simp only [← smul_apply, hg]
-      · let u : Fin (Nat.card α) := ⟨Nat.card α - 1, sub_one_lt_of_lt h2⟩
-        let v : Fin (Nat.card α) := ⟨Nat.card α - 2,
-            Nat.sub_lt_left_of_lt_add h2 (Nat.lt_add_of_pos_left Nat.zero_lt_two)⟩
-        refine ⟨⟨g * (Equiv.swap (x' u) (x' v)), ?_⟩, ?_⟩
-        · suffices u ≠ v by simp [h, this]
-          exact ne_of_val_ne (Nat.ne_of_gt (sub_succ_lt_self (Nat.card α) 1 h2))
-        · ext i
-          suffices (Equiv.swap (x' u) (x' v)) • (x' (castLE h2le i)) = x' (castLE h2le i) by
-            rw [← hy', ← hg, ← hx']
-            simp only [Subgroup.mk_smul, smul_apply, trans_apply, castLEEmb_apply,
-              Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply,
-              EmbeddingLike.apply_eq_iff_eq]
-            rw [← Equiv.Perm.smul_def, this]
-          have hiv : (i : ℕ) < v := (lt_of_lt_of_le i.prop (le_of_eq rfl))
-          have hiu : (i : ℕ) < u := by
-            apply lt_trans hiv
-            simp only [u, v, ← one_add_one_eq_two, ← Nat.sub_sub]
-            apply Nat.sub_lt_self Nat.zero_lt_one (le_sub_one_of_lt h2)
-          apply Equiv.swap_apply_of_ne_of_ne <;>
-            simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
+  have := Equiv.Perm.isMultiplyPretransitive α (Nat.card α)
+  have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α - 2) :=
+    MulAction.isMultiplyPretransitive_of_le h2le le_rfl
+  refine ⟨fun x y ↦ ?_⟩
+  obtain ⟨g, hg⟩ := exists_smul_eq (Equiv.Perm α) x y
+  rcases Int.units_eq_one_or (Equiv.Perm.sign g) with h | h
+  · exact ⟨⟨g, h⟩, hg⟩
+  · have : (Finset.univ.image x)ᶜ.card = 2 := by
+      rw [Finset.card_compl, Finset.univ.card_image_of_injective (by exact x.2), Finset.card_univ,
+        ← Nat.card_eq_fintype_card, Fintype.card_fin, tsub_tsub_cancel_of_le h2]
+    obtain ⟨a, b, hab, hs⟩ := Finset.card_eq_two.mp this
+    refine ⟨⟨g * Equiv.swap a b, by simp [h, hab]⟩, ?_⟩
+    ext i
+    have h : x i ∈ Finset.univ.image x := Finset.mem_image.mpr ⟨i, Finset.mem_univ i, rfl⟩
+    rw [← Finset.notMem_compl, hs, Finset.mem_insert, Finset.mem_singleton, not_or] at h
+    simp [Equiv.swap_apply_of_ne_of_ne h.1 h.2, ← hg]
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
 
 /-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
@@ -671,11 +654,9 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     alternatingGroup α ≤ G := by
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
-    rw [Nat.lt_succ_iff] at hα1
-    suffices alternatingGroup α = ⊥ by rw [this]; exact bot_le
-    refine alternatingGroup.eq_bot_of_card_le_two ?_
-    rw [← Nat.card_eq_fintype_card]
-    exact le_succ_of_le hα1
+    rw [Nat.card_eq_fintype_card] at hα1
+    rw [alternatingGroup.eq_bot_of_card_le_two hα1.le]
+    exact bot_le
   -- 2 ≤ Nat.card α
   apply Equiv.Perm.alternatingGroup_le_of_index_le_two
   -- one picks up a set of cardinality (card α - 2)
@@ -699,8 +680,7 @@ theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   rw [← is_one_pretransitive_iff]
   letI := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
-  rw [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
-  exact h
+  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
 
 open scoped Pointwise
 
@@ -713,60 +693,17 @@ theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup �
   rcases le_or_gt (Nat.card α) 2 with h2 | h2
   · exact isTrivialBlock_of_card_le_two h2 B
   rcases le_or_gt (Nat.card α) 3 with h3 | h4
-  · have h3' : Nat.card α = 3 := le_antisymm h3 h2
-    rcases le_or_gt B.ncard 1 with h1 | h2
-    · apply Or.intro_left
-      rwa [← Set.ncard_le_one_iff_subsingleton]
-    · apply Or.intro_right
-      rw [Set.one_lt_ncard_iff] at h2
-      -- using h2, get a ≠ b in B
-      obtain ⟨a, b, ha, hb, hab⟩ := h2
-      -- using h3', get c ≠ a, b
-      obtain ⟨c, _, hc⟩ := Finset.exists_mem_notMem_of_card_lt_card
-          (s := {a, b}) (t := Finset.univ) (by
-            simp only [Finset.card_univ, ← Nat.card_eq_fintype_card, h3']
-            exact lt_of_le_of_lt Finset.card_le_two (by norm_num))
-      have H1 : {c, a, b} = Finset.univ := by
-        apply Finset.eq_univ_of_card
-        rw [← Nat.card_eq_fintype_card, h3', Finset.card_insert_of_notMem hc,
-          Finset.card_insert_of_notMem (by simpa only [Finset.mem_singleton]),
-          Finset.card_singleton]
-      suffices c ∈ B by
-        apply subset_antisymm B.subset_univ
-        rw [← Finset.coe_univ, ← H1]
-        simp only [Finset.coe_insert, Finset.coe_singleton,
-          insert_subset_iff, singleton_subset_iff]
-        exact ⟨this, ha, hb⟩
-      -- get a three_cycle g = c[a,b,c]
-      simp only [Finset.mem_insert, Finset.mem_singleton, not_or] at hc
-      let g : alternatingGroup α := -- cycle [a, b, c]
-        ⟨Equiv.swap a b * Equiv.swap c b, by
-          rw [Equiv.Perm.mem_alternatingGroup, Equiv.Perm.sign_mul,
-            Equiv.Perm.sign_swap hab, Equiv.Perm.sign_swap hc.right,
-            Int.units_mul_self]⟩
-      suffices g • B = B by
-        rw [← this]
-        use b
-        apply And.intro hb
-        change (Equiv.swap a b * Equiv.swap c b) • b = c
-        simp only [Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply]
-        rw [Equiv.swap_apply_right]
-        rw [Equiv.swap_apply_of_ne_of_ne hc.left hc.right]
-      -- g • B = B
-      rw [isBlock_iff_smul_eq_of_mem] at hB
-      apply hB ha
-      simp only [Subgroup.mk_smul, Equiv.Perm.smul_def, Equiv.Perm.coe_mul, Function.comp_apply, g]
-      convert hb
-      rw [Equiv.swap_apply_of_ne_of_ne (Ne.symm hc.1) hab]
-      rw [Equiv.swap_apply_left]
+  · replace h3 : Nat.card α = 3 := le_antisymm h3 h2
+    have : IsPretransitive (alternatingGroup α) α := isPretransitive_of_three_le_card α h3.ge
+    have : IsPreprimitive (alternatingGroup α) α := IsPreprimitive.of_prime_card (h3 ▸ prime_three)
+    exact this.isTrivialBlock_of_isBlock hB
   -- IsTrivialBlock hB, for 4 ≤ Nat.card α
   suffices IsPreprimitive (alternatingGroup α) α by
     apply IsPreprimitive.isTrivialBlock_of_isBlock hB
   apply isPreprimitive_of_is_two_pretransitive
   letI := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
-  rw [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_of_lt h2)]
-  exact h4
+  rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_of_lt h2)]
 
 /-- The alternating group on 3 letters or more acts primitively -/
 theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
