@@ -10,7 +10,7 @@ import Mathlib.Geometry.Convex.Cone.Pointed
 # The algebraic dual of a cone
 
 Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p C` to be the pointed cone in `N` consisting of all points `y` such that
+`PointedCone.dual p s` to be the pointed cone in `N` consisting of all points `y` such that
 `0 ≤ p x y` for all `x ∈ s`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
