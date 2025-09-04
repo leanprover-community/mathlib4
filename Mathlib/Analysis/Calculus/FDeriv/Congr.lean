@@ -218,9 +218,6 @@ theorem Filter.EventuallyEq.fderivWithin_eq_of_nhds (h : f₁ =ᶠ[𝓝 x] f) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=
   (h.filter_mono nhdsWithin_le_nhds).fderivWithin_eq h.self_of_nhds
 
-@[deprecated (since := "2025-05-20")]
-alias Filter.EventuallyEq.fderivWithin_eq_nhds := Filter.EventuallyEq.fderivWithin_eq_of_nhds
-
 theorem fderivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=
   (hs.eventuallyEq.filter_mono inf_le_right).fderivWithin_eq hx

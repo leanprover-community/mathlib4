@@ -100,8 +100,6 @@ theorem mem_of_formPerm_apply_ne (h : l.formPerm x ≠ x) : x ∈ l := by
 theorem formPerm_apply_of_notMem (h : x ∉ l) : formPerm l x = x :=
   not_imp_comm.1 mem_of_formPerm_apply_ne h
 
-@[deprecated (since := "2025-05-23")] alias formPerm_apply_of_not_mem := formPerm_apply_of_notMem
-
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
   rcases l with - | ⟨y, l⟩
   · simp at h
@@ -326,9 +324,6 @@ theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) 
 
 theorem formPerm_eq_self_of_notMem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
   by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
-
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

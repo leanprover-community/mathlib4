@@ -237,9 +237,6 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
-@[deprecated (since := "2025-05-23")]
-alias uniformOfFinset_apply_of_not_mem := uniformOfFinset_apply_of_notMem
-
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
@@ -361,9 +358,6 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 theorem ofMultiset_apply_of_notMem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
     ENNReal.natCast_ne_top, or_false] using ha
-
-@[deprecated (since := "2025-05-23")]
-alias ofMultiset_apply_of_not_mem := ofMultiset_apply_of_notMem
 
 section Measure
 

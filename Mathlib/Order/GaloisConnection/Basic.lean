@@ -505,5 +505,3 @@ def WithBot.giUnbotDBot [Preorder α] [OrderBot α] :
   choice o _ := o.unbotD ⊥
   choice_eq _ _ := rfl
 
-@[deprecated (since := "2025-02-06")]
-alias WithBot.giUnbot'Bot := WithBot.giUnbotDBot

@@ -70,16 +70,9 @@ lemma insert_Icc_right_eq_Icc_add_one (h : a ≤ b + 1) :
     insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   simpa [← succ_eq_add_one] using insert_Icc_right_eq_Icc_succ (succ_eq_add_one b ▸ h)
 
-@[deprecated (since := "2025-04-19")]
-alias insert_Icc_eq_Icc_add_one_right := insert_Icc_right_eq_Icc_add_one
-
 lemma insert_Ico_right_eq_Ico_add_one_of_not_isMax (h : a ≤ b) (hb : ¬ IsMax b) :
     insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ_of_not_isMax h hb
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ico_right_eq_Ico_add_one_right_of_not_isMax :=
-  insert_Ico_right_eq_Ico_add_one_of_not_isMax
 
 lemma insert_Ico_add_one_left_eq_Ico (h : a < b) : insert a (Ico (a + 1) b) = Ico a b := by
   simpa [succ_eq_add_one] using insert_Ico_succ_left_eq_Ico h
@@ -115,9 +108,6 @@ lemma Ico_add_one_add_one_eq_Ioc (a b : α) : Ico (a + 1) (b + 1) = Ioc a b := b
 
 lemma insert_Ico_right_eq_Ico_add_one (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ h
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ico_right_eq_Ico_add_one_right := insert_Ico_right_eq_Ico_add_one
 
 lemma insert_Ioc_right_eq_Ioc_add_one (h : a ≤ b) : insert (b + 1) (Ioc a b) = Ioc a (b + 1) :=
   insert_Ioc_right_eq_Ioc_add_one_of_not_isMax h (not_isMax _)
@@ -158,16 +148,9 @@ lemma insert_Icc_left_eq_Icc_sub_one (h : a - 1 ≤ b) :
     insert (a - 1) (Icc a b) = Icc (a - 1) b := by
   simpa [← pred_eq_sub_one] using insert_Icc_left_eq_Icc_pred (pred_eq_sub_one a ▸ h)
 
-@[deprecated (since := "2025-04-19")]
-alias insert_Icc_eq_Icc_sub_one_left := insert_Icc_left_eq_Icc_sub_one
-
 lemma insert_Ioc_left_eq_Ioc_sub_one_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred_of_not_isMin h ha
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ioc_left_eq_Ioc_sub_one_left_of_not_isMin :=
-  insert_Ioc_left_eq_Ioc_sub_one_of_not_isMin
 
 lemma insert_Ioc_sub_one_right_eq_Ioc (h : a < b) : insert b (Ioc a (b - 1)) = Ioc a b := by
   simpa [pred_eq_sub_one] using insert_Ioc_pred_right_eq_Ioc h
@@ -203,9 +186,6 @@ lemma Ioc_sub_one_sub_one_eq_Ico (a b : α) : Ioc (a - 1) (b - 1) = Ico a b := b
 
 lemma insert_Ioc_left_eq_Ioc_sub_one (h : a ≤ b) : insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred h
-
-@[deprecated (since := "2025-04-14")]
-alias insert_Ioc_left_eq_Ioc_sub_one_left := insert_Ioc_left_eq_Ioc_sub_one
 
 lemma insert_Ico_left_eq_Ico_sub_one (h : a ≤ b) : insert (a - 1) (Ico a b) = Ico (a - 1) b :=
   insert_Ico_left_eq_Ico_sub_one_of_not_isMin h (not_isMin _)

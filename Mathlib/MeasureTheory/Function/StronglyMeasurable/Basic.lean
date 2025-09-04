@@ -94,14 +94,6 @@ lemma StronglyMeasurable.of_subsingleton_cod [Subsingleton β] : StronglyMeasura
   · exact ⟨fun _ => f_sf, fun x => tendsto_const_nhds⟩
   · simp [Set.preimage, eq_iff_true_of_subsingleton]
 
-@[deprecated StronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
-lemma Subsingleton.stronglyMeasurable [Subsingleton β] (f : α → β) : StronglyMeasurable f :=
-  .of_subsingleton_cod
-
-@[deprecated StronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
-lemma Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
-  .of_subsingleton_dom
-
 @[fun_prop]
 theorem stronglyMeasurable_const {b : β} : StronglyMeasurable fun _ : α => b :=
   ⟨fun _ => SimpleFunc.const α b, fun _ => tendsto_const_nhds⟩
@@ -145,9 +137,6 @@ lemma StronglyMeasurable.of_discrete [Countable α] : StronglyMeasurable f := by
   obtain ⟨g, hg⟩ := exists_surjective_nat α
   exact ⟨simpleFuncAux f g, hg.forall.2 fun m ↦
     tendsto_nhds_of_eventually_eq simpleFuncAux_eventuallyEq⟩
-
-@[deprecated StronglyMeasurable.of_discrete (since := "2025-04-09")]
-theorem StronglyMeasurable.of_finite [Finite α] : StronglyMeasurable f := .of_discrete
 
 end StronglyMeasurable
 
@@ -360,8 +349,6 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
 
-@[deprecated (since := "2025-03-05")] protected alias prod_mk := StronglyMeasurable.prodMk
-
 @[fun_prop]
 theorem comp_measurable [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
     {f : α → β} {g : γ → α} (hf : StronglyMeasurable f) (hg : Measurable g) :
@@ -568,11 +555,6 @@ theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.List.stronglyMeasurable_sum' := List.stronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.List.stronglyMeasurable_prod' := List.stronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) :
@@ -592,11 +574,6 @@ theorem _root_.Multiset.stronglyMeasurable_prod (l : Multiset (α → M))
   rcases l with ⟨l⟩
   simpa using l.stronglyMeasurable_prod (by simpa using hl)
 
-@[deprecated (since := "2025-05-30")]
-alias _root_.Multiset.stronglyMeasurable_sum' := Multiset.stronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Multiset.stronglyMeasurable_prod' := Multiset.stronglyMeasurable_prod
-
 @[to_additive (attr := fun_prop, measurability)]
 theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, StronglyMeasurable f) :
@@ -607,11 +584,6 @@ theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
 theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _a _b ha hb => ha.mul hb) (@stronglyMeasurable_one α M _ _ _) hf
-
-@[deprecated (since := "2025-05-30")]
-alias _root_.Finset.stronglyMeasurable_sum' := Finset.stronglyMeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Finset.stronglyMeasurable_prod' := Finset.stronglyMeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
 theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)

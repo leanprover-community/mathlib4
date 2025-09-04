@@ -89,9 +89,6 @@ lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
   refine forall₂_congr fun k _ ↦ ?_
   exact map_apply' _ _ _ ▸ IsSymmetricRel.mk_mem_comm h
 
-@[deprecated (since := "2025-03-05")]
-alias _root_.SymmetricRel.dynEntourage := _root_.IsSymmetricRel.dynEntourage
-
 lemma dynEntourage_comp_subset (T : X → X) (U V : Set (X × X)) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by
   simp only [dynEntourage, map_iterate, subset_iInter_iff]

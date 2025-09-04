@@ -520,9 +520,6 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
     takeWhile_append_dropWhile]
   exact mt ((takeWhile_prefix _).sublist.subset ·) hx
 
-@[deprecated (since := "2025-05-23")]
-alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
-
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Sorted r xs) :

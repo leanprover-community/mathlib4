@@ -794,9 +794,6 @@ theorem disjoint_powers_iff_notMem (y : R) (hI : I.IsRadical) :
   rintro x ⟨⟨n, rfl⟩, hx'⟩
   exact h (hI <| mem_radical_of_pow_mem <| le_radical hx')
 
-@[deprecated (since := "2025-05-23")]
-alias disjoint_powers_iff_not_mem := disjoint_powers_iff_notMem
-
 variable (I J)
 
 theorem radical_sup : radical (I ⊔ J) = radical (radical I ⊔ radical J) :=
@@ -1240,9 +1237,6 @@ theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} 
     x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
   Submodule.mem_span_range_iff_exists_fun _
 
-@[deprecated (since := "2025-04-02")] alias mem_ideal_span_range_iff_exists_fun :=
-  Ideal.mem_span_range_iff_exists_fun
-
 end span_range
 
 theorem Associates.mk_ne_zero' {R : Type*} [CommSemiring R] {r : R} :
@@ -1340,6 +1334,3 @@ lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [Co
   refine ⟨a, by rwa [Set.range_subset_iff], fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
   exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩)) (mem_sup_right <| hb _)
 
-@[deprecated (since := "2025-05-13")]
-alias Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup :=
-  Ideal.exists_subset_radical_span_sup_of_subset_radical_sup

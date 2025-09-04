@@ -460,8 +460,6 @@ theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • 
 theorem Normal.conj_smul_eq_self (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
 
-@[deprecated (since := "2025-03-01")] alias smul_normal := Normal.conj_smul_eq_self
-
 theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) :
     H.Normal := by
   constructor

@@ -52,8 +52,6 @@ lemma piecewise_eq_of_mem {i : ι} (hi : i ∈ s) : s.piecewise f g i = f i := b
 lemma piecewise_eq_of_notMem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
   simp [piecewise, hi]
 
-@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
-
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
     (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
   funext fun i => if_ctx_congr Iff.rfl (hf i) (hg i)
@@ -116,9 +114,6 @@ lemma update_piecewise_of_notMem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : �
   rw [update_piecewise]
   refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
-
-@[deprecated (since := "2025-05-23")]
-alias update_piecewise_of_not_mem := update_piecewise_of_notMem
 
 lemma piecewise_same : s.piecewise f f = f := by
   ext i

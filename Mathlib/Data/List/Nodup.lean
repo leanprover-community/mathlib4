@@ -46,8 +46,6 @@ theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
 theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
-
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.notMem
 
@@ -106,12 +104,6 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
-
-set_option linter.deprecated false in
-@[deprecated nodup_iff_getElem?_ne_getElem? (since := "2025-02-17")]
-theorem nodup_iff_get?_ne_get? {l : List α} :
-    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
-  simp [nodup_iff_getElem?_ne_getElem?]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by

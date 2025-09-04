@@ -48,9 +48,6 @@ on a certain object `M : PresheafOfModules S`. -/
 abbrev pullbackObjIsDefined : ObjectProperty (PresheafOfModules.{v} S) :=
   (pushforward φ).leftAdjointObjIsDefined
 
-@[deprecated (since := "2025-03-06")]
-alias PullbackObjIsDefined := pullbackObjIsDefined
-
 end
 
 section

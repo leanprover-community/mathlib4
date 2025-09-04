@@ -219,9 +219,6 @@ theorem normalizedFactors_of_irreducible_pow {p : α} (hp : Irreducible p) (k : 
 theorem zero_notMem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors x := fun h =>
   Prime.ne_zero (prime_of_normalized_factor _ h) rfl
 
-@[deprecated (since := "2025-05-23")]
-alias zero_not_mem_normalizedFactors := zero_notMem_normalizedFactors
-
 theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
   by_cases hcases : a = 0
   · rw [hcases]

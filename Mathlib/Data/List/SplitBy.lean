@@ -63,14 +63,10 @@ private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a
     · rw [splitByLoop_eq_append, mem_append]
       simpa using IH
 
-@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitByLoop := nil_notMem_splitByLoop
-
 theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
   | nil => not_mem_nil
   | cons _ _ => nil_notMem_splitByLoop
-
-@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitBy := nil_notMem_splitBy
 
 theorem ne_nil_of_mem_splitBy (r : α → α → Bool) {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] := by
   rintro rfl

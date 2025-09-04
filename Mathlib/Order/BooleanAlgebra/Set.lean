@@ -74,12 +74,8 @@ theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
 theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_compl := notMem_of_mem_compl
-
 theorem notMem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
-
-@[deprecated (since := "2025-05-23")] alias not_mem_compl_iff := notMem_compl_iff
 
 @[simp]
 theorem inter_compl_self (s : Set α) : s ∩ sᶜ = ∅ :=
@@ -186,15 +182,11 @@ lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm
 
 theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
 
-@[deprecated (since := "2025-05-23")] alias not_mem_diff_of_mem := notMem_diff_of_mem
-
 theorem mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∈ s :=
   h.left
 
 theorem notMem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t :=
   h.right
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_diff := notMem_of_mem_diff
 
 theorem diff_eq_compl_inter {s t : Set α} : s \ t = tᶜ ∩ s := by rw [diff_eq, inter_comm]
 
@@ -405,8 +397,6 @@ lemma diff_insert_of_notMem (h : a ∉ s) : s \ insert a t = s \ t := by
   simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
   exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
 
-@[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
-
 @[simp]
 lemma insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   ext
@@ -419,13 +409,8 @@ lemma insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t
   · simp [h', ne_of_mem_of_not_mem h' h]
   · simp [h']
 
-@[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
-
 lemma insert_diff_self_of_notMem (h : a ∉ s) : insert a s \ {a} = s := by
   ext x; simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
-
-@[deprecated (since := "2025-05-23")]
-alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 
 @[simp] lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
@@ -442,8 +427,6 @@ lemma diff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
 
 lemma diff_singleton_ssubset : s \ {a} ⊂ s ↔ a ∈ s := by simp
-
-@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
 
 @[simp]
 lemma insert_diff_singleton : insert a (s \ {a}) = insert a s := by

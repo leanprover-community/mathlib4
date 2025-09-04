@@ -177,9 +177,6 @@ instance : Inhabited (Subsemigroup M) :=
 theorem notMem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
   Set.notMem_empty x
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubsemigroup.not_mem_bot := AddSubsemigroup.notMem_bot
-
 @[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[to_additive (attr := simp)]

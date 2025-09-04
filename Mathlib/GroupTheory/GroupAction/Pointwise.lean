@@ -53,9 +53,6 @@ theorem Set.MapsTo.smul_setₛₗ (hst : MapsTo f s t) (c : M) : MapsTo f (c •
 theorem smul_preimage_set_subsetₛₗ (f : F) (c : M) (t : Set β) : c • f ⁻¹' t ⊆ f ⁻¹' (σ c • t) :=
   ((mapsTo_preimage f t).smul_setₛₗ c).subset_preimage
 
-@[deprecated (since := "2025-03-03")]
-alias vadd_preimage_set_leₛₗ := vadd_preimage_set_subsetₛₗ
-
 @[to_additive existing, deprecated (since := "2025-03-03")]
 alias smul_preimage_set_leₛₗ := smul_preimage_set_subsetₛₗ
 
@@ -90,9 +87,6 @@ theorem preimage_smul_setₛₗ_of_isUnit_isUnit (f : F)
     (hc : IsUnit c) (hc' : IsUnit (σ c)) (t : Set β) : f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ' hc.smul_bijective.surjective hc'.smul_bijective.injective
 
-@[deprecated (since := "2025-03-04")]
-alias preimage_vadd_setₛₗ_of_addUnits := preimage_vadd_setₛₗ_of_isAddUnit_isAddUnit
-
 @[to_additive existing, deprecated (since := "2025-03-04")]
 alias preimage_smul_setₛₗ_of_units := preimage_smul_setₛₗ_of_isUnit_isUnit
 
@@ -102,11 +96,6 @@ theorem IsUnit.preimage_smul_setₛₗ {F G : Type*} [FunLike G M N] [MonoidHomC
     (σ : G) [FunLike F α β] [MulActionSemiHomClass F σ α β] (f : F) (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (σ c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit _ hc (hc.map _) _
-
--- TODO: when you remove the next 2 aliases,
--- please move the group version below out of the `Group` namespace.
-@[deprecated (since := "2025-03-04")]
-alias preimage_vadd_setₛₗ := IsAddUnit.preimage_vadd_setₛₗ
 
 @[to_additive existing, deprecated (since := "2025-03-04")]
 alias preimage_smul_setₛₗ := IsUnit.preimage_smul_setₛₗ
@@ -144,9 +133,6 @@ theorem image_smul_set (f : F) (c : M) (s : Set α) : f '' (c • s) = c • f '
 theorem smul_preimage_set_subset (f : F) (c : M) (t : Set β) : c • f ⁻¹' t ⊆ f ⁻¹' (c • t) :=
   smul_preimage_set_subsetₛₗ f c t
 
-@[deprecated (since := "2025-03-04")]
-alias vadd_preimage_set_le := vadd_preimage_set_subset
-
 @[to_additive existing, deprecated (since := "2025-03-04")]
 alias smul_preimage_set_le := smul_preimage_set_subset
 
@@ -162,14 +148,6 @@ theorem IsUnit.preimage_smul_set {M α β F : Type*} [Monoid M] [MulAction M α]
     [FunLike F α β] [MulActionHomClass F M α β] (f : F) {c : M} (hc : IsUnit c) (t : Set β) :
     f ⁻¹' (c • t) = c • f ⁻¹' t :=
   preimage_smul_setₛₗ_of_isUnit_isUnit f hc hc t
-
--- TODO: when you remove the next 2 aliases,
--- please move the `Group` version to the root namespace.
-@[deprecated (since := "2025-03-04")]
-alias preimage_vadd_set := IsAddUnit.preimage_vadd_set
-
-@[deprecated (since := "2025-03-04")]
-alias preimage_smul_set := IsUnit.preimage_smul_set
 
 @[to_additive]
 theorem Group.preimage_smul_set {G : Type*} [Group G] {α β : Type*} [MulAction G α] [MulAction G β]

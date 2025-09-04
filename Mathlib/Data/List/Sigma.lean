@@ -64,15 +64,10 @@ theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigm
 theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l :=
   (not_congr mem_keys).trans not_exists
 
-@[deprecated (since := "2025-05-23")] alias not_mem_keys := notMem_keys
-
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
     let ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
-
-@[deprecated (since := "2025-04-27")]
-alias not_eq_key := ne_key
 
 /-! ### `NodupKeys` -/
 
@@ -99,9 +94,6 @@ theorem nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} :
 theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     s.1 ∉ l.keys :=
   (nodupKeys_cons.1 h).1
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_keys_of_nodupKeys_cons := notMem_keys_of_nodupKeys_cons
 
 theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     NodupKeys l :=
@@ -391,8 +383,6 @@ theorem kerase_of_notMem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : ker
   | nil => rfl
   | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
-@[deprecated (since := "2025-05-23")] alias kerase_of_not_mem_keys := kerase_of_notMem_keys
-
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist
 
@@ -466,8 +456,6 @@ theorem notMem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     · subst h
       simp [nd.1]
     · simp [h, ih nd.2]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_keys_kerase := notMem_keys_kerase
 
 @[simp]
 theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :

@@ -78,8 +78,6 @@ theorem range_add_one : range (n + 1) = insert n (range n) :=
 theorem notMem_range_self : n ∉ range n :=
   Multiset.notMem_range_self
 
-@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
-
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   Multiset.self_mem_range_succ n
 

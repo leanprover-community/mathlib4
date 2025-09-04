@@ -181,9 +181,6 @@ lemma Pointed.of_nonempty_of_isClosed (hC : (C : Set E).Nonempty) (hSclos : IsCl
   -- `0 ∈ closure f (0, ∞) ⊆ C, 0 ∈ C`
   simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
 
-@[deprecated (since := "2025-04-18")]
-alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
-
 variable [IsOrderedRing 𝕜]
 
 instance canLift : CanLift (ConvexCone 𝕜 E) (ProperCone 𝕜 E) (↑)

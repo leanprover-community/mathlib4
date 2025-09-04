@@ -141,18 +141,11 @@ theorem extend_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x 
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
-@[deprecated (since := "2025-05-22")]
-alias extend_image_nhd_mem_nhds_of_boundaryless := extend_image_nhds_mem_nhds_of_boundaryless
-
 theorem extend_image_nhds_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
     (h'x : f.extend I x ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 x) :
     (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
-
-@[deprecated (since := "2025-05-22")]
-alias extend_image_nhd_mem_nhds_of_mem_interior_range :=
-  extend_image_nhds_mem_nhds_of_mem_interior_range
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
 
@@ -463,19 +456,11 @@ theorem extChartAt_image_nhds_mem_nhds_of_mem_interior_range {x y}
   rw [extChartAt]
   exact extend_image_nhds_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
 
-@[deprecated (since := "2025-05-22")]
-alias extChartAt_image_nhd_mem_nhds_of_mem_interior_range :=
-  extChartAt_image_nhds_mem_nhds_of_mem_interior_range
-
 variable {x} in
 theorem extChartAt_image_nhds_mem_nhds_of_boundaryless [I.Boundaryless]
     {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
   rw [extChartAt]
   exact extend_image_nhds_mem_nhds_of_boundaryless _ (mem_chart_source H x) hx
-
-@[deprecated (since := "2025-05-22")]
-alias extChartAt_image_nhd_mem_nhds_of_boundaryless :=
-  extChartAt_image_nhds_mem_nhds_of_boundaryless
 
 theorem extChartAt_target_mem_nhdsWithin' {x y : M} (hy : y ∈ (extChartAt I x).source) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x y :=

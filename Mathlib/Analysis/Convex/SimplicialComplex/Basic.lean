@@ -67,9 +67,6 @@ structure SimplicialComplex where
 
 namespace SimplicialComplex
 
-@[deprecated (since := "2025-05-23")]
-alias not_empty_mem := empty_notMem
-
 variable {𝕜 E}
 variable {K : SimplicialComplex 𝕜 E} {s t : Finset E} {x : E}
 

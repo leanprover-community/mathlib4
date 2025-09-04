@@ -62,9 +62,6 @@ theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
   rw [round, round, Int.fract_add_intCast, Int.floor_add_intCast, Int.ceil_add_intCast,
     ← apply_ite₂, ite_self]
 
-@[deprecated (since := "2025-03-23")]
-alias round_add_int := round_add_intCast
-
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
   rw [← round_add_intCast a 1, cast_one]
@@ -75,9 +72,6 @@ theorem round_sub_intCast (x : α) (y : ℤ) : round (x - y) = round x - y := by
   norm_cast
   rw [round_add_intCast, sub_eq_add_neg]
 
-@[deprecated (since := "2025-03-23")]
-alias round_sub_int := round_sub_intCast
-
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
   rw [← round_sub_intCast a 1, cast_one]
@@ -85,9 +79,6 @@ theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
 @[simp]
 theorem round_add_natCast (x : α) (y : ℕ) : round (x + y) = round x + y :=
   mod_cast round_add_intCast x y
-
-@[deprecated (since := "2025-03-23")]
-alias round_add_nat := round_add_natCast
 
 @[simp]
 theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
@@ -98,9 +89,6 @@ theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
 theorem round_sub_natCast (x : α) (y : ℕ) : round (x - y) = round x - y :=
   mod_cast round_sub_intCast x y
 
-@[deprecated (since := "2025-03-23")]
-alias round_sub_nat := round_sub_natCast
-
 @[simp]
 theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
     round (x - ofNat(n)) = round x - ofNat(n) :=
@@ -110,15 +98,9 @@ theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
 theorem round_intCast_add (x : α) (y : ℤ) : round ((y : α) + x) = y + round x := by
   rw [add_comm, round_add_intCast, add_comm]
 
-@[deprecated (since := "2025-03-23")]
-alias round_int_add := round_intCast_add
-
 @[simp]
 theorem round_natCast_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round x := by
   rw [add_comm, round_add_natCast, add_comm]
-
-@[deprecated (since := "2025-03-23")]
-alias round_nat_add := round_natCast_add
 
 @[simp]
 theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :

@@ -84,8 +84,6 @@ lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
-@[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
-
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
   Or.elim (le_total a b)
     (fun h : a ≤ b =>
@@ -101,16 +99,10 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
-@[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
-
 lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
-@[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
-
 lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
-
-@[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
 
 lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by simpa [h] using lt_trichotomy a b
 
@@ -123,15 +115,6 @@ lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
-
-@[deprecated (since := "2025-07-27")] alias eq_or_lt_of_not_gt := eq_or_gt_of_not_lt
-@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
-
-/-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
-@[deprecated lt_trichotomy (since := "2025-04-21")]
-def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
-  if h : x < y then h₁ h
-  else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=

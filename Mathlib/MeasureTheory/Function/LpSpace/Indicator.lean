@@ -66,18 +66,12 @@ theorem _root_.HasCompactSupport.memLp_of_bound {f : X → E} (hf : HasCompactSu
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) (hf.measure_lt_top.ne) le_top
 
-@[deprecated (since := "2025-02-21")]
-alias _root_.HasCompactSupport.memℒp_of_bound := _root_.HasCompactSupport.memLp_of_bound
-
 /-- A continuous function with compact support is in L^p. -/
 theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : MemLp f p μ := by
   have := hf.memLp_top_of_hasCompactSupport h'f μ
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) (h'f.measure_lt_top.ne) le_top
-
-@[deprecated (since := "2025-02-21")]
-alias _root_.Continuous.memℒp_of_hasCompactSupport := _root_.Continuous.memLp_of_hasCompactSupport
 
 end Topology
 
@@ -113,9 +107,6 @@ theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorC
 
 theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp p hs hμs c x = 0 :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_notMem hxs _)
-
-@[deprecated (since := "2025-05-24")]
-alias indicatorConstLp_coeFn_nmem := indicatorConstLp_coeFn_notMem
 
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
@@ -207,9 +198,6 @@ theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (suppor
   · rw [← Set.indicator_add_eq_left h]; exact hfg.indicator (measurableSet_support hf.measurable)
   · rw [← Set.indicator_add_eq_right h]; exact hfg.indicator (measurableSet_support hg.measurable)
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_add_of_disjoint := memLp_add_of_disjoint
-
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (c : E) :
@@ -242,9 +230,6 @@ lemma Lp.coeFn_const : Lp.const p μ c =ᵐ[μ] Function.const α c :=
 
 @[simp]
 lemma MemLp.toLp_const : MemLp.toLp _ (memLp_const c) = Lp.const p μ c := rfl
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.toLp_const := MemLp.toLp_const
 
 @[simp]
 lemma indicatorConstLp_univ :

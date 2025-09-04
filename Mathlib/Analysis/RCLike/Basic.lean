@@ -142,9 +142,6 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
 
-@[deprecated (since := "2025-05-29")]
-alias zero_re' := zero_re
-
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
   map_zero im
@@ -211,8 +208,6 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
   map_finsuppProd _ f g
-
-@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=

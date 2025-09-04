@@ -66,44 +66,26 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 def unbotD (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
 
-@[deprecated (since := "2025-02-06")]
-alias unbot' := unbotD
-
 @[simp]
 theorem unbotD_bot {α} (d : α) : unbotD d ⊥ = d :=
   rfl
 
-@[deprecated (since := "2025-02-06")]
-alias unbot'_bot := unbotD_bot
-
 @[simp]
 theorem unbotD_coe {α} (d x : α) : unbotD d x = x :=
   rfl
-
-@[deprecated (since := "2025-02-06")]
-alias unbot'_coe := unbotD_coe
 
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 
 theorem unbotD_eq_iff {d y : α} {x : WithBot α} : unbotD d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x <;> simp [@eq_comm _ d]
 
-@[deprecated (since := "2025-02-06")]
-alias unbot'_eq_iff := unbotD_eq_iff
-
 @[simp]
 theorem unbotD_eq_self_iff {d : α} {x : WithBot α} : unbotD d x = d ↔ x = d ∨ x = ⊥ := by
   simp [unbotD_eq_iff]
 
-@[deprecated (since := "2025-02-06")]
-alias unbot'_eq_self_iff := unbotD_eq_self_iff
-
 theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
     unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
   induction y <;> simp [unbotD_eq_iff, or_comm]
-
-@[deprecated (since := "2025-02-06")]
-alias unbot'_eq_unbot'_iff := unbotD_eq_unbotD_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
@@ -156,8 +138,6 @@ lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
 
 lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x :=
   Option.eq_none_iff_forall_some_ne
-
-@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_bot := eq_bot_iff_forall_ne
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
@@ -236,9 +216,6 @@ lemma le_unbot_iff (hy : y ≠ ⊥) : a ≤ unbot y hy ↔ a ≤ y := by lift y 
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
 lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
 
-@[deprecated (since := "2025-02-06")]
-alias unbot'_le_iff := unbotD_le_iff
-
 end LE
 
 section LT
@@ -265,9 +242,6 @@ protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using id hy; simp
 lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using id hx; simp
 lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
-
-@[deprecated (since := "2025-02-06")]
-alias unbot'_lt_iff := unbotD_lt_iff
 
 end LT
 
@@ -324,9 +298,6 @@ lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b)
 
 theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x <;> simp
 
-@[deprecated (since := "2025-02-06")]
-alias le_coe_unbot' := le_coe_unbotD
-
 @[simp]
 theorem lt_coe_bot [OrderBot α] : x < (⊥ : α) ↔ x = ⊥ := by cases x <;> simp
 
@@ -337,9 +308,6 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
   refine ⟨by simp +contextual, fun h ↦ (x.eq_bot_iff_forall_ne).2 fun y => ?_⟩
   rintro rfl
   exact not_isBot y fun z => coe_le_coe.1 (h z)
-
-@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
-@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
 
 lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) ↔ x ≤ y := by
   obtain _ | y := y
@@ -562,22 +530,13 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
 def untopD (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
 
-@[deprecated (since := "2025-02-06")]
-alias untop' := untopD
-
 @[simp]
 theorem untopD_top {α} (d : α) : untopD d ⊤ = d :=
   rfl
 
-@[deprecated (since := "2025-02-06")]
-alias untop'_top := untopD_top
-
 @[simp]
 theorem untopD_coe {α} (d x : α) : untopD d x = x :=
   rfl
-
-@[deprecated (since := "2025-02-06")]
-alias untop'_coe := untopD_coe
 
 @[simp, norm_cast]
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
@@ -586,22 +545,13 @@ theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
 theorem untopD_eq_iff {d y : α} {x : WithTop α} : untopD d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_iff
 
-@[deprecated (since := "2025-02-06")]
-alias untop'_eq_iff := untopD_eq_iff
-
 @[simp]
 theorem untopD_eq_self_iff {d : α} {x : WithTop α} : untopD d x = d ↔ x = d ∨ x = ⊤ :=
   WithBot.unbotD_eq_self_iff
 
-@[deprecated (since := "2025-02-06")]
-alias untop'_eq_self_iff := untopD_eq_self_iff
-
 theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
     untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
   WithBot.unbotD_eq_unbotD_iff
-
-@[deprecated (since := "2025-02-06")]
-alias untop'_eq_untop'_iff := untopD_eq_untopD_iff
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
@@ -668,8 +618,6 @@ lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
 
 lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x :=
   Option.eq_none_iff_forall_some_ne
-
-@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
@@ -744,9 +692,6 @@ lemma untop_le_iff (hx : x ≠ ⊤) : untop x hx ≤ b ↔ x ≤ b := by lift x 
 lemma le_untop_iff (hy : y ≠ ⊤) : a ≤ untop y hy ↔ a ≤ y := by lift y to α using id hy; simp
 lemma le_untopD_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untopD b ↔ a ≤ y := by cases y <;> simp [hy]
 
-@[deprecated (since := "2025-02-11")]
-alias le_untop'_iff := le_untopD_iff
-
 end LE
 
 section LT
@@ -773,9 +718,6 @@ protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 @[simp] lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
 @[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
 lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
-
-@[deprecated (since := "2025-02-11")]
-alias lt_untop'_iff := lt_untopD_iff
 
 end LT
 
@@ -830,9 +772,6 @@ theorem map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ 
 
 theorem coe_untopD_le (y : WithTop α) (a : α) : y.untopD a ≤ y :=  by cases y <;> simp
 
-@[deprecated (since := "2025-02-11")]
-alias coe_untop'_le := coe_untopD_le
-
 @[simp]
 theorem coe_top_lt [OrderTop α] : (⊤ : α) < x ↔ x = ⊤ := by cases x <;> simp
 
@@ -841,9 +780,6 @@ lemma eq_top_iff_forall_gt : y = ⊤ ↔ ∀ a : α, a < y := by
 
 lemma eq_top_iff_forall_ge [NoTopOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
   WithBot.eq_bot_iff_forall_le (α := αᵒᵈ)
-
-@[deprecated (since := "2025-03-19")] alias forall_gt_iff_eq_top := eq_top_iff_forall_gt
-@[deprecated (since := "2025-03-19")] alias forall_ge_iff_eq_top := eq_top_iff_forall_ge
 
 lemma forall_coe_le_iff_le [NoTopOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y :=
   WithBot.forall_le_coe_iff_le (α := αᵒᵈ)

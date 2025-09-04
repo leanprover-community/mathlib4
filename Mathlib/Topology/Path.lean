@@ -108,11 +108,6 @@ theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
 
 /-- A special version of `ContinuousMap.coe_coe`.
 
-When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe_mk`. -/
-@[deprecated ContinuousMap.coe_coe (since := "2025-05-02")]
-theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
-  rfl
-
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
@@ -181,9 +176,6 @@ theorem _root_.Continuous.pathExtend {γ : Y → Path x y} {f : Y → ℝ} (hγ 
     (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=
   Continuous.IccExtend hγ hf
 
-@[deprecated (since := "2025-05-02")]
-alias _root_.Continuous.path_extend := Continuous.pathExtend
-
 /-- A useful special case of `Continuous.path_extend`. -/
 theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
@@ -194,16 +186,10 @@ theorem _root_.Filter.Tendsto.pathExtend
     Tendsto (↿fun x => ⇑(γ x).extend) (𝓝 y ×ˢ l₁) l₂ :=
   Filter.Tendsto.IccExtend _ hγ
 
-@[deprecated (since := "2025-05-02")]
-alias _root_.Filter.Tendsto.path_extend := Filter.Tendsto.pathExtend
-
 theorem _root_.ContinuousAt.pathExtend {g : Y → ℝ} {l r : Y → X} (γ : ∀ y, Path (l y) (r y))
     {y : Y} (hγ : ContinuousAt ↿γ (y, projIcc 0 1 zero_le_one (g y))) (hg : ContinuousAt g y) :
     ContinuousAt (fun i => (γ i).extend (g i)) y :=
   hγ.IccExtend (fun x => γ x) hg
-
-@[deprecated (since := "2025-05-02")]
-alias _root_.ContinuousAt.path_extend := ContinuousAt.pathExtend
 
 @[simp]
 theorem extend_extends {a b : X} (γ : Path a b) {t : ℝ}

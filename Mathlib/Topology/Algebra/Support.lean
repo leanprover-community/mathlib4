@@ -60,9 +60,6 @@ theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
 
-@[deprecated (since := "2025-05-24")]
-alias image_eq_zero_of_nmem_tsupport := image_eq_zero_of_notMem_tsupport
-
 @[to_additive existing, deprecated (since := "2025-05-24")]
 alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
 
@@ -111,9 +108,6 @@ variable {f : α → β} {x : α}
 theorem notMem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
   simp_rw [mulTSupport, mem_closure_iff_nhds, not_forall, not_nonempty_iff_eq_empty, exists_prop,
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_tsupport_iff_eventuallyEq := notMem_tsupport_iff_eventuallyEq
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias not_mem_mulTSupport_iff_eventuallyEq := notMem_mulTSupport_iff_eventuallyEq
@@ -435,14 +429,6 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
       intro i hi
       simp only [Finite.coe_toFinset, mem_setOf_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
-
-@[deprecated (since := "2025-05-22")]
-alias LocallyFinite.exists_finset_nhd_mulSupport_subset :=
-  LocallyFinite.exists_finset_nhds_mulSupport_subset
-
-@[deprecated (since := "2025-05-22")]
-alias LocallyFinite.exists_finset_nhd_support_subset :=
-  LocallyFinite.exists_finset_nhds_support_subset
 
 @[to_additive]
 theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :

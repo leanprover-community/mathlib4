@@ -251,9 +251,6 @@ theorem dist_orthogonalProjection_ne_zero_of_notMem {s : AffineSubspace ℝ P} [
     dist p (orthogonalProjection s p) ≠ 0 :=
   mt dist_orthogonalProjection_eq_zero_iff.mp hp
 
-@[deprecated (since := "2025-05-23")]
-alias dist_orthogonalProjection_ne_zero_of_not_mem := dist_orthogonalProjection_ne_zero_of_notMem
-
 /-- Subtracting `p` from its `orthogonalProjection` produces a result
 in the orthogonal direction. -/
 theorem orthogonalProjection_vsub_mem_direction_orthogonal (s : AffineSubspace ℝ P) [Nonempty s]

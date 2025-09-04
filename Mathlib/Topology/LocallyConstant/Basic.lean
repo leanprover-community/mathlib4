@@ -112,9 +112,6 @@ theorem prodMk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
 
-@[deprecated (since := "2025-03-10")]
-alias prod_mk := prodMk
-
 theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
     (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=
   (hf.prodMk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
@@ -468,8 +465,6 @@ theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU 
 @[to_additive]
 theorem mulIndicator_of_notMem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator hU a = 1 :=
   Set.mulIndicator_of_notMem h _
-
-@[deprecated (since := "2025-05-23")] alias indicator_of_not_mem := indicator_of_notMem
 
 @[to_additive existing, deprecated (since := "2025-05-23")]
 alias mulIndicator_of_not_mem := mulIndicator_of_notMem

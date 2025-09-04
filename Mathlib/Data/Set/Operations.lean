@@ -84,8 +84,6 @@ alias ⟨_root_.Membership.mem.out, _⟩ := mem_setOf
 
 theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a := Iff.rfl
 
-@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
-
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
 @[simp, mfld_simps, grind]
@@ -190,9 +188,6 @@ theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 @[mfld_simps]
 theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
-
-@[deprecated (since := "2025-02-21")]
-alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 

@@ -126,9 +126,6 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
 theorem Prime.not_isSquare (hp : Prime p) : ¬IsSquare p :=
   hp.irreducible.not_isSquare
 
-@[deprecated (since := "2025-04-17")]
-alias Prime.not_square := Prime.not_isSquare
-
 theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_isSquare ha
 
 theorem not_prime_pow {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>

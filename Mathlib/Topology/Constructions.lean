@@ -1144,9 +1144,6 @@ theorem continuous_uliftDown [TopologicalSpace X] : Continuous (ULift.down : ULi
 theorem continuous_uliftUp [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
 
-@[deprecated (since := "2025-02-10")] alias continuous_uLift_down := continuous_uliftDown
-@[deprecated (since := "2025-02-10")] alias continuous_uLift_up := continuous_uliftUp
-
 @[continuity, fun_prop]
 theorem continuous_uliftMap [TopologicalSpace X] [TopologicalSpace Y]
     (f : X → Y) (hf : Continuous f) :

@@ -440,32 +440,6 @@ end Monoid
 
 namespace AddMonoid
 
-set_option linter.deprecated false in
-@[deprecated noZeroSMulDivisors_nat_iff_isAddTorsionFree (since := "2025-04-23")]
-lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
-    IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
-  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
-    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
-  exact forall₂_congr fun _ _ ↦ by tauto
-
-set_option linter.deprecated false in
-@[deprecated noZeroSMulDivisors_int_iff_isAddTorsionFree (since := "2025-04-23")]
-lemma isTorsionFree_iff_noZeroSMulDivisors_int [SubtractionMonoid G] :
-    IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
-  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
-    noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
-  exact forall₂_congr fun _ _ ↦ by tauto
-
-set_option linter.deprecated false in
-@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors_nat (since := "2025-04-23")]
-lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
-    IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
-
-@[deprecated IsAddTorsionFree.to_noZeroSMulDivisors_nat (since := "2025-04-23")]
-alias ⟨IsTorsionFree.noZeroSMulDivisors_nat, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_nat
-@[deprecated IsAddTorsionFree.to_noZeroSMulDivisors_int (since := "2025-04-23")]
-alias ⟨IsTorsionFree.noZeroSMulDivisors_int, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_int
-
 end AddMonoid
 
 section AddCommGroup

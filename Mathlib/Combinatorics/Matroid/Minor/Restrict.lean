@@ -218,12 +218,8 @@ variable {N : Matroid α}
 /-- `Restriction N M` means that `N = M ↾ R` for some subset `R` of `M.E` -/
 def IsRestriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 
-@[deprecated (since := "2025-02-14")] alias Restriction := IsRestriction
-
 /-- `IsStrictRestriction N M` means that `N = M ↾ R` for some strict subset `R` of `M.E` -/
 def IsStrictRestriction (N M : Matroid α) : Prop := IsRestriction N M ∧ ¬ IsRestriction M N
-
-@[deprecated (since := "2025-02-14")] alias StrictRestriction := IsStrictRestriction
 
 /-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
 scoped infix:50  " ≤r " => IsRestriction

@@ -85,9 +85,6 @@ theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} =
 
 theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDivisors]
 
-@[deprecated (since := "2025-05-23")]
-alias properDivisors.not_self_mem := self_notMem_properDivisors
-
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
   rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]
@@ -317,12 +314,6 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
-
-/-- `Nat.swap_mem_divisorsAntidiagonal` with the LHS in simp normal form. -/
-@[deprecated swap_mem_divisorsAntidiagonal (since := "2025-02-17")]
-theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
-    x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
-  rw [mem_divisorsAntidiagonal, mul_comm]
 
 lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]

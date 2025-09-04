@@ -65,8 +65,6 @@ class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends MonoidalCa
   fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by cat_disch
   snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by cat_disch
 
-@[deprecated (since := "2025-05-15")] alias ChosenFiniteProducts := CartesianMonoidalCategory
-
 namespace CartesianMonoidalCategory
 
 variable {C : Type u} [Category.{v} C]
@@ -184,8 +182,6 @@ omit 𝒯 in
 in `C`. -/
 noncomputable abbrev ofHasFiniteProducts [HasFiniteProducts C] : CartesianMonoidalCategory C :=
   .ofChosenFiniteProducts (getLimitCone (.empty C)) (getLimitCone <| pair · ·)
-
-@[deprecated (since := "2025-05-08")] alias ofFiniteProducts := ofHasFiniteProducts
 
 end OfChosenFiniteProducts
 
@@ -325,9 +321,6 @@ lemma associator_inv_fst_fst (X Y Z : C) :
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
     ← whiskerLeft_comp_assoc]
 
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
-
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
@@ -455,10 +448,6 @@ This is not an instance to prevent diamonds. -/
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
 
-@[deprecated (since := "2025-05-15")]
-alias _root_.CategoryTheory.BraidedCategory.ofChosenFiniteProducts :=
-  BraidedCategory.ofCartesianMonoidalCategory
-
 instance : Nonempty (BraidedCategory C) := ⟨.ofCartesianMonoidalCategory⟩
 
 instance : Subsingleton (BraidedCategory C) where
@@ -497,12 +486,6 @@ abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 @[reassoc]
 lemma map_toUnit_comp_terminalComparison (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
-
-@[deprecated (since := "2025-04-09")]
-alias map_toUnit_comp_terminalCompariso := map_toUnit_comp_terminalComparison
-
-@[deprecated (since := "2025-04-09")]
-alias map_toUnit_comp_terminalCompariso_assoc := map_toUnit_comp_terminalComparison_assoc
 
 open Limits
 
@@ -691,10 +674,6 @@ noncomputable def isLimitCartesianMonoidalCategoryOfPreservesLimits :
   mapIsLimitOfPreservesOfIsLimit F (fst _ _) (snd _ _) <|
     (tensorProductIsBinaryProduct A B).ofIsoLimit <|
       isoBinaryFanMk (BinaryFan.mk (fst A B) (snd A B))
-
-@[deprecated (since := "2025-05-15")]
-alias isLimitChosenFiniteProductsOfPreservesLimits :=
-  isLimitCartesianMonoidalCategoryOfPreservesLimits
 
 /-- If `F` preserves the limit of the pair `(A, B)`, then `prodComparison F A B` is an isomorphism.
 -/
@@ -945,15 +924,6 @@ noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts 
 instance : Subsingleton F.Braided := (Braided.toMonoidal_injective F).subsingleton
 
 end Braided
-
-@[deprecated (since := "2025-04-24")]
-alias oplaxMonoidalOfChosenFiniteProducts := OplaxMonoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias monoidalOfChosenFiniteProducts := Monoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
 
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}

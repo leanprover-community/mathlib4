@@ -42,8 +42,6 @@ theorem mem_neLocus {f g : Π₀ a, N a} {a : α} : a ∈ f.neLocus g ↔ f a �
 theorem notMem_neLocus {f g : Π₀ a, N a} {a : α} : a ∉ f.neLocus g ↔ f a = g a :=
   mem_neLocus.not.trans not_ne_iff
 
-@[deprecated (since := "2025-05-23")] alias not_mem_neLocus := notMem_neLocus
-
 @[simp]
 theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } :=
   Set.ext fun _x ↦ mem_neLocus

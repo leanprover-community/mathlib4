@@ -116,9 +116,6 @@ lemma isLoop_iff_forall_notMem_isBase (he : e ∈ M.E := by aesop_mat) :
     M.IsLoop e ↔ ∀ B, M.IsBase B → e ∉ B := by
   simp_rw [isLoop_iff_forall_mem_compl_isBase, mem_diff, and_iff_right he]
 
-@[deprecated (since := "2025-05-23")]
-alias isLoop_iff_forall_not_mem_isBase := isLoop_iff_forall_notMem_isBase
-
 lemma IsLoop.mem_closure (he : M.IsLoop e) (X : Set α) : e ∈ M.closure X :=
   M.closure_mono (empty_subset _) he
 
@@ -136,8 +133,6 @@ lemma IsLoop.not_indep_of_mem (he : M.IsLoop e) (h : e ∈ X) : ¬M.Indep X :=
 
 lemma IsLoop.notMem_of_indep (he : M.IsLoop e) (hI : M.Indep I) : e ∉ I :=
   fun h ↦ he.not_indep_of_mem h hI
-
-@[deprecated (since := "2025-05-23")] alias IsLoop.not_mem_of_indep := IsLoop.notMem_of_indep
 
 lemma IsLoop.eq_of_isCircuit_mem (he : M.IsLoop e) (hC : M.IsCircuit C) (h : e ∈ C) : C = {e} := by
   rw [he.isCircuit.eq_of_subset_isCircuit hC (singleton_subset_iff.mpr h)]
@@ -347,15 +342,9 @@ lemma isNonloop_of_notMem_closure (h : e ∉ M.closure X) (he : e ∈ M.E := by 
     M.IsNonloop e :=
   isNonloop_of_not_isLoop he (fun hel ↦ h (hel.mem_closure X))
 
-@[deprecated (since := "2025-05-23")]
-alias isNonloop_of_not_mem_closure := isNonloop_of_notMem_closure
-
 lemma isNonloop_iff_notMem_loops (he : e ∈ M.E := by aesop_mat) :
     M.IsNonloop e ↔ e ∉ M.loops := by
   rw [isNonloop_iff, isLoop_iff, and_iff_left he]
-
-@[deprecated (since := "2025-05-23")]
-alias isNonloop_iff_not_mem_loops := isNonloop_iff_notMem_loops
 
 lemma IsNonloop.mem_closure_singleton (he : M.IsNonloop e) (hef : e ∈ M.closure {f}) :
     f ∈ M.closure {e} := by
@@ -476,8 +465,6 @@ lemma coloops_subset_ground (M : Matroid α) : M.coloops ⊆ M.E :=
 
 lemma isColoop_iff_mem_coloops : M.IsColoop e ↔ e ∈ M.coloops := Iff.rfl
 
-@[deprecated (since := "2025-04-01")] alias isColoop_iff_mem_loops := isColoop_iff_mem_coloops
-
 @[simp]
 lemma dual_loops : M✶.loops = M.coloops := rfl
 
@@ -563,17 +550,12 @@ lemma IsLoop.not_isColoop (h : M.IsLoop e) : ¬M.IsColoop e := by
 lemma IsColoop.notMem_isCircuit (he : M.IsColoop e) (hC : M.IsCircuit C) : e ∉ C :=
   fun h ↦ (hC.isCocircuit.isNonloop_of_mem h).not_isLoop he
 
-@[deprecated (since := "2025-05-23")] alias IsColoop.not_mem_isCircuit := IsColoop.notMem_isCircuit
-
 lemma IsCircuit.disjoint_coloops (hC : M.IsCircuit C) : Disjoint C M.coloops :=
   disjoint_right.2 <| fun _ he ↦ IsColoop.notMem_isCircuit he hC
 
 lemma isColoop_iff_forall_notMem_isCircuit (he : e ∈ M.E := by aesop_mat) :
     M.IsColoop e ↔ ∀ ⦃C⦄, M.IsCircuit C → e ∉ C := by
   simp_rw [(M.isColoop_tfae e).out 0 4, and_iff_left he]
-
-@[deprecated (since := "2025-05-23")]
-alias isColoop_iff_forall_not_mem_isCircuit := isColoop_iff_forall_notMem_isCircuit
 
 lemma isColoop_iff_forall_mem_compl_isCircuit [RankPos M✶] :
     M.IsColoop e ↔ ∀ C, M.IsCircuit C → e ∈ M.E \ C := by
@@ -618,9 +600,6 @@ lemma isColoop_iff_notMem_closure_compl (he : e ∈ M.E := by aesop_mat) :
   · assumption
   exact M.subset_closure (M.E \ {e}) diff_subset (show x ∈ M.E \ {e} from ⟨hx, hne⟩)
 
-@[deprecated (since := "2025-05-23")]
-alias isColoop_iff_not_mem_closure_compl := isColoop_iff_notMem_closure_compl
-
 lemma IsBase.isColoop_iff_forall_notMem_fundCircuit (hB : M.IsBase B) (he : e ∈ B) :
     M.IsColoop e ↔ ∀ x ∈ M.E \ B, e ∉ M.fundCircuit x B := by
   refine ⟨fun h x hx heC ↦ (h.notMem_isCircuit <| hB.fundCircuit_isCircuit hx.1 hx.2) heC,
@@ -637,10 +616,6 @@ lemma IsBase.isColoop_iff_forall_notMem_fundCircuit (hB : M.IsBase B) (he : e �
   rw [isColoop_iff_notMem_closure_compl (hB.subset_ground he)]
   exact notMem_subset (M.closure_subset_closure_of_subset_closure h') <|
     hB.indep.notMem_closure_diff_of_mem he
-
-@[deprecated (since := "2025-05-23")]
-alias IsBase.isColoop_iff_forall_not_mem_fundCircuit :=
-  IsBase.isColoop_iff_forall_notMem_fundCircuit
 
 lemma IsBasis'.inter_coloops_subset (hIX : M.IsBasis' I X) : X ∩ M.coloops ⊆ I := by
   intro e ⟨heX, (heI : M.IsColoop e)⟩
@@ -712,9 +687,6 @@ lemma closure_union_coloops_eq (M : Matroid α) (X : Set α) :
 
 lemma IsColoop.notMem_closure_of_notMem (he : M.IsColoop e) (hX : e ∉ X) : e ∉ M.closure X :=
   mt he.mem_closure_iff_mem.mp hX
-
-@[deprecated (since := "2025-05-23")]
-alias IsColoop.not_mem_closure_of_not_mem := IsColoop.notMem_closure_of_notMem
 
 lemma IsColoop.insert_indep_of_indep (he : M.IsColoop e) (hI : M.Indep I) :
     M.Indep (insert e I) := by

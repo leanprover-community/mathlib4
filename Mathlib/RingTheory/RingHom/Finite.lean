@@ -96,9 +96,6 @@ lemma Module.Finite.of_isLocalization (R S) {Rₚ Sₚ : Type*} [CommSemiring R]
     (IsLocalization.mk' Rₚ (1 : R) ⟨r, hr⟩) (H hy) using 1
   rw [Algebra.smul_def, this, IsLocalization.map_mk', map_one]
 
-@[deprecated (since := "2025-05-01")] alias Module.Finite_of_isLocalization :=
-  Module.Finite.of_isLocalization
-
 open Algebra nonZeroDivisors in
 instance {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] [Module.Finite A C] :
     Module.Finite (FractionRing A) (Localization (algebraMapSubmonoid C A⁰)) :=

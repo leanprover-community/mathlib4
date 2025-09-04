@@ -222,13 +222,9 @@ theorem le_gauge_of_notMem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
-@[deprecated (since := "2025-05-23")] alias le_gauge_of_not_mem := le_gauge_of_notMem
-
 theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s {x}) (hx : x ∉ s) :
     1 ≤ gauge s x :=
   le_gauge_of_notMem hs₁ hs₂ <| by rwa [one_smul]
-
-@[deprecated (since := "2025-05-23")] alias one_le_gauge_of_not_mem := one_le_gauge_of_notMem
 
 section LinearOrderedField
 
@@ -397,9 +393,6 @@ theorem tendsto_gauge_nhds_zero_nhdsGE (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (
   rw [← set_smul_mem_nhds_zero_iff hε.ne'] at hs
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩
-
-@[deprecated (since := "2025-03-02")]
-alias tendsto_gauge_nhds_zero' := tendsto_gauge_nhds_zero_nhdsGE
 
 theorem tendsto_gauge_nhds_zero (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝 0) :=
   (tendsto_gauge_nhds_zero_nhdsGE hs).mono_right inf_le_left

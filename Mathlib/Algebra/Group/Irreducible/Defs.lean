@@ -45,9 +45,6 @@ structure Irreducible (p : M) : Prop where
 
 namespace Irreducible
 
-@[deprecated (since := "2025-04-09")] alias not_unit := not_isUnit
-@[deprecated (since := "2025-04-10")] alias isUnit_or_isUnit' := isUnit_or_isUnit
-
 end Irreducible
 
 @[to_additive] lemma irreducible_iff :

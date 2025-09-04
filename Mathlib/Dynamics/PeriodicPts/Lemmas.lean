@@ -24,9 +24,6 @@ open Function (Commute)
 theorem directed_ptsOfPeriod_pnat (f : α → α) : Directed (· ⊆ ·) fun n : ℕ+ => ptsOfPeriod f n :=
   fun m n => ⟨m * n, fun _ hx => hx.mul_const n, fun _ hx => hx.const_mul m⟩
 
-@[deprecated (since := "2025-04-27")]
-alias directed_ptsOfPeriod_pNat := directed_ptsOfPeriod_pnat
-
 variable (f) in
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
   iUnion_pnat_ptsOfPeriod f ▸
@@ -94,16 +91,10 @@ theorem Injective.mem_periodicPts [Finite α] (h : Injective f) (x : α) : x ∈
   · exact mk_mem_periodicPts (by omega) (iterate_cancel h heq.symm)
   · exact mk_mem_periodicPts (by omega) (iterate_cancel h heq)
 
-@[deprecated (since := "2025-04-27")]
-alias mem_periodicPts_of_injective :=  Injective.mem_periodicPts
-
 theorem injective_iff_periodicPts_eq_univ [Finite α] : Injective f ↔ periodicPts f = univ := by
   refine ⟨fun h ↦ eq_univ_iff_forall.mpr h.mem_periodicPts, fun h ↦ ?_⟩
   rw [Finite.injective_iff_surjective, ← range_eq_univ, ← univ_subset_iff, ← h]
   apply periodicPts_subset_range
-
-@[deprecated (since := "2025-04-27")]
-alias injective_iff_forall_mem_periodicPts := injective_iff_periodicPts_eq_univ
 
 theorem injective_iff_iterate_factorial_card_eq_id [Fintype α] :
     Injective f ↔ f^[(card α)!] = id := by
@@ -121,9 +112,6 @@ variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α}
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
     minimalPeriod (Prod.map f g) x = (minimalPeriod f x.1).lcm (minimalPeriod g x.2) :=
   eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd, Nat.lcm_dvd_iff]
-
-@[deprecated (since := "2025-04-18")]
-alias minimalPeriod_prod_map := minimalPeriod_prodMap
 
 theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_left _ _

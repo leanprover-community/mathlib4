@@ -118,9 +118,6 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp
 
-@[deprecated (since := "2025-03-07")]
-alias Mon_ClassOfRepresentableBy := Mon_Class.ofRepresentableBy
-
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
 abbrev Hom.monoid : Monoid (X ⟶ M) where
   mul f₁ f₂ := lift f₁ f₂ ≫ μ
@@ -225,10 +222,6 @@ variable (M) in
 lemma Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :
     ofRepresentableBy M _ (yonedaMonObjRepresentableBy M) = ‹_› := by
   ext; change lift (fst M M) (snd M M) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
-
-@[deprecated (since := "2025-03-07")]
-alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
-  Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy
 
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where

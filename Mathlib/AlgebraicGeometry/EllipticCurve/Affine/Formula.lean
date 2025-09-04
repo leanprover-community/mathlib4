@@ -117,8 +117,6 @@ lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY
   rw [negY, sub_sub, negPolynomial]
   eval_simp
 
-@[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
-
 lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
     (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
   rw [equation_iff] at h₁ h₂
@@ -195,8 +193,6 @@ lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy
   congr 1
   rw [negY, evalEval_polynomialY]
   ring1
-
-@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
 
 end slope
 

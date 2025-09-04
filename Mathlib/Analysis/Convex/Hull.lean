@@ -147,10 +147,6 @@ theorem Convex.convex_remove_iff_notMem_convexHull_remove {s : Set E} (hs : Conv
         rintro (rfl : y = x)
         exact hx hy⟩
 
-@[deprecated (since := "2025-05-23")]
-alias Convex.convex_remove_iff_not_mem_convexHull_remove :=
-  Convex.convex_remove_iff_notMem_convexHull_remove
-
 theorem IsLinearMap.image_convexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
     f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
   Set.Subset.antisymm

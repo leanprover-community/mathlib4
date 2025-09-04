@@ -136,9 +136,6 @@ lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRa
 lemma eRk_insert_of_notMem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
   rw [← eRk_inter_ground, insert_inter_of_notMem he, eRk_inter_ground]
 
-@[deprecated (since := "2025-05-23")]
-alias eRk_insert_of_not_mem_ground := eRk_insert_of_notMem_ground
-
 lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
   rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]
 
@@ -257,15 +254,9 @@ lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
-@[deprecated (since := "2025-05-14")]
-alias erk_eq_zero_iff' := eRk_eq_zero_iff'
-
 @[simp]
 lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
   rw [eRk_eq_zero_iff', inter_eq_self_of_subset_left hX]
-
-@[deprecated (since := "2025-05-14")]
-alias erk_eq_zero_iff := eRk_eq_zero_iff
 
 @[simp]
 lemma eRk_loops : M.eRk M.loops = 0 := by
@@ -347,13 +338,9 @@ lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   rw [← hB.encard_eq_eRank, encard_ne_top_iff]
   exact ⟨fun h ↦ hB.rankFinite_of_finite h, fun h ↦ hB.finite⟩
 
-@[deprecated (since := "2025-04-13")] alias rankFinite_iff_eRk_ne_top := eRank_ne_top_iff
-
 @[simp]
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
-
-@[deprecated (since := "2025-04-13")] alias rankInfinite_iff_eRk_eq_top := eRank_eq_top_iff
 
 @[simp]
 lemma eRank_lt_top_iff : M.eRank < ⊤ ↔ M.RankFinite := by
@@ -377,8 +364,6 @@ lemma eRk_lt_top_iff : M.eRk X < ⊤ ↔ M.IsRkFinite X := by
 
 lemma IsRkFinite.eRk_lt_top (h : M.IsRkFinite X) : M.eRk X < ⊤ :=
   eRk_lt_top_iff.2 h
-
-@[deprecated (since := "2025-04-13")] alias eRk_lt_top_of_finite := IsRkFinite.eRk_lt_top
 
 /-- If `X` is a finite-rank set, and `I` is a subset of `X` of cardinality
 no larger than the rank of `X` that spans `X`, then `I` is a basis for `X`. -/

@@ -160,9 +160,6 @@ theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x
   induction s using Quot.inductionOn
   simpa using List.formPerm_eq_self_of_notMem _ _ hx
 
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
-
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
   induction s using Quot.inductionOn
@@ -219,16 +216,8 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
     (toList p x)[n] = (p ^ n) x := by simp [toList]
 
-@[deprecated getElem_toList (since := "2025-02-17")]
-theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
-
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
-
-@[deprecated toList_getElem_zero (since := "2025-02-17")]
-theorem toList_get_zero (h : x ∈ p.support) :
-    (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
 variable {p} {x}
 

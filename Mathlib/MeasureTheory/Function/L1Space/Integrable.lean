@@ -642,9 +642,6 @@ theorem Integrable.prodMk {f : α → β} {g : α → γ} (hf : Integrable f μ)
           max ‖f x‖ ‖g x‖ ≤ ‖f x‖ + ‖g x‖ := max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
           _ ≤ ‖‖f x‖ + ‖g x‖‖ := le_abs_self _⟩
 
-@[deprecated (since := "2025-03-05")]
-alias Integrable.prod_mk := Integrable.prodMk
-
 theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → ε} [IsFiniteMeasure μ]
     (hfq : MemLp f q μ) : Integrable f μ :=
   memLp_one_iff_integrable.mp (hfq.mono_exponent hq1)
@@ -845,9 +842,6 @@ theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f
   memLp_one_iff_integrable.2 <|
     (integrable_withDensity_iff_integrable_smul f_meas).1 <| memLp_one_iff_integrable.1 (Lp.memLp u)
 
-@[deprecated (since := "2025-02-21")]
-alias memL1_smul_of_ℒ1_withDensity := memL1_smul_of_L1_withDensity
-
 variable (μ)
 
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
@@ -911,9 +905,6 @@ theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasu
   rw [MemLp, eLpNorm_one_eq_lintegral_enorm]
   exact ⟨(AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable,
     hasFiniteIntegral_toReal_of_lintegral_ne_top hfi⟩
-
-@[deprecated (since := "2025-02-21")]
-alias mem_ℒ1_toReal_of_lintegral_ne_top := mem_L1_toReal_of_lintegral_ne_top
 
 theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : Integrable (fun x ↦ (f x).toReal) μ :=

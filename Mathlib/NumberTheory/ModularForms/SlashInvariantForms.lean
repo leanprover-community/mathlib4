@@ -235,9 +235,6 @@ lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) �
     translateGL f g = ⇑f ∣[k] g :=
   rfl
 
-@[deprecated (since := "2025-05-15")] alias translateGLPos := translateGL
-@[deprecated (since := "2025-05-15")] alias coe_translateGLPos := coe_translateGL
-
 open Pointwise ConjAct in
 /-- Translating a `SlashInvariantForm` by `g : SL(2, ℤ)`, to obtain a new `SlashInvariantForm`
 of level `g⁻¹ Γ g`. -/

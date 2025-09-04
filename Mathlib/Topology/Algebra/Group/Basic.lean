@@ -362,9 +362,6 @@ theorem IsTopologicalGroup.continuous_conj_prod [ContinuousInv G] :
     Continuous fun g : G × G => g.fst * g.snd * g.fst⁻¹ :=
   continuous_mul.mul (continuous_inv.comp continuous_fst)
 
-@[deprecated (since := "2025-03-11")]
-alias IsTopologicalAddGroup.continuous_conj_sum := IsTopologicalAddGroup.continuous_addConj_prod
-
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
 @[to_additive (attr := continuity)
   /-- Conjugation by a fixed element is continuous when `add` is continuous. -/]
@@ -1226,12 +1223,6 @@ def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
       ⟨continuous_val.fst'.prodMk continuous_val.snd',
         continuous_coe_inv.fst'.prodMk continuous_coe_inv.snd'⟩
   toEquiv := MulEquiv.prodUnits.toEquiv
-
-@[deprecated (since := "2025-02-21")]
-alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
-
-@[deprecated (since := "2025-02-21")]
-protected alias Homeomorph.prodUnits := Homeomorph.prodUnits
 
 end Units
 

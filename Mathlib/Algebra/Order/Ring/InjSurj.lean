@@ -52,33 +52,4 @@ protected lemma isStrictOrderedRing [IsStrictOrderedRing R] (zero : f 0 = 0) (on
     mul_lt_mul_of_pos_right a b c h hc := show f (a * c) < f (b * c) by
       simpa only [mul, zero] using mul_lt_mul_of_pos_right ‹f a < f b› (by rwa [← zero]) }
 
-@[deprecated (since := "2025-04-10")]
-protected alias orderedSemiring := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedCommSemiring := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedRing := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedCommRing := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedCommSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedCommRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedCommSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedCommRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-alias linearOrderedSemifield := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-alias linearOrderedField := Function.Injective.isStrictOrderedRing
-
 end Function.Injective

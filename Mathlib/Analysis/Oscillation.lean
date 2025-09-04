@@ -44,9 +44,6 @@ theorem oscillationWithin_nhds_eq_oscillation [TopologicalSpace E] (f : E → F)
     (hD : D ∈ 𝓝 x) : oscillationWithin f D x = oscillation f x := by
   rw [oscillation, oscillationWithin, nhdsWithin_eq_nhds.2 hD]
 
-@[deprecated (since := "2025-05-22")]
-alias oscillationWithin_nhd_eq_oscillation := oscillationWithin_nhds_eq_oscillation
-
 /-- The oscillation of `f` at `x` within `univ` is equal to `oscillation f x` -/
 theorem oscillationWithin_univ_eq_oscillation [TopologicalSpace E] (f : E → F) (x : E) :
     oscillationWithin f univ x = oscillation f x :=

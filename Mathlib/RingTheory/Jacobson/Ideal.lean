@@ -171,8 +171,6 @@ theorem eq_jacobson_iff_notMem :
     push_neg
     exact h x hx
 
-@[deprecated (since := "2025-05-23")] alias eq_jacobson_iff_not_mem := eq_jacobson_iff_notMem
-
 theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) :
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
@@ -259,8 +257,6 @@ instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
         apply add_mem (𝔪₀J this) (J.mul_mem_left _ bJ)
       simpa using this
     exact mem_sInf.mp xJ ⟨I𝔪₀, 𝔪₀_maximal⟩
-
-@[deprecated (since := "2025-04-13")] alias jacobson_mul_mem_right := Ideal.instIsTwoSidedJacobson
 
 end Ring
 

@@ -315,9 +315,6 @@ theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simpa [-re_inner_self_nonpos] using re_inner_self_nonpos (𝕜 := 𝕜) (x := x).not
 
-@[deprecated (since := "2025-04-22")] alias inner_self_nonpos := re_inner_self_nonpos
-@[deprecated (since := "2025-04-22")] alias inner_self_pos := re_inner_self_pos
-
 open scoped InnerProductSpace in
 theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 := re_inner_self_nonpos (𝕜 := ℝ)
 
@@ -357,8 +354,6 @@ theorem norm_eq_sqrt_re_inner (x : E) : ‖x‖ = √(re ⟪x, x⟫) :=
   calc
     ‖x‖ = √(‖x‖ ^ 2) := (sqrt_sq (norm_nonneg _)).symm
     _ = √(re ⟪x, x⟫) := congr_arg _ (norm_sq_eq_re_inner _)
-
-@[deprecated (since := "2025-04-22")] alias norm_eq_sqrt_inner := norm_eq_sqrt_re_inner
 
 theorem norm_eq_sqrt_real_inner (x : F) : ‖x‖ = √⟪x, x⟫_ℝ :=
   @norm_eq_sqrt_re_inner ℝ _ _ _ _ x

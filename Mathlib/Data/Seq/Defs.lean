@@ -512,8 +512,6 @@ theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x �
 
 theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
 
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
-
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _
 
@@ -566,9 +564,6 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
 @[simp]
 theorem ofList_get? (l : List α) (n : ℕ) : (ofList l).get? n = l[n]? :=
   rfl
-
-@[deprecated (since := "2025-02-21")]
-alias ofList_get := ofList_get?
 
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
