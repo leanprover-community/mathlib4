@@ -9,8 +9,6 @@ import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
 import Mathlib.Algebra.GroupWithZero.Action.Pi
-
-
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Eval.Degree
@@ -33,7 +31,7 @@ We also prove some auxiliary results about iterated forward differences of the f
 `n ↦ n.choose k`.
 -/
 
-open Finset Nat Function
+open Finset Nat Function Polynomial
 
 variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G] (h : M)
 
@@ -154,6 +152,15 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
+lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
+    Δ_[h]^[n] (fun r ↦ f (r + m)) y = (Δ_[h]^[n] f) (y + m) := by
+  simp [fwdDiff_iter_eq_sum_shift, add_right_comm]
+
+lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
+    Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
+  fwdDiff_iter_comp_add h f m 1 y
+
+
 /--
 **Gregory-Newton formula** expressing `f (y + n • h)` in terms of the iterated forward differences
 of `f` at `y`.
@@ -219,14 +226,6 @@ We prove five key formulae about the forward difference operator applied to poly
 
 variable {R : Type*} [CommRing R]
 
-lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
-    Δ_[h]^[n] (fun r ↦ f (r + m)) y = (Δ_[h]^[n] f) (y + m) := by
-  simp [fwdDiff_iter_eq_sum_shift, add_right_comm]
-
-lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
-    Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
-  fwdDiff_iter_comp_add h f m 1 y
-
 /--
 The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
 -/
@@ -246,31 +245,6 @@ lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
     Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ j) = 0 := by
   ext
   rw [fwdDiff_iter_comp_add 1 (· ^ j), fwdDiff_iter_pow_eq_zero_of_lt h, Pi.zero_def]
-
-open Polynomial
-
-theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
-    Δ_[1]^[P.natDegree + 1] P.eval = 0 := by
-  ext x
-  simp only [Pi.zero_apply, fwdDiff_iter_eq_sum_shift]
-  conv_lhs => enter [2]; ext k; rw [Polynomial.eval_eq_sum_range]
-  simp only [Int.reduceNeg, nsmul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
-    Int.cast_neg, Int.cast_one, Int.cast_natCast]
-  set d := P.natDegree with hd_def
-  conv_lhs => enter [2]; ext k; rw [mul_sum]; enter [2]; ext i; rw [mul_comm (a := P.coeff i),
-    ← mul_assoc]
-  rw [sum_comm]
-  conv_lhs => enter [2]; ext y; rw [← sum_mul, mul_comm]
-  conv_lhs => enter [2]; ext y; enter [2 , 2]; ext i; rw [show (i : R) = i • 1 by simp,
-    show (-1) ^ (d + 1 - i) * ↑((d + 1).choose i) * (x + i • 1) ^ y =
-      ((-1) ^ (d + 1 - i) * ↑((d + 1).choose i)) • (x + i • 1) ^ y by simp]
-  conv_lhs => enter [2]; ext y; rw [← fwdDiff_iter_eq_sum_shift
-    (n := d + 1) (f := fun i => i ^ y) (h := 1) (y := x)]
-  apply sum_eq_zero
-  intro i hi
-  rw [fwdDiff_iter_pow_eq_zero_of_lt (h := by
-    have := mem_range.1 hi
-    omega), Pi.zero_apply, mul_zero]
 
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
@@ -295,30 +269,24 @@ lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
   simp_all only [Pi.natCast_apply]
 
 theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
-    Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := by
-  ext x
-  simp only [fwdDiff_iter_eq_sum_shift, leadingCoeff]
-  conv_lhs => enter [2]; ext k; rw [Polynomial.eval_eq_sum_range]
-  simp only [Int.reduceNeg, nsmul_eq_mul, mul_one, zsmul_eq_mul, Int.cast_mul, Int.cast_pow,
-    Int.cast_neg, Int.cast_one, Int.cast_natCast]
-  set d := P.natDegree with hd_def
-  conv_lhs => enter [2]; ext k; rw [mul_sum]; enter [2]; ext i; rw [mul_comm (a := P.coeff i),
-    ← mul_assoc]
-  rw [sum_comm]
-  conv_lhs => enter [2]; ext y; rw [← sum_mul, mul_comm]
-  conv_lhs => enter [2]; ext y; enter [2 , 2]; ext i; rw [show (i : R) = i • 1 by simp,
-    show (-1) ^ (d - i) * ↑(d.choose i) * (x + i • 1) ^ y =
-      ((-1) ^ (d - i) * ↑(d.choose i)) • (x + i • 1) ^ y by simp]
-  conv_lhs => enter [2]; ext y; rw [← fwdDiff_iter_eq_sum_shift
-    (n := d) (f := fun i => i ^ y) (h := 1) (y := x)]
-  simp only [Pi.smul_apply, Pi.natCast_apply, smul_eq_mul]
-  rw [sum_range_succ]
-  have : ∑ k ∈ range d, P.coeff k * Δ_[1]^[d] (fun i ↦ i ^ k) x = 0 := by
-    apply sum_eq_zero
-    intro i hi
-    rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), Pi.zero_apply, mul_zero]
-  rw [this, zero_add, fwdDiff_iter_eq_factorial]
-  rfl
+    Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by
+  simp_rw [P.eval_eq_sum_range, ← sum_apply _ _ (fun i x ↦ P.coeff i * x ^ i),
+    fwdDiff_iter_finset_sum, ← smul_eq_mul, ← Pi.smul_def, fwdDiff_iter_const_smul, Pi.smul_apply]
+  rw [sum_apply, sum_range_succ, sum_eq_zero (fun i hi ↦ ?_), zero_add,
+    fwdDiff_iter_eq_factorial, leadingCoeff, Pi.smul_apply]
+  rw [fwdDiff_iter_pow_eq_zero_of_lt (mem_range.mp hi), smul_zero, Pi.zero_apply]
+
+theorem Polynomial.fwdDiff_iter_eq_zero_of_degree_lt {P : R[X]} {n : ℕ} (hP : P.natDegree < n) :
+    Δ_[1]^[n] P.eval = 0 := funext fun x ↦ by
+  obtain ⟨j, rfl⟩ := Nat.exists_eq_add_of_lt hP
+  rw [add_assoc, add_comm, Function.iterate_add_apply, Function.iterate_succ_apply,
+    P.fwdDiff_iter_degree_eq_factorial, Pi.smul_def]
+  simp [fwdDiff_iter_eq_sum_shift]
+
+theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
+    Δ_[1]^[P.natDegree + 1] P.eval = 0 := by
+    let hP : P.natDegree < P.natDegree + 1 := Nat.lt_succ_self P.natDegree
+    exact Polynomial.fwdDiff_iter_eq_zero_of_degree_lt hP
 
 /--
 The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
