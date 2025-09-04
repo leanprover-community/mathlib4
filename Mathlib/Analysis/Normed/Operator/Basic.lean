@@ -356,11 +356,7 @@ end
 variable [RingHomIsometric σ₁₂] (f : E →SL[σ₁₂] F)
 
 @[simp, nontriviality]
-theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
-  refine le_antisymm ?_ (norm_nonneg _)
-  apply opNorm_le_bound _ rfl.ge
-  intro x
-  simp [Subsingleton.elim x 0]
+theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := norm_of_subsingleton f
 
 /-- The fundamental property of the operator norm, expressed with extended norms:
 `‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
