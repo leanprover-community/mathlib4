@@ -1978,6 +1978,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.SeriesBounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow

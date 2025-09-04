@@ -26,13 +26,6 @@ sin, cos
 open Set
 open scoped Real
 
-/-- Double the range of a `Finset.sum` -/
-lemma Finset.sum_range_even {M : Type*} [AddCommMonoid M] (n : ℕ) (f : ℕ → M) :
-    ∑ k ∈ Finset.range n, f k = ∑ k ∈ Finset.range (2 * n), if Even k then f (k / 2) else 0 := by
-  induction n with
-  | zero => simp
-  | succ n h => simp [Finset.sum_range_succ, h, mul_add]
-
 lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
     ‖sin z - z * ∑ k ∈ Finset.range n, (-1) ^ k * z ^ (2 * k) / (2 * k + 1).factorial‖ ≤
       ‖z‖ ^ (2 * n + 1) * ((2 * n + 2) / ((2 * n + 1).factorial * (2 * n + 1))) := by
