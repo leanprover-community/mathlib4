@@ -137,11 +137,6 @@ variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M
   {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
   [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
 
-instance : SMulPosMono ℕ M :=
-  ⟨fun b hb m m' h ↦ by
-    rw [← Nat.add_sub_of_le h, add_smul]
-    exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m))⟩
-
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f := by
