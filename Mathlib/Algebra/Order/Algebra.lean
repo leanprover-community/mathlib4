@@ -30,7 +30,8 @@ ordered algebra
 
 section OrderedAlgebra
 
-variable {R A : Type*} [OrderedCommRing R] [OrderedRing A] [Algebra R A] [OrderedSMul R A]
+variable {R A : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
+  [Ring A] [PartialOrder A] [IsOrderedRing A] [Algebra R A] [OrderedSMul R A]
 
 theorem algebraMap_monotone : Monotone (algebraMap R A) := fun a b h => by
   rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, ← sub_nonneg, ← sub_smul]

@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.Order.Field
@@ -68,13 +68,13 @@ natural.
     `aₙ₊₁ * ((aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁) - a₀ = aₙ₊₁aₙ₊₂b` is divisible by `aₙ₊₂`.
 -/
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
     ∃ b : ℕ, (b : α) = ∑ i ∈ Finset.range n, (a 0 : α) * a n / (a i * a (i + 1)) := by
   -- Treat separately `n = 0` and `n ≥ 1`
-  cases' n with n
+  rcases n with - | n
   /- Case `n = 0`
     The sum is trivially equal to `0` -/
   · exact ⟨0, by rw [Nat.cast_zero, Finset.sum_range_zero]⟩
@@ -89,10 +89,11 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   simp_rw [← @Nat.cast_pos α] at a_pos
   /- Declare the induction
     `ih` will be the induction hypothesis -/
-  induction' n with n ih
+  induction n with
+  | zero =>
   /- Base case
-    Claim that the sum equals `1`-/
-  · refine ⟨1, ?_, ?_⟩
+    Claim that the sum equals `1` -/
+    refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
     · rw [Nat.cast_one, Finset.sum_range_one]
       norm_num
@@ -101,6 +102,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     -- Check the divisibility condition
     · rw [mul_one, tsub_self]
       exact dvd_zero _
+  | succ n ih =>
   /- Induction step
     `b` is the value of the previous sum as a natural, `hb` is the proof that it is indeed the
     value, and `han` is the divisibility condition -/
@@ -136,6 +138,6 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,
           mul_div_cancel_right₀ _ (a_pos _ <| Nat.le_succ _).ne', mul_comm]
   -- Check the divisibility condition
-  · rw [mul_tsub, ← mul_assoc, Nat.mul_div_cancel' ha, add_mul, Nat.mul_div_cancel' han,
+  · rw [Nat.mul_sub, ← mul_assoc, Nat.mul_div_cancel' ha, add_mul, Nat.mul_div_cancel' han,
       add_tsub_tsub_cancel ha₀, add_tsub_cancel_right]
     exact dvd_mul_right _ _

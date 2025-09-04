@@ -3,7 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Layercake
 
@@ -101,7 +101,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     ext x
     simp only [mem_setOf_eq, mem_closedBall_zero_iff]
     exact le_rpow_one_add_norm_iff_norm_le hr (mem_Ioi.mp ht) x
-  rw [setLIntegral_congr_fun measurableSet_Ioi (Eventually.of_forall h_int)]
+  rw [setLIntegral_congr_fun measurableSet_Ioi h_int]
   set f := fun t : ℝ ↦ μ (Metric.closedBall (0 : E) (t ^ (-r⁻¹) - 1))
   set mB := μ (Metric.ball (0 : E) 1)
   -- the next two inequalities are in fact equalities but we don't need that
@@ -115,7 +115,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
       refine μ.addHaar_closedBall (0 : E) ?_
       rw [sub_nonneg]
       exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos ht.1 ht.2 (by simp [hr.le])
-    rw [setLIntegral_congr_fun measurableSet_Ioc (ae_of_all _ h_int'),
+    rw [setLIntegral_congr_fun measurableSet_Ioc h_int',
       lintegral_mul_const' _ _ measure_ball_lt_top.ne]
     exact ENNReal.mul_lt_top
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr) measure_ball_lt_top
@@ -123,7 +123,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
       simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
-    rw [setLIntegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
+    rw [setLIntegral_congr_fun measurableSet_Ioi h_int'', lintegral_const 0,
       zero_mul]
     exact WithTop.top_pos
 
@@ -132,9 +132,9 @@ theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
   constructor
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   -- Lower Lebesgue integral
-  have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖₊ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
-    lintegral_nnnorm_eq_of_nonneg fun _ => rpow_nonneg (by positivity) _
-  rw [HasFiniteIntegral, this]
+  have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖ₑ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
+    lintegral_enorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
+  rw [hasFiniteIntegral_iff_enorm, this]
   exact finite_integral_one_add_norm hnr
 
 theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :

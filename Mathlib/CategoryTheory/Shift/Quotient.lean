@@ -70,9 +70,9 @@ variable {A}
 noncomputable def iso (a : A) :
     shiftFunctor (Quotient r) a ⋙ lift r F hF ≅ lift r F hF ⋙ shiftFunctor D a :=
   natIsoLift r ((Functor.associator _ _ _).symm ≪≫
-    isoWhiskerRight ((functor r).commShiftIso a).symm _ ≪≫
-    Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
-    isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
+    Functor.isoWhiskerRight ((functor r).commShiftIso a).symm _ ≪≫
+    Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
+    Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
@@ -136,7 +136,7 @@ noncomputable instance liftCommShift :
 
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
-  comm' a := by
+  shift_comm a := by
     ext X
     dsimp
     erw [Functor.map_id, id_comp, comp_id]

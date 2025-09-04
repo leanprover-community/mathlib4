@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Sites.Sheaf
 # The plus construction for presheaves.
 
 This file contains the construction of `P⁺`, for a presheaf `P : Cᵒᵖ ⥤ D`
-where `C` is endowed with a grothendieck topology `J`.
+where `C` is endowed with a Grothendieck topology `J`.
 
 See <https://stacks.math.columbia.edu/tag/00W1> for details.
 
@@ -25,10 +25,10 @@ open CategoryTheory.Limits
 
 open Opposite
 
-universe w v u
+universe w' w v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{w'} D]
 
 noncomputable section
 
@@ -49,7 +49,7 @@ def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).o
   app S :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
       Multiequalizer.condition (S.unop.index P) (Cover.Relation.mk' I.r.base)
-  naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp; rfl)
+  naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by simp; rfl)
 
 /-- A natural transformation `P ⟶ Q` induces a natural transformation
 between diagrams whose colimits define the values of `plus`. -/
@@ -83,15 +83,13 @@ theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ 
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
   simp
 
-variable (D)
-
+variable (D) in
 /-- `J.diagram P`, as a functor in `P`. -/
 @[simps]
 def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
   obj P := J.diagram P X
   map η := J.diagramNatTrans η X
 
-variable {D}
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 /-- The plus construction, associating a presheaf to any presheaf.
@@ -144,7 +142,7 @@ def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q w
       ι_colimMap_assoc, Category.assoc]
     simp_rw [← Category.assoc]
     congr 1
-    exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
+    exact Multiequalizer.hom_ext _ _ _ (fun I => by simp)
 
 @[simp]
 theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
@@ -152,7 +150,6 @@ theorem plusMap_id (P : Cᵒᵖ ⥤ D) : J.plusMap (𝟙 P) = 𝟙 _ := by
   dsimp only [plusMap, plusObj]
   rw [J.diagramNatTrans_id, NatTrans.id_app]
   ext
-  dsimp
   simp
 
 @[simp]
@@ -168,15 +165,12 @@ theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
   refine colimit.hom_ext (fun S => ?_)
   simp [plusMap, J.diagramNatTrans_comp]
 
-variable (D)
-
+variable (D) in
 /-- The plus construction, a functor sending `P` to `J.plusObj P`. -/
 @[simps]
 def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
   obj P := J.plusObj P
   map η := J.plusMap η
-
-variable {D}
 
 /-- The canonical map from `P` to `J.plusObj P`.
 See `toPlusNatTrans` for a functorial version. -/
@@ -192,7 +186,7 @@ def toPlus : P ⟶ J.plusObj P where
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
-    simp only [Multiequalizer.lift_ι, Category.assoc]
+    simp only [Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
 
@@ -205,16 +199,13 @@ theorem toPlus_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [ι_colimMap, Category.assoc]
   simp_rw [← Category.assoc]
   congr 1
-  exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
+  exact Multiequalizer.hom_ext _ _ _ (fun I => by simp)
 
-variable (D)
-
+variable (D) in
 /-- The natural transformation from the identity functor to `plus`. -/
 @[simps]
 def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
-
-variable {D}
 
 /-- `(P ⟶ P⁺)⁺ = P⁺ ⟶ P⁺⁺` -/
 @[simp]
@@ -235,8 +226,8 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   congr 1
   refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
   convert Multiequalizer.condition (S.unop.index P)
-    (Cover.Relation.mk I II.base { g₁ := II.f, g₂ := 𝟙 _ }) using 1
-  all_goals dsimp; simp
+    { fst := I, snd := II.base, r.Z := II.Y, r.g₁ := II.f, r.g₂ := 𝟙 II.Y } using 1
+  all_goals simp
 
 theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
@@ -247,7 +238,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
     isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
-    Multiequalizer.hom_ext _ _ _ (fun II => by dsimp; simp)
+    Multiequalizer.hom_ext _ _ _ (fun II => by simp)
   have :
     (J.diagram P X.unop).map e = inv (S.unop.toMultiequalizer P) ≫ T.unop.toMultiequalizer P := by
     simp [← this]

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Data.PNat.Basic
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -66,9 +66,9 @@ theorem ppow_mul_comm (m n : ℕ+) (x : M) :
     x ^ m * x ^ n = x ^ n * x ^ m := by simp only [← ppow_add, add_comm]
 
 theorem ppow_mul (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ m) ^ n := by
-  refine PNat.recOn n ?_ fun k hk ↦ ?_
-  · rw [ppow_one, mul_one]
-  · rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
+  induction n with
+  | one => rw [ppow_one, mul_one]
+  | succ k hk => rw [ppow_add, ppow_one, mul_add, ppow_add, mul_one, hk]
 
 theorem ppow_mul' (x : M) (m n : ℕ+) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
@@ -88,6 +88,6 @@ instance Prod.instPNatPowAssoc {N : Type*} [Mul M] [Pow M ℕ+] [PNatPowAssoc M]
 
 theorem ppow_eq_pow [Monoid M] [Pow M ℕ+] [PNatPowAssoc M] (x : M) (n : ℕ+) :
     x ^ n = x ^ (n : ℕ) := by
-  refine PNat.recOn n ?_ fun k hk ↦ ?_
-  · rw [ppow_one, PNat.one_coe, pow_one]
-  · rw [ppow_add, ppow_one, PNat.add_coe, pow_add, PNat.one_coe, pow_one, ← hk]
+  induction n with
+  | one => rw [ppow_one, PNat.one_coe, pow_one]
+  | succ k hk => rw [ppow_add, ppow_one, PNat.add_coe, pow_add, PNat.one_coe, pow_one, ← hk]

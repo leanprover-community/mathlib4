@@ -9,10 +9,10 @@ import Mathlib.LinearAlgebra.Span.Basic
 /-!
 # Towers of algebras
 
-In this file we prove basic facts about towers of algebra.
+In this file we prove basic facts about towers of algebras.
 
 An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
-`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
+`Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the latter asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
@@ -200,7 +200,7 @@ theorem coe_restrictScalars' (f : A →ₐ[S] B) : (restrictScalars R f : A → 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₐ[S] B) → A →ₐ[R] B) := fun _ _ h =>
-  AlgHom.ext (AlgHom.congr_fun h : _)
+  AlgHom.ext (AlgHom.congr_fun h :)
 
 end AlgHom
 
@@ -223,7 +223,7 @@ theorem coe_restrictScalars' (f : A ≃ₐ[S] B) : (restrictScalars R f : A → 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A ≃ₐ[S] B) → A ≃ₐ[R] B) := fun _ _ h =>
-  AlgEquiv.ext (AlgEquiv.congr_fun h : _)
+  AlgEquiv.ext (AlgEquiv.congr_fun h :)
 
 end AlgEquiv
 
@@ -337,3 +337,13 @@ theorem lsmul_injective [NoZeroSMulDivisors A M] {x : A} (hx : x ≠ 0) :
 end Algebra
 
 end Ring
+
+section Algebra.algebraMapSubmonoid
+
+@[simp]
+theorem Algebra.algebraMapSubmonoid_map_map {R A B : Type*} [CommSemiring R] [CommSemiring A]
+    [Algebra R A] (M : Submonoid R) [CommRing B] [Algebra R B] [Algebra A B] [IsScalarTower R A B] :
+    algebraMapSubmonoid B (algebraMapSubmonoid A M) = algebraMapSubmonoid B M :=
+  algebraMapSubmonoid_map_eq _ (IsScalarTower.toAlgHom R A B)
+
+end  Algebra.algebraMapSubmonoid

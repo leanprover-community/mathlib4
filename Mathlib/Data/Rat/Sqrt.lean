@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Int.Sqrt
 
@@ -45,9 +45,8 @@ theorem sqrt_intCast (z : ℤ) : Rat.sqrt (z : ℚ) = Int.sqrt z := by
 theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by
   rw [← Int.cast_natCast, sqrt_intCast, Int.sqrt_natCast, Int.cast_natCast]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem sqrt_ofNat (n : ℕ) : Rat.sqrt (no_index (OfNat.ofNat n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
+theorem sqrt_ofNat (n : ℕ) : Rat.sqrt (ofNat(n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
   sqrt_natCast _
 
 end Rat

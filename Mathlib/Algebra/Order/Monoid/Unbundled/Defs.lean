@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Order.Basic
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 
@@ -253,6 +253,10 @@ abbrev AddRightReflectLE [Add M] [LE M] : Prop :=
 
 attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
 
+instance [Add M] [Preorder M] [i₁ : AddRightMono M] [i₂ : AddRightReflectLE M] :
+    Lean.Grind.OrderedAdd M where
+  add_le_left_iff := fun c => ⟨i₁.elim c, i₂.elim c⟩
+
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=
   ⟨ContravariantClass.elim _, CovariantClass.elim _⟩
@@ -440,13 +444,13 @@ theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
-  ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k),
-   fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k)⟩
+  ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k),
+   fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k)⟩
 
 theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
     Covariant M N μ (· < ·) ↔ Contravariant M N μ (· ≤ ·) :=
-  ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k),
-   fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k)⟩
+  ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k),
+   fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k)⟩
 
 variable (mu : N → N → N)
 

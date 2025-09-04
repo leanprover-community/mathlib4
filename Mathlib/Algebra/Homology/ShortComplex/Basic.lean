@@ -57,9 +57,9 @@ structure Hom (S₁ S₂ : ShortComplex C) where
   /-- the morphism on the right objects -/
   τ₃ : S₁.X₃ ⟶ S₂.X₃
   /-- the left commutative square of a morphism in `ShortComplex` -/
-  comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂ := by aesop_cat
+  comm₁₂ : τ₁ ≫ S₂.f = S₁.f ≫ τ₂ := by cat_disch
   /-- the right commutative square of a morphism in `ShortComplex` -/
-  comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃ := by aesop_cat
+  comm₂₃ : τ₂ ≫ S₂.g = S₁.g ≫ τ₃ := by cat_disch
 
 attribute [reassoc] Hom.comm₁₂ Hom.comm₂₃
 attribute [local simp] Hom.comm₁₂ Hom.comm₂₃ Hom.comm₁₂_assoc Hom.comm₂₃_assoc
@@ -155,7 +155,7 @@ instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso
   app S := S.g
 
 @[reassoc (attr := simp)]
-lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by aesop_cat
+lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by cat_disch
 
 variable {D}
 variable [HasZeroMorphisms D]
@@ -200,11 +200,11 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
         dsimp
         simp only [← F.map_comp, φ.comm₂₃] }
 
-/-- A constructor for isomorphisms in the category `ShortComplex C`-/
+/-- A constructor for isomorphisms in the category `ShortComplex C` -/
 @[simps]
 def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
-    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by aesop_cat)
-    (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom := by aesop_cat) :
+    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by cat_disch)
+    (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom := by cat_disch) :
     S₁ ≅ S₂ where
   hom := ⟨e₁.hom, e₂.hom, e₃.hom, comm₁₂, comm₂₃⟩
   inv := homMk e₁.inv e₂.inv e₃.inv

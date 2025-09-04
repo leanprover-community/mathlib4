@@ -20,30 +20,27 @@ presheaves.
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor Topology
 
-universe u v
+universe u v w' w
 
 variable (C : Type u) [Category.{v} C]
 
 
--- Porting note: removed
--- local attribute [tidy] tactic.op_induction'
--- as it isn't needed here. If it is useful elsewhere
+-- We could enable the following line:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
--- should suffice, but may need
+-- but may need
 -- https://github.com/JLimperg/aesop/issues/59
 
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
 structure SheafedSpace extends PresheafedSpace C where
-  /-- A sheafed space is presheafed space which happens to be sheaf. -/
+  /-- A sheafed space is a presheafed space which happens to be a sheaf. -/
   IsSheaf : presheaf.IsSheaf
 
 variable {C}
 
 namespace SheafedSpace
 
--- Porting note: use `CoeOut` for the coercion happens left to right
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
@@ -53,13 +50,7 @@ instance coeSort : CoeSort (SheafedSpace C) Type* where
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
--- Porting note: this is a syntactic tautology, so removed
--- @[simp]
--- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
---   rfl
-
--- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
--- so removed @[simp]
+/-- Not `@[simp]` since it already reduces to `carrier = carrier`. -/
 theorem mk_coe (carrier) (presheaf) (h) :
     (({ carrier
         presheaf
@@ -97,12 +88,12 @@ def isoMk {X Y : SheafedSpace C} (e : X.toPresheafedSpace ≅ Y.toPresheafedSpac
 @[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
   map_surjective f := ⟨f, rfl⟩
 
--- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
@@ -194,29 +185,39 @@ theorem Γ_map {X Y : (SheafedSpace C)ᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.
 theorem Γ_map_op {X Y : SheafedSpace C} (f : X ⟶ Y) : Γ.map f.op = f.c.app (op ⊤) :=
   rfl
 
+noncomputable instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
+    CreatesColimitsOfShape J (forgetToPresheafedSpace : SheafedSpace.{_, _, v} C ⥤ _) :=
+  ⟨fun {K} =>
+    createsColimitOfFullyFaithfulOfIso
+      ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
+        limit_isSheaf _ fun j ↦ Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
+      (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩
+
 noncomputable instance [HasLimits C] :
-    CreatesColimits (forgetToPresheafedSpace : SheafedSpace C ⥤ _) :=
-  ⟨fun {_ _} =>
-    ⟨fun {K} =>
-      createsColimitOfFullyFaithfulOfIso
-        ⟨(PresheafedSpace.colimitCocone (K ⋙ forgetToPresheafedSpace)).pt,
-          limit_isSheaf _ fun j => Sheaf.pushforward_sheaf_of_sheaf _ (K.obj (unop j)).2⟩
-        (colimit.isoColimitCocone ⟨_, PresheafedSpace.colimitCoconeIsColimit _⟩).symm⟩⟩
+    CreatesColimits (forgetToPresheafedSpace : SheafedSpace C ⥤ _) where
 
-instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
-  hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
+instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
+    HasColimitsOfShape J (SheafedSpace.{_, _, v} C) :=
+  hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
-  Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
+instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) where
+
+instance (J : Type w) [Category.{w'} J] [Small.{v} J] [HasLimitsOfShape Jᵒᵖ C] :
+    PreservesColimitsOfShape J (forget.{_, _, v} C) :=
+  Limits.comp_preservesColimitsOfShape forgetToPresheafedSpace (PresheafedSpace.forget C)
+
+noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) where
 
 section ConcreteCategory
 
-variable [ConcreteCategory.{v} C] [HasColimits C] [HasLimits C]
-variable  [PreservesLimits (CategoryTheory.forget C)]
+variable {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [instCC : ConcreteCategory.{v} C FC] [HasColimits C] [HasLimits C]
+variable [PreservesLimits (CategoryTheory.forget C)]
 variable [PreservesFilteredColimits (CategoryTheory.forget C)]
 variable [(CategoryTheory.forget C).ReflectsIsomorphisms]
 
-attribute [local instance] ConcreteCategory.instFunLike in
+attribute [local ext] DFunLike.ext in
+include instCC in
 lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
     (h' : ∀ x, f.stalkMap x = (Y.presheaf.stalkCongr (h ▸ rfl)).hom ≫ g.stalkMap x) :
     f = g := by
@@ -230,6 +231,8 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
   erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
   simp [h']
 
+attribute [local ext] DFunLike.ext in
+include instCC in
 lemma mono_of_base_injective_of_stalk_epi {X Y : SheafedSpace C} (f : X ⟶ Y)
     (h₁ : Function.Injective f.base)
     (h₂ : ∀ x, Epi (f.stalkMap x)) : Mono f := by

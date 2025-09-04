@@ -3,7 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # Definitions about invariant measures
@@ -36,6 +36,8 @@ these definitions are equivalent.
 The definitions that use `MeasureTheory.Measure.map`
 imply that the left (resp., right) multiplication is `AEMeasurable`.
 -/
+
+assert_not_exists Module.Basis
 
 namespace MeasureTheory
 
@@ -85,7 +87,7 @@ class IsMulRightInvariant [Mul G] (μ : Measure G) : Prop where
 variable {μ : Measure G}
 
 @[to_additive]
-instance IsMulLeftInvariant.smulInvariantMeasure  [Mul G] [IsMulLeftInvariant μ] :
+instance IsMulLeftInvariant.smulInvariantMeasure [Mul G] [IsMulLeftInvariant μ] :
     SMulInvariantMeasure G G μ :=
   ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_left_eq_self _) hs.nullMeasurableSet⟩
 
@@ -95,7 +97,7 @@ instance [Monoid G] (s : Submonoid G) [IsMulLeftInvariant μ] :
   ⟨fun ⟨x, _⟩ _ h ↦ IsMulLeftInvariant.smulInvariantMeasure.1 x h⟩
 
 @[to_additive]
-instance IsMulRightInvariant.toSMulInvariantMeasure_op  [Mul G] [μ.IsMulRightInvariant] :
+instance IsMulRightInvariant.toSMulInvariantMeasure_op [Mul G] [μ.IsMulRightInvariant] :
     SMulInvariantMeasure Gᵐᵒᵖ G μ :=
   ⟨fun _x _s hs => measure_preimage_of_map_eq_self (map_mul_right_eq_self _) hs.nullMeasurableSet⟩
 

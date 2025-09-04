@@ -3,9 +3,10 @@ Copyright (c) 2020. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -25,10 +26,11 @@ discrete_sum
 open Finset
 
 /-- **Sum of the Reciprocals of the Triangular Numbers** -/
-theorem Theorems100.inverse_triangle_sum :
-    ∀ n, ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
-  refine sum_range_induction _ _ rfl ?_
+theorem Theorems100.inverse_triangle_sum (n : ℕ) :
+    ∑ k ∈ range n, (2 : ℚ) / (k * (k + 1)) = if n = 0 then 0 else 2 - (2 : ℚ) / n := by
+  apply sum_range_induction _ _ rfl
   rintro (_ | _)
   · norm_num
-  field_simp
-  ring
+  · simp [field]
+    ring_nf
+    simp

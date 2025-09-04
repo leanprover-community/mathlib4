@@ -5,6 +5,8 @@ Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 
@@ -65,7 +67,7 @@ open Set Function TopologicalSpace Topology
 variable {α X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- The type of discrete quotients of a topological space. -/
-@[ext] -- Porting note: in Lean 4, uses projection to `r` instead of `Setoid`.
+@[ext]
 structure DiscreteQuotient (X : Type*) [TopologicalSpace X] extends Setoid X where
   /-- For every point `x`, the set `{ y | Rel x y }` is an open set. -/
   protected isOpen_setOf_rel : ∀ x, IsOpen (setOf (toSetoid x))
@@ -109,9 +111,6 @@ theorem proj_surjective : Function.Surjective S.proj :=
 theorem proj_isQuotientMap : IsQuotientMap S.proj :=
   isQuotientMap_quot_mk
 
-@[deprecated (since := "2024-10-22")]
-alias proj_quotientMap := proj_isQuotientMap
-
 theorem proj_continuous : Continuous S.proj :=
   S.proj_isQuotientMap.continuous
 
@@ -150,7 +149,7 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/

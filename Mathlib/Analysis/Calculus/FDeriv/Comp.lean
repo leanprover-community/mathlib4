@@ -16,10 +16,7 @@ composition of functions (the chain rule).
 -/
 
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-
-open scoped Classical
-open Topology NNReal Filter Asymptotics ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 noncomputable section
 
@@ -84,8 +81,15 @@ theorem HasFDerivWithinAt.comp_of_tendsto {g : F → G} {g' : F →L[𝕜] G} {t
     (hst : Tendsto f (𝓝[s] x) (𝓝[t] f x)) : HasFDerivWithinAt (g ∘ f) (g'.comp f') s x :=
   HasFDerivAtFilter.comp x hg hf hst
 
-@[deprecated (since := "2024-10-18")]
-alias HasFDerivWithinAt.comp_of_mem := HasFDerivWithinAt.comp_of_tendsto
+theorem HasFDerivWithinAt.comp_hasFDerivAt {g : F → G} {g' : F →L[𝕜] G} {t : Set F}
+    (hg : HasFDerivWithinAt g g' t (f x)) (hf : HasFDerivAt f f' x)
+    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasFDerivAt (g ∘ f) (g' ∘L f') x :=
+  HasFDerivAtFilter.comp x hg hf <| tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩
+
+theorem HasFDerivWithinAt.comp_hasFDerivAt_of_eq {g : F → G} {g' : F →L[𝕜] G} {t : Set F} {y : F}
+    (hg : HasFDerivWithinAt g g' t y) (hf : HasFDerivAt f f' x)
+    (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) : HasFDerivAt (g ∘ f) (g' ∘L f') x := by
+  subst y; exact hg.comp_hasFDerivAt x hf ht
 
 /-- The chain rule. -/
 @[fun_prop]
@@ -106,6 +110,11 @@ theorem DifferentiableWithinAt.comp' {g : F → G} {t : Set F}
   hg.comp x (hf.mono inter_subset_left) inter_subset_right
 
 @[fun_prop]
+theorem DifferentiableAt.fun_comp' {f : E → F} {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
+    (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (fun x ↦ g (f x)) x :=
+  (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
+
+@[fun_prop]
 theorem DifferentiableAt.comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableAt 𝕜 f x) : DifferentiableAt 𝕜 (g ∘ f) x :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).differentiableAt
@@ -119,8 +128,6 @@ theorem fderivWithin_comp {g : F → G} {t : Set F} (hg : DifferentiableWithinAt
     (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (g ∘ f) s x = (fderivWithin 𝕜 g t (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h).fderivWithin hxs
-
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp := fderivWithin_comp
 
 theorem fderivWithin_comp_of_eq {g : F → G} {t : Set F} {y : F}
     (hg : DifferentiableWithinAt 𝕜 g t y) (hf : DifferentiableWithinAt 𝕜 f s x) (h : MapsTo f s t)
@@ -164,13 +171,9 @@ theorem fderivWithin_comp₃ {g' : G → G'} {g : F → G} {t : Set F} {u : Set 
   exact (hg'.hasFDerivWithinAt.comp x (hg.hasFDerivWithinAt.comp x hf.hasFDerivWithinAt h2f) <|
     h2g.comp h2f).fderivWithin hxs
 
-@[deprecated (since := "2024-10-31")] alias fderivWithin.comp₃ := fderivWithin_comp₃
-
 theorem fderiv_comp {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (g ∘ f) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   (hg.hasFDerivAt.comp x hf.hasFDerivAt).fderiv
-
-@[deprecated (since := "2024-10-31")] alias fderiv.comp := fderiv_comp
 
 /-- A variant for the derivative of a composition, written without `∘`. -/
 theorem fderiv_comp' {g : F → G} (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
@@ -182,12 +185,21 @@ theorem fderiv_comp_fderivWithin {g : F → G} (hg : DifferentiableAt 𝕜 g (f 
     fderivWithin 𝕜 (g ∘ f) s x = (fderiv 𝕜 g (f x)).comp (fderivWithin 𝕜 f s x) :=
   (hg.hasFDerivAt.comp_hasFDerivWithinAt x hf.hasFDerivWithinAt).fderivWithin hxs
 
-@[deprecated (since := "2024-10-31")] alias fderiv.comp_fderivWithin := fderiv_comp_fderivWithin
+@[fun_prop]
+theorem DifferentiableOn.fun_comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
+    (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) :
+    DifferentiableOn 𝕜 (fun x ↦ g (f x)) s :=
+  fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
 
 @[fun_prop]
 theorem DifferentiableOn.comp {g : F → G} {t : Set F} (hg : DifferentiableOn 𝕜 g t)
     (hf : DifferentiableOn 𝕜 f s) (st : MapsTo f s t) : DifferentiableOn 𝕜 (g ∘ f) s :=
   fun x hx => DifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
+
+@[fun_prop]
+theorem Differentiable.fun_comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
+    Differentiable 𝕜 (fun x ↦ g (f x)) :=
+  fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
 
 @[fun_prop]
 theorem Differentiable.comp {g : F → G} (hg : Differentiable 𝕜 g) (hf : Differentiable 𝕜 f) :
@@ -235,7 +247,6 @@ protected theorem HasFDerivAtFilter.iterate {f : E → E} {f' : E →L[𝕜] E}
 protected theorem HasFDerivAt.iterate {f : E → E} {f' : E →L[𝕜] E} (hf : HasFDerivAt f f' x)
     (hx : f x = x) (n : ℕ) : HasFDerivAt f^[n] (f' ^ n) x := by
   refine HasFDerivAtFilter.iterate hf ?_ hx n
-  -- Porting note: was `convert hf.continuousAt`
   convert hf.continuousAt.tendsto
   exact hx.symm
 
@@ -244,7 +255,7 @@ protected theorem HasFDerivWithinAt.iterate {f : E → E} {f' : E →L[𝕜] E}
     (hf : HasFDerivWithinAt f f' s x) (hx : f x = x) (hs : MapsTo f s s) (n : ℕ) :
     HasFDerivWithinAt f^[n] (f' ^ n) s x := by
   refine HasFDerivAtFilter.iterate hf ?_ hx n
-  rw [_root_.nhdsWithin] -- Porting note: Added `rw` to get rid of an error
+  rw [nhdsWithin]
   convert tendsto_inf.2 ⟨hf.continuousWithinAt, _⟩
   exacts [hx.symm, (tendsto_principal_principal.2 hs).mono_left inf_le_right]
 

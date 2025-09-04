@@ -119,16 +119,16 @@ theorem nhds_pure (x : α) : 𝓝 (pure x : Filter α) = 𝓟 {⊥, pure x} := b
   rw [← principal_singleton, nhds_principal, principal_singleton, Iic_pure]
 
 @[simp]
-theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
+protected theorem nhds_iInf (f : ι → Filter α) : 𝓝 (⨅ i, f i) = ⨅ i, 𝓝 (f i) := by
   simp only [nhds_eq]
   apply lift'_iInf_of_map_univ <;> simp
 
 @[simp]
-theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
-  simpa only [iInf_bool_eq] using nhds_iInf fun b => cond b l₁ l₂
+protected theorem nhds_inf (l₁ l₂ : Filter α) : 𝓝 (l₁ ⊓ l₂) = 𝓝 l₁ ⊓ 𝓝 l₂ := by
+  simpa only [iInf_bool_eq] using Filter.nhds_iInf fun b => cond b l₁ l₂
 
 theorem monotone_nhds : Monotone (𝓝 : Filter α → Filter (Filter α)) :=
-  Monotone.of_map_inf nhds_inf
+  Monotone.of_map_inf Filter.nhds_inf
 
 theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
   simp_rw [nhds_eq, Function.comp_def, sInter_lift'_sets monotone_principal.Iic, Iic,
@@ -164,7 +164,7 @@ instance : T0Space (Filter α) :=
     (specializes_iff_le.1 h.symm.specializes)⟩
 
 theorem nhds_atTop [Preorder α] : 𝓝 atTop = ⨅ x : α, 𝓟 (Iic (𝓟 (Ici x))) := by
-  simp only [atTop, nhds_iInf, nhds_principal]
+  simp only [atTop, Filter.nhds_iInf, nhds_principal]
 
 protected theorem tendsto_nhds_atTop_iff [Preorder β] {l : Filter α} {f : α → Filter β} :
     Tendsto f l (𝓝 atTop) ↔ ∀ y, ∀ᶠ a in l, Ici y ∈ f a := by
@@ -189,8 +189,6 @@ theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
       simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
         Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
         IsOpen.interior_eq]
-
-@[deprecated (since := "2024-10-28")] alias inducing_nhds := isInducing_nhds
 
 @[continuity]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=

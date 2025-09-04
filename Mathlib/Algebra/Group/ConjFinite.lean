@@ -10,6 +10,8 @@ import Mathlib.Data.Fintype.Units
 # Conjugacy of elements of finite groups
 -/
 
+assert_not_exists Field
+
 -- TODO: the following `assert_not_exists` should work, but does not
 -- assert_not_exists MonoidWithZero
 
@@ -27,7 +29,7 @@ instance [DecidableEq α] [Fintype α] : DecidableRel (IsConj : α → α → Pr
   inferInstanceAs (Decidable (∃ c : αˣ, c.1 * a = b * c.1))
 
 instance conjugatesOf.fintype [Fintype α] [DecidableRel (IsConj : α → α → Prop)] {a : α} :
-  Fintype (conjugatesOf a) :=
+    Fintype (conjugatesOf a) :=
   @Subtype.fintype _ _ (‹DecidableRel IsConj› a) _
 
 namespace ConjClasses

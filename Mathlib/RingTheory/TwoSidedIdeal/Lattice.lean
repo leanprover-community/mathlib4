@@ -129,6 +129,12 @@ instance : CompleteLattice (TwoSidedIdeal R) where
   le_top _ := by rw [ringCon_le_iff]; exact le_top
   bot_le _ := by rw [ringCon_le_iff]; exact bot_le
 
+@[simp]
+lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := rfl
+
+@[simp]
+lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := rfl
+
 lemma one_mem_iff {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
     (1 : R) ∈ I ↔ I = ⊤ :=
   ⟨fun h => eq_top_iff.2 fun x _ => by simpa using I.mul_mem_left x _ h, fun h ↦ h.symm ▸ trivial⟩

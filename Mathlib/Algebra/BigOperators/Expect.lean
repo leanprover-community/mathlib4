@@ -6,11 +6,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.Finset.Density
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Average over a finset
@@ -29,10 +29,10 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
 
 ## Implementation notes
 
-This definition is a special case of the general convex comnination operator in a convex space.
+This definition is a special case of the general convex combination operator in a convex space.
 However:
 1. We don't yet have general convex spaces.
-2. The uniform weights case is a overwhelmingly useful special case which should have its own API.
+2. The uniform weights case is an overwhelmingly useful special case which should have its own API.
 
 When convex spaces are finally defined, we should redefine `Finset.expect` in terms of that convex
 combination operator.
@@ -83,13 +83,13 @@ scoped macro_rules (kind := bigexpect)
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.expect`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
-@[scoped delab app.Finset.expect] def delabFinsetExpect : Delab :=
+@[scoped app_delab Finset.expect] def delabFinsetExpect : Delab :=
   whenPPOption getPPNotation <| withOverApp 6 <| do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
@@ -276,7 +276,7 @@ end bij
 
 lemma _root_.map_expect {F : Type*} [FunLike F M N] [LinearMapClass F ℚ≥0 M N]
     (g : F) (f : ι → M) (s : Finset ι) :
-    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_natCast, map_sum]
+    g (𝔼 i ∈ s, f i) = 𝔼 i ∈ s, g (f i) := by simp only [expect, map_smul, map_sum]
 
 @[simp]
 lemma card_smul_expect (s : Finset ι) (f : ι → M) : #s • 𝔼 i ∈ s, f i = ∑ i ∈ s, f i := by
@@ -409,7 +409,7 @@ lemma expect_const [Nonempty ι] (a : M) : 𝔼 _i : ι, a = a := Finset.expect_
 
 lemma expect_ite_zero (p : ι → Prop) [DecidablePred p] (h : ∀ i j, p i → p j → i = j) (a : M) :
     𝔼 i, ite (p i) a 0 = ite (∃ i, p i) (a /ℚ Fintype.card ι) 0 := by
-  simp [univ.expect_ite_zero p (by simpa using h), card_univ]
+  simp [univ.expect_ite_zero p (by simpa using h)]
 
 variable [DecidableEq ι]
 
@@ -418,16 +418,16 @@ variable [DecidableEq ι]
   simp [Finset.expect_ite_mem, dens]
 
 lemma expect_dite_eq (i : ι) (f : ∀ j, i = j → M) :
-    𝔼 j, (if h : i = j then f j h else 0) = f i rfl /ℚ card ι := by simp [card_univ]
+    𝔼 j, (if h : i = j then f j h else 0) = f i rfl /ℚ card ι := by simp
 
 lemma expect_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
-    𝔼 j, (if h : j = i then f j h else 0) = f i rfl /ℚ card ι := by simp [card_univ]
+    𝔼 j, (if h : j = i then f j h else 0) = f i rfl /ℚ card ι := by simp
 
 lemma expect_ite_eq (i : ι) (f : ι → M) :
-    𝔼 j, (if i = j then f j else 0) = f i /ℚ card ι := by simp [card_univ]
+    𝔼 j, (if i = j then f j else 0) = f i /ℚ card ι := by simp
 
 lemma expect_ite_eq' (i : ι) (f : ι → M) :
-    𝔼 j, (if j = i then f j else 0) = f i /ℚ card ι := by simp [card_univ]
+    𝔼 j, (if j = i then f j else 0) = f i /ℚ card ι := by simp
 
 end AddCommMonoid
 

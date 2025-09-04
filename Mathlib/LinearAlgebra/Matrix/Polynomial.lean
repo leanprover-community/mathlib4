@@ -38,20 +38,20 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
   rw [det_apply]
   refine (natDegree_sum_le _ _).trans ?_
   refine Multiset.max_le_of_forall_le _ _ ?_
-  simp only [forall_apply_eq_imp_iff, true_and, Function.comp_apply, Multiset.map_map,
+  simp only [forall_apply_eq_imp_iff, true_and, Function.comp_apply,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g
   calc
     natDegree (sign g • ∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) ≤
         natDegree (∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) := by
-      cases' Int.units_eq_one_or (sign g) with sg sg
+      rcases Int.units_eq_one_or (sign g) with sg | sg
       · rw [sg, one_smul]
       · rw [sg, Units.neg_smul, one_smul, natDegree_neg]
     _ ≤ ∑ i : n, natDegree (((X : α[X]) • A.map C + B.map C : Matrix n n α[X]) (g i) i) :=
       (natDegree_prod_le (Finset.univ : Finset n) fun i : n =>
         (X • A.map C + B.map C : Matrix n n α[X]) (g i) i)
     _ ≤ Finset.univ.card • 1 := (Finset.sum_le_card_nsmul _ _ 1 fun (i : n) _ => ?_)
-    _ ≤ Fintype.card n := by simp [mul_one, Algebra.id.smul_eq_mul, Finset.card_univ]
+    _ ≤ Fintype.card n := by simp [mul_one, Finset.card_univ]
   dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
   compute_degree
 
@@ -69,8 +69,7 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A := by
   rw [det_apply, det_apply, finset_sum_coeff]
   refine Finset.sum_congr rfl ?_
-  simp only [Algebra.id.smul_eq_mul, Finset.mem_univ, RingHom.mapMatrix_apply, forall_true_left,
-    map_apply, Pi.smul_apply]
+  simp only [Finset.mem_univ, forall_true_left]
   intro g
   convert coeff_smul (R := α) (sign g) _ _
   rw [← mul_one (Fintype.card n)]

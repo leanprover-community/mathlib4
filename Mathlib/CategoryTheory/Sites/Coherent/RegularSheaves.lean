@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.Limits.Final.ParallelPair
-import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
@@ -236,7 +236,7 @@ theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ D) [Preregular C] [∀ (X : C), P
     isSheafFor_regular_of_projective _ _
 
 /-- Every Yoneda-presheaf is a sheaf for the regular topology. -/
-lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
+lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
     Presieve.IsSheaf (regularTopology C) (yoneda.obj W) := by
   rw [regularTopology, isSheaf_coverage]
   intro X S ⟨_, hS⟩

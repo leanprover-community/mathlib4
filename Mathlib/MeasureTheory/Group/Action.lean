@@ -28,7 +28,7 @@ namespace MeasureTheory
 
 universe u v w
 
-variable {G : Type u} {M : Type v} {α : Type w} {s : Set α}
+variable {G : Type u} {M : Type v} {α : Type w}
 
 namespace SMulInvariantMeasure
 
@@ -61,13 +61,14 @@ variable {m : MeasurableSpace α} [SMul G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
 
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
-@[to_additive "See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`."]
+@[to_additive
+/-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/]
 theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
   (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
     (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _
 
 /-- See also `smul_ae`. -/
-@[to_additive "See also `vadd_ae`."]
+@[to_additive /-- See also `vadd_ae`. -/]
 theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
   eq_bot_mono (measure_preimage_smul_le μ c _) hs
 
@@ -148,7 +149,7 @@ theorem measurePreserving_smul : MeasurePreserving (c • ·) μ μ :=
       exact SMulInvariantMeasure.measure_preimage_smul c hs }
 
 @[to_additive (attr := simp)]
-theorem map_smul : map (c • ·) μ = μ :=
+protected theorem map_smul : map (c • ·) μ = μ :=
   (measurePreserving_smul c μ).map_eq
 
 end MeasurableSMul
@@ -198,7 +199,7 @@ instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N 
 
 end SMulHomClass
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (c : G) (μ : Measure α)
+variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
 
 variable [MeasurableSpace G] [MeasurableSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
@@ -307,7 +308,7 @@ variable [Measure.Regular μ]
 @[to_additive]
 theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
-  let ⟨_K, hK, hμK⟩ := Regular.exists_compact_not_null.mpr hμ
+  let ⟨_K, hK, hμK⟩ := Regular.exists_isCompact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
 
 @[to_additive]

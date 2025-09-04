@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Ring.Associated
 import Mathlib.Data.Set.Subsingleton
 import Batteries.Data.List.Lemmas
 
@@ -49,6 +49,7 @@ info: Try this: let a : ℕ × String := bar p.1 p.2
 info: Try this: let _ : ℕ × String := bar p.1 p.2
 -/
 #guard_msgs in
+set_option maxHeartbeats 400000 in
 example (p : Nat × String) : True := by
   fail_if_success have? using p
   have? a : Nat × String using p.1, p.2
@@ -101,6 +102,6 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
   rw [pow_succ'] at h
-  cases' dvd_or_dvd hp h with dvd_a dvd_pow
+  obtain dvd_a | dvd_pow := dvd_or_dvd hp h
   · assumption
   exact ih dvd_pow

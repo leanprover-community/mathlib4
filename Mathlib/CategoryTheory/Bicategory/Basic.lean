@@ -55,82 +55,82 @@ See https://ncatlab.org/nlab/show/bicategory.
 -/
 @[nolint checkUnivs]
 class Bicategory (B : Type u) extends CategoryStruct.{v} B where
-  -- category structure on the collection of 1-morphisms:
+  /-- The category structure on the collection of 1-morphisms -/
   homCategory : ∀ a b : B, Category.{w} (a ⟶ b) := by infer_instance
-  -- left whiskering:
+  /-- Left whiskering for morphisms -/
   whiskerLeft {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) : f ≫ g ⟶ f ≫ h
-  -- right whiskering:
+  /-- Right whiskering for morphisms -/
   whiskerRight {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) : f ≫ h ⟶ g ≫ h
-  -- associator:
+  /-- The associator isomorphism: `(f ≫ g) ≫ h ≅ f ≫ g ≫ h` -/
   associator {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : (f ≫ g) ≫ h ≅ f ≫ g ≫ h
-  -- left unitor:
+  /-- The left unitor: `𝟙 a ≫ f ≅ f` -/
   leftUnitor {a b : B} (f : a ⟶ b) : 𝟙 a ≫ f ≅ f
-  -- right unitor:
+  /-- The right unitor: `f ≫ 𝟙 b ≅ f` -/
   rightUnitor {a b : B} (f : a ⟶ b) : f ≫ 𝟙 b ≅ f
   -- axioms for left whiskering:
   whiskerLeft_id : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerLeft f (𝟙 g) = 𝟙 (f ≫ g) := by
-    aesop_cat
+    cat_disch
   whiskerLeft_comp :
     ∀ {a b c} (f : a ⟶ b) {g h i : b ⟶ c} (η : g ⟶ h) (θ : h ⟶ i),
       whiskerLeft f (η ≫ θ) = whiskerLeft f η ≫ whiskerLeft f θ := by
-    aesop_cat
+    cat_disch
   id_whiskerLeft :
     ∀ {a b} {f g : a ⟶ b} (η : f ⟶ g),
       whiskerLeft (𝟙 a) η = (leftUnitor f).hom ≫ η ≫ (leftUnitor g).inv := by
-    aesop_cat
+    cat_disch
   comp_whiskerLeft :
     ∀ {a b c d} (f : a ⟶ b) (g : b ⟶ c) {h h' : c ⟶ d} (η : h ⟶ h'),
       whiskerLeft (f ≫ g) η =
         (associator f g h).hom ≫ whiskerLeft f (whiskerLeft g η) ≫ (associator f g h').inv := by
-    aesop_cat
+    cat_disch
   -- axioms for right whiskering:
   id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
-    aesop_cat
+    cat_disch
   comp_whiskerRight :
     ∀ {a b c} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) (i : b ⟶ c),
       whiskerRight (η ≫ θ) i = whiskerRight η i ≫ whiskerRight θ i := by
-    aesop_cat
+    cat_disch
   whiskerRight_id :
     ∀ {a b} {f g : a ⟶ b} (η : f ⟶ g),
       whiskerRight η (𝟙 b) = (rightUnitor f).hom ≫ η ≫ (rightUnitor g).inv := by
-    aesop_cat
+    cat_disch
   whiskerRight_comp :
     ∀ {a b c d} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c) (h : c ⟶ d),
       whiskerRight η (g ≫ h) =
         (associator f g h).inv ≫ whiskerRight (whiskerRight η g) h ≫ (associator f' g h).hom := by
-    aesop_cat
+    cat_disch
   -- associativity of whiskerings:
   whisker_assoc :
     ∀ {a b c d} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g') (h : c ⟶ d),
       whiskerRight (whiskerLeft f η) h =
         (associator f g h).hom ≫ whiskerLeft f (whiskerRight η h) ≫ (associator f g' h).inv := by
-    aesop_cat
+    cat_disch
   -- exchange law of left and right whiskerings:
   whisker_exchange :
     ∀ {a b c} {f g : a ⟶ b} {h i : b ⟶ c} (η : f ⟶ g) (θ : h ⟶ i),
       whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ := by
-    aesop_cat
+    cat_disch
   -- pentagon identity:
   pentagon :
     ∀ {a b c d e} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e),
       whiskerRight (associator f g h).hom i ≫
           (associator f (g ≫ h) i).hom ≫ whiskerLeft f (associator g h i).hom =
         (associator (f ≫ g) h i).hom ≫ (associator f g (h ≫ i)).hom := by
-    aesop_cat
+    cat_disch
   -- triangle identity:
   triangle :
     ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),
       (associator f (𝟙 b) g).hom ≫ whiskerLeft f (leftUnitor g).hom
       = whiskerRight (rightUnitor f).hom g := by
-    aesop_cat
+    cat_disch
 
 namespace Bicategory
 
-scoped infixr:81 " ◁ " => Bicategory.whiskerLeft
-scoped infixl:81 " ▷ " => Bicategory.whiskerRight
-scoped notation "α_" => Bicategory.associator
-scoped notation "λ_" => Bicategory.leftUnitor
-scoped notation "ρ_" => Bicategory.rightUnitor
+@[inherit_doc] scoped infixr:81 " ◁ " => Bicategory.whiskerLeft
+@[inherit_doc] scoped infixl:81 " ▷ " => Bicategory.whiskerRight
+@[inherit_doc] scoped notation "α_" => Bicategory.associator
+@[inherit_doc] scoped notation "λ_" => Bicategory.leftUnitor
+@[inherit_doc] scoped notation "ρ_" => Bicategory.rightUnitor
 
 /-!
 ### Simp-normal form for 2-morphisms

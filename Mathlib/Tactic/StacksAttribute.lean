@@ -153,9 +153,12 @@ initialize Lean.registerBuiltinAttribute {
       | _ => throwUnsupportedSyntax
     let tagStr ← tag.getStacksTag
     let comment := (comment.map (·.getString)).getD ""
-    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr})", comment]
-    addDocString decl <| "\n\n".intercalate (newDoc.filter (· != ""))
+    let commentInDoc := if comment = "" then "" else s!" ({comment})"
+    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
+    addDocStringCore decl <| "\n\n".intercalate (newDoc.filter (· != ""))
     addTagEntry decl database tagStr <| comment
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
 }
 
 end Mathlib.StacksTag

@@ -44,9 +44,8 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
       rw [h w hw, h x hx, h (y ^ 2) (pow_pos hy 2), h (z ^ 2) (pow_pos hz 2)]
     · intro w x y z hw hx hy hz hprod
       rw [h w hw, h x hx, h (y ^ 2) (pow_pos hy 2), h (z ^ 2) (pow_pos hz 2)]
-      have hp2 : w ^ 2 * x ^ 2 = y ^ 2 * z ^ 2 := by linear_combination (w * x + y * z) * hprod
-      field_simp [hp2]
-      ring
+      field_simp
+      linear_combination - (z ^ 2 + y ^ 2) * (w ^ 2 + x ^ 2) * (w * x + y * z) * hprod
   -- proof that the only solutions are f(x) = x or f(x) = 1/x
   intro H₂
   have h₀ : f 1 ≠ 0 := by specialize H₁ 1 zero_lt_one; exact ne_of_gt H₁
@@ -62,7 +61,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     rw [h₁, one_pow 2, sq_sqrt (le_of_lt hx), ← two_mul (f x), ← two_mul x] at H₂
     have hfx_ne_0 : f x ≠ 0 := by specialize H₁ x hx; exact ne_of_gt H₁
     field_simp at H₂ ⊢
-    linear_combination 1 / 2 * H₂
+    linear_combination H₂
   have h₃ : ∀ x > 0, f x = x ∨ f x = 1 / x := by simpa [sub_eq_zero] using h₂
   by_contra! h
   rcases h with ⟨⟨b, hb, hfb₁⟩, ⟨a, ha, hfa₁⟩⟩
@@ -77,18 +76,18 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
   rw [hfa₂, hfb₂] at H₂
   have h2ab_ne_0 : 2 * (a * b) ≠ 0 := by positivity
   specialize h₃ (a * b) hab
-  cases' h₃ with hab₁ hab₂
+  rcases h₃ with hab₁ | hab₂
   -- f(ab) = ab → b^4 = 1 → b = 1 → f(b) = b → false
   · rw [hab₁, div_left_inj' h2ab_ne_0] at H₂
     field_simp at H₂
     have hb₁ : b ^ 4 = 1 := by linear_combination -H₂
-    obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by norm_num) hb₁
+    obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by simp) hb₁
     rw [abs_of_pos hb] at hb₂; rw [hb₂] at hfb₁; exact hfb₁ h₁
   -- f(ab) = 1/ab → a^4 = 1 → a = 1 → f(a) = 1/a → false
   · have hb_ne_0 : b ≠ 0 := ne_of_gt hb
-    field_simp [hab₂] at H₂
-    have H₃ : 2 * b ^ 4 * (a ^ 4 - 1) = 0 := by linear_combination H₂
+    simp [field, hab₂] at H₂
+    have H₃ : 2 * b ^ 4 * (a ^ 4 - 1) = 0 := by linear_combination 2 * b ^ 2 * H₂
     have h2b4_ne_0 : 2 * b ^ 4 ≠ 0 := mul_ne_zero two_ne_zero (pow_ne_zero 4 hb_ne_0)
     have ha₁ : a ^ 4 = 1 := by simpa [sub_eq_zero, h2b4_ne_0, hb_ne_0] using H₃
-    obtain ha₂ := abs_eq_one_of_pow_eq_one a 4 (show 4 ≠ 0 by norm_num) ha₁
+    obtain ha₂ := abs_eq_one_of_pow_eq_one a 4 (show 4 ≠ 0 by simp) ha₁
     rw [abs_of_pos ha] at ha₂; rw [ha₂] at hfa₁; norm_num at hfa₁; contradiction

@@ -6,7 +6,6 @@ Authors: Kim Morrison
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
-import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 # The `hint` tactic.
@@ -25,28 +24,41 @@ open Lean.Meta.Tactic.TryThis
 
 namespace Mathlib.Tactic.Hint
 
-/-- An environment extension for registering hint tactics. -/
-initialize hintExtension : SimplePersistentEnvExtension (TSyntax `tactic) (List (TSyntax `tactic)) ←
+/-- An environment extension for registering hint tactics with priorities. -/
+initialize hintExtension :
+    SimplePersistentEnvExtension (Nat × TSyntax `tactic) (List (Nat × TSyntax `tactic)) ←
   registerSimplePersistentEnvExtension {
     addEntryFn := (·.cons)
     addImportedFn := mkStateFromImportedEntries (·.cons) {}
   }
 
 /-- Register a new hint tactic. -/
-def addHint (stx : TSyntax `tactic) : CoreM Unit := do
-  modifyEnv fun env => hintExtension.addEntry env stx
+def addHint (prio : Nat) (stx : TSyntax `tactic) : CoreM Unit := do
+  modifyEnv fun env => hintExtension.addEntry env (prio, stx)
 
 /-- Return the list of registered hint tactics. -/
-def getHints : CoreM (List (TSyntax `tactic)) := return hintExtension.getState (← getEnv)
+def getHints : CoreM (List (Nat × TSyntax `tactic)) :=
+  return hintExtension.getState (← getEnv)
 
 open Lean.Elab.Command in
 /--
 Register a tactic for use with the `hint` tactic, e.g. `register_hint simp_all`.
+An optional priority can be provided with `register_hint (priority := n) tac`.
+Tactics with larger priorities run before those with smaller priorities. The default
+priority is `1000`.
 -/
-elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermElabM do
+elab (name := registerHintStx)
+    "register_hint" p:("(" "priority" ":=" num ")")? tac:tactic : command =>
+    liftTermElabM do
   -- remove comments
+  let prio := match p with
+    | some stx =>
+        match stx.raw[3]?.bind Syntax.isNatLit? with
+        | some n => n
+        | none => 1000
+    | none => 1000
   let tac : TSyntax `tactic := ⟨tac.raw.copyHeadTailInfoFrom .missing⟩
-  addHint tac
+  addHint prio tac
 
 initialize
   Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
@@ -72,7 +84,7 @@ def suggestion (tac : TSyntax `tactic) (msgs : MessageLog := {}) : TacticM Sugge
   let msg? ← msgs.toList.findM? fun m => do pure <|
     m.severity == MessageSeverity.information && (← m.data.toString).startsWith "Try this: "
   let suggestion ← match msg? with
-  | some m => pure <| SuggestionText.string (((← m.data.toString).drop 10).takeWhile (· != '\n'))
+  | some m => pure <| SuggestionText.string ((← m.data.toString).drop 10)
   | none => pure <| SuggestionText.tsyntax tac
   return { suggestion, postInfo?, style? }
 
@@ -100,11 +112,15 @@ If one tactic succeeds and closes the goal, we don't look at subsequent tactics.
 -- TODO We could run the tactics in parallel.
 -- TODO With widget support, could we run the tactics in parallel
 --      and do live updates of the widget as results come in?
-def hint (stx : Syntax) : TacticM Unit := do
-  let tacs := Nondet.ofList (← getHints)
+def hint (stx : Syntax) : TacticM Unit := withMainContext do
+  let tacs := (← getHints).toArray.qsort (·.1 > ·.1) |>.toList.map (·.2)
+  let tacs := Nondet.ofList tacs
   let results := tacs.filterMapM fun t : TSyntax `tactic => do
     if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
-      return some (← getGoals, ← suggestion t msgs)
+      if msgs.hasErrors then
+        return none
+      else
+        return some (← getGoals, ← suggestion t msgs)
     else
       return none
   let results ← (results.toMLList.takeUpToFirst fun r => r.1.1.isEmpty).asArray

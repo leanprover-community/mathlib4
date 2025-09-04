@@ -20,24 +20,19 @@ in terms of `ContinuousMap.abs`.
 
 namespace ContinuousMap
 
-section Lattice
-
 variable {α : Type*} [TopologicalSpace α]
 variable {β : Type*} [TopologicalSpace β]
+
+section Lattice
 
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulLeftMono β] :
-    MulLeftMono C(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
+instance [PartialOrder β] [CommMonoid β] [IsOrderedMonoid β] [ContinuousMul β] :
+    IsOrderedMonoid C(α, β) where
+  mul_le_mul_left _ _ hfg c x := mul_le_mul_left' (hfg x) (c x)
 
-@[to_additive]
-instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRightMono β] :
-    MulRightMono C(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
-
-variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
+variable [Group β] [IsTopologicalGroup β] [Lattice β] [TopologicalLattice β]
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl

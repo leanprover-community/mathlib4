@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
 
@@ -40,11 +41,8 @@ variable {X Y A} [TopologicalSpace X] [TopologicalSpace A]
 
 protected lemma Topology.IsEmbedding.toPullbackDiag (f : X → Y) : IsEmbedding (toPullbackDiag f) :=
   .mk' _ (injective_toPullbackDiag f) fun x ↦ by
-    rw [toPullbackDiag, nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod]
-    erw [Filter.comap_id, inf_idem]
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toPullbackDiag := IsEmbedding.toPullbackDiag
+    simp [nhds_induced, Filter.comap_comap, nhds_prod_eq, Filter.comap_prod, Function.comp_def,
+      Filter.comap_id']
 
 lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     [TopologicalSpace X₁] [TopologicalSpace X₂] [TopologicalSpace Z₁] [TopologicalSpace Z₂]
@@ -53,8 +51,8 @@ lemma Continuous.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {mapZ : Z₁ → Z₂} (contZ : Continuous mapZ)
     {commX : f₂ ∘ mapX = mapY ∘ f₁} {commZ : g₂ ∘ mapZ = mapY ∘ g₁} :
     Continuous (Function.mapPullback mapX mapY mapZ commX commZ) := by
-  refine continuous_induced_rng.mpr (continuous_prod_mk.mpr ⟨?_, ?_⟩) <;>
-  apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
+  refine continuous_induced_rng.mpr (.prodMk ?_ ?_) <;>
+    apply_rules [continuous_fst, continuous_snd, continuous_subtype_val, Continuous.comp]
 
 /-- A function from a topological space `X` to a type `Y` is a separated map if any two distinct
   points in `X` with the same image in `Y` can be separated by open neighborhoods. -/
@@ -72,7 +70,7 @@ lemma Function.Injective.isSeparatedMap {f : X → Y} (inj : f.Injective) : IsSe
 lemma isSeparatedMap_iff_disjoint_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → Disjoint (𝓝 x₁) (𝓝 x₂) :=
   forall₃_congr fun x x' _ ↦ by simp only [(nhds_basis_opens x).disjoint_iff (nhds_basis_opens x'),
-    exists_prop, ← exists_and_left, and_assoc, and_comm, and_left_comm]
+    ← exists_and_left, and_assoc, and_comm, and_left_comm]
 
 lemma isSeparatedMap_iff_nhds {f : X → Y} : IsSeparatedMap f ↔
     ∀ x₁ x₂, f x₁ = f x₂ → x₁ ≠ x₂ → ∃ s₁ ∈ 𝓝 x₁, ∃ s₂ ∈ 𝓝 x₂, Disjoint s₁ s₂ := by
@@ -93,9 +91,6 @@ theorem isSeparatedMap_iff_isClosedEmbedding {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedEmbedding (toPullbackDiag f) := by
   rw [isSeparatedMap_iff_isClosed_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isClosed_range⟩
-
-@[deprecated (since := "2024-10-20")]
-alias isSeparatedMap_iff_closedEmbedding := isSeparatedMap_iff_isClosedEmbedding
 
 theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
     IsSeparatedMap f ↔ IsClosedMap (toPullbackDiag f) :=
@@ -152,9 +147,6 @@ theorem IsLocallyInjective_iff_isOpenEmbedding {f : X → Y} :
   rw [isLocallyInjective_iff_isOpen_diagonal, ← range_toPullbackDiag]
   exact ⟨fun h ↦ ⟨.toPullbackDiag f, h⟩, fun h ↦ h.isOpen_range⟩
 
-@[deprecated (since := "2024-10-18")]
-alias IsLocallyInjective_iff_openEmbedding := IsLocallyInjective_iff_isOpenEmbedding
-
 theorem isLocallyInjective_iff_isOpenMap {f : X → Y} :
     IsLocallyInjective f ↔ IsOpenMap (toPullbackDiag f) :=
   IsLocallyInjective_iff_isOpenEmbedding.trans
@@ -183,25 +175,11 @@ section eqLocus
 variable {f : X → Y} {g₁ g₂ : A → X} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
 include h₁ h₂
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter flags `g` here,
-but it is used in a type ascription to direct `fun_prop`.
--/
-set_option linter.unusedVariables false in
 theorem IsSeparatedMap.isClosed_eqLocus (sep : IsSeparatedMap f) (he : f ∘ g₁ = f ∘ g₂) :
     IsClosed {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/5338,
-the unused variable linter flags `g` here,
-but it is used in a type ascription to direct `fun_prop`.
--/
-set_option linter.unusedVariables false in
 theorem IsLocallyInjective.isOpen_eqLocus (inj : IsLocallyInjective f) (he : f ∘ g₁ = f ∘ g₂) :
     IsOpen {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩

@@ -13,7 +13,7 @@ import Mathlib.Init
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
-open Lean Elab Command
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
@@ -60,7 +60,7 @@ def polishSource (s : String) : String × Array Nat :=
   let preWS := split.foldl (init := #[]) fun p q =>
     let txt := q.trimLeft.length
     (p.push (q.length - txt)).push txt
-  let preWS := preWS.eraseIdx 0
+  let preWS := preWS.eraseIdxIfInBounds 0
   let s := (split.map .trimLeft).filter (· != "")
   (" ".intercalate (s.filter (!·.isEmpty)), preWS)
 
@@ -115,7 +115,7 @@ namespace PPRoundtrip
 
 @[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
 def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.ppRoundtrip (← getOptions) do
+    unless getLinterValue linter.ppRoundtrip (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return

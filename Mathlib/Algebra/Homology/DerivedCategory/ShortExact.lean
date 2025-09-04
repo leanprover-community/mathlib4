@@ -17,6 +17,8 @@ in the derived category of `C`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 open CategoryTheory Category Pretriangulated
@@ -30,11 +32,11 @@ variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
 in the derived category when `S` is a short exact short complex of
 cochain complexes in an abelian category. -/
 noncomputable def triangleOfSESδ :
-  Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
-    have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
-    inv (Q.map (CochainComplex.mappingCone.descShortComplex S)) ≫
-      Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
-      (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
+    Q.obj (S.X₃) ⟶ (Q.obj S.X₁)⟦(1 : ℤ)⟧ :=
+  have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  inv (Q.map (CochainComplex.mappingCone.descShortComplex S)) ≫
+    Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
+    (Q.commShiftIso (1 : ℤ)).hom.app S.X₁
 
 /-- The distinguished triangle in the derived category associated to a short
 exact sequence of cochain complexes. -/

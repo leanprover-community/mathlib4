@@ -79,7 +79,7 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
 
 open Set
 
-theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
+theorem mk₂ (h : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
     FiniteInter (insert (univ : Set α) S) where
   univ_mem := Set.mem_insert Set.univ S
   inter_mem s hs t ht := by aesop

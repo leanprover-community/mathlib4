@@ -31,7 +31,7 @@ theorem eq_lim_at_left_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [De
     (ha : Tendsto f (𝓝[>] a) (𝓝 la)) : extendFrom (Ioo a b) f a = la := by
   apply extendFrom_eq
   · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, left_mem_Icc, right_mem_Icc]
+    simp only [le_of_lt hab, left_mem_Icc]
   · simpa [hab]
 
 theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
@@ -39,7 +39,7 @@ theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [D
     (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : extendFrom (Ioo a b) f b = lb := by
   apply extendFrom_eq
   · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, left_mem_Icc, right_mem_Icc]
+    simp only [le_of_lt hab, right_mem_Icc]
   · simpa [hab]
 
 theorem continuousOn_Ico_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
@@ -60,5 +60,5 @@ theorem continuousOn_Ioc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
     (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) :
     ContinuousOn (extendFrom (Ioo a b) f) (Ioc a b) := by
   have := @continuousOn_Ico_extendFrom_Ioo αᵒᵈ _ _ _ _ _ _ _ f _ _ lb hab
-  erw [dual_Ico, dual_Ioi, dual_Ioo] at this
+  erw [Ico_toDual, Ioi_toDual, Ioo_toDual] at this
   exact this hf hb

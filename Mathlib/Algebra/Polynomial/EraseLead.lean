@@ -87,8 +87,11 @@ theorem ne_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f)
     a ≠ f.natDegree :=
   (lt_natDegree_of_mem_eraseLead_support h).ne
 
-theorem natDegree_not_mem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
+theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
   ne_natDegree_of_mem_eraseLead_support h rfl
+
+@[deprecated (since := "2025-05-23")]
+alias natDegree_not_mem_eraseLead_support := natDegree_notMem_eraseLead_support
 
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]
@@ -306,7 +309,7 @@ theorem mono_map_natDegree_eq {S F : Type*} [Semiring S]
   · intro n r r0 _
     rw [natDegree_C_mul_X_pow _ _ r0, C_mul_X_pow_eq_monomial, φ_mon_nat _ _ r0]
   · intro f g fg _ fk gk
-    rw [natDegree_add_eq_right_of_natDegree_lt fg, _root_.map_add]
+    rw [natDegree_add_eq_right_of_natDegree_lt fg, map_add]
     by_cases FG : k ≤ f.natDegree
     · rw [natDegree_add_eq_right_of_natDegree_lt, gk]
       rw [fk, gk]
@@ -363,7 +366,7 @@ theorem card_support_eq {n : ℕ} :
         Function.extend Fin.castSucc x fun _ => f.leadingCoeff, ?_, ?_, ?_⟩
     · intro i j hij
       have hi : i ∈ Set.range (Fin.castSucc : Fin n → Fin (n + 1)) := by
-        rw [Fin.range_castSucc, Set.mem_def]
+        simp only [Fin.range_castSucc, Nat.succ_eq_add_one, Set.mem_setOf_eq]
         exact lt_of_lt_of_le hij (Nat.lt_succ_iff.mp j.2)
       obtain ⟨i, rfl⟩ := hi
       rw [Fin.strictMono_castSucc.injective.extend_apply]

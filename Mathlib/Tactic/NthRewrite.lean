@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 
 import Mathlib.Init
-import Lean.Elab.Tactic.Rewrite
 
 /-!
 # `nth_rewrite` tactic
@@ -33,7 +32,8 @@ h: a = 1
 ⊢ a + 1 + 1 + a + a = 5
 -/
 ```
-Notice that the second occurrence of `a` from the left has been rewritten by `nth_rewrite`.
+Notice that the second and third occurrences of `a` from the left have been rewritten by
+`nth_rewrite`.
 
 To understand the importance of order of precedence, consider the example below
 ```lean
@@ -68,21 +68,8 @@ h: a = a + b
 This new instance of `a` also turns out to be the third _occurrence_ of `a`.  Therefore,
 the next `nth_rewrite` with `h` rewrites this `a`.
 -/
-syntax (name := nthRewriteSeq) "nth_rewrite" optConfig ppSpace num+ rwRuleSeq (location)? : tactic
-
-@[inherit_doc nthRewriteSeq, tactic nthRewriteSeq] def evalNthRewriteSeq : Tactic := fun stx => do
-  match stx with
-  | `(tactic| nth_rewrite $cfg:optConfig $[$n]* $_rules:rwRuleSeq $[$loc]?) =>
-    let cfg ← elabRewriteConfig cfg
-    let loc := expandOptLocation (mkOptionalNode loc)
-    let occ := Occurrences.pos (n.map TSyntax.getNat).toList
-    let cfg := { cfg with occs := occ }
-    withRWRulesSeq stx[0] stx[3] fun symm term => do
-      withLocation loc
-        (rewriteLocalDecl term symm · cfg)
-        (rewriteTarget term symm cfg)
-        (throwTacticEx `nth_rewrite · "did not find instance of the pattern in the current goal")
-  | _ => throwUnsupportedSyntax
+macro "nth_rewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| rewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /--
 `nth_rw` is a variant of `rw` that only changes the `n₁, ..., nₖ`ᵗʰ _occurrence_ of the expression
@@ -99,7 +86,8 @@ h: a = 1
 ⊢ a + 1 + 1 + a + a = 5
 -/
 ```
-Notice that the second occurrence of `a` from the left has been rewritten by `nth_rewrite`.
+Notice that the second and third occurrences of `a` from the left have been rewritten by
+`nth_rw`.
 
 To understand the importance of order of precedence, consider the example below
 ```lean
@@ -136,13 +124,8 @@ the next `nth_rw` with `h` rewrites this `a`.
 
 Further, `nth_rw` will close the remaining goal with `rfl` if possible.
 -/
-macro (name := nthRwSeq) "nth_rw" c:optConfig ppSpace n:num+ s:rwRuleSeq l:(location)? : tactic =>
-  -- Note: This is a direct copy of `nth_rw` from core.
-  match s with
-  | `(rwRuleSeq| [$rs,*]%$rbrak) =>
-    -- We show the `rfl` state on `]`
-    `(tactic| (nth_rewrite $c:optConfig $[$n]* [$rs,*] $(l)?; with_annotate_state $rbrak
-      (try (with_reducible rfl))))
-  | _ => Macro.throwUnsupported
+macro "nth_rw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| rw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+
 
 end Mathlib.Tactic

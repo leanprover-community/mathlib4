@@ -3,39 +3,50 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Group action on rings
 
-This file defines the typeclass of monoid acting on semirings `MulSemiringAction M R`,
-and the corresponding typeclass of invariant subrings.
+This file defines the typeclass of monoid acting on semirings `MulSemiringAction M R`.
 
-Note that `Algebra` does not satisfy the axioms of `MulSemiringAction`.
+An example of a `MulSemiringAction` is the action of the Galois group `Gal(L/K)` on
+the big field `L`. Note that `Algebra` does not in general satisfy the axioms
+of `MulSemiringAction`.
 
 ## Implementation notes
 
 There is no separate typeclass for group acting on rings, group acting on fields, etc.
 They are all grouped under `MulSemiringAction`.
 
+## Note
+
+The corresponding typeclass of subrings invariant under such an action, `IsInvariantSubring`, is
+defined in `Mathlib/Algebra/Ring/Action/Invariant.lean`.
+
 ## Tags
 
-group action, invariant subring
+group action
 
 -/
 
-assert_not_exists Equiv.Perm.equivUnitsEnd
-assert_not_exists Prod.fst_mul
+assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
 
 universe u v
 
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
-This combines `DistribMulAction` with `MulDistribMulAction`. -/
+This combines `DistribMulAction` with `MulDistribMulAction`: it expresses
+the interplay between the action and both addition and multiplication on the target.
+Two key axioms are `g • (x + y) = (g • x) + (g • y)` and `g • (x * y) = (g • x) * (g • y)`.
+
+A typical use case is the action of a Galois group $Gal(L/K)$ on the field `L`.
+-/
 class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
   DistribMulAction M R where
-  /-- Multipliying `1` by a scalar gives `1` -/
+  /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y

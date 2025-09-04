@@ -66,15 +66,11 @@ theorem toDual_ofDual (a : αᵒᵈ) : toDual (ofDual a) = a :=
 theorem ofDual_toDual (a : α) : ofDual (toDual a) = a :=
   rfl
 
--- Porting note:
--- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b :=
-  Iff.rfl
+theorem toDual_inj {a b : α} : toDual a = toDual b ↔ a = b := by simp
 
--- Porting note:
--- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b :=
-  Iff.rfl
+theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
+
+@[ext] lemma ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := h
 
 @[simp]
 theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a :=
@@ -106,8 +102,8 @@ theorem toDual_lt [LT α] {a : α} {b : αᵒᵈ} : toDual a < b ↔ ofDual b < 
 
 /-- Recursor for `αᵒᵈ`. -/
 @[elab_as_elim]
-protected def rec {C : αᵒᵈ → Sort*} (h₂ : ∀ a : α, C (toDual a)) : ∀ a : αᵒᵈ, C a :=
-  h₂
+protected def rec {motive : αᵒᵈ → Sort*} (toDual : ∀ a : α, motive (toDual a)) :
+    ∀ a : αᵒᵈ, motive a := toDual
 
 @[simp]
 protected theorem «forall» {p : αᵒᵈ → Prop} : (∀ a, p a) ↔ ∀ a, p (toDual a) :=
@@ -160,15 +156,9 @@ theorem toLex_ofLex (a : Lex α) : toLex (ofLex a) = a :=
 theorem ofLex_toLex (a : α) : ofLex (toLex a) = a :=
   rfl
 
--- Porting note:
--- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
-  Iff.rfl
+theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b := by simp
 
--- Porting note:
--- removed @[simp] since this already follows by `simp only [EmbeddingLike.apply_eq_iff_eq]`
-theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
-  Iff.rfl
+theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b := by simp
 
 instance (α : Type*) [BEq α] : BEq (Lex α) where
   beq a b := ofLex a == ofLex b

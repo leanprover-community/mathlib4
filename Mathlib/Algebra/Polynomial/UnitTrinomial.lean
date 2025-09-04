@@ -188,7 +188,7 @@ theorem isUnitTrinomial_iff' :
   · have key : ∀ k ∈ p.support, p.coeff k ^ 2 = 1 := fun k hk =>
       Int.sq_eq_one_of_sq_le_three
         ((single_le_sum (fun k _ => sq_nonneg (p.coeff k)) hk).trans hp.le) (mem_support_iff.mp hk)
-    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => isUnit_ofPowEqOne (key k hk) two_ne_zero⟩
+    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => .of_pow_eq_one (key k hk) two_ne_zero⟩
     rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
     exact Nat.cast_injective hp
 
@@ -205,15 +205,12 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   have key : n - m + k < n := by rwa [← lt_tsub_iff_right, tsub_lt_tsub_iff_left_of_le hmn.le]
   rw [hp, trinomial_mirror hkm hmn u.ne_zero w.ne_zero]
   simp_rw [trinomial_def, C_mul_X_pow_eq_monomial, add_mul, mul_add, monomial_mul_monomial,
-    toFinsupp_add, toFinsupp_monomial]
-  -- Porting note: added next line (less powerful `simp`).
-  rw [Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add,
-    Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add, Finsupp.filter_add]
+    toFinsupp_add, toFinsupp_monomial, AddMonoidAlgebra, Finsupp.filter_add]
   rw [Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos,
     Finsupp.filter_single_of_neg, Finsupp.filter_single_of_pos, Finsupp.filter_single_of_neg]
-  · simp only [add_zero, zero_add, ofFinsupp_add, ofFinsupp_single]
-    -- Porting note: added next two lines (less powerful `simp`).
+  · simp only [add_zero, zero_add]
+    -- Porting note: the next `rw` is needed to see through the defeq `Finsupp = AddMonoidAlgebra`
     rw [ofFinsupp_add]
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
@@ -224,10 +221,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
   · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
   · rw [← add_assoc, add_tsub_cancel_of_le hmn.le, add_comm]
     exact fun h => h.1.ne rfl
-  · intro h
-    have := h.1
-    rw [add_comm, add_lt_add_iff_right] at this
-    exact asymm this hmn
+  · grind
   · exact fun h => h.1.ne rfl
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) key
   · exact fun h => asymm ((add_lt_add_iff_left k).mp h.1) (hkm.trans hmn)
@@ -241,20 +235,13 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   replace h := h.trans (irreducible_aux1 hkm' hmn' u v w hq).symm
   rw [(isUnit_C.mpr v.isUnit).mul_right_inj] at h
   rw [binomial_eq_binomial u.ne_zero w.ne_zero] at h
-  simp only [add_left_inj, Units.eq_iff] at h
+  simp only [add_left_inj, Units.val_inj] at h
   rcases h with (⟨rfl, -⟩ | ⟨rfl, rfl, h⟩ | ⟨-, hm, hm'⟩)
   · exact Or.inl (hq.trans hp.symm)
   · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
-  · suffices m = m' by
-      rw [this] at hp
-      exact Or.inl (hq.trans hp.symm)
-    rw [tsub_add_eq_add_tsub hmn.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm
-    · rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
-      · exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
-      · exact hmn'.le.trans (Nat.le_add_right n k)
-    · exact hmn.le.trans (Nat.le_add_right n k)
+  · grind
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
     (u v w x z : Units ℤ) (hp : p = trinomial k m n (u : ℤ) v w)
@@ -274,7 +261,7 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
     mul_right_inj' (show 2 * (v : ℤ) ≠ 0 from mul_ne_zero two_ne_zero v.ne_zero)] at hadd
   replace hadd :=
     (Int.isUnit_add_isUnit_eq_isUnit_add_isUnit w.isUnit u.isUnit z.isUnit x.isUnit).mp hadd
-  simp only [Units.eq_iff] at hadd
+  simp only [Units.val_inj] at hadd
   rcases hadd with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
   · exact irreducible_aux2 hkm hmn hkm' hmn' u v w hp hq h
   · rw [← mirror_inj, trinomial_mirror hkm' hmn' w.ne_zero u.ne_zero] at hq
@@ -303,13 +290,11 @@ theorem irreducible_of_coprime (hp : p.IsUnitTrinomial)
   rcases eq_or_eq_neg_of_sq_eq_sq (y : ℤ) (v : ℤ)
       ((Int.isUnit_sq y.isUnit).trans (Int.isUnit_sq v.isUnit).symm) with
     (h1 | h1)
-  · -- Porting note: `rw [h1] at *` rewrites at `h1`
-    rw [h1] at hq
+  · rw [h1] at hq
     rcases irreducible_aux3 hkm hmn hkm' hmn' u v w x z hp hq hpq with (h2 | h2)
     · exact Or.inl h2
     · exact Or.inr (Or.inr (Or.inl h2))
-  · -- Porting note: `rw [h1] at *` rewrites at `h1`
-    rw [h1] at hq
+  · rw [h1] at hq
     rw [trinomial_def] at hp
     rw [← neg_inj, neg_add, neg_add, ← neg_mul, ← neg_mul, ← neg_mul, ← C_neg, ← C_neg, ← C_neg]
       at hp

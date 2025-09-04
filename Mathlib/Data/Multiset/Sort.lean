@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Sort
 import Mathlib.Data.Multiset.Range
+import Mathlib.Util.Qq
 
 /-!
 # Construct a sorted list from a multiset.
@@ -37,9 +38,7 @@ theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
 
 @[simp]
 theorem sort_sorted (s : Multiset α) : Sorted r (sort r s) :=
-  Quot.inductionOn s fun l => by
-    simpa using sorted_mergeSort (le := (r · ·)) IsTrans.trans
-      (fun a b => by simpa using IsTotal.total a b) l
+  Quot.inductionOn s (sorted_mergeSort' _)
 
 @[simp]
 theorem sort_eq (s : Multiset α) : ↑(sort r s) = s :=
@@ -73,9 +72,22 @@ theorem sort_cons (a : α) (s : Multiset α) :
 
 @[simp]
 theorem sort_range (n : ℕ) : sort (· ≤ ·) (range n) = List.range n :=
-  List.mergeSort_eq_self (sorted_le_range n)
+  List.mergeSort_eq_self _ (sorted_le_range n)
 
 end sort
+
+open Qq in
+universe u in
+unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
+    Lean.ToExpr (Multiset α) :=
+  haveI u' := Lean.toLevel.{u}
+  haveI α' : Q(Type u') := Lean.toTypeExpr α
+  { toTypeExpr := q(Multiset $α')
+    toExpr s := show Q(Multiset $α') from
+      if Multiset.card s = 0 then
+        q(0)
+      else
+        mkSetLiteralQ (α := q($α')) q(Multiset $α') (s.unquot.map Lean.toExpr)}
 
 -- TODO: use a sort order if available, gh-18166
 unsafe instance [Repr α] : Repr (Multiset α) where

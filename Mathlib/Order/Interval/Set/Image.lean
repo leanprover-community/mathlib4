@@ -249,7 +249,7 @@ private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} 
     (h : ∀ {x}, r x c → q x b) :
     Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
   (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true}) [h]
+    ext; simp +contextual [h]
 
 variable [Preorder α] {p : α → Prop}
 

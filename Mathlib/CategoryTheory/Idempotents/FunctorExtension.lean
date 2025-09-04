@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-open Category Karoubi
+open Category Karoubi Functor
 
 variable {C D E : Type*} [Category C] [Category D] [Category E]
 
@@ -59,7 +59,7 @@ def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
         have h' := F.congr_map P.idem
         simp only [hom_ext_iff, Karoubi.comp_f, F.map_comp] at h h'
         simp only [obj_obj_p, assoc, ← h]
-        slice_rhs 1 3 => rw [h', h'] }
+        slice_lhs 1 3 => rw [h', h'] }
   naturality _ _ f := by
     ext
     dsimp [obj]
@@ -103,8 +103,8 @@ def functorExtension₁CompWhiskeringLeftToKaroubiIso :
       (fun X =>
         { hom := { f := (F.obj X).p }
           inv := { f := (F.obj X).p } })
-      (fun {X Y} f => by aesop_cat))
-    (by aesop_cat)
+      (fun {X Y} f => by simp))
+    (by cat_disch)
 
 /-- The counit isomorphism of the equivalence `(C ⥤ Karoubi D) ≌ (Karoubi C ⥤ Karoubi D)`. -/
 def KaroubiUniversal₁.counitIso :
@@ -117,7 +117,7 @@ def KaroubiUniversal₁.counitIso :
                 comm := by
                   simpa only [hom_ext_iff, G.map_comp, G.map_id] using
                     G.congr_map
-                      (show P.decompId_p = (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ by simp) }
+                      (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
             naturality := fun P Q f => by
               simpa only [hom_ext_iff, G.map_comp]
                 using (G.congr_map (decompId_p_naturality f)).symm }
@@ -127,7 +127,7 @@ def KaroubiUniversal₁.counitIso :
                 comm := by
                   simpa only [hom_ext_iff, G.map_comp, G.map_id] using
                     G.congr_map
-                      (show P.decompId_i = 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p by simp) }
+                      (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
             naturality := fun P Q f => by
               simpa only [hom_ext_iff, G.map_comp] using G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
@@ -180,8 +180,8 @@ def functorExtension₂CompWhiskeringLeftToKaroubiIso :
       (fun X =>
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } })
-      (by aesop_cat))
-    (by aesop_cat)
+      (by simp))
+    (by cat_disch)
 
 section IsIdempotentComplete
 

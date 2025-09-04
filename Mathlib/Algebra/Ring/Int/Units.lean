@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Group.Int.Units
 
 /-!
 # Basic lemmas for `ℤˣ`.
@@ -13,13 +14,12 @@ This file contains lemmas on the units of `ℤ`.
 
 ## Main results
 
- * `Int.units_eq_one_or`: the invertible integers are 1 and -1.
+* `Int.units_eq_one_or`: the invertible integers are 1 and -1.
 
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists Set.Subsingleton
+assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 

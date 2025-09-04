@@ -71,7 +71,7 @@ and one for each generator of `M₁`. -/
 def cokernelRelations : Relations A where
   G := pres₂.G
   R := Sum pres₂.R ι
-  relation x := match x with
+  relation
     | .inl r => pres₂.relation r
     | .inr i => data.lift i
 

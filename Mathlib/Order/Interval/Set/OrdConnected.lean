@@ -142,7 +142,6 @@ instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnec
     OrdConnected (⋂ i, s i) :=
   ordConnected_iInter ‹_›
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i hi) -/
 theorem ordConnected_biInter {ι : Sort*} {p : ι → Prop} {s : ∀ i, p i → Set α}
     (hs : ∀ i hi, OrdConnected (s i hi)) : OrdConnected (⋂ (i) (hi), s i hi) :=
   ordConnected_iInter fun i => ordConnected_iInter <| hs i
@@ -219,7 +218,6 @@ theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
   erw [(e : α ≃o β).image_eq_preimage]
   apply ordConnected_preimage (e : α ≃o β).symm
 
--- Porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
 theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     OrdConnected (range e) := by
@@ -228,12 +226,37 @@ theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
 
 @[simp]
 theorem dual_ordConnected_iff {s : Set α} : OrdConnected (ofDual ⁻¹' s) ↔ OrdConnected s := by
-  simp_rw [ordConnected_def, toDual.surjective.forall, dual_Icc, Subtype.forall']
+  simp_rw [ordConnected_def, toDual.surjective.forall, Icc_toDual, Subtype.forall']
   exact forall_swap
 
 @[instance]
 theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual ⁻¹' s) :=
   dual_ordConnected_iff.2 ‹_›
+
+/-- The preimage of an `OrdConnected` set under a map which is monotone on a set `t`,
+when intersected with `t`, is `OrdConnected`. More precisely, it is the intersection with `t`
+of an `OrdConnected` set. -/
+theorem OrdConnected.preimage_monotoneOn {f : β → α} {t : Set β} {s : Set α}
+    (hs : OrdConnected s) (hf : MonotoneOn f t) :
+    ∃ u, OrdConnected u ∧ t ∩ f ⁻¹' s = t ∩ u := by
+  let u := {x | (∃ y ∈ t, y ≤ x ∧ f y ∈ s) ∧ (∃ z ∈ t, x ≤ z ∧ f z ∈ s)}
+  refine ⟨u, ⟨?_⟩, Subset.antisymm ?_ ?_⟩
+  · rintro x ⟨⟨y, yt, yx, ys⟩, -⟩ x' ⟨-, ⟨z, zt, x'z, zs⟩⟩ a ha
+    exact ⟨⟨y, yt, yx.trans ha.1, ys⟩, ⟨z, zt, ha.2.trans x'z, zs⟩⟩
+  · rintro x ⟨xt, xs⟩
+    exact ⟨xt, ⟨x, xt, le_rfl, xs⟩, ⟨x, xt, le_rfl, xs⟩⟩
+  · rintro x ⟨xt, ⟨y, yt, yx, ys⟩, ⟨z, zt, xz, zs⟩⟩
+    refine ⟨xt, ?_⟩
+    apply hs.out ys zs
+    exact ⟨hf yt xt yx, hf xt zt xz⟩
+
+/-- The preimage of an `OrdConnected` set under a map which is antitone on a set `t`,
+when intersected with `t`, is `OrdConnected`. More precisely, it is the intersection with `t`
+of an `OrdConnected` set. -/
+theorem OrdConnected.preimage_antitoneOn {f : β → α} {t : Set β} {s : Set α}
+    (hs : OrdConnected s) (hf : AntitoneOn f t) :
+    ∃ u, OrdConnected u ∧ t ∩ f ⁻¹' s = t ∩ u :=
+  (OrdConnected.preimage_monotoneOn hs.dual hf.dual_right :)
 
 end Preorder
 
@@ -264,6 +287,8 @@ lemma not_ordConnected_inter_Icc_iff (hx : x ∈ s) (hy : y ∈ s) :
 end PartialOrder
 
 section LinearOrder
+
+open scoped Interval
 
 variable {α : Type*} [LinearOrder α] {s : Set α} {x : α}
 

@@ -26,7 +26,7 @@ variable {i : ι} {l : List ι}
 
 /-- Given `f` a function whose domain is `i :: l`, get its value at `i`. -/
 def head (f : ∀ j ∈ i :: l, α j) : α i :=
-  f i (mem_cons_self _ _)
+  f i mem_cons_self
 
 /-- Given `f` a function whose domain is `i :: l`, produce a function whose domain
 is restricted to `l`. -/
@@ -94,7 +94,7 @@ lemma _root_.Multiset.pi_coe (l : List ι) (fs : ∀ i, List (α i)) :
 
 lemma mem_pi {l : List ι} (fs : ∀ i, List (α i)) :
     ∀ f : ∀ i ∈ l, α i, (f ∈ pi l fs) ↔ (∀ i (hi : i ∈ l), f i hi ∈ fs i) := by
-  intros f
+  intro f
   convert @Multiset.mem_pi ι _ α ↑l (fs ·) f using 1
   rw [Multiset.pi_coe]
   rfl

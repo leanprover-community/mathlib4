@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
-# Etale morphisms
+# Étale morphisms
 
 An `R`-algebra `A` is formally étale if for every `R`-algebra `B`,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
@@ -24,8 +24,6 @@ localization at an element.
 
 -/
 
-
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u
@@ -38,10 +36,8 @@ variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally étale if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`.
-
-See <https://stacks.math.columbia.edu/tag/00UQ> -/
-@[mk_iff]
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
+@[mk_iff, stacks 00UQ]
 class FormallyEtale : Prop where
   comp_bijective :
     ∀ ⦃B : Type u⦄ [CommRing B],
@@ -143,9 +139,6 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
 
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
-
 theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_unramified_and_smooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
@@ -169,11 +162,9 @@ section
 variable (R : Type u) [CommRing R]
 variable (A : Type u) [CommRing A] [Algebra R A]
 
-/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation.
-
-Note that the definition <https://stacks.math.columbia.edu/tag/00U1> in the stacks project is
-different, but <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent
-to the definition here. -/
+/-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
+@[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
+<https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent to the definition here."]
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
@@ -196,12 +187,12 @@ section Comp
 
 variable (R A B)
 
-/-- Etale is stable under composition. -/
+/-- Étale is stable under composition. -/
 theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale R B where
   formallyEtale := FormallyEtale.comp R A B
   finitePresentation := FinitePresentation.trans R A B
 
-/-- Etale is stable under base change. -/
+/-- Étale is stable under base change. -/
 instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
 end Comp
@@ -214,3 +205,22 @@ theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Etale R A whe
 end Etale
 
 end Algebra
+
+namespace RingHom
+
+variable {R S : Type u} [CommRing R] [CommRing S]
+
+/--
+A ring homomorphism `R →+* A` is formally étale if it is formally unramified and formally smooth.
+See `Algebra.FormallyEtale`.
+-/
+@[algebraize Algebra.FormallyEtale]
+def FormallyEtale (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.FormallyEtale R S
+
+lemma formallyEtale_algebraMap [Algebra R S] :
+    (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
+  rw [FormallyEtale, toAlgebra_algebraMap]
+
+end RingHom

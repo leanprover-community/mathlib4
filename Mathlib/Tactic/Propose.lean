@@ -39,9 +39,6 @@ open Lean Meta Batteries.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
-/-- Configuration for `DiscrTree`. -/
-def discrTreeConfig : WhnfCoreConfig := {}
-
 initialize proposeLemmas : DeclCache (DiscrTree Name) ←
   DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
     if constInfo.isUnsafe then return lemmas
@@ -50,7 +47,7 @@ initialize proposeLemmas : DeclCache (DiscrTree Name) ←
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        lemmas ← lemmas.insertIfSpecific (← inferType m) name discrTreeConfig
+        lemmas ← lemmas.insertIfSpecific (← inferType m) name
       pure lemmas
 
 open Lean.Meta.SolveByElim in
@@ -80,7 +77,7 @@ def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
     (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := do
   guard !required.isEmpty
   let ty ← whnfR (← instantiateMVars (← inferType required[0]!))
-  let candidates ← lemmas.getMatch ty discrTreeConfig
+  let candidates ← lemmas.getMatch ty
   candidates.filterMapM fun lem : Name =>
     try
       trace[Tactic.propose] "considering {lem}"
@@ -100,8 +97,8 @@ open Lean.Parser.Tactic
 
 /--
 * `have? using a, b, c` tries to find a lemma
-which makes use of each of the local hypotheses `a, b, c`,
-and reports any results via trace messages.
+  which makes use of each of the local hypotheses `a, b, c`,
+  and reports any results via trace messages.
 * `have? : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
 * `have?! using a, b, c` will also call `have` to add results to the local goal state.
 
@@ -129,7 +126,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx
+        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx (← saveState)
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do

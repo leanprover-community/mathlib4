@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Endomorphisms
@@ -51,12 +50,14 @@ def of (f : X ⟶ X) : End X := f
 `X ⟶ X`. -/
 def asHom (f : End X) : X ⟶ X := f
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
+-- TODO: to fix defeq abuse, this should be `(1 : End x) = of (𝟙 X)`.
+-- But that would require many more extra simp lemmas to get rid of the `of`.
+@[simp]
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
+-- TODO: to fix defeq abuse, this should be `xs * ys = of (ys ≫ xs)`.
+-- But that would require many more extra simp lemmas to get rid of the `of`.
+@[simp]
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 
 end Struct
@@ -78,7 +79,7 @@ instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 
-instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) where
+instance mulActionLeft {X Y : C} : MulAction (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
@@ -86,7 +87,7 @@ instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) 
 theorem smul_right {X Y : C} {r : End Y} {f : X ⟶ Y} : r • f = f ≫ r :=
   rfl
 
-theorem smul_left {X : Cᵒᵖ} {Y : C} {r : End X} {f : unop X ⟶ Y} : r • f = r.unop ≫ f :=
+theorem smul_left {X Y : C} {r : (End X)ᵐᵒᵖ} {f : X ⟶ Y} : r • f = r.unop ≫ f :=
   rfl
 
 end MulAction
@@ -139,8 +140,6 @@ are (multiplicatively) equivalent to automorphisms of that object.
 def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   toFun f := ⟨f.1, f.2, f.4, f.3⟩
   invFun f := ⟨f.1, f.2, f.4, f.3⟩
-  left_inv := fun ⟨_, _, _, _⟩ => rfl
-  right_inv := fun ⟨_, _, _, _⟩ => rfl
   map_mul' f g := by cases f; cases g; rfl
 
 /-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/
@@ -151,8 +150,8 @@ def toEnd (X : C) : Aut X →* End X := (Units.coeHom (End X)).comp (Aut.unitsEn
 def autMulEquivOfIso {X Y : C} (h : X ≅ Y) : Aut X ≃* Aut Y where
   toFun x := { hom := h.inv ≫ x.hom ≫ h.hom, inv := h.inv ≫ x.inv ≫ h.hom }
   invFun y := { hom := h.hom ≫ y.hom ≫ h.inv, inv := h.hom ≫ y.inv ≫ h.inv }
-  left_inv _ := by aesop_cat
-  right_inv _ := by aesop_cat
+  left_inv _ := by cat_disch
+  right_inv _ := by cat_disch
   map_mul' := by simp [Aut_mul_def]
 
 end Aut

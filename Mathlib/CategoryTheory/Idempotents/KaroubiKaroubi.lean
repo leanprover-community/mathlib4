@@ -26,7 +26,6 @@ namespace KaroubiKaroubi
 
 variable (C : Type*) [Category C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
@@ -46,7 +45,7 @@ instance [Preadditive C] : Functor.Additive (inverse C) where
 /-- The unit isomorphism of the equivalence -/
 @[simps!]
 def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
-  eqToIso (Functor.ext (by aesop_cat) (by aesop_cat))
+  eqToIso (Functor.ext (by cat_disch) (by simp))
 
 attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/
@@ -64,10 +63,10 @@ def equivalence : Karoubi C ≌ Karoubi (Karoubi C) where
   counitIso := KaroubiKaroubi.counitIso C
 
 instance equivalence.additive_functor [Preadditive C] :
-  Functor.Additive (equivalence C).functor where
+    Functor.Additive (equivalence C).functor where
 
 instance equivalence.additive_inverse [Preadditive C] :
-  Functor.Additive (equivalence C).inverse where
+    Functor.Additive (equivalence C).inverse where
 
 end KaroubiKaroubi
 
