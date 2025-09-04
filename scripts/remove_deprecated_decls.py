@@ -43,18 +43,44 @@ def remove_old_deprecated_declarations(content, cutoff_date):
     # Pattern to match deprecated declarations with expanded character set
     pattern = r'@\[deprecated[^]]*since[^]]*"(\d{4}-\d{2}-\d{2})"[^]]*\]\s*(?:noncomputable\s+)?(?:protected\s+)?alias\s+[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*\s*:=\s*[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*'
 
-    def replacement_func(match):
+    # Find all matches first to track positions
+    matches = list(re.finditer(pattern, content, flags=re.MULTILINE | re.DOTALL))
+
+    # Process matches in reverse order to preserve positions
+    for match in reversed(matches):
         date_str = match.group(1)
         if is_date_older_than_cutoff(date_str, cutoff_date):
-            return ''  # Remove the match
-        else:
-            return match.group(0)  # Keep the match
+            start_pos = match.start()
+            end_pos = match.end()
 
-    # Apply the replacement
-    content = re.sub(pattern, replacement_func, content, flags=re.MULTILINE | re.DOTALL)
+            # Look for newlines before and after the match
+            before_start = start_pos
+            after_end = end_pos
 
-    # Clean up consecutive blank lines (more than 2 consecutive newlines)
-    content = re.sub(r'\n{3,}', '\n\n', content)
+            # Check for newlines before the match
+            while before_start > 0 and content[before_start - 1] in ' \t':
+                before_start -= 1
+            if before_start > 0 and content[before_start - 1] == '\n':
+                before_start -= 1
+
+            # Check for newlines after the match
+            while after_end < len(content) and content[after_end] in ' \t':
+                after_end += 1
+            if after_end < len(content) and content[after_end] == '\n':
+                after_end += 1
+
+            # Remove the match and adjacent whitespace
+            before_text = content[:before_start]
+            after_text = content[after_end:]
+
+            # Check if we need to add back a single newline to avoid merging lines
+            needs_separator = (before_text and not before_text.endswith('\n') and
+                             after_text and not after_text.startswith('\n'))
+
+            if needs_separator:
+                content = before_text + '\n' + after_text
+            else:
+                content = before_text + after_text
 
     return content
 
