@@ -217,11 +217,8 @@ theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
     (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
     dist p t ^ 2 = dist p a * dist p b := by
   have hr := radius_nonneg_of_mem ha
-  have h_outside : s.radius ≤ dist p s.center := by
-    rw [dist_comm]
-    by_contra! hlt
-    exact h_tangent.isTangent.notMem_of_dist_lt hlt (left_mem_affineSpan_pair ℝ p t)
-  rw [mul_dist_eq_power_of_radius_le_dist_center hr h_secant ha hb h_outside,
+  have radius_le_dist := h_tangent.isTangent.radius_le_dist_center (left_mem_affineSpan_pair ℝ p t)
+  rw [mul_dist_eq_power_of_radius_le_dist_center hr h_secant ha hb radius_le_dist,
     Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
   ring
 
