@@ -28,14 +28,14 @@ variable {X Z α : Type*} [UniformSpace X] [CompleteSpace X]
     [T2Space X] [Preorder α] [(atTop : Filter α).NeBot]
 
 @[to_additive]
-lemma limUnder.mul [Group X] [IsUniformGroup X] {f g : α → X} (hf : CauchySeq f)
+lemma limUnder.mul [Mul X] [ContinuousMul X] {f g : α → X} (hf : CauchySeq f)
     (hg : CauchySeq g) : (limUnder atTop f) * (limUnder atTop g) = limUnder atTop (f * g) :=
   (hf.tendsto_limUnder.mul hg.tendsto_limUnder).limUnder_eq.symm
 
+@[to_additive]
 lemma limUnder.smul_const {Y : Type*} [Nonempty X] [SMul Y X] [ContinuousConstSMul Y X]
-    (f : α → X) (hf : CauchySeq f) (c : Y) : c • (limUnder atTop f)= limUnder atTop (c • f) := by
-  nth_rw 2 [Tendsto.limUnder_eq]
-  exact Tendsto.const_smul hf.tendsto_limUnder c
+    (f : α → X) (hf : CauchySeq f) (c : Y) : c • (limUnder atTop f)= limUnder atTop (c • f) :=
+  (hf.tendsto_limUnder.const_smul c).limUnder_eq.symm
 
 lemma limUnder.mul_const {f : α → X} [Monoid X] [ContinuousMul X] (hf : CauchySeq f) (c : X) :
     c * (limUnder atTop f) = limUnder atTop (c • f) := by
