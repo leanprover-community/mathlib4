@@ -268,8 +268,7 @@ theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [Add
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
   have := Submodule.span_le_restrictScalars R A S
-  rw [hSgen] at this
-  exact this
+  rwa [hSgen] at this
 
 variable {R M}
 
@@ -278,6 +277,8 @@ theorem equiv [Module.Finite R M] (e : M ≃ₗ[R] N) : Module.Finite R N :=
 
 theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N :=
   ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
+
+instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.opLinearEquiv R)
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
