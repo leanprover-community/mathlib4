@@ -359,14 +359,14 @@ variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
   [StarModule R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
 instance : PosSMulMono R A where
-  elim r hr a b hab := by
+  smul_le_smul_of_nonneg_left r hr a b hab := by
     rw [StarOrderedRing.nonneg_iff] at hr
     rw [StarOrderedRing.le_iff] at hab ⊢
     obtain ⟨a, ha, rfl⟩ := hab
     exact ⟨r • a, smul_mem_closure_star_mul hr ha, smul_add ..⟩
 
 instance : SMulPosMono R A where
-  elim a ha r s hrs := by
+  smul_le_smul_of_nonneg_right a ha r s hrs := by
     rw [StarOrderedRing.nonneg_iff] at ha
     rw [StarOrderedRing.le_iff] at hrs ⊢
     obtain ⟨r, hr, rfl⟩ := hrs
@@ -375,7 +375,7 @@ instance : SMulPosMono R A where
 variable [IsCancelAdd A] [NoZeroSMulDivisors R A]
 
 instance : PosSMulStrictMono R A where
-  elim r hr a b hab := by
+  smul_lt_smul_of_pos_left r hr a b hab := by
     rw [StarOrderedRing.pos_iff] at hr
     rw [StarOrderedRing.lt_iff] at hab ⊢
     obtain ⟨a, ha₀, ha, rfl⟩ := hab
@@ -383,7 +383,7 @@ instance : PosSMulStrictMono R A where
     exact ⟨r • a, smul_ne_zero hr₀ ha₀, smul_mem_closure_star_mul hr ha, smul_add ..⟩
 
 instance [IsCancelAdd R] : SMulPosStrictMono R A where
-  elim a ha r s hrs := by
+  smul_lt_smul_of_pos_right a ha r s hrs := by
     rw [StarOrderedRing.pos_iff] at ha
     rw [StarOrderedRing.lt_iff] at hrs ⊢
     obtain ⟨r, hr₀, hr, rfl⟩ := hrs
