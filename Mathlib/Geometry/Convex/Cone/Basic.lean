@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.Hull
 /-!
 # Convex cones
 
-In a `R`-module `M`, we define a convex cone as a set `s` such that `a • x + b • y ∈ s` whenever
+In an `R`-module `M`, we define a convex cone as a set `s` such that `a • x + b • y ∈ s` whenever
 `x, y ∈ s` and `a, b > 0`. We prove that convex cones form a `CompleteLattice`, and define their
 images (`ConvexCone.map`) and preimages (`ConvexCone.comap`) under linear maps.
 
@@ -49,7 +49,7 @@ section Definitions
 variable [Semiring R] [PartialOrder R]
 
 variable (R M) in
-/-- A convex cone is a subset `s` of a `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
+/-- A convex cone is a subset `s` of an `R`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
 structure ConvexCone [AddCommMonoid M] [SMul R M] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
@@ -82,7 +82,7 @@ instance : SetLike (ConvexCone R M) M where
 theorem ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
 
 variable (C) in
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike])]
 protected lemma smul_mem (hc : 0 < c) (hx : x ∈ C) : c • x ∈ C := C.smul_mem' hc hx
 
 variable (C) in

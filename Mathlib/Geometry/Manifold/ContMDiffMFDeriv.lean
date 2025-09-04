@@ -49,9 +49,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   -- declare functions, sets
   {f : M → M'} {s : Set M}
 
--- Porting note: section about deducing differentiability for `C^n` functions moved to
--- `Geometry.Manifold.MFDeriv.Basic`
-
 /-! ### The derivative of a `C^(n+1)` function is `C^n` -/
 
 section mfderiv
@@ -331,7 +328,7 @@ theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 �
 theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
     Continuous (tangentMap I I' f) := by
   rw [← contMDiffOn_univ] at hf
-  rw [continuous_iff_continuousOn_univ]
+  rw [← continuousOn_univ]
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 

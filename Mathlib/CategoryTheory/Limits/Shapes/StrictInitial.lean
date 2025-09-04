@@ -13,7 +13,7 @@ This file sets up the basic theory of strict initial objects: initial objects wh
 to it is an isomorphism. This generalises a property of the empty set in the category of sets:
 namely that the only function to the empty set is from itself.
 
-We say `C` has strict initial objects if every initial object is strict, ie given any morphism
+We say `C` has strict initial objects if every initial object is strict, i.e. given any morphism
 `f : A ⟶ I` where `I` is initial, then `f` is an isomorphism.
 Strictly speaking, this says that *any* initial object must be strict, rather than that strict
 initial objects exist, which turns out to be a more useful notion to formalise.
@@ -49,7 +49,7 @@ variable (C : Type u) [Category.{v} C]
 
 section StrictInitial
 
-/-- We say `C` has strict initial objects if every initial object is strict, ie given any morphism
+/-- We say `C` has strict initial objects if every initial object is strict, i.e. given any morphism
 `f : A ⟶ I` where `I` is initial, then `f` is an isomorphism.
 
 Strictly speaking, this says that *any* initial object must be strict, rather than that strict
@@ -99,8 +99,8 @@ theorem mulIsInitial_inv (X : C) [HasBinaryProduct X I] (hI : IsInitial I) :
 /-- If `I` is initial, then `I ⨯ X` is isomorphic to it. -/
 @[simps! hom]
 noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I := by
-   have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
-   exact asIso prod.fst
+  have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
+  exact asIso prod.fst
 
 @[simp]
 theorem isInitialMul_inv (X : C) [HasBinaryProduct I X] (hI : IsInitial I) :
@@ -157,8 +157,8 @@ end StrictInitial
 
 section StrictTerminal
 
-/-- We say `C` has strict terminal objects if every terminal object is strict, ie given any morphism
-`f : I ⟶ A` where `I` is terminal, then `f` is an isomorphism.
+/-- We say `C` has strict terminal objects if every terminal object is strict, i.e. given any
+morphism `f : I ⟶ A` where `I` is terminal, then `f` is an isomorphism.
 
 Strictly speaking, this says that *any* terminal object must be strict, rather than that strict
 terminal objects exist.
@@ -224,8 +224,7 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
         rw [id_comp, eqToHom_refl]
         exact comp_id _
       · apply (H _ h).hom_ext
-    · rw [limit.lift_π]
-      simp
+    · simp
 
 variable [HasTerminal C]
 

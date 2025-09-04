@@ -232,7 +232,7 @@ def multicospan : WalkingMulticospan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 variable [HasProduct I.left] [HasProduct I.right]
 
@@ -280,7 +280,7 @@ def multispan : WalkingMultispan J ⥤ C where
   map_id := by
     rintro (_ | _) <;> rfl
   map_comp := by
-    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> aesop_cat
+    rintro (_ | _) (_ | _) (_ | _) (_ | _ | _) (_ | _ | _) <;> cat_disch
 
 @[simp]
 theorem multispan_obj_left (a) : I.multispan.obj (WalkingMultispan.left a) = I.left a :=
@@ -318,7 +318,7 @@ theorem ι_sndSigmaMap (b) : Sigma.ι I.left b ≫ I.sndSigmaMap = I.snd b ≫ S
 
 /--
 Taking the multicoequalizer over the multispan index is equivalent to taking the coequalizer over
-the two morphsims `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
+the two morphisms `∐ I.left ⇉ ∐ I.right`. This is the diagram of the latter.
 -/
 protected noncomputable abbrev parallelPairDiagram :=
   parallelPair I.fstSigmaMap I.sndSigmaMap
@@ -408,7 +408,7 @@ variable {K}
 lemma IsLimit.hom_ext (hK : IsLimit K) {T : C} {f g : T ⟶ K.pt}
     (h : ∀ a, f ≫ K.ι a = g ≫ K.ι a) : f = g := by
   apply hK.hom_ext
-  rintro (_|b)
+  rintro (_ | b)
   · apply h
   · dsimp
     rw [app_right_eq_ι_comp_fst, reassoc_of% h]
@@ -503,7 +503,7 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
         · apply limit.hom_ext
           simp
         · apply limit.hom_ext
-          intros j
+          intro j
           simp only [Multifork.toPiFork_π_app_one, Multifork.pi_condition, Category.assoc]
           dsimp [sndPiMap]
           simp }
@@ -683,7 +683,7 @@ variable {I} in
 /-- Constructor for isomorphisms between multicoforks. -/
 @[simps!]
 def ext {K K' : Multicofork I}
-    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by aesop_cat) :
+    (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by cat_disch) :
     K ≅ K' :=
   Cocones.ext e (by rintro (i | j) <;> simp [h])
 
@@ -701,7 +701,7 @@ noncomputable def toSigmaCoforkFunctor : Multicofork I ⥤ Cofork I.fstSigmaMap 
   map {K₁ K₂} f :=
   { hom := f.hom
     w := by
-      rintro (_|_)
+      rintro (_ | _)
       all_goals {
         apply colimit.hom_ext
         rintro ⟨j⟩
@@ -715,13 +715,8 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
     { hom := f.hom
       w := by --sorry --by rintro (_ | _) <;> simp
         rintro (_ | _)
-        -- porting note; in mathlib3, `simp` worked. What seems to be happening is that
-        -- the `simp` set is not confluent, and mathlib3 found
-        -- `Multicofork.ofSigmaCofork_ι_app_left` before `Multicofork.fst_app_right`,
-        -- but mathlib4 finds `Multicofork.fst_app_right` first.
-        { simp [-Multicofork.fst_app_right] }
-        -- Porting note: similarly here, the `simp` set seems to be non-confluent
-        { simp [-Multicofork.ofSigmaCofork_pt] } }
+        · simp
+        · simp }
 
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
@@ -850,11 +845,11 @@ abbrev multicofork : Multicofork I :=
 theorem multicofork_π (b) : (Multicoequalizer.multicofork I).π b = Multicoequalizer.π I b :=
   rfl
 
--- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
 theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
+/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=
