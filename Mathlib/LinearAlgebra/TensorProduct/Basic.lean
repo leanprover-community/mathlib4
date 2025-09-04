@@ -776,7 +776,7 @@ lemma range_map_mono {a : M₁ →ₗ[R] M₂} {b : M₃ →ₗ[R] M₂} {c : N�
   · exact map_zero (map a c) ▸ Submodule.zero_mem _
   · obtain ⟨g, hg⟩ := hab (mem_range_self a e)
     obtain ⟨h, hh⟩ := hcd (mem_range_self c f)
-    exact ⟨g ⊗ₜ h, map_tmul a c _ _ ▸ hh ▸ hg ▸ map_tmul b d _ _⟩
+    exact ⟨g ⊗ₜ h, by simp only [map_tmul, hg, hh]⟩
   · exact map_add (map a c) _ _ ▸ Submodule.add_mem _ h₁ h₂
 
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
