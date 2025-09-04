@@ -784,7 +784,9 @@ theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.r
 theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
   rfl
 
-@[deprecated (since := "25-08-2025")] alias to_ringEquiv_symm := toRingEquiv_symm
+@[deprecated "← toRingEquiv_symm" (since := "2025-08-25")]
+theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm :=
+  rfl
 @[deprecated (since := "25-08-2025")] alias symm_to_ringEquiv := toRingEquiv_symm
 
 /-- Transitivity of `StarAlgEquiv`. -/
