@@ -402,7 +402,7 @@ theorem cycleIcc_eq : cycleIcc i i = 1 := by
   split_ifs <;> omega
 
 @[simp]
-theorem cycleIcc_ge (hij : i ≤ j) [NeZero n] : cycleIcc j i = 1 := by
+theorem cycleIcc_ge (hij : i ≤ j) : cycleIcc j i = 1 := by
   rcases Fin.lt_or_eq_of_le hij with hij | hij
   · simp [hij]
   · rw [hij, ← cycleIcc_eq]
