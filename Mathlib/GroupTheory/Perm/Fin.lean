@@ -396,7 +396,7 @@ theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIc
 theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
   simp [cycleIcc_of_le_of_le hij (ge_of_eq rfl)]
 
-theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
+theorem cycleIcc_eq : cycleIcc i i = 1 := by
   ext k
   simp only [cycleIcc, coe_fn_mk, Perm.coe_one, id_eq, apply_ite Fin.val, apply_dite Fin.val]
   split_ifs <;> omega
