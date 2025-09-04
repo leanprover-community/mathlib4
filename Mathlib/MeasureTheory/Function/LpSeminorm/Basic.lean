@@ -264,6 +264,9 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
     MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [memLp_const_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
+class MemLp.Const where
+  eLpNorm_const (c : E) : eLpNorm (fun _ : α => c) p μ < ∞
+
 end Const
 
 variable {f : α → F}
