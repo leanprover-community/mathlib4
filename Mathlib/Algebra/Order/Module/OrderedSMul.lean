@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.GroupWithZero.Action.Prod
+import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Ordered scalar product
@@ -61,10 +59,10 @@ variable [Semiring R] [PartialOrder R] [AddCommMonoid M] [PartialOrder M]
   [SMulWithZero R M] [OrderedSMul R M]
 
 instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
-  elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
+  smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
 
 instance OrderedSMul.toPosSMulReflectLT : PosSMulReflectLT R M :=
-  PosSMulReflectLT.of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
+  .of_pos fun _a ha _b₁ _b₂ h ↦ OrderedSMul.lt_of_smul_lt_smul_of_pos h ha
 
 instance OrderDual.instOrderedSMul : OrderedSMul R Mᵒᵈ where
   smul_lt_smul_of_pos := OrderedSMul.smul_lt_smul_of_pos (M := M)
@@ -137,33 +135,3 @@ instance Pi.orderedSMul {M : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, 
   OrderedSMul.mk' fun _ _ _ h hc i => smul_le_smul_of_nonneg_left (h.le i) hc.le
 
 end LinearOrderedSemifield
-
-section Invertible
-variable (α : Type*) {β : Type*}
-variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [AddLeftMono β]
-
-lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
-  rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
-    smul_smul, invOf_mul_self, one_smul]
-
-lemma sup_eq_half_smul_add_add_abs_sub (x y : β) : x ⊔ y = (⅟2 : α) • (x + y + |y - x|) := by
-  rw [← two_nsmul_sup_eq_add_add_abs_sub x y, two_smul, ← two_smul α,
-    smul_smul, invOf_mul_self, one_smul]
-
-end Invertible
-
-section DivisionSemiring
-variable (α : Type*) {β : Type*}
-variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [AddLeftMono β]
-
-lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
-  letI := invertibleOfNonzero (two_ne_zero' α)
-  exact inf_eq_half_smul_add_sub_abs_sub α x y
-
-lemma sup_eq_half_smul_add_add_abs_sub' (x y : β) : x ⊔ y = (2⁻¹ : α) • (x + y + |y - x|) := by
-  letI := invertibleOfNonzero (two_ne_zero' α)
-  exact sup_eq_half_smul_add_add_abs_sub α x y
-
-end DivisionSemiring
