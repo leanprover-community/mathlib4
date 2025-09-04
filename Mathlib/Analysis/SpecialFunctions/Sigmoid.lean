@@ -46,10 +46,6 @@ that the composition of this embedding with the measurable embedding from a stan
   sigmoid function from `ℝ` to `I` with the measurable embedding from a standard Borel
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
-## TODO
-
-Show that `sigmoid : ℝ → ℝ` is in fact analytic and continuously differentiable.
-
 ## Tags
 sigmoid, embedding, measurable embedding, topological embedding
 -/
@@ -116,7 +112,7 @@ lemma continuous_sigmoid : Continuous sigmoid := by
   · intro x
     positivity
 
-lemma sigmoid_symm_eq_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
+lemma sigmoid_neg_eq_symm (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   simp only [sigmoid, neg_neg, coe_symm_eq]
   symm
@@ -130,7 +126,7 @@ lemma sigmoid_symm_eq_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
         ring
       _ = ((exp (-x))⁻¹ + 1)⁻¹ := by
         field_simp [exp_ne_zero (-x)]
-      _ = (1 + exp x)⁻¹ := by
+      _ = _ := by
         rw [← exp_neg]
         ring_nf
 
@@ -145,7 +141,7 @@ lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
 @[simp]
 lemma sigmoid_zero : sigmoid 0 = (2)⁻¹ := by
-  simp only [sigmoid, unitInterval.sigmoid_zero]
+  simp [sigmoid, unitInterval.sigmoid_zero]
 
 @[bound]
 lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := unitInterval.sigmoid_pos x
@@ -225,14 +221,31 @@ lemma hasDerivAt_sigmoid (x : ℝ) :
 lemma deriv_sigmoid : deriv sigmoid = fun x => sigmoid x * (1 - sigmoid x) :=
     funext fun x => (hasDerivAt_sigmoid x).deriv
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℝ]
+open Set
+
+variable {x : ℝ}
+
+@[fun_prop]
+lemma analyticAt_sigmoid : AnalyticAt ℝ sigmoid x :=
+  AnalyticAt.fun_inv (by fun_prop) (by positivity)
+
+theorem analyticOnNhd_sigmoid : AnalyticOnNhd ℝ sigmoid Set.univ :=
+  fun _ _ ↦ analyticAt_sigmoid
+
+lemma analyticOn_sigmoid : AnalyticOn ℝ sigmoid Set.univ :=
+  analyticOnNhd_sigmoid.analyticOn
+
+lemma analyticWithinAt_sigmoid {s : Set ℝ} : AnalyticWithinAt ℝ sigmoid s x :=
+  analyticAt_sigmoid.analyticWithinAt
+
+lemma contDiff_sigmoid : ContDiff ℝ 1 sigmoid := analyticOn_sigmoid.contDiff
 
 @[simp]
-theorem differentiable_sigmoid : Differentiable 𝕜 sigmoid := fun x =>
-  (hasDerivAt_sigmoid x).differentiableAt.restrictScalars 𝕜
+theorem differentiable_sigmoid : Differentiable ℝ sigmoid :=
+  contDiff_sigmoid.differentiable_one
 
 @[simp]
-theorem differentiableAt_sigmoid {x : ℝ} : DifferentiableAt 𝕜 sigmoid x :=
+theorem differentiableAt_sigmoid {x : ℝ} : DifferentiableAt ℝ sigmoid x :=
   differentiable_sigmoid x
 
 end Real
