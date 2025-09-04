@@ -472,7 +472,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     rw [Set.compl_inter]
     apply Set.mem_union_left
     rw [Set.compl_union] at ha
-    apply Set.mem_of_mem_inter_left ha
+    exact Set.mem_of_mem_inter_left ha
   rw [MulAction.isPretransitive_iff_base (⟨a, ha'⟩ : ofFixingSubgroup M (s ∩ g • s))]
   rintro ⟨x, hx⟩
   rw [mem_ofFixingSubgroup_iff, Set.mem_inter_iff, not_and_or] at hx
@@ -484,7 +484,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [mem_fixingSubgroup_iff] at hk ⊢
       intro y  hy
       apply hk
-      apply Set.mem_of_mem_inter_left hy)⟩
+      exact Set.mem_of_mem_inter_left hy)⟩
     · simp only [← SetLike.coe_eq_coe] at hkax ⊢
       exact hkax
   · suffices hg'x : g⁻¹ • x ∈ ofFixingSubgroup M s by
@@ -507,12 +507,11 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [← Set.mem_smul_set_iff_inv_smul_mem]
       intro h
       apply ha
-      apply Set.mem_union_right _ h
+      exact Set.mem_union_right _ h
     rw [mem_ofFixingSubgroup_iff]
     intro h
     apply hx
-    rw [Set.mem_smul_set_iff_inv_smul_mem]
-    exact h
+    rwa [Set.mem_smul_set_iff_inv_smul_mem]
 
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter

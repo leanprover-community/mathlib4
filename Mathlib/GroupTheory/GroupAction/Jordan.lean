@@ -55,10 +55,10 @@ variable {G α : Type*} [Group G] [MulAction G α]
 theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     (hG' : IsMultiplyPretransitive G α 2) {a : α} :
     normalClosure ((stabilizer G a) : Set G) = ⊤ := by
-  have _ : IsPretransitive G α := by
+  have : IsPretransitive G α := by
     rw [← is_one_pretransitive_iff]
     exact isMultiplyPretransitive_of_le' (one_le_two) (le_of_lt hsn')
-  have _ : Nontrivial α := by
+  have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
     exact lt_trans (by norm_num) hsn'
   have hGa : IsCoatom (stabilizer G a) :=  by
@@ -93,7 +93,7 @@ variable [Finite α]
 omit [Finite α] in -- to appease the linter
 proof_wanted IsPreprimitive.is_two_pretransitive'
     (hG : IsPreprimitive G α)
-    {s : Set α} {n : ℕ } (hsn : Nat.card s = n + 1) (hsn' : n + 1 < Nat.card α)
+    {s : Set α} {n : ℕ} (hsn : Nat.card s = n + 1) (hsn' : n + 1 < Nat.card α)
     (hs_trans : IsPretransitive (fixingSubgroup G s) (SubMulAction.ofFixingSubgroup G s)) :
     IsMultiplyPretransitive (Subgroup.normalClosure (fixingSubgroup G s : Set G)) α 2
 
@@ -120,12 +120,12 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     exact n.zero_lt_succ
   -- The result is assumed by induction for sets of ncard ≤ n
   rcases Nat.lt_or_ge (n + 1) 2 with hn | hn
-  · -- When n < 2 (imposes n = 0)
+  · -- When n + 1 < 2 (imposes n = 0)
     have hn : n = 0 := by
       rwa [Nat.succ_lt_succ_iff, Nat.lt_one_iff] at hn
     simp only [hn, zero_add, Set.ncard_eq_one] at hsn
     obtain ⟨a, hsa⟩ := hsn
-    suffices IsPretransitive ↥(fixingSubgroup G s) ↥(ofFixingSubgroup G s) →
+    suffices IsPretransitive (fixingSubgroup G s) (ofFixingSubgroup G s) →
       IsMultiplyPretransitive G α 2 by
       refine ⟨this, fun hs_prim ↦ ?_⟩
       rw [hsa] at hs_prim
@@ -176,17 +176,14 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
     exact Nat.add_lt_add_right hmn 2
   · -- CASE : 2 * s.ncard ≥ Nat.card α
     have : Set.Nontrivial sᶜ := by
-      rw [← Set.one_lt_encard_iff_nontrivial, ← sᶜ.toFinite.cast_ncard_eq, Nat.one_lt_cast,
+      rwa [← Set.one_lt_encard_iff_nontrivial, ← sᶜ.toFinite.cast_ncard_eq, Nat.one_lt_cast,
         ← Nat.add_lt_add_iff_left, Set.ncard_add_ncard_compl, add_comm, hsn, add_comm]
-      exact hsn'
     -- get a, b ∈ sᶜ, a ≠ b
     obtain ⟨a, ha : a ∈ sᶜ, b, hb : b ∈ sᶜ, hab⟩ := this
     -- apply Rudio to get g ∈ G such that a ∈ g • sᶜ, b ∉ g • sᶜ
     obtain ⟨g, hga, hgb⟩ := exists_mem_smul_and_notMem_smul (G := G)
       sᶜ.toFinite (Set.nonempty_of_mem ha)
-      (by intro h
-          simp only [Set.compl_univ_iff] at h
-          simp only [h, Set.not_nonempty_empty] at hs_nonempty)
+      (by simpa [Set.nonempty_iff_ne_empty] using hs_nonempty)
       hab
     let t := s ∩ g • s
     have ha : a ∉ s ∪ g • s := by
@@ -218,7 +215,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
           hs_prim hsgs_ne_top
     intro hs_trans
     apply (hrec _ hmn hG htm htm').1
-    apply IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans hsgs_ne_top
+    exact IsPretransitive.isPretransitive_ofFixingSubgroup_inter hs_trans hsgs_ne_top
 
 /-- A criterion due to Jordan for being 2-pretransitive (Wielandt, 13.1) -/
 theorem MulAction.IsPreprimitive.is_two_pretransitive
@@ -252,10 +249,9 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
   classical
   induction' n with n hrec generalizing α G
   · -- case n = 0
-    have _ : IsPretransitive G α := hG.toIsPretransitive
+    have : IsPretransitive G α := hG.toIsPretransitive
     simp only [zero_add, Set.ncard_eq_one] at hsn
-    obtain ⟨a, hsa⟩ := hsn
-    rw [hsa] at hprim
+    obtain ⟨a, rfl⟩ := hsn
     constructor
     · rw [ofStabilizer.isMultiplyPretransitive (a := a), is_one_pretransitive_iff]
       apply IsPretransitive.of_surjective_map
@@ -358,8 +354,8 @@ variable [Fintype α] [DecidableEq α]
 
 theorem isPretransitive_of_isCycle_mem {g : Equiv.Perm α}
     (hgc : g.IsCycle) (hg : g ∈ G) :
-    IsPretransitive (fixingSubgroup G ((↑g.support : Set α)ᶜ))
-      (SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ)) := by
+    IsPretransitive (fixingSubgroup G (g.support : Set α)ᶜ)
+      (SubMulAction.ofFixingSubgroup G (g.support : Set α)ᶜ) := by
   obtain ⟨a, _, hgc⟩ := hgc
   have hs : ∀ x : α, g • x ≠ x ↔
     x ∈ SubMulAction.ofFixingSubgroup G ((↑g.support : Set α)ᶜ) := by
