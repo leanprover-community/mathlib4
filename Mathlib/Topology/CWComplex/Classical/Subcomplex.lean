@@ -29,21 +29,33 @@ namespace Topology
 
 variable {X : Type*} [t : TopologicalSpace X] {C D : Set X}
 
+lemma RelCWComplex.Subcomplex.closedCell_subset_of_mem [T2Space X] [RelCWComplex C D]
+    (E : Subcomplex C) {n : ℕ} {i : cell C n} (hi : i ∈ E.I n) :
+    closedCell n i ⊆ E := by
+  rw [← closure_openCell_eq_closedCell, E.closed.closure_subset_iff, ← E.union]
+  apply subset_union_of_subset_right
+  exact subset_iUnion_of_subset n
+    (subset_iUnion (fun (j : ↑(E.I n)) ↦ openCell (C := C) n j) ⟨i, hi⟩)
+
+lemma RelCWComplex.Subcomplex.openCell_subset_of_mem [T2Space X] [RelCWComplex C D]
+    (E : Subcomplex C) {n : ℕ} {i : cell C n} (hi : i ∈ E.I n) :
+    openCell n i ⊆ E :=
+  (openCell_subset_closedCell n i).trans (closedCell_subset_of_mem E hi)
+
+lemma RelCWComplex.Subcomplex.cellFrontier_subset_of_mem [T2Space X] [RelCWComplex C D]
+    (E : Subcomplex C) {n : ℕ} {i : cell C n} (hi : i ∈ E.I n) :
+    cellFrontier n i ⊆ E :=
+  (cellFrontier_subset_closedCell n i).trans (closedCell_subset_of_mem E hi)
+
 /-- A subcomplex is the union of its closed cells and its base. -/
 lemma RelCWComplex.Subcomplex.union_closedCell [T2Space X] [RelCWComplex C D] (E : Subcomplex C) :
     D ∪ ⋃ (n : ℕ) (j : E.I n), closedCell (C := C) n j = E := by
   apply subset_antisymm
-  · apply union_subset
-    · rw [← Subcomplex.union (C := C) (D := D) (E := E)]
-      exact subset_union_left
-    · apply iUnion_subset fun n ↦ iUnion_subset fun i ↦ ?_
-      rw [← closure_openCell_eq_closedCell, E.closed.closure_subset_iff, ← E.union]
-      apply subset_union_of_subset_right
-      exact subset_iUnion_of_subset n
-        (subset_iUnion (fun (i : ↑(E.I n)) ↦ openCell (C := C) (D := D) n ↑i) i)
-  · simp_rw [← E.union]
+  · apply union_subset E.base_subset
+    apply iUnion_subset fun n ↦ iUnion_subset fun i ↦ closedCell_subset_of_mem E i.2
+  · rw [← E.union]
     apply union_subset_union_right
-    apply iUnion_mono fun n ↦ iUnion_mono fun (i : ↑(E.I n)) ↦ ?_
+    apply iUnion₂_mono fun n i ↦ ?_
     exact openCell_subset_closedCell (C := C) n i
 
 /-- A subcomplex is the union of its closed cells. -/
@@ -67,54 +79,33 @@ instance RelCWComplex.Subcomplex.instRelCWComplex [T2Space X] [RelCWComplex C D]
   continuousOn n i := continuousOn (C := C) n i
   continuousOn_symm n i := continuousOn_symm (C := C) n i
   pairwiseDisjoint' := by
-    simp only [PairwiseDisjoint, Set.Pairwise, mem_univ, ne_eq, Function.onFun,
-      disjoint_iff_inter_eq_empty, true_implies, Sigma.forall, Subtype.forall]
-    intro n j _ m i _ eq
-    refine (disjoint_openCell_of_ne ?_).inter_eq
-    simp_all only [Sigma.mk.inj_iff, not_and, ne_eq]
-    intro a
-    subst a
-    simp_all
+    intro ⟨n, i⟩ _ ⟨m, j⟩ _ hne
+    refine @pairwiseDisjoint' _ _ C D _ ⟨n, i⟩ trivial ⟨m, j⟩ trivial ?_
+    exact Function.injective_id.sigma_map (fun _ ↦ Subtype.val_injective) |>.ne hne
   disjointBase' n i := disjointBase' (C := C) n i
   mapsTo := by
     intro n i
     rcases cellFrontier_subset_finite_openCell (C := C) n i with ⟨J, hJ⟩
-    use fun m ↦ Finset.preimage (J m) Subtype.val (by simp [InjOn])
+    use fun m ↦ Finset.preimage (J m) Subtype.val Subtype.val_injective.injOn
     rw [mapsTo_iff_image_subset]
     intro x hx
     specialize hJ hx
-    simp_rw [iUnion_coe_set, mem_union, mem_iUnion, exists_prop, exists_and_right,
+    simp_rw [iUnion_coe_set, mem_union, mem_iUnion, Finset.mem_preimage, exists_prop,
       Decidable.or_iff_not_imp_left] at hJ ⊢
     intro h
     specialize hJ h
     obtain ⟨m, hmn, j, hj, hxj⟩ := hJ
-    use m, hmn, j
-    refine ⟨?_, openCell_subset_closedCell _ _ hxj⟩
-    suffices j ∈ E.I m from ⟨this, by simp [hj]⟩
-    have : x ∈ (E : Set X) := by
-      rw [← union_closedCell]
-      right
-      refine mem_of_subset_of_mem ?_ hx
-      refine subset_iUnion_of_subset n (subset_iUnion_of_subset i ?_)
-      exact cellFrontier_subset_closedCell (C := C) n i
-    simp only [← E.union, iUnion_coe_set, mem_union, h, mem_iUnion, exists_prop,
-      false_or] at this
-    obtain ⟨l, o, hxo⟩ := this
-    suffices (⟨m, j⟩ : Σ n, cell C n) = ⟨l, ↑o⟩ by aesop
-    apply eq_of_not_disjoint_openCell
-    rw [not_disjoint_iff]
-    use x
-    exact ⟨hxj, hxo.2⟩
+    suffices j ∈ E.I m from ⟨m, hmn, j, this, hj, openCell_subset_closedCell _ _ hxj⟩
+    have : x ∈ (E : Set X) := E.cellFrontier_subset_of_mem i.2 hx
+    by_contra hj'
+    exact E.disjoint_openCell_subcomplex_of_not_mem hj' |>.notMem_of_mem_left hxj this
   closed' A hA h := by
-    apply isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
+    apply isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell
       (subset_trans hA (subset_complex (C := C) E)) h.2
     intro n _ j
     by_cases hj : j ∈ E.I n
     · exact Or.intro_right _ (h.1 n ⟨j, hj⟩)
-    left
-    suffices A ∩ openCell n j = ∅ from this ▸ isClosed_empty
-    rw [← disjoint_iff_inter_eq_empty]
-    exact (disjoint_openCell_subcomplex_of_not_mem E hj).symm.mono_left hA
+    · exact Or.intro_left _ ((disjoint_openCell_subcomplex_of_not_mem E hj).symm.mono_left hA)
   isClosedBase := isClosedBase (C := C)
   union' := union_closedCell E
 
@@ -158,12 +149,8 @@ instance RelCWComplex.Subcomplex.finiteDimensional_subcomplex_of_finiteDimension
     [T2Space X] [RelCWComplex C D] [FiniteDimensional C] (E : Subcomplex C) :
     FiniteDimensional (E : Set X) where
   eventually_isEmpty_cell := by
-    have := FiniteDimensional.eventually_isEmpty_cell (C := C) (D := D)
-    simp only [Filter.eventually_atTop, ge_iff_le] at this ⊢
-    obtain ⟨n, hn⟩ := this
-    use n
-    intro b nleb
-    simp [isEmpty_subtype, hn b nleb]
+    filter_upwards [FiniteDimensional.eventually_isEmpty_cell (C := C) (D := D)] with n hn
+    simp [isEmpty_subtype]
 
 /-- A subcomplex of a finite CW complex is again finite. -/
 instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWComplex C D]
@@ -172,7 +159,8 @@ instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWC
 
 namespace CWComplex.Subcomplex
 
-export RelCWComplex.Subcomplex (subset_complex finiteType_subcomplex_of_finiteType
+export RelCWComplex.Subcomplex (closedCell_subset_of_mem openCell_subset_of_mem
+  cellFrontier_subset_of_mem subset_complex finiteType_subcomplex_of_finiteType
   finiteDimensional_subcomplex_of_finiteDimensional finite_subcomplex_of_finite)
 
 end CWComplex.Subcomplex
