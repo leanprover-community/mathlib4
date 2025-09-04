@@ -454,129 +454,58 @@ lemma δ_eq2 : δ 0 (-1) = 2 := by simp [δ]
 lemma δ_neq (a b : ℤ) (h : a ≠ 0) : δ a b = 0 := by
   simp [δ, h]
 
-lemma isBigO_linear' (z : ℍ) (a : ℕ) :
-    (fun (m : Fin 2 → ℤ) => (((m 0 : ℂ) * z + m 1 + a))⁻¹) =O[cofinite]
-    (fun m : (Fin 2 → ℤ) => ‖![m 0, m 1 + a]‖⁻¹) := by
+lemma isBigO_linear' (z : ℍ) (a b : ℤ) :
+    (fun (m : Fin 2 → ℤ) => (((m 0 + b: ℂ) * z + m 1 + a))⁻¹) =O[cofinite]
+    (fun m : (Fin 2 → ℤ) => ‖![m 0 + b, m 1 + a]‖⁻¹) := by
   rw [Asymptotics.isBigO_iff]
   have h0 : z ∈ verticalStrip |z.re| (z.im) := by
-    rw [mem_verticalStrip_iff]
-    simp
+    simp [mem_verticalStrip_iff]
   use ‖r ⟨⟨|z.re|, z.im⟩, z.2⟩‖⁻¹
   filter_upwards with m
-  have := summand_bound_of_mem_verticalStrip (k := 1) (by simp) ![m 0, m 1 + a] z.2 h0
-  simp [Real.rpow_neg_one] at *
+  have := summand_bound_of_mem_verticalStrip (k := 1) (by simp) ![m 0 + b, m 1 + a] z.2 h0
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+    Int.cast_add, Real.rpow_neg_one, norm_inv, Real.norm_eq_abs,
+    Nat.succ_eq_add_one, Nat.reduceAdd, ge_iff_le] at *
   simp_rw [add_assoc]
   apply le_trans this
   nth_rw 2 [abs_eq_self.mpr]
   · apply le_of_eq
-    simp
-    left
-    simp_rw [UpperHalfPlane.im]
-    rfl
-  · apply (r_pos _).le
+    simp only [Fin.isValue, abs_norm, mul_eq_mul_right_iff, inv_inj, inv_eq_zero, norm_eq_zero,
+      Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, UpperHalfPlane.im]
+    aesop
+  · exact (r_pos _).le
 
-lemma aux (a b c : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a⁻¹ ≤ c * b⁻¹ ↔ b ≤ c * a := by
-  constructor
-  intro h
-  simp_rw [inv_eq_one_div] at h
-  rw [mul_one_div, le_div_comm₀ _ hb] at h
-  simp only [one_div, div_inv_eq_mul] at h
-  apply h
-  simp only [one_div, inv_pos]
-  exact ha
-  intro h
-  simp_rw [inv_eq_one_div]
-  rw [← div_le_comm₀ _ ha]
-  simp only [one_div, mul_inv_rev, inv_inv]
-  rw [propext (mul_inv_le_iff₀ hc), mul_comm]
-  exact h
-  simp only [one_div]
-  apply mul_pos hc (inv_pos.mpr hb)
-
-lemma norm_add_isBigO (a : ℤ) : (fun (m : Fin 2 → ℤ) => ‖![m 0, m 1 + a + 1]‖⁻¹) =O[cofinite]
-    (fun m : (Fin 2 → ℤ) => ‖![m 0, m 1 + a]‖⁻¹) := by
-  rw [Asymptotics.isBigO_iff]
-  use 2
-  rw [Filter.eventually_iff_exists_mem ]
-  use { ![0,0], ![0,-(a + 1)],  ![0,-a]}ᶜ
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, mem_cofinite, compl_compl, finite_singleton,
-    Finite.insert, mem_compl_iff, mem_insert_iff, mem_singleton_iff, not_or, Fin.isValue, norm_inv,
-    norm_norm, Nat.cast_natAbs, Int.cast_abs, and_imp, true_and]
-  intro b HB1 HB2 HB3
-  have ht : b = ![b 0, b 1] := by
+lemma norm_add_isThetaa (a b : ℤ) : (fun (m : Fin 2 → ℤ) => ‖![m 0 + b, m 1 + a]‖⁻¹) =Θ[cofinite]
+    (fun m : (Fin 2 → ℤ) => ‖m‖⁻¹) := by
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Asymptotics.isTheta_inv]
+  have (x : Fin 2 → ℤ) : ![x 0 + b, x 1 + a] = x + ![b, a] := by
     ext i
-    fin_cases i <;> rfl
-  rw [aux]
-  · simp only [norm_eq_max_natAbs, Nat.cast_max, Matrix.cons_val_zero, Matrix.cons_val_one,
-    max_le_iff]
-    have : 2 * max ↑(b 0).natAbs ↑(b 1 + a + 1).natAbs =
-        max (2 *(b 0)).natAbs (2 *(b 1 + a + 1)).natAbs := by
-      simp_rw [Int.natAbs_mul]
-      norm_cast
-      simp
-    refine ⟨?_ , ?_⟩
-    · norm_cast at *
-      rw [this]
-      simp
-      left
-      norm_cast
-      simp only [Int.natAbs_mul, Int.reduceAbs]
-      apply Nat.le_mul_of_pos_left _ Nat.zero_lt_two
-    norm_cast
-    rcases eq_or_ne (b 1) (-(a + 1)) with hr | hr
-    · norm_cast at *
-      rw [this]
-      simp only [Fin.isValue, le_sup_iff]
-      left
-      simp only [Fin.isValue, hr, neg_add_rev, Int.reduceNeg, neg_add_cancel_right, IsUnit.neg_iff,
-        isUnit_one, Int.natAbs_of_isUnit, Int.natAbs_mul, Int.reduceAbs]
-      have hb0 : b 0 ≠ 0 := by
-        rw [ht, hr] at HB2
-        simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, neg_add_rev, Int.reduceNeg,
-          Matrix.vecCons_inj, and_true] at HB2
-        by_contra hh
-        simp only [Fin.isValue, hh, not_true_eq_false] at HB2
-      norm_cast at *
-      simp
-      omega
-    · norm_cast at *
-      rw [this]
-      simp only [Fin.isValue, le_sup_iff]
-      right
-      norm_cast
-      omega
-  · simp only [Fin.isValue, norm_pos_iff, ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty,
-    and_true, not_and]
-    intro h
-    by_contra H
-    rw [add_assoc] at H
-    rw [@add_eq_zero_iff_eq_neg] at H
-    rw [ht, h, H] at HB2
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, not_true_eq_false] at HB2
-  · simp
-    intro h H
-    rw [@add_eq_zero_iff_eq_neg] at H
-    rw [ht, h, H] at HB3
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, not_true_eq_false] at HB3
-  · simp only [Nat.ofNat_pos]
+    fin_cases i <;> simp
+  conv =>
+    enter [2]
+    ext x
+    rw [this x]
+  refine Asymptotics.isTheta_norm_left.mpr ?_
+  apply Asymptotics.IsTheta.add_isLittleO
+  rw [← Asymptotics.isTheta_norm_left]
+  simp
+  right
+  rw [@Filter.tendsto_atTop]
+  intro b
+  simp
+  apply IsCompact.finite_of_discrete
+  apply Metric.isCompact_of_isClosed_isBounded
+  · exact isClosed_discrete {v | ‖v‖ < b}
+  · simp_rw [← dist_zero,dist_comm]
+    change Bornology.IsBounded (Metric.ball 0 b)
+    exact Metric.isBounded_ball (x := 0) (r := b)
 
 
-lemma norm_add_isBigO2 (a : ℕ) : (fun (m : Fin 2 → ℤ) => ‖![m 0, m 1 + a]‖⁻¹) =O[cofinite]
+lemma isBigO_linear (z : ℍ) (a b : ℤ) :
+    (fun m : (Fin 2 → ℤ) => (((m 0 : ℂ) + a) * z + m 1 + b)⁻¹) =O[cofinite]
     (fun m : (Fin 2 → ℤ) => ‖m‖⁻¹) := by
-  induction' a with a ih
-  · simp
-    rw [show  (fun (m : Fin 2 → ℤ) ↦ ‖![m 0, m 1]‖⁻¹) = (fun m ↦ ‖m‖⁻¹) by ext n; rfl]
-    exact Asymptotics.isBigO_refl (fun m ↦ ‖m‖⁻¹) cofinite
-  · simp
-    apply Asymptotics.IsBigO.trans _ ih
-    have := norm_add_isBigO (a : ℤ)
-    simp_rw [← add_assoc]
-    apply this
-
-lemma isBigO_linear (z : ℍ) (a : ℕ) :
-    (fun (m : Fin 2 → ℤ) => (((m 0 : ℂ) * z + m 1 + a))⁻¹) =O[cofinite]
-    (fun m : (Fin 2 → ℤ) => ‖m‖⁻¹) := by
-  apply (isBigO_linear' z a ).trans (norm_add_isBigO2 a )
+  have h1 := (isBigO_linear' z b a)
+  apply h1.trans (norm_add_isThetaa b a).isBigO
 
 /-- If the inverse of a function `isBigO` to `(|(n : ℝ)| ^ a)⁻¹` for `1 < a`, then the function is
 Summable. -/
@@ -589,9 +518,8 @@ lemma G_2_alt_summable (z : ℍ) : Summable fun (m : Fin 2 → ℤ) =>
     (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ := by
   have hk' : 2 < (3 : ℝ) := by linarith
   apply summable_inv_of_isBigO_rpow_norm_inv hk'
-  simpa [pow_three, pow_two, ← mul_assoc] using ((isBigO_linear z 1).mul (isBigO_linear z 0)).mul
-    (isBigO_linear z 0)
-
+  simpa [pow_three, pow_two, ← mul_assoc] using
+    ((isBigO_linear z 0 1).mul (isBigO_linear z 0 0)).mul (isBigO_linear z 0 0)
 
 lemma G_2_alt_summable_δ (z : ℍ) : Summable fun (m : Fin 2 → ℤ) =>
     (1 / (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1)) + δ (m 0) (m 1)):= by
