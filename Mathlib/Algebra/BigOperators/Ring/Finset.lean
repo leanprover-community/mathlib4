@@ -30,6 +30,14 @@ lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
   simpa using (s.1.map f).prod_map_neg
 
+/-- Double the range of a `Finset.sum` -/
+@[to_additive]
+theorem prod_range_even [CommMonoid M] (n : ℕ) (f : ℕ → M) :
+    ∏ k ∈ range n, f k = ∏ k ∈ range (2 * n), if Even k then f (k / 2) else 1 := by
+  induction n with
+  | zero => simp
+  | succ n h => simp [prod_range_succ, h, Nat.mul_add_one]
+
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne R]
 

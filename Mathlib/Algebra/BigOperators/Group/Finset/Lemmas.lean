@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Notation.Support
-import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Miscellaneous lemmas on big operators
@@ -52,13 +52,5 @@ lemma isSquare_prod {s : Finset ι} (f : ι → M) (h : ∀ c ∈ s, IsSquare (f
   ext i
   rw [← @sq]
   exact ((isSquare_iff_exists_sq _).mp (h _ i.2)).choose_spec
-
-/-- Double the range of a `Finset.sum` -/
-@[to_additive]
-theorem prod_range_even (n : ℕ) (f : ℕ → M) :
-    ∏ k ∈ range n, f k = ∏ k ∈ range (2 * n), if Even k then f (k / 2) else 1 := by
-  induction n with
-  | zero => simp
-  | succ n h => simp [prod_range_succ, h, Nat.mul_add_one]
 
 end Finset
