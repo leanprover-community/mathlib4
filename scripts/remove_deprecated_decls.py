@@ -13,76 +13,102 @@ def is_date_older_than_cutoff(date_str, cutoff_str):
     except ValueError:
         return False
 
-def find_deprecated_declarations_to_remove(content, cutoff_date):
-    """Find deprecated declarations that would be removed, returning list of matches"""
-    pattern = r'@\[deprecated[^]]*since[^]]*"(\d{4}-\d{2}-\d{2})"[^]]*\]\s*(?:noncomputable\s+)?(?:protected\s+)?alias\s+[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*\s*:=\s*[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*'
+def find_deprecated_blocks_to_remove(content, cutoff_date):
+    """Find blocks containing deprecated declarations that would be removed"""
+    # Find block boundaries (blank lines)
+    block_separators = list(re.finditer(r'\n\s*\n', content))
 
-    matches_to_remove = []
-    for match in re.finditer(pattern, content, flags=re.MULTILINE | re.DOTALL):
-        date_str = match.group(1)
-        if is_date_older_than_cutoff(date_str, cutoff_date):
-            # Find line numbers for this match
-            lines_before = content[:match.start()].count('\n')
-            start_line = lines_before + 1
-            lines_in_match = match.group(0).count('\n')
-            end_line = start_line + lines_in_match
+    # Define block boundaries
+    block_starts = [0] + [match.end() for match in block_separators]
+    block_ends = [match.start() for match in block_separators] + [len(content)]
 
-            matches_to_remove.append({
-                'text': match.group(0),
-                'date': date_str,
-                'start_line': start_line,
-                'end_line': end_line,
-                'start_pos': match.start(),
-                'end_pos': match.end()
-            })
+    blocks_to_remove = []
 
-    return matches_to_remove
+    for i, (start, end) in enumerate(zip(block_starts, block_ends)):
+        block_content = content[start:end]
 
-def remove_old_deprecated_declarations(content, cutoff_date):
-    """Remove deprecated declarations older than cutoff_date"""
-    # Pattern to match deprecated declarations with expanded character set
-    pattern = r'@\[deprecated[^]]*since[^]]*"(\d{4}-\d{2}-\d{2})"[^]]*\]\s*(?:noncomputable\s+)?(?:protected\s+)?alias\s+[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*\s*:=\s*[_a-zA-Zα-ωΑ-Ωϊ-ϻἀ-῾℀-⅏𝒜-𝖟\'.₀₁₂₃₄₅₆₇₈₉]*'
+        # Find all deprecated attributes with dates in this block
+        deprecated_matches = list(re.finditer(r'@\[deprecated[^]]*since[^]]*"(\d{4}-\d{2}-\d{2})"[^]]*\]', block_content))
 
-    # Find all matches first to track positions
-    matches = list(re.finditer(pattern, content, flags=re.MULTILINE | re.DOTALL))
+        if deprecated_matches:
+            # Check if any deprecated declaration in this block is older than cutoff
+            should_remove = False
+            oldest_date = None
 
-    # Process matches in reverse order to preserve positions
-    for match in reversed(matches):
-        date_str = match.group(1)
-        if is_date_older_than_cutoff(date_str, cutoff_date):
-            start_pos = match.start()
-            end_pos = match.end()
+            for match in deprecated_matches:
+                date_str = match.group(1)
+                if is_date_older_than_cutoff(date_str, cutoff_date):
+                    should_remove = True
+                    if oldest_date is None or date_str < oldest_date:
+                        oldest_date = date_str
 
-            # Look for newlines before and after the match
-            before_start = start_pos
-            after_end = end_pos
+            if should_remove:
+                # Find line numbers for this block
+                lines_before = content[:start].count('\n')
+                start_line = lines_before + 1
+                lines_in_block = block_content.count('\n')
+                end_line = start_line + lines_in_block
 
-            # Check for newlines before the match
-            while before_start > 0 and content[before_start - 1] in ' \t':
-                before_start -= 1
-            if before_start > 0 and content[before_start - 1] == '\n':
-                before_start -= 1
+                blocks_to_remove.append({
+                    'block_index': i,
+                    'start_pos': start,
+                    'end_pos': end,
+                    'text': block_content,
+                    'oldest_date': oldest_date,
+                    'start_line': start_line,
+                    'end_line': end_line,
+                    'deprecated_count': len(deprecated_matches)
+                })
 
-            # Check for newlines after the match
-            while after_end < len(content) and content[after_end] in ' \t':
-                after_end += 1
-            if after_end < len(content) and content[after_end] == '\n':
-                after_end += 1
+    return blocks_to_remove
 
-            # Remove the match and adjacent whitespace
-            before_text = content[:before_start]
-            after_text = content[after_end:]
+def remove_old_deprecated_blocks(content, cutoff_date):
+    """Remove blocks containing deprecated declarations older than cutoff_date"""
+    # Find blocks to remove
+    blocks_to_remove = find_deprecated_blocks_to_remove(content, cutoff_date)
 
-            # Check if we need to add back a single newline to avoid merging lines
-            needs_separator = (before_text and not before_text.endswith('\n') and
-                             after_text and not after_text.startswith('\n'))
+    if not blocks_to_remove:
+        # No changes needed
+        return content
 
-            if needs_separator:
-                content = before_text + '\n' + after_text
-            else:
-                content = before_text + after_text
+    # Sort blocks by start position in reverse order for safe removal
+    blocks_to_remove.sort(key=lambda x: x['start_pos'], reverse=True)
 
-    return content
+    # Remove blocks from the content
+    new_content = content
+    for block_info in blocks_to_remove:
+        start_pos = block_info['start_pos']
+        end_pos = block_info['end_pos']
+
+        # Check if we need to clean up separators around the removed block
+        before_text = new_content[:start_pos]
+        after_text = new_content[end_pos:]
+
+        # Look for blank line patterns before and after
+        before_has_blank = before_text.endswith('\n\n') or before_text.endswith('\n\t\n') or before_text.endswith('\n \n')
+        after_starts_blank = after_text.startswith('\n\n') or after_text.startswith('\n\t\n') or after_text.startswith('\n \n')
+
+        # Remove the block
+        new_content = before_text + after_text
+
+        # Handle separator cleanup to avoid multiple blank lines
+        if before_has_blank and after_starts_blank:
+            # We now have content ending with blank line + content starting with blank line
+            # This creates too much separation, so we need to normalize
+
+            # Find the end of the "before" content (last non-whitespace)
+            before_content_end = len(before_text.rstrip())
+
+            # Find the start of the "after" content (first non-whitespace)
+            after_content_start = len(after_text) - len(after_text.lstrip())
+
+            if before_content_end > 0 and after_content_start < len(after_text):
+                # We have content both before and after, ensure exactly one blank line
+                clean_before = before_text.rstrip()
+                clean_after = after_text.lstrip()
+                new_content = clean_before + '\n\n' + clean_after
+
+    return new_content
 
 def process_file(filepath, cutoff_date, dry_run=False):
     """Process a single .lean file"""
@@ -92,21 +118,23 @@ def process_file(filepath, cutoff_date, dry_run=False):
 
         if dry_run:
             # Find what would be removed
-            matches_to_remove = find_deprecated_declarations_to_remove(content, cutoff_date)
-            if matches_to_remove:
+            blocks_to_remove = find_deprecated_blocks_to_remove(content, cutoff_date)
+            if blocks_to_remove:
                 print(f"\n{filepath}:")
-                for i, match in enumerate(matches_to_remove, 1):
-                    print(f"  Match {i} (lines {match['start_line']}-{match['end_line']}, date: {match['date']}):")
-                    # Show the alias text with some context, truncated if too long
-                    alias_text = match['text'].strip()
-                    if len(alias_text) > 100:
-                        alias_text = alias_text[:100] + "..."
-                    print(f"    {alias_text}")
-                return len(matches_to_remove)
+                for i, block_info in enumerate(blocks_to_remove, 1):
+                    print(f"  Block {i} (lines {block_info['start_line']}-{block_info['end_line']}, oldest date: {block_info['oldest_date']}, {block_info['deprecated_count']} deprecated items):")
+                    # Show first few lines of the block
+                    block_lines = block_info['text'].strip().split('\n')
+                    preview_lines = block_lines[:3]  # Show first 3 lines
+                    if len(block_lines) > 3:
+                        preview_lines.append("...")
+                    for line in preview_lines:
+                        print(f"    {line}")
+                return len(blocks_to_remove)
             return 0
         else:
             # Actually perform the removal
-            new_content = remove_old_deprecated_declarations(content, cutoff_date)
+            new_content = remove_old_deprecated_blocks(content, cutoff_date)
 
             # Only write if content changed
             if new_content != content:
@@ -161,7 +189,7 @@ def main():
 
     if dry_run:
         print(f"\nDRY RUN SUMMARY:")
-        print(f"Found {total_matches} deprecated declarations to remove in {processed_count} files")
+        print(f"Found {total_matches} deprecated blocks to remove in {processed_count} files")
     else:
         print(f"Processed {processed_count} files")
 
