@@ -310,7 +310,6 @@ lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ri
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
   convert quasispectrum_eq_spectrum_union R a
-  ext x
   simp
 
 lemma mem_quasispectrum_iff {R A : Type*} [Semifield R] [Ring A]
@@ -366,7 +365,6 @@ lemma quasispectrum_inr_eq (R S : Type*) {A : Type*} [Semifield R]
     [SMulCommClass S A A] [Module R A] [IsScalarTower R S A] (a : A) :
     quasispectrum R (a : Unitization S A) = quasispectrum R a := by
   rw [quasispectrum_eq_spectrum_union_zero, quasispectrum_eq_spectrum_inr' R S]
-  apply Set.union_eq_self_of_subset_right
   simpa using zero_mem_spectrum_inr _ _ _
 
 end Unitization

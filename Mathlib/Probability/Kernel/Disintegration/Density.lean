@@ -109,9 +109,9 @@ lemma measurable_densityProcess_countableFiltration_aux (κ : Kernel α (γ × �
   have h1 : @Measurable _ _ (mα.prod ⊤) _
       (fun p : α × countablePartition γ n ↦ κ p.1 (↑p.2 ×ˢ s) / ν p.1 p.2) := by
     refine Measurable.div ?_ ?_
-    · refine measurable_from_prod_countable (fun t ↦ ?_)
+    · refine measurable_from_prod_countable_left (fun t ↦ ?_)
       exact Kernel.measurable_coe _ ((measurableSet_countablePartition _ t.prop).prod hs)
-    · refine measurable_from_prod_countable ?_
+    · refine measurable_from_prod_countable_left ?_
       rintro ⟨t, ht⟩
       exact Kernel.measurable_coe _ (measurableSet_countablePartition _ ht)
   refine h1.comp (measurable_fst.prodMk ?_)

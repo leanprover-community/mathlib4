@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
@@ -254,6 +255,18 @@ instance (priority := 100) MulPosReflectLE.toSMulPosReflectLE [MulPosReflectLE �
   elim _b hb _a₁ _a₂ h := le_of_mul_le_mul_right h hb
 
 end Mul
+
+instance {M : Type*} [PartialOrder M] [AddCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulMono ℕ M where
+  elim _n _ _m₁ _m₂ hm := nsmul_le_nsmul_right hm _
+
+instance {M : Type*} [PartialOrder M] [AddCancelCommMonoid M] [IsOrderedAddMonoid M] :
+    PosSMulStrictMono ℕ M where
+  elim _n hn _m₁ _m₂ := nsmul_lt_nsmul_right hn.ne'
+
+instance {G : Type*} [PartialOrder G] [AddCommGroup G] [IsOrderedAddMonoid G] :
+    PosSMulStrictMono ℤ G where
+  elim _n hn _m₁ _m₂ := zsmul_lt_zsmul_right hn
 
 section SMul
 variable [SMul α β]
