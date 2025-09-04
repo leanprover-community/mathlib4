@@ -19,31 +19,35 @@ open scoped Polynomial
 
 namespace Matrix
 
-variable {R : Type*} [CommRing R] {n : Type*} [DecidableEq n] [Fintype n]
+variable {R : Type*} [CommRing R]
+variable {m n : Type*} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 
-theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).charpoly := by
-  let M := fromBlocks (scalar n X) (C.mapMatrix A) (C.mapMatrix B) 1
-  let N := fromBlocks (-1 : Matrix n n R[X]) 0 (C.mapMatrix B) (-scalar n X)
+theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
+    X ^ Fintype.card n * (A * B).charpoly = X ^ Fintype.card m * (B * A).charpoly := by
+  let M := fromBlocks (scalar m X) (A.map C) (B.map C) (1 : Matrix n n R[X])
+  let N := fromBlocks (-1 : Matrix m m R[X]) 0 (B.map C) (-scalar n X)
   have hMN : M * N = fromBlocks
-      (-scalar n X + C.mapMatrix (A * B)) (-(X : R[X]) • C.mapMatrix A) 0 (-scalar n X) := by
+      (-scalar m X + (A * B).map C) (-(X : R[X]) • A.map C) 0 (-scalar n X) := by
     simp [M, N, fromBlocks_multiply, smul_eq_mul_diagonal, -diagonal_neg]
-  have hNM : N * M = fromBlocks (-scalar n X) (-C.mapMatrix A)
-      0 (C.mapMatrix (B * A) - scalar n X) := by
-    simp [M, N, fromBlocks_multiply, -diagonal_neg, -scalar_apply, sub_eq_add_neg, scalar_comm]
-  have hdet_MN : (M * N).det = X ^ Fintype.card n * (scalar n X - C.mapMatrix (A * B)).det := calc
-    _ = (-scalar n X + C.mapMatrix (A * B)).det * (-1 : Matrix n n R[X]).det *
-        X ^ Fintype.card n := by
-      simp [hMN, det_neg]
-      ring
-    _ = _ := by simp [← det_mul, neg_add_eq_sub]; ring
-  have hdet_NM : (N * M).det = X ^ Fintype.card n * (scalar n X - C.mapMatrix (B * A)).det := calc
-    _ = X ^ Fintype.card n *
-        ((-1 : Matrix n n R[X]).det * (C.mapMatrix (B * A) - scalar n X).det) := by
-      simp [hNM, det_neg]
-      ring
-    _ = _ := by simp [← det_mul]
-  unfold charpoly charmatrix
-  rw [← (isRegular_X_pow _).left.eq_iff, ← hdet_MN, ← hdet_NM, det_mul_comm]
+  have hNM : N * M = fromBlocks (-scalar m X) (-A.map C)
+      0 ((B * A).map C - scalar n X) := by
+    simp [M, N, fromBlocks_multiply, -diagonal_neg, -scalar_apply,
+      sub_eq_add_neg, scalar_comm, Commute.all]
+  have hdet_MN : (M * N).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
+      (X ^ Fintype.card n * (scalar m X - (A * B).map C).det) := calc
+    _ = (-(scalar m X - (A * B).map C)).det * ((-1) ^ Fintype.card n * X ^ Fintype.card n) := by
+      simp [hMN, -diagonal_neg, det_neg, neg_add_eq_sub]
+    _ = _ := by simp [-neg_sub, det_neg]; ring
+  have hdet_NM : (N * M).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
+      (X ^ Fintype.card m * (scalar n X - (B * A).map C).det) := calc
+    _ = (-1) ^ Fintype.card m * X ^ Fintype.card m * (-(scalar n X - (B * A).map C)).det := by
+      simp [hNM, -diagonal_neg, det_neg]
+    _ = _ := by simp [-neg_sub, det_neg]; ring
+  simp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
+  rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_MN, ← hdet_NM, det_mul_comm]
+
+theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).charpoly :=
+  (isRegular_X_pow _).left.eq_iff.mp <| charpoly_mul_comm' A B
 
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
