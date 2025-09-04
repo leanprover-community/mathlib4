@@ -594,14 +594,10 @@ instance : IsTopologicalRing (UniformSpace.Completion r.Localization) :=
 open UniformSpace
 
 -- Wedhorn Proposition 8.2(1)
-lemma rationalOpenData.le_iff_exists_unique {A : HuberPair} (r s : rationalOpenData A) :
-    r ≤ s ↔ Nonempty (Unique (Completion s.Localization →A[A] Completion r.Localization)) := by
-  sorry
-
 noncomputable def rationalOpenData.uniqueOfLE
     {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
     Unique (Completion s.Localization →A[A] Completion r.Localization) :=
-  ((rationalOpenData.le_iff_exists_unique r s).mp h).some
+  sorry
 
 attribute [-instance] UniformSpace.Completion.ring
 
