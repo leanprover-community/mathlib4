@@ -14,6 +14,8 @@ import Mathlib.Tactic.Tendsto.Multiseries.LeadingTerm
 
 -/
 
+-- TODO: refactor using Pow.lean
+
 open Filter Asymptotics
 open scoped Topology
 

@@ -34,6 +34,21 @@ theorem sinSeries_get {n : ℕ} : sinSeries.get? n =
     some (if n % 2 = 1 then (-1 : ℝ) ^ ((n - 1) / 2) * (n ! : ℝ)⁻¹ else 0) := by
   simp [sinSeries]
 
+theorem cosSeries_eq_cons :
+    cosSeries = Seq.cons 1
+      (ofFnFrom (fun n ↦ if n % 2 = 0 then (-1 : ℝ) ^ (n / 2) * (n ! : ℝ)⁻¹ else 0) 1) := by
+  simp [cosSeries, ofFn]
+  rw [ofFnFrom_eq_cons]
+  congr
+  norm_num
+
+theorem sinSeries_eq_cons :
+    sinSeries = Seq.cons 0
+      (ofFnFrom (fun n ↦ if n % 2 = 1 then (-1 : ℝ) ^ ((n - 1) / 2) * (n ! : ℝ)⁻¹ else 0) 1) := by
+  simp [sinSeries, ofFn]
+  rw [ofFnFrom_eq_cons]
+  rfl
+
 theorem cosSeries_analytic : cosSeries.analytic := by
   sorry
 
@@ -58,9 +73,8 @@ noncomputable def cos {basis : Basis} (ms : PreMS basis) : PreMS basis :=
       if exp < 0 then
         cosSeries.apply ms
       else
-        PreMS.sub
-          ((cosSeries.apply tl).mulMonomial coef.cos 0)
-          ((sinSeries.apply tl).mulMonomial coef.sin 0)
+        ((cosSeries.apply tl).mulMonomial coef.cos 0).sub
+        ((sinSeries.apply tl).mulMonomial coef.sin 0)
 
 noncomputable def sin {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
@@ -72,9 +86,8 @@ noncomputable def sin {basis : Basis} (ms : PreMS basis) : PreMS basis :=
       if exp < 0 then
         sinSeries.apply ms
       else
-        PreMS.add
-          ((cosSeries.apply tl).mulMonomial coef.sin 0)
-          ((sinSeries.apply tl).mulMonomial coef.cos 0)
+        ((cosSeries.apply tl).mulMonomial coef.sin 0).add
+        ((sinSeries.apply tl).mulMonomial coef.cos 0)
 
 end
 

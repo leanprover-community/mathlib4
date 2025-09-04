@@ -38,6 +38,13 @@ theorem powSeriesFrom_eq_cons {a : ℝ} {acc : ℝ} {n : ℕ} :
   nth_rw 1 [corec_cons]
   rfl
 
+theorem powSeries_eq_cons {a : ℝ} :
+    powSeries a = Seq.cons 1 (powSeriesFrom a a 1) := by
+  simp [powSeries]
+  rw [powSeriesFrom_eq_cons]
+  congr
+  norm_num
+
 theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).get? m =
     .some (acc * ((descPochhammer ℤ m).smeval (a - n)) * n.factorial / (n + m).factorial) := by
   simp [powSeriesFrom]

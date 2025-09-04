@@ -14,436 +14,665 @@ import Mathlib.Tactic.Tendsto.Meta.CompareReal
 
 open Filter Asymptotics TendstoTactic Stream' Seq PreMS
 
+open Lean Elab Meta Tactic Qq
+
 namespace TendstoTactic
 
 namespace ElimDestruct
 
-section Destruct
+example : PreMS.one [] = 1 := by
+  norm_num [PreMS_const]
 
-variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+inductive ResultLS (s : Q(LazySeries))
+| nil (h : Q($s = Seq.nil))
+| cons (hd : Q(ℝ)) (tl : Q(LazySeries)) (h : Q($s = Seq.cons $hd $tl))
 
-theorem const_destruct (c : ℝ) : destruct (PreMS.const (basis_hd :: basis_tl) c) =
-    .some ((0, PreMS.const basis_tl c), @PreMS.nil basis_hd basis_tl) := by
+lemma ResultLS.consNormalize_aux {s : LazySeries} {hd hd' : ℝ} {tl : LazySeries}
+    (h : s = Seq.cons hd tl) (h_hd : hd = hd') :
+    s = Seq.cons hd' tl := by
+  rw [h, h_hd]
+
+def ResultLS.consNormalize {s : Q(LazySeries)} (hd : Q(ℝ)) (tl : Q(LazySeries))
+    (h : Q($s = Seq.cons $hd $tl)) :
+    TacticM (ResultLS s) := do
+  let ⟨hd', pf_hd⟩ ← normalizeReal hd
+  return .cons q($hd') q($tl) q(consNormalize_aux $h $pf_hd)
+
+partial def extractLS (s : Q(LazySeries)) : TacticM (ResultLS s) := do
+  match s with
+  | ~q(Seq.nil) =>
+    return .nil q(rfl)
+  | ~q(Seq.cons $hd $tl) =>
+    return ← ResultLS.consNormalize q($hd) q($tl) q(rfl)
+  | ~q(invSeries) =>
+    return ← ResultLS.consNormalize q(1) q(invSeries) q(invSeries_eq_cons_self)
+  | ~q(powSeriesFrom $x $acc $n) =>
+    return ← ResultLS.consNormalize q($acc)
+      q(PreMS.powSeriesFrom $x ($acc * ($x - $n) / ($n + 1)) ($n + 1))
+      q(powSeriesFrom_eq_cons)
+  | ~q(powSeries $x) =>
+    return ← ResultLS.consNormalize q(1) q(PreMS.powSeriesFrom $x $x 1) q(powSeries_eq_cons)
+  | ~q(LazySeries.ofFnFrom $f $n) =>
+    return ← ResultLS.consNormalize q($f $n) q(LazySeries.ofFnFrom $f ($n + 1))
+      q(LazySeries.ofFnFrom_eq_cons)
+  | ~q(logSeries) =>
+    return ← ResultLS.consNormalize q(0) q(LazySeries.ofFnFrom (fun n ↦ -(-1) ^ n / n) 1)
+      q(logSeries_eq_cons)
+  | ~q(expSeries) =>
+    return ← ResultLS.consNormalize q(1) q(LazySeries.ofFnFrom (fun n ↦ (n.factorial)⁻¹) 1)
+      q(expSeries_eq_cons)
+  | ~q(cosSeries) =>
+    return ← ResultLS.consNormalize q(1)
+      q(LazySeries.ofFnFrom
+        (fun n ↦ if n % 2 = 0 then (-1 : ℝ) ^ (n / 2) * (n.factorial : ℝ)⁻¹ else 0) 1)
+      q(cosSeries_eq_cons)
+  | ~q(sinSeries) =>
+    return ← ResultLS.consNormalize q(0)
+      q(LazySeries.ofFnFrom
+        (fun n ↦ if n % 2 = 1 then (-1 : ℝ) ^ ((n - 1) / 2) * (n.factorial : ℝ)⁻¹ else 0) 1)
+      q(sinSeries_eq_cons)
+  | _ => panic! "extractLS: unexpected s"
+
+inductive Result {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+    (ms : Q(PreMS ($basis_hd :: $basis_tl)))
+| nil (h : Q($ms = PreMS.nil))
+| cons (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(PreMS ($basis_hd :: $basis_tl)))
+  (h : Q($ms = PreMS.cons ($exp, $coef) $tl))
+
+lemma consNormalize_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    {exp exp' : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl) (h_exp : exp = exp') :
+    ms = PreMS.cons (exp', coef) tl := by
+  rw [h, h_exp]
+
+def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+    {ms : Q(PreMS ($basis_hd :: $basis_tl))}
+    (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(PreMS ($basis_hd :: $basis_tl)))
+    (h : Q($ms = PreMS.cons ($exp, $coef) $tl)) :
+    TacticM (Result ms) := do
+  let ⟨exp', pf_exp⟩ ← normalizeReal exp
+  return .cons q($exp') q($coef) q($tl) q(consNormalize_aux $h $pf_exp)
+
+def Result.cast {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+    {ms ms' : Q(PreMS ($basis_hd :: $basis_tl))} (res : Result ms) (h : Q($ms' = $ms)) :
+    Result ms' :=
+  match res with
+  | .nil h_ms => .nil q(($h).trans $h_ms)
+  | .cons exp coef tl h_ms => .cons exp coef tl q(($h).trans $h_ms)
+
+lemma extendBasisEnd_const (f : ℝ → ℝ) (ms : PreMS []) :
+    PreMS.extendBasisEnd f ms = PreMS.cons (0, ms) PreMS.nil := by
+  simp [PreMS.extendBasisEnd, PreMS.const]
   rfl
 
-theorem one_destruct : destruct (PreMS.one (basis_hd :: basis_tl)) =
-    .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl) := by
+lemma extendBasisEnd_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
+    {ms : PreMS (basis_hd :: basis_tl)} (h : ms = PreMS.nil) :
+    PreMS.extendBasisEnd f ms = PreMS.nil := by
+  subst h
+  simp [PreMS.extendBasisEnd, PreMS.nil]
+
+lemma extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
+    {exp : ℝ} {coef : PreMS basis_tl} {tl ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl) :
+    PreMS.extendBasisEnd f ms =
+    PreMS.cons (exp, PreMS.extendBasisEnd f coef) (PreMS.extendBasisEnd f tl) := by
+  subst h
+  simp [PreMS.extendBasisEnd, PreMS.cons]
+
+lemma updateBasis_keep_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (ex_tl : BasisExtension basis_tl)
+    (h : ms = PreMS.nil) :
+    ms.updateBasis (.keep _ ex_tl) = PreMS.nil := by
+  subst h
+  simp [PreMS.updateBasis, PreMS.const, PreMS.cons, PreMS.nil]
+
+lemma updateBasis_keep_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ex_tl : BasisExtension basis_tl)
+    {exp : ℝ} {coef : PreMS basis_tl} {tl ms : PreMS (basis_hd :: basis_tl)}
+    -- (ms : PreMS (basis_hd :: basis_tl))
+    (h : ms = PreMS.cons (exp, coef) tl) :
+    ms.updateBasis (.keep _ ex_tl) =
+    PreMS.cons (exp, PreMS.updateBasis ex_tl coef) (tl.updateBasis (.keep _ ex_tl)) := by
+  subst h
+  simp [PreMS.updateBasis, PreMS.cons]
+
+lemma updateBasis_insert_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (f : ℝ → ℝ)
+    (ex_tl : BasisExtension (basis_hd :: basis_tl)) (ms : PreMS (basis_hd :: basis_tl)) :
+    ms.updateBasis (.insert f ex_tl) = PreMS.cons (0, ms.updateBasis ex_tl) PreMS.nil := by
+  simp [PreMS.updateBasis, PreMS.cons, PreMS.nil]
+
+-- lemma updateBasis_insert_nil (f : ℝ → ℝ) (ms : PreMS []) (ex_tl : BasisExtension []):
+--     ms.updateBasis (.insert f ex_tl) = PreMS.cons (0, PreMS.const _ ms) PreMS.nil := by
+--   simp [PreMS.updateBasis, PreMS.const, PreMS.cons, PreMS.nil]
+--   congr
+--   rw [updateBasis_insert_nil]
+lemma monomial_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    PreMS.monomial (basis_hd :: basis_tl) 0 = PreMS.cons (1, PreMS.one basis_tl) PreMS.nil := by
+  simp [PreMS.monomial, PreMS.cons, PreMS.nil]
   rfl
 
-theorem monomial_rpow_zero_destruct (r : ℝ) :
-     destruct (PreMS.monomial_rpow (basis_hd :: basis_tl) 0 r) =
-    .some ((r, PreMS.one _), @PreMS.nil basis_hd basis_tl) := by
+lemma monomial_succ {basis_hd : ℝ → ℝ} {basis_tl : Basis} (n : ℕ) :
+    PreMS.monomial (basis_hd :: basis_tl) (n + 1) =
+    PreMS.cons (0, PreMS.monomial basis_tl n) PreMS.nil := by
+  simp [PreMS.monomial, PreMS.cons, PreMS.nil]
   rfl
 
-theorem monomial_rpow_succ_destruct (m : ℕ) (r : ℝ) :
-    destruct (PreMS.monomial_rpow (basis_hd :: basis_tl) (m + 1) r) =
-    .some ((0, PreMS.monomial_rpow basis_tl m r), @PreMS.nil basis_hd basis_tl) := by
+lemma monomial_rpow_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} (r : ℝ) :
+    PreMS.monomial_rpow (basis_hd :: basis_tl) 0 r =
+    PreMS.cons (r, PreMS.one basis_tl) PreMS.nil := by
+  simp [PreMS.monomial_rpow, PreMS.cons, PreMS.nil]
+
+lemma monomial_rpow_succ {basis_hd : ℝ → ℝ} {basis_tl : Basis} (n : ℕ)  (r : ℝ):
+    PreMS.monomial_rpow (basis_hd :: basis_tl) (n + 1) r =
+    PreMS.cons (0, PreMS.monomial_rpow basis_tl n r) PreMS.nil := by
+  simp [PreMS.monomial_rpow, PreMS.cons, PreMS.nil]
+
+lemma neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) : ms.neg = PreMS.nil := by
+  subst h
+  simp [PreMS.neg, PreMS.nil]
+
+lemma neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl) : ms.neg = PreMS.cons (exp, coef.neg) tl.neg := by
+  subst h
+  simp [PreMS.neg, PreMS.cons]
+
+lemma nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    (h : X = PreMS.nil) : X.add Y = Y := by
+  subst h
+  exact PreMS.nil_add
+
+lemma cons_add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (hX : X = PreMS.cons (exp, coef) tl) (hY : Y = PreMS.nil) :
+    X.add Y = PreMS.cons (exp, coef) tl := by
+  subst hX hY
+  exact PreMS.add_nil
+
+lemma cons_add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    {X_exp : ℝ} {X_coef : PreMS basis_tl} {X_tl : PreMS (basis_hd :: basis_tl)}
+    {Y_exp : ℝ} {Y_coef : PreMS basis_tl} {Y_tl : PreMS (basis_hd :: basis_tl)}
+    (hX : X = PreMS.cons (X_exp, X_coef) X_tl) (hY : Y = PreMS.cons (Y_exp, Y_coef) Y_tl)
+    (h_exp : X_exp < Y_exp) :
+    X.add Y = PreMS.cons (Y_exp, Y_coef) ((PreMS.cons (X_exp, X_coef) X_tl).add Y_tl) := by
+  subst hX hY
+  convert PreMS.add_cons_right _
+  simpa [PreMS.cons, leadingExp_cons]
+
+lemma cons_add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    {X_exp : ℝ} {X_coef : PreMS basis_tl} {X_tl : PreMS (basis_hd :: basis_tl)}
+    {Y_exp : ℝ} {Y_coef : PreMS basis_tl} {Y_tl : PreMS (basis_hd :: basis_tl)}
+    (hX : X = PreMS.cons (X_exp, X_coef) X_tl) (hY : Y = PreMS.cons (Y_exp, Y_coef) Y_tl)
+    (h_exp : Y_exp < X_exp) :
+    X.add Y = PreMS.cons (X_exp, X_coef) ((X_tl.add (PreMS.cons (Y_exp, Y_coef) Y_tl))) := by
+  subst hX hY
+  convert PreMS.add_cons_left _
+  simpa [PreMS.cons, leadingExp_cons]
+
+lemma cons_add_cons_both {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    {X_exp : ℝ} {X_coef : PreMS basis_tl} {X_tl : PreMS (basis_hd :: basis_tl)}
+    {Y_exp : ℝ} {Y_coef : PreMS basis_tl} {Y_tl : PreMS (basis_hd :: basis_tl)}
+    (hX : X = PreMS.cons (X_exp, X_coef) X_tl) (hY : Y = PreMS.cons (Y_exp, Y_coef) Y_tl)
+    (h_exp : X_exp = Y_exp) :
+    X.add Y = PreMS.cons (X_exp, X_coef.add Y_coef) ((X_tl.add Y_tl)) := by
+  subst hX hY
+  simp [PreMS.cons]
+  convert PreMS.add_cons_cons using 1
+  simp [h_exp]
   rfl
 
-theorem monomial_zero_destruct : destruct (PreMS.monomial (basis_hd :: basis_tl) 0) =
-    .some ((1, PreMS.one _), @PreMS.nil basis_hd basis_tl) := by
+lemma nil_mul {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    (h : X = PreMS.nil) : X.mul Y = PreMS.nil := by
+  subst h
+  exact PreMS.nil_mul
+
+lemma mul_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    (h : Y = PreMS.nil) : X.mul Y = PreMS.nil := by
+  subst h
+  exact PreMS.mul_nil
+
+lemma cons_mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)}
+    {X_exp : ℝ} {X_coef : PreMS basis_tl} {X_tl : PreMS (basis_hd :: basis_tl)}
+    {Y_exp : ℝ} {Y_coef : PreMS basis_tl} {Y_tl : PreMS (basis_hd :: basis_tl)}
+    (hX : X = PreMS.cons (X_exp, X_coef) X_tl) (hY : Y = PreMS.cons (Y_exp, Y_coef) Y_tl):
+    X.mul Y = PreMS.cons (X_exp + Y_exp, X_coef.mul Y_coef) ((mulMonomial Y_tl X_coef X_exp).add
+      (X_tl.mul (PreMS.cons (Y_exp, Y_coef) Y_tl))) := by
+  subst hX hY
+  exact PreMS.mul_cons_cons
+
+lemma mulMonomial_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {B : PreMS (basis_hd :: basis_tl)}
+    {M_exp : ℝ} {M_coef : PreMS basis_tl} (h : B = PreMS.nil) :
+    PreMS.mulMonomial B M_coef M_exp = PreMS.nil := by
+  subst h
+  simp [PreMS.mulMonomial, PreMS.nil]
+
+lemma mulMonomial_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {B : PreMS (basis_hd :: basis_tl)}
+    {M_exp : ℝ} {M_coef : PreMS basis_tl} {B_exp : ℝ} {B_coef : PreMS basis_tl}
+    {B_tl : PreMS (basis_hd :: basis_tl)}
+    (hB : B = PreMS.cons (B_exp, B_coef) B_tl) :
+    PreMS.mulMonomial B M_coef M_exp =
+    PreMS.cons (M_exp + B_exp, mul M_coef B_coef) (mulMonomial B_tl M_coef M_exp) := by
+  subst hB
+  simp [PreMS.mulMonomial, PreMS.cons]
+
+lemma mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)}
+    {c : ℝ} (h : X = PreMS.nil) : X.mulConst c = PreMS.nil := by
+  subst h
+  simp [PreMS.mulConst, PreMS.nil]
+
+lemma mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)}
+    {c : ℝ} {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (hX : X = PreMS.cons (exp, coef) tl) :
+    X.mulConst c = PreMS.cons (exp, coef.mulConst c) (tl.mulConst c) := by
+  subst hX
+  simp [PreMS.mulConst, PreMS.cons]
+
+lemma apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {s : LazySeries} (h : s = .nil) : s.apply ms = PreMS.nil := by
+  subst h
+  simp [LazySeries.apply_nil, PreMS.nil]
+
+lemma apply_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {s : LazySeries}
+    {s_hd : ℝ} {s_tl : LazySeries} (h : s = Seq.cons s_hd s_tl) :
+    s.apply ms = PreMS.cons (0, PreMS.const _ s_hd) ((s_tl.apply ms).mul ms) := by
+  subst h
+  simp [LazySeries.apply_cons, PreMS.cons]
+
+lemma inv_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) : ms.inv = PreMS.nil := by
+  subst h
+  simp [PreMS.inv, PreMS.nil]
+
+lemma inv_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl) :
+    ms.inv = PreMS.mulMonomial
+      (PreMS.invSeries.apply (mulMonomial (neg tl) coef.inv (-exp))) coef.inv (-exp) := by
+  subst h
+  simp [PreMS.inv, PreMS.cons]
+
+lemma pow_nil_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) {a : ℝ} (ha : a = 0) :
+    ms.pow a = PreMS.cons (0, PreMS.one _) PreMS.nil := by
+  subst h ha
+  simp [PreMS.pow, PreMS.nil, PreMS.cons, PreMS.one, PreMS.const]
+
+lemma pow_nil_nonzero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) {a : ℝ} (ha : a ≠ 0) :
+    ms.pow a = PreMS.nil := by
+  subst h
+  simp [PreMS.pow, PreMS.nil]
+  intro h
+  contradiction
+
+lemma pow_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl) (a : ℝ) :
+    ms.pow a = PreMS.mulMonomial ((PreMS.powSeries a).apply
+      (PreMS.mulMonomial tl coef.inv (-exp))) (coef.pow a) (exp * a) := by
+  subst h
+  simp [PreMS.pow, PreMS.cons]
+
+lemma log_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (logBasis : LogBasis (basis_hd :: basis_tl))
+    (h : ms = PreMS.nil) : ms.log logBasis = PreMS.nil := by
+  subst h
+  unfold PreMS.log
   rfl
 
-theorem monomial_succ_destruct (m : ℕ) : destruct (PreMS.monomial (basis_hd :: basis_tl) (m + 1)) =
-    .some ((0, PreMS.monomial basis_tl m), @PreMS.nil basis_hd basis_tl) := by
+lemma log_cons_basis_tl_nil {basis_hd : ℝ → ℝ} {ms : PreMS [basis_hd]}
+    {exp : ℝ} {coef : PreMS []} {tl : PreMS [basis_hd]}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (logBasis : LogBasis [basis_hd]) : ms.log logBasis =
+      (PreMS.const [basis_hd] (Real.log coef)).add
+        (PreMS.logSeries.apply (PreMS.mulConst tl coef⁻¹)) := by
+  subst h
+  unfold PreMS.log
   rfl
 
-theorem neg_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.neg =
-    match destruct ms with
-    | none => none
-    | some ((exp, coef), tl) => .some ((exp, coef.neg),
-        PreMS.neg (basis := basis_hd :: basis_tl) tl) := by
-  cases ms <;> simp
-
-theorem add_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x + y) =
-    match destruct x, destruct y with
-    | none, none => none
-    | none, some r => some r
-    | some r, none => some r
-    | some ((x_exp, x_coef), x_tl), some ((y_exp, y_coef), y_tl) =>
-      if y_exp < x_exp then
-        .some ((x_exp, x_coef), (PreMS.add x_tl y))
-      else if x_exp < y_exp then
-        .some ((y_exp, y_coef), (PreMS.add x y_tl))
-      else
-        .some ((x_exp, x_coef.add y_coef), (@PreMS.add (basis_hd :: basis_tl) x_tl y_tl)) := by
-  rw [PreMS.add_unfold]
-  simp [PreMS.add']
-  cases x <;> cases y <;> simp
-  split_ifs <;> simp <;> try rfl
-  constructor <;> rfl
-
-theorem mul_destruct (x y : PreMS (basis_hd :: basis_tl)) : destruct (x.mul y) =
-    match destruct x, destruct y with
-    | none, _ => none
-    | _, none => none
-    | some ((x_exp, x_coef), x_tl), some ((y_exp, y_coef), y_tl) =>
-      .some ((x_exp + y_exp, x_coef.mul y_coef), ((PreMS.mulMonomial y_tl x_coef x_exp).add
-      (PreMS.mul x_tl y))) := by
-  cases' x with x_exp x_coef x_tl <;> cases' y with y_exp y_coef y_tl <;> simp
+lemma log_cons_basis_tl_cons {basis_hd : ℝ → ℝ} {basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
+    {exp : ℝ} {coef : PreMS (basis_tl_hd :: basis_tl_tl)}
+    {tl ms : PreMS (basis_hd :: basis_tl_hd :: basis_tl_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl))
+    (log_hd : PreMS (basis_tl_hd :: basis_tl_tl)) :
+    ms.log (LogBasis.cons basis_hd basis_tl_hd basis_tl_tl logBasis_tl log_hd) =
+    PreMS.add ((.cons (0, (PreMS.log logBasis_tl coef).add <| log_hd.mulConst exp) .nil))
+      (PreMS.logSeries.apply (PreMS.mulMonomial tl coef.inv (-exp))) := by
+  subst h
+  conv => lhs; unfold PreMS.log
   rfl
 
-theorem mulMonomial_destruct (b : PreMS (basis_hd :: basis_tl)) (m_coef : PreMS basis_tl)
-    (m_exp : ℝ) : destruct (b.mulMonomial m_coef m_exp) =
-    match destruct b with
-    | none => none
-    | some ((b_exp, b_coef), b_tl) =>
-      some ((m_exp + b_exp, m_coef.mul b_coef),
-          PreMS.mulMonomial (basis_hd := basis_hd) b_tl m_coef m_exp) := by
-  cases b <;> simp
+lemma exp_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) : ms.exp = PreMS.cons (0, PreMS.one basis_tl) PreMS.nil := by
+  subst h
+  simp [PreMS.exp, PreMS.nil, PreMS.cons, PreMS.one, PreMS.const]
 
-theorem mulConst_destruct (x : PreMS (basis_hd :: basis_tl)) (c : ℝ) : destruct (x.mulConst c) =
-    match destruct x with
-    | none => none
-    | some ((exp, coef), tl) => .some ((exp, coef.mulConst c),
-      (PreMS.mulConst (basis := basis_hd :: basis_tl) tl c)) := by
-  cases x <;> simp
+lemma exp_cons_of_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (h_lt : exp < 0) :
+    ms.exp = PreMS.expSeries.apply (PreMS.cons (exp, coef) tl) := by
+  subst h
+  simp [PreMS.exp, PreMS.cons, h_lt]
 
-theorem apply_destruct (s : PreMS.LazySeries) (ms : PreMS (basis_hd :: basis_tl)) :
-    destruct (s.apply ms) =
-    match destruct s with
-    | none => none
-    | some (s_hd, s_tl) =>
-       .some ((0, PreMS.const _ s_hd), (PreMS.LazySeries.apply s_tl ms).mul ms) := by
-  cases s <;> simp
+lemma exp_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (h_not_lt : ¬ exp < 0) :
+    ms.exp = (PreMS.expSeries.apply tl).mulMonomial coef.exp 0 := by
+  subst h
+  simp [PreMS.exp, PreMS.cons, h_not_lt]
 
-theorem inv_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.inv =
-    match destruct ms with
-    | none => none
-    | some ((exp, coef), tl) => destruct (PreMS.mulMonomial (basis_hd := basis_hd)
-      (PreMS.invSeries.apply (PreMS.mulMonomial (PreMS.neg tl) coef.inv (-exp)))
-      coef.inv (-exp)) := by
-  cases ms
-  · simp [PreMS.inv]
-  · conv => lhs; unfold PreMS.inv
-    simp only [Stream'.Seq.destruct_cons]
+lemma cos_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) : ms.cos = PreMS.cons (0, PreMS.one basis_tl) PreMS.nil := by
+  subst h
+  simp [PreMS.cos, PreMS.nil, PreMS.cons, PreMS.one, PreMS.const]
 
-theorem pow_destruct (ms : PreMS (basis_hd :: basis_tl)) (a : ℝ) : destruct (ms.pow a) =
-    match destruct ms with
-    | none =>
-      if a = 0 then
-        .some ((0, PreMS.const basis_tl 1), @PreMS.nil basis_hd basis_tl)
-      else
-        .none
-    | some ((exp, coef), tl) => destruct <| PreMS.mulMonomial (basis_hd := basis_hd)
-      ((PreMS.powSeries a).apply (PreMS.mulMonomial tl coef.inv (-exp))) (coef.pow a)
-      (exp * a) := by
-  cases' ms with exp coef tl
-  · simp [PreMS.pow]
-    split_ifs
-    · simp [PreMS.one, const_destruct]
-    · simp
-  · simp [PreMS.pow]
+lemma cos_cons_of_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (h_lt : exp < 0) :
+    ms.cos = PreMS.cosSeries.apply (PreMS.cons (exp, coef) tl) := by
+  subst h
+  simp [PreMS.cos, PreMS.cons, h_lt]
 
-theorem log_destruct (ms : PreMS (basis_hd :: basis_tl))
-    (logBasis : LogBasis (basis_hd :: basis_tl)) : destruct (ms.log logBasis) =
-    match destruct ms with
-    | none => none
-    | some ((exp, coef), tl) =>
+lemma cos_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (h_not_lt : ¬ exp < 0) :
+    ms.cos =
+    ((cosSeries.apply tl).mulMonomial coef.cos 0).sub
+      ((sinSeries.apply tl).mulMonomial coef.sin 0) := by
+  subst h
+  simp [PreMS.cos, PreMS.cons, h_not_lt]
+
+lemma sin_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.nil) : ms.sin = PreMS.nil := by
+  subst h
+  simp [PreMS.sin, PreMS.nil]
+
+lemma sin_cons_of_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (h_lt : exp < 0) :
+    ms.sin = PreMS.sinSeries.apply (PreMS.cons (exp, coef) tl) := by
+  subst h
+  simp [PreMS.sin, PreMS.cons, h_lt]
+
+lemma sin_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl)
+    (h_not_lt : ¬ exp < 0) :
+    ms.sin =
+    ((cosSeries.apply tl).mulMonomial coef.sin 0).add
+      ((sinSeries.apply tl).mulMonomial coef.cos 0) := by
+  subst h
+  simp [PreMS.sin, PreMS.cons, h_not_lt]
+
+-- TODO: norm_num all leading exps
+set_option maxHeartbeats 0 in
+partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+    (ms : Q(PreMS ($basis_hd :: $basis_tl))) : TacticM (Result ms) := do
+  match ms.getAppFnArgs with
+  | (``PreMS.extendBasisEnd, #[(basis' : Q(Basis)), (f : Q(ℝ → ℝ)), (ms' : Q(PreMS $basis'))]) =>
+    have : ($basis_hd :: $basis_tl) =Q $basis' ++ [$f] := ⟨⟩
+    -- have : $ms =Q PreMS.extendBasisEnd $f $ms' := ⟨⟩
+    match basis' with
+    | ~q(List.nil) =>
+      have : $basis_tl =Q [] := ⟨⟩
+      let h' : Q(PreMS.extendBasisEnd $f $ms' = PreMS.cons (0, $ms') PreMS.nil) :=
+        q(extendBasisEnd_const $f $ms')
+      return .cons q(0) q($ms') q(PreMS.nil) (q($h') : Expr)
+    | ~q(List.cons $basis_hd' $basis_tl') =>
+      have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
+      let res := ← extractMSImp (basis_hd := basis_hd') (basis_tl := basis_tl') ms'
+      match res with
+      | .nil h =>
+        let h' : Q(PreMS.extendBasisEnd $f $ms' = PreMS.nil) := q(extendBasisEnd_nil $f $h)
+        return .nil (q($h') : Expr)
+      | .cons exp coef tl h =>
+        let coef' : Q(PreMS $basis_tl) := q(PreMS.extendBasisEnd $f $coef)
+        let tl' : Q(PreMS ($basis_hd :: $basis_tl)) := q(PreMS.extendBasisEnd $f $tl)
+        let h' : Q(PreMS.extendBasisEnd $f $ms' = PreMS.cons ($exp, $coef') $tl') :=
+          q(extendBasisEnd_cons $f $h)
+        return ← consNormalize q($exp) q($coef') q($tl') (q($h') : Expr)
+  | (``PreMS.updateBasis, #[(oldBasis : Q(Basis)), (ex : Q(BasisExtension $oldBasis)),
+      (ms' : Q(PreMS $oldBasis))]) =>
+    have : ($basis_hd :: $basis_tl) =Q ($ex).getBasis := ⟨⟩
+    -- have : $ms =Q PreMS.updateBasis $ex $ms' := ⟨⟩
+    let oldBasis' : Q(Basis) ← reduceBasis oldBasis
+    have : $oldBasis =Q $oldBasis' := ⟨⟩
+    match oldBasis, ex with
+    | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.keep _ $ex_tl) =>
+      let res := ← extractMSImp (basis_hd := oldBasis_hd) (basis_tl := oldBasis_tl) ms'
+      match res with
+      | .nil h =>
+        let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.nil) := q(updateBasis_keep_nil $ex_tl $h)
+        return .nil (q($h') : Expr)
+      | .cons exp coef tl h =>
+        have : ($ex_tl).getBasis =Q $basis_tl := ⟨⟩
+        let coef' : Q(PreMS $basis_tl) := q(PreMS.updateBasis $ex_tl $coef)
+        let tl' : Q(PreMS ($basis_hd :: $basis_tl)) := q(PreMS.updateBasis
+          (basis := $oldBasis_hd :: $oldBasis_tl) (BasisExtension.keep $oldBasis_hd $ex_tl) $tl)
+        let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.cons ($exp, $coef') $tl') :=
+          q(updateBasis_keep_cons $ex_tl $h)
+        return ← consNormalize q($exp) q($coef') q($tl') (q($h') : Expr)
+    | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.insert $f $ex_tl) =>
+      have : ($ex_tl).getBasis =Q $basis_tl := ⟨⟩
+      let coef' : Q(PreMS $basis_tl) := q(PreMS.updateBasis $ex_tl $ms')
+      let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.cons (0, $coef') PreMS.nil) :=
+        q(updateBasis_insert_cons $f $ex_tl $ms')
+      return .cons q(0) q($coef') q(PreMS.nil) (q($h') : Expr)
+    | ~q(List.nil), _ =>
+      have : ($ex).getBasis =Q ($basis_hd :: $basis_tl) := ⟨⟩
+      let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.const _ $ms') := q(updateBasis_const _ _)
+      return .cons q(0) q(PreMS.const _ $ms') q(PreMS.nil) (q($h') : Expr)
+    | _ => panic! s!"extractMS: unexpected oldBasis and ex: {← ppExpr oldBasis} and {← ppExpr ex}"
+  | _ =>
+  -- sorry
+  match ms with
+  | ~q(PreMS.nil) => return .nil q(rfl)
+  | ~q(PreMS.cons ($exp, $coef) $tl) => return .cons q($exp) q($coef) q($tl) q(rfl)
+  | ~q(PreMS.const _ $c) =>
+    -- TODO: replace all nontrivial rfl-s with theorems
+    return .cons q(0) q(PreMS.const _ $c) q(PreMS.nil) q(rfl)
+  | ~q(PreMS.one _) =>
+    return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(rfl)
+  | ~q(PreMS.monomial _ $n) =>
+    match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
+    | 0 =>
+      have : $n =Q 0 := ⟨⟩
+      return .cons q(1) q(PreMS.one _) q(PreMS.nil) q(monomial_zero)
+    | m + 1 =>
+      have : $n =Q $m + 1 := ⟨⟩
+      return .cons q(0) q(PreMS.monomial _ $m) q(PreMS.nil) q(monomial_succ $m)
+  | ~q(PreMS.monomial_rpow _ $n $r) =>
+    match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
+    | 0 =>
+      have : $n =Q 0 := ⟨⟩
+      return ← consNormalize q($r) q(PreMS.one _) q(PreMS.nil) q(monomial_rpow_zero $r)
+    | m + 1 =>
+      have : $n =Q $m + 1 := ⟨⟩
+      return .cons q(0) q(PreMS.monomial_rpow _ $m $r) q(PreMS.nil) q(monomial_rpow_succ $m $r)
+  | ~q(PreMS.neg $arg) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      return .nil q(neg_nil $h)
+    | .cons exp coef tl h =>
+      return ← consNormalize q($exp) q(PreMS.neg $coef) q(PreMS.neg $tl) q(neg_cons $h)
+  | ~q(PreMS.add $arg1 $arg2) =>
+    let res1 ← extractMSImp arg1
+    let res2 ← extractMSImp arg2
+    match res1 with
+    | .nil h1 =>
+      return res2.cast q(nil_add $h1)
+    | .cons exp1 coef1 tl1 h1 =>
+      match res2 with
+      | .nil h2 =>
+        return ← consNormalize exp1 coef1 tl1 q(cons_add_nil $h1 $h2)
+      | .cons exp2 coef2 tl2 h2 =>
+        match ← compareTwoReals exp1 exp2 with
+        | .lt h_exp =>
+          return ← consNormalize exp2 coef2 q(PreMS.add (PreMS.cons ($exp1, $coef1) $tl1) $tl2)
+            q(cons_add_cons_right $h1 $h2 $h_exp)
+        | .gt h_exp =>
+          return ← consNormalize exp1 coef1 q(PreMS.add $tl1 (PreMS.cons ($exp2, $coef2) $tl2))
+            q(cons_add_cons_left $h1 $h2 $h_exp)
+        | .eq h_exp =>
+          return ← consNormalize exp1 q(PreMS.add $coef1 $coef2) q(PreMS.add $tl1 $tl2)
+            q(cons_add_cons_both $h1 $h2 $h_exp)
+  | ~q(PreMS.mul $arg1 $arg2) =>
+    let res1 ← extractMSImp arg1
+    match res1 with
+    | .nil h1 => return .nil q(nil_mul $h1)
+    | .cons exp1 coef1 tl1 h1 =>
+      let res2 ← extractMSImp arg2
+      match res2 with
+      | .nil h2 => return .nil q(mul_nil $h2)
+      | .cons exp2 coef2 tl2 h2 =>
+        return ← consNormalize q($exp1 + $exp2) q(PreMS.mul $coef1 $coef2)
+          q((mulMonomial $tl2 $coef1 $exp1).add
+            (($tl1).mul (PreMS.cons ($exp2, $coef2) $tl2))) q(cons_mul_cons $h1 $h2)
+  | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
+    let res_b ← extractMSImp b
+    match res_b with
+    | .nil hb =>
+      return .nil q(mulMonomial_nil $hb)
+    | .cons b_exp b_coef b_tl hb =>
+      return ← consNormalize q($m_exp + $b_exp) q(PreMS.mul $m_coef $b_coef)
+        q(PreMS.mulMonomial (basis_hd := $basis_hd) $b_tl $m_coef $m_exp) q(mulMonomial_cons $hb)
+  | ~q(PreMS.mulConst $arg $c) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h => return .nil q(mulConst_nil $h)
+    | .cons exp coef tl h =>
+      return ← consNormalize q($exp) q(PreMS.mulConst $coef $c) q(PreMS.mulConst $tl $c)
+        q(mulConst_cons $h)
+  | ~q(PreMS.LazySeries.apply $s $arg) =>
+    let res_s ← extractLS s
+    match res_s with
+    | .nil hs =>
+      return .nil q(apply_nil $hs)
+    | .cons s_hd s_tl hs =>
+      return .cons q(0) q(PreMS.const _ $s_hd) q((PreMS.LazySeries.apply $s_tl $arg).mul $arg)
+        q(apply_cons $hs)
+  | ~q(PreMS.inv $arg) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      return .nil q(inv_nil $h)
+    | .cons exp coef tl h =>
+      let ms' : Q(PreMS ($basis_hd :: $basis_tl)) := q(mulMonomial
+        (invSeries.apply (mulMonomial (neg $tl) ($coef).inv (-$exp))) ($coef).inv (-$exp))
+      let res' ← extractMSImp ms'
+      return res'.cast q(inv_cons $h)
+  | ~q(PreMS.pow $arg $a) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      match ← checkZero a with
+      | .eq ha => return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(pow_nil_zero $h $ha)
+      | .neq ha => return .nil q(pow_nil_nonzero $h $ha)
+    | .cons exp coef tl h =>
+      let ms' : Q(PreMS ($basis_hd :: $basis_tl)) := q(mulMonomial
+        ((powSeries $a).apply (mulMonomial $tl ($coef).inv (-$exp))) (($coef).pow $a)
+        ($exp * $a))
+      let res' ← extractMSImp ms'
+      return res'.cast q(pow_cons $h $a)
+  | ~q(PreMS.log $logBasis $arg) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      return .nil q(log_nil $logBasis $h)
+    | .cons exp coef tl h =>
       match basis_tl with
-      | [] => destruct (PreMS.add (basis := [basis_hd]) (PreMS.const _ (Real.log coef)) <|
-          PreMS.logSeries.apply (PreMS.mulConst (basis := [basis_hd]) tl coef⁻¹))
-      | List.cons basis_tl_hd basis_tl_tl =>
-        let logC := PreMS.log logBasis.tail coef
-        match logBasis with
-        | .cons _ _ _ _ log_hd =>
-          destruct (PreMS.add (basis := basis_hd :: basis_tl_hd :: basis_tl_tl)
-            ((.cons (0, logC.add <| log_hd.mulConst exp) .nil)) <|
-            PreMS.logSeries.apply (PreMS.mulMonomial tl coef.inv (-exp))) := by
-  cases' ms with exp coef tl
-  · simp [PreMS.log]
-  cases' basis_tl with basis_tl_hd basis_tl_tl
-  · simp [PreMS.log]
-  cases' logBasis with _ _ _ _ log_hd
-  conv => lhs; unfold PreMS.log; simp
-  rfl
+      | ~q(List.nil) =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(PreMS.add (PreMS.const _ (Real.log $coef)) <|
+            PreMS.logSeries.apply (PreMS.mulConst $tl $coef⁻¹))
+        let res' ← extractMSImp ms'
+        return res'.cast q(log_cons_basis_tl_nil $h $logBasis)
+      | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
+        let logBasis' ← reduceLogBasis logBasis
+        have : $logBasis =Q $logBasis' := ⟨⟩
+        let ~q(LogBasis.cons _ _ _ $logBasis_tl $log_hd) := logBasis'
+          | panic! s!"extractMS: unexpected logBasis: {← ppExpr logBasis'}"
+        let logC := q(PreMS.log $logBasis_tl $coef)
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(PreMS.add ((.cons (0, ($logC).add <| ($log_hd).mulConst $exp) .nil)) <|
+            logSeries.apply (mulMonomial $tl ($coef).inv (-$exp)))
+        let res' ← extractMSImp ms'
+        return res'.cast q(log_cons_basis_tl_cons $h $logBasis_tl $log_hd)
+  | ~q(PreMS.exp $arg) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(exp_nil $h)
+    | .cons exp coef tl h =>
+      match ← checkLtZero exp with
+      | .lt h_exp =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(PreMS.expSeries.apply (PreMS.cons ($exp, $coef) $tl))
+        let res' ← extractMSImp ms'
+        return res'.cast q(exp_cons_of_lt $h $h_exp)
+      | .not_lt h_exp =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q((expSeries.apply $tl).mulMonomial ($coef).exp 0)
+        let res' ← extractMSImp ms'
+        return res'.cast q(exp_cons_of_not_lt $h $h_exp)
+  | ~q(PreMS.cos $arg) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(cos_nil $h)
+    | .cons exp coef tl h =>
+      match ← checkLtZero exp with
+      | .lt h_exp =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(PreMS.cosSeries.apply (PreMS.cons ($exp, $coef) $tl))
+        let res' ← extractMSImp ms'
+        return res'.cast q(cos_cons_of_lt $h $h_exp)
+      | .not_lt h_exp =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(((PreMS.cosSeries.apply $tl).mulMonomial ($coef).cos 0).sub
+            ((PreMS.sinSeries.apply $tl).mulMonomial ($coef).sin 0))
+        let res' ← extractMSImp ms'
+        return res'.cast q(cos_cons_of_not_lt $h $h_exp)
+  | ~q(PreMS.sin $arg) =>
+    let res ← extractMSImp arg
+    match res with
+    | .nil h =>
+      return .nil q(sin_nil $h)
+    | .cons exp coef tl h =>
+      match ← checkLtZero exp with
+      | .lt h_exp =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(PreMS.sinSeries.apply (PreMS.cons ($exp, $coef) $tl))
+        let res' ← extractMSImp ms'
+        return res'.cast q(sin_cons_of_lt $h $h_exp)
+      | .not_lt h_exp =>
+        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
+          q(((PreMS.cosSeries.apply $tl).mulMonomial ($coef).sin 0).add
+            ((PreMS.sinSeries.apply $tl).mulMonomial ($coef).cos 0))
+        let res' ← extractMSImp ms'
+        return res'.cast q(sin_cons_of_not_lt $h $h_exp)
+  | _ => panic! s!"extractMS: unexpected ms: {← ppExpr ms}"
 
-theorem exp_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.exp =
-    match destruct ms with
-    | .none => .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl)
-    | .some ((exp, coef), tl) =>
-      if exp < 0 then
-        destruct (PreMS.expSeries.apply ms)
-      else
-        destruct ((PreMS.expSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.exp 0) := by
-  cases' ms with exp coef tl
-  · simp [PreMS.exp]
-    rfl
-  · simp [PreMS.exp]
-    split_ifs with h_if <;> rfl
-
-theorem cos_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.cos =
-    match destruct ms with
-    | .none => .some ((0, PreMS.one basis_tl), @PreMS.nil basis_hd basis_tl)
-    | .some ((exp, coef), tl) =>
-      if exp < 0 then
-        destruct (PreMS.cosSeries.apply ms)
-      else
-        destruct (
-          PreMS.sub
-          ((PreMS.cosSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.cos 0)
-          ((PreMS.sinSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.sin 0)
-        ) := by
-  cases' ms with exp coef tl
-  · simp [PreMS.cos]
-    rfl
-  · simp [PreMS.cos]
-    split_ifs with h_if <;> rfl
-
-theorem sin_destruct (ms : PreMS (basis_hd :: basis_tl)) : destruct ms.sin =
-    match destruct ms with
-    | .none => .none
-    | .some ((exp, coef), tl) =>
-      if exp < 0 then
-        destruct (PreMS.sinSeries.apply ms)
-      else
-        destruct (
-          PreMS.add
-          ((PreMS.cosSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.sin 0)
-          ((PreMS.sinSeries.apply tl).mulMonomial (basis_hd := basis_hd) coef.cos 0)
-        ) := by
-  cases' ms with exp coef tl
-  · simp [PreMS.sin]
-  · simp [PreMS.sin]
-    split_ifs with h_if <;> rfl
-
-theorem ofFnFrom_destruct (f : ℕ → ℝ) (n : ℕ) : destruct (PreMS.LazySeries.ofFnFrom f n) =
-    .some ((f n), PreMS.LazySeries.ofFnFrom f (n + 1)) := by
-  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
-
-theorem invSeries_destruct : destruct PreMS.invSeries = .some (1, PreMS.invSeries) := by
-  conv => lhs; rw [PreMS.invSeries_eq_cons_self]; simp
-
-theorem powSeriesFrom_destruct (x : ℝ) (acc : ℝ) (n : ℕ) : destruct (PreMS.powSeriesFrom x acc n) =
-    .some (acc, PreMS.powSeriesFrom x (acc * (x - n) / (n + 1)) (n + 1)) := by
-  conv => lhs; rw [PreMS.powSeriesFrom_eq_cons]
-  simp
-
-theorem powSeries_destruct (x : ℝ) :
-    destruct (PreMS.powSeries x) = .some (1, PreMS.powSeriesFrom x x 1) := by
-  unfold PreMS.powSeries
-  simp [powSeriesFrom_destruct]
-
-theorem logSeries_destruct : destruct PreMS.logSeries =
-    .some (0, PreMS.LazySeries.ofFnFrom (fun n ↦ -(-1) ^ n / n) 1) := by
-  simp [PreMS.logSeries, PreMS.LazySeries.ofFn]
-  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
-  congr
-  simp
-
-theorem expSeries_destruct : destruct PreMS.expSeries =
-    .some (1, PreMS.LazySeries.ofFnFrom (fun n ↦ (↑n.factorial)⁻¹) 1) := by
-  simp [PreMS.expSeries, PreMS.LazySeries.ofFn]
-  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
-  congr
-  simp
-
-theorem cosSeries_destruct : destruct PreMS.cosSeries =
-    .some (1, PreMS.LazySeries.ofFnFrom (fun n ↦ if n % 2 = 0 then (-1 : ℝ) ^ (n / 2) * (n.factorial : ℝ)⁻¹ else 0) 1) := by
-  simp [PreMS.cosSeries, PreMS.LazySeries.ofFn]
-  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
-  congr
-  simp
-
-theorem sinSeries_destruct : destruct PreMS.sinSeries =
-    .some (0, PreMS.LazySeries.ofFnFrom (fun n ↦ if n % 2 = 1 then (-1) ^ ((n - 1) / 2) * (n.factorial : ℝ)⁻¹ else 0) 1) := by
-  simp [PreMS.sinSeries, PreMS.LazySeries.ofFn]
-  rw [PreMS.LazySeries.ofFnFrom_eq_cons, Seq.destruct_cons]
-  rfl
-
-theorem extendBasisEnd_destruct (f : ℝ → ℝ) (ms : PreMS (basis_hd :: basis_tl)) :
-    destruct (ms.extendBasisEnd f) =
-    match destruct ms with
-    | none => none
-    | some ((exp, coef), tl) => some ((exp, coef.extendBasisEnd f),
-        PreMS.extendBasisEnd (basis := basis_hd :: basis_tl) f tl) := by
-  cases' ms <;> simp [PreMS.extendBasisEnd]
-
-theorem updateBasis_keep_destruct (ms : PreMS (basis_hd :: basis_tl))
-    (ex_tl : BasisExtension basis_tl) :
-    destruct (ms.updateBasis (BasisExtension.keep basis_hd ex_tl)) =
-    match destruct ms with
-    | none => none
-    | some ((exp, coef), tl) =>
-      .some ((exp, PreMS.updateBasis ex_tl coef),
-        PreMS.updateBasis (basis := basis_hd :: basis_tl)
-          (BasisExtension.keep basis_hd ex_tl) tl) := by
-  cases' ms with exp coef tl <;> simp [PreMS.updateBasis]
-
-theorem updateBasis_insert_destruct (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ)
-    (ex_tl : BasisExtension (basis_hd :: basis_tl)) :
-    destruct (ms.updateBasis (BasisExtension.insert f ex_tl)) =
-    .some ((0, PreMS.updateBasis ex_tl ms), PreMS.nil (basis_hd := basis_hd)) := by
-  cases' ms with exp coef tl <;> simp [PreMS.updateBasis] <;> rfl
-
-end Destruct
-
-open Lean Elab Meta Tactic Qq
-
--- TODO: already done?
-def simpWith (pf : Expr) : SimpM Simp.Step := do
-  let some (_, _, rhs) := (← inferType pf).eq? | return .continue
-  return .visit {expr := rhs, proof? := pf}
-
-simproc elimDestruct (Stream'.Seq.destruct _) := fun e => do
-  let (``Stream'.Seq.destruct, #[_, target]) := e.getAppFnArgs | return .continue
-  let ⟨1, targetType, target⟩ := ← inferTypeQ target | return .continue
-  match targetType with
-  | ~q(PreMS.LazySeries) =>
-    match target with
-    | ~q(PreMS.LazySeries.ofFnFrom $f $n) => simpWith q(ofFnFrom_destruct $f $n)
-    | ~q(PreMS.invSeries) => simpWith q(invSeries_destruct)
-    | ~q(PreMS.powSeriesFrom $x $acc $n) => simpWith q(powSeriesFrom_destruct $x $acc $n)
-    | ~q(PreMS.powSeries $x) => simpWith q(powSeries_destruct $x)
-    | ~q(PreMS.logSeries) => simpWith q(logSeries_destruct)
-    | ~q(PreMS.expSeries) => simpWith q(expSeries_destruct)
-    | ~q(PreMS.cosSeries) => simpWith q(cosSeries_destruct)
-    | ~q(PreMS.sinSeries) => simpWith q(sinSeries_destruct)
-    | _ => return .continue
-  | ~q(PreMS $basis) =>
-    let basis' : Q(Basis) ← reduceBasis basis
-    let _ : $basis =Q $basis' := ⟨⟩
-    let ~q(List.cons $basis_hd $basis_tl) := basis' | return .continue
-    match target.getAppFnArgs with
-    | (``PreMS.extendBasisEnd, #[_, f, ms]) => -- crutch
-      simpWith (← mkAppM ``extendBasisEnd_destruct #[f, ms])
-    | (``PreMS.updateBasis, #[(oldBasis : Q(Basis)), (ex : Q(BasisExtension $oldBasis)),
-        (ms : Q(PreMS $oldBasis))]) =>
-      let oldBasis' : Q(Basis) ← reduceBasis oldBasis
-      haveI : $oldBasis =Q $oldBasis' := ⟨⟩
-      match oldBasis, ex with
-      | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.keep _ $ex_tl) =>
-        simpWith q(updateBasis_keep_destruct $ms $ex_tl)
-      | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.insert $f $ex_tl) =>
-        simpWith q(updateBasis_insert_destruct $ms $f $ex_tl)
-    | _ =>
-    match target with
-    | ~q(PreMS.nil) =>
-      return .done {
-        expr := q(@Option.none (Seq1 (ℝ × PreMS $basis_tl))),
-        proof? := q(@Stream'.Seq.destruct_nil (ℝ × (PreMS $basis_tl)))
-      }
-    | ~q(PreMS.cons $hd $tl) =>
-      return .done {
-        expr := q(Option.some ($hd, $tl)),
-        proof? := q(Stream'.Seq.destruct_cons $hd $tl)
-      }
-    | ~q(PreMS.const _ $c) => simpWith q(@const_destruct $basis_hd $basis_tl $c)
-    | ~q(PreMS.one _) => simpWith q(@one_destruct $basis_hd $basis_tl)
-    | ~q(PreMS.monomial_rpow _ $n $r) =>
-      match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
-      | 0 => simpWith q(@monomial_rpow_zero_destruct $basis_hd $basis_tl $r)
-      | m + 1 => simpWith q(@monomial_rpow_succ_destruct $basis_hd $basis_tl $m $r)
-    | ~q(PreMS.monomial _ $n) =>
-      match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
-      | 0 => simpWith q(@monomial_zero_destruct $basis_hd $basis_tl)
-      | m + 1 => simpWith q(@monomial_succ_destruct $basis_hd $basis_tl $m)
-    | ~q(PreMS.neg $arg) => simpWith q(neg_destruct $arg)
-    | ~q(PreMS.add $arg1 $arg2) => simpWith q(add_destruct $arg1 $arg2)
-    | ~q(PreMS.mul $arg1 $arg2) => simpWith q(mul_destruct $arg1 $arg2)
-    | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
-      simpWith q(mulMonomial_destruct $b $m_coef $m_exp)
-    | ~q(PreMS.mulConst $arg $c) => simpWith q(mulConst_destruct $arg $c)
-    | ~q(PreMS.LazySeries.apply $s $ms) => simpWith q(apply_destruct $s $ms)
-    | ~q(PreMS.inv $arg) => simpWith q(inv_destruct $arg)
-    | ~q(PreMS.pow $arg $exp) => simpWith q(pow_destruct $arg $exp)
-    | ~q(PreMS.log $logBasis $arg) => simpWith q(log_destruct $arg $logBasis)
-    | ~q(PreMS.exp $arg) => simpWith q(exp_destruct $arg)
-    | ~q(PreMS.cos $arg) => simpWith q(cos_destruct $arg)
-    | ~q(PreMS.sin $arg) => simpWith q(sin_destruct $arg)
-    | _ => return .continue
-  | _ => return .continue
-
--- #check Nat
-
-#check reduceIte
-
--- simproc ↓ reduceNumIte (ite _ _ _) := fun e => do
---   let_expr f@ite α c i tb eb ← e | return .continue
---   let g_true :=  ← mkFreshExprMVar c
---   let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
---   if res.isEmpty then
-
---   let r ← Mathlib.Meta.NormNum.deriveSimp c
---   if r.expr.isTrue then
---     let pr    := mkApp (mkApp5 (mkConst ``ite_cond_eq_true f.constLevels!) α c i tb eb)
---       (← r.getProof)
---     return .visit { expr := tb, proof? := pr }
---   if r.expr.isFalse then
---     let pr    := mkApp (mkApp5 (mkConst ``ite_cond_eq_false f.constLevels!) α c i tb eb)
---       (← r.getProof)
---     return .visit { expr := eb, proof? := pr }
---   return .continue
-
-universe u in
-lemma ite_cond_eq_true' {α : Type u} (P : Prop) [Decidable P] (rhs tb eb : α) (hc : P)
-    (h : tb = rhs) :
-    ite P tb eb = rhs := by
-  simp [hc, h]
-
-universe u in
-lemma ite_cond_eq_false' {α : Type u} (P : Prop) [Decidable P] (rhs tb eb : α) (hc : ¬ P)
-    (h : eb = rhs) :
-    ite P tb eb = rhs := by
-  simp [hc, h]
-
--- TODO: rewrite this hack
-elab "reduce_num_ite" : tactic => Lean.Elab.Tactic.withMainContext do
-  let g ← getMainGoal
-  let e ← getMainTarget
-  let_expr Eq _ lhs rhs := e |
-    -- dbg_trace f!"not an equality goal: {← ppExpr e}"
-    throwError "not an equality goal"
-  let_expr ite α c i tb eb := lhs |
-    -- dbg_trace f!"not an ite lhs: {lhs}"
-    throwError "not an ite lhs"
-  -- dbg_trace ← ppExpr c
-  let g_true ← mkFreshExprMVar c
-  let res ← evalTacticAt (← `(tactic| compare_real)) g_true.mvarId!
-  if res.isEmpty then
-    let g_new ← mkFreshExprMVar (← mkAppM ``Eq #[tb, rhs])
-    g.assign (← mkAppM ``ite_cond_eq_true' #[c, rhs, tb, eb, g_true, g_new])
-    replaceMainGoal [g_new.mvarId!]
-    return
-  let g_false ← mkFreshExprMVar (← mkAppM ``Not #[c])
-  let res ← evalTacticAt (← `(tactic| compare_real)) g_false.mvarId!
-  if res.isEmpty then
-    let g_new ← mkFreshExprMVar (← mkAppM ``Eq #[eb, rhs])
-    g.assign (← mkAppM ``ite_cond_eq_false' #[c, rhs, tb, eb, g_false, g_new])
-    replaceMainGoal [g_new.mvarId!]
-    return
-  throwError "reduce_num_ite can't neither prove the condition nor disprove it"
-
-open Real in
-example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
-  let ε : ℝ := 1;
-  let f := fun (x : ℝ) ↦
-    (1 - 1 / (b * (log x)^(1 + ε)))^p *
-    (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
-    (1 + 1 / (log x)^(ε / 2));
-    (if 0 * p + -2 + 0 + 0 < 0 * p + 0 + 0 + -(1 / 2) then 4 else 2) = 2 := by
-  intro ε f
-  -- reduce_num_ite
-
-  have : (if 0 < 0 * p + 0 + 0 then 4 else 2) = ?_ := by
-    reduce_num_ite
-    exact Eq.refl _
-  admit
-
--- TODO: rewrite without macro?
-syntax "elim_destruct" : tactic
-macro_rules
-| `(tactic| elim_destruct) =>
-    `(tactic|
-      repeat (
-        norm_num1;
-        first
-        | simp only [elimDestruct, PreMS_const, LogBasis.tail]
-        | simp only [↓reduceIte, PreMS_const]
-        | reduce_num_ite
-      ) <;>
-      norm_num1
-    )
+def extractMS {basis : Q(Basis)}
+    (ms : Q(PreMS $basis)) : TacticM ((ms' : Q(PreMS $basis)) × Q($ms = $ms')) := do
+  match basis with
+  | ~q(List.nil) => return ⟨ms, q(rfl)⟩
+  | ~q(List.cons $basis_hd $basis_tl) =>
+    let res ← extractMSImp ms
+    match res with
+    | .nil h => return ⟨q(PreMS.nil), q($h)⟩
+    | .cons exp coef tl h => return ⟨q(PreMS.cons ($exp, $coef) $tl), q($h)⟩
 
 end ElimDestruct
 

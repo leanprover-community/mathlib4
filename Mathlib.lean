@@ -4574,6 +4574,7 @@ import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
+import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
@@ -4638,6 +4639,7 @@ import Mathlib.Tactic.Tendsto.Main
 import Mathlib.Tactic.Tendsto.Meta.CompareMS
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
 import Mathlib.Tactic.Tendsto.Meta.ConstSimp
+import Mathlib.Tactic.Tendsto.Meta.ConstSimpAttribute
 import Mathlib.Tactic.Tendsto.Meta.Defs
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
@@ -4660,7 +4662,9 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Log
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Pow
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.PowFun
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Powser
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.TrigonometricFunctions
 import Mathlib.Tactic.Tendsto.Multiseries.Term
 import Mathlib.Tactic.Tendsto.Multiseries.Trimming
 import Mathlib.Tactic.TermCongr

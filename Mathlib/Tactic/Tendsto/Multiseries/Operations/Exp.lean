@@ -25,6 +25,13 @@ open scoped Nat
 noncomputable def expSeries : LazySeries :=
   ofFn fun n ↦ (n ! : ℝ)⁻¹
 
+theorem expSeries_eq_cons :
+    expSeries = Seq.cons 1 (ofFnFrom (fun n ↦ (n ! : ℝ)⁻¹) 1) := by
+  simp [expSeries, ofFn]
+  rw [ofFnFrom_eq_cons]
+  congr
+  norm_num
+
 theorem expSeries_get {n : ℕ} : expSeries.get? n = some ((n ! : ℝ)⁻¹) := by
   simp [expSeries]
 

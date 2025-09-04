@@ -25,6 +25,13 @@ open LazySeries Stream' Seq
 noncomputable def logSeries : LazySeries :=
   ofFn fun n ↦ -(-1 : ℝ)^n / n
 
+theorem logSeries_eq_cons :
+    logSeries = Seq.cons 0 (ofFnFrom (fun n ↦ -(-1 : ℝ)^n / n) 1) := by
+  simp [logSeries, ofFn]
+  rw [ofFnFrom_eq_cons]
+  congr
+  norm_num
+
 theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + t))
     (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 0 := by
   suffices HasFPowerSeriesAt Real.log (.ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n)) 1 by
@@ -92,12 +99,12 @@ noncomputable def log {basis : Basis}
     | none => .nil
     | some ((exp, coef), tl) =>
       match basis_tl with
-      | [] => PreMS.add (PreMS.const _ (Real.log coef)) <|
+      | [] => (const _ (Real.log coef)).add <|
           logSeries.apply (PreMS.mulConst tl coef⁻¹) -- here exp = 0 by assumption
       | List.cons _ _ =>
-        let logC := log logBasis.tail coef
         match logBasis with
-        | .cons _ _ _ _ log_hd =>
+        | .cons _ _ _ logBasis_tl log_hd =>
+          let logC := log logBasis_tl coef
           PreMS.add ((.cons (0, logC.add <| log_hd.mulConst exp) .nil)) <|
             logSeries.apply (mulMonomial tl coef.inv (-exp))
 

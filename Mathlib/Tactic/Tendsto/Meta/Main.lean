@@ -280,7 +280,7 @@ theorem PreMS.neg_log_exp_Approximates {basis : Basis} {ms : PreMS basis} {f : �
   ext
   simp
 
--- set_option maxHeartbeats 0 in
+set_option maxHeartbeats 0 in
 /-- Takes `ms` and place in current `basis`.
 Finds a deep coef `G` of `ms` to insert.
 Inserts `exp ±G.f` (with the right sign) in the basis between `left` and `right_hd :: right_tl`.
@@ -349,7 +349,8 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := logBasis
       h_logBasis := (q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
-        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx) (PreMS.neg_Trimmed $hG_trimmed)) : Expr)
+        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_log_exp_Approximates $G.h_approx)
+        (PreMS.neg_Trimmed $hG_trimmed)) : Expr)
       n_id := q($new_n_id)
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
@@ -495,10 +496,12 @@ partial def createMSImp (body : Expr) : BasisM MS := do
         let res ← createMSImp q(Real.exp ((Real.log $arg) * $exp))
         return {res with
           f := .lam .anonymous q(ℝ) q($arg ^ $exp) .default
-          h_approx := ← mkAppM ``PreMS.exp_Approximates_pow_of_pos #[ms.h_basis, ms.h_wo, ms.h_approx, h_trimmed, h_pos, res.h_approx]
+          h_approx := ← mkAppM ``PreMS.exp_Approximates_pow_of_pos #[ms.h_basis, ms.h_wo,
+            ms.h_approx, h_trimmed, h_pos, res.h_approx]
         }
       else
-        throwError f!"Unexpected type in pow: {← ppExpr t}. Only ℝ is supported for non-constant exponents"
+        throwError
+          f!"Unexpected type in pow: {← ppExpr t}. Only ℝ is supported for non-constant exponents"
   | (``Real.log, #[arg]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
     let leading ← getLeadingTerm ms.val
@@ -626,7 +629,8 @@ elab "compute_asymptotics" : tactic =>
         match targetLimit, limit with
         | ~q(𝓝 $a), ~q(𝓝 $b) =>
           let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
-          let extraGoals ← evalTacticAt (← `(tactic| try norm_num)) h_eq.mvarId!
+          -- TODO: remove [PreMS_const] here. Make sure result of createMS is normalized already
+          let extraGoals ← evalTacticAt (← `(tactic| try norm_num [PreMS_const])) h_eq.mvarId!
           appendGoals extraGoals
           pure q(Eq.subst
             (motive := fun x ↦ Filter.Tendsto $f atTop (𝓝 x)) $h_eq $h_tendsto)

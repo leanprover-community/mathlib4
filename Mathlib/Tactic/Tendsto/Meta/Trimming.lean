@@ -6,7 +6,6 @@ Authors: Vasilii Nesterov
 import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
-import Mathlib.Tactic.Tendsto.Meta.CompareReal
 import Qq
 
 /-!
@@ -18,30 +17,6 @@ open Filter Asymptotics Stream' Seq TendstoTactic ElimDestruct
 open Lean Elab Meta Tactic Qq
 
 namespace TendstoTactic
-
-/-- brings `ms` to normal form: `const`, `nil`, or `cons` with proof of equality. -/
-def extractMS (basis : Q(Basis)) (ms : Q(PreMS $basis)) :
-    TacticM ((ms' : Q(PreMS $basis)) × Q($ms = $ms')) := do
-  match basis with
-  | ~q(List.nil) => return ⟨ms, q(Eq.refl $ms)⟩ -- const
-  | ~q(List.cons $basis_hd $basis_tl) =>
-    let destruct_res ← mkFreshExprMVarQ q(Option (Seq1 (ℝ × PreMS $basis_tl)))
-    let h_eq ← mkFreshExprMVarQ q(Stream'.Seq.destruct $ms = $destruct_res)
-    try
-      let _ ← evalTacticAt (← `(tactic| elim_destruct; exact Eq.refl _)) h_eq.mvarId!
-    catch e =>
-      throwError f!"elim_destruct cannot solve the goal: {← e.toMessageData.toString}"
-    let destruct_res' ← instantiateMVarsQ destruct_res
-    haveI' : $destruct_res' =Q $destruct_res := ⟨⟩
-    match destruct_res with
-    | ~q(Option.none) =>
-      return ⟨q(@PreMS.nil $basis_hd $basis_tl), q(PreMS.nil_of_destruct $h_eq)⟩
-    | ~q(@Option.some ((Seq1 (ℝ × PreMS «$basis_tl»))) ($hd, $tl)) =>
-      -- why do i need explicitly put the type above?
-      return ⟨q(PreMS.cons $hd $tl), q(PreMS.cons_of_destruct $h_eq)⟩
-    | _ =>
-      throwError f!"Unexpected destruct_res in extractMS:\n{← ppExpr destruct_res.consumeMData}"
-  | _ => throwError "Unexpected basis in extractMS"
 
 section Trimming
 
@@ -102,7 +77,7 @@ structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
   h_trimmed : Q(PreMS.Trimmed $val)
 
 def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $ms))
-    (destructStepsLeft := 100) : TacticM (TrimmingResult ms) := do
+    (destructStepsLeft := 10000) : TacticM (TrimmingResult ms) := do
   match destructStepsLeft with
   | 0 => throwError "trim: no destruction steps left"
   | destructStepsLeftNext + 1 =>
@@ -115,7 +90,7 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $
       h_trimmed := q(@PreMS.Trimmed.const $ms)
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS basis ms
+    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS ms
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q(Eq.subst $h_eq_extracted $h_wo)
 
     match ms_extracted with
@@ -208,7 +183,7 @@ structure PartialTrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
 /-- Same as `trim` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true. In such
 case we can prove that the limit is zero without `ms.Trimmed`. -/
 def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
-    (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 100) :
+    (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 10000) :
     TacticM (PartialTrimmingResult ms) := do
   match destructStepsLeft with
   | 0 => throwError "trimPartial: no destruction steps left"
@@ -222,7 +197,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
       h_trimmed := .some q(@PreMS.Trimmed.const $ms)
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS basis ms
+    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS ms
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q(Eq.subst $h_eq_extracted $h_wo)
 
     match ms_extracted with

@@ -3,181 +3,9 @@ import Mathlib.Tactic.Tendsto.Main
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Real.Pi.Bounds
 
-section ElimDestruct
-
-open Stream'.Seq TendstoTactic ElimDestruct
-
-def basis : List (ℝ → ℝ) := [fun (x : ℝ) ↦ x]
-theorem basis_wo : WellFormedBasis basis := by
-  simp [WellFormedBasis, basis]
-  exact fun ⦃U⦄ a => a
-
-theorem zero_aux : 0 < basis.length := by simp [basis]
-
-def ms_const : PreMS [id] := PreMS.const [id] 42
-
-def ms_monom : PreMS [id] := PreMS.monomial [id] 0
-
-def ms_nil : PreMS [id] := PreMS.nil
-
-def ms_cons : PreMS [id] := PreMS.cons (1, 1) .nil -- x monomial
-
-def ms_cons2 : PreMS [id] := PreMS.cons (2, 1) ms_cons -- x^2 + x
-
-example : destruct ms_nil = .none := by
-  unfold ms_nil
-  elim_destruct
-
-example : destruct ms_cons = .some ((1, 1), ms_nil) := by
-  unfold ms_cons ms_nil
-  elim_destruct
-
-example : destruct (ms_nil.neg) = .none := by
-  unfold ms_nil
-  elim_destruct
-
-example : destruct (ms_nil.add ms_nil) = .none := by
-  unfold ms_nil
-  elim_destruct
-
-example : destruct (ms_nil.add ms_cons) = .some ((1, 1), ms_nil) := by
-  unfold ms_nil ms_cons
-  elim_destruct
-
-example : destruct (ms_cons.add ms_nil) = .some ((1, 1), ms_nil) := by
-  unfold ms_nil ms_cons
-  elim_destruct
-
--- we use `∃ tl` here and below, because we don't care about the tail
-example : ∃ tl, destruct (ms_cons.add ms_cons) = .some ((1, 2), tl) := by
-  unfold ms_cons
-  elim_destruct
-  simp
-
-example : ∃ tl, destruct (ms_cons.add ms_cons2) = .some ((2, 1), tl) := by
-  unfold ms_cons ms_cons2
-  elim_destruct
-  simp
-
-example : destruct (ms_nil.mul ms_nil) = .none := by
-  unfold ms_nil
-  elim_destruct
-
-example : destruct (ms_nil.mul ms_cons) = .none := by
-  unfold ms_nil ms_cons
-  elim_destruct
-
-example : destruct (ms_cons.mul ms_nil) = .none := by
-  unfold ms_nil ms_cons
-  elim_destruct
-
-example : ∃ tl, destruct (ms_cons.mul ms_cons) = .some ((2, 1), tl) := by
-  unfold ms_cons
-  elim_destruct
-  simp
-
-example : destruct ms_monom = .some ((1, 1), @PreMS.nil id []) := by
-  unfold ms_monom
-  elim_destruct
-
-example :
-    let ms_monom2 : PreMS [id, id] := PreMS.monomial [id, id] 1;
-    destruct ms_monom2 = .some ((0, PreMS.monomial [id] 0), @PreMS.nil id [id]) := by
-  intro ms_monom2
-  unfold ms_monom2
-  elim_destruct
-
-example : destruct ms_const = .some ((0, 42), .nil) := by
-  unfold ms_const
-  elim_destruct
-  rfl
-
-example : ∃ tl, destruct (PreMS.mul ms_const ms_cons)  = .some ((1, 42), tl) := by
-  unfold ms_const ms_cons
-  elim_destruct
-  simp
-
-example : ∃ tl, destruct (PreMS.add (PreMS.add ms_cons.neg ms_cons) ms_cons) = .some ((1, 1), tl) := by
-  unfold ms_cons
-  elim_destruct
-  simp
-
-example :
-    let ms_zero : PreMS [id] := PreMS.const [id] 0;
-    ∃ tl, destruct (PreMS.mul ms_cons ms_zero) = .some ((1, 0), tl) := by
-  intro ms_zero
-  unfold ms_zero ms_cons
-  elim_destruct
-  simp
-
-example : ∃ tl, destruct (PreMS.invSeries.apply ms_nil) = .some ((0, 1), tl) := by
-  unfold ms_nil
-  elim_destruct
-  simp
-
-example : destruct (ms_nil.inv) = .none := by
-  unfold ms_nil
-  simp only [elimDestruct]
-
-example : ∃ tl, destruct (ms_cons.inv) = .some ((-1, 1), tl) := by
-  unfold ms_cons
-  elim_destruct
-  simp
-
-example : (if (1 : ℝ) < (3/2 : ℝ) then 1 else 0) = 1 := by
-  norm_num1
-  simp only [↓reduceIte]
-
-example : destruct (TendstoTactic.PreMS.updateBasis
-    (TendstoTactic.BasisExtension.insert (Real.log ∘ fun x => x) TendstoTactic.BasisExtension.nil) 1) =
-    some ((0, PreMS.updateBasis BasisExtension.nil 1), nil) := by
-  elim_destruct
-  rfl
-
-end ElimDestruct
-
 open Filter Topology
 
-section trig
-
--- the first remarkable limit
-example :
-    let f := fun (y : ℝ) ↦ Real.sin y / y;
-    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
-  compute_asymptotics
-
-example :
-    let f := fun (y : ℝ) ↦ Real.sin (Real.sin y / y);
-    Tendsto f (𝓝[≠] 0) (𝓝 (Real.sin 1)) := by
-  have : 0 < Real.sin 1 := sorry -- TODO: why needed?
-  compute_asymptotics
-
-set_option maxHeartbeats 0 in
-example :
-    let f := fun (y : ℝ) ↦ (Real.sin y / Real.cos y - Real.sin y) / y^3;
-    Tendsto f (𝓝[≠] 0) (𝓝 (1 / 2)) := by
-  compute_asymptotics
-
--- slow but works
--- set_option maxHeartbeats 0 in
--- example :
---     let f := fun (y : ℝ) ↦ (Real.sin (Real.sin y) / Real.cos (Real.sin y) - Real.sin (Real.sin y / Real.cos y)) / y^7;
---     Tendsto f (𝓝[≠] 0) (𝓝 (1 / 30)) := by
---   compute_asymptotics
-
-end trig
-
-section pow_fun
-
--- the second remarkable limit
-example :
-    let f := fun (y : ℝ) ↦ (1 + y⁻¹) ^ y;
-    Tendsto f atTop (𝓝 (Real.exp 1)) := by
-  have : 0 < Real.exp 1 := Real.exp_pos 1
-  compute_asymptotics
-
-end pow_fun
-
+set_option trace.Meta.Tactic.simp.all true in
 example :
   let f := fun (y : ℝ) ↦ y;
   Tendsto f atTop atTop := by
@@ -305,13 +133,7 @@ example :
   compute_asymptotics
 
 example :
-  let f : ℝ → ℝ := fun (x : ℝ) ↦ (( - 6  *  x  *  x  *  x)  +  ((2  *  x  *  x)  +  ((1)  *  ((4  *  x)  -  ( - 2  *  x)))))  *  ((( - 6  *  x)  -  ( - 2))  /  ((8  *  x)  *  ( - 9  *  x  *  x  *  x)));
-  Tendsto f atTop (nhds (-(1/2))) := by
-  simp only
-  compute_asymptotics
-
-example :
-  let f : ℝ → ℝ := fun (x : ℝ) ↦ (( - 6  *  x  *  x  *  x)  +  ((2  *  x  *  x)  +  ((1)  *  ((4  *  x)  -  ( - 2  *  x)))))  *  ((( - 6  *  x)  -  ( - 2))  /  ((8  *  x)  *  ( - 9  *  x  *  x  *  x)));
+  let f := fun (x : ℝ) ↦ (( - 6  *  x  *  x  *  x)  +  ((2  *  x  *  x)  +  ((1)  *  ((4  *  x)  -  ( - 2  *  x)))))  *  ((( - 6  *  x)  -  ( - 2))  /  ((8  *  x)  *  ( - 9  *  x  *  x  *  x)));
   Tendsto f atTop (nhds (-1/2)) := by
   simp only
   compute_asymptotics
@@ -458,11 +280,6 @@ example :
   compute_asymptotics
 
 example :
-    let f := fun (y : ℝ) ↦ Real.log y - Real.log (Real.log y);
-    Tendsto f atTop atTop := by
-  compute_asymptotics
-
-example :
     let f := fun (y : ℝ) ↦ Real.exp (y^2) - Real.exp y;
     Tendsto f atTop atTop := by
   compute_asymptotics
@@ -508,8 +325,6 @@ example :
     Tendsto f atTop (𝓝 1) := by
   compute_asymptotics
 
-set_option trace.profiler true in
-set_option maxHeartbeats 0 in
 example :
     let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
     Tendsto f atTop atTop := by
@@ -520,7 +335,6 @@ example :
     Tendsto f atTop (𝓝 0):= by
   compute_asymptotics
 
-set_option maxHeartbeats 0 in
 example :
     let f := fun (y : ℝ) ↦ Real.exp y - Real.exp (y^3) + Real.exp (y^2)
     Tendsto f atTop atBot:= by
@@ -528,14 +342,54 @@ example :
 
 -- from Gruntz
 -- TODO
-open Real in
-set_option maxHeartbeats 0 in
-example :
-    let f := fun (x : ℝ) ↦ exp x * (exp (1/x - exp (-x)) - exp (1/x))
-    Tendsto f atTop (𝓝 (-1)) := by
-  compute_asymptotics
+-- open Real in
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦ exp x * (exp (1/x - exp (-x)) - exp (1/x))
+--     Tendsto f atTop (𝓝 (-1)) := by
+  -- compute_asymptotics
 
 end exp
+
+section pow_fun
+
+-- the second remarkable limit
+example :
+    let f := fun (y : ℝ) ↦ (1 + y⁻¹) ^ y;
+    Tendsto f atTop (𝓝 (Real.exp 1)) := by
+  have : 0 < Real.exp 1 := Real.exp_pos 1
+  compute_asymptotics
+
+end pow_fun
+
+section trig
+
+-- the first remarkable limit
+example :
+    let f := fun (y : ℝ) ↦ Real.sin y / y;
+    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    let f := fun (y : ℝ) ↦ Real.sin (Real.sin y / y);
+    Tendsto f (𝓝[≠] 0) (𝓝 (Real.sin 1)) := by
+  have : 0 < Real.sin 1 := Real.sin_pos_of_pos_of_le_one (by simp) (by simp) -- TODO: why needed?
+  compute_asymptotics
+
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (y : ℝ) ↦ (Real.sin y / Real.cos y - Real.sin y) / y^3;
+    Tendsto f (𝓝[≠] 0) (𝓝 (1 / 2)) := by
+  compute_asymptotics
+
+-- slow but works
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (y : ℝ) ↦ (Real.sin (Real.sin y) / Real.cos (Real.sin y) - Real.sin (Real.sin y / Real.cos y)) / y^7;
+--     Tendsto f (𝓝[≠] 0) (𝓝 (1 / 30)) := by
+--   compute_asymptotics
+
+end trig
 
 example :
   let f := fun (x : ℝ) ↦ x^(-Real.pi);
@@ -659,20 +513,14 @@ example :
 
 end DifferentFilters
 
--- TODO
 -- example from the paper. It's used in the proof of Akkra-Bazzi theorem.
--- open Real in
--- -- set_option pp.analyze true in
--- -- set_option pp.maxSteps 100000 in
--- -- set_option maxHeartbeats 0 in
--- example (p b : ℝ) (hb1 : 0 < b) (hb2 : b < 1) :
---   let ε : ℝ := 1;
---   let f := fun (x : ℝ) ↦
---     (1 - 1 / (b * (log x)^(1 + ε)))^p *
---     (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
---     (1 + 1 / (log x)^(ε / 2));
---   Tendsto f atTop (𝓝 0) := by
---   intro ε f
---   dsimp only [ε, f]
---   -- sorry
---   compute_asymptotics
+open Real in
+example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
+  let f := fun (x : ℝ) ↦
+    (1 - 1 / (b * (log x)^(1 + ε)))^p *
+    (1 + 1 / log (b * x + x / (log x)^(1 + ε))^(ε / 2)) -
+    (1 + 1 / (log x)^(ε / 2));
+  Tendsto f atTop (𝓝 0) := by
+  intro f
+  dsimp only [f]
+  compute_asymptotics

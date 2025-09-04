@@ -149,8 +149,10 @@ partial def reduceLogBasis {basis : Q(Basis)} (logBasis : Q(LogBasis $basis)) :
       (logBasis_tl : Q(LogBasis ($basis_tl_hd :: $basis_tl_tl))),
       (ms : Q(PreMS ($basis_tl_hd :: $basis_tl_tl)))]) =>
     have : $basis =Q $basis_hd :: $basis_tl_hd :: $basis_tl_tl := ⟨⟩
+    let basis_tl_tl' ← reduceBasis basis_tl_tl
     let logBasis_tl' ← reduceLogBasis logBasis_tl
-    return q(LogBasis.cons $basis_hd $basis_tl_hd $basis_tl_tl $logBasis_tl' $ms)
+    have : $basis_tl_tl =Q $basis_tl_tl' := ⟨⟩
+    return q(LogBasis.cons $basis_hd $basis_tl_hd $basis_tl_tl' $logBasis_tl' $ms)
   | (``LogBasis.tail, #[(basis_hd : Q(ℝ → ℝ)), (basis_tl : Q(Basis)),
       (logBasis_arg : Q(LogBasis ($basis_hd :: $basis_tl)))]) =>
     have : $basis =Q $basis_tl := ⟨⟩

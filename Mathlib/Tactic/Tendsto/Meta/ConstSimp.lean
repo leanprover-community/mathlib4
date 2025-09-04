@@ -68,7 +68,8 @@ theorem BasisExtension.nil_getBasis : BasisExtension.nil.getBasis = [] := rfl
 
 @[PreMS_const]
 theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis x) =
-    Real.log x := rfl
+    Real.log x := by
+  simp [PreMS.log]
 
 @[PreMS_const]
 theorem exp_const (x : PreMS []) : (PreMS.exp x) = Real.exp x := rfl

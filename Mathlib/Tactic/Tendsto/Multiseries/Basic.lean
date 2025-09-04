@@ -393,7 +393,7 @@ def updateBasis {basis : Basis} (ex : BasisExtension basis) (ms : PreMS basis) :
   match ex with
   | .nil => ms
   | .keep basis_hd ex_tl => ms.map (fun (exp, coef) => (exp, updateBasis ex_tl coef))
-  | .insert _ ex_tl => .cons (0, updateBasis ex_tl ms) .nil
+  | .insert _ ex_tl => .cons (0, ms.updateBasis ex_tl) .nil
 
 theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
     (h_wo : ms.WellOrdered) :
