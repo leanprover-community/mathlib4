@@ -41,6 +41,10 @@ attribute [push]
   and_or_left and_or_right and_true true_and and_false false_and
   or_and_left or_and_right or_true true_or or_false false_or
 
+-- these lemmas are only for the `pull` tactic
+attribute [push low]
+  forall_and_left forall_and_right -- needs lower priority than `forall_and` in the `pull` tactic
+
 attribute [push ←] Function.id_def
 
 -- TODO: decide if we want this lemma, and if so, fix the proofs that break as a result
