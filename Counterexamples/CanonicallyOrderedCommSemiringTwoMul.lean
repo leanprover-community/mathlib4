@@ -92,17 +92,19 @@ instance : ZeroLEOneClass (ℕ × ZMod 2) :=
   ⟨by dsimp only [LE.le]; decide⟩
 
 instance : PosMulStrictMono (ℕ × ZMod 2) where
-  elim _ _ _ ab c0 := by rw [lt_def] at *; exact mul_lt_mul_of_pos_left ab c0
+  elim := by
+    rintro ⟨a, ha⟩ b c hbc; dsimp at *; rw [lt_def] at *; exact mul_lt_mul_of_pos_left hbc ha
 
 instance : MulPosStrictMono (ℕ × ZMod 2) where
-  elim _ _ _ ab c0 := by rw [lt_def] at *; exact mul_lt_mul_of_pos_right ab c0
+  elim := by
+    rintro ⟨a, ha⟩ b c hbc; dsimp at *; rw [lt_def] at *; exact mul_lt_mul_of_pos_right hbc ha
 
 instance isorN2 : IsStrictOrderedRing (ℕ × ZMod 2) :=
   { add_le_add_left := add_le_add_left
     le_of_add_le_add_left := le_of_add_le_add_left
     zero_le_one := zero_le_one
-    mul_lt_mul_of_pos_left := mul_lt_mul_of_pos_left
-    mul_lt_mul_of_pos_right := mul_lt_mul_of_pos_right }
+    mul_lt_mul_of_pos_left _ _ _ := mul_lt_mul_of_pos_left
+    mul_lt_mul_of_pos_right _ _ _ := mul_lt_mul_of_pos_right }
 
 end Nxzmod2
 
