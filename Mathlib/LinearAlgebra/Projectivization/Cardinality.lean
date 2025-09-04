@@ -16,6 +16,12 @@ We compute the cardinality of `ℙ k V` if `k` is a finite field.
 
 -/
 
+/- TODO: Move me to a better place, maybe a file under `Algebra.Module`? Current required imports:
+import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.GroupTheory.GroupAction.Defs
+-/
 lemma Module.stabilizer_units_eq_bot_of_ne_zero (R : Type*) {M : Type*} [Ring R] [AddCommGroup M]
     [Module R M] [NoZeroSMulDivisors R M] {x : M} (hx : x ≠ 0) : MulAction.stabilizer Rˣ x = ⊥ := by
   rw [eq_bot_iff]
