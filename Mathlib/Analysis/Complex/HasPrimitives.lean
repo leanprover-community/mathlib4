@@ -294,7 +294,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
     rw [← sub_eq_zero]
     have : intVII - intV + intVIII - intIV = 0 := by
       have wzInBall : w.re + z.im * I ∈ ball c r :=
-        by exact mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
+        mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
       have wcInBall : w.re + c.im * I ∈ ball c r := cornerRectangle_in_disc hzPlusH
       convert hf (z.re + c.im * I) (w.re + z.im * I) (cornerRectangle_in_disc hz) wzInBall
           (by simpa using hz) (by simpa using wcInBall) using 1
@@ -343,7 +343,7 @@ lemma deriv_of_wedgeInt_re [CompleteSpace E] :
     (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) • f z)
       =o[𝓝 z] (fun w ↦ w - z) := by
   have zReTendsTo : Filter.Tendsto (fun (w : ℂ) ↦ w.re) (𝓝 z) (𝓝 z.re) :=
-    by apply Continuous.tendsto Complex.continuous_re
+    Continuous.tendsto Complex.continuous_re _
   have := (deriv_of_wedgeInt_re' f_cont hz).comp_tendsto zReTendsTo
   have := this.trans_isBigO re_isBigO
   convert this using 2
@@ -379,8 +379,8 @@ variable [CompleteSpace E]
 lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z)
     =o[𝓝 z] fun w ↦ w - z := by
   calc
-    _ = (fun w:ℂ ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (∫ _ in z.im..w.im, f z)) :=
-      by congr! 2; simp
+    _ = (fun w:ℂ ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (∫ _ in z.im..w.im, f z)) := by
+      congr! 2; simp
     _ =ᶠ[𝓝 z] (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) := ?_
     _ =o[𝓝 z] fun w ↦ w - z := deriv_of_wedgeInt_im' f_cont hz
   let r₁ := r - dist z c
