@@ -39,10 +39,10 @@ pullback.snd f g                       f
 ```
       X --------------f--------------> Y
       |                                |
-      g                          pushout.inr f g
+      g                          pushout.inl f g
       |                                |
       v                                v
-      Z ---pushout.inl f g---> pushout f g
+      Z ---pushout.inr f g---> pushout f g
 ```
 
 # Main results & API
