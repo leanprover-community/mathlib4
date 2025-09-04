@@ -299,9 +299,9 @@ end Higher
 
 end MulAction
 
-variable {G α : Type*} [Group G] [MulAction G α]
-
 namespace SubMulAction.ofStabilizer
+
+variable {G α : Type*} [Group G] [MulAction G α]
 
 open scoped BigOperators Pointwise Cardinal
 
@@ -328,37 +328,32 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
-  constructor
-  · intro hn
-    exact {
-      exists_smul_eq x y := by
-        obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
-        have hg : g ∈ stabilizer G a := by
-          rw [mem_stabilizer_iff]
-          rw [DFunLike.ext_iff] at hgxy
-          convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
-        use ⟨g, hg⟩
-        ext i
-        simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
-        rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc] }
-  · exact fun hn ↦ {
-      exists_smul_eq x y := by
-        -- gx • x = x1 :: a
-        obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
-        -- gy • y = y1 :: a
-        obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
-        -- g • x1 = y1,
-        obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
-        use gy⁻¹ * g * gx
-        ext i
-        simp only [mul_smul, smul_apply, inv_smul_eq_iff]
-        simp only [← smul_apply _ _ i, hgy, hgx]
-        simp only [smul_apply]
-        rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
-        · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
-          simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
-        · simp only [ofStabilizer.snoc_last, ← hg]
-          exact g.prop }
+  refine ⟨fun hn ↦ ⟨fun x y ↦ ?_⟩, fun hn ↦ ⟨fun x y ↦ ?_⟩⟩
+  · obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
+    have hg : g ∈ stabilizer G a := by
+      rw [mem_stabilizer_iff]
+      rw [DFunLike.ext_iff] at hgxy
+      convert hgxy (last n) <;> simp [smul_apply, ofStabilizer.snoc_last]
+    use ⟨g, hg⟩
+    ext i
+    simp only [smul_apply, SubMulAction.val_smul_of_tower, subgroup_smul_def]
+    rw [← ofStabilizer.snoc_castSucc x, ← smul_apply, hgxy, ofStabilizer.snoc_castSucc]
+  · -- gx • x = x1 :: a
+    obtain ⟨gx, x1, hgx⟩ := exists_smul_of_last_eq G a x
+    -- gy • y = y1 :: a
+    obtain ⟨gy, y1, hgy⟩ := exists_smul_of_last_eq G a y
+    -- g • x1 = y1,
+    obtain ⟨g, hg⟩ := hn.exists_smul_eq x1 y1
+    use gy⁻¹ * g * gx
+    ext i
+    simp only [mul_smul, smul_apply, inv_smul_eq_iff]
+    simp only [← smul_apply _ _ i, hgy, hgx]
+    simp only [smul_apply]
+    rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
+    · -- rw [Function.Embedding.ext_iff] at hgx hgy hg
+      simp [ofStabilizer.snoc_castSucc, ← hg, SetLike.val_smul, subgroup_smul_def]
+    · simp only [ofStabilizer.snoc_last, ← hg]
+      exact g.prop
 
 end ofStabilizer
 
@@ -626,13 +621,13 @@ namespace AlternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive. -/
+/-- The `alternatingGroup` on α is (card α - 2)-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
-  have h2le : Nat.card α - 2 ≤ Nat.card α:= sub_le (Nat.card α) 2
+  have h2le : Nat.card α - 2 ≤ Nat.card α := sub_le (Nat.card α) 2
   exact {
     exists_smul_eq x y := by
       have : IsMultiplyPretransitive (Equiv.Perm α) α (Nat.card α) :=
@@ -668,7 +663,7 @@ theorem isMultiplyPretransitive :
             simp [ne_eq, EmbeddingLike.apply_eq_iff_eq, ← val_inj,
               coe_castLE, Nat.ne_of_lt hiu, Nat.ne_of_lt hiv] }
 
-/-- A subgroup of `Equiv.Perm α` which is (Fintype.card α - 2)-pretransitive
+/-- A subgroup of `Equiv.Perm α` which is (card α - 2)-pretransitive
   contains `alternatingGroup α`. -/
 theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     (G : Subgroup (Equiv.Perm α))
