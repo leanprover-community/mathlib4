@@ -6,6 +6,7 @@ Authors: Moritz Doll
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
+import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Absolutely convex open sets
@@ -86,7 +87,8 @@ open ComplexOrder
 
 /-- The family of seminorms defined by the gauges of absolute convex open sets. -/
 noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets 𝕜 E) := fun s =>
-  gaugeSeminorm s.coe_balanced s.coe_convex (absorbent_nhds_zero s.coe_nhds)
+  gaugeSeminorm s.coe_balanced (convex_RCLike_iff_convex_real.mp s.coe_convex)
+    (absorbent_nhds_zero s.coe_nhds)
 
 variable {𝕜 E}
 
@@ -95,10 +97,11 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
   dsimp only [gaugeSeminormFamily]
   rw [Seminorm.ball_zero_eq]
   simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_isOpen s.coe_convex s.coe_zero_mem s.coe_isOpen
+  exact gauge_lt_one_eq_self_of_isOpen (convex_RCLike_iff_convex_real.mp s.coe_convex)
+    s.coe_zero_mem s.coe_isOpen
 
-variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
+variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] -- [SMulCommClass ℝ 𝕜 E]
+variable [LocallyConvexSpace 𝕜 E]
 
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
@@ -116,7 +119,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
     ⟨mem_iInter₂.mpr fun _ _ => by simp [hr],
       isOpen_biInter_finset fun S _ => ?_,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
-      convex_iInter₂ fun _ _ => Seminorm.convex_ball ..⟩
+      convex_iInter₂ fun _ _ => (convex_RCLike_iff_convex_real.mpr (Seminorm.convex_ball _ _ _) ..)⟩
   -- The only nontrivial part is to show that the ball is open
   have hr' : r = ‖(r : 𝕜)‖ * 1 := by simp [abs_of_pos hr]
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
