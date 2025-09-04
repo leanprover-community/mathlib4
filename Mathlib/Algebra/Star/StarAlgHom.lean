@@ -779,17 +779,13 @@ theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
 theorem refl_symm : (StarAlgEquiv.refl : A ≃⋆ₐ[R] A).symm = StarAlgEquiv.refl :=
   rfl
 
--- should be a `simp` lemma, but causes a linter timeout
-theorem toRingEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm :=
+
+@[simp]
+theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
   rfl
 
 @[deprecated (since := "25-08-2025")] alias to_ringEquiv_symm := toRingEquiv_symm
-
-@[simp]
-theorem symm_toRingEquiv (e : A ≃⋆ₐ[R] B) : (e.symm : B ≃+* A) = (e : A ≃+* B).symm :=
-  rfl
-
-@[deprecated (since := "25-08-2025")] alias symm_to_ringEquiv := symm_toRingEquiv
+@[deprecated (since := "25-08-2025")] alias symm_to_ringEquiv := toRingEquiv_symm
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
@@ -843,10 +839,10 @@ def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
 theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl
 
 @[simp]
-theorem coe_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv = f := rfl
+theorem coe_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv = ⇑f := rfl
 
 @[simp]
-theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = f.symm := rfl
+theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = ⇑f.symm := rfl
 
 @[simp]
 theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A ≃⋆ₐ[R] B)
@@ -854,6 +850,9 @@ theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A 
 
 theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R:=R) (A:=A) (B:=B)) :=
   fun _ _  h => ext <| AlgEquiv.congr_fun h
+
+@[simp]
+theorem toAlgEquiv_refl : (refl : A ≃⋆ₐ[R] A).toAlgEquiv = AlgEquiv.refl := rfl
 
 /-- Upgrade an algebra equivalence to a ⋆-algebra equivalence given that it preserves the
 `star` operation. -/
