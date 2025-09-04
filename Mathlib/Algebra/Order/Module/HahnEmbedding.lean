@@ -21,10 +21,10 @@ there exists a strictly monotone linear map to lexicographically ordered
 `HahnSeries (FiniteArchimedeanClass M) R` with an archimedean `K`-module `R`,
 as long as there are embeddings from a certain family of Archimedean submodules to `R`.
 
-The family of Archimedean submodules `ArchimedeanBallComplements K M` is indexed by
+The family of Archimedean submodules `HahnEmbedding.ArchimedeanStrata K M` is indexed by
 `(c : ArchimedeanClass M)`, and each submodule is a complement of `ArchimedeanClass.ball K c`
 under `ArchimedeanClass.closedBall K c`. The embeddings from these submodules are specified by
-`HahnEmbeddingSeed K M R`.
+`HahnEmbedding.Seed K M R`.
 
 By setting `K = ℚ` and `R = ℝ`, the condition can be trivially satisfied, leading
 to a proof of the classic Hahn embedding theorem. (TODO: implement this)
@@ -34,7 +34,7 @@ to a proof of the classic Hahn embedding theorem. (TODO: implement this)
 * `exists_linearMap_hahnSeries_strictMono_and_archimedeanClassMk_eq`:
   there exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
   `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
-  `HahnEmbeddingSeed K M R` is nonempty.
+  `HahnEmbedding.Seed K M R` is nonempty.
 
 ## References
 
@@ -43,11 +43,11 @@ to a proof of the classic Hahn embedding theorem. (TODO: implement this)
 
 /-! ### Step 1: base embedding
 
-We start with `ArchimedeanBallComplements` that gives a family of Archimedean submodules,
-and "seed" `HahnEmbeddingSeed` that specifies how to embed each
-`ArchimedeanBallComplements.ballComplement` into `R`.
+We start with `HahnEmbedding.ArchimedeanStrata` that gives a family of Archimedean submodules,
+and "seed" `HahnEmbedding.Seed` that specifies how to embed each
+`HahnEmbedding.ArchimedeanStrata.stratum` into `R`.
 
-From these, we create partial map from the direct sum of all `ballComplement` to `HahnSeries Γ R`.
+From these, we create partial map from the direct sum of all `stratum` to `HahnSeries Γ R`.
 If `ArchimedeanClass M` is finite, the direct sum is the entire `M` and we are done
 (though we don't specifically prove for this case). Otherwise, we will extend the map to `M` in the
 following steps.
@@ -58,25 +58,28 @@ open ArchimedeanClass DirectSum
 variable {K : Type*} [DivisionRing K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 variable [Module K M] [PosSMulMono K M]
+variable {R : Type*} [AddCommGroup R] [LinearOrder R]
+variable [Module K R]
+
+namespace HahnEmbedding
 
 variable (K M) in
 /-- A family of submodules indexed by `ArchimedeanClass M` that
 are complements between `ArchimedeanClass.ball` and `ArchimedeanClass.closedBall`. -/
-structure ArchimedeanBallComplements where
+structure ArchimedeanStrata where
   /-- For each `ArchimedeanClass`, specify a corresponding submodule. -/
-  ballComplement : ArchimedeanClass M → Submodule K M
-  /-- `ballComplement` and `ArchimedeanClass.ball` are disjoint. -/
-  disjoint_ball_ballComplement (c : ArchimedeanClass M) : Disjoint (ball K c) (ballComplement c)
-  /-- `ballComplement` and `ArchimedeanClass.ball` are codisjoint under
-  `ArchimedeanClass.closedBall`. -/
-  ball_sup_ballComplement_eq (c : ArchimedeanClass M) :
-    ball K c ⊔ (ballComplement c) = closedBall K c
+  stratum : ArchimedeanClass M → Submodule K M
+  /-- `stratum` and `ArchimedeanClass.ball` are disjoint. -/
+  disjoint_ball_stratum (c : ArchimedeanClass M) : Disjoint (ball K c) (stratum c)
+  /-- `stratum` and `ArchimedeanClass.ball` are codisjoint under `ArchimedeanClass.closedBall`. -/
+  ball_sup_stratum_eq (c : ArchimedeanClass M) :
+    ball K c ⊔ (stratum c) = closedBall K c
 
-namespace ArchimedeanBallComplements
-variable (u : ArchimedeanBallComplements K M)
+namespace ArchimedeanStrata
+variable (u : ArchimedeanStrata K M)
 
-theorem ballComplement_eq_bot_iff (c : ArchimedeanClass M) : u.ballComplement c = ⊥ ↔ c = ⊤ := by
-  obtain hsup := u.ball_sup_ballComplement_eq c
+theorem stratum_eq_bot_iff (c : ArchimedeanClass M) : u.stratum c = ⊥ ↔ c = ⊤ := by
+  obtain hsup := u.ball_sup_stratum_eq c
   constructor
   · rintro h
     rw [h] at hsup
@@ -89,26 +92,26 @@ theorem ballComplement_eq_bot_iff (c : ArchimedeanClass M) : u.ballComplement c 
   · rintro rfl
     simpa using hsup
 
-theorem nontrivial_ballComplement {c : ArchimedeanClass M} (h : c ≠ ⊤) :
-    Nontrivial (u.ballComplement c) :=
-  (Submodule.nontrivial_iff_ne_bot).mpr ((u.ballComplement_eq_bot_iff c).ne.mpr h)
+theorem nontrivial_stratum {c : ArchimedeanClass M} (h : c ≠ ⊤) :
+    Nontrivial (u.stratum c) :=
+  (Submodule.nontrivial_iff_ne_bot).mpr ((u.stratum_eq_bot_iff c).ne.mpr h)
 
 theorem archimedeanClassMk_eq {c : ArchimedeanClass M} {a : M}
-    (ha : a ∈ u.ballComplement c) (h0 : a ≠ 0) : ArchimedeanClass.mk a = c := by
+    (ha : a ∈ u.stratum c) (h0 : a ≠ 0) : ArchimedeanClass.mk a = c := by
   apply le_antisymm
   · have hc : c ≠ ⊤ := by
       contrapose! h0
-      rw [(u.ballComplement_eq_bot_iff c).mpr h0] at ha
+      rw [(u.stratum_eq_bot_iff c).mpr h0] at ha
       simpa using ha
     contrapose! h0 with hlt
     have ha' : a ∈ ball K c := (mem_ball_iff K hc).mpr hlt
-    exact (Submodule.disjoint_def.mp (u.disjoint_ball_ballComplement _)) _ ha' ha
+    exact (Submodule.disjoint_def.mp (u.disjoint_ball_stratum _)) _ ha' ha
   · apply (mem_closedBall_iff K).mp
-    rw [← u.ball_sup_ballComplement_eq c]
+    rw [← u.ball_sup_stratum_eq c]
     exact Submodule.mem_sup_right ha
 
-instance archimedean_ballComplement (c : ArchimedeanClass M) :
-    Archimedean (u.ballComplement c) := by
+instance archimedean_stratum (c : ArchimedeanClass M) :
+    Archimedean (u.stratum c) := by
   apply archimedean_of_mk_eq_mk
   intro a ha b hb
   suffices ArchimedeanClass.mk a.val = ArchimedeanClass.mk b.val by
@@ -117,7 +120,7 @@ instance archimedean_ballComplement (c : ArchimedeanClass M) :
   rw [u.archimedeanClassMk_eq a.prop (by simpa using ha)]
   rw [u.archimedeanClassMk_eq b.prop (by simpa using hb)]
 
-theorem iSupIndep_ballComplement : iSupIndep u.ballComplement := by
+theorem iSupIndep_stratum : iSupIndep u.stratum := by
   intro c
   rw [Submodule.disjoint_def']
   intro a ha b hb hab
@@ -126,7 +129,7 @@ theorem iSupIndep_ballComplement : iSupIndep u.ballComplement := by
   contrapose! hf' with h0
   rw [← hab, DFinsupp.sum]
   by_cases hnonempty : f.support.Nonempty
-  · have hmem (x : ArchimedeanClass M) : (f x).val ∈ u.ballComplement x :=
+  · have hmem (x : ArchimedeanClass M) : (f x).val ∈ u.stratum x :=
       Set.mem_of_mem_of_subset (f x).prop (by simp)
     have hmono : StrictMonoOn (fun i ↦ ArchimedeanClass.mk (f i).val) f.support := by
       intro x hx y hy hxy
@@ -146,86 +149,83 @@ theorem iSupIndep_ballComplement : iSupIndep u.ballComplement := by
     symm
     simpa using h0
 
-/-- The minimal submodule that contains all `ArchimedeanBallComplements.ballComplement`.
+/-- The minimal submodule that contains all `ArchimedeanStrata.stratum`.
 
 This is the domain of our "base" embedding into Hahn series, which we will extend into a full
 embedding. -/
-def baseDomain := ⨆ c, u.ballComplement c
+def baseDomain := ⨆ c, u.stratum c
 
-/-- `ArchimedeanBallComplements.ballComplement` as a submodule of
-`ArchimedeanBallComplements.baseDomain`. -/
-abbrev ballComplement' (c : ArchimedeanClass M) : Submodule K (baseDomain u) :=
-  (u.ballComplement c).comap u.baseDomain.subtype
+/-- `ArchimedeanStrata.stratum` as a submodule of
+`ArchimedeanStrata.baseDomain`. -/
+abbrev stratum' (c : ArchimedeanClass M) : Submodule K (baseDomain u) :=
+  (u.stratum c).comap u.baseDomain.subtype
 
-theorem iSupIndep_ballComplement' : iSupIndep (u.ballComplement') := by
+theorem iSupIndep_stratum' : iSupIndep (u.stratum') := by
   apply (iSupIndep_map_orderIso_iff (Submodule.mapIic u.baseDomain)).mp
   apply iSupIndep.of_coe_Iic_comp
-  convert u.iSupIndep_ballComplement
+  convert u.iSupIndep_stratum
   ext1 c
   simpa using le_iSup _ _
 
-theorem isInternal_ballComplement' : DirectSum.IsInternal (ballComplement' u) := by
-  apply DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top (iSupIndep_ballComplement' u)
+theorem isInternal_stratum' : DirectSum.IsInternal (stratum' u) := by
+  apply DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top (iSupIndep_stratum' u)
   apply Submodule.map_injective_of_injective (u.baseDomain.subtype_injective)
-  suffices ⨆ i, u.baseDomain ⊓ u.ballComplement i = u.baseDomain by simpa using this
+  suffices ⨆ i, u.baseDomain ⊓ u.stratum i = u.baseDomain by simpa using this
   apply iSup_congr
   intro c
   simpa using le_iSup _ _
 
 noncomputable
-instance : DirectSum.Decomposition (u.ballComplement') :=
-  DirectSum.IsInternal.chooseDecomposition _ (isInternal_ballComplement' u)
+instance : DirectSum.Decomposition (u.stratum') :=
+  DirectSum.IsInternal.chooseDecomposition _ (isInternal_stratum' u)
 
-end ArchimedeanBallComplements
-
-variable {R : Type*} [AddCommGroup R] [LinearOrder R]
-variable [Module K R]
+end ArchimedeanStrata
 
 variable (K M R) in
-/-- `HahnEmbeddingSeed` extends `ArchimedeanBallComplements` by specifying strictly monotone
-linear maps from each `ballComplement` to module `R`. -/
-structure HahnEmbeddingSeed extends ArchimedeanBallComplements K M where
-  /-- For each ballComplement, specify a linear map to `R` as the Hahn series coefficient. -/
-  coeff (c : ArchimedeanClass M) : ballComplement c →ₗ[K] R
-  /-- `map` is strictly monotone. -/
+/-- `HahnEmbedding.Seed` extends `HahnEmbedding.ArchimedeanStrata` by specifying strictly monotone
+linear maps from each `stratum` to module `R`. -/
+structure Seed extends ArchimedeanStrata K M where
+  /-- For each stratum, specify a linear map to `R` as the Hahn series coefficient. -/
+  coeff (c : ArchimedeanClass M) : stratum c →ₗ[K] R
+  /-- `coeff` is strictly monotone. -/
   strictMono_coeff (c : ArchimedeanClass M) : StrictMono (coeff c)
 
-variable (seed : HahnEmbeddingSeed K M R)
+variable (seed : Seed K M R)
 
-namespace HahnEmbeddingSeed
+namespace Seed
 
-/-- `HahnEmbeddingSeed.map` with `ArchimedeanBallComplements.ballComplement'` as domain. -/
-def map' (c : ArchimedeanClass M) : seed.ballComplement' c →ₗ[K] R :=
+/-- `HahnEmbedding.Seed.coeff` with `ArchimedeanStrata.stratum'` as domain. -/
+def coeff' (c : ArchimedeanClass M) : seed.stratum' c →ₗ[K] R :=
   (seed.coeff c).comp (LinearMap.submoduleComap _ _)
 
 /-- Coefficients of Hahn series for each `baseDomain` element. -/
 noncomputable
 def hahnCoeff : seed.baseDomain →ₗ[K] (⨁ _ : ArchimedeanClass M, R) :=
-  (DirectSum.lmap seed.map') ∘ₗ (DirectSum.decomposeLinearEquiv _).toLinearMap
+  (DirectSum.lmap seed.coeff') ∘ₗ (DirectSum.decomposeLinearEquiv _).toLinearMap
 
-theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.ballComplement c}
-    (h : x.val = f.sum fun c ↦ (seed.ballComplement c).subtype) (c : ArchimedeanClass M) :
+theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
+    (h : x.val = f.sum fun c ↦ (seed.stratum c).subtype) (c : ArchimedeanClass M) :
     seed.hahnCoeff x c = seed.coeff c (f c) := by
   suffices seed.baseDomain.subtype.submoduleComap
-      (seed.ballComplement c) (DirectSum.decompose seed.ballComplement' x c) = f c by
-    simp [HahnEmbeddingSeed.hahnCoeff, map', this]
-  have hxm {c : ArchimedeanClass M} (x : seed.ballComplement c) : x.val ∈ seed.baseDomain := by
+      (seed.stratum c) (DirectSum.decompose seed.stratum' x c) = f c by
+    simp [Seed.hahnCoeff, coeff', this]
+  have hxm {c : ArchimedeanClass M} (x : seed.stratum c) : x.val ∈ seed.baseDomain := by
     apply Set.mem_of_mem_of_subset x.prop
     simpa using le_iSup _ _
-  let f' : ⨁ c, seed.ballComplement' c :=
-    f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.ballComplement' c)) (by simp)
-  have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.ballComplement c)) (f' c) := by
+  let f' : ⨁ c, seed.stratum' c :=
+    f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.stratum' c)) (by simp)
+  have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.stratum c)) (f' c) := by
     apply Subtype.eq
     simp [f']
-  have hx : x = (decompose seed.ballComplement').symm f' := by
+  have hx : x = (decompose seed.stratum').symm f' := by
     change x = f'.coeAddMonoidHom _
     apply Submodule.subtype_injective
     rw [DirectSum.coeAddMonoidHom_eq_dfinsuppSum, DFinsupp.sum_mapRange_index (by simp)]
     simp [h]
   simp [hf, hx]
 
-/-- Combining all `HahnEmbeddingSeed.coeff` as
-a partial linear map from `HahnEmbeddingSeed.baseDomain` to `HahnSeries`. -/
+/-- Combining all `HahnEmbedding.Seed.coeff` as
+a partial linear map from `HahnEmbedding.Seed.baseDomain` to `HahnSeries`. -/
 noncomputable
 def baseEmbedding : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) where
   domain := seed.baseDomain
@@ -235,30 +235,30 @@ def baseEmbedding : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) w
 
 theorem domain_baseEmbedding : seed.baseEmbedding.domain = seed.baseDomain := rfl
 
-theorem coeff_baseEmbedding {x : seed.baseEmbedding.domain} {f : Π₀ c, seed.ballComplement c}
-    (h : x.val = f.sum fun c ↦ (seed.ballComplement c).subtype) (c : FiniteArchimedeanClass M) :
+theorem coeff_baseEmbedding {x : seed.baseEmbedding.domain} {f : Π₀ c, seed.stratum c}
+    (h : x.val = f.sum fun c ↦ (seed.stratum c).subtype) (c : FiniteArchimedeanClass M) :
     (ofLex ((baseEmbedding seed) x)).coeff c = seed.coeff c (f c) := by
   simpa [baseEmbedding] using seed.hahnCoeff_apply h c.val
 
-theorem mem_domain_baseEmbedding {x : M} {c : ArchimedeanClass M} (h : x ∈ seed.ballComplement c) :
+theorem mem_domain_baseEmbedding {x : M} {c : ArchimedeanClass M} (h : x ∈ seed.stratum c) :
     x ∈ seed.baseEmbedding.domain := by
   apply Set.mem_of_mem_of_subset h
   rw [domain_baseEmbedding]
   simpa using le_iSup_iff.mpr fun _ h ↦ h c
 
-end HahnEmbeddingSeed
+end Seed
 
 /-! ### Step 2: characterize partial embedding
 
 We characterize the base embedding as a member of a class of partial linear embeddings
-`PartialHahnEmbedding`. These embeddings share nice properties, including being strictly monotone,
+`HahnEmbedding.Partial`. These embeddings share nice properties, including being strictly monotone,
 transferring `ArchimedeanClass` to `HahnEmbedding.orderTop`, and being "truncation-closed"
-(see `IsPartialHahnEmbedding.truncLT_mem_range`).
+(see `HahnEmbedding.IsPartial.truncLT_mem_range`).
 -/
 
 /-- A partial linear map is called a "partial Hahn embedding" if it extends
-`HahnEmbeddingSeed.baseEmbedding`, is strictly monotone, and is truncation-closed. -/
-structure IsPartialHahnEmbedding (f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)) :
+`HahnEmbedding.Seed.baseEmbedding`, is strictly monotone, and is truncation-closed. -/
+structure IsPartial (f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)) :
     Prop where
   /-- A partial Hahn embedding is strictly monotone. -/
   strictMono : StrictMono f
@@ -268,11 +268,11 @@ structure IsPartialHahnEmbedding (f : M →ₗ.[K] Lex (HahnSeries (FiniteArchim
   truncLT_mem_range : ∀ x, ∀ c,
     toLex (HahnSeries.truncLTLinearMap K c (ofLex (f x))) ∈ LinearMap.range f.toFun
 
-namespace HahnEmbeddingSeed
+namespace Seed
 
 theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     0 < seed.baseEmbedding x := by
-  -- decompose `x` to sum of `ballComplement`
+  -- decompose `x` to sum of `stratum`
   have hmem : x.val ∈ seed.baseEmbedding.domain := x.prop
   simp_rw [seed.domain_baseEmbedding] at hmem
   obtain ⟨f, hf⟩ := (Submodule.mem_iSup_iff_exists_dfinsupp' _ _).mp hmem
@@ -292,7 +292,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     contrapose! h
     rw [← Submodule.coe_eq_zero, ← Submodule.mem_bot K]
     convert ← (f ⊤).prop
-    simpa using seed.ball_sup_ballComplement_eq ⊤
+    simpa using seed.ball_sup_stratum_eq ⊤
   -- The dictating term for `HahnSeries` < is at the lowest archimedean class of `f.support`
   refine (HahnSeries.lt_iff _ _).mpr ⟨⟨f.support.min' hsupport, htop⟩, ?_, ?_⟩
   · intro j hj
@@ -349,15 +349,15 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
     (c : FiniteArchimedeanClass M) :
     toLex (HahnSeries.truncLTLinearMap K c (ofLex (seed.baseEmbedding x))) ∈
     LinearMap.range seed.baseEmbedding.toFun := by
-  -- decompose `x` to `ballComplement`
+  -- decompose `x` to `stratum`
   have hmem : x.val ∈ seed.baseEmbedding.domain := x.prop
   simp_rw [seed.domain_baseEmbedding] at hmem
   obtain ⟨f, hf⟩ := (Submodule.mem_iSup_iff_exists_dfinsupp' _ _).mp hmem
   -- Truncating in the codomain is the same as truncating away some submodule
-  let f' : Π₀ (i : ArchimedeanClass M), seed.ballComplement i :=
+  let f' : Π₀ (i : ArchimedeanClass M), seed.stratum i :=
     DFinsupp.mk f.support fun d ↦ if c.val ≤ d.val then 0 else f d.val
   refine ⟨⟨f'.sum fun d x ↦ x.val, ?_⟩, ?_⟩
-  · rw [seed.domain_baseEmbedding, ArchimedeanBallComplements.baseDomain,
+  · rw [seed.domain_baseEmbedding, ArchimedeanStrata.baseDomain,
       Submodule.mem_iSup_iff_exists_dfinsupp']
     use f'
   apply_fun ofLex
@@ -378,27 +378,27 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
     convert LinearMap.map_zero _
     simp
 
-/-- `HahnEmbeddingSeed.baseEmbedding` is a partial Hahn embedding. -/
-theorem isPartialHahnEmbedding_baseEmbedding [IsOrderedAddMonoid R] :
-    IsPartialHahnEmbedding seed seed.baseEmbedding where
+/-- `HahnEmbedding.Seed.baseEmbedding` is a partial Hahn embedding. -/
+theorem isPartial_baseEmbedding [IsOrderedAddMonoid R] :
+    IsPartial seed seed.baseEmbedding where
   strictMono := seed.baseEmbedding_strictMono
   baseEmbedding_le := le_refl _
   truncLT_mem_range := seed.truncLT_mem_range_baseEmbedding
 
-end HahnEmbeddingSeed
+end Seed
 
 /-- The type of all partial Hahn embedding. -/
-abbrev PartialHahnEmbedding :=
-  {f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) // IsPartialHahnEmbedding seed f}
+abbrev Partial :=
+  {f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) // IsPartial seed f}
 
-namespace PartialHahnEmbedding
-variable {seed} (f : PartialHahnEmbedding seed)
+namespace Partial
+variable {seed} (f : Partial seed)
 
 noncomputable
-instance [IsOrderedAddMonoid R] : Inhabited (PartialHahnEmbedding seed) where
-  default := ⟨seed.baseEmbedding, seed.isPartialHahnEmbedding_baseEmbedding⟩
+instance [IsOrderedAddMonoid R] : Inhabited (Partial seed) where
+  default := ⟨seed.baseEmbedding, seed.isPartial_baseEmbedding⟩
 
-/-- `PartialHahnEmbedding` as an `OrderedAddMonoidHom`. -/
+/-- `HahnEmbedding.Partial` as an `OrderedAddMonoidHom`. -/
 def toOrderAddMonoidHom : f.val.domain →+o Lex (HahnSeries (FiniteArchimedeanClass M) R) where
   __ := f.val.toFun
   map_zero' := by simp
@@ -409,19 +409,19 @@ theorem toOrderAddMonoidHom_apply (x : f.val.domain) : f.toOrderAddMonoidHom x =
 theorem toOrderAddMonoidHom_injective : Function.Injective f.toOrderAddMonoidHom :=
   f.prop.strictMono.injective
 
-theorem mem_domain {x : M} {c : ArchimedeanClass M} (hx : x ∈ seed.ballComplement c) :
+theorem mem_domain {x : M} {c : ArchimedeanClass M} (hx : x ∈ seed.stratum c) :
     x ∈ f.val.domain := by
   apply Set.mem_of_subset_of_mem f.prop.baseEmbedding_le.1
   apply seed.mem_domain_baseEmbedding hx
 
-theorem apply_of_mem_ballComplement {x : f.val.domain} {c : FiniteArchimedeanClass M}
-    (hx : x.val ∈ seed.ballComplement c.val) :
+theorem apply_of_mem_stratum {x : f.val.domain} {c : FiniteArchimedeanClass M}
+    (hx : x.val ∈ seed.stratum c.val) :
     f.val x = toLex (HahnSeries.single c (seed.coeff c.val ⟨x.val, hx⟩)) := by
   have hx' : x.val ∈ seed.baseEmbedding.domain := seed.mem_domain_baseEmbedding hx
   have heq : (⟨x.val, hx'⟩ : seed.baseEmbedding.domain).val = x.val := rfl
   rw [← f.prop.baseEmbedding_le.2 heq]
-  let fx : Π₀ c, seed.ballComplement c := DFinsupp.single c ⟨x.val, hx⟩
-  have hfx : x.val = fx.sum fun c ↦ (seed.ballComplement c).subtype := by
+  let fx : Π₀ c, seed.stratum c := DFinsupp.single c ⟨x.val, hx⟩
+  have hfx : x.val = fx.sum fun c ↦ (seed.stratum c).subtype := by
     simp [fx, DFinsupp.sum_single_index]
   apply_fun ofLex
   rw [ofLex_toLex]
@@ -450,7 +450,7 @@ theorem orderTop_eq_iff [IsOrderedAddMonoid R] [Archimedean R] (x y : f.val.doma
     simp [this]
   have hnonempty : Nonempty (FiniteArchimedeanClass M) := inferInstance
   obtain c := hnonempty.some
-  have hnontrivial' : Nontrivial (seed.ballComplement c) := seed.nontrivial_ballComplement c.prop
+  have hnontrivial' : Nontrivial (seed.stratum c) := seed.nontrivial_stratum c.prop
   have : Nontrivial R := (seed.strictMono_coeff c).injective.nontrivial
   rw [← archimedeanClassMk_eq_iff]
   simp_rw [← HahnSeries.archimedeanClassOrderIsoWithTop_apply]
@@ -462,24 +462,24 @@ theorem orderTop_eq_archimedeanClass [IsOrderedAddMonoid R] [Archimedean R] (x :
   by_cases hx0 : x = 0
   · simp [hx0]
   have hx0' : x.val ≠ 0 := by simpa using hx0
-  have : Nontrivial (seed.ballComplement (mk x)) := by
-    apply seed.nontrivial_ballComplement
+  have : Nontrivial (seed.stratum (mk x)) := by
+    apply seed.nontrivial_stratum
     simpa using hx0
-  -- Pick a representative `x'` from `ballComplement` with the same class as `x`.
+  -- Pick a representative `x'` from `stratum` with the same class as `x`.
   -- `f.val x'` is a `HahnSeries.single` whose `orderTop` is known
-  obtain ⟨⟨x', hx'mem⟩, hx'0⟩ := exists_ne (0 : seed.ballComplement (mk x))
+  obtain ⟨⟨x', hx'mem⟩, hx'0⟩ := exists_ne (0 : seed.stratum (mk x))
   have heq : mk x' = mk x.val := by
     apply seed.archimedeanClassMk_eq hx'mem
     simpa using hx'0
   let x'' : f.val.domain := ⟨x', mem_domain f hx'mem⟩
-  have hx''mem : x''.val ∈ seed.ballComplement (FiniteArchimedeanClass.mk x.val hx0').val := hx'mem
+  have hx''mem : x''.val ∈ seed.stratum (FiniteArchimedeanClass.mk x.val hx0').val := hx'mem
   have h0 : (seed.coeff (FiniteArchimedeanClass.mk x.val hx0').val) ⟨x''.val, hx''mem⟩ ≠ 0
       := by
     rw [(LinearMap.map_eq_zero_iff _ (seed.strictMono_coeff _).injective).ne]
     unfold x''
     simpa using hx'0
   have heq' : mk x''.val = mk x.val := heq
-  rw [← orderTop_eq_iff, apply_of_mem_ballComplement f hx''mem, ofLex_toLex,
+  rw [← orderTop_eq_iff, apply_of_mem_stratum f hx''mem, ofLex_toLex,
     HahnSeries.orderTop_single h0] at heq'
   simp [← heq']
 
@@ -526,8 +526,8 @@ theorem coeff_eq_of_mem [IsOrderedAddMonoid R] [Archimedean R] (x : M) {y z : f.
 
 /-! ### Step 3: extend embedding
 
-We create larger `HahnPartialEmbedding` from an existing one by adding a new element to the domain
-and assigning an appropriate output that preserves all `HahnPartialEmbedding`'s properties.
+We create larger `HahnEmbedding.Partial` from an existing one by adding a new element to the domain
+and assigning an appropriate output that preserves all `HahnEmbedding.Partial`'s properties.
 -/
 
 /-- Evaluate coefficients of the `HahnSeries` given an arbitrary input that's not necessarily in
@@ -579,7 +579,7 @@ theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
   rw [Set.isWF_iff_no_descending_seq]
   simpa using ⟨seq, hanti, hmem'⟩
 
-/-- Promote `PartialHahnEmbedding.evalCoeff`'s output to a new `HahnSeries`. -/
+/-- Promote `HahnEmbedding.Partial.evalCoeff`'s output to a new `HahnSeries`. -/
 noncomputable
 def eval [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
     Lex (HahnSeries (FiniteArchimedeanClass M) R) :=
@@ -653,7 +653,7 @@ theorem eval_ne [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
   -- decompose `x - y = u + v`, where `v ∈ submodule (x - y)` and
   -- `u` is at higher class than `x - y`
   have hxy : x - y.val ∈ closedBall K (mk (x - y.val)) := by simp
-  rw [← seed.ball_sup_ballComplement_eq (mk (x - y.val)), Submodule.mem_sup] at hxy
+  rw [← seed.ball_sup_stratum_eq (mk (x - y.val)), Submodule.mem_sup] at hxy
   obtain ⟨u, hu, v, hv, huv⟩ := hxy
   have huv' : x - y.val - v = u := by simp [← huv]
   rw [mem_ball_iff K hxy0] at hu
@@ -862,16 +862,16 @@ theorem truncLT_mem_range_extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : 
     exact LinearPMap.supSpanSingleton_apply_mk_of_mem f.val _ hx ha'mem
   · apply truncLT_eval_mem_range_extendFun
 
-theorem isPartialHahnEmbedding_extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M}
-    (hx : x ∉ f.val.domain) : IsPartialHahnEmbedding seed (extendFun f hx) where
+theorem isPartial_extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M}
+    (hx : x ∉ f.val.domain) : IsPartial seed (extendFun f hx) where
   strictMono := f.extendFun_strictMono hx
   baseEmbedding_le := f.baseEmbedding_le_extendFun hx
   truncLT_mem_range := f.truncLT_mem_range_extendFun hx
 
-/-- Promote `extendFun` to a new `PartialHahnEmbedding`. -/
+/-- Promote `HahnEmbedding.Partial.extendFun` to a new `HahnEmbedding.Partial`. -/
 noncomputable
 def extend [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :
-    PartialHahnEmbedding seed := ⟨f.extendFun hx, f.isPartialHahnEmbedding_extendFun hx⟩
+    Partial seed := ⟨f.extendFun hx, f.isPartial_extendFun hx⟩
 
 theorem lt_extend [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :
     f < f.extend hx := by
@@ -886,18 +886,19 @@ theorem lt_extend [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.v
 
 /-! ### Step 4: use Zorn's lemma
 
-We show that `sSup` makes sense on `PartialHahnEmbedding`, which allows us to use Zorn's lemma
+We show that `sSup` makes sense on `HahnEmbedding.Partial`, which allows us to use Zorn's lemma
 to assert the existence of maximal embedding. Since we already show that we can create greater
 embeddings by adding new elements, the maximal embedding must have the maximal domain.
 -/
 
-/-- A partial linear map that contains every element in a directed set of `PartialHahnEmbedding`. -/
+/-- A partial linear map that contains every element in a directed set of
+`HahnEmbedding.Partial`. -/
 noncomputable
-def sSupFun {c : Set (PartialHahnEmbedding seed)} (hc : DirectedOn (· ≤ ·) c) :
+def sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c) :
     M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) :=
   LinearPMap.sSup ((·.val) '' c) (hc.mono_comp (by simp))
 
-theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (PartialHahnEmbedding seed)}
+theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
     (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : StrictMono (sSupFun hc) := by
   intro x y h
   apply lt_of_sub_pos
@@ -916,17 +917,17 @@ theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (PartialHahnEmbedding
   change 0 < y - x
   simpa using h
 
-theorem le_sSupFun {c : Set (PartialHahnEmbedding seed)} (hc : DirectedOn (· ≤ ·) c)
-    {f : PartialHahnEmbedding seed} (hf : f ∈ c) :
+theorem le_sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c)
+    {f : Partial seed} (hf : f ∈ c) :
     f.val ≤ sSupFun hc :=
   LinearPMap.le_sSup _ <| (Set.mem_image _ _ _).mpr ⟨f, hf, rfl⟩
 
-theorem baseEmbedding_le_sSupFun {c : Set (PartialHahnEmbedding seed)}
+theorem baseEmbedding_le_sSupFun {c : Set (Partial seed)}
     (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : seed.baseEmbedding ≤ sSupFun hc := by
   obtain ⟨f, hf⟩ := hnonempty
   exact le_trans f.prop.baseEmbedding_le (le_sSupFun hc hf)
 
-theorem truncLT_mem_range_sSupFun {c : Set (PartialHahnEmbedding seed)}
+theorem truncLT_mem_range_sSupFun {c : Set (Partial seed)}
     (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) (x : (sSupFun hc).domain)
     (c : FiniteArchimedeanClass M) :
     toLex ((HahnSeries.truncLTLinearMap K c) (ofLex (sSupFun hc x))) ∈
@@ -947,30 +948,30 @@ theorem truncLT_mem_range_sSupFun {c : Set (PartialHahnEmbedding seed)}
   have hright : (sSupFun hc) x = f ⟨x, hf⟩ := LinearPMap.sSup_apply _ hmem ⟨x, hf⟩
   simpa [hleft, hright] using hx'
 
-theorem isPartialHahnEmbedding_sSupFun [IsOrderedAddMonoid R]
-    {c : Set (PartialHahnEmbedding seed)} (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) :
-    IsPartialHahnEmbedding seed (sSupFun hc) where
+theorem isPartial_sSupFun [IsOrderedAddMonoid R]
+    {c : Set (Partial seed)} (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) :
+    IsPartial seed (sSupFun hc) where
   strictMono := sSupFun_strictMono hnonempty hc
   baseEmbedding_le := baseEmbedding_le_sSupFun hnonempty hc
   truncLT_mem_range := truncLT_mem_range_sSupFun hnonempty hc
 
-/-- Promote `sSupFun` to a `PartialHahnEmbedding`. -/
+/-- Promote `HahnEmbedding.Partial.sSupFun` to a `HahnEmbedding.Partial`. -/
 noncomputable
-def sSup [IsOrderedAddMonoid R] {c : Set (PartialHahnEmbedding seed)}
-    (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : PartialHahnEmbedding seed :=
-  ⟨_, isPartialHahnEmbedding_sSupFun hnonempty hc⟩
+def sSup [IsOrderedAddMonoid R] {c : Set (Partial seed)}
+    (hnonempty : c.Nonempty) (hc : DirectedOn (· ≤ ·) c) : Partial seed :=
+  ⟨_, isPartial_sSupFun hnonempty hc⟩
 
 variable (seed) in
 theorem exists_isMax [IsOrderedAddMonoid R] :
-    ∃ f : PartialHahnEmbedding seed, IsMax f := by
+    ∃ f : Partial seed, IsMax f := by
   apply zorn_le_nonempty
   intro c hc hnonempty
   exact ⟨sSup hnonempty hc.directedOn, mem_upperBounds.mpr fun _ hf ↦ le_sSupFun hc.directedOn hf⟩
 
 variable (seed) in
-/-- There exists a `PartialHahnEmbedding` whose domain is the whole module. -/
+/-- There exists a `HahnEmbedding.Partial` whose domain is the whole module. -/
 theorem exists_domain_eq_top [IsOrderedAddMonoid R] [Archimedean R] :
-    ∃ f : PartialHahnEmbedding seed, f.val.domain = ⊤ := by
+    ∃ f : Partial seed, f.val.domain = ⊤ := by
   obtain ⟨f, hf⟩ := exists_isMax seed
   refine ⟨f, Submodule.eq_top_iff'.mpr ?_⟩
   rw [isMax_iff_forall_not_lt] at hf
@@ -978,20 +979,22 @@ theorem exists_domain_eq_top [IsOrderedAddMonoid R] [Archimedean R] :
   obtain ⟨x, hx⟩ := hx
   exact ⟨f.extend hx, f.lt_extend hx⟩
 
-end PartialHahnEmbedding
+end Partial
+
+end HahnEmbedding
 
 /-- **Hahn embedding theorem for ordered module**
 
 There exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
 `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
-`HahnEmbeddingSeed K M R` is nonempty. The `PartialHahnEmbedding` with maximal domain is the
+`HahnEmbedding.Seed K M R` is nonempty. The `HahnEmbedding.Partial` with maximal domain is the
 desired embedding. -/
 theorem exists_linearMap_hahnSeries_strictMono_and_archimedeanClassMk_eq
     [IsOrderedAddMonoid R] [Archimedean R]
-    [h : Nonempty (HahnEmbeddingSeed K M R)] :
+    [h : Nonempty (HahnEmbedding.Seed K M R)] :
     ∃ f : M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R), StrictMono f ∧
       ∀ (a : M), mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
-  obtain ⟨e, hdomain⟩ := PartialHahnEmbedding.exists_domain_eq_top h.some
+  obtain ⟨e, hdomain⟩ := HahnEmbedding.Partial.exists_domain_eq_top h.some
   obtain harch := e.orderTop_eq_archimedeanClass
   obtain ⟨⟨fdomain, f⟩, hpartial⟩ := e
   obtain rfl := hdomain
