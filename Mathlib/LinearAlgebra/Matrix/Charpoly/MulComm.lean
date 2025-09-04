@@ -43,7 +43,7 @@ theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).char
       ring
     _ = _ := by simp [← det_mul]
   unfold charpoly charmatrix
-  rw [← X_pow_mul_inj, ← hdet_MN, ← hdet_NM, det_mul_comm]
+  rw [← (isRegular_X_pow _).left.eq_iff, ← hdet_MN, ← hdet_NM, det_mul_comm]
 
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
