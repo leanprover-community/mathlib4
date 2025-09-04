@@ -5,8 +5,6 @@ Authors: Evan Spotte-Smith, Bhavik Mehta
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Card
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Finset.Basic
 
 /-!
 # Undirected hypergraphs
