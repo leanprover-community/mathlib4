@@ -134,6 +134,26 @@ lemma lift'_surjective {f : α →* β} (hf : Surjective f) :
 
 end lift
 
+section mk₀
+
+/-- An alternative constructor that takes a function `α → β` satisfying certain axioms and outputs
+a monoid with zero homomorphism `α →*₀ WithZero β`. -/
+@[simps] noncomputable def _root_.MonoidWithZeroHom.mk₀ {α β : Type*}
+    [MulZeroOneClass α] [Nontrivial α] [NoZeroDivisors α] [Monoid β]
+    (f : α → β) (one : f 1 = 1)
+    (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → f (x * y) = f x * f y) : α →*₀ WithZero β where
+  toFun x := open Classical in if x = 0 then 0 else f x
+  map_zero' := if_pos rfl
+  map_one' := by rw [if_neg one_ne_zero, one, WithZero.coe_one]
+  map_mul' x y := by
+    by_cases hx : x = 0
+    · rw [hx, zero_mul, if_pos rfl, zero_mul]
+    by_cases hy : y = 0
+    · rw [hy, mul_zero, if_pos rfl, mul_zero]
+    rw [mul_eq_zero, if_neg (by tauto), if_neg hx, if_neg hy, mul hx hy, WithZero.coe_mul]
+
+end mk₀
+
 variable [MulOneClass β] [MulOneClass γ]
 
 /-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
