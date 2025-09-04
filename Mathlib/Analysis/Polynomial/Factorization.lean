@@ -24,7 +24,7 @@ namespace Polynomial.IsMonicOfDegree
 
 /-- If `f : F[X]` is monic of degree `≥ 1` and `F` is an algebraically closed field,
 then `f = f₁ * f₂` with `f₁` monic of degree `1` and `f₂` monic of degree `f.natDegree - 1`. -/
-lemma eq_mul_isMonicOfDegree_one_isMonicOfDegree {F : Type*} [Field F]
+lemma eq_isMonicOfDegree_one_mul_isMonicOfDegree {F : Type*} [Field F]
     [IsAlgClosed F] {f : F[X]} {n : ℕ} (hf : IsMonicOfDegree f (n + 1)) :
     ∃ f₁ f₂ : F[X], IsMonicOfDegree f₁ 1 ∧ IsMonicOfDegree f₂ n ∧ f = f₁ * f₂ := by
   obtain ⟨f₁, hf₁m, hf₁i, f₂, hf₂⟩ :=
