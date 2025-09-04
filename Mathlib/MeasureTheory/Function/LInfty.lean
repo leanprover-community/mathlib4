@@ -65,6 +65,14 @@ theorem const_mem_Linfty (c : R) :
     @AEEqFun.const α _ _ μ _ c ∈ Lp R ∞ μ :=
   (memLp_top_const c).eLpNorm_mk_lt_top
 
+/- We are going to need a new typeclass
+
+class MemLp.Const where
+  eLpNorm_const (c : E) : eLpNorm (fun _ : α => c) p μ < ∞
+
+and this will require a refactor of other bits of the library. Sounds substantial.
+-/
+
 /-- The constant L∞ function. -/
 def Linfty.const : R →+ Lp R ∞ μ where
   toFun c := ⟨AEEqFun.const α c, const_mem_Linfty c⟩
