@@ -187,14 +187,23 @@ instance uncountable : Uncountable Cardinal.{u} :=
 
 /-! ### Bounds on suprema -/
 
-theorem sum_le_iSup_lift {ι : Type u}
-    (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
-  rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
+theorem sum_le_lift_mk_mul_iSup_lift {ι} (f : ι → Cardinal.{v}) :
+    sum f ≤ lift #ι * ⨆ i, lift.{u} (f i) := by
+  rw [← (sum f).lift_id, lift_sum, ← lift_umax.{u, v}, ← (⨆ i, lift (f i)).lift_id,
+    lift_umax.{max v u, u}, ← sum_const]
+  refine sum_le_sum _ _ fun i => ?_
+  rw [lift_umax.{v, u}]
+  exact le_ciSup (bddAbove_of_small _) i
 
-theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
-  rw [← lift_id #ι]
-  exact sum_le_iSup_lift f
+theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
+    sum f ≤ lift #ι * iSup f := by
+  simpa [← lift_umax] using sum_le_lift_mk_mul_iSup_lift f
+
+theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
+  simpa using sum_le_lift_mk_mul_iSup.{u, u} f
+
+@[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
+@[deprecated (since := "2025-09-04")] alias sum_le_iSup := sum_le_mk_mul_iSup
 
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
@@ -716,11 +725,11 @@ theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : #(⋃ i, f i) ≤ #ι * ⨆ i, #(f i) :=
-  mk_iUnion_le_sum_mk.trans (sum_le_iSup _)
+  mk_iUnion_le_sum_mk.trans (sum_le_mk_mul_iSup _)
 
 theorem mk_iUnion_le_lift {α : Type u} {ι : Type v} (f : ι → Set α) :
     lift.{v} #(⋃ i, f i) ≤ lift.{u} #ι * ⨆ i, lift.{v} #(f i) := by
-  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_iSup_lift _)
+  refine mk_iUnion_le_sum_mk_lift.trans <| Eq.trans_le ?_ (sum_le_lift_mk_mul_iSup _)
   rw [← lift_sum, lift_id'.{_,u}]
 
 theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : #(⋃₀ A) ≤ #A * ⨆ s : A, #s := by
