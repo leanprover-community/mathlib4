@@ -593,38 +593,29 @@ instance : IsTopologicalRing (UniformSpace.Completion r.Localization) :=
 
 open UniformSpace
 
+-- Wedhorn Proposition 8.2(1)
+lemma rationalOpenData.le_iff_exists_unique {A : HuberPair} (r s : rationalOpenData A) :
+    r ≤ s ↔ Nonempty (Unique (Completion s.Localization →A[A] Completion r.Localization)) := by
+  sorry
+
+noncomputable def rationalOpenData.uniqueOfLE
+    {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
+    Unique (Completion s.Localization →A[A] Completion r.Localization) :=
+  ((rationalOpenData.le_iff_exists_unique r s).mp h).some
+
 attribute [-instance] UniformSpace.Completion.ring
-
-def rationalOpenData.algHomOfLE {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
-    s.Localization →ₐ[A] r.Localization :=
-  sorry
-
-@[simp]
-lemma rationalOpenData.algHomOfLE_refl {A : HuberPair}
-    (r : rationalOpenData A) :
-    algHomOfLE r r (le_refl r) = AlgHom.id _ _ := by
-  sorry
-
-@[simp]
-lemma rationalOpenData.algHomOfLE_trans {A : HuberPair}
-    {r s t : rationalOpenData A} (hrs : r ≤ s) (hst : s ≤ t) :
-    (algHomOfLE r s hrs).comp (algHomOfLE s t hst) = algHomOfLE r t (fun _ a ↦ hst (hrs a)) := by
-  sorry
-
-lemma rationalOpenData.algHomOfLE_continuous {A : HuberPair} (r s : rationalOpenData A)
-    (h : r ≤ s) : Continuous (algHomOfLE r s h) :=
-  sorry
 
 noncomputable def rationalOpenData.topAlgHomOfLE
     {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
-    Completion s.Localization →A[A] Completion r.Localization where
-  toRingHom := Completion.mapRingHom (algHomOfLE r s h).toRingHom (algHomOfLE_continuous r s h)
-  commutes' x := by
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, MonoidHom.coe_coe, Completion.mapRingHom_apply]
-    rw [Completion.algebraMap_def, Completion.algebraMap_def]
-    sorry
-  cont := Completion.continuous_map
+    Completion s.Localization →A[A] Completion r.Localization :=
+  letI := uniqueOfLE r s h
+  default
+
+lemma rationalOpenData.topAlgHom_eq {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s)
+    (f : Completion s.Localization →A[A] Completion r.Localization) :
+    rationalOpenData.topAlgHomOfLE r s h = f := by
+  letI := uniqueOfLE r s h
+  exact Subsingleton.elim _ _
 
 end spa
 
@@ -635,20 +626,69 @@ noncomputable def spa.presheafOnRationalOpenDataAlg (A : HuberPair) :
   obj r := TopAlgCat.of A (Completion r.unop.Localization)
   map h := TopAlgCat.ofHom A (rationalOpenData.topAlgHomOfLE _ _ h.unop.1.1)
   map_id _ := by
-    ext
-    change Completion.map _ _ = _
-    simp
+    apply ConcreteCategory.ext
+    apply rationalOpenData.topAlgHom_eq
   map_comp _ _ := by
-    ext
-    change Completion.map _ _ = (Completion.map _ ∘ Completion.map _) _
-    rw [Completion.map_comp]
-    · change _ = Completion.map ((rationalOpenData.algHomOfLE _ _ _).comp
-        (rationalOpenData.algHomOfLE _ _ _)) _
-      simp [-AlgHom.coe_comp]
-    · apply uniformContinuous_addMonoidHom_of_continuous
-      exact rationalOpenData.algHomOfLE_continuous _ _ _
-    · apply uniformContinuous_addMonoidHom_of_continuous
-      exact rationalOpenData.algHomOfLE_continuous _ _ _
+    apply ConcreteCategory.ext
+    apply rationalOpenData.topAlgHom_eq
+
+
+-- attribute [-instance] UniformSpace.Completion.ring
+
+-- def rationalOpenData.algHomOfLE {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
+--     s.Localization →ₐ[A] r.Localization :=
+--   sorry
+
+-- @[simp]
+-- lemma rationalOpenData.algHomOfLE_refl {A : HuberPair}
+--     (r : rationalOpenData A) :
+--     algHomOfLE r r (le_refl r) = AlgHom.id _ _ := by
+--   sorry
+
+-- @[simp]
+-- lemma rationalOpenData.algHomOfLE_trans {A : HuberPair}
+--     {r s t : rationalOpenData A} (hrs : r ≤ s) (hst : s ≤ t) :
+--     (algHomOfLE r s hrs).comp (algHomOfLE s t hst) = algHomOfLE r t (fun _ a ↦ hst (hrs a)) := by
+--   sorry
+
+-- lemma rationalOpenData.algHomOfLE_continuous {A : HuberPair} (r s : rationalOpenData A)
+--     (h : r ≤ s) : Continuous (algHomOfLE r s h) :=
+--   sorry
+
+-- noncomputable def rationalOpenData.topAlgHomOfLE
+--     {A : HuberPair} (r s : rationalOpenData A) (h : r ≤ s) :
+--     Completion s.Localization →A[A] Completion r.Localization where
+--   toRingHom := Completion.mapRingHom (algHomOfLE r s h).toRingHom (algHomOfLE_continuous r s h)
+--   commutes' x := by
+--     simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+--       MonoidHom.toOneHom_coe, MonoidHom.coe_coe, Completion.mapRingHom_apply]
+--     rw [Completion.algebraMap_def, Completion.algebraMap_def]
+--     sorry
+--   cont := Completion.continuous_map
+
+-- end spa
+
+-- open UniformSpace
+
+-- noncomputable def spa.presheafOnRationalOpenDataAlg (A : HuberPair) :
+--     (rationalOpenData A)ᵒᵖ ⥤  TopAlgCat A where
+--   obj r := TopAlgCat.of A (Completion r.unop.Localization)
+--   map h := TopAlgCat.ofHom A (rationalOpenData.topAlgHomOfLE _ _ h.unop.1.1)
+--   map_id _ := by
+--     ext
+--     change Completion.map _ _ = _
+--     simp
+--   map_comp _ _ := by
+--     ext
+--     change Completion.map _ _ = (Completion.map _ ∘ Completion.map _) _
+--     rw [Completion.map_comp]
+--     · change _ = Completion.map ((rationalOpenData.algHomOfLE _ _ _).comp
+--         (rationalOpenData.algHomOfLE _ _ _)) _
+--       simp [-AlgHom.coe_comp]
+--     · apply uniformContinuous_addMonoidHom_of_continuous
+--       exact rationalOpenData.algHomOfLE_continuous _ _ _
+--     · apply uniformContinuous_addMonoidHom_of_continuous
+--       exact rationalOpenData.algHomOfLE_continuous _ _ _
 
 noncomputable def spa.presheafOnRationalOpenData (A : HuberPair) :
     (rationalOpenData A)ᵒᵖ ⥤  TopRingCat :=
