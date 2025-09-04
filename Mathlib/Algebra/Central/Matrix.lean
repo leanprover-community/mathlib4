@@ -11,9 +11,7 @@ import Mathlib.Data.Matrix.Basis
 -/
 
 namespace Matrix
-
-variable {n R A : Type*}
-variable [CommSemiring R] [Semiring A] [Algebra R A] [Fintype n] [DecidableEq n]
+variable {n R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Fintype n] [DecidableEq n]
 
 theorem subalgebraCenter_eq_scalarAlgHom_map :
     Subalgebra.center R (Matrix n n A) = (Subalgebra.center R A).map (scalarAlgHom n R) :=
