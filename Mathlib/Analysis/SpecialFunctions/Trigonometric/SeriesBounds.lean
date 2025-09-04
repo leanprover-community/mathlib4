@@ -29,9 +29,9 @@ open scoped Real
 /-- Double the range of a `Finset.sum` -/
 lemma Finset.sum_range_even {M : Type*} [AddCommMonoid M] (n : ℕ) (f : ℕ → M) :
     ∑ k ∈ Finset.range n, f k = ∑ k ∈ Finset.range (2 * n), if Even k then f (k / 2) else 0 := by
-  induction' n with n h
-  · simp
-  · simp [Finset.sum_range_succ, h, mul_add]
+  induction n with
+  | zero => simp
+  | succ n h => simp [Finset.sum_range_succ, h, mul_add]
 
 lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
     ‖sin z - z * ∑ k ∈ Finset.range n, (-1) ^ k * z ^ (2 * k) / (2 * k + 1).factorial‖ ≤
@@ -52,9 +52,8 @@ lemma Complex.sin_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) (n : ℕ) :
       simp only [mul_comm _ 2, pow_mul, I_sq, mul_neg]
       simp only [neg_mul, neg_neg, mul_one]
     · simp [e, pow_mul, pow_add, mul_pow]
-  have r : ∀ a b c d : ℂ, (a - b) - (c - d) = (a - c) - (b - d) := fun _ _ _ _ ↦ by ring
-  rw [sin, e, ← sub_div, ← sub_mul, r, norm_div, Complex.norm_two, div_le_iff₀ (by norm_num),
-    norm_mul, Complex.norm_I, mul_one]
+  rw [sin, e, ← sub_div, ← sub_mul, sub_sub_sub_comm, norm_div, Complex.norm_two,
+    div_le_iff₀ (by norm_num), norm_mul, Complex.norm_I, mul_one]
   refine le_trans (norm_sub_le _ _) ?_
   refine le_trans (add_le_add (Complex.exp_bound (x := -z * I) (by simpa) (by omega))
     (Complex.exp_bound (x := z * I) (by simpa) (by omega))) (le_of_eq ?_)
@@ -76,8 +75,7 @@ lemma Complex.cos_series_bound {z : ℂ} (z1 : ‖z‖ ≤ 1) {n : ℕ} (n0 : 0 
         Even.neg_pow, ← add_div, neg_pow' (z ^ 2), mul_comm _ ((-1 : ℂ) ^ a), ← add_mul]
       ring
     · simp [e, pow_mul, pow_add, mul_pow, neg_div]
-  have r : ∀ a b c d : ℂ, (a + b) - (c + d) = (a - c) + (b - d) := fun _ _ _ _ ↦ by ring
-  rw [cos, e, ← sub_div, r, norm_div, Complex.norm_two, div_le_iff₀ (by norm_num)]
+  rw [cos, e, ← sub_div, add_sub_add_comm, norm_div, Complex.norm_two, div_le_iff₀ (by norm_num)]
   refine le_trans (norm_add_le _ _) ?_
   refine le_trans (add_le_add (Complex.exp_bound (x := z * I) (by simpa) (by omega))
     (Complex.exp_bound (x := -z * I) (by simpa) (by omega))) (le_of_eq ?_)
