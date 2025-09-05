@@ -248,7 +248,7 @@ theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
     simp
     ring
   dsimp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
-  rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_MN, ← hdet_NM, det_mul_comm]
+  rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_NM, ← hdet_MN, det_mul_comm]
 
 theorem charpoly_mul_comm_of_le
     (A : Matrix m n R) (B : Matrix n m R) (hle : Fintype.card n ≤ Fintype.card m) :
