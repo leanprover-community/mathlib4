@@ -59,26 +59,23 @@ partial def _root_.String.splitCase (s : String) (i₀ : Pos := 0) (r : List Str
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
   return splitCase s i₁ r
 
-/-- Helper for `capitalizeLike`. -/
-partial def capitalizeLikeAux (s : String) (i : String.Pos := 0) (p : String) : String :=
-  if p.atEnd i || s.atEnd i then
-    p
+/-- Replaces characters in `s` by lower-casing the first characters until a non-upper-case character
+is found. -/
+partial def _root_.String.decapitalizeSeq (s : String) (i : String.Pos := 0) : String :=
+  if s.atEnd i || !(s.get i).isUpper then
+    s
   else
-    let j := p.next i
-    if (s.get i).isLower then
-      capitalizeLikeAux s j <| p.set i (p.get i |>.toLower)
-    else if (s.get i).isUpper then
-      capitalizeLikeAux s j <| p.set i (p.get i |>.toUpper)
-    else
-      capitalizeLikeAux s j p
+    decapitalizeSeq (s.set i <| s.get i |>.toLower) <| s.next i
 
-/-- Capitalizes `s` char-by-char like `r`. If `s` is longer, it leaves the tail untouched. -/
+
+/-- If `r` starts with an upper-case letter, return `s`, otherwise return `s` with the
+initial sequence of upper-case letter lower-cased. -/
 def capitalizeLike (r : String) (s : String) :=
-  capitalizeLikeAux r 0 s
+  if r.get 0 |>.isUpper then s else s.decapitalizeSeq
 
 /-- Capitalize First element of a list like `s`.
-Note that we need to capitalize multiple characters in some cases,
-in examples like `HMul` or `hAdd`. -/
+Note that we need to de-capitalize multiple characters in some cases,
+in examples like `HMul` or `HAdd`. -/
 def capitalizeFirstLike (s : String) : List String → List String
   | x :: r => capitalizeLike s x :: r
   | [] => []
@@ -86,150 +83,133 @@ def capitalizeFirstLike (s : String) : List String → List String
 /--
 Dictionary used by `guessName` to autogenerate names.
 
-Note: `guessName` capitalizes first element of the output according to
-capitalization of the input. Input and first element should therefore be lower-case,
-2nd element should be capitalized properly.
+Note: `guessName` capitalizes the output according to the capitalization of the input.
+In order for this to work, the input should always be lower case, and the output always upper case.
 -/
 def nameDict : String → List String
-  | "one"           => ["zero"]
-  | "mul"           => ["add"]
-  | "smul"          => ["vadd"]
-  | "inv"           => ["neg"]
-  | "div"           => ["sub"]
-  | "prod"          => ["sum"]
-  | "hmul"          => ["hadd"]
-  | "hsmul"         => ["hvadd"]
-  | "hdiv"          => ["hsub"]
-  | "hpow"          => ["hsmul"]
-  | "finprod"       => ["finsum"]
-  | "tprod"         => ["tsum"]
-  | "pow"           => ["nsmul"]
-  | "npow"          => ["nsmul"]
-  | "zpow"          => ["zsmul"]
-  | "mabs"          => ["abs"]
-  | "monoid"        => ["add", "Monoid"]
-  | "submonoid"     => ["add", "Submonoid"]
-  | "group"         => ["add", "Group"]
-  | "subgroup"      => ["add", "Subgroup"]
-  | "semigroup"     => ["add", "Semigroup"]
-  | "magma"         => ["add", "Magma"]
-  | "haar"          => ["add", "Haar"]
-  | "prehaar"       => ["add", "Prehaar"]
-  | "unit"          => ["add", "Unit"]
-  | "units"         => ["add", "Units"]
-  | "cyclic"        => ["add", "Cyclic"]
-  | "rootable"      => ["divisible"]
-  | "semigrp"       => ["add", "Semigrp"]
-  | "grp"           => ["add", "Grp"]
-  | "commute"       => ["add", "Commute"]
-  | "semiconj"      => ["add", "Semiconj"]
-  | "zpowers"       => ["zmultiples"]
-  | "powers"        => ["multiples"]
-  | "multipliable"  => ["summable"]
-  | "gpfree"        => ["apfree"]
-  | "quantale"      => ["add", "Quantale"]
-  | "square"        => ["even"]
-  | "mconv"         => ["conv"]
-  | "irreducible"   => ["add", "Irreducible"]
-  | "mlconvolution" => ["lconvolution"]
-  | x               => [x]
+  | "one"           => ["Zero"]
+  | "mul"           => ["Add"]
+  | "smul"          => ["VAdd"]
+  | "inv"           => ["Neg"]
+  | "div"           => ["Sub"]
+  | "prod"          => ["Sum"]
+  | "hmul"          => ["HAdd"]
+  | "hsmul"         => ["HVAdd"]
+  | "hdiv"          => ["HSub"]
+  | "hpow"          => ["HSMul"]
+  | "finprod"       => ["Finsum"]
+  | "tprod"         => ["TSum"]
+  | "pow"           => ["NSMul"]
+  | "npow"          => ["NSMul"]
+  | "zpow"          => ["ZSMul"]
+  | "mabs"          => ["Abs"]
+  | "monoid"        => ["Add", "Monoid"]
+  | "submonoid"     => ["Add", "Submonoid"]
+  | "group"         => ["Add", "Group"]
+  | "subgroup"      => ["Add", "Subgroup"]
+  | "semigroup"     => ["Add", "Semigroup"]
+  | "magma"         => ["Add", "Magma"]
+  | "haar"          => ["Add", "Haar"]
+  | "prehaar"       => ["Add", "Prehaar"]
+  | "unit"          => ["Add", "Unit"]
+  | "units"         => ["Add", "Units"]
+  | "cyclic"        => ["Add", "Cyclic"]
+  | "semigrp"       => ["Add", "Semigrp"]
+  | "grp"           => ["Add", "Grp"]
+  | "commute"       => ["Add", "Commute"]
+  | "semiconj"      => ["Add", "Semiconj"]
+  | "rootable"      => ["Divisible"]
+  | "zpowers"       => ["ZMultiples"]
+  | "powers"        => ["Multiples"]
+  | "multipliable"  => ["Summable"]
+  | "gpfree"        => ["APFree"]
+  | "quantale"      => ["Add", "Quantale"]
+  | "square"        => ["Even"]
+  | "mconv"         => ["Conv"]
+  | "irreducible"   => ["Add", "Irreducible"]
+  | "mlconvolution" => ["LConvolution"]
+  | _               => []
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
 def applyNameDict : List String → List String
-  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
+  | x :: s =>
+    let y := nameDict x.toLower
+    let z := if y.isEmpty then [x] else capitalizeFirstLike x y
+    z ++ applyNameDict s
   | [] => []
-
-
-/--
-The capitalization heuristic of `applyNameDict` doesn't work in the following cases,
-here we fix them.
--/
-def fixCapitalization : List String → List String
-  --
-  | "HSmul" :: s                      => "HSMul" :: fixCapitalization s -- from `HPow`
-  | "NSmul" :: s                      => "NSMul" :: fixCapitalization s -- from `NPow`
-  | "Nsmul" :: s                      => "NSMul" :: fixCapitalization s -- from `Pow`
-  | "ZSmul" :: s                      => "ZSMul" :: fixCapitalization s -- from `ZPow`
-  | x :: s                            => x :: fixCapitalization s
-  | []                                => []
 
 /--
 We need to fix a few abbreviations after applying `nameDict`, i.e. replacing `ZeroLE` by `Nonneg`.
-This dictionary contains these fixes. The dictionary should only contain entries that start with
-a lower-case letter in both the input and the output.
-When applying the dictionary, we match case of the output with the case of the input
-*in the first character only*. In most cases this is sufficient. For example, the entry
-`"orderOf" => "addOrderOf"` will also map `OrderOf` to `AddOrderOf`.
-If the input or output have capital letters after the first character, they must be left
-capitalized, resulting e.g. in `"lEZero" => "nonpos"`.
+This dictionary contains these fixes.
+The input should contain entries that is in `lowerCamelCase` (e.g. `ltzero`, so the initial sequence
+of capital letters should be lower-cased) and the output should be in `UpperCamelCase`
+(e.g. `LTZero`).
+When applying the dictionary, we lower-case the output if the input was also given in lower-case.
 -/
 def abbreviationDict : String → Option String
-  | "isCancelAdd"      => "isCancelAdd"
-  | "isLeftCancelAdd"  => "isLeftCancelAdd"
-  | "isRightCancelAdd" => "isRightCancelAdd"
-  | "cancelAdd"        => "addCancel"
-  | "leftCancelAdd"    => "addLeftCancel"
-  | "rightCancelAdd"   => "addRightCancel"
-  | "cancelCommAdd"    => "addCancelComm"
-  | "commAdd"          => "addComm"
-  | "zero_le"          => "nonneg"
-  | "zeroLE"           => "nonneg"
-  | "zero_lt"          => "pos"
-  | "zeroLT"           => "pos"
-  | "lEZero"           => "nonpos"
-  | "le_zero"          => "nonpos"
-  | "lTZero"           => "neg"
+  | "isCancelAdd"      => "IsCancelAdd"
+  | "isLeftCancelAdd"  => "IsLeftCancelAdd"
+  | "isRightCancelAdd" => "IsRightCancelAdd"
+  | "cancelAdd"        => "AddCancel"
+  | "leftCancelAdd"    => "AddLeftCancel"
+  | "rightCancelAdd"   => "AddRightCancel"
+  | "cancelCommAdd"    => "AddCancelComm"
+  | "commAdd"          => "AddComm"
+  | "zero_le"          => "Nonneg"
+  | "zeroLE"           => "Nonneg"
+  | "zero_lt"          => "Pos"
+  | "zeroLT"           => "Pos"
+  | "lezero"           => "Nonpos"
+  | "le_zero"          => "Nonpos"
+  | "ltzero"           => "Neg"
   | "lt_zero"          => "neg"
-  | "addSingle"        => "single"
-  | "add_single"       => "single"
-  | "addSupport"       => "support"
-  | "add_support"      => "support"
-  | "addTSupport"      => "tsupport"
-  | "add_tsupport"     => "tsupport"
-  | "addIndicator"     => "indicator"
-  | "add_indicator"    => "indicator"
-  | "isEven"           => "even"
+  | "addSingle"        => "Single"
+  | "add_single"       => "Single"
+  | "addSupport"       => "Support"
+  | "add_support"      => "Support"
+  | "addTSupport"      => "TSupport"
+  | "add_tsupport"     => "TSupport"
+  | "addIndicator"     => "Indicator"
+  | "add_indicator"    => "Indicator"
+  | "isEven"           => "Even"
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
   -- "regular" --> "addRegular" in `nameDict` above seems error-prone.
-  | "isRegular"        => "isAddRegular"
-  | "isLeftRegular"    => "isAddLeftRegular"
-  | "isRightRegular"   => "isAddRightRegular"
-  | "hasFundamentalDomain" => "hasAddFundamentalDomain"
-  | "quotientMeasure"  => "addQuotientMeasure"
-  | "negFun"           => "invFun"
-  | "uniqueProds"      => "uniqueSums"
-  | "orderOf"          => "addOrderOf"
-  | "zeroLePart"       => "posPart"
-  | "lEZeroPart"       => "negPart"
-  | "leZeroPart"       => "negPart"
-  | "isScalarTower"    => "vaddAssocClass"
-  | "isOfFinOrder"     => "isOfFinAddOrder"
-  | "isCentralScalar"  => "isCentralVAdd"
-  | "function_addSemiconj" => "function_semiconj"
-  | "function_addCommute"  => "function_commute"
-  | "divisionAddMonoid"    => "subtractionMonoid"
-  | "subNegZeroAddMonoid"  => "subNegZeroMonoid"
-  | "modularCharacter" => "addModularCharacter"
+  | "isRegular"        => "IsAddRegular"
+  | "isLeftRegular"    => "IsAddLeftRegular"
+  | "isRightRegular"   => "IsAddRightRegular"
+  | "hasFundamentalDomain" => "HasAddFundamentalDomain"
+  | "quotientMeasure"  => "AddQuotientMeasure"
+  | "negFun"           => "InvFun"
+  | "uniqueProds"      => "UniqueSums"
+  | "orderOf"          => "AddOrderOf"
+  | "zeroLePart"       => "PosPart"
+  | "leZeroPart"       => "NegPart"
+  | "isScalarTower"    => "VAddAssocClass"
+  | "isOfFinOrder"     => "IsOfFinAddOrder"
+  | "isCentralScalar"  => "IsCentralVAdd"
+  | "function_addSemiconj" => "Function_semiconj"
+  | "function_addCommute"  => "Function_commute"
+  | "divisionAddMonoid"    => "SubtractionMonoid"
+  | "subNegZeroAddMonoid"  => "SubNegZeroMonoid"
+  | "modularCharacter" => "AddModularCharacter"
   | _                  => none
 
 /-- Helper for `fixAbbreviation`. -/
-partial def fixAbbreviationAux : List String → List String → String
+def fixAbbreviationAux : List String → List String → String
   | [], []     => ""
   | [], x::s   => x ++ fixAbbreviationAux s []
   | pre::l, s' =>
     let s := s' ++ [pre]
-    match abbreviationDict <| String.join s |>.decapitalize with
-    | some post => capitalizeLike (s[0]!.take 1) post ++ fixAbbreviationAux l []
+    match abbreviationDict <| String.join s |>.decapitalizeSeq with
+    | some post => capitalizeLike s[0]! post ++ fixAbbreviationAux l []
     | none      =>
-      -- have : WellFoundedRelation.rel (l.length + s.length, l.length)
-      --  ((pre::l).length + s'.length, (pre::l).length) := by
-      --   sorry
       fixAbbreviationAux l s
-  -- termination_by l s => (l.length + s.length, l.length) -- doesn't work?
+  termination_by l s => (l.length + s.length, l.length)
+  decreasing_by all_goals grind
 
 
 /-- Replace substrings according to `abbreviationDict`, matching the case of the first letter. -/
@@ -247,8 +227,9 @@ def guessName : String → String :=
   String.mapTokens '\'' <|
   fun s =>
     fixAbbreviation <|
-    fixCapitalization <|
     applyNameDict <|
     s.splitCase
+
+
 
 end ToAdditive
