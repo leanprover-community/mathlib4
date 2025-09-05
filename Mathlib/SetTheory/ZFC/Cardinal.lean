@@ -91,7 +91,7 @@ theorem iSup_card_le_card_sUnion_range {α} [Small.{v, u} α] {f : α → ZFSet.
     ⨆ i, card (f i) ≤ card (⋃₀ range f) := by
   rw [← lift_le.{v + 1}, card_eq, toSet_sUnion_range, lift_iSup (bddAbove_of_small _)]
   simp_rw [card_eq]
-  exact iSup_le_mk_iUnion
+  exact iSup_mk_le_mk_iUnion
 
 theorem lift_card_sUnion_range_le_sum_card {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
     lift (card (⋃₀ range f)) ≤ sum fun i => card (f i) := by
