@@ -29,7 +29,7 @@ where
     set i : Fin 1 := ⟨i, h⟩
     simp [show p = ![] from Subsingleton.elim _ _]
     --simp [show p = elim0 from Subsingleton.elim _ _]
-    have : i.insertNth x ![] = ![x] := by
+    have : insertNth i x ![] = ![x] := by
     --have : i.insertNth x ![] elim0 = ![x] := by
       have : i = 0 := by exact fin_one_eq_zero i
       simp [this]
@@ -39,8 +39,7 @@ where
     obtain ⟨hd, tl, rfl⟩ := exists_cons p
     simp
     have i_lt := Nat.lt_of_succ_lt_succ h
-    have : ∏ j, (⟨i + 1, h⟩ : Fin (n + 1 + 1)).insertNth x (cons hd tl) j =
-        hd * ∏ j, (⟨i, i_lt⟩ : Fin (n + 1)).insertNth x tl j := by
+    have : ∏ j, insertNth ⟨i + 1, h⟩ x (cons hd tl) j = hd * ∏ j, insertNth ⟨i, i_lt⟩ x tl j := by
       sorry
     simp [this]
     have ih := go_prod n i i_lt tl
