@@ -206,12 +206,16 @@ def fixAbbreviationAux : List String → List String → String
   | pre::l, s' =>
     let s := s' ++ [pre]
     let t := String.join s
-    match abbreviationDict <| t.decapitalizeSeq with
+    /- If a name starts with upper-case, and contains an underscore, it cannot match anything in
+    the abbreviation dictionary. This is necessary to correctly translate something like
+    `fixAbbreviation ["eventually", "LE", "_", "zero"]`. -/
+    if pre == "_" && (t.get 0).isUpper then
+      s[0]! ++ fixAbbreviationAux (s.drop 1 ++ l) []
+    else match abbreviationDict t.decapitalizeSeq with
     | some post => decapitalizeLike t post ++ fixAbbreviationAux l []
     | none      => fixAbbreviationAux l s
   termination_by l s => (l.length + s.length, l.length)
   decreasing_by all_goals grind
-
 
 /-- Replace substrings according to `abbreviationDict`, matching the case of the first letter. -/
 def fixAbbreviation (l : List String) : String :=
