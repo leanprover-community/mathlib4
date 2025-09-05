@@ -230,7 +230,7 @@ surjective on `S`. -/
 theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))
     (p : ι → MvPolynomial ι K) :
-    let S := zeroLocus I
+    let S := zeroLocus K I
     S.MapsTo (fun v i => eval v (p i)) S →
     S.InjOn (fun v i => eval v (p i)) →
     S.SurjOn (fun v i => eval v (p i)) S := by
