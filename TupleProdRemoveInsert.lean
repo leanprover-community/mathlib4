@@ -13,25 +13,39 @@ namespace Fin
 
 #check prod_cons
 
+#check Fin.induction
+
+theorem exists_cons (p : Fin (n + 1) → M) : ∃ h t, p = cons h t := by
+  sorry
+
 @[to_additive (attr := simp), simp]
-theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j := by
-  induction i using Fin.induction generalizing /- n -/ p
-  case zero => simp only [insertNth_zero', prod_cons]
-  case succ _ i ih =>
-    match n with
-    | 0 =>
-      simp [show p = ![] from Subsingleton.elim _ _]
-      --simp [show p = elim0 from Subsingleton.elim _ _]
-      have : i.succ.insertNth x ![] = ![x] := by
-      --have : i.succ.insertNth x elim0 = ![x] := by
-        sorry
+theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
+  go_prod n i.val i.isLt p
+where
+  --@[to_additive]
+  go_prod : ∀ n i (h : i < n + 1) (p : Fin n → M), ∏ j, insertNth ⟨i, h⟩ x p j = x * ∏ j, p j
+  | n, 0, h, p => by simp only [zero_eta, insertNth_zero', prod_cons]
+  | 0, i, h, p => by
+    set i : Fin 1 := ⟨i, h⟩
+    simp [show p = ![] from Subsingleton.elim _ _]
+    --simp [show p = elim0 from Subsingleton.elim _ _]
+    have : i.insertNth x ![] = ![x] := by
+    --have : i.insertNth x ![] elim0 = ![x] := by
+      have : i = 0 := by exact fin_one_eq_zero i
       simp [this]
-    | n + 1 =>
-      let p_tl := Fin.tail p
-      have : ∏ j, i.succ.insertNth x p j = p 0 * ∏ j, i.insertNth x p_tl j := by
-        sorry
-      simp [this]
+      rfl
+    simp [this]
+  | n + 1, i + 1, h, p => by
+    obtain ⟨hd, tl, rfl⟩ := exists_cons p
+    simp
+    have i_lt := Nat.lt_of_succ_lt_succ h
+    have : ∏ j, (⟨i + 1, h⟩ : Fin (n + 1 + 1)).insertNth x (cons hd tl) j =
+        hd * ∏ j, (⟨i, i_lt⟩ : Fin (n + 1)).insertNth x tl j := by
       sorry
+    simp [this]
+    have ih := go_prod n i i_lt tl
+    rw [ih]
+    exact mul_left_comm hd x (∏ j, tl j)
 
 end Fin
 
