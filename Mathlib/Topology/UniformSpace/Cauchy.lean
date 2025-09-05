@@ -692,8 +692,7 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
 
 /- TVS III.8 for complete spaces -/
 theorem isCompact_closure_of_totallyBounded [CompleteSpace α] {s : Set α} (ht : TotallyBounded s) :
-    IsCompact (closure s) :=
-  isCompact_of_totallyBounded_isClosed (TotallyBounded.closure ht) isClosed_closure
+    IsCompact (closure s) := (TotallyBounded.closure ht).isCompact_of_isClosed isClosed_closure
 
 /-- The Bornology arising from the Totally Bounded sets -/
 abbrev totallyBoundedBornology : Bornology α :=

@@ -316,12 +316,6 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
   rw [totallyBounded_union]
   exact ⟨hs, totallyBounded_neg hs⟩
 
-/- TVS III.8 for complete spaces -/
-theorem isCompact_closedAbsConvexHull_of_totallyBounded [CompleteSpace E] {s : Set E}
-    (ht : TotallyBounded s) : IsCompact (closedAbsConvexHull ℝ s) := by
-  rw [closedAbsConvexHull_eq_closure_absConvexHull]
-  exact isCompact_closure_of_totallyBounded (totallyBounded_absConvexHull E ht)
-
 -- TVS IV.3 Example
 open RingHom in
 omit [IsUniformAddGroup E] lcs [ContinuousSMul ℝ E] in
