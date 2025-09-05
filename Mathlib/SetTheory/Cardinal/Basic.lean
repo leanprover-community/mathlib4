@@ -187,8 +187,8 @@ instance uncountable : Uncountable Cardinal.{u} :=
 
 /-! ### Bounds on suprema -/
 
-theorem sum_le_lift_mk_mul_iSup_lift {ι} (f : ι → Cardinal.{v}) :
-    sum f ≤ lift #ι * ⨆ i, lift.{u} (f i) := by
+theorem sum_le_lift_mk_mul_iSup_lift {ι : Type u} (f : ι → Cardinal.{v}) :
+    sum f ≤ lift #ι * ⨆ i, lift (f i) := by
   rw [← (sum f).lift_id, lift_sum, ← lift_umax.{u, v}, ← (⨆ i, lift (f i)).lift_id,
     lift_umax.{max v u, u}, ← sum_const]
   refine sum_le_sum _ _ fun i => ?_
@@ -200,7 +200,7 @@ theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
   simpa [← lift_umax] using sum_le_lift_mk_mul_iSup_lift f
 
 theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * ⨆ i, f i := by
-  simpa using sum_le_lift_mk_mul_iSup.{u, u} f
+  simpa using sum_le_lift_mk_mul_iSup_lift f
 
 @[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
 @[deprecated (since := "2025-09-04")] alias sum_le_iSup := sum_le_mk_mul_iSup
