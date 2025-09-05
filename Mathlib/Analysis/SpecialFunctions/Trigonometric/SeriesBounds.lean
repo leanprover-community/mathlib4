@@ -16,7 +16,7 @@ import Mathlib.Analysis.Complex.Trigonometric
 We prove Taylor series bounds with optimal remainder for `sin` and `cos`, over both `ℂ` and `ℝ`.
 See `Mathlib/Analysis/SpecialFunctions/Trigonometric/Bounds.lean` for simpler inequalities and
 monotonicity in various intervals, and `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
-for even even simpler inequalities and monotonicity results.
+for even simpler inequalities and monotonicity results.
 
 ## Tags
 

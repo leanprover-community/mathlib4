@@ -230,15 +230,34 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
 
 /-- All the intervals on which `sin` is increasing -/
-lemma sin_monotone (n : ℤ) : MonotoneOn sin (Icc (n * (2 * π) - π / 2) (n * (2 * π) + π / 2)) := by
-  apply monotoneOn_of_deriv_nonneg
-  · apply convex_Icc
-  · fun_prop
-  · fun_prop
-  · intro x m
-    simp only [interior_Icc, mem_Ioo, deriv_sin] at m ⊢
-    rw [← cos_sub_int_mul_two_pi _ n]
-    exact Real.cos_nonneg_of_mem_Icc ⟨by linarith, by linarith⟩
+/-- All the intervals on which `sin` is increasing -/
+lemma monotoneOn_sin' (n : ℤ) :
+    MonotoneOn sin (Icc (n * (2 * π) - π / 2) (n * (2 * π) + π / 2)) := by
+  intro a ha b hb hab
+  rw [← Real.sin_sub_int_mul_two_pi a n, ← Real.sin_sub_int_mul_two_pi b n]
+  apply Real.monotoneOn_sin <;> simp at * <;> (try constructor) <;> linarith
+
+
+/-- All the intervals on which `sin` is decreasing -/
+lemma antitoneOn_sin' (n : ℤ) :
+    AntitoneOn sin (Icc (n * (2 * π) + π / 2) (n * (2 * π) + 3 * π / 2)) := by
+  intro a ha b hb hab
+  rw [← Real.cos_sub_pi_div_two, ← Real.cos_sub_int_mul_two_pi _ n,
+    ← Real.sin_sub_int_mul_two_pi _ n, ← Real.cos_sub_pi_div_two]
+  apply Real.antitoneOn_cos <;> simp at * <;> (try constructor) <;> linarith
+
+/-- All the intervals on which `cos` is increasing -/
+lemma monotoneOn_cos' (n : ℤ) : MonotoneOn cos (Icc (n * (2 * π) - π) (n * (2 * π))) := by
+  intro a ha b hb hab
+  rw [← Real.sin_add_pi_div_two, ← Real.cos_sub_int_mul_two_pi _ n,
+    ← Real.sin_sub_int_mul_two_pi _ n, ← Real.sin_add_pi_div_two]
+  apply Real.monotoneOn_sin <;> simp at * <;> (try constructor) <;> linarith
+
+/-- All the intervals on which `cos` is decreasing -/
+lemma antitoneOn_cos' (n : ℤ) : AntitoneOn cos (Icc (n * (2 * π)) (n * (2 * π) + π)) := by
+  intro a ha b hb hab
+  rw [← Real.cos_sub_int_mul_two_pi a n, ← Real.cos_sub_int_mul_two_pi b n]
+  apply Real.antitoneOn_cos <;> simp at * <;> (try constructor) <;> linarith
 
 /-- All the intervals on which `sin` is decreasing -/
 lemma sin_antitone (n : ℤ) :
