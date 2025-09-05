@@ -18,7 +18,7 @@ We introduce the Catalan generating function as a formal power series over `ℕ`
 * `PowerSeries.sum_coeff_X_catalanSeries`: When `n` is a natural number,
   each term in the sum `coeff i X * catalan (n - i)` is 0 except for `i = 1`.
 * `PowerSeries.coeff_X_mul_catalanSeries`: The coefficient of `X * catalanSeries` at `X^n` is
-  `catalan (n - 1)` when `n > 0`/
+  `catalan (n - 1)` when `n > 0`.
 * `PowerSeries.catalanSeries_one_add_X_mul_self_sq`: The Catalan generating function satisfies the
   equation `catalanSeries = 1 + X * catalanSeries ^ 2`.
 
