@@ -424,14 +424,10 @@ variable [Semiring α] [PartialOrder α]
 -- See note [lower instance priority]
 instance (priority := 100) IsOrderedRing.toIsOrderedModule [IsOrderedRing α] :
     IsOrderedModule α α where
-  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_left ha hb
-  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_right ha hb
 
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toIsStrictOrderedModule [IsStrictOrderedRing α] :
     IsStrictOrderedModule α α where
-  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_left ha hb
-  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_right ha hb
 
 end PartialOrder
 
@@ -665,8 +661,6 @@ instance (priority := 100) SMulPosReflectLE.toSMulPosReflectLT [SMulPosReflectLE
 -- See note [lower instance priority]
 instance (priority := 100) IsStrictOrderedModule.toIsOrderedModule [IsStrictOrderedModule α β] :
     IsOrderedModule α β where
-  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_left ha hb
-  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_right ha hb
 
 lemma smul_eq_smul_iff_eq_and_eq_of_pos [PosSMulStrictMono α β] [SMulPosStrictMono α β]
     (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) (h₁ : 0 < a₁) (h₂ : 0 < b₂) :
@@ -890,12 +884,7 @@ variable [Preorder α] [MonoidWithZero α] [AddCommGroup β] [PartialOrder β] [
   [DistribMulAction α β]
 
 instance instIsOrderedModule [IsOrderedModule α β] : IsOrderedModule α βᵒᵈ where
-  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_left ha hb
-  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := smul_le_smul_of_nonneg_right ha hb
-
 instance instIsStrictOrderedModule [IsStrictOrderedModule α β] : IsStrictOrderedModule α βᵒᵈ where
-  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_left ha hb
-  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := smul_lt_smul_of_pos_right ha hb
 
 end LeftRight
 end OrderDual
