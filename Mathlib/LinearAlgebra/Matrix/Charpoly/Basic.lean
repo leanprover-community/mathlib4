@@ -223,7 +223,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
 
 
 /--
-A version of `charpoly_mul_comm` for rectangular matrices.
+A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
 -/
 theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
