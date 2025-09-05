@@ -38,6 +38,7 @@ namespace NNRealRMK
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (Bochner) integral of `f` (as a `ℝ`-valued function) with respect to the `rieszMeasure`
 associated to `Λ` is equal to `Λ f`. -/
+@[simp]
 theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
   rw [← eq_toRealPositiveLinear_toReal Λ f,
       ← RealRMK.integral_rieszMeasure (toRealPositiveLinear Λ) f.toReal]
@@ -46,6 +47,7 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) �
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the (lower) Lebesgue integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal
 to `Λ f`. -/
+@[simp]
 theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(rieszMeasure Λ) = Λ f := by
   rw [lintegral_coe_eq_integral, ← ENNReal.ofNNReal_toNNReal]
   · rw [ENNReal.coe_inj, Real.toNNReal_of_nonneg (MeasureTheory.integral_nonneg (by intro a; simp)),
@@ -59,7 +61,10 @@ theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(r
 instance rieszMeasure_regular (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : (rieszMeasure Λ).Regular :=
   (rieszContent Λ).regular
 
-section Uniqueness
+section integralLinearMap
+
+/-! We show that `NNRealRMK.rieszMeasure` is a bijection between linear functionals on `C_c(X, ℝ≥0)`
+and regular measures with inverse `NNRealRMK.integralLinearMap`. -/
 
 /-- If two regular measures give the same integral for every function in `C_c(X, ℝ≥0)`, then they
 are equal. -/
@@ -72,28 +77,33 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nn
   erw [hμν f.nnrealPart, hμν (-f).nnrealPart]
   rfl
 
-/-- Let μ be a measure that is finite on compact sets. Then μ induces a linear functional on
-`C_c(X, ℝ≥0)`. -/
-noncomputable abbrev integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
+/-- Integration as a positive linear functional on `C_c(X, ℝ≥0)`. -/
+-- Note: the default generated `simps` lemma uses `Subtype.val` instead of `NNReal.toReal`.
+@[simps! apply]
+noncomputable def integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
     [IsFiniteMeasureOnCompacts μ] :
     C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 :=
   CompactlySupportedContinuousMap.toNNRealLinear (RealRMK.integralPositiveLinearMap μ)
 
 /-- If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are
 equal. -/
-theorem integralLinearMap_inj {μ ν : Measure X} [μ.Regular]
-    [ν.Regular] : integralLinearMap μ = integralLinearMap ν ↔ μ = ν :=
+@[simp]
+theorem integralLinearMap_inj {μ ν : Measure X} [μ.Regular] [ν.Regular] :
+    integralLinearMap μ = integralLinearMap ν ↔ μ = ν :=
   ⟨fun hμν ↦ Measure.ext_of_integral_eq_on_compactlySupported_nnreal fun f ↦
       by simpa using congr(($hμν f).toReal), fun _ ↦ by congr⟩
 
-/-- `NNRealRMK.rieszMeasure` is a surjective function onto regular measures.
-That is, every regular measure is induced by a positive linear functional on `C_c(X, ℝ≥0)`. -/
+/-- Every regular measure is induced by a positive linear functional on `C_c(X, ℝ≥0)`.
+That is, `NNRealRMK.rieszMeasure` is a surjective function onto regular measures. -/
 @[simp]
 theorem rieszMeasure_integralLinearMap {μ : Measure X} [μ.Regular] :
     rieszMeasure (integralLinearMap μ) = μ :=
-  Measure.ext_of_integral_eq_on_compactlySupported_nnreal fun f ↦
-    by simpa using integral_rieszMeasure (integralLinearMap μ) f
+  Measure.ext_of_integral_eq_on_compactlySupported_nnreal (by simp)
 
-end Uniqueness
+@[simp]
+theorem integralLinearMap_rieszMeasure :
+    integralLinearMap (rieszMeasure Λ) = Λ := by ext; simp
+
+end integralLinearMap
 
 end NNRealRMK
