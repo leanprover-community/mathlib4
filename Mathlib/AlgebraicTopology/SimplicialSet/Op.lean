@@ -23,7 +23,6 @@ this identification, the horn `horn n i` is sent to `horn n i.rev` (@joelriou)
 * Show that the topological realization of `X.op` identifies to the
 topological realization of `X` (@joelriou)
 
-
 -/
 
 universe u
