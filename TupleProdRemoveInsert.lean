@@ -21,8 +21,9 @@ theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j,
     match n with
     | 0 =>
       have : p = ![] := by
-        ext
-        sorry
+        --exact Subsingleton.elim _ _
+        ext fin_0
+        exact fin_0.elim0
       simp [this]
       have : i.succ.insertNth x ![] = ![x] := by
         sorry
