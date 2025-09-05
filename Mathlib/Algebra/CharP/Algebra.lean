@@ -57,11 +57,7 @@ theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom h p
 
-theorem charP_of_injective_algebraMap' (R A : Type*) [Field R] [Semiring A] [Algebra R A]
-    [Nontrivial A] (p : ℕ) [CharP R p] : CharP A p :=
-  charP_of_injective_algebraMap (algebraMap R A).injective p
-
-theorem charP_of_injective_algebraMap'' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
+theorem charP_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
     [Algebra R A] [FaithfulSMul R A] (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) p
 
@@ -122,7 +118,7 @@ lemma expChar_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom h q
 
-theorem expChar_of_injective_algebraMap'' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
+theorem expChar_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
     [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
   expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
 
