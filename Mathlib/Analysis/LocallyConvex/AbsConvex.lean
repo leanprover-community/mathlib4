@@ -53,11 +53,7 @@ section AbsolutelyConvex
 
 variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [AddCommMonoid E] [PartialOrder 𝕜]
 
-/-- A set is absolutely convex if it is balanced and convex. Mathlib's definition of `Convex`
-requires the scalars to be an `OrderedSemiring` whereas the definition of `Balanced` requires the
-scalars to be a `SeminormedRing`. Mathlib doesn't currently have a concept of a semi-normed ordered
-ring, so we define a set as `AbsConvex` if it is balanced over a `SeminormedRing` `𝕜` and convex
-over `ℝ`. -/
+/-- A set is absolutely convex if it is balanced and convex. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex 𝕜 s
 
 variable {𝕜}
