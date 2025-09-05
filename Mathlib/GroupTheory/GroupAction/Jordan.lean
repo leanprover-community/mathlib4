@@ -323,11 +323,20 @@ theorem subgroup_eq_top_of_nontrivial [Finite α] (hα : Nat.card α ≤ 2) (hG 
   apply (Nat.factorial_le hα).trans
   rwa [Nat.factorial_two, Nat.succ_le, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
 
-theorem nontrivial_on_equiv_perm_two {K : Type*} [Group K] [MulAction K α]
-    (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ .univ) :
-    IsMultiplyPretransitive K α 2 := by
+theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K α]
+    (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ .univ) (n : ℕ) :
+    IsMultiplyPretransitive K α n := by
   have : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
     simp [Nat.card_eq_zero_of_infinite] at hα)
+  have : Fintype α := Fintype.ofFinite α
+  suffices h2 : IsMultiplyPretransitive K α 2 by
+    by_cases hn : n ≤ 2
+    · apply MulAction.isMultiplyPretransitive_of_le' hn
+      simp [← hα]
+    · suffices (IsEmpty (Fin n ↪ α)) by infer_instance
+      apply Or.resolve_right (isEmpty_or_nonempty _)
+      rwa [Function.Embedding.nonempty_iff_card_le, Fintype.card_fin,
+        ← Nat.card_eq_fintype_card, hα]
   let φ := MulAction.toPermHom K α
   let f : α →ₑ[φ] α :=
     { toFun := id
