@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Normed.Module.Span
-import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.RCLike.Lemmas
 
