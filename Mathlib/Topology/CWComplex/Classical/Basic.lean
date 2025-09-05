@@ -498,7 +498,7 @@ lemma CWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
 
 /-- If for every cell either `A ∩ openCell n j` is empty or `A ∩ closedCell n j` is closed then
 `A` is closed. -/
-lemma CWComplex.isClosed_of_disjoit_openCell_or_isClosed_inter_closedCell
+lemma CWComplex.isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell
     [CWComplex C] [T2Space X] {A : Set X} (hAC : A ⊆ C) (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
     Disjoint A (openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A :=
   RelCWComplex.isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell hAC (by simp) h
