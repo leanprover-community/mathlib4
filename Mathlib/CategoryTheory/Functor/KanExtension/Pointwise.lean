@@ -225,7 +225,15 @@ def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
 namespace IsPointwiseLeftKanExtensionAt
 
 variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
-  [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
+
+@[reassoc]
+lemma comp_homEquiv_symm {Z : H}
+    (φ : CostructuredArrow.proj L Y ⋙ F ⟶ (Functor.const _).obj Z)
+    (g : CostructuredArrow L Y) :
+    E.hom.app g.left ≫ E.right.map g.hom ≫ h.homEquiv.symm φ = φ.app g := by
+  simpa using h.ι_app_homEquiv_symm φ g
+
+variable [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
 
 /-- A pointwise left Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
 `colimit (CostructuredArrow.proj L Y ⋙ F)`. -/
@@ -546,7 +554,7 @@ def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     naturality := by simp [← G.map_comp] }
 
 @[simp]
-lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α :  F ⟶ L ⋙ G) (Y : D) :
+lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
       G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
   let β : L.pointwiseLeftKanExtension F ⟶ G :=

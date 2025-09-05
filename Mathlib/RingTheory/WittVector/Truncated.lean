@@ -185,7 +185,7 @@ instance hasNatPow : Pow (TruncatedWittVector p n R) ℕ :=
 
 @[simp]
 theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := by
-  show coeff i (truncateFun _ 0 : TruncatedWittVector p n R) = 0
+  change coeff i (truncateFun _ 0 : TruncatedWittVector p n R) = 0
   rw [coeff_truncateFun, WittVector.zero_coeff]
 
 end TruncatedWittVector

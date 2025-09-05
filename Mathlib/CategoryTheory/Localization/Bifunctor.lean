@@ -29,7 +29,7 @@ which lifts `F`.
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 variable {C₁ C₂ D₁ D₂ E E' : Type*} [Category C₁] [Category C₂]
   [Category D₁] [Category D₂] [Category E] [Category E']
@@ -54,28 +54,25 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
 /-- Given functors `L₁ : C₁ ⥤ D₁`, `L₂ : C₂ ⥤ D₂`, morphisms properties `W₁` on `C₁`
 and `W₂` on `C₂`, and functors `F : C₁ ⥤ C₂ ⥤ E` and `F' : D₁ ⥤ D₂ ⥤ E`, we say
 `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds if `F` is induced by `F'`, up to an isomorphism. -/
-class Lifting₂ (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+class Lifting₂ (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E) where
   /-- the isomorphism `(((whiskeringLeft₂ E).obj L₁).obj L₂).obj F' ≅ F` expressing
   that `F` is induced by `F'` up to an isomorphism -/
-  iso' : (((whiskeringLeft₂ E).obj L₁).obj L₂).obj F' ≅ F
+  iso (L₁ L₂ W₁ W₂ F F') : (((whiskeringLeft₂ E).obj L₁).obj L₂).obj F' ≅ F
 
 variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E) [Lifting₂ L₁ L₂ W₁ W₂ F F']
 
-/-- The isomorphism `(((whiskeringLeft₂ E).obj L₁).obj L₂).obj F' ≅ F` when
-`Lifting₂ L₁ L₂ W₁ W₂ F F'` holds. -/
-noncomputable def Lifting₂.iso : (((whiskeringLeft₂ E).obj L₁).obj L₂).obj F' ≅ F :=
-  Lifting₂.iso' W₁ W₂
+@[deprecated (since := "2025-08-22")] alias Lifting₂.iso' := Lifting.iso
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then `Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁))`
 holds for any `X₁ : C₁`. -/
 noncomputable def Lifting₂.fst (X₁ : C₁) :
     Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁)) where
-  iso' := ((evaluation _ _).obj X₁).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
+  iso := ((evaluation _ _).obj X₁).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
 noncomputable instance Lifting₂.flip : Lifting₂ L₂ L₁ W₂ W₁ F.flip F'.flip where
-  iso' := (flipFunctor _ _ _).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
+  iso := (flipFunctor _ _ _).mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then
 `Lifting L₁ W₁ (F.flip.obj X₂) (F'.flip.obj (L₂.obj X₂))` holds for any `X₂ : C₂`. -/
@@ -85,7 +82,7 @@ noncomputable def Lifting₂.snd (X₂ : C₂) :
 
 noncomputable instance Lifting₂.uncurry [Lifting₂ L₁ L₂ W₁ W₂ F F'] :
     Lifting (L₁.prod L₂) (W₁.prod W₂) (uncurry.obj F) (uncurry.obj F') where
-  iso' := CategoryTheory.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
+  iso := Functor.uncurry.mapIso (Lifting₂.iso L₁ L₂ W₁ W₂ F F')
 
 end
 
@@ -105,7 +102,7 @@ noncomputable def lift₂ : D₁ ⥤ D₂ ⥤ E :=
   curry.obj (lift (uncurry.obj F) hF (L₁.prod L₂))
 
 noncomputable instance : Lifting₂ L₁ L₂ W₁ W₂ F (lift₂ F hF L₁ L₂) where
-  iso' := (curryObjProdComp _ _ _).symm ≪≫
+  iso := (curryObjProdComp _ _ _).symm ≪≫
     curry.mapIso (fac (uncurry.obj F) hF (L₁.prod L₂)) ≪≫
     currying.unitIso.symm.app F
 

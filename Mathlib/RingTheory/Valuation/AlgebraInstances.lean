@@ -23,10 +23,9 @@ of a field with a valuation, as well as their unit balls.
 -/
 
 open Function Valuation
+open scoped WithZero
 
-open scoped Multiplicative
-
-variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L] [Algebra K L]
+variable {K : Type*} [Field K] (v : Valuation K ℤᵐ⁰) (L : Type*) [Field L] [Algebra K L]
 
 namespace ValuationSubring
 

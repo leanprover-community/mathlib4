@@ -92,14 +92,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i)
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
--- The `Monoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Monoid (Monoid.CoprodI M) := by
-  delta Monoid.CoprodI; infer_instance
-
-instance : Inhabited (Monoid.CoprodI M) :=
-  ⟨1⟩
+deriving Monoid, Inhabited
 
 namespace Monoid.CoprodI
 
@@ -109,7 +102,7 @@ letters can come from the same summand. -/
 structure Word where
   /-- A `Word` is a `List (Σ i, M i)`, such that `1` is not in the list, and no
   two adjacent letters are from the same summand -/
-  toList : List (Σi, M i)
+  toList : List (Σ i, M i)
   /-- A reduced word does not contain `1` -/
   ne_one : ∀ l ∈ toList, Sigma.snd l ≠ 1
   /-- Adjacent letters are not from the same summand. -/
@@ -129,8 +122,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
--- Porting note: higher `ext` priority
-@[ext 1100]
+@[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
@@ -143,7 +135,7 @@ universal property of the free product, characterizing it as a categorical copro
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   toFun fi :=
-    Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
+    Con.lift _ (FreeMonoid.lift fun p : Σ i, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
         rintro _ _ (i | ⟨x, y⟩) <;> simp
@@ -205,7 +197,7 @@ theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : moti
     (mul : ∀ {i} (m : M i) x, motive x → motive (of m * x)) : motive m := by
   induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
   | one => exact one
-  | mul x hx y ihy =>
+  | mul_left x hx y ihy =>
     obtain ⟨i, m, rfl⟩ : ∃ (i : ι) (m : M i), of m = x := by simpa using hx
     exact mul m y ihy
 
@@ -352,7 +344,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
   · simp only [rcons, dif_pos hm, dif_pos hm'] at he
-    aesop
+    simp_all
   · exfalso
     simp only [rcons, dif_pos hm, dif_neg hm'] at he
     rw [he] at h
@@ -372,13 +364,7 @@ theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
   simp only [rcons, cons, ne_eq]
-  by_cases hij : i = j
-  · subst i
-    by_cases hm : m = p.head
-    · subst m
-      split_ifs <;> simp_all
-    · split_ifs <;> simp_all
-  · split_ifs <;> simp_all [Ne.symm hij]
+  grind
 
 end
 
@@ -629,7 +615,7 @@ open Word
 
 /-- The list represented by a given `NeWord` -/
 @[simp]
-def toList : ∀ {i j} (_w : NeWord M i j), List (Σi, M i)
+def toList : ∀ {i j} (_w : NeWord M i j), List (Σ i, M i)
   | i, _, singleton x _ => [⟨i, x⟩]
   | _, _, append w₁ _ w₂ => w₁.toList ++ w₂.toList
 
@@ -702,7 +688,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
-    · rw [List.chain'_cons] at hchain
+    · rw [List.chain'_cons_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
@@ -994,7 +980,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   clear this
   refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
-  show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
+  change Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong
   let H : ι → Type _ := fun _i => FreeGroup Unit
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
@@ -1010,13 +996,13 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+  · change Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
     refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
-    simp only [map_zpow, FreeGroup.lift.of]
+    simp only [map_zpow, FreeGroup.lift_apply_of]
     change a i ^ n • X' j ⊆ X' i
     have hnne0 : n ≠ 0 := by
       rintro rfl

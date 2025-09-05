@@ -115,7 +115,7 @@ noncomputable def inlX (i j : ι) (hij : c.Rel j i) : F.X i ⟶ X φ j :=
   biprod.inl ≫ (XIsoBiprod φ j i hij).inv
 
 @[reassoc (attr := simp)]
-lemma inlX_fstX (i j : ι ) (hij : c.Rel j i) :
+lemma inlX_fstX (i j : ι) (hij : c.Rel j i) :
     inlX φ i j hij ≫ fstX φ j i hij = 𝟙 _ := by
   simp [inlX, fstX]
 
@@ -312,7 +312,7 @@ lemma inrX_desc_f (i : ι) :
 
 @[reassoc (attr := simp)]
 lemma inr_desc :
-    inr φ ≫ desc φ α hα = α := by aesop_cat
+    inr φ ≫ desc φ α hα = α := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
@@ -361,7 +361,7 @@ noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.R
   right_inv f := (eq_desc φ f hc).symm
   left_inv := fun ⟨α, hα⟩ => by
     rw [descSigma_ext_iff]
-    aesop_cat
+    cat_disch
 
 end homotopyCofiber
 
@@ -542,7 +542,7 @@ end cylinder
 
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
-    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁)(hc : ∀ j, ∃ i, c.Rel i j)
+    {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
     [∀ i, HasBinaryBiproduct (F.X i) (F.X i)]
     [HasHomotopyCofiber (biprod.lift (𝟙 F) (-𝟙 F))]
     {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)

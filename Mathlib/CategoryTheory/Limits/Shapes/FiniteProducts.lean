@@ -61,8 +61,6 @@ class HasFiniteCoproducts : Prop where
   /-- `C` has all finite coproducts -/
   out (n : ℕ) : HasColimitsOfShape (Discrete (Fin n)) C
 
--- attribute [class] HasFiniteCoproducts Porting note: this doesn't seem necessary in Lean 4
-
 instance hasColimitsOfShape_discrete [HasFiniteCoproducts C] (ι : Type w) [Finite ι] :
     HasColimitsOfShape (Discrete ι) C := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩

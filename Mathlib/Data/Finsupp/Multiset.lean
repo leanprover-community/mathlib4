@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Sym.Basic
+import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions

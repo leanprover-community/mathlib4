@@ -15,7 +15,7 @@ We construct the subscheme associated to an ideal sheaf.
 ## Main definition
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
-* `AlgebraicGeometry.Scheme.Hom.image`: The scheme theoretical image of a morphism.
+* `AlgebraicGeometry.Scheme.Hom.image`: The scheme-theoretic image of a morphism.
 * `AlgebraicGeometry.Scheme.kerAdjunction`:
   The adjunction between taking kernels and taking the associated subscheme.
 
@@ -38,7 +38,7 @@ variable (I : IdealSheafData X)
 
 /-- `Spec (𝒪ₓ(U)/I(U))`, the object to be glued into the closed subscheme. -/
 def glueDataObj (U : X.affineOpens) : Scheme :=
-  Spec (.of (Γ(X, U) ⧸ I.ideal U))
+  Spec(Γ(X, U) ⧸ I.ideal U)
 
 /-- `Spec (𝒪ₓ(U)/I(U)) ⟶ Spec (𝒪ₓ(U)) = U`, the closed immersion into `U`. -/
 noncomputable
@@ -60,7 +60,7 @@ lemma ker_glueDataObjι_appTop (U : X.affineOpens) :
     RingHom.ker (I.glueDataObjι U).appTop.hom = (I.ideal U).comap U.1.topIso.hom.hom := by
   let φ := CommRingCat.ofHom (Ideal.Quotient.mk (I.ideal U))
   rw [← Ideal.mk_ker (I := I.ideal _)]
-  show RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
+  change RingHom.ker (Spec.map φ ≫ _).appTop.hom = (RingHom.ker φ.hom).comap _
   rw [← RingHom.ker_equiv_comp _ (Scheme.ΓSpecIso _).commRingCatIsoToRingEquiv, RingHom.comap_ker,
     RingEquiv.toRingHom_eq_coe, Iso.commRingCatIsoToRingEquiv_toRingHom, ← CommRingCat.hom_comp,
     ← CommRingCat.hom_comp]
@@ -110,8 +110,7 @@ lemma isLocalization_away {U V : X.affineOpens}
   refine IsLocalization.of_surjective _ _ _ Ideal.Quotient.mk_surjective _
     Ideal.Quotient.mk_surjective ?_ ?_
   · simp [RingHom.algebraMap_toAlgebra, Ideal.quotientMap_comp_mk]; rfl
-  · subst hU
-    simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
+  · simp only [Ideal.mk_ker, RingHom.algebraMap_toAlgebra, I.map_ideal', le_refl]
 
 instance isOpenImmersion_glueDataObjMap {V : X.affineOpens} (f : Γ(X, V.1)) :
     IsOpenImmersion (I.glueDataObjMap (X.affineBasicOpen_le f)) := by
@@ -342,7 +341,7 @@ private lemma gluedTo_injective :
     I.glueData.toGlueData.ι_jointly_surjective forget a
   obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
     I.glueData.toGlueData.ι_jointly_surjective forget b
-  show (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
+  change (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
   have : ((I.glueDataObjι ia).base a).1 = ((I.glueDataObjι ib).base b).1 := by
     have : (I.glueData.ι ia ≫ I.gluedTo).base a =
       (I.glueData.ι ib ≫ I.gluedTo).base b := e
@@ -354,7 +353,7 @@ private lemma gluedTo_injective :
       b ∈ Set.range (I.glueDataObjMap (hW.trans_le (X.affineBasicOpen_le g))).base := by
     subst hW
     refine (I.opensRange_glueDataObjMap g).ge ?_
-    show ((I.glueDataObjι ib).base b).1 ∈ X.basicOpen g
+    change ((I.glueDataObjι ib).base b).1 ∈ X.basicOpen g
     rwa [← this, ← hfg]
   obtain ⟨a, rfl⟩ := (I.opensRange_glueDataObjMap f).ge H
   obtain ⟨b, rfl⟩ := hmem (X.affineBasicOpen f) (Subtype.ext hfg)
@@ -373,7 +372,7 @@ private lemma range_gluedTo :
   refine subset_antisymm (Set.range_subset_iff.mpr fun x ↦ ?_) ?_
   · obtain ⟨ix, x : I.glueDataObj ix, rfl⟩ :=
       I.glueData.toGlueData.ι_jointly_surjective forget x
-    show (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
+    change (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
     rw [ι_gluedTo]
     exact ((I.range_glueDataObjι_ι_eq_support_inter ix).le ⟨_, rfl⟩).1
   · intro x hx
@@ -445,7 +444,7 @@ noncomputable
 def subschemeι : I.subscheme ⟶ X :=
   (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
     ext x
-    show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
+    change (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
     rw [I.gluedHomeo.apply_symm_apply]
 
 lemma subschemeι_apply (x : I.subscheme) : I.subschemeι.base x = x.1 := rfl
@@ -533,7 +532,7 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
   let e : CommRingCat.of (Γ(X, U) ⧸ I.ideal U) ≅ Γ(I.subscheme, I.subschemeι ⁻¹ᵁ U) :=
     (Scheme.ΓSpecIso _).symm ≪≫ ((I.subschemeCover.map U).appIso _).symm ≪≫
       I.subscheme.presheaf.mapIso (eqToIso (by simp)).op
-  show RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp
+  change RingHom.ker (e.commRingCatIsoToRingEquiv.toRingHom.comp
     (Ideal.Quotient.mk (I.ideal U))) = _
   rw [RingHom.ker_equiv_comp, Ideal.mk_ker]
 
@@ -614,10 +613,10 @@ open Limits
 
 variable {X Y : Scheme.{u}} (f : X.Hom Y) (U : Y.affineOpens)
 
-/-- The scheme theoretic image of a morphism. -/
+/-- The scheme-theoretic image of a morphism. -/
 abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 
-/-- The embedding from the scheme theoretic image to the codomain. -/
+/-- The embedding from the scheme-theoretic image to the codomain. -/
 abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
@@ -643,7 +642,7 @@ def Hom.toImageAux : X ⟶ f.image :=
   ((Y.openCoverOfISupEqTop _ (iSup_affineOpens_eq_top Y)).pullbackCover f).glueMorphisms
     (fun U ↦ (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).liftQuotient _
       (by exact ideal_ker_le_ker_ΓSpecIso_inv_comp f U) ≫ f.ker.subschemeCover.map U) (by
-    intros U V
+    intro U V
     rw [← cancel_mono f.imageι]
     simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc,
       ← pullback.condition, ← pullback.condition_assoc])
@@ -655,7 +654,7 @@ private lemma Hom.toImageAux_spec :
   simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
 
-/-- The morphism from the domain to the scheme theoretic image. -/
+/-- The morphism from the domain to the scheme-theoretic image. -/
 noncomputable
 def Hom.toImage : X ⟶ f.image :=
   f.toImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)

@@ -164,7 +164,6 @@ theorem cocycle_fst_snd (i j k : 𝒰.J) :
 theorem cocycle_snd_fst_fst (i j k : 𝒰.J) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫
       pullback.fst _ _ = pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
-  rw [← cancel_mono (𝒰.map i)]
   simp only [pullback.condition_assoc, t'_snd_fst_fst, t'_fst_snd, t'_snd_snd]
 
 theorem cocycle_snd_fst_snd (i j k : 𝒰.J) :
@@ -356,8 +355,8 @@ def pullbackP1Iso (i : 𝒰.J) : pullback (p1 𝒰 f g) (𝒰.map i) ≅ pullbac
   · exact
       pullback.lift (pullback.snd _ _) (pullback.fst _ _ ≫ p2 𝒰 f g)
         (by rw [← pullback.condition_assoc, Category.assoc, p_comm])
-  · apply pullback.lift ((gluing 𝒰 f g).ι i) (pullback.fst _ _)
-    rw [gluing_ι, p1, Multicoequalizer.π_desc]
+  · exact pullback.lift ((gluing 𝒰 f g).ι i) (pullback.fst _ _)
+      (by rw [gluing_ι, p1, Multicoequalizer.π_desc])
   · apply pullback.hom_ext
     · simpa using lift_comp_ι 𝒰 f g i
     · simp_rw [Category.assoc, pullback.lift_snd, pullback.lift_fst, Category.id_comp]
@@ -624,7 +623,7 @@ over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
     pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))
-      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec (.of <| S ⊗[R] T) :=
+      (Spec.map (CommRingCat.ofHom (algebraMap R T))) ≅ Spec(S ⊗[R] T) :=
   letI H := IsLimit.equivIsoLimit (PullbackCone.eta _)
     (PushoutCocone.isColimitEquivIsLimitOp _ (CommRingCat.pushoutCoconeIsColimit R S T))
   limit.isoLimitCone ⟨_, isLimitPullbackConeMapOfIsLimit Scheme.Spec _ H⟩
@@ -691,8 +690,8 @@ lemma diagonal_Spec_map :
         (pullbackSpecIso R S S).inv := by
   ext1 <;> simp only [pullback.diagonal_fst, pullback.diagonal_snd, ← Spec.map_comp, ← Spec.map_id,
     AlgHom.toRingHom_eq_coe, Category.assoc, pullbackSpecIso_inv_fst, pullbackSpecIso_inv_snd]
-  · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (x ⊗ₜ[R] 1); simp
-  · congr 1; ext x; show x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
+  · congr 1; ext x; change x = Algebra.TensorProduct.lmul' R (S := S) (x ⊗ₜ[R] 1); simp
+  · congr 1; ext x; change x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
 
 end Spec
 

@@ -76,7 +76,7 @@ lemma hasSum_mellin_pi_mul {a : ι → ℂ} {q : ι → ℝ} {F : ℝ → ℂ} {
           ← div_eq_inv_mul]
     simp_rw [mul_div_assoc, this]
     ring_nf
-  · have (i) : ‖a i‖ / ↑(π * q i) ^ s.re = π ^ (-s.re) * ‖a i‖ / q i ^ s.re := by
+  · have (i : _) : ‖a i‖ / ↑(π * q i) ^ s.re = π ^ (-s.re) * ‖a i‖ / q i ^ s.re := by
       rcases hq i with h | h
       · simp [h]
       · rw [mul_rpow pi_pos.le h.le, ← div_div, rpow_neg pi_pos.le, ← div_eq_inv_mul]
@@ -94,7 +94,7 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
     simp only [a']
     split_ifs with h <;> try tauto
     exact Or.inr (lt_of_le_of_ne (hp i) (Ne.symm h))
-  have (i t) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
+  have (i t : _) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
       a' i * rexp (-π * p i * t) := by
     simp [a']
   simp_rw [this] at hF
@@ -134,7 +134,7 @@ lemma hasSum_mellin_pi_mul_sq' {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → �
   have hs₁ : s ≠ 0 := fun h ↦ lt_irrefl _ (zero_re ▸ h ▸ hs)
   have hs₂ : 0 < (s + 1).re := by rw [add_re, one_re]; positivity
   have hs₃ : s + 1 ≠ 0 := fun h ↦ lt_irrefl _ (zero_re ▸ h ▸ hs₂)
-  have (i t) : (a i * r i * rexp (-π * r i ^ 2 * t)) =
+  have (i t : _) : (a i * r i * rexp (-π * r i ^ 2 * t)) =
       if r i = 0 then 0 else (a i * r i * rexp (-π * r i ^ 2 * t)) := by
     split_ifs with h <;> simp [h]
   conv at hF => enter [t, ht, 1, i]; rw [this]
@@ -145,7 +145,6 @@ lemma hasSum_mellin_pi_mul_sq' {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → �
       conv_rhs => enter [1]; rw [← sign_mul_abs (r i), ofReal_mul, ← ofRealHom_eq_coe,
         SignType.map_cast]
       field_simp [h]
-      ring_nf
   · convert h_sum using 2 with i
     rcases eq_or_ne (r i) 0 with h | h
     · rw [h, abs_zero, ofReal_zero, zero_rpow hs₂.ne', zero_rpow hs.ne', div_zero, div_zero]

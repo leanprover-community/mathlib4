@@ -142,7 +142,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
   induction' ys with y ys ih generalizing l
   · simp +contextual
   rw [permutationsAux2_snd_cons,
-    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by funext _; simp, mem_cons, ih]
+    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by simp, mem_cons, ih]
   constructor
   · rintro (rfl | ⟨l₁, l₂, l0, rfl, rfl⟩)
     · exact ⟨[], y :: ys, by simp⟩
@@ -305,14 +305,6 @@ theorem mem_permutationsAux_of_perm :
 theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
   ⟨perm_of_mem_permutations, mem_permutations_of_perm_lemma mem_permutationsAux_of_perm⟩
 
--- Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq [DecidableEq α] :
-    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
-  congr_arg BEq.mk <| by
-    funext l₁ l₂
-    show (l₁ == l₂) = _
-    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
-
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).flatMap (permutations'Aux b) ~
       (permutations'Aux b l).flatMap (permutations'Aux a) := by
@@ -325,9 +317,9 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
       (map (cons c) (permutations'Aux a l)).flatMap (permutations'Aux b) ~
         map (cons b ∘ cons c) (permutations'Aux a l) ++
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
-    intros a' b'
+    intro a' b'
     simp only [flatMap_map, permutations'Aux]
-    show (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
+    change (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
     refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_flatMap, ← map_flatMap]
@@ -399,6 +391,14 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (permutations'Aux x s).get ⟨n, hn⟩ = s.insertIdx n x := by
   simp [getElem_permutations'Aux]
 
+-- Porting note: temporary theorem to solve diamond issue
+private theorem DecEq_eq [DecidableEq α] :
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
+  congr_arg BEq.mk <| by
+    funext l₁ l₂
+    change (l₁ == l₂) = _
+    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+
 theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
     count (x :: l) (permutations'Aux x l) = length (takeWhile (x = ·) l) + 1 := by
   induction' l with y l IH generalizing x
@@ -452,22 +452,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   rw [get_permutations'Aux, get_permutations'Aux]
   have hl : length (s.insertIdx k x) = length (s.insertIdx (k + 1) x) := by
     rw [length_insertIdx_of_le_length hk.le, length_insertIdx_of_le_length (Nat.succ_le_of_lt hk)]
-  refine ext_get hl fun n hn hn' => ?_
-  rcases lt_trichotomy n k with (H | rfl | H)
-  · rw [get_insertIdx_of_lt _ _ _ _ H (H.trans hk),
-      get_insertIdx_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
-  · rw [get_insertIdx_self _ _ _ hk.le, get_insertIdx_of_lt _ _ _ _ (Nat.lt_succ_self _) hk, hk']
-  · rcases (Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
-    · rw [get_insertIdx_self _ _ _ (Nat.succ_le_of_lt hk)]
-      convert hk' using 1
-      exact get_insertIdx_add_succ _ _ _ 0 _
-    · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
-      rw [length_insertIdx_of_le_length hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
-      rw [get_insertIdx_add_succ]
-      · convert get_insertIdx_add_succ s x k m.succ (by simpa using hn) using 2
-        · simp [Nat.add_assoc, Nat.add_left_comm]
-        · simp [Nat.add_left_comm, Nat.add_comm]
-      · simpa [Nat.succ_add] using hn
+  exact ext_get hl fun n hn hn' => by grind
 
 theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]

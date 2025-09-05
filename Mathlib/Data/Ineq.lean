@@ -13,7 +13,7 @@ involving it. The type `Ineq` is one of the fundamental objects manipulated by t
 `linear_combination` tactics.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Meta
 
 namespace Mathlib
 

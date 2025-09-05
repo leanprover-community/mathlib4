@@ -133,7 +133,7 @@ theorem uncurryFin_smul
   ext v
   simp [uncurryFin_apply, smul_comm _ c, Finset.smul_sum]
 
-/-- `AlternaringMap.uncurryFin` as a linear map. -/
+/-- `AlternatingMap.uncurryFin` as a linear map. -/
 @[simps! apply]
 def uncurryFinLM : (M →ₗ[R] M [⋀^Fin n]→ₗ[R] N) →ₗ[R] M [⋀^Fin (n + 1)]→ₗ[R] N where
   toFun := uncurryFin

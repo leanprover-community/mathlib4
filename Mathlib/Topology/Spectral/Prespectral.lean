@@ -37,7 +37,7 @@ This is the variant with an indexed basis instead. -/
 lemma PrespectralSpace.of_isTopologicalBasis' {ι : Type*} {b : ι → Set X}
     (basis : IsTopologicalBasis (Set.range b)) (isCompact_basis : ∀ i, IsCompact (b i)) :
     PrespectralSpace X :=
-  .of_isTopologicalBasis basis (by aesop)
+  .of_isTopologicalBasis basis (by simp_all)
 
 instance (priority := low) [NoetherianSpace X] : PrespectralSpace X :=
   .of_isTopologicalBasis isTopologicalBasis_opens fun _ _ ↦ NoetherianSpace.isCompact _
@@ -105,13 +105,13 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
   right_inv I := by
     ext U
     dsimp
-    show U.toOpens ≤ _ ↔ _
+    change U.toOpens ≤ _ ↔ _
     refine ⟨fun H ↦ ?_, fun h ↦ le_iSup₂ (f := fun U (h : U ∈ I) ↦ U.toOpens) U h⟩
     simp only [← SetLike.coe_subset_coe, Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk] at H
     obtain ⟨s, hsI, hs, hU⟩ := U.isCompact.elim_finite_subcover_image (fun U _ ↦ U.2) H
     exact I.lower (a := hs.toFinset.sup fun i ↦ i) (by simpa [← SetLike.coe_subset_coe]) (by simpa)
   map_rel_iff' {U V} := by
-    show (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
+    change (∀ (W : CompactOpens X), (W : Set X) ⊆ U → (W : Set X) ⊆ V) ↔ U ≤ V
     refine ⟨?_, fun H W ↦ (le_trans · H)⟩
     intro H x hxU
     obtain ⟨W, ⟨h₁, h₂⟩, hxW, hWU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
@@ -135,7 +135,7 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
     exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
   · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
     convert_to ⋃ i ∈ t, f '' i.1 = U
-    · aesop
+    · simp
     · refine subset_antisymm (fun x ↦ ?_) ht
       simp_rw [Set.mem_iUnion]
       rintro ⟨i, hi, x, hx, rfl⟩

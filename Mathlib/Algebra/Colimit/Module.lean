@@ -137,17 +137,33 @@ variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 @[simp] theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
 
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
+    (h : ∀ i, g₁ ∘ₗ of R ι G f i = g₂ ∘ₗ of R ι G f i) :
+    g₁ = g₂ :=
+  LinearMap.toAddMonoidHom_injective <| AddCon.hom_ext <| DirectSum.addHom_ext' fun i =>
+    congr($(h i).toAddMonoidHom)
+
+@[simp]
+theorem lift_comp_of (F : DirectLimit G f →ₗ[R] P) :
+    lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) = F := by
+  ext; simp
+
+@[deprecated lift_comp_of (since := "2025-08-11")]
 theorem lift_unique (F : DirectLimit G f →ₗ[R] P) (x) :
     F x = lift R ι G f (fun i ↦ F.comp <| of R ι G f i) (fun i j hij x ↦ by simp) x := by
-  rcases x with ⟨x⟩
-  exact x.induction_on (by simp) (fun _ _ ↦ .symm <| lift_of ..) (by simp +contextual)
+  rw [lift_comp_of]
+
+@[simp]
+theorem lift_of' : lift R ι G f (of R ι G f) (fun i j hij x ↦ by simp) = .id := by
+  ext; simp
 
 lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift R ι G f g Hg) := by
   cases isEmpty_or_nonempty ι
   · apply Function.injective_of_subsingleton
-  intros z w eq
+  intro z w eq
   obtain ⟨i, x, y, rfl, rfl⟩ := exists_of₂ z w
   simp_rw [lift_of] at eq
   rw [injective _ eq]
@@ -178,9 +194,8 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
   lift_of _ _ _
 
 @[simp] lemma map_id :
-    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ ↦ map_apply_of _ _) (by simp +contextual)
+    map (fun _ ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (M := DirectLimit G f) := by
+  ext; simp
 
 lemma map_comp (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' i →ₗ[R] G'' i)
     (hg₁ : ∀ i j h, g₁ j ∘ₗ f i j h = f' i j h ∘ₗ g₁ i)
@@ -189,11 +204,8 @@ lemma map_comp (g₁ : (i : ι) → G i →ₗ[R] G' i) (g₂ : (i : ι) → G' 
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') =
     (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
         rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
-      DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
-    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _ _ _) = map _ _ (of _ _ _ _ _ _)
-    simp_rw [map_apply_of]; rfl
+      DirectLimit G f →ₗ[R] DirectLimit G'' f'') := by
+  ext; simp
 
 open LinearEquiv LinearMap in
 /--
@@ -234,11 +246,11 @@ open _root_.DirectLimit
 /-- The direct limit constructed as a quotient of the direct sum is isomorphic to
 the direct limit constructed as a quotient of the disjoint union. -/
 def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
-  .ofLinear (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
+  .ofLinear
+    (lift _ _ _ _ (Module.of _ _ _ _) fun _ _ _ _ ↦ .symm <| eq_of_le ..)
     (Module.lift _ _ _ _ (of _ _ _ _) fun _ _ _ _ ↦ of_f ..)
-    (by ext ⟨_⟩; rw [← Quotient.mk]; simp [Module.lift, _root_.DirectLimit.lift_def]; rfl) <| by
-      ext ⟨x⟩; refine x.induction_on (by simp) (fun i x ↦ ?_) (by simp+contextual)
-      rw [quotMk_of, LinearMap.comp_apply, lift_of, Module.lift_of, LinearMap.id_apply]
+    (by ext; simp)
+    (by ext; simp)
 
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
   simp [linearEquiv]; rfl
@@ -342,10 +354,24 @@ theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
     Hg
     x
 
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →+ P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ :=
+  AddCon.hom_ext <| DirectSum.addHom_ext' h
+
+@[simp]
+theorem lift_comp_of (F : DirectLimit G f →+ P) :
+    lift G f _ (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) = F := by
+  ext; simp
+
+@[deprecated lift_comp_of (since := "2025-08-11")]
 theorem lift_unique (F : DirectLimit G f →+ P) (x) :
     F x = lift G f P (fun i ↦ F.comp (of G f i)) (fun i j hij x ↦ by simp) x := by
-  rcases x with ⟨x⟩
-  exact x.induction_on (by simp) (fun _ _ ↦ .symm <| lift_of ..) (by simp +contextual)
+  rw [lift_comp_of]
+
+@[simp]
+theorem lift_of' : lift G f _ (of G f) (fun i j hij x ↦ by simp) = .id _ := by
+  ext; simp
 
 lemma lift_injective [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
@@ -379,9 +405,8 @@ def map (g : (i : ι) → G i →+ G' i)
   lift_of _ _ _ _ _
 
 @[simp] lemma map_id :
-    map (fun _ ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ ↦ map_apply_of _ _) (by simp +contextual)
+    map (fun _ ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) := by
+  ext; simp
 
 lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →+ G'' i)
     (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
@@ -391,11 +416,8 @@ lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →
     (map (fun i ↦ (g₂ i).comp (g₁ i)) fun i j h ↦ by
       rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
         AddMonoidHom.comp_assoc] :
-      DirectLimit G f →+ DirectLimit G'' f'') :=
-  DFunLike.ext _ _ <| by
-    rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ _ ↦ ?_) (by simp +contextual)
-    show map g₂ hg₂ (map g₁ hg₁ <| of _ _ _ _) = map _ _ (of _ _ _ _)
-    simp_rw [map_apply_of]; rfl
+      DirectLimit G f →+ DirectLimit G'' f'') := by
+  ext; simp
 
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any

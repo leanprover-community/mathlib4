@@ -137,9 +137,6 @@ theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 
-@[deprecated (since := "2024-12-20")]
-alias get_eq_get := get_eq_get_toList
-
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.getElem_replicate
@@ -160,9 +157,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
-  simp only [get_eq_get_toList]
-  congr <;> simp
+  simp [get_eq_get_toList]
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
@@ -534,9 +529,12 @@ theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
 theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
 
-theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
+theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq (List.eraseIdx_insertIdx ..)
+  Subtype.eq (List.eraseIdx_insertIdx_self ..)
+
+@[deprecated (since := "2025-06-17")]
+alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -606,7 +604,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 
 /-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive
-  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element"]
+  /-- Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element -/]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
@@ -698,31 +696,13 @@ instance : LawfulTraversable.{u} (flip Vector n) where
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
 
--- Porting note: not porting meta instances
--- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
---     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
---   @Vector.inductionOn α (fun n => reflected _) n v
---     ((by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.nil.{u}).subst
---       q(α))
---     fun n x xs ih =>
---     (by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.cons.{u}).subst₄
---       q(α) q(n) q(x) ih
-
 section Simp
 
 variable {x : α} {y : β} {s : σ} (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
-    replicate (n+1) val = val ::ᵥ (replicate n val) :=
+    replicate (n + 1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 section Append
