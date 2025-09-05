@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jannis Limperg
 -/
 import Mathlib.Util.AssertExists
-import Mathlib.Tactic.Cases
 import Mathlib.Data.List.Defs
 
 /-!
