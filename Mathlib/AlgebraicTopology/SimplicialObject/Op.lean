@@ -44,6 +44,16 @@ lemma opFunctor_obj_map (X : SimplicialObject C) {n m : SimplexCategoryᵒᵖ} (
       opObjIso.hom ≫ X.map (SimplexCategory.rev.map f.unop).op ≫ opObjIso.inv := by
   simp [opFunctor, opObjIso]
 
+@[simp]
+lemma opFunctor_obj_δ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 2)) :
+    (opFunctor.obj X).δ i = opObjIso.hom ≫ X.δ i.rev ≫ opObjIso.inv := by
+  simp [SimplicialObject.δ]
+
+@[simp]
+lemma opFunctor_obj_σ (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
+    (opFunctor.obj X).σ i = opObjIso.hom ≫ X.σ i.rev ≫ opObjIso.inv := by
+  simp [SimplicialObject.σ]
+
 /-- The functor `opFunctor : SimplicialObject C ⥤ SimplicialObject C`
 is a covariant involution. -/
 def opFunctorCompOpFunctorIso : opFunctor (C := C) ⋙ opFunctor ≅ 𝟭 _ :=
