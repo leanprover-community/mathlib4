@@ -18,8 +18,7 @@ section FieldNontrivial
 
 variable {R A : Type*} [Field R] [CommSemiring A] [Nontrivial A] [Algebra R A]
 
-@[norm_cast]
-theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 := map_eq_zero _
+
 
 end FieldNontrivial
 
