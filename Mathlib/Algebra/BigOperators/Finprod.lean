@@ -3,15 +3,14 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.FiniteSupport
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Notation.FiniteSupport
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Finite products and sums over types and sets
@@ -967,7 +966,7 @@ lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs :
 lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
     (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
-  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearance hidden by notation
   exact finprod_mem_powerset_insert (hs.subset Set.diff_subset)
     (notMem_diff_of_mem (Set.mem_singleton a))
 
@@ -1087,11 +1086,11 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   exact Finset.nonempty_of_prod_ne_one h
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
-we can simplify the right hand side of this lemma. However the form stated here is more useful for
+we can simplify the right-hand side of this lemma. However the form stated here is more useful for
 iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/
 @[to_additive
       /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
-      we can simplify the right hand side of this lemma. However the form stated here is more
+      we can simplify the right-hand side of this lemma. However the form stated here is more
       useful for iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/]
 theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finset (α × β))
     (f : α × β → M) :

@@ -29,7 +29,7 @@ open scoped Topology Interval ENNReal
 variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
+  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
   [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
@@ -213,7 +213,7 @@ theorem locallyIntegrableOn_of_locallyIntegrable_restrict [OpensMeasurableSpace 
   simpa only [IntegrableOn, Measure.restrict_restrict hu_o.measurableSet, inter_comm] using
     ht_int.mono_set hu_sub
 
-/-- If `s` is closed, being locally integrable on `s` wrt `μ` is equivalent to being locally
+/-- If `s` is closed, being locally integrable on `s` w.r.t. `μ` is equivalent to being locally
 integrable with respect to `μ.restrict s`. For the one-way implication without assuming `s` closed,
 see `locallyIntegrableOn_of_locallyIntegrable_restrict`. -/
 theorem locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace X]
@@ -339,13 +339,15 @@ protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAdd
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ENormedAddCommMonoid ε'''] [ContinuousAdd ε'''] in
+variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
+  [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finset_sum' {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => LocallyIntegrable g μ) (fun _ _ => LocallyIntegrable.add)
     locallyIntegrable_zero hf
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ENormedAddCommMonoid ε'''] [ContinuousAdd ε'''] in
+variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
+  [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using locallyIntegrable_finset_sum' s hf
@@ -353,15 +355,16 @@ theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → ε''
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
-    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → E}
-    (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    [OpensMeasurableSpace X] [T2Space X] {f : X → E} (hf : LocallyIntegrable f μ)
+    {g : X → 𝕜} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ g x • f x) μ := by
   let K := tsupport g
   have hK : IsCompact K := h'g
   have : K.indicator (fun x ↦ g x • f x) = (fun x ↦ g x • f x) := by
     apply indicator_eq_self.2
     apply support_subset_iff'.2
-    intros x hx
+    intro x hx
     simp [image_eq_zero_of_notMem_tsupport hx]
   rw [← this, indicator_smul]
   apply Integrable.smul_of_top_right
@@ -372,15 +375,16 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `f • g` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
-    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → ℝ} (hf : LocallyIntegrable f μ)
-    {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
+     {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+     [OpensMeasurableSpace X] [T2Space X] {f : X → 𝕜} (hf : LocallyIntegrable f μ)
+     {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ f x • g x) μ := by
   let K := tsupport g
   have hK : IsCompact K := h'g
   have : K.indicator (fun x ↦ f x • g x) = (fun x ↦ f x • g x) := by
     apply indicator_eq_self.2
     apply support_subset_iff'.2
-    intros x hx
+    intro x hx
     simp [image_eq_zero_of_notMem_tsupport hx]
   rw [← this, indicator_smul_left]
   apply Integrable.smul_of_top_left

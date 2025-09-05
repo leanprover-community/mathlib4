@@ -138,12 +138,17 @@ end NatTrans
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
-@[simps]
+@[simps obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
     { obj := fun j => (F.obj j).obj k,
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
+
+-- `@[simps]` doesn't produce a nicely stated lemma here:
+-- the implicit arguments for `app` use the definition of `flip`, rather than `flip` itself.
+@[simp] theorem flip_map_app (F : C ⥤ D ⥤ E) {d d' : D} (f : d ⟶ d') (c : C) :
+    (F.flip.map f).app c = (F.obj c).map f := rfl
 
 attribute [grind =] flip_obj_obj flip_obj_map flip_map_app
 
