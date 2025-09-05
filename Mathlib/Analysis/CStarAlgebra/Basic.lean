@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Subalgebra
@@ -31,6 +30,8 @@ Note that the type classes corresponding to C⋆-algebras are defined in
   definition of C*-algebras in some sources (e.g. Wikipedia).
 
 -/
+
+assert_not_exists ContinuousLinearMap.bound
 
 open Topology
 
@@ -251,33 +252,6 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing 
 theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] (x : selfAdjoint E)
     (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n :=
   x.prop.nnnorm_pow_two_pow _
-
-section starₗᵢ
-
-variable [CommSemiring 𝕜] [StarRing 𝕜]
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
-variable [Module 𝕜 E] [StarModule 𝕜 E]
-
-variable (𝕜) in
-/-- `star` bundled as a linear isometric equivalence -/
-def starₗᵢ : E ≃ₗᵢ⋆[𝕜] E :=
-  { starAddEquiv with
-    map_smul' := star_smul
-    norm_map' := norm_star }
-
-@[simp]
-theorem coe_starₗᵢ : (starₗᵢ 𝕜 : E → E) = star :=
-  rfl
-
-theorem starₗᵢ_apply {x : E} : starₗᵢ 𝕜 x = star x :=
-  rfl
-
-@[simp]
-theorem starₗᵢ_toContinuousLinearEquiv :
-    (starₗᵢ 𝕜 : E ≃ₗᵢ⋆[𝕜] E).toContinuousLinearEquiv = (starL 𝕜 : E ≃L⋆[𝕜] E) :=
-  ContinuousLinearEquiv.ext rfl
-
-end starₗᵢ
 
 namespace StarSubalgebra
 
