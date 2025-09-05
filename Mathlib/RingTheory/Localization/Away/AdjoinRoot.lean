@@ -20,7 +20,7 @@ variable {R : Type*} [CommRing R]
 attribute [local instance] AdjoinRoot.algHom_subsingleton
 
 /-- The `R`-`AlgEquiv` between the localization of `R` away from `r` and
-    `R` with an inverse of `r` adjoined. -/
+`R` with an inverse of `r` adjoined. -/
 noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] AdjoinRoot (C r * X - 1) :=
   AlgEquiv.ofAlgHom
     { awayLift _ r

@@ -243,7 +243,7 @@ theorem geom_mean_eq_arith_mean_weighted_iff (w z : ι → ℝ) (hw : ∀ i ∈ 
     simp only [h2, rpow_zero, ne_self_iff_false] at h1
   rw [← sum_filter_of_ne h, ← prod_filter_of_ne h', geom_mean_eq_arith_mean_weighted_iff']
   · simp
-  · simp +contextual [(hw _ _).gt_iff_ne]
+  · simp +contextual [(hw _ _).lt_iff_ne']
   · rwa [sum_filter_ne_zero]
   · simp_all only [ne_eq, mul_eq_zero, not_or, not_false_eq_true, implies_true, mem_filter]
 
@@ -327,21 +327,6 @@ theorem geom_mean_le_arith_mean4_weighted {w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
       ⟨p₂, hp₂⟩ ⟨p₃, hp₃⟩ ⟨p₄, hp₄⟩ <|
     NNReal.coe_inj.1 <| by assumption
 
-/-- As an example application of AM-GM we prove that the **Motzkin polynomial** is nonnegative.
-This bivariate polynomial cannot be written as a sum of squares. -/
-lemma motzkin_polynomial_nonneg (x y : ℝ) :
-    0 ≤ x ^ 4 * y ^ 2 + x ^ 2 * y ^ 4 - 3 * x ^ 2 * y ^ 2 + 1 := by
-  have nn₁ : 0 ≤ x ^ 4 * y ^ 2 := by positivity
-  have nn₂ : 0 ≤ x ^ 2 * y ^ 4 := by positivity
-  have key := geom_mean_le_arith_mean3_weighted (by norm_num) (by norm_num) (by norm_num)
-    nn₁ nn₂ zero_le_one (add_thirds 1)
-  rw [one_rpow, mul_one, ← mul_rpow nn₁ nn₂, ← mul_add, ← mul_add,
-    show x ^ 4 * y ^ 2 * (x ^ 2 * y ^ 4) = (x ^ 2) ^ 3 * (y ^ 2) ^ 3 by ring,
-    mul_rpow (by positivity) (by positivity),
-    ← rpow_natCast _ 3, ← rpow_mul (sq_nonneg x), ← rpow_natCast _ 3, ← rpow_mul (sq_nonneg y),
-    show ((3 : ℕ) * ((1 : ℝ) / 3)) = 1 by norm_num, rpow_one, rpow_one] at key
-  linarith
-
 end Real
 
 end GeomMeanLEArithMean
@@ -382,7 +367,7 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
   have := harm_mean_le_geom_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z hs ?_ ?_ hz
   · simp only at this
     set n := ∑ i ∈ s, w i
-    nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by norm_num), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
+    nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by simp), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
     simp_rw [inv_mul_eq_div n ((w _)/(z _)), div_right_comm _ _ n]
     convert this
     rw [← Real.finset_prod_rpow s _ (fun i hi ↦ Real.rpow_nonneg (le_of_lt <| hz i hi) _)]

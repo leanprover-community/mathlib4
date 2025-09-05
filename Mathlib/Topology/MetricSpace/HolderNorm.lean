@@ -153,7 +153,7 @@ lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
 
 lemma MemHolder.holderWith {r : ℝ≥0} {f : X → Y} (hf : MemHolder r f) :
     HolderWith (nnHolderNorm r f) r f := by
-  intros x₁ x₂
+  intro x₁ x₂
   by_cases hx : x₁ = x₂
   · simp only [hx, edist_self, zero_le]
   rw [nnHolderNorm, eHolderNorm, coe_toNNReal]
@@ -221,7 +221,7 @@ lemma MemHolder.nnHolderNorm_add_le (hf : MemHolder r f) (hg : MemHolder r g) :
 
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
-  by_cases hfg : MemHolder r f  ∧ MemHolder r g
+  by_cases hfg : MemHolder r f ∧ MemHolder r g
   · obtain ⟨hf, hg⟩ := hfg
     rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm,
       ← (hf.add hg).coe_nnHolderNorm_eq_eHolderNorm, ← coe_add, ENNReal.coe_le_coe]
