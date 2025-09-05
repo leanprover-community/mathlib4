@@ -16,7 +16,7 @@ open scoped nonZeroDivisors
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 
--- Inline
+-- This probably true more generally and already proved somewhere...
 theorem FractionRing.algEquiv_algebraMap_commutes (A B : Type*) [CommRing A] [IsDomain A]
     [CommRing B] [IsDomain B] (K L : Type*) [Field K]
     [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
@@ -141,14 +141,18 @@ variable [IsDedekindDomain A] [IsScalarTower A L₂ M] [IsScalarTower A B₁ M] 
 
 variable (A C B₁ B₂) in
 theorem span_eq_range
-    (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+    (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁.toSubalgebra ⊔ L₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
       ((differentIdeal A B₂).map (algebraMap B₂ C)))
     {ι : Type*} (b : Basis ι K L₂)
     (hb : span A (Set.range b) = (1 : Submodule B₂ L₂).restrictScalars A) :
-    span B₁ (Set.range (algebraMap L₂ M ∘ b)) =
+    span B₁ (Set.range (h₁.basisOfBasisRight h₂ b)) =
       LinearMap.range (IsScalarTower.toAlgHom B₁ C M) := by
+    -- span B₁ (Set.range (algebraMap L₂ M ∘ b)) =
+    -- LinearMap.range (IsScalarTower.toAlgHom B₁ C M) := by
   classical
+  replace h₂ : L₁ ⊔ L₂ = ⊤ := by
+    rwa [← sup_toSubalgebra_of_isAlgebraic_right, ← top_toSubalgebra, toSubalgebra_inj] at h₂
   have : Finite ι := Module.Finite.finite_basis b
   have h_main : (traceDual B₁ L₁ (1 : Submodule C M)).restrictScalars B₁ =
       span B₁ (algebraMap L₂ M '' (traceDual A K (1 : Submodule B₂ L₂))) :=
@@ -170,29 +174,48 @@ theorem span_eq_range
         rw [b.trace_traceDual_mul i j, MonoidWithZeroHom.map_ite_one_zero]
       rw [this, (traceForm L₁ M).dualSubmodule_span_of_basis (traceForm_nondegenerate L₁ M),
         ← Basis.traceDual_def, Basis.traceDual_traceDual]
-      congr!
-      ext
-      rw [Function.comp_apply, h₁.basisOfBasisRight_apply]
     · rw [hb]
   · ext; simp
 
-noncomputable example (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+noncomputable def basis_of_isCoprime_differentIdeal (h₁ : L₁.LinearDisjoint L₂)
+    (h₂ : L₁.toSubalgebra ⊔ L₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
       ((differentIdeal A B₂).map (algebraMap B₂ C))) {ι : Type*} (b : Basis ι A B₂) :
     Basis ι B₁ C := by
   let v := fun i : ι ↦ algebraMap B₂ C (b i)
   refine Basis.mk (v := v) ?_ ?_
-  · -- unfold v
-    refine linearIndependent_iff''.mpr ?_
-
-    sorry
+  · have := b.linearIndependent
+    have : LinearIndependent A ((IsScalarTower.toAlgHom A B₂ L₂).toLinearMap ∘ b) := by
+      apply LinearIndependent.map_injOn b.linearIndependent
+      apply Function.Injective.injOn
+      exact FaithfulSMul.algebraMap_injective _ _
+    rw [LinearIndependent.iff_fractionRing A K] at this
+    have := h₁.linearIndependent_right this
+    rw [← LinearMap.linearIndependent_iff (IsScalarTower.toAlgHom B₁ C M).toLinearMap]
+    · rw [LinearIndependent.iff_fractionRing B₁ L₁]
+      convert this
+      ext; simp [v, ← IsScalarTower.algebraMap_apply]
+      change _ = algebraMap L₂ M (algebraMap B₂ L₂ _)
+      rw [← IsScalarTower.algebraMap_apply B₂ L₂ M]
+    rw [LinearMap.ker_eq_bot]
+    exact FaithfulSMul.algebraMap_injective _ _
   · rw [top_le_iff]
-    rw [SetLike.ext'_iff]
-    let f : Set C → Set M := by exact?
-
-    sorry
-
-
+    let f := IsScalarTower.toAlgHom B₁ C M
+    let F := Submodule.map f
+    have : Function.Injective F := by
+      apply Submodule.map_injective_of_injective
+      exact FaithfulSMul.algebraMap_injective C M
+    apply this
+    unfold F f
+    simp only [Submodule.map_top]
+    let B : Basis ι K L₂ := b.localizationLocalization K A⁰ L₂
+    have := span_eq_range A C B₁ B₂ h₁ h₂ h₃ B ?_
+    · convert this
+      rw [LinearMap.map_span, IsScalarTower.coe_toAlgHom', ← Set.range_comp]
+      congr; ext
+      simp [B, v, ← IsScalarTower.algebraMap_apply]
+    · convert b.localizationLocalization_span K A⁰ L₂
+      ext; simp
 
 open NumberField
 
