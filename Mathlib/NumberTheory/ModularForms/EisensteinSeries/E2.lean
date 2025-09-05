@@ -104,7 +104,7 @@ theorem G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, 2 * (2 * �
   have hf : Summable fun m : ℕ => ( 2 * (-2 * ↑π * I) ^ 2 *
       ∑' n : ℕ+, n ^ ((2 - 1)) * Complex.exp (2 * ↑π * I * (m + 1) * z) ^ (n : ℕ)) := by
     apply Summable.mul_left
-    have := (summable_prod_aux 1 z).prod_symm.prod
+    have := (summable_prod_aux 1 z).prod
     have h0 := pnat_summable_iff_summable_succ
       (f := fun b ↦ ∑' (c : ℕ+), c * cexp (2 * ↑π * I * ↑↑b * ↑z) ^ (c : ℕ))
     simp at *

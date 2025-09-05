@@ -82,7 +82,7 @@ lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖
 
 theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
-    (c.2.1).1 ^ k * (r ^ (c.2.1.2 * c.2.1.1)) := by
+    (c.2.1.2) ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
   apply Summable.of_norm
   rw [summable_sigma_of_nonneg]
   constructor
@@ -94,13 +94,12 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1
       intro b
       apply le_trans (b := ∑ _ ∈ (b : ℕ).divisors, ‖(b : 𝕜)‖ ^ k * ‖r ^ (b : ℕ)‖)
       · rw [Finset.sum_attach ((b : ℕ).divisorsAntidiagonal) (fun x ↦
-            ‖(x.1 : 𝕜)‖ ^ (k : ℕ) * ‖r‖ ^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal
-            ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * ‖r‖ ^ (y * x))) (n := b)]
+            ‖(x.2 : 𝕜)‖ ^ (k : ℕ) * ‖r‖ ^ (x.1 * x.2)), Nat.sum_divisorsAntidiagonal
+            ((fun x y ↦ ‖(y : 𝕜)‖ ^ k * ‖r‖ ^ (x * y))) (n := b)]
         gcongr <;> rename_i i hi <;> simp at *
-        · exact Nat.le_of_dvd b.2 hi
+        · exact Nat.div_le_self (↑b) i
         · apply le_of_eq
           nth_rw 2 [← Nat.mul_div_cancel' hi]
-          ring_nf
       · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
           pow_one, norm_mul]
         gcongr
@@ -109,25 +108,23 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1
     simpa using mul_nonneg (by simp) (by simp)
 
 theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    Summable fun c : (ℕ+ × ℕ+) ↦ c.1 ^ k * (r ^ (c.2 * c.1 : ℕ)) := by
+    Summable fun c : (ℕ+ × ℕ+) ↦ c.2 ^ k * (r ^ (c.1 * c.2 : ℕ)) := by
   simpa [sigmaAntidiagonalEquivProd.summable_iff.symm] using summable_divisorsAntidiagonal_aux k hr
 
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' d : ℕ+, ∑' (c : ℕ+), c ^ k * (r ^ (d * c : ℕ)) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
-  suffices ∑' (c : ℕ+ × ℕ+), (c.1 ^ k : 𝕜) * (r ^ (c.2 * c.1 : ℕ)) =
+  suffices ∑' (c : ℕ+ × ℕ+), (c.2 ^ k : 𝕜) * (r ^ (c.1 * c.2 : ℕ)) =
     ∑' e : ℕ+, σ k e * r ^ (e : ℕ) by
-    rw [Summable.tsum_prod (by apply summable_prod_mul_pow k hr), Summable.tsum_comm] at this
+    rw [Summable.tsum_prod (by apply (summable_prod_mul_pow k hr))] at this
     · simpa using this
-    · apply (summable_prod_mul_pow k hr).prod_symm.congr
-      simp
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
     divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div, cast_sum,
     cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k hr)]
   apply tsum_congr
   intro n
   simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
-    (fun (x : ℕ × ℕ) ↦ (x.1 : 𝕜) ^ k * r ^ (x.2 * x.1)), Nat.sum_divisorsAntidiagonal'
-    (fun x y ↦ (x : 𝕜) ^ k * r ^ (y * x)), Finset.sum_mul]
+    (fun (x : ℕ × ℕ) ↦ (x.2 : 𝕜) ^ k * r ^ (x.1 * x.2)), Nat.sum_divisorsAntidiagonal
+    (fun x y ↦ (y : 𝕜) ^ k * r ^ (x * y)), Finset.sum_mul]
   refine Finset.sum_congr (rfl) fun i hi ↦ ?_
   have hni : (n / i : ℕ) * (i : ℕ) = n := by
     simp only [Nat.mem_divisors, ne_eq, PNat.ne_zero, not_false_eq_true, and_true] at *
@@ -153,7 +150,7 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
       rw [mul_assoc, ← pow_succ' (r ^ (n : ℕ)) m]
     rw [← tsum_pnat_eq_tsum_succ (fun m ↦ n * (r ^ (n : ℕ)) ^ (m : ℕ))]
   have h00 := (tsum_prod_pow_eq_tsum_sigma 1 hr)
-  rw [Summable.tsum_comm (by apply summable_prod_mul_pow 1 hr)] at h00
+  rw [Summable.tsum_comm (by apply (summable_prod_mul_pow 1 hr).prod_symm)] at h00
   rw [← h00]
   apply tsum_congr2
   intro b c
