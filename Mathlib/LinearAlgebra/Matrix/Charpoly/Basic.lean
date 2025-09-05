@@ -222,10 +222,10 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   exact h
 
 
--- This proof follows https://math.stackexchange.com/a/311362/315369
 /-- A version of `charpoly_mul_comm` for rectangular matrices. -/
 theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
     X ^ Fintype.card n * (A * B).charpoly = X ^ Fintype.card m * (B * A).charpoly := by
+  -- This proof follows https://math.stackexchange.com/a/311362/315369
   let M := fromBlocks (scalar m X) (A.map C) (B.map C) (1 : Matrix n n R[X])
   let N := fromBlocks (-1 : Matrix m m R[X]) 0 (B.map C) (-scalar n X)
   have hMN :
