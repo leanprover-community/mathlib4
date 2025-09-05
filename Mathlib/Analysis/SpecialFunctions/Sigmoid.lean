@@ -173,7 +173,7 @@ lemma contDiff_sigmoid : ContDiff ℝ ω sigmoid := analyticOn_sigmoid.contDiff
 theorem differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one
 
-@[simp]
+@[fun_prop]
 theorem differentiableAt_sigmoid {x : ℝ} : DifferentiableAt ℝ sigmoid x :=
   differentiable_sigmoid x
 
