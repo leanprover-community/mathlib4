@@ -1429,6 +1429,15 @@ protected lemma IsSubwalk.cons {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
 lemma isSubwalk_cons {u v w} (p : G.Walk u v) (h : G.Adj w u) : p.IsSubwalk (p.cons h) :=
   (isSubwalk_rfl p).cons h
 
+protected lemma IsSubwalk.concat {u v u' v' w} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) (h : G.Adj v' w) : p.IsSubwalk (q.concat h) := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  exact ⟨r₁, r₂.concat h, by rw [append_concat]⟩
+
+@[simp]
+lemma isSubwalk_concat {u v w} (p : G.Walk u v) (h : G.Adj v w) : p.IsSubwalk (p.concat h) :=
+  (isSubwalk_rfl p).concat h
+
 lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : G.Walk u₁ v₁} {p₂ : G.Walk u₂ v₂}
     {p₃ : G.Walk u₃ v₃} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₃) :
     p₁.IsSubwalk p₃ := by
@@ -1497,6 +1506,22 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
     p₁ = p₂ := by
   rw [isSubwalk_iff_support_isInfix] at h₁ h₂
   exact ext_support <| List.infix_antisymm h₁ h₂
+
+protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) : p.dropLast.IsSubwalk q := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  cases h' : p
+  · grind [getVert_nil, append_nil, dropLast_nil, nil_isSubwalk_iff_exists]
+  · exact ⟨r₁, cons (Walk.adj_penultimate (by simp)) r₂, by
+      nth_rw 2 [← append_assoc, ← concat_append]
+      simp [← h', append_assoc]⟩
+
+protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q := by
+  obtain ⟨r₁, r₂, rfl⟩ := hpq
+  cases h' : p
+  · grind [getVert_nil, append_nil, tail_nil, nil_isSubwalk_iff_exists]
+  · exact ⟨r₁.concat (Walk.adj_snd (by simp)), r₂, by simp [concat_append]⟩
 
 end Walk
 
