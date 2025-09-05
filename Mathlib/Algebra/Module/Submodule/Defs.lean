@@ -129,8 +129,6 @@ theorem toAddSubmonoid_injective : Injective (toAddSubmonoid : Submodule R M →
 theorem toAddSubmonoid_inj : p.toAddSubmonoid = q.toAddSubmonoid ↔ p = q :=
   toAddSubmonoid_injective.eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toAddSubmonoid_eq := toAddSubmonoid_inj
-
 @[simp]
 theorem coe_toAddSubmonoid (p : Submodule R M) : (p.toAddSubmonoid : Set M) = p :=
   rfl
@@ -140,8 +138,6 @@ theorem toSubMulAction_injective : Injective (toSubMulAction : Submodule R M →
 
 theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
   toSubMulAction_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toSubMulAction_eq := toSubMulAction_inj
 
 @[simp]
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
@@ -277,6 +273,14 @@ variable (p)
 instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
+instance isLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd p :=
+  p.toAddSubmonoid.isLeftCancelAdd
+
+instance isRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd p :=
+  p.toAddSubmonoid.isRightCancelAdd
+
+instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
+
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
@@ -321,8 +325,6 @@ theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → A
 @[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toAddSubgroup_eq := toAddSubgroup_inj
 
 protected theorem sub_mem : x ∈ p → y ∈ p → x - y ∈ p :=
   sub_mem

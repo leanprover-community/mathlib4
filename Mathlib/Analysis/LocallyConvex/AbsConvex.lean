@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Convex.TotallyBounded
+import Mathlib.Analysis.LocallyConvex.Bounded
 
 /-!
 # Absolutely convex sets
@@ -287,7 +288,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
     convexHull ℝ (s ∪ -s) = absConvexHull ℝ s := by
   rw [absConvexHull_eq_convexHull_balancedHull]
   exact le_antisymm (convexHull_mono (union_subset (subset_balancedHull ℝ)
-    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; simp_all)))
     (by
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
@@ -309,3 +310,12 @@ end
 lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [AddCommGroup E] [Module ℝ E]
     [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
+
+/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
+theorem isCompact_closedAbsConvexHull_of_totallyBounded {E : Type*} [AddCommGroup E] [Module ℝ E]
+    [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+    [QuasiCompleteSpace ℝ E] {s : Set E} (ht : TotallyBounded s) :
+    IsCompact (closedAbsConvexHull ℝ s) := by
+  rw [closedAbsConvexHull_eq_closure_absConvexHull]
+  exact isCompact_closure_of_totallyBounded_quasiComplete (𝕜 := ℝ)
+    (totallyBounded_absConvexHull E ht)

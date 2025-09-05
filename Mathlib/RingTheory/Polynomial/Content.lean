@@ -126,9 +126,9 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
 
 @[simp]
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
-  induction' k with k hi
-  · simp
-  rw [pow_succ', content_X_mul, hi]
+  induction k with
+  | zero => simp
+  | succ k hi => rw [pow_succ', content_X_mul, hi]
 
 @[simp]
 theorem content_X : content (X : R[X]) = 1 := by rw [← mul_one X, content_X_mul, content_one]
@@ -321,11 +321,13 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       apply h
       apply lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 (Nat.lt_succ_self _))
     intro n
-    induction' n with n ih
-    · intro p q hpq
+    induction n with
+    | zero =>
+      intro p q hpq
       rw [Nat.cast_zero,
         Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp
+    | succ n ih => ?_
     intro p q hpq
     by_cases p0 : p = 0
     · simp [p0]
@@ -425,12 +427,13 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
 
 theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq : q ≠ 0) :
     p ∣ q ↔ p.content ∣ q.content ∧ p.primPart ∣ q.primPart := by
-  constructor <;> intro h
-  · rcases h with ⟨r, rfl⟩
+  constructor
+  · rintro ⟨r, rfl⟩
     rw [content_mul, p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
-    exact ⟨Dvd.intro _ rfl, p.primPart_dvd.trans (Dvd.intro _ rfl)⟩
-  · rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
-    exact mul_dvd_mul (_root_.map_dvd C h.1) h.2
+    exact ⟨dvd_mul_right .., dvd_mul_of_dvd_left p.primPart_dvd _⟩
+  · rintro ⟨h₁, h₂⟩
+    rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
+    gcongr
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R

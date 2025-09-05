@@ -127,7 +127,19 @@ def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Normal H
     let _un_normal := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
-/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`. -/
+/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
+
+This is the increasing chain of subgroups of `G` that starts with the trivial subgroup `⊥` of `G`
+and then continues defining `upperCentralSeries G (n + 1)` to be all the elements of `G`
+that, modulo `upperCentralSeries G n`, belong to the center of the quotient
+`G ⧸ upperCentralSeries G n`.
+
+In particular, the identities
+* `upperCentralSeries G 0 = ⊥` (`upperCentralSeries_zero`);
+* `upperCentralSeries G 1 = center G` (`upperCentralSeries_one`);
+
+hold.
+-/
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 
@@ -251,9 +263,6 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
     apply hH
     convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
-
-@[deprecated (since := "2024-12-25")]
-alias is_decending_rev_series_of_is_ascending := is_descending_rev_series_of_is_ascending
 
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by

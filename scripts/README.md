@@ -41,6 +41,9 @@ to learn about it as well!
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
   and is not a rename, will likely confuse the script.
+- `create_deprecated_modules.lean` defines the `#create_deprecated_modules` command that
+  automatically generates the `deprecated_module` entries, gathering information from `git`.
+  The expectation is that this will be expanded to a fully automated process that happens in CI.
 - `migrate_to_fork.py`
   Helps contributors migrate from having direct write access to the main repository
   to using a fork-based workflow. This comprehensive script automates the entire migration process:
@@ -57,7 +60,7 @@ to learn about it as well!
   Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
 - `githelper.py`
   The subcommand `githelper.py fix` helps contributors fix their git repository setup
-  by step-by-step converting it from its current state to a well defined target state.
+  by step-by-step converting it from its current state to a well-defined target state.
   The target state mostly matches the state after of a freshly cloned fork (`gh repo clone <fork>`)
   and looks like this:
 
@@ -77,6 +80,8 @@ to learn about it as well!
   and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
 
 **CI workflow**
+- `lake-build-with-retry.sh`
+  Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`

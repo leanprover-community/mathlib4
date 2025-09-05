@@ -285,7 +285,7 @@ theorem zmodeq_ofDigits_digits (b b' : ℕ) (c : ℤ) (h : b' ≡ c [ZMOD b]) (n
     congr
     · skip
     · rw [← ofDigits_digits b' n]
-  rw [coe_int_ofDigits]
+  rw [coe_ofDigits]
   apply ofDigits_zmodeq' _ _ _ h
 
 theorem ofDigits_neg_one :
