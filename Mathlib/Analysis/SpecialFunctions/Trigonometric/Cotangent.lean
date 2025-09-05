@@ -205,7 +205,7 @@ lemma cotTerm_identity (hz : x ∈ ℂ_ℤ) (n : ℕ) :
   · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
   · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
 
-theorem Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := by
+lemma Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := by
   rw [funext fun n ↦ cotTerm_identity hz n]
   apply Summable.mul_left
   suffices Summable fun i : ℕ ↦ (x - (↑i : ℂ))⁻¹ * (x + (↑i : ℂ))⁻¹ by
@@ -216,7 +216,7 @@ theorem Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n :
   apply (EisensteinSeries.summable_linear_sub_mul_linear_add x 1 1).congr
   simp [mul_comm]
 
-theorem cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
+lemma cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
     ∑' n : ℕ, (1 / (x - (n + 1)) + 1 / (x + (n + 1))) := by
   rw [HasSum.tsum_eq]
   apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
@@ -235,7 +235,7 @@ end MittagLeffler
 
 section iteratedDeriv
 
-open Set Complex UpperHalfPlane
+open Set UpperHalfPlane
 
 open scoped Nat
 
@@ -318,7 +318,7 @@ lemma summableLocallyUniformlyOn_iteratedDerivWithin_cotTerm {k : ℕ} (hk : 1 �
   exact ⟨cotTermUpperBound k A B hB, summable_cotTermUpperBound A B hB hk,
     iteratedDerivWithin_cotTerm_bounded_uniformly hk hK A B hB HABK⟩
 
-theorem differentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
+lemma differentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
     DifferentiableOn ℂ (iteratedDerivWithin l (fun z ↦ cotTerm z n) ℍₒ) ℍₒ := by
   suffices DifferentiableOn ℂ (fun z : ℂ ↦ (-1) ^ l * l ! * ((z + (n + 1)) ^ (-1 - l : ℤ) +
     (z - (n + 1)) ^ (-1 - l : ℤ))) ℍₒ by
@@ -328,13 +328,13 @@ theorem differentiableOn_iteratedDerivWithin_cotTerm (n l : ℕ) :
   · simpa [add_eq_zero_iff_neg_eq'] using (UpperHalfPlane.ne_int ⟨x, hx⟩ (-(n + 1))).symm
   · simpa [sub_eq_zero] using (UpperHalfPlane.ne_int ⟨x, hx⟩ (n + 1))
 
-private theorem aux_summable_add {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
+private lemma aux_summable_add {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
   Summable fun (n : ℕ) ↦ (x + (n + 1)) ^ (-1 - k : ℤ) := by
   apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
         (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by omega))).1).congr
   simp [← zpow_neg, sub_eq_add_neg]
 
-private theorem aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
+private lemma aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
   Summable fun (n : ℕ) ↦ (x - (n + 1)) ^ (-1 - k : ℤ) := by
   apply ((summable_nat_add_iff 1).mpr (summable_int_iff_summable_nat_and_neg.mp
         (EisensteinSeries.linear_right_summable x 1 (k := k + 1) (by omega))).2).congr
@@ -343,7 +343,7 @@ private theorem aux_summable_sub {k : ℕ} (hk : 1 ≤ k) (x : ℂ) :
 variable {z : ℂ}
 
 -- We have this auxiliary ugly version on the lhs so the the rhs looks nicer.
-private theorem aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
+private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
     (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) + iteratedDerivWithin k
     (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
@@ -361,14 +361,14 @@ private theorem aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z 
   push_cast
   ring_nf
 
-theorem iteratedDerivWithin_cot_sub_inv_eq_add_mul_tsum {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
+lemma iteratedDerivWithin_cot_sub_inv_eq_add_mul_tsum {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
     -(-1) ^ k * k ! * (z ^ (-1 - k : ℤ)) + (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
   simp only [← aux_iteratedDeriv_tsum_cotTerm hk hz, one_div, neg_mul, neg_add_cancel_left]
   refine iteratedDerivWithin_congr (fun z hz ↦ ?_) hz
   simpa [cotTerm] using (cot_series_rep' (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩))
 
-private theorem iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍₒ) :
+private lemma iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍₒ) :
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
     (iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z) -
     (-1) ^ k * k ! * (z ^ (-1 - k : ℤ)) := by
@@ -382,7 +382,7 @@ private theorem iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍ
     apply ContDiffWithinAt.neg
     exact ContDiffWithinAt.inv (by fun_prop) (ne_zero ⟨z, hz⟩)
 
-theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow {k : ℕ} (hk : 1 ≤ k) {z : ℂ} (hz : z ∈ ℍₒ) :
+lemma iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow {k : ℕ} (hk : 1 ≤ k) {z : ℂ} (hz : z ∈ ℍₒ) :
     iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ):= by
   have h0 := iteratedDerivWithin_cot_pi_mul_sub_inv k hz
@@ -390,6 +390,7 @@ theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow {k : ℕ} (hk : 1 ≤ k)
   rw [← add_left_inj (-(-1) ^ k * k ! * z ^ (-1 - k : ℤ)), h0]
   ring
 
+/-- The series expansion of the iterated derivative of `π cot (π z)`. -/
 theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤ k) {z : ℂ}
     (hz : z ∈ ℍₒ) : iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
