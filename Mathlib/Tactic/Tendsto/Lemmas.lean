@@ -63,7 +63,7 @@ private def subHomeomorph {𝕜 : Type u} [LinearOrderedField 𝕜] [Topological
   · exact continuous_sub_right c
   · exact continuous_add_right c
 
-variable {c : 𝕜}
+variable (c : 𝕜)
 
 theorem tendsto_nhds_right_of_tendsto_top (h : Tendsto (fun x ↦ f (c + x⁻¹)) atTop l) :
     Tendsto f (𝓝[>] c) l := by

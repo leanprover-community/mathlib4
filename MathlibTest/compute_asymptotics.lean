@@ -5,7 +5,6 @@ import Mathlib.Data.Real.Pi.Bounds
 
 open Filter Topology
 
-set_option trace.Meta.Tactic.simp.all true in
 example :
   let f := fun (y : ℝ) ↦ y;
   Tendsto f atTop atTop := by
@@ -326,13 +325,13 @@ example :
   compute_asymptotics
 
 example :
-    let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
-    Tendsto f atTop atTop := by
+    let f := fun (y : ℝ) ↦ Real.exp (Real.log y) - y
+    Tendsto f atTop (𝓝 0):= by
   compute_asymptotics
 
 example :
-    let f := fun (y : ℝ) ↦ Real.exp (Real.log y) - y
-    Tendsto f atTop (𝓝 0):= by
+    let f := fun (y : ℝ) ↦ Real.exp (Real.exp y) / Real.exp (y^2);
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
@@ -340,14 +339,10 @@ example :
     Tendsto f atTop atBot:= by
   compute_asymptotics
 
--- from Gruntz
--- TODO
--- open Real in
--- set_option maxHeartbeats 0 in
--- example :
---     let f := fun (x : ℝ) ↦ exp x * (exp (1/x - exp (-x)) - exp (1/x))
---     Tendsto f atTop (𝓝 (-1)) := by
-  -- compute_asymptotics
+example :
+    let f := fun (y : ℝ) ↦ Real.exp (1 / (1 + y) - 1 / (1 + y))
+    Tendsto f atTop (𝓝 1):= by
+  compute_asymptotics
 
 end exp
 
@@ -416,12 +411,15 @@ example :
   simp only
   compute_asymptotics
 
--- TODO: add guard_msg
--- example :
---   let f := fun (x : ℝ) ↦ x^(-1 : ℝ) - 1/x;
---   Tendsto f (𝓝[>] 0) atTop := by
---   simp only
---   compute_asymptotics
+/--
+error: The tactic proved that the function tends to 𝓝 0, not atTop.
+-/
+#guard_msgs in
+example :
+  let f := fun (x : ℝ) ↦ x^(-1 : ℝ) - 1/x;
+  Tendsto f (𝓝[>] 0) atTop := by
+  simp only
+  compute_asymptotics
 
 example :
   let f := fun (x : ℝ) ↦ (1 + x)^(Real.pi) / (3 + 2*x^(314/100 : ℝ))
@@ -498,18 +496,12 @@ example :
   simp only
   compute_asymptotics
 
--- TODO: why two goals?
--- example :
---     let f := fun (y : ℝ) ↦ (1 : ℝ);
---     Tendsto f (𝓝[≠] 0) (𝓝 2) := by
---   compute_asymptotics
---   all_goals sorry
-
--- TODO: fix
--- example :
---     let f := fun (y : ℝ) ↦ (Real.log (Real.exp (2 * y) - Real.exp (y))) * y⁻¹;
---     Tendsto f atTop (𝓝 1) := by
---   compute_asymptotics
+example (a : ℝ) :
+    let f := fun (y : ℝ) ↦ (1 : ℝ);
+    Tendsto f (𝓝[≠] 0) (𝓝 a) := by
+  compute_asymptotics
+  · sorry
+  · sorry
 
 end DifferentFilters
 
@@ -524,3 +516,36 @@ example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
   intro f
   dsimp only [f]
   compute_asymptotics
+
+section Gruntz
+
+open Real
+
+-- 8.1
+
+-- TODO
+-- example :
+--     let f := fun (x : ℝ) ↦ exp x * (exp (x⁻¹) - exp (x⁻¹ - exp (-x)))
+--     Tendsto f atTop (𝓝 1) := by
+--   compute_asymptotics
+
+-- 8.5
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦ exp (exp (exp (x + exp (-x)))) / exp (exp (exp x))
+--     Tendsto f atTop (𝓝 1) := by
+--   compute_asymptotics
+
+-- 8.12
+example :
+  let f := fun (x : ℝ) ↦ ((3 : ℝ) ^ x + (5 : ℝ) ^ x) ^ (x⁻¹);
+    Tendsto f atTop (𝓝 5) := by
+  have : 1 < log 5 / log 3 := by
+    rw [one_lt_div (by positivity)]
+    apply Real.strictMonoOn_log (by simp) (by simp) (by norm_num)
+  compute_asymptotics
+  field_simp
+  rw [Real.exp_log]
+  norm_num
+
+end Gruntz

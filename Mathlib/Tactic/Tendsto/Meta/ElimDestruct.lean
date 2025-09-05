@@ -79,12 +79,26 @@ inductive Result {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
 | cons (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(PreMS ($basis_hd :: $basis_tl)))
   (h : Q($ms = PreMS.cons ($exp, $coef) $tl))
 
-lemma consNormalize_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+lemma consNormalize_aux_congr_exp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)}
     {exp exp' : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (h : ms = PreMS.cons (exp, coef) tl) (h_exp : exp = exp') :
     ms = PreMS.cons (exp', coef) tl := by
   rw [h, h_exp]
+
+lemma consNormalize_aux_congr_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)}
+    {exp : ℝ} {coef coef' : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+    (h : ms = PreMS.cons (exp, coef) tl) (h_coef : coef = coef') :
+    ms = PreMS.cons (exp, coef') tl := by
+  rw [h, h_coef]
+
+lemma consNormalize_aux_congr_exp_coef {basis_hd : ℝ → ℝ}
+    {ms : PreMS [basis_hd]}
+    {exp exp' : ℝ} {coef : PreMS []} {coef' : ℝ} {tl : PreMS [basis_hd]}
+    (h : ms = PreMS.cons (exp, coef) tl) (h_exp : exp = exp') (h_coef : coef = coef') :
+    ms = PreMS.cons (exp', coef') tl := by
+  rw [h, h_exp, h_coef]
 
 def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     {ms : Q(PreMS ($basis_hd :: $basis_tl))}
@@ -92,7 +106,24 @@ def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     (h : Q($ms = PreMS.cons ($exp, $coef) $tl)) :
     TacticM (Result ms) := do
   let ⟨exp', pf_exp⟩ ← normalizeReal exp
-  return .cons q($exp') q($coef) q($tl) q(consNormalize_aux $h $pf_exp)
+  match basis_tl with
+  | ~q(List.nil) =>
+    let ⟨coef', pf_coef⟩ ← normalizeReal coef
+    return .cons q($exp') q($coef') q($tl) q(consNormalize_aux_congr_exp_coef $h $pf_exp $pf_coef)
+  | _ =>
+    return .cons q($exp') q($coef) q($tl) q(consNormalize_aux_congr_exp $h $pf_exp)
+
+def consNormalizeCoef {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+    {ms : Q(PreMS ($basis_hd :: $basis_tl))}
+    (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(PreMS ($basis_hd :: $basis_tl)))
+    (h : Q($ms = PreMS.cons ($exp, $coef) $tl)) :
+    TacticM (Result ms) := do
+  match basis_tl with
+  | ~q(List.nil) =>
+    let ⟨coef', pf_coef⟩ ← normalizeReal coef
+    return .cons q($exp) q($coef') q($tl) q(consNormalize_aux_congr_coef $h $pf_coef)
+  | _ =>
+    return .cons q($exp) q($coef) q($tl) q($h)
 
 def Result.cast {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     {ms ms' : Q(PreMS ($basis_hd :: $basis_tl))} (res : Result ms) (h : Q($ms' = $ms)) :
@@ -143,11 +174,6 @@ lemma updateBasis_insert_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     ms.updateBasis (.insert f ex_tl) = PreMS.cons (0, ms.updateBasis ex_tl) PreMS.nil := by
   simp [PreMS.updateBasis, PreMS.cons, PreMS.nil]
 
--- lemma updateBasis_insert_nil (f : ℝ → ℝ) (ms : PreMS []) (ex_tl : BasisExtension []):
---     ms.updateBasis (.insert f ex_tl) = PreMS.cons (0, PreMS.const _ ms) PreMS.nil := by
---   simp [PreMS.updateBasis, PreMS.const, PreMS.cons, PreMS.nil]
---   congr
---   rw [updateBasis_insert_nil]
 lemma monomial_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     PreMS.monomial (basis_hd :: basis_tl) 0 = PreMS.cons (1, PreMS.one basis_tl) PreMS.nil := by
   simp [PreMS.monomial, PreMS.cons, PreMS.nil]
@@ -427,7 +453,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       have : $basis_tl =Q [] := ⟨⟩
       let h' : Q(PreMS.extendBasisEnd $f $ms' = PreMS.cons (0, $ms') PreMS.nil) :=
         q(extendBasisEnd_const $f $ms')
-      return .cons q(0) q($ms') q(PreMS.nil) (q($h') : Expr)
+      return ← consNormalizeCoef q(0) q($ms') q(PreMS.nil) (q($h') : Expr)
     | ~q(List.cons $basis_hd' $basis_tl') =>
       have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
       let res := ← extractMSImp (basis_hd := basis_hd') (basis_tl := basis_tl') ms'
@@ -467,11 +493,11 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       let coef' : Q(PreMS $basis_tl) := q(PreMS.updateBasis $ex_tl $ms')
       let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.cons (0, $coef') PreMS.nil) :=
         q(updateBasis_insert_cons $f $ex_tl $ms')
-      return .cons q(0) q($coef') q(PreMS.nil) (q($h') : Expr)
+      return ← consNormalizeCoef q(0) q($coef') q(PreMS.nil) (q($h') : Expr)
     | ~q(List.nil), _ =>
       have : ($ex).getBasis =Q ($basis_hd :: $basis_tl) := ⟨⟩
       let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.const _ $ms') := q(updateBasis_const _ _)
-      return .cons q(0) q(PreMS.const _ $ms') q(PreMS.nil) (q($h') : Expr)
+      return ← consNormalizeCoef q(0) q(PreMS.const _ $ms') q(PreMS.nil) (q($h') : Expr)
     | _ => panic! s!"extractMS: unexpected oldBasis and ex: {← ppExpr oldBasis} and {← ppExpr ex}"
   | _ =>
   -- sorry
@@ -480,17 +506,17 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
   | ~q(PreMS.cons ($exp, $coef) $tl) => return .cons q($exp) q($coef) q($tl) q(rfl)
   | ~q(PreMS.const _ $c) =>
     -- TODO: replace all nontrivial rfl-s with theorems
-    return .cons q(0) q(PreMS.const _ $c) q(PreMS.nil) q(rfl)
+    return ← consNormalizeCoef q(0) q(PreMS.const _ $c) q(PreMS.nil) q(rfl)
   | ~q(PreMS.one _) =>
-    return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(rfl)
+    return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(rfl)
   | ~q(PreMS.monomial _ $n) =>
     match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
     | 0 =>
       have : $n =Q 0 := ⟨⟩
-      return .cons q(1) q(PreMS.one _) q(PreMS.nil) q(monomial_zero)
+      return ← consNormalizeCoef q(1) q(PreMS.one _) q(PreMS.nil) q(monomial_zero)
     | m + 1 =>
       have : $n =Q $m + 1 := ⟨⟩
-      return .cons q(0) q(PreMS.monomial _ $m) q(PreMS.nil) q(monomial_succ $m)
+      return ← consNormalizeCoef q(0) q(PreMS.monomial _ $m) q(PreMS.nil) q(monomial_succ $m)
   | ~q(PreMS.monomial_rpow _ $n $r) =>
     match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
     | 0 =>
@@ -498,7 +524,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalize q($r) q(PreMS.one _) q(PreMS.nil) q(monomial_rpow_zero $r)
     | m + 1 =>
       have : $n =Q $m + 1 := ⟨⟩
-      return .cons q(0) q(PreMS.monomial_rpow _ $m $r) q(PreMS.nil) q(monomial_rpow_succ $m $r)
+      return ← consNormalizeCoef q(0) q(PreMS.monomial_rpow _ $m $r) q(PreMS.nil) q(monomial_rpow_succ $m $r)
   | ~q(PreMS.neg $arg) =>
     let res ← extractMSImp arg
     match res with
@@ -560,7 +586,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil hs =>
       return .nil q(apply_nil $hs)
     | .cons s_hd s_tl hs =>
-      return .cons q(0) q(PreMS.const _ $s_hd) q((PreMS.LazySeries.apply $s_tl $arg).mul $arg)
+      return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd) q((PreMS.LazySeries.apply $s_tl $arg).mul $arg)
         q(apply_cons $hs)
   | ~q(PreMS.inv $arg) =>
     let res ← extractMSImp arg
@@ -577,7 +603,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     match res with
     | .nil h =>
       match ← checkZero a with
-      | .eq ha => return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(pow_nil_zero $h $ha)
+      | .eq ha => return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(pow_nil_zero $h $ha)
       | .neq ha => return .nil q(pow_nil_nonzero $h $ha)
     | .cons exp coef tl h =>
       let ms' : Q(PreMS ($basis_hd :: $basis_tl)) := q(mulMonomial
@@ -613,7 +639,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     let res ← extractMSImp arg
     match res with
     | .nil h =>
-      return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(exp_nil $h)
+      return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(exp_nil $h)
     | .cons exp coef tl h =>
       match ← checkLtZero exp with
       | .lt h_exp =>
@@ -630,7 +656,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     let res ← extractMSImp arg
     match res with
     | .nil h =>
-      return .cons q(0) q(PreMS.one _) q(PreMS.nil) q(cos_nil $h)
+      return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(cos_nil $h)
     | .cons exp coef tl h =>
       match ← checkLtZero exp with
       | .lt h_exp =>

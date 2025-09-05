@@ -77,15 +77,14 @@ structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
   h_trimmed : Q(PreMS.Trimmed $val)
 
 def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $ms))
-    (destructStepsLeft := 10000) : TacticM (TrimmingResult ms) := do
-  match destructStepsLeft with
-  | 0 => throwError "trim: no destruction steps left"
-  | destructStepsLeftNext + 1 =>
+    (destructStepsLeft := 20) : TacticM (TrimmingResult ms) := do
+  let destructStepsLeftNext + 1 := destructStepsLeft
+    | throwError "trim: no destruction steps left"
   match basis with
   | ~q(List.nil) => -- const
     return {
-      val := ms
-      h_wo := h_wo
+      val := q($ms)
+      h_wo := q($h_wo)
       h_approx := q(fun _ h ↦ h)
       h_trimmed := q(@PreMS.Trimmed.const $ms)
     }
@@ -96,8 +95,8 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $
     match ms_extracted with
     | ~q(PreMS.nil) =>
       return {
-        val := ms_extracted
-        h_wo := h_extracted_wo
+        val := q($ms_extracted)
+        h_wo := q($h_extracted_wo)
         h_approx :=
           q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
         h_trimmed := q(@PreMS.Trimmed.nil $basis_hd $basis_tl)
@@ -112,37 +111,26 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $
 
       match basis_tl with
       | ~q(List.nil) =>
-        match ← compareReal coef with
-        | .pos pf =>
+        match ← checkZero coef with
+        | .neq h_coef_ne_zero =>
           let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_lt $pf))
           return {
-            val := ms_extracted
-            h_wo := h_extracted_wo
+            val := q($ms_extracted)
+            h_wo := q($h_extracted_wo)
             h_approx :=
               q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
             h_trimmed := q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
           }
-        | .neg pf =>
-          let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_gt $pf))
-          return {
-            val := ms_extracted
-            h_wo := h_extracted_wo
-            h_approx :=
-              q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
-            h_trimmed := q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
-          }
-        | .zero pf =>
+        | .eq h_coef_eq_zero =>
           let tl_trimmed ← trim tl h_tl_wo destructStepsLeftNext
           return {
-            val := tl_trimmed.val
-            h_wo := tl_trimmed.h_wo
+            val := q($tl_trimmed.val)
+            h_wo := q($tl_trimmed.h_wo)
             h_approx :=
               q(fun f h ↦ $tl_trimmed.h_approx f
-                (approx_cons_zero $pf
+                (approx_cons_zero $h_coef_eq_zero
                   (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)))
-            h_trimmed := tl_trimmed.h_trimmed
+            h_trimmed := q($tl_trimmed.h_trimmed)
           }
       | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
         let coef_trimmed ← trim coef h_coef_wo destructStepsLeftNext
@@ -150,13 +138,13 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $
         | ~q(PreMS.nil) =>
           let tl_trimmed ← trim tl h_tl_wo destructStepsLeftNext
           return {
-            val := tl_trimmed.val
-            h_wo := tl_trimmed.h_wo
+            val := q($tl_trimmed.val)
+            h_wo := q($tl_trimmed.h_wo)
             h_approx := q(fun f h ↦ $tl_trimmed.h_approx f
               (approx_cons_nil
                 (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
                 $coef_trimmed.h_approx))
-            h_trimmed := tl_trimmed.h_trimmed
+            h_trimmed := q($tl_trimmed.h_trimmed)
           }
         | ~q(PreMS.cons $coef_hd $coef_tl) =>
           let h_coef_ne_zero : Q($coef_trimmed.val ≠ PreMS.zero _) := q(PreMS.noConfusion_zero)
@@ -183,16 +171,15 @@ structure PartialTrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
 /-- Same as `trim` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true. In such
 case we can prove that the limit is zero without `ms.Trimmed`. -/
 def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
-    (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 10000) :
+    (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 20) :
     TacticM (PartialTrimmingResult ms) := do
-  match destructStepsLeft with
-  | 0 => throwError "trimPartial: no destruction steps left"
-  | destructStepsLeftNext + 1 =>
+  let destructStepsLeftNext + 1 := destructStepsLeft
+    | throwError "trimPartial: no destruction steps left"
   match basis with
   | ~q(List.nil) => -- const
     return {
-      val := ms
-      h_wo := h_wo
+      val := q($ms)
+      h_wo := q($h_wo)
       h_approx := q(fun _ h ↦ h)
       h_trimmed := .some q(@PreMS.Trimmed.const $ms)
     }
@@ -203,8 +190,8 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
     match ms_extracted with
     | ~q(PreMS.nil) =>
       return {
-        val := ms_extracted
-        h_wo := h_extracted_wo
+        val := q($ms_extracted)
+        h_wo := q($h_extracted_wo)
         h_approx :=
           q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
         h_trimmed := .some q(@PreMS.Trimmed.nil $basis_hd $basis_tl)
@@ -215,8 +202,8 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
         match ← compareReal exp with
         | .neg _ =>
           return {
-            val := ms_extracted
-            h_wo := h_extracted_wo
+            val := q($ms_extracted)
+            h_wo := q($h_extracted_wo)
             h_approx :=
               q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
             h_trimmed := .none
@@ -234,35 +221,24 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
 
       match basis_tl with
       | ~q(List.nil) =>
-        match ← compareReal coef with
-        | .pos pf =>
+        match ← checkZero coef with
+        | .neq h_coef_ne_zero =>
           let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_lt $pf))
           return {
-            val := ms_extracted
-            h_wo := h_extracted_wo
+            val := q($ms_extracted)
+            h_wo := q($h_extracted_wo)
             h_approx :=
               q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
             h_trimmed := .some q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
           }
-        | .neg pf =>
-          let h_coef_trimmed : Q(PreMS.Trimmed $coef) := q(PreMS.Trimmed.const)
-          let h_coef_ne_zero : Q($coef ≠ PreMS.zero _) := q(Ne.symm (ne_of_gt $pf))
-          return {
-            val := ms_extracted
-            h_wo := h_extracted_wo
-            h_approx :=
-              q(fun f h ↦ Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)
-            h_trimmed := .some q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
-          }
-        | .zero pf =>
+        | .eq h_coef_eq_zero =>
           let tl_trimmed ← trimPartial tl h_tl_wo allZero destructStepsLeftNext
           return {
-            val := tl_trimmed.val
-            h_wo := tl_trimmed.h_wo
+            val := q($tl_trimmed.val)
+            h_wo := q($tl_trimmed.h_wo)
             h_approx :=
               q(fun f h ↦ $tl_trimmed.h_approx f
-                (approx_cons_zero $pf
+                (approx_cons_zero $h_coef_eq_zero
                   (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)))
             h_trimmed := tl_trimmed.h_trimmed
           }
@@ -272,8 +248,8 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
         | ~q(PreMS.nil) =>
           let tl_trimmed ← trimPartial tl h_tl_wo allZero destructStepsLeftNext
           return {
-            val := tl_trimmed.val
-            h_wo := tl_trimmed.h_wo
+            val := q($tl_trimmed.val)
+            h_wo := q($tl_trimmed.h_wo)
             h_approx := q(fun f h ↦ $tl_trimmed.h_approx f
               (approx_cons_nil
                 (Eq.subst (motive := fun x ↦ PreMS.Approximates x f) $h_eq_extracted h)

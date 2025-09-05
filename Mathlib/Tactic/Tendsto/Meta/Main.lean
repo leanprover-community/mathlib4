@@ -62,16 +62,6 @@ structure BasisState where
 
 abbrev BasisM := StateT BasisState TacticM
 
-def proveTendstoTop (ms : MS) : TacticM Q(Tendsto $ms.f atTop atTop) := do
-  let ⟨ms, h_trimmed⟩ ← trimMS ms
-  let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "Unexpected basis in proveTendstoTop"
-  let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms.val
-  let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in proveTendstoTop"
-  let .pos h_first_is_pos := ← getFirstIs exps | panic! "Unexpected nonpos in proveTendstoTop"
-  let .pos h_coef_pos := ← compareReal coef | panic! "Unexpected coef in proveTendstoTop"
-  return (q(PreMS.tendsto_top_of_FirstIsPos $ms.h_wo $ms.h_approx $h_trimmed $ms.h_basis
-    $h_leading_eq $h_first_is_pos $h_coef_pos) : Expr)
-
 -- TODO: `h_c_pos` and `h_eq` are not used. Do we need them?
 inductive FindPlaceResultRight (f right_hd : Q(ℝ → ℝ))
   | gt (h : Q((Real.log ∘ $right_hd) =o[atTop] $f))
@@ -366,12 +356,15 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     return (← updateBasis G, G_exp)
   | .zero _ => panic! "Unexpected coef = zero in insertEquivalentToBasis"
 
-partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : BasisM MS := do
+-- assume `ms` is partially trimmed, i.e. its either trimmed or it's clear that `FirstIsNeg ms`
+partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val)) : BasisM MS := do
   let leading ← getLeadingTerm ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
   match ← getFirstIsPos exps with
   | .wrong h_nonpos => return ms.exp h_nonpos
   | .right h_first_is_pos =>
+    -- let .some h_trimmed := h_trimmed? | panic! "createExpMS: FirstIsPos but ms is not trimmed"
+    let h_trimmed := h_trimmed?.get!
     -- find place for a new basis element
     let ⟨left, right_hd, right_tl, h_left, h_right⟩ ← findPlace ms h_trimmed h_first_is_pos
     match h_right with
@@ -383,8 +376,8 @@ partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : Basis
       have : $log_right_hd'.f =Q Real.log ∘ $right_hd := ⟨⟩
       let G := log_right_hd'.mulConst q($c)
       let H := ms.sub G ⟨⟩
-      let ⟨H, hH_trimmed⟩ ← trimMS H
-      let expH := ← createExpMS H hH_trimmed
+      let ⟨H, hH_trimmed?⟩ ← trimPartialMS H
+      let expH := ← createExpMS H hH_trimmed?
       -- return b_i^c * exp (H)
       let n := ← findIndex (← get).basis right_hd
       let B := MS.monomial_rpow (← get).basis (← get).logBasis n q($c) (← get).h_basis
@@ -404,7 +397,7 @@ partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : Basis
       -- create H = F - G
       let ms ← updateBasis ms
       let H := ms.sub G ⟨⟩
-      let ⟨H, _⟩ ← trimMS H
+      let ⟨H, _⟩ ← trimPartialMS H
       -- prove `¬ FirstIsPos` for `H`
       let H_leading ← getLeadingTerm H.val
       let ~q(⟨$H_coef, $H_exps⟩) := H_leading | panic! "Unexpected leading of H in createExpMS"
@@ -431,6 +424,13 @@ partial def createExpMS (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : Basis
         h_basis := G_exp.h_basis
         h_logBasis := G_exp.h_logBasis
       }
+
+theorem monomial_rpow_Approximates_inv (basis : Basis) (ms : PreMS basis) (f : ℝ → ℝ)
+    (h_approx : ms.Approximates (f ^ (-1 : ℝ))) :
+    ms.Approximates (f⁻¹) := by
+  convert h_approx
+  ext t
+  simp [Real.rpow_neg_one]
 
 partial def createMSImp (body : Expr) : BasisM MS := do
   if body.isBVar then
@@ -464,9 +464,20 @@ partial def createMSImp (body : Expr) : BasisM MS := do
       return MS.mul ms1' ms2 ⟨⟩
     else
       return MS.mul ms1 ms2 ⟨⟩
-  | (``Inv.inv, #[_, _, arg]) =>
-    let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
-    return MS.inv ms h_trimmed
+  | (``Inv.inv, #[_, _, (arg : Q(ℝ))]) =>
+    if arg.isBVar then
+      if arg.bvarIdx! != 0 then
+        throwError "Unexpected bvarIdx in createMS: expected 0"
+      let res := MS.monomial_rpow (← get).basis (← get).logBasis (← get).n_id q(-1) (← get).h_basis
+        (← get).h_logBasis
+      return {res with
+        f := .lam .anonymous q(ℝ) q($arg⁻¹) .default
+        h_approx := ← mkAppM ``monomial_rpow_Approximates_inv
+          #[res.basis, res.val, q(id : ℝ → ℝ), res.h_approx]
+      }
+    else
+      let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
+      return MS.inv ms h_trimmed
   | (``HDiv.hDiv, #[_, _, _, _, arg1, arg2]) =>
     let ms1 ← createMSImp arg1
     let ⟨ms2, h_trimmed⟩ ← trimMS (← createMSImp arg2)
@@ -528,17 +539,17 @@ partial def createMSImp (body : Expr) : BasisM MS := do
       }
       return MS.log ms h_trimmed h_pos h_last
   | (``Real.exp, #[arg]) =>
-    let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
-    return ← createExpMS ms h_trimmed
+    let ⟨ms, h_trimmed?⟩ ← trimPartialMS (← createMSImp arg)
+    return ← createExpMS ms h_trimmed?
   | (``Real.cos, #[arg]) =>
-    let ⟨ms, _⟩ ← trimMS (← createMSImp arg)
+    let ⟨ms, _⟩ ← trimPartialMS (← createMSImp arg)
     let leading ← getLeadingTerm ms.val
     let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
     let .wrong h_nonpos ← getFirstIsPos exps |
       throwError f!"Cannot prove that argument of cos is eventually bounded: {← ppExpr arg}"
     return MS.cos ms h_nonpos
   | (``Real.sin, #[arg]) =>
-    let ⟨ms, _⟩ ← trimMS (← createMSImp arg)
+    let ⟨ms, _⟩ ← trimPartialMS (← createMSImp arg)
     let leading ← getLeadingTerm ms.val
     let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
     let .wrong h_nonpos ← getFirstIsPos exps |
@@ -620,7 +631,7 @@ elab "compute_asymptotics" : tactic =>
     let ~q(@Filter.Tendsto ℝ ℝ $f $filter $targetLimit) := target
       | throwError "The goal must me in the form Tendsto (fun x ↦ ...) ... ..."
     let (convertLemma?, convertedFs) ← convertFilter f filter
-    let proofs : List (Expr) ← convertedFs.mapM fun f => do
+    let proofs : List Expr ← convertedFs.mapM fun f => do
       let ⟨1, fType, f⟩ ← inferTypeQ f
         | throwError "Unexpected universe level of function in compute_asymptotics"
       let ~q(ℝ → ℝ) := fType | throwError "Only real functions are supported"
@@ -629,20 +640,31 @@ elab "compute_asymptotics" : tactic =>
         match targetLimit, limit with
         | ~q(𝓝 $a), ~q(𝓝 $b) =>
           let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
-          -- TODO: remove [PreMS_const] here. Make sure result of createMS is normalized already
-          let extraGoals ← evalTacticAt (← `(tactic| try norm_num [PreMS_const])) h_eq.mvarId!
+          let extraGoals ← evalTacticAt
+            (← `(tactic| norm_num)) h_eq.mvarId!
+          if ← extraGoals.anyM (fun g ↦ do pure (← g.getType).isFalse) then
+            throwError m!"The tactic proved that the function tends to {← ppExpr limit}, " ++
+              m!"not {← ppExpr targetLimit}."
           appendGoals extraGoals
           pure q(Eq.subst
             (motive := fun x ↦ Filter.Tendsto $f atTop (𝓝 x)) $h_eq $h_tendsto)
         | _ =>
-          throwError m!"The tactic proved that the function tends to {← ppExpr limit},
-            not {← ppExpr targetLimit}."
+          throwError m!"The tactic proved that the function tends to {← ppExpr limit}, " ++
+            m!"not {← ppExpr targetLimit}."
       else
         pure h_tendsto
     let pf ← match convertLemma? with
     | .none => pure proofs[0]!
-    | .some convertLemma => mkAppM convertLemma (f :: proofs).toArray
-
+    | .some convertLemma => do
+      match filter with
+      | ~q(𝓝[<] $c) =>
+        pure <| ← mkAppM convertLemma (f :: c :: proofs).toArray
+      | ~q(𝓝[>] $c) =>
+        pure <| ← mkAppM convertLemma (f :: c :: proofs).toArray
+      | ~q(𝓝[≠] $c) =>
+        pure <| ← mkAppM convertLemma (f :: c :: proofs).toArray
+      | _ =>
+        pure <| ← mkAppM convertLemma (f :: proofs).toArray
     (← getMainGoal).assign pf
 
 end TendstoTactic

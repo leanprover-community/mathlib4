@@ -5,6 +5,8 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 import Mathlib.Data.Real.Basic
 
 /-!
@@ -31,30 +33,26 @@ def normalizeReal (x : Q(ℝ)) : TacticM <| (x' : Q(ℝ)) × Q($x = $x') := do
   let pf : Q($x = $x2) := q(Eq.trans $pf1 $pf2)
   return ⟨x2, pf⟩
 
-syntax "compare_real" : tactic
-macro_rules
-| `(tactic| compare_real) => `(tactic| norm_num; try linarith)
-
 def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
   let e ← mkFreshExprMVar q(0 < $x)
-  let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
+  let res ← evalTacticAt (← `(tactic| norm_num; (try linarith); (try positivity))) e.mvarId!
   if res.isEmpty then
     return .pos e
 
   let e ← mkFreshExprMVar q($x < 0)
-  let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
+  let res ← evalTacticAt (← `(tactic| norm_num; (try linarith); (try positivity))) e.mvarId!
   if res.isEmpty then
     return .neg e
 
   let e ← mkFreshExprMVar q($x = 0)
-  let res ← evalTacticAt (← `(tactic| compare_real)) e.mvarId!
+  let res ← evalTacticAt (← `(tactic|
+    norm_num <;> field_simp <;> (try linarith) <;> (try positivity) <;> ring_nf)) e.mvarId!
   if res.isEmpty then
     return .zero e
   throwError f!"Cannot compare real number {← ppExpr x} with zero"
 
 def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
   let ⟨x', pf⟩ ← normalizeReal x
-  -- dbg_trace f!"normalizeReal: {← ppExpr x} --> {← ppExpr x'}"
   let r ← compareRealCore x'
   return match r with
   | .pos e => .pos q(Eq.subst (motive := fun x ↦ 0 < x) (Eq.symm $pf) $e)
