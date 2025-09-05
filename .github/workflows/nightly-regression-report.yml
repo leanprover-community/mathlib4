@@ -105,7 +105,7 @@ jobs:
           counts+=$(printf 'Warnings: %d' $(wc -l <<<"${warning_lines}"))
           echo "$(wc -l <<<"${warning_lines}") lines of warnings"
         fi
-        if info_lines=$((grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at ')); then
+        if info_lines=$(grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at '); then
           info_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${info_lines}")
           counts+=$(printf 'Info messages: %d' $(wc -l <<<"${info_lines}"))
           echo "$(wc -l <<<"${info_lines}") lines of info"
