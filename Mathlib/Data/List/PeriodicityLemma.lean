@@ -23,7 +23,7 @@ periodicity lemma, Fine-Wilf theorem, period, periodicity
 
 variable {α : Type*}
 
-open List Nat
+open Nat
 
 namespace List
 
@@ -38,7 +38,7 @@ def HasPeriod (w : List α) (p : ℕ) : Prop := w <+: take p w ++ w
 
 lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} : (HasPeriod w p) ↔
     (∀ i < w.length - p, w[i]? = w[i + p]?) := by
-  apply Iff.intro
+  constructor
   · rw [HasPeriod]; intro pref j len
     have i1: j < w.length := by omega
     have i2: j + p < w.length := by omega
@@ -63,7 +63,6 @@ lemma hasPeriod_zero (w : List α) : HasPeriod w 0 := by
 lemma hasPeriod_large (w : List α) (p : ℕ) (large : w.length ≤ p) : HasPeriod w p := by
   rw [HasPeriod]; simp_all [(take_eq_self_iff w).mpr large]
 
-@[simp]
 lemma hasPeriod_empty (p : ℕ) : HasPeriod ([] : List α) p := by
   simp
 
@@ -74,7 +73,7 @@ lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
     exact congrArg (getElem? w) (id (Eq.symm this))
   · cases lt_or_ge i p with
   | inl small =>
-      have eq : i % p = i := by exact mod_eq_of_lt small
+      have eq : i % p = i := mod_eq_of_lt small
       rw [eq]
   | inr large =>
       have len' : i - p < w.length := by omega
@@ -83,13 +82,13 @@ lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
       have minus: i - p < w.length - p := by omega
       have per' := per (i - p) minus
       simp only [IH, large, Nat.sub_add_cancel] at per'
-      have mod : i % p = (i - p) % p := by exact mod_eq_sub_mod large
+      have mod : i % p = (i - p) % p := mod_eq_sub_mod large
       simpa [mod] using per'.symm
 
 /-- An equivalent definition of `HasPeriod w p` by modular equivalence on indeces. -/
-lemma hasPeriod_iff_mod {p : ℕ} {w : List α} : (HasPeriod w p) ↔
-    (∀ i < w.length, w[i]? = w[i % p]?) := by
-  apply Iff.intro
+lemma hasPeriod_iff_mod {p : ℕ} {w : List α} :
+    (HasPeriod w p) ↔ (∀ i < w.length, w[i]? = w[i % p]?) := by
+  constructor
   · intro per i len
     exact hasPeriod_mod p i w per len
   · intro mod
@@ -116,7 +115,7 @@ lemma hasPeriod_factor_hasPeriod (u v w : List α) (p : ℕ) (per : HasPeriod (u
   have : ∀ i < u.length + (v.length + w.length) - p,
       (u ++ (v ++ w))[i]? = (u ++ (v ++ w))[i + p]? := by
    simp_all [hasPeriod_iff_getElem?]
-  refine (tp ▸ (t ▸ (this (j + u.length) ?_))); omega
+  exact (tp ▸ (t ▸ (this (j + u.length) (by omega))))
 
 lemma HasPeriod.drop_prefix {w : List α} (p : ℕ) (per : HasPeriod w p) :
     drop p w <+: w := by
@@ -132,8 +131,7 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
   rcases Nat.eq_zero_or_pos n with rfl | pos
   · simp_all
   rw [hasPeriod_iff_mod];
-  have mod_w : ∀ i < w.length, w[i]? = w[i % p]? := by
-    exact fun i a => hasPeriod_mod p i w per a
+  have mod_w : ∀ i < w.length, w[i]? = w[i % p]? := (hasPeriod_mod p · w per ·)
   suffices h: ∀ i < n + w.length, (take n w ++ w)[i]? = (take n w ++ w)[i % p]? by simp_all
   intro i less_i
   have mod_p: ∀ j < n + length w, (take n w ++ w)[j]? = w[j % p]? := by
@@ -143,7 +141,7 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
       exact calc
         (take n w ++ w)[j]? = (take n w)[j]? := by
           refine getElem?_append_left ?_; simp_all
-        _ = w[j]? := by exact getElem?_take_of_lt pref
+        _ = w[j]? := getElem?_take_of_lt pref
         _ = w[j % p]? := by refine mod_w j ?_; omega
     else
       -- larger indeces are indeces of `w` decreased by `n`
@@ -159,7 +157,7 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
           convert_to (take n w ++ w)[j]? = w[j - (take n w).length]?
           simp_all
           refine getElem?_append_right ?_; simp_all
-        _ = w[(j - n) % p]? := by refine mod_w (j - n) ?_; omega
+        _ = w[(j - n) % p]? := by refine mod_w (j - n) (by omega)
         _ = w[j % p]? := by rw [j_mod]
   have less_mod: i % p < n + w.length := by
     have : i % p < p := mod_lt i p_pos; have : p ≤ n := le_of_dvd pos dvd; omega
@@ -169,7 +167,8 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
 /-- Induction step for the `periodicity_lemma` -/
 lemma two_periods_step {p q : ℕ} {w : List α} (per_p : HasPeriod w p) (per_q : HasPeriod w q)
     (w_len : q < w.length) (q_lt_p : q < p) : HasPeriod (drop q w) (p - q) := by
-  rw [hasPeriod_iff_getElem?]; rw [hasPeriod_iff_getElem?] at per_p per_q
+  rw [hasPeriod_iff_getElem?]
+  rw [hasPeriod_iff_getElem?] at per_p per_q
   simp only [length_drop, getElem?_drop]
   intro i i_lt
   exact calc
@@ -197,7 +196,7 @@ theorem periodicity_lemma (w : List α) (p q : ℕ) (per_p : HasPeriod w p) (per
       exact (gcd_comm q p ▸ periodicity_lemma w q p) per_q per_p (add_comm p q ▸ len)
   | eq => simpa [(Nat.compare_eq_eq).mp hyp]
   | gt =>
-      have q_lt_p : q < p  := by exact Nat.compare_eq_gt.mp hyp
+      have q_lt_p : q < p  := Nat.compare_eq_gt.mp hyp
       have gcd_lt_p : p.gcd q < p := by
         refine Ne.lt_of_le ?_ (gcd_le_left q p_pos)
         simp [gcd_eq_left_iff_dvd, not_dvd_of_pos_of_lt q_pos q_lt_p]
@@ -217,7 +216,7 @@ theorem periodicity_lemma (w : List α) (p q : ℕ) (per_p : HasPeriod w p) (per
           let ⟨z,hz⟩ := per_q.drop_prefix
           convert_to take q (drop q w) = take q (drop q w ++ z); rw [hz]
           exact (take_append_of_le_length drop_len).symm
-
+      -- the induction step
       have IH : HasPeriod (drop q w) (gcd (p - q) q) := by
           apply periodicity_lemma (drop q w) (p - q) q
           · exact per_diff
