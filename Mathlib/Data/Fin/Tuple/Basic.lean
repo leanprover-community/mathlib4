@@ -207,7 +207,8 @@ theorem cons_injective_iff {α} {x₀ : α} {x : Fin n → α} :
 
 theorem exists_cons {α : Fin (n + 1) → Type*} (q : ∀ i, α i) :
     ∃ (x₀ : α 0) (x : ∀ i : Fin n, α i.succ), q = cons x₀ x := by
-  sorry
+  use q 0, tail q
+  exact Eq.symm (cons_self_tail q)
 
 @[simp]
 theorem forall_fin_zero_pi {α : Fin 0 → Sort*} {P : (∀ i, α i) → Prop} :
