@@ -370,6 +370,56 @@ def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ whe
       map_vadd' := fun _ _ => (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
   map_mul' _ _ := rfl
 
+section
+
+variable (e₁ : P₁ ≃ᵃ[k] P₂) (e₂ : P₃ ≃ᵃ[k] P₄)
+
+/-- Product of two affine equivalences. The map comes from `Equiv.prodCongr` -/
+@[simps linear]
+def prodCongr : P₁ × P₃ ≃ᵃ[k] P₂ × P₄ where
+  __ := Equiv.prodCongr e₁ e₂
+  linear := e₁.linear.prodCongr e₂.linear
+  map_vadd' := by simp
+
+@[simp]
+theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
+  rfl
+
+@[simp]
+theorem prodCongr_apply (p : P₁ × P₃) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
+  rfl
+
+@[simp, norm_cast]
+theorem coe_prodCongr :
+    (e₁.prodCongr e₂ : P₁ × P₃ →ᵃ[k] P₂ × P₄) = (e₁ : P₁ →ᵃ[k] P₂).prodMap (e₂ : P₃ →ᵃ[k] P₄) :=
+  rfl
+
+end
+
+section
+
+variable (k P₁ P₂ P₃)
+
+/-- Product of affine spaces is commutative up to affine isomorphism. -/
+@[simps! apply linear]
+def prodComm : P₁ × P₂ ≃ᵃ[k] P₂ × P₁ where
+  __ := Equiv.prodComm P₁ P₂
+  linear := LinearEquiv.prodComm k V₁ V₂
+  map_vadd' := by simp
+
+@[simp]
+theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
+  rfl
+
+/-- Product of affine spaces is associative up to affine isomorphism. -/
+@[simps! apply symm_apply linear]
+def prodAssoc : (P₁ × P₂) × P₃ ≃ᵃ[k] P₁ × (P₂ × P₃) where
+  __ := Equiv.prodAssoc P₁ P₂ P₃
+  linear := LinearEquiv.prodAssoc k V₁ V₂ V₃
+  map_vadd' := by simp
+
+end
+
 variable (k)
 
 /-- The map `v ↦ v +ᵥ b` as an affine equivalence between a module `V` and an affine space `P` with
