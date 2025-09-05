@@ -227,8 +227,8 @@ theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 @[simp]
 theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
-    IsIdempotentElem hpq.projection := LinearMap.ext fun x => by
-  simp [projection, -coe_linearProjOfIsCompl_apply]
+    IsIdempotentElem hpq.projection :=
+  LinearMap.ext fun _ ↦ congr($(linearProjOfIsCompl_isCompl_projection hpq _))
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
