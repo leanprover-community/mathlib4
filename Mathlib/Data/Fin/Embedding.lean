@@ -3,7 +3,7 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.Logic.Embedding.Basic
 
 /-!
@@ -17,7 +17,6 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.succEmb` : `Fin.succ` as an `Embedding`;
 * `Fin.castLEEmb h` : `Fin.castLE` as an `Embedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
-* `finCongr` : `Fin.cast` as an `Equiv`, equivalence between `Fin n` and `Fin m` when `n = m`;
 * `Fin.castAddEmb m` : `Fin.castAdd` as an `Embedding`, embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : `Fin.castSucc` as an `Embedding`, embed `Fin n` into `Fin (n+1)`;
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `Embedding`, add `m` on `i` on the right,
