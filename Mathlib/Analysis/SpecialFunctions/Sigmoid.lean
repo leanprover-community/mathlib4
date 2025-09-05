@@ -214,7 +214,7 @@ lemma sigmoid_inj {a b : ℝ} : sigmoid a = sigmoid b ↔ a = b := sigmoid_injec
 @[fun_prop]
 lemma continuous_sigmoid : Continuous sigmoid := Real.continuous_sigmoid.subtype_mk _
 
-lemma sigmoid_neg_eq_symm (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
+lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
