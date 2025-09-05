@@ -67,13 +67,13 @@ variable [IsOrderedRing R] [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoi
   [SMulWithZero R M]
 
 instance instIsOrderedModule [hM : IsOrderedModule R M] : IsOrderedModule R≥0 M where
-  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := hM.1 hb ha
-  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := hM.2 hb ha
+  smul_le_smul_of_nonneg_left _b hb _a₁ _a₂ ha := hM.smul_le_smul_of_nonneg_left hb ha
+  smul_le_smul_of_nonneg_right _b hb _a₁ _a₂ ha := hM.smul_le_smul_of_nonneg_right hb ha
 
 instance instIsStrictOrderedModule [hM : IsStrictOrderedModule R M] :
     IsStrictOrderedModule R≥0 M where
-  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := hM.1 hb ha
-  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := hM.2 hb ha
+  smul_lt_smul_of_pos_left _b hb _a₁ _a₂ ha := hM.smul_lt_smul_of_pos_left hb ha
+  smul_lt_smul_of_pos_right _b hb _a₁ _a₂ ha := hM.smul_lt_smul_of_pos_right hb ha
 
 end IsOrderedModule
 

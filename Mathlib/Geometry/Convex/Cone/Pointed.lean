@@ -34,7 +34,7 @@ open Function
 section Definitions
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-  {C₁ C₂ : PointedCone R E}
+  {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
 /-- Every pointed cone is a convex cone. -/
 @[coe]
@@ -61,6 +61,9 @@ lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.conv
 
 instance instZero (C : PointedCone R E) : Zero C :=
   ⟨0, C.zero_mem⟩
+
+nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
+  C.smul_mem ⟨r, hr⟩ hx
 
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
@@ -183,14 +186,13 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
 end PositiveCone
 
 section OrderedAddCommGroup
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
-  [Module R E]
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
+  [IsOrderedAddMonoid E] [Module R E]
 
 /-- Constructs an ordered module given an ordered group, a cone, and a proof that
 the order relation is the one defined by the cone. -/
-lemma to_posSMulMono (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ C) :
-    PosSMulMono R E where
-  elim r hr x y := by simpa [h, ← smul_sub] using C.smul_mem ⟨r, hr⟩
+lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ C) :
+    IsOrderedModule R E := .of_smul_nonneg <| by simp +contextual [h, C.smul_mem]
 
 end OrderedAddCommGroup
 end PointedCone
