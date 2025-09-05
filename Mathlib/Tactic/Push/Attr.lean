@@ -84,17 +84,21 @@ The `push` attribute is used to tag lemmas that "push" a constant into an expres
 
 For example:
 ```lean
-@[push] theorem not_not (p : Prop) : ¬ ¬p ↔ p
+@[push] theorem log_mul (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y
+@[push] theorem log_abs : log |x| = log x
 
 @[push] theorem not_imp (p q : Prop) : ¬(p → q) ↔ p ∧ ¬q
-
 @[push] theorem not_iff (p q : Prop) : ¬(p ↔ q) ↔ (p ∧ ¬q) ∨ (¬p ∧ q)
+@[push] theorem not_not (p : Prop) : ¬ ¬p ↔ p
+@[push] theorem not_le : ¬a ≤ b ↔ b < a
 ```
 
-When applicable, a `pull` attribute is automatically added in the reverse direction.
-To avoid this, use the `push only` syntax.
+Note that some `push` lemmas don't push the constant away from the head (`log_abs`) and
+some `push` lemmas cancel the constant out (`not_not` and `not_le`).
+For the other lemmas that are "genuine" `push` lemmas, a `pull` attribute is automatically added
+in the reverse direction. To not add a `pull` tag, use `@[push only]`.
 
-To use the reverse direction of the lemma, use the `push ←` syntax.
+To use the lemma in the reverse direction, use the `@[push ←]`.
 -/
 syntax (name := pushAttr) "push" (" ←" <|> " <-")? (&" only")? (ppSpace prio)? : attr
 
