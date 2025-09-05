@@ -145,17 +145,12 @@ lemma mem_closedBall_aux {c : ℂ} {r : ℝ} {z : ℂ} (z_in_ball : z ∈ closed
 lemma mem_ball_of_map_re_aux {c : ℂ} {r : ℝ} {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
   convert rectangle_in_convex (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
-    simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
-      add_zero, add_im, mul_im, zero_add, ha₁, ha₂, Rectangle]
-  simp [horizontalSegment_eq a₁ a₂ b]
+  simp [horizontalSegment_eq a₁ a₂ b, ha₁, ha₂, Rectangle]
 
 lemma mem_ball_of_map_im_aux {c : ℂ} {r : ℝ} {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
     (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
   convert rectangle_in_convex (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
-  simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
-    add_zero, add_im, mul_im, zero_add, hb₁, hb₂, Rectangle]
-  simp [verticalSegment_eq a b₁ b₂]
--- NOTE: I don't know why these `simp`s can't be combined.
+  simp [verticalSegment_eq a b₁ b₂, hb₁, hb₂, Rectangle]
 
 lemma mem_ball_of_map_im_aux' {c : ℂ} {r : ℝ} {z : ℂ} {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
     (fun (y : ℝ) ↦ w.re + y * I) '' [[z.im, w.im]] ⊆ ball c r := by
