@@ -84,7 +84,7 @@ instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCirc
 
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
-on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
+on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
 interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
@@ -197,7 +197,7 @@ protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by
 
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)
-on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
+on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
 interval (t, t + 1]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := UnitAddCircle) ((↑) : ℝ → UnitAddCircle)
@@ -315,11 +315,11 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     (h_int : ∀ t₁ t₂, IntervalIntegrable f MeasureSpace.volume t₁ t₂) :
     ∫ x in t..t + n • T, f x = n • ∫ x in t..t + T, f x := by
   -- Reduce to the case `b = 0`
-  suffices (∫ x in (0)..(n • T), f x) = n • ∫ x in (0)..T, f x by
+  suffices (∫ x in 0..(n • T), f x) = n • ∫ x in 0..T, f x by
     simp only [hf.intervalIntegral_add_eq t 0, (hf.zsmul n).intervalIntegral_add_eq t 0, zero_add,
       this]
   -- First prove it for natural numbers
-  have : ∀ m : ℕ, (∫ x in (0)..m • T, f x) = m • ∫ x in (0)..T, f x := fun m ↦ by
+  have : ∀ m : ℕ, (∫ x in 0..m • T, f x) = m • ∫ x in 0..T, f x := fun m ↦ by
     induction m with
     | zero => simp
     | succ m ih =>
@@ -346,8 +346,8 @@ include hg
 `Y`. -/
 theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
     (hT : 0 < T) (t : ℝ) :
-    (sInf ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x) ≤
-      ∫ x in (0)..t, g x := by
+    (sInf ((fun t => ∫ x in 0..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in 0..T, g x) ≤
+      ∫ x in 0..t, g x := by
   let h'_int := hg.intervalIntegrable₀ hT h_int
   let ε := Int.fract (t / T) * T
   conv_rhs =>
@@ -363,8 +363,8 @@ theorem sInf_add_zsmul_le_integral_of_pos (h_int : IntervalIntegrable g MeasureS
 `Y`. -/
 theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureSpace.volume 0 T)
     (hT : 0 < T) (t : ℝ) :
-    (∫ x in (0)..t, g x) ≤
-      sSup ((fun t => ∫ x in (0)..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in (0)..T, g x := by
+    (∫ x in 0..t, g x) ≤
+      sSup ((fun t => ∫ x in 0..t, g x) '' Icc 0 T) + ⌊t / T⌋ • ∫ x in 0..T, g x := by
   let h'_int := hg.intervalIntegrable₀ hT h_int
   let ε := Int.fract (t / T) * T
   conv_lhs =>
@@ -377,21 +377,21 @@ theorem integral_le_sSup_add_zsmul_of_pos (h_int : IntervalIntegrable g MeasureS
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `∞` as `t` tends to `∞`. -/
-theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop := by
+theorem tendsto_atTop_intervalIntegral_of_pos (h₀ : 0 < ∫ x in 0..T, g x) (hT : 0 < T) :
+    Tendsto (fun t => ∫ x in 0..t, g x) atTop atTop := by
   have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atTop_mono (hg.sInf_add_zsmul_le_integral_of_pos h_int hT)
-  apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
+  apply atTop.tendsto_atTop_add_const_left (sInf <| (fun t => ∫ x in 0..t, g x) '' Icc 0 T)
   apply Tendsto.atTop_zsmul_const h₀
   exact tendsto_floor_atTop.comp (tendsto_id.atTop_mul_const (inv_pos.mpr hT))
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `0 < ∫ x in 0..T, g x`, then
 `t ↦ ∫ x in 0..t, g x` tends to `-∞` as `t` tends to `-∞`. -/
-theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in 0..T, g x) (hT : 0 < T) :
+    Tendsto (fun t => ∫ x in 0..t, g x) atBot atBot := by
   have h_int := intervalIntegrable_of_integral_ne_zero h₀.ne'
   apply tendsto_atBot_mono (hg.integral_le_sSup_add_zsmul_of_pos h_int hT)
-  apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t => ∫ x in (0)..t, g x) '' Icc 0 T)
+  apply atBot.tendsto_atBot_add_const_left (sSup <| (fun t => ∫ x in 0..t, g x) '' Icc 0 T)
   apply Tendsto.atBot_zsmul_const h₀
   exact tendsto_floor_atBot.comp (tendsto_id.atBot_mul_const (inv_pos.mpr hT))
 
@@ -399,14 +399,14 @@ theorem tendsto_atBot_intervalIntegral_of_pos (h₀ : 0 < ∫ x in (0)..T, g x) 
 tends to `∞` as `t` tends to `∞`. -/
 theorem tendsto_atTop_intervalIntegral_of_pos'
     (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atTop atTop :=
+    Tendsto (fun t => ∫ x in 0..t, g x) atTop atTop :=
   hg.tendsto_atTop_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 /-- If `g : ℝ → ℝ` is periodic with period `T > 0` and `∀ x, 0 < g x`, then `t ↦ ∫ x in 0..t, g x`
 tends to `-∞` as `t` tends to `-∞`. -/
 theorem tendsto_atBot_intervalIntegral_of_pos'
     (h_int : IntervalIntegrable g MeasureSpace.volume 0 T) (h₀ : ∀ x, 0 < g x) (hT : 0 < T) :
-    Tendsto (fun t => ∫ x in (0)..t, g x) atBot atBot := by
+    Tendsto (fun t => ∫ x in 0..t, g x) atBot atBot := by
   exact hg.tendsto_atBot_intervalIntegral_of_pos (intervalIntegral_pos_of_pos h_int h₀ hT) hT
 
 end RealValued

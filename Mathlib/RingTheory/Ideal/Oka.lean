@@ -53,7 +53,7 @@ theorem isPrime_of_maximal_not (hP : IsOka P) {I : Ideal R}
     exact hI.prop (hP.oka h₁ h₂)
 
 /-- If all prime ideals of a ring satisfy an Oka predicate, then all its ideals also satisfy the
-predicate. `hmax` is generaly obtained using Zorn's lemma. -/
+predicate. `hmax` is generally obtained using Zorn's lemma. -/
 theorem forall_of_forall_prime (hP : IsOka P)
     (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
   by_contra!
