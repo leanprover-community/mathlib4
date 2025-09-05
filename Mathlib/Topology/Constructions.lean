@@ -481,11 +481,11 @@ theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
 
-lemma IsOpenMap.restrict_mapsTo {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
+lemma IsOpenMap.mapsToRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
     (hs : IsOpen s) (ht : MapsTo f s t) : IsOpenMap ht.restrict :=
   (hf.restrict hs).codRestrict _
 
-lemma IsClosedMap.restrict_mapsTo {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+lemma IsClosedMap.mapsToRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
     (hs : IsClosed s) (ht : MapsTo f s t) : IsClosedMap ht.restrict :=
   (hf.restrict hs).codRestrict _
 
