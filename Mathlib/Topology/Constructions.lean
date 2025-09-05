@@ -374,16 +374,30 @@ theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
 
-theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) {s : Set X} (hfs : ∀ x, f x ∈ s) :
-    IsOpenMap fun x ↦ (⟨f x, hfs x⟩ : Subtype s) := fun u hu ↦ by
+theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
+    IsOpenMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
   convert (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
-theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) {s : Set X} (hfs : ∀ x, f x ∈ s) :
-    IsClosedMap fun x ↦ (⟨f x, hfs x⟩ : Subtype s) := fun u hu ↦ by
+theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
+    IsClosedMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
   convert (hf u hu).preimage continuous_subtype_val
   exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
 
+@[fun_prop]
+theorem Continuous.subtype_coind {f : Y → X} (hf : Continuous f) (hp : ∀ x, p (f x)) :
+    Continuous (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+theorem IsOpenMap.subtype_coind {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
+    IsOpenMap (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+theorem IsClosedMap.subtype_coind {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
+    IsClosedMap (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+@[fun_prop]
 theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
     (hpq : ∀ x, p x → q (f x)) : Continuous (Subtype.map f hpq) :=
   (h.comp continuous_subtype_val).subtype_mk _
