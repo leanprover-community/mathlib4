@@ -18,6 +18,13 @@ namespace Fin
 theorem exists_cons (p : Fin (n + 1) → M) : ∃ h t, p = cons h t := by
   sorry
 
+theorem insertNth_succ_cons : (insertNth i.succ x (cons hd tl) : Fin (n + 2) → M) = cons hd (insertNth i x tl) := by
+  --exact?
+  sorry
+
+theorem insertNth_succ_cons' : (insertNth ⟨i + 1, h⟩ x (cons hd tl) : Fin (n + 2) → M) = cons hd (insertNth ⟨i, i_lt⟩ x tl) := by
+  sorry
+
 @[to_additive (attr := simp), simp]
 theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
   go_prod n i.val i.isLt p
@@ -41,8 +48,7 @@ where
     have i_lt := Nat.lt_of_succ_lt_succ h
     --let insert_tl : Fin (n + 1) → M := insertNth ⟨i, i_lt⟩ x tl
     have : ∏ j, insertNth ⟨i + 1, h⟩ x (cons hd tl) j = hd * ∏ j, insertNth ⟨i, i_lt⟩ x tl j := by
-      have : (insertNth ⟨i + 1, h⟩ x (cons hd tl) : Fin (n + 2) → M) = cons hd (insertNth ⟨i, i_lt⟩ x tl) := by
-        sorry
+      have := insertNth_succ_cons' (n := n) (i := i) (h := h) (x := x) (hd := hd) (tl := tl) (i_lt := i_lt)
       simp [this]
     simp [this]
     have ih := go_prod n i i_lt tl
