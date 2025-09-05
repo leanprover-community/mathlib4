@@ -98,7 +98,7 @@ some `push` lemmas cancel the constant out (`not_not` and `not_le`).
 For the other lemmas that are "genuine" `push` lemmas, a `pull` attribute is automatically added
 in the reverse direction. To not add a `pull` tag, use `@[push only]`.
 
-To use the lemma in the reverse direction, use the `@[push ←]`.
+To use the lemma in the reverse direction, use `@[push ←]`.
 -/
 syntax (name := pushAttr) "push" (" ←" <|> " <-")? (&" only")? (ppSpace prio)? : attr
 
