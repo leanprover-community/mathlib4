@@ -529,26 +529,10 @@ lemma exists_continuous_one_of_compact_subset_open [T2Space X] [LocallyCompactSp
     {K V : Set X} (hK : IsCompact K) (hV : IsOpen V) (hKV : K ⊆ V) :
     ∃ f : C(X, ℝ), Set.EqOn (⇑f) 1 K ∧ IsCompact (tsupport ⇑f)
     ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
-  rcases exists_open_between_and_isCompact_closure hK hV hKV with ⟨U, hU1, hU2, hU3, hU4⟩
-  rcases exists_tsupport_one_of_isOpen_isClosed hU1 hU4 (IsCompact.isClosed hK) hU2
-    with ⟨f, hf1, hf2, hf3⟩
-  use f
-  simp only [Set.mem_Icc]
-  refine ⟨?_, ?_, ?_, ?_⟩
-  · intro x hx
-    simp only [Pi.one_apply]
-    exact hf2 hx
-  · refine IsCompact.of_isClosed_subset hU4 ?_ ?_
-    · apply isClosed_closure
-    · trans U
-      · exact hf1
-      · apply subset_closure
-  · trans U
-    · exact hf1
-    · trans closure U
-      · apply subset_closure
-      · exact hU3
-  · simp only [Set.mem_Icc] at hf3; intro x; exact hf3 x
+  obtain ⟨U, hU1, hU2, hU3, hU4⟩ := exists_open_between_and_isCompact_closure hK hV hKV
+  obtain ⟨f, hf1, hf2, hf3⟩ := exists_tsupport_one_of_isOpen_isClosed hU1 hU4 hK.isClosed hU2
+  have : tsupport f ⊆ closure U := hf1.trans subset_closure
+  exact ⟨f, hf2, hU4.of_isClosed_subset isClosed_closure this, this.trans hU3, hf3⟩
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by

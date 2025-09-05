@@ -217,15 +217,9 @@ theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
 
 theorem eq_on_q_of_eq_on_p {ν : Measure α} (hμ : μ.InnerRegularWRT p q) (hν : ν.InnerRegularWRT p q)
-    (hμν : ∀ U, p U → μ U = ν U) : ∀ U, q U → μ U = ν U := by
-  intro U hU
-  rw [Measure.InnerRegularWRT.measure_eq_iSup hμ hU, Measure.InnerRegularWRT.measure_eq_iSup hν hU]
-  apply iSup_congr
-  intro t
-  apply iSup_congr
-  intro ht1
-  apply iSup_congr
-  intro ht2
+    (hμν : ∀ U, p U → μ U = ν U) (U : Set α) (hU : q U) : μ U = ν U := by
+  rw [hμ.measure_eq_iSup hU, hν.measure_eq_iSup hU]
+  congr! 4 with t _ ht2
   exact hμν t ht2
 
 theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
