@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.NormedSpace.Normalized
+import Mathlib.Analysis.NormedSpace.Normalize
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
@@ -332,18 +332,17 @@ theorem sin_eq_one_iff_angle_eq_pi_div_two : sin (angle x y) = 1 ↔ angle x y =
 /-- The angle between normalized vector and other vector is equal to the angle
 between the original vectors. -/
 @[simp]
-lemma angle_normalized_left (x y : V) :
-    angle (normalized x) y = angle x y := by
+lemma angle_normalize_left (x y : V) :
+    angle (NormedSpace.normalize x) y = angle x y := by
   by_cases hx : x = 0
   · simp [hx]
-  replace hx : 0 < ‖x‖⁻¹ := by simp [hx]
-  simp only [normalized, angle_smul_left_of_pos, hx, angle_smul_right_of_pos]
+  · rw [NormedSpace.normalize, angle_smul_left_of_pos _ _ (by positivity)]
 
 /-- The angle between a vector and normalized other vector is equal to the angle
 between the original vectors. -/
 @[simp]
-lemma angle_normalized_right (x y : V) :
-    angle x (normalized y) = angle x y := by
-  rw [angle_comm, angle_normalized_left, angle_comm]
+lemma angle_normalize_right (x y : V) :
+    angle x (NormedSpace.normalize y) = angle x y := by
+  rw [angle_comm, angle_normalize_left, angle_comm]
 
 end InnerProductGeometry

@@ -6,7 +6,7 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.UnitVectorAngles
-import Mathlib.Analysis.NormedSpace.Normalized
+import Mathlib.Analysis.NormedSpace.Normalize
 
 /-!
 # The Triangle Inequality for Angles
@@ -15,6 +15,7 @@ This file contains proof that angles obey the triangle inequality.
 -/
 
 open InnerProductGeometry
+open NormedSpace
 
 open scoped RealInnerProductSpace
 
@@ -31,8 +32,8 @@ theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  have H := UnitVectorAngles.angle_le_angle_add_angle (norm_normalized_eq_one_iff.mpr hx)
-    (norm_normalized_eq_one_iff.mpr hy) (norm_normalized_eq_one_iff.mpr hz)
+  have H := UnitVectorAngles.angle_le_angle_add_angle (norm_normalize_eq_one_iff.mpr hx)
+    (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
   simp at H
   exact H
 
