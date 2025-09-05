@@ -824,7 +824,7 @@ theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
   simp [sigma_apply_prime_pow hp]
 
 theorem sigma_eq_sum_div (k n : ℕ) : sigma k n = ∑ d ∈ Nat.divisors n, (n / d) ^ k := by
-  rw [sigma, ArithmeticFunction.coe_mk, ← Nat.sum_div_divisors]
+  rw [sigma_apply, ← Nat.sum_div_divisors]
 
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]
 

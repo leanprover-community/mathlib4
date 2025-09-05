@@ -387,9 +387,9 @@ theorem tprod_congr {f g : β → α}
   congr_arg tprod (funext hfg)
 
 @[to_additive]
-theorem tprod_congr2 {f g : γ → β → α}
-    (hfg : ∀ b c, f b c = g b c) : ∏' c, ∏' b, f b c = ∏' c, ∏' b, g b c := by
-  exact tprod_congr fun c ↦ tprod_congr fun b ↦ hfg b c
+theorem tprod_congr₂ {f g : γ → β → α}
+    (hfg : ∀ b c, f b c = g b c) : ∏' c, ∏' b, f b c = ∏' c, ∏' b, g b c :=
+  tprod_congr fun c ↦ tprod_congr fun b ↦ hfg b c
 
 @[to_additive]
 theorem tprod_fintype [Fintype β] (f : β → α) : ∏' b, f b = ∏ b, f b := by
