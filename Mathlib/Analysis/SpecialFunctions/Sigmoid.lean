@@ -169,7 +169,7 @@ lemma analyticWithinAt_sigmoid {s : Set ℝ} : AnalyticWithinAt ℝ sigmoid s x 
 open ContDiff in
 lemma contDiff_sigmoid : ContDiff ℝ ω sigmoid := analyticOn_sigmoid.contDiff
 
-@[simp]
+@[fun_prop]
 theorem differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one
 
