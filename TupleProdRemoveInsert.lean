@@ -39,8 +39,11 @@ where
     obtain ⟨hd, tl, rfl⟩ := exists_cons p
     simp
     have i_lt := Nat.lt_of_succ_lt_succ h
+    --let insert_tl : Fin (n + 1) → M := insertNth ⟨i, i_lt⟩ x tl
     have : ∏ j, insertNth ⟨i + 1, h⟩ x (cons hd tl) j = hd * ∏ j, insertNth ⟨i, i_lt⟩ x tl j := by
-      sorry
+      have : (insertNth ⟨i + 1, h⟩ x (cons hd tl) : Fin (n + 2) → M) = cons hd (insertNth ⟨i, i_lt⟩ x tl) := by
+        sorry
+      simp [this]
     simp [this]
     have ih := go_prod n i i_lt tl
     rw [ih]
