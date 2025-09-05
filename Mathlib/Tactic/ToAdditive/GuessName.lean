@@ -199,7 +199,8 @@ def abbreviationDict : String → Option String
   | "modularCharacter" => "AddModularCharacter"
   | _                  => none
 
-/-- Helper for `fixAbbreviation`. -/
+/-- Helper for `fixAbbreviation`.
+Note: quadratic runtime in the length of the first argument, but that should be fine. -/
 def fixAbbreviationAux : List String → List String → String
   | [], []     => ""
   | [], x::s   => x ++ fixAbbreviationAux s []
