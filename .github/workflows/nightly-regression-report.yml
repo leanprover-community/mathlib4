@@ -74,63 +74,84 @@ jobs:
         filtered_out=$((grep -v '^✔' "${lean_outfile}" | grep -v '^trace: ') || true)
         echo "$(wc -l <<<"${filtered_out}") lines of output"
 
-        # Categorize the output.
-        error_lines=$(grep '^error: ' <<<"${filtered_out}" || true)
-        error_descriptions=$(sed 's/^error: [^:]*:[0-9]*:[0-9]*: //' <<<"${error_lines}")
-        echo "$(wc -l <<<"${error_lines}") lines of errors"
-        warning_lines=$(grep '^warning: ' <<<"${filtered_out}" || true)
-        warning_descriptions=$(sed 's/^warning: [^:]*:[0-9]*:[0-9]*: //' <<<"${warning_lines}")
-        echo "$(wc -l <<<"${warning_lines}") lines of warnings"
-        # Panics are reported as an info message.
-        # They should be very prominent when debugging, so treat them differently.
-        panic_lines=$(grep '^info: .*PANIC at ' <<<"${filtered_out}" || true)
-        panic_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${panic_lines}")
-        echo "$(wc -l <<<"${panic_lines}") lines of panic"
-        info_lines=$((grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at ') || true)
-        info_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${info_lines}")
-        echo "$(wc -l <<<"${info_lines}") lines of info"
-
-        # Some additional postprocessing for specific forms of messages.
-        # Remove the extra arguments to linarith, to count them correctly.
-        warning_descriptions=$(sed "s/'linarith only/'linarith/" <<<"${warning_descriptions}")
-        warning_descriptions=$(sed "s/'linarith \[.*\]'/'linarith'/" <<<"${warning_descriptions}")
-        # Deal with line wrapping ending the argument list to `linarith` too early.
-        warning_descriptions=$(sed "s/'linarith \[[^]]*$/'linarith' succeeded. Counterexample:/" <<<"${warning_descriptions}")
-
-        echo "generating Zulip message..."
-
         delimiter=$(cat /proc/sys/kernel/random/uuid)
         echo "zulip-message<<${delimiter}" >> "$GITHUB_OUTPUT"
         echo "Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})) regression run [completed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})." | tee -a "$GITHUB_OUTPUT"
-        printf 'Panics: %d, errors: %d, warnings: %d, info messages: %d\n\n' $(wc -l <<<"${panic_lines}") $(wc -l <<<"${error_lines}") $(wc -l <<<"${warning_lines}") $(wc -l <<<"${info_lines}") | tee -a "$GITHUB_OUTPUT"
 
-        echo "\`\`\`spoiler Panic counts" | tee -a "$GITHUB_OUTPUT"
-        echo "| | Panic description |" | tee -a "$GITHUB_OUTPUT"
-        echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
-        sort <<<"${panic_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
-        echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
-        echo | tee -a "$GITHUB_OUTPUT"
+        # Categorize the output.
+        counts=()
+        # Panics are reported as an info message.
+        # They should be very prominent when debugging, so treat them differently.
+        if panic_lines=$(grep '^info: .*PANIC at ' <<<"${filtered_out}"); then
+          panic_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${panic_lines}")
+          counts+=$(printf 'Panics: %d' $(wc -l <<<"${panic_lines}"))
+          echo "$(wc -l <<<"${panic_lines}") lines of panic"
+        fi
+        if error_lines=$(grep '^error: ' <<<"${filtered_out}"); then
+          error_descriptions=$(sed 's/^error: [^:]*:[0-9]*:[0-9]*: //' <<<"${error_lines}")
+          counts+=$(printf 'Errors: %d' $(wc -l <<<"${error_lines}"))
+          echo "$(wc -l <<<"${error_lines}") lines of errors"
+        fi
+        if warning_lines=$(grep '^warning: ' <<<"${filtered_out}"); then
+          warning_descriptions=$(sed 's/^warning: [^:]*:[0-9]*:[0-9]*: //' <<<"${warning_lines}")
 
-        echo "\`\`\`spoiler Error counts" | tee -a "$GITHUB_OUTPUT"
-        echo "| | Error description |" | tee -a "$GITHUB_OUTPUT"
-        echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
-        sort <<<"${error_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
-        echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
-        echo | tee -a "$GITHUB_OUTPUT"
+          # Some additional postprocessing for specific forms of messages.
+          # Remove the extra arguments to linarith, to count them correctly.
+          warning_descriptions=$(sed "s/'linarith only/'linarith/" <<<"${warning_descriptions}")
+          warning_descriptions=$(sed "s/'linarith \[.*\]'/'linarith'/" <<<"${warning_descriptions}")
+          # Deal with line wrapping ending the argument list to `linarith` too early.
+          warning_descriptions=$(sed "s/'linarith \[[^]]*$/'linarith' succeeded. Counterexample:/" <<<"${warning_descriptions}")
 
-        echo "\`\`\`spoiler Warning counts" | tee -a "$GITHUB_OUTPUT"
-        echo "| | Warning description |" | tee -a "$GITHUB_OUTPUT"
-        echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
-        sort <<<"${warning_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
-        echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
-        echo | tee -a "$GITHUB_OUTPUT"
+          counts+=$(printf 'Warnings: %d' $(wc -l <<<"${warning_lines}"))
+          echo "$(wc -l <<<"${warning_lines}") lines of warnings"
+        fi
+        if info_lines=$((grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at ')); then
+          info_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${info_lines}")
+          counts+=$(printf 'Info messages: %d' $(wc -l <<<"${info_lines}"))
+          echo "$(wc -l <<<"${info_lines}") lines of info"
+        fi
 
-        echo "\`\`\`spoiler Info message counts" | tee -a "$GITHUB_OUTPUT"
-        echo "| | Info message |" | tee -a "$GITHUB_OUTPUT"
-        echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
-        sort <<<"${info_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
-        echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
-        echo | tee -a "$GITHUB_OUTPUT"
+        if (( ${#counts[@]} == 0 )); then
+          echo "Build completed without messages." | tee -a "$GITHUB_OUTPUT"
+        else
+          printf ' %s\n\n' "${counts[@]}" | tee -a "$GITHUB_OUTPUT"
+        fi
+
+        if ![ -z "${panic_lines}"]; then
+          echo "\`\`\`spoiler Panic counts" | tee -a "$GITHUB_OUTPUT"
+          echo "| | Panic description |" | tee -a "$GITHUB_OUTPUT"
+          echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
+          sort <<<"${panic_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
+          echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
+          echo | tee -a "$GITHUB_OUTPUT"
+        fi
+
+        if ![ -z "${error_lines}"]; then
+          echo "\`\`\`spoiler Error counts" | tee -a "$GITHUB_OUTPUT"
+          echo "| | Error description |" | tee -a "$GITHUB_OUTPUT"
+          echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
+          sort <<<"${error_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
+          echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
+          echo | tee -a "$GITHUB_OUTPUT"
+        fi
+
+        if ![ -z "${warning_lines}"]; then
+          echo "\`\`\`spoiler Warning counts" | tee -a "$GITHUB_OUTPUT"
+          echo "| | Warning description |" | tee -a "$GITHUB_OUTPUT"
+          echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
+          sort <<<"${warning_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
+          echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
+          echo | tee -a "$GITHUB_OUTPUT"
+        fi
+
+        if ![ -z "${info_lines}"]; then
+          echo "\`\`\`spoiler Info message counts" | tee -a "$GITHUB_OUTPUT"
+          echo "| | Info message |" | tee -a "$GITHUB_OUTPUT"
+          echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
+          sort <<<"${info_descriptions}" | uniq -c | sort -bgr | sed 's/^\( *[0-9][0-9]*\) \(.*\)$/| \1 | \2 |/' | tee -a "$GITHUB_OUTPUT"
+          echo "\`\`\`" | tee -a "$GITHUB_OUTPUT"
+          echo | tee -a "$GITHUB_OUTPUT"
+        fi
 
         echo "${delimiter}" >> "$GITHUB_OUTPUT"
 
