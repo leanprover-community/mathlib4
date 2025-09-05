@@ -182,25 +182,14 @@ private theorem prod_insertNth_go :
   | n, 0, h, x, p => by simp only [zero_eta, insertNth_zero', prod_cons]
   | 0, i, h, x, p => by
     set i : Fin 1 := ⟨i, h⟩
-    simp [show p = ![] from Subsingleton.elim _ _]
-    --simp [show p = elim0 from Subsingleton.elim _ _]
-    have : insertNth i x ![] = ![x] := by
-    --have : i.insertNth x ![] elim0 = ![x] := by
-      have : i = 0 := by exact fin_one_eq_zero i
-      simp [this]
-      rfl
-    simp [this]
+    simp [show p = ![] from Subsingleton.elim _ _, fin_one_eq_zero i]
   | n + 1, i + 1, h, x, p => by
     obtain ⟨hd, tl, rfl⟩ := exists_cons p
     have i_lt := Nat.lt_of_succ_lt_succ h
-    have : (⟨i + 1, h⟩ : Fin (n + 2)) = (⟨i, i_lt⟩ : Fin (n + 1)).succ := by
-      rfl
-    rw [this]
-    have := insertNth_succ_cons ⟨i, i_lt⟩ x hd tl
-    simp_rw [this]
-    simp
-    have ih := prod_insertNth_go n i i_lt x tl
-    rw [ih]
+    let i_fin : Fin (n + 1) := ⟨i, i_lt⟩
+    rw [show ⟨i + 1, h⟩ = i_fin.succ from rfl]
+    simp [insertNth_succ_cons]
+    rw [prod_insertNth_go n i i_lt x tl]
     exact mul_left_comm hd x (∏ j, tl j)
 
 @[to_additive (attr := simp), simp]
