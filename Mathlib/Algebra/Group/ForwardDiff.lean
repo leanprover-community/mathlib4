@@ -160,7 +160,6 @@ lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
     Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
   fwdDiff_iter_comp_add h f m 1 y
 
-
 /--
 **Gregory-Newton formula** expressing `f (y + n • h)` in terms of the iterated forward differences
 of `f` at `y`.
@@ -216,11 +215,12 @@ We prove five key formulae about the forward difference operator applied to poly
   The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`;
 * `fwdDiff_iter_eq_factorial` :
   The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
-* `fwdDiff_iter_succ_sum_eq_zero` :
-  The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
-* `sum_fwdDiff_iter_at_zero_trans` :
+* `fwdDiff_iter_sum_mul_pow_eq_zero` :
+  The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
+    sums over `range n`.
+* `sum_fwdDiff_iter_at_zero` :
   **Newton's series** for a polynomial. This is another definition.
-* `sum_sum_fwdDiff_iter_at_zero_trans` :
+* `sum_sum_fwdDiff_iter_at_zero` :
   A generalization of **Faulhaber's formula**.
 -/
 
@@ -241,11 +241,6 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
     exact sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
 
-lemma fwdDiff_iter_pow_eq_zero_of_lt' {j n : ℕ} (h : j < n) :
-    Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ j) = 0 := by
-  ext
-  rw [fwdDiff_iter_comp_add 1 (· ^ j), fwdDiff_iter_pow_eq_zero_of_lt h, Pi.zero_def]
-
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
 -/
@@ -261,12 +256,6 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
        sum_range_succ]
     simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), mul_zero]
-
-lemma fwdDiff_iter_eq_factorial' {n : ℕ} :
-    Δ_[1]^[n] (fun (r : R) ↦ (r + 1) ^ n) = n ! := by
-  ext
-  rw [fwdDiff_iter_comp_add 1 (· ^ n), fwdDiff_iter_eq_factorial]
-  simp_all only [Pi.natCast_apply]
 
 theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
     Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by
@@ -289,48 +278,15 @@ theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
     exact Polynomial.fwdDiff_iter_eq_zero_of_degree_lt hP
 
 /--
-The `(n+1)`-th forward difference of a polynomial of degree at most `n` is zero.
-A polynomial `P(x) = ∑_{k=0..n} aₖ xᵏ` has `Δ^[n+1] P = 0`.
+The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
+sums over `range n`.
 -/
-theorem fwdDiff_iter_succ_sum_eq_zero {n : ℕ} (P : ℕ → R) :
-    Δ_[1]^[n + 1] (fun (r : R) => ∑ k ∈ range (n + 1), P k • r ^ k) = 0 := by
-  induction n with
-  | zero => aesop
-  | succ n IH =>
-    have : Δ_[1]^[n + 1] (fun (r : R) => ∑ k ∈ range (n + 1), P k • r ^ k) =
-      ∑ k ∈ range (n + 1), Δ_[1]^[n + 1] (P k • fun (r : R) => r ^ k) := by
-      simp only [fwdDiff_iter_const_smul]
-      have : (fun (r : R) => ∑ k ∈ range (n + 1), P k • r ^ k) = (∑ k ∈ range (n + 1),
-        (fun (r : R) => P k • r ^ k)) := by
-        ext r; simp only [sum_apply]
-      rw [this]
-      simp only [fwdDiff_iter_finset_sum]
-      congr 1; ext k
-      rw [← fwdDiff_iter_const_smul]
-      have : (fun (r : R) => P k • r ^ k) = P k • (fun (r : R) => r ^ k) := by
-        ext r
-        rw [Pi.smul_apply]
-      rw [this]
-    rw [this] at IH
-    rw [iterate_succ_apply]
-    have : Δ_[1] (fun (r : R) => ∑ k ∈ range (n + 1 + 1), P k • r ^ k) =
-      ∑ k ∈ range (n + 1 + 1), P k • (fun (r : R) ↦ (r + 1) ^ k) +
-        (-1 • ∑ k ∈ range (n + 1 + 1), P k • fun (r : R) ↦ r ^ k) := by
-      unfold fwdDiff
-      ext X
-      simp only [smul_eq_mul, Int.reduceNeg, neg_smul, one_smul, Pi.add_apply, sum_apply,
-        Pi.smul_apply, Pi.neg_apply, sub_eq_add_neg]
-    rw [this, fwdDiff_iter_add, fwdDiff_iter_const_smul]
-    simp only [fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul, Int.reduceNeg, neg_smul, one_smul]
-    rw [← sub_eq_add_neg]
-    nth_rw 2 [sum_range_succ]
-    conv_lhs => enter [2, 1, 2]; ext k; rw [← fwdDiff_iter_const_smul]
-    rw [IH]
-    simp only [zero_add]
-    rw [fwdDiff_iter_eq_factorial, sum_range_succ, fwdDiff_iter_eq_factorial']
-    simp only [add_sub_cancel_right]
-    exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_pow_eq_zero_of_lt' (by have := mem_range.1 hi; omega), smul_zero]
+theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
+    Δ_[1]^[n] (fun r : R ↦ ∑ k ∈ range n, P k * r ^ k) = 0 := by
+  simp_rw [← sum_apply _ _ (fun i x ↦ P i * x ^ i), fwdDiff_iter_finset_sum, sum_fn, ← smul_eq_mul,
+    ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
+  exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
+    <| mem_range.mp hi
 
 /--
 **Newton's series** for a polynomial
@@ -338,26 +294,20 @@ Any function `f` defined by a polynomial can be expressed as a sum of its forwar
 differences at `0`, weighted by binomial coefficients.
 `f(x) = ∑_{k=0..p} (p choose k) * (Δ^k f)(0)`.
 -/
-theorem sum_fwdDiff_iter_at_zero_trans {n p : ℕ} (P : ℕ → R) :
+theorem sum_fwdDiff_iter_at_zero {n p : ℕ} (P : ℕ → R) :
     ∑ k ∈ range (n + 1), P k * p ^ k = ∑ k ∈ range (p + 1), p.choose k *
-      (Δ_[1]^[k]) (fun (r : R) ↦ ∑ i ∈ range (n + 1), P i • (r ^ i)) 0 := by
-  obtain h := shift_eq_sum_fwdDiff_iter (n := p) (y := 0)
-    (f := (fun x => ∑ i ∈ range (n + 1), P i * (x ^ i))) (h := 1)
-  simp only [mul_one, zero_add, nsmul_eq_mul] at h
-  rw [h]
-  exact sum_congr rfl fun k hk ↦ by
-    have _ := mem_range.1 hk
-    congr 1
+      (Δ_[1]^[k]) (fun (r : R) ↦ ∑ i ∈ range (n + 1), P i * (r ^ i)) 0 := by
+  simpa using shift_eq_sum_fwdDiff_iter 1 (∑ i ∈ range (n + 1), P i * · ^ i) p 0
 
 /--
 A formula for the sum of a polynomial sequence `∑_{k=0..p} P(k)`, which
 generalizes **Faulhaber's formula**.
 -/
-theorem sum_sum_fwdDiff_iter_at_zero_trans {p n : ℕ} (P : ℕ → R) :
+theorem sum_sum_fwdDiff_iter_at_zero {p n : ℕ} (P : ℕ → R) :
     ∑ k ∈ range (p + 1), (∑ m ∈ range (n + 1), P m * k ^ m) =
     ∑ k ∈ range (p + 1), ((p + 1).choose (k + 1)) *
-      ((Δ_[1]^[k] (fun (r : R) ↦ ∑ i ∈ range (n + 1), P i • r ^ i) 0)) := by
-  conv => enter [1, 2, x]; rw [sum_fwdDiff_iter_at_zero_trans]; simp only [smul_eq_mul]
+      ((Δ_[1]^[k] (fun (r : R) ↦ ∑ i ∈ range (n + 1), P i * r ^ i) 0)) := by
+  conv => enter [1, 2, x]; rw [sum_fwdDiff_iter_at_zero]; simp only [smul_eq_mul]
   have sum_extend_inner_range : ∑ x ∈ range (p + 1), ∑ k ∈ range (x + 1),
      (x.choose k) * ((Δ_[1]^[k]) fun x ↦ ∑ m ∈ range (n + 1), P m * x ^ m) 0 =
     ∑ x ∈ range (p + 1), ∑ k ∈ range (p + 1),
