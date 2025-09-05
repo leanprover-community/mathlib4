@@ -245,6 +245,15 @@ def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
     toFun := diagonal
     commutes' := fun r => (algebraMap_eq_diagonal r).symm }
 
+variable (n)
+
+/-- `Matrix.scalar` as an `AlgHom`. -/
+def scalarAlgHom : α →ₐ[R] Matrix n n α where
+  toRingHom := scalar n
+  commutes' _ := rfl
+
+@[simp] theorem scalarAlgHom_apply (a : α) : scalarAlgHom n R a = scalar n a := rfl
+
 end Algebra
 
 section AddHom
