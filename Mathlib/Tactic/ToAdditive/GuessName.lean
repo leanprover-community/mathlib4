@@ -69,15 +69,15 @@ partial def _root_.String.decapitalizeSeq (s : String) (i : String.Pos := 0) : S
 
 
 /-- If `r` starts with an upper-case letter, return `s`, otherwise return `s` with the
-initial sequence of upper-case letter lower-cased. -/
-def capitalizeLike (r : String) (s : String) :=
+initial sequence of upper-case letters lower-cased. -/
+def decapitalizeLike (r : String) (s : String) :=
   if r.get 0 |>.isUpper then s else s.decapitalizeSeq
 
-/-- Capitalize First element of a list like `s`.
-Note that we need to de-capitalize multiple characters in some cases,
+/-- Decapitalize the first element of a list if `s` starts with a lower-case letter.
+Note that we need to decapitalize multiple characters in some cases,
 in examples like `HMul` or `HAdd`. -/
-def capitalizeFirstLike (s : String) : List String → List String
-  | x :: r => capitalizeLike s x :: r
+def decapitalizeFirstLike (s : String) : List String → List String
+  | x :: r => decapitalizeLike s x :: r
   | [] => []
 
 /--
@@ -132,13 +132,12 @@ def nameDict : String → List String
   | _               => []
 
 /--
-Turn each element to lower-case, apply the `nameDict` and
-capitalize the output like the input.
+Apply the `nameDict` and decapitalize the output like the input.
 -/
 def applyNameDict : List String → List String
   | x :: s =>
     let y := nameDict x.toLower
-    let z := if y.isEmpty then [x] else capitalizeFirstLike x y
+    let z := if y.isEmpty then [x] else decapitalizeFirstLike x y
     z ++ applyNameDict s
   | [] => []
 
@@ -206,10 +205,10 @@ def fixAbbreviationAux : List String → List String → String
   | [], x::s   => x ++ fixAbbreviationAux s []
   | pre::l, s' =>
     let s := s' ++ [pre]
-    match abbreviationDict <| String.join s |>.decapitalizeSeq with
-    | some post => capitalizeLike s[0]! post ++ fixAbbreviationAux l []
-    | none      =>
-      fixAbbreviationAux l s
+    let t := String.join s
+    match abbreviationDict <| t.decapitalizeSeq with
+    | some post => decapitalizeLike t post ++ fixAbbreviationAux l []
+    | none      => fixAbbreviationAux l s
   termination_by l s => (l.length + s.length, l.length)
   decreasing_by all_goals grind
 
