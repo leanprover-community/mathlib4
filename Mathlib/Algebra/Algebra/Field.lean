@@ -18,10 +18,6 @@ section FieldNontrivial
 
 variable {R A : Type*} [Field R] [CommSemiring A] [Nontrivial A] [Algebra R A]
 
-@[norm_cast, simp]
-theorem coe_inj {a b : R} : (↑a : A) = ↑b ↔ a = b :=
-  (algebraMap R A).injective.eq_iff
-
 @[norm_cast]
 theorem lift_map_eq_zero_iff (a : R) : (↑a : A) = 0 ↔ a = 0 := map_eq_zero _
 

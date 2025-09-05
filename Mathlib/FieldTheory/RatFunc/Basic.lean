@@ -1065,6 +1065,13 @@ instance [Field K] {p : ℕ} [ExpChar K p] : ExpChar (RatFunc K) p :=
 instance [Field K] [CharZero K] : CharZero (RatFunc K) :=
   charZero_of_injective_algebraMap' K
 
+instance (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
+    [IsSimpleRing R] [Nontrivial A] : FaithfulSMul R A :=
+  faithfulSMul_iff_algebraMap_injective R A |>.2 <| RingHom.injective _
+
+#find_home RatFunc.instFaithfulSMulOfIsSimpleRingOfNontrivial
+#check IsSimpleRing
+
 end Char
 
 end RatFunc
