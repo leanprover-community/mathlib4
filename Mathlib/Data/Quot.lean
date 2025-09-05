@@ -690,6 +690,17 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
 
+protected def map₂' {s₁ : Setoid α} {s₂ : Setoid β} {s₃ : Setoid γ} (f : α → β → γ)
+    (h : ∀ ⦃a₁ a₂ : α⦄, s₁.r a₁ a₂ → ∀ ⦃b₁ b₂ : β⦄, s₂.r b₁ b₂ → s₃.r (f a₁ b₁) (f a₂ b₂)) :
+    Quotient s₁ → Quotient s₂ → Quotient s₃ :=
+  Quotient.map₂ f h
+
+@[simp]
+theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
+    (Quotient.mk'' x : Quotient s₁).map₂' f h =
+      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
+  rfl
+
 /-- A version of `Quotient.map₂` using curly braces and unification. -/
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=
