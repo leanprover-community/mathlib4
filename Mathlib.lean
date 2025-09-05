@@ -3497,6 +3497,7 @@ import Mathlib.Data.PNat.Equiv
 import Mathlib.Data.PNat.Factors
 import Mathlib.Data.PNat.Find
 import Mathlib.Data.PNat.Interval
+import Mathlib.Data.PNat.Order
 import Mathlib.Data.PNat.Notation
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.PNat.Xgcd
