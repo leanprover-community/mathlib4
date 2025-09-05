@@ -176,6 +176,39 @@ theorem prod_trunc {a b : ℕ} (f : Fin (a + b) → M) (hf : ∀ j : Fin b, f (n
     (∏ i : Fin (a + b), f i) = ∏ i : Fin a, f (castAdd b i) := by
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
 
+@[to_additive]
+private theorem go_prod :
+    ∀ n i (h : i < n + 1) x (p : Fin n → M), ∏ j, insertNth ⟨i, h⟩ x p j = x * ∏ j, p j
+  | n, 0, h, x, p => by simp only [zero_eta, insertNth_zero', prod_cons]
+  | 0, i, h, x, p => by
+    set i : Fin 1 := ⟨i, h⟩
+    simp [show p = ![] from Subsingleton.elim _ _]
+    --simp [show p = elim0 from Subsingleton.elim _ _]
+    have : insertNth i x ![] = ![x] := by
+    --have : i.insertNth x ![] elim0 = ![x] := by
+      have : i = 0 := by exact fin_one_eq_zero i
+      simp [this]
+      rfl
+    simp [this]
+  | n + 1, i + 1, h, x, p => by
+    obtain ⟨hd, tl, rfl⟩ := exists_cons p
+    simp
+    have i_lt := Nat.lt_of_succ_lt_succ h
+    --let insert_tl : Fin (n + 1) → M := insertNth ⟨i, i_lt⟩ x tl
+    have : ∏ j, insertNth ⟨i + 1, h⟩ x (cons hd tl) j = hd * ∏ j, insertNth ⟨i, i_lt⟩ x tl j := by
+      have : (insertNth ⟨i + 1, h⟩ x (cons hd tl) : Fin (n + 2) → M) =
+          cons hd (insertNth ⟨i, i_lt⟩ x tl) := by
+        sorry
+      simp [this]
+    simp [this]
+    have ih := go_prod n i i_lt x tl
+    rw [ih]
+    exact mul_left_comm hd x (∏ j, tl j)
+
+@[to_additive (attr := simp), simp]
+theorem prod_insertNth i x (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
+  go_prod n i.val i.isLt x p
+
 /-!
 ### Products over intervals: `Fin.cast`
 -/
