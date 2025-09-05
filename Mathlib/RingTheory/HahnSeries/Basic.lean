@@ -318,6 +318,7 @@ theorem leadingCoeff_of_ne_zero {x : HahnSeries Γ R} (hx : x ≠ 0) :
 
 @[deprecated (since := "2025-08-19")] alias leadingCoeff_of_ne := leadingCoeff_of_ne_zero
 
+@[simp]
 theorem leadingCoeff_eq_zero {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0 := by
   obtain rfl | hx := eq_or_ne x 0 <;> simp [leadingCoeff_of_ne_zero, coeff_orderTop_ne, *]
 

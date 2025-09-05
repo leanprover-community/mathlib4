@@ -217,7 +217,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
     (map f) ⋙ (forget Y) = (forget X) := by
   fapply Functor.ext
-  · dsimp [Over, Over.map]; intro x; exact rfl
+  · simp [Over, Over.map]
   · simp
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/

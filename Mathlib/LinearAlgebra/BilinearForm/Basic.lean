@@ -150,4 +150,7 @@ def restrict (B : BilinForm R M) (W : Submodule R M) : BilinForm R W :=
 
 end BilinForm
 
+@[simp]
+theorem lsmul_flip_apply (m : M) : (lsmul R M).flip m = toSpanSingleton R M m := rfl
+
 end LinearMap

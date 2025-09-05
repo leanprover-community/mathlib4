@@ -445,8 +445,8 @@ section NormedSpace
 /-- The topology of a `NormedSpace 𝕜 E` is induced by the seminorm `normSeminorm 𝕜 E`. -/
 theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
-  rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, ← comap_norm_nhds_zero]
-  rfl
+  rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
+    comap_norm_nhds_zero]
 
 end NormedSpace
 

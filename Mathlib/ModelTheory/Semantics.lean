@@ -840,9 +840,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · rcases x with _ | x
       · simp
       · refine Fin.lastCases ?_ ?_ x
-        · rw [Sum.elim_inr, Sum.elim_inr,
-            finSumFinEquiv_symm_last, Sum.map_inr, Sum.elim_inr]
-          simp [Fin.snoc]
+        · simp [Fin.snoc]
         · simp only [castSucc, Sum.elim_inr,
             finSumFinEquiv_symm_apply_castAdd, Sum.map_inl, Sum.elim_inl]
           rw [← castSucc]

@@ -95,7 +95,7 @@ theorem detp_mul :
 
 theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
-  simp_rw [mem_univ, filter_True] at key
+  simp_rw [mem_univ, filter_true] at key
   simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]

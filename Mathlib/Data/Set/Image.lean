@@ -514,8 +514,11 @@ theorem imageFactorization_eq {f : α → β} {s : Set α} :
     Subtype.val ∘ imageFactorization f s = f ∘ Subtype.val :=
   funext fun _ => rfl
 
-theorem surjective_onto_image {f : α → β} {s : Set α} : Surjective (imageFactorization f s) :=
+theorem imageFactorization_surjective {f : α → β} {s : Set α} :
+    Surjective (imageFactorization f s) :=
   fun ⟨_, ⟨a, ha, rfl⟩⟩ => ⟨⟨a, ha⟩, rfl⟩
+
+@[deprecated (since := "2025-08-18")] alias surjective_onto_image := imageFactorization_surjective
 
 /-- If the only elements outside `s` are those left fixed by `σ`, then mapping by `σ` has no effect.
 -/
@@ -879,7 +882,10 @@ theorem rangeFactorization_coe (f : ι → β) (a : ι) : (rangeFactorization f 
 @[simp]
 theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
 
-theorem surjective_onto_range : Surjective (rangeFactorization f) := fun ⟨_, ⟨i, rfl⟩⟩ => ⟨i, rfl⟩
+theorem rangeFactorization_surjective : Surjective (rangeFactorization f) :=
+  fun ⟨_, ⟨i, rfl⟩⟩ => ⟨i, rfl⟩
+
+@[deprecated (since := "2025-08-18")] alias surjective_onto_range := rangeFactorization_surjective
 
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext

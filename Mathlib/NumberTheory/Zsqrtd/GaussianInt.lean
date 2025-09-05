@@ -78,16 +78,24 @@ theorem toComplex_def₂ (x : ℤ[i]) : (x : ℂ) = ⟨x.re, x.im⟩ := by
   apply Complex.ext <;> simp [toComplex_def]
 
 @[simp]
-theorem to_real_re (x : ℤ[i]) : ((x.re : ℤ) : ℝ) = (x : ℂ).re := by simp [toComplex_def]
+theorem intCast_re (x : ℤ[i]) : ((x.re : ℤ) : ℝ) = (x : ℂ).re := by simp [toComplex_def]
+
+@[deprecated (since := "2025-08-31")] alias to_real_re := intCast_re
 
 @[simp]
-theorem to_real_im (x : ℤ[i]) : ((x.im : ℤ) : ℝ) = (x : ℂ).im := by simp [toComplex_def]
+theorem intCast_im (x : ℤ[i]) : ((x.im : ℤ) : ℝ) = (x : ℂ).im := by simp [toComplex_def]
+
+@[deprecated (since := "2025-08-31")] alias to_real_im := intCast_im
 
 @[simp]
-theorem toComplex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by simp [toComplex_def]
+theorem re_toComplex (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by simp [toComplex_def]
+
+@[deprecated (since := "2025-08-31")] alias toComplex_re := re_toComplex
 
 @[simp]
-theorem toComplex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
+theorem im_toComplex (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
+
+@[deprecated (since := "2025-08-31")] alias toComplex_im := im_toComplex
 
 theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
@@ -163,13 +171,17 @@ theorem div_def (x y : ℤ[i]) :
     x / y = ⟨round ((x * star y).re / norm y : ℚ), round ((x * star y).im / norm y : ℚ)⟩ :=
   show Zsqrtd.mk _ _ = _ by simp [div_eq_mul_inv]
 
-theorem toComplex_div_re (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x / y : ℂ).re := by
+theorem toComplex_re_div (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).re = round (x / y : ℂ).re := by
   rw [div_def, ← @Rat.round_cast ℝ _ _]
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
 
-theorem toComplex_div_im (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
+@[deprecated (since := "2025-08-31")] alias toComplex_div_re := toComplex_re_div
+
+theorem toComplex_im_div (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x / y : ℂ).im := by
   rw [div_def, ← @Rat.round_cast ℝ _ _, ← @Rat.round_cast ℝ _ _]
   simp [-Rat.round_cast, mul_assoc, div_eq_mul_inv, add_mul]
+
+@[deprecated (since := "2025-08-31")] alias toComplex_div_im := toComplex_im_div
 
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
     (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
@@ -189,8 +201,8 @@ theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     _ ≤ Complex.normSq (1 / 2 + 1 / 2 * I) := by
       have : |(2⁻¹ : ℝ)| = 2⁻¹ := abs_of_nonneg (by norm_num)
       exact normSq_le_normSq_of_re_le_of_im_le
-        (by rw [toComplex_div_re]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).re)
-        (by rw [toComplex_div_im]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).im)
+        (by rw [toComplex_re_div]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).re)
+        (by rw [toComplex_im_div]; simp [normSq, this]; simpa using abs_sub_round (x / y : ℂ).im)
     _ < 1 := by simp [normSq]; norm_num
 
 instance : Mod ℤ[i] :=

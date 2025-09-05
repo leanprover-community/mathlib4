@@ -529,7 +529,7 @@ theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
     (hI : Set.Pairwise (↑s) (IsCoprime on I)) :
     (s.inf fun i => Ideal.span ({I i} : Set R)) = Ideal.span {∏ i ∈ s, I i} := by
   ext x
-  simp only [Submodule.mem_finset_inf, Ideal.mem_span_singleton]
+  simp only [Submodule.mem_finsetInf, Ideal.mem_span_singleton]
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 
 theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
@@ -608,10 +608,9 @@ theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀ p ∈ s, I �
     (by simp only [one_eq_top, le_top, sup_of_le_right]) h
 
 theorem sup_iInf_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
-    (I ⊔ ⨅ i ∈ s, J i) = ⊤ :=
-  eq_top_iff.mpr <|
-    le_of_eq_of_le (sup_prod_eq_top h).symm <|
-      sup_le_sup_left (le_of_le_of_eq prod_le_inf <| Finset.inf_eq_iInf _ _) _
+    (I ⊔ ⨅ i ∈ s, J i) = ⊤ := by
+  rw [eq_top_iff, ← sup_prod_eq_top h, ← Finset.inf_eq_iInf]
+  grw [prod_le_inf]
 
 theorem prod_sup_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → J i ⊔ I = ⊤) :
     (∏ i ∈ s, J i) ⊔ I = ⊤ := by rw [sup_comm, sup_prod_eq_top]; intro i hi; rw [sup_comm, h i hi]
@@ -983,7 +982,6 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
--- Porting note: needed to add explicit coercions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union

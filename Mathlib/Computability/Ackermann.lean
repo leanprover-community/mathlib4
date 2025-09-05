@@ -91,10 +91,9 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   | succ n IH =>
     rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
-    have H : 2 * 3 ≤ 2 * 2 ^ 3 := by simp
-    apply H.trans
-    rw [_root_.mul_le_mul_left two_pos]
-    exact pow_right_mono₀ one_le_two (Nat.le_add_left 3 n)
+    calc  2 * 3
+      _ ≤ 2 * 2 ^ 3 := by simp
+      _ ≤ 2 * 2 ^ (n + 3) := by gcongr <;> omega
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp

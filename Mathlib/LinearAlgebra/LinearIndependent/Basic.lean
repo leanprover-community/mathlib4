@@ -452,7 +452,7 @@ theorem linearIndependent_sum {v : ι ⊕ ι' → M} :
     -- Porting note: `g` must be specified.
     rw [Finset.sum_preimage' (g := fun x => g x • v x),
       Finset.sum_preimage' (g := fun x => g x • v x), ← Finset.sum_union, ← Finset.filter_or]
-    · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_True]
+    · simpa only [← mem_union, range_inl_union_range_inr, mem_univ, Finset.filter_true]
     · exact Finset.disjoint_filter.2 fun x _ hx =>
         disjoint_left.1 isCompl_range_inl_range_inr.disjoint hx
   rw [← eq_neg_iff_add_eq_zero] at this
@@ -518,7 +518,6 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
     [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
-  -- Porting note: Some casts are required.
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
@@ -536,14 +535,14 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   -- We now make the key calculation:
   -- For any character `i` in the original `Finset`, we have `g i • i = g i • a` as functions
   -- on the monoid `G`.
-  have h1 (i) (his : i ∈ s) : (g i • (i : G → L)) = g i • (a : G → L) := by
+  have h1 (i) (his : i ∈ s) : (g i • i : G → L) = g i • a := by
     ext x
     rw [← sub_eq_zero]
     apply ih (fun j => g j * j x - g j * a x) _ i his
     ext y
     -- After that, it's just a chase scene.
     calc
-      (∑ i ∈ s, ((g i * i x - g i * a x) • (i : G → L))) y =
+      (∑ i ∈ s, (g i * i x - g i * a x) • i : G → L) y =
           (∑ i ∈ s, g i * i x * i y) - ∑ i ∈ s, g i * a x * i y := by simp [sub_mul]
       _ = (∑ i ∈ insert a s, g i * i x * i y) -
             ∑ i ∈ insert a s, g i * a x * i y := by simp [Finset.sum_insert has]
@@ -552,7 +551,7 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
         congrm ∑ i ∈ insert a s, ?_ - ∑ i ∈ insert a s, ?_
         · rw [mul_assoc]
         · rw [mul_assoc, mul_left_comm]
-      _ = (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
+      _ = (∑ i ∈ insert a s, g i • i : G → L) (x * y) -
             a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by simp [Finset.mul_sum]
       _ = 0 := by rw [hg]; simp
   -- On the other hand, since `a` is not already in `s`, for any character `i ∈ s`
@@ -572,8 +571,8 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
   have h4 : g a = 0 :=
     calc
       g a = g a * 1 := (mul_one _).symm
-      _ = (g a • (a : G → L)) 1 := by rw [← a.map_one]; rfl
-      _ = (∑ i ∈ insert a s, (g i • (i : G → L))) 1 := by
+      _ = (g a • a : G → L) 1 := by rw [← a.map_one]; rfl
+      _ = (∑ i ∈ insert a s, g i • i : G → L) 1 := by
         rw [Finset.sum_insert has, Finset.sum_eq_zero, add_zero]
         simp +contextual [h3]
       _ = 0 := by rw [hg]; rfl

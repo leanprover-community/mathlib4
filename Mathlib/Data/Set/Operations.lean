@@ -159,7 +159,7 @@ end Range
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
 noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
 
--- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
+-- This cannot be a `@[simp]` lemma because the head of the left-hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
   x.2.choose_spec
 

@@ -67,7 +67,7 @@ namespace MorphismProperty
 /-- Given `I : MorphismProperty C` and a regular cardinal `κ : Cardinal.{w}`,
 this property asserts the technical conditions which allow to proceed
 to the small object argument by doing a construction by transfinite
-induction indexed by the well ordered type `κ.ord.toType`. -/
+induction indexed by the well-ordered type `κ.ord.toType`. -/
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
   isSmall : IsSmall.{w} I := by infer_instance

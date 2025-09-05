@@ -96,7 +96,7 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_ |_ , _⟩ <;> simp
+  rcases boddDiv2 n with ⟨_ |_, _⟩ <;> simp
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
@@ -286,12 +286,12 @@ theorem one_bits : Nat.bits 1 = [true] := by
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h _ => simp [bodd_bit, bits_append_bit _ _ h]
+  | zero => simp
+  | bit _ _ h => simp [bodd_bit, bits_append_bit _ _ h]
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h _ => simp [div2_bit, bits_append_bit _ _ h]
+  | zero => simp
+  | bit _ _ h => simp [div2_bit, bits_append_bit _ _ h]
 
 end Nat

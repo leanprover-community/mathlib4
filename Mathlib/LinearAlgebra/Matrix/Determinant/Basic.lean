@@ -5,8 +5,8 @@ Authors: Kenny Lau, Chris Hughes, Anne Baanen
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.RowCol
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.LinearAlgebra.Alternating.Basic

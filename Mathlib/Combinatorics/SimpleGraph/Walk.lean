@@ -363,7 +363,7 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 @[simp]
 lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
   refine ⟨?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
-  rintro ⟨p , hp⟩
+  rintro ⟨p, hp⟩
   induction p with
   | nil => simp only [Walk.length_nil, zero_ne_one] at hp
   | cons h p' =>
@@ -566,6 +566,14 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
   obtain rfl | h := eq_or_ne t v <;> obtain rfl | h' := eq_or_ne t u <;>
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
+
+theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support ⊆ (p.cons hadj).support := by
+  simp
+
+theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support ⊆ (p.concat hadj).support := by
+  simp
 
 @[simp]
 theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
@@ -1010,11 +1018,14 @@ lemma tail_nil : (@nil _ G v).tail = .nil := rfl
 @[simp]
 lemma tail_cons_nil (h : G.Adj u v) : (Walk.cons h .nil).tail = .nil := rfl
 
-lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
+@[simp]
+lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
     (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
   match p with
   | .nil => rfl
   | .cons h q => rfl
+
+@[deprecated (since := "2025-08-19")] alias tail_cons_eq := tail_cons
 
 @[simp]
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
@@ -1067,7 +1078,7 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   cases p with
   | nil => simp at hp
   | cons h q =>
-    simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
+    simp only [getVert_cons_succ, tail_cons, cons_copy, copy_rfl_rfl]
 
 @[simp]
 lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
@@ -1099,13 +1110,6 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail p hp, List.tail_cons]
 
-@[simp]
-lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
-    (p.cons h).tail = p.copy (getVert_zero p).symm rfl := by
-  match p with
-  | .nil => rfl
-  | .cons h q => rfl
-
 lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
   match p with
@@ -1136,7 +1140,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   match p with
   | .nil => rfl
   | .cons h q =>
-    simp only [getVert_cons_succ, tail_cons_eq]
+    simp only [getVert_cons_succ, tail_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :

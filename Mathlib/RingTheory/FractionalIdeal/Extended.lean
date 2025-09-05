@@ -4,27 +4,27 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom, Xavier Roblot
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 
 /-!
 # Extension of fractional ideals
 
 This file defines the extension of a fractional ideal along a ring homomorphism.
 
-## Main definition
+## Main definitions
 
 * `FractionalIdeal.extended`: Let `A` and `B` be commutative rings with respective localizations
   `IsLocalization M K` and `IsLocalization N L`. Let `f : A →+* B` be a ring homomorphism with
   `hf : M ≤ Submonoid.comap f N`. If `I : FractionalIdeal M K`, then the extension of `I` along
   `f` is `extended L hf I : FractionalIdeal N L`.
+* `FractionalIdeal.extendedHom`: The ring homomorphism version of `FractionalIdeal.extended`.
+* `FractionalIdeal.extendedHomₐ`: For `A ⊆ B` an extension of domains, the ring homomorphism that
+  sends a fractional ideal of `A` to a fractional ideal of `B`.
 
 ## Main results
 
-* `FractionalIdeal.extended_add` says that extension commutes with addition.
-* `FractionalIdeal.extended_mul` says that extension commutes with multiplication.
-* `FractionalIdeal.extended_inv` says that extension commutes with inversion.
-* `FractionalIdeal.extended_injective` says that extension (by an algebra map) is injective.
-* `Ideal.map_algebraMap_injective`: the map of an ideal by an algebra map is injective
+* `FractionalIdeal.extendedHomₐ_injective`: the map `FractionalIdeal.extendedHomₐ` is injective.
+* `Ideal.map_algebraMap_injective`: For `A ⊆ B` an extension of Dedekind domains, the map that
+  sends an ideal `I` of `A` to `I·B` is injective.
 
 ## Tags
 
@@ -35,11 +35,9 @@ open IsLocalization FractionalIdeal Submodule
 
 namespace FractionalIdeal
 
-variable {A : Type*} [CommRing A] {B : Type*} [CommRing B]
+section RingHom
 
-section General
-
-variable {f : A →+* B}
+variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] {f : A →+* B}
 variable {K : Type*} {M : Submonoid A} [CommRing K] [Algebra A K] [IsLocalization M K]
 variable (L : Type*) {N : Submonoid B} [CommRing L] [Algebra B L] [IsLocalization N L]
 variable (hf : M ≤ Submonoid.comap f N)
@@ -78,8 +76,7 @@ theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
 variable {I}
 
 theorem extended_ne_zero [IsDomain K] [IsDomain L] [NoZeroSMulDivisors A K] [NoZeroSMulDivisors B L]
-    (hf' : Function.Injective f) (hI : I ≠ 0) :
-    extended L hf I ≠ 0 := by
+    (hf' : Function.Injective f) (hI : I ≠ 0) : extended L hf I ≠ 0 := by
   simp only [ne_eq, ← coeToSubmodule_inj, coe_extended_eq_span, coe_zero, Submodule.span_eq_bot,
     Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
     not_forall]
@@ -89,8 +86,7 @@ theorem extended_ne_zero [IsDomain K] [IsDomain L] [NoZeroSMulDivisors A K] [NoZ
 
 @[simp]
 theorem extended_eq_zero_iff [IsDomain K] [IsDomain L] [NoZeroSMulDivisors A K]
-    [NoZeroSMulDivisors B L] (hf' : Function.Injective f) :
-    extended L hf I = 0 ↔ I = 0 := by
+    [NoZeroSMulDivisors B L] (hf' : Function.Injective f) : extended L hf I = 0 ↔ I = 0 := by
   refine ⟨?_, fun h ↦ h ▸ extended_zero _ _⟩
   contrapose!
   exact fun h ↦ extended_ne_zero L hf hf' h
@@ -155,6 +151,7 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
   · rcases Set.mem_mul.mp h with ⟨y, ⟨i, hi, rfl⟩, z, ⟨j, hj, rfl⟩, rfl⟩
     exact Submodule.subset_span ⟨i * j, mul_mem_mul hi hj, by simp⟩
 
+@[simp]
 theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
     (I₀ : FractionalIdeal M K).extended L hf = (I₀.map f : FractionalIdeal N L) := by
   rw [Ideal.map, Ideal.span, ← coeToSubmodule_inj, Ideal.submodule_span_eq, coe_coeIdeal,
@@ -167,100 +164,87 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
     exact Submodule.subset_span
       ⟨algebraMap A K a, mem_coeIdeal_of_mem M ha, IsLocalization.map_eq hf a⟩
 
-end General
-section FractionRing
+/--
+The ring homomorphism version of `FractionalIdeal.extended`.
+-/
+@[simps]
+def extendedHom : FractionalIdeal M K →+* FractionalIdeal N L where
+  toFun := extended L hf
+  map_one' := extended_one L hf
+  map_zero' := extended_zero L hf
+  map_mul' := extended_mul L hf
+  map_add' := extended_add L hf
+
+end RingHom
+
+section Algebra
 
 open scoped nonZeroDivisors
 
-variable {K : Type*} (L : Type*) [IsDomain A] [IsDomain B] [Field K] [Field L] [Algebra A K]
-  [Algebra B L] [IsFractionRing A K] [IsFractionRing B L] [Algebra A B] [NoZeroSMulDivisors A B]
+variable {A K : Type*} (L B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
+  [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
+  [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
-theorem extended_inv [IsDedekindDomain A] [IsDedekindDomain B] {I : FractionalIdeal A⁰ K}
-    (hI : I ≠ 0) :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    extended L hs (f := algebraMap A B) I⁻¹ =
-       (extended L hs (f := algebraMap A B) I : FractionalIdeal B⁰ L)⁻¹ := by
-  rw [← mul_eq_one_iff_eq_inv₀, ← extended_mul, inv_mul_cancel₀ hI, extended_one]
-  exact extended_ne_zero _ _ (FaithfulSMul.algebraMap_injective _ _) hI
+/--
+The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
+`A ⊆ B` an extension of domains.
+-/
+abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+  extendedHom L <|
+    nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 
-variable (K) in
-theorem extended_coeIdeal_eq_map_algebraMap (I : Ideal A) :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    (I : FractionalIdeal A⁰ K).extended L hs =
-      (I.map (algebraMap A B) : FractionalIdeal B⁰ L) :=
-  FractionalIdeal.extended_coeIdeal_eq_map _ _ _
+theorem extendedHomₐ_eq_zero_iff {I : FractionalIdeal A⁰ K} :
+    extendedHomₐ L B I = 0 ↔ I = 0 :=
+  extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _)
 
-variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
+variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
+  [IsIntegrallyClosed A] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
 
-variable (B)
-
-lemma coe_extended_eq_span_algebraMap [IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L]
-    (I : FractionalIdeal A⁰ K) :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    I.extended L hs = span B (algebraMap K L '' I) := by
-  rw [IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
-  exact coe_extended_eq_span L _ I
-
-variable [IsIntegrallyClosed A] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
-
-theorem le_one_of_extended_le_one {I : FractionalIdeal A⁰ K}
-    (hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰) (hI : extended L hs I ≤ 1) : I ≤ 1 := by
+theorem le_one_of_extendedHomₐ_le_one (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
   contrapose! hI
   rw [SetLike.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
-  · rw [← FractionalIdeal.mem_coe, coe_extended_eq_span_algebraMap B L I]
-    exact subset_span <| Set.mem_image_of_mem _ hx₁
+  · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
+      using subset_span <| Set.mem_image_of_mem _ hx₁
   · contrapose! hx₂
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢
     exact IsIntegral.tower_bot_of_field <| isIntegral_trans _ hx₂
 
-theorem extended_le_one_iff {I : FractionalIdeal A⁰ K} :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    extended L hs I ≤ 1 ↔ I ≤ 1 := by
-  have hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-  exact ⟨fun h ↦ le_one_of_extended_le_one B L hs h, fun a ↦ extended_le_one_of_le_one L hs I a⟩
+theorem extendedHomₐ_le_one_iff : extendedHomₐ L B I ≤ 1 ↔ I ≤ 1 :=
+  ⟨fun h ↦ le_one_of_extendedHomₐ_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
 
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
-theorem one_le_extended_iff {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    1 ≤ extended L hs I ↔ 1 ≤ I := by
-  rw [← inv_le_inv_iff (extended_ne_zero _ _ (FaithfulSMul.algebraMap_injective _ _) hI)
-    (by simp), inv_one, ← extended_inv _ hI, extended_le_one_iff, inv_le_comm hI one_ne_zero,
-    inv_one]
+theorem one_le_extendedHomₐ_iff (hI : I ≠ 0) : 1 ≤ extendedHomₐ L B I ↔ 1 ≤ I := by
+  rw [← inv_le_inv_iff (by exact extended_ne_zero L _ (FaithfulSMul.algebraMap_injective _ _) hI)
+    (by simp), inv_one, ← map_inv₀, extendedHomₐ_le_one_iff, inv_le_comm hI (by simp), inv_one]
 
-theorem extended_eq_one_iff {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    extended L hs I = 1 ↔ I = 1 := by
-  rw [le_antisymm_iff, extended_le_one_iff, one_le_extended_iff _ _ hI, ← le_antisymm_iff]
+theorem extendedHomₐ_eq_one_iff (hI : I ≠ 0) : extendedHomₐ L B I = 1 ↔ I = 1 := by
+  rw [le_antisymm_iff, extendedHomₐ_le_one_iff, one_le_extendedHomₐ_iff _ _ hI, ← le_antisymm_iff]
 
-theorem extended_injective :
-    haveI hs : A⁰ ≤ Submonoid.comap (algebraMap A B) B⁰ := fun _ hx ↦ by simpa using hx
-    Function.Injective (fun I : FractionalIdeal A⁰ K ↦ extended L hs I) := by
+variable (A K) in
+theorem extendedHomₐ_injective :
+    Function.Injective (fun I : FractionalIdeal A⁰ K ↦ extendedHomₐ L B I) := by
   intro I J h
+  dsimp only at h
   by_cases hI : I = 0
-  · rw [hI]
-    dsimp only at h
-    rwa [eq_comm, hI, extended_zero,
-      extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _), eq_comm] at h
+  · rwa [hI, map_zero, eq_comm, extendedHomₐ_eq_zero_iff L B, eq_comm, ← hI] at h
   by_cases hJ : J = 0
-  · rw [hJ]
-    dsimp only at h
-    rwa [hJ, extended_zero, extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _)] at h
+  · rwa [hJ, map_zero, extendedHomₐ_eq_zero_iff L B, ← hJ] at h
   rwa [← mul_inv_eq_one₀ (extended_ne_zero _ _ (FaithfulSMul.algebraMap_injective _ _) hJ),
-    ← extended_inv _ hJ, ← extended_mul, extended_eq_one_iff _  _ (mul_ne_zero hI (inv_ne_zero hJ)),
+    ← map_inv₀, ← map_mul, extendedHomₐ_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)),
     mul_inv_eq_one₀ hJ] at h
 
-variable (A) in
 theorem _root_.Ideal.map_algebraMap_injective :
     Function.Injective (fun I : Ideal A ↦ I.map (algebraMap A B)) := by
   let _ : Algebra (FractionRing A) (FractionRing B) := FractionRing.liftAlgebra A (FractionRing B)
-  intro I _ h
-  rwa [← coeIdeal_inj (K := FractionRing B), ← extended_coeIdeal_eq_map_algebraMap (FractionRing A),
-    ← extended_coeIdeal_eq_map_algebraMap (FractionRing A), (extended_injective _ _).eq_iff,
-    coeIdeal_inj] at h
+  intro _ _ _
+  rwa [← coeIdeal_inj (K := FractionRing A),
+    ← (extendedHomₐ_injective A (FractionRing A) (FractionRing B) B).eq_iff,
+    extendedHom_apply, extendedHom_apply, extended_coeIdeal_eq_map, extended_coeIdeal_eq_map,
+    coeIdeal_inj]
 
-end FractionRing
+end Algebra
 
 end FractionalIdeal

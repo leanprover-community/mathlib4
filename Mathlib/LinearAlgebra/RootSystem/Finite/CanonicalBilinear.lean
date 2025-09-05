@@ -342,7 +342,6 @@ def posRootForm : P.RootPositiveForm S where
 
 lemma algebraMap_posRootForm_posForm (x y : span S (range P.root)) :
     (algebraMap S R) ((P.posRootForm S).posForm x y) = P.RootForm x y := by
-  rw [RootPositiveForm.algebraMap_posForm]
   simp [posRootForm]
 
 @[simp]

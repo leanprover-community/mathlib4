@@ -178,6 +178,7 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
     simp_rw [zpow_negSucc, ← inv_pow]
     refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
+    simp only [smul_eq_mul]
     field_simp
     rw [div_le_div_iff₀, ← sub_nonneg]
     · calc

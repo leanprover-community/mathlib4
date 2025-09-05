@@ -95,7 +95,7 @@ instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in
-/-- The grothendieck topology on `X.AffineZariskiSite` induced from the topology on `X.Opens`.
+/-- The Grothendieck topology on `X.AffineZariskiSite` induced from the topology on `X.Opens`.
 Also see `mem_grothendieckTopology_iff_sectionsOfPresieve`. -/
 def grothendieckTopology : GrothendieckTopology X.AffineZariskiSite :=
   (toOpensFunctor X).inducedTopology (Opens.grothendieckTopology X)

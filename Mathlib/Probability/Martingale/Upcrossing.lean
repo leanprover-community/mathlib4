@@ -498,12 +498,11 @@ theorem upperCrossingTime_eq_upperCrossingTime_of_lt {M : ℕ} (hNM : N ≤ M)
 theorem upcrossingsBefore_mono (hab : a < b) : Monotone fun N ω => upcrossingsBefore a b f N ω := by
   intro N M hNM ω
   simp only [upcrossingsBefore]
-  by_cases hemp : {n : ℕ | upperCrossingTime a b f N n ω < N}.Nonempty
-  · refine csSup_le_csSup (upperCrossingTime_lt_bddAbove hab) hemp fun n hn => ?_
-    rw [Set.mem_setOf_eq, upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
-    exact lt_of_lt_of_le hn hNM
-  · rw [Set.not_nonempty_iff_eq_empty] at hemp
-    simp [hemp, csSup_empty]
+  gcongr sSup {n | ?_} with n
+  · exact upperCrossingTime_lt_bddAbove hab
+  intro hn
+  rw [upperCrossingTime_eq_upperCrossingTime_of_lt hNM hn]
+  exact lt_of_lt_of_le hn hNM
 
 theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ} (hN₁ : N ≤ N₁)
     (hN₁' : f N₁ ω < a) (hN₂ : N₁ ≤ N₂) (hN₂' : b < f N₂ ω) :

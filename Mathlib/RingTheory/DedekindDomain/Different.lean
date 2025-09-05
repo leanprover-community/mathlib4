@@ -3,12 +3,12 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.RamificationInertia.Unramified
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.FractionalIdeal.Extended
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.Trace.Quotient
+import Mathlib.RingTheory.Conductor
 
 /-!
 # The different ideal

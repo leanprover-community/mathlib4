@@ -210,7 +210,7 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
           e.toOrderEmbedding.toOrderHom)) := by
   apply le_antisymm
   · rintro ⟨k⟩ x hx
-    induction' k using SimplexCategory.rec with k
+    induction k using SimplexCategory.rec with | _ k
     rw [mem_face_iff] at hx
     let φ : Fin (k + 1) →o S :=
       { toFun i := ⟨x i, hx i⟩
@@ -240,7 +240,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         ext i : 3
         apply e.symm_apply_apply
       right_inv := fun ⟨x, hx⟩ ↦ by
-        induction' j using SimplexCategory.rec with j
+        induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
         exact congr_arg Subtype.val

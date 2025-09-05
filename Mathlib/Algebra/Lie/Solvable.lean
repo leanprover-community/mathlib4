@@ -237,9 +237,7 @@ theorem coe_derivedSeries_eq_int (k : ℕ) :
     simp only [ih]
     apply le_antisymm
     · exact coe_derivedSeries_eq_int_aux _ _ L k ih
-    · simp only [← ih]
-      apply coe_derivedSeries_eq_int_aux _ _ L k
-      simp [ih]
+    · simp
 
 end LieIdeal
 

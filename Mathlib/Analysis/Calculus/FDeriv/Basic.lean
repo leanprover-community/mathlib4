@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
+import Mathlib.Analysis.Normed.Operator.Asymptotics
 
 /-!
 # The Fréchet derivative: basic properties

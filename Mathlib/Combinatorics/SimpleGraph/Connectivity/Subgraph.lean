@@ -352,7 +352,6 @@ lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.Is
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
   have hadj1 := ((show i - 1 + 1 = i from by omega) ▸
     p.toSubgraph_adj_getVert (by omega : (i - 1) < p.length)).symm
-  have hadj2 := p.toSubgraph_adj_getVert (by omega : i < p.length)
   ext v
   simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
     SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,

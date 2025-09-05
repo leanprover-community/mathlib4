@@ -70,8 +70,7 @@ def adj : free ⊣ forget AddCommGrp.{u} :=
       homEquiv_naturality_left_symm := by
         intros
         ext
-        simp
-        apply FreeAbelianGroup.lift_comp }
+        simpa using FreeAbelianGroup.lift_comp .. }
 
 instance : free.{u}.IsLeftAdjoint :=
   ⟨_, ⟨adj⟩⟩

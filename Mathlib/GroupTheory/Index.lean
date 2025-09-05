@@ -28,8 +28,8 @@ Several theorems proved in this file are known as Lagrange's theorem.
 # Main results
 
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
-- `index_mul_card` : `H.index * Fintype.card H = Fintype.card G`
-- `index_dvd_card` : `H.index ∣ Fintype.card G`
+- `index_mul_card` : `H.index * Nat.card H = Nat.card G`
+- `index_dvd_card` : `H.index ∣ Nat.card G`
 - `relindex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relindex_mul_relindex` : `relindex` is multiplicative in towers
@@ -90,6 +90,11 @@ theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
 theorem relindex_map_map_of_injective {f : G →* G'} (H K : Subgroup G) (hf : Function.Injective f) :
     relindex (map f H) (map f K) = relindex H K := by
   rw [← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective hf]
+
+@[to_additive]
+theorem relindex_map_map (f : G →* G') (H K : Subgroup G) :
+    (map f H).relindex (map f K) = (H ⊔ f.ker).relindex (K ⊔ f.ker) := by
+  rw [← comap_map_eq, ← comap_map_eq, relindex_comap, (gc_map_comap f).l_u_l_eq_l]
 
 variable {H K L}
 
@@ -577,6 +582,10 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
+@[to_additive]
+theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
+    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
+
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
@@ -594,10 +603,9 @@ theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
 theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ finiteIndex_of_finite_quotient⟩
 
--- Porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
-  @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)
+  finiteIndex_of_finite_quotient
 
 variable (H) in
 @[to_additive]

@@ -493,8 +493,6 @@ section Field
 
 variable {K : Type*} [Field K] [Algebra K A]
 
-/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
-simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]
   exact RingHom.injective _

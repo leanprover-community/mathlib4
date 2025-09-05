@@ -566,7 +566,7 @@ namespace Field
 as a natural number. This means that the cardinality of `Field.Emb F E` and the degree of
 `(separableClosure F E) / F` are both finite or infinite, and when they are finite, they
 coincide. -/
-@[stacks 09HJ "`sepDegree` is defined as the right hand side of 09HJ"]
+@[stacks 09HJ "`sepDegree` is defined as the right-hand side of 09HJ"]
 theorem finSepDegree_eq [Algebra.IsAlgebraic F E] :
     finSepDegree F E = Cardinal.toNat (sepDegree F E) := by
   have : Algebra.IsAlgebraic (separableClosure F E) E := Algebra.IsAlgebraic.tower_top (K := F) _

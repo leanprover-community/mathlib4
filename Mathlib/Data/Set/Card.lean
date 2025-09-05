@@ -393,16 +393,16 @@ theorem Finite.eq_insert_of_subset_of_encard_eq_succ (hs : s.Finite) (h : s ⊆ 
   obtain ⟨x, hx⟩ := hst; use x; rw [← diff_union_of_subset h, hx, singleton_union]
 
 theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.encard = k := by
-  revert hk
-  refine ENat.nat_induction k (fun _ ↦ ⟨∅, empty_subset _, by simp⟩) (fun n IH hle ↦ ?_) ?_
-  · obtain ⟨t₀, ht₀s, ht₀⟩ := IH (le_trans (by simp) hle)
+  induction k using ENat.nat_induction with
+  | zero => exact ⟨∅, empty_subset _, by simp⟩
+  | succ n IH =>
+    obtain ⟨t₀, ht₀s, ht₀⟩ := IH (le_trans (by simp) hk)
     simp only [Nat.cast_succ] at *
     have hne : t₀ ≠ s := by
-      rintro rfl; rw [ht₀, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at hle; simp at hle
+      rintro rfl; rw [ht₀, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le] at hk; simp at hk
     obtain ⟨x, hx⟩ := exists_of_ssubset (ht₀s.ssubset_of_ne hne)
     exact ⟨insert x t₀, insert_subset hx.1 ht₀s, by rw [encard_insert_of_notMem hx.2, ht₀]⟩
-  simp only [top_le_iff, encard_eq_top_iff]
-  exact fun _ hi ↦ ⟨s, Subset.rfl, hi⟩
+  | top => rw [top_le_iff] at hk; exact ⟨s, Subset.rfl, hk⟩
 
 theorem exists_superset_subset_encard_eq {k : ℕ∞}
     (hst : s ⊆ t) (hsk : s.encard ≤ k) (hkt : k ≤ t.encard) :
