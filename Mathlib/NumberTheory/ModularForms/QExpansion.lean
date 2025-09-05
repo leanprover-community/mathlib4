@@ -261,10 +261,8 @@ lemma qExpansion_coeff_eq_intervalIntegral (n : ℕ)
     ring_nf
   -- now just complex exponential arithmetic to finish
   simp_rw [deriv_circleMap, this, show u + t * I = τ by rfl, show ⟨↑τ, τ.2⟩ = τ by rfl,
-    eq_cuspFunction _ hΓ, smul_eq_mul, pow_succ]
-  ring_nf -- why do we need to do ring_nf twice here?
+    eq_cuspFunction _ hΓ, smul_eq_mul, pow_succ, push_cast]
   field_simp [(show 𝕢 h τ ≠ 0 from Complex.exp_ne_zero _), Real.pi_ne_zero, NeZero.ne]
-  ring_nf
 
 end ModularFormClass
 
