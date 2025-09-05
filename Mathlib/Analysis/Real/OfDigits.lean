@@ -20,6 +20,8 @@ representations of reals as sequences of digits in positional system.
   and returns the real number `0.d₀d₁d₂...`.
 * `digits`: takes a real number in [0,1) and returns the sequence of its digits.
 
+## Main Statements
+
 * `ofDigits_digits` states that `ofDigits (digits x b) = x`.
 -/
 
