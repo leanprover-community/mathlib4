@@ -693,7 +693,7 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
 
 /-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
 to a function `f : Quotient sa → Quotient sb → Quotient sc`. Useful to define binary operations
-on quotients. This is a version of `Quotient.map` using `Setoid.r` instead of `≈`. -/
+on quotients. This is a version of `Quotient.map₂` using `Setoid.r` instead of `≈`. -/
 protected def map₂' (f : α → β → γ)
     (h : ∀ ⦃a₁ a₂ : α⦄, s₁.r a₁ a₂ → ∀ ⦃b₁ b₂ : β⦄, s₂.r b₁ b₂ → s₃.r (f a₁ b₁) (f a₂ b₂)) :
     Quotient s₁ → Quotient s₂ → Quotient s₃ :=
