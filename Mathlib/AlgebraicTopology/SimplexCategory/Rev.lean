@@ -59,6 +59,11 @@ is a covariant involution. -/
 def revCompRevIso : rev ⋙ rev ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+@[simp]
+lemma rev_map_rev_map {n m : SimplexCategory} (f : n ⟶ m) :
+    rev.map (rev.map f) = f := by
+  aesop
+
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 as an equivalence of category. -/
 @[simps]
