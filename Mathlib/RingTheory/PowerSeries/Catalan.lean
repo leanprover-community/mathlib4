@@ -32,6 +32,7 @@ open Finset
 
 namespace PowerSeries
 
+/-- The Catalan generating function as a power series. -/
 def catalanSeries : PowerSeries ℕ := PowerSeries.mk catalan
 
 @[simp]
@@ -53,7 +54,7 @@ theorem coeff_X_mul_catalanSeries (n : ℕ) (hn : 0 < n) :
   coeff n (X * catalanSeries) = catalan (n - 1) := by
   simp [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ
     (fun x y => coeff x X * catalan y)]
-  rw [Finset.sum_congr rfl (sum_coeff_X_catalanSeries n)]
+  rw [sum_congr rfl (sum_coeff_X_catalanSeries n)]
   simp_all only [sum_ite_eq', mem_range, lt_add_iff_pos_left, ↓reduceIte]
 
 theorem catalanSeries_one_add_X_mul_self_sq : catalanSeries = 1 + X * catalanSeries ^ 2 := by
