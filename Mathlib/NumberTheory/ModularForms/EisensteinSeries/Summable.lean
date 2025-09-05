@@ -238,4 +238,64 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
   simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ z).mul
     (linear_inv_isBigO_right c₁ z).comp_neg_int
 
+lemma summable_linear_mul_linear {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
+    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
+  apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
+  simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
+  simpa using (linear_inv_isBigO_left c₂ hz).mul (linear_inv_isBigO_left c₁ hz)
+
+lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
+    (fun (m : Fin 2 → ℤ) => (((m 0 + a : ℂ) * z + m 1 + b))⁻¹) =O[cofinite]
+    (fun m : (Fin 2 → ℤ) => ‖![m 0 + a, m 1 + b]‖⁻¹) := by
+  rw [Asymptotics.isBigO_iff]
+  have h0 : z ∈ verticalStrip |z.re| (z.im) := by
+    simp [mem_verticalStrip_iff]
+  use ‖r ⟨⟨|z.re|, z.im⟩, z.2⟩‖⁻¹
+  filter_upwards with m
+  have := summand_bound_of_mem_verticalStrip (k := 1) (by simp) ![m 0 + a, m 1 + b] z.2 h0
+  simp only [Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
+    Int.cast_add, Real.rpow_neg_one, norm_inv, Real.norm_eq_abs,
+    Nat.succ_eq_add_one, Nat.reduceAdd, ge_iff_le] at *
+  simp_rw [add_assoc]
+  apply le_trans this
+  nth_rw 2 [abs_eq_self.mpr]
+  · apply le_of_eq
+    simp only [Fin.isValue, abs_norm, mul_eq_mul_right_iff, inv_inj, inv_eq_zero, norm_eq_zero,
+      Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, UpperHalfPlane.im]
+    aesop
+  · exact (r_pos _).le
+
+lemma isLittleO_const_vec (a b : ℤ) :
+    (fun _ : (Fin 2 → ℤ) ↦ ![a, b]) =o[cofinite] (fun x ↦ ‖x‖) := by
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Asymptotics.isLittleO_const_left,
+    Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true]
+  right
+  rw [Filter.tendsto_atTop]
+  intro r
+  simp only [Function.comp_apply, norm_norm, eventually_cofinite, not_le]
+  apply IsCompact.finite_of_discrete
+  apply Metric.isCompact_of_isClosed_isBounded (isClosed_discrete {v | ‖v‖ < r})
+  simp_rw [← dist_zero, dist_comm]
+  change Bornology.IsBounded (Metric.ball 0 r)
+  exact Metric.isBounded_ball
+
+lemma vec_add_const_isTheta (a b : ℤ) :
+    (fun (m : Fin 2 → ℤ) => ‖![m 0 + a, m 1 + b]‖⁻¹) =Θ[cofinite] (fun m => ‖m‖⁻¹) := by
+  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Asymptotics.isTheta_inv]
+  have (x : Fin 2 → ℤ) : ![x 0 + a, x 1 + b] = x + ![a, b] := List.ofFn_inj.mp rfl
+  simp_rw [this]
+  exact Asymptotics.isTheta_norm_left.mpr (Asymptotics.IsTheta.add_isLittleO
+    (by rw [← Asymptotics.isTheta_norm_left]) (isLittleO_const_vec a b))
+
+lemma isBigO_linear_add_const_vec (z : ℍ) (a b : ℤ) :
+    (fun m : (Fin 2 → ℤ) => (((m 0 : ℂ) + a) * z + m 1 + b)⁻¹) =O[cofinite] (fun m => ‖m‖⁻¹) :=
+  (aux_isBigO_linear z a b).trans (vec_add_const_isTheta a b).isBigO
+
+/-- If the inverse of a function from `Fin 2 → ℤ` is `BigO` to `(‖n‖ ^ a)⁻¹` for `2 < a`,
+then the function is Summable. -/
+lemma summable_inv_of_isBigO_rpow_norm_inv {f : (Fin 2 → ℤ) → ℂ} {a : ℝ} (hab : 2 < a)
+    (hf : (fun n ↦ (f n)⁻¹) =O[cofinite] fun n ↦ (‖n‖ ^ a)⁻¹) : Summable fun n ↦ (f n)⁻¹ :=
+  summable_of_isBigO
+    ((summable_one_div_norm_rpow hab).congr fun b ↦ Real.rpow_neg (norm_nonneg b) a) hf
+
 end EisensteinSeries
