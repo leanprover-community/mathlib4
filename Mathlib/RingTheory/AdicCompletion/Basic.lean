@@ -795,7 +795,17 @@ theorem coeHom_apply (x : M) : coeHom I M x = (x : AdicCompletion I M) :=
 variable {I M}
 
 theorem coeHom_injective_iff : Function.Injective (coeHom I M) ↔ IsHausdorff I M := by
-  sorry
+  constructor
+  · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
+    ext n
+    simpa [coeHom, SModEq.zero] using hx n
+  · intro h
+    rw [← LinearMap.ker_eq_bot]
+    ext x
+    simp only [LinearMap.mem_ker, Submodule.mem_bot]
+    refine ⟨fun hx ↦ h.haus x fun n ↦ ?_, fun hx ↦ by simp [hx]⟩
+    rw [Subtype.ext_iff] at hx
+    simpa using congrFun hx n
 
 alias ⟨isHausdorff_of_coeHom_injective, _⟩ := coeHom_injective_iff
 
@@ -804,7 +814,10 @@ theorem coeHom_injective [IsHausdorff I M] : Function.Injective (coeHom I M) :=
   coeHom_injective_iff.mpr ‹_›
 
 theorem coeHom_surjective_iff : Function.Surjective (coeHom I M) ↔ IsPrecomplete I M := by
-  sorry
+  constructor
+  · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
+    sorry
+  · sorry
 
 alias ⟨isPrecomplete_of_coeHom_surjective, _⟩ := coeHom_surjective_iff
 
