@@ -13,8 +13,9 @@ This file contains lemmas about the antidiagonal of the divisors function. It de
 `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b` to `(a, b)`.
 
 We then prove some identities about the infinite sums over this antidiagonal, such as
-`∑' n : ℕ+, n * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ 1 n * r ^ (n : ℕ)` which are used for
-Eisenstein series and their q-expansions.
+`∑' n : ℕ+, n ^ k * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ k n * r ^ (n : ℕ)`
+which are used for Eisenstein series and their q-expansions. This is also a special case of
+Lambert series.
 
 -/
 
@@ -77,20 +78,19 @@ theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1
   constructor
   · exact fun n ↦ (hasSum_fintype _).summable
   · simp only [norm_mul, norm_pow, tsum_fintype, Finset.univ_eq_attach]
-    · apply Summable.of_nonneg_of_le (f := fun c : ℕ+ ↦ ‖(c : 𝕜) ^ (k + 1) * r ^ (c : ℕ)‖)
-        (fun b ↦ Finset.sum_nonneg (fun _ _ ↦ mul_nonneg (by simp) (by simp))) (fun b ↦ ?_)
-        (by apply (summable_norm_pow_mul_geometric_of_norm_lt_one (k + 1) hr).subtype)
-      intro b
-      transitivity ∑ _ ∈ (b : ℕ).divisors, ‖(b : 𝕜)‖ ^ k * ‖r ^ (b : ℕ)‖
+    apply Summable.of_nonneg_of_le (f := fun c : ℕ+ ↦ ‖(c : 𝕜) ^ (k + 1) * r ^ (c : ℕ)‖)
+      (fun b ↦ Finset.sum_nonneg (fun _ _ ↦ mul_nonneg (by simp) (by simp))) (fun b ↦ ?_)
+      (by apply (summable_norm_pow_mul_geometric_of_norm_lt_one (k + 1) hr).subtype)
+    transitivity ∑ _ ∈ (b : ℕ).divisors, ‖(b : 𝕜)‖ ^ k * ‖r ^ (b : ℕ)‖
     · rw [(b : ℕ).divisorsAntidiagonal.sum_attach (fun x ↦ ‖(x.1 : 𝕜)‖ ^ _ * _ ^ (x.2 * x.1)),
           sum_divisorsAntidiagonal ((fun x y ↦ ‖(x : 𝕜)‖ ^ k * _ ^ (y * x)))]
-        gcongr with i hi
-        · simpa using le_of_dvd b.2 (dvd_of_mem_divisors hi)
-        · rw [Nat.div_mul_cancel (dvd_of_mem_divisors hi), norm_pow]
-      · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
-          pow_one, norm_mul]
-        gcongr
-        simpa using Nat.card_divisors_le_self b
+      gcongr with i hi
+      · simpa using le_of_dvd b.2 (dvd_of_mem_divisors hi)
+      · rw [Nat.div_mul_cancel (dvd_of_mem_divisors hi), norm_pow]
+    · simp only [norm_pow, Finset.sum_const, nsmul_eq_mul, ← mul_assoc, add_comm k 1, pow_add,
+        pow_one, norm_mul]
+      gcongr
+      simpa using Nat.card_divisors_le_self b
 
 theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (ℕ+ × ℕ+) ↦ c.1 ^ k * (r ^ (c.2 * c.1 : ℕ)) := by
@@ -121,14 +121,14 @@ theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
   nth_rw 2 [← hni]
   ring
 
-lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' n : ℕ+, n * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ 1 n * r ^ (n : ℕ) := by
+lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) (k : ℕ) :
+    ∑' n : ℕ+, n ^ k * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ k n * r ^ (n : ℕ) := by
   have (m : ℕ) [NeZero m] := tsum_geometric_of_norm_lt_one (ξ := r ^ m)
     (by simpa using pow_lt_one₀ (by simp) hr (NeZero.ne _))
   simp only [div_eq_mul_inv, ← this, ← tsum_mul_left, mul_assoc, ← _root_.pow_succ',
-    ← fun (n : ℕ) ↦ tsum_pnat_eq_tsum_succ (fun m ↦ n * (r ^ n) ^ m)]
-  have h00 := tsum_prod_pow_eq_tsum_sigma 1 hr
-  rw [Summable.tsum_comm (by apply summable_prod_mul_pow 1 hr)] at h00
+    ← fun (n : ℕ) ↦ tsum_pnat_eq_tsum_succ (fun m ↦ n ^ k * (r ^ n) ^ m)]
+  have h00 := tsum_prod_pow_eq_tsum_sigma k hr
+  rw [Summable.tsum_comm (by apply summable_prod_mul_pow k hr)] at h00
   rw [← h00]
   exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm b.val c.val, pow_mul]
 
