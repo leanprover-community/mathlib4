@@ -8,7 +8,7 @@ import Lean
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
-import Mathlib.Tactic.DataSynth.Types
+import Mathlib.Tactic.DataSynth.Decl
 
 open Lean Meta
 
@@ -27,7 +27,7 @@ def getTheorems (e : Expr) : DataSynthM (Array Theorem) := do
   let cfg := (← read).config
   let (candidates, thms) ←
     withConfig (fun cfg' => { cfg' with iota := cfg.iota, zeta := cfg.zeta }) <|
-      thms.getMatch e false true
+      thms.getMatch e true true
   modify ({ · with theorems := ⟨thms⟩ })
   return (← MonadExcept.ofExcept candidates).toArray
 
@@ -51,7 +51,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
   trace[Meta.Tactic.data_synth]
     "dataSynth: {dataSynthDecl.name}\
    \nthmName: {declName}\
-   \nkeys: {keys}"
+   \nkeys: {keys.map (·.1)}"
 
 
   let thm : Theorem := {
@@ -72,8 +72,8 @@ initialize theoremsExt : TheoremsExt ←
     name     := by exact decl_name%
     initial  := {}
     addEntry := fun d e =>
-      {d with theorems := e.keys.foldl (fun thms (key, entry) =>
-        RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
+      {d with theorems := e.keys.foldl (init:=d.theorems) (fun thms (key, entry) =>
+        thms.insert key (entry, e))}
   }
 
 def addTheorem (declName : Name) (kind : AttributeKind := .global)

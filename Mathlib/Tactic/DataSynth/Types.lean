@@ -9,25 +9,27 @@ import Lean
 -- import SciLean.Tactic.DataSynth.Decl
 -- import SciLean.Lean.Meta.Uncurry
 -- import SciLean.Lean.Meta.Basic
+import Mathlib.Lean.Meta.RefinedDiscrTree
 
 -- import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.DataSynth.Decl
+-- import Mathlib.Tactic.DataSynth.Decl
 
 open Lean Meta
 
 namespace Mathlib.Meta.DataSynth
 
--- initialize registerTraceClass `Meta.Tactic.data_synth
--- initialize registerTraceClass `Meta.Tactic.data_synth.attr
--- initialize registerTraceClass `Debug.Meta.Tactic.data_synth
+initialize registerTraceClass `Meta.Tactic.data_synth
+initialize registerTraceClass `Meta.Tactic.data_synth.input
+initialize registerTraceClass `Meta.Tactic.data_synth.normalize
+initialize registerTraceClass `Debug.Meta.Tactic.data_synth
 
 /-- Structure holding information about `data_synth` goal like `HasFDeriv R f ?f'` -/
 structure Goal where
   /-- Expression for `fun (x₁ : X₁) ... (xₙ : Xₙ) → P` for some `P : Sort u`
   The goal is to find `x₁`, ..., `xₙ` and proof/term of type `P x₁ ... xₙ` -/
   goal : Expr
-  /-- Corresponding `data_synth` declaration.  -/
-  dataSynthDecl : DataSynthDecl
+  
+  dataSynthName : Name
 deriving Hashable, BEq
 
 namespace Goal
@@ -83,6 +85,22 @@ def congr (r : Result) (rs : Array Simp.Result) : MetaM Result := do
 
 end Result
 
+/-- For a `Goal` and its proof extract `Result` from it. -/
+def Goal.getResultFrom (g : Goal) (proof : Expr) : MetaM Result := do
+
+  let P ← inferType proof
+  let (xs,goal) ← g.mkFreshProofGoal
+  unless (← isDefEq goal P) do throwError "invalid result of {← ppExpr P}"
+  let xs ← xs.mapM instantiateMVars
+
+  let r : Result := {
+    xs := xs
+    proof := ← instantiateMVars proof
+    goal := g
+  }
+  return r
+
+
 /-- Data synth theorem and it discr three key. -/
 structure Theorem where
   /-- function property name -/
@@ -101,14 +119,20 @@ structure Theorems where
   theorems : RefinedDiscrTree Theorem := {}
   deriving Inhabited
 
--- what are `data_synth` specific config options?
+/-- Configuration options for `data_synth` tactic. -/
 structure DataSynthConfig where
   maxNumSteps := 100
+  /-- Normalize result with dsimp. -/
+  norm_dsimp := false
+  /-- Normalize result with simp. -/
+  norm_simp := false
 
 structure Config extends DataSynthConfig, Simp.Config
 
 structure Context where
   config : Config := {}
+  disch : Expr → MetaM (Option Expr) := fun _ => pure .none
+  norm  : Expr → MetaM Simp.Result := fun e => pure {expr:=e}
 
 structure State where
   numSteps := 0

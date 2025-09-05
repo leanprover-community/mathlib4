@@ -5,6 +5,7 @@ Authors: Tomáš Skřivan
 -/
 
 import Mathlib.Lean.Meta.RefinedDiscrTree
+import Mathlib.Tactic.DataSynth.Types
 
 /-! Structure and enviroment extension storing `data_synth` declarations.
 
@@ -26,13 +27,12 @@ structure DataSynthDecl where
   and instance implicit arguments. -/
   nargs : Nat
   /-- Indices of arguments that are considered as outputs e.g. for `HasFDerivAt` only `f'` is
-  considered as output argument and its index is 11.  -/
-  outputArgs : Array Nat
-  /-- Input function argument - one argument of function type can be marked as special and custom
-  unification rules are applied. In case of `HasFDerivAt` it is the argument `f` with index 10 for
-  which custom unification is done to apply composition theorem.  -/
-  inputFunArg : Option Nat
-  deriving Hashable, Inhabited, BEq
+  considered as output argument and its index is 11. -/
+  outputArgs : Array Nat  
+  /-- If normal call to `data_synth` fails then try this callback. This is used in cases when custom
+  unification is needed like application of `HasFDerivAt.comp`. -/
+  customDispatch : Option (IO.Ref (Goal → DataSynthM (Option Result))) := none
+deriving Inhabited
 
 /-- Type for the environment extension storing all `data_synth` declarations. -/
 abbrev DataSynthDeclsExt := SimpleScopedEnvExtension DataSynthDecl (NameMap DataSynthDecl)
@@ -44,7 +44,6 @@ initialize dataSynthDeclsExt : DataSynthDeclsExt ←
     initial := {}
     addEntry := fun d e => d.insert e.name e
   }
-
 
 /-- Get `data_synth` declaration if `e` is a `data_synth` goal. -/
 def getDataSynth? (e : Expr) : MetaM (Option DataSynthDecl) := do
@@ -66,7 +65,7 @@ def getDataSynth? (e : Expr) : MetaM (Option DataSynthDecl) := do
 
 
 /-- Add `data_synth` declaration to the environment. -/
-def addDataSynthDecl (declName : Name) (outArgs : Array Name) (inFunArg? : Option Name) :
+def addDataSynthDecl (declName : Name) (outArgs : Array Name) :
     MetaM Unit := do
 
   let info ← getConstInfo declName
@@ -85,20 +84,10 @@ def addDataSynthDecl (declName : Name) (outArgs : Array Name) (inFunArg? : Optio
         | throwError "argument {arg} not found"
       pure i)
 
-  -- convert input function argument name to index and check if it is function type
-  let inArg? : Option Nat ←
-    inFunArg?.mapM fun arg => do
-      let some i := argNames.findIdx? (arg==·)
-        | throwError "argument {arg} not fuound"
-      unless (← inferType xs[i]!).isForall do
-        throwError "input function argument {arg} is expected to be function type"
-      pure i
-
   let decl : DataSynthDecl := {
     name := declName
     nargs := xs.size
     outputArgs := outputArgs
-    inputFunArg := inArg?
   }
 
   modifyEnv (dataSynthDeclsExt.addEntry · decl)
