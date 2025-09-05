@@ -60,12 +60,12 @@ lemma hasPeriod_zero (w : List α) : HasPeriod w 0 := by
   rw [HasPeriod]; simp_all
 
 @[simp]
-lemma hasPeriod_empty (p : ℕ) : HasPeriod ([] : List α) p := by
-  rw [HasPeriod]; simp_all
-
-@[simp]
 lemma hasPeriod_large (w : List α) (p : ℕ) (large : w.length ≤ p) : HasPeriod w p := by
   rw [HasPeriod]; simp_all [(take_eq_self_iff w).mpr large]
+
+@[simp]
+lemma hasPeriod_empty (p : ℕ) : HasPeriod ([] : List α) p := by
+  simp
 
 lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
     (less : i < w.length) : w[i]? = w[i % p]? := by
