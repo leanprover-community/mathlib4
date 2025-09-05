@@ -1,5 +1,18 @@
+/-
+Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Real.Star
+
+/-!
+# `ℝ` is an `RCLike` field
+
+This contains the instance of `RCLike ℝ` as well as some convenience lemmas about `RCLike` specific
+to the case `K := ℝ`.
+-/
 
 open scoped ComplexConjugate
 
@@ -9,6 +22,8 @@ namespace RCLike
 
 section Instances
 
+-- should we move this elsewhere, especially since we have reduced the imports of
+-- `CStarAlgebra.Basic`?
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
@@ -92,14 +107,6 @@ def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
   right_inv := ofReal_re
   map_add' := map_add re
   map_mul' := by simp [im_eq_zero h]
-
-/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℝ` when
-`RCLike.I = 0`. -/
-@[simps]
-noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
-  map_smul' := smul_re
-  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
-  __ := realRingEquiv h
 
 end CaseSpecific
 

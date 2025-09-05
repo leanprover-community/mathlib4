@@ -1,113 +1,23 @@
-import Mathlib.Analysis.RCLike.Basic
+/-
+Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+import Mathlib.Analysis.RCLike.Real
+import Mathlib.Algebra.Order.Star.Basic
 
+/-!
+# Order properties of `RCLike`
 
-variable {K : Type*} [RCLike K]
+This files contains order properties of `RCLike` fields.
+These are available in the scope `ComplexOrder`.
+-/
 
-
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
-(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
-
-Note this is only an instance with `open scoped ComplexOrder`. -/
-lemma toStarOrderedRing : StarOrderedRing K :=
-  StarOrderedRing.of_nonneg_iff'
-    (h_add := fun {x y} hxy z => by
-      rw [RCLike.le_iff_re_im] at *
-      simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
-    (h_nonneg_iff := fun x => by
-      rw [nonneg_iff]
-      refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
-      rintro ⟨s, rfl⟩
-      simp [mul_comm, mul_self_nonneg, add_nonneg])
-
-scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
-
-lemma toZeroLEOneClass : ZeroLEOneClass K where
-  zero_le_one := by simp [@RCLike.le_iff_re_im K]
-
-scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
-
-lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
-  add_le_add_left _ _ := add_le_add_left
-
-scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
-
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
-
-Note this is only an instance with `open scoped ComplexOrder`. -/
-lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
-  .of_mul_pos fun z w hz hw ↦ by
-    rw [lt_iff_re_im, map_zero] at hz hw ⊢
-    simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-
-scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
-
-lemma toPosMulReflectLT : PosMulReflectLT K where
-  elim := by
-    rintro ⟨x, hx⟩ y z hyz
-    dsimp at *
-    rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
-    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 3 1).1 hx.2
-    simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
-      mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
-    refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
-    rintro rfl
-    simp at hyz
-
-scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
-
-theorem toOrderedSMul : OrderedSMul ℝ K :=
-  OrderedSMul.mk' fun a b r hab hr => by
-    replace hab := hab.le
-    rw [RCLike.le_iff_re_im] at hab
-    rw [RCLike.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
-    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
-
-scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
-
-/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
-lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
-    OrderedSMul K A := .mk' fun _a _b _zc hab hc ↦ (smul_lt_smul_of_pos_left hab hc).le
-
-instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
-    OrderedSMul ℝ A :=
-  StarModule.instOrderedSMul
-
-scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
-
-theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
-    0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
-  simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]
-  obtain hx | hx | hx := lt_trichotomy x 0
-  · simp only [mul_pos_iff, not_lt_of_gt hx, false_and, hx, true_and, false_or, mul_eq_zero, hx.ne,
-      or_false]
-  · simp only [hx, zero_mul, lt_self_iff_false, false_and, false_or]
-  · simp only [mul_pos_iff, hx, true_and, not_lt_of_gt hx, false_and, or_false, mul_eq_zero,
-      hx.ne', false_or]
-
-theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
-    x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
-  simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
-
-lemma instPosMulReflectLE : PosMulReflectLE K where
-  elim a b c h := by
-    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
-    rw [← sub_nonneg]
-    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
-    beta_reduce at h
-    rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
-    rcases h with h | h
-    · rw [ofReal_mul_pos_iff] at h
-      exact le_of_lt <| h.rec (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
-    · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
-
-scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
-
-section Order
+namespace RCLike
 
 open scoped ComplexOrder
-variable {z w : K}
+
+variable {K : Type*} [RCLike K] {z w : K}
 
 theorem lt_iff_re_im : z < w ↔ re z < re w ∧ im z = im w := by
   simp_rw [lt_iff_le_and_ne, @RCLike.le_iff_re_im K]
@@ -219,4 +129,104 @@ lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
     im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by
   simpa [neg_eq_iff_eq_neg, le_neg] using norm_le_im_iff_eq_I_mul_norm (z := -z)
 
-end Order
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
+(That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
+
+Note this is only an instance with `open scoped ComplexOrder`. -/
+lemma toStarOrderedRing : StarOrderedRing K :=
+  StarOrderedRing.of_nonneg_iff'
+    (h_add := fun {x y} hxy z => by
+      rw [RCLike.le_iff_re_im] at *
+      simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
+    (h_nonneg_iff := fun x => by
+      rw [nonneg_iff]
+      refine ⟨fun h ↦ ⟨√(re x), by simp [ext_iff (K := K), h.1, h.2]⟩, ?_⟩
+      rintro ⟨s, rfl⟩
+      simp [mul_comm, mul_self_nonneg, add_nonneg])
+
+scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
+
+lemma toZeroLEOneClass : ZeroLEOneClass K where
+  zero_le_one := by simp [@RCLike.le_iff_re_im K]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
+
+lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
+  add_le_add_left _ _ := add_le_add_left
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
+
+/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
+
+Note this is only an instance with `open scoped ComplexOrder`. -/
+lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
+  .of_mul_pos fun z w hz hw ↦ by
+    rw [lt_iff_re_im, map_zero] at hz hw ⊢
+    simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
+
+lemma toPosMulReflectLT : PosMulReflectLT K where
+  elim := by
+    rintro ⟨x, hx⟩ y z hyz
+    dsimp at *
+    rw [RCLike.le_iff_re_im, map_zero, map_zero, eq_comm] at hx
+    obtain ⟨r, rfl⟩ := ((is_real_TFAE x).out 3 1).1 hx.2
+    simp only [RCLike.lt_iff_re_im (K := K), mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero,
+      mul_im, add_zero, mul_eq_mul_left_iff] at hyz ⊢
+    refine ⟨lt_of_mul_lt_mul_of_nonneg_left hyz.1 <| by simpa using hx, hyz.2.resolve_right ?_⟩
+    rintro rfl
+    simp at hyz
+
+scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
+
+theorem toOrderedSMul : OrderedSMul ℝ K :=
+  OrderedSMul.mk' fun a b r hab hr => by
+    replace hab := hab.le
+    rw [RCLike.le_iff_re_im] at hab
+    rw [RCLike.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
+    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
+
+scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
+
+/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
+lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
+    [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
+    OrderedSMul K A := .mk' fun _a _b _zc hab hc ↦ (smul_lt_smul_of_pos_left hab hc).le
+
+instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
+    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
+    OrderedSMul ℝ A :=
+  StarModule.instOrderedSMul
+
+scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
+
+theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
+    0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
+  simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]
+  obtain hx | hx | hx := lt_trichotomy x 0
+  · simp only [mul_pos_iff, not_lt_of_gt hx, false_and, hx, true_and, false_or, mul_eq_zero, hx.ne,
+      or_false]
+  · simp only [hx, zero_mul, lt_self_iff_false, false_and, false_or]
+  · simp only [mul_pos_iff, hx, true_and, not_lt_of_gt hx, false_and, or_false, mul_eq_zero,
+      hx.ne', false_or]
+
+theorem ofReal_mul_neg_iff (x : ℝ) (z : K) :
+    x * z < 0 ↔ (x < 0 ∧ 0 < z) ∨ (0 < x ∧ z < 0) := by
+  simpa only [mul_neg, neg_pos, neg_neg_iff_pos] using ofReal_mul_pos_iff x (-z)
+
+lemma instPosMulReflectLE : PosMulReflectLE K where
+  elim a b c h := by
+    obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
+    rw [← sub_nonneg]
+    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    beta_reduce at h
+    rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
+    rcases h with h | h
+    · rw [ofReal_mul_pos_iff] at h
+      exact le_of_lt <| h.rec (False.elim <| not_lt_of_gt ·.1 ha1) (·.2)
+    · exact ((mul_eq_zero_iff_left <| ofReal_ne_zero.mpr ha1.ne').mp h.symm).ge
+
+scoped[ComplexOrder] attribute [instance] RCLike.instPosMulReflectLE
+
+end RCLike

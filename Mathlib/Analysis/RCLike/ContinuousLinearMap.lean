@@ -1,11 +1,46 @@
-import Mathlib.Analysis.RCLike.Basic
+/-
+Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+import Mathlib.Analysis.RCLike.Real
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 
+/-!
+# Continuous linear maps between `RCLike K` and `ℝ`
+
+This file realizes the real and imaginary parts as continuous linear maps, as well as the
+`ℝ → K` coercion as a linear isometry. It also realizes conjugation as an `ℝ`-linear isometry
+equivalence from `K` to itself.
+
+These are not included in earlier files to avoid importing material involving the operator norm.
+-/
+
+open scoped ComplexConjugate
+namespace RCLike
+
+variable {K : Type*} [RCLike K]
+
+lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+  simpa using AddMonoidHomClass.lipschitz_of_bound reLm 1
+    fun _ ↦ (by simpa using norm_re_le_norm _)
+
+lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+  simpa using AddMonoidHomClass.lipschitz_of_bound imLm 1
+    fun _ ↦ (by simpa using norm_im_le_norm _)
+
+@[continuity, fun_prop]
+theorem continuous_re : Continuous (re : K → ℝ) :=
+  lipschitzWith_re.continuous
+
+@[continuity, fun_prop]
+theorem continuous_im : Continuous (im : K → ℝ) :=
+  lipschitzWith_im.continuous
 
 /-- The real part in an `RCLike` field, as a continuous linear map. -/
-noncomputable def reCLM : StrongDual ℝ K :=
-  reLm.mkContinuous 1 fun x => by
-    rw [one_mul]
-    exact abs_re_le_norm x
+noncomputable def reCLM : StrongDual ℝ K where
+  __ := reLm
 
 @[simp, rclike_simps, norm_cast]
 theorem reCLM_coe : ((reCLM : StrongDual ℝ K) : K →ₗ[ℝ] ℝ) = reLm :=
@@ -15,15 +50,9 @@ theorem reCLM_coe : ((reCLM : StrongDual ℝ K) : K →ₗ[ℝ] ℝ) = reLm :=
 theorem reCLM_apply : ((reCLM : StrongDual ℝ K) : K → ℝ) = re :=
   rfl
 
-@[continuity, fun_prop]
-theorem continuous_re : Continuous (re : K → ℝ) :=
-  reCLM.continuous
-
 /-- The imaginary part in an `RCLike` field, as a continuous linear map. -/
-noncomputable def imCLM : StrongDual ℝ K :=
-  imLm.mkContinuous 1 fun x => by
-    rw [one_mul]
-    exact abs_im_le_norm x
+noncomputable def imCLM : StrongDual ℝ K where
+  __ := imLm
 
 @[simp, rclike_simps, norm_cast]
 theorem imCLM_coe : ((imCLM : StrongDual ℝ K) : K →ₗ[ℝ] ℝ) = imLm :=
@@ -32,10 +61,6 @@ theorem imCLM_coe : ((imCLM : StrongDual ℝ K) : K →ₗ[ℝ] ℝ) = imLm :=
 @[simp, rclike_simps]
 theorem imCLM_apply : ((imCLM : StrongDual ℝ K) : K → ℝ) = im :=
   rfl
-
-@[continuity, fun_prop]
-theorem continuous_im : Continuous (im : K → ℝ) :=
-  imCLM.continuous
 
 /-- Conjugate as a linear isometry -/
 noncomputable def conjLIE : K ≃ₗᵢ[ℝ] K :=
@@ -96,16 +121,12 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
   ofRealLI.lipschitz
 
-lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
-  intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
-  calc ‖re x - re y‖ₑ
-  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
-  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+/-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℝ` when
+`RCLike.I = 0`. -/
+@[simps]
+noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
+  map_smul' := smul_re
+  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  __ := realRingEquiv h
 
-lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
-  intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
-  calc ‖im x - im y‖ₑ
-  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
-  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
+end RCLike

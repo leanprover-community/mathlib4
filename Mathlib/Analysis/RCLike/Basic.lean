@@ -24,7 +24,7 @@ complex case. One typically produces the definitions and proof for an arbitrary 
 typeclass, which basically amounts to doing the complex case, and the two cases then fall out
 immediately from the two instances of the class.
 
-The instance for `ℝ` is registered in this file.
+The instance for `ℝ` is registered in `Mathlib/Analysis/RCLike/Real.lean`.
 The instance for `ℂ` is declared in `Mathlib/Analysis/Complex/Basic.lean`.
 
 ## Implementation notes
