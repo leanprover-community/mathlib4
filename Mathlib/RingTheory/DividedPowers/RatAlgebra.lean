@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
+Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
@@ -60,19 +60,15 @@ noncomputable def dpow : ℕ → A → A := fun m x => if x ∈ I then inverse (
 variable {I}
 
 theorem dpow_eq_of_mem {m : ℕ} {x : A} (hx : x ∈ I) : dpow I m x = inverse (m ! : A) * x ^ m := by
-  simp only [dpow, if_pos hx]
+  simp [dpow, hx]
 
-theorem dpow_eq_of_not_mem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by
-  simp only [dpow, if_neg hx]
+theorem dpow_eq_of_not_mem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
 
-theorem dpow_null {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by
-  simp only [dpow, if_neg hx]
+theorem dpow_null {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
 
-theorem dpow_zero {x : A} (hx : x ∈ I) : dpow I 0 x = 1 := by
-  simp only [dpow, factorial_zero, cast_one, inverse_one, _root_.pow_zero, mul_one, if_pos hx]
+theorem dpow_zero {x : A} (hx : x ∈ I) : dpow I 0 x = 1 := by simp [dpow, hx]
 
-theorem dpow_one {x : A} (hx : x ∈ I) : dpow I 1 x = x := by
-  rw [dpow_eq_of_mem hx, pow_one, Nat.factorial_one, Nat.cast_one, inverse_one, one_mul]
+theorem dpow_one {x : A} (hx : x ∈ I) : dpow I 1 x = x := by simp [dpow_eq_of_mem hx]
 
 theorem dpow_mem {m : ℕ} (hm : m ≠ 0) {x : A} (hx : x ∈ I) : dpow I m x ∈ I := by
   rw [dpow_eq_of_mem hx]
