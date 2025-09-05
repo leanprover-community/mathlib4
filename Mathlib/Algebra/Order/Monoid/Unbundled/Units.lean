@@ -21,7 +21,7 @@ variable [MulLeftMono M] (u : Mˣ) {a b : M}
 theorem mulLECancellable_val : MulLECancellable (↑u : M) := fun _ _ h ↦ by
   simpa using mul_le_mul_left' h ↑u⁻¹
 
-private theorem mul_le_mul_left : u * a ≤ u * b ↔ a ≤ b :=
+private theorem mul_le_mul_iff_left : u * a ≤ u * b ↔ a ≤ b :=
   u.mulLECancellable_val.mul_le_mul_iff_left
 
 theorem inv_mul_le_iff : u⁻¹ * a ≤ b ↔ a ≤ u * b := by
@@ -54,7 +54,7 @@ end MulLeftMono
 section MulRightMono
 variable [MulRightMono M] {a b : M} (u : Mˣ)
 
-private theorem mul_le_mul_right : a * u ≤ b * u ↔ a ≤ b :=
+private theorem mul_le_mul_iff_right : a * u ≤ b * u ↔ a ≤ b :=
   ⟨(by simpa using mul_le_mul_right' · ↑u⁻¹), (mul_le_mul_right' · _)⟩
 
 theorem mul_inv_le_iff : a * u⁻¹ ≤ b ↔ a ≤ b * u := by
@@ -62,12 +62,6 @@ theorem mul_inv_le_iff : a * u⁻¹ ≤ b ↔ a ≤ b * u := by
 
 theorem le_mul_inv_iff : a ≤ b * u⁻¹ ↔ a * u ≤ b := by
   rw [← u.mul_le_mul_right, inv_mul_cancel_right]
-
-theorem one_le_inv' : (1 : M) ≤ u⁻¹ ↔ (u : M) ≤ 1 := by
-  rw [← u.mul_le_mul_right, one_mul, inv_mul]
-
-theorem inv_le_one' : u⁻¹ ≤ (1 : M) ↔ (1 : M) ≤ u := by
-  rw [← u.mul_le_mul_right, one_mul, inv_mul]
 
 theorem one_le_mul_inv : 1 ≤ a * u⁻¹ ↔ u ≤ a := by
   rw [u.le_mul_inv_iff, one_mul]
