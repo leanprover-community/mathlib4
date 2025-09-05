@@ -72,7 +72,7 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
   convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
   · rw [h, update_self]
-    simp [eq_self_iff_true, if_true, sub_add_cancel]
+    simp
   · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
@@ -134,16 +134,16 @@ Note that this requires the target to be a group, and hence fails for products v
 in a ring. See `Multipliable.congr_cofinite₀` for a version applying in this case,
 with an additional non-vanishing hypothesis.
 -/
-@[to_additive "A more general version of `Summable.congr`, allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- A more general version of `Summable.congr`, allowing the functions to
+disagree on a finite set. -/]
 theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
     Multipliable g :=
   hfg.multipliable_compl_iff.mp <| (hfg.multipliable_compl_iff.mpr hf).congr (by simp)
 
 /-- A more general version of `multipliable_congr`, allowing the functions to
 disagree on a finite set. -/
-@[to_additive "A more general version of `summable_congr`, allowing the functions to
-disagree on a finite set."]
+@[to_additive /-- A more general version of `summable_congr`, allowing the functions to
+disagree on a finite set. -/]
 theorem multipliable_congr_cofinite (hfg : f =ᶠ[cofinite] g) :
     Multipliable f ↔ Multipliable g :=
   ⟨fun h ↦ h.congr_cofinite hfg, fun h ↦ h.congr_cofinite (hfg.mono fun _ h' ↦ h'.symm)⟩
@@ -188,9 +188,9 @@ protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multip
 /-- Let `f : β → α` be a multipliable function and let `b ∈ β` be an index.
 Lemma `tprod_eq_mul_tprod_ite` writes `∏ n, f n` as `f b` times the product of the
 remaining terms. -/
-@[to_additive "Let `f : β → α` be a summable function and let `b ∈ β` be an index.
+@[to_additive /-- Let `f : β → α` be a summable function and let `b ∈ β` be an index.
 Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
-remaining terms."]
+remaining terms. -/]
 protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
     (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
   rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
@@ -209,8 +209,8 @@ section IsUniformGroup
 variable [CommGroup α] [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
-@[to_additive "The **Cauchy criterion** for infinite sums, also known as the
-**Cauchy convergence test**"]
+@[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
+**Cauchy convergence test** -/]
 theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
@@ -222,7 +222,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
       ∀ e ∈ 𝓝 (1 : α), ∃ s : Finset β, ∀ t, Disjoint t s → (∏ b ∈ t, f b) ∈ e := by
   classical
-  simp only [CauchySeq, cauchy_map_iff, and_iff_right atTop_neBot, prod_atTop_atTop_eq,
+  simp only [CauchySeq, cauchy_map_iff, prod_atTop_atTop_eq,
     uniformity_eq_comap_nhds_one α, tendsto_comap_iff, Function.comp_def, atTop_neBot, true_and]
   rw [tendsto_atTop']
   constructor
@@ -364,8 +364,9 @@ theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he :
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
 whole space. This does not need a multipliability assumption, as otherwise all such products are
 one. -/
-@[to_additive "The sum over the complement of a finset tends to `0` when the finset grows to cover
-the whole space. This does not need a summability assumption, as otherwise all such sums are zero."]
+@[to_additive /-- The sum over the complement of a finset tends to `0` when the finset grows to
+cover the whole space. This does not need a summability assumption, as otherwise all such sums are
+zero. -/]
 theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     Tendsto (fun s : Finset α ↦ ∏' a : { x // x ∉ s }, f a) atTop (𝓝 1) := by
   classical
@@ -379,8 +380,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
 
 /-- Product divergence test: if `f` is unconditionally multipliable, then `f x` tends to one along
 `cofinite`. -/
-@[to_additive "Series divergence test: if `f` is unconditionally summable, then `f x` tends to zero
-along `cofinite`."]
+@[to_additive /-- Series divergence test: if `f` is unconditionally summable, then `f x` tends to
+zero along `cofinite`. -/]
 theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofinite (𝓝 1) := by
   intro e he
   rw [Filter.mem_map]
@@ -419,7 +420,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
-    rcases eq_or_ne a 1 with rfl|ha
+    rcases eq_or_ne a 1 with rfl | ha
     · simp
     · apply tprod_eq_one_of_not_multipliable
       simpa [multipliable_const_iff] using ha

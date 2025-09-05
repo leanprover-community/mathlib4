@@ -127,10 +127,10 @@ theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [Star
       norm_num
     have sa : star P = P := by
       dsimp [P]
-      simp only [star_add, star_sub, star_mul, star_ofNat, star_one, T.A₀_sa, T.A₁_sa, T.B₀_sa,
+      simp only [star_add, star_sub, star_mul, star_ofNat, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
     simpa only [← idem', sa]
-      using smul_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
+      using smul_nonneg (by simp : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
 
@@ -152,8 +152,8 @@ we prepare some easy lemmas about √2.
 -- defeated me. Thanks for the rescue from Shing Tak Lam!
 theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4 * ((√2)⁻¹ * 2⁻¹)) := by
   ring_nf
-  rw [mul_inv_cancel₀ (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
-  convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
+  rw [mul_inv_cancel₀ (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by simp)))]
+  convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by simp)) using 1 <;>
     (try simp only [← pow_mul]) <;> norm_num
 
 theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
@@ -174,7 +174,7 @@ of the difference.
 (We could work over `ℤ[2^(1/2), 2^(-1/2)]` if we really wanted to!)
 -/
 theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
-  [Algebra ℝ R]
+    [Algebra ℝ R]
     [OrderedSMul ℝ R] [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
@@ -196,19 +196,17 @@ theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrdered
     abel_nf
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
-    simp only [neg_mul, one_mul, mul_inv_cancel_of_invertible, Int.cast_one, add_assoc, add_comm,
+    simp only [neg_mul, mul_inv_cancel_of_invertible, add_assoc, add_comm,
       add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat]
     simp only [← add_assoc, ← add_smul]
     -- just look at the coefficients now:
     congr
-    exact mul_left_cancel₀ (by norm_num) tsirelson_inequality_aux
+    exact mul_left_cancel₀ (by simp) tsirelson_inequality_aux
   have pos : 0 ≤ (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
-      simp only [P, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa,
-        T.B₁_sa]
+      simp only [P, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa]
     have Q_sa : star Q = Q := by
-      simp only [Q, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa,
-        T.B₁_sa]
+      simp only [Q, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₁_sa]
     have P2_nonneg : 0 ≤ P ^ 2 := by simpa only [P_sa, sq] using star_mul_self_nonneg P
     have Q2_nonneg : 0 ≤ Q ^ 2 := by simpa only [Q_sa, sq] using star_mul_self_nonneg Q
     positivity

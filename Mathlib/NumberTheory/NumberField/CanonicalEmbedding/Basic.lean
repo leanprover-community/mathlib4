@@ -27,15 +27,17 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
   radius is finite.
 
 * `NumberField.mixedEmbedding`: the ring homomorphism from `K` to the mixed space
-`K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
-where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real
-then `φ_w : K →+* ℝ` and, if `w` is complex, `φ_w` is an arbitrary choice between the two complex
-embeddings defining the place `w`.
+  `K →+* ({ w // IsReal w } → ℝ) × ({ w // IsComplex w } → ℂ)` that sends `x ∈ K` to `(φ_w x)_w`
+  where `φ_w` is the embedding associated to the infinite place `w`. In particular, if `w` is real
+  then `φ_w : K →+* ℝ` and, if `w` is complex, `φ_w` is an arbitrary choice between the two complex
+  embeddings defining the place `w`.
 
 ## Tags
 
 number field, infinite places
 -/
+
+open Module
 
 variable (K : Type*) [Field K]
 
@@ -102,8 +104,6 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
-open Module Fintype Module
-
 /-- A `ℂ`-basis of `ℂ^n` that is also a `ℤ`-basis of the `integerLattice`. -/
 noncomputable def latticeBasis [NumberField K] :
     Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℂ ((K →+* ℂ) → ℂ) := by
@@ -113,10 +113,10 @@ noncomputable def latticeBasis [NumberField K] :
   -- will imply the result.
     let B := Pi.basisFun ℂ (K →+* ℂ)
     let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
-      equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
+      Fintype.equivOfCardEq ((Embeddings.card K ℂ).trans (finrank_eq_card_basis (integralBasis K)))
     let M := B.toMatrix (fun i => canonicalEmbedding K (integralBasis K (e i)))
     suffices M.det ≠ 0 by
-      rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← is_basis_iff_det] at this
+      rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← Basis.is_basis_iff_det] at this
       exact (basisOfPiSpaceOfLinearIndependent this.1).reindex e
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
@@ -247,7 +247,7 @@ volume zero. -/
 theorem volume_eq_zero (w : {w // IsReal w}) :
     volume ({x : mixedSpace K | x.1 w = 0}) = 0 := by
   let A : AffineSubspace ℝ (mixedSpace K) :=
-    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by aesop⟩, rfl⟩ (by aesop))
+    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x.1 w = 0}, by simp_all⟩, rfl⟩ (by simp_all))
   convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 
@@ -327,7 +327,7 @@ theorem normAtPlace_nonneg (w : InfinitePlace K) (x : mixedSpace K) :
   split_ifs <;> exact norm_nonneg _
 
 theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K) :
-    normAtPlace w (- x) = normAtPlace w x := by
+    normAtPlace w (-x) = normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> simp
 
@@ -518,8 +518,8 @@ variable (K)
 open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
-        (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
-        (Set.univ.pi fun _ => Complex.measurableEquivPi⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
+      (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
+      (Set.univ.pi fun _ => Complex.measurableEquivPi ⁻¹' (Set.univ.pi fun _ => Set.Ico 0 1)) := by
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
@@ -580,7 +580,7 @@ element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjug
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
 def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
   fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
-    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
+    (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; -I, I]))
 
 open scoped Classical in
 theorem det_matrixToStdBasis :
@@ -591,7 +591,7 @@ theorem det_matrixToStdBasis :
           det_reindex_self, det_blockDiagonal]
   _ = ∏ _k : { w : InfinitePlace K // IsComplex w }, (2⁻¹ * Complex.I) := by
       refine prod_congr (Eq.refl _) (fun _ _ => ?_)
-      field_simp; ring
+      simp [field]; ring
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
 
@@ -618,18 +618,18 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
   | inr c =>
     rcases c with ⟨w, j⟩
     fin_cases j
-    · simp only [Fin.zero_eta, Fin.isValue, id_eq, stdBasis_apply_isComplex_fst, re_eq_add_conj,
+    · simp only [Fin.zero_eta, Fin.isValue, stdBasis_apply_isComplex_fst, re_eq_add_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, ite_mul, cons_val_one, head_cons, sum_add_distrib, sum_ite_eq,
+        empty_val', cons_val_fin_one, ite_mul, cons_val_one, sum_add_distrib, sum_ite_eq,
         mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       field_simp
-    · simp only [Fin.mk_one, Fin.isValue, id_eq, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
+    · simp only [Fin.mk_one, Fin.isValue, stdBasis_apply_isComplex_snd, im_eq_sub_conj,
         mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
         submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
-        empty_val', cons_val_fin_one, cons_val_one, head_fin_const, ite_mul, neg_mul, head_cons,
+        empty_val', cons_val_fin_one, cons_val_one, ite_mul, neg_mul,
         sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
-      ring_nf; field_simp
+      ring_nf; simp [field]
 
 end stdBasis
 
@@ -765,7 +765,7 @@ def fractionalIdealLatticeBasis :
       fractionalIdeal_rank]
   refine Basis.reindex ?_ e
   suffices IsUnit ((latticeBasis K).det ((mixedEmbedding K) ∘ (basisOfFractionalIdeal K I) ∘ e)) by
-    rw [← is_basis_iff_det] at this
+    rw [← Basis.is_basis_iff_det] at this
     exact Basis.mk this.1 (by rw [this.2])
   rw [isUnit_iff_ne_zero, ne_eq, ← abs_eq_zero.not, det_basisOfFractionalIdeal_eq_norm,
     Rat.cast_eq_zero, FractionalIdeal.absNorm_eq_zero_iff]
@@ -837,7 +837,7 @@ instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 variable [NumberField K]
 
 open Classical in
-/-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
+/-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
   (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
 
@@ -848,7 +848,7 @@ protected theorem finrank :
   rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
 
 open Classical in
-/-- An orthonormal basis of the euclidean mixed space. -/
+/-- An orthonormal basis of the Euclidean mixed space. -/
 def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
   OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
     ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
@@ -876,7 +876,7 @@ theorem volumePreserving_toMixed_symm :
   exact this.symm
 
 open Classical in
-/-- The image of ring of integers `𝓞 K` in the euclidean mixed space. -/
+/-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
 
@@ -912,7 +912,7 @@ variable {s}
 
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
-    (negAt s x).1 w = - x.1 w := by
+    (negAt s x).1 w = -x.1 w := by
   simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
     ContinuousLinearEquiv.neg_apply]
 
@@ -1143,7 +1143,7 @@ variable {K}
 theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
     volume ({x : realSpace K | x w = 0}) = 0 := by
   let A : AffineSubspace ℝ (realSpace K) :=
-    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x w = 0}, by aesop⟩, rfl⟩ (by aesop))
+    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x w = 0}, by simp_all⟩, rfl⟩ (by simp_all))
   convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
   simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
 

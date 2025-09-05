@@ -102,8 +102,8 @@ variable [Monoid α] [Monoid β]
 /-- Product of a `s : Multiset α` with `[Monoid α]`, given a proof that `*` commutes
 on all elements `x ∈ s`. -/
 @[to_additive
-      "Sum of a `s : Multiset α` with `[AddMonoid α]`, given a proof that `+` commutes
-      on all elements `x ∈ s`."]
+      /-- Sum of a `s : Multiset α` with `[AddMonoid α]`, given a proof that `+` commutes
+      on all elements `x ∈ s`. -/]
 def noncommProd (s : Multiset α) (comm : { x | x ∈ s }.Pairwise Commute) : α :=
   s.noncommFold (· * ·) comm 1
 
@@ -236,8 +236,8 @@ theorem noncommProd_lemma (s : Finset α) (f : α → β)
 /-- Product of a `s : Finset α` mapped with `f : α → β` with `[Monoid β]`,
 given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
 @[to_additive
-      "Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
-given a proof that `+` commutes on all elements `f x` for `x ∈ s`."]
+      /-- Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
+given a proof that `+` commutes on all elements `f x` for `x ∈ s`. -/]
 def noncommProd (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise (Commute on f)) : β :=
   (s.1.map f).noncommProd <| noncommProd_lemma s f comm
@@ -362,10 +362,10 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
     (noncommProd s f fun _ _ _ _ _ => Commute.all _ _) = s.prod f := by
   induction' s using Finset.cons_induction_on with a s ha IH
   · simp
-  · simp [ha, IH]
+  · simp [IH]
 
 /-- The non-commutative version of `Finset.prod_union` -/
-@[to_additive "The non-commutative version of `Finset.sum_union`"]
+@[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
     (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise (Commute on f)) :
     noncommProd (s ∪ t) f comm =
@@ -375,11 +375,12 @@ theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Di
   obtain ⟨tl, tl', rfl⟩ := exists_list_nodup_eq t
   rw [List.disjoint_toFinset_iff_disjoint] at h
   calc noncommProd (List.toFinset sl ∪ List.toFinset tl) f comm
-     = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
-         (by convert comm; simp [Set.ext_iff]) := noncommProd_congr (by ext; simp) (by simp) _
-   _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
+    _ = noncommProd ⟨↑(sl ++ tl), Multiset.coe_nodup.2 (sl'.append tl' h)⟩ f
+          (by convert comm; simp [Set.ext_iff]) :=
+      noncommProd_congr (by ext; simp) (by simp) _
+    _ = noncommProd (List.toFinset sl) f (comm.mono <| coe_subset.2 subset_union_left) *
          noncommProd (List.toFinset tl) f (comm.mono <| coe_subset.2 subset_union_right) := by
-    simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl', h]
+      simp [noncommProd, List.dedup_eq_self.2 sl', List.dedup_eq_self.2 tl']
 
 @[to_additive]
 theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → β}
@@ -395,7 +396,7 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
   · exact comm_gg.of_refl hx hy
 
 /-- The non-commutative version of `Finset.prod_mul_distrib` -/
-@[to_additive "The non-commutative version of `Finset.sum_add_distrib`"]
+@[to_additive /-- The non-commutative version of `Finset.sum_add_distrib` -/]
 theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) (comm_ff comm_gg comm_gf) :
     noncommProd s (f * g) (noncommProd_mul_distrib_aux comm_ff comm_gg comm_gf) =
       noncommProd s f comm_ff * noncommProd s g comm_gg := by
@@ -427,11 +428,11 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    · simp only [MonoidHom.mulSingle_apply, ne_eq, Pi.mulSingle_eq_same]
+    · simp only [Pi.mulSingle_eq_same]
     · intro j hj
       simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [MonoidHom.mulSingle_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
-        ne_eq, dite_eq_right_iff]
+      simp only [Pi.mulSingle, Function.update, Pi.one_apply,
+        dite_eq_right_iff]
       intro h
       simp [*] at *
 

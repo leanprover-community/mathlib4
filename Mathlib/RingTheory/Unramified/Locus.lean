@@ -63,7 +63,7 @@ section
 variable {R A : Type u} [CommRing R] [CommRing A] [Algebra R A]
 
 lemma unramifiedLocus_eq_compl_support :
-    unramifiedLocus R A = (Module.support A (Ω[A⁄R]))ᶜ := by
+    unramifiedLocus R A = (Module.support A Ω[A⁄R])ᶜ := by
   ext p
   simp only [Set.mem_compl_iff, Module.notMem_support_iff]
   have := IsLocalizedModule.iso p.asIdeal.primeCompl

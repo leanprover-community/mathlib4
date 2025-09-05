@@ -30,7 +30,7 @@ variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 def colon (N P : Submodule R M) : Ideal R where
   carrier := {r : R | (r • P : Set M) ⊆ N}
   add_mem' ha hb :=
-    (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp [← coe_sup]))
+    (Set.add_smul_subset _ _ _).trans ((Set.add_subset_add ha hb).trans_eq (by simp))
   zero_mem' := by simp [Set.zero_smul_set P.nonempty]
   smul_mem' r := by
     simp only [Set.mem_setOf_eq, smul_eq_mul, mul_smul, Set.smul_set_subset_iff]
@@ -55,6 +55,10 @@ theorem colon_bot : colon ⊥ N = N.annihilator := by
 
 theorem colon_mono (hn : N₁ ≤ N₂) (hp : P₁ ≤ P₂) : N₁.colon P₂ ≤ N₂.colon P₁ := fun _ hrnp =>
   mem_colon.2 fun p₁ hp₁ => hn <| mem_colon.1 hrnp p₁ <| hp hp₁
+
+theorem _root_.Ideal.le_colon {I J : Ideal R} [I.IsTwoSided] : I ≤ I.colon J := by
+  calc I = I.colon ⊤ := colon_top.symm
+       _ ≤ I.colon J := colon_mono (le_refl I) le_top
 
 end Semiring
 

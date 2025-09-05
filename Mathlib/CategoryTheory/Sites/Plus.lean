@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Sites.Sheaf
 # The plus construction for presheaves.
 
 This file contains the construction of `P⁺`, for a presheaf `P : Cᵒᵖ ⥤ D`
-where `C` is endowed with a grothendieck topology `J`.
+where `C` is endowed with a Grothendieck topology `J`.
 
 See <https://stacks.math.columbia.edu/tag/00W1> for details.
 
@@ -186,7 +186,7 @@ def toPlus : P ⟶ J.plusObj P where
     rw [← colimit.w _ e.op, ← Category.assoc, ← Category.assoc, ← Category.assoc]
     congr 1
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
-    simp only [Multiequalizer.lift_ι, Category.assoc]
+    simp only [Category.assoc]
     dsimp [Cover.Arrow.base]
     simp
 

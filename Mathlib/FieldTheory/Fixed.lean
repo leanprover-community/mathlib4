@@ -83,7 +83,7 @@ variable (M)
 /-- The subfield of fixed points by a monoid action. -/
 def subfield : Subfield F :=
   Subfield.copy (⨅ m : M, FixedBy.subfield F m) (fixedPoints M F)
-    (by ext z; simp [fixedPoints, FixedBy.subfield, iInf, Subfield.mem_sInf]; rfl)
+    (by ext; simp [FixedBy.subfield])
 
 instance : IsInvariantSubfield M (FixedPoints.subfield M F) where
   smul_mem g x hx g' := by rw [hx, hx]
@@ -148,7 +148,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     · skip
     · ext x
       rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
-  show
+  change
     (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
       ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
   rw [← smul_sum, ← sum_apply _ _ fun y => l y • toFun G F y, ←
@@ -296,8 +296,6 @@ theorem cardinalMk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Ring
     [FiniteDimensional K V] [Field W] [Algebra K W] :
     Cardinal.mk (V →ₐ[K] W) ≤ finrank W (V →ₗ[K] W) :=
   (linearIndependent_toLinearMap K V W).cardinalMk_le_finrank
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom := cardinalMk_algHom
 
 noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype (V ≃ₐ[K] V) :=

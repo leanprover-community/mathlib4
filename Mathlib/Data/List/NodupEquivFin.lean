@@ -51,7 +51,7 @@ the set of elements of `l`. -/
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
   invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.2⟩
-  left_inv i := by simp only [List.get_idxOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
+  left_inv i := by simp only [List.get_idxOf, Fin.eta, H]
   right_inv x := by simp
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines

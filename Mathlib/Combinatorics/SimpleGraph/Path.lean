@@ -8,4 +8,3 @@ import Mathlib.Combinatorics.SimpleGraph.Paths
 
 
 deprecated_module (since := "2025-06-13")
-

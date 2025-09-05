@@ -62,7 +62,7 @@ theorem imp_eq_of_eq_false_right {a b : Prop} (h : b = False) : (a → b) = Not 
   h.symm ▸ propext ⟨fun h ↦ h, fun hna ha ↦ hna ha⟩
 
 /- Remark: the congruence closure module will only use the following lemma is
-   `CCConfig.em` is `true`. -/
+`CCConfig.em` is `true`. -/
 theorem not_imp_eq_of_eq_false_right {a b : Prop} (h : b = False) : (Not a → b) = a :=
   h.symm ▸ propext (Iff.intro (
     fun h' ↦ Classical.byContradiction fun hna ↦ h' hna) fun ha hna ↦ hna ha)
@@ -112,7 +112,7 @@ theorem eq_false_of_not_eq_true {a : Prop} (h : Not a = True) : a = False :=
   eq_false fun ha ↦ absurd ha (Eq.mpr h trivial)
 
 /- Remark: the congruence closure module will only use the following lemma is
-   `CCConfig.em` is `true`. -/
+`CCConfig.em` is `true`. -/
 theorem eq_true_of_not_eq_false {a : Prop} (h : Not a = False) : a = True :=
   eq_true (Classical.byContradiction fun hna ↦ Eq.mp h hna)
 

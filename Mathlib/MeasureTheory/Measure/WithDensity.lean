@@ -246,17 +246,17 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
       EventuallyEq, ae_restrict_iff'₀, ae_iff] at A
     swap
     · simp only [measurableSet_toMeasurable, MeasurableSet.nullMeasurableSet]
-    simp only [Pi.zero_apply, mem_setOf_eq, Filter.mem_mk] at A
+    simp only [Pi.zero_apply] at A
     convert A using 2
     ext x
     simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
-      mem_compl_iff, not_forall]
+      not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true]
+      · simp only [fx, mem_union, mem_setOf_eq, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩
@@ -517,12 +517,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
     refine (withDensity_mono this).trans ?_
     rw [withDensity_one]
   filter_upwards with x
-  simp only [Pi.mul_apply, Pi.one_apply]
-  by_cases hx_top : f x = ∞
-  · simp only [hx_top, ENNReal.inv_top, mul_zero, zero_le]
-  by_cases hx_zero : f x = 0
-  · simp only [hx_zero, ENNReal.inv_zero, zero_mul, zero_le]
-  rw [ENNReal.mul_inv_cancel hx_zero hx_top]
+  simp
 
 lemma withDensity_inv_same₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
@@ -642,6 +637,12 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
+/-- In a countable space, every measure is s-finite. -/
+instance [Countable α] : SFinite μ := by
+  obtain ⟨s, h⟩ := exists_sum_smul_dirac μ
+  rw [h]
+  infer_instance
+
 end SFinite
 
 section Prod
@@ -728,7 +729,7 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
-    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw[(lintegral_mul_const'' _ (by fun_prop)).symm]
+    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
   all_goals first | fun_prop | simp; fun_prop
 
 @[to_additive]
