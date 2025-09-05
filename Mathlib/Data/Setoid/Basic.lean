@@ -170,6 +170,10 @@ instance : PartialOrder (Setoid α) where
   lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
 
+theorem not_le_iff {r s : Setoid α} :
+    ¬r ≤ s ↔ ∃ x y, r x y ∧ ¬s x y := by
+  simp_rw [le_def, not_forall, exists_prop]
+
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
 and top element the trivial equivalence relation. -/
 instance completeLattice : CompleteLattice (Setoid α) :=
