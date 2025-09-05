@@ -197,6 +197,10 @@ theorem extendedHomₐ_eq_zero_iff {I : FractionalIdeal A⁰ K} :
     extendedHomₐ L B I = 0 ↔ I = 0 :=
   extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _)
 
+theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
+    (I : FractionalIdeal A⁰ K).extendedHomₐ L B =
+      (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
+
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
   [IsIntegrallyClosed A] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
 
