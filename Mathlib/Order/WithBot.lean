@@ -770,8 +770,8 @@ lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
 `PartialOrder α`. -/
 protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 
-lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
-lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
+@[simp] lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
+@[simp] lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
 lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
 
 @[deprecated (since := "2025-02-11")]
@@ -988,7 +988,7 @@ section WithBotWithTop
 
 lemma WithBot.eq_top_iff_forall_ge [Preorder α] [Nonempty α] [NoTopOrder α]
     {x : WithBot (WithTop α)} : x = ⊤ ↔ ∀ a : α, a ≤ x := by
-  refine ⟨by aesop, fun H ↦ ?_⟩
+  refine ⟨by simp_all, fun H ↦ ?_⟩
   induction x
   · simp at H
   · simpa [WithTop.eq_top_iff_forall_ge] using H

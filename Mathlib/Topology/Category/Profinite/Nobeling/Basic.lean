@@ -119,7 +119,7 @@ theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ false → J i) : π
 
 theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
     (Proj J : (I → Bool) → (I → Bool)) := by
-  ext x i; dsimp [Proj]; aesop
+  ext x i; dsimp [Proj]; simp_all
 
 theorem proj_eq_of_subset (h : ∀ i, J i → K i) : π (π C K) J = π C J := by
   ext x
@@ -156,13 +156,13 @@ theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe]
-  aesop
+  simp_all
 
 theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
-  aesop
+  simp_all
 
 variable (J)
 

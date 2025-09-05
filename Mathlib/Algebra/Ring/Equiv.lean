@@ -231,9 +231,6 @@ theorem refl_apply (x : R) : RingEquiv.refl R x = x :=
 theorem coe_refl (R : Type*) [Mul R] [Add R] : ⇑(RingEquiv.refl R) = id :=
   rfl
 
-@[deprecated coe_refl (since := "2025-02-10")]
-alias coe_refl_id := coe_refl
-
 @[simp]
 theorem coe_addEquiv_refl : (RingEquiv.refl R : R ≃+ R) = AddEquiv.refl R :=
   rfl
@@ -450,6 +447,18 @@ theorem coe_ofBijective [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bij
 theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Bijective f)
     (x : R) : ofBijective f hf x = f x :=
   rfl
+
+@[simp]
+lemma ofBijective_symm_comp (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _).comp f = NonUnitalRingHom.id R := by
+  ext
+  exact (RingEquiv.ofBijective f hf).injective <| RingEquiv.apply_symm_apply ..
+
+@[simp]
+lemma comp_ofBijective_symm (f : R →ₙ+* S) (hf : Function.Bijective f) :
+    f.comp ((RingEquiv.ofBijective f hf).symm : _ →ₙ+* _) = NonUnitalRingHom.id S := by
+  ext
+  exact (RingEquiv.ofBijective f hf).symm.injective <| RingEquiv.apply_symm_apply ..
 
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
@@ -787,12 +796,10 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
 
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
-  ext
   simp
 
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
-  ext
   simp
 
 /-- Construct an equivalence of rings from homomorphisms in both directions, which are inverses.

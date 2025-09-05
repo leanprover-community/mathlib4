@@ -390,14 +390,8 @@ section ofIsClosed
 
 open _root_.PrimeSpectrum TopologicalSpace
 
-lemma Scheme.zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
-    X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
-  refine (X.zeroLocus_mono I.le_radical).antisymm ?_
-  simp only [Set.subset_def, mem_zeroLocus_iff, SetLike.mem_coe]
-  rintro x H f ⟨n, hn⟩ hx
-  rcases n.eq_zero_or_pos with rfl | hn'
-  · exact H f (by simpa using I.mul_mem_left f hn) hx
-  · exact H _ hn (X.basicOpen_pow f hn' ▸ hx)
+@[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
+  AlgebraicGeometry.Scheme.zeroLocus_radical
 
 /-- The radical of a ideal sheaf. -/
 @[simps! ideal]
@@ -412,7 +406,7 @@ def radical (I : IdealSheafData X) : IdealSheafData X :=
       congr($(I.map_ideal_basicOpen U f).radical))
   I.supportSet
   (fun U x hx ↦ by
-    simp only [mem_supportSet_iff_of_mem hx, Scheme.zeroLocus_radical])
+    simp only [mem_supportSet_iff_of_mem hx, AlgebraicGeometry.Scheme.zeroLocus_radical])
 
 @[simp]
 lemma support_radical (I : IdealSheafData X) : I.radical.support = I.support := rfl

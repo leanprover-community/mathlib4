@@ -37,6 +37,7 @@ lemma rev_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : Fin (n.len + 1)) 
     (rev.map f).toOrderHom (a := n) (b := m) i = (f.toOrderHom i.rev).rev := by
   rfl
 
+@[simp]
 lemma rev_map_δ {n : ℕ} (i : Fin (n + 2)) :
     rev.map (δ i) = δ i.rev := by
   ext j : 3
@@ -44,6 +45,7 @@ lemma rev_map_δ {n : ℕ} (i : Fin (n + 2)) :
   dsimp [δ]
   rw [Fin.succAbove_rev_right, Fin.rev_rev]
 
+@[simp]
 lemma rev_map_σ {n : ℕ} (i : Fin (n + 1)) :
     rev.map (σ i) = σ i.rev := by
   ext j : 3

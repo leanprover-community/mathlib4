@@ -7,9 +7,9 @@ import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -434,7 +434,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
         gcongr
         · exact hc.2.le
         · apply fle
-      _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
+      _ = r := by simp [(zero_lt_one.trans Rgt).ne']
   obtain ⟨x : E, _ : x ∈ Metric.closedBall (0 : E) r, φ : ℕ → ℕ, φmono : StrictMono φ,
     φlim : Tendsto (g ∘ φ) atTop (𝓝 x)⟩ := h.tendsto_subseq A
   have B : CauchySeq (g ∘ φ) := φlim.cauchySeq

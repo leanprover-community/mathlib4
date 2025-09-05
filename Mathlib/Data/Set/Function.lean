@@ -55,7 +55,7 @@ theorem EqOn.symm (h : EqOn f₁ f₂ s) : EqOn f₂ f₁ s := fun _ hx => (h hx
 theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
   ⟨EqOn.symm, EqOn.symm⟩
 
--- This can not be tagged as `@[refl]` with the current argument order.
+-- This cannot be tagged as `@[refl]` with the current argument order.
 -- See note below at `EqOn.trans`.
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 
@@ -101,8 +101,10 @@ variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂
 
 section MapsTo
 
-theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
+theorem mapsTo_iff_image_subset : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
+
+@[deprecated (since := "2025-08-30")] alias mapsTo' := mapsTo_iff_image_subset
 
 theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
   diagonal_subset_iff.2 fun _ => rfl
@@ -122,14 +124,14 @@ theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
   empty_subset _
 
 @[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
-  simp [mapsTo', subset_empty_iff]
+  simp [mapsTo_iff_image_subset, subset_empty_iff]
 
 /-- If `f` maps `s` to `t` and `s` is non-empty, `t` is non-empty. -/
 theorem MapsTo.nonempty (h : MapsTo f s t) (hs : s.Nonempty) : t.Nonempty :=
-  (hs.image f).mono (mapsTo'.mp h)
+  (hs.image f).mono (mapsTo_iff_image_subset.mp h)
 
 theorem MapsTo.image_subset (h : MapsTo f s t) : f '' s ⊆ t :=
-  mapsTo'.1 h
+  mapsTo_iff_image_subset.1 h
 
 theorem MapsTo.congr (h₁ : MapsTo f₁ s t) (h : EqOn f₁ f₂ s) : MapsTo f₂ s t := fun _ hx =>
   h hx ▸ h₁ hx
@@ -720,7 +722,7 @@ theorem BijOn.insert_iff (ha : a ∉ s) (hfa : f a ∉ t) :
     have := congrArg (· \ {f a}) (image_insert_eq ▸ h.image_eq)
     simp only [mem_singleton_iff, insert_diff_of_mem] at this
     rw [diff_singleton_eq_self hfa, diff_singleton_eq_self] at this
-    · exact ⟨by simp [← this, mapsTo'], h.injOn.mono (subset_insert ..),
+    · exact ⟨by simp [← this, mapsTo_iff_image_subset], h.injOn.mono (subset_insert ..),
         by simp [← this, surjOn_image]⟩
     simp only [mem_image, not_exists, not_and]
     intro x hx
@@ -1021,7 +1023,7 @@ theorem BijOn.exists_extend_of_subset {t' : Set β} (h : BijOn f s t) (hss₁ : 
   rw [image_diff_preimage, image_inter_preimage] at hbij
   refine ⟨s ∪ r, subset_union_left, ?_, ?_, ?_, fun y hyt' ↦ ?_⟩
   · exact union_subset hss₁ <| hrss.trans <| diff_subset.trans inter_subset_left
-  · rw [mapsTo', image_union, hbij.image_eq, h.image_eq, union_subset_iff]
+  · rw [mapsTo_iff_image_subset, image_union, hbij.image_eq, h.image_eq, union_subset_iff]
     exact ⟨htt', diff_subset.trans inter_subset_right⟩
   · rw [injOn_union, and_iff_right h.injOn, and_iff_right hbij.injOn]
     · refine fun x hxs y hyr hxy ↦ (hrss hyr).2 ?_
@@ -1066,6 +1068,13 @@ lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn 
 
 lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t s :=
   ⟨BijOn.symm h, BijOn.symm h.symm⟩
+
+/-- If `t ⊆ f '' s`, there exists a preimage of `t` under `f` contained in `s` such that
+`f` restricted to `u` is injective. -/
+lemma SurjOn.exists_subset_injOn_image_eq (hfs : s.SurjOn f t) :
+    ∃ u ⊆ s, u.InjOn f ∧ f '' u = t := by
+  choose x hmem heq using hfs
+  exact ⟨range (fun a : t ↦ x a.2), by grind, fun _ ↦ by grind, by aesop⟩
 
 end Set
 
