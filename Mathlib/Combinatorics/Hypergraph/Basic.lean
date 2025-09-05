@@ -334,11 +334,7 @@ def completeOn (f : Set α) : Hypergraph α where
   edgeSet := 𝒫 f
   edge_isSubset_vertexSet' := by simp
 
-@[simp]
-lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by
-  constructor
-  · exact fun a ↦ a
-  · exact fun a ↦ a
+lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by simp
 
 lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := by exact fun e a ↦ a
 
