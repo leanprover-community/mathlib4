@@ -117,7 +117,7 @@ jobs:
           printf ' %s\n\n' "${counts[@]}" | tee -a "$GITHUB_OUTPUT"
         fi
 
-        if ![ -z "${panic_lines}"]; then
+        if ! [ -z "${panic_lines}"]; then
           echo "\`\`\`spoiler Panic counts" | tee -a "$GITHUB_OUTPUT"
           echo "| | Panic description |" | tee -a "$GITHUB_OUTPUT"
           echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
@@ -126,7 +126,7 @@ jobs:
           echo | tee -a "$GITHUB_OUTPUT"
         fi
 
-        if ![ -z "${error_lines}"]; then
+        if ! [ -z "${error_lines}"]; then
           echo "\`\`\`spoiler Error counts" | tee -a "$GITHUB_OUTPUT"
           echo "| | Error description |" | tee -a "$GITHUB_OUTPUT"
           echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
@@ -135,7 +135,7 @@ jobs:
           echo | tee -a "$GITHUB_OUTPUT"
         fi
 
-        if ![ -z "${warning_lines}"]; then
+        if ! [ -z "${warning_lines}"]; then
           echo "\`\`\`spoiler Warning counts" | tee -a "$GITHUB_OUTPUT"
           echo "| | Warning description |" | tee -a "$GITHUB_OUTPUT"
           echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
@@ -144,7 +144,7 @@ jobs:
           echo | tee -a "$GITHUB_OUTPUT"
         fi
 
-        if ![ -z "${info_lines}"]; then
+        if ! [ -z "${info_lines}"]; then
           echo "\`\`\`spoiler Info message counts" | tee -a "$GITHUB_OUTPUT"
           echo "| | Info message |" | tee -a "$GITHUB_OUTPUT"
           echo "| ---: | --- |" | tee -a "$GITHUB_OUTPUT"
