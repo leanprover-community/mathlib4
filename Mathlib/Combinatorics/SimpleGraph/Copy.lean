@@ -46,13 +46,13 @@ Induced containment:
 
 ## Notation
 
-The following notation is declared in locale `SimpleGraph`:
+The following notation is declared in scope `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 * `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
 
 ## TODO
 
-* Relate `⊤ ⊑ H`/`⊥ ⊑ H` to there being a clique/independent set in `H`.
+* Relate `⊥ ⊴ H` to there being an independent set in `H`.
 * Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
@@ -195,6 +195,12 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
     toFun f := ⟨f.1, f.2⟩
     invFun f := ⟨f.1, f.2⟩
   }
+
+/-- A copy of `⊤` gives rise to an embedding of `⊤`. -/
+@[simps!]
+def topEmbedding (f : Copy (⊤ : SimpleGraph α) G) : (⊤ : SimpleGraph α) ↪g G :=
+  { f.toEmbedding with
+    map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
 
 end Copy
 
@@ -374,9 +380,8 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   isIndContained_iff_exists_iso_subgraph
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
-  mp h := h.isContained
-  mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
+    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
+  ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
 @[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
   Embedding.complEquiv.symm.nonempty_congr

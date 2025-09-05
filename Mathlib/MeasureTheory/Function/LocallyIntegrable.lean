@@ -213,7 +213,7 @@ theorem locallyIntegrableOn_of_locallyIntegrable_restrict [OpensMeasurableSpace 
   simpa only [IntegrableOn, Measure.restrict_restrict hu_o.measurableSet, inter_comm] using
     ht_int.mono_set hu_sub
 
-/-- If `s` is closed, being locally integrable on `s` wrt `μ` is equivalent to being locally
+/-- If `s` is closed, being locally integrable on `s` w.r.t. `μ` is equivalent to being locally
 integrable with respect to `μ.restrict s`. For the one-way implication without assuming `s` closed,
 see `locallyIntegrableOn_of_locallyIntegrable_restrict`. -/
 theorem locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace X]
@@ -355,8 +355,9 @@ theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → ε''
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
-    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → E}
-    (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    [OpensMeasurableSpace X] [T2Space X] {f : X → E} (hf : LocallyIntegrable f μ)
+    {g : X → 𝕜} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ g x • f x) μ := by
   let K := tsupport g
   have hK : IsCompact K := h'g
@@ -374,8 +375,9 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `f • g` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
-    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → ℝ} (hf : LocallyIntegrable f μ)
-    {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
+     {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+     [OpensMeasurableSpace X] [T2Space X] {f : X → 𝕜} (hf : LocallyIntegrable f μ)
+     {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ f x • g x) μ := by
   let K := tsupport g
   have hK : IsCompact K := h'g
