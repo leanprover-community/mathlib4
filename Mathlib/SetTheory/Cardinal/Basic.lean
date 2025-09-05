@@ -196,10 +196,10 @@ theorem sum_le_lift_mk_mul_iSup_lift {ι} (f : ι → Cardinal.{v}) :
   exact le_ciSup (bddAbove_of_small _) i
 
 theorem sum_le_lift_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{max u v}) :
-    sum f ≤ lift #ι * iSup f := by
+    sum f ≤ lift #ι * ⨆ i, f i := by
   simpa [← lift_umax] using sum_le_lift_mk_mul_iSup_lift f
 
-theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
+theorem sum_le_mk_mul_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * ⨆ i, f i := by
   simpa using sum_le_lift_mk_mul_iSup.{u, u} f
 
 @[deprecated (since := "2025-09-04")] alias sum_le_iSup_lift := sum_le_lift_mk_mul_iSup
