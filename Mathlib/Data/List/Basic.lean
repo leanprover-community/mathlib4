@@ -10,7 +10,6 @@ import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
-import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -985,12 +984,11 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
   mp := by
     induction l with | nil => simp | cons a l ih => ?_
-    rcases ha : f a with - | b <;> simp [ha]
+    rcases ha : f a with - | b
     · intro h
-      simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
-        using List.length_filterMap_le f l
-    · rintro rfl h
-      exact ⟨rfl, ih h⟩
+      have : (filterMap f l).length = l.length + 1 := by grind
+      grind
+    · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
 
 /-! ### filter -/
@@ -1080,7 +1078,7 @@ section eraseP
 
 variable {p : α → Bool}
 
--- Cannot be @[simp] because `a` can not be inferred by `simp`.
+-- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by
   let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa
