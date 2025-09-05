@@ -68,25 +68,9 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nn
     (hμν : ∀ (f : C_c(X, ℝ≥0)), ∫ (x : X), (f x : ℝ) ∂μ = ∫ (x : X), (f x : ℝ) ∂ν) : μ = ν := by
   apply Measure.ext_of_integral_eq_on_compactlySupported
   intro f
-  calc
-    ∫ (x : X), f x ∂μ
-      = ∫ (x : X), ↑(f x).toNNReal ∂μ - ∫ (x : X), ↑(-f x).toNNReal ∂μ := by
-      apply integral_eq_integral_pos_part_sub_integral_neg_part
-      exact f.integrable
-    _ = ∫ (x : X), ↑(f x).toNNReal ∂ν - ∫ (x : X), ↑(-f x).toNNReal ∂ν:= by
-      have h1 : ∫ (x : X), ((f x).toNNReal : ℝ) ∂μ = ∫ (x : X), ((f x).toNNReal : ℝ) ∂ν := by
-        refine hμν ⟨⟨Real.toNNReal ∘ f, ?_⟩, ?_⟩
-        · exact continuous_real_toNNReal.comp f.1.2
-        · exact HasCompactSupport.comp_left (g := Real.toNNReal) f.2 Real.toNNReal_zero
-      have h2 : ∫ (x : X), ((-f x).toNNReal : ℝ) ∂μ = ∫ (x : X), ((-f x).toNNReal : ℝ) ∂ν := by
-        refine hμν ⟨⟨Real.toNNReal ∘ (-f), ?_⟩, ?_⟩
-        · exact continuous_real_toNNReal.comp (-f).1.2
-        · exact HasCompactSupport.comp_left (g := Real.toNNReal) (-f).2 Real.toNNReal_zero
-      rw [h1, h2]
-    _ = ∫ (x : X), f x ∂ν := by
-      symm
-      apply integral_eq_integral_pos_part_sub_integral_neg_part
-      exact f.integrable
+  repeat rw [integral_eq_integral_pos_part_sub_integral_neg_part f.integrable]
+  erw [hμν f.nnrealPart, hμν (-f).nnrealPart]
+  rfl
 
 /-- Let μ be a measure that is finite on compact sets. Then μ induces a linear functional on
 `C_c(X, ℝ≥0)`. -/
