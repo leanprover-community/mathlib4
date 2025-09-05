@@ -69,22 +69,19 @@ variable [Group G] [DecidableEq G]
 /-! ## Full shift and shift action -/
 
 
-/-- Full shift over a group `G` with alphabet `A` (product topology). -/
-abbrev FullShift (A G) := G → A
-
 /-- Right-translation shift: `(shift g x)(h) = x (h * g)`. -/
-def shift (g : G) (x : FullShift A G) : FullShift A G :=
+def shift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
 section ShiftAlgebra
 variable {A G : Type*} [Group G]
-@[simp] lemma shift_apply (g h : G) (x : FullShift A G) :
+@[simp] lemma shift_apply (g h : G) (x : G → A) :
   shift g x h = x (h * g) := rfl
 
-@[simp] lemma shift_one (x : FullShift A G) : shift (1 : G) x = x := by
+@[simp] lemma shift_one (x : G → A) : shift (1 : G) x = x := by
   ext h; simp [shift]
 
-lemma shift_mul (g₁ g₂ : G) (x : FullShift A G) :
+lemma shift_mul (g₁ g₂ : G) (x : G → A) :
   shift (g₁ * g₂) x = shift g₁ (shift g₂ x) := by
   ext h; simp [shift, mul_assoc]
 end ShiftAlgebra
@@ -104,14 +101,14 @@ section CylindersDefs
 variable {A G : Type*}
 
 /-- Cylinder fixing `x` on the finite set `U`. -/
-def cylinder (U : Finset G) (x : FullShift A G) : Set (FullShift A G) :=
+def cylinder (U : Finset G) (x : G → A) : Set (G → A) :=
   { y | ∀ i ∈ U, y i = x i }
 
 lemma cylinder_eq_set_pi (U : Finset (G)) (x : G → A) :
   cylinder U x = Set.pi (↑U : Set (G)) (fun i => ({x i} : Set A)) := by
   ext y; simp [cylinder, Set.pi, Finset.mem_coe]
 
-@[simp] lemma mem_cylinder {U : Finset G} {x y : FullShift A G} :
+@[simp] lemma mem_cylinder {U : Finset G} {x y : G → A} :
   y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
 end CylindersDefs
 
@@ -150,14 +147,14 @@ end CylindersClosed
 /-- A subshift is a closed, shift-invariant subset. -/
 structure Subshift (A : Type*) [TopologicalSpace A] [Inhabited A] (G : Type*) [Group G] where
   /-- The underlying set of configurations. -/
-  carrier : Set (FullShift A G)
+  carrier : Set (G → A)
   /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
   /-- Shift invariance of `carrier`. -/
   shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift (A:=A) (G:=G) g x ∈ carrier
 
-/-- The full shift is a subshift. -/
-example : Subshift A G :=
+/-- Example: the full shift on alphabet A. -/
+def fullShift (A G) [TopologicalSpace A] [Inhabited A] [Group G] : Subshift A G :=
 { carrier := Set.univ,
   isClosed := isClosed_univ,
   shiftInvariant := by intro _ _ _; simp }
@@ -178,18 +175,18 @@ def domino {A : Type*}
   , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
 
 /-- Occurrence of a pattern `p` in `x` at position `g`. -/
-def Pattern.occursIn (p : Pattern A G) (x : FullShift A G) (g : G) : Prop :=
+def Pattern.occursIn (p : Pattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
 
 /-- Configurations avoiding every pattern in `F`. -/
-def forbids (F : Set (Pattern A G)) : Set (FullShift A G) :=
+def forbids (F : Set (Pattern A G)) : Set (G → A) :=
   { x | ∀ p ∈ F, ∀ g : G, ¬ p.occursIn x g }
 
 
 section ShiftInvariance
 variable {A G : Type*} [Group G]
 /-- Shifts move occurrences as expected. -/
-lemma occurs_shift (p : Pattern A G) (x : FullShift A G) (g h : G) :
+lemma occurs_shift (p : Pattern A G) (x : G → A) (g h : G) :
   p.occursIn (shift h x) g ↔ p.occursIn x (g * h) := by
   constructor <;> intro H u hu <;> simpa [shift, mul_assoc] using H u hu
 
@@ -203,11 +200,11 @@ lemma forbids_shift_invariant (F : Set (Pattern A G)) :
 end ShiftInvariance
 
 /-- Extend a pattern by `default` away from its support (anchored at the origin). -/
-def patternToOriginConfig (p : Pattern A G) : FullShift A G :=
+def patternToOriginConfig (p : Pattern A G) : G → A :=
   fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
 
 /-- Translate a pattern to occur at `v`. -/
-def patternToConfig (p : Pattern A G) (v : G) : FullShift A G :=
+def patternToConfig (p : Pattern A G) (v : G) : G → A :=
   shift (v⁻¹) (patternToOriginConfig p)
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
