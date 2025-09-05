@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.IsNormal
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -623,7 +622,7 @@ alias isLimit_sub := isSuccLimit_sub
 
 /-! ### Multiplication of ordinals -/
 
-/-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
+/-- The multiplication of ordinals `o₁` and `o₂` is the (well-founded) lexicographic order on
 `o₂ × o₁`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
@@ -995,6 +994,13 @@ theorem isSuccLimit_add_iff {a b : Ordinal} :
   · exact isSuccLimit_add a h
   · simpa only [add_zero]
 
+theorem isSuccLimit_add_iff_of_isSuccLimit {a b : Ordinal} (h : IsSuccLimit a) :
+    IsSuccLimit (a + b) ↔ IsSuccPrelimit b := by
+  rw [isSuccLimit_add_iff]
+  obtain rfl | hb := eq_or_ne b 0
+  · simpa
+  · simp [hb, isSuccLimit_iff]
+
 @[deprecated (since := "2025-07-09")]
 alias isLimit_add_iff := isSuccLimit_add_iff
 
@@ -1171,12 +1177,15 @@ theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o :=
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
 
+@[simp]
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
+@[simp]
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
+@[simp]
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
 
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by
