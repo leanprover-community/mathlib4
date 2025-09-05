@@ -437,7 +437,7 @@ lemma G_2_alt_summable_δ (z : ℍ) : Summable fun (m : Fin 2 → ℤ) => (G2Ter
   have hb2 : b.1 ≠ ![0, -1] := by aesop
   simp [δ, hb1, hb2]
 
-lemma G2_prod_summable1_δ (z : ℍ) (b : ℤ) : Summable fun c : ℤ ↦ G2Term z ![b,c] + δ ![b, c] := by
+lemma G2_prod_summable1_δ (z : ℍ) (b : ℤ) : Summable fun c ↦ G2Term z ![b,c] + δ ![b, c] := by
   have := G_2_alt_summable_δ z
   simp only [G2Term, Fin.isValue, mul_inv_rev, ← (finTwoArrowEquiv _).symm.summable_iff,
     finTwoArrowEquiv_symm_apply, Matrix.cons_val_zero, Matrix.cons_val_one,
@@ -515,8 +515,8 @@ lemma auxr (z : ℍ) (b : ℤ) :
 
 
 --this sum is now abs convergent. Idea is to subtract limUnder_sum_eq_zero from the G2 defn.
-lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m : ℤ, ∑' n : ℤ, (G2Term z ![m, n] + δ ![m, n]) := by
-  set t :=  ∑' m : ℤ, ∑' n : ℤ,  (G2Term z ![m, n] + δ ![m, n])
+lemma G2_alt_eq (z : ℍ) : G2 z = ∑' m, ∑' n, (G2Term z ![m, n] + δ ![m, n]) := by
+  set t :=  ∑' m, ∑' n,  (G2Term z ![m, n] + δ ![m, n])
   rw [G2, show t = t + 0 by ring, ←  tsum_limUnder_eq z, ← Summable.tsum_add]
   · rw [int_tsum_limUnder_Icc_atTop]
     · congr
