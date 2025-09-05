@@ -30,14 +30,6 @@ topological vector space has a basis consisting of absolutely convex sets.
 * `closedAbsConvexHull_closure_eq_closedAbsConvexHull` : the closed absolutely convex hull of the
   closure of `s` equals the closed absolutely convex hull of `s`;
 
-## Implementation notes
-
-Mathlib's definition of `Convex` requires the scalars to be an `OrderedSemiring` whereas the
-definition of `Balanced` requires the scalars to be a `SeminormedRing`. Mathlib doesn't currently
-have a concept of a semi-normed ordered ring, so we define a set as `AbsConvex` if it is balanced
-over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower ℝ 𝕜 E` and
-`SMulCommClass ℝ 𝕜 E` where required.
-
 ## Tags
 
 disks, convex, balanced
