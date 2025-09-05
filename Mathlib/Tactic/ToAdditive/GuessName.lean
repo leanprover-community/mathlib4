@@ -145,7 +145,7 @@ def applyNameDict : List String → List String
 /--
 We need to fix a few abbreviations after applying `nameDict`, i.e. replacing `ZeroLE` by `Nonneg`.
 This dictionary contains these fixes.
-The input should contain entries that is in `lowerCamelCase` (e.g. `ltzero`, so the initial sequence
+The input should contain entries that is in `lowerCamelCase` (e.g. `ltzero`; the initial sequence
 of capital letters should be lower-cased) and the output should be in `UpperCamelCase`
 (e.g. `LTZero`).
 When applying the dictionary, we lower-case the output if the input was also given in lower-case.
@@ -200,7 +200,7 @@ def abbreviationDict : String → Option String
   | _                  => none
 
 /-- Helper for `fixAbbreviation`.
-Note: quadratic runtime in the length of the first argument, but that should be fine. -/
+Note: quadratic runtime in the length of the arguments, but that should be fine. -/
 def fixAbbreviationAux : List String → List String → String
   | [], []     => ""
   | [], x::s   => x ++ fixAbbreviationAux s []
