@@ -104,13 +104,6 @@ lemma sigmoid_injective : Function.Injective sigmoid := sigmoid_strictMono.injec
 @[simp]
 lemma sigmoid_inj {a b : ℝ} : sigmoid a = sigmoid b ↔ a = b := sigmoid_injective.eq_iff
 
-@[fun_prop]
-lemma continuous_sigmoid : Continuous sigmoid := by
-  refine Continuous.inv₀ ?_ ?_
-  · continuity
-  · intro x
-    positivity
-
 lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = 1 - sigmoid x := by
   simp only [sigmoid_def]
   field_simp
@@ -177,6 +170,9 @@ theorem differentiable_sigmoid : Differentiable ℝ sigmoid :=
 theorem differentiableAt_sigmoid {x : ℝ} : DifferentiableAt ℝ sigmoid x :=
   differentiable_sigmoid x
 
+@[fun_prop]
+lemma continuous_sigmoid : Continuous sigmoid := by fun_prop
+
 end Real
 
 namespace unitInterval
@@ -218,20 +214,11 @@ lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
   exact Real.sigmoid_neg x
 
-open Set Real in
+open Set in
 lemma range_sigmoid : range unitInterval.sigmoid = Ioo 0 1 := by
-  ext x
-  constructor
-  · rintro ⟨y, rfl⟩
-    constructor
-    · change (0 : ℝ) < (1 + exp (-y))⁻¹
-      positivity
-    · exact inv_lt_one_of_one_lt₀ <| lt_add_of_pos_right 1 (exp_pos (-y))
-  · intro hx
-    use -(log (-1 + x.1⁻¹))
-    suffices exp (log (-1 + x.1⁻¹)) = -1 + x.1⁻¹ by
-      simp [sigmoid, Subtype.coind, Real.sigmoid, this]
-    exact exp_log (lt_neg_add_iff_lt.mpr <| one_lt_inv_iff₀.mpr hx)
+  rw [sigmoid, Subtype.range_coind, Real.range_sigmoid]
+  ext
+  simp
 
 open Topology Filter
 
