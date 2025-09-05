@@ -3,7 +3,8 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto, Oliver Butterley
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.Order.Interval.Set.Union
 
@@ -22,8 +23,8 @@ continuous functions have compact support.
 * `RealRMK.rieszMeasure`: the measure induced by a real linear positive functional.
 * `RealRMK.integral_rieszMeasure`: the Riesz–Markov–Kakutani representation theorem for a real
   linear positive functional.
-* `RealRMK.eq_of_integral_eq_on_Cc`: the uniqueness of the representing measure in the
-  Riesz–Markov–Kakutani representation theorem.
+* `RealRMK.eq_of_integral_eq_on_compactlySupported`: the uniqueness of the representing measure in
+  the Riesz–Markov–Kakutani representation theorem.
 
 ## Implementation notes
 
@@ -48,7 +49,7 @@ lemma CompactlySupportedContinuousMap.integrable {X E : Type*} [MeasurableSpace 
     [TopologicalSpace X] [NormedAddCommGroup E] (f : C_c(X, E))
     {μ : Measure X} [OpensMeasurableSpace X] [IsFiniteMeasureOnCompacts μ] :
     Integrable f μ :=
-  f.1.2.integrable_of_hasCompactSupport f.2
+  f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
 
 namespace RealRMK
 
@@ -348,6 +349,12 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure Λ
   -- prove the inequality for `f`
   · exact integral_riesz_aux Λ f
 
+/-- The Riesz measure induced by a positive linear functional on `C_c(X, ℝ)` is regular. -/
+instance rieszMeasure_regular : (rieszMeasure Λ).Regular :=
+  (rieszContent _).regular
+
+section Uniqueness
+
 -- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
 -- `μ` is infinite on any nonempty set and `ν = 0`, then the hypothese are satisfied.
 lemma compare_measure_of_compact_sets {μ ν : Measure X} [ν.OuterRegular]
@@ -392,43 +399,44 @@ lemma compare_measure_of_compact_sets {μ ν : Measure X} [ν.OuterRegular]
 
 /-- If two regular measures give the same integral for every function in `C_c(X, ℝ)`,
 then they are equal. -/
-theorem eq_of_integral_eq_on_Cc {μ ν : Measure X} [Measure.Regular μ] [Measure.Regular ν]
-    (hμν : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂μ = ∫ (x : X), f x ∂ν) : μ = ν := by
+theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported {μ ν : Measure X}
+    [μ.Regular] [ν.Regular] (hμν : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂μ = ∫ (x : X), f x ∂ν) :
+    μ = ν := by
   apply Measure.OuterRegular.eq_of_eq_on_isOpen
-  apply Measure.InnerRegularWRT.eq_on_q_of_eq_on_p
-  · exact Measure.Regular.innerRegular
-  · exact Measure.Regular.innerRegular
-  · intro K hK
-    apply le_antisymm
-    · exact compare_measure_of_compact_sets (fun f ↦ le_of_eq (hμν f)) hK
-    · exact compare_measure_of_compact_sets (fun f ↦ ge_of_eq (hμν f)) hK
+  apply Measure.InnerRegularWRT.eq_on_q_of_eq_on_p Measure.Regular.innerRegular
+    Measure.Regular.innerRegular
+  intro K hK
+  apply le_antisymm
+  · exact compare_measure_of_compact_sets (fun f ↦ (hμν f).le) hK
+  · exact compare_measure_of_compact_sets (fun f ↦ (hμν f).ge) hK
 
 /-- Let μ be a measure that is finite on compact sets. Then μ induces a positive
 linear functional on C_c(X, ℝ). -/
 @[simps!]
 noncomputable def integralPositiveLinearMap (μ : Measure X) [OpensMeasurableSpace X]
-    [MeasureTheory.IsFiniteMeasureOnCompacts μ] : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
-PositiveLinearMap.mk₀
-  { toFun f := ∫ (x : X), f x ∂μ,
-    map_add' f g := integral_add' f.integrable g.integrable
-    map_smul' c f := integral_smul c f }
-  fun _ ↦ integral_nonneg
+    [IsFiniteMeasureOnCompacts μ] : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
+  PositiveLinearMap.mk₀
+    { toFun f := ∫ (x : X), f x ∂μ,
+      map_add' f g := integral_add' f.integrable g.integrable
+      map_smul' c f := integral_smul c f }
+    fun _ ↦ integral_nonneg
 
-/-- If two regular measures induce the same positive linear functional on `C_c(X, ℝ)`,
-then they are equal. -/
-theorem eq_of_eq_integralPositiveLinearMap {μ ν : Measure X}
-    [Measure.Regular μ] [Measure.Regular ν]
-    (hμν : integralPositiveLinearMap μ = integralPositiveLinearMap ν) : μ = ν :=
-  eq_of_integral_eq_on_Cc fun f ↦ congr($hμν f)
+/-- Two regular measures are equal iff they induce the same positive linear functional
+on `C_c(X, ℝ)`. -/
+theorem integralPositiveLinearMap_inj {μ ν : Measure X}
+    [μ.Regular] [ν.Regular] :
+    integralPositiveLinearMap μ = integralPositiveLinearMap ν ↔ μ = ν :=
+  ⟨fun hμν ↦ Measure.ext_of_integral_eq_on_compactlySupported fun f ↦ congr($hμν f),
+    fun _ ↦ by congr⟩
 
-/-The Riesz measure induced by a positive linear functional on `C_c(X, ℝ)` is regular.-/
-instance rieszMeasure_regular (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ) : (rieszMeasure Λ).Regular :=
-  rieszContent (CompactlySupportedContinuousMap.toNNRealLinear Λ) |>.regular
+/-- `RealRMK.rieszMeasure` is a surjective function onto regular measures.
+That is, every regular measure is induced by a positive linear functional on `C_c(X, ℝ)`. -/
+@[simp]
+theorem rieszMeasure_integralPositiveLinearMap {μ : Measure X} [μ.Regular] :
+    rieszMeasure (integralPositiveLinearMap μ) = μ :=
+  Measure.ext_of_integral_eq_on_compactlySupported fun f ↦
+    integral_rieszMeasure (integralPositiveLinearMap μ) f
 
-/-- RealRMK.rieszMeasure is a surjective function. That is, every regular measure is induced by a
-positive linear functional on `C_c(X, ℝ)`. -/
-theorem rieszMeasure_surjective {μ : Measure X} [Measure.Regular μ] :
-    μ = rieszMeasure (integralPositiveLinearMap μ) :=
-  eq_of_integral_eq_on_Cc fun f ↦ (integral_rieszMeasure (integralPositiveLinearMap μ) f).symm
+end Uniqueness
 
 end RealRMK

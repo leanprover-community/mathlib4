@@ -55,17 +55,24 @@ theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(r
   exact Continuous.integrable_of_hasCompactSupport (by fun_prop)
     (HasCompactSupport.comp_left f.hasCompactSupport rfl)
 
-/-If two regular measures give the same integral for every function in `C_c(X, ℝ≥0)`, then they
-are equal.-/
-theorem eq_of_integral_eq_on_Cc {μ ν : Measure X} [Measure.Regular μ] [Measure.Regular ν]
+/-- The Riesz measure induced by a linear functional on `C_c(X, ℝ≥0)` is regular. -/
+instance rieszMeasure_regular (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : (rieszMeasure Λ).Regular :=
+  (rieszContent Λ).regular
+
+section Uniqueness
+
+/-- If two regular measures give the same integral for every function in `C_c(X, ℝ≥0)`, then they
+are equal. -/
+theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nnreal
+    {μ ν : Measure X} [μ.Regular] [ν.Regular]
     (hμν : ∀ (f : C_c(X, ℝ≥0)), ∫ (x : X), (f x : ℝ) ∂μ = ∫ (x : X), (f x : ℝ) ∂ν) : μ = ν := by
-  apply RealRMK.eq_of_integral_eq_on_Cc
+  apply Measure.ext_of_integral_eq_on_compactlySupported
   intro f
   calc
     ∫ (x : X), f x ∂μ
       = ∫ (x : X), ↑(f x).toNNReal ∂μ - ∫ (x : X), ↑(-f x).toNNReal ∂μ := by
       apply integral_eq_integral_pos_part_sub_integral_neg_part
-      exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+      exact f.integrable
     _ = ∫ (x : X), ↑(f x).toNNReal ∂ν - ∫ (x : X), ↑(-f x).toNNReal ∂ν:= by
       have h1 : ∫ (x : X), ((f x).toNNReal : ℝ) ∂μ = ∫ (x : X), ((f x).toNNReal : ℝ) ∂ν := by
         refine hμν ⟨⟨Real.toNNReal ∘ f, ?_⟩, ?_⟩
@@ -79,37 +86,30 @@ theorem eq_of_integral_eq_on_Cc {μ ν : Measure X} [Measure.Regular μ] [Measur
     _ = ∫ (x : X), f x ∂ν := by
       symm
       apply integral_eq_integral_pos_part_sub_integral_neg_part
-      exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+      exact f.integrable
 
 /-- Let μ be a measure that is finite on compact sets. Then μ induces a linear functional on
 `C_c(X, ℝ≥0)`. -/
-noncomputable def integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
-    [MeasureTheory.IsFiniteMeasureOnCompacts μ] :
+noncomputable abbrev integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
+    [IsFiniteMeasureOnCompacts μ] :
     C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 :=
   CompactlySupportedContinuousMap.toNNRealLinear (RealRMK.integralPositiveLinearMap μ)
 
-/-If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are equal.-/
-theorem eq_of_eq_integralLinearMap {μ ν : Measure X} [Measure.Regular μ]
-    [Measure.Regular ν] (hμν : integralLinearMap μ = integralLinearMap ν) : μ = ν := by
-  apply eq_of_integral_eq_on_Cc
-  intro f
-  simp only [integralLinearMap, RealRMK.integralPositiveLinearMap, PositiveLinearMap.mk₀,
-    toNNRealLinear_inj, PositiveLinearMap.mk.injEq, LinearMap.mk.injEq, AddHom.mk.injEq] at hμν
-  simpa using congr_fun hμν (CompactlySupportedContinuousMap.toReal f)
+/-- If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are
+equal. -/
+theorem integralLinearMap_inj {μ ν : Measure X} [μ.Regular]
+    [ν.Regular] : integralLinearMap μ = integralLinearMap ν ↔ μ = ν :=
+  ⟨fun hμν ↦ Measure.ext_of_integral_eq_on_compactlySupported_nnreal fun f ↦
+      by simpa using congr(($hμν f).toReal), fun _ ↦ by congr⟩
 
-/-The Riesz measure induced by a linear functional on `C_c(X, ℝ≥0)` is regular.-/
-instance rieszMeasure_regular (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : (rieszMeasure Λ).Regular :=
-  Content.regular (rieszContent Λ)
+/-- `NNRealRMK.rieszMeasure` is a surjective function onto regular measures.
+That is, every regular measure is induced by a positive linear functional on `C_c(X, ℝ≥0)`. -/
+@[simp]
+theorem rieszMeasure_integralLinearMap {μ : Measure X} [μ.Regular] :
+    rieszMeasure (integralLinearMap μ) = μ :=
+  Measure.ext_of_integral_eq_on_compactlySupported_nnreal fun f ↦
+    by simpa using integral_rieszMeasure (integralLinearMap μ) f
 
-/-- NNRealRMK.rieszMeasure is a surjective function. That is, every regular measure is induced by a
-positive linear functional on `C_c(X, ℝ≥0)`. -/
-theorem rieszMeasure_surjective {μ : Measure X} [Measure.Regular μ] :
-    μ = rieszMeasure (integralLinearMap μ) := by
-  apply eq_of_integral_eq_on_Cc
-  intro f
-  trans ((integralLinearMap μ) f : ℝ)
-  · simp [← toReal_apply]
-    rfl
-  · exact (integral_rieszMeasure (integralLinearMap μ) f).symm
+end Uniqueness
 
 end NNRealRMK
