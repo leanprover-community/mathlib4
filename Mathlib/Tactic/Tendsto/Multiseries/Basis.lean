@@ -8,7 +8,6 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Lemmas about well ordered basises

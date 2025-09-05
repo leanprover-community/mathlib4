@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.OfScalars
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul

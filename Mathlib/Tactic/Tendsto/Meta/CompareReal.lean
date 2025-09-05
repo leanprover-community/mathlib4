@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.Tendsto.Meta.ConstSimp
 
 /-!
 # TODO

@@ -3,8 +3,6 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Maps.Basic
 
