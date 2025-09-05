@@ -97,13 +97,11 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → K) (p : MvPolynomial σ k) 
     p ∈ (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)) ↔ aeval x p = 0 :=
   ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
 
-instance instIsPrimeVanishingIdealSingleton {x : σ → K} :
-    (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)).IsPrime := by
+instance {x : σ → K} : (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)).IsPrime := by
   convert RingHom.ker_isPrime (aeval (R := k) x)
   ext; simp
 
-instance instIsMaximalVanishingIdealSingleton {x : σ → K} :
-    (vanishingIdeal K {x} : Ideal (MvPolynomial σ K)).IsMaximal := by
+instance {x : σ → K} : (vanishingIdeal K {x} : Ideal (MvPolynomial σ K)).IsMaximal := by
   convert RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
   · ext; simp
   · intro z; use C z; simp
@@ -162,7 +160,7 @@ theorem eq_vanishingIdeal_singleton_of_isMaximal {I : Ideal (MvPolynomial σ k)}
 theorem isMaximal_iff_eq_vanishingIdeal_singleton {I : Ideal (MvPolynomial σ K)} :
     I.IsMaximal ↔ ∃ x : σ → K, I = vanishingIdeal K {x} :=
   ⟨eq_vanishingIdeal_singleton_of_isMaximal K,
-    fun ⟨_, hx⟩ => hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
+    fun ⟨_, hx⟩ => hx ▸ inferInstance⟩
 
 /-- Main statement of the Nullstellensatz -/
 @[simp]
