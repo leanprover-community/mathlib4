@@ -90,10 +90,8 @@ If $v$ and $w$ are two real absolute values on a field $F$, $v$ is non-trivial, 
 and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
 with $1 < v(a)$.
 -/
-theorem log_div_eq_constant_of_abv_lt_one_iff (hv : v.IsNontrivial)
-    (h : ∀ x, v x < 1 ↔ w x < 1) :
-    letI f : F → ℝ := fun a ↦ (v a).log / (w a).log
-    ∃ (a : F) (_ : 1 < v a), ∀ (b : F) (_ : 1 < v b), f b = f a := by
+theorem log_div_eq_constant_of_abv_lt_one_iff (hv : v.IsNontrivial) (h : ∀ x, v x < 1 ↔ w x < 1) :
+    ∃ a, 1 < v a ∧ ∀ b, 1 < v b → (v b).log / (w b).log = (v a).log / (w a).log := by
   let ⟨a, ha⟩ := hv.exists_abv_gt_one
   refine ⟨a, ha, fun b hb₁ ↦ ?_⟩
   by_contra! hb₂
