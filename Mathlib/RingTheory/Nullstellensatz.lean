@@ -67,7 +67,7 @@ theorem vanishingIdeal_anti_mono {A B : Set (σ → k)} (h : A ≤ B) :
     vanishingIdeal B ≤ vanishingIdeal A := fun _ hp x hx => hp x <| h hx
 
 theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (σ → k)) = ⊤ :=
-  le_antisymm le_top fun _ _ x hx => absurd hx (Set.not_mem_empty x)
+  le_antisymm le_top fun _ _ x hx => absurd hx (Set.notMem_empty x)
 
 theorem le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
     I ≤ vanishingIdeal (zeroLocus I) := fun p hp _ hx => hx p hp

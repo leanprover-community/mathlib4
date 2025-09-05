@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+import Mathlib.Algebra.Homology.Embedding.AreComplementary
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 
@@ -91,22 +91,22 @@ abbrev IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntGE n) i
-    (by simpa only [not_mem_range_embeddingUpIntGE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
 lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i) [K.IsStrictlyLE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntLE n) i
-    (by simpa only [not_mem_range_embeddingUpIntLE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
 lemma exactAt_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntGE n) i
-    (by simpa only [not_mem_range_embeddingUpIntGE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
 lemma exactAt_of_isLE (n i : ℤ) (hi : n < i) [K.IsLE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntLE n) i
-    (by simpa only [not_mem_range_embeddingUpIntLE_iff] using hi)
+    (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
 lemma isZero_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
@@ -123,7 +123,7 @@ lemma isStrictlyGE_iff (n : ℤ) :
     exact K.isZero_of_isStrictlyGE n i hi
   · intro h
     refine IsStrictlySupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntGE_iff] at hi
+    rw [notMem_range_embeddingUpIntGE_iff] at hi
     exact h i hi
 
 lemma isStrictlyLE_iff (n : ℤ) :
@@ -133,7 +133,7 @@ lemma isStrictlyLE_iff (n : ℤ) :
     exact K.isZero_of_isStrictlyLE n i hi
   · intro h
     refine IsStrictlySupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntLE_iff] at hi
+    rw [notMem_range_embeddingUpIntLE_iff] at hi
     exact h i hi
 
 lemma isGE_iff (n : ℤ) :
@@ -143,7 +143,7 @@ lemma isGE_iff (n : ℤ) :
     exact K.exactAt_of_isGE n i hi
   · intro h
     refine IsSupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntGE_iff] at hi
+    rw [notMem_range_embeddingUpIntGE_iff] at hi
     exact h i hi
 
 lemma isLE_iff (n : ℤ) :
@@ -153,7 +153,7 @@ lemma isLE_iff (n : ℤ) :
     exact K.exactAt_of_isLE n i hi
   · intro h
     refine IsSupported.mk (fun i hi ↦ ?_)
-    rw [not_mem_range_embeddingUpIntLE_iff] at hi
+    rw [notMem_range_embeddingUpIntLE_iff] at hi
     exact h i hi
 
 lemma isStrictlyLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
@@ -334,5 +334,33 @@ lemma isGE_shift (n : ℤ) [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧)
 end
 
 end Preadditive
+
+
+section Abelian
+
+variable [Abelian C] (K L : CochainComplex C ℤ)
+
+/-- The cokernel sequence of the monomorphism `K.ιTruncLE n`. -/
+noncomputable abbrev shortComplexTruncLE (n : ℤ) : ShortComplex (CochainComplex C ℤ) :=
+  HomologicalComplex.shortComplexTruncLE K (embeddingUpIntLE n)
+
+lemma shortComplexTruncLE_shortExact (n : ℤ) :
+    (K.shortComplexTruncLE n).ShortExact := by
+  apply HomologicalComplex.shortComplexTruncLE_shortExact
+
+variable (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+
+/-- The canonical morphism `(K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁`. -/
+noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
+    (K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁ :=
+  HomologicalComplex.shortComplexTruncLEX₃ToTruncGE K
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h)
+
+@[reassoc]
+lemma g_shortComplexTruncLEX₃ToTruncGE :
+    (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
+  apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
+
+end Abelian
 
 end CochainComplex

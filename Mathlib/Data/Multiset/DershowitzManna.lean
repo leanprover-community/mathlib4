@@ -18,7 +18,7 @@ the Dershowitz-Manna ordering defined over multisets is also well-founded.
 
 ## Main results
 
-- `Multiset.IsDershowitzMannaLT` : the standard definition fo the `Dershowitz-Manna ordering`.
+- `Multiset.IsDershowitzMannaLT` : the standard definition of the `Dershowitz-Manna ordering`.
 - `Multiset.wellFounded_isDershowitzMannaLT` : the main theorem about the
 `Dershowitz-Manna ordering` being well-founded.
 
@@ -64,7 +64,7 @@ lemma IsDershowitzMannaLT.trans :
     by_cases z_in : z ∈ Y₂
     · obtain ⟨w, hw, hzw⟩ := hYZ₂ z z_in
       exact ⟨w, .inl hw, hyz.trans hzw⟩
-    · exact ⟨z, .inr <| by rwa [mem_sub, count_eq_zero_of_not_mem z_in, count_pos], hyz⟩
+    · exact ⟨z, .inr <| by rwa [mem_sub, count_eq_zero_of_notMem z_in, count_pos], hyz⟩
   · obtain ⟨z, hz, hyz⟩ := hYZ₂ y <| mem_of_le (Multiset.sub_le_self ..) hy
     exact ⟨z, .inl hz, hyz⟩
 
@@ -144,7 +144,7 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
     ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
   · rw [add_add_tsub_cancel (filter_le ..), hM]
   · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy
-    simpa [hy.2] using hYZ y (by aesop)
+    simpa [hy.2] using hYZ y (by simp_all)
 
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=
@@ -163,7 +163,7 @@ theorem wellFounded_isDershowitzMannaLT [WellFoundedLT α] :
   rw [← transGen_oneStep_eq_isDershowitzMannaLT]
   exact isDershowitzMannaLT_singleton_wf.transGen
 
-instance instWellFoundedisDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
+instance instWellFoundedIsDershowitzMannaLT [WellFoundedLT α] : WellFoundedRelation (Multiset α) :=
     ⟨IsDershowitzMannaLT, wellFounded_isDershowitzMannaLT⟩
 
 end Multiset

@@ -196,9 +196,10 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
       obtain ⟨l', h₁, rfl⟩ := this l hl
       exact ⟨l', h₁, length_map _⟩
     intro l
-    induction' l with x xs hx
-    · exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
-    · intro h
+    induction l with
+    | nil => exact fun _ ↦ ⟨nil, ⟨trivial, fun x h ↦ (not_mem_nil h).elim⟩, rfl⟩
+    | cons x xs hx =>
+      intro h
       rw [cons_mem_subchain_iff] at h
       obtain ⟨⟨x, hx', rfl⟩, h₁, h₂⟩ := h
       obtain ⟨l', h₃, rfl⟩ := hx h₁
@@ -290,7 +291,7 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
     have hl₂ : ↑l₂.length ≤ t.chainHeight := by
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist filter_sublist, fun i h ↦ by simpa using (of_mem_filter h :)⟩
-    refine le_trans ?_ (add_le_add hl₁ hl₂)
+    grw [← hl₁, ← hl₂]
     simp_rw [l₁, l₂, ← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add,
       ← Multiset.filter_coe]
     rw [Multiset.filter_add_filter, Multiset.filter_eq_self.mpr, Multiset.card_add, Nat.cast_add]
@@ -318,8 +319,8 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
     WellFoundedGT s := by
   haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
-  refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
-  refine n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
+  refine ⟨RelEmbedding.wellFounded_iff_isEmpty.2 ⟨fun f ↦ ?_⟩⟩
+  refine n.lt_succ_self.not_ge (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)
   refine le_iSup₂_of_le ((ofFn (n := n.succ) fun i ↦ f i).map Subtype.val)
     ⟨chain'_map_of_chain' ((↑) : {x // x ∈ s} → α) (fun _ _ ↦ id)
       (chain'_iff_pairwise.2 <| pairwise_ofFn.2 fun i j ↦ f.map_rel_iff.2), fun i h ↦ ?_⟩ ?_

@@ -12,7 +12,7 @@ import Mathlib.Util.Superscript
 We construct a skeletal model of the simplex category, with objects `ℕ` and the
 morphisms `n ⟶ m` being the monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
 
-In `Mathlib.AlgebraicTopology.SimplexCategory.Basic`, we show that this category
+In `Mathlib/AlgebraicTopology/SimplexCategory/Basic.lean`, we show that this category
 is equivalent to `NonemptyFinLinOrd`.
 
 ## Remarks

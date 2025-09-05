@@ -137,12 +137,12 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 section LinearOrderedCancelAddCommMonoid
 
 variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [OrderTopology β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
   refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
-  rcases hxy.lt_or_lt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
+  rcases hxy.lt_or_gt with hlt | hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
         (isOpen_Ioo.subset_interior_iff.2 <| Ioo_subset_Icc_self.trans <| hs.out ‹_› ‹_›)
@@ -304,7 +304,7 @@ theorem StrictConvex.eq_of_openSegment_subset_frontier
 theorem StrictConvex.add_smul_mem [AddRightStrictMono 𝕜]
     (hs : StrictConvex 𝕜 s) (hx : x ∈ s) (hxy : x + y ∈ s)
     (hy : y ≠ 0) {t : 𝕜} (ht₀ : 0 < t) (ht₁ : t < 1) : x + t • y ∈ interior s := by
-  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> field_simp
+  have h : x + t • y = (1 - t) • x + t • (x + y) := by match_scalars <;> simp
   rw [h]
   exact hs hx hxy (fun h => hy <| add_left_cancel (a := x) (by rw [← h, add_zero]))
     (sub_pos_of_lt ht₁) ht₀ (sub_add_cancel 1 t)

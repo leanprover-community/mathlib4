@@ -29,7 +29,7 @@ Generalize linear independence to:
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
-open Submodule
+open Module Submodule
 open scoped Function
 
 variable (R : Type*)
@@ -93,7 +93,6 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     · simp [p_ne_zero]
     -- let u be the inverse of `S n`'s leading coefficient
     obtain ⟨u, leftinv, rightinv⟩ := isUnit_iff_exists.mp <| hCoeff n
-
     -- We'll show `P` is the difference of two terms in the span:
     --   a polynomial whose leading term matches `P`'s and lower degree terms match `S n`'s
     let head := P.leadingCoeff • u • S n -- a polynomial whose leading term matches P's and whose
@@ -177,7 +176,7 @@ noncomputable def basis : Basis ℕ R R[X] :=
 
 /-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
 @[simp]
-lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
+lemma basis_eq_self (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
 /-- Basis elements have strictly monotone degree. -/
 lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp

@@ -60,7 +60,7 @@ noncomputable def addChar_of_value_at_one (r : R) (hr : Tendsto (r ^ ·) atTop (
       Nat.choose_self, pow_zero, one_smul]
   map_add_eq_mul' a b := by
     let F : C(ℤ_[p], R) := mahlerSeries (r ^ ·)
-    show F (a + b) = F a * F b
+    change F (a + b) = F a * F b
     -- It is fiddly to show directly that `F (a + b) = F a * F b` for general `a, b`,
     -- so we prove it for `a, b ∈ ℕ` directly, and then deduce it for all `a, b` by continuity.
     have hF (n : ℕ) : F n = (r + 1) ^ n := by
@@ -84,7 +84,7 @@ lemma coe_addChar_of_value_at_one {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0))
 @[simp]
 lemma addChar_of_value_at_one_def {r : R} (hr : Tendsto (r ^ ·) atTop (𝓝 0)) :
     addChar_of_value_at_one r hr (1 : ℤ_[p]) = 1 + r := by
-  show mahlerSeries (r ^ ·) ↑(1 : ℕ) = _
+  change mahlerSeries (r ^ ·) ↑(1 : ℕ) = _
   rw [mahlerSeries_apply_nat hr le_rfl, Finset.sum_range_succ, Finset.sum_range_one,
     Nat.choose_zero_right, Nat.choose_self, one_smul, one_smul, pow_zero, pow_one]
 

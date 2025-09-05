@@ -17,9 +17,9 @@ It is formalized as a `Prop` valued typeclass `ReflectsIsomorphisms F`.
 Any fully faithful functor reflects isomorphisms.
 -/
 
-open CategoryTheory CategoryTheory.Functor
-
 namespace CategoryTheory
+
+open Functor
 
 variable {C : Type*} [Category C]
   {D : Type*} [Category D]
@@ -32,7 +32,7 @@ morphism `f : A ⟶ B`, if `F.map f` is an isomorphism then `f` is as well.
 Note that we do not assume or require that `F` is faithful.
 -/
 class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
- /-- For any `f`, if `F.map f` is an iso, then so was `f`. -/
+  /-- For any `f`, if `F.map f` is an iso, then so was `f`. -/
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/

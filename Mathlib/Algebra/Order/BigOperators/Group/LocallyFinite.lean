@@ -137,14 +137,15 @@ variable [LinearOrder α]
 section LocallyFiniteOrder
 variable [LocallyFiniteOrder α] [AddMonoidWithOne α] [SuccAddOrder α] [NoMaxOrder α]
 
+-- we can't use `to_additive`, because it tries to translate `1` into `0`
+
 lemma sum_Ico_add_eq_sum_Ico_add_one {M : Type*} [AddCommMonoid M] (hab : a ≤ b) (f : α → M) :
     ∑ x ∈ Ico a b, f x + f b = ∑ x ∈ Ico a (b + 1), f x := by
-  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, sum_insert right_not_mem_Ico, add_comm]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, sum_insert right_notMem_Ico, add_comm]
 
-@[to_additive existing sum_Ico_add_eq_sum_Ico_add_one]
 lemma prod_Ico_mul_eq_prod_Ico_add_one (hab : a ≤ b) (f : α → M) :
     (∏ x ∈ Ico a b, f x) * f b = ∏ x ∈ Ico a (b + 1), f x := by
-  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_not_mem_Ico, mul_comm]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one hab, prod_insert right_notMem_Ico, mul_comm]
 
 end LocallyFiniteOrder
 

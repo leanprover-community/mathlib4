@@ -60,7 +60,7 @@ theorem StronglyMeasurable.integral_kernel ⦃f : β → E⦄
   refine stronglyMeasurable_of_tendsto (f := f') atTop (fun n ↦ ?_) ?_
   · refine StronglyMeasurable.indicator ?_ (measurableSet_integrable hf)
     simp_rw [SimpleFunc.integral_eq]
-    refine Finset.stronglyMeasurable_sum _ fun _ _ ↦ ?_
+    refine Finset.stronglyMeasurable_fun_sum _ fun _ _ ↦ ?_
     refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
     exact κ.measurable_coe ((s n).measurableSet_fiber _)
   · rw [tendsto_pi_nhds]; intro x
@@ -89,7 +89,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
       intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
       simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
-    refine Finset.stronglyMeasurable_sum _ fun x _ => ?_
+    refine Finset.stronglyMeasurable_fun_sum _ fun x _ => ?_
     refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
     apply Kernel.measurable_kernel_prodMk_left
@@ -97,11 +97,11 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) (κ x)
-    · have (n) : Integrable (s' n x) (κ x) := by
+    · have (n : _) : Integrable (s' n x) (κ x) := by
         apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
         filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
-      simp only [f',  hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
+      simp only [f', hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]
       refine
         tendsto_integral_of_dominated_convergence (fun y => ‖f x y‖ + ‖f x y‖)

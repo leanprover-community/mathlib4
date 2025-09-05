@@ -14,9 +14,9 @@ This file relates `ZMod n` to the quotient ring `ℤ ⧸ Ideal.span {(n : ℤ)}`
 
 ## Main definitions
 
- - `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
-   `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
-   (where `n : ℕ` and `n : ℤ` respectively)
+- `ZMod.quotient_span_nat_equiv_zmod` and `ZMod.quotientSpanEquivZMod `:
+  `ZMod n` is the ring quotient of `ℤ` by `n ℤ : Ideal.span {n}`
+  (where `n : ℕ` and `n : ℤ` respectively)
 
 ## Tags
 
@@ -39,6 +39,26 @@ def quotientSpanNatEquivZMod : ℤ ⧸ Ideal.span {(n : ℤ)} ≃+* ZMod n :=
 def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* ZMod a.natAbs :=
   (Ideal.quotEquivOfEq (span_natAbs a)).symm.trans (quotientSpanNatEquivZMod a.natAbs)
 
+@[simp]
+theorem quotientSpanNatEquivZMod_comp_Quotient_mk (n : ℕ) :
+    (Int.quotientSpanNatEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+      Int.castRingHom (ZMod n) := rfl
+
+@[simp]
+theorem quotientSpanNatEquivZMod_comp_castRingHom (n : ℕ) :
+    ((Int.quotientSpanNatEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n)) =
+      Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
+@[simp]
+theorem quotientSpanEquivZMod_comp_Quotient_mk (n : ℤ) :
+    (Int.quotientSpanEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
+      Int.castRingHom (ZMod n.natAbs) := rfl
+
+@[simp]
+theorem quotientSpanEquivZMod_comp_castRingHom (n : ℤ) :
+    ((Int.quotientSpanEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n.natAbs)) =
+      Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
+
 end Int
 
 noncomputable section ChineseRemainder
@@ -46,7 +66,7 @@ open Ideal
 
 open scoped Function in -- required for scoped `on` notation
 /-- The **Chinese remainder theorem**, elementary version for `ZMod`. See also
-`Mathlib.Data.ZMod.Basic` for versions involving only two numbers. -/
+`Mathlib/Data/ZMod/Basic.lean` for versions involving only two numbers. -/
 def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
     (coprime : Pairwise (Nat.Coprime on a)) : ZMod (∏ i, a i) ≃+* Π i, ZMod (a i) :=
   have : Pairwise fun i j => IsCoprime (span {(a i : ℤ)}) (span {(a j : ℤ)}) :=

@@ -68,6 +68,10 @@ variable (R B) in
 instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R B :=
   ⟨.of_finite R⟩
 
+lemma Algebra.isIntegral_of_surjective (H : Function.Surjective (algebraMap R B)) :
+    Algebra.IsIntegral R B :=
+  .of_surjective (Algebra.ofId R B) H
+
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
 theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
@@ -94,28 +98,21 @@ theorem isIntegral_of_smul_mem_submodule {M : Type*} [AddCommGroup M] [Module R 
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
       { toFun := fun x => (DistribMulAction.toLinearMap R M x).restrict x.prop
-        -- Porting note: was
-                -- `fun x y => LinearMap.ext fun n => Subtype.ext <| add_smul x y n`
-        map_add' := by intros x y; ext; exact add_smul _ _ _
-        -- Porting note: was
-                --  `fun r s => LinearMap.ext fun n => Subtype.ext <| smul_assoc r s n`
-        map_smul' := by intros r s; ext; apply smul_assoc }
-      -- Porting note: the next two lines were
-      --`(LinearMap.ext fun n => Subtype.ext <| one_smul _ _) fun x y =>`
-      --`LinearMap.ext fun n => Subtype.ext <| mul_smul x y n`
+        map_add' := by intro x y; ext; exact add_smul _ _ _
+        map_smul' := by intro r s; ext; apply smul_assoc }
       (by ext; apply one_smul)
-      (by intros x y; ext; apply mul_smul)
+      (by intro x y; ext; apply mul_smul)
   obtain ⟨a, ha₁, ha₂⟩ : ∃ a ∈ N, a ≠ (0 : M) := by
     by_contra! h'
     apply hN
     rwa [eq_bot_iff]
   have : Function.Injective f := by
-    show Function.Injective f.toLinearMap
+    change Function.Injective f.toLinearMap
     rw [← LinearMap.ker_eq_bot, eq_bot_iff]
     intro s hs
     have : s.1 • a = 0 := congr_arg Subtype.val (LinearMap.congr_fun hs ⟨a, ha₁⟩)
     exact Subtype.ext ((eq_zero_or_eq_zero_of_smul_eq_zero this).resolve_right ha₂)
-  show IsIntegral R (A'.val ⟨x, hx⟩)
+  change IsIntegral R (A'.val ⟨x, hx⟩)
   rw [isIntegral_algHom_iff A'.val Subtype.val_injective, ← isIntegral_algHom_iff f this]
   haveI : Module.Finite R N := by rwa [Module.finite_def, Submodule.fg_top]
   apply Algebra.IsIntegral.isIntegral
@@ -224,3 +221,25 @@ instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R 
     (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
 
 end
+
+section TensorProduct
+
+variable {R A B : Type*} [CommRing R] [CommRing A]
+
+open TensorProduct
+
+theorem IsIntegral.tmul [Ring B] [Algebra R A] [Algebra R B]
+    (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
+  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
+  exact smul _ (h.map_of_comp_eq (algebraMap R A)
+    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
+    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
+
+variable (R A B)
+
+instance Algebra.IsIntegral.tensorProduct [CommRing B]
+    [Algebra R A] [Algebra R B] [int : Algebra.IsIntegral R B] :
+    Algebra.IsIntegral A (A ⊗[R] B) where
+  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
+
+end TensorProduct

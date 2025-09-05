@@ -47,7 +47,7 @@ Both statements are combined to give an equivalence,
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
-`Mathlib.NumberTheory.DiophantineApproximation.ContinuedFraction`, uses
+`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFraction.lean`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -257,12 +257,12 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
-    simp only [mem_image, mem_setOf] at hxy
+    simp only [mem_image] at hxy
     obtain ⟨q, hq₁, hq₂⟩ := hxy
     obtain ⟨hd, hn⟩ := den_le_and_le_num_le_of_sub_lt_one_div_den_sq hq₁
     simp_rw [mem_iUnion]
     refine ⟨q.den, Set.mem_Ioc.mpr ⟨q.pos, hd⟩, ?_⟩
-    simp only [prod_singleton, mem_image, mem_Icc, (congr_arg Prod.snd (Eq.symm hq₂)).trans rfl]
+    simp only [prod_singleton, mem_image, mem_Icc]
     exact ⟨q.num, hn, hq₂⟩
   refine (Finite.subset ?_ H).of_finite_image hinj.injOn
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
@@ -274,7 +274,7 @@ end Rat
 theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite ↔ Irrational ξ := by
   refine
-    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b H => Set.not_infinite.mpr ?_ h,
+    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ H => Set.not_infinite.mpr ?_ h,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
   rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
@@ -411,8 +411,8 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
     exact mod_cast
       h.trans_le
-        ((mul_le_mul_right <| hv₀').mpr <|
-          (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_right hv₀).mpr (floor_le ξ)))
+        ((mul_le_mul_iff_left₀ <| hv₀').mpr <|
+          (sub_le_sub_iff_left (u : ℝ)).mpr ((mul_le_mul_iff_left₀ hv₀).mpr (floor_le ξ)))
   have hu₁ : u - ⌊ξ⌋ * v ≤ v := by
     refine _root_.le_of_mul_le_mul_right (le_of_lt_add_one ?_) hv₁
     replace h := h.2
@@ -455,20 +455,13 @@ private theorem aux₃ :
     refine LE.le.trans ?_ h.le
     rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
     exact mod_cast huv
-  have help₁ {a b c : ℝ} : a ≠ 0 → b ≠ 0 → c ≠ 0 → |a⁻¹ - b / c| = |(a - c / b) * (b / c / a)| := by
-    intros; rw [abs_sub_comm]; congr 1; field_simp; ring
-  have help₂ :
-    ∀ {a b c d : ℝ}, a ≠ 0 → b ≠ 0 → c ≠ 0 → d ≠ 0 → (b * c)⁻¹ * (b / d / a) = (d * c * a)⁻¹ := by
-    intros; field_simp; ring
   calc
-    |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| :=
-      help₁ hξ₀.ne' Hv.ne' Hu.ne'
+    |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| := by
+      rw [abs_sub_comm]; congr 1; field_simp
     _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
-    _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne'
-    _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
-      rwa [inv_le_inv₀ (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
-        mul_le_mul_left Hu]
+    _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field_simp
+    _ ≤ (u' * (2 * u' - 1) : ℝ)⁻¹ := by gcongr
 
 -- The conditions `ass ξ u v` persist in the inductive step.
 private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋ * v) := by
@@ -477,12 +470,9 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     exact h.1
   · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
     have Hv : (v * (2 * v - 1) : ℝ)⁻¹ + (v : ℝ)⁻¹ = 2 / (2 * v - 1) := by
-      field_simp; ring
-    #adaptation_note
-    /-- `_root_` can be removed again after
-    https://github.com/leanprover/lean4/pull/7359 lands in nightly-2025-03-06. -/
+      simp [field]
     have Huv : (u / v : ℝ) = ⌊ξ⌋ + (v : ℝ)⁻¹ := by
-      rw [_root_.sub_eq_iff_eq_add'.mp huv]; field_simp
+      rw [sub_eq_iff_eq_add'.mp huv]; simp [field]
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
@@ -506,7 +496,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     exact False.elim (lt_irrefl _ <| (abs_nonneg ξ).trans_lt h)
   · rw [Nat.cast_one, div_one]
     obtain ⟨_, h₁, h₂⟩ := h
-    rcases le_or_lt (u : ℝ) ξ with ht | ht
+    rcases le_or_gt (u : ℝ) ξ with ht | ht
     · use 0
       rw [convergent_zero, Rat.coe_int_inj, eq_comm, floor_eq_iff]
       convert And.intro ht (sub_lt_iff_lt_add'.mp (abs_lt.mp h₂).2) <;> norm_num

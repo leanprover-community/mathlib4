@@ -41,7 +41,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 ## TODO
 
-* Prove that if two sets equidecompose into subsets of eachother, they are equidecomposable
+* Prove that if two sets equidecompose into subsets of each other, they are equidecomposable
   (Schroeder-Bernstein type theorem)
 * Define equidecomposability into subsets as a preorder on sets and
   prove that its induced equivalence relation is equidecomposability.
@@ -93,9 +93,8 @@ def witness (f : Equidecomp X G) : Finset G := f.isDecompOn'.choose
 theorem isDecompOn (f : Equidecomp X G) : IsDecompOn f f.source f.witness :=
   f.isDecompOn'.choose_spec
 
-@[simp]
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
-    f x ∈ f.target := f.toPartialEquiv.map_source h
+    f x ∈ f.target := by simp [h]
 
 theorem toPartialEquiv_injective : Injective <| toPartialEquiv (X := X) (G := G) := by
   intro ⟨_, _, _⟩ _ _
@@ -194,13 +193,11 @@ noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
     f.symm x ∈ f.source := f.toPartialEquiv.map_target h
 
-@[simp]
 theorem left_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
-    f.toPartialEquiv.symm (f x) = x := f.toPartialEquiv.left_inv h
+    f.toPartialEquiv.symm (f x) = x := by simp [h]
 
-@[simp]
 theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
-    f (f.toPartialEquiv.symm x) = x := f.toPartialEquiv.right_inv h
+    f (f.toPartialEquiv.symm x) = x := by simp [h]
 
 @[simp]
 theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl

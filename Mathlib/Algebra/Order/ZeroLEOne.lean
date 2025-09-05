@@ -22,6 +22,10 @@ class ZeroLEOneClass (α : Type*) [Zero α] [One α] [LE α] : Prop where
 @[simp] lemma zero_le_one [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
   ZeroLEOneClass.zero_le_one
 
+instance ZeroLEOneClass.factZeroLeOne [Zero α] [One α] [LE α] [ZeroLEOneClass α] :
+    Fact ((0 : α) ≤ 1) where
+  out := zero_le_one
+
 /-- `zero_le_one` with the type argument explicit. -/
 lemma zero_le_one' (α) [Zero α] [One α] [LE α] [ZeroLEOneClass α] : (0 : α) ≤ 1 :=
   zero_le_one
@@ -31,6 +35,9 @@ variable [Zero α] [One α] [PartialOrder α] [ZeroLEOneClass α] [NeZero (1 : �
 
 /-- See `zero_lt_one'` for a version with the type explicit. -/
 @[simp] lemma zero_lt_one : (0 : α) < 1 := zero_le_one.lt_of_ne (NeZero.ne' 1)
+
+instance ZeroLEOneClass.factZeroLtOne : Fact ((0 : α) < 1) where
+  out := zero_lt_one
 
 variable (α)
 

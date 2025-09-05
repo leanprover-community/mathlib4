@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Analysis.RCLike.Basic
 
 /-!
@@ -100,41 +100,39 @@ namespace ContinuousLinearMap
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- The norm of the extension is bounded by `‖fr‖`. -/
-theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
+theorem norm_extendTo𝕜'_bound (fr : StrongDual ℝ F) (x : F) :
     ‖(fr.toLinearMap.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
   set lm : F →ₗ[𝕜] 𝕜 := fr.toLinearMap.extendTo𝕜'
   by_cases h : lm x = 0
   · rw [h, norm_zero]
-    apply mul_nonneg <;> exact norm_nonneg _
-  rw [← mul_le_mul_left (norm_pos_iff.2 h), ← sq]
+    positivity
+  rw [← mul_le_mul_iff_right₀ (norm_pos_iff.2 h), ← sq]
   calc
     ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
     _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := le_abs_self _
     _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := le_opNorm _ _
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 
-/-- Extend `fr : F →L[ℝ] ℝ` to `F →L[𝕜] 𝕜`. -/
-noncomputable def extendTo𝕜' (fr : F →L[ℝ] ℝ) : F →L[𝕜] 𝕜 :=
+/-- Extend `fr : StrongDual ℝ F` to `StrongDual 𝕜 F`. -/
+noncomputable def extendTo𝕜' (fr : StrongDual ℝ F) : StrongDual 𝕜 F :=
   LinearMap.mkContinuous _ ‖fr‖ fr.norm_extendTo𝕜'_bound
 
-theorem extendTo𝕜'_apply (fr : F →L[ℝ] ℝ) (x : F) :
+theorem extendTo𝕜'_apply (fr : StrongDual ℝ F) (x : F) :
     fr.extendTo𝕜' x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
-theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ = ‖fr‖ :=
+theorem norm_extendTo𝕜' (fr : StrongDual ℝ F) : ‖(fr.extendTo𝕜' : StrongDual 𝕜 F)‖ = ‖fr‖ :=
   le_antisymm (LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _) <|
     opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
         ‖fr x‖ = ‖re (fr.extendTo𝕜' x : 𝕜)‖ := congr_arg norm (fr.extendTo𝕜'_apply_re x).symm
         _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := abs_re_le_norm _
-        _ ≤ ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ * ‖x‖ := le_opNorm _ _
+        _ ≤ ‖(fr.extendTo𝕜' : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
 
 end ContinuousLinearMap
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added a new instance. This instance is needed for the rest of the file.
-instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) := by
-  unfold RestrictScalars
-  infer_instance
+instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) :=
+  inferInstanceAs (NormedSpace 𝕜 F)
 
 /-- Extend `fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜`. -/
 noncomputable def LinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=
@@ -143,14 +141,14 @@ noncomputable def LinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ
 theorem LinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) (x : F) :
     fr.extendTo𝕜 x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
-/-- Extend `fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ` to `F →L[𝕜] 𝕜`. -/
-noncomputable def ContinuousLinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) : F →L[𝕜] 𝕜 :=
-  fr.extendTo𝕜'
+/-- Extend `fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)` to `StrongDual 𝕜 F`. -/
+noncomputable def ContinuousLinearMap.extendTo𝕜 (fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)) :
+    StrongDual 𝕜 F := fr.extendTo𝕜'
 
-theorem ContinuousLinearMap.extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) (x : F) :
+theorem ContinuousLinearMap.extendTo𝕜_apply (fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)) (x : F) :
     fr.extendTo𝕜 x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
-theorem ContinuousLinearMap.norm_extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →L[ℝ] ℝ) :
+theorem ContinuousLinearMap.norm_extendTo𝕜 (fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)) :
     ‖fr.extendTo𝕜‖ = ‖fr‖ :=
   fr.norm_extendTo𝕜'

@@ -48,7 +48,6 @@ namespace Opposite
 with the shift by `ℤ` such that shifting by `n` on `Cᵒᵖ` corresponds to shifting
 by `-n` on `C`, the user shall have to do `open CategoryTheory.Pretriangulated.Opposite`
 in order to get this shift and the (pre)triangulated structure on `Cᵒᵖ`. -/
-
 private abbrev OppositeShiftAux :=
   PullbackShift (OppositeShift C ℤ)
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
@@ -129,8 +128,8 @@ noncomputable def opShiftFunctorEquivalence (n : ℤ) : Cᵒᵖ ≌ Cᵒᵖ wher
   functor := shiftFunctor Cᵒᵖ n
   inverse := (shiftFunctor C n).op
   unitIso := NatIso.op (shiftFunctorCompIsoId C (-n) n n.add_left_neg) ≪≫
-    isoWhiskerRight (shiftFunctorOpIso C n (-n) n.add_right_neg).symm (shiftFunctor C n).op
-  counitIso := isoWhiskerLeft _ (shiftFunctorOpIso C n (-n) n.add_right_neg) ≪≫
+    Functor.isoWhiskerRight (shiftFunctorOpIso C n (-n) n.add_right_neg).symm (shiftFunctor C n).op
+  counitIso := Functor.isoWhiskerLeft _ (shiftFunctorOpIso C n (-n) n.add_right_neg) ≪≫
     NatIso.op (shiftFunctorCompIsoId C n (-n) n.add_right_neg).symm
   functor_unitIso_comp X := Quiver.Hom.unop_inj (by
     dsimp [shiftFunctorOpIso]
@@ -214,7 +213,7 @@ lemma opShiftFunctorEquivalence_unitIso_inv_app_eq (X : Cᵒᵖ) (m n p : ℤ) (
     Category.assoc, Category.assoc, Category.assoc, Iso.inv_hom_id_app_assoc]
   apply Quiver.Hom.unop_inj
   dsimp
-  simp only [Category.assoc, ← Functor.map_comp_assoc, Iso.hom_inv_id_app_assoc,
+  simp only [Category.assoc,
     ← unop_comp, Iso.inv_hom_id_app, Functor.comp_obj, Functor.op_obj, unop_id,
     Functor.map_id, id_comp, ← Functor.map_comp, Iso.hom_inv_id_app]
 
