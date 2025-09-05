@@ -28,6 +28,7 @@ theorem prod_insertNth (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j,
       let p_tl := Fin.tail p
       have : ∏ j, i.succ.insertNth x p j = p 0 * ∏ j, i.insertNth x p_tl j := by
         sorry
+      simp [this]
       sorry
 
 end Fin
