@@ -697,7 +697,8 @@ theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
 theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
   simpa using mk_image_embedding_lift f s
 
-theorem iSup_le_mk_iUnion {α : Type u} {ι : Type v} {f : ι → Set α} : ⨆ i, #(f i) ≤ #(⋃ i, f i) :=
+theorem iSup_mk_le_mk_iUnion {α : Type u} {ι : Type v} {f : ι → Set α} :
+    ⨆ i, #(f i) ≤ #(⋃ i, f i) :=
   ciSup_le' fun _ => mk_le_mk_of_subset (subset_iUnion _ _)
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
