@@ -472,12 +472,7 @@ theorem eq_of_eq_on_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
     (hμν : ∀ U, IsOpen U → μ U = ν U) : μ = ν := by
   ext s ms
   rw [Set.measure_eq_iInf_isOpen, Set.measure_eq_iInf_isOpen]
-  apply iInf_congr
-  intro t
-  apply iInf_congr
-  intro ht1
-  apply iInf_congr
-  intro ht2
+  congr! 4 with t _ ht2
   exact hμν t ht2
 
 end OuterRegular
