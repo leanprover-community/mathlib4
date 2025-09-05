@@ -82,6 +82,7 @@ def capitalizeFirstLike (s : String) : List String → List String
 
 /--
 Dictionary used by `guessName` to autogenerate names.
+This only transforms single name components, unlike `abbreviationDict`.
 
 Note: `guessName` capitalizes the output according to the capitalization of the input.
 In order for this to work, the input should always be lower case, and the output always upper case.
