@@ -147,7 +147,7 @@ lemma hasDerivAt_sigmoid (x : ℝ) :
   field_simp [sq]
 
 lemma deriv_sigmoid : deriv sigmoid = fun x => sigmoid x * (1 - sigmoid x) :=
-    funext fun x => (hasDerivAt_sigmoid x).deriv
+  funext fun x => (hasDerivAt_sigmoid x).deriv
 
 open Set
 
