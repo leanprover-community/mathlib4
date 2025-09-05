@@ -274,5 +274,4 @@ protected def gi : @GaloisInsertion (R → R → Prop) (RingCon R) _ _ ringConGe
 
 end Lattice
 
-
 end RingCon
