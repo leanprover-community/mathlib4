@@ -133,7 +133,6 @@ def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
 -- Credit: Peter Nelson, Jun Kwon
-@[simp]
 lemma adj_comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
 
 /--
@@ -141,9 +140,17 @@ Predicate for edge adjacency. Analogous to `Hypergraph.Adj`, edges `e` and `f` a
 adjacent if there is some vertex `x ∈ V(H)` where `x` is incident to both `e` and `f`.
 -/
 def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
-  e ∈ E(H) ∧ f ∈ E(H) ∧ ∃ x ∈ V(H), x ∈ e ∧ x ∈ f
+  e ∈ E(H) ∧ f ∈ E(H) ∧ ∃ x, x ∈ e ∧ x ∈ f
 
-lemma EAdj.symm {H : Hypergraph α} {e f : Set α} (h : H.EAdj e f) : H.EAdj f e := by grind [EAdj]
+lemma EAdj.exists_vertex (h : H.EAdj e f) : ∃ x ∈ V(H), x ∈ e ∧ x ∈ f := by
+  unfold EAdj at h
+  obtain ⟨x, hx⟩ := h.2.2
+  use x
+  constructor
+  · exact mem_vertexSet_of_mem_edgeSet h.1 hx.1
+  · exact hx
+
+lemma EAdj.symm (h : H.EAdj e f) : H.EAdj f e := by grind [EAdj]
 
 lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty := by
   unfold EAdj at *
@@ -151,7 +158,6 @@ lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty := by
   apply Set.inter_nonempty.mpr h'
 
 -- Credit: Peter Nelson, Jun Kwon
-@[simp]
 lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
@@ -184,7 +190,6 @@ def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
     refine image_subset_iff.mp ?_
     exact image_mono hev
 
-@[simp]
 lemma mem_image {f : α → β} {e : Set β} : e ∈ E(H.image f) ↔ ∃ e' ∈ E(H), f '' e' = e := Iff.rfl
 
 lemma image_mem_image {f : α → β} (he : e ∈ E(H)) : e.image f ∈ E(H.image f) :=
@@ -260,17 +265,14 @@ lemma isEmpty_empty_hypergraph : IsEmpty (Hypergraph.emptyHypergraph α) := by
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
 
-@[simp]
-lemma isEmpty_eq_empty_hypergraph (h : H.IsEmpty) : H = emptyHypergraph α := by
+lemma isEmpty_eq_empty_hypergraph (h : H.IsEmpty) : emptyHypergraph α = H := by
   unfold IsEmpty at h
   have hv : V(emptyHypergraph α) = ∅ := rfl
   have he : E(emptyHypergraph α) = ∅ := rfl
   apply Hypergraph.ext_iff.mpr
   grind
 
-@[simp]
-lemma edge_not_mem_empty : e ∉ E(emptyHypergraph α) :=
-  by exact fun a ↦ a
+lemma edge_not_mem_empty : e ∉ E(emptyHypergraph α) := by simp
 
 lemma IsEmpty.eq (hH : H.IsEmpty) : V(H) = ∅ ∧ E(H) = ∅ := by exact hH
 
