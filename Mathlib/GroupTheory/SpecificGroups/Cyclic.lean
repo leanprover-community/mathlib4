@@ -399,7 +399,6 @@ variable [DecidableEq α]
 @[to_additive]
 theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
     Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
-  simp_rw [← SetLike.mem_coe] at ha
   simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
 
 @[to_additive]
@@ -693,8 +692,8 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
       Function.Embedding.coeFn_mk] at this
   obtain ⟨a, ha, ha'⟩ := this
   interval_cases a
-  · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by aesop
-  · aesop
+  · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
+  · simp_all
   · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by omega
 
 end Exponent

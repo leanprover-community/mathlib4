@@ -22,7 +22,7 @@ Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas boolean
 algebras model classical logic.
 
-Heyting algebras are the order theoretic equivalent of cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of cartesian-closed categories.
 
 ## Main declarations
 
@@ -30,7 +30,7 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 * `GeneralizedCoheytingAlgebra`: Co-Heyting algebra without a bottom element (nor complement).
 * `HeytingAlgebra`: Heyting algebra.
 * `CoheytingAlgebra`: Co-Heyting algebra.
-* `BiheytingAlgebra`: bi-Heyting algebra.
+* `BiheytingAlgebra`: Bi-Heyting algebra.
 
 ## References
 
