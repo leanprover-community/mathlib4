@@ -242,6 +242,8 @@ def mkDivProof (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M) :
 
 end qNF
 
+/-- Constraints on denominators which may need to be considered in `field_simp`: no condition,
+nonzeroness, or strict positivity. -/
 inductive DenomCondition (iM : Q(GroupWithZero $M))
   | none
   | nonzero
@@ -249,11 +251,16 @@ inductive DenomCondition (iM : Q(GroupWithZero $M))
 
 namespace DenomCondition
 
-def proof {iM : Q(GroupWithZero $M)} (e : qNF M) : DenomCondition iM → Type
+/-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
+to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
+def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
   | .none => Unit
-  | .nonzero => Q(NF.eval $(qNF.toNF e) ≠ 0)
-  | .positive _ => Q(0 < NF.eval $(qNF.toNF e))
+  | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
+  | .positive _ => Q(0 < NF.eval $(qNF.toNF L))
 
+/-- The empty field-simp-normal-form expression `[]` (representing `1` as an empty product of powers
+of atoms) can be proved to be nonzero, strict positivity, etc., as needed, as specified by the
+value of `DenomCondition`. -/
 def proofZero {iM : Q(CommGroupWithZero $M)} :
     ∀ cond : DenomCondition (M := M) iM, MetaM (cond.proof [])
   | .none => return Unit.unit
@@ -264,6 +271,11 @@ def proofZero {iM : Q(CommGroupWithZero $M)} :
 
 end DenomCondition
 
+/-- Given a proof of the nonzeroness, strict positivity, etc. (as specified by the value of
+`DenomCondition`) of a field-simp-normal-form expression `L` (a product of powers of atoms),
+construct a corresponding proof for `((r, e), i) :: L`.
+
+In this version we also expose the proof of nonzeroness of `e`. -/
 def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) {cond : DenomCondition iM}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
@@ -284,6 +296,9 @@ def mkDenomConditionProofSucc {iM : Q(CommGroupWithZero $M)}
     let pf' := q(NF.cons_pos $r (x := $e) $pf $pf₀)
     return (q(LT.lt.ne' $pf), pf')
 
+/-- Given a proof of the nonzeroness, strict positivity, etc. (as specified by the value of
+`DenomCondition`) of a field-simp-normal-form expression `L` (a product of powers of atoms),
+construct a corresponding proof for `((r, e), i) :: L`. -/
 def mkDenomConditionProofSucc' {iM : Q(CommGroupWithZero $M)}
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) {cond : DenomCondition iM}
     {L : qNF M} (hL : cond.proof L) (e : Q($M)) (r : ℤ) (i : ℕ) :
