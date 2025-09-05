@@ -407,7 +407,6 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
           rw [Real.norm_of_nonpos]
           · simp [field]
           · field_simp
-            simp only [sub_add_cancel_right]
             linarith only
         rw [← mem_closedBall_iff_norm']
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
