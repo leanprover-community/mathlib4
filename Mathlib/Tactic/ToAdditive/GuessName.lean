@@ -230,6 +230,4 @@ def guessName : String → String :=
     applyNameDict <|
     s.splitCase
 
-
-
 end ToAdditive
