@@ -222,7 +222,10 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   exact h
 
 
-/-- A version of `charpoly_mul_comm` for rectangular matrices. -/
+/--
+A version of `charpoly_mul_comm` for rectangular matrices.
+See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
+-/
 theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
     X ^ Fintype.card n * (A * B).charpoly = X ^ Fintype.card m * (B * A).charpoly := by
   -- This proof follows https://math.stackexchange.com/a/311362/315369
@@ -246,6 +249,12 @@ theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
     ring
   dsimp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
   rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_MN, ← hdet_NM, det_mul_comm]
+
+theorem charpoly_mul_comm_of_le
+    (A : Matrix m n R) (B : Matrix n m R) (hle : Fintype.card n ≤ Fintype.card m) :
+    (A * B).charpoly = X ^ (Fintype.card m - Fintype.card n) * (B * A).charpoly := by
+  rw [← (isRegular_X_pow _).left.eq_iff, ← mul_assoc, ← pow_add,
+    Nat.add_sub_cancel' hle, charpoly_mul_comm']
 
 /-- A version of `charpoly_mul_comm'` for square matrices. -/
 theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).charpoly :=
