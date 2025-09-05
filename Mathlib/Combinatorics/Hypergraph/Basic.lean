@@ -133,6 +133,7 @@ def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
 lemma Adj.symm (h : H.Adj x y) : H.Adj y x := by grind [Adj]
 
 -- Credit: Peter Nelson, Jun Kwon
+@[simp]
 lemma adj_comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
 
 /--
@@ -150,6 +151,7 @@ lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty := by
   apply Set.inter_nonempty.mpr h'
 
 -- Credit: Peter Nelson, Jun Kwon
+@[simp]
 lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
@@ -182,6 +184,7 @@ def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
     refine image_subset_iff.mp ?_
     exact image_mono hev
 
+@[simp]
 lemma mem_image {f : α → β} {e : Set β} : e ∈ E(H.image f) ↔ ∃ e' ∈ E(H), f '' e' = e := Iff.rfl
 
 lemma image_mem_image {f : α → β} (he : e ∈ E(H)) : e.image f ∈ E(H.image f) :=
@@ -239,15 +242,14 @@ def IsNonempty (H : Hypergraph α) : Prop := (∃ x, x ∈ V(H)) ∨ (∃ e, e �
 /--
 The empty hypergraph of type α
 -/
-def emptyHypergraph (α : Type*) : Hypergraph α :=
-  Hypergraph.mk
-  ∅
-  ∅
-  (by
+@[simps]
+def emptyHypergraph (α : Type*) : Hypergraph α where
+  vertexSet := ∅
+  edgeSet := ∅
+  edge_isSubset_vertexSet' := by
     intro e he
     have h1 : e = ∅ := by exact False.elim he
     exact Set.subset_empty_iff.mpr h1
-  )
 
 @[simp] lemma coe_nonempty : V(H).Nonempty → H.IsNonempty := by
   unfold IsNonempty
@@ -258,7 +260,8 @@ lemma isEmpty_empty_hypergraph : IsEmpty (Hypergraph.emptyHypergraph α) := by
   unfold IsEmpty
   exact Prod.mk_inj.mp rfl
 
-lemma isEmpty_eq_empty_hypergraph (h : H.IsEmpty) : emptyHypergraph α = H := by
+@[simp]
+lemma isEmpty_eq_empty_hypergraph (h : H.IsEmpty) : H = emptyHypergraph α := by
   unfold IsEmpty at h
   have hv : V(emptyHypergraph α) = ∅ := rfl
   have he : E(emptyHypergraph α) = ∅ := rfl
@@ -271,6 +274,7 @@ lemma edge_not_mem_empty : e ∉ E(emptyHypergraph α) :=
 
 lemma IsEmpty.eq (hH : H.IsEmpty) : V(H) = ∅ ∧ E(H) = ∅ := by exact hH
 
+@[simp]
 lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e, e ∉ E(H)) := by
   grind [IsEmpty, Set.notMem_empty]
 
@@ -298,6 +302,7 @@ def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 /--
 A trivial hypergraph of type α with vertex set h
 -/
+@[simps]
 def trivialHypergraph (f : Set α) :=
   Hypergraph.mk
   f
@@ -327,6 +332,7 @@ def completeOn (f : Set α) : Hypergraph α where
   edgeSet := 𝒫 f
   edge_isSubset_vertexSet' := by simp
 
+@[simp]
 lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by
   constructor
   · exact fun a ↦ a
