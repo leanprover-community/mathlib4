@@ -76,9 +76,7 @@ variable {C}
 
 lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
-      ((shiftFunctorZero C ℤ).inv.app X.unop).op := by
-  erw [@pullbackShiftFunctorZero_hom_app (OppositeShift C ℤ), oppositeShiftFunctorZero_hom_app]
-  rfl
+      ((shiftFunctorZero C ℤ).inv.app X.unop).op := rfl
 
 lemma shiftFunctorZero_op_inv_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).inv.app X =
