@@ -51,7 +51,7 @@ theorem binaryProductLimitCone_cone_π_app_right (G H : AddCommGrp.{u}) :
   rfl
 
 /-- We verify that the biproduct in `AddCommGrp` is isomorphic to
-the cartesian product of the underlying types:
+the Cartesian product of the underlying types:
 -/
 noncomputable def biprodIsoProd (G H : AddCommGrp.{u}) :
     (G ⊞ H : AddCommGrp) ≅ AddCommGrp.of (G × H) :=
@@ -72,7 +72,7 @@ namespace HasLimit
 variable {J : Type w} (f : J → AddCommGrp.{max w u})
 
 /-- The map from an arbitrary cone over an indexed family of abelian groups
-to the cartesian product of those groups.
+to the Cartesian product of those groups.
 -/
 @[simps!]
 def lift (s : Fan f) : s.pt ⟶ AddCommGrp.of (∀ j, f j) :=

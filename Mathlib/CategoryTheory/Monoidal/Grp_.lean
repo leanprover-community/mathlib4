@@ -8,11 +8,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
-# The category of groups in a cartesian monoidal category
+# The category of groups in a Cartesian monoidal category
 
-We define group objects in cartesian monoidal categories.
+We define group objects in Cartesian monoidal categories.
 
-We show that the associativity diagram of a group object is always cartesian and deduce that
+We show that the associativity diagram of a group object is always Cartesian and deduce that
 morphisms of group objects commute with taking inverses.
 
 We show that a finite-product-preserving functor takes group objects to group objects.
@@ -26,7 +26,7 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C
 
 section
 
-/-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp_`. -/
+/-- A group object internal to a Cartesian monoidal category. Also see the bundled `Grp_`. -/
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
@@ -53,7 +53,7 @@ end Grp_Class
 end
 
 variable (C) in
-/-- A group object in a cartesian monoidal category. -/
+/-- A group object in a Cartesian monoidal category. -/
 structure Grp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
@@ -204,9 +204,9 @@ def mulRight {A : C} [Grp_Class A] (f : 𝟙_ C ⟶ A) : A ≅ A where
 lemma mulRight_one (A : C) [Grp_Class A] : mulRight η[A] = Iso.refl A := by
   ext; simp
 
-/-- The associativity diagram of a group object is cartesian.
+/-- The associativity diagram of a group object is Cartesian.
 
-In fact, any monoid object whose associativity diagram is cartesian can be made into a group object
+In fact, any monoid object whose associativity diagram is Cartesian can be made into a group object
 (we do not prove this in this file), so we should expect that many properties of group objects
 follow from this result. -/
 theorem isPullback (A : C) [Grp_Class A] :
