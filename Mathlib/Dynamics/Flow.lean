@@ -159,7 +159,7 @@ section Orbit
 def orbit (x : α) : Set α := ϕ.toAddAction.orbit _ x
 
 @[simp]
-theorem orbit_eq_range (x : α) : ϕ.orbit x = Set.range (fun t => ϕ t x) := rfl
+theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
 theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
   ϕ.toAddAction.mem_orbit_iff
@@ -187,22 +187,22 @@ variable [Preorder τ] [AddLeftMono τ]
 def fw : Flow (AddSubmonoid.nonneg τ) α := ϕ.restrictAddSubmonoid (AddSubmonoid.nonneg τ)
 
 /-- The forward orbit of a point under a flow. -/
-def fwOrbit (x : α) : Set α := ϕ.fw.orbit x
+def fwOrbit (x : α) : Set α := orbit ϕ.fw x
 
 @[simp]
 theorem fwOrbit_eq_nonneg_range (x : α) :
-    ϕ.fwOrbit x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
+    fwOrbit ϕ x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
 
 /-- The forward orbit of a point under a flow `ϕ` is forward invariant under `ϕ`. -/
-theorem isFwInvariant_fwOrbit (x : α) : IsFwInvariant ϕ (ϕ.fwOrbit x) :=
-  fun s hs => IsInvariant.isFwInvariant (isInvariant_orbit ϕ.fw x) (t := ⟨s, hs⟩) hs
+theorem isFwInvariant_fwOrbit (x : α) : IsFwInvariant ϕ (fwOrbit ϕ x) :=
+  fun t ht => IsInvariant.isFwInvariant (isInvariant_orbit ϕ.fw x) (t := ⟨t, ht⟩) ht
 
 /-- The forward orbit of a point `x` is contained in the orbit of `x`. -/
-theorem fwOrbit_subset_orbit (x : α) : ϕ.fwOrbit x ⊆ ϕ.orbit x :=
+theorem fwOrbit_subset_orbit (x : α) : fwOrbit ϕ x ⊆ orbit ϕ x :=
   ϕ.toAddAction.orbit_addSubmonoid_subset (AddSubmonoid.nonneg τ) x
 
-theorem mem_orbit_of_mem_fwOrbit {x y : α} (h : x ∈ (ϕ.fwOrbit y)) : x ∈ ϕ.orbit y :=
-  ϕ.fwOrbit_subset_orbit y h
+theorem mem_orbit_of_mem_fwOrbit {x₁ x₂ : α} (h : x₁ ∈ (fwOrbit ϕ x₂)) : x₁ ∈ orbit ϕ x₂ :=
+  ϕ.fwOrbit_subset_orbit x₂ h
 
 end Orbit
 
@@ -218,9 +218,9 @@ structure IsSemiconjugacy (π : ContinuousMap α β) (ϕ : Flow τ α) (ψ : Flo
   semiconj : ∀ t, Function.Semiconj π (ϕ t) (ψ t)
 
 /-- The composition of semiconjugacies is a semiconjugacy. -/
-theorem IsSemiconjugacy.comp {π₁ : ContinuousMap α β} {π₂ : ContinuousMap β γ}
-    (h : IsSemiconjugacy π₁ ϕ ψ) (g : IsSemiconjugacy π₂ ψ χ) : IsSemiconjugacy (π₂.comp π₁) ϕ χ :=
-  ⟨by simp [g.surj.comp h.surj], fun t => by simp [(g.semiconj t).comp_left (h.semiconj t)]⟩
+theorem IsSemiconjugacy.comp {π : ContinuousMap α β} {ρ : ContinuousMap β γ}
+    (h₁ : IsSemiconjugacy π ϕ ψ) (h₂ : IsSemiconjugacy ρ ψ χ) : IsSemiconjugacy (ρ.comp π) ϕ χ :=
+  ⟨by simp [h₂.surj.comp h₁.surj], fun t => by simp [(h₂.semiconj t).comp_left (h₁.semiconj t)]⟩
 
 /-- The identity is a semiconjugacy from `ϕ` to `ψ` if and only if `ϕ` and `ψ` are equal. -/
 theorem isSemiconjugacy_id_iff_eq (ϕ ψ : Flow τ α) : IsSemiconjugacy (ContinuousMap.id α)
@@ -238,7 +238,7 @@ theorem _root_.ContinuousMap.IsSemiconjugacy.isFactorOf {π : ContinuousMap α �
 
 /-- Transitivity of factors of flows. -/
 theorem IsFactorOf.trans (h₁ : IsFactorOf ϕ ψ) (h₂ : IsFactorOf ψ χ) : IsFactorOf ϕ χ :=
-  h₁.elim fun k hk => h₂.elim fun f hf => ⟨k.comp f, hf.comp χ ψ ϕ hk⟩
+  h₁.elim fun π hπ => h₂.elim fun ρ hρ => ⟨π.comp ρ, hρ.comp χ ψ ϕ hπ⟩
 
 /-- Every flow is a factor of itself. -/
 theorem IsFactorOf.self : IsFactorOf ϕ ϕ :=
