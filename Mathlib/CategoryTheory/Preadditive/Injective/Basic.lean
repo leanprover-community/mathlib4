@@ -112,10 +112,10 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := Option.some
+        f := WithTop.some
         mono := by
           rw [mono_iff_injective]
-          exact Option.some_injective X }
+          exact WithTop.coe_injective }
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
