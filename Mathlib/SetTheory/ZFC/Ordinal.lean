@@ -369,7 +369,7 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
   ext; simp [mem_toZFSet_iff]
 
 @[simp]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (o + 1) = insert (toZFSet o) (toZFSet o) := by
+theorem toZFSet_succ (o : Ordinal) : toZFSet (succ o) = insert (toZFSet o) (toZFSet o) := by
   ext; aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
