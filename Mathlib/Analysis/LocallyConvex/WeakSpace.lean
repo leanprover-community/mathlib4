@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.LocallyConvex.AbsConvex
 
 /-! # Closures of convex sets in locally convex spaces
 
@@ -20,6 +21,15 @@ creating two separate topologies on the same space.
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+
+open ComplexOrder in
+lemma Balanced.real_of_RCLike {s : Set E} (hs : Balanced 𝕜 s) : Balanced ℝ s := by
+  intro a ha x ⟨b, hb1, hb2⟩
+  apply hs ↑a (by norm_cast)
+  simp_rw [RCLike.real_smul_eq_coe_smul (K := 𝕜)] at hb2
+  rw [← hb2]
+  exact Set.smul_mem_smul_set hb1
+
 variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [LocallyConvexSpace ℝ E]
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
@@ -51,6 +61,17 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     rintro - ⟨y, hy, rfl⟩
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
+
+open ComplexOrder in
+theorem toWeakSpace_closedAbsConvexHull_eq [ContinuousSMul ℝ E] [ContinuousSMul ℝ (WeakSpace 𝕜 E)]
+    {s : Set E} : (toWeakSpace 𝕜 E) '' (closedAbsConvexHull 𝕜 s) =
+      closedAbsConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
+  have : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) := WeakBilin.instContinuousSMul _
+  rw [closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜),
+    convex_absConvexHull.orderedSMul_convex.toWeakSpace_closure 𝕜,
+    closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜)]
+  congr
+  refine (toWeakSpace 𝕜 E).toLinearMap.image_absConvexHull s
 
 /-- If `e : E →ₗ[𝕜] F` is a linear map between locally convex spaces, and `f ∘ e` is continuous
 for every continuous linear functional `f : StrongDual 𝕜 F`, then `e` commutes with the closure on
