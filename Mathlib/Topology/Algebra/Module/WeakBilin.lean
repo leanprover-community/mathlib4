@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
 import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.SesquilinearForm
 
 /-!
 # Weak dual topology
@@ -136,6 +136,20 @@ def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
   toFun f := ⟨B.flip f, by fun_prop⟩
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
+
+end Semiring
+
+section Semiring
+
+variable [TopologicalSpace 𝕜] [CommSemiring 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+  [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+open LinearMap in
+lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
+    Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
+    (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
 
 end Semiring
 
