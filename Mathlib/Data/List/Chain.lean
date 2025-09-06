@@ -309,9 +309,9 @@ theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R 
     Chain' R (y :: l) :=
   hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
 
-theorem chain'_getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
+protected theorem Chain'.getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
     R l[n] l[n + 1] :=
-  chain'_pair.mp <| Chain'.infix h ⟨l.take n, l.drop (n + 2), by simp⟩
+  chain'_pair.mp <| h.infix ⟨l.take n, l.drop (n + 2), by simp⟩
 
 theorem chain'_of_not (h : ¬List.Chain' R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by
@@ -332,7 +332,7 @@ theorem chain'_of_not (h : ¬List.Chain' R l) :
 
 theorem chain'_iff_forall_getElem :
     Chain' R l ↔ ∀ (n : ℕ) (h : n + 1 < l.length), R l[n] l[n + 1] := by
-  refine ⟨chain'_getElem, fun h ↦ ?_⟩
+  refine ⟨Chain'.getElem, fun h ↦ ?_⟩
   contrapose! h
   exact chain'_of_not h
 
