@@ -184,7 +184,7 @@ at least `p + q - gcd p q` has two periods `p` and `q`, then it has a period `gc
 The proof is similar to the Euclidean algorithm for computing `gcd`.
 -/
 
-theorem periodicity_lemma (w : List α) (p q : ℕ) (per_p : HasPeriod w p) (per_q : HasPeriod w q)
+theorem hasPeriod_gcd (w : List α) (p q : ℕ) (per_p : HasPeriod w p) (per_q : HasPeriod w q)
     (len : p + q - p.gcd q ≤ w.length) : HasPeriod w (p.gcd q) := by
   rcases Nat.eq_zero_or_pos p with rfl | p_pos
   · simp_all [HasPeriod]
@@ -193,7 +193,7 @@ theorem periodicity_lemma (w : List α) (p q : ℕ) (per_p : HasPeriod w p) (per
   cases hyp: compare p q with
   | lt => -- if `p` is less than `q`, switch the two periods
       have p_lt_q := Nat.compare_eq_lt.mp hyp
-      exact (gcd_comm q p ▸ periodicity_lemma w q p) per_q per_p (add_comm p q ▸ len)
+      exact (gcd_comm q p ▸ hasPeriod_gcd w q p) per_q per_p (add_comm p q ▸ len)
   | eq => simpa [(Nat.compare_eq_eq).mp hyp]
   | gt =>
       have q_lt_p : q < p  := Nat.compare_eq_gt.mp hyp
@@ -217,17 +217,12 @@ theorem periodicity_lemma (w : List α) (p q : ℕ) (per_p : HasPeriod w p) (per
           convert_to take q (drop q w) = take q (drop q w ++ z); rw [hz]
           exact (take_append_of_le_length drop_len).symm
       -- the induction step
-      have IH : HasPeriod (drop q w) (gcd (p - q) q) := by
-          apply periodicity_lemma (drop q w) (p - q) q
-          · exact per_diff
-          · exact per_q'
-          · simp; omega
+      have IH : HasPeriod (drop q w) (gcd (p - q) q) :=
+        hasPeriod_gcd (drop q w) (p - q) q per_diff per_q' (by simp; omega)
       convert_to HasPeriod (take q (drop q w) ++ drop q w) (p.gcd q)
       · rw [take_eq, take_append_drop q w]
-      · apply extend_periods_left (p.gcd q) q (drop q w)
-        · exact gcd_dvd_right p q
-        · exact drop_len
-        · exact (gcd_stable ▸ IH)
+      · exact extend_periods_left (p.gcd q) q (drop q w)
+          (gcd_dvd_right p q) drop_len (gcd_stable ▸ IH)
   termination_by (q,p)
   decreasing_by
     all_goals omega
