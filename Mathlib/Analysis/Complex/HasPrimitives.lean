@@ -73,7 +73,7 @@ section Rectangle
 
 /-- The axis-parallel complex rectangle with opposite corners `z` and `w` is complex product
   of two intervals, which is also the convex hull of the four corners. -/
-lemma segment_reProdIm_segment_eq_convexHull (z w : ℂ) :
+lemma uIcc_re_prod_uIcc_im_eq_convexHull (z w : ℂ) :
     [[z.re, w.re]] ×ℂ [[z.im, w.im]] = convexHull ℝ {z, z.re + w.im * I, w.re + z.im * I, w} := by
   simp_rw [← segment_eq_uIcc, ← convexHull_pair, ← convexHull_reProdIm,
     ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair,
@@ -82,16 +82,16 @@ lemma segment_reProdIm_segment_eq_convexHull (z w : ℂ) :
 
 /-- If the four corners of a rectangle are contained in a convex set `U`, then the whole
   rectangle is. -/
-lemma rectangle_in_convex {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ} (hz : z ∈ U)
+lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ} (hz : z ∈ U)
     (hw : w ∈ U) (hzw : (z.re + w.im * I) ∈ U) (hwz : (w.re + z.im * I) ∈ U) :
     Rectangle z w ⊆ U := by
-  rw [Rectangle, segment_reProdIm_segment_eq_convexHull]
+  rw [Rectangle, uIcc_re_prod_uIcc_im_eq_convexHull]
   convert convexHull_min ?_ (U_convex)
   refine insert_subset hz (insert_subset hzw (insert_subset hwz ?_))
   exact singleton_subset_iff.mpr hw
 
 /-- If `z` is in a ball centered at `c`, then `z.re + c.im * I` is in the ball. -/
-lemma cornerRectangle_in_disc {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r) :
+lemma re_add_im_mul_mem_ball {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r) :
     z.re + c.im * I ∈ ball c r := by
   simp only [mem_ball] at hz ⊢
   rw [dist_of_im_eq] <;> simp only [add_re, I_re, mul_zero, I_im, zero_add, add_im,
@@ -108,7 +108,7 @@ section SubsetBall_Aux
 
 /- Auxiliary lemmata about subsets of balls -/
 
-lemma mem_ball_re_aux {c : ℂ} {r : ℝ} {z : ℂ} :
+private lemma mem_ball_re_aux {c z : ℂ} {r : ℝ} :
     (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) ×ℂ {z.im} ⊆ ball z (r - dist z c) := by
   intro x hx
   obtain ⟨xRe, xIm⟩ := hx
@@ -144,19 +144,19 @@ lemma mem_closedBall_aux {c : ℂ} {r : ℝ} {z : ℂ} (z_in_ball : z ∈ closed
 
 lemma mem_ball_of_map_re_aux {c : ℂ} {r : ℝ} {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
-  convert rectangle_in_convex (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
+  convert Convex.rectangle_subset (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
   simp [horizontalSegment_eq a₁ a₂ b, ha₁, ha₂, Rectangle]
 
 lemma mem_ball_of_map_im_aux {c : ℂ} {r : ℝ} {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
     (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
-  convert rectangle_in_convex (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
+  convert Convex.rectangle_subset (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
   simp [verticalSegment_eq a b₁ b₂, hb₁, hb₂, Rectangle]
 
 lemma mem_ball_of_map_im_aux' {c : ℂ} {r : ℝ} {z : ℂ} {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
     (fun (y : ℝ) ↦ w.re + y * I) '' [[z.im, w.im]] ⊆ ball c r := by
   apply mem_ball_of_map_im_aux <;>
   apply mem_of_subset_of_mem (ball_subset_ball' (by simp) : ball z (r - dist z c) ⊆ ball c r)
-  · exact cornerRectangle_in_disc hw
+  · exact re_add_im_mul_mem_ball hw
   · convert hw; simp
 
 end SubsetBall_Aux
@@ -276,22 +276,22 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
   have intIdecomp : intI = intIII + intVII := by
     rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
     · simp only [re_add_im, mem_ball, dist_self, hr]
-    · exact cornerRectangle_in_disc hz
-    · exact cornerRectangle_in_disc hz
-    · exact cornerRectangle_in_disc hzPlusH
+    · exact re_add_im_mul_mem_ball hz
+    · exact re_add_im_mul_mem_ball hz
+    · exact re_add_im_mul_mem_ball hzPlusH
   have intIIdecomp : intII = intVIII + intVI := by
     rw [← smul_add, intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableVert
-    · exact cornerRectangle_in_disc hzPlusH
-    · apply mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
-    · apply mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
+    · exact re_add_im_mul_mem_ball hzPlusH
+    · apply mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
+    · apply mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
     · convert hzPlusH; simp
   have rectZero : intVIII = - intVII + intV + intIV := by
     rw [← sub_eq_zero]
     have : intVII - intV + intVIII - intIV = 0 := by
       have wzInBall : w.re + z.im * I ∈ ball c r :=
-        mem_of_subset_of_mem z_ball (cornerRectangle_in_disc w_in_z_ball)
-      have wcInBall : w.re + c.im * I ∈ ball c r := cornerRectangle_in_disc hzPlusH
-      convert hf (z.re + c.im * I) (w.re + z.im * I) (cornerRectangle_in_disc hz) wzInBall
+        mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
+      have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball hzPlusH
+      convert hf (z.re + c.im * I) (w.re + z.im * I) (re_add_im_mul_mem_ball hz) wzInBall
           (by simpa using hz) (by simpa using wcInBall) using 1
       rw [RectangleIntegral]
       congr
@@ -424,7 +424,7 @@ theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → E} {U : Set ℂ} {z w : �
 theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ → E}
     (f_holo : HolomorphicOn f (ball c r)) :
     VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
-  f_holo.vanishesOnRectangle (rectangle_in_convex (convex_ball c r) hz hw hz' hw')
+  f_holo.vanishesOnRectangle (Convex.rectangle_subset (convex_ball c r) hz hw hz' hw')
 
 variable [CompleteSpace E] [NormOneClass E]
 
