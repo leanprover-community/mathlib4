@@ -20,7 +20,7 @@ category `V`.
 -/
 
 
-universe w v u u₁ u₂ u₃
+universe w v v₂ u u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -118,6 +118,8 @@ instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   comp_whiskerRight := comp_whiskerRight
   whisker_exchange := whisker_exchange
 
+-- TODO replace `mapId` and `mapComp` by handcrafted pointwise iso so that
+-- we don't need `erw`
 def forget : Pseudofunctor (EnrichedCat.{w, v, u} V) Cat where
   obj C := .of <| ForgetEnrichment V C
   map F := (EnrichedFunctor.forget F).toCatHom
@@ -129,6 +131,14 @@ def forget : Pseudofunctor (EnrichedCat.{w, v, u} V) Cat where
   mapComp F G := NatIso.ofComponents (by cat_disch) fun H => by
     simp [Functor.toCatHom]
     erw [EnrichedFunctor.comp_map]
+
+variable (W : Type v₂) [Category.{w} W] [MonoidalCategory W]
+
+variable {W} in
+def transportEnrichment (F : V ⥤ W) [F.LaxMonoidal] :
+    Pseudofunctor (EnrichedCat.{w, v, u} V) (EnrichedCat W) where
+  obj C := .of W <| TransportEnrichment F C
+  map F := by { _ }
 
 end EnrichedCat
 

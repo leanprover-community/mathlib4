@@ -370,6 +370,19 @@ variable (W) (C) in
 def forgetId : (EnrichedFunctor.id W C).forget ≅ Functor.id _ :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [forget])
 
+@[simps]
+def transport (G : EnrichedFunctor W C D) (F : W ⥤ V) [F.LaxMonoidal] :
+    EnrichedFunctor V (TransportEnrichment F C) (TransportEnrichment F D) where
+  obj X := G.obj X
+  map X Y := F.map <| G.map X Y
+  map_id X := by
+    rw [TransportEnrichment.eId_eq, Category.assoc, ← F.map_comp, map_id,
+      ← TransportEnrichment.eId_eq]
+  map_comp X Y Z := by
+    rw [@TransportEnrichment.eComp_eq]
+    simp
+    sorry
+
 end
 
 end EnrichedFunctor
