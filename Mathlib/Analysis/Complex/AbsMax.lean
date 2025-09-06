@@ -8,6 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.Topology.Order.ExtrClosure
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Maximum modulus principle

@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
