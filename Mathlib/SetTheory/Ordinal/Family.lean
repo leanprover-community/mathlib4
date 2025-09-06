@@ -466,7 +466,6 @@ theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     bsup.{_, v} o₁ f = bsup.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `rfl` is required.
   rfl
 
 set_option linter.deprecated false in
@@ -571,9 +570,7 @@ theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 set_option linter.deprecated false in
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     lsub.{_, v} f ≤ a ↔ ∀ i, f i < a := by
-  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
-  -- Porting note: `comp_apply` is required.
-  simp only [comp_apply, succ_le_iff]
+  simpa using sup_le_iff.{_, v} (f := succ ∘ f) (a := a)
 
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
   lsub_le_iff.2
@@ -697,15 +694,14 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
   (lsub_le.{u, u} typein_lt_self).antisymm
     (by
       by_contra! h
-      -- Porting note: `nth_rw` → `conv_rhs` & `rw`
-      conv_rhs at h => rw [← type_toType o]
+      have h := h.trans_eq (type_toType o).symm
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 set_option linter.deprecated false in
 theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
     sup.{u, u} (typein ((· < ·) : o.toType → o.toType → Prop)) = o := by
-  -- Porting note: `rwa` → `rw` & `assumption`
-  rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]; assumption
+  rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]
+  assumption
 
 set_option linter.deprecated false in
 @[simp]
@@ -772,7 +768,6 @@ theorem blsub_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem blsub_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     blsub.{_, v} o₁ f = blsub.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `rfl` is required.
   rfl
 
 theorem blsub_le_iff {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} {a} :
@@ -844,7 +839,6 @@ theorem blsub_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : blsub o f = 0 ↔ o = 0
   rw [← lsub_eq_blsub, lsub_eq_zero_iff]
   exact toType_empty_iff_eq_zero
 
--- Porting note: `rwa` → `rw`
 @[simp]
 theorem blsub_zero (f : ∀ a < (0 : Ordinal), Ordinal) : blsub 0 f = 0 := by rw [blsub_eq_zero_iff]
 
