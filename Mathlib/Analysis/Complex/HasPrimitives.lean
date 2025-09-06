@@ -12,9 +12,9 @@ import Mathlib.Analysis.Complex.Convex
 In this file, we give conditions under which holomorphic functions have primitives. The main goal
 is to prove that holomorphic functions on simply connected domains have primitives. As a first step,
 we prove that holomorphic functions on disks have primitives. The approach is based on Morera's
-theorem, that a continuous function (on a disk) whose `RectangleIntegral` vanishes on all
+theorem, that a continuous function (on a disk) whose `rectangleIntegral` vanishes on all
 rectangles contained in the disk has a primitive. (Coupled with the fact that holomorphic functions
-satisfy this property.) To prove Morera's theorem, we first define the `WedgeInt`, which is the
+satisfy this property.) To prove Morera's theorem, we first define the `wedgeIntegral`, which is the
 integral of a function over a "wedge" (a horizontal segment followed by a vertical segment in the
 disk), and compute its derivative.
 
@@ -24,7 +24,7 @@ disk), and compute its derivative.
   disk with center `c`, then the wedge integral from `c` to `w` minus the wedge integral from
   `c` to `z` is equal to the wedge integral from `z` to `w`.
 
-* `deriv_of_wedgeInt`: The derivative of the wedge integral is the function being integrated.
+* `deriv_of_wedgeIntegral`: The derivative of the wedge integral is the function being integrated.
 
 * `VanishesOnRectanglesInDisc.hasPrimitive`: **Morera's Theorem**: A function which is
   continuous on a disk and whose integral on rectangles in the disk vanishes has a primitive
@@ -38,6 +38,8 @@ disk), and compute its derivative.
 TODO: Extend to holomorphic functions on simply connected domains. (In particular, this allows one
 to define the complex logarithm of a nonvanishing function on a simply connected domain.)
 -/
+
+noncomputable section
 
 open Complex Topology Set Metric
 
@@ -212,31 +214,41 @@ section MainDefinitions
 
 variable (E)
 
-/-- A set `U` `HasPrimitives` if, every holomorphic function on `U` has a primitive -/
+/-- A set `U` `HasPrimitives` if, every holomorphic function on `U` has a primitive.
+
+TODO This should depend only on `U` (not also `E`). Should the definition require `∀ E` or just take
+`E = ℂ`? -/
 def HasPrimitives (U : Set ℂ) : Prop :=
   ∀ f : ℂ → E, HolomorphicOn f U → ∃ g : ℂ → E, ∀ z ∈ U, HasDerivAt g (f z) z
 
 variable {E}
 
-/-- The wedge integral from `z` to `w` of a function `f` -/
-noncomputable def WedgeInt (z w : ℂ) (f : ℂ → E) : E :=
+/-- The `z`-`w`-`wedgeIntegral` of `f`, is the integral of `f` over two sides of the rectangle
+determined by `z` and `w`. -/
+def wedgeIntegral (z w : ℂ) (f : ℂ → E) : E :=
   (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) + I • (∫ y : ℝ in z.im..w.im, f (re w + y * I))
 
-/-- A `RectangleIntegral` of a function `f` is one over a rectangle determined by
-  `z` and `w` in `ℂ`. -/
-noncomputable def RectangleIntegral (f : ℂ → E) (z w : ℂ) : E :=
+/-- The `z`-`w`-`rectangleIntegral` of `f`, is the integral of `f` around the rectangle determined
+by `z` and `w`. -/
+def rectangleIntegral (z w : ℂ) (f : ℂ → E) : E :=
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I))
      + I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I)) - I • ∫ y : ℝ in z.im..w.im, f (z.re + y * I)
+
+lemma rectangleIntegral_eq_wedgeIntegral_add_wedgeIntegral (z w : ℂ) (f : ℂ → E) :
+    rectangleIntegral z w f = wedgeIntegral z w f + wedgeIntegral w z f := by
+  simp only [rectangleIntegral, wedgeIntegral, intervalIntegral.integral_symm z.re w.re,
+    intervalIntegral.integral_symm z.im w.im, smul_neg]
+  abel
 
 /-- A function `f` `VanishesOnRectanglesInDisc` if, for any rectangle contained in a disk,
   the integral of `f` over the rectangle is zero. -/
 def VanishesOnRectanglesInDisc (c : ℂ) (r : ℝ) (f : ℂ → E) : Prop :=
     ∀ z w, z ∈ ball c r → w ∈ ball c r → (z.re + w.im * I) ∈ ball c r →
-    (w.re + z.im * I) ∈ ball c r → RectangleIntegral f z w = 0
+    (w.re + z.im * I) ∈ ball c r → rectangleIntegral z w f = 0
 
 end MainDefinitions
 
-section WedgeIntDeriv
+section wedgeIntegralDeriv
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)) {z : ℂ}
   (hz : z ∈ ball c r)
@@ -248,7 +260,7 @@ include f_cont hz
   is equal to the wedge integral from `z` to `w`. -/
 lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc c r f) :
     ∀ᶠ (w : ℂ) in 𝓝 z,
-      WedgeInt c w f - WedgeInt c z f = WedgeInt z w f := by
+      wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
   let r₁ := r - dist z c
   have r₁_pos : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
@@ -256,7 +268,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
   filter_upwards [ball_mem_nhds z r₁_pos]
   intro w w_in_z_ball
   have hzPlusH : w ∈ ball c r := mem_of_subset_of_mem z_ball w_in_z_ball
-  simp only [WedgeInt]
+  simp only [wedgeIntegral]
   set intI := ∫ x : ℝ in c.re..(w).re, f (x + c.im * I)
   set intII := I • ∫ y : ℝ in c.im..w.im, f (w.re + y * I)
   set intIII := ∫ x : ℝ in c.re..z.re, f (x + c.im * I)
@@ -293,7 +305,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
       have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball hzPlusH
       convert hf (z.re + c.im * I) (w.re + z.im * I) (re_add_im_mul_mem_ball hz) wzInBall
           (by simpa using hz) (by simpa using wcInBall) using 1
-      rw [RectangleIntegral]
+      rw [rectangleIntegral]
       congr
       · simp [intVII]
       · simp [intV]
@@ -307,7 +319,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
 open MeasureTheory in
 /-- The integral of a continuous function `f` from `z` to `x + z.im * I` is equal to
   `(x - z.re) * f z` up to `o(x - z.re)`. -/
-lemma deriv_of_wedgeInt_re' [CompleteSpace E] :
+lemma deriv_of_wedgeIntegral_re' [CompleteSpace E] :
     (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z)
       =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
   let r₁ := r - dist z c
@@ -334,12 +346,12 @@ lemma deriv_of_wedgeInt_re' [CompleteSpace E] :
 
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_re [CompleteSpace E] :
+lemma deriv_of_wedgeIntegral_re [CompleteSpace E] :
     (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) • f z)
       =o[𝓝 z] (fun w ↦ w - z) := by
   have zReTendsTo : Filter.Tendsto (fun (w : ℂ) ↦ w.re) (𝓝 z) (𝓝 z.re) :=
     Continuous.tendsto Complex.continuous_re _
-  have := (deriv_of_wedgeInt_re' f_cont hz).comp_tendsto zReTendsTo
+  have := (deriv_of_wedgeIntegral_re' f_cont hz).comp_tendsto zReTendsTo
   have := this.trans_isBigO re_isBigO
   convert this using 2
 
@@ -347,7 +359,7 @@ variable [NormOneClass E]
 
 /-- If `f` is continuous on a ball containing `z`, then the integral from `z.im` to `w.im` of
   `f (w.re + y * I)` is equal to `(w - z).im * f z` up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_im' : (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z)
+lemma deriv_of_wedgeIntegral_im' : (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z)
     =o[𝓝 z] fun w ↦ w - z := by
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun (_ : ℂ) ↦ (1 : E) := by
     refine (Asymptotics.continuousAt_iff_isLittleO (f := f) (x := z)).mp
@@ -371,13 +383,13 @@ variable [CompleteSpace E]
 
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z)
+lemma deriv_of_wedgeIntegral_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z)
     =o[𝓝 z] fun w ↦ w - z := by
   calc
     _ = (fun w:ℂ ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (∫ _ in z.im..w.im, f z)) := by
       congr! 2; simp
     _ =ᶠ[𝓝 z] (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) := ?_
-    _ =o[𝓝 z] fun w ↦ w - z := deriv_of_wedgeInt_im' f_cont hz
+    _ =o[𝓝 z] fun w ↦ w - z := deriv_of_wedgeIntegral_im' f_cont hz
   let r₁ := r - dist z c
   have : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
   filter_upwards [ball_mem_nhds z this]
@@ -385,21 +397,22 @@ lemma deriv_of_wedgeInt_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) 
   rw [intervalIntegral.integral_sub ?_ continuousOn_const.intervalIntegrable]
   exact (f_cont.im_aux_1 hw).intervalIntegrable
 
-/-- The `WedgeInt` has derivative at `z` equal to `f z`. -/
-theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
-    HasDerivAt (fun w ↦ WedgeInt c w f) (f z) z := by
+/-- The `wedgeIntegral` has derivative at `z` equal to `f z`. -/
+theorem deriv_of_wedgeIntegral (hf : VanishesOnRectanglesInDisc c r f) :
+    HasDerivAt (fun w ↦ wedgeIntegral c w f) (f z) z := by
   dsimp [HasDerivAt, HasDerivAtFilter]
   rw [hasFDerivAtFilter_iff_isLittleO]
   calc
-    _ =ᶠ[𝓝 z] (fun w ↦ WedgeInt z w f - (w - z) • f z) := ?_
+    _ =ᶠ[𝓝 z] (fun w ↦ wedgeIntegral z w f - (w - z) • f z) := ?_
     _ = (fun w ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - (w - z).re • f z)
         + I • (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z) := ?_
     _ =o[𝓝 z] fun w ↦ w - z :=
-      (deriv_of_wedgeInt_re f_cont hz).add ((deriv_of_wedgeInt_im f_cont hz).const_smul_left I)
+      (deriv_of_wedgeIntegral_re f_cont hz).add
+        ((deriv_of_wedgeIntegral_im f_cont hz).const_smul_left I)
   · filter_upwards [VanishesOnRectanglesInDisc.diff_of_wedges f_cont hz hf]
     exact fun _ ha ↦ by rw [ha]; congr
   ext1 w
-  simp only [WedgeInt, sub_re, sub_im, Pi.add_apply, Pi.smul_apply]
+  simp only [wedgeIntegral, sub_re, sub_im, Pi.add_apply, Pi.smul_apply]
   set intI := ∫ (x : ℝ) in z.re..w.re, f (x + z.im * I)
   set intII := ∫ (y : ℝ) in z.im..w.im, f (w.re + y * I)
   calc
@@ -411,13 +424,13 @@ theorem deriv_of_wedgeInt (hf : VanishesOnRectanglesInDisc c r f) :
     abel
   · congr <;> simp
 
-end WedgeIntDeriv
+end wedgeIntegralDeriv
 
 /-- If `f` is holomorphic a set `U`, then the rectangle integral of `f` vanishes, for any
   rectangle in `U`. -/
 theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → E} {U : Set ℂ} {z w : ℂ}
     (f_holo : HolomorphicOn f U) (hU : Rectangle z w ⊆ U) :
-    RectangleIntegral f z w = 0 :=
+    rectangleIntegral z w f = 0 :=
   integral_boundary_rect_eq_zero_of_differentiableOn f z w (f_holo.mono hU)
 
 /-- If `f` is holomorphic a disk, then `f` vanishes on rectangles in the disk. -/
@@ -433,7 +446,7 @@ variable [CompleteSpace E] [NormOneClass E]
 theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
     (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
     ∃ g : ℂ → E, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
-  ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
+  ⟨fun z ↦ wedgeIntegral c z f, fun _ hz ↦ deriv_of_wedgeIntegral f_cont hz hf⟩
 
 /-- *** Holomorphic functions on disks have Primitives *** A holomorphic function on a disk has
   primitives. -/
