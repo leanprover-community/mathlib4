@@ -144,6 +144,30 @@ theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha => (smul_zero _)
 
 end Module
 
+section
+
+variable {𝕜 E F : Type*} {s : Set E} [SeminormedRing 𝕜] [AddCommMonoid E]
+  [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
+
+theorem Balanced.linear_image (hs : Balanced 𝕜 s) (f : E →ₗ[𝕜] F) : Balanced 𝕜 (f '' s) :=
+  fun a ha x ⟨_, ⟨c, hc1, hc2⟩, hb2⟩ =>
+    ⟨a • c, ⟨hs _ ha (smul_mem_smul_set hc1), by simp_rw [f.map_smul, hc2, hb2]⟩⟩
+
+theorem Balanced.is_linear_image (hs : Balanced 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
+    Balanced 𝕜 (f '' s) :=
+  hs.linear_image <| hf.mk' f
+
+theorem Balanced.linear_preimage {s : Set F} (hs : Balanced 𝕜 s) (f : E →ₗ[𝕜] F) :
+    Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨b, hb1, hb2⟩ =>
+  hs _ ha (by rw [← hb2, f.map_smul]; exact smul_mem_smul_set hb1)
+
+theorem Balanced.is_linear_preimage {s : Set F} (hs : Balanced 𝕜 s) {f : E → F}
+    (hf : IsLinearMap 𝕜 f) : Balanced 𝕜 (f ⁻¹' s) :=
+  hs.linear_preimage <| hf.mk' f
+
+end
+
+
 end SeminormedRing
 
 section NormedDivisionRing
@@ -264,18 +288,18 @@ end NormedField
 
 section NontriviallyNormedField
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [NontriviallyNormedField 𝕜] [PartialOrder 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
+--variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
-protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
-  suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
+protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull 𝕜 s) := by
+  suffices Convex 𝕜 { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull 𝕜 s } by
     rw [balanced_iff_smul_mem] at hs ⊢
     refine fun a ha x hx => convexHull_min ?_ this hx a ha
-    exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
+    exact fun y hy a ha => subset_convexHull 𝕜 s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha
-  simp only [smul_add, ← smul_comm]
-  exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
+  rw [smul_add, ← smul_comm u, ← smul_comm v]
+  exact convex_convexHull 𝕜 s (hx a ha) (hy a ha) hu hv huv
 
 end NontriviallyNormedField
 
