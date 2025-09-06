@@ -224,6 +224,14 @@ section CommMonoid
 variable [CommMonoid M] {a : M} {l l₁ l₂ : List M}
 
 @[to_additive (attr := simp)]
+theorem prod_insertIdx {i} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l.prod := by
+  induction i generalizing l
+  case zero => rfl
+  case succ i ih =>
+    obtain ⟨hd, tl, rfl⟩ := exists_cons_of_length_pos (Nat.zero_lt_of_lt h)
+    simp [ih (Nat.le_of_lt_succ h), mul_left_comm]
+
+@[to_additive (attr := simp)]
 lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
   prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
 

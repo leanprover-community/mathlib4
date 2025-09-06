@@ -192,7 +192,7 @@ private theorem prod_insertNth_go :
     rw [prod_insertNth_go n i i_lt x tl]
     exact mul_left_comm hd x (∏ j, tl j)
 
-@[to_additive (attr := simp), simp]
+@[to_additive (attr := simp)]
 theorem prod_insertNth i x (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
   prod_insertNth_go n i.val i.isLt x p
 
