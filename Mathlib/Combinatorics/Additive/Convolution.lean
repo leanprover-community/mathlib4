@@ -38,13 +38,20 @@ lemma card_smul_inter_smul (A B : Finset G) (x y : G) :
     (by simp [Set.LeftInvOn])
     (by simp +contextual [Set.LeftInvOn, ← eq_mul_inv_iff_mul_eq, mul_assoc])
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma card_inter_smul (A B : Finset G) (x : G) : #(A ∩ (x • B)) = A.convolution B⁻¹ x := by
   simpa using card_smul_inter_smul _ _ 1 x
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma card_smul_inter (A B : Finset G) (x : G) : #((x • A) ∩ B) = A.convolution B⁻¹ x⁻¹ := by
   simpa using card_smul_inter_smul _ _ x 1
+
+@[to_additive card_add_neg_eq_addConvolution_neg]
+lemma card_mul_inv_eq_convolution_inv (A B : Finset G) (x : G) :
+    #{ab ∈ A ×ˢ B | ab.1 * ab.2⁻¹ = x} = A.convolution B⁻¹ x :=
+  card_nbij' (fun ab => (ab.1, ab.2⁻¹)) (fun ab => (ab.1, ab.2⁻¹))
+    (by simp [Set.MapsTo]) (by simp [Set.MapsTo])
+    (by simp [Set.LeftInvOn]) (by simp [Set.LeftInvOn])
 
 @[to_additive (attr := simp) addConvolution_pos]
 lemma convolution_pos : 0 < A.convolution B x ↔ x ∈ A * B := by
