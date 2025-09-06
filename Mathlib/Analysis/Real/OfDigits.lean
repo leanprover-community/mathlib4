@@ -62,9 +62,7 @@ theorem summable_ofDigitsTerm {b : ℕ} {digits : ℕ → Fin b} :
   apply Summable.mul_left (a := (b : ℝ)) at h
   replace h : Summable fun i ↦ b * (b : ℝ)⁻¹ ^ (i + 1) := by
     simp_rw [pow_succ', ← mul_assoc, mul_comm (b : ℝ), mul_assoc, Summable.mul_left _ h]
-  apply Summable.of_nonneg_of_le _ _ h
-  · intros
-    exact ofDigitsTerm_nonneg
+  apply Summable.of_nonneg_of_le (fun _ ↦ ofDigitsTerm_nonneg) _ h
   intro i
   apply le_trans ofDigitsTerm_le
   gcongr
@@ -80,22 +78,20 @@ theorem ofDigits_nonneg {b : ℕ} (digits : ℕ → Fin b) : 0 ≤ ofDigits digi
   simp only [ofDigits]
   exact tsum_nonneg fun _ ↦ ofDigitsTerm_nonneg
 
-theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) :
-    ofDigits digits ≤ 1 := by
+theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤ 1 := by
   have hb : 0 < b := b_pos digits
   obtain rfl | hb' := (Nat.one_le_of_lt hb).eq_or_lt
   · simp [ofDigits, ofDigitsTerm]
   rify at hb'
   have hb_inv_nonneg : 0 ≤ (b⁻¹ : ℝ) := by simp
-  have hb_inv_lt_one : (b⁻¹ : ℝ) < 1 := inv_lt_one_of_one_lt₀ hb'
+  have hb_inv_lt_one : (b⁻¹ : ℝ) < 1 := by bound
   simp only [ofDigits]
   let g (i : ℕ) : ℝ := (1 - (b⁻¹ : ℝ)) * (b⁻¹ : ℝ) ^ i
   have hg_summable : Summable g :=
     (summable_geometric_of_lt_one (by simp) (inv_lt_one_of_one_lt₀ hb')).mul_left _
   convert Summable.tsum_mono (summable_ofDigitsTerm) hg_summable _
-  · simp [g, tsum_mul_left, -inv_pow]
-    rw [tsum_geometric_of_lt_one hb_inv_nonneg hb_inv_lt_one, mul_inv_cancel₀]
-    linarith
+  · simp only [tsum_mul_left, g]
+    rw [tsum_geometric_of_lt_one hb_inv_nonneg hb_inv_lt_one, mul_inv_cancel₀ (by linarith)]
   · intro i
     simp only [inv_pow, g]
     convert ofDigitsTerm_le using 1
@@ -133,7 +129,7 @@ theorem abs_ofDigits_sub_ofDigits_le {b : ℕ} {x y : ℕ → Fin b} {n : ℕ}
 /-- Converts a real number `x` from the interval `[0, 1)` into sequence of
 its digits in base `b`. -/
 noncomputable def digits (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
-  fun i ↦ Fin.ofNat _ <| ⌊x * b ^ (i + 1)⌋₊ % b
+  fun i ↦ Fin.ofNat _ <| ⌊x * b ^ (i + 1)⌋₊
 
 theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
@@ -141,7 +137,7 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
   induction n with
   | zero =>
     simp only [pow_zero, Finset.range_zero, Finset.sum_empty, mul_zero, one_mul]
-    simp only [Set.mem_Ico] at hx
+    rw [Set.mem_Ico] at hx
     norm_cast
     symm
     rw [Nat.floor_eq_zero]
@@ -156,15 +152,13 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
     move_mul [← (b : ℝ)⁻¹]
     have hb_zero : (b : ℝ) ≠ 0 := by
       simpa using NeZero.ne b
-    simp only [inv_mul_cancel₀ hb_zero, one_mul, Fin.ofNat_eq_cast, Fin.val_natCast, dvd_refl,
-      Nat.mod_mod_of_dvd, inv_pow]
+    simp only [inv_mul_cancel₀ hb_zero, one_mul, Fin.ofNat_eq_cast, Fin.val_natCast, inv_pow]
     move_mul [← ((b : ℝ) ^ n)⁻¹]
     rw [inv_mul_cancel₀ (by positivity), one_mul]
     norm_cast
-    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by omega)]
-    conv => rhs; rw [← Nat.mod_add_div ⌊(b : ℝ) * y⌋₊ b]
+    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by omega), Nat.mod_add_div]
 
-theorem ofDigits_digits_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
+theorem sum_ofDigitsTerm_digits_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
   have := ofDigits_digits_sum_eq hb hx n
@@ -174,7 +168,7 @@ theorem ofDigits_digits_sum_ge {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
     mul_sub, inv_pow, mul_inv_cancel₀ (by positivity)]
   linarith
 
-theorem ofDigits_digits_sum_le {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b) {n : ℕ}
+theorem sum_ofDigitsTerm_digits_le {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b) {n : ℕ}
     (hx : x ∈ Set.Ico 0 1) :
     ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i ≤ x := by
   have := ofDigits_digits_sum_eq hb hx n
@@ -199,12 +193,11 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
   · apply tendsto_const_nhds
   · intro n
     simp only [inv_pow, neg_le_sub_iff_le_add]
-    have := ofDigits_digits_sum_ge hb hx n
+    have := sum_ofDigitsTerm_digits_ge hb hx n
     simp only [inv_pow, tsub_le_iff_right] at this
     linarith
   · intro n
-    simp only [Pi.zero_apply, tsub_le_iff_right, zero_add]
-    exact ofDigits_digits_sum_le hb hx
+    simp [sum_ofDigitsTerm_digits_le hb hx]
 
 theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
     ofDigits (digits x b) = x := by
