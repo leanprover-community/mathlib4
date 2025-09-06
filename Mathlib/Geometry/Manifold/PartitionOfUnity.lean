@@ -37,7 +37,7 @@ index `i`, we have `tsupport (f i) ⊆ U (f i).c`. This notion is a bit more gen
 being subordinate to an open covering of `M`, because we make no assumption about the way `U x`
 depends on `x`.
 
-We prove that on a smooth finitely dimensional real manifold with `σ`-compact Hausdorff topology,
+We prove that on a smooth finite-dimensional real manifold with `σ`-compact Hausdorff topology,
 for any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
 subordinate to `U`. Then we use this fact to prove a similar statement about smooth partitions of
 unity, see `SmoothPartitionOfUnity.exists_isSubordinate`.
@@ -78,7 +78,7 @@ In this section we define `SmoothBumpCovering ι I M s` to be a collection of
 of this type is useful to construct a smooth partition of unity and can be used instead of a
 partition of unity in some proofs.
 
-We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
+We prove that on a smooth finite-dimensional real manifold with `σ`-compact Hausdorff topology, for
 any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
 subordinate to `U`. -/
 
@@ -91,7 +91,7 @@ variable (ι M)
 * for each point `x ∈ s` there exists `i` such that `f i =ᶠ[𝓝 x] 1`;
   in other words, `x` belongs to the interior of `{y | f i y = 1}`;
 
-If `M` is a finite dimensional real manifold which is a `σ`-compact Hausdorff topological space,
+If `M` is a finite-dimensional real manifold which is a `σ`-compact Hausdorff topological space,
 then for every covering `U : M → Set M`, `∀ x, U x ∈ 𝓝 x`, there exists a `SmoothBumpCovering`
 subordinate to `U`, see `SmoothBumpCovering.exists_isSubordinate`.
 
@@ -353,7 +353,7 @@ theorem IsSubordinate.support_subset {fs : SmoothBumpCovering ι I M s} {U : M �
   Subset.trans subset_closure (h i)
 
 variable (I) in
-/-- Let `M` be a smooth manifold modelled on a finite dimensional real vector space.
+/-- Let `M` be a smooth manifold modelled on a finite-dimensional real vector space.
 Suppose also that `M` is a Hausdorff `σ`-compact topological space. Let `s` be a closed set
 in `M` and `U : M → Set M` be a collection of sets such that `U x ∈ 𝓝 x` for every `x ∈ s`.
 Then there exists a smooth bump covering of `s` that is subordinate to `U`. -/
@@ -479,7 +479,7 @@ variable (I)
 variable [FiniteDimensional ℝ E]
 variable [IsManifold I ∞ M]
 
-/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
+/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` on `s` and to `1` on `t`.
 See also `exists_msmooth_zero_iff_one_iff_of_isClosed`, which ensures additionally that
 `f` is equal to `0` exactly on `s` and to `1` exactly on `t`. -/
@@ -496,7 +496,7 @@ theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s 
   refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
   exact notMem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 
-/-- Given two disjoint closed sets `s, t` in a Hausdorff normal σ-compact finite dimensional
+/-- Given two disjoint closed sets `s, t` in a Hausdorff normal σ-compact finite-dimensional
 manifold `M`, there exists a smooth function `f : M → [0,1]` that vanishes in a neighbourhood of `s`
 and is equal to `1` in a neighbourhood of `t`. -/
 theorem exists_smooth_zero_one_nhds_of_isClosed [T2Space M] [NormalSpace M] [SigmaCompactSpace M]
@@ -573,7 +573,7 @@ end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
 
-/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite-dimensional topological manifold
 `M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
 Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
 section `s_loc : M → V x` such that `s_loc` is $C^n$ smooth on `U_x₀` (when viewed as a map to
@@ -626,7 +626,7 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
   have h_x_in_Umap_j : x ∈ W j := interior_subset (hρU j h_x_in_tsupport_ρj)
   exact h_mem_t j x h_x_in_Umap_j
 
-/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite dimensional topological manifold
+/-- Let `V` be a vector bundle over a σ-compact Hausdorff finite-dimensional topological manifold
 `M`. Let `t : M → Set (V x)` be a family of convex sets in the fibers of `V`.
 Suppose that for each point `x₀ : M` there exists a neighborhood `U_x₀` of `x₀` and a local
 section `s_loc : M → V x` such that `s_loc` is $C^∞$ smooth on `U_x₀` (when viewed as a map to
@@ -646,7 +646,7 @@ theorem exists_smooth_section_forall_mem_convex_of_local
     ∃ s : Cₛ^∞⟮I; F_fiber, V⟯, ∀ x : M, s x ∈ t x :=
       exists_contMDiffOn_section_forall_mem_convex_of_local I V t ht_conv Hloc
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
+/-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is $C^n$ smooth on `U` and `g y ∈ t y` for all
 `y ∈ U`. Then there exists a $C^n$ smooth function `g : C^n⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x`
@@ -663,7 +663,7 @@ theorem exists_contMDiffOn_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t
       ⟨U, hU, g, fun y hy ↦ Bundle.contMDiffWithinAt_section |>.mpr <| hgs y hy, hgt⟩)
   ⟨⟨s, (Bundle.contMDiffAt_section _ |>.mp <| s.contMDiff ·)⟩, hs⟩
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F`
+/-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F`
 be a family of convex sets. Suppose that for each point `x : M` there exists a neighborhood
 `U ∈ 𝓝 x` and a function `g : M → F` such that `g` is smooth on `U` and `g y ∈ t y` for all `y ∈ U`.
 Then there exists a smooth function `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`.
@@ -676,7 +676,7 @@ theorem exists_smooth_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   exists_contMDiffOn_forall_mem_convex_of_local I ht Hloc
 
-/-- Let `M` be a σ-compact Hausdorff finite dimensional topological manifold. Let `t : M → Set F` be
+/-- Let `M` be a σ-compact Hausdorff finite-dimensional topological manifold. Let `t : M → Set F` be
 a family of convex sets. Suppose that for each point `x : M` there exists a vector `c : F` such that
 for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
 `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
@@ -814,7 +814,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
   · intro x
     simp [div_eq_one_iff_eq (A x).ne', left_eq_add, ← notMem_support, g_supp]
 
-/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite dimensional manifold,
+/-- Given two disjoint closed sets `s, t` in a Hausdorff σ-compact finite-dimensional manifold,
 there exists an infinitely smooth function that is equal to `0` exactly on `s` and to `1`
 exactly on `t`. See also `exists_smooth_zero_one_of_isClosed` for a slightly weaker version. -/
 theorem exists_msmooth_zero_iff_one_iff_of_isClosed {s t : Set M}

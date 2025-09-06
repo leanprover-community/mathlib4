@@ -16,7 +16,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 We prove that the Haar measure and Lebesgue measure are equal on `ℝ` and on `ℝ^ι`, in
 `MeasureTheory.addHaarMeasure_eq_volume` and `MeasureTheory.addHaarMeasure_eq_volume_pi`.
 
-We deduce basic properties of any Haar measure on a finite dimensional real vector space:
+We deduce basic properties of any Haar measure on a finite-dimensional real vector space:
 * `map_linearMap_addHaar_eq_smul_addHaar`: a linear map rescales the Haar measure by the
   absolute value of its determinant.
 * `addHaar_preimage_linearMap` : when `f` is a linear map with nonzero determinant, the measure

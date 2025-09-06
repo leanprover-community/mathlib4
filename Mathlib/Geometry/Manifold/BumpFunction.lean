@@ -47,7 +47,7 @@ In this section we define a structure for a bundled smooth bump function and pro
 -/
 
 variable (I) in
-/-- Given a smooth manifold modelled on a finite dimensional space `E`,
+/-- Given a smooth manifold modelled on a finite-dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
