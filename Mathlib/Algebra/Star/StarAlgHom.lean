@@ -634,7 +634,8 @@ add_decl_doc StarAlgEquiv.toStarRingEquiv
 
 /-- The class that directly extends `RingEquivClass` and `SMulHomClass`.
 
-Mostly an implementation detail for `StarAlgEquivClass`.
+Mostly an implementation detail for the ⋆-algebra equivalence class
+which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
 -/
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
@@ -648,7 +649,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
   { }
 
 -- See note [lower instance priority]
-instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
+instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
