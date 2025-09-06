@@ -169,6 +169,15 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
   simp only [Function.comp_apply]
   apply apply_rangeSplitting
 
+lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p (f a)) :
+    range (Subtype.coind f h) = Subtype.val ⁻¹' range f := by
+  ext y
+  constructor
+  · rintro ⟨x, rfl⟩
+    simp
+  · rintro ⟨x, hx⟩
+    exact ⟨x, Subtype.ext hx⟩
+
 section Prod
 
 /-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
