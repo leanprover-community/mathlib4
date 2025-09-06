@@ -984,7 +984,6 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
     inst1 = inst2 := by
   have ⟨beq1⟩ := inst1
-  have ⟨beq2⟩ := inst2
   congr
   funext x y
   exact h x y
