@@ -254,13 +254,16 @@ theorem integral_boundary_rect_eq_zero_of_differentiable_on_off_countable (f : �
     (fun x hx => (Hd x hx).hasFDerivAt.restrictScalars ℝ) ?_).trans ?_ <;>
       simp
 
+/-- A function is `HolomorphicOn` if it is `DifferentiableOn` over `ℂ`. -/
+abbrev HolomorphicOn (f : ℂ → E) (U : Set ℂ) : Prop := DifferentiableOn ℂ f U
+
 /-- **Cauchy-Goursat theorem for a rectangle**: the integral of a complex differentiable function
 over the boundary of a rectangle equals zero. More precisely, if `f` is continuous on a closed
 rectangle and is complex differentiable on the corresponding open rectangle, then its integral over
 the boundary of the rectangle equals zero. -/
 theorem integral_boundary_rect_eq_zero_of_continuousOn_of_differentiableOn (f : ℂ → E) (z w : ℂ)
     (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
-    (Hd : DifferentiableOn ℂ f
+    (Hd : HolomorphicOn f
       (Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im))) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
@@ -272,7 +275,7 @@ theorem integral_boundary_rect_eq_zero_of_continuousOn_of_differentiableOn (f : 
 over the boundary of a rectangle equals zero. More precisely, if `f` is complex differentiable on a
 closed rectangle, then its integral over the boundary of the rectangle equals zero. -/
 theorem integral_boundary_rect_eq_zero_of_differentiableOn (f : ℂ → E) (z w : ℂ)
-    (H : DifferentiableOn ℂ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
+    (H : HolomorphicOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • (∫ y : ℝ in z.im..w.im, f (re z + y * I)) = 0 :=
@@ -518,7 +521,7 @@ theorem _root_.DiffContOnCl.two_pi_i_inv_smul_circleIntegral_sub_inv_smul {R : �
 /-- **Cauchy integral formula**: if `f : ℂ → E` is complex differentiable on a closed disc of radius
 `R`, then for any `w` in its interior we have $\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)$. -/
 theorem _root_.DifferentiableOn.circleIntegral_sub_inv_smul {R : ℝ} {c w : ℂ} {f : ℂ → E}
-    (hd : DifferentiableOn ℂ f (closedBall c R)) (hw : w ∈ ball c R) :
+    (hd : HolomorphicOn f (closedBall c R)) (hw : w ∈ ball c R) :
     (∮ z in C(c, R), (z - w)⁻¹ • f z) = (2 * π * I : ℂ) • f w :=
   (hd.mono closure_ball_subset_closedBall).diffContOnCl.circleIntegral_sub_inv_smul hw
 
@@ -566,14 +569,14 @@ Cauchy integral formulas. See also
 `Complex.hasFPowerSeriesOnBall_of_differentiable_off_countable` for a version of this lemma with
 weaker assumptions. -/
 protected theorem _root_.DifferentiableOn.hasFPowerSeriesOnBall {R : ℝ≥0} {c : ℂ} {f : ℂ → E}
-    (hd : DifferentiableOn ℂ f (closedBall c R)) (hR : 0 < R) :
+    (hd : HolomorphicOn f (closedBall c R)) (hR : 0 < R) :
     HasFPowerSeriesOnBall f (cauchyPowerSeries f c R) c R :=
   (hd.mono closure_ball_subset_closedBall).diffContOnCl.hasFPowerSeriesOnBall hR
 
 /-- If `f : ℂ → E` is complex differentiable on some set `s`, then it is analytic at any point `z`
 such that `s ∈ 𝓝 z` (equivalently, `z ∈ interior s`). -/
 protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → E} {z : ℂ}
-    (hd : DifferentiableOn ℂ f s) (hz : s ∈ 𝓝 z) : AnalyticAt ℂ f z := by
+    (hd : HolomorphicOn f s) (hz : s ∈ 𝓝 z) : AnalyticAt ℂ f z := by
   rcases nhds_basis_closedBall.mem_iff.1 hz with ⟨R, hR0, hRs⟩
   lift R to ℝ≥0 using hR0.le
   exact ((hd.mono hRs).hasFPowerSeriesOnBall hR0).analyticAt
@@ -581,9 +584,9 @@ protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → 
 theorem _root_.DifferentiableOn.analyticOnNhd {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
     (hs : IsOpen s) : AnalyticOnNhd ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
 
-theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : HolomorphicOn f s)
     (hs : IsOpen s) : AnalyticOn ℂ f s :=
-  (hd.analyticOnNhd hs).analyticOn
+  fun _z hz => (hd.analyticAt (hs.mem_nhds hz)).analyticWithinAt
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
