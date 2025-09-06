@@ -22,25 +22,12 @@ namespace Set
 
 variable {α β : Type u} {s : Set α} {f : α → Set β}
 
-/-- The `Set` functor is a monad.
-
-This is not a global instance because it does not have computational content,
-so it does not make much sense using `do` notation in general.
-Plus, this would cause monad-related coercions and monad lifting logic to become activated.
-Either use `attribute [local instance] Set.monad` to make it be a local instance
-or use `SetM.run do ...` when `do` notation is wanted. -/
-protected def monad : Monad.{u} Set where
+instance : Alternative Set where
   pure a := {a}
-  bind s f := ⋃ i ∈ s, f i
-  seq s t := Set.seq s (t ())
+  seq s t := s.seq (t ())
   map := Set.image
-
-section with_instance
-attribute [local instance] Set.monad
-
-@[simp]
-theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
-  rfl
+  orElse s t := s ∪ t ()
+  failure := ∅
 
 @[simp]
 theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
@@ -54,6 +41,14 @@ theorem seq_eq_set_seq (s : Set (α → β)) (t : Set α) : s <*> t = s.seq t :=
 theorem pure_def (a : α) : (pure a : Set α) = {a} :=
   rfl
 
+@[simp]
+theorem failure_def : (failure : Set α) = ∅ :=
+  rfl
+
+@[simp]
+theorem orElse_def (s : Set α) (t : Set α) : (s <|> t) = s ∪ t :=
+  rfl
+
 /-- `Set.image2` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
 theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : Set β) :
@@ -61,20 +56,41 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
   ext
   simp
 
-instance : LawfulMonad Set := LawfulMonad.mk'
-  (id_map := image_id)
-  (pure_bind := biUnion_singleton)
-  (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
-  (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
-  (bind_map := fun _ _ => seq_def.symm)
+instance : LawfulApplicative Set where
+  pure_seq _ _ := Set.singleton_seq
+  seqLeft_eq _ _ := rfl
+  seqRight_eq _ _ := rfl
+  map_pure _ _ := Set.image_singleton
+  seq_pure _ _ := Set.seq_singleton
+  seq_assoc _ _ _ := Set.seq_seq
 
-instance : CommApplicative (Set : Type u → Type u) :=
-  ⟨fun s t => prod_image_seq_comm s t⟩
+instance : CommApplicative Set where
+  commutative_prod := prod_image_seq_comm
 
-instance : Alternative Set :=
-  { Set.monad with
-    orElse := fun s t => s ∪ (t ())
-    failure := ∅ }
+/-- The `Set` functor is a monad.
+
+This is not a global instance because it does not have computational content,
+so it does not make much sense using `do` notation in general.
+
+Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
+Either use `attribute [local instance] Set.monad` to make it be a local instance
+or use `SetM.run do ...` when `do` notation is wanted. -/
+protected def monad : Monad.{u} Set where
+  __ : Applicative Set := inferInstance
+  bind s f := ⋃ i ∈ s, f i
+
+section with_instance
+attribute [local instance] Set.monad
+
+@[simp]
+theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
+  rfl
+
+instance : LawfulMonad Set where
+  bind_pure_comp _ _ := (image_eq_iUnion _ _).symm
+  bind_map _ _ := seq_def.symm
+  pure_bind := biUnion_singleton
+  bind_assoc _ _ _ := by simp only [bind_def, biUnion_iUnion]
 
 /-! ### Monadic coercion lemmas -/
 
