@@ -145,8 +145,6 @@ lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then
 lemma finsetCongr_piAntidiag_eq_antidiag (n : μ) :
     Equiv.finsetCongr (Equiv.boolArrowEquivProd _) (piAntidiag univ n) = antidiagonal n := by
   ext ⟨x₁, x₂⟩
-  simp_rw [Equiv.finsetCongr_apply, mem_map, Equiv.toEmbedding, Function.Embedding.coeFn_mk,
-    ← Equiv.eq_symm_apply]
   simp [add_comm]
 
 end AddCommMonoid
