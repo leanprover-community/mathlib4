@@ -198,9 +198,12 @@ theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
 theorem IsSymmetricProjection.le_iff_comp_eq_left {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ p ∘ₗ q = p := by
   rw [hp.le_iff_comp_eq_right hq]
-  constructor <;> intro h <;> ext x <;> apply ext_inner_left 𝕜 fun y => ?_ <;>
-  simp only [coe_comp, Function.comp_apply, ← hq.isSymmetric _, ← hp.isSymmetric _] <;>
-  simp only [← LinearMap.comp_apply, h]
+  constructor
+  all_goals
+    intro h
+    apply LinearMap.ext fun x => ext_inner_left 𝕜 fun y => ?_
+    simp only [LinearMap.comp_apply, ← hq.isSymmetric _, ← hp.isSymmetric _]
+    simp only [← LinearMap.comp_apply, h]
 
 end LinearMap
 
