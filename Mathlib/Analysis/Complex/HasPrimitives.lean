@@ -13,7 +13,7 @@ In this file, we give conditions under which holomorphic functions have primitiv
 is to prove that holomorphic functions on simply connected domains have primitives. As a first step,
 we prove that holomorphic functions on discs have primitives. The approach is based on Morera's
 theorem, that a continuous function (on a disc) whose `RectangleIntegral` vanishes on all
-rectangles contained in the disc has a primitive. (Coupled with the fact that holomorphic functions
+rectangles contained in the disk has a primitive. (Coupled with the fact that holomorphic functions
 satisfy this property.) To prove Morera's theorem, we first define the `WedgeInt`, which is the
 integral of a function over a "wedge" (a horizontal segment followed by a vertical segment in the
 disc), and compute its derivative.
@@ -21,16 +21,16 @@ disc), and compute its derivative.
 ## Main results
 
 * `VanishesOnRectanglesInDisc.diff_of_wedges`: If a function `f` vanishes on all rectangles in a
-  disc with center `c`, then the wedge integral from `c` to `w` minus the wedge integral from
+  disk with center `c`, then the wedge integral from `c` to `w` minus the wedge integral from
   `c` to `z` is equal to the wedge integral from `z` to `w`.
 
 * `deriv_of_wedgeInt`: The derivative of the wedge integral is the function being integrated.
 
 * `VanishesOnRectanglesInDisc.hasPrimitive`: **Morera's Theorem**: A function which is
-  continuous on a disc and whose integral on rectangles in the disc vanishes has a primitive
-  on the disc (defined by the wedge integral).
+  continuous on a disk and whose integral on rectangles in the disk vanishes has a primitive
+  on the disk (defined by the wedge integral).
 
-* `hasPrimitives_on_disc`: A holomorphic function on a disc has primitives.
+* `hasPrimitives_on_disc`: A holomorphic function on a disk has primitives.
 
 ## Tags
   Holomorphic functions, primitives
@@ -428,16 +428,16 @@ theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ �
 
 variable [CompleteSpace E] [NormOneClass E]
 
-/-- *** Morera's theorem *** A function which is continuous on a disc and whose integral on
-  rectangles in the disc vanishes has a primitive on the disc. -/
+/-- *** Morera's theorem *** A function which is continuous on a disk and whose integral on
+  rectangles in the disk vanishes has a primitive on the disc. -/
 theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
     (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
     ∃ g : ℂ → E, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
   ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
 
-/-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disc has
+/-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disk has
   primitives. -/
-theorem hasPrimitives_on_disc (c : ℂ) {r : ℝ} : HasPrimitives E (ball c r) := fun _ f_holo ↦
+theorem hasPrimitives_on_disk (c : ℂ) {r : ℝ} : HasPrimitives E (ball c r) := fun _ f_holo ↦
   f_holo.vanishesOnRectanglesInDisc.hasPrimitive f_holo.continuousOn
 
 end Complex
