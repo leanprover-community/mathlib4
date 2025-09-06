@@ -226,14 +226,14 @@ theorem Dense.exists_seq_strictMono_tendsto_of_lt [DenselyOrdered α] [FirstCoun
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
   apply hx.exists_seq_strictMono_tendsto_of_notMem (by simp) hnonempty |>.imp
-  aesop
+  simp_all
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Iio x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
   obtain ⟨y, hy⟩ := exists_lt x
   apply hs.exists_seq_strictMono_tendsto_of_lt (exists_lt x).choose_spec |>.imp
-  aesop
+  simp_all
 
 theorem DenseRange.exists_seq_strictMono_tendsto_of_lt {β : Type*} [LinearOrder β]
     [DenselyOrdered α] [FirstCountableTopology α] {f : β → α} {x y : α} (hf : DenseRange f)

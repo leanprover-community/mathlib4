@@ -204,14 +204,17 @@ example (b : (k : Nat) → B k) (F : (f : (k : Fin n) → B k.1) → Nat) :
 
 -- Attempt to rewrite with an LHS that does not appear in the target,
 -- but does appear in types of the target's subterms.
-/-- error: tactic 'depRewrite' failed, did not find instance of the pattern in the target expression
+/--
+error: Tactic `depRewrite` failed: did not find instance of the pattern in the target expression
   n
+
 n m : Nat
 eq : n = m
 B : Nat → Type
 f : B n → Nat
 b : B n
-⊢ f b = f b -/
+⊢ f b = f b
+-/
 #guard_msgs in
 example (f : B n → Nat) (b : B n) :
     f b = f b := by
