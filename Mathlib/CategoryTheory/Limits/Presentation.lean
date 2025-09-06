@@ -66,10 +66,7 @@ def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : ColimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   natTrans := Functor.whiskerRight P.natTrans F ≫ (F.constComp _ _).hom
-  isColimit := by
-    convert isColimitOfPreserves F P.isColimit
-    ext j
-    simp
+  isColimit := (isColimitOfPreserves F P.isColimit).ofIsoColimit (Cocones.ext (.refl _) (by simp))
 
 /-- Map a colimit presentation under an isomorphism. -/
 @[simps]
@@ -101,7 +98,7 @@ structure Total.Hom (k l : Total P) where
   base : k.1 ⟶ l.1
   /-- A morphism in `C`. -/
   hom : (P k.1).diag.obj k.2 ⟶ (P l.1).diag.obj l.2
-  w : (P k.1).natTrans.app k.2 ≫ D.map base = hom ≫ (P l.1).natTrans.app l.2 := by aesop_cat
+  w : (P k.1).natTrans.app k.2 ≫ D.map base = hom ≫ (P l.1).natTrans.app l.2 := by cat_disch
 
 attribute [reassoc] Total.Hom.w
 
