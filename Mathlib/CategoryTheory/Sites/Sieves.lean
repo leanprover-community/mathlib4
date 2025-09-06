@@ -787,6 +787,19 @@ theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨V, f, 𝟙 _, h, by simp⟩
 
+lemma functorPushforward_ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) :
+    functorPushforward F (ofArrows Y f) =
+      ofArrows (fun i ↦ F.obj (Y i)) (fun i ↦ F.map (f i)) := by
+  ext Z g
+  constructor
+  · rintro ⟨T, a, b, ⟨U, c, d, hd, rfl⟩, rfl⟩
+    cases' hd with i
+    rw [F.map_comp, ← assoc]
+    exact downward_closed _ (ofArrows_mk _ _ i) _
+  · rintro ⟨T, a, b, hb, rfl⟩
+    cases' hb with i
+    exact downward_closed _ (image_mem_functorPushforward _ _ (ofArrows_mk _ _ i)) _
+
 /-- When `F` is essentially surjective and full, the galois connection is a galois insertion. -/
 def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
     GaloisInsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
