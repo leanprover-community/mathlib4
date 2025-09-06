@@ -188,7 +188,7 @@ def scalar (n : Type u) [DecidableEq n] [Fintype n] : α →+* Matrix n n α :=
 
 section Scalar
 
-variable [DecidableEq n] [Fintype n]
+variable [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 
 @[simp]
 theorem scalar_apply (a : α) : scalar n a = diagonal fun _ => a :=
@@ -203,6 +203,16 @@ theorem scalar_commute_iff {r : α} {M : Matrix n n α} :
 
 theorem scalar_commute (r : α) (hr : ∀ r', Commute r r') (M : Matrix n n α) :
     Commute (scalar n r) M := scalar_commute_iff.2 <| ext fun _ _ => hr _
+
+/-- A version of `Matrix.scalar_commute_iff` for rectangular matrices. -/
+theorem scalar_comm_iff {r : α} {M : Matrix m n α} :
+    scalar m r * M = M * scalar n r ↔ r • M = MulOpposite.op r • M := by
+  simp_rw [scalar_apply, ← smul_eq_diagonal_mul, ← op_smul_eq_mul_diagonal]
+
+/-- A version of `Matrix.scalar_commute` for rectangular matrices. -/
+theorem scalar_comm (r : α) (hr : ∀ r', Commute r r') (M : Matrix m n α) :
+    scalar m r * M = M * scalar n r :=
+  scalar_comm_iff.2 <| ext fun _ _ => hr _
 
 end Scalar
 
