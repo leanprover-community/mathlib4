@@ -235,8 +235,7 @@ theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
       M * N = fromBlocks (-scalar m X + (A * B).map C) (-(X : R[X]) • A.map C) 0 (-scalar n X) := by
     simp [M, N, fromBlocks_multiply, smul_eq_mul_diagonal, -diagonal_neg]
   have hNM : N * M = fromBlocks (-scalar m X) (-A.map C) 0 ((B * A).map C - scalar n X) := by
-    simp [M, N, fromBlocks_multiply, -diagonal_neg, -scalar_apply,
-      sub_eq_add_neg, scalar_comm, Commute.all]
+    simp [M, N, fromBlocks_multiply, sub_eq_add_neg, -scalar_apply, scalar_comm, Commute.all]
   have hdet_MN : (M * N).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
       (X ^ Fintype.card n * (scalar m X - (A * B).map C).det) := by
     rw [hMN, det_fromBlocks_zero₂₁, neg_add_eq_sub, ← neg_sub, det_neg]
