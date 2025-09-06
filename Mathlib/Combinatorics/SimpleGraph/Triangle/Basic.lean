@@ -263,7 +263,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
       simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
     _ ≤ ε * 2 * #G.edgeFinset := le_mul_of_one_le_left (by positivity) (by assumption)
     _ < ε * card α ^ 2 := ?_
-  rw [mul_assoc, mul_lt_mul_left hε₀]
+  rw [mul_assoc, mul_lt_mul_iff_right₀ hε₀]
   norm_cast
   calc
     _ ≤ 2 * (completeGraph α).edgeFinset.card := by gcongr; exact le_top
