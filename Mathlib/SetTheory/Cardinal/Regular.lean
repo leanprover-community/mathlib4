@@ -145,18 +145,23 @@ theorem iSup_lt_of_isRegular {ι} {f : ι → Cardinal} {c} (hc : IsRegular c) (
     (∀ i, f i < c) → iSup f < c :=
   iSup_lt (by rwa [hc.cof_eq])
 
-theorem sum_lt_lift_of_isRegular' {ι} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, lift (f i) < c) : sum f < c :=
+theorem IsRegular.sum_lt_of_lift_mk_lt_of_lift_lt {ι} {f : ι → Cardinal} {c : Cardinal}
+    (hc : IsRegular c) (hι : lift.{v, u} #ι < c) (hf : ∀ i, lift (f i) < c) : sum f < c :=
   (sum_le_lift_mk_mul_iSup_lift _).trans_lt <| mul_lt_of_lt hc.1 hι <|
     iSup_lt_lift_of_isRegular hc hι hf
 
-theorem sum_lt_lift_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
-  sum_lt_lift_of_isRegular' hc (by rwa [lift_umax]) (by simpa [← lift_umax])
+theorem IsRegular.sum_lt_of_lift_mk_lt_of_lt {ι : Type u} {f : ι → Cardinal} {c : Cardinal}
+    (hc : IsRegular c) (hι : lift.{v, u} #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
+  hc.sum_lt_of_lift_mk_lt_of_lift_lt (by rwa [lift_umax]) (by simpa [← lift_umax])
 
-theorem sum_lt_of_isRegular {ι : Type u} {f : ι → Cardinal} {c : Cardinal} (hc : IsRegular c)
-    (hι : #ι < c) : (∀ i, f i < c) → sum f < c :=
-  sum_lt_lift_of_isRegular.{u, u} hc (by rwa [lift_id])
+theorem IsRegular.sum_lt_of_mk_lt_of_lt {ι : Type u} {f : ι → Cardinal} {c : Cardinal}
+    (hc : IsRegular c) (hι : #ι < c) (hf : ∀ i, f i < c) : sum f < c :=
+  hc.sum_lt_of_lift_mk_lt_of_lt (by rwa [lift_id]) hf
+
+@[deprecated (since := "2025-09-06")]
+alias sum_lt_lift_of_isRegular := IsRegular.sum_lt_of_lift_mk_lt_of_lt
+
+@[deprecated (since := "2025-09-06")] alias sum_lt_of_isRegular := IsRegular.sum_lt_of_mk_lt_of_lt
 
 @[simp]
 theorem card_lt_of_card_iUnion_lt {ι : Type u} {α : Type u} {t : ι → Set α} {c : Cardinal}
