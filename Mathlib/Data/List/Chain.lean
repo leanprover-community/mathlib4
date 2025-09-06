@@ -309,6 +309,33 @@ theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R 
     Chain' R (y :: l) :=
   hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
 
+protected theorem Chain'.getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
+    R l[n] l[n + 1] :=
+  chain'_pair.mp <| h.infix ⟨l.take n, l.drop (n + 2), by simp⟩
+
+theorem chain'_of_not (h : ¬List.Chain' R l) :
+    ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by
+  contrapose! h
+  induction l with
+  | nil => simp
+  | cons head tail ih =>
+      refine List.chain'_cons'.mpr ⟨fun y yh ↦ ?_, ?_⟩
+      · by_cases h' : tail.length = 0
+        · simp [List.eq_nil_iff_length_eq_zero.mpr h'] at yh
+        · simp only [head?_eq_getElem?, Option.mem_def] at yh
+          obtain ⟨_, rfl⟩ := getElem?_eq_some_iff.mp yh
+          have := h 0 (by rw [length_cons]; omega)
+          rwa [getElem_cons_zero] at this
+      · refine ih (fun n h' ↦ ?_)
+        have := h (n + 1) (by rw [length_cons]; omega)
+        simpa using this
+
+theorem chain'_iff_forall_getElem :
+    Chain' R l ↔ ∀ (n : ℕ) (h : n + 1 < l.length), R l[n] l[n + 1] := by
+  refine ⟨Chain'.getElem, fun h ↦ ?_⟩
+  contrapose! h
+  exact chain'_of_not h
+
 theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
   | [] => Iff.rfl
   | [a] => by simp only [chain'_singleton, reverse_singleton]
