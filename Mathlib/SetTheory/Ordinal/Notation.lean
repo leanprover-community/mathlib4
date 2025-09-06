@@ -117,9 +117,6 @@ instance : WellFoundedRelation ONote :=
   | 0 => 0
   | Nat.succ n => oadd 0 n.succPNat 0
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
-
 @[simp] theorem ofNat_zero : ofNat 0 = 0 :=
   rfl
 
@@ -760,15 +757,8 @@ theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :
     ∀ k m, repr (opowAux e a0 a k m) = ω ^ repr e * repr (opowAux 0 a0 a k m)
   | 0, m => by cases m <;> simp [opowAux]
   | k + 1, m => by
-    by_cases h : m = 0
-    · simp [h, opowAux]
-    · -- Porting note: rewrote proof
-      rw [opowAux]; swap
-      · assumption
-      rw [opowAux]; swap
-      · assumption
-      rw [repr_add, repr_scale, scale_opowAux _ _ _ k]
-      simp only [repr_add, repr_scale, opow_add, mul_assoc, zero_add, mul_add]
+    by_cases h : m = 0 <;> simp only [h, opowAux, mulNat_eq_mul, repr_add, repr_scale, repr_mul,
+      repr_ofNat, zero_add, mul_add, repr_zero, mul_zero, scale_opowAux e, opow_add, mul_assoc]
 
 theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr e ≠ 0)
     (h : a' < (ω : Ordinal.{0}) ^ repr e) (aa : repr a = a') (n : ℕ+) :
@@ -1066,8 +1056,6 @@ def fastGrowing : ONote → ℕ → ℕ
       fastGrowing (f i) i
   termination_by o => o
 
--- Porting note: the linter bug should be fixed.
-@[nolint unusedHavesSuffices]
 theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
     fastGrowing o =
       match
