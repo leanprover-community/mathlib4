@@ -37,7 +37,7 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   the graded ring of all modular forms?)
 -/
 
-open ModularForm Complex Filter UpperHalfPlane Function
+open ModularForm Complex Filter UpperHalfPlane Function Matrix.SpecialLinearGroup
 
 open scoped Real MatrixGroups CongruenceSubgroup
 
@@ -50,7 +50,7 @@ local notation "𝕢" => Periodic.qParam
 
 namespace SlashInvariantFormClass
 
-theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
+theorem periodic_comp_ofComplex [SlashInvariantFormClass F (Γ(n).map <| mapGL ℝ) k] :
     Periodic (f ∘ ofComplex) n := by
   intro w
   by_cases hw : 0 < im w
@@ -69,7 +69,7 @@ limit at `0`.
 -/
 def cuspFunction : ℂ → ℂ := Function.Periodic.cuspFunction n (f ∘ ofComplex)
 
-theorem eq_cuspFunction [NeZero n] [SlashInvariantFormClass F Γ(n) k] (τ : ℍ) :
+theorem eq_cuspFunction [NeZero n] [SlashInvariantFormClass F (Γ(n).map <| mapGL ℝ) k] (τ : ℍ) :
     cuspFunction n f (𝕢 n τ) = f τ := by
   simpa only [comp_apply, ofComplex_apply]
     using (periodic_comp_ofComplex n f).eq_cuspFunction (NeZero.ne _) τ
@@ -80,16 +80,16 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-theorem differentiableAt_comp_ofComplex [ModularFormClass F Γ k] {z : ℂ} (hz : 0 < im z) :
+theorem differentiableAt_comp_ofComplex [ModularFormClass F (Γ.map (mapGL ℝ)) k]
+      {z : ℂ} (hz : 0 < im z) :
     DifferentiableAt ℂ (f ∘ ofComplex) z :=
   mdifferentiableAt_iff_differentiableAt.mp ((holo f _).comp z (mdifferentiableAt_ofComplex hz))
 
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] :
-    BoundedAtFilter I∞ (f ∘ ofComplex) := by
-  simpa only [SlashAction.slash_one, ModularForm.toSlashInvariantForm_coe]
-    using (ModularFormClass.bdd_at_infty f 1).comp_tendsto tendsto_comap_im_ofComplex
+theorem bounded_at_infty_comp_ofComplex [ModularFormClass F (Γ.map (mapGL ℝ)) k] [Γ.FiniteIndex] :
+    BoundedAtFilter I∞ (f ∘ ofComplex) :=
+  (ModularFormClass.bdd_at_infty f).comp_tendsto tendsto_comap_im_ofComplex
 
-theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
+theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F (Γ(n).map (mapGL ℝ)) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
     DifferentiableAt ℂ (cuspFunction n f) q := by
   have npos : 0 < (n : ℝ) := mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _))
@@ -102,7 +102,7 @@ theorem differentiableAt_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k]
       (periodic_comp_ofComplex n f).differentiableAt_cuspFunction npos.ne'
         <| differentiableAt_comp_ofComplex _ <| Periodic.im_invQParam_pos_of_norm_lt_one npos hq hq'
 
-lemma analyticAt_cuspFunction_zero [NeZero n] [ModularFormClass F Γ(n) k] :
+lemma analyticAt_cuspFunction_zero [NeZero n] [ModularFormClass F (Γ(n).map (mapGL ℝ)) k] :
     AnalyticAt ℂ (cuspFunction n f) 0 :=
   DifferentiableOn.analyticAt
     (fun q hq ↦ (differentiableAt_cuspFunction _ _ hq).differentiableWithinAt)
@@ -116,7 +116,7 @@ lemma qExpansion_coeff (m : ℕ) :
     (qExpansion n f).coeff m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0 := by
   simp [qExpansion]
 
-lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
+lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F (Γ(n).map (mapGL ℝ)) k]
     {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion n f).coeff m • q ^ m) (cuspFunction n f q) := by
   simp only [qExpansion_coeff]
@@ -127,7 +127,7 @@ lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
   convert hasSum_taylorSeries_on_ball hdiff qmem using 2 with m
   rw [sub_zero, smul_eq_mul, smul_eq_mul, mul_right_comm, smul_eq_mul, mul_assoc]
 
-lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
+lemma hasSum_qExpansion [NeZero n] [ModularFormClass F (Γ(n).map (mapGL ℝ)) k] (τ : ℍ) :
     HasSum (fun m : ℕ ↦ (qExpansion n f).coeff m • 𝕢 n τ ^ m) (f τ) := by
   simpa only [eq_cuspFunction n f] using
     hasSum_qExpansion_of_abs_lt n f (τ.norm_qParam_lt_one n)
@@ -147,7 +147,8 @@ lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
 
-lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
+lemma qExpansionFormalMultilinearSeries_radius [NeZero n]
+    [ModularFormClass F (Γ(n).map (mapGL ℝ)) k] :
     1 ≤ (qExpansionFormalMultilinearSeries n f).radius := by
   refine le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
@@ -158,7 +159,7 @@ lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ
   exact (hasSum_qExpansion_of_abs_lt n f (q := r) (by simpa using hr)).summable.norm
 
 /-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
-lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
+lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F (Γ(n).map (mapGL ℝ)) k] :
     HasFPowerSeriesOnBall (cuspFunction n f) (qExpansionFormalMultilinearSeries n f) 0 1 := by
   refine ⟨qExpansionFormalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
   rw [EMetric.mem_ball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
@@ -171,16 +172,16 @@ open ModularFormClass
 
 namespace CuspFormClass
 
-theorem zero_at_infty_comp_ofComplex [CuspFormClass F Γ k] : ZeroAtFilter I∞ (f ∘ ofComplex) := by
-  simpa only [SlashAction.slash_one, toSlashInvariantForm_coe]
-    using (zero_at_infty f 1).comp tendsto_comap_im_ofComplex
+theorem zero_at_infty_comp_ofComplex [CuspFormClass F (Γ.map (mapGL ℝ)) k] [Γ.FiniteIndex] :
+    ZeroAtFilter I∞ (f ∘ ofComplex) :=
+  (zero_at_infty f).comp tendsto_comap_im_ofComplex
 
-theorem cuspFunction_apply_zero [NeZero n] [CuspFormClass F Γ(n) k] :
+theorem cuspFunction_apply_zero [NeZero n] [CuspFormClass F (Γ(n).map (mapGL ℝ)) k] :
     cuspFunction n f 0 = 0 :=
   Periodic.cuspFunction_zero_of_zero_at_inf (mod_cast (Nat.pos_iff_ne_zero.mpr (NeZero.ne _)))
     (zero_at_infty_comp_ofComplex f)
 
-theorem exp_decay_atImInfty [NeZero n] [CuspFormClass F Γ(n) k] :
+theorem exp_decay_atImInfty [NeZero n] [CuspFormClass F (Γ(n).map (mapGL ℝ)) k] :
     f =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / n) := by
   simpa only [neg_mul, comp_def, ofComplex_apply, coe_im] using
     ((periodic_comp_ofComplex n f).exp_decay_of_zero_at_inf

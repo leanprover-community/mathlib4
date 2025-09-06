@@ -5,6 +5,7 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.RingTheory.EuclideanDomain
 
 /-!
@@ -26,7 +27,7 @@ import Mathlib.RingTheory.EuclideanDomain
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
+open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup
 
 open scoped MatrixGroups
 
@@ -207,10 +208,12 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
 
 /-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
+def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm ((Gamma N).map <| mapGL ℝ) k where
   toFun := eisensteinSeries a k
-  slash_action_eq' A hA := by simp only [eisensteinSeries_slash_apply, Gamma_mem'.mp hA,
-    SpecialLinearGroup.coe_one, vecMul_one]
+  slash_action_eq' A hA := by
+    obtain ⟨g, hg, rfl⟩ := hA
+    simp_rw [mapGL, MonoidHom.comp_apply, algebraMap_int_eq, ← SL_slash,
+      eisensteinSeries_slash_apply, Gamma_mem'.mp hg, SpecialLinearGroup.coe_one, vecMul_one]
 
 lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
