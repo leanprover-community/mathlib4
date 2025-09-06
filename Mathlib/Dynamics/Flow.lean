@@ -164,7 +164,7 @@ theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rf
 theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
   ϕ.toAddAction.mem_orbit_iff
 
-theorem mem_orbit (x : α) {t : τ} : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit ..
+theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit ..
 
 theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
 
