@@ -1152,6 +1152,7 @@ import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 import Mathlib.Algebra.SkewMonoidAlgebra.Support
+import Mathlib.Algebra.SkewPolynomial.Basic
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
