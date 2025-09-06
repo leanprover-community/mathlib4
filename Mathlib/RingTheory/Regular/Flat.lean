@@ -58,7 +58,7 @@ theorem IsWeaklyRegular.of_isLocalization {rs : List R} (reg : IsWeaklyRegular R
 
 variable (p : Ideal R) [p.IsPrime] [IsLocalization.AtPrime S p]
 
-theorem IsWeaklyRegular.isRegular_of_isLocalizedModule_of_mem_prime
+theorem IsWeaklyRegular.isRegular_of_isLocalizedModule_of_mem
     [Nontrivial N] [Module.Finite S N] (f : M →ₗ[R] N) [IsLocalizedModule.AtPrime p f]
     {rs : List R} (reg : IsWeaklyRegular M rs) (mem : ∀ r ∈ rs, r ∈ p) :
     IsRegular N (rs.map (algebraMap R S)) := by
