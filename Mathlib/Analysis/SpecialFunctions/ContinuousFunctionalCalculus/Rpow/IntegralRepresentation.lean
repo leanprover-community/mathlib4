@@ -451,7 +451,7 @@ private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
       (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
     fun a ha => (hμ a ha).2
   refine MonotoneOn.congr ?_ h₃'.symm
-  refine MeasureTheory.integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
+  refine integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
   exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
 
@@ -495,11 +495,12 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 lemma monotone_rpow {p : ℝ} (hp : p ∈ Icc 0 1) : Monotone (fun a : A => a ^ p) := by
   let q : ℝ≥0 := ⟨p, hp.1⟩
   change Monotone (fun a : A => a ^ (q : ℝ))
-  by_cases hq : q > 0
-  · simp_rw [← CFC.nnrpow_eq_rpow hq]
+  cases (zero_le q).lt_or_eq' with
+  | inl hq =>
+    simp_rw [← CFC.nnrpow_eq_rpow hq]
     exact monotone_nnrpow hp
-  · have hq : q = 0 := by simpa using hq
-    simp [hq]
+  | inr hq =>
+    simp only [hq, NNReal.coe_zero]
     intro a b hab
     by_cases ha : 0 ≤ a
     · have hb : 0 ≤ b := ha.trans hab
