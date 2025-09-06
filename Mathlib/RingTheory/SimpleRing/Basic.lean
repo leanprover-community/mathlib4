@@ -24,15 +24,28 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 
 assert_not_exists Finset
 
-variable (R : Type*) [NonUnitalNonAssocRing R]
 
 namespace IsSimpleRing
 
+section NonUnitalNonAssocSemiring
+variable {R : Type*} [NonUnitalNonAssocSemiring R]
+
+instance [IsSimpleRing R] : Nontrivial R where
+  exists_pair_ne := by
+    obtain ⟨x, y, _, hxy⟩ := (Setoid.not_le_iff.1 (bot_lt_top : (⊥ : RingCon R) < ⊤).2)
+    exact ⟨x, y, hxy⟩
+
+instance [IsSimpleRing R] : IsSimpleRing Rᵐᵒᵖ := ⟨RingCon.opOrderIso.symm.isSimpleOrder⟩
+
+end NonUnitalNonAssocSemiring
+
+section NonUnitalNonAssocRing
+variable (R : Type*) [NonUnitalNonAssocRing R]
+
 variable {R}
 
-instance [IsSimpleRing R] : Nontrivial R := by
-  obtain ⟨x, _, hx⟩ := SetLike.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
-  use x, 0, hx
+instance [IsSimpleRing R] : IsSimpleOrder (TwoSidedIdeal R) :=
+  TwoSidedIdeal.orderIsoRingCon.isSimpleOrder
 
 lemma one_mem_of_ne_bot {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : TwoSidedIdeal A)
     (hI : I ≠ ⊥) : (1 : A) ∈ I :=
@@ -44,7 +57,7 @@ lemma one_mem_of_ne_zero_mem {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : 
 
 lemma of_eq_bot_or_eq_top [Nontrivial R] (h : ∀ I : TwoSidedIdeal R, I = ⊥ ∨ I = ⊤) :
     IsSimpleRing R where
-  simple.eq_bot_or_eq_top := h
+  simple := TwoSidedIdeal.orderIsoRingCon.isSimpleOrder_iff.1 { eq_bot_or_eq_top := h }
 
 instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpleRing A :=
   .of_eq_bot_or_eq_top <| fun I ↦ by
@@ -56,7 +69,7 @@ instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpl
 lemma injective_ringHom_or_subsingleton_codomain
     {R S : Type*} [NonAssocRing R] [IsSimpleRing R] [NonAssocSemiring S]
     (f : R →+* S) : Function.Injective f ∨ Subsingleton S :=
-  simple.eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.imp (TwoSidedIdeal.ker_eq_bot _ |>.1)
+  eq_bot_or_eq_top (TwoSidedIdeal.ker f) |>.imp (TwoSidedIdeal.ker_eq_bot _ |>.1)
     (fun h => subsingleton_iff_zero_eq_one.1 <| by
       have mem : 1 ∈ TwoSidedIdeal.ker f := h.symm ▸ TwoSidedIdeal.mem_top _
       rwa [TwoSidedIdeal.mem_ker, map_one, eq_comm] at mem)
@@ -84,6 +97,6 @@ lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
     ⟨fun H _ _ _ f => H f |>.resolve_right (by simpa [not_subsingleton_iff_nontrivial]),
       fun H S _ f => subsingleton_or_nontrivial S |>.recOn Or.inr fun _ => Or.inl <| H f⟩
 
-instance [IsSimpleRing R] : IsSimpleRing Rᵐᵒᵖ := ⟨TwoSidedIdeal.opOrderIso.symm.isSimpleOrder⟩
+end NonUnitalNonAssocRing
 
 end IsSimpleRing
