@@ -419,4 +419,19 @@ def modulesForbiddenWindows (opts : LinterOptions) (modules : Array Lean.Name) :
         which is forbidden in Windows filenames."
   return badNamesNum
 
+/-- Verify that no module name contain a period -/
+register_option linter.modulesWithPeriod : Bool := { defValue := true }
+
+/-- Verify that no module *name* contains a period: those are likely misplaced. -/
+def modulesWithPeriod (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+  unless getLinterValue linter.modulesWithPeriod opts do return 0
+  let mut numBadNames := 0
+  for name in modules do
+    let some n := name.components.getLast? | continue
+    let .str .anonymous s := n | continue
+    if s.contains '.' then
+      numBadNames := numBadNames + 1
+      IO.eprintln s!"error: module name '{name} contains a period: this may be a typo"
+  return numBadNames
+
 end Mathlib.Linter.TextBased
