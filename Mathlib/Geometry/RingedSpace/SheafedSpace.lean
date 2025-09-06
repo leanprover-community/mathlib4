@@ -60,7 +60,7 @@ theorem mk_coe (carrier) (presheaf) (h) :
 instance (X : SheafedSpace C) : TopologicalSpace X :=
   X.carrier.str
 
-/-- The trivial `unit` valued sheaf on any topological space. -/
+/-- The trivial `unit`-valued sheaf on any topological space. -/
 def unit (X : TopCat) : SheafedSpace (Discrete Unit) :=
   { @PresheafedSpace.const (Discrete Unit) _ X ⟨⟨⟩⟩ with IsSheaf := Presheaf.isSheaf_unit _ }
 
