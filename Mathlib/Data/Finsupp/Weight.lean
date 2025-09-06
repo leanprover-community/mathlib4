@@ -229,7 +229,7 @@ theorem le_degree {R : Type*}
     (s : σ) (f : σ →₀ R) :
     f s ≤ degree f := by
   by_cases h : s ∈ f.support
-  · exact CanonicallyOrderedAddCommMonoid.single_le_sum h
+  · exact Finset.single_le_sum_of_canonicallyOrdered h
   · simp only [notMem_support_iff] at h
     simp only [h, zero_le]
 
