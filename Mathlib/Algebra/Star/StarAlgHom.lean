@@ -637,39 +637,38 @@ add_decl_doc StarAlgEquiv.toStarRingEquiv
 Mostly an implementation detail for the ⋆-algebra equivalence class
 which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
 -/
-class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
-  [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
-  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
+class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
+  [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [Star A] [Star B] [EquivLike F A B] : Prop
+  extends StarRingEquivClass F A B, MulActionHomClass F R A B where
+
+namespace StarAlgEquivClass
 
 -- See note [lower instance priority]
 instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
-    [NonUnitalAlgEquivClass F R A B] :
+    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star A] [Star B]
+    [EquivLike F A B] [StarAlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { }
 
 -- See note [lower instance priority]
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
+    [Algebra R A] [Semiring B] [Algebra R B] [Star A] [Star B] [EquivLike F A B]
+    [StarAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
-
-namespace StarAlgEquivClass
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
-    (f : F) : A ≃⋆ₐ[R] B :=
-  { (f : A ≃+* B) with
-    map_star' := map_star f
-    map_smul' := map_smul f}
+    [Star B] [EquivLike F A B] [StarAlgEquivClass F R A B] (f : F) : A ≃⋆ₐ[R] B :=
+  { (f : A ≃⋆+* B) with
+    map_smul' := map_smul f }
 
 /-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
 instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
-    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
+    [SMul R B] [Star B] [EquivLike F A B] [StarAlgEquivClass F R A B] :
     CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
 
@@ -692,13 +691,13 @@ instance : EquivLike (A ≃⋆ₐ[R] B) A B where
     rcases g with ⟨⟨⟨⟨_, _, _⟩, _⟩, _⟩, _⟩
     congr
 
-instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
+instance : StarRingEquivClass (A ≃⋆ₐ[R] B) A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
-  map_smulₛₗ := map_smul'
-
-instance : StarRingEquivClass (A ≃⋆ₐ[R] B) A B where
   map_star f := f.map_star'
+
+instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
+  map_smulₛₗ := map_smul'
 
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
 instance : FunLike (A ≃⋆ₐ[R] B) A B where
