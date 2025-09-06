@@ -447,6 +447,12 @@ lemma Algebra.intNorm_zero : Algebra.intNorm A B 0 = 0 := by
 
 variable {A B}
 
+theorem Algebra.intNorm_eq_of_algEquiv (x : B) (σ : B ≃ₐ[A] B) :
+    Algebra.intNorm A B (σ x) = Algebra.intNorm A B x := by
+  apply FaithfulSMul.algebraMap_injective A (FractionRing A)
+  rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
+    ← galRestrict_symm_algebraMap_apply A (FractionRing A), norm_eq_of_algEquiv]
+
 @[simp]
 theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Module.Finite A B₂]
     [NoZeroSMulDivisors A B₂] [Algebra.IsSeparable (FractionRing A) (FractionRing B₂)] (x : B)

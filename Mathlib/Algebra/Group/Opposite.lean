@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Opposites
 import Mathlib.Tactic.Spread
 
@@ -277,3 +278,12 @@ instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
     (fun _ _ => rfl) fun _ _ => rfl
 
 end AddOpposite
+
+section Torsion
+
+open MulOpposite in
+@[to_additive]
+instance (M : Type*) [Monoid M] [IsMulTorsionFree M] : IsMulTorsionFree (Mᵐᵒᵖ) :=
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
+
+end Torsion

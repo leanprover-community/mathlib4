@@ -39,6 +39,12 @@ lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injecti
 lemma IsMulTorsionFree.pow_eq_one_iff (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
   ⟨fun h ↦ by rwa [← pow_left_inj hn, one_pow], fun h ↦ by rw [h, one_pow]⟩
 
+@[to_additive]
+lemma IsMulTorsionFree.pow_eq_one_iff' (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, pow_zero]⟩
+  by_contra h'
+  simpa [h] using (pow_left_injective h').ne ha
+
 end Monoid
 
 section Group
