@@ -274,6 +274,15 @@ theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠
     vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
   exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
 
+/-- **Exterior angle theorem**. -/
+theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
+    ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
+  have H := (EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi p₃ (Sbtw.angle₁₂₃_eq_pi h)).symm
+  rw [angle_comm p₃ p₁ p₂, add_comm, ← angle_add_angle_add_angle_eq_pi p₃ ((Sbtw.right_ne h).symm)]
+    at H
+  simp only [angle_comm] at *
+  linarith
+
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
@@ -405,16 +414,5 @@ theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
   have h1 := (angle_lt_iff_dist_lt h).not
   simp at h1
   exact h1
-
-/-- **Exterior angle theorem**. -/
-theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
-    ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
-  have H := (EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi p₃ (Sbtw.angle₁₂₃_eq_pi h)).symm
-  rw [show ∠ p₃ p₁ p₂ = ∠ p₂ p₁ p₃ by simp only [angle_comm],
-      add_comm,
-      ← angle_add_angle_add_angle_eq_pi p₃ ((Sbtw.right_ne h).symm),
-      add_assoc] at H
-  simp only [add_right_inj] at H
-  rw [H]
 
 end EuclideanGeometry
