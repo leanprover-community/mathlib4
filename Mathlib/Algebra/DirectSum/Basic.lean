@@ -344,10 +344,8 @@ protected def coeAddMonoidHom {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [
 theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     {M S : Type*} [DecidableEq M] [AddCommMonoid M]
     [SetLike S M] [AddSubmonoidClass S M] (A : ι → S) (x : DirectSum ι fun i => A i) :
-    DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) := by
-  simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
-    Equiv.coe_fn_mk]
-  exact DFinsupp.sumAddHom_apply _ x
+    DirectSum.coeAddMonoidHom A x = DFinsupp.sum x fun i => (fun x : A i => ↑x) :=
+  DFinsupp.sumAddHom_apply _ x
 
 @[deprecated (since := "2025-04-06")]
 alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum

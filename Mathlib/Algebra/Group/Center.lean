@@ -142,7 +142,6 @@ lemma centralizer_subset (h : S ⊆ T) : centralizer T ⊆ centralizer S := fun 
 @[to_additive subset_addCentralizer_addCentralizer]
 lemma subset_centralizer_centralizer : S ⊆ S.centralizer.centralizer := by
   intro x hx
-  simp only [Set.mem_centralizer_iff]
   exact fun y hy => (hy x hx).symm
 
 @[to_additive (attr := simp) addCentralizer_addCentralizer_addCentralizer]

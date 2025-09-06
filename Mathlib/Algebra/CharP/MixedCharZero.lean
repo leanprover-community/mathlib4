@@ -92,7 +92,6 @@ theorem reduce_to_p_prime {P : Prop} :
     have r_pos : r ≠ 0 := by
       have q_zero :=
         congr_arg (Ideal.Quotient.factor h_IM) (CharP.cast_eq_zero (R ⧸ I) q)
-      simp only [map_natCast, map_zero] at q_zero
       apply ne_zero_of_dvd_ne_zero (ne_of_gt q_pos)
       exact (CharP.cast_eq_zero_iff (R ⧸ M) r q).mp q_zero
     have r_prime : Nat.Prime r :=

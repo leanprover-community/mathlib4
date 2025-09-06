@@ -57,7 +57,6 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
     (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i ∈ s, f i) ~ᵤ (∏ i ∈ s, g i) := by
   induction s using Finset.induction with
   | empty =>
-    simp only [Finset.prod_empty]
     rfl
   | insert j s hjs IH =>
     classical
@@ -85,13 +84,10 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
   induction m using Multiset.induction generalizing x y with
   | empty =>
     apply subset_closure
-    simp only [Set.mem_setOf]
-    simp only [Multiset.prod_zero] at hprod
     left; exact isUnit_of_mul_eq_one _ _ hprod.symm
   | cons c s hind =>
     simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
     simp only [Multiset.prod_cons] at hprod
-    simp only [Set.mem_setOf_eq] at hind
     obtain ⟨ha₁ | ha₂, hs⟩ := hm
     · rcases ha₁.exists_right_inv with ⟨k, hk⟩
       refine hind x (y*k) ?_ hs ?_
