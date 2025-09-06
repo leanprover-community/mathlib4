@@ -798,7 +798,7 @@ instance : PosMulStrictMono Ordinal where
 
 @[deprecated mul_lt_mul_left (since := "2025-08-26")]
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  mul_lt_mul_iff_right₀ a0
+  mul_lt_mul_left a0
 
 @[deprecated mul_le_mul_left (since := "2025-08-26")]
 theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
