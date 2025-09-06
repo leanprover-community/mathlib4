@@ -175,8 +175,7 @@ lemma two_periods_step {p q : ℕ} {w : List α} (per_p : HasPeriod w p) (per_q 
      w[q + i]? = w[i + q]? := congrArg (getElem? w) (add_comm q i)
      _         = w[i]? := by refine (per_q i ?_).symm; omega
      _         = w[i + p]? := by  refine (per_p i ?_); omega
-     _         = w[q + (i + (p - q))]? := by
-      apply congrArg (getElem? w); omega
+     _         = w[q + (i + (p - q))]? := congrArg (getElem? w) (by omega)
 
 /-- The Periodicity Lemma, also known as the Fine and Wilf theorem, shows that if word `w` of length
 at least `p + q - gcd p q` has two periods `p` and `q`, then it has a period `gcd p q`.
