@@ -21,15 +21,6 @@ creating two separate topologies on the same space.
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
-
-open ComplexOrder in
-lemma Balanced.real_of_RCLike {s : Set E} (hs : Balanced 𝕜 s) : Balanced ℝ s := by
-  intro a ha x ⟨b, hb1, hb2⟩
-  apply hs ↑a (by norm_cast)
-  simp_rw [RCLike.real_smul_eq_coe_smul (K := 𝕜)] at hb2
-  rw [← hb2]
-  exact Set.smul_mem_smul_set hb1
-
 variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   [LocallyConvexSpace ℝ E]
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
