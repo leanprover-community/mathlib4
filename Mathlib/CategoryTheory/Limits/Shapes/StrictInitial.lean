@@ -209,7 +209,6 @@ theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
         obtain rfl : f = 𝟙 _ := Subsingleton.elim _ _
         simp
       · cases h
-        erw [Category.comp_id]
         haveI : IsIso (F.map f) := (H _ h_1).isIso_from _
         rw [← IsIso.comp_inv_eq]
         apply (H _ h_1).hom_ext
