@@ -286,6 +286,19 @@ lemma CStarAlgebra.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by 
   peel h₀ with r hr _
   exact this.trans hab
 
+@[grind ←]
+lemma CStarAlgebra.isUnit_add {a b : A} (hunit : IsUnit a ∨ IsUnit b) (ha : 0 ≤ a := by cfc_tac)
+    (hb : 0 ≤ b := by cfc_tac) : IsUnit (a + b) := by
+  obtain ha'|hb' := hunit
+  case inl =>
+    refine isUnit_of_le ha' ha ?_
+    calc a = a + 0 := by simp
+      _ ≤ a + b := by gcongr
+  case inr =>
+    refine isUnit_of_le hb' hb ?_
+    calc b = 0 + b := by simp
+      _ ≤ a + b := by gcongr
+
 lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
   lift b to Aˣ using hbu
