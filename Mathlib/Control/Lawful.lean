@@ -36,7 +36,7 @@ protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
 
-/-- A copy of `LawfulFUnctor.map_const` that holds even if `m` is not lawful. -/
+/-- A copy of `LawfulFunctor.map_const` for `StateT` that holds even if `m` is not lawful. -/
 protected lemma map_const [Monad m] :
     (Functor.mapConst : α → StateT σ m β → StateT σ m α) = Functor.map ∘ Function.const β :=
   rfl
