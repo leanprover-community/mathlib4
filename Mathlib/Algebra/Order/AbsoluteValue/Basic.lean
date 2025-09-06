@@ -113,6 +113,14 @@ protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ abv x = 0 := by
+  simp [le_antisymm_iff, abv.nonneg]
+
+variable {abv} in
+theorem pos_of_abv_pos (abv' : AbsoluteValue R S) {a : R} (hv : 0 < abv a) : 0 < abv' a := by
+  rwa [AbsoluteValue.pos_iff] at hv ⊢
+
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
@@ -372,6 +380,33 @@ lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
+
+theorem isNontrivial_iff_exists_abv_one_lt :
+    v.IsNontrivial ↔ ∃ x, 1 < v x := by
+  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ⟨x⁻¹, ?_, ?_⟩⟩
+  · simpa only [ne_eq, inv_eq_zero] using fun h ↦ v.map_zero ▸ not_le.2 (h ▸ hx) <| zero_le_one' _
+  · simpa only [map_inv₀, ne_eq, inv_eq_one] using ne_of_gt hx
+
+theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
+  simp [map_inv₀, inv_lt_one_iff₀, map_eq_zero]
+
+variable {w : AbsoluteValue R S}
+
+theorem one_lt_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R} (hv : 1 < v x) : 1 < w x :=
+  (inv_lt_one_iff.1 <| h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left <|
+    fun h ↦ map_zero v ▸ not_le.2 (h ▸ hv) <| zero_le_one' _
+
+theorem one_lt_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : 1 < v x ↔ 1 < w x :=
+  ⟨fun hv => one_lt_of_lt_one_imp (fun _ => (h _).1) hv,
+    fun hw => one_lt_of_lt_one_imp (fun _ => (h _).2) hw⟩
+
+theorem eq_one_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) {x : R} (hv : v x = 1) : w x = 1 := by
+  cases eq_or_lt_of_le (not_lt.1 <| (h x).not.1 hv.not_lt) with
+  | inl hl => rw [← hl]
+  | inr hr => rw [← one_lt_iff_of_lt_one_iff h] at hr; absurd hv; exact ne_of_gt hr
+
+theorem eq_one_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : v x = 1 ↔ w x = 1 :=
+  ⟨fun hv => eq_one_of_lt_one_iff h hv, fun hw => eq_one_of_lt_one_iff (fun _ => (h _).symm) hw⟩
 
 end LinearOrderedSemifield
 
