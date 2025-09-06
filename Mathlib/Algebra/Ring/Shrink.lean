@@ -3,61 +3,56 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Small.Defs
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Group.Shrink
+import Mathlib.Algebra.Ring.TransferInstance
 
 /-!
-# Transfer ring structures from `α` to `Shrink α`.
+# Transfer ring structures from `α` to `Shrink α`
 -/
 
 noncomputable section
 
-variable {α : Type*}
+namespace Shrink
+universe v
+variable {α : Type*} [Small.{v} α]
 
-instance [NonUnitalNonAssocSemiring α] [Small α] : NonUnitalNonAssocSemiring (Shrink α) :=
-  (equivShrink _).symm.nonUnitalNonAssocSemiring
+variable (α) in
+/-- Shrink `α` to a smaller universe preserves ring structure. -/
+def ringEquiv [Add α] [Mul α] : Shrink.{v} α ≃+* α := (equivShrink α).symm.ringEquiv
 
-instance [NonUnitalSemiring α] [Small α] : NonUnitalSemiring (Shrink α) :=
-  (equivShrink _).symm.nonUnitalSemiring
+instance [NonUnitalNonAssocSemiring α] : NonUnitalNonAssocSemiring (Shrink.{v} α) :=
+  (equivShrink α).symm.nonUnitalNonAssocSemiring
 
-instance [AddMonoidWithOne α] [Small α] : AddMonoidWithOne (Shrink α) :=
-  (equivShrink _).symm.addMonoidWithOne
+instance [NonUnitalSemiring α] : NonUnitalSemiring (Shrink.{v} α) :=
+  (equivShrink α).symm.nonUnitalSemiring
 
-instance [AddGroupWithOne α] [Small α] : AddGroupWithOne (Shrink α) :=
-  (equivShrink _).symm.addGroupWithOne
+instance [AddMonoidWithOne α] : AddMonoidWithOne (Shrink.{v} α) :=
+  (equivShrink α).symm.addMonoidWithOne
 
-instance [NonAssocSemiring α] [Small α] : NonAssocSemiring (Shrink α) :=
-  (equivShrink _).symm.nonAssocSemiring
+instance [AddGroupWithOne α] : AddGroupWithOne (Shrink.{v} α) :=
+  (equivShrink α).symm.addGroupWithOne
 
-instance [Semiring α] [Small α] : Semiring (Shrink α) :=
-  (equivShrink _).symm.semiring
+instance [NonAssocSemiring α] : NonAssocSemiring (Shrink.{v} α) :=
+  (equivShrink α).symm.nonAssocSemiring
 
-instance [NonUnitalCommSemiring α] [Small α] : NonUnitalCommSemiring (Shrink α) :=
-  (equivShrink _).symm.nonUnitalCommSemiring
+instance [Semiring α] : Semiring (Shrink.{v} α) := (equivShrink α).symm.semiring
 
-instance [CommSemiring α] [Small α] : CommSemiring (Shrink α) :=
-  (equivShrink _).symm.commSemiring
+instance [NonUnitalCommSemiring α] : NonUnitalCommSemiring (Shrink.{v} α) :=
+  (equivShrink α).symm.nonUnitalCommSemiring
 
-instance [NonUnitalNonAssocRing α] [Small α] : NonUnitalNonAssocRing (Shrink α) :=
-  (equivShrink _).symm.nonUnitalNonAssocRing
+instance [CommSemiring α] : CommSemiring (Shrink.{v} α) := (equivShrink α).symm.commSemiring
 
-instance [NonUnitalRing α] [Small α] : NonUnitalRing (Shrink α) :=
-  (equivShrink _).symm.nonUnitalRing
+instance [NonUnitalNonAssocRing α] : NonUnitalNonAssocRing (Shrink.{v} α) :=
+  (equivShrink α).symm.nonUnitalNonAssocRing
 
-instance [Ring α] [Small α] : Ring (Shrink α) :=
-  (equivShrink _).symm.ring
+instance [NonUnitalRing α] : NonUnitalRing (Shrink.{v} α) := (equivShrink α).symm.nonUnitalRing
+instance [NonAssocRing α] : NonAssocRing (Shrink.{v} α) := (equivShrink α).symm.nonAssocRing
+instance [Ring α] : Ring (Shrink.{v} α) := (equivShrink α).symm.ring
 
-instance [NonUnitalCommRing α] [Small α] : NonUnitalCommRing (Shrink α) :=
-  (equivShrink _).symm.nonUnitalCommRing
+instance [NonUnitalCommRing α] : NonUnitalCommRing (Shrink.{v} α) :=
+  (equivShrink α).symm.nonUnitalCommRing
 
-instance [CommRing α] [Small α] : CommRing (Shrink α) :=
-  (equivShrink _).symm.commRing
+instance [CommRing α] : CommRing (Shrink.{v} α) := (equivShrink α).symm.commRing
+instance [Semiring α] [IsDomain α] : IsDomain (Shrink.{v} α) := (Shrink.ringEquiv α).isDomain
 
-instance [Nontrivial α] [Small α] : Nontrivial (Shrink α) :=
-  (equivShrink _).symm.nontrivial
-
-instance [DivisionRing α] [Small α] : DivisionRing (Shrink α) :=
-  (equivShrink _).symm.divisionRing
-
-instance [Field α] [Small α] : Field (Shrink α) :=
-  (equivShrink _).symm.field
+end Shrink

@@ -21,10 +21,6 @@ under `∈`.
   equivalences to this definition.
 - `Ordinal.toZFSet` converts Lean's type-theoretic ordinals into ZFC ordinals. We prove that these
   two notions are order-isomorphic.
-
-## TODO
-
-- Define the von Neumann hierarchy.
 -/
 
 universe u
@@ -183,7 +179,7 @@ theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y 
   refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
   revert hx hy
   apply Sym2.GameAdd.induction mem_wf _ x y
-  intros x y IH hx hy hyx z hzy
+  intro x y IH hx hy hyx z hzy
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 

@@ -41,7 +41,7 @@ instance instCommRing : CommRing ℤ where
   intCast_negSucc _ := rfl
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
-  mul_left_cancel_of_ne_zero {_a _b _c} ha := (mul_eq_mul_left_iff ha).1
+  mul_left_cancel_of_ne_zero ha _ _ := (mul_eq_mul_left_iff ha).1
 
 instance instCharZero : CharZero ℤ where cast_injective _ _ := ofNat.inj
 

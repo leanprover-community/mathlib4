@@ -64,7 +64,7 @@ lemma Ideal.mulQuot_injective {a : R} (I : Ideal R) (ha : a ∈ nonZeroDivisors 
   · have m : I = Submodule.comap (mul R R a) (a • I) := by
       ext b
       exact (Submodule.mul_mem_smul_iff ha).symm
-    simp [←m, ker_comp]
+    simp [← m, ker_comp]
 /--
 The quotient map `(R ⧸ a • I) →ₗ[R] (R ⧸ Ideal.span {a})`.
 -/
@@ -109,7 +109,7 @@ theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
           (Ideal.exact_mulQuot_quotOfMul (Ideal.span {a}))
   simp only [Ring.ord, ← this]
   have lem : (({b} : Set R) • Ideal.span {a}) = Ideal.span {b * a} := by
-    simp [←Ideal.submodule_span_eq, Submodule.set_smul_span]
+    simp [← Ideal.submodule_span_eq, Submodule.set_smul_span]
   have : (({b} : Set R) • Ideal.span {a}) = b • Ideal.span {a} := Submodule.singleton_set_smul
     (Ideal.span {a}) b
   rw [this] at lem
@@ -167,8 +167,7 @@ Order of vanishing function for elements of the fraction field defined as the ex
 @[stacks 02MD]
 noncomputable
 def ordFrac : K →*₀ ℤᵐ⁰ :=
-  letI f := Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap (nonZeroDivisors R) K)
-    (ordMonoidWithZeroHom R)
+  letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
     simp only [isUnit_iff_ne_zero, ne_eq]

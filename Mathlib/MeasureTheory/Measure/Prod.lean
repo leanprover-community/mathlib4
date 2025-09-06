@@ -268,9 +268,17 @@ theorem _root_.MeasureTheory.measureReal_prod_prod (s : Set α) (t : Set β) :
   ext s hs
   simp [Measure.map_apply measurable_fst hs, ← prod_univ, mul_comm]
 
+lemma _root_.MeasureTheory.measurePreserving_fst [IsProbabilityMeasure ν] :
+    MeasurePreserving Prod.fst (μ.prod ν) μ :=
+  ⟨measurable_fst, by rw [map_fst_prod, measure_univ, one_smul]⟩
+
 @[simp] lemma map_snd_prod : Measure.map Prod.snd (μ.prod ν) = (μ univ) • ν := by
   ext s hs
   simp [Measure.map_apply measurable_snd hs, ← univ_prod]
+
+lemma _root_.MeasureTheory.measurePreserving_snd [IsProbabilityMeasure μ] :
+    MeasurePreserving Prod.snd (μ.prod ν) ν :=
+  ⟨measurable_snd, by rw [map_snd_prod, measure_univ, one_smul]⟩
 
 instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
@@ -801,7 +809,7 @@ protected theorem prodMap {ω : Type*} {mω : MeasurableSpace ω} {υ : Measure 
     (hf : QuasiMeasurePreserving f μ ν) (hg : QuasiMeasurePreserving g τ υ) :
     QuasiMeasurePreserving (Prod.map f g) (μ.prod τ) (ν.prod υ) := by
   refine ⟨by fun_prop, ?_⟩
-  rw[← map_prod_map _ _ (by fun_prop) (by fun_prop)]
+  rw [← map_prod_map _ _ (by fun_prop) (by fun_prop)]
   exact hf.absolutelyContinuous.prod hg.absolutelyContinuous
 
 end QuasiMeasurePreserving

@@ -5,7 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.ConjTranspose
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Block Matrices
@@ -215,6 +215,14 @@ theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring �
   ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp only [fromBlocks, mul_apply, of_apply,
       Sum.elim_inr, Fintype.sum_sum_type, Sum.elim_inl, add_apply]
+
+theorem fromBlocks_diagonal_pow [Semiring α] [Fintype n] [Fintype m] [DecidableEq n] [DecidableEq m]
+    (A : Matrix n n α) (D : Matrix m m α) (k : ℕ) :
+    (fromBlocks A 0 0 D) ^ k = fromBlocks (A ^ k) 0 0 (D ^ k) := by
+  induction k with
+  | zero => ext (i | i) (j | j) <;> simp [one_apply]
+  | succ n ih =>
+    simp [ih, pow_succ, fromBlocks_multiply]
 
 theorem fromBlocks_mulVec [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
     (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) (x : l ⊕ m → α) :

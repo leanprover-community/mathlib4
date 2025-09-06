@@ -77,7 +77,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
     (n : ℕ) : ∀ (X : C), n = Nat.card (F.obj X) → ∃ (ι : Type) (f : ι → C)
     (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
     (∀ i, IsConnected (f i)) ∧ Finite ι := by
-  induction' n using Nat.strongRecOn with n hi
+  induction n using Nat.strongRecOn with | _ n hi
   intro X hn
   by_cases h : IsConnected X
   · exact has_decomp_connected_components_aux_conn X
@@ -164,7 +164,7 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
       inv_hom_id_apply]
     erw [Types.pullbackIsoPullback_inv_snd_apply (F.map i) (F.map j)]
   rw [← hu, ← hv]
-  change (F.toPrefunctor.map u ≫ F.toPrefunctor.map _) y = F.toPrefunctor.map v y
+  change (F.map u ≫ F.map _) y = F.map v y
   simp only [← F.map_comp, Iso.trans_hom, Iso.symm_hom, asIso_inv, asIso_hom,
     IsIso.hom_inv_id_assoc]
 

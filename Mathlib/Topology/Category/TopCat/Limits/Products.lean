@@ -67,7 +67,7 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
   exact ConcreteCategory.congr_hom this x
 
 /-- The inclusion to the coproduct as a bundled continuous map. -/
-abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ TopCat.of (Σi, α i) := by
+abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ TopCat.of (Σ i, α i) := by
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · dsimp
     apply Sigma.mk i
@@ -76,7 +76,7 @@ abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]
 def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
-  Cofan.mk (TopCat.of (Σi, α i)) (sigmaι α)
+  Cofan.mk (TopCat.of (Σ i, α i)) (sigmaι α)
 
 /-- The constructed cofan is indeed a colimit -/
 def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit (sigmaCofan β) where
@@ -90,11 +90,11 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
     congr
   fac s j := by
     cases j
-    aesop_cat
+    cat_disch
 
 /-- The coproduct is homeomorphic to the disjoint union of the topological spaces.
 -/
-def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σi, α i) :=
+def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σ i, α i) :=
   (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
 
 @[reassoc (attr := simp)]
@@ -217,17 +217,12 @@ theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (h
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
   rw [← hf.eq_induced, ← hg.eq_induced]
 
-@[deprecated (since := "2024-10-28")] alias inducing_prod_map := isInducing_prodMap
-
 theorem isEmbedding_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Limits.prod.map f g) :=
   ⟨isInducing_prodMap hf.isInducing hg.isInducing, by
     haveI := (TopCat.mono_iff_injective _).mpr hf.injective
     haveI := (TopCat.mono_iff_injective _).mpr hg.injective
     exact (TopCat.mono_iff_injective _).mp inferInstance⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_prod_map := isEmbedding_prodMap
 
 end Prod
 

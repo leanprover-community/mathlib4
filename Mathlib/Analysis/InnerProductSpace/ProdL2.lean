@@ -16,14 +16,14 @@ $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
 
+open Module
+open scoped InnerProductSpace
+
 variable {𝕜 ι₁ ι₂ E F : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 F]
 
 namespace WithLp
-open scoped InnerProductSpace
-
-variable (E F)
 
 noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
@@ -38,8 +38,6 @@ noncomputable instance instProdInnerProductSpace :
   smul_left x y r := by
     simp only [smul_fst, inner_smul_left, smul_snd]
     ring
-
-variable {E F}
 
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
@@ -58,8 +56,7 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
   ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
   (by
     constructor
-    · simp only [Sum.forall, norm_eq_sqrt_re_inner (𝕜 := 𝕜), Real.sqrt_eq_one]
-      simp
+    · simp
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
         OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,

@@ -28,14 +28,7 @@ theorem det_pi {ι R M : Type*} [Fintype ι] [CommRing R] [AddCommGroup M]
 
 theorem det_one_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
-  nontriviality 𝕜
-  have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
-    ext1
-    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
-      Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.coe_smul', Pi.smul_apply, mul_one]
-  rw [this, ContinuousLinearMap.det, ContinuousLinearMap.coe_smul,
-    ContinuousLinearMap.one_def, ContinuousLinearMap.coe_id, LinearMap.det_smul,
-    Module.finrank_self, LinearMap.det_id, pow_one, mul_one]
+  simp
 
 end ContinuousLinearMap
 

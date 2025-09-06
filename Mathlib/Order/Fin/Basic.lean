@@ -54,7 +54,7 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   bot_le := Fin.zero_le
 
 instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
-  LinearOrder.toBiheytingAlgebra
+  LinearOrder.toBiheytingAlgebra (Fin n)
 
 @[simp, norm_cast]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
@@ -103,8 +103,8 @@ theorem val_top (n : ℕ) [NeZero n] : ((⊤ : Fin n) : ℕ) = n - 1 := rfl
 
 @[simp]
 theorem zero_eq_top {n : ℕ} [NeZero n] : (0 : Fin n) = ⊤ ↔ n = 1 := by
-  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one, LE.le.le_iff_eq]
-  exact pos_of_neZero n
+  rw [← bot_eq_zero, subsingleton_iff_bot_eq_top, subsingleton_iff_le_one,
+    le_one_iff_eq_zero_or_eq_one, or_iff_right (NeZero.ne n)]
 
 @[simp]
 theorem top_eq_zero {n : ℕ} [NeZero n] : (⊤ : Fin n) = 0 ↔ n = 1 :=
@@ -266,11 +266,6 @@ lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H =
   · exact le_pred_of_lt ((not_lt.mp ha).trans_lt hb)
   · exact H
 
-@[gcongr]
-theorem _root_.GCongr.Fin.predAbove_le_predAbove_right (p : Fin n) {i j : Fin (n + 1)} (h : i ≤ j) :
-    p.predAbove i ≤ p.predAbove j :=
-  predAbove_right_monotone p h
-
 lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p i := fun a b H ↦ by
   dsimp [predAbove]
   split_ifs with ha hb hb
@@ -281,18 +276,31 @@ lemma predAbove_left_monotone (i : Fin (n + 1)) : Monotone fun p ↦ predAbove p
   · rfl
 
 @[gcongr]
-lemma _root_.GCongr.predAbove_le_predAbove_left {p q : Fin n} (h : p ≤ q) (i : Fin (n + 1)) :
-    p.predAbove i ≤ q.predAbove i :=
-  predAbove_left_monotone i h
-
-@[gcongr]
 lemma predAbove_le_predAbove {p q : Fin n} (hpq : p ≤ q) {i j : Fin (n + 1)} (hij : i ≤ j) :
-    p.predAbove i ≤ q.predAbove j := by
-  trans p.predAbove j <;> gcongr
+    p.predAbove i ≤ q.predAbove j :=
+  (predAbove_right_monotone p hij).trans (predAbove_left_monotone j hpq)
 
 /-- `Fin.predAbove p` as an `OrderHom`. -/
 @[simps!] def predAboveOrderHom (p : Fin n) : Fin (n + 1) →o Fin n :=
   ⟨p.predAbove, p.predAbove_right_monotone⟩
+
+/-- `predAbove` is injective at the pivot -/
+lemma predAbove_left_injective : Injective (@predAbove n) := by
+  intro i j hij
+  obtain ⟨n, rfl⟩ := Nat.exists_add_one_eq.2 i.size_positive
+  wlog h : i < j generalizing i j
+  · simp only [not_lt] at h
+    obtain h | rfl := h.lt_or_eq
+    · exact (this hij.symm h).symm
+    · rfl
+  replace hij := congr_fun hij i.succ
+  rw [predAbove_succ_self, Fin.predAbove_of_le_castSucc _ _ (by simpa),
+    ← Fin.castSucc_inj, castSucc_castPred] at hij
+  exact (i.castSucc_lt_succ.ne hij).elim
+
+/-- `predAbove` is injective at the pivot -/
+@[simp] lemma predAbove_left_inj {x y : Fin n} : x.predAbove = y.predAbove ↔ x = y :=
+  predAbove_left_injective.eq_iff
 
 /-! #### Order isomorphisms -/
 
@@ -336,6 +344,14 @@ lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
 @[simps! apply]
 def valOrderEmb (n) : Fin n ↪o ℕ := ⟨valEmbedding, Iff.rfl⟩
+
+namespace OrderEmbedding
+
+@[simps]
+instance : Inhabited (Fin n ↪o ℕ) where
+  default := Fin.valOrderEmb n
+
+end OrderEmbedding
 
 /-- The ordering on `Fin n` is a well order. -/
 instance Lt.isWellOrder (n) : IsWellOrder (Fin n) (· < ·) := (valOrderEmb n).isWellOrder

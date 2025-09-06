@@ -1027,15 +1027,17 @@ section isoCocycles₁
 /-- The short complex `A --d₀₁--> Fun(G, A) --d₁₂--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
-def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
+def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
     isoMk (cochainsIso₀ A) (cochainsIso₁ A) (cochainsIso₂ A)
       (comp_d₀₁_eq A) (comp_d₁₂_eq A)
 
+@[deprecated (since := "2025-07-11")] noncomputable alias shortComplexH1Iso := isoShortComplexH1
+
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
 def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
-  cyclesMapIso' (shortComplexH1Iso A) _ (shortComplexH1 A).moduleCatLeftHomologyData
+  cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
 @[deprecated (since := "2025-06-25")] noncomputable alias isoOneCocycles := isoCocycles₁
 
@@ -1087,16 +1089,18 @@ section isoCocycles₂
 /-- The short complex `Fun(G, A) --d₁₂--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
-def shortComplexH2Iso :
+def isoShortComplexH2 :
     (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
     isoMk (cochainsIso₁ A) (cochainsIso₂ A) (cochainsIso₃ A)
       (comp_d₁₂_eq A) (comp_d₂₃_eq A)
 
+@[deprecated (since := "2025-07-11")] noncomputable alias shortComplexH2Iso := isoShortComplexH2
+
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
 def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
-  cyclesMapIso' (shortComplexH2Iso A) _ (shortComplexH2 A).moduleCatLeftHomologyData
+  cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
 @[deprecated (since := "2025-06-25")] noncomputable alias isoTwoCocycles := isoCocycles₂
 
@@ -1224,7 +1228,7 @@ instance : Epi (H1π A) := by unfold H1π; infer_instance
 variable {A}
 
 lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundaries₁ A := by
-  have h := leftHomologyπ_naturality'_assoc (shortComplexH1Iso A).inv
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH1 A).inv
     (shortComplexH1 A).moduleCatLeftHomologyData (leftHomologyData _)
     ((inhomogeneousCochains A).sc 1).leftHomologyIso.hom
   simp only [H1π, isoCocycles₁, π, HomologicalComplex.homologyπ, homologyπ,
@@ -1248,7 +1252,7 @@ variable (A)
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `cocycles₁ A ⧸ coboundaries₁ A`, which is a simpler type. -/
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH1Iso A) _ _)
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
 
 @[deprecated (since := "2025-06-11")]
 noncomputable alias isoH1 := H1Iso
@@ -1318,7 +1322,7 @@ instance : Epi (H2π A) := by unfold H2π; infer_instance
 variable {A}
 
 lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundaries₂ A := by
-  have h := leftHomologyπ_naturality'_assoc (shortComplexH2Iso A).inv
+  have h := leftHomologyπ_naturality'_assoc (isoShortComplexH2 A).inv
     (shortComplexH2 A).moduleCatLeftHomologyData (leftHomologyData _)
     ((inhomogeneousCochains A).sc 2).leftHomologyIso.hom
   simp only [H2π, isoCocycles₂, π, HomologicalComplex.homologyπ, homologyπ,
@@ -1342,7 +1346,7 @@ variable (A)
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `cocycles₂ A ⧸ coboundaries₂ A`, which is a simpler type. -/
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH2Iso A) _ _)
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
 
 @[deprecated (since := "2025-06-11")]
 noncomputable alias isoH2 := H2Iso

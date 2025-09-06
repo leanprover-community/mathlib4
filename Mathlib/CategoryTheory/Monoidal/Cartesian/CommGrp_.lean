@@ -10,6 +10,8 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 # Yoneda embedding of `CommGrp_ C`
 -/
 
+assert_not_exists Field
+
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u

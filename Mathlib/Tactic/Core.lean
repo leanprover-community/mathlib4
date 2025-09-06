@@ -33,10 +33,9 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
-    else if isProtected env nm then
-      Visibility.regular
     else
-      Visibility.protected
+      Visibility.regular
+    isProtected := isProtected env nm
     computeKind := if (env.find? <| nm.mkStr "_cstage1").isSome then .regular else .noncomputable
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
@@ -210,7 +209,7 @@ def iterateAtMost : Nat → m Unit → m Unit
 -/
 def iterateExactly' : Nat → m Unit → m Unit
   | 0, _ => pure ()
-  | n+1, tac => tac *> iterateExactly' n tac
+  | n + 1, tac => tac *> iterateExactly' n tac
 
 /--
 `iterateRange m n t`: Repeat the given tactic at least `m` times and

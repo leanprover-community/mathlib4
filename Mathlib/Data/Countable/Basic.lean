@@ -137,7 +137,7 @@ instance [Countable α] [Countable β] : Countable (PProd α β) :=
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
-  Countable.of_equiv (Σa : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
+  Countable.of_equiv (Σ a : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
 
 instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
   have : ∀ n, Countable (Fin n → ℕ) := by
