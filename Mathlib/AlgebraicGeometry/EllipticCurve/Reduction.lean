@@ -151,7 +151,7 @@ open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
 
 /-- The valuation of the discriminant of a Weierstrass curve `W`,
 which is at most 1 if `W` is integral. Zero otherwise. -/
-noncomputable def valuation_discriminant_aux (W : WeierstrassCurve K) :
+noncomputable def valuation_Δ_aux (W : WeierstrassCurve K) :
     { v : WithZero (Multiplicative ℤ) // v ≤ 1 } := by
   by_cases h : IsIntegral R W
   · exact ⟨valuation K (maximalIdeal R) W.Δ, by
@@ -160,9 +160,9 @@ noncomputable def valuation_discriminant_aux (W : WeierstrassCurve K) :
       exact valuation_le_one (maximalIdeal R) r⟩
   · exact ⟨⊥, bot_le⟩
 
-lemma valuation_discriminant_aux_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
-    valuation_discriminant_aux R W = valuation K (maximalIdeal R) W.Δ := by
-  simp [valuation_discriminant_aux, hW]
+lemma valuation_Δ_aux_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    valuation_Δ_aux R W = valuation K (maximalIdeal R) W.Δ := by
+  simp [valuation_Δ_aux, hW]
 
 instance : WellFoundedGT { v : WithZero (Multiplicative ℤ) // v ≤ 1 } :=
   { wf :=
@@ -177,7 +177,7 @@ class IsMinimal (W : WeierstrassCurve K) : Prop where
   val_Δ_maximal :
     MaximalFor
       (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
-      (fun (C : VariableChange K) ↦ valuation_discriminant_aux R (C • W))
+      (fun (C : VariableChange K) ↦ valuation_Δ_aux R (C • W))
       (1 : VariableChange K)
 
 omit [IsFractionRing R K] in
@@ -188,7 +188,7 @@ theorem exists_minimal (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsMinimal R (C • W) := by
   obtain ⟨C, hC⟩ := exists_maximalFor_of_wellFoundedGT
     (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
-    (fun (C : VariableChange K) ↦ valuation_discriminant_aux R (C • W))
+    (fun (C : VariableChange K) ↦ valuation_Δ_aux R (C • W))
     (exists_integral R W)
   refine ⟨C, ⟨⟨by simp only [one_smul, hC.1], ?_⟩⟩⟩
   intro j hj; rw [← smul_assoc] at hj
