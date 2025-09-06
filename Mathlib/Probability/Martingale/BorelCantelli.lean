@@ -208,7 +208,7 @@ In particular, we define
 $$
   f_n := \sum_{k < n} \mathbf{1}_{s_{n + 1}} - \mathbb{P}[s_{n + 1} \mid \mathcal{F}_n].
 $$
-Then, as a martingale is both a sub and a super-martingale, the set for which it is unbounded from
+Then, as a martingale is both a sub- and a super-martingale, the set for which it is unbounded from
 above must agree with the set for which it is unbounded from below almost everywhere. Thus, it
 can only converge to $\pm \infty$ with probability 0. Thus, by considering
 $$

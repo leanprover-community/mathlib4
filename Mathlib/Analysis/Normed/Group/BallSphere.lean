@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Group.Uniform
 # Negation on spheres and balls
 
 In this file we define `InvolutiveNeg` and `ContinuousNeg` instances for spheres, open balls, and
-closed balls in a semi normed group.
+closed balls in a seminormed group.
 -/
 
 open Metric Set Topology

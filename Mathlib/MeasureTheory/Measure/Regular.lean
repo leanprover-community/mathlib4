@@ -123,11 +123,11 @@ for the more fine grained definitions above as they apply more generally.
   a measurable set of finite measure can be approximated by a closed subset (stated as
   `r < μ F` and `μ s < μ F + ε`, respectively).
 * `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_of_isFiniteMeasure` is an
-  instance registering that a finite measure on a metric space is weakly regular (in fact, a pseudo
-  metrizable space is enough);
+  instance registering that a finite measure on a metric space is weakly regular (in fact, a
+  pseudometrizable space is enough);
 * `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_secondCountable_of_locallyFinite`
   is an instance registering that a locally finite measure on a second countable metric space (or
-  even a pseudo metrizable space) is weakly regular.
+  even a pseudometrizable space) is weakly regular.
 
 ### Regular measures
 
@@ -636,7 +636,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
         _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
 
-/-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
+/-- In a metrizable space (or even a pseudometrizable space), an open set can be approximated from
 inside by closed sets. -/
 theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetrizableSpace X]
     [MeasurableSpace X] (μ : Measure X) : InnerRegularWRT μ IsClosed IsOpen := by
@@ -981,7 +981,7 @@ theorem restrict_of_measure_ne_top [BorelSpace α] [WeaklyRegular μ] {A : Set �
   exact this V_open.measurableSet r hr
 
 -- see Note [lower instance priority]
-/-- Any finite measure on a metrizable space (or even a pseudo metrizable space)
+/-- Any finite measure on a metrizable space (or even a pseudometrizable space)
 is weakly regular. -/
 instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -991,7 +991,7 @@ instance (priority := 100) of_pseudoMetrizableSpace_of_isFiniteMeasure {X : Type
 
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a second countable metrizable space
-(or even a pseudo metrizable space) is weakly regular. -/
+(or even a pseudometrizable space) is weakly regular. -/
 instance (priority := 100) of_pseudoMetrizableSpace_secondCountable_of_locallyFinite {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SecondCountableTopology X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [IsLocallyFiniteMeasure μ] : WeaklyRegular μ :=

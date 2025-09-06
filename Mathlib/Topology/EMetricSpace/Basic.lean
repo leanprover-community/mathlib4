@@ -186,7 +186,7 @@ theorem totallyBounded_iff' {s : Set α} :
 section Compact
 
 -- TODO: generalize to metrizable spaces
-/-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
+/-- A compact set in a pseudo-emetric space is separable, i.e., it is a subset of the closure of a
 countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
@@ -201,7 +201,7 @@ section SecondCountable
 open TopologicalSpace
 
 variable (α) in
-/-- A sigma compact pseudo emetric space has second countable topology. -/
+/-- A sigma compact pseudo-emetric space has second countable topology. -/
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
     SecondCountableTopology α := by
   suffices SeparableSpace α by exact UniformSpace.secondCountable_of_separable α
@@ -290,7 +290,7 @@ section Compact
 
 open Topology
 
-/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
+/-- If a set `s` is separable in a (pseudo-extended) metric space, then it admits a countable dense
 subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
 of separability does not need in general to be contained in `s`. -/
 theorem IsSeparable.exists_countable_dense_subset
@@ -302,7 +302,7 @@ theorem IsSeparable.exists_countable_dense_subset
     exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
   exact subset_countable_closure_of_almost_dense_set _ this
 
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
+/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo-extended)
 metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
 general to be contained in `s`. -/
 theorem IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
