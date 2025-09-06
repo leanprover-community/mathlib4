@@ -33,9 +33,10 @@ universe u v
 structure ωCPO : Type (u + 1) where
   /-- The underlying type. -/
   carrier : Type u
+  [partialOrder : PartialOrder carrier]
   [str : OmegaCompletePartialOrder carrier]
 
-attribute [instance] ωCPO.str
+attribute [instance] ωCPO.partialOrder ωCPO.str
 
 namespace ωCPO
 
@@ -45,10 +46,10 @@ instance : CoeSort ωCPO Type* :=
   ⟨carrier⟩
 
 /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
-abbrev of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO where
+abbrev of (α : Type*) [PartialOrder α] [OmegaCompletePartialOrder α] : ωCPO where
   carrier := α
 
-theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
+theorem coe_of (α : Type*) [PartialOrder α] [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
 
 instance : LargeCategory.{u} ωCPO where
@@ -90,8 +91,9 @@ instance (J : Type v) (f : J → ωCPO.{v}) : HasProduct f :=
 
 end HasProducts
 
-instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f g : α →𝒄 β) :
+instance omegaCompletePartialOrderEqualizer {α β : Type*}
+    [PartialOrder α] [OmegaCompletePartialOrder α]
+    [PartialOrder β] [OmegaCompletePartialOrder β] (f g : α →𝒄 β) :
     OmegaCompletePartialOrder { a : α // f a = g a } :=
   OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
@@ -102,7 +104,9 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
 namespace HasEqualizers
 
 /-- The equalizer inclusion function as a `ContinuousHom`. -/
-def equalizerι {α β : Type*} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
+def equalizerι {α β : Type*}
+    [PartialOrder α] [OmegaCompletePartialOrder α]
+    [PartialOrder β] [OmegaCompletePartialOrder β]
     (f g : α →𝒄 β) : { a : α // f a = g a } →𝒄 α :=
   .mk (OrderHom.Subtype.val _) fun _ => rfl
 
