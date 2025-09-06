@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 In this file, we record the equivalence between `Mon_ C` and `Mon Cᴹᵒᵖ`.
 -/
 
-namespace Mon_Class
+namespace MonObj
 
 open CategoryTheory MonoidalCategory MonoidalOpposite
 
@@ -20,13 +20,13 @@ variable {C : Type*} [Category C] [MonoidalCategory C]
 
 section mop
 
-variable (M : C) [Mon_Class M]
+variable (M : C) [MonObj M]
 
 /-- If `M : C` is a monoid object, then `mop M : Cᴹᵒᵖ` too. -/
 @[simps!]
-instance mopMon_Class : Mon_Class (mop M) where
-  mul := Mon_Class.mul.mop
-  one := Mon_Class.one.mop
+instance mopMonObj : MonObj (mop M) where
+  mul := MonObj.mul.mop
+  one := MonObj.one.mop
   mul_one := by
     apply mopEquiv C|>.fullyFaithfulInverse.map_injective
     simp
@@ -40,7 +40,7 @@ instance mopMon_Class : Mon_Class (mop M) where
 variable {M} in
 /-- If `f` is a morphism of monoid objects internal to `C`,
 then `f.mop` is a morphism of monoid objects internal to `Cᴹᵒᵖ`. -/
-instance mop_isMon_Hom {N : C} [Mon_Class N]
+instance mop_isMon_Hom {N : C} [MonObj N]
     (f : M ⟶ N) [IsMon_Hom f] : IsMon_Hom f.mop where
   mul_hom := by
     apply mopEquiv C|>.fullyFaithfulInverse.map_injective
@@ -53,13 +53,13 @@ end mop
 
 section unmop
 
-variable (M : Cᴹᵒᵖ) [Mon_Class M]
+variable (M : Cᴹᵒᵖ) [MonObj M]
 
 /-- If `M : Cᴹᵒᵖ` is a monoid object, then `unmop M : C` too. -/
 @[simps -isSimp] -- not making them simp because it causes a loop.
-instance unmopMon_Class : Mon_Class (unmop M) where
-  mul := Mon_Class.mul.unmop
-  one := Mon_Class.one.unmop
+instance unmopMonObj : MonObj (unmop M) where
+  mul := MonObj.mul.unmop
+  one := MonObj.one.unmop
   mul_one := by
     apply mopEquiv C|>.fullyFaithfulFunctor.map_injective
     simp
@@ -73,7 +73,7 @@ instance unmopMon_Class : Mon_Class (unmop M) where
 variable {M} in
 /-- If `f` is a morphism of monoid objects internal to `Cᴹᵒᵖ`,
 so is `f.unmop`. -/
-instance unmop_isMon_Hom {N : Cᴹᵒᵖ} [Mon_Class N]
+instance unmop_isMon_Hom {N : Cᴹᵒᵖ} [MonObj N]
     (f : M ⟶ N) [IsMon_Hom f] : IsMon_Hom f.unmop where
   mul_hom := by
     apply mopEquiv C|>.fullyFaithfulFunctor.map_injective
@@ -108,4 +108,4 @@ def mopEquivCompForgetIso :
     Mon_.forget C ⋙ (MonoidalOpposite.mopEquiv C).functor :=
   .refl _
 
-end Mon_Class
+end MonObj

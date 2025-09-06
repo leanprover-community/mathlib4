@@ -20,7 +20,7 @@ assert_not_exists Field
 
 universe v u
 
-open CategoryTheory Mon_Class
+open CategoryTheory MonObj
 
 namespace GrpTypeEquivalenceGrp
 
