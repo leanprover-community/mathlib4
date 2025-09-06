@@ -6,6 +6,8 @@ Authors: Bryan Wang
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.Valuation.Discrete.Basic
+import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
 # Reduction of Weierstrass curves over local fields
@@ -145,33 +147,53 @@ section Minimal
 variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-open IsDiscreteValuationRing
+open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
 
-/-- A Weierstrass equation over the fraction field `K` is minimal if the valuation
-of its discriminant is minimal among all isomorphic integral Weierstrass equations. -/
+/-- The valuation of the discriminant of a Weierstrass curve `W`,
+which is at most 1 if `W` is integral. Zero otherwise. -/
+noncomputable def valuation_discriminant_aux (W : WeierstrassCurve K) :
+    { v : WithZero (Multiplicative ℤ) // v ≤ 1 } := by
+  by_cases h : IsIntegral R W
+  · exact ⟨valuation K (maximalIdeal R) W.Δ, by
+      choose r hr using Δ_integral_of_isIntegral R W
+      rw [← hr]
+      exact valuation_le_one (maximalIdeal R) r⟩
+  · exact ⟨⊥, bot_le⟩
+
+lemma valuation_discriminant_aux_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    valuation_discriminant_aux R W = valuation K (maximalIdeal R) W.Δ := by
+  simp [valuation_discriminant_aux, hW]
+
+instance : WellFoundedGT { v : WithZero (Multiplicative ℤ) // v ≤ 1 } :=
+  { wf :=
+    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    one_ne_zero).mpr instNonemptyOfInhabited }
+
+/-- A Weierstrass equation over the fraction field `K` is minimal if the (multiplicative) valuation
+of its discriminant is maximal among all isomorphic integral Weierstrass equations.
+We still use 'minimal' for the naming, so as to standardize the naming with Silverman's book. -/
 @[mk_iff]
 class IsMinimal (W : WeierstrassCurve K) : Prop where
-  val_Δ_minimal :
-    MinimalFor
+  val_Δ_maximal :
+    MaximalFor
       (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
-      (fun (C : VariableChange K) ↦ addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
+      (fun (C : VariableChange K) ↦ valuation_discriminant_aux R (C • W))
       (1 : VariableChange K)
 
 omit [IsFractionRing R K] in
 instance {W : WeierstrassCurve K} [IsMinimal R W] :
-    IsIntegral R W := by simpa using IsMinimal.val_Δ_minimal.1
+    IsIntegral R W := by simpa using IsMinimal.val_Δ_maximal.1
 
 theorem exists_minimal (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsMinimal R (C • W) := by
-  obtain ⟨C, hC⟩ := exists_minimalFor_of_wellFoundedLT
+  obtain ⟨C, hC⟩ := exists_maximalFor_of_wellFoundedGT
     (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
-    (fun (C : VariableChange K) ↦ addVal R ((algebraMap R K).toFun.invFun (C • W).Δ))
+    (fun (C : VariableChange K) ↦ valuation_discriminant_aux R (C • W))
     (exists_integral R W)
   refine ⟨C, ⟨⟨by simp only [one_smul, hC.1], ?_⟩⟩⟩
   intro j hj; rw [← smul_assoc] at hj
   let h := hC.2 hj
-  simp_all only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-    MonoidHom.toOneHom_coe, MonoidHom.coe_coe, one_smul]
+  simp_all only [one_smul]
   rw [← smul_assoc]
   exact h
 
