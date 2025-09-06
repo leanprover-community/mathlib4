@@ -136,28 +136,23 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
   intro i less_i
   have mod_p: ∀ j < n + length w, (take n w ++ w)[j]? = w[j % p]? := by
     intro j less_j
-    if pref : j < n then
-      -- indeces within `take n w` can be reduced due to the period of `w`
+    by_cases j_lt_n : j < n
+    · -- indeces within `take n w` can be reduced due to the period of `w`
       exact calc
-        (take n w ++ w)[j]? = (take n w)[j]? := by
-          refine getElem?_append_left ?_; simp_all
-        _ = w[j]? := getElem?_take_of_lt pref
-        _ = w[j % p]? := by refine mod_w j ?_; omega
-    else
-      -- larger indeces are indeces of `w` decreased by `n`
+        (take n w ++ w)[j]? = (take n w)[j]? := getElem?_append_left (by simp_all)
+        _ = w[j]? := getElem?_take_of_lt j_lt_n
+        _ = w[j % p]? := mod_w j (by omega)
+    · -- larger indeces are indeces of `w` decreased by `n`
       have j_minus: j - n < w.length := by omega
+      have n_le_j : n ≤ j := le_of_not_gt j_lt_n; clear j_lt_n;
       have j_mod: (j - n) % p = j % p := by
-        convert_to (j - p * (n / p)) % p = j % p
-        rw [Nat.mul_div_cancel' dvd]
-        refine sub_mul_mod ?_
-        rw [Nat.mul_div_cancel' dvd]
-        simp_all
+        exact calc
+          (j - n) % p = (j - p * (n / p)) % p := by rw [Nat.mul_div_cancel' dvd]
+          _           = j % p := sub_mul_mod ((Nat.mul_div_cancel' dvd).symm ▸ n_le_j)
       exact calc
-        (take n w ++ w)[j]? = w[j - n]? := by
-          convert_to (take n w ++ w)[j]? = w[j - (take n w).length]?
-          simp_all
-          refine getElem?_append_right ?_; simp_all
-        _ = w[(j - n) % p]? := by refine mod_w (j - n) (by omega)
+        (take n w ++ w)[j]? = w[j - (take n w).length]? := getElem?_append_right (by simp_all)
+        _ = w[j - n]? := by simp_all
+        _ = w[(j - n) % p]? := mod_w (j - n) (by omega)
         _ = w[j % p]? := by rw [j_mod]
   have less_mod: i % p < n + w.length := by
     have : i % p < p := mod_lt i p_pos; have : p ≤ n := le_of_dvd pos dvd; omega
@@ -173,8 +168,8 @@ lemma two_periods_step {p q : ℕ} {w : List α} (per_p : HasPeriod w p) (per_q 
   intro i i_lt
   exact calc
      w[q + i]? = w[i + q]? := congrArg (getElem? w) (add_comm q i)
-     _         = w[i]? := by refine (per_q i ?_).symm; omega
-     _         = w[i + p]? := by  refine (per_p i ?_); omega
+     _         = w[i]? := (per_q i (by omega)).symm
+     _         = w[i + p]? := (per_p i (by omega))
      _         = w[q + (i + (p - q))]? := congrArg (getElem? w) (by omega)
 
 /-- The Periodicity Lemma, also known as the Fine and Wilf theorem, shows that if word `w` of length
@@ -197,8 +192,9 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
   | gt =>
       have q_lt_p : q < p  := Nat.compare_eq_gt.mp hyp
       have gcd_lt_p : p.gcd q < p := by
-        refine Ne.lt_of_le ?_ (gcd_le_left q p_pos)
-        simp [gcd_eq_left_iff_dvd, not_dvd_of_pos_of_lt q_pos q_lt_p]
+        have : p.gcd q ≠ p := by
+          simp [gcd_eq_left_iff_dvd, not_dvd_of_pos_of_lt q_pos q_lt_p]
+        exact Ne.lt_of_le this (gcd_le_left q p_pos)
       have : q < w.length := by omega
       have per_diff : HasPeriod (drop q w) (p - q) :=
         two_periods_step per_p per_q this q_lt_p
