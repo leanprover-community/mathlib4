@@ -73,7 +73,7 @@ def ofIso (e : M ≅ X) : Mon_Class X where
     simp only [MonoidalCategory.whiskerLeft_comp, tensorHom_def', Category.assoc,
       whiskerLeft_hom_inv_assoc, Iso.inv_hom_id]
     simp [← tensorHom_def'_assoc, rightUnitor_inv_comp_tensorHom_assoc]
-  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id, ← tensor_comp_assoc,
+  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id,
       -associator_conjugation, associator_naturality_assoc] using
       congr(((e.inv ⊗ₘ e.inv) ⊗ₘ e.inv) ≫ $(Mon_Class.mul_assoc M) ≫ e.hom)
 
@@ -101,12 +101,13 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 attribute [mon_tauto] Category.id_comp Category.comp_id Category.assoc
   id_tensorHom_id tensorμ tensorδ
+  tensorHom_comp_tensorHom tensorHom_comp_tensorHom_assoc
   leftUnitor_tensor_hom leftUnitor_tensor_hom_assoc
   leftUnitor_tensor_inv leftUnitor_tensor_inv_assoc
   rightUnitor_tensor_hom rightUnitor_tensor_hom_assoc
   rightUnitor_tensor_inv rightUnitor_tensor_inv_assoc
 
-attribute [mon_tauto ←] tensorHom_id id_tensorHom tensor_comp tensor_comp_assoc
+attribute [mon_tauto ←] tensorHom_id id_tensorHom
 
 @[reassoc (attr := mon_tauto)]
 lemma associator_hom_comp_tensorHom_tensorHom (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (h : Z₁ ⟶ Z₂) :
@@ -634,9 +635,9 @@ theorem one_associator {M N P : C} [Mon_Class M] [Mon_Class N] [Mon_Class P] :
     ((λ_ (𝟙_ C)).inv ≫ ((λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ₘ η[N]) ⊗ₘ η[P])) ≫ (α_ M N P).hom =
       (λ_ (𝟙_ C)).inv ≫ (η[M] ⊗ₘ (λ_ (𝟙_ C)).inv ≫ (η[N] ⊗ₘ η[P])) := by
   simp only [Category.assoc, Iso.cancel_iso_inv_left]
-  slice_lhs 1 3 => rw [← Category.id_comp (η : 𝟙_ C ⟶ P), tensor_comp]
+  slice_lhs 1 3 => rw [← Category.id_comp (η : 𝟙_ C ⟶ P), ← tensorHom_comp_tensorHom]
   slice_lhs 2 3 => rw [associator_naturality]
-  slice_rhs 1 2 => rw [← Category.id_comp η, tensor_comp]
+  slice_rhs 1 2 => rw [← Category.id_comp η, ← tensorHom_comp_tensorHom]
   slice_lhs 1 2 => rw [tensorHom_id, ← leftUnitor_tensor_inv]
   rw [← cancel_epi (λ_ (𝟙_ C)).inv]
   slice_lhs 1 2 => rw [leftUnitor_inv_naturality]
@@ -660,7 +661,7 @@ theorem Mon_tensor_one_mul (M N : C) [Mon_Class M] [Mon_Class N] :
       (λ_ (M ⊗ N)).hom := by
   simp only [comp_whiskerRight_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_left]
-  slice_lhs 3 4 => rw [← tensor_comp, one_mul, one_mul]
+  slice_lhs 3 4 => rw [tensorHom_comp_tensorHom, one_mul, one_mul]
   symm
   exact tensor_left_unitality M N
 
@@ -670,7 +671,7 @@ theorem Mon_tensor_mul_one (M N : C) [Mon_Class M] [Mon_Class N] :
       (ρ_ (M ⊗ N)).hom := by
   simp only [whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_right]
-  slice_lhs 3 4 => rw [← tensor_comp, mul_one, mul_one]
+  slice_lhs 3 4 => rw [tensorHom_comp_tensorHom, mul_one, mul_one]
   symm
   exact tensor_right_unitality M N
 
@@ -682,7 +683,9 @@ theorem Mon_tensor_mul_assoc (M N : C) [Mon_Class M] [Mon_Class N] :
           tensorμ M N M N ≫ (μ ⊗ₘ μ) := by
   simp only [comp_whiskerRight_assoc, whiskerLeft_comp_assoc]
   slice_lhs 2 3 => rw [tensorμ_natural_left]
-  slice_lhs 3 4 => rw [← tensor_comp, mul_assoc, mul_assoc, tensor_comp, tensor_comp]
+  slice_lhs 3 4 =>
+    rw [tensorHom_comp_tensorHom, mul_assoc, mul_assoc, ← tensorHom_comp_tensorHom,
+      ← tensorHom_comp_tensorHom]
   slice_lhs 1 3 => rw [tensor_associativity]
   slice_lhs 3 4 => rw [← tensorμ_natural_right]
   simp
@@ -695,9 +698,9 @@ theorem mul_associator {M N P : C} [Mon_Class M] [Mon_Class N] [Mon_Class P] :
         tensorμ M (N ⊗ P) M (N ⊗ P) ≫
           (μ ⊗ₘ tensorμ N P N P ≫ (μ ⊗ₘ μ)) := by
   simp only [Category.assoc]
-  slice_lhs 2 3 => rw [← Category.id_comp μ[P], tensor_comp]
+  slice_lhs 2 3 => rw [← Category.id_comp μ[P], ← tensorHom_comp_tensorHom]
   slice_lhs 3 4 => rw [associator_naturality]
-  slice_rhs 3 4 => rw [← Category.id_comp μ, tensor_comp]
+  slice_rhs 3 4 => rw [← Category.id_comp μ, ← tensorHom_comp_tensorHom]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 1 3 => rw [associator_monoidal]
   simp only [Category.assoc]
@@ -705,7 +708,7 @@ theorem mul_associator {M N P : C} [Mon_Class M] [Mon_Class N] [Mon_Class P] :
 theorem mul_leftUnitor {M : C} [Mon_Class M] :
     (tensorμ (𝟙_ C) M (𝟙_ C) M ≫ ((λ_ (𝟙_ C)).hom ⊗ₘ μ)) ≫ (λ_ M).hom =
       ((λ_ M).hom ⊗ₘ (λ_ M).hom) ≫ μ := by
-  rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp μ, tensor_comp]
+  rw [← Category.comp_id (λ_ (𝟙_ C)).hom, ← Category.id_comp μ, ← tensorHom_comp_tensorHom]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [leftUnitor_naturality]
   slice_lhs 1 3 => rw [← leftUnitor_monoidal]
@@ -714,7 +717,7 @@ theorem mul_leftUnitor {M : C} [Mon_Class M] :
 theorem mul_rightUnitor {M : C} [Mon_Class M] :
     (tensorμ M (𝟙_ C) M (𝟙_ C) ≫ (μ ⊗ₘ (λ_ (𝟙_ C)).hom)) ≫ (ρ_ M).hom =
       ((ρ_ M).hom ⊗ₘ (ρ_ M).hom) ≫ μ := by
-  rw [← Category.id_comp μ, ← Category.comp_id (λ_ (𝟙_ C)).hom, tensor_comp]
+  rw [← Category.id_comp μ, ← Category.comp_id (λ_ (𝟙_ C)).hom, ← tensorHom_comp_tensorHom]
   simp only [tensorHom_id, id_tensorHom]
   slice_lhs 3 4 => rw [rightUnitor_naturality]
   slice_lhs 1 3 => rw [← rightUnitor_monoidal]
@@ -741,11 +744,11 @@ variable {X Y Z W : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z] [Mon_Class W]
 instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ⊗ₘ g) where
   one_hom := by
     dsimp [tensorObj.one_def]
-    slice_lhs 2 3 => rw [← tensor_comp, one_hom, one_hom]
+    slice_lhs 2 3 => rw [tensorHom_comp_tensorHom, one_hom, one_hom]
   mul_hom := by
     dsimp [tensorObj.mul_def]
     slice_rhs 1 2 => rw [tensorμ_natural]
-    slice_lhs 2 3 => rw [← tensor_comp, mul_hom, mul_hom, tensor_comp]
+    slice_lhs 2 3 => rw [tensorHom_comp_tensorHom, mul_hom, mul_hom, ← tensorHom_comp_tensorHom]
     simp only [Category.assoc]
 
 instance : IsMon_Hom (𝟙 X) where
@@ -971,7 +974,7 @@ instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
   mul_comm := by
     simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
       ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
-      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, ← tensor_comp,
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft,
       Mon_Class.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
 
 end SymmetricCategory

@@ -937,8 +937,7 @@ lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
   rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
   dsimp
-  simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
-    ← tensor_comp, left_triangle_components, tensorHom_id, id_whiskerRight, comp_id]
+  simp [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc]
 
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
@@ -968,7 +967,8 @@ instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
     dsimp only [comp_obj, comp_μ, id_obj, comp_δ]
     rw [Equiv.symm_apply_apply]
     dsimp [homEquiv]
-    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, tensor_comp, δ_natural_assoc]
+    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, ← tensorHom_comp_tensorHom,
+      δ_natural_assoc]
     dsimp
     rw [← adj'.map_μ_comp_counit_app_tensor, ← map_comp_assoc, ← map_comp_assoc,
       ← map_comp_assoc, ← adj.map_μ_comp_counit_app_tensor, assoc,
@@ -1119,10 +1119,8 @@ instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
   leftAdjoint_μ X Y := by
     simp only [toAdjunction, Adjunction.homEquiv_unit]
     dsimp [symm]
-    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc,
-      ← Functor.map_comp, ← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
-    dsimp
-    rw [tensorHom_id, id_whiskerRight, map_id, comp_id]
+    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc]
+    simp [← map_comp]
 
 section
 
