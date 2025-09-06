@@ -1,0 +1,131 @@
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+import Mathlib.CategoryTheory.Limits.Preserves.Over
+import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.ObjectProperty.Ind
+
+/-!
+# Ind and pro-properties
+
+Given a morphism property `P`, we define a morphism property `ind P` that is satisfied for
+`f : X ⟶ Y` if `Y` is a filtered colimit of `Yᵢ` and `fᵢ : X ⟶ Yᵢ` satisfy `P`.
+
+We show that `ind P` inherits stability properties from `P`.
+
+## Main definitions
+
+- `CategoryTheory.MorphismProperty.ind`: `f` satisfies `ind P` if `f` is a filtered colimit of
+  morphisms in `P`.
+- `CategoryTheory.MorphismProperty.compact`: `f : X ⟶ Y` is compact if `Y` viewed as an object of
+  `Under X` is compact.
+
+## Main results:
+
+- `CategoryTheory.MorphismProperty.ind_ind`: If `P` implies compact, then `P.ind.ind = P.ind`.
+
+## TODOs:
+
+- Dualise to obtain `pro P`.
+- Show `ind P` is stable under composition if `P` spreads out (Christian).
+-/
+
+universe v u
+
+namespace CategoryTheory.MorphismProperty
+
+open Limits Opposite
+
+variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
+
+/--
+Let `P` be a property of morphisms. `P.Ind` is satisfied for `f : X ⟶ Y`
+if there exists a family of natural maps `tᵢ : X ⟶ Yᵢ` and `sᵢ : Yᵢ ⟶ Y` indexed by `J`
+such that
+- `J` is filtered
+- `Y = colim Yᵢ` via `{sᵢ}ᵢ`
+- `tᵢ` satisfies `P` for all `i`
+- `f = tᵢ ≫ sᵢ` for all `i`.
+
+See `CategoryTheory.MorphismProperty.ind_iff_ind_under_mk` for an equivalent characterization
+in terms of `Y` as an object of `Under X`.
+-/
+def ind (P : MorphismProperty C) : MorphismProperty C :=
+  fun X Y f ↦ ∃ (J : Type v) (_ : SmallCategory J) (_ : IsFiltered J)
+    (D : J ⥤ C) (t : (Functor.const J).obj X ⟶ D) (s : D ⟶ (Functor.const J).obj Y)
+    (_ : IsColimit (Cocone.mk _ s)), ∀ j, P (t.app j) ∧ t.app j ≫ s.app j = f
+
+variable (C) in
+/-- A morphism `f : X ⟶ Y` is compact if `Y` is compact viewed as an object of `Under X`. -/
+def compact : MorphismProperty C :=
+  fun _ _ f ↦ ObjectProperty.compact _ (CategoryTheory.Under.mk f)
+
+lemma exists_hom_of_compact {J : Type v} [SmallCategory J] [IsFiltered J] {D : J ⥤ C} {c : Cocone D}
+    (hc : IsColimit c) {X A : C} {p : X ⟶ A} (hp : compact C p) (s : (Functor.const J).obj X ⟶ D)
+    (f : A ⟶ c.pt) (h : ∀ (j : J), s.app j ≫ c.ι.app j = p ≫ f) :
+    ∃ (j : J) (q : A ⟶ D.obj j), p ≫ q = s.app j ∧ q ≫ c.ι.app j = f :=
+  hp.exists_hom_of_isColimit_under hc _ s _ h
+
+lemma le_ind : P ≤ P.ind := by
+  intro X Y f hf
+  refine ⟨PUnit, inferInstance, inferInstance, (Functor.const PUnit).obj Y, ?_, 𝟙 _, ?_, ?_⟩
+  · exact { app _ := f }
+  · exact isColimitConstCocone _ _
+  · simpa
+
+variable {P}
+
+lemma ind_iff_ind_under_mk {X Y : C} (f : X ⟶ Y) :
+    P.ind f ↔ P.underObj.ind (CategoryTheory.Under.mk f) := by
+  refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_, fun ⟨J, _, _, pres, hpres⟩ ↦ ?_⟩
+  · refine ⟨J, ‹_›, ‹_›, ⟨?_, ?_, ?_⟩, ?_⟩
+    · exact Under.lift D t
+    · exact { app j := CategoryTheory.Under.homMk (s.app j) (by simp [hst]) }
+    · have : Nonempty J := IsFiltered.nonempty
+      refine Under.isColimitLiftCocone _ _ _ _ (by simp [hst]) hs
+    · simp [underObj, hst]
+  · refine ⟨J, ‹_›, ‹_›, pres.diag ⋙ CategoryTheory.Under.forget _, ?_, ?_, ?_, fun j ↦ ⟨?_, ?_⟩⟩
+    · exact { app j := (pres.diag.obj j).hom }
+    · exact Functor.whiskerRight pres.natTrans (CategoryTheory.Under.forget X)
+    · exact isColimitOfPreserves (CategoryTheory.Under.forget _) pres.isColimit
+    · exact hpres j
+    · simp
+
+lemma ind_under_eq_under_ind (X : C) : P.ind.underObj (X := X) = P.underObj.ind := by
+  ext f
+  simp [underObj, show f = CategoryTheory.Under.mk f.hom from rfl, ind_iff_ind_under_mk]
+
+variable (Q : MorphismProperty C)
+
+instance [P.RespectsLeft Q] : P.ind.RespectsLeft Q where
+  precomp {X Y Z} i hi f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
+    refine ⟨J, ‹_›, ‹_›, D, (Functor.const J).map i ≫ t, s, hs, fun j ↦ ⟨?_, by simp [hst]⟩⟩
+    exact RespectsLeft.precomp _ hi _ (hst j).1
+
+instance [P.RespectsIso] : P.ind.RespectsIso where
+  postcomp {X Y Z} i (hi : IsIso i) f := fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ by
+    refine ⟨J, ‹_›, ‹_›, D, t, s ≫ (Functor.const J).map i, ?_, fun j ↦ ⟨(hst j).1, ?_⟩⟩
+    · exact (IsColimit.equivIsoColimit (Cocones.ext (asIso i))) hs
+    · simp [reassoc_of% (hst j).2]
+
+lemma ind_under_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnderCobaseChange]
+    {f : Under X} (hf : P.underObj.ind f) : P.underObj.ind ((Under.pushout g).obj f) := by
+  obtain ⟨J, _, _, pres, hpres⟩ := hf
+  use J, inferInstance, inferInstance, pres.map (Under.pushout g)
+  intro i
+  exact P.pushout_inr _ _ (hpres i)
+
+instance [P.IsStableUnderCobaseChange] [HasPushouts C] : P.ind.IsStableUnderCobaseChange := by
+  refine .mk' fun A B A' f g _ hf ↦ ?_
+  rw [ind_iff_ind_under_mk] at hf ⊢
+  exact ind_under_pushout g hf
+
+/-- `ind` is idempotent if `P` implies compact. -/
+lemma ind_ind (hp : P ≤ compact C) : P.ind.ind = P.ind := by
+  refine le_antisymm (fun X Y f hf ↦ ?_) P.ind.le_ind
+  have : P.underObj ≤ ObjectProperty.compact (Under X) := fun f hf ↦ hp _ hf
+  simpa [ind_iff_ind_under_mk, ind_under_eq_under_ind, ObjectProperty.ind_ind this] using hf
+
+end CategoryTheory.MorphismProperty
