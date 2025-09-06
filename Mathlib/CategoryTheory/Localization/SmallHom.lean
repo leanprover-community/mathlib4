@@ -153,7 +153,6 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]
   rw [Equiv.symm_apply_apply]
-  erw [(equivShrink _).symm_apply_apply, (equivShrink _).symm_apply_apply]
   simp only [homEquiv_refl, homEquiv_comp]
 
 section
