@@ -273,10 +273,10 @@ end Topology
 
 section
 
-variable {𝕜 E F : Type*} {s : Set E} [SeminormedRing 𝕜] [AddCommGroup E]
-  [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
+variable {𝕜 E F : Type*} {s : Set E} [SeminormedRing 𝕜] [NormOneClass 𝕜]
+  [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
 
-theorem IsLinearMap.image_ballancedHull [NormOneClass 𝕜] {f : E → F} (hf : IsLinearMap 𝕜 f)
+theorem IsLinearMap.image_balancedHull {f : E → F} (hf : IsLinearMap 𝕜 f)
     (s : Set E) : f '' balancedHull 𝕜 s = balancedHull 𝕜 (f '' s) :=
   Set.Subset.antisymm
     (image_subset_iff.2 <|
@@ -284,5 +284,9 @@ theorem IsLinearMap.image_ballancedHull [NormOneClass 𝕜] {f : E → F} (hf : 
         (image_subset_iff.1 <| (subset_balancedHull 𝕜)))
     (((balancedHull.balanced _).is_linear_image hf).balancedHull_subset_of_subset
       (image_mono (subset_balancedHull 𝕜)))
+
+theorem LinearMap.image_balancedHull (f : E →ₗ[𝕜] F) (s : Set E) :
+    f '' balancedHull 𝕜 s = balancedHull 𝕜 (f '' s) :=
+  f.isLinear.image_balancedHull s
 
 end
