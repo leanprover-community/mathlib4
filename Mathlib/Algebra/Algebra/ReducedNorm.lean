@@ -11,7 +11,7 @@ a field `K`.
 
 ## Main definitions
 * `ReducedCharPoly e a` is the characteristic polynomial of `a : A` under the algebra isomorphism
-  `e : F ⊗[K] A ≃ₐ[K] Matrix n n F`, where `F` is a splitting field of `A`.
+  `e : F ⊗[K] A ≃ₐ[F] Matrix n n F`, where `F` is a splitting field of `A`.
 * `ReducedNorm e a` is a map that preserves multiplication and zero that sends `a : A` to the
   determinant of `a` under the algebra isomorphism `e`.
 * `ReducedTrace e a` is a `K`-linear map that sends `a : A` to the trace of `a` under the algebra
@@ -24,7 +24,7 @@ Noncommutative algebra, central simple algebra, reduced norm, reduced trace
 open scoped TensorProduct
 
 variable {K F A n : Type*} [Fintype n] [DecidableEq n] [Field K] [Field F] [Algebra K F] [Ring A]
-  [Algebra K A] (e : F ⊗[K] A ≃ₐ[K] Matrix n n F)
+  [Algebra K A] (e : F ⊗[K] A ≃ₐ[F] Matrix n n F)
 
 noncomputable section
 
