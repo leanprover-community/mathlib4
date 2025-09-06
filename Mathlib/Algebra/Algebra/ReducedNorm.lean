@@ -31,7 +31,7 @@ noncomputable section
 /-- The reduced characteristic polynomial of an element `a` in a central simple algebra `A` over a
   field `K`, given a splitting field `F` and an algebra isomorphism
   `e : F ⊗[K] A ≃ₐ[K] Matrix n n F`. -/
-def ReducedCharPoly (a : A) := (e (1 ⊗ₜ a)).charpoly
+def reducedCharPoly (a : A) := (e (1 ⊗ₜ a)).charpoly
 
 /-- The reduced norm of an element `a` in a central simple algebra `A` over a field `K`, given a
   splitting field `F` and an algebra isomorphism `e`. -/
