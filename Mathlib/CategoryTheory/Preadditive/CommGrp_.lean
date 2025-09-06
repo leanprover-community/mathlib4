@@ -72,7 +72,7 @@ def commGrpEquivalenceAux : CommGrp_.forget C ⋙ toCommGrp C ≅
       convert (Mon_Class.lift_comp_one_left 0 _).symm
       · simp
       · infer_instance
-  · aesop_cat
+  · cat_disch
 
 /-- An additive category is equivalent to its category of commutative group objects. -/
 @[simps!]

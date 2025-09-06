@@ -3,7 +3,7 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NNNorm
+import Mathlib.Analysis.Normed.Operator.NNNorm
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
@@ -166,7 +166,6 @@ theorem coe_mk {f : α →ₘ[μ] E} (hf : eLpNorm f p μ < ∞) : ((⟨f, hf⟩
 
 @[simp]
 theorem toLp_coeFn (f : Lp E p μ) (hf : MemLp f p μ) : hf.toLp f = f := by
-  cases f
   simp [MemLp.toLp]
 
 theorem eLpNorm_lt_top (f : Lp E p μ) : eLpNorm f p μ < ∞ :=
@@ -234,8 +233,6 @@ protected theorem coe_nnnorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
 theorem enorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
 
-@[deprecated (since := "2025-01-20")] alias nnnorm_coe_ennreal := enorm_def
-
 @[simp]
 lemma norm_toLp (f : α → E) (hf : MemLp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (eLpNorm f p μ) := by
   rw [norm_def, eLpNorm_congr_ae (MemLp.coeFn_toLp hf)]
@@ -247,8 +244,6 @@ theorem nnnorm_toLp (f : α → E) (hf : MemLp f p μ) :
 
 lemma enorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
   simp [enorm, nnnorm_toLp f hf, ENNReal.coe_toNNReal hf.2.ne]
-
-@[deprecated (since := "2025-01-20")] alias coe_nnnorm_toLp := enorm_toLp
 
 theorem dist_def (f g : Lp E p μ) : dist f g = (eLpNorm (⇑f - ⇑g) p μ).toReal := by
   simp_rw [dist, norm_def]
@@ -771,18 +766,16 @@ end RCLike
 theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by
   ext1
-  refine (coeFn_compLp' (L + L') f).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
+  grw [Lp.coeFn_add, coeFn_compLp']
   refine
-    EventuallyEq.trans ?_ (EventuallyEq.add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
+    EventuallyEq.trans ?_ (EventuallyEq.fun_add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
   filter_upwards with x
   rw [coe_add', Pi.add_def]
 
 theorem smul_compLp {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
     (c : 𝕜') (L : E →L[𝕜] F) (f : Lp E p μ) : (c • L).compLp f = c • L.compLp f := by
   ext1
-  refine (coeFn_compLp' (c • L) f).trans ?_
-  refine EventuallyEq.trans ?_ (Lp.coeFn_smul _ _).symm
+  grw [Lp.coeFn_smul, coeFn_compLp']
   refine (L.coeFn_compLp' f).mono fun x hx => ?_
   rw [Pi.smul_apply, hx, coe_smul', Pi.smul_def]
 
@@ -918,9 +911,23 @@ theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_t
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top (Lp.aestronglyMeasurable f) hε (by simp)
 
-@[deprecated (since := "2025-01-20")] alias pow_mul_meas_ge_le_norm := pow_mul_meas_ge_le_enorm
-@[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm := mul_meas_ge_le_pow_enorm
-@[deprecated (since := "2025-01-20")] alias mul_meas_ge_le_pow_norm' := mul_meas_ge_le_pow_enorm'
-@[deprecated (since := "2025-01-20")] alias meas_ge_le_mul_pow_norm := meas_ge_le_mul_pow_enorm
+section Star
+
+variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+
+protected noncomputable instance {p : ℝ≥0∞} : Star (Lp R p μ) where
+  star f := ⟨star (f : α →ₘ[μ] R),
+    by simpa [Lp.mem_Lp_iff_eLpNorm_lt_top] using Lp.eLpNorm_lt_top f⟩
+
+lemma coeFn_star {p : ℝ≥0∞} (f : Lp R p μ) : (star f : Lp R p μ) =ᵐ[μ] star f :=
+    (f : α →ₘ[μ] R).coeFn_star
+
+noncomputable instance {p : ℝ≥0∞} : InvolutiveStar (Lp R p μ) where
+  star_involutive _ := Subtype.ext <| star_involutive _
+
+noncomputable instance [TrivialStar R] {p : ℝ≥0∞} : TrivialStar (Lp R p μ) where
+  star_trivial _ := Subtype.ext <| star_trivial _
+
+end Star
 
 end MeasureTheory.Lp

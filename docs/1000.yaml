@@ -305,6 +305,10 @@ Q282331:
 
 Q282649:
   title: Pentagonal number theorem
+  url: https://github.com/wwylele/PentagonalNumberTheorem
+  authors: Weiyi Wang
+  comment: Formal power series only. Missing power series over complex numbers.
+  date: 2025-08-24
 
 Q283690:
   title: Arrival theorem
@@ -314,6 +318,9 @@ Q284960:
 
 Q285719:
   title: Thales's theorem
+  decl: EuclideanGeometry.Sphere.thales_theorem
+  authors: Li Jiale
+  date: 2025
 
 Q287347:
   title: Gradient theorem
@@ -383,8 +390,15 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2025
+  # TODO: cannot display several URLs nicely yet
+  # links   :
+  #  Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+  #  With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+  #  website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
-  # also in 100.yaml
 
 Q388525:
   title: Bell's theorem
@@ -665,8 +679,18 @@ Q657903:
 
 Q660799:
   title: Darboux's theorem (analysis)
-  # "all derivatives have the intermediate value property"
-  # TODO should exist in mathlib, add decl!
+  decls:
+    - exists_hasDerivWithinAt_eq_of_gt_of_lt
+    - exists_hasDerivWithinAt_eq_of_lt_of_gt
+    - Set.OrdConnected.image_hasDerivWithinAt
+    - Set.OrdConnected.image_derivWithin
+    - Set.OrdConnected.image_deriv
+    - Convex.image_hasDerivWithinAt
+    - Convex.image_derivWithin
+    - Convex.image_deriv
+    - exists_hasDerivWithinAt_eq_of_ge_of_le
+    - exists_hasDerivWithinAt_eq_of_le_of_ge
+  authors: Yury Kudryashov
 
 Q670235:
   title: Fundamental theorem of arithmetic
@@ -795,10 +819,9 @@ Q766722:
   # theorem about Hamiltonian mechanics
 
 Q776578:
-  title: Artin–Wedderburn theorem
-  # in Mathlib/RingTheory/SimpleModule/Basic.lean
-  comment: "statement is formalized using proof_wanted (isSemisimpleRing_iff_pi_matrix_divisionRing)"
-  # WIP formalisation, but not complete yet (January 1, 2025)
+  title: Wedderburn–Artin theorem
+  decl: IsSimpleRing.exists_algEquiv_matrix_divisionRing
+  decl: IsSemisimpleRing.exists_algEquiv_pi_matrix_divisionRing
 
 Q777924:
   title: Tijdeman's theorem
@@ -1442,6 +1465,10 @@ Q1227061:
 
 Q1227702:
   title: Dirichlet's unit theorem
+  decls:
+    - NumberField.Units.basisModTorsion
+    - NumberField.Units.exist_unique_eq_mul_prod
+  authors: Xavier Roblot
 
 Q1227703:
   title: Dirichlet's approximation theorem
@@ -2043,7 +2070,12 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
-  # TODO: does mathlib have these?
+  decls:
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime
+    - Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap
+    - Algebra.HasGoingDown.of_specComap_localRingHom_surjective
+  date: 2025
 
 Q2394548:
   title: Hurewicz theorem

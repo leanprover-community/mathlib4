@@ -37,7 +37,7 @@ If `f` is differentiable and `w` is in the interior of the ball, then the integr
 def circleTransform (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • (circleMap z R θ - w)⁻¹ • f (circleMap z R θ)
 
-/-- The derivative of `circleTransform` w.r.t `w`. -/
+/-- The derivative of `circleTransform` w.r.t. `w`. -/
 def circleTransformDeriv (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ - w) ^ 2)⁻¹ • f (circleMap z R θ)
 
@@ -60,7 +60,7 @@ theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
   ring
 
 theorem integral_circleTransform (f : ℂ → E) :
-    (∫ θ : ℝ in (0)..2 * π, circleTransform R z w f θ) =
+    (∫ θ : ℝ in 0..2 * π, circleTransform R z w f θ) =
       (2 * ↑π * I)⁻¹ • ∮ z in C(z, R), (z - w)⁻¹ • f z := by
   simp_rw [circleTransform, circleIntegral, deriv_circleMap, circleMap]
   simp

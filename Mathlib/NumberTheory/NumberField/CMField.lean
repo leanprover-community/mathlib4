@@ -76,9 +76,9 @@ All the conjugations of a `CM`-extension are the same.
 -/
 theorem isConj_eq_isConj {φ ψ : K →+* ℂ} {σ τ : K ≃ₐ[F] K} (hφ : IsConj φ σ) (hψ : IsConj ψ τ) :
     σ = τ := by
-  have : Fintype.card (K ≃ₐ[F] K) = 2 :=
+  have : Nat.card (K ≃ₐ[F] K) = 2 :=
     (IsQuadraticExtension.finrank_eq_two F K) ▸ IsGalois.card_aut_eq_finrank F K
-  rw [← Nat.card_eq_fintype_card, Nat.card_eq_two_iff' 1] at this
+  rw [Nat.card_eq_two_iff' 1] at this
   exact ExistsUnique.unique this
     ((isConj_ne_one_iff hφ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ)
     ((isConj_ne_one_iff hψ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal ψ)
@@ -132,7 +132,7 @@ The complex conjugation generates the Galois group of `K/F`.
 theorem zpowers_complexConj_eq_top :
     Subgroup.zpowers (complexConj F K) = ⊤ := by
   refine Subgroup.eq_top_of_card_eq _ ?_
-  rw [Nat.card_zpowers, orderOf_complexConj, Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank,
+  rw [Nat.card_zpowers, orderOf_complexConj, IsGalois.card_aut_eq_finrank,
     IsQuadraticExtension.finrank_eq_two]
 
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
@@ -214,7 +214,7 @@ theorem of_forall_isConj {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsC
     let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
     have hσ' : σ ≠ 1 :=
       (isConj_ne_one_iff (hσ φ)).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ
-    rw [finrank_fixedField_eq_card, Fintype.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
+    rw [finrank_fixedField_eq_card, Nat.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
   exact ofCMExtension (fixedField (Subgroup.zpowers σ)) K
 
 /--

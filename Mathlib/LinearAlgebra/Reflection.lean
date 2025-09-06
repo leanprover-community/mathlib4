@@ -44,7 +44,7 @@ is characterised by properties 1 and 2 above, and is a linear isometry.
 Related definitions of reflection exists elsewhere in the library. These more specialised
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
-should connect (or unify) these definitions with `Module.reflecton` defined here.
+should connect (or unify) these definitions with `Module.reflection` defined here.
 
 -/
 
@@ -205,7 +205,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     set k : ℤ := m / 2
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
-      add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
+      add_mul_ediv_left _ k (by simp : (2 : ℤ) ≠ 0)]
     have he : e = 0 ∨ e = 1 := by omega
     clear_value e
     /- Now, equate the coefficients on both sides. These linear combinations were
@@ -352,7 +352,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
     abel
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
-    intros n
+    intro n
     induction n with
     | zero => simp
     | succ n ih =>

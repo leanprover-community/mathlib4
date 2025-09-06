@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Data.Finsupp.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
@@ -135,11 +136,6 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
 variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M] (w : σ → M)
   {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
   [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Module R M]
-
-instance : SMulPosMono ℕ M :=
-  ⟨fun b hb m m' h ↦ by
-    rw [← Nat.add_sub_of_le h, add_smul]
-    exact le_add_of_nonneg_right (nsmul_nonneg hb (m' - m))⟩
 
 variable {w} in
 theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
