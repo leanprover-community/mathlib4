@@ -430,6 +430,10 @@ theorem norm_derivWithin_eq_norm_fderivWithin : ‖derivWithin f s x‖ = ‖fde
 theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
   rfl
 
+theorem derivWithin_eq_deriv (hs : UniqueDiffWithinAt 𝕜 s x) (h : DifferentiableAt 𝕜 f x) :
+    derivWithin f s x = deriv f x := by
+  rw [derivWithin, deriv, fderivWithin_eq_fderiv hs h]
+
 @[simp]
 theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
   rw [← fderiv_deriv, ← ContinuousLinearMap.map_smul]
