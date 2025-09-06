@@ -1066,6 +1066,11 @@ theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
     obtain ⟨y, hy⟩ := hf i ⟨x, hx⟩
     exact ⟨y, i, congr_arg Subtype.val hy⟩
 
+lemma iUnion_sumElim {ι σ : Type*} (s : ι → Set α) (t : σ → Set α) :
+    ⋃ x, Sum.elim s t x = (⋃ x, s x) ∪ ⋃ x, t x := by
+  ext
+  simp
+
 theorem union_distrib_iInter_left (s : ι → Set α) (t : Set α) : (t ∪ ⋂ i, s i) = ⋂ i, t ∪ s i :=
   sup_iInf_eq _ _
 
