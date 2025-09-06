@@ -696,8 +696,7 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
           rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
             simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl, Sum.lex_inr_inr,
               sumProdDistrib_apply_left, sumProdDistrib_apply_right, reduceCtorEq] <;>
-            -- Porting note: `Sum.inr.inj_iff` is required.
-            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff, true_or, false_and, false_or]⟩⟩⟩
+            simp⟩⟩⟩
 
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
@@ -769,7 +768,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
   ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
-    -- Porting note: `induction` tactics are required because of the parser bug.
+    -- We use the `induction` tactic in order to change `h`/`H` too.
     le_of_not_gt <| by
       induction a using inductionOn with
       | H α r =>
@@ -1014,14 +1013,12 @@ theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a
   | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
 
 theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  -- Porting note: `⟨b, rfl⟩ => by` → `⟨b, e⟩ => by subst e`
   | a, _, b0, ⟨b, e⟩ => by
     subst e
-    -- Porting note: `Ne` is required.
     simpa only [mul_one] using
       mul_le_mul_left'
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by
-          simp only [h, mul_zero, Ne, not_true_eq_false] at b0) a
+        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
+        a
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
   if a0 : a = 0 then by subst a; exact (eq_zero_of_zero_dvd h₁).symm

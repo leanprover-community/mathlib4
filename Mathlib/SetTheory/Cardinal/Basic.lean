@@ -840,7 +840,6 @@ theorem mk_sep (s : Set α) (t : α → Prop) : #({ x ∈ s | t x } : Set α) = 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} #(f ⁻¹' s) ≤ lift.{u} #s := by
   rw [lift_mk_le.{0}]
-  -- Porting note: Needed to insert `mem_preimage.mp` below
   use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
 
