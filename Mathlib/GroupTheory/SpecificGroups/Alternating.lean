@@ -45,7 +45,7 @@ consisting of the even permutations.
 
 ## Instances
 
-* The alternating group is a characteristic subgroup of the permutaiton group.
+* The alternating group is a characteristic subgroup of the permutation group.
 
 ## Tags
 alternating group permutation simple characteristic index
@@ -110,6 +110,13 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
+
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
 
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
@@ -240,7 +247,7 @@ open Equiv.Perm
 theorem eq_bot_of_card_le_two (h2 : card α ≤ 2) : alternatingGroup α = ⊥ := by
   nontriviality α
   suffices hα' : card α = 2 by
-    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by norm_num),
+    rw [Subgroup.eq_bot_iff_card, ← Nat.mul_right_inj (a := 2) (by simp),
       Nat.card_eq_fintype_card, two_mul_card_alternatingGroup, mul_one, card_perm, hα',
       Nat.factorial_two]
   exact h2.antisymm Fintype.one_lt_card
@@ -274,7 +281,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
-      -- Porting note: added `:` to help the elaborator
+      -- Porting note: added `:` to help the elaborator (otherwise we get a timeout)
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 

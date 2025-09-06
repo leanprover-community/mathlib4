@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.Ring.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
@@ -83,7 +83,7 @@ instance : Inhabited (Colex α) := ⟨⟨∅⟩⟩
 lemma ofColex_toColex (s : Finset α) : ofColex (toColex s) = s := rfl
 lemma toColex_inj {s t : Finset α} : toColex s = toColex t ↔ s = t := by simp
 @[simp]
-lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := by cases s; cases t; simp
+lemma ofColex_inj {s t : Colex α} : ofColex s = ofColex t ↔ s = t := Colex.ext_iff.symm
 lemma toColex_ne_toColex {s t : Finset α} : toColex s ≠ toColex t ↔ s ≠ t := by simp
 lemma ofColex_ne_ofColex {s t : Colex α} : ofColex s ≠ ofColex t ↔ s ≠ t := by simp
 
@@ -511,7 +511,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by positivity) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by omega) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the

@@ -134,7 +134,7 @@ private structure PartialMatch where
   /-- Trie to match next -/
   trie : TrieIndex
   /-- Metavariable assignments for `.labelledStar` patterns in the discrimination tree.
-    We use a `List Key`, in the reverse order. -/
+  We use a `List Key`, in the reverse order. -/
   treeStars : Std.HashMap Nat (List Key) := {}
   deriving Inhabited
 
