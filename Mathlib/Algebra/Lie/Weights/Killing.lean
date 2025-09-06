@@ -424,7 +424,6 @@ lemma disjoint_ker_weight_corootSpace (α : Weight K H L) :
     Disjoint α.ker (corootSpace α) := by
   rw [disjoint_iff]
   refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ ?_
-  replace hαx : α x = 0 := by simpa using hαx
   exact eq_zero_of_apply_eq_zero_of_mem_corootSpace x α hαx hx
 
 lemma root_apply_cartanEquivDual_symm_ne_zero {α : Weight K H L} (hα : α.IsNonZero) :
