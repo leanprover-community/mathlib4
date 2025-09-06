@@ -358,8 +358,8 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
-  {x y : E}
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+  [IsStrictOrderedModule 𝕜 E] [PosSMulReflectLT 𝕜 E] {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by

@@ -299,7 +299,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E]
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [NormedSpace ℝ F] [CompleteSpace F]
-  [OrderedSMul ℝ F]
+  [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
@@ -322,7 +322,7 @@ namespace Submartingale
 section
 
 variable {F : Type*} [NormedAddCommGroup F] [Lattice F] [IsOrderedAddMonoid F]
-  [NormedSpace ℝ F] [CompleteSpace F] [OrderedSMul ℝ F]
+  [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
     Submartingale (c • f) ℱ μ := by
