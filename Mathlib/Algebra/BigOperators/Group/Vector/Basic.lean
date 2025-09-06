@@ -18,11 +18,6 @@ theorem prod_insertIdx {i} : (v.insertIdx a i).toList.prod = a * v.toList.prod :
 @[to_additive (attr := simp)]
 theorem mul_prod_eraseIdx {v : List.Vector M (n + 1)} {i} :
     v[i] * (v.eraseIdx i).toList.prod = v.toList.prod := by
-  /-
-  rw [← prod_insertIdx (i := i)]
-  congr
-  sorry
-  -/
   apply List.mul_prod_eraseIdx
 
 end CommMonoid
