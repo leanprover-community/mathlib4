@@ -12,6 +12,12 @@ open scoped Finset
 
 variable {K E : Type*} [RCLike K]
 
+open ComplexOrder RCLike in
+lemma convex_RCLike_iff_convex_real [AddCommMonoid E] [Module K E] [Module ℝ E]
+    [IsScalarTower ℝ K E] {s : Set E} : Convex K s ↔ Convex ℝ s :=
+  ⟨Convex.orderedSMul_convex,
+  fun hs => convex_of_nonneg_surjective_algebraMap _ (fun _ => nonneg_iff_exists_ofReal.mp) hs⟩
+
 namespace Polynomial
 
 theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) p :=
