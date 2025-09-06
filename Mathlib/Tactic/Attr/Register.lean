@@ -31,11 +31,6 @@ register_simp_attr functor_norm
 /-- Simp set for `functor_norm` -/
 register_simp_attr monad_norm
 
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
-
 /-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps
 

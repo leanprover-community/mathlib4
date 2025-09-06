@@ -76,7 +76,6 @@ variable [Mul M₀] [Zero M₀] [NoZeroDivisors M₀] {a b : M₀}
 theorem eq_zero_of_mul_self_eq_zero (h : a * a = 0) : a = 0 :=
   (eq_zero_or_eq_zero_of_mul_eq_zero h).elim id id
 
-@[field_simps]
 theorem mul_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
   mt eq_zero_or_eq_zero_of_mul_eq_zero <| not_or.mpr ⟨ha, hb⟩
 
@@ -176,7 +175,6 @@ lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
 
 lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
 
-@[field_simps]
 lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
 
 instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
