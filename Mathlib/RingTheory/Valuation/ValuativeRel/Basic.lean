@@ -793,7 +793,7 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
-/-- Any rank-at-most-one valuation has a mul-archimedean value group.
+/-- Any rank-at-most-one valuation has a mul-Archimedean value group.
 The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`
 which is in a later file since it requires a larger theory of reals. -/
 instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by

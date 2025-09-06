@@ -26,7 +26,7 @@ Furthermore, we show that there is an `OrderIso` between such an order and a sub
 ## Main definitions
 
 * `toZ i0 i`: in a linear order on which we can define predecessors and successors and which is
-  succ-archimedean, we can assign a unique integer `toZ i0 i` to each element `i : ι` while
+  succ-Archimedean, we can assign a unique integer `toZ i0 i` to each element `i : ι` while
   respecting the order, starting from `toZ i0 i0 = 0`.
 
 ## Main results
@@ -36,10 +36,10 @@ Results about linear locally finite orders:
 * `LinearLocallyFiniteOrder.PredOrder`: a linear locally finite order has a predecessor
   function.
 * `LinearLocallyFiniteOrder.isSuccArchimedean`: a linear locally finite order is
-  succ-archimedean.
-* `LinearOrder.pred_archimedean_of_succ_archimedean`: a succ-archimedean linear order is also
-  pred-archimedean.
-* `countable_of_linear_succ_pred_arch` : a succ-archimedean linear order is countable.
+  succ-Archimedean.
+* `LinearOrder.pred_archimedean_of_succ_archimedean`: a succ-Archimedean linear order is also
+  pred-Archimedean.
+* `countable_of_linear_succ_pred_arch` : a succ-Archimedean linear order is countable.
 
 About `toZ`:
 * `orderIsoRangeToZOfLinearSuccPredArch`: `toZ` defines an `OrderIso` between `ι` and its
