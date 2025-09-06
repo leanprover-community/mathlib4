@@ -234,3 +234,33 @@ theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : 
   hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
 
 end Dense
+
+namespace ClosedSubmodule
+
+instance (K : ClosedSubmodule 𝕜 E) : IsClosed K.carrier := K.isClosed'
+
+instance (K : Submodule 𝕜 E) [CompleteSpace E] [IsClosed K.carrier] : CompleteSpace K := by
+  have : CompleteSpace K.carrier := by infer_instance
+  exact this
+
+@[simp]
+theorem eq_orthogonal_orthogonal (K : ClosedSubmodule 𝕜 E) [K.HasOrthogonalProjection] :
+    (Kᗮ)ᗮ = K := by ext x; simp
+
+theorem eq_iff_orthogonal_eq_orthogonal (K₁ K₂ : ClosedSubmodule 𝕜 E) [K₁.HasOrthogonalProjection]
+    [K₂.HasOrthogonalProjection] : K₁ᗮ = K₂ᗮ ↔ K₁ = K₂ := by
+  constructor
+  · intro h
+    rw [← eq_orthogonal_orthogonal K₁, ← eq_orthogonal_orthogonal K₂]
+    exact congrArg orthogonal h
+  · intro h
+    exact congrArg orthogonal h
+
+/-- The sup of two orthogonal subspaces equals the subspace orthogonal
+to the inf. -/
+theorem sup_orthogonal (K₁ K₂ : ClosedSubmodule 𝕜 E) [CompleteSpace E] :
+    K₁ᗮ ⊔ K₂ᗮ = (K₁ ⊓ K₂)ᗮ := by
+  rw [← eq_orthogonal_orthogonal (K₁ᗮ ⊔ K₂ᗮ), ← inf_orthogonal]
+  simp
+
+end ClosedSubmodule
