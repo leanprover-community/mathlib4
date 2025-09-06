@@ -314,6 +314,19 @@ theorem AbsConvex.is_linear_preimage {s : Set F} (hs : AbsConvex 𝕜 s) {f : E 
     (hf : IsLinearMap 𝕜 f) : AbsConvex 𝕜 (f ⁻¹' s) :=
   hs.linear_preimage <| hf.mk' f
 
+theorem IsLinearMap.image_absConvexHull {f : E → F} (hf : IsLinearMap 𝕜 f) (s : Set E) :
+    f '' absConvexHull 𝕜 s = absConvexHull 𝕜 (f '' s) :=
+  Set.Subset.antisymm
+    (image_subset_iff.2 <|
+      absConvexHull_min (image_subset_iff.1 <| subset_absConvexHull)
+        (absConvex_absConvexHull.is_linear_preimage hf))
+    (absConvexHull_min (image_mono subset_absConvexHull) <|
+      absConvex_absConvexHull.is_linear_image hf)
+
+theorem LinearMap.image_absConvexHull (f : E →ₗ[𝕜] F) (s : Set E) :
+    f '' absConvexHull 𝕜 s = absConvexHull 𝕜 (f '' s) :=
+  f.isLinear.image_absConvexHull s
+
 end
 
 lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
