@@ -24,7 +24,7 @@ section Pi
 variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] {f : X → PiLp q E}
 
 lemma memLp_piLp_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ := by
-  simp_rw [← PiLp.ofLp_apply, ← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]
+  simp_rw [← memLp_pi_iff, ← Function.comp_apply (f := WithLp.ofLp)]
   exact (PiLp.lipschitzWith_ofLp q E).memLp_comp_iff_of_antilipschitz
     (PiLp.antilipschitzWith_ofLp q E) (by simp) |>.symm
 
@@ -51,7 +51,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : X → 
 
 lemma memLp_prodLp_iff :
     MemLp f p μ ↔ MemLp (fun x ↦ (f x).fst) p μ ∧ MemLp (fun x ↦ (f x).snd) p μ := by
-  simp_rw [← memLp_prod_iff]
+  simp_rw [← WithLp.ofLp_fst, ← WithLp.ofLp_snd, ← memLp_prod_iff]
   exact (WithLp.prod_lipschitzWith_ofLp q E F).memLp_comp_iff_of_antilipschitz
     (WithLp.prod_antilipschitzWith_ofLp q E F) (by simp) |>.symm
 

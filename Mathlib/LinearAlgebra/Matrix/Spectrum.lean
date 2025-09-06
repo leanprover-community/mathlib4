@@ -19,6 +19,8 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 
 spectral theorem, diagonalization theorem -/
 
+open WithLp
+
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
@@ -191,7 +193,8 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, mul_zero, zero_mul] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
-  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
+  exact ⟨_, _, hi, (ofLp_eq_zero 2).ne.2 <| hA.eigenvectorBasis.orthonormal.ne_zero i,
+    hA.mulVec_eigenvectorBasis i⟩
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
