@@ -63,8 +63,7 @@ lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
 
 @[simp]
 lemma lift_left {R S T : Over X} (f : R ⟶ S) (g : R ⟶ T) :
-    (CartesianMonoidalCategory.lift f g).left =
-      pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
+    (lift f g).left = pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
 
 @[simp]
 lemma toUnit_left {R : Over X} : (toUnit R).left = R.hom := rfl

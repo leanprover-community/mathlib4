@@ -429,7 +429,7 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
 /-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
 For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
 @[simps]
-def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
     J ⥤ Over X where
   obj j := mk (s.app j)
   map f := homMk (D.map f)
@@ -438,7 +438,7 @@ def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.cons
 @[simps]
 def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
     (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
-    Cone (lift D s) where
+    Cone (Over.lift D s) where
   pt := mk p
   π.app j := homMk (c.π.app j)
 
@@ -828,7 +828,7 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
 
 /-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
 @[simps]
-def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
     J ⥤ Under X where
   obj j := .mk (s.app j)
   map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
@@ -838,15 +838,15 @@ def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).o
 def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
     Cocone (Under.lift D s) where
-  pt := .mk p
-  ι.app j := Under.homMk (c.ι.app j)
+  pt := mk p
+  ι.app j := homMk (c.ι.app j)
 
 /-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
 and `J` is nonempty. -/
 def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
-    IsColimit c → IsColimit (Under.liftCocone D s c p hp) := by
+    IsColimit c → IsColimit (liftCocone D s c p hp) := by
   refine fun hc ↦ ⟨fun s ↦ Under.homMk ?_ ?_, fun _ _ ↦ ?_, fun c m hm ↦ ?_⟩
   · exact hc.desc ((Under.forget _).mapCocone s)
   · obtain ⟨j⟩ : Nonempty J := ‹_›
