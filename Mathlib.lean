@@ -5149,6 +5149,7 @@ import Mathlib.Order.Set
 import Mathlib.Order.SetIsMax
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Shrink
+import Mathlib.Order.SigmaCompleteLattice
 import Mathlib.Order.Sublattice
 import Mathlib.Order.Sublocale
 import Mathlib.Order.SuccPred.Archimedean
