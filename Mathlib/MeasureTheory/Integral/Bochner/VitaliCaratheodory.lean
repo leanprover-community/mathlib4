@@ -30,18 +30,18 @@ not a real problem.
 ## Sketch of proof
 
 Decomposing `f` as the difference of its positive and negative parts, it suffices to show that a
-positive function can be bounded from above by a lower semicontinuous function, and from below
-by an upper semicontinuous function, with integrals close to that of `f`.
+positive function can be bounded from above by a lower-semicontinuous function, and from below
+by an upper-semicontinuous function, with integrals close to that of `f`.
 
 For the bound from above, write `f` as a series `∑' n, cₙ * indicator (sₙ)` of simple functions.
 Then, approximate `sₙ` by a larger open set `uₙ` with measure very close to that of `sₙ` (this is
 possible by regularity of the measure), and set `g = ∑' n, cₙ * indicator (uₙ)`. It is
-lower semicontinuous as a series of lower semicontinuous functions, and its integral is arbitrarily
+lower semicontinuous as a series of lower-semicontinuous functions, and its integral is arbitrarily
 close to that of `f`.
 
 For the bound from below, use finitely many terms in the series, and approximate `sₙ` from inside by
 a closed set `Fₙ`. Then `∑ n < N, cₙ * indicator (Fₙ)` is bounded from above by `f`, it is
-upper semicontinuous as a finite sum of upper semicontinuous functions, and its integral is
+upper semicontinuous as a finite sum of upper-semicontinuous functions, and its integral is
 arbitrarily close to that of `f`.
 
 The main pain point in the implementation is that one needs to jump between the spaces `ℝ`, `ℝ≥0`,
@@ -81,10 +81,10 @@ namespace MeasureTheory
 
 local infixr:25 " →ₛ " => SimpleFunc
 
-/-! ### Lower semicontinuous upper bound for nonnegative functions -/
+/-! ### Lower-semicontinuous upper bound for nonnegative functions -/
 
 
-/-- Given a simple function `f` with values in `ℝ≥0`, there exists a lower semicontinuous
+/-- Given a simple function `f` with values in `ℝ≥0`, there exists a lower-semicontinuous
 function `g ≥ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
@@ -151,7 +151,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     abel
 
 open SimpleFunc in
-/-- Given a measurable function `f` with values in `ℝ≥0`, there exists a lower semicontinuous
+/-- Given a measurable function `f` with values in `ℝ≥0`, there exists a lower-semicontinuous
 function `g ≥ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
@@ -189,7 +189,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
         · intro n; exact (SimpleFunc.measurable _).coe_nnreal_ennreal.aemeasurable
 
 /-- Given a measurable function `f` with values in `ℝ≥0` in a sigma-finite space, there exists a
-lower semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
+lower-semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
 Formulation in terms of `lintegral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
 theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → ℝ≥0)
@@ -215,7 +215,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
       _ = (∫⁻ x : α, f x ∂μ) + ε := by rw [add_assoc, ENNReal.add_halves]
 
 /-- Given an almost everywhere measurable function `f` with values in `ℝ≥0` in a sigma-finite space,
-there exists a lower semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
+there exists a lower-semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
 Formulation in terms of `lintegral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
 theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite μ] (f : α → ℝ≥0)
@@ -252,7 +252,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
 variable {μ}
 
 /-- Given an integrable function `f` with values in `ℝ≥0` in a sigma-finite space, there exists a
-lower semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
+lower-semicontinuous function `g > f` with integral arbitrarily close to that of `f`.
 Formulation in terms of `integral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
 theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : α → ℝ≥0)
@@ -298,10 +298,10 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
     · apply Filter.Eventually.of_forall fun x => _; simp
     · apply gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable
 
-/-! ### Upper semicontinuous lower bound for nonnegative functions -/
+/-! ### Upper-semicontinuous lower bound for nonnegative functions -/
 
 
-/-- Given a simple function `f` with values in `ℝ≥0`, there exists an upper semicontinuous
+/-- Given a simple function `f` with values in `ℝ≥0`, there exists an upper-semicontinuous
 function `g ≤ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
@@ -366,7 +366,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     conv_lhs => rw [← ENNReal.add_halves ε]
     abel
 
-/-- Given an integrable function `f` with values in `ℝ≥0`, there exists an upper semicontinuous
+/-- Given an integrable function `f` with values in `ℝ≥0`, there exists an upper-semicontinuous
 function `g ≤ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
@@ -398,7 +398,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     _ ≤ (∫⁻ x, g x ∂μ) + ε / 2 + ε / 2 := add_le_add gint le_rfl
     _ = (∫⁻ x, g x ∂μ) + ε := by rw [add_assoc, ENNReal.add_halves]
 
-/-- Given an integrable function `f` with values in `ℝ≥0`, there exists an upper semicontinuous
+/-- Given an integrable function `f` with values in `ℝ≥0`, there exists an upper-semicontinuous
 function `g ≤ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `integral`.
 Auxiliary lemma for Vitali-Carathéodory theorem `exists_lt_lower_semicontinuous_integral_lt`. -/
