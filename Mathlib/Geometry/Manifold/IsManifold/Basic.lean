@@ -379,6 +379,11 @@ protected theorem rightInvOn : RightInvOn I.symm I (range I) :=
 protected theorem right_inv {x : E} (hx : x ∈ range I) : I (I.symm x) = x :=
   I.rightInvOn hx
 
+lemma rightInverse_restrict :
+    RightInverse ((range I).restrict I.symm) (Set.codRestrict I (range I) (by simp)) := by
+  intro ⟨x, hx⟩
+  simp [restrict_apply, Subtype.ext_iff_val, I.right_inv hx]
+
 theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
   I.injective.preimage_image s
 
@@ -393,6 +398,13 @@ theorem isClosedEmbedding : IsClosedEmbedding I :=
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
+lemma isClosedEmbedding_symm_restrict [T2Space H] : IsClosedEmbedding ((range I).restrict I.symm) :=
+  I.rightInverse_restrict.isClosedEmbedding (I.continuous.codRestrict (by simp))
+    I.continuousOn_symm.restrict
+
+lemma isEmbedding_symm_restrict : IsEmbedding ((range I).restrict I.symm) :=
+  IsEmbedding.of_leftInverse I.rightInverse_restrict (I.continuous.codRestrict (by simp))
+    I.continuousOn_symm.restrict
 
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
@@ -920,6 +932,28 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h1 := (contDiffGroupoid n I).compatible hf1 hg1
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
+
+section
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
+    {e : PartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    {e' : PartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
+    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+  simp only [maximalAtlas, mem_maximalAtlas_iff]
+  rintro e'' ⟨f, hf, f', hf', rfl⟩
+  rw [_root_.PartialHomeomorph.prod_symm_trans_prod, _root_.PartialHomeomorph.prod_symm_trans_prod]
+  exact ⟨contDiffGroupoid_prod
+    (compatible_of_mem_maximalAtlas he (subset_maximalAtlas hf))
+    (compatible_of_mem_maximalAtlas he' (subset_maximalAtlas hf')),
+    contDiffGroupoid_prod
+      (compatible_of_mem_maximalAtlas (subset_maximalAtlas hf) he)
+      (compatible_of_mem_maximalAtlas (subset_maximalAtlas hf') he')⟩
+
+end
 
 section DisjointUnion
 
