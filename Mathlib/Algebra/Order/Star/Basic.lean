@@ -12,6 +12,7 @@ import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Algebra.Star.StarProjection
+import Mathlib.Algebra.Order.Module.OrderedSMul
 
 /-! # Star ordered rings
 
@@ -391,6 +392,17 @@ instance [IsCancelAdd R] : IsStrictOrderedModule R A where
 @[deprecated smul_lt_smul_of_pos_left (since := "2025-08-24")]
 lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b)
     (hc : 0 < c) : c • a < c • b := smul_lt_smul_of_pos_left hab hc
+
+instance (priority := 100) StarModule.toOrderedSMul {𝕜 : Type*} [DivisionSemiring 𝕜]
+    [PartialOrder 𝕜] [StarRing 𝕜] [StarOrderedRing 𝕜] [PosMulReflectLT 𝕜] [Module 𝕜 A]
+    [StarModule 𝕜 A] [NoZeroSMulDivisors 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] :
+    OrderedSMul 𝕜 A where
+  smul_lt_smul_of_pos := StarModule.smul_lt_smul_of_pos
+  lt_of_smul_lt_smul_of_pos {a} {b} {c} hab hc := by
+    have hc' : c⁻¹ * c = 1 := inv_mul_cancel₀ (ne_of_lt hc).symm
+    have hmain : c⁻¹ • (c • a) < c⁻¹ • (c • b) := StarModule.smul_lt_smul_of_pos hab
+      (inv_pos_of_pos hc)
+    simpa [smul_smul, hc'] using hmain
 
 end StarModule
 
