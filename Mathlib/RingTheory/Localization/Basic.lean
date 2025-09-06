@@ -338,15 +338,15 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     [IsLocalization M₁ S₁] [IsLocalization M₂ S₂]
     [IsLocalization (Algebra.algebraMapSubmonoid S₂ M₁) T] :
     IsLocalization (Algebra.algebraMapSubmonoid S₁ M₂) T where
-  map_units' := by
+  map_units := by
     rintro ⟨m, ⟨a, ha, rfl⟩⟩
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
-    exact IsUnit.map _ (IsLocalization.map_units' ⟨a, ha⟩)
-  surj' a := by
+    exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩)
+  surj a := by
     obtain ⟨⟨y, -, m, hm, rfl⟩, hy⟩ := surj (M := Algebra.algebraMapSubmonoid S₂ M₁) a
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
     obtain ⟨⟨z, n, hn⟩, hz⟩ := IsLocalization.surj (M := M₂) y
-    have hunit : IsUnit (algebraMap R S₁ m) := map_units' ⟨m, hm⟩
+    have hunit : IsUnit (algebraMap R S₁ m) := map_units _ ⟨m, hm⟩
     use ⟨algebraMap R S₁ z * hunit.unit⁻¹, ⟨algebraMap R S₁ n, n, hn, rfl⟩⟩
     rw [map_mul, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
     conv_rhs => rw [← IsScalarTower.algebraMap_apply]
