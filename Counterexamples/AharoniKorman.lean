@@ -545,7 +545,7 @@ theorem exists_partition_iff_nonempty_spinalMap
   · rintro ⟨f⟩
     refine ⟨_, (Setoid.ker f).isPartition_classes, ?_⟩
     rintro _ ⟨x, rfl⟩
-    exact ⟨f.fibre_antichain _, f x, by simp [Setoid.ker, Function.onFun]⟩
+    exact ⟨f.fibre_antichain _, f x, by simp⟩
 
 variable {f : SpinalMap C}
 
