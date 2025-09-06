@@ -112,6 +112,10 @@ def coreId : (𝟭 C).core ≅ 𝟭 (Core C) := Iso.refl _
 def coreComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) :
     (F ⋙ G).core ≅ F.core ⋙ G.core := Iso.refl _
 
+lemma core_comp_inclusion (F : C ⥤ D) :
+    F.core ⋙ Core.inclusion D = Core.inclusion C ⋙ F :=
+  rfl
+
 end Functor
 
 namespace Iso
@@ -159,6 +163,33 @@ lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Categ
   cat_disch
 
 end Iso
+
+namespace Core
+
+variable {G : Type u₂} [Groupoid.{v₂} G]
+
+lemma functorToCore_comp_left {G' : Type u₃} [Groupoid.{v₃} G'] (H : G ⥤ C) (F : G' ⥤ G) :
+    functorToCore (F ⋙ H) = F ⋙ functorToCore H := by
+  apply Functor.ext <;> aesop_cat
+
+lemma functorToCore_comp_right {C' : Type u₄} [Category.{v₄} C'] (H : G ⥤ C) (F : C ⥤ C') :
+    functorToCore (H ⋙ F) = functorToCore H ⋙ F.core := by
+  apply Functor.ext <;> aesop_cat
+
+theorem inclusion_comp_functorToCore : inclusion G ⋙ functorToCore (𝟭 G) = 𝟭 (Core G) := by
+    apply Functor.ext
+    · intro x y f
+      simp only [Core.inclusion, Core.functorToCore, Functor.id_map,
+        Functor.comp_map, Groupoid.inv_eq_inv, IsIso.Iso.inv_hom,
+        eqToHom_refl, Category.comp_id, Category.id_comp]
+      rfl
+    · intro
+      rfl
+
+theorem functorToCore_inclusion : functorToCore (inclusion C) = 𝟭 (Core C) :=
+  rfl
+
+end Core
 
 variable (D : Type u₂) [Category.{v₂} D]
 
