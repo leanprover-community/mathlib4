@@ -11,10 +11,10 @@ import Mathlib.Control.Basic
 # Case bash on variables in finite intervals
 
 This file provides the tactic `interval_cases`. `interval_cases n` will:
-1. inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` or `a < n` and `n < b`
-   or `n ≤ b`, including the bound `0 ≤ n` for `n : ℕ` automatically.
-2. call `fin_cases` on the synthesised hypothesis `n ∈ Set.Ico a b`,
-   assuming an appropriate `Fintype` instance can be found for the type of `n`.
+1.  inspect hypotheses looking for lower and upper bounds of the form `a ≤ n` or `a < n` and `n < b`
+    or `n ≤ b`, including the bound `0 ≤ n` for `n : ℕ` automatically.
+2.  call `fin_cases` on the synthesised hypothesis `n ∈ Set.Ico a b`,
+    assuming an appropriate `Fintype` instance can be found for the type of `n`.
 
 Currently, `n` must be of type `ℕ` or `ℤ` (TODO: generalize).
 
