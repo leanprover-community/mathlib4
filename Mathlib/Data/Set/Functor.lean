@@ -23,27 +23,12 @@ namespace Set
 
 variable {α β : Type u} {s : Set α} {f : α → Set β}
 
-/-- The `Set` functor is a monad.
-
-This is not a global instance because it does not have computational content,
-so it does not make much sense using `do` notation in general.
-Plus, this would cause monad-related coercions and monad lifting logic to become activated.
-Either use `attribute [local instance] Set.monad Set.instAlternativeMonad` to make it be a local
-instance or use `SetM.run do ...` when `do` notation is wanted. -/
-protected def monad : AlternativeMonad.{u} Set where
+instance : Alternative Set where
   pure a := {a}
-  bind s f := ⋃ i ∈ s, f i
-  seq s t := Set.seq s (t ())
+  seq s t := s.seq (t ())
   map := Set.image
-  orElse s t := s ∪ (t ())
+  orElse s t := s ∪ t ()
   failure := ∅
-
-section with_instance
-attribute [local instance] Set.monad
-
-@[simp]
-theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
-  rfl
 
 @[simp]
 theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
@@ -72,23 +57,47 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
   ext
   simp
 
-instance : LawfulMonad Set := LawfulMonad.mk'
-  (id_map := image_id)
-  (pure_bind := biUnion_singleton)
-  (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
-  (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
-  (bind_map := fun _ _ => seq_def.symm)
-
-instance : CommApplicative (Set : Type u → Type u) :=
-  ⟨fun s t => prod_image_seq_comm s t⟩
-
 instance : LawfulAlternative Set where
+  pure_seq _ _ := Set.singleton_seq
+  seqLeft_eq _ _ := rfl
+  seqRight_eq _ _ := rfl
+  map_pure _ _ := Set.image_singleton
+  seq_pure _ _ := Set.seq_singleton
+  seq_assoc _ _ _ := Set.seq_seq
   map_failure _ := Set.image_empty _
   failure_seq _ := Set.image2_empty_left
   orElse_failure _ := Set.union_empty _
   failure_orElse _ := Set.empty_union _
   orElse_assoc _ _ _ := Set.union_assoc _ _ _ |>.symm
   map_orElse _ _ _ := Set.image_union _ _ _
+
+instance : CommApplicative Set where
+  commutative_prod := prod_image_seq_comm
+
+/-- The `Set` functor is a monad.
+
+This is not a global instance because it does not have computational content,
+so it does not make much sense using `do` notation in general.
+
+Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
+Either use `attribute [local instance] Set.monad` to make it be a local instance
+or use `SetM.run do ...` when `do` notation is wanted. -/
+protected def monad : AlternativeMonad.{u} Set where
+  __ : Alternative Set := inferInstance
+  bind s f := ⋃ i ∈ s, f i
+
+section with_instance
+attribute [local instance] Set.monad
+
+@[simp]
+theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
+  rfl
+
+instance : LawfulMonad Set where
+  bind_pure_comp _ _ := (image_eq_iUnion _ _).symm
+  bind_map _ _ := seq_def.symm
+  pure_bind := biUnion_singleton
+  bind_assoc _ _ _ := by simp only [bind_def, biUnion_iUnion]
 
 /-! ### Monadic coercion lemmas -/
 

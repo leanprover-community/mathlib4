@@ -164,11 +164,12 @@ theorem normalizedFactors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 @[simp]
 theorem normalizedFactors_pow {x : α} (n : ℕ) :
     normalizedFactors (x ^ n) = n • normalizedFactors x := by
-  induction' n with n ih
-  · simp [zero_nsmul]
-  by_cases h0 : x = 0
-  · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
-  rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
+  induction n with
+  | zero => simp [zero_nsmul]
+  | succ n ih =>
+    by_cases h0 : x = 0
+    · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
+    rw [pow_succ', succ_nsmul', normalizedFactors_mul h0 (pow_ne_zero _ h0), ih]
 
 theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (k : ℕ) :
     normalizedFactors (p ^ k) = Multiset.replicate k (normalize p) := by
@@ -177,9 +178,10 @@ theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (
 
 theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducible a) :
     normalizedFactors s.prod = s.map normalize := by
-  induction' s using Multiset.induction with a s ih
-  · rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
-  · have ia := hs a (Multiset.mem_cons_self a _)
+  induction s using Multiset.induction with
+  | empty => rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
+  | cons a s ih =>
+    have ia := hs a (Multiset.mem_cons_self a _)
     have ib := fun b h => hs b (Multiset.mem_cons_of_mem h)
     obtain rfl | ⟨b, hb⟩ := s.empty_or_exists_mem
     · rw [Multiset.cons_zero, Multiset.prod_singleton, Multiset.map_singleton,
