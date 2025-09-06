@@ -58,21 +58,6 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, p (
     · simp [h_p_hd]
 
 @[simp]
-theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p (l[0]'hl) := by
-  rcases l with - | ⟨hd, tl⟩
-  · simp
-  · rw [dropWhile]
-    by_cases h_p_hd : p hd
-    · simp only [h_p_hd, length_cons, Nat.zero_lt_succ, getElem_cons_zero, not_true_eq_false,
-        imp_false, iff_false]
-      intro h
-      replace h := congrArg length h
-      have := length_dropWhile_le p tl
-      simp at h
-      omega
-    · simp [h_p_hd]
-
-@[simp]
 theorem takeWhile_eq_self_iff : takeWhile p l = l ↔ ∀ x ∈ l, p x = true := by
   induction l with
   | nil => simp
