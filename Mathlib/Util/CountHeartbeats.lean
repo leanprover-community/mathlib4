@@ -91,6 +91,8 @@ set_option linter.style.maxHeartbeats false in
 /--
 `#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
+Note that answers can be affected by parallelism: if results look far too low,
+consider adding `set_option Elab.async false` to turn off asynchronous elaboration.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
 for long-running declarations.
