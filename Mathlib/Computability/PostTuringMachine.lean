@@ -188,9 +188,9 @@ theorem reaches_eval {σ} {f : σ → Option σ} {a b} (ab : Reaches f a b) : ev
 
 /-- Given a relation `tr : σ₁ → σ₂ → Prop` between state spaces, and state transition functions
 `f₁ : σ₁ → Option σ₁` and `f₂ : σ₂ → Option σ₂`, `Respects f₁ f₂ tr` means that if `tr a₁ a₂` holds
-initially and `f₁` takes a step to `a₂` then `f₂` will take one or more steps before reaching a
-state `b₂` satisfying `tr a₂ b₂`, and if `f₁ a₁` terminates then `f₂ a₂` also terminates.
-Such a relation `tr` is also known as a refinement. -/
+initially and `f₁` takes a step from `a₁` to `b₁`, then `f₂` will take one or more steps before
+reaching a state `b₂` satisfying `tr b₁ b₂`, and if `f₁ a₁` terminates then `f₂ a₂` also
+terminates. Such a relation `tr` is also known as a refinement. -/
 def Respects {σ₁ σ₂} (f₁ : σ₁ → Option σ₁) (f₂ : σ₂ → Option σ₂) (tr : σ₁ → σ₂ → Prop) :=
   ∀ ⦃a₁ a₂⦄, tr a₁ a₂ → (match f₁ a₁ with
     | some b₁ => ∃ b₂, tr b₁ b₂ ∧ Reaches₁ f₂ a₂ b₂
@@ -378,7 +378,7 @@ def step (M : Machine Γ Λ) : Cfg Γ Λ → Option (Cfg Γ Λ) :=
     | Stmt.write a => T.write a⟩
 
 /-- The statement `Reaches M s₁ s₂` means that `s₂` is obtained
-  starting from `s₁` after a finite number of steps from `s₂`. -/
+  starting from `s₁` after a finite number of steps. -/
 def Reaches (M : Machine Γ Λ) : Cfg Γ Λ → Cfg Γ Λ → Prop := ReflTransGen fun a b ↦ b ∈ step M a
 
 /-- The initial configuration. -/
@@ -821,13 +821,13 @@ end TM1to0
 ## TM1(Γ) emulator in TM1(Bool)
 
 The most parsimonious Turing machine model that is still Turing complete is `TM0` with `Γ = Bool`.
-Because our construction in the previous section reducing `TM1` to `TM0` doesn't change the
+Because our construction in the previous section reducing `TM1` to `TM0` does not change the
 alphabet, we can do the alphabet reduction on `TM1` instead of `TM0` directly.
 
 The basic idea is to use a bijection between `Γ` and a subset of `Vector Bool n`, where `n` is a
-fixed constant. Each tape element is represented as a block of `n` bools. Whenever the machine
+fixed constant. Each tape element is represented as a block of n `Bool`s. Whenever the machine
 wants to read a symbol from the tape, it traverses over the block, performing `n` `branch`
-instructions to each any of the `2^n` results.
+instructions to reach any of the `2^n` results.
 
 For the `write` instruction, we have to use a `goto` because we need to follow a different code
 path depending on the local state, which is not available in the TM1 model, so instead we jump to
@@ -891,7 +891,7 @@ then return to the original position with `n` moves to the left. -/
 def read (f : Γ → Stmt Bool (Λ' Γ Λ σ) σ) : Stmt Bool (Λ' Γ Λ σ) σ :=
   readAux n fun v ↦ move n Dir.left <| f (dec v)
 
-/-- Write a list of bools on the tape. -/
+/-- Write a list of `Bool`s on the tape. -/
 def write : List Bool → Stmt Bool (Λ' Γ Λ σ) σ → Stmt Bool (Λ' Γ Λ σ) σ
   | [], q => q
   | a :: l, q => (Stmt.write fun _ _ ↦ a) <| Stmt.move Dir.right <| write l q

@@ -11,26 +11,26 @@ import Mathlib.Tactic.NormNum
 /-!
 # Deterministic Finite Automata
 
-A Deterministic Finite Automaton (DFA) is a state machine which
-decides membership in a particular `Language`, by following a path
+A deterministic finite automaton (DFA) is a state machine that
+decides membership in a particular `Language` by following a path
 uniquely determined by an input string.
 
-We define regular languages to be ones for which a DFA exists, other formulations
+We define regular languages to be those for which a DFA exists; other formulations
 are later proved equivalent.
 
-Note that this definition allows for automata with infinite states,
-a `Fintype` instance must be supplied for true DFAs.
+Note that this definition allows automata with infinitely many states;
+a `Fintype` instance must be supplied to obtain a true DFA.
 
 ## Main definitions
 
 - `DFA α σ`: automaton over alphabet `α` and set of states `σ`
 - `M.accepts`: the language accepted by the DFA `M`
 - `Language.IsRegular L`: a predicate stating that `L` is a regular language, i.e. there exists
-  a DFA that recognizes the language
+  a DFA that recognizes the language `L`
 
 ## Main theorems
 
-- `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
+- `DFA.pumping_lemma`: every sufficiently long string accepted by the DFA has a substring that can
   be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
@@ -49,13 +49,13 @@ universe u v
 open Computability
 
 /-- A DFA is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`). -/
+  alphabet (`step`), a starting state (`start`), and a set of accepting states (`accept`). -/
 structure DFA (α : Type u) (σ : Type v) where
   /-- A transition function from state to state labelled by the alphabet. -/
   step : σ → α → σ
   /-- Starting state. -/
   start : σ
-  /-- Set of acceptance states. -/
+  /-- Set of accepting states. -/
   accept : Set σ
 
 namespace DFA

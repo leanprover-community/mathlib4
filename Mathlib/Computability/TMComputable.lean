@@ -26,7 +26,7 @@ To count the execution time of a Turing machine, we have decided to count the nu
 `step` function is used. Each step executes a statement (of type `Stmt`); this is a function, and
 generally contains multiple "fundamental" steps (pushing, popping, and so on).
 However, as functions only contain a finite number of executions and each one is executed at most
-once, this execution time is up to multiplication by a constant the amount of fundamental steps.
+once, this execution time is, up to multiplication by a constant, the number of fundamental steps.
 -/
 
 
@@ -43,7 +43,7 @@ structure FinTM2 where
   {K : Type} [kDecidableEq : DecidableEq K]
   /-- A TM2 machine has finitely many stacks. -/
   [kFin : Fintype K]
-  /-- input resp. output stack -/
+  /-- input and output stacks, respectively -/
   (k₀ k₁ : K)
   /-- type of stack elements -/
   (Γ : K → Type)
@@ -85,7 +85,7 @@ def Stmt : Type :=
 instance inhabitedStmt : Inhabited (Stmt tm) :=
   inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 
-/-- The type of configurations (functions) corresponding to this TM. -/
+/-- The type of configurations corresponding to this TM. -/
 def Cfg : Type :=
   Turing.TM2.Cfg tm.Γ tm.Λ tm.σ
 
@@ -154,11 +154,11 @@ def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ :
     EvalsToInTime f a c (m₂ + m₁) :=
   ⟨EvalsTo.trans f a b c h₁.toEvalsTo h₂.toEvalsTo, add_le_add h₂.steps_le_m h₁.steps_le_m⟩
 
-/-- A proof of tm outputting l' when given l. -/
+/-- A proof that the TM outputs `l'` when given `l`. -/
 def TM2Outputs (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁))) :=
   EvalsTo tm.step (initList tm l) ((Option.map (haltList tm)) l')
 
-/-- A proof of tm outputting l' when given l in at most m steps. -/
+/-- A proof that the TM outputs `l'` when given `l` in at most `m` steps. -/
 def TM2OutputsInTime (tm : FinTM2) (l : List (tm.Γ tm.k₀)) (l' : Option (List (tm.Γ tm.k₁)))
     (m : ℕ) :=
   EvalsToInTime tm.step (initList tm l) ((Option.map (haltList tm)) l') m

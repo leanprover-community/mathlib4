@@ -12,16 +12,16 @@ import Mathlib.Tactic.DeriveFintype
 /-!
 # Encodings
 
-This file contains the definition of a (finite) encoding, a map from a type to
-strings in an alphabet, used in defining computability by Turing machines.
-It also contains several examples:
+This file contains the definition of an encoding: a map from a type to strings over an alphabet,
+used to define computability via Turing machines. We also define a finite encoding, where the
+alphabet is finite. Several examples are provided.
 
 ## Examples
 
-- `finEncodingNatBool`  : a binary encoding of ℕ in a simple alphabet.
-- `finEncodingNatΓ'`    : a binary encoding of ℕ in the alphabet used for TM's.
-- `unaryFinEncodingNat` : a unary encoding of ℕ
-- `finEncodingBoolBool` : an encoding of bool.
+- `finEncodingNatBool`: a binary encoding of ℕ over a Boolean alphabet
+- `finEncodingNatΓ'`: a binary encoding of ℕ over the alphabet used for Turing machines (TMs)
+- `unaryFinEncodingNat`: a unary encoding of ℕ
+- `finEncodingBoolBool`: an encoding of `Bool`
 -/
 
 
@@ -39,7 +39,7 @@ structure Encoding (α : Type u) where
   encode : α → List Γ
   /-- The decoding function -/
   decode : List Γ → Option α
-  /-- Decoding and encoding are inverses of each other. -/
+  /-- decoding after encoding recovers the original value -/
   decode_encode : ∀ x, decode (encode x) = some x
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
@@ -54,7 +54,8 @@ structure FinEncoding (α : Type u) extends Encoding.{u, 0} α where
 instance Γ.fintype {α : Type u} (e : FinEncoding α) : Fintype e.toEncoding.Γ :=
   e.ΓFin
 
-/-- A standard Turing machine alphabet, consisting of blank,bit0,bit1,bra,ket,comma. -/
+/-- A standard Turing machine alphabet, consisting of `blank`, `bit b` (for `b : Bool`),
+`bra`, `ket`, and `comma`. -/
 inductive Γ'
   | blank
   | bit (b : Bool)
@@ -64,13 +65,14 @@ inductive Γ'
   deriving DecidableEq, Fintype
 
 instance inhabitedΓ' : Inhabited Γ' :=
+  -- default inhabitant of the standard TM alphabet
   ⟨Γ'.blank⟩
 
-/-- The natural inclusion of bool in Γ'. -/
+/-- The natural inclusion of `Bool` into `Γ'`. -/
 def inclusionBoolΓ' : Bool → Γ' :=
   Γ'.bit
 
-/-- An arbitrary section of the natural inclusion of bool in Γ'. -/
+/-- An arbitrary section of the natural inclusion of `Bool` into `Γ'`. -/
 def sectionΓ'Bool : Γ' → Bool
   | Γ'.bit b => b
   | _ => Inhabited.default
@@ -82,18 +84,18 @@ theorem sectionΓ'Bool_inclusionBoolΓ' {b} : sectionΓ'Bool (inclusionBoolΓ' b
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective ⟨_, (fun _ => sectionΓ'Bool_inclusionBoolΓ')⟩
 
-/-- An encoding function of the positive binary numbers in bool. -/
+/-- An encoding function for the positive binary numbers over `Bool`. -/
 def encodePosNum : PosNum → List Bool
   | PosNum.one    => [true]
   | PosNum.bit0 n => false :: encodePosNum n
   | PosNum.bit1 n => true :: encodePosNum n
 
-/-- An encoding function of the binary numbers in bool. -/
+/-- An encoding function for the binary numbers over `Bool`. -/
 def encodeNum : Num → List Bool
   | Num.zero => []
   | Num.pos n => encodePosNum n
 
-/-- An encoding function of ℕ in bool. -/
+/-- An encoding function for ℕ over `Bool`. -/
 def encodeNat (n : ℕ) : List Bool :=
   encodeNum n
 
@@ -132,29 +134,29 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   conv_rhs => rw [← Num.to_of_nat n]
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
 
-/-- A binary encoding of ℕ in bool. -/
+/-- A binary encoding of ℕ over `Bool`. -/
 def encodingNatBool : Encoding ℕ where
   Γ := Bool
   encode := encodeNat
   decode n := some (decodeNat n)
   decode_encode n := congr_arg _ (decode_encodeNat n)
 
-/-- A binary fin_encoding of ℕ in bool. -/
+/-- A binary FinEncoding of ℕ over `Bool`. -/
 def finEncodingNatBool : FinEncoding ℕ :=
   ⟨encodingNatBool, Bool.fintype⟩
 
-/-- A binary encoding of ℕ in Γ'. -/
+/-- A binary encoding of ℕ over `Γ'`. -/
 def encodingNatΓ' : Encoding ℕ where
   Γ := Γ'
   encode x := List.map inclusionBoolΓ' (encodeNat x)
   decode x := some (decodeNat (List.map sectionΓ'Bool x))
   decode_encode x := congr_arg _ <| by simp [Function.comp_def]
 
-/-- A binary FinEncoding of ℕ in Γ'. -/
+/-- A binary `FinEncoding` of ℕ over `Γ'`. -/
 def finEncodingNatΓ' : FinEncoding ℕ :=
   ⟨encodingNatΓ', inferInstanceAs (Fintype Γ')⟩
 
-/-- A unary encoding function of ℕ in bool. -/
+/-- A unary encoding function for ℕ over `Bool`. -/
 def unaryEncodeNat : Nat → List Bool
   | 0 => []
   | n + 1 => true :: unaryEncodeNat n
@@ -166,7 +168,7 @@ def unaryDecodeNat : List Bool → Nat :=
 @[simp] theorem unary_decode_encode_nat : ∀ n, unaryDecodeNat (unaryEncodeNat n) = n := fun n =>
   Nat.rec rfl (fun (_m : ℕ) hm => (congr_arg Nat.succ hm.symm).symm) n
 
-/-- A unary fin_encoding of ℕ. -/
+/-- A unary `FinEncoding` of ℕ over `Bool`. -/
 def unaryFinEncodingNat : FinEncoding ℕ where
   Γ := Bool
   encode := unaryEncodeNat
@@ -174,17 +176,17 @@ def unaryFinEncodingNat : FinEncoding ℕ where
   decode_encode n := congr_arg _ (unary_decode_encode_nat n)
   ΓFin := Bool.fintype
 
-/-- An encoding function of bool in bool. -/
+/-- An encoding function for `Bool` over `Bool`. -/
 def encodeBool : Bool → List Bool := pure
 
-/-- A decoding function from `List Bool` to bool. -/
+/-- A decoding function from `List Bool` to `Bool`. -/
 def decodeBool : List Bool → Bool
   | b :: _ => b
   | _ => Inhabited.default
 
 @[simp] theorem decode_encodeBool (b : Bool) : decodeBool (encodeBool b) = b := rfl
 
-/-- A fin_encoding of bool in bool. -/
+/-- A `FinEncoding` of `Bool` over `Bool`. -/
 def finEncodingBoolBool : FinEncoding Bool where
   Γ := Bool
   encode := encodeBool

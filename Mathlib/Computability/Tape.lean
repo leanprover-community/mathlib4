@@ -12,15 +12,15 @@ import Mathlib.Data.List.GetD
 # Turing machine tapes
 
 This file defines the notion of a Turing machine tape, and the operations on it. A tape is a
-bidirectional infinite sequence of cells, each of which stores an element of a given alphabet `Γ`.
+bidirectionally infinite sequence of cells, each of which stores an element of a given alphabet `Γ`.
 All but finitely many of the cells are required to hold the blank symbol `default : Γ`.
 
 ## Main definitions
 
-* `ListBlank Γ` is the type of one-directional tapes with alphabet `Γ`. Implemented as a quotient
+- `ListBlank Γ` is the type of one-directional tapes with alphabet `Γ`. Implemented as a quotient
   of `List Γ` by extension by blanks at the end.
-* `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
-  `ListBlank Γ` instances, one for each direction, as well as a head symbol.
+- `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
+  `ListBlank Γ` instances, one for each direction, together with a head symbol.
 
 -/
 
@@ -491,8 +491,8 @@ to the right. -/
 def Tape.mk₁ {Γ} [Inhabited Γ] (l : List Γ) : Tape Γ :=
   Tape.mk₂ [] l
 
-/-- The `nth` function of a tape is integer-valued, with index `0` being the head, negative indexes
-on the left and positive indexes on the right. (Picture a number line.) -/
+/-- The `nth` function of a tape is integer-valued, with index `0` being the head, negative indices
+on the left and positive indices on the right. (Picture a number line.) -/
 def Tape.nth {Γ} [Inhabited Γ] (T : Tape Γ) : ℤ → Γ
   | 0 => T.head
   | (n + 1 : ℕ) => T.right.nth n
