@@ -443,7 +443,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
       LowerSemicontinuous g ∧
       Integrable (fun x => EReal.toReal (g x)) μ ∧
       (∀ᵐ x ∂μ, g x < ⊤) ∧ (∫ x, EReal.toReal (g x) ∂μ) < (∫ x, f x ∂μ) + ε := by
-  let δ : ℝ≥0 := ⟨ε / 2, (half_pos εpos).le⟩
+  let δ := ε / 2
   have δpos : 0 < δ := half_pos εpos
   let fp : α → ℝ≥0 := fun x => Real.toNNReal (f x)
   have int_fp : Integrable (fun x => (fp x : ℝ)) μ := hf.real_toNNReal
@@ -476,7 +476,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
           apply sub_lt_sub_right
           convert gpint
           simp only [EReal.toReal_coe_ennreal]
-        _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := sub_le_sub_left gmint _
+        _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := by grw [gmint]
         _ = (∫ x : α, f x ∂μ) + 2 * δ := by
           simp_rw [integral_eq_integral_pos_part_sub_integral_neg_part hf]; ring
         _ = (∫ x : α, f x ∂μ) + ε := by congr 1; simp [field, δ]
