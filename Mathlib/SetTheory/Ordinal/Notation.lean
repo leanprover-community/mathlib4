@@ -137,7 +137,7 @@ instance (priority := low) nat (n : ℕ) : OfNat ONote n where
 
 theorem omega0_le_oadd (e n a) : ω ^ repr e ≤ repr (oadd e n a) := by
   refine le_trans ?_ (le_add_right _ _)
-  simpa using (mul_le_mul_left <| opow_pos (repr e) omega0_pos).2 (Nat.cast_le.2 n.2)
+  simpa using (mul_le_mul_iff_right₀ <| opow_pos (repr e) omega0_pos).2 (Nat.cast_le.2 n.2)
 
 theorem oadd_pos (e n a) : 0 < oadd e n a :=
   @lt_of_lt_of_le _ _ _ (ω ^ repr e) _ (opow_pos (repr e) omega0_pos) (omega0_le_oadd e n a)
@@ -269,7 +269,7 @@ theorem oadd_lt_oadd_2 {e o₁ o₂ : ONote} {n₁ n₂ : ℕ+} (h₁ : NF (oadd
     oadd e n₁ o₁ < oadd e n₂ o₂ := by
   simp only [lt_def, repr]
   refine lt_of_lt_of_le ((add_lt_add_iff_left _).2 h₁.snd'.repr_lt) (le_trans ?_ (le_add_right _ _))
-  rwa [← mul_succ, mul_le_mul_left (opow_pos _ omega0_pos), succ_le_iff, Nat.cast_lt]
+  rwa [← mul_succ, mul_le_mul_iff_right₀ (opow_pos _ omega0_pos), succ_le_iff, Nat.cast_lt]
 
 theorem oadd_lt_oadd_3 {e n a₁ a₂} (h : a₁ < a₂) : oadd e n a₁ < oadd e n a₂ := by
   rw [lt_def]; unfold repr
@@ -438,7 +438,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
         unfold repr at this
         cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
         exact lt_of_le_of_lt (le_add_right _ _) this
-      · simpa using (mul_le_mul_left <| opow_pos (repr e') omega0_pos).2
+      · simpa using (mul_le_mul_iff_right₀ <| opow_pos (repr e') omega0_pos).2
           (Nat.cast_le.2 n'.pos)
     · rw [ee, ← add_assoc, ← mul_add]
 
@@ -553,7 +553,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       simp [(· * ·)]
     have ao : repr a₁ + ω ^ repr e₁ * (n₁ : ℕ) = ω ^ repr e₁ * (n₁ : ℕ) := by
       apply add_absorp h₁.snd'.repr_lt
-      simpa using (mul_le_mul_left <| opow_pos _ omega0_pos).2 (Nat.cast_le.2 n₁.2)
+      simpa using (mul_le_mul_iff_right₀ <| opow_pos _ omega0_pos).2 (Nat.cast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
     · obtain ⟨x, xe⟩ := Nat.exists_eq_succ_of_ne_zero n₂.ne_zero
       simp only [Mul.mul, mul, e0, ↓reduceIte, repr, PNat.mul_coe, natCast_mul, opow_zero, one_mul]
