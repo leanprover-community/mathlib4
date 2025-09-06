@@ -43,10 +43,9 @@ From a slightly different perspective in order to reuse material in `Topology.Un
 noncomputable section
 
 open Filter Set
+open scoped SetRel Uniformity Topology
 
-universe u v w x
-
-open Uniformity Topology Filter
+universe u v w
 
 /-- Space of Cauchy filters
 
@@ -92,8 +91,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         exact le_rfl)
   exact h₁.trans_le h₂
 
-private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
-    compRel (gen s) (gen t) ⊆ (gen (compRel s t) : Set (CauchyFilter α × CauchyFilter α)) :=
+private theorem subset_gen_relComp {s t : Set (α × α)} : gen s ○ gen t ⊆ gen (s ○ t) :=
   fun ⟨f, g⟩ ⟨h, h₁, h₂⟩ =>
   let ⟨t₁, (ht₁ : t₁ ∈ f.val), t₂, (ht₂ : t₂ ∈ h.val), (h₁ : t₁ ×ˢ t₂ ⊆ s)⟩ := mem_prod_iff.mp h₁
   let ⟨t₃, (ht₃ : t₃ ∈ h.val), t₄, (ht₄ : t₄ ∈ g.val), (h₂ : t₃ ×ˢ t₄ ⊆ t)⟩ := mem_prod_iff.mp h₂
@@ -103,18 +101,17 @@ private theorem compRel_gen_gen_subset_gen_compRel {s t : Set (α × α)} :
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
 
-private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) ≤ (𝓤 α).lift' gen :=
+private theorem comp_gen : ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s) ≤ (𝓤 α).lift' gen :=
   calc
-    (((𝓤 α).lift' gen).lift' fun s => compRel s s) =
-        (𝓤 α).lift' fun s => compRel (gen s) (gen s) := by
+        ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s)
+    _ = (𝓤 α).lift' fun s ↦ gen s ○ gen s := by
       rw [lift'_lift'_assoc]
       · exact monotone_gen
-      · exact monotone_id.compRel monotone_id
-    _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
-      lift'_mono' fun _ _hs => compRel_gen_gen_subset_gen_compRel
-    _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen := by
+      · exact monotone_id.relComp monotone_id
+    _ ≤ (𝓤 α).lift' fun s ↦ gen <| s ○ s := lift'_mono' fun _ _hs => subset_gen_relComp
+    _ = ((𝓤 α).lift' fun s : Set (α × α) => s ○ s).lift' gen := by
       rw [lift'_lift'_assoc]
-      · exact monotone_id.compRel monotone_id
+      · exact monotone_id.relComp monotone_id
       · exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
@@ -169,7 +166,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
       mem_prod_iff.mpr
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
-          ht'₂ <| prodMk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
+          ht'₂ <| SetRel.prodMk_mem_comp (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
