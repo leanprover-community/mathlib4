@@ -135,6 +135,27 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where
 instance : Inhabited (OplaxFunctor B B) :=
   ⟨id B⟩
 
+/-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
+    F.map f ⟶ 𝟙 (F.obj b) :=
+  F.map₂ (eqToHom (by rw [hf])) ≫ F.mapId _
+
+lemma mapId'_eq_mapId (b : B) :
+    F.mapId' (𝟙 b) rfl = F.mapId b := by
+  simp [mapId']
+
+/-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by cat_disch) :
+    F.map fg ⟶ F.map f ≫ F.map g :=
+  F.map₂ (eqToHom (by rw [h])) ≫ F.mapComp f g
+
+lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
+    F.mapComp' f g _ rfl = F.mapComp f g := by
+  simp [mapComp']
+
 /-- Composition of oplax functors. -/
 --@[simps]
 def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
