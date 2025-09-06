@@ -54,8 +54,8 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
   exact (hux'.not_ge <| hus' ·)
 
 open ComplexOrder in
-theorem toWeakSpace_closedAbsConvexHull_eq [ContinuousSMul ℝ E] [ContinuousSMul ℝ (WeakSpace 𝕜 E)]
-    {s : Set E} : (toWeakSpace 𝕜 E) '' (closedAbsConvexHull 𝕜 s) =
+theorem toWeakSpace_closedAbsConvexHull_eq {s : Set E} :
+    (toWeakSpace 𝕜 E) '' (closedAbsConvexHull 𝕜 s) =
       closedAbsConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
   have : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) := WeakBilin.instContinuousSMul _
   rw [closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜),
