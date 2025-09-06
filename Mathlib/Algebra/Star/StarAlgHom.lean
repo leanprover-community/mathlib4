@@ -755,18 +755,18 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃
 theorem coe_mk (e h) : ⇑(⟨e, h⟩ : A ≃⋆ₐ[R] B) = e := rfl
 
 @[simp]
-theorem mk_coe (e : A ≃⋆ₐ[R] B) (h₁ h₂ h₃ h₄) :
-    (⟨⟨⟨e, h₁, h₂⟩, h₃⟩, h₄⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
+theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
+    (⟨⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
-protected def symm_mk.aux (f f') (h₁ h₂ h₃) :=
-  (⟨⟨⟨f, f', h₁⟩, h₂⟩, h₃⟩ : A ≃⋆ₐ[R] B).symm
+protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
+  (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm
 
 @[simp]
-theorem symm_mk (f) (h₁ h₂ h₃ h₄) :
-    (⟨⟨⟨f, h₁, h₂⟩, h₃⟩, h₄⟩ : A ≃⋆ₐ[R] B).symm =
-      { symm_mk.aux f h₁ h₂ h₃ h₄ with
-        toFun := f.symm
+theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
+    (⟨⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm =
+      { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ h₆ with
+        toFun := f'
         invFun := f } :=
   rfl
 
