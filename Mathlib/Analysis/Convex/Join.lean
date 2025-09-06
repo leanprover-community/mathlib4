@@ -124,7 +124,7 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
       ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,
       a₂ * a₁, a₂ * b₁ + b₂, by positivity, by positivity, ?_, ?_⟩
-  · linear_combination a₂ * hab₁ + hab₂
+  · grind
   · match_scalars <;> field_simp
 
 theorem convexJoin_assoc (s t u : Set E) :
@@ -154,7 +154,7 @@ protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
   rcases hs.exists_mem_add_smul_eq hx₁ hx₂ (mul_nonneg hp ha₁) (mul_nonneg hq ha₂) with ⟨x, hxs, hx⟩
   rcases ht.exists_mem_add_smul_eq hy₁ hy₂ (mul_nonneg hp hb₁) (mul_nonneg hq hb₂) with ⟨y, hyt, hy⟩
   refine ⟨_, hxs, _, hyt, p * a₁ + q * a₂, p * b₁ + q * b₂, ?_, ?_, ?_, ?_⟩ <;> try positivity
-  · linear_combination p * hab₁ + q * hab₂ + hpq
+  · grind
   · rw [hx, hy]
     module
 

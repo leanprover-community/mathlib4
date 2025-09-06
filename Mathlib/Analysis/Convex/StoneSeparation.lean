@@ -59,7 +59,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
     have hw : ∑ i, w i = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
       · simp [w, Fin.sum_univ_succ]
-      linear_combination (au * bv - 1 * au) * habz + (-(1 * az * au) + au) * habv + az * av * habu
+      grind
     have hz : ∀ i, z i ∈ ({p, q, az • x + bz • y} : Set E) := fun i => by fin_cases i <;> simp [z]
     convert (Finset.centerMass_mem_convexHull (Finset.univ : Finset (Fin 3)) (fun i _ => hw₀ i)
         (by rwa [hw]) fun i _ => hz i : Finset.univ.centerMass w z ∈ _)
