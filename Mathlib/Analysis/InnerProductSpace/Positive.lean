@@ -331,6 +331,15 @@ theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPosi
   have := hT.conj_adjoint (U.orthogonalProjection : E →L[𝕜] U)
   rwa [U.adjoint_orthogonalProjection] at this
 
+lemma _root_.InnerProductSpace.isPositive_rankOne_self (x : E) :
+    (rankOne 𝕜 x x).IsPositive := by
+  rw [rankOne_def, ← id_comp (innerSL 𝕜 x), ← adjoint_innerSL_apply]
+  exact IsPositive.adjoint_conj isPositive_one _
+
+lemma _root_.InnerProductSpace.isStarProjection_rankOne_self {x : E} (h : ‖x‖ = 1) :
+    IsStarProjection (rankOne 𝕜 x x) :=
+  ⟨isIdempotentElem_rankOne_self h, isSelfAdjoint_rankOne_self x⟩
+
 open scoped NNReal
 
 lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
