@@ -326,7 +326,7 @@ instance : EquivLike (M ≃ₜ* N) M N where
     exact MulEquiv.ext_iff.mpr (congrFun h₁)
 
 @[to_additive]
-instance : MulEquivClass (M ≃ₜ* N) M N where
+instance : MulHomClass (M ≃ₜ* N) M N where
   map_mul f := f.map_mul'
 
 @[to_additive]

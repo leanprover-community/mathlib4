@@ -197,7 +197,7 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
   rfl
 
 section EquivLike
-variable [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N] (f : F) {x : M}
+variable [Monoid M] [Monoid N] [EquivLike F M N] [MulHomClass F M N] (f : F) {x : M}
 
 -- Higher priority to take over the non-additivisable `isUnit_map_iff`
 @[to_additive (attr := simp high)]
