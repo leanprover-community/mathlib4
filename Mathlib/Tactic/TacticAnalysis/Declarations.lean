@@ -15,6 +15,9 @@ This file defines passes to run from the tactic analysis framework.
 
 open Lean Mathlib
 
+-- Passes related to the grind tactic.
+section grind
+
 /--
 Define a pass that tries replacing a specific tactic with `grind`.
 
@@ -69,32 +72,6 @@ register_option linter.tacticAnalysis.ringToGrind : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.ringToGrind,
   inherit_doc linter.tacticAnalysis.ringToGrind]
 def ringToGrind := grindReplacementWith `Mathlib.Tactic.RingNF.ring
-
-/-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
-register_option linter.tacticAnalysis.rwMerge : Bool := {
-  defValue := false
-}
-
-@[tacticAnalysis linter.tacticAnalysis.rwMerge, inherit_doc linter.tacticAnalysis.rwMerge]
-def rwMerge : TacticAnalysis.Config := .ofComplex {
-  out := (List MVarId × Array Syntax)
-  ctx := (Array (Array Syntax))
-  trigger ctx stx :=
-    match stx with
-    | `(tactic| rw [$args,*]) => .continue ((ctx.getD #[]).push args)
-    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
-  test ctx goal := withOptions (fun opts => opts.set `grind.warning false) do
-    let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
-    let tac ← `(tactic| rw [$ctxT,*])
-    try
-      let (goals, _) ← Lean.Elab.runTactic goal tac
-      return (goals, ctxT.map (↑·))
-    catch _e => -- rw throws an error if it fails to pattern-match.
-      return ([goal], ctxT.map (↑·))
-  tell _stx _old new :=
-    if new.1.1.isEmpty then
-      m!"Try this: rw {new.1.2}"
-    else none }
 
 /-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.mergeWithGrind : Bool := {
@@ -180,3 +157,31 @@ def terminalToGrind : TacticAnalysis.Config where
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
+
+end grind
+
+/-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
+register_option linter.tacticAnalysis.rwMerge : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.rwMerge, inherit_doc linter.tacticAnalysis.rwMerge]
+def rwMerge : TacticAnalysis.Config := .ofComplex {
+  out := (List MVarId × Array Syntax)
+  ctx := (Array (Array Syntax))
+  trigger ctx stx :=
+    match stx with
+    | `(tactic| rw [$args,*]) => .continue ((ctx.getD #[]).push args)
+    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
+  test ctx goal := withOptions (fun opts => opts.set `grind.warning false) do
+    let ctxT : Array (TSyntax `Lean.Parser.Tactic.rwRule) := ctx.flatten.map (⟨·⟩)
+    let tac ← `(tactic| rw [$ctxT,*])
+    try
+      let (goals, _) ← Lean.Elab.runTactic goal tac
+      return (goals, ctxT.map (↑·))
+    catch _e => -- rw throws an error if it fails to pattern-match.
+      return ([goal], ctxT.map (↑·))
+  tell _stx _old new :=
+    if new.1.1.isEmpty then
+      m!"Try this: rw {new.1.2}"
+    else none }
