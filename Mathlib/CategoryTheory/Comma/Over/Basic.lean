@@ -426,6 +426,36 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
+/-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
+For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
+@[simps]
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
+    J ⥤ Over X where
+  obj j := mk (s.app j)
+  map f := homMk (D.map f)
+
+/-- The induced cone on `Over X` on the lifted functor. -/
+@[simps]
+def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
+    Cone (Over.lift D s) where
+  pt := mk p
+  π.app j := homMk (c.π.app j)
+
+/-- The lifted cone on `Over X` is a limit cone if the original cone was limiting
+and `J` is nonempty. -/
+def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
+    (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
+    IsLimit c → IsLimit (Over.liftCone D s c p hp) := by
+  refine fun hc ↦ ⟨fun s ↦ homMk ?_ ?_, fun _ _ ↦ ?_, fun c m hm ↦ ?_⟩
+  · exact hc.lift ((forget _).mapCone s)
+  · obtain ⟨j⟩ : Nonempty J := ‹_›
+    simpa [← hp j] using Over.w (s.π.app j)
+  · ext; simp [hc.fac]
+  · ext
+    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
+
 end Over
 
 namespace CostructuredArrow
@@ -795,6 +825,35 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
   inverse := { obj Y := mk (hX.to Y), map f := homMk f }
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
+
+/-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
+@[simps]
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
+    J ⥤ Under X where
+  obj j := .mk (s.app j)
+  map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
+
+/-- The induced cocone on `Under X` from on the lifted functor. -/
+@[simps]
+def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
+    Cocone (Under.lift D s) where
+  pt := mk p
+  ι.app j := homMk (c.ι.app j)
+
+/-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
+and `J` is nonempty. -/
+def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
+    (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
+    IsColimit c → IsColimit (liftCocone D s c p hp) := by
+  refine fun hc ↦ ⟨fun s ↦ Under.homMk ?_ ?_, fun _ _ ↦ ?_, fun c m hm ↦ ?_⟩
+  · exact hc.desc ((Under.forget _).mapCocone s)
+  · obtain ⟨j⟩ : Nonempty J := ‹_›
+    simpa [← hp j] using Under.w (s.ι.app j)
+  · ext; simp [hc.fac]
+  · ext
+    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
 
