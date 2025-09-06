@@ -401,23 +401,16 @@ lemma subset_insert_diff_singleton (x : α) (s : Set α) : s ⊆ insert x (s \ {
   rw [← diff_singleton_subset_iff]
 
 lemma diff_insert_of_notMem (h : a ∉ s) : s \ insert a t = s \ t := by
-  refine Subset.antisymm (diff_subset_diff (refl _) (subset_insert ..)) fun y hy ↦ ?_
-  simp only [mem_diff, mem_insert_iff, not_or] at hy ⊢
-  exact ⟨hy.1, fun hxy ↦ h <| hxy ▸ hy.1, hy.2⟩
+  grind
 
 @[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
 
 @[simp]
 lemma insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
-  ext
-  constructor <;> simp +contextual [or_imp, h]
+  grind
 
 lemma insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
-  classical
-  ext x
-  by_cases h' : x ∈ t
-  · simp [h', ne_of_mem_of_not_mem h' h]
-  · simp [h']
+  grind
 
 @[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
 
@@ -464,10 +457,7 @@ lemma mem_diff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ t 
   mem_diff_singleton.trans <| and_congr_right' nonempty_iff_ne_empty.symm
 
 lemma subset_insert_iff : s ⊆ insert a t ↔ s ⊆ t ∨ (a ∈ s ∧ s \ {a} ⊆ t) := by
-  rw [← diff_singleton_subset_iff]
-  by_cases hx : a ∈ s
-  · rw [and_iff_right hx, or_iff_right_of_imp diff_subset.trans]
-  rw [diff_singleton_eq_self hx, or_iff_left_of_imp And.right]
+  grind
 
 lemma pair_diff_left (hab : a ≠ b) : ({a, b} : Set α) \ {a} = {b} := by
   rw [insert_diff_of_mem _ (mem_singleton a), diff_singleton_eq_self (by simpa)]
