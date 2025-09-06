@@ -451,7 +451,7 @@ private lemma monotoneOn_nnrpow_Ioo {p : ℝ≥0} (hp : p ∈ Ioo 0 1) :
       (fun a : A => ∫ t in Ioi 0, cfcₙ (rpowIntegrand₀₁ p t) a ∂μ) :=
     fun a ha => (hμ a ha).2
   refine MonotoneOn.congr ?_ h₃'.symm
-  refine MeasureTheory.integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
+  refine integral_monotoneOn_of_integrand_ae ?_ fun a ha => (hμ a ha).1
   filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
   exact monotoneOn_cfcₙ_rpowIntegrand₀₁ hp ht
 

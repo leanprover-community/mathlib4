@@ -206,7 +206,7 @@ example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by 
 -- Test that the positivity extension for `a • b` can handle universe polymorphism.
 example {R M : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Semiring M] [PartialOrder M] [IsStrictOrderedRing M]
-    [SMulWithZero R M] [OrderedSMul R M] {a : R} {b : M} (ha : 0 < a) (hb : 0 < b) :
+    [SMulWithZero R M] [PosSMulStrictMono R M] {a : R} {b : M} (ha : 0 < a) (hb : 0 < b) :
     0 < a • b := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a + a := by positivity
@@ -376,7 +376,7 @@ example {R : Type*} [Zero R] [Div R] [LinearOrder R] {a b c : R} (_h1 : 0 < a) (
 example
     [Semiring α] [PartialOrder α] [IsOrderedRing α]
     [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] [SMulWithZero α β]
-    [OrderedSMul α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by
+    [PosSMulMono α β] {a : α} (ha : 0 < a) {b : β} (hb : 0 < b) : 0 ≤ a • b := by
   positivity
 
 example (n : ℕ) : 0 < n.succ := by positivity
