@@ -36,7 +36,7 @@ def reducedCharPoly (a : A) := (e (1 ⊗ₜ a)).charpoly
 /-- The reduced norm of an element `a` in a central simple algebra `A` over a field `K`, given a
   splitting field `F` and an algebra isomorphism `e`. -/
 @[simps]
-def ReducedNorm [Nonempty n] : A →*₀ F where
+def reducedNorm [Nonempty n] : A →*₀ F where
   toFun a := (e (1 ⊗ₜ a)).det
   map_zero' := by simp
   map_one' := by simp [← Algebra.TensorProduct.one_def]
@@ -45,10 +45,10 @@ def ReducedNorm [Nonempty n] : A →*₀ F where
 /-- The reduced trace of an element `a` in a central simple algebra `A` over a field `K`, given a
   splitting field `F` and an algebra isomorphism `e`. -/
 @[simps]
-def ReducedTrace : A →ₗ[K] F where
-  toFun a := (e (1 ⊗ₜ a)).trace
+def reducedTrace : A →ₗ[K] F where
+  toFun a := Matrix.traceLinearMap _ F _ <| e (1 ⊗ₜ a)
   map_add' := by simp [← Matrix.trace_add, ← map_add, ← TensorProduct.tmul_add]
-  map_smul' := by simp
+  map_smul' := by simp [← Matrix.trace_smul, LinearMapClass.map_smul_of_tower e]
 
 end
 
@@ -56,7 +56,7 @@ namespace ReducedCharPoly
 
 @[simp]
 theorem equalMatrixCharpoly (M : Matrix n n K) :
-    ReducedCharPoly (Algebra.TensorProduct.lid _ _) M = M.charpoly := by
-  simp [ReducedCharPoly]
+    reducedCharPoly (Algebra.TensorProduct.lid _ _) M = M.charpoly := by
+  simp [reducedCharPoly]
 
 end ReducedCharPoly
