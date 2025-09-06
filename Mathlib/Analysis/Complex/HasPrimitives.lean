@@ -41,7 +41,7 @@ to define the complex logarithm of a nonvanishing function on a simply connected
 
 noncomputable section
 
-open Complex Topology Set Metric
+open Complex MeasureTheory Metric Set Topology
 
 open scoped Interval
 
@@ -250,17 +250,16 @@ end MainDefinitions
 
 section wedgeIntegralDeriv
 
-variable {c : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)) {z : ℂ}
-  (hz : z ∈ ball c r)
+variable {c z : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)) (hz : z ∈ ball c r)
 
 include f_cont hz
 
 /-- If a function `f` `VanishesOnRectanglesInDisk` of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
-lemma VanishesOnRectanglesInDisk.diff_of_wedges (hf : VanishesOnRectanglesInDisk c r f) :
-    ∀ᶠ (w : ℂ) in 𝓝 z,
-      wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
+lemma VanishesOnRectanglesInDisk.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
+    (hf : VanishesOnRectanglesInDisk c r f) :
+    ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
   let r₁ := r - dist z c
   have r₁_pos : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
@@ -316,44 +315,32 @@ lemma VanishesOnRectanglesInDisk.diff_of_wedges (hf : VanishesOnRectanglesInDisk
   rw [intIdecomp, intIIdecomp, rectZero]
   abel
 
-open MeasureTheory in
 /-- The integral of a continuous function `f` from `z` to `x + z.im * I` is equal to
   `(x - z.re) * f z` up to `o(x - z.re)`. -/
 lemma deriv_of_wedgeIntegral_re' [CompleteSpace E] :
-    (fun (x : ℝ) ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z)
-      =o[𝓝 z.re] (fun (x : ℝ)  ↦ x - z.re) := by
+    (fun x ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z)
+      =o[𝓝 z.re] (fun x ↦ x - z.re) := by
   let r₁ := r - dist z c
   have r₁_pos : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
-  have s_open : IsOpen s := isOpen_Ioo
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1
-  have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re := by
-    apply ContinuousOn.intervalIntegrable
-    apply f_contOn.mono
-    simpa [mem_ball.mp hz]
+  have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
+    ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa [mem_ball.mp hz]
   have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) ↦ f (x + z.im * I)) (𝓝 z.re) :=
-    ContinuousOn.stronglyMeasurableAtFilter s_open f_contOn _ zRe_mem_s
+    f_contOn.stronglyMeasurableAtFilter isOpen_Ioo _ zRe_mem_s
   have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
-    s_open.continuousOn_iff.mp f_contOn zRe_mem_s
-  have := @intervalIntegral.integral_hasDerivAt_right (f := fun (x : ℝ) ↦ f (x + z.im * I))
-    (a := z.re) (b := z.re) _ _ _ _ int1 int2 int3
-  dsimp [HasDerivAt, HasDerivAtFilter] at this
-  rw [hasFDerivAtFilter_iff_isLittleO] at this
-  simp only [intervalIntegral.integral_same, sub_zero, re_add_im, map_sub] at this
-  convert this using 3
-  simp [sub_smul]
+    isOpen_Ioo.continuousOn_iff.mp f_contOn zRe_mem_s
+  simpa [HasDerivAt, HasDerivAtFilter, hasFDerivAtFilter_iff_isLittleO] using
+    intervalIntegral.integral_hasDerivAt_right int1 int2 int3
 
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 lemma deriv_of_wedgeIntegral_re [CompleteSpace E] :
     (fun (w : ℂ) ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - ((w - z).re) • f z)
-      =o[𝓝 z] (fun w ↦ w - z) := by
-  have zReTendsTo : Filter.Tendsto (fun (w : ℂ) ↦ w.re) (𝓝 z) (𝓝 z.re) :=
-    Continuous.tendsto Complex.continuous_re _
-  have := (deriv_of_wedgeIntegral_re' f_cont hz).comp_tendsto zReTendsTo
-  have := this.trans_isBigO re_isBigO
-  convert this using 2
+      =o[𝓝 z] (fun w ↦ w - z) :=
+  ((deriv_of_wedgeIntegral_re' f_cont hz).comp_tendsto (continuous_re.tendsto z)).trans_isBigO
+    re_isBigO
 
 variable [NormOneClass E]
 
@@ -409,7 +396,7 @@ theorem deriv_of_wedgeIntegral (hf : VanishesOnRectanglesInDisk c r f) :
     _ =o[𝓝 z] fun w ↦ w - z :=
       (deriv_of_wedgeIntegral_re f_cont hz).add
         ((deriv_of_wedgeIntegral_im f_cont hz).const_smul_left I)
-  · filter_upwards [VanishesOnRectanglesInDisk.diff_of_wedges f_cont hz hf]
+  · filter_upwards [hf.eventually_nhds_wedgeIntegral_sub_wedgeIntegral f_cont hz]
     exact fun _ ha ↦ by rw [ha]; congr
   ext1 w
   simp only [wedgeIntegral, sub_re, sub_im, Pi.add_apply, Pi.smul_apply]
