@@ -332,7 +332,7 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
       (3 : ℝ) • ((univ : Finset (Fin 3)).centroid ℝ t.points -ᵥ t.circumcenter : V) +ᵥ
         t.circumcenter := by
   rw [orthocenter_eq_mongePoint, mongePoint_eq_smul_vsub_vadd_circumcenter]
-  norm_num
+  simp
 
 /-- **Sylvester's theorem**, specialized to triangles. -/
 theorem orthocenter_vsub_circumcenter_eq_sum_vsub (t : Triangle ℝ P) :

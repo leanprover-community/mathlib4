@@ -213,7 +213,7 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
     stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) ?_
   have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
-    norm_num
+    simp
   rw [h]
   exact ((ha.pow 4).div ((ha.comp (tendsto_id.const_mul_atTop' two_pos)).pow 2)
     (pow_ne_zero 2 hane)).mul tendsto_self_div_two_mul_self_add_one
