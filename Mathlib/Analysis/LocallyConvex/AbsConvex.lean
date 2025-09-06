@@ -295,6 +295,17 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
 
 end
 
+section
+
+variable {𝕜 E F : Type*} {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+  [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
+
+theorem AbsConvex.linear_image (hs : AbsConvex 𝕜 s) (f : E →ₗ[𝕜] F) : AbsConvex 𝕜 (f '' s) :=
+  ⟨hs.1.linear_image _, hs.2.linear_image _⟩
+
+end
+
+
 lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
   [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)

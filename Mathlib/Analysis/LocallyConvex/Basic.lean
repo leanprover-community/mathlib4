@@ -144,6 +144,18 @@ theorem balanced_zero : Balanced 𝕜 (0 : Set E) := fun _a _ha => (smul_zero _)
 
 end Module
 
+section
+
+variable {𝕜 E F : Type*} {s : Set E} [SeminormedRing 𝕜] [AddCommMonoid E]
+  [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
+
+theorem Balanced.linear_image (hs : Balanced 𝕜 s) (f : E →ₗ[𝕜] F) : Balanced 𝕜 (f '' s) :=
+  fun a ha x ⟨_, ⟨c, hc1, hc2⟩, hb2⟩ =>
+    ⟨a • c, ⟨hs _ ha (smul_mem_smul_set hc1), by simp_rw [f.map_smul, hc2, hb2]⟩⟩
+
+end
+
+
 end SeminormedRing
 
 section NormedDivisionRing
