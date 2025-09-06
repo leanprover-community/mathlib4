@@ -691,6 +691,12 @@ theorem pullbackIsoPullback_inv_fst :
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd := by aesop
 
+@[ext]
+lemma pullback_ext {z₁ z₂ : pullback f g}
+    (h₁ : pullback.fst f g z₁ = pullback.fst f g z₂)
+    (h₂ : pullback.snd f g z₁ = pullback.snd f g z₂) : z₁ = z₂ :=
+  PullbackCone.IsLimit.type_ext (pullbackIsPullback f g) h₁ h₂
+
 end Pullback
 
 section Pushout
