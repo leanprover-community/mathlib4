@@ -44,11 +44,14 @@ def reducedNorm [Nonempty n] : A →*₀ F where
 
 /-- The reduced trace of an element `a` in a central simple algebra `A` over a field `K`, given a
   splitting field `F` and an algebra isomorphism `e`. -/
-@[simps]
-def reducedTrace : A →ₗ[K] F where
-  toFun a := Matrix.traceLinearMap _ F _ <| e (1 ⊗ₜ a)
-  map_add' := by simp [← Matrix.trace_add, ← map_add, ← TensorProduct.tmul_add]
-  map_smul' := by simp [← Matrix.trace_smul, LinearMapClass.map_smul_of_tower e]
+-- @[simps]
+def reducedTrace : A →ₗ[K] F :=
+  Matrix.traceLinearMap n F F ∘ₗ
+    LinearMap.restrictScalars K e.toLinearMap ∘ₗ {
+      toFun a := 1 ⊗ₜ a
+      map_add' := by simp [TensorProduct.tmul_add]
+      map_smul' := by simp
+    }
 
 end
 
