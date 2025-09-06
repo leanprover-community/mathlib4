@@ -387,6 +387,10 @@ function. -/
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 
+/-- A function is `m`-`AEMeasurable` with respect to a measure `μ` if it is almost
+everywhere equal to the limit of a sequence of `m`-simple functions. -/
+scoped[MeasureTheory] notation "AEMeasurable[" m "]" => @AEMeasurable _ _ _ m
+
 @[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
