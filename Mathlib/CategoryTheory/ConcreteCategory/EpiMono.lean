@@ -111,7 +111,7 @@ lemma surjective_eq_epimorphisms [(forget C).PreservesEpimorphisms] :
   rw [surjective_eq_epimorphisms_iff]
   infer_instance
 
-variable [HasStrongEpiMonoFactorisations C] [(forget C).PreservesMonomorphisms]
+variable [HasStrongEpiMonoFactorizations C] [(forget C).PreservesMonomorphisms]
   [(forget C).PreservesEpimorphisms]
 
 /-- A concrete category with strong epi mono factorizations and such that
