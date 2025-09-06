@@ -294,11 +294,8 @@ variable [NonnegSpectrumClass ℝ A]
 
 -- TODO: REMOVE (duplicate; see comment on `isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts`)
 lemma nonneg_iff_isSelfAdjoint_and_spectrumRestricts {a : A} :
-    0 ≤ a ↔ IsSelfAdjoint a ∧ SpectrumRestricts a ContinuousMap.realToNNReal := by
-  refine ⟨fun ha ↦ ⟨.of_nonneg ha, .nnreal_of_nonneg ha⟩, ?_⟩
-  rintro ⟨ha₁, ha₂⟩
-  obtain ⟨x, hx, -, rfl⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts ha₁ ha₂
-  simpa [sq, hx.star_eq] using star_mul_self_nonneg x
+    0 ≤ a ↔ IsSelfAdjoint a ∧ SpectrumRestricts a ContinuousMap.realToNNReal :=
+  nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
 
 open NNReal in
 instance Nonneg.instContinuousFunctionalCalculus :
