@@ -504,7 +504,7 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     have := le_nfp (a * ·) (a ^ ω * b + c)
     rw [hd] at this
     have := (add_lt_add_left hc (a ^ ω * b)).trans_le this
-    rw [add_zero, mul_lt_mul_iff_left (opow_pos ω ha)] at this
+    rw [add_zero, mul_lt_mul_left (opow_pos ω ha)] at this
     rwa [succ_le_iff]
 
 theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
