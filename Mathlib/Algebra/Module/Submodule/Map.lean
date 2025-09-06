@@ -232,6 +232,10 @@ theorem map_iSup {ι : Sort*} (f : F) (p : ι → Submodule R M) :
     map f (⨆ i, p i) = ⨆ i, map f (p i) :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 
+lemma disjoint_map {f : F} (hf : Function.Injective f) {p q : Submodule R M} (hpq : Disjoint p q) :
+    Disjoint (p.map f) (q.map f) := by
+  rw [disjoint_iff, ← map_inf f hf, disjoint_iff.mp hpq, map_bot]
+
 end
 
 @[simp]
@@ -672,6 +676,10 @@ theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M�
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
   Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
+
+lemma surjOn_iff_le_map [RingHomSurjective σ₂₁] {f : M₂ →ₛₗ[σ₂₁] M} {p : Submodule R₂ M₂}
+    {q : Submodule R M} : Set.SurjOn f p q ↔ q ≤ p.map f :=
+  Iff.rfl
 
 end LinearMap
 
