@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Calculus.Deriv.ZPow
+import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Logarithmic Derivatives
@@ -15,7 +16,7 @@ facts about this, including how it changes under multiplication and composition.
 
 noncomputable section
 
-open Filter Function
+open Filter Function Set
 
 open scoped Topology
 
@@ -105,3 +106,47 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
   ring
+
+
+lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E] [NontriviallyNormedField 𝕜]
+    [IsRCLikeNormedField 𝕜] [NormedAlgebra 𝕜 E] {f g : 𝕜 → E} {s : Set 𝕜}
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hs2 : IsOpen s) (hsc : IsPreconnected s) (hgn : ∀ x ∈ s, g x ≠ 0) (hfn : ∀ x ∈ s, f x ≠ 0) :
+    EqOn (logDeriv f) (logDeriv g) s ↔ ∃ (z : E), z ≠ 0 ∧ s.EqOn f (z • g) := by
+  by_cases hs : s.Nonempty
+  · constructor
+    · simp_rw [logDeriv]
+      intro h
+      obtain ⟨t, ht⟩ := hs
+      refine ⟨(f t) * (g t)⁻¹, mul_ne_zero (hfn t ht) (by simpa using (hgn t ht)), fun y hy => ?_⟩
+      · have hderiv : s.EqOn (deriv (f * g⁻¹)) (deriv f * g⁻¹ - f * deriv g / g ^ 2) := by
+          intro z hz
+          rw [deriv_mul (hf.differentiableAt (hs2.mem_nhds hz)) ((hg.differentiableAt
+            (hs2.mem_nhds hz)).inv (hgn z hz))]
+          simp only [Pi.inv_apply, show g⁻¹ = (fun x => x⁻¹) ∘ g by rfl, deriv_inv, neg_mul,
+            deriv_comp z (differentiableAt_inv (hgn z hz)) (hg.differentiableAt (hs2.mem_nhds hz)),
+            mul_neg, Pi.sub_apply, Pi.mul_apply, comp_apply, Pi.div_apply, Pi.pow_apply]
+          ring
+        have hfg : EqOn (deriv (f * g⁻¹)) 0 s := by
+          apply hderiv.trans
+          intro z hz
+          simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
+            Pi.zero_apply]
+          suffices deriv f z * g z - f z * deriv g z = 0 by
+            field_simp [hgn z hz]
+            simp [this]
+          have H := h hz
+          simp_rw [Pi.div_apply, div_eq_div_iff (hfn z hz) (hgn z hz), mul_comm] at H
+          simp [← H, mul_comm]
+        letI := IsRCLikeNormedField.rclike 𝕜
+        obtain ⟨a, ha⟩ := IsOpen.exists_is_const_of_deriv_eq_zero (f := f * g⁻¹) (s := s) hs2 hsc
+          (hf.mul (DifferentiableOn.inv hg hgn)) hfg
+        have hay := ha y hy
+        have hat := ha t ht
+        simp only [ne_eq, Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul] at *
+        rw [hat, ← hay]
+        field_simp [hgn y hy]
+    · rintro ⟨z, hz0, hz⟩ x hx
+      simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
+        (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
+  ·  simpa [not_nonempty_iff_eq_empty.mp hs] using ⟨1, one_ne_zero⟩

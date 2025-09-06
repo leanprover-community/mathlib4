@@ -593,6 +593,12 @@ theorem derivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
   unfold derivWithin
   rw [fderivWithin_congr hs hx]
 
+lemma Set.EqOn.deriv {f g : 𝕜 → F} {s : Set 𝕜} (hfg : s.EqOn f g) (hs : IsOpen s) :
+    s.EqOn (deriv f) (deriv g) := by
+  intro x hx
+  rw [← derivWithin_of_isOpen hs hx, ← derivWithin_of_isOpen hs hx]
+  exact derivWithin_congr hfg (hfg hx)
+
 theorem Filter.EventuallyEq.deriv_eq (hL : f₁ =ᶠ[𝓝 x] f) : deriv f₁ x = deriv f x := by
   unfold deriv
   rwa [Filter.EventuallyEq.fderiv_eq]
