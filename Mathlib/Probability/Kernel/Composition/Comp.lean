@@ -55,7 +55,7 @@ theorem comp_apply' (η : Kernel β γ) (κ : Kernel α β) (a : α) {s : Set γ
     (η ∘ₖ κ) a s = ∫⁻ b, η b s ∂κ a := by
   rw [comp_apply, Measure.bind_apply hs (Kernel.aemeasurable _)]
 
-theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) [IsFiniteKernel η] (a : α) :
+theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
     (η ∘ₖ κ) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
   rw [comp_apply' _ _ _ .univ]
   let Cη := IsFiniteKernel.bound η
