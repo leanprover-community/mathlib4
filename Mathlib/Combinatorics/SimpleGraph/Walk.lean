@@ -838,8 +838,7 @@ theorem darts_toProd_eq {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.le
   · by_cases h' : n = 0
     · simp [h', List.getElem_zero]
     · have := List.chain'_getElem p.chain'_dartAdj_darts (n - 1) (by omega)
-      simp only [DartAdj, show n - 1 + 1 = n by omega] at this
-      simp [← p.cons_map_snd_darts, List.getElem_cons, ← this, h']
+      grind [DartAdj, =_ cons_map_snd_darts]
   · simp [← p.cons_map_snd_darts]
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
@@ -1120,6 +1119,14 @@ lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.lastDart hp).edge = s(p.penultimate, w) := rfl
+
+theorem firstDart_eq {p : G.Walk v w} (h₁ : ¬p.Nil) (h₂ : 0 < p.darts.length) :
+    p.firstDart h₁ = p.darts[0] := by
+  simp [Dart.ext_iff, firstDart_toProd, darts_toProd_eq]
+
+theorem lastDart_eq {p : G.Walk v w} (h₁ : ¬p.Nil) (h₂ : 0 < p.darts.length) :
+    p.lastDart h₁ = p.darts[p.darts.length - 1] := by
+  simp (disch := omega) [Dart.ext_iff, lastDart_toProd, darts_toProd_eq, p.getVert_of_length_le]
 
 lemma cons_tail_eq (p : G.Walk u v) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
