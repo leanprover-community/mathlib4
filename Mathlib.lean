@@ -2451,6 +2451,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Sifted
+import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types.ColimitType
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
