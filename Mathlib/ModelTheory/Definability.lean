@@ -126,15 +126,21 @@ theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ 
     rw [Finset.sup_insert]
     exact (hf i).union h
 
-theorem definable_finset_biInter {ι : Type*} {f : ι → Set (α → M)}
+theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 
-theorem definable_finset_biUnion {ι : Type*} {f : ι → Set (α → M)}
+@[deprecated (since := "2025-08-28")]
+alias definable_finset_biInter := definable_biInter_finset
+
+theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
+
+@[deprecated (since := "2025-08-28")]
+alias definable_finset_biUnion := definable_biUnion_finset
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
@@ -236,7 +242,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext ?_⟩
           simp
-      refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
+      refine (congr rfl (ext ?_)).mp (definable_biInter_finset h' Finset.univ)
       simp
     refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
