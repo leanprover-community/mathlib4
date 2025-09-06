@@ -425,7 +425,6 @@ example :
   let f := fun (x : ℝ) ↦ (1 + x)^(Real.pi) / (3 + 2*x^(314/100 : ℝ))
   Tendsto f atTop atTop := by
   simp only
-  have : 0 < Real.pi := Real.pi_pos
   have : 3141592 / 1000000 < Real.pi := by convert Real.pi_gt_d6; norm_num
   compute_asymptotics
 
@@ -441,14 +440,12 @@ example :
   let f := fun (x : ℝ) ↦ Real.pi * x;
   Tendsto f atTop atTop := by
   simp only
-  have : 0 < Real.pi := Real.pi_pos
   compute_asymptotics
 
 example :
   let f := fun (x : ℝ) ↦ 1 / (1 + Real.pi * x) - 1 / (1 + 3 * x);
   Tendsto f atTop (nhds 0) := by
   simp only
-  have : 0 < Real.pi := Real.pi_pos
   compute_asymptotics
 
 example :

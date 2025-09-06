@@ -524,7 +524,8 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalize q($r) q(PreMS.one _) q(PreMS.nil) q(monomial_rpow_zero $r)
     | m + 1 =>
       have : $n =Q $m + 1 := ⟨⟩
-      return ← consNormalizeCoef q(0) q(PreMS.monomial_rpow _ $m $r) q(PreMS.nil) q(monomial_rpow_succ $m $r)
+      return ← consNormalizeCoef q(0) q(PreMS.monomial_rpow _ $m $r) q(PreMS.nil)
+        q(monomial_rpow_succ $m $r)
   | ~q(PreMS.neg $arg) =>
     let res ← extractMSImp arg
     match res with
@@ -586,8 +587,8 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil hs =>
       return .nil q(apply_nil $hs)
     | .cons s_hd s_tl hs =>
-      return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd) q((PreMS.LazySeries.apply $s_tl $arg).mul $arg)
-        q(apply_cons $hs)
+      return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd)
+        q((PreMS.LazySeries.apply $s_tl $arg).mul $arg) q(apply_cons $hs)
   | ~q(PreMS.inv $arg) =>
     let res ← extractMSImp arg
     match res with

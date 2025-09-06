@@ -6,9 +6,9 @@ Authors: Vasilii Nesterov
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Inv
 
 /-!
-# Trigonometric functions
+# Trigonometric functions for multiseries
 
-TODO
+In this file we define `PreMS.cos` and `PreMS.sin` functions.
 -/
 
 namespace TendstoTactic.PreMS
@@ -48,17 +48,37 @@ theorem sinSeries_eq_cons :
   rw [ofFnFrom_eq_cons]
   rfl
 
-theorem cosSeries_analytic : cosSeries.analytic := by
+-- TODO: prove this after upstreaming
+theorem cos_hasFPowerSeriesOnBall_cosSeries :
+    HasFPowerSeriesOnBall Real.cos cosSeries.toFormalMultilinearSeries 0 ⊤ := by
   sorry
+
+-- TODO: prove this after upstreaming
+theorem sin_hasFPowerSeriesOnBall_sinSeries :
+    HasFPowerSeriesOnBall Real.sin sinSeries.toFormalMultilinearSeries 0 ⊤ := by
+  sorry
+
+theorem cosSeries_analytic : cosSeries.analytic := by
+  apply analytic_of_HasFPowerSeriesAt (f := Real.cos)
+  exact cos_hasFPowerSeriesOnBall_cosSeries.hasFPowerSeriesAt
 
 theorem cosSeries_toFun : cosSeries.toFun = Real.cos := by
-  sorry
+  ext x
+  simp [toFun]
+  conv => rhs; rw [show x = 0 + x by simp]
+  symm
+  exact cos_hasFPowerSeriesOnBall_cosSeries.sum (by simp)
 
 theorem sinSeries_analytic : sinSeries.analytic := by
-  sorry
+  apply analytic_of_HasFPowerSeriesAt (f := Real.sin)
+  exact sin_hasFPowerSeriesOnBall_sinSeries.hasFPowerSeriesAt
 
 theorem sinSeries_toFun : sinSeries.toFun = Real.sin := by
-  sorry
+  ext x
+  simp [toFun]
+  conv => rhs; rw [show x = 0 + x by simp]
+  symm
+  exact sin_hasFPowerSeriesOnBall_sinSeries.sum (by simp)
 
 mutual
 
@@ -198,8 +218,10 @@ mutual
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
     simp at h_tl
-    convert_to (((cosSeries.apply tl).mulMonomial coef.sin 0).add ((sinSeries.apply tl).mulMonomial coef.cos 0)).Approximates
-      (fun t ↦  Real.sin (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.cos (f t - fC t) + Real.cos (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.sin (f t - fC t))
+    convert_to (((cosSeries.apply tl).mulMonomial coef.sin 0).add
+        ((sinSeries.apply tl).mulMonomial coef.cos 0)).Approximates
+      (fun t ↦ Real.sin (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.cos (f t - fC t) +
+        Real.cos (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.sin (f t - fC t))
     · ext t
       simp [← Real.sin_add]
     apply add_Approximates
@@ -249,8 +271,10 @@ mutual
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     obtain ⟨fC, h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
     simp at h_tl
-    convert_to (((cosSeries.apply tl).mulMonomial coef.cos 0).sub ((sinSeries.apply tl).mulMonomial coef.sin 0)).Approximates
-      (fun t ↦  Real.cos (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.cos (f t - fC t) - Real.sin (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.sin (f t - fC t))
+    convert_to (((cosSeries.apply tl).mulMonomial coef.cos 0).sub
+        ((sinSeries.apply tl).mulMonomial coef.sin 0)).Approximates
+      (fun t ↦  Real.cos (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.cos (f t - fC t) -
+        Real.sin (fC t) * (basis_hd t) ^ (0 : ℝ) * Real.sin (f t - fC t))
     · ext t
       simp [← Real.cos_add]
     apply sub_Approximates

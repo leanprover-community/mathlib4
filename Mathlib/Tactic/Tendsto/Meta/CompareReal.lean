@@ -49,7 +49,8 @@ def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
     norm_num <;> field_simp <;> (try linarith) <;> (try positivity) <;> ring_nf)) e.mvarId!
   if res.isEmpty then
     return .zero e
-  throwError f!"Cannot compare real number {← ppExpr x} with zero"
+  throwError f!"Cannot compare real number {← ppExpr x} with zero. You can use a `have` " ++
+    "statement to provide the sign of the expression."
 
 def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
   let ⟨x', pf⟩ ← normalizeReal x
