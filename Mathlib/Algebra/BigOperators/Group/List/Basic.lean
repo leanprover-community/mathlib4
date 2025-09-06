@@ -232,6 +232,10 @@ theorem prod_insertIdx {i} (h : i ≤ l.length) : (l.insertIdx i a).prod = a * l
     simp [ih (Nat.le_of_lt_succ h), mul_left_comm]
 
 @[to_additive (attr := simp)]
+theorem mul_prod_eraseIdx {i} (h : i < l.length) : l[i] * (l.eraseIdx i).prod = l.prod := by
+  rw [← prod_insertIdx (by grind : i ≤ (l.eraseIdx i).length), insertIdx_eraseIdx_getElem h]
+
+@[to_additive (attr := simp)]
 lemma prod_erase [DecidableEq M] (ha : a ∈ l) : a * (l.erase a).prod = l.prod :=
   prod_erase_of_comm ha fun x _ y _ ↦ mul_comm x y
 

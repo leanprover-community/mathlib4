@@ -196,6 +196,10 @@ private theorem prod_insertNth_go :
 theorem prod_insertNth i x (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
   prod_insertNth_go n i.val i.isLt x p
 
+@[to_additive (attr := simp)]
+theorem mul_prod_removeNth i (f : Fin (n + 1) → M) : f i * ∏ j, removeNth i f j = ∏ j, f j := by
+  rw [← prod_insertNth, insertNth_self_removeNth]
+
 /-!
 ### Products over intervals: `Fin.cast`
 -/
