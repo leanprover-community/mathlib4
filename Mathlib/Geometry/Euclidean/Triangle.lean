@@ -343,22 +343,6 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
     exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
-<<<<<<< HEAD
-/-- **Exterior angle theorem**. -/
-theorem exterior_angle_eq_angle_add_angle  {p₁ p₂ p₃ : P} (p : P) (h_Sbtw : Sbtw ℝ p p₁ p₂) :
- ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
-  have h_pi : ∠ p p₁ p₂ = π := by
-    rw[Sbtw.angle₁₂₃_eq_pi]
-    assumption
-  have h1 : ∠ p₃ p₁ p + ∠ p₃ p₁ p₂ = π := by
-    rw [← EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi p₃ h_pi]
-  have h₁₂ : p₁ ≠ p₂ := by
-    exact Ne.symm (Sbtw.right_ne h_Sbtw)
-  have h2 := angle_add_angle_add_angle_eq_pi p₃ h₁₂
-  rw[show ∠ p₃ p₁ p₂ = ∠ p₂ p₁ p₃ by rw[angle_comm], add_comm, ← h2, add_assoc] at h1
-  simp at h1
-  rw [h1]
-=======
 /-- In a triangle, the smaller angle is opposite the smaller side. -/
 theorem dist_lt_of_angle_lt {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P)) :
     ∠ a c b < ∠ a b c → dist a b < dist a c := by
@@ -421,6 +405,16 @@ theorem angle_le_iff_dist_le {a b c : P} (h : ¬Collinear ℝ ({a, b, c} : Set P
   have h1 := (angle_lt_iff_dist_lt h).not
   simp at h1
   exact h1
->>>>>>> upstream/master
+
+/-- **Exterior angle theorem**. -/
+theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
+    ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
+  have H := (EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi p₃ (Sbtw.angle₁₂₃_eq_pi h)).symm
+  rw [show ∠ p₃ p₁ p₂ = ∠ p₂ p₁ p₃ by simp only [angle_comm],
+      add_comm,
+      ← angle_add_angle_add_angle_eq_pi p₃ ((Sbtw.right_ne h).symm),
+      add_assoc] at H
+  simp only [add_right_inj] at H
+  rw [H]
 
 end EuclideanGeometry
