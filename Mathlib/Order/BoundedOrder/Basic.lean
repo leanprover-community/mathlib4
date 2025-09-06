@@ -123,8 +123,11 @@ alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
   le_top.ge_iff_eq
 
+@[grind ←=] -- This tells grind that to prove `a = ⊤` it suffices to prove `⊤ ≤ a`.
 theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h
+
+grind_pattern top_unique => ⊤ ≤ a
 
 theorem eq_top_iff : a = ⊤ ↔ ⊤ ≤ a :=
   top_le_iff.symm
@@ -295,8 +298,11 @@ alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
   bot_le.ge_iff_eq'
 
+@[grind ←=] -- This tells grind that to prove `a = ⊥` it suffices to prove `a ≤ ⊥`.
 theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
+
+grind_pattern bot_unique => a ≤ ⊥
 
 theorem eq_bot_iff : a = ⊥ ↔ a ≤ ⊥ :=
   le_bot_iff.symm
