@@ -1513,8 +1513,7 @@ protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v
   cases h' : p
   · grind [getVert_nil, append_nil, dropLast_nil, nil_isSubwalk_iff_exists]
   · exact ⟨r₁, cons (Walk.adj_penultimate (by simp)) r₂, by
-      nth_rw 2 [← append_assoc, ← concat_append]
-      simp [← h', append_assoc]⟩
+      grind [=_ concat_append, concat_dropLast, _=_ append_assoc]⟩
 
 protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
     (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q := by
