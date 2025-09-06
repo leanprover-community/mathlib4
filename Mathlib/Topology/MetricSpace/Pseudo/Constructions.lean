@@ -143,9 +143,8 @@ variable [PseudoMetricSpace β]
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
-    (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
-      simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
-        Prod.edist_eq]
+    (fun x y ↦ by positivity) fun x y => by
+      simp only [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]

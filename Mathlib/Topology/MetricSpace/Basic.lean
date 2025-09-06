@@ -76,7 +76,8 @@ abbrev EMetricSpace.toMetricSpaceOfDist {α : Type u} [EMetricSpace α] (dist : 
     (edist_ne_top : ∀ x y : α, edist x y ≠ ⊤) (h : ∀ x y, dist x y = ENNReal.toReal (edist x y)) :
     MetricSpace α :=
   @MetricSpace.ofT0PseudoMetricSpace _
-    (PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist edist_ne_top h) _
+    (PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist (by intro x y; rw [h x y]; simp)
+      (by intro x y; simp_all)) _
 
 /-- One gets a metric space from an emetric space if the edistance
 is everywhere finite, by pushing the edistance to reals. We set it up so that the edist and the
