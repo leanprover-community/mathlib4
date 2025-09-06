@@ -687,9 +687,9 @@ instance : EquivLike (A ≃⋆ₐ[R] B) A B where
   left_inv f := f.left_inv
   right_inv f := f.right_inv
   coe_injective' f g h₁ h₂ := by
-    rcases f with ⟨⟨_, _⟩, _⟩
-    rcases g with ⟨⟨_, _⟩, _⟩
-    simp_all
+    rcases f with ⟨⟨⟨⟨_, _, _⟩, _⟩, _⟩, _⟩
+    rcases g with ⟨⟨⟨⟨_, _, _⟩, _⟩, _⟩, _⟩
+    congr
 
 instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
