@@ -959,7 +959,17 @@ theorem insertNth_comp_rev {α} (i : Fin (n + 1)) (x : α) (p : Fin n → α) :
 
 theorem insertNth_succ_cons {α} (i x a p) :
     (insertNth i.succ x (cons a p) : Fin (n + 2) → α) = cons a (insertNth i x p) := by
-  sorry
+  ext j
+  cases j using Fin.cases with
+  | zero =>
+    simp
+    have (q : Fin (n + 1) → α): insertNth (α := fun _ => α) i.succ x q 0 = q 0 := by
+      --hint
+      sorry
+    simp [this]
+  | succ j =>
+    simp
+    sorry
 
 theorem cons_rev {α n} (a : α) (f : Fin n → α) (i : Fin <| n + 1) :
     cons (α := fun _ => α) a f i.rev = snoc (α := fun _ => α) (f ∘ Fin.rev : Fin _ → α) a i := by
