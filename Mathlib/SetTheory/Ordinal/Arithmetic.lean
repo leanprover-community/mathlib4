@@ -623,7 +623,7 @@ alias isLimit_sub := isSuccLimit_sub
 
 /-! ### Multiplication of ordinals -/
 
-/-- The multiplication of ordinals `o₁` and `o₂` is the (well founded) lexicographic order on
+/-- The multiplication of ordinals `o₁` and `o₂` is the (well-founded) lexicographic order on
 `o₂ × o₁`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
@@ -697,8 +697,7 @@ instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
           rintro ⟨a₁ | a₁, a₂⟩ ⟨b₁ | b₁, b₂⟩ <;>
             simp only [Prod.lex_def, Sum.lex_inl_inl, Sum.Lex.sep, Sum.lex_inr_inl, Sum.lex_inr_inr,
               sumProdDistrib_apply_left, sumProdDistrib_apply_right, reduceCtorEq] <;>
-            -- Porting note: `Sum.inr.inj_iff` is required.
-            simp only [Sum.inl.inj_iff, Sum.inr.inj_iff, true_or, false_and, false_or]⟩⟩⟩
+            simp⟩⟩⟩
 
 theorem mul_succ (a b : Ordinal) : a * succ b = a * b + a :=
   mul_add_one a b
@@ -770,7 +769,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
   ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
-    -- Porting note: `induction` tactics are required because of the parser bug.
+    -- We use the `induction` tactic in order to change `h`/`H` too.
     le_of_not_gt <| by
       induction a using inductionOn with
       | H α r =>
@@ -995,6 +994,13 @@ theorem isSuccLimit_add_iff {a b : Ordinal} :
   · exact isSuccLimit_add a h
   · simpa only [add_zero]
 
+theorem isSuccLimit_add_iff_of_isSuccLimit {a b : Ordinal} (h : IsSuccLimit a) :
+    IsSuccLimit (a + b) ↔ IsSuccPrelimit b := by
+  rw [isSuccLimit_add_iff]
+  obtain rfl | hb := eq_or_ne b 0
+  · simpa
+  · simp [hb, isSuccLimit_iff]
+
 @[deprecated (since := "2025-07-09")]
 alias isLimit_add_iff := isSuccLimit_add_iff
 
@@ -1008,14 +1014,12 @@ theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a
   | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
 
 theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
-  -- Porting note: `⟨b, rfl⟩ => by` → `⟨b, e⟩ => by subst e`
   | a, _, b0, ⟨b, e⟩ => by
     subst e
-    -- Porting note: `Ne` is required.
     simpa only [mul_one] using
       mul_le_mul_left'
-        (one_le_iff_ne_zero.2 fun h : b = 0 => by
-          simp only [h, mul_zero, Ne, not_true_eq_false] at b0) a
+        (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
+        a
 
 theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :=
   if a0 : a = 0 then by subst a; exact (eq_zero_of_zero_dvd h₁).symm
@@ -1171,12 +1175,15 @@ theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o :=
   · exact Or.inl <| lt_omega0.1 ho
   · exact Or.inr ho
 
+@[simp]
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
+@[simp]
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
+@[simp]
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
 
 theorem isSuccLimit_omega0 : IsSuccLimit ω := by

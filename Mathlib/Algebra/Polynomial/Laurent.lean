@@ -252,7 +252,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   simp_rw [← single_eq_C_mul_T]
   rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
   · intro b _ hb
-    rw [single_eq_of_ne hb]
+    rw [single_eq_of_ne' hb]
   · intro ha
     rw [single_eq_same, notMem_support_iff.mp ha]
 
@@ -307,7 +307,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
     apply comapDomain_single
   · rw [toFinsupp_inj]
     ext a
-    have : n ≠ a := by omega
+    have : a ≠ n := by omega
     simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
       single_eq_of_ne this]
 

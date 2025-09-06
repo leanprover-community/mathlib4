@@ -370,7 +370,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
     have I : Ioi (0 : ℝ) = Ioc (0 : ℝ) M ∪ Ioi M := (Ioc_union_Ioi_eq_Ioi M_nonneg).symm
     have J : Disjoint (Ioc 0 M) (Ioi M) := Ioc_disjoint_Ioi le_rfl
     rw [I, lintegral_union measurableSet_Ioi J, lintegral_union measurableSet_Ioi J, B1, B2]
-  -- therefore, we may replace the integrals wrt `μ` with integrals wrt `ν`, and apply the
+  -- therefore, we may replace the integrals w.r.t. `μ` with integrals w.r.t. `ν`, and apply the
   -- result for sigma-finite measures.
   rw [A, B]
   exact lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite

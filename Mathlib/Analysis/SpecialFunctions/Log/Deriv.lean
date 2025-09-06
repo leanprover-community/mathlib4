@@ -41,7 +41,7 @@ theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := b
   rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
-    · field_simp [hx.ne]
+    · field_simp
   · exact hasStrictDerivAt_log_of_pos hx
 
 theorem hasDerivAt_log (hx : x ≠ 0) : HasDerivAt log x⁻¹ x :=
