@@ -268,7 +268,7 @@ partial def getOps (sum : Expr) : MetaM (Array ((Array Expr) × Expr)) := do
 /-- `rankSums op tgt instructions` takes as input
 * the name `op` of a binary operation,
 * an `Expr`ession `tgt`,
-* a list `instructions` of pair `(expression, boolean)`.
+* a list `instructions` of pair `(expression, Boolean)`.
 
 It extracts the maximal subexpressions of `tgt` whose head symbol is `op`
 (i.e. the maximal subexpressions that consist only of applications of the binary operation `op`),
