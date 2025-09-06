@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
+Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
+  Matteo Cipollina
 -/
 import Mathlib.Control.Basic
 import Mathlib.Data.Nat.Basic
@@ -1275,5 +1276,23 @@ lemma left_le_of_mem_range' {a b s x : ℕ} (hx : x ∈ List.range' a b s) : a �
   exact le_add_right a (s * i)
 
 end range'
+
+/-! ### Split -/
+section split
+
+/-- Any `x ∈ l` gives a decomposition `l = l₁ ++ x :: l₂`. -/
+lemma exists_mem_split {l : List α} {x : α} (h : x ∈ l) :
+    ∃ l₁ l₂, l = l₁ ++ x :: l₂ := by
+  induction l with
+  | nil     => cases h
+  | cons y ys ih =>
+    simp only [List.mem_cons] at h
+    rcases h with rfl | h'
+    · exact ⟨[], ys, by simp only [List.nil_append]⟩
+    · rcases ih h' with ⟨l₁, l₂, rfl⟩
+      use y :: l₁, l₂
+      simp only [List.cons_append]
+
+end split
 
 end List
