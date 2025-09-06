@@ -4718,6 +4718,7 @@ import Mathlib.ModelTheory.Substructures
 import Mathlib.ModelTheory.Syntax
 import Mathlib.ModelTheory.Types
 import Mathlib.ModelTheory.Ultraproducts
+import Mathlib.New
 import Mathlib.NumberTheory.ADEInequality
 import Mathlib.NumberTheory.AbelSummation
 import Mathlib.NumberTheory.ArithmeticFunction
