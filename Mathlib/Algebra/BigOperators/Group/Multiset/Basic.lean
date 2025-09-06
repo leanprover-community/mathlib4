@@ -119,7 +119,7 @@ theorem prod_map_prod_map (m : Multiset ι) (n : Multiset κ) {f : ι → κ →
       prod (n.map fun b => prod <| m.map fun a => f a b) :=
   Multiset.induction_on m (by simp) fun a m ih => by simp [ih]
 
-theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
+@[to_additive] theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
   obtain ⟨z, rfl⟩ := exists_add_of_le h
   simp only [prod_add, dvd_mul_right]
 
@@ -140,7 +140,7 @@ protected lemma _root_.MonoidHom.map_multiset_prod (f : M →* N) (s : Multiset 
 protected lemma _root_.MulHom.map_multiset_ne_zero_prod (f : M →ₙ* N) (s : Multiset M)
     (hs : s ≠ 0) : f s.prod = (s.map f).prod := (s.prod_hom_ne_zero hs f).symm
 
-lemma dvd_prod : a ∈ s → a ∣ s.prod :=
+@[to_additive] lemma dvd_prod : a ∈ s → a ∣ s.prod :=
   Quotient.inductionOn s (fun l a h ↦ by simpa using List.dvd_prod h) a
 
 @[to_additive] lemma fst_prod (s : Multiset (M × N)) : s.prod.1 = (s.map Prod.fst).prod :=
@@ -151,7 +151,7 @@ lemma dvd_prod : a ∈ s → a ∣ s.prod :=
 
 end CommMonoid
 
-theorem prod_dvd_prod_of_dvd [CommMonoid N] {S : Multiset M} (g1 g2 : M → N)
+@[to_additive] theorem prod_dvd_prod_of_dvd [CommMonoid N] {S : Multiset M} (g1 g2 : M → N)
     (h : ∀ a ∈ S, g1 a ∣ g2 a) : (Multiset.map g1 S).prod ∣ (Multiset.map g2 S).prod := by
   apply Multiset.induction_on' S
   · simp

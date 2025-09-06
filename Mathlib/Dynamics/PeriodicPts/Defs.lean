@@ -565,12 +565,12 @@ then `n` must be a multiple of `period g a`.
 This also holds for negative powers/multiples.
 -/
 
-@[to_additive]
+@[to_additive nsmul_vadd_eq_iff_period_dvd]
 theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
     m ^ n • a = a ↔ period m a ∣ n := by
   rw [period_eq_minimalPeriod, ← isPeriodicPt_iff_minimalPeriod_dvd, isPeriodicPt_smul_iff]
 
-@[to_additive]
+@[to_additive zsmul_vadd_eq_iff_period_dvd]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
   match j with
@@ -613,12 +613,12 @@ theorem zpow_period_add_smul (i : ℤ) (g : G) (a : α) :
 
 variable {a : G} {b : α}
 
-@[to_additive]
+@[to_additive nsmul_vadd_eq_iff_minimalPeriod_dvd]
 theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :
     a ^ n • b = b ↔ minimalPeriod (a • ·) b ∣ n := by
   rw [← period_eq_minimalPeriod, pow_smul_eq_iff_period_dvd]
 
-@[to_additive]
+@[to_additive zsmul_vadd_eq_iff_minimalPeriod_dvd]
 theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
     a ^ n • b = b ↔ (minimalPeriod (a • ·) b : ℤ) ∣ n := by
   rw [← period_eq_minimalPeriod, zpow_smul_eq_iff_period_dvd]
