@@ -527,6 +527,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
+import Mathlib.Algebra.Homology.DerivedCategory.Linear
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 import Mathlib.Algebra.Homology.DerivedCategory.TStructure
