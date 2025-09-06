@@ -312,7 +312,7 @@ theorem rank_toZFSet (o : Ordinal) : o.toZFSet.rank = o :=
   rank_toPSet o
 
 @[simp]
-theorem toZFSet_toSet {o : Ordinal} : o.toZFSet.toSet = toZFSet '' Iio o := by
+theorem toSet_toZFSet {o : Ordinal} : o.toZFSet.toSet = toZFSet '' Iio o := by
   ext
   simp [mem_toZFSet_iff]
 
