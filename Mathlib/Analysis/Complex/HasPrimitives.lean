@@ -20,13 +20,13 @@ disk), and compute its derivative.
 
 ## Main results
 
-* `VanishesOnRectanglesInDisc.diff_of_wedges`: If a function `f` vanishes on all rectangles in a
+* `VanishesOnRectanglesInDisk.diff_of_wedges`: If a function `f` vanishes on all rectangles in a
   disk with center `c`, then the wedge integral from `c` to `w` minus the wedge integral from
   `c` to `z` is equal to the wedge integral from `z` to `w`.
 
 * `deriv_of_wedgeIntegral`: The derivative of the wedge integral is the function being integrated.
 
-* `VanishesOnRectanglesInDisc.hasPrimitive`: **Morera's Theorem**: A function which is
+* `VanishesOnRectanglesInDisk.hasPrimitive`: **Morera's Theorem**: A function which is
   continuous on a disk and whose integral on rectangles in the disk vanishes has a primitive
   on the disk (defined by the wedge integral).
 
@@ -240,10 +240,10 @@ lemma rectangleIntegral_eq_wedgeIntegral_add_wedgeIntegral (z w : ℂ) (f : ℂ 
     intervalIntegral.integral_symm z.im w.im, smul_neg]
   abel
 
-/-- A function `f` `VanishesOnRectanglesInDisc` if, for any rectangle contained in a disk,
+/-- A function `f` `VanishesOnRectanglesInDisk` if, for any rectangle contained in a disk,
   the integral of `f` over the rectangle is zero. -/
-def VanishesOnRectanglesInDisc (c : ℂ) (r : ℝ) (f : ℂ → E) : Prop :=
-    ∀ z w, z ∈ ball c r → w ∈ ball c r → (z.re + w.im * I) ∈ ball c r →
+def VanishesOnRectanglesInDisk (c : ℂ) (r : ℝ) (f : ℂ → E) : Prop :=
+  ∀ᵉ (z ∈ ball c r) (w ∈ ball c r), (z.re + w.im * I) ∈ ball c r →
     (w.re + z.im * I) ∈ ball c r → rectangleIntegral z w f = 0
 
 end MainDefinitions
@@ -255,10 +255,10 @@ variable {c : ℂ} {r : ℝ} {f : ℂ → E} (f_cont : ContinuousOn f (ball c r)
 
 include f_cont hz
 
-/-- If a function `f` `VanishesOnRectanglesInDisc` of center `c`, then, for all `w` in a
+/-- If a function `f` `VanishesOnRectanglesInDisk` of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
-lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc c r f) :
+lemma VanishesOnRectanglesInDisk.diff_of_wedges (hf : VanishesOnRectanglesInDisk c r f) :
     ∀ᶠ (w : ℂ) in 𝓝 z,
       wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
@@ -303,7 +303,7 @@ lemma VanishesOnRectanglesInDisc.diff_of_wedges (hf : VanishesOnRectanglesInDisc
       have wzInBall : w.re + z.im * I ∈ ball c r :=
         mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
       have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball hzPlusH
-      convert hf (z.re + c.im * I) (w.re + z.im * I) (re_add_im_mul_mem_ball hz) wzInBall
+      convert hf (z.re + c.im * I) (re_add_im_mul_mem_ball hz) (w.re + z.im * I) wzInBall
           (by simpa using hz) (by simpa using wcInBall) using 1
       rw [rectangleIntegral]
       congr
@@ -398,7 +398,7 @@ lemma deriv_of_wedgeIntegral_im : (fun w ↦ (∫ y in z.im..w.im, f (w.re + y *
   exact (f_cont.im_aux_1 hw).intervalIntegrable
 
 /-- The `wedgeIntegral` has derivative at `z` equal to `f z`. -/
-theorem deriv_of_wedgeIntegral (hf : VanishesOnRectanglesInDisc c r f) :
+theorem deriv_of_wedgeIntegral (hf : VanishesOnRectanglesInDisk c r f) :
     HasDerivAt (fun w ↦ wedgeIntegral c w f) (f z) z := by
   dsimp [HasDerivAt, HasDerivAtFilter]
   rw [hasFDerivAtFilter_iff_isLittleO]
@@ -409,7 +409,7 @@ theorem deriv_of_wedgeIntegral (hf : VanishesOnRectanglesInDisc c r f) :
     _ =o[𝓝 z] fun w ↦ w - z :=
       (deriv_of_wedgeIntegral_re f_cont hz).add
         ((deriv_of_wedgeIntegral_im f_cont hz).const_smul_left I)
-  · filter_upwards [VanishesOnRectanglesInDisc.diff_of_wedges f_cont hz hf]
+  · filter_upwards [VanishesOnRectanglesInDisk.diff_of_wedges f_cont hz hf]
     exact fun _ ha ↦ by rw [ha]; congr
   ext1 w
   simp only [wedgeIntegral, sub_re, sub_im, Pi.add_apply, Pi.smul_apply]
@@ -434,23 +434,23 @@ theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → E} {U : Set ℂ} {z w : �
   integral_boundary_rect_eq_zero_of_differentiableOn f z w (f_holo.mono hU)
 
 /-- If `f` is holomorphic a disk, then `f` vanishes on rectangles in the disk. -/
-theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ → E}
+theorem HolomorphicOn.vanishesOnRectanglesInDisk {c : ℂ} {r : ℝ} {f : ℂ → E}
     (f_holo : HolomorphicOn f (ball c r)) :
-    VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
+    VanishesOnRectanglesInDisk c r f := fun _ hz _ hw hz' hw' ↦
   f_holo.vanishesOnRectangle (Convex.rectangle_subset (convex_ball c r) hz hw hz' hw')
 
 variable [CompleteSpace E] [NormOneClass E]
 
 /-- *** Morera's theorem *** A function which is continuous on a disk and whose integral on
   rectangles in the disk vanishes has a primitive on the disk. -/
-theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
-    (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
+theorem VanishesOnRectanglesInDisk.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
+    (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisk c r f) :
     ∃ g : ℂ → E, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
   ⟨fun z ↦ wedgeIntegral c z f, fun _ hz ↦ deriv_of_wedgeIntegral f_cont hz hf⟩
 
 /-- *** Holomorphic functions on disks have Primitives *** A holomorphic function on a disk has
   primitives. -/
 theorem hasPrimitives_ball (c : ℂ) {r : ℝ} : HasPrimitives E (ball c r) := fun _ f_holo ↦
-  f_holo.vanishesOnRectanglesInDisc.hasPrimitive f_holo.continuousOn
+  f_holo.vanishesOnRectanglesInDisk.hasPrimitive f_holo.continuousOn
 
 end Complex
