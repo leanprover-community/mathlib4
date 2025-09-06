@@ -321,9 +321,8 @@ private theorem toZFSet_mem_toZFSet_of_lt {a b : Ordinal} (h : a < b) :
   rw [mem_toZFSet_iff]
   exact ⟨a, h, rfl⟩
 
-private theorem toZFSet_subset_toZFSet_of_le {a b : Ordinal} (h : a ≤ b) :
-    a.toZFSet ⊆ b.toZFSet := by
-  intro x hx
+theorem toZFSet_mono : Monotone toZFSet := by
+  intro a b h x hx
   obtain ⟨c, hc, rfl⟩ := mem_toZFSet_iff.1 hx
   exact toZFSet_mem_toZFSet_of_lt (hc.trans_le h)
 
@@ -331,13 +330,19 @@ private theorem toZFSet_subset_toZFSet_of_le {a b : Ordinal} (h : a ≤ b) :
 theorem toZFSet_mem_toZFSet_iff {a b : Ordinal} : a.toZFSet ∈ b.toZFSet ↔ a < b := by
   refine ⟨?_, toZFSet_mem_toZFSet_of_lt⟩
   contrapose!
-  exact fun h ↦ notMem_of_subset (toZFSet_subset_toZFSet_of_le h)
+  exact fun h ↦ notMem_of_subset (toZFSet_mono h)
 
 @[simp]
 theorem toZFSet_subset_toZFSet_iff {a b : Ordinal} : a.toZFSet ⊆ b.toZFSet ↔ a ≤ b := by
-  refine ⟨?_, toZFSet_subset_toZFSet_of_le⟩
+  refine ⟨?_, fun h ↦ toZFSet_mono h⟩
   contrapose!
   exact fun h ↦ not_subset_of_mem (toZFSet_mem_toZFSet_of_lt h)
+
+theorem toZFSet_injective : Function.Injective toZFSet :=
+  fun _ ↦ by simp_all [le_antisymm_iff]
+
+theorem toZFSet_strictMono : StrictMono toZFSet :=
+  fun _ _ h ↦ by simpa [ssubset_iff_subset_not_subset] using ⟨h.le, h⟩
 
 end Ordinal
 
