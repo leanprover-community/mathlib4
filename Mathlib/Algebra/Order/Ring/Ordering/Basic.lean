@@ -32,6 +32,12 @@ namespace RingPreordering
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
   fun _ _ => id
 
+theorem toSubsemiring_lt_toSubsemiring {P₁ P₂ : RingPreordering R} :
+    P₁.toSubsemiring < P₂.toSubsemiring ↔ P₁ < P₂ := .rfl
+
+@[gcongr]
+alias ⟨_, GCongr.toSubsemiring_lt_toSubsemiring⟩ := toSubsemiring_lt_toSubsemiring
+
 @[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
   toSubsemiring_strictMono.monotone
@@ -123,10 +129,10 @@ theorem neg_smul_mem [P.HasIdealSupport]
 
 end HasIdealSupport
 
-instance hasIdealSupport_of_isUnit_2 [h2 : Fact (IsUnit (2 : R))] : P.HasIdealSupport := by
+theorem hasIdealSupport_of_isUnit_2 (h : IsUnit (2 : R)) : P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
   intro x a _ _
-  rcases h2.out.exists_right_inv with ⟨half, h2⟩
+  rcases h.exists_right_inv with ⟨half, h2⟩
   set y := (1 + x) * half
   set z := (1 - x) * half
   rw [show x = y ^ 2 - z ^ 2 by
@@ -134,12 +140,7 @@ instance hasIdealSupport_of_isUnit_2 [h2 : Fact (IsUnit (2 : R))] : P.HasIdealSu
   ring_nf
   aesop (add simp sub_eq_add_neg)
 
-theorem supportAddSubgroup_eq_bot_iff_support_eq_bot [P.HasIdealSupport] :
-    P.supportAddSubgroup = ⊥ ↔ P.support = ⊥ where
-  mp h := by
-    apply_fun Submodule.toAddSubgroup using Submodule.toAddSubgroup_injective;
-    simpa using h
-  mpr h := by simp [h]
+instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_2 h.out
 
 section Field
 
@@ -160,28 +161,11 @@ instance : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
 
 @[simp] theorem support_eq_bot : P.support = ⊥ := by
-  rw [← supportAddSubgroup_eq_bot_iff_support_eq_bot]
-  exact supportAddSubgroup_eq_bot P
+  simpa using supportAddSubgroup_eq_bot P
 
 instance : P.support.IsPrime := by simpa using Ideal.bot_prime
 
 end Field
-
-section HasMemOrNegMem
-
-variable [HasMemOrNegMem P]
-
-@[aesop unsafe 70% apply]
-theorem neg_mem_of_notMem (x : R) (h : x ∉ P) : -x ∈ P := by
-  have := mem_or_neg_mem P x
-  simp_all
-
-@[aesop unsafe 70% apply]
-theorem mem_of_neg_notMem (x : R) (h : -x ∉ P) : x ∈ P := by
-  have := mem_or_neg_mem P x
-  simp_all
-
-end HasMemOrNegMem
 
 theorem isOrdering_iff :
     P.IsOrdering ↔ ∀ a b : R, -(a * b) ∈ P → a ∈ P ∨ b ∈ P := by
