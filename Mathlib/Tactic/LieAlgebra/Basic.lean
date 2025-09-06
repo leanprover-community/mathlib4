@@ -7,7 +7,7 @@ import Mathlib.Algebra.Lie.Basic
 import Qq
 
 /-!
-# The tactic on Lie Ring - lie_ring
+# The tactic on Lie ring - lie_ring
 
 The implementation of this tactic imitates the `ring` tactic, using the `Qq` package to implement a
 a specific elimination procedure.
@@ -15,6 +15,56 @@ a specific elimination procedure.
 This part of the tactic only attempts to deal with `ℤ`-coefficients (which means only the `LieRing`
 instance will be used), reducing everything to the linear combination of elements of the Lyndon
 basis.
+
+## The elimination procedure
+
+In this section, we describe the elimination procedure used in this file.
+
+We assume that we have given a total ordering to all the variables (which corresponds to the `id`
+of `ExLie.atom` in the code), and now we try to write an expression of Lie brackets (e.g.
+`⁅⁅x, ⁅x, y⁆⁆, ⁅y, x⁆⁆`) into a certain normal form so that each value in the free Lie algebra is
+uniquely represented under this normal form. More specifically, we describe a basis of the free Lie
+algebra, and an algorithm to write a nested Lie bracket expression into linear combination of these
+elements.
+
+In the code, we use the inductive type `ExLie` to represent a nested Lie bracket expression, and
+`ExSum` to represent linear combination of nested Lie bracket expressions.
+
+For any given nested Lie bracket expression, we can "flatten" it into a list of variables. For
+example, `⁅⁅x, ⁅x, y⁆⁆, ⁅y, x⁆⁆` will be flattened to the list `[x, x, y, y, x]` (`ExLie.toListNat`)
+
+Then we can define an order on the nested Lie bracket expressions by simply comparing the list they
+are flatted to under lexicographic order. (`ExLie.cmp`)
+
+Using this order, we can define the elements in the basis in a recursive way.
+A nested Lie bracket expression is in the basis if one of the following is true:
+1. the expression is just a single variable, e.g. `x`
+2. the expression can be written as `⁅a₁, a₂⁆` (where `a₁` and `a₂` are both nested Lie brackets
+expressions), both `a₁` and `a₂` are in the basis, `a₁ < a₂` under the order described above, and
+either `a₁` is just a single variable or `a₁ = ⁅a₁₁, a₁₂⁆` and `a₁₂ < a₂` under the order described
+above.
+(`ExLie.isLyndon` returns true if the expression represented by the `ExLie` term is in the basis)
+
+The following algorithm gives us a way to write every nested Lie bracket representation into a
+linear combination of the elements in the basis (implemented in the function `evalLieLie`):
+For a given nested Lie bracket representation `⁅a, b⁆` (if it is just a single variable then it is
+already in the basis):
+1. If `a` is equal to `b`, then the value is 0.
+2. If `a > b` under the order described above, then `⁅a, b⁆ = -⁅b, a⁆`, so we reduce to case 3.
+3. If `a < b`, then
+  3.1. If `⁅a, b⁆` is in the basis, then we have finished.
+  3.2. Otherwise we will have `a = ⁅x, y⁆`, then we write
+    `⁅a, b⁆ = ⁅⁅x, y⁆, b⁆ = ⁅⁅x, b⁆, y⁆ + ⁅x, ⁅y, b⁆⁆`,
+    and process the two remaining terms recursively using this algorithm.
+
+The tactic implicitly relies on the following hypotheses:
+1. The algorithm described above actually terminates.
+2. The elements we claim to be a basis actually forms a basis of the free Lie algebra.
+  (So that we know the algorithm decides whether two terms are equal in the free Lie algebra)
+
+The proof of these hypotheses can be found in the reference.
+
+## References
 
 The elimination approach implemented here follows the theory of Hall sets and Lyndon words,
 see for example, ‹https://personal.math.ubc.ca/~cass/research/pdf/Free.pdf›
