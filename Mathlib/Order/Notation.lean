@@ -65,9 +65,9 @@ macro_rules
 | `($a ⊔ $b) => `(Max.max $a $b)
 | `($a ⊓ $b) => `(Min.min $a $b)
 
-namespace Mathlib.Meta
+namespace Lean.PrettyPrinter.Delaborator
 
-open Lean Meta PrettyPrinter Delaborator SubExpr Qq
+open Meta SubExpr Qq
 
 -- irreducible to not confuse Qq
 @[irreducible] private def linearOrderExpr (u : Level) : Q(Type u → Type u) :=
@@ -87,13 +87,9 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
     MetaM Bool := do
   try
     withNewMCtxDepth do
-    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
-    -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
-    -- TODO(Jovan): remove
-    withLocalInstances (← getLCtx).decls.toList.reduceOption do
-      let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
-      let inst' : Q($cls $α) := q($toCls $α $mvar)
-      isDefEq inst inst'
+    let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
+    let inst' : Q($cls $α) := q($toCls $α $mvar)
+    isDefEq inst inst'
   catch _ =>
     -- For instance, if `LinearOrder` is not yet imported.
     return false
@@ -122,7 +118,7 @@ def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotat
   let stx ← `($x ⊓ $y)
   annotateGoToSyntaxDef stx
 
-end Mathlib.Meta
+end Lean.PrettyPrinter.Delaborator
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
 @[notation_class]
