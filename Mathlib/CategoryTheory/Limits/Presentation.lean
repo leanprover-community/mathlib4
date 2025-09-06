@@ -71,6 +71,7 @@ def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
     ext j
     simp
 
+/-- Map a colimit presentation under an isomorphism. -/
 @[simps]
 def ofIso (P : ColimitPresentation J X) {Y : C} (e : X ≅ Y) : ColimitPresentation J Y where
   diag := P.diag
