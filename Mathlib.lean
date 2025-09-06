@@ -5104,6 +5104,7 @@ import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
 import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.LawfulSupInf
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Max
 import Mathlib.Order.MinMax

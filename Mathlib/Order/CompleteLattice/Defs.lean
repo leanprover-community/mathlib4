@@ -3,8 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.SetNotation
+import Mathlib.Order.LawfulSupInf
 
 /-!
 # Definition of complete lattices
@@ -43,12 +42,6 @@ In lemma names,
 open Function OrderDual Set
 
 variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
-
-instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
-  ⟨(sInf : Set α → α)⟩
-
-instance OrderDual.infSet (α) [SupSet α] : InfSet αᵒᵈ :=
-  ⟨(sSup : Set α → α)⟩
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -370,3 +363,4 @@ theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃
 end CompleteLinearOrder
 
 end
+
