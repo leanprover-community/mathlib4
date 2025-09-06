@@ -23,14 +23,14 @@ import Mathlib.RingTheory.TensorProduct.Basic
   More generally, `LinearMap.lTensor_range`  computes the range of
   `LinearMap.lTensor`
 
-* `TensorProduct.rTensor_exact` says that when one tensors a short exact
-  sequence on the right, one still gets a short exact sequence
+* `TensorProduct.rTensor_exact` says that when one tensors a short-exact
+  sequence on the right, one still gets a short-exact sequence
   (right-exactness of `TensorProduct.rTensor`),
   and `rTensor.equiv` gives the LinearEquiv that follows from this
   combined with `LinearMap.rTensor_surjective`.
 
-* `TensorProduct.lTensor_exact` says that when one tensors a short exact
-  sequence on the left, one still gets a short exact sequence
+* `TensorProduct.lTensor_exact` says that when one tensors a short-exact
+  sequence on the left, one still gets a short-exact sequence
   (right-exactness of `TensorProduct.rTensor`)
   and `lTensor.equiv` gives the LinearEquiv that follows from this
   combined with `LinearMap.lTensor_surjective`.
@@ -40,7 +40,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
   and `lTensor_mkQ` compute `ker (lTensor Q (N.mkQ))` and similarly for `rTensor_mkQ`
 
 * `TensorProduct.map_ker` computes the kernel of `TensorProduct.map f g'`
-  in the presence of two short exact sequences.
+  in the presence of two short-exact sequences.
 
 The proofs are those of [bourbaki1989] (chap. 2, §3, n°6)
 
@@ -570,7 +570,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         rw [map_add]
         apply Submodule.add_mem _ hx hy
 
--- Now, we can prove the right exactness properties of the tensor product,
+-- Now, we can prove the right-exactness properties of the tensor product,
 -- in its versions for algebras
 
 variable {R : Type*} [CommRing R]

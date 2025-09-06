@@ -12,7 +12,7 @@ The main result of this file is the lemma
 `HomotopyCategory.distinguished_iff_iso_trianglehOfDegreewiseSplit` which asserts
 that a triangle in `HomotopyCategory C (ComplexShape.up ℤ)`
 is distinguished iff it is isomorphic to the triangle attached to a
-degreewise split short exact sequence of cochain complexes.
+degreewise split short-exact sequence of cochain complexes.
 
 -/
 
@@ -33,7 +33,7 @@ open HomologicalComplex HomComplex
 variable (S : ShortComplex (CochainComplex C ℤ))
   (σ : ∀ n, (S.map (eval C _ n)).Splitting)
 
-/-- The `1`-cocycle attached to a degreewise split short exact sequence of cochain complexes. -/
+/-- The `1`-cocycle attached to a degreewise split short-exact sequence of cochain complexes. -/
 def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
   Cocycle.mk
     (Cochain.mk (fun p q _ => (σ p).s ≫ S.X₂.d p q ≫ (σ q).r)) 2 (by omega) (by
@@ -53,7 +53,7 @@ def cocycleOfDegreewiseSplit : Cocycle S.X₃ S.X₁ 1 :=
         sub_zero, neg_add_cancel])
 
 /-- The canonical morphism `S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧` attached to a degreewise split
-short exact sequence of cochain complexes. -/
+short-exact sequence of cochain complexes. -/
 def homOfDegreewiseSplit : S.X₃ ⟶ S.X₁⟦(1 : ℤ)⟧ :=
   ((Cocycle.equivHom _ _).symm ((cocycleOfDegreewiseSplit S σ).rightShift 1 0 (zero_add 1)))
 
@@ -63,14 +63,14 @@ lemma homOfDegreewiseSplit_f (n : ℤ) :
       (cocycleOfDegreewiseSplit S σ).1.v n (n + 1) rfl := by
   simp [homOfDegreewiseSplit, Cochain.rightShift_v _ _ _ _ _ _ _ _ rfl]
 
-/-- The triangle in `CochainComplex C ℤ` attached to a degreewise split short exact sequence
+/-- The triangle in `CochainComplex C ℤ` attached to a degreewise split short-exact sequence
 of cochain complexes. -/
 @[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
 def triangleOfDegreewiseSplit : Triangle (CochainComplex C ℤ) :=
   Triangle.mk S.f S.g (homOfDegreewiseSplit S σ)
 
 /-- The (distinguished) triangle in `HomotopyCategory C (ComplexShape.up ℤ)` attached to a
-degreewise split short exact sequence of cochain complexes. -/
+degreewise split short-exact sequence of cochain complexes. -/
 noncomputable abbrev trianglehOfDegreewiseSplit :
     Triangle (HomotopyCategory C (ComplexShape.up ℤ)) :=
   (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj (triangleOfDegreewiseSplit S σ)
@@ -155,7 +155,7 @@ lemma mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃ :
 
 /-- The canonical isomorphism of triangles
 `(triangleOfDegreewiseSplit S σ).rotate.rotate ≅ mappingCone.triangle (homOfDegreewiseSplit S σ)`
-when `S` is a degreewise split short exact sequence of cochain complexes. -/
+when `S` is a degreewise split short-exact sequence of cochain complexes. -/
 noncomputable def triangleOfDegreewiseSplitRotateRotateIso :
     (triangleOfDegreewiseSplit S σ).rotate.rotate ≅
       mappingCone.triangle (homOfDegreewiseSplit S σ) :=
@@ -168,7 +168,7 @@ noncomputable def triangleOfDegreewiseSplitRotateRotateIso :
 
 /-- The canonical isomorphism between `(trianglehOfDegreewiseSplit S σ).rotate.rotate` and
 `mappingCone.triangleh (homOfDegreewiseSplit S σ)` when `S` is a degreewise split
-short exact sequence of cochain complexes. -/
+short-exact sequence of cochain complexes. -/
 noncomputable def trianglehOfDegreewiseSplitRotateRotateIso :
     (trianglehOfDegreewiseSplit S σ).rotate.rotate ≅
       mappingCone.triangleh (homOfDegreewiseSplit S σ) :=
@@ -187,7 +187,7 @@ given by `(triangle φ).rotate`. -/
 noncomputable def triangleRotateShortComplex : ShortComplex (CochainComplex C ℤ) :=
   ShortComplex.mk (triangle φ).rotate.mor₁ (triangle φ).rotate.mor₂ (by simp)
 
-/-- `triangleRotateShortComplex φ` is a degreewise split short exact sequence of
+/-- `triangleRotateShortComplex φ` is a degreewise split short-exact sequence of
 cochain complexes. -/
 @[simps]
 noncomputable def triangleRotateShortComplexSplitting (n : ℤ) :
@@ -203,7 +203,7 @@ lemma cocycleOfDegreewiseSplit_triangleRotateShortComplexSplitting_v (p : ℤ) :
   simp [cocycleOfDegreewiseSplit, d_snd_v φ p (p + 1) rfl]
 
 /-- The triangle `(triangle φ).rotate` is isomorphic to a triangle attached to a
-degreewise split short exact sequence of cochain complexes. -/
+degreewise split short-exact sequence of cochain complexes. -/
 noncomputable def triangleRotateIsoTriangleOfDegreewiseSplit :
     (triangle φ).rotate ≅
       triangleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ) :=
@@ -211,7 +211,7 @@ noncomputable def triangleRotateIsoTriangleOfDegreewiseSplit :
     (by simp) (by simp) (by ext; simp)
 
 /-- The triangle `(triangleh φ).rotate` is isomorphic to a triangle attached to a
-degreewise split short exact sequence of cochain complexes. -/
+degreewise split short-exact sequence of cochain complexes. -/
 noncomputable def trianglehRotateIsoTrianglehOfDegreewiseSplit :
     (triangleh φ).rotate ≅
       trianglehOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ) :=

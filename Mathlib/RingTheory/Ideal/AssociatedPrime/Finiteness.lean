@@ -27,7 +27,7 @@ associated primes.
 
   - it holds for zero module,
   - it holds for any module isomorphic to some `A ⧸ p` where `p` is a prime ideal of `A`,
-  - it is stable by short exact sequences,
+  - it is stable by short-exact sequences,
 
   then the property holds for every finitely generated modules.
 
@@ -99,7 +99,7 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
 - it holds for zero module (it's formalized as it holds for any module which is subsingleton),
 - it holds for `A ⧸ p` for every prime ideal `p` of `A` (to avoid universe problem,
   it's formalized as it holds for any module isomorphic to `A ⧸ p`),
-- it is stable by short exact sequences,
+- it is stable by short-exact sequences,
 
 then the property holds for every finitely generated modules.
 

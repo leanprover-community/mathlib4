@@ -151,14 +151,14 @@ lemma isIso₂_of_shortExact_of_isIso₁₃' [Balanced C] {S₁ S₂ : ShortComp
     (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact) (_ : IsIso φ.τ₁) (_ : IsIso φ.τ₃) : IsIso φ.τ₂ :=
   isIso₂_of_shortExact_of_isIso₁₃ φ h₁ h₂
 
-/-- If `S` is a short exact short complex in a balanced category,
+/-- If `S` is a short-exact short complex in a balanced category,
 then `S.X₁` is the kernel of `S.g`. -/
 noncomputable def ShortExact.fIsKernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
     IsLimit (KernelFork.ofι S.f S.zero) := by
   have := hS.mono_f
   exact hS.exact.fIsKernel
 
-/-- If `S` is a short exact short complex in a balanced category,
+/-- If `S` is a short-exact short complex in a balanced category,
 then `S.X₃` is the cokernel of `S.f`. -/
 noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS : S.ShortExact) :
     IsColimit (CokernelCofork.ofπ S.g S.zero) := by
@@ -166,7 +166,7 @@ noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS :
   exact hS.exact.gIsCokernel
 
 /-- Is `S` is an exact short complex and `h : S.HomologyData`, there is
-a short exact sequence `0 ⟶ h.left.K ⟶ S.X₂ ⟶ h.right.Q ⟶ 0`. -/
+a short-exact sequence `0 ⟶ h.left.K ⟶ S.X₂ ⟶ h.right.Q ⟶ 0`. -/
 lemma Exact.shortExact {S : ShortComplex C} (hS : S.Exact) (h : S.HomologyData) :
     (ShortComplex.mk _ _ (h.exact_iff_i_p_zero.1 hS)).ShortExact where
   exact := by
@@ -194,7 +194,7 @@ lemma Splitting.shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitti
 
 namespace ShortExact
 
-/-- A choice of splitting for a short exact short complex `S` in a balanced category
+/-- A choice of splitting for a short-exact short complex `S` in a balanced category
 such that `S.X₁` is injective. -/
 noncomputable def splittingOfInjective {S : ShortComplex C} (hS : S.ShortExact)
     [Injective S.X₁] [Balanced C] :
@@ -202,7 +202,7 @@ noncomputable def splittingOfInjective {S : ShortComplex C} (hS : S.ShortExact)
   have := hS.mono_f
   Splitting.ofExactOfRetraction S hS.exact (Injective.factorThru (𝟙 S.X₁) S.f) (by simp) hS.epi_g
 
-/-- A choice of splitting for a short exact short complex `S` in a balanced category
+/-- A choice of splitting for a short-exact short complex `S` in a balanced category
 such that `S.X₃` is projective. -/
 noncomputable def splittingOfProjective {S : ShortComplex C} (hS : S.ShortExact)
     [Projective S.X₃] [Balanced C] :

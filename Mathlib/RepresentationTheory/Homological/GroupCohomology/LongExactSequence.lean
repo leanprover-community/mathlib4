@@ -10,13 +10,13 @@ import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 /-!
 # Long exact sequence in group cohomology
 
-Given a commutative ring `k` and a group `G`, this file shows that a short exact sequence of
-`k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short exact sequence of
+Given a commutative ring `k` and a group `G`, this file shows that a short-exact sequence of
+`k`-linear `G`-representations `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` induces a short-exact sequence of
 complexes
 `0 ⟶ inhomogeneousCochains X₁ ⟶ inhomogeneousCochains X₂ ⟶ inhomogeneousCochains X₃ ⟶ 0`.
 
 Since the cohomology of `inhomogeneousCochains Xᵢ` is the group cohomology of `Xᵢ`, this allows us
-to specialize API about long exact sequences to group cohomology.
+to specialize API about long-exact sequences to group cohomology.
 
 ## Main definitions
 
@@ -107,7 +107,7 @@ noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X�
       (by simpa using hx) (j + 1))
 
 theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
-    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short-exact sequence of `G`-representations.
     -- Let `z` be an `i`-cocycle for `X₃`
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
     -- Let `y` be an `i`-cochain for `X₂` such that `g ∘ y = z`
@@ -132,7 +132,7 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
 alias mem_oneCocycles_of_comp_eq_dZero := mem_cocycles₁_of_comp_eq_d₀₁
 
 theorem δ₀_apply
-    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short-exact sequence of `G`-representations.
     -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
     (z : X.X₃.ρ.invariants) (y : X.X₂) (hy : X.g.hom y = z)
     -- Let `x` be a 1-cochain for `X₁` such that `f ∘ x = d(y)`.
@@ -158,7 +158,7 @@ theorem mem_cocycles₂_of_comp_eq_d₁₂
 alias mem_twoCocycles_of_comp_eq_dOne := mem_cocycles₂_of_comp_eq_d₁₂
 
 theorem δ₁_apply
-    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
+    -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short-exact sequence of `G`-representations.
     -- Let `z` be a 1-cocycle for `X₃` and `y` be a 1-cochain for `X₂` such that `g ∘ y = z`.
     (z : cocycles₁ X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
     -- Let `x` be a 2-cochain for `X₁` such that `f ∘ x = d(y)`.

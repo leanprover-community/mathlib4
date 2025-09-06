@@ -22,7 +22,7 @@ Remark C2.3.7, and this name is suggested by Mike Shulman in
 https://golem.ph.utexas.edu/category/2011/06/flat_functors_and_morphisms_of.html to avoid
 confusion with other notions of flatness.
 
-This definition is equivalent to left exact functors (functors that preserves finite limits) when
+This definition is equivalent to left-exact functors (functors that preserves finite limits) when
 `C` has all finite limits.
 
 ## Main results
