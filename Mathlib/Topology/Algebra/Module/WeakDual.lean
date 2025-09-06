@@ -215,6 +215,16 @@ theorem WeakSpace.isOpen_of_isOpen (V : Set E)
     (hV : IsOpen ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
+/-- A set in `E` which is closed in the weak topology is closed. -/
+theorem WeakSpace.isOpen_of_isClosed (V : Set E)
+    (hV : IsClosed ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsClosed V := by
+  sorry
+
+/-- A set in `E` which is closed in the weak topology is closed. -/
+theorem WeakSpace.closure_subset (V : Set E) :
+    closure ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E)) ⊆ closure V := by
+  sorry
+
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
     {x : WeakDual 𝕜 E} :
     Tendsto f l (𝓝 x) ↔
