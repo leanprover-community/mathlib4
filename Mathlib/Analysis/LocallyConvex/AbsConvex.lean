@@ -303,8 +303,18 @@ variable {𝕜 E F : Type*} {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜
 theorem AbsConvex.linear_image (hs : AbsConvex 𝕜 s) (f : E →ₗ[𝕜] F) : AbsConvex 𝕜 (f '' s) :=
   ⟨hs.1.linear_image _, hs.2.linear_image _⟩
 
-end
+theorem AbsConvex.is_linear_image (hs : AbsConvex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
+    AbsConvex 𝕜 (f '' s) :=
+  hs.linear_image <| hf.mk' f
 
+theorem AbsConvex.linear_preimage {s : Set F} (hs : AbsConvex 𝕜 s) (f : E →ₗ[𝕜] F) :
+    AbsConvex 𝕜 (f ⁻¹' s) := ⟨hs.1.linear_preimage f, hs.2.linear_preimage f⟩
+
+theorem AbsConvex.is_linear_preimage {s : Set F} (hs : AbsConvex 𝕜 s) {f : E → F}
+    (hf : IsLinearMap 𝕜 f) : AbsConvex 𝕜 (f ⁻¹' s) :=
+  hs.linear_preimage <| hf.mk' f
+
+end
 
 lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
   [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=

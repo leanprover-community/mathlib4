@@ -153,6 +153,18 @@ theorem Balanced.linear_image (hs : Balanced 𝕜 s) (f : E →ₗ[𝕜] F) : Ba
   fun a ha x ⟨_, ⟨c, hc1, hc2⟩, hb2⟩ =>
     ⟨a • c, ⟨hs _ ha (smul_mem_smul_set hc1), by simp_rw [f.map_smul, hc2, hb2]⟩⟩
 
+theorem Balanced.is_linear_image (hs : Balanced 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :
+    Balanced 𝕜 (f '' s) :=
+  hs.linear_image <| hf.mk' f
+
+theorem Balanced.linear_preimage {s : Set F} (hs : Balanced 𝕜 s) (f : E →ₗ[𝕜] F) :
+    Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨b, hb1, hb2⟩ =>
+  hs _ ha (by rw [← hb2, f.map_smul]; exact smul_mem_smul_set hb1)
+
+theorem Balanced.is_linear_preimage {s : Set F} (hs : Balanced 𝕜 s) {f : E → F}
+    (hf : IsLinearMap 𝕜 f) : Balanced 𝕜 (f ⁻¹' s) :=
+  hs.linear_preimage <| hf.mk' f
+
 end
 
 
