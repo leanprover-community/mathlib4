@@ -42,29 +42,20 @@ which are used to deduce corresponding results for Euclidean affine spaces.
 -/
 
 
-theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, k ≠ 1 ∧ x + y = k • (x - y))
-    (h₂ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
-  obtain ⟨k, hk_ne_one, hk⟩ := h₁
-  let r := (k - 1)⁻¹ * (k + 1)
-  have hxy : x = r • y := by
-    rw [← smul_smul, eq_inv_smul_iff₀ (sub_ne_zero.mpr hk_ne_one), ← sub_eq_zero]
-    calc
-      (k - 1) • x - (k + 1) • y = k • x - x - (k • y + y) := by
-        simp_rw [sub_smul, add_smul, one_smul]
-      _ = k • x - k • y - (x + y) := by simp_rw [← sub_sub, sub_right_comm]
-      _ = k • (x - y) - (x + y) := by rw [← smul_sub k x y]
-      _ = 0 := sub_eq_zero.mpr hk.symm
+theorem mul_norm_eq_abs_sub_sq_norm {x y z : V} (h₁ : ∃ k : ℝ, x = k • y)
+    (h₃ : ‖z - y‖ = ‖z + y‖) : ‖x - y‖ * ‖x + y‖ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
+  obtain ⟨r, hr⟩ := h₁
   have hzy : ⟪z, y⟫ = 0 := by
     rwa [inner_eq_zero_iff_angle_eq_pi_div_two, ← norm_add_eq_norm_sub_iff_angle_eq_pi_div_two,
       eq_comm]
-  have hzx : ⟪z, x⟫ = 0 := by rw [hxy, inner_smul_right, hzy, mul_zero]
+  have hzx : ⟪z, x⟫ = 0 := by rw [hr, inner_smul_right, hzy, mul_zero]
   calc
-    ‖x - y‖ * ‖x + y‖ = ‖(r - 1) • y‖ * ‖(r + 1) • y‖ := by simp [sub_smul, add_smul, hxy]
+    ‖x - y‖ * ‖x + y‖ = ‖(r - 1) • y‖ * ‖(r + 1) • y‖ := by simp [sub_smul, add_smul, hr]
     _ = ‖r - 1‖ * ‖y‖ * (‖r + 1‖ * ‖y‖) := by simp_rw [norm_smul]
     _ = ‖r - 1‖ * ‖r + 1‖ * ‖y‖ ^ 2 := by ring
     _ = |(r - 1) * (r + 1) * ‖y‖ ^ 2| := by simp [abs_mul]
     _ = |r ^ 2 * ‖y‖ ^ 2 - ‖y‖ ^ 2| := by ring_nf
-    _ = |‖x‖ ^ 2 - ‖y‖ ^ 2| := by simp [hxy, norm_smul, mul_pow, sq_abs]
+    _ = |‖x‖ ^ 2 - ‖y‖ ^ 2| := by simp [hr, norm_smul, mul_pow, sq_abs]
     _ = |‖z + y‖ ^ 2 - ‖z - x‖ ^ 2| := by
       simp [norm_add_sq_real, norm_sub_sq_real, hzy, hzx, abs_sub_comm]
 
@@ -85,25 +76,32 @@ variable {P : Type*} [MetricSpace P] [NormedAddTorsor V P]
 
 /-- If `P` is a point on the line `AB` and `Q` is equidistant from `A` and `B`, then
 `AP * BP = abs (BQ ^ 2 - PQ ^ 2)`. -/
-theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+theorem mul_dist_eq_abs_sub_sq_dist {a b p q : P} (hp : p ∈ line[ℝ, a, b])
     (hq : dist a q = dist b q) : dist a p * dist b p = |dist b q ^ 2 - dist p q ^ 2| := by
   let m : P := midpoint ℝ a b
   have h1 := vsub_sub_vsub_cancel_left a p m
+  have h1' := vsub_sub_vsub_cancel_left p a m
   have h2 := vsub_sub_vsub_cancel_left p q m
   have h3 := vsub_sub_vsub_cancel_left a q m
   have h : ∀ r, b -ᵥ r = m -ᵥ r + (m -ᵥ a) := fun r => by
     rw [midpoint_vsub_left, ← right_vsub_midpoint, add_comm, vsub_add_vsub_cancel]
   iterate 4 rw [dist_eq_norm_vsub V]
   rw [← h1, ← h2, h, h]
-  rw [← h1, h] at hp
   rw [dist_eq_norm_vsub V a q, dist_eq_norm_vsub V b q, ← h3, h] at hq
-  exact mul_norm_eq_abs_sub_sq_norm hp hq
+  refine mul_norm_eq_abs_sub_sq_norm ?_ hq
+  -- TODO: factor this out as a separate lemma?
+  · rw [← vsub_vadd p a, vadd_left_mem_affineSpan_pair] at hp
+    rcases hp with ⟨r, hr⟩
+    rw [h, ← h1', eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at hr
+    rw [hr]
+    use 1 - r * 2
+    match_scalars
+    ring
 
 /-- If `A`, `B`, `C`, `D` are cospherical and `P` is on both lines `AB` and `CD`, then
 `AP * BP = CP * DP`. -/
 theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a, b, c, d} : Set P))
-    (hapb : ∃ k₁ : ℝ, k₁ ≠ 1 ∧ b -ᵥ p = k₁ • (a -ᵥ p))
-    (hcpd : ∃ k₂ : ℝ, k₂ ≠ 1 ∧ d -ᵥ p = k₂ • (c -ᵥ p)) :
+    (hapb : p ∈ line[ℝ, a, b]) (hcpd : p ∈ line[ℝ, c, d]) :
     dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨q, r, h'⟩ := (cospherical_def {a, b, c, d}).mp h
   obtain ⟨ha, hb, hc, hd⟩ := h' a (by simp), h' b (by simp), h' c (by simp), h' d (by simp)
@@ -115,19 +113,18 @@ theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hapb : ∠ a p b = π) (hcpd : ∠ c p d = π) :
     dist a p * dist b p = dist c p * dist d p := by
-  obtain ⟨-, k₁, _, hab⟩ := angle_eq_pi_iff.mp hapb
-  obtain ⟨-, k₂, _, hcd⟩ := angle_eq_pi_iff.mp hcpd
-  exact mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, by linarith, hab⟩ ⟨k₂, by linarith, hcd⟩
+  rw [EuclideanGeometry.angle_eq_pi_iff_sbtw] at hapb hcpd
+  exact mul_dist_eq_mul_dist_of_cospherical h hapb.wbtw.mem_affineSpan hcpd.wbtw.mem_affineSpan
 
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
     (h : Cospherical ({a, b, c, d} : Set P)) (hab : a ≠ b) (hcd : c ≠ d) (hapb : ∠ a p b = 0)
     (hcpd : ∠ c p d = 0) : dist a p * dist b p = dist c p * dist d p := by
-  obtain ⟨-, k₁, -, hab₁⟩ := angle_eq_zero_iff.mp hapb
-  obtain ⟨-, k₂, -, hcd₁⟩ := angle_eq_zero_iff.mp hcpd
-  refine mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, ?_, hab₁⟩ ⟨k₂, ?_, hcd₁⟩ <;> by_contra hnot <;>
-    simp_all only [one_smul]
-  exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+  apply collinear_of_angle_eq_zero at hapb
+  apply collinear_of_angle_eq_zero at hcpd
+  exact mul_dist_eq_mul_dist_of_cospherical h
+    (hapb.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hab)
+    (hcpd.mem_affineSpan_of_mem_of_ne (by simp) (by simp) (by simp) hcd)
 
 namespace Sphere
 
@@ -167,7 +164,7 @@ theorem power_nonpos_iff_dist_center_le_radius {s : Sphere P} {p : P} (hr : 0 �
 /-- For any point, the product of distances to two intersection
 points on a line through the point equals the absolute value of the power of the point. -/
 theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s) :
     dist p a * dist p b = |s.power p| := by
   have hq : dist a s.center = dist b s.center := by
@@ -178,7 +175,7 @@ theorem mul_dist_eq_abs_power {s : Sphere P} {p a b : P}
 /-- For a point on the sphere, the product of distances to two other intersection
 points on a line through the point is zero. -/
 theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s)
     (hp_on : p ∈ s) :
     dist p a * dist p b = 0 := by
@@ -191,7 +188,7 @@ theorem mul_dist_eq_zero_of_mem_sphere {s : Sphere P} {p a b : P}
 points on a line through the point equals the power of the point. -/
 theorem mul_dist_eq_power_of_radius_le_dist_center {s : Sphere P} {p a b : P}
     (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s)
     (hle : s.radius ≤ dist p s.center) :
     dist p a * dist p b = s.power p := by
@@ -202,7 +199,7 @@ theorem mul_dist_eq_power_of_radius_le_dist_center {s : Sphere P} {p a b : P}
 points on a line through the point equals the negative of the power of the point. -/
 theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P}
     (hr : 0 ≤ s.radius)
-    (hp : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (ha : a ∈ s) (hb : b ∈ s)
     (hle : dist p s.center ≤ s.radius) :
     dist p a * dist p b = -s.power p := by
@@ -213,12 +210,12 @@ theorem mul_dist_eq_neg_power_of_dist_center_le_radius {s : Sphere P} {p a b : P
     the product of secant segment lengths. -/
 theorem dist_sq_eq_mul_dist_of_tangent_and_secant {a b t p : P} {s : Sphere P}
     (ha : a ∈ s) (hb : b ∈ s)
-    (h_secant : ∃ k : ℝ, k ≠ 1 ∧ b -ᵥ p = k • (a -ᵥ p))
+    (hp : p ∈ line[ℝ, a, b])
     (h_tangent : s.IsTangentAt t (line[ℝ, p, t])) :
     dist p t ^ 2 = dist p a * dist p b := by
   have hr := radius_nonneg_of_mem ha
   have radius_le_dist := h_tangent.isTangent.radius_le_dist_center (left_mem_affineSpan_pair ℝ p t)
-  rw [mul_dist_eq_power_of_radius_le_dist_center hr h_secant ha hb radius_le_dist,
+  rw [mul_dist_eq_power_of_radius_le_dist_center hr hp ha hb radius_le_dist,
     Sphere.power, h_tangent.dist_sq_eq_of_mem (left_mem_affineSpan_pair ℝ p t)]
   ring
 
