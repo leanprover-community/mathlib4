@@ -271,7 +271,7 @@ alias mulIndicator_preimage_of_not_mem := mulIndicator_preimage_of_notMem
 @[to_additive]
 lemma mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :
     r ∈ range (mulIndicator s f) ↔ r = 1 ∧ s ≠ univ ∨ r ∈ f '' s := by
-  simp [mulIndicator, ite_eq_iff, exists_or, eq_univ_iff_forall, and_comm, or_comm,
+  simp [mulIndicator, ite_eq_iff_or, exists_or, eq_univ_iff_forall, and_comm, or_comm,
     @eq_comm _ r 1]
 
 @[to_additive]
