@@ -11,12 +11,12 @@ import Mathlib.Analysis.Complex.Convex
 
 In this file, we give conditions under which holomorphic functions have primitives. The main goal
 is to prove that holomorphic functions on simply connected domains have primitives. As a first step,
-we prove that holomorphic functions on discs have primitives. The approach is based on Morera's
-theorem, that a continuous function (on a disc) whose `RectangleIntegral` vanishes on all
+we prove that holomorphic functions on disks have primitives. The approach is based on Morera's
+theorem, that a continuous function (on a disk) whose `RectangleIntegral` vanishes on all
 rectangles contained in the disk has a primitive. (Coupled with the fact that holomorphic functions
 satisfy this property.) To prove Morera's theorem, we first define the `WedgeInt`, which is the
 integral of a function over a "wedge" (a horizontal segment followed by a vertical segment in the
-disc), and compute its derivative.
+disk), and compute its derivative.
 
 ## Main results
 
@@ -30,7 +30,7 @@ disc), and compute its derivative.
   continuous on a disk and whose integral on rectangles in the disk vanishes has a primitive
   on the disk (defined by the wedge integral).
 
-* `hasPrimitives_on_disc`: A holomorphic function on a disk has primitives.
+* `Complex.hasPrimitives_ball`: A holomorphic function on a disk has primitives.
 
 ## Tags
   Holomorphic functions, primitives
@@ -228,7 +228,7 @@ noncomputable def RectangleIntegral (f : ℂ → E) (z w : ℂ) : E :=
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I))
      + I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I)) - I • ∫ y : ℝ in z.im..w.im, f (z.re + y * I)
 
-/-- A function `f` `VanishesOnRectanglesInDisc` if, for any rectangle contained in a disc,
+/-- A function `f` `VanishesOnRectanglesInDisc` if, for any rectangle contained in a disk,
   the integral of `f` over the rectangle is zero. -/
 def VanishesOnRectanglesInDisc (c : ℂ) (r : ℝ) (f : ℂ → E) : Prop :=
     ∀ z w, z ∈ ball c r → w ∈ ball c r → (z.re + w.im * I) ∈ ball c r →
@@ -420,7 +420,7 @@ theorem HolomorphicOn.vanishesOnRectangle {f : ℂ → E} {U : Set ℂ} {z w : �
     RectangleIntegral f z w = 0 :=
   integral_boundary_rect_eq_zero_of_differentiableOn f z w (f_holo.mono hU)
 
-/-- If `f` is holomorphic a disc, then `f` vanishes on rectangles in the disc. -/
+/-- If `f` is holomorphic a disk, then `f` vanishes on rectangles in the disk. -/
 theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ → E}
     (f_holo : HolomorphicOn f (ball c r)) :
     VanishesOnRectanglesInDisc c r f := fun _ _ hz hw hz' hw' ↦
@@ -429,15 +429,15 @@ theorem HolomorphicOn.vanishesOnRectanglesInDisc {c : ℂ} {r : ℝ} {f : ℂ �
 variable [CompleteSpace E] [NormOneClass E]
 
 /-- *** Morera's theorem *** A function which is continuous on a disk and whose integral on
-  rectangles in the disk vanishes has a primitive on the disc. -/
+  rectangles in the disk vanishes has a primitive on the disk. -/
 theorem VanishesOnRectanglesInDisc.hasPrimitive {c : ℂ} {r : ℝ} {f : ℂ → E}
     (f_cont : ContinuousOn f (ball c r)) (hf : VanishesOnRectanglesInDisc c r f) :
     ∃ g : ℂ → E, ∀ z ∈ (ball c r), HasDerivAt g (f z) z :=
   ⟨fun z ↦ WedgeInt c z f, fun _ hz ↦ deriv_of_wedgeInt f_cont hz hf⟩
 
-/-- *** Holomorphic functions on discs have Primitives *** A holomorphic function on a disk has
+/-- *** Holomorphic functions on disks have Primitives *** A holomorphic function on a disk has
   primitives. -/
-theorem hasPrimitives_on_disk (c : ℂ) {r : ℝ} : HasPrimitives E (ball c r) := fun _ f_holo ↦
+theorem hasPrimitives_ball (c : ℂ) {r : ℝ} : HasPrimitives E (ball c r) := fun _ f_holo ↦
   f_holo.vanishesOnRectanglesInDisc.hasPrimitive f_holo.continuousOn
 
 end Complex
