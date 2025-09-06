@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Enriched.Basic
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # The bicategory of `V`-enriched categories
@@ -116,6 +117,18 @@ instance bicategory : Bicategory (EnrichedCat.{w, v, u} V) where
   rightUnitor := rightUnitor
   comp_whiskerRight := comp_whiskerRight
   whisker_exchange := whisker_exchange
+
+def forget : Pseudofunctor (EnrichedCat.{w, v, u} V) Cat where
+  obj C := .of <| ForgetEnrichment V C
+  map F := (EnrichedFunctor.forget F).toCatHom
+  map₂ α := α.out
+  mapId C := NatIso.ofComponents (by cat_disch) fun F => by
+    simp [Functor.toCatHom]
+    erw [EnrichedFunctor.id_map]
+    simp
+  mapComp F G := NatIso.ofComponents (by cat_disch) fun H => by
+    simp [Functor.toCatHom]
+    erw [EnrichedFunctor.comp_map]
 
 end EnrichedCat
 
