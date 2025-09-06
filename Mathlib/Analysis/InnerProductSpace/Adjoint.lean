@@ -352,7 +352,7 @@ open ContinuousLinearMap
 
 theorem IsStarNormal.ker_adjoint_eq_ker (hT : IsStarNormal T) :
     LinearMap.ker (adjoint T) = LinearMap.ker T :=
-  Submodule.ext <| hT.adjoint_apply_eq_zero_iff
+  Submodule.ext hT.adjoint_apply_eq_zero_iff
 
 /-- The range of a normal operator is pairwise orthogonal to its kernel.
 
