@@ -45,41 +45,6 @@ class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
 
 attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
 
-set_option linter.deprecated false in
-/-- A canonically ordered additive monoid is an ordered commutative additive monoid
-  in which the ordering coincides with the subtractibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
-  This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s. -/
-@[deprecated "Use `[OrderedAddCommMonoid α] [CanonicallyOrderedAdd α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyOrderedAddCommMonoid (α : Type*) extends
-    OrderedAddCommMonoid α, OrderBot α where
-  /-- For `a ≤ b`, there is a `c` so `b = a + c`. -/
-  protected exists_add_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a + c
-  /-- For any `a` and `b`, `a ≤ a + b` -/
-  protected le_self_add : ∀ a b : α, a ≤ a + b
-
-set_option linter.deprecated false in
-set_option linter.existingAttributeWarning false in
-/-- A canonically ordered monoid is an ordered commutative monoid
-  in which the ordering coincides with the divisibility relation,
-  which is to say, `a ≤ b` iff there exists `c` with `b = a * c`.
-  Examples seem rare; it seems more likely that the `OrderDual`
-  of a naturally-occurring lattice satisfies this than the lattice
-  itself (for example, dual of the lattice of ideals of a PID or
-  Dedekind domain satisfy this; collections of all things ≤ 1 seem to
-  be more natural that collections of all things ≥ 1).
--/
-@[to_additive,
-  deprecated "Use `[OrderedCommMonoid α] [CanonicallyOrderedMul α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, OrderBot α where
-  /-- For `a ≤ b`, there is a `c` so `b = a * c`. -/
-  protected exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c, b = a * c
-  /-- For any `a` and `b`, `a ≤ a * b` -/
-  protected le_self_mul : ∀ a b : α, a ≤ a * b
-
 section Mul
 variable [Mul α]
 
@@ -314,27 +279,6 @@ theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
   of_pos <| lt_of_lt_of_le (pos x) h
 
 end NeZero
-
-set_option linter.deprecated false in
-/-- A canonically linear-ordered additive monoid is a canonically ordered additive monoid
-whose ordering is a linear order. -/
-@[deprecated "Use `[LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyLinearOrderedAddCommMonoid (α : Type*)
-  extends CanonicallyOrderedAddCommMonoid α, LinearOrderedAddCommMonoid α
-
-set_option linter.deprecated false in
-set_option linter.existingAttributeWarning false in
-/-- A canonically linear-ordered monoid is a canonically ordered monoid
-whose ordering is a linear order. -/
-@[to_additive,
-  deprecated "Use `[LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyLinearOrderedCommMonoid (α : Type*)
-  extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
-
-attribute [nolint docBlame] CanonicallyLinearOrderedAddCommMonoid.toLinearOrderedAddCommMonoid
-attribute [nolint docBlame] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 
 section CanonicallyLinearOrderedCommMonoid
 
