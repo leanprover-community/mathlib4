@@ -191,8 +191,7 @@ def isoFromEq {A : C} {X Y : Subobject A} (h : X = Y) :=
 
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
-    (isoFromEq h).hom ≫ Y.arrow = X.arrow := by
-  unfold isoFromEq
+    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
   induction h
   simp
 
