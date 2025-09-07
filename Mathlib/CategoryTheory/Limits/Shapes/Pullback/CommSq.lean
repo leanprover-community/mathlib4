@@ -39,7 +39,6 @@ We define bicartesian squares, and
 show that the pullback and pushout squares for a biproduct are bicartesian.
 -/
 
-
 noncomputable section
 
 open CategoryTheory
@@ -1533,3 +1532,5 @@ theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColim
 end Functor
 
 end CategoryTheory
+
+set_option linter.style.longFile 1700
