@@ -23,17 +23,14 @@ instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMo
 
 instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) where
-  le_self_add a b :=
-    match a, b with
-    | ⊤, _ => le_rfl
-    | (a : α), ⊤ => le_top
-    | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
-  le_add_self a b :=
-    match a, b with
-    | ⊤, ⊤ | ⊤, (b : α) => le_rfl
-    | (a : α), ⊤ => le_top
-    | (a : α), (b : α) => WithTop.coe_le_coe.2 le_add_self
-  __ := WithTop.existsAddOfLE
+  le_self_add
+  | ⊤, _ => le_rfl
+  | (a : α), ⊤ => le_top
+  | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
+  le_add_self
+  | ⊤, ⊤ | ⊤, (b : α) => le_rfl
+  | (a : α), ⊤ => le_top
+  | (a : α), (b : α) => WithTop.coe_le_coe.2 le_add_self
 
 end WithTop
 
