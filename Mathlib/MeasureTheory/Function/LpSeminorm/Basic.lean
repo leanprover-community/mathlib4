@@ -277,10 +277,11 @@ instance [IsFiniteMeasure μ] : MemLp.Const E p μ where
 instance : MemLp.Const E ∞ μ where
   eLpNorm_const_lt_top := fun _ _ ↦ MemLp.eLpNorm_lt_top <| memLp_top_const ..
 
+/-- Trivial check to ensure the previous two instances are defeq when μ is finite and p = ∞. -/
 example [IsFiniteMeasure μ] : instConstOfIsFiniteMeasure (μ := μ) = instConstTopENNReal (E := E)
   := rfl
 
--- We need a test to ensure we have definitional equality here for the finite measure p=∞ case.
+
 /-
 
 Write the two instances for `IsFiniteMeasure` and `p = ⊤` case, then we will be able to generalize:
