@@ -281,6 +281,10 @@ instance : MemLp.Const E ∞ μ where
 example [IsFiniteMeasure μ] : instConstOfIsFiniteMeasure (μ := μ) = instConstTopENNReal (E := E)
   := rfl
 
+theorem memLp_const_enorm' {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) [MemLp.Const E p μ] :
+    MemLp (fun _ : α ↦ c) p μ := sorry
+
+theorem memLp_const' (c : E) [MemLp.Const E p μ] : MemLp (fun _ : α => c) p μ := sorry
 
 /-
 
