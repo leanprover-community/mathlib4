@@ -628,9 +628,9 @@ section CommRing
 variable {R : Type*} [CommRing R]
 variable {A : Type*} [Ring A] [Algebra R A]
 variable {M : Type*} [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
-variable [PartialOrder R] [IsOrderedRing R] [PartialOrder A] [IsOrderedRing A] [OrderedSMul R A]
+variable [PartialOrder R] [PartialOrder A] [IsOrderedRing A] [SMulPosMono R A]
 
-lemma Convex.orderedSMul_convex {s : Set M} (hs : Convex A s) : Convex R s :=
+lemma Convex.sMulPosMono_convex {s : Set M} (hs : Convex A s) : Convex R s :=
   convex_of_nonneg_algebraMap A (fun ⦃_⦄ ↦ algebraMap_nonneg A) hs
 
 end CommRing
