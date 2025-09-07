@@ -285,16 +285,15 @@ protected theorem continuous (e : α ≃o β) : Continuous e := by
   · rw [e.preimage_Iio]
     apply isOpen_gt'
 
-instance : HomeomorphClass (α ≃o β) α β where
-  map_continuous := OrderIso.continuous
-  inv_continuous e := e.symm.continuous
-
 /-- An order isomorphism between two linear order `OrderTopology` spaces is a homeomorphism. -/
-abbrev toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
-  HomeomorphClass.toHomeomorph e
+def toHomeomorph (e : α ≃o β) : α ≃ₜ β :=
+  { e with
+    continuous_toFun := e.continuous
+    continuous_invFun := e.symm.continuous }
 
+@[simp]
 theorem coe_toHomeomorph (e : α ≃o β) : ⇑e.toHomeomorph = e :=
-  rfl --Simp can prove this too
+  rfl
 
 @[simp]
 theorem coe_toHomeomorph_symm (e : α ≃o β) : ⇑e.toHomeomorph.symm = e.symm :=

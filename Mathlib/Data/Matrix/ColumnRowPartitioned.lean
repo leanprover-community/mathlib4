@@ -106,13 +106,13 @@ lemma fromRows_toRows (A : Matrix (m₁ ⊕ m₂) n R) : fromRows A.toRows₁ A.
   ext (i | i) j <;> simp
 
 lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
-  intro x1 x2 y1 y2
+  intros x1 x2 y1 y2
   simp [← Matrix.ext_iff]
 
 lemma fromCols_inj : Function.Injective2 (@fromCols R m n₁ n₂) := by
-  intro x1 x2 y1 y2
+  intros x1 x2 y1 y2
   simp only [← Matrix.ext_iff]
-  simp_all
+  aesop
 
 lemma fromCols_ext_iff (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (B₁ : Matrix m n₁ R)
     (B₂ : Matrix m n₂ R) :

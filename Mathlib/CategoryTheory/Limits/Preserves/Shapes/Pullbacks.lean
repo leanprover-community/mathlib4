@@ -232,9 +232,10 @@ lemma preservesPushout_symmetry : PreservesColimit (span g f) G where
     apply IsColimit.ofIsoColimit _ (PushoutCocone.isoMk _).symm
     apply PushoutCocone.isColimitOfFlip
     apply (isColimitMapCoconePushoutCoconeEquiv _ _).toFun
-    · -- Need to unfold these to allow the `PreservesColimit` instance to be found.
-      dsimp only [span_map_fst, span_map_snd]
-      exact isColimitOfPreserves _ (PushoutCocone.flipIsColimit hc)⟩
+    · refine @isColimitOfPreserves _ _ _ _ _ _ _ _ _ ?_ ?_ -- Porting note: more TC coddling
+      · exact PushoutCocone.flipIsColimit hc
+      · dsimp
+        infer_instance⟩
 
 theorem hasPushout_of_preservesPushout [HasPushout f g] : HasPushout (G.map f) (G.map g) :=
   ⟨⟨⟨_, isColimitPushoutCoconeMapOfIsColimit G _ (pushoutIsPushout _ _)⟩⟩⟩
@@ -254,11 +255,13 @@ theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutCom
 @[reassoc]
 theorem PreservesPushout.inl_iso_hom :
     pushout.inl _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inl _ _) := by
+  delta PreservesPushout.iso
   simp
 
 @[reassoc]
 theorem PreservesPushout.inr_iso_hom :
     pushout.inr _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inr _ _) := by
+  delta PreservesPushout.iso
   simp
 
 @[reassoc (attr := simp)]
@@ -311,7 +314,8 @@ lemma PreservesPushout.of_iso_comparison [i : IsIso (pushoutComparison G f g)] :
     PreservesColimit (span f g) G := by
   apply preservesColimit_of_preserves_colimit_cocone (pushoutIsPushout f g)
   apply (isColimitMapCoconePushoutCoconeEquiv _ _).symm _
-  exact IsColimit.ofPointIso _ (i := i)
+  -- Porting note: apply no longer creates goals for instances
+  exact @IsColimit.ofPointIso _ _ _ _ _ _ _ (colimit.isColimit (span (G.map f) (G.map g))) i
 
 variable [PreservesColimit (span f g) G]
 

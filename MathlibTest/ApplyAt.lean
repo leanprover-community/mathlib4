@@ -36,7 +36,7 @@ example {G : Type*} [Monoid G] (a b c : G) (h : a * c = b * c)
   · exact h
   · guard_target = IsRightCancelMul G
     constructor
-    intro a b c
+    intros a b c
     apply hh
 
 example {α β γ δ : Type*} (f : α → β → γ → δ) (a : α) (b : β) (g : γ) : δ := by

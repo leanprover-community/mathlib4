@@ -41,8 +41,9 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     · rcases not_disjoint_iff_nonempty_inter.1 hy with ⟨z, hz⟩
       exact le_csSup_of_le (hu' _) (mem_image_of_mem _ hz) (ha <| mem_image_of_mem _ hz.2)
     · exact (hx <| hy.mono_left <| Iic_subset_Iic.2 hxy).elim
-    · rw [not_disjoint_iff_nonempty_inter] at hx
-      gcongr; exacts [hu' _, hx.image _]
+    · rw [not_disjoint_iff_nonempty_inter] at hx hy
+      refine csSup_le_csSup (hu' _) (hx.image _) (image_mono ?_)
+      exact inter_subset_inter_left _ (Iic_subset_Iic.2 hxy)
 
 /-- If a function is antitone and is bounded on a set `s`, then it admits an antitone extension to
 the whole space. -/

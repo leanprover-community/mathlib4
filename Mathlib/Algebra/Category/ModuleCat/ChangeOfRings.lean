@@ -317,6 +317,7 @@ def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
   ofHom (@LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l.hom)
 
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ := by
+  ext x
   simp [map', obj']
 
 theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (l₂₃ : M₂ ⟶ M₃) :
@@ -659,7 +660,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
         dsimp only
         rw [map_add, smul_add] }
     (by
-      intro r x
+      intros r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
         LinearMap.map_smul, smul_comm r s (g x : Y)] )
 
@@ -681,7 +682,8 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)
-  · simp
+  · intros z₁ z₂
+    simp
   · intro s z
     change lift _ (s • z) = s • lift _ z
     induction z using TensorProduct.induction_on with

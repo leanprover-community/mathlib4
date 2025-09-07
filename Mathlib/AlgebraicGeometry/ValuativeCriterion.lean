@@ -24,7 +24,7 @@ import Mathlib.RingTheory.Valuation.LocalSubring
   it is qcqs and of fintite type and satisfies the valuative criterion.
 
 ## Future projects
-Show that it suffices to check discrete valuation rings when the base is Noetherian.
+Show that it suffices to check discrete valuation rings when the base is noetherian.
 
 -/
 
@@ -192,7 +192,7 @@ lemma of_specializingMap (H : (topologically @SpecializingMap).universally f) :
 
 instance stableUnderBaseChange : ValuativeCriterion.Existence.IsStableUnderBaseChange := by
   constructor
-  intro Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
+  intros Y' X X' Y  Y'_to_Y f X'_to_X f' hP hf commSq
   let commSq' : ValuativeCommSq f :=
   { R := commSq.R
     K := commSq.K
@@ -269,7 +269,7 @@ lemma IsSeparated.of_valuativeCriterion [QuasiSeparated f]
 
 @[stacks 01KZ]
 lemma IsSeparated.valuativeCriterion [IsSeparated f] : ValuativeCriterion.Uniqueness f := by
-  intro S
+  intros S
   constructor
   rintro ⟨l₁, hl₁, hl₁'⟩ ⟨l₂, hl₂, hl₂'⟩
   ext : 1

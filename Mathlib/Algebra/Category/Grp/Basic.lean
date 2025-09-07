@@ -38,6 +38,7 @@ structure Grp : Type (u + 1) where
   [str : Group carrier]
 
 attribute [instance] AddGrp.str Grp.str
+attribute [to_additive existing] Grp.carrier Grp.str
 
 initialize_simps_projections AddGrp (carrier → coe, -str)
 initialize_simps_projections Grp (carrier → coe, -str)
@@ -244,6 +245,7 @@ structure CommGrp : Type (u + 1) where
   [str : CommGroup carrier]
 
 attribute [instance] AddCommGrp.str CommGrp.str
+attribute [to_additive existing] CommGrp.carrier CommGrp.str
 
 initialize_simps_projections AddCommGrp (carrier → coe, -str)
 initialize_simps_projections CommGrp (carrier → coe, -str)

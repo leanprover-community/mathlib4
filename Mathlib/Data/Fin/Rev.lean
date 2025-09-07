@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 -/
-import Mathlib.Data.Fin.SuccPred
+import Mathlib.Data.Fin.Basic
 /-!
 # Reverse on `Fin n`
 

@@ -30,7 +30,7 @@ minimise the shadow.
 
 ## Notation
 
-`𝓒` (typed with `\MCC`) is notation for `UV.compression` in scope `FinsetFamily`.
+`𝓒` (typed with `\MCC`) is notation for `UV.compression` in locale `FinsetFamily`.
 
 ## Notes
 

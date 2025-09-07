@@ -140,7 +140,6 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
   rw [Ideal.isMaximal_def, ← isSimpleModule_iff_isCoatom]
   exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
 
-open scoped IsSimpleOrder in
 instance : IsNoetherian R M := isNoetherian_iff'.mpr inferInstance
 
 end IsSimpleModule
@@ -186,37 +185,6 @@ theorem isSimpleModule_self_iff_isUnit :
 theorem IsSemisimpleModule.of_sSup_simples_eq_top
     (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M where
   __ := complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
-
-namespace Module.Finite
-
-variable (R₀ P : Type*) [Semiring R₀] [AddCommMonoid P] [Module R P]
-
-section
-
-variable [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)]
-
-theorem of_isComplemented_domain (h : IsComplemented m) : Module.Finite R₀ (m →ₗ[R] P) :=
-  .of_surjective (.lcomp R₀ P ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
-
-instance [IsSemisimpleModule R M] : Module.Finite R₀ (m →ₗ[R] P) :=
-  .of_isComplemented_domain _ _ (exists_isCompl m)
-
-end
-
-section
-
-variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
-  [IsScalarTower R₀ R M] [Module.Finite R₀ (P →ₗ[R] M)]
-
-theorem of_isComplemented_codomain (h : IsComplemented m) : Module.Finite R₀ (P →ₗ[R] m) :=
-  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
-
-instance [IsSemisimpleModule R M] : Module.Finite R₀ (P →ₗ[R] m) :=
-  .of_isComplemented_codomain _ _ (exists_isCompl m)
-
-end
-
-end Module.Finite
 
 namespace IsSemisimpleModule
 

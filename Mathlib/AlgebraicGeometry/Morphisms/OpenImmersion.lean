@@ -62,7 +62,10 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
 variable {X Y : Scheme.{u}}
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
-    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_stalk_iso f
+    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
+  constructor
+  · intro h; exact ⟨h.1, inferInstance⟩
+  · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
 
 theorem isOpenImmersion_eq_inf :
     @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓

@@ -3,6 +3,9 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.RingHom.Finite

@@ -23,7 +23,7 @@ noncomputable section
 /-!
 We first prove some results about differential graded objects.
 
-TODO: We should move these to their own file.
+Porting note: after the port, move these to their own file.
 -/
 namespace CategoryTheory.DifferentialObject
 

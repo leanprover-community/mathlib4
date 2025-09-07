@@ -41,7 +41,7 @@ variable {X Y : C}
 /-- A regular monomorphism is a morphism which is the equalizer of some parallel pair. -/
 class RegularMono (f : X ⟶ Y) where
   /-- An object in `C` -/
-  Z : C
+  Z : C -- Porting note: violates naming but what is better?
   /-- A map from the codomain of `f` to `Z` -/
   left : Y ⟶ Z
   /-- Another map from the codomain of `f` to `Z` -/
@@ -169,7 +169,7 @@ instance (priority := 100) strongMonoCategory_of_regularMonoCategory [IsRegularM
 /-- A regular epimorphism is a morphism which is the coequalizer of some parallel pair. -/
 class RegularEpi (f : X ⟶ Y) where
   /-- An object from `C` -/
-  W : C
+  W : C -- Porting note: violates naming convention but what is better?
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/

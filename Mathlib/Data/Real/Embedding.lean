@@ -3,10 +3,14 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
+
+import Mathlib.Data.Real.Archimedean
+import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Real.Archimedean
+import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Tactic.Qify
 
 /-!
 # Embedding of archimedean groups into reals
@@ -124,7 +128,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
       simp [hk]
     have hka0 : k * a.den ≠ 0 := mul_ne_zero hk0 a.den_ne_zero
     obtain ⟨m, ⟨hm1, hm2⟩, _⟩ := existsUnique_add_zsmul_mem_Ico zero_lt_one 0 (k • a.den • x - 1)
-    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den), ?_, ?_⟩
+    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den) , ?_, ?_⟩
     · rw [mkRat_mem_ratLt hka0, ← smul_smul]
       simpa using hm2
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by

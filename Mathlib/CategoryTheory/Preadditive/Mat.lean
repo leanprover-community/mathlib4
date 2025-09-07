@@ -145,8 +145,11 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 
 end
 
-instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) :=
-  inferInstanceAs <| AddCommGroup (DMatrix M.ι N.ι _)
+-- Porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
+-- was introduced separately and the lemma `add_apply` was moved upwards
+instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
+  change AddCommGroup (DMatrix M.ι N.ι _)
+  infer_instance
 
 @[simp]
 theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
@@ -335,12 +338,14 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
 
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
-/-- This instance can be found using `Functor.hasBiproduct_of_preserves'`, but it is faster
-to keep it here. -/
+-- Porting note: added because it was not found automatically
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
+-- Porting note: removed the @[simps] attribute as the automatically generated lemmas
+-- are not very useful; two more useful lemmas have been added just after this
+-- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
 def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=

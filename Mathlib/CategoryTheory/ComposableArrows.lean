@@ -174,12 +174,12 @@ def homMk {F G : ComposableArrows C n} (app : ∀ i, F.obj i ⟶ G.obj i)
       obtain ⟨k, hk⟩ := Nat.le.dest hij'
       exact this k i j hk (by valid)
     intro k
-    induction k with intro i j hj hj'
-    | zero =>
+    induction' k with k hk
+    · intro i j hj hj'
       simp only [add_zero] at hj
       obtain rfl := hj
       rw [F.map'_self i, G.map'_self i, id_comp, comp_id]
-    | succ k hk =>
+    · intro i j hj hj'
       rw [← add_assoc] at hj
       subst hj
       rw [F.map'_comp i (i + k) (i + k + 1), G.map'_comp i (i + k) (i + k + 1), assoc,
@@ -834,15 +834,18 @@ variable (obj : Fin (n + 1) → C) (mapSucc : ∀ (i : Fin n), obj i.castSucc �
 lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj i ≅ obj i),
     ∀ (i : ℕ) (hi : i < n), mapSucc ⟨i, hi⟩ =
       (e ⟨i, _⟩).inv ≫ F.map' i (i + 1) ≫ (e ⟨i + 1, _⟩).hom := by
-  induction n with
-  | zero => exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
-  | succ n hn =>
+  revert obj mapSucc
+  induction' n with n hn
+  · intro obj _
+    exact ⟨mk₀ (obj 0), fun 0 => Iso.refl _, fun i hi => by simp at hi⟩
+  · intro obj mapSucc
     obtain ⟨F, e, h⟩ := hn (fun i => obj i.succ) (fun i => mapSucc i.succ)
     refine ⟨F.precomp (mapSucc 0 ≫ (e 0).inv), fun i => match i with
       | 0 => Iso.refl _
       | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
-    · simp
+    · simp only [← Fin.mk_zero]
+      simp
     · exact h i (by valid)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`

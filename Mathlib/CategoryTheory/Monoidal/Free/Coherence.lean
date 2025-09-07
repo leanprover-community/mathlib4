@@ -62,6 +62,7 @@ local notation "N" => Discrete ∘ NormalMonoidalObject
 
 local infixr:10 " ⟶ᵐ " => Hom
 
+-- Porting note: this was automatic in mathlib 3
 instance (x y : N C) : Subsingleton (x ⟶ y) := Discrete.instSubsingletonDiscreteHom _ _
 
 /-- Auxiliary definition for `inclusion`. -/
@@ -81,7 +82,10 @@ theorem inclusion_obj (X : N C) :
 
 @[simp]
 theorem inclusion_map {X Y : N C} (f : X ⟶ Y) :
-    inclusion.map f = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom f))) := rfl
+    inclusion.map f = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom f))) := by
+  rcases f with ⟨⟨⟩⟩
+  cases Discrete.ext (by assumption)
+  apply inclusion.map_id
 
 /-- Auxiliary definition for `normalize`. -/
 def normalizeObj : F C → NormalMonoidalObject C → NormalMonoidalObject C
@@ -272,6 +276,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     ext ⟨n⟩
     convert normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
+    rfl
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=

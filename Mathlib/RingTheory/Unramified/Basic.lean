@@ -163,7 +163,7 @@ end
 
 instance {R : Type*} [CommRing R] : FormallyUnramified R R := by
   rw [iff_comp_injective]
-  intro B _ _ _ _ f₁ f₂ _
+  intros B _ _ _ _ f₁ f₂ _
   exact Subsingleton.elim _ _
 
 section OfEquiv

@@ -241,6 +241,7 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_neg_eq_map f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
+-- Porting note: This is no longer `@[simp]` in Lean 4
 theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 
 @[ext]
@@ -344,6 +345,7 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_neg_eq_map f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
+-- Porting note: This no longer in `@[simp]`-normal form in Lean 4
 theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
 
 @[ext]

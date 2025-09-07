@@ -7,12 +7,12 @@ import Mathlib.CategoryTheory.Subobject.ArtinianObject
 import Mathlib.CategoryTheory.Subobject.NoetherianObject
 
 /-!
-# Artinian and Noetherian categories
+# Artinian and noetherian categories
 
-An Artinian category is a category in which objects do not
+An artinian category is a category in which objects do not
 have infinite decreasing sequences of subobjects.
 
-A Noetherian category is a category in which objects do not
+A noetherian category is a category in which objects do not
 have infinite increasing sequences of subobjects.
 
 Note: In the file, `CategoryTheory.Subobject.ArtinianObject`,
@@ -32,13 +32,13 @@ open CategoryTheory.Limits
 
 variable (C : Type*) [Category C]
 
-/-- A category is Noetherian if it is essentially small and all objects are Noetherian. -/
+/-- A category is noetherian if it is essentially small and all objects are noetherian. -/
 class Noetherian : Prop extends EssentiallySmall C where
   isNoetherianObject : ∀ X : C, IsNoetherianObject X
 
 attribute [instance] Noetherian.isNoetherianObject
 
-/-- A category is Artinian if it is essentially small and all objects are Artinian. -/
+/-- A category is artinian if it is essentially small and all objects are artinian. -/
 class Artinian : Prop extends EssentiallySmall C where
   isArtinianObject : ∀ X : C, IsArtinianObject X
 

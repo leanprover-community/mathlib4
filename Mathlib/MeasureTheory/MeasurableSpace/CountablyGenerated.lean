@@ -157,7 +157,7 @@ theorem separating_of_generateFrom (S : Set (Set α))
     [h : @SeparatesPoints α (generateFrom S)] :
     ∀ x y : α, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y := by
   letI := generateFrom S
-  intro x y hxy
+  intros x y hxy
   rw [← forall_generateFrom_mem_iff_mem_iff] at hxy
   exact separatesPoints_def <| fun _ hs ↦ (hxy _ hs).mp
 

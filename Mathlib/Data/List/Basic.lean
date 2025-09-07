@@ -11,6 +11,7 @@ import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
+import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -98,7 +99,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
   · intro h; refine ⟨fun x y => ?_⟩; (suffices [x] = [y] by simpa using this); apply h; rfl
-  · intro hα l1 l2 hl
+  · intros hα l1 l2 hl
     induction l1 generalizing l2 <;> cases l2
     · rfl
     · cases hl
@@ -528,7 +529,16 @@ theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = 
   | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
 
 theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a ∉ l := by
-  grind
+  induction l with
+  | nil => exact iff_of_true rfl not_mem_nil
+  | cons b l ih =>
+    simp only [length, mem_cons, idxOf_cons]
+    rw [cond_eq_if]
+    split_ifs with h <;> simp at h
+    · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
+    · simp only [Ne.symm h, false_or]
+      rw [← ih]
+      exact succ_inj
 
 @[simp]
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
@@ -943,7 +953,7 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
     ∀ mb : m β, (mb >>= fun b => List.foldlM f b l) = foldl (fun mb a => mb >>= fun b => f b a) mb l
     by simp [← h (pure b)]
   induction l with
-  | nil => simp
+  | nil => intro; simp
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 
 end FoldlMFoldrM
@@ -985,11 +995,12 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
   mp := by
     induction l with | nil => simp | cons a l ih => ?_
-    rcases ha : f a with - | b
+    rcases ha : f a with - | b <;> simp [ha]
     · intro h
-      have : (filterMap f l).length = l.length + 1 := by grind
-      grind
-    · simp +contextual [ha, ih]
+      simpa [show (filterMap f l).length = l.length + 1 from by simp [h], Nat.add_one_le_iff]
+        using List.length_filterMap_le f l
+    · rintro rfl h
+      exact ⟨rfl, ih h⟩
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
 
 /-! ### filter -/
@@ -1079,7 +1090,7 @@ section eraseP
 
 variable {p : α → Bool}
 
--- Cannot be @[simp] because `a` cannot be inferred by `simp`.
+-- Cannot be @[simp] because `a` can not be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by
   let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa

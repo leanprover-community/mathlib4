@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Common
@@ -34,6 +33,7 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 /--
 info: Try these:
 • linarith
+• field_simp
 -/
 #guard_msgs in
 example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
@@ -58,6 +58,7 @@ example : Nat.Prime 37 := by hint
 info: Try these:
 • aesop
 • ring_nf
+• field_simp
 • norm_num
 • simp_all only [zero_le, and_true]
 -/
@@ -102,6 +103,7 @@ example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A
 info: Try these:
 • aesop
 • ring_nf
+• field_simp
 • norm_num
 • simp_all only [Nat.not_ofNat_le_one]
 ---
@@ -125,10 +127,8 @@ end compute_degree
 section field_simp
 /--
 info: Try these:
-• exact Units.divp_add_divp_same a b u₁
+• field_simp
 • ring_nf
-• abel_nf
-• norm_num
 -/
 #guard_msgs in
 example (R : Type) (a b : R) [CommRing R] (u₁ : Rˣ) : a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁ := by hint

@@ -96,7 +96,7 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
   OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
     congr 1
-    ext x
+    apply OrderHom.ext; funext x -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
     apply hc _ ⟨_, rfl⟩
 
 namespace HasEqualizers

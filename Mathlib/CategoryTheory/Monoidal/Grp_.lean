@@ -104,7 +104,6 @@ lemma comp' {A₁ A₂ A₃ : Grp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
 end Grp_
 
 namespace Grp_Class
-variable {G X : C} [Grp_Class G]
 
 variable {A : C} {B : C}
 
@@ -156,14 +155,6 @@ theorem lift_left_mul_ext [Grp_Class B] {f g : A ⟶ B} (i : A ⟶ B)
 theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
-
-/-- Transfer `Grp_Class` along an isomorphism. -/
-@[simps!]
-abbrev ofIso (e : G ≅ X) : Grp_Class X where
-  toMon_Class := .ofIso e
-  inv := e.inv ≫ ι[G] ≫ e.hom
-  left_inv := by simp [Mon_Class.ofIso]
-  right_inv := by simp [Mon_Class.ofIso]
 
 instance (A : C) [Grp_Class A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
@@ -261,17 +252,11 @@ lemma toMon_Class_injective {X : C} :
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[ext]
-lemma ext {X : C} (h₁ h₂ : Grp_Class X) (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
+lemma _root_.Grp_Class.ext {X : C} (h₁ h₂ : Grp_Class X)
+    (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
   Grp_Class.toMon_Class_injective H
 
-namespace tensorObj
-variable [BraidedCategory C] {G H : C} [Grp_Class G] [Grp_Class H]
-
-@[simps inv]
-instance : Grp_Class (G ⊗ H) where
-  inv := ι ⊗ₘ ι
-
-end Grp_Class.tensorObj
+end Grp_Class
 
 namespace Grp_
 
@@ -428,15 +413,6 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
   map {F G} α := { app A := .mk' (α.app A.X) }
-
-/-- Pullback a group object along a fully faithful monoidal functor. -/
-def FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] : Grp_Class X where
-  __ := hF.mon_Class X
-  inv := hF.preimage ι[F.obj X]
-  left_inv := hF.map_injective <| by
-    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
-  right_inv := hF.map_injective <| by
-    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
 
 end Functor
 

@@ -236,7 +236,11 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     uSwitch.map (uSwitch.map f) =
     (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
-      Y.uSwitchEquiv)).inv := rfl
+      Y.uSwitchEquiv)).inv := by
+  ext x
+  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
+  rfl
 
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

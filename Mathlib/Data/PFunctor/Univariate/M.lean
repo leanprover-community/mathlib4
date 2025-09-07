@@ -278,7 +278,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
     apply x.consistent
   revert ch
   rw [h']
-  intro ch h
+  intros ch h
   congr
   ext a
   dsimp only [children]
@@ -286,7 +286,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   rw [cast_eq_iff_heq] at hh
   revert a''
   rw [h]
-  intro _ hh
+  intros _ hh
   cases hh
   rfl
 

@@ -167,7 +167,8 @@ Order of vanishing function for elements of the fraction field defined as the ex
 @[stacks 02MD]
 noncomputable
 def ordFrac : K →*₀ ℤᵐ⁰ :=
-  letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
+  letI f := Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap (nonZeroDivisors R) K)
+    (ordMonoidWithZeroHom R)
   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
     simp only [isUnit_iff_ne_zero, ne_eq]

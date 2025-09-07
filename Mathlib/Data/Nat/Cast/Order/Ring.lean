@@ -82,8 +82,8 @@ theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [Canoni
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
 
-section Lattice
-variable [Ring R] [Lattice R] [IsOrderedRing R]
+section LinearOrderedRing
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {m n : ℕ} {m n : ℕ}
 
 @[simp, norm_cast]
 theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
@@ -91,18 +91,13 @@ theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
 
-end Lattice
-
-section PartialOrderedRing
-variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {m n : ℕ}
-
 @[simp, norm_cast] lemma neg_cast_eq_cast : (-m : R) = n ↔ m = 0 ∧ n = 0 := by
   simp [neg_eq_iff_add_eq_zero, ← cast_add]
 
 @[simp, norm_cast] lemma cast_eq_neg_cast : (m : R) = -n ↔ m = 0 ∧ n = 0 := by
   simp [eq_neg_iff_add_eq_zero, ← cast_add]
 
-end PartialOrderedRing
+end LinearOrderedRing
 
 lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
     a * b ≤ a ^ b := by

@@ -26,7 +26,8 @@ namespace CategoryTheory.NormalMonoCategory
 variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
-lemma pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
+@[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
+def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
     HasLimit (cospan a b) :=
   let ⟨P, f, haf, i⟩ := normalMonoOfMono a
   let ⟨Q, g, hbg, i'⟩ := normalMonoOfMono b
@@ -98,7 +99,9 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
 /-- The equalizer of `f` and `g` exists. -/
-lemma hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
+-- Porting note: changed to irreducible def since irreducible_def was breaking things
+@[irreducible, nolint defLemma]
+def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
     calc
       (pullback.fst _ _ : P f g ⟶ X) = pullback.fst _ _ ≫ 𝟙 _ := Eq.symm <| Category.comp_id _
@@ -169,7 +172,8 @@ namespace CategoryTheory.NormalEpiCategory
 variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
 /-- The pushout of two epimorphisms exists. -/
-lemma pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
+@[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
+def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
     HasColimit (span a b) :=
   let ⟨P, f, hfa, i⟩ := normalEpiOfEpi a
   let ⟨Q, g, hgb, i'⟩ := normalEpiOfEpi b
@@ -217,7 +221,7 @@ lemma pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
               rw [CokernelCofork.π_ofπ] at ha'
               have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : a ≫ a' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']
-              simp [reassoced, PushoutCocone.condition s])
+              simp [reassoced , PushoutCocone.condition s])
           (fun s =>
             (cancel_epi b).1 <| by
               rw [CokernelCofork.π_ofπ] at hb'
@@ -248,7 +252,8 @@ private abbrev Q {X Y : C} (f g : X ⟶ Y) [Epi (coprod.desc (𝟙 Y) f)] [Epi (
   pushout (coprod.desc (𝟙 Y) f) (coprod.desc (𝟙 Y) g)
 
 /-- The coequalizer of `f` and `g` exists. -/
-lemma hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
+@[irreducible, nolint defLemma] -- Porting note: changed to def and restored irreducible
+def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair f g) :=
   have huv : (pushout.inl _ _ : Y ⟶ Q f g) = pushout.inr _ _ :=
     calc
       (pushout.inl _ _ : Y ⟶ Q f g) = 𝟙 _ ≫ pushout.inl _ _ := Eq.symm <| Category.id_comp _

@@ -123,7 +123,7 @@ theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 
 protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).Nonempty :=
-  (hs.exists_ne a).imp <| by simp_all
+  (hs.exists_ne a).imp <| by aesop
 
 @[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
   simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]
@@ -613,25 +613,11 @@ end Multiset
 
 namespace Finset
 
-variable {α : Type*}
-
-theorem mem_union_of_disjoint [DecidableEq α]
+theorem mem_union_of_disjoint {α : Type*} [DecidableEq α]
     {s t : Finset α} (h : Disjoint s t) {x : α} :
     x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
   rw [Finset.mem_union, Xor']
   have := disjoint_left.1 h
   tauto
-
-@[simp]
-theorem univ_finset_of_isEmpty [h : IsEmpty α] : (Set.univ : Set (Finset α)) = {∅} :=
-  subset_antisymm (fun S hS ↦ by simp [Finset.eq_empty_of_isEmpty S]) (by simp)
-
-theorem isEmpty_of_forall_eq_empty (H : ∀ s : Finset α, s = ∅) : IsEmpty α :=
-  isEmpty_iff.mpr fun a ↦ by specialize H {a}; aesop
-
-@[simp]
-theorem univ_finset_eq_singleton_empty_iff : @Set.univ (Finset α) = {∅} ↔ IsEmpty α :=
-  ⟨fun h ↦ isEmpty_of_forall_eq_empty fun s ↦ Set.mem_singleton_iff.mp
-    (Set.ext_iff.mp h s |>.mp (Set.mem_univ s)), fun _ ↦ by simp⟩
 
 end Finset

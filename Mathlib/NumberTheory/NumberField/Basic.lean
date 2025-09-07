@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.CharZero.AddMonoidHom
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
@@ -83,12 +82,6 @@ theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Fiel
   letI := Module.Finite.left K E L
   of_module_finite K E
 
-theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
-  letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
-  {
-    to_charZero := inferInstance
-    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
-  }
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
 
@@ -335,7 +328,7 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-/-- Any extension between ring of integers of number fields is Noetherian. -/
+/-- Any extension between ring of integers of number fields is noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
 

@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.Normed.Operator.Mul
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
 # Unitization norms

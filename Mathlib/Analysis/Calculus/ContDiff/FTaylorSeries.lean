@@ -454,14 +454,12 @@ theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 
     (m : Fin (n + 1) → E) :
     (iteratedFDerivWithin 𝕜 (n + 1) f s x : (Fin (n + 1) → E) → F) m =
       iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s x (init m) (m (last n)) := by
-  induction n generalizing x with
-  | zero =>
-    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp,
+  induction' n with n IH generalizing x
+  · rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp,
       iteratedFDerivWithin_zero_apply, Function.comp_apply,
       LinearIsometryEquiv.comp_fderivWithin _ (hs x hx)]
     rfl
-  | succ n IH =>
-    let I := (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm
+  · let I := (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm
     have A : ∀ y ∈ s, iteratedFDerivWithin 𝕜 n.succ f s y =
         (I ∘ iteratedFDerivWithin 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) y := fun y hy ↦ by
       ext m
@@ -617,10 +615,9 @@ with the one we have chosen in `iteratedFDerivWithin 𝕜 m f s`. -/
 theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
     (h : HasFTaylorSeriesUpToOn n f p s) {m : ℕ} (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) : p x m = iteratedFDerivWithin 𝕜 m f s x := by
-  induction m generalizing x with
-  | zero => rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp, comp_apply]
-  | succ m IH =>
-    have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
+  induction' m with m IH generalizing x
+  · rw [h.zero_eq' hx, iteratedFDerivWithin_zero_eq_comp, comp_apply]
+  · have A : m < n := lt_of_lt_of_le (mod_cast lt_add_one m) hmn
     have :
       HasFDerivWithinAt (fun y : E => iteratedFDerivWithin 𝕜 m f s y)
         (ContinuousMultilinearMap.curryLeft (p x (Nat.succ m))) s x :=

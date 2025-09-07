@@ -20,8 +20,7 @@ contraction, dual module, tensor product
 
 variable {ι : Type*} (R M N P Q : Type*)
 
--- Enable extensionality of maps out of the tensor product.
--- High priority so it takes precendence over `LinearMap.ext`.
+-- Porting note: we need high priority for this to fire first; not the case in ML3
 attribute [local ext high] TensorProduct.ext
 
 section Contraction

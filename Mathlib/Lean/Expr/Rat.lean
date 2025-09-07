@@ -18,11 +18,6 @@ This file defines some operations involving `Expr` and rational numbers.
   This includes natural numbers, integers and rationals.
 -/
 
-open Lean in
-instance : ToExpr Rat where
-  toExpr q := mkApp2 (.const ``mkRat []) (toExpr q.num) (toExpr q.den)
-  toTypeExpr := .const ``Rat [0]
-
 namespace Lean.Expr
 
 /--

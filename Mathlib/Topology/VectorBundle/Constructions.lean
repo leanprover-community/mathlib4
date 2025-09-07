@@ -5,7 +5,7 @@ Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doo
 -/
 import Mathlib.Topology.FiberBundle.Constructions
 import Mathlib.Topology.VectorBundle.Basic
-import Mathlib.Analysis.Normed.Operator.Prod
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
 /-!
 # Standard constructions on vector bundles

@@ -29,6 +29,19 @@ namespace SimpleGraph
 
 variable {V : Type*} (G : SimpleGraph V) (s t : V)
 
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
+
+include f in
+theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    #G.edgeFinset = #G'.edgeFinset := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+end Iso
+
 section ReplaceVertex
 
 variable [DecidableEq V]
@@ -149,7 +162,7 @@ instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
 
 @[simp]
 lemma edge_self_eq_bot : edge s s = ⊥ := by
-  ext; rw [edge_adj]; simp_all
+  ext; rw [edge_adj]; aesop
 
 lemma sup_edge_self : G ⊔ edge s s = G := by simp
 

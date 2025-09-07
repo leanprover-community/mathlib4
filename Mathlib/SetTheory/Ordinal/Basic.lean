@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.IsNormal
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
@@ -52,7 +51,7 @@ for the empty set by convention.
 
 ## Notations
 
-* `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
+* `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
 -/
 
 assert_not_exists Module Field
@@ -551,7 +550,7 @@ instance wellFoundedLT : WellFoundedLT Ordinal :=
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-/-- Reformulation of well-founded induction on ordinals as a lemma that works with the
+/-- Reformulation of well founded induction on ordinals as a lemma that works with the
 `induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
@@ -578,7 +577,6 @@ theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
     #{ y // r y x } = (typein r x).card :=
   rfl
 
-@[gcongr]
 theorem card_le_card {o₁ o₂ : Ordinal} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
   inductionOn o₁ fun _ _ _ => inductionOn o₂ fun _ _ _ ⟨⟨⟨f, _⟩, _⟩⟩ => ⟨f⟩
 
@@ -590,12 +588,13 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 /-! ### Lifting ordinals to a higher universe -/
 
+-- Porting note: Needed to add universe hint .{u} below
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
   see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
-  Quotient.liftOn o (fun w => type <| ULift.down ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
+  Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
@@ -776,7 +775,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
     Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
       Quot.sound
         ⟨⟨sumAssoc _ _ _, by
-          intro a b
+          intros a b
           rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
             simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
               Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩
@@ -857,6 +856,7 @@ theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
+-- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 
@@ -957,8 +957,10 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
-      induction a using inductionOn with
-      | H a r =>
+      revert hf
+      -- Porting note: apply inductionOn does not work, refine does
+      refine inductionOn a ?_
+      intro α r _ hf
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
@@ -1040,9 +1042,6 @@ theorem card_ord (c) : (ord c).card = c :=
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
 
-theorem bddAbove_ord_image_iff {s : Set Cardinal} : BddAbove (ord '' s) ↔ BddAbove s :=
-  gc_ord_card.bddAbove_l_image
-
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
   gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
@@ -1098,14 +1097,6 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
 
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
-
-theorem isNormal_ord : Order.IsNormal ord where
-  strictMono := ord_strictMono
-  mem_lowerBounds_upperBounds_of_isSuccLimit := by
-    intro a ha
-    simp_rw [lowerBounds, upperBounds, mem_setOf, forall_mem_image, ord_le]
-    refine fun b H ↦ le_of_forall_lt fun c hc ↦ ?_
-    simpa using H (ha.succ_lt hc)
 
 @[simp]
 theorem ord_aleph0 : ord.{u} ℵ₀ = ω := by

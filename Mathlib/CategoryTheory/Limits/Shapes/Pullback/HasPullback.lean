@@ -21,13 +21,13 @@ pullacks.
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
 ```
-  pullback f g ---pullback.fst f g---> X
+  pullback f g ---pullback.snd f g---> Y
       |                                |
       |                                |
-pullback.snd f g                       f
+pullback.snd f g                       g
       |                                |
       v                                v
-      Y --------------g--------------> Z
+      X --------------f--------------> Z
 ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
@@ -39,10 +39,10 @@ pullback.snd f g                       f
 ```
       X --------------f--------------> Y
       |                                |
-      g                          pushout.inl f g
+      g                          pushout.inr f g
       |                                |
       v                                v
-      Z ---pushout.inr f g---> pushout f g
+      Z ---pushout.inl f g---> pushout f g
 ```
 
 # Main results & API

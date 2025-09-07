@@ -104,8 +104,9 @@ theorem enumOrd_le_of_subset {t : Set Ordinal} (hs : ¬ BddAbove s) (hst : s ⊆
     enumOrd t ≤ enumOrd s := by
   intro a
   rw [enumOrd, enumOrd]
-  gcongr with b c
-  exacts [enumOrd_nonempty hs a, enumOrd_le_of_subset hs hst c]
+  apply csInf_le_csInf' (enumOrd_nonempty hs a) (inter_subset_inter hst _)
+  intro b hb c hc
+  exact (enumOrd_le_of_subset hs hst c).trans_lt <| hb c hc
 termination_by a => a
 
 /-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `s`. -/

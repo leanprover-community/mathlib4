@@ -173,7 +173,8 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
   have h23 : 0 < (2 / 3 : ℝ) := by norm_num1
   -- In the trivial case `f = 0`, we take `g = 0`
   rcases eq_or_ne f 0 with (rfl | hf)
-  · simp
+  · use 0
+    simp
   replace hf : 0 < ‖f‖ := norm_pos_iff.2 hf
   /- Otherwise, the closed sets `e '' (f ⁻¹' (Iic (-‖f‖ / 3)))` and `e '' (f ⁻¹' (Ici (‖f‖ / 3)))`
     are disjoint, hence by Urysohn's lemma there exists a function `g` that is equal to `-‖f‖ / 3`
@@ -257,8 +258,7 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
     refine
       (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1)
         hg_dist hg_cau.tendsto_limUnder).trans_eq ?_
-    field_simp
-    ring
+    field_simp [show (3 - 2 : ℝ) = 1 by norm_num1]
   · rw [← hge]
     exact norm_compContinuous_le _ _
 

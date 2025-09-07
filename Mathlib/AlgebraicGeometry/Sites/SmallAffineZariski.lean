@@ -90,12 +90,12 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
 
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
   is_cover := by
-    intro U x hx
+    intros U x hx
     obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ := (isBasis_affine_open X).exists_subset_of_mem_open hx U.2
     exact ⟨V, homOfLE hVU, ⟨⟨V, hV⟩, 𝟙 _, homOfLE hVU, rfl⟩, hxV⟩
 
 variable (X) in
-/-- The Grothendieck topology on `X.AffineZariskiSite` induced from the topology on `X.Opens`.
+/-- The grothendieck topology on `X.AffineZariskiSite` induced from the topology on `X.Opens`.
 Also see `mem_grothendieckTopology_iff_sectionsOfPresieve`. -/
 def grothendieckTopology : GrothendieckTopology X.AffineZariskiSite :=
   (toOpensFunctor X).inducedTopology (Opens.grothendieckTopology X)

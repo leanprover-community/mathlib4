@@ -154,12 +154,12 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       (-((k ! : ℝ)⁻¹ * (x - y) ^ k)) t y := by
     -- Commuting the factors:
     have : -((k ! : ℝ)⁻¹ * (x - y) ^ k) = ((k + 1 : ℝ) * k !)⁻¹ * (-(k + 1) * (x - y) ^ k) := by
-      field_simp
+      field_simp; ring
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
   convert this.smul hf using 1
   field_simp
-  rw [neg_smul, sub_eq_add_neg]
+  rw [neg_div, neg_smul, sub_eq_add_neg]
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
@@ -229,7 +229,8 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   intro i _
   rw [← iteratedDerivWithin_succ']
   congr 1
-  simp [field, Nat.factorial_succ]
+  field_simp [Nat.factorial_succ]
+  ring
 
 /-- **Taylor's theorem** using little-o notation. -/
 theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
@@ -304,10 +305,9 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   simp only [taylorWithinEval_self] at h
   rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel_right₀ _ (g'_ne y hy)] at h
   rw [← h]
-  simp [field]
+  field_simp [g'_ne y hy]
+  ring
 
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 /-- **Taylor's theorem** with the Lagrange form of the remainder.
 
 We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
@@ -335,7 +335,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   use y, hy
   simp only [sub_self, zero_pow, Ne, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
-  simp [field, xy_ne y hy, Nat.factorial]
+  field_simp [xy_ne y hy, Nat.factorial]; ring
 
 /-- A corollary of Taylor's theorem with the Lagrange form of the remainder. -/
 lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
@@ -372,7 +372,8 @@ theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} 
   rcases taylor_mean_remainder hx hf hf' gcont gdiff fun _ _ => by simp with ⟨y, hy, h⟩
   use y, hy
   rw [h]
-  simp [field]
+  field_simp [n.factorial_ne_zero]
+  ring
 
 /-- **Taylor's theorem** with a polynomial bound on the remainder
 

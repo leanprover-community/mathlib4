@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Seq.Basic
+import Mathlib.Data.Seq.Seq
 import Mathlib.Util.CompileInductive
 
 /-!
@@ -86,10 +86,9 @@ def destruct : WSeq α → Computation (Option (α × WSeq α)) :=
     | some (some a, s') => Sum.inl (some (a, s'))
 
 /-- Recursion principle for weak sequences, compare with `List.recOn`. -/
-@[elab_as_elim]
-def recOn {motive : WSeq α → Sort v} (s : WSeq α) (nil : motive nil)
-    (cons : ∀ x s, motive (cons x s)) (think : ∀ s, motive (think s)) : motive s :=
-  Seq.recOn s nil fun o => Option.recOn o think cons
+def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (cons x s))
+    (h3 : ∀ s, C (think s)) : C s :=
+  Seq.recOn s h1 fun o => Option.recOn o h3 h2
 
 /-- membership for weak sequences -/
 protected def Mem (s : WSeq α) (a : α) :=

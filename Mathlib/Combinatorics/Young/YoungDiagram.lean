@@ -68,6 +68,7 @@ structure YoungDiagram where
 namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out how to do this correctly
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
@@ -142,7 +143,7 @@ instance : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
       isLowerSet := by
-        intro a b _ h
+        intros a b _ h
         simp only [Finset.coe_empty, Set.mem_empty_iff_false]
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
   bot_le _ _ := by

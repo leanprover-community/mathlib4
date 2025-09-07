@@ -34,12 +34,13 @@ lemma logDeriv_one : logDeriv (1 : R) = 0 := by
 
 lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
   unfold logDeriv
-  simp [field]
+  field_simp
   ring
 
 lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
   unfold logDeriv
-  simp [field, Derivation.leibniz_div]
+  field_simp [Derivation.leibniz_div, smul_sub]
+  ring
 
 @[simp]
 lemma logDeriv_pow (n : ℕ) (a : R) : logDeriv (a ^ n) = n * logDeriv a := by

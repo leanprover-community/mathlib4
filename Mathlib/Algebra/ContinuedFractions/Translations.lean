@@ -5,7 +5,6 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Seq.Basic
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions

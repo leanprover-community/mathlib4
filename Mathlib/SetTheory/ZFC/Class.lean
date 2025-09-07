@@ -131,7 +131,9 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 
 @[simp]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
-  rfl
+  ext z
+  simp only [congToClass, not_empty_hom, iff_false]
+  exact Set.notMem_empty z
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
 def classToCong (x : Class.{u}) : Set Class.{u} :=
@@ -139,6 +141,7 @@ def classToCong (x : Class.{u}) : Set Class.{u} :=
 
 @[simp]
 theorem classToCong_empty : classToCong ∅ = ∅ := by
+  ext
   simp [classToCong]
 
 /-- The power class of a class is the class of all subclasses that are ZFC sets -/
@@ -359,7 +362,7 @@ private lemma toSet_equiv_aux {s : Set ZFSet.{u}} (hs : Small.{u} s) :
 noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} s} where
   toFun x := ⟨x.toSet, x.small_toSet⟩
   invFun := fun ⟨s, _⟩ ↦ mk <| PSet.mk (Shrink s) fun x ↦ ((equivShrink.{u, u + 1} s).symm x).1.out
-  left_inv := Function.rightInverse_of_injective_of_leftInverse (by intro _ _; simp)
+  left_inv := Function.rightInverse_of_injective_of_leftInverse (by intros x y; simp)
     fun s ↦ Subtype.coe_injective <| toSet_equiv_aux s.2
   right_inv s := Subtype.coe_injective <| toSet_equiv_aux s.2
 

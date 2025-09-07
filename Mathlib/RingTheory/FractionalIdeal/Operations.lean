@@ -23,7 +23,7 @@ Let `K` be the localization of `R` at `R⁰ = R \ {0}` (i.e. the field of fracti
 
 ## Main statement
 
-  * `isNoetherian` states that every fractional ideal of a Noetherian integral domain is Noetherian
+  * `isNoetherian` states that every fractional ideal of a noetherian integral domain is noetherian
 
 ## References
 
@@ -229,7 +229,8 @@ theorem canonicalEquiv_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'
     [IsLocalization S P''] (I : FractionalIdeal S P) :
     canonicalEquiv S P' P'' (canonicalEquiv S P P' I) = canonicalEquiv S P P'' I := by
   ext
-  simp [IsLocalization.map_map]
+  simp only [IsLocalization.map_map, RingHomInvPair.comp_eq₂, mem_canonicalEquiv_apply,
+    exists_exists_and_eq_and]
 
 theorem canonicalEquiv_trans_canonicalEquiv (P'' : Type*) [CommRing P''] [Algebra R P'']
     [IsLocalization S P''] :
@@ -417,7 +418,9 @@ theorem le_div_iff_of_nonzero {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠
 
 theorem le_div_iff_mul_le {I J J' : FractionalIdeal R₁⁰ K} (hJ' : J' ≠ 0) :
     I ≤ J / J' ↔ I * J' ≤ J := by
-  rw [div_nonzero hJ', ← coe_le_coe (I := I * J') (J := J), coe_mul]
+  rw [div_nonzero hJ']
+  -- Porting note: this used to be { convert; rw }, flipped the order.
+  rw [← coe_le_coe (I := I * J') (J := J), coe_mul]
   exact Submodule.le_div_iff_mul_le
 
 @[simp]
@@ -428,8 +431,9 @@ theorem div_one {I : FractionalIdeal R₁⁰ K} : I / 1 = I := by
   · simpa using mem_div_iff_forall_mul_mem.mp h 1 ((algebraMap R₁ K).map_one ▸ coe_mem_one R₁⁰ 1)
   · apply mem_div_iff_forall_mul_mem.mpr
     rintro y ⟨y', _, rfl⟩
-    convert Submodule.smul_mem _ y' h using 1
+    -- Porting note: this used to be { convert; rw }, flipped the order.
     rw [mul_comm, Algebra.linearMap_apply, ← Algebra.smul_def]
+    exact Submodule.smul_mem _ y' h
 
 theorem eq_one_div_of_mul_eq_one_right (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) :
     J = 1 / I := by
@@ -458,8 +462,11 @@ protected theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] 
     (I / J).map (h : K →ₐ[R₁] K') = I.map h / J.map h := by
   by_cases H : J = 0
   · rw [H, div_zero, FractionalIdeal.map_zero, div_zero]
-  · simp [← coeToSubmodule_inj, div_nonzero H, div_nonzero (map_ne_zero _ H)]
+  · -- Porting note: `simp` wouldn't apply these lemmas so do them manually using `rw`
+    rw [← coeToSubmodule_inj, div_nonzero H, div_nonzero (map_ne_zero _ H)]
+    simp [Submodule.map_div]
 
+-- Porting note: doesn't need to be @[simp] because this follows from `map_one` and `map_div`
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by
   rw [FractionalIdeal.map_div, FractionalIdeal.map_one]
@@ -846,7 +853,7 @@ theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdea
     coe_mul, mul_assoc, spanSingleton_mul_spanSingleton, mul_inv_cancel₀ h_gx, spanSingleton_one,
     mul_one]
 
-/-- Every fractional ideal of a Noetherian integral domain is Noetherian. -/
+/-- Every fractional ideal of a noetherian integral domain is noetherian. -/
 theorem isNoetherian [IsNoetherianRing R₁] (I : FractionalIdeal R₁⁰ K) : IsNoetherian R₁ I := by
   obtain ⟨d, J, _, rfl⟩ := exists_eq_spanSingleton_mul I
   apply isNoetherian_spanSingleton_inv_to_map_mul

@@ -96,6 +96,7 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
 
 variable (α β)
 
+-- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
 A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
 of pairs which should be identified. -/

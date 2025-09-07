@@ -11,6 +11,7 @@ import Mathlib.Tactic.Bound
 ## Tests for the `bound` tactic
 -/
 
+open Complex (abs)
 open scoped NNReal
 
 -- Tests that work with `bound`, but not `positivity`, `gcongr`, or `norm_num`

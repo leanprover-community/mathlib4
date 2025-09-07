@@ -386,7 +386,9 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
         rw [← Category.assoc]
         simp := by
-  cat_disch
+  apply eq_desc_of_comp_eq
+  · simp
+  · rfl -- Porting note: another missing rfl
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,

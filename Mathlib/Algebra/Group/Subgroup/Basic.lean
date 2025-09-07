@@ -163,6 +163,19 @@ section Pi
 
 variable {η : Type*} {f : η → Type*}
 
+-- defined here and not in Algebra.Group.Submonoid.Operations to have access to Algebra.Group.Pi
+/-- A version of `Set.pi` for submonoids. Given an index set `I` and a family of submodules
+`s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
+`f i` belongs to `Pi I s` whenever `i ∈ I`. -/
+@[to_additive /-- A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
+  of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
+  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
+def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
+    Submonoid (∀ i, f i) where
+  carrier := I.pi fun i => (s i).carrier
+  one_mem' i _ := (s i).one_mem
+  mul_mem' hp hq i hI := (s i).mul_mem (hp i hI) (hq i hI)
+
 variable [∀ i, Group (f i)]
 
 /-- A version of `Set.pi` for subgroups. Given an index set `I` and a family of submodules
@@ -196,22 +209,43 @@ theorem pi_empty (H : ∀ i, Subgroup (f i)) : pi ∅ H = ⊤ :=
 
 @[to_additive]
 theorem pi_bot : (pi Set.univ fun i => (⊥ : Subgroup (f i))) = ⊥ :=
-  ext fun x => by simp [mem_pi, funext_iff]
+  (eq_bot_iff_forall _).mpr fun p hp => by
+    simp only [mem_pi, mem_bot] at *
+    ext j
+    exact hp j trivial
 
 @[to_additive]
 theorem le_pi_iff {I : Set η} {H : ∀ i, Subgroup (f i)} {J : Subgroup (∀ i, f i)} :
-    J ≤ pi I H ↔ ∀ i ∈ I, J ≤ comap (Pi.evalMonoidHom f i) (H i) :=
-  Set.subset_pi_iff
+    J ≤ pi I H ↔ ∀ i : η, i ∈ I → map (Pi.evalMonoidHom f i) J ≤ H i := by
+  constructor
+  · intro h i hi
+    rintro _ ⟨x, hx, rfl⟩
+    exact (h hx) _ hi
+  · intro h x hx i hi
+    exact h i hi ⟨_, hx, rfl⟩
 
 @[to_additive (attr := simp)]
 theorem mulSingle_mem_pi [DecidableEq η] {I : Set η} {H : ∀ i, Subgroup (f i)} (i : η) (x : f i) :
-    Pi.mulSingle i x ∈ pi I H ↔ i ∈ I → x ∈ H i :=
-  Set.update_mem_pi_iff_of_mem (one_mem (pi I H))
+    Pi.mulSingle i x ∈ pi I H ↔ i ∈ I → x ∈ H i := by
+  constructor
+  · intro h hi
+    simpa using h i hi
+  · intro h j hj
+    by_cases heq : j = i
+    · subst heq
+      simpa using h hj
+    · simp [heq, one_mem]
 
 @[to_additive]
 theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ i, H i = ⊥ := by
-  simp_rw [SetLike.ext'_iff]
-  exact Set.univ_pi_eq_singleton_iff
+  classical
+    simp only [eq_bot_iff_forall]
+    constructor
+    · intro h i x hx
+      have : MonoidHom.mulSingle f i x = 1 :=
+        h (MonoidHom.mulSingle f i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
+      simpa using congr_fun this i
+    · exact fun h x hx => funext fun i => h _ _ (hx i trivial)
 
 end Pi
 
@@ -848,7 +882,7 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
   ⟨fun n hmem g => ⟨hH.conj_mem n hmem.1 g, hK.conj_mem n hmem.2 g⟩⟩
 
 @[to_additive]
-theorem normal_iInf_normal {ι : Sort*} {a : ι → Subgroup G}
+theorem normal_iInf_normal {ι : Type*} {a : ι → Subgroup G}
     (norm : ∀ i : ι, (a i).Normal) : (iInf a).Normal := by
   constructor
   intro g g_in_iInf h
@@ -914,8 +948,7 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
       MonoidHom.restrict_apply, Subtype.mk_eq_mk, ← mul_assoc, mul_inv_cancel, one_mul]
     rw [mul_assoc, mul_inv_cancel, mul_one]
   rw [eq_top_iff, ← MonoidHom.range_eq_top.2 hs, MonoidHom.range_eq_map]
-  grw [eq_top_iff.1 ht]
-  refine map_le_iff_le_comap.2 (normalClosure_le_normal ?_)
+  refine le_trans (map_mono (eq_top_iff.1 ht)) (map_le_iff_le_comap.2 (normalClosure_le_normal ?_))
   rw [Set.singleton_subset_iff, SetLike.mem_coe]
   simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply,
     MonoidHom.restrict_apply, mem_comap]

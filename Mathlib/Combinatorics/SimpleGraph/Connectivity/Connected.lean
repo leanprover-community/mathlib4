@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
@@ -184,16 +185,6 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   cases p with
   | nil => contradiction
   | @cons _ w => exact ⟨w, ‹_›⟩
-
-lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
-    (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
-  simp [degree_pos_iff_mem_support, h.support_eq_univ]
-
-lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : SimpleGraph V}
-    [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by
-  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
-  rw [hv]
-  exact h.degree_pos_of_nontrivial v
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
@@ -524,7 +515,11 @@ lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v 
   exact ConnectedComponent.exact (hv ▸ hu)
 
 lemma mem_supp_of_adj_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
-    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := (mem_supp_congr_adj C hadj).mp hu
+    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := by
+  have hC : G.connectedComponentMk u = G.connectedComponentMk v :=
+    connectedComponentMk_eq_of_adj hadj
+  rw [hu] at hC
+  exact hC.symm
 
 /--
 Given a connected component `C` of a simple graph `G`, produce the induced graph on `C`.

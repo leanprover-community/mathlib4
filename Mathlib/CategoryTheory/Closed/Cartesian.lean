@@ -67,6 +67,7 @@ We define this as `MonoidalClosed` with respect to the cartesian monoidal struct
 abbrev CartesianClosed := MonoidalClosed C
 
 variable (C) in
+-- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
 def CartesianClosed.mk (exp : ∀ (X : C), Exponentiable X) : CartesianClosed C where
   closed X := exp X
@@ -245,7 +246,7 @@ theorem coev_app_comp_pre_app (f : B ⟶ A) [Exponentiable B] :
 @[simp]
 theorem pre_id (A : C) [Exponentiable A] : pre (𝟙 A) = 𝟙 _ := by
   simp only [pre, Functor.map_id]
-  simp
+  cat_disch
 
 @[simp]
 theorem pre_map {A₁ A₂ A₃ : C} [Exponentiable A₁] [Exponentiable A₂] [Exponentiable A₃]

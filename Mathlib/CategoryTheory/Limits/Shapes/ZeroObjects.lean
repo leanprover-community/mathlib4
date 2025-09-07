@@ -47,10 +47,8 @@ namespace IsZero
 
 variable {X Y : C}
 
-/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`.
-
-`to` is a reserved word, it was replaced by `to_`
--/
+-- Porting note: `to` is a reserved word, it was replaced by `to_`
+/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`. -/
 protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
   @default _ <| (h.unique_to Y).some.toInhabited
 
@@ -60,10 +58,8 @@ theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
 theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 
-/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`.
-
-`from` is a reserved word, it was replaced by `from_`
--/
+-- Porting note: `from` is a reserved word, it was replaced by `from_`
+/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`. -/
 protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
   @default _ <| (h.unique_from Y).some.toInhabited
 
@@ -175,7 +171,7 @@ section
 variable [HasZeroObject C]
 
 /-- Construct a `Zero C` for a category with a zero object.
-This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
+This can not be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 

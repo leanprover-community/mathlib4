@@ -46,7 +46,8 @@ structure SemidirectProduct (φ : G →* MulAut N) where
   right : G
   deriving DecidableEq
 
-attribute [pp_using_anonymous_constructor] SemidirectProduct
+-- Porting note: unknown attribute
+-- attribute [pp_using_anonymous_constructor] SemidirectProduct
 
 @[inherit_doc]
 notation:35 N " ⋊[" φ:35 "] " G:35 => SemidirectProduct N G φ

@@ -18,8 +18,7 @@ open Encodable
 instance Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
   ofEquiv { s : Multiset α // s.Nodup }
-    { toFun := fun ⟨a, b⟩ => ⟨a, b⟩
-      invFun := fun ⟨a, b⟩ => ⟨a, b⟩ }
+    ⟨fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 namespace Encodable
 

@@ -67,13 +67,17 @@ lemma map_le_succ (i : ℕ) : map f i (i + 1) (by omega) = f i := by
 @[reassoc]
 lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
     map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
-  induction i generalizing X j k with
+  revert X f j k
+  induction i with
   | zero =>
-      induction j generalizing X k with
+      intros X f j
+      revert X f
+      induction j with
       | zero =>
+          intros X f k hij hjk
           rw [map_id, id_comp]
       | succ j hj =>
-          obtain (_ | _ | k) := k
+          rintro X f (_ | _ | k) hij hjk
           · omega
           · obtain rfl : j = 0 := by omega
             rw [map_id, comp_id]
@@ -82,11 +86,12 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
             obtain _ | j := j
             all_goals simp [map]
   | succ i hi =>
-      rcases j, k with ⟨(_ | j), (_ | k)⟩
+      rintro X f (_ | j) (_ | k)
       · omega
       · omega
       · omega
-      · exact hi _ j k (by omega) (by omega)
+      · intros
+        exact hi _ j k (by omega) (by omega)
 
 -- `map` has good definitional properties when applied to explicit natural numbers
 example : map f 5 5 (by omega) = 𝟙 _ := rfl

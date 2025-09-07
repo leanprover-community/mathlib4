@@ -12,8 +12,7 @@ import Mathlib.Tactic.NormNum.Eq
 /-!
 # Divisible Group and rootable group
 
-In this file, we define a divisible additive monoid and a rootable monoid with some basic
-properties.
+In this file, we define a divisible add monoid and a rootable monoid with some basic properties.
 
 ## Main definition
 
@@ -30,19 +29,19 @@ properties.
 
 For additive monoids and groups:
 
-* `divisibleByOfSMulRightSurj` : the constructive definition of divisibility is implied by
+* `divisibleByOfSMulRightSurj` : the constructive definition of divisiblity is implied by
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `smul_right_surj_of_divisibleBy` : the constructive definition of divisibility implies
+* `smul_right_surj_of_divisibleBy` : the constructive definition of divisiblity implies
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.divisibleBy` : `A × B` is divisible for any two divisible additive monoids.
 * `Pi.divisibleBy` : any product of divisible additive monoids is divisible.
-* `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisibility is implied
-  by nat divisibility.
-* `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisibility is implied
-  by int divisibility.
-* `AddCommGroup.divisibleByIntOfSMulTopEqTop`: the constructive definition of divisibility
+* `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisiblity is implied
+  by nat divisiblity.
+* `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisiblity is implied
+  by int divisiblity.
+* `AddCommGroup.divisibleByIntOfSMulTopEqTop`: the constructive definition of divisiblity
   is implied by the condition that `n • A = A` for all `n ≠ 0`.
-* `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisibility
+* `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisiblity
   implies the condition that `n • A = A` for all `n ≠ 0`.
 * `divisibleByIntOfCharZero` : any field of characteristic zero is divisible.
 * `QuotientAddGroup.divisibleBy` : quotient group of divisible group is divisible.
@@ -51,16 +50,16 @@ For additive monoids and groups:
 
 and their multiplicative counterparts:
 
-* `rootableByOfPowLeftSurj` : the constructive definition of rootability is implied by the
+* `rootableByOfPowLeftSurj` : the constructive definition of rootablity is implied by the
   condition that `xⁿ = y` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `pow_left_surj_of_rootableBy` : the constructive definition of rootability implies the
+* `pow_left_surj_of_rootableBy` : the constructive definition of rootablity implies the
   condition that `xⁿ = y` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.rootableBy` : any product of two rootable monoids is rootable.
 * `Pi.rootableBy` : any product of rootable monoids is rootable.
-* `Group.rootableByIntOfRootableByNat` : in groups, int rootability is implied by nat
-  rootability.
-* `Group.rootableByNatOfRootableByInt` : in groups, nat rootability is implied by int
-  rootability.
+* `Group.rootableByIntOfRootableByNat` : in groups, int rootablity is implied by nat
+  rootablity.
+* `Group.rootableByNatOfRootableByInt` : in groups, nat rootablity is implied by int
+  rootablity.
 * `QuotientGroup.rootableBy` : quotient group of rootable group is rootable.
 * `Function.Surjective.rootableBy` : if `A` is rootable and `A →* B` is surjective, then `B` is
   rootable.
@@ -219,9 +218,8 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
-    norm_num at this
-    exact this
+    -- Porting note: replaced `norm_num`
+    simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
 
 end Group
 

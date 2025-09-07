@@ -52,6 +52,8 @@ noncomputable section
 
 universe v u
 
+/- Porting note: ./././Mathport/Syntax/Translate/Command.lean:229:11:unsupported:
+unusual advanced open style -/
 open CategoryTheory CategoryTheory.ActionCategory CategoryTheory.SingleObj Quiver FreeGroup
 
 /-- `IsFreeGroupoid.Generators G` is a type synonym for `G`. We think of this as
@@ -151,6 +153,7 @@ private def root' : G :=
 -- this has to be marked noncomputable, see issue https://github.com/leanprover-community/mathlib4/pull/451.
 -- It might be nicer to define this in terms of `composePath`
 /-- A path in the tree gives a hom, by composition. -/
+-- Porting note: removed noncomputable. This is already declared at the beginning of the section.
 def homOfPath : ∀ {a : G}, Path (root T) a → (root' T ⟶ a)
   | _, Path.nil => 𝟙 _
   | _, Path.cons p f => homOfPath p ≫ Sum.recOn f.val (fun e => of e) fun e => inv (of e)
@@ -218,7 +221,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
           erw [Functor.mapEnd_apply]
           rw [this, hF']
           exact dif_neg h
-        intro x y q
+        intros x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
           simp only [this, treeHom, comp_as_mul, inv_as_inv, loopOfHom, inv_one, mul_one,
             one_mul, Functor.map_inv, Functor.map_comp]

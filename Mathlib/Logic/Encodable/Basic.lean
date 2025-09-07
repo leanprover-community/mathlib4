@@ -173,7 +173,8 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 
 @[simp]
 theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
-  simp [decode₂_eq_some]
+  ext
+  simp [eq_comm, decode₂_eq_some]
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by

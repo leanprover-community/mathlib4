@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Induction
-import Mathlib.Order.Basic
 
 /-!
 # Prefixes, suffixes, infixes

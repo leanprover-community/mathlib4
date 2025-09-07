@@ -94,7 +94,9 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
     HasIterationOfShape α C where
   hasColimitsOfShape := hasColimitsOfShape_of_initialSeg C h
   hasColimitsOfShape_of_isSuccLimit j hj := by
-    have := hj.nonempty_Iio.to_subtype
+    have : Nonempty (Set.Iio j) := by
+      obtain ⟨a, ha⟩ := not_isMin_iff.1 hj.1
+      exact ⟨⟨a, ha⟩⟩
     exact hasColimitsOfShape_of_initialSeg  _
       (InitialSeg.trans (Set.principalSegIio j) h)
 

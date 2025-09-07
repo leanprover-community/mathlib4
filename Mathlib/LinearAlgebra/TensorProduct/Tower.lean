@@ -609,6 +609,7 @@ theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTens
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
+  -- Porting note: added `-baseChange_tmul`
   simp [baseChange_eq_ltensor, -baseChange_tmul]
 
 @[simp]
@@ -619,7 +620,7 @@ theorem baseChange_zero : baseChange A (0 : M →ₗ[R] N) = 0 := by
 @[simp]
 theorem baseChange_smul : (r • f).baseChange A = r • f.baseChange A := by
   ext
-  simp
+  simp [baseChange_tmul]
 
 @[simp]
 lemma baseChange_id : (.id : M →ₗ[R] M).baseChange A = .id := by

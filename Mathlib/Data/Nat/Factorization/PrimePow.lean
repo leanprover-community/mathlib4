@@ -106,9 +106,11 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
 theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · simp
+  · simp only [Nat.coprime_zero_left] at hab
+    simp [hab]
   rcases eq_or_ne b 0 with (rfl | hb)
-  · simp
+  · simp only [Nat.coprime_zero_right] at hab
+    simp [hab]
   refine
     ⟨?_, fun h =>
       Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))

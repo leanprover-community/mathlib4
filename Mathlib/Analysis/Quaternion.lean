@@ -17,7 +17,7 @@ In this file we define the following structures on the space `ℍ := ℍ[ℝ]` o
 * normed ring;
 * normed space over `ℝ`.
 
-We show that the norm on `ℍ[ℝ]` agrees with the Euclidean norm of its components.
+We show that the norm on `ℍ[ℝ]` agrees with the euclidean norm of its components.
 
 ## Notation
 
@@ -52,7 +52,7 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
       re_inner_nonneg := fun _ => normSq_nonneg
       definite := fun _ => normSq_eq_zero.1
-      add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
+      add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
       smul_left := fun x y r => by simp [inner_def] }
 
 noncomputable instance : InnerProductSpace ℝ ℍ :=
@@ -98,28 +98,20 @@ instance : CStarRing ℍ where
 instance : Coe ℂ ℍ := ⟨coeComplex⟩
 
 @[simp, norm_cast]
-theorem re_coeComplex (z : ℂ) : (z : ℍ).re = z.re :=
+theorem coeComplex_re (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_re := re_coeComplex
 
 @[simp, norm_cast]
-theorem imI_coeComplex (z : ℂ) : (z : ℍ).imI = z.im :=
+theorem coeComplex_imI (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imI := imI_coeComplex
 
 @[simp, norm_cast]
-theorem imJ_coeComplex (z : ℂ) : (z : ℍ).imJ = 0 :=
+theorem coeComplex_imJ (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imJ := imJ_coeComplex
 
 @[simp, norm_cast]
-theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
+theorem coeComplex_imK (z : ℂ) : (z : ℍ).imK = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imK := imK_coeComplex
 
 @[simp, norm_cast]
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
@@ -154,7 +146,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
-/-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
+/-- The norm of the components as a euclidean vector equals the norm of the quaternion. -/
 lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
     Fin.sum_univ_four]
@@ -197,7 +189,7 @@ theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
-  simpa only [← sub_re_self] using continuous_id.sub (continuous_coe.comp continuous_re)
+  simpa only [← sub_self_re] using continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
   haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
@@ -220,7 +212,7 @@ theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summ
   simpa only using
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)
-      (continuous_algebraMap _ _) continuous_re re_coe
+      (continuous_algebraMap _ _) continuous_re coe_re
 
 @[norm_cast]
 theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by

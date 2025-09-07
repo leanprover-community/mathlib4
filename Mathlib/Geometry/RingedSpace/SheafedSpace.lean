@@ -25,22 +25,25 @@ universe u v w' w
 variable (C : Type u) [Category.{v} C]
 
 
--- We could enable the following line:
+-- Porting note: removed
+-- local attribute [tidy] tactic.op_induction'
+-- as it isn't needed here. If it is useful elsewhere
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
--- but may need
+-- should suffice, but may need
 -- https://github.com/JLimperg/aesop/issues/59
 
 namespace AlgebraicGeometry
 
 /-- A `SheafedSpace C` is a topological space equipped with a sheaf of `C`s. -/
 structure SheafedSpace extends PresheafedSpace C where
-  /-- A sheafed space is a presheafed space which happens to be a sheaf. -/
+  /-- A sheafed space is presheafed space which happens to be sheaf. -/
   IsSheaf : presheaf.IsSheaf
 
 variable {C}
 
 namespace SheafedSpace
 
+-- Porting note: use `CoeOut` for the coercion happens left to right
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
@@ -50,7 +53,13 @@ instance coeSort : CoeSort (SheafedSpace C) Type* where
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
   ⟨X.presheaf, X.IsSheaf⟩
 
-/-- Not `@[simp]` since it already reduces to `carrier = carrier`. -/
+-- Porting note: this is a syntactic tautology, so removed
+-- @[simp]
+-- theorem as_coe (X : SheafedSpace C) : X.carrier = (X : TopCat) :=
+--   rfl
+
+-- Porting note: this gives a `simpVarHead` error (`LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`).
+-- so removed @[simp]
 theorem mk_coe (carrier) (presheaf) (h) :
     (({ carrier
         presheaf

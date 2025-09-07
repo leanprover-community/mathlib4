@@ -119,7 +119,8 @@ end HasLimits
 open HasLimits
 
 /-- The category of monoids has all limits. -/
-@[to_additive (relevant_arg := 100) /-- The category of additive monoids has all limits. -/]
+@[to_additive /-- The category of additive monoids has all limits. -/,
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} MonCat.{u} where
   has_limits_of_shape _ _ := { }
 
@@ -138,10 +139,11 @@ noncomputable instance forget_preservesLimitsOfShape [Small.{u} J] :
 /-- The forgetful functor from monoids to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
-@[to_additive (relevant_arg := 100)
+@[to_additive
   /-- The forgetful functor from additive monoids to types preserves all limits.
 
-  This means the underlying type of a limit can be computed as a limit in the category of types. -/]
+  This means the underlying type of a limit can be computed as a limit in the category of types. -/,
+  to_additive_relevant_arg 2]
 noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget MonCat.{u}) where
   preservesLimitsOfShape := { }
@@ -272,8 +274,8 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommMonCat.{u} wher
   has_limit _ := inferInstance
 
 /-- The category of commutative monoids has all limits. -/
-@[to_additive (relevant_arg := 100)
-  /-- The category of additive commutative monoids has all limits. -/]
+@[to_additive /-- The category of additive commutative monoids has all limits. -/,
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommMonCat.{u} where
   has_limits_of_shape _ _ := { }
 
@@ -284,12 +286,12 @@ instance hasLimits : HasLimits CommMonCat.{u} :=
 /-- The forgetful functor from commutative monoids to monoids preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of monoids. -/
-@[to_additive (relevant_arg := 100) AddCommMonCat.forget₂AddMonPreservesLimitsOfSize
-  /-- The forgetful functor from
+@[to_additive AddCommMonCat.forget₂AddMonPreservesLimitsOfSize /-- The forgetful functor from
   additive commutative monoids to additive monoids preserves all limits.
 
   This means the underlying type of a limit can be computed as a limit in the category of additive
-  monoids. -/]
+  monoids. -/,
+  to_additive_relevant_arg 2]
 instance forget₂Mon_preservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommMonCat.{u} MonCat.{u}) where
   preservesLimitsOfShape {J} 𝒥 := { }

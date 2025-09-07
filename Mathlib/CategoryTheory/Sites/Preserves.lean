@@ -89,7 +89,7 @@ theorem piComparison_fac :
   rw [hh, ← desc_op_comp_opCoproductIsoProduct'_hom hc]
   simp
 
-variable [(ofArrows X c.inj).HasPairwisePullbacks]
+variable [(ofArrows X c.inj).hasPullbacks]
 
 include hc in
 /--

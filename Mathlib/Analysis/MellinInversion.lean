@@ -61,7 +61,9 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
         push_cast
         ring_nf
       congr
-      simp [field]
+      rw [mul_comm (-s.im : ℂ) (u : ℂ), mul_comm (-2 * π)]
+      have : 2 * (π : ℂ) ≠ 0 := by simp
+      field_simp
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
       simp [fourierIntegral_eq', mul_comm (_ / _)]
 

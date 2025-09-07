@@ -23,7 +23,7 @@ open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
 open scoped Real Topology FourierTransform RealInnerProductSpace
 
-open Complex hiding exp continuous_exp
+open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
 
 noncomputable section
 

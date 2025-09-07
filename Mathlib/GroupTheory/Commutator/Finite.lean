@@ -29,7 +29,7 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
     apply commutator_mono <;>
       · rw [le_pi_iff]
         intro j _hj
-        rintro _ ⟨x, hx, rfl⟩
+        rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
         by_cases h : j = i
         · subst h
           simpa using hx

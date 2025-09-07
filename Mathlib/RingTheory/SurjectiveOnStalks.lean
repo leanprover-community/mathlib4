@@ -98,13 +98,13 @@ lemma surjectiveOnStalks_of_surjective (h : Function.Surjective f) :
 
 lemma SurjectiveOnStalks.comp (hg : SurjectiveOnStalks g) (hf : SurjectiveOnStalks f) :
     SurjectiveOnStalks (g.comp f) := by
-  intro I hI
+  intros I hI
   have := (hg I hI).comp (hf _ (hI.comap g))
   rwa [← RingHom.coe_comp, ← Localization.localRingHom_comp] at this
 
 lemma SurjectiveOnStalks.of_comp (hg : SurjectiveOnStalks (g.comp f)) :
     SurjectiveOnStalks g := by
-  intro I hI
+  intros I hI
   have := hg I hI
   rw [Localization.localRingHom_comp (I.comap (g.comp f)) (I.comap g) _ _ rfl _ rfl,
     RingHom.coe_comp] at this
@@ -159,7 +159,7 @@ lemma SurjectiveOnStalks.baseChange
     (hf : (algebraMap R T).SurjectiveOnStalks) :
     (algebraMap S (S ⊗[R] T)).SurjectiveOnStalks := by
   let g : T →+* S ⊗[R] T := Algebra.TensorProduct.includeRight.toRingHom
-  intro J hJ
+  intros J hJ
   rw [surjective_localRingHom_iff]
   intro x
   obtain ⟨t, r, a, ht, e⟩ := hf.exists_mul_eq_tmul x (J.comap g) inferInstance

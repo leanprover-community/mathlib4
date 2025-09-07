@@ -96,6 +96,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
   exact
     { e with
       map_mul' := fun x y => by
+        apply e.symm.injective
         simp [mul_def] }
 
 @[to_additive (attr := simp)]
