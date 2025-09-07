@@ -1490,7 +1490,7 @@ theorem IsSubwalk.support_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.W
     (h : p₂.IsSubwalk p₁) : p₂.support ⊆ p₁.support :=
   List.IsInfix.subset <| isSubwalk_iff_support_isInfix.mp h
 
-theorem IsSubwalk.edges_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+theorem IsSubwalk.edges_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₁.IsSubwalk p₂) : p₁.edges <:+: p₂.edges := by
   grind [edges_append, IsSubwalk]
 
@@ -1499,7 +1499,7 @@ theorem IsSubwalk.edges_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Wal
     (h : p₂.IsSubwalk p₁) : p₂.edges ⊆ p₁.edges :=
   List.IsInfix.subset <| h.edges_isInfix
 
-theorem IsSubwalk.darts_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+theorem IsSubwalk.darts_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₁.IsSubwalk p₂) : p₁.darts <:+: p₂.darts := by
   grind [darts_append, IsSubwalk]
 
@@ -1515,3 +1515,5 @@ protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700
