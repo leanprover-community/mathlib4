@@ -143,7 +143,8 @@ noncomputable def upperCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b
 /-- `lowerCrossingTime a b f N n` is the first time before time `N`, `f` reaches
 below `a` after `f` reached above `b` for the `n`-th time. -/
 noncomputable def lowerCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ) (f : ι → Ω → ℝ)
-    (N : ι) (n : ℕ) : Ω → ι := fun ω => hittingBtwn f (Set.Iic a) (upperCrossingTime a b f N n ω) N ω
+    (N : ι) (n : ℕ) : Ω → ι :=
+    fun ω => hittingBtwn f (Set.Iic a) (upperCrossingTime a b f N n ω) N ω
 
 section
 
@@ -159,7 +160,8 @@ theorem lowerCrossingTime_zero : lowerCrossingTime a b f N 0 = hittingBtwn f (Se
   rfl
 
 theorem upperCrossingTime_succ : upperCrossingTime a b f N (n + 1) ω =
-    hittingBtwn f (Set.Ici b) (lowerCrossingTimeAux a f (upperCrossingTime a b f N n ω) N ω) N ω := by
+    hittingBtwn f (Set.Ici b)
+      (lowerCrossingTimeAux a f (upperCrossingTime a b f N n ω) N ω) N ω := by
   rw [upperCrossingTime]
 
 theorem upperCrossingTime_succ_eq (ω : Ω) : upperCrossingTime a b f N (n + 1) ω =
@@ -213,12 +215,14 @@ variable {a b : ℝ} {f : ℕ → Ω → ℝ} {N : ℕ} {n m : ℕ} {ω : Ω}
 
 theorem stoppedValue_lowerCrossingTime (h : lowerCrossingTime a b f N n ω ≠ N) :
     stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω ≤ a := by
-  obtain ⟨j, hj₁, hj₂⟩ := (hittingBtwn_le_iff_of_lt _ (lt_of_le_of_ne lowerCrossingTime_le h)).1 le_rfl
+  obtain ⟨j, hj₁, hj₂⟩ :=
+    (hittingBtwn_le_iff_of_lt _ (lt_of_le_of_ne lowerCrossingTime_le h)).1 le_rfl
   exact stoppedValue_hittingBtwn_mem ⟨j, ⟨hj₁.1, le_trans hj₁.2 lowerCrossingTime_le⟩, hj₂⟩
 
 theorem stoppedValue_upperCrossingTime (h : upperCrossingTime a b f N (n + 1) ω ≠ N) :
     b ≤ stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω := by
-  obtain ⟨j, hj₁, hj₂⟩ := (hittingBtwn_le_iff_of_lt _ (lt_of_le_of_ne upperCrossingTime_le h)).1 le_rfl
+  obtain ⟨j, hj₁, hj₂⟩ :=
+    (hittingBtwn_le_iff_of_lt _ (lt_of_le_of_ne upperCrossingTime_le h)).1 le_rfl
   exact stoppedValue_hittingBtwn_mem ⟨j, ⟨hj₁.1, le_trans hj₁.2 (hittingBtwn_le _)⟩, hj₂⟩
 
 theorem upperCrossingTime_lt_lowerCrossingTime (hab : a < b)

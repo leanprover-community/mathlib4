@@ -35,6 +35,121 @@ open Filter Order TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 
+namespace WithTopOrderTopology
+
+variable {ι : Type*} [Preorder ι]
+
+scoped instance : TopologicalSpace (WithTop ι) := Preorder.topology _
+
+scoped instance : MeasurableSpace (WithTop ι) := borel _
+
+scoped instance : BorelSpace (WithTop ι) := ⟨rfl⟩
+
+scoped instance : OrderTopology (WithTop ι) := ⟨rfl⟩
+
+scoped instance [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι] :
+    SecondCountableTopology (WithTop ι) :=
+  sorry
+
+end WithTopOrderTopology
+
+namespace WithTop
+
+open scoped WithTopOrderTopology
+
+variable {ι : Type*}
+
+noncomputable
+abbrev _root_.WithTop.ut [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
+
+variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
+
+lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
+  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected ?_
+  rw [WithTop.range_coe]
+  exact Set.ordConnected_Iio
+
+lemma isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : ι → WithTop ι) :=
+  ⟨isEmbedding_coe, by rw [WithTop.range_coe]; exact isOpen_Iio⟩
+
+lemma nhds_coe {r : ι} : 𝓝 (r : WithTop ι) = (𝓝 r).map (↑) :=
+  (isOpenEmbedding_coe.map_nhds_eq r).symm
+
+lemma tendsto_ut [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
+    Tendsto WithTop.ut (𝓝 a) (𝓝 a.ut) := by
+  lift a to ι using ha
+  rw [nhds_coe, tendsto_map'_iff]
+  exact tendsto_id
+
+lemma continuousOn_ut [Nonempty ι] : ContinuousOn WithTop.ut { a : WithTop ι | a ≠ ⊤ } :=
+  fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_ut ha)
+
+@[fun_prop]
+lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) :=
+  isEmbedding_coe.continuous
+
+variable (ι) in
+noncomputable
+def _root_.WithTop.neTopEquiv [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ ι where
+  toFun x := WithTop.ut x
+  invFun x := ⟨x, WithTop.coe_ne_top⟩
+  left_inv := fun x => Subtype.eq <| by
+    lift (x : WithTop ι) to ι using x.2 with y
+    simp
+  right_inv x := by simp
+
+variable (ι) in
+noncomputable
+def neTopHomeomorph [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
+  toEquiv := WithTop.neTopEquiv ι
+  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_ut
+  continuous_invFun := continuous_coe.subtype_mk _
+
+variable [MeasurableSpace ι] [BorelSpace ι]
+
+noncomputable
+def MeasurableEquiv.withTopEquiv [Nonempty ι] : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
+  (WithTop.neTopHomeomorph ι).toMeasurableEquiv
+
+lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α} [Nonempty ι]
+    {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
+    Measurable f :=
+  measurable_of_measurable_on_compl_singleton ⊤
+    (MeasurableEquiv.withTopEquiv.symm.measurable_comp_iff.1 h)
+
+-- lemma measurable_untopD {d : ι} : Measurable (WithTop.untopD d) :=
+--   measurable_of_measurable_comp_coe measurable_id
+
+lemma measurable_ut [Nonempty ι] : Measurable (WithTop.ut (ι := ι)) :=
+  measurable_of_measurable_comp_coe measurable_id
+
+lemma measurable_coe [Nonempty ι] :
+    Measurable (fun x : ι ↦ (x : WithTop ι)) := continuous_coe.measurable
+
+@[fun_prop]
+lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} [SecondCountableTopology ι]
+    {f : α → ι} (hf : Measurable f) :
+    Measurable (fun x ↦ (f x : WithTop ι)) := by
+  refine measurable_of_Iic fun i ↦ ?_
+  cases i with
+  | top => simp
+  | coe i =>
+    have : ((fun x ↦ ↑(f x)) ⁻¹' Set.Iic (i : WithTop ι)) = (f ⁻¹' Set.Iic i) := by ext; simp
+    rw [this]
+    exact hf measurableSet_Iic
+
+@[fun_prop]
+lemma _root_.Measurable.ut {α} {mα : MeasurableSpace α} [Nonempty ι]
+    {f : α → WithTop ι} (hf : Measurable f) :
+    Measurable (fun x ↦ (f x).ut) := measurable_ut.comp hf
+
+def measurableEquivSum [Nonempty ι] : WithTop ι ≃ᵐ ι ⊕ Unit :=
+  { Equiv.optionEquivSumPUnit ι with
+    measurable_toFun := measurable_of_measurable_comp_coe measurable_inl
+    measurable_invFun := measurable_fun_sum measurable_coe (@measurable_const _ Unit _ _ ⊤) }
+
+end WithTop
+
 namespace MeasureTheory
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
@@ -599,15 +714,7 @@ protected theorem measurableSet_lt_of_countable' [Countable ι] (hτ : IsStoppin
 
 end Countable
 
-local instance : TopologicalSpace (WithTop ι) := Preorder.topology _
-
-local instance : MeasurableSpace (WithTop ι) := borel _
-
-local instance : BorelSpace (WithTop ι) := ⟨rfl⟩
-
-local instance : OrderTopology (WithTop ι) := ⟨rfl⟩
-
-local instance : SecondCountableTopology (WithTop ι) := sorry
+open scoped WithTopOrderTopology
 
 protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
@@ -620,6 +727,11 @@ protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι] [BorelSp
 protected theorem measurable' [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable τ := hτ.measurable.mono (measurableSpace_le hτ) le_rfl
+
+protected lemma measurableSet_eq_top [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
+    [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
+    MeasurableSet {ω | τ ω = ⊤} :=
+  (measurableSet_singleton _).preimage hτ.measurable'
 
 protected theorem measurable_of_le [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) {i : ι}
@@ -777,9 +889,6 @@ section LinearOrder
 
 variable [Nonempty ι]
 
-noncomputable
-abbrev _root_.WithTop.ut : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
-
 /-- Given a map `u : ι → Ω → E`, its stopped value with respect to the stopping
 time `τ` is the map `x ↦ u (τ ω) ω`. -/
 noncomputable
@@ -817,37 +926,14 @@ theorem stoppedProcess_eq_of_ge {u : ι → Ω → β} {τ : Ω → WithTop ι} 
 
 section ProgMeasurable
 
-local instance : TopologicalSpace (WithTop ι) := Preorder.topology _
-
-local instance : MeasurableSpace (WithTop ι) := borel _
-
-local instance : BorelSpace (WithTop ι) := ⟨rfl⟩
-
-local instance : OrderTopology (WithTop ι) := ⟨rfl⟩
-
-local instance : SecondCountableTopology (WithTop ι) := sorry
-
-local instance : PseudoMetrizableSpace (WithTop ι) := sorry
+open scoped WithTopOrderTopology
 
 variable [MeasurableSpace ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
   [BorelSpace ι] [TopologicalSpace β] {u : ι → Ω → β} {τ : Ω → WithTop ι} {f : Filtration ι m}
 
-@[fun_prop]
-lemma _root_.Measurable.withTop_coe {α} {mα : MeasurableSpace α} {f : α → ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x : WithTop ι)) := by
-  refine measurable_of_Iic fun i ↦ ?_
-  cases i with
-  | top => simp
-  | coe i => sorry
-
-@[fun_prop]
-lemma _root_.Measurable.ut {α} {mα : MeasurableSpace α} {f : α → WithTop ι} (hf : Measurable f) :
-    Measurable (fun x ↦ (f x).ut) := by
-  sorry
-
 theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsStoppingTime f τ) :
-    ProgMeasurable f fun i ω ↦ min (i : WithTop ι) (τ ω) := by
-  intro i
+    ProgMeasurable f fun i ω ↦ (min (i : WithTop ι) (τ ω)).ut := by
+  refine fun i ↦ (Measurable.ut ?_).stronglyMeasurable
   let m_prod : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (f i)
   let m_set : ∀ t : Set (Set.Iic i × Ω), MeasurableSpace t := fun _ =>
     @Subtype.instMeasurableSpace (Set.Iic i × Ω) _ m_prod
@@ -856,7 +942,6 @@ theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsSto
   have h_meas_fst : ∀ t : Set (Set.Iic i × Ω),
       Measurable[m_set t] fun x : t => ((x : Set.Iic i × Ω).fst : ι) :=
     fun t => (@measurable_subtype_coe (Set.Iic i × Ω) m_prod _).fst.subtype_val
-  apply Measurable.stronglyMeasurable
   refine measurable_of_restrict_of_restrict_compl hs ?_ ?_
   · refine Measurable.min (h_meas_fst s).withTop_coe ?_
     refine measurable_of_Iic fun j ↦ ?_
@@ -894,11 +979,13 @@ theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsSto
 theorem ProgMeasurable.stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasurable f u)
     (hτ : IsStoppingTime f τ) : ProgMeasurable f (stoppedProcess u τ) := by
   have h_meas := progMeasurable_min_stopping_time hτ
-  refine h.comp ?_ fun i ω ↦ ?_
-  · sorry
-  · cases τ ω with
-    | top => simp
-    | coe t => sorry
+  refine h.comp h_meas fun i ω ↦ ?_
+  cases τ ω with
+  | top => simp
+  | coe t =>
+    rcases le_total i t with h_it | h_ti
+    · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
+    · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
 
 theorem ProgMeasurable.adapted_stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasurable f u)
     (hτ : IsStoppingTime f τ) : Adapted f (MeasureTheory.stoppedProcess u τ) :=
@@ -926,15 +1013,13 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : Is
   refine (Measurable.subtype_mk ?_).prodMk measurable_id
   exact (hτ.measurable_of_le hτ_le).ut
 
-theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
-    Measurable[hτ.measurableSpace] (stoppedValue u τ) := by
+lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace β] [MeasurableSpace β]
+    [BorelSpace β]
+    (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ)
+    {t : Set β} (ht : MeasurableSet t) (i : ι) :
+    MeasurableSet[f i] (stoppedValue u τ ⁻¹' t ∩ {ω | τ ω ≤ i}) := by
   have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
     stronglyMeasurable_stoppedValue_of_le hf_prog (hτ.min_const i) fun _ => min_le_right _ _
-  intro t ht
-  refine ⟨?_, fun i ↦ ?_⟩
-  · refine ht.preimage ?_
-    sorry
   suffices stoppedValue u τ ⁻¹' t ∩ {ω : Ω | τ ω ≤ i} =
       (stoppedValue u fun ω => min (τ ω) i) ⁻¹' t ∩ {ω : Ω | τ ω ≤ i} by
     rw [this]; exact ((h_str_meas i).measurable ht).inter (hτ.measurableSet_le i)
@@ -943,6 +1028,45 @@ theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] 
     and_congr_left_iff]
   intro h
   rw [min_eq_left h]
+
+theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
+    (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
+    Measurable[hτ.measurableSpace] (stoppedValue u τ) := by
+  have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
+    stronglyMeasurable_stoppedValue_of_le hf_prog (hτ.min_const i) fun _ => min_le_right _ _
+  intro t ht
+  refine ⟨?_, fun i ↦ measurableSet_preimage_stoppedValue_inter hf_prog hτ ht i⟩
+  obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := (atTop : Filter ι).exists_seq_tendsto
+  have : stoppedValue u τ ⁻¹' t
+      = (⋃ n, stoppedValue u τ ⁻¹' t ∩ {ω | τ ω ≤ seq n})
+        ∪ (stoppedValue u τ ⁻¹' t ∩ {ω | τ ω = ⊤}) := by
+    ext1 ω
+    simp only [Set.mem_preimage, Set.mem_union, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq,
+      exists_and_left]
+    rw [← and_or_left, iff_self_and]
+    intro _
+    by_cases h : τ ω = ⊤
+    · exact .inr h
+    · lift τ ω to ι using h with t
+      simp only [WithTop.coe_le_coe, WithTop.coe_ne_top, or_false]
+      rw [tendsto_atTop] at h_seq_tendsto
+      exact (h_seq_tendsto t).exists
+  rw [this]
+  refine MeasurableSet.union ?_ ?_
+  · exact MeasurableSet.iUnion fun i ↦ f.le (seq i) _
+      (measurableSet_preimage_stoppedValue_inter hf_prog hτ ht (seq i))
+  · have : stoppedValue u τ ⁻¹' t ∩ {ω | τ ω = ⊤}
+       = (fun ω ↦ u (Classical.arbitrary ι) ω) ⁻¹' t ∩ {ω | τ ω = ⊤} := by
+      ext ω
+      simp only [Set.mem_inter_iff, Set.mem_preimage, stoppedValue, WithTop.ut, Set.mem_setOf_eq,
+        and_congr_left_iff]
+      intro h
+      simp [h]
+    rw [this]
+    refine MeasurableSet.inter ?_ hτ.measurableSet_eq_top
+    refine ht.preimage ?_
+    have h_ada := hf_prog.adapted (Classical.arbitrary ι)
+    exact h_ada.measurable.mono (f.le (Classical.arbitrary ι)) le_rfl
 
 end ProgMeasurable
 

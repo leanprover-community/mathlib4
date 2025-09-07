@@ -97,7 +97,11 @@ theorem stoppedValue_ae_eq_condExp_of_le_const_of_countable_range (h : Martingal
   nth_rw 1 [← @Measure.restrict_univ Ω _ μ]
   rw [this, ae_eq_restrict_biUnion_iff _ h_countable_range]
   intro i hi
-  have h_top : i ≠ ⊤ := sorry
+  have h_top : i ≠ ⊤ := fun h ↦ by
+    simp only [h, Set.mem_range] at hi
+    obtain ⟨ω , hω⟩ := hi
+    specialize hτ_le ω
+    simp [hω] at hτ_le
   lift i to ι using h_top with i
   exact stoppedValue_ae_eq_restrict_eq h _ hτ_le i
 

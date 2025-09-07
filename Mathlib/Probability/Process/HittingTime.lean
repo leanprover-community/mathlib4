@@ -310,10 +310,10 @@ theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFo
       ext x
       rw [Set.mem_setOf_eq, hittingBtwn_le_iff_of_lt _ hi]
       simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-    sorry
-    -- rw [h_set_eq_Union]
-    -- exact MeasurableSet.iUnion fun j =>
-    --   MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+    simp only [WithTop.coe_le_coe]
+    rw [h_set_eq_Union]
+    exact MeasurableSet.iUnion fun j =>
+      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
 
 /-- A discrete hitting time is a stopping time. -/
 theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
@@ -353,17 +353,29 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n}) ∪
       ⋃ i > n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n} := by
     ext x
-    sorry -- simp [← or_and_right, le_or_gt]
-  sorry
-  -- have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n} = ∅ := by
-  --   ext x
-  --   simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
-  --     Set.mem_empty_iff_false, iff_false, not_exists, not_and, not_le]
-  --   rintro m hm rfl
-  --   exact lt_of_lt_of_le hm (le_hittingBtwn (hτbdd _) _)
-  -- rw [h₁, h₂, Set.union_empty]
-  -- exact MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
-  --   (f.mono hi _ (hτ.measurableSet_eq i)).inter (hittingBtwn_isStoppingTime hf hs n)
+    simp only [Set.mem_setOf_eq, gt_iff_lt, Set.mem_union, Set.mem_iUnion, Set.mem_inter_iff,
+      exists_and_left, exists_prop]
+    specialize hτbdd x
+    have h_top : τ x ≠ ⊤ := fun h => by simp [h] at hτbdd
+    lift τ x to ι using h_top with t
+    simp [← or_and_right, le_or_gt]
+  have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hittingBtwn u s i N x ≤ n} = ∅ := by
+    ext x
+    simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
+      Set.mem_empty_iff_false, iff_false, not_exists, not_and, not_le]
+    intro m hm hτ
+    refine hm.trans_le <| le_hittingBtwn ?_ x
+    specialize hτbdd x
+    have h_top : τ x ≠ ⊤ := fun h => by simp [h] at hτbdd
+    lift τ x to ι using h_top with t
+    rw [hτ] at hτbdd
+    exact mod_cast hτbdd
+  simp only [WithTop.coe_le_coe]
+  rw [h₁, h₂, Set.union_empty]
+  refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
+    (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
+  have h := hittingBtwn_isStoppingTime (n := i) (n' := N) hf hs n
+  simpa only [WithTop.coe_le_coe] using h
 
 section CompleteLattice
 

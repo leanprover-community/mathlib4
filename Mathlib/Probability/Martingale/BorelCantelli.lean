@@ -45,10 +45,7 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtrat
 ### One sided martingale bound
 -/
 
-
--- TODO: `leastGE` should be defined taking values in `WithTop ℕ` once the `stoppedProcess`
--- refactor is complete
-/-- `leastGE f r n` is the stopping time corresponding to the first time `f ≥ r`. -/
+/-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
 noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ)
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] : Ω → ℕ∞ :=
   hittingAfter f (Set.Ici r) 0
