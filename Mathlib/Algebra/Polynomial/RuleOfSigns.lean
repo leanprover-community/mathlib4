@@ -78,69 +78,59 @@ theorem signVariations_eq_eraseLead_add_ite {P : Polynomial R} (h : P ≠ 0) :
   by_cases hpz : P = 0
   · simp_all
   have hsl : SignType.sign (leadingCoeff P) ≠ 0 := by simp_all
-  obtain hc := coeffList_eraseLead hpz
+  obtain h₁ := coeffList_eraseLead hpz
   dsimp [signVariations]
-  rw [hc, List.map_cons, List.map_append, List.map_replicate, List.filter, decide_eq_true hsl]
+  rw [h₁, List.map_cons, List.map_append, List.map_replicate, List.filter, decide_eq_true hsl]
   simp only [decide_not, sign_zero, List.filter_append, List.filter_replicate, decide_true,
     Bool.not_true]
-  cases hcep : P.eraseLead.coeffList
-  case neg.nil =>
-    simp [coeffList_eq_nil.mp hcep, h]
-  case neg.cons c cs =>
-    rw [List.map_cons, List.filter]
-    have hc2 : SignType.sign c ≠ 0 := by
-      by_contra hc2
-      suffices eraseLead P = 0 by
-        simp [this] at hcep
-      by_contra h
-      obtain ⟨l, hl⟩ := coeffList_eq_cons_leadingCoeff h
-      rw [hcep, List.cons.injEq] at hl
-      rcases hl with ⟨ha, _⟩
-      rw [sign_eq_zero_iff.mp hc2, eq_comm, leadingCoeff_eq_zero] at ha
-      exact h ha
-    simp only [List.destutter, Bool.false_eq_true, ↓reduceIte, hc2, decide_false, Bool.not_false,
-        List.nil_append, List.destutter']
-    have hel : eraseLead P ≠ 0 := by
-      simp [← coeffList_eq_nil, hcep]
-    have hc4 : c = leadingCoeff P.eraseLead := by
-      obtain ⟨ls, hls⟩ := coeffList_eq_cons_leadingCoeff hel
-      cases hcep ▸ hls
-      rfl
-    by_cases hc3 : SignType.sign (leadingCoeff P) = SignType.sign c
-    · cases hc6 : SignType.sign c
-      · exact (hc2 hc6).elim
+  rcases h_eL : P.eraseLead.coeffList with _ | ⟨c, cs⟩
+  · simp [coeffList_eq_nil.mp h_eL, h]
+  rw [List.map_cons, List.filter]
+  have h₂ : SignType.sign c ≠ 0 := by
+    by_contra h₂
+    suffices eraseLead P = 0 by
+      simp [this] at h_eL
+    by_contra h
+    obtain ⟨l, hl⟩ := coeffList_eq_cons_leadingCoeff h
+    rw [h_eL, List.cons.injEq] at hl
+    rcases hl with ⟨ha, _⟩
+    rw [sign_eq_zero_iff.mp h₂, eq_comm, leadingCoeff_eq_zero] at ha
+    exact h ha
+  simp only [List.destutter, Bool.false_eq_true, ↓reduceIte, h₂, decide_false, Bool.not_false,
+      List.nil_append, List.destutter']
+  obtain rfl : c = leadingCoeff P.eraseLead := by
+    have h_eL : eraseLead P ≠ 0 := by simp [← coeffList_eq_nil, h_eL]
+    obtain ⟨ls, hls⟩ := coeffList_eq_cons_leadingCoeff h_eL
+    grind
+  by_cases h₄ : SignType.sign P.leadingCoeff = SignType.sign P.eraseLead.leadingCoeff
+  · cases h₅ : SignType.sign P.eraseLead.leadingCoeff
+    · exact (h₂ h₅).elim
+    all_goals
+    cases h₆ : SignType.sign P.leadingCoeff
+    · exact (hsl h₆).elim
+    all_goals simp_all
+  · have h₇ : SignType.sign P.leadingCoeff = -SignType.sign P.eraseLead.leadingCoeff := by
+      cases h₅ : SignType.sign P.eraseLead.leadingCoeff
+      · exact (h₂ h₅).elim
       all_goals
-      cases hl2 : SignType.sign (leadingCoeff P)
+      cases hl2 : SignType.sign P.leadingCoeff
       · exact (hsl hl2).elim
       all_goals simp_all
-    · have hc5 : SignType.sign (leadingCoeff P) = -SignType.sign c := by
-        cases hc6 : SignType.sign c
-        · exact (hc2 hc6).elim
-        all_goals
-        cases hl2 : SignType.sign (leadingCoeff P)
-        · exact (hsl hl2).elim
-        all_goals simp_all
-      rw [if_pos hc3, ← hc4, if_pos hc5,
-        Nat.sub_add_cancel (List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _))]
-      simp only [List.length_cons, add_tsub_cancel_right]
+    rw [if_pos h₄, if_pos h₇,
+      Nat.sub_add_cancel (List.length_pos_of_ne_nil (List.destutter'_ne_nil _ _))]
+    simp only [List.length_cons, add_tsub_cancel_right]
 
 /-- We can only lose, not gain, sign changes if we drop the leading coefficient. -/
 theorem signVariations_eraseLead_le : signVariations P.eraseLead ≤ signVariations P := by
   by_cases hpz : P = 0
   · simp [hpz]
-  have := signVariations_eq_eraseLead_add_ite hpz
-  by_cases SignType.sign P.leadingCoeff = -SignType.sign P.eraseLead.leadingCoeff
-  · simp_all
-  · simp_all
+  · grind [signVariations_eq_eraseLead_add_ite]
 
 /-- We can only lose at most one sign changes if we drop the leading coefficient. -/
 theorem signVariations_le_eraseLead_succ : signVariations P ≤ signVariations P.eraseLead + 1 := by
   by_cases hpz : P = 0
   · simp [hpz]
-  have h := signVariations_eq_eraseLead_add_ite hpz
-  by_cases SignType.sign P.leadingCoeff = -SignType.sign P.eraseLead.leadingCoeff
-  · simp_all
-  · simp_all
+  · grind [signVariations_eq_eraseLead_add_ite]
 
 end Semiring
 
@@ -152,18 +142,14 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R] (P : Polynomial 
 @[simp]
 theorem signVariations_neg : signVariations (-P) = signVariations P := by
   rw [signVariations, signVariations, coeffList_neg]
-  congr 1
   simp only [List.map_map, List.filter_map]
   have hsc : SignType.sign ∘ (fun (x:R) => -x) = (fun x => -x) ∘ SignType.sign := by
-    funext n
-    simp [Left.sign_neg]
-  rw [hsc, List.comp_map]
-  have h_neg_destutter (l : List SignType) : (List.destutter (¬· = ·) l).map (- ·) =
-      List.destutter (¬· = ·) (l.map (- ·)) := by
-    apply List.map_destutter
-    simp only [neg_inj, implies_true]
-  rw [← h_neg_destutter, List.length_map]
-  congr 4
+    grind [Left.sign_neg]
+  have h_neg_destutter (l : List SignType) :
+      (l.destutter (¬· = ·)).map (- ·) = (l.map (- ·)).destutter (¬· = ·)  := by
+    grind [List.map_destutter, neg_inj]
+  rw [hsc, List.comp_map, ← h_neg_destutter, List.length_map]
+  congr 5
   funext
   simp [SignType.sign]
 
@@ -180,9 +166,8 @@ theorem signVariations_C_mul (P : Polynomial R) (hx : η ≠ 0) :
   wlog hx2 : 0 < η
   · simpa [lt_of_le_of_ne (le_of_not_gt hx2), hx] using this (η := -η) (P := -P)
   rw [signVariations, signVariations]
-  congr 3
   rw [coeffList_C_mul _ (lt_or_lt_iff_ne.mp (.inr hx2)), ← List.comp_map]
-  congr 2
+  congr 5
   funext
   simp [hx2, sign_mul]
 
@@ -204,12 +189,11 @@ lemma signVariations_eraseLead_mul_XC_eq_XC_mul_eraseLead (hη : 0 < η) (hP₀ 
     rw [natDegree_mul (X_sub_C_ne_zero η) hePn0, natDegree_X_sub_C, add_comm]
     exact natDegree_eraseLead_add_one hc.ne
   have hQ : ((X - C η) * P).nextCoeff = coeff P d - η * coeff P (d + 1) := by
-    rw [nextCoeff_of_natDegree_pos (hndxP ▸ P.natDegree.succ_pos)]
-    rw [hndxP, hd, Nat.add_sub_cancel, coeff_X_sub_C_mul]
+    grind [nextCoeff_of_natDegree_pos, coeff_X_sub_C_mul]
   have hQ₁ : ((X - C η) * P).nextCoeff < 0 := by
     rw [hQ, sub_neg]
     trans 0
-    · rwa [nextCoeff_of_natDegree_pos (hd ▸ d.succ_pos), hd, Nat.add_sub_cancel] at hc
+    · grind [nextCoeff_of_natDegree_pos]
     · exact hd ▸ mul_pos hη hP₀
   have hndexP0 : natDegree (eraseLead ((X - C η) * P)) = P.natDegree := by
     apply Nat.add_right_cancel (m := 1)
@@ -220,16 +204,12 @@ lemma signVariations_eraseLead_mul_XC_eq_XC_mul_eraseLead (hη : 0 < η) (hP₀ 
     suffices (coeffList (eraseLead ((X - C η) * P))).map SignType.sign =
       (coeffList ((X - C η) * P.eraseLead)).map SignType.sign by
         rw [signVariations, signVariations, this]
-    rw [coeffList_eraseLead (mt nextCoeff_eq_zero_of_eraseLead_eq_zero hQ₁.ne)]
-    have hndeP0 : 0 < natDegree ((X - C η) * P.eraseLead) :=
-      Nat.lt_of_sub_eq_succ (hd ▸ hndxeP)
-    rw [coeffList_eraseLead (ne_zero_of_natDegree_gt hndeP0)]
-    rw [List.map_cons, List.map_cons, leadingCoeff_eraseLead_eq_nextCoeff hQ₁.ne]
-    rw [sign_neg hQ₁, sign_neg ?_, this, hndxeP, hndexP0]
-    rwa [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff hc.ne]
+    have : 0 < natDegree ((X - C η) * P.eraseLead) := by omega
+    grind [leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, leadingCoeff_eraseLead_eq_nextCoeff,
+      LT.lt.ne, sign_neg, coeffList_eraseLead, ne_zero_of_natDegree_gt,
+      nextCoeff_eq_zero_of_eraseLead_eq_zero]
   rw [← self_sub_monomial_natDegree_leadingCoeff, leadingCoeff_eraseLead_eq_nextCoeff hQ₁.ne]
-  rw [hndexP0]
-  rw [← self_sub_monomial_natDegree_leadingCoeff, leadingCoeff_monic_mul (monic_X_sub_C η)]
+  rw [hndexP0, ← self_sub_monomial_natDegree_leadingCoeff, leadingCoeff_monic_mul (monic_X_sub_C η)]
   rw [← self_sub_monomial_natDegree_leadingCoeff, leadingCoeff_monic_mul (monic_X_sub_C η)]
   rw [hndxeP, hndxP]
   rw [leadingCoeff_eraseLead_eq_nextCoeff hc.ne, ← self_sub_monomial_natDegree_leadingCoeff]
