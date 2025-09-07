@@ -193,9 +193,13 @@ noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
 instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
   (representative.obj Y).property
 
+def isoFromEq {A : C} {X Y : Subobject A} (h : X = Y) :=
+  eqToIso (congr_arg (fun X : Subobject A => (X : C)) h)
+
 @[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
-    eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
+    (isoFromEq h).hom ≫ Y.arrow = X.arrow := by
+  unfold isoFromEq
   induction h
   simp
 

@@ -407,11 +407,6 @@ def homEquivToProd {X Y Z : C} : (Z ⟶ X ⊗ Y) ≃ (Z ⟶ X) × (Z ⟶ Y) wher
   left_inv _ := by simp
   right_inv _ := by simp
 
-def diag (X : C) : X ⟶ X ⊗ X := lift (𝟙 X) (𝟙 X)
-
-instance {X : C} : IsSplitMono (diag X) :=
-  IsSplitMono.mk' { id := by unfold diag; simp, retraction := fst X X }
-
 section BraidedCategory
 
 variable [BraidedCategory C]

@@ -373,6 +373,46 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+
+def isoIsPullback_congr
+      {P' X' Y' : C}
+      (iX : X ≅ X') (iY : Y ≅ Y')
+      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+      {f' : X' ⟶ Z} {g' : Y' ⟶ Z}
+      (hf : iX.inv ≫ f = f') (hg : iY.inv ≫ g = g')
+      (pb : IsPullback fst snd f g)
+      (pb' : IsPullback fst' snd' f' g') :
+    P ≅ P' :=
+  have h_trans : IsPullback (fst ≫ iX.hom) (snd ≫ iY.hom) (iX.inv ≫ f) (iY.inv ≫ g) :=
+    IsPullback.of_iso pb
+      (Iso.refl P) (iX) (iY) (Iso.refl Z)
+      (by simp) (by simp) (by simp) (by simp)
+  IsPullback.isoIsPullback X' Y' h_trans (by simpa [hf, hg] using pb')
+
+@[reassoc (attr := simp)]
+lemma isoIsPullback_congr_hom_fst
+      {X' Y' P' : C}
+      (iX : X ≅ X') (iY : Y ≅ Y')
+      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+      {f' : X' ⟶ Z} {g' : Y' ⟶ Z}
+      (hf : iX.inv ≫ f = f') (hg : iY.inv ≫ g = g')
+      (pb : IsPullback fst snd f g)
+      (pb' : IsPullback fst' snd' f' g') :
+    (isoIsPullback_congr iX iY hf hg pb pb').hom ≫ fst' = fst ≫ iX.hom := by
+  unfold isoIsPullback_congr; simp
+
+@[reassoc (attr := simp)]
+lemma isoIsPullback_congr_hom_snd
+      {X' Y' P' : C}
+      (iX : X ≅ X') (iY : Y ≅ Y')
+      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+      {f' : X' ⟶ Z} {g' : Y' ⟶ Z}
+      (hf : iX.inv ≫ f = f') (hg : iY.inv ≫ g = g')
+      (pb : IsPullback fst snd f g)
+      (pb' : IsPullback fst' snd' f' g') :
+    (isoIsPullback_congr iX iY hf hg pb pb').hom ≫ snd' = snd ≫ iY.hom := by
+  unfold isoIsPullback_congr; simp
+
 section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]

@@ -402,8 +402,7 @@ noncomputable def isoΩ₀ : (h.Ω₀ : C) ≅ ⊤_ C :=
 
 /-- Any representation `Ω` of `Subobject.presheaf C` gives a subobject classifier with truth values
 object `Ω`. -/
-noncomputable def classifier : Classifier C where
-  Ω₀ := ⊤_ C
+noncomputable def classifier : Classifier C (⊤_ C) where
   Ω := Ω
   truth := h.isoΩ₀.inv ≫ h.Ω₀.arrow
   mono_truth := terminalIsTerminal.mono_from _

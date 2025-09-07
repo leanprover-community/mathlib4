@@ -24,7 +24,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 /-- If `e` is an equalizer of `f g : X ⟶ Y`, then `e` is also the pullback of the diagonal map
 `Y ⟶ Y ⨯ Y` along `⟨f, g⟩ : X ⟶ Y ⨯ Y`. Fully explicit version with binary fans and forks -/
-lemma isPullback_equalizer_prod_exp {p : BinaryFan Y Y} (hp : IsLimit p)
+lemma isPullback_equalizer_binaryFan_fork {p : BinaryFan Y Y} (hp : IsLimit p)
       (f g : X ⟶ Y) (e : Fork f g) (he : IsLimit e) :
     IsPullback e.ι (e.ι ≫ f)
       (hp.lift (BinaryFan.mk f g)) (hp.lift (BinaryFan.mk (𝟙 Y) (𝟙 Y))) := by
@@ -40,11 +40,12 @@ lemma isPullback_equalizer_prod_exp {p : BinaryFan Y Y} (hp : IsLimit p)
   along the map `⟨f, g⟩ : X ⟶ Y ⨯ Y`. Version with implicit products and equalizers. -/
 lemma isPullback_equalizer_prod (f g : X ⟶ Y) [HasEqualizer f g] [HasBinaryProduct Y Y] :
       IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f) (prod.lift f g) (diag Y) :=
-    isPullback_equalizer_prod_exp _ f g (equalizer.fork f g) (equalizerIsEqualizer' f g)
+    isPullback_equalizer_binaryFan_fork _
+      f g (equalizer.fork f g) (equalizerIsEqualizer' f g)
 
 /-- If `e` is an coequalizer of `f g : X ⟶ Y`, then `e` is also the pushout of the codiagonal map
 `X + X ⟶ X` along `⟨f, g⟩ : X + X ⟶ Y`. Fully explicit version with binary cofans and coforks. -/
-lemma isPushout_coequalizer_coprod_exp {p : BinaryCofan X X} (hp : IsColimit p)
+lemma isPushout_coequalizer_binaryCofan_coFork {p : BinaryCofan X X} (hp : IsColimit p)
   (f g : X ⟶ Y) (e : Cofork f g) (h : IsColimit e) :
     IsPushout (hp.desc (BinaryCofan.mk f g)) (hp.desc (BinaryCofan.mk (𝟙 X) (𝟙 X)))
       e.π (f ≫ e.π) := by
@@ -61,6 +62,7 @@ along the map `(f, g) : X ⨿ X ⟶ Y`. Version with implicit coproducts and coe
 lemma isPushout_coequalizer_coprod (f g : X ⟶ Y) [HasCoequalizer f g] [HasBinaryCoproduct X X] :
     IsPushout (coprod.desc f g) (codiag X)
       (coequalizer.π f g) (f ≫ coequalizer.π f g) :=
-  isPushout_coequalizer_coprod_exp _ f g (coequalizer.cofork f g) (coequalizerIsCoequalizer' f g)
+  isPushout_coequalizer_binaryCofan_coFork _
+    f g (coequalizer.cofork f g) (coequalizerIsCoequalizer' f g)
 
 end CategoryTheory.Limits
