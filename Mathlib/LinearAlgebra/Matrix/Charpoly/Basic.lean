@@ -135,6 +135,10 @@ theorem eval_charpoly (M : Matrix m m R) (t : R) :
   obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 @[simp]
+theorem charpoly_isEmpty [IsEmpty n] {A : Matrix n n R} : charpoly A = 1 := by
+  simp [charpoly]
+
+@[simp]
 theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
   simp [charpoly]
 
@@ -220,5 +224,59 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   rw [matPolyEquiv_smul_one, eval_map] at h
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
+
+/--
+A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
+See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.
+-/
+theorem charpoly_mul_comm' (A : Matrix m n R) (B : Matrix n m R) :
+    X ^ Fintype.card n * (A * B).charpoly = X ^ Fintype.card m * (B * A).charpoly := by
+  -- This proof follows https://math.stackexchange.com/a/311362/315369
+  let M := fromBlocks (scalar m X) (A.map C) (B.map C) (1 : Matrix n n R[X])
+  let N := fromBlocks (-1 : Matrix m m R[X]) 0 (B.map C) (-scalar n X)
+  have hMN :
+      M * N = fromBlocks (-scalar m X + (A * B).map C) (-(X : R[X]) • A.map C) 0 (-scalar n X) := by
+    simp [M, N, fromBlocks_multiply, smul_eq_mul_diagonal, -diagonal_neg]
+  have hNM : N * M = fromBlocks (-scalar m X) (-A.map C) 0 ((B * A).map C - scalar n X) := by
+    simp [M, N, fromBlocks_multiply, sub_eq_add_neg, -scalar_apply, scalar_comm, Commute.all]
+  have hdet_MN : (M * N).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
+      (X ^ Fintype.card n * (scalar m X - (A * B).map C).det) := by
+    rw [hMN, det_fromBlocks_zero₂₁, neg_add_eq_sub, ← neg_sub, det_neg]
+    simp
+    ring
+  have hdet_NM : (N * M).det = (-1 : R[X]) ^ (Fintype.card m + Fintype.card n) *
+      (X ^ Fintype.card m * (scalar n X - (B * A).map C).det) := by
+    rw [hNM, det_fromBlocks_zero₂₁, ← neg_sub, det_neg (_ - _)]
+    simp
+    ring
+  dsimp only [charpoly, charmatrix, RingHom.mapMatrix_apply]
+  rw [← (isUnit_neg_one.pow _).isRegular.left.eq_iff, ← hdet_NM, ← hdet_MN, det_mul_comm]
+
+theorem charpoly_mul_comm_of_le
+    (A : Matrix m n R) (B : Matrix n m R) (hle : Fintype.card n ≤ Fintype.card m) :
+    (A * B).charpoly = X ^ (Fintype.card m - Fintype.card n) * (B * A).charpoly := by
+  rw [← (isRegular_X_pow _).left.eq_iff, ← mul_assoc, ← pow_add,
+    Nat.add_sub_cancel' hle, charpoly_mul_comm']
+
+/-- A version of `charpoly_mul_comm'` for square matrices. -/
+theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).charpoly :=
+  (isRegular_X_pow _).left.eq_iff.mp <| charpoly_mul_comm' A B
+
+theorem charpoly_vecMulVec (u v : n → R) :
+    (vecMulVec u v).charpoly = X ^ Fintype.card n - (u ⬝ᵥ v) • X ^ (Fintype.card n - 1) := by
+  cases isEmpty_or_nonempty n
+  · simp
+  · have h : 1 ≤ Fintype.card n := NeZero.one_le
+    rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
+    simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
+
+theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
+    (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
+  rw [Matrix.charpoly_mul_comm, ← mul_assoc]
+  simp
+
+theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
+    (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
+  charpoly_units_conj M⁻¹ N
 
 end Matrix
