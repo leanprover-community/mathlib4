@@ -41,7 +41,7 @@ lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} : (HasPeriod w p) ↔
     have i1 : j < w.length := by omega
     have i2 : j + p < w.length := by omega
     have min : p < w.length := by omega
-    have e : j + p - (take p w).length = j := by
+    have : j + p - (take p w).length = j := by
       simp_all [min_eq_left_of_lt]
     simp_all [getElem_append_right, IsPrefix.getElem pref, min_eq_left_of_lt]
   · intro lhs; rw [HasPeriod]
@@ -74,9 +74,9 @@ lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
         rw [eq]
     | inr large =>
         have len' : i - p < w.length := by omega
-        have IH: w[i - p]? = w[(i - p) % p]? := hasPeriod_mod p (i - p) w per len'
+        have IH : w[i - p]? = w[(i - p) % p]? := hasPeriod_mod p (i - p) w per len'
         rw [hasPeriod_iff_getElem?] at per
-        have minus: i - p < w.length - p := by omega
+        have minus : i - p < w.length - p := by omega
         have per' := per (i - p) minus
         simp only [IH, large, Nat.sub_add_cancel] at per'
         have mod : i % p = (i - p) % p := mod_eq_sub_mod large
@@ -95,15 +95,15 @@ lemma hasPeriod_iff_mod {p : ℕ} {w : List α} :
 /-- If `w` has a period `p`, then any of its factors has a period `p` as well. -/
 lemma hasPeriod_factor_hasPeriod (u v w : List α) (p : ℕ) (per : HasPeriod (u ++ v ++ w) p) :
     HasPeriod v p := by
-  suffices h : ∀ j < v.length - p, v[j]? = v[j + p]? by simpa [hasPeriod_iff_getElem?]
+  suffices ∀ j < v.length - p, v[j]? = v[j + p]? by simpa [hasPeriod_iff_getElem?]
   intro j len
-  have t: (u ++ (v ++ w))[j + u.length]? = v[j]? := by
+  have shift_position : (u ++ (v ++ w))[j + u.length]? = v[j]? := by
     rw [getElem?_append_right]
     rw [Nat.add_sub_cancel]
     rw [getElem?_append_left]
     all_goals omega
-  have tp: (u ++ (v ++ w))[j + u.length + p]? = v[j + p]? := by
-    have eq: j + u.length + p - u.length = j + p := by omega
+  have shift_position' : (u ++ (v ++ w))[j + u.length + p]? = v[j + p]? := by
+    have eq : j + u.length + p - u.length = j + p := by omega
     rw [getElem?_append_right]
     · rw [getElem?_append_left]
       · exact congrArg (getElem? v) eq
@@ -112,7 +112,7 @@ lemma hasPeriod_factor_hasPeriod (u v w : List α) (p : ℕ) (per : HasPeriod (u
   have : ∀ i < u.length + (v.length + w.length) - p,
       (u ++ (v ++ w))[i]? = (u ++ (v ++ w))[i + p]? := by
    simp_all [hasPeriod_iff_getElem?]
-  exact (tp ▸ (t ▸ (this (j + u.length) (by omega))))
+  exact (shift_position' ▸ (shift_position ▸ (this (j + u.length) (by omega))))
 
 lemma HasPeriod.drop_prefix {w : List α} (p : ℕ) (per : HasPeriod w p) :
     drop p w <+: w := by
@@ -129,9 +129,9 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
   · simp_all
   rw [hasPeriod_iff_mod];
   have mod_w : ∀ i < w.length, w[i]? = w[i % p]? := (hasPeriod_mod p · w per ·)
-  suffices h: ∀ i < n + w.length, (take n w ++ w)[i]? = (take n w ++ w)[i % p]? by simp_all
+  suffices ∀ i < n + w.length, (take n w ++ w)[i]? = (take n w ++ w)[i % p]? by simp_all
   intro i less_i
-  have mod_p: ∀ j < n + length w, (take n w ++ w)[j]? = w[j % p]? := by
+  have mod_p : ∀ j < n + length w, (take n w ++ w)[j]? = w[j % p]? := by
     intro j less_j
     by_cases j_lt_n : j < n
     · -- indeces within `take n w` can be reduced due to the period of `w`
@@ -140,9 +140,9 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
         _ = w[j]? := getElem?_take_of_lt j_lt_n
         _ = w[j % p]? := mod_w j (by omega)
     · -- larger indeces are indeces of `w` decreased by `n`
-      have j_minus: j - n < w.length := by omega
+      have j_minus : j - n < w.length := by omega
       have n_le_j : n ≤ j := le_of_not_gt j_lt_n; clear j_lt_n;
-      have j_mod: (j - n) % p = j % p := by
+      have j_mod : (j - n) % p = j % p := by
         exact calc
           (j - n) % p = (j - p * (n / p)) % p := by rw [Nat.mul_div_cancel' dvd]
           _           = j % p := sub_mul_mod ((Nat.mul_div_cancel' dvd).symm ▸ n_le_j)
@@ -151,7 +151,7 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
         _ = w[j - n]? := by simp_all
         _ = w[(j - n) % p]? := mod_w (j - n) (by omega)
         _ = w[j % p]? := by rw [j_mod]
-  have less_mod: i % p < n + w.length := by
+  have less_mod : i % p < n + w.length := by
     have : i % p < p := mod_lt i p_pos; have : p ≤ n := le_of_dvd pos dvd; omega
   rw [mod_p i less_i, mod_p (i % p) less_mod, mod_mod]
 
@@ -181,7 +181,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
   · simp_all [HasPeriod]
   rcases Nat.eq_zero_or_pos q with rfl | q_pos
   · simp_all [HasPeriod]
-  cases hyp: compare p q with
+  cases hyp : compare p q with
   | lt => -- if `p` is less than `q`, switch the two periods
       have p_lt_q := Nat.compare_eq_lt.mp hyp
       exact (gcd_comm q p ▸ per_q.gcd)  per_p (add_comm p q ▸ len)
@@ -199,13 +199,13 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
         apply hasPeriod_factor_hasPeriod (take q w) (drop q w) [] q
         all_goals simp_all
       have gcd_stable : (p - q).gcd q = p.gcd q := gcd_sub_self_left (le_of_lt q_lt_p)
-      have drop_len: q ≤ (drop q w).length := by
+      have drop_len : q ≤ (drop q w).length := by
         rw [length_drop]
         have : p.gcd q ≤ p - q := by
           rw [← gcd_stable]; apply gcd_le_left q; omega
         omega
       have take_eq : take q (drop q w) = take q w := by
-          let ⟨z,hz⟩ := per_q.drop_prefix
+          let ⟨z, hz⟩ := per_q.drop_prefix
           convert_to take q (drop q w) = take q (drop q w ++ z); rw [hz]
           exact (take_append_of_le_length drop_len).symm
       -- the induction step
@@ -215,7 +215,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
       · rw [take_eq, take_append_drop q w]
       · exact extend_periods_left (p.gcd q) q (drop q w)
           (gcd_dvd_right p q) drop_len (gcd_stable ▸ IH)
-  termination_by (q,p)
+  termination_by (q, p)
   decreasing_by
     all_goals omega
 
