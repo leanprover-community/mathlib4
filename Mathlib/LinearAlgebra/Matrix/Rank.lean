@@ -350,7 +350,7 @@ A rank factorization of $A\in\mathbb{F}^{m\times n}$ is a factorization of the f
 where $P\in\mathbb {F}^{m\times r}$ and $Q\in\mathbb{F}^{r\times n}$,
 where $r$ is the rank of $A$.
 -/
-noncomputable def rank_factorization {r : Type*} [Fintype r]
+noncomputable def rankFactorization {r : Type*} [Fintype r]
     (A : Matrix m n R) (hr : Fintype.card r = A.rank) :
     { B : Matrix m r R × Matrix r n R // A = B.1 * B.2 } where
   val :=
