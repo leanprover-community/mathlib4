@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Klaus Gy
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.Topos.Classifier
 /-!
 # Elementary Topos (in Elementary Form)
