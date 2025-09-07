@@ -165,11 +165,12 @@ def bigOpBindersProd (processed : Array (Term × Term)) : MacroM Term := do
 - `∑ x ∈ s, f x` is notation for `Finset.sum s f`. It is the sum of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∑ x ∈ s with p x, f x` is notation for `Finset.sum (Finset.filter p s) f`.
+- `∑ x ∈ s with h : p x, f x h` is notation for `Finset.sum s fun x ↦ if h : p x then f x h else 0`.
 - `∑ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.sum (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∑ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∑" bigOpBinders* ("with" term)? "," term` -/
+Notation: `"∑" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
 syntax (name := bigsum)
   "∑ " bigOpBinders ("with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
@@ -179,11 +180,13 @@ syntax (name := bigsum)
 - `∏ x ∈ s, f x` is notation for `Finset.prod s f`. It is the product of `f x`,
   where `x` ranges over the finite set `s` (either a `Finset` or a `Set` with a `Fintype` instance).
 - `∏ x ∈ s with p x, f x` is notation for `Finset.prod (Finset.filter p s) f`.
+- `∏ x ∈ s with h : p x, f x h` is notation for
+  `Finset.prod s fun x ↦ if h : p x then f x h else 1`.
 - `∏ (x ∈ s) (y ∈ t), f x y` is notation for `Finset.prod (s ×ˢ t) (fun ⟨x, y⟩ ↦ f x y)`.
 
 These support destructuring, for example `∏ ⟨x, y⟩ ∈ s ×ˢ t, f x y`.
 
-Notation: `"∏" bigOpBinders* ("with" term)? "," term` -/
+Notation: `"∏" bigOpBinders* ("with" (ident ":")? term)? "," term` -/
 syntax (name := bigprod)
   "∏ " bigOpBinders (" with " atomic(binderIdent " : ")? term)? ", " term:67 : term
 
