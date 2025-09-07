@@ -177,20 +177,17 @@ theorem prod_trunc {a b : ℕ} (f : Fin (a + b) → M) (hf : ∀ j : Fin b, f (n
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
 
 @[to_additive]
-private theorem prod_insertNth_go :
+private lemma prod_insertNth_go :
     ∀ n i (h : i < n + 1) x (p : Fin n → M), ∏ j, insertNth ⟨i, h⟩ x p j = x * ∏ j, p j
-  | n, 0, h, x, p => by simp only [zero_eta, insertNth_zero', prod_cons]
-  | 0, i, h, x, p => by
-    set i : Fin 1 := ⟨i, h⟩
-    simp [show p = ![] from Subsingleton.elim _ _, fin_one_eq_zero i]
+  | n, 0, h, x, p => by simp
+  | 0, i, h, x, p => by simp [fin_one_eq_zero ⟨i, h⟩]
   | n + 1, i + 1, h, x, p => by
     obtain ⟨hd, tl, rfl⟩ := exists_cons p
     have i_lt := Nat.lt_of_succ_lt_succ h
     let i_fin : Fin (n + 1) := ⟨i, i_lt⟩
     rw [show ⟨i + 1, h⟩ = i_fin.succ from rfl]
     simp [insertNth_succ_cons]
-    rw [prod_insertNth_go n i i_lt x tl]
-    exact mul_left_comm hd x (∏ j, tl j)
+    rw [prod_insertNth_go n i i_lt x tl, mul_left_comm]
 
 @[to_additive (attr := simp)]
 theorem prod_insertNth i x (p : Fin n → M) : ∏ j, insertNth i x p j = x * ∏ j, p j :=
