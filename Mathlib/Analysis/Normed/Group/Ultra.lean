@@ -344,6 +344,37 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
 lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
   (nnnorm_tprod_le f).trans (ciSup_le' h)
 
+@[to_additive]
+lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖₊ ≠ ‖f j‖₊)) :
+    ‖∏ i ∈ s, f i‖₊ = s.sup (fun i ↦ ‖f i‖₊) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | hs'
+    · simp
+    specialize IH (hs.mono (by simp))
+    obtain ⟨j, hj, hj'⟩ : ∃ j ∈ s, ‖∏ i ∈ s, f i‖₊ = ‖f j‖₊ := by
+      obtain ⟨j, hj, hj'⟩ := Finset.mem_image.mp
+        (Finset.max'_mem (s.image (fun i ↦ ‖f i‖₊)) (by simp [hs']))
+      refine ⟨j, hj, ?_⟩
+      rw [hj', IH, Finset.max'_eq_sup', Finset.sup'_eq_sup]
+      simp
+    simp only [Finset.prod_cons]
+    rw [IsUltrametricDist.nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm, hj']
+    · simp [← IH, hj']
+    · rw [hj']
+      exact hs (by simp) (by simp [hj]) (mt (fun H ↦ H ▸ hj) ha)
+
+@[to_additive]
+lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
+    ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
+  have := IsUltrametricDist.nnnorm_prod_eq_sup_of_pairwise_ne (ι := ι) (M := M)
+    (by simpa [← NNReal.coe_inj] using hs)
+  rw [← coe_nnnorm', this, ← Finset.sup'_eq_sup hs']
+  exact Finset.comp_sup'_eq_sup'_comp hs' _ (by simp)
+
 end CommGroup
 
 end IsUltrametricDist
