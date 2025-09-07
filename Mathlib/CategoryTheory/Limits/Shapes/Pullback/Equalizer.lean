@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
-
 /-!
 # Equalizers as pullbacks of products
 
@@ -15,7 +14,7 @@ Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar resul
 
 universe v u
 
-open CategoryTheory.Category CategoryTheory.CartesianMonoidalCategory
+open CategoryTheory.Category
 
 namespace CategoryTheory.Limits
 
