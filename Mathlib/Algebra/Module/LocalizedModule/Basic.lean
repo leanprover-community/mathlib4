@@ -19,9 +19,9 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S`: the localized module by `S`.
 * `LocalizedModule.mk`: the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
-* `LocalizedModule.liftOn`: any well defined function `f : M × S → α` respecting `r` descents to
+* `LocalizedModule.liftOn`: any well-defined function `f : M × S → α` respecting `r` descents to
   a function `LocalizedModule M S → α`
-* `LocalizedModule.liftOn₂`: any well defined function `f : M × S → M × S → α` respecting `r`
+* `LocalizedModule.liftOn₂`: any well-defined function `f : M × S → M × S → α` respecting `r`
   descents to a function `LocalizedModule M S → LocalizedModule M S`
 * `LocalizedModule.mk_add_mk`: in the localized module
   `mk m s + mk m' s' = mk (s' • m + s • m') (s * s')`
@@ -1123,7 +1123,7 @@ instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
     obtain ⟨⟨y', s⟩, e⟩ := IsLocalizedModule.surj S₂ f₂ y
     exact ⟨⟨f₁ y', s⟩, by simpa⟩
   exists_of_eq := by
-    intros x₁ x₂ e
+    intro x₁ x₂ e
     obtain ⟨x₁, s₁, rfl⟩ := mk'_surjective S₁ f₁ x₁
     obtain ⟨x₂, s₂, rfl⟩ := mk'_surjective S₁ f₁ x₂
     simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff,
@@ -1193,18 +1193,18 @@ lemma map_id : map S f f (.id ) = .id := by
 @[simp]
 theorem map_injective (h : M →ₗ[R] N) (h_inj : Function.Injective h) :
     Function.Injective (map S f g h) := by
-  intros x y
+  intro x y
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
   simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_mk'_iff, Subtype.exists,
     Submonoid.mk_smul, exists_prop, forall_exists_index, and_imp]
-  intros c hc e
+  intro c hc e
   exact ⟨c, hc, h_inj (by simpa)⟩
 
 @[simp]
 theorem map_surjective (h : M →ₗ[R] N) (h_surj : Function.Surjective h) :
     Function.Surjective (map S f g h) := by
-  intros x
+  intro x
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S g x
   obtain ⟨x, rfl⟩ := h_surj x
   exact ⟨mk' f x s, by simp⟩
@@ -1281,7 +1281,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebr
       refine ⟨((h₁ x x.2).unit⁻¹ :) * a, ?_⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
-  · intros x y
+  · intro x y
     dsimp only [AlgHom.toLinearMap_apply]
     rw [← sub_eq_zero, ← map_sub, h₃]
     simp_rw [smul_sub, sub_eq_zero]

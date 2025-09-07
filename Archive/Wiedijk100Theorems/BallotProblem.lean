@@ -340,7 +340,7 @@ theorem ballot_problem' :
         apply ne_of_gt
         norm_cast
         linarith
-      field_simp [h₄, h₅, h₆] at *
+      simp [field, h₄, h₅, h₆] at *
       ring
     all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
 

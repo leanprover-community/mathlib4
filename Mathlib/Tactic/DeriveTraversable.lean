@@ -440,7 +440,7 @@ def simpFunctorGoal (m : MVarId) (s : Simp.Context) (simprocs : Simp.SimprocsArr
 /--
 Run the following tactic:
 ```lean
-intros _ .. x
+intro _ .. x
 dsimp only [Traversable.traverse, Functor.map]
 induction x <;> (the simp tactic corresponding to s) <;> (tac)
 ```
