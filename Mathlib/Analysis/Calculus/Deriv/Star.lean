@@ -80,7 +80,8 @@ lemma HasDerivAt.star_conj {f : 𝕜 → F} {f' : F} (hf : HasDerivAt f f' x) :
 @[simp]
 lemma hasDerivAt_star_conj_iff {f : 𝕜 → F} {x : 𝕜} {f' : F} :
     HasDerivAt (star ∘ f ∘ conj) f' x ↔ HasDerivAt f (star f') (conj x) :=
-  ⟨fun hf ↦ by convert hf.star_conj <;> simp [Function.comp_def], fun hf ↦ hf.star_conj⟩
+  ⟨fun hf ↦ by convert hf.star_conj; simp [Function.comp_def],
+    fun hf ↦ by convert hf.star_conj <;> simp⟩
 
 /-- If `f` has derivative `f'` at `z`, then `conj ∘ f ∘ conj` has derivative `conj f'` at
 `conj z`. -/
@@ -104,7 +105,8 @@ lemma DifferentiableAt.star_conj {f : 𝕜 → F} (hf : DifferentiableAt 𝕜 f 
 @[simp]
 lemma differentiableAt_star_conj_iff {f : 𝕜 → F} :
     DifferentiableAt 𝕜 (star ∘ f ∘ conj) x ↔ DifferentiableAt 𝕜 f (conj x) :=
-  ⟨fun hf ↦ by convert hf.star_conj <;> simp [Function.comp_def], fun hf ↦ hf.star_star⟩
+  ⟨fun hf ↦ by convert hf.star_conj; simp [Function.comp_def],
+    fun hf ↦ by convert hf.star_conj; simp⟩
 
 /-- If `f` is differentiable at `conj z`, then `conj ∘ f ∘ conj` is differentiable at `z`. -/
 lemma DifferentiableAt.conj_conj {f : 𝕜 → 𝕜} (hf : DifferentiableAt 𝕜 f x) :
