@@ -67,7 +67,7 @@ def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, ((curryObj F).obj (op B)).Repre
     ℰᵒᵖ ⥤ ℰ :=
   { obj (B : ℰᵒᵖ) := P (unop B),
     map {B C : ℰᵒᵖ} (h : B ⟶ C) := map (hP (unop C)) (hP (unop B)) h.unop,
-    map_id (_) := by
+    map_id _ := by
       change (hP _).homEquiv.symm (F.map (𝟙 _) ((hP _).homEquiv (𝟙 _))) = 𝟙 _
       rw[FunctorToTypes.map_id_apply]; simp
     map_comp {B C D : ℰᵒᵖ} (h : B ⟶ C) (h' : C ⟶ D) :=
