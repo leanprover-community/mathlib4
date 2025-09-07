@@ -11,7 +11,6 @@ import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Ring.Finite
 import Mathlib.Data.Real.Sqrt
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -73,7 +72,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   conj_I_ax : conj I = -I
   norm_sq_eq_def_ax : ∀ z : K, ‖z‖ ^ 2 = re z * re z + im z * im z
   mul_im_I_ax : ∀ z : K, im z * im I = im z
-  /-- only an instance in the `ComplexOrder` locale -/
+  /-- only an instance in the `ComplexOrder` scope -/
   [toPartialOrder : PartialOrder K]
   le_iff_re_im {z w : K} : z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
@@ -524,7 +523,8 @@ theorem I_mul_I_of_nonzero : (I : K) ≠ 0 → (I : K) * I = -1 :=
 theorem inv_I : (I : K)⁻¹ = -I := by
   by_cases h : (I : K) = 0
   · simp [h]
-  · field_simp [I_mul_I_of_nonzero h]
+  · field_simp
+    linear_combination I_mul_I_of_nonzero h
 
 @[simp, rclike_simps]
 theorem div_I (z : K) : z / I = -(z * I) := by rw [div_eq_mul_inv, inv_I, mul_neg]
@@ -922,26 +922,14 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
 
-theorem toOrderedSMul : OrderedSMul ℝ K :=
-  OrderedSMul.mk' fun a b r hab hr => by
-    replace hab := hab.le
-    rw [RCLike.le_iff_re_im] at hab
-    rw [RCLike.le_iff_re_im, smul_re, smul_re, smul_im, smul_im]
-    exact hab.imp (fun h => mul_le_mul_of_nonneg_left h hr.le) (congr_arg _)
+theorem toIsStrictOrderedModule : IsStrictOrderedModule ℝ K where
+  smul_lt_smul_of_pos_left r hr a b hab := by
+    simpa [RCLike.lt_iff_re_im (K := K), smul_re, smul_im, hr, hr.ne'] using hab
+  smul_lt_smul_of_pos_right a ha r₁ r₂ hr := by
+    obtain ⟨hare, haim⟩ := RCLike.lt_iff_re_im.1 ha
+    simp_all [RCLike.lt_iff_re_im (K := K), smul_re, smul_im]
 
-scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
-
-/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
-lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
-    OrderedSMul K A := .mk' fun _a _b _zc hab hc ↦ (smul_lt_smul_of_pos_left hab hc).le
-
-instance {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
-    [Module ℝ A] [StarModule ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] :
-    OrderedSMul ℝ A :=
-  StarModule.instOrderedSMul
-
-scoped[ComplexOrder] attribute [instance] StarModule.instOrderedSMul
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedModule
 
 theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
