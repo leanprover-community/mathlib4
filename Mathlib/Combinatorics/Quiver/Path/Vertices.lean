@@ -164,7 +164,6 @@ lemma end_mem_vertices {a b : V} (p : Path a b) : b ∈ p.vertices := by
   simpa [h₁] using h₂
 
 /-!  ### Path vertices decomposition -/
-
 section
 
 variable {a b : V} (p : Path a b)
@@ -189,8 +188,8 @@ theorem exists_eq_comp_of_le_length {n : ℕ} (hn : n ≤ p.length) :
 
 /-- If a vertex `v` occurs in the list of vertices of a path `p : Path a b`, then `p` can be
 decomposed as a concatenation of a subpath from `a` to `v` and a subpath from `v` to `b`. -/
-theorem exists_comp_of_mem_vertices {a b v : V} (p : Path a b)
-  (h : v ∈ p.vertices) : ∃ (p₁ : Path a v) (p₂ : Path v b), p = p₁.comp p₂ := by
+theorem exists_comp_of_mem_vertices {v : V} (h : v ∈ p.vertices) :
+    ∃ (p₁ : Path a v) (p₂ : Path v b), p = p₁.comp p₂ := by
   obtain ⟨l₁, l₂, hv⟩ := (mem_iff_append.mp h : ∃ s t : List V, p.vertices = s ++ v :: t)
   have h_len : l₁.length ≤ p.length := by
     have : p.vertices.length = p.length + 1 := vertices_length p
@@ -222,10 +221,14 @@ theorem exists_comp_of_mem_vertices {a b v : V} (p : Path a b)
   simp [head?_cons, Option.some.injEq] at this
   exact this
 
+@[simp]
+lemma dropLast_append_end_eq :
+    p.vertices.dropLast ++ [b] = p.vertices := by
+  simp_rw [← p.vertices_getLast p.vertices_ne_nil, dropLast_concat_getLast]
+
 /-- `split_at_vertex` decomposes a path `p` at the vertex sitting in
     position `i` of its `vertices` -/
-theorem split_at_vertices_index (i : ℕ)
-    (hi : i < p.vertices.length) :
+theorem exists_eq_comp_and_length_eq_of_lt_length (i : ℕ) (hi : i < p.vertices.length) :
     ∃ (v : V) (p₁ : Path a v) (p₂ : Path v b),
       p = p₁.comp p₂ ∧
       p₁.length = i ∧
@@ -236,65 +239,11 @@ theorem split_at_vertices_index (i : ℕ)
   obtain ⟨v, p₁, p₂, rfl, rfl⟩ := exists_eq_comp_of_le_length p hi_le_len
   exact ⟨v, p₁, p₂, rfl, rfl, by simp⟩
 
-/-- Given vertices lists from a path composition,
-the prefix path’s vertices is a prefix of the full path’s vertices. -/
-lemma vertices_dropLast_isPrefix_of_vertices_eq
-    {V : Type*} [Quiver V]
-    {a b c : V} {p : Path a b} {p₁ : Path a c} {p₂ : Path c b}
-    (h : p.vertices = p₁.vertices.dropLast ++ p₂.vertices) :
-    p₁.vertices.dropLast.IsPrefix p.vertices := by
-  rw [h]; exact prefix_append p₁.vertices.dropLast p₂.vertices
-
-lemma mem_vertices_eq_end_or_mem_dropLast {a b c : V} (p : Path a b) (h : c ∈ p.vertices) :
-  c = b ∨ c ∈ p.vertices.dropLast := by
-  induction p with
-  | nil =>
-    simp [vertices_nil] at h
-    subst h
-    simp
-  | cons p' e ih =>
-    rename_i b'
-    have h' : c ∈ p'.vertices ∨ c = b' := by
-      simpa using (mem_vertices_cons p' e).1 h
-    cases h' with
-    | inl h_in_p' =>
-      have ih' := ih h_in_p'
-      cases ih' with
-      | inl h_eq_p'_end =>
-        right
-        subst h_eq_p'_end
-        simp
-      | inr h_in_p'_dropLast =>
-        simp_all
-    | inr h_eq_b =>
-      left
-      exact h_eq_b
-
-/-- If we have a path p from a to b with c ∈ p.vertices,
-    and c is not the end vertex b, then it appears in a proper prefix of the path. -/
-lemma exists_prefix_of_mem_vertices_ne_end [DecidableEq V] {a b c : V}
-    (p : Path a b) (h : c ∈ p.vertices) (h_ne : c ≠ b) :
-  ∃ (p₁ : Path a c) (p₂ : Path c b), p = p₁.comp p₂ := by
-  have h_cases := mem_vertices_eq_end_or_mem_dropLast p h
-  cases h_cases with
-  | inl h_eq =>
-      contradiction
-  | inr h_mem_tail =>
-      let i := p.vertices.idxOf c
-      have hi : i < p.vertices.length := List.idxOf_lt_length_iff.2 h
-      obtain ⟨v, p₁, p₂, h_comp, h_len, h_c_eq⟩ := split_at_vertices_index p i hi
-      have hvc : v = c := by
-        rw [h_c_eq]
-        simp [i]
-      subst hvc
-      exact ⟨p₁, p₂, h_comp⟩
 
 /-- Split a path at the *last* occurrence of a vertex. -/
-theorem exists_decomp_of_mem_vertices_not_mem_tail
-    [DecidableEq V] {a b x : V} (p : Path a b) (hx : x ∈ p.vertices) :
+theorem exists_eq_comp_and_notMem_tail_of_mem_vertices {x : V} (hx : x ∈ p.vertices) :
     ∃ (p₁ : Path a x) (p₂ : Path x b),
       p = p₁.comp p₂ ∧ x ∉ p₂.vertices.tail := by
-  classical
   induction p with
   | nil =>
       have hxa : x = a := by
