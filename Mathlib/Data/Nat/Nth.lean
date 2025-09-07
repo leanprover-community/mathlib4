@@ -285,14 +285,10 @@ lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
   · induction n using Nat.strong_induction_on with
     | _ n ih =>
       rw [nth_eq_sInf]
-      refine csInf_le (by simp) ?_
-      simp only [Set.mem_setOf_eq]
-      refine ⟨?_, ?_⟩
-      · exact hmaps hn
-      · intro k hk
-        refine lt_of_le_of_lt (ih k hk (fun hf => lt_trans hk (hn hf))) ?_
-        rwa [hmono.lt_iff_lt (fun hf => lt_trans hk (hn hf)) hn]
-  · simp only [not_forall, not_lt] at hn
+      refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
+      refine lt_of_le_of_lt (ih k hk (fun hf => lt_trans hk (hn hf))) ?_
+      rwa [hmono.lt_iff_lt (fun hf => lt_trans hk (hn hf)) hn]
+  · push_neg at hn
     rcases hn with ⟨hf, hn⟩
     rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
     exact Nat.zero_le _
@@ -305,16 +301,14 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
   induction n with
   | zero =>
     rw [Nat.nth_zero]
-    refine le_csInf ⟨_, nth_mem _ hn⟩ ?_
-    intro b hb
+    refine le_csInf ⟨_, nth_mem _ hn⟩ fun b hb => ?_
     rcases hsurj hb with ⟨k, hk, rfl⟩
     exact hmono hn hk (Nat.zero_le _)
   | succ n ih =>
     rw [nth_eq_sInf]
     refine le_csInf ?_ ?_
     · use nth p (n + 1), nth_mem _ hn
-      intro k hk
-      exact nth_lt_nth' hk hn
+      exact fun k hk => nth_lt_nth' hk hn
     rintro b ⟨hb, h⟩
     have fnb : f n < b := lt_of_le_of_lt (ih (fun hf => Nat.lt_of_succ_lt (hn hf)))
       (h n (Nat.lt_succ_self _))
@@ -328,9 +322,8 @@ lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ →
     (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
     (hmaps: Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
     (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) :
-    Set.EqOn f (nth p) {n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card} := by
-  intro i hi
-  exact le_antisymm
+    Set.EqOn f (nth p) {n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card} :=
+  fun _ hi => le_antisymm
     (Nat.le_nth_of_monotoneOn_of_surjOn _ hsurj hmono.monotoneOn hi)
     (Nat.nth_le_of_strictMonoOn_of_mapsTo _ hmaps hmono)
 
