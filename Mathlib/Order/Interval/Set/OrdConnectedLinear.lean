@@ -53,7 +53,7 @@ lemma Set.ordConnected_iff_disjoint_Ioo_empty [LinearOrder α] [LocallyFiniteOrd
   refine ⟨fun h' x hx y hy hxy ↦ ?_, fun h' ↦ ordConnected_of_Ioo fun x hx y hy hxy z hz ↦ ?_⟩
   · suffices ∀ z, x < z → y ≤ z by ext z; simpa using this z
     intro z hz
-    suffices z ∉ Ioo x y by aesop
+    suffices z ∉ Ioo x y by simp_all
     exact fun contra ↦ hxy contra <| h'.out hx hy <| mem_Icc_of_Ioo contra
   · by_contra hz'
     obtain ⟨x', hx', hx''⟩ :=

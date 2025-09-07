@@ -47,14 +47,14 @@ lemma braiding_naturality_right [HasTensor X Y] [HasTensor Y X] [HasTensor X Z] 
     (f : Y ⟶ Z) :
     whiskerLeft X f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ whiskerRight f X  := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 variable {X Y} in
 lemma braiding_naturality_left [HasTensor Y Z] [HasTensor Z Y] [HasTensor X Z] [HasTensor Z X]
     (f : X ⟶ Y) :
     whiskerRight f Z ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ whiskerLeft Z f  := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 lemma hexagon_forward [HasTensor X Y] [HasTensor Y X] [HasTensor Y Z]
     [HasTensor Z X] [HasTensor X Z]
@@ -101,7 +101,7 @@ lemma hexagon_reverse [HasTensor X Y] [HasTensor Y Z] [HasTensor Z X]
     [HasTensor X (tensorObj Z Y)] [HasTensor (tensorObj X Z) Y]
     [HasGoodTensor₁₂Tensor X Y Z] [HasGoodTensorTensor₂₃ X Y Z]
     [HasGoodTensor₁₂Tensor Z X Y] [HasGoodTensorTensor₂₃ Z X Y]
-    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y]:
+    [HasGoodTensor₁₂Tensor X Z Y] [HasGoodTensorTensor₂₃ X Z Y] :
     (associator X Y Z).inv ≫ (braiding (tensorObj X Y) Z).hom ≫ (associator Z X Y).inv =
       whiskerLeft X (braiding Y Z).hom ≫ (associator X Z Y).inv ≫
         whiskerRight (braiding X Z).hom Y := by
@@ -136,7 +136,7 @@ end Braided
 lemma symmetry [SymmetricCategory C] [HasTensor X Y] [HasTensor Y X] :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 _ := by
   dsimp [braiding]
-  aesop_cat
+  cat_disch
 
 end Monoidal
 

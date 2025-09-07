@@ -165,7 +165,7 @@ lemma map_hom_ofInv_id (s : Y ⟶ X) (hs : W s) (L : C ⥤ D) (hL : W.IsInverted
 variable {W}
 
 lemma cases (α : W.RightFraction X Y) :
-    ∃ (X' : C) (s : X' ⟶ X) (hs : W s) (f : X' ⟶ Y) , α = RightFraction.mk s hs f :=
+    ∃ (X' : C) (s : X' ⟶ X) (hs : W s) (f : X' ⟶ Y), α = RightFraction.mk s hs f :=
   ⟨_, _, _, _, rfl⟩
 
 end RightFraction
@@ -559,9 +559,8 @@ noncomputable def Hom.map {X Y : C} (f : Hom W X Y) (F : C ⥤ E) (hF : W.IsInve
       F.map_comp, map_comp_map_s_assoc]) f
 
 @[simp]
-lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y)
-    (F : C ⥤ E) (hF : W.IsInvertedBy F) :
-  Hom.map (Hom.mk f) F hF = f.map F hF := rfl
+lemma Hom.map_mk {W} {X Y : C} (f : LeftFraction W X Y) (F : C ⥤ E) (hF : W.IsInvertedBy F) :
+    Hom.map (Hom.mk f) F hF = f.map F hF := rfl
 
 namespace StrictUniversalPropertyFixedTarget
 
@@ -757,8 +756,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
       LeftFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
-    simp only [id_comp] at hst
-    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+    grind
   · rintro ⟨Z, s, hs, fac⟩
     simp only [← cancel_mono (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]
@@ -966,8 +964,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
       RightFraction.map_eq_iff] at h
     obtain ⟨Z, t₁, t₂, hst, hft, ht⟩ := h
     dsimp at t₁ t₂ hst hft ht
-    simp only [comp_id] at hst
-    exact ⟨Z, t₁, by simpa using ht, by rw [hft, hst]⟩
+    grind
   · rintro ⟨Z, s, hs, fac⟩
     simp only [← cancel_epi (Localization.isoOfHom L W s hs).hom,
       Localization.isoOfHom_hom, ← L.map_comp, fac]

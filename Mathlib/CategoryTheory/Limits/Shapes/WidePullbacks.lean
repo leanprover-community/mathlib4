@@ -35,7 +35,6 @@ variable (J : Type w)
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
 def WidePullbackShape := Option J
 
--- Porting note: strangely this could be synthesized
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
@@ -115,7 +114,7 @@ def wideCospan (B : C) (objs : J → C) (arrows : ∀ j : J, objs j ⟶ B) : Wid
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideCospan` -/
 def diagramIsoWideCospan (F : WidePullbackShape J ⥤ C) :
     F ≅ wideCospan (F.obj none) (fun j => F.obj (some j)) fun j => F.map (Hom.term j) :=
-  NatIso.ofComponents fun j => eqToIso <| by aesop_cat
+  NatIso.ofComponents fun j => eqToIso <| by cat_disch
 
 /-- Construct a cone over a wide cospan. -/
 @[simps]
@@ -138,6 +137,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePullbackShape J)) ≌ WidePullbackShape (ULift J) :=
@@ -240,6 +240,7 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ Wi
   unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
   counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
+attribute [local instance] uliftCategory in
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
 def uliftEquivalence :
     ULiftHom.{w'} (ULift.{w'} (WidePushoutShape J)) ≌ WidePushoutShape (ULift J) :=
@@ -324,9 +325,7 @@ theorem eq_lift_of_comp_eq (g : X ⟶ widePullback _ _ arrows) :
 
 theorem hom_eq_lift (g : X ⟶ widePullback _ _ arrows) :
     g = lift (g ≫ base arrows) (fun j => g ≫ π arrows j) (by simp) := by
-  apply eq_lift_of_comp_eq
-  · simp
-  · rfl  -- Porting note: quite a few missing refl's in aesop_cat now
+  aesop
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : X ⟶ widePullback _ _ arrows) : (∀ j : J,
@@ -387,9 +386,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
         rw [← Category.assoc]
         simp := by
-  apply eq_desc_of_comp_eq
-  · simp
-  · rfl -- Porting note: another missing rfl
+  cat_disch
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,

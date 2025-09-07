@@ -11,8 +11,6 @@ import Mathlib.Algebra.Ring.InjSurj
 # Pulling back ordered rings along injective maps
 -/
 
-open Function
-
 variable {R S : Type*}
 
 namespace Function.Injective

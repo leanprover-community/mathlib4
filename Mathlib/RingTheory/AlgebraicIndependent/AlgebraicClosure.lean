@@ -127,7 +127,7 @@ theorem isAlgebraic_adjoin_iff_top :
 
 theorem isAlgebraic_adjoin_iff_bot :
     Algebra.IsAlgebraic R (adjoin F s) ↔ Algebra.IsAlgebraic R (Algebra.adjoin F s) :=
-  (IsAlgebraic.isAlgebraic_iff_bot ..).symm
+  IsAlgebraic.isAlgebraic_iff_bot ..
 
 theorem transcendental_adjoin_iff {x : S} :
     Transcendental (adjoin F s) x ↔ Transcendental (Algebra.adjoin F s) x :=
