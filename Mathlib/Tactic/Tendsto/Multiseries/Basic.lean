@@ -387,7 +387,8 @@ theorem extendBasisEnd_Approximates {basis : Basis} {f b : ℝ → ℝ} {ms : Pr
   simp [motive]
   use tl
 
--- @[reducible]
+/-- Given a basis extension `ex`, and a multiseries `ms`, immerses `ms` into the
+basis `ex.getBasis`. -/
 def updateBasis {basis : Basis} (ex : BasisExtension basis) (ms : PreMS basis) :
     PreMS ex.getBasis :=
   match ex with

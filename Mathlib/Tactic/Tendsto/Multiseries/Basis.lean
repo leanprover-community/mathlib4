@@ -245,6 +245,8 @@ theorem PreMS.Approximates_coef_majorated_head {fC basis_hd : ℝ → ℝ} {basi
         exact h_basis.left.left.left
       · exact h_exp
 
+/-- Basis extension. It is a data-version of `List.Sublist`.
+Using `getBasis` one can construct any `basis'` from `basis` if `basis <+ basis'`.-/
 inductive BasisExtension : Basis → Type
 | nil : BasisExtension []
 | keep (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ex : BasisExtension basis_tl) :
@@ -253,6 +255,7 @@ inductive BasisExtension : Basis → Type
 
 namespace BasisExtension
 
+/-- Basis after applying a basis extension. -/
 def getBasis {basis : Basis} (ex : BasisExtension basis) : Basis :=
   match ex with
   | nil => []

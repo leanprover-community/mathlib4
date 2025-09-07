@@ -9,4 +9,5 @@ import Qq
 # TODO
 -/
 
+/-- Simp attribute for the `PreMS []`. -/
 register_simp_attr PreMS_const

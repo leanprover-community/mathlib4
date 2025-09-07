@@ -20,8 +20,11 @@ namespace PreMS
 open LazySeries Stream' Seq
 open scoped Nat
 
--- exp (x) = 1 + x/1! + x^2/2! + x^3/3! + ...
-
+/-- Series defining the exponential function:
+```
+exp x = 1 + x/1! + x^2/2! + x^3/3! + ...
+```
+ -/
 noncomputable def expSeries : LazySeries :=
   ofFn fun n ↦ (n ! : ℝ)⁻¹
 
@@ -41,7 +44,7 @@ theorem expSeries_toFormalMultilinearSeries_eq :
   unfold NormedSpace.expSeries FormalMultilinearSeries.ofScalars
   simp [coeff, expSeries_get]
 
-theorem expSeries_analytic : expSeries.analytic := by
+theorem expSeries_analytic : expSeries.Analytic := by
   apply analytic_of_HasFPowerSeriesAt (f := Real.exp)
   rw [expSeries_toFormalMultilinearSeries_eq]
   convert NormedSpace.exp_hasFPowerSeriesAt_zero
@@ -69,7 +72,8 @@ theorem expSeries_toFun : expSeries.toFun = Real.exp := by
 --     PreMS (basis_hd :: basis_tl) :=
 --   expSeries.apply ms
 
--- we assume that leadingTerm is nonpositive, i.e. ms tendsto constant (maybe zero)
+/-- If `ms` approximates an eventually bounded function `f` and,
+then `ms.exp` approximates `Real.exp ∘ f`. -/
 noncomputable def exp {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => Real.exp ms

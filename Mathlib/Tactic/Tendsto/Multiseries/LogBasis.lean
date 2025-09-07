@@ -25,6 +25,8 @@ inductive LogBasis : Basis → Type
 
 namespace LogBasis
 
+/-- Well-formedness predicate for `LogBasis`. It assures that all multiseries in `logBasis` are
+well-ordered, approximate the logarithm of the corresponding basis function, and trimmed. -/
 def WellFormed {basis : Basis} (logBasis : LogBasis basis) : Prop :=
   match logBasis with
   | .nil => True
@@ -60,6 +62,7 @@ theorem WellFormed_cons_Trimmed {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_t
   simp [WellFormed] at h
   exact h.right.right.left
 
+/-- Tail of a `LogBasis`. -/
 @[reducible]
 def tail {basis_hd : ℝ → ℝ} {basis_tl : Basis} (logBasis : LogBasis (basis_hd :: basis_tl)) :
     LogBasis basis_tl :=
@@ -77,6 +80,8 @@ theorem tail_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     simp [tail]
     exact h_wf.right.right.right
 
+/-- Extends a `LogBasis` along the basis by adding a function to the middle with a multiseries
+approximating its logarithm. -/
 @[reducible]
 noncomputable def extendBasisMiddle {right_hd : ℝ → ℝ} {left right_tl : Basis} (f : ℝ → ℝ)
     (logBasis : LogBasis (left ++ right_hd :: right_tl)) (ms : PreMS (right_hd :: right_tl)) :
@@ -97,6 +102,8 @@ noncomputable def extendBasisMiddle {right_hd : ℝ → ℝ} {left right_tl : Ba
           (extendBasisMiddle (left := left_tl_hd :: left_tl_tl) f logBasis_tl ms)
           (ms'.extendBasisMiddle (left := left_tl_hd :: left_tl_tl) f)
 
+/-- Extends a `LogBasis` along the basis by adding a function to the end with a multiseries
+approximating the logarithm of the last function in the current basis. -/
 @[reducible]
 noncomputable def extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
     (logBasis : LogBasis (basis_hd :: basis_tl)) (ms : PreMS [f]) :
@@ -107,6 +114,8 @@ noncomputable def extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f 
     .cons _ _ _ (extendBasisEnd f logBasis_tl ms)
       (ms'.extendBasisEnd _)
 
+/-- Updates a `LogBasis` when the logarithm of the last function in the current basis is added to
+the basis. -/
 @[reducible]
 noncomputable def insertLastLog {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (logBasis : LogBasis (basis_hd :: basis_tl)) :

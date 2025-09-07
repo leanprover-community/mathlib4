@@ -31,6 +31,7 @@ namespace TendstoTactic
 
 open Filter Asymptotics Topology Stream' Seq
 
+/-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
 
 /-- TODO -/
@@ -385,11 +386,15 @@ end Majorated
 
 section PartialSums
 
+/-- Sequence of partial sums of
+`init + basis_fun ^ exps[0] * Cs[0] + ... + basis_fun ^ exps[n] * Cs[n]`. -/
 noncomputable def partialSumsFrom (Cs : Seq (ℝ → ℝ)) (exps : Seq ℝ) (basis_fun : ℝ → ℝ)
     (init : ℝ → ℝ) : Seq (ℝ → ℝ) :=
   Cs.zip exps |>.fold init fun acc (fC, exp) =>
     fun t ↦ acc t + (basis_fun t)^exp * (fC t)
 
+/-- Sequence of partial sums of
+`basis_fun ^ exps[0] * Cs[0] + ... + basis_fun ^ exps[n] * Cs[n]`. -/
 noncomputable def partialSums (Cs : Seq (ℝ → ℝ)) (exps : Seq ℝ) (basis_fun : ℝ → ℝ) :
     Seq (ℝ → ℝ) :=
   partialSumsFrom Cs exps basis_fun 0
@@ -472,6 +477,14 @@ theorem partialSumsFrom_eq_map {Cs : Seq (ℝ → ℝ)} {exps : Seq ℝ} {basis_
 
 end PartialSums
 
+/-- Predicate stating that `ms` approximates `f` on `basis`. This means that
+* If `basis = []`, i.e. ms is just a real number, then `f =ᶠ[atTop] ms`.
+* If `basis ≠ []`, and `ms = nil`, then `f =ᶠ[atTop] 0`.
+* If `basis = basis_hd :: basis_tl`, and `ms = cons (exp, coef) tl`, then
+  `f` is majorated with exponent `exp` by `basis_hd`,
+  `coef` approximates some function `fC`, and
+  `tl` approximates `f - fC * basis_hd ^ exp`
+-/
 def Approximates {basis : Basis} (ms : PreMS basis) (f : ℝ → ℝ) : Prop :=
   match basis with
   | [] => f =ᶠ[atTop] fun _ ↦ ms

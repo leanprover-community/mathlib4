@@ -1567,7 +1567,7 @@ theorem Pairwise.cons_elim {R : α → α → Prop} {hd : α} {tl : Seq α}
   · simp [Pairwise]
     exact fun i j x y h_ij hx hy ↦ h (i + 1) (j + 1) x y (by omega) hx hy
 
-theorem Pairwise.cons_cons_elim_of_trans {R : α → α → Prop} [IsTrans _ R] {hd tl_hd : α}
+theorem Pairwise.cons_cons_elim_of_trans {R : α → α → Prop} {hd tl_hd : α}
     {tl_tl : Seq α} (h : Pairwise R (.cons hd (.cons tl_hd tl_tl))) :
     R hd tl_hd ∧ Pairwise R (.cons tl_hd tl_tl) := by
   apply Pairwise.cons_elim at h

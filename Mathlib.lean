@@ -4641,10 +4641,11 @@ import Mathlib.Tactic.Tendsto.Meta.CompareReal
 import Mathlib.Tactic.Tendsto.Meta.ConstSimp
 import Mathlib.Tactic.Tendsto.Meta.ConstSimpAttribute
 import Mathlib.Tactic.Tendsto.Meta.Defs
-import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
 import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
 import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.Main
+import Mathlib.Tactic.Tendsto.Meta.Misc
+import Mathlib.Tactic.Tendsto.Meta.Normalization
 import Mathlib.Tactic.Tendsto.Meta.Trimming
 import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Multiseries.Basic
@@ -4662,7 +4663,6 @@ import Mathlib.Tactic.Tendsto.Multiseries.Operations.Log
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Pow
-import Mathlib.Tactic.Tendsto.Multiseries.Operations.PowFun
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Powser
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.TrigonometricFunctions
 import Mathlib.Tactic.Tendsto.Multiseries.Term

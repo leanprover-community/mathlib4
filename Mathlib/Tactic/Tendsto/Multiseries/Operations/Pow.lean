@@ -24,11 +24,21 @@ namespace PreMS
 open LazySeries Stream' Seq
 open ForPow
 
+/-- Binomial series starting from `acc` and `n`:
+```
+[acc * (a - n) / (n + 1), acc * (a - n) * (a - n + 1) / ((n + 1) * (n + 2)), ...]
+```
+ -/
 noncomputable def powSeriesFrom (a : ℝ) (acc : ℝ) (n : ℕ) : LazySeries :=
   let g : (ℝ × ℕ) → Option (ℝ × (ℝ × ℕ)) := fun (acc, m) =>
     some (acc, (acc * (a - m) / (m + 1), m + 1))
   Seq.corec g (acc, n)
 
+/-- Binomial series:
+```
+[1, a, a * (a - 1) / 2, a * (a - 1) * (a - 2) / 6, ...]
+```
+ -/
 noncomputable def powSeries (a : ℝ) : LazySeries :=
   powSeriesFrom a 1 0
 
@@ -87,8 +97,8 @@ theorem powSeries_eq_binomialSeries {a : ℝ} :
   congr
   exact Eq.symm List.prod_ofFn
 
-theorem powSeries_analytic {a : ℝ} : analytic (powSeries a) := by
-  simp [analytic, powSeries_eq_binomialSeries]
+theorem powSeries_analytic {a : ℝ} : Analytic (powSeries a) := by
+  simp [Analytic, powSeries_eq_binomialSeries]
   have : 1 ≤ (binomialSeries ℝ a).radius := by apply binomialSeries_radius_ge_one
   apply lt_of_lt_of_le _ this
   simp
@@ -97,6 +107,8 @@ theorem powSeries_toFun_eq {t : ℝ} {a : ℝ} (ht : ‖t‖ < 1) : (powSeries a
   simp [toFun, powSeries_eq_binomialSeries]
   exact binomialSum_eq_rpow ht
 
+/-- If `ms` approximates `f` that eventually positive and `a` is a real number,
+then `ms.pow a` approximates `f^a`. -/
 noncomputable def pow {basis : Basis} (ms : PreMS basis) (a : ℝ) : PreMS basis :=
   match basis with
   | [] => ms^a

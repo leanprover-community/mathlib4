@@ -16,12 +16,19 @@ namespace TendstoTactic.PreMS
 open LazySeries Stream' Seq
 open scoped Nat
 
--- cos (x) = 1 - x^2/2! + x^4/4! - x^6/6! + ...
--- sin (x) = x - x^3/3! + x^5/5! - x^7/7! + ...
-
+/-- Series defining the cosine function:
+```
+cos x = 1 - x^2/2! + x^4/4! - x^6/6! + ...
+```
+ -/
 noncomputable def cosSeries : LazySeries :=
   ofFn fun n ↦ if n % 2 = 0 then (-1 : ℝ) ^ (n / 2) * (n ! : ℝ)⁻¹ else 0
 
+/-- Series defining the sine function:
+```
+sin x = x - x^3/3! + x^5/5! - x^7/7! + ...
+```
+ -/
 noncomputable def sinSeries : LazySeries :=
   ofFn fun n ↦ if n % 2 = 1 then (-1 : ℝ) ^ ((n - 1) / 2) * (n ! : ℝ)⁻¹ else 0
 
@@ -58,7 +65,7 @@ theorem sin_hasFPowerSeriesOnBall_sinSeries :
     HasFPowerSeriesOnBall Real.sin sinSeries.toFormalMultilinearSeries 0 ⊤ := by
   sorry
 
-theorem cosSeries_analytic : cosSeries.analytic := by
+theorem cosSeries_analytic : cosSeries.Analytic := by
   apply analytic_of_HasFPowerSeriesAt (f := Real.cos)
   exact cos_hasFPowerSeriesOnBall_cosSeries.hasFPowerSeriesAt
 
@@ -69,7 +76,7 @@ theorem cosSeries_toFun : cosSeries.toFun = Real.cos := by
   symm
   exact cos_hasFPowerSeriesOnBall_cosSeries.sum (by simp)
 
-theorem sinSeries_analytic : sinSeries.analytic := by
+theorem sinSeries_analytic : sinSeries.Analytic := by
   apply analytic_of_HasFPowerSeriesAt (f := Real.sin)
   exact sin_hasFPowerSeriesOnBall_sinSeries.hasFPowerSeriesAt
 
@@ -82,6 +89,8 @@ theorem sinSeries_toFun : sinSeries.toFun = Real.sin := by
 
 mutual
 
+/-- If `ms` approximates `f` that is eventually bounded,
+then `ms.cos` approximates `Real.cos ∘ f`. -/
 noncomputable def cos {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => Real.cos ms
@@ -95,6 +104,8 @@ noncomputable def cos {basis : Basis} (ms : PreMS basis) : PreMS basis :=
         ((cosSeries.apply tl).mulMonomial coef.cos 0).sub
         ((sinSeries.apply tl).mulMonomial coef.sin 0)
 
+/-- If `ms` approximates `f` that is eventually bounded,
+then `ms.sin` approximates `Real.sin ∘ f`. -/
 noncomputable def sin {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => Real.sin ms

@@ -131,11 +131,7 @@ theorem mul_leadingExp {basis_hd} {basis_tl} {X Y : PreMS (basis_hd :: basis_tl)
   · simp
   cases' Y with Y_exp Y_coef Y_tl
   · simp
-  have : Seq.head (mul (basis := basis_hd :: basis_tl) (Seq.cons (X_exp, X_coef) X_tl)
-      (Seq.cons (Y_exp, Y_coef) Y_tl)) = .some ?_ := by
-    simp
-    exact Eq.refl _
-  simp [leadingExp_of_head, this]
+  simp [leadingExp_of_head]
 
 theorem mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {X Y : PreMS (basis_hd :: basis_tl)} (h : X.mul Y = Seq.nil) :
@@ -1332,6 +1328,7 @@ theorem merge1_mul_comm_right {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       · rw [add_mul_right']
         abel
 
+/-- Addition of `k` multiseries. -/
 noncomputable def addMany {basis : Basis} {k : ℕ} (args : Fin k → PreMS basis) : PreMS basis :=
   match k with
   | 0 => 0
@@ -1369,7 +1366,7 @@ theorem addMany_nils {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ} :
     addMany (fun (_ : Fin k) ↦ Seq.nil) = (0 : PreMS (basis_hd :: basis_tl)) := by
   rw [show Seq.nil = (0 : PreMS (basis_hd :: basis_tl)) by rfl, addMany_zeros]
 
-/-- TODO -/
+/-- Corecursive version of `addMany`. The `addMany_eq` theorem shows that `addMany = addMany'`. -/
 noncomputable def addMany' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
     (args : Fin k → PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
   match k with
@@ -1385,7 +1382,6 @@ noncomputable def addMany' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {k : ℕ}
           (leadingExp_eq_coe h).choose
         else
           (0, args i)
-
       let coef := addMany fun i ↦(coef_tl_args i).1
       let tl := addMany fun i ↦(coef_tl_args i).2
       .cons (exp, coef) tl
@@ -1704,6 +1700,7 @@ theorem addMany_Approximates {basis : Basis} {k : ℕ} {args : Fin k → PreMS b
       · simp only [Fin.natCast_eq_last]
         apply h_approx
 
+/-- Auxiliary function for the RHS of the `addMany_mulMonomial_tail_eq` theorem. -/
 noncomputable def addMany_mulMonomial_tail_BM {basis_hd} {basis_tl} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (exp : ℝ) :
     Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ) :=
@@ -1728,7 +1725,11 @@ noncomputable def addMany_mulMonomial_tail_BM {basis_hd} {basis_tl} {k : ℕ}
           ((h_BM_cons i h).choose.2, (BM i).2.1, (BM i).2.2)
         else BM i)
 
-
+/-- If we know that the sum of `Bᵢ.mulMonomial M_coefᵢ M_expᵢ` equals `cons (exp, coef) tl`,
+then `tl` is given by the sum of `Bᵢ'.mulMonomial M_coefᵢ' M_expᵢ'` where
+`(Bᵢ', M_coefᵢ', M_expᵢ')` is obtained from `(Bᵢ, M_coefᵢ, M_expᵢ)` by
+`addMany_mulMonomial_tail_BM`.
+-/
 theorem addMany_mulMonomial_tail_eq {basis_hd} {basis_tl} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)}
     {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
@@ -1822,6 +1823,7 @@ theorem addMany_mulMonomial_tail_BM_WellOrdered {basis_hd} {basis_tl} {k : ℕ}
   · apply addMany_mulMonomial_tail_M_WellOrdered
     exact fun j ↦ (h_wo j).right
 
+/-- Auxiliary function for the RHS of the `addMany_mulMonomial_tail_B_Approximates` theorem. -/
 noncomputable def addMany_mulMonomial_tail_fB {basis_hd} {basis_tl} {k : ℕ}
     (BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)) (exp : ℝ)
     {fB : Fin k → (ℝ → ℝ)}
@@ -1854,6 +1856,9 @@ noncomputable def addMany_mulMonomial_tail_fB {basis_hd} {basis_tl} {k : ℕ}
       else
         fB i
 
+/-- If `Bᵢ` approximates `fBᵢ`, then `Bᵢ'` approximates
+`addMany_mulMonomial_tail_fB BM exp hB_approx i`, where `(Bᵢ', M_coefᵢ', M_expᵢ')` is obtained
+from `(Bᵢ, M_coefᵢ, M_expᵢ)` by `addMany_mulMonomial_tail_BM`. -/
 theorem addMany_mulMonomial_tail_B_Approximates {basis_hd} {basis_tl} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} {exp : ℝ}
     {fB : Fin k → (ℝ → ℝ)}
@@ -1872,6 +1877,9 @@ theorem addMany_mulMonomial_tail_B_Approximates {basis_hd} {basis_tl} {k : ℕ}
       exact h.choose_spec.right.right
     · apply hB_approx
 
+/-- When `Bᵢ` approximates `fBᵢ` and `Mᵢ` approximates `fMᵢ`,
+and the sum of `Bᵢ.mulMonomial Mᵢ M_exp` equals `cons (exp, coef) tl`,
+then `coef` approximates `addMany_mulMonomial_fC BM exp fB fM hB_approx`. -/
 noncomputable def addMany_mulMonomial_fC {basis_hd} {basis_tl} {k : ℕ}
     {BM : Fin k → (PreMS (basis_hd :: basis_tl) × (PreMS basis_tl) × ℝ)} (exp : ℝ)
     {fB : Fin k → (ℝ → ℝ)} (fM : Fin k → (ℝ → ℝ))

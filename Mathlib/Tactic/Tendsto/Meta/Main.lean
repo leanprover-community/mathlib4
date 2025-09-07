@@ -11,20 +11,20 @@ import Mathlib.Tactic.Tendsto.Meta.CompareMS
 # TODO
 -/
 
-open Filter Topology Asymptotics TendstoTactic Stream'.Seq ElimDestruct
+open Filter Topology Asymptotics TendstoTactic Stream'.Seq Normalization
 
 open Lean Elab Meta Tactic Qq
 
 namespace TendstoTactic
 
-theorem basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] := by
-  simp [WellFormedBasis]
-  exact fun _ a ↦ a
+theorem init_basis_wo : WellFormedBasis [fun (x : ℝ) ↦ x] :=
+  WellFormedBasis.single _ (fun _ a ↦ a)
 
 lemma proveLastExpZero_aux {x y : ℝ} {z : Option ℝ} (hx : z = .some x) (hy : z = .some y)
     (hy0 : y = 0) : x = 0 := by
   aesop
 
+/-- Proves that the last element of the list is zero. Return `none` otherwise. -/
 partial def proveLastExpZero (li : Q(List ℝ)) : TacticM <| Option <|
     Q(∀ a, List.getLast? $li = .some a → a = 0) := do
   let .some last ← getLast li | return .none
@@ -53,34 +53,46 @@ partial def getBasisExtension (basis basis' : Q(Basis)) : MetaM (Q(BasisExtensio
       return q(BasisExtension.insert $basis_hd' $ex)
   | _ => panic! "unexpected basis or basis' in getBasisExtension"
 
+/-- State of the `BasisM` monad. -/
 structure BasisState where
+  /-- Current basis. -/
   basis : Q(Basis)
+  /-- Log-basis. -/
   logBasis : Q(LogBasis $basis)
+  /-- Proof of well-formedness of the basis. -/
   h_basis : Q(WellFormedBasis $basis)
+  /-- Proof of well-formedness of the log-basis. -/
   h_logBasis : Q(LogBasis.WellFormed $logBasis)
+  /-- Index of the `id` function in the basis. -/
   n_id : Q(Fin (List.length $basis))
 
+/-- Monad currying the basis. -/
 abbrev BasisM := StateT BasisState TacticM
 
 -- TODO: `h_c_pos` and `h_eq` are not used. Do we need them?
+/-- Type for the `h_right` field of the `FindPlaceResult`. -/
 inductive FindPlaceResultRight (f right_hd : Q(ℝ → ℝ))
   | gt (h : Q((Real.log ∘ $right_hd) =o[atTop] $f))
   | eq (c : Q(ℝ)) (h_c_pos : Q($c ≠ 0)) (h_eq : Q($f ~[atTop] $c • Real.log ∘ $right_hd))
     (log_right_hd : MS)
 deriving Inhabited
 
+/-- Result of the `findPlace` function. -/
 structure FindPlaceResult (ms : MS) where
+  /-- `ms` is o-little of logarithms of `left`. -/
   left : Q(Basis)
+  /-- The head of the right part of the basis. -/
   right_hd : Q(ℝ → ℝ)
+  /-- The tail of the right part of the basis. -/
   right_tl : Q(Basis)
+  /-- `ms` is o-little of logarithms of `left`. -/
   h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g))
+  /-- Either `right_hd` is o-little of `ms.f` or `ms.f` and `right_hd` are equivalent. -/
   h_right : FindPlaceResultRight ms.f right_hd
 deriving Inhabited
 
--- assumptions:
--- `ms` tends to infinity
--- `ms` is o-little of logs of `left`
--- `ms.basis = left ++ cur :: right`
+/-- Given `ms : MS` with `ms.basis = left ++ cur :: right` return the place where `ms` can be
+inserted into the log-basis. Assumes `ms` is o-little of logarithms of `left`. -/
 partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     (h_pos : Q(Term.FirstIsPos (PreMS.leadingTerm $ms.val).exps))
     (left : Q(Basis)) (cur : Q(ℝ → ℝ)) (right : Q(Basis))
@@ -170,6 +182,7 @@ lemma PreMS.Approximates_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef 
   generalize_proofs h
   exact h.choose_spec.left
 
+/-- Given trimmed `ms : MS` finds its coefficient on depth `depth`. -/
 def extractDeepCoef (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (depth : Nat) :
     MetaM <| (ms : MS) × Q(PreMS.Trimmed $ms.val) := do
   match depth with
@@ -197,7 +210,8 @@ lemma PreMS.Approximates_log_exp {basis : Basis} {ms : PreMS basis} {f : ℝ →
   ext
   simp
 
-def updateNId (left right : Q(Basis)) (newElem : Q(ℝ → ℝ))
+/-- Finds the new `n_id` after inserting `newElem` into `basis = left ++ right`. -/
+def getNewNId (left right : Q(Basis)) (newElem : Q(ℝ → ℝ))
     (n_id : Q(Fin (List.length ($left ++ $right)))) :
     MetaM (Q(Fin (List.length ($left ++ $newElem :: $right)))) := do
   let leftLength ← computeLength left
@@ -207,11 +221,13 @@ def updateNId (left right : Q(Basis)) (newElem : Q(ℝ → ℝ))
   else
     return ← mkAppM ``Fin.succ #[n_id]
 
+/-- Returns the index of the inserted element at `Fin (List.length (left ++ newElem :: right))`. -/
 @[reducible]
 def getInsertedIndex (left right : Basis) (newElem : ℝ → ℝ) :
     Fin (List.length (left ++ newElem :: right)) :=
   ⟨left.length, by simp⟩
 
+/-- Given `ms` immerses it into the current basis. -/
 def updateBasis (ms : MS) : BasisM MS := do
   let ex ← getBasisExtension ms.basis (← get).basis
   let ms' ← ms.updateBasis ex (← get).logBasis (← get).h_basis (← get).h_logBasis
@@ -271,7 +287,7 @@ theorem PreMS.neg_log_exp_Approximates {basis : Basis} {ms : PreMS basis} {f : �
   simp
 
 set_option maxHeartbeats 0 in
-/-- Takes `ms` and place in current `basis`.
+/-- Takes `ms` and its place in current `basis`.
 Finds a deep coef `G` of `ms` to insert.
 Inserts `exp ±G.f` (with the right sign) in the basis between `left` and `right_hd :: right_tl`.
 Returns `G` and the MS representing `exp G.f`. -/
@@ -281,9 +297,9 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     (h_first_is_pos : Q(Term.FirstIsPos $exps))
     (h_left : Q(∀ g ∈ List.getLast? $left, $ms.f =o[atTop] (Real.log ∘ g)))
     (h_right : Q((Real.log ∘ $right_hd) =o[atTop] $ms.f)) : BasisM (MS × MS) := do
-  have : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩
-  have : (PreMS.leadingTerm $ms.val).coef =Q $coef := ⟨⟩
-  have : (PreMS.leadingTerm $ms.val).exps =Q $exps := ⟨⟩
+  haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩; do
+  haveI : (PreMS.leadingTerm $ms.val).coef =Q $coef := ⟨⟩; do
+  haveI : (PreMS.leadingTerm $ms.val).exps =Q $exps := ⟨⟩; do
   -- extract deep coef `G`
   let ⟨G, hG_trimmed⟩ := ← extractDeepCoef ms h_trimmed (← computeLength left)
   haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩
@@ -301,9 +317,9 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
   | .pos h_pos =>
     have expG := q(Real.exp ∘ $G.f)
     haveI : $expG =Q Real.exp ∘ $G.f := ⟨⟩
-    let new_n_id := ← updateNId left q($right_hd :: $right_tl) expG (← get).n_id
+    let new_n_id := ← getNewNId left q($right_hd :: $right_tl) expG (← get).n_id
     let basis := ← reduceBasis q($left ++ $expG :: $right_hd :: $right_tl)
-    have : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
+    haveI : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
     do
     let h_basis : Q(WellFormedBasis ($left ++ $expG :: $right_hd :: $right_tl)) :=
       q(WellFormedBasis.insert_pos_exp $left $right_hd $right_tl $ms.h_wo $ms.h_approx $h_trimmed
@@ -325,9 +341,9 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
   | .neg h_neg =>
     have expG := q(Real.exp ∘ (-$G.f))
     haveI : $expG =Q Real.exp ∘ (-$G.f) := ⟨⟩
-    let new_n_id := ← updateNId left q($right_hd :: $right_tl) expG (← get).n_id
+    let new_n_id := ← getNewNId left q($right_hd :: $right_tl) expG (← get).n_id
     let basis := ← reduceBasis q($left ++ $expG :: $right_hd :: $right_tl)
-    have : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
+    haveI : $basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
     do
     let h_basis : Q(WellFormedBasis ($left ++ $expG :: $right_hd :: $right_tl)) :=
       q(WellFormedBasis.insert_neg_exp $left $right_hd $right_tl $ms.h_wo $ms.h_approx $h_trimmed
@@ -346,7 +362,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
     let G_exp := MS.monomial_rpow (← get).basis (← get).logBasis new_idx q(-1) (← get).h_basis
       (← get).h_logBasis
-    have : $G_exp.basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩
+    haveI : $G_exp.basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩; do
     let new_idx : Q(Fin (List.length $G_exp.basis)) := new_idx
     let h_eq : Q(List.get _ $new_idx = Real.exp ∘ (-$G.f)) := ← mkEqRefl q(Real.exp ∘ (-$G.f))
     let G_exp := {G_exp with
@@ -356,7 +372,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     return (← updateBasis G, G_exp)
   | .zero _ => panic! "Unexpected coef = zero in insertEquivalentToBasis"
 
--- assume `ms` is partially trimmed, i.e. its either trimmed or it's clear that `FirstIsNeg ms`
+/-- Given a partially trimmed `ms` returns the MS approximating `exp ∘ ms.f`. -/
 partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val)) : BasisM MS := do
   let leading ← getLeadingTerm ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
@@ -375,7 +391,7 @@ partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val))
       let log_right_hd' ← log_right_hd.updateBasis ex ms.logBasis ms.h_basis ms.h_logBasis
       have : $log_right_hd'.f =Q Real.log ∘ $right_hd := ⟨⟩
       let G := log_right_hd'.mulConst q($c)
-      let H := ms.sub G ⟨⟩
+      let H := ms.sub G
       let ⟨H, hH_trimmed?⟩ ← trimPartialMS H
       let expH := ← createExpMS H hH_trimmed?
       -- return b_i^c * exp (H)
@@ -384,7 +400,7 @@ partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val))
         (← get).h_logBasis
       -- B ~ b_i^c
       -- expH ~ exp (f - c * log b_i)
-      let res := B.mul expH ⟨⟩
+      let res := B.mul expH
       return {res with
         f := q(Real.exp ∘ $ms.f)
         h_approx :=
@@ -396,7 +412,7 @@ partial def createExpMS (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val))
         h_first_is_pos h_left h_right
       -- create H = F - G
       let ms ← updateBasis ms
-      let H := ms.sub G ⟨⟩
+      let H := ms.sub G
       let ⟨H, _⟩ ← trimPartialMS H
       -- prove `¬ FirstIsPos` for `H`
       let H_leading ← getLeadingTerm H.val
@@ -432,6 +448,7 @@ theorem monomial_rpow_Approximates_inv (basis : Basis) (ms : PreMS basis) (f : �
   ext t
   simp [Real.rpow_neg_one]
 
+/-- Implemetation of `createMS` in `BasisM`. -/
 partial def createMSImp (body : Expr) : BasisM MS := do
   if body.isBVar then
     if body.bvarIdx! != 0 then
@@ -445,25 +462,25 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     let ms2 ← createMSImp arg2
     if ms1.basis != ms2.basis then
       let ms1' ← updateBasis ms1
-      return MS.add ms1' ms2 ⟨⟩
+      return MS.add ms1' ms2
     else
-      return MS.add ms1 ms2 ⟨⟩
+      return MS.add ms1 ms2
   | (``HSub.hSub, #[_, _, _, _, arg1, arg2]) =>
     let ms1 ← createMSImp arg1
     let ms2 ← createMSImp arg2
     if ms1.basis != ms2.basis then
       let ms1' ← updateBasis ms1
-      return MS.sub ms1' ms2 ⟨⟩
+      return MS.sub ms1' ms2
     else
-      return MS.sub ms1 ms2 ⟨⟩
+      return MS.sub ms1 ms2
   | (``HMul.hMul, #[_, _, _, _, arg1, arg2]) =>
     let ms1 ← createMSImp arg1
     let ms2 ← createMSImp arg2
     if ms1.basis != ms2.basis then
       let ms1' ← updateBasis ms1
-      return MS.mul ms1' ms2 ⟨⟩
+      return MS.mul ms1' ms2
     else
-      return MS.mul ms1 ms2 ⟨⟩
+      return MS.mul ms1 ms2
   | (``Inv.inv, #[_, _, (arg : Q(ℝ))]) =>
     if arg.isBVar then
       if arg.bvarIdx! != 0 then
@@ -483,9 +500,9 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     let ⟨ms2, h_trimmed⟩ ← trimMS (← createMSImp arg2)
     if ms1.basis != ms2.basis then
       let ms1' ← updateBasis ms1
-      return MS.div ms1' ms2 h_trimmed ⟨⟩
+      return MS.div ms1' ms2 h_trimmed
     else
-      return MS.div ms1 ms2 h_trimmed ⟨⟩
+      return MS.div ms1 ms2 h_trimmed
   | (``HPow.hPow, #[_, t, _, _, (arg : Q(ℝ)), exp]) =>
     let ⟨ms, h_trimmed⟩ ← trimMS (← createMSImp arg)
     if !exp.hasLooseBVars then
@@ -561,15 +578,17 @@ partial def createMSImp (body : Expr) : BasisM MS := do
     else
       return MS.const (← get).basis (← get).logBasis body (← get).h_basis (← get).h_logBasis
 
+/-- Given a body of a function, returns the MS approximating it. -/
 def createMS (body : Expr) : TacticM MS := do
   return (← (createMSImp body).run {
     basis := q([fun (x : ℝ) ↦ x])
     logBasis := q(LogBasis.single _)
-    h_basis := q(basis_wo)
+    h_basis := q(init_basis_wo)
     h_logBasis := q(LogBasis.single_WellFormed _)
     n_id := q(⟨0, by simp⟩)
   }).fst
 
+/-- Given a function `f`, returns the limit and the proof that `f` tends to it at `atTop`. -/
 def computeTendsto (f : Q(ℝ → ℝ)) :
     TacticM ((limit : Q(Filter ℝ)) × Q(Tendsto $f atTop $limit)) := do
   match f with
@@ -615,16 +634,25 @@ def computeTendsto (f : Q(ℝ → ℝ)) :
     return ⟨limit, res⟩
   | _ => throwError "Function should be lambda"
 
-def convertFilter (f : Q(ℝ → ℝ)) (limit : Q(Filter ℝ)) : MetaM (Option Name × List (Q(ℝ → ℝ))) := do
-  match limit with
+/-- Given a function `f` and a filter `source`, for which we would like to know
+the limit at `source`,
+returns the lemma name with the list of functions. One then need to find limits of these
+functions and apply the lemma to the found proofs to get the proof for `f` at `source`. -/
+def convertFilter (f : Q(ℝ → ℝ)) (source : Q(Filter ℝ)) :
+    MetaM (Option Name × List (Q(ℝ → ℝ))) := do
+  match source with
   | ~q(atTop) => return (.none, [f])
   | ~q(atBot) => return (.some ``tendsto_bot_of_tendsto_top, [q(fun x ↦ $f (-x))])
   | ~q(𝓝[>] $c) => return (.some ``tendsto_nhds_right_of_tendsto_top, [q(fun x ↦ $f ($c + x⁻¹))])
   | ~q(𝓝[<] $c) => return (.some ``tendsto_nhds_left_of_tendsto_top, [q(fun x ↦ $f ($c - x⁻¹))])
   | ~q(𝓝[≠] $c) => return (.some ``tendsto_nhds_punctured_of_tendsto_top,
     [q(fun x ↦ $f ($c - x⁻¹)), q(fun x ↦ $f ($c + x⁻¹))])
-  | _ => throwError f!"Unexpected source filter: {← ppExpr limit}"
+  | _ => throwError f!"Unexpected source filter: {← ppExpr source}"
 
+/-- Computes limits of functions `ℝ → ℝ`. The goal must be in the form
+`Tendsto (fun x ↦ body) source target`.
+It works on wide class of function, that is constructed by arithmetic operations, powers, `exp` and
+`log` operations. -/
 elab "compute_asymptotics" : tactic =>
   Lean.Elab.Tactic.withMainContext do
     let target : Q(Prop) ← getMainTarget

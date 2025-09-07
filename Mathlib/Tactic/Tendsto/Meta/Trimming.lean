@@ -5,14 +5,16 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries
 import Mathlib.Tactic.Tendsto.Meta.MS
-import Mathlib.Tactic.Tendsto.Meta.ElimDestruct
+import Mathlib.Tactic.Tendsto.Meta.Normalization
 import Qq
 
 /-!
-# TODO
+# Trimming a multiseries
+
+TODO: write about what is trimming and why it is needed
 -/
 
-open Filter Asymptotics Stream' Seq TendstoTactic ElimDestruct
+open Filter Asymptotics Stream' Seq TendstoTactic Normalization
 
 open Lean Elab Meta Tactic Qq
 
@@ -70,12 +72,18 @@ theorem approx_cons_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ →
   apply PreMS.Approximates.cons fC _ h_maj h_tl
   exact h_coef_approx _ h_coef
 
+/-- Result of the `trim` function. -/
 structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
+  /-- Trimmed multiseries. -/
   val : Q(PreMS $basis)
+  /-- Proof of its well-orderedness. -/
   h_wo : Q(PreMS.WellOrdered $val)
+  /-- Proof that it approximates the same function. -/
   h_approx : Q(∀ f, PreMS.Approximates $ms f → PreMS.Approximates $val f)
+  /-- Proof that it is trimmed. -/
   h_trimmed : Q(PreMS.Trimmed $val)
 
+/-- Trims a multiseries. -/
 def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $ms))
     (destructStepsLeft := 20) : TacticM (TrimmingResult ms) := do
   let destructStepsLeftNext + 1 := destructStepsLeft
@@ -89,7 +97,7 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $
       h_trimmed := q(@PreMS.Trimmed.const $ms)
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS ms
+    let ⟨ms_extracted, h_eq_extracted⟩ ← normalizePreMS ms
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q(Eq.subst $h_eq_extracted $h_wo)
 
     match ms_extracted with
@@ -162,14 +170,20 @@ def trim {basis : Q(Basis)} (ms : Q(PreMS $basis)) (h_wo : Q(PreMS.WellOrdered $
     | _ => throwError "extractMS returned wrong ms"
 
 
+/-- Result of the `trimPartial` function. -/
 structure PartialTrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
+  /-- Trimmed multiseries. -/
   val : Q(PreMS $basis)
+  /-- Proof that it is well-ordered. -/
   h_wo : Q(PreMS.WellOrdered $val)
+  /-- Proof that it approximates the same function. -/
   h_approx : Q(∀ f, PreMS.Approximates $ms f → PreMS.Approximates $val f)
+  /-- Optional proof that it is trimmed. It it's not present, then it can be proved that
+  `FirstIsNeg ms.leadingTerm.exps` is true by the `getFirstIs` function. -/
   h_trimmed : Option Q(PreMS.Trimmed $val)
 
 /-- Same as `trim` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true. In such
-case we can prove that the limit is zero without `ms.Trimmed`. -/
+case one can prove that the limit is zero without the `ms.Trimmed` assumption. -/
 def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
     (h_wo : Q(PreMS.WellOrdered $ms)) (allZero := true) (destructStepsLeft := 20) :
     TacticM (PartialTrimmingResult ms) := do
@@ -184,7 +198,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
       h_trimmed := .some q(@PreMS.Trimmed.const $ms)
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let ⟨ms_extracted, h_eq_extracted⟩ ← extractMS ms
+    let ⟨ms_extracted, h_eq_extracted⟩ ← normalizePreMS ms
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q(Eq.subst $h_eq_extracted $h_wo)
 
     match ms_extracted with
@@ -272,8 +286,7 @@ def trimPartial {basis : Q(Basis)} (ms : Q(PreMS $basis))
       | _ => throwError "Unexpected basis_tl in trim"
     | _ => throwError "extractMS returned wrong ms"
 
--- TODO: rename? because `trimMS` not just creates a trimmed MS approximating the same function, but
--- but also is in the normal form as expression.
+/-- Trims a multiseries. -/
 def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo
   let newMs : MS := {
@@ -288,6 +301,8 @@ def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
   }
   return ⟨newMs, res.h_trimmed⟩
 
+/-- Same as `trimMS` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true.
+In such case one can prove that the limit is zero without the `ms.Trimmed` assumption. -/
 def trimPartialMS (ms : MS) : TacticM ((ms' : MS) × Option Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trimPartial ms.val ms.h_wo
   let newMs : MS := {

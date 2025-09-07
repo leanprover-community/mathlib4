@@ -4,12 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Tendsto.Meta.Defs
 import Mathlib.Tactic.Tendsto.Meta.ConstSimp
 import Mathlib.Tactic.Tendsto.Meta.CompareReal
+import Mathlib.Tactic.Tendsto.Meta.Defs
+import Mathlib.Tactic.Tendsto.Meta.Misc
 
 /-!
-# TODO
+# Extraction of the head of a multiseries
+
+In this file we simulate the lazy evaluation with multiseries and `LazySeries`.
+The main function is `normalizePreMS` that turns a given multiseries into a new one
+in the normal form (`nil` or `cons`). The function `normalizeLS` does the same for `LazySeries`.
 -/
 
 open Filter Asymptotics TendstoTactic Stream' Seq PreMS
@@ -18,11 +23,12 @@ open Lean Elab Meta Tactic Qq
 
 namespace TendstoTactic
 
-namespace ElimDestruct
+namespace Normalization
 
 example : PreMS.one [] = 1 := by
   norm_num [PreMS_const]
 
+/-- Result of the normalization of a `LazySeries`. -/
 inductive ResultLS (s : Q(LazySeries))
 | nil (h : Q($s = Seq.nil))
 | cons (hd : Q(ℝ)) (tl : Q(LazySeries)) (h : Q($s = Seq.cons $hd $tl))
@@ -32,13 +38,15 @@ lemma ResultLS.consNormalize_aux {s : LazySeries} {hd hd' : ℝ} {tl : LazySerie
     s = Seq.cons hd' tl := by
   rw [h, h_hd]
 
+/-- The same as `ResultLS.cons` but also normalizes the head as a real number. -/
 def ResultLS.consNormalize {s : Q(LazySeries)} (hd : Q(ℝ)) (tl : Q(LazySeries))
     (h : Q($s = Seq.cons $hd $tl)) :
     TacticM (ResultLS s) := do
   let ⟨hd', pf_hd⟩ ← normalizeReal hd
   return .cons q($hd') q($tl) q(consNormalize_aux $h $pf_hd)
 
-partial def extractLS (s : Q(LazySeries)) : TacticM (ResultLS s) := do
+/-- Normalizes a `LazySeries`. -/
+partial def normalizeLS (s : Q(LazySeries)) : TacticM (ResultLS s) := do
   match s with
   | ~q(Seq.nil) =>
     return .nil q(rfl)
@@ -71,8 +79,9 @@ partial def extractLS (s : Q(LazySeries)) : TacticM (ResultLS s) := do
       q(LazySeries.ofFnFrom
         (fun n ↦ if n % 2 = 1 then (-1 : ℝ) ^ ((n - 1) / 2) * (n.factorial : ℝ)⁻¹ else 0) 1)
       q(sinSeries_eq_cons)
-  | _ => panic! "extractLS: unexpected s"
+  | _ => panic! "normalizeLS: unexpected s"
 
+/-- Result of the normalization of a `PreMS`. -/
 inductive Result {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     (ms : Q(PreMS ($basis_hd :: $basis_tl)))
 | nil (h : Q($ms = PreMS.nil))
@@ -100,6 +109,8 @@ lemma consNormalize_aux_congr_exp_coef {basis_hd : ℝ → ℝ}
     ms = PreMS.cons (exp', coef') tl := by
   rw [h, h_exp, h_coef]
 
+/-- The same as `Result.cons` but also normalizes `exp` as a real number,
+and the `coef` if `basis_tl` is `[]`. -/
 def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     {ms : Q(PreMS ($basis_hd :: $basis_tl))}
     (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(PreMS ($basis_hd :: $basis_tl)))
@@ -113,6 +124,7 @@ def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
   | _ =>
     return .cons q($exp') q($coef) q($tl) q(consNormalize_aux_congr_exp $h $pf_exp)
 
+/-- The same as `Result.cons` but also normalizes the `coef` if `basis_tl` is `[]`. -/
 def consNormalizeCoef {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     {ms : Q(PreMS ($basis_hd :: $basis_tl))}
     (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(PreMS ($basis_hd :: $basis_tl)))
@@ -125,12 +137,15 @@ def consNormalizeCoef {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
   | _ =>
     return .cons q($exp) q($coef) q($tl) q($h)
 
+/-- Turns a `Result` for `ms` into a `Result` for `ms'` given the proof of `ms' = ms`. -/
 def Result.cast {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     {ms ms' : Q(PreMS ($basis_hd :: $basis_tl))} (res : Result ms) (h : Q($ms' = $ms)) :
     Result ms' :=
   match res with
   | .nil h_ms => .nil q(($h).trans $h_ms)
   | .cons exp coef tl h_ms => .cons exp coef tl q(($h).trans $h_ms)
+
+section lemmas
 
 lemma extendBasisEnd_const (f : ℝ → ℝ) (ms : PreMS []) :
     PreMS.extendBasisEnd f ms = PreMS.cons (0, ms) PreMS.nil := by
@@ -440,9 +455,10 @@ lemma sin_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS
   subst h
   simp [PreMS.sin, PreMS.cons, h_not_lt]
 
--- TODO: norm_num all leading exps
-set_option maxHeartbeats 0 in
-partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+end lemmas
+
+/-- Normalizes a `PreMS` and returns a `Result`. -/
+partial def normalizePreMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     (ms : Q(PreMS ($basis_hd :: $basis_tl))) : TacticM (Result ms) := do
   match ms.getAppFnArgs with
   | (``PreMS.extendBasisEnd, #[(basis' : Q(Basis)), (f : Q(ℝ → ℝ)), (ms' : Q(PreMS $basis'))]) =>
@@ -456,7 +472,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalizeCoef q(0) q($ms') q(PreMS.nil) (q($h') : Expr)
     | ~q(List.cons $basis_hd' $basis_tl') =>
       have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
-      let res := ← extractMSImp (basis_hd := basis_hd') (basis_tl := basis_tl') ms'
+      let res := ← normalizePreMSImp (basis_hd := basis_hd') (basis_tl := basis_tl') ms'
       match res with
       | .nil h =>
         let h' : Q(PreMS.extendBasisEnd $f $ms' = PreMS.nil) := q(extendBasisEnd_nil $f $h)
@@ -475,7 +491,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     have : $oldBasis =Q $oldBasis' := ⟨⟩
     match oldBasis, ex with
     | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.keep _ $ex_tl) =>
-      let res := ← extractMSImp (basis_hd := oldBasis_hd) (basis_tl := oldBasis_tl) ms'
+      let res := ← normalizePreMSImp (basis_hd := oldBasis_hd) (basis_tl := oldBasis_tl) ms'
       match res with
       | .nil h =>
         let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.nil) := q(updateBasis_keep_nil $ex_tl $h)
@@ -498,9 +514,10 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       have : ($ex).getBasis =Q ($basis_hd :: $basis_tl) := ⟨⟩
       let h' : Q(PreMS.updateBasis $ex $ms' = PreMS.const _ $ms') := q(updateBasis_const _ _)
       return ← consNormalizeCoef q(0) q(PreMS.const _ $ms') q(PreMS.nil) (q($h') : Expr)
-    | _ => panic! s!"extractMS: unexpected oldBasis and ex: {← ppExpr oldBasis} and {← ppExpr ex}"
+    | _ =>
+      panic!
+        s!"normalizePreMS: unexpected oldBasis and ex: {← ppExpr oldBasis} and {← ppExpr ex}"
   | _ =>
-  -- sorry
   match ms with
   | ~q(PreMS.nil) => return .nil q(rfl)
   | ~q(PreMS.cons ($exp, $coef) $tl) => return .cons q($exp) q($coef) q($tl) q(rfl)
@@ -527,15 +544,15 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalizeCoef q(0) q(PreMS.monomial_rpow _ $m $r) q(PreMS.nil)
         q(monomial_rpow_succ $m $r)
   | ~q(PreMS.neg $arg) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       return .nil q(neg_nil $h)
     | .cons exp coef tl h =>
       return ← consNormalize q($exp) q(PreMS.neg $coef) q(PreMS.neg $tl) q(neg_cons $h)
   | ~q(PreMS.add $arg1 $arg2) =>
-    let res1 ← extractMSImp arg1
-    let res2 ← extractMSImp arg2
+    let res1 ← normalizePreMSImp arg1
+    let res2 ← normalizePreMSImp arg2
     match res1 with
     | .nil h1 =>
       return res2.cast q(nil_add $h1)
@@ -555,11 +572,11 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
           return ← consNormalize exp1 q(PreMS.add $coef1 $coef2) q(PreMS.add $tl1 $tl2)
             q(cons_add_cons_both $h1 $h2 $h_exp)
   | ~q(PreMS.mul $arg1 $arg2) =>
-    let res1 ← extractMSImp arg1
+    let res1 ← normalizePreMSImp arg1
     match res1 with
     | .nil h1 => return .nil q(nil_mul $h1)
     | .cons exp1 coef1 tl1 h1 =>
-      let res2 ← extractMSImp arg2
+      let res2 ← normalizePreMSImp arg2
       match res2 with
       | .nil h2 => return .nil q(mul_nil $h2)
       | .cons exp2 coef2 tl2 h2 =>
@@ -567,7 +584,7 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
           q((mulMonomial $tl2 $coef1 $exp1).add
             (($tl1).mul (PreMS.cons ($exp2, $coef2) $tl2))) q(cons_mul_cons $h1 $h2)
   | ~q(PreMS.mulMonomial $b $m_coef $m_exp) =>
-    let res_b ← extractMSImp b
+    let res_b ← normalizePreMSImp b
     match res_b with
     | .nil hb =>
       return .nil q(mulMonomial_nil $hb)
@@ -575,14 +592,14 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalize q($m_exp + $b_exp) q(PreMS.mul $m_coef $b_coef)
         q(PreMS.mulMonomial (basis_hd := $basis_hd) $b_tl $m_coef $m_exp) q(mulMonomial_cons $hb)
   | ~q(PreMS.mulConst $arg $c) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h => return .nil q(mulConst_nil $h)
     | .cons exp coef tl h =>
       return ← consNormalize q($exp) q(PreMS.mulConst $coef $c) q(PreMS.mulConst $tl $c)
         q(mulConst_cons $h)
   | ~q(PreMS.LazySeries.apply $s $arg) =>
-    let res_s ← extractLS s
+    let res_s ← normalizeLS s
     match res_s with
     | .nil hs =>
       return .nil q(apply_nil $hs)
@@ -590,17 +607,17 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd)
         q((PreMS.LazySeries.apply $s_tl $arg).mul $arg) q(apply_cons $hs)
   | ~q(PreMS.inv $arg) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       return .nil q(inv_nil $h)
     | .cons exp coef tl h =>
       let ms' : Q(PreMS ($basis_hd :: $basis_tl)) := q(mulMonomial
         (invSeries.apply (mulMonomial (neg $tl) ($coef).inv (-$exp))) ($coef).inv (-$exp))
-      let res' ← extractMSImp ms'
+      let res' ← normalizePreMSImp ms'
       return res'.cast q(inv_cons $h)
   | ~q(PreMS.pow $arg $a) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       match ← checkZero a with
@@ -610,10 +627,10 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       let ms' : Q(PreMS ($basis_hd :: $basis_tl)) := q(mulMonomial
         ((powSeries $a).apply (mulMonomial $tl ($coef).inv (-$exp))) (($coef).pow $a)
         ($exp * $a))
-      let res' ← extractMSImp ms'
+      let res' ← normalizePreMSImp ms'
       return res'.cast q(pow_cons $h $a)
   | ~q(PreMS.log $logBasis $arg) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       return .nil q(log_nil $logBasis $h)
@@ -623,21 +640,21 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(PreMS.add (PreMS.const _ (Real.log $coef)) <|
             PreMS.logSeries.apply (PreMS.mulConst $tl $coef⁻¹))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(log_cons_basis_tl_nil $h $logBasis)
       | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
         let logBasis' ← reduceLogBasis logBasis
         have : $logBasis =Q $logBasis' := ⟨⟩
         let ~q(LogBasis.cons _ _ _ $logBasis_tl $log_hd) := logBasis'
-          | panic! s!"extractMS: unexpected logBasis: {← ppExpr logBasis'}"
+          | panic! s!"normalizePreMS: unexpected logBasis: {← ppExpr logBasis'}"
         let logC := q(PreMS.log $logBasis_tl $coef)
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(PreMS.add ((.cons (0, ($logC).add <| ($log_hd).mulConst $exp) .nil)) <|
             logSeries.apply (mulMonomial $tl ($coef).inv (-$exp)))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(log_cons_basis_tl_cons $h $logBasis_tl $log_hd)
   | ~q(PreMS.exp $arg) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(exp_nil $h)
@@ -646,15 +663,15 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | .lt h_exp =>
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(PreMS.expSeries.apply (PreMS.cons ($exp, $coef) $tl))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(exp_cons_of_lt $h $h_exp)
       | .not_lt h_exp =>
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q((expSeries.apply $tl).mulMonomial ($coef).exp 0)
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(exp_cons_of_not_lt $h $h_exp)
   | ~q(PreMS.cos $arg) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(cos_nil $h)
@@ -663,16 +680,16 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | .lt h_exp =>
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(PreMS.cosSeries.apply (PreMS.cons ($exp, $coef) $tl))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(cos_cons_of_lt $h $h_exp)
       | .not_lt h_exp =>
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(((PreMS.cosSeries.apply $tl).mulMonomial ($coef).cos 0).sub
             ((PreMS.sinSeries.apply $tl).mulMonomial ($coef).sin 0))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(cos_cons_of_not_lt $h $h_exp)
   | ~q(PreMS.sin $arg) =>
-    let res ← extractMSImp arg
+    let res ← normalizePreMSImp arg
     match res with
     | .nil h =>
       return .nil q(sin_nil $h)
@@ -681,26 +698,28 @@ partial def extractMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | .lt h_exp =>
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(PreMS.sinSeries.apply (PreMS.cons ($exp, $coef) $tl))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(sin_cons_of_lt $h $h_exp)
       | .not_lt h_exp =>
         let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
           q(((PreMS.cosSeries.apply $tl).mulMonomial ($coef).sin 0).add
             ((PreMS.sinSeries.apply $tl).mulMonomial ($coef).cos 0))
-        let res' ← extractMSImp ms'
+        let res' ← normalizePreMSImp ms'
         return res'.cast q(sin_cons_of_not_lt $h $h_exp)
-  | _ => panic! s!"extractMS: unexpected ms: {← ppExpr ms}"
+  | _ => panic! s!"normalizePreMS: unexpected ms: {← ppExpr ms}"
 
-def extractMS {basis : Q(Basis)}
+/-- Given `ms : PreMS basis`, return `ms'` that is normalized (either `PreMS.nil` or `PreMS.cons`),
+and the proof of `ms' = ms`. -/
+def normalizePreMS {basis : Q(Basis)}
     (ms : Q(PreMS $basis)) : TacticM ((ms' : Q(PreMS $basis)) × Q($ms = $ms')) := do
   match basis with
   | ~q(List.nil) => return ⟨ms, q(rfl)⟩
   | ~q(List.cons $basis_hd $basis_tl) =>
-    let res ← extractMSImp ms
+    let res ← normalizePreMSImp ms
     match res with
     | .nil h => return ⟨q(PreMS.nil), q($h)⟩
     | .cons exp coef tl h => return ⟨q(PreMS.cons ($exp, $coef) $tl), q($h)⟩
 
-end ElimDestruct
+end Normalization
 
 end TendstoTactic

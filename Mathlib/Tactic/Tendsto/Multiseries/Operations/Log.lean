@@ -20,8 +20,10 @@ namespace PreMS
 
 open LazySeries Stream' Seq
 
--- log (1 + x) = x - x^2/2 + x^3/3 - ...
-
+/-- Series defining the logarithm function:
+```
+log (1 + x) = x - x^2/2 + x^3/3 - ...
+``` -/
 noncomputable def logSeries : LazySeries :=
   ofFn fun n ↦ -(-1 : ℝ)^n / n
 
@@ -76,7 +78,7 @@ theorem logSeries_toFormalMultilinearSeries_eq :
   ext n
   simp [LazySeries.coeff, logSeries]
 
-theorem logSeries_analytic : logSeries.analytic := by
+theorem logSeries_analytic : logSeries.Analytic := by
   apply analytic_of_HasFPowerSeriesAt
   convert Real.log_hasFPowerSeriesAt
   rw [logSeries_toFormalMultilinearSeries_eq]
@@ -86,8 +88,8 @@ theorem logSeries_toFun : logSeries.toFun =ᶠ[𝓝 0] (fun t ↦ Real.log (1 + 
   convert Real.log_hasFPowerSeriesAt
   rw [logSeries_toFormalMultilinearSeries_eq]
 
--- log (C b^e + F) = log C + e log b + log(1 + C^-1 b^-e F)
--- here we assume that the last exponent is 0
+/-- If `ms` approximates `f` and the last exponent of the leading term of `ms` is 0,
+then `ms.log logBasis` approximates `Real.log ∘ f`. -/
 noncomputable def log {basis : Basis}
     (logBasis : LogBasis basis)
     (ms : PreMS basis) :
@@ -324,8 +326,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
           exact h_logBasis.right.left
       · rw [show (0 : ℝ) = 0 ⊔ 0 by simp]
         apply add_majorated
-        · have := PreMS.Approximates_coef_majorated_head h_coef h_basis
-          unfold leadingTerm at h_pos h_last
+        · unfold leadingTerm at h_pos h_last
           simp at h_pos h_last
           replace h_last : ∀ (x : ℝ), coef.leadingTerm.exps.getLast? = some x → x = 0 := by
             intro x h
@@ -383,8 +384,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       apply Approximates_of_EventuallyEq
         (f := logSeries.toFun ∘ fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) *
           (f t - basis_hd t ^ exp * fC t))
-      · have := Filter.EventuallyEq.comp_tendsto logSeries_toFun h_tendsto_zero
-        apply Eventually.mono this
+      · apply Eventually.mono (Filter.EventuallyEq.comp_tendsto logSeries_toFun h_tendsto_zero)
         intro t ht
         simp at ht
         simp [ht]

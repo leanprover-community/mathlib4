@@ -8,7 +8,16 @@ import Mathlib.Tactic.Tendsto.Meta.MS
 import Mathlib.Tactic.Tendsto.Meta.LeadingTerm
 
 /-!
-# TODO
+# Comparing growth rates of multiseries
+
+To compare the growth rate of two trimmed multiseries it's enough to compare their leading terms
+as lists using lexigraphic order. In this file we implement this procedure.
+
+## Main definitions
+
+* `compareLists` is the function that compares two lists using lexigraphic order.
+* `compare` is the function that compares two trimmed multiseries.
+
 -/
 
 set_option linter.docPrime false
@@ -17,11 +26,11 @@ namespace TendstoTactic
 
 namespace MS
 
-open Lean Meta Elab Tactic
+open Lean Meta Elab Tactic Qq
 
 open Topology Filter Asymptotics
-open Qq
 
+/-- Result of comparing two lists using lexigraphic order. -/
 inductive CompareListsResult (x y : Q(List ℝ))
 | lt (h : Q($x < $y))
 | gt (h : Q($y < $x))
@@ -37,6 +46,7 @@ lemma List.cons_eq' {x y : ℝ} {x_tl y_tl : List ℝ} (h : x = y) (h_tl : x_tl 
   subst h h_tl
   rfl
 
+/-- Compare two lists using lexigraphic order. -/
 partial def compareLists (x y : Q(List ℝ)) : TacticM <| CompareListsResult x y := do
   match x, y with
   | ~q(List.nil), ~q(List.nil) =>
@@ -56,24 +66,26 @@ partial def compareLists (x y : Q(List ℝ)) : TacticM <| CompareListsResult x y
       | .eq h => return .eq q(List.cons_eq' (eq_of_sub_eq_zero $h_zero) $h)
   | _ => panic! s!"compareLists: unexpected x or y:\n{← ppExpr x}\n{← ppExpr y}"
 
+/-- Result of comparing two trimmed multiseries. -/
 inductive CompareResult (f g : Q(ℝ → ℝ))
 | lt (h : Q($f =o[atTop] $g))
 | gt (h : Q($g =o[atTop] $f))
 | eq (c : Q(ℝ)) (hc : Q($c ≠ 0)) (h : Q($f ~[atTop] $c • $g))
 
+/-- Prove that a trimmed multiseries is not zero. -/
 def proveNeZero (ms : MS) : MetaM Q($ms.val ≠ PreMS.zero _) := do
   let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "proveNeZero: unexpected basis"
   let ~q(PreMS.cons $hd $tl) := ms.val | panic! "proveNeZero: unexpected val"
   return q(PreMS.noConfusion_zero)
 
--- assume that `x.basis = ... ++ y.basis`
--- assume that `x` and `y` are not `nil`s
+/-- Compare two trimmed multiseries. It assumes that `x.basis = ... ++ y.basis` and that `x` and
+`y` both are not `nil`s. -/
 def compare (x y : MS)
     (hx_trimmed : Q(PreMS.Trimmed $x.val))
     (hy_trimmed : Q(PreMS.Trimmed $y.val)) :
     TacticM <| CompareResult q($x.f) q($y.f) := do
   let left ← expressAsAppend x.basis y.basis
-  have : $x.basis =Q $left ++ $y.basis := ⟨⟩
+  haveI : $x.basis =Q $left ++ $y.basis := ⟨⟩; do
   let tx ← getLeadingTerm x.val
   let ty ← getLeadingTerm y.val
   let ~q(⟨$x_coef, $x_exps⟩) := tx | panic! "Unexpected x in compareLeadingTerms"
@@ -81,8 +93,9 @@ def compare (x y : MS)
   let n : Nat := (← computeLength x.basis) - (← computeLength y.basis)
   let zeros ← replicate n q(0 : ℝ)
   let y_exps' : Q(List ℝ) := ← reduceAppend (α := q(ℝ)) q($zeros) q($y_exps)
-  have : $x_exps =Q (PreMS.leadingTerm $x.val).exps := ⟨⟩
-  have : $y_exps' =Q List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $y.val).exps := ⟨⟩
+  haveI : $x_exps =Q (PreMS.leadingTerm $x.val).exps := ⟨⟩; do
+  haveI : $y_exps' =Q List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $y.val).exps := ⟨⟩
+  do
   let res ← compareLists q($x_exps) q($y_exps')
   match res with
   | .lt h =>
@@ -95,9 +108,9 @@ def compare (x y : MS)
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h =>
     let c : Q(ℝ) := q($x_coef / $y_coef)
-    have hc := ← CompareReal.proveNeZero c
-    have : $x_coef =Q (PreMS.leadingTerm $x.val).coef := ⟨⟩
-    have : $y_coef =Q (PreMS.leadingTerm $y.val).coef := ⟨⟩
+    let hc := ← CompareReal.proveNeZero c
+    haveI : $x_coef =Q (PreMS.leadingTerm $x.val).coef := ⟨⟩
+    haveI : $y_coef =Q (PreMS.leadingTerm $y.val).coef := ⟨⟩
     return .eq c hc q(PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
       $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $hc ($h).symm)
 

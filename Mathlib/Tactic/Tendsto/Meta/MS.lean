@@ -4,40 +4,44 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.Tendsto.Multiseries
-import Mathlib.Tactic.Tendsto.Meta.Defs
+import Mathlib.Tactic.Tendsto.Meta.Misc
 
 /-!
-# TODO
+# Multiseries on meta level
 -/
 
 open Lean Elab Meta Qq TendstoTactic
 
 namespace TendstoTactic
 
+/-- Multiseries on meta level. It contains
+* the basis with the proof of well-formedness
+* the log-basis with the proof of well-formedness
+* the `PreMS` value with the proof of well-ordering
+* the function `f` with the proof that the multiseries approximates it
+-/
 structure MS where
+  /-- Basis of the multiseries. -/
   basis : Q(Basis)
+  /-- Log-basis of the multiseries. -/
   logBasis : Q(LogBasis $basis)
+  /-- `PreMS` value of the multiseries. -/
   val : Q(PreMS $basis)
+  /-- Function represented by the multiseries. -/
   f : Q(ℝ → ℝ)
+  /-- Proof of well-ordering of the multiseries. -/
   h_wo : Q(PreMS.WellOrdered $val)
+  /-- Proof of approximation of the multiseries. -/
   h_approx : Q(PreMS.Approximates $val $f)
+  /-- Proof of well-formedness of the basis. -/
   h_basis : Q(WellFormedBasis $basis)
+  /-- Proof of well-formedness of the log-basis. -/
   h_logBasis : Q(LogBasis.WellFormed $logBasis)
-
-instance : Inhabited MS where
-  default := {
-    basis := q([])
-    val := q(0)
-    f := q(fun _ ↦ 0)
-    h_wo := q(PreMS.const_WellOrdered)
-    h_approx := q(PreMS.const_Approximates WellFormedBasis.nil)
-    h_basis := q(WellFormedBasis.nil)
-    logBasis := q(LogBasis.nil)
-    h_logBasis := q(LogBasis.nil_WellFormed)
-  }
+deriving Inhabited
 
 namespace MS
 
+/-- Multiseries representing a constant function. -/
 def const (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (c : Q(ℝ))
     (h_basis : Q(WellFormedBasis $basis)) (h_logBasis : Q(LogBasis.WellFormed $logBasis)) : MS where
   basis := basis
@@ -49,6 +53,7 @@ def const (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (c : Q(ℝ))
   h_basis := h_basis
   h_logBasis := h_logBasis
 
+/-- Multiseries representing `basis[n] ^ r`. -/
 def monomial_rpow (basis : Q(Basis)) (logBasis : Q(LogBasis $basis))
     (n : Q(Fin (List.length $basis))) (r : Q(ℝ))
     (h_basis : Q(WellFormedBasis $basis)) (h_logBasis : Q(LogBasis.WellFormed $logBasis)) : MS where
@@ -61,6 +66,7 @@ def monomial_rpow (basis : Q(Basis)) (logBasis : Q(LogBasis $basis))
   h_basis := h_basis
   h_logBasis := h_logBasis
 
+/-- Multiseries representing `basis[n]`. -/
 def monomial (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (n : Q(Fin (List.length $basis)))
     (h_basis : Q(WellFormedBasis $basis)) (h_logBasis : Q(LogBasis.WellFormed $logBasis)) : MS where
   basis := basis
@@ -72,6 +78,7 @@ def monomial (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (n : Q(Fin (List
   h_basis := h_basis
   h_logBasis := h_logBasis
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `c • f`. -/
 def mulConst (x : MS) (c : Q(ℝ)) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -82,6 +89,7 @@ def mulConst (x : MS) (c : Q(ℝ)) : MS where
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `-f`. -/
 def neg (x : MS) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -92,39 +100,49 @@ def neg (x : MS) : MS where
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
-set_option linter.unusedVariables false in
-def add (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
-  basis := x.basis
-  logBasis := x.logBasis
-  val := q(PreMS.add $x.val $y.val)
-  f := q($x.f + $y.f)
-  h_wo := q(PreMS.add_WellOrdered $x.h_wo $y.h_wo)
-  h_approx := q(PreMS.add_Approximates $x.h_approx $y.h_approx)
-  h_basis := x.h_basis
-  h_logBasis := x.h_logBasis
+/-- Given two multiseries representing `f` and `g`, returns the multiseries representing `f + g`. -/
+def add (x y : MS) : MS :=
+  haveI : $x.basis =Q $y.basis := ⟨⟩
+  {
+    basis := x.basis
+    logBasis := x.logBasis
+    val := q(PreMS.add $x.val $y.val)
+    f := q($x.f + $y.f)
+    h_wo := q(PreMS.add_WellOrdered $x.h_wo $y.h_wo)
+    h_approx := q(PreMS.add_Approximates $x.h_approx $y.h_approx)
+    h_basis := x.h_basis
+    h_logBasis := x.h_logBasis
+  }
 
-set_option linter.unusedVariables false in
-def sub (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
-  basis := x.basis
-  logBasis := x.logBasis
-  val := q(PreMS.add $x.val (PreMS.neg $y.val))
-  f := q($x.f - $y.f)
-  h_wo := q(PreMS.sub_WellOrdered $x.h_wo $y.h_wo)
-  h_approx := q(PreMS.sub_Approximates $x.h_approx $y.h_approx)
-  h_basis := x.h_basis
-  h_logBasis := x.h_logBasis
+/-- Given two multiseries representing `f` and `g`, returns the multiseries representing `f - g`. -/
+def sub (x y : MS) : MS :=
+  haveI : $x.basis =Q $y.basis := ⟨⟩
+  {
+    basis := x.basis
+    logBasis := x.logBasis
+    val := q(PreMS.add $x.val (PreMS.neg $y.val))
+    f := q($x.f - $y.f)
+    h_wo := q(PreMS.sub_WellOrdered $x.h_wo $y.h_wo)
+    h_approx := q(PreMS.sub_Approximates $x.h_approx $y.h_approx)
+    h_basis := x.h_basis
+    h_logBasis := x.h_logBasis
+  }
 
-set_option linter.unusedVariables false in
-def mul (x y : MS) (h_basis_eq : $x.basis =Q $y.basis) : MS where
-  basis := x.basis
-  logBasis := x.logBasis
-  val := q(PreMS.mul $x.val $y.val)
-  f := q($x.f * $y.f)
-  h_wo := q(PreMS.mul_WellOrdered $x.h_wo $y.h_wo)
-  h_approx := q(PreMS.mul_Approximates $x.h_basis $x.h_approx $y.h_approx)
-  h_basis := x.h_basis
-  h_logBasis := x.h_logBasis
+/-- Given two multiseries representing `f` and `g`, returns the multiseries representing `f * g`. -/
+def mul (x y : MS) : MS :=
+  haveI : $x.basis =Q $y.basis := ⟨⟩
+  {
+    basis := x.basis
+    logBasis := x.logBasis
+    val := q(PreMS.mul $x.val $y.val)
+    f := q($x.f * $y.f)
+    h_wo := q(PreMS.mul_WellOrdered $x.h_wo $y.h_wo)
+    h_approx := q(PreMS.mul_Approximates $x.h_basis $x.h_approx $y.h_approx)
+    h_basis := x.h_basis
+    h_logBasis := x.h_logBasis
+  }
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `f⁻¹`. -/
 def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -135,18 +153,22 @@ def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
-set_option linter.unusedVariables false in
-def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) (h_basis_eq : $x.basis =Q $y.basis) :
-    MS where
-  basis := x.basis
-  logBasis := x.logBasis
-  val := q(PreMS.mul $x.val (PreMS.inv $y.val))
-  f := q($x.f / $y.f)
-  h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
-  h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
-  h_basis := x.h_basis
-  h_logBasis := x.h_logBasis
+/-- Given two multiseries representing `f` and `g`, returns the multiseries representing `f / g`. -/
+def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) : MS :=
+  haveI : $x.basis =Q $y.basis := ⟨⟩
+  {
+    basis := x.basis
+    logBasis := x.logBasis
+    val := q(PreMS.mul $x.val (PreMS.inv $y.val))
+    f := q($x.f / $y.f)
+    h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
+    h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
+    h_basis := x.h_basis
+    h_logBasis := x.h_logBasis
+  }
 
+/-- Given a multiseries representing `f` and constant `a : ℕ`,
+returns the multiseries representing `f ^ a`. -/
 def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -157,6 +179,8 @@ def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries representing `f` and constant `a : ℤ`,
+returns the multiseries representing `f ^ a`. -/
 def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -167,6 +191,8 @@ def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries representing `f` and constant `a : ℝ`,
+returns the multiseries representing `f ^ a`. -/
 def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val))
     (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef)) : MS where
   basis := x.basis
@@ -178,6 +204,8 @@ def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val))
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries `ms` and a basis extension `ex`, returns the multiseries representing
+the same function on the new basis. -/
 def updateBasis (ms : MS) (ex : Q(BasisExtension $ms.basis))
     (logBasis : Q(LogBasis (BasisExtension.getBasis $ex)))
     (h_basis : Q(WellFormedBasis (BasisExtension.getBasis $ex)))
@@ -195,6 +223,8 @@ def updateBasis (ms : MS) (ex : Q(BasisExtension $ms.basis))
     h_logBasis := h_logBasis
   }
 
+/-- Given a multiseries `ms`, returns the multiseries representing the same function on the basis
+extended by the last `log ∘ basis.getLast` element. -/
 def insertLastLog (ms : MS) : MetaM MS := do
   let ~q(List.cons $basis_hd $basis_tl) := ms.basis | panic! "insertLastLog: unexpected basis"
   let .some last ← getLast (α := q(ℝ → ℝ)) ms.basis | panic! "insertLastLog: unexpected basis"
@@ -203,7 +233,7 @@ def insertLastLog (ms : MS) : MetaM MS := do
   haveI : $basis =Q $ms.basis ++ [Real.log ∘ $last] := ⟨⟩
   let logBasis := ← reduceLogBasis q(LogBasis.insertLastLog (basis_hd := $basis_hd)
     (basis_tl := $basis_tl) $ms.logBasis)
-  have : $logBasis =Q LogBasis.insertLastLog (basis_hd := $basis_hd) (basis_tl := $basis_tl)
+  haveI : $logBasis =Q LogBasis.insertLastLog (basis_hd := $basis_hd) (basis_tl := $basis_tl)
     $ms.logBasis := ⟨⟩
   let h_basis : Q(WellFormedBasis $basis) := q(insertLastLog_WellFormedBasis $ms.h_basis)
   let ms' : MS := {
@@ -218,6 +248,7 @@ def insertLastLog (ms : MS) : MetaM MS := do
   }
   return ms'
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `log ∘ f`. -/
 def log (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val))
     (h_pos : Q(0 < (PreMS.leadingTerm $x.val).coef))
     (h_last : Q(∀ a, (PreMS.leadingTerm $x.val).exps.getLast? = .some a → a = 0)) : MS where
@@ -231,6 +262,7 @@ def log (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val))
   logBasis := q($x.logBasis)
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `exp ∘ f`. -/
 def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exps)) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -241,6 +273,7 @@ def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `cos ∘ f`. -/
 def cos (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exps)) : MS where
   basis := x.basis
   logBasis := x.logBasis
@@ -251,6 +284,7 @@ def cos (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries representing `f`, returns the multiseries representing `sin ∘ f`. -/
 def sin (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exps)): MS where
   basis := x.basis
   logBasis := x.logBasis

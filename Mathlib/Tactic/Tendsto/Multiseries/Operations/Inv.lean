@@ -25,7 +25,11 @@ namespace PreMS
 
 open LazySeries Stream' Seq
 
--- 1/(1-t), i.e. ones
+/-- Taylor series for 1 / (1 - t), i.e.
+```
+1 / (1 - t) = 1 + t + t^2 + t^3 + ...
+```
+ -/
 def invSeries : LazySeries :=
   let g : Unit → Option (ℝ × Unit) := fun () => some (1, ())
   Seq.corec g ()
@@ -53,8 +57,8 @@ theorem invSeries_eq_geom :
     ContinuousMultilinearMap.mkPiAlgebraFin_apply]
   exact Eq.symm List.prod_ofFn
 
-theorem invSeries_analytic : analytic invSeries := by
-  simp [analytic, invSeries_eq_geom, formalMultilinearSeries_geometric_radius]
+theorem invSeries_analytic : Analytic invSeries := by
+  simp [Analytic, invSeries_eq_geom, formalMultilinearSeries_geometric_radius]
 
 -- TODO: rewrite
 theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 - t)⁻¹ := by
@@ -65,6 +69,7 @@ theorem invSeries_toFun_eq {t : ℝ} (ht : |t| < 1) : invSeries.toFun t = (1 - t
   simp at this
   exact this.symm
 
+/-- If `ms` approximates `f`, then `ms.inv` approximates `f⁻¹`. -/
 noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
   | [] => ms⁻¹
@@ -74,6 +79,7 @@ noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
     | some ((exp, coef), tl) => mulMonomial
       (invSeries.apply (mulMonomial (neg tl) coef.inv (-exp))) coef.inv (-exp)
 
+/-- If `X` and `Y` are multiseries, then `X.div Y` approximates `X / Y`. -/
 noncomputable def div {basis : Basis} (X Y : PreMS basis) : PreMS basis :=
   X.mul (Y.inv)
 

@@ -466,14 +466,17 @@ theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : Basis)
     simp
   · simpa [t]
 
+/-- Predicate stating that the first non-zero element of the list is positive. -/
 def FirstIsPos (x : List ℝ) : Prop := match x with
 | [] => False
 | hd :: tl => 0 < hd ∨ (hd = 0 ∧ FirstIsPos tl)
 
+/-- Predicate stating that the first non-zero element of the list is negative. -/
 def FirstIsNeg (x : List ℝ) : Prop := match x with
 | [] => False
 | hd :: tl => hd < 0 ∨ (hd = 0 ∧ FirstIsNeg tl)
 
+/-- Predicate stating that all elements of the list are zero. -/
 def AllZero (x : List ℝ) : Prop := match x with
 | [] => True
 | hd :: tl => hd = 0 ∧ AllZero tl

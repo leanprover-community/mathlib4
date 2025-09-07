@@ -12,7 +12,7 @@ import Mathlib.Tactic.MoveAdd
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.RingTheory.Binomial
 /-!
-# TODO
+# TODO: upstream
 -/
 
 namespace TendstoTactic
@@ -51,6 +51,9 @@ section
 variable {𝕂 : Type v} [NormedField 𝕂]
 variable (𝔸 : Type u) [NormedDivisionRing 𝔸] [Algebra 𝕂 𝔸]
 
+/-- **Binomial series**: the (scalar) formal multilinear series with coefficients given
+by `Ring.choose a`. The sum of this series is `fun x ↦ (1 + x) ^ a` within the radius
+of convergence. -/
 noncomputable def binomialSeries [CharZero 𝕂] (a : 𝕂) : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
   (Ring.choose a n) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
 
@@ -229,6 +232,7 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [inv_mul_cancel_right₀ (by linarith)]
     ring
 
+/-- Sum of the binomial series. -/
 noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
 
 -- TODO: move
@@ -281,7 +285,6 @@ theorem HasFPowerSeriesOnBall.smul {𝕜 : Type u} [NontriviallyNormedField 𝕜
 -- TODO: move
 theorem HasFPowerSeriesOnBall.unshift {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type u}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [CompleteSpace F]
     {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {r : ENNReal} {f : E → (E →L[𝕜] F)} {x : E}
     (h : HasFPowerSeriesOnBall f p x r) {z : F} :
     HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (p.unshift z) x r := by
@@ -354,7 +357,6 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
   have := HasFPowerSeriesOnBall.unique h_afun h_rhs
   have hx_mem : x ∈ EMetric.ball 0 1 := by
     simp [EMetric.ball]
-    have := coe_nnnorm x
     rw [← NNReal.coe_lt_coe, coe_nnnorm x]
     rw [Real.norm_eq_abs, NNReal.coe_one]
     rw [abs_lt]
@@ -422,13 +424,6 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
   · convert Set.eqOn_empty _ _
     apply Set.Icc_eq_empty
     linarith
-  have h_sum_analytic : AnalyticOnNhd ℝ (binomialSum a) (EMetric.ball 0 1) := by
-    apply AnalyticOnNhd.mono _
-      (EMetric.ball_subset_ball (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a)))
-    apply HasFPowerSeriesOnBall.analyticOnNhd (p := binomialSeries ℝ a)
-    apply FormalMultilinearSeries.hasFPowerSeriesOnBall
-    apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
-    simp
   let v : ℝ → ℝ → ℝ := fun t x ↦ a * x / (1 + t)
   let s : ℝ → Set ℝ := fun _ ↦ Set.univ
   apply ODE_solution_unique_of_mem_Icc' (v := v) (s := s) (t₀ := 0)
@@ -455,7 +450,6 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
     · intro x hx
       simp at hx
       simp [EMetric.ball]
-      have := coe_nnnorm x
       apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
       rw [← ENNReal.coe_one, ENNReal.coe_one, ENNReal.coe_lt_one_iff]
       rw [← NNReal.coe_lt_coe, coe_nnnorm x]
