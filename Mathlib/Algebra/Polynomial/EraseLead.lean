@@ -259,8 +259,8 @@ theorem nextCoeff_eq_zero_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.nextCoe
 /-- If we erase the leading coefficient of a `Polynomial.coeffList` like [+,0,...], and then
 multiply by a linear term, it's equivalent to erasing the first two coefficients of the product. -/
 lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZeroDivisors R]
-  [Nontrivial R] {x : R} {P : R[X]} (hx : x ≠ 0) (h : P.nextCoeff = 0) :
-  ((X - C x) * P).eraseLead.eraseLead = (X - C x) * P.eraseLead := by
+    [Nontrivial R] {x : R} {P : R[X]} (hx : x ≠ 0) (h : P.nextCoeff = 0) :
+    ((X - C x) * P).eraseLead.eraseLead = (X - C x) * P.eraseLead := by
   -- if `P = 0` this is trivial
   by_cases hp : P = 0
   · simp [hp]
@@ -295,28 +295,19 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
     have hd₁ : n < ((X - C x) * P).eraseLead.natDegree := by
       linarith [natDegree_eraseLead_add_one h₂]
     rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg hd₁.ne']
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by linarith)]
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by omega)]
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
-      sub_zero, sub_zero, eq_comm, sub_eq_self]
-    rcases hn₂ : n with _ | n₂
-    · simpa [coeff_monomial, hp] using fun _ ↦ by linarith
-    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by linarith),
-        if_neg (by linarith), mul_zero, sub_zero]
+      sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
+    rcases hn₂ : n
+    · simpa [coeff_monomial, hp] using fun _ ↦ by omega
+    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by omega),
+        if_neg (by omega), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.
     trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
-    · calc
-        _ ≤ natDegree _ - 1 := eraseLead_natDegree_le _
-        _ ≤ (natDegree _ - 1) - 1 :=
-          Nat.sub_le_sub_right (eraseLead_natDegree_le _) 1
-        _ < P.natDegree := by simp [h₁, hdP]
-        _ ≤ n := hn
-    · calc
-      _ = 1 + P.eraseLead.natDegree := by
-        rw [natDegree_mul (X_sub_C_ne_zero x) ‹_›, natDegree_X_sub_C]
-      _ ≤ 1 + (natDegree P - 2) :=
-        (add_le_add_iff_left 1).mpr (natDegree_eraseLead_le_of_nextCoeff_eq_zero h)
-      _ < P.natDegree := by simp [add_comm, hdP]
-      _ ≤ n := hn
+    · grw [eraseLead_natDegree_le, eraseLead_natDegree_le]
+      simpa [h₁, hdP] using hn
+    · grw [natDegree_mul (X_sub_C_ne_zero x) he, natDegree_eraseLead_le_of_nextCoeff_eq_zero h]
+      simpa [add_comm, hdP] using hn
 
 end EraseLead
 
