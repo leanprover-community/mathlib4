@@ -345,11 +345,7 @@ theorem eRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).eRank = {i | (w i) ≠ 0}.encard := by
   simp [eRank, cRank_diagonal, toENat_cardinalMk_subtype]
 
-/--
-A rank factorization of $A\in\mathbb{F}^{m\times n}$ is a factorization of the form $A = PQ$,
-where $P\in\mathbb {F}^{m\times r}$ and $Q\in\mathbb{F}^{r\times n}$,
-where $r$ is the rank of $A$.
--/
+/-- The rank factorization derived from `Module.finBasis`. -/
 noncomputable def rankFactorization {r : Type*} [Fintype r]
     (A : Matrix m n R) (hr : Fintype.card r = A.rank) :
     { B : Matrix m r R × Matrix r n R // A = B.1 * B.2 } where
