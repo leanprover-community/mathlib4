@@ -137,7 +137,7 @@ noncomputable def rank : ZFSet.{u} → Ordinal.{u} :=
   Quotient.lift _ fun _ _ => PSet.rank_congr
 
 @[simp]
-theorem _root_.PSet.rank_mk (x : PSet) : rank (.mk x) = x.rank :=
+theorem rank_mk (x : PSet) : rank (.mk x) = x.rank :=
   rfl
 
 theorem rank_lt_of_mem : y ∈ x → rank y < rank x :=
