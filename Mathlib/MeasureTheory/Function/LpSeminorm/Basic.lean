@@ -275,7 +275,7 @@ instance [IsFiniteMeasure μ] : MemLp.Const E p μ where
   eLpNorm_const_lt_top :=  fun _ hc ↦ MemLp.eLpNorm_lt_top <| memLp_const_enorm hc
 
 instance : MemLp.Const E ∞ μ where
-  eLpNorm_const_lt_top := fun c _ ↦ MemLp.eLpNorm_lt_top <| memLp_top_const (c := c)
+  eLpNorm_const_lt_top := fun _ _ ↦ MemLp.eLpNorm_lt_top <| memLp_top_const ..
 
 /-
 
