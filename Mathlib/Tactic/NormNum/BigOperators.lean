@@ -240,7 +240,7 @@ def Finset.ProveEmptyOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Finset $α)
 
 lemma Finset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
     insert a s = Finset.cons a s h := by
-  ext; simp
+  simp
 
 lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Finset.range n = {} := by rw [pn.out, Nat.cast_zero, Finset.range_zero]

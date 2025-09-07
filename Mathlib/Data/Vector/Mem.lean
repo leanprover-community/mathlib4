@@ -31,7 +31,6 @@ theorem mem_iff_get (v : Vector α n) : a ∈ v.toList ↔ ∃ i, v.get i = a :=
       ⟨i, by rwa [toList_length], h⟩⟩
 
 theorem notMem_nil : a ∉ (Vector.nil : Vector α 0).toList := by
-  unfold Vector.nil
   simp
 
 @[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
