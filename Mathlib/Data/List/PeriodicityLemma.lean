@@ -31,19 +31,17 @@ namespace List
 `HasPeriod w p`, means that the list `w` has the period `p`.
 The definition is given in terms of a self-overlap.
 -/
-
 def HasPeriod (w : List α) (p : ℕ) : Prop := w <+: take p w ++ w
 
 /-- An equivalent definition of `HasPeriod w p` by indeces. -/
-
 lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} : (HasPeriod w p) ↔
     (∀ i < w.length - p, w[i]? = w[i + p]?) := by
   constructor
   · rw [HasPeriod]; intro pref j len
-    have i1: j < w.length := by omega
-    have i2: j + p < w.length := by omega
-    have min: p < w.length := by omega
-    have e: j + p - (take p w).length = j := by
+    have i1 : j < w.length := by omega
+    have i2 : j + p < w.length := by omega
+    have min : p < w.length := by omega
+    have e : j + p - (take p w).length = j := by
       simp_all [min_eq_left_of_lt]
     simp_all [getElem_append_right, IsPrefix.getElem pref, min_eq_left_of_lt]
   · intro lhs; rw [HasPeriod]
@@ -70,20 +68,20 @@ lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
     (less : i < w.length) : w[i]? = w[i % p]? := by
   by_cases p_zero: p = 0
   · have : i % p = i := by rw [p_zero, mod_zero]
-    exact congrArg (getElem? w) (id (Eq.symm this))
+    exact congr_arg (getElem? w) this.symm
   · cases lt_or_ge i p with
-  | inl small =>
-      have eq : i % p = i := mod_eq_of_lt small
-      rw [eq]
-  | inr large =>
-      have len' : i - p < w.length := by omega
-      have IH: w[i - p]? = w[(i - p) % p]? := hasPeriod_mod p (i - p) w per len'
-      rw [hasPeriod_iff_getElem?] at per
-      have minus: i - p < w.length - p := by omega
-      have per' := per (i - p) minus
-      simp only [IH, large, Nat.sub_add_cancel] at per'
-      have mod : i % p = (i - p) % p := mod_eq_sub_mod large
-      simpa [mod] using per'.symm
+    | inl small =>
+        have eq : i % p = i := mod_eq_of_lt small
+        rw [eq]
+    | inr large =>
+        have len' : i - p < w.length := by omega
+        have IH: w[i - p]? = w[(i - p) % p]? := hasPeriod_mod p (i - p) w per len'
+        rw [hasPeriod_iff_getElem?] at per
+        have minus: i - p < w.length - p := by omega
+        have per' := per (i - p) minus
+        simp only [IH, large, Nat.sub_add_cancel] at per'
+        have mod : i % p = (i - p) % p := mod_eq_sub_mod large
+        simpa [mod] using per'.symm
 
 /-- An equivalent definition of `HasPeriod w p` by modular equivalence on indeces. -/
 lemma hasPeriod_iff_mod {p : ℕ} {w : List α} :
@@ -158,26 +156,26 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
     have : i % p < p := mod_lt i p_pos; have : p ≤ n := le_of_dvd pos dvd; omega
   rw [mod_p i less_i, mod_p (i % p) less_mod, mod_mod]
 
-
 /-- Induction step for the `periodicity_lemma` -/
-lemma two_periods_step {p q : ℕ} {w : List α} (per_p : HasPeriod w p) (per_q : HasPeriod w q)
-    (w_len : q < w.length) (q_lt_p : q < p) : HasPeriod (drop q w) (p - q) := by
+lemma two_periods_drop {q k : ℕ} {w : List α}
+    (per_q : HasPeriod w q) (per_plus : HasPeriod w (k + q))
+    : HasPeriod (drop q w) k := by
   rw [hasPeriod_iff_getElem?]
-  rw [hasPeriod_iff_getElem?] at per_p per_q
+  rw [hasPeriod_iff_getElem?] at per_plus per_q
   simp only [length_drop, getElem?_drop]
   intro i i_lt
   exact calc
      w[q + i]? = w[i + q]? := congrArg (getElem? w) (add_comm q i)
      _         = w[i]? := (per_q i (by omega)).symm
-     _         = w[i + p]? := (per_p i (by omega))
-     _         = w[q + (i + (p - q))]? := congrArg (getElem? w) (by omega)
+     _         = w[i + (k + q)]? := (per_plus i (by omega))
+     _         = w[q + (i + k)]? := congrArg (getElem? w) (by omega)
+
 
 /-- The Periodicity Lemma, also known as the Fine and Wilf theorem, shows that if word `w` of length
 at least `p + q - gcd p q` has two periods `p` and `q`, then it has a period `gcd p q`.
 
 The proof is similar to the Euclidean algorithm for computing `gcd`.
 -/
-
 theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q : HasPeriod w q)
     (len : p + q - p.gcd q ≤ w.length) : HasPeriod w (p.gcd q) := by
   rcases Nat.eq_zero_or_pos p with rfl | p_pos
@@ -195,9 +193,9 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
         have : p.gcd q ≠ p := by
           simp [gcd_eq_left_iff_dvd, not_dvd_of_pos_of_lt q_pos q_lt_p]
         exact Ne.lt_of_le this (gcd_le_left q p_pos)
-      have : q < w.length := by omega
-      have per_diff : HasPeriod (drop q w) (p - q) :=
-        two_periods_step per_p per_q this q_lt_p
+      have per_diff : HasPeriod (drop q w) (p - q) := by
+        have : p = (p - q) + q := by omega
+        exact two_periods_drop per_q (this ▸ per_p)
       have per_q' : HasPeriod (drop q w) q := by
         apply hasPeriod_factor_hasPeriod (take q w) (drop q w) [] q
         all_goals simp_all
