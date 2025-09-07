@@ -575,8 +575,8 @@ lemma mem_allRoots (i : ι) :
     induction hx using Submodule.span_induction with
     | zero => simp
     | mem => aesop
-    | add => aesop
-    | smul => aesop
+    | add => simp_all
+    | smul => simp_all
   simpa using LinearMap.congr_fun key (P.root i)
 
 open scoped Classical in

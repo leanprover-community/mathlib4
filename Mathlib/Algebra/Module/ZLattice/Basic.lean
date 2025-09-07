@@ -401,7 +401,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     refine measure_mono_null this
       (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
     refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
-      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
+      (AffineSubspace.mem_mk'.not.mpr ?_)).symm
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_notMem_span.mp b.linearIndependent i
   intro x hx
@@ -519,7 +519,6 @@ instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
-  have : Module.Free ℤ L := module_free K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
