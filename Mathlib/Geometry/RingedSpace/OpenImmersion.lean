@@ -384,7 +384,6 @@ theorem pullbackConeOfLeftLift_fst :
   · induction x with | op x => ?_
     change ((_ ≫ _) ≫ _ ≫ _) ≫ _ = _
     simp_rw [Category.assoc]
-    erw [← s.pt.presheaf.map_comp]
     erw [s.snd.c.naturality_assoc]
     have := congr_app s.condition (op (opensFunctor f |>.obj x))
     dsimp only [comp_c_app, unop_op] at this
