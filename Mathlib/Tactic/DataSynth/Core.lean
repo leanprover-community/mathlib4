@@ -1,5 +1,6 @@
 import Mathlib.Tactic.DataSynth.Types
 import Mathlib.Tactic.DataSynth.Theorems
+import Mathlib.Tactic.FunProp.Elab
 import Batteries.Tactic.Exact
 
 import Lean.Meta.Transform
@@ -21,8 +22,7 @@ private def withMainTrace {α : Type}  (msg : Except Exception α → DataSynthM
 
 def normalize (e : Expr) : DataSynthM (Simp.Result) := do
 
-  withMainTrace
-    (fun _ => return m!"normalization") do
+  withProfileTrace "normalization" do
 
   let cfg := (← read).config
 
@@ -59,13 +59,8 @@ def Goal.getCandidateTheorems (g : Goal) : DataSynthM (Array Theorem) := do
   getTheorems e
 
 
--- def isDataSynthGoal? (e : Expr) : MetaM (Option (Goal × DataSynthDecl)) := do
---   let .some dataSynthDecl ← getDataSynth? e | return none
---   return .some ({ goal := e }, dataSynthDecl)
-
-
-/-- Takes goal `e` solvable by `data_synth` and return `g : Goal`. Mainly, it replaces metavariables
-in output arguments and turns them into bound variables.
+/-- Takes goal `e` solvable by `data_synth` and return `g : Goal`. Mainly, it replaces output 
+arguments with bound variables.
 
 For example, it takes `HasFDerivAt ℝ f ?f' x` and returns `g : Goal` with `g.goal` being
 `fun f' =>  HasFDerivAt ℝ f f' x` -/
@@ -106,33 +101,35 @@ def Goal.assumption? (goal : Goal) : DataSynthM (Option Result) := do
       let (_,e) ← goal.mkFreshProofGoal
       let (ys, _, type') ← forallMetaTelescope localDecl.type
       if (← isDefEq e type') then
+        trace[Meta.Tactic.data_synth] "using local hypothesis {localDecl.toExpr}"
         return ← goal.getResultFrom (mkAppN (.fvar localDecl.fvarId) ys)
       else
         return none
     else
       return none
 
--- def discharge? (e : Expr) : DataSynthM (Option Expr) := do
---   (← read).discharge e
+def discharge? (e : Expr) : DataSynthM (Option Expr) := do
+  (← read).disch e
 
--- def synthesizeAutoParam (x X : Expr) : DataSynthM Bool := do
---   let .some (.const tacticDecl ..) := X.getAutoParamTactic?
---     | return false
---   let env ← getEnv
---   match Lean.Elab.evalSyntaxConstant env (← getOptions) tacticDecl with
---   | .error err       => throwError err
---   | .ok tacticSyntax =>
---     let X' := X.appFn!.appArg! -- extract the actual type from `autoParam _ _`
---     let disch := Mathlib.Meta.FunProp.tacticToDischarge ⟨tacticSyntax⟩
---     trace[Meta.Tactic.data_synth] "calling auto param tactic {tacticSyntax.prettyPrint} to prove {X'}"
---     let some r ← disch X' | return false
---     try
---       x.mvarId!.assignIfDefEq r
---       trace[Meta.Tactic.data_synth] "auto param success"
---       return true
---     catch _e =>
---       trace[Meta.Tactic.data_synth] "auto param failed"
---       return false
+def synthesizeAutoParam (x X : Expr) : DataSynthM Bool := do
+  let .some (.const tacticDecl ..) := X.getAutoParamTactic?
+    | return false
+  let env ← getEnv
+  match Lean.Elab.evalSyntaxConstant env (← getOptions) tacticDecl with
+  | .error err       => throwError err
+  | .ok tacticSyntax =>
+    let X' := X.appFn!.appArg! -- extract the actual type from `autoParam _ _`
+    let disch := Mathlib.Meta.FunProp.tacticToDischarge ⟨tacticSyntax⟩
+    trace[Meta.Tactic.data_synth] 
+      "calling auto param tactic {tacticSyntax.prettyPrint} to prove {X'}"
+    let some r ← disch X' | return false
+    try
+      x.mvarId!.assignIfDefEq r
+      trace[Meta.Tactic.data_synth] "auto param success"
+      return true
+    catch _e =>
+      trace[Meta.Tactic.data_synth] "auto param failed"
+      return false
 
 /-- Try to fill in `x` if it is metavariable. -/
 def synthesizeArgument (x : Expr) : DataSynthM Bool := do
@@ -155,15 +152,6 @@ def synthesizeArgument (x : Expr) : DataSynthM Bool := do
           trace[Meta.Tactic.data_synth] e.toMessageData
           pure ()
 
-      -- if let some r ← g.assumption? then
-      --   try
-      --     x.mvarId!.assignIfDefEq (← mkLambdaFVars ys r.proof)
-      --     return true
-      --   catch e =>
-      --     trace[Meta.Tactic.data_synth] m!"failed to assign {(← mkLambdaFVars ys r.proof)} to {x}"
-      --     trace[Meta.Tactic.data_synth] e.toMessageData
-      --     pure ()
-
     return false
   if b then return true
 
@@ -176,10 +164,10 @@ def synthesizeArgument (x : Expr) : DataSynthM Bool := do
     catch _ =>
       pure ()
 
-  -- -- try auto param
-  -- if X.isAppOfArity' ``autoParam 2 then
-  --   if ← synthesizeAutoParam x X then
-  --     return true
+  -- try auto param
+  if X.isAppOfArity' ``autoParam 2 then
+    if ← synthesizeAutoParam x X then
+      return true
 
   -- try assumptions
   if (← inferType X).isProp then
@@ -189,16 +177,16 @@ def synthesizeArgument (x : Expr) : DataSynthM Bool := do
     catch _ =>
       pure ()
 
-  -- -- try discharger
-  -- if (← inferType X).isProp then
-  --   if let .some prf ← discharge? X then
-  --     if ← isDefEq (← inferType prf) X then
-  --       try
-  --         x.mvarId!.assignIfDefEq prf
-  --         return true
-  --       catch _ =>
-  --         trace[Meta.Tactic.data_synth] m!"failed to assign {prf} to {x}"
-  --         pure ()
+  -- try user defined discharger
+  if (← inferType X).isProp then
+    if let .some prf ← discharge? X then
+      if ← isDefEq (← inferType prf) X then
+        try
+          x.mvarId!.assignIfDefEq prf
+          return true
+        catch _ =>
+          trace[Meta.Tactic.data_synth] m!"failed to assign {prf} to {x}"
+          pure ()
 
   return false
 
@@ -315,6 +303,9 @@ partial def main (goal : Goal) : DataSynthM (Option Result) := do
   for thm in thms do
     if let .some r ← goal.tryTheorem? thm then
       return r
+
+  if let .some r ← goal.assumption? then
+    return r
 
   if let .some dispatch := (← goal.getDataSynthDecl).customDispatch then
     (← dispatch.get) goal

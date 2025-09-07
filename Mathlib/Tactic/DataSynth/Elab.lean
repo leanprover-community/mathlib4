@@ -9,7 +9,7 @@ open Lean Meta Elab Tactic Term Conv
 
 declare_config_elab elabDataSynthConfig Config
 
-def elabConvRewrite (stx : TSyntax `conv) (e : Expr) : 
+def elabConvRewrite (stx : TSyntax `conv) (e : Expr) :
     TermElabM Simp.Result := do
 
   let (rhs, eq) ← mkConvGoalFor e
