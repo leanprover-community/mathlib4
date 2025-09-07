@@ -142,9 +142,6 @@ end functoriality
 def singleton : B ⟶ PB :=
   hPB.homEquiv.invFun (Subobject.mk (cmdiag B))
 
-/-- The classifying subobject on `B ⊗ PB` associated to the chosen representation. -/
-def epsilon : Subobject (B ⊗ PB) := hPB.homEquiv (𝟙 PB)
-
 private lemma pullback_diag_eq_singleton {X} (f : X ⟶ B) :
       (Subobject.pullback (B ◁ f)).obj (Subobject.mk (cmdiag B)) =
     hPB.homEquiv (f ≫ singleton hPB) := by

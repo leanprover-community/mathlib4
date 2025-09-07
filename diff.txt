@@ -1,0 +1,785 @@
+diff --git a/Mathlib.lean b/Mathlib.lean
+index 0b2dbf0646..2fd426ad92 100644
+--- a/Mathlib.lean
++++ b/Mathlib.lean
+@@ -2131,6 +2131,7 @@ import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+ import Mathlib.CategoryTheory.Closed.FunctorToTypes
+ import Mathlib.CategoryTheory.Closed.Ideal
+ import Mathlib.CategoryTheory.Closed.Monoidal
++import Mathlib.CategoryTheory.Closed.PowerObjects
+ import Mathlib.CategoryTheory.Closed.Types
+ import Mathlib.CategoryTheory.Closed.Zero
+ import Mathlib.CategoryTheory.CodiscreteCategory
+diff --git a/Mathlib/CategoryTheory/Closed/PowerObjects.lean b/Mathlib/CategoryTheory/Closed/PowerObjects.lean
+new file mode 100644
+index 0000000000..89ef867b75
+--- /dev/null
++++ b/Mathlib/CategoryTheory/Closed/PowerObjects.lean
+@@ -0,0 +1,179 @@
++/-
++Copyright (c) 2025 Klaus Gy. All rights reserved.
++Released under Apache 2.0 license as described in the file LICENSE.
++Authors: Klaus Gy
++-/
++import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
++import Mathlib.CategoryTheory.Subobject.Basic
++import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
++/-!
++# Elementary Topos (in Elementary Form)
++
++This ongoing work formalizes the elementary definition of a topos and the direct consequences.
++
++## References
++
++* [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
++-/
++
++universe u v
++
++open CategoryTheory
++open Category Functor Limits Opposite Prod
++
++variable {ℰ : Type u} [Category.{v} ℰ]
++
++namespace LeftRepresentable
++
++variable {F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type (max u v)}
++
++variable {B PB : ℰ} (hPB : ((curryObj F).obj (op B)).RepresentableBy PB)
++  {C PC : ℰ} (hPC : ((curryObj F).obj (op C)).RepresentableBy PC)
++
++/-- The morphism induced by a morphism between the base objects. -/
++def map (h : B ⟶ C) : PC ⟶ PB :=
++  hPB.homEquiv.symm (F.map (h.op ×ₘ 𝟙 (op PC)) (hPC.homEquiv (𝟙 PC)))
++
++lemma map_universal (h : B ⟶ C) :
++  F.map (𝟙 (op B) ×ₘ (map hPB hPC h).op) (hPB.homEquiv (𝟙 PB))
++    = F.map (h.op ×ₘ 𝟙 (op PC)) (hPC.homEquiv (𝟙 PC)) := by
++  calc
++    _ = ((curryObj F).obj (op B)).map (map hPB hPC h).op (hPB.homEquiv (𝟙 PB)) := by rfl
++    _ = F.map (h.op ×ₘ 𝟙 (op PC)) (hPC.homEquiv (𝟙 PC)) := by
++      rw [← hPB.homEquiv_eq, map, hPB.homEquiv.apply_symm_apply]
++
++variable {D PD : ℰ} (hPD : ((curryObj F).obj (op D)).RepresentableBy PD)
++
++lemma compose (h : B ⟶ C) (h' : C ⟶ D) :
++    map hPB hPD (h ≫ h') = map hPC hPD h' ≫ map hPB hPC h := by
++  let Ph := map hPB hPC h
++  let Ph' := map hPC hPD h'
++  apply hPB.homEquiv.injective
++  calc
++    _ = F.map ((h'.op ×ₘ 𝟙 _) ≫ (h.op ×ₘ 𝟙 _)) (hPD.homEquiv (𝟙 PD)) := by unfold map; simp
++    _ = F.map ((𝟙 _ ×ₘ Ph'.op) ≫ (h.op ×ₘ 𝟙 _)) (hPC.homEquiv (𝟙 PC)) := by
++      rw[FunctorToTypes.map_comp_apply, ← map_universal, ← FunctorToTypes.map_comp_apply]
++    _ = F.map ((h.op ×ₘ 𝟙 _) ≫ (𝟙 _ ×ₘ Ph'.op)) (hPC.homEquiv (𝟙 PC)) := by simp
++    _ = F.map ((𝟙 _ ×ₘ Ph.op) ≫ (𝟙 _ ×ₘ Ph'.op)) (hPB.homEquiv (𝟙 PB)) := by
++      rw[FunctorToTypes.map_comp_apply, ← map_universal, ← FunctorToTypes.map_comp_apply]
++    _ = (F.curryObj.obj _).map (Ph' ≫ Ph).op (hPB.homEquiv (𝟙 PB)) := by
++      simp [curryObj, ← FunctorToTypes.map_comp_apply]
++    _ = hPB.homEquiv (Ph' ≫ Ph) := by rw[← hPB.homEquiv_eq]
++
++/-- Let `F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type`. If for each `B` we choose
++an object `P B` representing the functor `A ↦ F (B, A)`,
++then these choices assemble into a covariant functor `ℰᵒᵖ ⥤ ℰ`. -/
++def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, ((curryObj F).obj (op B)).RepresentableBy (P B)) :
++    ℰᵒᵖ ⥤ ℰ :=
++  { obj (B : ℰᵒᵖ) := P (unop B),
++    map {B C : ℰᵒᵖ} (h : B ⟶ C) := map (hP (unop C)) (hP (unop B)) h.unop,
++    map_id (_) := by
++      change (hP _).homEquiv.symm (F.map (𝟙 _) ((hP _).homEquiv (𝟙 _))) = 𝟙 _
++      rw[FunctorToTypes.map_id_apply]; simp
++    map_comp {B C D : ℰᵒᵖ} (h : B ⟶ C) (h' : C ⟶ D) :=
++      compose (hP (unop D)) (hP (unop C)) (hP (unop B)) h'.unop h.unop }
++
++end LeftRepresentable
++
++open CartesianMonoidalCategory MonoidalCategory
++
++variable [CartesianMonoidalCategory ℰ]
++
++private abbrev cmdiag (X : ℰ) : X ⟶ X ⊗ X := lift (𝟙 X) (𝟙 X)
++
++private lemma pullback_of_diag {B X : ℰ} (b : X ⟶ B) :
++    IsPullback b (lift b (𝟙 X)) (cmdiag B) (B ◁ b) :=
++  let eq : lift b (𝟙 X) ≫ fst B X = lift b (𝟙 X) ≫ snd B X ≫ b := by simp
++  let lim : IsLimit (Fork.ofι (lift b (𝟙 X)) eq) :=
++    Fork.IsLimit.mk _
++      (fun s => s.ι ≫ (snd B X))
++      (fun s => by simp[← s.condition])
++      (fun s m eq => by simp[← eq])
++  let pb : IsPullback _ (_ ≫ fst B X) (lift (fst B X) (snd B X ≫ b)) (cmdiag B) :=
++    isPullback_equalizer_binaryFan_fork _ (fst B X) (snd B X ≫ b) _ lim
++  IsPullback.flip
++    (by simpa using pb)
++
++private lemma eq_of_lift_through_diag {X Y : ℰ} {f f' g : X ⟶ Y}
++    (h : lift f f' = g ≫ cmdiag Y) : f = f' := by
++  calc
++    _ = (lift f f') ≫ (fst Y Y) := by simp
++    _ = (lift f f') ≫ (snd Y Y) := by simp[h]
++    _ = f' := by simp
++
++variable [HasPullbacks ℰ]
++
++/-- The subobject functor for products. -/
++noncomputable def subobjProd : ℰᵒᵖ × ℰᵒᵖ ⥤ Type (max u v) where
++  obj P := Subobject (unop P.1 ⊗ unop P.2)
++  map f := (Subobject.pullback (f.1.unop ⊗ₘ f.2.unop)).obj
++  map_id A := by ext1 x; simp [Subobject.pullback_id]
++  map_comp f f' := by ext1 x; simp [Subobject.pullback_comp]
++
++/-- `P` is a power object of `B` if it represents the functor `A ↦ Subobject (B ⊗ A)`. -/
++def IsPowerObjectOf (B P : ℰ) :=
++  (subobjProd.curryObj.obj (op B)).RepresentableBy P
++
++namespace PowerObject
++
++variable {B PB : ℰ} (hPB : IsPowerObjectOf B PB)
++
++section functoriality
++
++variable {C PC : ℰ} (hPC : IsPowerObjectOf C PC)
++  {D PD : ℰ} (hPD : IsPowerObjectOf D PD)
++
++/-- Functoriality on the left variable of the bifunctor `(B, A) ↦ Subobject (B ⊗ A)`:
++a map `h : B ⟶ C` induces `PC ⟶ PB` via left-representability. -/
++noncomputable def map (h : B ⟶ C) : PC ⟶ PB := LeftRepresentable.map hPB hPC h
++
++lemma compose (h : B ⟶ C) (h' : C ⟶ D) :
++    map hPB hPD (h ≫ h') = map hPC hPD h' ≫ map hPB hPC h :=
++  LeftRepresentable.compose hPB hPC hPD h h'
++
++/-- Given a choice of representing objects `P B` for the functors `A ↦ Subobject (B ⊗ A)`,
++then these choices assemble into a covariant functor `ℰᵒᵖ ⥤ ℰ`. -/
++noncomputable def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, IsPowerObjectOf B (P B)) : ℰᵒᵖ ⥤ ℰ :=
++  LeftRepresentable.functor P hP
++
++end functoriality
++
++/-- The singleton morphism from `B` to `PB`. -/
++def singleton : B ⟶ PB :=
++  hPB.homEquiv.invFun (Subobject.mk (cmdiag B))
++
++/-- The classifying subobject on `B ⊗ PB` associated to the chosen representation. -/
++def epsilon : Subobject (B ⊗ PB) := hPB.homEquiv (𝟙 PB)
++
++private lemma pullback_diag_eq_singleton {X} (f : X ⟶ B) :
++      (Subobject.pullback (B ◁ f)).obj (Subobject.mk (cmdiag B)) =
++    hPB.homEquiv (f ≫ singleton hPB) := by
++  calc
++    _ = (subobjProd.curryObj.obj (op B)).map f.op (hPB.homEquiv (singleton hPB)) := by
++      simp[subobjProd, curryObj, singleton]
++    _ = hPB.homEquiv (f ≫ singleton hPB) := Eq.symm (hPB.homEquiv_comp f (singleton hPB))
++
++noncomputable instance singleton_is_mono : Mono (singleton hPB) :=
++  ⟨ fun {X} (b b' : X ⟶ B) eq ↦
++    let B_sub := Subobject.mk (cmdiag B)
++    let P := (Subobject.pullback (B ◁ b)).obj B_sub
++    let P' := (Subobject.pullback (B ◁ b')).obj B_sub
++    let PeqP' : P = P' := by
++      unfold P P'
++      rw[pullback_diag_eq_singleton hPB b, eq, ← pullback_diag_eq_singleton hPB b']
++    let ι : X ≅ Subobject.underlying.obj P :=
++      IsPullback.isoIsPullback_congr
++        (Subobject.underlyingIso (cmdiag B)).symm (Iso.refl (B ⊗ X))
++        (Subobject.underlyingIso_hom_comp_eq_mk (cmdiag B)) (by simp)
++        (pullback_of_diag b) (Subobject.isPullback (B ◁ b) B_sub)
++    let eq₁ : (lift b (𝟙 X)) = ι.hom ≫ P.arrow := by unfold P ι; simp
++    let eq₂ := Eq.symm (Subobject.arrow_congr P P' PeqP')
++    let eq₃ := Eq.symm (Subobject.isPullback (B ◁ b') B_sub).w
++    let eq₄ := Eq.symm (Subobject.underlyingIso_hom_comp_eq_mk (cmdiag B))
++    have : (lift b b') = _ ≫ cmdiag B := by
++      calc
++        _ = (lift b (𝟙 X)) ≫ B ◁ b' := by simp
++        _ = _ ≫ cmdiag B := by rw[eq₁, assoc, eq₂, assoc, eq₃, assoc, eq₄, ← assoc, ← assoc]
++    eq_of_lift_through_diag this ⟩
++
++end PowerObject
+diff --git a/Mathlib/CategoryTheory/Limits/Shapes/BinaryProducts.lean b/Mathlib/CategoryTheory/Limits/Shapes/BinaryProducts.lean
+index 93f5b673a0..5ef650d62b 100644
+--- a/Mathlib/CategoryTheory/Limits/Shapes/BinaryProducts.lean
++++ b/Mathlib/CategoryTheory/Limits/Shapes/BinaryProducts.lean
+@@ -30,7 +30,7 @@ braiding and associating isomorphisms, and the product comparison morphism.
+ 
+ universe v v₁ u u₁ u₂
+ 
+-open CategoryTheory
++open CategoryTheory Category
+ 
+ namespace CategoryTheory.Limits
+ 
+@@ -386,7 +386,7 @@ theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : Binary
+     obtain ⟨l, hl, -⟩ := BinaryFan.IsLimit.lift' H (𝟙 X) (h.from X)
+     exact
+       ⟨⟨l,
+-          BinaryFan.IsLimit.hom_ext H (by simpa [hl, -Category.comp_id] using Category.comp_id _)
++          BinaryFan.IsLimit.hom_ext H (by simpa [hl, -comp_id] using comp_id _)
+             (h.hom_ext _ _),
+           hl⟩⟩
+   · intro
+@@ -433,9 +433,9 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
+   · rintro ⟨H⟩
+     obtain ⟨l, hl, -⟩ := BinaryCofan.IsColimit.desc' H (𝟙 X) (h.to X)
+     refine ⟨⟨l, hl, BinaryCofan.IsColimit.hom_ext H (?_) (h.hom_ext _ _)⟩⟩
+-    rw [Category.comp_id]
++    rw [comp_id]
+     have e : (inl c ≫ l) ≫ inl c = 𝟙 X ≫ inl c := congrArg (·≫inl c) hl
+-    rwa [Category.assoc,Category.id_comp] at e
++    rwa [assoc,id_comp] at e
+   · intro
+     exact
+       ⟨BinaryCofan.IsColimit.mk _ (fun f _ => inv c.inl ≫ f)
+@@ -519,8 +519,8 @@ noncomputable def coprodIsCoprod (X Y : C) [HasBinaryCoproduct X Y] :
+     IsColimit (BinaryCofan.mk (coprod.inl : X ⟶ X ⨿ Y) coprod.inr) :=
+   (colimit.isColimit _).ofIsoColimit (Cocones.ext (Iso.refl _) (fun ⟨u⟩ => by
+     cases u
+-    · dsimp; simp only [Category.comp_id]
+-    · dsimp; simp only [Category.comp_id]
++    · dsimp; simp only [comp_id]
++    · dsimp; simp only [comp_id]
+   ))
+ 
+ @[ext 1100]
+@@ -622,7 +622,7 @@ theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W
+     f ≫ prod.lift g h = prod.lift (f ≫ g) (f ≫ h) := by ext <;> simp
+ 
+ theorem prod.comp_diag {X Y : C} [HasBinaryProduct Y Y] (f : X ⟶ Y) :
+-    f ≫ diag Y = prod.lift f f := by simp
++    f ≫ diag Y = lift f f := by simp
+ 
+ @[reassoc (attr := simp)]
+ theorem prod.map_fst {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ⟶ Y)
+@@ -642,6 +642,10 @@ theorem prod.map_id_id {X Y : C} [HasBinaryProduct X Y] : prod.map (𝟙 X) (
+ theorem prod.lift_fst_snd {X Y : C} [HasBinaryProduct X Y] :
+     prod.lift prod.fst prod.snd = 𝟙 (X ⨯ Y) := by ext <;> simp
+ 
++@[simp]
++lemma prod.lift_comp_fst_snd {X Y Z : C} [HasBinaryProduct Y Z] (f : X ⟶ Y ⨯ Z) :
++    prod.lift (f ≫ prod.fst) (f ≫ prod.snd) = f := by ext <;> simp
++
+ @[reassoc (attr := simp)]
+ theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : V ⟶ W)
+     (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
+@@ -744,6 +748,10 @@ theorem coprod.map_id_id {X Y : C} [HasBinaryCoproduct X Y] : coprod.map (𝟙 X
+ theorem coprod.desc_inl_inr {X Y : C} [HasBinaryCoproduct X Y] :
+     coprod.desc coprod.inl coprod.inr = 𝟙 (X ⨿ Y) := by ext <;> simp
+ 
++@[simp]
++lemma coprod.desc_comp_inl_inr {X Y Z : C} [HasBinaryCoproduct X Y] (f : X ⨿ Y ⟶ Z) :
++    coprod.desc (coprod.inl ≫ f) (coprod.inr ≫ f) = f := by ext <;> simp
++
+ -- The simp linter says simp can prove the reassoc version of this lemma.
+ @[reassoc, simp]
+ theorem coprod.map_desc {S T U V W : C} [HasBinaryCoproduct U W] [HasBinaryCoproduct T V]
+@@ -913,7 +921,7 @@ theorem prod.leftUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
+ @[reassoc]
+ theorem prod.leftUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
+     (prod.leftUnitor X).inv ≫ prod.map (𝟙 _) f = f ≫ (prod.leftUnitor Y).inv := by
+-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, prod.leftUnitor_hom_naturality]
++  rw [Iso.inv_comp_eq, ← assoc, Iso.eq_comp_inv, prod.leftUnitor_hom_naturality]
+ 
+ @[reassoc]
+ theorem prod.rightUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
+@@ -923,7 +931,7 @@ theorem prod.rightUnitor_hom_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
+ @[reassoc]
+ theorem prod_rightUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
+     (prod.rightUnitor X).inv ≫ prod.map f (𝟙 _) = f ≫ (prod.rightUnitor Y).inv := by
+-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, prod.rightUnitor_hom_naturality]
++  rw [Iso.inv_comp_eq, ← assoc, Iso.eq_comp_inv, prod.rightUnitor_hom_naturality]
+ 
+ theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
+     (prod.associator X (⊤_ C) Y).hom ≫ prod.map (𝟙 X) (prod.leftUnitor Y).hom =
+@@ -1097,7 +1105,7 @@ theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodCom
+     [IsIso (prodComparison F A' B')] :
+     inv (prodComparison F A B) ≫ F.map (prod.map f g) =
+       prod.map (F.map f) (F.map g) ≫ inv (prodComparison F A' B') := by
+-  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
++  rw [IsIso.eq_comp_inv, assoc, IsIso.inv_comp_eq, prodComparison_natural]
+ 
+ /-- The natural isomorphism `F(A ⨯ -) ≅ FA ⨯ F-`, provided each `prodComparison F A B` is an
+ isomorphism (as `B` changes).
+@@ -1174,7 +1182,7 @@ theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (copro
+     [IsIso (coprodComparison F A' B')] :
+     inv (coprodComparison F A B) ≫ coprod.map (F.map f) (F.map g) =
+       F.map (coprod.map f g) ≫ inv (coprodComparison F A' B') := by
+-  rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, coprodComparison_natural]
++  rw [IsIso.eq_comp_inv, assoc, IsIso.inv_comp_eq, coprodComparison_natural]
+ 
+ /-- The natural isomorphism `FA ⨿ F- ≅ F(A ⨿ -)`, provided each `coprodComparison F A B` is an
+ isomorphism (as `B` changes).
+@@ -1209,7 +1217,7 @@ noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over
+   obj f := Over.coprodObj f
+   map k :=
+     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
+-        dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
++        dsimp; rw [coprod.map_desc, id_comp, Over.w k])
+       naturality := fun f g k => by
+         ext
+         simp }
+diff --git a/Mathlib/CategoryTheory/Limits/Shapes/Equalizers.lean b/Mathlib/CategoryTheory/Limits/Shapes/Equalizers.lean
+index 17d7fe8b12..d0b738730c 100644
+--- a/Mathlib/CategoryTheory/Limits/Shapes/Equalizers.lean
++++ b/Mathlib/CategoryTheory/Limits/Shapes/Equalizers.lean
+@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
+ Authors: Kim Morrison, Markus Himmel
+ -/
+ import Mathlib.CategoryTheory.EpiMono
++import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+ import Mathlib.CategoryTheory.Limits.HasLimits
+ 
+ /-!
+@@ -172,7 +173,7 @@ theorem walkingParallelPairOpEquiv_counitIso_one :
+   rfl
+ 
+ variable {C : Type u} [Category.{v} C]
+-variable {X Y : C}
++variable {X Y Z : C}
+ 
+ /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
+ common domain and codomain. -/
+@@ -355,6 +356,23 @@ theorem Cofork.coequalizer_ext (s : Cofork f g) {W : C} {k l : s.pt ⟶ W}
+   | zero => by simp only [s.app_zero_eq_comp_π_left, Category.assoc, h]
+   | one => h
+ 
++@[simp]
++theorem Fork.ofι_eq_self (w : Fork f g) : Fork.ofι w.ι w.condition = w :=
++  let ext (w w' : Fork f g) (hp : w.pt = w'.pt) (hπ : w.π = hp ▸ w'.π) : w = w' := by
++    cases w; cases hp; cases hπ; rfl
++  have (X : WalkingParallelPair) : (Fork.ofι w.ι w.condition).π.app X = w.π.app X := by
++    cases X <;> simp
++  ext _ w (by rfl) (NatTrans.ext (funext this))
++
++@[simp]
++theorem Cofork.ofπ_eq_self (w : Cofork f g) : Cofork.ofπ w.π w.condition = w :=
++  let ext (w w' : Cofork f g) (hp : w.pt = w'.pt) (hι : w.ι = hp ▸ w'.ι) : w = w' := by
++    cases w; cases hp; cases hι; rfl
++  have (X : WalkingParallelPair) :
++    (Cofork.ofπ w.π w.condition).ι.app X = w.ι.app X := by
++    cases X <;> simp
++  ext _ w (by rfl) (NatTrans.ext (funext this))
++
+ theorem Fork.IsLimit.hom_ext {s : Fork f g} (hs : IsLimit s) {W : C} {k l : W ⟶ s.pt}
+     (h : k ≫ Fork.ι s = l ≫ Fork.ι s) : k = l :=
+   hs.hom_ext <| Fork.equalizer_ext _ h
+@@ -698,6 +716,22 @@ def Cofork.isColimitOfIsos {X' Y' : C} (c : Cofork f g) (hc : IsColimit c)
+     (comm₃ : e₁.inv ≫ c.π ≫ e.hom = c'.π := by cat_disch) : IsColimit c' :=
+   (Cofork.isColimitEquivOfIsos c c' e₀ e₁ e) hc
+ 
++lemma eq_of_lift_eq_diag (p : BinaryFan Z Z) (hp : IsLimit p)
++      {e : X ⟶ Y} {f g : Y ⟶ Z} {h : X ⟶ Z}
++      (eq : e ≫ hp.lift (BinaryFan.mk f g) = h ≫ (hp.lift (BinaryFan.mk (𝟙 Z) (𝟙 Z)))) :
++    e ≫ f = e ≫ g :=
++  by calc
++    e ≫ f = h     := by simpa using congr($eq ≫ p.fst)
++    _     = e ≫ g := by simpa using congr($eq.symm ≫ p.snd)
++
++lemma eq_of_desc_eq_codiag (p : BinaryCofan X X) (hp : IsColimit p)
++      {e : Y ⟶ Z} {f g : X ⟶ Y} {h : X ⟶ Z}
++      (eq : (hp.desc (BinaryCofan.mk f g)) ≫ e = (hp.desc (BinaryCofan.mk (𝟙 X) (𝟙 X))) ≫ h) :
++    f ≫ e = g ≫ e :=
++  by calc
++    f ≫ e = h     := by simpa using congr(p.inl ≫ $eq)
++    _     = g ≫ e := by simpa using congr(p.inr ≫ $eq.symm)
++
+ variable (f g)
+ 
+ section
+@@ -741,6 +775,15 @@ noncomputable def equalizerIsEqualizer : IsLimit (Fork.ofι (equalizer.ι f g)
+     (equalizer.condition f g)) :=
+   IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
+ 
++/-- The equalizer built from `equalizer.fork f g` is limiting. -/
++noncomputable def equalizerIsEqualizer' : IsLimit (equalizer.fork f g) :=
++  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
++
++@[simp]
++theorem equalizer.fork_ofι :
++    Fork.ofι (equalizer.ι f g) (equalizer.condition f g) = equalizer.fork f g :=
++  Fork.ofι_eq_self (equalizer.fork f g)
++
+ variable {f g}
+ 
+ /-- A morphism `k : W ⟶ X` satisfying `k ≫ f = k ≫ g` factors through the equalizer of `f` and `g`
+@@ -890,6 +933,15 @@ noncomputable def coequalizerIsCoequalizer :
+     IsColimit (Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g)) :=
+   IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
+ 
++/-- The cofork built from `coequalizer.π f g` is colimiting. -/
++noncomputable def coequalizerIsCoequalizer' : IsColimit (coequalizer.cofork f g) :=
++  IsColimit.ofIsoColimit (colimit.isColimit _) (Cofork.ext (Iso.refl _) (by simp))
++
++@[simp]
++theorem coequalizer.cofork_ofπ :
++    Cofork.ofπ (coequalizer.π f g) (coequalizer.condition f g) = coequalizer.cofork f g :=
++  Cofork.ofπ_eq_self (coequalizer.cofork f g)
++
+ variable {f g}
+ 
+ /-- Any morphism `k : Y ⟶ W` satisfying `f ≫ k = g ≫ k` factors through the coequalizer of `f`
+@@ -1226,6 +1278,19 @@ noncomputable def splitEpiOfIdempotentCoequalizer {X : C} {f : X ⟶ X} (hf : f
+     [HasCoequalizer (𝟙 X) f] : SplitEpi (coequalizer.π (𝟙 X) f) :=
+   splitEpiOfIdempotentOfIsColimitCofork _ hf (colimit.isColimit _)
+ 
++variable [HasBinaryProducts C]
++
++local notation "p⟨" f ", " g "⟩" => Limits.prod.lift f g
++
++/-- For `f : X ⟶ Y`, the pairing `p⟨𝟙 X, f⟩ : X ⟶ X ⨯ Y` is the equalizer
++of the pair `(prod.fst ≫ f, prod.snd)`. -/
++noncomputable def graph_as_equalizer {X Y : C} (f : X ⟶ Y) :
++    IsLimit (Fork.ofι p⟨𝟙 X, f⟩ ((by simp) : p⟨𝟙 X, f⟩ ≫ prod.fst ≫ f = p⟨𝟙 X, f⟩ ≫ prod.snd)) :=
++  Fork.IsLimit.mk _
++    (fun s => s.ι ≫ prod.fst)
++    (fun s => ((by simp[prod.comp_lift, s.condition])))
++    (fun s m eq => by simp[← eq])
++
+ end CategoryTheory.Limits
+ 
+ end
+diff --git a/Mathlib/CategoryTheory/Limits/Shapes/Pullback/CommSq.lean b/Mathlib/CategoryTheory/Limits/Shapes/Pullback/CommSq.lean
+index f95b2be8ce..ed0807e461 100644
+--- a/Mathlib/CategoryTheory/Limits/Shapes/Pullback/CommSq.lean
++++ b/Mathlib/CategoryTheory/Limits/Shapes/Pullback/CommSq.lean
+@@ -39,7 +39,6 @@ We define bicartesian squares, and
+ show that the pullback and pushout squares for a biproduct are bicartesian.
+ -/
+ 
+-
+ noncomputable section
+ 
+ open CategoryTheory
+@@ -373,6 +372,47 @@ lemma of_iso (h : IsPullback fst snd f g)
+               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
+             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
+               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
++
++/-- Pullbacks over isomorphic cospans (with fixed codomain `Z`) have isomorphic apexes. -/
++def isoIsPullback_congr
++      {P' X' Y' : C}
++      (iX : X ≅ X') (iY : Y ≅ Y')
++      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
++      {f' : X' ⟶ Z} {g' : Y' ⟶ Z}
++      (hf : iX.inv ≫ f = f') (hg : iY.inv ≫ g = g')
++      (pb : IsPullback fst snd f g)
++      (pb' : IsPullback fst' snd' f' g') :
++    P ≅ P' :=
++  have h_trans : IsPullback (fst ≫ iX.hom) (snd ≫ iY.hom) (iX.inv ≫ f) (iY.inv ≫ g) :=
++    IsPullback.of_iso pb
++      (Iso.refl P) (iX) (iY) (Iso.refl Z)
++      (by simp) (by simp) (by simp) (by simp)
++  IsPullback.isoIsPullback X' Y' h_trans (by simpa [hf, hg] using pb')
++
++@[reassoc (attr := simp)]
++lemma isoIsPullback_congr_hom_fst
++      {X' Y' P' : C}
++      (iX : X ≅ X') (iY : Y ≅ Y')
++      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
++      {f' : X' ⟶ Z} {g' : Y' ⟶ Z}
++      (hf : iX.inv ≫ f = f') (hg : iY.inv ≫ g = g')
++      (pb : IsPullback fst snd f g)
++      (pb' : IsPullback fst' snd' f' g') :
++    (isoIsPullback_congr iX iY hf hg pb pb').hom ≫ fst' = fst ≫ iX.hom := by
++  unfold isoIsPullback_congr; simp
++
++@[reassoc (attr := simp)]
++lemma isoIsPullback_congr_hom_snd
++      {X' Y' P' : C}
++      (iX : X ≅ X') (iY : Y ≅ Y')
++      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
++      {f' : X' ⟶ Z} {g' : Y' ⟶ Z}
++      (hf : iX.inv ≫ f = f') (hg : iY.inv ≫ g = g')
++      (pb : IsPullback fst snd f g)
++      (pb' : IsPullback fst' snd' f' g') :
++    (isoIsPullback_congr iX iY hf hg pb pb').hom ≫ snd' = snd ≫ iY.hom := by
++  unfold isoIsPullback_congr; simp
++
+ section
+ 
+ variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+@@ -1492,3 +1532,5 @@ theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColim
+ end Functor
+ 
+ end CategoryTheory
++
++set_option linter.style.longFile 1700
+diff --git a/Mathlib/CategoryTheory/Limits/Shapes/Pullback/Equalizer.lean b/Mathlib/CategoryTheory/Limits/Shapes/Pullback/Equalizer.lean
+index acd890c5e8..09c3e1895f 100644
+--- a/Mathlib/CategoryTheory/Limits/Shapes/Pullback/Equalizer.lean
++++ b/Mathlib/CategoryTheory/Limits/Shapes/Pullback/Equalizer.lean
+@@ -14,35 +14,53 @@ Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar resul
+ 
+ universe v u
+ 
++open CategoryTheory.Category
++
+ namespace CategoryTheory.Limits
+ 
+-variable {C : Type u} [Category.{v} C] {X Y : C} (f g : X ⟶ Y)
+-
+-/-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y × Y`
+-along the map `(f, g) : X ⟶ Y × Y`. -/
+-lemma isPullback_equalizer_prod [HasEqualizer f g] [HasBinaryProduct Y Y] :
+-    IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f) (prod.lift f g) (prod.lift (𝟙 _) (𝟙 _)) := by
+-  refine ⟨⟨by ext <;> simp [equalizer.condition f g]⟩, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+-  · refine fun s ↦ equalizer.lift s.fst ?_
+-    have H₁ : s.fst ≫ f = s.snd := by simpa using congr($s.condition ≫ prod.fst)
+-    have H₂ : s.fst ≫ g = s.snd := by simpa using congr($s.condition ≫ prod.snd)
+-    exact H₁.trans H₂.symm
+-  · exact fun s ↦ by simp
+-  · exact fun s ↦ by simpa using congr($s.condition ≫ prod.fst)
+-  · exact fun s m hm _ ↦ by ext; simp [*]
++variable {C : Type u} [Category.{v} C] {X Y Z : C}
++
++/-- If `e` is an equalizer of `f g : X ⟶ Y`, then `e` is also the pullback of the diagonal map
++`Y ⟶ Y ⨯ Y` along `⟨f, g⟩ : X ⟶ Y ⨯ Y`. Fully explicit version with binary fans and forks -/
++lemma isPullback_equalizer_binaryFan_fork {p : BinaryFan Y Y} (hp : IsLimit p)
++      (f g : X ⟶ Y) (e : Fork f g) (he : IsLimit e) :
++    IsPullback e.ι (e.ι ≫ f)
++      (hp.lift (BinaryFan.mk f g)) (hp.lift (BinaryFan.mk (𝟙 Y) (𝟙 Y))) := by
++  refine
++    ⟨ ⟨ BinaryFan.IsLimit.hom_ext hp (by simp) (by simp[e.condition]) ⟩,
++      ⟨ PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_ ⟩ ⟩
++  · exact fun s ↦ he.lift (Fork.ofι s.fst (eq_of_lift_eq_diag p hp (s.condition)))
++  · exact fun s ↦ Fork.IsLimit.lift_ι he
++  · exact fun s ↦ by simpa using congr($s.condition ≫ p.fst)
++  · exact fun _ _ hm _ ↦ Fork.IsLimit.hom_ext he (Eq.symm (Fork.IsLimit.lift_ι he) ▸ hm)
++
++/-- The equalizer of `f g : X ⟶ Y` is the pullback of the diagonal map `Y ⟶ Y ⨯ Y`
++  along the map `⟨f, g⟩ : X ⟶ Y ⨯ Y`. Version with implicit products and equalizers. -/
++lemma isPullback_equalizer_prod (f g : X ⟶ Y) [HasEqualizer f g] [HasBinaryProduct Y Y] :
++      IsPullback (equalizer.ι f g) (equalizer.ι f g ≫ f) (prod.lift f g) (diag Y) :=
++    isPullback_equalizer_binaryFan_fork _
++      f g (equalizer.fork f g) (equalizerIsEqualizer' f g)
++
++/-- If `e` is an coequalizer of `f g : X ⟶ Y`, then `e` is also the pushout of the codiagonal map
++`X + X ⟶ X` along `⟨f, g⟩ : X + X ⟶ Y`. Fully explicit version with binary cofans and coforks. -/
++lemma isPushout_coequalizer_binaryCofan_coFork {p : BinaryCofan X X} (hp : IsColimit p)
++  (f g : X ⟶ Y) (e : Cofork f g) (h : IsColimit e) :
++    IsPushout (hp.desc (BinaryCofan.mk f g)) (hp.desc (BinaryCofan.mk (𝟙 X) (𝟙 X)))
++      e.π (f ≫ e.π) := by
++  refine
++    ⟨ ⟨ BinaryCofan.IsColimit.hom_ext hp (by simp) (by simp[e.condition]) ⟩,
++      ⟨ PushoutCocone.IsColimit.mk _ ?_ ?_ ?_ ?_ ⟩ ⟩
++  · exact fun s ↦ h.desc (Cofork.ofπ s.inl (eq_of_desc_eq_codiag p hp (s.condition)))
++  · exact fun s ↦ Cofork.IsColimit.π_desc h
++  · exact fun s ↦ by simpa using congr(p.inl ≫ $s.condition)
++  · exact fun _ _ hm _ ↦ Cofork.IsColimit.hom_ext h (Eq.symm (Cofork.IsColimit.π_desc h) ▸ hm)
+ 
+ /-- The coequalizer of `f g : X ⟶ Y` is the pushout of the diagonal map `X ⨿ X ⟶ X`
+-along the map `(f, g) : X ⨿ X ⟶ Y`. -/
+-lemma isPushout_coequalizer_coprod [HasCoequalizer f g] [HasBinaryCoproduct X X] :
+-    IsPushout (coprod.desc f g) (coprod.desc (𝟙 _) (𝟙 _))
+-      (coequalizer.π f g) (f ≫ coequalizer.π f g) := by
+-  refine ⟨⟨by ext <;> simp [coequalizer.condition f g]⟩, ⟨PushoutCocone.IsColimit.mk _ ?_ ?_ ?_ ?_⟩⟩
+-  · refine fun s ↦ coequalizer.desc s.inl ?_
+-    have H₁ : f ≫ s.inl = s.inr := by simpa using congr(coprod.inl ≫ $s.condition)
+-    have H₂ : g ≫ s.inl = s.inr := by simpa using congr(coprod.inr ≫ $s.condition)
+-    exact H₁.trans H₂.symm
+-  · exact fun s ↦ by simp
+-  · exact fun s ↦ by simpa using congr(coprod.inl ≫ $s.condition)
+-  · exact fun s m hm _ ↦ by ext; simp [*]
++along the map `(f, g) : X ⨿ X ⟶ Y`. Version with implicit coproducts and coequalizers -/
++lemma isPushout_coequalizer_coprod (f g : X ⟶ Y) [HasCoequalizer f g] [HasBinaryCoproduct X X] :
++    IsPushout (coprod.desc f g) (codiag X)
++      (coequalizer.π f g) (f ≫ coequalizer.π f g) :=
++  isPushout_coequalizer_binaryCofan_coFork _
++    f g (coequalizer.cofork f g) (coequalizerIsCoequalizer' f g)
+ 
+ end CategoryTheory.Limits
+diff --git a/Mathlib/CategoryTheory/Monoidal/Cartesian/Basic.lean b/Mathlib/CategoryTheory/Monoidal/Cartesian/Basic.lean
+index 8b58ba85b2..8d7a53af72 100644
+--- a/Mathlib/CategoryTheory/Monoidal/Cartesian/Basic.lean
++++ b/Mathlib/CategoryTheory/Monoidal/Cartesian/Basic.lean
+@@ -223,6 +223,10 @@ Construct a morphism to the product given its two components.
+ def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
+   (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
+ 
++@[simp]
++lemma lift_eq {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
++  (tensorProductIsBinaryProduct X Y).lift (BinaryFan.mk f g) = lift f g := rfl
++
+ @[reassoc (attr := simp)]
+ lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = f :=
+   (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.1
+@@ -276,6 +280,14 @@ lemma whiskerRight_fst {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ fst _ _ = f
+ lemma whiskerRight_snd {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ snd _ _ = snd _ _ := by
+   simp [snd_def, ← comp_whiskerRight_assoc]
+ 
++@[simp]
++lemma whiskerLeft_eq_lift {X Y Z : C} (f : Y ⟶ Z) :
++    (lift (fst X Y) (snd X Y ≫ f)) = X ◁ f := by aesop_cat
++
++@[simp]
++lemma whiskerRight_eq_lift {X Y Z : C} (f : X ⟶ Z) :
++    (lift (fst X Y ≫ f) (snd X Y)) = f ▷ Y := by aesop_cat
++
+ @[reassoc (attr := simp)]
+ lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+     (f ⊗ₘ g) ≫ fst _ _ = fst _ _ ≫ f := by simp [tensorHom_def]
+diff --git a/Mathlib/CategoryTheory/Subobject/Basic.lean b/Mathlib/CategoryTheory/Subobject/Basic.lean
+index bc9abec6e2..19461b6fdc 100644
+--- a/Mathlib/CategoryTheory/Subobject/Basic.lean
++++ b/Mathlib/CategoryTheory/Subobject/Basic.lean
+@@ -186,6 +186,10 @@ noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
+ instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
+   (representative.obj Y).property
+ 
++/-- Equal subobjects induce isomorphic underlying objects. -/
++def isoFromEq {A : C} {X Y : Subobject A} (h : X = Y) : underlying.obj X ≅ underlying.obj Y :=
++  eqToIso (congr_arg (fun X : Subobject A => (X : C)) h)
++
+ @[simp]
+ theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
+     eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
+diff --git a/Mathlib/CategoryTheory/Topos/Classifier.lean b/Mathlib/CategoryTheory/Topos/Classifier.lean
+index fceb5b45d7..dd7abbc0c6 100644
+--- a/Mathlib/CategoryTheory/Topos/Classifier.lean
++++ b/Mathlib/CategoryTheory/Topos/Classifier.lean
+@@ -72,9 +72,7 @@ variable (C : Type u) [Category.{v} C]
+ ```
+ An equivalent formulation replaces `Ω₀` with the terminal object.
+ -/
+-structure Classifier where
+-  /-- The domain of the truth morphism -/
+-  Ω₀ : C
++structure Classifier (Ω₀ : C) where
+   /-- The codomain of the truth morphism -/
+   Ω : C
+   /-- The truth morphism of the subobject classifier -/
+@@ -108,8 +106,7 @@ def mkOfTerminalΩ₀
+     (isPullback : ∀ {U X : C} (m : U ⟶ X) [Mono m],
+       IsPullback m (t.from U) (χ m) truth)
+     (uniq : ∀ {U X : C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ Ω)
+-      (_ : IsPullback m (t.from U) χ' truth), χ' = χ m) : Classifier C where
+-  Ω₀ := Ω₀
++      (_ : IsPullback m (t.from U) χ' truth), χ' = χ m) : Classifier C Ω₀ where
+   Ω := Ω
+   truth := truth
+   mono_truth := t.mono_from _
+@@ -118,7 +115,12 @@ def mkOfTerminalΩ₀
+   isPullback m _ := isPullback m
+   uniq m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
+ 
+-instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
++variable {Ω₀ : C}
++
++/-- Given `c : Classifier C`, `c.Ω₀` is a terminal object.
++Prefer `c.χ₀` over `c.isTerminalΩ₀.from`. -/
++def isTerminalΩ₀ {c : Classifier C Ω₀} : IsTerminal Ω₀ :=
++  have : ∀ Y : C, Unique (Y ⟶ Ω₀) := fun Y ↦
+   { default := c.χ₀ Y,
+     uniq f :=
+       have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
+@@ -126,40 +128,36 @@ instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
+           _ = c.χ (𝟙 Y) := c.uniq (𝟙 Y) (of_horiz_isIso_mono { })
+           _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
+       Mono.right_cancellation _ _ this }
+-
+-/-- Given `c : Classifier C`, `c.Ω₀` is a terminal object.
+-Prefer `c.χ₀` over `c.isTerminalΩ₀.from`. -/
+-def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
++  IsTerminal.ofUnique Ω₀
+ 
+ @[simp]
+-lemma isTerminalFrom_eq_χ₀ (c : Classifier C) : c.isTerminalΩ₀.from = c.χ₀ := rfl
++lemma isTerminalFrom_eq_χ₀ (c : Classifier C Ω₀) : c.isTerminalΩ₀.from = c.χ₀ := rfl
+ 
+ end Classifier
+ 
+ /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
+ class HasClassifier (C : Type u) [Category.{v} C] : Prop where
+   /-- There is some classifier. -/
+-  exists_classifier : Nonempty (Classifier C)
++  exists_classifier : Nonempty (Σ Ω₀, Classifier C Ω₀)
+ 
+ namespace HasClassifier
+ 
+ variable (C) [HasClassifier C]
+ 
+ noncomputable section
+-
+ /-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
+-abbrev Ω₀ : C := HasClassifier.exists_classifier.some.Ω₀
++abbrev Ω₀ : C := HasClassifier.exists_classifier.some.1
++private abbrev cΩ₀ : Classifier C (Ω₀ C) := HasClassifier.exists_classifier.some.2
+ /-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
+-abbrev Ω : C := HasClassifier.exists_classifier.some.Ω
++abbrev Ω : C := (cΩ₀ C).Ω
+ 
+ /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
+-abbrev truth : Ω₀ C ⟶ Ω C := HasClassifier.exists_classifier.some.truth
++abbrev truth : Ω₀ C ⟶ Ω C := (cΩ₀ C).truth
+ 
+ variable {C} {U X : C} (m : U ⟶ X) [Mono m]
+ 
+ /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
+-def χ : X ⟶ Ω C :=
+-  HasClassifier.exists_classifier.some.χ m
++def χ : X ⟶ Ω C := (cΩ₀ C).χ m
+ 
+ /-- The diagram
+ ```
+@@ -172,7 +170,7 @@ def χ : X ⟶ Ω C :=
+ ```
+ is a pullback square.
+ -/
+-lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
++lemma isPullback_χ : IsPullback m (Classifier.χ₀ (cΩ₀ C) U) (χ m) (truth C) :=
+   Classifier.isPullback _ m
+ 
+ /-- The diagram
+@@ -187,16 +185,16 @@ lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
+ commutes.
+ -/
+ @[reassoc]
+-lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).w
++lemma comm : m ≫ χ m = (cΩ₀ C).χ₀ U ≫ truth C := (isPullback_χ m).w
+ 
+ /-- `χ m` is the only map for which the associated square
+ is a pullback square.
+ -/
+-lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) : χ' = χ m :=
+-  Classifier.uniq _ m hχ'
++lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m ((cΩ₀ C).χ₀ U) χ' (truth C)) :
++  χ' = χ m := (cΩ₀ C).uniq m hχ'
+ 
+ instance truthIsSplitMono : IsSplitMono (truth C) :=
+-  Classifier.isTerminalΩ₀.isSplitMono_from _
++  (cΩ₀ C).isTerminalΩ₀.isSplitMono_from _
+ 
+ /-- `truth C` is a regular monomorphism (because it is split). -/
+ noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
+@@ -251,7 +249,7 @@ open Subobject
+ 
+ section RepresentableBy
+ 
+-variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
++variable {C : Type u} [Category.{v} C] [HasPullbacks C] {Ω₀ : C} (𝒞 : Classifier C Ω₀)
+ 
+ /-- The subobject of `𝒞.Ω` corresponding to the `truth` morphism. -/
+ abbrev truth_as_subobject : Subobject 𝒞.Ω :=
+@@ -404,8 +402,7 @@ noncomputable def isoΩ₀ : (h.Ω₀ : C) ≅ ⊤_ C :=
+ 
+ /-- Any representation `Ω` of `Subobject.presheaf C` gives a subobject classifier with truth values
+ object `Ω`. -/
+-noncomputable def classifier : Classifier C where
+-  Ω₀ := ⊤_ C
++noncomputable def classifier : Classifier C (⊤_ C) where
+   Ω := Ω
+   truth := h.isoΩ₀.inv ≫ h.Ω₀.arrow
+   mono_truth := terminalIsTerminal.mono_from _
+@@ -430,12 +427,12 @@ variable [HasTerminal C]
+ theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :
+     HasClassifier C ↔ (Subobject.presheaf C).IsRepresentable := by
+   constructor <;> intro h
+-  · obtain ⟨⟨𝒞⟩⟩ := h
++  · obtain ⟨⟨Ω₀, 𝒞⟩⟩ := h
+     apply RepresentableBy.isRepresentable
+     exact 𝒞.representableBy
+   · obtain ⟨Ω, ⟨h⟩⟩ := h
+     constructor; constructor
+-    exact Classifier.SubobjectRepresentableBy.classifier h
++    exact ⟨⊤_ C, Classifier.SubobjectRepresentableBy.classifier h⟩
+ 
+ end Representability
+ end CategoryTheory
