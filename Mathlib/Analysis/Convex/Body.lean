@@ -21,7 +21,7 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 - define positive convex bodies, requiring the interior to be nonempty
 - introduce support sets
-- Characterise the interaction of the distance with algebraic operations, eg
+- Characterise the interaction of the distance with algebraic operations, e.g.
   `dist (a • K) (a • L) = ‖a‖ * dist K L`, `dist (a +ᵥ K) (a +ᵥ L) = dist K L`
 
 ## Tags
@@ -83,7 +83,7 @@ theorem coe_mk (s : Set V) (h₁ h₂ h₃) : (mk s h₁ h₂ h₃ : Set V) = s 
 /-- A convex body that is symmetric contains `0`. -/
 theorem zero_mem_of_symmetric (K : ConvexBody V) (h_symm : ∀ x ∈ K, -x ∈ K) : 0 ∈ K := by
   obtain ⟨x, hx⟩ := K.nonempty
-  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by field_simp]
+  rw [show 0 = (1/2 : ℝ) • x + (1/2 : ℝ) • (- x) by simp]
   apply convex_iff_forall_pos.mp K.convex hx (h_symm x hx)
   all_goals linarith
 
@@ -92,7 +92,7 @@ section ContinuousAdd
 instance : Zero (ConvexBody V) where
   zero := ⟨0, convex_singleton 0, isCompact_singleton, Set.singleton_nonempty 0⟩
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_zero : (↑(0 : ConvexBody V) : Set V) = 0 :=
   rfl
 
@@ -109,7 +109,7 @@ instance : Add (ConvexBody V) where
 instance : SMul ℕ (ConvexBody V) where
   smul := nsmulRec
 
--- Porting note: add @[simp, norm_cast]; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : Set V)
   | 0, _ => rfl
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
@@ -117,7 +117,7 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
 noncomputable instance : AddMonoid (ConvexBody V) :=
   SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 
@@ -131,7 +131,7 @@ variable [ContinuousSMul ℝ V]
 instance : SMul ℝ (ConvexBody V) where
   smul c K := ⟨c • (K : Set V), K.convex.smul _, K.isCompact.smul _, K.nonempty.smul_set⟩
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
@@ -140,7 +140,7 @@ variable [ContinuousAdd V]
 noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
   SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
 
-@[simp] -- Porting note: add norm_cast; we leave it out for now to reproduce mathlib3 behavior.
+@[simp, norm_cast]
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 

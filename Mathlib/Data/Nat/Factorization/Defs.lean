@@ -5,6 +5,7 @@ Authors: Stuart Presnell
 -/
 import Batteries.Data.List.Count
 import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Data.Finsupp.Order
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
 

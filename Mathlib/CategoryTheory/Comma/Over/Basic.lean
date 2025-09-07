@@ -75,7 +75,7 @@ def mk {X Y : T} (f : Y ⟶ X) : Over X :=
   CostructuredArrow.mk f
 
 /-- We can set up a coercion from arrows with codomain `X` to `over X`. This most likely should not
-    be a global instance, but it is sometimes useful. -/
+be a global instance, but it is sometimes useful. -/
 def coeFromHom {X Y : T} : CoeOut (Y ⟶ X) (Over X) where coe := mk
 
 section
@@ -89,7 +89,7 @@ theorem coe_hom {X Y : T} (f : Y ⟶ X) : (f : Over X).hom = f :=
 end
 
 /-- To give a morphism in the over category, it suffices to give an arrow fitting in a commutative
-    triangle. -/
+triangle. -/
 @[simps! left]
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by cat_disch) : U ⟶ V :=
   CostructuredArrow.homMk f w
@@ -101,7 +101,7 @@ lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) :
-    homMk (f ≫ g) (by aesop) = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp_all) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -204,7 +204,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Over, Over.map, Comma.mapRight]
     simp only [Category.comp_id]
     exact rfl
-  · intros x y u
+  · intro x y u
     dsimp [Over, Over.map, Comma.mapRight]
     simp
 
@@ -215,10 +215,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
-    (map f) ⋙ (forget Y) = (forget X) := by
-  fapply Functor.ext
-  · dsimp [Over, Over.map]; intro x; exact rfl
-  · intros x y u; simp
+    (map f) ⋙ (forget Y) = (forget X) := rfl
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -615,7 +612,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Under, Under.map, Comma.mapLeft]
     simp only [Category.id_comp]
     exact rfl
-  · intros x y u
+  · intro x y u
     dsimp [Under, Under.map, Comma.mapLeft]
     simp
 
@@ -625,10 +622,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
-    (map f) ⋙ (forget X) = (forget Y) := by
-  fapply Functor.ext
-  · dsimp [Under, Under.map]; intro x; exact rfl
-  · intros x y u; simp
+    (map f) ⋙ (forget X) = (forget Y) := rfl
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :

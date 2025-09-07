@@ -50,7 +50,7 @@ instance compactOpen : TopologicalSpace C(X, Y) :=
 /-- Definition of `ContinuousMap.compactOpen`. -/
 theorem compactOpen_eq : @compactOpen X Y _ _ =
     .generateFrom (image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {t | IsOpen t}) :=
-   rfl
+  rfl
 
 theorem isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
     IsOpen {f : C(X, Y) | MapsTo f K U} :=
@@ -166,7 +166,7 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   obtain ⟨V, W, hV, hW, hrV, hKW, hVW⟩ := generalized_tube_lemma (isCompact_singleton (x := r))
     (hK.image f.continuous) hU (by simpa [Set.subset_def, forall_comm (α := X)])
   refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds (by simpa using hrV))
-    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
+    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo_iff_image_subset.mpr hKW))) ?_
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
@@ -181,7 +181,7 @@ theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1
   obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
     exists_mem_nhdsSet_isCompact_mapsTo g.continuous (hK.image f.continuous) hU
       (mapsTo_image_iff.2 hKU)
-  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo'] at hKL
+  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo_iff_image_subset] at hKL
   exact ((eventually_mapsTo hK isOpen_interior hKL).prod_nhds
     (eventually_mapsTo hLc hU hLU)).mono fun ⟨f', g'⟩ ⟨hf', hg'⟩ ↦
       hg'.comp <| hf'.mono_right interior_subset
@@ -268,7 +268,7 @@ instance [RegularSpace Y] : RegularSpace C(X, Y) :=
     intro K hK U hU hf
     rcases (hK.image f.continuous).exists_isOpen_closure_subset (hU.mem_nhdsSet.2 hf.image_subset)
       with ⟨V, hVo, hKV, hVU⟩
-    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
+    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo_iff_image_subset.2 hKV))] with g hg
     refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
     exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
 

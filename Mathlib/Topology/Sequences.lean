@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.Cauchy
 # Sequences in topological spaces
 
 In this file we prove theorems about relations
-between closure/compactness/continuity etc and their sequential counterparts.
+between closure/compactness/continuity etc. and their sequential counterparts.
 
 ## Main definitions
 
@@ -331,7 +331,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
 
 variable [IsCountablyGenerated (𝓤 X)]
 
-/-- A sequentially compact set in a uniform set with countably generated uniformity filter
+/-- A sequentially compact set in a uniform space with countably generated uniformity filter
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1

@@ -200,7 +200,7 @@ def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
   toFun := toFunctor
   invFun F := F.toOrderHom
 
-/-- The categorical equivalence beween the category of monotone functions `X →o Y` and the category
+/-- The categorical equivalence between the category of monotone functions `X →o Y` and the category
 of functors `X ⥤ Y`, where `X` and `Y` are preorder categories. -/
 @[simps! functor_obj_obj inverse_obj unitIso_hom_app unitIso_inv_app counitIso_inv_app_app
   counitIso_hom_app_app]

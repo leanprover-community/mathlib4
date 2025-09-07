@@ -164,7 +164,7 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
 
-/- The pair of maps `kernel` and `hull` form an antitone Galois connection betwen the
+/- The pair of maps `kernel` and `hull` form an antitone Galois connection between the
 subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)

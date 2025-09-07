@@ -64,7 +64,7 @@ theorem side_angle_side (h : ∠ a b c = ∠ a' b' c') (hd₁ : dist a b = dist 
   apply side_side_side hd₁ hd₂
   rw [dist_comm, dist_comm c' a', ← sq_eq_sq₀ (by positivity) (by positivity), pow_two, pow_two,
     EuclideanGeometry.law_cos a b c, EuclideanGeometry.law_cos a' b' c']
-  field_simp [h, hd₁, hd₂, dist_comm]
+  simp [h, hd₁, hd₂, dist_comm]
 
 /-- **Angle–Side–Angle (ASA) congruence**
 If two triangles have two equal angles and the included side equal, then the triangles are

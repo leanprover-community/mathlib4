@@ -139,8 +139,6 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
 theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
   simp [List.nodup_range']
 
-@[deprecated (since := "2025-01-28")] alias nodup_enum_map_fst := nodup_zipIdx_map_snd
-
 theorem mem_ext {l₀ l₁ : List (Sigma β)} (nd₀ : l₀.Nodup) (nd₁ : l₁.Nodup)
     (h : ∀ x, x ∈ l₀ ↔ x ∈ l₁) : l₀ ~ l₁ :=
   (perm_ext_iff_of_nodup nd₀ nd₁).2 h
@@ -349,11 +347,7 @@ theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys 
     · simp_all
     · simp_all
     · rfl
-  · rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
-    dsimp [Option.guard]
-    split_ifs
-    · simp
-    · rintro ⟨⟩
+  · simp
 
 theorem keys_kreplace (a : α) (b : β a) : ∀ l : List (Sigma β), (kreplace a b l).keys = l.keys :=
   lookmap_map_eq _ _ <| by
@@ -698,14 +692,16 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by
-  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; rcases h with h | h <;> obtain ⟨a'⟩ := s
-  · subst h
-    simp
-  · rw [kunion_cons]
-    by_cases h' : a = a'
-    · subst h'
-      simp
-    · simp [h', ih h]
+  induction' l₁ with s _ ih generalizing l₂
+  · simp at h
+  · simp only [keys_cons, mem_cons] at h
+    rcases h with rfl | h <;> obtain ⟨a'⟩ := s
+    · simp
+    · rw [kunion_cons]
+      by_cases h' : a = a'
+      · subst h'
+        simp
+      · simp [h', ih h]
 
 @[simp]
 theorem dlookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.keys) :

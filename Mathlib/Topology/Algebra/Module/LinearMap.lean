@@ -18,7 +18,7 @@ modules which are continuous. The set of continuous semilinear maps between the 
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -59,6 +59,12 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
+
+/-- The *strong dual* of a topological vector space `M` over a ring `R`. This is the space of
+continuous linear functionals and is equipped with the topology of uniform convergence
+on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`. -/
+abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
+  (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
 
 namespace ContinuousLinearMap
 
@@ -604,7 +610,7 @@ instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T2Space M₂]
     [FunLike F M' M₂] [ContinuousSemilinearMapClass F σ₁₂ M' M₂]
     (f g : F) : CompleteSpace (LinearMap.eqLocus f g) :=
-  IsClosed.completeSpace_coe <| isClosed_eq (map_continuous f) (map_continuous g)
+  IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
 
 /-- Restrict codomain of a continuous linear map. -/
 def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
@@ -709,27 +715,36 @@ def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
   cont := continuous_id.smul continuous_const
 
+@[simp]
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
   rfl
 
+theorem toSpanSingleton_one (x : M₁) : toSpanSingleton R₁ x 1 = x :=
+  one_smul _ _
+
 theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
-    toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y := by
-  ext1; simp [toSpanSingleton_apply]
+    toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y :=
+  coe_inj.mp <| LinearMap.toSpanSingleton_add _ _
 
-theorem toSpanSingleton_smul' {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
+theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
     [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
-    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x := by
-  ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
+    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
+  coe_inj.mp <| LinearMap.toSpanSingleton_smul _ _
 
-/-- A special case of `to_span_singleton_smul'` for when `R` is commutative. -/
-theorem toSpanSingleton_smul (R) {M₁} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
-    [TopologicalSpace R] [TopologicalSpace M₁] [ContinuousSMul R M₁] (c : R) (x : M₁) :
-    toSpanSingleton R (c • x) = c • toSpanSingleton R x :=
-  toSpanSingleton_smul' R c x
+@[deprecated (since := "28-08-2025")] alias toSpanSingleton_smul' := toSpanSingleton_smul
 
 theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
   rfl
+
+@[simp]
+theorem toLinearMap_toSpanSingleton (x : M₁) :
+    (toSpanSingleton R₁ x).toLinearMap = LinearMap.toSpanSingleton R₁ M₁ x := rfl
+
+variable {R₁} in
+theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
+    f ∘L toSpanSingleton R₁ x = toSpanSingleton R₁ (f x) :=
+  coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
 
 end ToSpanSingleton
 
@@ -897,10 +912,10 @@ variable {R M : Type*}
 /-- A nonzero continuous linear functional is open. -/
 protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [ContinuousSub R]
     [AddCommGroup M] [TopologicalSpace M] [ContinuousAdd M] [Module R M] [ContinuousSMul R M]
-    (f : M →L[R] R) (hf : f ≠ 0) : IsOpenMap f :=
+    (f : StrongDual R M) (hf : f ≠ 0) : IsOpenMap f :=
   let ⟨x, hx⟩ := exists_ne_zero hf
   IsOpenMap.of_sections fun y =>
-    ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by continuity, by simp,
+    ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by fun_prop, by simp,
       fun a => by simp [hx]⟩
 
 end DivisionRing
