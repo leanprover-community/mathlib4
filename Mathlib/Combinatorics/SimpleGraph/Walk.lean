@@ -1027,8 +1027,7 @@ lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
   | cons => cases n <;> simp_all [drop]
 
 @[simp]
-theorem append_take_drop_eq {u v : V} (p : G.Walk u v) (n : ℕ) :
-    (p.take n).append (p.drop n) = p := by
+theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
   apply ext_support
   grind [support_append, take_support_eq_support_take_succ, drop_support_eq_support_drop_min,
     List.tail_drop, length_support, List.take_eq_self_iff, List.take_append_drop]
@@ -1525,3 +1524,5 @@ protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700

@@ -91,12 +91,10 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
 
-theorem isSubwalk_takeUntil {u v w : V} (p : G.Walk u v) (h : w ∈ p.support) :
-    (p.takeUntil w h).IsSubwalk p :=
+theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
   ⟨nil, p.dropUntil w h, by simp⟩
 
-theorem isSubwalk_dropUntil {u v w : V} (p : G.Walk u v) (h : w ∈ p.support) :
-    (p.dropUntil w h).IsSubwalk p :=
+theorem isSubwalk_dropUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
   ⟨p.takeUntil w h, nil, by simp⟩
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
