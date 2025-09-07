@@ -44,10 +44,12 @@ variable {l : Filter α}
 instance instIsOrderedRing [Semiring β] [PartialOrder β] [IsOrderedRing β] :
     IsOrderedRing (Germ l β) where
   zero_le_one := const_le zero_le_one
-  mul_le_mul_of_nonneg_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
-    fun _a ↦ mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦ hh.mp <| hfg.mono
-    fun _a ↦ mul_le_mul_of_nonneg_right
+  mul_le_mul_of_nonneg_left x :=
+    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
+      fun _a ↦ mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right x :=
+    inductionOn x fun _f hx y z ↦ inductionOn₂ y z fun _g _h hfg ↦ hx.mp <| hfg.mono
+      fun _a ↦ mul_le_mul_of_nonneg_right
 
 end Germ
 
