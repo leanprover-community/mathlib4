@@ -57,7 +57,7 @@ lemma compose (h : B ⟶ C) (h' : C ⟶ D) :
     _ = F.map ((𝟙 _ ×ₘ Ph.op) ≫ (𝟙 _ ×ₘ Ph'.op)) (hPB.homEquiv (𝟙 PB)) := by
       rw[FunctorToTypes.map_comp_apply, ← map_universal, ← FunctorToTypes.map_comp_apply]
     _ = (F.curryObj.obj _).map (Ph' ≫ Ph).op (hPB.homEquiv (𝟙 PB)) := by
-      simp [curryObj, ← FunctorToTypes.map_comp_apply]
+      simp only [prod_comp, comp_id, op_comp, curryObj]
     _ = hPB.homEquiv (Ph' ≫ Ph) := by rw[← hPB.homEquiv_eq]
 
 /-- Let `F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type`. If for each `B` we choose
