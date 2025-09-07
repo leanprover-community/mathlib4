@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Lattice
 
 /-! # Periods of words (Lists)
 
-This file defines the notion of a period of a word (list) and proves the Periodicity Lemma,
+This file defines the notion of a period of a word (list) and proves the Periodicity Lemma.
 
 ## Implementation notes
 
@@ -45,7 +45,7 @@ lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} : (HasPeriod w p) ↔
       simp_all [min_eq_left_of_lt]
     simp_all [getElem_append_right, IsPrefix.getElem pref, min_eq_left_of_lt]
   · intro lhs; rw [HasPeriod]
-    have drop: drop p w <+: w := by
+    have drop : drop p w <+: w := by
       simp only [prefix_iff_getElem?, length_drop, getElem_drop]
       intro i leni
       have len : i + p < w.length := by omega
@@ -55,7 +55,7 @@ lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} : (HasPeriod w p) ↔
 
 @[simp]
 lemma hasPeriod_zero (w : List α) : HasPeriod w 0 := by
-  rw [HasPeriod]; simp_all
+  simp [HasPeriod]
 
 @[simp]
 lemma hasPeriod_large (w : List α) (p : ℕ) (large : w.length ≤ p) : HasPeriod w p := by
@@ -66,9 +66,8 @@ lemma hasPeriod_empty (p : ℕ) : HasPeriod ([] : List α) p := by
 
 lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
     (less : i < w.length) : w[i]? = w[i % p]? := by
-  by_cases p_zero: p = 0
-  · have : i % p = i := by rw [p_zero, mod_zero]
-    exact congr_arg (getElem? w) this.symm
+  by_cases p_zero : p = 0
+  · rw [p_zero, mod_zero]
   · cases lt_or_ge i p with
     | inl small =>
         have eq : i % p = i := mod_eq_of_lt small
@@ -85,7 +84,7 @@ lemma hasPeriod_mod (p i : ℕ) (w : List α) (per : HasPeriod w p)
 
 /-- An equivalent definition of `HasPeriod w p` by modular equivalence on indeces. -/
 lemma hasPeriod_iff_mod {p : ℕ} {w : List α} :
-    (HasPeriod w p) ↔ (∀ i < w.length, w[i]? = w[i % p]?) := by
+    HasPeriod w p ↔ (∀ i < w.length, w[i]? = w[i % p]?) := by
   constructor
   · intro per i len
     exact hasPeriod_mod p i w per len
@@ -158,8 +157,8 @@ lemma extend_periods_left (p n : ℕ) (w : List α) (dvd : p ∣ n)
 
 /-- Induction step for the `periodicity_lemma` -/
 lemma two_periods_drop {q k : ℕ} {w : List α}
-    (per_q : HasPeriod w q) (per_plus : HasPeriod w (k + q))
-    : HasPeriod (drop q w) k := by
+    (per_q : HasPeriod w q) (per_plus : HasPeriod w (k + q)) :
+    HasPeriod (drop q w) k := by
   rw [hasPeriod_iff_getElem?]
   rw [hasPeriod_iff_getElem?] at per_plus per_q
   simp only [length_drop, getElem?_drop]
@@ -167,8 +166,8 @@ lemma two_periods_drop {q k : ℕ} {w : List α}
   exact calc
      w[q + i]? = w[i + q]? := congrArg (getElem? w) (add_comm q i)
      _         = w[i]? := (per_q i (by omega)).symm
-     _         = w[i + (k + q)]? := (per_plus i (by omega))
-     _         = w[q + (i + k)]? := congrArg (getElem? w) (by omega)
+     _         = w[i + (k + q)]? := per_plus i (by omega)
+     _         = w[q + (i + k)]? := congr_arg (getElem? w) (by omega)
 
 
 /-- The Periodicity Lemma, also known as the Fine and Wilf theorem, shows that if word `w` of length
@@ -192,7 +191,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
       have gcd_lt_p : p.gcd q < p := by
         have : p.gcd q ≠ p := by
           simp [gcd_eq_left_iff_dvd, not_dvd_of_pos_of_lt q_pos q_lt_p]
-        exact Ne.lt_of_le this (gcd_le_left q p_pos)
+        exact this.lt_of_le (gcd_le_left q p_pos)
       have per_diff : HasPeriod (drop q w) (p - q) := by
         have : p = (p - q) + q := by omega
         exact two_periods_drop per_q (this ▸ per_p)
@@ -201,7 +200,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
         all_goals simp_all
       have gcd_stable : (p - q).gcd q = p.gcd q := gcd_sub_self_left (le_of_lt q_lt_p)
       have drop_len: q ≤ (drop q w).length := by
-        rw [length_drop];
+        rw [length_drop]
         have : p.gcd q ≤ p - q := by
           rw [← gcd_stable]; apply gcd_le_left q; omega
         omega
