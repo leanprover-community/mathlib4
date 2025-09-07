@@ -326,7 +326,7 @@ lemma deriv_of_wedgeIntegral_re' [CompleteSpace E] :
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
-    ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa [mem_ball.mp hz]
+    ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa
   have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) ↦ f (x + z.im * I)) (𝓝 z.re) :=
     f_contOn.stronglyMeasurableAtFilter isOpen_Ioo _ zRe_mem_s
   have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
