@@ -55,12 +55,13 @@ lemma compose (h : B ⟶ C) (h' : C ⟶ D) :
     _ = F.map ((h.op ×ₘ 𝟙 _) ≫ (𝟙 _ ×ₘ Ph'.op)) (hPC.homEquiv (𝟙 PC)) := by simp
     _ = F.map ((𝟙 _ ×ₘ Ph.op) ≫ (𝟙 _ ×ₘ Ph'.op)) (hPB.homEquiv (𝟙 PB)) := by
       rw[FunctorToTypes.map_comp_apply, ← map_universal, ← FunctorToTypes.map_comp_apply]
-    _ = (F.curryObj.obj _).map (Ph' ≫ Ph).op (hPB.homEquiv (𝟙 PB)) := by simp [curryObj]
+    _ = (F.curryObj.obj _).map (Ph' ≫ Ph).op (hPB.homEquiv (𝟙 PB)) := by
+      simp [curryObj, ← FunctorToTypes.map_comp_apply]
     _ = hPB.homEquiv (Ph' ≫ Ph) := by rw[← hPB.homEquiv_eq]
 
-/-- Let `F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type`. If for each `B` we choose an object `P B`
-representing the functor `A ↦ F (B, A)`, then these choices assemble
-into a functor `ℰᵒᵖ ⥤ ℰ` that is contravariant in `B`. -/
+/-- Let `F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type`. If for each `B` we choose
+an object `P B` representing the functor `A ↦ F (B, A)`,
+then these choices assemble into a covariant functor `ℰᵒᵖ ⥤ ℰ`. -/
 def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, ((curryObj F).obj (op B)).RepresentableBy (P B)) :
     ℰᵒᵖ ⥤ ℰ :=
   { obj (B : ℰᵒᵖ) := P (unop B),
@@ -130,7 +131,7 @@ lemma compose (h : B ⟶ C) (h' : C ⟶ D) :
   LeftRepresentable.compose hPB hPC hPD h h'
 
 /-- Given a choice of representing objects `P B` for the functors `A ↦ Subobject (B ⊗ A)`,
-this assembles into a functor `ℰᵒᵖ ⥤ ℰ` acting contravariantly in `B`. -/
+then these choices assemble into a covariant functor `ℰᵒᵖ ⥤ ℰ`. -/
 noncomputable def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, IsPowerObjectOf B (P B)) : ℰᵒᵖ ⥤ ℰ :=
   LeftRepresentable.functor P hP
 
