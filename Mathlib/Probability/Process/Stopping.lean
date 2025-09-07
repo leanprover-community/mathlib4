@@ -1368,14 +1368,14 @@ end Nat
 
 section PiecewiseConst
 
-variable [Preorder ι] {𝓖 : Filtration ι m} {τ η : Ω → WithTop ι} {i j : ι} {s : Set Ω}
+variable [Preorder ι] {𝒢 : Filtration ι m} {τ η : Ω → WithTop ι} {i j : ι} {s : Set Ω}
   [DecidablePred (· ∈ s)]
 
 /-- Given stopping times `τ` and `η` which are bounded below, `Set.piecewise s τ η` is also
 a stopping time with respect to the same filtration. -/
-theorem IsStoppingTime.piecewise_of_le (hτ_st : IsStoppingTime 𝓖 τ) (hη_st : IsStoppingTime 𝓖 η)
-    (hτ : ∀ ω, i ≤ τ ω) (hη : ∀ ω, i ≤ η ω) (hs : MeasurableSet[𝓖 i] s) :
-    IsStoppingTime 𝓖 (s.piecewise τ η) := by
+theorem IsStoppingTime.piecewise_of_le (hτ_st : IsStoppingTime 𝒢 τ) (hη_st : IsStoppingTime 𝒢 η)
+    (hτ : ∀ ω, i ≤ τ ω) (hη : ∀ ω, i ≤ η ω) (hs : MeasurableSet[𝒢 i] s) :
+    IsStoppingTime 𝒢 (s.piecewise τ η) := by
   intro n
   have : {ω | s.piecewise τ η ω ≤ n} = s ∩ {ω | τ ω ≤ n} ∪ sᶜ ∩ {ω | η ω ≤ n} := by
     ext1 ω
@@ -1383,15 +1383,15 @@ theorem IsStoppingTime.piecewise_of_le (hτ_st : IsStoppingTime 𝓖 τ) (hη_st
     by_cases hx : ω ∈ s <;> simp [hx]
   rw [this]
   by_cases hin : i ≤ n
-  · have hs_n : MeasurableSet[𝓖 n] s := 𝓖.mono hin _ hs
+  · have hs_n : MeasurableSet[𝒢 n] s := 𝒢.mono hin _ hs
     exact (hs_n.inter (hτ_st n)).union (hs_n.compl.inter (hη_st n))
   · have hτn : ∀ ω, ¬τ ω ≤ n := fun ω hτn => hin (mod_cast (hτ ω).trans hτn)
     have hηn : ∀ ω, ¬η ω ≤ n := fun ω hηn => hin (mod_cast (hη ω).trans hηn)
     simp [hτn, hηn, @MeasurableSet.empty _ _]
 
-theorem isStoppingTime_piecewise_const (hij : i ≤ j) (hs : MeasurableSet[𝓖 i] s) :
-    IsStoppingTime 𝓖 (s.piecewise (fun _ => i) fun _ => j) :=
-  (isStoppingTime_const 𝓖 i).piecewise_of_le (isStoppingTime_const 𝓖 j) (fun _ => le_rfl)
+theorem isStoppingTime_piecewise_const (hij : i ≤ j) (hs : MeasurableSet[𝒢 i] s) :
+    IsStoppingTime 𝒢 (s.piecewise (fun _ => i) fun _ => j) :=
+  (isStoppingTime_const 𝒢 i).piecewise_of_le (isStoppingTime_const 𝒢 j) (fun _ => le_rfl)
     (fun _ => mod_cast hij) hs
 
 theorem stoppedValue_piecewise_const {ι' : Type*} [Nonempty ι'] {i j : ι'} {f : ι' → Ω → ℝ} :

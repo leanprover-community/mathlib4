@@ -7,7 +7,7 @@ import Mathlib.Probability.Process.Stopping
 import Mathlib.Tactic.AdaptationNote
 
 /-!
-# hitting time
+# Hitting times
 
 Given a stochastic process, the hitting time provides the first time the process "hits" some
 subset of the state space. The hitting time is a stopping time in the case that the time index is
