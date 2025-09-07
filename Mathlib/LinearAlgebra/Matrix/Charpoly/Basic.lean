@@ -135,6 +135,10 @@ theorem eval_charpoly (M : Matrix m m R) (t : R) :
   obtain rfl | hij := eq_or_ne i j <;> simp [*]
 
 @[simp]
+theorem charpoly_isEmpty [IsEmpty n] {A : Matrix n n R} : charpoly A = 1 := by
+  simp [charpoly]
+
+@[simp]
 theorem charpoly_zero : charpoly (0 : Matrix n n R) = X ^ Fintype.card n := by
   simp [charpoly]
 
@@ -257,6 +261,14 @@ theorem charpoly_mul_comm_of_le
 /-- A version of `charpoly_mul_comm'` for square matrices. -/
 theorem charpoly_mul_comm (A B : Matrix n n R) : (A * B).charpoly = (B * A).charpoly :=
   (isRegular_X_pow _).left.eq_iff.mp <| charpoly_mul_comm' A B
+
+theorem charpoly_vecMulVec (u v : n → R) :
+    (vecMulVec u v).charpoly = X ^ Fintype.card n - (u ⬝ᵥ v) • X ^ (Fintype.card n - 1) := by
+  cases isEmpty_or_nonempty n
+  · simp
+  · have h : 1 ≤ Fintype.card n := NeZero.one_le
+    rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
+    simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
 
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
