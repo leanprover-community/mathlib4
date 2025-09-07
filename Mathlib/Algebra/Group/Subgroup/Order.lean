@@ -73,7 +73,7 @@ namespace Subgroup
 variable {G : Type*}
 
 /-- A subgroup of an ordered group is an ordered group. -/
-@[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
+@[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
 instance toIsOrderedMonoid [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
   Subtype.coe_injective.isOrderedMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl

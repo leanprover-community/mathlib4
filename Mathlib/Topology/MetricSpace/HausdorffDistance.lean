@@ -268,7 +268,7 @@ theorem hausdorffEdist_self : hausdorffEdist s s = 0 := by
   simp only [hausdorffEdist_def, sup_idem, ENNReal.iSup_eq_zero]
   exact fun x hx => infEdist_zero_of_mem hx
 
-/-- The Haudorff edistances of `s` to `t` and of `t` to `s` coincide. -/
+/-- The Hausdorff edistances of `s` to `t` and of `t` to `s` coincide. -/
 theorem hausdorffEdist_comm : hausdorffEdist s t = hausdorffEdist t s := by
   simp only [hausdorffEdist_def]; apply sup_comm
 
@@ -397,7 +397,7 @@ theorem hausdorffEdist_zero_iff_eq_of_closed (hs : IsClosed s) (ht : IsClosed t)
     hausdorffEdist s t = 0 ↔ s = t := by
   rw [hausdorffEdist_zero_iff_closure_eq_closure, hs.closure_eq, ht.closure_eq]
 
-/-- The Haudorff edistance to the empty set is infinite. -/
+/-- The Hausdorff edistance to the empty set is infinite. -/
 theorem hausdorffEdist_empty (ne : s.Nonempty) : hausdorffEdist s ∅ = ∞ := by
   rcases ne with ⟨x, xs⟩
   have : infEdist x ∅ ≤ hausdorffEdist s ∅ := infEdist_le_hausdorffEdist_of_mem xs
@@ -458,7 +458,7 @@ theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
 lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
   simpa [infDist_eq_iInf, sInf_image']
-    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds]⟩
 
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by

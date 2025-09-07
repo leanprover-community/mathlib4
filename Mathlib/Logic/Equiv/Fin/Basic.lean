@@ -148,9 +148,7 @@ theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
 
 theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
     finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
-  rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
-  rw [finSuccEquiv'_last_apply_castSucc]
-  rfl
+  simp
 
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
     finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by
@@ -237,6 +235,11 @@ theorem finSumFinEquiv_apply_right (i : Fin n) :
 theorem finSumFinEquiv_symm_apply_castAdd (x : Fin m) :
     finSumFinEquiv.symm (Fin.castAdd n x) = Sum.inl x :=
   finSumFinEquiv.symm_apply_apply (Sum.inl x)
+
+@[simp]
+theorem finSumFinEquiv_symm_apply_castSucc (x : Fin m) :
+    finSumFinEquiv.symm (Fin.castSucc x) = Sum.inl x :=
+  finSumFinEquiv_symm_apply_castAdd x
 
 @[simp]
 theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :
@@ -389,13 +392,13 @@ def Fin.castLEquiv {n m : ℕ} (h : n ≤ m) : Fin n ≃ { i : Fin m // (i : ℕ
   left_inv _ := by simp
   right_inv _ := by simp
 
-/-- `Fin 0` is a subsingleton. -/
-instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
-  finZeroEquiv.subsingleton
+@[deprecated Fin.subsingleton_zero (since := "2025-06-03")]
+theorem subsingleton_fin_zero : Subsingleton (Fin 0) :=
+  Fin.subsingleton_zero
 
-/-- `Fin 1` is a subsingleton. -/
-instance subsingleton_fin_one : Subsingleton (Fin 1) :=
-  finOneEquiv.subsingleton
+@[deprecated Fin.subsingleton_one (since := "2025-06-03")]
+theorem subsingleton_fin_one : Subsingleton (Fin 1) :=
+  Fin.subsingleton_one
 
 /-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]

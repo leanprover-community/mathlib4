@@ -141,9 +141,6 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
   · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 
-@[deprecated (since := "2025-01-09")]
-alias SmoothFiberwiseLinear.locality_aux₁ := ContMDiffFiberwiseLinear.locality_aux₁
-
 /-- Let `e` be a partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set `U` in
 `B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x` such that `e` is equal
 on `u ×ˢ univ` to some bi-`C^n` fiberwise linear partial homeomorphism.  Then `e` itself
@@ -217,9 +214,6 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
   rw [hΦφ]
   apply hux
 
-@[deprecated (since := "2025-01-09")]
-alias SmoothFiberwiseLinear.locality_aux₂ := ContMDiffFiberwiseLinear.locality_aux₂
-
 -- Having this private lemma speeds up `simp` calls below a lot.
 -- TODO: understand why and fix the underlying issue (relatedly, the `simp` calls
 -- in `contMDiffFiberwiseLinear` are quite slow, even with this change)
@@ -264,8 +258,7 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
       exact (h2φ.mono inter_subset_left).clm_comp (h2φ'.mono inter_subset_right)
     · apply FiberwiseLinear.source_trans_partialHomeomorph
     · rintro ⟨b, v⟩ -; apply FiberwiseLinear.trans_partialHomeomorph_apply
-  -- Porting note: without introducing `e` first, the first `simp only` fails
-  symm' := fun e ↦ by
+  symm' e := by
     simp only [mem_aux]
     rintro ⟨φ, U, hU, hφ, h2φ, heφ⟩
     refine ⟨fun b => (φ b).symm, U, hU, h2φ, ?_, PartialHomeomorph.EqOnSource.symm' heφ⟩
@@ -288,8 +281,6 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 
-@[deprecated (since := "2025-01-09")] alias smoothFiberwiseLinear := contMDiffFiberwiseLinear
-
 @[simp]
 theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeomorph (B × F) (B × F)) :
     e ∈ contMDiffFiberwiseLinear B F IB n ↔
@@ -299,5 +290,3 @@ theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeom
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux
 
-@[deprecated (since := "2025-01-09")]
-alias mem_smoothFiberwiseLinear_iff := mem_contMDiffFiberwiseLinear_iff

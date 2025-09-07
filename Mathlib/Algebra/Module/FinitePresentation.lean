@@ -22,7 +22,7 @@ import Mathlib.RingTheory.TensorProduct.Finite
 
 ## Main results
 
-- `Module.finitePresentation_iff_finite`: If `R` is noetherian, then f.p. iff f.g. on `R`-modules.
+- `Module.finitePresentation_iff_finite`: If `R` is Noetherian, then f.p. iff f.g. on `R`-modules.
 
 Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 
@@ -151,9 +151,6 @@ lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R 
   have ⟨_n, _f, _g, surj, _, hfg⟩ := Finite.exists_comp_eq_id_of_projective R M
   Module.finitePresentation_of_free_of_surjective _ surj
     (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
-
-@[deprecated (since := "2024-11-06")]
-alias Module.finitePresentation_of_free := Module.finitePresentation_of_projective
 
 variable {ι} [Finite ι]
 
@@ -381,7 +378,7 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     rw [← mul_smul, Finset.prod_erase_mul]
     exact j.prop
   have : ∀ x : τ, ∃ s : S, s • (Finsupp.linearCombination R i x) = 0 := by
-    intros x
+    intro x
     convert_to ∃ s : S, s • (Finsupp.linearCombination R i x) = s • 0
     · simp only [smul_zero]
     apply IsLocalizedModule.exists_of_eq (S := S) (f := f)

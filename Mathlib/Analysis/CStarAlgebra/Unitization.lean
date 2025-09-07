@@ -147,7 +147,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
         rw [← Ne, ← norm_pos_iff] at h
         simp only [Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star] at this
-        exact (mul_le_mul_right h).mp this
+        exact (mul_le_mul_iff_left₀ h).mp this
     -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
         = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by
@@ -174,13 +174,10 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
 scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
     CommCStarAlgebra (Unitization ℂ A) where
-  mul_comm := mul_comm
 
 end CStarProperty

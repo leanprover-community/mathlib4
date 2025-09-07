@@ -5,7 +5,9 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Category.Ring.Basic
+import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Shrink
+import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 # The category of (commutative) rings has all limits
@@ -203,7 +205,7 @@ and then reuse the existing limit.
 -/
 instance :
     CreatesLimit F (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
-  -- Porting note: Lean can not see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
+  -- Porting note: Lean cannot see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this
   -- instance is added.
   let _ : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}

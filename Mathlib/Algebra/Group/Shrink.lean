@@ -3,12 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.TransferInstance
+import Mathlib.Algebra.Group.Action.TransferInstance
 import Mathlib.Logic.Small.Defs
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
-# Transfer group structures from `α` to `Shrink α`.
+# Transfer group structures from `α` to `Shrink α`
 -/
 
 -- FIXME: `to_additive` is incompatible with `noncomputable section`.
@@ -73,7 +73,7 @@ lemma equivShrink_inv [Inv α] (x : α) : equivShrink α x⁻¹ = (equivShrink �
 namespace Shrink
 
 /-- Shrink `α` to a smaller universe preserves multiplication. -/
-@[to_additive "Shrink `α` to a smaller universe preserves addition."]
+@[to_additive /-- Shrink `α` to a smaller universe preserves addition. -/]
 def mulEquiv [Mul α] : Shrink.{v} α ≃* α := (equivShrink α).symm.mulEquiv
 
 @[to_additive]
@@ -81,6 +81,17 @@ instance [Semigroup α] : Semigroup (Shrink.{v} α) := (equivShrink α).symm.sem
 
 @[to_additive]
 instance [CommSemigroup α] : CommSemigroup (Shrink.{v} α) := (equivShrink α).symm.commSemigroup
+
+@[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isLeftCancelMul
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Shrink.{v} α) :=
+  (equivShrink α).symm.isRightCancelMul
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Shrink.{v} α) := (equivShrink α).symm.isCancelMul
 
 @[to_additive]
 instance [MulOneClass α] : MulOneClass (Shrink.{v} α) := (equivShrink α).symm.mulOneClass
