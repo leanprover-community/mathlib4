@@ -264,8 +264,42 @@ theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_t
     MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [memLp_const_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
-class MemLp.Const where
-  eLpNorm_const (c : E) : eLpNorm (fun _ : α => c) p μ < ∞
+/- When we make the certain instance parameters explicit here, what does it do?
+We may not need to make these extra inputs here explicit. They are already in the
+context, although implicit. Let's see if explicitness is needed.
+-/
+class MemLp.Const (E : Type*) [NormedAddCommGroup E] (p : ℝ≥0∞) (μ : Measure α) where
+  eLpNorm_const_lt_top : ∀ c : E, ‖c‖ₑ ≠ ∞ → eLpNorm (fun _ : α => c) p μ < ∞
+
+instance [IsFiniteMeasure μ] : MemLp.Const E p μ where
+  eLpNorm_const_lt_top :=  fun _ hc ↦ MemLp.eLpNorm_lt_top <| memLp_const_enorm hc
+
+instance : MemLp.Const E ∞ μ where
+  eLpNorm_const_lt_top := fun c _ ↦ MemLp.eLpNorm_lt_top <| memLp_top_const (c := c)
+
+/-
+
+Write the two instances for `IsFiniteMeasure` and `p = ⊤` case, then we will be able to generalize:
+
+`memLp_const_enorm`, `memLp_const`, `memLp_top_const_enorm` and `memLp_top_const`, using just
+
+two lemmas (probably putting together the first two and second two.)
+
+also `Lp.const` and related results in the `LpSpace.Basic` file
+
+--
+
+Some thinking about what we are doing here. We need the typeclass to be indexed by something
+that will allow us to declare two instances, one case where the p is finite, and the other where
+we have a finite measure. If we just declare the typeclass `MemLp.Const` without any other inputs,
+When we go to make an instance, I'm not really sure how the lookup would happen. This seems to
+weirdly not look anywhere at all. On the other hand, we might have it take p as an input, and if
+p is finite give an instance if the measure is finite (how would we do this) and if p is ⊤, we
+could just provide the instance. This is kind of that case break the guy was suggesting before.
+So it somehow seems like we should be doing the lookup over p. But that also seems crazy, since
+we shouldn't need to look at ALL the p, but just whether p is finite.
+
+-/
 
 end Const
 
