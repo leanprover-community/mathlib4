@@ -60,9 +60,8 @@ lemma compose (h : B ⟶ C) (h' : C ⟶ D) :
       simp only [prod_comp, comp_id, op_comp, curryObj]
     _ = hPB.homEquiv (Ph' ≫ Ph) := by rw[← hPB.homEquiv_eq]
 
-/-- Let `F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type`. If for each `B` we choose
-an object `P B` representing the functor `A ↦ F (B, A)`,
-then these choices assemble into a covariant functor `ℰᵒᵖ ⥤ ℰ`. -/
+/-- Let `F : ℰᵒᵖ × ℰᵒᵖ ⥤ Type`. If for each `B` we choose an object `P B` representing
+the functor `C ↦ F (B, C)`, then these choices assemble into a covariant functor `ℰᵒᵖ ⥤ ℰ`. -/
 def functor (P : ℰ → ℰ) (hP : ∀ B : ℰ, ((curryObj F).obj (op B)).RepresentableBy (P B)) :
     ℰᵒᵖ ⥤ ℰ :=
   { obj (B : ℰᵒᵖ) := P (unop B),
