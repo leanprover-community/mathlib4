@@ -446,14 +446,14 @@ def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.
 and `J` is nonempty. -/
 def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
-    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
-    IsLimit c → IsLimit (Over.liftCone D s c p hp) := by
-  refine fun hc ↦ ⟨fun s ↦ homMk ?_ ?_, fun _ _ ↦ ?_, fun c m hm ↦ ?_⟩
-  · exact hc.lift ((forget _).mapCone s)
-  · obtain ⟨j⟩ : Nonempty J := ‹_›
-    simpa [← hp j] using Over.w (s.π.app j)
-  · ext; simp [hc.fac]
-  · ext
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p)
+    (hc : IsLimit c) :
+    IsLimit (Over.liftCone D s c p hp) where
+  lift s := homMk (hc.lift ((forget _).mapCone s))
+    (by simpa [← hp (Classical.arbitrary J)] using Over.w (s.π.app _))
+  fac _ _ := by ext; simp [hc.fac]
+  uniq _ _ hm := by
+    ext
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
 
 end Over
@@ -845,14 +845,14 @@ def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.cons
 and `J` is nonempty. -/
 def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
-    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
-    IsColimit c → IsColimit (liftCocone D s c p hp) := by
-  refine fun hc ↦ ⟨fun s ↦ Under.homMk ?_ ?_, fun _ _ ↦ ?_, fun c m hm ↦ ?_⟩
-  · exact hc.desc ((Under.forget _).mapCocone s)
-  · obtain ⟨j⟩ : Nonempty J := ‹_›
-    simpa [← hp j] using Under.w (s.ι.app j)
-  · ext; simp [hc.fac]
-  · ext
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p)
+    (hc : IsColimit c) :
+    IsColimit (liftCocone D s c p hp) where
+  desc s := Under.homMk (hc.desc ((Under.forget _).mapCocone s))
+    (by simpa [← hp (Classical.arbitrary _)] using Under.w (s.ι.app _))
+  fac _ _ := by ext; simp [hc.fac]
+  uniq _ _ hm := by
+    ext
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
