@@ -402,6 +402,20 @@ lemma ENNReal.tsum_two_zpow_neg_add_one :
     ENNReal.inv_pow, ENNReal.tsum_geometric_add_one, one_sub_inv_two, inv_inv]
   exact ENNReal.inv_mul_cancel (Ne.symm (NeZero.ne' 2)) (Ne.symm top_ne_ofNat)
 
+open Encodable
+
+protected lemma ENNReal.tsum_geometric_two : ∑' n, (2⁻¹ : ℝ≥0∞) ^ n = 2 := by simp
+
+lemma ENNReal.tsum_geometric_two_encode_le_two {ι : Type*} [Encodable ι] :
+    ∑' i : ι, (2⁻¹ : ℝ≥0∞) ^ encode i ≤ 2 :=
+  (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_eq ENNReal.tsum_geometric_two
+
+lemma tsum_geometric_lt_top {r : ℝ≥0∞} : ∑' n, r ^ n < ∞ ↔ r < 1 := by simp
+
+lemma tsum_geometric_encode_lt_top {r : ℝ≥0∞} (hr : r < 1) {ι : Type*} [Encodable ι] :
+    ∑' i : ι, (r : ℝ≥0∞) ^ encode i < ∞ :=
+  (ENNReal.tsum_comp_le_tsum_of_injective encode_injective _).trans_lt <| by simpa
+
 end Geometric
 
 /-!
