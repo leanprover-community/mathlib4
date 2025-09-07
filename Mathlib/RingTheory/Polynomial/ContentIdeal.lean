@@ -62,7 +62,7 @@ theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
   simp only [contentIdeal_def, span_eq_bot]
   refine ⟨?_, fun h ↦ by simp [h]⟩
   contrapose!
-  exact fun h ↦ ⟨p.leadingCoeff, coeff_mem_coeffs _ _ (leadingCoeff_ne_zero.mpr h),
+  exact fun h ↦ ⟨p.leadingCoeff, coeff_mem_coeffs (leadingCoeff_ne_zero.mpr h),
     leadingCoeff_ne_zero.mpr h⟩
 
 theorem coeff_mem_contentIdeal (n : ℕ) : p.coeff n ∈ p.contentIdeal := by
