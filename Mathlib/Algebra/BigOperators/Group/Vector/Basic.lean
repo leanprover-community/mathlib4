@@ -1,5 +1,17 @@
+/-
+Copyright (c) 2025 Yongshun Ye. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yongshun Ye
+-/
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.Vector.Basic
+
+/-!
+# Sums and products from vectors
+
+This file provides basic results analogous to those in `Albegra/BigOperators/Group/List/Basic.lean`
+but for `List.Vector`, separated to avoid import cycles.
+-/
 
 variable {M : Type*}
 
