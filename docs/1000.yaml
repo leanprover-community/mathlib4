@@ -3814,7 +3814,8 @@ Q7996766:
 Q7996769:
   title: Whitney immersion theorem
 
-# Note: This is in PNT+
+# TODO: This is in PNT+
+# and should be added to this file once the prime number theorem itself is added
 # https://alexkontorovich.github.io/PrimeNumberTheoremAnd/docs/PrimeNumberTheoremAnd/Wiener.html#WienerIkeharaTheorem'
 Q7999144:
   title: Wiener–Ikehara theorem
