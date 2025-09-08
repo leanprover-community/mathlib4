@@ -241,7 +241,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   return {repo := repo, useFirst := false}
 
 -- FRO cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-def useFROCache : Bool := true
+def useFROCache : Bool := false
 
 /-- Public URL for mathlib cache -/
 def URL : String :=

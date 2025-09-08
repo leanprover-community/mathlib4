@@ -45,9 +45,6 @@ mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 class IsTopologicalSemiring [TopologicalSpace R] [NonUnitalNonAssocSemiring R] : Prop
     extends ContinuousAdd R, ContinuousMul R
 
-@[deprecated (since := "2025-02-14")] alias TopologicalSemiring :=
-  IsTopologicalSemiring
-
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
@@ -56,9 +53,6 @@ multiplication as it is multiplication with `-1`. (See
 `topological_semiring.to_topological_add_group`) -/
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R
-
-@[deprecated (since := "2025-02-14")] alias TopologicalRing :=
-  IsTopologicalRing
 
 variable {R}
 
@@ -75,9 +69,6 @@ proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace R] [NonAssocRing R]
     (_ : IsTopologicalSemiring R) : IsTopologicalRing R where
   toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
-
-@[deprecated (since := "2025-02-14")] alias TopologicalSemiring.toTopologicalRing :=
-  IsTopologicalSemiring.toIsTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
