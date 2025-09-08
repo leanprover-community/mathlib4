@@ -337,11 +337,11 @@ theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     | inl hk => left; apply (T_eq_one_iff hn x).mpr; use l; rw [hx, hk]; push_cast; rfl
     | inr hk => right; apply (T_eq_neg_one_iff hn x).mpr; use l; rw [hx, hk]; push_cast; rfl
 
-noncomputable def T_extrema (n : ℕ) : Finset ℝ :=
-  (Finset.Icc 0 n).image (fun (k : ℕ) => cos (k * π / n))
+noncomputable def T_extrema (n : ℤ) : Finset ℝ :=
+  (Finset.Icc 0 n.natAbs).image (fun (k : ℕ) => cos (k * π / n.natAbs))
 
 @[simp]
-theorem T_extrema_card (n : ℕ) : (T_extrema n).card = n + 1 := by
+theorem T_extrema_card (n : ℤ) : (T_extrema n).card = n.natAbs + 1 := by
   unfold T_extrema
   rw [Finset.card_image_of_injOn]
   · simp
@@ -355,21 +355,20 @@ theorem T_extrema_card (n : ℕ) : (T_extrema n).card = n + 1 := by
     intro _
     omega
   case neg =>
-    have {k : ℕ} (hk : k ∈ Set.Icc 0 n) :
-      k * π / n ∈ Set.Icc 0 π := by
+    have {k : ℕ} (hk : k ∈ Set.Icc 0 n.natAbs) :
+      k * π / n.natAbs ∈ Set.Icc 0 π := by
       apply Set.mem_Icc.mpr
       constructor
       · positivity
       calc
-        k * π / n ≤ n * π / n := by
+        k * π / n.natAbs ≤ n.natAbs * π / n.natAbs := by
           gcongr
-          apply Nat.cast_le.mpr
           exact (Set.mem_Icc.mp hk).2
         _ ≤ π := by
           rw [mul_div_assoc, mul_div_cancel₀]
           positivity
     intro h
-    have : k₁ * π / n = k₂ * π / n := by
+    have : k₁ * π / n.natAbs = k₂ * π / n.natAbs := by
       apply injOn_cos
       exact this hk₁
       exact this hk₂
@@ -377,7 +376,7 @@ theorem T_extrema_card (n : ℕ) : (T_extrema n).card = n + 1 := by
     field_simp at this
     exact this
 
-theorem T_extrema_eq {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+theorem T_extrema_eq_nat {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
   |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
   have hn' : (n : ℤ) ≠ 0 := by omega
   constructor
@@ -421,6 +420,19 @@ theorem T_extrema_eq {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     apply (T_abs_eq_one_iff hn' x).mpr
     use k
     rw [← hx]
+    simp
+
+theorem T_extrema_eq {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
+  |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
+  obtain ⟨m, hmn⟩ := n.eq_nat_or_neg
+  have hm : m ≠ 0 := by omega
+  cases hmn with
+  | inl hmn => subst hmn; exact T_extrema_eq_nat hm x
+  | inr hmn =>
+    subst hmn
+    rw [T_neg]
+    convert T_extrema_eq_nat hm x using 1
+    unfold T_extrema
     simp
 
 theorem U_cos (n : ℤ) (θ : ℝ) : (U ℝ n).eval (cos θ) * sin θ = sin ((n+1) * θ) := by
