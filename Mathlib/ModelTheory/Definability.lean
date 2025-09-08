@@ -206,9 +206,6 @@ theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M
   · rintro ⟨y, hy⟩
     exact ⟨Sum.elim x y, (congr rfl (funext finZeroElim)).mp hy, Sum.elim_comp_inl _ _⟩
 
-@[deprecated (since := "2025-02-21")] alias
-Definable.image_comp_sum_inl_fin := Definable.image_comp_sumInl_fin
-
 /-- Shows that definability is closed under finite projections. -/
 theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s) (f : α ↪ β)
     [Finite β] : A.Definable L ((fun g : β → M => g ∘ f) '' s) := by

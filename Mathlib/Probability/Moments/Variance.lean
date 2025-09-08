@@ -114,9 +114,6 @@ theorem evariance_lt_top_iff_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurab
   mp := by contrapose!; rw [top_le_iff]; exact evariance_eq_top hX
   mpr := evariance_lt_top
 
-@[deprecated (since := "2025-02-21")]
-alias evariance_lt_top_iff_memℒp := evariance_lt_top_iff_memLp
-
 lemma evariance_eq_top_iff [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ) :
     evariance X μ = ∞ ↔ ¬ MemLp X 2 μ := by simp [← evariance_lt_top_iff_memLp hX]
 
@@ -132,13 +129,6 @@ theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
 protected alias _root_.MeasureTheory.MemLp.evariance_lt_top := evariance_lt_top
 protected alias _root_.MeasureTheory.MemLp.evariance_ne_top := evariance_ne_top
 protected alias _root_.MeasureTheory.MemLp.ofReal_variance_eq := ofReal_variance
-
-@[deprecated (since := "2025-02-21")]
-protected alias _root_.MeasureTheory.Memℒp.evariance_lt_top := evariance_lt_top
-@[deprecated (since := "2025-02-21")]
-protected alias _root_.MeasureTheory.Memℒp.evariance_ne_top := evariance_ne_top
-@[deprecated (since := "2025-02-21")]
-protected alias _root_.MeasureTheory.Memℒp.ofReal_variance_eq := ofReal_variance
 
 variable (X μ) in
 theorem evariance_eq_lintegral_ofReal :

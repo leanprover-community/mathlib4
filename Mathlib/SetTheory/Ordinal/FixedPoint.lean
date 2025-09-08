@@ -61,9 +61,6 @@ theorem le_nfpFamily [Small.{u} ι] (f : ι → Ordinal.{u} → Ordinal.{u}) (a)
 theorem lt_nfpFamily_iff [Small.{u} ι] {a b} : a < nfpFamily f b ↔ ∃ l, a < List.foldr f b l :=
   Ordinal.lt_iSup_iff
 
-@[deprecated (since := "2025-02-16")]
-alias lt_nfpFamily := lt_nfpFamily_iff
-
 theorem nfpFamily_le_iff [Small.{u} ι] {a b} : nfpFamily f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
   Ordinal.iSup_le_iff
 

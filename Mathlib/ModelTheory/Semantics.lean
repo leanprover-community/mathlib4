@@ -573,8 +573,6 @@ theorem realize_relabel_sumInr (φ : L.Formula (Fin n)) {v : Empty → M} {x : F
     cast_refl, Function.comp_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 
-@[deprecated (since := "2025-02-21")] alias realize_relabel_sum_inr := realize_relabel_sumInr
-
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
     (t₁.equal t₂).Realize x ↔ t₁.realize x = t₂.realize x := by simp [Term.equal, Realize]

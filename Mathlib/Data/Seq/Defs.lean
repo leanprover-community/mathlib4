@@ -567,9 +567,6 @@ theorem ofList_nil : ofList [] = (nil : Seq α) :=
 theorem ofList_get? (l : List α) (n : ℕ) : (ofList l).get? n = l[n]? :=
   rfl
 
-@[deprecated (since := "2025-02-21")]
-alias ofList_get := ofList_get?
-
 @[simp]
 theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) := by
   ext1 (_ | n) <;> simp

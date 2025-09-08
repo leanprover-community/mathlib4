@@ -38,9 +38,6 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
   simp [count, hs, ← tsum_subtype, Set.encard]
 
-@[deprecated measure_empty (since := "2025-02-06")]
-theorem count_empty : count (∅ : Set α) = 0 := measure_empty
-
 @[simp]
 theorem count_apply_finset' {s : Finset α} (hs : MeasurableSet (s : Set α)) :
     count (↑s : Set α) = #s := by simp [count_apply hs]

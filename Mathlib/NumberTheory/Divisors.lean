@@ -318,12 +318,6 @@ theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
 
-/-- `Nat.swap_mem_divisorsAntidiagonal` with the LHS in simp normal form. -/
-@[deprecated swap_mem_divisorsAntidiagonal (since := "2025-02-17")]
-theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
-    x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
-  rw [mem_divisorsAntidiagonal, mul_comm]
-
 lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
 

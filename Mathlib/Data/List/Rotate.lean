@@ -211,13 +211,6 @@ theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).l
   rw [← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem, getElem?_rotate]
   exact h.trans_eq (length_rotate _ _)
 
-set_option linter.deprecated false in
-@[deprecated getElem?_rotate (since := "2025-02-14")]
-theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
-    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
-  simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
-  rw [← getElem?_eq_getElem]
-
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]

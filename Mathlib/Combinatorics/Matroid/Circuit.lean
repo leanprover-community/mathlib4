@@ -56,8 +56,6 @@ namespace Matroid
 /-- `M.IsCircuit C` means that `C` is a minimal dependent set in `M`. -/
 def IsCircuit (M : Matroid α) := Minimal M.Dep
 
-@[deprecated (since := "2025-02-14")] alias Circuit := IsCircuit
-
 lemma isCircuit_def : M.IsCircuit C ↔ Minimal M.Dep C := Iff.rfl
 
 lemma IsCircuit.dep (hC : M.IsCircuit C) : M.Dep C :=
