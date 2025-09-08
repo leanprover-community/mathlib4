@@ -471,7 +471,7 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
   induction N with
     | zero => simp [Finset.filter_false_of_mem]
     | succ N ih =>
-        rw [Finset.range_succ, Finset.filter_insert]
+        rw [Finset.range_add_one, Finset.filter_insert]
         by_cases h : n ∣ N.succ
         · simp [h, succ_div_of_dvd, ih]
         · simp [h, succ_div_of_not_dvd, ih]
