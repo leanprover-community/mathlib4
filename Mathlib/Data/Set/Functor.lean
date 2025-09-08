@@ -26,6 +26,8 @@ variable {α β : Type u} {s : Set α} {f : α → Set β}
 instance : Alternative Set where
   pure a := {a}
   seq s t := s.seq (t ())
+  seqLeft s t := {a | a ∈ s ∧ (t ()).Nonempty}
+  seqRight s t := {b | s.Nonempty ∧ b ∈ t ()}
   map := Set.image
   orElse s t := s ∪ t ()
   failure := ∅
@@ -36,6 +38,14 @@ theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
 
 @[simp]
 theorem seq_eq_set_seq (s : Set (α → β)) (t : Set α) : s <*> t = s.seq t :=
+  rfl
+
+@[simp]
+theorem seqLeft_def (s : Set α) (t : Set β) : s <* t = {a | a ∈ s ∧ t.Nonempty} :=
+  rfl
+
+@[simp]
+theorem seqRight_def (s : Set α) (t : Set β) : s *> t = {a | s.Nonempty ∧ a ∈ t} :=
   rfl
 
 @[simp]
@@ -59,8 +69,8 @@ theorem image2_def {α β γ : Type u} (f : α → β → γ) (s : Set α) (t : 
 
 instance : LawfulAlternative Set where
   pure_seq _ _ := Set.singleton_seq
-  seqLeft_eq _ _ := rfl
-  seqRight_eq _ _ := rfl
+  seqLeft_eq _ _ := by simp [Set.seq, Set.image2, Set.nonempty_def]
+  seqRight_eq s t := by simp [Set.seq, Set.image2, Set.nonempty_def]
   map_pure _ _ := Set.image_singleton
   seq_pure _ _ := Set.seq_singleton
   seq_assoc _ _ _ := Set.seq_seq
