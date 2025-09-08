@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 /-!
 # Locally presentable and accessible categories
 
-In this file, we define the notion of locally presentable and locally accessible
+In this file, we define the notion of locally presentable and accessible
 categories. We first define these notions for a category `C` relative to a
 fixed regular cardinal `κ` (typeclasses `IsCardinalLocallyPresentable C κ`
 and `IsCardinalAccessibleCategory C κ`). The existence of such a regular
