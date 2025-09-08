@@ -656,7 +656,7 @@ section Coord
 
 variable (i : ι)
 
-/-- `b.coord i` is the linear function giving the `i`'th coordinate of a vector
+/-- `b.coord i` is the linear function giving the `i`-th coordinate of a vector
 with respect to the basis `b`.
 
 `b.coord i` is an element of the dual space. In particular, for
