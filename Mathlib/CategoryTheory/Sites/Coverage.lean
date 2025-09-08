@@ -248,6 +248,9 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
       exact hS hg
   transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
 
+lemma mem_toGrothendieck {K : Coverage C} {X : C} {S : Sieve X} :
+    S ∈ K.toGrothendieck C X ↔ Saturate K X S := .rfl
+
 instance : PartialOrder (Coverage C) where
   le A B := A.coverings ≤ B.coverings
   le_refl _ _ := le_refl _
@@ -328,6 +331,28 @@ end Coverage
 def Pretopology.toCoverage [HasPullbacks C] (J : Pretopology C) : Coverage C where
   coverings := J
   pullback _ _ f R hR := ⟨R.pullbackArrows f, J.pullbacks _ _ hR, .pullbackArrows f R⟩
+
+@[simp]
+lemma Pretopology.mem_toCoverage [HasPullbacks C] (J : Pretopology C) {X : C} (S : Presieve X) :
+    S ∈ J.toCoverage X ↔ S ∈ J X := .rfl
+
+lemma Pretopology.toGrothendieck_toCoverage [HasPullbacks C] (J : Pretopology C) :
+    J.toCoverage.toGrothendieck = J.toGrothendieck := by
+  ext T S
+  rw [mem_toGrothendieck, Coverage.mem_toGrothendieck]
+  refine ⟨fun h ↦ ?_, fun ⟨R, hR, hle⟩ ↦ ?_⟩
+  · induction h with
+    | of X S hS => use S, hS, Sieve.le_generate S
+    | top X => use Presieve.singleton (𝟙 X), J.has_isos (𝟙 X), le_top
+    | transitive X R S hR hRS hle hfS =>
+        obtain ⟨R', hR', hle⟩ := hle
+        choose S' hS' hS'le using hfS
+        refine ⟨Presieve.bind R' (fun Y f hf ↦ S' (hle _ hf)), ?_, fun Z u hu ↦ ?_⟩
+        · exact J.transitive R' (fun Y f hf ↦ S' (hle Y hf)) hR' fun Y f H ↦ hS' (hle Y H)
+        · obtain ⟨W, g, w, hw, hg, rfl⟩ := hu
+          exact hS'le _ _ hg
+  · refine Coverage.saturate_of_superset _ ?_ (.of _ _ hR)
+    rwa [Sieve.generate_le_iff]
 
 open Coverage
 
