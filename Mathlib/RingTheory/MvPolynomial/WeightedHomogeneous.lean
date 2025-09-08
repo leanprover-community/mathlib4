@@ -113,6 +113,28 @@ theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ �
     (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree w :=
   le_sup hd
 
+/-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
+  the weights are singletons containing each variable. -/
+theorem weightedTotalDegree_eq_degrees [H : DecidableEq σ] (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun i => {i}) p = degrees p := by
+  congr
+  ext; cases (H _ _) <;> cases (Classical.decEq _ _ _) <;> trivial
+
+/-- The `totalDegree` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p`
+  where all of the weights are `1`. -/
+theorem weightedTotalDegree_eq_totalDegree (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun _ => 1) p = totalDegree p := by
+  simp [weightedTotalDegree, totalDegree, weight, linearCombination]
+
+/-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
+  `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
+theorem weightedTotalDegree_eq_degreeOf [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun j => if i = j then 1 else 0) p = degreeOf i p := by
+  simp [weightedTotalDegree, degreeOf, degrees, weight, linearCombination]
+  simp [Multiset.count_finset_sup]
+  congr; ext s
+  by_cases h : s i = 0 <;> simp[h]
+
 end OrderBot
 
 end SemilatticeSup
@@ -284,28 +306,6 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     simp only [← hφ hd]
     replace hd := Finsupp.mem_support_iff.mpr hd
     apply Finset.le_sup hd
-
-/-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
-  the weights are singletons containing each variable. -/
-theorem weightedTotalDegree_eq_degrees [H : DecidableEq σ] (p : MvPolynomial σ R) :
-    weightedTotalDegree (fun i => {i}) p = degrees p := by
-  congr
-  ext; cases (H _ _) <;> cases (Classical.decEq _ _ _) <;> trivial
-
-/-- The `totalDegree` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p`
-  where all of the weights are `1`. -/
-theorem weightedTotalDegree_eq_totalDegree (p : MvPolynomial σ R) :
-    weightedTotalDegree (fun _ => 1) p = totalDegree p := by
-  simp [weightedTotalDegree, totalDegree, weight, linearCombination]
-
-/-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
-  `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
-theorem weightedTotalDegree_eq_degreeOf [DecidableEq σ] (i : σ) (p : MvPolynomial σ R) :
-    weightedTotalDegree (fun j => if i = j then 1 else 0) p = degreeOf i p := by
-  simp [weightedTotalDegree, degreeOf, degrees, weight, linearCombination]
-  simp [Multiset.count_finset_sup]
-  congr; ext s
-  by_cases h : s i = 0 <;> simp[h]
 
 end IsWeightedHomogeneous
 
