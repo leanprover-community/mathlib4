@@ -846,6 +846,8 @@ Q791663:
   decls:
     - Irrational.beattySeq_symmDiff_beattySeq_pos
     - compl_beattySeq
+  authors: Jason Yuen
+  date: 2023
 
 Q794269:
   title: Betti's theorem
@@ -1480,6 +1482,8 @@ Q1227703:
     - Real.exists_int_int_abs_mul_sub_le
     - Real.exists_nat_abs_mul_sub_round_le
     - Real.exists_rat_abs_sub_le_and_den_le
+  authors: Michael Geißer, Michael Stoll
+  date: 2022
 
 Q1242398:
   title: Doob decomposition theorem
@@ -3377,7 +3381,9 @@ Q6777133:
 
 Q6783821:
   title: Mason–Stothers theorem
-  decl: Polynomial.abc
+  decl: Polynomial.
+  authors: Jineon Baek, Seewoo Lee
+  date: 2024
 
 Q6795637:
   title: Maximal ergodic theorem
