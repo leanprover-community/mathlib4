@@ -55,23 +55,24 @@ theorem Adapted.isStoppingTime_leastGE (r : ℝ)
     IsStoppingTime ℱ (leastGE f r) :=
   hittingAfter_isStoppingTime hf measurableSet_Ici
 
-noncomputable def todo (f : ℕ → Ω → ℝ) (r : ℝ)
+/-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
+(the first time `f` passes above `r`), and then is constant afterwards. -/
+noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ)
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] : ℕ → Ω → ℝ :=
     stoppedProcess f (leastGE f r)
 
-protected lemma Submartingale.todo [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ)
+protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ)
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] :
-    Submartingale (todo f r) ℱ μ :=
+    Submartingale (stoppedAbove f r) ℱ μ :=
   hf.stoppedProcess (hf.adapted.isStoppingTime_leastGE r)
 
 variable {r : ℝ} {R : ℝ≥0}
 
-theorem norm_todo_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
-    (hr : 0 ≤ r) (hf0 : f 0 = 0)
-    (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    ∀ᵐ ω ∂μ, todo f r i ω ≤ r + R := by
+theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
+    (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
+    ∀ᵐ ω ∂μ, stoppedAbove f r i ω ≤ r + R := by
   filter_upwards [hbdd] with ω hbddω
-  rw [todo, stoppedProcess]
+  rw [stoppedAbove, stoppedProcess]
   simp only [ENat.some_eq_coe]
   by_cases h_zero : (min (i : ℕ∞) (leastGE f r ω)).ut = 0
   · simp only [h_zero, hf0, Pi.zero_apply]
@@ -89,136 +90,43 @@ theorem norm_todo_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r
     simp only [this, Nat.cast_lt, gt_iff_lt] at *
     omega
 
-theorem Submartingale.eLpNorm_todo_le [IsFiniteMeasure μ]
+theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ]
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    eLpNorm (todo f r i) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
-  refine eLpNorm_one_le_of_le' ((hf.todo r).integrable _) ?_ (norm_todo_le hr hf0 hbdd i)
+    eLpNorm (stoppedAbove f r i) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
+  refine eLpNorm_one_le_of_le' ((hf.stoppedAbove r).integrable _) ?_
+    (stoppedAbove_le hr hf0 hbdd i)
   rw [← setIntegral_univ]
-  refine le_trans ?_ ((hf.todo r).setIntegral_le (zero_le _) MeasurableSet.univ)
-  simp [todo, stoppedProcess, hf0]
+  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le (zero_le _) MeasurableSet.univ)
+  simp [stoppedAbove, stoppedProcess, hf0]
 
-theorem Submartingale.eLpNorm_todo_le' [IsFiniteMeasure μ]
+theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
-    eLpNorm (todo f r i) 1 μ ≤ ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
-  refine (hf.eLpNorm_todo_le hr hf0 hbdd i).trans ?_
+    eLpNorm (stoppedAbove f r i) 1 μ
+      ≤ ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
+  refine (hf.eLpNorm_stoppedAbove_le hr hf0 hbdd i).trans ?_
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
-
--- theorem leastGE_le {i : ℕ} {r : ℝ} (ω : Ω) : leastGE f r i ω ≤ i :=
---   hitting_le ω
-
--- The following four lemmas shows `leastGE` behaves like a stopped process. Ideally we should
--- define `leastGE` as a stopping time and take its stopped process. However, we can't do that
--- with our current definition since a stopping time takes only finite indices. An upcoming
--- refactor should hopefully make it possible to have stopping times taking infinity as a value
--- theorem leastGE_mono {n m : ℕ} (hnm : n ≤ m) (r : ℝ) (ω : Ω) :
---   leastGE f r n ω ≤ leastGE f r m ω :=
---   hitting_mono hnm
-
--- theorem leastGE_eq_min (π : Ω → ℕ∞) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : ∀ ω, π ω ≤ n) :
---     leastGE f r (π ω).ut ω = min (π ω).ut (leastGE f r n ω) := by
---   classical
---   refine le_antisymm (le_min (leastGE_le _) (leastGE_mono (hπn ω) r ω)) ?_
---   by_cases hle : π ω ≤ leastGE f r n ω
---   · rw [min_eq_left hle, leastGE]
---     by_cases h : ∃ j ∈ Set.Icc 0 (π ω), f j ω ∈ Set.Ici r
---     · refine hle.trans (Eq.le ?_)
---       rw [leastGE, ← hitting_eq_hitting_of_exists (hπn ω) h]
---     · simp only [hitting, if_neg h, le_rfl]
---   · rw [min_eq_right (not_le.1 hle).le, leastGE, leastGE, ←
---       hitting_eq_hitting_of_exists (hπn ω) _]
---     rw [not_le, leastGE, hitting_lt_iff _ (hπn ω)] at hle
---     exact
---       let ⟨j, hj₁, hj₂⟩ := hle
---       ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
-
--- theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → WithTop ℕ) (r : ℝ) {n : ℕ}
---     (hπn : ∀ ω, π ω ≤ n) :
---     stoppedValue (fun i ↦ stoppedValue f (fun ω ↦ (leastGE f r i ω : ℕ))) π =
---       stoppedValue (stoppedProcess f (fun ω ↦ (leastGE f r n ω : ℕ))) π := by
---   ext1 ω
---   simp +unfoldPartialApp only [stoppedProcess, stoppedValue]
---   rw [leastGE_eq_min _ _ _ hπn]
---   have h_top : π ω ≠ ⊤ := fun h ↦ by simpa [h] using hπn ω
---   lift π ω to ℕ using h_top with p
---   simp only [← ENat.some_eq_coe, WithTop.untopD_coe]
---   congr
-
--- theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ]
---     (hf :Submartingale f ℱ μ) (r : ℝ) :
---     Submartingale (fun i ↦ stoppedValue f (fun ω ↦ (leastGE f r i ω : ℕ))) ℱ μ := by
---   rw [submartingale_iff_expected_stoppedValue_mono]
---   · intro σ π hσ hπ hσ_le_π hπ_bdd
---     obtain ⟨n, hπ_le_n⟩ := hπ_bdd
---     simp_rw [stoppedValue_stoppedValue_leastGE f σ r fun i => (hσ_le_π i).trans (hπ_le_n i)]
---     simp_rw [stoppedValue_stoppedValue_leastGE f π r hπ_le_n]
---     refine hf.expected_stoppedValue_mono ?_ ?_ ?_ (N := n) fun ω => (min_le_left _ _).trans ?_
---     · exact hσ.min (hf.adapted.isStoppingTime_leastGE _ _)
---     · exact hπ.min (hf.adapted.isStoppingTime_leastGE _ _)
---     · exact fun ω => min_le_min (hσ_le_π ω) le_rfl
---     · sorry
---   · exact fun i => stronglyMeasurable_stoppedValue_of_le hf.adapted.progMeasurable_of_discrete
---       (hf.adapted.isStoppingTime_leastGE _ _)
---       (fun ω ↦ by simp only [ENat.some_eq_coe, Nat.cast_le]; exact leastGE_le ω)
---   · exact fun i => integrable_stoppedValue _ (hf.adapted.isStoppingTime_leastGE _ _)
---       hf.integrable
---       (fun ω ↦ by simp only [ENat.some_eq_coe, Nat.cast_le]; exact leastGE_le ω)
-
--- variable {r : ℝ} {R : ℝ≥0}
-
--- theorem norm_stoppedValue_leastGE_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
---     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
---     ∀ᵐ ω ∂μ, stoppedValue f (fun ω ↦ (leastGE f r i ω : ℕ)) ω ≤ r + R := by
---   filter_upwards [hbdd] with ω hbddω
---   change f (leastGE f r i ω) ω ≤ r + R
---   by_cases heq : leastGE f r i ω = 0
---   · rw [heq, hf0, Pi.zero_apply]
---     exact add_nonneg hr R.coe_nonneg
---   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero heq
---     rw [hk, add_comm, ← sub_le_iff_le_add]
---     have := notMem_of_lt_hittingBtwn (hk.symm ▸ k.lt_succ_self : k < leastGE f r i ω) (zero_le _)
---     simp only [Set.mem_Ici, not_le] at this
---     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
-
--- theorem Submartingale.stoppedValue_leastGE_eLpNorm_le [IsFiniteMeasure μ]
---     (hf : Submartingale f ℱ μ)
---     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
---     eLpNorm (stoppedValue f (fun ω ↦ (leastGE f r i ω : ℕ))) 1 μ
---       ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
---   refine eLpNorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) ?_
---     (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
---   rw [← setIntegral_univ]
---   refine le_trans ?_ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
---   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
-
--- theorem Submartingale.stoppedValue_leastGE_eLpNorm_le' [IsFiniteMeasure μ]
---     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
---     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
---     eLpNorm (stoppedValue f (fun ω ↦ (leastGE f r i ω : ℕ))) 1 μ ≤
---       ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
---   refine (hf.stoppedValue_leastGE_eLpNorm_le hr hf0 hbdd i).trans ?_
---   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
 theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     (hf : Submartingale f ℱ μ) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) :
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) → ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   classical
-  have ht : ∀ᵐ ω ∂μ, ∀ i : ℕ, ∃ c, Tendsto (fun n => todo f i n ω) atTop (𝓝 c) := by
+  have ht : ∀ᵐ ω ∂μ, ∀ i : ℕ, ∃ c, Tendsto (fun n => stoppedAbove f i n ω) atTop (𝓝 c) := by
     rw [ae_all_iff]
-    exact fun i ↦ Submartingale.exists_ae_tendsto_of_bdd (hf.todo i)
-      (hf.eLpNorm_todo_le' i.cast_nonneg hf0 hbdd)
+    exact fun i ↦ Submartingale.exists_ae_tendsto_of_bdd (hf.stoppedAbove i)
+      (hf.eLpNorm_stoppedAbove_le' i.cast_nonneg hf0 hbdd)
   filter_upwards [ht] with ω hω hωb
   rw [BddAbove] at hωb
   obtain ⟨i, hi⟩ := exists_nat_gt hωb.some
   have hib : ∀ n, f n ω < i := by
     intro n
     exact lt_of_le_of_lt ((mem_upperBounds.1 hωb.some_mem) _ ⟨n, rfl⟩) hi
-  have heq : ∀ n, todo f i n ω = f n ω := by
+  have heq : ∀ n, stoppedAbove f i n ω = f n ω := by
     intro n
-    simp [todo, stoppedProcess, leastGE]
+    simp [stoppedAbove, stoppedProcess, leastGE]
     rw [hittingAfter_eq_top_iff.mpr]
     · simp only [le_top, inf_of_le_left]
       congr
