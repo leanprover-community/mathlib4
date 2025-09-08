@@ -289,7 +289,7 @@ lemma sieve₁'_cylinder (i j : Σ (i : E.I₀), F.I₁ (f.s₀ i) (g.s₀ i)) :
     simp only [cylinder_Y, cylinder_f, toPullback_cylinder, pullback.condition]
   · rw [sieve₁', Sieve.ofArrows, ← Sieve.pullbackArrows_comm, Sieve.generate_le_iff]
     rintro Z u ⟨W, v, ⟨k⟩⟩
-    rw [← pullbackSymmetry_inv_comp_fst]
+    simp_rw [← pullbackSymmetry_inv_comp_fst]
     apply (((cylinder f g).sieve₁' i j)).downward_closed
     rw [sieve₁']
     convert Sieve.ofArrows_mk _ _ (ULift.up k)
