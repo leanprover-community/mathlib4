@@ -573,7 +573,7 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
           rw [AffineMap.lineMap_apply_one] at h0
           exact h.touchpoint_notMem_affineSpan_of_ne hne h0
         · refine (h.isTangentAt_touchpoint j).isTangent.notMem_of_dist_lt ?_ h0
-          simp only [exsphere_center, dist_left_lineMap, Real.norm_eq_abs, h.dist_excenter,
+          simp only [exsphere_center, dist_lineMap_left, Real.norm_eq_abs, h.dist_excenter,
             exsphere_radius, h.exradius_pos, mul_lt_iff_lt_one_left]
           rw [abs_lt]
           rcases ht with ⟨ht0, ht1'⟩
