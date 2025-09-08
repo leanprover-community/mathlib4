@@ -93,7 +93,7 @@ lemma ind_iff_ind_under_mk {X Y : C} (f : X ⟶ Y) :
     · exact hpres j
     · simp
 
-lemma ind_under_eq_under_ind (X : C) : P.ind.underObj (X := X) = P.underObj.ind := by
+lemma underObj_ind_eq_ind_underObj (X : C) : P.ind.underObj (X := X) = P.underObj.ind := by
   ext f
   simp [underObj, show f = CategoryTheory.Under.mk f.hom from rfl, ind_iff_ind_under_mk]
 
@@ -110,7 +110,7 @@ instance [P.RespectsIso] : P.ind.RespectsIso where
     · exact (IsColimit.equivIsoColimit (Cocones.ext (asIso i))) hs
     · simp [reassoc_of% (hst j).2]
 
-lemma ind_under_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnderCobaseChange]
+lemma ind_underObj_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnderCobaseChange]
     {f : Under X} (hf : P.underObj.ind f) : P.underObj.ind ((Under.pushout g).obj f) := by
   obtain ⟨J, _, _, pres, hpres⟩ := hf
   use J, inferInstance, inferInstance, pres.map (Under.pushout g)
@@ -120,12 +120,12 @@ lemma ind_under_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUnder
 instance [P.IsStableUnderCobaseChange] [HasPushouts C] : P.ind.IsStableUnderCobaseChange := by
   refine .mk' fun A B A' f g _ hf ↦ ?_
   rw [ind_iff_ind_under_mk] at hf ⊢
-  exact ind_under_pushout g hf
+  exact ind_underObj_pushout g hf
 
 /-- `ind` is idempotent if `P` implies compact. -/
 lemma ind_ind (hp : P ≤ compact C) : P.ind.ind = P.ind := by
   refine le_antisymm (fun X Y f hf ↦ ?_) P.ind.le_ind
   have : P.underObj ≤ ObjectProperty.compact (Under X) := fun f hf ↦ hp _ hf
-  simpa [ind_iff_ind_under_mk, ind_under_eq_under_ind, ObjectProperty.ind_ind this] using hf
+  simpa [ind_iff_ind_under_mk, underObj_ind_eq_ind_underObj, ObjectProperty.ind_ind this] using hf
 
 end CategoryTheory.MorphismProperty
