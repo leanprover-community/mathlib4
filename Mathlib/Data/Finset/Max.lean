@@ -252,11 +252,7 @@ lemma max'_eq_iff (a : α) : s.max' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s 
   ⟨(· ▸ ⟨max'_mem _ _, le_max' _⟩), fun h ↦ le_antisymm (max'_le _ _ _ h.2) (le_max' _ _ h.1)⟩
 
 @[simp] lemma min'_pair (a b : α) : min' {a, b} (insert_nonempty _ _) = min a b := by
-  rw [Finset.min'_eq_iff]
-  simp
-  rcases le_or_gt a b with h | h
-  · exact .inl h
-  · exact .inr h.le
+  rw [min'_insert, min'_singleton, min_comm]
 
 @[simp] lemma max'_pair (a b : α) : max' {a, b} (insert_nonempty _ _) = max a b := by
   rw [Finset.max'_eq_iff]
