@@ -77,7 +77,7 @@ lemma isCardinalPresentable (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j
 end CardinalFilteredPresentation
 
 /-- Constructor for `CardinalFilteredPresentation` -/
-@[simps J F ι isColimit]
+@[simps]
 def CardinalFilteredPresentation.ofIsColimit {J : Type w} [Category.{w} J]
     {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
