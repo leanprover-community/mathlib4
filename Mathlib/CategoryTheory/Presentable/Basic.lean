@@ -172,6 +172,7 @@ variable (X : C)
 
 /-- An object of a category is presentable relative to a universe `w`
 if it is `κ`-presentable for some regular `κ : Cardinal.{w}`. -/
+@[pp_with_univ]
 abbrev IsPresentable (X : C) : Prop :=
   Functor.IsAccessible.{w} (coyoneda.obj (op X))
 
