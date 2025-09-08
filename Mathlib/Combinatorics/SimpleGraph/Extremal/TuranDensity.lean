@@ -25,7 +25,7 @@ This files defines the **Turán density** of a simple graph.
   asymptotically equivalent to `turanDensity H * n.choose 2` as `n` approaches `∞`.
 
 * `SimpleGraph.isContained_of_card_edgeFinset` is the proof that `n`-vertex simple graphs having
-at least `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for sufficently large `n`.
+  at least `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for sufficently large `n`.
 -/
 
 
