@@ -47,16 +47,6 @@ theorem roots_of_zeroes_of_card
     rw [←hcard, Nat.cast_le] at this
     exact this
 
-theorem roots_of_zeroes_of_card'
-  {R : Type _} [CommRing R] [IsDomain R] {p : Polynomial R} {S : Finset R}
-  (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) (x : R) :
-  p.eval x = 0 ↔ x ∈ S := by
-  change p.IsRoot x ↔ x ∈ S
-  have hp : p ≠ 0 := by contrapose! hcard; simp [hcard]
-  rw [←p.mem_roots hp]
-  have h := roots_of_zeroes_of_card hS hcard
-  simp [h]
-
 end Polynomial
 
 namespace Polynomial.Chebyshev
@@ -235,12 +225,12 @@ theorem T_eq_zero_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     use k
     field_simp; ring
 
-noncomputable def T_zeroes (n : ℕ) : Finset ℝ :=
+noncomputable def T_roots (n : ℕ) : Finset ℝ :=
   (Finset.Ico 0 n).image (fun (k : ℕ) => cos ((2 * k + 1) * π / (2 * n)))
 
 @[simp]
-theorem T_zeroes_card (n : ℕ) : (T_zeroes n).card = n := by
-  unfold T_zeroes
+theorem T_roots_card (n : ℕ) : (T_roots n).card = n := by
+  unfold T_roots
   rw [Finset.card_image_of_injOn]
   · simp
   intro k₁ hk₁ k₂ hk₂
@@ -277,10 +267,10 @@ theorem T_zeroes_card (n : ℕ) : (T_zeroes n).card = n := by
   field_simp at this
   exact this
 
-theorem T_roots {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_zeroes n).val := by
-  have hS : ∀ x ∈ T_zeroes n, (T ℝ n).eval x = 0 := by
+theorem T_roots_eq {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_roots n).val := by
+  have hS : ∀ x ∈ T_roots n, (T ℝ n).eval x = 0 := by
     intro x hx
-    unfold T_zeroes at hx
+    unfold T_roots at hx
     rw [Finset.mem_image] at hx
     obtain ⟨k, hk, hx⟩ := hx
     apply (T_eq_zero_iff ?_ x).mpr
@@ -289,8 +279,8 @@ theorem T_roots {n : ℕ} (hn : n ≠ 0) : (T ℝ n).roots = (T_zeroes n).val :=
       push_cast; rfl
     contrapose! hn
     exact Int.ofNat_eq_zero.mp hn
-  have hcard : (T_zeroes n).card = (T ℝ n).degree := by
-    rw [T_zeroes_card n, T_degree] <;> simp
+  have hcard : (T_roots n).card = (T ℝ n).degree := by
+    rw [T_roots_card n, T_degree] <;> simp
   apply roots_of_zeroes_of_card hS hcard
 
 theorem T_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
@@ -346,6 +336,92 @@ theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     cases hl with
     | inl hk => left; apply (T_eq_one_iff hn x).mpr; use l; rw [hx, hk]; push_cast; rfl
     | inr hk => right; apply (T_eq_neg_one_iff hn x).mpr; use l; rw [hx, hk]; push_cast; rfl
+
+noncomputable def T_extrema (n : ℕ) : Finset ℝ :=
+  (Finset.Icc 0 n).image (fun (k : ℕ) => cos (k * π / n))
+
+@[simp]
+theorem T_extrema_card (n : ℕ) : (T_extrema n).card = n + 1 := by
+  unfold T_extrema
+  rw [Finset.card_image_of_injOn]
+  · simp
+  intro k₁ hk₁ k₂ hk₂
+  dsimp
+  push_cast at hk₁ hk₂
+  by_cases n = 0
+  case pos =>
+    have := Set.mem_Icc.mp hk₁
+    have := Set.mem_Icc.mp hk₂
+    intro _
+    omega
+  case neg =>
+    have {k : ℕ} (hk : k ∈ Set.Icc 0 n) :
+      k * π / n ∈ Set.Icc 0 π := by
+      apply Set.mem_Icc.mpr
+      constructor
+      · positivity
+      calc
+        k * π / n ≤ n * π / n := by
+          gcongr
+          apply Nat.cast_le.mpr
+          exact (Set.mem_Icc.mp hk).2
+        _ ≤ π := by
+          rw [mul_div_assoc, mul_div_cancel₀]
+          positivity
+    intro h
+    have : k₁ * π / n = k₂ * π / n := by
+      apply injOn_cos
+      exact this hk₁
+      exact this hk₂
+      exact h
+    field_simp at this
+    exact this
+
+theorem T_extrema_eq {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
+  |(T ℝ n).eval x| = 1 ↔ x ∈ T_extrema n := by
+  have hn' : (n : ℤ) ≠ 0 := by omega
+  constructor
+  · intro h
+    obtain ⟨k, hx⟩ := (T_abs_eq_one_iff hn' x).mp h
+    unfold T_extrema
+    apply Finset.mem_image.mpr
+    let l := k % (2 * n)
+    let r := k / (2 * n)
+    have l_nonneg : 0 ≤ l := by exact k.emod_nonneg (by omega)
+    have l_lt : l < 2 * n := by exact k.emod_lt_of_pos (by omega)
+    have k_eq : k = l + r * (2 * n) := by have := k.ediv_add_emod (2 * n); linarith
+    let l' := l.toNat
+    have hl' : l' = l := by omega
+    by_cases l ≤ n
+    case pos hl =>
+      use l'
+      constructor
+      · exact Finset.mem_Icc.mpr ⟨by omega, by omega⟩
+      rw [hx]
+      apply cos_eq_cos_iff.mpr
+      use r
+      left
+      field_simp
+      rw [k_eq, ← hl']
+      push_cast; ring
+    case neg =>
+      use 2 * n - l'
+      constructor
+      · exact Finset.mem_Icc.mpr ⟨by omega, by omega⟩
+      rw [hx]
+      apply cos_eq_cos_iff.mpr
+      use r + 1
+      right
+      field_simp
+      rw [k_eq, ← hl', Nat.cast_sub (by omega)]
+      push_cast; ring
+  · intro h
+    unfold T_extrema at h
+    obtain ⟨k, hk, hx⟩ := Finset.mem_image.mp h
+    apply (T_abs_eq_one_iff hn' x).mpr
+    use k
+    rw [← hx]
+    simp
 
 theorem U_cos (n : ℤ) (θ : ℝ) : (U ℝ n).eval (cos θ) * sin θ = sin ((n+1) * θ) := by
   induction n using Chebyshev.induct with
@@ -425,12 +501,12 @@ theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
         _ = (n + 1) := by rw [one_mul]
     linarith
 
-noncomputable def U_zeroes (n : ℕ) : Finset ℝ :=
+noncomputable def U_roots (n : ℕ) : Finset ℝ :=
   (Finset.Icc 1 n).image (fun (k : ℕ) => cos (k * π / (n + 1)))
 
 @[simp]
-theorem U_zeroes_card (n : ℕ) : (U_zeroes n).card = n := by
-  unfold U_zeroes
+theorem U_roots_card (n : ℕ) : (U_roots n).card = n := by
+  unfold U_roots
   rw [Finset.card_image_of_injOn]
   · simp
   intro k₁ hk₁ k₂ hk₂
@@ -458,17 +534,17 @@ theorem U_zeroes_card (n : ℕ) : (U_zeroes n).card = n := by
   field_simp at this
   exact this
 
-theorem U_roots (n : ℕ) : (U ℝ n).roots = (U_zeroes n).val := by
-  have hS : ∀ x ∈ U_zeroes n, (U ℝ n).eval x = 0 := by
+theorem U_roots_eq (n : ℕ) : (U ℝ n).roots = (U_roots n).val := by
+  have hS : ∀ x ∈ U_roots n, (U ℝ n).eval x = 0 := by
     intro x hx
-    unfold U_zeroes at hx
+    unfold U_roots at hx
     rw [Finset.mem_image] at hx
     obtain ⟨k, hk, hx⟩ := hx
     replace hk := Finset.mem_Icc.mp hk
     rw [←hx]
     apply U_eq_zero_if n hk.1 hk.2
-  have hcard : (U_zeroes n).card = (U ℝ n).degree := by
-    rw [U_zeroes_card n, U_degree_nat]; simp
+  have hcard : (U_roots n).card = (U ℝ n).degree := by
+    rw [U_roots_card n, U_degree_nat]; simp
   apply roots_of_zeroes_of_card hS hcard
 
 theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
@@ -478,8 +554,8 @@ theorem U_eq_zero_iff (n : ℕ) (x : ℝ) :
     by_contra! h
     have : (U ℝ n).degree = n := by apply U_degree_nat; simp
     simp [h] at this
-  rw [←(U ℝ n).mem_roots this, U_roots n]
-  unfold U_zeroes
+  rw [←(U ℝ n).mem_roots this, U_roots_eq n]
+  unfold U_roots
   rw [Finset.mem_val, Finset.mem_image]
   constructor
   · intro ⟨k, hk, hx⟩
