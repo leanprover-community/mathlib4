@@ -361,8 +361,8 @@ noncomputable def rankFactorization {r : Type*} [Fintype r]
     simpa [mul_comm] using congr_fun this i
 
 theorem rank_rankFactorization {r : Type*} [Fintype r]
-    (A : Matrix m n R) (P : Matrix m r R) (Q : Matrix r n R) (hr : Fintype.card r = A.rank)
-    (hPQ : A = P * Q) : P.rank = Fintype.card r ∧ Q.rank = Fintype.card r := by
+    (P : Matrix m r R) (Q : Matrix r n R) (hPQ : (P * Q).rank = Fintype.card r) :
+    P.rank = Fintype.card r ∧ Q.rank = Fintype.card r := by
   have := Matrix.rank_mul_le P Q
   have := Matrix.rank_le_card_width P
   have := Matrix.rank_le_card_height Q
