@@ -85,9 +85,8 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     cases le_or_gt (x : ℝ) 2⁻¹ with
     | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
-      simp? [hx.not_ge, ← extend_extends] says
-        simp only [one_div, hx.not_ge, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
-          extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
+      suffices p.extend (2 - 2 * ↑x) = p.extend (1 - (2 * ↑x - 1)) by
+        simpa [hx.not_ge, ← extend_extends]
       ring_nf
   prop' t := by norm_num [reflTransSymmAux]
 
