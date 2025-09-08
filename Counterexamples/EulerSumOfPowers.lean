@@ -3,7 +3,7 @@ Copyright (c) 2025 Snir Broshi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Snir Broshi
 -/
-import Mathlib.NumberTheory.FLT.Basic
+import Mathlib.NumberTheory.FLT.Three
 
 /-!
 # Euler's sum of powers conjecture
@@ -13,6 +13,10 @@ are required to sum to an nth power of a positive integer.
 
 This was an attempt to generalize Fermat's Last Theorem,
 which is the special case of summing 2 nth powers.
+
+We demonstrate the connection with FLT, prove that it's true for `n ≤ 3`,
+and provide counterexamples for `n = 4` and `n = 5`.
+The status of the conjecture for `n ≥ 6` is unknown.
 
 https://en.wikipedia.org/wiki/Euler%27s_sum_of_powers_conjecture
 http://euler.free.fr/
@@ -48,6 +52,25 @@ theorem fermatLastTheoremWith_of_sumOfPowersConjectureWith (R : Type*) [Semiring
 /-- Euler's sum of powers conjecture over the naturals implies FLT. -/
 theorem fermatLastTheorem_of_sumOfPowersConjecture : SumOfPowersConjecture → FermatLastTheorem :=
   fun conj n hn ↦ fermatLastTheoremWith_of_sumOfPowersConjectureWith ℕ n hn (conj n)
+
+/-- For `n = 3`, Euler's sum of powers conjecture over a given semiring is equivalent to FLT. -/
+theorem sumOfPowersConjectureWith_three_iff_fermatLastTheoremWith_three (R : Type*) [Semiring R] :
+    SumOfPowersConjectureWith R 3 ↔ FermatLastTheoremWith R 3 := by
+  refine ⟨fermatLastTheoremWith_of_sumOfPowersConjectureWith R 3 (by rfl), ?_⟩
+  intro FLT a b ha ha₀ hb₀ hsum
+  contrapose! hsum
+  have ⟨x, y, hxy⟩ := List.length_eq_two (l := a) |>.mp (by omega)
+  simp [hxy, ← ne_eq] at ha₀
+  simp [hxy, FLT x y b ha₀.left.symm ha₀.right.symm hb₀]
+
+/-- Euler's sum of powers conjecture over the naturals is true for `n ≤ 3`. -/
+theorem sumOfPowersConjectureFor_le_three : ∀ n ≤ 3, SumOfPowersConjectureFor n := by
+  intro n hn
+  by_cases h3 : n = 3
+  · rw [h3]
+    exact sumOfPowersConjectureWith_three_iff_fermatLastTheoremWith_three _
+      |>.mpr fermatLastTheoremThree
+  · omega
 
 /--
 The first counterexample was found by L. J. Lander and T. R. Parkin in 1966
