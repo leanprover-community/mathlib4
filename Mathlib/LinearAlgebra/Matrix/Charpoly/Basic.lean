@@ -282,13 +282,9 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (mu : R) :
     (M - scalar n mu).charpoly  = M.charpoly.comp (X + C mu) := by
-  have hcomp (σ : Equiv.Perm n) :
-      ∏ i : n, (M - scalar n mu).charmatrix (σ i) i =
-      (∏ i : n, (M.charmatrix (σ i) i)).comp (X + C mu) := by
-    rw [Polynomial.prod_comp]
-    refine Finset.prod_congr rfl fun i _ => ?_
-    by_cases hi : σ i = i <;> simp [hi]
-    ring
-  simp [-scalar_apply, charpoly, det_apply, hcomp]
+  simp only [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
+  congr! with σ _ i _
+  by_cases hi : σ i = i <;> simp [hi]
+  ring
 
 end Matrix
