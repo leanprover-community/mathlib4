@@ -76,8 +76,7 @@ lemma contMDiff_subtype_coe_Icc :
       ModelWithCorners.toPartialEquiv_coe_symm, CompTriple.comp_eq, PartialEquiv.coe_trans,
       ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe, Function.comp_apply]
   split_ifs with hz
-  · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
-      simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
+  · simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
       modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, Function.comp_def,
       Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
@@ -91,10 +90,9 @@ lemma contMDiff_subtype_coe_Icc :
     rw [max_eq_left hw, min_eq_left]
     linarith
   · simp only [not_lt] at hz
-    simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
-      simp only [IccRightChart, Fin.isValue, PartialHomeomorph.mk_coe_symm,
-        PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
-        Function.comp_def, Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
+    simp only [IccRightChart, Fin.isValue, PartialHomeomorph.mk_coe_symm,
+      PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
+      Function.comp_def, Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap

@@ -430,9 +430,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     · simp only [Pi.mulSingle_eq_same]
     · intro j hj
-      simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [Pi.mulSingle, Function.update, Pi.one_apply,
-        dite_eq_right_iff]
+      simp only [Pi.mulSingle, Function.update, Pi.one_apply, dite_eq_right_iff]
       intro h
       simp [*] at *
 

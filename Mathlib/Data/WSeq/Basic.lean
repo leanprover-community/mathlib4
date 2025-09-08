@@ -352,7 +352,7 @@ theorem head_terminates_of_head_tail_terminates (s : WSeq α) [T : Terminates (h
     Terminates (head s) :=
   (head_terminates_iff _).2 <| by
     rcases (head_terminates_iff _).1 T with ⟨⟨a, h⟩⟩
-    simp? [tail] at h says simp only [tail, destruct_flatten, bind_map_left] at h
+    simp only [tail, destruct_flatten, bind_map_left] at h
     rcases exists_of_mem_bind h with ⟨s', h1, _⟩
     exact terminates_of_mem h1
 
@@ -692,7 +692,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
       simp at this; cases this
     substs b' ss
-    simp? at m ⊢ says simp only [cons_append, mem_cons_iff] at m ⊢
+    simp only [cons_append, mem_cons_iff] at m ⊢
     rcases o with e | IH
     · simp [e]
     rcases m with e | m
