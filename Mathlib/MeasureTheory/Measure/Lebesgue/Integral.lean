@@ -75,8 +75,7 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 -/
 
 
-/- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
-itself, it does not apply when `f` is more complicated -/
+@[simp]
 theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
@@ -85,8 +84,7 @@ theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, neg_Ici, neg_neg]
 
-/- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
-itself, it does not apply when `f` is more complicated -/
+@[simp]
 theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
