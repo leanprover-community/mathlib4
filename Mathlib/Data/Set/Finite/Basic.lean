@@ -733,8 +733,6 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
-
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
@@ -862,7 +860,7 @@ protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 theorem infinite_of_injOn_mapsTo {s : Set α} {t : Set β} {f : α → β} (hi : InjOn f s)
     (hm : MapsTo f s t) (hs : s.Infinite) : t.Infinite :=
-  ((infinite_image_iff hi).2 hs).mono (mapsTo'.mp hm)
+  ((infinite_image_iff hi).2 hs).mono (mapsTo_iff_image_subset.mp hm)
 
 theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α → β} (hs : s.Infinite)
     (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by

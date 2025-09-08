@@ -80,8 +80,7 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
           (adjoin_le_integralClosure (hζ.isIntegral (NeZero.pos _)))).isIntegral _)
   let B := hζ.subOnePowerBasis ℚ
   have hint : IsIntegral ℤ B.gen := (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one
-  -- Porting note: the following `letI` was not needed because the scope `cyclotomic` set it
-  -- as instances.
+  -- This can't be a `local instance` because it has metavariables.
   letI := IsCyclotomicExtension.finiteDimensional {p ^ k} ℚ K
   have H := discr_mul_isIntegral_mem_adjoin ℚ hint h
   obtain ⟨u, n, hun⟩ := discr_prime_pow_eq_unit_mul_pow' hζ

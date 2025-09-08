@@ -177,11 +177,8 @@ def IsBaseChange : Prop :=
   IsTensorProduct
     (((Algebra.linearMap S <| Module.End S (M →ₗ[R] N)).flip f).restrictScalars R)
 
--- Porting note: split `variable`
-variable {S f}
-variable (h : IsBaseChange S f)
-variable {P Q : Type*} [AddCommMonoid P] [Module R P]
-variable [AddCommMonoid Q] [Module S Q]
+variable {S f} (h : IsBaseChange S f)
+variable {P Q : Type*} [AddCommMonoid P] [Module R P] [AddCommMonoid Q] [Module S Q]
 
 section
 
@@ -258,10 +255,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
-        simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, Module.End.mul_apply,
-          LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
-          smul_tmul', LinearMap.coe_restrictScalars, LinearMap.flip_apply]
+        simp [smul_tmul', Algebra.linearMap_apply, smul_comm r x]
       · intro x y hx hy
         rw [map_add, smul_add, map_add, smul_add, hx, hy] }
 
@@ -276,6 +270,11 @@ lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗�
   apply IsTensorProduct.of_equiv (e.restrictScalars R)
   intro x y
   simp [show x ⊗ₜ[R] y = x • (1 ⊗ₜ[R] y) by simp [smul_tmul'], he]
+
+variable (R S) in
+theorem IsBaseChange.linearMap : IsBaseChange S (Algebra.linearMap R S) :=
+  of_equiv (AlgebraTensorModule.rid R S S) fun x ↦ by
+    simpa using (Algebra.algebraMap_eq_smul_one x).symm
 
 section
 
@@ -423,6 +422,15 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
 noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
     [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
   LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
+
+theorem IsBaseChange.map_id_lsmul_eq_lsmul_algebraMap
+    {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R) :
+    hf.map hf LinearMap.id (LinearMap.lsmul R M x) = LinearMap.lsmul S N (algebraMap R S x) := by
+  ext y
+  refine IsTensorProduct.inductionOn hf y (by simp) ?_ (fun _ _ ha hb ↦ by simp [ha, hb])
+  intro s m
+  rw [hf.map_eq hf]
+  simpa using smul_comm x s (f m)
 
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
