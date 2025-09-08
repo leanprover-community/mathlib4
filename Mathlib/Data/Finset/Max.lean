@@ -49,6 +49,10 @@ theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
   rw [← insert_empty_eq]
   exact max_insert
 
+lemma max_pair [DecidableEq α] (a b : α) :
+    Finset.max {a, b} = max (↑a) (↑b) := by
+  simp
+
 theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
   obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
   exact ⟨b, h⟩
@@ -130,6 +134,10 @@ theorem min_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).min 
 theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
   rw [← insert_empty_eq]
   exact min_insert
+
+lemma min_pair [DecidableEq α] (a b : α) :
+    Finset.min {a, b} = min (↑a) (↑b) := by
+  simp
 
 theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
   obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
