@@ -86,7 +86,7 @@ lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
-  rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
+  rw [mapsTo_iff_image_subset, extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
   exact image_mono inter_subset_right
 

@@ -356,6 +356,18 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
+/-- `f : X ⟶ Y` is a monomorphism iff for all `Z`, composition of morphisms `Z ⟶ X` with `f`
+is injective. -/
+lemma mono_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ Z, (fun g : Z ⟶ X ↦ g ≫ f).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_mono f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
+/-- `f : X ⟶ Y` is an epimorphism iff for all `Z`, composition of morphisms `Y ⟶ Z` with `f`
+is injective. -/
+lemma epi_iff_forall_injective {X Y : C} (f : X ⟶ Y) :
+    Epi f ↔ ∀ Z, (fun g : Y ⟶ Z ↦ f ≫ g).Injective :=
+  ⟨fun _ _ _ _ hg ↦ (cancel_epi f).1 hg, fun h ↦ ⟨fun _ _ hg ↦ h _ hg⟩⟩
+
 section
 
 variable [Quiver.IsThin C] (f : X ⟶ Y)
