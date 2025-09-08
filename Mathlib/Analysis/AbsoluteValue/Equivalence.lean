@@ -163,19 +163,18 @@ variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
 open Real in
 /--
-If $v$ and $w$ are two real absolute values on a field $F$, $v$ is non-trivial, and $v(x) < 1$ if
+If $v$ and $w$ are two real absolute values on a field $F$ and $v(x) < 1$ if
 and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
 with $1 < v(a)$.
 -/
-theorem IsOrderEquiv.log_div_eq_constant (hv : v.IsNontrivial) (h : v.IsOrderEquiv w) :
-    ∃ a, 1 < v a ∧ ∀ b, 1 < v b → (v b).log / (w b).log = (v a).log / (w a).log := by
-  let ⟨a, ha⟩ := hv.exists_abv_gt_one
-  refine ⟨a, ha, fun b hb₁ ↦ ?_⟩
-  by_contra! hb₂
+theorem IsOrderEquiv.log_div_log_eq_log_div_log (h : v.IsOrderEquiv w)
+    {a : F} (ha : 1 < v a) {b : F} (hb : 1 < v b) :
+    (v b).log / (w b).log = (v a).log / (w a).log := by
+  by_contra! h_ne
   wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this b hb₁ a ha hb₂.symm <| lt_of_le_of_ne (not_lt.1 h_lt) hb₂.symm
+  · exact this hb ha h_ne.symm <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
   have hwa := (h.one_lt_iff _).1 ha
-  have hwb := (h.one_lt_iff _).1 hb₁
+  have hwb := (h.one_lt_iff _).1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
     ← div_lt_div_iff₀ (log_pos ha) (log_pos hwa)] at h_lt
   let ⟨q, ⟨hq₁, hq₂⟩⟩ := exists_rat_btwn h_lt
@@ -192,10 +191,10 @@ open Real in
 theorem IsOrderEquiv.exists_rpow_eq {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : v.IsOrderEquiv w) :
     ∃ (t : ℝ) (_ : 0 < t), ∀ x, 1 < v x → w x ^ t = v x := by
-  obtain ⟨a, ha, hlog⟩ := h.log_div_eq_constant hv
+  let ⟨a, ha⟩ := hv.exists_abv_gt_one
   refine ⟨(v a).log / (w a).log,
     div_pos (log_pos ha) (log_pos ((h.one_lt_iff a).1 ha)), fun b hb ↦ ?_⟩
-  rw [← hlog b hb, div_eq_inv_mul, rpow_mul (w.nonneg _),
+  rw [← h.log_div_log_eq_log_div_log ha hb, div_eq_inv_mul, rpow_mul (w.nonneg _),
     rpow_inv_log (by linarith [(h.one_lt_iff b).1 hb]) (by linarith [(h.one_lt_iff b).1 hb]),
     exp_one_rpow, exp_log (by linarith)]
 
