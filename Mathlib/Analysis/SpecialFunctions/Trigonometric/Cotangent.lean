@@ -393,12 +393,11 @@ lemma iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow {k : ℕ} (hk : 1 ≤ k) {
 
 /-- The series expansion of the iterated derivative of `π cot (π z)`. -/
 theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤ k) {z : ℂ}
-    (hz : z ∈ ℍₒ) : iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
-    (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
-  simp only [iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz, Int.reduceNeg, one_div,
-    mul_eq_mul_left_iff, mul_eq_zero, pow_eq_zero_iff', neg_eq_zero, one_ne_zero, ne_eq,
-     Nat.cast_eq_zero, show -1 - (k : ℤ) = -(k + 1) by ring]
-  left
-  rfl
+    (hz : z ∈ ℍₒ) :
+    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
+      (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
+  convert iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
+  rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; omega, zpow_neg_coe_of_pos _ (by omega),
+    one_div]
 
 end iteratedDeriv
