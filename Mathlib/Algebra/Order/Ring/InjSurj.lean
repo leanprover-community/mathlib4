@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.InjSurj
 
 /-!
 # Pulling back ordered rings along injective maps

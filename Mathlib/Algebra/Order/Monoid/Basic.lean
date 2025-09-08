@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Order.Hom.Basic
 
 /-!
