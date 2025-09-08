@@ -133,7 +133,7 @@ instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
 lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
 
 open Order in
-lemma height_closed_point {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
+lemma height_of_isClosed {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
   simp only [height_eq_zero]
   intro b _
   obtain rfl | h := eq_or_ne b x
