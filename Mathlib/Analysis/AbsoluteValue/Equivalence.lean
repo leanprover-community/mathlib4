@@ -21,7 +21,7 @@ variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
 
 /-- Two absolute values `v` and `w` are *order equivalent* if `v x < 1` precisely when `w x < 1`.
 
-Note that when `S` has a linear order, this is equivalent to `∀ x y, v x < v y ↔ w x < w y`. It is
+Note that when `S` has a linear order this is equivalent to `∀ x y, v x < v y ↔ w x < w y`. It is
 also equivalent to `v.IsEquiv w` when `v` and `w` are real absolute values. -/
 def IsOrderEquiv : Prop := ∀ x, v x < 1 ↔ w x < 1
 
@@ -87,7 +87,7 @@ section LinearOrderedField
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
 
-theorem isOrderEquiv_of_imp [Archimedean S] [IsStrictOrderedRing S] (hv : v.IsNontrivial)
+theorem isOrderEquiv_of_lt_one_imp [Archimedean S] [IsStrictOrderedRing S] (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 → w x < 1) :
     v.IsOrderEquiv w := by
   intro a
@@ -227,7 +227,7 @@ theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.
     (h : ¬v.IsEquiv w) :
     ∃ a : F, v a < 1 ∧ 1 ≤ w a := by
   contrapose! h
-  exact isEquiv_iff_isOrderEquiv _ |>.2 <| isOrderEquiv_of_imp hv h
+  exact (isEquiv_iff_isOrderEquiv _).2 <| isOrderEquiv_of_lt_one_imp hv h
 
 /--
 If $v$ and $w$ are two non-trivial and inequivalent absolute values then
