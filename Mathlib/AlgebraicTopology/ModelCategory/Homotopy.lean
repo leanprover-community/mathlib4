@@ -98,7 +98,7 @@ namespace LeftHomotopyClass
 
 variable (X)
 
-lemma bijective_postcomp_of_fibration_of_weakEquivalence
+lemma postcomp_bijective_of_fibration_of_weakEquivalence
     [IsCofibrant X] (g : Y ⟶ Z) [Fibration g] [WeakEquivalence g] :
     Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
   constructor
