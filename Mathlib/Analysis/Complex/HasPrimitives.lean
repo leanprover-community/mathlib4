@@ -248,59 +248,49 @@ include f_cont hz
 
 /-- If a function `f` `IsClosedOn` on a ball of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
-  is equal to the wedge integral from `z` to `w`.
-
-TODO Should we prefer instead the equivalent goal:
-`∀ᶠ w in 𝓝 z, wedgeIntegral c w f + wedgeIntegral w z f = wedgeIntegral c z f` ? -/
+  is equal to the wedge integral from `z` to `w`. -/
 lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
     (hf : IsClosedOn f (ball c r)) :
     ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w w_in_z_ball ↦ ?_⟩
-  have z_ball : ball z (r - dist z c) ⊆ ball c r := ball_subset_ball' (by simp)
-  have hzPlusH : w ∈ ball c r := mem_of_subset_of_mem z_ball w_in_z_ball
-  simp only [wedgeIntegral]
   set I₁ :=     ∫ x in c.re..w.re, f (x + c.im * I)
-  set I₃ := I • ∫ y in c.im..w.im, f (w.re + y * I)
-  set I₂ :=     ∫ x in c.re..z.re, f (x + c.im * I)
+  set I₂ := I • ∫ y in c.im..w.im, f (w.re + y * I)
+  set I₃ :=     ∫ x in c.re..z.re, f (x + c.im * I)
   set I₄ := I • ∫ y in c.im..z.im, f (z.re + y * I)
   set I₅ :=     ∫ x in z.re..w.re, f (x + z.im * I)
   set I₆ := I • ∫ y in z.im..w.im, f (w.re + y * I)
-  let I₇ :=     ∫ x in z.re..w.re, f (x + c.im * I)
-  let I₈ := I • ∫ y in c.im..z.im, f (w.re + y * I)
-  have integrableHoriz : ∀ a₁ a₂ b : ℝ, a₁ + b * I ∈ ball c r → a₂ + b * I ∈ ball c r →
+  set I₇ :=     ∫ x in z.re..w.re, f (x + c.im * I)
+  set I₈ := I • ∫ y in c.im..z.im, f (w.re + y * I)
+  have z_ball : ball z (r - dist z c) ⊆ ball c r := ball_subset_ball' (by simp)
+  have w_mem : w ∈ ball c r := mem_of_subset_of_mem z_ball w_in_z_ball
+  have integrableHoriz (a₁ a₂ b : ℝ) (ha₁ : a₁ + b * I ∈ ball c r) (ha₂ : a₂ + b * I ∈ ball c r) :
       IntervalIntegrable (fun x ↦ f (x + b * I)) volume a₁ a₂ :=
-    fun a₁ a₂ b ha₁ ha₂ ↦ (f_cont.re_aux_2 ha₁ ha₂).intervalIntegrable
-  have integrableVert : ∀ a b₁ b₂ : ℝ, a + b₁ * I ∈ ball c r → a + b₂ * I ∈ ball c r →
+    (f_cont.re_aux_2 ha₁ ha₂).intervalIntegrable
+  have integrableVert (a b₁ b₂ : ℝ) (hb₁ : a + b₁ * I ∈ ball c r) (hb₂ : a + b₂ * I ∈ ball c r) :
       IntervalIntegrable (fun y ↦ f (a + y * I)) volume b₁ b₂ :=
-    fun a b₁ b₂ hb₁ hb₂ ↦ (f_cont.im_aux hb₁ hb₂).intervalIntegrable
-  have I₁decomp : I₁ = I₂ + I₇ := by
+    (f_cont.im_aux hb₁ hb₂).intervalIntegrable
+  have hI₁ : I₁ = I₃ + I₇ := by
     rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
-    · simp only [re_add_im, mem_ball, dist_self, pos_of_mem_ball hz]
+    · exact re_add_im_mul_mem_ball <| mem_ball_self (pos_of_mem_ball hz)
     · exact re_add_im_mul_mem_ball hz
     · exact re_add_im_mul_mem_ball hz
-    · exact re_add_im_mul_mem_ball hzPlusH
-  have I₃decomp : I₃ = I₈ + I₆ := by
+    · exact re_add_im_mul_mem_ball w_mem
+  have hI₂ : I₂ = I₈ + I₆ := by
     rw [← smul_add, intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableVert
-    · exact re_add_im_mul_mem_ball hzPlusH
+    · exact re_add_im_mul_mem_ball w_mem
     · exact mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
     · exact mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
-    · simpa using hzPlusH
-  have rectZero : I₇ - I₅ + I₈ - I₄ = 0 := by
+    · simpa using w_mem
+  have hI₀ : I₇ - I₅ + I₈ - I₄ = 0 := by
     have wzInBall : w.re + z.im * I ∈ ball c r :=
       mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
-    have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball hzPlusH
+    have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball w_mem
     have hU : Rectangle (z.re + c.im * I) (w.re + z.im * I) ⊆ ball c r :=
       (convex_ball c r).rectangle_subset (re_add_im_mul_mem_ball hz) wzInBall
         (by simpa using hz) (by simpa using wcInBall)
-    replace hf := hf (z.re + c.im * I) (w.re + z.im * I) hU
-    rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq] at hf
-    convert hf using 1
-    congr
-    · simp [I₇]
-    · simp [I₅]
-    · simp [I₈]
-    · simp [I₄]
-  grind
+    simpa [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq] using
+      hf (z.re + c.im * I) (w.re + z.im * I) hU
+  grind [wedgeIntegral]
 
 variable [CompleteSpace E]
 
@@ -335,8 +325,8 @@ lemma deriv_of_wedgeIntegral_im :
       _ = fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (∫ _ in z.im..w.im, f z) := by simp
       _ =ᶠ[𝓝 z] fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z := ?_
       _ =o[𝓝 z] fun w ↦ w - z := this
-    replace hz : 0 < r - dist z c := by simpa only [mem_ball, sub_pos] using hz
-    filter_upwards [ball_mem_nhds z hz] with w hw using (intervalIntegral.integral_sub
+    refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w hw ↦ ?_⟩
+    exact (intervalIntegral.integral_sub
       (f_cont.im_aux_1 hw).intervalIntegrable intervalIntegrable_const).symm
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : E) :=
     Asymptotics.continuousAt_iff_isLittleO.mp <| (f_cont z hz).continuousAt <|
