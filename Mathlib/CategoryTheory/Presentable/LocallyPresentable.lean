@@ -58,6 +58,7 @@ class IsLocallyPresentable (C : Type u) [hC : Category.{v} C] : Prop where
 
 /-- A category `C` is locally accessible if it is `κ`-locally accessible
 for some regular cardinal `κ`. -/
+@[pp_with_univ]
 class IsAccessibleCategory (C : Type u) [hC : Category.{v} C] : Prop where
   exists_cardinal (C) [hC] : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
     IsCardinalAccessibleCategory C κ
