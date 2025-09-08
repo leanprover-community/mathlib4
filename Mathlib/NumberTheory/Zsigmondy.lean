@@ -7,6 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.Order.WithTop.Untop0
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Homogenize
+import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.NumberTheory.Multiplicity
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Int.Basic
