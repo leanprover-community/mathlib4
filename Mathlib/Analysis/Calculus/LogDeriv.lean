@@ -115,21 +115,21 @@ lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : S
   · simpa using ⟨1, one_ne_zero⟩
   · constructor
     · refine fun h ↦ ⟨f t * (g t)⁻¹, by grind, fun y hy ↦ ?_⟩
-      · have hderiv : s.EqOn (deriv (f * g⁻¹)) (deriv f * g⁻¹ - f * deriv g / g ^ 2) := by
-          intro z hz
-          rw [deriv_mul (hf.differentiableAt (hs2.mem_nhds hz)) ((hg.differentiableAt
-            (hs2.mem_nhds hz)).inv (hgn z hz))]
-          simp only [Pi.inv_apply, show g⁻¹ = (fun x => x⁻¹) ∘ g by rfl, deriv_inv, neg_mul,
-            deriv_comp z (differentiableAt_inv (hgn z hz)) (hg.differentiableAt (hs2.mem_nhds hz)),
-            mul_neg, Pi.sub_apply, Pi.mul_apply, comp_apply, Pi.div_apply, Pi.pow_apply]
-          ring
-        have hfg : EqOn (deriv (f * g⁻¹)) 0 s := hderiv.trans fun z hz ↦ by
-          simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
-            Pi.zero_apply]
-          grind [logDeriv_apply, Pi.div_apply]
-        letI := IsRCLikeNormedField.rclike 𝕜
-        obtain ⟨a, ha⟩ := hs2.exists_is_const_of_deriv_eq_zero hsc (hf.mul (hg.inv hgn)) hfg
-        grind [Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul]
+      have hderiv : s.EqOn (deriv (f * g⁻¹)) (deriv f * g⁻¹ - f * deriv g / g ^ 2) := by
+        intro z hz
+        rw [deriv_mul (hf.differentiableAt (hs2.mem_nhds hz)) ((hg.differentiableAt
+          (hs2.mem_nhds hz)).inv (hgn z hz))]
+        simp only [Pi.inv_apply, show g⁻¹ = (fun x => x⁻¹) ∘ g by rfl, deriv_inv, neg_mul,
+          deriv_comp z (differentiableAt_inv (hgn z hz)) (hg.differentiableAt (hs2.mem_nhds hz)),
+          mul_neg, Pi.sub_apply, Pi.mul_apply, comp_apply, Pi.div_apply, Pi.pow_apply]
+        ring
+      have hfg : EqOn (deriv (f * g⁻¹)) 0 s := hderiv.trans fun z hz ↦ by
+        simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
+          Pi.zero_apply]
+        grind [logDeriv_apply, Pi.div_apply]
+      letI := IsRCLikeNormedField.rclike 𝕜
+      obtain ⟨a, ha⟩ := hs2.exists_is_const_of_deriv_eq_zero hsc (hf.mul (hg.inv hgn)) hfg
+      grind [Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul]
     · rintro ⟨z, hz0, hz⟩ x hx
       simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
         (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]
