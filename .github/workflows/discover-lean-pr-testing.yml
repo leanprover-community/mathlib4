@@ -71,16 +71,39 @@ jobs:
         # Fetch the $OLD tag
         git fetch --depth=1 origin tag "$OLD" --no-tags
         # Fetch the $NEW tag.
-        # This will only fetch commits newer than previously fetched commits (ie $OLD)
+        # This will only fetch commits newer than previously fetched commits (i.e. $OLD)
         git fetch origin tag "$NEW" --no-tags
 
-        # Find all commits to lean4 between the $OLD and $NEW toolchains
-        # and extract the github PR numbers
-        # (drop anything that doesn't look like a PR number from the final result)
-        PRS=$(git log --oneline "$OLD..$NEW" | sed 's/.*(#\([0-9]\+\))$/\1/' | grep -E '^[0-9]+$')
+        # Get all commit SHAs between the $OLD and $NEW toolchains
+        COMMIT_SHAS=$(git log --format="%H" "$OLD..$NEW")
+
+        # Initialize an empty string to collect PR numbers
+        PRS=""
+
+        # For each commit, query the GitHub API to get associated PRs
+        for commit_sha in $COMMIT_SHAS; do
+          echo "Checking commit $commit_sha for associated PRs..."
+
+          # Query GitHub API for PRs associated with this commit
+          # Using jq to extract PR numbers from the response
+          pr_numbers=$(curl -s -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/leanprover/lean4/commits/$commit_sha/pulls" | \
+            jq -r '.[] | select(.merged_at != null) | .number | tostring' 2>/dev/null || echo "")
+
+          # Add each PR number to our list (duplicates will be handled later)
+          for pr_num in $pr_numbers; do
+            if [[ "$pr_num" =~ ^[0-9]+$ ]]; then
+              PRS="$PRS $pr_num"
+              echo "Found PR #$pr_num associated with commit $commit_sha"
+            fi
+          done
+        done
+
+        # Remove duplicates and trim whitespace
+        PRS=$(echo "$PRS" | tr ' ' '\n' | sort -u | tr '\n' ' ' | xargs)
 
         # Output the PRs
-        echo "$PRS"
+        echo "Found PRs: $PRS"
         printf "prs<<EOF\n%s\nEOF" "$PRS" >> "$GITHUB_OUTPUT"
 
     - name: Use merged PRs information

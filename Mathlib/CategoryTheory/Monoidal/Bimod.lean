@@ -221,8 +221,7 @@ theorem whiskerLeft_π_actLeft :
 theorem one_act_left' : (η ▷ _) ≫ actLeft P Q = (λ_ _).hom := by
   refine (cancel_epi ((tensorLeft _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
-  -- Porting note: had to replace `rw` by `erw`
-  slice_lhs 1 2 => erw [whisker_exchange]
+  slice_lhs 1 2 => rw [whisker_exchange]
   slice_lhs 2 3 => rw [whiskerLeft_π_actLeft]
   slice_lhs 1 2 => rw [associator_inv_naturality_left]
   slice_lhs 2 3 => rw [← comp_whiskerRight, one_actLeft]
@@ -279,8 +278,7 @@ theorem π_tensor_id_actRight :
 theorem actRight_one' : (_ ◁ η) ≫ actRight P Q = (ρ_ _).hom := by
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
-  -- Porting note: had to replace `rw` by `erw`
-  slice_lhs 1 2 =>erw [← whisker_exchange]
+  slice_lhs 1 2 => rw [← whisker_exchange]
   slice_lhs 2 3 => rw [π_tensor_id_actRight]
   slice_lhs 1 2 => rw [associator_naturality_right]
   slice_lhs 2 3 => rw [← whiskerLeft_comp, actRight_one]
@@ -291,7 +289,6 @@ theorem right_assoc' :
       (α_ _ T.X T.X).inv ≫ (actRight P Q ▷ T.X) ≫ actRight P Q := by
   refine (cancel_epi ((tensorRight _).map (coequalizer.π _ _))).1 ?_
   dsimp [X]
-  -- Porting note: had to replace some `rw` by `erw`
   slice_lhs 1 2 => rw [← whisker_exchange]
   slice_lhs 2 3 => rw [π_tensor_id_actRight]
   slice_lhs 1 2 => rw [associator_naturality_right]
@@ -319,7 +316,6 @@ theorem middle_assoc' :
     comp_whiskerRight]
   slice_lhs 3 4 => rw [π_tensor_id_actRight]
   slice_lhs 2 3 => rw [associator_naturality_left]
-  -- Porting note: had to replace `rw` by `erw`
   slice_rhs 1 2 => rw [associator_naturality_middle]
   slice_rhs 2 3 => rw [← whiskerLeft_comp, π_tensor_id_actRight,
     whiskerLeft_comp, whiskerLeft_comp]
@@ -866,9 +862,7 @@ theorem whisker_assoc_bimod {W X Y Z : Mon_ C} (M : Bimod W X) {N N' : Bimod X Y
   dsimp [AssociatorBimod.invAux]
   slice_rhs 2 2 => rw [whiskerLeft_comp]
   slice_rhs 3 5 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
-  slice_rhs 2 3 => rw [associator_inv_naturality_middle]
-  slice_rhs 1 3 => rw [Iso.hom_inv_id_assoc]
-  slice_lhs 1 1 => rw [comp_whiskerRight]
+  simp
 
 theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y Z} (f : M ⟶ N)
     (g : P ⟶ Q) : whiskerLeft M g ≫ whiskerRight f Q =
@@ -879,9 +873,7 @@ theorem whisker_exchange_bimod {X Y Z : Mon_ C} {M N : Bimod X Y} {P Q : Bimod Y
   slice_lhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_lhs 2 3 => rw [ι_colimMap, parallelPairHom_app_one]
   slice_lhs 1 2 => rw [whisker_exchange]
-  slice_rhs 1 2 => rw [ι_colimMap, parallelPairHom_app_one]
-  slice_rhs 2 3 => rw [ι_colimMap, parallelPairHom_app_one]
-  simp only [Category.assoc]
+  simp
 
 theorem pentagon_bimod {V W X Y Z : Mon_ C} (M : Bimod V W) (N : Bimod W X) (P : Bimod X Y)
     (Q : Bimod Y Z) :

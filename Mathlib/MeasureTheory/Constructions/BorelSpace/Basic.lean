@@ -27,7 +27,7 @@ import Mathlib.Topology.Instances.Rat
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
   is continuous, then `fun x => op (f x, g y)` is measurable;
-* `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
+* `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
@@ -452,6 +452,15 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
     μ (closure s) = μ s :=
   measure_congr (closure_ae_eq_of_null_frontier h)
 
+theorem null_frontier_inter {μ : Measure α'} {s s' : Set α'}
+    (h : μ (frontier s) = 0) (h' : μ (frontier s') = 0) :
+    μ (frontier (s ∩ s')) = 0 := by
+  apply bot_unique
+  calc μ (frontier (s ∩ s'))
+  _ ≤ μ (frontier s ∪ frontier s') := measure_mono <| (frontier_inter_subset _ _).trans (by grind)
+  _ ≤ μ (frontier s) + μ (frontier s') := measure_union_le _ _
+  _ = 0 := by simp [h, h']
+
 instance separatesPointsOfOpensMeasurableSpaceOfT0Space [T0Space α] :
     MeasurableSpace.SeparatesPoints α where
   separates x y := by
@@ -562,9 +571,12 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     AEMeasurable (fun a => c (f a) (g a)) μ :=
   h.measurable.comp_aemeasurable (hf.prodMk hg)
 
-instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
-    [HasContinuousInv₀ γ] : MeasurableInv γ :=
+instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
+    [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
+
+@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
+  ContinuousInv₀.measurableInv
 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]

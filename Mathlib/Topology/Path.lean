@@ -373,6 +373,8 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   source' := by simp [hx]
   target' := by simp [hy]
 
+@[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
+
 @[simp]
 theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=
@@ -499,13 +501,13 @@ end Pi
 
 
 /-- Pointwise multiplication of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise addition of paths in a topological additive group."]
+@[to_additive (attr := simps!) /-- Pointwise addition of paths in a topological additive group. -/]
 protected def mul [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} (γ₁ : Path a₁ b₁) (γ₂ : Path a₂ b₂) :
     Path (a₁ * a₂) (b₁ * b₂) :=
   (γ₁.prod γ₂).map continuous_mul
 
 /-- Pointwise inversion of paths in a topological group. -/
-@[to_additive (attr := simps!) "Pointwise negation of paths in a topological group."]
+@[to_additive (attr := simps!) /-- Pointwise negation of paths in a topological group. -/]
 def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
     Path a⁻¹ b⁻¹ :=
   γ.map continuous_inv
