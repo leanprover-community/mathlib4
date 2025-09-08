@@ -213,7 +213,7 @@ noncomputable def Sheaf.ΓNatIsoSectionsFunctor :
 /-- Global sections of a sheaf of types `F` correspond to morphisms from a terminal sheaf to `F`.
 We use the constant sheaf on a singleton type as a specific choice of terminal sheaf here. -/
 noncomputable def Sheaf.ΓObjEquivHom [HasWeakSheafify J (Type w)]
-    [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) (X : Type w) [Unique X]:
+    [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) (X : Type w) [Unique X] :
       (Γ J (Type w)).obj F ≃ ((constantSheaf J (Type w)).obj X ⟶ F) :=
   (Equiv.funUnique X _).symm.trans ((constantSheafΓAdj J (Type w)).homEquiv _ _).symm
 

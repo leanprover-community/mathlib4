@@ -288,8 +288,7 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
   ⟨fun f g => CoalgHom.ext fun x => by
     have hf := CoalgHomClass.counit_comp_apply f x
     have hg := CoalgHomClass.counit_comp_apply g x
-    simp_all only [CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp, CoalgHom.coe_toLinearMap,
-      Function.comp_apply, CommSemiring.counit_apply]⟩
+    simp_all only [CommSemiring.counit_apply]⟩
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _

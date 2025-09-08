@@ -6,6 +6,7 @@ Authors: Simon Hudon, Harun Khan, Alex Keizer
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Basic Theorems About Bitvectors
@@ -21,6 +22,25 @@ namespace BitVec
 
 variable {w : Nat}
 
+-- TODO: move to the Lean4 repository.
+open Fin.CommRing in
+theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
+  cases w
+  case zero =>
+    simp only [eq_nil]
+  case succ w =>
+    apply BitVec.eq_of_toInt_eq
+    rw [toInt_ofFin, Fin.val_intCast, Int.natCast_pow, Nat.cast_ofNat, Int.ofNat_toNat,
+      toInt_intCast]
+    rw [Int.max_eq_left]
+    · have h : (2 ^ (w + 1) : Int) = (2 ^ (w + 1) : Nat) := by simp
+      rw [h, Int.emod_bmod]
+    · omega
+
+open Fin.CommRing in
+@[simp] theorem toFin_intCast (z : ℤ) : (z : BitVec w).toFin = ↑z := by
+  rw [← ofFin_intCast]
+
 /-!
 ## Injectivity
 -/
@@ -33,16 +53,21 @@ theorem toFin_injective {n : Nat} : Function.Injective (toFin : BitVec n → _)
 
 /-!
 ## Scalar Multiplication and Powers
-Having instance of `SMul ℕ`, `SMul ℤ` and `Pow` are prerequisites for a `CommRing` instance
 -/
 
 open Fin.NatCast
 
-instance : SMul ℕ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-instance : SMul ℤ (BitVec w) := ⟨fun x y => ofFin <| x • y.toFin⟩
-lemma toFin_nsmul (n : ℕ) (x : BitVec w)  : toFin (n • x) = n • x.toFin := rfl
-lemma toFin_zsmul (z : ℤ) (x : BitVec w)  : toFin (z • x) = z • x.toFin := rfl
-lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
+lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin :=
+  toFin_mul _ _ |>.trans <| by
+    open scoped Fin.CommRing in
+    simp only [natCast_eq_ofNat, toFin_ofNat, Fin.ofNat_eq_cast, nsmul_eq_mul]
+
+lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin :=
+  toFin_mul _ _ |>.trans <| by
+    open scoped Fin.CommRing in
+    simp only [zsmul_eq_mul, toFin_intCast]
+
+lemma toFin_pow (x : BitVec w) (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := by
   induction n with
   | zero => simp
   | succ n ih => simp [ih, BitVec.pow_succ, pow_succ]
@@ -57,56 +82,14 @@ example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowF
 instance : CommSemiring (BitVec w) :=
   open Fin.CommRing in
   toFin_injective.commSemiring _
-    rfl /- toFin_zero -/
-    rfl /- toFin_one -/
+    toFin_zero
+    toFin_one
     toFin_add
     toFin_mul
     toFin_nsmul
-    (by convert toFin_pow)
-    (fun _ => rfl) /- toFin_natCast -/
+    toFin_pow
+    toFin_natCast
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
-
--- Variant of `Fin.intCast_def` for when we are using the `Fin.CommRing` instance.
-open Fin.CommRing in
-theorem _root_.Fin.intCast_def' {n : Nat} [NeZero n] (x : Int) :
-    (x : Fin n) = if 0 ≤ x then Fin.ofNat n x.natAbs else -Fin.ofNat n x.natAbs := by
-  unfold Fin.instCommRing
-  dsimp [Int.cast, IntCast.intCast, Int.castDef]
-  split <;> (simp [Fin.intCast]; omega)
-
-open Fin.CommRing in
-@[simp] theorem _root_.Fin.val_intCast {n : Nat} [NeZero n] (x : Int) :
-    (x : Fin n).val = (x % n).toNat := by
-  rw [Fin.intCast_def']
-  split <;> rename_i h
-  · simp [Int.emod_natAbs_of_nonneg h]
-  · simp only [Fin.ofNat_eq_cast, Fin.val_neg, Fin.natCast_eq_zero, Fin.val_natCast]
-    split <;> rename_i h
-    · rw [← Int.natCast_dvd] at h
-      rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
-    · rw [Int.emod_natAbs_of_neg (by omega) (NeZero.ne n), if_neg (by rwa [← Int.natCast_dvd] at h)]
-      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; omega)
-      omega
-
--- TODO: move to the Lean4 repository.
-open Fin.CommRing in
-theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
-  cases w
-  case zero =>
-    simp only [eq_nil]
-  case succ w =>
-    apply BitVec.eq_of_toInt_eq
-    rw [toInt_ofFin, Fin.val_intCast, Int.natCast_pow, Nat.cast_ofNat, Int.ofNat_toNat,
-      toInt_intCast]
-    rw [Int.max_eq_left]
-    · have h : (2 ^ (w + 1) : Int) = (2 ^ (w + 1) : Nat) := by simp
-      rw [h, Int.emod_bmod]
-    · refine Int.emod_nonneg z ?_
-      exact pow_ne_zero (w + 1) (by decide)
-
-open Fin.CommRing in
-theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
-  apply toFin_inj.mpr <| (ofFin_intCast z).symm
 
 instance : CommRing (BitVec w) :=
   open Fin.CommRing in
@@ -119,9 +102,7 @@ instance : CommRing (BitVec w) :=
 def equivFin {m : ℕ} : BitVec m ≃+* Fin (2 ^ m) where
   toFun a := a.toFin
   invFun a := ofFin a
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_mul' _ _ := rfl
-  map_add' _ _ := rfl
+  map_mul' := toFin_mul
+  map_add' := toFin_add
 
 end BitVec

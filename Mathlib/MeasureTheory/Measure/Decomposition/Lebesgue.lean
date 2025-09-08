@@ -153,7 +153,7 @@ instance haveLebesgueDecompositionSMul' (μ ν : Measure α) [HaveLebesgueDecomp
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
     refine ⟨⟨r • μ.singularPart ν, r • μ.rnDeriv ν⟩, hmeas.const_smul _, hsing.smul _, ?_⟩
-    simp only [ENNReal.smul_def]
+    simp only
     rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
 
 instance haveLebesgueDecompositionSMul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
@@ -661,7 +661,7 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
     simp [hr, hr_ne_top]
   have : (r.toNNReal)⁻¹ • rnDeriv ν μ = r⁻¹ • rnDeriv ν μ := by
     ext x
-    simp only [Pi.smul_apply, ENNReal.smul_def, ne_eq, smul_eq_mul]
+    simp only [Pi.smul_apply, ENNReal.smul_def, smul_eq_mul]
     rw [ENNReal.coe_inv, ENNReal.coe_toNNReal hr_ne_top]
     rw [ne_eq, ENNReal.toNNReal_eq_zero_iff]
     simp [hr, hr_ne_top]

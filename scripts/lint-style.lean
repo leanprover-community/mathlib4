@@ -68,7 +68,7 @@ def getLakefileLeanOptions : IO Lean.Options := do
       exe.config.leanOptions
     else
       #[]
-  return toLeanOptions (rootOpts ++ defaultOpts)
+  return Lean.LeanOptions.toOptions (rootOpts.appendArray defaultOpts)
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
 register_option linter.checkInitImports : Bool := { defValue := false }
@@ -208,7 +208,9 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     IO.eprintln s!"warning: nolints file could not be read; treating as empty: {filename}"
     pure #[]
   let numberErrors := (← lintModules opts nolints allModuleNames style fix)
-    + (← missingInitImports opts) + (← undocumentedScripts opts) + (← modulesNotUpperCamelCase opts allModuleNames)
+    + (← missingInitImports opts).toUInt32 + (← undocumentedScripts opts).toUInt32
+    + (← modulesNotUpperCamelCase opts allModuleNames).toUInt32
+    + (← modulesForbiddenWindows opts allModuleNames).toUInt32
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.

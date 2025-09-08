@@ -10,7 +10,7 @@ import Mathlib.Tactic.TypeStar
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`
 
-This file provides a locale `Vector3` which overrides the `[a, b, c]` notation to create a `Vector3`
+This file provides a scope `Vector3` which overrides the `[a, b, c]` notation to create a `Vector3`
 instead of a `List`.
 
 The `::` notation is also overloaded by this file to mean `Vector3.cons`.
@@ -169,7 +169,7 @@ theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
   funext fun j => by
     refine j.cases' (by simp [insert, insertPerm]) fun j => ?_
     simp only [insert, insertPerm, succ_eq_add_one, cons_fs]
-    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp [insertPerm]
+    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp
 
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
     (e : (n + 1) + m = (n + m) + 1) :

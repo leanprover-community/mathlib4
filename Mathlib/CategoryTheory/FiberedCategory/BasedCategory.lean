@@ -54,7 +54,7 @@ def BasedCategory.ofFunctor {𝒳 : Type u₂} [Category.{v₂} 𝒳] (p : 𝒳 
 with the projections. -/
 structure BasedFunctor (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) extends
     𝒳.obj ⥤ 𝒴.obj where
-  w : toFunctor ⋙ 𝒴.p = 𝒳.p := by aesop_cat
+  w : toFunctor ⋙ 𝒴.p = 𝒳.p := by cat_disch
 
 /-- Notation for `BasedFunctor`. -/
 scoped infixr:26 " ⥤ᵇ " => BasedFunctor
@@ -133,7 +133,7 @@ end BasedFunctor
 underlying functors, such that for all `a : 𝒳`, `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`. -/
 structure BasedNatTrans {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
     (F G : 𝒳 ⥤ᵇ 𝒴) extends CategoryTheory.NatTrans F.toFunctor G.toFunctor where
-  isHomLift' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by aesop_cat
+  isHomLift' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by cat_disch
 
 namespace BasedNatTrans
 
@@ -253,7 +253,7 @@ and natural transformations. -/
 @[simps]
 def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
-  toNatTrans := CategoryTheory.whiskerLeft F.toFunctor α.toNatTrans
+  toNatTrans := Functor.whiskerLeft F.toFunctor α.toNatTrans
   isHomLift' := fun a ↦ α.isHomLift (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
@@ -261,7 +261,7 @@ functors and natural transformations. -/
 @[simps]
 def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (H : 𝒴 ⥤ᵇ 𝒵) :
     F ⋙ H ⟶ G ⋙ H where
-  toNatTrans := CategoryTheory.whiskerRight α.toNatTrans H.toFunctor
+  toNatTrans := Functor.whiskerRight α.toNatTrans H.toFunctor
   isHomLift' := fun _ ↦ BasedFunctor.preserves_isHomLift _ _ _
 
 end
