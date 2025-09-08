@@ -15,7 +15,7 @@ covariant involution `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 
 -/
 
-universe v u
+universe v
 
 open CategoryTheory
 
