@@ -49,6 +49,9 @@ scoped instance : OrderTopology (WithTop ι) := ⟨rfl⟩
 
 scoped instance [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι] :
     SecondCountableTopology (WithTop ι) :=
+  let b := countableBasis ι
+  have hbc : Set.Countable b := countable_countableBasis ι
+  have hb_basis : IsTopologicalBasis b := isBasis_countableBasis ι
   sorry
 
 end WithTopOrderTopology
@@ -104,6 +107,28 @@ def neTopHomeomorph [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι whe
   toEquiv := WithTop.neTopEquiv ι
   continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_ut
   continuous_invFun := continuous_coe.subtype_mk _
+
+variable (ι) in
+/-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
+noncomputable
+def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
+  toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.ut
+  invFun x := match x with
+    | Sum.inl i => (i : WithTop ι)
+    | Sum.inr () => ⊤
+  left_inv x := by cases x <;> simp
+  right_inv x := by cases x <;> simp
+  continuous_toFun := by
+    have h_fr : frontier ({⊤} : Set (WithTop ι)) = ∅ := by
+      simp only [frontier, Set.finite_singleton, Set.Finite.isClosed, IsClosed.closure_eq]
+      suffices interior ({⊤} : Set (WithTop ι)) = {⊤} by simp [this]
+      rw [interior_eq_iff_isOpen]
+      have : {⊤} = Set.Ioi ((⊤ : ι) : WithTop ι) := by ext; simp
+      rw [this]
+      exact isOpen_Ioi
+    refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
+    exact Continuous.comp_continuousOn (by fun_prop) continuousOn_ut
+  continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
 variable [MeasurableSpace ι] [BorelSpace ι]
 
