@@ -3,6 +3,7 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.NonAssoc.PreLie.Basic
 /-!
@@ -127,3 +128,25 @@ variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
 end RightPreLieAlgebra
+
+namespace Ring
+
+variable [Ring L]
+
+instance instLieAdmissibleRing : LieAdmissibleRing L where
+  assoc_def := by
+    suffices ∀ a b c : L, associator a b c = 0 by simp
+    simp
+
+end Ring
+
+namespace Algebra
+
+variable [Ring L] [Algebra R L]
+
+instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
+  smul_comm := by simp
+
+end Algebra
+
+end instances
