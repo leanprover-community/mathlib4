@@ -38,24 +38,23 @@ section Basic
 @[simp]
 theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis ι R M) :
     (toMatrix b b f).charpoly = f.charpoly := by
-  cases subsingleton_or_nontrivial R
-  · exact Subsingleton.elim ..
-  · unfold LinearMap.charpoly
-    set b' := chooseBasis R M
-    rw [← basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix b b' b b']
-    set P := b.toMatrix b'
-    set A := toMatrix b' b' f
-    set Q := b'.toMatrix b
-    let e := Basis.indexEquiv b b'
-    let ι' := ChooseBasisIndex R M
-    let φ := reindexLinearEquiv R R e e
-    let φ₁ := reindexLinearEquiv R R e (Equiv.refl ι')
-    let φ₂ := reindexLinearEquiv R R (Equiv.refl ι') (Equiv.refl ι')
-    let φ₃ := reindexLinearEquiv R R (Equiv.refl ι') e
-    calc
-      (P * A * Q).charpoly = (φ (P * A * Q)).charpoly := (charpoly_reindex ..).symm
-      _ = (φ₁ P * φ₂ A * φ₃ Q).charpoly := by rw [reindexLinearEquiv_mul, reindexLinearEquiv_mul]
-      _ = A.charpoly := by rw [charpoly_mul_comm, ← mul_assoc]; simp [P, Q, φ₁, φ₂, φ₃]
+  nontriviality R
+  unfold LinearMap.charpoly
+  set b' := chooseBasis R M
+  rw [← basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix b b' b b']
+  set P := b.toMatrix b'
+  set A := toMatrix b' b' f
+  set Q := b'.toMatrix b
+  let e := Basis.indexEquiv b b'
+  let ι' := ChooseBasisIndex R M
+  let φ := reindexLinearEquiv R R e e
+  let φ₁ := reindexLinearEquiv R R e (Equiv.refl ι')
+  let φ₂ := reindexLinearEquiv R R (Equiv.refl ι') (Equiv.refl ι')
+  let φ₃ := reindexLinearEquiv R R (Equiv.refl ι') e
+  calc
+    (P * A * Q).charpoly = (φ (P * A * Q)).charpoly := (charpoly_reindex ..).symm
+    _ = (φ₁ P * φ₂ A * φ₃ Q).charpoly := by rw [reindexLinearEquiv_mul, reindexLinearEquiv_mul]
+    _ = A.charpoly := by rw [charpoly_mul_comm, ← mul_assoc]; simp [P, Q, φ₁, φ₂, φ₃]
 
 lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
     (f₁.prodMap f₂).charpoly = f₁.charpoly * f₂.charpoly := by
