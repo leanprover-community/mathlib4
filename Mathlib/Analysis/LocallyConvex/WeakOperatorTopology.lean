@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
+import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # The weak operator topology
