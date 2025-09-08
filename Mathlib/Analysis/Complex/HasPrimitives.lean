@@ -37,8 +37,11 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 namespace Complex
 
-/-- If `z` is in a ball centered at `c`, then `z.re + c.im * I` is in the ball. -/
-lemma re_add_im_mul_mem_ball {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r) :
+section AuxiliaryLemmata
+
+variable {c z : ℂ} {r x y : ℝ}
+
+private lemma re_add_im_mul_mem_ball (hz : z ∈ ball c r) :
     z.re + c.im * I ∈ ball c r := by
   suffices dist (z.re + c.im * I) c ≤ dist z c from lt_of_le_of_lt this hz
   simp only [dist_eq_re_im]
@@ -46,34 +49,19 @@ lemma re_add_im_mul_mem_ball {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r)
   rw [Real.sq_sqrt (by positivity)]
   simp [sq_nonneg _]
 
-section SubsetBall_Aux
-
-/- Auxiliary lemmata about subsets of balls -/
-
-private lemma mem_ball_re_aux {c z : ℂ} {r : ℝ} :
-    (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) ×ℂ {z.im} ⊆ ball z (r - dist z c) := by
-  intro x hx
-  obtain ⟨xRe, xIm⟩ := hx
-  simp only [mem_preimage, mem_singleton_iff, mem_Ioo] at xRe xIm
-  simp only [mem_ball]
-  rw [dist_eq_re_im, xIm]
-  simp only [sub_self, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, add_zero,
-    Real.sqrt_sq_eq_abs, abs_lt, neg_sub]
-  refine ⟨by linarith, by linarith⟩
-
-lemma mem_ball_re_aux' {c : ℂ} {r : ℝ} {z : ℂ} {x : ℝ}
-    (hx : x ∈ Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :
+private lemma mem_ball_re_aux (hx : x ∈ Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :
     x + z.im * I ∈ ball c r := by
   set r₁ := r - dist z c
   set s := Ioo (z.re - r₁) (z.re + r₁)
-  have s_ball₁ : s ×ℂ {z.im} ⊆ ball z r₁ := mem_ball_re_aux
-  have s_ball : s ×ℂ {z.im} ⊆ ball c r := s_ball₁.trans (by apply ball_subset_ball'; simp [r₁])
-  apply s_ball
-  rw [mem_reProdIm]
-  simp [hx]
+  have s_ball₁ : s ×ℂ {z.im} ⊆ ball z r₁ := by
+    rintro y ⟨yRe : y.re ∈ s, yIm : y.im = z.im⟩
+    rw [mem_ball, dist_eq_re_im, yIm, sub_self, zero_pow two_ne_zero, add_zero, Real.sqrt_sq_eq_abs]
+    grind [abs_lt]
+  suffices s ×ℂ {z.im} ⊆ ball c r from this <| by simp [mem_reProdIm, hx]
+  exact s_ball₁.trans <| ball_subset_ball' <| by simp [r₁]
 
-lemma mem_closedBall_aux {c : ℂ} {r : ℝ} {z : ℂ} (z_in_ball : z ∈ closedBall c r)
-    {y : ℝ} (y_in_I : y ∈ Ι c.im z.im) : z.re + y * I ∈ closedBall c r := by
+private lemma mem_closedBall_aux (z_in_ball : z ∈ closedBall c r) (y_in_I : y ∈ Ι c.im z.im) :
+    z.re + y * I ∈ closedBall c r := by
   rw [mem_closedBall] at z_in_ball ⊢
   rw [mem_uIoc] at y_in_I
   apply le_trans ?_ z_in_ball
@@ -84,24 +72,24 @@ lemma mem_closedBall_aux {c : ℂ} {r : ℝ} {z : ℂ} (z_in_ball : z ∈ closed
     add_zero, add_im, mul_im, zero_add, add_le_add_iff_left]
   cases y_in_I <;> nlinarith
 
-lemma mem_ball_of_map_re_aux {c : ℂ} {r : ℝ} {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
+private lemma mem_ball_of_map_re_aux {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
   convert Convex.rectangle_subset (convex_ball c r) ha₁ ha₂ ?_ ?_ using 1 <;>
   simp [horizontalSegment_eq a₁ a₂ b, ha₁, ha₂, Rectangle]
 
-lemma mem_ball_of_map_im_aux {c : ℂ} {r : ℝ} {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
+private lemma mem_ball_of_map_im_aux₁ {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
     (hb₂ : a + b₂ * I ∈ ball c r) : (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] ⊆ ball c r := by
   convert Convex.rectangle_subset (convex_ball c r) hb₁ hb₂ ?_ ?_ using 1 <;>
   simp [verticalSegment_eq a b₁ b₂, hb₁, hb₂, Rectangle]
 
-lemma mem_ball_of_map_im_aux' {c : ℂ} {r : ℝ} {z : ℂ} {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
+private lemma mem_ball_of_map_im_aux₂ {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
     (fun (y : ℝ) ↦ w.re + y * I) '' [[z.im, w.im]] ⊆ ball c r := by
-  apply mem_ball_of_map_im_aux <;>
+  apply mem_ball_of_map_im_aux₁ <;>
   apply mem_of_subset_of_mem (ball_subset_ball' (by simp) : ball z (r - dist z c) ⊆ ball c r)
   · exact re_add_im_mul_mem_ball hw
   · simpa using hw
 
-end SubsetBall_Aux
+end AuxiliaryLemmata
 
 end Complex
 
@@ -181,7 +169,7 @@ lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedO
       (mapsTo_image _ _)).intervalIntegrable
   have integrableVert (a b₁ b₂ : ℝ) (hb₁ : a + b₁ * I ∈ ball c r) (hb₂ : a + b₂ * I ∈ ball c r) :
       IntervalIntegrable (fun y ↦ f (a + y * I)) volume b₁ b₂ :=
-    ((f_cont.mono (mem_ball_of_map_im_aux hb₁ hb₂)).comp (by fun_prop)
+    ((f_cont.mono (mem_ball_of_map_im_aux₁ hb₁ hb₂)).comp (by fun_prop)
       (mapsTo_image _ _)).intervalIntegrable
   have hI₁ : I₁ = I₃ + I₇ := by
     rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
@@ -219,7 +207,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s :=
     f_cont.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <|
-      fun _ ↦ mem_ball_re_aux'
+      fun _ ↦ mem_ball_re_aux
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
     ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa
   have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) ↦ f (x + z.im * I)) (𝓝 z.re) :=
@@ -240,7 +228,7 @@ private lemma hasDerivAt_wedgeIntegral_im_aux :
       _ =o[𝓝 z] fun w ↦ w - z := this
     refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w hw ↦ ?_⟩
     exact (intervalIntegral.integral_sub
-      ((f_cont.mono (mem_ball_of_map_im_aux' hw)).comp (by fun_prop)
+      ((f_cont.mono (mem_ball_of_map_im_aux₂ hw)).comp (by fun_prop)
         (mapsTo_image _ _)).intervalIntegrable intervalIntegrable_const).symm
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : ℝ) := by
     rw [Asymptotics.isLittleO_one_iff, tendsto_sub_nhds_zero_iff]
