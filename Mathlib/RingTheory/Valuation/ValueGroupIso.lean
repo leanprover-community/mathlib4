@@ -61,7 +61,7 @@ lemma Valuation.IsEquiv.exists_mem_valueGroup {v : Valuation R Γ₀} {v' : Valu
 /-- When two valuations are equivalent, their value groups are isomorphic. -/
 def Valuation.IsEquiv.orderMonoidIso {v : Valuation R Γ₀} {v' : Valuation R Γ₀'}
     (h : v.IsEquiv v') :
-    MonoidWithZeroHom.valueGroup₀ v ≃*o MonoidWithZeroHom.valueGroup₀ v' := by
+    MonoidWithZeroHom.ValueGroup₀ v ≃*o MonoidWithZeroHom.ValueGroup₀ v' := by
   refine ⟨MulEquiv.withZero ⟨⟨fun x ↦ ?_, fun x ↦ ?_, ?_, ?_⟩, ?_⟩, ?_⟩
   · exact ⟨(h.exists_mem_valueGroup' x.prop).choose,
       (h.exists_mem_valueGroup' x.prop).choose_spec.left⟩
@@ -144,7 +144,7 @@ variable [ValuativeRel R]
 mul-order-isomorphic to the value group of the valuation induced by the relation. -/
 @[simps!]
 def ValueGroup₀Iso :
-    MonoidWithZeroHom.valueGroup₀ (valuation R) ≃*o ValueGroupWithZero R := by
+    MonoidWithZeroHom.ValueGroup₀ (valuation R) ≃*o ValueGroupWithZero R := by
   refine ⟨.ofBijective (OrderMonoidIso.withZeroUnits.toMonoidHom.comp
     MonoidWithZeroHom.valueGroup₀_MonoidWithZeroHom.toMonoidHom)
       ⟨OrderMonoidIso.withZeroUnits.injective.comp
@@ -168,5 +168,5 @@ def ValueGroup₀Iso :
 /-- When a commutative ring has a valuative relation, the relation's value group is
 mul-order-isomorphic to the value group of any valuation compatible to the relation. -/
 nonrec def Valuation.Compatible.ValueGroup₀Iso (v : Valuation R Γ₀) [h : v.Compatible] :
-    MonoidWithZeroHom.valueGroup₀ v ≃*o ValueGroupWithZero R :=
+    MonoidWithZeroHom.ValueGroup₀ v ≃*o ValueGroupWithZero R :=
   (isEquiv v (valuation R)).orderMonoidIso.trans ValueGroup₀Iso
