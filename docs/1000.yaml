@@ -3814,11 +3814,13 @@ Q7996766:
 Q7996769:
   title: Whitney immersion theorem
 
-# TODO: This is in PNT+
-# and should be added to this file once the prime number theorem itself is added
-# https://alexkontorovich.github.io/PrimeNumberTheoremAnd/docs/PrimeNumberTheoremAnd/Wiener.html#WienerIkeharaTheorem'
 Q7999144:
   title: Wiener–Ikehara theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2024
+  # TODO: cannot display several URLs nicely yet
+  # link: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/655055549f8725b3fd4de577435259932129dc4c/PrimeNumberTheoremAnd/Wiener.lean#L2078
 
 Q7999797:
   title: Beer's theorem
