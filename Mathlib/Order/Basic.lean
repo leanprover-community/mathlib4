@@ -955,49 +955,32 @@ theorem const_lt_const : const β a < const β b ↔ a < b := by simpa [Pi.lt_de
 
 end Function
 
-/-! ### Lifts of order instances -/
+/-! ### Pullbacks of order instances -/
 
+/-- Pull back a `Preorder` instance along an injective function.
 
-/-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
 See note [reducible non-instances]. -/
-abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α where
-  le x y := f x ≤ f y
-  le_refl _ := le_rfl
-  le_trans _ _ _ := _root_.le_trans
-  lt x y := f x < f y
-  lt_iff_le_not_ge _ _ := _root_.lt_iff_le_not_ge
+abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
+    Preorder α where
+  le_refl _ := le.1 <| le_refl _
+  le_trans _ _ _ h₁ h₂ := le.1 <| le_trans (le.2 h₁) (le.2 h₂)
+  lt_iff_le_not_ge _ _ := by
+    rw [← le, ← le, ← lt, lt_iff_le_not_ge]
 
-/-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
-function `f : α → β`. See note [reducible non-instances]. -/
-abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
-  { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
+/-- Pull back a `PartialOrder` instance along an injective function.
 
-/-- A version of `PartialOrder.lift` that doesn't construct any new data. -/
+See note [reducible non-instances]. -/
 abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
     (hf : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
     PartialOrder α where
-  le_refl _ := le.1 <| le_refl _
-  le_trans _ _ _ h₁ h₂ := le.1 <| le_trans (le.2 h₁) (le.2 h₂)
+  __ := Function.Injective.preorder f le lt
   le_antisymm _ _ h₁ h₂ := hf <| le_antisymm (le.2 h₁) (le.2 h₂)
-  lt_iff_le_not_ge _ _ := by
-    rw [← le, ← le, ← lt, lt_iff_le_not_ge]
 
-theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
-    [DecidableEq α] (f : α → β) (inj : Injective f)
-    [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
-    compare (f a) (f b) =
-      @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
-  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
-  simp only [h, compareOfLessAndEq]
-  split_ifs <;> try (first | rfl | contradiction)
-  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
-    contradiction
-  · grind
+/-- Pull back a `LinearOrder` instance along an injective function.
 
-/-- Pull back a linear order along an injective function.
-
-Unlike `LinearOrder.lift`, this constructs no new data, and only the proofs. -/
+See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] [Min α] [Ord α]
     [DecidableEq α] [DecidableLE α] [DecidableLT α] (f : α → β)
     (hf : Function.Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
@@ -1015,16 +998,60 @@ abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] 
     simp_rw [← compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, ← lt,
       hf.eq_iff]
 
+/-!
+### Lifts of order instances
+
+Unlike the constructions above, these construct new data fields.
+They should be avoided if the types already define any order or decidability instances.
+-/
+
+/-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
+
+See also `Function.Injective.preorder` when only the proof fields need to be transferred.
+
+See note [reducible non-instances]. -/
+abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α :=
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
+  Function.Injective.preorder f .rfl .rfl
+
+/-- Transfer a `PartialOrder` on `β` to a `PartialOrder` on `α` using an injective
+function `f : α → β`.
+
+See also `Function.Injective.partialOrder` when only the proof fields need to be transferred.
+
+See note [reducible non-instances]. -/
+abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
+  Function.Injective.partialOrder f inj .rfl .rfl
+
+theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
+    [DecidableEq α] (f : α → β) (inj : Injective f)
+    [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
+    compare (f a) (f b) =
+      @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
+  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  simp only [h, compareOfLessAndEq]
+  split_ifs <;> try (first | rfl | contradiction)
+  · have : ¬ f a = f b := by rename_i h; exact inj.ne h
+    contradiction
+  · grind
+
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
 `max` fields, and `LinearOrder.liftWithOrd` for one that does not auto-generate `compare`
-fields. See note [reducible non-instances]. -/
+fields.
+
+See also `Function.Injective.linearOrder` when only the proof fields need to be transferred.
+
+See note [reducible non-instances]. -/
 abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
   letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
-  letI _instLE : LT α := ⟨fun a b ↦ f a < f b⟩
+  letI _instLT : LT α := ⟨fun a b ↦ f a < f b⟩
   letI _instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
   letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
   letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
