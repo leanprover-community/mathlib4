@@ -219,7 +219,7 @@ variable {m}
 lemma simplicialEvalσ_of_isAdmissible
     (m₁ m₂ : ℕ) (hL : IsAdmissible m₂ L) (hk : m₂ + L.length = m₁)
     (j : ℕ) (hj : j < m₁ + 1) :
-    ((toSimplexCategory.map <| standardσ L hk).toOrderHom ⟨j, hj⟩ : ℕ) =
+    (toSimplexCategory.map <| standardσ L hk).toOrderHom ⟨j, hj⟩ =
     simplicialEvalσ L j := by
   induction L generalizing m₁ m₂ with
   | nil =>
@@ -237,7 +237,7 @@ lemma simplicialEvalσ_of_isAdmissible
       · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
       · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
       · rfl
-    have := h_rec _ _ hL.tail (by simp +arith) hj
+    have := h_rec _ _ hL.tail (by grind) hj
     have ha₀ : Fin.ofNat (m₂ + 1) a = a₀ := by ext; simpa [a₀] using hL.head.prop
     simpa only [toSimplexCategory_obj_mk, SimplexCategory.len_mk, standardσ_cons, Functor.map_comp,
       toSimplexCategory_map_σ, SimplexCategory.σ, SimplexCategory.mkHom,
