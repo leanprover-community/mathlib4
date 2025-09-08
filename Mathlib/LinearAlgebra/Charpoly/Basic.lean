@@ -59,6 +59,10 @@ theorem charpoly_one [StrongRankCondition R] :
     (1 : M →ₗ[R] M).charpoly = (X - 1) ^ Module.finrank R M := by
   simp [charpoly, Module.finrank_eq_card_chooseBasisIndex, Matrix.charpoly_one]
 
+theorem charpoly_sub_scalar (phi : Module.End R M) (mu : R) :
+    (phi - mu • 1).charpoly  = phi.charpoly.comp (X + C mu) := by
+  simpa [LinearMap.charpoly, smul_eq_mul_diagonal] using Matrix.charpoly_sub_scalar ..
+
 end Basic
 
 section Coeff
