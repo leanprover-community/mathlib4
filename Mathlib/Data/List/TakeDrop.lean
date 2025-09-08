@@ -145,8 +145,6 @@ private theorem span.loop_eq_take_drop :
 theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
   simpa using span.loop_eq_take_drop p l []
 
-@[deprecated (since := "2025-02-07")] alias span_eq_take_drop := span_eq_takeWhile_dropWhile
-
 end Filter
 
 /-! ### Miscellaneous lemmas -/

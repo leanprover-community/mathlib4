@@ -889,6 +889,57 @@ theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph X Y} (h : e ≈ e') (s :
     (t : e.target = univ) : e = e' :=
   toPartialEquiv_injective <| PartialEquiv.eq_of_eqOnSource_univ _ _ h s t
 
+variable {s : Set X}
+
+theorem restr_symm_trans {e' : PartialHomeomorph X Y}
+    (hs : IsOpen s) (hs' : IsOpen (e '' s)) (hs'' : s ⊆ e.source) :
+    (e.restr s).symm.trans e' ≈ (e.symm.trans e').restr (e '' s) := by
+  refine ⟨?_, ?_⟩
+  · simp only [trans_toPartialEquiv, symm_toPartialEquiv, restr_toPartialEquiv,
+      PartialEquiv.trans_source, PartialEquiv.symm_source, PartialEquiv.restr_target, coe_coe_symm,
+      PartialEquiv.restr_coe_symm, PartialEquiv.restr_source]
+    rw [interior_eq_iff_isOpen.mpr hs', interior_eq_iff_isOpen.mpr hs]
+    -- Get rid of the middle term, which is merely distracting.
+    rw [inter_assoc, inter_assoc, inter_comm _ (e '' s), ← inter_assoc, ← inter_assoc]
+    congr 1
+    -- Now, just a bunch of rewrites: should this be a separate lemma?
+    rw [← image_source_inter_eq', ← image_source_eq_target]
+    refine image_inter_on ?_
+    intro x hx y hy h
+    rw [← left_inv e hy, ← left_inv e (hs'' hx), h]
+  · simp_rw [coe_trans, restr_symm_apply, restr_apply, coe_trans]
+    intro x hx
+    simp
+
+theorem symm_trans_restr (e' : PartialHomeomorph X Y) (hs : IsOpen s) :
+    e'.symm.trans (e.restr s) ≈ (e'.symm.trans e).restr (e'.target ∩ e'.symm ⁻¹' s) := by
+  have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
+    rw [← image_source_inter_eq']
+    exact isOpen_image_source_inter e' hs
+  refine ⟨?_, ?_⟩
+  · simp only [trans_toPartialEquiv, symm_toPartialEquiv, restr_toPartialEquiv,
+      PartialEquiv.trans_source, PartialEquiv.symm_source, coe_coe_symm, PartialEquiv.restr_source,
+      preimage_inter]
+    -- Shuffle the intersections, pull e'.target into the interior and use interior_inter.
+    rw [interior_eq_iff_isOpen.mpr hs,
+      ← inter_assoc, inter_comm e'.target, inter_assoc, inter_assoc]
+    congr 1
+    nth_rw 2 [← interior_eq_iff_isOpen.mpr e'.open_target]
+    rw [← interior_inter, ← inter_assoc, inter_self, interior_eq_iff_isOpen.mpr ht]
+  · simp
+    exact fun ⦃x⦄ ↦ congrFun rfl
+
+lemma restr_eqOnSource_restr {s' : Set X}
+    (hss' : e.source ∩ interior s = e.source ∩ interior s') :
+    e.restr s ≈ e.restr s' := by
+  constructor
+  · simpa [e.restr_source]
+  · simp
+    exact fun ⦃x⦄ ↦ congrFun rfl
+
+lemma restr_inter_source : e.restr (e.source ∩ s) ≈ e.restr s :=
+  e.restr_eqOnSource_restr (by simp [interior_eq_iff_isOpen.mpr e.open_source])
+
 end EqOnSource
 
 /-! product of two partial homeomorphisms -/
@@ -1448,3 +1499,5 @@ lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedd
     exact (hf.injective hxy) ▸ hy
 
 end PartialHomeomorph
+
+set_option linter.style.longFile 1700

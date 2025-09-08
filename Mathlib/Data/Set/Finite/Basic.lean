@@ -733,8 +733,6 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
-
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
