@@ -118,7 +118,7 @@ protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ abv x = 0 := by
   simp [le_antisymm_iff, abv.nonneg]
 
 variable {abv} in
-theorem pos_of_abv_pos (abv' : AbsoluteValue R S) {a : R} (hv : 0 < abv a) : 0 < abv' a := by
+theorem pos_of_pos (abv' : AbsoluteValue R S) {a : R} (hv : 0 < abv a) : 0 < abv' a := by
   rwa [AbsoluteValue.pos_iff] at hv ⊢
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
@@ -380,12 +380,6 @@ lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
-
-theorem isNontrivial_iff_exists_abv_one_lt :
-    v.IsNontrivial ↔ ∃ x, 1 < v x := by
-  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ⟨x⁻¹, ?_, ?_⟩⟩
-  · simpa only [ne_eq, inv_eq_zero] using fun h ↦ v.map_zero ▸ not_le.2 (h ▸ hx) <| zero_le_one' _
-  · simpa only [map_inv₀, ne_eq, inv_eq_one] using ne_of_gt hx
 
 theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
   simp [map_inv₀, inv_lt_one_iff₀]

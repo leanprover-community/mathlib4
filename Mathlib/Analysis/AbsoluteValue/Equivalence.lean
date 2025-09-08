@@ -96,7 +96,7 @@ theorem isOrderEquiv_of_imp [Archimedean S] [IsStrictOrderedRing S] (hv : v.IsNo
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
   by_contra! hv
   have (n : ℕ) : w x₀ < w a ^ n := by
-    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (v.pos_of_abv_pos w (v.pos ha₀)) _),
+    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (v.pos_of_pos w (v.pos ha₀)) _),
       ← map_pow, ← map_inv₀, ← map_mul]
     apply h
     rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by simp_all) _), one_mul]
@@ -224,7 +224,7 @@ theorem isEquiv_iff_isOrderEquiv {v : AbsoluteValue F ℝ} (w : AbsoluteValue F 
 If $v$ and $w$ are inequivalent absolute values and $v$ is non-trivial, then we can find an $a ∈ F$
 such that $v(a) < 1$ while $1 ≤ w(a)$.
 -/
-theorem exists_abv_lt_one_abv_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ¬v.IsEquiv w) :
     ∃ a : F, v a < 1 ∧ 1 ≤ w a := by
   contrapose! h
@@ -234,12 +234,12 @@ theorem exists_abv_lt_one_abv_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} 
 If $v$ and $w$ are two non-trivial and inequivalent absolute values then
 we can find an $a ∈ K$ such that $1 < v a$ while $w a < 1$.
 -/
-theorem exists_abv_one_lt_abv_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
+theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (hw : w.IsNontrivial) (h : ¬v.IsEquiv w) :
     ∃ a : F, 1 < v a ∧ w a < 1 := by
-  let ⟨a, ha⟩ := exists_abv_lt_one_abv_one_le_of_not_isEquiv hv h
-  let ⟨b, hb⟩ := exists_abv_lt_one_abv_one_le_of_not_isEquiv hw (mt w.isEquiv_symm h)
-  exact ⟨b / a, by simpa using ⟨one_lt_div (w.pos_of_abv_pos v (by linarith)) |>.2 (by linarith),
+  let ⟨a, ha⟩ := exists_lt_one_one_le_of_not_isEquiv hv h
+  let ⟨b, hb⟩ := exists_lt_one_one_le_of_not_isEquiv hw (mt w.isEquiv_symm h)
+  exact ⟨b / a, by simpa using ⟨one_lt_div (w.pos_of_pos v (by linarith)) |>.2 (by linarith),
     div_lt_one (by linarith) |>.2 (by linarith)⟩⟩
 
 end Real
