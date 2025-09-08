@@ -218,7 +218,6 @@ lemma norm_sub_zmodRepr_lt_one (x : ℤ_[p]) :
   rw [← mem_nonunits, ← IsLocalRing.mem_maximalIdeal]
   exact sub_zmodRepr_mem _
 
-@[simp]
 lemma norm_natCast_zmodRepr_eq_one_iff {x : ℤ_[p]} :
     ‖(x.zmodRepr : ℤ_[p])‖ = 1 ↔ ‖x‖ = 1 := by
   rcases eq_or_ne ‖(x.zmodRepr : ℤ_[p])‖ ‖x‖ with H | H
