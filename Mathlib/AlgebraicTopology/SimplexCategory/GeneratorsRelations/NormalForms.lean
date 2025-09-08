@@ -162,15 +162,15 @@ section NormalFormsP_σ
 but it is intended to behave well only when the list is admissible. -/
 def standardσ (L : List ℕ) {m₁ m₂ : ℕ} (h : m₂ + L.length = m₁) : mk m₁ ⟶ mk m₂ :=
   match L with
-  | .nil => eqToHom (by congr; aesop)
-  | .cons a t => standardσ t (by subst h; simp only [List.length_cons]; omega) ≫ σ (Fin.ofNat _ a)
+  | .nil => eqToHom (by grind)
+  | .cons a t => standardσ t (by grind) ≫ σ (Fin.ofNat _ a)
 
 @[simp]
-lemma standardσ_nil (m : ℕ) : standardσ .nil (by simp) = 𝟙 (mk m) := rfl
+lemma standardσ_nil (m : ℕ) : standardσ .nil (by grind) = 𝟙 (mk m) := rfl
 
 @[simp, reassoc]
 lemma standardσ_cons (L : List ℕ) (a : ℕ) {m₁ m₂ : ℕ} (h : m₂ + (a :: L).length = m₁) :
-    standardσ (L.cons a) h = standardσ L (by dsimp at h; omega) ≫ σ (Fin.ofNat _ a) := rfl
+    standardσ (L.cons a) h = standardσ L (by grind) ≫ σ (Fin.ofNat _ a) := rfl
 
 @[reassoc]
 lemma standardσ_comp_standardσ (L₁ L₂ : List ℕ) {m₁ m₂ m₃ : ℕ}
