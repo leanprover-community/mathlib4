@@ -41,7 +41,7 @@ theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
 @[simp]
-theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
+theorem max_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
 @[simp]
@@ -123,7 +123,7 @@ theorem min_empty : (∅ : Finset α).min = ⊤ :=
   rfl
 
 @[simp]
-theorem min_insert {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
+theorem min_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
   fold_insert_idem
 
 @[simp]
@@ -311,13 +311,13 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     t.min' (H.mono hst) ≤ s.min' H :=
   min'_le _ _ (hst (s.min'_mem H))
 
-theorem max'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
+theorem max'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).max' (s.insert_nonempty a) = max (s.max' H) a :=
   (isGreatest_max' _ _).unique <| by
     rw [coe_insert, max_comm]
     exact (isGreatest_max' _ _).insert _
 
-theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
+theorem min'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).min' (s.insert_nonempty a) = min (s.min' H) a :=
   (isLeast_min' _ _).unique <| by
     rw [coe_insert, min_comm]
