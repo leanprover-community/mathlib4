@@ -104,7 +104,7 @@ protected theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : ℂ)‖ = r :
 @[simp, norm_cast]
 lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
 
-@[simp 1100, norm_cast]
+@[norm_cast]
 lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := Complex.norm_of_nonneg n.cast_nonneg
 
 @[simp 1100]
@@ -114,7 +114,7 @@ lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
 protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 
 @[simp 1100, norm_cast]
-lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
 
 @[simp 1100]
 lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
