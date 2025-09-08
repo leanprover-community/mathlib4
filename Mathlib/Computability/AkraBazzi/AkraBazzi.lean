@@ -39,9 +39,9 @@ where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Implementation
 
-Note that the original version of the theorem uses an integral rather than a sum in the above
-expression, and first considers the `T : ℝ → ℝ` case before moving on to `ℕ → ℝ`. We prove the
-version with a sum here, as it is simpler and more relevant for algorithms.
+Note that the original version of the Akra–Bazzi theorem uses an integral rather than the sum in
+the above expression, and first considers the `T : ℝ → ℝ` case before moving on to `ℕ → ℝ`. We
+prove the version with a sum here, as it is simpler and more relevant for algorithms.
 
 ## TODO
 
