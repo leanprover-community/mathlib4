@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
+import Mathlib.Data.Set.Subset
 import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Separation.Hausdorff
@@ -165,6 +166,10 @@ def _root_.Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
   left_inv _ := by aesop
   right_inv _ := by aesop
 
+@[simp]
+lemma mk_apply {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
+    (hf : Continuous f) (x : X) : { toFun := f, continuous_toFun := hf : C(X, Y) } x = f x:= by rfl
+
 section Prod
 
 variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
@@ -199,6 +204,66 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
+section Sum
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+/-- `Sum.inl : X → X ⊕ Y` as a bundled continuous map. -/
+def inl : C(X, X ⊕ Y) where
+  toFun := Sum.inl
+  continuous_toFun := by continuity
+
+@[simp]
+lemma coe_inl : ⇑(inl : C(X, X ⊕ Y)) = Sum.inl := rfl
+
+/-- `Sum.inr : Y → X ⊕ Y` as a bundled continuous map. -/
+def inr : C(Y, X ⊕ Y) where
+  toFun := Sum.inr
+  continuous_toFun := by continuity
+
+@[simp]
+lemma coe_inr : ⇑(inr : C(Y, X ⊕ Y)) = Sum.inr := rfl
+
+/-- A continuous map from a sum can be defined by its action on the summands.
+This is `Continuous.sumElim` bundled into a continuous map. -/
+@[simps]
+def sum {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
+  toFun := fun x ↦ Sum.elim f.toFun g.toFun x
+  continuous_toFun := Continuous.sumElim f.continuous g.continuous
+
+@[simp]
+lemma sum_comp_inl {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (f : C(X, Z)) (g : C(Y, Z)) : (sum f g) ∘ Sum.inl = f := by
+  ext x; simp
+
+@[simp]
+lemma sum_comp_inr {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (f : C(X, Z)) (g : C(Y, Z)) : (sum f g) ∘ Sum.inr = g := by
+  ext x; simp
+
+
+/-- A continuous map between sums can be defined fiberwise by its action on the summands.
+This is `Continuous.sumMap` bundled into a continuous map. -/
+@[simps]
+def sumMap {X Y Z W : Type*}
+    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
+    (f : C(X, Z)) (g : C(Y, W)) : C(X ⊕ Y, Z ⊕ W) where
+  toFun := Sum.map f g
+
+@[simp]
+lemma sumMap_comp_inl {X Y Z W : Type*}
+    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
+    (f : C(X, Z)) (g : C(Y, W)) : (sumMap f g) ∘ Sum.inl = Sum.inl ∘ f := by
+  ext x; simp
+
+@[simp]
+lemma sumMap_comp_inr {X Y Z W : Type*}
+    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
+    (f : C(X, Z)) (g : C(Y, W)) : (sumMap f g) ∘ Sum.inr = Sum.inr ∘ g := by
+  ext x; simp
+
+end Sum
+
 section Sigma
 
 variable {I A : Type*} {X : I → Type*} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
@@ -208,6 +273,8 @@ variable {I A : Type*} {X : I → Type*} [TopologicalSpace A] [∀ i, Topologica
 def sigmaMk (i : I) : C(X i, Σ i, X i) where
   toFun := Sigma.mk i
 
+lemma coe_sigmaMk (i : I) : ⇑(sigmaMk (X := X) i) = Sigma.mk i := rfl
+
 /--
 To give a continuous map out of a disjoint union, it suffices to give a continuous map out of
 each term. This is `Sigma.uncurry` for continuous maps.
@@ -215,6 +282,29 @@ each term. This is `Sigma.uncurry` for continuous maps.
 @[simps]
 def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
   toFun ig := f ig.fst ig.snd
+
+lemma coe_sigma (f : ∀ i, C(X i, A)) : ⇑(sigma f) = Sigma.uncurry (f · ·) := rfl
+
+@[simp]
+lemma sigma_comp_mk
+    {I A} {X : I → Type*} [TopologicalSpace A] [(i : I) → TopologicalSpace (X i)]
+    (f : (i : I) → C(X i, A)) (i : I) : (sigma f).comp (sigmaMk i) = f i := by
+  ext x; simp
+
+/-- A continuous map between sigma types can be defined fiberwise by its action on the summands.
+This is `Continuous.sigma_map` bundled into a continuous map. -/
+@[simps]
+def sigmaMap {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*}
+    [(i : ι) → TopologicalSpace (σ i)] [(k : κ) → TopologicalSpace (τ k)]
+    (f₁ : ι → κ) (f₂ : (i : ι) → C(σ i, τ (f₁ i))) : C(Sigma σ, Sigma τ) where
+  toFun := (Sigma.map f₁ (f₂ ·))
+
+@[simp]
+lemma sigmaMap_comp_mk {ι κ : Type*} {σ : ι → Type*} {τ : κ → Type*}
+    [(i : ι) → TopologicalSpace (σ i)] [(k : κ) → TopologicalSpace (τ k)]
+    (f₁ : ι → κ) (f₂ : (i : ι) → C(σ i, τ (f₁ i))) (i : ι) :
+    (sigmaMap f₁ f₂).comp (sigmaMk i) = (sigmaMk (f₁ i)).comp (f₂ i) := by
+  ext x <;> simp [Sigma.map]
 
 variable (A X) in
 /--
@@ -299,6 +389,15 @@ theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
 def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
   ⟨s.restrictPreimage f, continuous_iff_continuousAt.mpr fun _ ↦
     (map_continuousAt f _).restrictPreimage⟩
+
+open Set in
+/-- Given a function `f : α → β` s.t. `MapsTo f s t`, if `f` is continuous on `s` then `f` can
+be lifted into a continuous map from `s` to `t`. -/
+@[simps -fullyApplied]
+def mapsTo (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) (hf : ContinuousOn f s) :
+    C(s, t) where
+  toFun := MapsTo.restrict f s t h
+  continuous_toFun := ContinuousOn.restrict_mapsTo hf _
 
 end Restrict
 
