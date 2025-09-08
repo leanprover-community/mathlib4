@@ -43,9 +43,6 @@ lemma MemLp.isProbabilityMeasure_of_indepFun
   simp only [Set.preimage_setOf_eq, Set.preimage_univ, Set.inter_univ] at this
   exact ⟨(ENNReal.mul_eq_left hc.ne' h'c.ne).1 this.symm⟩
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.isProbabilityMeasure_of_indepFun := MemLp.isProbabilityMeasure_of_indepFun
-
 
 /-- If a nonzero function is integrable and is independent of another function, then
 the space is a probability space. -/

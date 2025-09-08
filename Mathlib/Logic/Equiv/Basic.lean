@@ -890,9 +890,6 @@ theorem piCongrLeft_sumInr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' �
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
 
-@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inl := piCongrLeft_sumInl
-@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inr := piCongrLeft_sumInr
-
 end
 
 section

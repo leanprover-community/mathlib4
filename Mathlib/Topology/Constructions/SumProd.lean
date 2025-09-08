@@ -706,14 +706,10 @@ theorem continuous_sumElim {f : X → Z} {g : Y → Z} :
     Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_dom
 
-@[deprecated (since := "2025-02-20")] alias continuous_sum_elim := continuous_sumElim
-
 @[continuity, fun_prop]
 theorem Continuous.sumElim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
   continuous_sumElim.2 ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias Continuous.sum_elim := Continuous.sumElim
 
 @[continuity, fun_prop]
 theorem continuous_isLeft : Continuous (isLeft : X ⊕ Y → Bool) :=
@@ -790,14 +786,10 @@ theorem continuous_sumMap {f : X → Y} {g : Z → W} :
   continuous_sumElim.trans <|
     IsEmbedding.inl.continuous_iff.symm.and IsEmbedding.inr.continuous_iff.symm
 
-@[deprecated (since := "2025-02-21")] alias continuous_sum_map := continuous_sumMap
-
 @[continuity, fun_prop]
 theorem Continuous.sumMap {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
   continuous_sumMap.2 ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-21")] alias Continuous.sum_map := Continuous.sumMap
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
@@ -812,13 +804,9 @@ theorem isOpenMap_sumElim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
   simp only [isOpenMap_sum, elim_inl, elim_inr]
 
-@[deprecated (since := "2025-02-20")] alias isOpenMap_sum_elim := isOpenMap_sumElim
-
 theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sumElim.2 ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias IsOpenMap.sum_elim := IsOpenMap.sumElim
 
 lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :

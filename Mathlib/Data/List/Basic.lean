@@ -307,9 +307,6 @@ theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-@[deprecated (since := "2025-02-06")]
-alias getLast_append' := getLast_append_of_right_ne_nil
-
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
@@ -331,9 +328,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
     (replicate (m + 1) a).getLast (ne_nil_of_length_eq_add_one length_replicate) = a := by
   simp only [replicate_succ']
   exact getLast_append_singleton _
-
-@[deprecated (since := "2025-02-07")]
-alias getLast_filter' := getLast_filter_of_pos
 
 /-! ### getLast? -/
 
@@ -465,8 +459,6 @@ theorem get_eq_getElem? (l : List α) (i : Fin l.length) :
     l.get i = l[i]?.get (by simp) := by
   simp
 
-@[deprecated (since := "2025-02-15")] alias get_eq_get? := get_eq_getElem?
-
 theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp only [mem_iff_getElem]
@@ -498,9 +490,6 @@ lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l�
     · rwa [cons_sublist_cons]
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
-
-@[deprecated (since := "2025-02-07")]
-alias sublist_nil_iff_eq_nil := sublist_nil
 
 @[simp] lemma sublist_singleton {l : List α} {a : α} : l <+ [a] ↔ l = [] ∨ l = [a] := by
   constructor <;> rintro (_ | _) <;> aesop
@@ -585,9 +574,6 @@ theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.l
   · exact h' n hn
   · simp_all [Nat.max_le]
 
-@[deprecated (since := "2025-02-15")] alias ext_get?' := ext_getElem?'
-@[deprecated (since := "2025-02-15")] alias ext_get?_iff := List.ext_getElem?_iff
-
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
   constructor
@@ -599,8 +585,6 @@ theorem ext_get_iff {l₁ l₂ : List α} :
 theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
   ⟨by rintro rfl _ _; rfl, ext_getElem?'⟩
-
-@[deprecated (since := "2025-02-15")] alias ext_get?_iff' := ext_getElem?_iff'
 
 /-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
 then the lists are equal. -/
@@ -624,8 +608,6 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
   rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
-
-@[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -1019,8 +1001,6 @@ theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩
 
-@[deprecated (since := "2025-02-07")] alias monotone_filter_left := filter_subset
-
 variable (p)
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
@@ -1042,8 +1022,6 @@ lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
-
-@[deprecated (since := "2025-02-07")] alias map_filter' := map_filter
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =

@@ -273,8 +273,6 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
         simp at this; simp [this] at hi'
       · rw [getElem_cons_succ]; exact get_mem _ _
 
-@[deprecated (since := "2025-02-15")] alias next_get := next_getElem
-
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
       (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=
@@ -314,8 +312,6 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
-
-@[deprecated (since := "2025-02-15")] alias prev_get := prev_getElem
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem

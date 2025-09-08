@@ -309,9 +309,6 @@ theorem sumInl : Computable (@Sum.inl α β) :=
 theorem sumInr : Computable (@Sum.inr α β) :=
   Primrec.sumInr.to_comp
 
-@[deprecated (since := "2025-02-21")] alias sum_inl := Computable.sumInl
-@[deprecated (since := "2025-02-21")] alias sum_inr := Computable.sumInr
-
 theorem list_cons : Computable₂ (@List.cons α) :=
   Primrec.list_cons.to_comp
 
@@ -320,8 +317,6 @@ theorem list_reverse : Computable (@List.reverse α) :=
 
 theorem list_getElem? : Computable₂ ((·[·]? : List α → ℕ → Option α)) :=
   Primrec.list_getElem?.to_comp
-
-@[deprecated (since := "2025-02-14")] alias list_get? := list_getElem?
 
 theorem list_append : Computable₂ ((· ++ ·) : List α → List α → List α) :=
   Primrec.list_append.to_comp
@@ -633,8 +628,6 @@ theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ 
       fun a => by
         rcases f a with b | c <;> simp [Nat.div2_val]
 
-@[deprecated (since := "2025-02-21")] alias sum_casesOn := sumCasesOn
-
 theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ} (hg : Computable₂ g)
     (H : ∀ a n, g a ((List.range n).map (f a)) = Option.some (f a n)) : Computable₂ f :=
   suffices Computable₂ fun a n => (List.range n).map (f a) from
@@ -691,8 +684,6 @@ theorem optionCasesOn_right {o : α → Option β} {f : α → σ} {g : α → �
         ((@Computable.decode β _).comp snd).ofOption.bind (hg.comp (fst.comp fst) snd).to₂
   this.of_eq fun a => by rcases o a with - | b <;> simp [encodek]
 
-@[deprecated (since := "2025-02-21")] alias option_casesOn_right := optionCasesOn_right
-
 theorem sumCasesOn_right {f : α → β ⊕ γ} {g : α → β → σ} {h : α → γ →. σ} (hf : Computable f)
     (hg : Computable₂ g) (hh : Partrec₂ h) :
     @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (fun b => Part.some (g a b)) (h a) :=
@@ -714,9 +705,6 @@ theorem sumCasesOn_left {f : α → β ⊕ γ} {g : α → β →. σ} {h : α �
     @Partrec _ σ _ _ fun a => Sum.casesOn (f a) (g a) fun c => Part.some (h a c) :=
   (sumCasesOn_right (sumCasesOn hf (sumInr.comp snd).to₂ (sumInl.comp snd).to₂) hh hg).of_eq
     fun a => by cases f a <;> simp
-
-@[deprecated (since := "2025-02-21")] alias sum_casesOn_left := sumCasesOn_left
-@[deprecated (since := "2025-02-21")] alias sum_casesOn_right := sumCasesOn_right
 
 theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
     let F : α → ℕ →. σ ⊕ α := fun a n =>

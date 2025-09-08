@@ -33,8 +33,6 @@ namespace List
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
-@[deprecated (since := "2025-02-15")] alias get?_ofFn := List.getElem?_ofFn
-
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
