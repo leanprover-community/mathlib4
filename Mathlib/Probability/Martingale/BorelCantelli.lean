@@ -66,6 +66,9 @@ protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submarting
     Submartingale (stoppedAbove f r) ℱ μ :=
   hf.stoppedProcess (hf.adapted.isStoppingTime_leastGE r)
 
+@[deprecated (since := "2025-09-08")] alias Submartingale.stoppedValue_leastGE :=
+  Submartingale.stoppedAbove
+
 variable {r : ℝ} {R : ℝ≥0}
 
 theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
@@ -90,6 +93,8 @@ theorem stoppedAbove_le [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ic
     simp only [this, Nat.cast_lt, gt_iff_lt] at *
     omega
 
+@[deprecated (since := "2025-09-08")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
+
 theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ]
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
@@ -100,6 +105,9 @@ theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ]
   refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp [stoppedAbove, stoppedProcess, hf0]
 
+@[deprecated (since := "2025-09-08")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le :=
+  Submartingale.eLpNorm_stoppedAbove_le
+
 theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)]
     (hf : Submartingale f ℱ μ) (hr : 0 ≤ r) (hf0 : f 0 = 0)
@@ -108,6 +116,9 @@ theorem Submartingale.eLpNorm_stoppedAbove_le' [IsFiniteMeasure μ]
       ≤ ENNReal.toNNReal (2 * μ Set.univ * ENNReal.ofReal (r + R)) := by
   refine (hf.eLpNorm_stoppedAbove_le hr hf0 hbdd i).trans ?_
   simp [ENNReal.coe_toNNReal (measure_ne_top μ _), ENNReal.coe_toNNReal]
+
+@[deprecated (since := "2025-09-08")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le' :=
+  Submartingale.eLpNorm_stoppedAbove_le'
 
 /-- This lemma is superseded by `Submartingale.bddAbove_iff_exists_tendsto`. -/
 theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
