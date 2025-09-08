@@ -68,9 +68,9 @@ lemma isCardinalPresentable (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j
     [LocallySmall.{w} C]
     (κ' : Cardinal.{w}) [Fact κ'.IsRegular] (h : κ ≤ κ')
     (hJ : HasCardinalLT (Arrow p.J) κ') :
-    IsCardinalPresentable X κ' := by
+    IsCardinalPresentable X κ' :=
   have (k : p.J) : IsCardinalPresentable (p.F.obj k) κ' := isCardinalPresentable_of_le _ h
-  exact isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
+  isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
 
 end CardinalFilteredPresentation
 
