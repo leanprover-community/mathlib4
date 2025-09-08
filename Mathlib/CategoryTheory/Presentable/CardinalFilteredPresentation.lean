@@ -22,7 +22,7 @@ larger regular cardinal `κ'`).
 Finally, we define a typeclass `HasCardinalFilteredGenerators C κ` saying
 that `C` is locally `w`-small and that there exists a family `G : ι → C`
 indexed `ι : Type w` such that `AreCardinalFilteredGenerators G κ` holds.
-This is used in the definition of locally presentable and locally accessible
+This is used in the definition of locally presentable and accessible
 categories in the file `CategoryTheory.Presentable.LocallyPresentable`.
 
 ## References
