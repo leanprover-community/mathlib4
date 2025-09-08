@@ -109,15 +109,14 @@ lemma postcomp_bijective_of_fibration_of_weakEquivalence
     obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good_cylinder
     have sq : CommSq (coprod.desc f₀ f₁) P.i g h.h := { }
     rw [mk_eq_mk_iff]
-    exact ⟨P, ⟨{
-      h := sq.lift
-      h₀ := by
-        have := coprod.inl ≫= sq.fac_left
-        rwa [P.inl_i_assoc, coprod.inl_desc] at this
-      h₁ := by
-        have := coprod.inr ≫= sq.fac_left
-        rwa [P.inr_i_assoc, coprod.inr_desc] at this
-    }⟩⟩
+    exact ⟨P,
+      ⟨{h := sq.lift
+        h₀ := by
+          have := coprod.inl ≫= sq.fac_left
+          rwa [P.inl_i_assoc, coprod.inl_desc] at this
+        h₁ := by
+          have := coprod.inr ≫= sq.fac_left
+          rwa [P.inr_i_assoc, coprod.inr_desc] at this }⟩⟩
   · intro φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     have sq : CommSq (initial.to Y) (initial.to X) g φ := { }
@@ -129,12 +128,12 @@ lemma postcomp_bijective_of_weakEquivalence
   let h : FibrantBrownFactorization g := Classical.arbitrary _
   have hi : Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp h.i) := by
     rw [← Function.Bijective.of_comp_iff'
-      (bijective_postcomp_of_fibration_of_weakEquivalence X h.r)]
+      (postcomp_bijective_of_fibration_of_weakEquivalence X h.r)]
     convert Function.bijective_id
     ext φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     simp
-  convert (bijective_postcomp_of_fibration_of_weakEquivalence X h.p).comp hi using 1
+  convert (postcomp_bijective_of_fibration_of_weakEquivalence X h.p).comp hi using 1
   ext φ
   obtain ⟨φ, rfl⟩ := φ.mk_surjective
   simp
@@ -156,15 +155,14 @@ lemma precomp_bijective_of_cofibration_of_weakEquivalence
     obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good_pathObject
     have sq : CommSq h.h f P.p (prod.lift f₀ f₁) := { }
     rw [mk_eq_mk_iff]
-    exact ⟨P, ⟨{
-      h := sq.lift
-      h₀ := by
-        have := sq.fac_right =≫ prod.fst
-        rwa [Category.assoc, P.p_fst, prod.lift_fst] at this
-      h₁ := by
-        have := sq.fac_right =≫ prod.snd
-        rwa [Category.assoc, P.p_snd, prod.lift_snd] at this
-    }⟩⟩
+    exact ⟨P,
+      ⟨{h := sq.lift
+        h₀ := by
+          have := sq.fac_right =≫ prod.fst
+          rwa [Category.assoc, P.p_fst, prod.lift_fst] at this
+        h₁ := by
+          have := sq.fac_right =≫ prod.snd
+          rwa [Category.assoc, P.p_snd, prod.lift_snd] at this }⟩⟩
   · intro φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     have sq : CommSq φ f (terminal.from _) (terminal.from _) := { }
@@ -176,12 +174,12 @@ lemma precomp_bijective_of_weakEquivalence
   let h : CofibrantBrownFactorization f := Classical.arbitrary _
   have hj : Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp h.p) := by
     rw [← Function.Bijective.of_comp_iff'
-      (bijective_precomp_of_cofibration_of_weakEquivalence Z h.s)]
+      (precomp_bijective_of_cofibration_of_weakEquivalence Z h.s)]
     convert Function.bijective_id
     ext φ
     obtain ⟨φ, rfl⟩ := φ.mk_surjective
     simp
-  convert (bijective_precomp_of_cofibration_of_weakEquivalence Z h.i).comp hj using 1
+  convert (precomp_bijective_of_cofibration_of_weakEquivalence Z h.i).comp hj using 1
   ext φ
   obtain ⟨φ, rfl⟩ := φ.mk_surjective
   simp
@@ -189,12 +187,12 @@ lemma precomp_bijective_of_weakEquivalence
 lemma whitehead [IsCofibrant X] [IsCofibrant Y] [IsFibrant X] [IsFibrant Y]
     (f : X ⟶ Y) [WeakEquivalence f] :
     ∃ (g : Y ⟶ X), RightHomotopyRel (f ≫ g) (𝟙 X) ∧ RightHomotopyRel (g ≫ f) (𝟙 Y) := by
-  obtain ⟨g, hg⟩ := (bijective_precomp_of_weakEquivalence X f).2 (.mk (𝟙 X))
+  obtain ⟨g, hg⟩ := (precomp_bijective_of_weakEquivalence X f).2 (.mk (𝟙 X))
   obtain ⟨g, rfl⟩ := g.mk_surjective
   dsimp at hg
   refine ⟨g, by rwa [← mk_eq_mk_iff], ?_⟩
   rw [← mk_eq_mk_iff]
-  apply (bijective_precomp_of_weakEquivalence Y f).1
+  apply (precomp_bijective_of_weakEquivalence Y f).1
   simp only [precomp_mk, Category.comp_id]
   rw [mk_eq_mk_iff, ← leftHomotopyRel_iff_rightHomotopyRel] at hg ⊢
   simpa using hg.postcomp f
