@@ -61,9 +61,9 @@ theorem card_empty : #(∅ : Finset α) = 0 :=
 theorem card_le_card : s ⊆ t → #s ≤ #t :=
   Multiset.card_le_card ∘ val_le_iff.mpr
 
-grind_pattern card_le_card => s ⊆ t, #s
-grind_pattern card_le_card => s ⊆ t, #t
-grind_pattern card_le_card => #s, #t
+-- This pattern is unreasonable to use generally, but it's convenient in this file.
+-- (Note that we turn it on again later in this file.)
+local grind_pattern card_le_card => #s, #t
 
 @[mono]
 theorem card_mono : Monotone (@card α) := by apply card_le_card
@@ -517,6 +517,9 @@ theorem card_disjUnion (s t : Finset α) (h) : #(s.disjUnion t h) = #s + #t :=
 
 /-! ### Lattice structure -/
 
+-- This pattern is unreasonable to use generally, but it's convenient in this file.
+-- (Note that we've already turned it on earlier in this file, but need to redo it now.)
+local grind_pattern card_le_card => #s, #t
 
 section Lattice
 
