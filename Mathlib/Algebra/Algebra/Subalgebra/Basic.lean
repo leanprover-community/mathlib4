@@ -247,21 +247,20 @@ section
 
 /-! `Subalgebra`s inherit structure from their `Subsemiring` / `Semiring` coercions. -/
 
-
 instance toSemiring {R A} [CommSemiring R] [Semiring A] [Algebra R A] (S : Subalgebra R A) :
     Semiring S :=
-  S.toSubsemiring.toSemiring
+  fast_instance% S.toSubsemiring.toSemiring
 
 instance toCommSemiring {R A} [CommSemiring R] [CommSemiring A] [Algebra R A] (S : Subalgebra R A) :
     CommSemiring S :=
-  S.toSubsemiring.toCommSemiring
+  fast_instance% S.toSubsemiring.toCommSemiring
 
 instance toRing {R A} [CommRing R] [Ring A] [Algebra R A] (S : Subalgebra R A) : Ring S :=
-  S.toSubring.toRing
+  fast_instance% S.toSubring.toRing
 
 instance toCommRing {R A} [CommRing R] [CommRing A] [Algebra R A] (S : Subalgebra R A) :
     CommRing S :=
-  S.toSubring.toCommRing
+  fast_instance% S.toSubring.toCommRing
 
 end
 

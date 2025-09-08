@@ -337,7 +337,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
-  SubringClass.toCommRing s
+  fast_instance% SubringClass.toCommRing s
 
 /-- A subring of a non-trivial ring is non-trivial. -/
 instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=

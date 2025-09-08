@@ -365,11 +365,13 @@ instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedF
 
 #check SubfieldClass.toNormedField
 
+/-
 set_option synthInstance.maxHeartbeats 200000
 
 set_option trace.Meta.isDefEq true
 set_option trace.profiler true
 set_option trace.Meta.synthInstance true
+-/
 /-
 lemma foo {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) :
@@ -377,17 +379,16 @@ lemma foo {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
   sorry
 -/
 
+/-
 instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [SeminormedRing A] [Field 𝕜]
     [WithNormMulClassNormedRing 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : WithNormMulClassNormedRing S := by
   infer_instance
-
-#exit
-
+-/
+set_option synthInstance.maxHeartbeats 200000 in
 instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
-    [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  by infer_instance
-  --NormedAlgebra.induced 𝕜 S A S.val
+    [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormSMulClass 𝕜 S :=
+  NormedAlgebra.induced 𝕜 S A S.val
 
 section SubalgebraClass
 
