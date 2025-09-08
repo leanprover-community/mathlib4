@@ -3,7 +3,6 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
@@ -359,19 +358,6 @@ instance isIso_of_from_star {X : WithTerminal C} (f : star ⟶ X) : IsIso f :=
   match X with
   | of _X => f.elim
   | star => ⟨f, rfl, rfl⟩
-
-open IsCofiltered in
-instance [IsCofilteredOrEmpty C] : IsCofiltered (WithTerminal C) where
-  cone_objs x y :=
-    match x, y with
-    | star, y => ⟨y, default, 𝟙 y, trivial⟩
-    | x, star => ⟨x, 𝟙 x, default, trivial⟩
-    | of x, of y => ⟨.of <| min x y, minToLeft _ _, minToRight _ _, trivial⟩
-  cone_maps x y f g :=
-    match x, y with
-    | star, _ => ⟨star, 𝟙 _, (IsIso.eq_comp_inv f).mp rfl⟩
-    | x, star => ⟨x, 𝟙 _, Subsingleton.elim _ _⟩
-    | of _, of _ => ⟨.of <| eq f g, eqHom _ _, eq_condition _ _⟩
 
 section
 
@@ -1013,13 +999,5 @@ def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
           Iso.refl_hom, Category.comp_id]
         rfl
     | .star => rfl
-
-namespace WithInitial
-
-instance [IsFilteredOrEmpty C] : IsFiltered (WithInitial C) :=
-  have := IsCofiltered.of_equivalence (opEquiv C).symm
-  isFiltered_of_isCofiltered_op _
-
-end WithInitial
 
 end CategoryTheory

@@ -80,15 +80,14 @@ variable {P}
 lemma ind_iff_ind_under_mk {X Y : C} (f : X ⟶ Y) :
     P.ind f ↔ P.underObj.ind (CategoryTheory.Under.mk f) := by
   refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_, fun ⟨J, _, _, pres, hpres⟩ ↦ ?_⟩
-  · refine ⟨J, ‹_›, ‹_›, ⟨?_, ?_, ?_⟩, ?_⟩
-    · exact Under.lift D t
+  · refine ⟨J, ‹_›, ‹_›, ⟨Under.lift D t, ?_, ?_⟩, ?_⟩
     · exact { app j := CategoryTheory.Under.homMk (s.app j) (by simp [hst]) }
     · have : Nonempty J := IsFiltered.nonempty
-      refine Under.isColimitLiftCocone _ _ _ _ (by simp [hst]) hs
+      exact Under.isColimitLiftCocone _ _ _ _ (by simp [hst]) hs
     · simp [underObj, hst]
   · refine ⟨J, ‹_›, ‹_›, pres.diag ⋙ CategoryTheory.Under.forget _, ?_, ?_, ?_, fun j ↦ ⟨?_, ?_⟩⟩
     · exact { app j := (pres.diag.obj j).hom }
-    · exact Functor.whiskerRight pres.natTrans (CategoryTheory.Under.forget X)
+    · exact Functor.whiskerRight pres.ι (CategoryTheory.Under.forget X)
     · exact isColimitOfPreserves (CategoryTheory.Under.forget _) pres.isColimit
     · exact hpres j
     · simp
