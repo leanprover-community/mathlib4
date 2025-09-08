@@ -143,8 +143,8 @@ we prepare some easy lemmas about √2.
 -/
 
 theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
-  have : √2 ^ 2 = 2 := by norm_num
-  grind
+  rw [← mul_inv]
+  norm_num
 
 end TsirelsonInequality
 
