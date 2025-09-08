@@ -31,6 +31,22 @@ info: Tests.Reassoc.foo_iso_assoc.{v₁, u₁} {C : Type u₁} [Category.{v₁, 
 #guard_msgs in
 #check foo_iso_assoc
 
+/-!
+Test that `reassoc_of% foo` works even though the category is not yet known.
+-/
+example {x y z w : C} (f : x ⟶ y) (g : y ⟶ z) (h' : z ⟶ w) (h : x ⟶ z) (hfg : f ≫ g = h) :
+    f ≫ g ≫ h' = h ≫ h' := by
+  rw [reassoc_of% foo]
+  exact hfg
+
+/-!
+Test that `reassoc_of% foo_iso` works even though the category is not yet known.
+-/
+example {x y z w : C} (f : x ≅ y) (g : y ≅ z) (h' : z ≅ w) (h : x ≅ z) (hfg : f ≪≫ g = h) :
+    f ≪≫ g ≪≫ h' = h ≪≫ h' := by
+  rw [reassoc_of% foo_iso]
+  exact hfg
+
 /-- error: `reassoc` can only be used on terms about equality of (iso)morphisms -/
 #guard_msgs in
 @[reassoc]

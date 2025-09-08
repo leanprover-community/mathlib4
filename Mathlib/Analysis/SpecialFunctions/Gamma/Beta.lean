@@ -322,14 +322,15 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
   · intro n
     rw [ae_restrict_iff' measurableSet_Ioi]
     filter_upwards with x hx
-    dsimp only [f]
+    simp only [mem_Ioi, f] at hx ⊢
     rcases lt_or_ge (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
       exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le₀ hxn <| by positivity) _),
-          norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re, mul_le_mul_right (rpow_pos_of_pos hx _)]
+          norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
+      gcongr
       exact one_sub_div_pow_le_exp_neg hxn
 
 /-- Euler's limit formula for the complex Gamma function. -/

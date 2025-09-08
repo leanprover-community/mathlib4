@@ -40,7 +40,7 @@ Polynomials are defined using `R[ℕ]`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
 `X * p = p * X`.  The relationship to `R[ℕ]` is through a structure
 to make polynomials irreducible from the point of view of the kernel. Most operations
-are irreducible since Lean can not compute anyway with `AddMonoidAlgebra`. There are two
+are irreducible since Lean cannot compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:
 * The zero polynomial, so that its coefficients are definitionally equal to `0`.
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance

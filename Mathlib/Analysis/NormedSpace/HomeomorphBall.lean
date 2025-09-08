@@ -51,12 +51,16 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
     exact lt_one_add _
   map_target' _ _ := trivial
   left_inv' x _ := by
-    field_simp [norm_smul, smul_smul, (zero_lt_one_add_norm_sq x).ne', sq_abs,
-      Real.sq_sqrt (zero_lt_one_add_norm_sq x).le, ← Real.sqrt_div (zero_lt_one_add_norm_sq x).le]
+    match_scalars
+    simp [norm_smul]
+    field_simp
+    simp [sq_abs, Real.sq_sqrt (zero_lt_one_add_norm_sq x).le]
   right_inv' y hy := by
     have : 0 < 1 - ‖y‖ ^ 2 := by nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
-    field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le,
-      ← Real.sqrt_div this.le]
+    match_scalars
+    simp [norm_smul]
+    field_simp
+    simp [field, sq_abs, Real.sq_sqrt this.le]
   open_source := isOpen_univ
   open_target := isOpen_ball
   continuousOn_toFun := by

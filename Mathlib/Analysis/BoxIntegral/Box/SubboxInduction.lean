@@ -90,7 +90,7 @@ theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Se
 @[simp]
 theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
-  by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
+  by_cases i ∈ s <;> simp [field, splitCenterBox, *] <;> ring
 
 /-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.

@@ -52,7 +52,7 @@ for the empty set by convention.
 
 ## Notations
 
-* `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
+* `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
 
 assert_not_exists Module Field

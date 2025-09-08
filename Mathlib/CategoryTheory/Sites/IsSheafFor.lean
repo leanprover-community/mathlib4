@@ -268,9 +268,7 @@ theorem restrict_inj {x₁ x₂ : FamilyOfElements P (generate R).arrows} (t₁ 
     (t₂ : x₂.Compatible) : x₁.restrict (le_generate R) = x₂.restrict (le_generate R) → x₁ = x₂ :=
   fun h => by
   rw [← extend_restrict t₁, ← extend_restrict t₂]
-  -- Porting note: congr fails to make progress
-  apply congr_arg
-  exact h
+  congr
 
 /-- Compatible families of elements for a presheaf of types `P` and a presieve `R`
 are in 1-1 correspondence with compatible families for the same presheaf and

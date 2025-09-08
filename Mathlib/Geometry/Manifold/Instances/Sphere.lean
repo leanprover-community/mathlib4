@@ -223,9 +223,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   simp only [norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg ha.le]
   match_scalars
   · field_simp
-    linear_combination 4 * (1 - a) * pythag
+    linear_combination 4 * pythag
   · field_simp
-    linear_combination 4 * (a - 1) ^ 3 * pythag
+    linear_combination 4 * (a - 1) * pythag
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
   simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
@@ -238,7 +238,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   have h₃ : ⟪v, v⟫ = 1 := by simp [real_inner_self_eq_norm_mul_norm, hv]
   rw [h₁, h₂, h₃]
   match_scalars
-  field_simp
+  simp [field]
   ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;

@@ -226,7 +226,7 @@ protected def comp (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinear
     FormalMultilinearSeries 𝕜 E G := fun n => ∑ c : Composition n, q.compAlongComposition p c
 
 /-- The `0`-th coefficient of `q.comp p` is `q 0`. Since these maps are multilinear maps in zero
-variables, but on different spaces, we can not state this directly, so we state it when applied to
+variables, but on different spaces, we cannot state this directly, so we state it when applied to
 arbitrary vectors (which have to be the zero vector). -/
 theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (v : Fin 0 → E) (v' : Fin 0 → F) : (q.comp p) 0 v = q 0 v' := by
@@ -474,8 +474,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
       _ ≤ Cq * Cp ^ n * r0 ^ n := mul_le_mul' (mul_le_mul' A B) le_rfl
       _ = Cq / 4 ^ n := by
         simp only [r0]
-        field_simp [mul_pow, (zero_lt_one.trans_le hCp1).ne']
-        ring
+        simp [field, mul_pow]
   refine ⟨r, r_pos, NNReal.summable_of_le I ?_⟩
   simp_rw [div_eq_mul_inv]
   refine Summable.mul_left _ ?_
@@ -487,8 +486,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
   convert (NNReal.summable_geometric (NNReal.div_lt_one_of_lt one_lt_two)).mul_left (1 / 4) using 1
   ext1 n
   rw [(this _).tsum_eq, add_tsub_cancel_right]
-  field_simp [← mul_assoc, pow_succ, mul_pow, show (4 : ℝ≥0) = 2 * 2 by norm_num,
-    mul_right_comm]
+  simp [field, pow_succ, mul_pow, show (4 : ℝ≥0) = 2 * 2 by norm_num]
 
 end
 

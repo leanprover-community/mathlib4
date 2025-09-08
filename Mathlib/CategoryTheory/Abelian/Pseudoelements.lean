@@ -24,7 +24,7 @@ A classic application of pseudoelements are diagram lemmas like the four lemma o
 Pseudoelements are in some ways weaker than actual elements in a concrete category. The most
 important limitation is that there is no extensionality principle: If `f g : X ⟶ Y`, then
 `∀ x ∈ X, f x = g x` does not necessarily imply that `f = g` (however, if `f = 0` or `g = 0`,
-it does). A corollary of this is that we can not define arrows in abelian categories by dictating
+it does). A corollary of this is that we cannot define arrows in abelian categories by dictating
 their action on pseudoelements. Thus, a usual style of proofs in abelian categories is this:
 First, we construct some morphism using universal properties, and then we use diagram chasing
 of pseudoelements to verify that is has some desirable property such as exactness.
