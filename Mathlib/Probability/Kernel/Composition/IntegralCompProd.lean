@@ -145,10 +145,6 @@ theorem _root_.MeasureTheory.Integrable.ae_of_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : ∀ᵐ x ∂κ a, Integrable (fun y => f (x, y)) (η (a, x)) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).1
 
-@[deprecated (since := "2025-02-28")]
-alias _root_.MeasureTheory.Integrable.compProd_mk_left_ae :=
-  _root_.MeasureTheory.Integrable.ae_of_compProd
-
 theorem _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ → E⦄
     (hf : Integrable f ((κ ⊗ₖ η) a)) : Integrable (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) :=
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).2

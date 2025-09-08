@@ -84,9 +84,6 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   simp only [map_mul, map_one] at heq'
   simpa using isUnit_of_mul_eq_one _ _ heq'
 
-@[deprecated (since := "2025-02-08")] alias _root_.CommRingCat.germ_res_apply := germ_res_apply
-@[deprecated (since := "2025-02-08")] alias _root_.CommRingCat.germ_res_apply' := germ_res_apply'
-
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     (h : ∀ (x) (hx : x ∈ U), IsUnit (X.presheaf.germ U x hx f)) : IsUnit f := by

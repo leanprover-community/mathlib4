@@ -1227,12 +1227,6 @@ def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
         continuous_coe_inv.fst'.prodMk continuous_coe_inv.snd'⟩
   toEquiv := MulEquiv.prodUnits.toEquiv
 
-@[deprecated (since := "2025-02-21")]
-alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
-
-@[deprecated (since := "2025-02-21")]
-protected alias Homeomorph.prodUnits := Homeomorph.prodUnits
-
 end Units
 
 section LatticeOps

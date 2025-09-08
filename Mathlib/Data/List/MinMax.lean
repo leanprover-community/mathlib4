@@ -460,14 +460,8 @@ lemma getD_max?_eq_unbotD_maximum (l : List α) (d : α) : l.max?.getD d = l.max
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
       all_goals simp [le_total]
 
-@[deprecated (since := "2025-02-06")]
-alias getD_max?_eq_unbot'_maximum := getD_max?_eq_unbotD_maximum
-
 lemma getD_min?_eq_untopD_minimum (l : List α) (d : α) : l.min?.getD d = l.minimum.untopD d :=
   getD_max?_eq_unbotD_maximum (α := αᵒᵈ) _ _
-
-@[deprecated (since := "2025-02-06")]
-alias getD_min?_eq_untop'_minimum := getD_min?_eq_untopD_minimum
 
 end LinearOrder
 

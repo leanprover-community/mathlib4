@@ -35,9 +35,6 @@ lemma tsum_set_one : ∑' _ : s, (1 : ℝ≥0∞) = s.encard := by
 lemma tsum_set_const (c : ℝ≥0∞) : ∑' _ : s, c = s.encard * c := by
   simp [← tsum_set_one, ← ENNReal.tsum_mul_right]
 
-@[deprecated (since := "2025-02-06")] alias tsum_set_one_eq := tsum_set_one
-@[deprecated (since := "2025-02-06")] alias tsum_set_const_eq := tsum_set_const
-
 @[simp]
 lemma tsum_one : ∑' _ : α, (1 : ℝ≥0∞) = ENat.card α := by
   rw [← tsum_univ]; simpa [encard_univ] using tsum_set_one univ

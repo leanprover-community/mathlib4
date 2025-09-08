@@ -195,8 +195,6 @@ theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : L
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
 
-@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
-
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
   rw [← (Equiv.optionEquivSumPUnit.{0, _} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]

@@ -566,9 +566,6 @@ protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Fins
     (hf : ∀ i ∈ s, Multipliable (f i)) : ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
   (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
 
-@[deprecated (since := "2025-02-13")]
-  alias tprod_of_prod := Multipliable.tprod_finsetProd
-
 @[deprecated (since := "2025-04-12")] alias tsum_finsetSum := Summable.tsum_finsetSum
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finsetProd :=
   Multipliable.tprod_finsetProd

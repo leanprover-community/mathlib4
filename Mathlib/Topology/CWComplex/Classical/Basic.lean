@@ -115,9 +115,6 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   /-- The union of all closed cells equals `C`. Use `RelCWComplex.union` instead. -/
   union' : D ∪ ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
-@[deprecated (since := "2025-02-20")] alias
-RelCWComplex.mapsto := Topology.RelCWComplex.mapsTo
-
 /-- Characterizing when a subspace `C` of a topological space `X` is a CW complex. Note that this
 requires `C` to be closed. If `C` is not closed choose `X` to be `C`. -/
 class CWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) where
@@ -210,9 +207,6 @@ lemma CWComplex.mapsTo [CWComplex C] (n : ℕ) (i : cell C n) : ∃ I : Π m, Fi
   have := RelCWComplex.mapsTo n i
   simp_rw [empty_union] at this
   exact this
-
-@[deprecated (since := "2025-02-20")] alias
-CWComplex.mapsto := Topology.CWComplex.mapsTo
 
 lemma RelCWComplex.pairwiseDisjoint [RelCWComplex C D] :
     (univ : Set (Σ n, cell C n)).PairwiseDisjoint (fun ni ↦ openCell ni.1 ni.2) :=
