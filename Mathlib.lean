@@ -3672,6 +3672,7 @@ import Mathlib.Data.ZMod.Factorial
 import Mathlib.Data.ZMod.IntUnitsPower
 import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.Data.ZMod.QuotientRing
+import Mathlib.Data.ZMod.Torsion
 import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.Aliases
