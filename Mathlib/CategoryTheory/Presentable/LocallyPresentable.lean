@@ -14,7 +14,7 @@ fixed regular cardinal `κ` (typeclasses `IsCardinalLocallyPresentable C κ`
 and `IsCardinalAccessibleCategory C κ`). The existence of such a regular
 cardinal `κ` is asserted in the typeclasses `IsLocallyPresentable` and
 `IsAccessibleCategory`. We show that in a locally presentable or
-locally accessible category, any object is presentable.
+accessible category, any object is presentable.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
