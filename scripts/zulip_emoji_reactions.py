@@ -95,7 +95,7 @@ print(f"Searching for: '{urlPR}'")
 first_by_subject = {}
 
 for message in messages:
-    if message['display_recipient'] == 'rss':
+    if message['display_recipient'] == 'rss' and message['subject'] != 'mathlib bors notifications':
         continue
     content = message['content']
     # Check for emoji reactions
