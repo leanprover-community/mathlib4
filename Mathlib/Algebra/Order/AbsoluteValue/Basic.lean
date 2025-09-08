@@ -388,25 +388,7 @@ theorem isNontrivial_iff_exists_abv_one_lt :
   · simpa only [map_inv₀, ne_eq, inv_eq_one] using ne_of_gt hx
 
 theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
-  simp [map_inv₀, inv_lt_one_iff₀, map_eq_zero]
-
-variable {w : AbsoluteValue R S}
-
-theorem one_lt_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R} (hv : 1 < v x) : 1 < w x :=
-  (inv_lt_one_iff.1 <| h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left <|
-    fun h ↦ map_zero v ▸ not_le.2 (h ▸ hv) <| zero_le_one' _
-
-theorem one_lt_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : 1 < v x ↔ 1 < w x :=
-  ⟨fun hv => one_lt_of_lt_one_imp (fun _ => (h _).1) hv,
-    fun hw => one_lt_of_lt_one_imp (fun _ => (h _).2) hw⟩
-
-theorem eq_one_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) {x : R} (hv : v x = 1) : w x = 1 := by
-  cases eq_or_lt_of_le (not_lt.1 <| (h x).not.1 hv.not_lt) with
-  | inl hl => rw [← hl]
-  | inr hr => rw [← one_lt_iff_of_lt_one_iff h] at hr; absurd hv; exact ne_of_gt hr
-
-theorem eq_one_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : v x = 1 ↔ w x = 1 :=
-  ⟨fun hv => eq_one_of_lt_one_iff h hv, fun hw => eq_one_of_lt_one_iff (fun _ => (h _).symm) hw⟩
+  simp [map_inv₀, inv_lt_one_iff₀]
 
 end LinearOrderedSemifield
 
