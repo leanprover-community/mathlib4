@@ -164,9 +164,6 @@ def factorial {n : ℕ} : Fin n → ℕ
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
   measure (val : Fin n → ℕ)
 
-@[deprecated (since := "2025-02-24")]
-alias val_zero' := val_zero
-
 /-- `Fin.mk_zero` in `Lean` only applies in `Fin (n + 1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
