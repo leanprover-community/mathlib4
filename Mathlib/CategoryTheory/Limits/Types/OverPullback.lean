@@ -13,7 +13,11 @@ Given a map `f : E → B`, in order to show that `Over.pullback f : Over B ⥤ O
 commutes with colimits, we show that it admits a right adjoint. In order to
 do that, we first construct a functor `overPullback f : Over B ⥤ Over E` whose
 definition involves explicit types rather than categorical pullbacks, and
-we define its right adjoint `overPushout f : Over E ⥤ Over B`.
+we define its right adjoint `overPushforward f : Over E ⥤ Over B`.
+
+## TODO
+
+When this notion is defined, deduce that `Type u` is a locally cartesian closed category.
 
 -/
 
@@ -46,16 +50,16 @@ that is right adjoint to `overPullback f`. It sends `p : T → E` to the
 sigma type which sends `b : B` to the subtype of maps
 `g : f ⁻¹' {b} → T` over `E`. -/
 @[simps]
-def overPushout : Over E ⥤ Over B where
+def overPushforward : Over E ⥤ Over B where
   obj T := Over.mk
     (Y := Σ (b : B), { g : f ⁻¹' {b} → T.left // ∀ e, T.hom (g e) = e.1 }) Sigma.fst
   map {T T'} φ := Over.homMk (fun ⟨b, g, hg⟩ ↦ ⟨b, φ.left.comp g, fun e ↦ by
     simpa [hg] using congr_fun (Over.w φ) (g e)⟩)
 
 variable {f} in
-/-- Extensionality lemma for the types in the image of the `overPushout f` functor. -/
+/-- Extensionality lemma for the types in the image of the `overPushforward f` functor. -/
 @[ext (iff := false)]
-lemma overPushout_obj_left_ext {T : Over E} {t t' : ((overPushout f).obj T).left}
+lemma overPushforward_obj_left_ext {T : Over E} {t t' : ((overPushforward f).obj T).left}
     (h₁ : t.1 = t'.1) (h₂ : ∀ (e : E) (he : f e = t.1),
       t.2.1 ⟨e, he⟩ = t'.2.1 ⟨e, by simp [h₁, he]⟩) : t = t' := by
   obtain ⟨t, g, _⟩ := t
@@ -65,8 +69,8 @@ lemma overPushout_obj_left_ext {T : Over E} {t t' : ((overPushout f).obj T).left
   rfl
 
 /-- Given a map `f : E → B`, the functor `overPullback : Over B ⥤ Over E`
-admits `overPushout` as a right adjoint. -/
-def overPushoutAdjunction : overPullback f ⊣ overPushout f :=
+admits `overPushforward` as a right adjoint. -/
+def overPushforwardAdjunction : overPullback f ⊣ overPushforward f :=
   .mkOfHomEquiv
     { homEquiv S T :=
       { toFun φ :=
@@ -82,9 +86,9 @@ def overPushoutAdjunction : overPullback f ⊣ overPushout f :=
           · exact (congr_fun (Over.w ψ).symm s)
           · dsimp } }
 
-instance : (overPullback f).IsLeftAdjoint := (overPushoutAdjunction f).isLeftAdjoint
+instance : (overPullback f).IsLeftAdjoint := (overPushforwardAdjunction f).isLeftAdjoint
 
-instance : (overPushout f).IsRightAdjoint := (overPushoutAdjunction f).isRightAdjoint
+instance : (overPushforward f).IsRightAdjoint := (overPushforwardAdjunction f).isRightAdjoint
 
 instance (f : E ⟶ B) : (Over.pullback f).IsLeftAdjoint :=
   Functor.isLeftAdjoint_of_iso (overPullbackIso f)
