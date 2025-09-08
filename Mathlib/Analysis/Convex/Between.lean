@@ -599,6 +599,103 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   have ha' := ha s (w₁ - w₂) hw₁w₂ hz i his
   rwa [Pi.sub_apply, sub_eq_zero] at ha'
 
+namespace Affine
+
+namespace Simplex
+
+lemma closedInterior_eq_affineSegment (s : Simplex R P 1) :
+    s.closedInterior = affineSegment R (s.points 0) (s.points 1) := by
+  ext p
+  constructor
+  · rintro ⟨w, hw, h01, rfl⟩
+    have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
+      rw [Fin.sum_univ_two] at hw
+      ext i
+      fin_cases i <;> simp [← hw]
+    rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _)]
+    exact Set.mem_image_of_mem _ (h01 _)
+  · rintro ⟨r, ⟨h0, h1⟩, rfl⟩
+    rw [← Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _), affineCombination_mem_closedInterior_iff
+        (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
+    intro i
+    fin_cases i <;> simp <;> grind
+
+lemma mem_closedInterior_iff_wbtw {s : Simplex R P 1} {p : P} :
+    p ∈ s.closedInterior ↔ Wbtw R (s.points 0) p (s.points 1) := by
+  rw [closedInterior_eq_affineSegment, Wbtw]
+
+lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : Fin (n + 1)}
+    (h : i ≠ j) :
+    (s.face (Finset.card_pair h)).closedInterior = affineSegment R (s.points i) (s.points j) := by
+  have h' : affineSegment R (s.points i) (s.points j) =
+      affineSegment R (s.points (min i j)) (s.points (max i j)) := by
+    rcases h.lt_or_gt with hij | hji
+    · simp [min_eq_left hij.le, max_eq_right hij.le]
+    · nth_rw 2 [affineSegment_comm]
+      simp [max_eq_left hji.le, min_eq_right hji.le]
+  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment]
+  convert rfl using 2 <;> rw [face_points] <;> congr
+  · convert (Finset.orderEmbOfFin_zero _ _).symm
+    · rw [eq_comm]
+      · convert Finset.min'_pair i j
+      · omega
+  · convert (Finset.orderEmbOfFin_last _ _).symm
+    · rw [eq_comm]
+      · convert Finset.max'_pair i j
+      · omega
+
+lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i j : Fin (n + 1)}
+    (h : i ≠ j) :
+    p ∈ (s.face (Finset.card_pair h)).closedInterior ↔ Wbtw R (s.points i) p (s.points j) := by
+  rw [s.closedInterior_face_eq_affineSegment h, Wbtw]
+
+lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex R P 1} {p : P} :
+    p ∈ s.interior ↔ Sbtw R (s.points 0) p (s.points 1) := by
+  rw [sbtw_iff_mem_image_Ioo_and_ne]
+  simp only [ne_eq, s.independent.injective.ne (by decide : (0 : Fin 2) ≠ 1), not_false_eq_true,
+    and_true]
+  constructor
+  · rintro ⟨w, hw, h01, rfl⟩
+    have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
+      rw [Fin.sum_univ_two] at hw
+      ext i
+      fin_cases i <;> simp [← hw]
+    rw [h, Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _)]
+    exact Set.mem_image_of_mem _ (h01 _)
+  · rintro ⟨r, ⟨h0, h1⟩, rfl⟩
+    rw [← Finset.univ.affineCombination_affineCombinationLineMapWeights _ (Finset.mem_univ _)
+      (Finset.mem_univ _), affineCombination_mem_interior_iff
+        (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
+    intro i
+    fin_cases i <;> simp <;> grind
+
+lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : ℕ}
+    (s : Simplex R P n) {p : P} {i j : Fin (n + 1)} (h : i ≠ j) :
+    p ∈ (s.face (Finset.card_pair h)).interior ↔ Sbtw R (s.points i) p (s.points j) := by
+  have h' : Sbtw R (s.points i) p (s.points j) ↔
+      Sbtw R (s.points (min i j)) p (s.points (max i j )) := by
+    rcases h.lt_or_gt with hij | hji
+    · simp [min_eq_left hij.le, max_eq_right hij.le]
+    · nth_rw 2 [sbtw_comm]
+      simp [max_eq_left hji.le, min_eq_right hji.le]
+  rw [h', mem_interior_iff_sbtw]
+  convert Iff.rfl using 2 <;> rw [face_points] <;> congr
+  · convert (Finset.orderEmbOfFin_zero _ _).symm
+    · rw [eq_comm]
+      · convert Finset.min'_pair i j
+      · omega
+  · convert (Finset.orderEmbOfFin_last _ _).symm
+    · rw [eq_comm]
+      · convert Finset.max'_pair i j
+      · omega
+
+end Simplex
+
+end Affine
+
 end OrderedRing
 
 section StrictOrderedCommRing
