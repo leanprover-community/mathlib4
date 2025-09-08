@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.NormedSpace.Extend
+import Mathlib.Analysis.RCLike.Extend
 
 /-!
 # Separation Hahn-Banach theorem
