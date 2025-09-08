@@ -1,13 +1,17 @@
 /-
 Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Giulio Caflisch, David Loeffler
+Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Eval.Degree
 
 /-!
 # Forward difference operators and Newton series
@@ -27,7 +31,7 @@ We also prove some auxiliary results about iterated forward differences of the f
 `n ↦ n.choose k`.
 -/
 
-open Finset Nat Function
+open Finset Nat Function Polynomial
 
 variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G] (h : M)
 
@@ -148,6 +152,14 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
+lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :
+    Δ_[h]^[n] (fun r ↦ f (r + m)) y = (Δ_[h]^[n] f) (y + m) := by
+  simp [fwdDiff_iter_eq_sum_shift, add_right_comm]
+
+lemma fwdDiff_comp_add (f : M → G) (m : M) (y : M) :
+    Δ_[h] (fun r ↦ f (r + m)) y = (Δ_[h] f) (y + m) :=
+  fwdDiff_iter_comp_add h f m 1 y
+
 /--
 **Gregory-Newton formula** expressing `f (y + n • h)` in terms of the iterated forward differences
 of `f` at `y`.
@@ -171,7 +183,7 @@ lemma fwdDiff_iter_choose (j k : ℕ) :
     Δ_[1]^[k] (fun x ↦ x.choose (k + j) : ℕ → ℤ) = fun x ↦ x.choose j := by
   induction' k with k IH generalizing j
   · simp only [zero_add, iterate_zero, id_eq]
-  · simp only [Function.iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
+  · simp only [iterate_succ_apply', add_assoc, add_comm 1 j, IH, fwdDiff_choose]
 
 lemma fwdDiff_iter_choose_zero (m n : ℕ) :
     Δ_[1]^[n] (fun x ↦ x.choose m : ℕ → ℤ) 0 = if n = m then 1 else 0 := by
@@ -191,5 +203,83 @@ lemma fwdDiff_addChar_eq {M R : Type*} [AddCommMonoid M] [Ring R]
   induction n generalizing x with
   | zero => simp
   | succ n IH =>
-    simp only [pow_succ, Function.iterate_succ_apply', fwdDiff, IH, ← mul_sub, mul_assoc]
+    simp only [pow_succ, iterate_succ_apply', fwdDiff, IH, ← mul_sub, mul_assoc]
     rw [sub_mul, ← AddChar.map_add_eq_mul, add_comm h x, one_mul]
+
+/-!
+## Forward differences of polynomials
+
+We prove formulae about the forward difference operator applied to polynomials:
+
+* `fwdDiff_iter_pow_eq_zero_of_lt` :
+  The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`;
+* `fwdDiff_iter_eq_factorial` :
+  The `n`-th forward difference of the function `x ↦ x^n` is the constant function `n!`;
+* `fwdDiff_iter_sum_mul_pow_eq_zero` :
+  The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
+    sums over `range n`.
+-/
+
+variable {R : Type*} [CommRing R]
+
+/--
+The `n`-th forward difference of the function `x ↦ x^j` is zero if `j < n`.
+-/
+theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
+    Δ_[1]^[n] (fun (r : R) ↦ r ^ j) = 0 := by
+  induction n generalizing j with
+  | zero => aesop
+  | succ n ih =>
+    have : (Δ_[1] fun (r : R) ↦ r ^ j) = ∑ i ∈ range j, j.choose i • fun r ↦ r ^ i := by
+      ext x
+      simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
+    rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
+    exact sum_eq_zero fun i hi ↦ by
+      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
+
+/--
+The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
+-/
+theorem fwdDiff_iter_eq_factorial {n : ℕ} :
+    Δ_[1]^[n] (fun (r : R) ↦ r ^ n) = n ! := by
+  induction' n with n IH
+  · aesop
+  · have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
+      ∑ i ∈ range (n + 1), (n + 1).choose i • fun r ↦ r ^ i := by
+      ext x
+      simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
+    simp_rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul,
+       sum_range_succ]
+    simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
+      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), mul_zero]
+
+theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
+    Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by
+  simp_rw [P.eval_eq_sum_range, ← sum_apply _ _ (fun i x ↦ P.coeff i * x ^ i),
+    fwdDiff_iter_finset_sum, ← smul_eq_mul, ← Pi.smul_def, fwdDiff_iter_const_smul, Pi.smul_apply]
+  rw [sum_apply, sum_range_succ, sum_eq_zero (fun i hi ↦ ?_), zero_add,
+    fwdDiff_iter_eq_factorial, leadingCoeff, Pi.smul_apply]
+  rw [fwdDiff_iter_pow_eq_zero_of_lt (mem_range.mp hi), smul_zero, Pi.zero_apply]
+
+theorem Polynomial.fwdDiff_iter_eq_zero_of_degree_lt {P : R[X]} {n : ℕ} (hP : P.natDegree < n) :
+    Δ_[1]^[n] P.eval = 0 := funext fun x ↦ by
+  obtain ⟨j, rfl⟩ := Nat.exists_eq_add_of_lt hP
+  rw [add_assoc, add_comm, Function.iterate_add_apply, Function.iterate_succ_apply,
+    P.fwdDiff_iter_degree_eq_factorial, Pi.smul_def]
+  simp [fwdDiff_iter_eq_sum_shift]
+
+theorem Polynomial.fwdDiff_iter_degree_add_one_eq_zero (P : R[X]) :
+    Δ_[1]^[P.natDegree + 1] P.eval = 0 := by
+  have hP : P.natDegree < P.natDegree + 1 := Nat.lt_succ_self P.natDegree
+  exact Polynomial.fwdDiff_iter_eq_zero_of_degree_lt hP
+
+/--
+The `n`-th forward difference of a polynomial of degree `< n` is zero (formulated using explicit
+sums over `range n`.
+-/
+theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
+    Δ_[1]^[n] (fun r : R ↦ ∑ k ∈ range n, P k * r ^ k) = 0 := by
+  simp_rw [← sum_apply _ _ (fun i x ↦ P i * x ^ i), fwdDiff_iter_finset_sum, sum_fn, ← smul_eq_mul,
+    ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
+  exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
+    <| mem_range.mp hi
