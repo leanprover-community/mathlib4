@@ -1193,8 +1193,9 @@ theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G 
     G.maximalAtlas M ⊆ G'.maximalAtlas M :=
   fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
 
-private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G] {e e' : PartialHomeomorph M H}
-    (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M) {s : Set M} (hs : IsOpen s) :
+private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
     (e.restr s).symm ≫ₕ e' ∈ G := by
   have hs'' : IsOpen (e '' (e.source ∩ s)) := by
     rw [isOpen_image_iff_of_subset_source _ inter_subset_left]
@@ -1205,8 +1206,9 @@ private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G] {e e' : P
   refine G.mem_of_eqOnSource this ?_
   exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
 
-private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G] {e e' : PartialHomeomorph M H}
-    (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M) {s : Set M} (hs : IsOpen s) :
+private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
     e'.symm ≫ₕ e.restr s ∈ G := by
   have hs'' : IsOpen (e' '' (e'.source ∩ s)) := by
     rw [isOpen_image_iff_of_subset_source e' inter_subset_left]
