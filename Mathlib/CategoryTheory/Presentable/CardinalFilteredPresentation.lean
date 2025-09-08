@@ -118,9 +118,9 @@ instance (j : (h.presentation X).J) :
   exact isCardinalPresentable_of_iso e.symm κ
 
 include h in
-lemma isPresentable (i : ι) : IsPresentable.{w} (G i) := by
+lemma isPresentable (i : ι) : IsPresentable.{w} (G i) :=
   have := h.isCardinalPresentable
-  exact isPresentable_of_isCardinalPresentable _ κ
+  isPresentable_of_isCardinalPresentable _ κ
 
 instance (j : (h.presentation X).J) : IsPresentable.{w} ((h.presentation X).F.obj j) :=
   isPresentable_of_isCardinalPresentable _ κ
