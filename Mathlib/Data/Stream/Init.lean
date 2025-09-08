@@ -534,13 +534,9 @@ theorem getElem?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n)[k]? = s
   | k+1, n+1, h => by
     rw [take_succ, List.getElem?_cons_succ, getElem?_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
-@[deprecated (since := "2025-02-14")] alias get?_take := getElem?_take
-
 theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
     (take (succ n) s)[n]? = some (get s n) :=
   getElem?_take (Nat.lt_succ_self n)
-
-@[deprecated (since := "2025-02-14")] alias get?_take_succ := getElem?_take_succ
 
 @[simp] theorem dropLast_take {n : ℕ} {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
