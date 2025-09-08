@@ -7,8 +7,8 @@ import Mathlib.Algebra.Algebra.Field
 import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Operator.Star
 import Mathlib.Analysis.Normed.Ring.Finite
 import Mathlib.Data.Real.Sqrt
 import Mathlib.LinearAlgebra.Basis.VectorSpace
