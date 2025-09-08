@@ -40,12 +40,12 @@ variable {f g : X ⟶ Y} [IsCofibrant X]
 /-- When two morphisms `X ⟶ Y` with `X` cofibrant are related by a left homotopy,
 this is a choice of a right homotopy relative to any good path object for `Y`. -/
 noncomputable def rightHomotopy (h : LeftHomotopyRel f g) (Q : PathObject Y) [Q.IsGood] :
-    Q.RightHomotopy f g := by
-  apply Nonempty.some
-  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good_cylinder
+    Q.RightHomotopy f g :=
+  let P := h.exists_good_cylinder.choose
+  have h := h.exists_good_cylinder.choose_spec.2.some
+  have h' := h.exists_good_cylinder.choose_spec.1
   have sq : CommSq (f ≫ Q.ι) P.i₀ Q.p (prod.lift (P.π ≫ f) h.h) := { }
-  exact ⟨{
-    h := P.i₁ ≫ sq.lift
+  { h := P.i₁ ≫ sq.lift
     h₀ := by
       have := sq.fac_right =≫ prod.fst
       rw [Category.assoc, Q.p_fst, prod.lift_fst] at this
@@ -53,8 +53,7 @@ noncomputable def rightHomotopy (h : LeftHomotopyRel f g) (Q : PathObject Y) [Q.
     h₁ := by
       have := sq.fac_right =≫ prod.snd
       rw [Category.assoc, Q.p_snd, prod.lift_snd] at this
-      simp [this]
-  }⟩
+      simp [this] }
 
 lemma rightHomotopyRel (h : LeftHomotopyRel f g) : RightHomotopyRel f g := by
   obtain ⟨P, _⟩ := PathObject.exists_very_good Y
