@@ -3,7 +3,6 @@ Copyright (c) 2025 Javier Burroni. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Javier Burroni
 -/
-
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.PNat.Basic
 import Mathlib.Order.SuccPred.Basic
