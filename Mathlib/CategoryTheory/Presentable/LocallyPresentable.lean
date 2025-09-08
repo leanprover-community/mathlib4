@@ -37,7 +37,7 @@ objects such that any object identifies as a `κ`-filtered colimit of these obje
 class IsCardinalLocallyPresentable : Prop
   extends HasCardinalFilteredGenerators C κ, HasColimitsOfSize.{w, w} C where
 
-/-- Given a regular cardinal `κ`, a category `C` is `κ`-locally accessible
+/-- Given a regular cardinal `κ`, a category `C` is `κ`-accessible
 if it has `κ`-filtered colimits and admits a (small) family `G : ι → C` of `κ`-presentable
 objects such that any object identifies as a `κ`-filtered colimit of these objects. -/
 class IsCardinalAccessibleCategory : Prop
