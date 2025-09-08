@@ -296,4 +296,9 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
   simpa using H
 
+noncomputable
+instance [IsIntegral X] : OrderTop X where
+  top := genericPoint X
+  le_top a := genericPoint_specializes a
+
 end AlgebraicGeometry
