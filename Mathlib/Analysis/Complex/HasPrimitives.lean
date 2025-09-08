@@ -12,7 +12,7 @@ import Mathlib.Analysis.Complex.Convex
 In this file, we give conditions under which holomorphic functions have primitives. The main goal
 is to prove that holomorphic functions on simply connected domains have primitives. As a first step,
 we prove that holomorphic functions on disks have primitives. The approach is based on Morera's
-theorem, that a continuous function (on a disk) whose `Complex.rectangleIntegral` vanishes on all
+theorem, that a continuous function (on a disk) whose integral round a rectangle vanishes on all
 rectangles contained in the disk has a primitive. (Coupled with the fact that holomorphic functions
 satisfy this property.) To prove Morera's theorem, we first define the `Complex.wedgeIntegral`,
 which is the integral of a function over a "wedge" (a horizontal segment followed by a vertical
@@ -200,33 +200,33 @@ namespace Complex
 
 variable {E : Type*} [NormedRing E] [NormedSpace ℂ E]
 
-/-- The `z`-`w`-`wedgeIntegral` of `f`, is the integral of `f` over two sides of the rectangle
+/-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
   determined by `z` and `w`. -/
 def wedgeIntegral (z w : ℂ) (f : ℂ → E) : E :=
   (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) + I • (∫ y : ℝ in z.im..w.im, f (re w + y * I))
 
-/-- The `z`-`w`-`rectangleIntegral` of `f`, is the integral of `f` around the rectangle determined
-  by `z` and `w`. -/
-def rectangleIntegral (z w : ℂ) (f : ℂ → E) : E :=
-    (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I))
-     + I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I)) - I • ∫ y : ℝ in z.im..w.im, f (z.re + y * I)
-
-lemma rectangleIntegral_eq_wedgeIntegral_add_wedgeIntegral (z w : ℂ) (f : ℂ → E) :
-    rectangleIntegral z w f = wedgeIntegral z w f + wedgeIntegral w z f := by
-  simp only [rectangleIntegral, wedgeIntegral, intervalIntegral.integral_symm z.re w.re,
+lemma wedgeIntegral_add_wedgeIntegral_eq (z w : ℂ) (f : ℂ → E) :
+    wedgeIntegral z w f + wedgeIntegral w z f =
+      (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) -
+      (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
+      I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I)) -
+      I • (∫ y : ℝ in z.im..w.im, f (z.re + y * I)) := by
+  simp only [wedgeIntegral, intervalIntegral.integral_symm z.re w.re,
     intervalIntegral.integral_symm z.im w.im, smul_neg]
   abel
 
 /-- A function `f` `IsClosedOn` in `U` if, for any rectangle contained in `U`
   the integral of `f` over the rectangle is zero. -/
 def IsClosedOn (f : ℂ → E) (U : Set ℂ) : Prop :=
-  ∀ᵉ (z ∈ U) (w ∈ U), Rectangle z w ⊆ U → rectangleIntegral z w f = 0
+  ∀ z w, Rectangle z w ⊆ U → wedgeIntegral z w f = - wedgeIntegral w z f
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
-theorem HolomorphicOn.IsClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
-    IsClosedOn f U :=
-  fun z _ w _ hzw ↦ integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
+theorem HolomorphicOn.isClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
+    IsClosedOn f U := by
+  rintro z w hzw
+  rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq]
+  exact integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
 
 section ContinuousOnBall
 
@@ -284,8 +284,9 @@ lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
       have hU : Rectangle (z.re + c.im * I) (w.re + z.im * I) ⊆ ball c r :=
         (convex_ball c r).rectangle_subset (re_add_im_mul_mem_ball hz) wzInBall
           (by simpa using hz) (by simpa using wcInBall)
-      convert hf (z.re + c.im * I) (re_add_im_mul_mem_ball hz) (w.re + z.im * I) wzInBall hU using 1
-      rw [rectangleIntegral]
+      replace hf := hf (z.re + c.im * I) (w.re + z.im * I) hU
+      rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq] at hf
+      convert hf using 1
       congr
       · simp [intVII]
       · simp [intV]
@@ -384,6 +385,6 @@ theorem IsClosedOn.exists_forall_mem_ball_hasDerivAt
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
 theorem HolomorphicOn.exists_forall_mem_ball_hasDerivAt (hf : HolomorphicOn f (ball c r)) :
     ∃ g, ∀ z ∈ ball c r, HasDerivAt g (f z) z :=
-  hf.IsClosedOn.exists_forall_mem_ball_hasDerivAt hf.continuousOn
+  hf.isClosedOn.exists_forall_mem_ball_hasDerivAt hf.continuousOn
 
 end Complex
