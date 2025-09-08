@@ -78,7 +78,7 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
   apply Seq.eq_of_bisim' motive
   · simp only [motive]
   · intro X Y ih
-    simp [motive] at ih
+    simp only [motive] at ih
     subst ih
     cases' Y with hd tl
     · right
@@ -89,7 +89,7 @@ theorem nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       · simp [HAdd.hAdd, Add.add, add]
         rw [corec_cons]
         pick_goal 2
-        · simp
+        · simp only [destruct_nil, destruct_cons, Prod.mk.eta, Option.some.injEq, Prod.mk.injEq]
           constructor <;> exact Eq.refl _
         exact Eq.refl _
       constructor
@@ -113,7 +113,7 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
   apply Seq.eq_of_bisim' motive
   · simp only [motive]
   · intro X Y ih
-    simp [motive] at ih
+    simp only [motive] at ih
     subst ih
     cases' Y with hd tl
     · right
@@ -124,7 +124,7 @@ theorem add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_h
       · simp [HAdd.hAdd, Add.add, add]
         rw [corec_cons]
         pick_goal 2
-        · simp
+        · simp only [destruct_cons, destruct_nil, Prod.mk.eta, Option.some.injEq, Prod.mk.injEq]
           constructor <;> exact Eq.refl _
         exact Eq.refl _
       constructor
@@ -178,7 +178,7 @@ theorem add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} 
   rw [add_unfold, add']
   cases' Y with Y_exp Y_coef Y_tl
   · simp
-  · simp at h_lt
+  · simp only [leadingExp_cons, WithBot.coe_lt_coe] at h_lt
     simp only [destruct_cons, not_lt]
     split_ifs
     · rfl
@@ -192,7 +192,7 @@ theorem add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ}
   rw [add_unfold, add']
   cases' X with X_exp X_coef X_tl
   · simp
-  · simp at h_lt
+  · simp only [leadingExp_cons, WithBot.coe_lt_coe] at h_lt
     simp only [destruct_cons, not_lt]
     split_ifs
     · exfalso
@@ -219,7 +219,7 @@ theorem add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
     (X + Y).mulConst c = (X.mulConst c) + Y.mulConst c := by
   cases basis with
-  | nil => simp [mulConst]; ring
+  | nil => simp only [mulConst]; ring
   | cons basis_hd basis_tl =>
     let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
       ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y).mulConst c ∧
@@ -240,10 +240,10 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
       split_ifs
       · use ?_, ?_, ?_
         constructor
-        · simp
+        · simp only [mulConst_cons]
           exact Eq.refl _
         constructor
-        · simp
+        · simp only [mulConst_cons]
           rw [add_cons_cons]
           split_ifs
           exact Eq.refl _
@@ -256,7 +256,7 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
         · simp
           exact Eq.refl _
         constructor
-        · simp
+        · simp only [mulConst_cons]
           rw [add_cons_cons]
           split_ifs
           exact Eq.refl _
@@ -268,10 +268,10 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
         subst this
         use ?_, ?_, ?_
         constructor
-        · simp
+        · simp only [mulConst_cons]
           exact Eq.refl _
         constructor
-        · simp
+        · simp only [mulConst_cons]
           rw [add_cons_cons]
           split_ifs
           rw [add_mulConst]
@@ -285,7 +285,10 @@ theorem add_mulConst {basis : Basis} {X Y : PreMS basis} {c : ℝ} :
 private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
     X + Y = Y + X := by
   cases basis with
-  | nil => simp [HAdd.hAdd, Add.add]; simp [add]; ring
+  | nil =>
+    simp only [HAdd.hAdd, Add.add]
+    simp only [add]
+    ring
   | cons basis_hd basis_tl =>
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ (X Y : PreMS (basis_hd :: basis_tl)), a = (X + Y) ∧ b = Y + X
@@ -341,7 +344,10 @@ private theorem add_comm' {basis : Basis} {X Y : PreMS basis} :
 private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     X + (Y + Z) = (X + Y) + Z := by
   cases basis with
-  | nil => simp [HAdd.hAdd, Add.add]; simp [add]; ring
+  | nil =>
+    simp only [HAdd.hAdd, Add.add]
+    simp only [add]
+    ring
   | cons basis_hd basis_tl =>
   let motive : PreMS (basis_hd :: basis_tl) → PreMS (basis_hd :: basis_tl) → Prop := fun a b =>
     ∃ (X Y Z : PreMS (basis_hd :: basis_tl)), a = X + (Y + Z) ∧ b = (X + Y) + Z
@@ -362,12 +368,12 @@ private theorem add_assoc' {basis : Basis} {X Y Z : PreMS basis} :
     have h_XY : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (X_exp, X_coef) X_tl)
         (Seq.cons (Y_exp, Y_coef) Y_tl) = ?_ := by
       rw [add_unfold, add']
-      simp
+      simp only [destruct_cons]
       exact Eq.refl _
     have h_YZ : HAdd.hAdd (α := PreMS (basis_hd :: basis_tl)) (Seq.cons (Y_exp, Y_coef) Y_tl)
         (Seq.cons (Z_exp, Z_coef) Z_tl) = ?_ := by
       rw [add_unfold, add']
-      simp
+      simp only [destruct_cons]
       exact Eq.refl _
     split_ifs at h_XY h_YZ <;>
     (
@@ -448,7 +454,7 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
           simpa using h_ms_eq
         · obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
           right
-          simp at h_ms_eq
+          simp only [nil_add] at h_ms_eq
           use Y_exp, Y_coef, Y_tl
           constructor
           · exact h_ms_eq
@@ -458,14 +464,14 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
           · exact hY_comp
           simp only [motive]
           use .nil, Y_tl
-          simp
+          simp only [nil_add, true_and]
           constructor
           · apply WellOrdered.nil
           · exact hY_tl_wo
       · obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
         right
         cases' Y with Y_exp Y_coef Y_tl
-        · simp at h_ms_eq
+        · simp only [add_nil] at h_ms_eq
           use X_exp, X_coef, X_tl
           constructor
           · exact h_ms_eq
@@ -475,7 +481,7 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
           · exact hX_comp
           simp only [motive]
           use .nil, X_tl
-          simp
+          simp only [nil_add, true_and]
           constructor
           · apply WellOrdered.nil
           · exact hX_tl_wo
@@ -488,7 +494,7 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
             constructor
             · exact hX_coef_wo
             constructor
-            · simp
+            · simp only [add_leadingExp, leadingExp_cons, sup_lt_iff, WithBot.coe_lt_coe]
               constructor
               · exact hX_comp
               · simpa
@@ -500,7 +506,7 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
             constructor
             · exact hY_coef_wo
             constructor
-            · simp
+            · simp only [add_leadingExp, leadingExp_cons, sup_lt_iff, WithBot.coe_lt_coe]
               constructor
               · simpa
               · exact hY_comp
@@ -514,7 +520,7 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
             constructor
             · exact add_WellOrdered hX_coef_wo hY_coef_wo
             constructor
-            · simp
+            · simp only [add_leadingExp, sup_lt_iff]
               constructor
               · exact hX_comp
               · exact hY_comp
@@ -527,7 +533,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
     (X + Y).Approximates (fX + fY) := by
   cases basis with
   | nil =>
-    simp [Approximates] at *
+    simp only [Approximates] at *
     exact EventuallyEq.add hX_approx hY_approx
   | cons basis_hd basis_tl =>
     let motive : (ℝ → ℝ) → (PreMS (basis_hd :: basis_tl)) → Prop := fun f ms =>
@@ -544,21 +550,21 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
         cases' Y with Y_exp Y_coef Y_tl
         · apply Approximates_nil at hY_approx
           left
-          simp at h_ms_eq
+          simp only [add_nil] at h_ms_eq
           constructor
           · exact h_ms_eq
           trans
           · exact hf_eq
-          conv => rhs; ext t; simp; rw [← add_zero 0]
+          conv_rhs => ext t; simp; rw [← add_zero 0]
           apply EventuallyEq.add
           exacts [hX_approx, hY_approx]
         · obtain ⟨fYC, hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
           right
-          simp at h_ms_eq
+          simp only [nil_add] at h_ms_eq
           replace hf_eq : f =ᶠ[atTop] fY := by
             trans
             · exact hf_eq
-            conv => rhs; ext t; rw [← zero_add (fY t)]
+            conv_rhs => ext t; rw [← zero_add (fY t)]
             apply EventuallyEq.add hX_approx
             rfl
           use ?_, ?_, ?_, fYC
@@ -576,7 +582,8 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           constructor
           · apply eventuallyEq_iff_sub.mpr
             eta_expand
-            simp
+            simp only [Pi.zero_apply, Pi.add_apply, zero_add, Pi.sub_apply,
+              sub_sub_sub_cancel_right]
             ring_nf!
             apply eventuallyEq_iff_sub.mp hf_eq
           constructor
@@ -587,11 +594,11 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
         right
         cases' Y with Y_exp Y_coef Y_tl
         · apply Approximates_nil at hY_approx
-          simp at h_ms_eq
+          simp only [add_nil] at h_ms_eq
           replace hf_eq : f =ᶠ[atTop] fX := by
             trans
             · exact hf_eq
-            conv => rhs; ext t; rw [← add_zero (fX t)]
+            conv_rhs => ext t; rw [← add_zero (fX t)]
             apply EventuallyEq.add _ hY_approx
             rfl
           use ?_, ?_, ?_, fXC
@@ -609,7 +616,8 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
           constructor
           · apply eventuallyEq_iff_sub.mpr
             eta_expand
-            simp
+            simp only [Pi.zero_apply, Pi.add_apply, zero_add, Pi.sub_apply,
+              sub_sub_sub_cancel_right]
             ring_nf!
             apply eventuallyEq_iff_sub.mp hf_eq
           constructor
@@ -636,7 +644,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · apply eventuallyEq_iff_sub.mpr
               eta_expand
-              simp
+              simp only [Pi.add_apply, Pi.sub_apply, Pi.zero_apply]
               ring_nf!
               conv =>
                 lhs
@@ -663,7 +671,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · apply eventuallyEq_iff_sub.mpr
               eta_expand
-              simp
+              simp only [Pi.add_apply, Pi.sub_apply, Pi.zero_apply]
               ring_nf!
               conv =>
                 lhs
@@ -693,7 +701,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis} {fX fY : ℝ → �
             constructor
             · apply eventuallyEq_iff_sub.mpr
               eta_expand
-              simp
+              simp only [Pi.add_apply, Pi.sub_apply, Pi.zero_apply]
               ring_nf!
               conv =>
                 lhs

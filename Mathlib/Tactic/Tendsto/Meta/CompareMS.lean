@@ -141,7 +141,7 @@ lemma log_congr_IsEquivalent_right' (right_hd : ℝ → ℝ) (right_tl : Basis) 
     (h_equiv : f ~[atTop] f')
     (h : (Real.log ∘ right_hd) =o[atTop] f) :
     ∀ g ∈ (right_hd :: right_tl).head?, (Real.log ∘ g) =o[atTop] (Real.log ∘ Real.exp ∘ f') := by
-  simp
+  simp only [List.head?_cons, Option.mem_def, Option.some.injEq, forall_eq']
   apply Asymptotics.IsLittleO.trans_isEquivalent h
   convert h_equiv
   ext

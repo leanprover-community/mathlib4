@@ -72,7 +72,7 @@ theorem cosSeries_analytic : cosSeries.Analytic := by
 theorem cosSeries_toFun : cosSeries.toFun = Real.cos := by
   ext x
   simp [toFun]
-  conv => rhs; rw [show x = 0 + x by simp]
+  conv_rhs => rw [show x = 0 + x by simp]
   symm
   exact cos_hasFPowerSeriesOnBall_cosSeries.sum (by simp)
 
@@ -83,7 +83,7 @@ theorem sinSeries_analytic : sinSeries.Analytic := by
 theorem sinSeries_toFun : sinSeries.toFun = Real.sin := by
   ext x
   simp [toFun]
-  conv => rhs; rw [show x = 0 + x by simp]
+  conv_rhs => rw [show x = 0 + x by simp]
   symm
   exact sin_hasFPowerSeriesOnBall_sinSeries.sum (by simp)
 

@@ -29,7 +29,7 @@ noncomputable def logSeries : LazySeries :=
 
 theorem logSeries_eq_cons :
     logSeries = Seq.cons 0 (ofFnFrom (fun n ↦ -(-1 : ℝ)^n / n) 1) := by
-  simp [logSeries, ofFn]
+  simp only [logSeries, ofFn]
   rw [ofFnFrom_eq_cons]
   congr
   norm_num
@@ -46,7 +46,8 @@ theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + 
     convert AnalyticAt.hasFPowerSeriesAt _ using 1 <;> try infer_instance
     exact analyticAt_log (by simp)
   ext n v
-  simp
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff,
+    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, mul_eq_mul_left_iff]
   left
   clear v
   cases' n with n
@@ -54,7 +55,7 @@ theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + 
   rw [Nat.factorial_succ, pow_succ]
   field_simp
   move_mul [((n : ℝ) + 1)]
-  simp
+  simp only [mul_eq_mul_right_iff]
   left
   suffices iteratedDeriv (n + 1) Real.log =
       fun (x : ℝ) ↦ (-1 : ℝ) ^ n * n.factorial * x ^ (-(n : ℤ) - 1) by
@@ -64,15 +65,17 @@ theorem Real.log_hasFPowerSeriesAt : HasFPowerSeriesAt (fun t ↦ Real.log (1 + 
   | zero =>
     simp
   | succ n ih =>
-    simp
+    simp only [Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg]
     rw [iteratedDeriv_succ, ih]
     ext x
-    simp [Nat.factorial_succ, pow_succ]
+    simp only [differentiableAt_const, deriv_const_mul_field', deriv_zpow', Int.cast_sub,
+      Int.cast_neg, Int.cast_natCast, Int.cast_one, pow_succ, mul_neg, mul_one, Nat.factorial_succ,
+      Nat.cast_mul, Nat.cast_add, Nat.cast_one, neg_mul, Int.reduceNeg]
     ring_nf
 
 theorem logSeries_toFormalMultilinearSeries_eq :
     logSeries.toFormalMultilinearSeries = .ofScalars ℝ (fun n ↦ -(-1 : ℝ)^n / n) := by
-  simp [toFormalMultilinearSeries]
+  simp only [toFormalMultilinearSeries, FormalMultilinearSeries.ofScalars_series_eq_iff]
   suffices logSeries.coeff = (fun (n : ℕ) ↦ -(-1 : ℝ)^n / n) by
     rw [this]
   ext n
@@ -115,8 +118,7 @@ theorem log_WellOrdered {basis : Basis}
     {ms : PreMS basis}
     (h_logBasis : logBasis.WellFormed)
     (h_last : ∀ x, ms.leadingTerm.exps.getLast? = .some x → x = 0)
-    (h_wo : ms.WellOrdered)
-    :
+    (h_wo : ms.WellOrdered) :
     (ms.log logBasis).WellOrdered := by
   cases' basis with basis_hd basis_tl
   · apply WellOrdered.const
@@ -127,15 +129,15 @@ theorem log_WellOrdered {basis : Basis}
     have h_exp : exp = 0 := by
       simpa [leadingTerm] using h_last
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-    simp [log]
+    simp only [log, destruct_cons]
     apply add_WellOrdered const_WellOrdered
     apply apply_WellOrdered
     · apply mulConst_WellOrdered h_tl_wo
-    · simp
+    · simp only [mulConst_leadingExp]
       generalize tl.leadingExp = x at h_comp
       cases x
       · exact WithBot.bot_lt_coe 0
-      · simp at h_comp
+      · simp only [WithBot.coe_lt_coe] at h_comp
         norm_cast
         linarith
   | cons basis_tl_hd basis_tl_tl =>
@@ -144,7 +146,7 @@ theorem log_WellOrdered {basis : Basis}
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     cases' logBasis with _ _ _ _ logBasis_tl log_hd h_wo h_approx
     unfold log
-    simp
+    simp only [destruct_cons]
     apply add_WellOrdered
     · apply WellOrdered.cons
       · apply add_WellOrdered
@@ -155,18 +157,18 @@ theorem log_WellOrdered {basis : Basis}
           simpa [List.getLast?_cons, h] using h_last
         · apply mulConst_WellOrdered
           exact h_logBasis.left
-      · simp [leadingExp]
+      · simp only [leadingExp, head_nil, WithBot.coe_zero]
         exact WithBot.bot_lt_coe 0
       · exact WellOrdered.nil
     · apply apply_WellOrdered
       · apply mulMonomial_WellOrdered h_tl_wo
         exact inv_WellOrdered h_coef_wo
       · -- copypaste from above
-        simp
+        simp only [mulMonomial_leadingExp]
         generalize tl.leadingExp = x at h_comp
         cases x
         · exact WithBot.bot_lt_coe 0
-        · simp at h_comp
+        · simp only [WithBot.coe_lt_coe] at h_comp
           norm_cast
           linarith
 
@@ -179,11 +181,10 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
     (h_approx : ms.Approximates f)
     (h_trimmed : ms.Trimmed)
     (h_pos : 0 < ms.leadingTerm.coef)
-    (h_last : ∀ x, ms.leadingTerm.exps.getLast? = .some x → x = 0)
-    :
+    (h_last : ∀ x, ms.leadingTerm.exps.getLast? = .some x → x = 0) :
     (ms.log logBasis).Approximates (Real.log ∘ f) := by
   cases' basis with basis_hd basis_tl
-  · simp [Approximates] at h_approx
+  · simp only [Approximates] at h_approx
     apply Approximates_of_EventuallyEq (f := Real.log ∘ (fun _ ↦ ms))
     · apply EventuallyEq.fun_comp h_approx.symm
     change (log logBasis ms).Approximates (fun x ↦ Real.log ms)
@@ -191,7 +192,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
   cases basis_tl with
   | nil =>
     cases' ms with exp coef tl
-    · simp [log]
+    · simp only [log, destruct_nil]
       apply Approximates_nil at h_approx
       apply Approximates.nil
       trans Real.log ∘ (fun _ ↦ 0)
@@ -199,13 +200,13 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       apply EventuallyEq.of_eq
       ext
       simp
-    · simp [log]
+    · simp only [log, destruct_cons]
       have h_exp : exp = 0 := by
         simpa [leadingTerm] using h_last
       subst h_exp
       obtain ⟨fC, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
-      simp [Approximates] at h_coef
+      simp only [Approximates] at h_coef
       -- f = basis_hd t ^ exp * coef + (f t - basis_hd t ^ exp * coef)
       --   = basis_hd t ^ exp * coef * (1 + basis_hd t ^ (-exp) * coef⁻¹ *
       --                                       (f t - basis_hd t ^ exp * coef))
@@ -221,24 +222,24 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         simpa using hx
       apply Approximates_of_EventuallyEq
           (f := fun t ↦ Real.log coef + Real.log (1 + (f t - coef) * coef⁻¹))
-      · simp [leadingTerm] at h_pos
+      · simp only [leadingTerm, Seq.head_cons] at h_pos
         rw [NormedAddCommGroup.tendsto_nhds_zero] at h_tendsto_zero
         specialize h_tendsto_zero (coef * 2⁻¹) (by positivity)
         calc
           _ =ᶠ[atTop] (fun t ↦ Real.log (coef * (1 + (f t - coef) * coef⁻¹))) := by
             apply Eventually.mono h_tendsto_zero
             intro x hx
-            simp
+            simp only
             rw [Real.log_mul h_pos.ne']
             intro h
             field_simp at h
-            simp [h, abs_of_pos h_pos] at hx
+            simp only [h, zero_sub, norm_neg, Real.norm_eq_abs, abs_of_pos h_pos] at hx
             apply one_lt_of_lt_mul_left₀ at hx
             · norm_num at hx
             · exact h_pos.le
           _ = _ := by
             ext x
-            simp
+            simp only [Function.comp_apply]
             congr
             field_simp
       apply add_Approximates
@@ -250,21 +251,21 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         simp
       apply apply_Approximates logSeries_analytic h_basis
       · exact mulConst_WellOrdered h_tl_wo
-      · simp
+      · simp only [mulConst_leadingExp]
         generalize tl.leadingExp = x at h_comp
         cases x
         · exact WithBot.bot_lt_coe 0
-        · simp at h_comp
+        · simp only [WithBot.coe_zero, WithBot.coe_lt_zero] at h_comp
           norm_cast
       apply mulConst_Approximates'
       apply Approximates_of_EventuallyEq _ h_tl
-      simp
+      simp only [Real.rpow_zero, one_mul]
       apply Eventually.mono h_coef
       intro x hx
       simpa using hx
   | cons basis_tl_hd basis_tl_tl =>
     cases' ms with exp coef tl
-    · simp [log]
+    · simp only [log, destruct_nil]
       apply Approximates_nil at h_approx
       apply Approximates.nil
       trans Real.log ∘ (fun _ ↦ 0)
@@ -277,12 +278,12 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
     obtain ⟨fC, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
     cases' logBasis with _ _ _ _ logBasis_tl log_hd h_wo h_log_approx
     unfold log
-    simp
+    simp only [destruct_cons]
     have h_f_pos : ∀ᶠ t in atTop, 0 < f t :=
       eventually_pos_of_coef_pos h_pos h_wo h_approx h_trimmed h_basis
     have h_fC_pos : ∀ᶠ t in atTop, 0 < fC t := by
       unfold leadingTerm at h_pos
-      simp at h_pos
+      simp only [Seq.head_cons] at h_pos
       apply eventually_pos_of_coef_pos h_pos h_coef_wo h_coef h_coef_trimmed h_basis.tail
     have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t := basis_head_eventually_pos h_basis
     apply Approximates_of_EventuallyEq
@@ -290,7 +291,7 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
           Real.log (1 + basis_hd t ^ (-exp) * (fC t)⁻¹ * (f t - (basis_hd t) ^ exp * fC t)))
     · apply Eventually.mono (h_f_pos.and (h_fC_pos.and (h_basis_hd_pos)))
       intro x ⟨h_f, h_fC, h_basis_hd⟩
-      simp
+      simp only [Function.comp_apply]
       rw [mul_comm, ← Real.log_rpow, ← Real.log_mul, ← Real.log_mul]
       rotate_left
       · positivity
@@ -298,9 +299,9 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         ring_nf
         move_mul [← basis_hd x ^ exp]
         rw [← Real.rpow_add h_basis_hd]
-        simp
+        simp only [add_neg_cancel, Real.rpow_zero, one_mul, ne_eq]
         rw [mul_inv_cancel₀ h_fC.ne']
-        simp
+        simp only [sub_self, zero_add, mul_eq_zero, inv_eq_zero, not_or]
         constructorm* _ ∧ _ <;> positivity
       · positivity
       · positivity
@@ -308,7 +309,8 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
       congr
       rw [mul_add]
       move_mul [← (fC x)⁻¹]
-      simp [inv_mul_cancel₀ h_fC.ne', ← Real.rpow_add h_basis_hd]
+      simp only [mul_one, inv_mul_cancel₀ h_fC.ne', one_mul, ← Real.rpow_add h_basis_hd,
+        add_neg_cancel, Real.rpow_zero]
       ring
     apply add_Approximates
     · apply Approximates.cons (fC := fun t ↦ Real.log (fC t) + Real.log (basis_hd t) * exp)
@@ -319,29 +321,29 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
           intro x h
           specialize h_last x
           unfold leadingTerm at h_last
-          simp at h_last
+          simp only [Seq.head_cons] at h_last
           simpa [List.getLast?_cons, h] using h_last
         · apply mulConst_Approximates'
-          simp [LogBasis.WellFormed] at h_logBasis
+          simp only [LogBasis.WellFormed] at h_logBasis
           exact h_logBasis.right.left
       · rw [show (0 : ℝ) = 0 ⊔ 0 by simp]
         apply add_majorated
         · unfold leadingTerm at h_pos h_last
-          simp at h_pos h_last
+          simp only [Seq.head_cons] at h_pos h_last
           replace h_last : ∀ (x : ℝ), coef.leadingTerm.exps.getLast? = some x → x = 0 := by
             intro x h
             apply h_last
             rw [← h]
             rw [List.getLast?_eq_getLast _ (leadingTerm_ne_nil),
               List.getLast?_eq_getLast _ (by simp)]
-            simp
+            simp only [Option.some.injEq]
             rw [List.getLast_cons]
           have := log_Approximates (ms := coef) (f := fC) h_basis.tail
             (LogBasis.tail_WellFormed h_logBasis) h_coef_wo h_coef h_coef_trimmed h_pos
             h_last
           exact PreMS.Approximates_coef_majorated_head this h_basis
         · apply mul_const_majorated
-          simp [majorated]
+          simp only [majorated]
           intro exp' h_exp'
           change (Real.log ∘ basis_hd) =o[atTop] ((fun t ↦ t ^ exp') ∘ basis_hd)
           apply Asymptotics.IsLittleO.comp_tendsto (l := atTop)
@@ -350,14 +352,14 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
             simp
           exact isLittleO_log_rpow_atTop h_exp'
       · apply Approximates.nil
-        simp
+        simp only [Real.rpow_zero, one_mul, sub_self]
         rfl
     · have h_tendsto_zero : Tendsto (fun t ↦ (fC t)⁻¹ * basis_hd t ^ (-exp) *
           (f t - basis_hd t ^ exp * fC t)) atTop (𝓝 0) := by
         apply Tendsto.congr' (f₁ := fun t ↦ fC⁻¹ t * basis_hd t ^ (-exp) * f t - 1)
         · apply Eventually.mono (h_fC_pos.and h_basis_hd_pos)
           intro t ⟨h_fC, h_basis_hd⟩
-          simp [mul_sub]
+          simp only [Pi.inv_apply, mul_sub, sub_right_inj]
           ring_nf
           simp [mul_inv_cancel₀ h_fC.ne', ← Real.rpow_add h_basis_hd]
         rw [show (0 : ℝ) = 1 - 1 by simp]
@@ -366,14 +368,14 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
         · simp only [EventuallyEq]
           apply h_basis_hd_pos.mono
           intro t h_basis_hd_pos
-          simp [Real.rpow_neg h_basis_hd_pos.le]
+          simp only [Pi.div_apply, Pi.inv_apply, Real.rpow_neg h_basis_hd_pos.le]
           ring
         rw [← isEquivalent_iff_tendsto_one]
-        conv => rhs; ext t; rw [mul_comm]
+        conv_rhs => ext t; rw [mul_comm]
         apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
         apply (h_fC_pos.and h_basis_hd_pos).mono
         intro t ⟨h_fC_pos, h_basis_hd_pos⟩
-        simp
+        simp only [ne_eq, mul_eq_zero, not_or]
         constructor
         · exact h_fC_pos.ne'
         · rw [Real.rpow_eq_zero_iff_of_nonneg]
@@ -386,18 +388,18 @@ theorem log_Approximates {basis : Basis} {f : ℝ → ℝ}
           (f t - basis_hd t ^ exp * fC t))
       · apply Eventually.mono (Filter.EventuallyEq.comp_tendsto logSeries_toFun h_tendsto_zero)
         intro t ht
-        simp at ht
-        simp [ht]
+        simp only [Function.comp_apply] at ht
+        simp only [Function.comp_apply, ht]
         congr 3
         ring
       apply apply_Approximates logSeries_analytic h_basis
       · apply mulMonomial_WellOrdered h_tl_wo
         exact inv_WellOrdered h_coef_wo
-      · simp
+      · simp only [mulMonomial_leadingExp]
         generalize tl.leadingExp = x at h_comp
         cases x
         · exact WithBot.bot_lt_coe 0
-        · simp at h_comp
+        · simp only [WithBot.coe_lt_coe] at h_comp
           norm_cast
           linarith
       apply mulMonomial_Approximates h_basis h_tl

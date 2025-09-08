@@ -56,7 +56,7 @@ theorem expSeries_toFun : expSeries.toFun = Real.exp := by
   rw [← expSeries_toFormalMultilinearSeries_eq, ← Real.exp_eq_exp_ℝ] at this
   ext x
   simp [toFun]
-  conv => rhs; rw [show x = 0 + x by simp]
+  conv_rhs => rw [show x = 0 + x by simp]
   symm
   exact HasFPowerSeriesOnBall.sum this (by simp)
 

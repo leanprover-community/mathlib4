@@ -45,21 +45,21 @@ theorem WellFormed_cons_WellOrdered {basis_hd basis_tl_hd : ℝ → ℝ} {basis_
     {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.WellOrdered := by
-  simp [WellFormed] at h
+  simp only [WellFormed] at h
   exact h.left
 
 theorem WellFormed_cons_Approximates {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
     {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.Approximates (Real.log ∘ basis_hd) := by
-  simp [WellFormed] at h
+  simp only [WellFormed] at h
   exact h.right.left
 
 theorem WellFormed_cons_Trimmed {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
     {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
     ms.Trimmed := by
-  simp [WellFormed] at h
+  simp only [WellFormed] at h
   exact h.right.right.left
 
 /-- Tail of a `LogBasis`. -/
@@ -76,8 +76,8 @@ theorem tail_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   cases logBasis with
   | single => simp [WellFormed]
   | cons _ _ _ logBasis_tl ms =>
-    simp [WellFormed] at h_wf
-    simp [tail]
+    simp only [WellFormed] at h_wf
+    simp only [tail]
     exact h_wf.right.right.right
 
 /-- Extends a `LogBasis` along the basis by adding a function to the middle with a multiseries
@@ -136,7 +136,7 @@ theorem Approximates_log_basis_ne_zero {basis basis' : Basis} {ms : PreMS basis'
   apply Filter.Tendsto.congr' h_approx at h
   have h' : Tendsto (0 : ℝ → ℝ) atTop (nhds 0) := tendsto_const_nhds
   have := Filter.Tendsto.disjoint h (disjoint_nhds_atTop 0).symm h'
-  simp at this
+  simp only [disjoint_self] at this
   contrapose! this
   exact Filter.NeBot.ne'
 
@@ -151,12 +151,12 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
   · cases logBasis with
     | single => simp [WellFormed, h_wo, h_approx, h_trimmed]
     | cons _ right_tl_hd right_tl_tl logBasis_tl ms' =>
-      simp [WellFormed] at h_wf
+      simp only [WellFormed] at h_wf
       simp [extendBasisMiddle, WellFormed, h_wo, h_approx, h_trimmed, h_wf]
   cases' left_tl with left_tl_hd left_tl_tl
   · cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp [WellFormed] at h_wf
-    simp [extendBasisMiddle, WellFormed, h_wo, h_approx, h_wf.right]
+    simp only [WellFormed] at h_wf
+    simp only [WellFormed, h_wo, h_approx, h_wf.right, and_true, true_and]
     constructor
     · exact PreMS.extendBasisMiddle_WellOrdered h_wf.left
     constructor
@@ -166,8 +166,8 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
       exact Approximates_log_basis_ne_zero h_basis h_wf.right.left (by simp)
     · exact h_trimmed
   · cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp [WellFormed] at h_wf
-    simp [extendBasisMiddle, WellFormed]
+    simp only [WellFormed, List.append_eq] at h_wf
+    simp only [WellFormed, List.append_eq]
     constructor
     · exact PreMS.extendBasisMiddle_WellOrdered h_wf.left
     constructor
@@ -189,8 +189,8 @@ theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
   cases logBasis with
   | single => simpa [WellFormed, h_wo, h_trimmed] using h_approx
   | cons _ basis_tl_hd basis_tl_tl logBasis_tl ms' =>
-    simp [WellFormed] at h_wf
-    simp [extendBasisEnd, WellFormed, h_wo, h_approx, h_wf]
+    simp only [WellFormed] at h_wf
+    simp only [WellFormed, List.append_eq]
     constructor
     · exact PreMS.extendBasisEnd_WellOrdered h_wf.left
     constructor
@@ -204,7 +204,7 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_wf : logBasis.WellFormed) :
     (logBasis.insertLastLog).WellFormed := by
-  simp [insertLastLog]
+  simp only [List.cons_append, insertLastLog]
   apply extendBasisEnd_WellFormed
   · exact insertLastLog_WellFormedBasis h_basis
   · exact h_wf

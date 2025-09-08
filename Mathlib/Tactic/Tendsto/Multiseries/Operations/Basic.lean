@@ -66,7 +66,7 @@ theorem const_mulConst {basis : Basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, const]
   | cons =>
-    simp [mulConst, const]
+    simp only [mulConst, const, Seq.map_cons, Seq.map_nil]
     congr
     apply const_mulConst
 
@@ -75,9 +75,9 @@ theorem mulConst_one {basis : Basis} {ms : PreMS basis} : ms.mulConst 1 = ms := 
   cases basis with
   | nil => simp [mulConst]
   | cons basis_hd basis_tl =>
-    simp [mulConst]
+    simp only [mulConst]
     convert Seq.map_id _
-    simp
+    simp only [id_eq]
     apply mulConst_one
 
 @[simp]
@@ -86,8 +86,8 @@ theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
   cases basis with
   | nil => simp [mulConst, mul_assoc]
   | cons =>
-    simp [mulConst, const]
-    simp [← Seq.map_comp]
+    simp only [mulConst]
+    simp only [← Seq.map_comp]
     congr
     ext1
     simp [mulConst_mulConst]
@@ -101,10 +101,10 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
     let motive : (PreMS (basis_hd :: basis_tl)) → Prop := fun ms =>
       ∃ (X : PreMS (basis_hd :: basis_tl)), ms = X.mulConst c ∧ X.WellOrdered
     apply WellOrdered.coind motive
-    · simp [motive]
+    · simp only [motive]
       use ms
     · intro ms ih
-      simp [motive] at ih
+      simp only [motive] at ih
       obtain ⟨X, h_ms_eq, hX_wo⟩ := ih
       subst h_ms_eq
       cases' X with exp coef tl
@@ -119,7 +119,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
         · exact mulConst_WellOrdered hX_coef_wo
         constructor
         · simpa
-        simp [motive]
+        simp only [motive]
         use tl
 
 /-- If `ms` approximates `f`, then `ms.mulConst c` approximates `f * c`. -/
@@ -128,7 +128,7 @@ theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f :
     (ms.mulConst c).Approximates (fun t ↦ f t * c) := by
   cases basis with
   | nil =>
-    simp [Approximates, mulConst] at *
+    simp only [Approximates, mulConst] at *
     apply EventuallyEq.mul h_approx
     rfl
   | cons basis_hd basis_tl =>
@@ -145,7 +145,7 @@ theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f :
       cases' X with X_exp X_coef X_tl
       · left
         apply Approximates_nil at hX_approx
-        simp [mulConst] at h_ms_eq
+        simp only [mulConst, Seq.map_nil] at h_ms_eq
         constructor
         · exact h_ms_eq
         trans
@@ -153,13 +153,12 @@ theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f :
         conv =>
           rhs
           ext
-          simp
-          rw [← zero_mul c]
+          rw [Pi.zero_apply, ← zero_mul c]
         apply EventuallyEq.mul hX_approx
         rfl
       · obtain ⟨fXC, hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
         right
-        simp [mulConst] at h_ms_eq
+        simp only [mulConst, Seq.map_cons] at h_ms_eq
         use ?_, ?_, ?_, fun t ↦ fXC t * c
         constructor
         · exact h_ms_eq
@@ -175,10 +174,10 @@ theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f :
         constructor
         · apply eventuallyEq_iff_sub.mpr
           eta_expand
-          simp
+          simp only [Pi.sub_apply, Pi.zero_apply]
           ring_nf!
           apply eventuallyEq_iff_sub.mp
-          conv => rhs; ext; rw [mul_comm]
+          conv_rhs => ext; rw [mul_comm]
           exact hf_eq
         · exact hX_tl
 
@@ -196,7 +195,7 @@ theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zer
   contrapose! h_ne_zero
   cases basis with
   | nil =>
-    simp [mulConst, zero] at h_ne_zero ⊢
+    simp only [mulConst, zero, mul_eq_zero] at h_ne_zero ⊢
     tauto
   | cons =>
     cases' ms with exp coef tl
@@ -210,9 +209,8 @@ theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed
   | nil => constructor
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
-    · simp
-      constructor
-    simp
+    · constructor
+    simp only [mulConst_cons]
     apply Trimmed_cons at h_trimmed
     constructor
     · exact mulConst_Trimmed h_trimmed.left hc

@@ -88,12 +88,12 @@ theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basi
   obtain ⟨coef2, exps2⟩ := t2
   apply (basis_eventually_pos h_basis).mono
   intro x h_pos
-  simp [toFun, mul]
-  simp at h_length
+  simp only [toFun, mul]
+  simp only at h_length
   rw [fold_eq_mul]
-  conv => rhs; rw [fold_eq_mul]; arg 2; rw [fold_eq_mul]
+  conv_rhs => rw [fold_eq_mul]; arg 2; rw [fold_eq_mul]
   move_mul [coef1, coef2]
-  simp
+  simp only [mul_eq_mul_right_iff]
   left
   left
   induction' exps1 with exp1 exps1 ih generalizing exps2 basis
@@ -103,9 +103,9 @@ theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basi
   · simp at h_length
   cases' basis with basis_hd basis_tl
   · simp
-  simp [List.foldl_cons]
+  simp only [List.zip_cons_cons, List.map_cons, List.foldl_cons, one_mul]
   rw [fold_eq_mul]
-  conv => rhs; rw [fold_eq_mul]; arg 2; rw [fold_eq_mul]
+  conv_rhs => rw [fold_eq_mul]; arg 2; rw [fold_eq_mul]
   specialize ih h_basis.tail exps2 (by simpa using h_length)
     (fun f hf ↦ h_pos f <| List.mem_cons_of_mem basis_hd hf)
   rw [ih, Real.rpow_add (h_pos _ (by simp))]
@@ -114,15 +114,15 @@ theorem mul_toFun {t1 t2 : Term} {basis : Basis} (h_basis : WellFormedBasis basi
 theorem smul_toFun {t : Term} {basis : Basis} (c : ℝ) :
     (mk (t.coef * c) t.exps).toFun basis = c • t.toFun basis := by
   ext x
-  simp [toFun]
-  conv => lhs; rw [fold_eq_mul]
-  conv => rhs; rw [fold_eq_mul]
+  simp only [toFun, Pi.smul_apply, smul_eq_mul]
+  conv_lhs => rw [fold_eq_mul]
+  conv_rhs => rw [fold_eq_mul]
   ring
 
 theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
     (fun x ↦ (t.toFun basis x)⁻¹) =ᶠ[atTop] fun x ↦ t.inv.toFun basis x := by
   unfold toFun
-  simp [inv]
+  simp only [inv]
   induction t.exps generalizing basis with
   | nil => simp
   | cons hd tl ih =>
@@ -134,35 +134,20 @@ theorem inv_toFun {t : Term} {basis : Basis} (h_basis : WellFormedBasis basis) :
       unfold EventuallyEq at ih
       apply ((basis_head_eventually_pos h_basis).and ih).mono
       rintro x ⟨h_pos, ih⟩
-      simp at ih
+      simp only at ih
       simp only [List.zip_cons_cons, List.foldl_cons, List.map_cons]
       simp [WellFormedBasis] at h_basis
-      conv =>
-        congr <;> rw [fold_eq_mul]
-      simp
-
-      conv at ih =>
-        congr <;> rw [fold_eq_mul]
-      simp at ih
-
+      conv => congr <;> rw [fold_eq_mul]
+      simp only [mul_inv_rev]
+      conv at ih => congr <;> rw [fold_eq_mul]
+      simp only [mul_inv_rev] at ih
       -- why can't use ring?
-      conv =>
-        rhs
+      conv_rhs => lhs; rw [mul_comm]
+      conv_rhs =>
+        rw [mul_assoc, ← ih, ← mul_assoc]
         lhs
         rw [mul_comm]
-
-      conv =>
-        rhs
-        rw [mul_assoc]
-        rw [← ih]
-        rw [← mul_assoc]
-        lhs
-        rw [mul_comm]
-
-      conv =>
-        rhs
-        rw [mul_assoc]
-        rw [Real.rpow_neg (h_pos.le)]
+      conv_rhs => rw [mul_assoc, Real.rpow_neg (h_pos.le)]
 
 /-- If `t.coef > 0` then t.toFun is eventually positive. -/
 theorem toFun_pos {t : Term} {basis : Basis}
@@ -173,7 +158,7 @@ theorem toFun_pos {t : Term} {basis : Basis}
   have hx' : ∀ hd ∈ t.exps.zip basis, 0 < hd.2 x := by
     intro hd h_hd
     exact hx _ (List.of_mem_zip h_hd).right
-  simp [toFun]
+  simp only [toFun, gt_iff_lt]
   generalize t.coef = c at *
   generalize t.exps.zip basis = li at *
   induction li generalizing c with
@@ -196,7 +181,7 @@ theorem toFun_ne_zero {t : Term} {basis : Basis} (h_basis : WellFormedBasis basi
   · rw [neg_coef_toFun]
     apply (toFun_pos (t := mk (-t.coef) t.exps) h_basis (by simpa)).mono
     intro x hx
-    simp
+    simp only [ne_eq, neg_eq_zero]
     linarith
   · apply (toFun_pos h_basis h_coef).mono
     intro x hx
@@ -268,10 +253,9 @@ theorem zeros_append_toFun (coef : ℝ) {exps : List ℝ} {left right : Basis}
     (h_length : exps.length = right.length) :
     let t : Term := ⟨coef, List.replicate left.length 0 ++ exps⟩;
     t.toFun (left ++ right) = (mk coef exps).toFun right := by
-  simp
   induction' left with left_hd left_tl ih
   · rfl
-  simp [List.replicate_succ]
+  simp only [List.length_cons, List.replicate_succ, List.cons_append]
   rw [Term.zero_head_toFun _ (by simpa) rfl]
   simpa using ih
 
@@ -294,41 +278,29 @@ theorem log_IsEquivalent_of_nonzero_head {coef exp : ℝ} {tl : List ℝ} {basis
       induction li generalizing init with
       | nil => simp
       | cons hd tl ih =>
-        simp at ih ⊢
+        simp only [List.foldl_cons, zero_add] at ih ⊢
         rw [ih (hd.1 * Real.log (hd.2 x)), ih (init + hd.1 * Real.log (hd.2 x))]
         ring
-    simp
-    simp at h_pull_init
-    conv =>
-      lhs
-      ext x
-      rw [h_pull_init]
+    simp only [List.zip_cons_cons, List.foldl_cons, List.head!_cons]
+    conv_lhs => ext; rw [h_pull_init]
     simp only [IsEquivalent]
-    conv =>
-      lhs
-      ext x
-      simp
-
+    conv_lhs => ext; simp
     have h_little : ∀ hd ∈ tl.zip basis_tl, (Real.log ∘ hd.2) =o[atTop] (Real.log ∘ basis_hd) := by
       intro hd h_hd
       apply basis_IsLittleO_of_head h_basis
       exact (List.of_mem_zip h_hd).right
-
     have h_tendsto : ∀ hd ∈ tl.zip basis_tl, Tendsto hd.2 atTop atTop := by
       intro hd h_hd
       apply basis_tendsto_top h_basis
-      simp; right
+      simp only [List.mem_cons]
+      right
       exact (List.of_mem_zip h_hd).right
-
     generalize tl.zip basis_tl = li at *
     induction li with
     | nil => simp
     | cons tl_hd tl_tl ih =>
-      simp
-      conv =>
-        lhs
-        ext x
-        rw [h_pull_init]
+      simp only [List.foldl_cons, zero_add]
+      conv_lhs => ext; rw [h_pull_init]
       apply IsLittleO.add
       · apply IsLittleO.const_mul_left
         have : (fun _ ↦ Real.log coef) =o[atTop] fun x ↦ exp * Real.log (basis_hd x) := by
@@ -338,7 +310,8 @@ theorem log_IsEquivalent_of_nonzero_head {coef exp : ℝ} {tl : List ℝ} {basis
           apply Filter.Tendsto.comp tendsto_norm_atTop_atTop
           rw [← Function.comp_def]
           apply Filter.Tendsto.comp Real.tendsto_log_atTop
-          simp [WellFormedBasis] at h_basis
+          simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons,
+            forall_eq_or_imp] at h_basis
           exact h_basis.right.left
         rw [show (fun x ↦ Real.log coef + exp * Real.log (basis_hd x)) =
           (fun _ ↦ Real.log coef) + (fun x ↦ exp * Real.log (basis_hd x)) by rfl]
@@ -369,7 +342,6 @@ theorem tendsto_top {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
     apply (toFun_pos (t := t) h_basis h_coef).mono
     intro x hx
     simp [Real.exp_log hx]
-
   apply IsEquivalent.tendsto_atTop h_t_equiv.symm
   apply Filter.tendsto_atTop_add_const_left
   apply Filter.Tendsto.const_mul_atTop h_exp
@@ -410,7 +382,6 @@ lemma tendsto_zero_pos_coef {coef exp : ℝ} {tl : List ℝ} {basis : Basis}
     apply (toFun_pos (t := t) h_basis h_coef).mono
     intro x hx
     simp [Real.exp_log hx]
-
   apply IsEquivalent.tendsto_atBot h_t_equiv.symm
   apply Filter.tendsto_atBot_add_const_left
   apply (Filter.tendsto_neg_atTop_iff).mp
@@ -526,9 +497,9 @@ theorem not_FirstIsPos_of_FirstIsNeg {x : List ℝ} (h : FirstIsNeg x) : ¬ Firs
   | nil => simp [FirstIsPos]
   | cons hd tl =>
     intro h'
-    simp [FirstIsNeg, FirstIsPos] at h h'
+    simp only [FirstIsNeg, FirstIsPos] at h h'
     by_cases h_hd : hd = 0
-    · simp [h_hd] at h h'
+    · simp only [h_hd, lt_self_iff_false, true_and, false_or] at h h'
       exact not_FirstIsPos_of_FirstIsNeg h h'
     simp [h_hd] at h h'
     linarith
@@ -545,10 +516,10 @@ theorem tendsto_const_of_AllZero {coef : ℝ} {exps : List ℝ} {basis : Basis}
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp [AllZero] at h_exps
+      simp only [AllZero] at h_exps
       have := zero_head_toFun coef h_length h_exps.left
-      simp [this]
-      simp at h_length
+      simp only [this, List.tail!_cons]
+      simp only [List.length_cons, add_left_inj] at h_length
       exact tendsto_const_of_AllZero h_length h_exps.right
 
 theorem tendsto_zero_of_FirstIsNeg {coef : ℝ} {exps : List ℝ} {basis : Basis}
@@ -564,12 +535,12 @@ theorem tendsto_zero_of_FirstIsNeg {coef : ℝ} {exps : List ℝ} {basis : Basis
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp [FirstIsNeg] at h_exps
+      simp only [FirstIsNeg] at h_exps
       cases' h_exps with h_exps h_exps
       · exact tendsto_zero coef h_length h_exps h_basis
       · have := zero_head_toFun coef h_length h_exps.left
-        simp [this]
-        simp at h_length
+        simp only [this, List.tail!_cons]
+        simp only [List.length_cons, add_left_inj] at h_length
         exact tendsto_zero_of_FirstIsNeg (h_basis.tail) h_length h_exps.right
 
 theorem tendsto_top_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
@@ -586,12 +557,12 @@ theorem tendsto_top_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp [FirstIsPos] at h_exps
+      simp only [FirstIsPos] at h_exps
       cases' h_exps with h_exps h_exps
       · exact tendsto_top h_length h_basis h_coef h_exps
       · have := zero_head_toFun coef h_length h_exps.left
-        simp [this]
-        simp at h_length
+        simp only [this, List.tail!_cons]
+        simp only [List.length_cons, add_left_inj] at h_length
         exact tendsto_top_of_FirstIsPos (h_basis.tail) h_length h_coef
           h_exps.right
 
@@ -609,12 +580,12 @@ theorem tendsto_bot_of_FirstIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp [FirstIsPos] at h_exps
+      simp only [FirstIsPos] at h_exps
       cases' h_exps with h_exps h_exps
       · exact tendsto_bot h_length h_basis h_coef h_exps
       · have := zero_head_toFun coef h_length h_exps.left
-        simp [this]
-        simp at h_length
+        simp only [this, List.tail!_cons]
+        simp only [List.length_cons, add_left_inj] at h_length
         exact tendsto_bot_of_FirstIsPos (h_basis.tail) h_length h_coef
           h_exps.right
 
@@ -630,11 +601,11 @@ theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : 
   generalize t.exps = exps at *
   induction exps generalizing basis_hd basis_tl with
   | nil =>
-    simp
+    simp only [List.zip_nil_left, List.foldl_nil, isLittleO_const_left]
     right
     apply Tendsto.comp tendsto_norm_atTop_atTop
     apply Tendsto.comp (tendsto_rpow_atTop h_exp)
-    simp [WellFormedBasis] at h_basis
+    simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h_basis
     exact h_basis.right.left
   | cons exps_hd exps_tl ih =>
     cases basis_tl with
@@ -660,12 +631,11 @@ theorem tail_fun_IsLittleO_head {t : Term} {basis_hd : ℝ → ℝ} {basis_tl : 
         ext
         rw [mul_assoc]
       simp only
-
       -- TODO: rewrite it using proved lemmas
       have h_comp : ∀ (a b : ℝ), (0 < a) → (fun x ↦ (basis_tl_hd x)^b) =o[atTop]
           fun x ↦ (basis_hd x)^a := by
         intro a b ha
-        simp [WellFormedBasis] at h_basis
+        simp only [List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h_basis
         apply basis_compare b a (Tendsto.eventually_gt_atTop h_basis.right.right.left 0)
           h_basis.right.left h_basis.left.left.left ha
 

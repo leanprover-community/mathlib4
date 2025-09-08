@@ -36,11 +36,11 @@ theorem approx_cons_zero {basis_hd : ℝ → ℝ}  {f : ℝ → ℝ} {exp : ℝ}
     (h_approx : (PreMS.cons (exp, coef) tl).Approximates f) :
     tl.Approximates f := by
   obtain ⟨fC, h_coef, h_maj, h_tl⟩ := PreMS.Approximates_cons h_approx
-  simp [PreMS.Approximates, h_zero] at h_coef
+  simp only [PreMS.Approximates, h_zero] at h_coef
   apply Approximates_sub_zero h_tl
   rw [eventuallyEq_iff_sub]
   eta_expand
-  simp
+  simp only [Pi.zero_apply, Pi.sub_apply, sub_zero]
   rw [show (fun a ↦ 0) = fun a ↦ (basis_hd a ^ exp * 0) by simp]
   apply EventuallyEq.mul (by rfl) h_coef
 
@@ -58,7 +58,7 @@ theorem approx_cons_nil {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basi
   apply Approximates_sub_zero h_tl
   rw [eventuallyEq_iff_sub]
   eta_expand
-  simp
+  simp only [Pi.zero_apply, Pi.sub_apply, sub_zero]
   rw [show (fun a ↦ 0) = fun a ↦ (basis_hd a ^ exp * 0) by simp]
   exact EventuallyEq.mul (by rfl) h_coef_approx
 

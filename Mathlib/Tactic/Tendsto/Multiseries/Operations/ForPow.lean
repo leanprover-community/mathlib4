@@ -41,7 +41,9 @@ theorem ascPochhammer_nonneg {R : Type u} [LinearOrderedCommRing R] {a : R} {n :
   cases n with
   | zero => simp
   | succ m =>
-    simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
+    simp only [ascPochhammer_succ_right, Polynomial.smeval_mul,
+      Polynomial.ascPochhammer_smeval_cast, Polynomial.smeval_add, Polynomial.smeval_X, pow_one,
+      Polynomial.smeval_natCast, pow_zero, nsmul_eq_mul, mul_one]
     apply mul_nonneg
     · exact ascPochhammer_nonneg ha
     · linarith
@@ -62,15 +64,17 @@ theorem descPochhammer_bound_ascPochhammer {a : 𝕂} {n : ℕ} :
   cases n with
   | zero => simp
   | succ m =>
-    simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast,
-      descPochhammer_succ_right]
+    simp only [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_sub,
+      Polynomial.smeval_X, pow_one, Polynomial.smeval_natCast, pow_zero, nsmul_eq_mul, mul_one,
+      norm_mul, ascPochhammer_succ_right, Polynomial.ascPochhammer_smeval_cast,
+      Polynomial.smeval_add]
     apply mul_le_mul
     · exact descPochhammer_bound_ascPochhammer
     · trans ‖a‖ + ‖(m : 𝕂)‖
       · apply norm_sub_le
-      simp
+      simp only [add_le_add_iff_left]
       -- the following should be simpler
-      conv => lhs; rw [← nsmul_one]
+      conv_lhs => rw [← nsmul_one]
       trans m * ‖(1 : 𝕂)‖
       · apply norm_nsmul_le
       simp
@@ -99,8 +103,10 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     induction k with
     | zero => simp
     | succ l ih =>
-      simp [← add_assoc, Nat.factorial, pow_succ, ascPochhammer_succ_right, Polynomial.smeval_mul,
-        Polynomial.smeval_natCast] at ih ⊢
+      simp only [Polynomial.ascPochhammer_smeval_cast, ← add_assoc, ascPochhammer_succ_right,
+        Nat.cast_add, Polynomial.smeval_mul, Polynomial.smeval_add, Polynomial.smeval_X, pow_succ,
+        pow_zero, one_mul, Polynomial.smeval_natCast, nsmul_eq_mul, mul_one, Nat.factorial,
+        Nat.add_eq, Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_one, mul_inv_rev] at ih ⊢
       convert_to (ascPochhammer ℕ (M + l)).smeval ‖a‖ * ((M + l)! : ℝ)⁻¹ * ↑r ^ l *
         (r * (‖a‖ + (↑M + ↑l)) * (M + l + 1 : ℝ)⁻¹) ≤ (ascPochhammer ℕ M).smeval ‖a‖ * (M ! : ℝ)⁻¹
       · ring_nf
@@ -119,7 +125,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
       have : (r : ℝ) * l ≤ l := by -- for linarith
         apply mul_le_of_le_one_left
         · simp
-        · simp
+        · simp only [NNReal.coe_le_one]
           exact hr.le
       linarith
   apply Asymptotics.IsBigO.of_bound (c := r^M * (ascPochhammer ℕ M).smeval ‖a‖ * ‖(M ! : 𝕂)‖⁻¹)
@@ -135,18 +141,18 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     · apply ContinuousMultilinearMap.opNorm_smul_le
     · apply pow_pos
       simpa
-  simp [pow_add, div_eq_mul_inv]
+  simp only [ContinuousMultilinearMap.norm_mkPiAlgebraFin, mul_one, pow_add]
   move_mul [r.toReal^M, r.toReal^M]
   apply mul_le_mul_of_nonneg_right _ (by simp)
-  simp [Ring.choose_eq_div]
+  simp only [Ring.choose_eq_div, smul_eq_mul, norm_mul, norm_inv, RCLike.norm_natCast]
   trans ((M + k) ! : ℝ)⁻¹ * (ascPochhammer ℕ (M + k)).smeval ‖a‖ * ↑r ^ k
   · rw [mul_le_mul_right, mul_le_mul_left]
     · exact descPochhammer_bound_ascPochhammer
-    · simp
+    · simp only [inv_pos, Nat.cast_pos]
       apply Nat.factorial_pos
     · apply pow_pos
       simpa
-  conv => lhs; arg 1; rw [mul_comm]
+  conv_lhs => arg 1; rw [mul_comm]
   apply this
 
 open ContinuousLinearMap FormalMultilinearSeries
@@ -158,33 +164,39 @@ theorem binomialSeries_ODE {a : ℝ} :
   have h_coeff : ∀ k, (binomialSeries ℝ a).coeff k = (Ring.choose a k) := by
     intro k
     unfold binomialSeries
-    simp [coeff]
+    simp only [coeff, ContinuousMultilinearMap.smul_apply,
+      ContinuousMultilinearMap.mkPiAlgebraFin_apply, smul_eq_mul]
     rw [List.prod_eq_one] -- cringe
     · simp
     · simp [List.forall_mem_ofFn_iff]
   have h_deriv_coeff : ∀ k, ((binomialSeries ℝ a).derivSeries.coeff k) 1 =
       (Ring.choose a (k + 1)) * (k + 1) := by
     intro k
-    simp [derivSeries]
+    simp only [derivSeries]
     unfold coeff
-    simp [changeOriginSeries, changeOriginSeriesTerm, h_coeff]
+    simp only [compFormalMultilinearSeries_apply, changeOriginSeries, changeOriginSeriesTerm,
+      compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
+      Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, coe_sum', Finset.sum_apply,
+      continuousMultilinearCurryFin1_apply, Matrix.zero_empty,
+      ContinuousMultilinearMap.curryFinFinset_apply, apply_eq_prod_smul_coeff, h_coeff, smul_eq_mul]
     rw [← Finset.sum_mul, mul_comm]
     congr 2
     · ring
-    conv => lhs; arg 2; ext; arg 2; ext; arg 2; change fun _ ↦ 1
+    conv_lhs => arg 2; ext; arg 2; ext; arg 2; change fun _ ↦ 1
     have : ∀ x : Fin k ⊕ Fin 1, Sum.elim (1 : Fin k → ℝ) (fun x ↦ 1) x = 1 := by
       intro x
       cases x <;> simp
-    conv => lhs; arg 2; ext; arg 2; ext x; rw [this]
+    conv_lhs => arg 2; ext; arg 2; ext x; rw [this]
     simp [add_comm 1 k]
-  simp
+  simp only
   apply FormalMultilinearSeries.ext
   intro n
-  simp
+  simp only [FormalMultilinearSeries.smul_apply, FormalMultilinearSeries.add_apply,
+    compFormalMultilinearSeries_apply]
   cases n with
   | zero =>
-    simp [unshift]
-    simp [binomialSeries]
+    simp only [unshift, map_zero, add_zero]
+    simp only [binomialSeries, Ring.choose_zero_right', pow_zero, one_smul]
     apply ContinuousMultilinearMap.ext
     intro m
     simp [h_deriv_coeff]
@@ -195,9 +207,9 @@ theorem binomialSeries_ODE {a : ℝ} :
       Nat.succ_eq_add_one, ContinuousMultilinearMap.add_apply, compContinuousMultilinearMap_coe,
       Function.comp_apply, map_smul, apply_apply, continuousMultilinearCurryRightEquiv_symm_apply',
       coe_smul', Pi.smul_apply]
-    conv => rhs; arg 2; arg 2; arg 2; rw [show m (Fin.last k) = m (Fin.last k) • 1 by simp]
+    conv_rhs => arg 2; arg 2; arg 2; rw [show m (Fin.last k) = m (Fin.last k) • 1 by simp]
     simp only [map_smul, Algebra.mul_smul_comm]
-    simp [smul_eq_mul]
+    simp only [smul_eq_mul]
     ring_nf
     rw [show m (Fin.last k) * ∏ i : Fin k, Fin.init m i = ∏ i : Fin (k + 1), m i by
       rw [Fin.prod_univ_castSucc, mul_comm]; rfl]
@@ -208,12 +220,12 @@ theorem binomialSeries_ODE {a : ℝ} :
     move_mul [a]
     rw [mul_assoc, mul_eq_mul_left_iff]
     left
-    simp [h_coeff, h_deriv_coeff, Ring.choose_eq_div]
-    conv => rhs; arg 1; simp [descPochhammer_succ_right, Polynomial.smeval_mul,
+    simp only [h_coeff, Ring.choose_eq_div, smul_eq_mul, h_deriv_coeff, Nat.cast_add, Nat.cast_one]
+    conv_rhs => arg 1; simp [descPochhammer_succ_right, Polynomial.smeval_mul,
       Polynomial.smeval_natCast]
     rw [add_comm 1 k]
     move_mul [← (descPochhammer ℤ (k + 1)).smeval a]
-    conv => lhs; rw [mul_assoc]
+    conv_lhs => rw [mul_assoc]
     trans (descPochhammer ℤ (k + 1)).smeval a * ((a - (1 + ↑k)) * ((k + 1 + 1)! : ℝ)⁻¹ *
       (1 + ↑k + 1) + ((k + 1)! : ℝ)⁻¹ * (↑k + 1))
     swap
@@ -221,7 +233,7 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [mul_assoc, mul_eq_mul_left_iff]
     left
     rw [Nat.factorial_succ (k + 1)]
-    simp [div_eq_mul_inv]
+    simp only [Nat.cast_mul, Nat.cast_add, Nat.cast_one, mul_inv_rev]
     rw [mul_comm]
     have h : ((k + 1)! : ℝ) ≠ 0 := fun h ↦ Nat.factorial_ne_zero _ (Nat.cast_eq_zero.mp h)
     rw [mul_inv_eq_iff_eq_mul₀ h]
@@ -266,7 +278,7 @@ theorem HasFPowerSeriesOnBall.smul {𝕜 : Type u} [NontriviallyNormedField 𝕜
     use ‖c‖ * C
     apply iSup_mono'
     intro h
-    simp
+    simp only [le_refl, exists_prop, and_true]
     intro n
     trans ‖c‖ * ‖pf n‖ * (r : NNReal) ^ n
     · apply mul_le_mul_of_nonneg_right
@@ -300,19 +312,21 @@ theorem HasFPowerSeriesOnBall.unshift {𝕜 : Type u} [NontriviallyNormedField �
     use C * r + ‖z‖
     apply iSup_mono'
     intro h
-    simp
+    simp only [le_refl, exists_prop, and_true]
     intro n
     have hC : 0 ≤ C := by
       specialize h 0
-      simp at h
+      simp only [pow_zero, mul_one] at h
       trans ‖p 0‖
       · apply ContinuousMultilinearMap.opNorm_nonneg
       · exact h
     cases' n with k
-    · simp [FormalMultilinearSeries.unshift]
+    · simp only [FormalMultilinearSeries.unshift, LinearIsometryEquiv.norm_map, pow_zero, mul_one,
+      le_add_iff_nonneg_left, ge_iff_le]
       apply mul_nonneg hC
       simp
-    · simp [FormalMultilinearSeries.unshift, pow_succ]
+    · simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      LinearIsometryEquiv.norm_map, pow_succ, ge_iff_le]
       trans C * r
       · rw [← mul_assoc]
         apply mul_le_mul_of_nonneg_right _ (by simp)
@@ -322,7 +336,8 @@ theorem HasFPowerSeriesOnBall.unshift {𝕜 : Type u} [NontriviallyNormedField �
   · intro y hy
     apply HasSum.zero_add
     simp_rw [FormalMultilinearSeries.unshift.eq_2]
-    simp
+    simp only [Nat.succ_eq_add_one, continuousMultilinearCurryRightEquiv_symm_apply',
+      add_sub_cancel_left]
     conv => arg 1; ext n; arg 1; arg 2; change fun _ ↦ y
     have := ContinuousLinearMap.hasSum (ContinuousLinearMap.apply 𝕜 F y) (h.hasSum hy)
     simpa using this
@@ -350,13 +365,13 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
       ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
     convert h_xfderiv using 1
     ext x
-    conv => rhs; arg 2; rw [show x = x • 1 by simp]
+    conv_rhs => arg 2; rw [show x = x • 1 by simp]
     simp
   rw [binomialSeries_ODE] at h_afun
   have h_rhs := HasFPowerSeriesOnBall.add h_deriv h_xderiv
   have := HasFPowerSeriesOnBall.unique h_afun h_rhs
   have hx_mem : x ∈ EMetric.ball 0 1 := by
-    simp [EMetric.ball]
+    simp only [EMetric.ball, edist_zero_right, ENNReal.coe_lt_one_iff, Set.mem_setOf_eq]
     rw [← NNReal.coe_lt_coe, coe_nnnorm x]
     rw [Real.norm_eq_abs, NNReal.coe_one]
     rw [abs_lt]
@@ -393,30 +408,33 @@ theorem ODE_solution_unique_of_mem_Icc' {E : Type u} [NormedAddCommGroup E] [Nor
   · intro t
     by_cases h : t ∈ Set.Ioo a b
     · simp only [v', h]
-      simp
+      simp only [↓reduceIte]
       apply hv _ h
     · simp only [v', h]
-      simp
+      simp only [↓reduceIte]
       apply LipschitzWith.lipschitzOnWith
       apply LipschitzWith.const'
   · intro t ht
     simp only [v', ht]
-    simp
+    simp only [↓reduceIte]
     apply hf' _ ht
   · intro t ht
     simp only [v', ht]
-    simp
+    simp only [↓reduceIte]
     apply hg' _ ht
 
 theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
     Set.EqOn (binomialSum a) (fun x ↦ (1 + x)^a) (Set.Icc (-1 + ε) (1 - ε)) := by
   have binomialSum_zero : binomialSum a 0 = 1 := by
-    simp [binomialSum, FormalMultilinearSeries.sum]
+    simp only [binomialSum, FormalMultilinearSeries.sum, apply_eq_prod_smul_coeff,
+      Finset.prod_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
     rw [tsum_eq_zero_add']
-    · simp
+    · simp only [pow_zero, one_mul, ne_eq, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false,
+      not_false_eq_true, zero_pow, zero_mul, tsum_zero, add_zero]
       unfold FormalMultilinearSeries.coeff binomialSeries
       simp
-    · simp
+    · simp only [ne_eq, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
+      zero_pow, zero_mul]
       exact summable_zero
   rcases lt_trichotomy ε 1 with (hε' | hε' | hε')
   rotate_left
@@ -429,18 +447,18 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
   apply ODE_solution_unique_of_mem_Icc' (v := v) (s := s) (t₀ := 0)
     (K := ⟨|a| / ε, by apply div_nonneg (by simp); linarith⟩)
   · intro t ht
-    simp at ht
-    simp [s, v]
+    simp only [Set.mem_Ioo, neg_add_lt_iff_lt_add] at ht
+    simp only [lipschitzOnWith_univ, v, s]
     apply LipschitzWith.weaken (K := ⟨|a| / (1 + t), by apply div_nonneg (by simp); linarith⟩)
     conv => arg 2; ext x; rw [mul_comm, ← mul_div, mul_comm]; change (a / (1 + t)) • x
     convert lipschitzWith_smul _ <;> try infer_instance
-    · simp [nnnorm]
+    · simp only [nnnorm, norm_div, Real.norm_eq_abs]
       rw [Subtype.eq_iff]
-      simp
+      simp only
       rw [abs_of_nonneg (a := 1 + t)]
       linarith
     · rw [← NNReal.coe_le_coe]
-      simp
+      simp only [NNReal.coe_mk]
       exact div_le_div_of_nonneg_left (by simp) hε (by linarith)
   · simpa
   · apply ContinuousOn.mono (s := EMetric.ball 0 (binomialSeries ℝ a).radius)
@@ -448,8 +466,8 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
       convert FormalMultilinearSeries.continuousOn
       infer_instance -- why asked?
     · intro x hx
-      simp at hx
-      simp [EMetric.ball]
+      simp only [Set.mem_Icc, neg_add_le_iff_le_add] at hx
+      simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq]
       apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
       rw [← ENNReal.coe_one, ENNReal.coe_one, ENNReal.coe_lt_one_iff]
       rw [← NNReal.coe_lt_coe, coe_nnnorm x]
@@ -457,9 +475,9 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
       rw [abs_lt]
       constructor <;> linarith
   · intro t ht
-    simp [v]
+    simp only [v]
     apply binomialSum_ODE
-    simp at ht
+    simp only [Set.mem_Ioo, neg_add_lt_iff_lt_add] at ht
     rw [abs_lt]
     constructor <;> linarith
   · simp [s]
@@ -472,8 +490,8 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
       simp at hx
       linarith
   · intro t ht
-    simp at ht
-    simp [v]
+    simp only [Set.mem_Ioo, neg_add_lt_iff_lt_add] at ht
+    simp only [v]
     conv => arg 2; rw [← mul_div, ← Real.rpow_sub_one (by linarith)]
     have := HasDerivAt.rpow_const (f := fun x ↦ 1 + x) (p := a) (x := t) (f' := 1)
     simp only [one_mul] at this
@@ -490,7 +508,7 @@ theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + 
   have hε : 0 < ε := by dsimp [ε]; linarith
   have := binomialSum_eq_rpow_aux (a := a) hε
   apply this
-  simp
+  simp only [Set.mem_Icc, neg_add_le_iff_le_add]
   rw [abs_lt] at hx
   dsimp [ε]
   constructor <;> linarith [le_abs_self x, neg_abs_le x]

@@ -50,35 +50,35 @@ theorem powSeriesFrom_eq_cons {a : ℝ} {acc : ℝ} {n : ℕ} :
 
 theorem powSeries_eq_cons {a : ℝ} :
     powSeries a = Seq.cons 1 (powSeriesFrom a a 1) := by
-  simp [powSeries]
+  simp only [powSeries]
   rw [powSeriesFrom_eq_cons]
   congr
   norm_num
 
 theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).get? m =
     .some (acc * ((descPochhammer ℤ m).smeval (a - n)) * n.factorial / (n + m).factorial) := by
-  simp [powSeriesFrom]
+  simp only [powSeriesFrom]
   induction m generalizing acc n with
   | zero =>
-    simp [powSeriesFrom]
+    simp only [descPochhammer_zero, Polynomial.smeval_one, pow_zero, one_smul, mul_one, add_zero]
     rw [corec_cons]
     pick_goal 2
     · exact Eq.refl _
-    simp
+    simp only [get?_cons_zero, Option.some.injEq]
     field_simp
   | succ m ih =>
     rw [corec_cons]
     pick_goal 2
     · exact Eq.refl _
-    simp
+    simp only [get?_cons_succ]
     rw [ih]
-    simp [div_eq_mul_inv]
+    simp only [div_eq_mul_inv, Nat.cast_add, Nat.cast_one, Option.some.injEq]
     move_mul [acc]
     congr 2
     swap
     · congr 3
       ring
-    simp [Nat.factorial_succ]
+    simp only [Nat.factorial_succ, Nat.cast_mul, Nat.cast_add, Nat.cast_one]
     rw [← mul_assoc]
     congr 1
     move_mul [((n : ℝ) + 1)⁻¹]
@@ -92,19 +92,21 @@ theorem powSeries_get {a : ℝ} {n : ℕ} : (powSeries a).get? n = .some (Ring.c
 theorem powSeries_eq_binomialSeries {a : ℝ} :
     (powSeries a).toFormalMultilinearSeries = binomialSeries ℝ a := by
   ext n f
-  simp [binomialSeries, toFormalMultilinearSeries_coeff, powSeries_get]
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, toFormalMultilinearSeries_coeff,
+    powSeries_get, Option.getD_some, smul_eq_mul, binomialSeries,
+    ContinuousMultilinearMap.smul_apply, ContinuousMultilinearMap.mkPiAlgebraFin_apply]
   rw [mul_comm]
   congr
   exact Eq.symm List.prod_ofFn
 
 theorem powSeries_analytic {a : ℝ} : Analytic (powSeries a) := by
-  simp [Analytic, powSeries_eq_binomialSeries]
+  simp only [Analytic, powSeries_eq_binomialSeries]
   have : 1 ≤ (binomialSeries ℝ a).radius := by apply binomialSeries_radius_ge_one
   apply lt_of_lt_of_le _ this
   simp
 
 theorem powSeries_toFun_eq {t : ℝ} {a : ℝ} (ht : ‖t‖ < 1) : (powSeries a).toFun t = (1 + t)^a := by
-  simp [toFun, powSeries_eq_binomialSeries]
+  simp only [toFun, powSeries_eq_binomialSeries]
   exact binomialSum_eq_rpow ht
 
 /-- If `ms` approximates `f` that eventually positive and `a` is a real number,
@@ -123,17 +125,18 @@ noncomputable def pow {basis : Basis} (ms : PreMS basis) (a : ℝ) : PreMS basis
       ((powSeries a).apply (mulMonomial tl coef.inv (-exp))) (coef.pow a) (exp * a)
 
 theorem powSeries_zero_eq : powSeries 0 = Seq.cons 1 zeros := by
-  simp [powSeries, powSeriesFrom]
+  simp only [powSeries, powSeriesFrom, zero_sub, mul_neg]
   rw [corec_cons]
   pick_goal 2
-  · simp
+  · simp only [CharP.cast_eq_zero, mul_zero, neg_zero, zero_add, div_one, Option.some.injEq,
+    Prod.mk.injEq]
     constructor <;> exact Eq.refl _
   congr 1
   let motive : LazySeries → LazySeries → Prop := fun a b =>
     b = zeros ∧
     ∃ n, a = Seq.corec (fun (p : ℝ × ℕ) ↦ some (p.1, -(p.1 * ↑p.2) / (↑p.2 + 1), p.2 + 1)) (0, n)
   apply eq_of_bisim' motive
-  · simp [motive]
+  · simp only [true_and, motive]
     use 1
   · intro a b ih
     simp only [motive] at ih ⊢
@@ -146,7 +149,7 @@ theorem powSeries_zero_eq : powSeries 0 = Seq.cons 1 zeros := by
       · exact Eq.refl _
       · rfl
     constructor
-    · conv => lhs; rw [zeros_eq_cons]
+    · conv_lhs => rw [zeros_eq_cons]
     constructor
     · rfl
     use n + 1
@@ -158,9 +161,9 @@ theorem neg_zpow {basis : Basis} {ms : PreMS basis} {a : ℤ} :
   | nil => simp [neg, pow, mulConst, ← mul_zpow]
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
-    · conv => lhs; simp [pow]
+    · conv_lhs => simp [pow]
       split_ifs with ha <;> simp [pow, ha, one]
-    simp [pow]
+    simp only [pow, neg_cons, destruct_cons]
     rw [neg_zpow, mulMonomial_mulConst_left]
     congr 3
     rw [neg_inv_comm, mulMonomial_neg_left, mulMonomial_neg_right, neg_neg]
@@ -171,19 +174,19 @@ theorem pow_WellOrdered {basis : Basis} {ms : PreMS basis} {a : ℝ}
   | nil => constructor
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
-    · simp [pow]
+    · simp only [pow, destruct_nil]
       split_ifs
       · apply one_WellOrdered
       · apply WellOrdered.nil
     · obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
-      simp [pow]
+      simp only [pow, destruct_cons]
       apply mulMonomial_WellOrdered
       · apply apply_WellOrdered
         · apply mulMonomial_WellOrdered
           · exact h_tl
           · apply inv_WellOrdered
             exact h_coef
-        · simp
+        · simp only [mulMonomial_leadingExp]
           generalize leadingExp tl = w at *
           cases w with
           | bot => simp [Ne.bot_lt']
@@ -204,22 +207,23 @@ theorem pow_zero_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basi
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
-      simp [pow]
+      simp only [pow, destruct_nil, ↓reduceIte]
       exact one_Approximates h_basis
     · apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
       obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
       obtain ⟨fC, h_coef, _, h_tl⟩ := Approximates_cons h_approx
-      simp [pow, powSeries_zero_eq]
+      simp only [pow, destruct_cons, powSeries_zero_eq, apply_cons, mul_zero, mulMonomial_cons,
+        add_zero]
       apply Approximates.cons (fC := 1)
-      · conv => rhs; rw [← mul_one 1]
+      · conv_rhs => rw [← mul_one 1]
         apply mul_Approximates (h_basis.tail)
         · exact pow_zero_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
         · exact one_Approximates (h_basis.tail)
       · apply const_majorated
         apply basis_tendsto_top h_basis
         simp
-      · simp
+      · simp only [Pi.one_apply, Real.rpow_zero, mul_one, sub_self]
         rw [show (fun t ↦ 0) = fun t ↦ 1 * (basis_hd t)^(0 : ℝ) * 0 by simp]
         apply mulMonomial_Approximates h_basis
         swap
@@ -236,7 +240,7 @@ theorem pow_zero_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basi
           exact inv_WellOrdered h_coef_wo
         · apply mulMonomial_Approximates h_basis h_tl
           apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
-        simp
+        simp only [mulMonomial_leadingExp]
         generalize tl.leadingExp = e at h_comp
         cases e
         · simp [Ne.bot_lt]
@@ -249,30 +253,29 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
   by_cases ha : a = 0
   · rw [ha]
     eta_expand
-    simp
+    simp only [Pi.pow_apply, Real.rpow_zero]
     apply pow_zero_Approximates h_basis h_wo h_approx h_trimmed
   cases basis with
   | nil =>
     unfold pow
     simp only [Approximates] at *
     eta_expand
-    simp
+    simp only [Pi.pow_apply]
     apply EventuallyEq.pow_const h_approx
   | cons basis_hd basis_tl =>
     have hF_pos : ∀ᶠ t in atTop, 0 < f t :=
       eventually_pos_of_coef_pos h_pos h_wo h_approx h_trimmed h_basis
     cases' ms with exp coef tl
     · apply Approximates_nil at h_approx
-      simp [pow]
+      simp only [pow, destruct_nil]
       split_ifs
       apply Approximates.nil
       conv =>
         rhs
         ext
-        simp
-        rw [← Real.zero_rpow ha]
+        rw [Pi.zero_apply, ← Real.zero_rpow ha]
       eta_expand
-      simp
+      simp only [Pi.pow_apply]
       apply EventuallyEq.pow_const h_approx
     · apply Trimmed_cons at h_trimmed
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := h_trimmed
@@ -288,7 +291,7 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
             simp only [EventuallyEq]
             apply h_basis_hd_pos.mono
             intro t ht
-            simp
+            simp only [Pi.div_apply]
             rw [mul_div_cancel_left₀]
             apply ne_of_gt
             apply Real.rpow_pos_of_pos ht
@@ -298,16 +301,16 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         apply eventually_pos_of_IsEquivallent hC_equiv
         apply (hF_pos.and h_basis_hd_pos).mono
         intro t ⟨hF_pos, h_basis_hd_pos⟩
-        simp
+        simp only [Pi.div_apply, gt_iff_lt]
         apply div_pos hF_pos
         apply Real.rpow_pos_of_pos h_basis_hd_pos
-      simp [pow]
+      simp only [pow, destruct_cons]
       apply Approximates_of_EventuallyEq (f := fun t ↦ (fC t)^a * (basis_hd t)^(exp * a) *
         (fun t ↦ (fC t)^(-a) * (basis_hd t)^(-exp * a) * (f t)^a) t)
       · simp only [EventuallyEq]
         apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
-        simp
+        simp only [neg_mul, Pi.pow_apply]
         ring_nf
         move_mul [←  fC t ^ (-a)]
         rw [← Real.rpow_add hC_pos]
@@ -328,16 +331,15 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
       · simp only [EventuallyEq]
         apply (hC_pos.and h_basis_hd_pos).mono
         intro t ⟨hC_pos, h_basis_hd_pos⟩
-        simp
+        simp only [Pi.inv_apply]
         ring_nf
-        simp [mul_inv_cancel₀ hC_pos.ne.symm]
-        simp [← Real.rpow_add h_basis_hd_pos]
+        simp [mul_inv_cancel₀ hC_pos.ne.symm, ← Real.rpow_add h_basis_hd_pos]
       apply Approximates_of_EventuallyEq
         (f := (fun t ↦ (1 + t)^a) ∘ (fun t ↦ -1 + fC⁻¹ t * basis_hd t ^ (-exp) * f t))
       · simp only [EventuallyEq]
         apply (hF_pos.and (hC_pos.and h_basis_hd_pos)).mono
         intro t ⟨hF_pos, hC_pos, h_basis_hd_pos⟩
-        simp
+        simp only [Pi.inv_apply, Function.comp_apply, add_neg_cancel_left, neg_mul]
         rw [Real.mul_rpow _ hF_pos.le, Real.mul_rpow, Real.inv_rpow hC_pos.le,
           Real.rpow_neg hC_pos.le, ← Real.rpow_mul h_basis_hd_pos.le, neg_mul]
         · apply inv_nonneg_of_nonneg
@@ -358,14 +360,14 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
           · simp only [EventuallyEq]
             apply h_basis_hd_pos.mono
             intro t h_basis_hd_pos
-            simp [Real.rpow_neg h_basis_hd_pos.le]
+            simp only [Pi.div_apply, Pi.inv_apply, Real.rpow_neg h_basis_hd_pos.le]
             ring
           rw [← isEquivalent_iff_tendsto_one]
-          conv => rhs; ext; rw [mul_comm]
+          conv_rhs => ext; rw [mul_comm]
           apply IsEquivalent_coef h_coef h_coef_wo h_coef_trimmed h_coef_ne_zero h_tl h_comp h_basis
           apply (hC_pos.and h_basis_hd_pos).mono
           intro t ⟨hC_pos, h_basis_hd_pos⟩
-          simp
+          simp only [ne_eq, mul_eq_zero, not_or]
           constructor
           · exact hC_pos.ne.symm
           · rw [Real.rpow_eq_zero_iff_of_nonneg]
@@ -379,14 +381,14 @@ theorem pow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {a
         simp only [EventuallyEq]
         apply this.mono
         intro t this
-        simp
+        simp only [Pi.inv_apply, Function.comp_apply, add_neg_cancel_left]
         rw [powSeries_toFun_eq]
         · simp
         · simpa using this
       apply apply_Approximates powSeries_analytic h_basis
       · apply mulMonomial_WellOrdered h_tl_wo
         exact inv_WellOrdered h_coef_wo
-      · simp
+      · simp only [mulMonomial_leadingExp]
         generalize leadingExp tl = w at h_comp
         cases w with
         | bot => simp [Ne.bot_lt']
@@ -406,19 +408,19 @@ theorem zpow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {
     subst this
     cases basis with
     | nil =>
-      simp [zero, pow, Approximates]
-      simp [zero, Approximates] at h_approx
+      simp only [Approximates, pow, zero, Real.rpow_intCast]
+      simp only [Approximates, zero] at h_approx
       by_cases ha : a = 0
       · simp [ha]
         rfl
       · replace ha : a ≠ 0 := by simpa
         apply h_approx.mono
-        simp [zero_zpow a ha]
+        simp only [Pi.pow_apply, zero_zpow a ha]
         intro x hx
         rw [hx, zero_zpow a ha]
     | cons basis_hd basis_tl =>
-      simp [zero, pow]
-      simp [zero] at h_approx
+      simp only [pow, zero, destruct_nil, Int.cast_eq_zero]
+      simp only [zero] at h_approx
       apply Approximates_nil at h_approx
       split_ifs with ha
       · subst ha
@@ -426,7 +428,7 @@ theorem zpow_Approximates {basis : Basis} {f : ℝ → ℝ} {ms : PreMS basis} {
       · apply Approximates.nil
         replace ha : a ≠ 0 := by simpa
         apply h_approx.mono
-        simp [zero_zpow a ha]
+        simp only [Pi.zero_apply, Pi.pow_apply]
         intro x hx
         rw [hx, zero_zpow a ha]
   · have h_neg_approx : (ms.neg.pow a).Approximates ((-f)^a) := by

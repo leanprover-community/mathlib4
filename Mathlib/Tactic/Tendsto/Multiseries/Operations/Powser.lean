@@ -56,12 +56,12 @@ def ofFn (f : ℕ → ℝ) : LazySeries :=
 theorem ofFnFrom_eq_cons {f : ℕ → ℝ} {n : ℕ} :
     ofFnFrom f n = Seq.cons (f n) (ofFnFrom f (n + 1)) := by
   ext i x
-  simp [ofFnFrom]
+  simp only [ofFnFrom, get?_mk, Option.mem_def, Option.some.injEq]
   cases i with
   | zero =>
     simp
   | succ i =>
-    simp
+    simp only [get?_cons_succ, get?_mk, Option.some.injEq]
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> (convert h using 2; ring)
 
 @[simp]
@@ -132,8 +132,8 @@ theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
     apply FormalMultilinearSeries.le_radius_of_bound (C := C / r)
     intro n
     specialize h_bound (n + 1)
-    simp [toFormalMultilinearSeries_coeff] at h_bound ⊢
-    simp [toFormalMultilinearSeries_coeff, pow_succ, ← mul_assoc] at h_bound ⊢
+    simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, toFormalMultilinearSeries_coeff,
+      get?_cons_succ, Real.norm_eq_abs, pow_succ, ← mul_assoc] at h_bound ⊢
     rwa [le_div_iff₀]
     simpa
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
@@ -149,15 +149,17 @@ theorem tail_radius_eq {s_hd : ℝ} {s_tl : LazySeries} :
       simp [toFormalMultilinearSeries_coeff]
     | succ m =>
       specialize h_bound m
-      simp [toFormalMultilinearSeries_coeff] at h_bound ⊢
+      simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, toFormalMultilinearSeries_coeff,
+        get?_cons_succ, Real.norm_eq_abs, le_sup_iff]
       left
-      simp [toFormalMultilinearSeries_coeff, pow_succ, ← mul_assoc] at h_bound ⊢
+      simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, toFormalMultilinearSeries_coeff,
+        Real.norm_eq_abs, pow_succ, ← mul_assoc] at h_bound ⊢
       rw [← div_le_iff₀, mul_div_assoc, ← NNReal.coe_div, div_self hr_pos.ne.symm] <;> simpa
 
 theorem tail_analytic {s_hd : ℝ} {s_tl : LazySeries}
     (h_analytic : Analytic (.cons s_hd s_tl)) :
     Analytic s_tl := by
-  simp [Analytic] at *
+  simp only [Analytic] at *
   rwa [← tail_radius_eq]
 
 /-- The function represented by a lazy series. -/
@@ -166,9 +168,9 @@ noncomputable def toFun (s : LazySeries) : ℝ → ℝ :=
 
 @[simp]
 theorem toFun_nil : toFun Seq.nil = 0 := by
-  simp [toFun]
+  simp only [toFun]
   unfold toFormalMultilinearSeries coeff
-  simp
+  simp only [get?_nil, Option.getD_none]
   unfold FormalMultilinearSeries.ofScalars FormalMultilinearSeries.sum
   simp
   rfl
@@ -182,7 +184,8 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
   replace h_hsum := HasFPowerSeriesOnBall.hasSum h_hsum ht
   have h_hsum_tl := FormalMultilinearSeries.hasFPowerSeriesOnBall _ h_tl
   replace h_hsum_tl := HasFPowerSeriesOnBall.hasSum h_hsum_tl (tail_radius_eq ▸ ht)
-  simp at h_hsum h_hsum_tl
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, Finset.prod_const, Finset.card_univ,
+    Fintype.card_fin, smul_eq_mul, zero_add] at h_hsum h_hsum_tl
   simp_rw [toFormalMultilinearSeries_coeff] at h_hsum h_hsum_tl
   unfold toFun
   generalize (toFormalMultilinearSeries (Seq.cons s_hd s_tl)).sum t = a at *
@@ -202,7 +205,7 @@ theorem toFun_cons {s_hd : ℝ} {s_tl : LazySeries} {t : ℝ}
 theorem toFun_of_HasFPowerSeriesAt {s : LazySeries} {f : ℝ → ℝ}
     (h : HasFPowerSeriesAt f s.toFormalMultilinearSeries 0) :
     s.toFun =ᶠ[𝓝 0] f := by
-  simp [toFun]
+  simp only [toFun]
   obtain ⟨r, h⟩ := h
   rw [Filter.eventuallyEq_iff_exists_mem]
   use EMetric.ball 0 r
@@ -221,13 +224,14 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
     (h_analytic : Analytic (.cons s_hd s_tl)) :
     Tendsto (toFun (.cons s_hd s_tl)) (𝓝 0) (𝓝 s_hd) := by
   have : (toFun (.cons s_hd s_tl)) 0 = s_hd := by
-    simp [toFun, FormalMultilinearSeries.sum]
+    simp only [toFun, FormalMultilinearSeries.sum, FormalMultilinearSeries.apply_eq_prod_smul_coeff,
+      Finset.prod_const, Finset.card_univ, Fintype.card_fin, smul_eq_mul]
     rw [tsum_eq_zero_add']
-    · simp
+    · simp only [pow_zero, one_mul, ne_eq, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false,
+      not_false_eq_true, zero_pow, zero_mul, tsum_zero, add_zero]
       unfold toFormalMultilinearSeries
       simp [FormalMultilinearSeries.ofScalars, FormalMultilinearSeries.coeff, coeff]
-    · simp
-      exact summable_zero
+    · simpa using summable_zero
   conv =>
     arg 3
     rw [← this]
@@ -239,7 +243,7 @@ theorem toFun_tendsto_head {s_hd : ℝ} {s_tl : LazySeries}
 theorem toFun_IsBigO_one {s : LazySeries} (h_analytic : s.Analytic) {f : ℝ → ℝ}
     (hF : Tendsto f atTop (𝓝 0)) : ((toFun s) ∘ f) =O[atTop] (1 : ℝ → ℝ) := by
   cases' s with s_hd s_tl
-  · simp [toFun_nil]
+  · simp only [toFun_nil, Pi.zero_comp]
     apply isBigO_zero
   · apply isBigO_const_of_tendsto (y := s_hd) _ (by exact ne_zero_of_eq_one rfl)
     apply Tendsto.comp _ hF
@@ -266,7 +270,7 @@ theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply (.cons s_hd s_tl) ms) = .cons (0, PreMS.const _ s_hd) ((apply s_tl ms).mul ms) := by
-  simp [apply]
+  simp only [apply]
   conv =>
     lhs
     rw [Seq.corec_cons (by rfl)]
@@ -275,7 +279,7 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
     arg 1
     unfold const
   rw [merge1_cons_head_cons]
-  simp [Seq.cons_eq_cons, one, ← merge1_mul_comm_right]
+  simp only [nil_add, one, ← merge1_mul_comm_right, cons_eq_cons, true_and]
   congr 1
   let motive : Seq (PreMS (basis_hd :: basis_tl)) → Seq (PreMS (basis_hd :: basis_tl)) → Prop :=
     fun x y =>
@@ -283,10 +287,10 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
       x = Seq.corec (apply_aux ms) (X.mul ms, s) ∧
       y = Seq.map (fun X ↦ X.mul ms) (Seq.corec (apply_aux ms) (X, s))
   apply Seq.eq_of_bisim' motive
-  · simp [motive]
+  · simp only [motive]
     use const (basis_hd :: basis_tl) 1, s_tl
   · intro x y ih
-    simp [motive] at ih
+    simp only [motive] at ih
     obtain ⟨X, s, hx, hy⟩ := ih
     subst hx hy
     cases' s with s_hd s_tl
@@ -297,10 +301,10 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
       use ?_, ?_, ?_
       constructor
       · unfold apply_aux
-        simp
+        simp only
         rw [Seq.corec_cons]
         pick_goal 2
-        · simp
+        · simp only [destruct_cons, Option.some.injEq, Prod.mk.injEq]
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
@@ -311,11 +315,11 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
       · unfold apply_aux
         rw [Seq.corec_cons]
         pick_goal 2
-        · simp
+        · simp only [destruct_cons, Option.some.injEq, Prod.mk.injEq]
           constructor
           · exact Eq.refl _
           · exact Eq.refl _
-        simp
+        simp only [Seq.map_cons]
         congr
         · rw [mul_mulConst_left]
         · exact Eq.refl _
@@ -323,7 +327,7 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
       use ?_, s_tl
       constructor
       · unfold apply_aux
-        simp
+        simp only
         congr 2
         exact Eq.refl _
       · unfold apply_aux
@@ -341,20 +345,18 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
   by_cases h_ms_ne_nil : ms = .nil
   · rw [h_ms_ne_nil]
     cases' s with s_hd s_tl
-    · simp
-      exact WellOrdered.nil
-    · simp
+    · simpa using WellOrdered.nil
+    · simp only [apply_cons, mul_nil]
       apply WellOrdered.cons_nil
       exact const_WellOrdered
-  simp [apply]
+  simp only [apply]
   apply merge1_WellOrdered
   · let motive : Seq (PreMS (basis_hd :: basis_tl)) → Prop := fun a =>
       ∃ X s, a = Seq.corec (apply_aux ms) (X, s) ∧ X.WellOrdered
     apply Seq.All.coind motive
     · simp only [motive]
       use one _, s
-      simp
-      exact const_WellOrdered
+      simpa using const_WellOrdered
     · intro hd tl ih
       simp only [motive] at ih ⊢
       obtain ⟨X, s, h_eq⟩ := ih
@@ -366,7 +368,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
       pick_goal 2
       · simp only [apply_aux]
         exact Eq.refl _
-      simp [Seq.cons_eq_cons] at h_eq
+      simp only [Seq.tail_cons, cons_eq_cons] at h_eq
       obtain ⟨⟨h_hd, h_tl⟩, hX_wo⟩ := h_eq
       constructor
       · rw [h_hd]
@@ -394,7 +396,7 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
       pick_goal 2
       · simp only [apply_aux]
         exact Eq.refl _
-      simp [Seq.cons_eq_cons] at h_eq
+      simp only [Seq.tail_cons, cons_eq_cons] at h_eq
       obtain ⟨h_hd, h_tl⟩ := h_eq
       constructor
       · rw [h_tl]
@@ -406,11 +408,12 @@ theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : 
         pick_goal 2
         · simp only [apply_aux]
           exact Eq.refl _
-        simp [h_hd, lt_iff_lt]
-        conv => rhs; rw [← add_zero X.leadingExp]
+        simp only [Seq.tail_cons, Seq.head_cons, h_hd, gt_iff_lt, lt_iff_lt, mulConst_leadingExp,
+          Option.elim_some, mul_leadingExp]
+        conv_rhs => rw [← add_zero X.leadingExp]
         apply WithBot.add_lt_add_left
         · contrapose hX_ne_nil
-          simp at hX_ne_nil ⊢
+          simp only [ne_eq, Decidable.not_not, not_not] at hX_ne_nil ⊢
           rwa [leadingExp_eq_bot]
         · exact h_neg
       use ?_, ?_
@@ -433,12 +436,12 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
       X.WellOrdered ∧ X.Approximates fX ∧
       Y.WellOrdered ∧ Y.Approximates fY
   apply Approximates.coind motive
-  · simp [motive]
+  · simp only [motive]
     use s
     constructor
     · exact h_analytic
     use .nil, one _, 0, 1
-    simp
+    simp only [one_mul, zero_add, EventuallyEq.refl, mul_one', nil_add, true_and]
     constructor
     · apply WellOrdered.nil
     constructor
@@ -448,7 +451,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
     · apply const_WellOrdered
     · apply one_Approximates h_basis
   · intro f' ms' ih
-    simp [motive] at ih
+    simp only [motive] at ih
     obtain ⟨s, h_analytic, ⟨X, Y, fX, fY, hf_eq, h_ms_eq, hX_wo, hX_approx, hY_wo, hY_approx⟩⟩ := ih
     have hF_in_ball : ∀ᶠ x in atTop,
         f x ∈ EMetric.ball 0 (toFormalMultilinearSeries s).radius := by
@@ -456,7 +459,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
       | top => simp
       | coe r =>
         have := NormedAddCommGroup.tendsto_nhds_zero.mp hF_tendsto_zero
-        simp [Analytic] at h_analytic
+        simp only [Analytic] at h_analytic
         specialize this r (by simpa [h_rad] using h_analytic)
         simpa using this
     cases' X with X_exp X_coef X_tl
@@ -486,7 +489,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
           · trans; · exact hf_eq
             simpa [toFun_nil]
         · right
-          simp [-apply_cons] at h_ms_eq -- TODO: rewrite
+          simp only [nil_add] at h_ms_eq -- TODO: rewrite
           rw [apply_cons] at h_ms_eq
           simp only [mul_cons_cons, zero_add] at h_ms_eq
           rw [mul_assoc'] at h_ms_eq
@@ -520,7 +523,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
                 · simp only [EventuallyEq] at hf_eq hX_approx ⊢
                   apply ((hf_eq.and hX_approx).and hF_in_ball).mono
                   intro t ⟨⟨hf_eq, hX_approx⟩, hF_in_ball⟩
-                  simp [hf_eq, hX_approx, toFun_cons h_analytic hF_in_ball]
+                  simp only [hf_eq, Pi.add_apply, hX_approx, Pi.zero_apply, Pi.mul_apply,
+                    Function.comp_apply, toFun_cons h_analytic hF_in_ball, zero_add]
                   ring_nf!
                 constructor
                 · rfl
@@ -551,11 +555,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
             rw [← add_zero (fX t)]
           apply EventuallyEq.add
           · rfl
-          conv => rhs; ext t; rw [← zero_mul ((s.toFun ∘ f) t)]
+          conv_rhs => ext t; rw [← zero_mul ((s.toFun ∘ f) t)]
           apply EventuallyEq.mul
           · exact hY_approx
           · rfl
-        simp at h_ms_eq -- #1 (i've copypasted it to below)
+        simp only [mul_nil, add_nil] at h_ms_eq -- #1 (i've copypasted it to below)
         use X_exp, X_coef, X_tl, fXC
         constructor
         · exact h_ms_eq
@@ -564,16 +568,16 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
         constructor
         · apply majorated_of_EventuallyEq hf_eq
           exact hX_maj
-        · simp [motive]
+        · simp only [motive]
           use s
           constructor
           · exact h_analytic
           use X_tl, .nil, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t, 0
           constructor
-          · simp
+          · simp only [zero_mul, add_zero]
             apply eventuallyEq_iff_sub.mpr
             eta_expand
-            simp
+            simp only [Pi.sub_apply, sub_sub_sub_cancel_right, Pi.zero_apply]
             apply eventuallyEq_iff_sub.mp hf_eq
           constructor
           · simp
@@ -597,12 +601,12 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
               rw [← add_zero (fX t)]
             apply EventuallyEq.add
             · rfl
-            conv => rhs; ext t; rw [← mul_zero (fY t)]
+            conv_rhs => ext t; rw [← mul_zero (fY t)]
             apply EventuallyEq.mul
             · rfl
             · simp [toFun_nil]
               rfl
-          simp [apply_nil] at h_ms_eq -- copypaste from #1
+          simp only [apply_nil, nil_mul, add_nil] at h_ms_eq -- copypaste from #1
           use X_exp, X_coef, X_tl, fXC
           constructor
           · exact h_ms_eq
@@ -611,16 +615,16 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
           constructor
           · apply majorated_of_EventuallyEq hf_eq
             exact hX_maj
-          · simp [motive]
+          · simp only [motive]
             use .nil
             constructor
             · exact h_analytic
             use X_tl, .nil, fun t ↦ fX t - basis_hd t ^ X_exp * fXC t, 0
             constructor
-            · simp
+            · simp only [toFun_nil, Pi.zero_comp, mul_zero, add_zero]
               apply eventuallyEq_iff_sub.mpr
               eta_expand
-              simp
+              simp only [Pi.sub_apply, sub_sub_sub_cancel_right, Pi.zero_apply]
               apply eventuallyEq_iff_sub.mp hf_eq
             constructor
             · simp
@@ -642,11 +646,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
             · exact hX_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
-              rw [show X_exp = X_exp ⊔ Y_exp by simp; linarith]
+              rw [show X_exp = X_exp ⊔ Y_exp by simp only [left_eq_sup]; linarith]
               apply add_majorated hX_maj
               apply mul_bounded_majorated hY_maj
               exact toFun_IsBigO_one h_analytic hF_tendsto_zero
-            simp [motive]
+            simp only [motive]
             use .cons s_hd s_tl
             constructor
             · exact h_analytic
@@ -654,7 +658,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
             constructor
             · apply eventuallyEq_iff_sub.mpr
               eta_expand
-              simp
+              simp only [Function.comp_apply, Pi.mul_apply, Pi.add_apply, Pi.sub_apply,
+                Pi.zero_apply]
               ring_nf
               conv =>
                 lhs; ext t; rw [show f' t + (-fX t - fY t * toFun (Seq.cons s_hd s_tl) (f t)) =
@@ -680,11 +685,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
               · exact hY_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
-              rw [show Y_exp = X_exp ⊔ Y_exp by simp; linarith]
+              rw [show Y_exp = X_exp ⊔ Y_exp by simp only [right_eq_sup]; linarith]
               apply add_majorated hX_maj
               apply mul_bounded_majorated hY_maj
               exact toFun_IsBigO_one h_analytic hF_tendsto_zero
-            simp [motive]
+            simp only [motive]
             use s_tl
             constructor
             · apply tail_analytic h_analytic
@@ -696,7 +701,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
             · simp only [EventuallyEq] at hf_eq ⊢
               apply (hf_eq.and hF_in_ball).mono
               intro t ⟨hf_eq, hF_in_ball⟩
-              simp [hf_eq, toFun_cons h_analytic hF_in_ball]
+              simp only [hf_eq, Pi.add_apply, Pi.mul_apply, Function.comp_apply,
+                toFun_cons h_analytic hF_in_ball]
               ring
             constructor
             · rw [mul_assoc']
@@ -738,11 +744,11 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
                 · exact hY_coef
             constructor
             · apply majorated_of_EventuallyEq hf_eq
-              rw [show X_exp = X_exp ⊔ Y_exp by simp; linarith]
+              rw [show X_exp = X_exp ⊔ Y_exp by simp only [left_eq_sup]; linarith]
               apply add_majorated hX_maj
               apply mul_bounded_majorated hY_maj
               exact toFun_IsBigO_one h_analytic hF_tendsto_zero
-            simp [motive]
+            simp only [motive]
             use s_tl
             constructor
             · exact tail_analytic h_analytic
@@ -756,7 +762,8 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
             · simp only [EventuallyEq] at hf_eq ⊢
               apply (hf_eq.and hF_in_ball).mono
               intro t ⟨hf_eq, hF_in_ball⟩
-              simp [h, hf_eq, toFun_cons h_analytic hF_in_ball]
+              simp only [hf_eq, Pi.add_apply, Pi.mul_apply, Function.comp_apply,
+                toFun_cons h_analytic hF_in_ball, h]
               ring
             constructor
             · rw [mul_assoc']
@@ -786,7 +793,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : Analytic s) {basis_hd 
               · exact hY_approx
 
 theorem analytic_of_all_le_one {s : LazySeries} (h : s.All fun x ↦ |x| ≤ 1) : s.Analytic := by
-  simp [Analytic]
+  simp only [Analytic]
   apply lt_of_lt_of_le (b := 1)
   · simp
   apply FormalMultilinearSeries.le_radius_of_bound (C := 1)
@@ -803,7 +810,7 @@ section Zeros
 def zeros : LazySeries := Seq.corec (fun () ↦ some (0, ())) ()
 
 theorem zeros_eq_cons : zeros = .cons 0 zeros := by
-  simp [zeros]
+  simp only [zeros]
   nth_rw 1 [corec_cons]
   rfl
 
@@ -817,7 +824,7 @@ theorem zeros_get {n : ℕ} : zeros.get? n = .some 0 := by
     simpa
 
 theorem zeros_toFun : zeros.toFun = 0 := by
-  simp [toFun, toFormalMultilinearSeries]
+  simp only [toFun, toFormalMultilinearSeries]
   unfold FormalMultilinearSeries.sum FormalMultilinearSeries.ofScalars
   simp [coeff, zeros_get]
   rfl

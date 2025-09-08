@@ -385,7 +385,7 @@ lemma log_cons_basis_tl_cons {basis_hd : ℝ → ℝ} {basis_tl_hd : ℝ → ℝ
     PreMS.add ((.cons (0, (PreMS.log logBasis_tl coef).add <| log_hd.mulConst exp) .nil))
       (PreMS.logSeries.apply (PreMS.mulMonomial tl coef.inv (-exp))) := by
   subst h
-  conv => lhs; unfold PreMS.log
+  conv_lhs => unfold PreMS.log
   rfl
 
 lemma exp_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}

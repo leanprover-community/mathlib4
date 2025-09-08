@@ -37,15 +37,15 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
   · intro _ h_basis
     simp at h_basis
   · intro _ _ h_basis h
-    simp at h_basis
+    simp only [List.cons.injEq] at h_basis
     obtain ⟨h_basis_hd, h_basis_tl⟩ := h_basis
     subst h_basis_hd h_basis_tl
     simp at h
   · intro _ _ exp coef tl h_trimmed h_ne_zero h_basis h
-    simp at h_basis
+    simp only [List.cons.injEq] at h_basis
     obtain ⟨h_basis_hd, h_basis_tl⟩ := h_basis
     subst h_basis_hd h_basis_tl
-    simp [Seq.cons_eq_cons] at h
+    simp only [Seq.cons_eq_cons, Prod.mk.injEq] at h
     rw [← h.1.2]
     exact ⟨h_trimmed, h_ne_zero⟩
   · rfl
@@ -54,7 +54,7 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
 theorem const_Trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (PreMS.const basis c).Trimmed := by
   cases' basis with basis_hd basis_tl
   · constructor
-  simp [const]
+  simp only [const]
   constructor
   · exact const_Trimmed hc
   cases basis_tl <;> simp [const, zero, hc]
@@ -65,7 +65,7 @@ theorem monomial_rpow_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) (
   · constructor
   cases' n with n
   · constructor
-    · simp [one]
+    · simp only [one]
       exact const_Trimmed (by simp)
     · cases basis_tl <;> simp [one, zero, const]
   · constructor
@@ -91,12 +91,11 @@ theorem extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : 
     {ms : PreMS (basis_hd :: basis_tl)}
     (h_trimmed : ms.Trimmed) : (ms.extendBasisEnd b).Trimmed := by
   cases' ms with exp coef tl
-  · simp [extendBasisEnd]
-    constructor
-  simp [extendBasisEnd]
+  · constructor
+  simp only [List.cons_append, extendBasisEnd, List.append_eq, Seq.map_cons]
   constructor
   · cases' basis_tl with basis_tl_hd basis_tl_tl
-    · simp [extendBasisEnd, const]
+    · simp only [List.nil_append, extendBasisEnd, const]
       constructor
       · exact (Trimmed_cons h_trimmed).left
       · exact (Trimmed_cons h_trimmed).right
@@ -112,13 +111,13 @@ theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → 
   cases' left with left_hd left_tl
   · cases' ms with exp coef tl
     · simp [zero] at h_ne_zero
-    simp [extendBasisMiddle]
+    simp only [List.nil_append, extendBasisMiddle]
     constructor
     · exact h_trimmed
     · simp [zero]
   · cases' ms with exp coef tl
     · simp [zero] at h_ne_zero
-    simp [extendBasisMiddle]
+    simp only [List.cons_append, extendBasisMiddle, List.append_eq, Seq.map_cons]
     apply Trimmed_cons at h_trimmed
     constructor
     · exact extendBasisMiddle_Trimmed h_trimmed.left h_trimmed.right
@@ -140,7 +139,7 @@ theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       apply Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
     · obtain ⟨C, h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
-      simp at h_neg
+      simp only [leadingExp_cons, WithBot.coe_lt_zero] at h_neg
       apply majorated_tendsto_zero_of_neg h_neg h_maj
 
 end PreMS

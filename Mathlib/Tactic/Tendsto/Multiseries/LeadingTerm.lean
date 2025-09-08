@@ -34,7 +34,7 @@ def leadingTerm {basis : Basis} (ms : PreMS basis) : Term :=
 theorem leadingTerm_cons_coef {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)} :
     (@leadingTerm (basis_hd :: basis_tl) (cons (exp, coef) tl)).coef = coef.leadingTerm.coef := by
-  conv => lhs; simp [leadingTerm]
+  conv_lhs => simp [leadingTerm]
 
 theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
     ms.leadingTerm.exps.length = basis.length :=
@@ -43,8 +43,9 @@ theorem leadingTerm_length {basis : Basis} {ms : PreMS basis} :
   | List.cons basis_hd basis_tl => by
     cases ms <;> simp [leadingTerm, leadingTerm_length]
 
-theorem leadingTerm_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    : ms.leadingTerm.exps ≠ [] := by
+theorem leadingTerm_ne_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)} :
+    ms.leadingTerm.exps ≠ [] := by
   cases' ms with exp coef tl <;> simp [leadingTerm]
 
 theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
@@ -52,7 +53,7 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
     (leadingTerm (basis := basis_hd :: basis_tl) (Seq.cons (exp, coef) tl)).toFun
       (basis_hd :: basis_tl) t =
     (basis_hd t)^exp * (leadingTerm coef).toFun basis_tl t := by
-  simp [leadingTerm, Term.toFun]
+  simp only [Term.toFun, leadingTerm, Seq.head_cons, List.zip_cons_cons, List.foldl_cons]
   conv =>
     congr <;> rw [Term.fold_eq_mul]
     lhs
@@ -62,13 +63,11 @@ theorem leadingTerm_cons_toFun {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp 
 theorem zero_of_leadingTerm_zero_coef {basis : Basis} {ms : PreMS basis} (h_trimmed : ms.Trimmed)
     (h : ms.leadingTerm.coef = 0) : ms = zero basis := by
   cases basis with
-  | nil =>
-    simp [leadingTerm] at h
-    exact h
+  | nil => simpa [leadingTerm] using h
   | cons basis_hd basis_tl =>
     cases' ms with exp coef tl
     · rfl
-    simp [leadingTerm] at h
+    simp only [leadingTerm, Seq.head_cons] at h
     replace h_trimmed := Trimmed_cons h_trimmed
     have : coef = zero _ := zero_of_leadingTerm_zero_coef h_trimmed.left h
     simp [this] at h_trimmed
@@ -81,7 +80,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
   cases basis with
   | nil =>
     unfold leadingTerm
-    simp [Term.toFun]
+    simp only [Term.toFun, List.zip_nil_right, List.foldl_nil, ne_eq, eventually_atTop, ge_iff_le]
     use default
     intros
     intro h
@@ -95,7 +94,7 @@ theorem leadingTerm_eventually_ne_zero {basis : Basis} {ms : PreMS basis}
         (h_basis.tail)
       apply (coef_ih.and (basis_head_eventually_pos h_basis)).mono
       rintro t ⟨coef_ih, h_basis_hd_pos⟩
-      simp [leadingTerm, Term.toFun, -ne_eq]
+      simp only [Term.toFun, leadingTerm, Seq.head_cons, List.zip_cons_cons, List.foldl_cons]
       simp only [Term.toFun] at coef_ih
       conv =>
         rw [Term.fold_eq_mul]
@@ -123,7 +122,7 @@ mutual
       f ~[atTop] fun t ↦ (basis_hd t)^exp * (fC t) := by
     have coef_ih := coef.IsEquivalent_leadingTerm (f := fC) h_coef_wo h_coef h_coef_trimmed
       (h_basis.tail)
-    simp [IsEquivalent]
+    simp only [IsEquivalent]
     eta_expand
     simp only [Pi.sub_apply]
     cases' tl with tl_exp tl_coef tl_tl
@@ -131,7 +130,7 @@ mutual
       apply EventuallyEq.trans_isLittleO h_tl
       apply Asymptotics.isLittleO_zero -- should be simp lemma
     · obtain ⟨tl_C, _, h_tl_maj, _⟩ := Approximates_cons h_tl
-      simp at h_comp
+      simp only [leadingExp_cons, WithBot.coe_lt_coe] at h_comp
       let exp' := (exp + tl_exp) / 2
       specialize h_tl_maj exp' (by simp only [exp']; linarith)
       apply IsLittleO.trans h_tl_maj
@@ -184,14 +183,14 @@ mutual
       f ~[atTop] ms.leadingTerm.toFun basis := by
     cases basis with
     | nil =>
-      simp [Approximates] at h_approx
-      simp [leadingTerm]
+      simp only [Approximates] at h_approx
+      simp only [leadingTerm]
       apply EventuallyEq.isEquivalent (by assumption)
     | cons basis_hd basis_tl =>
       cases' ms with exp coef tl
       · have hF := Approximates_nil h_approx
         unfold leadingTerm
-        simp [Term.zero_coef_toFun]
+        simp only [head_nil, List.length_cons, Term.zero_coef_toFun]
         apply EventuallyEq.isEquivalent (by assumption)
       · obtain ⟨fC, h_coef, _, h_tl⟩ := Approximates_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
@@ -246,7 +245,7 @@ theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis} {f : �
   apply ((h_eq.and hφ).and h_leadingTerm).mono
   intro t ⟨⟨h_eq, hφ⟩, h_leadingTerm⟩
   rw [h_eq]
-  simp
+  simp only [Pi.mul_apply, ne_eq, mul_eq_zero, not_or]
   constructor
   · linarith
   · exact h_leadingTerm
@@ -260,9 +259,9 @@ lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
     t1.toFun basis =o[atTop] t2.toFun basis := by
   obtain ⟨coef1, exps1⟩ := t1
   obtain ⟨coef2, exps2⟩ := t2
-  simp at h1 h2 h_lt h_coef2
+  simp only [ne_eq] at h1 h2 h_lt h_coef2
   cases' basis with basis_hd basis_tl
-  · simp at h1 h2
+  · simp only [List.length_nil, List.length_eq_zero] at h1 h2
     simp [h1, h2] at h_lt
   cases' exps1 with exp1 exps1_tl
   · simp at h1
@@ -271,9 +270,9 @@ lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
   cases h_lt with
   | cons h =>
     unfold Term.toFun
-    simp
-    conv => lhs; ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
-    conv => rhs; ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
+    simp only [List.zip_cons_cons, List.foldl_cons]
+    conv_lhs => ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
+    conv_rhs => ext x; rw [Term.fold_eq_mul, mul_comm _ (basis_hd x ^ exp1), mul_assoc, mul_comm]
     apply Asymptotics.IsLittleO.mul_isBigO
     swap
     · apply isBigO_refl
@@ -281,10 +280,10 @@ lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
         Term.toFun ⟨coef2, exps2_tl⟩ basis_tl
     · unfold Term.toFun
       ext x
-      conv => rhs; rw [Term.fold_eq_mul]
+      conv_rhs => rw [Term.fold_eq_mul]
     · unfold Term.toFun
       ext x
-      conv => rhs; rw [Term.fold_eq_mul]
+      conv_rhs => rw [Term.fold_eq_mul]
     exact Term.IsLittleO_of_lt_exps h_basis.tail (by simpa using h1) (by simpa using h2)
       (by simpa) h
   | rel h =>
@@ -301,7 +300,7 @@ lemma Term.IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Term}
       simp at hx ⊢
       left
       rw [hx]
-    simp at h1 h2
+    simp only [List.length_cons, add_left_inj] at h1 h2
     apply Filter.Tendsto.congr' (f₁ :=
       ((Term.mk coef1 (exp1 :: exps1_tl)).mul
       (Term.mk coef2 (exp2 :: exps2_tl)).inv).toFun (basis_hd :: basis_tl))
@@ -414,8 +413,8 @@ theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis}
     simp [leadingTerm_length]
   rw [← this]
   congr!
-  simp [t2']
-  conv => rhs; change ⟨ms1.leadingTerm.coef, ms1.leadingTerm.exps⟩
+  simp only [t2']
+  conv_rhs => change ⟨ms1.leadingTerm.coef, ms1.leadingTerm.exps⟩
   congr 1
   rw [h_coef]
 
@@ -444,7 +443,7 @@ theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
     simp [leadingTerm_length]
   rw [← this, ← Term.smul_toFun]
   congr!
-  simp [t2']
+  simp only
   rw [mul_div_cancel₀]
   contrapose! h_coef
   simp [h_coef]
@@ -457,7 +456,7 @@ theorem FirstIsPos_ne_zero {basis : Basis} {ms : PreMS basis}
   · simp [leadingTerm] at h_pos
     cases h_pos
   · apply Term.not_FirstIsPos_of_AllZero _ h_pos
-    simp [h, zero, leadingTerm]
+    simp only [leadingTerm, h, zero, head_nil, List.length_cons]
     exact Term.AllZero_of_replicate
 
 theorem const_leadingTerm_eq {basis : Basis} {c : ℝ} :
@@ -502,7 +501,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
     (h_trimmed : ms.Trimmed) (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
     (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] f := by
   cases' basis with basis_hd basis_tl
-  · simp [leadingTerm] at h_pos
+  · simp only [leadingTerm] at h_pos
     cases h_pos
   have h_basis' := insertLastLog_WellFormedBasis h_basis
   let ms' : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
@@ -532,8 +531,8 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   generalize basis_tl.length + 1 = n at *
   induction n generalizing exps with
   | zero =>
-    simp at h_len
-    simp [h_len] at h_pos
+    simp only [List.length_eq_zero] at h_len
+    simp only [h_len] at h_pos
     cases h_pos
   | succ n ih =>
     cases' exps with exp exps_tl <;> simp at h_len
@@ -583,7 +582,7 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
     (h_exps : Term.FirstIsNeg t_exps) :
     Tendsto f atTop (𝓝 0) := by
   cases' basis with basis_hd basis_tl
-  · simp [leadingTerm] at h_eq
+  · simp only [leadingTerm, Term.mk.injEq, List.nil_eq] at h_eq
     simp [h_eq.right, Term.FirstIsNeg] at h_exps
   cases' ms with exp coef tl
   · apply Approximates_nil at h_approx
@@ -591,8 +590,8 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
     apply tendsto_const_nhds
   · obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
     obtain ⟨fC, h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
-    simp [leadingTerm] at h_eq
-    simp [← h_eq.right, Term.FirstIsNeg] at h_exps
+    simp only [leadingTerm, Seq.head_cons, Term.mk.injEq] at h_eq
+    simp only [← h_eq.right, Term.FirstIsNeg] at h_exps
     cases' h_exps with h_neg h_zero
     · exact majorated_tendsto_zero_of_neg h_neg h_maj
     have hC : Tendsto fC atTop (𝓝 0) := by
@@ -648,11 +647,12 @@ lemma extendBasisEnd_zero_last_exp_cons {basis_hd : ℝ → ℝ} {basis_tl : Bas
   cases' basis_tl with basis_tl_hd basis_tl_tl
   · simp [extendBasisEnd, leadingTerm, PreMS.const]
   have ih := extendBasisEnd_zero_last_exp_cons (ms := coef) (b := b)
-  simp [extendBasisEnd, leadingTerm]
+  simp only [leadingTerm, List.append_eq, List.cons_append, extendBasisEnd, Seq.map_cons,
+    Seq.head_cons, List.length_cons, List.length_append, List.length_singleton]
   cases' coef with coef_exp coef_coef coef_tl
   · simp
-  simp
-  simp [extendBasisEnd, leadingTerm] at ih
+  simp only [Seq.map_cons, Seq.head_cons, ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons]
+  simp only [leadingTerm, List.append_eq, extendBasisEnd, Seq.map_cons, Seq.head_cons] at ih
   exact ih
 
 theorem extendBasisEnd_zero_last_exp {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis} :
