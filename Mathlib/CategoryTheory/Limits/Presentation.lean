@@ -22,6 +22,7 @@ the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` th
 ## TODOs:
 
 - Dualise to obtain `LimitPresentation`.
+- Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
 
 universe s t w v u
@@ -36,9 +37,9 @@ structure ColimitPresentation (J : Type w) [Category.{t} J] (X : C) where
   /-- The diagram `{Dᵢ}`. -/
   diag : J ⥤ C
   /-- The natural maps `sᵢ : Dᵢ ⟶ X`. -/
-  natTrans : diag ⟶ (Functor.const J).obj X
+  ι : diag ⟶ (Functor.const J).obj X
   /-- `X` is the colimit of the `Dᵢ` via `sᵢ`. -/
-  isColimit : IsColimit (Cocone.mk _ natTrans)
+  isColimit : IsColimit (Cocone.mk _ ι)
 
 variable {J : Type w} [Category.{t} J] {X : C}
 
@@ -48,14 +49,14 @@ initialize_simps_projections ColimitPresentation (-isColimit)
 
 /-- The cocone associated to a colimit presentation. -/
 abbrev cocone (pres : ColimitPresentation J X) : Cocone pres.diag :=
-  Cocone.mk _ pres.natTrans
+  Cocone.mk _ pres.ι
 
 /-- The canonical colimit presentation of any object over a point. -/
 @[simps]
 noncomputable
 def self (X : C) : ColimitPresentation PUnit.{s + 1} X where
   diag := (Functor.const _).obj X
-  natTrans := 𝟙 _
+  ι := 𝟙 _
   isColimit := isColimitConstCocone _ _
 
 /-- If `F` preserves colimits of shape `J`, it maps colimit presentations of `X` to
@@ -65,16 +66,14 @@ noncomputable
 def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : ColimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
-  natTrans := Functor.whiskerRight P.natTrans F ≫ (F.constComp _ _).hom
-  isColimit := by
-    convert isColimitOfPreserves F P.isColimit
-    ext j
-    simp
+  ι := Functor.whiskerRight P.ι F ≫ (F.constComp _ _).hom
+  isColimit := (isColimitOfPreserves F P.isColimit).ofIsoColimit (Cocones.ext (.refl _) (by simp))
 
+/-- Map a colimit presentation under an isomorphism. -/
 @[simps]
 def ofIso (P : ColimitPresentation J X) {Y : C} (e : X ≅ Y) : ColimitPresentation J Y where
   diag := P.diag
-  natTrans := P.natTrans ≫ (Functor.const J).map e.hom
+  ι := P.ι ≫ (Functor.const J).map e.hom
   isColimit := P.isColimit.ofIsoColimit (Cocones.ext e fun _ ↦ rfl)
 
 section
@@ -100,7 +99,7 @@ structure Total.Hom (k l : Total P) where
   base : k.1 ⟶ l.1
   /-- A morphism in `C`. -/
   hom : (P k.1).diag.obj k.2 ⟶ (P l.1).diag.obj l.2
-  w : (P k.1).natTrans.app k.2 ≫ D.map base = hom ≫ (P l.1).natTrans.app l.2 := by aesop_cat
+  w : (P k.1).ι.app k.2 ≫ D.map base = hom ≫ (P l.1).ι.app l.2 := by cat_disch
 
 attribute [reassoc] Total.Hom.w
 
@@ -128,7 +127,7 @@ lemma Total.exists_hom_of_hom {j j' : J} (i : I j) (u : j ⟶ j')
     [IsFiltered (I j')] [IsFinitelyPresentable.{w} ((P j).diag.obj i)] :
     ∃ (i' : I j') (f : Total.mk P j i ⟶ Total.mk P j' i'), f.base = u := by
   obtain ⟨i', q, hq⟩ := IsFinitelyPresentable.exists_hom_of_isColimit (P j').isColimit
-    ((P j).natTrans.app i ≫ D.map u)
+    ((P j).ι.app i ≫ D.map u)
   use i', { base := u, hom := q, w := by simp [← hq] }
 
 instance [IsFiltered J] [∀ j, IsFiltered (I j)] : Nonempty (Total P) := by
@@ -149,7 +148,7 @@ instance [IsFiltered J] [∀ j, IsFiltered (I j)]
   cocone_maps {k l} f g := by
     let a := IsFiltered.coeq f.base g.base
     obtain ⟨a', u, hu⟩ := Total.exists_hom_of_hom (P := P) l.2 (IsFiltered.coeqHom f.base g.base)
-    have : (f.hom ≫ u.hom) ≫ (P _).natTrans.app _ = (g.hom ≫ u.hom) ≫ (P _).natTrans.app _ := by
+    have : (f.hom ≫ u.hom) ≫ (P _).ι.app _ = (g.hom ≫ u.hom) ≫ (P _).ι.app _ := by
       simp only [Category.assoc, Functor.const_obj_obj, ← u.w, ← f.w_assoc, ← g.w_assoc]
       rw [← Functor.map_comp, hu, IsFiltered.coeq_condition f.base g.base]
       simp
@@ -172,8 +171,8 @@ def bind {X : C} (P : ColimitPresentation J X) (Q : ∀ j, ColimitPresentation (
     ColimitPresentation (Total Q) X where
   diag.obj k := (Q k.1).diag.obj k.2
   diag.map {k l} f := f.hom
-  natTrans.app k := (Q k.1).natTrans.app k.2 ≫ P.natTrans.app k.1
-  natTrans.naturality {k l} u := by simp [← u.w_assoc]
+  ι.app k := (Q k.1).ι.app k.2 ≫ P.ι.app k.1
+  ι.naturality {k l} u := by simp [← u.w_assoc]
   isColimit.desc c := P.isColimit.desc
     { pt := c.pt
       ι.app j := (Q j).isColimit.desc

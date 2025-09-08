@@ -346,15 +346,9 @@ lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (
   refine setIntegral_congr_ae (hm _ hs) ?_
   filter_upwards [hf2.coeFn_toLp] with ω hω _ using hω
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.condExpL2_ae_eq_condExp' := MemLp.condExpL2_ae_eq_condExp'
-
 lemma MemLp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : MemLp f 2 μ) [IsFiniteMeasure μ] :
     condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f|m] :=
   hf.condExpL2_ae_eq_condExp' hm (memLp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.condExpL2_ae_eq_condExp := MemLp.condExpL2_ae_eq_condExp
 
 end RCLike
 
@@ -383,9 +377,6 @@ protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f|m]) 2 μ := by
   · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
       eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
   · simp [condExp_of_not_le hm]
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.condExp := MemLp.condExp
 
 end Real
 end NormedAddCommGroup

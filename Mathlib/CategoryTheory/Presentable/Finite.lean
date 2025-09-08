@@ -54,24 +54,22 @@ lemma isFinitelyPresentable_iff_preservesFilteredColimits {X : C} :
     IsFinitelyPresentable.{v} X ↔ PreservesFilteredColimits (coyoneda.obj (op X)) :=
   Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
 
+instance (X : C) [IsFinitelyPresentable.{w} X] :
+    PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) := by
+  rw [← isFinitelyPresentable_iff_preservesFilteredColimitsOfSize]
+  infer_instance
+
 lemma IsFinitelyPresentable.exists_hom_of_isColimit {J : Type w} [SmallCategory J] [IsFiltered J]
     {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C} [IsFinitelyPresentable.{w} X]
     (f : X ⟶ c.pt) :
-    ∃ (j : J) (p : X ⟶ D.obj j), p ≫ c.ι.app j = f := by
-  have : PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) := by
-    rw [← isFinitelyPresentable_iff_preservesFilteredColimitsOfSize]
-    infer_instance
-  exact Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
+    ∃ (j : J) (p : X ⟶ D.obj j), p ≫ c.ι.app j = f :=
+  Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
 
 lemma IsFinitelyPresentable.exists_eq_of_isColimit {J : Type w} [SmallCategory J] [IsFiltered J]
     {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c) {X : C} [IsFinitelyPresentable.{w} X]
     {i j : J} (f : X ⟶ D.obj i) (g : X ⟶ D.obj j) (h : f ≫ c.ι.app i = g ≫ c.ι.app j) :
-    ∃ (k : J) (u : i ⟶ k) (v : j ⟶ k), f ≫ D.map u = g ≫ D.map v := by
-  have : PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) := by
-    rw [← isFinitelyPresentable_iff_preservesFilteredColimitsOfSize]
-    infer_instance
-  exact
-    (Types.FilteredColimit.isColimit_eq_iff _ (isColimitOfPreserves (coyoneda.obj (op X)) hc)).mp h
+    ∃ (k : J) (u : i ⟶ k) (v : j ⟶ k), f ≫ D.map u = g ≫ D.map v :=
+  (Types.FilteredColimit.isColimit_eq_iff _ (isColimitOfPreserves (coyoneda.obj (op X)) hc)).mp h
 
 lemma IsFinitelyPresentable.exists_hom_of_isColimit_under
     {J : Type w} [SmallCategory J] [IsFiltered J] {D : J ⥤ C} {c : Cocone D} (hc : IsColimit c)
