@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Ian Jauslin and Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ian Jauslin, Alex Kontorovich
+Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Convex
@@ -20,10 +20,9 @@ segment in the disk), and compute its derivative.
 
 ## Main results
 
-* `Complex.IsClosedOn.exists_forall_mem_ball_hasDerivAt`: **Morera's Theorem**: On a disk, a
-  continuous function whose integrals on rectangles vanish, has primitives.
-* `Complex.HolomorphicOn.exists_forall_mem_ball_hasDerivAt`: On a disk, a holomorphic function has
-  primitives.
+* `Complex.IsClosedOn.isExactOn_ball`: **Morera's Theorem**: On a disk, a continuous function whose
+  integrals on rectangles vanish, has primitives.
+* `Complex.HolomorphicOn.isExactOn_ball`: On a disk, a holomorphic function has primitives.
 
 TODO: Extend to holomorphic functions on simply connected domains. (In particular, this allows one
 to define the complex logarithm of a nonvanishing function on a simply connected domain.)
@@ -203,7 +202,7 @@ variable {E : Type*} [NormedRing E] [NormedSpace ℂ E]
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
   determined by `z` and `w`. -/
 def wedgeIntegral (z w : ℂ) (f : ℂ → E) : E :=
-  (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) + I • (∫ y : ℝ in z.im..w.im, f (re w + y * I))
+  (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) + I • (∫ y : ℝ in z.im..w.im, f (w.re + y * I))
 
 lemma wedgeIntegral_add_wedgeIntegral_eq (z w : ℂ) (f : ℂ → E) :
     wedgeIntegral z w f + wedgeIntegral w z f =
@@ -220,6 +219,12 @@ lemma wedgeIntegral_add_wedgeIntegral_eq (z w : ℂ) (f : ℂ → E) :
 def IsClosedOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∀ z w, Rectangle z w ⊆ U → wedgeIntegral z w f = - wedgeIntegral w z f
 
+/-- A function `f` `IsExactOn` in `U` if it is the complex derivative of a function on `U`.
+
+In complex variable theory, this is also referred to as "having a primitive". -/
+def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
+  ∃ g, ∀ z ∈ U, HasDerivAt g (f z) z
+
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
 theorem HolomorphicOn.isClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
@@ -228,74 +233,74 @@ theorem HolomorphicOn.isClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
   rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq]
   exact integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
 
+lemma IsExactOn.isClosedOn_of_isOpen [CompleteSpace E]
+    {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
+    IsClosedOn f U := by
+  obtain ⟨g, hg⟩ := hf
+  have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
+  apply HolomorphicOn.isClosedOn
+  exact (differentiableOn_congr <| fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
+
 section ContinuousOnBall
 
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
-/-- If a function `f` `IsClosedOn` of center `c`, then, for all `w` in a
+/-- If a function `f` `IsClosedOn` on a ball of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
-  is equal to the wedge integral from `z` to `w`. -/
+  is equal to the wedge integral from `z` to `w`.
+
+TODO Should we prefer instead the equivalent goal:
+`∀ᶠ w in 𝓝 z, wedgeIntegral c w f + wedgeIntegral w z f = wedgeIntegral c z f` ? -/
 lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
     (hf : IsClosedOn f (ball c r)) :
     ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
-  have hr : 0 < r := pos_of_mem_ball hz
-  let r₁ := r - dist z c
-  have r₁_pos : 0 < r₁ := by simp only [mem_ball, r₁] at hz ⊢; linarith
-  have z_ball : ball z r₁ ⊆ ball c r := ball_subset_ball' (by simp [r₁])
-  filter_upwards [ball_mem_nhds z r₁_pos]
-  intro w w_in_z_ball
+  refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w w_in_z_ball ↦ ?_⟩
+  have z_ball : ball z (r - dist z c) ⊆ ball c r := ball_subset_ball' (by simp)
   have hzPlusH : w ∈ ball c r := mem_of_subset_of_mem z_ball w_in_z_ball
   simp only [wedgeIntegral]
-  set intI := ∫ x : ℝ in c.re..(w).re, f (x + c.im * I)
-  set intII := I • ∫ y : ℝ in c.im..w.im, f (w.re + y * I)
-  set intIII := ∫ x : ℝ in c.re..z.re, f (x + c.im * I)
-  set intIV := I • ∫ y : ℝ in c.im..z.im, f (z.re + y * I)
-  set intV := ∫ x : ℝ in z.re..w.re, f (x + z.im * I)
-  set intVI := I • ∫ y : ℝ in z.im..w.im, f (w.re + y * I)
-  let intVII := ∫ x : ℝ in z.re..w.re, f (x + c.im * I)
-  let intVIII := I • ∫ y : ℝ in c.im..z.im, f (w.re + y * I)
-  have integrableHoriz : ∀ a₁ a₂ b : ℝ, a₁ + b * I ∈ ball c r → a₂ + b * I ∈ ball c r
-    → IntervalIntegrable (fun x ↦ f (x + b * I)) MeasureTheory.volume a₁ a₂ :=
-      fun a₁ a₂ b ha₁ ha₂ ↦
-        ContinuousOn.intervalIntegrable (f_cont.re_aux_2 ha₁ ha₂)
-  have integrableVert : ∀ a b₁ b₂ : ℝ, a + b₁ * I ∈ ball c r → a + b₂ * I ∈ ball c r
-    → IntervalIntegrable (fun y ↦ f (a + y * I)) MeasureTheory.volume b₁ b₂ := by
-    intro a b₁ b₂ hb₁ hb₂
-    apply ContinuousOn.intervalIntegrable (f_cont.im_aux hb₁ hb₂)
-  have intIdecomp : intI = intIII + intVII := by
+  set I₁ :=     ∫ x in c.re..w.re, f (x + c.im * I)
+  set I₃ := I • ∫ y in c.im..w.im, f (w.re + y * I)
+  set I₂ :=     ∫ x in c.re..z.re, f (x + c.im * I)
+  set I₄ := I • ∫ y in c.im..z.im, f (z.re + y * I)
+  set I₅ :=     ∫ x in z.re..w.re, f (x + z.im * I)
+  set I₆ := I • ∫ y in z.im..w.im, f (w.re + y * I)
+  let I₇ :=     ∫ x in z.re..w.re, f (x + c.im * I)
+  let I₈ := I • ∫ y in c.im..z.im, f (w.re + y * I)
+  have integrableHoriz : ∀ a₁ a₂ b : ℝ, a₁ + b * I ∈ ball c r → a₂ + b * I ∈ ball c r →
+      IntervalIntegrable (fun x ↦ f (x + b * I)) volume a₁ a₂ :=
+    fun a₁ a₂ b ha₁ ha₂ ↦ (f_cont.re_aux_2 ha₁ ha₂).intervalIntegrable
+  have integrableVert : ∀ a b₁ b₂ : ℝ, a + b₁ * I ∈ ball c r → a + b₂ * I ∈ ball c r →
+      IntervalIntegrable (fun y ↦ f (a + y * I)) volume b₁ b₂ :=
+    fun a b₁ b₂ hb₁ hb₂ ↦ (f_cont.im_aux hb₁ hb₂).intervalIntegrable
+  have I₁decomp : I₁ = I₂ + I₇ := by
     rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
-    · simp only [re_add_im, mem_ball, dist_self, hr]
+    · simp only [re_add_im, mem_ball, dist_self, pos_of_mem_ball hz]
     · exact re_add_im_mul_mem_ball hz
     · exact re_add_im_mul_mem_ball hz
     · exact re_add_im_mul_mem_ball hzPlusH
-  have intIIdecomp : intII = intVIII + intVI := by
+  have I₃decomp : I₃ = I₈ + I₆ := by
     rw [← smul_add, intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableVert
     · exact re_add_im_mul_mem_ball hzPlusH
-    · apply mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
-    · apply mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
-    · convert hzPlusH; simp
-  have rectZero : intVIII = - intVII + intV + intIV := by
-    rw [← sub_eq_zero]
-    have : intVII - intV + intVIII - intIV = 0 := by
-      have wzInBall : w.re + z.im * I ∈ ball c r :=
-        mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
-      have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball hzPlusH
-      have hU : Rectangle (z.re + c.im * I) (w.re + z.im * I) ⊆ ball c r :=
-        (convex_ball c r).rectangle_subset (re_add_im_mul_mem_ball hz) wzInBall
-          (by simpa using hz) (by simpa using wcInBall)
-      replace hf := hf (z.re + c.im * I) (w.re + z.im * I) hU
-      rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq] at hf
-      convert hf using 1
-      congr
-      · simp [intVII]
-      · simp [intV]
-      · simp [intVIII]
-      · simp [intIV]
-    rw [← this]
-    abel
-  rw [intIdecomp, intIIdecomp, rectZero]
-  abel
+    · exact mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
+    · exact mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
+    · simpa using hzPlusH
+  have rectZero : I₇ - I₅ + I₈ - I₄ = 0 := by
+    have wzInBall : w.re + z.im * I ∈ ball c r :=
+      mem_of_subset_of_mem z_ball (re_add_im_mul_mem_ball w_in_z_ball)
+    have wcInBall : w.re + c.im * I ∈ ball c r := re_add_im_mul_mem_ball hzPlusH
+    have hU : Rectangle (z.re + c.im * I) (w.re + z.im * I) ⊆ ball c r :=
+      (convex_ball c r).rectangle_subset (re_add_im_mul_mem_ball hz) wzInBall
+        (by simpa using hz) (by simpa using wcInBall)
+    replace hf := hf (z.re + c.im * I) (w.re + z.im * I) hU
+    rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq] at hf
+    convert hf using 1
+    congr
+    · simp [I₇]
+    · simp [I₅]
+    · simp [I₈]
+    · simp [I₄]
+  grind
 
 variable [CompleteSpace E]
 
@@ -377,14 +382,13 @@ variable [CompleteSpace E] [NormOneClass E]
 
 /-- **Morera's theorem for a disk** On a disk, a continuous function whose integrals on rectangles
   vanish, has primitives. -/
-theorem IsClosedOn.exists_forall_mem_ball_hasDerivAt
-    (f_cont : ContinuousOn f (ball c r)) (hf : IsClosedOn f (ball c r)) :
-    ∃ g, ∀ z ∈ ball c r, HasDerivAt g (f z) z :=
-  ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral f_cont⟩
+theorem IsClosedOn.isExactOn_ball (hf' : ContinuousOn f (ball c r)) (hf : IsClosedOn f (ball c r)) :
+    IsExactOn f (ball c r) :=
+  ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral hf'⟩
 
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
-theorem HolomorphicOn.exists_forall_mem_ball_hasDerivAt (hf : HolomorphicOn f (ball c r)) :
-    ∃ g, ∀ z ∈ ball c r, HasDerivAt g (f z) z :=
-  hf.isClosedOn.exists_forall_mem_ball_hasDerivAt hf.continuousOn
+theorem HolomorphicOn.isExactOn_ball (hf : HolomorphicOn f (ball c r)) :
+    IsExactOn f (ball c r) :=
+  hf.isClosedOn.isExactOn_ball hf.continuousOn
 
 end Complex
