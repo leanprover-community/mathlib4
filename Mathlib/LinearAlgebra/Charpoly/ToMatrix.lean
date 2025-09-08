@@ -46,8 +46,8 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     set P := b.toMatrix b'
     set A := toMatrix b' b' f
     set Q := b'.toMatrix b
-    let ι' := ChooseBasisIndex R M
     let e := Basis.indexEquiv b b'
+    let ι' := ChooseBasisIndex R M
     let φ := reindexLinearEquiv R R e e
     let φ₁ := reindexLinearEquiv R R e (Equiv.refl ι')
     let φ₂ := reindexLinearEquiv R R (Equiv.refl ι') (Equiv.refl ι')
