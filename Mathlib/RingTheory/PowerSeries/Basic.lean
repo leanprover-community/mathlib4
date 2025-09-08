@@ -771,8 +771,6 @@ variable {R : Type*} [Semiring R] (φ ψ : R[X])
 def toPowerSeries : R[X] → PowerSeries R := fun φ =>
   PowerSeries.mk fun n => coeff φ n
 
-@[deprecated (since := "2024-10-27")] alias ToPowerSeries := toPowerSeries
-
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
   ⟨toPowerSeries⟩

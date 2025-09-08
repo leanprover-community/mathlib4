@@ -84,10 +84,25 @@ local notation3 "Sₚ" => Localization P'
 
 variable [FaithfulSMul R S]
 
-noncomputable instance : Algebra Sₚ L :=
+instance : NoZeroSMulDivisors S Sₚ := by
+  rw [NoZeroSMulDivisors.iff_algebraMap_injective,
+    injective_iff_isRegular (algebraMapSubmonoid S P.primeCompl)]
+  exact fun ⟨x, hx⟩ ↦ isRegular_iff_ne_zero'.mpr <|
+    ne_of_mem_of_not_mem hx <| by simp [Algebra.algebraMapSubmonoid]
+
+instance : NoZeroSMulDivisors R Sₚ := by
+  have := IsLocalization.AtPrime.faithfulSMul Rₚ R P
+  exact NoZeroSMulDivisors.trans_faithfulSMul R Rₚ _
+
+/--
+This is not an instance because it creates a diamond with `OreLocalization.instAlgebra`.
+-/
+noncomputable abbrev Localization.AtPrime.liftAlgebra : Algebra Sₚ L :=
   (map _ (T := S⁰) (RingHom.id S)
     (algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul _
       P.primeCompl_le_nonZeroDivisors)).toAlgebra
+
+attribute [local instance] Localization.AtPrime.liftAlgebra
 
 instance : IsScalarTower S Sₚ L :=
   localization_isScalarTower_of_submonoid_le _ _ _ _

@@ -87,6 +87,9 @@ lemma _root_.ConvexCone.coe_toPointedCone {C : ConvexCone R E} (hC : C.Pointed) 
     C.toPointedCone hC = C :=
   rfl
 
+@[simp]
+lemma _root_.ConvexCone.toPointedCone_top : (⊤ : ConvexCone R E).toPointedCone trivial = ⊤ := rfl
+
 instance canLift : CanLift (ConvexCone R E) (PointedCone R E) (↑) ConvexCone.Pointed where
   prf C hC := ⟨C.toPointedCone hC, rfl⟩
 

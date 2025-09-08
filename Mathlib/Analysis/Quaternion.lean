@@ -153,14 +153,6 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
   simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
   rfl
 
-@[deprecated norm_toLp_equivTuple (since := "2024-04-27")]
-theorem norm_piLp_equiv_symm_equivTuple (x : ℍ) :
-    ‖(WithLp.equiv 2 (Fin 4 → _)).symm (equivTuple ℝ x)‖ = ‖x‖ := by
-  rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
-    Fin.sum_univ_four]
-  simp_rw [RCLike.inner_apply, starRingEnd_apply, star_trivial, ← sq]
-  rfl
-
 /-- `QuaternionAlgebra.linearEquivTuple` as a `LinearIsometryEquiv`. -/
 @[simps apply symm_apply]
 noncomputable def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=

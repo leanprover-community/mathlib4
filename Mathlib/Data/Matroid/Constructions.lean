@@ -106,8 +106,8 @@ theorem eq_loopyOn_iff : M = loopyOn E ↔ M.E = E ∧ ∀ X ⊆ M.E, M.Indep X 
   ⟨fun h ↦ ⟨loopyOn_indep_iff.mp h.indep, h.subset_ground⟩,
     by rintro ⟨rfl, hX⟩; rw [isBasis_iff]; simp⟩
 
-instance : RankFinite (loopyOn E) :=
-  ⟨⟨∅, loopyOn_isBase_iff.2 rfl, finite_empty⟩⟩
+instance loopyOn_rankFinite : RankFinite (loopyOn E) :=
+  ⟨∅, by simp⟩
 
 theorem Finite.loopyOn_finite (hE : E.Finite) : Matroid.Finite (loopyOn E) :=
   ⟨hE⟩
@@ -128,9 +128,6 @@ theorem eq_loopyOn_or_rankPos (M : Matroid α) : M = loopyOn M.E ∨ RankPos M :
 
 theorem not_rankPos_iff : ¬RankPos M ↔ M = loopyOn M.E := by
   rw [rankPos_iff, not_iff_comm, empty_isBase_iff]
-
-instance loopyOn_rankFinite : RankFinite (loopyOn E) :=
-  ⟨∅, by simp⟩
 
 end LoopyOn
 

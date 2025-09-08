@@ -107,11 +107,6 @@ lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
 
 alias ⟨_, count_ne_zero⟩ := count_ne_zero_iff
 
-@[deprecated (since := "2024-11-20")] alias ⟨empty_of_count_eq_zero, _⟩ := count_eq_zero_iff
-@[deprecated (since := "2024-11-20")] alias empty_of_count_eq_zero' := empty_of_count_eq_zero
-@[deprecated (since := "2024-11-20")] alias count_eq_zero_iff' := count_eq_zero_iff
-@[deprecated (since := "2024-11-20")] alias count_ne_zero' := count_ne_zero
-
 @[simp]
 lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x := by
   refine ⟨fun h x ↦ ?_, ae_of_all _⟩

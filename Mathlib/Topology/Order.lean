@@ -495,6 +495,14 @@ instance : DiscreteTopology ℤ := ⟨rfl⟩
 instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 
+lemma Nat.cast_continuous {R : Type*} [NatCast R] [TopologicalSpace R] :
+    Continuous (Nat.cast (R := R)) :=
+  continuous_of_discreteTopology
+
+lemma Int.cast_continuous {R : Type*} [IntCast R] [TopologicalSpace R] :
+    Continuous (Int.cast (R := R)) :=
+  continuous_of_discreteTopology
+
 instance sierpinskiSpace : TopologicalSpace Prop :=
   generateFrom {{True}}
 
@@ -596,7 +604,7 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: timeouts without `b₁ := t₁`
+-- Porting note: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
   (gc_nhds a).u_inf (b₁ := t₁)

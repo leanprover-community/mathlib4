@@ -312,7 +312,7 @@ lemma inrX_desc_f (i : ι) :
 
 @[reassoc (attr := simp)]
 lemma inr_desc :
-    inr φ ≫ desc φ α hα = α := by aesop_cat
+    inr φ ≫ desc φ α hα = α := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
@@ -361,7 +361,7 @@ noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.R
   right_inv f := (eq_desc φ f hc).symm
   left_inv := fun ⟨α, hα⟩ => by
     rw [descSigma_ext_iff]
-    aesop_cat
+    cat_disch
 
 end homotopyCofiber
 

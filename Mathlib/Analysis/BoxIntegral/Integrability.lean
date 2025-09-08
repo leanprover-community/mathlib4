@@ -310,7 +310,7 @@ theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
   exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
 
 /-- If `f : ℝⁿ → E` is a.e. continuous and bounded on a rectangular box `I`, then it is Box
-    integrable on `I` w.r.t. a locally finite measure `μ` with the same integral. -/
+integrable on `I` w.r.t. a locally finite measure `μ` with the same integral. -/
 theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (μ : Measure (ι → ℝ))
     [IsLocallyFiniteMeasure μ] {I : Box ι} (hb : ∃ C : ℝ, ∀ x ∈ Box.Icc I, ‖f x‖ ≤ C)
     (hc : ∀ᵐ x ∂μ, ContinuousAt f x) (l : IntegrationParams) :
@@ -336,7 +336,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
       isFiniteMeasure_of_le (μ.restrict (Box.Icc I))
                             (μ.restrict_mono Box.coe_subset_Icc (le_refl μ))
     obtain ⟨C, hC⟩ := hb
-    refine hasFiniteIntegral_of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
+    refine .of_bounded (C := C) (Filter.eventually_iff_exists_mem.2 ?_)
     use I, self_mem_ae_restrict I.measurableSet_coe, fun y hy ↦ hC y (I.coe_subset_Icc hy)
 
 end MeasureTheory

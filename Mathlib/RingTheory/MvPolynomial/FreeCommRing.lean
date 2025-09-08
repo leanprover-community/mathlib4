@@ -23,6 +23,8 @@ formulas whose realization is a property of an `MvPolynomial`
 
 -/
 
+assert_not_exists Cardinal
+
 variable {ι κ R : Type*}
 
 namespace FirstOrder

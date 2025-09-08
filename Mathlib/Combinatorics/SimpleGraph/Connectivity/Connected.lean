@@ -587,6 +587,18 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 
 end ConnectedComponent
 
+/-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
+homomorphism from `G` to `H` -/
+@[simps]
+def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
+    (C : (c : G.ConnectedComponent) → c.toSimpleGraph →g H) : G →g H where
+  toFun := fun x ↦ (C (G.connectedComponentMk _)) _
+  map_rel' := fun hab ↦ by
+    have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
+        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+      rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
+
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
     Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by

@@ -80,9 +80,9 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
-instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
+instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -126,8 +126,6 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   rw [f.interior_preimage, interior_Ici]
   apply Function.surjective_eval
 
-@[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
-
 @[simp]
 theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a ≤ y i } := by
@@ -135,8 +133,6 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ici]
   apply Function.surjective_eval
-
-@[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
 @[simp]
 theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
@@ -146,16 +142,12 @@ theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) 
   rw [f.closure_preimage, closure_Ioi]
   apply Function.surjective_eval
 
-@[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
-
 @[simp]
 theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | a ≤ y i } = { y | a = y i } := by
   rw [frontier, closure_halfSpace, interior_halfSpace]
   ext y
   simpa only [mem_diff, mem_setOf_eq, not_lt] using antisymm_iff
-@[deprecated (since := "2024-11-12")] alias frontier_halfspace := frontier_halfSpace
-
 theorem range_euclideanQuadrant (n : ℕ) :
     range (Subtype.val : EuclideanQuadrant n → _) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
@@ -395,9 +387,6 @@ lemma IccRightChart_extend_top_mem_frontier :
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
-@[deprecated (since := "2025-01-25")]
-alias IccRightChart_extend_right_mem_frontier := IccRightChart_extend_top_mem_frontier
-
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
@@ -428,12 +417,12 @@ lemma Icc_chartedSpaceChartAt_of_top_le {z : Set.Icc x y} (h : y ≤ z.val) :
 
 lemma Icc_isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint (⊥ : Set.Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    Icc_chartedSpaceChartAt_of_le_top (by norm_num [hxy.out])]
+    Icc_chartedSpaceChartAt_of_le_top (by simp [hxy.out])]
   exact IccLeftChart_extend_bot_mem_frontier
 
 lemma Icc_isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint (⊤ : Set.Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
-    Icc_chartedSpaceChartAt_of_top_le (by norm_num)]
+    Icc_chartedSpaceChartAt_of_top_le (by simp)]
   exact IccRightChart_extend_top_mem_frontier
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :

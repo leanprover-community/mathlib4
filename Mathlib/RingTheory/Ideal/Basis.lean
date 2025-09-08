@@ -14,6 +14,8 @@ import Mathlib.RingTheory.Ideal.Span
 Some results involving `Ideal` and `Basis`.
 -/
 
+open Module
+
 namespace Ideal
 
 variable {ι R S : Type*} [CommSemiring R] [CommRing S] [IsDomain S] [Algebra R S]

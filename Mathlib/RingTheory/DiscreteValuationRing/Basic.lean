@@ -460,7 +460,7 @@ lemma addVal_eq_zero_of_unit (u : Rˣ) :
 
 lemma addVal_eq_zero_iff {x : R} :
     addVal R x = 0 ↔ IsUnit x := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ

@@ -383,9 +383,6 @@ theorem le_mul_prod_of_opNorm_le_of_le {f : ContinuousMultilinearMap 𝕜 E G}
     ‖f m‖ ≤ C * ∏ i, b i :=
   (f.le_opNorm m).trans <| by gcongr; exacts [f.opNorm_nonneg.trans hC, hm _]
 
-@[deprecated (since := "2024-11-27")]
-alias le_mul_prod_of_le_opNorm_of_le := le_mul_prod_of_opNorm_le_of_le
-
 theorem le_opNorm_mul_prod_of_le (f : ContinuousMultilinearMap 𝕜 E G)
     {m : ∀ i, E i} {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i) : ‖f m‖ ≤ ‖f‖ * ∏ i, b i :=
   le_mul_prod_of_opNorm_le_of_le le_rfl hm
@@ -485,7 +482,7 @@ instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap �
     uniformity_eq_seminorm
 
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
-    the operator norm. -/
+the operator norm. -/
 instance seminormedAddCommGroup :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
@@ -502,9 +499,6 @@ instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
 search. -/
 instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
-
-@[deprecated norm_neg (since := "2024-11-24")]
-theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ := norm_neg f
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
@@ -805,7 +799,7 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
     1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
-  smulRightL 𝕜 E G f z = f.smulRight z := rfl
+    smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
@@ -1288,7 +1282,7 @@ theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 �
   simp [← (opNorm_nonneg f).ge_iff_eq', opNorm_le_iff le_rfl, ContinuousMultilinearMap.ext_iff]
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
-    the operator norm. -/
+the operator norm. -/
 instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
   NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 

@@ -135,7 +135,4 @@ theorem SetLike.IsHomogeneousElem.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA
     SetLike.IsHomogeneousElem B (a • b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i +ᵥ j, SetLike.GradedSMul.smul_mem hi hj⟩
 
-@[deprecated (since := "2025-01-31")] alias SetLike.Homogeneous.graded_smul :=
-  SetLike.IsHomogeneousElem.graded_smul
-
 end HomogeneousElements

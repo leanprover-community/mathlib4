@@ -48,7 +48,7 @@ could be defined as `IsReduced`, `IsNoetherian`, `Ring.DimensionLEOne`, and eith
 `IsIntegrallyClosed` or `NormalDomain`. If we use `NormalDomain` then `IsReduced` is automatic,
 but we could also consider a version of `NormalDomain` that only requires the localizations are
 `IsIntegrallyClosed` but may not be domains, and that may not equivalent to the ring itself being
-`IsIntegallyClosed` (even for noetherian rings?).
+`IsIntegrallyClosed` (even for noetherian rings?).
 -/
 
 
@@ -253,7 +253,7 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
     simp only [y, eval₂_sub, eval₂_X_pow, div_pow, eval₂_C]
     replace hx := congr_arg (algebraMap R K) hx
     rw [map_pow] at hx
-    field_simp [hx, ha]
+    simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]

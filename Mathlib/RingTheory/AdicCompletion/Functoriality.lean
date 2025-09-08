@@ -216,7 +216,7 @@ section Families
 In this section we consider a family `M : ι → Type*` of `R`-modules. Purely from
 the formal properties of adic completions we obtain two canonical maps
 
-- `AdicCompleiton I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
+- `AdicCompletion I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
 - `(⨁ j, (AdicCompletion I (M j))) →ₗ[R] AdicCompletion I (⨁ j, M j)`
 
 If `ι` is finite, both are isomorphisms and, modulo

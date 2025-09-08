@@ -129,9 +129,9 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
     (ht₃ : IsOpen t) (disj : Disjoint s t) :
     ∃ (f : E →L[ℝ] ℝ) (u : ℝ), (∀ a ∈ s, f a < u) ∧ ∀ b ∈ t, u < f b := by
   obtain rfl | ⟨a₀, ha₀⟩ := s.eq_empty_or_nonempty
-  · exact ⟨0, -1, by simp, fun b _hb => by norm_num⟩
+  · exact ⟨0, -1, by simp, fun b _hb => by simp⟩
   obtain rfl | ⟨b₀, hb₀⟩ := t.eq_empty_or_nonempty
-  · exact ⟨0, 1, fun a _ha => by norm_num, by simp⟩
+  · exact ⟨0, 1, fun a _ha => by simp, by simp⟩
   obtain ⟨f, s, hf₁, hf₂⟩ := geometric_hahn_banach_open hs₁ hs₂ ht₁ disj
   have hf : IsOpenMap f := by
     refine f.isOpenMap_of_ne_zero ?_
@@ -153,9 +153,9 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
     (ht₁ : Convex ℝ t) (ht₂ : IsClosed t) (disj : Disjoint s t) :
     ∃ (f : E →L[ℝ] ℝ) (u v : ℝ), (∀ a ∈ s, f a < u) ∧ u < v ∧ ∀ b ∈ t, v < f b := by
   obtain rfl | hs := s.eq_empty_or_nonempty
-  · exact ⟨0, -2, -1, by simp, by norm_num, fun b _hb => by norm_num⟩
+  · exact ⟨0, -2, -1, by simp⟩
   obtain rfl | _ht := t.eq_empty_or_nonempty
-  · exact ⟨0, 1, 2, fun a _ha => by norm_num, by norm_num, by simp⟩
+  · exact ⟨0, 1, 2, by simp⟩
   obtain ⟨U, V, hU, hV, hU₁, hV₁, sU, tV, disj'⟩ := disj.exists_open_convexes hs₁ hs₂ ht₁ ht₂
   obtain ⟨f, u, hf₁, hf₂⟩ := geometric_hahn_banach_open_open hU₁ hU hV₁ hV disj'
   obtain ⟨x, hx₁, hx₂⟩ := hs₂.exists_isMaxOn hs f.continuous.continuousOn
@@ -206,8 +206,6 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).not_ge le_rfl
-@[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
-
 end
 
 namespace RCLike
@@ -319,6 +317,4 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
-@[deprecated (since := "2024-11-12")] alias iInter_halfspaces_eq := iInter_halfSpaces_eq
-
 end RCLike

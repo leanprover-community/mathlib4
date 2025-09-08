@@ -73,10 +73,9 @@ def presieveOfCoveringAux {ι : Type v} (U : ι → Opens X) (Y : Opens X) : Pre
 def presieveOfCovering {ι : Type v} (U : ι → Opens X) : Presieve (iSup U) :=
   presieveOfCoveringAux U (iSup U)
 
-/-- Given a presieve `R` on `Y`, if we take its associated family of opens via
-    `coveringOfPresieve` (which may not cover `Y` if `R` is not covering), and take
-    the presieve on `Y` associated to the family of opens via `presieveOfCoveringAux`,
-    then we get back the original presieve `R`. -/
+/-- Given a presieve `R` on `Y`, if we take its associated family of opens via `coveringOfPresieve`
+(which may not cover `Y` if `R` is not covering), and take the presieve on `Y` associated to the
+family of opens via `presieveOfCoveringAux`, then we get back the original presieve `R`. -/
 @[simp]
 theorem covering_presieve_eq_self {Y : Opens X} (R : Presieve Y) :
     presieveOfCoveringAux (coveringOfPresieve Y R) Y = R := by
@@ -222,9 +221,9 @@ def isTerminalOfEqEmpty (F : X.Sheaf C) {U : Opens X} (h : U = ⊥) :
   convert F.isTerminalOfEmpty
 
 /-- If a family `B` of open sets forms a basis of the topology on `X`, and if `F'`
-    is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
-    is equivalent to a homomorphism between their restrictions to the indexing type
-    `ι` of `B`, with the induced category structure on `ι`. -/
+is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
+is equivalent to a homomorphism between their restrictions to the indexing type
+`ι` of `B`, with the induced category structure on `ι`. -/
 def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
     ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _

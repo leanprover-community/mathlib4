@@ -7,11 +7,11 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -141,21 +141,9 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
   elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_right a.2).1 h
 
-@[deprecated mul_inv_le_of_le_mul₀ (since := "2024-11-18")]
-theorem mul_inv_le_of_le_mul (hab : a ≤ b * c) : a * c⁻¹ ≤ b :=
-  mul_inv_le_of_le_mul₀ zero_le' zero_le' hab
-
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
   zero_lt_iff.2 u.ne_zero
-
-@[deprecated mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (since := "2024-11-18")]
-theorem mul_lt_mul_of_lt_of_le₀ (hab : a ≤ b) (hb : b ≠ 0) (hcd : c < d) : a * c < b * d :=
-  mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hab hcd zero_le' (zero_lt_iff.2 hb)
-
-@[deprecated mul_lt_mul'' (since := "2024-11-18")]
-theorem mul_lt_mul₀ (hab : a < b) (hcd : c < d) : a * c < b * d :=
-  mul_lt_mul'' hab hcd zero_le' zero_le'
 
 theorem mul_inv_lt_of_lt_mul₀ (h : a < b * c) : a * c⁻¹ < b := by
   contrapose! h
@@ -171,38 +159,6 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ hc.ne']
     using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hh  h zero_le' (inv_pos.2 hc)
 
-@[deprecated div_le_div_iff_of_pos_right (since := "2024-11-18")]
-theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b :=
-  div_le_div_iff_of_pos_right (zero_lt_iff.2 hc)
-
-@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-18")]
-theorem div_le_div_left₀ (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) : a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_iff_of_pos_left (zero_lt_iff.2 ha) (zero_lt_iff.2 hb) (zero_lt_iff.2 hc)
-
-/-- `Equiv.mulLeft₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`. -/
-@[simps! +simpRhs apply toEquiv,
-deprecated OrderIso.mulLeft₀ (since := "2024-11-18")]
-def OrderIso.mulLeft₀' {a : α} (ha : a ≠ 0) : α ≃o α := .mulLeft₀ a (zero_lt_iff.2 ha)
-
-set_option linter.deprecated false in
-@[deprecated OrderIso.mulLeft₀_symm (since := "2024-11-18")]
-theorem OrderIso.mulLeft₀'_symm {a : α} (ha : a ≠ 0) :
-    (OrderIso.mulLeft₀' ha).symm = OrderIso.mulLeft₀' (inv_ne_zero ha) := by
-  ext
-  rfl
-
-/-- `Equiv.mulRight₀` as an `OrderIso` on a `LinearOrderedCommGroupWithZero.`. -/
-@[simps! +simpRhs apply toEquiv,
-deprecated OrderIso.mulRight₀ (since := "2024-11-18")]
-def OrderIso.mulRight₀' {a : α} (ha : a ≠ 0) : α ≃o α := .mulRight₀ a (zero_lt_iff.2 ha)
-
-set_option linter.deprecated false in
-@[deprecated OrderIso.mulRight₀_symm (since := "2024-11-18")]
-theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
-    (OrderIso.mulRight₀' ha).symm = OrderIso.mulRight₀' (inv_ne_zero ha) := by
-  ext
-  rfl
-
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
   neg_top := inv_zero (G₀ := α)
   add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
@@ -211,9 +167,6 @@ instance : LinearOrderedAddCommGroupWithTop (Additive α)ᵒᵈ where
   neg_top := inv_zero (G₀ := α)
   add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
 
-@[deprecated pow_lt_pow_right₀ (since := "2024-11-18")]
-lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := pow_lt_pow_right₀ ha n.lt_succ_self
-
 end LinearOrderedCommGroupWithZero
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
@@ -221,8 +174,6 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
   zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
   zero_mul := @top_add _ (_)
-  -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
   mul_zero := @add_top _ (_)
   zero_le_one := (le_top : (0 : α) ≤ ⊤)
 
@@ -327,6 +278,48 @@ lemma map'_mono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : Monoton
 lemma map'_strictMono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : StrictMono f) :
     StrictMono (map' f) := by simpa [StrictMono, WithZero.forall]
 
+theorem exists_ne_zero_and_lt [NoMinOrder α] (hx : x ≠ 0) :
+    ∃ y, y ≠ 0 ∧ y < x := by
+  obtain ⟨z, hlt⟩ := exists_lt (WithZero.unzero hx)
+  rw [← WithZero.coe_lt_coe, WithZero.coe_unzero hx] at hlt
+  exact ⟨z, WithZero.coe_ne_zero, hlt⟩
+
+section Multiplicative
+
+open Multiplicative
+
+theorem toAdd_unzero_lt_of_lt_ofAdd
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : a < ofAdd b) :
+    toAdd (unzero ha) < b := by
+  rwa [← coe_unzero ha, coe_lt_coe, ← toAdd_lt, toAdd_ofAdd] at h
+
+theorem lt_ofAdd_of_toAdd_unzero_lt
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : toAdd (unzero ha) < b) :
+    a < ofAdd b := by
+  rwa [← coe_unzero ha, coe_lt_coe, ← ofAdd_toAdd (unzero ha), ofAdd_lt]
+
+theorem lt_ofAdd_iff
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) :
+    a < ofAdd b ↔ toAdd (unzero ha) < b :=
+  ⟨toAdd_unzero_lt_of_lt_ofAdd ha, lt_ofAdd_of_toAdd_unzero_lt ha⟩
+
+theorem toAdd_unzero_le_of_lt_ofAdd
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : a ≤ ofAdd b) :
+    toAdd (unzero ha) ≤ b := by
+  rwa [← coe_unzero ha, coe_le_coe, ← toAdd_le, toAdd_ofAdd] at h
+
+theorem le_ofAdd_of_toAdd_unzero_le
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) (h : toAdd (unzero ha) ≤ b) :
+    a ≤ ofAdd b := by
+  rwa [← coe_unzero ha, coe_le_coe, ← ofAdd_toAdd (unzero ha), ofAdd_le]
+
+theorem le_ofAdd_iff
+    {a : WithZero (Multiplicative α)} {b : α} (ha : a ≠ 0) :
+    a ≤ ofAdd b ↔ toAdd (unzero ha) ≤ b :=
+  ⟨toAdd_unzero_le_of_lt_ofAdd ha, le_ofAdd_of_toAdd_unzero_le ha⟩
+
+end Multiplicative
+
 end Preorder
 
 section PartialOrder
@@ -350,7 +343,7 @@ end PartialOrder
 instance instLattice [Lattice α] : Lattice (WithZero α) := WithBot.lattice
 
 section LinearOrder
-variable [LinearOrder α] {a b c : α}
+variable [LinearOrder α] {a b c : α} {x y : WithZero α}
 
 instance instLinearOrder : LinearOrder (WithZero α) := WithBot.linearOrder
 
@@ -359,6 +352,17 @@ protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a
 
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
+
+theorem exists_ne_zero_and_le_and_le (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ z, z ≠ 0 ∧ z ≤ x ∧ z ≤ y :=
+  ⟨x ⊓ y, by simp [min_eq_iff, hx, hy], by simp, by simp⟩
+
+theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 0) :
+    ∃ z, z ≠ 0 ∧ z < x ∧ z < y := by
+  obtain ⟨z', hnz', hzx, hzy⟩ := exists_ne_zero_and_le_and_le hx hy
+  obtain ⟨z, hnz, hlt⟩ := exists_ne_zero_and_lt hnz'
+  use z, hnz
+  constructor <;> exact lt_of_lt_of_le hlt ‹z' ≤ _›
 
 end LinearOrder
 

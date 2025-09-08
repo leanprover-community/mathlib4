@@ -227,11 +227,7 @@ inductive CountableGenerateSets : Set α → Prop
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
-
--- The `ContableInterFilter` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : CountableInterFilter (countableGenerate g) := by
-  delta countableGenerate; infer_instance
+deriving CountableInterFilter
 
 variable {g}
 

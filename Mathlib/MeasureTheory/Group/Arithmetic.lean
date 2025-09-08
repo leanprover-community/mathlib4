@@ -117,7 +117,7 @@ theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable
 
 /-- Compositional version of `Measurable.mul` for use by `fun_prop`. -/
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))
-"Compositional version of `Measurable.add` for use by `fun_prop`."]
+/-- Compositional version of `Measurable.add` for use by `fun_prop`. -/]
 lemma Measurable.mul' [MeasurableMul₂ M] {f g : α → β → M} {h : α → β} (hf : Measurable ↿f)
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a * g a) (h a) := by
   simp; fun_prop
@@ -152,8 +152,8 @@ end Mul
 
 /-- A version of `measurable_div_const` that assumes `MeasurableMul` instead of
   `MeasurableDiv`. This can be nice to avoid unnecessary type-class assumptions. -/
-@[to_additive "A version of `measurable_sub_const` that assumes `MeasurableAdd` instead of
-  `MeasurableSub`. This can be nice to avoid unnecessary type-class assumptions."]
+@[to_additive /-- A version of `measurable_sub_const` that assumes `MeasurableAdd` instead of
+  `MeasurableSub`. This can be nice to avoid unnecessary type-class assumptions. -/]
 theorem measurable_div_const' {G : Type*} [DivInvMonoid G] [MeasurableSpace G] [MeasurableMul G]
     (g : G) : Measurable fun h => h / g := by simp_rw [div_eq_mul_inv, measurable_mul_const]
 
@@ -557,7 +557,7 @@ lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :
 
 /-- Compositional version of `Measurable.const_smul` for use by `fun_prop`. -/
 @[to_additive (attr := fun_prop)
-"Compositional version of `Measurable.const_vadd` for use by `fun_prop`."]
+/-- Compositional version of `Measurable.const_vadd` for use by `fun_prop`. -/]
 lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Measurable ↿g) (hh : Measurable h)
     (c : M) : Measurable fun a ↦ (c • g a) (h a) :=
   (hg.comp <| measurable_id.prodMk hh).const_smul _
@@ -597,7 +597,7 @@ theorem Measurable.smul [MeasurableSMul₂ M X] (hf : Measurable f) (hg : Measur
 
 /-- Compositional version of `Measurable.smul` for use by `fun_prop`. -/
 @[to_additive (attr := fun_prop)
-"Compositional version of `Measurable.vadd` for use by `fun_prop`."]
+/-- Compositional version of `Measurable.vadd` for use by `fun_prop`. -/]
 lemma Measurable.smul' [MeasurableSMul₂ M X] {f : α → β → M} {g : α → β → X} {h : α → β}
     (hf : Measurable ↿f) (hg : Measurable ↿g) (hh : Measurable h) :
     Measurable fun a ↦ (f a • g a) (h a) := by simp; fun_prop
@@ -822,8 +822,8 @@ section Monoid
 variable {M α : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M] {m : MeasurableSpace α}
   {μ : Measure α}
 
-@[to_additive (attr := measurability)]
-theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
+@[to_additive (attr := measurability, fun_prop)]
+theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable l.prod := by
   induction l with
   | nil => exact measurable_one
@@ -832,8 +832,13 @@ theorem List.measurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, Measurabl
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[to_additive (attr := measurability)]
-theorem List.aemeasurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+@[deprecated (since := "2025-05-30")]
+alias List.measurable_sum' := List.measurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias List.measurable_prod' := List.measurable_prod
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   induction l with
   | nil => exact aemeasurable_one
@@ -842,15 +847,20 @@ theorem List.aemeasurable_prod' (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasu
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[to_additive (attr := measurability)]
-theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
-    Measurable fun x => (l.map fun f : α → M => f x).prod := by
-  simpa only [← Pi.list_prod_apply] using l.measurable_prod' hl
+@[deprecated (since := "2025-05-30")]
+alias List.aemeasurable_sum' := List.aemeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias List.aemeasurable_prod' := List.aemeasurable_prod
 
-@[to_additive (attr := measurability)]
-theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+@[to_additive (attr := measurability, fun_prop)]
+theorem List.measurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
+    Measurable fun x => (l.map fun f : α → M => f x).prod := by
+  simpa only [← Pi.list_prod_apply] using l.measurable_prod hl
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem List.aemeasurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable (fun x => (l.map fun f : α → M => f x).prod) μ := by
-  simpa only [← Pi.list_prod_apply] using l.aemeasurable_prod' hl
+  simpa only [← Pi.list_prod_apply] using l.aemeasurable_prod hl
 
 end Monoid
 
@@ -859,29 +869,45 @@ section CommMonoid
 variable {M ι α β : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul₂ M]
   {m : MeasurableSpace α} {mβ : MeasurableSpace β} {μ : Measure α} {f : ι → α → M}
 
-@[to_additive (attr := measurability)]
-theorem Multiset.measurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, Measurable f) :
+@[to_additive (attr := measurability, fun_prop)]
+theorem Multiset.measurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, Measurable f) :
     Measurable l.prod := by
   rcases l with ⟨l⟩
-  simpa using l.measurable_prod' (by simpa using hl)
+  simpa using l.measurable_prod (by simpa using hl)
 
-@[to_additive (attr := measurability)]
-theorem Multiset.aemeasurable_prod' (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
+@[deprecated (since := "2025-05-30")]
+alias Multiset.measurable_sum' := Multiset.measurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias Multiset.measurable_prod' := Multiset.measurable_prod
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem Multiset.aemeasurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   rcases l with ⟨l⟩
-  simpa using l.aemeasurable_prod' (by simpa using hl)
+  simpa using l.aemeasurable_prod (by simpa using hl)
 
-@[to_additive (attr := measurability)]
-theorem Multiset.measurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Measurable f) :
+@[deprecated (since := "2025-05-30")]
+alias Multiset.aemeasurable_sum' := Multiset.aemeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias Multiset.aemeasurable_prod' := Multiset.aemeasurable_prod
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem Multiset.measurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Measurable f) :
     Measurable fun x => (s.map fun f : α → M => f x).prod := by
-  simpa only [← Pi.multiset_prod_apply] using s.measurable_prod' hs
+  simpa only [← Pi.multiset_prod_apply] using s.measurable_prod hs
 
-@[to_additive (attr := measurability)]
-theorem Multiset.aemeasurable_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
+@[to_additive (attr := measurability, fun_prop)]
+theorem Multiset.aemeasurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, AEMeasurable f μ) :
     AEMeasurable (fun x => (s.map fun f : α → M => f x).prod) μ := by
-  simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod' hs
+  simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod hs
 
-@[to_additive (attr := fun_prop, measurability)]
+@[to_additive (attr := measurability, fun_prop)]
+theorem Finset.measurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
+    Measurable fun a ↦ ∏ i ∈ s, f i a := by
+  simp_rw [← Finset.prod_apply]
+  exact Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
+
+@[to_additive (attr := measurability, fun_prop)]
 theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun a ↦ ∏ i ∈ s, f i a := by
   simp_rw [← Finset.prod_apply]
@@ -889,22 +915,32 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 
 /-- Compositional version of `Finset.measurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := measurability, fun_prop)
-"Compositional version of `Finset.measurable_sum` for use by `fun_prop`."]
-lemma Finset.measurable_prod' {f : ι → α → β → M} {g : α → β} {s : Finset ι}
-    (hf : ∀ i, Measurable ↿(f i)) (hg : Measurable g) :
-    Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by simp; fun_prop
+/-- Compositional version of `Finset.measurable_sum` for use by `fun_prop`. -/]
+lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
+    (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
+    Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by simp; fun_prop (discharger := assumption)
 
-@[to_additive (attr := measurability)]
-theorem Finset.aemeasurable_prod' (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
+@[deprecated (since := "2025-05-30")]
+alias Finset.measurable_sum' := Finset.measurable_sum_apply
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias Finset.measurable_prod' := Finset.measurable_prod_apply
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (∏ i ∈ s, f i) μ :=
-  Multiset.aemeasurable_prod' _ fun _g hg =>
+  Multiset.aemeasurable_prod _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
 
-@[to_additive (attr := measurability)]
-theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
+@[deprecated (since := "2025-05-30")]
+alias Finset.aemeasurable_sum' := Finset.aemeasurable_sum
+@[to_additive existing, deprecated (since := "2025-05-30")]
+alias Finset.aemeasurable_prod' := Finset.aemeasurable_prod
+
+@[to_additive (attr := measurability, fun_prop)]
+theorem Finset.aemeasurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (fun a => ∏ i ∈ s, f i a) μ := by
-  simpa only [← Finset.prod_apply] using s.aemeasurable_prod' hf
+  simpa only [← Finset.prod_apply] using s.aemeasurable_prod hf
 
 end CommMonoid
 

@@ -19,7 +19,7 @@ This file computes the cardinal of the general linear group over finite rings.
 * `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
 -/
 
-open LinearMap
+open LinearMap Module
 
 section LinearIndependent
 

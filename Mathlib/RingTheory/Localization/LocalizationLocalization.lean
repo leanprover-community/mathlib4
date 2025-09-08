@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 
@@ -223,7 +223,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       exact ⟨a, 1, by convert e using 1 <;> simp⟩ }
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the
-localization at `N` is equal to the localizaton of `M`. -/
+localization at `N` is equal to the localization of `M`. -/
 theorem isLocalization_of_is_exists_mul_mem (M N : Submonoid R) [IsLocalization M S] (h : M ≤ N)
     (h' : ∀ x : N, ∃ m : R, m * x ∈ M) : IsLocalization N S :=
   { map_units' := fun y => by
@@ -259,11 +259,11 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
   have := isLocalization_of_submonoid_le S T M (nonZeroDivisors R) hM
   refine @isLocalization_of_is_exists_mul_mem _ _ _ _ _ _ _ this ?_ ?_
   · exact map_nonZeroDivisors_le M S
-  · rintro ⟨x, hx⟩
+  · rintro ⟨x, -, hx⟩
     obtain ⟨⟨y, s⟩, e⟩ := IsLocalization.surj M x
     use algebraMap R S s
     rw [mul_comm, Subtype.coe_mk, e]
-    refine Set.mem_image_of_mem (algebraMap R S) ?_
+    refine Set.mem_image_of_mem (algebraMap R S) (mem_nonZeroDivisors_iff_right.mpr ?_)
     intro z hz
     apply IsLocalization.injective S hM
     rw [map_zero]

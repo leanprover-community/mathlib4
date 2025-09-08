@@ -177,6 +177,14 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, f.comm⟩
 
+instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
+
+instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
+
 end FDRep
 
 namespace FDRep

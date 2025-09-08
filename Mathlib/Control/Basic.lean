@@ -207,7 +207,7 @@ open Functor
 
 theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
-  f <$> a <*> b = flip f <$> b <*> a :=
+    f <$> a <*> b = flip f <$> b <*> a :=
   calc
     f <$> a <*> b = (fun p : α × β => f p.1 p.2) <$> (Prod.mk <$> a <*> b) := by
       simp only [map_seq, map_map, Function.comp_def]

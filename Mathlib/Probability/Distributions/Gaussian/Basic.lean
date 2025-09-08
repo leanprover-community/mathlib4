@@ -69,7 +69,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
 instance {x : E} : IsGaussian (Measure.dirac x) where
   map_eq_gaussianReal L := by rw [Measure.map_dirac (by fun_prop)]; simp
 
-lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
+lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
@@ -78,7 +78,7 @@ lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E)
   simp [hp]
 
 @[fun_prop]
-lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : Dual ℝ E) :
+lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E) :
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
   exact IsGaussian.memLp_dual μ L 1 (by simp)
@@ -111,7 +111,7 @@ section charFunDual
 
 /-- The characteristic function of a Gaussian measure `μ` has value
 `exp (μ[L] * I - Var[L; μ] / 2)` at `L : Dual ℝ E`. -/
-lemma IsGaussian.charFunDual_eq (L : Dual ℝ E) :
+lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
     charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
   calc charFunDual μ L
   _ = charFun (μ.map L) 1 := by rw [charFunDual_eq_charFun_map_one]
@@ -128,7 +128,7 @@ lemma IsGaussian.charFunDual_eq (L : Dual ℝ E) :
 /-- A finite measure is Gaussian iff its characteristic function has value
 `exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
 theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
-    IsGaussian μ ↔ ∀ L : Dual ℝ E, charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
+    IsGaussian μ ↔ ∀ L : StrongDual ℝ E, charFunDual μ L = exp (μ[L] * I - Var[L; μ] / 2) := by
   refine ⟨fun h ↦ h.charFunDual_eq, fun h ↦ ⟨fun L ↦ Measure.ext_of_charFun ?_⟩⟩
   ext u
   rw [charFun_map_eq_charFunDual_smul L u, h (u • L), charFun_gaussianReal]

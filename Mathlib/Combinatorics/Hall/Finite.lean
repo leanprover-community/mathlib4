@@ -195,10 +195,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     exact h.2
   have im_disj :
       ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : x'' ∉ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ := by
-    intro x x' hx' hx'' h
-    apply f''_notMem_biUnion x' hx''
-    rw [← h]
-    apply f'_mem_biUnion x
+    grind
   refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
   · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x

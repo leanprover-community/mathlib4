@@ -103,10 +103,10 @@ theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
 
 -- If https://github.com/leanprover/lean4/issues/2678 is resolved-
 -- this can be changed back to an `Iff`, but for now we would like `dsimp` to use it.
-@[simp]
+@[simp, grind =]
 theorem mem_val {a : α} {s : Finset α} : (a ∈ s.1) = (a ∈ s) := rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
   Iff.rfl
 
@@ -126,7 +126,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 instance : CoeTC (Finset α) (Set α) :=
   ⟨toSet⟩
 
-@[simp, norm_cast]
+@[simp, norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl
 
@@ -146,7 +146,7 @@ instance decidableMem' [DecidableEq α] (a : α) (s : Finset α) : Decidable (a 
 
 /-! ### extensionality -/
 
-@[ext]
+@[ext, grind ext]
 theorem ext {s₁ s₂ : Finset α} (h : ∀ a, a ∈ s₁ ↔ a ∈ s₂) : s₁ = s₂ :=
   (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).mpr h
 
@@ -263,6 +263,7 @@ alias not_mem_subset := not_mem_mono
 theorem Subset.antisymm {s₁ s₂ : Finset α} (H₁ : s₁ ⊆ s₂) (H₂ : s₂ ⊆ s₁) : s₁ = s₂ :=
   ext fun a => ⟨@H₁ a, @H₂ a⟩
 
+@[grind =]
 theorem subset_iff {s₁ s₂ : Finset α} : s₁ ⊆ s₂ ↔ ∀ ⦃x⦄, x ∈ s₁ → x ∈ s₂ :=
   Iff.rfl
 
@@ -305,6 +306,7 @@ theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.1 < s₂.1 ↔ s₁ ⊂ s₂ :
 
 lemma val_strictMono : StrictMono (val : Finset α → Multiset α) := fun _ _ ↦ val_lt_iff.2
 
+@[grind]
 theorem ssubset_iff_subset_ne {s t : Finset α} : s ⊂ t ↔ s ⊆ t ∧ s ≠ t :=
   @lt_iff_le_and_ne _ _ s t
 

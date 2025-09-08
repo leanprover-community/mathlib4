@@ -81,6 +81,12 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 
 @[deprecated (since := "2025-05-05")] alias map_stdBasisMatrix := map_single
 
+theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
+    Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
+  simp only [Set.mem_matrix, single, of_apply]
+  conv_lhs => intro _ _; rw [ite_mem]
+  simp [hS]
+
 end Zero
 
 theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
@@ -96,7 +102,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [single, mulVec, dotProduct]
-  rcases eq_or_ne i i' with rfl|h
+  rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
 
@@ -203,16 +209,23 @@ def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R
   LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
     LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
 
+-- not `simp` to let `liftLinear_single` fire instead
+theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
+    liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
+  simp [liftLinear, map_sum, LinearEquiv.congrLeft]
+
 @[simp]
-theorem liftLinear_piSingle (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
+theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
   dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
   simp_rw [of_symm_single, LinearMap.lsum_piSingle]
 
+@[deprecated (since := "2025-08-13")] alias liftLinear_piSingle := liftLinear_single
+
 @[simp]
 theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
     liftLinear S f ∘ₗ Matrix.singleLinearMap _ i j = f i j :=
-  LinearMap.ext <| liftLinear_piSingle S f i j
+  LinearMap.ext <| liftLinear_single S f i j
 
 @[simp]
 theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :

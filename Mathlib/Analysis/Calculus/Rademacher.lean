@@ -286,7 +286,7 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
     rcases Metric.mem_nhds_iff.1 I with ⟨r, r_pos, hr⟩
     exact ⟨r, r_pos, fun t ht v hv ↦ hr (mem_ball_zero_iff.2 ht) v hv⟩
   apply Metric.mem_nhds_iff.2 ⟨r, r_pos, fun v hv ↦ ?_⟩
-  rcases eq_or_ne v 0 with rfl|v_ne
+  rcases eq_or_ne v 0 with rfl | v_ne
   · simp
   obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
     refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel₀ (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
@@ -314,9 +314,6 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
       simp only [add_sub_add_left_eq_sub, ← smul_sub, norm_smul, norm_rho]; gcongr
     _ = ((C + ‖L‖ + 1) * δ) * ρ := by ring
     _ = ε * ‖v‖ := by rw [hδ, hρ]
-
-@[deprecated (since := "2025-01-15")]
-alias hasFderivAt_of_hasLineDerivAt_of_closure := hasFDerivAt_of_hasLineDerivAt_of_closure
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
 differentiable almost everywere. Superseded by

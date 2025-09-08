@@ -185,8 +185,6 @@ theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal 
   have := (zmod_congr_of_sub_mem_max_ideal x n m hn₂ hm₂).symm
   rwa [ZMod.natCast_eq_natCast_iff, ModEq, mod_eq_of_lt hn₁, mod_eq_of_lt hm₁] at this
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
-
 /-- `zmodRepr x` is the unique natural number smaller than `p`
 satisfying `‖(x - zmodRepr x : ℤ_[p])‖ < 1`.
 -/

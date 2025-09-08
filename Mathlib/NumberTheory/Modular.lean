@@ -78,10 +78,8 @@ section BottomRow
 
 /-- The two numbers `c`, `d` in the "bottom_row" of `g=[[*,*],[c,d]]` in `SL(2, ℤ)` are coprime. -/
 theorem bottom_row_coprime {R : Type*} [CommRing R] (g : SL(2, R)) :
-    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) := by
-  use -(↑g : Matrix (Fin 2) (Fin 2) R) 0 1, (↑g : Matrix (Fin 2) (Fin 2) R) 0 0
-  rw [add_comm, neg_mul, ← sub_eq_add_neg, ← det_fin_two]
-  exact g.det_coe
+    IsCoprime ((↑g : Matrix (Fin 2) (Fin 2) R) 1 0) ((↑g : Matrix (Fin 2) (Fin 2) R) 1 1) :=
+  isCoprime_row g 1
 
 /-- Every pair `![c, d]` of coprime integers is the "bottom_row" of some element `g=[[*,*],[c,d]]`
 of `SL(2,ℤ)`. -/
@@ -455,7 +453,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
     · rw [hc]; norm_num
-    · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
+    · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
       specialize this hc
       linarith
   intro hc

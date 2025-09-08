@@ -368,7 +368,7 @@ theorem finitaryExtensive_of_reflective
       · rintro ⟨⟨⟩⟩ <;> rfl
       · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
     rw [this]
-    rintro Z ⟨_|_⟩ f <;> dsimp <;> infer_instance
+    rintro Z ⟨_ | _⟩ f <;> dsimp <;> infer_instance
   refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit <| pair X Y ⋙ _)).map_reflective
     adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl (colimit.isColimit _)
@@ -401,7 +401,7 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
   refine IsVanKampenColimit.of_iso ?_ (hc.uniqueUpToIso (coprodIsCoprod X Y)).symm
   have (i : Discrete WalkingPair) (Z : C) (f : Z ⟶ X ⨿ Y) :
     PreservesLimit (cospan f ((BinaryCofan.mk coprod.inl coprod.inr).ι.app i)) F := by
-    rcases i with ⟨_|_⟩ <;> dsimp <;> infer_instance
+    rcases i with ⟨_ | _⟩ <;> dsimp <;> infer_instance
   refine (FinitaryExtensive.vanKampen _
     (isColimitOfPreserves F (coprodIsCoprod X Y))).of_mapCocone F
 
@@ -482,7 +482,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
       Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
     inv := coprod.desc (Sigma.ι f i) (Sigma.desc fun j ↦ Sigma.ι f j)
-    hom_inv_id := by aesop_cat
+    hom_inv_id := by cat_disch
     inv_hom_id := by
       ext j
       · simp

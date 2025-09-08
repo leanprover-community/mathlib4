@@ -116,7 +116,7 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
     have := Fintype.sum_equiv (e₂.symm.trans e₁) _ g fun _ ↦ rfl
-    aesop
+    simp_all
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
@@ -129,7 +129,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
     rw [sum_dite_of_true fun _ ↦ id]
     exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
-    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
+    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by grind⟩
     rw [← sum_attach s]
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 

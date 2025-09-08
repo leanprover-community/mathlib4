@@ -409,9 +409,8 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
       · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
-      simp only [e, Fin.sum_univ_one, e_symm]
-      have : ∀ c : ℝ, const (Fin 0) c = isEmptyElim := fun c => Subsingleton.elim _ _
-      simp [this, volume_pi, Measure.pi_of_empty fun _ : Fin 0 => volume]
+      simp [e, Subsingleton.elim (const (Fin 0) _) isEmptyElim, volume_pi,
+        Measure.pi_of_empty fun _ : Fin 0 ↦ _]
 
 @[deprecated (since := "2025-05-02")]
 alias integral_eq_of_hasDerivWithinAt_off_countable_of_le :=

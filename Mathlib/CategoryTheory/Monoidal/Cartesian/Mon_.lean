@@ -134,7 +134,7 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
       map_mul' f₁ f₂ := by
         change φ.unop ≫ lift f₁ f₂ ≫ μ = lift (φ.unop ≫ f₁) (φ.unop ≫ f₂) ≫ μ
         rw [← Category.assoc]
-        aesop_cat }
+        cat_disch }
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 

@@ -483,15 +483,15 @@ section Relation
 
 open Relation
 
-lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : ((· : α) ⩿ ·) = ReflGen (· ⋖ ·) := by
+lemma wcovBy_eq_reflGen_covBy [PartialOrder α] : (· ⩿ · : α → α → Prop) = ReflGen (· ⋖ ·) := by
   ext x y; simp_rw [wcovBy_iff_eq_or_covBy, @eq_comm _ x, reflGen_iff]
 
 lemma transGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    TransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    TransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, transGen_reflGen]
 
 lemma reflTransGen_wcovBy_eq_reflTransGen_covBy [PartialOrder α] :
-    ReflTransGen ((· : α) ⩿ ·) = ReflTransGen (· ⋖ ·) := by
+    ReflTransGen (· ⩿ · : α → α → Prop) = ReflTransGen (· ⋖ ·) := by
   rw [wcovBy_eq_reflGen_covBy, reflTransGen_reflGen]
 
 end Relation

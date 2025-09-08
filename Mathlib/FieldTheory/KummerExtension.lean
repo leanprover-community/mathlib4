@@ -101,9 +101,9 @@ theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
-  | h₀ => simp [← Nat.not_even_iff_odd] at hn
-  | h₁ => simpa using irreducible_X_sub_C a
-  | h p n hp IH =>
+  | zero => simp [← Nat.not_even_iff_odd] at hn
+  | one => simpa using irreducible_X_sub_C a
+  | prime_mul p n hp IH =>
     rw [mul_comm]
     apply X_pow_mul_sub_C_irreducible
       (X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _)))
@@ -439,8 +439,8 @@ lemma finrank_of_isSplittingField_X_pow_sub_C : Module.finrank K L = n := by
   have := isGalois_of_isSplittingField_X_pow_sub_C hζ H L
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   have : NeZero n := ⟨ne_zero_of_irreducible_X_pow_sub_C H⟩
-  rw [← IsGalois.card_aut_eq_finrank, Fintype.card_congr ((autEquivZmod H L <|
-    (mem_primitiveRoots hn).mp hζ.choose_spec).toEquiv.trans Multiplicative.toAdd), ZMod.card]
+  rw [← IsGalois.card_aut_eq_finrank, Nat.card_congr ((autEquivZmod H L <|
+    (mem_primitiveRoots hn).mp hζ.choose_spec).toEquiv.trans Multiplicative.toAdd), Nat.card_zmod]
 
 end IsSplittingField
 
@@ -467,8 +467,9 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K
   -- Since the minimal polynomial of `σ` over `K` is `Xⁿ - 1`,
   -- `σ` has an eigenvector `v` with eigenvalue `ζ`.
   have : IsRoot (minpoly K σ.toLinearMap) ζ := by
+    rw [IsGalois.card_aut_eq_finrank] at hσ'
     simpa [minpoly_algEquiv_toLinearMap σ (isOfFinOrder_of_finite σ), hσ',
-      sub_eq_zero, IsGalois.card_aut_eq_finrank] using hζ.pow_eq_one
+      sub_eq_zero] using hζ.pow_eq_one
   obtain ⟨v, hv⟩ := (Module.End.hasEigenvalue_of_isRoot this).exists_hasEigenvector
   have hv' := hv.pow_apply
   simp_rw [← AlgEquiv.pow_toLinearMap, AlgEquiv.toLinearMap_apply] at hv'
@@ -490,7 +491,7 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K
     simp only [AlgEquiv.smul_def, hv'] at this
     conv_rhs at this => rw [← one_smul K v]
     obtain ⟨k, rfl⟩ := hζ.dvd_of_pow_eq_one n (smul_left_injective K hv.2 this)
-    rw [pow_mul, ← IsGalois.card_aut_eq_finrank, pow_card_eq_one, one_pow]
+    rw [pow_mul, ← IsGalois.card_aut_eq_finrank, pow_card_eq_one', one_pow]
     exact one_mem _
 
 variable {K L}

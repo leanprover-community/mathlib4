@@ -219,8 +219,8 @@ open scoped Classical in
 `s \ ⋃₀ I = ⋃₀ (hC.disjointOfDiffUnion hs I hI)`.
 `disjointOfDiff` is a special case of `disjointOfDiffUnion` where `I` is a
 singleton. -/
-noncomputable def disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
-  (hI : ↑I ⊆ C) : Finset (Set α) :=
+noncomputable def disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
+    Finset (Set α) :=
   (hC.exists_disjoint_finset_diff_eq hs hI).choose \ {∅}
 
 lemma empty_notMem_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)

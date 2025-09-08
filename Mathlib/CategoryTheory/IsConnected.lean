@@ -89,7 +89,7 @@ private def liftToDiscrete {α : Type u₂} (F : J ⥤ Discrete α) : J ⥤ Disc
 /-- Implementation detail of `isoConstant`. -/
 private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
     liftToDiscrete F ⋙ Discrete.functor F.obj ≅ F :=
-  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+  NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by cat_disch)
 
 end IsPreconnected.IsoConstantAux
 
@@ -198,6 +198,7 @@ theorem IsConnected.of_induct {j₀ : J}
     intro j j'
     rw [w j, w j']
 
+attribute [local instance] uliftCategory in
 /-- Lifting the universe level of morphisms and objects preserves connectedness. -/
 instance [hc : IsConnected J] : IsConnected (ULiftHom.{v₂} (ULift.{u₂} J)) := by
   apply IsConnected.of_induct

@@ -334,6 +334,7 @@ protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
 protected theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 :=
   bot_lt_iff_ne_bot
 
+@[simp]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 

@@ -179,7 +179,7 @@ theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun x y ↦ by
   refine UniformSpace.Completion.induction_on₂ x y
-    (isClosed_le (continuous_norm.comp continuous_add) (by continuity)) (fun a b ↦ ?_)
+    (isClosed_le (continuous_norm.comp continuous_add) (by fun_prop)) (fun a b ↦ ?_)
   rw [← UniformSpace.Completion.coe_add, norm_extends, norm_extends, norm_extends]
   exact PadicAlgCl.isNonarchimedean p a b
 

@@ -185,7 +185,7 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
   have lfpApprox_mem_fixedPoint :
       lfpApprox f x a ∈ fixedPoints f := by
     rw [mem_fixedPoints_iff, ← lfpApprox_add_one f x h_init]
-    exact Monotone.eq_of_le_of_le (lfpApprox_monotone f x)
+    exact Monotone.eq_of_ge_of_le (lfpApprox_monotone f x)
       h_fab (SuccOrder.le_succ a) (SuccOrder.succ_le_of_lt h_ab)
   rw [lfpApprox_eq_of_mem_fixedPoints f x h_init]
   · exact lfpApprox_mem_fixedPoint

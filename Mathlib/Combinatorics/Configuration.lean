@@ -146,7 +146,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       exact (eq_or_eq (hp₁ l₁ hl₁) (hp₂ l₁ hl₁) (hp₁ l₂ hl₂) (hp₂ l₂ hl₂)).resolve_right hl₃
     by_cases hs₃ : #sᶜ = 0
     · rw [hs₃, Nat.le_zero]
-      rw [Finset.card_compl, tsub_eq_zero_iff_le, LE.le.ge_iff_eq' (Finset.card_le_univ _), eq_comm,
+      rw [Finset.card_compl, tsub_eq_zero_iff_le, (Finset.card_le_univ _).ge_iff_eq', eq_comm,
         Finset.card_eq_iff_eq_univ] at hs₃ ⊢
       rw [hs₃]
       rw [Finset.eq_univ_iff_forall] at hs₃ ⊢

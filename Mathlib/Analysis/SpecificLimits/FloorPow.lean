@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -259,7 +260,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         ring
       rw [Real.rpow_sub A, I]
       have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
-      field_simp [hj.ne', (zero_lt_one.trans hc).ne']
+      simp
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
 

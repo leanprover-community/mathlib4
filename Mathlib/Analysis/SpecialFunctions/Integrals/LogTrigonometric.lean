@@ -54,9 +54,9 @@ theorem integral_log_sin_zero_pi_div_two : ∫ x in (0)..(π / 2), log (sin x) =
         intervalIntegral.integral_sub _ intervalIntegrable_const,
         intervalIntegral.integral_const]
       · simp
-      · simpa using (intervalIntegrable_log_sin (a := 0) (b := π)).comp_mul_left 2
+      · simpa using (intervalIntegrable_log_sin (a := 0) (b := π)).comp_mul_left
       · apply IntervalIntegrable.sub _ intervalIntegrable_const
-        simpa using (intervalIntegrable_log_sin (a := 0) (b := π)).comp_mul_left 2
+        simpa using (intervalIntegrable_log_sin (a := 0) (b := π)).comp_mul_left
       · exact intervalIntegrable_log_cos
     _ = (∫ x in (0)..(π / 2), log (sin (2 * x)))
         - π / 2 * log 2 - ∫ x in (0)..(π / 2), log (sin x) := by

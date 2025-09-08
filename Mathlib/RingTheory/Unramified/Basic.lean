@@ -49,7 +49,7 @@ This is equivalent to "for every `R`-algebra, every square-zero ideal
 See `Algebra.FormallyUnramified.iff_comp_injective`. -/
 @[mk_iff, stacks 00UM]
 class FormallyUnramified : Prop where
-  subsingleton_kaehlerDifferential : Subsingleton (Ω[A⁄R])
+  subsingleton_kaehlerDifferential : Subsingleton Ω[A⁄R]
 
 attribute [instance] FormallyUnramified.subsingleton_kaehlerDifferential
 

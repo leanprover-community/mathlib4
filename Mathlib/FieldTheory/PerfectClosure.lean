@@ -26,7 +26,7 @@ import Mathlib.FieldTheory.Perfect
 
 ## Main results
 
-- `PerfectClosure.induction_on`: to prove a result for all elements of the prefect closure, one only
+- `PerfectClosure.induction_on`: to prove a result for all elements of the perfect closure, one only
   needs to prove it for all elements of the form `x ^ (p ^ -n)`.
 
 - `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
@@ -350,9 +350,7 @@ theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   | zero =>
     induction x with
     | zero => simp
-    | succ x ih =>
-      rw [Nat.cast_succ, Nat.cast_succ, ih]
-      rfl
+    | succ x ih => simp [Nat.cast_succ, ih, one_def]
   | succ n ih =>
     rw [ih]; apply Quot.sound
     suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by

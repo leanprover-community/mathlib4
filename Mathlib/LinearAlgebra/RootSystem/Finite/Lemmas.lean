@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
+import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -102,7 +103,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
-  have := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   rcases eq_or_ne i j with rfl | h₁; · simp
   rcases eq_or_ne (α i) (-α j) with h₂ | h₂; · aesop
   have aux₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
@@ -114,7 +115,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' [P.IsReduced]
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
-  have := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   aesop
 
@@ -143,7 +144,7 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
     aesop -- #24551 (this should be faster)
   have aux₁ : P.pairingIn ℤ j i = -1 ∨ P.pairingIn ℤ j i = 1 := by
-    have _i := P.reflexive_left
+    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
     aesop -- #24551 (this should be faster)
   have aux₂ := B.pairingIn_mul_eq_pairingIn_mul_swap i j
@@ -171,7 +172,7 @@ lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne {B : P.InvariantForm}
     (len_eq : B.form (α i) (α i) = B.form (α j) (α j))
     (ne : i ≠ j) (ne' : α i ≠ -α j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(0, 0), (1, 1), (-1, -1)} : Set (ℤ × ℤ)) := by
-  have := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
   aesop
 
@@ -188,9 +189,9 @@ variable {i j}
 
 lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i ≠ j) :
     α i - α j ∈ Φ := by
-  have := P.reflexive_left
-  have := P.reflexive_right
-  have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
+  have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
+  have : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
@@ -268,7 +269,7 @@ lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
     B.form (α i) (α i) = 3 * B.form (α j) (α j) ∨
     B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
-  have := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (α i) (α i) =
             algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (α j) (α j) := by
@@ -286,30 +287,10 @@ lemma apply_eq_or (i j : ι) :
     B.form (α j) (α j) = 2 * B.form (α i) (α i) ∨
     B.form (α j) (α j) = 3 * B.form (α i) (α i) := by
   obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
-  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁]; exact B.apply_eq_or_aux i j' this
+  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁, B.apply_eq_or_aux i j' this]
   contrapose! h₂
   replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
   exact (B.apply_root_root_zero_iff i j').mpr h₂
-
-theorem exists_apply_eq_or_aux {x y z : R}
-    (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
-    (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
-    (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
-    x = 0 ∧ y = 0 ∧ z = 0 := by
-  /- The below proof (due to Mario Carneiro, Johan Commelin, Bhavik Mehta, Jingting Wang) should
-     not really be necessary: we should have a tactic to crush this. -/
-  suffices y = 0 ∨ z = 0 by apply this.elim <;> rintro rfl <;> simp_all
-  let S : Finset (ℕ × ℕ) := {(1, 2), (1, 3), (2, 1), (3, 1)}
-  obtain ⟨⟨ab, hab, hxy⟩, ⟨cd, hcd, hxz⟩, ⟨ef, hef, hyz⟩⟩ :
-    (∃ ab ∈ S, ab.1 * x = ab.2 * y) ∧
-    (∃ cd ∈ S, cd.1 * x = cd.2 * z) ∧
-    (∃ ef ∈ S, ef.1 * y = ef.2 * z) := by
-    simp_all only [Finset.mem_insert, Finset.mem_singleton, exists_eq_or_imp, Nat.cast_one, one_mul,
-      Nat.cast_ofNat, eq_comm, exists_eq_left, and_self, S]
-  have : (ab.1 * cd.2 * ef.1 : R) ≠ ab.2 * cd.1 * ef.2 := by norm_cast; clear! R; decide +revert
-  have : (ab.1 * cd.2 * ef.1 - ab.2 * cd.1 * ef.2) * (y * z) = 0 := by
-    linear_combination z * cd.1 * ef.2 * hxy - ab.1 * ef.1 * y * hxz + ab.1 * x * cd.1 * hyz
-  simp_all only [ne_eq, mul_eq_zero, sub_eq_zero, false_or, S]
 
 /-- A reduced irreducible finite crystallographic root system has roots of at most two different
 lengths. -/
@@ -327,8 +308,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
-    have := exists_apply_eq_or_aux hij hik hjk
-    aesop
+    grind
 
 lemma apply_eq_or_of_apply_ne
     (h : B.form (α i) (α i) ≠ B.form (α j) (α j)) (k : ι) :

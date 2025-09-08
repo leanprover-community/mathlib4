@@ -601,7 +601,7 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
 
 open Classical in
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
-existence of a local flow and that it is Lipschitz continuous in the intial point. -/
+existence of a local flow and that it is Lipschitz continuous in the initial point. -/
 theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ∃ α : E → ℝ → E, (∀ x ∈ closedBall x₀ r, α x t₀ = x ∧

@@ -319,7 +319,8 @@ distance, with a topology defeq to the initial one. -/
 namespace MulOpposite
 
 /-- Pseudoemetric space instance on the multiplicative opposite of a pseudoemetric space. -/
-@[to_additive "Pseudoemetric space instance on the additive opposite of a pseudoemetric space."]
+@[to_additive
+/-- Pseudoemetric space instance on the additive opposite of a pseudoemetric space. -/]
 instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
   PseudoEMetricSpace.induced unop ‹_›
 
@@ -346,7 +347,7 @@ end ULift
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
-  PseudoEMetricSpace (α × β) where
+    PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
@@ -666,7 +667,7 @@ instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtyp
   EMetricSpace.induced Subtype.val Subtype.coe_injective ‹_›
 
 /-- EMetric space instance on the multiplicative opposite of an emetric space. -/
-@[to_additive "EMetric space instance on the additive opposite of an emetric space."]
+@[to_additive /-- EMetric space instance on the additive opposite of an emetric space. -/]
 instance {α : Type*} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ :=
   EMetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 

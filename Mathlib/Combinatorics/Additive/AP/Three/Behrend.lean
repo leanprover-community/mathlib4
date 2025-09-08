@@ -58,7 +58,7 @@ lemma threeAPFree_frontier {𝕜 E : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsS
     ThreeAPFree (frontier s) := by
   intro a ha b hb c hc habc
   obtain rfl : (1 / 2 : 𝕜) • a + (1 / 2 : 𝕜) • c = b := by
-    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by norm_num), two_smul]
+    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by simp), two_smul]
   have :=
     hs₁.eq (hs₀.frontier_subset ha) (hs₀.frontier_subset hc) one_half_pos one_half_pos
       (add_halves _) hb.2
@@ -391,7 +391,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff₀]
-      · norm_num; exact le_sqrt_log hN
+      · norm_num [le_sqrt_log hN]
       · norm_num1
     · apply log_nonneg
       rw [one_le_cast]

@@ -138,8 +138,18 @@ theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := b
 
 alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 
+theorem count_ne_iff_exists {n : ℕ} : n.count p ≠ 0 ↔ ∃ m < n, p m := by
+  simp [Nat.count_iff_forall_not]
+
 @[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
   count_of_forall_not fun _ _ ↦ id
+
+lemma exists_of_count_lt_count {a b : ℕ} (h : a.count p < b.count p) : ∃ x ∈ Set.Ico a b, p x := by
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt (lt_of_count_lt_count h)
+  rw [add_assoc, count_add, Nat.lt_add_right_iff_pos] at h
+  obtain ⟨t, ht, hp⟩ := count_ne_iff_exists.mp h.ne'
+  simp_rw [Set.mem_Ico]
+  exact ⟨a + t, ⟨le_add_right _ _, by rwa [add_assoc _ k, Nat.add_lt_add_iff_left]⟩, hp⟩
 
 variable {q : ℕ → Prop}
 variable [DecidablePred q]

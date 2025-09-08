@@ -64,14 +64,9 @@ end CliffordAlgebra
 -/
 def CliffordAlgebra :=
   RingQuot (CliffordAlgebra.Rel Q)
+deriving Inhabited, Ring, Algebra R
 
 namespace CliffordAlgebra
-
--- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
-instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 
 instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
@@ -84,9 +79,6 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
 example : (Semiring.toNatAlgebra : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
-
--- shortcut instance, as the other instance is slow
-instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)

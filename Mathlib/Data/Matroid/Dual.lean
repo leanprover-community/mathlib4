@@ -179,9 +179,9 @@ theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.I
     and_iff_left (inter_subset_left.trans diff_subset)]
   refine fun B' hB' ↦ by_contra (fun hem ↦ ?_)
   rw [nonempty_iff_ne_empty, not_ne_iff, ← union_singleton, diff_inter_diff,
-   union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
-   inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
-   diff_eq_empty] at hem
+    union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
+    inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
+    diff_eq_empty] at hem
   obtain ⟨f, hfb, hBf⟩ := hB.exchange hB' ⟨he.2, hem.2⟩
   have hi : M.Indep (insert f (B ∩ X)) := by
     refine hBf.indep.subset (insert_subset_insert ?_)

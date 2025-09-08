@@ -291,7 +291,7 @@ private lemma no_strictly_decreasing {α : Type*} [Preorder α] [WellFoundedLT �
     (hf : ∀ n ≥ n₀, f (n + 1) < f n) : False := by
   let g (n : ℕ) : α := f (n₀ + n)
   have : (· > ·) ↪r (· < ·) := RelEmbedding.natGT g (fun n ↦ hf _ (by simp))
-  exact this.not_wellFounded_of_decreasing_seq wellFounded_lt
+  exact this.not_wellFounded wellFounded_lt
 
 private lemma no_strictAnti {α : Type*} [Preorder α] [WellFoundedLT α] (f : ℕ → α)
     (hf : StrictAnti f) : False :=

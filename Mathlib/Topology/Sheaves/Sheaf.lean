@@ -84,7 +84,7 @@ nonrec def IsSheaf (F : Presheaf.{w, v, u} C X) : Prop :=
 /-- The presheaf valued in `Unit` over any topological space is a sheaf.
 -/
 theorem isSheaf_unit (F : Presheaf (CategoryTheory.Discrete Unit) X) : F.IsSheaf :=
-  fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by aesop_cat, fun _ => by aesop_cat⟩
+  fun x U S _ x _ => ⟨eqToHom (Subsingleton.elim _ _), by cat_disch, fun _ => by cat_disch⟩
 
 theorem isSheaf_iso_iff {F G : Presheaf C X} (α : F ≅ G) : F.IsSheaf ↔ G.IsSheaf :=
   Presheaf.isSheaf_of_iso_iff α
@@ -103,11 +103,7 @@ satisfying the sheaf condition.
 -/
 nonrec def Sheaf : Type max u v w :=
   Sheaf (Opens.grothendieckTopology X) C
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance SheafCat : Category (Sheaf C X) :=
-  show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
+deriving Category
 
 variable {C X}
 

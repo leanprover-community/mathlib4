@@ -304,7 +304,7 @@ instance : LinearOrder (Products I) :=
 
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
-  cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
+  simp
 
 instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (· < ·) l.val m.val) := by
@@ -509,7 +509,7 @@ theorem Products.prop_of_isGood_of_contained {l : Products I} (o : Ordinal) (h :
     (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
-  suffices eval C l = 0 by simp [this, Submodule.zero_mem]
+  suffices eval C l = 0 by simp [this]
   ext x
   simp only [eval_eq, LocallyConstant.coe_zero, Pi.zero_apply, ite_eq_right_iff, one_ne_zero]
   contrapose! h'
@@ -563,7 +563,7 @@ theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
     (Set.surjective_mapsTo_image_restrict _ _)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection
-    `π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
+`π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
 @[simps!]
 noncomputable
 def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :

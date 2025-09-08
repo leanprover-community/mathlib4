@@ -41,7 +41,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
         rw [← h] at h₁
         exact h₁ rfl)
   simp only [len_mk] at hk
-  rcases k with _|k
+  rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
     obtain ⟨j, rfl⟩ := eq_δ_of_mono i
@@ -55,14 +55,12 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     subst hk
     obtain ⟨j₁ : Fin (_ + 1), i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
-        have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
-        dsimp at h'
-        omega
+        rw [← SimplexCategory.epi_iff_surjective] at h
+        grind [→ le_of_epi]
     obtain ⟨j₂, i, rfl⟩ :=
       eq_comp_δ_of_not_surjective i fun h => by
-        have h' := len_le_of_epi (SimplexCategory.epi_iff_surjective.2 h)
-        dsimp at h'
-        omega
+        rw [← SimplexCategory.epi_iff_surjective] at h
+        grind [→ le_of_epi]
     by_cases hj₁ : j₁ = 0
     · subst hj₁
       rw [assoc, ← SimplexCategory.δ_comp_δ'' (Fin.zero_le _)]

@@ -67,7 +67,7 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : IsDenseInducing i) (h
   refine mem_of_superset (hUo.mem_nhds haU) ?_
   calc
     U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
-    _ ⊆ closure (i '' s) := closure_mono (image_subset i sub)
+    _ ⊆ closure (i '' s) := closure_mono (image_mono sub)
 
 theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
   refine ⟨fun H x => ?_, di.dense.dense_image di.continuous⟩
@@ -276,9 +276,6 @@ theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
 
 theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
 
-@[deprecated (since := "2024-10-26")]
-alias to_embedding := isEmbedding
-
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=
   de.isDenseInducing.separableSpace
@@ -384,7 +381,7 @@ theorem Filter.HasBasis.hasBasis_of_isDenseInducing [TopologicalSpace α] [Topol
     obtain ⟨i, hi, hi'⟩ := (h _).mp hT₄
     exact
       ⟨i, hi,
-        (closure_mono (image_subset f hi')).trans
+        (closure_mono (image_mono hi')).trans
           (Subset.trans (closure_minimal (image_preimage_subset _ _) hT₂) hT₃)⟩
   · obtain ⟨i, hi, hi'⟩ := hT
     suffices closure (f '' s i) ∈ 𝓝 (f x) by filter_upwards [this] using hi'

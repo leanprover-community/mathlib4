@@ -26,7 +26,8 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
+-- Porting note: `aesop cases` does not work on type synonyms like `WidePullbackShape`
+-- attribute [local aesop safe cases] WidePullbackShape WalkingPair
 
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
 `WidePullbackShape`. -/

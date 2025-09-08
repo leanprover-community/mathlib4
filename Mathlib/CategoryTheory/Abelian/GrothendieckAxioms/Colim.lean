@@ -80,7 +80,7 @@ lemma IsColimit.mono_ι_app_of_isFiltered
         simp only [Category.id_comp, ← X.map_comp, Under.w] }
   have := NatTrans.mono_of_mono_app f
   exact colim.map_mono' f (isColimitConstCocone _ _)
-    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by aesop_cat)
+    ((Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by cat_disch)
 
 section
 
@@ -148,6 +148,10 @@ instance isStableUnderColimitsOfShape_monomorphisms
 
 instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
     IsStableUnderCoproducts.{u'} (monomorphisms C) where
+
+instance [HasFilteredColimitsOfSize.{v', u'} C] [AB5OfSize.{v', u'} C] :
+    IsStableUnderFilteredColimits.{v', u'} (monomorphisms C) where
+  isStableUnderColimitsOfShape J _ _ := by infer_instance
 
 end MorphismProperty
 

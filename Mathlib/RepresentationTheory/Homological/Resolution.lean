@@ -118,9 +118,9 @@ alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
 
 /-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
-the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
+the left-hand side is `TensorProduct.leftModule`, whilst that of the right-hand side comes from
 `Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
-of the righthand side. -/
+of the right-hand side. -/
 @[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
 def ofMulActionBasisAux :
     MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]

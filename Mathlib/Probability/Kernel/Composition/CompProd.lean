@@ -80,7 +80,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
   have h_Union : (fun b ↦ η (a, b) {c : γ | (b, c) ∈ ⋃ i, f i})
       = fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}) := by
     ext1 b
-    congr with c
+    congr 1 with c
     simp only [Set.mem_iUnion, Set.mem_setOf_eq]
   rw [compProdFun, h_Union]
   have h_tsum : (fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}))

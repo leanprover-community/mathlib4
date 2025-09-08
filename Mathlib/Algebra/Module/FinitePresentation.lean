@@ -152,9 +152,6 @@ lemma Module.finitePresentation_of_projective [Projective R M] [Module.Finite R 
   Module.finitePresentation_of_free_of_surjective _ surj
     (Finite.iff_fg.mp <| LinearMap.ker_eq_range_of_comp_eq_id hfg ▸ inferInstance)
 
-@[deprecated (since := "2024-11-06")]
-alias Module.finitePresentation_of_free := Module.finitePresentation_of_projective
-
 variable {ι} [Finite ι]
 
 instance : Module.FinitePresentation R R := Module.finitePresentation_of_projective _ _

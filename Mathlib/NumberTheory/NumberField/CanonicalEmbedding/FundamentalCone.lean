@@ -17,7 +17,7 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
-`u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
+  `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
   by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
@@ -229,7 +229,7 @@ theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
   rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ ZSpan.fundamentalDomain B
   · exact ⟨u, by rwa [Set.mem_preimage, logMap_unit_smul u hx], by simp [hx]⟩
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
-    exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
+    exact ⟨⟨e, by rwa [← Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
 theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
@@ -247,7 +247,7 @@ theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 
   let B := (basisUnitLattice K).ofZLatticeBasis ℝ
   refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
     (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
-  · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+  · rw [Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
     exact ⟨u, trivial, rfl⟩
   · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
     exact h.1
@@ -271,9 +271,6 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
-
-@[deprecated (since := "2024-12-17")]
-alias exists_unique_preimage_of_mem_integerSet := existsUnique_preimage_of_mem_integerSet
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
   by_contra!

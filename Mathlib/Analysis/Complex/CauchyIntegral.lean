@@ -384,13 +384,16 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       rwa [mem_closedBall_iff_norm, hz]
     _ = ε := by field_simp [hr0.ne', Real.two_pi_pos.ne']; ac_rfl
 
-/-- **Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous
-on a closed disc of radius `R` and is complex differentiable at all but countably many points of its
-interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to `2πiy`. -/
+/--
+**Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous on a
+closed disc of radius `R` and center `c`, and is complex differentiable at all but countably many
+points of its interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to
+`2πi • f c`.
+-/
 theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 < R)
     {f : ℂ → E} {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
-    (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • f c :=
+    (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I) • f c :=
   circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto h0 hs
     (hc.mono diff_subset) (fun z hz => hd z ⟨hz.1.1, hz.2⟩)
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt

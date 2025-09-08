@@ -99,8 +99,8 @@ theorem mulIsInitial_inv (X : C) [HasBinaryProduct X I] (hI : IsInitial I) :
 /-- If `I` is initial, then `I ⨯ X` is isomorphic to it. -/
 @[simps! hom]
 noncomputable def isInitialMul (X : C) [HasBinaryProduct I X] (hI : IsInitial I) : I ⨯ X ≅ I := by
-   have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
-   exact asIso prod.fst
+  have := hI.isIso_to (prod.fst : I ⨯ X ⟶ I)
+  exact asIso prod.fst
 
 @[simp]
 theorem isInitialMul_inv (X : C) [HasBinaryProduct I X] (hI : IsInitial I) :

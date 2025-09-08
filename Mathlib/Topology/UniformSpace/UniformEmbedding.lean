@@ -107,11 +107,6 @@ theorem IsUniformInducing.isInducing {f : α → β} (h : IsUniformInducing f) :
   obtain rfl := h.comap_uniformSpace
   exact .induced f
 
-@[deprecated (since := "2024-10-28")]
-alias IsUniformInducing.inducing := IsUniformInducing.isInducing
-
-@[deprecated (since := "2024-10-28")] alias UniformInducing.inducing := IsUniformInducing.isInducing
-
 theorem IsUniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformInducing e₁) (h₂ : IsUniformInducing e₂) :
     IsUniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
@@ -232,9 +227,6 @@ protected lemma IsUniformEmbedding.isEmbedding {f : α → β} (h : IsUniformEmb
   toIsInducing := h.toIsUniformInducing.isInducing
   injective := h.injective
 
-@[deprecated (since := "2024-10-26")]
-alias IsUniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
-
 theorem IsUniformEmbedding.isDenseEmbedding {f : α → β} (h : IsUniformEmbedding f)
     (hd : DenseRange f) : IsDenseEmbedding f :=
   { h.isEmbedding with dense := hd }
@@ -254,7 +246,7 @@ theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ IsSymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
   rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
-  refine ⟨a, mem_of_superset ?_ (closure_mono <| image_subset _ <| UniformSpace.ball_mono hs a)⟩
+  refine ⟨a, mem_of_superset ?_ (closure_mono <| image_mono <| UniformSpace.ball_mono hs a)⟩
   have ho : IsOpen (UniformSpace.ball (e a) U) := UniformSpace.isOpen_ball (e a) hUo
   refine mem_of_superset (ho.mem_nhds <| (UniformSpace.mem_ball_symmetry hsymm).2 ha) fun y hy => ?_
   refine mem_closure_iff_nhds.2 fun V hV => ?_
@@ -423,9 +415,6 @@ make sure that its topology is defeq to the original one. -/
 def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.eq_induced
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.comapUniformSpace := IsEmbedding.comapUniformSpace
 
 theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : UniformSpace β] (f : α → β)
     (h : IsEmbedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=

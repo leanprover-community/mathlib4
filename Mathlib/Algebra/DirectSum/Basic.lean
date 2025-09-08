@@ -33,21 +33,7 @@ variable (ι : Type v) (β : ι → Type w)
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
-
--- The `AddCommMonoid, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
-  inferInstanceAs (Inhabited (Π₀ i, β i))
-
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
-  inferInstanceAs (AddCommMonoid (Π₀ i, β i))
-
-instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
-  inferInstanceAs (DFunLike (Π₀ i, β i) _ _)
-
-instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
-  inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
+deriving AddCommMonoid, Inhabited, DFunLike, CoeFun
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/

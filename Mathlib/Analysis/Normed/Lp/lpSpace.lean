@@ -98,10 +98,10 @@ theorem memℓp_gen {f : ∀ i, E i} (hf : Summable fun i => ‖f i‖ ^ p.toRea
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
     have H : Summable fun _ : α => (1 : ℝ) := by simpa using hf
-    exact (Set.Finite.of_summable_const (by norm_num) H).subset (Set.subset_univ _)
+    exact (Set.Finite.of_summable_const (by simp) H).subset (Set.subset_univ _)
   · apply memℓp_infty
     have H : Summable fun _ : α => (1 : ℝ) := by simpa using hf
-    simpa using ((Set.Finite.of_summable_const (by norm_num) H).image fun i => ‖f i‖).bddAbove
+    simpa using ((Set.Finite.of_summable_const (by simp) H).image fun i => ‖f i‖).bddAbove
   exact (memℓp_gen_iff hp).2 hf
 
 theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C) :
@@ -183,7 +183,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     have hf' := hfq.summable hq
     refine .of_norm_bounded_eventually hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
     · have H : { x : α | 1 ≤ ‖f x‖ ^ q.toReal }.Finite := by
-        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by norm_num)
+        simpa using hf'.tendsto_cofinite_zero.eventually_lt_const (by simp)
       exact H.subset fun i hi => Real.one_le_rpow hi hq.le
     · change ∀ i, ¬|‖f i‖ ^ p.toReal| ≤ ‖f i‖ ^ q.toReal → 1 ≤ ‖f i‖
       intro i hi

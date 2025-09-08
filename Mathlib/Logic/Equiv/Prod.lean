@@ -11,7 +11,7 @@ import Mathlib.Data.Prod.PProd
 # Equivalence between product types
 
 In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`,
-focussing on product types.
+focusing on product types.
 
 ## Main definitions
 

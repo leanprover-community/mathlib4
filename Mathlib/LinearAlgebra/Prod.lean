@@ -528,16 +528,12 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
-  invFun m := ⟨⟨m, 0⟩, by simp [fst]⟩
+  invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv := by
-    rintro ⟨⟨x, y⟩, hy⟩
-    simp only [fst, comap_bot, mem_ker, snd_apply] at hy
-    simpa only [Subtype.mk.injEq, Prod.mk.injEq, true_and] using hy.symm
-  right_inv := by rintro x; rfl
+  left_inv x := by aesop (add norm simp Submodule.fst)
+  right_inv x := by simp
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
   aesop
@@ -552,15 +548,11 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
-  invFun n := ⟨⟨0, n⟩, by simp [snd]⟩
+  invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv := by
-    rintro ⟨⟨x, y⟩, hx⟩
-    simp only [snd, comap_bot, mem_ker, fst_apply] at hx
-    simpa only [Subtype.mk.injEq, Prod.mk.injEq, and_true] using hx.symm
+  left_inv x := by aesop (add norm simp Submodule.snd)
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
   aesop (add simp snd)

@@ -738,12 +738,8 @@ lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
     (le_sup'_of_le _ H.choose_spec (h _ H.choose_spec).ge)
 
 @[simp]
-theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
-  apply le_antisymm
-  · apply sup'_le
-    intros
-    exact le_rfl
-  · apply le_sup' (fun _ => a) H.choose_spec
+theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a :=
+  sup'_eq_of_forall H (fun _ ↦ a) fun _ ↦ congrFun rfl
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :

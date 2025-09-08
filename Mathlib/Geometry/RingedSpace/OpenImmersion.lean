@@ -67,7 +67,7 @@ spaces, such that the sheaf map `Y(V) ⟶ f _* X(V)` is an iso for each `V ⊆ U
 -/
 class PresheafedSpace.IsOpenImmersion {X Y : PresheafedSpace C} (f : X ⟶ Y) : Prop where
   /-- the underlying continuous map of underlying spaces from the source to an open subset of the
-    target. -/
+  target. -/
   base_open : IsOpenEmbedding f.base
   /-- the underlying sheaf morphism is an isomorphism on each open subset -/
   c_iso : ∀ U : Opens X, IsIso (f.c.app (op (base_open.isOpenMap.functor.obj U)))

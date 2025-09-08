@@ -21,12 +21,10 @@ finiteness of the class group for number fields and function fields.
   its integral closure has a finite class group
 -/
 
+open Module Ring
 open scoped nonZeroDivisors
 
 namespace ClassGroup
-
-open Ring
-
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
@@ -279,7 +277,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
     · rw [mem_nonZeroDivisors_iff_ne_zero]
       rintro rfl
       rw [Ideal.zero_eq_bot, Ideal.mul_bot] at hJ
-      exact hM (Ideal.span_singleton_eq_bot.mp (I.2 _ hJ))
+      exact hM (Ideal.span_singleton_eq_bot.mp (I.2.2 _ hJ))
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]

@@ -81,7 +81,7 @@ lemma jacobiTheta₂''_neg_left (z τ : ℂ) : jacobiTheta₂'' (-z) τ = -jacob
 lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     jacobiTheta₂' z τ = (-2 * π) / (-I * τ) ^ (3 / 2 : ℂ) * jacobiTheta₂'' z (-1 / τ) := by
   rcases eq_or_ne τ 0 with rfl | hτ
-  · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by norm_num), div_zero, zero_mul]
+  · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by simp), div_zero, zero_mul]
   have aux1 : (-2 * π : ℂ) / (2 * π * I) = I := by
     rw [div_eq_iff two_pi_I_ne_zero, mul_comm I, mul_assoc _ I I, I_mul_I, neg_mul, mul_neg,
       mul_one]

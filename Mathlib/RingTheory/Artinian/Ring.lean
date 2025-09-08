@@ -64,7 +64,7 @@ variable (R) in
 /-- Commutative artinian reduced local ring is a field. -/
 theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsField R :=
   (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
-    _ (Ideal.Quotient.field _).toIsField
+    (Ideal.Quotient.field _).toIsField
 
 section IsUnit
 

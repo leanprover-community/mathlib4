@@ -40,6 +40,7 @@ Bilinear form,
 
 open LinearMap (BilinForm)
 open LinearMap (BilinMap)
+open Module
 
 universe u v w
 

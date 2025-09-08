@@ -61,18 +61,16 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
       · exact Or.inr (le_of_lt ⟨i, fun j hj ↦ (hji j hj).symm, hi⟩)
   toDecidableLE := Classical.decRel _
 
+@[simp]
 theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by
   rw [lt_iff]
   constructor
   · intro hpos
-    have hne : (ofLex x) ≠ 0 := leadingCoeff_ne_iff.mp hpos.ne.symm
-    have htop : (ofLex x).orderTop ≠ ⊤ := ne_zero_iff_orderTop.mp hne
-    use (ofLex x).orderTop.untop htop
-    constructor
-    · intro j hj
-      simpa using (coeff_eq_zero_of_lt_orderTop ((WithTop.lt_untop_iff htop).mp hj)).symm
-    · rw [coeff_untop_eq_leadingCoeff hne]
-      simpa using hpos
+    have hne : (ofLex x) ≠ 0 := leadingCoeff_ne_zero.mp hpos.ne.symm
+    have htop : (ofLex x).orderTop ≠ ⊤ := orderTop_ne_top.2 hne
+    refine ⟨(ofLex x).orderTop.untop htop, ?_, by simpa [coeff_untop_eq_leadingCoeff] using hpos⟩
+    intro j hj
+    simpa using (coeff_eq_zero_of_lt_orderTop ((WithTop.lt_untop_iff htop).mp hj)).symm
   · intro ⟨i, hj, hi⟩
     have horder : (ofLex x).orderTop = WithTop.some i := by
       apply orderTop_eq_of_le
@@ -81,9 +79,9 @@ theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leading
         contrapose! hg
         simpa using (hj g hg).symm
     have htop : (ofLex x).orderTop ≠ ⊤ := WithTop.ne_top_iff_exists.mpr ⟨i, horder.symm⟩
-    have hne : ofLex x ≠ 0 := ne_zero_iff_orderTop.mpr htop
+    have hne : ofLex x ≠ 0 := orderTop_ne_top.1 htop
     have horder' : (ofLex x).orderTop.untop htop = i := (WithTop.untop_eq_iff _).mpr horder
-    rw [← coeff_untop_eq_leadingCoeff hne, horder']
+    rw [leadingCoeff_of_ne_zero hne, horder']
     simpa using hi
 
 theorem leadingCoeff_nonneg_iff {x : Lex (HahnSeries Γ R)} :
@@ -91,7 +89,7 @@ theorem leadingCoeff_nonneg_iff {x : Lex (HahnSeries Γ R)} :
   constructor
   · intro h
     obtain heq | hlt := h.eq_or_lt
-    · exact le_of_eq (leadingCoeff_eq_iff.mp heq.symm).symm
+    · exact le_of_eq (leadingCoeff_eq_zero.mp heq.symm).symm
     · exact (leadingCoeff_pos_iff.mp hlt).le
   · intro h
     obtain rfl | hlt := h.eq_or_lt
@@ -103,7 +101,7 @@ theorem leadingCoeff_neg_iff {x : Lex (HahnSeries Γ R)} : (ofLex x).leadingCoef
 
 theorem leadingCoeff_nonpos_iff {x : Lex (HahnSeries Γ R)} :
     (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
-  simpa using (leadingCoeff_pos_iff (x := x)).not
+  simp [← not_lt]
 
 end LinearOrder
 
@@ -127,12 +125,14 @@ end OrderedMonoid
 section OrderedGroup
 variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
+@[simp]
 theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle]
     simp
   · rw [abs_eq_self.mpr hge]
 
+@[simp]
 theorem orderTop_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).orderTop = (ofLex x).orderTop := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle, ofLex_neg, orderTop_neg]
@@ -146,7 +146,7 @@ theorem order_abs [Zero Γ] (x : Lex (HahnSeries Γ R)) : (ofLex |x|).order = (o
       change |x| ≠ 0
       simpa using hne
     apply WithTop.coe_injective
-    rw [order_eq_orderTop_of_ne habs, order_eq_orderTop_of_ne hne']
+    rw [order_eq_orderTop_of_ne_zero habs, order_eq_orderTop_of_ne_zero hne']
     apply orderTop_abs
 
 theorem leadingCoeff_abs (x : Lex (HahnSeries Γ R)) :

@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.SelfAdjoint
+import Mathlib.Algebra.Star.Prod
 
 /-!
 # Non-unital Star Subalgebras
@@ -341,7 +342,7 @@ def map (f : F) (S : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R B 
 
 theorem map_mono {S₁ S₂ : NonUnitalStarSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalStarSubalgebra R B) ≤ map f S₂ :=
-  Set.image_subset f
+  Set.image_mono
 
 theorem map_injective {f : F} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalStarSubalgebra R A → NonUnitalStarSubalgebra R B) :=
@@ -724,6 +725,7 @@ protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalStarSubalgebra
 theorem adjoin_le {S : NonUnitalStarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
   NonUnitalStarAlgebra.gc.l_le hs
 
+@[simp]
 theorem adjoin_le_iff {S : NonUnitalStarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalStarAlgebra.gc _ _
 
@@ -731,6 +733,7 @@ theorem adjoin_le_iff {S : NonUnitalStarSubalgebra R A} {s : Set A} : adjoin R s
 theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   NonUnitalStarAlgebra.gc.monotone_l H
 
+@[simp]
 lemma adjoin_eq (s : NonUnitalStarSubalgebra R A) : adjoin R (s : Set A) = s :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R (s : Set A))
 
@@ -880,8 +883,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B
     (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
-
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 @[simp]
 theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :

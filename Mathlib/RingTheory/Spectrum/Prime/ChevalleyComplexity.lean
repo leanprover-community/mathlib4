@@ -259,8 +259,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-set_option maxHeartbeats 400000 in
--- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -663,8 +661,8 @@ lemma chevalley_mvPolynomialC
     (hSn : ∀ C ∈ S, C.n ≤ k)
     (hS : ∀ C ∈ S, ∀ j, C.g j ∈ coeffsIn _ M ⊓ (degreesLE _ _ d).restrictScalars _) :
     ∃ T : ConstructibleSetData R,
-      comap MvPolynomial.C '' S.toSet = T.toSet ∧ ∀ C ∈ T,
-        C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
+      comap MvPolynomial.C '' S.toSet = T.toSet ∧
+      ∀ C ∈ T, C.n ≤ numBound k (fun i ↦ 1 + (d.map Fin.val).count i) n ∧
       ∀ i, C.g i ∈ M ^ (degBound k (fun i ↦ 1 + (d.map Fin.val).count i) n) := by
   classical
   induction' n with n IH generalizing k M

@@ -110,7 +110,7 @@ theorem head_shiftUp (c : Cube (n + 1)) : c.shiftUp.b 0 = c.xm :=
   rfl
 
 def unitCube : Cube n :=
-  ⟨fun _ => 0, 1, by norm_num⟩
+  ⟨fun _ => 0, 1, by simp⟩
 
 @[simp]
 theorem side_unitCube {j : Fin n} : unitCube.side j = Ico 0 1 := by

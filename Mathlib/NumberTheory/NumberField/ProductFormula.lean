@@ -20,10 +20,10 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 ## Main Results
 
 * `NumberField.FinitePlace.prod_eq_inv_abs_norm`: for any non-zero element `x` of a number field
-`K`, the product `∏ |x|ᵥ` of the absolute values of `x` associated to the finite places of `K` is
-equal to the inverse of the norm of `x`.
+  `K`, the product `∏ |x|ᵥ` of the absolute values of `x` associated to the finite places of `K` is
+  equal to the inverse of the norm of `x`.
 * `NumberField.prod_abs_eq_one`: for any non-zero element `x` of a number field `K`, we have
-`∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
+  `∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
 
 ## Tags
 number field, embeddings, places, infinite places, finite places, product formula

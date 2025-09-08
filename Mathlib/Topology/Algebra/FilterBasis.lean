@@ -64,7 +64,7 @@ attribute [to_additive existing] GroupFilterBasis GroupFilterBasis.conj'
   GroupFilterBasis.toFilterBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
-@[to_additive "`AddGroupFilterBasis` constructor in the additive commutative group case."]
+@[to_additive /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
 def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
     (nonempty : sets.Nonempty) (inter_sets : ∀ x y, x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y)
     (one : ∀ U ∈ sets, (1 : G) ∈ U) (mul : ∀ U ∈ sets, ∃ V ∈ sets, V * V ⊆ U)
@@ -103,8 +103,8 @@ theorem conj : ∀ x₀, ∀ {U}, U ∈ B → ∃ V ∈ B, V ⊆ (fun x ↦ x₀
 
 /-- The trivial group filter basis consists of `{1}` only. The associated topology
 is discrete. -/
-@[to_additive "The trivial additive group filter basis consists of `{0}` only. The associated
-topology is discrete."]
+@[to_additive /-- The trivial additive group filter basis consists of `{0}` only. The associated
+topology is discrete. -/]
 instance : Inhabited (GroupFilterBasis G) where
   default := {
     sets := {{1}}
@@ -120,7 +120,7 @@ theorem subset_mul_self (B : GroupFilterBasis G) {U : Set G} (h : U ∈ B) : U �
   fun x x_in ↦ ⟨1, one h, x, x_in, one_mul x⟩
 
 /-- The neighborhood function of a `GroupFilterBasis`. -/
-@[to_additive "The neighborhood function of an `AddGroupFilterBasis`."]
+@[to_additive /-- The neighborhood function of an `AddGroupFilterBasis`. -/]
 def N (B : GroupFilterBasis G) : G → Filter G :=
   fun x ↦ map (fun y ↦ x * y) B.toFilterBasis.filter
 
@@ -134,7 +134,7 @@ protected theorem hasBasis (B : GroupFilterBasis G) (x : G) :
   HasBasis.map (fun y ↦ x * y) toFilterBasis.hasBasis
 
 /-- The topological space structure coming from a group filter basis. -/
-@[to_additive "The topological space structure coming from an additive group filter basis."]
+@[to_additive /-- The topological space structure coming from an additive group filter basis. -/]
 def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
   TopologicalSpace.mkOfNhds B.N
 
@@ -179,10 +179,10 @@ theorem mem_nhds_one (B : GroupFilterBasis G) {U : Set G} (hU : U ∈ B) :
   exact ⟨U, hU, rfl.subset⟩
 
 -- See note [lower instance priority]
-/-- If a group is endowed with a topological structure coming from a group filter basis then it's a
+/-- If a group is endowed with a topological structure coming from a group filter basis then, it's a
 topological group. -/
-@[to_additive "If a group is endowed with a topological structure coming from a group filter basis
-then it's a topological group."]
+@[to_additive /-- If an additive group is endowed with a topological structure coming from an
+additive group filter basis, then it's an additive topological group. -/]
 instance (priority := 100) isTopologicalGroup (B : GroupFilterBasis G) :
     @IsTopologicalGroup G B.topology _ := by
   letI := B.topology

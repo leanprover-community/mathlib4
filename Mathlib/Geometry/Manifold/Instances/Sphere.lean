@@ -333,7 +333,7 @@ private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensio
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
 space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
-composing the original sterographic projection (`stereographic`) with an arbitrary linear isometry
+composing the original stereographic projection (`stereographic`) with an arbitrary linear isometry
 from `(ℝ ∙ v)ᗮ` to the Euclidean space. -/
 def stereographic' (n : ℕ) [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     PartialHomeomorph (sphere (0 : E) 1) (EuclideanSpace ℝ (Fin n)) :=
