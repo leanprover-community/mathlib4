@@ -74,7 +74,7 @@ lemma opFunctorCompOpFunctorIso_inv_app_app (X : SimplicialObject C) (n : Simple
 
 /-- The functor `opFunctor : SimplicialObject C ⥤ SimplicialObject C`
 as an equivalence of categories. -/
-@[simps!]
+@[simps]
 def opEquivalence : SimplicialObject C ≌ SimplicialObject C where
   functor := opFunctor
   inverse := opFunctor
