@@ -657,7 +657,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
   constructor
   · grind
   · rintro ⟨hst, h⟩
-    obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind [card_sdiff])
+    obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind)
     exact
       ⟨a, fun hs => (by grind : a ∉ {a}) <| mem_singleton_self _, by
         rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
