@@ -224,6 +224,10 @@ def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
+theorem HolomorphicOn.isExactOn {U : Set ℂ} (hf : HolomorphicOn f U) :
+    IsExactOn f U :=
+  fun z _ w _ hzw ↦ integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
+
 section ContinuousOnBall
 
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
@@ -367,11 +371,6 @@ theorem IsExactOn.hasDerivAt_wedgeIntegral (h : IsExactOn f (ball c r)) :
   · congr <;> simp
 
 end ContinuousOnBall
-
-/-- If `f` is holomorphic a disk, then `f` vanishes on rectangles in the disk. -/
-theorem HolomorphicOn.isExactOn (hf : HolomorphicOn f (ball c r)) :
-    IsExactOn f (ball c r) :=
-  fun z _ w _ hzw ↦ integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
 
 variable [CompleteSpace E] [NormOneClass E]
 
