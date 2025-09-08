@@ -5,6 +5,7 @@ Authors: Ruben Van de Velde
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.RCLike.Basic
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Extending an `ℝ`-linear functional to a `𝕜`-linear functional
@@ -37,13 +38,15 @@ open ComplexConjugate
 variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*}
 namespace LinearMap
 
+open Module
+
 section ScalarTower
 
 variable [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
 
-/-- Extend `fr : F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜` in a way that will also be continuous and have its norm
-equal to `‖fr‖` if `fr` is continuous. -/
-noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=
+/-- Extend `fr : Dual ℝ F` to `Dual 𝕜 F` in a way that will also be continuous and have its norm
+(as a continuous linear map) equal to `‖fr‖` when `fr` is itself continuous on a normed space. -/
+noncomputable def extendTo𝕜' (fr : Dual ℝ F) : Dual 𝕜 F :=
   letI fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
   have add (x y) : fc (x + y) = fc x + fc y := by
     simp only [fc, smul_add, map_add, mul_add]
@@ -62,14 +65,14 @@ noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :
     map_add' := add
     map_smul' := smul_𝕜 }
 
-theorem extendTo𝕜'_apply (fr : F →ₗ[ℝ] ℝ) (x : F) :
+theorem extendTo𝕜'_apply (fr : Dual ℝ F) (x : F) :
     fr.extendTo𝕜' x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
-theorem extendTo𝕜'_apply_re (fr : F →ₗ[ℝ] ℝ) (x : F) : re (fr.extendTo𝕜' x : 𝕜) = fr x := by
+theorem extendTo𝕜'_apply_re (fr : Dual ℝ F) (x : F) : re (fr.extendTo𝕜' x : 𝕜) = fr x := by
   simp only [extendTo𝕜'_apply, map_sub, zero_mul, mul_zero, sub_zero, rclike_simps]
 
-theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
+theorem norm_extendTo𝕜'_apply_sq (fr : Dual ℝ F) (x : F) :
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := calc
   ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
     rw [RCLike.conj_mul, ← ofReal_pow, ofReal_re]
@@ -85,8 +88,8 @@ variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) :=
   inferInstanceAs (NormedSpace 𝕜 F)
 
-/-- Extend `fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜`. -/
-noncomputable def extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=
+/-- Extend `fr : Dual ℝ (RestrictScalars ℝ 𝕜 F)` to `Dual 𝕜 F`. -/
+noncomputable def extendTo𝕜 (fr : Dual ℝ (RestrictScalars ℝ 𝕜 F)) : Dual 𝕜 F :=
   fr.extendTo𝕜'
 
 theorem extendTo𝕜_apply (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) (x : F) :
