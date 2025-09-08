@@ -251,20 +251,6 @@ lemma min'_eq_iff (a : α) : s.min' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s 
 lemma max'_eq_iff (a : α) : s.max' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s → b ≤ a :=
   ⟨(· ▸ ⟨max'_mem _ _, le_max' _⟩), fun h ↦ le_antisymm (max'_le _ _ _ h.2) (le_max' _ _ h.1)⟩
 
-@[simp] lemma min'_pair (a b : α) : min' {a, b} (insert_nonempty _ _) = min a b := by
-  rw [Finset.min'_eq_iff]
-  simp
-  rcases le_or_gt a b with h | h
-  · exact .inl h
-  · exact .inr h.le
-
-@[simp] lemma max'_pair (a b : α) : max' {a, b} (insert_nonempty _ _) = max a b := by
-  rw [Finset.max'_eq_iff]
-  simp
-  rcases le_or_gt a b with h | h
-  · exact .inr h
-  · exact .inl h.le
-
 theorem min'_le_max' (hs : s.Nonempty) : s.min' hs ≤ s.max' hs := min'_le _ _ (max'_mem _ _)
 
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
@@ -336,6 +322,12 @@ theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
   (isLeast_min' _ _).unique <| by
     rw [coe_insert, min_comm]
     exact (isLeast_min' _ _).insert _
+
+@[simp] lemma min'_pair (a b : α) : min' {a, b} (insert_nonempty _ _) = min a b := by
+  rw [min'_insert, min'_singleton, min_comm]
+
+@[simp] lemma max'_pair (a b : α) : max' {a, b} (insert_nonempty _ _) = max a b := by
+  rw [max'_insert, max'_singleton, max_comm]
 
 theorem lt_max'_of_mem_erase_max' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.max' H)) :
     a < s.max' H :=
