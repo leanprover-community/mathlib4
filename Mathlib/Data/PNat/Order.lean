@@ -9,10 +9,9 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Algebra.Order.SuccPred
 
-
-/-! Order related instances for `ℕ+`.
+/-!
+# Order related instances for `ℕ+`
 -/
-
 
 namespace PNat
 open Nat
