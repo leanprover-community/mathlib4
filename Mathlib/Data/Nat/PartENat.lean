@@ -398,16 +398,20 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-instance : CanonicallyOrderedAdd PartENat :=
-  { le_self_add := fun a b =>
-      PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
-        PartENat.casesOn a (top_add _).ge fun _ =>
-          (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
-    exists_add_of_le := fun {a b} =>
-      PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
-        PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
-          ⟨(b - a : ℕ), by
-            rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
+instance : CanonicallyOrderedAdd PartENat where
+  le_self_add a b :=
+    PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
+      PartENat.casesOn a (top_add _).ge fun _ =>
+        (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
+  le_add_self a b :=
+    PartENat.casesOn b (le_top.trans_eq (top_add _).symm) fun _ =>
+      PartENat.casesOn a (add_top _).ge fun _ =>
+        (coe_le_coe.2 le_add_self).trans_eq (Nat.cast_add _ _)
+  exists_add_of_le {a b} :=
+    PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
+      PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
+        ⟨(b - a : ℕ), by
+          rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩
 
 theorem eq_natCast_sub_of_add_eq_natCast {x y : PartENat} {n : ℕ} (h : x + y = n) :
     x = ↑(n - y.get (dom_of_le_natCast ((le_add_left le_rfl).trans_eq h))) := by

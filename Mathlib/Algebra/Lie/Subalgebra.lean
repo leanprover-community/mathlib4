@@ -496,6 +496,7 @@ instance : IsOrderedAddMonoid (LieSubalgebra R L) where
 
 instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add _ _ := le_sup_left
 
 @[simp]
