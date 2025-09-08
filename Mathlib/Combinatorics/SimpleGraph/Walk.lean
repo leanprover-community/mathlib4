@@ -567,6 +567,14 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
+theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support ⊆ (p.cons hadj).support := by
+  simp
+
+theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support ⊆ (p.concat hadj).support := by
+  simp
+
 @[simp]
 theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
@@ -1442,11 +1450,8 @@ lemma nil_isSubwalk_iff_exists {u' u v} (q : G.Walk u v) :
   simp [IsSubwalk]
 
 lemma length_le_of_isSubwalk {u₁ v₁ u₂ v₂} {q : G.Walk u₁ v₁} {p : G.Walk u₂ v₂}
-    (h : p.IsSubwalk q) :
-    p.length ≤ q.length := by
-  obtain ⟨ru, rv, h⟩ := h
-  rw [h, length_append, length_append, add_comm _ p.length, add_assoc]
-  exact Nat.le_add_right _ _
+    (h : p.IsSubwalk q) : p.length ≤ q.length := by
+  grind [IsSubwalk, length_append]
 
 lemma isSubwalk_of_append_left {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w u} {p₃ : G.Walk v u}
     (h : p₃ = p₁.append p₂) : p₁.IsSubwalk p₃ :=
@@ -1458,15 +1463,9 @@ lemma isSubwalk_of_append_right {v w u : V} {p₁ : G.Walk v w} {p₂ : G.Walk w
 
 theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'} :
     p₁.IsSubwalk p₂ ↔ p₁.support <:+: p₂.support := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · obtain ⟨ru, rv, h⟩ := h
-    rw [h, support_append, support_append_eq_support_dropLast_append]
-    exact List.infix_append ru.support.dropLast p₁.support rv.support.tail
-  · obtain ⟨s, t, h⟩ := h
-    have : (s.length + p₁.length) ≤ p₂.length := by
-      rw [Nat.le_iff_lt_add_one, ← length_support]
-      simp only [← h, List.append_assoc, List.length_append, length_support]
-      omega
+  refine ⟨fun ⟨ru, rv, h⟩ ↦ ?_, fun ⟨s, t, h⟩ ↦ ?_⟩
+  · grind [support_append, support_append_eq_support_dropLast_append]
+  · have : (s.length + p₁.length) ≤ p₂.length := by grind [_=_ length_support]
     have h₁ : p₂.getVert s.length = v := by
       simp [p₂.getVert_eq_support_getElem (by omega : s.length ≤ p₂.length), ← h, List.getElem_zero]
     have h₂ : p₂.getVert (s.length + p₁.length) = w := by
@@ -1475,15 +1474,11 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     refine ⟨p₂.take s.length |>.copy rfl h₁, p₂.drop (s.length + p₁.length) |>.copy h₂ rfl, ?_⟩
     apply ext_support
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
-      List.take_append, drop_support_eq_support_drop_min, List.tail_drop, List.append_assoc,
-      Nat.add_sub_cancel_left, length_support]
-    rw [Nat.min_eq_left]
-    · rw [List.drop_append, List.drop_append, List.drop_eq_nil_of_le (by omega),
-        List.drop_eq_nil_of_le (by rw [length_support]; omega), p₁.support_eq_cons]
-      simp +arith
-    · simp only [Nat.le_iff_lt_add_one, ← length_support, ← h, List.length_append]
-      rw [length_support]
-      omega
+      List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
+    rw [Nat.min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
+      List.drop_eq_nil_of_le (by omega), List.drop_eq_nil_of_le (by grind [length_support]),
+      p₁.support_eq_cons]
+    simp +arith
 
 lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p₂) (h₂ : p₂.IsSubwalk p₁) :
     p₁ = p₂ := by
