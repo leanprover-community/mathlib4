@@ -1179,6 +1179,38 @@ theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G 
     G.maximalAtlas M ⊆ G'.maximalAtlas M :=
   fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
 
+private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    (e.restr s).symm ≫ₕ e' ∈ G := by
+  have hs'' : IsOpen (e '' (e.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source _ inter_subset_left]
+    exact e.open_source.inter hs
+  have : (e.restr (e.source ∩ s)).symm ≫ₕ e' ∈ G := by
+    apply G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').1 hs'')
+    exact e.restr_symm_trans (e.open_source.inter hs) hs'' inter_subset_left
+  refine G.mem_of_eqOnSource this ?_
+  exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
+
+private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
+    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {s : Set M} (hs : IsOpen s) :
+    e'.symm ≫ₕ e.restr s ∈ G := by
+  have hs'' : IsOpen (e' '' (e'.source ∩ s)) := by
+    rw [isOpen_image_iff_of_subset_source e' inter_subset_left]
+    exact e'.open_source.inter hs
+  have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
+    rw [← image_source_inter_eq']
+    exact isOpen_image_source_inter e' hs
+  exact G.mem_of_eqOnSource (closedUnderRestriction' (he e' he').2 ht) (e.symm_trans_restr e' hs)
+
+/-- If a structure groupoid `G` is closed under restriction, for any chart `e` in the maximal atlas,
+the restriction `e.restr s` to an open set `s` is also in the maximal atlas. -/
+theorem restr_mem_maximalAtlas [ClosedUnderRestriction G]
+    {e : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) {s : Set M} (hs : IsOpen s) :
+    e.restr s ∈ G.maximalAtlas M :=
+  fun _e' he' ↦ ⟨restr_mem_maximalAtlas_aux1 G he he' hs, restr_mem_maximalAtlas_aux2 G he he' hs⟩
+
 end MaximalAtlas
 
 section Singleton
@@ -1318,7 +1350,7 @@ end TopologicalSpace.Opens
 NB. We cannot deduce membership in `atlas H s` in general: by definition, this atlas contains
 precisely the restriction of each preferred chart at `x ∈ s` --- whereas `atlas H M`
 can contain more charts than these. -/
-lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
+lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : PartialHomeomorph M H}
     (he : e ∈ atlas H M) {s : Opens M} (hs : Nonempty s) {G : StructureGroupoid H} [HasGroupoid M G]
     [ClosedUnderRestriction G] : e.subtypeRestr hs ∈ G.maximalAtlas s := by
   intro e' he'
@@ -1329,6 +1361,9 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
   -- the transition functions of the restriction are the restriction of the transition function.
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
+
+@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
+  StructureGroupoid.subtypeRestr_mem_maximalAtlas
 
 /-! ### Structomorphisms -/
 
@@ -1435,7 +1470,7 @@ theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
           Opens.partialHomeomorphSubtypeCoe_source, preimage_univ, inter_self, subtypeRestr_source,
           goal, s]
         exact Subtype.coe_preimage_self _ |>.symm, by intro _ _; rfl⟩
-  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.restriction_in_maximalAtlas he hs)
+  exact G.mem_maximalAtlas_of_eqOnSource (M := s) this (G.subtypeRestr_mem_maximalAtlas he hs)
 
 /-- Each chart of a charted space is a structomorphism between its source and target. -/
 def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
@@ -1461,3 +1496,5 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
+
+set_option linter.style.longFile 1700
