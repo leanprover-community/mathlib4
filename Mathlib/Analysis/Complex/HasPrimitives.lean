@@ -36,64 +36,14 @@ open scoped Interval
 
 namespace Complex
 
-section Asymptotics
-
-/-- As `w → z`, `w.re - z.re` is big-O of `w - z`. -/
-lemma re_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.re - z.re) =O[𝓝 z] fun w ↦ w - z := by
-  rw [Asymptotics.isBigO_iff]
-  use 1
-  filter_upwards
-  intro w
-  simp only [Real.norm_eq_abs, one_mul]
-  rw [← Complex.sub_re]
-  exact abs_re_le_norm (w - z)
-
-/-- As `w → z`, `w.im - z.im` is big-O of `w - z`. -/
-lemma im_isBigO {z : ℂ} : (fun (w : ℂ) ↦ w.im - z.im) =O[𝓝 z] fun w ↦ w - z := by
-  rw [Asymptotics.isBigO_iff]
-  use 1
-  filter_upwards
-  intro w
-  simp only [Real.norm_eq_abs, one_mul]
-  rw [← Complex.sub_im]
-  exact abs_im_le_norm (w - z)
-
-end Asymptotics
-
-section Rectangle
-
-/-- The axis-parallel complex rectangle with opposite corners `z` and `w` is complex product
-  of two intervals, which is also the convex hull of the four corners. -/
-lemma uIcc_re_prod_uIcc_im_eq_convexHull (z w : ℂ) :
-    [[z.re, w.re]] ×ℂ [[z.im, w.im]] = convexHull ℝ {z, z.re + w.im * I, w.re + z.im * I, w} := by
-  simp_rw [← segment_eq_uIcc, ← convexHull_pair, ← convexHull_reProdIm,
-    ← preimage_equivRealProd_prod, insert_prod, singleton_prod, image_pair,
-    insert_union, ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
-    equivRealProd_symm_apply, re_add_im]
-
-/-- If the four corners of a rectangle are contained in a convex set `U`, then the whole
-  rectangle is. -/
-lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ} (hz : z ∈ U)
-    (hw : w ∈ U) (hzw : (z.re + w.im * I) ∈ U) (hwz : (w.re + z.im * I) ∈ U) :
-    Rectangle z w ⊆ U := by
-  rw [Rectangle, uIcc_re_prod_uIcc_im_eq_convexHull]
-  convert convexHull_min ?_ (U_convex)
-  refine insert_subset hz (insert_subset hzw (insert_subset hwz ?_))
-  exact singleton_subset_iff.mpr hw
-
 /-- If `z` is in a ball centered at `c`, then `z.re + c.im * I` is in the ball. -/
 lemma re_add_im_mul_mem_ball {c : ℂ} {r : ℝ} {z : ℂ} (hz : z ∈ ball c r) :
     z.re + c.im * I ∈ ball c r := by
-  simp only [mem_ball] at hz ⊢
-  rw [dist_of_im_eq] <;> simp only [add_re, I_re, mul_zero, I_im, zero_add, add_im,
-    add_zero, sub_self, mul_re, mul_one, ofReal_im, mul_im, ofReal_re]
-  apply lt_of_le_of_lt ?_ hz
-  rw [dist_eq_re_im, Real.dist_eq]
+  suffices dist (z.re + c.im * I) c ≤ dist z c from lt_of_le_of_lt this hz
+  simp only [dist_eq_re_im]
   apply Real.le_sqrt_of_sq_le
-  simp only [_root_.sq_abs, le_add_iff_nonneg_right]
-  exact sq_nonneg _
-
-end Rectangle
+  rw [Real.sq_sqrt (by positivity)]
+  simp [sq_nonneg _]
 
 section SubsetBall_Aux
 
@@ -249,8 +199,7 @@ include f_cont hz
 /-- If a function `f` `IsClosedOn` on a ball of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
-lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
-    (hf : IsClosedOn f (ball c r)) :
+lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedOn f (ball c r)) :
     ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w w_in_z_ball ↦ ?_⟩
   set I₁ :=     ∫ x in c.re..w.re, f (x + c.im * I)
@@ -296,10 +245,11 @@ variable [CompleteSpace E]
 
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeIntegral_re :
+private lemma hasDerivAt_wedgeIntegral_re_aux :
     (fun w ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - (w - z).re • f z) =o[𝓝 z] fun w ↦ w - z := by
   suffices (fun x ↦ (∫ t in z.re..x, f (t + z.im * I)) - (x - z.re) • f z) =o[𝓝 z.re]
-      fun x ↦ x - z.re from this.comp_tendsto (continuous_re.tendsto z) |>.trans_isBigO re_isBigO
+      fun x ↦ x - z.re from
+    this.comp_tendsto (continuous_re.tendsto z) |>.trans_isBigO isBigO_re_sub_re
   let r₁ := r - dist z c
   have r₁_pos : 0 < r₁ := by simpa only [mem_ball, sub_pos, r₁] using hz
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
@@ -318,7 +268,7 @@ variable [NormOneClass E]
 
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
-lemma deriv_of_wedgeIntegral_im :
+private lemma hasDerivAt_wedgeIntegral_im_aux :
     (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z) =o[𝓝 z] fun w ↦ w - z := by
   suffices (fun w ↦ ∫ y in z.im..w.im, f (w.re + y * I) - f z) =o[𝓝 z] fun w ↦ w - z by
     calc
@@ -353,8 +303,8 @@ theorem IsClosedOn.hasDerivAt_wedgeIntegral (h : IsClosedOn f (ball c r)) :
     _ =ᶠ[𝓝 z] (fun w ↦ wedgeIntegral z w f - (w - z) • f z) := ?_
     _ = (fun w ↦ (∫ x in z.re..w.re, f (x + z.im * I)) - (w - z).re • f z)
         + I • (fun w ↦ (∫ y in z.im..w.im, f (w.re + y * I)) - (w - z).im • f z) := ?_
-    _ =o[𝓝 z] fun w ↦ w - z := (deriv_of_wedgeIntegral_re f_cont hz).add
-        ((deriv_of_wedgeIntegral_im f_cont hz).const_smul_left I)
+    _ =o[𝓝 z] fun w ↦ w - z := (hasDerivAt_wedgeIntegral_re_aux f_cont hz).add
+        ((hasDerivAt_wedgeIntegral_im_aux f_cont hz).const_smul_left I)
   · exact (h.eventually_nhds_wedgeIntegral_sub_wedgeIntegral f_cont hz).mono <| by simp
   ext w
   set I₁ := ∫ x in z.re..w.re, f (x + z.im * I)
