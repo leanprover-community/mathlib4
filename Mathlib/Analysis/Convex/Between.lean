@@ -638,13 +638,11 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
   rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment]
   convert rfl using 2 <;> rw [face_points] <;> congr
   · convert (Finset.orderEmbOfFin_zero _ _).symm
-    · rw [eq_comm]
-      · convert Finset.min'_pair i j
-      · omega
+    · exact (Finset.min'_pair i j).symm
+    · omega
   · convert (Finset.orderEmbOfFin_last _ _).symm
-    · rw [eq_comm]
-      · convert Finset.max'_pair i j
-      · omega
+    · exact (Finset.max'_pair i j).symm
+    · omega
 
 lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i j : Fin (n + 1)}
     (h : i ≠ j) :
@@ -684,13 +682,11 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
   rw [h', mem_interior_iff_sbtw]
   convert Iff.rfl using 2 <;> rw [face_points] <;> congr
   · convert (Finset.orderEmbOfFin_zero _ _).symm
-    · rw [eq_comm]
-      · convert Finset.min'_pair i j
-      · omega
+    · exact (Finset.min'_pair i j).symm
+    · omega
   · convert (Finset.orderEmbOfFin_last _ _).symm
-    · rw [eq_comm]
-      · convert Finset.max'_pair i j
-      · omega
+    · exact (Finset.max'_pair i j).symm
+    · omega
 
 end Simplex
 
