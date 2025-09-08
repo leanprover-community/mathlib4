@@ -13,7 +13,9 @@ In this file, we define strictly unitary Lax functors and
 strictly unitary pseudofunctors between bicategories.
 
 A lax functor `F` is said to be *strictly unitary* (sometimes, they are also
-called *normal*) if there is an equality `F.obj (𝟙 _) = 𝟙 (F.obj x)` and if.
+called *normal*) if there is an equality `F.obj (𝟙 _) = 𝟙 (F.obj x)` and if the
+unit 2-morphism `F.obj (𝟙 _) → 𝟙 (F.obj _)` is the identity 2-morphism induced
+by this equality.
 
 A pseudofunctor is called *strictly unitary* (or a *normal homomorphism*) if it
 satisfies the same condition (i.e its "underlying" lax functor is strictly
@@ -45,7 +47,8 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B]
   {C : Type u₂} [Bicategory.{w₂, v₂} C]
   {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
-variable (B C) in
+variable (B C)
+
 /-- A strictly unitary lax functor `F` between bicategories `B` and `C` is a
 lax functor `F` from `B` to `C` such that the structure 1-cell
 `𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 1-cell for every `X : B`. -/
@@ -54,64 +57,77 @@ structure StrictlyUnitaryLaxFunctor extends LaxFunctor B C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
   mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm
 
+/-- A helper structure that bundles the necessary data to
+construct a `StrictlyUnitaryLaxFunctor` without specifying the redundant
+field `mapId`. -/
+structure StrictlyUnitaryLaxFunctorCore where
+  /-- action on objects -/
+  obj : B → C
+  /-- action on 1-morhisms -/
+  map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y)
+  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X)
+  /-- action on 2-morphisms -/
+  map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g)
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
+  map₂_comp :
+      ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
+        map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
+    aesop_cat
+  /-- structure 2-morphism for composition of 1-morphism -/
+  mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
+    map f ≫ map g ⟶ map (f ≫ g)
+  mapComp_naturality_left :
+      ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
+        mapComp f g ≫ map₂ (η ▷ g) = map₂ η ▷ map g ≫ mapComp f' g := by
+    aesop_cat
+  mapComp_naturality_right :
+      ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
+        mapComp f g ≫ map₂ (f ◁ η) = map f ◁ map₂ η ≫ mapComp f g' := by
+    aesop_cat
+  map₂_leftUnitor :
+      ∀ {a b : B} (f : a ⟶ b),
+        map₂ (λ_ f).inv =
+        (λ_ (map f)).inv ≫ eqToHom (by rw [map_id a]) ≫ mapComp (𝟙 a) f := by
+    aesop_cat
+  map₂_rightUnitor :
+      ∀ {a b : B} (f : a ⟶ b),
+        map₂ (ρ_ f).inv =
+        (ρ_ (map f)).inv ≫ eqToHom (by rw [map_id b]) ≫ mapComp f (𝟙 b) := by
+    aesop_cat
+  map₂_associator :
+      ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
+        mapComp f g ▷ map h ≫ mapComp (f ≫ g) h ≫ map₂ (α_ f g h).hom =
+        (α_ (map f) (map g) (map h)).hom ≫ map f ◁ mapComp g h ≫
+          mapComp f (g ≫ h) := by
+    aesop_cat
+
 namespace StrictlyUnitaryLaxFunctor
+
+variable {B C}
 
 /-- An alternate constructor for strictly unitary lax functors that does not
 require the `mapId` fields, and that adapts the `map₂_leftUnitor` and
 `map₂_rightUnitor` to the fact that the functor is strictly unitary. -/
 @[simps]
-def mk'
-    (obj : B → C)
-    (map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X))
-    (map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g))
-    (map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat)
-    (map₂_comp :
-        ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
-          map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-      aesop_cat)
-    (mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
-      map f ≫ map g ⟶ map (f ≫ g))
-    (mapComp_naturality_left :
-        ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
-          mapComp f g ≫ map₂ (η ▷ g) = map₂ η ▷ map g ≫ mapComp f' g := by
-      aesop_cat)
-    (mapComp_naturality_right :
-        ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
-          mapComp f g ≫ map₂ (f ◁ η) = map f ◁ map₂ η ≫ mapComp f g' := by
-      aesop_cat)
-    (map₂_leftUnitor :
-        ∀ {a b : B} (f : a ⟶ b),
-          map₂ (λ_ f).inv =
-          (λ_ (map f)).inv ≫ eqToHom (by rw [map_id a]) ≫ mapComp (𝟙 a) f := by
-      aesop_cat)
-    (map₂_rightUnitor :
-        ∀ {a b : B} (f : a ⟶ b),
-          map₂ (ρ_ f).inv =
-          (ρ_ (map f)).inv ≫ eqToHom (by rw [map_id b]) ≫ mapComp f (𝟙 b) := by
-      aesop_cat)
-    (map₂_associator :
-        ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
-          mapComp f g ▷ map h ≫ mapComp (f ≫ g) h ≫ map₂ (α_ f g h).hom =
-          (α_ (map f) (map g) (map h)).hom ≫ map f ◁ mapComp g h ≫
-            mapComp f (g ≫ h) := by
-      aesop_cat) :
+def mk' (S : StrictlyUnitaryLaxFunctorCore B C) :
     StrictlyUnitaryLaxFunctor B C where
-  obj := obj
-  map := map
-  map_id := map_id
-  mapId x := eqToHom (map_id x).symm
+  obj := S.obj
+  map := S.map
+  map_id := S.map_id
+  mapId x := eqToHom (S.map_id x).symm
   mapId_eq_eqToHom x := rfl
-  map₂ := map₂
-  map₂_id := map₂_id
-  map₂_comp := map₂_comp
-  mapComp := mapComp
-  mapComp_naturality_left := mapComp_naturality_left
-  mapComp_naturality_right := mapComp_naturality_right
-  map₂_leftUnitor {a b} f := by
-    simpa using map₂_leftUnitor f
-  map₂_rightUnitor {a b} f := by
-    simpa using map₂_rightUnitor f
+  map₂ := S.map₂
+  map₂_id := S.map₂_id
+  map₂_comp := S.map₂_comp
+  mapComp := S.mapComp
+  mapComp_naturality_left := S.mapComp_naturality_left
+  mapComp_naturality_right := S.mapComp_naturality_right
+  map₂_leftUnitor f := by
+    simpa using S.map₂_leftUnitor f
+  map₂_rightUnitor f := by
+    simpa using S.map₂_rightUnitor f
+  map₂_associator f g h := by
+    simpa using S.map₂_associator f g h
 
 instance mapId_isIso (F : StrictlyUnitaryLaxFunctor B C) (x : B) :
     IsIso (F.mapId x) := by
@@ -186,77 +202,94 @@ end
 
 end StrictlyUnitaryLaxFunctor
 
-variable (B C) in
 /-- A strictly unitary pseudofunctor (sometimes called a "normal homomorphism)
 `F` between bicategories `B` and `C` is a lax functor `F` from `B` to `C`
 such that the structure isomorphism `map (𝟙 X) ≅ 𝟙 (F.obj X)` is in fact an
-identity 1-cell for every `X : B`. -/
+identity 1-cell for every `X : B` (in particular, there is an equality
+`F.map (𝟙 X) = 𝟙 (F.obj x)`). -/
 @[kerodon 008R]
 structure StrictlyUnitaryPseudofunctor extends Pseudofunctor B C where
   map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
   mapId_eq_eqToIso (X : B) : (mapId X) = eqToIso (map_id X)
 
+/-- A helper structure that bundles the necessary data to
+construct a `StrictlyUnitaryPseudofunctor` without specifying the redundant
+field `mapId` -/
+structure StrictlyUnitaryPseudofunctorCore where
+  /-- action on objects -/
+  obj : B → C
+  /-- action on 1-morphisms -/
+  map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y)
+  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X)
+  /-- action on 2-morphisms -/
+  map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g)
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
+  map₂_comp :
+      ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
+        map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
+    aesop_cat
+  /-- structure 2-isomorphism for composition of 1-morphisms -/
+  mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
+    map (f ≫ g) ≅ map f ≫ map g
+  map₂_whisker_left :
+      ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
+        map₂ (f ◁ η) =
+        (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
+    aesop_cat
+  map₂_whisker_right :
+      ∀ {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c),
+        map₂ (η ▷ h) =
+        (mapComp f h).hom ≫ map₂ η ▷ map h ≫ (mapComp g h).inv := by
+    aesop_cat
+  map₂_left_unitor :
+      ∀ {a b : B} (f : a ⟶ b),
+        map₂ (λ_ f).hom =
+        (mapComp (𝟙 a) f).hom ≫ eqToHom (by rw [map_id a]) ≫
+          (λ_ (map f)).hom := by
+    aesop_cat
+  map₂_right_unitor :
+      ∀ {a b : B} (f : a ⟶ b),
+        map₂ (ρ_ f).hom =
+        (mapComp f (𝟙 b)).hom ≫ eqToHom (by rw [map_id b]) ≫
+          (ρ_ (map f)).hom := by
+    aesop_cat
+  map₂_associator :
+      ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
+        map₂ (α_ f g h).hom =
+          (mapComp (f ≫ g) h).hom ≫ (mapComp f g).hom ▷ map h ≫
+          (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
+          (mapComp f (g ≫ h)).inv := by
+    aesop_cat
+
 namespace StrictlyUnitaryPseudofunctor
+
+variable {B C}
 
 /-- An alternate constructor for strictly unitary lax functors that does not
 require the `mapId` fields, and that adapts the `map₂_leftUnitor` and
 `map₂_rightUnitor` to the fact that the functor is strictly unitary. -/
 @[simps]
-def mk'
-    (obj : B → C)
-    (map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y))
-    (map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X))
-    (map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g))
-    (map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat)
-    (map₂_comp :
-        ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
-          map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-      aesop_cat)
-    (mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
-      map (f ≫ g) ≅ map f ≫ map g)
-    (map₂_whiskerLeft :
-        ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
-          map₂ (f ◁ η) =
-          (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
-      aesop_cat)
-    (map₂_whiskerRight :
-        ∀ {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c),
-          map₂ (η ▷ h) =
-          (mapComp f h).hom ≫ map₂ η ▷ map h ≫ (mapComp g h).inv := by
-      aesop_cat)
-    (map₂_left_unitor :
-        ∀ {a b : B} (f : a ⟶ b),
-          map₂ (λ_ f).hom =
-          (mapComp (𝟙 a) f).hom ≫ eqToHom (by rw [map_id a]) ≫
-            (λ_ (map f)).hom := by
-      aesop_cat)
-    (map₂_right_unitor :
-        ∀ {a b : B} (f : a ⟶ b),
-          map₂ (ρ_ f).hom =
-          (mapComp f (𝟙 b)).hom ≫ eqToHom (by rw [map_id b]) ≫
-            (ρ_ (map f)).hom := by
-      aesop_cat)
-    (map₂_associator :
-        ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
-          map₂ (α_ f g h).hom =
-            (mapComp (f ≫ g) h).hom ≫ (mapComp f g).hom ▷ map h ≫
-            (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
-            (mapComp f (g ≫ h)).inv := by
-      aesop_cat) :
+def mk' (S : StrictlyUnitaryPseudofunctorCore B C) :
     StrictlyUnitaryPseudofunctor B C where
-  obj := obj
-  map := map
-  map_id := map_id
-  mapId x := eqToIso (map_id x)
+  obj := S.obj
+  map := S.map
+  map_id := S.map_id
+  mapId x := eqToIso (S.map_id x)
   mapId_eq_eqToIso x := rfl
-  map₂ := map₂
-  map₂_id := map₂_id
-  map₂_comp := map₂_comp
-  mapComp := mapComp
-  map₂_left_unitor {a b} f := by
-    simpa using map₂_left_unitor f
-  map₂_right_unitor {a b} f := by
-    simpa using map₂_right_unitor f
+  map₂ := S.map₂
+  map₂_id := S.map₂_id
+  map₂_comp := S.map₂_comp
+  mapComp := S.mapComp
+  map₂_left_unitor f := by
+    simpa using S.map₂_left_unitor f
+  map₂_right_unitor f := by
+    simpa using S.map₂_right_unitor f
+  map₂_associator f g h := by
+    simpa using S.map₂_associator f g h
+  map₂_whisker_left f _ _ η := by
+    simpa using S.map₂_whisker_left f η
+  map₂_whisker_right η f := by
+    simpa using S.map₂_whisker_right η f
 
 /-- By forgetting the inverse to `mapComp`, a `StrictlyUnitaryPseudofunctor`
 is a `StrictlyUnitaryLaxFunctor`. -/
@@ -272,23 +305,28 @@ variable (F : StrictlyUnitaryPseudofunctor B C)
 
 @[simp]
 lemma toStrictlyUnitaryLaxFunctor_obj (x : B) :
-    F.toStrictlyUnitaryLaxFunctor.obj x = F.obj x := rfl
+    F.toStrictlyUnitaryLaxFunctor.obj x = F.obj x :=
+  rfl
 
 @[simp]
 lemma toStrictlyUnitaryLaxFunctor_map {x y : B} (f : x ⟶ y) :
-    F.toStrictlyUnitaryLaxFunctor.map f = F.map f := rfl
+    F.toStrictlyUnitaryLaxFunctor.map f = F.map f :=
+  rfl
 
 @[simp]
 lemma toStrictlyUnitaryLaxFunctor_map₂ {x y : B} {f g : x ⟶ y} (η : f ⟶ g) :
-    F.toStrictlyUnitaryLaxFunctor.map₂ η = F.map₂ η := rfl
+    F.toStrictlyUnitaryLaxFunctor.map₂ η = F.map₂ η :=
+  rfl
 
 @[simp]
 lemma toStrictlyUnitaryLaxFunctor_mapComp {x y z : B} (f : x ⟶ y) (g : y ⟶ z) :
-    F.toStrictlyUnitaryLaxFunctor.mapComp f g = (F.mapComp f g).inv := rfl
+    F.toStrictlyUnitaryLaxFunctor.mapComp f g = (F.mapComp f g).inv :=
+  rfl
 
 @[simp]
 lemma toStrictlyUnitaryLaxFunctor_mapId {x : B} :
-    F.toStrictlyUnitaryLaxFunctor.mapId x = (F.mapId x).inv := rfl
+    F.toStrictlyUnitaryLaxFunctor.mapId x = (F.mapId x).inv :=
+  rfl
 
 variable (B) in
 /-- The identity `StrictlyUnitaryPseudofunctor`. -/
