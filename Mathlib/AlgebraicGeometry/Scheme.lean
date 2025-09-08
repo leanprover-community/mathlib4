@@ -136,10 +136,10 @@ open Order in
 lemma height_closed_point {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
   simp only [height_eq_zero]
   intro b _
-  by_cases h : b ≠ x
+  obtain rfl | h := eq_or_ne b x
+  · assumption
   · have := IsClosed.not_specializes hx rfl h
     contradiction
-  · aesop
 
 namespace Hom
 
