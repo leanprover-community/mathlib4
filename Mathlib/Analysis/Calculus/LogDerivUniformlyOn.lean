@@ -28,10 +28,9 @@ theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s
     (g := (∏' i : ι, f i ·)) hs (p := atTop)
   simp only [eventually_atTop, ge_iff_le, ne_eq, forall_exists_index, Subtype.forall] at this
   conv =>
-    enter [1]
-    ext n
-    rw [← logDeriv_prod _ _ _ (by intro i hi; apply hf i)
-      (by intro i hi; apply (hd i x x.2).differentiableAt; exact IsOpen.mem_nhds hs x.2)]
+    enter [1, n]
+    rw [← logDeriv_prod _ _ _ (fun i hi ↦ hf i)
+    (fun i hi => (hd i x x.2).differentiableAt (hs.mem_nhds x.2))]
   apply (this x x.2 ?_ ⊥ ?_ hnez).congr
   · intro m
     congr
