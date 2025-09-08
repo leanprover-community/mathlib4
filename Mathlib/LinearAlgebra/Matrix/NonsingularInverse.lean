@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
-import Mathlib.Data.Matrix.Kronecker
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.Trace
@@ -206,7 +206,7 @@ theorem mul_nonsing_inv (h : IsUnit A.det) : A * A⁻¹ = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
   rw [← invOf_eq_nonsing_inv, mul_invOf_self]
 
-/-- The `nonsing_inv` of `A` is a left inverse. -/
+/-- The nonsingular inverse of `A` is a left inverse. -/
 @[simp]
 theorem nonsing_inv_mul (h : IsUnit A.det) : A⁻¹ * A = 1 := by
   cases (A.isUnit_iff_isUnit_det.mpr h).nonempty_invertible
@@ -633,7 +633,7 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
     A.det • A⁻¹ *ᵥ b = cramer A b := by
-  rw [cramer_eq_adjugate_mulVec, A.nonsing_inv_apply h, ← smul_mulVec_assoc, smul_smul,
+  rw [cramer_eq_adjugate_mulVec, A.nonsing_inv_apply h, ← smul_mulVec, smul_smul,
     h.mul_val_inv, one_smul]
 
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/

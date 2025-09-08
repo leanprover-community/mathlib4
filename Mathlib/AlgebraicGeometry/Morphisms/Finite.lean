@@ -118,7 +118,7 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 
 end IsFinite
 
-/-- If `X` is a jacobson scheme and `k` is a field,
+/-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/
 lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace

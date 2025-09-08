@@ -74,7 +74,7 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   rw [ne_comm]
   change ¬(A.epiComp (SimplexCategory.σ i).op).EqId
   rw [IndexSet.eqId_iff_len_eq]
-  have h := SimplexCategory.len_le_of_epi (inferInstance : Epi A.e)
+  have h := SimplexCategory.len_le_of_epi A.e
   dsimp at h ⊢
   omega
 

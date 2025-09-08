@@ -240,7 +240,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
     · simpa only [T_zero, mul_one] using h_C a
     · exact fun m => h_C_mul_T m a
     · exact fun m => h_C_mul_T_Z m a
-  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p.toFun n) * T n) := by
+  have B : ∀ s : Finset ℤ, M (s.sum fun n : ℤ => C (p n) * T n) := by
     apply Finset.induction
     · convert h_C 0
       simp only [Finset.sum_empty, map_zero]
@@ -250,12 +250,11 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   convert B p.support
   ext a
   simp_rw [← single_eq_C_mul_T]
-  -- Porting note: did not make progress in `simp_rw`
-  rw [Finset.sum_apply']
-  simp_rw [Finsupp.single_apply, Finset.sum_ite_eq']
-  split_ifs with h
-  · rfl
-  · exact Finsupp.notMem_support_iff.mp h
+  rw [Finset.sum_apply', Finset.sum_eq_single a, single_eq_same]
+  · intro b _ hb
+    rw [single_eq_of_ne' hb]
+  · intro ha
+    rw [single_eq_same, notMem_support_iff.mp ha]
 
 /-- To prove something about Laurent polynomials, it suffices to show that
 * the condition is closed under taking sums, and
@@ -297,17 +296,18 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 @[simp]
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
-  rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
+  simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
+    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_coe,
+    AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
+  -- We need `erw` to see through the identification of `Finsupp` with `LaurentSeries`.
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
-  rw [toFinsuppIso_apply]
   split_ifs with n0
   · rw [toFinsupp_monomial]
     lift n to ℕ using n0
     apply comapDomain_single
   · rw [toFinsupp_inj]
     ext a
-    have : n ≠ a := by omega
+    have : a ≠ n := by omega
     simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
       single_eq_of_ne this]
 
