@@ -156,9 +156,12 @@ def findTacticSeqs (stx : Syntax) (tree : InfoTree) :
   let out ← tree.visitM (m := CommandElabM) (ctx? := some ctxInfo)
     (fun _ i _ => do
       if let some _range := i.stx.getRange? then
-        -- It turns out some syntax replacements change the ranges, so we get misleading answers.
-        -- Comment out the check for now, since the worst that can happen is we analyze a piece
-        -- of syntax that belongs to another declaration (that would be analyzed later on anyway).
+        /-
+        It turns out some syntax replacements change the ranges, so we get misleading answers.
+        Comment out the check for now, since the worst that can happen is we analyze a piece
+        of syntax that belongs to another declaration (that would be analyzed later on anyway).
+        See [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/What.20can.20one.20actually.20do.20with.20docs.23Syntax.2EgetRange.3F/with/536203324).
+        -/
         -- pure <| enclosingRange.start <= range.start && range.stop <= enclosingRange.stop
         pure true
       else pure false)
