@@ -72,6 +72,23 @@ theorem sumOfPowersConjectureFor_le_three : ∀ n ≤ 3, SumOfPowersConjectureFo
       |>.mpr fermatLastTheoremThree
   · omega
 
+/-- Given a ring homomorphism from `R` to `S` with no nontrivial zeros,
+the conjecture over `S` implies the conjecture over `R` -/
+lemma sumOfPowersConjecture_of_ringHom {R S : Type*} [Semiring R] [Semiring S] {f : R →+* S}
+    (hf : ∀ x, f x = 0 → x = 0) {n : ℕ} (conj : SumOfPowersConjectureWith S n) :
+    SumOfPowersConjectureWith R n := by
+  intro a b ha ha₀ hb hsum
+  convert conj (a.map f) (f b) ?_ ?_ ?_ ?_ <;> try grind
+  have h : (· ^ n) ∘ f = f ∘ (· ^ n) := by ext; simp
+  simp [h, hsum, List.sum_map_hom]
+
+/-- Given an injective ring homomorphism from `R` to `S`,
+the conjecture over `S` implies the conjecture over `R` -/
+lemma sumOfPowersConjecture_of_injective {R S : Type*} [Semiring R] [Semiring S] {f : R →+* S}
+    (hf : Function.Injective f) {n : ℕ} (h : SumOfPowersConjectureWith S n) :
+    SumOfPowersConjectureWith R n :=
+  sumOfPowersConjecture_of_ringHom (fun _ _ ↦ hf <| by rwa [map_zero]) h
+
 /--
 The first counterexample was found by L. J. Lander and T. R. Parkin in 1966
 through a computer search, disproving the conjecture.
