@@ -3,7 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Lemmas
+import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Difference of finite sets

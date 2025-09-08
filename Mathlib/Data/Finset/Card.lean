@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # Cardinality of a finite set
