@@ -207,6 +207,7 @@ lemma finrank_genEigenspace_le (φ : Module.End K M) (μ : K) (k : ℕ) :
     finrank K (φ.genEigenspace μ k) ≤ φ.charpoly.rootMultiplicity μ := by
   grw [Submodule.finrank_mono (φ.genEigenspace_le_maximal μ k), finrank_maxGenEigenspace_eq]
 
+/-- The geometric multiplicity of an eigenvalue is at most the algebraic multiplicity. -/
 lemma finrank_eigenspace_le (φ : Module.End K M) (μ : K) :
     finrank K (φ.eigenspace μ) ≤ φ.charpoly.rootMultiplicity μ :=
   finrank_genEigenspace_le ..
