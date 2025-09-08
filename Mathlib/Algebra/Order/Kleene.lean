@@ -163,9 +163,10 @@ instance (priority := 100) IdemSemiring.toIsOrderedAddMonoid :
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
-    CanonicallyOrderedAdd α :=
-  { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
-    le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
+    CanonicallyOrderedAdd α where
+  exists_add_of_le h := ⟨_, h.add_eq_right.symm⟩
+  le_add_self a b := add_eq_left_iff_le.1 <| by rw [add_assoc, add_idem]
+  le_self_add a b := add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem]
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toMulLeftMono : MulLeftMono α :=

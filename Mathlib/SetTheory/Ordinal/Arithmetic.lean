@@ -431,6 +431,7 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
 -- TODO: This gives us `zero_le` as an immediate consequence.
 -- Private/protect the old theorem, golf proofs.
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
+  le_add_self := le_add_left
   le_self_add := le_add_right
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
