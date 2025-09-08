@@ -75,3 +75,22 @@ lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M�
   congr 1
   ext i j : 1
   simp [LinearMap.toMatrix, LinearEquiv.conj_apply]
+
+namespace Matrix
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+@[simp]
+theorem charpoly_toLin (A : Matrix n n R) (b : Basis n R M) :
+    (A.toLin b b).charpoly = A.charpoly := by
+  simp [← LinearMap.charpoly_toMatrix (A.toLin b b) b]
+
+@[simp]
+theorem charpoly_toLin' (A : Matrix n n R) : A.toLin'.charpoly = A.charpoly := by
+  rw [← Matrix.toLin_eq_toLin', charpoly_toLin]
+
+@[simp]
+theorem charpoly_mulVecLin (A : Matrix n n R) : A.mulVecLin.charpoly = A.charpoly :=
+  charpoly_toLin' A
+
+end Matrix
