@@ -85,8 +85,12 @@ theorem contMDiffAt_extChartAt : ContMDiffAt I 𝓘(𝕜, E) n (extChartAt I x) 
   filter_upwards [extChartAt_target_mem_nhdsWithin x] with y hy
   exact PartialEquiv.right_inv (extChartAt I x) hy
 
+theorem contMDiffOn_extend (he : e ∈ maximalAtlas I n M) :
+    ContMDiffOn I 𝓘(𝕜, E) n (e.extend I) e.source :=
+  fun _x' hx' ↦ (contMDiffAt_extend he hx').contMDiffWithinAt
+
 theorem contMDiffOn_extChartAt : ContMDiffOn I 𝓘(𝕜, E) n (extChartAt I x) (chartAt H x).source :=
-  fun _x' hx' => (contMDiffAt_extChartAt' hx').contMDiffWithinAt
+  contMDiffOn_extend (chart_mem_maximalAtlas x)
 
 theorem contMDiffOn_extend_symm (he : e ∈ maximalAtlas I n M) :
     ContMDiffOn 𝓘(𝕜, E) I n (e.extend I).symm (I '' e.target) := by
@@ -285,3 +289,104 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     · simp only [c, c', hx', mfld_simps]
 
 end IsLocalStructomorph
+
+open Set Filter Function
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {H G : Type*} [TopologicalSpace H] [TopologicalSpace G]
+  {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  {n : WithTop ℕ∞}
+  [IsManifold I n M] [IsManifold J n N] {f : M → N} {s : Set M}
+  {φ : PartialHomeomorph M H} {ψ : PartialHomeomorph N G}
+
+-- there is no definition `writtenInExtend` but we already use some made-up names in this file
+
+/- The following proof is a warm-up for the real case; it should contain the main idea.
+-- TODO: complete the proof, and refactor the proof
+-- to prove ContMDiffWithinAt and ContMDiffAt versions first.
+-- More bare hands proof, but actually clearer. -/
+theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+    (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
+    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
+    ContMDiffOn I J n f s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · set f' := (ψ.extend J) ∘ f ∘ (φ.extend I).symm
+    have eq1 : EqOn (f' ∘ φ.extend I) (ψ.extend J ∘ f) s := by
+      have : (f' ∘ φ.extend I) = (ψ.extend J ∘ f) ∘ ((φ.extend I).symm ∘ (φ.extend I)) := by
+        simp only [f', Function.comp_assoc]
+      intro x hx
+      rw [this, Function.comp_apply]
+      congr
+      simp only [comp_apply]
+      apply PartialHomeomorph.extend_left_inv φ (hs hx)
+    have : ContMDiffOn I 𝓘(𝕜, F) n (f' ∘ (φ.extend I)) s := by
+      apply h.comp ((contMDiffOn_extend hφ).mono hs)
+      exact subset_preimage_image (↑(φ.extend I)) s
+    have : ContMDiffOn I J n ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) s := by
+      apply ContMDiffOn.comp (t := (ψ.extend J).target) ?_ this ?_
+      · rw [PartialHomeomorph.extend_target']
+        exact contMDiffOn_extend_symm hψ
+      · refine image_subset_iff.mp ?_
+        rintro x ⟨x', hx's, rfl⟩
+        rw [eq1 hx's, ψ.extend_target_eq_image_source]
+        exact mem_image_of_mem (ψ.extend J) (hmaps hx's)
+    have eq2 : EqOn ((ψ.extend J).symm ∘ f' ∘ (φ.extend I)) f s := by
+      intro x hx
+      rw [Function.comp_apply, eq1 hx, Function.comp_apply]
+      exact PartialEquiv.left_inv _ (by simpa using hmaps hx)
+    exact this.congr eq2.symm
+  · -- Easy direction: extended charts and their inverse is smooth on their source,
+    -- so composing with them preserves smoothness.
+    have : (φ.extend I) '' s ⊆ ↑I '' φ.target := by
+      rw [φ.extend_coe, ← φ.image_source_eq_target, image_comp]; gcongr
+    have aux : (φ.extend I) '' s ⊆ (φ.extend I).symm ⁻¹' s := by
+      rintro x ⟨x', hx', rfl⟩
+      rwa [mem_preimage, PartialHomeomorph.extend_left_inv φ (hs hx')]
+    have := ((contMDiffOn_extend hψ).comp h hmaps).comp ((contMDiffOn_extend_symm hφ).mono this) aux
+    apply this.mono le_rfl
+
+#exit
+
+/-- This is a smooth analogue of `continuousWithinAt_writtenInExtend_iff`. -/
+theorem contMDiffWithinAt_writtenInExtend_iff {y : M}
+    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
+    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
+      ((φ.extend I).symm ⁻¹' s ∩ range I) (φ.extend I y) ↔ ContMDiffWithinAt I J n f s y := by
+  refine ⟨?_, ?_⟩
+  · intro h
+    sorry
+  · intro h
+    have h1 := contMDiffOn_extend_symm hψ
+    --have h1' := h1 (ψ (f y)) hgy
+    have h2 := contMDiffAt_extend hφ hy (I := I) (n := n)
+    --have aux2 := h.comp y h1 (t := Set.univ)
+    -- apply (h1'.comp _ h).comp _ aux2 does it, morally
+    sorry
+
+theorem contMDiffAt_writtenInExtend_iff {y : M}
+    (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+    (hy : y ∈ φ.source) (hgy : f y ∈ ψ.source) (hmaps : MapsTo f s ψ.source) :
+    ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm)
+      (φ.extend I y) ↔ ContMDiffAt I J n f y := by
+  sorry /- TODO: can this be deduced from the withinAt version?
+  nth_rw 2 [← contMDiffWithinAt_univ]
+  rw [← contMDiffWithinAt_writtenInExtend_iff hφ hψ hy hgy]
+  simp only [preimage_univ, univ_inter] -- two goals left, which might be unprovable -/
+
+/-- If `s ⊆ φ.source` and `f x ∈ ψ.source` whenever `x ∈ s`, then `f` is `C^n` on `s` if and
+only if `f` written in charts `φ.extend I` and `ψ.extend I'` is `C^n` on `φ.extend I '' s`.
+This is a smooth analogue of `continuousOn_writtenInExtend_iff`. -/
+theorem contMDiffOn_writtenInExtend_iff (hφ : φ ∈ maximalAtlas I n M) (hψ : ψ ∈ maximalAtlas J n N)
+    (hs : s ⊆ φ.source) (hmaps : MapsTo f s ψ.source) :
+    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n (ψ.extend J ∘ f ∘ (φ.extend I).symm) (φ.extend I '' s) ↔
+    ContMDiffOn I J n f s := by
+  refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
+  refine (contMDiffWithinAt_congr_set ?_).trans
+    (contMDiffWithinAt_writtenInExtend_iff hφ hψ (hs hx) (hmaps hx) hmaps)
+  rw [← nhdsWithin_eq_iff_eventuallyEq, ← φ.map_extend_nhdsWithin_eq_image_of_subset,
+    ← φ.map_extend_nhdsWithin]
+  exacts [hs hx, hs hx, hs]
