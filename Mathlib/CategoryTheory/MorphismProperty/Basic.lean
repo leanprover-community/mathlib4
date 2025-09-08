@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
@@ -488,18 +487,6 @@ whose left and right parts are in `W`. -/
 def arrow (W : MorphismProperty C) :
     MorphismProperty (Arrow C) :=
   fun _ _ f => W f.left ∧ W f.right
-
-/-- The morphism property on `Over X` induced by a morphism property on `C`. -/
-def over (W : MorphismProperty C) {X : C} : MorphismProperty (Over X) := fun _ _ f ↦ W f.left
-
-/-- The morphism property on `Over X` induced by a morphism property on `C`. -/
-def under (W : MorphismProperty C) {X : C} : MorphismProperty (Under X) := fun _ _ f ↦ W f.right
-
-/-- The object property on `Over X` induced by a morphism property. -/
-def overObj (W : MorphismProperty C) {X : C} : ObjectProperty (Over X) := fun f ↦ W f.hom
-
-/-- The object property on `Under X` induced by a morphism property. -/
-def underObj (W : MorphismProperty C) {X : C} : ObjectProperty (Under X) := fun f ↦ W f.hom
 
 end MorphismProperty
 
