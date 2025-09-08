@@ -36,14 +36,6 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
   `Mathlib/SetTheory/Cardinal/Ordinal.lean`.
-* There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
-  the base and the exponent live in the same universe. As a workaround, you can add
-  ```
-    local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
-  ```
-  to a file. This notation will work even if Lean doesn't know yet that the base and the exponent
-  live in the same universe (but no exponents in other types can be used).
-  (Porting note: This last point might need to be updated.)
 
 ## References
 
