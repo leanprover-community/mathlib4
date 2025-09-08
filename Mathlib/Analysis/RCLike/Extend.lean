@@ -42,56 +42,39 @@ section ScalarTower
 variable [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜` in a way that will also be continuous and have its norm
-bounded by `‖fr‖` if `fr` is continuous. -/
-noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 := by
-  let fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
-  have add : ∀ x y : F, fc (x + y) = fc x + fc y := by
-    intro x y
-    simp only [fc, smul_add, LinearMap.map_add, ofReal_add]
-    rw [mul_add]
+equal to `‖fr‖` if `fr` is continuous. -/
+noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=
+  letI fc : F → 𝕜 := fun x => (fr x : 𝕜) - (I : 𝕜) * fr ((I : 𝕜) • x)
+  have add (x y) : fc (x + y) = fc x + fc y := by
+    simp only [fc, smul_add, map_add, mul_add]
     abel
-  have A : ∀ (c : ℝ) (x : F), (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) := by
-    intro c x
-    rw [← ofReal_mul]
-    congr 1
-    rw [RCLike.ofReal_alg, smul_assoc, fr.map_smul, Algebra.id.smul_eq_mul, one_smul]
-  have smul_ℝ : ∀ (c : ℝ) (x : F), fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
-    intro c x
-    dsimp only [fc]
-    rw [A c x, smul_smul, mul_comm I (c : 𝕜), ← smul_smul, A, mul_sub]
-    ring
-  have smul_I : ∀ x : F, fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
-    intro x
-    dsimp only [fc]
-    rcases @I_mul_I_ax 𝕜 _ with h | h
-    · simp [h]
-    rw [mul_sub, ← mul_assoc, smul_smul, h]
-    simp only [neg_mul, LinearMap.map_neg, one_mul, one_smul, mul_neg, ofReal_neg, neg_smul,
-      sub_neg_eq_add, add_comm]
-  have smul_𝕜 : ∀ (c : 𝕜) (x : F), fc (c • x) = c • fc x := by
-    intro c x
-    rw [← re_add_im c, add_smul, add_smul, add, smul_ℝ, ← smul_smul, smul_ℝ, smul_I, ← mul_assoc]
-    rfl
-  exact
-    { toFun := fc
-      map_add' := add
-      map_smul' := smul_𝕜 }
+  have A (c : ℝ) (x : F) : (fr ((c : 𝕜) • x) : 𝕜) = (c : 𝕜) * (fr x : 𝕜) := by simp
+  have smul_ℝ (c : ℝ) (x : F) : fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
+    simp only [fc, A, smul_comm I, mul_comm I, mul_sub, mul_assoc]
+  have smul_I (x : F) : fc ((I : 𝕜) • x) = (I : 𝕜) * fc x := by
+    obtain (h | h) := @I_mul_I_ax 𝕜 _
+    · simp [fc, h]
+    · simp [fc, mul_sub, ← mul_assoc, smul_smul, h, add_comm]
+  have smul_𝕜 (c : 𝕜) (x : F) : fc (c • x) = c • fc x := by
+    rw [← re_add_im c]
+    simp only [add_smul, ← smul_smul, add, smul_ℝ, smul_I, ← mul_assoc, smul_eq_mul, add_mul]
+  { toFun := fc
+    map_add' := add
+    map_smul' := smul_𝕜 }
 
 theorem extendTo𝕜'_apply (fr : F →ₗ[ℝ] ℝ) (x : F) :
     fr.extendTo𝕜' x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
 theorem extendTo𝕜'_apply_re (fr : F →ₗ[ℝ] ℝ) (x : F) : re (fr.extendTo𝕜' x : 𝕜) = fr x := by
-  simp only [extendTo𝕜'_apply, map_sub, zero_mul, mul_zero, sub_zero,
-    rclike_simps]
+  simp only [extendTo𝕜'_apply, map_sub, zero_mul, mul_zero, sub_zero, rclike_simps]
 
 theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
-    ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) :=
-  calc
-    ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
-      rw [RCLike.conj_mul, ← ofReal_pow, ofReal_re]
-    _ = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := by
-      rw [← smul_eq_mul, ← map_smul, extendTo𝕜'_apply_re]
+    ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := calc
+  ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
+    rw [RCLike.conj_mul, ← ofReal_pow, ofReal_re]
+  _ = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := by
+    rw [← smul_eq_mul, ← map_smul, extendTo𝕜'_apply_re]
 
 end ScalarTower
 
