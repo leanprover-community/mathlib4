@@ -60,10 +60,6 @@ deriving DecidableEq
 
 namespace Partition
 
-@[deprecated "Partition now derives an instance of DecidableEq." (since := "2024-12-28")]
-instance decidableEqPartition {n : ℕ} : DecidableEq (Partition n) :=
-  fun _ _ => decidable_of_iff' _ Partition.ext_iff
-
 /-- A composition induces a partition (just convert the list to a multiset). -/
 @[simps]
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where

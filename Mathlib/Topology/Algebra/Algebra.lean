@@ -100,8 +100,7 @@ over the topological ring `R`. -/
 structure ContinuousAlgHom (R : Type*) [CommSemiring R] (A : Type*) [Semiring A]
     [TopologicalSpace A] (B : Type*) [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
     extends A →ₐ[R] B where
--- TODO: replace with `fun_prop` when that is stable
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 @[inherit_doc]
 notation:25 A " →A[" R "] " B => ContinuousAlgHom R A B
@@ -587,15 +586,11 @@ open Subalgebra
 def Algebra.elemental (x : A) : Subalgebra R A :=
   (Algebra.adjoin R ({x} : Set A)).topologicalClosure
 
-@[deprecated (since := "2024-11-05")] alias Algebra.elementalAlgebra := Algebra.elemental
-
 namespace Algebra.elemental
 
 @[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
-
-@[deprecated (since := "2024-11-05")] alias _root_.Algebra.self_mem_elementalAlgebra := self_mem
 
 variable {R} in
 theorem le_of_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) (hx : x ∈ s) :

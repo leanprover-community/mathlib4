@@ -210,6 +210,12 @@ instance {D : Type*} [Category D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C :
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
 
+instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
+  Localization.essSurj _ (HomotopyCategory.quasiIso _ _)
+
+instance : (Q : _ ⥤ DerivedCategory C).EssSurj :=
+  Localization.essSurj _ (HomologicalComplex.quasiIso _ _)
+
 variable {C} in
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
@@ -267,13 +273,16 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
 
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
-  ext X
   dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
     quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
   erw [CategoryTheory.Functor.map_id]
-  rw [SingleFunctors.id_hom, NatTrans.id_app]
+  rw [SingleFunctors.id_hom]
   erw [Category.id_comp, Category.id_comp]
   rfl
+
+/-- The isomorphism `singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q`. -/
+noncomputable def singleFunctorIsoCompQ (n : ℤ) :
+    singleFunctor C n ≅ CochainComplex.singleFunctor C n ⋙ Q := Iso.refl _
 
 lemma isIso_Q_map_iff_quasiIso {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
     IsIso (Q.map φ) ↔ QuasiIso φ := by

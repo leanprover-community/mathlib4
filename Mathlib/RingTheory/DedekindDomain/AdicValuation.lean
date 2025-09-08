@@ -344,6 +344,17 @@ theorem valuation_exists_uniformizer : ∃ π : K,
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
 
+lemma valuation_surjective :
+    Function.Surjective (v.valuation K) := by
+  intro x
+  induction x with
+  | zero => simp
+  | coe x =>
+    induction x with | ofAdd x
+    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    refine ⟨π ^ (- x), ?_⟩
+    simp [hπ, ← WithZero.coe_zpow, ← ofAdd_zsmul]
+
 /-- Uniformizers are nonzero. -/
 theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uniformizer K) ≠ 0 :=
   haveI hu := Classical.choose_spec (v.valuation_exists_uniformizer K)
@@ -402,9 +413,9 @@ abbrev adicCompletion := (v.valuation K).Completion
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
 
--- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
---   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
+lemma valuedAdicCompletion_surjective :
+    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
+  Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
@@ -507,6 +518,16 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     simp only [Algebra.smul_def]
     rfl
 
+@[simp]
+lemma algebraMap_adicCompletionIntegers_apply (r : R) :
+    algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
+  rfl
+
+instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
+  rw [faithfulSMul_iff_algebraMap_injective]
+  intro x y
+  simp [Subtype.ext_iff, (FaithfulSMul.algebraMap_injective R K).eq_iff]
+
 variable {R K} in
 open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
@@ -535,12 +556,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
   rfl
 
 instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
-    rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine hcx.imp_left fun hc => ?_
-    rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
-    exact
-      IsFractionRing.injective R _ (UniformSpace.Completion.coe_injective _ (Subtype.ext_iff.mp hc))
+  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by simp
 
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where

@@ -121,8 +121,6 @@ lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Ty
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
 
-@[deprecated (since := "2024-11-26")] alias op_comp_isSheafOfTypes := op_comp_isSheaf_of_types
-
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
   fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩

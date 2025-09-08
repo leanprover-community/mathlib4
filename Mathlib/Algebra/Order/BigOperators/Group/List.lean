@@ -31,10 +31,10 @@ lemma Forall₂.prod_le_prod' [Preorder M] [MulRightMono M]
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
 of `∀ a ∈ l₂, 1 ≤ a` but this lemma is not yet in `mathlib`. -/
-@[to_additive sum_le_sum "If `l₁` is a sublist of `l₂` and all elements of `l₂` are nonnegative,
+@[to_additive sum_le_sum /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are nonnegative,
   then `l₁.sum ≤ l₂.sum`.
   One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 0 ≤ a` instead of `∀ a ∈ l₂, 0 ≤ a`
-  but this lemma is not yet in `mathlib`."]
+  but this lemma is not yet in `mathlib`. -/]
 lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : l₁ <+ l₂)
     (h₁ : ∀ a ∈ l₂, (1 : M) ≤ a) : l₁.prod ≤ l₂.prod := by
@@ -157,12 +157,10 @@ lemma one_lt_prod_of_one_lt [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] 
     rw [List.prod_cons]
     apply one_lt_mul_of_lt_of_le' hl₁.1
     apply le_of_lt ((b :: l).one_lt_prod_of_one_lt _ (l.cons_ne_nil b))
-    intro x hx; cases hx
-    · exact hl₁.2.1
-    · exact hl₁.2.2 _ ‹_›
+    grind
 
 /-- See also `List.le_prod_of_mem`. -/
-@[to_additive "See also `List.le_sum_of_mem`."]
+@[to_additive /-- See also `List.le_sum_of_mem`. -/]
 lemma single_le_prod [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
     {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
     ∀ x ∈ l, x ≤ l.prod := by
@@ -195,7 +193,7 @@ variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
 
 /-- See also `List.single_le_prod`. -/
-@[to_additive "See also `List.single_le_sum`."]
+@[to_additive /-- See also `List.single_le_sum`. -/]
 theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod := by
   induction xs with
   | nil => simp at h₁

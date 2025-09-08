@@ -277,7 +277,7 @@ theorem inv_strictAnti : StrictAnti (Inv.inv : ℝ≥0∞ → ℝ≥0∞) := by
 
 @[simp]
 protected theorem inv_lt_inv : a⁻¹ < b⁻¹ ↔ b < a :=
-  inv_strictAnti.lt_iff_lt
+  inv_strictAnti.lt_iff_gt
 
 theorem inv_lt_iff_inv_lt : a⁻¹ < b ↔ b⁻¹ < a := by
   simpa only [inv_inv] using @ENNReal.inv_lt_inv a b⁻¹
@@ -287,7 +287,7 @@ theorem lt_inv_iff_lt_inv : a < b⁻¹ ↔ b < a⁻¹ := by
 
 @[simp]
 protected theorem inv_le_inv : a⁻¹ ≤ b⁻¹ ↔ b ≤ a :=
-  inv_strictAnti.le_iff_le
+  inv_strictAnti.le_iff_ge
 
 theorem inv_le_iff_inv_le : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
   simpa only [inv_inv] using @ENNReal.inv_le_inv a b⁻¹
@@ -417,6 +417,27 @@ theorem div_lt_of_lt_mul (h : a < b * c) : a / c < b :=
 
 theorem div_lt_of_lt_mul' (h : a < b * c) : a / b < c :=
   div_lt_of_lt_mul <| by rwa [mul_comm]
+
+protected lemma div_lt_div_iff_left (hc₀ : c ≠ 0) (hc : c ≠ ∞) : a / c < b / c ↔ a < b :=
+  ENNReal.mul_lt_mul_right (by simpa) (by simpa)
+
+protected lemma div_lt_div_iff_right (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a / b < a / c ↔ c < b :=
+  (ENNReal.mul_lt_mul_left ha₀ ha).trans (by simp)
+
+@[gcongr]
+protected lemma div_lt_div_right (hc₀ : c ≠ 0) (hc : c ≠ ∞) (hab : a < b) : a / c < b / c :=
+  (ENNReal.div_lt_div_iff_left hc₀ hc).2 hab
+
+@[gcongr]
+protected lemma div_lt_div_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) (hcb : c < b) : a / b < a / c :=
+  (ENNReal.div_lt_div_iff_right ha₀ ha).2 hcb
+
+protected lemma exists_pos_mul_lt (ha : a ≠ ∞) (hb₀ : b ≠ 0) : ∃ c, 0 < c ∧ c * a < b := by
+  obtain rfl | hb := eq_or_ne b ∞
+  · exact ⟨1, by simpa [lt_top_iff_ne_top]⟩
+  refine ⟨b / (a + 1), ENNReal.div_pos hb₀ (by finiteness), ENNReal.mul_lt_of_lt_div ?_⟩
+  gcongr
+  exacts [hb, ENNReal.lt_add_right ha one_ne_zero]
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
@@ -643,6 +664,12 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 
+lemma zero_zpow_def (n : ℤ) : (0 : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then 0 else ⊤ := by
+  obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
+
+lemma top_zpow_def (n : ℤ) : (⊤ : ℝ≥0∞) ^ n = if n = 0 then 1 else if 0 < n then ⊤ else 0 := by
+  obtain ((_ | n) | n) := n <;> simp [-Nat.cast_add, -Int.natCast_add]
+
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · simpa using ENNReal.pow_pos ha.bot_lt _
@@ -718,13 +745,30 @@ protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m 
   replace hx : x ≠ 0 := by simpa only [Ne, coe_eq_zero] using hx
   simp only [← coe_zpow hx, zpow_add₀ hx, coe_mul]
 
-protected theorem zpow_neg {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m : ℤ) :
-    x ^ (-m) = (x ^ m)⁻¹ :=
-  ENNReal.eq_inv_of_mul_eq_one_left (by simp [← ENNReal.zpow_add x_ne_zero x_ne_top])
+protected theorem zpow_neg (x : ℝ≥0∞) (m : ℤ) : x ^ (-m) = (x ^ m)⁻¹ := by
+  obtain hx₀ | hx₀ := eq_or_ne x 0
+  · obtain hm | hm | hm := lt_trichotomy m 0 <;>
+      simp_all [zero_zpow_def, ne_of_lt, ne_of_gt, lt_asymm]
+  obtain hx | hx := eq_or_ne x ⊤
+  · obtain hm | hm | hm := lt_trichotomy m 0 <;>
+      simp_all [top_zpow_def, ne_of_lt, ne_of_gt, lt_asymm]
+  exact ENNReal.eq_inv_of_mul_eq_one_left (by simp [← ENNReal.zpow_add hx₀ hx])
 
 protected theorem zpow_sub {x : ℝ≥0∞} (x_ne_zero : x ≠ 0) (x_ne_top : x ≠ ⊤) (m n : ℤ) :
     x ^ (m - n) = (x ^ m) * (x ^ n)⁻¹ := by
-  rw [sub_eq_add_neg, ENNReal.zpow_add x_ne_zero x_ne_top, ENNReal.zpow_neg x_ne_zero x_ne_top n]
+  rw [sub_eq_add_neg, ENNReal.zpow_add x_ne_zero x_ne_top, ENNReal.zpow_neg]
+
+protected lemma inv_zpow (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = (x ^ n)⁻¹ := by
+  cases n <;> simp [ENNReal.inv_pow]
+
+protected lemma inv_zpow' (x : ℝ≥0∞) (n : ℤ) : x⁻¹ ^ n = x ^ (-n) := by
+  rw [ENNReal.zpow_neg, ENNReal.inv_zpow]
+
+lemma zpow_le_one_of_nonpos {n : ℤ} (hn : n ≤ 0) {x : ℝ≥0∞} (hx : 1 ≤ x) : x ^ n ≤ 1 := by
+  obtain ⟨m, rfl⟩ := neg_surjective n
+  lift m to ℕ using by simpa using hn
+  rw [← ENNReal.inv_zpow', ENNReal.inv_zpow, ENNReal.inv_le_one]
+  exact mod_cast one_le_pow₀ hx
 
 lemma isUnit_iff : IsUnit a ↔ a ≠ 0 ∧ a ≠ ∞ := by
   refine ⟨fun ha ↦ ⟨ha.ne_zero, ?_⟩,
@@ -878,6 +922,7 @@ lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] 
     c • sSup s = ⨆ a ∈ s, c • a := by
   simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
 
+@[simp]
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]

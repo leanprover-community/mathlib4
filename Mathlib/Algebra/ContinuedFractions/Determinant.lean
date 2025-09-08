@@ -59,15 +59,8 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
       have gp_a_eq_one : gp.a = 1 := s.property _ _ (partNum_eq_s_a s_nth_eq)
       rw [gp_a_eq_one, this.symm]
       ring
-    suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by calc
-      pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) =
-          pA * ppB + pA * gp.b * pB - pB * ppA - pB * gp.b * pA := by ring
-      _ = pA * ppB - pB * ppA := by ring
-      _ = (-1) ^ (n + 1) := by assumption
-    suffices ppA * pB - ppB * pA = (-1) ^ n by
-      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ' (-1) n
-      rw [pow_succ_n, ← this]
-      ring
+    suffices pA * ppB - pB * ppA = (-1) ^ (n + 1) by grind
+    suffices ppA * pB - ppB * pA = (-1) ^ n by grind
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/

@@ -3,10 +3,11 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Analysis.Normed.Module.Basic
 
 /-! # Germs of functions between topological spaces
 
@@ -49,7 +50,7 @@ theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` into a monoid `E` as a monoid homomorphism -/
-@[to_additive "The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism"]
+@[to_additive /-- The map `Germ (𝓝 x) E → E` as an additive monoid homomorphism -/]
 def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →* E where
   toFun := Filter.Germ.value
   map_one' := rfl
