@@ -907,7 +907,9 @@ theorem restr_symm_trans {e' : PartialHomeomorph X Y}
     refine image_inter_on ?_
     intro x hx y hy h
     rw [← left_inv e hy, ← left_inv e (hs'' hx), h]
-  · simpa using fun ⦃x⦄ ↦ congrFun rfl
+  · simp_rw [coe_trans, restr_symm_apply, restr_apply, coe_trans]
+    intro x hx
+    simp
 
 theorem symm_trans_restr (e' : PartialHomeomorph X Y) (hs : IsOpen s) :
     e'.symm.trans (e.restr s) ≈ (e'.symm.trans e).restr (e'.target ∩ e'.symm ⁻¹' s) := by
