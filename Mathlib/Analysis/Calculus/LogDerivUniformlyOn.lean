@@ -19,25 +19,12 @@ individual functions.
 open TopologicalSpace Filter Complex Set Function
 
 theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s} {f : ι → ℂ → ℂ}
-    (hf : ∀ i, f i x ≠ 0) (hd : ∀ i : ι, DifferentiableOn ℂ (f i) s)
+    (hf : ∀ i, f i x ≠ 0) (hd : ∀ i, DifferentiableOn ℂ (f i) s)
     (hm : Summable fun i ↦ logDeriv (f i) x) (htend : MultipliableLocallyUniformlyOn f s)
-    (hnez : ∏' (i : ι), f i x ≠ 0) : logDeriv (∏' i : ι, f i ·) x = ∑' i : ι, logDeriv (f i) x := by
-  apply symm
-  rw [← Summable.hasSum_iff hm, HasSum]
-  have := logDeriv_tendsto (f := fun (n : Finset ι) ↦ ∏ i ∈ n, f i)
-    (g := (∏' i : ι, f i ·)) hs (p := atTop)
-  simp only [eventually_atTop, ge_iff_le, ne_eq, forall_exists_index, Subtype.forall] at this
-  conv =>
-    enter [1, n]
-    rw [← logDeriv_prod _ _ _ (fun i hi ↦ hf i)
-    (fun i hi => (hd i x x.2).differentiableAt (hs.mem_nhds x.2))]
-  apply (this x x.2 ?_ ⊥ ?_ hnez).congr
-  · intro m
-    congr
-    aesop
-  · convert hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp
-      htend.hasProdLocallyUniformlyOn
-    rw [Finset.prod_apply]
-  · exact fun b hb z hz => DifferentiableAt.differentiableWithinAt
-      (DifferentiableAt.finset_prod fun i hi ↦ DifferentiableWithinAt.differentiableAt (hd i z hz)
-      (hs.mem_nhds hz))
+    (hnez : ∏' i, f i x ≠ 0) :
+    logDeriv (∏' i, f i ·) x = ∑' i, logDeriv (f i) x := by
+  rw [Eq.comm, ← hm.hasSum_iff]
+  refine logDeriv_tendsto hs x htend.hasProdLocallyUniformlyOn (.of_forall <| by fun_prop) hnez
+    |>.congr fun b ↦ ?_
+  rw [logDeriv_prod _ _ _ (fun i _ ↦ hf i)
+    (fun i _ ↦ (hd i x x.2).differentiableAt (hs.mem_nhds x.2))]
