@@ -517,47 +517,11 @@ theorem measurableSpace_mono (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f
     intro hle' _
     exact le_trans (hle _) hle'
 
--- theorem measurableSpace_le_of_countable [Countable ι] (hτ : IsStoppingTime f τ) :
---     hτ.measurableSpace ≤ m := by
---   intro s hs
---   change ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
---   rw [(_ : s = ((⋃ i : ι, s ∩ {ω | τ ω ≤ i})) ∪ (s ∩ {ω | τ ω = ⊤}))]
---   · refine MeasurableSet.union ?_ ?_
---     · exact MeasurableSet.iUnion fun i => f.le i _ (hs i)
---     · sorry
---   · ext ω
---     constructor <;> rw [Set.mem_union, Set.mem_iUnion]
---     · exact fun hx => ⟨τ ω, hx, le_rfl⟩
---     · rintro ⟨_, hx, _⟩
---       exact hx
-
--- theorem measurableSpace_le [IsCountablyGenerated (atTop : Filter ι)] [IsDirected ι (· ≤ ·)]
---     (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m := by
---   intro s hs
---   cases isEmpty_or_nonempty ι
---   · haveI : IsEmpty Ω := ⟨fun ω => IsEmpty.false (τ ω)⟩
---     apply Subsingleton.measurableSet
---   · change ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
---     obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := (atTop : Filter ι).exists_seq_tendsto
---     rw [(_ : s = ⋃ n, s ∩ {ω | τ ω ≤ seq n})]
---     · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
---     · ext ω; constructor <;> rw [Set.mem_iUnion]
---       · intro hx
---         suffices ∃ i, τ ω ≤ seq i from ⟨this.choose, hx, this.choose_spec⟩
---         rw [tendsto_atTop] at h_seq_tendsto
---         exact (h_seq_tendsto (τ ω)).exists
---       · rintro ⟨_, hx, _⟩
---         exact hx
-
 theorem measurableSpace_le (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m := fun _ hs ↦ hs.1
 
--- example {f : Filtration ℕ m} {τ : Ω → ℕ∞} (hτ : IsStoppingTime f τ) :
---     hτ.measurableSpace ≤ m :=
---   hτ.measurableSpace_le
-
--- example {f : Filtration ℝ m} {τ : Ω → WithTop ℝ} (hτ : IsStoppingTime f τ) :
---     hτ.measurableSpace ≤ m :=
---   hτ.measurableSpace_le
+@[deprecated (since := "2025-09-08")] alias measurableSpace_le_of_countable := measurableSpace_le
+@[deprecated (since := "2025-09-08")] alias measurableSpace_le_of_countable_range :=
+    measurableSpace_le
 
 @[simp]
 theorem measurableSpace_const (f : Filtration ι m) (i : ι) :
@@ -722,21 +686,6 @@ protected theorem measurableSet_lt_of_countable' [Countable ι] (hτ : IsStoppin
     MeasurableSet[hτ.measurableSpace] {ω | τ ω < i} :=
   hτ.measurableSet_lt_of_countable_range' (Set.to_countable _) i
 
--- protected theorem measurableSpace_le_of_countable_range (hτ : IsStoppingTime f τ)
---     (h_countable : (Set.range τ).Countable) : hτ.measurableSpace ≤ m := by
---   intro s hs
---   exact hs.1
---   change MeasurableSet s ∧ ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
---   rw [(_ : s = ⋃ i ∈ Set.range τ, s ∩ {ω | τ ω ≤ i})]
---   · exact MeasurableSet.biUnion h_countable fun i _ => f.le i _ (hs i)
---   · ext ω
---     constructor <;> rw [Set.mem_iUnion]
---     · exact fun hx => ⟨τ ω, by simpa using hx⟩
---     · rintro ⟨i, hx⟩
---       simp only [Set.mem_range, Set.iUnion_exists, Set.mem_iUnion, Set.mem_inter_iff,
---         Set.mem_setOf_eq, exists_prop, exists_and_right] at hx
---       exact hx.2.1
-
 end Countable
 
 open scoped WithTopOrderTopology
@@ -898,11 +847,8 @@ theorem measurableSet_eq_stopping_time [TopologicalSpace ι] [MeasurableSpace ι
   rw [measurableSet_min_iff hτ hπ] at h
   exact h.1
 
--- theorem measurableSet_eq_stopping_time_of_countable [Countable ι] [TopologicalSpace ι]
---     [MeasurableSpace ι] [BorelSpace ι] [OrderTopology ι] [MeasurableSingletonClass ι]
---     [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
---     MeasurableSet[hτ.measurableSpace] {ω | τ ω = π ω} := by
---   exact measurableSet_eq_stopping_time hτ hπ
+@[deprecated (since := "2025-09-08")] alias measurableSet_eq_stopping_time_of_countable :=
+  measurableSet_eq_stopping_time
 
 end LinearOrder
 
