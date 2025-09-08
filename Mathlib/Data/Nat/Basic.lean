@@ -116,7 +116,7 @@ lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Pro
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
 
 @[simp]
-lemma dvd_sub_self_iff {n m : ℕ} :
+protected lemma dvd_sub_self_left {n m : ℕ} :
     n ∣ n - m ↔ m = 0 ∨ n ≤ m := by
   rcases le_or_gt n m with h | h
   · simp [h]
@@ -125,5 +125,12 @@ lemma dvd_sub_self_iff {n m : ℕ} :
     · simp only [hm, h.not_ge, or_self, iff_false]
       refine not_dvd_of_pos_of_lt ?_ ?_ <;>
       grind
+
+@[simp]
+protected lemma dvd_sub_self_right {n m : ℕ} :
+    n ∣ m - n ↔ n ∣ m ∨ m ≤ n := by
+  rcases le_or_gt m n with h | h
+  · simp [h]
+  · simp [dvd_sub_iff_left (le_of_lt h) (Nat.dvd_refl _), h.not_ge]
 
 end Nat
