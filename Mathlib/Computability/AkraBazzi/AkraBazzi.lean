@@ -11,24 +11,26 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 /-!
 # Divide-and-conquer recurrences and the Akra–Bazzi theorem
 
-A divide-and-conquer recurrence is a function `T : ℕ → ℝ` that satisfies a recurrence relation of
-the form `T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)` for sufficiently large `n`, where `r_i(n)` is a
-function with `‖r_i(n) - b_i n‖ ∈ o(n / (log n)^2)` for every `i`, the coefficients `a_i` are
-positive, and the parameters `b_i` are real numbers in `(0, 1)`. (This assumption can be
-relaxed to `O(n / (log n)^(1 + ε))` for some `ε > 0`; we leave this as future work.) These
+A divide-and-conquer recurrence is a function $T : ℕ → ℝ$ that satisfies a recurrence relation of
+the form
+$$T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n),$$
+for sufficiently large $n$, where $r_i(n)$ is a function with
+$‖r_i(n) - b_i n‖ ∈ o(n / (\log n)^2)$ for every $i$, the coefficients $a_i$ are
+positive, and the parameters $b_i$ are real numbers in $(0, 1)$. (This assumption can be
+relaxed to $O(n / (\log n)^{1 + ε})$ for some $ε > 0$; we leave this as future work.) These
 recurrences arise primarily in the
 analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
-multiplication. This class of algorithms works by dividing an instance of the problem of size `n`
-into `k` smaller instances, where the `i`-th instance is of size roughly `b_i n`, and calling itself
-recursively on those smaller instances. `T(n)` then represents the running time of the algorithm,
-and `g(n)` represents the running time required to divide the instance and process the
+multiplication. This class of algorithms works by dividing an instance of the problem of size $n$
+into $k$ smaller instances, where the $i$-th instance is of size roughly $b_i n$, and calling itself
+recursively on those smaller instances. $T(n)$ then represents the running time of the algorithm,
+and $g(n)$ represents the running time required to divide the instance and process the
 answers produced by the recursive calls. Since virtually all such algorithms produce instances
-that are only approximately of size `b_i n` (they must round up or down, at the very least), we
-allow the instance sizes to be given by a function `r_i(n)` that approximates `b_i n`.
+that are only approximately of size $b_i n$ (they must round up or down, at the very least), we
+allow the instance sizes to be given by a function $r_i(n)$ that approximates $b_i n$.
 
 The Akra–Bazzi theorem gives the asymptotic order of such a recurrence: it states that
-`T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1}))`,
-where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
+$$T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})),$$
+where $p$ is the unique real number such that $∑ a_i b_i^p = 1$.
 
 ## Main definitions and results
 
