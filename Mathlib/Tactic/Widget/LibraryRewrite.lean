@@ -153,7 +153,7 @@ def addLocalRewriteEntry (decl : LocalDecl) :
 
 private abbrev ExtState := IO.Ref (Option (RefinedDiscrTree RewriteLemma))
 
-private builtin_initialize ExtState.default : ExtState ←
+private initialize ExtState.default : ExtState ←
   IO.mkRef none
 
 private instance : Inhabited ExtState where
