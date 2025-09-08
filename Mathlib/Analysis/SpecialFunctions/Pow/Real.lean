@@ -329,17 +329,6 @@ theorem norm_cpow_eq_rpow_re_of_nonneg {x : ℝ} (hx : 0 ≤ x) {y : ℂ} (hy : 
     ‖(x : ℂ) ^ y‖ = x ^ re y := by
   rw [norm_cpow_of_imp] <;> simp [*, arg_ofReal_of_nonneg, abs_of_nonneg]
 
-@[deprecated (since := "2025-02-17")] alias abs_cpow_of_ne_zero := norm_cpow_of_ne_zero
-@[deprecated (since := "2025-02-17")] alias abs_cpow_of_imp := norm_cpow_of_imp
-@[deprecated (since := "2025-02-17")] alias abs_cpow_le := norm_cpow_le
-@[deprecated (since := "2025-02-17")] alias abs_cpow_real := norm_cpow_real
-@[deprecated (since := "2025-02-17")] alias abs_cpow_inv_nat := norm_cpow_inv_nat
-@[deprecated (since := "2025-02-17")] alias abs_cpow_eq_rpow_re_of_pos :=
-  norm_cpow_eq_rpow_re_of_pos
-
-@[deprecated (since := "2025-02-17")] alias abs_cpow_eq_rpow_re_of_nonneg :=
-  norm_cpow_eq_rpow_re_of_nonneg
-
 open Filter in
 lemma norm_ofReal_cpow_eventually_eq_atTop (c : ℂ) :
     (fun t : ℝ ↦ ‖(t : ℂ) ^ c‖) =ᶠ[atTop] fun t ↦ t ^ c.re := by
