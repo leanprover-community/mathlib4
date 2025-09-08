@@ -20,27 +20,27 @@ variable [MonoidWithZeroHomClass F A B] {f : F}
 
 open WithZero
 
-/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an monoid with zero hom. -/
+/-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an monoid with zero hom. -/
 @[simps!]
-def valueGroup₀_MonoidWithZeroHom : valueGroup₀ f →*₀ WithZero Bˣ :=
+def valueGroup₀_MonoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
   WithZero.map' (valueGroup f).subtype
 
 lemma valueGroup₀_MonoidWithZeroHom_strictMono :
     StrictMono (valueGroup₀_MonoidWithZeroHom (f := f)) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
-/-- The inclusion of `valueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
+/-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. -/
 @[simps!]
-def valueGroup₀_OrderEmbedding : valueGroup₀ f ↪o WithZero Bˣ where
+def valueGroup₀_OrderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
   toFun := valueGroup₀_MonoidWithZeroHom
   inj' := valueGroup₀_MonoidWithZeroHom_strictMono.injective
   map_rel_iff' := valueGroup₀_MonoidWithZeroHom_strictMono.le_iff_le
 
 instance : IsOrderedMonoid B := inferInstance
 instance : IsOrderedMonoid (WithZero Bˣ) := .comap WithZero.withZeroUnitsEquiv_strictMono
-instance : IsOrderedMonoid (valueGroup₀ f) := .comap valueGroup₀_MonoidWithZeroHom_strictMono
+instance : IsOrderedMonoid (ValueGroup₀ f) := .comap valueGroup₀_MonoidWithZeroHom_strictMono
 
-instance : LinearOrderedCommGroupWithZero (valueGroup₀ f) where
+instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
   zero_le_one := by simp
 
 end MonoidWithZeroHom
