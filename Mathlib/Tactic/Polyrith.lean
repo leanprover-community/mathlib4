@@ -154,7 +154,7 @@ partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 /-- The possible hypothesis sources for a polyrith proof. -/
 inductive Source where
-  /-- `input n` refers to the `n`'th input `ai` in `polyrith [a1, ..., an]`. -/
+  /-- `input n` refers to the `n`-th input `ai` in `polyrith [a1, ..., an]`. -/
   | input : Nat → Source
   /-- `fvar h` refers to hypothesis `h` from the local context. -/
   | fvar : FVarId → Source
