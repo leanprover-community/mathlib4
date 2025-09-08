@@ -56,6 +56,8 @@ structure CardinalFilteredPresentation (X : C) (κ : Cardinal.{w}) [Fact κ.IsRe
   /-- `X` is the colimit of the functor `F` -/
   isColimit : IsColimit (Cocone.mk _ ι)
 
+initialize_simps_projections CardinalFilteredPresentation (-category, -isCardinalFiltered)
+
 namespace CardinalFilteredPresentation
 
 attribute [instance] category isCardinalFiltered
