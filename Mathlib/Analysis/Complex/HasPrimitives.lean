@@ -99,47 +99,37 @@ lemma mem_ball_of_map_im_aux' {c : ℂ} {r : ℝ} {z : ℂ} {w : ℂ} (hw : w �
   apply mem_ball_of_map_im_aux <;>
   apply mem_of_subset_of_mem (ball_subset_ball' (by simp) : ball z (r - dist z c) ⊆ ball c r)
   · exact re_add_im_mul_mem_ball hw
-  · convert hw; simp
+  · simpa using hw
 
 end SubsetBall_Aux
 
 end Complex
 
-section ContinuousOn_Aux
+namespace ContinuousOn
+
 /- Auxiliary lemmata about continuity of various occurring functions -/
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E} (hf : ContinuousOn f (ball c r))
 include hf
 
-lemma ContinuousOn.re_aux_1 {z : ℂ} :
+private lemma re_aux_1 {z : ℂ} :
     ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I))
       (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :=
   hf.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <| fun _ ↦ mem_ball_re_aux'
 
-lemma ContinuousOn.re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
-    (ha₂ : a₂ + b * I ∈ ball c r) : ContinuousOn (fun (x : ℝ) ↦ f (x + b * I)) [[a₁, a₂]] := by
-  convert ContinuousOn.comp (g := f) (f := fun (x : ℝ) ↦ (x : ℂ) + b * I) (s := uIcc a₁ a₂)
-    (t := (fun (x : ℝ) ↦ (x : ℂ) + b * I) '' (uIcc a₁ a₂)) ?_ ?_ (mapsTo_image _ _)
-  · apply hf.mono (mem_ball_of_map_re_aux ha₁ ha₂)
-  · exact Continuous.continuousOn (Continuous.comp (continuous_add_right _) continuous_ofReal)
+private lemma re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r) (ha₂ : a₂ + b * I ∈ ball c r) :
+    ContinuousOn (fun (x : ℝ) ↦ f (x + b * I)) [[a₁, a₂]] :=
+  (hf.mono (mem_ball_of_map_re_aux ha₁ ha₂)).comp (by fun_prop) (mapsTo_image _ _)
 
-lemma ContinuousOn.im_aux_1 {z : ℂ} {w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
-    ContinuousOn (fun (y : ℝ) ↦ f (w.re + y * I)) [[z.im, w.im]] := by
-  convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) ↦ (w.re : ℂ) + y * I) (s := uIcc z.im w.im)
-    (t := (fun (y : ℝ) ↦ (w.re : ℂ) + y * I) '' (uIcc z.im w.im)) ?_ ?_ (mapsTo_image _ _)
-  · apply hf.mono (mem_ball_of_map_im_aux' hw)
-  · apply Continuous.continuousOn
-    exact ((continuous_add_left _).comp (continuous_mul_right _)).comp continuous_ofReal
+private lemma im_aux_1 {z w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
+    ContinuousOn (fun (y : ℝ) ↦ f (w.re + y * I)) [[z.im, w.im]] :=
+  (hf.mono (mem_ball_of_map_im_aux' hw)).comp (by fun_prop) (mapsTo_image _ _)
 
-lemma ContinuousOn.im_aux {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r)
-    (hb₂ : a + b₂ * I ∈ ball c r) : ContinuousOn (fun (y : ℝ) ↦ f (a + y * I)) [[b₁, b₂]] := by
-  convert ContinuousOn.comp (g := f) (f := fun (y : ℝ) ↦ (a : ℂ) + y * I) (s := uIcc b₁ b₂)
-    (t := (fun (y : ℝ) ↦ (a : ℂ) + y * I) '' (uIcc b₁ b₂)) ?_ ?_ (mapsTo_image _ _)
-  · apply hf.mono (mem_ball_of_map_im_aux hb₁ hb₂)
-  · apply Continuous.continuousOn
-    exact ((continuous_add_left _).comp (continuous_mul_right _)).comp continuous_ofReal
+private lemma im_aux_2 {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r) (hb₂ : a + b₂ * I ∈ ball c r) :
+    ContinuousOn (fun (y : ℝ) ↦ f (a + y * I)) [[b₁, b₂]] :=
+  (hf.mono (mem_ball_of_map_im_aux hb₁ hb₂)).comp (by fun_prop) (mapsTo_image _ _)
 
-end ContinuousOn_Aux
+end ContinuousOn
 
 namespace Complex
 
@@ -216,7 +206,7 @@ lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedO
     (f_cont.re_aux_2 ha₁ ha₂).intervalIntegrable
   have integrableVert (a b₁ b₂ : ℝ) (hb₁ : a + b₁ * I ∈ ball c r) (hb₂ : a + b₂ * I ∈ ball c r) :
       IntervalIntegrable (fun y ↦ f (a + y * I)) volume b₁ b₂ :=
-    (f_cont.im_aux hb₁ hb₂).intervalIntegrable
+    (f_cont.im_aux_2 hb₁ hb₂).intervalIntegrable
   have hI₁ : I₁ = I₃ + I₇ := by
     rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
     · exact re_add_im_mul_mem_ball <| mem_ball_self (pos_of_mem_ball hz)
