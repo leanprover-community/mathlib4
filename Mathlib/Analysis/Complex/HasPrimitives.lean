@@ -62,15 +62,11 @@ private lemma mem_ball_re_aux (hx : x ∈ Ioo (z.re - (r - dist z c)) (z.re + (r
 
 private lemma mem_closedBall_aux (z_in_ball : z ∈ closedBall c r) (y_in_I : y ∈ Ι c.im z.im) :
     z.re + y * I ∈ closedBall c r := by
-  rw [mem_closedBall] at z_in_ball ⊢
-  rw [mem_uIoc] at y_in_I
-  apply le_trans ?_ z_in_ball
-  rw [dist_eq_re_im, dist_eq_re_im]
-  apply Real.le_sqrt_of_sq_le
-  rw [Real.sq_sqrt (by positivity)]
-  simp only [add_re, ofReal_re, mul_re, I_re, mul_zero, ofReal_im, I_im, mul_one, sub_self,
-    add_zero, add_im, mul_im, zero_add, add_le_add_iff_left]
-  cases y_in_I <;> nlinarith
+  refine le_trans ?_ (mem_closedBall.mp z_in_ball)
+  rw [dist_eq_re_im, dist_eq_re_im, Real.le_sqrt (by positivity) (by positivity),
+    Real.sq_sqrt (by positivity)]
+  suffices (y - c.im) ^ 2 ≤ (z.im - c.im) ^ 2 by simpa
+  cases mem_uIoc.mp y_in_I <;> nlinarith
 
 private lemma mem_ball_of_map_re_aux {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] ⊆ ball c r := by
