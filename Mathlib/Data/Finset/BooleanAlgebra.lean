@@ -231,8 +231,7 @@ theorem univ_filter_exists (f : α → β) [Fintype β] [DecidablePred fun y => 
 /-- Note this is a special case of `(Finset.image_preimage f univ _).symm`. -/
 theorem univ_filter_mem_range (f : α → β) [Fintype β] [DecidablePred fun y => y ∈ Set.range f]
     [DecidableEq β] : (Finset.univ.filter fun y => y ∈ Set.range f) = Finset.univ.image f := by
-  letI : DecidablePred (fun y => ∃ x, f x = y) := by simpa using ‹_›
-  exact univ_filter_exists f
+  grind
 
 theorem coe_filter_univ (p : α → Prop) [DecidablePred p] :
     (univ.filter p : Set α) = { x | p x } := by simp
