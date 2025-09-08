@@ -316,10 +316,9 @@ namespace qNF
 /-- Extract a common factor `L` of two products-of-powers `l₁` and `l₂` in `M`, in the sense that
 both `l₁` and `l₂` are quotients by `L` of products of *positive* powers.
 
-The boolean flag `nonzero` specifies whether we extract a *certified nonzero* (and therefore
-potentially smaller) common factor. The metaprogram returns a "proof" that this common factor is
-nonzero, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)`, but this will be junk if the boolean flag
-`nonzero` is set to `false`. -/
+The variable `cond` specifies whether we extract a *certified nonzero[/positive]* (and therefore
+potentially smaller) common factor. If so, the metaprogram returns a "proof" that this common factor
+is nonzero/positive, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)` / `Q(0 < NF.eval $(L.toNF))`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (cond : DenomCondition (M := M) q(inferInstance)) :
@@ -606,8 +605,9 @@ def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x :
   let ⟨e, pf⟩ ← reduceExprQ disch iK x
   return { expr := e, proof? := some pf }
 
-/-- Given an equality `a = b`, cancel nonzero factors to construct a new equality which is logically
-equivalent to `a = b`. -/
+/-- Given an (in)equality `a = b` (respectively, `a ≤ b`, `a < b`), cancel nonzero (resp. positive)
+factors to construct a new (in)equality which is logically equivalent to `a = b` (respectively,
+`a ≤ b`, `a < b`). -/
 def reduceEq (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
     AtomM Simp.Result := do
   let ⟨i, _, a, b⟩ ← t.ineq?
@@ -668,7 +668,7 @@ def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax 
 The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
 where neither `n` nor `d` contains any division symbol.
 
-If the goal is an equality, this tactic will also clear the denominators, so that the proof
+If the goal is an (in)equality, this tactic will also clear the denominators, so that the proof
 can normally be concluded by an application of `ring`.
 
 For example,
