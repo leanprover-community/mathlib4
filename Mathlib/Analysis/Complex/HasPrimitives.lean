@@ -24,8 +24,7 @@ segment in the disk), and compute its derivative.
   integrals on rectangles vanish, has primitives.
 * `Complex.HolomorphicOn.isExactOn_ball`: On a disk, a holomorphic function has primitives.
 
-TODO: Extend to holomorphic functions on simply connected domains. (In particular, this allows one
-to define the complex logarithm of a nonvanishing function on a simply connected domain.)
+TODO: Extend to holomorphic functions on simply connected domains.
 -/
 
 noncomputable section
@@ -44,9 +43,8 @@ variable {c z : ℂ} {r x y : ℝ}
 private lemma re_add_im_mul_mem_ball (hz : z ∈ ball c r) :
     z.re + c.im * I ∈ ball c r := by
   suffices dist (z.re + c.im * I) c ≤ dist z c from lt_of_le_of_lt this hz
-  simp only [dist_eq_re_im]
-  apply Real.le_sqrt_of_sq_le
-  rw [Real.sq_sqrt (by positivity)]
+  rw [dist_eq_re_im, dist_eq_re_im, Real.le_sqrt (by positivity) (by positivity),
+    Real.sq_sqrt (by positivity)]
   simp [sq_nonneg _]
 
 private lemma mem_ball_re_aux (hx : x ∈ Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :
@@ -87,10 +85,6 @@ private lemma mem_ball_of_map_im_aux₂ {w : ℂ} (hw : w ∈ ball z (r - dist z
 
 end AuxiliaryLemmata
 
-end Complex
-
-namespace Complex
-
 variable [NormedSpace ℂ E]
 
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
@@ -129,8 +123,7 @@ theorem HolomorphicOn.isClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
 
 variable [CompleteSpace E]
 
-lemma IsExactOn.isClosedOn_of_isOpen
-    {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
+lemma IsExactOn.isClosedOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
     IsClosedOn f U := by
   obtain ⟨g, hg⟩ := hf
   have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
@@ -143,9 +136,8 @@ variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
 omit [CompleteSpace E] in
-/-- If a function `f` `IsClosedOn` on a ball of center `c`, then, for all `w` in a
-  neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
-  is equal to the wedge integral from `z` to `w`. -/
+/-- If a function `f` `IsClosedOn` on a disk of center `c`, then for points `z` in this disk, the
+wedge integral from `c` to `z` is additive under a detour through a nearby point `w`. -/
 lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedOn f (ball c r)) :
     ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w w_in_z_ball ↦ ?_⟩

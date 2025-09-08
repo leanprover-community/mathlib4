@@ -82,8 +82,7 @@ lemma rectangle_eq_convexHull (z w : ℂ) :
     ← insert_eq, preimage_equiv_eq_image_symm, image_insert_eq, image_singleton,
     equivRealProd_symm_apply, re_add_im]
 
-/-- If the four corners of a rectangle are contained in a convex set `U`, then the whole
-  rectangle is. -/
+/-- If opposite corners of a rectangle are contained in a convex set, the whole rectangle is. -/
 lemma Convex.rectangle_subset {U : Set ℂ} (U_convex : Convex ℝ U) {z w : ℂ} (hz : z ∈ U)
     (hw : w ∈ U) (hzw : (z.re + w.im * I) ∈ U) (hwz : (w.re + z.im * I) ∈ U) :
     Rectangle z w ⊆ U := by
