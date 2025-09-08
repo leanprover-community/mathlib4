@@ -363,15 +363,15 @@ private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z �
   ring_nf
 
 lemma iteratedDerivWithin_cot_sub_inv_eq_add_mul_tsum {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
-    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
+    iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x) - 1 / x) ℍₒ z =
     -(-1) ^ k * k ! * (z ^ (-1 - k : ℤ)) + (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
   simp only [← aux_iteratedDeriv_tsum_cotTerm hk hz, one_div, neg_mul, neg_add_cancel_left]
   refine iteratedDerivWithin_congr (fun z hz ↦ ?_) hz
   simpa [cotTerm] using (cot_series_rep' (UpperHalfPlane.coe_mem_integerComplement ⟨z, hz⟩))
 
 private lemma iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍₒ) :
-    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x) - 1 / x) ℍₒ z =
-    (iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z) -
+    iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x) - 1 / x) ℍₒ z =
+    (iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z) -
     (-1) ^ k * k ! * (z ^ (-1 - k : ℤ)) := by
   simp_rw [sub_eq_add_neg]
   rw [iteratedDerivWithin_fun_add hz isOpen_upperHalfPlaneSet.uniqueDiffOn]
@@ -384,7 +384,7 @@ private lemma iteratedDerivWithin_cot_pi_mul_sub_inv {z : ℂ} (hz : z ∈ ℍ�
     exact ContDiffWithinAt.inv (by fun_prop) (ne_zero ⟨z, hz⟩)
 
 lemma iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow {k : ℕ} (hk : 1 ≤ k) {z : ℂ} (hz : z ∈ ℍₒ) :
-    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
+    iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ):= by
   have h0 := iteratedDerivWithin_cot_pi_mul_sub_inv k hz
   rw [iteratedDerivWithin_cot_sub_inv_eq_add_mul_tsum  hk hz, add_comm] at h0
@@ -394,7 +394,7 @@ lemma iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow {k : ℕ} (hk : 1 ≤ k) {
 /-- The series expansion of the iterated derivative of `π cot (π z)`. -/
 theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤ k) {z : ℂ}
     (hz : z ∈ ℍₒ) :
-    iteratedDerivWithin k (fun x ↦ π * Complex.cot (π * x)) ℍₒ z =
+    iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z =
       (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
   convert iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
   rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; omega, zpow_neg_coe_of_pos _ (by omega),
