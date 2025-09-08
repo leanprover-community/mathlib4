@@ -20,7 +20,7 @@ segment in the disk), and compute its derivative.
 
 ## Main results
 
-* `Complex.IsExactOn.exists_forall_mem_ball_hasDerivAt`: **Morera's Theorem**: On a disk, a
+* `Complex.IsClosedOn.exists_forall_mem_ball_hasDerivAt`: **Morera's Theorem**: On a disk, a
   continuous function whose integrals on rectangles vanish, has primitives.
 * `Complex.HolomorphicOn.exists_forall_mem_ball_hasDerivAt`: On a disk, a holomorphic function has
   primitives.
@@ -217,15 +217,15 @@ lemma rectangleIntegral_eq_wedgeIntegral_add_wedgeIntegral (z w : ℂ) (f : ℂ 
     intervalIntegral.integral_symm z.im w.im, smul_neg]
   abel
 
-/-- A function `f` `IsExactOn` in `U` if, for any rectangle contained in `U`
+/-- A function `f` `IsClosedOn` in `U` if, for any rectangle contained in `U`
   the integral of `f` over the rectangle is zero. -/
-def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
+def IsClosedOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∀ᵉ (z ∈ U) (w ∈ U), Rectangle z w ⊆ U → rectangleIntegral z w f = 0
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
-theorem HolomorphicOn.isExactOn {U : Set ℂ} (hf : HolomorphicOn f U) :
-    IsExactOn f U :=
+theorem HolomorphicOn.IsClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
+    IsClosedOn f U :=
   fun z _ w _ hzw ↦ integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
 
 section ContinuousOnBall
@@ -233,11 +233,11 @@ section ContinuousOnBall
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
-/-- If a function `f` `IsExactOn` of center `c`, then, for all `w` in a
+/-- If a function `f` `IsClosedOn` of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
-lemma IsExactOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
-    (hf : IsExactOn f (ball c r)) :
+lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
+    (hf : IsClosedOn f (ball c r)) :
     ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   have hr : 0 < r := pos_of_mem_ball hz
   let r₁ := r - dist z c
@@ -350,7 +350,7 @@ lemma deriv_of_wedgeIntegral_im :
     _ ≤ ε * ‖w - z‖ := (mul_le_mul_iff_of_pos_left ε_pos).mpr (abs_im_le_norm _)
 
 /-- The `wedgeIntegral` has derivative at `z` equal to `f z`. -/
-theorem IsExactOn.hasDerivAt_wedgeIntegral (h : IsExactOn f (ball c r)) :
+theorem IsClosedOn.hasDerivAt_wedgeIntegral (h : IsClosedOn f (ball c r)) :
     HasDerivAt (fun w ↦ wedgeIntegral c w f) (f z) z := by
   rw [hasDerivAt_iff_isLittleO]
   calc
@@ -376,14 +376,14 @@ variable [CompleteSpace E] [NormOneClass E]
 
 /-- **Morera's theorem for a disk** On a disk, a continuous function whose integrals on rectangles
   vanish, has primitives. -/
-theorem IsExactOn.exists_forall_mem_ball_hasDerivAt
-    (f_cont : ContinuousOn f (ball c r)) (hf : IsExactOn f (ball c r)) :
+theorem IsClosedOn.exists_forall_mem_ball_hasDerivAt
+    (f_cont : ContinuousOn f (ball c r)) (hf : IsClosedOn f (ball c r)) :
     ∃ g, ∀ z ∈ ball c r, HasDerivAt g (f z) z :=
   ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral f_cont⟩
 
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
 theorem HolomorphicOn.exists_forall_mem_ball_hasDerivAt (hf : HolomorphicOn f (ball c r)) :
     ∃ g, ∀ z ∈ ball c r, HasDerivAt g (f z) z :=
-  hf.isExactOn.exists_forall_mem_ball_hasDerivAt hf.continuousOn
+  hf.IsClosedOn.exists_forall_mem_ball_hasDerivAt hf.continuousOn
 
 end Complex
