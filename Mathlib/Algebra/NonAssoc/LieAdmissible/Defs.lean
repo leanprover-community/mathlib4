@@ -131,3 +131,25 @@ variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
 end RightPreLieAlgebra
+
+namespace Ring
+
+variable [Ring L]
+
+instance instLieAdmissibleRing : LieAdmissibleRing L where
+  assoc_def := by
+    suffices ∀ a b c : L, associator a b c = 0 by simp
+    simp
+
+end Ring
+
+namespace Algebra
+
+variable [Ring L] [Algebra R L]
+
+instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
+  smul_comm := by simp
+
+end Algebra
+
+end instances
