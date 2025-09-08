@@ -63,7 +63,7 @@ instance instRing [Ring R] (v : AbsoluteValue R S) : Ring (WithAbs v) := inferIn
 instance instCommRing [CommRing R] (v : AbsoluteValue R S) : CommRing (WithAbs v) :=
   inferInstanceAs (CommRing R)
 
-instance normedRing [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
+instance normedRing [Ring R] (v : AbsoluteValue R ℝ) : WithNormedRing (WithAbs v) :=
   v.toNormedRing
 
 lemma norm_eq_abv [Ring R] (v : AbsoluteValue R ℝ) (x : WithAbs v) :

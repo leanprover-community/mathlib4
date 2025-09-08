@@ -34,7 +34,7 @@ variable [SeminormedGroup E] {s : Subgroup E}
 with the restriction of the norm. -/
 @[to_additive /-- A subgroup of a seminormed group is also a seminormed group, with the restriction
 of the norm. -/]
-instance seminormedGroup : SeminormedGroup s :=
+instance seminormedGroup : WithSeminormedGroup s :=
   SeminormedGroup.induced _ _ s.subtype
 
 /-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
@@ -58,16 +58,8 @@ theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
 end SeminormedGroup
 
 @[to_additive]
-instance seminormedCommGroup [SeminormedCommGroup E] {s : Subgroup E} : SeminormedCommGroup s :=
-  SeminormedCommGroup.induced _ _ s.subtype
-
-@[to_additive]
-instance normedGroup [NormedGroup E] {s : Subgroup E} : NormedGroup s :=
+instance normedGroup [NormedGroup E] {s : Subgroup E} : WithNormedGroup s :=
   NormedGroup.induced _ _ s.subtype Subtype.coe_injective
-
-@[to_additive]
-instance normedCommGroup [NormedCommGroup E] {s : Subgroup E} : NormedCommGroup s :=
-  NormedCommGroup.induced _ _ s.subtype Subtype.coe_injective
 
 end Subgroup
 
@@ -84,7 +76,7 @@ variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : 
 with the restriction of the norm. -/
 @[to_additive /-- A subgroup of a seminormed additive group is also a seminormed additive group,
 with the restriction of the norm. -/]
-instance (priority := 75) seminormedGroup : SeminormedGroup s :=
+instance (priority := 75) seminormedGroup : WithSeminormedGroup s :=
   SeminormedGroup.induced _ _ (SubgroupClass.subtype s)
 
 /-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
@@ -97,18 +89,8 @@ theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
 end SeminormedGroup
 
 @[to_additive]
-instance (priority := 75) seminormedCommGroup [SeminormedCommGroup E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : SeminormedCommGroup s :=
-  SeminormedCommGroup.induced _ _ (SubgroupClass.subtype s)
-
-@[to_additive]
 instance (priority := 75) normedGroup [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
-    (s : S) : NormedGroup s :=
+    (s : S) : WithNormedGroup s :=
   NormedGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
-
-@[to_additive]
-instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : NormedCommGroup s :=
-  NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass

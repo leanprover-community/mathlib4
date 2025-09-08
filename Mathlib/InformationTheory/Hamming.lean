@@ -397,11 +397,8 @@ instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
 theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
   rfl
 
-instance [∀ i, AddGroup (β i)] : NormedAddGroup (Hamming β) where
+instance [∀ i, AddGroup (β i)] : WithNormedAddGroup (Hamming β) where
   dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
-
-instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
-  dist_eq := fun x y => NormedAddGroup.dist_eq x y
 
 @[simp, push_cast]
 theorem nnnorm_eq_hammingNorm [∀ i, AddGroup (β i)] (x : Hamming β) :

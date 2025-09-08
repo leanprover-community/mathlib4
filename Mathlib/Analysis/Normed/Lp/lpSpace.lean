@@ -822,7 +822,7 @@ theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : NormedRing (lp B ∞) :=
+instance inftyNormedRing : WithNormedRing (lp B ∞) :=
   { lp.inftyRing, lp.nonUnitalNormedRing with }
 
 end NormedRing

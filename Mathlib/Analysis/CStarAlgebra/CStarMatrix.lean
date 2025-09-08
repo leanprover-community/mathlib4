@@ -783,7 +783,7 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
-noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
+noncomputable instance instNormedRing : WithNormedRing (CStarMatrix n n A) where
   dist_eq _ _ := rfl
   norm_mul_le := norm_mul_le
 

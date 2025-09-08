@@ -22,7 +22,7 @@ variable {ι E F : Type*} {G : ι → Type*}
 
 namespace PUnit
 
-instance normedAddCommGroup : NormedAddCommGroup PUnit where
+instance normedAddCommGroup : WithNormedAddGroup PUnit where
   norm := Function.const _ 0
   dist_eq _ _ := rfl
 
@@ -60,30 +60,15 @@ lemma nnnorm_def (x : ULift E) : ‖x‖₊ = ‖x.down‖₊ := rfl
 end NNNorm
 
 @[to_additive]
-instance seminormedGroup [SeminormedGroup E] : SeminormedGroup (ULift E) :=
+instance seminormedGroup [SeminormedGroup E] : WithSeminormedGroup (ULift E) :=
   SeminormedGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
     map_mul' := fun _ _ => rfl : ULift E →* E }
 
 @[to_additive]
-instance seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup (ULift E) :=
-  SeminormedCommGroup.induced _ _
-  { toFun := ULift.down,
-    map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
-
-@[to_additive]
-instance normedGroup [NormedGroup E] : NormedGroup (ULift E) :=
+instance normedGroup [NormedGroup E] : WithNormedGroup (ULift E) :=
   NormedGroup.induced _ _
-  { toFun := ULift.down,
-    map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
-  down_injective
-
-@[to_additive]
-instance normedCommGroup [NormedCommGroup E] : NormedCommGroup (ULift E) :=
-  NormedCommGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
     map_mul' := fun _ _ => rfl : ULift E →* E }
@@ -130,41 +115,20 @@ instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 
 end NNNorm
 
-instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
+instance Additive.seminormedAddGroup [SeminormedGroup E] : WithSeminormedAddGroup (Additive E) where
   dist_eq x y := dist_eq_norm_div x.toMul y.toMul
 
 
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
-    SeminormedGroup (Multiplicative E) where
+    WithSeminormedGroup (Multiplicative E) where
   dist_eq x y := dist_eq_norm_sub x.toAdd y.toAdd
 
-instance Additive.seminormedCommGroup [SeminormedCommGroup E] :
-    SeminormedAddCommGroup (Additive E) :=
-  { Additive.seminormedAddGroup with
-    add_comm := add_comm }
-
-instance Multiplicative.seminormedAddCommGroup [SeminormedAddCommGroup E] :
-    SeminormedCommGroup (Multiplicative E) :=
-  { Multiplicative.seminormedGroup with
-    mul_comm := mul_comm }
-
-instance Additive.normedAddGroup [NormedGroup E] : NormedAddGroup (Additive E) :=
+instance Additive.normedAddGroup [NormedGroup E] : WithNormedAddGroup (Additive E) :=
   { Additive.seminormedAddGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-instance Multiplicative.normedGroup [NormedAddGroup E] : NormedGroup (Multiplicative E) :=
+instance Multiplicative.normedGroup [NormedAddGroup E] : WithNormedGroup (Multiplicative E) :=
   { Multiplicative.seminormedGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-instance Additive.normedAddCommGroup [NormedCommGroup E] : NormedAddCommGroup (Additive E) :=
-  { Additive.seminormedAddGroup with
-    add_comm := add_comm
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-instance Multiplicative.normedCommGroup [NormedAddCommGroup E] :
-    NormedCommGroup (Multiplicative E) :=
-  { Multiplicative.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end AdditiveMultiplicative
@@ -244,7 +208,7 @@ variable [SeminormedGroup E] [SeminormedGroup F]
 
 /-- Product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Product of seminormed groups, using the sup norm. -/]
-instance Prod.seminormedGroup : SeminormedGroup (E × F) where
+instance Prod.seminormedGroup : WithSeminormedGroup (E × F) where
   dist_eq x y := by
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
 
@@ -261,24 +225,10 @@ end SeminormedGroup
 
 namespace Prod
 
-/-- Product of seminormed groups, using the sup norm. -/
-@[to_additive /-- Product of seminormed groups, using the sup norm. -/]
-instance seminormedCommGroup [SeminormedCommGroup E] [SeminormedCommGroup F] :
-    SeminormedCommGroup (E × F) :=
-  { Prod.seminormedGroup with
-    mul_comm := mul_comm }
-
 /-- Product of normed groups, using the sup norm. -/
 @[to_additive /-- Product of normed groups, using the sup norm. -/]
-instance normedGroup [NormedGroup E] [NormedGroup F] : NormedGroup (E × F) :=
+instance normedGroup [NormedGroup E] [NormedGroup F] : WithNormedGroup (E × F) :=
   { Prod.seminormedGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-/-- Product of normed groups, using the sup norm. -/
-@[to_additive /-- Product of normed groups, using the sup norm. -/]
-instance normedCommGroup [NormedCommGroup E] [NormedCommGroup F] : NormedCommGroup (E × F) :=
-  { Prod.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Prod
@@ -293,7 +243,7 @@ variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x 
 
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
-instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
+instance Pi.seminormedGroup : WithSeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
     congr_arg (toReal : ℝ≥0 → ℝ) <|
@@ -374,23 +324,10 @@ lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι �
 
 end SeminormedGroup
 
-/-- Finite product of seminormed groups, using the sup norm. -/
-@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
-instance Pi.seminormedCommGroup [∀ i, SeminormedCommGroup (G i)] : SeminormedCommGroup (∀ i, G i) :=
-  { Pi.seminormedGroup with
-    mul_comm := mul_comm }
-
 /-- Finite product of normed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
-instance Pi.normedGroup [∀ i, NormedGroup (G i)] : NormedGroup (∀ i, G i) :=
+instance Pi.normedGroup [∀ i, NormedGroup (G i)] : WithNormedGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
-
-/-- Finite product of normed groups, using the sup norm. -/
-@[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
-instance Pi.normedCommGroup [∀ i, NormedCommGroup (G i)] : NormedCommGroup (∀ i, G i) :=
-  { Pi.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
@@ -422,7 +359,7 @@ choice of norm in the multiplicative `SeminormedGroup E` case.
 We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
-instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
+instance instSeminormedAddGroup [SeminormedAddGroup E] : WithSeminormedAddGroup Eᵐᵒᵖ where
   __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
@@ -435,15 +372,8 @@ lemma nnnorm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖₊ = ‖
 
 lemma nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖₊ = ‖a‖₊ := rfl
 
-instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
+instance instNormedAddGroup [NormedAddGroup E] : WithNormedAddGroup Eᵐᵒᵖ where
   __ := instMetricSpace
   __ := instSeminormedAddGroup
-
-instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
-  dist_eq _ _ := dist_eq_norm _ _
-
-instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
-  __ := instSeminormedAddCommGroup
-  __ := instNormedAddGroup
 
 end MulOpposite

@@ -265,7 +265,7 @@ instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
   __ : NonUnitalNormedRing C(α, R) := inferInstance
   __ : NonUnitalCommRing C(α, R) := inferInstance
 
-instance [NormedRing R] : NormedRing C(α, R) where
+instance [NormedRing R] : WithNormedRing C(α, R) where
   __ : NormedAddCommGroup C(α, R) := inferInstance
   __ : SeminormedRing C(α, R) := inferInstance
 

@@ -487,7 +487,7 @@ that `𝓜(𝕜, A)` is also a C⋆-algebra. Moreover, in this case, for `a : �
 
 /-- The normed group structure is inherited as the pullback under the ring monomorphism
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`. -/
-noncomputable instance : NormedRing 𝓜(𝕜, A) :=
+noncomputable instance : WithNormedRing 𝓜(𝕜, A) :=
   NormedRing.induced _ _ (toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ)
     (by simpa using toProdMulOpposite_injective)
 

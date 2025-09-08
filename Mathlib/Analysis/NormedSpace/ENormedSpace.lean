@@ -224,7 +224,7 @@ theorem finite_edist_eq (x y : e.finiteSubspace) : edist x y = e (x - y) :=
   rfl
 
 /-- Normed group instance on `e.finiteSubspace`. -/
-instance normedAddCommGroup : NormedAddCommGroup e.finiteSubspace :=
+instance normedAddCommGroup : WithNormedAddGroup e.finiteSubspace :=
   { e.metricSpace with
     norm := fun x => (e x).toReal
     dist_eq := fun _ _ => rfl }

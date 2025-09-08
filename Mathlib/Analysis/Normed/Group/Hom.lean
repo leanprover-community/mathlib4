@@ -506,8 +506,8 @@ instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
 
 /-- Normed group homomorphisms themselves form a seminormed group with respect to
 the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
+instance toSeminormedAddCommGroup : WithSeminormedAddGroup (NormedAddGroupHom V₁ V₂) :=
+  AddGroupSeminorm.toSeminormedAddGroup
     { toFun := opNorm
       map_zero' := opNorm_zero
       neg' := opNorm_neg
@@ -516,8 +516,8 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V�
 /-- Normed group homomorphisms themselves form a normed group with respect to
 the operator norm. -/
 instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
-    NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
-  AddGroupNorm.toNormedAddCommGroup
+    WithNormedAddGroup (NormedAddGroupHom V₁ V₂) :=
+  AddGroupNorm.toNormedAddGroup
     { toFun := opNorm
       map_zero' := opNorm_zero
       neg' := opNorm_neg

@@ -81,6 +81,8 @@ instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalars R S M) := I
 
 instance [I : AddCommGroup M] : AddCommGroup (RestrictScalars R S M) := I
 
+instance [I : AddGroup M] : AddGroup (RestrictScalars R S M) := I
+
 section Module
 
 section
@@ -174,6 +176,10 @@ theorem RestrictScalars.lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :
 end Module
 
 section Algebra
+
+instance [I : NonUnitalRing A] : NonUnitalRing (RestrictScalars R S A) := I
+
+instance [I : NonUnitalCommRing A] : NonUnitalCommRing (RestrictScalars R S A) := I
 
 instance [I : Semiring A] : Semiring (RestrictScalars R S A) := I
 

@@ -14,7 +14,7 @@ open NNReal
 variable {α : Type*}
 namespace Int
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
+instance instNormedAddCommGroup : WithNormedAddGroup ℤ where
   norm n := ‖(n : ℝ)‖
   dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
 

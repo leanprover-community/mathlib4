@@ -36,7 +36,7 @@ namespace AddCircle
 
 variable (p : ℝ)
 
-instance : NormedAddCommGroup (AddCircle p) := QuotientAddGroup.instNormedAddCommGroup _
+instance : WithNormedAddGroup (AddCircle p) := QuotientAddGroup.instNormedAddCommGroup _
 
 @[simp]
 theorem norm_coe_mul (x : ℝ) (t : ℝ) :

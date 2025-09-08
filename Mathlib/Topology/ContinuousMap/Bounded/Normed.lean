@@ -367,7 +367,7 @@ protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
 
 end Seminormed
 
-instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
+instance instNormedRing [NormedRing R] : WithNormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalNormedRing
 

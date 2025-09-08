@@ -68,7 +68,7 @@ section Algebra
 
 variable (A : Type*)
 
-instance [SeminormedRing A] : NormedRing (Completion A) where
+instance [SeminormedRing A] : WithNormedRing (Completion A) where
   __ : NormedAddCommGroup (Completion A) := inferInstance
   __ : Ring (Completion A) := inferInstance
   norm_mul_le x y := by

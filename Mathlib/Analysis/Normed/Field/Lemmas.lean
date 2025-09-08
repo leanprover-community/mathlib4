@@ -137,8 +137,10 @@ In the discrete topology case, all the norms are 1, by `norm_eq_one_iff_ne_zero_
 The nontrivially normed field instance is provided by a subtype with a proof that the
 forgetful inheritance to the existing `NormedField` instance is definitionally true.
 This allows one to have the new `NontriviallyNormedField` instance without data clashes. -/
-lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedField 𝕜] :
-    DiscreteTopology 𝕜 ∨ Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toNormedField = h}) := by
+lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [Field 𝕜]
+    [h : WithNormMulClassNormedRing 𝕜] :
+    DiscreteTopology 𝕜 ∨ Nonempty
+      ({h' : WithNontrivialNormMulClassNormedRing 𝕜 // h'.toWithNormMulClassNormedRing = h}) := by
   by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
   · exact Or.inr ⟨(⟨NontriviallyNormedField.ofNormNeOne H, rfl⟩)⟩
   · simp_rw [discreteTopology_iff_isOpen_singleton_zero, Metric.isOpen_singleton_iff, dist_eq_norm,
@@ -149,7 +151,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
     simp +contextual [ne_of_lt]
 
-lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
+lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [Field 𝕜] [WithNormMulClassNormedRing 𝕜]
     (h : BddAbove (Set.range fun k : 𝕜 ↦ ‖k‖)) :
     DiscreteTopology 𝕜 := by
   refine (NormedField.discreteTopology_or_nontriviallyNormedField _).resolve_right ?_
@@ -187,19 +189,20 @@ protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
 end NontriviallyNormedField
 end NormedField
 
-instance Rat.instNormedField : NormedField ℚ where
+instance Rat.instNormedField : WithNormMulClassNormedRing ℚ where
   __ := instField
   __ := instNormedAddCommGroup
   norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
-instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
+instance Rat.instDenselyNormedField : WithDenseNormMulClassNormedRing ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
 
 section Complete
 
-lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedField K] :
+lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [Field K]
+    [WithNormMulClassNormedRing K] :
     CompleteSpace K ↔ IsComplete (Metric.closedBall 0 1 : Set K) := by
   constructor <;> intro h
   · exact Metric.isClosed_closedBall.isComplete

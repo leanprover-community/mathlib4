@@ -383,8 +383,7 @@ set_option linter.docPrime false in
 theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 
 @[to_additive]
-instance : NormedCommGroup (SeparationQuotient E) where
-  __ : CommGroup (SeparationQuotient E) := instCommGroup
+instance : WithNormedGroup (SeparationQuotient E) where
   dist_eq := Quotient.ind₂ dist_eq_norm_div
 
 @[to_additive]
@@ -415,7 +414,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
 lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
     (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
   obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
-  simp_rw [SeminormedGroup.dist_eq] at hC
+  simp_rw [WithSeminormedGroup.dist_eq] at hC
   have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
     intro n
     rw [add_comm]

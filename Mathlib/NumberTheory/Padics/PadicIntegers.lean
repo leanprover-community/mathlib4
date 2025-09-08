@@ -172,8 +172,7 @@ instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-instance : NormedCommRing ℤ_[p] where
-  __ := instCommRing
+instance : WithNormedRing ℤ_[p] where
   dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
   norm_mul_le := by simp [norm_def]
 

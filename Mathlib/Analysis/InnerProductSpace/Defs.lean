@@ -391,8 +391,8 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
 
 /-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
-def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
+def toSeminormedAddCommGroup : WithSeminormedAddGroup F :=
+  AddGroupSeminorm.toSeminormedAddGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -463,8 +463,8 @@ theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
 attribute [local instance] toNorm
 
 /-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
-def toNormedAddCommGroup : NormedAddCommGroup F :=
-  AddGroupNorm.toNormedAddCommGroup
+def toNormedAddCommGroup : WithNormedAddGroup F :=
+  AddGroupNorm.toNormedAddGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -503,7 +503,7 @@ lemma topology_eq
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup
     InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]

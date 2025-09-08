@@ -11,7 +11,7 @@ import Mathlib.Topology.Instances.Rat
 
 namespace Rat
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℚ where
+instance instNormedAddCommGroup : WithNormedAddGroup ℚ where
   norm r := ‖(r : ℝ)‖
   dist_eq r₁ r₂ := by simp only [Rat.dist_eq, norm, Rat.cast_sub]
 

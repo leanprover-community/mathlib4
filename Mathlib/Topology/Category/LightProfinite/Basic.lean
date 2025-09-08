@@ -184,6 +184,8 @@ instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphi
   rw [isIso_iff_bijective] at hf
   exact LightProfinite.isIso_of_bijective _ hf
 
+set_option synthInstance.maxHeartbeats 100000 in
+/- Something fishy going on here -/
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
   constructor

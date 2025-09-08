@@ -268,7 +268,7 @@ variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐ�
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
 
-instance instL1NormedRing : NormedRing (tsze R M) where
+instance instL1NormedRing : WithNormedRing (tsze R M) where
   __ : NormedAddCommGroup (tsze R M) := inferInstance
   __ : SeminormedRing (tsze R M) := inferInstance
 

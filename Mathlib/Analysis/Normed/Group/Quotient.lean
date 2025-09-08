@@ -200,9 +200,9 @@ lemma exists_norm_mul_lt (S : Subgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
 variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
-noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
+noncomputable instance instSeminormedCommGroup : WithSeminormedGroup (M ⧸ S) where
   toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
-  __ := groupSeminorm.toSeminormedCommGroup
+  __ := groupSeminorm.toSeminormedGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]
     simp only [dist, preimage_setOf_eq, norm_eq_groupSeminorm, map_div_rev]
@@ -211,7 +211,7 @@ variable (S) in
 /-- The quotient in the category of normed groups. -/
 @[to_additive /-- The quotient in the category of normed groups. -/]
 noncomputable instance instNormedCommGroup [hS : IsClosed (S : Set M)] :
-    NormedCommGroup (M ⧸ S) where
+    WithNormedGroup (M ⧸ S) where
   __ := MetricSpace.ofT0PseudoMetricSpace _
 
 -- This is a sanity check left here on purpose to ensure that potential refactors won't destroy
@@ -221,7 +221,7 @@ example :
       (instSeminormedCommGroup S).toUniformSpace.toTopologicalSpace := rfl
 
 example [IsClosed (S : Set M)] :
-    (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+    (instSeminormedCommGroup S) = WithNormedGroup.toWithSeminormedGroup := rfl
 
 end QuotientGroup
 
@@ -479,11 +479,11 @@ section Submodule
 
 variable {R : Type*} [Ring R] [Module R M] (S : Submodule R M)
 
-instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
+instance Submodule.Quotient.seminormedAddCommGroup : WithSeminormedAddGroup (M ⧸ S) :=
   QuotientAddGroup.instSeminormedAddCommGroup S.toAddSubgroup
 
 instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
-    NormedAddCommGroup (M ⧸ S) :=
+    WithNormedAddGroup (M ⧸ S) :=
   QuotientAddGroup.instNormedAddCommGroup S.toAddSubgroup (hS := hS)
 
 instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M ⧸ S) :=
@@ -531,9 +531,8 @@ nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} 
 
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ := norm_mk_le_norm
 
-instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
+instance Ideal.Quotient.semiNormedCommRing : WithSeminormedRing (R ⧸ I) where
   dist_eq := dist_eq_norm
-  mul_comm := _root_.mul_comm
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
       (continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
@@ -548,7 +547,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
-instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
+instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : WithNormedRing (R ⧸ I) :=
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 
 variable (𝕜 : Type*) [NormedField 𝕜]

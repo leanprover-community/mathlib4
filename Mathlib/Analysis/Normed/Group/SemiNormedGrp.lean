@@ -26,9 +26,10 @@ open CategoryTheory
 structure SemiNormedGrp : Type (u + 1) where
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [str : SeminormedAddCommGroup carrier]
+  [str : AddCommGroup carrier]
+  [str' : WithSeminormedAddGroup carrier]
 
-attribute [instance] SemiNormedGrp.str
+attribute [instance] SemiNormedGrp.str SemiNormedGrp.str'
 
 namespace SemiNormedGrp
 
@@ -211,9 +212,10 @@ which we shall equip with the category structure consisting only of the norm non
 structure SemiNormedGrp₁ : Type (u + 1) where
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [str : SeminormedAddCommGroup carrier]
+  [str : AddCommGroup carrier]
+  [str' : WithSeminormedAddGroup carrier]
 
-attribute [instance] SemiNormedGrp₁.str
+attribute [instance] SemiNormedGrp₁.str SemiNormedGrp₁.str'
 
 namespace SemiNormedGrp₁
 
@@ -330,8 +332,11 @@ lemma hom_inv_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (s : N) : e.hom (e.in
   rw [← comp_apply]
   simp
 
-instance (M : SemiNormedGrp₁) : SeminormedAddCommGroup M :=
+instance (M : SemiNormedGrp₁) : AddCommGroup M :=
   M.str
+
+instance (M : SemiNormedGrp₁) : WithSeminormedAddGroup M :=
+  M.str'
 
 /-- Promote an isomorphism in `SemiNormedGrp` to an isomorphism in `SemiNormedGrp₁`. -/
 @[simps]

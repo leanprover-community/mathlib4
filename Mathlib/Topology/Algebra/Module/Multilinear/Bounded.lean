@@ -47,7 +47,7 @@ theorem image_multilinear' [Nonempty ι] {s : Set (∀ i, E i)} (hs : IsVonNBoun
   if h₁ : ∀ c : 𝕜, ‖c‖ ≤ 1 then
     exact absorbs_iff_norm.2 ⟨2, fun c hc ↦ by linarith [h₁ c]⟩
   else
-    let _ : NontriviallyNormedField 𝕜 := ⟨by simpa using h₁⟩
+    let _ : WithNontrivialNormMulClassNormedRing 𝕜 := ⟨by simpa using h₁⟩
     obtain ⟨I, t, ht₀, hft⟩ :
         ∃ (I : Finset ι) (t : ∀ i, Set (E i)), (∀ i, t i ∈ 𝓝 0) ∧ Set.pi I t ⊆ f ⁻¹' V := by
       have hfV : f ⁻¹' V ∈ 𝓝 0 := (map_continuous f).tendsto' _ _ f.map_zero hV

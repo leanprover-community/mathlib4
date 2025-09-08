@@ -61,8 +61,8 @@ private theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
 private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
-instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
-  AddGroupNorm.toNormedAddCommGroup
+instance instNormedAddCommGroup : WithNormedAddGroup ℂ :=
+  AddGroupNorm.toNormedAddGroup
   { toFun := norm
     map_zero' := norm_map_zero'
     add_le' := norm_add_le'

@@ -66,7 +66,9 @@ end Field
 
 section NormedField
 
-variable {𝕜 : Type u} [hnorm : NontriviallyNormedField 𝕜] {E : Type v} [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type u} [Field 𝕜]
+  [hnorm : WithNontrivialNormMulClassNormedRing 𝕜]
+  {E : Type v} [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {F : Type w} [AddCommGroup F]
   [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {F' : Type x}
   [AddCommGroup F'] [Module 𝕜 F'] [TopologicalSpace F'] [IsTopologicalAddGroup F']

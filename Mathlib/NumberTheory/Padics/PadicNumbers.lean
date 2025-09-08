@@ -800,9 +800,8 @@ instance metricSpace : MetricSpace ℚ_[p] where
 instance : Norm ℚ_[p] :=
   ⟨fun x ↦ padicNormE x⟩
 
-instance normedField : NormedField ℚ_[p] :=
-  { Padic.field,
-    Padic.metricSpace p with
+instance normedField : WithNormMulClassNormedRing ℚ_[p] :=
+  { Padic.metricSpace p with
     dist_eq := fun _ _ ↦ rfl
     norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
@@ -874,7 +873,7 @@ theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_natCast]
 
-instance : NontriviallyNormedField ℚ_[p] :=
+instance : WithNontrivialNormMulClassNormedRing ℚ_[p] :=
   { Padic.normedField p with
     non_trivial :=
       ⟨p⁻¹, by
