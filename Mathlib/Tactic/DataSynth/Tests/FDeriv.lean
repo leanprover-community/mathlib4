@@ -27,6 +27,7 @@ attribute [data_synth out f'] HasFDerivAt
 attribute [data_synth] 
   hasFDerivAt_id
   hasFDerivAt_id'
+  hasFDerivAt_const
   HasFDerivAt.comp
   HasFDerivAt.fun_comp
   HasFDerivAt.fun_add
@@ -34,19 +35,27 @@ attribute [data_synth]
   HasFDerivAt.fun_mul
 
 set_option pp.proofs false 
-variable (x₀ : ℝ) 
+variable (x₀ : ℝ)
   (f : ℝ → ℝ) (f' : ℝ → (ℝ →L[ℝ] ℝ)) (hf : ∀ x, HasFDerivAt f (f' x) x)
   (g : ℝ → ℝ) (g' : ℝ → (ℝ →L[ℝ] ℝ)) (hg : ∀ x, HasFDerivAt g (g' x) x)
 
 set_option trace.Meta.Tactic.data_synth true 
 
-#check 
+#check
  (by data_synth :
   HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x) _ x₀)
 
-#check 
+#check
  (by data_synth (disch:=skip) (norm:=simp [smul_smul,←add_smul]) :
   HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x*x*x+x) _ x₀)
+
+#check
+ (by data_synth (disch:=skip) (norm:=simp) :
+  HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x*3) _ x₀)
+
+#check
+ (by data_synth (disch:=skip) (norm:=simp) :
+  HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => (3:ℝ)*x) _ x₀)
 
 #check
  (by data_synth :

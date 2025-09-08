@@ -18,9 +18,6 @@ def HasBoundingBall (s : Set α) (center : α) (radius : ℝ) : Prop :=
 theorem hasBoundingBall_Icc (a b : ℝ) : 
     HasBoundingBall (Icc a b) ((a+b)/2) (|b-a|/2) := sorry
 
-example : Nonempty (Icc (0:ℝ) 1) := by infer_instance
-
--- s₁ s₂ c₁ c₂ r₁ r₂
 @[data_synth]
 theorem hasBoundingBall_union (s₁ s₂ : Set X) {c₁ r₁ c₂ r₂}
     (hs₁ : HasBoundingBall s₁ c₁ r₁) (hs₂ : HasBoundingBall s₂ c₂ r₂) : 
