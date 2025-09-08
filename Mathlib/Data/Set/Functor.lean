@@ -81,13 +81,13 @@ instance : Alternative Set :=
 variable {β : Set α} {γ : Set β}
 
 theorem mem_coe_of_mem {a : α} (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
-  ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
+  ⟨⟨a, ha⟩, ha', rfl⟩
 
 theorem coe_subset : (γ : Set α) ⊆ β := by
-  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
+  rintro _ ⟨⟨b, hb⟩, ha, rfl⟩; exact hb
 
 theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
-  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
+  rcases ha with ⟨⟨b, hb⟩, hb', rfl⟩; convert hb'
 
 theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
   eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
@@ -104,11 +104,8 @@ In practice this is only used for applying the `Set` functor to `Subtype.val`,
 as was defined in `Data.Set.Notation`. -/
 
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
-theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ Set.monad t = (t : Set α) := by
-  change ⋃ (x ∈ t), {x.1} = _
-  ext
-  simp
+@[simp] theorem coe_eq_image_val (t : Set s) :
+    @Lean.Internal.coeM Set s α _ Set.monad t = Subtype.val '' t := rfl
 
 variable {β : Set α} {γ : Set β} {a : α}
 
