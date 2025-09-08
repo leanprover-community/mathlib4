@@ -28,7 +28,7 @@ variable {X Z α : Type*} [UniformSpace X] [CompleteSpace X]
     [T2Space X] [Preorder α] [(atTop : Filter α).NeBot]
 
 @[to_additive]
-lemma limUnder.mul [Mul X] [ContinuousMul X] {f g : α → X} (hf : CauchySeq f)
+lemma limUnder.mul [Mul X] [ContinuousMul X] [Nonempty X] {f g : α → X} (hf : CauchySeq f)
     (hg : CauchySeq g) : (limUnder atTop f) * (limUnder atTop g) = limUnder atTop (f * g) :=
   (hf.tendsto_limUnder.mul hg.tendsto_limUnder).limUnder_eq.symm
 
