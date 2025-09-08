@@ -23,12 +23,26 @@ namespace Set
 
 variable {α β : Type u} {s : Set α} {f : α → Set β}
 
-instance : Alternative Set where
+/-- The `Set` functor is a monad.
+
+This is not a global instance because it does not have computational content,
+so it does not make much sense using `do` notation in general.
+
+Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
+Either use `attribute [local instance] Set.monad` to make it be a local instance
+or use `SetM.run do ...` when `do` notation is wanted. -/
+protected def monad : AlternativeMonad.{u} Set where
   pure a := {a}
+  bind s f := ⋃ i ∈ s, f i
   seq s t := s.seq (t ())
+  seqLeft s t := {a | a ∈ s ∧ (t ()).Nonempty}
+  seqRight s t := {b | s.Nonempty ∧ b ∈ t ()}
   map := Set.image
   orElse s t := s ∪ t ()
   failure := ∅
+
+section with_instance
+attribute [local instance] Set.monad
 
 @[simp]
 theorem fmap_eq_image (f : α → β) : f <$> s = f '' s :=
@@ -48,6 +62,10 @@ theorem failure_def : (failure : Set α) = ∅ :=
 
 @[simp]
 theorem orElse_def (s : Set α) (t : Set α) : (s <|> t) = s ∪ t :=
+  rfl
+
+@[simp]
+theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
   rfl
 
 /-- `Set.image2` in terms of monadic operations. Note that this can't be taken as the definition
@@ -73,25 +91,6 @@ instance : LawfulAlternative Set where
 
 instance : CommApplicative Set where
   commutative_prod := prod_image_seq_comm
-
-/-- The `Set` functor is a monad.
-
-This is not a global instance because it does not have computational content,
-so it does not make much sense using `do` notation in general.
-
-Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
-Either use `attribute [local instance] Set.monad` to make it be a local instance
-or use `SetM.run do ...` when `do` notation is wanted. -/
-protected def monad : AlternativeMonad.{u} Set where
-  __ : Alternative Set := inferInstance
-  bind s f := ⋃ i ∈ s, f i
-
-section with_instance
-attribute [local instance] Set.monad
-
-@[simp]
-theorem bind_def : s >>= f = ⋃ i ∈ s, f i :=
-  rfl
 
 instance : LawfulMonad Set where
   bind_pure_comp _ _ := (image_eq_iUnion _ _).symm
@@ -126,10 +125,9 @@ The `Monad` instance gives a coercion using the internal function `Lean.Internal
 In practice this is only used for applying the `Set` functor to `Subtype.val`,
 as was defined in `Data.Set.Notation`. -/
 
-attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ _ t = (t : Set α) := by
+    (letI := Set.monad; @Lean.Internal.coeM Set s α _ _ t) = (t : Set α) := by
   change ⋃ (x ∈ t), {x.1} = _
   ext
   simp
