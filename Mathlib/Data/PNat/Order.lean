@@ -16,7 +16,7 @@ namespace PNat
 open Nat
 
 instance instSuccOrder : SuccOrder ℕ+ :=
-  SuccOrder.ofSuccLeIff (fun n => succPNat n) (by rfl)
+  SuccOrder.ofSuccLeIff (fun n ↦ n + 1) rfl
 
 instance instSuccAddOrder : SuccAddOrder ℕ+ where
   succ_eq_add_one x := by rfl
