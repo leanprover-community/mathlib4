@@ -148,9 +148,12 @@ theorem Int.zmultiples_natAbs (a : ℤ) :
     AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a := by
   simp [le_antisymm_iff, Int.mem_zmultiples_iff, Int.dvd_natAbs, Int.natAbs_dvd]
 
-lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = ⊤ := by
+@[simp] lemma Int.addSubgroupClosure_one : AddSubgroup.closure ({1} : Set ℤ) = ⊤ := by
   ext
-  simp [mem_closure_singleton]
+  simp [AddSubgroup.mem_closure_singleton]
 
-lemma AddSubgroup.zmultiples_one_eq_top : zmultiples (1 : ℤ) = ⊤ := by
-  rw [zmultiples_eq_closure, closure_singleton_int_one_eq_top]
+@[deprecated (since := "2025-08-12")]
+alias AddSubgroup.closure_singleton_int_one_eq_top := Int.addSubgroupClosure_one
+
+@[deprecated (since := "2025-08-12")]
+alias AddSubgroup.zmultiples_one_eq_top := Int.zmultiples_one

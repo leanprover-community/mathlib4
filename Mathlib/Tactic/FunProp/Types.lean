@@ -146,7 +146,7 @@ structure Result where
 def defaultUnfoldPred : Name → Bool :=
   defaultNamesToUnfold.contains
 
-/-- Get predicate on names indicating if theys should be unfolded. -/
+/-- Get predicate on names indicating whether they should be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
   return fun n => toUnfold.contains n

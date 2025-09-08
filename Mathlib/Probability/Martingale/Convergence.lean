@@ -87,7 +87,7 @@ $$
 $$
 as required.
 
-Implementationwise, we have `tendsto_of_no_upcrossings` which shows that
+In terms of implementation, we have `tendsto_of_no_upcrossings` which shows that
 a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
 for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
 that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
@@ -130,7 +130,7 @@ theorem upcrossings_eq_top_of_frequently_lt (hab : a < b) (h₁ : ∃ᶠ n in at
     (h₂ : ∃ᶠ n in atTop, b < f n ω) : upcrossings a b f ω = ∞ :=
   by_contradiction fun h => not_frequently_of_upcrossings_lt_top hab h ⟨h₁, h₂⟩
 
-/-- A realization of a stochastic process with bounded upcrossings and bounded liminfs is
+/-- A realization of a stochastic process with bounded upcrossings and bounded limit inferiors is
 convergent.
 
 We use the spelling `< ∞` instead of the standard `≠ ∞` in the assumptions since it is not as easy

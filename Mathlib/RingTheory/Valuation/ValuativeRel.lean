@@ -27,7 +27,7 @@ saying that `R` is endowed with an equivalence class of valuations.
   Use the notation `x ≤ᵥ y` for this relation.
 - `ValuativeRel.valuation R` is the "canonical" valuation associated to `ValuativeRel R`,
   taking values in `ValuativeRel.ValueGroupWithZero R`.
-- Given a valution `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
+- Given a valuation `v` on `R` and an instance `[ValuativeRel R]`, writing `[v.Compatible]`
   ensures that the relation `x ≤ᵥ y` is equivalent to `v x ≤ v y`. Note that
   it is possible to have `[v.Compatible]` and `[w.Compatible]` for two different valuations on `R`.
 - If we have both `[ValuativeRel R]` and `[TopologicalSpace R]`, then writing
@@ -793,7 +793,7 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
-/-- Any rank-at-most-one valuation has a mularchimedean value group.
+/-- Any rank-at-most-one valuation has a mul-archimedean value group.
 The converse (for any compatible valuation) is `ValuativeRel.isRankLeOne_iff_mulArchimedean`
 which is in a later file since it requires a larger theory of reals. -/
 instance [IsRankLeOne R] : MulArchimedean (ValueGroupWithZero R) := by

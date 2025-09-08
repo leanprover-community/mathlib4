@@ -32,7 +32,7 @@ variable {P : ℚ → Prop} {x y z : ℚ}
 #guard_msgs in
 example : P (1 : ℚ) := by test_field_simp
 
-/- ### One atom -/
+/-! ### One atom -/
 
 /-- info: P 1 -/
 #guard_msgs in
@@ -72,6 +72,10 @@ example : P (x ^ (-1 : ℤ) * x ^ (-2 : ℤ)) := by test_field_simp
 
 -- Cancellation: if x could be zero, we cannot cancel x * x⁻¹.
 
+/-- info: P (1 / x) -/
+#guard_msgs in
+example : P (x⁻¹) := by test_field_simp
+
 /-- info: P (x / x) -/
 #guard_msgs in
 example : P (x * x⁻¹) := by test_field_simp
@@ -102,6 +106,11 @@ example : P (x ^ 3 * x⁻¹) := by test_field_simp
 /-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x / x ^ 4) := by test_field_simp
+
+-- TODO (new implementation): this should reduce to `P (x ^ 6)`
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example : P ((x ^ (2:ℤ)) ^ 3) := by test_field_simp
 
 -- TODO (new implementation): this should reduce to `P (1 / x ^ 6)`
 /-- info: P (1 / (x ^ 2) ^ 3) -/
@@ -177,47 +186,7 @@ example : P ((2 - 2) * x) := by test_field_simp
 #guard_msgs in
 example {a : Nat} : P (a* x - a * x) := by test_field_simp
 
--- We simplify multiplication by one, but not by e.g. two, and do not simplify literals.
-
-/-- info: P (2 * x - x) -/
-#guard_msgs in
-example : P (2 * x - 1 * x) := by test_field_simp
-
-/-- error: `simp` made no progress -/
-#guard_msgs in
-example : P (2 * x - x - x) := by test_field_simp
-
-/-- error: `simp` made no progress -/
-#guard_msgs in
-example : P (2 * x - x) := by test_field_simp
-
-/-- error: `simp` made no progress -/
-#guard_msgs in
-example : P ((3 - 2) * x - x) := by test_field_simp
-
--- Multiplication with a zero literal is simplified.
-/-- info: P 0 -/
-#guard_msgs in
-example : P (0 * x) := by test_field_simp
-
-/-- info: P 0 -/
-#guard_msgs in
-example : P (0 * x * y + 0) := by test_field_simp
-
-/-- error: `simp` made no progress -/
-#guard_msgs in
-example : P ((x * y - y * x) * z) := by test_field_simp
-
--- Iterated negation is simplified, as is subtraction from zero.
-/-- info: P x -/
-#guard_msgs in
-example : P (-(-x)) := by test_field_simp
-
-/-- info: P x -/
-#guard_msgs in
-example : P (0 -(0 + (-x))) := by test_field_simp
-
-/- ### Two atoms -/
+/-! ### Two atoms -/
 
 /-- error: `simp` made no progress -/
 #guard_msgs in
@@ -226,6 +195,10 @@ example : P (x + y) := by test_field_simp
 /-- error: `simp` made no progress -/
 #guard_msgs in
 example : P (x * y) := by test_field_simp
+
+/-- info: P (1 / (x * y)) -/
+#guard_msgs in
+example : P ((x * y)⁻¹) := by test_field_simp
 
 /-- error: `simp` made no progress -/
 #guard_msgs in
@@ -314,7 +287,7 @@ example (hx : x ≠ 0) (hy : y ≠ 0) : P ((x * y) * (y * x)⁻¹) := by test_fi
 #guard_msgs in
 example (hy : y ≠ 0) : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
-/- ### Three atoms -/
+/-! ### Three atoms -/
 
 /-- error: `simp` made no progress -/
 #guard_msgs in
@@ -334,6 +307,66 @@ example (hx : x ≠ 0) : P (x / (x * y + x * z))  := by test_field_simp
 #guard_msgs in
 example : P (x / (x * y + x * z))  := by test_field_simp
 
+/-! ### Constants and addition/subtraction -/
+
+-- We simplify multiplication by one, but not by e.g. two, and do not simplify literals.
+
+/-- info: P (2 * x - x) -/
+#guard_msgs in
+example : P (2 * x - 1 * x) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example : P (2 * x - x - x) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example : P (2 * x - x) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example : P ((3 - 2) * x - x) := by test_field_simp
+
+-- Multiplication with a zero literal is simplified.
+/-- info: P 0 -/
+#guard_msgs in
+example : P (0 * x) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example : P (0 * x * y + 0) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example : P ((x * y - y * x) * z) := by test_field_simp
+
+-- Iterated negation is simplified, as is subtraction from zero.
+/-- info: P x -/
+#guard_msgs in
+example : P (-(-x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example : P (0 -(0 + (-x))) := by test_field_simp
+
+/-! ### Transparency -/
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example : True := by
+  let a := y
+  suffices P (x * y + x * a) from test_sorry
+  test_field_simp
+
+/-- info: P (x * y + x * y) -/
+#guard_msgs in
+example : P (x * y + x * (fun t ↦ t) y) := by test_field_simp
+
+-- TODO: fix so the `id` is not seen through, this is more consistent with e.g. `ring_nf`
+/-- info: P (x * y + x * y) -/
+#guard_msgs in
+example : P (x * y + x * id y) := by test_field_simp
+
 end
 
 /-! ## Cancel denominators from equalities -/
@@ -352,6 +385,11 @@ example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by fie
 
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 = 1 := by
+  field
+
+-- example from the `field_simp` docstring
+example {K : Type*} [Field K] (a b c d x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
+    a + b / x + c / x ^ 2 + d / x ^ 3 = a + x⁻¹ * (y * b / y + (d / x + c) / x) := by
   field
 
 -- TODO (new implementation): `field` should solve this, no `b ≠ 0` hypothesis required
@@ -456,7 +494,7 @@ example (x : ℚ) (h₀ : x ≠ 0) :
   field_simp (config := {})
   ring
 
-/- ### check that `field_simp` closes goals when the equality reduces to an identity -/
+/-! ### check that `field_simp` closes goals when the equality reduces to an identity -/
 
 example {x y : ℚ} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field_simp
 example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by field_simp
@@ -503,7 +541,7 @@ example {x y z : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
 /-! ## Performance -/
 
 -- from `InnerProductGeometry.cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle`
--- 21794 heartbeats!!!
+-- 19983 heartbeats!!!
 example {V : Type*} [AddCommGroup V] (F : V → ℚ)
     {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
     (hxn : F x ≠ 0) (hyn : F y ≠ 0) (hxyn : F (x - y) ≠ 0) :
@@ -516,18 +554,6 @@ example {V : Type*} [AddCommGroup V] (F : V → ℚ)
     = -((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2 / (F x * F y))
         * F x * F y * F (x - y) * F (x - y) := by
   field_simp
-  guard_target =
-    ((F x * F x * 2 - (F x * F x + F y * F y - F (x - y) * F (x - y)))
-      * (F y * F y * 2 - (F x * F x + F y * F y - F (x - y) * F (x - y)))
-      * F x * F y * F (x - y) * F (x - y) * (2 * 2)
-      - 2 * (F x * F (x - y)) * (2 * (F y * F (x - y))) *
-        (F x * F x * (F y * F y) * (2 * 2)
-        - (F x * F x + F y * F y - F (x - y) * F (x - y))
-        * (F x * F x + F y * F y - F (x - y) * F (x - y))))
-    * (2 * (F x * F y))
-    = (F (x - y) * F (x - y) - (F x * F x + F y * F y))
-      * F x * F y * F (x - y) * F (x - y)
-      * (2 * (F x * F (x - y)) * (2 * (F y * F (x - y))) * (2 * 2))
   exact test_sorry
 
 /-! ## Discharger -/
@@ -631,7 +657,28 @@ example : a /ₚ (u₁ / u₂) = a * u₂ /ₚ u₁ := by field_simp
 
 example : a /ₚ u₁ /ₚ u₂ = a /ₚ (u₂ * u₁) := by field_simp
 
--- TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
+/-! ## Algebraic structures weaker than `Field`
+
+TODO (new implementation): handle `CommGroupWithZero`, not just `Semifield`
+-/
+
+/--
+error: unsolved goals
+R : Type ?u.201754
+inst✝¹ : CommRing R
+a b c d e f g : R
+u₁ u₂ : Rˣ
+K : Type
+inst✝ : CommGroupWithZero K
+x y : K
+⊢ y * x ^ 3 * y ^ 3 / x = x ^ 2 * y ^ 5 / y
+-/
+#guard_msgs in
+example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^ 2 * y ^ 5 / y := by
+  field_simp
+
+example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
+  field_simp
 
 /-! ## Miscellaneous -/
 

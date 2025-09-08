@@ -1130,6 +1130,11 @@ protected theorem continuous [TopologicalSpace E] [IsTopologicalAddGroup E]
     Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 
+protected theorem continuous_iff [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) :
+    Continuous p ↔ p.ball 0 r ∈ 𝓝 0 :=
+  ⟨fun H ↦ p.ball_zero_eq ▸ (H.tendsto' 0 0 (map_zero p)).eventually_lt_const hr, p.continuous⟩
+
 /-- A seminorm is continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous'`. -/

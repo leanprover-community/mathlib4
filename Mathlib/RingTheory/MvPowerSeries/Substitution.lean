@@ -53,7 +53,7 @@ as it is discrete.
 
 * `MvPowerSeries.IsNilpotent_subst` asserts that the constant coefficient
   of a legit substitution is nilpotent; prove that the converse holds when
-  the kernel of `algebraMap R S` is a nilideal.
+  the kernel of `algebraMap R S` is a nil ideal.
 -/
 
 namespace MvPowerSeries

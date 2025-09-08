@@ -598,7 +598,7 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
 variable [DecidableEq (Fin n → G)]
 
 variable (k G n) in
-/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the righthand representation is
+/-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
 defined pointwise by the left regular representation on `k[G]`. The map sends
 `single (g₀, ..., gₙ) a ↦ single (g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ) (single g₀ a)`. -/
 def diagonalSuccIsoFree : diagonal k G (n + 1) ≅ free k G (Fin n → G) :=

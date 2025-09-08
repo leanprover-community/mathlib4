@@ -512,7 +512,7 @@ def evalRatDen : PositivityExt where eval {u α} _ _ e := do
     pure <| .positive q(den_pos $a)
   | _, _ => throwError "not Rat.num"
 
-/-- Extension for `posPart`. `a⁺` is always nonegative, and positive if `a` is. -/
+/-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
 @[positivity _⁺]
 def evalPosPart : PositivityExt where eval {u α} zα pα e := do
   match e with
@@ -527,7 +527,7 @@ def evalPosPart : PositivityExt where eval {u α} zα pα e := do
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
 
-/-- Extension for `negPart`. `a⁻` is always nonegative. -/
+/-- Extension for `negPart`. `a⁻` is always nonnegative. -/
 @[positivity _⁻]
 def evalNegPart : PositivityExt where eval {u α} _ _ e := do
   match e with

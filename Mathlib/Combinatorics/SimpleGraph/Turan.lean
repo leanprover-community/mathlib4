@@ -63,6 +63,9 @@ lemma IsTuranMaximal.le_iff_eq (hG : G.IsTuranMaximal r) (hH : H.CliqueFree (r +
 /-- The canonical `r + 1`-cliquefree Turán graph on `n` vertices. -/
 def turanGraph (n r : ℕ) : SimpleGraph (Fin n) where Adj v w := v % r ≠ w % r
 
+lemma turanGraph_adj {v w} :
+  (turanGraph n r).Adj v w ↔ v % r ≠ w % r := by rfl
+
 instance turanGraph.instDecidableRelAdj : DecidableRel (turanGraph n r).Adj := by
   dsimp only [turanGraph]; infer_instance
 

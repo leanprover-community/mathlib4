@@ -600,10 +600,7 @@ theorem offDiag_union (h : Disjoint s t) :
       exact (Set.disjoint_right.mp h h0 h1).elim
 
 theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a} ×ˢ s ∪ s ×ˢ {a} := by
-  rw [insert_eq, union_comm, offDiag_union, offDiag_singleton, union_empty, union_right_comm]
-  rw [disjoint_left]
-  rintro b hb (rfl : b = a)
-  exact ha hb
+  grind
 
 end OffDiag
 
@@ -720,8 +717,6 @@ theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
     (s₁ ∪ s₂).pi (fun i ↦ t₁ i ∩ t₂ i) = s₁.pi t₁ ∩ s₂.pi t₂ := by
-  ext x
-  simp only [mem_pi, mem_inter_iff]
   grind
 
 @[simp]

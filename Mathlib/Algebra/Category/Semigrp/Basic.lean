@@ -79,8 +79,6 @@ structure MagmaCat.Hom (A B : MagmaCat.{u}) where
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
-attribute [to_additive existing AddMagmaCat.Hom.mk] MagmaCat.Hom.mk
-
 namespace MagmaCat
 
 @[to_additive]
@@ -240,8 +238,6 @@ structure Semigrp.Hom (A B : Semigrp.{u}) where
   private mk ::
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
-
-attribute [to_additive existing AddSemigrp.Hom.mk] Semigrp.Hom.mk
 
 namespace Semigrp
 

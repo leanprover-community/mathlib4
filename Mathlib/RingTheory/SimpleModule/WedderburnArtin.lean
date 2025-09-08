@@ -20,11 +20,11 @@ import Mathlib.RingTheory.SimpleRing.Congr
 
 * `IsSimpleRing.exists_algEquiv_matrix_end_mulOpposite`: a simple Artinian algebra is
   isomorphic to a (finite-dimensional) matrix algebra over a division algebra. The division
-  algebra is the opoposite of the endomorphism algebra of a simple (i.e., minimal) left ideal.
+  algebra is the opposite of the endomorphism algebra of a simple (i.e., minimal) left ideal.
 
 * `IsSemisimpleRing.exists_algEquiv_pi_matrix_end_mulOpposite`: a semisimple algebra is
   isomorphic to a finite direct product of matrix algebras over division algebras. The division
-  algebras are the opoposites of the endomorphism algebras of the simple (i.e., minimal)
+  algebras are the opposites of the endomorphism algebras of the simple (i.e., minimal)
   left ideals.
 
 * `IsSimpleRing.exists_algEquiv_matrix_divisionRing_finite`,

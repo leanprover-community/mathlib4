@@ -144,7 +144,7 @@ theorem oreDiv_add_char' {r r' : X} (s s' : S) (rb : R) (sb : R)
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ ⟨sb * s, h'⟩ := by
   with_unfolding_all exact add''_char r s r' s' rb sb h h'
 
-/-- A characterization of the addition on the Ore localizaion, allowing for arbitrary Ore
+/-- A characterization of the addition on the Ore localization, allowing for arbitrary Ore
 numerator and Ore denominator. -/
 theorem oreDiv_add_char {r r' : X} (s s' : S) (rb : R) (sb : S) (h : sb * s = rb * s') :
     r /ₒ s + r' /ₒ s' = (sb • r + rb • r') /ₒ (sb * s) :=
