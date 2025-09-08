@@ -29,7 +29,7 @@ that is induced by the involution
 def opFunctor : SimplicialObject C ⥤ SimplicialObject C :=
   (Functor.whiskeringLeft _ _ _).obj SimplexCategory.rev.op
 
-/-- The isomorphism `(opFunctor.obj X).obj n ≅ X.obj n` when `X` is a cosimplicial object. -/
+/-- The isomorphism `(opFunctor.obj X).obj n ≅ X.obj n` when `X` is a simplicial object. -/
 def opObjIso {X : SimplicialObject C} {n : SimplexCategoryᵒᵖ} :
     (opFunctor.obj X).obj n ≅ X.obj n := Iso.refl _
 
