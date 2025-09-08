@@ -32,21 +32,39 @@ instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ
   PartialOrder.lift val val_injective
 
 @[to_additive]
+instance [Monoid α] [LinearOrder α] : Max αˣ where
+  max a b := if a ≤ b then b else a
+
+@[to_additive]
+instance [Monoid α] [LinearOrder α] : Min αˣ where
+  min a b := if a ≤ b then a else b
+
+
+@[to_additive (attr := simp, norm_cast)]
+theorem max_val [Monoid α] [LinearOrder α] (a b : αˣ) : (max a b).val = max a.val b.val := by
+  simp_rw [max_def, val_le_val, ← apply_ite]
+  rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem min_val [Monoid α] [LinearOrder α] (a b : αˣ) : (min a b).val = min a.val b.val := by
+  simp_rw [min_def, val_le_val, ← apply_ite]
+  rfl
+
+@[to_additive]
+instance [Monoid α] [Ord α] : Ord αˣ where
+  compare a b := compare a.val b.val
+
+@[to_additive]
+theorem compare_val [Monoid α] [Ord α] (a b : αˣ) : compare a.val b.val = compare a b := rfl
+
+@[to_additive]
 instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
-  LinearOrder.lift' val val_injective
+  val_injective.linearOrder _ val_le_val val_lt_val min_val max_val compare_val
 
 /-- `val : αˣ → α` as an order embedding. -/
 @[to_additive (attr := simps -fullyApplied)
   /-- `val : add_units α → α` as an order embedding. -/]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
   ⟨⟨val, val_injective⟩, .rfl⟩
-
-@[to_additive (attr := simp, norm_cast)]
-theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=
-  Monotone.map_max orderEmbeddingVal.monotone
-
-@[to_additive (attr := simp, norm_cast)]
-theorem min_val [Monoid α] [LinearOrder α] {a b : αˣ} : (min a b).val = min a.val b.val :=
-  Monotone.map_min orderEmbeddingVal.monotone
 
 end Units

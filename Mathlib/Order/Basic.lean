@@ -957,6 +957,7 @@ end Function
 
 /-! ### Lifts of order instances -/
 
+
 /-- Transfer a `Preorder` on `β` to a `Preorder` on `α` using a function `f : α → β`.
 See note [reducible non-instances]. -/
 abbrev Preorder.lift [Preorder β] (f : α → β) : Preorder α where
@@ -971,6 +972,17 @@ function `f : α → β`. See note [reducible non-instances]. -/
 abbrev PartialOrder.lift [PartialOrder β] (f : α → β) (inj : Injective f) : PartialOrder α :=
   { Preorder.lift f with le_antisymm := fun _ _ h₁ h₂ ↦ inj (h₁.antisymm h₂) }
 
+/-- A version of `PartialOrder.lift` that doesn't construct any new data. -/
+abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
+    (hf : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
+    PartialOrder α where
+  le_refl _ := le.1 <| le_refl _
+  le_trans _ _ _ h₁ h₂ := le.1 <| le_trans (le.2 h₁) (le.2 h₂)
+  le_antisymm _ _ h₁ h₂ := hf <| le_antisymm (le.2 h₁) (le.2 h₂)
+  lt_iff_le_not_ge _ _ := by
+    rw [← le, ← le, ← lt, lt_iff_le_not_ge]
+
 theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [DecidableEq α] (f : α → β) (inj : Injective f)
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
@@ -983,6 +995,26 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     contradiction
   · grind
 
+/-- Pull back a linear order along an injective function.
+
+Unlike `LinearOrder.lift`, this constructs no new data, and only the proofs. -/
+abbrev Function.Injective.linearOrder [LinearOrder β] [LE α] [LT α] [Max α] [Min α] [Ord α]
+    [DecidableEq α] [DecidableLE α] [DecidableLT α] (f : α → β)
+    (hf : Function.Injective f) (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
+    (min : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (max : ∀ x y, f (x ⊔ y) = f x ⊔ f y)
+    (compare : ∀ x y, compare (f x) (f y) = compare x y) :
+    LinearOrder α where
+  toPartialOrder := hf.partialOrder _ le lt
+  toDecidableLE := ‹_›
+  toDecidableEq := ‹_›
+  toDecidableLT := ‹_›
+  le_total _ _ := by simp only [← le, le_total]
+  min_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← min_def, min]
+  max_def _ _ := by simp_rw [← hf.eq_iff, ← le, apply_ite f, ← max_def, max]
+  compare_eq_compareOfLessAndEq _ _ := by
+    simp_rw [← compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, ← lt,
+      hf.eq_iff]
+
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version takes `[Max α]` and `[Min α]` as arguments, then uses
 them for `max` and `min` fields. See `LinearOrder.lift'` for a version that autogenerates `min` and
@@ -991,29 +1023,13 @@ fields. See note [reducible non-instances]. -/
 abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj : Injective f)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
-  letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
-  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
-  { PartialOrder.lift f inj, instOrdα with
-    le_total := fun x y ↦ le_total (f x) (f y)
-    toDecidableLE := decidableLE
-    toDecidableLT := decidableLT
-    toDecidableEq := decidableEq
-    min := (· ⊓ ·)
-    max := (· ⊔ ·)
-    min_def := by
-      intro x y
-      apply inj
-      rw [apply_ite f]
-      exact (hinf _ _).trans (min_def _ _)
-    max_def := by
-      intro x y
-      apply inj
-      rw [apply_ite f]
-      exact (hsup _ _).trans (max_def _ _)
-    compare_eq_compareOfLessAndEq := fun a b ↦
-      compare_of_injective_eq_compareOfLessAndEq a b f inj }
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLE : LT α := ⟨fun a b ↦ f a < f b⟩
+  letI _instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
+  letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI _decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  inj.linearOrder _ .rfl .rfl hinf hsup (fun _ _ => rfl)
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version autogenerates `min` and `max` fields. See `LinearOrder.lift`
@@ -1036,28 +1052,12 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
-  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
-  { PartialOrder.lift f inj with
-    le_total := fun x y ↦ le_total (f x) (f y)
-    toDecidableLE := decidableLE
-    toDecidableLT := decidableLT
-    toDecidableEq := decidableEq
-    min := (· ⊓ ·)
-    max := (· ⊔ ·)
-    min_def := by
-      intro x y
-      apply inj
-      rw [apply_ite f]
-      exact (hinf _ _).trans (min_def _ _)
-    max_def := by
-      intro x y
-      apply inj
-      rw [apply_ite f]
-      exact (hsup _ _).trans (max_def _ _)
-    compare_eq_compareOfLessAndEq := fun a b ↦
-      (compare_f a b).trans <| compare_of_injective_eq_compareOfLessAndEq a b f inj }
+  letI _instLE : LE α := ⟨fun a b ↦ f a ≤ f b⟩
+  letI _instLE : LT α := ⟨fun a b ↦ f a < f b⟩
+  letI _decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI _decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI _decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  inj.linearOrder _ .rfl .rfl hinf hsup (fun _ _ => (compare_f _ _).symm)
 
 /-- Transfer a `LinearOrder` on `β` to a `LinearOrder` on `α` using an injective
 function `f : α → β`. This version auto-generates `min` and `max` fields. It also takes `[Ord α]`
