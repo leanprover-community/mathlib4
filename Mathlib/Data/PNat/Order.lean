@@ -16,15 +16,15 @@ namespace PNat
 open Nat
 
 instance instSuccOrder : SuccOrder ℕ+ :=
-  SuccOrder.ofSuccLeIff (fun n ↦ n + 1) rfl
+  SuccOrder.ofSuccLeIff (fun n ↦ n + 1) (by rfl)
 
 instance instSuccAddOrder : SuccAddOrder ℕ+ where
   succ_eq_add_one x := by rfl
 
 instance instNoMaxOrder : NoMaxOrder ℕ+ where
-  exists_gt n := ⟨succPNat n, lt_succ_self n⟩
+  exists_gt n := ⟨n + 1, lt_succ_self n⟩
 
 @[simp]
-lemma succ_eq_succPNat (n : ℕ+) : Order.succ n = succPNat n := rfl
+lemma succ_eq_add_one (n : ℕ+) : Order.succ n = n + 1 := rfl
 
 end PNat
