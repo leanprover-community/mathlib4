@@ -44,7 +44,7 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
   refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
   cases n with
   | top =>
-    rw [← WithTop.none_eq_top, ← compl_range_some, preimage_compl, ← iUnion_singleton_eq_range,
+    rw [← WithTop.top_eq, ← compl_range_some, preimage_compl, ← iUnion_singleton_eq_range,
       preimage_iUnion]
     exact .compl <| .iUnion h
   | coe n => exact h n
