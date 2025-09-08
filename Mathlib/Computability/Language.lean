@@ -20,16 +20,16 @@ over the languages.
 In addition to that, we define a reversal of a language and prove that it behaves well
 with respect to other language operations.
 
-## Notation
+## Notations
 
 * `l + m`: union of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
 * `1`: language consisting of only the empty string.
   This is because it is the unit of the `*` operator.
-* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
+* `l∗`: Kleene star – language of strings consisting of arbitrarily many
   members of `l` concatenated together
-  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+  (Note that this uses the Unicode asterisk `∗`, not the ASCII asterisk `*`)
 
 ## Main definitions
 
@@ -66,7 +66,7 @@ instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Langua
 
 variable {l m : Language α} {a b x : List α}
 
-/-- Zero language has no elements. -/
+/-- The zero language has no elements. -/
 instance : Zero (Language α) :=
   ⟨(∅ : Set _)⟩
 

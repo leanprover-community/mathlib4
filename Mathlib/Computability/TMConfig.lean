@@ -80,8 +80,8 @@ inductive Code
   | fix : Code → Code
   deriving DecidableEq, Inhabited
 
-/-- The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`. By convention
-we functions that return a single result return a singleton `[n]`, or in some cases `n :: v` where
+/-- The semantics of the `Code` primitives, as partial functions `List ℕ →. List ℕ`. By convention,
+functions that return a single result return a singleton `[n]`, or in some cases `n :: v`, where
 `v` will be ignored by a subsequent function.
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
@@ -474,9 +474,10 @@ evaluation, when we receive results from continuations built by `stepNormal`.
 * `Cont.cons₂ ns k v = k (ns.headI :: v)`, where we now have everything we need to evaluate
   `ns.headI :: v`, so we return it to `k`.
 * `Cont.comp f k v = k (f v)`, so we call `f v` with `k` as the continuation.
-* `Cont.fix f k v = k (if v.headI = 0 then k v.tail else fix f v.tail)`, where `v` is a value,
-  so we evaluate the if statement and either call `k` with `v.tail`, or call `fix f v` with `k` as
-  the continuation (which immediately calls `f` with `Cont.fix f k` as the continuation).
+* `Cont.fix f k v`: evaluate the conditional on `v`:
+  if `v.headI = 0`, call `k` with `v.tail`; otherwise run `fix f` on `v.tail` and then pass the
+  resulting value to `k` (which operationally means evaluating `f` with `Cont.fix f k` as the
+  continuation until it yields a value).
 -/
 def stepRet : Cont → List ℕ → Cfg
   | Cont.halt, v => Cfg.halt v

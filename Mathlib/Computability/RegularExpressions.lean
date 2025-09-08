@@ -9,13 +9,13 @@ import Mathlib.Tactic.AdaptationNote
 /-!
 # Regular Expressions
 
-This file contains the formal definition for regular expressions and basic lemmas. Note these are
-regular expressions in terms of formal language theory. Note this is different to regex's used in
-computer science such as the POSIX standard.
+This file contains the formal definition of regular expressions and basic lemmas. Note that these
+are regular expressions in the sense of formal language theory. These differ from "regexes" used
+in computer science, such as the POSIX standard.
 
 ## TODO
 
-Currently, we don't show that regular expressions and DFA/NFA's are equivalent.
+Currently, we do not show that regular expressions and DFAs/NFAs are equivalent.
 Multiple competing PRs towards that goal are in review.
 See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
 -/
@@ -31,13 +31,13 @@ variable {α β γ : Type*}
 -- Disable generation of unneeded lemmas which the simpNF linter would complain about.
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
-/-- This is the definition of regular expressions. The names used here is to mirror the definition
-of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+/-- This is the definition of regular expressions. The names used here are to mirror the
+definition of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
-* `char a` matches only the string 'a'
+* `char a` matches only the character `a`
 * `star P` matches any finite concatenation of strings which match `P`
-* `P + Q` (`plus P Q`) matches anything which match `P` or `Q`
+* `P + Q` (`plus P Q`) matches anything which matches `P` or `Q`
 * `P * Q` (`comp P Q`) matches `x ++ y` if `x` matches `P` and `y` matches `Q`
 -/
 inductive RegularExpression (α : Type u) : Type u
@@ -124,7 +124,7 @@ theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' 
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
 
-/-- `matchEpsilon P` is true if and only if `P` matches the empty string -/
+/-- `matchEpsilon P` is true if and only if `P` matches the empty string. -/
 def matchEpsilon : RegularExpression α → Bool
   | 0 => false
   | 1 => true
@@ -137,7 +137,7 @@ section DecidableEq
 variable [DecidableEq α]
 
 /-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
-  to `a` -/
+  to `a`. -/
 def deriv : RegularExpression α → α → RegularExpression α
   | 0, _ => 0
   | 1, _ => 0

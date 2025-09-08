@@ -241,11 +241,11 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
             Computable.const _}⟩
 
-/-- The Halting problem is recursively enumerable -/
+/-- The halting problem is recursively enumerable. -/
 theorem halting_problem_re (n) : REPred fun c => (eval c n).Dom :=
   (eval_part.comp Computable.id (Computable.const _)).dom_re
 
-/-- The **Halting problem** is not computable -/
+/-- The halting problem is not computable. -/
 theorem halting_problem (n) : ¬ComputablePred fun c => (eval c n).Dom
   | h => rice { f | (f n).Dom } h Nat.Partrec.zero Nat.Partrec.none trivial
 

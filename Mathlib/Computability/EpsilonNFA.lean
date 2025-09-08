@@ -7,14 +7,14 @@ import Mathlib.Computability.NFA
 import Mathlib.Data.List.ReduceOption
 
 /-!
-# Epsilon Nondeterministic Finite Automata
+# Epsilon-nondeterministic finite automata
 
-This file contains the definition of an epsilon Nondeterministic Finite Automaton (`εNFA`), a state
+This file contains the definition of an epsilon-nondeterministic finite automaton (`εNFA`), a state
 machine which determines whether a string (implemented as a list over an arbitrary alphabet) is in a
-regular set by evaluating the string over every possible path, also having access to ε-transitions,
-which can be followed without reading a character.
-Since this definition allows for automata with infinite states, a `Fintype` instance must be
-supplied for true `εNFA`'s.
+regular set by evaluating the string over every possible path, and also having access to
+ε-transitions, which can be followed without reading a character.
+Since this definition allows for automata with infinitely many states, a `Fintype` instance must be
+supplied for true `εNFA`s.
 -/
 
 
@@ -22,24 +22,24 @@ open Set
 
 open Computability
 
--- "ε_NFA"
 
 universe u v
 
-/-- An `εNFA` is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
-  Note the transition function sends a state to a `Set` of states and can make ε-transitions by
+/-- An `εNFA` consists of a set of states (`σ`), a transition function from state to state
+  labelled by the alphabet (`step`), starting states (`start`), and a set of accepting states
+  (`accept`).
+  The transition function sends a state to a `Set` of states and can make ε-transitions by
   inputting `none`.
-  Since this definition allows for Automata with infinite states, a `Fintype` instance must be
-  supplied for true `εNFA`'s. -/
+  Since this definition allows for automata with infinitely many states, a `Fintype` instance must
+  be supplied for true `εNFA`s. -/
 structure εNFA (α : Type u) (σ : Type v) where
-  /-- Transition function. The automaton is rendered non-deterministic by this transition function
+  /-- Transition function. The automaton is rendered nondeterministic by this transition function
   returning `Set σ` (rather than `σ`), and ε-transitions are made possible by taking `Option α`
   (rather than `α`). -/
   step : σ → Option α → Set σ
   /-- Starting states. -/
   start : Set σ
-  /-- Set of acceptance states. -/
+  /-- Set of accepting states. -/
   accept : Set σ
 
 variable {α : Type u} {σ : Type v} (M : εNFA α σ) {S : Set σ} {s t u : σ} {a : α}
@@ -141,7 +141,7 @@ theorem eval_singleton (a : α) : M.eval [a] = M.stepSet (M.εClosure M.start) a
 theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.stepSet (M.eval x) a :=
   evalFrom_append_singleton _ _ _ _
 
-/-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
+/-- `M.accepts` is the language of words `x` such that there is an accepting state in `M.eval x`. -/
 def accepts : Language α :=
   { x | ∃ S ∈ M.accept, S ∈ M.eval x }
 

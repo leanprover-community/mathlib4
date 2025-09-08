@@ -19,7 +19,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 
 ## Main definitions
 
-* `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
+* `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
 
 -/
 
@@ -66,7 +66,7 @@ The four stacks are `main`, `rev`, `aux`, `stack`. In normal mode, `main` contai
 current program (a `List ℕ`) and `stack` contains data (a `List (List ℕ)`) associated to the
 current continuation, and in `ret` mode `main` contains the value that is being passed to the
 continuation and `stack` contains the data for the continuation. The `rev` and `aux` stacks are
-usually empty; `rev` is used to store reversed data when e.g. moving a value from one stack to
+usually empty; `rev` is used to store reversed data when, e.g., moving a value from one stack to
 another, while `aux` is used as a temporary for a `main`/`stack` swap that happens during `cons₁`
 evaluation.
 
@@ -99,9 +99,9 @@ prove that only finitely many labels are accessible.) The labels are:
 * `read (f : Option Γ' → Λ')`: go to state `f s` where `s` is the local store. Again this is only
   here for convenience.
 * `succ q`: perform a successor operation. Assuming `[n]` is encoded on `main` before,
-  `[n+1]` will be on main after. This implements successor for binary natural numbers.
+  `[n+1]` will be on `main` after. This implements successor for binary natural numbers.
 * `pred q₁ q₂`: perform a predecessor operation or `case` statement. If `[]` is encoded on
-  `main` before, then we transition to `q₁` with `[]` on main; if `(0 :: v)` is on `main` before
+  `main` before, then we transition to `q₁` with `[]` on `main`; if `(0 :: v)` is on `main` before
   then `v` will be on `main` after and we transition to `q₁`; and if `(n+1 :: v)` is on `main`
   before then `n :: v` will be on `main` after and we transition to `q₂`.
 * `ret k`: call continuation `k`. Each continuation has its own interpretation of the data in
@@ -118,7 +118,7 @@ prove that only finitely many labels are accessible.) The labels are:
 
 In addition to these basic states, we define some additional subroutines that are used in the
 above:
-* `push'`, `peek'`, `pop'` are special versions of the builtins that use the local store to supply
+* `push'`, `peek'`, `pop'` are special versions of the built-ins that use the local store to supply
   inputs and outputs.
 * `unrev`: special case `move false rev main` to move everything from `rev` back to `main`. Used as
   a cleanup operation in several functions.
@@ -135,9 +135,8 @@ above:
 * `trNormal` is the main entry point, defining states that perform a given `code` computation.
   It mostly just dispatches to functions written above.
 
-The main theorem of this section is `tr_eval`, which asserts that for each that for each code `c`,
-the state `init c v` steps to `halt v'` in finitely many steps if and only if
-`Code.eval c v = some v'`.
+The main theorem of this section is `tr_eval`, which asserts that for each code `c`, the state
+`init c v` steps to `halt v'` in finitely many steps if and only if `Code.eval c v = some v'`.
 -/
 
 
@@ -471,7 +470,7 @@ def trContStack (k : Cont) :=
 
 /-- This is the nondependent eliminator for `K'`, but we use it specifically here in order to
 represent the stack data as four lists rather than as a function `K' → List Γ'`, because this makes
-rewrites easier. The theorems `K'.elim_update_main` et. al. show how such a function is updated
+rewrites easier. The theorems `K'.elim_update_main` et al. show how such a function is updated
 after an `update` to one of the components. -/
 def K'.elim (a b c d : List Γ') : K' → List Γ'
   | K'.main => a

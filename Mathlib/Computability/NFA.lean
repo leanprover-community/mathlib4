@@ -9,19 +9,19 @@ import Mathlib.Data.Fintype.Powerset
 /-!
 # Nondeterministic Finite Automata
 
-A Nondeterministic Finite Automaton (NFA) is a state machine which
-decides membership in a particular `Language`, by following every
-possible path that describes an input string.
+A nondeterministic finite automaton (NFA) is a state machine that
+decides membership in a particular `Language` by following every
+possible path consistent with an input string.
 
-We show that DFAs and NFAs can decide the same languages, by constructing
+We show that DFAs and NFAs can decide the same languages by constructing
 an equivalent DFA for every NFA, and vice versa.
 
 As constructing a DFA from an NFA uses an exponential number of states,
-we re-prove the pumping lemma instead of lifting `DFA.pumping_lemma`,
+we reprove the pumping lemma instead of lifting `DFA.pumping_lemma`,
 in order to obtain the optimal bound on the minimal length of the string.
 
-Like `DFA`, this definition allows for automata with infinite states;
-a `Fintype` instance must be supplied for true NFAs.
+Like `DFA`, this definition allows automata with infinitely many states;
+a `Fintype` instance must be supplied to obtain a true NFA.
 
 ## Main definitions
 
@@ -45,7 +45,7 @@ open Computability
 universe u v
 
 /-- An NFA is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a set of starting states (`start`) and a set of acceptance states (`accept`).
+  alphabet (`step`), a set of starting states (`start`) and a set of accepting states (`accept`).
   Note the transition function sends a state to a `Set` of states. These are the states that it
   may be sent to. -/
 structure NFA (α : Type u) (σ : Type v) where
@@ -125,7 +125,7 @@ theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
   simp
 
 variable (M) in
-/-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
+/-- `M.eval x` computes all possible paths through `M` with input `x` starting at an element of
   `M.start`. -/
 def eval : List α → Set σ :=
   M.evalFrom M.start
@@ -146,7 +146,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
   evalFrom_append_singleton ..
 
 variable (M) in
-/-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
+/-- `M.accepts` is the language of words `x` such that there is an accepting state in `M.eval x`. -/
 def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
@@ -156,7 +156,7 @@ variable (M) in
 /-- `M.Path` represents a concrete path through the NFA from a start state to an end state
 for a particular word.
 
-Note that due to the non-deterministic nature of the automata, there can be more than one `Path`
+Note that due to the nondeterministic nature of the automata, there can be more than one `Path`
 for a given word.
 
 Also note that this is `Type` and not a `Prop`, so that we can speak about the properties
@@ -197,7 +197,7 @@ theorem accepts_iff_exists_path {x : List α} :
 
 variable (M) in
 /-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
-  states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
+  states are of type `Set σ`, and the step function is `M.stepSet`. -/
 def toDFA : DFA α (Set σ) where
   step := M.stepSet
   start := M.start
@@ -222,7 +222,7 @@ end NFA
 namespace DFA
 
 /-- `M.toNFA` is an `NFA` constructed from a `DFA` `M` by using the same start and accept
-  states and a transition function which sends `s` with input `a` to the singleton `M.step s a`. -/
+  states and a transition function which sends `s` with input `a` to the singleton set `{M.step s a}`. -/
 @[simps] def toNFA (M : DFA α σ) : NFA α σ where
   step s a := {M.step s a}
   start := {M.start}

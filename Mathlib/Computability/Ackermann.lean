@@ -25,9 +25,9 @@ definition, we show that this isn't a primitive recursive function.
 We very broadly adapt the proof idea from
 https://www.planetmath.org/ackermannfunctionisnotprimitiverecursive. Namely, we prove that for any
 primitive recursive `f : ℕ → ℕ`, there exists `m` such that `f n < ack m n` for all `n`. This then
-implies that `fun n => ack n n` can't be primitive recursive, and so neither can `ack`. We aren't
-able to use the same bounds as in that proof though, since our approach of using pairing functions
-differs from their approach of using multivariate functions.
+implies that `fun n => ack n n` cannot be primitive recursive, and so neither can `ack`. However,
+we are not able to use the same bounds as in that proof, since our approach using pairing functions
+differs from their approach using multivariate functions.
 
 The important bounds we show during the main inductive proof (`exists_lt_ack_of_nat_primrec`)
 are the following. Assuming `∀ n, f n < ack a n` and `∀ n, g n < ack b n`, we have:
@@ -356,7 +356,7 @@ def pappAck : ℕ → Code
   | 0 => .succ
   | n + 1 => step (pappAck n)
 where
-  /-- Yields single recursion step on `pappAck`. -/
+  /-- Yields a single recursion step on `pappAck`. -/
   step (c : Code) : Code :=
     .curry (.prec (.comp c (.const 1)) (.comp c (.comp .right .right))) 0
 
