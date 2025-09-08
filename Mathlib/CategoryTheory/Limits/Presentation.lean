@@ -22,6 +22,7 @@ the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` th
 ## TODOs:
 
 - Dualise to obtain `LimitPresentation`.
+- Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
 
 universe s t w v u
