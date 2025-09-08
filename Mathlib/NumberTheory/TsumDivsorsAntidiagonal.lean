@@ -13,7 +13,7 @@ This file contains lemmas about the antidiagonal of the divisors function. It de
 `Nat.divisorsAntidiagonal n` to `ℕ+ × ℕ+` given by sending `n = a * b` to `(a, b)`.
 
 We then prove some identities about the infinite sums over this antidiagonal, such as
-`∑' n : ℕ+, n ^ k * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ k n * r ^ (n : ℕ)`
+`∑' n : ℕ+, n ^ k * r ^ n / (1 - r ^ n) = ∑' n : ℕ+, σ k n * r ^ n`
 which are used for Eisenstein series and their q-expansions. This is also a special case of
 Lambert series.
 
@@ -65,12 +65,12 @@ omit [NormSMulClass ℤ 𝕜] in
 lemma summable_norm_pow_mul_geometric_div_one_sub (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun n : ℕ ↦ n ^ k * r ^ n / (1 - r ^ n) := by
   simp only [div_eq_mul_one_div ( _ * _ ^ _)]
-  apply summable_mul_tendsto_const (c := 1 / (1 - 0))
+  apply Summable.mul_tendsto_const (c := 1 / (1 - 0))
     (by simpa using summable_norm_pow_mul_geometric_of_norm_lt_one k hr)
   simpa only [Nat.cofinite_eq_atTop] using
    tendsto_const_nhds.div ((tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).const_sub 1) (by simp)
 
-theorem summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
+private lemma summable_divisorsAntidiagonal_aux (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable fun c : (n : ℕ+) × {x // x ∈ (n : ℕ).divisorsAntidiagonal} ↦
     (c.2.1.2) ^ k * (r ^ (c.2.1.1 * c.2.1.2)) := by
   apply Summable.of_norm
@@ -97,27 +97,17 @@ theorem summable_prod_mul_pow (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
   simpa [sigmaAntidiagonalEquivProd.summable_iff.symm] using summable_divisorsAntidiagonal_aux k hr
 
 theorem tsum_prod_pow_eq_tsum_sigma (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' d : ℕ+, ∑' (c : ℕ+), c ^ k * (r ^ (d * c : ℕ)) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
-  suffices ∑' (c : ℕ+ × ℕ+), (c.2 ^ k : 𝕜) * (r ^ (c.1 * c.2 : ℕ)) =
-    ∑' e : ℕ+, σ k e * r ^ (e : ℕ) by
-    rw [Summable.tsum_prod (by apply summable_prod_mul_pow k hr)] at this
-    · simpa using this
+    ∑' d : ℕ+, ∑' c : ℕ+, c ^ k * r ^ (d * c : ℕ) = ∑' e : ℕ+, σ k e * r ^ (e : ℕ) := by
+  suffices ∑' c : ℕ+ × ℕ+, c.2 ^ k * r ^ (c.1 * c.2 : ℕ) =
+    ∑' e : ℕ+, σ k e * r ^ (e : ℕ) by rwa [← (summable_prod_mul_pow k hr).tsum_prod]
   simp only [← sigmaAntidiagonalEquivProd.tsum_eq, sigmaAntidiagonalEquivProd,
     divisorsAntidiagonalFactors, PNat.mk_coe, Equiv.coe_fn_mk, sigma_eq_sum_div, cast_sum,
     cast_pow, Summable.tsum_sigma (summable_divisorsAntidiagonal_aux k hr)]
-  apply tsum_congr
-  intro n
-  simp only [tsum_fintype, Finset.univ_eq_attach, Finset.sum_attach ((n : ℕ).divisorsAntidiagonal)
-    (fun (x : ℕ × ℕ) ↦ (x.2 : 𝕜) ^ k * r ^ (x.1 * x.2)), Nat.sum_divisorsAntidiagonal
-    (fun x y ↦ (y : 𝕜) ^ k * r ^ (x * y)), Finset.sum_mul]
-  refine Finset.sum_congr (rfl) fun i hi ↦ ?_
-  have hni : (n / i : ℕ) * (i : ℕ) = n := by
-    simp only [Nat.mem_divisors, ne_eq, PNat.ne_zero, not_false_eq_true, and_true] at *
-    nth_rw 2 [← Nat.div_mul_cancel hi]
-  rw [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
-  left
-  nth_rw 2 [← hni]
-  ring
+  refine tsum_congr fun n ↦ ?_
+  simpa [tsum_fintype, Finset.sum_mul,
+    (n : ℕ).divisorsAntidiagonal.sum_attach fun x : ℕ × ℕ ↦ x.2 ^ k * r ^ (x.1 * x.2),
+    sum_divisorsAntidiagonal fun x y ↦ y ^ k * r ^ (x * y)]
+      using Finset.sum_congr rfl fun i hi ↦ by rw [Nat.mul_div_cancel' (dvd_of_mem_divisors hi)]
 
 lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) (k : ℕ) :
     ∑' n : ℕ+, n ^ k * r ^ (n : ℕ) / (1 - r ^ (n : ℕ)) = ∑' n : ℕ+, σ k n * r ^ (n : ℕ) := by
