@@ -9,6 +9,7 @@ import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.TryThis
 
 /-!
 ## The `bound` tactic
@@ -236,6 +237,7 @@ lemma le_sqr_add (c z : ℝ) (cz : ‖c‖ ≤ ‖z‖) (z3 : 3 ≤ ‖z‖) :
 3. Local hypotheses from the context
 4. Optionally: additional hypotheses provided as `bound [h₀, h₁]` or similar. These are added to the
    context as if by `have := hᵢ`.
+5. Extra `aesop` rules may be added, for example `bound (add unsafe unfold [myFunc]) [h₀]`
 
 The functionality of `bound` overlaps with `positivity` and `gcongr`, but can jump back and forth
 between `0 ≤ x` and `x ≤ y`-type inequalities.  For example, `bound` proves
@@ -247,28 +249,29 @@ faster since it is more specialized (not built atop `aesop`).
 
 The variant `bound?` prints the proof it found as a Try this suggestion.
 -/
-syntax (name := boundTactic) "bound " (" [" term,* "]")? : tactic
+macro (name := bound) "bound" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
+`(tactic|
+  aesop $c* (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
 
--- Plain `bound` elaboration, with no hypotheses
-elab_rules : tactic
-  | `(tactic| bound) => do
-    let tac ← `(tactic| aesop (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
-    liftMetaTactic fun g ↦ do return (← Lean.Elab.runTactic g tac.raw).1
+-- Elaborating `bound?` to use `aesop?`'s proof script generation
+@[inherit_doc bound]
+macro (name := bound?) "bound?" c:Aesop.tactic_clause* (" [" term,* "]")? : tactic =>
+`(tactic|
+  aesop? $c* (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
 
 -- Rewrite `bound [h₀, h₁]` into `have := h₀, have := h₁, bound`, and similar
 macro_rules
-  | `(tactic| bound%$tk [$[$ts],*]) => do
+  | `(tactic| bound%$tk $cs:Aesop.tactic_clause* [$[$ts],*]) => do
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
-    `(tactic| ($haves;*; bound%$tk))
+    `(tactic| ($haves;*; bound%$tk $cs*))
 
-@[inherit_doc boundTactic]
-syntax "bound? " : tactic
-
--- Elaborating `bound?` to use `aesop?`'s proof script generation
-elab_rules : tactic
-  | `(tactic| bound?) => do
-    let tac ← `(tactic| aesop? (rule_sets := [Bound, -default]) (config := Bound.boundConfig))
-    liftMetaTactic fun g ↦ do return (← Lean.Elab.runTactic g tac.raw).1
+-- When rewriting `bound?`, we give `try_this` outputs for the `have`s.
+-- This prints them out as separate commands after the aesop script, a TODO would be combining them.
+-- But this is perfectly legible for now (and we don't expect `bound?`s to stick in the codebase)
+macro_rules
+  | `(tactic| bound?%$tk $cs:Aesop.tactic_clause* [$[$ts],*]) => do
+    let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| try_this have := $t)
+    `(tactic| ($haves;*; bound?%$tk $cs*))
 
 /-!
 We register `bound` with the `hint` tactic.
