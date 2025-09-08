@@ -320,9 +320,9 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
 /-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p` -/
 lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
-    (hmaps: Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
     (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) :
-    Set.EqOn f (nth p) {n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card} :=
+    Set.EqOn f (nth p) { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } :=
   fun _ hi => le_antisymm
     (Nat.le_nth_of_monotoneOn_of_surjOn _ hsurj hmono.monotoneOn hi)
     (Nat.nth_le_of_strictMonoOn_of_mapsTo _ hmaps hmono)
