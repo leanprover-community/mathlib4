@@ -373,7 +373,7 @@ lemma of_iso (h : IsPullback fst snd f g)
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
 
-/-- Pullbacks over isomorphic cospans (with fixed codomain `Z`) have isomorphic apexes. -/
+/-- Pullbacks over isomorphic cospans have isomorphic apexes. -/
 def isoIsPullback_congr
       {P' X' Y' Z' : C}
       (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
