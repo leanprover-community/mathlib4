@@ -36,42 +36,23 @@ info: the term is reduced to 6 • ⁅⁅a, c⁆, ⁅a, ⁅c, b⁆⁆⁆ + (6 �
 
 end
 
--- Add tests that shows what `lie_ring_nf` does
--- Add tests to make sure config works
--- Add tests for lie_algebra
-
--- section tests
-
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
 example (a b c : L) (r r' : R) : ⁅r • ⁅r • a, r' • b⁆, r' • c⁆
-  = (r' * (r * (r' * r))) • ⁅⁅a, b⁆, c⁆ := by
-  sorry
+    = (r' * r) • (⁅r • a, ⁅b, r' • c⁆⁆ + ⁅⁅a, r • c⁆, r' • b⁆) := by
+  lie_algebra
 
--- example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆ := by
---   lie_ring_nf
+example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆ := by
+  lie_ring_nf
+  guard_target = ⁅a, ⁅b, c⁆⁆ + ⁅⁅a, c⁆, b⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆
+  abel
+
+example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆ := by
+  lie_ring_nf (config := {mode := .raw})
+  guard_target = (1 : ℤ) • ⁅a, ⁅b, c⁆⁆ + ((1 : ℤ) • ⁅⁅a, c⁆, b⁆ + 0) = (1 : ℤ) • ⁅⁅a, c⁆, b⁆ + 0 + ((1 : ℤ) • ⁅a, ⁅b, c⁆⁆ + 0)
+  abel
 
 example (a b c : L) : ⁅⁅a, b⁆, c⁆ + ⁅⁅b, c⁆, a⁆ + ⁅⁅c, a⁆, b⁆ = 0 := by
-  -- lie_ring_nf
-  sorry
-
-example (a b : L) : (2 : ℤ) • a + (2 : ℤ) • b = (2 : ℤ) • (a + b) := by
-  -- lie_ring_nf
-  sorry
-
-example (a b c : L) : ⁅⁅a, c⁆, ⁅b, ⁅a, c⁆⁆⁆ = 0 := by
-  lie_ring_nf (config := {strategy := .raw})
-  sorry
-
-example (a b : L) (f : L → L) (g : L → L) (h : f ⁅a, a⁆ = 0) : f (f ⁅b, b⁆) = 0 := by
-  lie_ring_nf 
-  sorry
-
--- example (a : L) : ⁅a, a⁆ = 0 := by
---   lie_ring_nf
-
--- example (a b : L) : ⁅a, b⁆ = -⁅b, a⁆ := by
---   lie_ring_nf
---   -- module
-
--- end tests
+  lie_ring_nf
+  guard_target = ⁅a, ⁅b, c⁆⁆ + ⁅⁅a, c⁆, b⁆ + -⁅a, ⁅b, c⁆⁆ + -⁅⁅a, c⁆, b⁆ = 0
+  abel

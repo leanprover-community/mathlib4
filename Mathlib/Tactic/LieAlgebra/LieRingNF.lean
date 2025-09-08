@@ -5,6 +5,7 @@ Authors: Nailin Guan, Zixun Guo, Wanyi He, Jingting Wang
 -/
 import Mathlib.Tactic.LieAlgebra.Basic
 import Mathlib.Tactic.Module
+import Mathlib.Util.AtomM.Recurse
 
 /-!
 # `lie_ring_nf` tactic
@@ -23,63 +24,36 @@ open Mathlib.Tactic.LieRing
 
 namespace LieRingNF
 
-inductive LieRingConfig
+inductive LieRingMode
   /-- If set to `.simple`, simp lemmas will be applied to the result to make it more concise. -/
   | simple
   /-- If set to `.raw`, the normal form will be the raw result returned from the internal
   representation of this tactic. -/
   | raw
-deriving Inhabited, BEq, Repr
-
-structure Config where
-  /-- The reducibility setting to use when comparing atoms for defEq -/
-  red := TransparencyMode.reducible
-  /-- If it is `true`, atoms inside Lie ring expressions will be reduced recursively -/
-  recursive := true
-  /-- The strategy to use for normalizing the expressions in `LieRing` -/
-  strategy : LieRingConfig := LieRingConfig.simple
   deriving Inhabited, BEq, Repr
 
-/-- Default elaborator -/
+structure Config extends AtomM.Recurse.Config where
+  /-- The mode of normalizing the expressions in `LieRing` -/
+  mode : LieRingMode := LieRingMode.simple
+  deriving Inhabited, BEq, Repr
+
+/-- Default elaborator of `LieRingNF.config` -/
 declare_config_elab elabConfig Config
 
-structure Context where
-  /-- The context for `simp` in the process of rewriting. -/
-  ctx : Simp.Context
-  /-- The simplification that we will apply to the expression after rewriting it into the normal
-  form. -/
-  simp : Simp.Result → SimpM Simp.Result
-
-private abbrev M := ReaderT Context AtomM
-
-private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
-  fun nctx rctx s ↦ do
-    let pre : Simp.Simproc := fun e =>
-      try
-        guard <| root || parent != e -- recursion guard
-        let e ← withReducible <| whnf e
-        guard e.isApp -- all interesting expressions we consider are applications
-        let ⟨u, α, e⟩ ← inferTypeQ' e
-        let sα ← synthInstanceQ (q(LieRing $α) : Q(Type u))
-        let ⟨a, _, pa⟩ ← if ← isAtom α e rctx s then
-          (failure : MetaM (Result (ExSum sα) e)) -- No point rewriting atoms
-        else
-          -- Notice that in our design, when we come across `u • ⁅a, b⁆ + v • ⁅c, d⁆`,
-          -- we pass `⁅a, b⁆` and `⁅c, d⁆` to `eval` separately, rather than the whole expr.
-          let .const n _ := (← withReducible <| whnf e).getAppFn | failure
-          match n with
-          | ``Bracket.bracket =>
-            eval sα e rctx s
-          | _ =>
-            -- if it is not a Lie bracket, recursively rewrite the arguments
-            -- after failure, the simp process automatically continues into subexpressions
-            failure
-        let r ← nctx.simp { expr := a, proof? := pa }
-        if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
-        pure (.done r)
-      catch _ => pure <| .continue
-    let post := Simp.postDefault #[]
-    (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
+def evalExpr (e : Expr) : AtomM Simp.Result := do
+  let e ← withReducible <| whnf e
+  guard e.isApp -- all interesting expressions we consider are applications
+  let ⟨u, α, e⟩ ← inferTypeQ' e
+  let sα ← synthInstanceQ (q(LieRing $α) : Q(Type u))
+  let ⟨a, _, pa⟩ ← if ← isAtom α e then failure -- No point rewriting atoms
+    else
+    -- Notice that in our design, when we come across `u • ⁅a, b⁆ + v • ⁅c, d⁆`,
+    -- we pass `⁅a, b⁆` and `⁅c, d⁆` to `eval` separately, rather than the whole expr.
+    let .const n _ := (← withReducible <| whnf e).getAppFn | failure
+    match n with
+    | ``Bracket.bracket => eval sα e
+    | _ => failure
+  pure {expr := a, proof? := pa}
 
 section SimpLemmas
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {n d : ℕ}
@@ -106,60 +80,31 @@ private theorem rat_rawCast_neg {R} [DivisionRing R] :
 
 end SimpLemmas
 
-private partial def M.run
-    {α : Type} (s : IO.Ref AtomM.State) (cfg : LieRingNF.Config) (x : M α) : MetaM α := do
-  let ctx ← Simp.mkContext { singlePass := cfg.strategy matches .raw}
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+def simp_theorems : MetaM SimpTheorems := do
+  let thms : SimpTheorems := {}
+  let thms ← [ ``lie_smul_left, ``lie_smul_right, ``lie_nsmul_left, ``lie_nsmul_right,
+    ``add_lie_left, ``add_lie_right, ``add_zero1, ``zero_smul1, ``one_smul1,
+    ``neg_smul1, ``sub_neg
+  ].foldlM (·.addConst ·) thms
+  let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
+    ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
+  pure thms
+
+def simp_ctx (cfg : LieRingNF.Config) : MetaM Simp.Context := do
+  let thms ← simp_theorems
+  Simp.mkContext { zetaDelta := cfg.zetaDelta }
+    (simpTheorems := #[thms])
     (congrTheorems := ← getSimpCongrTheorems)
-  let simp ← match cfg.strategy with
-  /- If the strategy is `.raw`, we do no further simplification of the result. -/
-  | .raw => pure pure
-  /- If the strategy is `.simple`, we apply these lemmas to simplify the normal form we get. -/
+
+def cleanup (cfg : LieRingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+  match cfg.mode with
+  | .raw => pure r
   | .simple => do
-    let thms : SimpTheorems := {}
-    let thms ← [ ``lie_smul_left, ``lie_smul_right, ``lie_nsmul_left, ``lie_nsmul_right,
-      ``add_lie_left, ``add_lie_right, ``add_zero1, ``zero_smul1, ``one_smul1,
-      ``neg_smul1, ``sub_neg
-    ].foldlM (·.addConst ·) thms
-    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-      ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
-    let ctx' := ctx.setSimpTheorems #[thms]
-    pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-  let nctx := { ctx, simp }
-  let rec
-    /-- The recursive context. -/
-    rctx := { red := cfg.red, evalAtom },
-    /-- The atom evaluator calls either `LieRingNF.rewrite` recursively,
-    or nothing depending on `cfg.recursive`. -/
-    evalAtom := if cfg.recursive
-      then fun e ↦ rewrite e false nctx rctx s
-      else fun e ↦ pure { expr := e }
-  x nctx rctx s
+    let ctx ← simp_ctx cfg
+    pure <| ←
+      r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
 open Elab.Tactic Parser.Tactic
-/-- Use `lie_ring_nf` to rewrite the main goal. -/
-private def lieRingNFTarget
-    (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let r ← M.run s cfg <| rewrite tgt
-  if r.expr.consumeMData.isConstOf ``True then
-    goal.assign (← mkOfEqTrue (← r.getProof))
-    replaceMainGoal []
-  else
-    replaceMainGoal [← applySimpResultToTarget goal tgt r]
-
-/-- Use `lie_ring_nf` to rewrite hypothesis `h`. -/
-private def lieRingNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId : FVarId) :
-    TacticM Unit := withMainContext do
-  let tgt ← instantiateMVars (← fvarId.getType)
-  let goal ← getMainGoal
-  let myres ← M.run s cfg <| rewrite tgt
-  match ← applySimpResultToLocalDecl goal fvarId myres false with
-  | none => replaceMainGoal []
-  | some (_, newGoal) => replaceMainGoal [newGoal]
-
 /--
 Simplification tactic for expressions in the language of Lie rings,
 which rewrites all `LieRing` expressions into a normal form.
@@ -178,8 +123,11 @@ elab (name := lie_ringNF) "lie_ring_nf" tk:"!"? cfg:optConfig loc:(location)? : 
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
-  withLocation loc (lieRingNFLocalDecl s cfg) (lieRingNFTarget s cfg)
-    fun _ ↦ throwError "lie_ring_nf failed"
+  -- We have to run the simp process first to extract all scalars before running our tactic.
+  let m : Expr → MetaM Simp.Result := fun tgt => do
+    let r ← Simp.main tgt (← simp_ctx cfg) (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})
+    pure <| ← r.1.mkEqTrans (← AtomM.recurse s cfg.toConfig evalExpr (cleanup cfg) r.1.expr)
+  transformAtLocation (m ·) "lie_ring_nf" loc (failIfUnchanged := false)
 
 @[inherit_doc lie_ringNF] macro "lie_ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| lie_ring_nf ! $cfg:optConfig $(loc)?)
@@ -192,8 +140,7 @@ elab (name := lie_algebra) "lie_algebra" cfg:optConfig : tactic =>
     let s ← saveState
     try
       evalTactic (← `(tactic| lie_ring_nf $cfg:optConfig))
-      if (← getGoals).isEmpty then
-        return
+      if (← getGoals).isEmpty then return
       evalTactic (← `(tactic| module))
       if (← getGoals).isEmpty then return else throwError "failed"
     catch _ =>
