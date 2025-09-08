@@ -30,7 +30,6 @@ local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 /-- The cardinal of the set of linearly independent vectors over a finite dimensional vector space
 over a finite field. -/
 theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
@@ -49,7 +48,7 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
-        mul_comm, Fin.prod_univ_succAbove _ k]
+        mul_comm, Fin.prod_univ_succAbove _ (Fin.last k)]
 
 end LinearIndependent
 
