@@ -68,12 +68,12 @@ variable {f g : X ⟶ Y} [IsFibrant Y]
 /-- When two morphisms `X ⟶ Y` with `Y` fibrant are related by a right homotopy,
 this is a choice of a left homotopy relative to any good cylinder object for `X`. -/
 noncomputable def leftHomotopy (h : RightHomotopyRel f g) (Q : Cylinder X) [Q.IsGood] :
-    Q.LeftHomotopy f g := by
-  apply Nonempty.some
-  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good_pathObject
+    Q.LeftHomotopy f g :=
+  let P := h.exists_good_pathObject.choose
+  have h := h.exists_good_pathObject.choose_spec.2.some
+  have h' := h.exists_good_pathObject.choose_spec.1
   have sq : CommSq (coprod.desc (f ≫ P.ι) h.h) Q.i P.p₀ (Q.π ≫ f) := { }
-  exact ⟨{
-    h := sq.lift ≫ P.p₁
+  { h := sq.lift ≫ P.p₁
     h₀ := by
       have := coprod.inl ≫= sq.fac_left
       rw [Q.inl_i_assoc, coprod.inl_desc] at this
@@ -81,8 +81,7 @@ noncomputable def leftHomotopy (h : RightHomotopyRel f g) (Q : Cylinder X) [Q.Is
     h₁ := by
       have := coprod.inr ≫= sq.fac_left
       rw [Q.inr_i_assoc, coprod.inr_desc] at this
-      simp [reassoc_of% this]
-  }⟩
+      simp [reassoc_of% this, P] }
 
 lemma leftHomotopyRel (h : RightHomotopyRel f g) : LeftHomotopyRel f g := by
   obtain ⟨P, _⟩ := Cylinder.exists_very_good X
