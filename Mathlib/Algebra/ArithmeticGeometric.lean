@@ -53,7 +53,8 @@ lemma arithGeom_eq_add_sum [CommSemiring R] (n : ℕ) :
     congr
     rw [add_comm _ n, Finset.sum_range_succ', Finset.mul_sum, pow_zero, mul_add, mul_one,
       Finset.mul_sum, Finset.mul_sum]
-    ring_nf
+    congr with k
+    ring
 
 lemma arithGeom_same_eq_sum [CommSemiring R] (n : ℕ) :
     arithGeom a b b n = b * ∑ k ∈ Finset.range (n + 1), a ^ k := by
