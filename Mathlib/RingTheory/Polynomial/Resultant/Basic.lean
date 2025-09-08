@@ -210,7 +210,7 @@ private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree 
     fin_cases hj' <;> simp [mul_comm, one_add_one_eq_two, (by norm_num : (2 : R) + 1 = 3)]
 
 /-- Standard formula for the discriminant of a cubic polynomial. -/
-lemma disc_cubic {f : R[X]} (hf : f.degree = 3) :
+lemma disc_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
     disc f = f.coeff 2 ^ 2 * f.coeff 1 ^ 2
               - 4 * f.coeff 3 * f.coeff 1 ^ 3
               - 4 * f.coeff 2 ^ 3 * f.coeff 0
