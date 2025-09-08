@@ -105,32 +105,6 @@ end SubsetBall_Aux
 
 end Complex
 
-namespace ContinuousOn
-
-/- Auxiliary lemmata about continuity of various occurring functions -/
-
-variable {c : ℂ} {r : ℝ} {f : ℂ → E} (hf : ContinuousOn f (ball c r))
-include hf
-
-private lemma re_aux_1 {z : ℂ} :
-    ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I))
-      (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :=
-  hf.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <| fun _ ↦ mem_ball_re_aux'
-
-private lemma re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r) (ha₂ : a₂ + b * I ∈ ball c r) :
-    ContinuousOn (fun (x : ℝ) ↦ f (x + b * I)) [[a₁, a₂]] :=
-  (hf.mono (mem_ball_of_map_re_aux ha₁ ha₂)).comp (by fun_prop) (mapsTo_image _ _)
-
-private lemma im_aux_1 {z w : ℂ} (hw : w ∈ ball z (r - dist z c)) :
-    ContinuousOn (fun (y : ℝ) ↦ f (w.re + y * I)) [[z.im, w.im]] :=
-  (hf.mono (mem_ball_of_map_im_aux' hw)).comp (by fun_prop) (mapsTo_image _ _)
-
-private lemma im_aux_2 {a b₁ b₂ : ℝ} (hb₁ : a + b₁ * I ∈ ball c r) (hb₂ : a + b₂ * I ∈ ball c r) :
-    ContinuousOn (fun (y : ℝ) ↦ f (a + y * I)) [[b₁, b₂]] :=
-  (hf.mono (mem_ball_of_map_im_aux hb₁ hb₂)).comp (by fun_prop) (mapsTo_image _ _)
-
-end ContinuousOn
-
 namespace Complex
 
 variable [NormedSpace ℂ E]
@@ -203,10 +177,12 @@ lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedO
   have w_mem : w ∈ ball c r := mem_of_subset_of_mem z_ball w_in_z_ball
   have integrableHoriz (a₁ a₂ b : ℝ) (ha₁ : a₁ + b * I ∈ ball c r) (ha₂ : a₂ + b * I ∈ ball c r) :
       IntervalIntegrable (fun x ↦ f (x + b * I)) volume a₁ a₂ :=
-    (f_cont.re_aux_2 ha₁ ha₂).intervalIntegrable
+    ((f_cont.mono (mem_ball_of_map_re_aux ha₁ ha₂)).comp (by fun_prop)
+      (mapsTo_image _ _)).intervalIntegrable
   have integrableVert (a b₁ b₂ : ℝ) (hb₁ : a + b₁ * I ∈ ball c r) (hb₂ : a + b₂ * I ∈ ball c r) :
       IntervalIntegrable (fun y ↦ f (a + y * I)) volume b₁ b₂ :=
-    (f_cont.im_aux_2 hb₁ hb₂).intervalIntegrable
+    ((f_cont.mono (mem_ball_of_map_im_aux hb₁ hb₂)).comp (by fun_prop)
+      (mapsTo_image _ _)).intervalIntegrable
   have hI₁ : I₁ = I₃ + I₇ := by
     rw [intervalIntegral.integral_add_adjacent_intervals] <;> apply integrableHoriz
     · exact re_add_im_mul_mem_ball <| mem_ball_self (pos_of_mem_ball hz)
@@ -241,7 +217,9 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
   have r₁_pos : 0 < r₁ := by simpa only [mem_ball, sub_pos, r₁] using hz
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
-  have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s := f_cont.re_aux_1
+  have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s :=
+    f_cont.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <|
+      fun _ ↦ mem_ball_re_aux'
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
     ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa
   have int2 : StronglyMeasurableAtFilter (fun (x : ℝ) ↦ f (x + z.im * I)) (𝓝 z.re) :=
@@ -262,7 +240,8 @@ private lemma hasDerivAt_wedgeIntegral_im_aux :
       _ =o[𝓝 z] fun w ↦ w - z := this
     refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w hw ↦ ?_⟩
     exact (intervalIntegral.integral_sub
-      (f_cont.im_aux_1 hw).intervalIntegrable intervalIntegrable_const).symm
+      ((f_cont.mono (mem_ball_of_map_im_aux' hw)).comp (by fun_prop)
+        (mapsTo_image _ _)).intervalIntegrable intervalIntegrable_const).symm
   have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : ℝ) := by
     rw [Asymptotics.isLittleO_one_iff, tendsto_sub_nhds_zero_iff]
     exact f_cont.continuousAt <| _root_.mem_nhds_iff.mpr ⟨ball c r, le_refl _, isOpen_ball, hz⟩
