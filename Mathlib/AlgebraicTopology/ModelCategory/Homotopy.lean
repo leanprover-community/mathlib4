@@ -170,7 +170,7 @@ lemma precomp_bijective_of_cofibration_of_weakEquivalence
     have sq : CommSq φ f (terminal.from _) (terminal.from _) := { }
     exact ⟨mk sq.lift, by simp⟩
 
-lemma bijective_precomp_of_weakEquivalence
+lemma precomp_bijective_of_weakEquivalence
     [IsFibrant Z] (f : X ⟶ Y) [IsCofibrant X] [IsCofibrant Y] [WeakEquivalence f] :
     Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
   let h : CofibrantBrownFactorization f := Classical.arbitrary _
