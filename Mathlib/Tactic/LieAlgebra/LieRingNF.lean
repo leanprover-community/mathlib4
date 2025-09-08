@@ -23,15 +23,18 @@ open Mathlib.Tactic.LieRing
 
 namespace LieRingNF
 
-private inductive LieRingConfig
+inductive LieRingConfig
+  /-- If set to `.simple`, simp lemmas will be applied to the result to make it more concise. -/
   | simple
+  /-- If set to `.raw`, the normal form will be the raw result returned from the internal
+  representation of this tactic. -/
   | raw
 deriving Inhabited, BEq, Repr
 
-private structure Config where
+structure Config where
   /-- The reducibility setting to use when comparing atoms for defEq -/
   red := TransparencyMode.reducible
-  /-- If it is `true`, atoms inside ring expressions will be reduced recursively -/
+  /-- If it is `true`, atoms inside Lie ring expressions will be reduced recursively -/
   recursive := true
   /-- The strategy to use for normalizing the expressions in `LieRing` -/
   strategy : LieRingConfig := LieRingConfig.simple
@@ -40,8 +43,11 @@ private structure Config where
 /-- Default elaborator -/
 declare_config_elab elabConfig Config
 
-private structure Context where
+structure Context where
+  /-- The context for `simp` in the process of rewriting. -/
   ctx : Simp.Context
+  /-- The simplification that we will apply to the expression after rewriting it into the normal
+  form. -/
   simp : Simp.Result → SimpM Simp.Result
 
 private abbrev M := ReaderT Context AtomM
@@ -52,15 +58,14 @@ private partial def rewrite (parent : Expr) (root := true) : M Simp.Result :=
       try
         guard <| root || parent != e -- recursion guard
         let e ← withReducible <| whnf e
-        guard e.isApp -- all interesting expressions are applications
+        guard e.isApp -- all interesting expressions we consider are applications
         let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ (q(LieRing $α) : Q(Type u))
         let ⟨a, _, pa⟩ ← if ← isAtom α e rctx s then
           (failure : MetaM (Result (ExSum sα) e)) -- No point rewriting atoms
         else
-          -- notice that in our design,
-          -- when we come across `u • ⁅a, b⁆ + v • ⁅c, d⁆`, we pass `⁅a, b⁆` and `⁅c, d⁆` to `eval`
-          -- separately, rather than the whole expr.
+          -- Notice that in our design, when we come across `u • ⁅a, b⁆ + v • ⁅c, d⁆`,
+          -- we pass `⁅a, b⁆` and `⁅c, d⁆` to `eval` separately, rather than the whole expr.
           let .const n _ := (← withReducible <| whnf e).getAppFn | failure
           match n with
           | ``Bracket.bracket =>
@@ -107,7 +112,9 @@ private partial def M.run
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.strategy with
+  /- If the strategy is `.raw`, we do no further simplification of the result. -/
   | .raw => pure pure
+  /- If the strategy is `.simple`, we apply these lemmas to simplify the normal form we get. -/
   | .simple => do
     let thms : SimpTheorems := {}
     let thms ← [ ``lie_smul_left, ``lie_smul_right, ``lie_nsmul_left, ``lie_nsmul_right,
@@ -154,16 +161,15 @@ private def lieRingNFLocalDecl (s : IO.Ref AtomM.State) (cfg : Config) (fvarId :
   | some (_, newGoal) => replaceMainGoal [newGoal]
 
 /--
-Simplification tactic for expressions in the language of lie rings,
+Simplification tactic for expressions in the language of Lie rings,
 which rewrites all `LieRing` expressions into a normal form.
 * `lie_ring_nf!` will use a more aggressive reducibility setting to identify atoms.
 * `lie_ring_nf (config := cfg)` allows for additional configuration:
   * `red`: the reducibility setting (overridden by `!`)
   * `recursive`: if true, `lie_ring_nf` will also recurse into atoms
-* `lie_ring_nf` works as both a tactic and a conv tactic.
-  In tactic mode, `lie_ring_nf at h` can be used to rewrite in a hypothesis.
+* In tactic mode, `lie_ring_nf at h` can be used to rewrite in a hypothesis.
 
-  Pay attention to that `lie_ring_nf` is not designed to simplify coefficients of lie algebra.
+  Please notice that `lie_ring_nf` is not designed to simplify coefficients of lie algebra.
   We suggest using `module` after `lie_ring_nf` or simply `lie_algebra` to close the goal
   of equation.
 -/
@@ -177,27 +183,6 @@ elab (name := lie_ringNF) "lie_ring_nf" tk:"!"? cfg:optConfig loc:(location)? : 
 
 @[inherit_doc lie_ringNF] macro "lie_ring_nf!" cfg:optConfig loc:(location)? : tactic =>
   `(tactic| lie_ring_nf ! $cfg:optConfig $(loc)?)
-
-@[inherit_doc lie_ringNF] syntax (name := ringNFConv) "lie_ring_nf" "!"? optConfig : conv
-
-/--
-Tactic for proving equations in `LieRing`.
-
-* This version of `lie_ring1` uses `lie_ring_nf` to simplify in atoms.
-* The variant `lie_ring1_nf!` will use a more aggressive reducibility setting
-  to determine equality of atoms.
--/
-elab (name := lie_ring1NF) "lie_ring1_nf" tk:"!"? cfg:optConfig : tactic => do
-  let mut cfg ← elabConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
-  let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
-
-@[inherit_doc lie_ring1NF] macro "lie_ring1_nf!" cfg:optConfig : tactic =>
-  `(tactic| lie_ring1_nf ! $cfg:optConfig)
-
-@[inherit_doc lie_ringNF] macro "lie_ring_nf!" cfg:optConfig : conv =>
-  `(conv| lie_ring_nf ! $cfg:optConfig)
 
 /-- This tactic simply call `module` after `lie_ring`.
   See the documentation for `lie_ring` for more details about configuration.
