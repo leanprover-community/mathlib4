@@ -17,9 +17,9 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
 
 ## Main definitions
 
-- `ListBlank Γ` is the type of one-directional tapes with alphabet `Γ`. Implemented as a quotient
+* `ListBlank Γ` is the type of one-directional tapes with alphabet `Γ`. Implemented as a quotient
   of `List Γ` by extension by blanks at the end.
-- `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
+* `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
   `ListBlank Γ` instances, one for each direction, together with a head symbol.
 
 -/
