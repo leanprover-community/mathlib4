@@ -310,6 +310,19 @@ def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
 
+
+open Function in
+/-- Build a homeomorphism out of bundled continuous maps in both directions. -/
+@[simps]
+def ofContinuousMaps {X Y} [TopologicalSpace X] [TopologicalSpace Y]
+    (toFun : C(X, Y)) (invFun : C(Y, X))
+    (left_inv : LeftInverse invFun toFun := by intro; first | rfl | ext <;> rfl)
+    (right_inv : RightInverse invFun toFun := by intro; first | rfl | ext <;> rfl) : X ≃ₜ Y where
+  toFun
+  invFun
+  left_inv
+  right_inv
+
 @[simp]
 theorem map_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝 x) = 𝓝 (h x) :=
   h.isEmbedding.map_nhds_of_mem _ (by simp)

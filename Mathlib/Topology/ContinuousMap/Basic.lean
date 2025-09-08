@@ -410,6 +410,51 @@ def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
   toFun := Set.inclusion h
   continuous_toFun := continuous_inclusion h
 
+@[simp]
+lemma coe_inclusion {X : Type*} [TopologicalSpace X] {s t : Set X} (h : s ⊆ t) :
+  ⇑(inclusion h) = Set.inclusion h := rfl
+
+/-- `Continuous.subtype_val` bundled into a continuous map. -/
+@[simps]
+def subtypeVal {p : α → Prop} : C(Subtype p, α) where
+  toFun := Subtype.val
+
+section preimage_val
+open Set Set.Notation
+
+/-- The 'identity' function recognizing values of the intersection `s ↓∩ t` as values of `t`,
+as a continuous map. -/
+@[simp]
+def preimageValIncl {s t : Set α} : C(s ↓∩ t, t) where
+  toFun := preimageValInclusion s t
+  continuous_toFun := by unfold preimageValInclusion; continuity
+
+/-- When `s ⊆ t`, the inclusion of `s` into `t` can be lifted into a continuous map`C(s, t ↓∩ s)`.
+-/
+@[simps]
+def inclPreimageVal {s t : Set α} (h : s ⊆ t) : C(s, t ↓∩ s) where
+  toFun := inclusionPreimageVal h
+  continuous_toFun := Continuous.subtype_mk (continuous_inclusion _) _
+
+/-- When `s ⊆ t`, `s ≃ₜ t ↓∩ s`. -/
+@[simps]
+def _root_.Homeomorph.Set.preimageVal {s t : Set α} (h : s ⊆ t) : s ≃ₜ t ↓∩ s where
+  toFun := inclPreimageVal h
+  invFun := preimageValIncl
+  continuous_invFun := ContinuousMap.continuous _
+
+open Set in
+lemma _root_.Topology.IsEmbedding.inclPreimageVal {s t : Set α} (h : s ⊆ t) :
+    Topology.IsEmbedding (inclPreimageVal h) where
+  eq_induced := by
+    ext u
+    simp_rw [isOpen_induced_iff, ContinuousMap.inclPreimageVal, ContinuousMap.coe_mk]
+    unfold inclusionPreimageVal
+    simp [preimage_preimage]
+  injective x y heq := by simpa [inclusionPreimageVal, Subtype.val_inj] using heq
+
+end preimage_val
+
 end ContinuousMap
 
 section Lift
