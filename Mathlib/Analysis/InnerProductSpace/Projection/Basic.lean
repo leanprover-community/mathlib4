@@ -332,7 +332,8 @@ lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     range_starProjection]
 
 open ContinuousLinearMap in
-/-- Composing `e` with `f` is zero iff composing `(ker e).starProjection` with `f` equals `f`. -/
+/-- Composing `e` with `f` equals zero iff composing `(ker e).starProjection` with `f`
+equals `f`. -/
 theorem _root_.ContinuousLinearMap.comp_eq_zero_iff {F G : Type*} [NormedAddCommGroup F]
     [NormedAddCommGroup G] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G] {e : E →L[𝕜] F}
     {f : G →L[𝕜] E} [(LinearMap.ker e).HasOrthogonalProjection] :
