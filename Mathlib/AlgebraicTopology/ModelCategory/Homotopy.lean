@@ -145,7 +145,7 @@ namespace RightHomotopyClass
 
 variable (Z)
 
-lemma bijective_precomp_of_cofibration_of_weakEquivalence
+lemma precomp_bijective_of_cofibration_of_weakEquivalence
     [IsFibrant Z] (f : X ⟶ Y) [Cofibration f] [WeakEquivalence f] :
     Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
   constructor
