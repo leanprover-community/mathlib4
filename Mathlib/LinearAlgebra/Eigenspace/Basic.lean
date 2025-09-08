@@ -135,10 +135,6 @@ lemma genEigenspace_zero_nat (f : End R M) (k : ℕ) :
     f.genEigenspace 0 k = LinearMap.ker (f ^ k) := by
   ext; simp [mem_genEigenspace_nat]
 
-lemma genEigenspace_eq_genEigenspace_zero_nat (f : End R M) (μ : R) (k : ℕ) :
-    f.genEigenspace μ k = (f - μ • 1).genEigenspace 0 k := by
-  simp [genEigenspace_nat]
-
 /-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`,
 and let `μ : R` and `k : ℕ∞` be given.
 Then `x : M` satisfies `HasUnifEigenvector f μ k x` if
@@ -399,10 +395,6 @@ lemma eigenspace_def {f : End R M} {μ : R} :
 @[simp]
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
   simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
-
-lemma eigenspace_eq_eigenspace_zero (f : End R M) (μ : R) :
-    f.eigenspace μ = (f - μ • 1).eigenspace 0 :=
-  genEigenspace_eq_genEigenspace_zero_nat ..
 
 /-- A nonzero element of an eigenspace is an eigenvector. (Def 5.7 of [axler2015]) -/
 abbrev HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
