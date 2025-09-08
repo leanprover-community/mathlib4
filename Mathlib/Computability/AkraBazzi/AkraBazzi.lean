@@ -18,7 +18,7 @@ coefficients, and the `b_i`'s are reals `∈ (0,1)`. (Note that this can be impr
 `O(n / (log n)^(1+ε))`, this is left as future work.) These recurrences arise mainly in the
 analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
 multiplication.  This class of algorithms works by dividing an instance of the problem of size `n`,
-into `k` smaller instances, where the `i`'th instance is of size roughly `b_i n`, and calling itself
+into `k` smaller instances, where the `i`-th instance is of size roughly `b_i n`, and calling itself
 recursively on those smaller instances. `T(n)` then represents the running time of the algorithm,
 and `g(n)` represents the running time required to actually divide up the instance and process the
 answers that come out of the recursive calls. Since virtually all such algorithms produce instances
