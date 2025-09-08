@@ -74,6 +74,7 @@ open Set
 variable [Preorder α]
 
 /-- Order isomorphism between two equal sets. -/
+@[simps! apply symm_apply]
 def setCongr (s t : Set α) (h : s = t) :
     s ≃o t where
   toEquiv := Equiv.setCongr h

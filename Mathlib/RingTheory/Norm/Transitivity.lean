@@ -99,7 +99,7 @@ omit [Fintype m] in
 lemma polyToMatrix_cornerAddX :
     f.polyToMatrix (cornerAddX M k k k) = (-f (M k k)).charmatrix := by
   simp [cornerAddX, Matrix.add_apply, charmatrix,
-    RingHom.polyToMatrix, ← AlgEquiv.symm_toRingEquiv, map_neg]
+    RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, map_neg]
 
 lemma eval_zero_det_det : eval 0 (f.polyToMatrix (cornerAddX M k).det).det = (f M.det).det := by
   rw [← coe_evalRingHom, RingHom.map_det, ← RingHom.comp_apply,
@@ -159,7 +159,7 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
   let f' := f.polyToMatrix
   let M' := cornerAddX M k
   have : (f' M'.det).det = ((M'.map f').comp m m n n R[X]).det := by
-    refine sub_eq_zero.mp <| mem_nonZeroDivisors_iff.mp
+    refine sub_eq_zero.mp <| mem_nonZeroDivisors_iff_right.mp
       (pow_mem ?_ _) _ (det_det_aux k fun M ↦ ih _ _ <| by simp [← card])
     rw [polyToMatrix_cornerAddX, ← charpoly]
     exact (Matrix.charpoly_monic _).mem_nonZeroDivisors

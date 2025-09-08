@@ -42,7 +42,7 @@ various versions of the Jacobi theta function.
 
 noncomputable section
 
-open Complex hiding abs_of_nonneg
+open Complex
 open CharZero Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
 
@@ -81,7 +81,7 @@ lemma jacobiTheta₂''_neg_left (z τ : ℂ) : jacobiTheta₂'' (-z) τ = -jacob
 lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     jacobiTheta₂' z τ = (-2 * π) / (-I * τ) ^ (3 / 2 : ℂ) * jacobiTheta₂'' z (-1 / τ) := by
   rcases eq_or_ne τ 0 with rfl | hτ
-  · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by norm_num), div_zero, zero_mul]
+  · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by simp), div_zero, zero_mul]
   have aux1 : (-2 * π : ℂ) / (2 * π * I) = I := by
     rw [div_eq_iff two_pi_I_ne_zero, mul_comm I, mul_assoc _ I I, I_mul_I, neg_mul, mul_neg,
       mul_one]
@@ -89,7 +89,7 @@ lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     (by rw [cpow_one, ← div_div, div_self (neg_ne_zero.mpr I_ne_zero)] :
       1 / τ = -I / (-I * τ) ^ (1 : ℂ)), div_mul_div_comm,
     ← cpow_add _ _ (mul_ne_zero (neg_ne_zero.mpr I_ne_zero) hτ), ← div_mul_eq_mul_div,
-    (by norm_num : (1 / 2  + 1 : ℂ) = 3 / 2), mul_assoc (1 / _), mul_assoc (1 / _),
+    (by norm_num : (1 / 2 + 1 : ℂ) = 3 / 2), mul_assoc (1 / _), mul_assoc (1 / _),
     ← mul_one_div (-2 * π : ℂ), mul_comm _ (1 / _), mul_assoc (1 / _)]
   congr 1
   rw [jacobiTheta₂'', div_add' _ _ _ two_pi_I_ne_zero, ← mul_div_assoc, ← mul_div_assoc,
@@ -105,7 +105,7 @@ for an expression as a sum over `ℤ`.
 -/
 @[irreducible] def oddKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun a : ℝ ↦ re (jacobiTheta₂'' a (I * x))) 1 by
-    intro a; simp [jacobiTheta₂''_add_left]).lift a
+    simp [jacobiTheta₂''_add_left]).lift a
 
 lemma oddKernel_def (a x : ℝ) : ↑(oddKernel a x) = jacobiTheta₂'' a (I * x) := by
   simp [oddKernel, ← conj_eq_iff_re, jacobiTheta₂''_conj]
@@ -126,7 +126,7 @@ to `∑ (n : ℕ), 2 * n * sin (2 * π * n * a) * exp (-π * n ^ 2 * x)`. See `h
 for the defining sum. -/
 @[irreducible] def sinKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun ξ : ℝ ↦ re (jacobiTheta₂' ξ (I * x) / (-2 * π))) 1 by
-    intro ξ; simp [jacobiTheta₂'_add_left]).lift a
+    simp [jacobiTheta₂'_add_left]).lift a
 
 lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I * x) / (-2 * π) := by
   simp [sinKernel, re_eq_add_conj, jacobiTheta₂'_conj, map_ofNat]
@@ -240,7 +240,7 @@ lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     (sinKernel ↑a t) := by
   rw [← hasSum_ofReal]
   have := (hasSum_int_sinKernel a ht).nat_add_neg
-  simp only [Int.cast_zero, sq (0 : ℂ), zero_mul, mul_zero, add_zero] at this
+  simp only [Int.cast_zero, zero_mul, mul_zero, add_zero] at this
   refine this.congr_fun fun n ↦ ?_
   simp_rw [Int.cast_neg, neg_sq, mul_neg, ofReal_mul, Int.cast_natCast, ofReal_natCast,
       ofReal_ofNat, ← add_mul, ofReal_sin, Complex.sin]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Data.Sign
+import Mathlib.Data.Sign.Basic
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.RCLike.Basic
 
@@ -20,13 +20,9 @@ as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
 
+open Finset Module QuadraticMap SignType
 
 namespace QuadraticForm
-
-open Finset SignType
-
-open QuadraticMap
-
 variable {ι : Type*} [Fintype ι]
 
 /-- The isometry between a weighted sum of squares with weights `u` on the
@@ -39,7 +35,9 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     have : (u i : ℝ) ≠ 0 := (u i).ne_zero
     by positivity
   have hwu : ∀ i, w i / |(u i : ℝ)| = sign (w i) := fun i ↦ by
-    by_cases hi : w i = 0 <;> field_simp [hi, u]
+    by_cases hi : w i = 0
+    · simp [hi]
+    · simp only [hi, ↓reduceDIte, Units.val_mk0, u]; field_simp; simp
   convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
     ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v

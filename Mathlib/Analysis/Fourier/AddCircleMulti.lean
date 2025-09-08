@@ -91,7 +91,7 @@ section Algebra
 def mFourierSubalgebra (d : Type*) [Fintype d] : StarSubalgebra ℂ C(UnitAddTorus d, ℂ) where
   toSubalgebra := Algebra.adjoin ℂ (range mFourier)
   star_mem' := by
-    show Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
+    change Algebra.adjoin ℂ (range mFourier) ≤ star (Algebra.adjoin ℂ (range mFourier))
     refine adjoin_le ?_
     rintro _ ⟨n, rfl⟩
     refine subset_adjoin ⟨-n, ?_⟩
@@ -152,6 +152,11 @@ theorem coeFn_mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
     mFourierLp p n =ᵐ[volume] mFourier n :=
   ContinuousMap.coeFn_toLp volume (mFourier n)
 
+-- shortcut instance: avoids `synthInstance.maxHeartbeats` issue in `span_mFourierLp_closure_eq_top`
+instance {p : ℝ≥0∞} [Fact (1 ≤ p)] :
+    ContinuousSMul ℂ (Lp ℂ p (volume : Measure (UnitAddTorus d))) :=
+  inferInstance
+
 /-- For each `1 ≤ p < ∞`, the linear span of the monomials `mFourier n` is dense in the `Lᵖ` space
 of functions on `UnitAddTorus d`. -/
 theorem span_mFourierLp_closure_eq_top {p : ℝ≥0∞} [Fact (1 ≤ p)] (hp : p ≠ ∞) :
@@ -194,7 +199,7 @@ local notation "L²(" α ")" => Lp ℂ 2 (volume : Measure α)
 on `UnitAddTorus d`, which by definition is an isometric isomorphism from `L²(UnitAddTorus d)`
 to `ℓ²(ℤᵈ, ℂ)`. -/
 def mFourierBasis : HilbertBasis (d → ℤ) ℂ L²(UnitAddTorus d) :=
-  HilbertBasis.mk orthonormal_mFourier (span_mFourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_mFourier (span_mFourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `mFourierBasis` are the functions `mFourierLp 2`, i.e. the
 monomials `mFourier n` on `UnitAddTorus d` considered as elements of `L²`. -/

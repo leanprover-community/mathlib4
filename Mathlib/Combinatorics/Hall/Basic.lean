@@ -36,7 +36,7 @@ The core of this module is constructing the inverse system: for every finite sub
 
 * `Finset.all_card_le_biUnion_card_iff_exists_injective` is in terms of `t : ι → Finset α`.
 * `Fintype.all_card_le_rel_image_card_iff_exists_injective` is in terms of a relation
-  `r : α → β → Prop` such that `Rel.image r {a}` is a finite set for all `a : α`.
+  `r : α → β → Prop` such that `R.image {a}` is a finite set for all `a : α`.
 * `Fintype.all_card_le_filter_rel_iff_exists_injective` is in terms of a relation
   `r : α → β → Prop` on finite types, with the Hall condition given in terms of
   `finset.univ.filter`.
@@ -51,6 +51,7 @@ Hall's Marriage Theorem, indexed families
 -/
 
 open Finset Function CategoryTheory
+open scoped SetRel
 
 universe u v
 
@@ -132,7 +133,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       refine ⟨?_, ?_, ?_⟩
       ·-- Build the matching function from the section
         exact fun i =>
-          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [Opposite.unop_op, mem_singleton]⟩
+          (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective
         intro i i'
         have subi : ({i} : Finset ι) ⊆ {i, i'} := by simp
@@ -149,18 +150,15 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
     rintro ⟨f, hf₁, hf₂⟩ s
     rw [← Finset.card_image_of_injective s hf₁]
     apply Finset.card_le_card
-    intro
-    rw [Finset.mem_image, Finset.mem_biUnion]
-    rintro ⟨x, hx, rfl⟩
-    exact ⟨x, hx, hf₂ x⟩
+    grind
 
 /-- Given a relation such that the image of every singleton set is finite, then the image of every
 finite set is finite. -/
-instance {α : Type u} {β : Type v} [DecidableEq β] (r : α → β → Prop)
-    [∀ a : α, Fintype (Rel.image r {a})] (A : Finset α) : Fintype (Rel.image r A) := by
-  have h : Rel.image r A = (A.biUnion fun a => (Rel.image r {a}).toFinset : Set β) := by
+instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
+    [∀ a : α, Fintype (R.image {a})] (A : Finset α) : Fintype (R.image A) := by
+  have h : R.image A = (A.biUnion fun a => (R.image {a}).toFinset : Set β) := by
     ext
-    simp [Rel.image]
+    simp [SetRel.image]
   rw [h]
   apply FinsetCoe.fintype
 
@@ -172,20 +170,20 @@ a transversal of the relation (an injective function `α → β` whose graph is
 a subrelation of the relation) iff every subset of
 `k` terms of `α` is related to at least `k` terms of `β`.
 
-Note: if `[Fintype β]`, then there exist instances for `[∀ (a : α), Fintype (Rel.image r {a})]`.
+Note: if `[Fintype β]`, then there exist instances for `[∀ (a : α), Fintype (R.image {a})]`.
 -/
 theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {β : Type v}
-    [DecidableEq β] (r : α → β → Prop) [∀ a : α, Fintype (Rel.image r {a})] :
-    (∀ A : Finset α, #A ≤ Fintype.card (Rel.image r A)) ↔
-      ∃ f : α → β, Function.Injective f ∧ ∀ x, r x (f x) := by
-  let r' a := (Rel.image r {a}).toFinset
-  have h : ∀ A : Finset α, Fintype.card (Rel.image r A) = #(A.biUnion r') := by
+    [DecidableEq β] (R : SetRel α β) [∀ a : α, Fintype (R.image {a})] :
+    (∀ A : Finset α, #A ≤ Fintype.card (R.image A)) ↔
+      ∃ f : α → β, Function.Injective f ∧ ∀ x, x ~[R] f x := by
+  let r' a := (R.image {a}).toFinset
+  have h : ∀ A : Finset α, Fintype.card (R.image A) = #(A.biUnion r') := by
     intro A
     rw [← Set.toFinset_card]
     apply congr_arg
     ext b
-    simp [r', Rel.image]
-  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [r', Rel.image]
+    simp [r', SetRel.image]
+  have h' : ∀ (f : α → β) (x), x ~[R] f x ↔ f x ∈ r' x := by simp [r', SetRel.image]
   simp only [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 

@@ -9,7 +9,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.ProperSpace
 
 /-!
-# Proper nontrivally normed fields
+# Proper nontrivially normed fields
 
 Nontrivially normed fields are `ProperSpaces` when they are `WeaklyLocallyCompact`.
 

@@ -11,7 +11,7 @@ import Std.Data.HashMap.Basic
 # Datatypes for the Simplex Algorithm implementation
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /--
 Specification for matrix types over ℚ which can be used in the Gauss Elimination and the Simplex
@@ -60,9 +60,9 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
     mat.data.zipIdx.foldl (init := []) fun acc (row, i) =>
       let rowVals := Array.toList <| row.zipIdx.filterMap fun (v, j) =>
         if v != 0 then
-          .some (i, j, v)
+          some (i, j, v)
         else
-          .none
+          none
       rowVals ++ acc
   ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
     let mut data : Array (Array Rat) := Array.replicate n <| Array.replicate m 0
@@ -126,4 +126,4 @@ structure Tableau (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm mat
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
   mat : matType basic.size free.size
 
-end Linarith.SimplexAlgorithm
+end Mathlib.Tactic.Linarith.SimplexAlgorithm
