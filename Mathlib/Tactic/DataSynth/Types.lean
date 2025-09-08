@@ -131,8 +131,8 @@ structure Config extends DataSynthConfig, Simp.Config
 
 structure Context where
   config : Config := {}
-  disch : Expr → MetaM (Option Expr) := fun _ => pure .none
-  norm  : Expr → MetaM Simp.Result := fun e => pure {expr:=e}
+  disch : Expr → SimpM (Option Expr) := fun _ => pure .none
+  norm  : Expr → SimpM Simp.Result := fun e => pure {expr:=e}
 
 structure State where
   numSteps := 0
