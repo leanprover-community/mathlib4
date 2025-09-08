@@ -531,12 +531,14 @@ instance [SMul M X] [Monoid N] [Semiring Y] [MulSemiringAction N Y] :
 
 instance [SMul M X] [Monoid N] [CommSemiring Y] [MulSemiringAction N Y] :
     CommSemiring (X →ₑ[σ] Y) where
+  mul_comm := mul_comm
 
 instance [SMul M X] [Monoid N] [Ring Y] [MulSemiringAction N Y] :
     Ring (X →ₑ[σ] Y) where
 
 instance [SMul M X] [Monoid N] [CommRing Y] [MulSemiringAction N Y] :
     CommRing (X →ₑ[σ] Y) where
+  mul_comm := mul_comm
 
 end
 
