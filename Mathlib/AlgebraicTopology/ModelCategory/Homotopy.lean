@@ -123,7 +123,7 @@ lemma postcomp_bijective_of_fibration_of_weakEquivalence
     have sq : CommSq (initial.to Y) (initial.to X) g φ := { }
     exact ⟨mk sq.lift, by simp⟩
 
-lemma bijective_postcomp_of_weakEquivalence
+lemma postcomp_bijective_of_weakEquivalence
     [IsCofibrant X] (g : Y ⟶ Z) [IsFibrant Y] [IsFibrant Z] [WeakEquivalence g] :
     Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
   let h : FibrantBrownFactorization g := Classical.arbitrary _
