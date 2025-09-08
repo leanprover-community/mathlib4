@@ -31,8 +31,9 @@ to define the complex logarithm of a nonvanishing function on a simply connected
 noncomputable section
 
 open Complex MeasureTheory Metric Set Topology
-
 open scoped Interval
+
+variable {E : Type*} [NormedAddCommGroup E]
 
 namespace Complex
 
@@ -107,18 +108,13 @@ end Complex
 section ContinuousOn_Aux
 /- Auxiliary lemmata about continuity of various occurring functions -/
 
-variable {E : Type*} [NormedAddCommGroup E] {c : ℂ} {r : ℝ}
-  {f : ℂ → E} (hf : ContinuousOn f (ball c r))
-
+variable {c : ℂ} {r : ℝ} {f : ℂ → E} (hf : ContinuousOn f (ball c r))
 include hf
 
 lemma ContinuousOn.re_aux_1 {z : ℂ} :
     ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I))
-      (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) := by
-  apply (hf.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn)
-  intro x hx
-  change x + z.im * I ∈ ball c r
-  exact mem_ball_re_aux' hx
+      (Ioo (z.re - (r - dist z c)) (z.re + (r - dist z c))) :=
+  hf.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <| fun _ ↦ mem_ball_re_aux'
 
 lemma ContinuousOn.re_aux_2 {a₁ a₂ b : ℝ} (ha₁ : a₁ + b * I ∈ ball c r)
     (ha₂ : a₂ + b * I ∈ ball c r) : ContinuousOn (fun (x : ℝ) ↦ f (x + b * I)) [[a₁, a₂]] := by
@@ -147,7 +143,7 @@ end ContinuousOn_Aux
 
 namespace Complex
 
-variable {E : Type*} [NormedRing E] [NormedSpace ℂ E]
+variable [NormedSpace ℂ E]
 
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
   determined by `z` and `w`. -/
@@ -183,7 +179,9 @@ theorem HolomorphicOn.isClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
   rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq]
   exact integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
 
-lemma IsExactOn.isClosedOn_of_isOpen [CompleteSpace E]
+variable [CompleteSpace E]
+
+lemma IsExactOn.isClosedOn_of_isOpen
     {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
     IsClosedOn f U := by
   obtain ⟨g, hg⟩ := hf
@@ -196,6 +194,7 @@ section ContinuousOnBall
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
+omit [CompleteSpace E] in
 /-- If a function `f` `IsClosedOn` on a ball of center `c`, then, for all `w` in a
   neighborhood of `z`, the wedge integral from `c` to `w` minus the wedge integral from `c` to `z`
   is equal to the wedge integral from `z` to `w`. -/
@@ -241,8 +240,6 @@ lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedO
       hf (z.re + c.im * I) (w.re + z.im * I) hU
   grind [wedgeIntegral]
 
-variable [CompleteSpace E]
-
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_re_aux :
@@ -264,8 +261,6 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
   simpa [HasDerivAt, HasDerivAtFilter, hasFDerivAtFilter_iff_isLittleO] using
     intervalIntegral.integral_hasDerivAt_right int1 int2 int3
 
-variable [NormOneClass E]
-
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_im_aux :
@@ -278,9 +273,9 @@ private lemma hasDerivAt_wedgeIntegral_im_aux :
     refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w hw ↦ ?_⟩
     exact (intervalIntegral.integral_sub
       (f_cont.im_aux_1 hw).intervalIntegrable intervalIntegrable_const).symm
-  have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : E) :=
-    Asymptotics.continuousAt_iff_isLittleO.mp <| (f_cont z hz).continuousAt <|
-      isOpen_ball.mem_nhds_iff.mpr hz
+  have : (fun w ↦ f w - f z) =o[𝓝 z] fun _ ↦ (1 : ℝ) := by
+    rw [Asymptotics.isLittleO_one_iff, tendsto_sub_nhds_zero_iff]
+    exact f_cont.continuousAt <| _root_.mem_nhds_iff.mpr ⟨ball c r, le_refl _, isOpen_ball, hz⟩
   rw [Asymptotics.IsLittleO] at this ⊢
   intro ε ε_pos
   replace := this ε_pos
@@ -317,8 +312,6 @@ theorem IsClosedOn.hasDerivAt_wedgeIntegral (h : IsClosedOn f (ball c r)) :
   · congr <;> simp
 
 end ContinuousOnBall
-
-variable [CompleteSpace E] [NormOneClass E]
 
 /-- **Morera's theorem for a disk** On a disk, a continuous function whose integrals on rectangles
   vanish, has primitives. -/
