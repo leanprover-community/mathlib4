@@ -48,7 +48,7 @@ lemma opFunctor_map {X Y : SSet.{u}} (f : X ⟶ Y) {n : SimplexCategoryᵒᵖ} (
 
 lemma op_map (X : SSet.{u}) {n m : SimplexCategoryᵒᵖ} (f : n ⟶ m) (x : X.op.obj n) :
     X.op.map f x =
-      opObjEquiv.symm (X.map (SimplexCategory.rev.map f.unop).op (opObjEquiv x)) := by
+      opObjEquiv.symm (X.map (SimplexCategory.rev.map f.unop).op (opObjEquiv x)) :=
   rfl
 
 @[simp]
