@@ -159,8 +159,8 @@ noncomputable instance singleton_is_mono : Mono (singleton hPB) :=
       rw[pullback_diag_eq_singleton hPB b, eq, ← pullback_diag_eq_singleton hPB b']
     let ι : X ≅ Subobject.underlying.obj P :=
       IsPullback.isoIsPullback_congr
-        (Subobject.underlyingIso (cmdiag B)).symm (Iso.refl (B ⊗ X))
-        (Subobject.underlyingIso_hom_comp_eq_mk (cmdiag B)) (by simp)
+        (Subobject.underlyingIso (cmdiag B)).symm (Iso.refl _) (Iso.refl _)
+        (by simpa using Subobject.underlyingIso_hom_comp_eq_mk (cmdiag B)) (by simp)
         (pullback_of_diag b) (Subobject.isPullback (B ◁ b) B_sub)
     let eq₁ : (lift b (𝟙 X)) = ι.hom ≫ P.arrow := by unfold P ι; simp
     let eq₂ := Eq.symm (Subobject.arrow_congr P P' PeqP')
