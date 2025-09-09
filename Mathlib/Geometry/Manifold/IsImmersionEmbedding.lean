@@ -49,8 +49,7 @@ open scoped Manifold Topology ContDiff
 
 open Function Set
 
--- XXX: does NontriviallyNormedField also work? Splits seems to require more...
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {F F' : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -175,7 +174,7 @@ this is not a mathematically meaningful difference.`
 At the same time, this condition is fairly weak: it is implied, for instance, by `f` being
 continuous at `x` (see `mk_of_continuousAt`), which is easy to acertain in practice.
 -/
--- TODO: golf this proof!
+-- TODO: can this proof be golfed further?
 lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
     (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend I').target := by
   have : (h.domChart.extend I).target = (h.domChart.extend I) '' (h.domChart.extend I).source := by
@@ -188,7 +187,7 @@ lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
     rw [aux, PartialEquiv.image_source_eq_target] at this ⊢
     rwa [h.writtenInCharts.image_eq] at this
   calc
-   _ = (Ψ ∘ f ∘ ↑Φ.symm ∘ Φ) '' h.domChart.source := by rw [← image_comp]; congr
+   _ = (Ψ ∘ f ∘ ↑Φ.symm ∘ Φ) '' h.domChart.source := by simp [← image_comp]
    _ = (Ψ ∘ f) '' ((Φ.symm ∘ Φ) '' h.domChart.source) := by simp [← image_comp]
    _ = (Ψ ∘ f) '' h.domChart.source := by rw [h.domChart.extend_left_inv' fun ⦃a⦄ a ↦ a]
    _ = Ψ '' (f '' h.domChart.source) := by rw [image_comp]
