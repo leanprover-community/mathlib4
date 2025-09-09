@@ -387,8 +387,8 @@ theorem eq_of_bisim' {s₁ s₂ : Seq α}
     (base : motive s₁ s₂)
     (step : ∀ s₁ s₂, motive s₁ s₂ →
       (s₁ = nil ∧ s₂ = nil) ∨
-      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂')
-    ) : s₁ = s₂ := by
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂')) :
+    s₁ = s₂ := by
   apply eq_of_bisim motive _ base
   intro s₁ s₂ h
   rcases step s₁ s₂ h with ⟨h_nil₁, h_nil₂⟩ | ⟨_, _, _, h₁, h₂, _⟩
