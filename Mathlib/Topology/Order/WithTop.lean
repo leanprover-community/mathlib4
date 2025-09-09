@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Topology.Order.Basic
+import Mathlib.Data.Fintype.Option
 
 /-! Order topology on `WithTop ι`
 
 When `ι` is a topological space with the order topology, we put also the order topology on
 `WithTop ι`. If `ι` is second countable, we prove that `WithTop ι` also is.
 -/
+
+open Set
 
 namespace TopologicalSpace
 
@@ -20,11 +23,7 @@ instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι
 
 instance [TopologicalSpace ι] [OrderTopology ι] : OrderTopology (WithTop ι) := ⟨rfl⟩
 
-
 instance {α : Type*} [Finite α] : Finite (WithTop α) := instFiniteOption
-
-lemma WithTop.Ioi_coe (a : ι) : Ioi (a : WithTop ι) = (↑) '' (Ioi a) ∪ {⊤} := by
-  ext x; induction x <;> simp
 
 scoped instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopology ι] :
     SecondCountableTopology (WithTop ι) := by
@@ -44,7 +43,7 @@ scoped instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCounta
     SeparableSpace.exists_countable_dense
   let x₁ : ι := if h : ∃ x, Ioi x = ∅ then h.choose else x₀
   let d : Set (WithTop ι) := (↑)'' c ∪ (↑)'' c' ∪ {⊤} ∪ {(x₁ : WithTop ι)}
-  suffices H : instTopologicalSpaceWithTopOfOrderTopology
+  suffices H : instWithTopOfOrderTopology
       = generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} by
     refine ⟨{s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a}, ?_, by rw [← H]⟩
     have d_count : d.Countable :=
