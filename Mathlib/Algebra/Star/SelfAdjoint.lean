@@ -183,14 +183,14 @@ theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := 
   simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
 
 @[grind =]
-lemma _root_.IsUnit.isSelfAdjoint_conjugate {a u : R} (hu : IsUnit u) :
+lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (u * a * star u) ↔ IsSelfAdjoint a := by
   simp [IsSelfAdjoint, mul_assoc, hu.mul_right_inj, hu.star.mul_left_inj]
 
 @[grind =]
-lemma _root_.IsUnit.isSelfAdjoint_conjugate' {a u : R} (hu : IsUnit u) :
+lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff' {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
-  simpa using hu.star.isSelfAdjoint_conjugate
+  simpa using hu.star.isSelfAdjoint_conjugate_iff
 
 end Monoid
 
