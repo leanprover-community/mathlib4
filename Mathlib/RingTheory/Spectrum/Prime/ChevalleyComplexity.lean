@@ -405,7 +405,7 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · omega
+          · grind
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
@@ -510,7 +510,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             exact Finset.single_le_sum (f := fun i ↦ (c.val i).degree.succ)
               (by intros; positivity) (Finset.mem_univ _)
           _ = c.degBound ^ (c'.degBound + 1) := by rw [pow_succ']
-          _ ≤ c.degBound ^ c.degBound := by gcongr <;> omega
+          _ ≤ c.degBound ^ c.degBound := by gcongr <;> grind
       rw [coeffSubmodule]
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']
