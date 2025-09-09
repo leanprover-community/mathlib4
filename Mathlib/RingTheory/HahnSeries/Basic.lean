@@ -484,6 +484,21 @@ theorem embDomain_injective {f : Γ ↪o Γ'} :
   have xyg := xy (f g)
   rwa [embDomain_coeff, embDomain_coeff] at xyg
 
+@[simp]
+theorem orderTop_embDomain {Γ : Type*} [LinearOrder Γ] {f : Γ ↪o Γ'} {x : HahnSeries Γ R} :
+    (embDomain f x).orderTop = WithTop.map f x.orderTop := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  rw [← WithTop.coe_untop x.orderTop (by simpa using hx), WithTop.map_coe]
+  apply orderTop_eq_of_le
+  · simpa using coeff_orderTop_ne (by simp)
+  intro y hy
+  obtain ⟨z, hz, rfl⟩ :=
+    (Set.mem_image _ _ _).mp <| Set.mem_of_subset_of_mem support_embDomain_subset hy
+  rw [OrderEmbedding.le_iff_le, WithTop.untop_le_iff]
+  apply orderTop_le_of_coeff_ne_zero
+  simpa using hz
+
 end Domain
 
 end Zero
