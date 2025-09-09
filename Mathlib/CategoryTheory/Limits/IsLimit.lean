@@ -52,17 +52,17 @@ structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
   /-- The map makes the triangle with the two natural transformations commute -/
-  fac : ∀ (s : Cone F) (j : J), lift s ≫ t.π.app j = s.π.app j := by aesop_cat
+  fac : ∀ (s : Cone F) (j : J), lift s ≫ t.π.app j = s.π.app j := by cat_disch
   /-- It is the unique such map to do this -/
   uniq : ∀ (s : Cone F) (m : s.pt ⟶ t.pt) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] IsLimit.fac
 
 namespace IsLimit
 
 instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) :=
-  ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
+  ⟨by intro P Q; cases P; cases Q; congr; cat_disch⟩
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cone point
 of any cone over `F` to the cone point of a limit cone over `G`. -/
@@ -161,8 +161,8 @@ theorem ofIsoLimit_lift {r t : Cone F} (P : IsLimit r) (i : r ≅ t) (s) :
 def equivIsoLimit {r t : Cone F} (i : r ≅ t) : IsLimit r ≃ IsLimit t where
   toFun h := h.ofIsoLimit i
   invFun h := h.ofIsoLimit i.symm
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 theorem equivIsoLimit_apply {r t : Cone F} (i : r ≅ t) (P : IsLimit r) :
@@ -213,8 +213,8 @@ def ofConeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G �
     IsLimit (h.functor.obj c) ≃ IsLimit c where
   toFun P := ofIsoLimit (ofRightAdjoint h.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofRightAdjoint h.symm.toAdjunction
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 theorem ofConeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cone G ≌ Cone F)
@@ -303,7 +303,7 @@ def ofWhiskerEquivalence {s : Cone F} (e : K ≌ J) (P : IsLimit (s.whisker e.fu
 /-- Given an equivalence of diagrams `e`, `s` is a limit cone iff `s.whisker e.functor` is.
 -/
 def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by cat_disch, by cat_disch⟩
 
 /-- A limit cone extended by an isomorphism is a limit cone. -/
 def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
@@ -342,12 +342,12 @@ def conePointsIsoOfEquivalence {F : J ⥤ C} {s : Cone F} {G : K ⥤ C} {t : Con
         assoc, id_comp, invFunIdAssoc_hom_app, fac_assoc, NatTrans.comp_app]
       rw [counit_app_functor, ← Functor.comp_map]
       have l :
-        NatTrans.app w.hom j = NatTrans.app w.hom (Prefunctor.obj (𝟭 J).toPrefunctor j) := by dsimp
-      rw [l,w.hom.naturality]
+        NatTrans.app w.hom j = NatTrans.app w.hom ((𝟭 J).obj j) := by dsimp
+      rw [l, w.hom.naturality]
       simp
     inv_hom_id := by
       apply hom_ext Q
-      aesop_cat }
+      cat_disch }
 
 end Equivalence
 
@@ -358,7 +358,18 @@ def homEquiv (h : IsLimit t) {W : C} : (W ⟶ t.pt) ≃ ((Functor.const J).obj W
   toFun f := (t.extend f).π
   invFun π := h.lift (Cone.mk _ π)
   left_inv f := h.hom_ext (by simp)
-  right_inv π := by aesop_cat
+  right_inv π := by cat_disch
+
+@[reassoc (attr := simp)]
+lemma homEquiv_symm_π_app (h : IsLimit t) {W : C}
+    (f : (const J).obj W ⟶ F) (j : J) :
+    h.homEquiv.symm f ≫ t.π.app j = f.app j := by
+  simp [homEquiv]
+
+lemma homEquiv_symm_naturality (h : IsLimit t) {W W' : C}
+    (f : (const J).obj W ⟶ F) (g : W' ⟶ W) :
+    h.homEquiv.symm ((Functor.const _).map g ≫ f) = g ≫ h.homEquiv.symm f :=
+  h.homEquiv.injective (by aesop)
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
@@ -508,18 +519,18 @@ structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
   /-- The map `desc` makes the diagram with the natural transformations commute -/
-  fac : ∀ (s : Cocone F) (j : J), t.ι.app j ≫ desc s = s.ι.app j := by aesop_cat
+  fac : ∀ (s : Cocone F) (j : J), t.ι.app j ≫ desc s = s.ι.app j := by cat_disch
   /-- `desc` is the unique such map -/
   uniq :
     ∀ (s : Cocone F) (m : t.pt ⟶ s.pt) (_ : ∀ j : J, t.ι.app j ≫ m = s.ι.app j), m = desc s := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] IsColimit.fac
 
 namespace IsColimit
 
 instance subsingleton {t : Cocone F} : Subsingleton (IsColimit t) :=
-  ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
+  ⟨by intro P Q; cases P; cases Q; congr; cat_disch⟩
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cocone point
 of a colimit cocone over `F` to the cocone point of any cocone over `G`. -/
@@ -618,8 +629,8 @@ theorem ofIsoColimit_desc {r t : Cocone F} (P : IsColimit r) (i : r ≅ t) (s) :
 def equivIsoColimit {r t : Cocone F} (i : r ≅ t) : IsColimit r ≃ IsColimit t where
   toFun h := h.ofIsoColimit i
   invFun h := h.ofIsoColimit i.symm
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 theorem equivIsoColimit_apply {r t : Cocone F} (i : r ≅ t) (P : IsColimit r) :
@@ -675,8 +686,8 @@ def ofCoconeEquiv {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D} (h : Cocone 
     {c : Cocone G} : IsColimit (h.functor.obj c) ≃ IsColimit c where
   toFun P := ofIsoColimit (ofLeftAdjoint h.symm.toAdjunction P) (h.unitIso.symm.app c)
   invFun := ofLeftAdjoint h.toAdjunction
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 @[simp]
 theorem ofCoconeEquiv_apply_desc {D : Type u₄} [Category.{v₄} D] {G : K ⥤ D}
@@ -768,7 +779,7 @@ def ofWhiskerEquivalence {s : Cocone F} (e : K ≌ J) (P : IsColimit (s.whisker 
 -/
 def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
     IsColimit s ≃ IsColimit (s.whisker e.functor) :=
-  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
+  ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by cat_disch, by cat_disch⟩
 
 /-- A colimit cocone extended by an isomorphism is a colimit cocone. -/
 def extendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit s) :
@@ -809,7 +820,7 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
       simp
     inv_hom_id := by
       apply hom_ext Q
-      aesop_cat }
+      cat_disch }
 
 end Equivalence
 
@@ -821,11 +832,22 @@ def homEquiv (h : IsColimit t) {W : C} : (t.pt ⟶ W) ≃ (F ⟶ (const J).obj W
       { pt := W
         ι }
   left_inv f := h.hom_ext (by simp)
-  right_inv ι := by aesop_cat
+  right_inv ι := by cat_disch
 
 @[simp]
 lemma homEquiv_apply (h : IsColimit t) {W : C} (f : t.pt ⟶ W) :
     h.homEquiv f = (t.extend f).ι := rfl
+
+@[reassoc (attr := simp)]
+lemma ι_app_homEquiv_symm (h : IsColimit t) {W : C}
+    (f : F ⟶ (const J).obj W) (j : J) :
+    t.ι.app j ≫ h.homEquiv.symm f = f.app j := by
+  simp [homEquiv]
+
+lemma homEquiv_symm_naturality (h : IsColimit t) {W W' : C}
+    (f : F ⟶ (const J).obj W) (g : W ⟶ W') :
+    h.homEquiv.symm (f ≫ (Functor.const _).map g) = h.homEquiv.symm f ≫ g :=
+  h.homEquiv.injective (by aesop)
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
