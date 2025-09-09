@@ -350,7 +350,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   -- TODO: by continuity!
-  continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
+  continuous_toFun := e.continuous.continuousOn.mapsToRestrict (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 
