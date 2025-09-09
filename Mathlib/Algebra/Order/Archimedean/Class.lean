@@ -719,7 +719,7 @@ def congrOrderIso (e : MulArchimedeanClass M ≃o MulArchimedeanClass N) :
   map_rel_iff' := by simp
 
 @[to_additive (attr := simp)]
-theorem coe_congrOrderIso (e : MulArchimedeanClass M ≃o MulArchimedeanClass N)
+theorem coe_congrOrderIso_apply (e : MulArchimedeanClass M ≃o MulArchimedeanClass N)
     (a : FiniteMulArchimedeanClass M) :
     (congrOrderIso e a : MulArchimedeanClass N) = e a := rfl
 
