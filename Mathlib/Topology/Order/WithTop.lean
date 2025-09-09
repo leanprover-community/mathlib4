@@ -18,6 +18,7 @@ namespace TopologicalSpace
 
 variable {ι : Type*} [Preorder ι]
 
+@[nolint unusedArguments]
 instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι) :=
   Preorder.topology _
 
@@ -171,6 +172,5 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
               apply isOpen_generateFrom_of_mem
               simp [d]
               grind
-
 
 end TopologicalSpace
