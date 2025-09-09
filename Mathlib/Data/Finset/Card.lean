@@ -492,7 +492,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   have : #(s.image f) = #t := by rw [this]
   have : #(s.image f) ≤ #s := card_image_le
   rw [← card_image_iff]
-  omega
+  grind
 
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
@@ -617,7 +617,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
   classical
   refine Nat.decreasingInduction' ?_ hnt ⟨t, by simp [hst]⟩
   intro k _ hnk ⟨u, hu₁, hu₂, hu₃⟩
-  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos, card_sdiff hu₁]; omega
+  obtain ⟨a, ha⟩ : (u \ s).Nonempty := by rw [← card_pos, card_sdiff hu₁]; grind
   simp only [mem_sdiff] at ha
   exact ⟨u.erase a, by simp [subset_erase, erase_subset_iff_of_mem (hu₂ _), *]⟩
 
@@ -635,7 +635,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finse
   have h₂ : #(X ∪ Y) = #X + #(Y \ X) := by
     rw [← card_union_add_card_inter X (Y \ X), Finset.union_sdiff_self_eq_union, h₁, Nat.add_zero]
   rw [h₂, Nat.two_mul] at hXY
-  obtain h | h : n < #X ∨ n < #(Y \ X) := by contrapose! hXY; omega
+  obtain h | h : n < #X ∨ n < #(Y \ X) := by contrapose! hXY; grind
   · exact ⟨X, h, Or.inl (Finset.Subset.refl X)⟩
   · exact ⟨Y \ X, h, Or.inr sdiff_subset⟩
 
@@ -866,7 +866,7 @@ def strongDownwardInduction {p : Finset α → Sort*} {n : ℕ}
   | s =>
     H s fun {t} ht h =>
       have := Finset.card_lt_card h
-      have : n - #t < n - #s := by omega
+      have : n - #t < n - #s := by grind
       strongDownwardInduction H t ht
   termination_by s => n - #s
 

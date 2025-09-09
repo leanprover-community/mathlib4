@@ -118,7 +118,7 @@ lemma getLast_eq_D (p : DyckWord) (h) : p.toList.getLast h = D := by
   by_contra f; have s := p.count_U_eq_count_D
   rw [← dropLast_append_getLast h, (dichotomy _).resolve_right f] at s
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, reduceCtorEq, ite_false] at s
-  have := p.count_D_le_count_U (p.toList.length - 1); omega
+  have := p.count_D_le_count_U (p.toList.length - 1); grind
 
 include h in
 lemma cons_tail_dropLast_concat : U :: p.toList.dropLast.tail ++ [D] = p := by
@@ -148,9 +148,9 @@ def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
   count_U_eq_count_D := by
     have := p.count_U_eq_count_D
     rw [← take_append_drop i p.toList, count_append, count_append] at this
-    omega
+    grind
   count_D_le_count_U k := by
-    rw [show i = min i (i + k) by omega, ← take_take] at hi
+    rw [show i = min i (i + k) by grind, ← take_take] at hi
     rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
       ← count_append, hi, ← count_append, take_append_drop]
     exact p.count_D_le_count_U _
@@ -180,8 +180,8 @@ def IsNested : Prop :=
 
 protected lemma IsNested.nest : p.nest.IsNested := ⟨nest_ne_zero, fun i lb ub ↦ by
   simp_rw [nest, length_append, length_singleton] at ub ⊢
-  rw [take_append_of_le_length (by rw [singleton_append, length_cons]; omega),
-    take_append, take_of_length_le (by rw [length_singleton]; omega),
+  rw [take_append_of_le_length (by rw [singleton_append, length_cons]; grind),
+    take_append, take_of_length_le (by rw [length_singleton]; grind),
     length_singleton, singleton_append, count_cons_of_ne (by simp), count_cons_self,
     Nat.lt_add_one_iff]
   exact p.count_D_le_count_U _⟩
@@ -206,13 +206,13 @@ def denest (hn : p.IsNested) : DyckWord where
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by grind
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
-      min_eq_left (by omega), l1, head_eq_U] at eq
+      min_eq_left (by grind), l1, head_eq_U] at eq
     simp only [count_singleton', ite_true] at eq
-    omega
+    grind
 
 variable (p) in
 lemma nest_denest (hn) : (p.denest hn).nest = p := by
@@ -270,7 +270,7 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   apply findIdx_lt_length_of_exists
   simp only [mem_range, decide_eq_true_eq]
   use p.toList.length - 1
-  exact ⟨by omega, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
+  exact ⟨by grind, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
 include h in
@@ -294,10 +294,10 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
   · simp_rw [u, decide_eq_true_eq, getElem_range]
     have v := firstReturn_lt_length h
     constructor
-    · rw [take_append, show p.firstReturn + 1 - p.toList.length = 0 by omega,
+    · rw [take_append, show p.firstReturn + 1 - p.toList.length = 0 by grind,
         take_zero, append_nil, count_take_firstReturn_add_one h]
     · intro j hj
-      rw [take_append, show j + 1 - p.toList.length = 0 by omega,
+      rw [take_append, show j + 1 - p.toList.length = 0 by grind,
         take_zero, append_nil]
       simpa using (count_D_lt_count_U_of_lt_firstReturn hj).ne'
   · rw [length_range, u, length_append]
@@ -313,10 +313,10 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
     · intro j hj
       simp_rw [cons_append, take_succ_cons, count_cons, beq_self_eq_true, ite_true,
         beq_iff_eq, reduceCtorEq, ite_false, take_append,
-        show j - p.toList.length = 0 by omega, take_zero, append_nil]
+        show j - p.toList.length = 0 by grind, take_zero, append_nil]
       have := p.count_D_le_count_U j
       simp only [add_zero, decide_eq_false_iff_not, ne_eq]
-      omega
+      grind
   · simp_rw [length_range, u, length_append, length_cons]
     exact Nat.lt_add_one _
 
@@ -330,7 +330,7 @@ def insidePart : DyckWord :=
       simp only [take, length_take, lt_min_iff] at ub ⊢
       replace ub := ub.1
       rw [take_take, min_eq_left ub.le]
-      rw [show i = i - 1 + 1 by omega] at ub ⊢
+      rw [show i = i - 1 + 1 by grind] at ub ⊢
       rw [Nat.add_lt_add_iff_right] at ub
       exact count_D_lt_count_U_of_lt_firstReturn ub⟩
 
@@ -362,13 +362,13 @@ lemma outsidePart_add : (p + q).outsidePart = p.outsidePart + q := by
 lemma insidePart_nest : p.nest.insidePart = p := by
   simp_rw [insidePart, nest_ne_zero, dite_false, firstReturn_nest]
   convert p.denest_nest; rw [DyckWord.ext_iff]; apply take_of_length_le
-  simp_rw [nest, length_append, length_singleton]; omega
+  simp_rw [nest, length_append, length_singleton]; grind
 
 @[simp]
 lemma outsidePart_nest : p.nest.outsidePart = 0 := by
   simp_rw [outsidePart, nest_ne_zero, dite_false, firstReturn_nest]
   rw [DyckWord.ext_iff]; apply drop_of_length_le
-  simp_rw [nest, length_append, length_singleton]; omega
+  simp_rw [nest, length_append, length_singleton]; grind
 
 include h in
 @[simp]
@@ -385,12 +385,12 @@ lemma semilength_insidePart_add_semilength_outsidePart_add_one :
 include h in
 theorem semilength_insidePart_lt : p.insidePart.semilength < p.semilength := by
   have := semilength_insidePart_add_semilength_outsidePart_add_one h
-  omega
+  grind
 
 include h in
 theorem semilength_outsidePart_lt : p.outsidePart.semilength < p.semilength := by
   have := semilength_insidePart_add_semilength_outsidePart_add_one h
-  omega
+  grind
 
 end FirstReturn
 

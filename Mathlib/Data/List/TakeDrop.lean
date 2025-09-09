@@ -36,7 +36,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   simp
 
 @[simp] lemma take_eq_self_iff (x : List α) {n : ℕ} : x.take n = x ↔ x.length ≤ n :=
-  ⟨fun h ↦ by rw [← h]; simp; omega, take_of_length_le⟩
+  ⟨fun h ↦ by rw [← h]; simp; grind, take_of_length_le⟩
 
 @[simp] lemma take_self_eq_iff (x : List α) {n : ℕ} : x = x.take n ↔ x.length ≤ n := by
   rw [Eq.comm, take_eq_self_iff]
@@ -163,11 +163,11 @@ theorem length_dropSlice (i j : ℕ) (xs : List α) :
     cases i <;> simp only [List.dropSlice]
     · cases j with
       | zero => simp
-      | succ n => simp_all; omega
-    · simp [xs_ih]; omega
+      | succ n => simp_all; grind
+    · simp [xs_ih]; grind
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
     (List.dropSlice i j xs).length < xs.length := by
-  simp; omega
+  simp; grind
 
 end List

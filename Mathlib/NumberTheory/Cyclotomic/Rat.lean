@@ -483,7 +483,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
         Nat.reduceAdd] at htwo ⊢
       exact htwo.symm.lt_of_le hp.1.two_le
     · exact one_lt_mul_of_lt_of_le (one_lt_pow₀ hp.1.one_lt hk)
-        (have := Nat.Prime.two_le hp.out; by omega)
+        (have := Nat.Prime.two_le hp.out; by grind)
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
   -- coordinates in the base `pB`, we obtain that `1` is a multiple of `p`, contradiction.
@@ -496,7 +496,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
     LinearMap.map_smul, ← zsmul_one, ← pB.basis.coord_apply, LinearMap.map_smul,
-    show 1 = pB.gen ^ (⟨0, by omega⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by grind⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩

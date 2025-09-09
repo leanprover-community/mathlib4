@@ -116,7 +116,7 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 @[deprecated (since := "2025-06-05")] protected alias div_le_self' := Nat.div_le_self
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
-  omega
+  grind
 
 /-! ### `pow` -/
 
@@ -369,7 +369,7 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
   | 0, _ + 1, _ => hb _
   | a + 1, b + 1, h => by
     apply hd _ _ (Nat.add_lt_add_iff_right.1 h)
-    · have this : a + 1 = b ∨ a + 1 < b := by omega
+    · have this : a + 1 = b ∨ a + 1 < b := by grind
       have wf : (a + 1) + b < (a + 1) + (b + 1) := by simp
       rcases this with (rfl | h)
       · exact ha _
@@ -390,7 +390,7 @@ lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
 
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
-  omega
+  grind
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`. -/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
@@ -436,7 +436,7 @@ class AtLeastTwo (n : ℕ) : Prop where
 instance instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 
-instance {n : ℕ} [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; omega⟩
+instance {n : ℕ} [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; grind⟩
 
 namespace AtLeastTwo
 

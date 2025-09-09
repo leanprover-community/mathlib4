@@ -98,11 +98,11 @@ protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :
       · constructor
         · refine (·.elim ?_ And.right)
           rintro ⟨hna, nb0⟩
-          apply (Int.mul_neg_of_neg_of_pos hna _).trans_le (Int.mul_nonneg nb0 _) <;> omega
+          apply (Int.mul_neg_of_neg_of_pos hna _).trans_le (Int.mul_nonneg nb0 _) <;> grind
         · intro h
           suffices na < 0 ∧ 0 ≤ nb ∨ na ≤ 0 ∨ 0 < nb by simpa [h]
           contrapose! h
-          apply (Int.mul_nonpos_of_nonpos_of_nonneg _ _).trans (Int.mul_nonneg _ _) <;> omega
+          apply (Int.mul_nonpos_of_nonpos_of_nonneg _ _).trans (Int.mul_nonneg _ _) <;> grind
 
 protected theorem le_iff (a b : ℚ) : a ≤ b ↔ a.num * b.den ≤ b.num * a.den := by
   simpa only [Rat.not_lt, not_lt] using (Rat.lt_iff b a).not

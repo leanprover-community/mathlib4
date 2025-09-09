@@ -193,7 +193,7 @@ def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
-  Vector.congr (by omega) (replicate (min n i) fill ++ take (n - i) v)
+  Vector.congr (by grind) (replicate (min n i) fill ++ take (n - i) v)
 
 end Shift
 

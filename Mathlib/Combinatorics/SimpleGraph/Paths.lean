@@ -268,13 +268,13 @@ lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ 
   | .nil => simp at hp'
   | .cons h .nil => simp at h
   | .cons _ (.cons _ .nil) => simp at hp
-  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
+  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; grind
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
   have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
   rw [Walk.not_nil_iff_lt_length]
-  omega
+  grind
 
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ s(u, v) ∉ p.edges := by
@@ -328,17 +328,17 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
   | @cons v w u h p ihp =>
     simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · omega
+    · grind
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
       have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
+      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by grind⟩⟩)).elim
     · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
       have hvp : v ∉ p.support := by simp_all
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
+      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by grind⟩⟩)).elim
     · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
-      have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
-        (by omega : (m - 1) ≤ p.length) hnm
-      omega
+      have := ihp hp.of_cons (by grind : (n - 1) ≤ p.length)
+        (by grind : (m - 1) ≤ p.length) hnm
+      grind
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
@@ -346,15 +346,15 @@ lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi
   intro h
   by_cases hi : i = 0
   · exact hi
-  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; grind) (by rw [Set.mem_setOf]; grind)
     simp [h]
 
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
-  have := hp.reverse.getVert_eq_start_iff (by omega : p.reverse.length - i ≤ p.reverse.length)
-  simp only [length_reverse, getVert_reverse, show p.length - (p.length - i) = i by omega] at this
+  have := hp.reverse.getVert_eq_start_iff (by grind : p.reverse.length - i ≤ p.reverse.length)
+  simp only [length_reverse, getVert_reverse, show p.length - (p.length - i) = i by grind] at this
   rw [this]
-  omega
+  grind
 
 lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
     p.IsPath := by
@@ -367,15 +367,15 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     refine ⟨ih (by
       intro n hn m hm hnm
       simp only [Set.mem_setOf_eq] at hn hm
-      have := hinj (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
-          (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
+      have := hinj (by rw [length_cons]; grind : n + 1 ≤ (q.cons h).length)
+          (by rw [length_cons]; grind : m + 1 ≤ (q.cons h).length)
           (by simpa [getVert_cons] using hnm)
-      omega), fun h' => ?_⟩
+      grind), fun h' => ?_⟩
     obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp h'
-    have := hinj (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
-      (by omega : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0
-        from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
-    omega
+    have := hinj (by rw [length_cons]; grind : (n + 1) ≤ (q.cons h).length)
+      (by grind : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0
+        from by rwa [getVert_cons _ _ (by grind : n + 1 ≠ 0), getVert_zero])
+    grind
 
 /-! ### About cycles -/
 
@@ -387,10 +387,10 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   rw [← SimpleGraph.Walk.length_tail_add_one
     (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
-      (by omega : n - 1 ≤ p.tail.length) (by omega : m - 1 ≤ p.tail.length)
-      (by simp_all [SimpleGraph.Walk.getVert_tail, show n - 1 + 1 = n by omega,
-          show m - 1 + 1 = m by omega])
-  omega
+      (by grind : n - 1 ≤ p.tail.length) (by grind : m - 1 ≤ p.tail.length)
+      (by simp_all [SimpleGraph.Walk.getVert_tail, show n - 1 + 1 = n by grind,
+          show m - 1 + 1 = m by grind])
+  grind
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
@@ -398,38 +398,38 @@ lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
   simp only [Set.mem_setOf_eq] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
-    (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by omega, hnm,
-      show p.length - (p.length - m) = m by omega])
-  omega
+    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; grind)
+    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; grind)
+    (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by grind, hnm,
+      show p.length - (p.length - m) = m by grind])
+  grind
 
 lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
   intro h
   have := hp.three_le_length
-  apply hp.getVert_injOn (by simp; omega) (by simp; omega) at h
-  omega
+  apply hp.getVert_injOn (by simp; grind) (by simp; grind) at h
+  grind
 
 lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
   intro h hi
-  exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
-    (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
+  exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; grind)
+    (by simp only [Set.mem_setOf_eq]; grind) (h.symm ▸ (Walk.getVert_length p).symm)
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
   · intro h'
-    rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by omega)] at h'
-    omega
+    rw [p.getVert_of_length_le (by grind : p.length ≤ i + 1),
+      hpc.getVert_endpoint_iff (by grind)] at h'
+    grind
   intro h'
-  have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
-    (by simp only [Set.mem_setOf_eq]; omega) h'
-  omega
+  have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; grind)
+    (by simp only [Set.mem_setOf_eq]; grind) h'
+  grind
 
 @[deprecated (since := "2025-04-27")]
 alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
@@ -495,9 +495,9 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
   have := p.length_takeUntil_lt hw h.symm
-  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; grind) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
-  omega
+  grind
 
 @[deprecated (since := "2025-05-23")]
 alias endpoint_not_mem_support_takeUntil := endpoint_notMem_support_takeUntil
@@ -611,7 +611,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     · trans
       · apply length_dropUntil_le
       rw [length_cons]
-      omega
+      grind
     · rw [length_cons, length_cons]
       exact Nat.add_le_add_right ih 1
 

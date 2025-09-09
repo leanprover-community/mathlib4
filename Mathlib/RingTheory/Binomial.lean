@@ -224,7 +224,7 @@ section Basic_Instances
 open Polynomial
 
 instance Nat.instBinomialRing : BinomialRing ℕ where
-  nsmul_right_injective n hn _ _ := Nat.eq_of_mul_eq_mul_left (by omega)
+  nsmul_right_injective n hn _ _ := Nat.eq_of_mul_eq_mul_left (by grind)
   multichoose := Nat.multichoose
   factorial_nsmul_multichoose r n := by
     rw [smul_eq_mul, Nat.multichoose_eq r n, ← Nat.descFactorial_eq_factorial_mul_choose,
@@ -237,7 +237,7 @@ def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   | negSucc n => Int.negOnePow k * Nat.choose (n + 1) k
 
 instance Int.instBinomialRing : BinomialRing ℤ where
-  nsmul_right_injective n hn _ _ := Int.eq_of_mul_eq_mul_left (by omega)
+  nsmul_right_injective n hn _ _ := Int.eq_of_mul_eq_mul_left (by grind)
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
@@ -282,7 +282,7 @@ theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
     rw [ascPochhammer_succ_left, smeval_X_mul, smeval_comp, smeval_add, smeval_X, smeval_one,
       pow_zero, pow_one, one_smul, Nat.cast_add, Nat.cast_one, neg_add_rev, neg_add_cancel_comm,
       smeval_ascPochhammer_self_neg n, ← mul_assoc, mul_comm _ ((-1) ^ n),
-      show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by omega, ← mul_assoc, pow_add, pow_one,
+      show (-1 + -↑n = (-1 : ℤ) * (n + 1)) by grind, ← mul_assoc, pow_add, pow_one,
       Nat.factorial, Nat.cast_mul, ← mul_assoc, Nat.cast_succ]
 
 @[simp]
@@ -302,7 +302,7 @@ theorem smeval_ascPochhammer_neg_add (n : ℕ) : ∀ k : ℕ,
 @[simp]
 theorem smeval_ascPochhammer_neg_of_lt {n k : ℕ} (h : n < k) :
     smeval (ascPochhammer ℕ k) (-n : ℤ) = 0 := by
-  rw [show k = n + (k - n - 1) + 1 by omega, smeval_ascPochhammer_neg_add]
+  rw [show k = n + (k - n - 1) + 1 by grind, smeval_ascPochhammer_neg_add]
 
 theorem smeval_ascPochhammer_nat_cast {R} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] (n k : ℕ) :
     smeval (ascPochhammer ℕ k) (n : R) = smeval (ascPochhammer ℕ k) n := by

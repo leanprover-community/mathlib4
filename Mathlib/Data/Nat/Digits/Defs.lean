@@ -354,7 +354,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   cases hd
   · exact n.succ.mod_lt (by linarith)
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> omega
+    · apply Nat.div_lt_self <;> grind
     · assumption
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
@@ -554,7 +554,7 @@ namespace NormDigits
 theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
     (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
   rcases h with ⟨h, b2, m0⟩
-  have b0 : 0 < b := by omega
+  have b0 : 0 < b := by grind
   have n0 : 0 < n := by linarith [mul_pos b0 m0]
   refine ⟨?_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩

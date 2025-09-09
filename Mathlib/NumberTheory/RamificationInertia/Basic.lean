@@ -166,7 +166,7 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le.mpr h1k))
   · intro he
     have := Nat.find_spec H 2 he
-    omega
+    grind
 
 open IsLocalRing in
 /-- The converse is true when `S` is a Dedekind domain.

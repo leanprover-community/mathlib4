@@ -50,7 +50,7 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
    fun h ↦ h.trans <| l₂.prefix_append l₃⟩
 
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
-  simp [prefix_take_iff, take_prefix]; omega
+  simp [prefix_take_iff, take_prefix]; grind
 
 @[gcongr]
 protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
@@ -304,7 +304,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction' l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take] <;> omega)
+  apply ext_getElem <;> (simp [take_take] <;> grind)
 
 end InitsTails
 

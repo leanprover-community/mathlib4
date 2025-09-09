@@ -216,13 +216,13 @@ def counterBasis : FilterBasis (ℕ × ℕ) where
         exists_and_left, exists_eq_left] at h
       simpa only [← hs, mem_fundamentalEntourage] using Or.inr h.2
     · simpa only [← hs, mem_fundamentalEntourage] using Or.inl
-        ⟨le_trans (by omega) h.1, le_trans (by omega) h.2⟩
+        ⟨le_trans (by grind) h.1, le_trans (by grind) h.2⟩
     · simp only [iUnion_singleton_eq_range, mem_range, Prod.mk.injEq, Subtype.exists,
         exists_and_left, exists_eq_left] at h
       simpa only [← ht, mem_fundamentalEntourage] using Or.inr h.2
     · simp only [mem_Ici, Prod.mk_le_mk] at h
       simpa only [← ht, mem_fundamentalEntourage] using Or.inl ⟨le_trans
-         (by omega) h.1, le_trans (by omega) h.2⟩
+         (by grind) h.1, le_trans (by grind) h.2⟩
 
 @[simp]
 lemma mem_counterBasis_iff (S : Set (ℕ × ℕ)) :
@@ -241,7 +241,7 @@ def counterCoreUniformity : UniformSpace.Core ℕ := by
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn
     simp only [hn, mem_union, mem_range, Prod.mk.injEq, and_self, Subtype.exists, mem_Icc, zero_le,
       true_and, exists_prop', nonempty_prop, exists_eq_right, mem_Ici, Prod.mk_le_mk]
-    omega
+    grind
   · refine ⟨S, hS, ?_⟩
     obtain ⟨n, hn⟩ := hS
     simp only [fundamentalEntourage_ext, iUnion_singleton_eq_range] at hn

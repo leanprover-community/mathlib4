@@ -469,7 +469,7 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp [mem_iff_getElem, @forall_swap α]
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; grind)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -622,11 +622,11 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by grind⟩] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
   simp
   congr
-  omega
+  grind
 
 end deprecated
 
@@ -940,9 +940,9 @@ end FoldlMFoldrM
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
   induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · omega
+  · grind
   · specialize ih ‹_›
-    omega
+    grind
 
 /-! ### filter -/
 
@@ -1102,7 +1102,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := by
   rw [length_eraseIdx]
-  split <;> omega
+  split <;> grind
 
 end Erase
 

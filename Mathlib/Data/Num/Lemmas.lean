@@ -483,11 +483,11 @@ theorem size_to_nat : ∀ n, (size n : ℕ) = Nat.size n
       rw [size, succ_to_nat, size_to_nat n, cast_bit0, ← two_mul, ← Nat.bit_false_apply,
         Nat.size_bit]
       have := to_nat_pos n
-      dsimp [Nat.bit]; omega
+      dsimp [Nat.bit]; grind
   | bit1 n => by
       rw [size, succ_to_nat, size_to_nat n, cast_bit1, ← two_mul, ← Nat.bit_true_apply,
         Nat.size_bit]
-      dsimp [Nat.bit]; omega
+      dsimp [Nat.bit]; grind
 
 theorem size_eq_natSize : ∀ n, (size n : ℕ) = natSize n
   | 1 => rfl
@@ -828,7 +828,7 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     apply Nat.zero_shiftRight
   induction' n with n IH generalizing m
   · cases m <;> rfl
-  have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; omega
+  have hdiv2 : ∀ m, Nat.div2 (m + m) = m := by intro; rw [Nat.div2_val]; grind
   obtain - | m | m := m <;> dsimp only [PosNum.shiftr, ← PosNum.shiftr_eq_shiftRight]
   · rw [Nat.shiftRight_eq_div_pow]
     symm

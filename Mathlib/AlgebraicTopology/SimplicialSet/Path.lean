@@ -85,11 +85,11 @@ lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g := 
 
 /-- For `j + l ≤ m`, a path of length `m` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l where
-  vertex i := f.vertex ⟨j + i, by omega⟩
-  arrow i := f.arrow ⟨j + i, by omega⟩
-  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
-  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
+def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by grind) : Path X l where
+  vertex i := f.vertex ⟨j + i, by grind⟩
+  arrow i := f.arrow ⟨j + i, by grind⟩
+  arrow_src i := f.arrow_src ⟨j + i, by grind⟩
+  arrow_tgt i := f.arrow_tgt ⟨j + i, by grind⟩
 
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
@@ -127,7 +127,7 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
-def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where
+def spine (m : ℕ) (h : m ≤ n + 1 := by grind) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where
   vertex i := X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
@@ -170,7 +170,7 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
-    X.spine l (by omega) (X.map (tr (subinterval j l h)).op Δ) =
+    X.spine l (by grind) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
@@ -220,7 +220,7 @@ lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
 
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
+def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by grind) : Path X l :=
   Truncated.Path.interval f j l h
 
 variable {X Y : SSet.{u}} {n : ℕ}
@@ -276,11 +276,11 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
+    |>.spine_map_vertex n (by grind) Δ m (by grind) φ i
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
-  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by omega) j l h Δ
+  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by grind) j l h Δ
 
 end spine
 

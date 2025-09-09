@@ -379,7 +379,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · gcongr
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        omega
+        grind
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
         exact hi.not_gt (Nat.lt_of_succ_le h'i.left)
@@ -454,7 +454,7 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
   rw [Finset.mem_range] at hx
   dsimp only [Subtype.coe_mk, Function.comp_apply]
   rw [edist_comm]
-  congr 4 <;> omega
+  congr 4 <;> grind
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :
     eVariationOn (f ∘ φ) t = eVariationOn f (φ '' t) := by

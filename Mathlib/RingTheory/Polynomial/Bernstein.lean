@@ -173,7 +173,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         eval_natCast, Function.comp_apply, Function.iterate_succ, ascPochhammer_succ_left]
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
-      · have : n - 1 - (ν - 1) = n - ν := by omega
+      · have : n - 1 - (ν - 1) = n - ν := by grind
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
@@ -214,7 +214,7 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
   · simp
   · norm_cast
     congr
-    omega
+    grind
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by

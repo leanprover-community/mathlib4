@@ -31,11 +31,11 @@ example : 1 + 1 = 2 := by
   grind
 
 /--
-warning: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
+warning: 'have : 1 + 1 < 3 := by grind; grind' can be replaced with 'grind'
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
-  have : 1 + 1 < 3 := by omega
+  have : 1 + 1 < 3 := by grind
   grind
 
 end mergeWithGrind
@@ -48,14 +48,14 @@ example : 1 + 1 = 2 := by
   grind
 
 /--
-warning: replace the proof with 'grind': have : 1 + 1 < 3 := by omega;
-  have : 1 + 1 < 4 := by omega;
+warning: replace the proof with 'grind': have : 1 + 1 < 3 := by grind;
+  have : 1 + 1 < 4 := by grind;
   rfl
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
-  have : 1 + 1 < 3 := by omega
-  have : 1 + 1 < 4 := by omega
+  have : 1 + 1 < 3 := by grind
+  have : 1 + 1 < 4 := by grind
   rfl
 
 end replaceWithGrind

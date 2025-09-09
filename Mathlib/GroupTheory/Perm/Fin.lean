@@ -135,7 +135,7 @@ variable {n : ℕ} {i j : Fin n}
 
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
-  (finRotate (i + 1)).extendDomain (castLEEmb (by omega)).toEquivRange
+  (finRotate (i + 1)).extendDomain (castLEEmb (by grind)).toEquivRange
 
 theorem cycleRange_of_gt (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, Perm.extendDomain_apply_not_subtype]
@@ -143,14 +143,14 @@ theorem cycleRange_of_gt (h : i < j) : cycleRange i j = j := by
 
 theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     cycleRange j i = if i = j then 0 else i + 1 := by
-  have iin : i ∈ Set.range (castLEEmb (n := j + 1) (by omega)) := by
+  have iin : i ∈ Set.range (castLEEmb (n := j + 1) (by grind)) := by
     simpa using by omega
-  have : (castLEEmb (by omega)).toEquivRange (castLT i (by omega)) = ⟨i, iin⟩ := by
+  have : (castLEEmb (by grind)).toEquivRange (castLT i (by omega)) = ⟨i, iin⟩ := by
     simpa only [coe_castLEEmb] using by rfl
-  rw [cycleRange, (finRotate (j + 1)).extendDomain_apply_subtype (castLEEmb (by omega)).toEquivRange
+  rw [cycleRange, (finRotate (j + 1)).extendDomain_apply_subtype (castLEEmb (by grind)).toEquivRange
     iin, Function.Embedding.toEquivRange_apply]
   split_ifs with ch
-  · have : ((castLEEmb (by omega)).toEquivRange.symm ⟨i, iin⟩) = last j := by
+  · have : ((castLEEmb (by grind)).toEquivRange.symm ⟨i, iin⟩) = last j := by
       simpa only [coe_castLEEmb, ← this, symm_apply_apply] using eq_of_val_eq (by simp [ch])
     rw [this, finRotate_last]
     rfl
@@ -306,7 +306,7 @@ when `i > j`. In other words, it rotates elements in `[i, j]` one step to the ri
 
 namespace Fin
 
-local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by omega)
+local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by grind)
 
 variable {n : ℕ} {i j k : Fin n}
 
@@ -356,7 +356,7 @@ theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
       simpa [range_natAdd_castLEEmb] using by omega
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by omega)) (by simpa using by omega) := by
+      = subNat i.1 (k.cast (by grind)) (by simpa using by omega) := by
       simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by omega)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
@@ -372,21 +372,21 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
   have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
     simpa [range_natAdd_castLEEmb] using by omega
   have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by omega)) (by simpa using by omega) := by
+      = subNat i.1 (k.cast (by grind)) (by simpa using by grind) := by
     simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by omega)
   simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
     addNatEmb_apply, coe_toEmbedding, finCongr_apply]
   refine eq_of_val_eq ?_
   split_ifs with ch
-  · have : subNat i.1 (j.cast (by omega)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
+  · have : subNat i.1 (j.cast (by grind)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
       eq_of_val_eq (by simp [sub_val_of_le hij])
-    simpa [ch, cycleRange_of_eq this] using by omega
-  · have : subNat i.1 (k.cast (by omega)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
+    simpa [ch, cycleRange_of_eq this] using by grind
+  · have : subNat i.1 (k.cast (by grind)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
       by simpa [lt_iff_val_lt_val, sub_val_of_le hij] using by omega
     rw [cycleRange_of_lt this, subNat]
     simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
     rw [Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
-    omega
+    grind
 
 theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIcc i j) k = k + 1 := by
   simp [cycleIcc_of_le_of_le hik (le_of_lt hkj), Fin.ne_of_lt hkj]

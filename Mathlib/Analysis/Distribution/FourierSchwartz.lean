@@ -71,7 +71,7 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
         have : (p.1 + integrablePower (volume : Measure V), p.2) ∈ (Finset.range
             (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1)) := by
           simp [hp.2]
-          omega
+          grind
         apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
     _ = _ := by simp [mul_assoc]
 

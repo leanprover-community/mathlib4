@@ -103,7 +103,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  omega
+  grind
 
 @[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
@@ -125,7 +125,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  omega
+  grind
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :
@@ -232,7 +232,7 @@ lemma det_one_add_smul (r : R) (M : Matrix n n R) :
 
 lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
     M.charpoly = X ^ 2 - C M.trace * X + C M.det := by
-  have : Nonempty n := by rw [← Fintype.card_pos_iff]; omega
+  have : Nonempty n := by rw [← Fintype.card_pos_iff]; grind
   ext i
   by_cases hi : i ∈ Finset.range 3
   · fin_cases hi
@@ -242,7 +242,7 @@ lemma charpoly_of_card_eq_two [Nontrivial R] (hn : Fintype.card n = 2) :
         M.charpoly_monic.leadingCoeff
   · rw [Finset.mem_range, not_lt, Nat.succ_le] at hi
     suffices M.charpoly.coeff i = 0 by
-      simpa [show i ≠ 2 by omega, show 1 ≠ i by omega, show i ≠ 0 by omega, coeff_X, coeff_C]
+      simpa [show i ≠ 2 by grind, show 1 ≠ i by grind, show i ≠ 0 by grind, coeff_X, coeff_C]
     apply coeff_eq_zero_of_natDegree_lt
     simpa [charpoly_natDegree_eq_dim, hn] using hi
 

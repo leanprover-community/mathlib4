@@ -112,7 +112,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by omega
+      have m_le_d : x.val ≤ d := by grind
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
@@ -147,8 +147,8 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
     (antidiagonal n).attach.biUnion fun ijh =>
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   decreasing_by
-    · simp_wf; have := fst_le ijh.2; omega
-    · simp_wf; have := snd_le ijh.2; omega
+    · simp_wf; have := fst_le ijh.2; grind
+    · simp_wf; have := snd_le ijh.2; grind
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]
