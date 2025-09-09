@@ -142,7 +142,7 @@ lemma map'_surjective_of_openEmbedding (h2 : IsOpenEmbedding f) :
 The map taking an irreducible closed set `T` to `closure (f '' T)` is bijective onto irreducible
 closeds `V` satisfying `f ⁻¹' V ≠ ∅` when `f` is an open embedding.
 -/
-lemma map'_bijective_of_openEmbedding (h2 : IsOpenEmbedding f):
+lemma map'_bijective_of_openEmbedding (h2 : IsOpenEmbedding f) :
   Function.Bijective <| map' f h :=
   ⟨map'_injective_of_openEmbedding f h h2, map'_surjective_of_openEmbedding f h h2⟩
 
