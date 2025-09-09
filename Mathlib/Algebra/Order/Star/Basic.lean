@@ -63,7 +63,7 @@ lemma smul_mem_closure_star_mul {r : R}
   | mem a ha =>
   obtain ⟨r, rfl⟩ := hr
   obtain ⟨a, rfl⟩ := ha
-  exact AddSubmonoid.subset_closure  ⟨r • a, by simp [star_smul, smul_mul_smul_comm]⟩
+  exact AddSubmonoid.subset_closure ⟨r • a, by simp [star_smul, smul_mul_smul_comm]⟩
 
 end prereq
 

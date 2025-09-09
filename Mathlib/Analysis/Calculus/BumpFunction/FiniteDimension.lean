@@ -93,8 +93,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
-        simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero,
-          not_false_iff]
+        simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero, not_false_iff]
       exact mem_iUnion_of_mem _ this
     simp_rw [← this]
     apply isOpen_iUnion_countable
@@ -104,7 +103,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     apply Countable.exists_eq_range T_count
     rcases eq_empty_or_nonempty T with (rfl | hT)
     · simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
-          at h's
+        at h's
     · exact hT
   let g : ℕ → E → ℝ := fun n => (g0 n).1
   have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).2.1
@@ -172,8 +171,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
-    simp only [Nat.cofinite_eq_atTop,
-      Filter.eventually_atTop]
+    simp only [Nat.cofinite_eq_atTop, Filter.eventually_atTop]
     exact ⟨i, fun n hn x => hr _ _ hn _⟩
   · rintro - ⟨y, rfl⟩
     refine ⟨tsum_nonneg fun n => mul_nonneg (rpos n).le (g_nonneg n y), le_trans ?_ c_lt.le⟩
