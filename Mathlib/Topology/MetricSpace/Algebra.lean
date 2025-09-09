@@ -48,7 +48,7 @@ class LipschitzMul [Monoid β] : Prop where
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive]
+@[to_additive /-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/]
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 
 variable {β}
