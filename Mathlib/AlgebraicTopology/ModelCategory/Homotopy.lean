@@ -10,7 +10,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 /-!
 # Homotopies in model categories
 
-In this file, we relate left and right homotopy between
+In this file, we relate left and right homotopies between
 morphisms `X ⟶ Y` in model categories. In particular, if `X` is cofibrant
 and `Y` is fibrant, these notions coincide (for arbitrary choices of good
 cylinders or good path objects).
