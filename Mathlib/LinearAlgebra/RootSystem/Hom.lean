@@ -498,10 +498,10 @@ def mk' [IsDomain R] [CharZero R] [Module.IsTorsionFree R M₂] [Finite ι₂]
       ext i
       rw [LinearEquiv.coe_coe, comp_apply, ← LinearEquiv.eq_symm_apply]
       conv_lhs => rw [this]
-      rfl
+      simp [g]
     apply IsRootSystem.ext <;> ext
-    · simp [RootPairing.map, RootPairing.map, g]
-    · simp [hf, RootPairing.map, RootPairing.map]
+    · simp [g]
+    · simp [hf]
   bijective_weightMap := LinearEquiv.bijective _
   bijective_coweightMap := LinearEquiv.bijective _
 

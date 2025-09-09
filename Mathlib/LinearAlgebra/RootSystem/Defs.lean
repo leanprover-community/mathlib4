@@ -657,6 +657,7 @@ section Map
 variable {ι₂ M₂ N₂ : Type*} [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
 
 /-- Push forward a root pairing along linear equivalences, also reindexing the (co)roots. -/
+@[simps! toLinearMap root_apply coroot_apply]
 protected def map (e : ι ≃ ι₂) (f : M ≃ₗ[R] M₂) (g : N ≃ₗ[R] N₂) :
     RootPairing ι₂ R M₂ N₂ where
   __ := (f.symm.trans P.toPerfPair).trans g.symm.dualMap
