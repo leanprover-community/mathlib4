@@ -60,8 +60,8 @@ namespace Matrix
 
 /-- The roots of the characteristic polynomial are the spectrum of the matrix. -/
 theorem isRoot_charpoly_iff_mem_spectrum {r : R} : IsRoot A.charpoly r ↔ r ∈ spectrum R A := by
-  simp [Matrix.eval_charpoly, spectrum.mem_iff, Matrix.isUnit_iff_isUnit_det]
-  rfl
+  simp [Matrix.eval_charpoly, spectrum.mem_iff, Matrix.isUnit_iff_isUnit_det,
+    Matrix.algebraMap_eq_diagonal, Pi.algebraMap_def]
 
 theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
     A.det = (Matrix.charpoly A).roots.prod := by
