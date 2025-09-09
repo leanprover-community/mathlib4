@@ -39,7 +39,7 @@ Positive operator
 
 open InnerProductSpace RCLike LinearMap ContinuousLinearMap
 
-open scoped InnerProduct ComplexConjugate ComplexOrder
+open scoped InnerProduct ComplexConjugate
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -82,15 +82,18 @@ theorem IsPositive.isSelfAdjoint [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] 
 theorem IsPositive.adjoint_eq [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E} (hT : IsPositive T) :
     T.adjoint = T := hT.isSelfAdjoint
 
+open ComplexOrder in
 theorem isPositive_iff (T : E →ₗ[𝕜] E) :
     IsPositive T ↔ IsSymmetric T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
   simp_rw [IsPositive, and_congr_right_iff, ← RCLike.ofReal_nonneg (K := 𝕜)]
   intro hT
   simp [hT]
 
+open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) : 0 ≤ ⟪T x, x⟫ :=
   (T.isPositive_iff.mp hT).right x
 
+open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪x, T x⟫ :=
   hT.isSymmetric _ _ ▸ hT.inner_nonneg_left x
@@ -119,6 +122,7 @@ theorem IsPositive.add {T S : E →ₗ[𝕜] E} (hT : T.IsPositive) (hS : S.IsPo
   rw [add_apply, inner_add_left, map_add]
   exact add_nonneg (hT.re_inner_nonneg_left x) (hS.re_inner_nonneg_left x)
 
+open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →ₗ[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive := by
@@ -173,6 +177,7 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
     Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
   exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
 
+open scoped ComplexOrder in
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
 @[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
@@ -182,6 +187,7 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
 
+open ComplexOrder in
 /-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
 theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
@@ -240,14 +246,17 @@ lemma isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
 
 alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 
+open ComplexOrder in
 theorem isPositive_iff (T : E →L[𝕜] E) :
     IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
   simp [← isPositive_toLinearMap_iff, isSelfAdjoint_iff_isSymmetric, LinearMap.isPositive_iff]
 
+open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪T x, x⟫ :=
   (T.isPositive_iff.mp hT).right x
 
+open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪x, T x⟫ := by
   rw [← hT.inner_left_eq_inner_right]
@@ -274,6 +283,7 @@ theorem IsPositive.add {T S : E →L[𝕜] E} (hT : T.IsPositive) (hS : S.IsPosi
     (T + S).IsPositive :=
   (isPositive_toLinearMap_iff _).mp (hT.toLinearMap.add hS.toLinearMap)
 
+open ComplexOrder in
 @[aesop safe apply]
 theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 𝕜} (hc : 0 ≤ c) :
     (c • T).IsPositive :=
