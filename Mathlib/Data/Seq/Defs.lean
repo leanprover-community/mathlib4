@@ -351,7 +351,9 @@ attribute [nolint simpNF] BisimO.eq_3
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
-/-- If two streams are bisimilar, then they are equal. -/
+/-- If two streams are bisimilar, then they are equal. There are also versions
+`eq_of_bisim'` and `eq_of_bisim_strong` that does not mention `IsBisimulation` and look
+more like an induction principles. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
@@ -378,20 +380,23 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · simp
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
-/-- Version of `eq_of_bisim` that looks more like an induction principle. -/
+/-- Coinductive principle for equality on sequences.
+This is a version of `eq_of_bisim` that looks more like an induction principle. -/
 theorem eq_of_bisim' {s₁ s₂ : Seq α}
     (motive : Seq α → Seq α → Prop)
     (base : motive s₁ s₂)
     (step : ∀ s₁ s₂, motive s₁ s₂ →
-      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂') ∨
-      (s₁ = nil ∧ s₂ = nil)) : s₁ = s₂ := by
+      (s₁ = nil ∧ s₂ = nil) ∨
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂')
+    ) : s₁ = s₂ := by
   apply eq_of_bisim motive _ base
   intro s₁ s₂ h
-  rcases step s₁ s₂ h with (⟨_, _, _, h₁, h₂, _⟩ | ⟨h_nil₁, h_nil₂⟩)
-  · simpa [h₁, h₂]
+  rcases step s₁ s₂ h with ⟨h_nil₁, h_nil₂⟩ | ⟨_, _, _, h₁, h₂, _⟩
   · simp [h_nil₁, h_nil₂]
+  · simpa [h₁, h₂]
 
-/-- Version of `eq_of_bisim'` that requires only `s₁ = s₂`
+/-- Coinductive principle for equality on sequences.
+This is a version of `eq_of_bisim'` that requires proving only `s₁ = s₂`
 instead of `s₁ = nil ∧ s₂ = nil` in `step`. -/
 theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
     (motive : Seq α → Seq α → Prop)

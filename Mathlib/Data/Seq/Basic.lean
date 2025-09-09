@@ -632,7 +632,6 @@ theorem All_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [All, mem_iff_exists_get?]
   grind
 
-set_option linter.dupNamespace false in
 private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
@@ -648,8 +647,8 @@ private lemma All.coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (bas
 /-- Coinductive principle for `All`. -/
 theorem All.coind {s : Seq α} {p : α → Prop}
     (motive : Seq α → Prop) (base : motive s)
-    (step : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl)
-    : s.All p := by
+    (step : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl) :
+    s.All p := by
   apply All_of_get
   intro n
   have := All.coind_drop_motive motive base (fun hd tl ih ↦ (step hd tl ih).right) n
@@ -765,8 +764,9 @@ theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
     simp at hx hy
     exact hx ▸ All_get (step hd tl this).left hy
 
-/-- Coinductive principle for `Pairwise` that assumes that `R` is transitive. It allows to prove
-`R hd tl.head` instead of `tl.All (R hd ·)` in `step`. -/
+/-- Coinductive principle for `Pairwise` that assumes that `R` is transitive. Compared to
+`Pairwise.coind`, this allows you to prove `R hd tl.head` instead of `tl.All (R hd ·)` in `step`.
+-/
 theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans α R] {s : Seq α}
     (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → (∀ x ∈ tl.head, R hd x) ∧ motive tl) :
@@ -803,8 +803,7 @@ section AtLeastAsLongAs
 
 theorem AtLeastAsLongAs.nil {a : Seq α} :
     a.AtLeastAsLongAs (@nil β) := by
-  unfold AtLeastAsLongAs
-  simp [terminatedAt_nil]
+  simp [AtLeastAsLongAs, terminatedAt_nil]
 
 theorem AtLeastAsLongAs.cons {a_hd : α} {a_tl : Seq α} {b_hd : β} {b_tl : Seq β}
     (h : a_tl.AtLeastAsLongAs b_tl) :
@@ -819,8 +818,7 @@ theorem AtLeastAsLongAs.cons_elim {a : Seq α} {hd : β} {tl : Seq β}
     (h : a.AtLeastAsLongAs (.cons hd tl)) : ∃ hd' tl', a = .cons hd' tl' := by
   cases a with
   | nil =>
-    unfold AtLeastAsLongAs at h
-    simp only [terminatedAt_nil, forall_const] at h
+    simp only [AtLeastAsLongAs, terminatedAt_nil, forall_const] at h
     specialize h 0
     simp [TerminatedAt] at h
   | cons hd' tl' => use hd', tl'
@@ -829,8 +827,8 @@ theorem AtLeastAsLongAs.cons_elim {a : Seq α} {hd : β} {tl : Seq β}
 theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)
     (step : ∀ a b, motive a b →
-      (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl))
-    : a.AtLeastAsLongAs b := by
+      (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl)) :
+    a.AtLeastAsLongAs b := by
   simp only [AtLeastAsLongAs, TerminatedAt, ← head_dropn]
   intro n
   have (hb : b.drop n ≠ .nil) : motive (a.drop n) (b.drop n) := by
@@ -843,7 +841,7 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
       | nil => simp at hb
       | cons tb_hd tb_tl =>
         simp only [ne_eq, cons_ne_nil, not_false_eq_true, forall_const] at ih
-        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := step (a.drop m) (.cons tb_hd tb_tl) ih _ _ (by rfl)
+        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := step (a.drop m) (.cons tb_hd tb_tl) ih _ _ rfl
         simpa [ha]
   contrapose
   rw [head_eq_none_iff]
@@ -851,7 +849,7 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
   cases tb
   · simp
   · intro hb
-    obtain ⟨a_hd, a_tl, ha, _⟩ := step _ _ (this hb) _ _ (by rfl)
+    obtain ⟨a_hd, a_tl, ha, _⟩ := step _ _ (this hb) _ _ rfl
     simp [ha]
 
 @[simp]
