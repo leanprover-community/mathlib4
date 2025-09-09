@@ -1407,3 +1407,14 @@ lemma Algebra.TensorProduct.includeLeft_surjective
   TensorProduct.flip_mk_surjective _ h
 
 end
+
+section
+universe u v w
+
+/-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
+of A ⊗[k] B -/
+def subAlgebra.baseChange {k : Type u} {A : Type v} [CommRing k] [Ring A] [Algebra k A] (B : Type w)
+    [CommRing B] [Algebra k B] (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
+  AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
+
+end
