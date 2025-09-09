@@ -71,7 +71,10 @@ jobs:
         (lake build || true) | tee "${lean_outfile}"
 
         # Process output for posting to Zulip
-        ./scripts/zulip_build_report.sh "${lean_outfile}" > "${GITHUB_OUTPUT}"
+        SHA=${{ github.sha }} \
+        REPO=${{ github.repository }} \
+        RUN_ID=${{ github.run_id }} \
+          ./scripts/zulip_build_report.sh "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23

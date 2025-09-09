@@ -8,30 +8,30 @@ echo "$(wc -l <<<"${filtered_out}") lines of output" >&2
 
 delimiter=$(cat /proc/sys/kernel/random/uuid)
 echo "zulip-message<<${delimiter}"
-echo "Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})) regression run [completed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+echo "Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) ([${SHA}}](https://github.com/${REPO}/commit/${SHA})) regression run [completed](https://github.com/${REPO}/actions/runs/${RUN_ID}})."
 
 # Categorize the output.
 counts=()
 # Panics are reported as an info message.
 # They should be very prominent when debugging, so treat them differently.
 if panic_lines=$(grep '^info: .*PANIC at ' <<<"${filtered_out}"); then
-  panic_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${panic_lines}")
-  counts+=$(printf 'Panics: %d' $(wc -l <<<"${panic_lines}"))
+  panic_descriptions=${panic_lines//^info: [^:]*:[0-9]*:[0-9]*: //}
+  counts+=( "$(printf 'Panics: %d' "$(wc -l <<<"${panic_lines}")")" )
   echo "$(wc -l <<<"${panic_lines}") lines of panic" >&2
 fi
 if error_lines=$(grep '^error: ' <<<"${filtered_out}"); then
-  error_descriptions=$(sed 's/^error: [^:]*:[0-9]*:[0-9]*: //' <<<"${error_lines}")
-  counts+=$(printf 'Errors: %d' $(wc -l <<<"${error_lines}"))
+  error_descriptions=${error_lines//^error: [^:]*:[0-9]*:[0-9]*: //}
+  counts+=( "$(printf 'Errors: %d' "$(wc -l <<<"${error_lines}")")" )
   echo "$(wc -l <<<"${error_lines}") lines of errors" >&2
 fi
 if warning_lines=$(grep '^warning: ' <<<"${filtered_out}"); then
-  warning_descriptions=$(sed 's/^warning: [^:]*:[0-9]*:[0-9]*: //' <<<"${warning_lines}")
-  counts+=$(printf 'Warnings: %d' $(wc -l <<<"${warning_lines}"))
+  warning_descriptions=${warning_lines//^warning: [^:]*:[0-9]*:[0-9]*: //}
+  counts+=( "$(printf 'Warnings: %d' "$(wc -l <<<"${warning_lines}")")" )
   echo "$(wc -l <<<"${warning_lines}") lines of warnings" >&2
 fi
 if info_lines=$(grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at '); then
-  info_descriptions=$(sed 's/^info: [^:]*:[0-9]*:[0-9]*: //' <<<"${info_lines}")
-  counts+=$(printf 'Info messages: %d' $(wc -l <<<"${info_lines}"))
+  info_descriptions=${info_lines//^info: [^:]*:[0-9]*:[0-9]*: //}
+  counts+=( "$(printf 'Info messages: %d' "$(wc -l <<<"${info_lines}")")" )
   echo "$(wc -l <<<"${info_lines}") lines of info" >&2
 fi
 
@@ -41,7 +41,7 @@ else
   printf ' %s\n\n' "${counts[@]}"
 fi
 
-if ! [ -z "${panic_lines}"]; then
+if [ -n "${panic_lines}" ]; then
   echo "\`\`\`spoiler Panic counts"
   echo "| | Panic description |"
   echo "| ---: | --- |"
@@ -50,7 +50,7 @@ if ! [ -z "${panic_lines}"]; then
   echo
 fi
 
-if ! [ -z "${error_lines}"]; then
+if [ -n "${error_lines}" ]; then
   echo "\`\`\`spoiler Error counts"
   echo "| | Error description |"
   echo "| ---: | --- |"
@@ -59,7 +59,7 @@ if ! [ -z "${error_lines}"]; then
   echo
 fi
 
-if ! [ -z "${warning_lines}"]; then
+if [ -n "${warning_lines}" ]; then
   echo "\`\`\`spoiler Warning counts"
   echo "| | Warning description |"
   echo "| ---: | --- |"
@@ -68,7 +68,7 @@ if ! [ -z "${warning_lines}"]; then
   echo
 fi
 
-if ! [ -z "${info_lines}"]; then
+if [ -n "${info_lines}" ]; then
   echo "\`\`\`spoiler Info message counts"
   echo "| | Info message |"
   echo "| ---: | --- |"
