@@ -34,9 +34,6 @@ of LocallyRingedSpaces
 abbrev IsOpenImmersion : MorphismProperty (Scheme.{u}) :=
   fun _ _ f ↦ LocallyRingedSpace.IsOpenImmersion f.toLRSHom
 
-instance : IsOpenImmersion.IsStableUnderComposition where
-  comp_mem f g := fun _ _ ↦ LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
-
 instance IsOpenImmersion.comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion (f ≫ g) :=
   LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
@@ -60,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -193,8 +190,6 @@ theorem appIso_inv_app (U) :
     (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
-@[deprecated (since := "2025-02-11")] alias appIso_inv_app_apply' := appIso_inv_app_apply
-
 @[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
     {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U) :
@@ -261,7 +256,7 @@ theorem exists_affine_mem_range_and_range_subset
     show ((e.hom ≫ e.inv).base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
-  let f : Spec (CommRingCat.of (Localization.Away r)) ⟶ X :=
+  let f : Spec(Localization.Away r) ⟶ X :=
     Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ ⟨e.inv ≫ X.ofRestrict _⟩
   refine ⟨.of (Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.comp_base, TopCat.coe_comp, Set.range_comp]
@@ -339,7 +334,7 @@ def Scheme.ofRestrict : X.restrict h ⟶ X :=
 @[simp]
 lemma Scheme.ofRestrict_app (V) :
     (X.ofRestrict h).app V = X.presheaf.map (h.isOpenMap.adjunction.counit.app V).op  :=
-  Scheme.ofRestrict_toLRSHom_c_app X h (op V)
+  rfl
 
 instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
   show PresheafedSpace.IsOpenImmersion (X.toPresheafedSpace.ofRestrict h) by infer_instance
@@ -361,7 +356,7 @@ lemma Scheme.ofRestrict_appIso (U) :
 @[simp]
 lemma Scheme.restrict_presheaf_map (V W) (i : V ⟶ W) :
     (X.restrict h).presheaf.map i = X.presheaf.map (homOfLE (show X.ofRestrict h ''ᵁ W.unop ≤
-      X.ofRestrict h ''ᵁ V.unop from Set.image_subset _ i.unop.le)).op := rfl
+      X.ofRestrict h ''ᵁ V.unop from Set.image_mono i.unop.le)).op := rfl
 
 end Restrict
 
@@ -630,11 +625,7 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
 theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : U.Opens) :
     f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ''ᵁ V) := by
-  subst H
-  rw [Scheme.comp_base, Opens.map_comp_obj]
-  congr 1
-  ext1
-  exact (Set.preimage_image_eq _ h.base_open.injective).symm
+  simp_all
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
@@ -666,7 +657,7 @@ lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Open
     (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f⁻¹ᵁ U)
       (by rw [← f.image_preimage_eq_opensRange_inter, f.preimage_image_eq]) := by
   simp only [ΓIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
-    asIso_inv, IsIso.comp_inv_eq, Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]
+    Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]
 
 @[reassoc, elementwise]
 lemma map_ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :

@@ -57,7 +57,7 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
   map p := Path.Homotopic.pi p
   map_id x := by
     change (Path.Homotopic.pi fun i => ⟦_⟧) = _
-    simp only [FundamentalGroupoid.id_eq_path_refl, Path.Homotopic.pi_lift]
+    simp only [Path.Homotopic.pi_lift]
     rfl
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
 
@@ -151,7 +151,7 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
     | (_, _), (_, _), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
   map_id := by
     rintro ⟨x₀, x₁⟩
-    simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
+    simp only
     rfl
   map_comp {x y z} f g :=
     match x, y, z, f, g with

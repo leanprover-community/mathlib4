@@ -109,8 +109,9 @@ class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
 
+-- These instances should have a lower priority, or typeclass search times out.
 attribute [instance 100] Abelian.has_finite_products
-attribute [instance 90] Abelian.has_kernels Abelian.has_cokernels
+attribute [instance 100] Abelian.has_kernels Abelian.has_cokernels
 
 end CategoryTheory
 
@@ -144,7 +145,7 @@ theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
   ext
-  simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
+  simp only [Abelian.coimageImageComparison, Category.assoc,
     cokernel.π_desc_assoc]
 
 /-- If the coimage-image comparison morphism for a morphism `f` is an isomorphism,
@@ -253,9 +254,9 @@ namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
--- Porting note: the below porting note is from mathlib3!
 -- Porting note: this should be an instance,
 -- but triggers https://github.com/leanprover/lean4/issues/2055
+-- (this is still the case despite that issue being closed now).
 -- We set it as a local instance instead.
 -- instance (priority := 100)
 -- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.

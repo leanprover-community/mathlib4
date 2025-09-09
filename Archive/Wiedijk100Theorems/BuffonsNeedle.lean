@@ -144,7 +144,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   refine stronglyMeasurable_iff_measurable_separable.mpr
     ⟨measurable_needleCrossesIndicator l, {0, 1}, ?separable⟩
   have range_finite : Set.Finite ({0, 1} : Set ℝ) := by
-    simp only [Set.mem_singleton_iff, Set.finite_singleton, Set.Finite.insert]
+    simp only [Set.finite_singleton, Set.Finite.insert]
   refine ⟨range_finite.countable, ?subset_closure⟩
   rw [IsClosed.closure_eq range_finite.isClosed, Set.subset_def, Set.range]
   intro x ⟨p, hxp⟩
@@ -215,7 +215,7 @@ lemma buffon_integral :
     MeasureTheory.integral_integral_swap ?integrable]
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
     integrable_needleCrossesIndicator d l hd]
-  simp only [needleCrossesIndicator, needleProjX, Set.mem_Icc]
+  simp only [needleCrossesIndicator, needleProjX]
   have indicator_eq (x θ : ℝ) :
       Set.indicator (Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)) 1 0 =
       Set.indicator (Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)) (1 : ℝ → ℝ) x := by
@@ -279,11 +279,11 @@ lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
 
 /--
 This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
-Then, `∫ θ in (0)..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
+Then, `∫ θ in 0..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
 point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
 -/
 lemma integral_min_eq_two_mul :
-    ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π / 2, min d (θ.sin * l) := by
+    ∫ θ in 0..π, min d (θ.sin * l) = 2 * ∫ θ in 0..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
   · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
@@ -293,11 +293,11 @@ lemma integral_min_eq_two_mul :
 
 include hd hl in
 /--
-The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
-have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
+The first of two adjacent integrals in the long case. In the range `0..(d / l).arcsin`, we
+have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in 0..(d / l).arcsin, θ.sin * l`.
 -/
 lemma integral_zero_to_arcsin_min :
-    ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
+    ∫ θ in 0..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
@@ -352,6 +352,8 @@ theorem buffon_long (h : d ≤ l) :
     ← intervalIntegral.integral_add_adjacent_intervals
       (intervalIntegrable_min_const_sin_mul d l _ _) (intervalIntegrable_min_const_sin_mul d l _ _),
     integral_zero_to_arcsin_min d l hd hl, integral_arcsin_to_pi_div_two_min d l hl h]
+  field_simp
+  simp (disch := positivity)
   field_simp
   ring_nf
 

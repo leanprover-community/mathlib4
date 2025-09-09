@@ -178,7 +178,7 @@ end IsApproximateSubgroup
 open Set in
 /-- A `1`-approximate subgroup is the same thing as a subgroup. -/
 @[to_additive (attr := simp)
-"A `1`-approximate subgroup is the same thing as a subgroup."]
+/-- A `1`-approximate subgroup is the same thing as a subgroup. -/]
 lemma isApproximateSubgroup_one {A : Set G} :
     IsApproximateSubgroup 1 (A : Set G) ↔ ∃ H : Subgroup G, H = A where
   mp hA := by
@@ -204,7 +204,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       rw [← hA.inv_eq_self]
       simpa using hx' (smul_mem_smul_set (mul_mem_mul hx_inv hA.one_mem))
     calc A * A ⊆ x • A := by assumption
-      _ = x⁻¹ • (x * x) • A := by simp [sq, smul_smul]
+      _ = x⁻¹ • (x * x) • A := by simp [smul_smul]
       _ ⊆ x⁻¹ • (A • A) := smul_set_mono (smul_set_subset_smul hx_sq)
       _ ⊆ A := hx'
   mpr := by rintro ⟨H, rfl⟩; exact .subgroup

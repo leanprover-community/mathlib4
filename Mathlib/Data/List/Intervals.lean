@@ -100,7 +100,7 @@ theorem bagInter_consecutive (n m l : Nat) :
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [range', Nat.add_sub_cancel_left]
+  simp [Nat.add_sub_cancel_left]
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
   rwa [← succ_singleton, append_consecutive]

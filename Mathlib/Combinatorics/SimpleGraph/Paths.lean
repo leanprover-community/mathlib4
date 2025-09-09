@@ -65,27 +65,22 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 
 /-- A *path* is a walk with no repeating vertices.
 Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
-structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
+structure IsPath {u v : V} (p : G.Walk u v) : Prop extends isTrail : IsTrail p where
   support_nodup : p.support.Nodup
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.toIsTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
 @[mk_iff isCircuit_def]
-structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends IsTrail p where
+structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p where
   ne_nil : p ≠ nil
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) : Prop extends IsCircuit p where
+structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
--- Porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+@[deprecated (since := "2025-08-26")] protected alias IsPath.toIsTrail := IsPath.isTrail
+@[deprecated (since := "2025-08-26")] protected alias IsCircuit.toIsTrail := IsCircuit.isTrail
+@[deprecated (since := "2025-08-26")] protected alias IsCycle.toIsCircuit := IsCycle.isCircuit
 
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -213,8 +208,52 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [reverse_append] at h
   apply h.of_append_left
 
+theorem isTrail_of_isSubwalk {v w v' w'} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+    (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsTrail) : p₁.IsTrail := by
+  obtain ⟨_, _, h⟩ := h
+  rw [h] at h₂
+  exact h₂.of_append_left.of_append_right
+
+theorem isPath_of_isSubwalk {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : G.Walk v' w'}
+    (h : p₁.IsSubwalk p₂) (h₂ : p₂.IsPath) : p₁.IsPath := by
+  obtain ⟨_, _, h⟩ := h
+  rw [h] at h₂
+  exact h₂.of_append_left.of_append_right
+
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
+
+theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
+    (p.concat h).IsPath ↔ p.IsPath ∧ w ∉ p.support := by
+  rw [← (p.concat h).isPath_reverse_iff, ← p.isPath_reverse_iff, reverse_concat, ← List.mem_reverse,
+    ← support_reverse]
+  exact cons_isPath_iff h.symm p.reverse
+
+theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
+    (h : G.Adj v w) : (p.concat h).IsPath :=
+  (concat_isPath_iff h).mpr ⟨hp, hw⟩
+
+lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) (hq : ¬q.Nil) : p.support.Disjoint q.tail.support := by
+  have hpq' := hpq.support_nodup
+  rw [support_append] at hpq'
+  rw [support_tail_of_not_nil q hq]
+  exact List.disjoint_of_nodup_append hpq'
+
+lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
+    x ≠ y := by
+  intro hxy
+  subst hxy
+  have hq : ¬q.Nil := by
+    intro hq
+    simp only [nil_iff_support_eq.mp hq, List.mem_cons, List.not_mem_nil, or_false] at hy
+    exact hyv hy
+  have hx' : x ∈ q.tail.support := by
+    rw [support_tail_of_not_nil q hq]
+    rw [mem_support_iff] at hy
+    exact (or_iff_right hyv).mp hy
+  exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
@@ -256,7 +295,7 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
 lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
     (hcyc : (p.append q).IsCycle) : q.IsPath := by
   have := hcyc.2
-  rw [tail_support_append, List.nodup_append] at this
+  rw [tail_support_append, List.nodup_append'] at this
   rw [isPath_def, support_eq_cons, List.nodup_cons]
   exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
 
@@ -285,16 +324,16 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
     Set.InjOn p.getVert {i | i ≤ p.length} := by
   intro n hn m hm hnm
   induction p generalizing n m with
-  | nil => aesop
+  | nil => simp_all
   | @cons v w u h p ihp =>
     simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
     by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · aesop
+    · omega
     · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
       have hvp : v ∉ p.support := by aesop
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
     · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by aesop
+      have hvp : v ∉ p.support := by simp_all
       exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
     · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
       have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
@@ -303,7 +342,7 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
-  refine ⟨?_, by aesop⟩
+  refine ⟨?_, by simp_all⟩
   intro h
   by_cases hi : i = 0
   · exact hi
@@ -356,7 +395,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
   intro n hn m hm hnm
-  simp only [Walk.length_reverse, Set.mem_setOf_eq, Nat.sub_le, and_true] at *
+  simp only [Set.mem_setOf_eq] at *
   have := hpc.three_le_length
   have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
     (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
@@ -660,13 +699,7 @@ theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
 protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPath := by
   induction p with
   | nil => simp
-  | cons _ _ ih =>
-    rw [map_cons, Walk.cons_isPath_iff, support_map] at hp
-    rw [Walk.cons_isPath_iff]
-    obtain ⟨hp1, hp2⟩ := hp
-    refine ⟨ih hp1, ?_⟩
-    contrapose! hp2
-    exact List.mem_map_of_mem hp2
+  | cons _ _ ih => grind [map_cons, Walk.cons_isPath_iff, support_map]
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
@@ -725,7 +758,7 @@ protected def map (f : G →g G') (hinj : Function.Injective f) {u v : V} (p : G
 theorem map_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Path.map f hinj : G.Path u v → G'.Path (f u) (f v)) := by
   rintro ⟨p, hp⟩ ⟨p', hp'⟩ h
-  simp only [Path.map, Subtype.coe_mk, Subtype.mk.injEq] at h
+  simp only [Path.map, Subtype.mk.injEq] at h
   simp [Walk.map_injective_of_injective hinj u v h]
 
 /-- Given a graph embedding, map paths to paths. -/
@@ -759,7 +792,7 @@ protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
   cases q with
   | nil => simp at qc
   | cons _ q =>
-    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hq
+    simp only [edges_cons, List.mem_cons, forall_eq_or_imp] at hq
     simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
     exact ⟨qc.1.transfer hq.2, qc.2⟩
 

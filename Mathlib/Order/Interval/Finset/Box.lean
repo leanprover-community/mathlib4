@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Disjointed
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Tactic.Ring
@@ -54,7 +55,7 @@ lemma box_succ_disjUnion (n : ℕ) :
 
 @[simp] lemma zero_mem_box : (0 : α) ∈ box n ↔ n = 0 := by cases n <;> simp [box_succ_eq_sdiff]
 
-lemma eq_zero_iff_eq_zero_of_mem_box  {x : α} (hx : x ∈ box n) : x = 0 ↔ n = 0 :=
+lemma eq_zero_iff_eq_zero_of_mem_box {x : α} (hx : x ∈ box n) : x = 0 ↔ n = 0 :=
   ⟨zero_mem_box.mp ∘ (· ▸ hx), fun hn ↦ by rwa [hn, box_zero, mem_singleton] at hx⟩
 
 end Finset

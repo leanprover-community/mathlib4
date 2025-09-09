@@ -435,8 +435,6 @@ theorem entries_insert_of_notMem {a : α} {b : β a} {s : Finmap β} :
 
 @[deprecated (since := "2025-05-23")] alias entries_insert_of_not_mem := entries_insert_of_notMem
 
-@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
-
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
   induction_on s AList.mem_insert
@@ -467,7 +465,7 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
   induction' xs with x xs
-  · simp only [toFinmap_nil, notMem_empty, find?, not_mem_nil, exists_false]
+  · simp only [toFinmap_nil, notMem_empty, not_mem_nil, exists_false]
   obtain ⟨fst_i, snd_i⟩ := x
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
   refine (or_congr_left <| and_iff_left_of_imp ?_).symm
@@ -550,13 +548,13 @@ theorem union_assoc {s₁ s₂ s₃ : Finmap β} : s₁ ∪ s₂ ∪ s₃ = s₁
 theorem empty_union {s₁ : Finmap β} : ∅ ∪ s₁ = s₁ :=
   induction_on s₁ fun s₁ => by
     rw [← empty_toFinmap]
-    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [-empty_toFinmap, union_toFinmap]
 
 @[simp]
 theorem union_empty {s₁ : Finmap β} : s₁ ∪ ∅ = s₁ :=
   induction_on s₁ fun s₁ => by
     rw [← empty_toFinmap]
-    simp [-empty_toFinmap, AList.toFinmap_eq, union_toFinmap, AList.union_assoc]
+    simp [-empty_toFinmap, union_toFinmap]
 
 theorem erase_union_singleton (a : α) (b : β a) (s : Finmap β) (h : s.lookup a = some b) :
     s.erase a ∪ singleton a b = s :=

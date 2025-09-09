@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Ring.NegOnePow
@@ -10,6 +11,7 @@ import Mathlib.Data.NNRat.Order
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Module
 
 /-!
 # Binomial rings
@@ -241,11 +243,11 @@ instance Int.instBinomialRing : BinomialRing ℤ where
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
-      simp only [multichoose, nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]
+      simp only [Int.ofNat_eq_coe, Int.ofNat_mul_out]
       rw [← Nat.descFactorial_eq_factorial_mul_choose, smeval_at_natCast, ← eval_eq_smeval n,
         ascPochhammer_nat_eq_descFactorial]
     | negSucc n =>
-      simp only [Int.multichoose, nsmul_eq_mul]
+      simp only
       rw [mul_comm, mul_assoc, ← Nat.cast_mul, mul_comm _ (k.factorial),
         ← Nat.descFactorial_eq_factorial_mul_choose, ← descPochhammer_smeval_eq_descFactorial,
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
@@ -257,7 +259,7 @@ noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R �
     simp_all only [smul_assoc, Nat.cast_smul_eq_nsmul]
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
-    simp only [← smul_assoc]
+    match_scalars
     field_simp
 
 end Basic_Instances
@@ -380,7 +382,7 @@ theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choo
 theorem choose_zero_right' (r : R) : choose r 0 = (r + 1) ^ 0 := by
   dsimp only [choose]
   rw [← nsmul_right_inj (Nat.factorial_ne_zero 0)]
-  simp [factorial_nsmul_multichoose_eq_ascPochhammer]
+  simp
 
 theorem choose_zero_right [NatPowAssoc R] (r : R) : choose r 0 = 1 := by
   rw [choose_zero_right', npow_zero]
@@ -419,7 +421,7 @@ theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPow
     (k + 1) • smeval (descPochhammer ℤ k) r + smeval (descPochhammer ℤ (k + 1)) r := by
   nth_rw 1 [descPochhammer_succ_left]
   rw [descPochhammer_succ_right, mul_comm (descPochhammer ℤ k)]
-  simp only [smeval_comp, smeval_sub, smeval_add, smeval_mul, smeval_X, smeval_one, npow_one,
+  simp only [smeval_comp, smeval_sub, smeval_mul, smeval_X, smeval_one, npow_one,
     npow_zero, one_smul, add_sub_cancel_right, sub_mul, add_mul, add_smul, one_mul]
   rw [← C_eq_natCast, smeval_C, npow_zero, add_comm (k • smeval (descPochhammer ℤ k) r) _,
     add_assoc, add_comm (k • smeval (descPochhammer ℤ k) r) _, ← add_assoc, ← add_sub_assoc,
@@ -432,14 +434,7 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
 
-theorem choose_eq_nat_choose [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
-  induction n generalizing k with
-  | zero => cases k with
-    | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
-    | succ k => rw [Nat.cast_zero, choose_zero_succ, Nat.choose_zero_succ, Nat.cast_zero]
-  | succ n ih => cases k with
-    | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
-    | succ k => rw [Nat.cast_succ, choose_succ_succ, ih, ih, Nat.choose_succ_succ, Nat.cast_add]
+@[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
 
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
@@ -459,6 +454,11 @@ theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
 
 end
 
+theorem choose_eq_smul [Field R] [CharZero R] {a : R} {n : ℕ} :
+    Ring.choose a n = (n.factorial : R)⁻¹ • (descPochhammer ℤ n).smeval a := by
+  rw [Ring.descPochhammer_eq_factorial_smul_choose, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
+  simpa using Nat.factorial_ne_zero n
+
 open Finset
 
 /-- Pochhammer version of Chu-Vandermonde identity -/
@@ -472,7 +472,7 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s)
       fun i j => ((descPochhammer ℤ i).smeval r * (descPochhammer ℤ j).smeval s),
       ← sum_add_distrib, smeval_sub, smeval_X, smeval_natCast, pow_zero, pow_one, ih, mul_sum]
     refine sum_congr rfl ?_
-    intro ij hij -- try to move descPochhammers to right, gather multipliers.
+    intro ij hij -- try to move `descPochhammer`s to right, gather multipliers.
     have hdx : (descPochhammer ℤ ij.1).smeval r * (X - (ij.2 : ℤ[X])).smeval s =
         (X - (ij.2 : ℤ[X])).smeval s * (descPochhammer ℤ ij.1).smeval r := by
       refine (commute_iff_eq ((descPochhammer ℤ ij.1).smeval r)
@@ -484,7 +484,7 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s)
       ← mul_assoc _ _ (((descPochhammer ℤ ij.1).smeval r) * _)]
     have hl : (r + s - k • 1) * (k.choose ij.1) = (k.choose ij.1) * (X - (ij.2 : ℤ[X])).smeval s +
         ↑(k.choose ij.2) * (X - (ij.1 : ℤ[X])).smeval r := by
-      simp only [smeval_sub, smeval_X, pow_one, smeval_natCast, pow_zero, ← mul_sub]
+      simp only [smeval_sub, smeval_X, pow_one, smeval_natCast, pow_zero]
       rw [← Nat.choose_symm_of_eq_add (List.Nat.mem_antidiagonal.mp hij).symm,
         (List.Nat.mem_antidiagonal.mp hij).symm, ← mul_add, Nat.cast_comm, add_smul]
       abel_nf

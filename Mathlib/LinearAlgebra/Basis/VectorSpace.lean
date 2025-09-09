@@ -28,7 +28,7 @@ basis, bases
 
 -/
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
@@ -39,7 +39,7 @@ variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section ExistsBasis
 
@@ -154,7 +154,7 @@ theorem ofVectorSpace_apply_self (x : ofVectorSpaceIndex K V) : ofVectorSpace K 
   exact Basis.mk_apply _ _ _
 
 @[simp]
-theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _ ) :=
+theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
   funext fun x => ofVectorSpace_apply_self K V x
 
 theorem ofVectorSpaceIndex.linearIndependent :
@@ -173,7 +173,7 @@ end
 
 end ExistsBasis
 
-end Basis
+end Module.Basis
 
 open Fintype
 
@@ -248,7 +248,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
-  dsimp []
+  dsimp
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 

@@ -279,16 +279,16 @@ theorem fixedPoint_unique {x} (hx : IsFixedPt f x) : x = fixedPoint f hf :=
 theorem dist_fixedPoint_le (x) : dist x (fixedPoint f hf) ≤ dist x (f x) / (1 - K) :=
   hf.dist_le_of_fixedPoint x hf.fixedPoint_isFixedPt
 
-/-- Aposteriori estimates on the convergence of iterates to the fixed point. -/
+/-- A posteriori estimates on the convergence of iterates to the fixed point. -/
 theorem aposteriori_dist_iterate_fixedPoint_le (x n) :
-    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := by
+    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n+1] x) / (1 - K) := by
   rw [iterate_succ']
   apply hf.dist_fixedPoint_le
 
 theorem apriori_dist_iterate_fixedPoint_le (x n) :
     dist (f^[n] x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
   calc
-    _ ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
+    _ ≤ dist (f^[n] x) (f^[n+1] x) / (1 - K) := hf.aposteriori_dist_iterate_fixedPoint_le x n
     _ ≤ _ := by
       gcongr; exacts [hf.one_sub_K_pos.le, hf.toLipschitzWith.dist_iterate_succ_le_geometric x n]
 

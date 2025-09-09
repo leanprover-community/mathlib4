@@ -32,7 +32,7 @@ assert_not_exists map_ne_zero MonoidWithZero
 universe w v₁ v₂ v u₁ u₂ u
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
-  CategoryTheory.Limits.Types.FilteredColimit
+  CategoryTheory.Limits.Types.FilteredColimit CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
 
@@ -81,7 +81,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp? [colimit_eq_iff] at h says
-      simp only [Functor.comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
+      simp only [comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
         colimit_eq_iff, curry_obj_obj_obj, curry_obj_obj_map] at h
     let k j := (h j).choose
     let f : ∀ j, kx ⟶ k j := fun j => (h j).choose_spec.choose
@@ -107,20 +107,20 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inl
           (by
-            simp only [true_and, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
-              Finset.mem_image, heq_iff_eq]
+            simp only [true_and, Finset.mem_univ,
+              Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only [heq_iff_eq] ))
+            simp only ))
     have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inr
           (by
-            simp only [true_and, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
-              Finset.mem_image, heq_iff_eq]
+            simp only [true_and, Finset.mem_univ,
+              Finset.mem_image]
             refine ⟨j, ?_⟩
-            simp only [heq_iff_eq]))
+            simp only))
     -- Our goal is now an equation between equivalence classes of representatives of a colimit,
     -- and so it suffices to show those representative become equal somewhere, in particular at `S`.
     apply colimit_sound' (T kxO) (T kyO)
@@ -128,11 +128,9 @@ theorem colimitLimitToLimitColimit_injective :
     -- are equal by comparing them componentwise.
     ext j
     -- Now it's just a calculation using `W` and `w`.
-    simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
+    simp only [Functor.comp_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): had to add `Limit.map_π_apply`
-    -- (which was un-tagged simp since "simp can prove it")
-    simp [Limit.map_π_apply, w]
+    simp [w]
 
 end
 
@@ -239,7 +237,7 @@ theorem colimitLimitToLimitColimit_surjective :
     -- satisfying `gf f ≫ i f = hf f' ≫ i f'`.
     let i : ∀ {j j'} (f : j ⟶ j'), kf f ⟶ k'' := fun {j} {j'} f => i' (kfO f)
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
-      intros j₁ j₂ j₃ j₄ f f'
+      intro j₁ j₂ j₃ j₄ f f'
       rw [s', s']
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
@@ -304,9 +302,6 @@ theorem colimitLimitToLimitColimit_surjective :
           colimit_eq_iff, Bifunctor.map_id_comp, types_comp_apply, curry_obj_obj_map,
           Functor.comp_obj, colim_obj, Limit.π_mk]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
-      -- Porting note: the lean 3 proof finished with
-      -- `simp only [Bifunctor.map_id_comp, types_comp_apply, Bifunctor.map_id, types_id_apply]`
-      -- which doesn't work; the corresponding `rw` works fine:
       rw [Bifunctor.map_id_comp, Bifunctor.map_id_comp, types_comp_apply, types_comp_apply,
         Bifunctor.map_id, types_id_apply]
 
@@ -385,7 +380,7 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
   congr 1
   simp only [← Category.assoc, Iso.comp_inv_eq,
     Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
-    Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
+    Limits.HasColimit.isoOfNatIso_ι_hom]
   simp
 
 end
