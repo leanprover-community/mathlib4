@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Main
+import Mathlib.Tactic.ComputeAsymptotics.Main
 
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Real.Pi.Bounds
@@ -497,6 +497,7 @@ example (a : ℝ) :
     let f := fun (y : ℝ) ↦ (1 : ℝ);
     Tendsto f (𝓝[≠] 0) (𝓝 a) := by
   compute_asymptotics
+  -- there is always two goals when source is 𝓝[≠] (for left and for right)
   · sorry
   · sorry
 
