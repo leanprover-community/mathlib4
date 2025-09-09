@@ -132,7 +132,7 @@ lemma map'_surjective_of_openEmbedding (h2 : IsOpenEmbedding f) :
     exact Set.nonempty_of_nonempty_preimage this
   have lem := subset_closure_inter_of_isPreirreducible_of_isOpen (S := V.1.1) (U := range f)
     (IsIrreducible.isPreirreducible V.1.2) (h2.isOpen_range) this
-  refine eq_of_le_of_le (((IsClosed.closure_subset_iff (IrreducibleCloseds.isClosed V.1)).mpr
+  refine le_antisymm (((IsClosed.closure_subset_iff (IrreducibleCloseds.isClosed V.1)).mpr
     (image_preimage_subset f ↑↑V))) ?_
   suffices V.1.1 ⊆ closure (f '' (f ⁻¹' V.1.1)) from this
   convert lem

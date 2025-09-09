@@ -366,7 +366,7 @@ lemma stalk_dim_eq_coheight {X : Scheme} (Z : X) :
   congr
   ext
   simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes,
-    OrderDual.instPreorder, OrderDual.instLE, specializationPreorder]
+    OrderDual.instPreorder, OrderDual.instLE]
   exact Eq.to_iff rfl
 
 end AlgebraicGeometry
