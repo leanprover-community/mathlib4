@@ -551,7 +551,10 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
 
 end
 
-/-- `Equiv.cast (congrArg _ h)` as a linear equiv. -/
+/-- `Equiv.cast (congrArg _ h)` as a linear equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
 @[simps!]
 protected def cast {ι : Type*} {M : ι → Type*}
     [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :

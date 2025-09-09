@@ -457,7 +457,10 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 
-/-- `Equiv.cast (congrArg _ h)` as a ring equiv. -/
+/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
 @[simps!]
 protected def cast
     {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :

@@ -379,7 +379,10 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
 
 end trans
 
-/-- `Equiv.cast (congrArg _ h)` as an algebra equiv. -/
+/-- `Equiv.cast (congrArg _ h)` as an algebra equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
 @[simps!]
 protected def cast
     {ι : Type*} {A : ι → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] {i j : ι} (h : i = j) :
