@@ -331,6 +331,16 @@ theorem T_eq_neg_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     use k
     field_simp; ring
 
+@[simp]
+theorem T_node_eval {n : ℤ} (hn : n ≠ 0) (k : ℤ) :
+  (T ℝ n).eval (cos (k * π / n)) = (-1)^k := by
+  rw [T_cos]
+  trans cos (k * π)
+  · congr 1; field_simp
+  calc cos (k * π) = cos (0 + k * π) := by rw [zero_add]
+    _ = (-1)^k * cos 0 := cos_add_int_mul_pi _ _
+    _ = (-1)^k := by rw [cos_zero, mul_one]
+
 theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
   |(T ℝ n).eval x| = 1 ↔ ∃ (k : ℤ), x = cos (k * π / n) := by
   constructor
@@ -345,11 +355,10 @@ theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
       use 2 * k + 1
       rw [hx]; congr; push_cast; rfl
   · rintro ⟨k, hx⟩
-    obtain ⟨l, hl⟩ := Int.even_or_odd' k
-    apply (abs_eq (by norm_num)).mpr
-    cases hl with
-    | inl hk => left; apply (T_eq_one_iff hn x).mpr; use l; rw [hx, hk]; push_cast; rfl
-    | inr hk => right; apply (T_eq_neg_one_iff hn x).mpr; use l; rw [hx, hk]; push_cast; rfl
+    rw [hx, T_cos]
+    trans |cos (k * π)|
+    · congr 2; field_simp
+    exact abs_cos_int_mul_pi _
 
 noncomputable def T_extrema (n : ℤ) : Finset ℝ :=
   (Finset.Icc 0 n.natAbs).image (fun (k : ℕ) => cos (k * π / n.natAbs))
