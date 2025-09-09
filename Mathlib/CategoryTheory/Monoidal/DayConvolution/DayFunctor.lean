@@ -112,7 +112,7 @@ instance : MonoidalCategory (C ⊛⥤ V) :=
     (equiv C V).functor
     (equiv C V).fullyFaithfulFunctor
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
-    (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
+    ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩
 
 @[simps! ι_obj ι_map]
 instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
@@ -120,7 +120,7 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
     (equiv C V).functor
     (equiv C V).fullyFaithfulFunctor
     (fun _ _ => ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
-    (⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩)
+    ⟨_, ⟨equiv C V|>.counitIso.app _⟩⟩
 
 /-- The unit transformation exhibiting `(F ⊗ G).functor` as a left Kan extension of
 `F.functor ⊠ G.functor` along `tensor C`. -/
@@ -140,8 +140,8 @@ theorem tensor_hom_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
       (η F G).app (x, y) ≫ β.natTrans.app (x ⊗ y)) :
     α = β := by
   ext : 1
-  apply Functor.homEquivOfIsLeftKanExtension
-    (F ⊗ G).functor (η F G) _|>.injective
+  apply Functor.hom_ext_of_isLeftKanExtension
+    (F ⊗ G).functor (η F G) _
   ext ⟨x, y⟩
   exact h x y
 
@@ -178,7 +178,7 @@ lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
     (η F G).app (x, y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =
     Limits.colimit.ι
       ((CostructuredArrow.proj (tensor C) (x ⊗ y)) ⋙ F.functor ⊠ G.functor)
-        (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) := by
+      (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) := by
   simpa [η, isoPointwiseLeftKanExtension] using
     Functor.descOfIsLeftKanExtension_fac_app
       (F ⊗ G).functor (η F G) _
