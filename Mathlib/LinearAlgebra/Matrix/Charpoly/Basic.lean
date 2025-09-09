@@ -282,7 +282,7 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
 
 theorem charpoly_sub_scalar (M : Matrix n n R) (mu : R) :
     (M - scalar n mu).charpoly  = M.charpoly.comp (X + C mu) := by
-  simp only [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
+  simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
   congr! with σ _ i _
   by_cases hi : σ i = i <;> simp [hi]
   ring
