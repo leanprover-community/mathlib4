@@ -500,6 +500,10 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
 
 variable {K}
 
+theorem algebraMap_def (R : Type*) [CommSemiring R] [Algebra R K[X]] (x) :
+    algebraMap R (RatFunc K) x = RatFunc.mk (algebraMap _ _ x) 1 :=
+  rfl
+
 /-- The coercion from polynomials to rational functions, implemented as the algebra map from a
 domain to its field of fractions -/
 @[coe]
@@ -522,9 +526,7 @@ The equivalence between `RatFunc K` and the field of fractions of `K[X]`
 def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
     RatFunc K ≃ₐ[R] FractionRing K[X] where
   __ := RatFunc.toFractionRingRingEquiv K
-  commutes' r := by
-    change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
-    rw [mk_one']; rfl
+  commutes' r := by simp [algebraMap_def, mk_one', ← IsScalarTower.algebraMap_apply]
 
 @[simp]
 theorem mk_eq_div (p q : K[X]) : RatFunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by
@@ -539,8 +541,7 @@ theorem div_smul {R} [Monoid R] [DistribMulAction R K[X]] [IsScalarTower R K[X] 
 
 theorem algebraMap_apply {R : Type*} [CommSemiring R] [Algebra R K[X]] (x : R) :
     algebraMap R (RatFunc K) x = algebraMap _ _ (algebraMap R K[X] x) / algebraMap K[X] _ 1 := by
-  rw [← mk_eq_div]
-  rfl
+  rw [← mk_eq_div, algebraMap_def]
 
 theorem map_apply_div_ne_zero {R F : Type*} [CommRing R] [IsDomain R]
     [FunLike F K[X] R[X]] [MonoidHomClass F K[X] R[X]]
