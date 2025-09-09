@@ -94,14 +94,6 @@ jobs:
         fi
         if warning_lines=$(grep '^warning: ' <<<"${filtered_out}"); then
           warning_descriptions=$(sed 's/^warning: [^:]*:[0-9]*:[0-9]*: //' <<<"${warning_lines}")
-
-          # Some additional postprocessing for specific forms of messages.
-          # Remove the extra arguments to linarith, to count them correctly.
-          warning_descriptions=$(sed "s/'linarith only/'linarith/" <<<"${warning_descriptions}")
-          warning_descriptions=$(sed "s/'linarith \[.*\]'/'linarith'/" <<<"${warning_descriptions}")
-          # Deal with line wrapping ending the argument list to `linarith` too early.
-          warning_descriptions=$(sed "s/'linarith \[[^]]*$/'linarith' succeeded. Counterexample:/" <<<"${warning_descriptions}")
-
           counts+=$(printf 'Warnings: %d' $(wc -l <<<"${warning_lines}"))
           echo "$(wc -l <<<"${warning_lines}") lines of warnings"
         fi
