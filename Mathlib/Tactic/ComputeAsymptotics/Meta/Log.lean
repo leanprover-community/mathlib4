@@ -3,7 +3,6 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 import Mathlib.Tactic.ComputeAsymptotics.Meta.BasisM
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
 import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
@@ -33,6 +32,7 @@ partial def proveLastExpZero (li : Q(List ℝ)) : TacticM <| Option <|
     panic! "proveLastExpZero: unexpected result of rfl"
   return .some q(fun _ ha ↦ proveLastExpZero_aux ha $h_eq $h_zero)
 
+/-- Given a trimmed `ms` returns the MS approximating `log ∘ ms.f`. -/
 def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) : BasisM MS := do
   let leading ← getLeadingTerm ms.val
   let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"

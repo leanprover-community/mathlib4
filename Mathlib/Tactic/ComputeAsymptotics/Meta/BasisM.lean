@@ -3,7 +3,6 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
 import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
 
@@ -59,13 +58,16 @@ def updateBasis (ms : MS) : BasisM MS := do
   let ms' ← ms.updateBasis ex (← get).logBasis (← get).h_basis (← get).h_logBasis
   return ms'
 
+/-- MS approximating `c : ℝ` in the current basis. -/
 def BasisM.const (c : Q(ℝ)) : BasisM MS := do
   return MS.const (← get).basis (← get).logBasis q($c) (← get).h_basis (← get).h_logBasis
 
+/-- MS approximating `basis[n]` in the current basis. -/
 def BasisM.monomial {k : Q(ℕ)} (n : Q(Fin $k)) : BasisM MS := do
   return MS.monomial (← get).basis (← get).logBasis n (← get).h_basis
     (← get).h_logBasis
 
+/-- MS approximating `basis[n] ^ r` in the current basis. -/
 def BasisM.monomial_rpow {k : Q(ℕ)} (n : Q(Fin $k)) (r : Q(ℝ)) : BasisM MS := do
   return MS.monomial_rpow (← get).basis (← get).logBasis n r (← get).h_basis
     (← get).h_logBasis

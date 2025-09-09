@@ -5,6 +5,7 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Maps.Basic
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 /-!
 # TODO
@@ -12,7 +13,7 @@ import Mathlib.Topology.Maps.Basic
 
 universe u v
 
-open Filter Topology
+open Filter Topology Asymptotics
 
 namespace ComputeAsymptotics
 
@@ -112,5 +113,81 @@ theorem tendsto_nhds_punctured_of_tendsto_top (h_neg : Tendsto (fun x ↦ f (c -
   apply tendsto_zero_punctured_of_tendsto_top _ h_pos
   convert h_neg using 3
   ring
+
+theorem tendsto_nhds_punctured_of_tendsto_top_nhds_of_eq
+    [TopologicalSpace α]
+    {a b : α}
+    (h_neg : Tendsto (fun x ↦ f (c - x⁻¹)) atTop (𝓝 a))
+    (h_pos : Tendsto (fun x ↦ f (c + x⁻¹)) atTop (𝓝 b))
+    (h_eq : a = b) :
+    Tendsto f (𝓝[≠] c) (𝓝 a) := by
+  apply tendsto_nhds_punctured_of_tendsto_top _ _ h_neg
+  convert h_pos
+
+-- TODO: generalize lemmas below
+
+theorem isLittleO_of_tendsto_top {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atTop) :
+    f =o[l] g := by
+  rw [isLittleO_iff]
+  intro c hc
+  apply (Filter.Tendsto.eventually_ge_atTop h c⁻¹).mono
+  intro x hx
+  replace hx : c⁻¹ ≤ |g x / f x| := by
+    apply hx.trans
+    apply le_abs_self
+  simp [abs_div] at hx
+  by_cases hf : f x = 0
+  · simp [hf] at hx
+    linarith
+  rw [le_div_iff₀ (abs_pos.mpr hf)] at hx
+  exact (inv_mul_le_iff₀ hc).mp hx
+
+theorem isLittleO_of_tendsto_bot {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atBot) :
+    f =o[l] g := by
+  apply IsLittleO.of_neg_left
+  apply isLittleO_of_tendsto_top
+  rw [← tendsto_neg_atBot_iff]
+  convert h using 1
+  ext x
+  simp [div_neg_eq_neg_div]
+
+theorem isBigO_of_tendsto_top {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atTop) :
+    f =O[l] g :=
+  Asymptotics.IsLittleO.isBigO (isLittleO_of_tendsto_top h)
+
+theorem isBigO_of_tendsto_bot {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l atBot) :
+    f =O[l] g :=
+  Asymptotics.IsLittleO.isBigO (isLittleO_of_tendsto_bot h)
+
+theorem isBigO_of_tendsto_nhds {f g : ℝ → ℝ} {l : Filter ℝ} {c : ℝ}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
+    f =O[l] g := by
+  apply Asymptotics.isBigO_of_div_tendsto_nhds (c := c⁻¹)
+  · have : ∀ᶠ x in l, g x / f x ≠ 0 := Filter.Tendsto.eventually_ne h hc
+    apply this.mono
+    intro x hx hg
+    simp [hg] at hx
+  · rw [← tendsto_inv_iff₀]
+    · convert h using 1
+      · ext x
+        simp
+      · simp
+    · simpa
+
+-- TODO: upstream
+theorem isEquivalent_of_tendsto_one {f g : ℝ → ℝ} {l : Filter ℝ}
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
+    f ~[l] g := by
+  apply Asymptotics.isEquivalent_of_tendsto_one _ h
+  have : ∀ᶠ x in l, 1 / 2 ≤ f x / g x := by
+    apply eventually_ge_of_tendsto_gt _ h
+    norm_num
+  apply this.mono
+  intro x hx hg
+  norm_num [hg] at hx
 
 end ComputeAsymptotics

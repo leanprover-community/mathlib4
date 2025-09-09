@@ -1,9 +1,7 @@
 import Mathlib.Tactic.ComputeAsymptotics.Main
-
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Data.Real.Pi.Bounds
 
-open Filter Topology
+open Filter Topology Asymptotics
 
 example :
   let f := fun (y : ℝ) ↦ y;
@@ -412,7 +410,7 @@ example :
   compute_asymptotics
 
 /--
-error: The tactic proved that the function tends to 𝓝 0, not atTop.
+error: The tactic proved that the function fun x => x ^ (-1) - 1 / x tends to 𝓝 0, not atTop.
 -/
 #guard_msgs in
 example :
@@ -497,11 +495,41 @@ example (a : ℝ) :
     let f := fun (y : ℝ) ↦ (1 : ℝ);
     Tendsto f (𝓝[≠] 0) (𝓝 a) := by
   compute_asymptotics
-  -- there is always two goals when source is 𝓝[≠] (for left and for right)
-  · sorry
-  · sorry
+  sorry
 
 end DifferentFilters
+
+section ONotation
+
+example :
+  let f := fun (y : ℝ) ↦ y;
+  let g := fun (y : ℝ) ↦ y^2;
+  f =o[atTop] g := by
+  simp
+  compute_asymptotics
+
+example :
+  let f := fun (y : ℝ) ↦ y;
+  let g := fun (y : ℝ) ↦ y^2;
+  g =o[𝓝[>] 0] f := by
+  simp
+  compute_asymptotics
+
+example :
+  let f := fun (y : ℝ) ↦ y;
+  let g := fun (y : ℝ) ↦ y^2;
+  f =O[atTop] g := by
+  simp
+  compute_asymptotics
+
+example :
+  let f := fun (y : ℝ) ↦ y;
+  let g := fun (y : ℝ) ↦ y + Real.log y;
+  f ~[atTop] g := by
+  simp
+  compute_asymptotics
+
+end ONotation
 
 -- example from the paper. It's used in the proof of Akkra-Bazzi theorem.
 open Real in
@@ -547,3 +575,21 @@ example :
   norm_num
 
 end Gruntz
+
+/--
+error: Function must me in the form fun x ↦ ...
+Calling `eta_expand` before `compute asymptotics might help.
+-/
+#guard_msgs in
+example : Tendsto Real.exp atTop atTop := by
+  compute_asymptotics
+
+/--
+error: proveTendstoInf proved that the function fun x => x / x ^ 2 tends to finite limit: 𝓝 0 -/
+#guard_msgs in
+example :
+  let f := fun (y : ℝ) ↦ y;
+  let g := fun (y : ℝ) ↦ y^2;
+  g =o[atTop] f := by
+  simp
+  compute_asymptotics
