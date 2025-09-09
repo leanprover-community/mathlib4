@@ -385,10 +385,6 @@ def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
   createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
     ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
 
-@[deprecated (since := "2025-02-01")]
-noncomputable alias createsColimitOfFullyFaithfulOfPreserves :=
-  createsColimitOfReflectsIsomorphismsOfPreserves
-
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
 -- so the constructed colimits may not be ideal, definitionally.

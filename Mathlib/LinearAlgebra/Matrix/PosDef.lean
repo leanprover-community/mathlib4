@@ -423,6 +423,37 @@ theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
   simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
+theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
+    A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
+  refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
+  · simp only [h.isHermitian.spectrum_eq_image_range, Set.mem_image, Set.mem_range,
+      exists_exists_eq_and, Set.mem_setOf_eq, forall_exists_index]
+    rintro i rfl
+    exact_mod_cast h.eigenvalues_nonneg _
+  · rw [h1.posSemidef_iff_eigenvalues_nonneg]
+    intro i
+    simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)
+
+theorem PosSemidef.commute_iff [DecidableEq n] {A B : Matrix n n 𝕜}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) :
+    Commute A B ↔ (A * B).PosSemidef := by
+  rw [hA.isHermitian.commute_iff hB.isHermitian]
+  refine ⟨fun hAB => posSemidef_iff_isHermitian_and_spectrum_nonneg.mpr ⟨hAB, ?_⟩,
+    fun h => h.isHermitian⟩
+  obtain ⟨x, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hA
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hB
+  have {s t} (u : Set 𝕜) (h : u ⊆ t := by simp) : s \ u ⊆ t \ u ↔ s ⊆ t := by
+    rw [Set.diff_subset_iff, Set.union_diff_cancel h]
+  rw [← mul_assoc, mul_assoc _ x, ← this {0}]
+  calc
+    _ = spectrum 𝕜 ((x * yᴴ)ᴴ * (x * yᴴ)) \ {0} := by
+      simp_rw [spectrum.nonzero_mul_comm _ y, conjTranspose_mul, conjTranspose_conjTranspose,
+        mul_assoc]
+    _ ⊆ {x : 𝕜 | 0 ≤ x} \ {0} := by
+      rw [this {0}]
+      exact posSemidef_iff_isHermitian_and_spectrum_nonneg.mp
+        (posSemidef_conjTranspose_mul_self _) |>.2
+
 /-!
 ## Positive definite matrices
 -/
@@ -662,6 +693,13 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
 
 variable [DecidableEq n]
 
+open Matrix
+
+theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
+    Commute A B ↔ (A * B).PosDef := by
+  rw [hA.posSemidef.commute_iff hB.posSemidef]
+  exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
+
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
   simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate', and_congr_right_iff,
@@ -671,8 +709,6 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : Is
   have hVV (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(V *ᵥ $h)
   have hWW (y : n → R) (hy : y ≠ 0) : W *ᵥ y ≠ 0 := fun h => by simpa [hy, hW] using congr(U *ᵥ $h)
   exact fun _ => ⟨fun h x hx => by simpa [hW] using h _ (hWW _ hx), fun h x hx => h _ (hVV _ hx)⟩
-
-open Matrix
 
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (U * x * star U) ↔ x.PosDef := by simpa using hU.star.posDef_conjugate_iff'
