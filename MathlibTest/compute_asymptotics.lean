@@ -355,35 +355,6 @@ example :
 
 end pow_fun
 
-section trig
-
--- the first remarkable limit
-example :
-    let f := fun (y : ℝ) ↦ Real.sin y / y;
-    Tendsto f (𝓝[≠] 0) (𝓝 1) := by
-  compute_asymptotics
-
-example :
-    let f := fun (y : ℝ) ↦ Real.sin (Real.sin y / y);
-    Tendsto f (𝓝[≠] 0) (𝓝 (Real.sin 1)) := by
-  have : 0 < Real.sin 1 := Real.sin_pos_of_pos_of_le_one (by simp) (by simp) -- TODO: why needed?
-  compute_asymptotics
-
-set_option maxHeartbeats 0 in
-example :
-    let f := fun (y : ℝ) ↦ (Real.sin y / Real.cos y - Real.sin y) / y^3;
-    Tendsto f (𝓝[≠] 0) (𝓝 (1 / 2)) := by
-  compute_asymptotics
-
--- slow but works
--- set_option maxHeartbeats 0 in
--- example :
---     let f := fun (y : ℝ) ↦ (Real.sin (Real.sin y) / Real.cos (Real.sin y) - Real.sin (Real.sin y / Real.cos y)) / y^7;
---     Tendsto f (𝓝[≠] 0) (𝓝 (1 / 30)) := by
---   compute_asymptotics
-
-end trig
-
 example :
   let f := fun (x : ℝ) ↦ x^(-Real.pi);
   Tendsto f atTop (nhds 0) := by
