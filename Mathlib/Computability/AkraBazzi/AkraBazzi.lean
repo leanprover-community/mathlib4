@@ -34,8 +34,6 @@ where $p$ is the unique real number such that $∑ a_i b_i^p = 1$.
 
 ## Main definitions and results
 
-* `asympBound`: the asymptotic bound satisfied by an Akra–Bazzi recurrence, namely
-  `n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})`
 * `isTheta_asympBound`: the main result stating that
   `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1}))`
 

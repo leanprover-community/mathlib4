@@ -23,6 +23,8 @@ We develop further preliminaries required for the theorem, up to the sum transfo
   `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b * n` and `n`, for any constant `b ∈ (0, 1)`.
 * `sumTransform`: The transformation that turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
+* `asympBound`: the asymptotic bound satisfied by an Akra–Bazzi recurrence, namely
+  `n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})`
 
 
 ## References
@@ -37,7 +39,7 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-#### Definition of Akra–Bazzi recurrences
+### Definition of Akra–Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence relation
@@ -246,7 +248,7 @@ lemma T_nonneg (n : ℕ) : 0 ≤ T n := le_of_lt <| R.T_pos n
 end
 
 /-!
-#### Smoothing function
+### Smoothing function
 
 We define `ε` as the "smoothing function" `fun n => 1 / log n`, which will be used in the form of a
 factor of `1 ± ε n` needed to make the induction step go through.
@@ -471,7 +473,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
       rw [← isTheta_const_mul_right this]
 
 /-!
-#### Akra–Bazzi exponent `p`
+### Akra–Bazzi exponent `p`
 
 Every Akra–Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
@@ -532,7 +534,7 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)
 
 /-!
-#### The sum transform
+### The sum transform
 
 This section defines the "sum transform" of a function `g` as
 `∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`,
