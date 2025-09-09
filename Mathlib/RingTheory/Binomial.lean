@@ -69,7 +69,7 @@ open Function Polynomial
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural
 number powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
 quotient. -/
-class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] extends IsAddTorsionFree R where
+class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] [IsAddTorsionFree R] where
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!` -/
@@ -78,7 +78,7 @@ class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] extends IsAddTorsio
 
 namespace Ring
 
-variable {R : Type*} [AddCommMonoid R] [Pow R ℕ] [BinomialRing R]
+variable {R : Type*} [AddCommMonoid R] [Pow R ℕ] [IsAddTorsionFree R] [BinomialRing R]
 
 @[deprecated (since := "2025-03-15")] protected alias nsmul_right_injective := nsmul_right_injective
 @[deprecated (since := "2025-03-15")] protected alias nsmul_right_inj := nsmul_right_inj
@@ -114,7 +114,8 @@ theorem multichoose_one_right' (r : R) : multichoose r 1 = r ^ 1 := by
 theorem multichoose_one_right [MulOneClass R] [NatPowAssoc R] (r : R) : multichoose r 1 = r := by
   rw [multichoose_one_right', npow_one]
 
-variable {R : Type*} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
+variable {R : Type*} [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc R] [IsAddTorsionFree R]
+  [BinomialRing R]
 
 @[simp]
 theorem multichoose_zero_succ (k : ℕ) : multichoose (0 : R) (k + 1) = 0 := by
@@ -224,7 +225,6 @@ section Basic_Instances
 open Polynomial
 
 instance Nat.instBinomialRing : BinomialRing ℕ where
-  nsmul_right_injective n hn _ _ := Nat.eq_of_mul_eq_mul_left (by omega)
   multichoose := Nat.multichoose
   factorial_nsmul_multichoose r n := by
     rw [smul_eq_mul, Nat.multichoose_eq r n, ← Nat.descFactorial_eq_factorial_mul_choose,
@@ -236,8 +236,10 @@ def Int.multichoose (n : ℤ) (k : ℕ) : ℤ :=
   | ofNat n => (Nat.choose (n + k - 1) k : ℤ)
   | negSucc n => Int.negOnePow k * Nat.choose (n + 1) k
 
-instance Int.instBinomialRing : BinomialRing ℤ where
+instance Int.instIsAddTorsionFree : IsAddTorsionFree ℤ where
   nsmul_right_injective n hn _ _ := Int.eq_of_mul_eq_mul_left (by omega)
+
+instance Int.instBinomialRing : BinomialRing ℤ where
   multichoose := Int.multichoose
   factorial_nsmul_multichoose r k := by
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
@@ -253,10 +255,13 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
       norm_cast
 
-noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
+noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] :
+    IsAddTorsionFree R where
   nsmul_right_injective {n} hn r s hrs := by
     rw [← one_smul ℚ≥0 r, ← one_smul ℚ≥0 s, show 1 = (n : ℚ≥0)⁻¹ • (n : ℚ≥0) by simp_all]
     simp_all only [smul_assoc, Nat.cast_smul_eq_nsmul]
+
+noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by
     match_scalars
@@ -270,7 +275,7 @@ namespace Ring
 
 open Polynomial
 
-variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
+variable {R : Type*} [NonAssocRing R] [Pow R ℕ] [IsAddTorsionFree R] [BinomialRing R]
 
 @[simp]
 theorem smeval_ascPochhammer_self_neg : ∀ n : ℕ,
@@ -359,10 +364,11 @@ section
 
 /-- The binomial coefficient `choose r n` generalizes the natural number `Nat.choose` function,
   interpreted in terms of choosing without replacement. -/
-def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
+def choose [AddCommGroupWithOne R] [Pow R ℕ] [IsAddTorsionFree R] [BinomialRing R]
+    (r : R) (n : ℕ) : R :=
   multichoose (r - n + 1) n
 
-variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
+variable [NonAssocRing R] [Pow R ℕ] [IsAddTorsionFree R] [BinomialRing R]
 
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
     (descPochhammer ℤ n).smeval r = n.factorial • choose r n := by
@@ -388,15 +394,18 @@ theorem choose_zero_right [NatPowAssoc R] (r : R) : choose r 0 = 1 := by
   rw [choose_zero_right', npow_zero]
 
 @[simp]
-theorem choose_zero_succ (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
+theorem choose_zero_succ
+    (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [IsAddTorsionFree R] [BinomialRing R]
     (n : ℕ) : choose (0 : R) (n + 1) = 0 := by
   rw [choose, Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, multichoose_succ_neg_natCast]
 
-theorem choose_zero_pos (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
+theorem choose_zero_pos
+    (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [IsAddTorsionFree R] [BinomialRing R]
     {k : ℕ} (h_pos : 0 < k) : choose (0 : R) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
 
-theorem choose_zero_ite (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
+theorem choose_zero_ite
+    (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [IsAddTorsionFree R] [BinomialRing R]
     (k : ℕ) : choose (0 : R) k = if k = 0 then 1 else 0 := by
   split_ifs with hk
   · rw [hk, choose_zero_right]
@@ -491,7 +500,8 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s)
     rw [hl, ← add_mul]
 
 /-- The Chu-Vandermonde identity for binomial rings -/
-theorem add_choose_eq [Ring R] [BinomialRing R] {r s : R} (k : ℕ) (h : Commute r s) :
+theorem add_choose_eq [Ring R] [IsAddTorsionFree R] [BinomialRing R]
+    {r s : R} (k : ℕ) (h : Commute r s) :
     choose (r + s) k =
       ∑ ij ∈ antidiagonal k, choose r ij.1 * choose s ij.2 := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero k),

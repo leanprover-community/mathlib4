@@ -35,7 +35,7 @@ variable {R A : Type*}
 
 namespace PowerSeries
 
-variable [CommRing R] [BinomialRing R]
+variable [CommRing R] [IsAddTorsionFree R] [BinomialRing R]
 
 /-- The power series for `(1 + X) ^ r`. -/
 def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
