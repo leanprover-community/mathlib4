@@ -54,6 +54,19 @@ namespace Polynomial.Chebyshev
 open Polynomial
 open Real
 
+@[simp]
+theorem T_degree_real (n : ℤ) : (T ℝ n).degree = n.natAbs := by
+  exact T_degree ℝ (by simp) n
+
+@[simp]
+theorem T_natDegree_real (n : ℤ) : (T ℝ n).natDegree = n.natAbs := by
+  exact T_natDegree ℝ (by simp) n
+
+@[simp]
+theorem T_leadingCoeff_real (n : ℤ) : (T ℝ n).leadingCoeff = 2^(n.natAbs - 1) := by
+  exact T_leadingCoeff ℝ (by simp) n
+
+@[simp]
 theorem T_cos (n : ℤ) (θ : ℝ) : (T ℝ n).eval (cos θ) = cos (n * θ) := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -65,6 +78,7 @@ theorem T_cos (n : ℤ) (θ : ℝ) : (T ℝ n).eval (cos θ) = cos (n * θ) := b
     push_cast; congr 3 <;> ring
   | neg n ih => simp [T_neg, ih]
 
+@[simp]
 theorem T_cosh (n : ℤ) (θ : ℝ) : (T ℝ n).eval (cosh θ) = cosh (n * θ) := by
   induction n using Chebyshev.induct' with
   | zero => simp
@@ -435,6 +449,29 @@ theorem T_extrema_eq {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     unfold T_extrema
     simp
 
+@[simp]
+theorem U_degree_nat_real (n : ℕ) : (U ℝ n).degree = n := by
+  exact U_degree_nat ℝ (by simp) n
+
+@[simp]
+theorem U_natDegree_nat_real (n : ℕ) : (U ℝ n).natDegree = n := by
+  exact U_natDegree_nat ℝ (by simp) n
+
+@[simp]
+theorem U_degree_ne_neg_one_real (n : ℤ) (hn : n ≠ -1) :
+  (U ℝ n).degree = ↑((n + 1).natAbs - 1) := by
+  exact U_degree_ne_neg_one ℝ (by simp) n hn
+
+@[simp]
+theorem U_natDegree_real (n : ℤ) :
+  (U ℝ n).natDegree = (n + 1).natAbs - 1 := by
+  exact U_natDegree ℝ (by simp) n
+
+@[simp]
+theorem U_leadingCoeff_nat_real (n : ℕ) : (U ℝ n).leadingCoeff = 2^n := by
+  exact U_leadingCoeff_nat ℝ (by simp) n
+
+@[simp]
 theorem U_cos (n : ℤ) (θ : ℝ) : (U ℝ n).eval (cos θ) * sin θ = sin ((n+1) * θ) := by
   induction n using Chebyshev.induct with
   | zero => simp
