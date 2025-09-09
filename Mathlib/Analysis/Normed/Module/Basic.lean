@@ -329,7 +329,7 @@ instance normedAlgebraRat {𝕜} [NormedDivisionRing 𝕜] [CharZero 𝕜] [Norm
     rw [← smul_one_smul ℝ q x, Rat.smul_one_eq_cast, norm_smul, Rat.norm_cast_real]
 
 instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
-  norm_smul_le q _ := by simp only [norm_eq_zero, mul_zero, le_refl]
+  norm_smul_le q _ := by simp only [norm_eq_zero_iff, mul_zero, le_refl]
 
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }

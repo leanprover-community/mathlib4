@@ -809,7 +809,7 @@ instance normedField : NormedField ℚ_[p] :=
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_nonneg' := norm_nonneg
-  abv_eq_zero' := norm_eq_zero
+  abv_eq_zero' := norm_eq_zero_iff
   abv_add' := norm_add_le
   abv_mul' := by simp [Norm.norm, map_mul]
 

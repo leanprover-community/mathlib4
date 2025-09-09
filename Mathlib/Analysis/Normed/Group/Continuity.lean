@@ -98,7 +98,7 @@ instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
   enorm_zero := by simp [enorm_eq_nnnorm]
-  enorm_eq_zero := by simp [enorm_eq_nnnorm]
+  enorm_eq_zero_iff := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]

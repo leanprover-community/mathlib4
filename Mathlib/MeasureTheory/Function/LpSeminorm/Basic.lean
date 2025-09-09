@@ -972,7 +972,7 @@ theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AES
   simp only [eLpNorm'_eq_lintegral_enorm, lintegral_eq_zero_iff' (hf.enorm.pow_const q), one_div,
     ENNReal.rpow_eq_zero_iff, inv_pos, inv_neg'', hq0.not_gt, and_false, or_false] at h
   refine h.left.mono fun x hx ↦ ?_
-  simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero, h.2.not_gt, and_false,
+  simp only [Pi.ofNat_apply, ENNReal.rpow_eq_zero_iff, enorm_eq_zero_iff, h.2.not_gt, and_false,
     or_false] at hx
   simp [hx.1]
 
@@ -1182,7 +1182,7 @@ theorem eLpNorm_eq_zero_and_zero_of_ae_le_mul_neg {f : α → F} {g : α → G} 
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ c * ‖g x‖) (hc : c < 0) (p : ℝ≥0∞) :
     eLpNorm f p μ = 0 ∧ eLpNorm g p μ = 0 := by
   simp_rw [le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg (norm_nonneg _) hc (norm_nonneg _),
-    norm_eq_zero, eventually_and] at h
+    norm_eq_zero_iff, eventually_and] at h
   change f =ᵐ[μ] 0 ∧ g =ᵐ[μ] 0 at h
   simp [eLpNorm_congr_ae h.1, eLpNorm_congr_ae h.2]
 

@@ -664,7 +664,7 @@ end NormedField
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
-attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
+attribute [rclike_simps] norm_zero norm_one norm_eq_zero_iff abs_norm norm_inv norm_div
 
 theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]

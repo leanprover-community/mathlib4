@@ -233,7 +233,7 @@ lemma eHolderNorm_add_le :
 lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (c : α) :
     eHolderNorm r (c • f) = ‖c‖₊ * eHolderNorm r f := by
   by_cases hc : ‖c‖₊ = 0
-  · rw [nnnorm_eq_zero] at hc
+  · rw [nnnorm_eq_zero_iff] at hc
     simp [hc]
   by_cases hf : MemHolder r f
   · refine le_antisymm ((hf.holderWith.smul c).eHolderNorm_le.trans ?_) <| mul_le_of_le_div' ?_
@@ -247,7 +247,7 @@ lemma eHolderNorm_smul {α} [NormedRing α] [Module α Y] [NormSMulClass α Y] (
       exact hf.smul.holderWith x₁ x₂
   · rw [← eHolderNorm_eq_top] at hf
     rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top, MemHolder.smul_iff hc]
-    rw [nnnorm_eq_zero] at hc
+    rw [nnnorm_eq_zero_iff] at hc
     intro h
     exact h.eHolderNorm_lt_top.ne hf
 

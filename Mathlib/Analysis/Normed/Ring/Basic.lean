@@ -775,13 +775,13 @@ variable [NormedRing α] [NormMulClass α]
 
 instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_nonneg' := norm_nonneg
-  abv_eq_zero' := norm_eq_zero
+  abv_eq_zero' := norm_eq_zero_iff
   abv_add' := norm_add_le
   abv_mul' := norm_mul
 
 instance NormMulClass.toNoZeroDivisors : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero h := by
-    simpa only [← norm_eq_zero (E := α), norm_mul, mul_eq_zero] using h
+    simpa only [← norm_eq_zero_iff (E := α), norm_mul, mul_eq_zero] using h
 
 end NormedRing
 

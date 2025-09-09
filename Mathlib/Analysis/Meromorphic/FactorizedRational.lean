@@ -344,7 +344,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
     · obtain ⟨y, hy⟩ := NormedField.exists_one_lt_norm 𝕜
       have := congrFun hx (y + u)
       simp only [add_sub_cancel_right, Pi.zero_apply, mul_eq_zero, Int.cast_eq_zero, log_eq_zero,
-        norm_eq_zero] at this
+        norm_eq_zero_iff] at this
       rcases this with h | h | h | h
       · assumption
       · simp only [h, norm_zero] at hy
@@ -369,7 +369,7 @@ theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.l
   have : ∀ x ∈ h₃f.toFinset, ‖z - x‖ ^ D x ≠ 0 := by
     intro x hx
     rw [Finite.mem_toFinset, Function.mem_support] at hx
-    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero, sub_eq_zero, eq_comm]
+    rw [ne_eq, zpow_eq_zero_iff hx, norm_eq_zero_iff, sub_eq_zero, eq_comm]
     apply ne_of_apply_ne D
     rwa [h₂z]
   simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply, norm_smul, norm_prod, norm_zpow]
@@ -410,7 +410,7 @@ theorem MeromorphicOn.log_norm_meromorphicTrailingCoeffAt_extract_zeros_poles
     ((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x).meromorphicTrailingCoeffAt_smul
       h₁g.meromorphicAt, h₁g.meromorphicTrailingCoeffAt_of_ne_zero h₂g,
     norm_smul, log_mul, log_norm_meromorphicTrailingCoeffAt hD]
-  · simp only [ne_eq, norm_eq_zero]
+  · simp only [ne_eq, norm_eq_zero_iff]
     apply MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero
       ((FactorizedRational.meromorphicNFOn D U).meromorphicOn x h₁x)
     apply FactorizedRational.meromorphicOrderAt_ne_top

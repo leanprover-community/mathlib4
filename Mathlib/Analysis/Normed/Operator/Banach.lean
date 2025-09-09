@@ -140,7 +140,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
           simp only [δ]
           ring
         _ = ‖y‖ / 2 := by
-          simp [norm_eq_zero, hd]
+          simp [norm_eq_zero_iff, hd]
         _ = 1 / 2 * ‖y‖ := by ring
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=

@@ -1325,7 +1325,7 @@ theorem bound_of_shell (f : MultilinearMap 𝕜 E G) {ε : ι → ℝ} {C : ℝ}
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   bound_of_shell_of_norm_map_coord_zero f
-    (fun h ↦ by rw [map_coord_zero f _ (norm_eq_zero.1 h), norm_zero]) hε hc hf m
+    (fun h ↦ by rw [map_coord_zero f _ (norm_eq_zero_iff.1 h), norm_zero]) hε hc hf m
 
 end MultilinearMap
 

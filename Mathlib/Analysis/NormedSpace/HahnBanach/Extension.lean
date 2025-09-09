@@ -149,7 +149,7 @@ open ContinuousLinearEquiv Submodule
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
   rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), RCLike.norm_coe_norm, coord_norm,
-    mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+    mul_inv_cancel₀ (mt norm_eq_zero_iff.mp h)]
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
 element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/

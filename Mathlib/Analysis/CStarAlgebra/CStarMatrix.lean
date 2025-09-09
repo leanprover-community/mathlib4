@@ -537,7 +537,7 @@ lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) :=
   rw [injective_iff_map_eq_zero]
   intro M h
   ext i j
-  rw [Matrix.zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
+  rw [Matrix.zero_apply, ← norm_eq_zero_iff, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
     ← toCLM_apply_single_apply]
   simp [h]
 
@@ -569,7 +569,7 @@ lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
   norm_triangle M₁ M₂ := by simpa [← map_add] using norm_add_le (toCLM M₁) (toCLM M₂)
   norm_eq_zero_iff := by
-    simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
+    simpa only [norm_def, norm_eq_zero_iff, ← injective_iff_map_eq_zero'] using toCLM_injective
 
 open WithCStarModule in
 lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :

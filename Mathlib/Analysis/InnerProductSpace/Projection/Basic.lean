@@ -414,7 +414,7 @@ theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
     ‖K.orthogonalProjection‖ = 1 := by
   refine le_antisymm K.orthogonalProjection_norm_le ?_
   obtain ⟨x, hxK, hx_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
-  simpa [K.norm_orthogonalProjection_apply hxK, norm_eq_zero, hx_ne_zero]
+  simpa [K.norm_orthogonalProjection_apply hxK, norm_eq_zero_iff, hx_ne_zero]
     using K.orthogonalProjection.ratio_le_opNorm x
 
 theorem norm_starProjection (hK : K ≠ ⊥) :

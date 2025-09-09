@@ -46,13 +46,13 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   obtain ⟨δ, δ_pos, δε⟩ := (Metric.isOpen_iff.mp t_open) 0 z_mem
   clear h hc z_mem
   rcases n with - | n
-  · exact norm_eq_zero.mp (by
-      simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
+  · exact norm_eq_zero_iff.mp (by
+      simpa only [fin0_apply_norm, norm_eq_zero_iff, norm_zero, zero_add, pow_one,
         mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine Or.elim (Classical.em (y = 0))
       (fun hy => by simpa only [hy] using p.map_zero) fun hy => ?_
     replace hy := norm_pos_iff.mpr hy
-    refine norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε ε_pos => ?_) (norm_nonneg _))
+    refine norm_eq_zero_iff.mp (le_antisymm (le_of_forall_pos_le_add fun ε ε_pos => ?_) (norm_nonneg _))
     have h₀ := _root_.mul_pos c_pos (pow_pos hy (n.succ + 1))
     obtain ⟨k, k_pos, k_norm⟩ := NormedField.exists_norm_lt 𝕜
       (lt_min (mul_pos δ_pos (inv_pos.mpr hy)) (mul_pos ε_pos (inv_pos.mpr h₀)))

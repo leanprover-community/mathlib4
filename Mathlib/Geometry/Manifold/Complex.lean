@@ -130,7 +130,7 @@ theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a
   rcases hc.exists_isMaxOn ⟨a, ha⟩ hd.continuousOn.norm with ⟨c, hcU, hc⟩
   have : ∀ x ∈ U, ‖f x‖ = ‖f c‖ :=
     norm_eqOn_of_isPreconnected_of_isMaxOn hd hpc ho hcU hc
-  rw [hb₀, ← norm_eq_zero, this a ha, ← this b hb, hb₀, norm_zero]
+  rw [hb₀, ← norm_eq_zero_iff, this a ha, ← this b hb, hb₀, norm_zero]
 
 end MDifferentiableOn
 

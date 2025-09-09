@@ -188,7 +188,7 @@ def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 
       rw [← InnerProductSpace.norm_sq_eq_re_inner]
       apply sq_nonneg
     definite := fun x hx =>
-      norm_eq_zero.1 <| pow_eq_zero (n := 2) <| by
+      norm_eq_zero_iff.1 <| pow_eq_zero (n := 2) <| by
         rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
 
 namespace InnerProductSpace.Core
@@ -488,7 +488,7 @@ omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
 lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
-  norm_eq_zero_iff x := norm_eq_zero
+  norm_eq_zero_iff x := norm_eq_zero_iff
   norm_smul c x := by
     letI : NormedSpace 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x

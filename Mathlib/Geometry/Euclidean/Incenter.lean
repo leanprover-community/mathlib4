@@ -521,7 +521,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
         rw [← Submodule.mem_bot ℝ,
           ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
         exact ⟨h', this⟩
-      rw [← norm_eq_zero, ← dist_eq_norm_vsub, h.dist_excenter] at h0
+      rw [← norm_eq_zero_iff, ← dist_eq_norm_vsub, h.dist_excenter] at h0
       exact h.exradius_pos.ne' h0
     obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by omega)
     have hu : Set.range s.points =

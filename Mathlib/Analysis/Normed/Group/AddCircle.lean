@@ -210,7 +210,7 @@ theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFi
   rw [hn, nsmul_eq_mul, ← mul_assoc, mul_comm _ p, mul_assoc, mul_div_cancel₀ _ hu,
     mul_le_mul_iff_right₀ hp.out, Nat.one_le_cast, Nat.one_le_iff_ne_zero]
   contrapose! hu'
-  simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero] using hn
+  simpa only [hu', Nat.cast_zero, zero_div, mul_zero, norm_eq_zero_iff] using hn
 
 end FiniteOrderPoints
 

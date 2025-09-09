@@ -361,8 +361,8 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    · exact norm_eq_zero.mp (normAtPlace_apply_of_isReal w.prop _ ▸ h w.1)
-    · exact norm_eq_zero.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
+    · exact norm_eq_zero_iff.mp (normAtPlace_apply_of_isReal w.prop _ ▸ h w.1)
+    · exact norm_eq_zero_iff.mp (normAtPlace_apply_of_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
 
 @[simp]

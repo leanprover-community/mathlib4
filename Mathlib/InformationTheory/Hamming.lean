@@ -152,7 +152,7 @@ theorem hammingNorm_nonneg {x : ∀ i, β i} : 0 ≤ hammingNorm x :=
 theorem hammingNorm_zero : hammingNorm (0 : ∀ i, β i) = 0 :=
   hammingDist_self _
 
-/-- Corresponds to `norm_eq_zero`. -/
+/-- Corresponds to `norm_eq_zero_iff`. -/
 @[simp]
 theorem hammingNorm_eq_zero {x : ∀ i, β i} : hammingNorm x = 0 ↔ x = 0 :=
   hammingDist_eq_zero

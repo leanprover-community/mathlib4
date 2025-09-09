@@ -193,7 +193,7 @@ theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
       specialize h_le (spectralValueTerms p n) ⟨n, rfl⟩
       simp only [spectralValueTerms, if_pos hn'] at h_le
       rw [h0, rpow_le_rpow_iff (norm_nonneg _) (le_refl _) h_exp] at h_le
-      exact norm_eq_zero.mp (le_antisymm h_le (norm_nonneg _))
+      exact norm_eq_zero_iff.mp (le_antisymm h_le (norm_nonneg _))
     · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt hn') (ne_comm.mpr hn))
 
 end Normed

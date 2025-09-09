@@ -183,7 +183,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   have h_tendsto := hf.tendsto_approx x
   simp only [StronglyMeasurable.approxBounded, SimpleFunc.coe_map, Function.comp_apply]
   by_cases hfx0 : ‖f x‖ = 0
-  · rw [norm_eq_zero] at hfx0
+  · rw [norm_eq_zero_iff] at hfx0
     rw [hfx0] at h_tendsto ⊢
     have h_tendsto_norm : Tendsto (fun n => ‖hf.approx n x‖) atTop (𝓝 0) := by
       convert h_tendsto.norm

@@ -86,7 +86,7 @@ noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [SeminormedAddCommGroup
   toFun f := liftNormedAddGroupHom f f.prop
   invFun g := ⟨g.comp normedMk, by
     intro x hx
-    rw [← norm_mk, norm_eq_zero] at hx
+    rw [← norm_mk, norm_eq_zero_iff] at hx
     simp [hx]⟩
   right_inv _ := by
     ext x
@@ -134,7 +134,7 @@ theorem normedMk_eq_zero_iff : normedMk (M := M) = 0 ↔ ∀ (x : M), ‖x‖ = 
     simp
   · intro h
     ext x
-    simpa [← norm_eq_zero] using h x
+    simpa [← norm_eq_zero_iff] using h x
 
 end SeparationQuotient
 

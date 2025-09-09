@@ -350,7 +350,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
     hasSum := fun {y} hy => by
       have norm_lt : ‖y • a‖ < 1 := by
         by_cases h : ‖a‖₊ = 0
-        · simp only [nnnorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
+        · simp only [nnnorm_eq_zero_iff.mp h, norm_zero, zero_lt_one, smul_zero]
         · have nnnorm_lt : ‖y‖₊ < ‖a‖₊⁻¹ := by
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,

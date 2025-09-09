@@ -261,7 +261,7 @@ theorem taylor_tendsto {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
   rw [Asymptotics.isLittleO_iff_tendsto] at h_isLittleO
   · rw [tendsto_zero_iff_norm_tendsto_zero]
     simpa [norm_smul, div_eq_inv_mul] using h_isLittleO
-  · simp only [norm_pow, Real.norm_eq_abs, pow_eq_zero_iff', abs_eq_zero, ne_eq, norm_eq_zero,
+  · simp only [norm_pow, Real.norm_eq_abs, pow_eq_zero_iff', abs_eq_zero, ne_eq, norm_eq_zero_iff,
       and_imp]
     intro x hx
     rw [sub_eq_zero] at hx

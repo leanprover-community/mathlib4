@@ -569,7 +569,7 @@ namespace ContinuousAlternatingMap
 /-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
 instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
   NormedAddCommGroup.ofSeparation fun _f hf ↦
-    toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
+    toContinuousMultilinearMap_injective <| norm_eq_zero_iff.mp hf
 
 variable (𝕜 F) in
 theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :

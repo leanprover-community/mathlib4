@@ -292,7 +292,7 @@ export InnerProductSpace (norm_sq_eq_re_inner)
 
 @[simp]
 theorem inner_self_eq_zero {x : E} : ⟪x, x⟫ = 0 ↔ x = 0 := by
-  rw [inner_self_eq_norm_sq_to_K, sq_eq_zero_iff, ofReal_eq_zero, norm_eq_zero]
+  rw [inner_self_eq_norm_sq_to_K, sq_eq_zero_iff, ofReal_eq_zero, norm_eq_zero_iff]
 
 theorem inner_self_ne_zero {x : E} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
   inner_self_eq_zero.not
@@ -309,7 +309,7 @@ variable {𝕜}
 
 @[simp]
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
-  rw [← norm_sq_eq_re_inner, (sq_nonneg _).ge_iff_eq', sq_eq_zero_iff, norm_eq_zero]
+  rw [← norm_sq_eq_re_inner, (sq_nonneg _).ge_iff_eq', sq_eq_zero_iff, norm_eq_zero_iff]
 
 @[simp]
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
@@ -451,7 +451,7 @@ theorem real_inner_le_norm (x y : F) : ⟪x, y⟫_ℝ ≤ ‖x‖ * ‖y‖ :=
   le_trans (le_abs_self _) (abs_real_inner_le_norm _ _)
 
 lemma inner_eq_zero_of_left {x : E} (y : E) (h : ‖x‖ = 0) : ⟪x, y⟫_𝕜 = 0 := by
-  rw [← norm_eq_zero]
+  rw [← norm_eq_zero_iff]
   refine le_antisymm ?_ (by positivity)
   exact norm_inner_le_norm _ _ |>.trans <| by simp [h]
 
@@ -751,7 +751,7 @@ theorem inner_eq_norm_mul_iff {x y : E} :
   rcases eq_or_ne x 0 with (rfl | h₀)
   · simp
   · rw [inner_eq_norm_mul_iff_div h₀, div_eq_inv_mul, mul_smul, inv_smul_eq_iff₀]
-    rwa [Ne, ofReal_eq_zero, norm_eq_zero]
+    rwa [Ne, ofReal_eq_zero, norm_eq_zero_iff]
 
 /-- If the inner product of two vectors is equal to the product of their norms (i.e.,
 `⟪x, y⟫ = ‖x‖ * ‖y‖`), then the two vectors are nonnegative real multiples of each other. One form

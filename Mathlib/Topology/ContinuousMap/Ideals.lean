@@ -201,7 +201,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine Set.subset_compl_iff_disjoint_left.mp fun x hx => ?_
     simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using
-      (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
+      (nnnorm_eq_zero_iff.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
   /- It suffices to produce `g : C(X, ℝ≥0)` which takes values in `[0,1]` and is constantly `1` on
     `t` such that when composed with the natural embedding of `ℝ≥0` into `𝕜` lies in the ideal `I`.
     Indeed, then `‖f - f * ↑g‖ ≤ ‖f * (1 - ↑g)‖ ≤ ⨆ ‖f * (1 - ↑g) x‖`. When `x ∉ t`, `‖f x‖ < ε / 2`

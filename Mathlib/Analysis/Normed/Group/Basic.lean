@@ -113,7 +113,7 @@ which is positive definite: in other words, this is an `ESeminormedAddMonoid` wi
 definiteness condition added. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ESeminormedAddMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  enorm_eq_zero_iff : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
 /-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
 Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
@@ -127,7 +127,7 @@ which is positive definite: in other words, this is an `ESeminormedMonoid` with 
 definiteness condition added. -/
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  enorm_eq_zero_iff : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
 /-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
 enorm.
@@ -976,13 +976,15 @@ section ENormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 
-@[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [ENormedMonoid.enorm_eq_zero]
+@[to_additive (attr := simp) enorm_eq_zero_iff]
+lemma enorm_eq_zero_iff' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
+  simp [ENormedMonoid.enorm_eq_zero_iff]
+
+deprecated
 
 @[to_additive enorm_ne_zero]
 lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
-  enorm_eq_zero'.ne
+  enorm_eq_zero_iff'.ne
 
 @[to_additive (attr := simp) enorm_pos]
 lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
@@ -993,7 +995,7 @@ end ENormedMonoid
 instance : ENormedAddCommMonoid ℝ≥0∞ where
   continuous_enorm := continuous_id
   enorm_zero := by simp
-  enorm_eq_zero := by simp
+  enorm_eq_zero_iff := by simp
   enorm_add_le := by simp
 
 open Set in
@@ -1307,14 +1309,14 @@ lemma norm_le_zero_iff' : ‖a‖ ≤ 0 ↔ a = 1 := by rw [← dist_one_right, 
 @[to_additive (attr := simp) norm_pos_iff]
 lemma norm_pos_iff' : 0 < ‖a‖ ↔ a ≠ 1 := by rw [← not_le, norm_le_zero_iff']
 
-@[to_additive (attr := simp) norm_eq_zero]
-lemma norm_eq_zero' : ‖a‖ = 0 ↔ a = 1 := (norm_nonneg' a).ge_iff_eq'.symm.trans norm_le_zero_iff'
+@[to_additive (attr := simp) norm_eq_zero_iff]
+lemma norm_eq_zero_iff' : ‖a‖ = 0 ↔ a = 1 := (norm_nonneg' a).ge_iff_eq'.symm.trans norm_le_zero_iff'
 
 @[to_additive norm_ne_zero_iff]
-lemma norm_ne_zero_iff' : ‖a‖ ≠ 0 ↔ a ≠ 1 := norm_eq_zero'.not
+lemma norm_ne_zero_iff' : ‖a‖ ≠ 0 ↔ a ≠ 1 := norm_eq_zero_iff'.not
 
 @[to_additive]
-theorem norm_div_eq_zero_iff : ‖a / b‖ = 0 ↔ a = b := by rw [norm_eq_zero', div_eq_one]
+theorem norm_div_eq_zero_iff : ‖a / b‖ = 0 ↔ a = b := by rw [norm_eq_zero_iff', div_eq_one]
 
 @[to_additive]
 theorem norm_div_pos_iff : 0 < ‖a / b‖ ↔ a ≠ b := by
@@ -1337,13 +1339,13 @@ theorem eq_one_or_norm_pos (a : E) : a = 1 ∨ 0 < ‖a‖ := by
 theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
   eq_one_or_norm_pos a
 
-@[to_additive (attr := simp) nnnorm_eq_zero]
-theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
-  rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
+@[to_additive (attr := simp) nnnorm_eq_zero_iff]
+theorem nnnorm_eq_zero_iff' : ‖a‖₊ = 0 ↔ a = 1 := by
+  rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero_iff']
 
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
-  nnnorm_eq_zero'.not
+  nnnorm_eq_zero_iff'.not
 
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
@@ -1353,7 +1355,7 @@ variable (E)
 /-- The norm of a normed group as a group norm. -/
 @[to_additive /-- The norm of a normed group as an additive group norm. -/]
 def normGroupNorm : GroupNorm E :=
-  { normGroupSeminorm _ with eq_one_of_map_eq_zero' := fun _ => norm_eq_zero'.1 }
+  { normGroupSeminorm _ with eq_one_of_map_eq_zero' := fun _ => norm_eq_zero_iff'.1 }
 
 @[simp]
 theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
@@ -1368,7 +1370,7 @@ variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
 /-! Some relations with `HasCompactSupport` -/
 
 theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ HasCompactSupport f :=
-  hasCompactSupport_comp_left norm_eq_zero
+  hasCompactSupport_comp_left norm_eq_zero_iff
 
 alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff
 

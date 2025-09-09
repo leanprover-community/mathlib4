@@ -260,7 +260,7 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
   · simp only [gramSchmidtNormed_unit_length, h₀, imp_true_iff]
   · intro i j hij
     simp only [gramSchmidtNormed, inner_smul_left, inner_smul_right, RCLike.conj_inv,
-      RCLike.conj_ofReal, mul_eq_zero, inv_eq_zero, RCLike.ofReal_eq_zero, norm_eq_zero]
+      RCLike.conj_ofReal, mul_eq_zero, inv_eq_zero, RCLike.ofReal_eq_zero, norm_eq_zero_iff]
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 

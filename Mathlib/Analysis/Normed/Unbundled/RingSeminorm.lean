@@ -440,7 +440,7 @@ def NormedRing.toRingNorm (R : Type*) [NormedRing R] : RingNorm R where
   add_le'   := norm_add_le
   mul_le'   := norm_mul_le
   neg'      := norm_neg
-  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero_iff]; exact hx
 
 @[simp]
 theorem NormedRing.toRingNorm_apply (R : Type*) [NormedRing R] (x : R) :
@@ -455,12 +455,12 @@ def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
   add_le'   := norm_add_le
   map_mul'  := norm_mul
   neg'      := norm_neg
-  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero_iff]; exact hx
 
 /-- The norm on a `NormedField`, as an `AbsoluteValue`. -/
 def NormedField.toAbsoluteValue (R : Type*) [NormedField R] : AbsoluteValue R ℝ where
   toFun     := norm
   map_mul'  := norm_mul
   nonneg'   := norm_nonneg
-  eq_zero' _ := norm_eq_zero
+  eq_zero' _ := norm_eq_zero_iff
   add_le'   := norm_add_le

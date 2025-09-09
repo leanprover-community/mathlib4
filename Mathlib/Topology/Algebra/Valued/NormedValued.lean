@@ -64,7 +64,7 @@ instance {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
   hom := .id _
   strictMono' := strictMono_id
   exists_val_nontrivial := (exists_one_lt_norm K).imp fun x h ↦ by
-    have h' : x ≠ 0 := norm_eq_zero.not.mp (h.gt.trans' (by simp)).ne'
+    have h' : x ≠ 0 := norm_eq_zero_iff.not.mp (h.gt.trans' (by simp)).ne'
     simp [valuation_apply, ← NNReal.coe_inj, h.ne', h']
 
 end NormedField
@@ -87,7 +87,7 @@ theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
   simp only [norm, NNReal.coe_le_coe, le_max_iff, StrictMono.le_iff_le hv.strictMono]
   exact le_max_iff.mp (Valuation.map_add_le_max' val.v _ _)
 
-theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
+theorem norm_eq_zero_iff {x : L} (hx : norm x = 0) : x = 0 := by
   simpa [norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
 theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
@@ -109,7 +109,7 @@ def toNormedField : NormedField L :=
       simp only [← sub_add_sub_cancel x y z]
       exact le_trans (norm_add_le _ _)
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
-    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
+    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero_iff hxy)
     dist_eq := fun x y => rfl
     norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace

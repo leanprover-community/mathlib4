@@ -127,8 +127,8 @@ theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖�
 
 @[simp]
 theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
-  rw [← norm_eq_zero, norm_star_mul_self]
-  exact mul_self_eq_zero.trans norm_eq_zero
+  rw [← norm_eq_zero_iff, norm_star_mul_self]
+  exact mul_self_eq_zero.trans norm_eq_zero_iff
 
 theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne, star_mul_self_eq_zero_iff]

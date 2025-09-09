@@ -190,7 +190,7 @@ theorem hasFDerivAtFilter_iff_tendsto :
     HasFDerivAtFilter f f' x L ↔
       Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) L (𝓝 0) := by
   have h : ∀ x', ‖x' - x‖ = 0 → ‖f x' - f x - f' (x' - x)‖ = 0 := fun x' hx' => by
-    rw [sub_eq_zero.1 (norm_eq_zero.1 hx')]
+    rw [sub_eq_zero.1 (norm_eq_zero_iff.1 hx')]
     simp
   rw [hasFDerivAtFilter_iff_isLittleO, ← isLittleO_norm_left, ← isLittleO_norm_right,
     isLittleO_iff_tendsto h]

@@ -169,7 +169,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
     · refine h_nnnorm_eq_zero.mono fun x hx => ?_
       dsimp only at hx
       rw [Pi.zero_apply] at hx ⊢
-      · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
+      · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero_iff] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
       exact (Lp.stronglyMeasurable _).measurable
   refine le_antisymm ?_ (zero_le _)

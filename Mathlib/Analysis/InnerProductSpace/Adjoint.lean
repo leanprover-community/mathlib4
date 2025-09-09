@@ -346,7 +346,7 @@ theorem isStarNormal_iff_norm_eq_adjoint :
 
 lemma IsStarNormal.adjoint_apply_eq_zero_iff (hT : IsStarNormal T) (x : E) :
     adjoint T x = 0 ↔ T x = 0 := by
-  simp_rw [← norm_eq_zero (E := E), ← isStarNormal_iff_norm_eq_adjoint.mp hT]
+  simp_rw [← norm_eq_zero_iff (E := E), ← isStarNormal_iff_norm_eq_adjoint.mp hT]
 
 open ContinuousLinearMap
 
@@ -371,15 +371,15 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T
   refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
   suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
   rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
-  simp_rw [zero_apply, ← norm_eq_zero (E := E)]
+  simp_rw [zero_apply, ← norm_eq_zero_iff (E := E)]
   have :=
     calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
-          simp [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, norm_eq_zero,
+          simp [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, norm_eq_zero_iff,
             ← star_eq_adjoint, star_sub, star_one, one_apply]
       _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
           simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
       _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
-      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
+      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero_iff, ContinuousLinearMap.ext_iff, zero_apply]
       _ ↔ IsIdempotentElem T := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
   exact this.mpr hT
 

@@ -147,7 +147,7 @@ theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
 theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) {s : Set α} (hs : MeasurableSet s) (hs_zero : μ s = 0) :
     T s = 0 := by
-  refine norm_eq_zero.mp ?_
+  refine norm_eq_zero_iff.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
   rw [measureReal_def, hs_zero, ENNReal.toReal_zero, mul_zero]
 

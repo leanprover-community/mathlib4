@@ -364,7 +364,7 @@ theorem norm_inv_eq {x : FreeGroup α} : norm x⁻¹ = norm x := by
   simp only [norm, toWord_inv, invRev_length]
 
 @[to_additive (attr := simp)]
-theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
+theorem norm_eq_zero_iff {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
   simp only [norm, List.length_eq_zero_iff, toWord_eq_nil_iff]
 
 @[to_additive (attr := simp)]

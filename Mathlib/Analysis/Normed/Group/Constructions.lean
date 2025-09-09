@@ -26,7 +26,7 @@ instance normedAddCommGroup : NormedAddCommGroup PUnit where
   norm := Function.const _ 0
   dist_eq _ _ := rfl
 
-@[simp] lemma norm_eq_zero (x : PUnit) : ‖x‖ = 0 := rfl
+@[simp] lemma norm_eq_zero_iff (x : PUnit) : ‖x‖ = 0 := rfl
 
 end PUnit
 

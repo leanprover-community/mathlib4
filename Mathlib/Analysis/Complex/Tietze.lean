@@ -69,7 +69,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
     simp [g, hx]
   · refine continuousOn_id.norm.inv₀ ?_ |>.smul continuousOn_id
     simp only [closure_compl, interior_closedBall (0 : E) one_ne_zero, mem_compl_iff,
-      Metric.mem_ball, dist_zero_right, not_lt, id_eq, ne_eq, norm_eq_zero]
+      Metric.mem_ball, dist_zero_right, not_lt, id_eq, ne_eq, norm_eq_zero_iff]
     exact fun x hx ↦ norm_pos_iff.mp <| one_pos.trans_le hx
 
 theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}

@@ -426,7 +426,7 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
   refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
   by_cases f_zero : ‖f‖ = 0
-  · simp only [norm_eq_zero] at f_zero
+  · simp only [norm_eq_zero_iff] at f_zero
     simp [f_zero, limsup_const]
   have norm_f_pos : 0 < ‖f‖ := lt_of_le_of_ne (norm_nonneg _) (fun a => f_zero a.symm)
   apply _root_.le_of_forall_pos_le_add

@@ -907,7 +907,7 @@ instance : IsStrictOrderedRing (ℤ√d) :=
 
 end
 
-theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
+theorem norm_eq_zero_iff {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
   refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
@@ -966,7 +966,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
     suffices lift r a.norm = 0 by
       simp only [re_intCast, add_zero, lift_apply_apply, im_intCast, Int.cast_zero,
         zero_mul] at this
-      rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
+      rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero_iff hd] at this
     rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]
 
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid

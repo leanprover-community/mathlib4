@@ -502,7 +502,7 @@ theorem oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq {x y : V} (hn : x ≠ y
   rw [eq_sub_iff_add_eq, ← oangle_neg_neg, ← add_assoc]
   have hy : y ≠ 0 := by
     rintro rfl
-    rw [norm_zero, norm_eq_zero] at h
+    rw [norm_zero, norm_eq_zero_iff] at h
     exact hn h
   have hx : x ≠ 0 := norm_ne_zero_iff.1 (h.symm ▸ norm_ne_zero_iff.2 hy)
   convert o.oangle_add_cyc3_neg_right (neg_ne_zero.2 hy) hx (sub_ne_zero_of_ne hn.symm) using 1

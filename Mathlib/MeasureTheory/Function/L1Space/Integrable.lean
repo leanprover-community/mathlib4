@@ -758,7 +758,7 @@ lemma integrable_count_iff :
   rw [Integrable, hasFiniteIntegral_count_iff, and_iff_right_iff_imp]
   intro hs
   have hs' : (Function.support f).Countable := by
-    simpa only [Ne, Pi.zero_apply, eq_comm, Function.support, norm_eq_zero]
+    simpa only [Ne, Pi.zero_apply, eq_comm, Function.support, norm_eq_zero_iff]
       using hs.countable_support
   letI : MeasurableSpace β := borel β
   haveI : BorelSpace β := ⟨rfl⟩

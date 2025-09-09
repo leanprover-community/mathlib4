@@ -31,7 +31,7 @@ theorem oangle_eq_two_zsmul_oangle_sub_of_norm_eq {x y z : V} (hxyne : x ≠ y) 
     (hxy : ‖x‖ = ‖y‖) (hxz : ‖x‖ = ‖z‖) : o.oangle y z = (2 : ℤ) • o.oangle (y - x) (z - x) := by
   have hy : y ≠ 0 := by
     rintro rfl
-    rw [norm_zero, norm_eq_zero] at hxy
+    rw [norm_zero, norm_eq_zero_iff] at hxy
     exact hxyne hxy
   have hx : x ≠ 0 := norm_ne_zero_iff.1 (hxy.symm ▸ norm_ne_zero_iff.2 hy)
   have hz : z ≠ 0 := norm_ne_zero_iff.1 (hxz ▸ norm_ne_zero_iff.2 hx)

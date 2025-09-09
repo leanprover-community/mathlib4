@@ -59,7 +59,7 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
       apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc)
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
         Filter.self_mem_codiscreteWithin [[a, b]]] with x h₁x h₂x
-      simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero]
+      simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero_iff]
       left
       by_contra hCon
       simp_all [← h₁x.meromorphicOrderAt_eq_zero_iff, t₀ ⟨x, h₂x⟩]
@@ -139,7 +139,7 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
         intro x hx
         simp
       · intro x hx
-        rw [ne_eq, norm_eq_zero]
+        rw [ne_eq, norm_eq_zero_iff]
         apply h₂g ⟨circleMap c R x, circleMap_mem_sphere' c R x⟩
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_sphere (by simp) c
       (abs_nonneg R))] at t₀
@@ -147,7 +147,7 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
     have : (log ‖f ·‖) =ᶠ[codiscreteWithin (sphere c |R|)] 0 := by
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
         self_mem_codiscreteWithin (sphere c |R|)] with x h₁x h₂x
-      simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero]
+      simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero_iff]
       left
       by_contra hCon
       simp_all [← h₁x.meromorphicOrderAt_eq_zero_iff, t₀ ⟨x, h₂x⟩]

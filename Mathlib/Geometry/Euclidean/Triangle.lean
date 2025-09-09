@@ -98,7 +98,7 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
   · rw [← norm_neg (y - x), neg_sub, mul_comm, mul_comm ‖y‖, div_eq_mul_inv, div_eq_mul_inv,
       mul_inv_rev, mul_inv_rev, ← mul_assoc, ← mul_assoc] at h
     replace h :=
-      mul_right_cancel₀ (inv_ne_zero fun hz => hxy (eq_of_sub_eq_zero (norm_eq_zero.1 hz))) h
+      mul_right_cancel₀ (inv_ne_zero fun hz => hxy (eq_of_sub_eq_zero (norm_eq_zero_iff.1 hz))) h
     rw [inner_sub_right, inner_sub_right, real_inner_comm x y, real_inner_self_eq_norm_mul_norm,
       real_inner_self_eq_norm_mul_norm, mul_sub_right_distrib, mul_sub_right_distrib,
       mul_self_mul_inv, mul_self_mul_inv, sub_eq_sub_iff_sub_eq_sub, ← mul_sub_left_distrib] at h
@@ -108,7 +108,7 @@ theorem norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi {x y : V}
     · by_cases hy0 : y = 0
       · rw [hy0, norm_zero, inner_zero_right, zero_mul, sub_zero] at h
         rw [hy0, norm_zero, h]
-      · rw [inv_sub_inv (fun hz => hx0 (norm_eq_zero.1 hz)) fun hz => hy0 (norm_eq_zero.1 hz), ←
+      · rw [inv_sub_inv (fun hz => hx0 (norm_eq_zero_iff.1 hz)) fun hz => hy0 (norm_eq_zero_iff.1 hz), ←
           neg_sub, ← mul_div_assoc, mul_comm, mul_div_assoc, ← mul_neg_one] at h
         symm
         by_contra hyx
