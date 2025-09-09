@@ -20,6 +20,11 @@ The status of the conjecture for `n ≥ 6` is unknown.
 
 https://en.wikipedia.org/wiki/Euler%27s_sum_of_powers_conjecture
 http://euler.free.fr/
+
+## TODO
+
+* Formalize the Elkies's construction of infinitely many irreducible counterexamples for `n = 4`
+  https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf
 -/
 
 
@@ -100,6 +105,8 @@ theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
 /--
 The first counterexample for `n = 4` was found by Noam D. Elkies in October 1988.
 https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf
+In this paper, Elkies constructs infinitely many solutions to `a^4 + b^4 + c^4 = d^4` for coprime
+`a, b, c, d`, which provide infinitely many irreducible counterexamples for the case `n = 4`.
 The smallest counterexample known for `n = 4` was found a month later by Roger E. Frye:
 `a := [95_800, 217_519, 414_560]`, `b := 422_481`. https://ieeexplore.ieee.org/document/74138
 -/
