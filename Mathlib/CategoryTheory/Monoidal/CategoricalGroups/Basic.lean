@@ -39,56 +39,58 @@ namespace CategoryTheory
 
 open Category MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
+
+
+
 /-- A braided monoidal category is a monoidal category equipped with a braiding isomorphism
 `β_ X Y : X ⊗ Y ≅ Y ⊗ X`
 which is natural in both arguments,
 and also satisfies the two hexagon identities.
 -/
-class CategoricalGroup (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
+class CategoricalGroup (C : Type u) [Groupoid.{v} C] [MonoidalCategory.{v} C] where
   /-- The negator functor -/
   negator : C ⥤  C
-  /-- Left cancellation isomorphism -/
+  /-- Left cancellation isomorphism, usually denoted by ε -/
   cancel_left : ∀ X : C, negator.obj X ⊗ X ≅ 𝟙_ C
-  /-- Right cancellation isomorphism -/
-  cancel_right : ∀ X : C, X ⊗ negator.obj X ≅ 𝟙_ C
+  /-- Right cancellation isomorphism, usually denoted by η -/
+  cancel_right : ∀ X : C, 𝟙_ C ≅ X ⊗ negator.obj X
   cancel_naturality_left :
     ∀  {X Y : C} (f : X ⟶ Y),
       (negator.map f) ▷ X ≫ (negator.obj Y) ◁ f ≫ (cancel_left Y).hom = (cancel_left X).hom  := by
     cat_disch
   cancel_naturality_right :
     ∀ {X Y : C} (f : X ⟶ Y),
-      (X ◁ (negator.map f)) ≫ (f ▷ (negator.obj Y)) ≫ ((cancel_right Y).hom) = (cancel_right X).hom := by
+      (X ◁ (negator.map f)) ≫ (f ▷ (negator.obj Y)) ≫ ((cancel_right Y).inv)
+        = (cancel_right X).inv := by
     cat_disch
 
+  cancellation_right :
+    ∀ X : C,
+      (λ_ X).inv ≫ (cancel_right X).hom ▷ X ≫ (α_ X (negator.obj X) X).hom ≫
+        X ◁ (cancel_left X).hom ≫ (ρ_ X).hom = 𝟙 X  := by cat_disch
+
+  cancellation_left :
+    ∀ X : C,
+      (ρ_ (negator.obj X)).inv ≫ (negator.obj X) ◁ (cancel_right X).hom
+      ≫ (α_ (negator.obj X) X (negator.obj X)).inv ≫ (cancel_left X).hom ▷ (negator.obj X) ≫
+      (λ_ (negator.obj X)).hom = 𝟙 (negator.obj X) := by cat_disch
 
 
-
-  /-- The first hexagon identity. -/
-  hexagon_forward :
-    ∀ X Y Z : C,
-      (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
-        ((braiding X Y).hom ▷ Z) ≫ (α_ Y X Z).hom ≫ (Y ◁ (braiding X Z).hom) := by
-    cat_disch
-  /-- The second hexagon identity. -/
-  hexagon_reverse :
-    ∀ X Y Z : C,
-      (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
-        (X ◁ (braiding Y Z).hom) ≫ (α_ X Z Y).inv ≫ ((braiding X Z).hom ▷ Y) := by
-    cat_disch
 
 attribute [reassoc (attr := simp)]
-  BraidedCategory.braiding_naturality_left
-  BraidedCategory.braiding_naturality_right
-attribute [reassoc] BraidedCategory.hexagon_forward BraidedCategory.hexagon_reverse
+  CategoricalGroup.cancellation_right
+  CategoricalGroup.cancellation_left
+-- attribute [reassoc] CategoricalGroup.cancellation_left CategoricalGroup.cancellation_right
 
-open BraidedCategory
+open CategoricalGroup
 
 @[inherit_doc]
-notation "β_" => BraidedCategory.braiding
+notation "η_" => CategoricalGroup.cancel_right
+notation "ε_" => CategoricalGroup.cancel_left
 
-namespace BraidedCategory
+namespace CategoricalGroup
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
+variable {C : Type u} [Groupoid.{v} C] [MonoidalCategory.{v} C] [CategoricalGroup.{v} C]
 
 @[simp, reassoc]
 theorem braiding_tensor_left_hom (X Y Z : C) :
