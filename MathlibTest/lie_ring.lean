@@ -52,6 +52,18 @@ example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c�
   guard_target = (1 : ℤ) • ⁅a, ⁅b, c⁆⁆ + ((1 : ℤ) • ⁅⁅a, c⁆, b⁆ + 0) = (1 : ℤ) • ⁅⁅a, c⁆, b⁆ + 0 + ((1 : ℤ) • ⁅a, ⁅b, c⁆⁆ + 0)
   abel
 
+example (a b c : L) : ⁅⁅a, b⁆, c⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆ := by
+  let d := c
+  nth_rw 2 [show c = d from rfl]
+  guard_target = ⁅⁅a, b⁆, c⁆ = ⁅⁅a, d⁆, b⁆ + ⁅a, ⁅b, c⁆⁆
+  -- When `zetaDelta` is set to false (as default), `let` is not unfolded
+  lie_ring_nf (config := {zetaDelta := false})
+  guard_target = ⁅a, ⁅b, c⁆⁆ + ⁅⁅a, c⁆, b⁆ = ⁅⁅a, d⁆, b⁆ + ⁅a, ⁅b, c⁆⁆
+  -- When `zetaDelta` is set to true, `let` is unfolded
+  lie_ring_nf (config := {zetaDelta := true})
+  guard_target = ⁅a, ⁅b, c⁆⁆ + ⁅⁅a, c⁆, b⁆ = ⁅⁅a, c⁆, b⁆ + ⁅a, ⁅b, c⁆⁆
+  exact add_comm _ _
+
 example (a b c : L) : ⁅⁅a, b⁆, c⁆ + ⁅⁅b, c⁆, a⁆ + ⁅⁅c, a⁆, b⁆ = 0 := by
   lie_ring_nf
   guard_target = ⁅a, ⁅b, c⁆⁆ + ⁅⁅a, c⁆, b⁆ + -⁅a, ⁅b, c⁆⁆ + -⁅⁅a, c⁆, b⁆ = 0

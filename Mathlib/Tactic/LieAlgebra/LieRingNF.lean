@@ -40,6 +40,7 @@ structure Config extends AtomM.Recurse.Config where
 /-- Default elaborator of `LieRingNF.config` -/
 declare_config_elab elabConfig Config
 
+/-- Evaluate an expression `e` into a normalized form. -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
   guard e.isApp -- all interesting expressions we consider are applications
@@ -80,7 +81,8 @@ private theorem rat_rawCast_neg {R} [DivisionRing R] :
 
 end SimpLemmas
 
-def simp_theorems : MetaM SimpTheorems := do
+/-- The theorems used in the simplification process. -/
+private def simp_theorems : MetaM SimpTheorems := do
   let thms : SimpTheorems := {}
   let thms ← [ ``lie_smul_left, ``lie_smul_right, ``lie_nsmul_left, ``lie_nsmul_right,
     ``add_lie_left, ``add_lie_right, ``add_zero1, ``zero_smul1, ``one_smul1,
@@ -90,12 +92,15 @@ def simp_theorems : MetaM SimpTheorems := do
     ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
   pure thms
 
-def simp_ctx (cfg : LieRingNF.Config) : MetaM Simp.Context := do
+/-- The `simp` context used in the simplification process. -/
+private def simp_ctx (cfg : LieRingNF.Config) : MetaM Simp.Context := do
   let thms ← simp_theorems
   Simp.mkContext { zetaDelta := cfg.zetaDelta }
     (simpTheorems := #[thms])
     (congrTheorems := ← getSimpCongrTheorems)
 
+/-- The cleanup process after normalizing the expression using `evalExpr` to a more human-friendly
+format. -/
 def cleanup (cfg : LieRingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
   match cfg.mode with
   | .raw => pure r
