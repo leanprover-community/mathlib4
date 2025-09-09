@@ -102,7 +102,6 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
     rw [← add_zero x₀] at hx₀
     exact disj.zero_notMem_sub_set (vadd_mem_vadd_set_iff.1 hx₀)
   obtain ⟨f, hf₁, hf₂⟩ := separate_convex_open_set ‹0 ∈ C› ‹_› (hs₂.sub_right.vadd _) ‹x₀ ∉ C›
-  have : f b₀ = f a₀ + 1 := by simp [x₀, ← hf₁]
   have forall_le : ∀ a ∈ s, ∀ b ∈ t, f a ≤ f b := by
     intro a ha b hb
     have := hf₂ (x₀ + (a - b)) (vadd_mem_vadd_set <| sub_mem_sub ha hb)
@@ -135,11 +134,6 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   obtain rfl | ⟨b₀, hb₀⟩ := t.eq_empty_or_nonempty
   · exact ⟨0, 1, fun a _ha => by simp, by simp⟩
   obtain ⟨f, s, hf₁, hf₂⟩ := geometric_hahn_banach_open hs₁ hs₂ ht₁ disj
-  have hf : IsOpenMap f := by
-    refine f.isOpenMap_of_ne_zero ?_
-    rintro rfl
-    simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
-    exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
   refine ⟨f, s, hf₁, image_subset_iff.1 (?_ : f '' t ⊆ Ioi s)⟩
   rw [← interior_Ici]
   refine interior_maximal (image_subset_iff.2 hf₂) (f.isOpenMap_of_ne_zero ?_ _ ht₃)
