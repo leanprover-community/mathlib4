@@ -12,6 +12,8 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 In fields we show that:
 
+* `Matrix.isRoot_charpoly_iff_mem_spectrum`: the roots of the characteristic polynomial are the
+  spectrum of the matrix.
 * `Matrix.det_eq_prod_roots_charpoly_of_splits`: the determinant (in the field of the matrix)
   is the product of the roots of the characteristic polynomial if the polynomial splits in the field
   of the matrix.
@@ -56,6 +58,11 @@ open scoped Matrix
 
 namespace Matrix
 
+/-- The roots of the characteristic polynomial are the spectrum of the matrix. -/
+theorem isRoot_charpoly_iff_mem_spectrum {r : R} : IsRoot A.charpoly r ↔ r ∈ spectrum R A := by
+  simp [Matrix.eval_charpoly, spectrum.mem_iff, Matrix.isUnit_iff_isUnit_det]
+  rfl
+
 theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
     A.det = (Matrix.charpoly A).roots.prod := by
   rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim A,
@@ -71,11 +78,6 @@ theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom
   · rw [trace_eq_neg_charpoly_coeff, neg_eq_iff_eq_neg,
       ← Polynomial.sum_roots_eq_nextCoeff_of_monic_of_split A.charpoly_monic hAps, nextCoeff,
       charpoly_natDegree_eq_dim, if_neg (Fintype.card_ne_zero : Fintype.card n ≠ 0)]
-
-/-- The roots of the characteristic polynomial give the spectrum of the matrix. -/
-theorem isRoot_charpoly_iff_mem_spectrum {r : R} : IsRoot A.charpoly r ↔ r ∈ spectrum R A := by
-  simp [Matrix.eval_charpoly, spectrum.mem_iff, Matrix.isUnit_iff_isUnit_det]
-  rfl
 
 variable (A)
 
