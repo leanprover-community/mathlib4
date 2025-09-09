@@ -1190,7 +1190,7 @@ theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G 
   fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
 
 private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
-    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
     {s : Set M} (hs : IsOpen s) :
     (e.restr s).symm ≫ₕ e' ∈ G := by
   have hs'' : IsOpen (e '' (e.source ∩ s)) := by
@@ -1203,7 +1203,7 @@ private theorem restr_mem_maximalAtlas_aux1 [ClosedUnderRestriction G]
   exact EqOnSource.trans' (Setoid.symm e.restr_inter_source).symm' (eqOnSource_refl e')
 
 private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
-    {e e' : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) (he' : e' ∈ atlas H M)
     {s : Set M} (hs : IsOpen s) :
     e'.symm ≫ₕ e.restr s ∈ G := by
   have hs'' : IsOpen (e' '' (e'.source ∩ s)) := by
@@ -1217,7 +1217,7 @@ private theorem restr_mem_maximalAtlas_aux2 [ClosedUnderRestriction G]
 /-- If a structure groupoid `G` is closed under restriction, for any chart `e` in the maximal atlas,
 the restriction `e.restr s` to an open set `s` is also in the maximal atlas. -/
 theorem restr_mem_maximalAtlas [ClosedUnderRestriction G]
-    {e : PartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) {s : Set M} (hs : IsOpen s) :
+    {e : OpenPartialHomeomorph M H} (he : e ∈ G.maximalAtlas M) {s : Set M} (hs : IsOpen s) :
     e.restr s ∈ G.maximalAtlas M :=
   fun _e' he' ↦ ⟨restr_mem_maximalAtlas_aux1 G he he' hs, restr_mem_maximalAtlas_aux2 G he he' hs⟩
 
