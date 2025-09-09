@@ -95,9 +95,7 @@ theorem reduce.not {p : Prop} :
       dsimp; intro h
       exfalso
       have := congr_arg List.length h
-      simp? [List.length] at this says
-        simp only [List.length, zero_add, List.length_append] at this
-      omega
+      grind
     | cons hd tail =>
       obtain ⟨y, c⟩ := hd
       dsimp only

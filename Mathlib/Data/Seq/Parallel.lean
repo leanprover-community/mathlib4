@@ -209,8 +209,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           apply ret_mem
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp? at dm says simp only [List.mem_cons] at dm
-          rcases dm with e | dl
+          rcases List.mem_cons.mp dm with e | dl
           · rw [e] at ad
             refine ⟨c, List.mem_cons_self, ?_⟩
             rw [destruct_eq_think h]
