@@ -316,9 +316,17 @@ theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃
 theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
     (ab.trans bc).trans cd = ab.trans (bc.trans cd) := by grind
 
-theorem leftInverse_symm (f : Equiv α β) : LeftInverse f.symm f := f.left_inv
+theorem trans_cancel_left (e : α ≃ β) (f : β ≃ γ) (g : α ≃ γ) :
+    e.trans f = g ↔ f = e.symm.trans g := by
+  constructor <;> (rintro rfl; simp [← Equiv.trans_assoc])
 
-theorem rightInverse_symm (f : Equiv α β) : Function.RightInverse f.symm f := f.right_inv
+theorem trans_cancel_right (e : α ≃ β) (f : β ≃ γ) (g : α ≃ γ) :
+    e.trans f = g ↔ e = g.trans f.symm := by
+  constructor <;> (rintro rfl; simp [Equiv.trans_assoc])
+
+theorem leftInverse_symm (f : α ≃ β) : LeftInverse f.symm f := f.left_inv
+
+theorem rightInverse_symm (f : α ≃ β) : Function.RightInverse f.symm f := f.right_inv
 
 theorem injective_comp (e : α ≃ β) (f : β → γ) : Injective (f ∘ e) ↔ Injective f :=
   EquivLike.injective_comp e f
