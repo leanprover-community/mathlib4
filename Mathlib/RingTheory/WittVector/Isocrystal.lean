@@ -33,7 +33,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `Isocrystal`.
+This file introduces notation in the scope `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
