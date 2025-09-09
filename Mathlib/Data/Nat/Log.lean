@@ -81,7 +81,7 @@ theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     b ^ x ≤ y ↔ x ≤ log b y := by
   induction y using Nat.strong_induction_on generalizing x with | h y ih => ?_
   cases x with
-  | zero => dsimp; omega
+  | zero => dsimp; grind
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
@@ -136,7 +136,7 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
     any_goals
       simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
         at h
-      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> omega
+      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> grind
   · simp [@eq_comm _ 0, hm]
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -221,12 +221,12 @@ theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   rcases lt_or_ge n b with h | h
   · rw [div_eq_of_lt h, Nat.zero_mul, log_zero_right, log_of_lt h]
-  rw [log_mul_base hb (Nat.div_pos h (by omega)).ne', log_div_base,
+  rw [log_mul_base hb (Nat.div_pos h (by grind)).ne', log_div_base,
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
 
 theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
-  rw [div_lt_iff_lt_mul (by omega), ← succ_le_iff, ← pred_eq_sub_one,
-    succ_pred_eq_of_pos (by omega)]
+  rw [div_lt_iff_lt_mul (by grind), ← succ_le_iff, ← pred_eq_sub_one,
+    succ_pred_eq_of_pos (by grind)]
   exact Nat.add_le_mul hn hb
 
 lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
@@ -277,7 +277,7 @@ theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : 0 < clog b n := by
 
 theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := by
   rw [clog_of_two_le (hn.trans h) hn, clog_of_right_le_one]
-  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> omega
+  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> grind
 
 /-- `clog b` and `pow b` form a Galois connection. -/
 theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y := by
@@ -384,7 +384,7 @@ Note a tail-recursive version of `Nat.log` is also possible:
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
   decreasing_by
-    have : n / b < n := Nat.div_lt_self (by omega) h.2
+    have : n / b < n := Nat.div_lt_self (by grind) h.2
     decreasing_trivial
   go n 0
 ```
@@ -435,7 +435,7 @@ private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hp
       rw [Nat.pow_succ, Nat.mul_assoc, Nat.pow_mul, Nat.pow_two, Nat.mul_assoc]
       refine ⟨(ih hqe').1.trans' (Nat.mul_le_mul_left _ (Nat.mul_div_le _ _)),
         Nat.div_lt_of_lt_mul (ih hqe').2.1, (ih hqe').2.2.1.trans_le ?_,
-        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by omega)⟩
+        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by grind)⟩
       exact Nat.mul_le_mul_left _ (Nat.lt_mul_div_succ _ (zero_lt_of_lt hpw))
 
 private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :

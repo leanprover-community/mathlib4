@@ -44,11 +44,11 @@ the form `X n ⟶ X (n + 1)` when `i ≤ j`. -/
 def map : ∀ {X : ℕ → C} (_ : ∀ n, X n ⟶ X (n + 1)) (i j : ℕ), i ≤ j → (X i ⟶ X j)
   | _, _, 0, 0 => fun _ ↦ 𝟙 _
   | _, f, 0, 1 => fun _ ↦ f 0
-  | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by omega)
+  | _, f, 0, l + 1 => fun _ ↦ f 0 ≫ map (fun n ↦ f (n + 1)) 0 l (by grind)
   | _, _, _ + 1, 0 => nofun
-  | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by omega)
+  | _, f, k + 1, l + 1 => fun _ ↦ map (fun n ↦ f (n + 1)) k l (by grind)
 
-lemma map_id (i : ℕ) : map f i i (by omega) = 𝟙 _ := by
+lemma map_id (i : ℕ) : map f i i (by grind) = 𝟙 _ := by
   revert X f
   induction i with
   | zero => intros; rfl
@@ -56,7 +56,7 @@ lemma map_id (i : ℕ) : map f i i (by omega) = 𝟙 _ := by
       intro X f
       apply hi
 
-lemma map_le_succ (i : ℕ) : map f i (i + 1) (by omega) = f i := by
+lemma map_le_succ (i : ℕ) : map f i (i + 1) (by grind) = f i := by
   revert X f
   induction i with
   | zero => intros; rfl
@@ -74,24 +74,24 @@ lemma map_comp (i j k : ℕ) (hij : i ≤ j) (hjk : j ≤ k) :
           rw [map_id, id_comp]
       | succ j hj =>
           obtain (_ | _ | k) := k
-          · omega
-          · obtain rfl : j = 0 := by omega
+          · grind
+          · obtain rfl : j = 0 := by grind
             rw [map_id, comp_id]
           · simp only [map, Nat.reduceAdd]
-            rw [hj (fun n ↦ f (n + 1)) (k + 1) (by omega) (by omega)]
+            rw [hj (fun n ↦ f (n + 1)) (k + 1) (by grind) (by grind)]
             obtain _ | j := j
             all_goals simp [map]
   | succ i hi =>
       rcases j, k with ⟨(_ | j), (_ | k)⟩
-      · omega
-      · omega
-      · omega
-      · exact hi _ j k (by omega) (by omega)
+      · grind
+      · grind
+      · grind
+      · exact hi _ j k (by grind) (by grind)
 
 -- `map` has good definitional properties when applied to explicit natural numbers
-example : map f 5 5 (by omega) = 𝟙 _ := rfl
-example : map f 0 3 (by omega) = f 0 ≫ f 1 ≫ f 2 := rfl
-example : map f 3 7 (by omega) = f 3 ≫ f 4 ≫ f 5 ≫ f 6 := rfl
+example : map f 5 5 (by grind) = 𝟙 _ := rfl
+example : map f 0 3 (by grind) = f 0 ≫ f 1 ≫ f 2 := rfl
+example : map f 3 7 (by grind) = f 3 ≫ f 4 ≫ f 5 ≫ f 6 := rfl
 
 end OfSequence
 
@@ -126,16 +126,16 @@ def ofSequence : F ⟶ G where
   naturality := by
     intro i j φ
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_le (leOfHom φ)
-    obtain rfl := Subsingleton.elim φ (homOfLE (by omega))
+    obtain rfl := Subsingleton.elim φ (homOfLE (by grind))
     revert i j
     induction k with
     | zero =>
         intro i j hk
-        obtain rfl : j = i := by omega
+        obtain rfl : j = i := by grind
         simp
     | succ k hk =>
         intro i j hk'
-        obtain rfl : j = i + k + 1 := by omega
+        obtain rfl : j = i + k + 1 := by grind
         simp only [← homOfLE_comp (show i ≤ i + k by omega) (show i + k ≤ i + k + 1 by omega),
           Functor.map_comp, assoc, naturality, reassoc_of% (hk rfl)]
 
@@ -151,9 +151,9 @@ morphisms `f : X (n + 1) ⟶ X n` for all `n : ℕ`. -/
 def ofOpSequence : ℕᵒᵖ ⥤ C := (ofSequence (fun n ↦ (f n).op)).leftOp
 
 -- `ofOpSequence` has good definitional properties when applied to explicit natural numbers
-example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by omega)).op = 𝟙 _ := rfl
-example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by omega)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
-example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by omega)).op =
+example : (ofOpSequence f).map (homOfLE (show 5 ≤ 5 by grind)).op = 𝟙 _ := rfl
+example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by grind)).op = (f 2 ≫ f 1) ≫ f 0 := rfl
+example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by grind)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
 @[simp]

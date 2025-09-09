@@ -201,7 +201,7 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
     simp only [takeUntil_cons hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
       getVert_cons _ _ hn0] at hn ⊢
     apply q.getVert_takeUntil hw
-    omega
+    grind
 
 lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
@@ -254,7 +254,7 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
-  omega
+  grind
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_support_takeUntil_support_takeUntil_subset :=
@@ -305,7 +305,7 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       right
       have hnp : ¬ p.Nil := by
         rw [nil_iff_length_eq]
-        omega
+        grind
       rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
       use n
       rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]

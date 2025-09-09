@@ -263,7 +263,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
         mul_comm (_ ^ n), mul_assoc, ← ENNReal.inv_le_iff_le_mul, inv_inv, ← pow_add]
       · gcongr
         · norm_num
-        · omega
+        · grind
       all_goals simp
     exact le_trans hNx.le h_inv_n_le_k
   rw [ae_iff]

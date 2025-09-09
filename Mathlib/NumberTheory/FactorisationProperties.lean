@@ -93,23 +93,23 @@ theorem weird_seventy : Weird 70 := by
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  grind
 
 lemma perfect_iff_not_abundant_and_not_deficient (hn : 0 ≠ n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  grind
 
 lemma abundant_iff_not_perfect_and_not_deficient (hn : 0 ≠ n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  grind
 
 /-- A positive natural number is either deficient, perfect, or abundant -/
 theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
     Deficient n ∨ Abundant n ∨ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
-  omega
+  grind
 
 theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩
@@ -191,7 +191,7 @@ theorem infinite_odd_deficient : {n : ℕ | Odd n ∧ n.Deficient}.Infinite := b
   rw [Set.infinite_iff_exists_gt]
   intro n
   obtain ⟨p, ⟨_, h2⟩⟩ := exists_infinite_primes (max (n + 1) 3)
-  exact ⟨p, Set.mem_setOf.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by omega))),
-    Prime.deficient h2⟩, by omega⟩
+  exact ⟨p, Set.mem_setOf.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by grind))),
+    Prime.deficient h2⟩, by grind⟩
 
 end Nat

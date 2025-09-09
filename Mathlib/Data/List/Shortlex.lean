@@ -96,7 +96,7 @@ theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s�
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append]
-    omega
+    grind
   cases t with
   | nil =>
     rw [List.append_nil]
@@ -104,14 +104,14 @@ theorem append_right {s₁ s₂ : List α} (t : List α) (h : Shortlex r s₁ s�
   | cons head tail =>
     apply of_length_lt
     rw [List.length_append, List.length_cons]
-    omega
+    grind
 
 theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List α) :
     Shortlex r (s ++ t₁) (s ++ t₂) := by
   rcases shortlex_def.mp h with h1 | h2
   · apply of_length_lt
     rw [List.length_append, List.length_append]
-    omega
+    grind
   cases s with
   | nil =>
     rw [List.nil_append, List.nil_append]

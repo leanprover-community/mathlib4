@@ -79,10 +79,10 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
   obtain ⟨n₁, hn₁⟩ := h₂
   obtain ⟨n₂, hn₂⟩ := h₃
   let N := n₁ ⊔ n₂
-  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₁
-  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₂
+  have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by grind) hn₁
+  have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by grind) hn₂
   rw [exp_eq_sum (k := 2 * N + 1)
-    (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by omega)),
+    (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by grind)),
     exp_eq_sum h₄, exp_eq_sum h₅]
   set R2N := range (2 * N + 1) with hR2N
   set RN := range (N + 1) with hRN
@@ -109,14 +109,14 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     · rw [hR2N, sum_sigma']
       apply sum_bij (fun ⟨i, j⟩ _ ↦ (j, i - j))
       · simp only [mem_sigma, mem_range, mem_filter, mem_product, and_imp]
-        omega
+        grind
       · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
         rintro ⟨x₁, y₁⟩ - h₁ ⟨x₂, y₂⟩ - h₂ h₃ h₄
         simp_all
-        omega
+        grind
       · simp only [mem_filter, mem_product, mem_range, mem_sigma, exists_prop, Sigma.exists,
           and_imp, Prod.forall, Prod.mk.injEq]
-        exact fun x y _ _ _ ↦ ⟨x + y, x, by omega⟩
+        exact fun x y _ _ _ ↦ ⟨x + y, x, by grind⟩
       · simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ R2N ×ˢ R2N with ¬ ij.1 + ij.2 ≤ 2 * N,
       ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
@@ -148,7 +148,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     apply sum_congr
     · ext x
       simp only [mem_filter, mem_product, mem_range, hR2N, hRN]
-      omega
+      grind
     · tauto
   rw [restrict] at s₁
   have s₂ := by
@@ -217,8 +217,8 @@ theorem commute_exp_left_of_commute
   obtain ⟨k, hfM⟩ := hfM
   obtain ⟨l, hfN⟩ := hfN
   let kl := max k l
-  replace hfM : fM ^ kl = 0 := pow_eq_zero_of_le (by omega) hfM
-  replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
+  replace hfM : fM ^ kl = 0 := pow_eq_zero_of_le (by grind) hfM
+  replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by grind) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
     simpa using LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h i) m
   simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]

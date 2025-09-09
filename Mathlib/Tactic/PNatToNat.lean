@@ -57,7 +57,7 @@ lemma sub_coe (a b : PNat) : ((a - b : PNat) : Nat) = a.val - 1 - b.val + 1 := b
   cases a
   cases b
   simp only [PNat.mk_coe, _root_.PNat.sub_coe, ← _root_.PNat.coe_lt_coe]
-  split_ifs <;> omega
+  split_ifs <;> grind
 
 /-- `pnat_to_nat` shifts all `PNat`s in the context to `Nat`, rewriting propositions about them.
 A typical use case is `pnat_to_nat; omega`. -/

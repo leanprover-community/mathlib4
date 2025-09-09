@@ -50,7 +50,7 @@ by `-n` on `C`, the user shall have to do `open CategoryTheory.Pretriangulated.O
 in order to get this shift and the (pre)triangulated structure on `Cᵒᵖ`. -/
 private abbrev OppositeShiftAux :=
   PullbackShift (OppositeShift C ℤ)
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; grind))
 
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/
@@ -69,7 +69,7 @@ open Opposite
 of a shift functor on the original category. -/
 noncomputable def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
     shiftFunctor Cᵒᵖ n ≅ (shiftFunctor C m).op := eqToIso (by
-  obtain rfl : m = -n := by omega
+  obtain rfl : m = -n := by grind
   rfl)
 
 variable {C}
@@ -90,11 +90,11 @@ lemma shiftFunctorAdd'_op_hom_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
     (b₁ b₂ b₃ : ℤ) (h₁ : a₁ + b₁ = 0) (h₂ : a₂ + b₂ = 0) (h₃ : a₃ + b₃ = 0) :
     (shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).hom.app X =
       (shiftFunctorOpIso C _ _ h₃).hom.app X ≫
-        ((shiftFunctorAdd' C b₁ b₂ b₃ (by omega)).inv.app X.unop).op ≫
+        ((shiftFunctorAdd' C b₁ b₂ b₃ (by grind)).inv.app X.unop).op ≫
         (shiftFunctorOpIso C _ _ h₂).inv.app _ ≫
         (shiftFunctor Cᵒᵖ a₂).map ((shiftFunctorOpIso C _ _ h₁).inv.app X) := by
   erw [@pullbackShiftFunctorAdd'_hom_app (OppositeShift C ℤ) _ _ _ _ _ _ _ X
-    a₁ a₂ a₃ h b₁ b₂ b₃ (by dsimp; omega) (by dsimp; omega) (by dsimp; omega)]
+    a₁ a₂ a₃ h b₁ b₂ b₃ (by dsimp; grind) (by dsimp; grind) (by dsimp; grind)]
   rw [oppositeShiftFunctorAdd'_hom_app]
   rfl
 
@@ -103,7 +103,7 @@ lemma shiftFunctorAdd'_op_inv_app (X : Cᵒᵖ) (a₁ a₂ a₃ : ℤ) (h : a₁
     (shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).inv.app X =
       (shiftFunctor Cᵒᵖ a₂).map ((shiftFunctorOpIso C _ _ h₁).hom.app X) ≫
       (shiftFunctorOpIso C _ _ h₂).hom.app _ ≫
-      ((shiftFunctorAdd' C b₁ b₂ b₃ (by omega)).hom.app X.unop).op ≫
+      ((shiftFunctorAdd' C b₁ b₂ b₃ (by grind)).hom.app X.unop).op ≫
       (shiftFunctorOpIso C _ _ h₃).inv.app X := by
   rw [← cancel_epi ((shiftFunctorAdd' Cᵒᵖ a₁ a₂ a₃ h).hom.app X), Iso.hom_inv_id_app,
     shiftFunctorAdd'_op_hom_app X a₁ a₂ a₃ h b₁ b₂ b₃ h₁ h₂ h₃,
@@ -186,9 +186,9 @@ lemma opShiftFunctorEquivalence_unitIso_hom_app_eq (X : Cᵒᵖ) (m n p : ℤ) (
       (opShiftFunctorEquivalence C n).unitIso.hom.app X ≫
       (((opShiftFunctorEquivalence C m).unitIso.hom.app (X⟦n⟧)).unop⟦n⟧').op ≫
       ((shiftFunctorAdd' C m n p h).hom.app _).op ≫
-      (((shiftFunctorAdd' Cᵒᵖ n m p (by omega)).inv.app X).unop⟦p⟧').op := by
+      (((shiftFunctorAdd' Cᵒᵖ n m p (by grind)).inv.app X).unop⟦p⟧').op := by
   dsimp [opShiftFunctorEquivalence]
-  simp only [shiftFunctorAdd'_op_inv_app _ n m p (by omega) _ _ _ (add_neg_cancel n)
+  simp only [shiftFunctorAdd'_op_inv_app _ n m p (by grind) _ _ _ (add_neg_cancel n)
     (add_neg_cancel m) (add_neg_cancel p), shiftFunctor_op_map _ _ (add_neg_cancel m),
     Category.assoc, Iso.inv_hom_id_app_assoc]
   erw [Functor.map_id, Functor.map_id, Functor.map_id, Functor.map_id,
@@ -202,7 +202,7 @@ lemma opShiftFunctorEquivalence_unitIso_hom_app_eq (X : Cᵒᵖ) (m n p : ℤ) (
 
 lemma opShiftFunctorEquivalence_unitIso_inv_app_eq (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
-      (((shiftFunctorAdd' Cᵒᵖ n m p (by omega)).hom.app X).unop⟦p⟧').op ≫
+      (((shiftFunctorAdd' Cᵒᵖ n m p (by grind)).hom.app X).unop⟦p⟧').op ≫
       ((shiftFunctorAdd' C m n p h).inv.app _).op ≫
       (((opShiftFunctorEquivalence C m).unitIso.inv.app (X⟦n⟧)).unop⟦n⟧').op ≫
       (opShiftFunctorEquivalence C n).unitIso.inv.app X := by

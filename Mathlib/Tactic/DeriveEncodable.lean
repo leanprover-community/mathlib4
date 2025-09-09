@@ -85,7 +85,7 @@ private lemma nat_unpair_lt_2 {n : ℕ} (h : (Nat.unpair n).1 ≠ 0) : (Nat.unpa
   unfold Nat.pair
   have := Nat.le_mul_self a
   have := Nat.le_mul_self b
-  split <;> omega
+  split <;> grind
 
 private def S.decode (n : ℕ) : S :=
   let p := Nat.unpair n
@@ -93,7 +93,7 @@ private def S.decode (n : ℕ) : S :=
     S.nat p.2
   else
     have : p.1 ≤ n := Nat.unpair_left_le n
-    have := Nat.unpair_lt (by omega : 1 ≤ n)
+    have := Nat.unpair_lt (by grind : 1 ≤ n)
     have := nat_unpair_lt_2 h
     S.cons (S.decode (p.1 - 1)) (S.decode p.2)
 
@@ -123,8 +123,8 @@ private def S_equiv : S ≃ ℕ where
       · exact nat_unpair_lt_2 h
       · obtain _ | n' := n
         · exact False.elim (h rfl)
-        · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
-          omega
+        · have := Nat.unpair_lt (by grind : 1 ≤ n' + 1)
+          grind
 
 instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
 

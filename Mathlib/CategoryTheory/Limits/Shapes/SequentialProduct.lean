@@ -44,12 +44,12 @@ noncomputable def functorObj : ℕ → C :=
 /-- The projection map from `functorObj M N n` to `M m`, when `m < n` -/
 noncomputable def functorObjProj_pos (n m : ℕ) (h : m < n) :
     functorObj M N n ⟶ M m :=
-  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by omega))
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by grind))
 
 /-- The projection map from `functorObj M N n` to `N m`, when `m ≥ n` -/
 noncomputable def functorObjProj_neg (n m : ℕ) (h : ¬(m < n)) :
     functorObj M N n ⟶ N m :=
-  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by omega))
+  Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by grind))
 
 /-- The transition maps in the sequential limit of products -/
 noncomputable def functorMap : ∀ n,
@@ -57,54 +57,54 @@ noncomputable def functorMap : ∀ n,
   intro n
   refine Limits.Pi.map fun m ↦ if h : m < n then eqToHom ?_ else
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
-  all_goals split_ifs; try rfl; try omega
+  all_goals split_ifs; try rfl; try grind
 
 lemma functorMap_commSq_succ (n : ℕ) :
-    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ n + 1)).op ≫ Pi.π _ n ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(n < n))) =
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by grind : n ≤ n + 1)).op ≫ Pi.π _ n ≫
+      eqToHom (functorObj_eq_neg (by grind : ¬(n < n))) =
         (Pi.π (fun i ↦ if _ : i < (n + 1) then M i else N i) n) ≫
-          eqToHom (functorObj_eq_pos (by omega)) ≫ f n := by
+          eqToHom (functorObj_eq_pos (by grind)) ≫ f n := by
   simp [functorMap]
 
 lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     (Functor.ofOpSequence (functorMap f)).map (homOfLE h).op ≫ Pi.π _ k ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(k < n))) =
+      eqToHom (functorObj_eq_neg (by grind : ¬(k < n))) =
         (Pi.π (fun i ↦ if _ : i < m then M i else N i) k) ≫
           eqToHom (functorObj_eq_neg hh) := by
   induction h using Nat.leRec with
   | refl => simp
   | @le_succ_of_le m h ih =>
-    specialize ih (by omega)
-    have : homOfLE (by omega : n ≤ m + 1) =
-        homOfLE (by omega : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
+    specialize ih (by grind)
+    have : homOfLE (by grind : n ≤ m + 1) =
+        homOfLE (by grind : n ≤ m) ≫ homOfLE (by grind : m ≤ m + 1) := by simp
     rw [this, op_comp, Functor.map_comp]
     slice_lhs 2 4 => rw [ih]
     simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
       functorMap, dite_eq_ite, limMap_π_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app]
     split_ifs
-    simp [dif_neg (by omega : ¬(k < m))]
+    simp [dif_neg (by grind : ¬(k < m))]
 
 lemma functorMap_commSq {n m : ℕ} (h : ¬(m < n)) :
-    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by omega : n ≤ m + 1)).op ≫ Pi.π _ m ≫
-      eqToHom (functorObj_eq_neg (by omega : ¬(m < n))) =
+    (Functor.ofOpSequence (functorMap f)).map (homOfLE (by grind : n ≤ m + 1)).op ≫ Pi.π _ m ≫
+      eqToHom (functorObj_eq_neg (by grind : ¬(m < n))) =
         (Pi.π (fun i ↦ if _ : i < m + 1 then M i else N i) m) ≫
-          eqToHom (functorObj_eq_pos (by omega)) ≫ f m := by
+          eqToHom (functorObj_eq_pos (by grind)) ≫ f m := by
   cases m with
   | zero =>
-      have : n = 0 := by omega
+      have : n = 0 := by grind
       subst this
       simp [functorMap]
   | succ m =>
       rw [← functorMap_commSq_succ f (m + 1)]
       simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, dite_eq_ite,
         Functor.ofOpSequence_map_homOfLE_succ]
-      have : homOfLE (by omega : n ≤ m + 1 + 1) =
-          homOfLE (by omega : n ≤ m + 1) ≫ homOfLE (by omega : m + 1 ≤ m + 1 + 1) := by simp
+      have : homOfLE (by grind : n ≤ m + 1 + 1) =
+          homOfLE (by grind : n ≤ m + 1) ≫ homOfLE (by grind : m + 1 ≤ m + 1 + 1) := by simp
       rw [this, op_comp, Functor.map_comp]
       simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
         Category.assoc]
       congr 1
-      exact functorMap_commSq_aux f (by omega) (by omega)
+      exact functorMap_commSq_aux f (by grind) (by grind)
 
 /--
 The cone over the tower
@@ -126,7 +126,7 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
       Discrete.natTrans_app, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
       limMap_π_assoc]
     split
-    · simp [dif_pos (by omega : m < n + 1)]
+    · simp [dif_pos (by grind : m < n + 1)]
     · split
       all_goals simp
 
@@ -159,7 +159,7 @@ with cone point `∏ M` is indeed a limit cone.
 noncomputable def isLimit : IsLimit (cone f) where
   lift s := Pi.lift fun m ↦
     s.π.app ⟨m + 1⟩ ≫ Pi.π (fun i ↦ if _ : i < m + 1 then M i else N i) m ≫
-      eqToHom (dif_pos (by omega : m < m + 1))
+      eqToHom (dif_pos (by grind : m < m + 1))
   fac s := by
     intro ⟨n⟩
     apply Pi.hom_ext
@@ -168,7 +168,7 @@ noncomputable def isLimit : IsLimit (cone f) where
     · simp only [Category.assoc, cone_π_app_comp_Pi_π_pos f _ _ h]
       simp only [dite_eq_ite, Functor.ofOpSequence_obj, limit.lift_π_assoc, Fan.mk_pt,
         Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc, eqToHom_trans]
-      have hh : m + 1 ≤ n := by omega
+      have hh : m + 1 ≤ n := by grind
       rw [← s.w (homOfLE hh).op]
       simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
         Category.assoc]
@@ -181,15 +181,15 @@ noncomputable def isLimit : IsLimit (cone f) where
         simp only [Functor.ofOpSequence_obj, Nat.succ_eq_add_one, homOfLE_leOfHom,
           Functor.ofOpSequence_map_homOfLE_succ, Category.assoc]
         have h₁ : (if _ : m < m + 1 then M m else N m) = if _ : m < n then M m else N m := by
-          rw [dif_pos (by omega), dif_pos (by omega)]
+          rw [dif_pos (by grind), dif_pos (by grind)]
         have h₂ : (if _ : m < n then M m else N m) = if _ : m < n + 1 then M m else N m := by
-          rw [dif_pos h, dif_pos (by omega)]
+          rw [dif_pos h, dif_pos (by grind)]
         rw [← eqToHom_trans h₁ h₂]
-        slice_lhs 2 4 => rw [ih (by omega)]
+        slice_lhs 2 4 => rw [ih (by grind)]
         simp only [functorMap, dite_eq_ite, Pi.π, limMap_π_assoc, Discrete.functor_obj_eq_as,
           Discrete.natTrans_app]
         split_ifs
-        rw [dif_pos (by omega)]
+        rw [dif_pos (by grind)]
         simp
     · simp only [Category.assoc]
       rw [cone_π_app_comp_Pi_π_neg f _ _ h]
@@ -202,7 +202,7 @@ noncomputable def isLimit : IsLimit (cone f) where
     intro n
     simp only [Functor.ofOpSequence_obj, dite_eq_ite, limit.lift_π, Fan.mk_pt,
       Fan.mk_π_app, ← h ⟨n + 1⟩, Category.assoc]
-    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ (by omega)]
+    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ (by grind)]
     simp
 
 section

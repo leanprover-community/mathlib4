@@ -143,7 +143,7 @@ lemma valMinAbs_natAbs_eq_min [hpos : NeZero n] (a : ZMod n) :
     a.valMinAbs.natAbs = min a.val (n - a.val) := by
   rw [valMinAbs_def_pos]
   have := a.val_lt
-  omega
+  grind
 
 lemma valMinAbs_natCast_of_le_half (ha : a ≤ n / 2) : (a : ZMod n).valMinAbs = a := by
   cases n

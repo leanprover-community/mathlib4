@@ -25,7 +25,7 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where
   isUnit_or_isUnit_of_add_one {a b} hab := by
-    have h : a = 1 ∨ b = 1 := by omega
+    have h : a = 1 ∨ b = 1 := by grind
     apply h.imp <;> simp +contextual
 
 open IsLocalRing Ideal
@@ -39,7 +39,7 @@ theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = .span {2, 3} := 
   obtain lt | lt := (mem_maximalIdeal_iff.mp h).lt_or_gt
   · obtain rfl := lt_one_iff.mp lt; exact zero_mem _
   exact mem_span_pair.mpr <|
-    exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le 2 3 n (by simp) (show 2 ≤ n by omega)
+    exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le 2 3 n (by simp) (show 2 ≤ n by grind)
 
 theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     P.IsPrime ↔ P = ⊥ ∨ P = maximalIdeal ℕ ∨ ∃ p : ℕ, p.Prime ∧ P = span {p} := by
@@ -54,7 +54,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   let p := Nat.find h0
   have ⟨(hp : p ∈ P), (hp0 : p ≠ 0)⟩ := Nat.find_spec h0
   have : p ≠ 1 := ne_of_mem_of_not_mem hp P.one_notMem
-  have prime : p.Prime := Nat.prime_iff_not_exists_mul_eq.mpr <| .intro (by omega)
+  have prime : p.Prime := Nat.prime_iff_not_exists_mul_eq.mpr <| .intro (by grind)
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
   push_neg at hsp
@@ -65,7 +65,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   have : n ≠ 1 := Nat.mem_maximalIdeal_iff.mp hn
   have ⟨a, b, eq⟩ := Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le p q _
     (by simp [prime.coprime_iff_not_dvd.mpr (Ideal.mem_span_singleton.not.mp hqp)])
-    (Nat.lt_pow_self (show 1 < n by omega)).le
+    (Nat.lt_pow_self (show 1 < n by grind)).le
   exact h.mem_of_pow_mem _ (eq ▸ add_mem (P.mul_mem_left _ hp) (P.mul_mem_left _ hq))
 
 theorem Ideal.map_comap_natCastRingHom_int {I : Ideal ℤ} :
@@ -82,7 +82,7 @@ theorem Ideal.isPrime_int_iff {P : Ideal ℤ} :
 theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
   refine le_antisymm (iSup_le fun s ↦ le_of_not_gt fun hs ↦ ?_) ?_
   · replace hs : 2 < s.length := ENat.coe_lt_coe.mp (WithBot.coe_lt_coe.mp hs)
-    let s := s.take ⟨3, by omega⟩
+    let s := s.take ⟨3, by grind⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)
     obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).2).resolve_left h1.ne'

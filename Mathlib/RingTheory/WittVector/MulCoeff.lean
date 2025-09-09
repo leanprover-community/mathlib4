@@ -249,7 +249,7 @@ theorem nth_mul_coeff' (n : ℕ) :
       congr!
       simp
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    obtain ⟨ha, ha⟩ := ha' <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> grind
   use f
   intro x y
   dsimp [f, peval]

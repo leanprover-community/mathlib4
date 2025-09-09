@@ -143,7 +143,7 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
   convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
   · rw [← pow_mul, ← pow_add]
     congr 1
-    omega
+    grind
   · congr 1
     omega
   refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|

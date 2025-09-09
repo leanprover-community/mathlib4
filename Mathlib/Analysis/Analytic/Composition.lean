@@ -106,7 +106,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   funext v i
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
-  obtain rfl : j = 0 := by omega
+  obtain rfl : j = 0 := by grind
   refine congr_arg v ?_
   rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
 
@@ -413,7 +413,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       have A : 1 < b.length := by
         have : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
         have : 0 < b.length := Composition.length_pos_of_pos b n_pos
-        omega
+        grind
       ext v
       rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A,
         ContinuousMultilinearMap.zero_apply, ContinuousMultilinearMap.zero_apply]

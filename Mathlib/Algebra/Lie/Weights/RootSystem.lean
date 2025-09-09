@@ -121,7 +121,7 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
       apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat, mul_comm (2 : K),
       add_sub_cancel, add_sub, Nat.cast_inj, eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add,
       sub_eq_iff_eq_add] at this
-    omega
+    grind
   have H₂ : ((1 + n + chainTopCoeff (-α) W) • α + chainTop (-α) W : H → K) =
       (chainTopCoeff α β + 1) • α + β := by
     simp only [Weight.coe_neg, ← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_add, Nat.cast_one, coe_chainTop,
@@ -186,7 +186,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   `β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; grind
 
 lemma le_chainBotCoeff_of_rootSpace_ne_top
     (hα : α.IsNonZero) (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
@@ -337,7 +337,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     swap
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
-      omega
+      grind
     rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
@@ -361,7 +361,7 @@ def reflectRoot (α β : Weight K H L) : Weight K H L where
     · simpa [hα.eq] using β.genWeightSpace_ne_bot
     rw [sub_eq_neg_add, apply_coroot_eq_cast α β, ← neg_smul, ← Int.cast_neg,
       Int.cast_smul_eq_zsmul, rootSpace_zsmul_add_ne_bot_iff α β hα]
-    omega
+    grind
 
 lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
     (reflectRoot α β).IsNonZero := by

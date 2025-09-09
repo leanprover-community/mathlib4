@@ -276,12 +276,12 @@ end AreComplementary
 
 lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
-  disjoint i₁ i₂ := by dsimp; omega
+  disjoint i₁ i₂ := by dsimp; grind
   union i := by
     by_cases hi : i ≤ n₀
     · obtain ⟨k, rfl⟩ := Int.exists_add_of_le hi
-      exact Or.inl ⟨k, by dsimp; omega⟩
-    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by omega)
+      exact Or.inl ⟨k, by dsimp; grind⟩
+    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by grind)
       exact Or.inr ⟨k, rfl⟩
 
 end Embedding

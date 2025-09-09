@@ -32,10 +32,10 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
   finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
   finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
   finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
-  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
-  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
+  finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; grind
+  finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; grind
+  finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; grind
+  finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; grind
 
 theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
@@ -77,7 +77,7 @@ theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
 
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
-  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> omega
+  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> grind
 
 @[simp]
 lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
@@ -164,29 +164,29 @@ theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := 
 lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   ext x
   simp only [mem_insert, mem_Icc]
-  omega
+  grind
 
 @[deprecated Finset.insert_Icc_eq_Icc_succ_right (since := "2025-04-24")]
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   ext x
   simp only [mem_insert, mem_Icc]
-  omega
+  grind
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨x + c, by omega⟩⟩
+  refine ⟨?_, fun h ↦ ⟨x + c, by grind⟩⟩
   rintro ⟨x, hx, rfl⟩
-  omega
+  grind
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨c - x, by omega⟩⟩
+  refine ⟨?_, fun h ↦ ⟨c - x, by grind⟩⟩
   rintro ⟨x, hx, rfl⟩
-  omega
+  grind
 
 set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
@@ -204,7 +204,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
   | succ n ih =>
     rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-      Ico_succ_right_eq_insert_Ico (by omega)]
+      Ico_succ_right_eq_insert_Ico (by grind)]
     rintro k hk l hl (hkl : k % a = l % a)
     have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
     simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl
@@ -240,8 +240,8 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
       rw [Nat.mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · omega
-    · omega
+    · grind
+    · grind
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 
 section Multiset
@@ -289,9 +289,9 @@ theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftE
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
-  · omega
+  · grind
   · rintro h
-    exact ⟨x - a, by omega⟩
+    exact ⟨x - a, by grind⟩
 
 end Finset
 
@@ -315,7 +315,7 @@ lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀
   · rintro ⟨b, hb⟩
     rcases base with ⟨n, hn⟩
     specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
-    all_goals omega
+    all_goals grind
 
 theorem Nat.decreasing_induction_of_infinite
     (h : ∀ n, P (n + 1) → P n) (hP : { x | P x }.Infinite) (n : ℕ) : P n :=

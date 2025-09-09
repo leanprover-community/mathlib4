@@ -96,13 +96,13 @@ theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
   induction' m  with m hm generalizing x
   · simp
   · simp_rw [iteratedDerivWithin_succ]
-    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by omega) hr)]
-    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by omega))
-          (fun k r e hr he ↦ hf2 k r e (by omega) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by omega))
-          (fun k r e hr he ↦ hf2 k r e (by omega) he))
+    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by grind) hr)]
+    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by grind))
+          (fun k r e hr he ↦ hf2 k r e (by grind) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by grind))
+          (fun k r e hr he ↦ hf2 k r e (by grind) he))
     · intro r hr
       by_cases hm2 : m = 0
       · simp [hm2, hsum r hr]
-      · exact ((h m (by omega) (by omega)).summable hr).congr (fun _ ↦ by simp)
+      · exact ((h m (by grind) (by grind)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
-        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by omega) (by omega))
+        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by grind) (by grind))

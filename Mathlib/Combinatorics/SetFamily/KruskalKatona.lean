@@ -368,9 +368,9 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- and everything in 𝒜ᶜˢ has size n-r.
   have h𝒜bar : (𝒜ᶜˢ : Set (Finset (Fin n))).Sized (n - r) := by simpa using h₂.compls
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by omega)
+  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by grind)
     ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
-  have : n - r - (n - 2 * r) = r := by omega
+  have : n - r - (n - 2 * r) = r := by grind
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`
   have : n.choose r < #(𝒜 ∪ ∂^[n - 2 * r] 𝒜ᶜˢ) := by
@@ -384,6 +384,6 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   rw [coe_union, Set.sized_union]
   refine ⟨‹_›, ?_⟩
   convert h𝒜bar.shadow_iterate
-  omega
+  grind
 
 end Finset

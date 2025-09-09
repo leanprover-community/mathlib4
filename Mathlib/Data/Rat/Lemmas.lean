@@ -327,13 +327,13 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
   rcases lt_trichotomy a 0 with lt | rfl | gt
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
     simp at lt
-    rw [if_neg (by omega)]
+    rw [if_neg (by grind)]
     simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
-    exact Int.eq_natAbs_of_nonneg (by omega)
+    exact Int.eq_natAbs_of_nonneg (by grind)
   · simp
-  · rw [if_neg (by omega)]
+  · rw [if_neg (by grind)]
     simp only [inv_intCast_den_of_pos gt]
-    exact Int.eq_natAbs_of_nonneg (by omega)
+    exact Int.eq_natAbs_of_nonneg (by grind)
 
 @[simp]
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by

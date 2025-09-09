@@ -129,7 +129,7 @@ theorem self_le_factorial : ∀ n : ℕ, n ≤ n !
   | k + 1 => Nat.le_mul_of_pos_right _ (Nat.one_le_of_lt k.factorial_pos)
 
 theorem lt_factorial_self {n : ℕ} (hi : 3 ≤ n) : n < n ! := by
-  have : 0 < n := by omega
+  have : 0 < n := by grind
   have hn : 1 < pred n := le_pred_of_lt (succ_le_iff.mp hi)
   rw [← succ_pred_eq_of_pos ‹0 < n›, factorial_succ]
   exact (Nat.lt_mul_iff_one_lt_right (pred n).succ_pos).2
@@ -140,7 +140,7 @@ theorem add_factorial_succ_lt_factorial_add_succ {i : ℕ} (n : ℕ) (hi : 2 ≤
   rw [factorial_succ (i + _), Nat.add_mul, Nat.one_mul]
   have := (i + n).self_le_factorial
   refine Nat.add_lt_add_of_lt_of_le (Nat.lt_of_le_of_lt ?_ ((Nat.lt_mul_iff_one_lt_right ?_).2 ?_))
-    (factorial_le ?_) <;> omega
+    (factorial_le ?_) <;> grind
 
 theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n) :
     i + n ! < (i + n)! := by
@@ -378,13 +378,13 @@ theorem descFactorial_mul_descFactorial {k m n : ℕ} (hkm : k ≤ m) :
     (n - k).descFactorial (m - k) * n.descFactorial k = n.descFactorial m := by
   by_cases hmn : m ≤ n
   · apply Nat.mul_left_cancel (n - m).factorial_pos
-    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by omega, ← Nat.mul_assoc,
-      factorial_mul_descFactorial (show m - k ≤ n - k by omega),
+    rw [factorial_mul_descFactorial hmn, show n - m = (n - k) - (m - k) by grind, ← Nat.mul_assoc,
+      factorial_mul_descFactorial (show m - k ≤ n - k by grind),
       factorial_mul_descFactorial (le_trans hkm hmn)]
-  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by omega)]
+  · rw [descFactorial_eq_zero_iff_lt.mpr (show n < m by grind)]
     by_cases hkn : k ≤ n
-    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by omega), Nat.zero_mul]
-    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by omega), Nat.mul_zero]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n - k < m - k by grind), Nat.zero_mul]
+    · rw [descFactorial_eq_zero_iff_lt.mpr (show n < k by grind), Nat.mul_zero]
 
 /-- Avoid in favor of `Nat.factorial_mul_descFactorial` if you can. ℕ-division isn't worth it. -/
 theorem descFactorial_eq_div {n k : ℕ} (h : k ≤ n) : n.descFactorial k = n ! / (n - k)! := by
@@ -412,7 +412,7 @@ theorem pow_sub_lt_descFactorial' {n : ℕ} :
     ∀ {k : ℕ}, k + 2 ≤ n → (n - (k + 1)) ^ (k + 2) < n.descFactorial (k + 2)
   | 0, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.pow_one, descFactorial_one]
-    exact Nat.mul_lt_mul_of_pos_left (by omega) (Nat.sub_pos_of_lt h)
+    exact Nat.mul_lt_mul_of_pos_left (by grind) (Nat.sub_pos_of_lt h)
   | k + 1, h => by
     rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm]
     refine Nat.mul_lt_mul_of_pos_left ?_ (Nat.sub_pos_of_lt h)

@@ -184,13 +184,13 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     · exact this hx
     · convert this (left_mem_Ico.mpr zero_lt_one) using 1
       · rw [AddCircle.coe_period, QuotientAddGroup.mk_zero]
-      · rw [bernoulliFun_endpoints_eq_of_ne_one (by omega : k ≠ 1)]
+      · rw [bernoulliFun_endpoints_eq_of_ne_one (by grind : k ≠ 1)]
   intro y hy
   let B : C(𝕌, ℂ) :=
     ContinuousMap.mk ((↑) ∘ periodizedBernoulli k)
-      (continuous_ofReal.comp (periodizedBernoulli.continuous (by omega)))
+      (continuous_ofReal.comp (periodizedBernoulli.continuous (by grind)))
   have step1 : ∀ n : ℤ, fourierCoeff B n = -k ! / (2 * π * I * n) ^ k := by
-    rw [ContinuousMap.coe_mk]; exact fourierCoeff_bernoulli_eq (by omega : k ≠ 0)
+    rw [ContinuousMap.coe_mk]; exact fourierCoeff_bernoulli_eq (by grind : k ≠ 0)
   have step2 :=
     has_pointwise_sum_fourier_series_of_summable
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
@@ -233,7 +233,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k) * (fourier n (x : 𝕌) + fourier (-n) (x : 𝕌)))
       ((-1 : ℂ) ^ (k + 1) * (2 * (π : ℂ)) ^ (2 * k) / (2 * k)! * bernoulliFun (2 * k) x) := by
     convert
-      hasSum_one_div_nat_pow_mul_fourier (by omega : 2 ≤ 2 * k)
+      hasSum_one_div_nat_pow_mul_fourier (by grind : 2 ≤ 2 * k)
         hx using 3
     · rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
     · rw [pow_add, pow_one]
@@ -271,7 +271,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         bernoulliFun (2 * k + 1) x) := by
     convert
       hasSum_one_div_nat_pow_mul_fourier
-        (by omega : 2 ≤ 2 * k + 1) hx using 1
+        (by grind : 2 ≤ 2 * k + 1) hx using 1
     · ext1 n
       rw [pow_add (-1 : ℂ), pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul, pow_one, ←
         neg_eq_neg_one_mul, ← sub_eq_add_neg]
@@ -318,7 +318,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
       · skip
       · rw [← pow_one (2 : ℝ)]
     rw [← pow_add, Nat.sub_add_cancel]
-    omega
+    grind
   rw [this, mul_pow]
   ring
 

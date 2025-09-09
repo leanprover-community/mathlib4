@@ -118,7 +118,7 @@ protected theorem Chain.rel [IsTrans α R] (hl : l.Chain R a) (hb : b ∈ l) : R
 theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
-        R (get l ⟨i, by omega⟩) (get l ⟨i+1, by omega⟩)
+        R (get l ⟨i, by grind⟩) (get l ⟨i+1, by grind⟩)
   | a, [] => iff_of_true (by simp) ⟨fun h => by simp at h, fun _ h => by simp at h⟩
   | a, b :: t => by
     rw [chain_cons, @chain_iff_get _ _ t]
@@ -130,14 +130,14 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       rcases i with - | i
       · apply h0
-      · exact h i (by simp only [length_cons] at w; omega)
+      · exact h i (by simp only [length_cons] at w; grind)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp
     constructor
     · apply h 0
     intro i w
-    exact h (i+1) (by simp only [length_cons]; omega)
+    exact h (i+1) (by simp only [length_cons]; grind)
 
 theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
   match n with
@@ -318,7 +318,7 @@ theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
 
 theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
-      R (get l ⟨i, by omega⟩) (get l ⟨i + 1, by omega⟩)
+      R (get l ⟨i, by grind⟩) (get l ⟨i + 1, by grind⟩)
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
@@ -471,10 +471,10 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     f^[i] l[0] = l[i] := by
   induction' i with i h
   · rfl
-  · rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
+  · rw [Function.iterate_succ', Function.comp_apply, h (by grind)]
     rw [List.chain'_iff_get] at hl
     apply hl
-    omega
+    grind
 
 theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
   match n with

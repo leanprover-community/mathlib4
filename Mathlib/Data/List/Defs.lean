@@ -163,7 +163,7 @@ def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] 
   | t :: ts, is =>
       H1 t ts is (permutationsAux.rec H0 H1 ts (t :: is)) (permutationsAux.rec H0 H1 is [])
   termination_by ts is => (length ts + length is, length ts)
-  decreasing_by all_goals (simp_wf; omega)
+  decreasing_by all_goals (simp_wf; grind)
 
 /-- An auxiliary function for defining `permutations`. `permutationsAux ts is` is the set of all
 permutations of `is ++ ts` that do not fix `ts`. -/
