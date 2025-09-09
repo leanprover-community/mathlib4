@@ -169,6 +169,14 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
+theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
+    IsPositive (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap) ↔ IsPositive T := by
+  simp_rw [IsPositive, isSymmetric_linearIsometryEquiv_conj_iff, and_congr_right_iff,
+    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.coe_symm_toLinearEquiv,
+    Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
+  exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
+
 open scoped ComplexOrder in
 /-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
 @[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
@@ -178,14 +186,6 @@ open scoped ComplexOrder in
     dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff, RCLike.nonneg_iff (K:=𝕜)]
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
-
-theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
-    IsPositive (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap) ↔ IsPositive T := by
-  simp_rw [IsPositive, isSymmetric_linearIsometryEquiv_conj_iff, and_congr_right_iff,
-    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.coe_symm_toLinearEquiv,
-    Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
-  exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
