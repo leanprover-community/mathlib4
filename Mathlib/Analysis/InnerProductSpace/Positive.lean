@@ -189,7 +189,7 @@ open scoped ComplexOrder in
 
 open ComplexOrder in
 /-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
-theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+@[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
   rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
