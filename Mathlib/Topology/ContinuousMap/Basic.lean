@@ -612,6 +612,13 @@ theorem lift_comp : (hf.lift g h).comp f = g := by
   ext
   simpa using h (Function.rightInverse_surjInv _ _)
 
+@[simp↓]
+lemma lift_comp_apply {X Y Z : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [TopologicalSpace Z] {f : C(X, Y)} (hf : IsQuotientMap f)
+    (g : C(X, Z)) (hg : Function.FactorsThrough g f) (x : X) :
+    (hf.lift g hg) (f x) = g x := by
+  rw [← (hf.lift g hg).comp_apply, lift_comp]
+
 /-- `IsQuotientMap.lift` as an equivalence. -/
 @[simps]
 noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ C(Y, Z) where
@@ -622,6 +629,12 @@ noncomputable def liftEquiv : { g : C(X, Z) // Function.FactorsThrough g f} ≃ 
     intro g
     ext a
     simpa using congrArg g (Function.rightInverse_surjInv hf.surjective a)
+
+/-- A version of `liftEquiv_apply` that is more convenient when rewriting. -/
+lemma liftEquiv_apply' {X Y Z : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [TopologicalSpace Z] {f : C(X, Y)} (hf : IsQuotientMap f)
+    (g : C(X, Z)) (hg : Function.FactorsThrough g f) : hf.lift g hg =  hf.liftEquiv ⟨g, hg⟩ := by
+  rfl
 
 end Topology.IsQuotientMap
 end Lift
