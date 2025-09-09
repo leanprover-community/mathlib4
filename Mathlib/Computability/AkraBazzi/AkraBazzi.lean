@@ -61,14 +61,6 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 open Finset Real Filter Asymptotics
 open scoped Topology
 
-/-!
-### Definition of Akra–Bazzi recurrences
-
-This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
-satisfies the recurrence
-`T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)`
-with appropriate conditions on the various parameters.
--/
 
 
 namespace AkraBazziRecurrence

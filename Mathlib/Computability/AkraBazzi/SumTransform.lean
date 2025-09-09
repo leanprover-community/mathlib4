@@ -16,15 +16,16 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 
 ## Main definitions and results
 
-* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra–Bazzi
-  recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
-  It roughly states that
-  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b * n` and `n`, for any constant `b ∈ (0, 1)`.
-* `sumTransform`: The transformation that turns a function `g` into
+* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an
+  Akra–Bazzi recurrence with parameters `g`, `a`, `b` and `r` as above.
+* `smoothingFn`: the smoothing function `ε(x) = 1 / log x` (with derivative/asymptotic facts)
+  used in the inductive estimates.
+* `p`: the Akra–Bazzi exponent characterized by `∑ i, a i * (b i)^p = 1` (existence/uniqueness
+  and related properties).
+* `sumTransform`: the transformation turning a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
-* `asympBound`: the asymptotic bound satisfied by an Akra–Bazzi recurrence, namely
-  `n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})`
+* `asympBound`: the asymptotic bound expression for an Akra–Bazzi recurrence,
+  `n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})`.
 
 
 ## References
