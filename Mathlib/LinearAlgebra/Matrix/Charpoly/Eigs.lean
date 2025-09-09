@@ -64,7 +64,10 @@ theorem mem_spectrum_of_isRoot_charpoly [Nontrivial R]
   simp_all [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
     Pi.algebraMap_def]
 
-/-- In fields, the roots of the characteristic polynomial are exactly the spectrum of the matrix. -/
+/--
+In fields, the roots of the characteristic polynomial are exactly the spectrum of the matrix.
+The weaker direction is true in nontrivial rings (see `Matrix.mem_spectrum_of_isRoot_charpoly`).
+-/
 theorem isRoot_charpoly_iff_mem_spectrum {r : K} : IsRoot A.charpoly r ↔ r ∈ spectrum K A := by
   simp [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
     Pi.algebraMap_def]
