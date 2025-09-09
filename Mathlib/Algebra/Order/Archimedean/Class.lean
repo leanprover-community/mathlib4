@@ -707,4 +707,24 @@ theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
   unfold mk withTopOrderIso
   convert WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
 
+variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
+
+/-- An `OrderIso` on `MulArchimedeanClass` induces an `OrderIso` on `FiniteMulArchimedeanClass`. -/
+@[to_additive
+/-- An `OrderIso` on `ArchimedeanClass` induces an `OrderIso` on `FiniteArchimedeanClass`. -/]
+noncomputable
+def congrOrderIso (e : MulArchimedeanClass M ≃o MulArchimedeanClass N) :
+    FiniteMulArchimedeanClass M ≃o FiniteMulArchimedeanClass N where
+  __ := Equiv.subtypeEquiv e (by simp)
+  map_rel_iff' := by simp
+
+@[to_additive (attr := simp)]
+theorem coe_congrOrderIso_apply (e : MulArchimedeanClass M ≃o MulArchimedeanClass N)
+    (a : FiniteMulArchimedeanClass M) :
+    (congrOrderIso e a : MulArchimedeanClass N) = e a := rfl
+
+@[to_additive (attr := simp)]
+theorem congrOrderIso_symm (e : MulArchimedeanClass M ≃o MulArchimedeanClass N) :
+    (congrOrderIso e).symm = congrOrderIso e.symm := rfl
+
 end FiniteMulArchimedeanClass
