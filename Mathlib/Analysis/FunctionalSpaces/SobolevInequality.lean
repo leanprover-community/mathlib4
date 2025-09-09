@@ -381,8 +381,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   let e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
-  have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
-    (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
   have hp : Real.HolderConjugate #ι p := by rwa [hιcard]
   have h0p : 0 ≤ p := hp.symm.nonneg
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
