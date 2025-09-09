@@ -12,7 +12,7 @@ import Mathlib.RingTheory.CohenMacaulay.Maximal
 
 -/
 
-set_option pp.universes true
+--set_option pp.universes true
 
 universe u v
 
@@ -35,17 +35,43 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       have := CategoryTheory.Limits.IsZero.hasProjectiveDimensionLT_zero this
       use 0
       exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
-  · simp only [Nat.cast_add, Nat.cast_one, ge_iff_le, ← add_assoc]
+  · rw [Nat.cast_add, Nat.cast_one, ge_iff_le, add_comm _ 1, ← add_assoc]
     intro le
     rcases Module.Finite.exists_fin' R M with ⟨n, f', hf'⟩
-    --fix the universe problem of `f`
-    /-let S : ShortComplex (ModuleCat.{v} R) := {
+    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv R R)).trans
+      (Finsupp.linearEquivFunOnFinite R R (Fin n))).1
+    have surjf : Function.Surjective f := by simpa [f] using hf'
+    let S : ShortComplex (ModuleCat.{v} R) := {
       f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
       g := ModuleCat.ofHom.{v} f
       zero := by
         ext x
-        simp }-/
-    sorry
+        simp }
+    have S_exact : S.ShortExact := {
+      exact := by
+        apply (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr
+        intro x
+        simp [S]
+      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
+    let _ : Module.Finite R S.X₂ := by
+      simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin n)]
+    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+    let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+    have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
+    have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
+      moduleDepth_ge_min_of_shortExact_fst_snd _ S S_exact
+    have ge' : (depth S.X₁) + i ≥ ringKrullDim R := by
+      apply le_trans _ (add_le_add_right (WithBot.coe_le_coe.mpr ge) i)
+      have : IsLocalRing.depth S.X₂ = IsLocalRing.depth (ModuleCat.of R R) := by
+        --ring_depth_invariant
+        --free_depth_eq_ring_depth
+        sorry
+      simpa [← (isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing,
+        this, min_add] using ⟨WithBot.le_self_add (WithBot.natCast_ne_bot i) (ringKrullDim R), le⟩
+    rcases ih S.X₁ ge' with ⟨m, hm⟩
+    use m + 1
+    exact (S_exact.hasProjectiveDimensionLT_X₃_iff m proj).mpr hm
 
 lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : ∃ n, HasProjectiveDimensionLE M n := by
