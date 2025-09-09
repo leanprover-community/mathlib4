@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
+import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -105,12 +106,6 @@ theorem nodup_iff_getElem?_ne_getElem? {l : List α} :
   · intro h i j hi hj hij
     rw [Ne, ← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem]
     exact h i j hij hj
-
-set_option linter.deprecated false in
-@[deprecated nodup_iff_getElem?_ne_getElem? (since := "2025-02-17")]
-theorem nodup_iff_get?_ne_get? {l : List α} :
-    l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
-  simp [nodup_iff_getElem?_ne_getElem?]
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by

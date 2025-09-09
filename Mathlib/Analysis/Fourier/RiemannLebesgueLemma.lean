@@ -262,7 +262,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   simp [Aₘ]
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
-pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and
+pairing in the definition of `fourierIntegral` taken to be the canonical pairing between `V` and
 its dual space). -/
 theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaarMeasure] :
     Tendsto (VectorFourier.fourierIntegral 𝐞 μ (topDualPairing ℝ V).flip f)
