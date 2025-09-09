@@ -11,6 +11,11 @@ namespace Cache.Requests
 
 open System (FilePath)
 
+-- FRO cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
+initialize useFROCache : Bool ← do
+  let froCache ← IO.getEnv "USE_FRO_CACHE"
+  return froCache == some "1" || froCache == some "true"
+
 /--
 Structure to hold repository information with priority ordering
 -/
@@ -176,7 +181,8 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
         s!"Branch '{branchName}' should use the nightly-testing remote, but it's not configured.\n\
           Please add the nightly-testing remote pointing to the nightly testing repository:\n\
           git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git"
-      IO.println s!"Using cache from nightly-testing remote: {repo}"
+      let cacheService := if useFROCache then "Cloudflare" else "Azure"
+      IO.println s!"Using cache ({cacheService}) from nightly-testing remote: {repo}"
       return {repo := repo, useFirst := true}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
@@ -237,11 +243,9 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
 
   let repo ← getRepoFromRemote mathlibDepPath remoteName
     s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
-  IO.println s!"Using cache from {remoteName}: {repo}"
+  let cacheService := if useFROCache then "Cloudflare" else "Azure"
+  IO.println s!"Using cache ({cacheService}) from {remoteName}: {repo}"
   return {repo := repo, useFirst := false}
-
--- FRO cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-def useFROCache : Bool := false
 
 /-- Public URL for mathlib cache -/
 def URL : String :=
@@ -367,7 +371,6 @@ def downloadFiles
         IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
         IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
         IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-        IO.eprintln "During August 2025, we are changing the back-end for the olean cache. If you are unexpectedly not finding oleans for your PR, please try merging `master`."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
