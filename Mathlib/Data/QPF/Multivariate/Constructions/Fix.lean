@@ -34,7 +34,7 @@ See [avigad-carneiro-hudon2019] for more details.
 ## Reference
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -88,10 +88,10 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   intro h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
-  · intros a f' f₀ f₁ _h ih; simp only [recF_eq]
-    congr; funext; congr; funext; apply ih
-  · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
-  · intros x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
+  · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
+    congr 4; funext; apply ih
+  · intro a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
+  · intro x y z _e₁ _e₂ ih₁ ih₂; exact Eq.trans ih₁ ih₂
 
 theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
     (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
@@ -103,8 +103,7 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
   intro a₁ f'₁ f₁
   apply WEquiv.abs
 
-theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := by
-  apply q.P.w_cases _ x; intro a f' f; exact WEquiv.abs a f' f a f' f rfl
+theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
 
 theorem wEquiv.symm {α : TypeVec n} (x y : q.P.W α) : WEquiv x y → WEquiv y x := by
   intro h; induction h with

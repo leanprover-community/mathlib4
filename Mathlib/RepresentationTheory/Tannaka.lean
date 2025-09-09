@@ -158,12 +158,9 @@ def sumSMulInv [Fintype G] {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
   map_smul' _ _ := by simp [smul_sum, smul_smul]
 
 omit [Finite G] in
-@[simp]
 lemma sumSMulInv_single_id [Fintype G] [DecidableEq G] {X : FDRep k G} (v : X) :
     ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
-  rw [Fintype.sum_eq_single 1]
-  · simp
-  · simp_all
+  simp
 
 /-- For `v : X` and `G` a finite group, the representation morphism from the right
 regular representation `rightFDRep` to `X` sending `single 1 1` to `v`. -/
@@ -199,7 +196,7 @@ lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
   classical
   obtain ⟨s, hs⟩ := ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η)).eq_piEvalAlgHom
-  refine ⟨s, Basis.ext (basisFun k G) (fun u ↦ ?_)⟩
+  refine ⟨s, (basisFun k G).ext fun u ↦ ?_⟩
   simp only [rightFDRep, forget_obj]
   ext t
   have nat := η.hom.hom.naturality (leftRegularFDRepHom t⁻¹)

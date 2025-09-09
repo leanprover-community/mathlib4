@@ -134,7 +134,7 @@ lemma exists_pushouts
 lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
     ∃ (A' : Subobject X) (h : A < A'),
       (generatingMonomorphisms G).pushouts (Subobject.ofLE A A' h.le) := by
-  induction' A using Subobject.ind with Y f _
+  induction A using Subobject.ind with | _ f
   obtain ⟨X', i, p', hi, hi', hp', fac⟩ := exists_pushouts hG f
     (by simpa only [Subobject.isIso_iff_mk_eq_top] using hA)
   refine ⟨Subobject.mk p', Subobject.mk_lt_mk_of_comm i fac hi',
@@ -210,7 +210,7 @@ variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrd
   [WellFoundedLT J]
 
 /-- Let `C` be a Grothendieck abelian category with a generator (`hG`),
-`X : C`, `A₀ : Subobject X`. Let `J` be a well ordered type. This is
+`X : C`, `A₀ : Subobject X`. Let `J` be a well-ordered type. This is
 the functor `J ⥤ MonoOver X` which corresponds to the evaluation
 at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/
@@ -226,7 +226,7 @@ noncomputable abbrev functor : J ⥤ C :=
 
 instance : (functor hG A₀ J).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨by
-    have : Nonempty (Set.Iio m) := ⟨⟨⊥, Ne.bot_lt (by simpa using hm.not_isMin)⟩⟩
+    have := hm.nonempty_Iio.to_subtype
     let c := (Set.principalSegIio m).cocone (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _)
     have : Mono c.pt.hom := by dsimp [c]; infer_instance
     apply IsGrothendieckAbelian.isColimitMapCoconeOfSubobjectMkEqISup
@@ -240,7 +240,7 @@ variable {J} in
 is a transfinite composition of pushouts of monomorphisms in the
 family `generatingMonomorphisms G`. -/
 noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
-  (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
+    (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
     ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
   isoBot := Iso.refl _
@@ -324,7 +324,7 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
               refine (?_ : _ ≤ monomorphisms C) _ this
               simp only [pushouts_le_iff, coproducts_le_iff]
               exact generatingMonomorphisms_le_monomorphisms G }
-        have := hf'.mono_map
+        have (j j' : κ.ord.toType) (φ : j ⟶ j') : Mono (hf'.F.map φ) := hf'.mem_map φ
         apply preservesColimit_coyoneda_obj_of_mono (Y := hf'.F) (κ := κ)
         obtain ⟨S⟩ := hi
         exact Subobject.hasCardinalLT_of_mono hκ S.arrow }⟩

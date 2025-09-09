@@ -29,6 +29,8 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 * `NumberField.IsCM.ofIsCMExtension`: Assume that there exists `F` such that `K/F` is a
   CM-extension. Then `K` is CM.
 
+* `NumberField.IsCMField.of_isMulCommutative`: A totally complex abelian extension of `ℚ` is CM.
+
 ## Implementation note
 
 Most result are proved under the general hypothesis: `K/F` quadratic extension of number fields
@@ -74,9 +76,9 @@ All the conjugations of a `CM`-extension are the same.
 -/
 theorem isConj_eq_isConj {φ ψ : K →+* ℂ} {σ τ : K ≃ₐ[F] K} (hφ : IsConj φ σ) (hψ : IsConj ψ τ) :
     σ = τ := by
-  have : Fintype.card (K ≃ₐ[F] K) = 2 :=
+  have : Nat.card (K ≃ₐ[F] K) = 2 :=
     (IsQuadraticExtension.finrank_eq_two F K) ▸ IsGalois.card_aut_eq_finrank F K
-  rw [← Nat.card_eq_fintype_card, Nat.card_eq_two_iff' 1] at this
+  rw [Nat.card_eq_two_iff' 1] at this
   exact ExistsUnique.unique this
     ((isConj_ne_one_iff hφ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ)
     ((isConj_ne_one_iff hψ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal ψ)
@@ -130,7 +132,7 @@ The complex conjugation generates the Galois group of `K/F`.
 theorem zpowers_complexConj_eq_top :
     Subgroup.zpowers (complexConj F K) = ⊤ := by
   refine Subgroup.eq_top_of_card_eq _ ?_
-  rw [Nat.card_zpowers, orderOf_complexConj, Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank,
+  rw [Nat.card_zpowers, orderOf_complexConj, IsGalois.card_aut_eq_finrank,
     IsQuadraticExtension.finrank_eq_two]
 
 theorem eq_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] [IsQuadraticExtension E K] :
@@ -196,6 +198,40 @@ theorem ofCMExtension [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
     IsCMField K where
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
       (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
+
+open IntermediateField in
+/--
+A totally complex field that has a unique complex conjugation is CM.
+-/
+theorem of_forall_isConj {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
+    IsCMField K := by
+  have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
+    obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
+    let τ := subgroupEquivAlgEquiv _ ⟨σ, Subgroup.mem_zpowers σ⟩
+    have hτ : IsConj W.embedding τ := hσ _
+    simpa [← isReal_mk_iff, ← InfinitePlace.comap_mk, mk_embedding] using hτ.isReal_comp⟩
+  have : IsQuadraticExtension (fixedField (Subgroup.zpowers σ)) K := ⟨by
+    let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
+    have hσ' : σ ≠ 1 :=
+      (isConj_ne_one_iff (hσ φ)).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ
+    rw [finrank_fixedField_eq_card, Nat.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
+  exact ofCMExtension (fixedField (Subgroup.zpowers σ)) K
+
+/--
+A totally complex abelian extension of `ℚ` is CM.
+-/
+instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+    IsCMField K := by
+  let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
+  obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
+    exists_isConj_of_isRamified <|
+      isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
+  have hσ₂ : ∀ (φ : K →+* ℂ), ComplexEmbedding.IsConj φ σ := by
+    intro ψ
+    obtain ⟨ν, rfl⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq (k := ℚ) φ ψ (by ext; simp)
+    rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
+    exact hσ₁.comp _
+  exact of_forall_isConj K hσ₂
 
 variable [IsCMField K]
 

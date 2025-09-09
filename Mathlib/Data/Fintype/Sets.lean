@@ -205,8 +205,7 @@ theorem toFinset_insert [DecidableEq α] {a : α} {s : Set α} [Fintype (insert 
 theorem filter_mem_univ_eq_toFinset [Fintype α] (s : Set α) [Fintype s] [DecidablePred (· ∈ s)] :
     Finset.univ.filter (· ∈ s) = s.toFinset := by
   ext
-  simp only [Finset.mem_univ, mem_filter,
-    true_and, mem_toFinset]
+  rw [mem_filter_univ, mem_toFinset]
 
 end Set
 
@@ -230,7 +229,6 @@ end Finset
 
 theorem Fintype.coe_image_univ [Fintype α] [DecidableEq β] {f : α → β} :
     ↑(Finset.image f Finset.univ) = Set.range f := by
-  ext x
   simp
 
 instance List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x ∈ l } :=
