@@ -248,6 +248,6 @@ lemma isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' 
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
-  fun x ↦ (h x).congr_of_eventuallyEq heq.eventuallyEq
+  heq ▸ h
 
 end IsImmersion
