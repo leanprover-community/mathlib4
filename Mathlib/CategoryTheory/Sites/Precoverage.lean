@@ -104,9 +104,16 @@ class IsStableUnderComposition (J : Precoverage C) : Prop where
     (g : ∀ i j, Y i j ⟶ X i) (hg : ∀ i, Presieve.ofArrows (Y i) (g i) ∈ J (X i)) :
     .ofArrows (fun p : Σ i, σ i ↦ Y _ p.2) (fun _ ↦ g _ _ ≫ f _) ∈ J S
 
+/-- A precoverage is stable under `⊔` if whenever `R` and `S` are coverings,
+also `R ⊔ S` is a covering. -/
+class IsStableUnderSup (J : Precoverage C) where
+  sup_mem_coverings {X : C} {R S : Presieve X} (hR : R ∈ J X) (hS : S ∈ J X) :
+    R ⊔ S ∈ J X
+
 alias mem_coverings_of_isIso := HasIsos.mem_coverings_of_isIso
 alias mem_coverings_of_isPullback := IsStableUnderBaseChange.mem_coverings_of_isPullback
 alias comp_mem_coverings := IsStableUnderComposition.comp_mem_coverings
+alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
 
 instance (J K : Precoverage C) [HasIsos J] [HasIsos K] : HasIsos (J ⊓ K) where
   mem_coverings_of_isIso f _ := ⟨mem_coverings_of_isIso f, mem_coverings_of_isIso f⟩
@@ -120,6 +127,10 @@ instance (J K : Precoverage C) [IsStableUnderComposition.{w, w'} J]
     [IsStableUnderComposition.{w, w'} K] : IsStableUnderComposition.{w, w'} (J ⊓ K) where
   comp_mem_coverings _ h _ _ _ H :=
     ⟨comp_mem_coverings _ h.1 _ fun i ↦ (H i).1, comp_mem_coverings _ h.2 _ fun i ↦ (H i).2⟩
+
+instance (J K : Precoverage C) [IsStableUnderSup J] [IsStableUnderSup K] :
+    IsStableUnderSup (J ⊓ K) where
+  sup_mem_coverings hR hS := ⟨J.sup_mem_coverings hR.1 hS.1, K.sup_mem_coverings hR.2 hS.2⟩
 
 end Precoverage
 
