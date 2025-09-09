@@ -21,14 +21,13 @@ variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddComm
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction 𝕜 G] [PosSMulMono 𝕜 G] :
     PosSMulReflectLE 𝕜 G where
-  elim _a ha b₁ b₂ h := by
+  le_of_smul_le_smul_left _a ha b₁ b₂ h := by
     simpa [ha.ne'] using smul_le_smul_of_nonneg_left h <| inv_nonneg.2 ha.le
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZero 𝕜 G]
     [PosSMulStrictMono 𝕜 G] : PosSMulReflectLT 𝕜 G :=
-  PosSMulReflectLT.of_pos fun a ha b₁ b₂ h ↦ by
-    simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos.2 ha
+  .of_pos fun a ha b₁ b₂ h ↦ by simpa [ha.ne'] using smul_lt_smul_of_pos_left h <| inv_pos.2 ha
 
 end LinearOrderedSemifield
 
@@ -70,7 +69,7 @@ open Lean Meta Qq Function
 
 variable {α β : Type*}
 
-section OrderedSMul
+section PosSMulMono
 variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
   {b : β}
 
@@ -80,7 +79,10 @@ private theorem smul_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤
 private theorem smul_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b :=
   smul_nonneg ha hb.le
 
-end OrderedSMul
+private theorem smul_nonneg_of_pos_of_pos (ha : 0 < a) (hb : 0 < b) : 0 ≤ a • b :=
+  smul_nonneg ha.le hb.le
+
+end PosSMulMono
 
 section NoZeroSMulDivisors
 variable [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] {a : α} {b : β}
@@ -93,9 +95,9 @@ private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder β] (ha : a ≠ 0) (hb 
 
 end NoZeroSMulDivisors
 
-/-- Positivity extension for HSMul, i.e. (_ • _). -/
+/-- Positivity extension for scalar multiplication. -/
 @[positivity HSMul.hSMul _ _]
-def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+def evalSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
@@ -105,7 +107,12 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
   match ← core zM pM a, ← core zα pα b with
   | .positive pa, .positive pb =>
-      pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
+      try {
+        let _hαβ : Q(SMul $β $α) ← synthInstanceQ q(SMul $β $α)
+        let _hαβ : Q(PosSMulStrictMono $β $α) ← synthInstanceQ q(PosSMulStrictMono $β $α)
+        pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
+      } catch _ =>
+        pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_pos #[pa, pb]))
   | .positive pa, .nonnegative pb =>
       pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
   | .nonnegative pa, .positive pb =>
