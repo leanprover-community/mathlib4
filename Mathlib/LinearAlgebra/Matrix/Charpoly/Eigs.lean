@@ -3,6 +3,7 @@ Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 
@@ -70,6 +71,11 @@ theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom
   · rw [trace_eq_neg_charpoly_coeff, neg_eq_iff_eq_neg,
       ← Polynomial.sum_roots_eq_nextCoeff_of_monic_of_split A.charpoly_monic hAps, nextCoeff,
       charpoly_natDegree_eq_dim, if_neg (Fintype.card_ne_zero : Fintype.card n ≠ 0)]
+
+/-- The roots of the characteristic polynomial give the spectrum of the matrix. -/
+theorem isRoot_charpoly_iff_mem_spectrum {r : R} : IsRoot A.charpoly r ↔ r ∈ spectrum R A := by
+  simp [Matrix.eval_charpoly, spectrum.mem_iff, Matrix.isUnit_iff_isUnit_det]
+  rfl
 
 variable (A)
 
