@@ -701,8 +701,8 @@ theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
   simp_rw [PosDef, isHermitian_iff_isSelfAdjoint, hU.isSelfAdjoint_conjugate_iff',
-    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose,
-    ← star_mulVec, ← dotProduct_mulVec]
+    and_congr_right_iff, ← mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose, ← star_mulVec,
+    ← dotProduct_mulVec]
   obtain ⟨V, hV, hV2⟩ := isUnit_iff_exists.mp hU
   have hV3 (y : n → R) (hy : y ≠ 0) : U *ᵥ y ≠ 0 := fun h => by simpa [hy, hV2] using congr(V *ᵥ $h)
   have hV4 (y : n → R) (hy : y ≠ 0) : V *ᵥ y ≠ 0 := fun h => by simpa [hy, hV] using congr(U *ᵥ $h)
