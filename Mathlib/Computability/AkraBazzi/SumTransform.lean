@@ -18,9 +18,6 @@ We develop further required preliminaries for the theorem, up to the sum transfo
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
-  It roughly states that
-  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
 * `sumTransform`: The transformation which turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
 * `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
