@@ -88,8 +88,7 @@ noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R 
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
 
 @[simp]
-lemma _root_.RingHom.quotientKerEquivOfSurjective_apply_mk {f : R →+* S}
-    (hf : Function.Surjective f) (x : R) :
+lemma quotientKerEquivOfSurjective_apply_mk {f : R →+* S} (hf : Function.Surjective f) (x : R) :
     f.quotientKerEquivOfSurjective hf (Ideal.Quotient.mk _ x) = f x :=
   rfl
 
