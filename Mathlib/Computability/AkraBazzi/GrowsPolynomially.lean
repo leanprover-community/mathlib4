@@ -10,19 +10,19 @@ import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
-# Akra-Bazzi theorem: The polynomial growth condition
+# Akra–Bazzi theorem: the polynomial growth condition
 
 This file defines and develops an API for the polynomial growth condition that appears in the
-statement of the Akra-Bazzi theorem: for the Akra-Bazzi theorem to hold, the function `g` must
-satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant
-`b ∈ (0,1)`.
+statement of the Akra–Bazzi theorem: for the theorem to hold, the function $g$ must
+satisfy the condition $c_1\, g(n) \le g(u) \le c_2\, g(n)$ for $u$ between $b\,n$ and $n$, for any
+constant $b \in (0,1)$.
 
 ## Implementation notes
 
-Our definition states that the condition must hold for any `b ∈ (0,1)`. This is equivalent to
-only requiring it for `b = 1 / 2` or any other particular value between 0 and 1. While this
-could in principle make it harder to prove that a particular function grows polynomially,
-this issue doesn't seem to arise in practice.
+Our definition requires that the condition hold for any $b \in (0,1)$. This is equivalent to
+requiring it only for $b = 1/2$ (or any other particular value in $(0,1)$). While this
+could, in principle, make it harder to prove that a particular function grows polynomially,
+this issue does not seem to arise in practice.
 
 -/
 
@@ -31,9 +31,9 @@ open scoped Topology
 
 namespace AkraBazziRecurrence
 
-/-- The growth condition that the function `g` must satisfy for the Akra-Bazzi theorem to apply.
-It roughly states that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
-constant `b ∈ (0,1)`. -/
+/-- The growth condition that the function `g` must satisfy for the Akra–Bazzi theorem to apply.
+It roughly states that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b * n` and `n`, for any
+constant `b ∈ (0, 1)`. -/
 def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
   ∀ b ∈ Set.Ioo 0 1, ∃ c₁ > 0, ∃ c₂ > 0,
     ∀ᶠ x in atTop, ∀ u ∈ Set.Icc (b * x) x, f u ∈ Set.Icc (c₁ * (f x)) (c₂ * f x)
