@@ -3,14 +3,10 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Real.Basic
-import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Tactic.Qify
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Data.Real.Archimedean
 
 /-!
 # Embedding of archimedean groups into reals

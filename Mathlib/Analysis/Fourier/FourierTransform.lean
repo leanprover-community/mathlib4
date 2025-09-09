@@ -39,7 +39,7 @@ multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped w
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
-introduced the notation `𝐞` in the locale `FourierTransform`).
+introduced the notation `𝐞` in the scope `FourierTransform`).
 
 Another familiar case (which generalizes the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
