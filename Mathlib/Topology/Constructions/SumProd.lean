@@ -844,6 +844,18 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
+lemma IsQuotientMap.sumMap (f : X → Y) (g : Z → W) (h₁ : IsQuotientMap f) (h₂ : IsQuotientMap g) :
+    IsQuotientMap (Sum.map f g) := by
+  fconstructor
+  · rintro (x | y)
+    · use .inl (h₁.surjective x).choose
+      simp [h₁.surjective x |>.choose_spec]
+    · use .inr (h₂.surjective y).choose
+      simp [h₂.surjective y |>.choose_spec]
+  · simp_rw [instTopologicalSpaceSum, coinduced_sup, coinduced_compose, Function.comp_def,
+    Sum.map_inl, Sum.map_inr, ← Function.comp_def, ← coinduced_compose, h₁.eq_coinduced,
+    h₂.eq_coinduced]
+
 -- Homeomorphisms between the various constructions: sums of two homeomorphisms,
 -- as well as commutativity, associativity and distributivity with products.
 namespace Homeomorph
