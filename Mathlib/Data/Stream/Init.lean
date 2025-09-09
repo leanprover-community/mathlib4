@@ -596,10 +596,7 @@ lemma drop_append_of_le_length (h : n ≤ x.length) :
 theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : ℕ, take n s₁ = take n s₂) → s₁ = s₂ := by
   intro h; apply Stream'.ext; intro n
   induction' n with n _
-  · have aux := h 1
-    simp? [take] at aux says
-      simp only [take, List.cons.injEq, and_true] at aux
-    exact aux
+  · simpa [take] using h 1
   · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
       rw [← getElem?_take_succ, ← getElem?_take_succ, h (succ (succ n))]
     injection h₁
