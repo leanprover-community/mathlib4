@@ -3233,6 +3233,7 @@ import Mathlib.Data.Fintype.Sort
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Fintype.Units
 import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Fintype.WithTopBot
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
@@ -6702,6 +6703,7 @@ import Mathlib.Topology.Order.Rolle
 import Mathlib.Topology.Order.ScottTopology
 import Mathlib.Topology.Order.T5
 import Mathlib.Topology.Order.UpperLowerSetTopology
+import Mathlib.Topology.Order.WithTop
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.PartitionOfUnity

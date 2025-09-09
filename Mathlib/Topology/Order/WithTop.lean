@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Topology.Order.Basic
-import Mathlib.Data.Fintype.Option
+import Mathlib.Data.Fintype.WithTopBot
 
-/-! Order topology on `WithTop ι`
+/-! # Order topology on `WithTop ι`
 
-When `ι` is a topological space with the order topology, we put also the order topology on
-`WithTop ι`. If `ι` is second countable, we prove that `WithTop ι` also is.
+When `ι` is a topological space with the order topology, we also endow `WithTop ι` with the order
+topology. If `ι` is second countable, we prove that `WithTop ι` also is.
 -/
 
 open Set
@@ -23,9 +23,7 @@ instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι
 
 instance [TopologicalSpace ι] [OrderTopology ι] : OrderTopology (WithTop ι) := ⟨rfl⟩
 
-instance {α : Type*} [Finite α] : Finite (WithTop α) := instFiniteOption
-
-scoped instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopology ι] :
+instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopology ι] :
     SecondCountableTopology (WithTop ι) := by
   classical
   rcases isEmpty_or_nonempty ι with hι | ⟨⟨x₀⟩⟩
