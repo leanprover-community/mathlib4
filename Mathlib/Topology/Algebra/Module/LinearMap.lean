@@ -731,7 +731,7 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
     toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
   coe_inj.mp <| LinearMap.toSpanSingleton_smul _ _
 
-@[deprecated (since := "28-08-2025")] alias toSpanSingleton_smul' := toSpanSingleton_smul
+@[deprecated (since := "2025-08-28")] alias toSpanSingleton_smul' := toSpanSingleton_smul
 
 theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
