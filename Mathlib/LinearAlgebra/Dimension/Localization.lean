@@ -121,8 +121,6 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     lift_lift, ← lift_lift.{max uS uT uP, uM}]
   let _ : Algebra T ST := Algebra.TensorProduct.rightAlgebra
   set pT := Algebra.algebraMapSubmonoid T p
-  have : IsLocalization pT ST := isLocalizedModule_iff_isLocalization.mp
-    (IsLocalization.tensorProduct_isLocalizedModule ..)
   rw [← lift_lift.{max uS uT, max uM uN}, ← lift_umax.{uP},
     ← IsLocalizedModule.lift_rank_eq pT (mk T ST P 1) hpT,
     ← IsLocalization.rank_eq ST pT hpT, lift_id'.{uP, max uS uT},
