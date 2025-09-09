@@ -498,7 +498,8 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M₂] [Finite ι₂]
       ext i
       rw [LinearEquiv.coe_coe, comp_apply, ← LinearEquiv.eq_symm_apply]
       conv_lhs => rw [this]
-      rfl
+      -- TODO: Missing API
+      simp [RootSystem.map, RootPairing.map, RootSystem.flip, g]
     ext m n
     · simp [RootSystem.map, RootPairing.map, RootSystem.flip, g]
     · simp [hf, RootSystem.map, RootPairing.map]
