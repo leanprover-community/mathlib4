@@ -526,12 +526,6 @@ def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
-/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
-@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
-def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' ho
-
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
@@ -590,13 +584,12 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 
 /-! ### Lifting ordinals to a higher universe -/
 
--- Porting note: Needed to add universe hint .{u} below
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
   see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
-  Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
+  Quotient.liftOn o (fun w => type <| ULift.down ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
     Quot.sound
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
@@ -858,7 +851,6 @@ theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
--- Porting note: Proof used to be rfl
 @[simp]
 theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
 
@@ -959,10 +951,8 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
       obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
       obtain ⟨f, a, hf⟩ := f
       exists a
-      revert hf
-      -- Porting note: apply inductionOn does not work, refine does
-      refine inductionOn a ?_
-      intro α r _ hf
+      induction a using inductionOn with
+      | H a r =>
       refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
         ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
       · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
