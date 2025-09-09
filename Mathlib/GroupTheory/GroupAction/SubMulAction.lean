@@ -87,6 +87,10 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 
+@[to_additive] instance (priority := 50) [SMul T M] [SMulMemClass S T M] [SMulCommClass T R M] :
+    SMulCommClass T R s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
 @[to_additive] theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α]
@@ -102,14 +106,10 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
--- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
--- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
   rfl
@@ -152,6 +152,12 @@ theorem mk_smul_of_tower_mk (r : M) (x : α) (hx : x ∈ s) :
 theorem smul_of_tower_def (r : M) (x : s) :
     r • x = ⟨r • x, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩ :=
   rfl
+
+@[to_additive] instance (priority := 50) [SMulCommClass M N α] : SMulCommClass M N s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
+
+@[to_additive] instance (priority := 50) [SMulCommClass N M α] : SMulCommClass N M s where
+  smul_comm _ _ _ := Subtype.ext (smul_comm ..)
 
 end OfTower
 
@@ -288,11 +294,6 @@ lemma subtype_injective :
 @[to_additive (attr := simp)]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SubMulAction.SMulMemClass.coe_subtype
-@[deprecated (since := "2025-02-18")]
-protected alias _root_.SubAddAction.SMulMemClass.coeSubtype := SubAddAction.SMulMemClass.coe_subtype
 
 end SMulMemClass
 

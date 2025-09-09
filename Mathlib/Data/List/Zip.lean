@@ -117,10 +117,6 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 
-@[deprecated (since := "2025-02-14")] alias get?_zipWith' := getElem?_zipWith'
-@[deprecated (since := "2025-02-14")] alias get?_zipWith_eq_some := getElem?_zipWith_eq_some
-@[deprecated (since := "2025-02-14")] alias get?_zip_eq_some := getElem?_zip_eq_some
-
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by
   induction' l with hd tl ih generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]

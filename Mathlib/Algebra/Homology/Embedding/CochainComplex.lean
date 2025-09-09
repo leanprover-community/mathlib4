@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+import Mathlib.Algebra.Homology.Embedding.AreComplementary
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 
@@ -334,5 +334,33 @@ lemma isGE_shift (n : ℤ) [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧)
 end
 
 end Preadditive
+
+
+section Abelian
+
+variable [Abelian C] (K L : CochainComplex C ℤ)
+
+/-- The cokernel sequence of the monomorphism `K.ιTruncLE n`. -/
+noncomputable abbrev shortComplexTruncLE (n : ℤ) : ShortComplex (CochainComplex C ℤ) :=
+  HomologicalComplex.shortComplexTruncLE K (embeddingUpIntLE n)
+
+lemma shortComplexTruncLE_shortExact (n : ℤ) :
+    (K.shortComplexTruncLE n).ShortExact := by
+  apply HomologicalComplex.shortComplexTruncLE_shortExact
+
+variable (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+
+/-- The canonical morphism `(K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁`. -/
+noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
+    (K.shortComplexTruncLE n₀).X₃ ⟶ K.truncGE n₁ :=
+  HomologicalComplex.shortComplexTruncLEX₃ToTruncGE K
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h)
+
+@[reassoc]
+lemma g_shortComplexTruncLEX₃ToTruncGE :
+    (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
+  apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
+
+end Abelian
 
 end CochainComplex

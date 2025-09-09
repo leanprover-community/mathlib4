@@ -32,7 +32,7 @@ variable {P Q : MorphismProperty C}
 /-- This is the precoverage on `C` where covering presieves are those where every
 morphism satisfies `P`. -/
 def precoverage (P : MorphismProperty C) : Precoverage C where
-  coverings X S := ∀ {Y : C} {f : Y ⟶ X}, S f → P f
+  coverings X S := ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f
 
 @[simp]
 lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
@@ -52,14 +52,14 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
 
-lemma precoverage_le_precoverage (hPQ : P ≤ Q) : precoverage P ≤ precoverage Q :=
+lemma precoverage_monotone (hPQ : P ≤ Q) : precoverage P ≤ precoverage Q :=
   fun _ _ hR _ _ hg ↦ hPQ _ (hR hg)
 
 variable (P Q) in
 lemma precoverage_inf : precoverage (P ⊓ Q) = precoverage P ⊓ precoverage Q := by
   ext X R
-  exact ⟨fun hS ↦ ⟨fun hf ↦ (hS hf).left, fun hf ↦ (hS hf).right⟩,
-    fun h ↦ fun hf ↦ ⟨h.left hf, h.right hf⟩⟩
+  exact ⟨fun hS ↦ ⟨fun _ _ hf ↦ (hS hf).left, fun _ _ hf ↦ (hS hf).right⟩,
+    fun h ↦ fun _ _ hf ↦ ⟨h.left hf, h.right hf⟩⟩
 
 /-- If `P` is stable under base change, this is the coverage on `C` where covering presieves
 are those where every morphism satisfies `P`. -/
@@ -109,11 +109,11 @@ variable {P Q : MorphismProperty C}
   [P.IsMultiplicative] [P.IsStableUnderBaseChange]
   [Q.IsMultiplicative] [Q.IsStableUnderBaseChange]
 
-lemma pretopology_le_pretopology (hPQ : P ≤ Q) : P.pretopology ≤ Q.pretopology :=
-  precoverage_le_precoverage hPQ
+lemma pretopology_monotone (hPQ : P ≤ Q) : P.pretopology ≤ Q.pretopology :=
+  precoverage_monotone hPQ
 
 @[deprecated (since := "2025-08-28")]
-alias pretopology_le := pretopology_le_pretopology
+alias pretopology_le := pretopology_monotone
 
 variable (P Q) in
 lemma pretopology_inf : (P ⊓ Q).pretopology = P.pretopology ⊓ Q.pretopology := by

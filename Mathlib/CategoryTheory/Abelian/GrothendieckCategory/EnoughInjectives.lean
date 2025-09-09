@@ -134,7 +134,7 @@ lemma exists_pushouts
 lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
     ∃ (A' : Subobject X) (h : A < A'),
       (generatingMonomorphisms G).pushouts (Subobject.ofLE A A' h.le) := by
-  induction' A using Subobject.ind with Y f _
+  induction A using Subobject.ind with | _ f
   obtain ⟨X', i, p', hi, hi', hp', fac⟩ := exists_pushouts hG f
     (by simpa only [Subobject.isIso_iff_mk_eq_top] using hA)
   refine ⟨Subobject.mk p', Subobject.mk_lt_mk_of_comm i fac hi',
@@ -210,7 +210,7 @@ variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrd
   [WellFoundedLT J]
 
 /-- Let `C` be a Grothendieck abelian category with a generator (`hG`),
-`X : C`, `A₀ : Subobject X`. Let `J` be a well ordered type. This is
+`X : C`, `A₀ : Subobject X`. Let `J` be a well-ordered type. This is
 the functor `J ⥤ MonoOver X` which corresponds to the evaluation
 at `A₀` of the transfinite iteration of the map
 `largerSubobject hG : Subobject X → Subobject X`. -/

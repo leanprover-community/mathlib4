@@ -696,24 +696,6 @@ instance : LawfulTraversable.{u} (flip Vector n) where
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
 
--- Porting note: not porting meta instances
--- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
---     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
---   @Vector.inductionOn α (fun n => reflected _) n v
---     ((by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.nil.{u}).subst
---       q(α))
---     fun n x xs ih =>
---     (by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.cons.{u}).subst₄
---       q(α) q(n) q(x) ih
-
 section Simp
 
 variable {x : α} {y : β} {s : σ} (xs : Vector α n)

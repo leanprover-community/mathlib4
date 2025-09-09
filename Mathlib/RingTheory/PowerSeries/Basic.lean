@@ -188,6 +188,11 @@ theorem coeff_monomial_same (n : ℕ) (a : R) : coeff n (monomial n a) = a :=
 theorem coeff_comp_monomial (n : ℕ) : (coeff (R := R) n).comp (monomial n) = LinearMap.id :=
   LinearMap.ext <| coeff_monomial_same n
 
+theorem monomial_mul_monomial (m n : ℕ) (a b : R) :
+    monomial m a * monomial n b = monomial (m + n) (a * b) := by
+  simpa [monomial] using
+    MvPowerSeries.monomial_mul_monomial (Finsupp.single () m) (Finsupp.single () n) a b
+
 /-- The constant coefficient of a formal power series. -/
 def constantCoeff : R⟦X⟧ →+* R :=
   MvPowerSeries.constantCoeff
@@ -640,6 +645,14 @@ theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
   simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
     Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
     Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+
+theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
+    ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
+  simpa [monomial, Finsupp.single_finset_sum] using
+    MvPowerSeries.prod_monomial (fun i ↦ Finsupp.single () (f i)) g s
+
+theorem monmial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
+  simpa [monomial] using MvPowerSeries.monmial_pow (Finsupp.single () m) a n
 
 /-- The `n`-th coefficient of the `k`-th power of a power series. -/
 lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :

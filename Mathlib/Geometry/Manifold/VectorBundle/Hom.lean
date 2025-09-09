@@ -45,8 +45,6 @@ local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (fun (b : B) ↦
 
 section
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083):
--- moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange
     [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']

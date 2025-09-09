@@ -191,7 +191,7 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
+    let some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
     return .intLike (← instantiateMVarsQ n) instRing instCharP
 

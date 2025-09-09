@@ -52,8 +52,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        u (c n) - c n * l = (u (c n) / c n - l) * c n := by
-          simp only [cnpos.ne', Ne, Nat.cast_eq_zero, not_false_iff, field_simps]
+        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field_simp
         _ ≤ ε * c n := by
           gcongr
           refine (le_abs_self _).trans ?_
@@ -106,8 +105,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by
-          simp only [cnpos.ne', Ne, Nat.cast_eq_zero, not_false_iff, neg_sub, field_simps]
+        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field_simp; ring
         _ ≤ ε * c n := by
           gcongr
           refine le_trans (neg_le_abs _) ?_
@@ -209,7 +207,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     simp only [one_mul, div_one] at A
     convert A using 1
     ext1 n
-    field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
+    field_simp [(zero_lt_one.trans (cone k)).ne']
     ring
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff₀ (H n)).1 hn.le
@@ -302,4 +300,4 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       exact sum_div_pow_sq_le_div_sq N hj hc
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1
-      field_simp [(sub_pos.2 hc).ne']
+      field_simp

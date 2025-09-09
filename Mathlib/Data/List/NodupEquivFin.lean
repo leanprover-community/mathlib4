@@ -127,9 +127,6 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
 
-@[deprecated (since := "2025-02-15")] alias sublist_of_orderEmbedding_get?_eq :=
-sublist_of_orderEmbedding_getElem?_eq
-
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
 any element of `l` found at index `ix` can be found at index `f ix` in `l'`.
@@ -154,9 +151,6 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
         · simpa using hf _
   · rintro ⟨f, hf⟩
     exact sublist_of_orderEmbedding_getElem?_eq f hf
-
-@[deprecated (since := "2025-02-15")] alias sublist_iff_exists_orderEmbedding_get?_eq :=
-sublist_iff_exists_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that

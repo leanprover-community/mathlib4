@@ -136,13 +136,13 @@ def SimpTheorems.contains (d : SimpTheorems) (declName : Name) :=
 /-- Tests whether `decl` has `simp`-attribute `simpAttr`. Returns `false` is `simpAttr` is not a
 valid simp-attribute. -/
 def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return false
+  let some simpDecl ← getSimpExtension? simpAttr | return false
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
 Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
-  let .some simpDecl ← getSimpExtension? simpAttr | return []
+  let some simpDecl ← getSimpExtension? simpAttr | return []
   let thms ← simpDecl.getTheorems
   return thms.toUnfold.toList ++ thms.lemmaNames.toList.filterMap fun
     | .decl decl => some decl

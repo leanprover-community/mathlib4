@@ -184,6 +184,7 @@ noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
+  le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
 noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=

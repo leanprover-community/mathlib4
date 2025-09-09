@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.CharZero.AddMonoidHom
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
@@ -82,6 +83,12 @@ theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Fiel
   letI := Module.Finite.left K E L
   of_module_finite K E
 
+theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
+  letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
+  {
+    to_charZero := inferInstance
+    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+  }
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
 

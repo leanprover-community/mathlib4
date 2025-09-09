@@ -110,10 +110,6 @@ lemma neg_re_eq_norm {z : ℂ} : -z.re = ‖z‖ ↔ z ≤ 0 := by
 @[simp]
 lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_norm]
 
-@[deprecated (since := "2025-02-16")] alias re_eq_abs := re_eq_norm
-@[deprecated (since := "2025-02-16")] alias neg_re_eq_abs := neg_re_eq_norm
-@[deprecated (since := "2025-02-16")] alias re_eq_neg_abs := re_eq_neg_norm
-
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy
   simp only [real_le_real, hxy]

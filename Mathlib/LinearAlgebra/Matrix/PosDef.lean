@@ -3,7 +3,9 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
+import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.LinearAlgebra.Matrix.Vec
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-! # Positive Definite Matrices
@@ -32,9 +34,10 @@ open scoped ComplexOrder
 
 namespace Matrix
 
-variable {m n R 𝕜 : Type*}
+variable {m n R R' 𝕜 : Type*}
 variable [Fintype m] [Fintype n]
-variable [CommRing R] [PartialOrder R] [StarRing R]
+variable [Ring R] [PartialOrder R] [StarRing R]
+variable [CommRing R'] [PartialOrder R'] [StarRing R']
 variable [RCLike 𝕜]
 open scoped Matrix
 
@@ -89,13 +92,13 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
   simpa only [conjTranspose_submatrix, conjTranspose_one] using
     conjTranspose_mul_mul_same hM (Matrix.submatrix 1 id e)
 
-theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
+theorem transpose {M : Matrix n n R'} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
   convert hM.2 (star x) using 1
   rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 @[simp]
-theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
+theorem _root_.Matrix.posSemidef_transpose_iff {M : Matrix n n R'} : Mᵀ.PosSemidef ↔ M.PosSemidef :=
   ⟨(by simpa using ·.transpose), .transpose⟩
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
@@ -115,8 +118,7 @@ protected lemma one [StarOrderedRing R] [DecidableEq n] : PosSemidef (1 : Matrix
 protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
     PosSemidef (d : Matrix n n R) :=
   ⟨isHermitian_natCast _, fun x => by
-    simp only [natCast_mulVec, dotProduct_smul]
-    rw [Nat.cast_smul_eq_nsmul]
+    rw [natCast_mulVec, Nat.cast_smul_eq_nsmul, dotProduct_smul]
     exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
@@ -126,8 +128,7 @@ protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeast
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
     PosSemidef (d : Matrix n n R) :=
   ⟨isHermitian_intCast _, fun x => by
-    simp only [intCast_mulVec, dotProduct_smul]
-    rw [Int.cast_smul_eq_zsmul]
+    rw [intCast_mulVec, Int.cast_smul_eq_zsmul, dotProduct_smul]
     exact zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
@@ -146,15 +147,15 @@ protected lemma pow [StarOrderedRing R] [DecidableEq n]
     rw [pow_succ, pow_succ']
     simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
-protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
+protected lemma inv [DecidableEq n] {M : Matrix n n R'} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
   by_cases h : IsUnit M.det
   · have := (conjTranspose_mul_mul_same hM M⁻¹).conjTranspose
     rwa [mul_nonsing_inv_cancel_right _ _ h, conjTranspose_conjTranspose] at this
   · rw [nonsing_inv_apply_not_isUnit _ h]
     exact .zero
 
-protected lemma zpow [StarOrderedRing R] [DecidableEq n]
-    {M : Matrix n n R} (hM : M.PosSemidef) (z : ℤ) :
+protected lemma zpow [StarOrderedRing R'] [DecidableEq n]
+    {M : Matrix n n R'} (hM : M.PosSemidef) (z : ℤ) :
     (M ^ z).PosSemidef := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
   · simpa using hM.pow n
@@ -165,6 +166,13 @@ protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
   ⟨hA.isHermitian.add hB.isHermitian, fun x => by
     rw [add_mulVec, dotProduct_add]
     exact add_nonneg (hA.2 x) (hB.2 x)⟩
+
+protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
+    [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulMono α R] {x : Matrix n n R}
+    (hx : x.PosSemidef) {a : α} (ha : 0 ≤ a) : (a • x).PosSemidef := by
+  refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha) hx.1, fun y => ?_⟩
+  simp only [smul_mulVec, dotProduct_smul]
+  exact smul_nonneg ha (hx.2 _)
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
 lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
@@ -320,6 +328,22 @@ theorem posSemidef_self_mul_conjTranspose [StarOrderedRing R] (A : Matrix m n R)
     PosSemidef (A * Aᴴ) := by
   simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
+section trace
+-- TODO: move these results to an earlier file
+
+variable {R : Type*} [PartialOrder R] [NonUnitalRing R]
+  [StarRing R] [StarOrderedRing R] [NoZeroDivisors R]
+
+theorem trace_conjTranspose_mul_self_eq_zero_iff {A : Matrix m n R} :
+    (Aᴴ * A).trace = 0 ↔ A = 0 := by
+  rw [← star_vec_dotProduct_vec, dotProduct_star_self_eq_zero, vec_eq_zero_iff]
+
+theorem trace_mul_conjTranspose_self_eq_zero_iff {A : Matrix m n R} :
+    (A * Aᴴ).trace = 0 ↔ A = 0 := by
+  simpa using trace_conjTranspose_mul_self_eq_zero_iff (A := Aᴴ)
+
+end trace
+
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
   (posSemidef_conjTranspose_mul_self _).eigenvalues_nonneg _
@@ -395,13 +419,13 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 
-theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
+theorem transpose {M : Matrix n n R'} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
   rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 @[simp]
-theorem transpose_iff {M : Matrix n n R} : Mᵀ.PosDef ↔ M.PosDef :=
+theorem transpose_iff {M : Matrix n n R'} : Mᵀ.PosDef ↔ M.PosDef :=
   ⟨(by simpa using ·.transpose), .transpose⟩
 
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -433,8 +457,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) (hd : d ≠ 0) :
     PosDef (d : Matrix n n R) :=
   ⟨isHermitian_natCast _, fun x hx => by
-    simp only [natCast_mulVec, dotProduct_smul]
-    rw [Nat.cast_smul_eq_nsmul]
+    rw [natCast_mulVec, Nat.cast_smul_eq_nsmul, dotProduct_smul]
     exact nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
@@ -452,8 +475,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℤ) (hd : 0 < d) :
     PosDef (d : Matrix n n R) :=
   ⟨isHermitian_intCast _, fun x hx => by
-    simp only [intCast_mulVec, dotProduct_smul]
-    rw [Int.cast_smul_eq_zsmul]
+    rw [intCast_mulVec, Int.cast_smul_eq_zsmul, dotProduct_smul]
     exact zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
@@ -477,6 +499,13 @@ protected lemma posSemidef_add [AddLeftMono R]
 protected lemma add [AddLeftMono R] {A : Matrix m m R} {B : Matrix m m R}
     (hA : A.PosDef) (hB : B.PosDef) : (A + B).PosDef :=
   hA.add_posSemidef hB.posSemidef
+
+protected theorem smul {α : Type*} [CommSemiring α] [PartialOrder α] [StarRing α]
+    [StarOrderedRing α] [Algebra α R] [StarModule α R] [PosSMulStrictMono α R]
+    {x : Matrix n n R} (hx : x.PosDef) {a : α} (ha : 0 < a) : (a • x).PosDef := by
+  refine ⟨IsSelfAdjoint.smul (IsSelfAdjoint.of_nonneg ha.le) hx.1, fun y hy => ?_⟩
+  simp only [smul_mulVec, dotProduct_smul]
+  exact smul_pos ha (hx.2 _ hy)
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} {B : Matrix n m R} (hA : A.PosDef)
     (hB : Function.Injective B.mulVec) :

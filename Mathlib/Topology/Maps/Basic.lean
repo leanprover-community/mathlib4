@@ -288,7 +288,7 @@ theorem range_mem_nhds (hf : IsOpenMap f) (x : X) : range f ∈ 𝓝 (f x) :=
 
 theorem mapsTo_interior (hf : IsOpenMap f) {s : Set X} {t : Set Y} (h : MapsTo f s t) :
     MapsTo f (interior s) (interior t) :=
-  mapsTo'.2 <|
+  mapsTo_iff_image_subset.2 <|
     interior_maximal (h.mono interior_subset Subset.rfl).image_subset (hf _ isOpen_interior)
 
 theorem image_interior_subset (hf : IsOpenMap f) (s : Set X) :

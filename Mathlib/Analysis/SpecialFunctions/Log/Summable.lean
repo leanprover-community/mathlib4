@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms

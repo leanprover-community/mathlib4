@@ -248,7 +248,6 @@ theorem union_symm_apply_right {α} {s t : Set α} [DecidablePred fun x => x ∈
 /-- A singleton set is equivalent to a `PUnit` type. -/
 protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
   ⟨fun _ => PUnit.unit, fun _ => ⟨a, mem_singleton _⟩, fun ⟨x, h⟩ => by
-    simp? at h says simp only [mem_singleton_iff] at h
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 

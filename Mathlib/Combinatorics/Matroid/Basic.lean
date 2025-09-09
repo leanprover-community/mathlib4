@@ -211,8 +211,6 @@ namespace Matroid
 
 variable {α : Type*} {M : Matroid α}
 
-@[deprecated (since := "2025-02-14")] alias Base := IsBase
-
 instance (M : Matroid α) : Nonempty {B // M.IsBase B} :=
   nonempty_subtype.2 M.exists_isBase
 
@@ -249,8 +247,6 @@ instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   /-- There is a finite base -/
   exists_finite_isBase : ∃ B, M.IsBase B ∧ B.Finite
 
-@[deprecated (since := "2025-02-09")] alias FiniteRk := RankFinite
-
 instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
   ⟨M.exists_isBase.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
@@ -259,14 +255,10 @@ instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
   /-- There is an infinite base -/
   exists_infinite_isBase : ∃ B, M.IsBase B ∧ B.Infinite
 
-@[deprecated (since := "2025-02-09")] alias InfiniteRk := RankInfinite
-
 /-- A `RankPos` matroid is one whose bases are nonempty. -/
 @[mk_iff] class RankPos (M : Matroid α) : Prop where
   /-- The empty set isn't a base -/
   empty_not_isBase : ¬M.IsBase ∅
-
-@[deprecated (since := "2025-02-09")] alias RkPos := RankPos
 
 instance rankPos_nonempty {M : Matroid α} [M.RankPos] : M.Nonempty := by
   obtain ⟨B, hB⟩ := M.exists_isBase
@@ -799,15 +791,11 @@ section IsBasis
 def IsBasis (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I ∧ X ⊆ M.E
 
-@[deprecated (since := "2025-02-14")] alias Basis := IsBasis
-
 /-- `Matroid.IsBasis' I X` is the same as `Matroid.IsBasis I X`,
 without the requirement that `X ⊆ M.E`. This is convenient for some
 API building, especially when working with rank and closure. -/
 def IsBasis' (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I
-
-@[deprecated (since := "2025-02-14")] alias Basis' := IsBasis'
 
 variable {B I J X Y : Set α} {e : α}
 

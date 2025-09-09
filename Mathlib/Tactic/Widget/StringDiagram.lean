@@ -276,8 +276,8 @@ def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
       addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add constraints. -/
   for (l₁, l₂) in pairs nodes do
-    if let .some x₁ := l₁.head? then
-      if let .some x₂ := l₂.head? then
+    if let some x₁ := l₁.head? then
+      if let some x₂ := l₂.head? then
         addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add 1-morphisms as strings. -/
   for l in strands do
@@ -313,12 +313,12 @@ def mkKind (e : Expr) : MetaM Kind := do
     | none => return e)
   let ctx? ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e
   match ctx? with
-  | .some _ => return .bicategory
-  | .none =>
+  | some _ => return .bicategory
+  | none =>
     let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e
     match ctx? with
-    | .some _ => return .monoidal
-    | .none => return .none
+    | some _ => return .monoidal
+    | none => return .none
 
 open scoped Jsx in
 /-- Given a 2-morphism, return a string diagram. Otherwise `none`. -/
@@ -327,19 +327,19 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
   let k ← mkKind e
   let x : Option (List (List Node) × List (List Strand)) ← (match k with
     | .monoidal => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
+        return some (← e'.nodes, ← e'.strands)
     | .bicategory => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return .none
+      let some ctx ← BicategoryLike.mkContext? (ρ := Bicategory.Context) e | return none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
-        return .some (← e'.nodes, ← e'.strands)
-    | .none => return .none)
+        return some (← e'.nodes, ← e'.strands)
+    | .none => return none)
   match x with
-  | .none => return none
-  | .some (nodes, strands) => do
+  | none => return none
+  | some (nodes, strands) => do
     DiagramBuilderM.run do
       mkStringDiagram nodes strands
       trace[string_diagram] "Penrose substance: \n{(← get).sub}"
@@ -443,8 +443,8 @@ def elabStringDiagramCmd : CommandElab := fun
       let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
         catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
       match ← StringDiagram.stringMorOrEqM? e with
-      | .some html => return html
-      | .none => throwError "could not find a morphism or equality: {e}"
+      | some html => return html
+      | none => throwError "could not find a morphism or equality: {e}"
     liftCoreM <| Widget.savePanelWidgetInfo
       (hash HtmlDisplay.javascript)
       (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })

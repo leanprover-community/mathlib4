@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!

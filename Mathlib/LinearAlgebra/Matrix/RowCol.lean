@@ -55,6 +55,16 @@ variable {ι : Type*}
 theorem replicateRow_apply (v : n → α) (i : ι) (j) : replicateRow ι v i j = v j :=
   rfl
 
+@[simp]
+theorem vecMulVec_one [MulOneClass R] (x : n → R) :
+    vecMulVec x 1 = replicateCol m x := by
+  ext; simp [vecMulVec_apply]
+
+@[simp]
+theorem one_vecMulVec [MulOneClass R] (x : n → R) :
+    vecMulVec 1 x = replicateRow m x := by
+  ext; simp [vecMulVec_apply]
+
 theorem replicateCol_injective [Nonempty ι] :
     Function.Injective (replicateCol ι : (m → α) → Matrix m ι α) := by
   inhabit ι

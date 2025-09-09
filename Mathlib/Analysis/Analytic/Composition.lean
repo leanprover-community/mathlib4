@@ -885,7 +885,7 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
-  comp' (mono hg (Set.mapsTo'.mp st)) hf
+  comp' (mono hg (Set.mapsTo_iff_image_subset.mp st)) hf
 
 lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
@@ -1066,9 +1066,10 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     change
       sum (take (b.blocks.take i).sum a.blocks) =
         sum (take i (map sum (splitWrtComposition a.blocks b)))
-    induction' i with i IH
-    · rfl
-    · have A : i < b.length := Nat.lt_of_succ_lt hi
+    induction i with
+    | zero => rfl
+    | succ i IH =>
+      have A : i < b.length := Nat.lt_of_succ_lt hi
       have B : i < List.length (map List.sum (splitWrtComposition a.blocks b)) := by simp [A]
       have C : 0 < blocksFun b ⟨i, A⟩ := Composition.blocks_pos' _ _ _
       rw [sum_take_succ _ _ B, ← IH A C]

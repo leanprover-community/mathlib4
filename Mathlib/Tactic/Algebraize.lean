@@ -196,16 +196,16 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
           -- This should be the type `Algebra.Property A B`
           let tp ← instantiateMVars tp'
           if ← isDefEqGuarded decl.type tp then return (decl.toExpr, tp)
-          else return .none
+          else return none
         /- Otherwise, the attribute points to a lemma or a constructor for the `Algebra` property.
         In this case, we assume that the `RingHom` property is the last argument of the lemma or
         constructor (and that this is all we need to supply explicitly). -/
         else
-          try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return .none
+          try pargs.back!.mvarId!.assignIfDefEq decl.toExpr catch _ => return none
           let val ← instantiateMVars tp'
           let tp ← inferType val -- This should be the type `Algebra.Property A B`.
           return (val, tp)
-      let .some (val,tp) ← getValType | return
+      let some (val, tp) ← getValType | return
       /- Find all arguments to `Algebra.Property A B` or `Module.Property A B` which are
         of the form `RingHom.toAlgebra f`, `RingHom.toModule f`
         or `Algebra.toModule (RingHom.toAlgebra f)`. -/

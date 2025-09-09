@@ -201,14 +201,16 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n) : ℝ) := by
   rcases eq_or_ne z 0 with (rfl | hz)
   · simp
-  induction' n with n hn
-  · simp_rw [mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
+  induction n with
+  | zero =>
+    simp_rw [mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
       (by push_cast; field_simp : 2 * z * ↑(π / 2) = π * z)]
     simp [field]
-  · rw [hn, Finset.prod_range_succ]
+  | succ n hn =>
+    rw [hn, Finset.prod_range_succ]
     set A := ∏ j ∈ Finset.range n, ((1 : ℂ) - z ^ 2 / ((j : ℂ) + 1) ^ 2)
     set B := ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n)
     set C := ∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n)

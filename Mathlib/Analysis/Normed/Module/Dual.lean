@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.Normed.Module.Convex

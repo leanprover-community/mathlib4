@@ -223,9 +223,9 @@ simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.prod (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
     match (generalizing := false) n.nat? with
-    | .none =>
+    | none =>
       return .continue
-    | .some nVal =>
+    | some nVal =>
       let ⟨res, pf⟩ ← mkProdEqQ inst nVal f
       let ⟨_⟩ ← assertDefEqQ q($instF) q(Fin.fintype _)
       have _ : $n =Q $nVal := ⟨⟩
@@ -237,9 +237,9 @@ simproc_decl sum_univ_ofNat (∑ _ : Fin _, _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.sum (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
     match n.nat? with
-    | .none =>
+    | none =>
       return .continue
-    | .some nVal =>
+    | some nVal =>
       let ⟨res, pf⟩ ← mkSumEqQ inst nVal f
       let ⟨_⟩ ← assertDefEqQ q($instF) q(Fin.fintype _)
       have _ : $n =Q $nVal := ⟨⟩

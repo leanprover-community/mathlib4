@@ -38,22 +38,37 @@ section Semiring
 
 namespace Ideal
 
-variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
+variable {R : ι → Type*} [Π i, Semiring (R i)] (I J : Π i, Ideal (R i))
 
 section Pi
 
 /-- `Πᵢ Iᵢ` as an ideal of `Πᵢ Rᵢ`. -/
-def pi : Ideal (Π i, α i) where
-  carrier := { x | ∀ i, x i ∈ I i }
+def pi : Ideal (Π i, R i) where
+  carrier := { r | ∀ i, r i ∈ I i }
   zero_mem' i := (I i).zero_mem
   add_mem' ha hb i := (I i).add_mem (ha i) (hb i)
   smul_mem' a _b hb i := (I i).mul_mem_left (a i) (hb i)
 
-theorem mem_pi (x : Π i, α i) : x ∈ pi I ↔ ∀ i, x i ∈ I i :=
+theorem mem_pi (r : Π i, R i) : r ∈ pi I ↔ ∀ i, r i ∈ I i :=
   Iff.rfl
+
+@[simp] theorem pi_span {r : Π i, R i} : pi (span {r ·}) = span {r} := by
+  ext; simp_rw [mem_pi, mem_span_singleton', funext_iff, Classical.skolem, Pi.mul_def]
 
 instance (priority := low) [∀ i, (I i).IsTwoSided] : (pi I).IsTwoSided :=
   ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
+
+variable {I J}
+
+theorem single_mem_pi [DecidableEq ι] {i : ι} {r : R i} (hr : r ∈ I i) : Pi.single i r ∈ pi I := by
+  intro j
+  obtain rfl | ne := eq_or_ne i j
+  · simpa
+  · simp [ne]
+
+@[simp] theorem pi_le_pi_iff : pi I ≤ pi J ↔ I ≤ J where
+  mp le i r hr := by classical simpa using le (single_mem_pi hr) i
+  mpr le r hr i := le i (hr i)
 
 end Pi
 
@@ -148,7 +163,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
+  change (f.support.sum fun a => f a * a) = 1 at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this

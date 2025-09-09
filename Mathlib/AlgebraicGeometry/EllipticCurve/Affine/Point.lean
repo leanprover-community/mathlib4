@@ -380,9 +380,6 @@ lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
-@[deprecated (since := "2025-02-01")] alias mk_XYIdeal'_mul_mk_XYIdeal'_of_Yeq :=
-  mk_XYIdeal'_neg_mul
-
 lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
@@ -535,8 +532,6 @@ lemma add_some {x₁ x₂ y₁ y₂ : F} (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY
     {h₂ : W.Nonsingular x₂ y₂} : some h₁ + some h₂ = some (nonsingular_add h₁ h₂ hxy) := by
   simp only [add_def, add, dif_neg hxy]
 
-@[deprecated (since := "2025-02-28")] alias add_of_imp := add_some
-
 @[simp]
 lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some h₁ + some h₂ = 0 := by
@@ -596,8 +591,6 @@ noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) 
       exact (CoordinateRing.mk_XYIdeal'_neg_mul h₂).symm
     · simp only [add_some hxy]
       exact (CoordinateRing.mk_XYIdeal'_mul_mk_XYIdeal' h₁ h₂ hxy).symm
-
-@[deprecated (since := "2025-02-01")] alias toClassFun := toClass
 
 lemma toClass_zero : toClass (0 : W.Point) = 0 :=
   rfl
@@ -664,8 +657,6 @@ noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
     · simp only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope]
       rw [add_some fun h => hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩]
-
-@[deprecated (since := "2025-02-01")] alias mapFun := map
 
 lemma map_zero : map f (0 : W'⟮F⟯) = 0 :=
   rfl

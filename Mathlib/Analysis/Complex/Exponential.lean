@@ -40,8 +40,6 @@ theorem isCauSeq_norm_exp (z : ℂ) :
       gcongr
       exact le_trans hm (Nat.le_succ _)
 
-@[deprecated (since := "2025-02-16")] alias isCauSeq_abs_exp := isCauSeq_norm_exp
-
 noncomputable section
 
 theorem isCauSeq_exp (z : ℂ) : IsCauSeq (‖·‖) fun n => ∑ m ∈ range n, z ^ m / m.factorial :=
@@ -457,7 +455,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
     refine (IsAbsoluteValue.abv_sum norm ..).trans_eq ?_
     congr with i
-    simp [Complex.norm_pow]
+    simp [Complex.norm_pow, Complex.norm_natCast]
   _ ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
     gcongr
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
@@ -507,14 +505,6 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
       refine Real.sum_le_exp_of_nonneg ?_ _
       exact norm_nonneg _
 
-@[deprecated (since := "2025-02-16")] alias abs_exp_sub_one_le := norm_exp_sub_one_le
-@[deprecated (since := "2025-02-16")] alias abs_exp_sub_one_sub_id_le := norm_exp_sub_one_sub_id_le
-@[deprecated (since := "2025-02-16")] alias  abs_exp_sub_sum_le_exp_abs_sub_sum :=
-  norm_exp_sub_sum_le_exp_norm_sub_sum
-@[deprecated (since := "2025-02-16")] alias abs_exp_le_exp_abs := norm_exp_le_exp_norm
-@[deprecated (since := "2025-02-16")] alias abs_exp_sub_sum_le_abs_mul_exp :=
-  norm_exp_sub_sum_le_norm_mul_exp
-
 end Complex
 
 namespace Real
@@ -548,7 +538,7 @@ theorem abs_exp_sub_one_sub_id_le {x : ℝ} (hx : |x| ≤ 1) : |exp x - 1 - x| �
   exact_mod_cast Complex.norm_exp_sub_one_sub_id_le this
 
 /-- A finite initial segment of the exponential series, followed by an arbitrary tail.
-For fixed `n` this is just a linear map wrt `r`, and each map is a simple linear function
+For fixed `n` this is just a linear map w.r.t. `r`, and each map is a simple linear function
 of the previous (see `expNear_succ`), with `expNear n x r ⟶ exp x` as `n ⟶ ∞`,
 for any `r`. -/
 noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
@@ -560,7 +550,7 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
-      Nat.factorial]
+    Nat.factorial]
   ac_rfl
 
 theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
@@ -685,7 +675,5 @@ namespace Complex
 theorem norm_exp_ofReal (x : ℝ) : ‖exp x‖ = Real.exp x := by
   rw [← ofReal_exp]
   exact Complex.norm_of_nonneg (le_of_lt (Real.exp_pos _))
-
-@[deprecated (since := "2025-02-16")] alias abs_exp_ofReal := norm_exp_ofReal
 
 end Complex

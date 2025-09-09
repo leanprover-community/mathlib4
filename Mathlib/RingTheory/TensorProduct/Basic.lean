@@ -285,9 +285,9 @@ instance instSemiring : Semiring (A ⊗[R] B) where
 
 @[simp]
 theorem tmul_pow (a : A) (b : B) (k : ℕ) : a ⊗ₜ[R] b ^ k = (a ^ k) ⊗ₜ[R] (b ^ k) := by
-  induction' k with k ih
-  · simp [one_def]
-  · simp [pow_succ, ih]
+  induction k with
+  | zero => simp [one_def]
+  | succ k ih => simp [pow_succ, ih]
 
 /-- The ring morphism `A →+* A ⊗[R] B` sending `a` to `a ⊗ₜ 1`. -/
 @[simps]
@@ -1120,6 +1120,9 @@ theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = Al
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
   AlgHom.ext <| one_mul
 
+lemma lmul'_comp_map (f : A →ₐ[R] S) (g : B →ₐ[R] S) :
+    (lmul' R).comp (map f g) = lift f g (fun _ _ ↦ .all _ _) := by ext <;> rfl
+
 variable (R S) in
 /-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
 then `lmul''` is an isomorphism. -/
@@ -1350,13 +1353,6 @@ theorem linearMap_comp_mul' :
     Algebra.linearMap_apply, map_one, LinearMap.coe_comp, Function.comp_apply,
     LinearMap.mul'_apply, mul_one, Algebra.TensorProduct.one_def]
 
-@[simp]
-theorem mul'_comp_tensorTensorTensorComm :
-    LinearMap.mul' R (A ⊗[R] B) ∘ₗ tensorTensorTensorComm R A A B B =
-      map (LinearMap.mul' R A) (LinearMap.mul' R B) := by
-  ext
-  simp
-
 end Lemmas
 
 end TensorProduct.Algebra
@@ -1411,6 +1407,17 @@ end
 variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
   [NonUnitalNonAssocSemiring B] [Module R A] [Module R B] [SMulCommClass R A A]
   [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
+
+@[simp]
+theorem TensorProduct.Algebra.mul'_comp_tensorTensorTensorComm :
+    LinearMap.mul' R (A ⊗[R] B) ∘ₗ tensorTensorTensorComm R A A B B =
+      map (LinearMap.mul' R A) (LinearMap.mul' R B) := by
+  ext
+  simp
+
+lemma LinearMap.mul'_tensor :
+    mul' R (A ⊗[R] B) = map (mul' R A) (mul' R B) ∘ₗ tensorTensorTensorComm R A B A B :=
+  ext_fourfold' <| by simp
 
 lemma LinearMap.mulLeft_tmul (a : A) (b : B) :
     mulLeft R (a ⊗ₜ[R] b) = map (mulLeft R a) (mulLeft R b) := by

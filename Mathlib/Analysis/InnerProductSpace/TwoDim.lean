@@ -5,9 +5,9 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.Data.Complex.Orientation
 import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -470,8 +470,6 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity
-
-@[deprecated (since := "2025-02-17")] alias abs_kahler := norm_kahler
 
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
