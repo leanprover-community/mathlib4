@@ -13,7 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 A divide-and-conquer recurrence is a function $T : ℕ → ℝ$ that satisfies a recurrence relation of
 the form
-$$T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n),$$
+$$T(n) = \sum_{i=0}^{k-1} a_i\, T(r_i(n)) + g(n),$$
 for sufficiently large $n$, where $r_i(n)$ is a function with
 $‖r_i(n) - b_i n‖ ∈ o(n / (\log n)^2)$ for every $i$, the coefficients $a_i$ are
 positive, and the parameters $b_i$ are real numbers in $(0, 1)$. (This assumption can be
@@ -29,13 +29,13 @@ that are only approximately of size $b_i n$ (they must round up or down, at the 
 allow the instance sizes to be given by a function $r_i(n)$ that approximates $b_i n$.
 
 The Akra–Bazzi theorem gives the asymptotic order of such a recurrence: it states that
-$$T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})),$$
+$$T(n) \in \Theta\bigl(n^p \,(1 + \sum_{u=0}^{n-1} g(u) / u^{p+1})\bigr),$$
 where $p$ is the unique real number such that $∑ a_i b_i^p = 1$.
 
 ## Main definitions and results
 
 * `isTheta_asympBound`: the main result stating that
-  `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1}))`
+  $T(n) \in \Theta\bigl(n^p \,(1 + \sum_{u=0}^{n-1} g(u) / u^{p+1})\bigr)$
 
 ## Implementation
 
@@ -493,13 +493,13 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
     with n₀ n₀_ge_Rn₀ h_smoothing_pos h_smoothing_gt_half
       h_asympBound_pos h_asympBound_r_pos h_asympBound_floor n₀_pos h_smoothing_r_pos
       bound1 h_smoothingFn_floor h_sumTransform h_bi_le_r
-  -- Max of the ratio `T(n) / asympBound(n)` over the base case `n ∈ [b' * n₀, n₀)`
+  -- Max of the ratio `T n / asympBound g a b n` over the base case `n ∈ [b' * n₀, n₀)`
   have h_base_nonempty := R.base_nonempty n₀_pos
   let base_max : ℝ :=
     (Finset.Ico (⌊b' * n₀⌋₊) n₀).sup' h_base_nonempty
       fun n => T n / ((1 - ε n) * asympBound g a b n)
   -- The big-O constant we are aiming for: max of the base case ratio and what we need to
-  -- cancel out the `g(n)` term in the calculation below
+  -- cancel out the `g n` term in the calculation below
   set C := max (2 * c₁⁻¹) base_max with hC
   refine ⟨C, fun n hn => ?_⟩
   -- Base case: statement is true for `b' * n₀ ≤ n < n₀`
@@ -646,7 +646,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
       h_asympBound_floor n₀_pos h_smoothing_r_pos bound2 h_smoothingFn_floor h_sumTransform
       h_bi_le_r h_exp
   have h_base_nonempty := R.base_nonempty n₀_pos
-  -- Min of the ratio `T(n) / asympBound(n)` over the base case `n ∈ [b' * n₀, n₀)`
+  -- Min of the ratio `T n / asympBound g a b n` over the base case `n ∈ [b' * n₀, n₀)`
   set base_min : ℝ :=
     (Finset.Ico (⌊b' * n₀⌋₊) n₀).inf' h_base_nonempty
       (fun n => T n / ((1 + ε n) * asympBound g a b n)) with base_min_def
@@ -766,7 +766,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
           _ = 1 := inv_mul_cancel₀ (by positivity)
       _ = C * ((1 + ε n) * asympBound g a b n) := by ring
 
-/-- The **Akra–Bazzi theorem**: `T ∈ O(n^p (1 + ∑_{u < n} g(u) / u^{p+1}))`. -/
+/-- The **Akra–Bazzi theorem**: $T \in O\bigl(n^p\,(1 + \sum_{u < n} g(u) / u^{p+1})\bigr)$. -/
 theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
   calc T
     _ =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
@@ -778,7 +778,7 @@ theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
         tendsto_natCast_atTop_atTop
     _ = asympBound g a b := by simp
 
-/-- The **Akra–Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_{u < n} g(u) / u^{p+1}))`. -/
+/-- The **Akra–Bazzi theorem**: $T \in \Omega\bigl(n^p\,(1 + \sum_{u < n} g(u) / u^{p+1})\bigr)$. -/
 theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
   calc asympBound g a b
     _ = (fun n => 1 * asympBound g a b n) := by simp
@@ -790,7 +790,7 @@ theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
         tendsto_natCast_atTop_atTop
     _ =O[atTop] T := R.smoothingFn_mul_asympBound_isBigO_T
 
-/-- The **Akra–Bazzi theorem**: `T ∈ Θ(n^p (1 + ∑_{u < n} g(u) / u^{p+1}))`. -/
+/-- The **Akra–Bazzi theorem**: $T \in \Theta\bigl(n^p\,(1 + \sum_{u < n} g(u) / u^{p+1})\bigr)$. -/
 theorem isTheta_asympBound : T =Θ[atTop] asympBound g a b :=
   ⟨R.isBigO_asympBound, R.isBigO_symm_asympBound⟩
 

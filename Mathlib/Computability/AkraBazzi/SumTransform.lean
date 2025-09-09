@@ -18,14 +18,14 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an
   Akra–Bazzi recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `smoothingFn`: the smoothing function `ε(x) = 1 / log x` (with derivative/asymptotic facts)
-  used in the inductive estimates.
-* `p`: the Akra–Bazzi exponent characterized by `∑ i, a i * (b i)^p = 1` (existence/uniqueness
-  and related properties).
+* `smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ (with derivative/asymptotic
+  facts) used in the inductive estimates.
+* `p`: the Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
+  (existence/uniqueness and related properties).
 * `sumTransform`: the transformation turning a function `g` into
-  `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
+  `n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`.
 * `asympBound`: the asymptotic bound expression for an Akra–Bazzi recurrence,
-  `n^p (1 + ∑_{u=0}^{n-1} g(u) / u^{p+1})`.
+  $n^p\,\bigl(1 + \sum_{u=0}^{n-1} g(u) / u^{p+1}\bigr)$.
 
 
 ## References
@@ -44,7 +44,7 @@ open scoped Topology
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence relation
-`T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)`
+$T(n) = \sum_{i=0}^{k-1} a_i\, T(r_i(n)) + g(n)$
 with appropriate conditions on the various parameters.
 -/
 
@@ -68,7 +68,7 @@ structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
   g_grows_poly : AkraBazziRecurrence.GrowsPolynomially g
   /-- The actual recurrence -/
   h_rec (n : ℕ) (hn₀ : n₀ ≤ n) : T n = (∑ i, a i * T (r i n)) + g n
-  /-- Base case: `T(n) > 0` whenever `n < n₀` -/
+  /-- Base case: `0 < T n` whenever `n < n₀` -/
   T_gt_zero' (n : ℕ) (hn : n < n₀) : 0 < T n
   /-- The functions `r i` always reduce `n`. -/
   r_lt_n : ∀ i n, n₀ ≤ n → r i n < n
@@ -252,7 +252,7 @@ end
 ### Smoothing function
 
 We define `ε` as the "smoothing function" `fun n => 1 / log n`, which will be used in the form of a
-factor of `1 ± ε n` needed to make the induction step go through.
+factor of $1 \pm \varepsilon\,n$ needed to make the induction step go through.
 
 This is its own definition to make it easier to switch to a different smoothing function.
 For example, choosing `1 / log n ^ δ` for a suitable choice of `δ` leads to a slightly tighter
@@ -477,7 +477,7 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 ### Akra–Bazzi exponent `p`
 
 Every Akra–Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
-`∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
+$\sum a_i b_i^p = 1$. This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`. These results are used in the next section to define the asymptotic
 bound expression. -/
 
@@ -538,7 +538,7 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
 ### The sum transform
 
 This section defines the "sum transform" of a function `g` as
-`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`,
+`∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`,
 and uses it to define `asympBound` as the bound satisfied by an Akra–Bazzi recurrence, using the
 exponent `p` established in the previous section.
 
@@ -546,7 +546,7 @@ Several properties of the sum transform are then proven.
 -/
 
 /-- The transformation that turns a function `g` into
-`n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`. -/
+`n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`. -/
 noncomputable def sumTransform (p : ℝ) (g : ℝ → ℝ) (n₀ n : ℕ) :=
   n ^ p * ∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)
 
@@ -556,7 +556,7 @@ lemma sumTransform_def {p : ℝ} {g : ℝ → ℝ} {n₀ n : ℕ} :
 
 variable (g) (a) (b)
 /-- The asymptotic bound satisfied by an Akra–Bazzi recurrence, namely
-`n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
+$n^p\,\bigl(1 + \sum_{u < n} g(u) / u^{p+1}\bigr)$. -/
 noncomputable def asympBound (n : ℕ) : ℝ := n ^ p a b + sumTransform (p a b) g 0 n
 
 lemma asympBound_def {α} [Fintype α] (a b : α → ℝ) {n : ℕ} :

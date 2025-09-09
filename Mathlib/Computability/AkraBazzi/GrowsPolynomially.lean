@@ -13,14 +13,14 @@ import Mathlib.Analysis.SpecialFunctions.Log.Base
 # Akra–Bazzi theorem: the polynomial growth condition
 
 This file defines and develops an API for the polynomial growth condition that appears in the
-statement of the Akra–Bazzi theorem: for the theorem to hold, the function `g` must
-satisfy the condition `c₁ g(n) ≤ g(u) ≤ c₂ g(n)` for `u` between `b * n` and `n`, for any constant
-`b ∈ (0, 1)`.
+statement of the Akra–Bazzi theorem: for the theorem to hold, the function $g$ must
+satisfy the condition $c_1\, g(n) \le g(u) \le c_2\, g(n)$ for $u$ between $b\,n$ and $n$, for any
+constant $b \in (0,1)$.
 
 ## Implementation notes
 
-Our definition requires that the condition hold for any `b ∈ (0, 1)`. This is equivalent to
-requiring it only for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this
+Our definition requires that the condition hold for any $b \in (0,1)$. This is equivalent to
+requiring it only for $b = 1/2$ (or any other particular value in $(0,1)$). While this
 could, in principle, make it harder to prove that a particular function grows polynomially,
 this issue does not seem to arise in practice.
 
