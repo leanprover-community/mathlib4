@@ -133,8 +133,8 @@ theorem weightedTotalDegree_eq_degreeOf (i : σ) (p : MvPolynomial σ R) :
     weightedTotalDegree (if · = i then 1 else 0) p = degreeOf i p := by
   simp only [weightedTotalDegree, degreeOf, degrees, weight, linearCombination,
     Multiset.count_finset_sup]
-  congr; ext s
-  by_cases h : s i = 0 <;> simp [h]
+  congr; ext d
+  by_cases h : d i = 0 <;> simp [h]
 
 end OrderBot
 
