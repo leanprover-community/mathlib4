@@ -12,7 +12,7 @@ but are starting out here for quick experimentation.
 
 Notes:
 * If these survive to `v4.24.0`, remember to add `-ac` to the macros.
-* I'll later replace this with an implementation that uses a minimal configuration
+* I'll later replace these with an implementation that uses a minimal configuration
   and then reactivates modules as needed.
 * It would be nice if these macros supported all the `grind` configurations, too.
 -/
