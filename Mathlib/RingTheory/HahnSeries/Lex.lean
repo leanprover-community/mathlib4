@@ -386,10 +386,9 @@ def embDomainOrderEmbedding [Zero R] : Lex (HahnSeries Γ R) ↪o Lex (HahnSerie
 @[simps]
 noncomputable
 def embDomainOrderAddMonoidHom [AddMonoid R] : Lex (HahnSeries Γ R) →+o Lex (HahnSeries Γ' R) where
-  toFun := embDomainOrderEmbedding f
+  __ := (embDomainOrderEmbedding f).toOrderHom
   map_zero' := by simp
   map_add' := by simp [embDomainOrderEmbedding, embDomain_add]
-  monotone' := OrderEmbedding.monotone _
 
 theorem embDomainOrderAddMonoidHom_injective [AddMonoid R] :
     Function.Injective (embDomainOrderAddMonoidHom f (R := R)) :=
