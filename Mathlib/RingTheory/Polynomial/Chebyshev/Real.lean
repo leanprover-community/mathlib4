@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Yuval Filmus
+Authors: Yuval Filmus
 -/
 import Mathlib.RingTheory.Polynomial.Chebyshev.Basic
 import Mathlib.Data.Real.Basic
@@ -13,7 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Algebra.Polynomial.Roots
 
 /-!
-# Chebyshev polynomials
+# Chebyshev polynomials over the reals
 
 ## Main statements
 
