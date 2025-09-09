@@ -75,12 +75,6 @@ theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis 
 @[PreMS_const]
 theorem exp_const (x : PreMS []) : (PreMS.exp x) = Real.exp x := rfl
 
-@[PreMS_const]
-theorem sin_const (x : PreMS []) : (PreMS.sin x) = Real.sin x := rfl
-
-@[PreMS_const]
-theorem cos_const (x : PreMS []) : (PreMS.cos x) = Real.cos x := rfl
-
 end Const
 
 end ComputeAsymptotics.PreMS

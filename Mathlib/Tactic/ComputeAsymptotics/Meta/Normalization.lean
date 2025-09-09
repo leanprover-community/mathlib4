@@ -69,16 +69,6 @@ partial def normalizeLS (s : Q(LazySeries)) : TacticM (ResultLS s) := do
   | ~q(expSeries) =>
     return ← ResultLS.consNormalize q(1) q(LazySeries.ofFnFrom (fun n ↦ (n.factorial)⁻¹) 1)
       q(expSeries_eq_cons)
-  | ~q(cosSeries) =>
-    return ← ResultLS.consNormalize q(1)
-      q(LazySeries.ofFnFrom
-        (fun n ↦ if n % 2 = 0 then (-1 : ℝ) ^ (n / 2) * (n.factorial : ℝ)⁻¹ else 0) 1)
-      q(cosSeries_eq_cons)
-  | ~q(sinSeries) =>
-    return ← ResultLS.consNormalize q(0)
-      q(LazySeries.ofFnFrom
-        (fun n ↦ if n % 2 = 1 then (-1 : ℝ) ^ ((n - 1) / 2) * (n.factorial : ℝ)⁻¹ else 0) 1)
-      q(sinSeries_eq_cons)
   | _ => panic! "normalizeLS: unexpected s"
 
 /-- Result of the normalization of a `PreMS`. -/
@@ -409,52 +399,6 @@ lemma exp_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS
   subst h
   simp [PreMS.exp, PreMS.cons, h_not_lt]
 
-lemma cos_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h : ms = PreMS.nil) : ms.cos = PreMS.cons (0, PreMS.one basis_tl) PreMS.nil := by
-  subst h
-  simp [PreMS.cos, PreMS.nil, PreMS.cons, PreMS.one, PreMS.const]
-
-lemma cos_cons_of_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : ms = PreMS.cons (exp, coef) tl)
-    (h_lt : exp < 0) :
-    ms.cos = PreMS.cosSeries.apply (PreMS.cons (exp, coef) tl) := by
-  subst h
-  simp [PreMS.cos, PreMS.cons, h_lt]
-
-lemma cos_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : ms = PreMS.cons (exp, coef) tl)
-    (h_not_lt : ¬ exp < 0) :
-    ms.cos =
-    ((cosSeries.apply tl).mulMonomial coef.cos 0).sub
-      ((sinSeries.apply tl).mulMonomial coef.sin 0) := by
-  subst h
-  simp [PreMS.cos, PreMS.cons, h_not_lt]
-
-lemma sin_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h : ms = PreMS.nil) : ms.sin = PreMS.nil := by
-  subst h
-  simp [PreMS.sin, PreMS.nil]
-
-lemma sin_cons_of_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : ms = PreMS.cons (exp, coef) tl)
-    (h_lt : exp < 0) :
-    ms.sin = PreMS.sinSeries.apply (PreMS.cons (exp, coef) tl) := by
-  subst h
-  simp [PreMS.sin, PreMS.cons, h_lt]
-
-lemma sin_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    {exp : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : ms = PreMS.cons (exp, coef) tl)
-    (h_not_lt : ¬ exp < 0) :
-    ms.sin =
-    ((cosSeries.apply tl).mulMonomial coef.sin 0).add
-      ((sinSeries.apply tl).mulMonomial coef.cos 0) := by
-  subst h
-  simp [PreMS.sin, PreMS.cons, h_not_lt]
-
 end lemmas
 
 /-- Normalizes a `PreMS` and returns a `Result`. -/
@@ -670,42 +614,6 @@ partial def normalizePreMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
           q((expSeries.apply $tl).mulMonomial ($coef).exp 0)
         let res' ← normalizePreMSImp ms'
         return res'.cast q(exp_cons_of_not_lt $h $h_exp)
-  | ~q(PreMS.cos $arg) =>
-    let res ← normalizePreMSImp arg
-    match res with
-    | .nil h =>
-      return ← consNormalizeCoef q(0) q(PreMS.one _) q(PreMS.nil) q(cos_nil $h)
-    | .cons exp coef tl h =>
-      match ← checkLtZero exp with
-      | .lt h_exp =>
-        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
-          q(PreMS.cosSeries.apply (PreMS.cons ($exp, $coef) $tl))
-        let res' ← normalizePreMSImp ms'
-        return res'.cast q(cos_cons_of_lt $h $h_exp)
-      | .not_lt h_exp =>
-        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
-          q(((PreMS.cosSeries.apply $tl).mulMonomial ($coef).cos 0).sub
-            ((PreMS.sinSeries.apply $tl).mulMonomial ($coef).sin 0))
-        let res' ← normalizePreMSImp ms'
-        return res'.cast q(cos_cons_of_not_lt $h $h_exp)
-  | ~q(PreMS.sin $arg) =>
-    let res ← normalizePreMSImp arg
-    match res with
-    | .nil h =>
-      return .nil q(sin_nil $h)
-    | .cons exp coef tl h =>
-      match ← checkLtZero exp with
-      | .lt h_exp =>
-        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
-          q(PreMS.sinSeries.apply (PreMS.cons ($exp, $coef) $tl))
-        let res' ← normalizePreMSImp ms'
-        return res'.cast q(sin_cons_of_lt $h $h_exp)
-      | .not_lt h_exp =>
-        let ms' : Q(PreMS ($basis_hd :: $basis_tl)) :=
-          q(((PreMS.cosSeries.apply $tl).mulMonomial ($coef).sin 0).add
-            ((PreMS.sinSeries.apply $tl).mulMonomial ($coef).cos 0))
-        let res' ← normalizePreMSImp ms'
-        return res'.cast q(sin_cons_of_not_lt $h $h_exp)
   | _ => panic! s!"normalizePreMS: unexpected ms: {← ppExpr ms}"
 
 /-- Given `ms : PreMS basis`, return `ms'` that is normalized (either `PreMS.nil` or `PreMS.cons`),

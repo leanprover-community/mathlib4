@@ -10,7 +10,6 @@ import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Inv
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Log
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Exp
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.TrigonometricFunctions
 
 /-!
 # Operations for multiseries

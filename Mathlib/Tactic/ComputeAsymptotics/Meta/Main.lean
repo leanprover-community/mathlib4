@@ -111,20 +111,10 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
   | (``Real.exp, #[arg]) =>
     let ⟨ms, h_trimmed?⟩ ← trimPartialMS (← createMSImp x arg)
     return ← createExpMS ms h_trimmed?
-  | (``Real.cos, #[arg]) =>
-    let ⟨ms, _⟩ ← trimPartialMS (← createMSImp x arg)
-    let leading ← getLeadingTerm ms.val
-    let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
-    let .wrong h_nonpos ← getFirstIsPos exps |
-      throwError f!"Cannot prove that argument of cos is eventually bounded: {← ppExpr arg}"
-    return MS.cos ms h_nonpos
-  | (``Real.sin, #[arg]) =>
-    let ⟨ms, _⟩ ← trimPartialMS (← createMSImp x arg)
-    let leading ← getLeadingTerm ms.val
-    let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in createExpMS"
-    let .wrong h_nonpos ← getFirstIsPos exps |
-      throwError f!"Cannot prove that argument of sin is eventually bounded: {← ppExpr arg}"
-    return MS.sin ms h_nonpos
+  | (``Real.cos, _) =>
+    throwError "Cosine is not supported (but will be soon)"
+  | (``Real.sin, _) =>
+    throwError "Sine is not supported (but will be soon)"
   | _ =>
     if body.hasAnyFVar (fun fvarId ↦ fvarId == x.fvarId!) then
       throwError f!"Unsupported body in createMS: {body}"

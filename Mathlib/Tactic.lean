@@ -84,7 +84,6 @@ import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Merge
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Mul
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Pow
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.TrigonometricFunctions
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term
 import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 import Mathlib.Tactic.ComputeDegree
