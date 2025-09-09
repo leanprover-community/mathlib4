@@ -100,7 +100,7 @@ theorem ball_antitone : Antitone (ball (M := M) K) := by
   intro _ _ h
   exact (Submodule.toAddSubgroup_le _ _).mp <| ballAddSubgroup_antitone h
 
-theorem ball_le_closedBall (c : ArchimedeanClass M) : ball K c ≤ closedBall K c := by
+theorem ball_le_closedBall {c : ArchimedeanClass M} : ball K c ≤ closedBall K c := by
   obtain rfl | hc := eq_or_ne c ⊤
   · simp
   intro a ha
