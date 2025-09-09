@@ -31,16 +31,17 @@ if the tensor product `A ⊗[k] AlgebraicClosure k` is reduced.
 open TensorProduct
 
 noncomputable section
-variable {k : Type} {A : Type} [Field k] [Ring A] [Algebra k A]
+universe u v w
+variable {k : Type u} {A : Type v} [Field k] [Ring A] [Algebra k A]
 
 /-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
 @[mk_iff]
-class IsGeometricallyReduced (k : Type) (A : Type) [Field k] [Ring A] [Algebra k A] : Prop where
+class IsGeometricallyReduced (k : Type u) (A : Type v) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
 
-lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Field k] [Ring A]
+lemma geometricallyReduced_indep_of_algebraicClosure (k : Type u) (A : Type v) [Field k] [Ring A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
     (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) :=
   isReduced_of_injective
@@ -49,7 +50,7 @@ lemma geometricallyReduced_indep_of_algebraicClosure (k : Type) (A : Type) [Fiel
     (Module.Flat.rTensor_preserves_injective_linearMap _
       <| EquivLike.injective (IsAlgClosure.equiv k K (AlgebraicClosure k)))
 
-lemma isGeometricallyReduced_of_injective {B : Type} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
+lemma isGeometricallyReduced_of_injective {B : Type w} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A :=
   ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
@@ -60,7 +61,7 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
     (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
 
-lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
+lemma notReduced_has_nilpotent {R : Type u} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
     ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
   by_contra h_contra
   simp only [ne_eq, not_exists, not_and] at h_contra
@@ -70,12 +71,12 @@ lemma notReduced_has_nilpotent {R : Type} [Zero R] [Pow R ℕ] (h : ¬IsReduced 
 
 /-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
 of A ⊗[k] B -/
-def subAlgebra.baseChange {A k : Type} [CommRing k] [Ring A] [Algebra k A] (B : Type) [CommRing B]
-    [Algebra k B] (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
+def subAlgebra.baseChange {k : Type u} {A : Type v} [CommRing k] [Ring A] [Algebra k A] (B : Type w)
+    [CommRing B] [Algebra k B] (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
   AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
 
-lemma exists_fg_and_mem_baseChange {k A B : Type} [CommRing k] [CommRing A] [CommRing B]
-    [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
+lemma exists_fg_and_mem_baseChange {k : Type u} {A : Type v} {B : Type w} [CommRing k] [CommRing A]
+    [CommRing B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B, C.FG ∧ x ∈ subAlgebra.baseChange A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   classical
@@ -86,8 +87,8 @@ lemma exists_fg_and_mem_baseChange {k A B : Type} [CommRing k] [CommRing A] [Com
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem FlatBaseChangeIsReduced.of_FG {k A C : Type} [CommRing A] [CommRing C]
-    [CommRing k] [Algebra k A] [Algebra k C] [Module.Flat k C]
+theorem FlatBaseChangeIsReduced.of_FG {k : Type u} {A : Type v} {C : Type w} [CommRing A]
+    [CommRing C] [CommRing k] [Algebra k A] [Algebra k C] [Module.Flat k C]
     (h : ∀ B : Subalgebra k A, B.FG → IsReduced (C ⊗[k] B)) :
     IsReduced (C ⊗[k] A) := by
   by_contra h_contra
