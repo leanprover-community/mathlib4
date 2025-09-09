@@ -5,7 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
@@ -95,6 +95,10 @@ instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
 instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F R S] :
     LinearMapClass F ℚ R S where
   map_smulₛₗ f q a := by simp [smul_def, cast_id]
+
+instance _root_.RingEquivClass.toLinearEquivClassRat [EquivLike F R S] [RingEquivClass F R S] :
+    LinearEquivClass F ℚ R S where
+  map_smulₛₗ f c x := by simp [Algebra.smul_def]
 
 variable [SMul R S]
 
