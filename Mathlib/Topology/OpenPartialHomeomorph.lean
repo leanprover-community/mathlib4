@@ -908,7 +908,7 @@ theorem eq_of_eqOnSource_univ {e e' : OpenPartialHomeomorph X Y} (h : e ≈ e') 
 
 variable {s : Set X}
 
-theorem restr_symm_trans {e' : PartialHomeomorph X Y}
+theorem restr_symm_trans {e' : OpenPartialHomeomorph X Y}
     (hs : IsOpen s) (hs' : IsOpen (e '' s)) (hs'' : s ⊆ e.source) :
     (e.restr s).symm.trans e' ≈ (e.symm.trans e').restr (e '' s) := by
   refine ⟨?_, ?_⟩
@@ -928,7 +928,7 @@ theorem restr_symm_trans {e' : PartialHomeomorph X Y}
     intro x hx
     simp
 
-theorem symm_trans_restr (e' : PartialHomeomorph X Y) (hs : IsOpen s) :
+theorem symm_trans_restr (e' : OpenPartialHomeomorph X Y) (hs : IsOpen s) :
     e'.symm.trans (e.restr s) ≈ (e'.symm.trans e).restr (e'.target ∩ e'.symm ⁻¹' s) := by
   have ht : IsOpen (e'.target ∩ e'.symm ⁻¹' s) := by
     rw [← image_source_inter_eq']
