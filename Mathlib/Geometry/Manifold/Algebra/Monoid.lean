@@ -422,11 +422,11 @@ nonrec theorem ContMDiffAt.pow (hg : ContMDiffAt I' I n g x) (m : ℕ) :
 
 theorem ContMDiffOn.pow (hg : ContMDiffOn I' I n g s) (m : ℕ) :
     ContMDiffOn I' I n (fun x ↦ g x ^ m) s :=
-  fun x hx => (hg x hx).pow m
+  fun x hx ↦ (hg x hx).pow m
 
 theorem ContMDiff.pow (hg : ContMDiff I' I n g) (m : ℕ) :
     ContMDiff I' I n (fun x ↦ g x ^ m) :=
-  fun x => (hg x).pow m
+  fun x ↦ (hg x).pow m
 
 end CommMonoid
 
