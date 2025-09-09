@@ -118,10 +118,19 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
   · ext w
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
+-- TODO move
+section
+variable {G : Type*} [Group G]
+
+@[simp]
+theorem mem_toAddSubgroup {H : Subgroup G} {x} :
+    x ∈ Subgroup.toAddSubgroup H ↔ Additive.toMul x ∈ H := .rfl
+end
+
 theorem logEmbedding_ker : (logEmbedding K).ker = (torsion K).toAddSubgroup := by
   ext x
   rw [AddMonoidHom.mem_ker, ← ofMul_toMul x, logEmbedding_eq_zero_iff]
-  rfl
+  simp
 
 theorem map_logEmbedding_sup_torsion (s : AddSubgroup (Additive (𝓞 K)ˣ)) :
     (s ⊔ (torsion K).toAddSubgroup).map (logEmbedding K) = s.map (logEmbedding K) := by
