@@ -3,8 +3,7 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
-import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
+import Mathlib.Tactic.ComputeAsymptotics.Meta.MS
 
 /-!
 # TODO
@@ -15,8 +14,6 @@ open Filter Topology Asymptotics Stream'.Seq
 open Lean Elab Meta Tactic Qq
 
 namespace ComputeAsymptotics
-
-open Normalization
 
 /-- State of the `BasisM` monad. -/
 structure BasisState where

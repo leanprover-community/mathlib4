@@ -3,7 +3,6 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp
 import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareReal
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Defs
@@ -24,9 +23,6 @@ open Lean Elab Meta Tactic Qq
 namespace ComputeAsymptotics
 
 namespace Normalization
-
-example : PreMS.one [] = 1 := by
-  norm_num [PreMS_const]
 
 /-- Result of the normalization of a `LazySeries`. -/
 inductive ResultLS (s : Q(LazySeries))

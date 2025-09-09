@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.ComputeAsymptotics.Meta.BasisM
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
-import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
+import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm
 
 /-!
 # TODO

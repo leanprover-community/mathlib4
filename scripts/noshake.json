@@ -282,6 +282,24 @@
   "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.ComputeAsymptotics.Multiseries.Term":
+  ["Mathlib.Tactic.MoveAdd"],
+  "Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.ForPow":
+  ["Mathlib.Tactic.MoveAdd"],
+  "Mathlib.Tactic.ComputeAsymptotics.Meta.Normalization":
+  ["Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp"],
+  "Mathlib.Tactic.ComputeAsymptotics.Meta.Misc":
+  ["Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis"],
+  "Mathlib.Tactic.ComputeAsymptotics.Meta.Main":
+  ["Mathlib.Tactic.ComputeAsymptotics.Lemmas"],
+  "Mathlib.Tactic.ComputeAsymptotics.Meta.MS":
+  ["Mathlib.Tactic.ComputeAsymptotics.Multiseries"],
+  "Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm":
+  ["Mathlib.Tactic.ComputeAsymptotics.Meta.Defs",
+   "Mathlib.Tactic.ComputeAsymptotics.Multiseries"],
+  "Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp":
+  ["Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimpAttribute",
+   "Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":
   ["Mathlib.CategoryTheory.Category.Cat"],
@@ -431,7 +449,6 @@
   "Mathlib.Algebra.Homology.ModuleCat": ["Mathlib.Algebra.Homology.Homotopy"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
-  "Mathlib.Algebra.Group.Defs": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
