@@ -36,12 +36,6 @@ abbrev SumOfPowersConjectureFor (n : ℕ) : Prop := SumOfPowersConjectureWith �
 /-- Euler's sum of powers conjecture over the naturals. -/
 abbrev SumOfPowersConjecture : Prop := ∀ n, SumOfPowersConjectureFor n
 
-/-- Euler's sum of powers conjecture over the integers for a given exponent. -/
-abbrev SumOfPowersConjectureIntFor (n : ℕ) : Prop := SumOfPowersConjectureWith ℤ n
-
-/-- Euler's sum of powers conjecture over the integers. -/
-abbrev SumOfPowersConjectureInt : Prop := ∀ n, SumOfPowersConjectureIntFor n
-
 /-- Euler's sum of powers conjecture over a given semiring with a specific exponent implies FLT. -/
 theorem fermatLastTheoremWith_of_sumOfPowersConjectureWith (R : Type*) [Semiring R] :
     ∀ n ≥ 3, SumOfPowersConjectureWith R n → FermatLastTheoremWith R n := by
@@ -131,7 +125,7 @@ Bob Scher, Ed Seidl, 1996
 This counterexample uses a negative number,
 so it does not disprove the conjecture over ℕ, but rather over ℤ.
 -/
-theorem sum_of_powers_conjecture_int_false₀ : ¬SumOfPowersConjectureIntFor 5 := by
+theorem sum_of_powers_conjecture_int_false₀ : ¬SumOfPowersConjectureWith ℤ 5 := by
   intro conj
   let n := 5
   let a := [-220, 5_027, 6_237, 14_068]
