@@ -328,12 +328,18 @@ lemma esymmAlgHom_surjective (hn : Fintype.card σ ≤ n) :
   rw [← rename_esymmAlgHom (Fintype.equivFin σ).symm, AlgHom.coe_comp]
   exact (AlgEquiv.surjective _).comp (esymmAlgHom_fin_surjective R hn)
 
+variable (σ) in
 /-- If the cardinality of `σ` is `n`, then `esymmAlgHom σ R n` is an isomorphism. -/
 @[simps! apply]
 noncomputable def esymmAlgEquiv (hn : Fintype.card σ = n) :
     MvPolynomial (Fin n) R ≃ₐ[R] symmetricSubalgebra σ R :=
   AlgEquiv.ofBijective (esymmAlgHom σ R n)
     ⟨esymmAlgHom_injective R hn.ge, esymmAlgHom_surjective R hn.le⟩
+
+lemma esymmAlgEquiv_symm_apply (hn : Fintype.card σ = n) (i : Fin n) :
+    (esymmAlgEquiv σ R hn).symm ⟨esymm σ R (i + 1), esymm_isSymmetric σ R _⟩ = X i := by
+  apply_fun esymmAlgHom σ R n using esymmAlgHom_injective R hn.ge
+  simp_rw [esymmAlgEquiv, AlgEquiv.ofBijective_apply_symm_apply, esymmAlgHom, aeval_X]
 
 end CommRing
 

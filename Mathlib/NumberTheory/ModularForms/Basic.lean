@@ -66,7 +66,6 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
-  ext τ
   simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by norm_num : (-1 : ℂ) ≠ 0),
     (by ring : k - 1 + -k = -1), -zpow_neg, zpow_neg_one]
 
@@ -80,7 +79,7 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
     simp [ofComplex_apply_of_im_pos hz]
   refine .congr (fun z hz ↦ DifferentiableAt.differentiableWithinAt ?_) this
   have : 0 < (-conj z).im := by simpa using hz
-  have := hf.differentiableAt ((Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds this)
+  have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
   simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/

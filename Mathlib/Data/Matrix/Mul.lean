@@ -24,7 +24,7 @@ This file defines vector and matrix multiplication
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `⬝ᵥ` for `dotProduct`
 * `*ᵥ` for `Matrix.mulVec`
@@ -766,24 +766,31 @@ theorem mulVec_mulVec [Fintype n] [Fintype o] (v : o → α) (M : Matrix m n α)
 theorem mul_mul_apply [Fintype n] (A B C : Matrix n n α) (i j : n) :
     (A * B * C) i j = A i ⬝ᵥ B *ᵥ (Cᵀ j) := by
   rw [Matrix.mul_assoc]
-  simp only [mul_apply, dotProduct, mulVec]
-  rfl
+  simp [mul_apply, dotProduct, mulVec]
 
 theorem vecMul_vecMulVec [Fintype m] (u v : m → α) (w : n → α) :
-      u ᵥ* vecMulVec v w = (u ⬝ᵥ v) • w := by
+    u ᵥ* vecMulVec v w = (u ⬝ᵥ v) • w := by
   ext i
   simp [vecMul, dotProduct, vecMulVec, Finset.sum_mul, mul_assoc]
 
 theorem vecMulVec_mulVec [Fintype n] (u : m → α) (v w : n → α) :
-      vecMulVec u v *ᵥ w = MulOpposite.op (v ⬝ᵥ w) • u := by
+    vecMulVec u v *ᵥ w = MulOpposite.op (v ⬝ᵥ w) • u := by
   ext i
   simp [mulVec, dotProduct, vecMulVec, Finset.mul_sum, mul_assoc]
 
+theorem mul_vecMulVec [Fintype m] (M : Matrix l m α) (x : m → α) (y : n → α) :
+    M * vecMulVec x y = vecMulVec (M *ᵥ x) y := by
+  ext
+  simp_rw [mul_apply, vecMulVec_apply, mulVec, dotProduct, Finset.sum_mul, mul_assoc]
+
+theorem vecMulVec_mul [Fintype m] (x : l → α) (y : m → α) (M : Matrix m n α) :
+    vecMulVec x y * M = vecMulVec x (y ᵥ* M) := by
+  ext
+  simp_rw [mul_apply, vecMulVec_apply, vecMul, dotProduct, Finset.mul_sum, mul_assoc]
+
 theorem vecMulVec_mul_vecMulVec [Fintype m] (u : l → α) (v w : m → α) (x : n → α) :
-      vecMulVec u v * vecMulVec w x = vecMulVec u ((v ⬝ᵥ w) • x) := by
-  ext i j
-  simp_rw [mul_apply, dotProduct, vecMulVec, Pi.smul_apply, of_apply, mul_assoc, ← Finset.mul_sum,
-    smul_eq_mul, Finset.sum_mul, mul_assoc]
+    vecMulVec u v * vecMulVec w x = vecMulVec u ((v ⬝ᵥ w) • x) := by
+  rw [vecMulVec_mul, vecMul_vecMulVec]
 
 lemma mul_right_injective_iff_mulVec_injective [Fintype m] [Nonempty n] {A : Matrix l m α} :
     Function.Injective (fun B : Matrix m n α => A * B) ↔ Function.Injective A.mulVec := by
@@ -931,7 +938,7 @@ theorem sub_vecMulVec (w₁ w₂ : m → α) (v : n → α) :
   ext fun _ _ => sub_mul _ _ _
 
 theorem vecMulVec_sub (w : m → α) (v₁ v₂ : n → α) :
-    vecMulVec w (v₁ - v₂) = vecMulVec w v₁ - vecMulVec w v₂  :=
+    vecMulVec w (v₁ - v₂) = vecMulVec w v₁ - vecMulVec w v₂ :=
   ext fun _ _ => mul_sub _ _ _
 
 end NonUnitalNonAssocRing

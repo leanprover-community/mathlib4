@@ -10,9 +10,9 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 
-# Finitely generated module over noetherian ring have finitely many associated primes.
+# Finitely generated module over Noetherian ring have finitely many associated primes.
 
-In this file we proved that any finitely generated module over a noetherian ring have finitely many
+In this file we proved that any finitely generated module over a Noetherian ring have finitely many
 associated primes.
 
 ## Main results

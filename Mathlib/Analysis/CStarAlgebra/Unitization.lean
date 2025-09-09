@@ -147,7 +147,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
         rw [← Ne, ← norm_pos_iff] at h
         simp only [Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star] at this
-        exact (mul_le_mul_right h).mp this
+        exact (mul_le_mul_iff_left₀ h).mp this
     -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
         = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by

@@ -62,7 +62,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
-        field_simp
+        simp [field, -mul_eq_mul_right_iff]
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
         simp [pow_succ', PNat.mk_coe, t_succ]
@@ -81,7 +81,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       ((1 : ℚ) + (2 ^ pk.succ - 1) / ↑n : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
         rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
-        field_simp
+        simp [field]
         ring
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / t_succ) := by norm_cast
       _ = (∏ i ∈ Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / ↑(m pk)) := by

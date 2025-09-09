@@ -43,8 +43,8 @@ open goldenRatio
 /-- The inverse of the golden ratio is the opposite of its conjugate. -/
 theorem inv_goldenRatio : φ⁻¹ = -ψ := by
   have : 1 + √5 ≠ 0 := by positivity
-  field_simp [sub_mul, mul_add]
-  norm_num
+  simp [field, add_mul, mul_sub]
+  ring
 
 @[deprecated (since := "2025-08-23")] alias _root_.inv_gold := inv_goldenRatio
 

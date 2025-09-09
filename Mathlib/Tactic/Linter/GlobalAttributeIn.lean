@@ -120,7 +120,7 @@ def globalAttributeIn : Linter where run := withSetOptionIn fun stx => do
   if (← MonadState.get).messages.hasErrors then
     return
   for s in stx.topDown do
-    if let .some (id, nonScopedNorLocal) := getGlobalAttributesIn? s then
+    if let some (id, nonScopedNorLocal) := getGlobalAttributesIn? s then
       for attr in nonScopedNorLocal do
         Linter.logLint linter.globalAttributeIn attr m!
           "Despite the `in`, the attribute '{attr}' is added globally to '{id}'\n\

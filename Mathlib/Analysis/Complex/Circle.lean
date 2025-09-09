@@ -21,7 +21,7 @@ We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)`
 
 We define two additive characters onto the circle:
 * `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the
-  notation `𝐞` in the locale `FourierTransform`). This uses the analyst convention that there is a
+  notation `𝐞` in the scope `FourierTransform`). This uses the analyst convention that there is a
   `2 * π` in the exponent.
 * `Real.probChar`: The character `fun x ↦ exp (x * I)`, which uses the probabilist convention that
   there is no `2 * π` in the exponent.
@@ -64,8 +64,6 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
 lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
-
-@[deprecated (since := "2025-02-16")] alias abs_coe := norm_coe
 
 @[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z

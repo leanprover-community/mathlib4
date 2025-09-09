@@ -24,6 +24,7 @@ instance : IsOrderedCancelAddMonoid (Multiset α) where
   le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
 
 instance : CanonicallyOrderedAdd (Multiset α) where
+  le_add_self := le_add_left
   le_self_add := le_add_right
   exists_add_of_le h := exists_add_of_le h
 

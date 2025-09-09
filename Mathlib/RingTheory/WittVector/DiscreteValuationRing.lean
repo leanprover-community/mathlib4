@@ -57,8 +57,9 @@ Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself,
 def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
   Units.mkOfMulEqOne A (@WittVector.mk' p _ (inverseCoeff a A)) (by
     ext n
-    induction' n with n _
-    · simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
+    induction n with
+    | zero => simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
+    | succ n => ?_
     let H_coeff := A.coeff (n + 1) * ↑(a⁻¹ ^ p ^ (n + 1)) +
       nthRemainder p n (truncateFun (n + 1) A) fun i : Fin (n + 1) => inverseCoeff a A i
     have H := Units.mul_inv (a ^ p ^ (n + 1))

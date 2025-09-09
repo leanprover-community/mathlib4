@@ -709,9 +709,6 @@ theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
   rw [f.iteratedFDeriv_eq]
   exact f.norm_iteratedFDeriv_le' n x
 
-@[deprecated (since := "2025-02-15")] alias cPolynomialAt := cpolynomialAt
-@[deprecated (since := "2025-02-15")] alias cPolynomialOn := cpolynomialOn
-
 end ContinuousMultilinearMap
 
 namespace FormalMultilinearSeries

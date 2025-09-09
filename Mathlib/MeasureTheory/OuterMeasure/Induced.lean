@@ -188,7 +188,7 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
   apply le_antisymm
   · simp only [le_iInf_iff]
     intro t ht hs
-    refine le_trans (measure_mono hs) ?_
+    grw [hs]
     exact le_of_eq (inducedOuterMeasure_eq' _ msU m_mono _)
   · refine le_iInf ?_
     intro f

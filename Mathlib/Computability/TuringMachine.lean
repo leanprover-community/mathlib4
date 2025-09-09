@@ -675,7 +675,6 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
   obtain @⟨- | l, v, S, L, hT⟩ := h; · constructor
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
@@ -687,6 +686,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | load a _ IH => exact IH _ hT
   | branch p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | goto => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩

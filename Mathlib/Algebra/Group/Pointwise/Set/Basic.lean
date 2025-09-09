@@ -36,9 +36,9 @@ Appropriate definitions and results are also transported to the additive theory 
   `(fun h ↦ h * g) ⁻¹' s`, `(fun h ↦ g * h) ⁻¹' s`, `(fun h ↦ h * g⁻¹) ⁻¹' s`,
   `(fun h ↦ g⁻¹ * h) ⁻¹' s`, `s * t`, `s⁻¹`, `(1 : Set _)` (and similarly for additive variants).
   Expressions equal to one of these will be simplified.
-* We put all instances in the locale `Pointwise`, so that these instances are not available by
+* We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-  since we expect the locale to be open whenever the instances are actually used (and making the
+  since we expect the scope to be open whenever the instances are actually used (and making the
   instances reducible changes the behavior of `simp`.
 
 ## Tags
@@ -73,8 +73,8 @@ section One
 
 variable [One α] {s : Set α} {a : α}
 
-/-- The set `1 : Set α` is defined as `{1}` in locale `Pointwise`. -/
-@[to_additive /-- The set `0 : Set α` is defined as `{0}` in locale `Pointwise`. -/]
+/-- The set `1 : Set α` is defined as `{1}` in scope `Pointwise`. -/
+@[to_additive /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Set α) :=
   ⟨{1}⟩
 
@@ -140,10 +140,10 @@ end One
 
 section Inv
 
-/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in locale `Pointwise`. It is
+/-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
 @[to_additive
-      /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in locale `Pointwise`.
+      /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in scope `Pointwise`.
       It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`. -/]
 protected def inv [Inv α] : Inv (Set α) :=
   ⟨preimage Inv.inv⟩
@@ -260,7 +260,7 @@ section Mul
 variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
-locale `Pointwise`. -/
+scope `Pointwise`. -/
 @[to_additive
       /-- The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
@@ -693,8 +693,6 @@ protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
 lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
-
-@[deprecated (since := "2025-02-17")] alias sum_nsmul := nsmul_prod
 
 end Monoid
 

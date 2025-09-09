@@ -455,7 +455,6 @@ theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
         fs i * ∏ j ∈ t with WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
-  -- Porting note: was defeq, now the continuous lemma uses bundled homs
   simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 
 theorem toSmoothPartitionOfUnity_zero_of_zero {i : ι} {x : M} (h : fs i x = 0) :

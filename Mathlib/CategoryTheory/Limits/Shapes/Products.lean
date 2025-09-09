@@ -207,14 +207,15 @@ abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
 abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added the next two lemmas to ease automation; without these lemmas,
--- `limit.hom_ext` would be applied, but the goal would involve terms
--- in `Discrete β` rather than `β` itself
+/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ f)
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
   limit.hom_ext (fun ⟨j⟩ => h j)
 
+/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
     (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=

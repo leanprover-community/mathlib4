@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!

@@ -15,8 +15,8 @@ completion of any module is a module over the adic completion of the ring.
 
 ## Implementation details
 
-We do not make a separate adic completion type in algebra case, to not duplicate all module
-theoretic results on adic completions. This choice does cause some trouble though,
+We do not make a separate adic completion type in algebra case, to not duplicate all
+module-theoretic results on adic completions. This choice does cause some trouble though,
 since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the trouble by
 providing as much API as possible.
 

@@ -165,8 +165,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- Neither matching contains the edge that would make the other matching of G perfect
   have hM1nac : ¬M1.Adj a c := fun h ↦ by simpa [hnGac, edge_adj, hnac, hxa.ne, hnbc.symm, hab.ne]
     using h.adj_sub
-  have hM2nxb : ¬M2.Adj x b := fun h ↦ by simpa [hnGxb, edge_adj, hnxb, hxa.ne, hnxc]
-    using h.adj_sub
   have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by aesop
   -- We state conditions for our cycle that hold in all cases and show that that suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
@@ -182,7 +180,6 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   let cycles := M1.spanningCoe ∆ M2.spanningCoe
   have hcalt : cycles.IsAlternating M2.spanningCoe := hM1.isAlternating_symmDiff_right hM2
   have hcycles := Subgraph.IsPerfectMatching.symmDiff_isCycles hM1 hM2
-  have hcxb : cycles.Adj x b := by simp [cycles, symmDiff_def, hM2nxb, hM1xb]
   have hcac : cycles.Adj a c := by simp [cycles, symmDiff_def, hM2ac, hM1nac]
   have hM1sub := Subgraph.spanningCoe_le M1
   have hM2sub := Subgraph.spanningCoe_le M2

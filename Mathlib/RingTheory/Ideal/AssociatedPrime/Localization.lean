@@ -20,7 +20,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
   `p ∈ Ass (S⁻¹M)`.
 
 TODO: prove the reverse when `p` is finitely generated and
-      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` noetherian.
+      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` Noetherian.
 
 TODO: deduce from the above that every minimal element in support is in `Ass(M)`.
 

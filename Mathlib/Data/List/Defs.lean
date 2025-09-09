@@ -114,6 +114,7 @@ end foldIdxM
 
 section mapIdxM
 
+-- This could be relaxed to `Applicative` but is `Monad` to match `List.mapIdxM`.
 variable {m : Type v → Type w} [Monad m]
 
 /-- Auxiliary definition for `mapIdxM'`. -/
