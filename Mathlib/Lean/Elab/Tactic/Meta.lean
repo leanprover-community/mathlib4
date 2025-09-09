@@ -12,7 +12,10 @@ import Lean.Elab.SyntheticMVars
 namespace Lean.Elab
 open Term
 
-/-- Apply the give tactic code to `mvarId` in `MetaM`. -/
+/-- Apply the given tactic code to `mvarId` in `MetaM`.
+
+This is a variant of `Lean.Elab.runTactic` that forgets the final `Term.State`.
+-/
 def runTactic' (mvarId : MVarId) (tacticCode : Syntax) (ctx : Context := {}) (s : State := {}) :
     MetaM (List MVarId) := do
   instantiateMVarDeclMVars mvarId
