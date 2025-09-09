@@ -469,7 +469,6 @@ private theorem tendsto_card_div_pow₆ :
     (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / ⌈x⌉₊ ^ card ι * (⌈x⌉₊ / x) ^ card ι)
           =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
   filter_upwards [eventually_ge_atTop 1] with x hx
-  have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
   rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
 
 /-- A version of `tendsto_card_div_pow_atTop_volume` for a real variable. -/
