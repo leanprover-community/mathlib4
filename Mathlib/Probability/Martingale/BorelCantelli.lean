@@ -59,7 +59,7 @@ theorem Adapted.isStoppingTime_leastGE (r : ℝ)
 (the first time `f` passes above `r`), and then is constant afterwards. -/
 noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ)
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] : ℕ → Ω → ℝ :=
-    stoppedProcess f (leastGE f r)
+  stoppedProcess f (leastGE f r)
 
 protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ)
     [∀ ω, Decidable (∃ j, 0 ≤ j ∧ f j ω ∈ Set.Ici r)] :
