@@ -52,7 +52,7 @@ lemma RelCWComplex.Subcomplex.union_closedCell [T2Space X] [RelCWComplex C D] (E
     D ∪ ⋃ (n : ℕ) (j : E.I n), closedCell (C := C) n j = E := by
   apply subset_antisymm
   · apply union_subset E.base_subset
-    apply iUnion_subset fun n ↦ iUnion_subset fun i ↦ closedCell_subset_of_mem E i.2
+    exact iUnion₂_subset fun n i ↦ closedCell_subset_of_mem E i.2
   · rw [← E.union]
     apply union_subset_union_right
     apply iUnion₂_mono fun n i ↦ ?_
@@ -143,7 +143,7 @@ instance RelCWComplex.Subcomplex.finiteType_subcomplex_of_finiteType [T2Space X]
     [RelCWComplex C D] [FiniteType C] (E : Subcomplex C) : FiniteType (E : Set X) where
   finite_cell n :=
     let _ := FiniteType.finite_cell (C := C) (D := D) n
-    toFinite (E.I n)
+    Subtype.finite
 
 instance RelCWComplex.Subcomplex.finiteDimensional_subcomplex_of_finiteDimensional
     [T2Space X] [RelCWComplex C D] [FiniteDimensional C] (E : Subcomplex C) :

@@ -659,10 +659,8 @@ def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComple
         exact isClosed_closedCell
       exact closedCell_subset n ⟨j, h⟩
     · left
-      simp_rw [disjoint_iff_inter_eq_empty, ← union, union_inter_distrib_right, iUnion_inter]
-      apply sup_eq_bot_iff.mpr ⟨(disjointBase n j).symm.inter_eq, ?_⟩
-      apply iUnion_eq_empty.2 fun m ↦ iUnion_eq_empty.2 fun i ↦ ?_
-      exact (disjoint_openCell_of_ne (by aesop)).inter_eq
+      simp_rw [← union, disjoint_union_left, disjoint_iUnion_left]
+      exact ⟨disjointBase n j |>.symm, fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
   union' := union
 
 /-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
