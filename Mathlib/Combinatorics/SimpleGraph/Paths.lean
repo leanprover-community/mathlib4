@@ -65,27 +65,22 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 
 /-- A *path* is a walk with no repeating vertices.
 Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
-structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
+structure IsPath {u v : V} (p : G.Walk u v) : Prop extends isTrail : IsTrail p where
   support_nodup : p.support.Nodup
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.toIsTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
 @[mk_iff isCircuit_def]
-structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends IsTrail p where
+structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p where
   ne_nil : p ≠ nil
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) : Prop extends IsCircuit p where
+structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
--- Porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+@[deprecated (since := "2025-08-26")] protected alias IsPath.toIsTrail := IsPath.isTrail
+@[deprecated (since := "2025-08-26")] protected alias IsCircuit.toIsTrail := IsCircuit.isTrail
+@[deprecated (since := "2025-08-26")] protected alias IsCycle.toIsCircuit := IsCycle.isCircuit
 
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -237,6 +232,28 @@ theorem concat_isPath_iff {p : G.Walk u v} (h : G.Adj v w) :
 theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
+
+lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) (hq : ¬q.Nil) : p.support.Disjoint q.tail.support := by
+  have hpq' := hpq.support_nodup
+  rw [support_append] at hpq'
+  rw [support_tail_of_not_nil q hq]
+  exact List.disjoint_of_nodup_append hpq'
+
+lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+    (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
+    x ≠ y := by
+  intro hxy
+  subst hxy
+  have hq : ¬q.Nil := by
+    intro hq
+    simp only [nil_iff_support_eq.mp hq, List.mem_cons, List.not_mem_nil, or_false] at hy
+    exact hyv hy
+  have hx' : x ∈ q.tail.support := by
+    rw [support_tail_of_not_nil q hq]
+    rw [mem_support_iff] at hy
+    exact (or_iff_right hyv).mp hy
+  exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
 theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl

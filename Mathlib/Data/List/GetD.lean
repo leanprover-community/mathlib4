@@ -28,22 +28,12 @@ section getD
 variable (d : α)
 
 theorem getD_eq_getElem {n : ℕ} (hn : n < l.length) : l.getD n d = l[n] := by
-  induction l generalizing n with
-  | nil => simp at hn
-  | cons head tail ih =>
-    cases n
-    · exact getD_cons_zero
-    · exact ih _
+  grind
 
 theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD n d) := by simp
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
-  induction l generalizing n with
-  | nil => exact getD_nil
-  | cons head tail ih =>
-    cases n
-    · simp at hn
-    · exact ih (Nat.le_of_succ_le_succ hn)
+  grind
 
 theorem getD_reverse {l : List α} (i) (h : i < length l) :
     getD l.reverse i = getD l (l.length - 1 - i) := by
@@ -81,8 +71,6 @@ theorem getD_eq_getD_getElem? (n : ℕ) : l.getD n d = l[n]?.getD d := by
   | inl h => rw [getD_eq_getElem _ _ h, getElem?_eq_getElem h, Option.getD_some]
   | inr h => rw [getD_eq_default _ _ h, getElem?_eq_none_iff.mpr h, Option.getD_none]
 
-@[deprecated (since := "2025-02-14")] alias getD_eq_getD_get? := getD_eq_getD_getElem?
-
 end getD
 
 section getI
@@ -119,8 +107,6 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
 
 theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.iget := by
   rw [← getD_default_eq_getI, getD_eq_getD_getElem?, Option.getD_default_eq_iget]
-
-@[deprecated (since := "2025-02-14")] alias getI_eq_iget_get? := getI_eq_iget_getElem?
 
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 
