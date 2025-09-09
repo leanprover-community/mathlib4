@@ -32,8 +32,6 @@ noncomputable section
 open Complex MeasureTheory Metric Set Topology
 open scoped Interval
 
-variable {E : Type*} [NormedAddCommGroup E]
-
 namespace Complex
 
 section AuxiliaryLemmata
@@ -85,7 +83,7 @@ private lemma mem_ball_of_map_im_aux₂ {w : ℂ} (hw : w ∈ ball z (r - dist z
 
 end AuxiliaryLemmata
 
-variable [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
   determined by `z` and `w`. -/
