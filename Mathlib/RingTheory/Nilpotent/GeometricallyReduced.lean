@@ -38,10 +38,10 @@ variable {k : Type u} {A : Type v} [Field k] [Ring A] [Algebra k A]
 @[mk_iff]
 class IsGeometricallyReduced (k : Type u) (A : Type v) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
+
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
-
-lemma geometricallyReduced_indep_of_algebraicClosure (k : Type u) (A : Type v) [Field k] [Ring A]
+instance geometricallyReduced_indep_of_algebraicClosure (k : Type u) (A : Type v) [Field k] [Ring A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
     (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) :=
   isReduced_of_injective
@@ -61,20 +61,6 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
     (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
 
-lemma notReduced_has_nilpotent {R : Type u} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
-    ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
-  by_contra h_contra
-  simp only [ne_eq, not_exists, not_and] at h_contra
-  simp only [isReduced_iff, not_forall] at h
-  obtain ⟨x, ⟨hNil, hx⟩⟩ := h
-  tauto
-
-/-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the basechange of C to a subalgebra
-of A ⊗[k] B -/
-def subAlgebra.baseChange {k : Type u} {A : Type v} [CommRing k] [Ring A] [Algebra k A] (B : Type w)
-    [CommRing B] [Algebra k B] (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
-  AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
-
 lemma exists_fg_and_mem_baseChange {k : Type u} {A : Type v} {B : Type w} [CommRing k] [CommRing A]
     [CommRing B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B, C.FG ∧ x ∈ subAlgebra.baseChange A C := by
@@ -92,7 +78,7 @@ theorem FlatBaseChangeIsReduced.of_FG {k : Type u} {A : Type v} {C : Type w} [Co
     (h : ∀ B : Subalgebra k A, B.FG → IsReduced (C ⊗[k] B)) :
     IsReduced (C ⊗[k] A) := by
   by_contra h_contra
-  obtain ⟨x, hx⟩ := notReduced_has_nilpotent h_contra
+  obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
   obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
   have h_inj : Function.Injective
       (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) := by
