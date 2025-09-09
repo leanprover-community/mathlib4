@@ -478,8 +478,8 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
 
 Every Akra–Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
-`R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
-namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
+`R : AkraBazziRecurrence`. These results are used in the next section to define the asymptotic
+bound expression. -/
 
 @[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -539,7 +539,8 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
 
 This section defines the "sum transform" of a function `g` as
 `∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`,
-and uses it to define `asympBound` as the bound satisfied by an Akra–Bazzi recurrence.
+and uses it to define `asympBound` as the bound satisfied by an Akra–Bazzi recurrence, using the
+exponent `p` established in the previous section.
 
 Several properties of the sum transform are then proven.
 -/
