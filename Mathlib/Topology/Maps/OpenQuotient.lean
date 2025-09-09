@@ -16,7 +16,7 @@ Many important quotient maps are open quotient maps, including
 
 - the quotient map from a topological space to its quotient by the action of a group;
 - the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological spaace to its separation quotient.
+- the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
@@ -34,21 +34,12 @@ protected theorem id : IsOpenQuotientMap (id : X → X) := ⟨surjective_id, con
 theorem isQuotientMap (h : IsOpenQuotientMap f) : IsQuotientMap f :=
   h.isOpenMap.isQuotientMap h.continuous h.surjective
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 theorem iff_isOpenMap_isQuotientMap : IsOpenQuotientMap f ↔ IsOpenMap f ∧ IsQuotientMap f :=
   ⟨fun h ↦ ⟨h.isOpenMap, h.isQuotientMap⟩, fun ⟨ho, hq⟩ ↦ ⟨hq.surjective, hq.continuous, ho⟩⟩
-
-@[deprecated (since := "2024-10-22")]
-alias iff_isOpenMap_quotientMap := iff_isOpenMap_isQuotientMap
 
 theorem of_isOpenMap_isQuotientMap (ho : IsOpenMap f) (hq : IsQuotientMap f) :
     IsOpenQuotientMap f :=
   iff_isOpenMap_isQuotientMap.2 ⟨ho, hq⟩
-
-@[deprecated (since := "2024-10-22")]
-alias of_isOpenMap_quotientMap := of_isOpenMap_isQuotientMap
 
 theorem comp {g : Y → Z} (hg : IsOpenQuotientMap g) (hf : IsOpenQuotientMap f) :
     IsOpenQuotientMap (g ∘ f) :=

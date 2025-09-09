@@ -60,11 +60,15 @@ instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
 
+theorem top_mem : ⊤ ∈ L := by simpa using L.sInfClosed' <| empty_subset _
+
+theorem bot_mem : ⊥ ∈ L := by simpa using L.sSupClosed' <| empty_subset _
+
 instance instBot : Bot L where
-  bot := ⟨⊥, by simpa using L.sSupClosed' <| empty_subset _⟩
+  bot := ⟨⊥, bot_mem⟩
 
 instance instTop : Top L where
-  top := ⟨⊤, by simpa using L.sInfClosed' <| empty_subset _⟩
+  top := ⟨⊤, top_mem⟩
 
 instance instSupSet : SupSet L where
   sSup s := ⟨sSup <| (↑) '' s, L.sSupClosed' image_val_subset⟩
@@ -89,6 +93,12 @@ theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
 
 theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
+
+@[simp] theorem coe_iSup {ι} (f : ι → L) : (↑(iSup f) : α) = ⨆ i, (f i : α) := by
+  rw [iSup, coe_sSup', iSup_range]
+
+@[simp] theorem coe_iInf {ι} (f : ι → L) : (↑(iInf f) : α) = ⨅ i, (f i : α) := by
+  rw [iInf, coe_sInf', iInf_range]
 
 -- Redeclaring to get proper keys for these instances
 instance : Max {x // x ∈ L} := Sublattice.instSupCoe

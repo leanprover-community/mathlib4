@@ -255,13 +255,11 @@ theorem PreservesPushout.iso_hom : (PreservesPushout.iso G f g).hom = pushoutCom
 @[reassoc]
 theorem PreservesPushout.inl_iso_hom :
     pushout.inl _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inl _ _) := by
-  delta PreservesPushout.iso
   simp
 
 @[reassoc]
 theorem PreservesPushout.inr_iso_hom :
     pushout.inr _ _ ≫ (PreservesPushout.iso G f g).hom = G.map (pushout.inr _ _) := by
-  delta PreservesPushout.iso
   simp
 
 @[reassoc (attr := simp)]
@@ -333,7 +331,7 @@ def PushoutCocone.isColimitYonedaEquiv (c : PushoutCocone f g) :
         ((IsLimit.postcomposeHomEquiv
           (isoWhiskerRight (cospanOp f g).symm (yoneda.obj X)) _).symm.trans
             (Equiv.trans (IsLimit.equivIsoLimit
-              (by exact Cones.ext (Iso.refl _) (by rintro (_|_|_) <;> simp)))
+              (by exact Cones.ext (Iso.refl _) (by rintro (_ | _ | _) <;> simp)))
                 (c.op.isLimitMapConeEquiv (yoneda.obj X))))))
 
 end Pushout

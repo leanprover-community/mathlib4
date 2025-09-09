@@ -39,8 +39,8 @@ specified declaration should be one of the following:
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term. Due to how this is performed, we also
-need to assume that the `Algebra` property can be constructed only from the homomorphism, so it can
-not have any other explicit arguments.
+need to assume that the `Algebra` property can be constructed only from the homomorphism, so it
+cannot have any other explicit arguments.
 2. A lemma (or constructor) proving the `Algebra` property from the `RingHom` property. In this case
 it is assumed that the `RingHom` property is the final argument, and that no other explicit argument
 is needed. The tactic then constructs the `Algebra` property by applying the lemma or constructor.
@@ -58,7 +58,7 @@ def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
-An example with a constructor as parameter (as the two properties are not definitonally the same):
+An example with a constructor as parameter (as the two properties are not definitionally the same):
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where

@@ -177,7 +177,7 @@ theorem one_apply (n : ℕ) : (1 : AdicCauchySequence I R) n = 1 :=
 theorem mul_apply (n : ℕ) (f g : AdicCauchySequence I R) : (f * g) n = f n * g n :=
   rfl
 
-/-- The canonical algebra map from adic cauchy sequences to the adic completion. -/
+/-- The canonical algebra map from adic Cauchy sequences to the adic completion. -/
 @[simps!]
 def mkₐ : AdicCauchySequence I R →ₐ[R] AdicCompletion I R :=
   AlgHom.ofLinearMap (mk I R) rfl (fun _ _ ↦ rfl)
