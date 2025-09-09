@@ -780,8 +780,7 @@ theorem neg_convexOn_iff : ConvexOn 𝕜 s (-f) ↔ ConcaveOn 𝕜 s f := by
   constructor
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
-    have h := h hx hy ha hb hab
-    simpa [add_comm] using h
+    simpa [add_comm] using h hx hy ha hb hab
   · rintro ⟨hconv, h⟩
     refine ⟨hconv, fun x hx y hy a b ha hb hab => ?_⟩
     rw [← neg_le_neg_iff]

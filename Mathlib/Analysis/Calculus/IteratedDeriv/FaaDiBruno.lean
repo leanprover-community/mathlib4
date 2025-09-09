@@ -167,13 +167,8 @@ theorem iteratedDerivWithin_scomp_three
       3 • iteratedDerivWithin 2 f s x • derivWithin f s x • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 3 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_three hg hf ht hs hx hst]
-  suffices derivWithin f s x ^ 3 • iteratedDerivWithin 3 g t (f x) +
-      derivWithin f s x • iteratedDerivWithin 2 f s x • iteratedDerivWithin 2 g t (f x) +
-      2 • derivWithin f s x • iteratedDerivWithin 2 f s x • iteratedDerivWithin 2 g t (f x) =
-    derivWithin f s x ^ 3 • iteratedDerivWithin 3 g t (f x) +
-      3 • derivWithin f s x • iteratedDerivWithin 2 f s x • iteratedDerivWithin 2 g t (f x) by
-    simpa [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
-      iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
+  simp [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
+        iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
   abel
 
 theorem iteratedDeriv_scomp_three (hg : ContDiffAt 𝕜 3 g (f x)) (hf : ContDiffAt 𝕜 3 f x) :

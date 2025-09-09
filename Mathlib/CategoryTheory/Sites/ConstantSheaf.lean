@@ -193,11 +193,8 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
   rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
   ext x
-  suffices U.map _ = U.map ((toSheafify _ _).app x) ≫
-      U.map (((presheafToSheaf _ _).map ((constantPresheafAdj _ _).counit.app _)).val.app x) ≫
-      U.map ((sheafifyLift _ _ _).app x) by
-    simpa
-  simp [← map_comp, ← NatTrans.comp_app]
+  simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
+  simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions
 
 lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
