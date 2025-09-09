@@ -84,6 +84,13 @@ mkDeclAndDepr () {
             reps++
             # reset the "old name counter", since the deprecation happened
             old=""
+            perr(NR " plus " i ": " $i "\n")
+            break
+          } else {
+            # we found a keyword corresponding to a declaration the following word was not
+            # different from the line prior to the change so we do not need to deprecate
+            # reset the "old name counter", since the deprecation should not happen
+            old=""
             break
           }
         }
