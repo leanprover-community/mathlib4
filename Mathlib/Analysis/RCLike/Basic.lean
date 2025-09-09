@@ -611,7 +611,7 @@ theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofRe
 theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
   (norm_ofReal _).trans (abs_of_nonneg h)
 
-@[simp, rclike_simps, norm_cast]
+@[simp 1100, rclike_simps, norm_cast]
 theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
