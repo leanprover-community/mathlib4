@@ -264,7 +264,6 @@ variable [Finite ι] [CharZero R] [IsDomain R]
 lemma pairingIn_short_long :
     P.pairingIn ℤ (short P) (long P) = - 1 := by
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
-  have := pairingIn_long_short (P := P)
   aesop
 
 @[simp]
