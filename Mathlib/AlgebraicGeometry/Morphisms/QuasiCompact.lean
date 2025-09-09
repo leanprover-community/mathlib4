@@ -168,8 +168,8 @@ instance quasiCompact_isStableUnderBaseChange :
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
   intro X Y S _ _ f g h
   let 𝒰 := Scheme.Pullback.openCoverOfRight Y.affineCover.finiteSubcover f g
-  have : Finite 𝒰.J := by dsimp [𝒰]; infer_instance
-  have : ∀ i, CompactSpace (𝒰.obj i) := by intro i; dsimp [𝒰]; infer_instance
+  have : Finite 𝒰.I₀ := by dsimp [𝒰]; infer_instance
+  have : ∀ i, CompactSpace (𝒰.X i) := by intro i; dsimp [𝒰]; infer_instance
   exact 𝒰.compactSpace
 
 variable {Z : Scheme.{u}}
@@ -184,12 +184,12 @@ lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f.base := by
   refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (x : 𝒰.J) : IsAffine (𝒰.obj x) := X.isAffine_affineCover _
-  refine ⟨Γ(∐ 𝒰.obj, ⊤), (∐ 𝒰.obj).isoSpec.inv ≫ Sigma.desc 𝒰.map, ?_⟩
-  refine Function.Surjective.comp (g := (Sigma.desc 𝒰.map).base)
-    (fun x ↦ ?_) (∐ 𝒰.obj).isoSpec.inv.surjective
+  have (x : 𝒰.I₀) : IsAffine (𝒰.X x) := X.isAffine_affineCover _
+  refine ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, ?_⟩
+  refine Function.Surjective.comp (g := (Sigma.desc 𝒰.f).base)
+    (fun x ↦ ?_) (∐ 𝒰.X).isoSpec.inv.surjective
   obtain ⟨y, hy⟩ := 𝒰.covers x
-  exact ⟨(Sigma.ι 𝒰.obj (𝒰.f x)).base y, by rw [← Scheme.comp_base_apply, Sigma.ι_desc, hy]⟩
+  exact ⟨(Sigma.ι 𝒰.X (𝒰.idx x)).base y, by rw [← Scheme.comp_base_apply, Sigma.ι_desc, hy]⟩
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f.base = U := by

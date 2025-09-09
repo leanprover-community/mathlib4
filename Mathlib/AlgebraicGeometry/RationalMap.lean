@@ -488,11 +488,14 @@ lemma RationalMap.dense_domain (f : X ⤏ Y) : Dense (X := X) f.domain :=
 consisting of all the domains of the partial maps in the equivalence class. -/
 noncomputable
 def RationalMap.openCoverDomain (f : X ⤏ Y) : f.domain.toScheme.OpenCover where
-  J := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
-  obj U := U.1.toScheme
-  map U := X.homOfLE (le_sSup U.2)
-  f x := ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
-  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
+  I₀ := { PartialMap.domain g | (g) (_ : g.toRationalMap = f) }
+  X U := U.1.toScheme
+  f U := X.homOfLE (le_sSup U.2)
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    use ⟨_, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.1⟩
+    exact ⟨⟨x.1, (TopologicalSpace.Opens.mem_sSup.mp x.2).choose_spec.2⟩, Subtype.ext (by simp)⟩
 
 /-- If `f : X ⤏ Y` is a rational map from a reduced scheme to a separated scheme,
 then `f` can be represented as a partial map on its domain of definition. -/

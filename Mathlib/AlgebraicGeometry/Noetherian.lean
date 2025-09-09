@@ -274,8 +274,8 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).base) by
     apply NoetherianSpace.iUnion
   intro i
-  have : IsAffine (𝒰.obj i) := by
-    rw [X.affineCover.finiteSubcover_obj]
+  have : IsAffine (𝒰.X i) := by
+    rw [X.affineCover.finiteSubcover_X]
     apply Scheme.isAffine_affineCover
   let U : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
   convert noetherianSpace_of_isAffineOpen U.1 U.2

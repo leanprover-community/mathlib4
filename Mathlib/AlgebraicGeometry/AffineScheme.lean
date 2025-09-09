@@ -240,24 +240,24 @@ theorem exists_isAffineOpen_mem_and_subset {X : Scheme.{u}} {x : X}
   exact ⟨Scheme.Hom.opensRange f (H := hf.1),
     ⟨AlgebraicGeometry.isAffineOpen_opensRange f (H := hf.1), hf.2.1, hf.2.2⟩⟩
 
-instance Scheme.isAffine_affineCover (X : Scheme) (i : X.affineCover.J) :
-    IsAffine (X.affineCover.obj i) :=
+instance Scheme.isAffine_affineCover (X : Scheme) (i : X.affineCover.I₀) :
+    IsAffine (X.affineCover.X i) :=
   isAffine_Spec _
 
-instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.J) :
-    IsAffine (X.affineBasisCover.obj i) :=
+instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.I₀) :
+    IsAffine (X.affineBasisCover.X i) :=
   isAffine_Spec _
 
 instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover) (i : 𝒰.J) :
-    IsAffine (𝒰.openCover.obj i) :=
+    IsAffine (𝒰.openCover.X i) :=
   inferInstanceAs (IsAffine (Spec (𝒰.obj i)))
 
-instance (X : Scheme) [CompactSpace X] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (i) :
-    IsAffine (𝒰.finiteSubcover.obj i) :=
-  inferInstanceAs (IsAffine (𝒰.obj _))
+instance (X : Scheme) [CompactSpace X] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.X i)] (i) :
+    IsAffine (𝒰.finiteSubcover.X i) :=
+  inferInstanceAs (IsAffine (𝒰.X _))
 
 instance {X} [IsAffine X] (i) :
-    IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 X)).obj i) := by
+    IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 X)).X i) := by
   dsimp; infer_instance
 
 theorem isBasis_affine_open (X : Scheme) : Opens.IsBasis X.affineOpens := by

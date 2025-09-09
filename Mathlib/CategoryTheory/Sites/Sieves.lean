@@ -235,7 +235,7 @@ theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
 `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
 class HasPairwisePullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
-  has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
+  has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), Limits.HasPullback f g
 
 @[deprecated (since := "2025-08-28")]
 alias hasPullbacks := HasPairwisePullbacks

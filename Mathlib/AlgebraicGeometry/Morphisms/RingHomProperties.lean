@@ -302,11 +302,11 @@ lemma iff_appLE : P f ↔ ∀ (U : Y.affineOpens) (V : X.affineOpens) (e), Q (f.
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le]
 
 theorem of_source_openCover [IsAffine Y]
-    (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, Q ((𝒰.map i ≫ f).appTop.hom)) :
+    (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.X i)] (H : ∀ i, Q ((𝒰.f i ≫ f).appTop.hom)) :
     P f := by
   rw [HasAffineProperty.iff_of_isAffine (P := P)]
   intro U
-  let S i : X.affineOpens := ⟨_, isAffineOpen_opensRange (𝒰.map i)⟩
+  let S i : X.affineOpens := ⟨_, isAffineOpen_opensRange (𝒰.f i)⟩
   induction U using of_affine_open_cover S 𝒰.iSup_opensRange with
   | basicOpen U r H =>
     simp_rw [Scheme.affineBasicOpen_coe,
@@ -323,15 +323,15 @@ theorem of_source_openCover [IsAffine Y]
   | hU i =>
     specialize H i
     rw [← (isLocal_ringHomProperty P).respectsIso.cancel_right_isIso _
-      ((IsOpenImmersion.isoOfRangeEq (𝒰.map i) (S i).1.ι
+      ((IsOpenImmersion.isoOfRangeEq (𝒰.f i) (S i).1.ι
       Subtype.range_coe.symm).inv.app _), ← CommRingCat.hom_comp, ← Scheme.comp_appTop,
       IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, Scheme.comp_appTop,
       Scheme.Opens.ι_appTop, Scheme.Hom.appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map] at H
     exact (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp H
 
-theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
-    P f ↔ ∀ i, Q ((𝒰.map i ≫ f).appTop).hom :=
-  ⟨fun H i ↦ appTop P _ (comp_of_isOpenImmersion P (𝒰.map i) f H), of_source_openCover 𝒰⟩
+theorem iff_of_source_openCover [IsAffine Y] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.X i)] :
+    P f ↔ ∀ i, Q ((𝒰.f i ≫ f).appTop).hom :=
+  ⟨fun H i ↦ appTop P _ (comp_of_isOpenImmersion P (𝒰.f i) f H), of_source_openCover 𝒰⟩
 
 theorem iff_of_isAffine [IsAffine X] [IsAffine Y] :
     P f ↔ Q (f.appTop).hom := by
@@ -348,7 +348,7 @@ theorem of_iSup_eq_top [IsAffine Y] {ι : Type*}
     (U : ι → X.affineOpens) (hU : ⨆ i, (U i : Opens X) = ⊤)
     (H : ∀ i, Q (f.appLE ⊤ (U i).1 le_top).hom) :
     P f := by
-  have (i : _) : IsAffine ((X.openCoverOfISupEqTop _ hU).obj i) := (U i).2
+  have (i : _) : IsAffine ((X.openCoverOfISupEqTop _ hU).X i) := (U i).2
   refine of_source_openCover (X.openCoverOfISupEqTop _ hU) fun i ↦ ?_
   simpa [Scheme.Hom.app_eq_appLE] using (f.appLE_congr _ rfl (by simp) (fun f => Q f.hom)).mp (H i)
 
@@ -362,7 +362,7 @@ instance : IsLocalAtSource P := by
   intro X Y f _ 𝒰
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
     iff_of_source_openCover 𝒰.affineRefinement.openCover,
-    fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
+    fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.f i ≫ f) (𝒰.X i).affineCover]
   simp [Scheme.OpenCover.affineRefinement, Sigma.forall]
 
 lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentities where
@@ -390,8 +390,8 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
     apply IsLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
       (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
-    simp only [CommRingCat.coe_of, Scheme.AffineOpenCover.openCover_obj, ← Spec.map_comp,
-      Scheme.AffineOpenCover.openCover_map, Scheme.affineOpenCoverOfSpanRangeEqTop_map]
+    simp only [CommRingCat.coe_of, Scheme.AffineOpenCover.openCover_X, ← Spec.map_comp,
+      Scheme.AffineOpenCover.openCover_f, Scheme.affineOpenCoverOfSpanRangeEqTop_map]
     exact H i
   · intro R S _ _  f s hs H
     apply IsLocalAtTarget.of_iSup_eq_top _ (PrimeSpectrum.iSup_basicOpen_eq_top_iff
@@ -509,7 +509,7 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
   · rw [IsLocalAtSource.iff_of_openCover (P := P)
       (Scheme.Pullback.openCoverOfRight Y.affineCover f g)]
     intro i
-    simp only [Scheme.Pullback.openCoverOfRight_obj, Scheme.Pullback.openCoverOfRight_map,
+    simp only [Scheme.Pullback.openCoverOfRight_X, Scheme.Pullback.openCoverOfRight_f,
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.comp_id]
     apply this _ (comp_of_isOpenImmersion _ _ _ H) inferInstance
   rw [iff_of_isAffine (P := P)] at H ⊢
