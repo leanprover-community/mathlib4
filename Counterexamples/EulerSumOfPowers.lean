@@ -111,4 +111,41 @@ theorem sumOfPowersConjectureFor_four_false : ¬SumOfPowersConjectureFor 4 := by
   have : 4 ≤ 3 := conj a b (by simp [a]) (by simp [a]) (by simp) (by decide)
   omega
 
+/--
+For all `(k, m, n)` we define the Diophantine equation `∑ x_i ^ k = ∑ y_i ^ k`
+where `x` and `y` are disjoint with length `m` and `n` respectively.
+This is a generalization of the diophantine equation of Euler's sum of powers conjecture.
+-/
+abbrev ExistsEqualSumsOfLikePowersFor (R : Type*) [Semiring R] (k m n : ℕ) : Prop :=
+  ∃ (x y : List R), (x.length = m) ∧ (y.length = n) ∧ (0 ∉ x) ∧ (0 ∉ y) ∧ (List.Disjoint x y) ∧
+  (x.map (· ^ k)).sum = (y.map (· ^ k)).sum
+
+/-- Euler's sum of powers conjecture for `k` restricts solutions for `(k, m, 1)`. -/
+theorem existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith (R : Type*) [Semiring R] :
+    ∀ k, ∀ m ≥ 2,
+    SumOfPowersConjectureWith R k → ExistsEqualSumsOfLikePowersFor R k m 1 → k ≤ m := by
+  intro k m hm conj ⟨x, y, hx, hy, hx₀, hy₀, hdisj, hsum⟩
+  rw [← hx]
+  rw [List.eq_cons_of_length_one hy] at hsum hy₀
+  simp at hsum hy₀
+  exact conj x (y.get ⟨0, _⟩) (by omega) hx₀ (fun h ↦ hy₀ h.symm) hsum
+
+/--
+After the first counterexample was found, Leon J. Lander, Thomas R. Parkin, and John Selfridge
+made a similar conjecture that is not amenable to the counterexamples found so far.
+The status of this conjecture is unknown.
+https://en.wikipedia.org/wiki/Lander,_Parkin,_and_Selfridge_conjecture
+https://www.ams.org/journals/mcom/1967-21-099/S0025-5718-1967-0222008-0/S0025-5718-1967-0222008-0.pdf
+-/
+abbrev LanderParkinSelfridgeConjecture (R : Type*) [Semiring R] (k m n : ℕ) : Prop :=
+  ExistsEqualSumsOfLikePowersFor R k m n → k ≤ m + n
+
+/-- Euler's sum of powers conjecture for `k` implies the Lander, Parkin, and Selfridge conjecture
+for `(k, m, 1)`. -/
+theorem LanderParkinSelfridgeConjecture_of_sumOfPowersConjectureWith (R : Type*) [Semiring R] :
+    ∀ k, ∀ m ≥ 2, SumOfPowersConjectureWith R k → LanderParkinSelfridgeConjecture R k m 1 := by
+  intro k m hm conj hsum
+  have := existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith R k m hm conj hsum
+  omega
+
 end Counterexample
