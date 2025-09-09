@@ -187,6 +187,15 @@ open scoped ComplexOrder in
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
 
+open ComplexOrder in
+/-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
+@[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
+    (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
+  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
+    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
+      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
+
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
 theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
