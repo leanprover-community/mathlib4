@@ -49,8 +49,8 @@ dependencies are not general enough to unify them. We should refactor
 
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
-variable {R : Type*} [Field R]
-variable {A : Matrix n n R}
+variable {R K : Type*} [CommRing R] [Field K]
+variable {A : Matrix n n K} {B : Matrix n n R}
 
 open Matrix Polynomial
 
@@ -58,18 +58,24 @@ open scoped Matrix
 
 namespace Matrix
 
-/-- The roots of the characteristic polynomial are the spectrum of the matrix. -/
-theorem isRoot_charpoly_iff_mem_spectrum {r : R} : IsRoot A.charpoly r ↔ r ∈ spectrum R A := by
+/-- The roots of the characteristic polynomial are in the spectrum of the matrix. -/
+theorem mem_spectrum_of_isRoot_charpoly [Nontrivial R]
+    {r : R} (hr : IsRoot B.charpoly r) : r ∈ spectrum R B := by
+  simp_all [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
+    Pi.algebraMap_def]
+
+/-- In fields, the roots of the characteristic polynomial are exactly the spectrum of the matrix. -/
+theorem isRoot_charpoly_iff_mem_spectrum {r : K} : IsRoot A.charpoly r ↔ r ∈ spectrum K A := by
   simp [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
     Pi.algebraMap_def]
 
-theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
+theorem det_eq_prod_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id K)) :
     A.det = (Matrix.charpoly A).roots.prod := by
   rw [det_eq_sign_charpoly_coeff, ← charpoly_natDegree_eq_dim A,
     Polynomial.prod_roots_eq_coeff_zero_of_monic_of_splits A.charpoly_monic hAps, ← mul_assoc,
     ← pow_two, pow_right_comm, neg_one_sq, one_pow, one_mul]
 
-theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id R)) :
+theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom.id K)) :
     A.trace = (Matrix.charpoly A).roots.sum := by
   rcases isEmpty_or_nonempty n with h | _
   · rw [Matrix.trace, Fintype.sum_empty, Matrix.charpoly,
@@ -81,10 +87,10 @@ theorem trace_eq_sum_roots_charpoly_of_splits (hAps : A.charpoly.Splits (RingHom
 
 variable (A)
 
-theorem det_eq_prod_roots_charpoly [IsAlgClosed R] : A.det = (Matrix.charpoly A).roots.prod :=
+theorem det_eq_prod_roots_charpoly [IsAlgClosed K] : A.det = (Matrix.charpoly A).roots.prod :=
   det_eq_prod_roots_charpoly_of_splits (IsAlgClosed.splits A.charpoly)
 
-theorem trace_eq_sum_roots_charpoly [IsAlgClosed R] : A.trace = (Matrix.charpoly A).roots.sum :=
+theorem trace_eq_sum_roots_charpoly [IsAlgClosed K] : A.trace = (Matrix.charpoly A).roots.sum :=
   trace_eq_sum_roots_charpoly_of_splits (IsAlgClosed.splits A.charpoly)
 
 end Matrix
