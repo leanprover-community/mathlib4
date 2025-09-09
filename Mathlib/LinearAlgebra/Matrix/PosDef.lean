@@ -714,9 +714,8 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff {x U : Matrix n n R} (hU : IsU
 
 open scoped Kronecker in
 theorem kronecker [DecidableEq m] {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
-    (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
-  rw [hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit]
-  exact hx.isUnit.kronecker hy.isUnit
+    (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef :=
+  hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit |>.mpr <| hx.isUnit.kronecker hy.isUnit
 
 end PosDef
 
