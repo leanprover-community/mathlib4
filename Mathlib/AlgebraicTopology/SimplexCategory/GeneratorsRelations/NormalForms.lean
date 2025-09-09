@@ -404,8 +404,8 @@ lemma simplicialEvalδ_of_isAdmissible (hL : IsAdmissible (n + 1) L)
       simp only [Fin.succAbove, a₀]
       split_ifs with h₁ _ _
       · rfl
-      · simp [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
-      · simp [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
+      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
+      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
       · rfl
     have ha₀ : a = a₀ := by simp [a₀]
     have := h_rec (l := n + (L.length + 1)) hL.tail (by grind) ↑(a₀.succAbove ⟨j, hj⟩)
