@@ -31,6 +31,9 @@ We develop further required preliminaries for the theorem, up to the sum transfo
 * Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
+## Tags
+Akra Bazzi, Akra-Bazzi, Akra–Bazzi, sum transform
+
 -/
 
 open Finset Real Filter Asymptotics

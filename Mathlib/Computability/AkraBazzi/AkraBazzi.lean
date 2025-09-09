@@ -55,6 +55,8 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 * Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
+## Tags
+Akra Bazzi, Akra-Bazzi, Akra–Bazzi, Akra Bazzi theorem, Akra-Bazzi theorem, Akra–Bazzi theorem
 -/
 
 open Finset Real Filter Asymptotics

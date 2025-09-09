@@ -24,6 +24,8 @@ only requiring it for `b = 1 / 2` or any other particular value between 0 and 1.
 could in principle make it harder to prove that a particular function grows polynomially,
 this issue doesn't seem to arise in practice.
 
+## Tags
+Akra Bazzi, Akra-Bazzi, Akra–Bazzi, polynomial growth condition
 -/
 
 open Finset Real Filter Asymptotics
