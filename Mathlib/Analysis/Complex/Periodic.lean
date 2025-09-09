@@ -75,13 +75,13 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
 
 @[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 @[fun_prop]
 lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
