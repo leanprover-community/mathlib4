@@ -260,6 +260,8 @@ lemma toMonObj_injective {X : C} :
   convert @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
+@[deprecated (since := "2025-09-09")] alias toMon_Class_injective := toMonObj_injective
+
 @[ext]
 lemma ext {X : C} (h₁ h₂ : Grp_Class X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
   Grp_Class.toMonObj_injective H

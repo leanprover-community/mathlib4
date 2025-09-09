@@ -48,6 +48,8 @@ class MonObj (X : C) where
   -- The heuristic is that unitors and associators "don't have much weight".
   mul_assoc (X) : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by cat_disch
 
+@[deprecated (since := "2025-09-09")] alias Mon_Class := MonObj
+
 namespace MonObj
 variable {M X Y : C} [MonObj M]
 
@@ -348,6 +350,8 @@ abbrev monObjObj : MonObj (F.obj X) where
     slice_lhs 3 4 => rw [← F.map_comp, MonObj.mul_assoc]
     simp
 
+@[deprecated (since := "2025-09-09")] alias mon_ClassObj := monObjObj
+
 scoped[Obj] attribute [instance] CategoryTheory.Functor.monObjObj
 
 open scoped Obj
@@ -427,7 +431,7 @@ abbrev FullyFaithful.monObj (hF : F.FullyFaithful) (X : C) [MonObj (F.obj X)] : 
   mul_one := hF.map_injective <| by simp [← δ_natural_right_assoc]
   mul_assoc := hF.map_injective <| by simp [← δ_natural_left_assoc, ← δ_natural_right_assoc]
 
-@[deprecated (since := "2025-09-11")] alias FullyFaithful.mon_Class := FullyFaithful.monObj
+@[deprecated (since := "2025-09-09")] alias FullyFaithful.mon_Class := FullyFaithful.monObj
 
 end OplaxMonoidal
 
@@ -971,10 +975,14 @@ variable (M) in
 lemma MonObj.mul_mul_mul_comm [IsCommMon M] :
     tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
+@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm := MonObj.mul_mul_mul_comm
+
 variable (M) in
 @[reassoc (attr := simp)]
 lemma MonObj.mul_mul_mul_comm' [IsCommMon M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
+
+@[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm' := MonObj.mul_mul_mul_comm'
 
 end
 

@@ -43,6 +43,8 @@ class BimonObj (M : C) extends MonObj M, ComonObj M where
   mul_counit (M) : μ[M] ≫ ε[M] = ε[M ⊗ M] := by cat_disch
   one_counit (M) : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by cat_disch
 
+@[deprecated (since := "2025-09-09")] alias Bimon_Class := BimonObj
+
 namespace BimonObj
 
 attribute [reassoc (attr := simp)] mul_comul one_comul mul_counit one_counit
@@ -132,6 +134,8 @@ def ofMon_Comon_Obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   X := ofMon_Comon_ObjX M
   comon.counit := .mk' ε[M.X.X]
   comon.comul := .mk' Δ[M.X.X]
+
+@[deprecated (since := "2025-09-09")] alias Mon_Class.tensorObj.mul_def := MonObj.tensorObj.mul_def
 
 variable (C) in
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
@@ -234,9 +238,13 @@ theorem BimonObjAux_counit (M : Bimon_ C) :
     ε[((toComon_ C).obj M).X] = ε[M.X].hom :=
   Category.comp_id _
 
+@[deprecated (since := "2025-09-09")] alias Bimon_ClassAux_counit := BimonObjAux_counit
+
 theorem BimonObjAux_comul (M : Bimon_ C) :
     Δ[((toComon_ C).obj M).X] = Δ[M.X].hom :=
   Category.comp_id _
+
+@[deprecated (since := "2025-09-09")] alias Bimon_ClassAux_comul := BimonObjAux_comul
 
 instance (M : Bimon_ C) : BimonObj M.X.X where
   counit := ε[M.X].hom
