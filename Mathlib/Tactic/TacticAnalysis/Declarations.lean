@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
+import Lean.Elab.Tactic.Meta
 
 /-!
 # Tactic linters

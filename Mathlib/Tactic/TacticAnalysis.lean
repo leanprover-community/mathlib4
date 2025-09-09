@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 
 import Batteries.Data.Array.Merge
-import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
 import Lean.Server.InfoUtils
 import Mathlib.Lean.ContextInfo
