@@ -530,7 +530,7 @@ jobs:
         with:
           auto-config: false # Don't run `lake build`, `lake test`, or `lake lint` automatically.
           use-github-cache: false
-          use-mathlib-cache: false
+          use-mathlib-cache: false # This can be re-enabled once we are confident in the cache again.
           reinstall-transient-toolchain: true
 
       - name: retrieve and test the Cloudflare caches, but don't fail, just report to Zulip, if anything goes wrong
