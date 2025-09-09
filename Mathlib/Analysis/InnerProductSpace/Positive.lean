@@ -410,7 +410,7 @@ theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
 * `p` is self-adjoint
 * `p` is positive -/
 theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
-    [(LinearMap.range p)ᗮ = LinearMap.ker p, 
+    [(LinearMap.range p)ᗮ = LinearMap.ker p,
       IsStarNormal p,
       IsSelfAdjoint p,
       p.IsPositive].TFAE := by
