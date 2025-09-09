@@ -188,9 +188,8 @@ lemma standardσ_comp_standardσ (L₁ L₂ : List ℕ) {m₁ m₂ m₃ : ℕ}
 
 variable (m : ℕ) (L : List ℕ)
 
-/-- `simplicialEvalσ` is a lift to ℕ of `toSimplexCategory.map (standardσ m L _ _)).toOrderHom`.
+/-- `simplicialEvalσ` is a lift to ℕ of `(toSimplexCategory.map (standardσ m L _ _)).toOrderHom`.
 Rather than defining it as such, we define it inductively for less painful inductive reasoning,
-and we keep the (hidden) `eqToHom` business in the proof that it is indeed such a lift
 (see `simplicialEvalσ_of_isAdmissible`).
 It is expected to produce the correct result only if `L` is admissible, and values for
 non-admissible lists should be considered junk values. Similarly, values for out-of-bonds inputs
@@ -244,7 +243,7 @@ lemma simplicialEvalσ_of_isAdmissible
       SimplexCategory.comp_toOrderHom, SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe,
       Function.comp_apply, Fin.predAboveOrderHom_coe, simplicialEvalσ, ha₀, ← this] using aux _
 
-/-- Performing a simplicial insert in a list is the same as composition on the right by the
+/-- Performing a simplicial insertion in a list is the same as composition on the right by the
 corresponding degeneracy operator. -/
 lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1)
     (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁) :
