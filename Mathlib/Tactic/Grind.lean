@@ -30,7 +30,11 @@ macro "grobner" : tactic =>
 `cutsat` is a wrapper around `grind`,
 with only case splitting and the cutsat (integer linear arithmetic) module enabled.
 In particular, no theorem instantiation occurs
-and the other solvers (e.g. `linarith`, `ring`) are disabled
+and the other solvers (e.g. `linarith`, `ring`) are disabled.
+
+This should mostly be functionally equivalent to `omega`,
+although we know of discrepancies in both directions. (No need to report these.)
+Where both work, `cutsat` is recommended as the implementation of `omega` is showing its age.
 -/
 macro "cutsat" : tactic =>
   `(tactic| grind (ematch := 0) -ext -mbtc -linarith -ring)
