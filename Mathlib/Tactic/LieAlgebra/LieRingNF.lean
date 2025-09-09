@@ -24,6 +24,7 @@ open Mathlib.Tactic.LieRing
 
 namespace LieRingNF
 
+/-- The mode of simplification for `lie_ring_nf` tactic. -/
 inductive LieRingMode
   /-- If set to `.simple`, simp lemmas will be applied to the result to make it more concise. -/
   | simple
@@ -32,6 +33,7 @@ inductive LieRingMode
   | raw
   deriving Inhabited, BEq, Repr
 
+/-- The config for `lie_ring_nf` tactic. -/
 structure Config extends AtomM.Recurse.Config where
   /-- The mode of normalizing the expressions in `LieRing` -/
   mode : LieRingMode := LieRingMode.simple
