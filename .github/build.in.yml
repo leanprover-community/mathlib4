@@ -574,10 +574,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # This action is used to determine the PR metadata in the event of a push.
-      # If it is called from a PR from a fork, it will find nothing/irrelevant data.
       - if: github.event_name != 'pull_request_target'
         id: PR_from_push
-        uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
+        uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:

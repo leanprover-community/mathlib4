@@ -1025,7 +1025,7 @@ sending `f ⊗ g` to the composition of `TensorProduct.map f g` with
 the natural isomorphism `R ⊗ R ≃ R`.
 -/
 def dualDistrib : Dual R M ⊗[R] Dual R N →ₗ[R] Dual R (M ⊗[R] N) :=
-  compRight ↑(TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
+  compRight _ (TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
 
 variable {R M N}
 
@@ -1042,7 +1042,7 @@ variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
 
 /-- Heterobasic version of `TensorProduct.dualDistrib` -/
 def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
-  compRight (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
+  compRight _ (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
 
 variable {R M N}
 
@@ -1061,10 +1061,9 @@ variable [Module R M] [Module R N]
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  -- Porting note: ∑ (i) (j) does not seem to work; applyₗ needs a little help to unify
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      (applyₗ (c j)) ∘ₗ (applyₗ (b i)) ∘ₗ lcurry R M N R
+      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry R M N R
 
 @[simp]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
