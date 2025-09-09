@@ -379,12 +379,29 @@ lemma foo {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
   sorry
 -/
 
-/-
-instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [SeminormedRing A] [Field 𝕜]
-    [WithNormMulClassNormedRing 𝕜]
-    [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : WithNormMulClassNormedRing S := by
-  infer_instance
+class MyFoo (α : Type*) [Ring α] : Prop where
+
+namespace SubfieldClass
+
+variable {S F : Type*} [SetLike S F]
+
+/--
+If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
+field structure.
 -/
+instance toNormedField' [Field F] [SubfieldClass S F] [MyFoo F]
+    (s : S) : MyFoo s where
+
+end SubfieldClass
+
+
+instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [Ring A] [Field 𝕜]
+    [Algebra 𝕜 A] (S : Subalgebra 𝕜 A) : MyFoo S := by
+  infer_instance
+
+
+#exit
+
 set_option synthInstance.maxHeartbeats 200000 in
 instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormSMulClass 𝕜 S :=
