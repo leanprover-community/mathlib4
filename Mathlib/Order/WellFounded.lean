@@ -301,7 +301,7 @@ noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [
 namespace ULift
 
 instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
-  wf := by apply InvImage.wf _ h.wf
+  wf := InvImage.wf down h.wf
 
 instance [LT α] [WellFoundedGT α] : WellFoundedGT (ULift α) :=
   inferInstanceAs (WellFoundedLT (ULift αᵒᵈ))
