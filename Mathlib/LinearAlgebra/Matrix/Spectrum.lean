@@ -141,6 +141,17 @@ theorem eigenvalues_eq (i : n) :
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
+open Polynomial in
+lemma charpoly_eq : A.charpoly = ∏ i, (X - C (RCLike.ofReal (hA.eigenvalues i))) := by
+  conv_lhs => rw [hA.spectral_theorem, charpoly_mul_comm, ← mul_assoc]
+  simp [charpoly_diagonal]
+
+lemma charpoly_roots_eq_eigenvalues :
+    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues) Finset.univ.val := by
+  rw [hA.charpoly_eq, Polynomial.roots_prod]
+  · simp
+  · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
+
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   convert congr_arg det hA.spectral_theorem
@@ -201,8 +212,3 @@ theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
 end IsHermitian
 
 end Matrix
-
-/-The following were removed as a result of the refactor, since they either were
-unused in the library, followed as immediate consequences of, or were replaced by
-above results (e.g. results about inverses don't need replacement because their unitary
-analogues have replaced them). -/

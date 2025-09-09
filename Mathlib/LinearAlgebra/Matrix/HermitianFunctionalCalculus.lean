@@ -146,5 +146,11 @@ lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.restrict_apply,
     IsHermitian.cfc]
 
+open Polynomial in
+lemma charpoly_cfc_eq (f : ℝ → ℝ) :
+    (cfc f A).charpoly = ∏ i, (X - C (RCLike.ofReal (f (hA.eigenvalues i)))) := by
+  rw [cfc_eq hA f, IsHermitian.cfc, charpoly_mul_comm, ← mul_assoc]
+  simp [charpoly_diagonal]
+
 end IsHermitian
 end Matrix
