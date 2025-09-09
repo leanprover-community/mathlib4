@@ -44,7 +44,7 @@ theorem coe_rpow (x : ℝ≥0) (y : ℝ) : ((x ^ y : ℝ≥0) : ℝ) = (x : ℝ)
 theorem rpow_zero (x : ℝ≥0) : x ^ (0 : ℝ) = 1 :=
   NNReal.eq <| Real.rpow_zero _
 
-theorem rpow_zero_pos (x : ℝ≥0) : 0 < x ^ (0 : ℝ) := by simp
+theorem rpow_zero_pos (x : ℝ≥0) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
 @[simp]
 theorem rpow_eq_zero_iff {x : ℝ≥0} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
@@ -454,7 +454,7 @@ theorem rpow_zero {x : ℝ≥0∞} : x ^ (0 : ℝ) = 1 := by
     · dsimp only [(· ^ ·), Pow.pow, rpow]
       simp
 
-theorem rpow_zero_pos (x : ℝ≥0∞) : 0 < x ^ (0 : ℝ) := by simp
+theorem rpow_zero_pos (x : ℝ≥0∞) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
 theorem top_rpow_def (y : ℝ) : (⊤ : ℝ≥0∞) ^ y = if 0 < y then ⊤ else if y = 0 then 1 else 0 :=
   rfl
@@ -968,6 +968,11 @@ lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 
   _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
   _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
 
+theorem nonneg (x : ℝ≥0∞) : 0 ≤ x := by
+  cases x
+  · exact le_top
+  · exact zero_le _
+
 end ENNReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
@@ -1119,7 +1124,7 @@ def evalENNRealRpow : PositivityExt where eval {u α} _zα _pα e := do
         pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
     | .positive pa, .nonnegative pb =>
         pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
-    | _, _ => pure <| .nonnegative q(by simp : 0 ≤ $e)
+    | _, _ => pure <| .nonnegative q(ENNReal.nonneg $e)
   | _, _, _ => throwError "not ENNReal.rpow"
 
 end Mathlib.Meta.Positivity
