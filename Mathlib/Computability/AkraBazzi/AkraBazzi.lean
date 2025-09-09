@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
-# Divide-and-conquer recurrences and the Akra-Bazzi theorem
+# Divide-and-conquer recurrences and the Akra–Bazzi theorem
 
 A divide-and-conquer recurrence is a function `T : ℕ → ℝ` that satisfies a recurrence relation of
 the form `T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)` for large enough `n`, where `r_i(n)` is some
@@ -25,13 +25,13 @@ answers that come out of the recursive calls. Since virtually all such algorithm
 that are only approximately of size `b_i n` (they have to round up or down at the very least), we
 allow the instance sizes to be given by some function `r_i(n)` that approximates `b_i n`.
 
-The Akra-Bazzi theorem gives the asymptotic order of such a recurrence: it states that
+The Akra–Bazzi theorem gives the asymptotic order of such a recurrence: it states that
 `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`,
 where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
-* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
+* `asympBound`: The asymptotic bound satisfied by an Akra–Bazzi recurrence, namely
   `n^p (1 + ∑ g(u) / u^(p+1))`
 * `isTheta_asympBound`: The main result stating that
   `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`
@@ -61,7 +61,7 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-#### Definition of Akra-Bazzi recurrences
+#### Definition of Akra–Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence
@@ -447,7 +447,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
 /-!
 #### Main proof
 
-This final section proves the Akra-Bazzi theorem.
+This final section proves the Akra–Bazzi theorem.
 -/
 
 lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * n⌋₊) n).Nonempty := by
@@ -460,7 +460,7 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                            _ = n := by simp
   exact_mod_cast this
 
-/-- The main proof of the upper bound part of the Akra-Bazzi theorem. The factor
+/-- The main proof of the upper bound part of the Akra–Bazzi theorem. The factor
 `1 - ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
@@ -608,7 +608,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · exact le_of_lt <| h_smoothing_gt_half n hn
       _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
-/-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
+/-- The main proof of the lower bound part of the Akra–Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
@@ -773,7 +773,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
           _ = 1 := inv_mul_cancel₀ (by positivity)
       _ = C * ((1 + ε n) * asympBound g a b n) := by ring
 
-/-- The **Akra-Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
+/-- The **Akra–Bazzi theorem**: `T ∈ O(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
   calc T
     _ =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
@@ -785,7 +785,7 @@ theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
         tendsto_natCast_atTop_atTop
     _ = asympBound g a b := by simp
 
-/-- The **Akra-Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
+/-- The **Akra–Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
   calc asympBound g a b
     _ = (fun n => 1 * asympBound g a b n) := by simp
@@ -797,7 +797,7 @@ theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
         tendsto_natCast_atTop_atTop
     _ =O[atTop] T := R.smoothingFn_mul_asympBound_isBigO_T
 
-/-- The **Akra-Bazzi theorem**: `T ∈ Θ(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
+/-- The **Akra–Bazzi theorem**: `T ∈ Θ(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isTheta_asympBound : T =Θ[atTop] asympBound g a b :=
   ⟨R.isBigO_asympBound, R.isBigO_symm_asympBound⟩
 

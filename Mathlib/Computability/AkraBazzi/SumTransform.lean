@@ -10,13 +10,13 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 /-!
-# Akra-Bazzi theorem: the sum transform
+# Akra–Bazzi theorem: the sum transform
 
 We develop further required preliminaries for the theorem, up to the sum transform.
 
 ## Main definitions and results
 
-* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
+* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra–Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
 * `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
   It roughly states that
@@ -37,7 +37,7 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-#### Definition of Akra-Bazzi recurrences
+#### Definition of Akra–Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence
@@ -45,7 +45,7 @@ satisfies the recurrence
 with appropriate conditions on the various parameters.
 -/
 
-/-- An Akra-Bazzi recurrence is a function that satisfies the recurrence
+/-- An Akra–Bazzi recurrence is a function that satisfies the recurrence
 `T n = (∑ i, a i * T (r i n)) + g n`. -/
 structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
     (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ) (b : α → ℝ) (r : α → ℕ → ℕ) where
@@ -471,9 +471,9 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
       rw [← isTheta_const_mul_right this]
 
 /-!
-#### Akra-Bazzi exponent `p`
+#### Akra–Bazzi exponent `p`
 
-Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
+Every Akra–Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`.  This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`, and defines `R.asympBound` to be the asymptotic bound satisfied by `R`,
 namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
@@ -522,7 +522,7 @@ lemma injective_sumCoeffsExp : Function.Injective (fun (p : ℝ) => ∑ i, a i *
 end
 
 variable (a b) in
-/-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
+/-- The exponent `p` associated with a particular Akra–Bazzi recurrence. -/
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
@@ -536,7 +536,7 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
 
 This section defines the "sum transform" of a function `g` as
 `∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`,
-and uses it to define `asympBound` as the bound satisfied by an Akra-Bazzi recurrence.
+and uses it to define `asympBound` as the bound satisfied by an Akra–Bazzi recurrence.
 
 Several properties of the sum transform are then proven.
 -/
@@ -551,7 +551,7 @@ lemma sumTransform_def {p : ℝ} {g : ℝ → ℝ} {n₀ n : ℕ} :
 
 
 variable (g) (a) (b)
-/-- The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
+/-- The asymptotic bound satisfied by an Akra–Bazzi recurrence, namely
 `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 noncomputable def asympBound (n : ℕ) : ℝ := n ^ p a b + sumTransform (p a b) g 0 n
 
