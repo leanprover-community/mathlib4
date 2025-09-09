@@ -636,7 +636,7 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRoots n (1 : R)).Nodup :=
   h.nthRoots_nodup one_ne_zero
 
--- Cannot be @[simp] because `ζ` can not be inferred by `simp`.
+-- Cannot be @[simp] because `ζ` cannot be inferred by `simp`.
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     #(nthRootsFinset n (1 : R)) = n := by
   classical

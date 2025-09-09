@@ -58,8 +58,6 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 
 namespace Finite
 
-@[deprecated (since := "2025-02-21")] alias cast_card_eq_mk := Nat.cast_card
-
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
