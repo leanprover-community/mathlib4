@@ -5,20 +5,23 @@ Authors: Yuval Filmus
 -/
 import Mathlib.RingTheory.Polynomial.Chebyshev.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+
+-- FIX ME:
+-- some of the results are available here:
+-- Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 
 /-!
 # Chebyshev polynomials over the reals
 
 ## Main statements
 
-* Trigonometric identities satisfied by Chebyshev polynomials:
-  `Polynomial.Chebyshev.T_cos`, `Polynomial.Chebyshev.U_cos`
 * T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]
 * Zeroes of T and U
 * Extrema of T
@@ -66,35 +69,10 @@ theorem T_natDegree_real (n : ℤ) : (T ℝ n).natDegree = n.natAbs := by
 theorem T_leadingCoeff_real (n : ℤ) : (T ℝ n).leadingCoeff = 2^(n.natAbs - 1) := by
   exact T_leadingCoeff ℝ (by simp) n
 
-@[simp]
-theorem T_cos (n : ℤ) (θ : ℝ) : (T ℝ n).eval (cos θ) = cos (n * θ) := by
-  induction n using Chebyshev.induct' with
-  | zero => simp
-  | one => simp
-  | add_two n ih1 ih2 =>
-    rw [T_add_two, eval_sub, eval_mul, eval_mul, eval_ofNat, eval_X, ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [Real.cos_add_cos, mul_assoc, mul_comm θ.cos, ←mul_assoc]
-    push_cast; congr 3 <;> ring
-  | neg n ih => simp [T_neg, ih]
-
-@[simp]
-theorem T_cosh (n : ℤ) (θ : ℝ) : (T ℝ n).eval (cosh θ) = cosh (n * θ) := by
-  induction n using Chebyshev.induct' with
-  | zero => simp
-  | one => simp
-  | add_two n ih1 ih2 =>
-    rw [T_add_two, eval_sub, eval_mul, eval_mul, eval_ofNat, eval_X, ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    trans cosh ((n + 1) * θ + θ) + cosh ((n + 1) * θ - θ)
-    · rw [cosh_add, cosh_sub]; push_cast; ring
-    · congr <;> (push_cast; ring)
-  | neg n ih => simp [T_neg, ih]
-
 theorem T_bounded_of_bounded (n : ℤ) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
   (T ℝ n).eval x ∈ Set.Icc (-1) 1 := by
   rw [Set.mem_Icc] at hx
-  rw [←cos_arccos hx.1 hx.2, T_cos]
+  rw [←cos_arccos hx.1 hx.2, T_real_cos]
   apply cos_mem_Icc
 
 theorem T_bounded_of_bounded' (n : ℤ) {x : ℝ} (hx : |x| ≤ 1) :
@@ -119,12 +97,12 @@ theorem cosh_arccosh {x : ℝ} (hx : 1 ≤ x) : cosh (arccosh x) = x := by
 
 theorem T_ge_of_ge_one (n : ℤ) {x : ℝ} (hx : x ≥ 1) :
   (T ℝ n).eval x ≥ 1 := by
-  rw [←cosh_arccosh hx, T_cosh]
+  rw [←cosh_arccosh hx, T_real_cosh]
   apply one_le_cosh
 
 theorem T_gt_of_gt_one {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x > 1) :
   (T ℝ n).eval x > 1 := by
-  rw [←cosh_arccosh (le_of_lt hx), T_cosh]
+  rw [←cosh_arccosh (le_of_lt hx), T_real_cosh]
   apply one_lt_cosh.mpr
   apply mul_ne_zero_iff.mpr
   constructor
@@ -218,9 +196,9 @@ theorem T_eq_cos_of_bounded {n : ℤ} (hn : n ≠ 0) {y : ℝ} (hy : |y| ≤ 1) 
     use arccos x
     constructor
     · exact cos_arccos (neg_le_of_abs_le hx) (le_of_abs_le hx)
-    · rw [←h, ←T_cos n (arccos x), cos_arccos (neg_le_of_abs_le hx) (le_of_abs_le hx)]
+    · rw [←h, ←T_real_cos (arccos x), cos_arccos (neg_le_of_abs_le hx) (le_of_abs_le hx)]
   · rintro ⟨θ, hx, hy⟩
-    rw [← hx, T_cos n, hy]
+    rw [← hx, T_real_cos, hy]
 
 theorem T_eq_zero_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
   (T ℝ n).eval x = 0 ↔ ∃ (k : ℤ), x = cos ((2 * k + 1) * π / (2 * n)) := by
@@ -334,7 +312,7 @@ theorem T_eq_neg_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
 @[simp]
 theorem T_node_eval {n : ℤ} (hn : n ≠ 0) (k : ℤ) :
   (T ℝ n).eval (cos (k * π / n)) = (-1)^k := by
-  rw [T_cos]
+  rw [T_real_cos]
   trans cos (k * π)
   · congr 1; field_simp
   calc cos (k * π) = cos (0 + k * π) := by rw [zero_add]
@@ -355,7 +333,7 @@ theorem T_abs_eq_one_iff {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
       use 2 * k + 1
       rw [hx]; congr; push_cast; rfl
   · rintro ⟨k, hx⟩
-    rw [hx, T_cos]
+    rw [hx, T_real_cos]
     trans |cos (k * π)|
     · congr 2; field_simp
     exact abs_cos_int_mul_pi _
@@ -480,63 +458,11 @@ theorem U_natDegree_real (n : ℤ) :
 theorem U_leadingCoeff_nat_real (n : ℕ) : (U ℝ n).leadingCoeff = 2^n := by
   exact U_leadingCoeff_nat ℝ (by simp) n
 
-@[simp]
-theorem U_cos (n : ℤ) (θ : ℝ) : (U ℝ n).eval (cos θ) * sin θ = sin ((n+1) * θ) := by
-  induction n using Chebyshev.induct with
-  | zero => simp
-  | one => norm_num; rw [sin_two_mul]; ring
-  | add_two n ih1 ih2 =>
-    norm_num
-    rw [sub_mul]
-    trans 2 * θ.cos * ((U ℝ (n+1)).eval θ.cos * θ.sin) - (U ℝ n).eval θ.cos * θ.sin
-    · ring
-    rw [ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [Real.sin_add_sin, mul_assoc, mul_comm θ.cos, ←mul_assoc]
-    push_cast; congr 3 <;> ring
-  | neg_add_one n ih1 ih2 =>
-    rw [U_sub_one]
-    norm_num
-    rw [sub_mul]
-    trans 2 * θ.cos * ((U ℝ (-n)).eval θ.cos * θ.sin) - (U ℝ (-n+1)).eval θ.cos * θ.sin
-    · ring
-    rw [ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [←sin_neg, ←cos_neg, sin_add_sin, mul_assoc, mul_comm (-θ).cos, ←mul_assoc]
-    push_cast; congr 3 <;> ring
-
-theorem U_cosh (n : ℤ) (θ : ℝ) : (U ℝ n).eval (cosh θ) * sinh θ = sinh ((n+1) * θ) := by
-  induction n using Chebyshev.induct with
-  | zero => simp
-  | one => norm_num; rw [sinh_two_mul]; ring
-  | add_two n ih1 ih2 =>
-    norm_num
-    rw [sub_mul]
-    trans 2 * θ.cosh * ((U ℝ (n+1)).eval θ.cosh * θ.sinh) - (U ℝ n).eval θ.cosh * θ.sinh
-    · ring
-    rw [ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    trans sinh ((n + 2) * θ + θ) + sinh ((n + 2) * θ - θ)
-    · rw [sinh_add, sinh_sub]; push_cast; ring_nf
-    · congr <;> (push_cast; ring)
-  | neg_add_one n ih1 ih2 =>
-    rw [U_sub_one]
-    norm_num
-    rw [sub_mul]
-    trans 2 * θ.cosh * ((U ℝ (-n)).eval θ.cosh * θ.sinh) - (U ℝ (-n+1)).eval θ.cosh * θ.sinh
-    · ring
-    rw [ih1, ih2]
-    apply sub_eq_iff_eq_add.mpr
-    rw [←sinh_neg]
-    trans sinh ((-n + 1) * θ - θ) + sinh ((-n + 1) * θ + θ)
-    · rw [sinh_add, sinh_sub]; push_cast; ring
-    · congr <;> (push_cast; ring)
-
 theorem U_eq_zero_if (n : ℕ) {k : ℕ} (hk1 : 1 ≤ k) (hkn : k ≤ n) :
   (U ℝ n).eval (cos (k * π / (n + 1))) = 0 := by
   have hn1 : (n + 1 : ℝ) ≠ 0 := by norm_cast
   have hpi := Real.pi_ne_zero
-  have := U_cos n (k * π / (n + 1))
+  have := U_real_cos (k * π / (n + 1)) n
   push_cast at this
   rw [mul_div_cancel₀ _ hn1, (@sin_eq_zero_iff (k*π)).mpr ⟨k, rfl⟩] at this
   refine (mul_eq_zero_iff_right ?_).mp this
