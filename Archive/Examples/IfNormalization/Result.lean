@@ -24,7 +24,7 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
 
-attribute [local simp] apply_ite ite_eq_iff'
+attribute [local simp] apply_ite ite_eq_iff_and
 
 variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}
 
@@ -71,7 +71,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
+          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff_and]
           cases hfv : f v
           · simp_all
             congr

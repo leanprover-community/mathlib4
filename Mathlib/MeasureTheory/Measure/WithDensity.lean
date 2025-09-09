@@ -619,7 +619,7 @@ instance Measure.withDensity.instSFinite [SFinite μ] {f : α → ℝ≥0∞} :
       else simp [hx]
   have : SigmaFinite (μ.withDensity (sᶜ.indicator f)) := by
     refine SigmaFinite.withDensity_of_ne_top <| ae_of_all _ fun x hx ↦ ?_
-    simp [indicator_apply, ite_eq_iff, s] at hx
+    simp [indicator_apply, ite_eq_iff_or, s] at hx
   have : SigmaFinite (μ.withDensity (s.indicator 1)) := by
     rw [withDensity_indicator hs]
     exact SigmaFinite.withDensity 1
