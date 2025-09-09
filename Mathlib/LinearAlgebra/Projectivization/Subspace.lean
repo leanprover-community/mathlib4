@@ -202,27 +202,13 @@ theorem span_eq_span_iff {S T : Set (ℙ K V)} : span S = span T ↔ S ⊆ span 
   ⟨fun h => ⟨h ▸ subset_span S, h.symm ▸ subset_span T⟩, fun h =>
     le_antisymm (span_le_subspace_iff.2 h.1) (span_le_subspace_iff.2 h.2)⟩
 
-end Subspace
-
-end Projectivization
-
-namespace Submodule
-
-variable {K V}
-
-/-- Subspaces of a vector space correspond to subspaces of its projectivization. -/
-def projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
+/-- The submodule corresponding to a projective subspace `s`, consisting of the representatives of
+points in `s` together with zero. This is the inverse of `Submodule.projectivization`. -/
+def submodule : Projectivization.Subspace K V ≃o Submodule K V :=
   Equiv.toOrderIso {
     toFun s := {
-      carrier := setOf <| Projectivization.lift (↑· ∈ s) <| by
-        rintro ⟨-, h⟩ ⟨y, -⟩ c rfl
-        exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
-      mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂
-    }
-    invFun s := {
       carrier := {x | (h : x ≠ 0) → Projectivization.mk K x h ∈ s.carrier}
-      add_mem' := by
-        intro x y hx₁ hy₁
+      add_mem' {x y} hx₁ hy₁ := by
         rcases eq_or_ne x 0 with rfl | hx₂
         · rw [zero_add]; exact hy₁
         rcases eq_or_ne y 0 with rfl | hy₂
@@ -235,23 +221,55 @@ def projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
         rw [Projectivization.mk_eq_mk_iff']
         exact ⟨c, rfl⟩
     }
+    invFun s := {
+      carrier := setOf <| Projectivization.lift (↑· ∈ s) <| by
+        rintro ⟨-, h⟩ ⟨y, -⟩ c rfl
+        exact Iff.eq <| s.smul_mem_iff <| left_ne_zero_of_smul h
+      mem_add' _ _ _ _ _ h₁ h₂ := s.add_mem h₁ h₂
+    }
     left_inv s := by
+      ext x
+      cases x with | _ x hx =>
+      exact ⟨fun h => h hx, fun h _ => h⟩
+    right_inv s := by
       ext x
       change (x ≠ 0 → x ∈ s) ↔ x ∈ s
       refine ⟨fun h => ?_, fun h _ => h⟩
       rcases eq_or_ne x 0 with rfl | hx
       · exact s.zero_mem
       · exact h hx
-    right_inv s := by
-      ext x
-      cases x with | _ x hx =>
-      exact ⟨fun h => h hx, fun h _ => h⟩
   }
-  (fun _ _ h₁ => Projectivization.ind fun _ _ h₂ => h₁ h₂)
   (fun _ _ h₁ _ h₂ _ => h₁ <| h₂ _)
+  (fun _ _ h₁ => Projectivization.ind fun _ _ h₂ => h₁ h₂)
 
 @[simp]
-theorem mem_projectivization_iff (s : Submodule K V) {v : V} (hv : v ≠ 0) :
+theorem mem_submodule_iff (s : Projectivization.Subspace K V) {v : V} (hv : v ≠ 0) :
+    v ∈ submodule s ↔ Projectivization.mk K v hv ∈ s :=
+  ⟨fun h => h hv, fun h _ => h⟩
+
+end Subspace
+
+end Projectivization
+
+namespace Submodule
+
+open scoped LinearAlgebra.Projectivization
+
+variable {K V}
+
+/-- The projective subspace corresponding to a submodule `s`, consisting of the one-dimensional
+subspaces of `s`. This is the inverse of `Projectivization.Subspace.submodule`. -/
+abbrev projectivization : Submodule K V ≃o Projectivization.Subspace K V :=
+  Projectivization.Subspace.submodule.symm
+
+@[simp]
+theorem mk_mem_projectivization_iff (s : Submodule K V) {v : V} (hv : v ≠ 0) :
     Projectivization.mk K v hv ∈ s.projectivization ↔ v ∈ s := Iff.rfl
+
+theorem mem_projectivization_iff_submodule_le (s : Submodule K V) (x : ℙ K V) :
+    x ∈ s.projectivization ↔ x.submodule ≤ s := by
+  cases x
+  rw [mk_mem_projectivization_iff, Projectivization.submodule_mk,
+    Submodule.span_singleton_le_iff_mem]
 
 end Submodule
