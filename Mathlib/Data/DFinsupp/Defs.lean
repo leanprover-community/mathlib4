@@ -1162,6 +1162,7 @@ theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i
 
 section mapRange.equiv
 variable [∀ i, Zero (β i)] [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
+
 /-- `DFinsupp.mapRange` as an equiv.
 
 Note that while `he'` is redundant, it allows `equiv_symm` to fire in both directions, as the
