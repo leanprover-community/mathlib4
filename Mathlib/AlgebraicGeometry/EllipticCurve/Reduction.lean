@@ -55,6 +55,12 @@ it has coefficients in the ring `R`. -/
 class IsIntegral (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
+def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    WeierstrassCurve R :=
+  hW.choose
+
+  
+
 omit [IsFractionRing R K] in
 lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
     (h₁ : ∃ r₁, (algebraMap R K) r₁ = W.a₁)
