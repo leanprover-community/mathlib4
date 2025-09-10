@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Nat.Notation
+import Mathlib.Logic.Function.Iterate
 
 /-!
 # Definition of `Stream'` and functions on streams
@@ -17,57 +18,63 @@ universe u v w
 variable {α : Type u} {β : Type v} {δ : Type w}
 
 /-- A stream `Stream' α` is an infinite sequence of elements of `α`. -/
-def Stream' (α : Type u) := ℕ → α
+structure Stream' (α : Type u) where
+  /-- Prefer to use `[]` (`getElem`) notation instead. -/
+  private get' : ℕ → α
 
 namespace Stream'
 
+/-- Get the `n`-th element of a stream. -/
+instance : GetElem (Stream' α) ℕ α (fun _ _ => True) where
+  getElem s n _ := s.get' n
+
 /-- Prepend an element to a stream. -/
-def cons (a : α) (s : Stream' α) : Stream' α
+def cons (a : α) (s : Stream' α) : Stream' α where
+  get'
   | 0 => a
-  | n + 1 => s n
+  | n + 1 => s[n]
 
 @[inherit_doc] scoped infixr:67 " :: " => cons
 
-/-- Get the `n`-th element of a stream. -/
-def get (s : Stream' α) (n : ℕ) : α := s n
+@[simp, deprecated "use `s[n]` instead" (since := "2025-09-10")]
+def get (s : Stream' α) (n : ℕ) : α := s[n]
 
 /-- Head of a stream: `Stream'.head s = Stream'.get s 0`. -/
-abbrev head (s : Stream' α) : α := s.get 0
+abbrev head (s : Stream' α) : α := s[0]
 
 /-- Tail of a stream: `Stream'.tail (h :: t) = t`. -/
-def tail (s : Stream' α) : Stream' α := fun i => s.get (i + 1)
+def tail (s : Stream' α) : Stream' α where get' i := s[i + 1]
 
 /-- Drop first `n` elements of a stream. -/
-def drop (n : ℕ) (s : Stream' α) : Stream' α := fun i => s.get (i + n)
+def drop (n : ℕ) (s : Stream' α) : Stream' α where get' i := s[i + n]
 
 /-- Proposition saying that all elements of a stream satisfy a predicate. -/
-def All (p : α → Prop) (s : Stream' α) := ∀ n, p (get s n)
+def All (p : α → Prop) (s : Stream' α) := ∀ n : ℕ, p s[n]
 
 /-- Proposition saying that at least one element of a stream satisfies a predicate. -/
-def Any (p : α → Prop) (s : Stream' α) := ∃ n, p (get s n)
+def Any (p : α → Prop) (s : Stream' α) := ∃ n : ℕ, p s[n]
 
 /-- `a ∈ s` means that `a = Stream'.get n s` for some `n`. -/
 instance : Membership α (Stream' α) :=
   ⟨fun s a => Any (fun b => a = b) s⟩
 
 /-- Apply a function `f` to all elements of a stream `s`. -/
-def map (f : α → β) (s : Stream' α) : Stream' β := fun n => f (get s n)
+def map (f : α → β) (s : Stream' α) : Stream' β where get' n := f s[n]
 
 /-- Zip two streams using a binary operation:
 `Stream'.get n (Stream'.zip f s₁ s₂) = f (Stream'.get s₁) (Stream'.get s₂)`. -/
-def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ :=
-  fun n => f (get s₁ n) (get s₂ n)
+def zip (f : α → β → δ) (s₁ : Stream' α) (s₂ : Stream' β) : Stream' δ where
+  get' n := f s₁[n] s₂[n]
 
 /-- Enumerate a stream by tagging each element with its index. -/
-def enum (s : Stream' α) : Stream' (ℕ × α) := fun n => (n, s.get n)
+def enum (s : Stream' α) : Stream' (ℕ × α) where get' n := (n, s[n])
 
 /-- The constant stream: `Stream'.get n (Stream'.const a) = a`. -/
-def const (a : α) : Stream' α := fun _ => a
+def const (a : α) : Stream' α where get' _ := a
 
 /-- Iterates of a function as a stream. -/
-def iterate (f : α → α) (a : α) : Stream' α
-  | 0 => a
-  | n + 1 => f (iterate f a n)
+def iterate (f : α → α) (a : α) : Stream' α where
+  get' n := Nat.iterate f n a
 
 /-- Given functions `f : α → β` and `g : α → α`, `corec f g` creates a stream by:
 1. Starting with an initial value `a : α`
@@ -158,11 +165,11 @@ def pure (a : α) : Stream' α :=
   const a
 
 /-- Given a stream of functions and a stream of values, apply `n`-th function to `n`-th value. -/
-def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β := fun n => (get f n) (get s n)
+def apply (f : Stream' (α → β)) (s : Stream' α) : Stream' β where get' n := f[n] s[n]
 
 @[inherit_doc] infixl:75 " ⊛ " => apply -- input as `\circledast`
 
 /-- The stream of natural numbers: `Stream'.get n Stream'.nats = n`. -/
-def nats : Stream' ℕ := fun n => n
+def nats : Stream' ℕ where get' n := n
 
 end Stream'
