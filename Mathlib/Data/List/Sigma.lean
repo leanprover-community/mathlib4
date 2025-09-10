@@ -181,8 +181,8 @@ theorem of_mem_dlookup {a : α} {b : β a} :
   | ⟨a', b'⟩ :: l, H => by
     by_cases h : a = a'
     · subst a'
-      simp? at H says simp only [dlookup_cons_eq, Option.mem_def, Option.some.injEq] at H
-      simp [H]
+      have : b' = b := by simpa using H
+      simp [this]
     · simp only [ne_eq, h, not_false_iff, dlookup_cons_ne] at H
       simp [of_mem_dlookup H]
 
