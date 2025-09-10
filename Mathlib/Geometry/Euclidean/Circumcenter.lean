@@ -157,10 +157,8 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       · simp_rw [hi default, Set.singleton_subset_iff]
         exact ⟨⟨⟩, by simp only [Metric.sphere_zero, Set.mem_singleton_iff]⟩
       · rintro ⟨cc, cr⟩
-        simp only
         rintro ⟨rfl, hdist⟩
-        simp? [Set.singleton_subset_iff] at hdist says
-          simp only [Set.singleton_subset_iff, Metric.mem_sphere, dist_self] at hdist
+        replace hdist : 0 = cr := by simpa using hdist
         rw [hi default, hdist]
     · have i := hne.some
       let ι2 := { x // x ≠ i }

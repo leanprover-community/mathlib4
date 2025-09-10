@@ -602,8 +602,7 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   ⟨f '' c, hfc.image f, by
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
-    simp? [subset_def] at hct says
-      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
+    have hct : ∀ x ∈ s, ∃ i ∈ c, (f x, f i) ∈ t := by simpa [subset_def] using hct
     intro x hx
     simpa using hct x hx⟩
 

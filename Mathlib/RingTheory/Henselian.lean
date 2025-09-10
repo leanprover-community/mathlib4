@@ -75,7 +75,7 @@ theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   rw [← (Ideal.Quotient.mk _).map_mul, ← (Ideal.Quotient.mk _).map_one, Ideal.Quotient.eq,
     Ideal.mem_jacobson_bot] at h1 h2
   specialize h1 1
-  simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
+  have h1 : IsUnit a ∧ IsUnit y := by simpa using h1
   exact h1.1
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
