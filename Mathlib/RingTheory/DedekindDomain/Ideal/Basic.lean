@@ -90,17 +90,32 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit [Algebra A K] [IsFractio
 
 namespace IsDedekindDomainInv
 
-variable [Algebra A K] [IsFractionRing A K] (h : IsDedekindDomainInv A)
+variable [Algebra A K] [IsFractionRing A K] (h : IsDedekindDomainInv A) {I J : FractionalIdeal A⁰ K}
 include h
 
-theorem mul_inv_eq_one {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : I * I⁻¹ = 1 :=
+@[simp] protected lemma mul_inv_cancel (hI : I ≠ 0) : I * I⁻¹ = 1 :=
   isDedekindDomainInv_iff.mp h I hI
 
-theorem inv_mul_eq_one {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : I⁻¹ * I = 1 :=
-  (mul_comm _ _).trans (h.mul_inv_eq_one hI)
+@[simp] protected lemma inv_mul_cancel (hI : I ≠ 0) : I⁻¹ * I = 1 :=
+  (mul_comm _ _).trans (h.mul_inv_cancel hI)
+
+@[deprecated (since := "2025-09-09")] alias mul_inv_eq_one := IsDedekindDomainInv.mul_inv_cancel
+@[deprecated (since := "2025-09-09")] alias inv_mul_eq_one := IsDedekindDomainInv.inv_mul_cancel
+
+@[simp] protected lemma inv_mul_cancel_left (hI : I ≠ 0) (J : FractionalIdeal A⁰ K) :
+    I⁻¹ * (I * J) = J := by simp [← mul_assoc, *]
+
+@[simp] protected lemma mul_inv_cancel_left (hI : I ≠ 0) (J : FractionalIdeal A⁰ K) :
+    I * (I⁻¹ * J) = J := by simp [← mul_assoc, *]
+
+@[simp] protected lemma mul_inv_cancel_right (hJ : J ≠ 0) (I : FractionalIdeal A⁰ K) :
+    (I * J) * J⁻¹ = I := by simp [mul_assoc, *]
+
+@[simp] protected lemma inv_mul_cancel_right (hJ : J ≠ 0) (I : FractionalIdeal A⁰ K) :
+    (I * J⁻¹) * J = I := by simp [mul_assoc, *]
 
 protected theorem isUnit {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : IsUnit I :=
-  isUnit_of_mul_eq_one _ _ (h.mul_inv_eq_one hI)
+  isUnit_of_mul_eq_one _ _ (h.mul_inv_cancel hI)
 
 theorem isNoetherianRing : IsNoetherianRing A := by
   refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A => ?_⟩
@@ -133,24 +148,20 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
   suffices (M⁻¹ : FractionalIdeal A⁰ (FractionRing A)) * P ≤ P by
     rw [eq_top_iff, ← coeIdeal_le_coeIdeal (FractionRing A), coeIdeal_top]
     calc
-      (1 : FractionalIdeal A⁰ (FractionRing A)) = _ * _ * _ := ?_
-      _ ≤ _ * _ := mul_right_mono
-        ((P : FractionalIdeal A⁰ (FractionRing A))⁻¹ * M : FractionalIdeal A⁰ (FractionRing A)) this
-      _ = M := ?_
-    · rw [mul_assoc, ← mul_assoc (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne,
-      one_mul, h.inv_mul_eq_one M'_ne]
-    · rw [← mul_assoc (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne, one_mul]
+      (1 : FractionalIdeal A⁰ (FractionRing A)) = (↑M)⁻¹ * P * ((↑P)⁻¹ * M) := by
+        simp [mul_assoc, *]
+      _ ≤ P * ((↑P)⁻¹ * M) := by gcongr
+      _ = M := by simp [← mul_assoc, *]
   -- Suppose we have `x ∈ M⁻¹ * P`, then in fact `x = algebraMap _ _ y` for some `y`.
   intro x hx
   have le_one : (M⁻¹ : FractionalIdeal A⁰ (FractionRing A)) * P ≤ 1 := by
-    rw [← h.inv_mul_eq_one M'_ne]
-    exact mul_left_mono _ ((coeIdeal_le_coeIdeal (FractionRing A)).mpr hM.le)
+    rw [← h.inv_mul_cancel M'_ne]; gcongr
   obtain ⟨y, _hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
   -- Since `M` is strictly greater than `P`, let `z ∈ M \ P`.
   obtain ⟨z, hzM, hzp⟩ := SetLike.exists_of_lt hM
   -- We have `z * y ∈ M * (M⁻¹ * P) = P`.
   have zy_mem := mul_mem_mul (mem_coeIdeal_of_mem A⁰ hzM) hx
-  rw [← RingHom.map_mul, ← mul_assoc, h.mul_inv_eq_one M'_ne, one_mul] at zy_mem
+  rw [← RingHom.map_mul, ← mul_assoc, h.mul_inv_cancel M'_ne, one_mul] at zy_mem
   obtain ⟨zy, hzy, zy_eq⟩ := (mem_coeIdeal A⁰).mp zy_mem
   rw [IsFractionRing.injective A (FractionRing A) zy_eq] at hzy
   -- But `P` is a prime ideal, so `z ∉ P` implies `y ∈ P`, as desired.
@@ -336,14 +347,14 @@ theorem mul_right_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ :
   intro I I'
   constructor
   · intro h
-    convert mul_right_mono J⁻¹ h <;> dsimp only <;>
+    convert mul_left_mono J⁻¹ h <;> dsimp only <;>
     rw [mul_assoc, FractionalIdeal.mul_inv_cancel hJ, mul_one]
-  · exact fun h => mul_right_mono J h
+  · exact fun h => mul_left_mono J h
 
 theorem mul_left_le_iff [IsDedekindDomain A] {J : FractionalIdeal A⁰ K} (hJ : J ≠ 0) {I I'} :
     J * I ≤ J * I' ↔ I ≤ I' := by convert mul_right_le_iff hJ using 1; simp only [mul_comm]
 
-theorem mul_right_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
+theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
     StrictMono (· * I) :=
   strictMono_of_le_iff_le fun _ _ => (mul_right_le_iff hI).symm
 
@@ -446,8 +457,7 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
       rw [hI, hJ]
     have hI' : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
     have : (I : FractionalIdeal A⁰ (FractionRing A))⁻¹ * J ≤ 1 := by
-      rw [← inv_mul_cancel₀ hI']
-      exact mul_left_mono _ ((coeIdeal_le_coeIdeal _).mpr h)
+      rw [← inv_mul_cancel₀ hI']; gcongr
     obtain ⟨H, hH⟩ := le_one_iff_exists_coeIdeal.mp this
     use H
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)

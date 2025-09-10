@@ -22,7 +22,7 @@ Let `S` be a submonoid of an integral domain `R` and `P` the localization of `R`
 
 ## Main statements
 
-  * `mul_left_mono` and `mul_right_mono` state that ideal multiplication is monotone
+  * the `MulLeftMono` and `MulRightMono` instances state that ideal multiplication is monotone
   * `mul_div_self_cancel_iff` states that `1 / I` is the inverse of `I` if one exists
 
 ## Implementation notes
@@ -281,6 +281,8 @@ theorem coeIdeal_le_coeIdeal' [IsLocalization S P] (h : S ≤ nonZeroDivisors R)
 theorem coeIdeal_le_coeIdeal (K : Type*) [CommRing K] [Algebra R K] [IsFractionRing R K]
     {I J : Ideal R} : (I : FractionalIdeal R⁰ K) ≤ J ↔ I ≤ J :=
   IsFractionRing.coeSubmodule_le_coeSubmodule
+
+@[gcongr] protected alias ⟨_, GCongr.coeIdeal_le_coeIdeal⟩ := coeIdeal_le_coeIdeal
 
 instance : Zero (FractionalIdeal S P) :=
   ⟨(0 : Ideal R)⟩
@@ -553,12 +555,20 @@ theorem coeIdeal_mul (I J : Ideal R) : (↑(I * J) : FractionalIdeal S P) = I * 
   simp only [mul_def]
   exact coeToSubmodule_injective (coeSubmodule_mul _ _ _)
 
-theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := by
+instance : MulLeftMono (FractionalIdeal S P) where
+  elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
+
+instance : MulRightMono (FractionalIdeal S P) where
+  elim I J J' h := by simpa only [mul_def] using mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
+
+@[deprecated _root_.mul_right_mono (since := "2025-09-09")]
+protected theorem mul_left_mono (I : FractionalIdeal S P) : Monotone (I * ·) := by
   intro J J' h
   simp only [mul_def]
   exact mul_le.mpr fun x hx y hy => mul_mem_mul hx (h hy)
 
-theorem mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := by
+@[deprecated _root_.mul_left_mono (since := "2025-09-09")]
+protected theorem mul_right_mono (I : FractionalIdeal S P) : Monotone fun J => J * I := by
   intro J J' h
   simp only [mul_def]
   exact mul_le.mpr fun x hx y hy => mul_mem_mul (h hx) hy
@@ -631,11 +641,11 @@ theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : Fracti
   mul_le.mpr fun _ hk _ hj => mul_mem_mul hk (hIJ hj)
 
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I := by
-  convert mul_left_mono I hI
+  convert mul_right_mono hI
   exact (mul_one I).symm
 
 theorem mul_self_le_self {I : FractionalIdeal S P} (hI : I ≤ 1) : I * I ≤ I := by
-  convert mul_left_mono I hI
+  convert mul_right_mono hI
   exact (mul_one I).symm
 
 theorem coeIdeal_le_one {I : Ideal R} : (I : FractionalIdeal S P) ≤ 1 := fun _ hx =>
