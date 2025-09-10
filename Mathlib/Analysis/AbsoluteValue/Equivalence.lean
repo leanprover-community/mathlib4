@@ -19,10 +19,10 @@ section OrderedSemiring
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
   (v w : AbsoluteValue R S)
 
-/-- Two absolute values `v` and `w` are *order equivalent* if `v x < 1` precisely when `w x < 1`.
+/-- Two absolute values `v` and `w` are *order equivalent* if `v x ≤ v y` precisely when
+`w x ≤ w y`.
 
-Note that when `S` has a linear order this is equivalent to `∀ x y, v x < v y ↔ w x < w y`. It is
-also equivalent to `v.IsEquiv w` when `v` and `w` are real absolute values. -/
+Note that this is equivalent to `v.IsEquiv w` when `v` and `w` are real absolute values. -/
 def IsOrderEquiv : Prop := ∀ x y, v x ≤ v y ↔ w x ≤ w y
 
 theorem IsOrderEquiv.refl : v.IsOrderEquiv v := fun _ _ ↦ .rfl
