@@ -67,8 +67,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-@[simp, mfld_simps]
-theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+@[simp, mfld_simps, grind =]
+theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ setOf p) = p x := rfl
 
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
 hence the explicit argument and the equality in the reverse direction from normal.
