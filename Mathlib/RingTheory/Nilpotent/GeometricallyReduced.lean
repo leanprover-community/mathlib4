@@ -43,7 +43,7 @@ attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
 instance geometricallyReduced_indep_of_algebraicClosure (k : Type u) (A : Type v) [Field k] [Ring A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
-    (h : IsGeometricallyReduced k A) : IsReduced (K ⊗[k] A) :=
+    [h : IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
   isReduced_of_injective
     (Algebra.TensorProduct.map
       ((↑(IsAlgClosure.equiv k K (AlgebraicClosure k)) : K →ₐ[k] AlgebraicClosure k)) 1)
@@ -55,21 +55,10 @@ lemma isGeometricallyReduced_of_injective {B : Type w} [Ring B] [Algebra k B] (f
   ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
 
-
 theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsReduced A :=
   isReduced_of_injective
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
     (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
-
-lemma exists_fg_and_mem_baseChange {k : Type u} {A : Type v} {B : Type w} [CommRing k] [CommRing A]
-    [CommRing B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
-    ∃ C : Subalgebra k B, C.FG ∧ x ∈ subAlgebra.baseChange A C := by
-  obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
-  classical
-  refine ⟨Algebra.adjoin k (S.image fun j ↦ j.2), ?_, ?_⟩
-  · exact Subalgebra.fg_adjoin_finset _
-  · exact hS ▸ Subalgebra.sum_mem _ fun s hs ↦ ⟨s.1 ⊗ₜ[k] ⟨s.2, Algebra.subset_adjoin
-      (Finset.mem_image_of_mem _ hs)⟩, rfl⟩
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
