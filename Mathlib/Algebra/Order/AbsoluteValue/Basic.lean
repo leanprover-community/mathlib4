@@ -117,10 +117,6 @@ protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ abv x = 0 := by
   simp [le_antisymm_iff, abv.nonneg]
 
-variable {abv} in
-theorem pos_of_pos (abv' : AbsoluteValue R S) {a : R} (hv : 0 < abv a) : 0 < abv' a := by
-  rwa [AbsoluteValue.pos_iff] at hv ⊢
-
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
