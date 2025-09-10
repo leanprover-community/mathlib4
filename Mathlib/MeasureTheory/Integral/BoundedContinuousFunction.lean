@@ -105,7 +105,8 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
 noncomputable def integralFiniteMeasure (𝕜 E F : Type*) [NormedField 𝕜]
   [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [SecondCountableTopology F]
-  [MeasurableSpace F] [BorelSpace F] (μ : Measure E) [IsFiniteMeasure μ] : (E →ᵇ F) →L[𝕜] F :=
+  [MeasurableSpace F] [BorelSpace F] (μ : Measure E) [IsFiniteMeasure μ] :
+    (E →ᵇ F) →L[𝕜] F :=
   LinearMap.mkContinuous
   ({
     toFun := (∫ x, · x ∂μ)
