@@ -469,6 +469,17 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 
+/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast
+    {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :
+    R i ≃+* R j where
+  __ := AddEquiv.cast h
+  __ := MulEquiv.cast h
+
 /-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
 
