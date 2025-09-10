@@ -593,8 +593,6 @@ jobs:
 
       - name: check the PR title format
         if: github.event.pull_request.draft == false && github.event.pull_request.base == 'master'
-        runs-on: ubuntu-latest
-        shell: bash
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |

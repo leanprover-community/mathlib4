@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Batteries.Data.HashMap
-import Batteries.Data.String.Matcher
+import Mathlib.Init
 
 /-!
 # Checker for well-formed title and labels
@@ -16,7 +15,7 @@ verify whether the title or body are written in present imperative tense.
 -/
 
 /-- Split a string in two, at a given position. Assumes `pos` is valid. -/
--- FIXME: this should be added to batteries, as a version of "splitOn"
+-- TODO: this should be added to batteries, as a version of `splitOn`
 def splitAtPos (s : String) (pos : String.Pos) : String × String :=
   let before := s.extract 0 pos
   let after := s.extract (s.next pos) s.endPos
@@ -25,11 +24,12 @@ def splitAtPos (s : String) (pos : String.Pos) : String × String :=
 /--
 Check if `title` matches the mathlib conventions for PR titles
 (documented at https://leanprover-community.github.io/contribute/commit.html).
+
 Not all checks are implemented: for instance, no effort is made to verify if the title or body
 are written in present imperative tense.
 Return all error messages for violations found.
 -/
-def validateTitle (title: String) : Array String := Id.run do
+def validateTitle (title : String) : Array String := Id.run do
   -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
   if !title.contains ':' then
     return #["error: the PR title does not contain a colon"]
