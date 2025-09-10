@@ -85,7 +85,7 @@ theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m : ℕ} (hmn
   rw [dpow_eq_of_mem (Ideal.add_mem I hx hy)]
   simp only [dpow]
   rw [inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hmn),
-    Finset.mul_sum, Commute.add_pow' (Commute.all _ _)]
+    Finset.mul_sum, add_pow']
   apply Finset.sum_congr rfl
   intro k hk
   rw [if_pos hx, if_pos hy]
