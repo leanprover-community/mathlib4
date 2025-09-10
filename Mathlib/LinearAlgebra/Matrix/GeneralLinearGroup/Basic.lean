@@ -21,32 +21,30 @@ variable {R n : Type*} [Fintype n]
 
 /-- This takes in a non-unital algebra homomorphism `f` and vectors `y, z : n → R`
 and constructs a linear operator on `(n → R)` such that `x ↦ f (vecMulVec x y) *ᵥ z`. -/
-private def NonUnitalAlgHom.apply_vecMulVec_mulVec [Semiring R]
+private def NonUnitalAlgHom.toLinearEquivAux [Semiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) :
     (n → R) →ₗ[R] (n → R) :=
   (mulVecBilin R ℕ).flip z ∘ₗ (↑f : Matrix n n R →ₗ[R] Matrix n n R) ∘ₗ (vecMulVecBilin R ℕ).flip y
 
 @[simp]
-private theorem NonUnitalAlgHom.apply_vecMulVec_mulVec_apply [Semiring R]
+private theorem NonUnitalAlgHom.toLinearEquivAux_apply [Semiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (x y z : n → R) :
-  f.apply_vecMulVec_mulVec y z x = f (vecMulVec x y) *ᵥ z := rfl
+  f.toLinearEquivAux y z x = f (vecMulVec x y) *ᵥ z := rfl
 
 variable [DecidableEq n]
 
-private theorem NonUnitalAlgHom.toMatrix'_apply_vecMulVec_mulVec_mul [CommSemiring R]
+private theorem NonUnitalAlgHom.toMatrix'_toLinearEquivAux_mul [CommSemiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
-    (f.apply_vecMulVec_mulVec y z).toMatrix' * A = f A * (f.apply_vecMulVec_mulVec y z).toMatrix' :=
+    (f.toLinearEquivAux y z).toMatrix' * A = f A * (f.toLinearEquivAux y z).toMatrix' :=
   toLin'.injective <| LinearMap.ext fun x =>
-  let T := f.apply_vecMulVec_mulVec y z
+  let T := f.toLinearEquivAux y z
   calc
-    (T.toMatrix' * A) *ᵥ x = T (A *ᵥ x) := by
-      ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
-    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, NonUnitalAlgHom.apply_vecMulVec_mulVec_apply]
+    (T.toMatrix' * A) *ᵥ x = T (A *ᵥ x) := by ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
+    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, NonUnitalAlgHom.toLinearEquivAux_apply]
     _ = f (A * vecMulVec x y) *ᵥ z := by
       simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
     _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
-    _ = f A *ᵥ T x := by
-      simp only [← mulVec_mulVec]; rfl
+    _ = f A *ᵥ T x := by simp only [← mulVec_mulVec]; rfl
     _ = (f A * T.toMatrix') *ᵥ x := by
       simp_rw [← mulVec_mulVec, ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
 
@@ -65,23 +63,19 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
       rwa [← toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff] at this
     rw [← ne_eq, EmbeddingLike.map_ne_zero_iff]
     exact vecMulVec_ne_zero hu hv
-  let T := f.toAlgHom.toNonUnitalAlgHom.apply_vecMulVec_mulVec v z
+  let T := f.toAlgHom.toNonUnitalAlgHom.toLinearEquivAux v z
   have this A : T.toMatrix' * A = f A * T.toMatrix' :=
-    f.toAlgHom.toNonUnitalAlgHom.toMatrix'_apply_vecMulVec_mulVec_mul v z A
+    f.toAlgHom.toNonUnitalAlgHom.toMatrix'_toLinearEquivAux_mul v z A
   suffices hM : IsUnit T.toMatrix' from ⟨hM.unit, fun A => this A |>.symm⟩
   simp_rw [← isUnit_toLin'_iff, toLin'_toMatrix', isUnit_iff_range_eq_top, range_eq_top]
   intro w
-  obtain ⟨B, hB⟩ : ∃ B : Matrix n n R, f B *ᵥ T u = w := by
-    obtain ⟨d, hd⟩ : ∃ d : n → R, T u ⬝ᵥ d = 1 := by
-      have hi : T u ≠ 0 := by simpa [T, NonUnitalAlgHom.apply_vecMulVec_mulVec]
-      obtain ⟨q, hq⟩ := Function.ne_iff.mp hi
-      use Pi.single q (T u q)⁻¹
-      rw [dotProduct_single, mul_inv_cancel₀ hq]
-    obtain ⟨B, hB⟩ := f.surjective (vecMulVec w d)
-    use B
-    rw [hB, vecMulVec_mulVec, dotProduct_comm, hd, MulOpposite.op_one, one_smul]
-  use B *ᵥ u
-  simp_rw [← toMatrix'_mulVec, mulVec_mulVec, this, ← mulVec_mulVec, toMatrix'_mulVec, hB]
+  obtain ⟨q, hq : T u q ≠ 0⟩ := Function.ne_iff.mp hz
+  let d : n → R := Pi.single q (T u q)⁻¹
+  have hd : T u ⬝ᵥ d = 1 := by rw [dotProduct_single, mul_inv_cancel₀ hq]
+  use f.symm (vecMulVec w d) *ᵥ u
+  have h : f (f.symm (vecMulVec w d)) *ᵥ T u = w := by
+    rw [f.apply_symm_apply, vecMulVec_mulVec, dotProduct_comm, hd, MulOpposite.op_one, one_smul]
+  simp_rw [← toMatrix'_mulVec, mulVec_mulVec, this, ← mulVec_mulVec, toMatrix'_mulVec, h]
 
 /-- Alternate statement of `coe_eq_generalLinearGroup_conjugate`. -/
 theorem mulSemiringActionToAlgEquiv_conjAct_surjective [Field R] :
