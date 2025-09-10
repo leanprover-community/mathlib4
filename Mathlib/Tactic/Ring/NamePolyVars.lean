@@ -58,12 +58,6 @@ deriving Inhabited, DecidableEq, Hashable, Repr
 if it is multivariate, the `type` (e.g. `Polynomial`), the constant term `c` (e.g. `Polynomial.C`),
 and the formal variable(s) `x` (e.g. `Polynomial.X`). -/
 structure Notation where
-  /-- The opening bracket. -/
-  opening : String
-  /-- The closing bracket. -/
-  closing : String
-  /-- Whether the notation is multivariate. -/
-  mv? : Bool
   /-- The polynomial-like type of the notation. -/
   type : Term
   /-- The constant term of the notation. -/
@@ -71,12 +65,6 @@ structure Notation where
   /-- The formal variable(s) of the notation. -/
   x : Term
 deriving Inhabited, Repr
-
-/-- Get the signature of a polynomial-like notation. -/
-def Notation.signature (n : Notation) : NotationSignature where
-  opening := n.opening
-  closing := n.closing
-  mv? := n.mv?
 
 /-- The category that in the future will contain things like:
 `syntax "[" vars "]" : polyesque_notation` -/
@@ -138,11 +126,11 @@ def Lean.TSyntax.rawTermDecl : TermDecl → String
 abbrev NotationTable := Std.HashMap NotationSignature Notation
 
 /-- The environmental extension for registered polynomial-like notations. -/
-abbrev NotationTableExt := SimpleScopedEnvExtension Notation NotationTable
+abbrev NotationTableExt := SimpleScopedEnvExtension (NotationSignature × Notation) NotationTable
 
 /-- Initialize the notation table extension. -/
 initialize notationTableExt : NotationTableExt ← registerSimpleScopedEnvExtension <|
-  { addEntry old new := insert (new.signature, new) old
+  { addEntry old new := insert (new.1, new.2) old
     initial := {} }
 
 /-- Usage:
@@ -172,18 +160,21 @@ def registerElab : CommandElab := fun stx ↦ do
   -- register the new syntax to the global table
   trace[name_poly_vars] m!"Registering new syntax: {opening} {mv?} {closing}"
   notationTableExt.add
-    { opening := opening
-      closing := closing
-      mv? := mv?.varDeclToBool
-      type := type.term
-      c := c.term
-      x := x.term }
+    ({  opening := opening
+        closing := closing
+        mv? := mv?.varDeclToBool },
+      { type := type.term
+        c := c.term
+        x := x.term })
     .global
   trace[name_poly_vars] m!"New table size: {(notationTableExt.getState (← getEnv)).size}"
 
 /-- A parsed body for one polynomial-like notation, consisting of the type of the notation
 (e.g. `MvPolynomial`) and the array of variable identifiers (or one identifier). -/
-abbrev Body : Type := Notation × (Ident ⊕ Array Ident)
+structure Body : Type where
+  signature : NotationSignature
+  main : Notation
+  vars : (Ident ⊕ Array Ident)
 
 /-- Get the `Body` from a polynomial-like notation. -/
 def Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body := do
@@ -195,31 +186,31 @@ def Lean.TSyntax.polyesqueNotation (p : PolyesqueNotation) : CoreM Body := do
   have mv? : Bool := v.isRight
   let .some n := (notationTableExt.getState (← getEnv)).get? ⟨opening, closing, mv?⟩
     | throwError s!"Unrecognised polynomial-like syntax: {opening} {mv?.toVarDecl} {closing}"
-  return (n, v)
+  return ⟨⟨opening, closing, mv?⟩, n, v⟩
 
 /-- Create the functor for a polynomial-like notation, e.g. `[a,b]` gives `MvPolynomial (Fin 2)`. -/
 def Body.mkFunctor (b : Body) : CoreM Term :=
-  match b.snd with
-  | Sum.inl _ => `($b.fst.type)
-  | Sum.inr ns => `($b.fst.type (Fin $(quote ns.size)))
+  match b.vars with
+  | Sum.inl _ => `($b.main.type)
+  | Sum.inr ns => `($b.main.type (Fin $(quote ns.size)))
 
 /-- Create the constant term for a polynomial-like notation. -/
 def Body.mkC (b : Body) (term : Term) : CoreM Term :=
-  `($b.fst.c $term)
+  `($b.main.c $term)
 
 /-- Create the formal variable term(s) for a polynomial-like notation. -/
 def Body.mkX (b : Body) : CoreM (Array (Ident × Term)) :=
-  match b.snd with
-  | Sum.inl n => return #[(n, b.fst.x)]
-  | Sum.inr ns => ns.zipIdx.mapM fun n ↦ return (n.fst, ← `($b.fst.x $(quote n.snd)))
+  match b.vars with
+  | Sum.inl n => return #[(n, b.main.x)]
+  | Sum.inr ns => ns.zipIdx.mapM fun n ↦ return (n.fst, ← `($b.main.x $(quote n.snd)))
 
 /-- Convert the notation to a raw string. -/
 def Body.raw (b : Body) : String :=
-  b.fst.opening ++
-  (match b.snd with
+  b.signature.opening ++
+  (match b.vars with
     | Sum.inl n => s!"{n.getId}"
     | Sum.inr ns => ",".intercalate (ns.map fun n ↦ s!"{n.getId}").toList) ++
-  b.fst.closing
+  b.signature.closing
 
 /-- The syntax for polynomial-like notations, which is an unambiguous term declaration followed by
 one or more polynomial-like notations, e.g. `(Fin 37)[x,y,z][[t]]`. -/
