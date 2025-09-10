@@ -40,9 +40,13 @@ def checkTitleLabels : Cmd := `[Cli|
   If this PR is a feature PR, also verify that it has a topic label,
   and that there are no contradictory labels."
 
+  FLAGS:
+    "labels" : Array String; "list of label names of this PR\
+      These are optional; we merely use a WIP label to skip any checks of the PR title"
+
   ARGS:
     title : String; "this PR's title"
-    ...labels : Array String; "list of label names of this PR"
+
 ]
 
 /-- The entrypoint to the `lake exe check-title-labels` command. -/
