@@ -175,7 +175,7 @@ Ring Theory:
     Subfields: 'field_theory/subfield.html'
     Frobenius morphisms: 'frobenius'
     field $\Q$ of rational numbers: 'Rat.instField'
-    field $\R$ of real numbers: 'Real.field'
+    field $\R$ of real numbers: 'Real.instField'
     field $\C$ of complex numbers: 'Complex.instField'
     $\C$ is algebraically closed: 'Complex.exists_root'
     field of fractions of an integral domain: 'IsFractionRing'
@@ -277,7 +277,7 @@ Affine and Euclidean Geometry:
 Single Variable Real Analysis:
   Real numbers:
     definition of $\R$: 'Real'
-    field structure: 'Real.field'
+    field structure: 'Real.instField'
     order: 'Real.linearOrder'
   Sequences of real numbers:
     convergence: 'Filter.Tendsto'
