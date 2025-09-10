@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.Normed.Module.Convex
@@ -88,7 +88,7 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M)
   classical
     by_cases h : x = 0
     · simp only [h, hMp, norm_zero]
-    · obtain ⟨f, hf₁, hfx⟩ : ∃ f : E →L[𝕜] 𝕜, ‖f‖ = 1 ∧ f x = ‖x‖ := exists_dual_vector 𝕜 x h
+    · obtain ⟨f, hf₁, hfx⟩ : ∃ f : StrongDual 𝕜 E, ‖f‖ = 1 ∧ f x = ‖x‖ := exists_dual_vector 𝕜 x h
       calc
         ‖x‖ = ‖(‖x‖ : 𝕜)‖ := RCLike.norm_coe_norm.symm
         _ = ‖f x‖ := by rw [hfx]

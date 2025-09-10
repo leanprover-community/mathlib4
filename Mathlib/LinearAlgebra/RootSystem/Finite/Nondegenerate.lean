@@ -25,7 +25,7 @@ Weyl group.
 
 ## Main results:
 * `RootPairing.IsAnisotropic`: We say a finite root pairing is anisotropic if there are no roots /
-  coroots which have length zero wrt the root / coroot forms.
+  coroots which have length zero w.r.t. the root / coroot forms.
 * `RootPairing.rootForm_pos_of_nonzero`: `RootForm` is strictly positive on non-zero linear
   combinations of roots. This gives us a convenient way to eliminate certain Dynkin diagrams from
   the classification, since it suffices to produce a nonzero linear combination of simple roots with
@@ -60,7 +60,7 @@ section CommRing
 variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
 
 /-- We say a finite root pairing is anisotropic if there are no roots / coroots which have length
-zero wrt the root / coroot forms.
+zero w.r.t. the root / coroot forms.
 
 Examples include crystallographic pairings in characteristic zero
 `RootPairing.instIsAnisotropicOfIsCrystallographic` and pairings over ordered scalars.
@@ -196,7 +196,7 @@ private lemma finrank_corootSpan_le' :
   rw [← finrank_rootSpan_map_polarization_eq_finrank_corootSpan]
   exact Submodule.finrank_map_le P.Polarization (P.rootSpan R)
 
-/-- Equality of finranks when the base is a domain. -/
+/-- Equality of `finrank`s when the base is a domain. -/
 lemma finrank_corootSpan_eq' :
     finrank R (P.corootSpan R) = finrank R (P.rootSpan R) :=
   le_antisymm P.finrank_corootSpan_le' P.flip.finrank_corootSpan_le'
@@ -276,7 +276,7 @@ lemma rootForm_restrict_nondegenerate_of_isAnisotropic :
 lemma orthogonal_rootSpan_eq :
     P.RootForm.orthogonal (P.rootSpan R) = LinearMap.ker P.RootForm := by
   rw [← LinearMap.BilinForm.orthogonal_top_eq_ker P.rootForm_symmetric.isRefl]
-  refine le_antisymm ?_ (by intro; aesop)
+  refine le_antisymm ?_ (by intro; simp_all)
   rintro x hx y -
   simp only [LinearMap.BilinForm.mem_orthogonal_iff, LinearMap.BilinForm.IsOrtho] at hx ⊢
   obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by

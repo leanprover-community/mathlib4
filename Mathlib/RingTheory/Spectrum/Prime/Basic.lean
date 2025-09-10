@@ -425,7 +425,7 @@ open Submodule
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
-/-- In a noetherian ring, every ideal contains a product of prime ideals
+/-- In a Noetherian ring, every ideal contains a product of prime ideals
 ([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
@@ -456,7 +456,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
-/-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
+/-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
   product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
