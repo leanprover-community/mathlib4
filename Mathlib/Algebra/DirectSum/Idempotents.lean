@@ -42,7 +42,7 @@ theorem completeOrthogonalIdempotents_idempotent [Fintype I] :
   ortho i j hij := by
     simp only
     rw [← decompose_eq_mul_idempotent, idempotent, decompose_coe,
-      of_eq_of_ne (h := hij), Submodule.coe_zero]
+      of_eq_of_ne (h := hij.symm), Submodule.coe_zero]
   complete := by
     apply (decompose V).injective
     refine DFunLike.ext _ _ fun i ↦ ?_

@@ -292,7 +292,7 @@ def elab_proxy_equiv : Elab.Term.TermElab := fun stx expectedType? =>
     let (type, indVal) ← elabProxyEquiv t expectedType?
     let config : ProxyEquivConfig := ProxyEquivConfig.default indVal
     ensureProxyEquiv config indVal
-    mkAppOptM config.proxyEquivName (type.getAppArgs.map .some)
+    mkAppOptM config.proxyEquivName (type.getAppArgs.map some)
   | _ => throwUnsupportedSyntax
 
 end Mathlib.ProxyType

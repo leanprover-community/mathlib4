@@ -99,9 +99,7 @@ theorem coe_erase (a : α) (s : Finset α) : ↑(erase s a) = (s \ {a} : Set α)
 theorem erase_idem {a : α} {s : Finset α} : erase (erase s a) a = erase s a := by simp
 
 theorem erase_right_comm {a b : α} {s : Finset α} : erase (erase s a) b = erase (erase s b) a := by
-  ext x
-  simp only [mem_erase, ← and_assoc]
-  rw [@and_comm (x ≠ a)]
+  grind
 
 theorem erase_inj {x y : α} (s : Finset α) (hx : x ∈ s) : s.erase x = s.erase y ↔ x = y := by
   grind [eq_of_mem_of_notMem_erase]
