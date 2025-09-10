@@ -8,7 +8,7 @@ import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fintype.Defs
 
 /-!
-# `Finset`s are a boolean algebra
+# `Finset`s are a Boolean algebra
 
 This file provides the `BooleanAlgebra (Finset α)` instance, under the assumption that `α` is a
 `Fintype`.
@@ -16,7 +16,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 ## Main results
 
 * `Finset.boundedOrder`: `Finset.univ` is the top element of `Finset α`
-* `Finset.booleanAlgebra`: `Finset α` is a boolean algebra if `α` is finite
+* `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
 assert_not_exists Monoid

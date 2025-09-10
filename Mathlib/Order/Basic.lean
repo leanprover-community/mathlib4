@@ -1346,7 +1346,7 @@ end PUnit
 
 section «Prop»
 
-/-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
+/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
 instance Prop.le : LE Prop :=
   ⟨(· → ·)⟩
 

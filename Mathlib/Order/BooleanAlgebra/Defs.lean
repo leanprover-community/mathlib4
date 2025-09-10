@@ -151,8 +151,8 @@ namespace DistribLattice
 variable (α) [DistribLattice α]
 
 /--
-An alternative constructor for boolean algebras:
-a distributive lattice that is complemented is a boolean algebra.
+An alternative constructor for Boolean algebras:
+a distributive lattice that is complemented is a Boolean algebra.
 
 This is not an instance, because it creates data using choice.
 -/

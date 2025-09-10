@@ -244,9 +244,9 @@ def mkDivProof (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M) :
 /-- Extract a common factor `L` of two products-of-powers `l₁` and `l₂` in `M`, in the sense that
 both `l₁` and `l₂` are quotients by `L` of products of *positive* powers.
 
-The boolean flag `nonzero` specifies whether we extract a *certified nonzero* (and therefore
+The Boolean flag `nonzero` specifies whether we extract a *certified nonzero* (and therefore
 potentially smaller) common factor. The metaprogram returns a "proof" that this common factor is
-nonzero, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)`, but this will be junk if the boolean flag
+nonzero, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)`, but this will be junk if the Boolean flag
 `nonzero` is set to `false`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (nonzero : Bool) :
