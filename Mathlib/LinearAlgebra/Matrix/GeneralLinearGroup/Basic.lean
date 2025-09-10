@@ -30,23 +30,23 @@ private theorem auxLinear_apply [Semiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (x y z : n → R) :
   auxLinear f y z x = f (vecMulVec x y) *ᵥ z := rfl
 
+theorem auxLinear_mulVec [CommSemiring R]
+    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) (x : n → R) :
+    auxLinear f y z (A *ᵥ x) = f A *ᵥ auxLinear f y z x := by
+  let T := auxLinear f y z
+  calc
+    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [auxLinear_apply]
+    _ = f (A * vecMulVec x y) *ᵥ z := by
+      simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
+    _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
+    _ = f A *ᵥ T x := by simp only [← mulVec_mulVec]; rfl
 
 variable [DecidableEq n]
 
 private theorem toMatrix'_auxLinear_mul [CommSemiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
     (auxLinear f y z).toMatrix' * A = f A * (auxLinear f y z).toMatrix' :=
-  toLin'.injective <| LinearMap.ext fun x =>
-  let T := auxLinear f y z
-  calc
-    (T.toMatrix' * A) *ᵥ x = T (A *ᵥ x) := by ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
-    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, auxLinear_apply]
-    _ = f (A * vecMulVec x y) *ᵥ z := by
-      simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
-    _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
-    _ = f A *ᵥ T x := by simp only [← mulVec_mulVec]; rfl
-    _ = (f A * T.toMatrix') *ᵥ x := by
-      simp_rw [← mulVec_mulVec, ← toLin'_apply (LinearMap.toMatrix' T), toLin'_toMatrix']
+  toLin'.injective <| LinearMap.ext fun x => by simpa using auxLinear_mulVec f y z A x
 
 /-- Given an algebra automorphism `f` on `Matrix n n R`, there exists an invertible matrix `T`
 such that `f` is given by `x ↦ T * x * T⁻¹`. -/
