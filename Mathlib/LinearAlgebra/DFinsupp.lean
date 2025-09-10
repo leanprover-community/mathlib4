@@ -35,7 +35,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
+variable {ι ι' ι'' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
 
@@ -316,23 +316,18 @@ def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)
 @[simp]
 theorem domLCongr_refl : domLCongr (Equiv.refl ι) = LinearEquiv.refl R (Π₀ i, M i) := by ext; rfl
 
--- TODO: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/LinearEquiv.2Ecast.20.2F.20AddEquiv.2Ecast.20etc/near/521390380
-/-- `Equiv.cast` as a linear equiv. -/
-@[simps]
-def _root_.LinearEquiv.cast
-    {R} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-    {i j : ι} (h : i = j) :
-    M i ≃ₗ[R] M j where
-  __ := Equiv.cast (congrArg _ h)
-  map_add' _ _ := by cases h; rfl
-  map_smul' _ _ := by cases h; rfl
-
-
 @[simp]
 theorem domLCongr_symm (e : ι ≃ ι') :
     (domLCongr e : (Π₀ i, M i) ≃ₗ[R] _).symm =
       (domLCongr e.symm : (Π₀ i, M (e.symm i)) ≃ₗ[R] _) ≪≫ₗ
         (mapRange.linearEquiv fun i => LinearEquiv.cast (e.symm_apply_apply i)) := by
+    ext; simp [domLCongr, equivCongrLeft_symm]
+
+@[simp]
+theorem domLCongr_trans (e : ι ≃ ι') (e' : ι' ≃ ι'') :
+    (domLCongr e : (Π₀ i, M i) ≃ₗ[R] _).trans (domLCongr e' : (Π₀ i, M (e.symm i)) ≃ₗ[R] _) =
+      (domLCongr (e.trans e') : (Π₀ i, M i) ≃ₗ[R] _) ≪≫ₗ
+        (mapRange.linearEquiv fun _ => LinearEquiv.cast (by simp)) := by
     ext; simp [domLCongr, equivCongrLeft_symm]
 
 end domLCongr
