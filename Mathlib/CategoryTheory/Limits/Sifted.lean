@@ -77,8 +77,7 @@ instance [IsSifted C] : IsConnected C :=
         constructor
         · constructor
           · exact Zag.of_hom X.hom.fst
-          · simp
-            exact Zag.of_inv X.hom.snd
+          · simpa using Zag.of_inv X.hom.snd
         · rfl)
 
 /-- A category with binary coproducts is sifted or empty. -/
