@@ -826,6 +826,47 @@ lemma IsLocalRing.depth_eq_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R'
   · use List.map e.symm.toRingHom rs, (LinearEquiv.isRegular_congr' e'.symm rs).mp reg
     simpa [len]
 
+lemma IsLocalRing.depth_eq_of_algebraMap_surjective [IsLocalRing R] [IsNoetherianRing R]
+    {S : Type u} [CommRing S] [IsLocalRing S] [Algebra R S] [Small.{v} S] [IsNoetherianRing S]
+    (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M] [Module S M]
+    [IsScalarTower R S M] [Nontrivial M] (surj : Function.Surjective (algebraMap R S)) :
+    IsLocalRing.depth (ModuleCat.of R M) = IsLocalRing.depth (ModuleCat.of S M) := by
+  have : Module.Finite S M := Finite.of_restrictScalars_finite R S M
+  have loc_hom : IsLocalHom (algebraMap R S) :=
+    Function.Surjective.isLocalHom (algebraMap R S) surj
+  simp only [depth_eq_sSup_length_regular]
+  congr!
+  rename_i n
+  refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
+  · have mem' : ∀ r ∈ rs.map (algebraMap R S), r ∈ maximalIdeal S := by
+      intro r hr
+      simp only [List.mem_map] at hr
+      rcases hr with ⟨r', hr', eq⟩
+      simpa [← eq] using mem r' hr'
+    have reg' : RingTheory.Sequence.IsRegular M (rs.map (algebraMap R S)) := by
+      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff S M rs).mpr reg.1, ?_⟩
+      apply (ne_top_of_le_ne_top (Ne.symm _) (Submodule.smul_mono_left (span_le.mpr mem'))).symm
+      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      exact IsLocalRing.maximalIdeal_le_jacobson _
+    use rs.map (algebraMap R S), reg', mem'
+    simpa
+  · rcases List.map_surjective_iff.mpr surj rs with ⟨rs', hrs'⟩
+    have mem' : ∀ r ∈ rs', r ∈ maximalIdeal R := by
+      intro r hr
+      have : algebraMap R S r ∈ maximalIdeal S := by
+        apply mem
+        simp only [← hrs', List.mem_map]
+        use r
+      simpa using this
+    have reg' : RingTheory.Sequence.IsRegular M rs' := by
+      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff S M rs').mp
+        (by simpa [hrs'] using reg.1), ?_⟩
+      apply (ne_top_of_le_ne_top (Ne.symm _) (Submodule.smul_mono_left (span_le.mpr mem'))).symm
+      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      exact IsLocalRing.maximalIdeal_le_jacobson _
+    use rs', reg', mem'
+    simpa [← hrs'] using len
+
 omit [Small.{v, u} R] in
 lemma IsLocalRing.depth_quotient_regular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R] (x : R)
     (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
@@ -844,41 +885,9 @@ lemma IsLocalRing.depth_quotient_regular_succ_eq_depth [IsLocalRing R] [IsNoethe
   have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
     IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
   rw [← IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth (ModuleCat.of R R) x reg mem, eq_comm]
-  simp only [depth_eq_sSup_length_regular]
-  congr!
-  rename_i n
-  refine ⟨fun ⟨rs, reg, mem, len⟩ ↦ ?_, fun ⟨rs, reg, mem, len⟩ ↦ ?_⟩
-  · have mem' : ∀ r ∈ rs.map (algebraMap R (R ⧸ x • (⊤ : Ideal R))),
-      r ∈ maximalIdeal (R ⧸ x • ⊤) := by
-      intro r hr
-      simp only [Quotient.algebraMap_eq, List.mem_map] at hr
-      rcases hr with ⟨r', hr', eq⟩
-      simpa [← eq] using mem r' hr'
-    have reg' : RingTheory.Sequence.IsRegular (R ⧸ x • (⊤ : Ideal R))
-      (rs.map (algebraMap R (R ⧸ x • (⊤ : Ideal R)))) := by
-      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff
-        (R ⧸ x • (⊤ : Ideal R)) (R ⧸ x • (⊤ : Ideal R)) rs).mpr reg.1, ?_⟩
-      apply (ne_top_of_le_ne_top (Ne.symm _) (Ideal.mul_mono_left (span_le.mpr mem'))).symm
-      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-      exact IsLocalRing.maximalIdeal_le_jacobson _
-    use rs.map (algebraMap R (R ⧸ x • (⊤ : Ideal R))), reg', mem'
-    simpa
-  · rcases List.map_surjective_iff.mpr Ideal.Quotient.mk_surjective rs with ⟨rs', hrs'⟩
-    have mem' : ∀ r ∈ rs', r ∈ maximalIdeal R := by
-      intro r hr
-      have : (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r ∈ maximalIdeal (R ⧸ x • ⊤) := by
-        apply mem
-        simp only [← hrs', List.mem_map]
-        use r
-      simpa using this
-    have reg' : RingTheory.Sequence.IsRegular (QuotSMulTop x R) rs' := by
-      refine ⟨(RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff
-        (R ⧸ x • (⊤ : Ideal R)) (R ⧸ x • (⊤ : Ideal R)) rs').mp (by simpa [hrs'] using reg.1), ?_⟩
-      apply (ne_top_of_le_ne_top (Ne.symm _) (Submodule.smul_mono_left (span_le.mpr mem'))).symm
-      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-      exact IsLocalRing.maximalIdeal_le_jacobson _
-    use rs', reg', mem'
-    simpa [← hrs'] using len
+  congr 1
+  apply depth_eq_of_algebraMap_surjective _
+  simpa only [Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
 
 omit [Small.{v, u} R] in
 lemma IsLocalRing.depth_quotient_span_regular_succ_eq_depth [IsLocalRing R] [IsNoetherianRing R]
