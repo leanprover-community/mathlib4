@@ -137,9 +137,6 @@ theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 
-@[deprecated (since := "2024-12-20")]
-alias get_eq_get := get_eq_get_toList
-
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
   apply List.getElem_replicate
@@ -160,9 +157,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
-  conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
-  simp only [get_eq_get_toList]
-  congr <;> simp [Fin.heq_ext_iff]
+  simp [get_eq_get_toList]
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
@@ -217,7 +212,7 @@ retrieved via `toList`, is equal to the list of that single element. -/
 @[simp]
 theorem toList_singleton (v : Vector α 1) : v.toList = [v.head] := by
   rw [← v.cons_head_tail]
-  simp only [toList_cons, toList_nil, head_cons, eq_self_iff_true, and_self_iff, singleton_tail]
+  simp only [toList_cons, toList_nil, head_cons, singleton_tail]
 
 @[simp]
 theorem empty_toList_eq_ff (v : Vector α (n + 1)) : v.toList.isEmpty = false :=
@@ -368,7 +363,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList, List.get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -534,9 +529,12 @@ theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
 theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
 
-theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
+theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq (List.eraseIdx_insertIdx ..)
+  Subtype.eq (List.eraseIdx_insertIdx_self ..)
+
+@[deprecated (since := "2025-06-17")]
+alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -606,7 +604,7 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
 
 /-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element -/
 @[to_additive
-  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element"]
+  /-- Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element -/]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
@@ -649,7 +647,7 @@ protected theorem traverse_def (f : α → F β) (x : α) :
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = pure x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
-  simp! [IH]; rfl
+  simp! [IH]
 
 end
 
@@ -672,7 +670,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
-  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
+  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm]; rfl
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
@@ -698,46 +696,28 @@ instance : LawfulTraversable.{u} (flip Vector n) where
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
 
--- Porting note: not porting meta instances
--- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
---     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
---   @Vector.inductionOn α (fun n => reflected _) n v
---     ((by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.nil.{u}).subst
---       q(α))
---     fun n x xs ih =>
---     (by
---           trace
---             "./././Mathport/Syntax/Translate/Tactic/Builtin.lean:76:14:
---              unsupported tactic `reflect_name #[]" :
---           reflected _ @Vector.cons.{u}).subst₄
---       q(α) q(n) q(x) ih
-
 section Simp
 
 variable {x : α} {y : β} {s : σ} (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
-    replicate (n+1) val = val ::ᵥ (replicate n val) :=
+    replicate (n + 1) val = val ::ᵥ (replicate n val) :=
   rfl
 
 section Append
 variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) 0 = x := rfl
+@[simp] lemma get_append_cons_zero : get (x ::ᵥ xs ++ ys) 0 = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+    get (x ::ᵥ xs ++ ys) ⟨i+1, h⟩ = get (xs ++ ys) i :=
   rfl
 
 @[simp]
-theorem append_nil : append xs nil = xs := by
-  cases xs; simp [append]
+theorem append_nil : xs ++ (nil : Vector α 0) = xs := by
+  cases xs; simp only [append_def, append_nil]
 
 end Append
 

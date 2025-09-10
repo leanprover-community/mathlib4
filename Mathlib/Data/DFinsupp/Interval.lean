@@ -69,8 +69,6 @@ theorem mem_dfinsupp_iff_of_support_subset {t : Π₀ i, Finset (α i)} (ht : t.
 
 end Finset
 
-open Finset
-
 namespace DFinsupp
 
 section BundledSingleton

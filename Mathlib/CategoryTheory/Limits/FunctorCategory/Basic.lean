@@ -72,9 +72,7 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
     { obj := fun k => (c k).cone.pt
       map := fun {k₁} {k₂} f => (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
       map_id := fun k =>
-        (c k).isLimit.hom_ext fun j => by
-          dsimp
-          simp
+        (c k).isLimit.hom_ext fun j => by simp
       map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₃).isLimit.hom_ext fun j => by simp }
   π :=
     { app := fun j => { app := fun k => (c k).cone.π.app j }
@@ -104,7 +102,6 @@ def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
           rw [(t X).fac_assoc _ j]
           erw [← (c.ι.app j).naturality_assoc f]
           erw [(t Y).fac ⟨s.pt.obj _, whiskerRight s.ι _⟩ j]
-          dsimp
           simp }
   fac s j := by ext k; exact (t k).fac _ j
   uniq s m w := by
@@ -125,9 +122,7 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
     { obj := fun k => (c k).cocone.pt
       map := fun {k₁} {k₂} f => (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
       map_id := fun k =>
-        (c k).isColimit.hom_ext fun j => by
-          dsimp
-          simp
+        (c k).isColimit.hom_ext fun j => by simp
       map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₁).isColimit.hom_ext fun j => by simp }
   ι :=
     { app := fun j => { app := fun k => (c k).cocone.ι.app j }
@@ -187,15 +182,13 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
     HasColimitsOfShape J (K ⥤ C) where
   has_colimit _ := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
     HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_limits_of_shape := fun _ _ => inferInstance
+  has_limits_of_shape := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_colimits_of_shape := fun _ _ => inferInstance
+  has_colimits_of_shape := inferInstance
 
 instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
     HasLimit (F ⋙ (evaluation _ _).obj k) :=
@@ -203,7 +196,7 @@ instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.ob
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
     PreservesLimit F ((evaluation K C).obj k) :=
-    -- Porting note: added a let because X was not inferred
+  -- Porting note: added a let because X was not inferred
   let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
   preservesLimit_of_preserves_limit_cone (combinedIsLimit _ X) <|
     IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
@@ -241,7 +234,6 @@ theorem limit_map_limitObjIsoLimitCompEvaluation_hom [HasLimitsOfShape J C] {i j
     (F : J ⥤ K ⥤ C) (f : i ⟶ j) : (limit F).map f ≫ (limitObjIsoLimitCompEvaluation _ _).hom =
     (limitObjIsoLimitCompEvaluation _ _).hom ≫ limMap (whiskerLeft _ ((evaluation _ _).map f)) := by
   ext
-  dsimp
   simp
 
 @[reassoc (attr := simp)]
@@ -328,7 +320,6 @@ theorem colimitObjIsoColimitCompEvaluation_inv_colimit_map [HasColimitsOfShape J
       colimMap (whiskerLeft _ ((evaluation _ _).map f)) ≫
         (colimitObjIsoColimitCompEvaluation _ _).inv := by
   ext
-  dsimp
   simp
 
 @[reassoc (attr := simp)]
@@ -385,23 +376,11 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     change IsLimit ((F ⋙ (evaluation K C).obj X).mapCone c)
     exact isLimitOfPreserves _ hc⟩⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
-    (H : ∀ k : K, PreservesLimit G (F ⋙ (evaluation K C).obj k : D ⥤ C)) :
-    PreservesLimit G F :=
-  preservesLimit_of_evaluation _ _ H
-
 /-- `F : D ⥤ K ⥤ C` preserves limits of shape `J` if it does for each `k : K`. -/
 lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
     (_ : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfShape J F :=
   ⟨fun {G} => preservesLimit_of_evaluation F G fun _ => PreservesLimitsOfShape.preservesLimit⟩
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitsOfShapeOfEvaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
-    (H : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
-    PreservesLimitsOfShape J F :=
-  preservesLimitsOfShape_of_evaluation _ _ H
 
 /-- `F : D ⥤ K ⥤ C` preserves all limits if it does for each `k : K`. -/
 lemma preservesLimits_of_evaluation (F : D ⥤ K ⥤ C)
@@ -409,12 +388,6 @@ lemma preservesLimits_of_evaluation (F : D ⥤ K ⥤ C)
     PreservesLimitsOfSize.{w', w} F :=
   ⟨fun {L} _ =>
     preservesLimitsOfShape_of_evaluation F L fun _ => PreservesLimitsOfSize.preservesLimitsOfShape⟩
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitsOfEvaluation (F : D ⥤ K ⥤ C)
-    (H : ∀ k : K, PreservesLimitsOfSize.{w', w} (F ⋙ (evaluation K C).obj k)) :
-    PreservesLimitsOfSize.{w', w} F :=
-  preservesLimits_of_evaluation _ H
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves limits. -/
 instance preservesLimits_const : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
@@ -434,11 +407,6 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     haveI := H X
     change IsColimit ((F ⋙ (evaluation K C).obj X).mapCocone c)
     exact isColimitOfPreserves _ hc⟩⟩
-
-@[deprecated "No deprecation message was provided."  (since := "2024-11-19")]
-lemma preservesColimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
-    (H : ∀ k, PreservesColimit G (F ⋙ (evaluation K C).obj k)) : PreservesColimit G F :=
-  preservesColimit_of_evaluation _ _ H
 
 /-- `F : D ⥤ K ⥤ C` preserves all colimits of shape `J` if it does for each `k : K`. -/
 lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]

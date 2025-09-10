@@ -16,7 +16,7 @@ as a linear map in the 0th variable taking values in the alternating maps in `n`
 
 variable {R : Type*} {M M₂ N N₂ : Type*} [CommSemiring R] [AddCommMonoid M]
   [AddCommMonoid M₂] [AddCommMonoid N] [AddCommMonoid N₂] [Module R M] [Module R M₂]
-  [Module R N] [Module R N₂]
+  [Module R N] [Module R N₂] {n : ℕ}
 
 namespace AlternatingMap
 
@@ -26,36 +26,38 @@ It can be thought of as a map $Hom(\bigwedge^{n+1} M, N) \to Hom(M, Hom(\bigwedg
 
 This is `MultilinearMap.curryLeft` for `AlternatingMap`. See also
 `AlternatingMap.curryLeftLinearMap`. -/
-@[simps]
-def curryLeft {n : ℕ} (f : M [⋀^Fin n.succ]→ₗ[R] N) :
-    M →ₗ[R] M [⋀^Fin n]→ₗ[R] N where
+@[simps apply_toMultilinearMap]
+def curryLeft (f : M [⋀^Fin n.succ]→ₗ[R] N) : M →ₗ[R] M [⋀^Fin n]→ₗ[R] N where
   toFun m :=
     { f.toMultilinearMap.curryLeft m with
-      toFun := fun v => f (Matrix.vecCons m v)
-      map_eq_zero_of_eq' := fun v i j hv hij =>
-        f.map_eq_zero_of_eq _ (by
-          rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
+      map_eq_zero_of_eq' v i j hv hij :=
+        f.map_eq_zero_of_eq _ (by simpa) ((Fin.succ_injective _).ne hij) }
   map_add' _ _ := ext fun _ => f.map_vecCons_add _ _ _
   map_smul' _ _ := ext fun _ => f.map_vecCons_smul _ _ _
 
 @[simp]
-theorem curryLeft_zero {n : ℕ} : curryLeft (0 : M [⋀^Fin n.succ]→ₗ[R] N) = 0 :=
+theorem curryLeft_apply_apply (f : M [⋀^Fin n.succ]→ₗ[R] N) (x : M) (v : Fin n → M) :
+    curryLeft f x v = f (Matrix.vecCons x v) :=
   rfl
 
 @[simp]
-theorem curryLeft_add {n : ℕ} (f g : M [⋀^Fin n.succ]→ₗ[R] N) :
+theorem curryLeft_zero : curryLeft (0 : M [⋀^Fin n.succ]→ₗ[R] N) = 0 :=
+  rfl
+
+@[simp]
+theorem curryLeft_add (f g : M [⋀^Fin n.succ]→ₗ[R] N) :
     curryLeft (f + g) = curryLeft f + curryLeft g :=
   rfl
 
 @[simp]
-theorem curryLeft_smul {n : ℕ} (r : R) (f : M [⋀^Fin n.succ]→ₗ[R] N) :
+theorem curryLeft_smul (r : R) (f : M [⋀^Fin n.succ]→ₗ[R] N) :
     curryLeft (r • f) = r • curryLeft f :=
   rfl
 
 /-- `AlternatingMap.curryLeft` as a `LinearMap`. This is a separate definition as dot notation
 does not work for this version. -/
 @[simps]
-def curryLeftLinearMap {n : ℕ} :
+def curryLeftLinearMap :
     (M [⋀^Fin n.succ]→ₗ[R] N) →ₗ[R] M →ₗ[R] M [⋀^Fin n]→ₗ[R] N where
   toFun f := f.curryLeft
   map_add' := curryLeft_add
@@ -63,23 +65,19 @@ def curryLeftLinearMap {n : ℕ} :
 
 /-- Currying with the same element twice gives the zero map. -/
 @[simp]
-theorem curryLeft_same {n : ℕ} (f : M [⋀^Fin n.succ.succ]→ₗ[R] N) (m : M) :
+theorem curryLeft_same (f : M [⋀^Fin n.succ.succ]→ₗ[R] N) (m : M) :
     (f.curryLeft m).curryLeft m = 0 :=
   ext fun _ => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
 
 @[simp]
-theorem curryLeft_compAlternatingMap {n : ℕ} (g : N →ₗ[R] N₂)
+theorem curryLeft_compAlternatingMap (g : N →ₗ[R] N₂)
     (f : M [⋀^Fin n.succ]→ₗ[R] N) (m : M) :
     (g.compAlternatingMap f).curryLeft m = g.compAlternatingMap (f.curryLeft m) :=
   rfl
 
 @[simp]
-theorem curryLeft_compLinearMap {n : ℕ} (g : M₂ →ₗ[R] M) (f : M [⋀^Fin n.succ]→ₗ[R] N) (m : M₂) :
+theorem curryLeft_compLinearMap (g : M₂ →ₗ[R] M) (f : M [⋀^Fin n.succ]→ₗ[R] N) (m : M₂) :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
-  ext fun v => congr_arg f <| funext <| by
-    refine Fin.cases ?_ ?_
-    · rfl
-    · simp
+  ext fun v ↦ congr_arg f <| funext fun i ↦ by cases i using Fin.cases <;> simp
 
 end AlternatingMap
-

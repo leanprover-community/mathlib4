@@ -136,7 +136,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
-    cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
+    cases o <;> simp [encodek]⟩
 
 @[simp]
 theorem encode_none [Encodable α] : encode (@none α) = 0 :=
@@ -147,7 +147,7 @@ theorem encode_some [Encodable α] (a : α) : encode (some a) = succ (encode a) 
   rfl
 
 @[simp]
-theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α))= some none :=
+theorem decode_option_zero [Encodable α] : (decode 0 : Option (Option α)) = some none :=
   rfl
 
 @[simp]
@@ -173,8 +173,7 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 
 @[simp]
 theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
-  ext
-  simp [mem_decode₂, eq_comm, decode₂_eq_some]
+  simp [decode₂_eq_some]
 
 theorem decode₂_ne_none_iff [Encodable α] {n : ℕ} :
     decode₂ α n ≠ none ↔ n ∈ Set.range (encode : α → ℕ) := by
@@ -439,7 +438,7 @@ theorem down_up {a : ULower α} : down a.up = a :=
 
 @[simp]
 theorem up_down {a : α} : (down a).up = a := by
-  simp [up, down,Equiv.left_inv _ _, Equiv.symm_apply_apply]
+  simp [up, down, Equiv.symm_apply_apply]
 
 @[simp]
 theorem up_eq_up {a b : ULower α} : a.up = b.up ↔ a = b :=
@@ -551,7 +550,7 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, add_eq, Nat.add_zero, encodek, and_self]
+  simp only [Directed.sequence, encodek]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}

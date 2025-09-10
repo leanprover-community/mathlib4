@@ -233,6 +233,14 @@ lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ =
     refine h _ fun m ↦ ?_
     rw [sub_lie, sub_eq_zero, ← toEnd_apply_apply R, ← toEnd_apply_apply R, hxy]
 
+instance [IsFaithful R L M] {L' : LieSubalgebra R L} :
+    IsFaithful R L' M := by
+  refine ⟨(?_ : Injective (toEnd R L M ∘ ((↑) : L' → L)))⟩
+  exact IsFaithful.injective_toEnd.comp Subtype.val_injective
+
+instance : IsFaithful R (Module.End R M) M where
+  injective_toEnd := by simpa using injective_id
+
 end LieModule
 
 end IsFaithful
@@ -333,9 +341,6 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext
-  simp only [LinearMap.restrict_coe_apply, toEnd_apply_apply, ← coe_bracket,
-    SetLike.coe_eq_coe]
   rfl
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
@@ -429,7 +434,7 @@ open LieEquiv
 /-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and an element `x : L`, the conjugate
 of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`. -/
 @[simp]
-lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
+lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : e.toLinearEquiv.conj (ad R L x) = ad R L' (e x) := by
   ext y'
   rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_toLinearEquiv, map_lie,
     ← coe_toLinearEquiv, LinearEquiv.apply_symm_apply]

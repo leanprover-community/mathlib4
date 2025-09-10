@@ -38,7 +38,7 @@ The present theory focuses on the univariate case for qpfs
 -/
 
 
-universe u
+universe u u' v
 
 /-- Quotients of polynomial functors.
 
@@ -46,8 +46,8 @@ Roughly speaking, saying that `F` is a quotient of a polynomial functor means th
 elements of `F α` are represented by pairs `⟨a, f⟩`, where `a` is the shape of the object and
 `f` indexes the relevant elements of `α`, in a suitably natural manner.
 -/
-class QPF (F : Type u → Type u) extends Functor F where
-  P : PFunctor.{u}
+class QPF (F : Type u → Type v) extends Functor F where
+  P : PFunctor.{u, u'}
   abs : ∀ {α}, P α → F α
   repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
@@ -55,7 +55,7 @@ class QPF (F : Type u → Type u) extends Functor F where
 
 namespace QPF
 
-variable {F : Type u → Type u} [q : QPF F]
+variable {F : Type u → Type v} [q : QPF F]
 
 open Functor (Liftp Liftr)
 
@@ -221,6 +221,8 @@ attribute [local instance] Wsetoid
 def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 
+variable {F : Type u → Type u} [q : QPF F]
+
 /-- recursor of a type defined by a qpf -/
 def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
   Quot.lift (recF g) (recF_eq_of_Wequiv g)
@@ -271,7 +273,7 @@ theorem Fix.ind_rec {α : Type u} (g₁ g₂ : Fix F → α)
   change g₁ ⟦⟨a, f⟩⟧ = g₂ ⟦⟨a, f⟩⟧
   rw [← Fix.ind_aux a f]; apply h
   rw [← abs_map, ← abs_map, PFunctor.map_eq, PFunctor.map_eq]
-  congr with x
+  congr 2 with x
   apply ih
 
 theorem Fix.rec_unique {α : Type u} (g : F α → α) (h : Fix F → α)

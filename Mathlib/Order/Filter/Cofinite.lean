@@ -224,7 +224,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
     simp only [not_le] at this
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
-    refine ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim ?_ (le_trans ha₀.le)⟩
+    refine ⟨a₀, ha₀s, fun a has => (lt_or_ge (f a) x).elim ?_ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
     push_neg at not_all_top
@@ -268,3 +268,11 @@ theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) 
 theorem Function.Injective.nat_tendsto_atTop {f : ℕ → ℕ} (hf : Injective f) :
     Tendsto f atTop atTop :=
   Nat.cofinite_eq_atTop ▸ hf.tendsto_cofinite
+
+lemma Function.update_eventuallyEq [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[𝓟 {a}ᶜ] f := by
+  filter_upwards [mem_principal_self _] with u hu using Function.update_of_ne hu _ _
+
+lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[cofinite] f :=
+  (Function.update_eventuallyEq f a b).filter_mono (by simp)

@@ -239,7 +239,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     refine ⟨insert n s, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p * X ⟨n, s.mem_insert_self n⟩
       simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
-    · simp only [rename_rename, rename_X, Subtype.coe_mk, map_mul]
+    · simp only [rename_rename, rename_X, map_mul]
       rfl
 
 /-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a

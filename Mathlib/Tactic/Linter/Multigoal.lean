@@ -37,7 +37,7 @@ TODO:
   Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -156,7 +156,7 @@ def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
-    unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
+    unless getLinterValue linter.style.multiGoal (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return

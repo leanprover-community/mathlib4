@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.Module.TransferInstance
 import Mathlib.RingTheory.Localization.Defs
 
 /-!
@@ -19,9 +19,9 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S`: the localized module by `S`.
 * `LocalizedModule.mk`: the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
-* `LocalizedModule.liftOn`: any well defined function `f : M × S → α` respecting `r` descents to
+* `LocalizedModule.liftOn`: any well-defined function `f : M × S → α` respecting `r` descents to
   a function `LocalizedModule M S → α`
-* `LocalizedModule.liftOn₂`: any well defined function `f : M × S → M × S → α` respecting `r`
+* `LocalizedModule.liftOn₂`: any well-defined function `f : M × S → M × S → α` respecting `r`
   descents to a function `LocalizedModule M S → LocalizedModule M S`
 * `LocalizedModule.mk_add_mk`: in the localized module
   `mk m s + mk m' s' = mk (s' • m + s • m') (s * s')`
@@ -56,7 +56,7 @@ theorem r.isEquiv : IsEquiv _ (r S M) :=
       -- Put everything in the same shape, sorting the terms using `simp`
       have hu1' := congr_arg ((u2 * s3) • ·) hu1.symm
       have hu2' := congr_arg ((u1 * s1) • ·) hu2.symm
-      simp only [← mul_smul, smul_assoc, mul_assoc, mul_comm, mul_left_comm] at hu1' hu2' ⊢
+      simp only [← mul_smul, mul_comm, mul_left_comm] at hu1' hu2' ⊢
       rw [hu2', hu1']
     symm := fun ⟨_, _⟩ ⟨_, _⟩ ⟨u, hu⟩ => ⟨u, hu.symm⟩ }
 
@@ -142,7 +142,7 @@ instance : Add (LocalizedModule S M) where
               -- Put everything in the same shape, sorting the terms using `simp`
               have hu1' := congr_arg ((u2 * s2 * s2') • ·) hu1
               have hu2' := congr_arg ((u1 * s1 * s1') • ·) hu2
-              simp only [smul_add, ← mul_smul, smul_assoc, mul_assoc, mul_comm,
+              simp only [smul_add, ← mul_smul, mul_comm,
                 mul_left_comm] at hu1' hu2' ⊢
               rw [hu1', hu2']⟩
 
@@ -249,7 +249,7 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       apply mk_eq.mpr _
       use 1
-      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
+      simp only [one_mul, smul_smul, ← mul_assoc] }
 
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
@@ -500,7 +500,6 @@ noncomputable def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule 
       smul_comm _ s, ← smul_add, mul_left_comm s t₁ t₂, mk_cancel_common_left s]
   map_smul' r x := by
     refine x.induction_on (fun _ _ ↦ ?_)
-    dsimp only
     change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
     simp_rw [liftOn_mk, mul_assoc, ← smul_def]
     congr!
@@ -935,9 +934,6 @@ theorem ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
   rw [← lift_unique S f (k.comp f) map_unit j h, lift_unique]
   rfl
 
-@[deprecated (since := "2024-12-07")]
-alias ringHom_ext := ext
-
 /-- If `(M', f)` and `(M'', g)` both satisfy universal property of localized module, then `M', M''`
 are isomorphic as `R`-module
 -/
@@ -1127,10 +1123,10 @@ instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
     obtain ⟨⟨y', s⟩, e⟩ := IsLocalizedModule.surj S₂ f₂ y
     exact ⟨⟨f₁ y', s⟩, by simpa⟩
   exists_of_eq := by
-    intros x₁ x₂ e
+    intro x₁ x₂ e
     obtain ⟨x₁, s₁, rfl⟩ := mk'_surjective S₁ f₁ x₁
     obtain ⟨x₂, s₂, rfl⟩ := mk'_surjective S₁ f₁ x₂
-    simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff, Submonoid.mk_smul,
+    simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff,
       Submonoid.smul_def, ← mk'_smul] at e ⊢
     obtain ⟨c, e⟩ := e
     exact ⟨c, 1, by simpa [← smul_comm c.1]⟩
@@ -1171,8 +1167,7 @@ def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
   map_smul' r h := by
     apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
-    simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add, LinearMap.smul_comp,
-      LinearMap.comp_smul, RingHom.id_apply]
+    simp only [lift_comp, LinearMap.smul_comp, LinearMap.comp_smul, RingHom.id_apply]
 
 lemma map_comp (h : M →ₗ[R] N) : (map S f g h) ∘ₗ f = g ∘ₗ h :=
   lift_comp S f (g ∘ₗ h) (IsLocalizedModule.map_units g)
@@ -1198,18 +1193,18 @@ lemma map_id : map S f f (.id ) = .id := by
 @[simp]
 theorem map_injective (h : M →ₗ[R] N) (h_inj : Function.Injective h) :
     Function.Injective (map S f g h) := by
-  intros x y
+  intro x y
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
   simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_mk'_iff, Subtype.exists,
     Submonoid.mk_smul, exists_prop, forall_exists_index, and_imp]
-  intros c hc e
+  intro c hc e
   exact ⟨c, hc, h_inj (by simpa)⟩
 
 @[simp]
 theorem map_surjective (h : M →ₗ[R] N) (h_surj : Function.Surjective h) :
     Function.Surjective (map S f g h) := by
-  intros x
+  intro x
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S g x
   obtain ⟨x, rfl⟩ := h_surj x
   exact ⟨mk' f x s, by simp⟩
@@ -1286,7 +1281,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebr
       refine ⟨((h₁ x x.2).unit⁻¹ :) * a, ?_⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
-  · intros x y
+  · intro x y
     dsimp only [AlgHom.toLinearMap_apply]
     rw [← sub_eq_zero, ← map_sub, h₃]
     simp_rw [smul_sub, sub_eq_zero]

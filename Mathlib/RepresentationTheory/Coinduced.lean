@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.RepresentationTheory.Rep
 
 /-!
@@ -105,6 +106,22 @@ noncomputable def coindFunctor : Rep k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
+instance {G : Type u} [Group G] (S : Subgroup G) :
+    (coindFunctor k S.subtype).PreservesEpimorphisms where
+  preserves {X Y} f := (Rep.epi_iff_surjective _).2 fun y => by
+    letI := QuotientGroup.rightRel S
+    choose! s hs using (Rep.epi_iff_surjective f).1 ‹_›
+    choose! i hi using Quotient.mk'_surjective (α := G)
+    let γ (g : G) : S := ⟨g * (i (Quotient.mk' g))⁻¹,
+      (QuotientGroup.rightRel_apply.1 (Quotient.eq'.1 (hi (Quotient.mk' g))))⟩
+    have hmk (s : S) (g : G) : Quotient.mk' (s.1 * g) = Quotient.mk' g :=
+      Quotient.eq'.2 (QuotientGroup.rightRel_apply.2 (by simp))
+    have hγ (s : S) (g : G) : γ (s.1 * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
+    let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
+    refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
+    · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
+    · simp_all [x, hom_comm_apply, ← y.2 (γ g), γ]
+
 end Coind
 section Coind'
 
@@ -167,7 +184,7 @@ such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linear
 to the `G`-representation morphisms `k[H] ⟶ A`.
 -/
 @[simps]
-noncomputable def coindVLEquiv :
+noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] ((Action.res _ φ).obj (leftRegular k H) ⟶ A) where
   toFun f := {
     hom := ModuleCat.ofHom <| linearCombination _ f.1
@@ -182,10 +199,10 @@ noncomputable def coindVLEquiv :
   right_inv x := coind'_ext φ fun _ => by simp
 
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
-`k`-linear equivalence given by `coindVLEquiv`. -/
+`k`-linear equivalence given by `coindVEquiv`. -/
 @[simps! hom_hom_hom inv_hom_hom]
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
-  Action.mkIso (coindVLEquiv φ A).toModuleIso fun h => by
+  Action.mkIso (coindVEquiv φ A).toModuleIso fun h => by
     ext
     simp [ModuleCat.endRingEquiv, leftRegularHomEquiv_symm_apply (leftRegular k H)]
 
@@ -206,7 +223,7 @@ section Adjunction
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `B ⟶ A` and the
 `H`-representation morphisms `B ⟶ coind φ A`. -/
 @[simps]
-noncomputable def resCoindHomLEquiv (B : Rep k H) (A : Rep k G) :
+noncomputable def resCoindHomEquiv (B : Rep k H) (A : Rep k G) :
     ((Action.res _ φ).obj B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
   toFun f := {
     hom := ModuleCat.ofHom <| (LinearMap.pi fun h => f.hom.hom ∘ₗ Rep.ρ B h).codRestrict _
@@ -230,12 +247,20 @@ adjoint to the restriction functor along `φ`. -/
 @[simps! counit_app_hom_hom unit_app_hom_hom]
 noncomputable abbrev resCoindAdjunction : Action.res _ φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
-    homEquiv X Y := (resCoindHomLEquiv φ X Y).toEquiv
+    homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; ext; rfl }
 
-noncomputable instance : Limits.PreservesLimits (coindFunctor k φ) :=
-  (resCoindAdjunction k φ).rightAdjoint_preservesLimits
+noncomputable instance : (coindFunctor k φ).IsRightAdjoint :=
+  (resCoindAdjunction k φ).isRightAdjoint
+
+noncomputable instance : (Action.res (ModuleCat.{u} k) φ).IsLeftAdjoint :=
+  (resCoindAdjunction k φ).isLeftAdjoint
+
+instance {G : Type u} [Group G] (S : Subgroup G) :
+    (Action.res (ModuleCat.{u} k) S.subtype).PreservesProjectiveObjects :=
+  (Action.res _ S.subtype).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
+    (resCoindAdjunction k S.subtype)
 
 end Adjunction
 end Rep

@@ -19,9 +19,9 @@ between `s : Finset α` and `t : Finset β` by the minimum/maximum of edges over
 size of `s`. Similarly for `t`. Combining those two yields inequalities between the sizes of `s`
 and `t`.
 
-* `bipartiteBelow`: `s.bipartiteBelow r b` are the elements of `s` below `b` wrt to `r`. Its size
+* `bipartiteBelow`: `s.bipartiteBelow r b` are the elements of `s` below `b` w.r.t. `r`. Its size
   is the number of edges of `b` in `s`.
-* `bipartiteAbove`: `t.bipartite_Above r a` are the elements of `t` above `a` wrt to `r`. Its size
+* `bipartiteAbove`: `t.bipartite_Above r a` are the elements of `t` above `a` w.r.t. `r`. Its size
   is the number of edges of `a` in `t`.
 * `card_mul_le_card_mul`, `card_mul_le_card_mul'`: Double counting the edges of a bipartite graph
   from below and from above.
@@ -202,8 +202,6 @@ theorem card_le_card_of_forall_subsingleton' (ht : ∀ b ∈ t, ∃ a, a ∈ s �
 end Bipartite
 
 end Finset
-
-open Finset
 
 namespace Fintype
 

@@ -174,7 +174,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
           rw [e]
           rfl
         rw [D]
-        cases o <;> simp [parallel.aux1, TT]
+        cases o <;> simp [TT]
 
 theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parallel S) :
     ∃ c ∈ S, a ∈ c := by
@@ -192,8 +192,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     intro l
     induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
     · intro a h
-      rcases h with ⟨c, hn, _⟩
-      exact False.elim <| List.not_mem_nil hn
+      assumption
     · simp only [parallel.aux2] at IH
       -- Porting note: `revert IH` & `intro IH` are required.
       revert IH
@@ -201,7 +200,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         match o with
         | Sum.inl a => Sum.inl a
         | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l <;>
-        intro IH <;> simp only [parallel.aux2]
+        intro IH <;> simp only
       · rcases IH with ⟨c', cl, ac⟩
         exact ⟨c', List.Mem.tail _ cl, ac⟩
       · induction' h : destruct c with a c' <;> simp only [rmap]
@@ -210,8 +209,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           apply ret_mem
         · intro a' h
           rcases h with ⟨d, dm, ad⟩
-          simp? at dm says simp only [List.mem_cons] at dm
-          rcases dm with e | dl
+          rcases List.mem_cons.mp dm with e | dl
           · rw [e] at ad
             refine ⟨c, List.mem_cons_self, ?_⟩
             rw [destruct_eq_think h]

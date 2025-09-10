@@ -55,7 +55,7 @@ lemma pullback_snd_iff [P.IsStableUnderBaseChange] [P.DescendsAlong Q] [HasPullb
     (hg : Q g) : P (pullback.snd f g) ↔ P f :=
   iff_of_isPullback (IsPullback.of_hasPullback f g).flip hg
 
-instance DescendsAlong.top: (⊤ : MorphismProperty C).DescendsAlong Q where
+instance DescendsAlong.top : (⊤ : MorphismProperty C).DescendsAlong Q where
   of_isPullback _ _ _ := trivial
 
 instance DescendsAlong.inf [P.DescendsAlong Q] [W.DescendsAlong Q] : (P ⊓ W).DescendsAlong Q where

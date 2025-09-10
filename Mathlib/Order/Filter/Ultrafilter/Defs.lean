@@ -189,7 +189,7 @@ theorem map_id' (f : Ultrafilter α) : (f.map fun x => x) = f :=
 
 @[simp]
 nonrec theorem map_map (f : Ultrafilter α) (m : α → β) (n : β → γ) :
-  (f.map m).map n = f.map (n ∘ m) :=
+    (f.map m).map n = f.map (n ∘ m) :=
   coe_injective map_map
 
 /-- The pullback of an ultrafilter along an injection whose range is large with respect to the given
@@ -362,8 +362,6 @@ theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monot
 end Filter
 
 namespace Ultrafilter
-
-open Filter
 
 variable {m : α → β} {s : Set α} {g : Ultrafilter β}
 

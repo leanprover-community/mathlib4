@@ -104,11 +104,11 @@ private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Q
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x * M`. -/
 @[to_additive
-"The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
-`x + S`."]
+/-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
+`x + S`. -/]
 noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
   toFun x := infDist 1 {m : M | (m : M ⧸ S) = x}
-  map_one' := infDist_zero_of_mem (by simpa using S.one_mem)
+  map_one' := infDist_zero_of_mem (by simp)
   mul_le' x y := by
     simp only [infDist_eq_iInf]
     have := (norm_aux x).to_subtype
@@ -124,8 +124,8 @@ noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x * S`. -/
 @[to_additive
-"The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
-`x + S`."]
+/-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
+`x + S`. -/]
 noncomputable instance instNorm : Norm (M ⧸ S) where norm := groupSeminorm
 
 @[to_additive]
@@ -154,43 +154,44 @@ lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun 
 /-- An alternative definition of the norm on the quotient group: the norm of `((x : M) : M ⧸ S)` is
 equal to the distance from `x` to `S`. -/
 @[to_additive
-"An alternative definition of the norm on the quotient group: the norm of `((x : M) : M ⧸ S)` is
-equal to the distance from `x` to `S`."]
+/-- An alternative definition of the norm on the quotient group: the norm of `((x : M) : M ⧸ S)` is
+equal to the distance from `x` to `S`. -/]
 lemma norm_mk (x : M) : ‖(x : M ⧸ S)‖ = infDist x S := by
   rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.divLeft x).isometry,
     ← IsometryEquiv.preimage_symm]
   simp
 
 /-- The norm of the projection is smaller or equal to the norm of the original element. -/
-@[to_additive "The norm of the projection is smaller or equal to the norm of the original element."]
+@[to_additive
+/-- The norm of the projection is smaller or equal to the norm of the original element. -/]
 lemma norm_mk_le_norm : ‖(m : M ⧸ S)‖ ≤ ‖m‖ :=
   (infDist_le_dist_of_mem (by simp)).trans_eq (dist_one_left _)
 
 /-- The norm of the image of `m : M` in the quotient by `S` is zero if and only if `m` belongs
 to the closure of `S`. -/
-@[to_additive "The norm of the image of `m : M` in the quotient by `S` is zero if and only if `m`
-belongs to the closure of `S`."]
+@[to_additive /-- The norm of the image of `m : M` in the quotient by `S` is zero if and only if `m`
+belongs to the closure of `S`. -/]
 lemma norm_mk_eq_zero_iff_mem_closure : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ closure (S : Set M) := by
   rw [norm_mk, ← mem_closure_iff_infDist_zero]
   exact ⟨1, S.one_mem⟩
 
 /-- The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero if and only if
 `m ∈ S`. -/
-@[to_additive "The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero if
-and only if `m ∈ S`."]
+@[to_additive /-- The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero
+if and only if `m ∈ S`. -/]
 lemma norm_mk_eq_zero [hS : IsClosed (S : Set M)] : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ S := by
   rw [norm_mk_eq_zero_iff_mem_closure, hS.closure_eq, SetLike.mem_coe]
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
-@[to_additive "For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
-and `‖m‖ < ‖x‖ + ε`."]
+@[to_additive /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
+and `‖m‖ < ‖x‖ + ε`. -/]
 lemma exists_norm_mk_lt (x : M ⧸ S) (hε : 0 < ε) : ∃ m : M, m = x ∧ ‖m‖ < ‖x‖ + ε :=
   norm_lt_iff.1 <| lt_add_of_pos_right _ hε
 
 /-- For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m * s‖ < ‖mk' S m‖ + ε`. -/
 @[to_additive
-"For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m + s‖ < ‖mk' S m‖ + ε`."]
+/-- For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m + s‖ < ‖mk' S m‖ + ε`. -/]
 lemma exists_norm_mul_lt (S : Subgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
     ∃ s ∈ S, ‖m * s‖ < ‖mk' S m‖ + ε := by
   obtain ⟨n : M, hn, hn'⟩ := exists_norm_mk_lt (QuotientGroup.mk' S m) hε
@@ -198,7 +199,7 @@ lemma exists_norm_mul_lt (S : Subgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
 
 variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
-@[to_additive "The seminormed group structure on the quotient by an additive subgroup."]
+@[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
 noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
   toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
@@ -208,7 +209,7 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
 
 variable (S) in
 /-- The quotient in the category of normed groups. -/
-@[to_additive "The quotient in the category of normed groups."]
+@[to_additive /-- The quotient in the category of normed groups. -/]
 noncomputable instance instNormedCommGroup [hS : IsClosed (S : Set M)] :
     NormedCommGroup (M ⧸ S) where
   __ := MetricSpace.ofT0PseudoMetricSpace _
@@ -220,52 +221,13 @@ example :
       (instSeminormedCommGroup S).toUniformSpace.toTopologicalSpace := rfl
 
 example [IsClosed (S : Set M)] :
-   (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+    (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
 
 end QuotientGroup
 
 open QuotientAddGroup Metric Set Topology NNReal
 
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
-
-/-- The definition of the norm on the quotient by an additive subgroup. -/
-@[deprecated QuotientAddGroup.instNorm (since := "2025-02-02")]
-noncomputable def normOnQuotient (S : AddSubgroup M) : Norm (M ⧸ S) := inferInstance
-
-@[deprecated QuotientAddGroup.norm_eq_infDist (since := "2025-02-02")]
-theorem AddSubgroup.quotient_norm_eq {S : AddSubgroup M} (x : M ⧸ S) :
-    ‖x‖ = sInf (norm '' { m : M | (m : M ⧸ S) = x }) := by
-  simp only [norm_eq_infDist, infDist_eq_iInf, sInf_image', dist_zero_left]
-
-@[deprecated "Replaced by a private lemma" (since := "2025-02-02")]
-theorem image_norm_nonempty {S : AddSubgroup M} (x : M ⧸ S) :
-    (norm '' { m | mk' S m = x }).Nonempty :=
-  .image _ <| Quot.exists_rep x
-
-@[deprecated norm_nonneg (since := "2025-02-02")]
-theorem bddBelow_image_norm (s : Set M) : BddBelow (norm '' s) :=
-  ⟨0, forall_mem_image.2 fun _ _ ↦ norm_nonneg _⟩
-
-@[deprecated isGLB_infDist (since := "2025-02-02")]
-theorem isGLB_quotient_norm {S : AddSubgroup M} (x : M ⧸ S) :
-    IsGLB (norm '' { m | mk' S m = x }) (‖x‖) := by
-  simpa using isGLB_infDist (QuotientGroup.add_norm_aux x) (x := 0)
-
-/-- The norm on the quotient satisfies `‖-x‖ = ‖x‖`. -/
-@[deprecated norm_neg (since := "2025-02-02")]
-theorem quotient_norm_neg {S : AddSubgroup M} (x : M ⧸ S) : ‖-x‖ = ‖x‖ := norm_neg _
-
-@[deprecated norm_sub_rev (since := "2025-02-02")]
-theorem quotient_norm_sub_rev {S : AddSubgroup M} (x y : M ⧸ S) : ‖x - y‖ = ‖y - x‖ :=
-  norm_sub_rev ..
-
-/-- The norm of the projection is smaller or equal to the norm of the original element. -/
-@[deprecated QuotientAddGroup.norm_mk_le_norm (since := "2025-02-02")]
-theorem quotient_norm_mk_le (S : AddSubgroup M) (m : M) : ‖mk' S m‖ ≤ ‖m‖ := norm_mk_le_norm
-
-/-- The norm of the projection is smaller or equal to the norm of the original element. -/
-@[deprecated QuotientAddGroup.norm_mk_le_norm (since := "2025-02-02")]
-theorem quotient_norm_mk_le' (S : AddSubgroup M) (m : M) : ‖(m : M ⧸ S)‖ ≤ ‖m‖ := norm_mk_le_norm
 
 /-- The norm of the image under the natural morphism to the quotient. -/
 theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
@@ -274,64 +236,9 @@ theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
     neg_coe_set (H := S), infDist_eq_iInf]
   simp only [dist_eq_norm', sub_neg_eq_add, add_comm]
 
-/-- The quotient norm is nonnegative. -/
-@[deprecated norm_nonneg (since := "2025-02-02")]
-theorem quotient_norm_nonneg (S : AddSubgroup M) (x : M ⧸ S) : 0 ≤ ‖x‖ := norm_nonneg _
-
-/-- The quotient norm is nonnegative. -/
-@[deprecated norm_nonneg (since := "2025-02-02")]
-theorem norm_mk_nonneg (S : AddSubgroup M) (m : M) : 0 ≤ ‖mk' S m‖ := norm_nonneg _
-
-/-- The norm of the image of `m : M` in the quotient by `S` is zero if and only if `m` belongs
-to the closure of `S`. -/
-@[deprecated QuotientAddGroup.norm_mk_eq_zero_iff_mem_closure (since := "2025-02-02")]
-theorem quotient_norm_eq_zero_iff (S : AddSubgroup M) (m : M) :
-    ‖mk' S m‖ = 0 ↔ m ∈ closure (S : Set M) := norm_mk_eq_zero_iff_mem_closure
-
-/-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
-and `‖m‖ < ‖x‖ + ε`. -/
-@[deprecated QuotientAddGroup.exists_norm_mk_lt (since := "2025-02-02")]
-theorem norm_mk_lt {S : AddSubgroup M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :
-    ∃ m : M, mk' S m = x ∧ ‖m‖ < ‖x‖ + ε := exists_norm_mk_lt _ hε
-
-/-- For any `m : M` and any `0 < ε`, there is `s ∈ S` such that `‖m + s‖ < ‖mk' S m‖ + ε`. -/
-@[deprecated QuotientAddGroup.exists_norm_add_lt (since := "2025-02-02")]
-theorem norm_mk_lt' (S : AddSubgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
-    ∃ s ∈ S, ‖m + s‖ < ‖mk' S m‖ + ε := exists_norm_add_lt _ _ hε
-
 /-- The quotient norm satisfies the triangle inequality. -/
-theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
-  rcases And.intro (mk_surjective x) (mk_surjective y) with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
-  simp only [← mk'_apply, ← map_add, quotient_norm_mk_eq, sInf_image']
-  refine le_ciInf_add_ciInf fun a b ↦ ?_
-  refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ norm_nonneg _⟩ (a + b) ?_
-  exact (congr_arg norm (add_add_add_comm _ _ _ _)).trans_le (norm_add_le _ _)
-
-/-- The quotient norm of `0` is `0`. -/
-@[deprecated norm_zero (since := "2025-02-02")]
-theorem norm_mk_zero (S : AddSubgroup M) : ‖(0 : M ⧸ S)‖ = 0 := norm_zero
-
-/-- If `(m : M)` has norm equal to `0` in `M ⧸ S` for a closed subgroup `S` of `M`, then
-`m ∈ S`. -/
-@[deprecated QuotientAddGroup.norm_mk_eq_zero (since := "2025-02-02")]
-theorem norm_mk_eq_zero (S : AddSubgroup M) (hS : IsClosed (S : Set M)) (m : M)
-    (h : ‖mk' S m‖ = 0) : m ∈ S := QuotientAddGroup.norm_mk_eq_zero.1 h
-
-@[deprecated QuotientAddGroup.nhds_zero_hasBasis (since := "2025-02-02")]
-theorem quotient_nhds_basis (S : AddSubgroup M) :
-    (𝓝 (0 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := nhds_zero_hasBasis
-
-@[deprecated (since := "2025-05-22")] alias quotient_nhd_basis := quotient_nhds_basis
-
-/-- The seminormed group structure on the quotient by an additive subgroup. -/
-@[deprecated QuotientAddGroup.instSeminormedAddCommGroup (since := "2025-02-02")]
-noncomputable def AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M) :
-    SeminormedAddCommGroup (M ⧸ S) := inferInstance
-
-/-- The quotient in the category of normed groups. -/
-@[deprecated QuotientAddGroup.instNormedAddCommGroup (since := "2025-02-02")]
-noncomputable instance AddSubgroup.normedAddCommGroupQuotient (S : AddSubgroup M)
-    [IsClosed (S : Set M)] : NormedAddCommGroup (M ⧸ S) := inferInstance
+theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ :=
+  norm_add_le x y
 
 namespace AddSubgroup
 
@@ -361,14 +268,14 @@ theorem norm_normedMk_le (S : AddSubgroup M) : ‖S.normedMk‖ ≤ 1 :=
 
 theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ S, f x = 0) (x : M ⧸ S) : ‖lift S f.toAddMonoidHom hf x‖ ≤ ‖f‖ * ‖x‖ := by
-  cases (norm_nonneg f).eq_or_gt with
+  cases (norm_nonneg f).eq_or_lt' with
   | inl h =>
     rcases mk_surjective x with ⟨x, rfl⟩
     simpa [h] using le_opNorm f x
   | inr h =>
     rw [← not_lt, ← lt_div_iff₀' h, norm_lt_iff]
     rintro ⟨x, rfl, hx⟩
-    exact ((lt_div_iff₀' h).1 hx).not_le (le_opNorm f x)
+    exact ((lt_div_iff₀' h).1 hx).not_ge (le_opNorm f x)
 
 /-- The operator norm of the projection is `1` if the subspace is not dense. -/
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :
@@ -450,7 +357,7 @@ theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     ‖lift S f hf‖ ≤ ‖f‖ :=
   opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: deprecate?
+-- TODO: deprecate?
 theorem lift_norm_le {N : Type*} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) {c : ℝ≥0} (fb : ‖f‖ ≤ c) :
     ‖lift S f hf‖ ≤ c :=
@@ -505,12 +412,12 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
     [SeminormedCommRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
     IsBoundedSMul 𝕜 (M ⧸ S) :=
   .of_norm_smul_le fun k x =>
-    -- Porting note: this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
+    -- this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
     -- `x ↦ mk (k • x)`; todo: add scalar multiplication as `NormedAddGroupHom`, use it here
     _root_.le_of_forall_pos_le_add fun ε hε => by
       have := (nhds_basis_ball.tendsto_iff nhds_basis_ball).mp
         ((@Real.uniformContinuous_const_mul ‖k‖).continuous.tendsto ‖x‖) ε hε
-      simp only [mem_ball, exists_prop, dist, abs_sub_lt_iff] at this
+      simp only [mem_ball, dist, abs_sub_lt_iff] at this
       rcases this with ⟨δ, hδ, h⟩
       obtain ⟨a, rfl, ha⟩ := Submodule.Quotient.norm_mk_lt x hδ
       specialize h ‖a‖ ⟨by linarith, by linarith [Submodule.Quotient.norm_mk_le S a]⟩
@@ -540,7 +447,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
       (continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
-    simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, exists_prop, Prod.exists] at this
+    simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, Prod.exists] at this
     rcases this with ⟨ε₁, ε₂, ⟨h₁, h₂⟩, h⟩
     obtain ⟨⟨a, rfl, ha⟩, ⟨b, rfl, hb⟩⟩ := Ideal.Quotient.norm_mk_lt x h₁,
       Ideal.Quotient.norm_mk_lt y h₂

@@ -31,4 +31,4 @@ jobs:
         with:
           mode: fix
           lint-bib-file: true
-          bot-fix-style-token: ${{ secrets.GITHUB_TOKEN }}
+          BOT_FIX_STYLE_TOKEN: ${{ secrets.GITHUB_TOKEN }}

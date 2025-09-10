@@ -253,7 +253,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
     rcases existsUnique_sub_zsmul_mem_Ioc ha y l with ⟨n, hny, -⟩
     rcases lt_trichotomy n 0 with hn | rfl | hn
     · -- Since `l ≤ x ≤ y`, the case `n < 0` is impossible
-      refine absurd ?_ hxy.not_le
+      refine absurd ?_ hxy.not_ge
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
@@ -265,8 +265,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
       -- If `R = (· < ·)`, then the proof looks like
       -- `f x < f (l + a) ≤ f (l + n • a) < f y`
       trans f (l + (1 : ℤ) • a)
-      · rw [one_zsmul]
-        exact hf x (Ico_subset_Icc_self hx) (l + a) (by simpa) hx.2
+      · grind
       have hy : R (f (l + n • a)) (f y) := by
         rw [← sub_add_cancel y (n • a), map_add_zsmul, map_add_zsmul]
         refine hR _ <| hf _ ?_ _ (Ioc_subset_Icc_self hny) hny.1; simpa

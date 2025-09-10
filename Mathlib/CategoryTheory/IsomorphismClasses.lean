@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Objects of a category up to an isomorphism
@@ -41,17 +41,17 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
   obj C := Quotient (isIsomorphicSetoid C.α)
   map {_ _} F := Quot.map F.obj fun _ _ ⟨f⟩ => ⟨F.mapIso f⟩
   map_id {C} := by  -- Porting note: this used to be `tidy`
-    dsimp; apply funext; intro x
+    apply funext; intro x
     apply @Quot.recOn _ _ _ x
     · intro _ _ p
       simp only [types_id_apply]
     · intro _
       rfl
   map_comp {C D E} f g := by -- Porting note(s): idem
-    dsimp; apply funext; intro x
+    apply funext; intro x
     apply @Quot.recOn _ _ _ x
     · intro _ _ _
-      simp only [types_id_apply]
+      simp only
     · intro _
       rfl
 

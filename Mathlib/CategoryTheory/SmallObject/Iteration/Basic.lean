@@ -132,7 +132,7 @@ induces a successor structure on `C ⥤ C`. -/
 @[simps]
 def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
   succ G := G ⋙ F
-  toSucc G := whiskerLeft G ε
+  toSucc G := Functor.whiskerLeft G ε
   X₀ := 𝟭 C
 
 variable (Φ : SuccStruct C)

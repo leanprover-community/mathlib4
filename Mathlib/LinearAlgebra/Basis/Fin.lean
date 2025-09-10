@@ -20,7 +20,7 @@ open Function Set Submodule Finsupp
 
 variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
-section Module
+namespace Module
 
 open LinearMap
 

@@ -44,7 +44,7 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
       IsOpenImmersion.of_isLocalization (1 - e)
     have H : Set.range (Spec.map φ).base = Set.range (Spec.map f).base :=
       ((PrimeSpectrum.range_comap_of_surjective _ _
-        Ideal.Quotient.mk_surjective).trans (by simp [φ])).trans he'.symm
+        Ideal.Quotient.mk_surjective).trans (by simp)).trans he'.symm
     let i : S ≅ .of _ := (Scheme.Spec.preimageIso
       (IsOpenImmersion.isoOfRangeEq (Spec.map φ) (Spec.map f) H)).unop
     have hi : Function.Injective i.inv.hom := (ConcreteCategory.bijective_of_isIso i.inv).1
@@ -62,10 +62,7 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
 variable {X Y : Scheme.{u}}
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
-    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
-  constructor
-  · intro h; exact ⟨h.1, inferInstance⟩
-  · rintro ⟨h₁, h₂⟩; exact IsOpenImmersion.of_stalk_iso f h₁
+    IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_stalk_iso f
 
 theorem isOpenImmersion_eq_inf :
     @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓
