@@ -571,9 +571,9 @@ variable {F : C ⥤ D}
     (η : F.obj (𝟙_ C) ⟶ 𝟙_ D)
     /- tensorator as a morphism of bifunctors -/
     (δ : curriedTensorPost F ⟶ curriedTensorPre F)
-    (associativity : firstMap δ = secondMap δ)
-    (left_unitality : leftMapₗ F = topMapₗ F ≫ δ.app (𝟙_ C) ≫ bottomMapₗ η)
-    (right_unitality : leftMapᵣ F =
+    (oplax_associativity : firstMap δ = secondMap δ)
+    (oplax_left_unitality : leftMapₗ F = topMapₗ F ≫ δ.app (𝟙_ C) ≫ bottomMapₗ η)
+    (oplax_right_unitality : leftMapᵣ F =
       topMapᵣ F ≫ ((flipFunctor _ _ _).map δ).app (𝟙_ C) ≫ bottomMapᵣ η)
 
 def ofBifunctor : F.OplaxMonoidal where
@@ -582,9 +582,9 @@ def ofBifunctor : F.OplaxMonoidal where
   δ_natural_left f X := (NatTrans.congr_app (δ.naturality f) X).symm
   δ_natural_right X f := ((δ.app X).naturality f).symm
   oplax_associativity X Y Z :=
-    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app associativity X) Y) Z
-  oplax_left_unitality X := NatTrans.congr_app left_unitality X
-  oplax_right_unitality X := NatTrans.congr_app right_unitality X
+    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app oplax_associativity X) Y) Z
+  oplax_left_unitality X := NatTrans.congr_app oplax_left_unitality X
+  oplax_right_unitality X := NatTrans.congr_app oplax_right_unitality X
 
 end Bifunctor
 
@@ -803,6 +803,37 @@ lemma toOplaxMonoidal_injective : Function.Injective
   · exact congr(($eq).η)
   · exact congr(($eq).δ)
 
+section Bifunctor
+
+variable {F : C ⥤ D}
+    /- unit morphism -/
+    (ε : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    /- tensorator as a morphism of bifunctors -/
+    (μ : curriedTensorPre F ⟶ curriedTensorPost F)
+    (associativity : firstMap μ = secondMap μ)
+    (left_unitality : LaxMonoidal.leftMapₗ F = topMapₗ ε ≫ μ.app (𝟙_ C) ≫ bottomMapₗ F)
+    (right_unitality : LaxMonoidal.leftMapᵣ F =
+      topMapᵣ ε ≫ ((flipFunctor _ _ _).map μ).app (𝟙_ C) ≫ bottomMapᵣ F)
+    /- unit morphism -/
+    (η : F.obj (𝟙_ C) ⟶ 𝟙_ D)
+    /- tensorator as a morphism of bifunctors -/
+    (δ : curriedTensorPost F ⟶ curriedTensorPre F)
+    (oplax_associativity : firstMap δ = secondMap δ)
+    (oplax_left_unitality : OplaxMonoidal.leftMapₗ F = topMapₗ F ≫ δ.app (𝟙_ C) ≫ bottomMapₗ η)
+    (oplax_right_unitality : OplaxMonoidal.leftMapᵣ F =
+      topMapᵣ F ≫ ((flipFunctor _ _ _).map δ).app (𝟙_ C) ≫ bottomMapᵣ η)
+
+def ofBifunctor (ε_η : ε ≫ η = 𝟙 _) (η_ε : η ≫ ε = 𝟙 _) (μ_δ : μ ≫ δ = 𝟙 _)
+    (δ_μ : δ ≫ μ = 𝟙 _) : F.Monoidal where
+  toLaxMonoidal := .ofBifunctor ε μ associativity left_unitality right_unitality
+  toOplaxMonoidal := .ofBifunctor η δ oplax_associativity oplax_left_unitality oplax_right_unitality
+  ε_η := ε_η
+  η_ε := η_ε
+  μ_δ X Y := NatTrans.congr_app ((NatTrans.congr_app μ_δ) X) Y
+  δ_μ X Y := NatTrans.congr_app ((NatTrans.congr_app δ_μ) X) Y
+
+end Bifunctor
+
 end Monoidal
 
 variable (F : C ⥤ D)
@@ -903,6 +934,30 @@ noncomputable def ofOplaxMonoidal [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsI
     simp [← cancel_epi (δ F X Y ▷ F.obj Z), ← cancel_epi (δ F (X ⊗ Y) Z)]
   left_unitality X := by simp [← cancel_epi (λ_ (F.obj X)).inv]
   right_unitality X := by simp [← cancel_epi (ρ_ (F.obj X)).inv]
+
+section Bifunctor
+
+variable {F : C ⥤ D}
+    /- unit morphism -/
+    (ε : 𝟙_ D ≅ F.obj (𝟙_ C))
+    /- tensorator as a morphism of bifunctors -/
+    (μ : curriedTensorPre F ≅ curriedTensorPost F)
+    (associativity : firstMap μ.hom = secondMap μ.hom)
+    (left_unitality : LaxMonoidal.leftMapₗ F = topMapₗ ε.hom ≫ μ.hom.app (𝟙_ C) ≫ bottomMapₗ F)
+    (right_unitality : LaxMonoidal.leftMapᵣ F =
+      topMapᵣ ε.hom ≫ ((flipFunctor _ _ _).map μ.hom).app (𝟙_ C) ≫ bottomMapᵣ F)
+
+def ofBifunctor : F.CoreMonoidal where
+  εIso := ε
+  μIso X Y := (μ.app X).app Y
+  μIso_hom_natural_left f X := NatTrans.congr_app (μ.hom.naturality f) X
+  μIso_hom_natural_right X f := (μ.hom.app X).naturality f
+  associativity X Y Z :=
+    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app associativity X) Y) Z
+  left_unitality X := NatTrans.congr_app left_unitality X
+  right_unitality X := NatTrans.congr_app right_unitality X
+
+end Bifunctor
 
 end CoreMonoidal
 
