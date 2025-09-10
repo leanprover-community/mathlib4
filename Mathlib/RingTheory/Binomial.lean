@@ -69,6 +69,8 @@ suitable factorials. We define this notion as a mixin for additive commutative m
 number powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
 quotient. -/
 class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
+  -- This base class has been demoted to a field, to avoid creating
+  -- an expensive global instance.
   [toIsAddTorsionFree : IsAddTorsionFree R]
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
