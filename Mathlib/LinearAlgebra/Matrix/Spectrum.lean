@@ -151,7 +151,7 @@ lemma charpoly_eq : A.charpoly = ∏ i, (X - C (RCLike.ofReal (hA.eigenvalues i)
   conv_lhs => rw [hA.spectral_theorem, charpoly_mul_comm, ← mul_assoc]
   simp [charpoly_diagonal]
 
-lemma charpoly_roots_eq_eigenvalues :
+lemma roots_charpoly_eq_eigenvalues :
     A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues) Finset.univ.val := by
   rw [hA.charpoly_eq, Polynomial.roots_prod]
   · simp
