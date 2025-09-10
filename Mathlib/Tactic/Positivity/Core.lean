@@ -415,7 +415,7 @@ end Meta.Positivity
 namespace Meta.Positivity
 
 /-- Given an expression `e`, use the core method of the `positivity` tactic to prove it positive,
-or, failing that, nonnegative; return a boolean (signalling whether the strict or non-strict
+or, failing that, nonnegative; return a Boolean (signalling whether the strict or non-strict
 inequality was established) together with the proof as an expression. -/
 def bestResult (e : Expr) : MetaM (Bool × Expr) := do
   let ⟨u, α, _⟩ ← inferTypeQ' e

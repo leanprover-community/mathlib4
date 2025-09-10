@@ -389,7 +389,7 @@ def isOk : (Bool × Proof) × Nat → Option (Proof × Nat)
   | ((false, _), _) => none
   | ((true, p), n) => some (p, n)
 
-/-- Skip the continuation and return a failed proof if the boolean is false. -/
+/-- Skip the continuation and return a failed proof if the Boolean is false. -/
 def whenOk : Bool → IProp → StateM Nat (Bool × Proof) → StateM Nat (Bool × Proof)
   | false, _, _ => pure (false, .sorry)
   | true, _, f => f
