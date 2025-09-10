@@ -135,3 +135,10 @@ lemma Subring.isLocalRing_of_unit {R : Type*} [Ring R] [IsLocalRing R] (S : Subr
   isUnit_or_isUnit_of_add_one {x y} hxy :=
     (‹IsLocalRing R›.isUnit_or_isUnit_of_add_one congr(Subtype.val $hxy)).elim
       (fun hx ↦ Or.inl (h_unit x.val x.prop hx)) (fun hy ↦ Or.inr (h_unit y.val y.prop hy))
+
+lemma Subsemiring.isLocalRing_of_unit {R : Type*} [Semiring R] [IsLocalRing R] (S : Subsemiring R)
+    (h_unit : ∀ (x : R) (hx : x ∈ S), IsUnit x → IsUnit (⟨x, hx⟩ : S)) :
+    IsLocalRing S where
+  isUnit_or_isUnit_of_add_one {x y} hxy :=
+    (‹IsLocalRing R›.isUnit_or_isUnit_of_add_one congr(Subtype.val $hxy)).elim
+      (fun hx ↦ Or.inl (h_unit x.val x.prop hx)) (fun hy ↦ Or.inr (h_unit y.val y.prop hy))
