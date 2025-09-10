@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
-import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
 import Lean.Server.InfoUtils
-import Batteries.Data.Array.Merge
 import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.Elab.Tactic.Meta
 
