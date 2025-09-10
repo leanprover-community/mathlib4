@@ -286,11 +286,6 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     rw [Set.mem_singleton_iff, Sigma.ext_iff] at h
     obtain ⟨rfl, h⟩ := h; subst h; constructor
 
-/-- The uncurried version of `pullbackArrows`. -/
-@[simps] noncomputable nonrec
-def _root_.Sigma.pullback [HasPullbacks C] {B : C} (b : B ⟶ X) (f : Σ Y, Y ⟶ X) : Σ Y, Y ⟶ B :=
-  ⟨pullback f.2 b, pullback.snd _ _⟩
-
 @[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :
     (pullbackArrows b s).uncurry = (fun f ↦ ⟨pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
   ext ⟨Z, v⟩; constructor
@@ -300,11 +295,6 @@ def _root_.Sigma.pullback [HasPullbacks C] {B : C} (b : B ⟶ X) (f : Σ Y, Y �
     obtain ⟨rfl, h⟩ := h
     rw [heq_iff_eq] at h; subst h
     exact ⟨Y, u, hu⟩
-
-/-- The uncurried version of composing on the right. -/
-@[simps]
-def _root_.Sigma.map_hom {Y : C} (u : Y ⟶ X) (f : Σ Z, Z ⟶ Y) : Σ Z, Z ⟶ X :=
-  ⟨f.1, f.2 ≫ u⟩
 
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
