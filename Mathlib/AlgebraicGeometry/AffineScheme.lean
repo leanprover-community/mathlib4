@@ -723,7 +723,7 @@ theorem primeIdealOf_eq_map_closedPoint (x : U) :
   hU.isoSpec_hom_base_apply _
 
 /-- If a point `x : U` is a closed point, then its corresponding prime ideal is maximal. -/
-theorem primeIdealOf_isMaximal_of_isClosed (x : U) (hx : IsClosed {x.1}) :
+theorem primeIdealOf_isMaximal_of_isClosed (x : U) (hx : IsClosed {(x : X)}) :
     (hU.primeIdealOf x).asIdeal.IsMaximal := by
   have hx₀ : IsClosed {x} := by
     simpa [← Set.image_singleton, Set.preimage_image_eq _ Subtype.val_injective]
