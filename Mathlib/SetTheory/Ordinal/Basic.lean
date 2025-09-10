@@ -526,12 +526,6 @@ def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
-/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
-@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
-def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' ho
-
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)

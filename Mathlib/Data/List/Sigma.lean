@@ -181,8 +181,8 @@ theorem of_mem_dlookup {a : α} {b : β a} :
   | ⟨a', b'⟩ :: l, H => by
     by_cases h : a = a'
     · subst a'
-      simp? at H says simp only [dlookup_cons_eq, Option.mem_def, Option.some.injEq] at H
-      simp [H]
+      have : b' = b := by simpa using H
+      simp [this]
     · simp only [ne_eq, h, not_false_iff, dlookup_cons_ne] at H
       simp [of_mem_dlookup H]
 
@@ -719,10 +719,7 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     by_cases h₁ : a = a'
     · subst h₁
       simp
-    · let h₂ := @ih (kerase a' l₂)
-      simp? [h₁] at h₂ says
-        simp only [Option.mem_def, ne_eq, h₁, not_false_eq_true, dlookup_kerase_ne] at h₂
-      simp [h₁, h₂]
+    · simp [h₁, @ih (kerase a' l₂)]
 
 @[simp]
 theorem dlookup_kunion_eq_some {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
