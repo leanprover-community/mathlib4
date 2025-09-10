@@ -180,14 +180,13 @@ lemma eigenvalues_eq_iff_charpoly_eq :
   · unfold eigenvalues
     simp_rw [eigenvalues₀_eq_charpoly_roots_sort_getI, h]
 
-theorem polynomial_splits_charpoly (hA : A.IsHermitian) :
+theorem charpoly_splits (hA : A.IsHermitian) :
     A.charpoly.Splits (RingHom.id 𝕜) :=
   Polynomial.splits_iff_card_roots.mpr (by simp [hA.charpoly_roots_eq_eigenvalues])
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  simp [det_eq_prod_roots_charpoly_of_splits hA.polynomial_splits_charpoly,
-    hA.charpoly_roots_eq_eigenvalues]
+  simp [det_eq_prod_roots_charpoly_of_splits hA.charpoly_splits, hA.charpoly_roots_eq_eigenvalues]
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
@@ -237,8 +236,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
-  simp [trace_eq_sum_roots_charpoly_of_splits hA.polynomial_splits_charpoly,
-    hA.charpoly_roots_eq_eigenvalues]
+  simp [trace_eq_sum_roots_charpoly_of_splits hA.charpoly_splits, hA.charpoly_roots_eq_eigenvalues]
 
 end IsHermitian
 
