@@ -102,9 +102,8 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
   apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
   exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
-noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [NormedAddCommGroup X]
-  [OpensMeasurableSpace X] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-  [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [IsFiniteMeasure μ] :
+noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace ℝ E]
+  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →ₗ[𝕜] E :=
   {
     toFun := (∫ x, · x ∂μ)
@@ -112,9 +111,8 @@ noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [No
     map_smul' := fun c f ↦ integral_smul c f
   }
 
-noncomputable def integralFiniteMeasureCLM (𝕜 : Type*) [NormedField 𝕜] [NormedAddCommGroup X]
-  [OpensMeasurableSpace X] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-  [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [IsFiniteMeasure μ] :
+noncomputable def integralFiniteMeasureCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace ℝ E]
+  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →L[𝕜] E :=
   LinearMap.mkContinuous (integralFiniteMeasureₗ μ 𝕜) (measureUnivNNReal μ)
     (fun f ↦ le_trans (f.norm_integral_le_mul_norm _) le_rfl)
