@@ -89,7 +89,7 @@ lemma eq_on_nat_iff_eq : (∀ n : ℕ, f n = g n) ↔ f = g := by
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f.IsEquiv g := by
+lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f.IsEquiv g := by
   rw [isEquiv_iff_exists_rpow_eq]
   refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
   ext1 x
@@ -232,7 +232,7 @@ theorem equiv_padic_of_bounded :
   have hprime := is_prime_of_minimal_nat_zero_lt_and_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact p.Prime := ⟨hprime⟩
   obtain ⟨t, h⟩ := exists_pos_eq_pow_neg hfp.1 hfp.2 hmin
-  simp_rw [← equiv_on_nat_iff_equiv]
+  simp_rw [← exists_nat_rpow_iff_isEquiv]
   refine ⟨p, ⟨hprime_fact, t⁻¹, inv_pos_of_pos h.1, fun n ↦ ?_⟩, fun q ⟨hq_prime, h_equiv⟩ ↦ ?_⟩
   · have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
     rcases eq_or_ne n 0 with rfl | hn -- Separate cases n = 0 and n ≠ 0
@@ -429,7 +429,7 @@ theorem equiv_real_of_unbounded : f.IsEquiv real := by
   have oneltm : 1 < m := by
     contrapose! hm
     rcases le_one_iff_eq_zero_or_eq_one.mp hm with rfl | rfl <;> simp
-  rw [← equiv_on_nat_iff_equiv]
+  rw [← exists_nat_rpow_iff_isEquiv]
   set s := logb m (f m) with hs
   refine ⟨s⁻¹,
     inv_pos.mpr (logb_pos (Nat.one_lt_cast.mpr oneltm) (one_lt_of_not_bounded notbdd oneltm)),
