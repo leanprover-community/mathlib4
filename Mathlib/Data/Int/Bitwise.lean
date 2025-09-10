@@ -67,8 +67,8 @@ def land : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => -[m ||| n +1]
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
-  pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+  pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
+  Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
   | (m : ℕ), -[n +1] => m &&& n
