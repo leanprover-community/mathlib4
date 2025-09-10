@@ -181,7 +181,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
 @[simp]
 lemma quotientEquivClasses_mk_eq (r : Setoid α) (a : α) :
     (quotientEquivClasses r (Quotient.mk r a) : Set α) = { x | r x a } :=
-  (@Subtype.ext_iff_val _ _ _ ⟨{ x | r x a }, Setoid.mem_classes r a⟩).mp rfl
+  (@Subtype.ext_iff _ _ _ ⟨{ x | r x a }, Setoid.mem_classes r a⟩).mp rfl
 
 section Partition
 
@@ -249,7 +249,7 @@ instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
   lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
-    rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
+    rw [Subtype.ext_iff, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
 
 variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
@@ -258,7 +258,7 @@ protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartit
   toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
-  right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
+  right_inv C := by rw [Subtype.ext_iff, ← classes_mkClasses C.1 C.2]
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
