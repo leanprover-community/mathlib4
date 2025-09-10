@@ -27,7 +27,7 @@ lemma hasEigenvalue_iff_isRoot_charpoly (f : End K V) (μ : K) :
     f.HasEigenvalue μ ↔ f.charpoly.IsRoot μ := by
   let b := Module.Free.chooseBasis K V
   rw [hasEigenvalue_iff_mem_spectrum, ← charpoly_toMatrix f b,
-    Matrix.mem_spectrum_iff_isRoot_charpoly, spectrum_toMatrix f b]
+    ← Matrix.mem_spectrum_iff_isRoot_charpoly, spectrum_toMatrix f b]
 
 end End
 
