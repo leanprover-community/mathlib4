@@ -8,6 +8,8 @@ import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
 # Adjoining elements to form subalgebras
@@ -202,3 +204,15 @@ theorem is_noetherian_subring_closure (s : Set R) (hs : s.Finite) :
     Algebra.adjoin_int s ▸ isNoetherianRing_of_fg (Subalgebra.fg_def.2 ⟨s, hs, rfl⟩)
 
 end Ring
+
+open TensorProduct
+
+lemma exists_fg_and_mem_baseChange {k : Type u} {A : Type v} {B : Type w} [CommRing k] [CommRing A]
+    [CommRing B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
+    ∃ C : Subalgebra k B, C.FG ∧ x ∈ subAlgebra.baseChange A C := by
+  obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
+  classical
+  refine ⟨Algebra.adjoin k (S.image fun j ↦ j.2), ?_, ?_⟩
+  · exact Subalgebra.fg_adjoin_finset _
+  · exact hS ▸ Subalgebra.sum_mem _ fun s hs ↦ ⟨s.1 ⊗ₜ[k] ⟨s.2, Algebra.subset_adjoin
+      (Finset.mem_image_of_mem _ hs)⟩, rfl⟩
