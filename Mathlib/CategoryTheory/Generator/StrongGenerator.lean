@@ -9,6 +9,20 @@ import Mathlib.CategoryTheory.Generator.Basic
 /-!
 # Strong generators
 
+A set of objects `S` in a category `C` is a strong generator if it is a
+generator (in the sense that `IsSeparating S` holds) such that for any
+proper subject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
+object in `S` which does not factor through `A`.
+
+The main result if the lemma `isStrongGenerator_iff_exists_extremalEpi` which
+says that if `S` is `w`-small, `C` is locally `w`-small and
+has coproducts of size `w`, then `S` is a strong generator iff any
+object of `C` is the target of extremal epimorphism from a coproduct of
+objects in `S`. A similar iff lemma for `IsSeparating` is also obtained.
+
+## References
+* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
+
 -/
 
 universe w v u
@@ -19,6 +33,9 @@ open Limits
 
 variable {C : Type u} [Category.{v} C] (S : Set C)
 
+/-- A set of objects is a strong generator if it is separating and for any
+proper subject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
+object in `S` which does not factor through `A`. -/
 def IsStrongGenerator : Prop :=
   IsSeparating S ∧ ∀ ⦃X : C⦄ (A : Subobject X),
     (∀ (G : S) (f : G.1 ⟶ X), Subobject.Factors A f) → A = ⊤
@@ -75,6 +92,8 @@ section
 
 variable (S) [HasCoproducts.{w} C] [LocallySmall.{w} C] [Small.{w} S] (X : C)
 
+/-- Given `S : Set C` and `X : C`, this is the family of source objects
+in the family of all maps `G ⟶ X` with `G ∈ S`. -/
 abbrev coproductOfSet.obj (p : Σ (s : S), s.1 ⟶ X) : C := p.1.1
 
 lemma coproductOfSet.hasColimit :
@@ -82,12 +101,15 @@ lemma coproductOfSet.hasColimit :
   hasColimit_of_equivalence_comp
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
+/-- Given `S : Set C` and `X : C`, this is the coproduct of
+`G` indexed by the type of all maps `G ⟶ X` with `G ∈ S`. -/
 noncomputable def coproductOfSet (X : C) : C :=
   have := coproductOfSet.hasColimit S X
   ∐ (coproductOfSet.obj S X)
 
 namespace coproductOfSet
 
+/-- The canonical morphism `coproductOfSet S X ⟶ X`. -/
 noncomputable def π (X : C) : coproductOfSet S X ⟶ X :=
   have := coproductOfSet.hasColimit S X
   Sigma.desc (fun p ↦ p.2)
@@ -96,6 +118,7 @@ section
 
 variable {S} {X : C} (s : S) (f : s.1 ⟶ X)
 
+/-- The inclusion morphisms in the coproduct `coproductOfSet S X`. -/
 noncomputable def ι : s.1 ⟶ coproductOfSet S X :=
   have := coproductOfSet.hasColimit S X
   Sigma.ι (coproductOfSet.obj S X) ⟨s, f⟩
@@ -130,6 +153,18 @@ lemma mk_of_exists_epi
     (fun i ↦ by simpa using h _ (s i).2 (c.inj i ≫ p))
 
 end IsSeparating
+
+lemma isSeparating_iff_exists_epi
+    [HasCoproducts.{w} C] [LocallySmall.{w} C] [Small.{w} S] :
+    IsSeparating S ↔
+      ∀ (X : C), ∃ (ι : Type w) (s : ι → S) (c : Cofan (fun i ↦ (s i).1)) (_ : IsColimit c)
+        (p : c.pt ⟶ X), Epi p := by
+  refine ⟨fun hS X ↦ ?_, fun hS ↦ .mk_of_exists_epi hS⟩
+  have := coproductOfSet.hasColimit S X
+  exact ⟨_, fun j ↦ ((equivShrink (Σ (s : S), s.1 ⟶ X)).symm j).1, _,
+    (colimit.isColimit (Discrete.functor (coproductOfSet.obj S X))).whiskerEquivalence
+      ((Discrete.equivalence (equivShrink.{w} _))).symm, _,
+      hS.epi_coproductOfSetπ X⟩
 
 namespace IsStrongGenerator
 
