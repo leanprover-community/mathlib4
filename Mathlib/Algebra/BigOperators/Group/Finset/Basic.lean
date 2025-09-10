@@ -220,9 +220,6 @@ lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι 
 theorem prod_sumElim (s : Finset ι) (t : Finset κ) (f : ι → M) (g : κ → M) :
     ∏ x ∈ s.disjSum t, Sum.elim f g x = (∏ x ∈ s, f x) * ∏ x ∈ t, g x := by simp
 
-@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
-@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
-
 @[to_additive]
 theorem prod_biUnion [DecidableEq ι] {s : Finset κ} {t : κ → Finset ι}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
@@ -335,7 +332,6 @@ theorem prod_filter (p : ι → Prop) [DecidablePred p] (f : ι → M) :
 @[to_additive]
 theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈ s)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) : ∏ x ∈ s, f x = f a := by
-  haveI := Classical.decEq ι
   calc
     ∏ x ∈ s, f x = ∏ x ∈ {a}, f x := by
       { refine (prod_subset ?_ ?_).symm
