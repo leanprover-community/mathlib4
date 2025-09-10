@@ -260,7 +260,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
         ← Int.neg_ofNat_succ, ascPochhammer_smeval_neg_eq_descPochhammer]
       norm_cast
 
-noncomputable local instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] :
+local instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] :
     IsAddTorsionFree R where
   nsmul_right_injective {n} hn r s hrs := by
     rw [← one_smul ℚ≥0 r, ← one_smul ℚ≥0 s, show 1 = (n : ℚ≥0)⁻¹ • (n : ℚ≥0) by simp_all]
