@@ -54,7 +54,7 @@ lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w �
 /-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
-  complete := fun x ↦ List.mem_toFinset.mpr (mem_support hp x)
+  complete x := List.mem_toFinset.mpr (mem_support hp x)
 
 protected lemma IsHamiltonian.finite (hp : p.IsHamiltonian) : Finite α := hp.fintype.finite
 
