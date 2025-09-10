@@ -148,7 +148,7 @@ lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
 
 open Polynomial in
 lemma charpoly_cfc_eq (f : ℝ → ℝ) :
-    (cfc f A).charpoly = ∏ i, (X - C (RCLike.ofReal (f (hA.eigenvalues i)))) := by
+    (cfc f A).charpoly = ∏ i, (X - C (f (hA.eigenvalues i) : 𝕜)) := by
   rw [cfc_eq hA f, IsHermitian.cfc, charpoly_mul_comm, ← mul_assoc]
   simp [charpoly_diagonal]
 
