@@ -46,7 +46,7 @@ Let `P` be a property of morphisms. `P.Ind` is satisfied for `f : X ⟶ Y`
 if there exists a family of natural maps `tᵢ : X ⟶ Yᵢ` and `sᵢ : Yᵢ ⟶ Y` indexed by `J`
 such that
 - `J` is filtered
-- `Y = colim Yᵢ` via `{sᵢ}ᵢ`
+- `Y ≅ colim Yᵢ` via `{sᵢ}ᵢ`
 - `tᵢ` satisfies `P` for all `i`
 - `f = tᵢ ≫ sᵢ` for all `i`.
 
