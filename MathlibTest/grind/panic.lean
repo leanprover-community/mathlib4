@@ -2,9 +2,9 @@ import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic.FastInstance
 
 /-!
-From `v4.23.0-rc2` through to `nightly-2025-09-02`, `grind` panics here.
+From `v4.23.0-rc2` through to `nightly-2025-09-02`, `grind` panicked here.
 
-Once this is fixed in `grind`, we can keep this example as a regression test in Mathlib.
+We keep this example as a regression test in Mathlib.
 -/
 
 variable {R : Type} [CommRing R]
