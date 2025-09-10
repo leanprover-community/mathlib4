@@ -55,11 +55,15 @@ it has coefficients in the ring `R`. -/
 class IsIntegral (W : WeierstrassCurve K) : Prop where
   integral : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K
 
-def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+/-- An integral model of an integral Weierstrass curve. -/
+noncomputable def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     WeierstrassCurve R :=
-  hW.choose
+  hW.integral.choose
 
-  
+omit [IsFractionRing R K] in
+lemma integralModel_baseChange_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    (integralModel R W).baseChange K = W :=
+  hW.integral.choose_spec.symm
 
 omit [IsFractionRing R K] in
 lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
@@ -86,15 +90,11 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
   use W_int.Δ
   rw [hW_int, map_Δ]
 
-lemma integral_Δ_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
-    hW.integral.choose.Δ =
-    (algebraMap R K).toFun.invFun W.Δ := by
-  conv_rhs => simp [Function.invFun, Δ_integral_of_isIntegral R W]
-  apply (@IsFractionRing.coe_inj R _ K _ _ _ _).mp
-  unfold Algebra.cast
-  rw [← map_Δ]
-  conv_lhs => arg 1; equals W => apply hW.integral.choose_spec.symm
-  rw [(Δ_integral_of_isIntegral R W).choose_spec]
+omit [IsFractionRing R K] in
+lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+    algebraMap R K (integralModel R W).Δ = W.Δ := by
+  conv_rhs => rw [← integralModel_baseChange_eq R W]
+  simp [integralModel]
 
 variable [IsDomain R] [ValuationRing R]
 
@@ -153,27 +153,24 @@ section Minimal
 variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
+open WithZero Multiplicative
 open IsDiscreteValuationRing IsDedekindDomain.HeightOneSpectrum
 
+open Classical in
 /-- The valuation of the discriminant of a Weierstrass curve `W`,
 which is at most 1 if `W` is integral. Zero otherwise. -/
 noncomputable def valuation_Δ_aux (W : WeierstrassCurve K) :
-    { v : WithZero (Multiplicative ℤ) // v ≤ 1 } := by
-  by_cases h : IsIntegral R W
-  · exact ⟨valuation K (maximalIdeal R) W.Δ, by
+    { v : ℤᵐ⁰ // v ≤ 1 } :=
+  if h : IsIntegral R W then
+    ⟨valuation K (maximalIdeal R) W.Δ, by
       choose r hr using Δ_integral_of_isIntegral R W
       rw [← hr]
       exact valuation_le_one (maximalIdeal R) r⟩
-  · exact ⟨⊥, bot_le⟩
+  else ⟨⊥, bot_le⟩
 
 lemma valuation_Δ_aux_eq_of_isIntegral (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     valuation_Δ_aux R W = valuation K (maximalIdeal R) W.Δ := by
   simp [valuation_Δ_aux, hW]
-
-instance : WellFoundedGT { v : WithZero (Multiplicative ℤ) // v ≤ 1 } :=
-  { wf :=
-    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
-    one_ne_zero).mpr instNonemptyOfInhabited }
 
 /-- A Weierstrass equation over the fraction field `K` is minimal if the (multiplicative) valuation
 of its discriminant is maximal among all isomorphic integral Weierstrass equations.
@@ -217,29 +214,30 @@ section Reduction
 variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-open IsDiscreteValuationRing IsLocalRing
+open IsDiscreteValuationRing IsLocalRing IsDedekindDomain.HeightOneSpectrum
 
 /-- The reduction of a Weierstrass curve over `K` given by a minimal Weierstrass equation,
 which is a Weierstrass curve over the residue field of `R`. -/
 noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
     WeierstrassCurve (ResidueField R) :=
-  letI hW : IsIntegral R W := inferInstance
-  hW.integral.choose.map (residue R)
+  (integralModel R W).map (residue R)
 
 /-- A minimal Weierstrass equation has good reduction if and only if
-the valuation of its discriminant is zero. -/
+the valuation of its discriminant is 1. -/
 @[mk_iff]
 class IsGoodReduction (W : WeierstrassCurve K) [IsMinimal R W] : Prop where
-  goodReduction : addVal R ((algebraMap R K).toFun.invFun W.Δ) = 0
+  goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
 lemma isGoodReduction_iff_reduction_isElliptic {W : WeierstrassCurve K} [IsMinimal R W] :
     IsGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
-  simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff, mem_maximalIdeal,
-    mem_nonunits_iff, not_not]
-  refine Iff.trans ?_ addVal_eq_zero_iff
-  rw [integral_Δ_eq_of_isIntegral R W]
-  exact isGoodReduction_iff _ _
+  simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff]
+  have h :
+      ¬(valuation K (maximalIdeal R) (algebraMap R K (integralModel R W).Δ) < 1)
+      ↔ (integralModel R W).Δ ∉ IsLocalRing.maximalIdeal R :=
+    not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
+  refine ((integralModel_Δ_eq R W ▸ isGoodReduction_iff _ _).trans ?_).trans h
+  simpa using (LE.le.ge_iff_eq <| valuation_le_one _ _).symm
 
 end Reduction
 
