@@ -163,7 +163,7 @@ lemma roots_charpoly_eq_eigenvalues₀ :
   simp only [← Multiset.map_map, eigenvalues, ← Function.comp_apply (f := hA.eigenvalues₀)]
   simp
 
-lemma eigenvalues₀_eq_roots_charpoly_sort_getI :
+lemma eigenvalues₀_eq_getI_sort_roots_charpoly :
     hA.eigenvalues₀ = fun i ↦ ((A.charpoly.roots.map RCLike.re).sort (· ≥ ·)).getI i.val := by
   rw [hA.roots_charpoly_eq_eigenvalues₀]
   simp_rw [Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
@@ -178,7 +178,7 @@ lemma eigenvalues_eq_iff_charpoly_eq :
   constructor <;> intro h
   · rw [hA.charpoly_eq, hB.charpoly_eq, h]
   · unfold eigenvalues
-    simp_rw [eigenvalues₀_eq_roots_charpoly_sort_getI, h]
+    simp_rw [eigenvalues₀_eq_getI_sort_roots_charpoly, h]
 
 theorem charpoly_splits (hA : A.IsHermitian) :
     A.charpoly.Splits (RingHom.id 𝕜) :=
