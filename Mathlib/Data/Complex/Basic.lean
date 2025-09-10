@@ -427,7 +427,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 
 /-- This defines the complex conjugate as the `star` operation of the `StarRing ℂ`. It
 is recommended to use the ring endomorphism version `starRingEnd`, available under the
-notation `conj` in the locale `ComplexConjugate`. -/
+notation `conj` in the scope `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]

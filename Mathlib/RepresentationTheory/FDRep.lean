@@ -218,8 +218,7 @@ open scoped MonoidalCategory
 /-- Auxiliary definition for `FDRep.dualTensorIsoLinHom`. -/
 noncomputable def dualTensorIsoLinHomAux :
     (FDRep.of ρV.dual ⊗ W).V ≅ (FDRep.of (linHom ρV W.ρ)).V :=
-  -- Porting note: had to make `V` explicit
-  LinearEquiv.toFGModuleCatIso (V := (FDRep.of ρV.dual ⊗ W).V) (dualTensorHomEquiv k V W)
+  LinearEquiv.toFGModuleCatIso (dualTensorHomEquiv k V W)
 
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
