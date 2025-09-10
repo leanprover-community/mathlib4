@@ -15,6 +15,9 @@ We show that not all commutative rings `R` satisfy
 `ringKrullDim (Polynomial R) = ringKrullDim R + 1`,
 following the construction in the reference link.
 
+We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$, and show that `ringKrullDim A = 1`
+but `ringKrullDim A[X] = 3`.
+
 ## References
 
 <https://math.stackexchange.com/questions/1267419/examples-of-rings-whose-polynomial-rings-have-large-dimension>
