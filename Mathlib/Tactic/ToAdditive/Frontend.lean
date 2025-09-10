@@ -494,6 +494,9 @@ structure Config : Type where
   self : Bool := false
   deriving Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprConfig.repr
+
 /-- Implementation function for `additiveTest`.
 Failure means that in that subexpression there is no constant that blocks `e` from being translated.
 We cache previous applications of the function, using an expression cache using ptr equality
