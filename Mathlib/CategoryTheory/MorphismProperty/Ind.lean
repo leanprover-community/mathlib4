@@ -73,7 +73,7 @@ lemma le_ind : P ≤ ind.{w} P := by
 
 variable {P}
 
-lemma ind_iff_ind_under_mk {X Y : C} (f : X ⟶ Y) :
+lemma ind_iff_ind_underMk {X Y : C} (f : X ⟶ Y) :
     ind.{w} P f ↔ ObjectProperty.ind.{w} P.underObj (CategoryTheory.Under.mk f) := by
   refine ⟨fun ⟨J, _, _, D, t, s, hs, hst⟩ ↦ ?_, fun ⟨J, _, _, pres, hpres⟩ ↦ ?_⟩
   · refine ⟨J, ‹_›, ‹_›, ⟨Under.lift D t, ?_, ?_⟩, ?_⟩
