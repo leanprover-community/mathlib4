@@ -9,8 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces
@@ -21,12 +21,13 @@ to be conformal.
 ## Main results
 
 * `isConformalMap_complex_linear`: a nonzero complex linear map into an arbitrary complex normed
-                                   space is conformal.
+  space is conformal.
+
 * `isConformalMap_complex_linear_conj`: the composition of a nonzero complex linear map with `conj`
-                                        is complex linear.
+  is complex linear.
+
 * `isConformalMap_iff_is_complex_or_conj_linear`: a real linear map between the complex plane is
-                                                  conformal iff it's complex linear or the
-                                                  composition of some complex linear map and `conj`.
+  conformal iff it's complex linear or the composition of some complex linear map and `conj`.
 
 * `DifferentiableAt.conformalAt` states that a real-differentiable function with a nonvanishing
   differential from the complex plane into an arbitrary complex-normed space is conformal at a point
@@ -74,7 +75,7 @@ theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠
     nth_rw 1 [this]
     rw [LinearMap.coe_restrictScalars]
     simp only [map.coe_coe, map.map_smul, norm_smul, norm_inv, norm_norm]
-    field_simp only [one_mul]
+    field_simp
   · ext1
     simp [minor₁]
 
@@ -106,7 +107,7 @@ theorem IsConformalMap.is_complex_or_conj_linear (h : IsConformalMap g) :
     simp
 
 /-- A real continuous linear map on the complex plane is conformal if and only if the map or its
-    conjugate is complex linear, and the map is nonvanishing. -/
+conjugate is complex linear, and the map is nonvanishing. -/
 theorem isConformalMap_iff_is_complex_or_conj_linear :
     IsConformalMap g ↔
       ((∃ map : ℂ →L[ℂ] ℂ, map.restrictScalars ℝ = g) ∨
@@ -198,26 +199,23 @@ lemma real_linearMap_map_smul_complex {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I �
 Construct a complex-linear map from a real-linear map `ℓ` that maps `I` to `I • ℓ 1`.
 -/
 def LinearMap.complexOfReal (ℓ : ℂ →ₗ[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →ₗ[ℂ] E where
-  toFun := ℓ
-  map_add' := ℓ.map_add
+  __ := ℓ
   map_smul' := real_linearMap_map_smul_complex h
 
 @[simp]
-lemma LinearMap.coe_complexOfReal {ℓ : ℂ →ₗ[ℝ] E} (h : ℓ I = I • ℓ 1) :
-    ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
+lemma LinearMap.coe_complexOfReal {ℓ : ℂ →ₗ[ℝ] E} (h) : ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
 
 /--
 Construct a continuous complex-linear map from a continuous real-linear map `ℓ` that maps `I` to
 `I • ℓ 1`.
 -/
 def ContinuousLinearMap.complexOfReal (ℓ : ℂ →L[ℝ] E) (h : ℓ I = I • ℓ 1) : ℂ →L[ℂ] E where
-  toFun := ℓ
-  map_add' := ℓ.map_add
+  __ := ℓ
   map_smul' := real_linearMap_map_smul_complex h
 
 @[simp]
-lemma ContinuousLinearMap.coe_complexOfReal {ℓ : ℂ →L[ℝ] E} (h : ℓ I = I • ℓ 1) :
-    ℓ.complexOfReal h = (ℓ : ℂ → E) := rfl
+lemma ContinuousLinearMap.coe_complexOfReal {ℓ : ℂ →L[ℝ] E} (h) : ℓ.complexOfReal h = (ℓ : ℂ → E) :=
+  rfl
 
 /--
 The **Cauchy-Riemann Equation**: A real-differentiable function `f` on `ℂ` is complex-differentiable
@@ -240,10 +238,10 @@ theorem differentiableWithinAt_complex_iff_differentiableWithinAt_real
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
 complex derivative equals `ContinuousLinearMap.complexOfReal` of the real derivative.
 -/
-protected theorem HasFDerivWithinAt.complexOfReal_hasFDerivWithinAt {f' : ℂ →L[ℝ] E}
-    (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f' I = I • f' 1) :
+protected theorem HasFDerivWithinAt.complexOfReal {f' : ℂ →L[ℝ] E} (h₁ : HasFDerivWithinAt f f' s x)
+    (h₂ : f' I = I • f' 1) :
     HasFDerivWithinAt f (f'.complexOfReal h₂) s x :=
-  HasFDerivWithinAt.of_restrictScalars ℝ h₁ rfl
+  .of_restrictScalars ℝ h₁ rfl
 
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the
@@ -264,7 +262,7 @@ theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
     HasDerivWithinAt f ((fderivWithin ℝ f s x).complexOfReal h₂ 1) s x := by
   rw [hasDerivWithinAt_iff_hasFDerivWithinAt, smulRight_one_one]
-  exact (h₁.hasFDerivWithinAt).complexOfReal_hasFDerivWithinAt h₂
+  exact h₁.hasFDerivWithinAt.complexOfReal h₂
 
 /--
 In cases where the **Cauchy-Riemann Equation** guarantees complex differentiability at `x`, the

@@ -291,7 +291,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
-  have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
+  have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
     (algebraMap R S) (Submonoid.le_comap_map M) := by
     apply IsLocalization.ringHom_ext M

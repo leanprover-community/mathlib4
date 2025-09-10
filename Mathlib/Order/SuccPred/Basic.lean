@@ -1007,8 +1007,8 @@ element to an order:
 * Adding a `⊤` to a `NoMaxOrder`: Preserves `succ`. Never preserves `pred`.
 * Adding a `⊥` to an `OrderBot`: Preserves `succ` and `pred`.
 * Adding a `⊥` to a `NoMinOrder`: Preserves `pred`. Never preserves `succ`.
-where "preserves `(succ/pred)`" means
-`(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
+  where "preserves `(succ/pred)`" means
+  `(Succ/Pred)Order α → (Succ/Pred)Order ((WithTop/WithBot) α)`.
 -/
 
 namespace WithTop

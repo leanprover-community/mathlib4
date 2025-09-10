@@ -587,8 +587,9 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
 
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : (minpoly F α).Splits (algebraMap F K)) :
-    @Fintype.card (F⟮α⟯ →ₐ[F] K) (fintypeOfAlgHomAdjoinIntegral F h) = (minpoly F α).natDegree := by
-  rw [AlgHom.card_of_powerBasis] <;>
+    Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
+  let _ : Fintype (F⟮α⟯ →ₐ[F] K) := fintypeOfAlgHomAdjoinIntegral F h
+  rw [Nat.card_eq_fintype_card, AlgHom.card_of_powerBasis] <;>
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
@@ -802,8 +803,8 @@ theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set 
   apply (Cardinal.lift_le.mpr (Subfield.cardinalMk_closure_le_max _)).trans
   rw [lift_max, sup_le_iff, lift_aleph0]
   refine ⟨(Cardinal.lift_le.mpr ((mk_union_le _ _).trans <| add_le_max _ _)).trans ?_, le_sup_right⟩
-  simp_rw [lift_max, lift_aleph0, sup_assoc]
-  exact sup_le_sup_right mk_range_le_lift _
+  simp_rw [lift_max, lift_aleph0]
+  grw [mk_range_le_lift]
 
 theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by

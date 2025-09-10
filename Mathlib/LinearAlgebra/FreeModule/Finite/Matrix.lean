@@ -51,7 +51,7 @@ theorem Module.rank_linearMap :
   rw [(linearMapEquivFun R S M N).rank_eq, rank_fun_eq_lift_mul,
     ← finrank_eq_card_chooseBasisIndex, ← finrank_eq_rank R, lift_natCast]
 
-/-- The finrank of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
+/-- The `finrank` of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
 theorem Module.finrank_linearMap :
     finrank S (M →ₗ[R] N) = finrank R M * finrank S N := by
   simp_rw [finrank, rank_linearMap, toNat_mul, toNat_lift]
@@ -82,8 +82,6 @@ theorem cardinalMk_algHom_le_rank : #(M →ₐ[K] L) ≤ lift.{v} (Module.rank K
   · rw [lift_id]
   · have := Module.nontrivial K L
     rw [lift_id, Module.rank_linearMap_self]
-
-@[deprecated (since := "2024-11-10")] alias cardinal_mk_algHom_le_rank := cardinalMk_algHom_le_rank
 
 @[stacks 09HS]
 theorem card_algHom_le_finrank : Nat.card (M →ₐ[K] L) ≤ finrank K M := by
