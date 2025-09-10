@@ -68,7 +68,11 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
     }
   | ~q(List.cons $right_hd $right_tl) =>
     -- in this case `log cur` is approximated by `logBasis`
-    let ~q(LogBasis.cons _ _ _ $logBasis_tl $log_hd) := logBasis
+    let logBasis' ← reduceLogBasis logBasis
+    haveI : $logBasis' =Q $logBasis := ⟨⟩
+    do
+    -- check logBasis
+    let ~q(LogBasis.cons _ _ _ $logBasis_tl $log_hd) := logBasis'
       | panic! s!"findPlaceAux: unexpected logBasis: {← ppExpr logBasis}"
     have : $ms.basis =Q $left ++ $cur :: $right_hd :: $right_tl := ⟨⟩
     let h_basis' : Q(WellFormedBasis ($right_hd :: $right_tl)) :=
