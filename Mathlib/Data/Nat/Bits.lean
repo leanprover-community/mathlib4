@@ -74,10 +74,8 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     cases bodd m <;> cases bodd n <;> rfl
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
-  have := congr_arg bodd (mod_add_div n 2)
-  simp? [not] at this says
-    simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
-      at this
+  have : (n % 2).bodd = n.bodd := by
+    simpa using congr_arg bodd (mod_add_div n 2)
   have _ : ∀ b, and false b = false := by
     intro b
     cases b <;> rfl

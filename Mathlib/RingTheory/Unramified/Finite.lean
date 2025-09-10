@@ -195,11 +195,9 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
     apply Finsupp.finsuppProdEquiv.symm.injective
     apply (Finsupp.equivCongrLeft (Equiv.prodComm I I)).injective
     apply (b.tensorProduct b).repr.symm.injective
-    simp? [Finsupp.linearCombination_apply, Finsupp.sum_uncurry_index] says
-      simp only [Finsupp.finsuppProdEquiv_symm_apply, Finsupp.equivCongrLeft_apply,
-        Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum_equivMapDomain,
-        Equiv.prodComm_apply, Finsupp.sum_uncurry_index, Prod.swap_prod_mk,
-        Basis.tensorProduct_apply]
+    suffices (F.sum fun a f ↦ f.sum fun b' c ↦ c • b b' ⊗ₜ[R] b a) =
+        G.sum fun a f ↦ f.sum fun b' c ↦ c • b b' ⊗ₜ[R] b a by
+      simpa [Finsupp.linearCombination_apply, Finsupp.sum_uncurry_index]
     rw [Finsupp.onFinset_sum, Finsupp.onFinset_sum]
     have : ∀ i, ((b.repr (x * f i)).sum fun j k ↦ k • b j ⊗ₜ[R] b i) = (x * f i) ⊗ₜ[R] b i := by
       intro i
