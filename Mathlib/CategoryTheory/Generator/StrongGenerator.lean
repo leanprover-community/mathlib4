@@ -96,22 +96,22 @@ variable (S) [HasCoproducts.{w} C] [LocallySmall.{w} C] [Small.{w} S] (X : C)
 in the family of all maps `G ⟶ X` with `G ∈ S`. -/
 abbrev coproductOfSet.obj (p : Σ (s : S), s.1 ⟶ X) : C := p.1.1
 
-lemma coproductOfSet.hasColimit :
-    HasColimit (Discrete.functor (coproductOfSet.obj S X)) :=
+lemma coproductOfSet.hasCoproduct :
+    HasCoproduct (coproductOfSet.obj S X) :=
   hasColimit_of_equivalence_comp
     (Discrete.equivalence (equivShrink.{w} _)).symm
 
 /-- Given `S : Set C` and `X : C`, this is the coproduct of
 `G` indexed by the type of all maps `G ⟶ X` with `G ∈ S`. -/
 noncomputable def coproductOfSet (X : C) : C :=
-  have := coproductOfSet.hasColimit S X
+  have := coproductOfSet.hasCoproduct S X
   ∐ (coproductOfSet.obj S X)
 
 namespace coproductOfSet
 
 /-- The canonical morphism `coproductOfSet S X ⟶ X`. -/
 noncomputable def π (X : C) : coproductOfSet S X ⟶ X :=
-  have := coproductOfSet.hasColimit S X
+  have := coproductOfSet.hasCoproduct S X
   Sigma.desc (fun p ↦ p.2)
 
 section
@@ -120,7 +120,7 @@ variable {S} {X : C} (s : S) (f : s.1 ⟶ X)
 
 /-- The inclusion morphisms in the coproduct `coproductOfSet S X`. -/
 noncomputable def ι : s.1 ⟶ coproductOfSet S X :=
-  have := coproductOfSet.hasColimit S X
+  have := coproductOfSet.hasCoproduct S X
   Sigma.ι (coproductOfSet.obj S X) ⟨s, f⟩
 
 @[reassoc (attr := simp)]
@@ -158,7 +158,7 @@ lemma isSeparating_iff_exists_epi
       ∀ (X : C), ∃ (ι : Type w) (s : ι → S) (c : Cofan (fun i ↦ (s i).1)) (_ : IsColimit c)
         (p : c.pt ⟶ X), Epi p := by
   refine ⟨fun hS X ↦ ?_, fun hS ↦ .mk_of_exists_epi hS⟩
-  have := coproductOfSet.hasColimit S X
+  have := coproductOfSet.hasCoproduct S X
   exact ⟨_, fun j ↦ ((equivShrink (Σ (s : S), s.1 ⟶ X)).symm j).1, _,
     (colimit.isColimit (Discrete.functor (coproductOfSet.obj S X))).whiskerEquivalence
       ((Discrete.equivalence (equivShrink.{w} _))).symm, _,
@@ -196,7 +196,7 @@ lemma isStrongGenerator_iff_exists_extremalEpi
       ∀ (X : C), ∃ (ι : Type w) (s : ι → S) (c : Cofan (fun i ↦ (s i).1)) (_ : IsColimit c)
         (p : c.pt ⟶ X), ExtremalEpi p := by
   refine ⟨fun hS X ↦ ?_, fun hS ↦ .mk_of_exists_extremalEpi hS⟩
-  have := coproductOfSet.hasColimit S X
+  have := coproductOfSet.hasCoproduct S X
   exact ⟨_, fun j ↦ ((equivShrink (Σ (s : S), s.1 ⟶ X)).symm j).1, _,
     (colimit.isColimit (Discrete.functor (coproductOfSet.obj S X))).whiskerEquivalence
       ((Discrete.equivalence (equivShrink.{w} _))).symm, _,
