@@ -3,11 +3,11 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.RamificationInertia.Unramified
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.Trace.Quotient
+import Mathlib.RingTheory.Conductor
 
 /-!
 # The different ideal
@@ -194,7 +194,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   apply IsIntegral.algebraMap
   rw [cramer_apply]
   apply IsIntegral.det
-  intros j k
+  intro j k
   rw [updateCol_apply]
   split
   · rw [mul_assoc]
@@ -212,7 +212,7 @@ variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 namespace FractionalIdeal
 
 open scoped Classical in
-/-- The dual of a non-zero fractional ideal is the dual of the submodule under the traceform. -/
+/-- The dual of a non-zero fractional ideal is the dual of the submodule under the trace form. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
     FractionalIdeal B⁰ L :=
@@ -639,7 +639,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
       exact ⟨intTrace A B z, this z hz, rfl⟩
     rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
-  intros x hx
+  intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
     ← isNilpotent_iff_eq_zero]
   refine trace_isNilpotent_of_isNilpotent ⟨e, ?_⟩
@@ -797,7 +797,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
       exact ⟨Algebra.intTrace A B z, this z hz, rfl⟩
     rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
-  intros x hx
+  intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain]
   letI : Algebra (A ⧸ p) (B ⧸ a) :=
     Ideal.Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp

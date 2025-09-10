@@ -222,9 +222,8 @@ def refl : A₁ ≃ₐ[R] A₁ :=
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
-@[simp]
-theorem refl_toAlgHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
-  rfl
+@[simp, norm_cast] lemma refl_toAlgHom : (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
+@[simp, norm_cast] lemma refl_toRingHom : (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
 
 @[simp]
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
@@ -376,6 +375,13 @@ theorem trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x
 theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x : A₃) :
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
+
+@[simp] lemma self_trans_symm (e : A₁ ≃ₐ[R] A₂) : e.trans e.symm = refl := by ext; simp
+@[simp] lemma symm_trans_self (e : A₁ ≃ₐ[R] A₂) : e.symm.trans e = refl := by ext; simp
+
+@[simp, norm_cast]
+lemma toRingHom_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
+    (e₁.trans e₂ : A₁ →+* A₃) = .comp e₂ (e₁ : A₁ →+* A₂) := rfl
 
 end trans
 
@@ -540,6 +546,19 @@ lemma ofBijective_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (a
 lemma toLinearMap_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
     (ofBijective f hf).toLinearMap = f := rfl
 
+@[simp]
+lemma toAlgHom_ofBijective (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) :
+    AlgHomClass.toAlgHom (ofBijective f hf) = f := rfl
+
+lemma ofBijective_apply_symm_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₂) :
+    f ((ofBijective f hf).symm x) = x :=
+  (ofBijective f hf).apply_symm_apply x
+
+@[simp]
+lemma ofBijective_symm_apply_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bijective f) (x : A₁) :
+    (ofBijective f hf).symm (f x) = x :=
+  (ofBijective f hf).symm_apply_apply x
+
 section OfLinearEquiv
 
 variable (l : A₁ ≃ₗ[R] A₂) (map_one : l 1 = 1) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
@@ -686,13 +705,18 @@ theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :
   ⟨fun h => by simpa using e.symm.toAlgHom.algebraMap_eq_apply h, fun h =>
     e.toAlgHom.algebraMap_eq_apply h⟩
 
-/-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
-@[simps]
-def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
-    (A ≃ₐ[R] A) →* A →ₗ[R] A where
-  toFun := AlgEquiv.toLinearMap
+/-- `AlgEquiv.toAlgHom` as a `MonoidHom`. -/
+@[simps] def toAlgHomHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (A ≃ₐ[R] A) →* A →ₐ[R] A where
+  toFun := AlgEquiv.toAlgHom
   map_one' := rfl
-  map_mul' := fun _ _ ↦ rfl
+  map_mul' _ _ := rfl
+
+/-- `AlgEquiv.toLinearMap` as a `MonoidHom`. -/
+@[simps!]
+def toLinearMapHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (A ≃ₐ[R] A) →* Module.End R A :=
+  AlgHom.toEnd.comp (toAlgHomHom R A)
 
 lemma pow_toLinearMap (σ : A₁ ≃ₐ[R] A₁) (n : ℕ) :
     (σ ^ n).toLinearMap = σ.toLinearMap ^ n :=
@@ -782,4 +806,3 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
-

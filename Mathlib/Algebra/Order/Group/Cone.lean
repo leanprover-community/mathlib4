@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Construct ordered groups from groups with a specified positive cone.
@@ -61,25 +62,15 @@ instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
 initialize_simps_projections GroupCone (carrier → coe, as_prefix coe)
 initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
 
-/-- Typeclass for maximal additive cones. -/
-class IsMaxCone {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
-  mem_or_neg_mem' (a : G) : a ∈ C ∨ -a ∈ C
-
-/-- Typeclass for maximal multiplicative cones. -/
-@[to_additive IsMaxCone]
-class IsMaxMulCone {S G : Type*} [CommGroup G] [SetLike S G] (C : S) : Prop where
-  mem_or_inv_mem' (a : G) : a ∈ C ∨ a⁻¹ ∈ C
-
-@[to_additive]
-lemma mem_or_inv_mem {S G : Type*} [CommGroup G] [SetLike S G] (C : S) [IsMaxMulCone C]
-    (a : G) : a ∈ C ∨ a⁻¹ ∈ C := IsMaxMulCone.mem_or_inv_mem' a
+@[deprecated (since := "2025-08-21")] alias IsMaxCone := NegMemClass
+@[deprecated (since := "2025-08-21")] alias IsMaxMulCone := InvMemClass
 
 namespace GroupCone
 variable {H : Type*} [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] {a : H}
 
 variable (H) in
 /-- The cone of elements that are at least 1. -/
-@[to_additive "The cone of non-negative elements."]
+@[to_additive /-- The cone of non-negative elements. -/]
 def oneLE : GroupCone H where
   __ := Submonoid.oneLE H
   eq_one_of_mem_of_inv_mem' {a} := by simpa using ge_antisymm
@@ -91,17 +82,21 @@ lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
-@[to_additive nonneg.isMaxCone]
-instance oneLE.isMaxMulCone {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
-    IsMaxMulCone (oneLE H) where
-  mem_or_inv_mem' := by simpa using le_total 1
+@[to_additive]
+instance oneLE.hasMemOrInvMem {H : Type*} [CommGroup H] [LinearOrder H] [IsOrderedMonoid H] :
+    HasMemOrInvMem (oneLE H) where
+  mem_or_inv_mem := by simpa using le_total 1
+
+@[deprecated (since := "2025-08-21")] alias oneLE.isMaxMulCone := oneLE.hasMemOrInvMem
+@[deprecated (since := "2025-08-21")] alias _root_.AddGroupCone.nonneg.isMaxCone :=
+  AddGroupCone.nonneg.hasMemOrNegMem
 
 end GroupCone
 
 variable {S G : Type*} [CommGroup G] [SetLike S G] (C : S)
 
 /-- Construct a partial order by designating a cone in an abelian group. -/
-@[to_additive "Construct a partial order by designating a cone in an abelian group."]
+@[to_additive /-- Construct a partial order by designating a cone in an abelian group. -/]
 abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
   le a b := b / a ∈ C
   le_refl a := by simp [one_mem]
@@ -115,16 +110,16 @@ lemma PartialOrder.mkOfGroupCone_le_iff {S G : Type*} [CommGroup G] [SetLike S G
     (mkOfGroupCone C).le a b ↔ b / a ∈ C := Iff.rfl
 
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
-@[to_additive "Construct a linear order by designating a maximal cone in an abelian group."]
+@[to_additive /-- Construct a linear order by designating a maximal cone in an abelian group. -/]
 abbrev LinearOrder.mkOfGroupCone
-    [GroupConeClass S G] [IsMaxMulCone C] [DecidablePred (· ∈ C)] : LinearOrder G where
+    [GroupConeClass S G] [HasMemOrInvMem C] [DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
   le_total a b := by simpa using mem_or_inv_mem C (b / a)
   toDecidableLE _ := _
 
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive
-  "Construct a partially ordered abelian group by designating a cone in an abelian group."]
+  /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/]
 lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
     IsOrderedMonoid G :=

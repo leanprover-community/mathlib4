@@ -21,11 +21,11 @@ open Set
 `n ↦ (· ^ n)`, which maps a second argument of `1` to `1`. Then if `f` is replaced by the
 corresponding multiplicative indicator function, the finset may be replaced by a possibly larger
 finset without changing the value of the product. -/
-@[to_additive "Consider a sum of `g i (f i)` over a finset.  Suppose `g` is a function such as
+@[to_additive /-- Consider a sum of `g i (f i)` over a finset.  Suppose `g` is a function such as
 `n ↦ (n • ·)`, which maps a second argument of `0` to `0` (or a weighted sum of `f i * h i` or
 `f i • h i`, where `f` gives the weights that are multiplied by some other function `h`). Then if
 `f` is replaced by the corresponding indicator function, the finset may be replaced by a possibly
-larger finset without changing the value of the sum."]
+larger finset without changing the value of the sum. -/]
 lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α → β) {s t : Finset ι}
     (h : s ⊆ t) (hg : ∀ a, g a 1 = 1) :
     ∏ i ∈ t, g i (mulIndicator ↑s f i) = ∏ i ∈ s, g i (f i) := by
@@ -35,8 +35,8 @@ lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α
 
 /-- Taking the product of an indicator function over a possibly larger finset is the same as
 taking the original function over the original finset. -/
-@[to_additive "Summing an indicator function over a possibly larger `Finset` is the same as summing
-  the original function over the original finset."]
+@[to_additive /-- Summing an indicator function over a possibly larger `Finset` is the same as
+summing the original function over the original finset. -/]
 lemma prod_mulIndicator_subset (f : ι → β) {s t : Finset ι} (h : s ⊆ t) :
     ∏ i ∈ t, mulIndicator (↑s) f i = ∏ i ∈ s, f i :=
   prod_mulIndicator_subset_of_eq_one _ (fun _ ↦ id) h fun _ ↦ rfl

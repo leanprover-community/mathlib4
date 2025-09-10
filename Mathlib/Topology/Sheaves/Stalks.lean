@@ -208,8 +208,6 @@ theorem stalkPushforward_iso_of_isInducing {f : X ⟶ Y} (hf : IsInducing f)
   symm
   exact colimit.ι_pre ((OpenNhds.inclusion x).op ⋙ F) (OpenNhds.map f x).op _
 
-@[deprecated (since := "2024-10-27")]
-alias stalkPushforward_iso_of_isOpenEmbedding := stalkPushforward_iso_of_isInducing
 end stalkPushforward
 
 section stalkPullback

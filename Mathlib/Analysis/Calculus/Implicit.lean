@@ -380,7 +380,6 @@ theorem implicitToPartialHomeomorph_fst (hf : HasStrictFDerivAt f f' a) (hf' : r
 @[simp]
 theorem implicitToPartialHomeomorph_apply_ker (hf : HasStrictFDerivAt f f' a) (hf' : range f' = ⊤)
     (y : ker f') : hf.implicitToPartialHomeomorph f f' hf' (y + a) = (f (y + a), y) :=
-  -- Porting note: had to add `haveI` (here and below)
   haveI := FiniteDimensional.complete 𝕜 F
   implicitToPartialHomeomorphOfComplemented_apply_ker ..
 
