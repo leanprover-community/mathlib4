@@ -102,6 +102,8 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
   apply integral_mono _ (integrable_const ‖f‖) (fun x ↦ f.norm_coe_le_norm x) -- NOTE: `gcongr`?
   exact (integrable_norm_iff f.continuous.measurable.aestronglyMeasurable).mpr (f.integrable μ)
 
+/-- `integralFiniteMeasureₗ` wraps the integral in respect to a finite measure `μ`
+  as a `𝕜`-linear map on bounded continuous functions -/
 noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace ℝ E]
   [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →ₗ[𝕜] E :=
@@ -111,6 +113,8 @@ noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [No
     map_smul' := fun c f ↦ integral_smul c f
   }
 
+/-- `integralFiniteMeasureCLM` wraps the integral in respect to a finite measure `μ`
+  as a continuous `𝕜`-linear map on bounded continuous functions -/
 noncomputable def integralFiniteMeasureCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace ℝ E]
   [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →L[𝕜] E :=
