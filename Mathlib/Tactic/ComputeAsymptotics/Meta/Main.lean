@@ -141,14 +141,14 @@ def computeTendstoAtTop (f : Q(ℝ → ℝ)) :
     let ms ← createMS x body
     let ⟨ms_trimmed, h_trimmed?⟩ ← trimPartialMS ms
     let ~q(List.cons $basis_hd $basis_tl) := ms_trimmed.basis
-      | panic! "Unexpected basis in computeTendsto"
+      | panic! "Unexpected basis in computeTendstoAtTop"
     -- I don't know how to avoid Expr here.
     let h_tendsto : Expr ← match ms_trimmed.val with
     | ~q(PreMS.nil) =>
       pure (q(PreMS.nil_tendsto_zero $ms_trimmed.h_approx) : Expr)
     | ~q(PreMS.cons $hd $tl) =>
       let ⟨leading, h_leading_eq⟩ ← getLeadingTermWithProof ms_trimmed.val
-      let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
+      let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendstoAtTop"
       let h_tendsto ← match ← getFirstIs exps with
       | .pos h_exps =>
         match ← compareReal coef with
