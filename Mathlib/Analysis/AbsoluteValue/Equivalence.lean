@@ -19,7 +19,7 @@ section OrderedSemiring
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
   (v w : AbsoluteValue R S)
 
-/-- Two absolute values `v` and `w` are *order equivalent* if `v x ≤ v y` precisely when
+/-- Two absolute values `v` and `w` are *equivalent* if `v x ≤ v y` precisely when
 `w x ≤ w y`.
 
 Note that for real absolute values this condition is equivalent to the existence of a positive
