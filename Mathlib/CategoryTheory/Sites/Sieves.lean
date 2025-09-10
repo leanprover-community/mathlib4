@@ -882,7 +882,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
-    simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
+    simpa [Subtype.ext_iff] using congr_fun (NatTrans.congr_app h Y) y⟩
 
 -- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
 /-- A natural transformation to a representable functor induces a sieve. This is the left inverse of

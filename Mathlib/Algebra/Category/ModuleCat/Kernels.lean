@@ -39,7 +39,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
           rw [Fork.condition, HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
-      hom_ext <| LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
+      hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=

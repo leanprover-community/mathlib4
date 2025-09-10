@@ -424,7 +424,7 @@ def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
   right_inv := by
     rintro f
     funext a
-    exact Subtype.ext_val rfl
+    exact Subtype.ext rfl
 
 /-- A sigma of a sigma whose second base does not depend on the first is equivalent
 to a sigma whose base is a product. -/
@@ -595,7 +595,7 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
       a.2
   invFun a :=
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
-      Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
+      Subtype.ext (Quotient.sound ((h _ _).1 hab))
   left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
   right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
 
