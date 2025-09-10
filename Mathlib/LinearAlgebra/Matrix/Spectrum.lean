@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.Data.List.GetD
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
@@ -22,7 +23,7 @@ spectral theorem, diagonalization theorem -/
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-variable {A : Matrix n n 𝕜}
+variable {A B : Matrix n n 𝕜}
 
 lemma finite_real_spectrum [DecidableEq n] : (spectrum ℝ A).Finite := by
   rw [← spectrum.preimage_algebraMap 𝕜]
@@ -42,12 +43,15 @@ namespace IsHermitian
 section DecidableEq
 
 variable [DecidableEq n]
-variable (hA : A.IsHermitian)
+variable (hA : A.IsHermitian) (hB : B.IsHermitian)
 
 /-- The eigenvalues of a hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
   (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
+
+lemma eigenvalues₀_antitone : Antitone hA.eigenvalues₀ :=
+  LinearMap.IsSymmetric.eigenvalues_antitone ..
 
 /-- The eigenvalues of a hermitian matrix, reusing the index `n` of the matrix entries. -/
 noncomputable def eigenvalues : n → ℝ := fun i =>
@@ -151,6 +155,29 @@ lemma charpoly_roots_eq_eigenvalues :
   rw [hA.charpoly_eq, Polynomial.roots_prod]
   · simp
   · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
+
+lemma charpoly_roots_eq_eigenvalues₀ :
+    A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
+  rw [hA.charpoly_roots_eq_eigenvalues]
+  simp only [← Multiset.map_map, eigenvalues, ← Function.comp_apply (f := hA.eigenvalues₀)]
+  simp
+
+lemma eigenvalues₀_eq_charpoly_roots_sort_getI :
+    hA.eigenvalues₀ = fun i ↦ ((A.charpoly.roots.map RCLike.re).sort (· ≥ ·)).getI i.val := by
+  rw [hA.charpoly_roots_eq_eigenvalues₀]
+  simp_rw [Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
+    Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
+  rw [List.mergeSort_of_sorted]
+  · simp [List.getI_eq_getElem]
+  · simp only [decide_eq_true_eq]
+    exact (eigenvalues₀_antitone hA).ofFn_sorted
+
+lemma eigenvalues_eq_iff_charpoly_eq :
+    hA.eigenvalues = hB.eigenvalues ↔ A.charpoly = B.charpoly := by
+  constructor <;> intro h
+  · rw [hA.charpoly_eq, hB.charpoly_eq, h]
+  · unfold eigenvalues
+    simp_rw [eigenvalues₀_eq_charpoly_roots_sort_getI, h]
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
