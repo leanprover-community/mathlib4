@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
+import Lean.Elab.Tactic.Meta
 
 /-!
 # Tactic linters
@@ -21,12 +22,15 @@ Define a pass that tries replacing a specific tactic with `grind`.
 `tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
 for example `Mathlib.Tactic.linarith`.
 -/
-def grindReplacementWith (tacticKind : SyntaxNodeKind) : TacticAnalysis.Config := .ofComplex {
-  out := (List MVarId × MessageData)
+def grindReplacementWith (tacticKind : SyntaxNodeKind)
+    (reportFailure : Bool := true) (reportSuccess : Bool := false)
+    (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
+    TacticAnalysis.Config := .ofComplex {
+  out := List MVarId × MessageData
   ctx := Syntax
   trigger _ stx := if stx.getKind == tacticKind
     then .accept stx else .skip
-  test stx goal := withOptions (fun opts => opts.set `grind.warning false) do
+  test stx goal := do
     let tac ← `(tactic| grind)
     try
       let (goals, _) ← Lean.Elab.runTactic goal tac
@@ -36,15 +40,20 @@ def grindReplacementWith (tacticKind : SyntaxNodeKind) : TacticAnalysis.Config :
       let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
       let imports := modules.toList.map (s!"import {·}")
       return ([goal], m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success grind\n  {stx}")
-  tell stx _old new :=
-    if new.1.1 != [] then
-      m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{new.1.2}"
-    /-
+  tell stx _ oldHeartbeats new newHeartbeats :=
+    if let (_ :: _, counterexample ) := new then
+      if reportFailure then
+        some m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{counterexample}"
+      else
+        none
     else
-      if old.2 * 2 < new.2 then
-        return m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
-    -/
-    else none }
+      if reportSlowdown ∧ maxSlowdown * oldHeartbeats.toFloat < newHeartbeats.toFloat then
+        some m!"'grind' is slower than '{stx}': {newHeartbeats / 1000} versus {oldHeartbeats / 1000} heartbeats"
+      else if reportSuccess then
+        some m!"'grind' can replace '{stx}'"
+      else
+        none
+    }
 
 /-- Debug `grind` by identifying places where it does not yet supersede `linarith`. -/
 register_option linter.tacticAnalysis.linarithToGrind : Bool := {
@@ -60,7 +69,7 @@ register_option linter.tacticAnalysis.omegaToGrind : Bool := {
 }
 @[tacticAnalysis linter.tacticAnalysis.omegaToGrind,
   inherit_doc linter.tacticAnalysis.omegaToGrind]
-def omegaToGrind := grindReplacementWith `Lean.Parser.Tactic.ring
+def omegaToGrind := grindReplacementWith ``Lean.Parser.Tactic.omega
 
 /-- Debug `grind` by identifying places where it does not yet supersede `ring`. -/
 register_option linter.tacticAnalysis.ringToGrind : Bool := {
@@ -91,9 +100,9 @@ def rwMerge : TacticAnalysis.Config := .ofComplex {
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-  tell _stx _old new :=
-    if new.1.1.isEmpty then
-      m!"Try this: rw {new.1.2}"
+  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+    if new.1.isEmpty then
+      m!"Try this: rw {new.2}"
     else none }
 
 /-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
