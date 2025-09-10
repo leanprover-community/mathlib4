@@ -19,7 +19,7 @@ section OrderedSemiring
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
   (v w : AbsoluteValue R S)
 
-/-- Two absolute values `v` and `w` are *order equivalent* if `v x ≤ v y` precisely when
+/-- Two absolute values `v` and `w` are *equivalent* if `v x ≤ v y` precisely when
 `w x ≤ w y`.
 
 Note that this is equivalent to `v.IsEquiv w` when `v` and `w` are real absolute values. -/
