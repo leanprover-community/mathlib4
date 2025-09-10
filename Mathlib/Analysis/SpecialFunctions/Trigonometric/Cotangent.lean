@@ -217,8 +217,9 @@ theorem cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
 theorem cot_series_rep (hz : x ∈ ℂ_ℤ) :
     π * cot (π * x) = 1 / x + ∑' n : ℕ+, (1 / (x - n) + 1 / (x + n)) := by
   have h0 := tsum_pnat_eq_tsum_succ (f := fun n ↦ 1 / (x - n) + 1 / (x + n))
-  rw [one_div] at *
-  rw [h0, ← cot_series_rep' hz]
+  have h1 := cot_series_rep' hz
+  simp only [one_div, Nat.cast_add, Nat.cast_one] at *
+  rw [h0, ← h1]
   ring
 
 end MittagLeffler
