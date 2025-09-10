@@ -35,6 +35,7 @@ initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
   instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib/Data/Set/Basic.lean`. -/
+-- This is a leftover from Lean 3: it is identical to `Subtype.property`, and should be deprecated.
 theorem prop (x : Subtype p) : p x :=
   x.2
 
@@ -228,6 +229,6 @@ theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=
   a.prop
 
 theorem val_prop {S : Set α} (a : { a // a ∈ S }) : a.val ∈ S :=
-  a.property
+  a.prop
 
 end Subtype
