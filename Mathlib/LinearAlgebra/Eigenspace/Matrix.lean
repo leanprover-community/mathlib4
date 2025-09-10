@@ -107,6 +107,22 @@ lemma maxGenEigenspace_toLin'_diagonal_eq_eigenspace :
     maxGenEigenspace (diagonal d).toLin' μ = eigenspace (diagonal d).toLin' μ :=
   maxGenEigenspace_toLin_diagonal_eq_eigenspace d <| Pi.basisFun R n
 
+omit [IsDomain R]
+
+@[simp]
+theorem _root_.LinearMap.spectrum_toMatrix (f : M →ₗ[R] M) (b : Basis n R M) :
+    spectrum R (LinearMap.toMatrix b b f) = spectrum R f :=
+  AlgEquiv.spectrum_eq (LinearMap.toMatrixAlgEquiv b) f
+
+@[simp]
+theorem spectrum_toLin (A : Matrix n n R) (b : Basis n R M) :
+    spectrum R (toLin b b A) = spectrum R A :=
+  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv b) A
+
+@[simp]
+theorem spectrum_toLin' (A : Matrix n n R) : spectrum R (toLin' A) = spectrum R A :=
+  AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' A
+
 end Matrix
 
 /-- The spectrum of the diagonal operator is the range of the diagonal viewed as a function. -/

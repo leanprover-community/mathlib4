@@ -12,8 +12,8 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 In fields we show that:
 
-* `Matrix.isRoot_charpoly_iff_mem_spectrum`: the roots of the characteristic polynomial are the
-  spectrum of the matrix.
+* `Matrix.mem_spectrum_iff_isRoot_charpoly`: the roots of the characteristic polynomial are exactly
+  the spectrum of the matrix.
 * `Matrix.det_eq_prod_roots_charpoly_of_splits`: the determinant (in the field of the matrix)
   is the product of the roots of the characteristic polynomial if the polynomial splits in the field
   of the matrix.
@@ -68,7 +68,7 @@ theorem mem_spectrum_of_isRoot_charpoly [Nontrivial R]
 In fields, the roots of the characteristic polynomial are exactly the spectrum of the matrix.
 The weaker direction is true in nontrivial rings (see `Matrix.mem_spectrum_of_isRoot_charpoly`).
 -/
-theorem isRoot_charpoly_iff_mem_spectrum {r : K} : IsRoot A.charpoly r ↔ r ∈ spectrum K A := by
+theorem mem_spectrum_iff_isRoot_charpoly {r : K} : IsRoot A.charpoly r ↔ r ∈ spectrum K A := by
   simp [eval_charpoly, spectrum.mem_iff, isUnit_iff_isUnit_det, algebraMap_eq_diagonal,
     Pi.algebraMap_def]
 
