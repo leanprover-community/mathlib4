@@ -134,9 +134,6 @@ theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsAr
 lemma isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
--- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
--- attribute [local elab_as_elim] Finite.induction_empty_option
-
 open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
@@ -294,7 +291,6 @@ prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
 instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 
---Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
 
@@ -314,7 +310,7 @@ theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
     let f : M →ₗ[R] ∀ m : s, M ⧸ m.1.1 := LinearMap.pi fun m ↦ m.1.1.mkQ
     .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
       rw [← h, Module.jacobson, Submodule.mem_sInf]
-      exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finset_inf.mpr fun i hi ↦
+      exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finsetInf.mpr fun i hi ↦
         (Submodule.Quotient.mk_eq_zero i.1).mp <| congr_fun hx ⟨i, hi⟩⟩
 
 open Submodule Function
