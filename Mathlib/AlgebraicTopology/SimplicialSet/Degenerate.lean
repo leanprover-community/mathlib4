@@ -37,14 +37,14 @@ set `X` is the complement of `X.degenerate n`. -/
 def nonDegenerate (n : ℕ) : Set (X _⦋n⦌) := (X.degenerate n)ᶜ
 
 @[simp]
-lemma degenerate_zero : X.degenerate 0 = ⊥ := by
+lemma degenerate_zero : X.degenerate 0 = ∅ := by
   ext x
-  simp only [Set.bot_eq_empty, Set.mem_empty_iff_false, iff_false]
+  simp only [Set.mem_empty_iff_false, iff_false]
   rintro ⟨m, hm, _⟩
   simp at hm
 
 @[simp]
-lemma nondegenerate_zero : X.nonDegenerate 0 = ⊤ := by
+lemma nondegenerate_zero : X.nonDegenerate 0 = Set.univ := by
   simp [nonDegenerate]
 
 variable {n : ℕ}
