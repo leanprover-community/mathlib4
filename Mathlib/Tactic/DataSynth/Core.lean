@@ -15,41 +15,55 @@ open Lean Meta
 private def withProfileTrace {α : Type} (msg : String) (x : DataSynthM α) : DataSynthM α :=
   withTraceNode `Meta.Tactic.data_synth.profile (fun _ => return msg) x
 
-private def withMainTrace {α : Type}  (msg : Except Exception α → DataSynthM MessageData)
+private def withMainTrace {α : Type} (msg : Except Exception α → DataSynthM MessageData)
   (x : DataSynthM α) :
     DataSynthM α :=
   withTraceNode `Meta.Tactic.data_synth msg x
 
-def normalize (e : Expr) : DataSynthM (Simp.Result) := do
+private def _root_.Lean.Meta.Simp.Result.andThen (r : Simp.Result) (f : Simp.Simproc) : 
+    SimpM Simp.Result := do
+  match ← Simp.mkEqTransResultStep r (← f r.expr) with
+  | .done r | .visit r | .continue (some r) => return r
+  | .continue none => return r
 
+def normalize (e : Expr) : DataSynthM (Simp.Result) := do
   withProfileTrace "normalization" do
 
-  let cfg := (← read).config
+  let e ← instantiateMVars e
 
-  let e₀ := e
-  let mut e := e
+  let simpCache := (← getThe Simp.State).cache
+  match simpCache.find? e with
+  | some r => 
+    trace[Meta.Tactic.data_synth.normalize] m!"cached normalization\n{e}\n==>\n{r.expr}"
+    return r
+  | none =>
 
-  if cfg.norm_dsimp then
-    e ← Simp.dsimp e
+    let cfg := (← read).config
 
-  let mut r : Simp.Result := { expr := e}
+    let e₀ := e
+    let mut e := e
 
-  if cfg.norm_simp then
-    r ← r.mkEqTrans (← Simp.simp r.expr)
+    if cfg.norm_dsimp then
+      e ← Simp.dsimp e
 
-  -- user specified normalization
-  r ← r.mkEqTrans (← (← read).norm r.expr)
+    let mut r : Simp.Result := { expr := e}
 
-  -- report only when something has been done
-  if ¬(e₀==r.expr) then
-    trace[Meta.Tactic.data_synth.normalize] m!"\n{e₀}\n==>\n{r.expr}"
+    if cfg.norm_simp then
+      r ← r.mkEqTrans (← Simp.simp r.expr)
 
-  return r
+    -- user specified normalization
+    r ← r.mkEqTrans (← (← read).norm r.expr)
+
+    -- report only when something has been done
+    if ¬(e₀==r.expr) then
+      trace[Meta.Tactic.data_synth.normalize] m!"\n{e₀}\n==>\n{r.expr}"
+
+    Simp.cacheResult e { cfg with } r
 
 
 def Result.normalize (r : Result) : DataSynthM Result := do
   withProfileTrace "normalize result" do
-  r.congr (← r.xs.mapM (fun x => instantiateMVars x >>= DataSynth.normalize ))
+  r.congr (← r.xs.mapM DataSynth.normalize)
 
 
 def Goal.getCandidateTheorems (g : Goal) : DataSynthM (Array Theorem) := do
@@ -77,7 +91,9 @@ def isDataSynthGoal? (e : Expr) : MetaM (Option Goal) := do
   let e' ← go fn args.toList outArgs.toList #[]
 
   return some {
-    goal := e'
+    -- instantiating mvars is important otherwise we can get different hashes for 
+    -- the same expression which breaks caching
+    goal := ← instantiateMVars e'
     dataSynthName := dataSynthDecl.name
   }
 where
@@ -208,7 +224,6 @@ where
           getArgNames body (names.push name) i
     | _ => names
 
-
 /- Apply theorem `thm` to solve `e`.
 
 You can provide certain theorem arguments explicitelly with `hint` i.e. for `hint = #[(id₁,e₁),...]`
@@ -277,7 +292,7 @@ def Goal.tryTheorem? (goal : Goal) (thm : Theorem) (hintPre hintPost : Array (Na
 
   let .some prf ← DataSynth.tryTheorem? e thm hintPre hintPost | return none
 
-  let mut r := Result.mk xs prf goal
+  let mut r := Result.mk (← xs.mapM instantiateMVars) (← instantiateMVars prf) goal
 
   r ← r.normalize
 
@@ -292,6 +307,7 @@ def Goal.getDataSynthDecl (g : Goal) : CoreM DataSynthDecl := do
 
 -- main function that looks up theorems
 partial def main (goal : Goal) : DataSynthM (Option Result) := do
+  increaseStepOrThrow
   withProfileTrace "main" do
 
   let thms ← goal.getCandidateTheorems
@@ -300,15 +316,19 @@ partial def main (goal : Goal) : DataSynthM (Option Result) := do
   if thms.size = 0 then
     logError m!"no candidate theorems for {← goal.pp}"
 
+  -- try global theorems
   for thm in thms do
     if let .some r ← goal.tryTheorem? thm then
       return r
 
+  -- try local hypothesis
   if let .some r ← goal.assumption? then
     return r
 
-  if let .some dispatch := (← goal.getDataSynthDecl).customDispatch then
-    (← dispatch.get) goal
+  -- try custom dispatch
+  let dispatch ← (← goal.getDataSynthDecl).customDispatch.get
+  if let some r ← dispatch goal then
+    return r
   else
     return none
 
@@ -321,6 +341,9 @@ def mainCached (goal : Goal) (initialTrace := true) :
       trace[Meta.Tactic.data_synth] "using cached result"
       return r
     | none =>
+      if (← get).failedCache.contains goal then
+        trace[Meta.Tactic.data_synth] "same goal failed previously"
+        return none
       match ← main goal with
       | some r =>
         modify (fun s => {s with cache := s.cache.insert goal r})
@@ -336,7 +359,8 @@ def mainCached (goal : Goal) (initialTrace := true) :
         | .ok (some _r) => return m!"[✅] {← goal.pp}"
         | .ok none => return m!"[❌] {← goal.pp}"
         | .error e => return m!"[💥️] {← goal.pp}\n{e.toMessageData}")
-      go
+      do
+        go
   else
     go
 

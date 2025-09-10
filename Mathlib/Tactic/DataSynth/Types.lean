@@ -119,6 +119,12 @@ structure Theorems where
   theorems : RefinedDiscrTree Theorem := {}
   deriving Inhabited
 
+def Theorems.add (t : Theorems) (thms : Array Theorem) : MetaM Theorems := do 
+  return {
+    theorems := thms.foldl (init := t.theorems) (fun t thm =>
+      thm.keys.foldl (init := t) (fun t (key,entry) => t.insert key (entry,thm)))
+  }
+
 /-- Configuration options for `data_synth` tactic. -/
 structure DataSynthConfig where
   maxNumSteps := 100
@@ -129,10 +135,15 @@ structure DataSynthConfig where
 
 structure Config extends DataSynthConfig, Simp.Config
 
+abbrev Normalize := Expr → SimpM Simp.Result
+
 structure Context where
   config : Config := {}
-  disch : Expr → SimpM (Option Expr) := fun _ => pure .none
-  norm  : Expr → SimpM Simp.Result := fun e => pure {expr:=e}
+  disch : Simp.Discharge := fun _ => pure .none
+  -- todo: do the same trick as `Simp.MethodsRef`/`Simp.Methods` which would 
+  --       allow us to define `Normalize` as `Expr → DataSynthM Simp.Result` 
+  --       i.e. use `DataSynthM` before defining it
+  norm  : Normalize := fun e => return { expr := e }
 
 structure State where
   numSteps := 0
@@ -151,6 +162,14 @@ abbrev DataSynthM := ReaderT Context <| StateRefT State Simp.SimpM
 instance : MonadCache Goal Result DataSynthM where
   findCached? g := return (← get).cache[g]?
   cache g r := modify fun s => {s with cache := s.cache.insert g r}
+
+def increaseStepOrThrow : DataSynthM Unit := do
+  let steps := (← get).numSteps
+  let maxSteps := (← read).config.maxNumSteps
+  unless steps < maxSteps do
+    throwError s!"Maximum number of steps {maxSteps} reached!"
+  modify (fun s => { s with numSteps := steps+1 })
+
 
 /-- Run `DataSynthM` in `SimpM` with default context and config.
 

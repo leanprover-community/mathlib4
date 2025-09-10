@@ -4,6 +4,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 import Mathlib.Tactic.DataSynth.Elab
 import Mathlib.Tactic.DataSynth.Attr
@@ -50,6 +52,10 @@ attribute [data_synth]
   HasFDerivAt.fun_sub
   HasFDerivAt.fun_mul
   hasFDerivAt_inv
+  hasFDerivAt_exp
+  HasFDerivAt.exp
+  HasFDerivAt.sin
+  HasFDerivAt.cos
 
 set_option pp.proofs false 
 variable (x₀ : ℝ)
@@ -169,6 +175,13 @@ example (x : ℝ) (h : x ≠ 0) :
     fderiv ℝ (fun x => (x*x)⁻¹) x
     =
     x⁻¹ • smulRight (1:ℝ→L[ℝ]ℝ) (-(x ^ 2)⁻¹) + x⁻¹ • smulRight (1:ℝ→L[ℝ]ℝ) (-(x ^ 2)⁻¹) := by
+  simp (disch:=aesop) [deriv_simproc]
+
+open Real in
+example (x : ℝ) :
+    fderiv ℝ (fun x => (exp x)⁻¹*sin x) x 1
+    =
+    (rexp x)⁻¹ * cos x + -(sin x * (rexp x * (rexp x ^ 2)⁻¹)) := by
   simp (disch:=aesop) [deriv_simproc]
 
 

@@ -15,6 +15,12 @@ open Lean Meta
 
 namespace Mathlib.Meta.DataSynth
 
+
+initialize emptyDispatch : IO.Ref (Goal → DataSynthM (Option Result)) 
+  ← IO.mkRef fun _ => return none
+
+local instance : Inhabited (IO.Ref (Goal → DataSynthM (Option Result))) := ⟨emptyDispatch⟩
+
 /-- Each type of `data_synth` goal like `HasFDerivAt`, `HasFDerivWithinAt` etc. is
 called `data_synth` declaration and the structure `DataSynthDecl` stores information on which
 arguments are considered as input or output. For example for `HasFDerivAt R f f' x` arguments `R`,
@@ -22,16 +28,16 @@ arguments are considered as input or output. For example for `HasFDerivAt R f f'
 -/
 structure DataSynthDecl where
   /-- Name of the `data_synth` declaration e.g. `HasFDerivAt`. -/
-  name : Name
+  name : Name := default
   /-- Number of arguments of the decalaration e.g. `HasFDerivAt` has 13 arguments including implicit
   and instance implicit arguments. -/
-  nargs : Nat
+  nargs : Nat := 0
   /-- Indices of arguments that are considered as outputs e.g. for `HasFDerivAt` only `f'` is
   considered as output argument and its index is 11. -/
-  outputArgs : Array Nat  
+  outputArgs : Array Nat := #[]
   /-- If normal call to `data_synth` fails then try this callback. This is used in cases when custom
   unification is needed like application of `HasFDerivAt.comp`. -/
-  customDispatch : Option (IO.Ref (Goal → DataSynthM (Option Result))) := none
+  customDispatch : IO.Ref (Goal → DataSynthM (Option Result))
 deriving Inhabited
 
 /-- Type for the environment extension storing all `data_synth` declarations. -/
@@ -84,10 +90,14 @@ def addDataSynthDecl (declName : Name) (outArgs : Array Name) :
         | throwError "argument {arg} not found"
       pure i)
 
+  -- make new reference unique to this `data_synth` declaration
+  let customDispatch ← IO.mkRef fun _ => return none
+
   let decl : DataSynthDecl := {
     name := declName
     nargs := xs.size
     outputArgs := outputArgs
+    customDispatch := customDispatch
   }
 
   modifyEnv (dataSynthDeclsExt.addEntry · decl)
