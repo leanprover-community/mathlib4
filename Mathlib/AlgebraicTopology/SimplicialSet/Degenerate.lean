@@ -295,7 +295,6 @@ lemma iSup_ofSimplex_nonDegenerate_eq_top :
 
 end Subcomplex
 
-
 section
 
 variable {X} {Y : SSet.{u}}
