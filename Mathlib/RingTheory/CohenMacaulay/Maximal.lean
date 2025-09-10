@@ -78,39 +78,58 @@ lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
   have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
   simpa [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg] using this
 
+lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
+    [Module R M] [Module.Finite R M] {x : R} (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x)
+    (free : Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) : Module.Free R M := by
+  sorry
+
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
   rcases exist_nat_eq R with ⟨n, hn⟩
   induction' n with n ih generalizing R M
   · have : IsField R := isField_of_isRegularLocalRing_of_dimension_zero hn
     sorry
-  · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
-      by_contra! ge
-      have : IsField R := by
-        simpa only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
-          IsIdempotentElem] using le_antisymm Ideal.mul_le_right (le_of_le_of_eq ge (pow_two _))
-      rw [ringKrullDim_eq_zero_of_isField this, ← Nat.cast_zero, Nat.cast_inj] at hn
-      exact Nat.zero_ne_add_one n hn
-    let _ := (quotient_span_singleton R xmem xnmem).1
-    have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
-      have := (quotient_span_singleton R xmem xnmem).2
-      simp only [hn, Nat.cast_add, Nat.cast_one] at this
-      exact (withBotENat_add_coe_cancel _ _ 1).mp this
-    have reg : IsSMulRegular M x := by
-      by_contra h
-      have := (Set.ext_iff.mp (biUnion_associatedPrimes_eq_compl_regular R M) x).mpr h
-      simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop] at this
-      rcases this with ⟨p, pass, mem⟩
-      --use `depth R ≤ dim(R ⧸ p)`
-      sorry
-    have : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
-      --Module.Finite.of_surjective
-      sorry
-    have max : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)).IsMaximalCohenMacaulay := by
-      rw [isMaximalCohenMacaulay_def]
-      --need to switch ring
-      --RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff
-      sorry
-    have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
-    --https://stacks.math.columbia.edu/tag/00NS
-    sorry
+  · by_cases ntr : Nontrivial M
+    · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
+        by_contra! ge
+        have : IsField R := by
+          simpa only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
+            IsIdempotentElem] using le_antisymm Ideal.mul_le_right (le_of_le_of_eq ge (pow_two _))
+        rw [ringKrullDim_eq_zero_of_isField this, ← Nat.cast_zero, Nat.cast_inj] at hn
+        exact Nat.zero_ne_add_one n hn
+      let _ := (quotient_span_singleton R xmem xnmem).1
+      have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
+        have := (quotient_span_singleton R xmem xnmem).2
+        simp only [hn, Nat.cast_add, Nat.cast_one] at this
+        exact (withBotENat_add_coe_cancel _ _ 1).mp this
+      have reg : IsSMulRegular M x := by
+        by_contra h
+        have := (Set.ext_iff.mp (biUnion_associatedPrimes_eq_compl_regular R M) x).mpr h
+        simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop] at this
+        rcases this with ⟨p, pass, mem⟩
+        have le1 := depth_le_ringKrullDim_associatedPrime M p pass
+        rw [← WithBot.coe_le_coe, WithBot.coe_unbot, (isMaximalCohenMacaulay_def M).mp ‹_›] at le1
+        have le2 : ringKrullDim (R ⧸ p) ≤ ringKrullDim (R ⧸ Ideal.span {x}) :=
+          ringKrullDim_le_of_surjective (Ideal.Quotient.factor
+            ((Ideal.span_singleton_le_iff_mem p).mpr mem)) (Ideal.Quotient.factor_surjective _)
+        have := le1.trans le2
+        rw [hn, dim, Nat.cast_le] at this
+        exact (Nat.not_succ_le_self n) this
+      have : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
+        let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
+          __ := Submodule.mkQ _
+          map_smul' r m := rfl }
+        exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
+      have max : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)).IsMaximalCohenMacaulay := by
+        rw [isMaximalCohenMacaulay_def, ← withBotENat_add_coe_cancel _ _ 1, Nat.cast_one,
+          (quotient_span_singleton R xmem xnmem).2, ← WithBot.coe_one, ← WithBot.coe_add,
+          ← (isMaximalCohenMacaulay_def M).mp ‹_›, WithBot.coe_inj,
+          ← depth_quotSMulTop_succ_eq_moduleDepth M x reg xmem]
+        congr 1
+        have : Nontrivial (QuotSMulTop x M) := quotSMulTop_nontrivial xmem M
+        apply (depth_eq_of_algebraMap_surjective _ _).symm
+        simpa only [Ideal.Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
+      have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
+      exact free_of_quotSMulTop_free M xmem reg free
+    · have : Subsingleton M := not_nontrivial_iff_subsingleton.mp ntr
+      exact Module.Free.of_subsingleton R M
