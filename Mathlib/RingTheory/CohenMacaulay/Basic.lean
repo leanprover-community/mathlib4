@@ -238,7 +238,7 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
   rw [moduleDepth_eq_sSup_length_regular p _ _ smul_lt h_supp]
   apply sSup_le (fun n hn ↦ le_sSup ?_)
   rcases hn with ⟨rs, reg, mem, len⟩
-  refine ⟨rs.map (algebraMap R Rₚ), reg.isRegular_of_isLocalizedModule_of_mem_prime Rₚ p f mem,
+  refine ⟨rs.map (algebraMap R Rₚ), reg.isRegular_of_isLocalizedModule_of_mem Rₚ p f mem,
     fun _ hr ↦ ?_, by simpa using len⟩
   rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
   simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
