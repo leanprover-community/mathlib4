@@ -66,9 +66,6 @@ theorem memLp_lineDeriv (hf : LipschitzWith C f) (v : E) :
   memLp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
     (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_lineDeriv := memLp_lineDeriv
-
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 
 theorem ae_lineDifferentiableAt
@@ -118,7 +115,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
       = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
     _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
       gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-    _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg ht.le]; ring
+    _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg ht.le]
   · exact hg.norm.const_mul _
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
     exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
@@ -145,7 +142,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, t_pos.le]
       _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
         gcongr; exact LipschitzWith.norm_sub_le hf (x + t • v) x
-      _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg t_pos.le]; ring
+      _ = (C * ‖v‖) *‖g x‖ := by simp [field, norm_smul, abs_of_nonneg t_pos.le]
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
         rw [← Function.notMem_support]
