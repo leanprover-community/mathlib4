@@ -822,7 +822,7 @@ instance instField : Field (HahnSeries Γ R) where
   mul_inv_cancel x x0 := by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) _ (neg_add_cancel x.order))
+        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr x0)) _ (neg_add_cancel x.order))
     rw [sub_sub_cancel] at h
     rw [inv_def, ← mul_assoc, mul_comm x, h]
   nnqsmul := (· • ·)

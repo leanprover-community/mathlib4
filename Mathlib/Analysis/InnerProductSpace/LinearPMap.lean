@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.Normed.Operator.Completeness
 
 /-!
 
@@ -91,7 +91,7 @@ def adjointDomain : Submodule 𝕜 F where
 
 /-- The operator `fun x ↦ ⟪y, T x⟫` considered as a continuous linear operator
 from `T.adjointDomain` to `𝕜`. -/
-def adjointDomainMkCLM (y : T.adjointDomain) : T.domain →L[𝕜] 𝕜 :=
+def adjointDomainMkCLM (y : T.adjointDomain) : StrongDual 𝕜 T.domain :=
   ⟨(innerₛₗ 𝕜 (y : F)).comp T.toFun, y.prop⟩
 
 theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
@@ -102,7 +102,7 @@ variable {T}
 variable (hT : Dense (T.domain : Set E))
 
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
-def adjointDomainMkCLMExtend (y : T.adjointDomain) : E →L[𝕜] 𝕜 :=
+def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
   (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
     isUniformEmbedding_subtype_val.isUniformInducing
 

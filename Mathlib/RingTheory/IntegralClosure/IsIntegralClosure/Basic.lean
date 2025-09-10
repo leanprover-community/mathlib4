@@ -249,21 +249,9 @@ theorem IsIntegral.det {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n A
 theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n) ↔ IsIntegral R x :=
   ⟨IsIntegral.of_pow hn, fun hx ↦ hx.pow n⟩
 
-open TensorProduct
-
-theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
-  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
-  exact smul _ (h.map_of_comp_eq (algebraMap R A)
-    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
-    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
-
 section Pushout
 
 variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
-
-instance Algebra.IsIntegral.tensorProduct : Algebra.IsIntegral A (A ⊗[R] S) where
-  isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
-
 variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
   [IsScalarTower R S SA] [IsScalarTower R A SA]
 
@@ -349,15 +337,10 @@ section IsIntegralClosure
 
 instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
-  algebraMap_injective' := Subtype.coe_injective
+  algebraMap_injective := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
 namespace IsIntegralClosure
-
--- Porting note: added to work around missing infer kind support
-theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
-    [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
-  algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
@@ -395,12 +378,12 @@ theorem mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
 theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
   algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_zero]
 
--- Porting note: Left-hand side does not simplify @[simp]
+@[simp]
 theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (hx.add hy) = mk' A x hx + mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
 
--- Porting note: Left-hand side does not simplify @[simp]
+@[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (hx.mul hy) = mk' A x hx * mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]

@@ -159,7 +159,7 @@ end Range
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
 noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
 
--- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
+-- This cannot be a `@[simp]` lemma because the head of the left-hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
   x.2.choose_spec
 
@@ -190,9 +190,6 @@ theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 @[mfld_simps]
 theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
-
-@[deprecated (since := "2025-02-21")]
-alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
