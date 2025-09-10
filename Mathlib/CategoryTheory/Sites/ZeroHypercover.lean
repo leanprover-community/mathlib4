@@ -190,7 +190,6 @@ def add (E : PreZeroHypercover.{w} S) {T : C} (f : T ⟶ S) : PreZeroHypercover.
 @[simp] lemma presieve₀_add {T : C} (f : T ⟶ S) :
     (E.add f).presieve₀ = E.presieve₀ ⊔ .singleton f := by
   simp [add, presieve₀_reindex, presieve₀_sum]
->>>>>>> upstream/master
 
 section Category
 
