@@ -177,13 +177,13 @@ section Gc
 
 variable (R)
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc :
     @GaloisConnection (Ideal R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun I => zeroLocus I) fun t =>
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by

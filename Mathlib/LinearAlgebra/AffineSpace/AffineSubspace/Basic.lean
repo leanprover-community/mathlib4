@@ -672,7 +672,7 @@ theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P
     (s.comap g).comap f = s.comap (g.comp f) :=
   rfl
 
--- lemmas about map and comap derived from the galois connection
+-- lemmas about map and comap derived from the Galois connection
 theorem map_le_iff_le_comap {f : P₁ →ᵃ[k] P₂} {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} :
     s.map f ≤ t ↔ s ≤ t.comap f :=
   image_subset_iff

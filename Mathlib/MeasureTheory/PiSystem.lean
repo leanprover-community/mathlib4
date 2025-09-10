@@ -49,9 +49,9 @@ import Mathlib.Order.Disjointed
 
 ## Implementation details
 
-* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the galois
+* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
-  lattice and galois insertion on the subtype corresponding to `IsPiSystem`.
+  lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
 
 
