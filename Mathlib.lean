@@ -4450,7 +4450,6 @@ import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.ComputeAsymptotics
 import Mathlib.Tactic.ComputeAsymptotics.Lemmas
-import Mathlib.Tactic.ComputeAsymptotics.Main
 import Mathlib.Tactic.ComputeAsymptotics.Meta.BasisM
 import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
 import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareReal

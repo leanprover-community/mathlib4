@@ -290,8 +290,6 @@
   ["Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp"],
   "Mathlib.Tactic.ComputeAsymptotics.Meta.Misc":
   ["Mathlib.Tactic.ComputeAsymptotics.Multiseries.LogBasis"],
-  "Mathlib.Tactic.ComputeAsymptotics.Meta.Main":
-  ["Mathlib.Tactic.ComputeAsymptotics.Lemmas"],
   "Mathlib.Tactic.ComputeAsymptotics.Meta.MS":
   ["Mathlib.Tactic.ComputeAsymptotics.Multiseries"],
   "Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm":
@@ -300,6 +298,8 @@
   "Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp":
   ["Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimpAttribute",
    "Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations"],
+  "Mathlib.Tactic.ComputeAsymptotics":
+  ["Mathlib.Tactic.ComputeAsymptotics.Lemmas"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":
   ["Mathlib.CategoryTheory.Category.Cat"],
