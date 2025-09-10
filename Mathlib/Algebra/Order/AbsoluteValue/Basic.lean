@@ -381,9 +381,6 @@ lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
 
-theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
-  simp [map_inv₀, inv_lt_one_iff₀]
-
 end LinearOrderedSemifield
 
 end nontrivial

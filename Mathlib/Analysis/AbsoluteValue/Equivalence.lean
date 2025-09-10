@@ -29,8 +29,7 @@ theorem IsOrderEquiv.refl : v.IsOrderEquiv v := fun _ ↦ Iff.rfl
 
 variable {v w}
 
-theorem IsOrderEquiv.symm (h : v.IsOrderEquiv w) : w.IsOrderEquiv v :=
-  fun _ ↦ Iff.symm (h _)
+theorem IsOrderEquiv.symm (h : v.IsOrderEquiv w) : w.IsOrderEquiv v := fun _ ↦ Iff.symm (h _)
 
 theorem IsOrderEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsOrderEquiv w)
     (h₂ : w.IsOrderEquiv u) : v.IsOrderEquiv u := fun _ ↦ (h₁ _).trans (h₂ _)
@@ -52,21 +51,10 @@ theorem isOrderEquiv_iff_lt :
       ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
     exact h _
 
-theorem IsOrderEquiv.not_isNontrivial {w : AbsoluteValue R S}
-    (h : v.IsOrderEquiv w) (hv : ¬v.IsNontrivial) : ¬w.IsNontrivial := by
-  rw [not_isNontrivial_iff] at hv ⊢
-  intro x hx
-  contrapose! hx
-  rcases lt_or_lt_iff_ne.2 hx with h₁ | h₂
-  · simpa using mt (hv x) (h x |>.2 h₁).ne
-  · simpa using mt (hv x⁻¹) ((h _).2 <| map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ h₂).ne
-
-variable [ExistsAddOfLE S]
-
 private theorem one_lt_imp_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R}
     (hv : 1 < v x) : 1 < w x :=
-  (inv_lt_one_iff.1 <| h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left <|
-    fun h ↦ map_zero v ▸ not_le.2 (h ▸ hv) <| zero_le_one' _
+  (inv_lt_one_iff₀.1 <| map_inv₀ w _ ▸ h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left
+    fun hw ↦ not_lt.2 zero_le_one (by simpa [(map_eq_zero _).1 <| w.nonpos_iff.1 hw] using hv)
 
 theorem IsOrderEquiv.one_lt_iff (h : v.IsOrderEquiv w) (x : R) : 1 < v x ↔ 1 < w x :=
   ⟨fun hv => one_lt_imp_of_lt_one_imp (fun _ => (h _).1) hv,
@@ -80,6 +68,13 @@ private theorem IsOrderEquiv.eq_one_imp (h : v.IsOrderEquiv w) {x : R} (hv : v x
 
 theorem IsOrderEquiv.eq_one_iff (h : v.IsOrderEquiv w) (x : R) : v x = 1 ↔ w x = 1 :=
   ⟨fun hv => h.eq_one_imp hv, fun hw => eq_one_imp (fun _ => (h _).symm) hw⟩
+
+theorem IsOrderEquiv.isNontrivial {w : AbsoluteValue R S}
+    (h : v.IsOrderEquiv w) (hv : w.IsNontrivial) : v.IsNontrivial := by
+  obtain ⟨x, h₀, h₁⟩ := hv
+  cases lt_or_lt_iff_ne.2 h₁ with
+  | inl hw => exact ⟨x, h₀, (h x).2 hw |>.ne⟩
+  | inr hw => exact ⟨x⁻¹, inv_ne_zero h₀, (h _).2 (map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ hw) |>.ne⟩
 
 end LinearOrderedSemifield
 
@@ -164,7 +159,7 @@ variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 open Real in
 /--
 If $v$ and $w$ are two real absolute values on a field $F$ and $v(x) < 1$ if
-and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a ∈ F$
+and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a\in F$
 with $1 < v(a)$.
 -/
 theorem IsOrderEquiv.log_div_log_eq_log_div_log (h : v.IsOrderEquiv w)
@@ -200,10 +195,10 @@ theorem IsOrderEquiv.exists_rpow_eq {v w : AbsoluteValue F ℝ} (hv : v.IsNontri
 
 open Real in
 /--
-If $v$ and $w$ be two real absolute values on a field $F$, where $v$ is non-trivial, then $v$ and
-$w$ are equivalent if and only if $v(x) < 1$ exactly when $w(x) < 1$.
+If `v` and `w` are two real absolute values on a field `F`, where `v` is non-trivial, then `v` and
+`w` are equivalent if and only if `v x < 1` exactly when `w x < 1`.
 -/
-theorem isEquiv_iff_isOrderEquiv {v : AbsoluteValue F ℝ} (w : AbsoluteValue F ℝ) :
+theorem isEquiv_iff_isOrderEquiv {v w : AbsoluteValue F ℝ} :
     v.IsEquiv w ↔ v.IsOrderEquiv w := by
   refine ⟨fun ⟨t, ht, h⟩ x ↦ h ▸ (rpow_lt_one_iff' (v.nonneg x) ht).symm, fun h ↦ isEquiv_symm ?_⟩
   by_cases hv : v.IsNontrivial
@@ -214,24 +209,24 @@ theorem isEquiv_iff_isOrderEquiv {v : AbsoluteValue F ℝ} (w : AbsoluteValue F 
     by_cases h₂ : 0 < v x ∧ v x < 1
     · rw [← inv_inj, ← map_inv₀ v, ← ht _ (map_inv₀ v _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
         inv_rpow (w.nonneg _)]
-    · rw [← one_lt_inv_iff₀, ← map_inv₀, not_lt] at h₂
-      rw [← inv_ne_one, ← map_inv₀] at h₁
-      exact ht _ <| (v.inv_lt_one_iff.1 <| lt_of_le_of_ne h₂ h₁).resolve_left ((map_ne_zero v).1 h₀)
-  · exact isEquiv_of_not_isNontrivial (h.not_isNontrivial hv) hv
+    · have hv_le : (v x)⁻¹ ≤ 1 := not_lt.1 <| one_lt_inv_iff₀.not.2 h₂
+      rw [inv_le_one₀ (v.pos <| v.ne_zero_iff.mp h₀)] at hv_le
+      exact ht _ <| lt_of_le_of_ne hv_le h₁.symm
+  · exact isEquiv_of_not_isNontrivial (mt h.isNontrivial hv) hv
 
 /--
-If $v$ and $w$ are inequivalent absolute values and $v$ is non-trivial, then we can find an $a ∈ F$
-such that $v(a) < 1$ while $1 ≤ w(a)$.
+If `v` and `w` are inequivalent absolute values and `v` is non-trivial, then we can find an `a : F`
+such that `v a < 1` while `1 ≤ w a`.
 -/
 theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (h : ¬v.IsEquiv w) :
     ∃ a : F, v a < 1 ∧ 1 ≤ w a := by
   contrapose! h
-  exact (isEquiv_iff_isOrderEquiv _).2 <| isOrderEquiv_of_lt_one_imp hv h
+  exact isEquiv_iff_isOrderEquiv.2 <| isOrderEquiv_of_lt_one_imp hv h
 
 /--
-If $v$ and $w$ are two non-trivial and inequivalent absolute values then
-we can find an $a ∈ K$ such that $1 < v a$ while $w a < 1$.
+If `v` and `w` are two non-trivial and inequivalent absolute values then
+we can find an `a : K` such that `1 < v a` while `w a < 1`.
 -/
 theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
     (hw : w.IsNontrivial) (h : ¬v.IsEquiv w) :
