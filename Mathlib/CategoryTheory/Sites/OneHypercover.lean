@@ -97,6 +97,14 @@ lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _
   congr
   aesop_cat
 
+variable (i₁ i₂) in
+@[simps]
+noncomputable
+def cover₀ : PreZeroHypercover (Limits.pullback (E.f i₁) (E.f i₂)) where
+  I₀ := E.I₁ i₁ i₂
+  X k := E.Y k
+  f k := E.toPullback k
+
 end
 
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
@@ -615,6 +623,143 @@ def Homotopy.pullback₁ {T : C} (g : T ⟶ S) {u v : E.Hom F} (H : Homotopy u v
   wl i := by apply pullback.hom_ext <;> simp
   wr i := by apply pullback.hom_ext <;> simp
 
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
+def bind₁ (E : PreOneHypercover.{w} S)
+    (F : ∀ {i j : E.I₀} (k : E.I₁ i j), PreZeroHypercover.{w} (E.Y k)) :
+    PreOneHypercover S where
+  __ := E.toPreZeroHypercover
+  I₁ {i j : E.I₀} := Σ (k : E.I₁ i j), (F k).I₀
+  Y {i j : E.I₀} p := (F p.1).X p.2
+  p₁ {i j : E.I₀} p := (F p.1).f p.2 ≫ E.p₁ _
+  p₂ {i j : E.I₀} p := (F p.1).f p.2 ≫ E.p₂ _
+  w {i j : E.I₀} p := by simp [E.w]
+
+@[simps]
+noncomputable
+def sum (E : PreOneHypercover.{w} S) (F : PreOneHypercover.{w} S)
+    [∀ i j, HasPullback (E.f i) (F.f j)]
+    (G : ∀ (i : E.I₀) (j : F.I₀), PreZeroHypercover.{w} (pullback (E.f i) (F.f j))) :
+    PreOneHypercover.{w} S where
+  I₀ := E.I₀ ⊕ F.I₀
+  X := Sum.elim E.X F.X
+  f
+    | .inl i => E.f i
+    | .inr i => F.f i
+  I₁
+    | .inl i, .inl j => E.I₁ i j
+    | .inr i, .inr j => F.I₁ i j
+    | .inl i, .inr j => (G i j).I₀
+    | .inr i, .inl j => (G j i).I₀
+  Y
+    | .inl i, .inl j, k => E.Y k
+    | .inr i, .inr j, k => F.Y k
+    | .inl i, .inr j, k => (G i j).X k
+    | .inr i, .inl j, k => (G j i).X k
+  p₁
+    | .inl i, .inl j, k => E.p₁ k
+    | .inr i, .inr j, k => F.p₁ k
+    | .inl i, .inr j, k => (G i j).f _ ≫ pullback.fst _ _
+    | .inr i, .inl j, k => (G j i).f _ ≫ pullback.snd _ _
+  p₂
+    | .inl i, .inl j, k => E.p₂ k
+    | .inr i, .inr j, k => F.p₂ k
+    | .inl i, .inr j, k => (G i j).f _ ≫ pullback.snd _ _
+    | .inr i, .inl j, k => (G j i).f _ ≫ pullback.fst _ _
+  w
+    | .inl i, .inl j, k => E.w k
+    | .inr i, .inr j, k => F.w k
+    | .inl i, .inr j, k => by simp [pullback.condition]
+    | .inr i, .inl j, k => by simp [pullback.condition]
+
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
+def mk' (E : PreZeroHypercover.{w} S) (I₁' : Type w) (Y : I₁' → C)
+    (i₁ i₂ : I₁' → E.I₀)
+    (p₁ : ∀ i : I₁', Y i ⟶ E.X (i₁ i))
+    (p₂ : ∀ i : I₁', Y i ⟶ E.X (i₂ i))
+    (w : ∀ i, p₁ i ≫ E.f _ = p₂ i ≫ E.f _) :
+    PreOneHypercover.{w} S where
+  __ := E
+  I₁ i j := { x : I₁' // i₁ x = i ∧ i₂ x = j }
+  Y i j k := Y k.1
+  p₁ i j k := p₁ k.1 ≫ eqToHom (by rw [k.2.1])
+  p₂ i j k := p₂ k.1 ≫ eqToHom (by rw [k.2.2])
+  w i j := fun ⟨k, h₁, h₂⟩ ↦ by
+    subst h₁ h₂
+    simp [w]
+
+/-- A refinement data of a pre-`1`-hypercover `{Uᵢ} is a pre-`0`-hypercover for every `Uᵢ`
+and coverings of the intersections. -/
+structure Refinement' (E : PreOneHypercover.{w} S) where
+  cover (i : E.I₀) : PreOneHypercover.{w} (E.X i)
+  I {i j : E.I₀} (k : E.I₁ i j) (a : (cover i).I₀) (b : (cover j).I₀) : Type w
+  Z {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) : C
+  s {i : E.I₀} {a b : (cover i).I₀} (c : (cover i).I₁ a b) : E.I₁ i i
+  p {i : E.I₀} {a b : (cover i).I₀} (c : (cover i).I₁ a b) : (cover i).Y c ⟶ E.Y (s c)
+  --p {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+  --  Z k l ⟶ E.Y k
+  q₁ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    Z k l ⟶ (cover i).X a
+  q₂ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    Z k l ⟶ (cover j).X b
+  w {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+    q₁ k l ≫ (cover _).f _ ≫ E.f _ = q₂ k l ≫ (cover _).f _ ≫ E.f _
+  --w_self {i : E.I₀} (k : E.I₁ i i) {a : (cover i).I₀} {b : (cover i).I₀} (l : I k a b) :
+  --  q₁ k l ≫ (cover _).f _ = q₂ k l ≫ (cover _).f _
+  --w₁ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+  --  p k l ≫ E.p₁ k = q₁ k l ≫ (cover i).f a
+  --w₂ {i j : E.I₀} (k : E.I₁ i j) {a : (cover i).I₀} {b : (cover j).I₀} (l : I k a b) :
+  --  p k l ≫ E.p₂ k = q₂ k l ≫ (cover j).f b
+
+namespace Refinement'
+
+attribute [reassoc (attr := grind _=_)] w
+
+variable {E : PreOneHypercover.{w} S}
+
+@[simps!]
+def bind (R : E.Refinement') :
+    PreOneHypercover.{w} S :=
+  .mk' (E.toPreZeroHypercover.bind (fun i ↦ (R.cover i).toPreZeroHypercover))
+    ((Σ (i : E.I₀) (a b : (R.cover i).I₀), (R.cover i).I₁ a b) ⊕
+      Σ (k : E.I₁') (a : (R.cover k.1.1).I₀) (b : (R.cover k.1.2).I₀), R.I k.2 a b)
+    (Sum.elim (fun p ↦ (R.cover p.1).Y p.2.2.2) (fun k ↦ R.Z _ k.2.2.2))
+    (Sum.elim (fun p ↦ ⟨p.1, p.2.1⟩) (fun k ↦ ⟨k.1.1.1, k.2.1⟩)) 
+    (Sum.elim (fun p ↦ ⟨p.1, p.2.2.1⟩) (fun k ↦ ⟨k.1.1.2, k.2.2.1⟩)) 
+    (fun i ↦ match i with
+      | .inl ⟨i, a, b, l⟩ => (R.cover _).p₁ _
+      | .inr k => R.q₁ _ _)
+    (fun i ↦ match i with
+      | .inl ⟨i, a, b, l⟩ => (R.cover _).p₂ _
+      | .inr k => R.q₂ _ _)
+    (fun i ↦ match i with
+      | .inl p => by simp [reassoc_of% (R.cover p.1).w]
+      | .inr k => R.w _ _)
+
+@[simps]
+def toBase (R : E.Refinement') : R.bind ⟶ E where
+  s₀ i := i.1
+  h₀ i := (R.cover i.1).f i.2
+  s₁ {i j} := fun ⟨p, hp⟩ ↦ match p with
+    | .inl p => by
+      dsimp at hp
+      rw [← hp.1, ← hp.2]
+      exact R.s p.2.2.2
+    | .inr k => hp.1 ▸ hp.2 ▸ k.1.2
+  h₁ {i j} := fun ⟨p, hp1, hp2⟩ ↦ match p with
+    | .inl p => by
+        dsimp at hp1 hp2 ⊢
+        subst hp1 hp2
+        dsimp
+        exact R.p _
+    | .inr p => by dsimp; sorry
+  w₀ _ := sorry
+  w₁₁ _ := sorry
+  w₁₂ _ := sorry
+
+attribute [local grind =] Category.assoc Category.id_comp
+
+end Refinement'
+
 /-- A refinement data of a pre-`1`-hypercover `{Uᵢ} is a pre-`0`-hypercover for every `Uᵢ`
 and coverings of the intersections. -/
 structure Refinement (E : PreOneHypercover.{w} S) where
@@ -854,6 +999,122 @@ def bind (R : E.Refinement) : J.OneHypercover S where
   mem₁ i₁ i₂ W v₁ v₂ hv₁₂ := R.mem₁ v₁ v₂ hv₁₂
 
 end Refinement
+
+lemma _root_.CategoryTheory.GrothendieckTopology.ofArrows_sumElim_mem
+    {α β : Type*} {X : α → C} {Y : β → C} (f : ∀ a, X a ⟶ S) (g : ∀ b, Y b ⟶ S)
+    (hf : Sieve.ofArrows X f ∈ J S) :
+    Sieve.ofArrows (Sum.elim X Y) (fun i ↦ match i with | .inl a => f a | .inr b => g b) ∈ J S := by
+  let p (i : α ⊕ β) : Sum.elim X Y i ⟶ S := match i with
+    | .inl a => f a
+    | .inr b => g b
+  have : Sieve.ofArrows _ f ≤ Sieve.ofArrows _ p := by
+    rw [Sieve.ofArrows, Sieve.generate_le_iff]
+    rintro W w ⟨i⟩
+    rw [Sieve.ofArrows]
+    apply Sieve.le_generate
+    exact ⟨Sum.inl i⟩
+  exact superset_covering J this hf
+
+noncomputable
+nonrec def sum
+    [HasPullbacks C] -- TODO: remove this after updating mathlib
+    (E : OneHypercover.{w} J S) (F : OneHypercover.{w} J S)
+    [∀ i j, HasPullback (E.f i) (F.f j)]
+    (G : ∀ (i : E.I₀) (j : F.I₀), Coverage.ZeroHypercover.{w} (.ofGrothendieck _ J)
+      (Limits.pullback (E.f i) (F.f j))) :
+    OneHypercover J S where
+  __ := E.toPreOneHypercover.sum F.toPreOneHypercover (fun i j ↦ (G i j).toPreZeroHypercover)
+  mem₀ := by
+    simp only [PreZeroHypercover.sieve₀, PreOneHypercover.sum]
+    convert J.ofArrows_sumElim_mem E.f F.f E.mem₀
+    grind
+  mem₁
+    | .inl i, .inl j, W, p₁, p₂, h => E.mem₁ i j p₁ p₂ h
+    | .inr i, .inr j, W, p₁, p₂, h => F.mem₁ i j p₁ p₂ h
+    | .inl i, .inr j, W, p₁, p₂, h => by
+      have : HasPullback
+          ((E.sum F.toPreOneHypercover (fun i j ↦ (G i j).toPreZeroHypercover)).f (Sum.inl i))
+          ((E.sum F.toPreOneHypercover (fun i j ↦ (G i j).toPreZeroHypercover)).f (Sum.inr j)) :=
+        inferInstanceAs <| HasPullback (E.f i) (F.f j)
+      rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _ h]
+      apply J.pullback_stable
+      rw [PreOneHypercover.sieve₁']
+      rw [Sieve.ofArrows]
+      rw [← Coverage.ofGrothendieck_iff]
+      -- have : J = Coverage.toGrothendieck _ (Coverage.ofGrothendieck _ J) := sorry
+      have := (G i j).mem₀
+      rw [PreZeroHypercover.presieve₀] at this
+      simp only [PreOneHypercover.sum_X, Sum.elim_inl, Sum.elim_inr, PreOneHypercover.sum_f,
+        PreOneHypercover.sum_I₁]
+      convert this using 2
+      ext k <;> simp [PreOneHypercover.toPullback]
+    | .inr j, .inl i, W, p₁, p₂, h => by
+      have : HasPullback
+          ((E.sum F.toPreOneHypercover (fun i j ↦ (G i j).toPreZeroHypercover)).f (Sum.inr j))
+          ((E.sum F.toPreOneHypercover (fun i j ↦ (G i j).toPreZeroHypercover)).f (Sum.inl i)) :=
+        --inferInstanceAs <| HasPullback (E.f j) (F.f i)
+        sorry
+      rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _ h]
+      apply J.pullback_stable
+      dsimp
+      rw [← pullback_mem_iff_of_isIso (i := (pullbackSymmetry _ _).hom)]
+      rw [PreOneHypercover.sieve₁']
+      rw [Sieve.ofArrows]
+      rw [← Sieve.pullbackArrows_comm]
+      rw [← Coverage.ofGrothendieck_iff]
+      -- have : J = Coverage.toGrothendieck _ (Coverage.ofGrothendieck _ J) := sorry
+      have := (G i j).mem₀
+      rw [PreZeroHypercover.presieve₀] at this
+      simp only [PreOneHypercover.sum_X, Sum.elim_inl, Sum.elim_inr, PreOneHypercover.sum_f,
+        PreOneHypercover.sum_I₁]
+      rw [← Presieve.ofArrows_pullback]
+      convert this using 1
+      --ext k <;> simp [PreOneHypercover.toPullback]
+      sorry
+
+@[simps! id_s₀ id_s₁ id_h₀ id_h₁ comp_s₀ comp_s₁ comp_h₀ comp_h₁]
+instance : Category (J.OneHypercover S) where
+  Hom := Hom
+  id E := PreOneHypercover.Hom.id E.toPreOneHypercover
+  comp f g := f.comp g
+
+@[simps]
+def isoMk {E F : J.OneHypercover S} (f : E.toPreOneHypercover ≅ F.toPreOneHypercover) :
+    E ≅ F where
+  __ := f
+
+variable (J) in
+@[simps]
+noncomputable
+def pullback [HasPullbacks C] {T : C} (f : S ⟶ T) : J.OneHypercover T ⥤ J.OneHypercover S where
+  obj E := E.pullback₁ f
+  map g := g.pullback₁ f
+  map_id _ := PreOneHypercover.Hom.pullback₁_id f
+  map_comp _ _ := PreOneHypercover.Hom.pullback₁_comp f _ _
+
+variable (J) in
+@[simps!]
+noncomputable
+def pullbackId [HasPullbacks C] (S : C) : pullback J (𝟙 S) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun E ↦ isoMk E.pullback₁Id) fun {X Y} f ↦
+    PreOneHypercover.Hom.ext'' (by rfl) (by simp) (by simp) (by simp)
+
+variable (J) in
+@[simps!]
+noncomputable
+def pullbackComp [HasPullbacks C] {S T W : C} (f : S ⟶ T) (g : T ⟶ W) :
+    pullback J (f ≫ g) ≅ pullback J g ⋙ pullback J f :=
+  NatIso.ofComponents (fun E ↦ isoMk (E.pullback₁Comp f g)) fun {X Y} f ↦ by
+    apply PreOneHypercover.Hom.ext'' (by rfl)
+    · intros
+      apply pullback.hom_ext
+      · simp
+      · apply pullback.hom_ext <;> simp
+    · intros
+      apply pullback.hom_ext
+      · simp
+      · apply pullback.hom_ext <;> simp
+    · simp
 
 end OneHypercover
 

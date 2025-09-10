@@ -36,7 +36,7 @@ structure PreZeroHypercover (S : C) where
 
 namespace PreZeroHypercover
 
-variable {S T : C} (E : PreZeroHypercover.{w} S)
+variable {S T : C} (E : PreZeroHypercover.{w} S) (F : PreZeroHypercover.{w'} S)
 
 /-- The assumption that the pullback of `X i₁` and `X i₂` over `S` exists
 for any `i₁` and `i₂`. -/
@@ -100,6 +100,38 @@ def bind (E : PreZeroHypercover.{w} T) (F : ∀ i, PreZeroHypercover.{w'} (E.X i
   I₀ := Σ (i : E.I₀), (F i).I₀
   X := fun ⟨i, j⟩ ↦ (F i).X j
   f := fun ⟨i, j⟩ ↦ (F i).f j ≫ E.f i
+
+/-- Replace the indexing type of a pre-`0`-hypercover. -/
+@[simps]
+def reindex (E : PreZeroHypercover.{w} T) {ι : Type w'} (e : ι ≃ E.I₀) :
+    PreZeroHypercover.{w'} T where
+  I₀ := ι
+  X := E.X ∘ e
+  f i := E.f (e i)
+
+@[simp]
+lemma presieve₀_reindex {ι : Type w'} (e : ι ≃ E.I₀) : (E.reindex e).presieve₀ = E.presieve₀ := by
+  refine le_antisymm (fun Y g ⟨i⟩ ↦ ⟨e i⟩) fun Y g ⟨i⟩ ↦ ?_
+  obtain ⟨i, rfl⟩ := e.surjective i
+  exact ⟨i⟩
+
+/-- Pairwise intersection of two pre-`0`-hypercovers. -/
+@[simps!]
+noncomputable
+def inter (E : PreZeroHypercover.{w} T) (F : PreZeroHypercover.{w'} T)
+    [∀ i j, HasPullback (E.f i) (F.f j)] :
+    PreZeroHypercover.{max w w'} T :=
+  (E.bind (fun i ↦ F.pullback₁ (E.f i))).reindex (Equiv.sigmaEquivProd _ _).symm
+
+lemma inter_def [∀ i j, HasPullback (E.f i) (F.f j)] :
+    E.inter F = (E.bind (fun i ↦ F.pullback₁ (E.f i))).reindex (Equiv.sigmaEquivProd _ _).symm :=
+  rfl
+
+@[simps]
+def pushforwardIso (E : PreZeroHypercover.{w} T) (e : T ≅ S) : PreZeroHypercover.{w} S where
+  I₀ := E.I₀
+  X := E.X
+  f i := E.f i ≫ e.hom
 
 section Category
 
