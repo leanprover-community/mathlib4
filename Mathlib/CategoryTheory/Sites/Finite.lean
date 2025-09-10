@@ -3,7 +3,6 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.Data.Set.Finite.Lattice
 
@@ -33,11 +32,11 @@ def finite (C : Type u) [Category.{v} C] : Precoverage C where
 
 variable {C : Type u} [Category.{v} C]
 
-@[simp] lemma mem_finite_coverings {X : C} {s : Presieve X} :
-    s ∈ (finite C).coverings X ↔ s.uncurry.Finite := Iff.rfl
+@[simp] lemma mem_finite {X : C} {s : Presieve X} :
+    s ∈ finite C X ↔ s.uncurry.Finite := Iff.rfl
 
 theorem ofArrows_mem_finite {X : C} {ι : Type*} [Finite ι] (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
-    ofArrows Y f ∈ (finite C).coverings X := by
+    ofArrows Y f ∈ finite C X := by
   simpa using Set.finite_range _
 
 instance : (finite C).HasIsos where
@@ -51,6 +50,7 @@ open Limits
 
 /-- The finite pretopology on a category consists of finite presieves, i.e. a presieve with finitely
 many maps after uncurrying. -/
+@[simps toPrecoverage]
 def finite (C : Type u) [Category.{v} C] [HasPullbacks C] : Pretopology C where
   __ := Precoverage.finite C
   has_isos _ _ _ := Precoverage.mem_coverings_of_isIso _
