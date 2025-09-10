@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Generator.Basic
 
 A set of objects `S` in a category `C` is a strong generator if it is a
 generator (in the sense that `IsSeparating S` holds) such that for any
-proper subject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
+proper subobject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
 object in `S` which does not factor through `A`.
 
 The main result if the lemma `isStrongGenerator_iff_exists_extremalEpi` which
@@ -34,7 +34,7 @@ open Limits
 variable {C : Type u} [Category.{v} C] (S : Set C)
 
 /-- A set of objects is a strong generator if it is separating and for any
-proper subject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
+proper subobject `A ⊂ X`, there exists a morphism `G ⟶ X` from an
 object in `S` which does not factor through `A`. -/
 def IsStrongGenerator : Prop :=
   IsSeparating S ∧ ∀ ⦃X : C⦄ (A : Subobject X),
@@ -134,8 +134,6 @@ end
 
 namespace IsSeparating
 
-variable {S : Set C}
-
 lemma epi_coproductOfSetπ (hS : IsSeparating S)
     [HasCoproducts.{w} C] [LocallySmall.{w} C] [Small.{w} S] (X : C) :
     Epi (coproductOfSet.π S X) where
@@ -167,8 +165,6 @@ lemma isSeparating_iff_exists_epi
       hS.epi_coproductOfSetπ X⟩
 
 namespace IsStrongGenerator
-
-variable {S : Set C}
 
 lemma extremalEpi_coproductOfSetπ
     (hS : IsStrongGenerator S) [HasCoproducts.{w} C] [LocallySmall.{w} C]
