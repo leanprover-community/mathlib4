@@ -264,7 +264,8 @@ theorem image_mem_functorPushforward (R : Presieve X) {f : Y ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨Y, f, 𝟙 _, h, by simp⟩
 
-/-- This presieve generates `functorPushforward`. -/
+/-- This presieve generates `functorPushforward`.
+See `arrows_generate_map_eq_functorPushforward`. -/
 inductive map (s : Presieve X) : Presieve (F.obj X) where
   | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
 
@@ -286,7 +287,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
     obtain ⟨rfl, h⟩ := h; subst h; constructor
 
 /-- The uncurried version of `pullbackArrows`. -/
-@[simp] noncomputable nonrec
+@[simps] noncomputable nonrec
 def _root_.Sigma.pullback [HasPullbacks C] {B : C} (b : B ⟶ X) (f : Σ Y, Y ⟶ X) : Σ Y, Y ⟶ B :=
   ⟨pullback f.2 b, pullback.snd _ _⟩
 
@@ -301,7 +302,7 @@ def _root_.Sigma.pullback [HasPullbacks C] {B : C} (b : B ⟶ X) (f : Σ Y, Y �
     exact ⟨Y, u, hu⟩
 
 /-- The uncurried version of composing on the right. -/
-@[simp]
+@[simps]
 def _root_.Sigma.map_hom {Y : C} (u : Y ⟶ X) (f : Σ Z, Z ⟶ Y) : Σ Z, Z ⟶ X :=
   ⟨f.1, f.2 ≫ u⟩
 
