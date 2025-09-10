@@ -61,7 +61,6 @@ Further results in Elliot's paper:
   `1 + I`.
 
 -/
-section Multichoose
 
 open Function Polynomial
 
@@ -69,12 +68,28 @@ open Function Polynomial
 suitable factorials. We define this notion as a mixin for additive commutative monoids with natural
 number powers, but retain the ring name. We introduce `Ring.multichoose` as the uniquely defined
 quotient. -/
-class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] extends IsAddTorsionFree R where
+class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
+  -- This field of `IsAddTorsionFree` has been inlined, to avoid creating
+  -- `BinomialRing.toIsAddTorsionFree` as a global instance.
+  /-- Binomial rings are torsion free. -/
+  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : R ↦ n • a
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!` -/
   factorial_nsmul_multichoose (r : R) (n : ℕ) :
     n.factorial • multichoose r n = (ascPochhammer ℕ n).smeval r
+
+/--
+The parent projection to `IsAddTorsionFree`,
+defined separately so we can make it a local instance.
+-/
+def BinomialRing.toIsAddTorsionFree (R : Type*) [AddCommMonoid R] [Pow R ℕ] [BinomialRing R] :
+    IsAddTorsionFree R :=
+  { nsmul_right_injective := BinomialRing.nsmul_right_injective }
+
+attribute [local instance] BinomialRing.toIsAddTorsionFree
+
+section Multichoose
 
 namespace Ring
 
