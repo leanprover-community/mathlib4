@@ -22,7 +22,7 @@ segment in the disk), and compute its derivative.
 
 * `Complex.IsClosedOn.isExactOn_ball`: **Morera's Theorem**: On a disk, a continuous function whose
   integrals on rectangles vanish, has primitives.
-* `Complex.HolomorphicOn.isExactOn_ball`: On a disk, a holomorphic function has primitives.
+* `DifferentiableOn.isExactOn_ball`: On a disk, a holomorphic function has primitives.
 
 TODO: Extend to holomorphic functions on simply connected domains.
 -/
@@ -113,7 +113,7 @@ def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
-theorem HolomorphicOn.isClosedOn {U : Set ℂ} (hf : HolomorphicOn f U) :
+theorem _root_.DifferentiableOn.isClosedOn {U : Set ℂ} (hf : DifferentiableOn ℂ f U) :
     IsClosedOn f U := by
   rintro z w hzw
   rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq]
@@ -125,7 +125,7 @@ lemma IsExactOn.isClosedOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExact
     IsClosedOn f U := by
   obtain ⟨g, hg⟩ := hf
   have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
-  apply HolomorphicOn.isClosedOn
+  apply DifferentiableOn.isClosedOn
   exact (differentiableOn_congr <| fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
 
 section ContinuousOnBall
@@ -263,7 +263,7 @@ theorem IsClosedOn.isExactOn_ball (hf' : ContinuousOn f (ball c r)) (hf : IsClos
   ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral hf'⟩
 
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
-theorem HolomorphicOn.isExactOn_ball (hf : HolomorphicOn f (ball c r)) :
+theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
     IsExactOn f (ball c r) :=
   hf.isClosedOn.isExactOn_ball hf.continuousOn
 
