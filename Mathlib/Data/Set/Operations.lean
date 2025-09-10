@@ -171,12 +171,7 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
 
 lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p (f a)) :
     range (Subtype.coind f h) = Subtype.val ⁻¹' range f := by
-  ext y
-  constructor
-  · rintro ⟨x, rfl⟩
-    simp
-  · rintro ⟨x, hx⟩
-    exact ⟨x, Subtype.ext hx⟩
+  simp [Set.ext_iff, Subtype.ext_iff]
 
 section Prod
 
