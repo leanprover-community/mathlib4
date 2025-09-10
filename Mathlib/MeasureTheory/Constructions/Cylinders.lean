@@ -188,24 +188,20 @@ theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
     cylinder s₁ S₁ ∩ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
         (Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
-          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := by
-  ext1 f; simp only [mem_inter_iff, mem_cylinder]; rfl
+          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := rfl
 
 theorem inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
-    cylinder s S₁ ∩ cylinder s S₂ = cylinder s (S₁ ∩ S₂) := by
-  classical rw [inter_cylinder]; rfl
+    cylinder s S₁ ∩ cylinder s S₂ = cylinder s (S₁ ∩ S₂) := rfl
 
 theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i)) (S₂ : Set (∀ i : s₂, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∪ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
         (Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∪
-          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := by
-  ext1 f; simp only [mem_union, mem_cylinder]; rfl
+          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := rfl
 
 theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
-    cylinder s S₁ ∪ cylinder s S₂ = cylinder s (S₁ ∪ S₂) := by
-  classical rw [union_cylinder]; rfl
+    cylinder s S₁ ∪ cylinder s S₂ = cylinder s (S₁ ∪ S₂) := rfl
 
 theorem compl_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) :
     (cylinder s S)ᶜ = cylinder s (Sᶜ) := by
