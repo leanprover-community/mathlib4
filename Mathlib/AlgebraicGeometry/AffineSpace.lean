@@ -279,7 +279,7 @@ lemma SpecIso_inv_over (R : CommRingCat.{max u v}) :
 section functorial
 
 variable (n) in
-/-- `𝔸(n; S)` is functorial wrt `S`. -/
+/-- `𝔸(n; S)` is functorial w.r.t. `S`. -/
 def map {S T : Scheme.{max u v}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
   homOfVector (𝔸(n; S) ↘ S ≫ f) (coord S)
 
@@ -339,7 +339,7 @@ lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
   convert (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
-/-- `𝔸(n; S)` is functorial wrt `n`. -/
+/-- `𝔸(n; S)` is functorial w.r.t. `n`. -/
 def reindex {n m : Type v} (i : m → n) (S : Scheme.{max u v}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
   homOfVector (𝔸(n; S) ↘ S) (coord S ∘ i)
 

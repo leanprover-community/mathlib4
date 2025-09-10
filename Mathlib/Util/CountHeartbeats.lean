@@ -133,14 +133,6 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
           (← set_option hygiene false in `(command| set_option maxHeartbeats $m in $cmd))
 
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : tactic =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
-/-- `count_heartbeats` is deprecated in favour of `#count_heartbeats` since "2025-01-12" -/
-elab "count_heartbeats" : command =>
-  logWarning "`count_heartbeats` has been renamed to `#count_heartbeats`"
-
 set_option linter.style.maxHeartbeats false in
 /--
 Guard the minimal number of heartbeats used in the enclosed command.
