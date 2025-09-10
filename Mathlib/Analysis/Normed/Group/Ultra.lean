@@ -355,25 +355,18 @@ lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
     · simp
     specialize IH (hs.mono (by simp))
     obtain ⟨j, hj, hj'⟩ : ∃ j ∈ s, ‖∏ i ∈ s, f i‖₊ = ‖f j‖₊ := by
-      obtain ⟨j, hj, hj'⟩ := Finset.mem_image.mp
-        (Finset.max'_mem (s.image (fun i ↦ ‖f i‖₊)) (by simp [hs']))
-      refine ⟨j, hj, ?_⟩
-      rw [hj', IH, Finset.max'_eq_sup', Finset.sup'_eq_sup]
-      simp
-    simp only [Finset.prod_cons]
-    rw [IsUltrametricDist.nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm, hj']
-    · simp [← IH, hj']
-    · rw [hj']
-      exact hs (by simp) (by simp [hj]) (mt (fun H ↦ H ▸ hj) ha)
+      simpa [IH] using s.exists_mem_eq_sup hs' _
+    suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm this]
+    rw [hj']
+    apply hs <;> grind
 
 @[to_additive]
 lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)
     (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
     ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
-  have := IsUltrametricDist.nnnorm_prod_eq_sup_of_pairwise_ne (ι := ι) (M := M)
-    (by simpa [← NNReal.coe_inj] using hs)
-  rw [← coe_nnnorm', this, ← Finset.sup'_eq_sup hs']
-  exact Finset.comp_sup'_eq_sup'_comp hs' _ (by simp)
+  rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
+  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · simpa [← NNReal.coe_inj] using hs
 
 end CommGroup
 
