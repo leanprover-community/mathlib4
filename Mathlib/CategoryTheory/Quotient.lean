@@ -234,10 +234,8 @@ theorem lift_obj_functor_obj (X : C) :
     (lift r F H).obj ((functor r).obj X) = F.obj X := rfl
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f := by
-  rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp [lift, functor]
-  simp
+    (lift r F H).map ((functor r).map f) = F.map f :=
+  rfl
 
 variable {r}
 
