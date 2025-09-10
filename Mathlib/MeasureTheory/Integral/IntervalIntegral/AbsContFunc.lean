@@ -103,7 +103,7 @@ theorem IntervalIntegrable.integral_absolutelyContinuousOnInterval {f : ℝ → 
   _ = ∫ (v : ℝ) in s, |f v| := by
     dsimp [s]
     symm
-    apply MeasureTheory.integral_finset_biUnion (hs := by simp [uIoc]) (h's := hI2)
+    apply MeasureTheory.integral_biUnion_finset (hs := by simp [uIoc]) (h's := hI2)
     intro i hi
     replace h := IntegrableOn.mono_set h.1 (hs0 hi)
     dsimp only [IntegrableOn] at h ⊢
@@ -153,9 +153,10 @@ lemma ae_deriv_zero_ctb_cover {f : ℝ → ℝ} {d b η : ℝ}
       intros; constructor <;> linarith
     · intro A hA
       simp only [Real.volume_closedBall, ENNReal.coe_ofNat, Real.volume_Icc, add_sub_cancel_left, B]
-      rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul] <;> try norm_num
-      rw [ENNReal.ofReal_le_ofReal_iff (by simp only [mem_setOf_eq, t] at hA; linarith)]
-      linarith
+      rw [show 6 = ENNReal.ofReal 6 by norm_num, ← ENNReal.ofReal_mul]
+      · rw [ENNReal.ofReal_le_ofReal_iff (by simp only [mem_setOf_eq, t] at hA; linarith)]
+        linarith
+      · norm_num
     · simp +contextual [B, t]
     · simp [B, isClosed_Icc]
     · intro x hx ε hε
