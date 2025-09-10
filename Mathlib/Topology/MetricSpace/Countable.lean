@@ -10,18 +10,14 @@ import Mathlib.Analysis.Real.Cardinality
 
 -/
 
-open Set
+open Function Set
 
-universe u
-
-variable {γ : Type u} [MetricSpace γ]
-variable {s : Set γ}
+variable {γ : Type*} [MetricSpace γ]
 
 namespace Metric
 
 section TotallyDisconnected
 
-open Function (uncurry) in
 /-- Countable metric spaces are totally separated. -/
 instance instTotallySeparatedSpace_of_countable [Countable γ] :
     TotallySeparatedSpace γ := by
@@ -44,15 +40,10 @@ instance instTotallySeparatedSpace_of_countable [Countable γ] :
   · simpa [hball] using isClosed_closedBall;
   use mem_ball_self rp; simpa [dist_comm] using rxy.le
 
-/-- Countable metric spaces are totally disconnected. -/
-instance instTotallyDisconnectedSpace_of_countable [Countable γ] :
-    TotallyDisconnectedSpace γ := inferInstance
-
 /-- Countable subsets of metric spaces are totally disconnected. -/
-theorem Countable.isTotallyDisconnected (hs : Countable s) :
-    IsTotallyDisconnected s := by
-  rw [← totallyDisconnectedSpace_subtype_iff]
-  infer_instance
+theorem Countable.isTotallyDisconnected {s : Set γ} (hs : Countable s) :
+    IsTotallyDisconnected s :=
+  totallyDisconnectedSpace_subtype_iff.mp inferInstance
 
 end TotallyDisconnected
 
