@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Basic
 import Batteries.Logic
 import Batteries.Tactic.Trans
@@ -27,8 +28,6 @@ open Function
 section Miscellany
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
-attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
-attribute [simp] cast_heq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
@@ -211,6 +210,11 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 
 /-! ### Declarations about `Xor'` -/
 
+#adaptation_note
+/--
+2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
+Anytime after v4.23.0-rc1 lands it should be okay to remove the deprecation, and then rename this.
+-/
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
@@ -346,37 +350,6 @@ theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a �
     and_or_left, and_not_self_iff, or_false]
 
 end Propositional
-
-/-! ### Membership -/
-
-alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
-alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
-
-section Membership
-
-variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
-
-theorem mem_dite {a : α} {s : p → β} {t : ¬p → β} :
-    (a ∈ if h : p then s h else t h) ↔ (∀ h, a ∈ s h) ∧ (∀ h, a ∈ t h) := by
-  by_cases h : p <;> simp [h]
-
-theorem dite_mem {a : p → α} {b : ¬p → α} {s : β} :
-    (if h : p then a h else b h) ∈ s ↔ (∀ h, a h ∈ s) ∧ (∀ h, b h ∈ s) := by
-  by_cases h : p <;> simp [h]
-
-theorem mem_ite {a : α} {s t : β} : (a ∈ if p then s else t) ↔ (p → a ∈ s) ∧ (¬p → a ∈ t) :=
-  mem_dite
-
-theorem ite_mem {a b : α} {s : β} : (if p then a else b) ∈ s ↔ (p → a ∈ s) ∧ (¬p → b ∈ s) :=
-  dite_mem
-
-end Membership
 
 /-! ### Declarations about equality -/
 
@@ -634,6 +607,15 @@ protected theorem Decidable.forall_or_right {q} {p : α → Prop} [Decidable q] 
 
 theorem forall_or_right {q} {p : α → Prop} : (∀ x, p x ∨ q) ↔ (∀ x, p x) ∨ q :=
   open scoped Classical in Decidable.forall_or_right
+
+@[simp]
+theorem forall_and_index {p q : Prop} {r : p ∧ q → Prop} :
+    (∀ h : p ∧ q, r h) ↔ ∀ (hp : p) (hq : q), r ⟨hp, hq⟩ :=
+  ⟨fun h hp hq ↦ h ⟨hp, hq⟩, fun h h1 ↦ h h1.1 h1.2⟩
+
+theorem forall_and_index' {p q : Prop} {r : p → q → Prop} :
+    (∀ (hp : p) (hq : q), r hp hq) ↔ ∀ h : p ∧ q, r h.1 h.2 :=
+  (forall_and_index (r := fun h => r h.1 h.2)).symm
 
 theorem Exists.fst {b : Prop} {p : b → Prop} : Exists p → b
   | ⟨h, _⟩ => h
@@ -958,6 +940,37 @@ end congr
 
 end ite
 
+/-! ### Membership -/
+
+alias Membership.mem.ne_of_notMem := ne_of_mem_of_not_mem
+alias Membership.mem.ne_of_notMem' := ne_of_mem_of_not_mem'
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem := Membership.mem.ne_of_notMem
+
+@[deprecated (since := "2025-05-23")]
+alias Membership.mem.ne_of_not_mem' := Membership.mem.ne_of_notMem'
+
+section Membership
+
+variable {α β : Type*} [Membership α β] {p : Prop} [Decidable p]
+
+theorem mem_dite {a : α} {s : p → β} {t : ¬p → β} :
+    (a ∈ if h : p then s h else t h) ↔ (∀ h, a ∈ s h) ∧ (∀ h, a ∈ t h) := by
+  by_cases h : p <;> simp [h]
+
+theorem dite_mem {a : p → α} {b : ¬p → α} {s : β} :
+    (if h : p then a h else b h) ∈ s ↔ (∀ h, a h ∈ s) ∧ (∀ h, b h ∈ s) := by
+  by_cases h : p <;> simp [h]
+
+theorem mem_ite {a : α} {s t : β} : (a ∈ if p then s else t) ↔ (p → a ∈ s) ∧ (¬p → a ∈ t) :=
+  mem_dite
+
+theorem ite_mem {a b : α} {s : β} : (if p then a else b) ∈ s ↔ (p → a ∈ s) ∧ (¬p → b ∈ s) :=
+  dite_mem
+
+end Membership
+
 theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
   fun h => ne (eq_of_beq h)
 
@@ -971,7 +984,6 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
     inst1 = inst2 := by
   have ⟨beq1⟩ := inst1
-  have ⟨beq2⟩ := inst2
   congr
   funext x y
   exact h x y

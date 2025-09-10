@@ -70,8 +70,7 @@ lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
 
 @[simp]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
-  rw [Finset.union_comm]
-  rfl
+  rw [Finset.union_comm, singleton_union]
 
 @[simp]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by

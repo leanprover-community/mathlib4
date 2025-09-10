@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
@@ -64,6 +64,12 @@ theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [N
     (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp
+
+/-- Decomposing `x : ι → R` as a sum along the canonical basis `Pi.single i 1` for `i : ι`. -/
+theorem pi_eq_sum_univ' {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
+    (x : ι → R) : x = ∑ i, (x i) • Pi.single (M := fun _ ↦ R) i 1 := by
+  convert pi_eq_sum_univ x
+  aesop
 
 section CommSemiring
 variable [CommSemiring R]

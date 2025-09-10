@@ -74,9 +74,6 @@ lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.unt
   induction b; · rw [mul_top ha, untopD_top, mul_zero]
   rw [← coe_mul, untopD_coe, untopD_coe, untopD_coe]
 
-@[deprecated (since := "2025-02-06")]
-alias untop'_zero_mul := untopD_zero_mul
-
 theorem mul_ne_top {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b ≠ ⊤ := by
   simp [mul_eq_top_iff, *]
 
@@ -89,6 +86,30 @@ instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
+
+variable [Preorder α]
+
+protected lemma mul_right_strictMono [PosMulStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
+    StrictMono (a * ·) := by
+  lift a to α using hinf
+  rintro b c hbc
+  lift b to α using hbc.ne_top
+  match c with
+  | ⊤ => simp [← coe_mul, mul_top h₀.ne']
+  | (c : α) =>
+  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  exact mul_lt_mul_of_pos_left hbc h₀
+
+protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
+    StrictMono (· * a) := by
+  lift a to α using hinf
+  rintro b c hbc
+  lift b to α using hbc.ne_top
+  match c with
+  | ⊤ => simp [← coe_mul, top_mul h₀.ne']
+  | (c : α) =>
+  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  exact mul_lt_mul_of_pos_right hbc h₀
 
 end MulZeroClass
 
@@ -312,9 +333,6 @@ lemma unbotD_zero_mul (a b : WithBot α) : (a * b).unbotD 0 = a.unbotD 0 * b.unb
   induction a; · rw [bot_mul hb, unbotD_bot, zero_mul]
   induction b; · rw [mul_bot ha, unbotD_bot, mul_zero]
   rw [← coe_mul, unbotD_coe, unbotD_coe, unbotD_coe]
-
-@[deprecated (since := "2025-02-06")]
-alias unbot'_zero_mul := unbotD_zero_mul
 
 theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
   WithTop.mul_ne_top (α := αᵒᵈ) ha hb
