@@ -77,6 +77,12 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
+/-- A version of `add_pow` that avoids ℕ-subtraction by summing over the antidiagonal and
+also with the binomial coefficient applied via scalar action of ℕ. -/
+theorem add_pow' [CommSemiring R] (x y : R) (n : ℕ) :
+    (x + y) ^ n = ∑ m ∈ antidiagonal n, n.choose m.1 • (x ^ m.1 * y ^ m.2) :=
+  (Commute.all x y).add_pow' n
+
 /-- A special case of the **binomial theorem** -/
 theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
     (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
