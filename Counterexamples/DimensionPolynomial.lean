@@ -29,13 +29,23 @@ variable (k : Type*) [Field k]
 
 abbrev A := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
+lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
+    [CommRing R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔
+    ∀ (x : R), x ≠ 0 → IsLocalRing.maximalIdeal R ≤ Ideal.radical (Ideal.span {x}) := by
+  sorry
+
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
   sorry
 
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
-  let φ : (A k) →+* k := sorry
-  have h_phi : RatFunc.C.comp φ = PowerSeries.constantCoeff.comp (A k).subtype := sorry
+  let φ : (A k) →+* k := by
+    refine RingHom.comp ?_ (PowerSeries.constantCoeff.comp (A k).subtype).rangeRestrict
+    refine (((⊤ : Subring k).equivMapOfInjective _ RatFunc.C_injective).symm.trans
+      Subring.topEquiv).toRingHom.comp (Subring.inclusion ?_)
+    exact fun _ ⟨⟨_, ⟨u, _⟩⟩, _⟩ ↦ ⟨u, ⟨by simp, by simp_all⟩⟩
+  have h_phi : RatFunc.C.comp φ = PowerSeries.constantCoeff.comp (A k).subtype := RingHom.ext
+    fun x ↦ by simp [φ, ← Subring.coe_equivMapOfInjective_apply _ _ RatFunc.C_injective _]
   let f : (A k)[X] →+* (RatFunc k)⟦X⟧ := eval₂RingHom (A k).subtype (PowerSeries.C RatFunc.X)
   let Q : PrimeSpectrum (A k)[X] := ⟨RingHom.ker f, RingHom.ker_isPrime f⟩
   let g : (A k)[X] →+* k[X] := mapRingHom φ
