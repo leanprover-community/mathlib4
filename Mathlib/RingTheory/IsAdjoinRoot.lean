@@ -109,7 +109,8 @@ def root : S := h.map X
 set_option linter.unusedSectionVars false in
 include h in
 @[deprecated "use Algebra.subsingleton" (since := "2025-09-10")]
-theorem subsingleton [Subsingleton R] : Subsingleton S := Algebra.subsingleton R S
+theorem subsingleton [Subsingleton R] : Subsingleton S := by
+  have := h; exact Algebra.subsingleton R S
 
 theorem algebraMap_apply (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := AlgHom.algebraMap_eq_apply h.map rfl
