@@ -53,6 +53,7 @@ noncomputable instance : Lifting₂ L' L' W W
     ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) where
   iso' := Iso.refl _
 
+-- curriedTensorPre F ≅ curriedTensorPost F
 /--
 The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
 -/
@@ -88,6 +89,76 @@ lemma μNatIso_hom_app_app (X Y : C) :
         F.map (Functor.OplaxMonoidal.δ L' X Y) := by
   simp [μNatIso, lift₂NatIso, Lifting₂.iso, Lifting₂.iso']
   rfl
+
+noncomputable def functorCoremonoidalOfComp' : F.CoreMonoidal := by
+  refine Functor.CoreMonoidal.ofBifunctor (εIso (L ⋙ F) ≪≫ F.mapIso ε) (μNatIso L W ε F) ?_ ?_ ?_
+  · apply natTrans₃_ext (L') (L') (L') W W W
+    intro X Y Z
+    simp only [curriedTensorPrePre_obj_obj_obj, curriedTensorPostPost'_obj_obj_obj,
+      LaxMonoidal.firstMap_app_app_app, LaxMonoidal.secondMap_app_app_app]
+    simp only [μNatIso_hom_app_app, comp_obj, CoreMonoidal.toMonoidal_toOplaxMonoidal,
+      comp_whiskerRight, Category.assoc, MonoidalCategory.whiskerLeft_comp]
+    have := (μNatIso L W ε F).hom.naturality ((Functor.LaxMonoidal.μ L' X Y))
+    apply NatTrans.congr_app at this
+    specialize this ((L').obj Z)
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, Functor.comp_obj,
+      whiskeringRight_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, NatTrans.comp_app,
+      whiskeringLeft₂_obj_obj_obj_map_app, curriedTensor_map_app, Functor.comp_map,
+      whiskeringRight_obj_map, Functor.whiskerRight_app] at this
+    change _ = _ ≫ (F.mapIso ((Functor.mapIso _ (Functor.Monoidal.μIso L' _ _)).app _)).hom at this
+    rw [← Iso.comp_inv_eq] at this
+    simp only [Functor.mapIso_inv, Iso.app_inv, Category.assoc] at this
+    change _ ≫ _ ≫ F.map (_ ▷ (L').obj Z) = _ at this
+    rw [← this, μNatIso_hom_app_app]
+    simp only [comp_obj, CoreMonoidal.toMonoidal_toOplaxMonoidal, μIso_inv, Category.assoc]
+    have := ((μNatIso L W ε F).hom.app ((L').obj X)).naturality (Functor.LaxMonoidal.μ L' Y Z)
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, comp_obj,
+      whiskeringRight_obj_obj, CoreMonoidal.toMonoidal_toLaxMonoidal,
+      whiskeringLeft₂_obj_obj_obj_obj_map, curriedTensor_obj_map, Functor.comp_map] at this
+    change _ = _ ≫ (F.mapIso (Functor.mapIso _ (Functor.Monoidal.μIso L' Y Z))).hom at this
+    rw [← Iso.comp_inv_eq] at this
+    simp only [Functor.mapIso_inv, μIso_inv, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
+      Category.assoc] at this
+    change _ ≫ _ ≫ F.map ((L').obj X ◁ _) = _ at this
+    rw [← this]
+    simp only [μNatIso_hom_app_app, comp_obj, CoreMonoidal.toMonoidal_toOplaxMonoidal,
+      Category.assoc]
+    simp only [← map_comp, OplaxMonoidal.associativity]
+    simp only [← Category.assoc, map_comp]
+    congr 2
+    simp only [Category.assoc]
+    simp only [← comp_whiskerRight_assoc, map_δ_μ, id_whiskerRight, Category.id_comp,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, MonoidalCategory.whiskerLeft_id]
+    exact Functor.Monoidal.toLaxMonoidal.associativity (F := L' ⋙ F) _ _ _
+  · apply natTrans_ext (L') W
+    intro X
+    simp only [comp_obj, curriedTensor_obj_obj, LaxMonoidal.leftMapₗ_app, Iso.trans_hom, εIso_hom,
+      mapIso_hom, NatTrans.comp_app, curriedTensorPre_obj_obj, LaxMonoidal.topMapₗ_app,
+      comp_whiskerRight, curriedTensorPost_obj_obj, LaxMonoidal.bottomMapₗ_app,
+      LaxMonoidal.left_unitality, CoreMonoidal.toMonoidal_toLaxMonoidal, map_comp, Category.assoc]
+    change (λ_ ((L' ⋙ F).obj _)).hom = _
+    rw [Functor.LaxMonoidal.left_unitality (L' ⋙ F)]
+    stop
+    simp?
+    -- simp only [Functor.comp_obj, Functor.comp_map, whiskeringRight_obj_obj, curriedTensor_obj_obj,
+    --   Functor.LaxMonoidal.left_unitality, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal]
+    slice_rhs 2 4 =>
+      rw [← MonoidalCategory.tensorHom_id, ← Functor.map_id]
+      change _ ≫ ((μNatIso L W ε F).hom.app unit).app _
+      rw [μNatIso_naturality]
+    rw [μNatIso_hom_app_app']
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, Functor.comp_obj,
+      whiskeringRight_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
+      MonoidalCategory.tensorHom_id, Category.assoc, ← Functor.map_comp]
+    congr
+    rw [← Functor.LaxMonoidal.left_unitality L', leftUnitor_hom_app]
+    simp only [ε', hom_inv_whiskerRight_assoc]
+    change _ = _ ≫ Functor.LaxMonoidal.μ L' _ _ ≫ _
+    simp
+    change _ = _ ≫ _ ≫ ((μNatIso L W ε F).hom.app unit).app _ ≫ _ ≫ _
+    have : Functor.LaxMonoidal.ε L' = ε.inv := rfl
+
+  · sorry
 
 /--
 Variant of `μNatIso_hom_app_app` where the notation `L'` in the first argument is replaced by `L`
