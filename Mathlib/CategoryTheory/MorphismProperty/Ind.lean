@@ -91,7 +91,7 @@ lemma ind_iff_ind_underMk {X Y : C} (f : X ⟶ Y) :
 lemma underObj_ind_eq_ind_underObj (X : C) :
     underObj (ind.{w} P) (X := X) = ObjectProperty.ind.{w} P.underObj := by
   ext f
-  simp [underObj, show f = CategoryTheory.Under.mk f.hom from rfl, ind_iff_ind_under_mk]
+  simp [underObj, show f = CategoryTheory.Under.mk f.hom from rfl, ind_iff_ind_underMk]
 
 variable (Q : MorphismProperty C)
 
@@ -116,7 +116,7 @@ lemma ind_underObj_pushout {X Y : C} (g : X ⟶ Y) [HasPushouts C] [P.IsStableUn
 
 instance [P.IsStableUnderCobaseChange] [HasPushouts C] : P.ind.IsStableUnderCobaseChange := by
   refine .mk' fun A B A' f g _ hf ↦ ?_
-  rw [ind_iff_ind_under_mk] at hf ⊢
+  rw [ind_iff_ind_underMk] at hf ⊢
   exact ind_underObj_pushout g hf
 
 /-- `ind` is idempotent if `P` implies finitely presentable. -/
@@ -124,7 +124,7 @@ lemma ind_ind (hp : P ≤ isFinitelyPresentable.{w} C) [LocallySmall.{w} C] :
     ind.{w} (ind.{w} P) = ind.{w} P := by
   refine le_antisymm (fun X Y f hf ↦ ?_) P.ind.le_ind
   have : P.underObj ≤ ObjectProperty.isFinitelyPresentable.{w} (Under X) := fun f hf ↦ hp _ hf
-  simpa [ind_iff_ind_under_mk, underObj_ind_eq_ind_underObj,
+  simpa [ind_iff_ind_underMk, underObj_ind_eq_ind_underObj,
     ObjectProperty.ind_ind.{w} this] using hf
 
 end CategoryTheory.MorphismProperty
