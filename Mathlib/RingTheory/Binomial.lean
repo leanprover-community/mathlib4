@@ -72,7 +72,7 @@ class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
   -- This field of `IsAddTorsionFree` has been inlined, to avoid creating
   -- `BinomialRing.toIsAddTorsionFree` as a global instance.
   /-- Binomial rings are torsion free. -/
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : R ↦ n • a
+  [toIsAddTorsionFree : IsAddTorsionFree R]
   /-- A multichoose function, giving the quotient of Pochhammer evaluations by factorials. -/
   multichoose : R → ℕ → R
   /-- The `n`th ascending Pochhammer polynomial evaluated at any element is divisible by `n!` -/
