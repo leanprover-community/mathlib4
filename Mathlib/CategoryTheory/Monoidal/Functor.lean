@@ -50,6 +50,60 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 namespace Functor
 
+section bitrifunctors -- todo: move
+
+/-- The bifunctor `(F -) ⊗ -`. -/
+@[simps!]
+def curriedTensorInsertFunctor₁ (F : C ⥤ D) : C ⥤ D ⥤ D :=
+  (((whiskeringLeft₂ _).obj F).obj (𝟭 D)).obj (curriedTensor D)
+
+/-- The bifunctor `- ⊗ (F -)`. -/
+@[simps!]
+def curriedTensorInsertFunctor₂ (F : C ⥤ D) : D ⥤ C ⥤ D :=
+  (((whiskeringLeft₂ _).obj (𝟭 D)).obj F).obj (curriedTensor D)
+
+/-- The bifunctor `F - ⊗ F -`. -/
+@[simps!]
+def curriedTensorPre (F : C ⥤ D) : C ⥤ C ⥤ D :=
+  (whiskeringLeft₂ _).obj F |>.obj F |>.obj (curriedTensor D)
+
+/-- The bifunctor `F (- ⊗ -)`. -/
+@[simps!]
+def curriedTensorPost (F : C ⥤ D) : C ⥤ C ⥤ D :=
+  (Functor.postcompose₂.obj F).obj (curriedTensor C)
+
+/-- The trifunctor `(F - ⊗ F -) ⊗ F -`. -/
+@[simps!]
+def curriedTensorPrePre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₁₂ (curriedTensorPre F) (curriedTensorInsertFunctor₂ F)
+
+/-- The trifunctor `F - ⊗ (F - ⊗ F -)`. -/
+@[simps!]
+def curriedTensorPrePre' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₂₃ (curriedTensorInsertFunctor₁ F) (curriedTensorPre F)
+
+/-- The trifunctor `F (- ⊗ -) ⊗ F -`. -/
+@[simps!]
+def curriedTensorPostPre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₁₂ (curriedTensor C) (curriedTensorPre F)
+
+/-- The trifunctor `F - ⊗ F (- ⊗ -)`. -/
+@[simps!]
+def curriedTensorPrePost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₂₃ (curriedTensorPre F) (curriedTensor C)
+
+/-- The trifunctor `F ((- ⊗ -) ⊗ -)` -/
+@[simps!]
+def curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₁₂ (curriedTensor C) (curriedTensorPost F)
+
+/-- The trifunctor `F (- ⊗ (- ⊗ -))` -/
+@[simps!]
+def curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
+
+end bitrifunctors
+
 -- The direction of `left_unitality` and `right_unitality` as simp lemmas may look strange:
 -- remember the rule of thumb that component indices of natural transformations
 -- "weigh more" than structural maps.
@@ -199,62 +253,12 @@ def ofTensorHom : F.LaxMonoidal where
 
 end
 
-section
-
-/-- The bifunctor `(F -) ⊗ -`. -/
-@[simps!]
-def curriedTensorInsertFunctor₁ (F : C ⥤ D) : C ⥤ D ⥤ D :=
-  (((whiskeringLeft₂ _).obj F).obj (𝟭 D)).obj (curriedTensor D)
-
-/-- The bifunctor `- ⊗ (F -)`. -/
-@[simps!]
-def curriedTensorInsertFunctor₂ (F : C ⥤ D) : D ⥤ C ⥤ D :=
-  (((whiskeringLeft₂ _).obj (𝟭 D)).obj F).obj (curriedTensor D)
-
-/-- The bifunctor `F - ⊗ F -`. -/
-@[simps!]
-def curriedTensorPre (F : C ⥤ D) : C ⥤ C ⥤ D :=
-  (whiskeringLeft₂ _).obj F |>.obj F |>.obj (curriedTensor D)
-
-/-- The bifunctor `F (- ⊗ -)`. -/
-@[simps!]
-def curriedTensorPost (F : C ⥤ D) : C ⥤ C ⥤ D :=
-  (Functor.postcompose₂.obj F).obj (curriedTensor C)
-
-/-- The trifunctor `(F - ⊗ F -) ⊗ F -`. -/
-@[simps!]
-def curriedTensorPrePre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
-  bifunctorComp₁₂ (curriedTensorPre F) (curriedTensorInsertFunctor₂ F)
-
-/-- The trifunctor `F - ⊗ (F - ⊗ F -)`. -/
-@[simps!]
-def curriedTensorPrePre' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
-  bifunctorComp₂₃ (curriedTensorInsertFunctor₁ F) (curriedTensorPre F)
-
-/-- The trifunctor `F (- ⊗ -) ⊗ F -`. -/
-@[simps!]
-def curriedTensorPostPre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
-  bifunctorComp₁₂ (curriedTensor C) (curriedTensorPre F)
-
-/-- The trifunctor `F - ⊗ F (- ⊗ -)`. -/
-@[simps!]
-def curriedTensorPrePost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
-  bifunctorComp₂₃ (curriedTensorPre F) (curriedTensor C)
-
-/-- The trifunctor `F ((- ⊗ -) ⊗ -)` -/
-@[simps!]
-def curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
-  bifunctorComp₁₂ (curriedTensor C) (curriedTensorPost F)
-
-/-- The trifunctor `F (- ⊗ (- ⊗ -))` -/
-@[simps!]
-def curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
-  bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
+section Bifunctor
 
 @[simps!]
 def firstMap₁ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
     curriedTensorPrePre F ⟶ curriedTensorPostPre F :=
-  (bifunctorComp₁₂Functor.map μ).app _
+  (bifunctorComp₁₂Functor.map μ).app F.curriedTensorInsertFunctor₂
 
 @[simps!]
 def firstMap₂ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
@@ -339,7 +343,7 @@ def ofBifunctor : F.LaxMonoidal where
   left_unitality X := NatTrans.congr_app left_unitality X
   right_unitality X := NatTrans.congr_app right_unitality X
 
-end
+end Bifunctor
 
 @[simps]
 instance id : (𝟭 C).LaxMonoidal where
@@ -491,6 +495,98 @@ instance comp : (F ⋙ G).OplaxMonoidal where
       assoc, assoc, MonoidalCategory.whiskerLeft_comp, δ_natural_right_assoc]
 
 end
+
+section Bifunctor
+
+@[simps!]
+def firstMap₁ {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    curriedTensorPostPost F ⟶ curriedTensorPostPre F :=
+  (bifunctorComp₁₂Functor.obj (curriedTensor C)).map δ
+
+@[simps!]
+def firstMap₂ {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    (curriedTensorPostPre F) ⟶ curriedTensorPrePre F :=
+  (bifunctorComp₁₂Functor.map δ).app F.curriedTensorInsertFunctor₂
+
+@[simps!]
+def firstMap₃ (F : C ⥤ D) : curriedTensorPrePre F ⟶ curriedTensorPrePre' F :=
+  ((((whiskeringLeft₃ D).obj F).obj F).obj F).map (curriedAssociatorNatIso D).hom
+
+@[simps!]
+def firstMap {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    curriedTensorPostPost F ⟶ curriedTensorPrePre' F :=
+  firstMap₁ δ ≫ firstMap₂ δ ≫ firstMap₃ F
+
+@[simps!]
+def secondMap₁ (F : C ⥤ D) : curriedTensorPostPost F ⟶ curriedTensorPostPost' F :=
+  (postcompose₃.obj _).map (curriedAssociatorNatIso _).hom
+
+@[simps!]
+def secondMap₂ {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    curriedTensorPostPost' F ⟶ curriedTensorPrePost F :=
+  (bifunctorComp₂₃Functor.map δ).app _
+
+@[simps!]
+def secondMap₃ {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    curriedTensorPrePost F ⟶ curriedTensorPrePre' F :=
+  (bifunctorComp₂₃Functor.obj F.curriedTensorInsertFunctor₁).map δ
+
+@[simps!]
+def secondMap {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    curriedTensorPostPost F ⟶ curriedTensorPrePre' F :=
+  secondMap₁ F ≫ secondMap₂ δ ≫ secondMap₃ δ
+
+@[simps!]
+def leftMapₗ (F : C ⥤ D) : F ⟶ F ⋙ tensorUnitLeft D :=
+  whiskerLeft F (leftUnitorNatIso D).inv
+
+@[simps!]
+def topMapₗ (F : C ⥤ D) : F ⟶ (curriedTensor C).obj (𝟙_ C) ⋙ F :=
+  whiskerRight (leftUnitorNatIso C).inv F
+
+@[simps!]
+def bottomMapₗ {F : C ⥤ D} (η : F.obj (𝟙_ C) ⟶ 𝟙_ D) :
+    (curriedTensorPre F).obj (𝟙_ C) ⟶ F ⋙ tensorUnitLeft D :=
+  whiskerLeft F ((curriedTensor _).map η)
+
+@[simps!]
+def leftMapᵣ (F : C ⥤ D) : F ⟶ F ⋙ tensorUnitRight D :=
+  whiskerLeft F (rightUnitorNatIso D).inv
+
+@[simps!]
+def topMapᵣ (F : C ⥤ D) : F ⟶ (curriedTensor C).flip.obj (𝟙_ C) ⋙ F :=
+  whiskerRight (rightUnitorNatIso C).inv F
+
+def rightMapᵣ {F : C ⥤ D} (δ : curriedTensorPost F ⟶ curriedTensorPre F) :
+    (curriedTensor C).flip.obj (𝟙_ C) ⋙ F ⟶ (curriedTensorPre F).flip.obj (𝟙_ C) :=
+  ((flipFunctor _ _ _).map δ).app (𝟙_ C)
+
+@[simps!]
+def bottomMapᵣ {F : C ⥤ D} (η : F.obj (𝟙_ C) ⟶ 𝟙_ D) :
+    (curriedTensorPre F).flip.obj (𝟙_ C) ⟶ F ⋙ tensorUnitRight D :=
+  whiskerLeft F ((curriedTensor _).flip.map η)
+
+variable {F : C ⥤ D}
+    /- unit morphism -/
+    (η : F.obj (𝟙_ C) ⟶ 𝟙_ D)
+    /- tensorator as a morphism of bifunctors -/
+    (δ : curriedTensorPost F ⟶ curriedTensorPre F)
+    (associativity : firstMap δ = secondMap δ)
+    (left_unitality : leftMapₗ F = topMapₗ F ≫ δ.app (𝟙_ C) ≫ bottomMapₗ η)
+    (right_unitality : leftMapᵣ F =
+      topMapᵣ F ≫ ((flipFunctor _ _ _).map δ).app (𝟙_ C) ≫ bottomMapᵣ η)
+
+def ofBifunctor : F.OplaxMonoidal where
+  η := η
+  δ X Y := (δ.app X).app Y
+  δ_natural_left f X := (NatTrans.congr_app (δ.naturality f) X).symm
+  δ_natural_right X f := ((δ.app X).naturality f).symm
+  oplax_associativity X Y Z :=
+    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app associativity X) Y) Z
+  oplax_left_unitality X := NatTrans.congr_app left_unitality X
+  oplax_right_unitality X := NatTrans.congr_app right_unitality X
+
+end Bifunctor
 
 end OplaxMonoidal
 
