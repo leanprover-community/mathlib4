@@ -199,6 +199,148 @@ def ofTensorHom : F.LaxMonoidal where
 
 end
 
+section
+
+/-- The bifunctor `(F -) ⊗ -`. -/
+@[simps!]
+def curriedTensorInsertFunctor₁ (F : C ⥤ D) : C ⥤ D ⥤ D :=
+  (((whiskeringLeft₂ _).obj F).obj (𝟭 D)).obj (curriedTensor D)
+
+/-- The bifunctor `- ⊗ (F -)`. -/
+@[simps!]
+def curriedTensorInsertFunctor₂ (F : C ⥤ D) : D ⥤ C ⥤ D :=
+  (((whiskeringLeft₂ _).obj (𝟭 D)).obj F).obj (curriedTensor D)
+
+/-- The bifunctor `F - ⊗ F -`. -/
+@[simps!]
+def curriedTensorPre (F : C ⥤ D) : C ⥤ C ⥤ D :=
+  (whiskeringLeft₂ _).obj F |>.obj F |>.obj (curriedTensor D)
+
+/-- The bifunctor `F (- ⊗ -)`. -/
+@[simps!]
+def curriedTensorPost (F : C ⥤ D) : C ⥤ C ⥤ D :=
+  (Functor.postcompose₂.obj F).obj (curriedTensor C)
+
+/-- The trifunctor `(F - ⊗ F -) ⊗ F -`. -/
+@[simps!]
+def curriedTensorPrePre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₁₂ (curriedTensorPre F) (curriedTensorInsertFunctor₂ F)
+
+/-- The trifunctor `F - ⊗ (F - ⊗ F -)`. -/
+@[simps!]
+def curriedTensorPrePre' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₂₃ (curriedTensorInsertFunctor₁ F) (curriedTensorPre F)
+
+/-- The trifunctor `F (- ⊗ -) ⊗ F -`. -/
+@[simps!]
+def curriedTensorPostPre (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₁₂ (curriedTensor C) (curriedTensorPre F)
+
+/-- The trifunctor `F - ⊗ F (- ⊗ -)`. -/
+@[simps!]
+def curriedTensorPrePost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₂₃ (curriedTensorPre F) (curriedTensor C)
+
+/-- The trifunctor `F ((- ⊗ -) ⊗ -)` -/
+@[simps!]
+def curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₁₂ (curriedTensor C) (curriedTensorPost F)
+
+/-- The trifunctor `F (- ⊗ (- ⊗ -))` -/
+@[simps!]
+def curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
+  bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
+
+@[simps!]
+def firstMap₁ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    curriedTensorPrePre F ⟶ curriedTensorPostPre F :=
+  (bifunctorComp₁₂Functor.map μ).app _
+
+@[simps!]
+def firstMap₂ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    (curriedTensorPostPre F) ⟶ curriedTensorPostPost F :=
+  (bifunctorComp₁₂Functor.obj _).map μ
+
+@[simps!]
+def firstMap₃ (F : C ⥤ D) : curriedTensorPostPost F ⟶ curriedTensorPostPost' F :=
+  (postcompose₃.obj _).map (curriedAssociatorNatIso _).hom
+
+@[simps!]
+def firstMap {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    curriedTensorPrePre F ⟶ curriedTensorPostPost' F :=
+  firstMap₁ μ ≫ firstMap₂ μ ≫ firstMap₃ F
+
+@[simps!]
+def secondMap₁ (F : C ⥤ D) : curriedTensorPrePre F ⟶ curriedTensorPrePre' F :=
+  ((((whiskeringLeft₃ D).obj F).obj F).obj F).map (curriedAssociatorNatIso D).hom
+
+@[simps!]
+def secondMap₂ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    curriedTensorPrePre' F ⟶ curriedTensorPrePost F :=
+  (bifunctorComp₂₃Functor.obj _).map μ
+
+@[simps!]
+def secondMap₃ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    curriedTensorPrePost F ⟶ curriedTensorPostPost' F :=
+  (bifunctorComp₂₃Functor.map μ).app _
+
+@[simps!]
+def secondMap {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    curriedTensorPrePre F ⟶ curriedTensorPostPost' F :=
+  secondMap₁ F ≫ secondMap₂ μ ≫ secondMap₃ μ
+
+@[simps!]
+def leftMapₗ (F : C ⥤ D) : F ⋙ tensorUnitLeft D ⟶ F :=
+  whiskerLeft F (leftUnitorNatIso D).hom
+
+@[simps!]
+def topMapₗ {F : C ⥤ D} (ε : 𝟙_ D ⟶ F.obj (𝟙_ C)) :
+    F ⋙ tensorUnitLeft D ⟶ (curriedTensorPre F).obj (𝟙_ C) :=
+  whiskerLeft F ((curriedTensor _).map ε )
+
+@[simps!]
+def bottomMapₗ (F : C ⥤ D) : (curriedTensor C).obj (𝟙_ C) ⋙ F ⟶ F :=
+  whiskerRight (leftUnitorNatIso C).hom F
+
+@[simps!]
+def leftMapᵣ (F : C ⥤ D) : F ⋙ tensorUnitRight D ⟶ F :=
+  whiskerLeft F (rightUnitorNatIso D).hom
+
+@[simps!]
+def topMapᵣ {F : C ⥤ D} (ε : 𝟙_ D ⟶ F.obj (𝟙_ C)) :
+    F ⋙ tensorUnitRight D ⟶ (curriedTensorPre F).flip.obj (𝟙_ C) :=
+  whiskerLeft F ((curriedTensor _).flip.map ε)
+
+def rightMapᵣ {F : C ⥤ D} (μ : curriedTensorPre F ⟶ curriedTensorPost F) :
+    (curriedTensorPre F).flip.obj (𝟙_ C) ⟶ (curriedTensor C).flip.obj (𝟙_ C) ⋙ F :=
+  ((flipFunctor _ _ _).map μ).app (𝟙_ C)
+
+@[simps!]
+def bottomMapᵣ (F : C ⥤ D) : (curriedTensor C).flip.obj (𝟙_ C) ⋙ F ⟶ F :=
+  whiskerRight (rightUnitorNatIso C).hom F
+
+variable {F : C ⥤ D}
+    /- unit morphism -/
+    (ε : 𝟙_ D ⟶ F.obj (𝟙_ C))
+    /- tensorator as a morphism of bifunctors -/
+    (μ : curriedTensorPre F ⟶ curriedTensorPost F)
+    (associativity : firstMap μ = secondMap μ)
+    (left_unitality : leftMapₗ F = topMapₗ ε ≫ μ.app (𝟙_ C) ≫ bottomMapₗ F)
+    (right_unitality : leftMapᵣ F =
+      topMapᵣ ε ≫ ((flipFunctor _ _ _).map μ).app (𝟙_ C) ≫ bottomMapᵣ F)
+
+def ofBifunctor : F.LaxMonoidal where
+  ε := ε
+  μ X Y := (μ.app X).app Y
+  μ_natural_left f X := NatTrans.congr_app (μ.naturality f) X
+  μ_natural_right X f := (μ.app X).naturality f
+  associativity X Y Z :=
+    NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app associativity X) Y) Z
+  left_unitality X := NatTrans.congr_app left_unitality X
+  right_unitality X := NatTrans.congr_app right_unitality X
+
+end
+
 @[simps]
 instance id : (𝟭 C).LaxMonoidal where
   ε := 𝟙 _
