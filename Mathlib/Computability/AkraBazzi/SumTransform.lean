@@ -18,10 +18,6 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `smoothingFn`: the smoothing function `ε(x) = 1 / log x` (with derivative/asymptotic
-  facts) used in the inductive estimates.
-* `p`: the Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
-  (existence/uniqueness and related properties).
 * `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
   It roughly states that
   `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
