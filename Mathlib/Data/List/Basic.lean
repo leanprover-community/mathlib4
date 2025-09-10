@@ -57,7 +57,10 @@ theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a
 /-! ### mem -/
 
 theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
-    {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by grind
+    {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by
+  by_cases hab : a = b
+  · exact Or.inl hab
+  · exact ((List.mem_cons.1 h).elim Or.inl (fun h => Or.inr ⟨hab, h⟩))
 
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
