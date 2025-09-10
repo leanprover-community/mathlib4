@@ -133,7 +133,7 @@ def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
   toFun i := i.1 - k
   invFun j := ⟨j + k, by simp⟩
   left_inv j := by
-    rw [Subtype.ext_iff_val]
+    rw [Subtype.ext_iff]
     apply Nat.sub_add_cancel
     simpa using j.2
   right_inv _ := Nat.add_sub_cancel_right _ _

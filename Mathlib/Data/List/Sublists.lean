@@ -366,10 +366,8 @@ theorem revzip_sublists (l l₁ l₂ : List α) (h : (l₁, l₂) ∈ revzip l.s
   rw [revzip] at h
   induction l using List.reverseRecOn generalizing l₁ l₂ with
   | nil =>
-    simp? at h says
-      simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
-        mem_cons, Prod.mk.injEq, not_mem_nil, or_false] at h
-    simp [h]
+    have : l₁ = [] ∧ l₂ = [] := by simpa using h
+    simp [this]
   | append_singleton l' a ih =>
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *
