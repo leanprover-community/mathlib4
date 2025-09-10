@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
@@ -62,6 +63,16 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
     rw [eq_intCast, eq_intCast, Int.cast_inj]
     rintro rfl
     use 1
+
+/-- As a corollary, `Rat` is also a localization at only positive integers. -/
+instance : IsLocalization (Submonoid.pos ℤ) ℚ where
+  map_units' y := by simpa using y.prop.ne'
+  surj' z := by
+    obtain ⟨⟨x1, x2⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors ℤ) z
+    obtain hx2 | hx2 := lt_or_gt_of_ne (show x2.val ≠ 0 by simp)
+    · exact ⟨⟨-x1, ⟨-x2.val, by simpa using hx2⟩⟩, by simpa using hx⟩
+    · exact ⟨⟨x1, ⟨x2.val, hx2⟩⟩, hx⟩
+  exists_of_eq {x y} h := ⟨1, by simpa using Rat.intCast_inj.mp h⟩
 
 namespace IsFractionRing
 
@@ -155,7 +166,7 @@ noncomputable abbrev toField : Field K where
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
-      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField _ (IsFractionRing.toField R).toIsField
+      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
   mpr h :=
     letI := h.toField
     (IsLocalization.atUnits R _ (S := K)
@@ -326,16 +337,10 @@ fraction rings `K ≃+* L`. -/
 noncomputable def ringEquivOfRingEquiv : K ≃+* L :=
   IsLocalization.ringEquivOfRingEquiv K L h (MulEquivClass.map_nonZeroDivisors h)
 
-@[deprecated (since := "2024-11-05")]
-alias fieldEquivOfRingEquiv := ringEquivOfRingEquiv
-
 @[simp]
 lemma ringEquivOfRingEquiv_algebraMap
     (a : A) : ringEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
   simp [ringEquivOfRingEquiv]
-
-@[deprecated (since := "2024-11-05")]
-alias fieldEquivOfRingEquiv_algebraMap := ringEquivOfRingEquiv_algebraMap
 
 @[simp]
 lemma ringEquivOfRingEquiv_symm :
@@ -481,9 +486,6 @@ theorem FaithfulSMul.of_field_isFractionRing (K L : Type*) [Field K] [Semiring L
   (faithfulSMul_iff_algebraMap_injective R S).mpr <|
     algebraMap_injective_of_field_isFractionRing R S K L
 
-@[deprecated (since := "2025-01-31")]
-alias NoZeroSMulDivisors.of_field_isFractionRing := FaithfulSMul.of_field_isFractionRing
-
 end algebraMap_injective
 
 variable (A)
@@ -559,5 +561,20 @@ instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := b
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
     (FaithfulSMul.algebraMap_injective R A)
+
+section IsScalarTower
+
+attribute [local instance] liftAlgebra
+
+instance (B C : Type*) [CommRing B] [IsDomain B] [CommRing C] [IsDomain C] [Algebra A B]
+    [Algebra A C] [Algebra B C] [NoZeroSMulDivisors A B] [NoZeroSMulDivisors A C]
+    [NoZeroSMulDivisors B C] [IsScalarTower A B C] :
+    IsScalarTower (FractionRing A) (FractionRing B) (FractionRing C) where
+  smul_assoc a b c := a.ind fun ⟨a₁, a₂⟩ ↦ by
+    rw [← smul_right_inj (nonZeroDivisors.coe_ne_zero a₂)]
+    simp_rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, Localization.mk_eq_mk',
+      IsLocalization.mk'_mul_cancel_left, algebraMap_smul, smul_assoc]
+
+end IsScalarTower
 
 end FractionRing

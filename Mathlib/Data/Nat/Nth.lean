@@ -9,7 +9,6 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Data.Finset.Sort
 
 /-!

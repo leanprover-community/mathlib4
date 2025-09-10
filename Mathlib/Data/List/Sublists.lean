@@ -51,7 +51,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
   rw [← List.foldr_hom Array.toList]
-  · intros _ _; congr
+  · intros; congr
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
@@ -122,7 +122,7 @@ theorem sublistsAux_eq_flatMap :
   · rw [sublistsAux_eq_flatMap, sublists]
   · simp only [sublistsFast, sublistsAux_eq_array_foldl]
     rw [← foldr_hom Array.toList]
-    · intros _ _; congr
+    · intros; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
@@ -362,10 +362,8 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
   · intro l₁ l₂ h
-    simp? at h says
-      simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
-        mem_cons, Prod.mk.injEq, not_mem_nil, or_false] at h
-    simp [h]
+    have : l₁ = [] ∧ l₂ = [] := by simpa using h
+    simp [this]
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *

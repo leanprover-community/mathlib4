@@ -46,11 +46,11 @@ instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivis
         (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
 
 instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsRightCancelMulZero αᵐᵒᵖ where
-  mul_right_cancel_of_ne_zero h eq := unop_injective <|
+  mul_right_cancel_of_ne_zero h _ _ eq := unop_injective <|
     mul_left_cancel₀ (unop_injective.ne_iff.mpr h) (congr_arg unop eq)
 
 instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsLeftCancelMulZero αᵐᵒᵖ where
-  mul_left_cancel_of_ne_zero h eq := unop_injective <|
+  mul_left_cancel_of_ne_zero h _ _ eq := unop_injective <|
     mul_right_cancel₀ (unop_injective.ne_iff.mpr h) (congr_arg unop eq)
 
 instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵐᵒᵖ where

@@ -227,7 +227,7 @@ section Block
 /-! #### General 2×2 block matrices -/
 
 
-/-- A block matrix is invertible if the bottom right corner and the corresponding schur complement
+/-- A block matrix is invertible if the bottom right corner and the corresponding Schur complement
 is. -/
 def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟D * C)] :
@@ -254,7 +254,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
       Matrix.mul_assoc, add_comm (⅟D)]
 
-/-- A block matrix is invertible if the top left corner and the corresponding schur complement
+/-- A block matrix is invertible if the top left corner and the corresponding Schur complement
 is. -/
 def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟A * B)] :
@@ -337,7 +337,7 @@ def invertibleEquivFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m 
   right_inv _i_schur := Subsingleton.elim _ _
 
 /-- If the bottom-left element of a block matrix is invertible, then the whole matrix is invertible
-iff the corresponding schur complement is. -/
+iff the corresponding Schur complement is. -/
 theorem isUnit_fromBlocks_iff_of_invertible₂₂ {A : Matrix m m α} {B : Matrix m n α}
     {C : Matrix n m α} {D : Matrix n n α} [Invertible D] :
     IsUnit (fromBlocks A B C D) ↔ IsUnit (A - B * ⅟D * C) := by
@@ -345,7 +345,7 @@ theorem isUnit_fromBlocks_iff_of_invertible₂₂ {A : Matrix m m α} {B : Matri
     (invertibleEquivFromBlocks₂₂Invertible A B C D).nonempty_congr]
 
 /-- If the top-right element of a block matrix is invertible, then the whole matrix is invertible
-iff the corresponding schur complement is. -/
+iff the corresponding Schur complement is. -/
 theorem isUnit_fromBlocks_iff_of_invertible₁₁ {A : Matrix m m α} {B : Matrix m n α}
     {C : Matrix n m α} {D : Matrix n n α} [Invertible A] :
     IsUnit (fromBlocks A B C D) ↔ IsUnit (D - C * ⅟A * B) := by

@@ -22,9 +22,8 @@ assert_not_exists Polynomial
 
 universe uR uS uA uB
 
-open Pointwise
-
-open Submodule Subsemiring
+open Module Submodule Subsemiring
+open scoped Pointwise
 
 variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 
@@ -85,11 +84,7 @@ theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adj
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
   · change adjoin R s ≤ (adjoin S s).restrictScalars R
-    refine adjoin_le ?_
-    -- Porting note: unclear why this was broken
-    have : (Subalgebra.restrictScalars R (adjoin S s) : Set A) = adjoin S s := rfl
-    rw [this]
-    exact subset_adjoin
+    exact adjoin_le subset_adjoin
 
 theorem Subalgebra.restrictScalars_adjoin {s : Set A} :
     (adjoin S s).restrictScalars R = (IsScalarTower.toAlgHom R S A).range ⊔ adjoin R s := by

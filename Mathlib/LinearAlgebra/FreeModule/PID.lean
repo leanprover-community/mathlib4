@@ -45,6 +45,7 @@ free module, finitely generated module, rank, structure theorem
 
 -/
 
+open Module
 
 universe u v
 
@@ -186,7 +187,6 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     contradiction
   -- We claim that `ϕ⁻¹ a = y` can be taken as basis element of `N`.
   obtain ⟨y, yN, ϕy_eq⟩ := (LinearMap.mem_submoduleImage_of_le N_le_M).mp a_mem
-  have _ϕy_ne_zero : ϕ ⟨y, N_le_M yN⟩ ≠ 0 := fun h ↦ a_zero (ϕy_eq.symm.trans h)
   -- Write `y` as `a • y'` for some `y'`.
   have hdvd : ∀ i, a ∣ b'M.coord i ⟨y, N_le_M yN⟩ := fun i ↦
     generator_maximal_submoduleImage_dvd N_le_M ϕ_max y yN ϕy_eq (b'M.coord i)
@@ -411,7 +411,7 @@ section SmithNormal
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
-structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
+structure Module.Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The basis of M. -/
   bM : Basis ι R M
   /-- The basis of N. -/
@@ -423,7 +423,7 @@ structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The SNF relation between the vectors of the bases. -/
   snf : ∀ i, (bN i : M) = a i • bM (f i)
 
-namespace Basis.SmithNormalForm
+namespace Module.Basis.SmithNormalForm
 
 variable {n : ℕ} {N : Submodule R M} (snf : Basis.SmithNormalForm N ι n) (m : N)
 
@@ -483,7 +483,7 @@ lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
   ext
   simp [snf.snf]
 
-end Basis.SmithNormalForm
+end Module.Basis.SmithNormalForm
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
@@ -635,7 +635,7 @@ is a square diagonal matrix; these are the entries of the diagonal matrix. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : ι → R :=
+    (h : Module.finrank R N = Module.finrank R M) : ι → R :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose
 
 @[simp]
