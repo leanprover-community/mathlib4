@@ -1635,6 +1635,9 @@ Q1471282:
 
 Q1472120:
   title: Hellinger&ndash;Toeplitz theorem
+  decl: LinearMap.IsSymmetric.continuous
+  authors: Moritz Doll
+  date: 2022
 
 Q1477053:
   title: Arzelà–Ascoli theorem
