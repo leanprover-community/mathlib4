@@ -1,9 +1,9 @@
-import Mathlib.Tactic.ComputeAsymptotics.Main
 import Mathlib.Data.Real.Pi.Bounds
-
-open Filter Topology Asymptotics
+import Mathlib.Tactic.ComputeAsymptotics
 
 private axiom test_sorry : ∀ {α}, α
+
+open Real Filter Topology Asymptotics
 
 example :
   let f := fun (x : ℝ) ↦ x;
@@ -507,7 +507,6 @@ example :
 end ONotation
 
 -- example from the paper. It's used in the proof of Akkra-Bazzi theorem.
-open Real in
 example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
   let f := fun (x : ℝ) ↦
     (1 - 1 / (b * (log x) ^ (1 + ε))) ^ p *
@@ -519,8 +518,6 @@ example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
   compute_asymptotics
 
 section Gruntz
-
-open Real
 
 -- 8.1
 

@@ -51,6 +51,7 @@ import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Common
+import Mathlib.Tactic.ComputeAsymptotics
 import Mathlib.Tactic.ComputeAsymptotics.Lemmas
 import Mathlib.Tactic.ComputeAsymptotics.Main
 import Mathlib.Tactic.ComputeAsymptotics.Meta.BasisM
@@ -63,7 +64,6 @@ import Mathlib.Tactic.ComputeAsymptotics.Meta.Exp
 import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Log
 import Mathlib.Tactic.ComputeAsymptotics.Meta.MS
-import Mathlib.Tactic.ComputeAsymptotics.Meta.Main
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Misc
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Normalization
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
