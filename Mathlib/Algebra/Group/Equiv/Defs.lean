@@ -432,6 +432,19 @@ def symmEquiv (P Q : Type*) [Mul P] [Mul Q] : (P ≃* Q) ≃ (Q ≃* P) where
 
 end Mul
 
+/-- `Equiv.cast (congrArg _ h)` as a `MulEquiv`.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[to_additive (attr := simps!) /-- `Equiv.cast (congrArg _ h)` as an `AddEquiv`.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/]
+protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι} (h : i = j) :
+    M i ≃* M j where
+  toEquiv := Equiv.cast (congrArg _ h)
+  map_mul' _ _ := by cases h; rfl
+
 /-!
 ## Monoids
 -/
