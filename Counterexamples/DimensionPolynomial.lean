@@ -15,8 +15,8 @@ We show that not all commutative rings `R` satisfy
 `ringKrullDim (Polynomial R) = ringKrullDim R + 1`,
 following the construction in the reference link.
 
-We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$, and show that `ringKrullDim A = 1`
-but `ringKrullDim A[X] = 3`.
+We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$ for a field $k$, and show that
+`ringKrullDim A = 1` but `ringKrullDim A[X] = 3`.
 
 ## References
 
@@ -31,6 +31,7 @@ open PowerSeries Polynomial
 
 variable (k : Type*) [Field k]
 
+/-- We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$ for a field `k`. -/
 abbrev A := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
 lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
