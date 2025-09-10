@@ -549,7 +549,7 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
-/-- Every atomic complete boolean algebra is completely atomic.
+/-- Every atomic complete Boolean algebra is completely atomic.
 
 This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
