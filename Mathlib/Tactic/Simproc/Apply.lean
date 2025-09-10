@@ -18,7 +18,7 @@ namespace Lean.Meta.Simp.Simproc
 open Elab.Tactic Mathlib.Tactic
 
 /-- Execute the given `Simproc` on the goal. -/
-def apply (s : Simproc) (debug : String) (loc : Option Location) : TacticM Unit := do
+def apply (s : Simproc) (proc : String) (loc : Option Location) : TacticM Unit := do
   let ctx ← mkContext (simpTheorems := #[])
   transformAtLocation ((·.1) <$> mainCore · ctx (methods := {post := s}))
     debug (loc.getD (.targets #[] true))
