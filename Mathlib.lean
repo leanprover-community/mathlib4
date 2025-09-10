@@ -1311,6 +1311,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.Basic
 import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
+import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
@@ -1351,6 +1352,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 import Mathlib.AlgebraicTopology.SimplicialSet.Op
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
@@ -1526,6 +1528,7 @@ import Mathlib.Analysis.Calculus.LocalExtr.LineDeriv
 import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
 import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Calculus.LogDeriv
+import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Monotone
 import Mathlib.Analysis.Calculus.ParametricIntegral
@@ -4035,6 +4038,7 @@ import Mathlib.Init
 import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Lean.Elab.Tactic.Meta
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
