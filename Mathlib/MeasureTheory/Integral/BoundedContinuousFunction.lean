@@ -115,7 +115,6 @@ noncomputable def integralFiniteMeasure (𝕜 E F : Type*) [NormedField 𝕜]
   })
   (measureUnivNNReal μ) (fun f ↦ le_trans (f.norm_integral_le_mul_norm _) le_rfl)
 
-
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
   convert f.norm_integral_le_mul_norm μ
@@ -128,9 +127,6 @@ lemma isBounded_range_integral
   obtain ⟨i, hi⟩ := hv
   rw [← hi]
   apply f.norm_integral_le_norm (μs i)
-
-
-
 
 end BochnerIntegral
 
