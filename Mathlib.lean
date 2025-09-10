@@ -4038,6 +4038,7 @@ import Mathlib.Init
 import Mathlib.Lean.ContextInfo
 import Mathlib.Lean.CoreM
 import Mathlib.Lean.Elab.Tactic.Basic
+import Mathlib.Lean.Elab.Tactic.Meta
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Exception
