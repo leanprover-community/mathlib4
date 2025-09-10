@@ -83,10 +83,13 @@ class BinomialRing (R : Type*) [AddCommMonoid R] [Pow R ℕ] where
 The parent projection to `IsAddTorsionFree`,
 defined separately so we can make it a local instance.
 -/
-def BinomialRing.toIsAddTorsionFree (R : Type*) [AddCommMonoid R] [Pow R ℕ] [BinomialRing R] :
+theorem BinomialRing.toIsAddTorsionFree (R : Type*) [AddCommMonoid R] [Pow R ℕ] [BinomialRing R] :
     IsAddTorsionFree R :=
   { nsmul_right_injective := BinomialRing.nsmul_right_injective }
 
+-- This is only a local instance as it otherwise causes significant slow downs
+-- to every call to `grind` involving a ring. Please do not make it a global instance.
+-- (~1500 heartbeats measured on `nightly-testing-2025-09-09`.)
 attribute [local instance] BinomialRing.toIsAddTorsionFree
 
 section Multichoose
