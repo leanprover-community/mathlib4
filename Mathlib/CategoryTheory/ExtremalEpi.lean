@@ -62,7 +62,7 @@ lemma extremalEpi_iff_strongEpi_of_hasPullbacks [HasPullbacks C] :
     fun _ ↦ inferInstance⟩
   have := ExtremalEpi.isIso f (pullback.lift _ _ sq.w)
     (pullback.snd _ _) (by simp)
-  refine
+  exact
     { l := inv (pullback.snd i b) ≫ pullback.fst _ _
       fac_left := by
         rw [← cancel_mono i, sq.w, Category.assoc, Category.assoc]
