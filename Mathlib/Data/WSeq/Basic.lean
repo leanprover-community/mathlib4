@@ -706,7 +706,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       simp only [join_cons, nil_append, mem_think, mem_cons_iff, exists_eq_or_imp] at m ⊢
       exact IH s S rfl m
     · apply Or.inr
-      simp? at m says simp only [join_think, nil_append, mem_think] at m
+      replace m : a ∈ S.join := by simpa using m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (notMem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
     · simp only [think_append, mem_think] at m IH ⊢
