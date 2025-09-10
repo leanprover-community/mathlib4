@@ -539,9 +539,12 @@ theorem preBeth_lt_preBeth {o₁ o₂ : Ordinal} : preBeth o₁ < preBeth o₂ �
 theorem preBeth_le_preBeth {o₁ o₂ : Ordinal} : preBeth o₁ ≤ preBeth o₂ ↔ o₁ ≤ o₂ :=
   preBeth_strictMono.le_iff_le
 
+theorem preBeth_injective : Injective preBeth :=
+  preBeth_strictMono.injective
+
 @[simp]
 theorem preBeth_inj {o₁ o₂ : Ordinal} : preBeth o₁ = preBeth o₂ ↔ o₁ = o₂ :=
-  preBeth_strictMono.injective.eq_iff
+  preBeth_injective.eq_iff
 
 @[simp]
 theorem preBeth_zero : preBeth 0 = 0 := by
@@ -592,8 +595,8 @@ theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
 
 @[simp]
-theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
-  simpa using preBeth_inj (o₂ := 0)
+theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 :=
+  preBeth_injective.eq_iff' preBeth_zero
 
 theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSuccLimit o := by
   by_cases H : IsSuccLimit o
