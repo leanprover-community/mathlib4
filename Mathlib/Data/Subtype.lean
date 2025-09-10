@@ -60,9 +60,11 @@ lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : 
   subst h'
   rw [heq_iff_eq, heq_iff_eq, Subtype.ext_iff]
 
+@[deprecated Subtype.ext (since := "2025-09-10")]
 theorem ext_val {a1 a2 : { x // p x }} : a1.1 = a2.1 → a1 = a2 :=
   Subtype.ext
 
+@[deprecated Subtype.ext_iff (since := "2025-09-10")]
 theorem ext_iff_val {a1 a2 : { x // p x }} : a1 = a2 ↔ a1.1 = a2.1 :=
   Subtype.ext_iff
 
