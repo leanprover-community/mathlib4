@@ -99,7 +99,7 @@ theorem self : IsSubDPIdeal hI I where
 def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)] :
     DividedPowers J where
   dpow n x        := if x ∈ J then hI.dpow n x else 0
-  dpow_null hx    := by simp [if_neg hx]
+  dpow_eq_of_notMem hx := by simp [if_neg hx]
   dpow_zero hx    := by simp [if_pos hx, hI.dpow_zero (hJ.isSubideal hx)]
   dpow_one hx     := by simp [if_pos hx, hI.dpow_one (hJ.isSubideal hx)]
   dpow_mem hn hx  := by simp [if_pos hx, hJ.dpow_mem _ hn hx]
@@ -572,7 +572,7 @@ open Ideal
   the ideal `I.map f` of the target. -/
 noncomputable def dividedPowers : DividedPowers J where
   dpow := dpow hI f
-  dpow_null n {x} hx' := by
+  dpow_eq_of_notMem n {x} hx' := by
     classical
     rw [dpow, Function.extend_def, dif_neg, Pi.zero_apply]
     rintro ⟨⟨a, ha⟩, rfl⟩

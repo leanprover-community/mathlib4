@@ -249,7 +249,7 @@ theorem dpow_eq_from_gens {S : Set A} (hS : I = span S)
       exact subset_span hs
     · intro m b hb
       simpa only [RingHom.id_apply] using (hdp b hb)
-  · rw [hI.dpow_null ha, hI'.dpow_null ha]
+  · rw [hI.dpow_eq_of_notMem ha, hI'.dpow_eq_of_notMem ha]
 
 end Uniqueness
 
