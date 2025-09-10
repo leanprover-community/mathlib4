@@ -357,7 +357,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
         exact le_sup_right
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [le_sup_iff, dist_nonneg, or_self]
-        · simp
+        · simp [-ofReal_max]
     · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
       have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
       simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
@@ -449,6 +449,15 @@ lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) := continuous_id
 @[continuity, fun_prop]
 lemma prod_continuous_ofLp : Continuous (@ofLp p (α × β)) := continuous_id
 
+/-- `WithLp.equiv` as a homeomorphism. -/
+def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
+  toEquiv := WithLp.equiv p (α × β)
+  continuous_toFun := prod_continuous_ofLp p α β
+  continuous_invFun := prod_continuous_toLp p α β
+
+@[simp]
+lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
+
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
@@ -473,6 +482,19 @@ lemma prod_uniformContinuous_toLp : UniformContinuous (@toLp p (α × β)) :=
 
 lemma prod_uniformContinuous_ofLp : UniformContinuous (@ofLp p (α × β)) :=
   uniformContinuous_id
+
+/-- `WithLp.equiv` as a uniform isomorphism. -/
+def uniformEquivProd : WithLp p (α × β) ≃ᵤ α × β where
+  toEquiv := WithLp.equiv p (α × β)
+  uniformContinuous_toFun := prod_uniformContinuous_ofLp p α β
+  uniformContinuous_invFun := prod_uniformContinuous_toLp p α β
+
+@[simp]
+lemma toHomeomorph_uniformEquivProd :
+    (uniformEquivProd p α β).toHomeomorph = homeomorphProd p α β := rfl
+
+@[simp]
+lemma toEquiv_uniformEquivProd : (uniformEquivProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
 
 variable [CompleteSpace α] [CompleteSpace β]
 
@@ -571,9 +593,17 @@ lemma prod_lipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     LipschitzWith 1 (@ofLp p (α × β)) :=
   prod_lipschitzWith_ofLp_aux p α β
 
+lemma prod_antilipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    AntilipschitzWith 1 (@toLp p (α × β)) :=
+  (prod_lipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
+
 lemma prod_antilipschitzWith_ofLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@ofLp p (α × β)) :=
   prod_antilipschitzWith_ofLp_aux p α β
+
+lemma prod_lipschitzWith_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_ofLp p α β).to_rightInverse (ofLp_toLp p)
 
 lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     Isometry (@ofLp ∞ (α × β)) :=
@@ -594,6 +624,11 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
+
+lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    IsUniformInducing (@toLp p (α × β)) :=
+  (prod_antilipschitzWith_toLp p α β).isUniformInducing
+    (prod_lipschitzWith_toLp p α β).uniformContinuous
 
 section
 variable {β p}
