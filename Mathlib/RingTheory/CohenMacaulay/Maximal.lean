@@ -141,7 +141,8 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
   rcases exist_nat_eq R with ⟨n, hn⟩
   induction' n with n ih generalizing R M
   · have : IsField R := isField_of_isRegularLocalRing_of_dimension_zero hn
-    sorry
+    let _ : Field R := this.toField
+    exact Module.Free.of_divisionRing R M
   · by_cases ntr : Nontrivial M
     · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
         by_contra! ge
