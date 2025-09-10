@@ -1126,7 +1126,7 @@ theorem comapDomain'_id [∀ i, Zero (β i)] :
 @[simp]
 theorem comapDomain'_comp [∀ i, Zero (β i)]
     (h : κ → ι) {h' : ι → κ} (hh' : Function.LeftInverse h' h)
-    (h₂ : κ' → κ) {h'₂ : κ → κ'} (hh'₂ : Function.LeftInverse h'₂ h₂):
+    (h₂ : κ' → κ) {h'₂ : κ → κ'} (hh'₂ : Function.LeftInverse h'₂ h₂) :
     comapDomain' h₂ hh'₂ ∘ comapDomain' h hh' = comapDomain' (β := β) (h ∘ h₂) (hh'.comp hh'₂) := by
   ext; rfl
 
