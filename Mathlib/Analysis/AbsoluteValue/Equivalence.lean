@@ -22,10 +22,15 @@ variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
 /-- Two absolute values `v` and `w` are *order equivalent* if `v x ≤ v y` precisely when
 `w x ≤ w y`.
 
-Note that this is equivalent to `v.IsEquiv w` when `v` and `w` are real absolute values. -/
+Note that for real absolute values this condition is equivalent to the existence of a positive
+real number `c` such that `v x ^ c = w x` for all `x`. See
+`AbsoluteValue.isEquiv_iff_exists_rpow_eq`. -/
 def IsEquiv : Prop := ∀ x y, v x ≤ v y ↔ w x ≤ w y
 
 theorem IsEquiv.refl : v.IsEquiv v := fun _ _ ↦ .rfl
+
+variable {v} in
+theorem IsEquiv.rfl : v.IsEquiv v := fun _ _ ↦ .rfl
 
 variable {v w}
 
@@ -46,36 +51,33 @@ instance : Setoid (AbsoluteValue R S) where
     trans := .trans
   }
 
+theorem IsEquiv.lt_iff_lt (h : v.IsEquiv w) {x y : R} : v x < v y ↔ w x < w y :=
+  lt_iff_lt_of_le_iff_le' (h y x) (h x y)
+
+variable [IsDomain S] [Nontrivial R]
+
+theorem IsEquiv.lt_one_iff (h : v.IsEquiv w) {x : R} :
+    v x < 1 ↔ w x < 1 := by
+  simpa only [AbsoluteValue.map_one] using h.lt_iff_lt (y := 1)
+
+theorem IsEquiv.one_lt_iff (h : v.IsEquiv w) {x : R} :
+    1 < v x ↔ 1 < w x := by
+  simpa only [AbsoluteValue.map_one] using h.lt_iff_lt (x := 1)
+
 end OrderedSemiring
 
-section LinearOrderedSemifield
+section LinearOrderedSemiring
 
-variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] {v w : AbsoluteValue R S}
+variable {R S : Type*} [Field R] [Semiring S] [LinearOrder S] [IsDomain S] {v w : AbsoluteValue R S}
 
-theorem IsEquiv.lt_iff_lt (h : v.IsEquiv w) {x y : R} : v x < v y ↔ w x < w y := by
-  rw [← le_iff_le_iff_lt_iff_lt, h]
-
-theorem IsEquiv.lt_one_iff (h : v.IsEquiv w) {x : R} : v x < 1 ↔ w x < 1 := by
-  simpa using h.lt_iff_lt (y := 1)
-
-variable [IsStrictOrderedRing S]
-
-theorem isEquiv_iff_lt_one_iff :
-    v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
-  refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
-  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
-  rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
-    ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
-  exact h _
-
-private theorem one_lt_imp_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R}
-    (hv : 1 < v x) : 1 < w x :=
-  (inv_lt_one_iff₀.1 <| map_inv₀ w _ ▸ h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left
-    fun hw ↦ not_lt.2 zero_le_one (by simpa [(map_eq_zero _).1 <| w.nonpos_iff.1 hw] using hv)
-
-theorem IsEquiv.one_lt_iff (h : v.IsEquiv w) (x : R) : 1 < v x ↔ 1 < w x :=
-  ⟨fun hv => one_lt_imp_of_lt_one_imp (fun _ => h.lt_one_iff.1) hv,
-    fun hw => one_lt_imp_of_lt_one_imp (fun _ => h.lt_one_iff.2) hw⟩
+theorem IsEquiv.isNontrivial {w : AbsoluteValue R S}
+    (h : v.IsEquiv w) (hv : w.IsNontrivial) : v.IsNontrivial := by
+  obtain ⟨x, h₀, h₁⟩ := hv
+  have hl := h.lt_one_iff (x := x)
+  have hr := h.one_lt_iff (x := x)
+  cases lt_or_lt_iff_ne.2 h₁ with
+  | inl hw => contrapose! hl; exact .inr <| by simp [hw, v.not_isNontrivial_iff.1 hl _ h₀]
+  | inr hw => contrapose! hr; exact .inr <| by simpa [v.not_isNontrivial_iff.1 hr _ h₀]
 
 private theorem IsEquiv.eq_one_imp (h : v.IsEquiv w) {x : R} (hv : v x = 1) :
     w x = 1 := by
@@ -86,13 +88,20 @@ private theorem IsEquiv.eq_one_imp (h : v.IsEquiv w) {x : R} (hv : v x = 1) :
 theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) (x : R) : v x = 1 ↔ w x = 1 :=
   ⟨fun hv => h.eq_one_imp hv, fun hw => h.symm.eq_one_imp hw⟩
 
-theorem IsEquiv.isNontrivial {w : AbsoluteValue R S}
-    (h : v.IsEquiv w) (hv : w.IsNontrivial) : v.IsNontrivial := by
-  obtain ⟨x, h₀, h₁⟩ := hv
-  cases lt_or_lt_iff_ne.2 h₁ with
-  | inl hw => exact ⟨x, h₀, h.lt_one_iff.2 hw |>.ne⟩
-  | inr hw =>
-    exact ⟨x⁻¹, inv_ne_zero h₀, h.lt_one_iff.2 (map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ hw) |>.ne⟩
+end LinearOrderedSemiring
+
+section LinearOrderedSemifield
+
+variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] {v w : AbsoluteValue R S}
+  [IsStrictOrderedRing S]
+
+theorem isEquiv_iff_lt_one_iff :
+    v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
+  refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
+  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
+  rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
+    ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
+  exact h _
 
 end LinearOrderedSemifield
 
@@ -120,7 +129,7 @@ theorem isEquiv_of_lt_one_imp [Archimedean S] [IsStrictOrderedRing S] (hv : v.Is
 /-- An absolute value is equivalent to the trivial iff it is trivial itself. -/
 @[simp]
 lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
-    [IsStrictOrderedRing S] (f : AbsoluteValue R S) :
+    [IsStrictOrderedRing S] {f : AbsoluteValue R S} :
     f.IsEquiv .trivial ↔ f = .trivial := by
   refine ⟨fun h ↦ ext fun x ↦ ?_, fun h ↦ h ▸ .refl _⟩
   rcases eq_or_ne x 0 with rfl | hx <;> try simp
@@ -147,8 +156,8 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
   by_contra! h_ne
   wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
   · exact this hb ha h_ne.symm <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
-  have hwa := (h.one_lt_iff _).1 ha
-  have hwb := (h.one_lt_iff _).1 hb
+  have hwa := h.one_lt_iff.1 ha
+  have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
     ← div_lt_div_iff₀ (log_pos ha) (log_pos hwa)] at h_lt
   let ⟨q, ⟨hq₁, hq₂⟩⟩ := exists_rat_btwn h_lt
@@ -163,12 +172,12 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
 
 open Real in
 theorem IsEquiv.exists_rpow_eq_of_one_lt {v w : AbsoluteValue F ℝ} (h : v.IsEquiv w) :
-    ∃ (t : ℝ) (_ : 0 < t), ∀ x, 1 < w x → v x ^ t = w x := by
+    ∃ t > (0 : ℝ), ∀ x, 1 < w x → v x ^ t = w x := by
   by_cases hw : w.IsNontrivial
   · let ⟨a, ha⟩ := hw.exists_abv_gt_one
-    refine ⟨(w a).log / (v a).log,
-      div_pos (log_pos ha) (log_pos ((h.symm.one_lt_iff a).1 ha)), fun b hb ↦ ?_⟩
-    have := (h.symm.one_lt_iff b).1 hb
+    refine ⟨(w a).log / (v a).log, div_pos (log_pos ha) (log_pos (h.symm.one_lt_iff.1 ha)),
+      fun b hb ↦ ?_⟩
+    have := h.symm.one_lt_iff.1 hb
     rw [← h.symm.log_div_log_eq_log_div_log ha hb, div_eq_inv_mul, rpow_mul (v.nonneg _),
       rpow_inv_log (by linarith) (by linarith), exp_one_rpow, exp_log (by linarith)]
   · refine ⟨1, zero_lt_one, fun x _ ↦ ?_⟩
