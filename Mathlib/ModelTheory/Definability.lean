@@ -19,7 +19,7 @@ This file defines what it means for a set over a first-order structure to be def
   `(s : Set M)` is definable with parameters in `A`.
 - `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
   `(s : Set (M × M))` is definable with parameters in `A`.
-- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results

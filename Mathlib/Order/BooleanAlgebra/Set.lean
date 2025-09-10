@@ -9,7 +9,7 @@ import Mathlib.Order.BooleanAlgebra.Basic
 /-!
 # Boolean algebra of sets
 
-This file proves that `Set α` is a boolean algebra, and proves results about set difference and
+This file proves that `Set α` is a Boolean algebra, and proves results about set difference and
 complement.
 
 ## Notation
@@ -369,7 +369,7 @@ lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
 
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 
--- TODO: prove this in terms of a boolean algebra lemma
+-- TODO: prove this in terms of a Boolean algebra lemma
 lemma disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
   disjoint_of_subset_right inter_subset_right disjoint_sdiff_left
 

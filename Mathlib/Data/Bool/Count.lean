@@ -7,9 +7,9 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.List.Chain
 
 /-!
-# List of booleans
+# List of Booleans
 
-In this file we prove lemmas about the number of `false`s and `true`s in a list of booleans. First
+In this file we prove lemmas about the number of `false`s and `true`s in a list of Booleans. First
 we prove that the number of `false`s plus the number of `true` equals the length of the list. Then
 we prove that in a list with alternating `true`s and `false`s, the number of `true`s differs from
 the number of `false`s by at most one. We provide several versions of these statements.

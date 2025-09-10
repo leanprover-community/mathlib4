@@ -81,7 +81,7 @@ def succ : PosNum → PosNum
   | bit1 n => bit0 (succ n)
   | bit0 n => bit1 n
 
-/-- Returns a boolean for whether the `PosNum` is `one`. -/
+/-- Returns a Boolean for whether the `PosNum` is `one`. -/
 def isOne : PosNum → Bool
   | 1 => true
   | _ => false

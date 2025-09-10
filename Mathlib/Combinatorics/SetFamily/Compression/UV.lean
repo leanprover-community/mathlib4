@@ -35,7 +35,7 @@ minimise the shadow.
 ## Notes
 
 Even though our emphasis is on `Finset α`, we define UV-compressions more generally in a generalized
-boolean algebra, so that one can use it for `Set α`.
+Boolean algebra, so that one can use it for `Set α`.
 
 ## References
 
@@ -64,7 +64,7 @@ theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
 -- The namespace is here to distinguish from other compressions.
 namespace UV
 
-/-! ### UV-compression in generalized boolean algebras -/
+/-! ### UV-compression in generalized Boolean algebras -/
 
 
 section GeneralizedBooleanAlgebra
