@@ -67,6 +67,70 @@ theorem invMonoidHom_apply (a : α) : invMonoidHom a = a⁻¹ := rfl
 
 end DivisionCommMonoid
 
+namespace OneHom
+
+/-- Given two one-preserving morphisms `f`, `g`,
+`f * g` is the one-preserving morphism sending `x` to `f x * g x`. -/
+@[to_additive /-- Given two zero-preserving morphisms `f`, `g`,
+`f + g` is the zero-preserving morphism sending `x` to `f x + g x`. -/]
+instance [One M] [MulOneClass N] : Mul (OneHom M N) where
+  mul f g :=
+    { toFun m := f m * g m
+      map_one' := by simp}
+
+@[to_additive (attr := norm_cast)]
+theorem coe_mul {M N} [One M] [MulOneClass N] (f g : OneHom M N) : ⇑(f * g) = ⇑f * ⇑g := rfl
+
+@[to_additive (attr := simp)]
+theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
+    (f * g) x = f x * g x := rfl
+
+@[to_additive]
+theorem mul_comp [One M] [One N] [MulOneClass P] (g₁ g₂ : OneHom N P) (f : OneHom M N) :
+    (g₁ * g₂).comp f = g₁.comp f * g₂.comp f := rfl
+
+/-- Given a one-preserving morphism `f`,
+`f⁻¹` is the one-preserving morphism sending `x` to `(f x)⁻¹`. -/
+@[to_additive /-- Given a zero-preserving morphism `f`,
+`-f` is the zero-preserving morphism sending `x` to `-f x`. -/]
+instance [One M] [InvOneClass N] : Inv (OneHom M N) where
+  inv f :=
+    { toFun m := (f m)⁻¹
+      map_one' := by simp}
+
+@[to_additive (attr := norm_cast)]
+theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
+    f⁻¹ x = (f x)⁻¹ := rfl
+
+@[to_additive]
+theorem inv_comp [One M] [One N] [InvOneClass P] (g : OneHom N P) (f : OneHom M N) :
+    (g⁻¹).comp f = (g.comp f)⁻¹ := rfl
+
+/-- Given two one-preserving morphisms `f`, `g`,
+`f / g` is the one-preserving morphism sending `x` to `f x / g x`. -/
+@[to_additive /-- Given two zero-preserving morphisms `f`, `g`,
+`f - g` is the additive morphism sending `x` to `f x - g x`. -/]
+instance [One M] [DivisionMonoid N] : Div (OneHom M N) where
+  div f g :=
+    { toFun m := f m / g m
+      map_one' := by simp }
+
+@[to_additive (attr := norm_cast)]
+theorem coe_div {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) : ⇑(f / g) = ⇑f / ⇑g := rfl
+
+@[to_additive (attr := simp)]
+theorem div_apply {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) (x : M) :
+    (f / g) x = f x / g x := rfl
+
+@[to_additive]
+theorem div_comp [One M] [One N] [DivisionMonoid P] (g₁ g₂ : OneHom N P) (f : OneHom M N) :
+    (g₁ / g₂).comp f = g₁.comp f / g₂.comp f := rfl
+
+end OneHom
+
 namespace MulHom
 
 /-- Given two mul morphisms `f`, `g` to a commutative semigroup, `f * g` is the mul morphism
