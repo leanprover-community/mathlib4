@@ -139,7 +139,7 @@ theorem edist_le_mul (h : LipschitzWith K f) (x y : α) : edist (f x) (f y) ≤ 
 
 theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : edist x y ≤ r) :
     edist (f x) (f y) ≤ K * r :=
-  (h x y).trans <| mul_left_mono hr
+  (h x y).trans <| mul_right_mono hr
 
 theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x y < r) :
     edist (f x) (f y) < K * r :=
@@ -164,7 +164,7 @@ protected theorem of_edist_le (h : ∀ x y, edist (f x) (f y) ≤ edist x y) : L
   fun x y => by simp only [ENNReal.coe_one, one_mul, h]
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
-  fun x y => le_trans (hf x y) <| mul_right_mono (ENNReal.coe_le_coe.2 h)
+  fun x y => le_trans (hf x y) <| mul_left_mono (ENNReal.coe_le_coe.2 h)
 
 theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
     EMetric.diam (f '' s) ≤ K * EMetric.diam s := by
@@ -219,7 +219,7 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f ∘ g) := fun x y =>
   calc
     edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
-    _ ≤ Kf * (Kg * edist x y) := mul_left_mono (hg _ _)
+    _ ≤ Kf * (Kg * edist x y) := mul_right_mono (hg _ _)
     _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
 
 theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {s : Set α}
@@ -260,8 +260,8 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
   simp only [Function.uncurry, ENNReal.coe_add, add_mul]
   apply le_trans (edist_triangle _ (f a₂ b₁) _)
   exact
-    add_le_add (le_trans (hα _ _ _) <| mul_left_mono <| le_max_left _ _)
-      (le_trans (hβ _ _ _) <| mul_left_mono <| le_max_right _ _)
+    add_le_add (le_trans (hα _ _ _) <| mul_right_mono <| le_max_left _ _)
+      (le_trans (hβ _ _ _) <| mul_right_mono <| le_max_right _ _)
 
 /-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
@@ -309,7 +309,7 @@ protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :
 theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {r : ℝ≥0∞} (hr : edist x y ≤ r) :
     edist (f x) (f y) ≤ K * r :=
-  (h hx hy).trans <| mul_left_mono hr
+  (h hx hy).trans <| mul_right_mono hr
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0∞} (hd : edist x y < d / K) : edist (f x) (f y) < d :=
@@ -337,8 +337,8 @@ theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α
   refine (edist_triangle _ (f a₂ b₁) _).trans ?_
   exact
     add_le_add
-      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| mul_left_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)
-      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| mul_left_mono <| EMetric.edist_le_diam_of_mem hb₁ hb₂)
+      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| mul_right_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)
+      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| mul_right_mono <| EMetric.edist_le_diam_of_mem hb₁ hb₂)
 
 end LipschitzOnWith
 

@@ -536,7 +536,7 @@ alias add_le_of_limit := add_le_iff_of_isSuccLimit
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) := by
   rw [isNormal_iff_strictMono_limit]
-  exact ⟨add_left_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
+  exact ⟨add_right_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
 
 theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
   (isNormal_add_right a).isSuccLimit

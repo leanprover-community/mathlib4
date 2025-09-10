@@ -87,6 +87,30 @@ instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
 
+variable [Preorder α]
+
+protected lemma mul_right_strictMono [PosMulStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
+    StrictMono (a * ·) := by
+  lift a to α using hinf
+  rintro b c hbc
+  lift b to α using hbc.ne_top
+  match c with
+  | ⊤ => simp [← coe_mul, mul_top h₀.ne']
+  | (c : α) =>
+  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  exact mul_lt_mul_of_pos_left hbc h₀
+
+protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
+    StrictMono (· * a) := by
+  lift a to α using hinf
+  rintro b c hbc
+  lift b to α using hbc.ne_top
+  match c with
+  | ⊤ => simp [← coe_mul, top_mul h₀.ne']
+  | (c : α) =>
+  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  exact mul_lt_mul_of_pos_right hbc h₀
+
 end MulZeroClass
 
 /-- `Nontrivial α` is needed here as otherwise we have `1 * ⊤ = ⊤` but also `0 * ⊤ = 0`. -/
