@@ -455,7 +455,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
     refine (IsAbsoluteValue.abv_sum norm ..).trans_eq ?_
     congr with i
-    simp [Complex.norm_pow]
+    simp [Complex.norm_pow, Complex.norm_natCast]
   _ ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
     gcongr
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
