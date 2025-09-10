@@ -56,13 +56,13 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
   obtain hn | hn := isEmpty_or_nonempty n
   · exact ⟨1, Subsingleton.elim _ _⟩
   simp_rw [funext_iff, @eq_comm _ (f _), Units.mul_inv_eq_iff_eq_mul, @eq_comm _ _ (f _ * _)]
-  obtain ⟨u, v, hu, hv⟩ : ∃ u v : n → R, u ≠ 0 ∧ v ≠ 0 := ⟨1, 1, one_ne_zero, one_ne_zero⟩
+  obtain ⟨u, v, huv⟩ : ∃ u v : n → R, vecMulVec u v ≠ 0 :=
+    ⟨1, 1, vecMulVec_ne_zero one_ne_zero one_ne_zero⟩
   obtain ⟨z, hz⟩ : ∃ z : n → R, f (vecMulVec u v) *ᵥ z ≠ 0 := by
     simp_rw [ne_eq, ← not_forall]
     suffices ¬ f (vecMulVec u v) = 0 by
       rwa [← toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff] at this
-    rw [← ne_eq, EmbeddingLike.map_ne_zero_iff]
-    exact vecMulVec_ne_zero hu hv
+    rwa [← ne_eq, EmbeddingLike.map_ne_zero_iff]
   let T := auxLinear f.toAlgHom v z
   have this A : T.toMatrix' * A = f A * T.toMatrix' :=
     toMatrix'_auxLinear_mul f.toAlgHom.toNonUnitalAlgHom v z A
