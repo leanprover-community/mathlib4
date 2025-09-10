@@ -77,18 +77,13 @@ add_decl_doc RingEquiv.toMulEquiv
 /-- `RingEquivClass F R S` states that `F` is a type of ring structure preserving equivalences.
 You should extend this class when you extend `RingEquiv`. -/
 class RingEquivClass (F R S : Type*) [Mul R] [Add R] [Mul S] [Add S] [EquivLike F R S] : Prop
-  extends MulEquivClass F R S where
-  /-- By definition, a ring isomorphism preserves the additive structure. -/
-  map_add : ∀ (f : F) (a b), f (a + b) = f a + f b
+  extends MulHomClass F R S, AddHomClass F R S
 
 namespace RingEquivClass
 
 variable [EquivLike F R S]
 
--- See note [lower instance priority]
-instance (priority := 100) toAddEquivClass [Mul R] [Add R]
-    [Mul S] [Add S] [h : RingEquivClass F R S] : AddEquivClass F R S :=
-  { h with }
+attribute [instance 100] toAddHomClass
 
 -- See note [lower instance priority]
 instance (priority := 100) toRingHomClass [NonAssocSemiring R] [NonAssocSemiring S]
@@ -852,7 +847,7 @@ namespace MulEquiv
 
 /-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
-    [MulEquivClass F R S] (f : F)
+    [MulHomClass F R S] (f : F)
     (H : ∀ x y : R, f (x + y) = f x + f y) : R ≃+* S :=
   { (f : R ≃* S).toEquiv, (f : R ≃* S), AddEquiv.mk' (f : R ≃* S).toEquiv H with }
 
@@ -862,7 +857,7 @@ namespace AddEquiv
 
 /-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
-    [AddEquivClass F R S] (f : F)
+    [AddHomClass F R S] (f : F)
     (H : ∀ x y : R, f (x * y) = f x * f y) : R ≃+* S :=
   { (f : R ≃+ S).toEquiv, (f : R ≃+ S), MulEquiv.mk' (f : R ≃+ S).toEquiv H with }
 

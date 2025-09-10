@@ -172,7 +172,7 @@ instance : EquivLike (S.Equiv S') E E' where
     exact congrFun h
 
 @[to_additive]
-instance : MulEquivClass (S.Equiv S') E E' where
+instance : MulHomClass (S.Equiv S') E E' where
   map_mul equiv := equiv.map_mul'
 
 variable (equiv : S.Equiv S')

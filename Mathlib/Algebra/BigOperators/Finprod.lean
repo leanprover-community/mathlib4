@@ -289,7 +289,7 @@ theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) =
   g.toMonoidHom.map_finprod_of_injective (EquivLike.injective g) f
 
 @[to_additive]
-theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (g : F)
+theorem MulEquivClass.map_finprod {F : Type*} [EquivLike F M N] [MulHomClass F M N] (g : F)
     (f : α → M) : g (∏ᶠ i, f i) = ∏ᶠ i, g (f i) :=
   MulEquiv.map_finprod (MulEquivClass.toMulEquiv g) f
 
@@ -383,7 +383,7 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, 
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
 @[to_additive]
-theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulHomClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
   simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
 
