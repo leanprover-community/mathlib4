@@ -515,12 +515,11 @@ def putFiles
       #["-H", "x-ms-blob-type: BlockBlob"]
     else
       #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    let out ← IO.runCurl (stderrAsErr := false) (args ++ #[
+    let args := args ++ #[
+      "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
-      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
-    if out.trim != "" then
-      IO.println s!"Output from curl:"
-      IO.println out
+      "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    discard <| monitorCurl args size "Uploaded" "speed_upload"
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
