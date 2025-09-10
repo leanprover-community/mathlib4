@@ -14,7 +14,7 @@ through any proper subobject of `Y`. In case the category has equalizers,
 we show that a morphism `p : X ⟶ Y` which does not factor through
 any proper subobject of `Y` is automatically an epimorphism, and also
 an extremal epimorphism. We also show that a strong epimorphism
-is an extremal epimorphism, and the both notions coincide when
+is an extremal epimorphism, and that both notions coincide when
 the category has pullbacks.
 
 ## References
@@ -62,7 +62,7 @@ lemma extremalEpi_iff_strongEpi_of_hasPullbacks [HasPullbacks C] :
     fun _ ↦ inferInstance⟩
   have := ExtremalEpi.isIso f (pullback.lift _ _ sq.w)
     (pullback.snd _ _) (by simp)
-  refine
+  exact
     { l := inv (pullback.snd i b) ≫ pullback.fst _ _
       fac_left := by
         rw [← cancel_mono i, sq.w, Category.assoc, Category.assoc]
