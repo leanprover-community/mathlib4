@@ -419,6 +419,7 @@ variable [F.OplaxMonoidal]
 
 open scoped Mon_Class in
 /-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
+@[simps]
 abbrev FullyFaithful.mon_Class (hF : F.FullyFaithful) (X : C) [Mon_Class (F.obj X)] :
     Mon_Class X where
   one := hF.preimage <| OplaxMonoidal.η F ≫ η[F.obj X]
@@ -456,6 +457,18 @@ faithful too. -/
 @[simps]
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
+
+open Monoidal in
+/-- The essential image of a fully faithful functor between cartesian-monoidal categories is the
+same on monoid objects as on objects. -/
+@[simp] lemma essImage_mapMon [F.Full] [F.Faithful] {M : Mon_ D} :
+    F.mapMon.essImage M ↔ F.essImage M.X where
+  mp := by rintro ⟨N, ⟨e⟩⟩; exact ⟨N.X, ⟨(Mon_.forget _).mapIso e⟩⟩
+  mpr := by
+    rintro ⟨N, ⟨e⟩⟩
+    let : Mon_Class (F.obj N) := .ofIso e.symm
+    let : Mon_Class N := (FullyFaithful.ofFullyFaithful F).mon_Class N
+    refine ⟨.mk N, ⟨Mon_.mkIso e ?_ ?_⟩⟩ <;> simp
 
 end Monoidal
 
