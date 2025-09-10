@@ -19,7 +19,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 
 ## Main definitions
 
-* `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
+* `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
 
 -/
 
