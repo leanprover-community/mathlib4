@@ -61,10 +61,7 @@ noncomputable def sigmoid (x : ℝ) := (1 + exp (-x))⁻¹
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
 @[simp]
-lemma sigmoid_zero : sigmoid 0 = (2)⁻¹ := by
-  refine inv_inj.mpr ?_
-  rw [neg_zero, exp_zero]
-  ring
+lemma sigmoid_zero : sigmoid 0 = 2⁻¹ := by norm_num [sigmoid]
 
 @[bound]
 lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := by
