@@ -129,7 +129,7 @@ end IsLocalRing
 theorem IsLocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
   IsLocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
 
-lemma Subring.isLocalRing_of_unit {R : Type*} [CommRing R] [IsLocalRing R] (S : Subring R)
+lemma Subring.isLocalRing_of_unit {R : Type*} [Ring R] [IsLocalRing R] (S : Subring R)
     (h_unit : ∀ (x : R) (hx : x ∈ S), IsUnit x → IsUnit (⟨x, hx⟩ : S)) :
     IsLocalRing S where
   isUnit_or_isUnit_of_add_one {x y} hxy :=
