@@ -135,6 +135,38 @@ elab_rules : tactic
 
 initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
 
+/--
+`X said Y` is a variant of the `says` tactic which is supposed to come with no _guarantees_ about
+the relationship of `Y`, other than that `X` was used in the developer's decision to write `Y`. As
+such, as it does not have any verification.
+
+Main uses are where a `says` tactic is liable to change too often to be checked (but we
+still want generally want `says.verify` on), or where the relationship between input and output is
+more up to human intervention.
+
+For example, `exact? says [a long proof term]` might be unstable due to slight changes in the output
+of `exact?`, where many different proof terms would work.
+
+For `simp?`, it is the case that `simp` should generally be confluent, but
+there can be different orders rewrites that get the same conclusion, so it could be that
+```
+simp only [A, B]
+simp only [C, D]
+```
+do the same transformation, and all four are tagged `@[simp]`. Then the particular output of `simp?`
+will be very sensitive to the environment in picking one or the other, and so `simp? says` changes
+regularly; in this case, `simp? said simp only [A, B]` implies that the exact output of `simp?` is
+unstable.
+
+Finally, you could do things like `simp? [*] said exact h₁.myStandardTheorem h₂` or even
+`ring said grind [add_pow_char_pow_of_commute]` if that's what you want.
+-/
+syntax (name := said) tactic " said" colGt tacticSeq : tactic
+
+macro_rules | `(tactic| $_:tactic said%$_ $result:tacticSeq) =>  `(tactic| ($result))
+
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.said
+
 end Says
 
 end Mathlib.Tactic

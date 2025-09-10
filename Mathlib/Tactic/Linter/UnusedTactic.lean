@@ -87,6 +87,7 @@ unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
   IO.mkRef <| .ofArray #[
+    `Mathlib.Tactic.Says.said,
     `Mathlib.Tactic.Says.says,
     ``Parser.Term.binderTactic,
     ``Lean.Parser.Term.dynamicQuot,

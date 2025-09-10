@@ -111,3 +111,9 @@ info: Try this: aesop? says
 #guard_msgs in
 example : P := by
   aesop? says
+
+-- Check that there's no output even with says.verify
+#guard_msgs in
+set_option says.verify true in
+example : let x := 3 + 5; x = 8 := by
+  rw [Nat.add_comm, margle_morbs] said rfl
