@@ -23,33 +23,38 @@ variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
 
 Note that when `S` has a linear order this is equivalent to `∀ x y, v x < v y ↔ w x < w y`. It is
 also equivalent to `v.IsEquiv w` when `v` and `w` are real absolute values. -/
-def IsOrderEquiv : Prop := ∀ x, v x < 1 ↔ w x < 1
+def IsOrderEquiv : Prop := ∀ x y, v x ≤ v y ↔ w x ≤ w y
 
-theorem IsOrderEquiv.refl : v.IsOrderEquiv v := fun _ ↦ Iff.rfl
+theorem IsOrderEquiv.refl : v.IsOrderEquiv v := fun _ _ ↦ .rfl
 
 variable {v w}
 
-theorem IsOrderEquiv.symm (h : v.IsOrderEquiv w) : w.IsOrderEquiv v := fun _ ↦ Iff.symm (h _)
+theorem IsOrderEquiv.symm (h : v.IsOrderEquiv w) : w.IsOrderEquiv v := fun _ _ ↦ (h _ _).symm
 
 theorem IsOrderEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsOrderEquiv w)
-    (h₂ : w.IsOrderEquiv u) : v.IsOrderEquiv u := fun _ ↦ (h₁ _).trans (h₂ _)
+    (h₂ : w.IsOrderEquiv u) : v.IsOrderEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
 
 end OrderedSemiring
 
 section LinearOrderedSemifield
 
-variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S]
-  {v w : AbsoluteValue R S}
+variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] {v w : AbsoluteValue R S}
 
-theorem isOrderEquiv_iff_lt :
-    v.IsOrderEquiv w ↔ ∀ x y, v x < v y ↔ w x < w y := by
-  refine ⟨fun h x y ↦ ?_, fun h x ↦ by simpa using h x 1⟩
-  by_cases hy₀ : v y = 0
-  · rw [map_eq_zero _ |>.1 hy₀, map_zero, map_zero]
-    exact ⟨fun h ↦ absurd (v.nonneg _) (not_le.2 h), fun h ↦ absurd (w.nonneg _) (not_le.2 h)⟩
-  · rw [← one_mul (v y), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w y),
-      ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
-    exact h _
+theorem IsOrderEquiv.lt_iff_lt (h : v.IsOrderEquiv w) {x y : R} : v x < v y ↔ w x < w y := by
+  rw [← le_iff_le_iff_lt_iff_lt, h]
+
+theorem IsOrderEquiv.lt_one_iff (h : v.IsOrderEquiv w) {x : R} : v x < 1 ↔ w x < 1 := by
+  simpa using h.lt_iff_lt (y := 1)
+
+variable [IsStrictOrderedRing S]
+
+theorem isOrderEquiv_iff_lt_one_iff :
+    v.IsOrderEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
+  refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
+  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
+  rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
+    ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
+  exact h _
 
 private theorem one_lt_imp_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R}
     (hv : 1 < v x) : 1 < w x :=
@@ -57,24 +62,25 @@ private theorem one_lt_imp_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R
     fun hw ↦ not_lt.2 zero_le_one (by simpa [(map_eq_zero _).1 <| w.nonpos_iff.1 hw] using hv)
 
 theorem IsOrderEquiv.one_lt_iff (h : v.IsOrderEquiv w) (x : R) : 1 < v x ↔ 1 < w x :=
-  ⟨fun hv => one_lt_imp_of_lt_one_imp (fun _ => (h _).1) hv,
-    fun hw => one_lt_imp_of_lt_one_imp (fun _ => (h _).2) hw⟩
+  ⟨fun hv => one_lt_imp_of_lt_one_imp (fun _ => h.lt_one_iff.1) hv,
+    fun hw => one_lt_imp_of_lt_one_imp (fun _ => h.lt_one_iff.2) hw⟩
 
 private theorem IsOrderEquiv.eq_one_imp (h : v.IsOrderEquiv w) {x : R} (hv : v x = 1) :
     w x = 1 := by
-  cases eq_or_lt_of_le (not_lt.1 <| (h x).not.1 hv.not_lt) with
+  cases eq_or_lt_of_le (not_lt.1 <| h.lt_one_iff.not.1 hv.not_lt) with
   | inl hl => rw [← hl]
   | inr hr => rw [← h.one_lt_iff] at hr; absurd hv; exact ne_of_gt hr
 
 theorem IsOrderEquiv.eq_one_iff (h : v.IsOrderEquiv w) (x : R) : v x = 1 ↔ w x = 1 :=
-  ⟨fun hv => h.eq_one_imp hv, fun hw => eq_one_imp (fun _ => (h _).symm) hw⟩
+  ⟨fun hv => h.eq_one_imp hv, fun hw => h.symm.eq_one_imp hw⟩
 
 theorem IsOrderEquiv.isNontrivial {w : AbsoluteValue R S}
     (h : v.IsOrderEquiv w) (hv : w.IsNontrivial) : v.IsNontrivial := by
   obtain ⟨x, h₀, h₁⟩ := hv
   cases lt_or_lt_iff_ne.2 h₁ with
-  | inl hw => exact ⟨x, h₀, (h x).2 hw |>.ne⟩
-  | inr hw => exact ⟨x⁻¹, inv_ne_zero h₀, (h _).2 (map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ hw) |>.ne⟩
+  | inl hw => exact ⟨x, h₀, h.lt_one_iff.2 hw |>.ne⟩
+  | inr hw =>
+    exact ⟨x⁻¹, inv_ne_zero h₀, h.lt_one_iff.2 (map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ hw) |>.ne⟩
 
 end LinearOrderedSemifield
 
@@ -85,7 +91,7 @@ variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue 
 theorem isOrderEquiv_of_lt_one_imp [Archimedean S] [IsStrictOrderedRing S] (hv : v.IsNontrivial)
     (h : ∀ x, v x < 1 → w x < 1) :
     v.IsOrderEquiv w := by
-  intro a
+  refine isOrderEquiv_iff_lt_one_iff.2 fun a ↦ ?_
   rcases eq_or_ne a 0 with (rfl | ha₀) <;> try simp
   refine ⟨h a, fun hw ↦ ?_⟩
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
@@ -180,7 +186,7 @@ theorem IsOrderEquiv.log_div_log_eq_log_div_log (h : v.IsOrderEquiv w)
   rw [div_lt_div_iff₀ (by simp [q.den_pos]) (log_pos hwa), mul_comm (w _).log,
     ← log_pow, ← log_zpow, log_lt_log_iff (zpow_pos (by linarith) _) (pow_pos (by linarith) _),
     ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at hq₂
-  exact not_lt_of_gt ((h _).1 hq₁) hq₂
+  exact not_lt_of_gt (h.lt_one_iff.1 hq₁) hq₂
 
 open Real in
 theorem IsOrderEquiv.exists_rpow_eq {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
@@ -200,7 +206,8 @@ If `v` and `w` are two real absolute values on a field `F`, where `v` is non-tri
 -/
 theorem isEquiv_iff_isOrderEquiv {v w : AbsoluteValue F ℝ} :
     v.IsEquiv w ↔ v.IsOrderEquiv w := by
-  refine ⟨fun ⟨t, ht, h⟩ x ↦ h ▸ (rpow_lt_one_iff' (v.nonneg x) ht).symm, fun h ↦ isEquiv_symm ?_⟩
+  refine ⟨fun ⟨t, ht, h⟩ ↦ isOrderEquiv_iff_lt_one_iff.2
+    fun x ↦ h ▸ (rpow_lt_one_iff' (v.nonneg x) ht).symm, fun h ↦ isEquiv_symm ?_⟩
   by_cases hv : v.IsNontrivial
   · obtain ⟨t, ht₀, ht⟩ := h.exists_rpow_eq hv
     refine ⟨t, ht₀, funext fun x ↦ ?_⟩
