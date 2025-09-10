@@ -644,7 +644,6 @@ lemma isIso_of_yoneda_map_bijective {X Y : C} (f : X ⟶ Y)
 lemma isIso_iff_yoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
     IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : T ⟶ X) => x ≫ f)) := by
   refine ⟨fun _ ↦ ?_, fun hf ↦ isIso_of_yoneda_map_bijective f hf⟩
-  have : IsIso (yoneda.map f) := inferInstance
   intro T
   rw [← isIso_iff_bijective]
   exact inferInstanceAs (IsIso ((yoneda.map f).app _))
@@ -872,7 +871,6 @@ lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
 lemma isIso_iff_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y) :
     IsIso f ↔ (∀ (T : C), Function.Bijective (fun (x : Y ⟶ T) => f ≫ x)) := by
   refine ⟨fun _ ↦ ?_, fun hf ↦ isIso_of_coyoneda_map_bijective f hf⟩
-  have : IsIso (coyoneda.map f.op) := inferInstance
   intro T
   rw [← isIso_iff_bijective]
   exact inferInstanceAs (IsIso ((coyoneda.map f.op).app _))
