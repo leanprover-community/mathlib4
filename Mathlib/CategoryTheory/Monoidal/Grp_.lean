@@ -430,13 +430,26 @@ noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   map {F G} α := { app A := .mk' (α.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/
-def FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] : Grp_Class X where
+@[simps]
+abbrev FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] :
+    Grp_Class X where
   __ := hF.mon_Class X
   inv := hF.preimage ι[F.obj X]
   left_inv := hF.map_injective <| by
     simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
   right_inv := hF.map_injective <| by
     simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+
+/-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
+same on group objects as on objects. -/
+@[simp] lemma essImage_mapGrp [F.Full] [F.Faithful] {G : Grp_ D} :
+    F.mapGrp.essImage G ↔ F.essImage G.X where
+  mp := by rintro ⟨H, ⟨e⟩⟩; exact ⟨H.X, ⟨(Grp_.forget _).mapIso e⟩⟩
+  mpr := by
+    rintro ⟨H, ⟨e⟩⟩
+    let : Grp_Class (F.obj H) := .ofIso e.symm
+    let : Grp_Class H := (FullyFaithful.ofFullyFaithful F).grp_Class H
+    refine ⟨⟨H⟩, ⟨Grp_.mkIso e ?_ ?_⟩⟩ <;> simp
 
 end Functor
 
