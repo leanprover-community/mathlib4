@@ -5,6 +5,7 @@ Authors: Arend Mellendijk
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # The Selberg Sieve
@@ -325,7 +326,7 @@ theorem one_div_selbergTerms_eq_conv_moebius_nu (l : ℕ) (hl : Squarefree l)
   obtain ⟨hde, -⟩ : d.Coprime e ∧ _ := by simpa only [squarefree_mul_iff] using hl
   obtain ⟨hd0, he0⟩ : ¬s.nu d = 0 ∧ ¬s.nu e = 0 :=
     by simp_all [s.nu_mult.map_mul_of_coprime hde]
-  field_simp [s.nu_mult.map_mul_of_coprime hde, mul_assoc]
+  simp [field, s.nu_mult.map_mul_of_coprime hde, mul_assoc]
 
 theorem nu_eq_conv_one_div_selbergTerms (d : ℕ) (hdP : d ∣ s.prodPrimes) :
     (s.nu d)⁻¹ = ∑ l ∈ divisors s.prodPrimes, if l ∣ d then 1 / s.selbergTerms l else 0 := by
