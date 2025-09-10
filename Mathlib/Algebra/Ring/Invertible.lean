@@ -45,7 +45,7 @@ theorem invOf_sub_invOf [Ring R] (a b : R) [Invertible a] [Invertible b] :
     ⅟a - ⅟b = ⅟a * (b - a) * ⅟b := by
   rw [mul_sub, invOf_mul_self, sub_mul, one_mul, mul_assoc, mul_invOf_self, mul_one]
 
-theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] (a b : R) [Invertible a] [Invertible b]
+theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] {a b : R} [Invertible a] [Invertible b]
     [Invertible (a + b)] (h : ⅟(a + b) = ⅟a + ⅟b) :
     a * ⅟b * a = b * ⅟a * b := by
   have h_neg_identity : -1 = ⅟a * b + ⅟b * a := by
