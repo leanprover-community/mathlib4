@@ -139,38 +139,74 @@ lemma hasDerivAt_sigmoid (x : ℝ) :
 lemma deriv_sigmoid : deriv sigmoid = fun x => sigmoid x * (1 - sigmoid x) :=
   funext fun x => (hasDerivAt_sigmoid x).deriv
 
-open Set
+end Real
 
-variable {x : ℝ}
+open Set Real
+
+variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
 
 @[fun_prop]
 lemma analyticAt_sigmoid : AnalyticAt ℝ sigmoid x :=
   AnalyticAt.fun_inv (by fun_prop) (by positivity)
 
-theorem analyticOnNhd_sigmoid : AnalyticOnNhd ℝ sigmoid Set.univ :=
+@[fun_prop]
+lemma AnalyticAt.sigmoid {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (sigmoid ∘ f) x :=
+  analyticAt_sigmoid.comp fa
+
+@[fun_prop]
+lemma AnalyticAt.sigmoid' {x : E} (fa : AnalyticAt ℝ f x) :
+    AnalyticAt ℝ (fun z ↦ Real.sigmoid (f z)) x := fa.sigmoid
+
+lemma analyticOnNhd_sigmoid : AnalyticOnNhd ℝ sigmoid Set.univ :=
   fun _ _ ↦ analyticAt_sigmoid
+
+lemma AnalyticOnNhd.sigmoid (fs : AnalyticOnNhd ℝ f s) : AnalyticOnNhd ℝ (sigmoid ∘ f) s :=
+  fun z n ↦ analyticAt_sigmoid.comp (fs z n)
 
 lemma analyticOn_sigmoid : AnalyticOn ℝ sigmoid Set.univ :=
   analyticOnNhd_sigmoid.analyticOn
 
+lemma AnalyticOn.sigmoid (fs : AnalyticOn ℝ f s) : AnalyticOn ℝ (sigmoid ∘ f) s :=
+  analyticOnNhd_sigmoid.comp_analyticOn fs (mapsTo_univ _ _)
+
 lemma analyticWithinAt_sigmoid {s : Set ℝ} : AnalyticWithinAt ℝ sigmoid s x :=
   analyticAt_sigmoid.analyticWithinAt
 
+lemma AnalyticWithinAt.sigmoid {x : E} (fa : AnalyticWithinAt ℝ f s x) :
+  AnalyticWithinAt ℝ (sigmoid ∘ f) s x := analyticAt_sigmoid.comp_analyticWithinAt fa
+
 open ContDiff in
+@[fun_prop]
 lemma contDiff_sigmoid : ContDiff ℝ ω sigmoid := analyticOn_sigmoid.contDiff
 
+open ContDiff in
 @[fun_prop]
-theorem differentiable_sigmoid : Differentiable ℝ sigmoid :=
+lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f) :=
+  contDiff_sigmoid.comp hf
+
+@[fun_prop]
+lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one
 
 @[fun_prop]
-theorem differentiableAt_sigmoid {x : ℝ} : DifferentiableAt ℝ sigmoid x :=
+lemma Differentiable.sigmoid (hf : Differentiable ℝ f) : Differentiable ℝ (sigmoid ∘ f) :=
+  differentiable_sigmoid.comp hf
+
+@[fun_prop]
+lemma differentiableAt_sigmoid : DifferentiableAt ℝ sigmoid x :=
   differentiable_sigmoid x
+
+@[fun_prop]
+lemma DifferentiableAt.sigmoid {x : E} (hf : DifferentiableAt ℝ f x) :
+    DifferentiableAt ℝ (sigmoid ∘ f) x := differentiableAt_sigmoid.comp x hf
 
 @[fun_prop]
 lemma continuous_sigmoid : Continuous sigmoid := by fun_prop
 
-end Real
+omit [NormedSpace ℝ E] in
+@[fun_prop]
+lemma Continuous.sigmoid (hf : Continuous f) : Continuous (sigmoid ∘ f) :=
+  continuous_sigmoid.comp hf
 
 namespace unitInterval
 
@@ -205,7 +241,7 @@ lemma sigmoid_injective : Function.Injective sigmoid := sigmoid_strictMono.injec
 lemma sigmoid_inj {a b : ℝ} : sigmoid a = sigmoid b ↔ a = b := sigmoid_injective.eq_iff
 
 @[fun_prop]
-lemma continuous_sigmoid : Continuous sigmoid := Real.continuous_sigmoid.subtype_mk _
+lemma continuous_sigmoid : Continuous sigmoid := _root_.continuous_sigmoid.subtype_mk _
 
 lemma sigmoid_neg (x : ℝ) : sigmoid (-x) = σ (sigmoid x) := by
   ext
@@ -233,14 +269,14 @@ open unitInterval Function Set
 
 /-- The Sigmoid function as an `OrderEmbedding` from `ℝ` to `I`. -/
 noncomputable def OrderEmbedding.sigmoid : ℝ ↪o I :=
-  OrderEmbedding.ofStrictMono unitInterval.sigmoid sigmoid_strictMono
+  OrderEmbedding.ofStrictMono unitInterval.sigmoid unitInterval.sigmoid_strictMono
 
 lemma Topology.isEmbedding_sigmoid : IsEmbedding unitInterval.sigmoid :=
   OrderEmbedding.sigmoid.isEmbedding_of_ordConnected (ordConnected_of_Ioo <|
-    fun a _ b _ _ => range_sigmoid ▸ Ioo_subset_Ioo a.2.1 b.2.2)
+    fun a _ b _ _ => unitInterval.range_sigmoid ▸ Ioo_subset_Ioo a.2.1 b.2.2)
 
 lemma measurableEmbedding_sigmoid : MeasurableEmbedding unitInterval.sigmoid :=
-  Topology.isEmbedding_sigmoid.measurableEmbedding <| range_sigmoid ▸ measurableSet_Ioo
+  Topology.isEmbedding_sigmoid.measurableEmbedding <| unitInterval.range_sigmoid ▸ measurableSet_Ioo
 
 variable (α : Type*) [MeasurableSpace α] [StandardBorelSpace α]
 
