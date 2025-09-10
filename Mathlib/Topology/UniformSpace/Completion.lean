@@ -156,7 +156,7 @@ theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → Ca
 
 theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) where
   __ := isUniformInducing_pureCauchy
-  injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff_val.1 h
+  injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff.1 h
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>

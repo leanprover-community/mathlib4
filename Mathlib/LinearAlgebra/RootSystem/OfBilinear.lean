@@ -137,7 +137,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
           specialize h2y x
           rw [coroot_apply_self] at h2y
           rw [mul_comm, ← h2x, ← hSB.eq, RingHom.id_apply, ← h2y, mul_comm]
-        rw [Subtype.ext_iff_val, ← sub_eq_zero]
+        rw [Subtype.ext_iff, ← sub_eq_zero]
         refine hNB.1 _ (fun z => ?_)
         rw [map_sub, LinearMap.sub_apply, sub_eq_zero]
         refine h2.1 ?_

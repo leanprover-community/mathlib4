@@ -477,8 +477,8 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
     C.supp ≃ (φ.connectedComponentEquiv C).supp where
   toFun v := ⟨φ v, ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp.mpr v.prop⟩
   invFun v' := ⟨φ.symm v', ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map.mpr v'.prop⟩
-  left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
-  right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
+  left_inv v := Subtype.ext (φ.toEquiv.left_inv ↑v)
+  right_inv v := Subtype.ext (φ.toEquiv.right_inv ↑v)
 
 lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
