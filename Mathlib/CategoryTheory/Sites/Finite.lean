@@ -59,9 +59,6 @@ def finite (C : Type u) [Category.{v} C] [HasPullbacks C] : Pretopology C where
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C]
 
-@[simp] lemma mem_finite_coverings {X : C} {s : Presieve X} :
-    s ∈ (finite C).coverings X ↔ s.uncurry.Finite := Iff.rfl
-
 theorem ofArrows_mem_finite {X : C} {ι : Type*} [Finite ι] (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
     ofArrows Y f ∈ (finite C).coverings X :=
   Precoverage.ofArrows_mem_finite _ _
