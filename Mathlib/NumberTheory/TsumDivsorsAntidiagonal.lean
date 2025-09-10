@@ -148,7 +148,7 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) :
       enter [1]
       ext m
       rw [mul_assoc, ← pow_succ' (r ^ (n : ℕ)) m]
-    rw [← tsum_pnat_eq_tsum_succ (fun m ↦ n * (r ^ (n : ℕ)) ^ (m : ℕ))]
+    rw [← tsum_pnat_eq_tsum_succ (f := fun m ↦ n * (r ^ (n : ℕ)) ^ (m : ℕ))]
   have h00 := (tsum_prod_pow_eq_tsum_sigma 1 hr)
   rw [Summable.tsum_comm (by apply (summable_prod_mul_pow 1 hr).prod_symm)] at h00
   rw [← h00]

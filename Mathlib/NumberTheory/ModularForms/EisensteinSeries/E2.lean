@@ -30,8 +30,154 @@ open scoped Interval Real Topology BigOperators Nat
 
 noncomputable section
 
+variable {α β γ : Type*}
+
+variable [CommMonoid α] [TopologicalSpace α]
+
+@[to_additive]
+def HasProdFilter (L : Filter (Finset β)) (f : β → α) (a : α) : Prop :=
+  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L (𝓝 a)
+
+@[to_additive
+/-- `SummableAlongFilter f` means that `f` has some (infinite) sum. -/]
+def MultipliableFilter (L : Filter (Finset β)) (f : β → α) : Prop :=
+  ∃ a, HasProdFilter L f a
+
+open scoped Classical in
+/-- `∏' i, f i` is the product of `f` if along the filter `L` if it exists or 1 otherwise. -/
+@[to_additive /-- `∑' i, f i` is the sum  of `f` if along the filter `L` if it exists
+ or 0 otherwise. -/]
+noncomputable irreducible_def tprodFilter {β} (L : Filter (Finset β)) (f : β → α) :=
+  if h : MultipliableFilter L f then
+   h.choose
+  else 1
+
+@[inherit_doc tprod]
+notation3 "∏' " "[" L "]" (...)", "r:67:(scoped f => tprodFilter L f) => r
+@[inherit_doc tsumFilter]
+notation3 "∑' " "[" L "]" (...)", "r:67:(scoped f => tsumFilter L f) => r
+
+variable (L : Filter (Finset β)) (f : β → α) (a : α)
+
+@[to_additive]
+theorem HasProdFilter.multipliableFilter (h : HasProdFilter L f a) : MultipliableFilter L f :=
+  ⟨a, h⟩
+
+@[to_additive]
+theorem tprod_eq_one_of_not_multipliableFilter (h : ¬MultipliableFilter L f) :
+    ∏'[L] b, f b = 1 := by
+  simp [tprodFilter_def, h]
+
+
+@[to_additive]
+theorem MultipliableFilter.hasProdFilter (ha : MultipliableFilter L f) :
+    HasProdFilter L f (∏'[L] b, f b) := by
+  simp only [tprodFilter_def, ha, dite_true]
+  apply ha.choose_spec
+
+@[to_additive]
+theorem HasProdFilter.unique {a₁ a₂ : α} [T2Space α] [L.NeBot] :
+    HasProdFilter L f a₁ → HasProdFilter L f a₂ → a₁ = a₂ := by
+  classical exact tendsto_nhds_unique
+
+variable [T2Space α]
+
+@[to_additive]
+theorem HasProdFilter.tprodFilter_eq (ha : HasProdFilter L f a) [L.NeBot] : ∏'[L] b, f b = a :=
+  (MultipliableFilter.hasProdFilter L f ha.multipliableFilter).unique L f ha
+
+
+@[to_additive]
+theorem MultipliableFilter.hasProdFilter_iff (h : MultipliableFilter L f) [L.NeBot] :
+    HasProdFilter L f a ↔ ∏'[L] b, f b = a := by
+  apply Iff.intro
+  · intro h
+    apply h.tprodFilter_eq
+  · intro H
+    have := h.hasProdFilter
+    rw [H] at this
+    exact this
+
+omit [T2Space α] in
+@[to_additive]
+theorem MultipliableFilter.mul {f g : β → α} [ContinuousMul α] (hf : MultipliableFilter L f)
+    (hg : MultipliableFilter L g) :
+    MultipliableFilter L (fun b ↦ f b * g b) := by
+  obtain ⟨a, ha⟩ := hf
+  obtain ⟨b, hb⟩ := hg
+  use a * b
+  simp [HasProdFilter] at *
+  have := Tendsto.mul (ha) (hb)
+  apply this.congr
+  intro s
+  exact Eq.symm prod_mul_distrib
+
+omit [T2Space α] in
+@[to_additive]
+lemma mulipliable_iff_multipliableFilter_atTop {f : β → α} :
+    Multipliable f ↔ MultipliableFilter atTop f := by
+  simp [Multipliable, MultipliableFilter, HasProd, HasProdFilter]
+
+omit [T2Space α] in
+@[to_additive]
+lemma hasProd_iff_hasProdFilter_atTop {f : β → α} {a : α} :
+    HasProd f a ↔ HasProdFilter atTop f a := by
+  simp [HasProd, HasProdFilter]
+
+lemma tprod_eq_tproFilter_atTop (f : β → α) : ∏' [atTop] b, f b = ∏' b, f b := by
+  by_cases h : MultipliableFilter atTop f
+  · have := h.hasProdFilter
+    rw [this.tprodFilter_eq atTop f]
+    rw [← mulipliable_iff_multipliableFilter_atTop] at h
+    have H := h.hasProd
+    rw [← hasProd_iff_hasProdFilter_atTop] at this
+    apply HasProd.unique this H
+  · rw [tprod_eq_one_of_not_multipliableFilter atTop f h, tprod_eq_one_of_not_multipliable h]
+
+def Icc_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N)
+
+def Ico_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Ico (-(N : ℤ)) N)
+
+@[to_additive]
+lemma prodFilter_int_atTop_eq_Icc_filter {f : ℤ → α}
+    (hf : MultipliableFilter atTop f) : ∏'[atTop] b, f b  = ∏'[Icc_filter] b, f b := by
+  have := (hf.hasProdFilter).comp tendsto_Icc_atTop_atTop
+  simp only [Icc_filter] at *
+  apply symm
+  apply HasProdFilter.tprodFilter_eq
+  simp only [HasProdFilter, tendsto_map'_iff]
+  apply this.congr
+  simp
+
+
+@[to_additive]
+lemma prodFilter_int_atTop_eq_Ico_filter {f : ℤ → α}
+    (hf : MultipliableFilter atTop f) : ∏'[atTop] b, f b  = ∏'[Ico_filter] b, f b := by
+  have := (hf.hasProdFilter).comp tendsto_Ico_atTop_atTop
+  simp only [Ico_filter] at *
+  apply symm
+  apply HasProdFilter.tprodFilter_eq
+  simp only [HasProdFilter, tendsto_map'_iff]
+  apply this.congr
+  simp
+
+/- @[to_additive] --this needs a hyp, but lets see what the min it needs
+lemma prodFilter_int_Icc_eq_Ico_filter {f : ℤ → α}
+    (hf : MultipliableFilter Icc_filter f) : ∏'[Icc_filter] b, f b  = ∏'[Ico_filter] b, f b := by
+  have := (hf.hasProdFilter)
+
+  simp only [Ico_filter] at *
+  apply symm
+  apply HasProdFilter.tprodFilter_eq
+  simp only [HasProdFilter, tendsto_map'_iff]
+
+  --apply this.congr
+  --simp
+
+
+ -/
 /-- This is an auxilary summand used to define the Eisenstein serires `G2`. -/
-def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' (n : ℤ), eisSummand 2 ![m, n] z
+def e2Summand (m : ℤ) (z : ℍ) : ℂ := ∑' n, eisSummand 2 ![m, n] z
 
 lemma e2Summand_summable (m : ℤ) (z : ℍ) : Summable (fun n => eisSummand 2 ![m, n] z) := by
   apply (linear_right_summable z m (k := 2) (by omega)).congr
@@ -87,7 +233,7 @@ private lemma aux_tsum_identity (z : ℍ) : ∑' m : ℕ, (-8 * π ^ 2  *
     ∑' n : ℕ+, n * cexp (2 * π * I * (m + 1) * z) ^ (n : ℕ))  =
     -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ) := by
   have := tsum_prod_pow_cexp_eq_tsum_sigma 1 z
-  rw [tsum_pnat_eq_tsum_succ (fun d =>
+  rw [tsum_pnat_eq_tsum_succ (f:= fun d =>
     ∑' (c : ℕ+), (c ^ 1 : ℂ) * cexp (2 * π * I * d * z) ^ (c : ℕ))] at this
   simp [← tsum_mul_left, ← this]
 
@@ -99,7 +245,7 @@ private lemma aux_G2_tendsto (z : ℍ) : Tendsto (fun N ↦ ∑ x ∈ range N, -
       ∑' n : ℕ+, n ^ ((2 - 1)) * cexp (2 * π * I * (m + 1) * z) ^ (n : ℕ)) := by
     apply Summable.mul_left
     have := (summable_prod_aux 1 z).prod
-    have h0 := pnat_summable_iff_summable_succ
+    have h0 := summable_pnat_iff_summable_succ
       (f := fun b ↦ ∑' (c : ℕ+), c * cexp (2 * π * I * b * z) ^ (c : ℕ))
     simp only [pow_one, cexp_pow_aux, Nat.cast_add, Nat.cast_one, Nat.add_one_sub_one] at *
     rw [← h0]
@@ -113,6 +259,26 @@ lemma G2_cauchy (z : ℍ) : CauchySeq (fun N : ℕ ↦ ∑ m ∈ Icc (-N : ℤ) 
   apply CauchySeq.const_add
   apply Tendsto.cauchySeq (x := -8 * π ^ 2 * ∑' (n : ℕ+), (σ 1 n) * cexp (2 * π * I * z) ^ (n : ℕ))
   simpa using aux_G2_tendsto z
+
+
+def G2' : ℍ → ℂ := fun z => ∑'[Icc_filter] m, e2Summand m z
+
+lemma SummableFilter_G2 (z : ℍ) : SummableFilter Icc_filter (fun m : ℤ => e2Summand m z) := by
+  simp [SummableFilter, HasSumFilter, Icc_filter ]
+  have := G2_cauchy z
+  have := cauchySeq_tendsto_of_complete this
+  simpa using this
+
+lemma G2_eq_G2' (z : ℍ) : G2 z = G2' z := by
+  rw [G2, G2']
+  have SF1 := SummableFilter_G2 z
+  have SF2 := SF1.hasSumFilter
+  obtain ⟨a, ha⟩ := SF1
+  apply Filter.Tendsto.limUnder_eq
+  simp [HasSumFilter] at *
+  apply SF2
+
+
 
 lemma G2_q_exp (z : ℍ) : G2 z =
     (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
@@ -238,8 +404,8 @@ theorem int_tsum_pNat {α : Type*} [UniformSpace α] [CommRing α] [IsUniformAdd
   [CompleteSpace α] [T2Space α] {f : ℤ → α} (hf2 : Summable f) :
   ∑' n, f n = f 0 + ∑' n : ℕ+, f n + ∑' m : ℕ+, f (-m) := by
   rw [summable_int_iff_summable_nat_and_neg_add_zero, tsum_of_add_one_of_neg_add_one] at *
-  · simp only [neg_add_rev, Int.reduceNeg, tsum_pnat_eq_tsum_succ (fun n => f n), Nat.cast_add,
-    Nat.cast_one, tsum_pnat_eq_tsum_succ (fun n => f (-n)), add_left_inj]
+  · simp only [neg_add_rev, Int.reduceNeg, tsum_pnat_eq_tsum_succ (f := fun n => f n), Nat.cast_add,
+    Nat.cast_one, tsum_pnat_eq_tsum_succ (f := fun n => f (-n)), add_left_inj]
     ring
   · have hf21 := hf2.1
     rw [← summable_nat_add_iff (k := 1)] at hf21
@@ -248,7 +414,7 @@ theorem int_tsum_pNat {α : Type*} [UniformSpace α] [CommRing α] [IsUniformAdd
 
 lemma summable_pnat_iff_summable_nat {G : Type*} [AddCommGroup G] [TopologicalSpace G]
     [IsTopologicalAddGroup G] {f : ℕ → G} : Summable (fun n : ℕ+ => f n) ↔ Summable f := by
-  rw [pnat_summable_iff_summable_succ , summable_nat_add_iff]
+  rw [summable_pnat_iff_summable_succ , summable_nat_add_iff]
 
 private lemma linear_sub_linear_eq (z : ℍ) (a b m : ℤ) (hm : m ≠ 0) :
     1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
@@ -354,7 +520,7 @@ private theorem aux_tendsto_tsum (z : ℍ) : Tendsto (fun n : ℕ => (2 / z *
     have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement Z)
     rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add'] at h2
     simp only [coe_mk_subtype, one_div, inv_div, neg_mul, Z] at *
-    rw [← h2, ← tsum_zero_pnat_eq_tsum_nat _
+    rw [← h2, ← tsum_zero_pnat_eq_tsum_nat
       (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, pnat_div_upper N z⟩), mul_sub]
     field_simp [ne_zero z]
     ring

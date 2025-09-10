@@ -236,7 +236,7 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
       ⟨b * z , by simpa using z.2⟩
     simp only [coe_mk_subtype, show k - 1 + 1 = k by omega, one_div, neg_mul, mul_assoc, eisSummand,
       Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Int.cast_zero, zero_mul, Fin.cons_one,
-      zero_add, zpow_neg, zpow_natCast, Int.cast_natCast,
+      zero_add, zpow_neg, zpow_natCast, Int.cast_natCast, nsmul_eq_mul, Nat.cast_ofNat,
       two_riemannZeta_eq_tsum_int_inv_even_pow (by omega) hk2, add_right_inj, mul_eq_mul_left_iff,
       OfNat.ofNat_ne_zero, or_false] at *
     conv =>
@@ -246,10 +246,10 @@ lemma tsum_eisSummand_eq_sigma_cexp {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z :
       rw [this c]
     simp_rw [tsum_mul_left, ← mul_assoc, tsum_prod_pow_cexp_eq_tsum_sigma (k - 1) z]
   · intro n
-    nth_rw 2 [(tsum_int_eq_tsum_neg _).symm]
+    nth_rw 1 [(tsum_int_eq_tsum_neg _).symm]
     congr
     ext y
-    simp only [eisSummand, Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one,
+    simp [eisSummand, Fin.isValue, piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one,
       zpow_neg, zpow_natCast, ← Even.neg_pow hk2 (n * (z : ℂ) + y), neg_add_rev, Int.cast_neg,
       neg_mul, inv_inj]
     ring
