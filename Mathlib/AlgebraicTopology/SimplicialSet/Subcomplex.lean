@@ -91,7 +91,6 @@ lemma toRange_ι : toRange f ≫ (Subcomplex.range f).ι = f := rfl
 lemma toRange_app_val {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
     ((toRange f).app Δ x).val = f.app Δ x := rfl
 
-
 instance : Epi (toRange f) :=
   inferInstanceAs (Epi (Subpresheaf.toRange f))
 
