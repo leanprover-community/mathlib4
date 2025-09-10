@@ -21,26 +21,26 @@ variable {R n : Type*} [Fintype n]
 
 /-- This takes in a non-unital algebra homomorphism `f` and vectors `y, z : n → R`
 and constructs a linear operator on `(n → R)` such that `x ↦ f (vecMulVec x y) *ᵥ z`. -/
-private def NonUnitalAlgHom.toLinearEquivAux [Semiring R]
-    (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) :
+private def auxLinear [Semiring R] (f : Matrix n n R →ₗ[R] Matrix n n R) (y z : n → R) :
     (n → R) →ₗ[R] (n → R) :=
-  (mulVecBilin R ℕ).flip z ∘ₗ (↑f : Matrix n n R →ₗ[R] Matrix n n R) ∘ₗ (vecMulVecBilin R ℕ).flip y
+  (mulVecBilin R ℕ).flip z ∘ₗ (f : Matrix n n R →ₗ[R] Matrix n n R) ∘ₗ (vecMulVecBilin R ℕ).flip y
 
 @[simp]
-private theorem NonUnitalAlgHom.toLinearEquivAux_apply [Semiring R]
+private theorem auxLinear_apply [Semiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (x y z : n → R) :
-  f.toLinearEquivAux y z x = f (vecMulVec x y) *ᵥ z := rfl
+  auxLinear f y z x = f (vecMulVec x y) *ᵥ z := rfl
+
 
 variable [DecidableEq n]
 
-private theorem NonUnitalAlgHom.toMatrix'_toLinearEquivAux_mul [CommSemiring R]
+private theorem toMatrix'_auxLinear_mul [CommSemiring R]
     (f : Matrix n n R →ₙₐ[R] Matrix n n R) (y z : n → R) (A : Matrix n n R) :
-    (f.toLinearEquivAux y z).toMatrix' * A = f A * (f.toLinearEquivAux y z).toMatrix' :=
+    (auxLinear f y z).toMatrix' * A = f A * (auxLinear f y z).toMatrix' :=
   toLin'.injective <| LinearMap.ext fun x =>
-  let T := f.toLinearEquivAux y z
+  let T := auxLinear f y z
   calc
     (T.toMatrix' * A) *ᵥ x = T (A *ᵥ x) := by ext; rw [← mulVec_mulVec, LinearMap.toMatrix'_mulVec]
-    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, NonUnitalAlgHom.toLinearEquivAux_apply]
+    _ = f (vecMulVec (A *ᵥ x) y) *ᵥ z := by simp [T, auxLinear_apply]
     _ = f (A * vecMulVec x y) *ᵥ z := by
       simp_rw [vecMulVec_eq Unit, replicateCol_mulVec, ← Matrix.mul_assoc]
     _ = (f A * f (vecMulVec x y)) *ᵥ z := by simp_rw [map_mul]
@@ -63,9 +63,9 @@ theorem AlgEquiv.coe_eq_generalLinearGroup_conjugate [Field R]
       rwa [← toMatrix'_toLin' (f _), EmbeddingLike.map_eq_zero_iff, LinearMap.ext_iff] at this
     rw [← ne_eq, EmbeddingLike.map_ne_zero_iff]
     exact vecMulVec_ne_zero hu hv
-  let T := f.toAlgHom.toNonUnitalAlgHom.toLinearEquivAux v z
+  let T := auxLinear f.toAlgHom v z
   have this A : T.toMatrix' * A = f A * T.toMatrix' :=
-    f.toAlgHom.toNonUnitalAlgHom.toMatrix'_toLinearEquivAux_mul v z A
+    toMatrix'_auxLinear_mul f.toAlgHom.toNonUnitalAlgHom v z A
   suffices hM : IsUnit T.toMatrix' from ⟨hM.unit, fun A => this A |>.symm⟩
   simp_rw [← isUnit_toLin'_iff, toLin'_toMatrix', isUnit_iff_range_eq_top, range_eq_top]
   intro w
