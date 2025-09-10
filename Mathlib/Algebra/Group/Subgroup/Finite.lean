@@ -233,7 +233,6 @@ section Normalizer
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
     x ∈ Subgroup.setNormalizer S := by
   haveI := Classical.propDecidable; cases nonempty_fintype S
-  haveI := Set.fintypeImage S fun n => x * n * x⁻¹
   exact fun n =>
     ⟨h n, fun h₁ =>
       have heq : (fun n => x * n * x⁻¹) '' S = S :=
