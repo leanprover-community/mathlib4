@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 
-import Lean.Elab.Tactic.Meta
 import Lean.Util.Heartbeats
 import Lean.Server.InfoUtils
 import Mathlib.Lean.ContextInfo
+import Mathlib.Lean.Elab.Tactic.Meta
 
 /-! # Tactic analysis framework
 
@@ -274,7 +274,8 @@ structure ComplexConfig where
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
   test (context : ctx) (goal : MVarId) : MetaM out
   /-- Decides what to report to the user. -/
-  tell (stx : Syntax) (original : List MVarId × Nat) (new : out × Nat) : Option MessageData
+  tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
+    (new : out) (newHeartbeats : Nat) : Option MessageData
 
 /-- Test the `config` against a sequence of tactics, using the context info and tactic info
 from the start of the sequence. -/
@@ -284,14 +285,14 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
   let stx ← `(tactic| $(tacticSeq);*)
   -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
   if let [goal] := i.goalsBefore then
-    let old ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
+    let (oldGoals, oldHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
       try
-        Lean.Elab.runTactic goal stx
+        Lean.Elab.runTactic' goal stx
       catch e =>
         logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-        return ([goal], {})
-    let new ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-    if let some msg := config.tell stx (old.1.1, old.2) new then
+        return [goal]
+    let (new, newHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
+    if let some msg := config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
       logWarningAt stx msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
