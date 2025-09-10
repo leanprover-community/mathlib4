@@ -15,9 +15,9 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main definitions
 
-* `Matrix.PosDef` : a matrix `M : Matrix n n 𝕜` is positive definite if it is hermitian and `xᴴMx`
+* `Matrix.PosDef` : a matrix `M : Matrix n n 𝕜` is positive definite if it is Hermitian and `xᴴMx`
   is greater than zero for all nonzero `x`.
-* `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is hermitian
+* `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is Hermitian
   and `xᴴMx` is nonnegative for all `x`.
 
 ## Main results
@@ -428,7 +428,7 @@ theorem PosSemidef.commute_iff [DecidableEq n] {A B : Matrix n n 𝕜}
 ## Positive definite matrices
 -/
 
-/-- A matrix `M : Matrix n n R` is positive definite if it is hermitian
+/-- A matrix `M : Matrix n n R` is positive definite if it is Hermitian
 and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x)
