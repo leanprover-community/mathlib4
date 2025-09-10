@@ -30,7 +30,7 @@ def kernelIsLimit : IsLimit <| kernelCone f :=
     (fun s => ofHom <| s.ι.hom.codRestrict _ fun c => mem_ker.mpr <|
       ConcreteCategory.congr_hom s.condition c)
     (fun _ => by rfl)
-    (fun _ _ h => ext fun x => Subtype.ext_iff_val.mpr <| ConcreteCategory.congr_hom h x)
+    (fun _ _ h => ext fun x => Subtype.ext_iff.mpr <| ConcreteCategory.congr_hom h x)
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=

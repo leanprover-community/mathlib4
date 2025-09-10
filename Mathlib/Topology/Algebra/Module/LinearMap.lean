@@ -899,7 +899,7 @@ theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M] (f₁ : M →
 theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (y : M₂) :
     f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
-  Subtype.ext_iff_val.2 <| by simp [h y]
+  Subtype.ext_iff.2 <| by simp [h y]
 
 end
 
@@ -1143,7 +1143,7 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
+  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff.2 <| by simp⟩
 
 end Submodule
 
