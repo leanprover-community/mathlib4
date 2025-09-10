@@ -64,7 +64,7 @@ lemma exists_hom_of_isFinitelyPresentable {J : Type w} [SmallCategory J] [IsFilt
     ∃ (j : J) (q : A ⟶ D.obj j), p ≫ q = s.app j ∧ q ≫ c.ι.app j = f :=
   hp.exists_hom_of_isColimit_under hc _ s _ h
 
-lemma le_ind : P ≤ P.ind := by
+lemma le_ind : P ≤ ind.{w} P := by
   intro X Y f hf
   refine ⟨PUnit, inferInstance, inferInstance, (Functor.const PUnit).obj Y, ?_, 𝟙 _, ?_, ?_⟩
   · exact { app _ := f }
