@@ -157,15 +157,15 @@ lemma roots_charpoly_eq_eigenvalues :
   · simp
   · simp [Finset.prod_ne_zero_iff, Polynomial.X_sub_C_ne_zero]
 
-lemma charpoly_roots_eq_eigenvalues₀ :
+lemma roots_charpoly_eq_eigenvalues₀ :
     A.charpoly.roots = Multiset.map (RCLike.ofReal ∘ hA.eigenvalues₀) Finset.univ.val := by
-  rw [hA.charpoly_roots_eq_eigenvalues]
+  rw [hA.roots_charpoly_eq_eigenvalues]
   simp only [← Multiset.map_map, eigenvalues, ← Function.comp_apply (f := hA.eigenvalues₀)]
   simp
 
-lemma eigenvalues₀_eq_charpoly_roots_sort_getI :
+lemma eigenvalues₀_eq_roots_charpoly_sort_getI :
     hA.eigenvalues₀ = fun i ↦ ((A.charpoly.roots.map RCLike.re).sort (· ≥ ·)).getI i.val := by
-  rw [hA.charpoly_roots_eq_eigenvalues₀]
+  rw [hA.roots_charpoly_eq_eigenvalues₀]
   simp_rw [Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
     Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
   rw [List.mergeSort_of_sorted]
@@ -178,15 +178,15 @@ lemma eigenvalues_eq_iff_charpoly_eq :
   constructor <;> intro h
   · rw [hA.charpoly_eq, hB.charpoly_eq, h]
   · unfold eigenvalues
-    simp_rw [eigenvalues₀_eq_charpoly_roots_sort_getI, h]
+    simp_rw [eigenvalues₀_eq_roots_charpoly_sort_getI, h]
 
 theorem charpoly_splits (hA : A.IsHermitian) :
     A.charpoly.Splits (RingHom.id 𝕜) :=
-  Polynomial.splits_iff_card_roots.mpr (by simp [hA.charpoly_roots_eq_eigenvalues])
+  Polynomial.splits_iff_card_roots.mpr (by simp [hA.roots_charpoly_eq_eigenvalues])
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  simp [det_eq_prod_roots_charpoly_of_splits hA.charpoly_splits, hA.charpoly_roots_eq_eigenvalues]
+  simp [det_eq_prod_roots_charpoly_of_splits hA.charpoly_splits, hA.roots_charpoly_eq_eigenvalues]
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
@@ -236,7 +236,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
     A.trace = ∑ i, (hA.eigenvalues i : 𝕜) := by
-  simp [trace_eq_sum_roots_charpoly_of_splits hA.charpoly_splits, hA.charpoly_roots_eq_eigenvalues]
+  simp [trace_eq_sum_roots_charpoly_of_splits hA.charpoly_splits, hA.roots_charpoly_eq_eigenvalues]
 
 end IsHermitian
 
