@@ -66,9 +66,10 @@ variable {I}
 theorem dpow_eq_of_mem {m : ℕ} {x : A} (hx : x ∈ I) : dpow I m x = inverse (m ! : A) * x ^ m := by
   simp [dpow, hx]
 
-theorem dpow_eq_of_not_mem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+theorem dpow_eq_of_notMem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
 
-theorem dpow_null {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+@[deprecated (since := "2025-09-10")] alias dpow_eq_of_not_mem := dpow_eq_of_notMem
+@[deprecated (since := "2025-09-10")] alias dpow_null := dpow_eq_of_notMem
 
 theorem dpow_zero {x : A} (hx : x ∈ I) : dpow I 0 x = 1 := by simp [dpow, hx]
 
@@ -174,7 +175,7 @@ theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^
 noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A))
     (hnI : I ^ n = 0) : DividedPowers I where
   dpow            := dpow I
-  dpow_null hx    := dpow_null hx
+  dpow_eq_of_notMem hx := dpow_eq_of_notMem hx
   dpow_zero hx    := dpow_zero hx
   dpow_one hx     := dpow_one hx
   dpow_mem hn hx  := dpow_mem hn hx
@@ -265,7 +266,7 @@ variable (I)
   given by `dpow n x = x ^ n / n!`. -/
 noncomputable def dividedPowers : DividedPowers I where
   dpow           := dpow I
-  dpow_null hx   := OfInvertibleFactorial.dpow_null hx
+  dpow_eq_of_notMem hx := OfInvertibleFactorial.dpow_eq_of_notMem hx
   dpow_zero hx   := OfInvertibleFactorial.dpow_zero hx
   dpow_one hx    := OfInvertibleFactorial.dpow_one hx
   dpow_mem hn hx := OfInvertibleFactorial.dpow_mem hn hx
