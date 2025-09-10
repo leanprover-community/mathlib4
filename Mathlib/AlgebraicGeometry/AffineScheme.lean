@@ -722,13 +722,16 @@ theorem primeIdealOf_eq_map_closedPoint (x : U) :
     hU.primeIdealOf x = (Spec.map (X.presheaf.germ _ x x.2)).base (closedPoint _) :=
   hU.isoSpec_hom_base_apply _
 
-/-- A point `x : U` is a closed point if and only if its corresponding prime ideal is maximal. -/
-theorem isClosed_iff_primeIdealOf_isMaximal {x : U} :
-    IsClosed {x} ↔ (hU.primeIdealOf x).asIdeal.IsMaximal := by
-  refine Iff.trans ?_ (hU.primeIdealOf x).isClosed_singleton_iff_isMaximal
+/-- If a point `x : U` is a closed point, then its corresponding prime ideal is maximal. -/
+theorem primeIdealOf_isMaximal_of_isClosed (x : U) (hx : IsClosed {x.1}) :
+    (hU.primeIdealOf x).asIdeal.IsMaximal := by
+  have hx₀ : IsClosed {x} := by
+    simpa [← Set.image_singleton, Set.preimage_image_eq _ Subtype.val_injective]
+      using hx.preimage U.isOpenEmbedding'.continuous
+  apply (hU.primeIdealOf x).isClosed_singleton_iff_isMaximal.mp
   rw [primeIdealOf, ← Set.image_singleton]
-  refine Topology.IsClosedEmbedding.isClosed_iff_image_isClosed <|
-    IsHomeomorph.isClosedEmbedding ?_
+  refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed <|
+    IsHomeomorph.isClosedEmbedding ?_).mp hx₀
   apply (TopCat.isIso_iff_isHomeomorph _).mp
   infer_instance
 
