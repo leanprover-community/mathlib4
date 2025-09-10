@@ -154,24 +154,3 @@ lemma triangle_removal (hG : #(G.cliqueFinset 3) < triangleRemovalBound ε * car
   exact le_of_not_gt fun i ↦ h G' hG _ i hG'
 
 end SimpleGraph
-
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq SimpleGraph
-
-/-- Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive if
-`0 < ε ≤ 1`.
-
-Note this looks for `ε ≤ 1` in the context. -/
-@[positivity triangleRemovalBound _]
-def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let some hε₁ ← findLocalDeclWithTypeQ? q($ε ≤ 1) | failure
-    let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure
-    assertInstancesCommute
-    pure (.positive q(triangleRemovalBound_pos $hε $hε₁))
-  | _, _, _ => throwError "failed to match on Int.ceil application"
-
-example (ε : ℝ) (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) : 0 < triangleRemovalBound ε := by positivity
-
-end Mathlib.Meta.Positivity
