@@ -61,8 +61,6 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 open Finset Real Filter Asymptotics
 open scoped Topology
 
-
-
 namespace AkraBazziRecurrence
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
