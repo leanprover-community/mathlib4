@@ -147,7 +147,7 @@ theorem eigenvalues_eq (i : n) :
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
 open Polynomial in
-lemma charpoly_eq : A.charpoly = ∏ i, (X - C (RCLike.ofReal (hA.eigenvalues i))) := by
+lemma charpoly_eq : A.charpoly = ∏ i, (X - C (hA.eigenvalues i : 𝕜)) := by
   conv_lhs => rw [hA.spectral_theorem, charpoly_mul_comm, ← mul_assoc]
   simp [charpoly_diagonal]
 
