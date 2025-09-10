@@ -18,7 +18,7 @@ satisfying relations that model the intuitive formula `dpow n a = a ^ n / n !` a
 collected by the structure `DividedPowers`. The list of axioms is embedded in the structure:
 To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, extended by 0.
 
-* `DividedPowers.dpow_null` asserts that `dpow n x = 0` for `x ∉ I`
+* `DividedPowers.dpow_eq_of_notMem` asserts that `dpow n x = 0` for `x ∉ I`
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
@@ -77,7 +77,7 @@ variable {A : Type*} [CommSemiring A] (I : Ideal A)
 structure DividedPowers where
   /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A
-  dpow_null : ∀ {n x} (_ : x ∉ I), dpow n x = 0 -- TODO rename away from "null"
+  dpow_eq_of_notMem : ∀ {n x} (_ : x ∉ I), dpow n x = 0
   dpow_zero : ∀ {x} (_ : x ∈ I), dpow 0 x = 1
   dpow_one : ∀ {x} (_ : x ∈ I), dpow 1 x = x
   dpow_mem : ∀ {n x} (_ : n ≠ 0) (_ : x ∈ I), dpow n x ∈ I
@@ -90,11 +90,14 @@ structure DividedPowers where
   dpow_comp : ∀ {m n x} (_ : n ≠ 0) (_ : x ∈ I),
     dpow m (dpow n x) = uniformBell m n * dpow (m * n) x
 
+@[deprecated (since := "2025-09-11")]
+alias DividedPowers.dpow_null := DividedPowers.dpow_eq_of_notMem
+
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
 noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
   dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
-  dpow_null {n a} ha := by
+  dpow_eq_of_notMem {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
     exact not_and_of_not_left (n = 0) ha
@@ -340,8 +343,8 @@ variable {A B : Type*} [CommSemiring A] {I : Ideal A} [CommSemiring B] {J : Idea
 /-- Transfer divided powers under an equivalence -/
 def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
   dpow n b := e (hI.dpow n (e.symm b))
-  dpow_null hx := by
-    rw [EmbeddingLike.map_eq_zero_iff, hI.dpow_null]
+  dpow_eq_of_notMem hx := by
+    rw [EmbeddingLike.map_eq_zero_iff, hI.dpow_eq_of_notMem]
     rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_zero hx := by
     rw [EmbeddingLike.map_eq_one_iff, hI.dpow_zero]
