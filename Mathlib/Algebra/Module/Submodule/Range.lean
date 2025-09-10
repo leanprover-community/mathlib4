@@ -56,8 +56,10 @@ See Note [range copy pattern]. -/
 def range [RingHomSurjective τ₁₂] (f : F) : Submodule R₂ M₂ :=
   (map f ⊤).copy (Set.range f) Set.image_univ.symm
 
-theorem range_coe [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = Set.range f :=
+theorem coe_range [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = Set.range f :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
 
 theorem range_toAddSubmonoid [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
     (range f).toAddSubmonoid = AddMonoidHom.mrange f :=
@@ -88,10 +90,16 @@ theorem range_comp_le_range [RingHomSurjective τ₂₃] [RingHomSurjective τ�
 
 theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
     range f = ⊤ ↔ Surjective f := by
-  rw [SetLike.ext'_iff, range_coe, top_coe, Set.range_eq_univ]
+  rw [SetLike.ext'_iff, coe_range, top_coe, Set.range_eq_univ]
 
 theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : F) (hf : Surjective f) :
     range f = ⊤ := range_eq_top.2 hf
+
+theorem range_add_le [RingHomSurjective τ₁₂] (f g : M →ₛₗ[τ₁₂] M₂) :
+    range (f + g) ≤ range f ⊔ range g := by
+  rintro - ⟨_, rfl⟩
+  apply add_mem_sup
+  all_goals simp only [mem_range, exists_apply_eq_apply]
 
 theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂} :
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
@@ -226,13 +234,13 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
   constructor
   · intro h
     use 0
-    rw [← SetLike.mem_coe, range_coe]
+    rw [← SetLike.mem_coe, coe_range]
     exact ⟨⟨0, map_zero f⟩, h⟩
   · rintro ⟨y, h₁, h₂⟩
     rw [SetLike.le_def]
     intro z hz
     simp only [mem_ker] at hz
-    rw [← SetLike.mem_coe, range_coe, Set.mem_range] at h₁
+    rw [← SetLike.mem_coe, coe_range, Set.mem_range] at h₁
     obtain ⟨x, hx⟩ := h₁
     have hx' : x ∈ p := h₂ hx
     have hxz : z + x ∈ p := by
@@ -402,11 +410,7 @@ theorem mem_submoduleImage {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Su
 theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
     x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
-  refine mem_submoduleImage.trans ⟨?_, ?_⟩
-  · rintro ⟨y, yO, yN, h⟩
-    exact ⟨y, yN, h⟩
-  · rintro ⟨y, yN, h⟩
-    exact ⟨y, hNO yN, yN, h⟩
+  grind [mem_submoduleImage]
 
 theorem submoduleImage_apply_of_le {M' : Type*} [AddCommMonoid M'] [Module R M']
     {O : Submodule R M} (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :

@@ -129,7 +129,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
     rw [sum_dite_of_true fun _ ↦ id]
     exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
-    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
+    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by grind⟩
     rw [← sum_attach s]
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 

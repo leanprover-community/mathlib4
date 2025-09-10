@@ -195,7 +195,7 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
 
 lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
     (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp [Set.singleton_zero, Ideal.span_zero, map_eq_zero_iff _ hv.hom_inj]
   ext
   simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
@@ -204,7 +204,7 @@ lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
     [Subsingleton (MonoidHom.mrange v)ˣ] :
     Function.Bijective (algebraMap O F) := by
   refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
-  rcases eq_or_ne x 0 with rfl|hx
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
       ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le

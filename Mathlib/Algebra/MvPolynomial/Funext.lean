@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.MvPolynomial.Rename
-import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 ## Function extensionality for multivariate polynomials

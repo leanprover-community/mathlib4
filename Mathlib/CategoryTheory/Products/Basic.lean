@@ -133,13 +133,6 @@ def sectR {C : Type u₁} [Category.{v₁} C] (Z : C) (D : Type u₂) [Category.
   obj X := (Z, X)
   map f := (𝟙 Z, f)
 
-@[deprecated (since := "2024-11-12")] alias sectl := sectL
-@[deprecated (since := "2024-11-12")] alias sectr := sectR
-@[deprecated (since := "2024-11-12")] alias sectl_obj := sectL_obj
-@[deprecated (since := "2024-11-12")] alias sectr_obj := sectR_obj
-@[deprecated (since := "2024-11-12")] alias sectl_map := sectL_map
-@[deprecated (since := "2024-11-12")] alias sectr_map := sectR_map
-
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- `fst` is the functor `(X, Y) ↦ X`. -/
@@ -185,12 +178,12 @@ variable {C D}
 /-- Any morphism in a product factors as a morphsim whose left component is an identity
 followed by a morphism whose right component is an identity. -/
 @[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by aesop
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by simp
 
 /-- Any morphism in a product factors as a morphsim whose right component is an identity
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by aesop
+lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by simp
 
 end Prod
 

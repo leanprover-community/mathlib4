@@ -277,7 +277,7 @@ def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
 noncomputable
 instance {X : LocallyRingedSpace.{u}} : Unique (∅ ⟶ X) where
   default := LocallyRingedSpace.emptyTo X
-  uniq f := by ext ⟨⟩ x; aesop_cat
+  uniq f := by ext ⟨⟩ x; cat_disch
 
 /-- The empty space is initial in `LocallyRingedSpace`. -/
 noncomputable
@@ -290,7 +290,7 @@ theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
   simp only [RingedSpace.basicOpen, Opens.coe_mk, Set.mem_setOf_eq,
     Opens.coe_bot, Set.mem_empty_iff_false,
     iff_false, not_exists]
-  intros hx
+  intro hx
   rw [map_zero, isUnit_zero_iff]
   change (0 : X.presheaf.stalk x) ≠ (1 : X.presheaf.stalk x)
   exact zero_ne_one
@@ -440,7 +440,7 @@ variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : I
   (V : Opens U) (x : U) (hx : x ∈ V)
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
-of `X` at `f x` and the stalk of the restriction of `X` along `f` at t `x`. -/
+of `X` at `f x` and the stalk of the restriction of `X` along `f` at `x`. -/
 noncomputable
 def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x) :=
   X.toPresheafedSpace.restrictStalkIso h x
