@@ -42,7 +42,7 @@ noncomputable def DividedPowers.ofInjective (f : A →+* B) (hf : Injective f)
     (hmem : ∀ (n : ℕ) {x : A} (_ : x ∈ I), ∃ (y : A) (_ : n ≠ 0 → y ∈ I), f y = hJ.dpow n (f x)) :
     DividedPowers I where
   dpow n x := open Classical in if hx : x ∈ I then Exists.choose (hmem n hx) else 0
-  dpow_null hx := by simp [dif_neg hx]
+  dpow_eq_of_notMem hx := by simp [dif_neg hx]
   dpow_zero {x} hx := by
     simp only [dif_pos hx, ← hf.eq_iff, (Exists.choose_spec (hmem 0 hx)).2, map_one]
     rw [hJ.dpow_zero (hIJ ▸ Ideal.mem_map_of_mem f hx)]
