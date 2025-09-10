@@ -29,10 +29,9 @@ def IsEquiv : Prop := ∀ x y, v x ≤ v y ↔ w x ≤ w y
 
 theorem IsEquiv.refl : v.IsEquiv v := fun _ _ ↦ .rfl
 
-variable {v} in
-theorem IsEquiv.rfl : v.IsEquiv v := fun _ _ ↦ .rfl
-
 variable {v w}
+
+theorem IsEquiv.rfl : v.IsEquiv v := fun _ _ ↦ .rfl
 
 theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 
