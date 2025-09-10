@@ -30,12 +30,48 @@ variable (k : Type*) [Field k]
 abbrev A := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
 lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
-    [CommRing R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔
+    [CommRing R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔ ¬ IsField R ∧
     ∀ (x : R), x ≠ 0 → IsLocalRing.maximalIdeal R ≤ Ideal.radical (Ideal.span {x}) := by
   sorry
 
+lemma Subring.isLocalRing_of_unit {R : Type*} [CommRing R] [IsLocalRing R] (S : Subring R)
+    (h_unit : ∀ (x : R) (hx : x ∈ S), IsUnit x → IsUnit (⟨x, hx⟩ : S)) :
+    IsLocalRing S where
+  isUnit_or_isUnit_of_add_one {x y} hxy :=
+    (‹IsLocalRing R›.isUnit_or_isUnit_of_add_one congr(Subtype.val $hxy)).elim
+      (fun hx ↦ Or.inl (h_unit x.val x.prop hx)) (fun hy ↦ Or.inr (h_unit y.val y.prop hy))
+
 theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
-  sorry
+  have h_unit : ∀ (x : (RatFunc k)⟦X⟧) (hx : x ∈ A k), IsUnit x → IsUnit (⟨x, hx⟩ : A k) :=
+    fun x ⟨z, hz⟩ ⟨y, hxy⟩ ↦ by
+    refine ⟨⟨⟨y.val, hxy ▸ ⟨z, hz⟩⟩, ⟨y.inv, ⟨z⁻¹, ?_⟩⟩, Subtype.ext y.3, Subtype.ext y.4⟩,
+      Subtype.ext hxy⟩
+    have := hxy ▸ congr(PowerSeries.constantCoeff $(y.3))
+    simp only [map_mul, ← hz, constantCoeff_one] at this
+    have hz : z ≠ 0 := fun h ↦ by subst h; simp at this
+    simpa only [← mul_assoc, ← RatFunc.C.map_mul, inv_mul_cancel₀ hz, RatFunc.C.map_one,
+    one_mul, mul_one] using congr(RatFunc.C z⁻¹ * $this.symm)
+  have : IsLocalRing (A k) := Subring.isLocalRing_of_unit (A k) h_unit
+  have : ¬ IsField (A k) := fun h ↦ by
+    let Y : A k := ⟨PowerSeries.X, by simp [A]⟩
+    have : Y ≠ 0 := fun h ↦ PowerSeries.X_ne_zero congr(Subtype.val $h)
+    obtain ⟨Y_inv, h'⟩ := h.mul_inv_cancel this
+    have := congr(PowerSeries.constantCoeff (Subtype.val $(h')))
+    simp [Y] at this
+  refine ringKrullDim_eq_one_iff_of_isLocalRing_isDomain.mpr ⟨this, fun x hx y hy ↦ ?_⟩
+  have : ringKrullDim (RatFunc k)⟦X⟧ = 1 := IsPrincipalIdealRing.ringKrullDim_eq_one _
+    PowerSeries.not_isField
+  have hy_mem : y.val ∈ IsLocalRing.maximalIdeal (RatFunc k)⟦X⟧ :=
+    fun h ↦ hy (h_unit y.val y.prop h)
+  have hy_const : PowerSeries.constantCoeff y.val = 0 := by
+    simpa [← PowerSeries.ker_coeff_eq_max_ideal] using hy_mem
+  obtain ⟨n, hn⟩ := (ringKrullDim_eq_one_iff_of_isLocalRing_isDomain.mp this).2 x
+    (fun h ↦ hx (Subtype.ext h)) hy_mem
+  rw [Ideal.mem_span_singleton'] at hn
+  obtain ⟨a, ha⟩ := hn
+  refine ⟨n + 1, Ideal.mem_span_singleton'.mpr ⟨⟨a * y.val, ?_⟩, Subtype.ext ?_⟩⟩
+  · exact ⟨0, by simp [hy_const]⟩
+  · simp only [Subring.coe_mul, SubmonoidClass.coe_pow, pow_succ, ← ha, mul_assoc, mul_comm x.val _]
 
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
