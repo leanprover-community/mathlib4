@@ -16,9 +16,7 @@ namespace StateT
 
 section
 
-variable {σ : Type u}
-variable {m : Type u → Type v}
-variable {α : Type u}
+variable {σ : Type u} {m : Type u → Type v} {α β : Type u}
 
 /--
 `StateT` doesn't require a constructor, but it appears confusing to declare the
@@ -37,6 +35,14 @@ protected def mk (f : σ → m (α × σ)) : StateT σ m α := f
 @[simp]
 theorem run_mk (f : σ → m (α × σ)) (st : σ) : StateT.run (StateT.mk f) st = f st :=
   rfl
+
+/-- A copy of `LawfulFunctor.map_const` for `StateT` that holds even if `m` is not lawful. -/
+protected lemma map_const [Monad m] :
+    (Functor.mapConst : α → StateT σ m β → StateT σ m α) = Functor.map ∘ Function.const β :=
+  rfl
+
+@[simp] lemma run_mapConst [Monad m] [LawfulMonad m] (x : StateT σ m α) (y : β) (st : σ) :
+    (Functor.mapConst y x).run st = Prod.map (Function.const α y) id <$> x.run st := run_map _ _ _
 
 end
 

@@ -493,6 +493,9 @@ structure Config : Type where
   self : Bool := false
   deriving Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprConfig.repr
+
 /-- Implementation function for `additiveTest`.
 Failure means that in that subexpression there is no constant that blocks `e` from being translated.
 We cache previous applications of the function, using an expression cache using ptr equality
@@ -1145,7 +1148,8 @@ def elabToAdditive : Syntax → CoreM Config
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
         if getLinterValue linter.deprecated (← getLinterOptions) then
           let hintSuggestion := {
-            diffGranularity := .none
+            /- #adaptation_note: change to `.none` on nightly-2025-08-28. -/
+            diffGranularity := .auto
             toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trim ++ " -/" }
           }
           let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc
