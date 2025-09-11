@@ -21,6 +21,7 @@ import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Tactic.CC.MkProof
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.CancelDenoms.Core
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
