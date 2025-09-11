@@ -35,6 +35,11 @@ to learn about it as well!
   **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
 
 **Tools for manual maintenance**
+- `check_github_urls.py`
+  Scans the codebase for GitHub issue/PR URLs and checks their status via the GitHub API.
+  Identifies closed issues and PRs that are still referenced in code, helping maintain clean documentation.
+  Reports file/URL pairs grouped by status (closed, open, errors) with issue/PR titles.
+  Requires `gh` CLI installed and authenticated. Usage: `python3 scripts/check_github_urls.py`
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
 - `add_deprecations.sh` is a text-based script that automatically adds deprecation statements.
