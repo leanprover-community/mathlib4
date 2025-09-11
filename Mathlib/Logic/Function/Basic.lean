@@ -1104,3 +1104,17 @@ instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
     Decidable (curry r a b) :=
   ‹Decidable _›
+
+namespace Pi
+
+variable {ι : Type*}
+
+@[simp] theorem map_id {α : ι → Type*} : Pi.map (fun i => @id (α i)) = id := rfl
+
+@[simp] theorem map_id' {α : ι → Type*} : Pi.map (fun i (a : α i) => a) = fun x ↦ x := rfl
+
+theorem map_comp_map {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
+    Pi.map g ∘ Pi.map f = Pi.map fun i => g i ∘ f i :=
+  rfl
+
+end Pi
