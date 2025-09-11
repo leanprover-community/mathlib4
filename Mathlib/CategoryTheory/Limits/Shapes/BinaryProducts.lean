@@ -1392,15 +1392,11 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
     · apply P.hom_ext
       rintro ⟨⟨⟩⟩ <;> simp
       · exact w ⟨.left⟩
-      · specialize w ⟨.right⟩
-        simp? at w says
-          simp only [pair_obj_right, BinaryFan.assoc_snd,
-            Functor.const_obj_obj, pair_obj_left] at w
+      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+          simpa using w ⟨.right⟩
         simp [← w]
-    · specialize w ⟨.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
+    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+        simpa using w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
