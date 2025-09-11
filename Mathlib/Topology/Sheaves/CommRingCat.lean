@@ -65,7 +65,7 @@ open scoped nonZeroDivisors
 
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
--- note: this was specialized to `CommRingCat` in #19757
+-- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
   /-- The submonoid structure for each component -/

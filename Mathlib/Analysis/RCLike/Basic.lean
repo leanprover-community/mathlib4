@@ -949,7 +949,7 @@ lemma instPosMulReflectLE : PosMulReflectLE K where
   elim a b c h := by
     obtain ⟨a', ha1, ha2⟩ := pos_iff_exists_ofReal.mp a.2
     rw [← sub_nonneg]
-    #adaptation_note /-- 2025-03-29 need beta reduce for lean4#7717 -/
+    #adaptation_note /-- 2025-03-29 need beta reduce for https://github.com/leanprover/lean4/issues/7717 -/
     beta_reduce at h
     rw [← ha2, ← sub_nonneg, ← mul_sub, le_iff_lt_or_eq] at h
     rcases h with h | h
