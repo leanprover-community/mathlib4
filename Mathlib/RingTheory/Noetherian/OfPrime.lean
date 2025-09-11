@@ -26,23 +26,6 @@ namespace Ideal
 
 open Set Finset
 
-/-- If a commutative (semi)ring has an infinitely generated ideal, then it has an ideal which is
-maximal for being infinitely generated. -/
-lemma exists_maximal_not_fg [CommSemiring R] (h : ∃ I : Ideal R, ¬I.FG) :
-    ∃ I : Ideal R, Maximal (¬·.FG) I := by
-  refine zorn_le₀ { I : Ideal R | ¬I.FG } (fun C hC hC₂ ↦ ?_)
-  by_cases H : C.Nonempty
-  · refine ⟨sSup C, ?_, fun _ ↦ le_sSup⟩
-    intro ⟨G, hG⟩
-    obtain ⟨I, I_mem_C, G_subset_I⟩ : ∃ I ∈ C, G.toSet ⊆ I := by
-      refine hC₂.directedOn.exists_mem_subset_of_finset_subset_biUnion H (fun _ hx ↦ ?_)
-      simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
-      exact (Submodule.mem_sSup_of_directed H hC₂.directedOn).1 <| hG ▸ subset_span hx
-    have I_eq_sSup : I = sSup C := le_antisymm (le_sSup I_mem_C) (hG ▸ Ideal.span_le.2 G_subset_I)
-    exact hC I_mem_C ⟨G, I_eq_sSup ▸ hG⟩
-  · obtain ⟨I, hI⟩ := h
-    exact ⟨I, hI, by simp [Set.not_nonempty_iff_eq_empty.1 H]⟩
-
 /-- `Ideal.FG` is an Oka predicate. -/
 theorem isOka_fg [CommRing R] : IsOka (FG (R := R)) where
   top := ⟨{1}, by simp⟩
@@ -77,5 +60,17 @@ open Ideal
 
 /-- If all prime ideals in a commutative ring are finitely generated, so are all other ideals. -/
 theorem IsNoetherianRing.of_prime [CommRing R] (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
-    IsNoetherianRing R :=
-  ⟨isOka_fg.forall_of_forall_prime exists_maximal_not_fg H⟩
+    IsNoetherianRing R := by
+  refine ⟨isOka_fg.forall_of_forall_prime (fun h ↦ ?_) H⟩
+  refine zorn_le₀ { I : Ideal R | ¬I.FG } (fun C hC hC₂ ↦ ?_)
+  by_cases H : C.Nonempty
+  · refine ⟨sSup C, ?_, fun _ ↦ le_sSup⟩
+    intro ⟨G, hG⟩
+    obtain ⟨I, I_mem_C, G_subset_I⟩ : ∃ I ∈ C, G.toSet ⊆ I := by
+      refine hC₂.directedOn.exists_mem_subset_of_finset_subset_biUnion H (fun _ hx ↦ ?_)
+      simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop]
+      exact (Submodule.mem_sSup_of_directed H hC₂.directedOn).1 <| hG ▸ subset_span hx
+    have I_eq_sSup : I = sSup C := le_antisymm (le_sSup I_mem_C) (hG ▸ Ideal.span_le.2 G_subset_I)
+    exact hC I_mem_C ⟨G, I_eq_sSup ▸ hG⟩
+  · obtain ⟨I, hI⟩ := h
+    exact ⟨I, hI, by simp [Set.not_nonempty_iff_eq_empty.1 H]⟩
