@@ -469,7 +469,7 @@ theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f.IsNontri
   · exact .inl <| equiv_real_of_unbounded bdd
 
 /-- The standard absolute value on `ℚ` is not equivalent to any `p`-adic absolute value. -/
-lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.IsEquiv (padic p) := by
+lemma not_real_isEquiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.IsEquiv (padic p) := by
   rw [isEquiv_iff_exists_rpow_eq]
   rintro ⟨c, hc₀, hc⟩
   apply_fun (· 2) at hc

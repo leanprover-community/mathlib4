@@ -57,73 +57,37 @@ variable [IsDomain S] [Nontrivial R]
 
 theorem IsEquiv.lt_one_iff (h : v.IsEquiv w) {x : R} :
     v x < 1 ↔ w x < 1 := by
-  simpa only [AbsoluteValue.map_one] using h.lt_iff_lt (y := 1)
+  simpa only [map_one] using h.lt_iff_lt (y := 1)
 
 theorem IsEquiv.one_lt_iff (h : v.IsEquiv w) {x : R} :
     1 < v x ↔ 1 < w x := by
-  simpa only [AbsoluteValue.map_one] using h.lt_iff_lt (x := 1)
+  simpa only [map_one] using h.lt_iff_lt (x := 1)
+
+theorem IsEquiv.le_one_iff (h : v.IsEquiv w) {x : R} :
+    v x ≤ 1 ↔ w x ≤ 1 := by
+  simpa only [map_one] using h x 1
+
+theorem IsEquiv.one_le_iff (h : v.IsEquiv w) {x : R} :
+    1 ≤ v x ↔ 1 ≤ w x := by
+  simpa only [map_one] using h 1 x
+
+theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) (x : R) : v x = 1 ↔ w x = 1 := by
+  simp only [le_antisymm_iff, h.le_one_iff, h.one_le_iff]
+
+theorem IsEquiv.isNontrivial {w : AbsoluteValue R S} (h : v.IsEquiv w) (hv : w.IsNontrivial) :
+    v.IsNontrivial := by
+  obtain ⟨x, h₀, h₁⟩ := hv
+  have hl := h.one_le_iff (x := x)
+  have hr := h.le_one_iff (x := x)
+  by_cases hw : w x ≤ 1
+  · contrapose! hl; exact .inl ⟨v.not_isNontrivial_iff.1 hl _ h₀ ▸ le_rfl, mt (le_antisymm hw) h₁⟩
+  · contrapose! hr; exact .inl ⟨v.not_isNontrivial_iff.1 hr _ h₀ ▸ le_rfl, hw⟩
 
 end OrderedSemiring
-
-section LinearOrderedSemiring
-
-variable {R S : Type*} [Field R] [Semiring S] [LinearOrder S] [IsDomain S] {v w : AbsoluteValue R S}
-
-theorem IsEquiv.isNontrivial {w : AbsoluteValue R S}
-    (h : v.IsEquiv w) (hv : w.IsNontrivial) : v.IsNontrivial := by
-  obtain ⟨x, h₀, h₁⟩ := hv
-  have hl := h.lt_one_iff (x := x)
-  have hr := h.one_lt_iff (x := x)
-  cases lt_or_lt_iff_ne.2 h₁ with
-  | inl hw => contrapose! hl; exact .inr <| by simp [hw, v.not_isNontrivial_iff.1 hl _ h₀]
-  | inr hw => contrapose! hr; exact .inr <| by simpa [v.not_isNontrivial_iff.1 hr _ h₀]
-
-private theorem IsEquiv.eq_one_imp (h : v.IsEquiv w) {x : R} (hv : v x = 1) :
-    w x = 1 := by
-  cases eq_or_lt_of_le (not_lt.1 <| h.lt_one_iff.not.1 hv.not_lt) with
-  | inl hl => rw [← hl]
-  | inr hr => rw [← h.one_lt_iff] at hr; absurd hv; exact ne_of_gt hr
-
-theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) (x : R) : v x = 1 ↔ w x = 1 :=
-  ⟨fun hv => h.eq_one_imp hv, fun hw => h.symm.eq_one_imp hw⟩
-
-end LinearOrderedSemiring
 
 section LinearOrderedSemifield
 
 variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] {v w : AbsoluteValue R S}
-  [IsStrictOrderedRing S]
-
-theorem isEquiv_iff_lt_one_iff :
-    v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
-  refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
-  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
-  rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
-    ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
-  exact h _
-
-end LinearOrderedSemifield
-
-section LinearOrderedField
-
-variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
-
-theorem isEquiv_of_lt_one_imp [Archimedean S] [IsStrictOrderedRing S] (hv : v.IsNontrivial)
-    (h : ∀ x, v x < 1 → w x < 1) :
-    v.IsEquiv w := by
-  refine isEquiv_iff_lt_one_iff.2 fun a ↦ ?_
-  rcases eq_or_ne a 0 with (rfl | ha₀) <;> try simp
-  refine ⟨h a, fun hw ↦ ?_⟩
-  let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
-  by_contra! hv
-  have (n : ℕ) : w x₀ < w a ^ n := by
-    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (by simp_all) _),
-      ← map_pow, ← map_inv₀, ← map_mul]
-    apply h
-    rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by simp [ha₀]) _), one_mul]
-    exact lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv
-  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one (w.pos hx₀.1) hw
-  linarith [this n]
 
 /-- An absolute value is equivalent to the trivial iff it is trivial itself. -/
 @[simp]
@@ -137,7 +101,55 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
 @[deprecated (since := "2025-09-10")]
 alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
-end LinearOrderedField
+variable [IsStrictOrderedRing S]
+
+theorem isEquiv_iff_lt_one_iff :
+    v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
+  refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
+  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
+  rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
+    ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
+  exact h _
+
+variable [Archimedean S] [ExistsAddOfLE S]
+
+theorem isEquiv_of_lt_one_imp (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) : v.IsEquiv w := by
+  refine isEquiv_iff_lt_one_iff.2 fun a ↦ ?_
+  rcases eq_or_ne a 0 with (rfl | ha₀) <;> try simp
+  refine ⟨h a, fun hw ↦ ?_⟩
+  let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
+  have hpow (n : ℕ) (hv : 1 ≤ v a) : w x₀ < w a ^ n := by
+    rw [← one_mul (_ ^ _), ← mul_inv_lt_iff₀ (pow_pos (by simp_all) _),
+      ← map_pow, ← map_inv₀, ← map_mul]
+    apply h
+    rw [map_mul, map_inv₀, map_pow, mul_inv_lt_iff₀ (pow_pos (by simp [ha₀]) _), one_mul]
+    exact lt_of_lt_of_le hx₀.2 <| one_le_pow₀ hv
+  obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one (w.pos hx₀.1) hw
+  exact not_le.1 <| mt (hpow n) <| not_lt.2 hn.le
+
+/--
+If `v` and `w` are inequivalent absolute values and `v` is non-trivial, then we can find an `a : R`
+such that `v a < 1` while `1 ≤ w a`.
+-/
+theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue R S} (hv : v.IsNontrivial)
+    (h : ¬v.IsEquiv w) : ∃ a : R, v a < 1 ∧ 1 ≤ w a := by
+  contrapose! h
+  exact isEquiv_of_lt_one_imp hv h
+
+/--
+If `v` and `w` are two non-trivial and inequivalent absolute values then we can find an `a : R`
+such that `1 < v a` while `w a < 1`.
+-/
+theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue R S} (hv : v.IsNontrivial)
+    (hw : w.IsNontrivial) (h : ¬v.IsEquiv w) :
+    ∃ a : R, 1 < v a ∧ w a < 1 := by
+  let ⟨a, hva, hwa⟩ := exists_lt_one_one_le_of_not_isEquiv hv h
+  let ⟨b, hwb, hvb⟩ := exists_lt_one_one_le_of_not_isEquiv hw (mt .symm h)
+  have ha : a ≠ 0 := fun ha ↦ not_lt.2 (map_zero w ▸ ha ▸ hwa) zero_lt_one
+  use b / a
+  simp [ha, one_lt_div, div_lt_one, lt_of_le_of_lt' hvb hva, lt_of_le_of_lt' hwa hwb]
+
+end LinearOrderedSemifield
 
 section Real
 
@@ -170,7 +182,7 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
   exact not_lt_of_gt (h.lt_one_iff.1 hq₁) hq₂
 
 open Real in
-theorem IsEquiv.exists_rpow_eq_of_one_lt {v w : AbsoluteValue F ℝ} (h : v.IsEquiv w) :
+private theorem IsEquiv.exists_rpow_eq_of_one_lt {v w : AbsoluteValue F ℝ} (h : v.IsEquiv w) :
     ∃ t > (0 : ℝ), ∀ x, 1 < w x → v x ^ t = w x := by
   by_cases hw : w.IsNontrivial
   · let ⟨a, ha⟩ := hw.exists_abv_gt_one
@@ -202,28 +214,6 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
   · have hw_le : (w x)⁻¹ ≤ 1 := not_lt.1 <| one_lt_inv_iff₀.not.2 h₂
     rw [inv_le_one₀ (w.pos <| v.ne_zero_iff.mp h₀)] at hw_le
     exact ht _ <| lt_of_le_of_ne hw_le h₁.symm
-
-/--
-If `v` and `w` are inequivalent absolute values and `v` is non-trivial, then we can find an `a : F`
-such that `v a < 1` while `1 ≤ w a`.
--/
-theorem exists_lt_one_one_le_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
-    (h : ¬v.IsEquiv w) :
-    ∃ a : F, v a < 1 ∧ 1 ≤ w a := by
-  contrapose! h
-  exact isEquiv_of_lt_one_imp hv h
-
-/--
-If `v` and `w` are two non-trivial and inequivalent absolute values then
-we can find an `a : K` such that `1 < v a` while `w a < 1`.
--/
-theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue F ℝ} (hv : v.IsNontrivial)
-    (hw : w.IsNontrivial) (h : ¬v.IsEquiv w) :
-    ∃ a : F, 1 < v a ∧ w a < 1 := by
-  let ⟨a, _, ha⟩ := exists_lt_one_one_le_of_not_isEquiv hv h
-  let ⟨b, _, _⟩ := exists_lt_one_one_le_of_not_isEquiv hw (mt .symm h)
-  exact ⟨b / a, by simpa using ⟨(one_lt_div (v.pos fun h₀ ↦ by linarith [map_zero w ▸ h₀ ▸ ha])).2
-    (by linarith), div_lt_one (by linarith) |>.2 (by linarith)⟩⟩
 
 end Real
 
