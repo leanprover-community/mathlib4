@@ -62,10 +62,7 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 /-- Some basic API lemmas -/
 theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 0 := by
   simp only [quadraticCharFun]
-  by_cases ha : a = 0
-  · simp only [ha, if_true]
-  · simp only [ha, if_false]
-    split_ifs <;> simp only [neg_eq_zero, one_ne_zero, not_false_iff]
+  grind
 
 @[simp]
 theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
@@ -133,7 +130,7 @@ theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
 theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
     quadraticChar F a = 1 ↔ IsSquare a := by
   simp only [quadraticChar_apply, quadraticCharFun, ha, if_false, ite_eq_left_iff,
-    (by omega : (-1 : ℤ) ≠ 1), imp_false, not_not, reduceCtorEq]
+    imp_false, not_not, reduceCtorEq]
 
 /-- The quadratic character takes the value `1` on nonzero squares. -/
 theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) = 1 := by
@@ -206,7 +203,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := by
   rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
   intro hχ
-  simp only [hχ, one_apply a.isUnit, one_ne_zero, reduceCtorEq] at ha
+  simp only [hχ, one_apply a.isUnit, reduceCtorEq] at ha
 
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
@@ -224,8 +221,8 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       have h₁ : s = [b, -b].toFinset := by
         ext1
         rw [← pow_two] at h
-        simp only [Set.toFinset_setOf, h, mem_filter, mem_univ, true_and, List.toFinset_cons,
-          List.toFinset_nil, insert_empty_eq, mem_insert, mem_singleton, s]
+        simp_rw [s, Set.toFinset_setOf, mem_filter_univ, h, List.toFinset_cons, List.toFinset_nil,
+          insert_empty_eq, mem_insert, mem_singleton]
         exact sq_eq_sq_iff_eq_or_eq_neg
       norm_cast
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]

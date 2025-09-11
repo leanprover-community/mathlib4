@@ -122,7 +122,7 @@ section
 variable [PreservesColimit F (forget C)]
 
 theorem from_union_surjective_of_isColimit {D : Cocone F} (hD : IsColimit D) :
-    let ff : (Σj : J, ToType (F.obj j)) → ToType D.pt := fun a => D.ι.app a.1 a.2
+    let ff : (Σ j : J, ToType (F.obj j)) → ToType D.pt := fun a => D.ι.app a.1 a.2
     Function.Surjective ff := by
   intro ff x
   let E : Cocone (F ⋙ forget C) := (forget C).mapCocone D
@@ -149,7 +149,7 @@ theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : ToType (F.obj i
   obtain ⟨k, f, g, (hfg : (F ⋙ forget C).map f x = F.map g y)⟩ := h
   let h1 : (F ⋙ forget C).map f ≫ E.ι.app k = E.ι.app i := E.ι.naturality f
   let h2 : (F ⋙ forget C).map g ≫ E.ι.app k = E.ι.app j := E.ι.naturality g
-  show E.ι.app i x = E.ι.app j y
+  change E.ι.app i x = E.ι.app j y
   rw [← h1, types_comp_apply, hfg]
   exact congrFun h2 y
 

@@ -234,7 +234,7 @@ lemma find?_eq_eq_find?_le {l : List (Cell N)} {r : Fin (N + 2)} (hne : l ≠ []
       simp only [h, decide_false, Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, h']
       rcases tail with ⟨⟩ | ⟨htail, ttail⟩
       · simp
-      · simp only [List.chain'_cons] at ha
+      · simp only [List.chain'_cons_cons] at ha
         rcases ha with ⟨ha1, ha2⟩
         simp only [List.head_cons] at hf
         simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.head_cons, ha2, true_implies] at hi
@@ -260,7 +260,7 @@ lemma Path.firstMonster_eq_none {p : Path N} {m : MonsterData N} :
   convert List.find?_eq_none
   simp
 
-lemma Path.one_lt_length_cells (p : Path N): 1 < p.cells.length := by
+lemma Path.one_lt_length_cells (p : Path N) : 1 < p.cells.length := by
   by_contra hl
   have h : p.cells.length = 0 ∨ p.cells.length = 1 := by omega
   rcases h with h | h
@@ -271,7 +271,7 @@ lemma Path.one_lt_length_cells (p : Path N): 1 < p.cells.length := by
     have h1 := p.head_first_row
     simp_rw [hc, List.head_cons] at h1
     have h2 := p.last_last_row
-    simp [hc, List.getLast_singleton, h1, Fin.add_def] at h2
+    simp [hc, List.getLast_singleton, h1] at h2
 
 /-- Remove the first cell from a path, if the second cell is also on the first row. -/
 def Path.tail (p : Path N) : Path N where
@@ -330,8 +330,7 @@ lemma Path.tail_firstMonster (p : Path N) (m : MonsterData N) :
     rcases cells with ⟨⟩ | ⟨head, tail⟩
     · simp at nonempty
     · simp only [List.head_cons] at head_first_row
-      simp [List.find?_cons, head_first_row, m.notMem_monsterCells_of_fst_eq_zero head_first_row,
-        firstMonster]
+      simp [m.notMem_monsterCells_of_fst_eq_zero head_first_row, firstMonster]
   · simp_rw [Path.tail, if_neg h]
 
 lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
@@ -491,7 +490,7 @@ lemma Strategy.play_one (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 1 <
     s.play m k ⟨1, hk⟩ = (s ![(s Fin.elim0).firstMonster m]).firstMonster m := by
   have hk' : 2 ≤ k := by omega
   rw [s.play_apply_of_le m one_lt_two hk']
-  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, Nat.zero_eq,
+  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd,
     Fin.mk_one, Fin.isValue, cast_eq, Nat.succ_eq_add_one]
   congr
   refine funext fun i ↦ ?_
@@ -502,15 +501,15 @@ lemma Strategy.play_two (s : Strategy N) (m : MonsterData N) {k : ℕ} (hk : 2 <
     s.play m k ⟨2, hk⟩ = (s ![(s Fin.elim0).firstMonster m,
       (s ![(s Fin.elim0).firstMonster m]).firstMonster m]).firstMonster m := by
   have hk' : 3 ≤ k := by omega
-  rw [s.play_apply_of_le m (by norm_num : 2 < 3) hk']
-  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, Nat.zero_eq,
-    Fin.mk_one, Fin.isValue, cast_eq, Nat.succ_eq_add_one]
+  rw [s.play_apply_of_le m (by simp : 2 < 3) hk']
+  simp only [play, Fin.snoc, lt_self_iff_false, ↓reduceDIte, Nat.reduceAdd, cast_eq,
+    Nat.succ_eq_add_one]
   congr
   refine funext fun i ↦ ?_
   fin_cases i
   · rfl
   · have h : (1 : Fin 2) = Fin.last 1 := rfl
-    simp only [Fin.snoc_zero, Nat.reduceAdd, Fin.mk_one, Fin.isValue, id_eq, Matrix.cons_val]
+    simp only [Fin.snoc_zero, Nat.reduceAdd, Fin.mk_one, Fin.isValue, Matrix.cons_val]
     simp only [h, Fin.snoc_last]
     convert rfl
     simp_rw [Fin.fin_one_eq_zero, Matrix.cons_val]
@@ -562,6 +561,8 @@ lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1
   exact (monsterData12_apply_row2 hN h).symm
 
 lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.ForcesWinIn 2 := by
+  have : NeZero N := ⟨by omega⟩
+  have : 0 < N := by omega
   simp only [ForcesWinIn, WinsIn, Set.mem_range, not_forall, not_exists, Option.ne_none_iff_isSome]
   let m1 : Cell N := (s Fin.elim0).findFstEq 1
   let m2 : Cell N := (s ![m1]).findFstEq 2
@@ -570,7 +571,6 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
   have h2r : m2.1 = 2 := Path.findFstEq_fst _ _
   have h1 : m1 ∈ m.monsterCells := by
     convert row1_mem_monsterCells_monsterData12 hN m1.2 m2.2
-  have h2 : ((2 : Fin (N + 2)) : ℕ) = 2 := Nat.mod_eq_of_lt (by omega : 2 < N + 2)
   refine ⟨m, fun i ↦ ?_⟩
   fin_cases i
   · simp only [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some]
@@ -582,15 +582,13 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
     · rw [Path.firstMonster_isSome]
       refine ⟨m1, ?_, h1⟩
       have h' : m1 = (⟨(((2 : Fin (N + 2)) : ℕ) - 1 : ℕ), by omega⟩, m2.2) := by
-        simp [h2, Prod.ext_iff, h1r, h2r, h]
+        simpa [Prod.ext_iff, h1r, h2r, h]
       nth_rw 2 [h']
-      refine Path.findFstEq_fst_sub_one_mem _ ?_
-      rw [ne_eq, Fin.ext_iff, h2]
-      norm_num
+      exact Path.findFstEq_fst_sub_one_mem _ two_ne_zero
     · rw [Path.firstMonster_isSome]
       refine ⟨m2, Path.findFstEq_mem_cells _ _, ?_⟩
       convert row2_mem_monsterCells_monsterData12 hN h using 1
-      simp [Prod.ext_iff, h2r, Fin.ext_iff, h2]
+      simpa [Prod.ext_iff, h2r, Fin.ext_iff]
 
 lemma Strategy.ForcesWinIn.three_le {s : Strategy N} {k : ℕ} (hf : s.ForcesWinIn k)
     (hN : 2 ≤ N) : 3 ≤ k := by
@@ -766,13 +764,13 @@ lemma path0_firstMonster_eq_apply_row1 (hN : 2 ≤ N) (m : MonsterData N) :
       exact Nat.lt_irrefl _ hj
 
 lemma winningStrategy_play_one (hN : 2 ≤ N) (m : MonsterData N) :
-    (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ =
+    (winningStrategy hN).play m 3 ⟨1, by simp⟩ =
       (path1 hN (m (row1 hN))).firstMonster m := by
   simp_rw [Strategy.play_one, winningStrategy, path0_firstMonster_eq_apply_row1]
   rfl
 
 lemma winningStrategy_play_two (hN : 2 ≤ N) (m : MonsterData N) :
-    (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ =
+    (winningStrategy hN).play m 3 ⟨2, by simp⟩ =
       (path2 hN (m (row1 hN))
              (((path1 hN (m (row1 hN))).firstMonster m).getD 0).1).firstMonster m := by
   simp_rw [Strategy.play_two, winningStrategy, path0_firstMonster_eq_apply_row1]
@@ -857,8 +855,8 @@ lemma path2_firstMonster_of_not_edge (hN : 2 ≤ N) {m : MonsterData N} (hc₁0 
 
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_not_edge (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁0 : m (row1 hN) ≠ 0) (hc₁N : (m (row1 hN) : ℕ) ≠ N) :
-    (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
-      (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
+    (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨
+      (winningStrategy hN).play m 3 ⟨2, by simp⟩ = none := by
   rw [winningStrategy_play_one, winningStrategy_play_two]
   have h1 := path1_firstMonster_of_not_edge hN hc₁0 hc₁N
   rcases h1 with h1 | h1
@@ -919,8 +917,8 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
 
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁0 : m (row1 hN) = 0) :
-    (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
-      (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
+    (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨
+      (winningStrategy hN).play m 3 ⟨2, by simp⟩ = none := by
   rw [or_iff_not_imp_left]
   intro h
   rw [← ne_eq, Option.ne_none_iff_exists] at h
@@ -963,8 +961,8 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
     hx2N.2 hc₁0 hx.symm
 
 lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
-    (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ =
-      ((winningStrategy hN).play m.reflect 3 ⟨1, by norm_num⟩).map Cell.reflect := by
+    (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨1, by simp⟩ =
+      ((winningStrategy hN).play m.reflect 3 ⟨1, by simp⟩).map Cell.reflect := by
   have hc₁0 : m (row1 hN) ≠ 0 := by
     rw [← Fin.val_ne_iff, hc₁N, Fin.val_zero]
     omega
@@ -977,8 +975,8 @@ lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
     dif_pos hc₁r0, ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
 
 lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
-    (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ =
-      ((winningStrategy hN).play m.reflect 3 ⟨2, by norm_num⟩).map Cell.reflect := by
+    (hc₁N : (m (row1 hN) : ℕ) = N) : (winningStrategy hN).play m 3 ⟨2, by simp⟩ =
+      ((winningStrategy hN).play m.reflect 3 ⟨2, by simp⟩).map Cell.reflect := by
   have hc₁0 : m (row1 hN) ≠ 0 := by
     rw [← Fin.val_ne_iff, hc₁N, Fin.val_zero]
     omega
@@ -1000,8 +998,8 @@ lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
 
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_N (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁N : (m (row1 hN) : ℕ) = N) :
-    (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
-      (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
+    (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨
+      (winningStrategy hN).play m 3 ⟨2, by simp⟩ = none := by
   simp_rw [winningStrategy_play_one_of_edge_N hN hc₁N, winningStrategy_play_two_of_edge_N hN hc₁N,
     Option.map_eq_none_iff]
   have hc₁r0 : m.reflect (row1 hN) = 0 := by
@@ -1012,8 +1010,8 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_N (hN : 2 ≤
   exact winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero hN hc₁r0
 
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none (hN : 2 ≤ N) (m : MonsterData N) :
-    (winningStrategy hN).play m 3 ⟨1, by norm_num⟩ = none ∨
-      (winningStrategy hN).play m 3 ⟨2, by norm_num⟩ = none := by
+    (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨
+      (winningStrategy hN).play m 3 ⟨2, by simp⟩ = none := by
   by_cases hc₁0 : m (row1 hN) = 0
   · exact winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero hN hc₁0
   · by_cases hc₁N : (m (row1 hN) : ℕ) = N
@@ -1025,10 +1023,10 @@ lemma winningStrategy_forcesWinIn_three (hN : 2 ≤ N) :
   intro m
   rcases winningStrategy_play_one_eq_none_or_play_two_eq_none hN m with h | h
   · rw [Strategy.WinsIn]
-    convert Set.mem_range_self (⟨1, by norm_num⟩ : Fin 3)
+    convert Set.mem_range_self (⟨1, by simp⟩ : Fin 3)
     exact h.symm
   · rw [Strategy.WinsIn]
-    convert Set.mem_range_self (⟨2, by norm_num⟩ : Fin 3)
+    convert Set.mem_range_self (⟨2, by simp⟩ : Fin 3)
     exact h.symm
 
 /-- This is to be determined by the solver of the original problem (and much of the difficulty
@@ -1039,7 +1037,7 @@ def answer : ℕ := 3
 /-- The final result, combining upper and lower bounds. -/
 theorem result : IsLeast {k | ∃ s : Strategy 2022, s.ForcesWinIn k} answer := by
   simp_rw [IsLeast, mem_lowerBounds, Set.mem_setOf, forall_exists_index]
-  exact ⟨⟨winningStrategy (by norm_num), winningStrategy_forcesWinIn_three (by norm_num)⟩,
-    fun k s h ↦ h.three_le (by norm_num)⟩
+  exact ⟨⟨winningStrategy (by simp), winningStrategy_forcesWinIn_three (by simp)⟩,
+    fun k s h ↦ h.three_le (by simp)⟩
 
 end Imo2024Q5

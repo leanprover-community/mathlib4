@@ -25,7 +25,7 @@ lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c
   have hp_roots_card : p.roots.card = p.natDegree := by
     rw [hp_natDegree, hroots, Multiset.card_pair]
   simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using
-    coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by norm_num [hp_natDegree])
+    coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by simp [hp_natDegree])
 
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
@@ -37,7 +37,7 @@ lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 
   have hp_roots_card : p.roots.card = p.natDegree := by
     rw [hp_natDegree, hroots, Multiset.card_pair]
   simpa [leadingCoeff, hp_natDegree, p, hroots, mul_assoc, add_comm x1] using
-    coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by norm_num [hp_natDegree])
+    coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by simp [hp_natDegree])
 
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
 lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair

@@ -3,6 +3,7 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
+import Batteries.Data.List.Count
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Tactic.Positivity
 
@@ -71,7 +72,7 @@ instance : Coe DyckWord (List DyckStep) := ⟨DyckWord.toList⟩
 instance : Add DyckWord where
   add p q := ⟨p ++ q, by
     simp only [count_append, p.count_U_eq_count_D, q.count_U_eq_count_D], by
-    simp only [take_append_eq_append_take, count_append]
+    simp only [take_append, count_append]
     exact fun _ ↦ add_le_add (p.count_D_le_count_U _) (q.count_D_le_count_U _)⟩
 
 instance : Zero DyckWord := ⟨[], by simp, by simp⟩
@@ -160,12 +161,12 @@ def nest : DyckWord where
   toList := [U] ++ p ++ [D]
   count_U_eq_count_D := by simp [p.count_U_eq_count_D]
   count_D_le_count_U i := by
-    simp only [take_append_eq_append_take, count_append]
+    simp only [take_append, count_append]
     rw [← add_rotate (count D _), ← add_rotate (count U _)]
     apply add_le_add _ (p.count_D_le_count_U _)
     rcases i.eq_zero_or_pos with hi | hi; · simp [hi]
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
-    simp only [reduceCtorEq, ite_true, ite_false]
+    simp only [reduceCtorEq, ite_false]
     rw [add_comm]
     exact add_le_add (zero_le _) (count_le_length.trans (by simp))
 
@@ -180,7 +181,7 @@ def IsNested : Prop :=
 protected lemma IsNested.nest : p.nest.IsNested := ⟨nest_ne_zero, fun i lb ub ↦ by
   simp_rw [nest, length_append, length_singleton] at ub ⊢
   rw [take_append_of_le_length (by rw [singleton_append, length_cons]; omega),
-    take_append_eq_append_take, take_of_length_le (by rw [length_singleton]; omega),
+    take_append, take_of_length_le (by rw [length_singleton]; omega),
     length_singleton, singleton_append, count_cons_of_ne (by simp), count_cons_self,
     Nat.lt_add_one_iff]
   exact p.count_D_le_count_U _⟩
@@ -210,7 +211,7 @@ def denest (hn : p.IsNested) : DyckWord where
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
       min_eq_left (by omega), l1, head_eq_U] at eq
-    simp only [count_singleton', ite_true, ite_false] at eq
+    simp only [count_singleton', ite_true] at eq
     omega
 
 variable (p) in
@@ -293,10 +294,10 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
   · simp_rw [u, decide_eq_true_eq, getElem_range]
     have v := firstReturn_lt_length h
     constructor
-    · rw [take_append_eq_append_take, show p.firstReturn + 1 - p.toList.length = 0 by omega,
+    · rw [take_append, show p.firstReturn + 1 - p.toList.length = 0 by omega,
         take_zero, append_nil, count_take_firstReturn_add_one h]
     · intro j hj
-      rw [take_append_eq_append_take, show j + 1 - p.toList.length = 0 by omega,
+      rw [take_append, show j + 1 - p.toList.length = 0 by omega,
         take_zero, append_nil]
       simpa using (count_D_lt_count_U_of_lt_firstReturn hj).ne'
   · rw [length_range, u, length_append]
@@ -311,7 +312,7 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
     · rw [take_of_length_le (by simp), ← u, p.nest.count_U_eq_count_D]
     · intro j hj
       simp_rw [cons_append, take_succ_cons, count_cons, beq_self_eq_true, ite_true,
-        beq_iff_eq, reduceCtorEq, ite_false, take_append_eq_append_take,
+        beq_iff_eq, reduceCtorEq, ite_false, take_append,
         show j - p.toList.length = 0 by omega, take_zero, append_nil]
       have := p.count_D_le_count_U j
       simp only [add_zero, decide_eq_false_iff_not, ne_eq]
@@ -420,13 +421,7 @@ lemma infix_of_le (h : p ≤ q) : p.toList <:+: q.toList := by
       rwa [mq] at ih
     · have : [U] ++ r.insidePart ++ [D] ++ r.outsidePart = r :=
         DyckWord.ext_iff.mp (nest_insidePart_add_outsidePart hr)
-      rcases mq with hm | hm
-      · have : r.insidePart <:+: r.toList := by
-          use [U], [D] ++ r.outsidePart; rwa [← append_assoc]
-        exact ih.trans (hm ▸ this)
-      · have : r.outsidePart <:+: r.toList := by
-          use [U] ++ r.insidePart ++ [D], []; rwa [append_nil]
-        exact ih.trans (hm ▸ this)
+      grind
 
 lemma le_of_suffix (h : p.toList <:+ q.toList) : p ≤ q := by
   obtain ⟨r', h⟩ := h

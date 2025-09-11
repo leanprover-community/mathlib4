@@ -43,12 +43,12 @@ in which case it's also equivalent to being a finite product of normal domains.
 
 We'd need to add these conditions if we want exactly the products of Dedekind domains.
 
-In fact noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
+In fact Noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
 could be defined as `IsReduced`, `IsNoetherian`, `Ring.DimensionLEOne`, and either
 `IsIntegrallyClosed` or `NormalDomain`. If we use `NormalDomain` then `IsReduced` is automatic,
 but we could also consider a version of `NormalDomain` that only requires the localizations are
 `IsIntegrallyClosed` but may not be domains, and that may not equivalent to the ring itself being
-`IsIntegallyClosed` (even for noetherian rings?).
+`IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
 
@@ -84,7 +84,7 @@ theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective
     aesop
   · rintro ⟨y, rfl⟩
     apply (isIntegral_algHom_iff f hf).mp
-    aesop
+    simp_all
 
 /-- Being integrally closed is preserved under algebra isomorphisms. -/
 theorem AlgEquiv.isIntegrallyClosedIn (e : A ≃ₐ[R] B) :
@@ -109,9 +109,9 @@ theorem isIntegrallyClosedIn_iff {R A : Type*} [CommRing R] [CommRing A] [Algebr
         ∀ {x : A}, IsIntegral R x → ∃ y, algebraMap R A y = x := by
   constructor
   · rintro ⟨_, cl⟩
-    aesop
+    simp_all
   · rintro ⟨inj, cl⟩
-    refine ⟨inj, by aesop, ?_⟩
+    refine ⟨inj, by simp_all, ?_⟩
     rintro ⟨y, rfl⟩
     apply isIntegral_algebraMap
 
@@ -250,13 +250,19 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   let y := (algebraMap R K b) / (algebraMap R K a)
   have hy : IsIntegral R y := by
     refine ⟨X ^ n - C x, monic_X_pow_sub_C _ hn, ?_⟩
-    simp only [y, map_pow, eval₂_sub, eval₂_X_pow, div_pow, eval₂_pow', eval₂_C]
+    simp only [y, eval₂_sub, eval₂_X_pow, div_pow, eval₂_C]
     replace hx := congr_arg (algebraMap R K) hx
     rw [map_pow] at hx
-    field_simp [hx, ha]
+    simp [hx, ha]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]
+
+@[simp]
+theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} (hn : n ≠ 0)
+    {a b : R} :
+    Associated (a ^ n) (b ^ n) ↔ Associated a b := by
+  simp_rw [← dvd_dvd_iff_associated, pow_dvd_pow_iff hn]
 
 variable (R)
 

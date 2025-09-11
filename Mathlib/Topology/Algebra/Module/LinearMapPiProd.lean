@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Module.LinearMap
 # Continuous linear maps on products and Pi types
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 open LinearMap (ker range)
 open Topology Filter Pointwise
@@ -211,7 +211,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
   toFun := fun v i ↦ v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  cont := by continuity
+  cont := by fun_prop
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
@@ -334,7 +334,7 @@ def coprodEquiv [ContinuousAdd M₁] [ContinuousAdd M₂] [Semiring S] [Module S
   map_add' a b := coprod_add ..
   map_smul' r a := by
     dsimp
-    ext <;> simp [smul_add, smul_apply, Prod.smul_snd, Prod.smul_fst, coprod_apply]
+    ext <;> simp [smul_apply]
 
 end AddCommMonoid
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -78,7 +78,7 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
   rw [RingHom.injective_iff_ker_eq_bot]
   refine (Ideal.ker_quotient_lift _ _).trans ?_
-  show map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
+  change map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
 instance : IsFractionRing (R ⧸ I) I.ResidueField where
@@ -125,7 +125,7 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
   refine .of_algebraMap_eq fun x ↦ ?_
   simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
     Ideal.ResidueField.mapₐ_apply, Ideal.ResidueField.map, IsLocalRing.ResidueField.map_map,
-    ← IsLocalRing.ResidueField.map_comp, IsScalarTower.algebraMap_eq R A B,
+    IsScalarTower.algebraMap_eq R A B,
     ← Localization.localRingHom_comp]
 
 end LiesOver

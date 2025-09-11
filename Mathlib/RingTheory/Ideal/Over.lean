@@ -110,8 +110,8 @@ theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
 
 variable {A}
 
-/-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
-class LiesOver : Prop where
+/-- `P` lies over `p` if `p` is the preimage of `P` by the `algebraMap`. -/
+@[mk_iff] class LiesOver : Prop where
   over : p = P.under A
 
 instance over_under : P.LiesOver (P.under A) where over := rfl
@@ -213,6 +213,11 @@ variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] 
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
   algebraQuotientOfLEComap (le_of_eq (P.over_def p))
 
+@[simp]
+lemma algebraMap_mk_of_liesOver (x : A) :
+    algebraMap (A ⧸ p) (B ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (algebraMap _ _ x) :=
+  rfl
+
 instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' <|
     congrArg (algebraMap B (B ⧸ P)).comp (IsScalarTower.algebraMap_eq R A B)
@@ -223,9 +228,6 @@ instance instFaithfulSMul : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
   apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
   rw [RingHom.map_sub]
   exact Quotient.eq.mp hab
-
-@[deprecated (since := "2025-01-31")]
-alias algebraMap_injective_of_liesOver := instFaithfulSMul
 
 variable {p} in
 theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
