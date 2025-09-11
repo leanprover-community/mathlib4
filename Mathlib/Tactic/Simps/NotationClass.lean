@@ -92,8 +92,8 @@ structure AutomaticProjectionData where
   /-- `className` is the name of the class we are looking for. -/
   className : Name
   /-- `isNotation` is a boolean that specifies whether this is notation
-    (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
-    class as hypothesis during type-class synthesis. -/
+  (false for the coercions `DFunLike` and `SetLike`). If this is set to true, we add the current
+  class as hypothesis during type-class synthesis. -/
   isNotation := true
   /-- The method to find the arguments of the class. -/
   findArgs : Name := `Simps.defaultfindArgs

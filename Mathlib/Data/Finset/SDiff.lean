@@ -170,6 +170,8 @@ theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x �
 
 theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s \ t = s \ t := by grind
 
+@[simp] lemma insert_sdiff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by grind
+
 @[simp] lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by grind
 
 @[simp]

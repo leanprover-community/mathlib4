@@ -127,7 +127,19 @@ def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Normal H
     let _un_normal := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
-/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`. -/
+/-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
+
+This is the increasing chain of subgroups of `G` that starts with the trivial subgroup `⊥` of `G`
+and then continues defining `upperCentralSeries G (n + 1)` to be all the elements of `G`
+that, modulo `upperCentralSeries G n`, belong to the center of the quotient
+`G ⧸ upperCentralSeries G n`.
+
+In particular, the identities
+* `upperCentralSeries G 0 = ⊥` (`upperCentralSeries_zero`);
+* `upperCentralSeries G 1 = center G` (`upperCentralSeries_one`);
+
+hold.
+-/
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 
@@ -356,7 +368,7 @@ variable [hG : IsNilpotent G]
 variable (G) in
 open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
-the `n`'th term of the upper central series is `G`. -/
+the `n`-th term of the upper central series is `G`. -/
 noncomputable def Group.nilpotencyClass : ℕ := Nat.find (IsNilpotent.nilpotent G)
 
 open scoped Classical in
@@ -376,7 +388,7 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
 
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which an ascending
-central series reaches `G` in its `n`'th term. -/
+central series reaches `G` in its `n`-th term. -/
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
@@ -389,7 +401,7 @@ theorem least_ascending_central_series_length_eq_nilpotencyClass :
 
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which the descending
-central series reaches `⊥` in its `n`'th term. -/
+central series reaches `⊥` in its `n`-th term. -/
 theorem least_descending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_descending_central_series G).mp hG) =
     Group.nilpotencyClass G := by

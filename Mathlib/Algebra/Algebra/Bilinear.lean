@@ -168,6 +168,19 @@ theorem map_mul_iff (f : A →ₗ[R] B) :
 
 end NonUnital
 
+section Injective
+variable {R A : Type*} [Semiring R] [NonAssocSemiring A] [Module R A]
+
+@[simp] lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
+    mulLeft R a = mulLeft R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+@[simp] lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
+    mulRight R a = mulRight R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+end Injective
+
 section Semiring
 
 variable (R A : Type*)
@@ -181,11 +194,8 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := ext fun _ => one_mul _
 
 @[simp]
-theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
-  constructor <;> intro h
-  · rw [← mul_one a, ← mulLeft_apply R a 1, h, LinearMap.zero_apply]
-  · rw [h]
-    exact mulLeft_zero_eq_zero _ _
+theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 :=
+  mulLeft_zero_eq_zero R A ▸ mulLeft_inj
 
 @[simp]
 theorem pow_mulLeft (a : A) (n : ℕ) : mulLeft R a ^ n = mulLeft R (a ^ n) :=
@@ -202,11 +212,8 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := ext fun _ => mul_one _
 
 @[simp]
-theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
-  constructor <;> intro h
-  · rw [← one_mul a, ← mulRight_apply R a 1, h, LinearMap.zero_apply]
-  · rw [h]
-    exact mulRight_zero_eq_zero _ _
+theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 :=
+  mulRight_zero_eq_zero R A ▸ mulRight_inj
 
 @[simp]
 theorem pow_mulRight (a : A) (n : ℕ) : mulRight R a ^ n = mulRight R (a ^ n) :=
