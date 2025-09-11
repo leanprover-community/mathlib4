@@ -40,48 +40,47 @@ end OnePoint
 section IsCusp
 
 /-- The *cusps* of a subgroup of `GL(2, ℝ)` are the fixed points of parabolic elements of `g`. -/
-def IsCusp (c : OnePoint ℝ) (Γ : Subgroup (GL (Fin 2) ℝ)) : Prop :=
-    ∃ g ∈ Γ, g.IsParabolic ∧ g • c = c
+def IsCusp (c : OnePoint ℝ) (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop :=
+    ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
 
 open Pointwise in
-lemma IsCusp.smul {c : OnePoint ℝ} {Γ : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c Γ)
-    (g : GL (Fin 2) ℝ) : IsCusp (g • c) (ConjAct.toConjAct g • Γ) := by
-  obtain ⟨p, hpΓ, hpp, hpc⟩ := hc
-  refine ⟨_, Γ.smul_mem_pointwise_smul _ _ hpΓ, ?_, ?_⟩
+lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
+    (g : GL (Fin 2) ℝ) : IsCusp (g • c) (ConjAct.toConjAct g • 𝒢) := by
+  obtain ⟨p, hp𝒢, hpp, hpc⟩ := hc
+  refine ⟨_, 𝒢.smul_mem_pointwise_smul _ _ hp𝒢, ?_, ?_⟩
   · simpa only [ConjAct.toConjAct_smul, GeneralLinearGroup.IsParabolic, Units.val_mul,
       isParabolic_conj_iff] using hpp
   · simp [ConjAct.toConjAct_smul, MulAction.mul_smul, hpc]
 
-lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {Γ : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c Γ)
-    {g : GL (Fin 2) ℝ} (hg : g ∈ Γ) : IsCusp (g • c) Γ := by
+lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
+    {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
   convert hc.smul g
   ext x
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv,
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,
     Subgroup.mul_mem_cancel_left _ (inv_mem hg)]
 
-lemma isCusp_finiteIndex_iff
-    {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (hΓ : Γ' ≤ Γ) (hΓ' : Γ'.relindex Γ ≠ 0) (c : OnePoint ℝ) :
-    IsCusp c Γ' ↔ IsCusp c Γ := by
-  refine ⟨fun ⟨g, hg, hgp, hgc⟩ ↦ ⟨g, hΓ hg, hgp, hgc⟩, fun ⟨g, hg, hgp, hgc⟩ ↦ ?_⟩
-  obtain ⟨n, hn, -, hgn⟩ := Subgroup.exists_pow_mem_of_relindex_ne_zero hΓ' hg
+lemma isCusp_iff_of_relindex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
+    (h𝒢 : 𝒢' ≤ 𝒢) (h𝒢' : 𝒢'.relindex 𝒢 ≠ 0) (c : OnePoint ℝ) :
+    IsCusp c 𝒢' ↔ IsCusp c 𝒢 := by
+  refine ⟨fun ⟨g, hg, hgp, hgc⟩ ↦ ⟨g, h𝒢 hg, hgp, hgc⟩, fun ⟨g, hg, hgp, hgc⟩ ↦ ?_⟩
+  obtain ⟨n, hn, -, hgn⟩ := Subgroup.exists_pow_mem_of_relindex_ne_zero h𝒢' hg
   refine ⟨g ^ n, (Subgroup.mem_inf.mpr hgn).1, hgp.pow hn.ne', ?_⟩
   rw [Nat.pos_iff_ne_zero] at hn
   rwa [(hgp.pow hn).smul_eq_self_iff, hgp.parabolicFixedPoint_pow hn, ← hgp.smul_eq_self_iff]
 
-lemma Commensurable.isCusp_iff
-    {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (hΓ : Commensurable Γ Γ') {c : OnePoint ℝ} :
-    IsCusp c Γ ↔ IsCusp c Γ' := by
-  rw [← isCusp_finiteIndex_iff (inf_le_left ..), isCusp_finiteIndex_iff (inf_le_right ..)]
-  · simpa [Subgroup.inf_relindex_right] using hΓ.1
-  · simpa [Subgroup.inf_relindex_left] using hΓ.2
+lemma Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
+    (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
+    IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
+  rw [← isCusp_iff_of_relindex_ne_zero inf_le_left, isCusp_iff_of_relindex_ne_zero inf_le_right]
+  · simpa [Subgroup.inf_relindex_right] using h𝒢.1
+  · simpa [Subgroup.inf_relindex_left] using h𝒢.2
 
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
-lemma isCusp_SL2Z_iff {c : OnePoint ℝ} :
-    IsCusp c (mapGL (R := ℤ) ℝ).range ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
+lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
   constructor
-  · rintro ⟨-, ⟨γ, rfl⟩, hgp, hgc⟩
-    simpa only [hgp.smul_eq_self_iff.mp hgc] using ⟨(mapGL ℚ γ).parabolicFixedPoint,
+  · rintro ⟨-, ⟨g, rfl⟩, hgp, hgc⟩
+    simpa only [hgp.smul_eq_self_iff.mp hgc] using ⟨(mapGL ℚ g).parabolicFixedPoint,
       by simp [GeneralLinearGroup.parabolicFixedPoint, apply_ite]⟩
   · rintro ⟨c, rfl⟩
     obtain ⟨a, rfl⟩ := c.exists_mem_SL2 ℤ
@@ -96,61 +95,59 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} :
         smul_infty_eq_self_iff.mpr (show mapGL ℝ ModularGroup.T 1 0 = 0 by simp [ModularGroup.T])]
 
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
-lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} :
-    IsCusp c (mapGL (R := ℤ) ℝ).range ↔ ∃ γ : SL(2, ℤ), c = mapGL ℝ γ • ∞ := by
+lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
   rw [isCusp_SL2Z_iff]
   constructor
   · rintro ⟨c, rfl⟩
-    obtain ⟨γ, rfl⟩ := c.exists_mem_SL2 ℤ
-    refine ⟨γ, ?_⟩
-    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, γ.map_mapGL (by rfl)]
-  · rintro ⟨γ, rfl⟩
-    refine ⟨mapGL ℚ γ • ∞, ?_⟩
-    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, γ.map_mapGL (by rfl)]
+    obtain ⟨g, rfl⟩ := c.exists_mem_SL2 ℤ
+    refine ⟨g, ?_⟩
+    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, g.map_mapGL (by rfl)]
+  · rintro ⟨g, rfl⟩
+    refine ⟨mapGL ℚ g • ∞, ?_⟩
+    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, g.map_mapGL (by rfl)]
 
 /-- The cusps of any arithmetic subgroup are the same as those of `SL(2, ℤ)`. -/
-lemma IsArith.isCusp_iff_isCusp_SL2Z (Γ : Subgroup (GL (Fin 2) ℝ)) [IsArith Γ] {c : OnePoint ℝ} :
-    IsCusp c Γ ↔ IsCusp c (mapGL (R := ℤ) ℝ).range :=
-  IsArith.is_comm.isCusp_iff
+lemma IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢]
+    {c : OnePoint ℝ} : IsCusp c 𝒢 ↔ IsCusp c 𝒮ℒ :=
+  IsArithmetic.is_commensurable.isCusp_iff
 
 end IsCusp
 
 section CuspOrbits
 
-/-- The action of `Γ` on its own cusps. -/
-def cusps_subMulAction (Γ : Subgroup (GL (Fin 2) ℝ)) : SubMulAction Γ (OnePoint ℝ) where
-  carrier := {c | IsCusp c Γ}
+/-- The action of `𝒢` on its own cusps. -/
+def cusps_subMulAction (𝒢 : Subgroup (GL (Fin 2) ℝ)) : SubMulAction 𝒢 (OnePoint ℝ) where
+  carrier := {c | IsCusp c 𝒢}
   smul_mem' g _ hc := IsCusp.smul_of_mem hc g.property
 
-/-- The type of cusps of `Γ`, i.e. orbits for the action of `Γ` its own cusps. -/
-@[reducible]
-def CuspOrbits (Γ : Subgroup (GL (Fin 2) ℝ)) :=
-  MulAction.orbitRel.Quotient Γ (cusps_subMulAction Γ)
+/-- The type of cusp orbits of `𝒢`, i.e. orbits for the action of `𝒢` on its own cusps. -/
+abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
+  MulAction.orbitRel.Quotient 𝒢 (cusps_subMulAction 𝒢)
 
-/-- Surjection from `SL(2, ℤ) / (Γ ⊓ SL(2, ℤ))` to cusps of `Γ`. Mostly useful for showing that
-`CuspOrbits Γ` is finite for arithmetic subgroups. -/
-noncomputable def cosetToCuspOrbit
-    (Γ : Subgroup <| GL (Fin 2) ℝ) [IsArith Γ] : SL(2, ℤ) ⧸ (Γ.comap <| mapGL ℝ) → CuspOrbits Γ :=
+/-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
+that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/
+noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
+    SL(2, ℤ) ⧸ (𝒢.comap <| mapGL ℝ) → CuspOrbits 𝒢 :=
   Quotient.lift
     (fun g ↦ ⟦⟨mapGL ℝ g⁻¹ • ∞,
-      (IsArith.isCusp_iff_isCusp_SL2Z Γ).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
+      (IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
         rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, map_mapGL _ (by rfl)]⟩⟩⟧)
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
       simp [MulAction.mul_smul])
 
-lemma surjective_cosetToCuspOrbit (Γ : Subgroup <| GL (Fin 2) ℝ) [IsArith Γ] :
-    (cosetToCuspOrbit Γ).Surjective := by
+lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
+    (cosetToCuspOrbit 𝒢).Surjective := by
   rintro ⟨c, (hc : IsCusp c _)⟩
-  rw [IsArith.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
-  obtain ⟨γ, rfl⟩ := hc
-  use ⟦γ⁻¹⟧
-  simp only [cosetToCuspOrbit, Quotient.lift_mk, inv_inv]
-  rfl
+  rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
+  obtain ⟨g, rfl⟩ := hc
+  use ⟦g⁻¹⟧
+  unfold cosetToCuspOrbit
+  aesop
 
-/-- An arithmetic subgroup has finitely many cusps. -/
-instance (Γ : Subgroup (GL (Fin 2) ℝ)) [IsArith Γ] : Finite (CuspOrbits Γ) :=
-  .of_surjective _ (surjective_cosetToCuspOrbit Γ)
+/-- An arithmetic subgroup has finitely many cusp orbits. -/
+instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] : Finite (CuspOrbits 𝒢) :=
+  .of_surjective _ (surjective_cosetToCuspOrbit 𝒢)
 
 end CuspOrbits
