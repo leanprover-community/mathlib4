@@ -181,7 +181,7 @@ lemma ord_le_smul {S : Type*} [CommRing S] [Algebra S R] (a : S) (x : R) :
   exact Dvd.intro_left (Algebra.algebraMap a) rfl
 
 /--
-The order of vanishing of a uniti s `0`.
+The order of vanishing of a unit is `0`.
 -/
 @[simp]
 lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
@@ -338,40 +338,11 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
   apply ordFrac_ge_one_of_ne_zero
   exact ha
 
-
-
 /--
-If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
-expressed as `(algebraMap R K u)*(algebraMap R K ϖ)^n` for some `u : Rˣ`, `n : ℤ`.
+The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
+unit `x`.
 -/
-lemma IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible [IsDiscreteValuationRing R]
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] {x : K} (hx : x ≠ 0) {ϖ : R}
-    (hϖ : Irreducible ϖ)
-    : ∃ (n : ℤ) (u : Rˣ), x = (algebraMap R K u)*(algebraMap R K ϖ)^n := by
-  let x1 := (IsLocalization.sec (nonZeroDivisors R) x).1
-  let x2 := (IsLocalization.sec (nonZeroDivisors R) x).2
-  have x1nez : x1 ≠ 0 := by exact IsLocalization.sec_fst_ne_zero hx
-  have x2nez : x2.1 ≠ 0 := by exact IsLocalization.sec_snd_ne_zero (fun ⦃x⦄ a ↦ a) x
-  have : x = IsLocalization.mk' K x1 x2 := (IsLocalization.mk'_sec K x).symm
-  rw [this]
-  obtain ⟨n1, u1, h1⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x1nez hϖ
-  rw [h1]
-  obtain ⟨n2, u2, h2⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x2nez hϖ
-  simp only [IsFractionRing.mk'_eq_div, map_mul, map_pow, h2]
-  use (n1 : ℤ) - (n2 : ℤ)
-  use (u1 * u2⁻¹)
-  simp only [Units.val_mul, map_mul, map_units_inv]
-  field_simp
-  rw[← zpow_natCast, ← zpow_natCast, Field.div_eq_mul_inv, ← @zpow_neg, ← zpow_add₀]
-  · rfl
-  · exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors <|
-      mem_nonZeroDivisors_of_ne_zero <| Irreducible.ne_zero hϖ
-#check IsDiscreteValuationRing.eq_unit_mul_pow_irreducible
-
-
-lemma ordFrac_of_isUnit {R : Type*} [CommRing R] [Nontrivial R] [IsNoetherianRing R]
-    [KrullDimLE 1 R]
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] (x : R) (hx : IsUnit x) :
+lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) :
     ordFrac R (algebraMap R K x) = 1 := by
   have : x ≠ 0 := by exact IsUnit.ne_zero hx
   have thing : x ∈ nonZeroDivisors R := by exact IsUnit.mem_nonZeroDivisors hx
@@ -379,9 +350,11 @@ lemma ordFrac_of_isUnit {R : Type*} [CommRing R] [Nontrivial R] [IsNoetherianRin
   rw [ord_of_isUnit x hx]
   aesop
 
-lemma ordFrac_irreducible {R : Type*} [CommRing R] [Nontrivial R] [IsNoetherianRing R]
-    [KrullDimLE 1 R] [IsDomain R] [IsDiscreteValuationRing R]
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+/--
+In a discrete valuation ring, `ordFrac (algebraMap R K ϖ) = WithZero.exp 1`
+for an irreducible element `ϖ`. This is the analogue of `ord_irreducible` for `ordFrac`.
+-/
+lemma ordFrac_irreducible [IsDiscreteValuationRing R]
     (ϖ : R) (hϖ : Irreducible ϖ) : ordFrac R (algebraMap R K ϖ) = WithZero.exp 1 := by
   have : ϖ ≠ 0 := by exact Irreducible.ne_zero hϖ
   have thing : ϖ ∈ nonZeroDivisors R := by exact mem_nonZeroDivisors_of_ne_zero this
@@ -389,10 +362,13 @@ lemma ordFrac_irreducible {R : Type*} [CommRing R] [Nontrivial R] [IsNoetherianR
   rw [ord_irreducible ϖ hϖ]
   aesop
 
-
-theorem ordFrac_add' [IsDiscreteValuationRing R]
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] (x y : K)
-    (h : x + y ≠ 0) :
+/--
+For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
+condition that `x + y ≠ 0` is used to guarantee that all the elements we're taking `ordFrac` of
+are nonzero, meaning none of them will be `0` in `ℤᵐ⁰`. This allows us to use `ord_add` (which
+uses the ordering on `ℕ∞`), since these orders correspond on non `⊤` elements.
+-/
+theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
     min (Ring.ordFrac R x) (Ring.ordFrac R y) ≤ Ring.ordFrac R (x + y) := by
   classical
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
@@ -410,212 +386,45 @@ theorem ordFrac_add' [IsDiscreteValuationRing R]
   obtain ⟨k, rfl⟩ := Int.exists_add_of_le hmn
   have xy : x + y = (algebraMap R K α + (algebraMap R K β) * (algebraMap R K ϖ)^k) *
       (algebraMap R K ϖ)^m := by
-    rw [hx, hy]
-    rw [← zpow_natCast]
-    rw [zpow_add₀]
+    rw [hx, hy, ← zpow_natCast, zpow_add₀]
     · ring
-    · have : ϖ ≠ 0 := by exact Irreducible.ne_zero hϖ
-      refine IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors ?_
-      exact mem_nonZeroDivisors_of_ne_zero this
-  rw[xy, hx, hy, map_mul, map_mul, map_mul, map_zpow₀, map_zpow₀,
+    · exact IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors <|
+        mem_nonZeroDivisors_of_ne_zero <| Irreducible.ne_zero hϖ
+
+  rw [xy, hx, hy, map_mul, map_mul, map_mul, map_zpow₀, map_zpow₀,
      ordFrac_of_isUnit (α : R), ordFrac_of_isUnit (β : R), ordFrac_irreducible _ hϖ]
 
+  · simp only [← WithZero.exp_zsmul, Int.zsmul_eq_mul, mul_one, one_mul, WithZero.exp_add,
+      inf_le_iff, WithZero.exp_pos, le_mul_iff_one_le_left]
+    have : (algebraMap R K) ↑α + (algebraMap R K) ↑β *
+         (algebraMap R K) ϖ ^ k = algebraMap R K (α + β *ϖ^k) := by simp_all
+    rw [this]
+    have : α + β *ϖ^k ≠ 0 := by
+      rw [xy, this] at h
+      have m : (algebraMap R K) (↑α + ↑β * ϖ ^ k) ≠ 0 := by
+        rw [mul_ne_zero_iff] at h
+        exact h.1
+      rw [← (algebraMap.coe_zero : algebraMap R K 0 = 0)] at m
+      exact fun a ↦ m (congrArg (⇑(algebraMap R K)) a)
+
+    exact Or.inl <| ordFrac_ge_one_of_ne_zero _ this
   all_goals simp
-  have : (algebraMap R K) ↑α + (algebraMap R K) ↑β *
-         (algebraMap R K) ϖ ^ k = algebraMap R K (α + β *ϖ^k) := by aesop
-  rw [this]
-  have : α + β *ϖ^k ≠ 0 := by
-    rw[xy] at h
-    rw [this] at h
-    have m : (algebraMap R K) (↑α + ↑β * ϖ ^ k) ≠ 0 := by
-      rw [mul_ne_zero_iff] at h
-      exact h.1
-    have : algebraMap R K 0 = 0 := by exact algebraMap.coe_zero
-    rw [← this] at m
-    exact fun a ↦ m (congrArg (⇑(algebraMap R K)) a)
 
-  exact Or.inl <| ordFrac_ge_one_of_ne_zero _ this
-
-
-
-
-/--
-For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
-condition that `x + y ≠ 0` is used to guarantee that all the elements we're taking `ordFrac` of
-are nonzero, meaning none of them will be `0` in `ℤᵐ⁰`. This allows us to use `ord_add` (which
-uses the ordering on `ℕ∞`), since these orders correspond on non `⊤` elements.
--/
-theorem ordFrac_add [IsDiscreteValuationRing R]
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] (x y : K)
-    (h : x + y ≠ 0) :
-    min (Ring.ordFrac R x) (Ring.ordFrac R y) ≤ Ring.ordFrac R (x + y) := by
-
-  by_cases hx : x = 0
-  · simp [hx]
-  by_cases hy : y = 0
-  · simp [hy]
-
-  let x1 := (IsLocalization.sec (nonZeroDivisors R) x).1
-  let x2 := (IsLocalization.sec (nonZeroDivisors R) x).2
-  let y1 := (IsLocalization.sec (nonZeroDivisors R) y).1
-  let y2 := (IsLocalization.sec (nonZeroDivisors R) y).2
-
-  have x1nez : x1 ≠ 0 := IsLocalization.sec_fst_ne_zero hx
-  have y1nez : y1 ≠ 0 := IsLocalization.sec_fst_ne_zero hy
-
-  have hx1 : x1 ∈ nonZeroDivisors R := mem_nonZeroDivisors_of_ne_zero x1nez
-  have hy1 : y1 ∈ nonZeroDivisors R := mem_nonZeroDivisors_of_ne_zero y1nez
-
-  have : Ring.ordFrac R (x + y) =
-      ordFrac R (IsLocalization.mk' K (x1 * y2 + x2 * y1) (x2*y2)) := by
-    have : x1 * ↑y2 + ↑x2 * y1 = x1 * ↑y2 + y1 * ↑x2 := by simp [CommMonoid.mul_comm]
-
-    rw [this, IsLocalization.mk'_add (S := K) x1 y1 x2 y2,
-       IsLocalization.mk'_sec, IsLocalization.mk'_sec]
-  rw [this]
-
-  have : Ring.ordFrac R x = ordFrac R (IsLocalization.mk' K x1 x2) := by
-    congr
-    exact Eq.symm (IsLocalization.mk'_sec K x)
-  rw [this]
-  have : Ring.ordFrac R y = ordFrac R (IsLocalization.mk' K y1 y2) := by
-    congr
-    exact Eq.symm (IsLocalization.mk'_sec K y)
-  rw [this]
-
-  have o : x1 * y2 + x2 * y1 ≠ 0 := by
-    simp only [ne_eq, x1, y2, x2, y1]
-    have : (IsLocalization.mk' K x1 x2) + (IsLocalization.mk' K y1 y2) ≠ 0 := by
-      rw[← IsLocalization.mk'_sec (M := nonZeroDivisors R) K x,
-         ← IsLocalization.mk'_sec (M := nonZeroDivisors R) K y] at h
-      simpa using h
-    simp only [IsFractionRing.mk'_eq_div, ne_eq] at this
-    field_simp [x1, x2, y1, y2] at this
-
-    rw[← map_mul, ← map_mul, ← map_add] at this
-    exact fun h ↦ (this (by aesop)).elim
-
-
-  have : ordFrac R (IsLocalization.mk' K (x1 * y2 + x2 * y1) (x2*y2)) =
-      ordMonoidWithZeroHom R (x1 * y2 + x2 * y1) / ordMonoidWithZeroHom R (x2*y2) :=
-    ordFrac_eq_div R ⟨(x1 * y2 + x2 * y1), mem_nonZeroDivisors_of_ne_zero o⟩ (x2*y2)
-
-  rw[this]
-  have ans := ord_add (x1*y2) (x2*y1)
-  rw [inf_le_iff] at ans ⊢
-  rw [ordFrac_eq_div R ⟨x1, hx1⟩ x2, ordFrac_eq_div R ⟨y1, hy1⟩ y2]
-  rw[ord_le_iff, ord_le_iff] at ans
-  · simp only [map_mul] at ans ⊢
-    have : (ordMonoidWithZeroHom R) x1 ≠ 0 := ordMonoidWithZeroHom_ne_zero x1 hx1
-    obtain ⟨x1', hx1'⟩ := WithZero.ne_zero_iff_exists.mp this
-    rw[← hx1'] at ans ⊢
-    have : (ordMonoidWithZeroHom R) x2 ≠ 0 := ordMonoidWithZeroHom_ne_zero x2.1 x2.2
-    obtain ⟨x2', hx2'⟩ := WithZero.ne_zero_iff_exists.mp this
-    rw[← hx2'] at ans ⊢
-    have : (ordMonoidWithZeroHom R) (x1 * ↑y2 + ↑x2 * y1) ≠ 0 := ordMonoidWithZeroHom_ne_zero
-        (x1 * ↑y2 + ↑x2 * y1) (mem_nonZeroDivisors_of_ne_zero o)
-    obtain ⟨sum, hsum⟩ := WithZero.ne_zero_iff_exists.mp this
-    rw[← hsum] at ans ⊢
-    have  : (ordMonoidWithZeroHom R) y1 ≠ 0 := ordMonoidWithZeroHom_ne_zero y1 hy1
-    obtain ⟨y1', hy1'⟩ := WithZero.ne_zero_iff_exists.mp this
-    rw[← hy1'] at ans ⊢
-    have : (ordMonoidWithZeroHom R) y2 ≠ 0 := ordMonoidWithZeroHom_ne_zero y2.1 y2.2
-    obtain ⟨y2', hy2'⟩ := WithZero.ne_zero_iff_exists.mp this
-
-    rw [← hy2'] at ans ⊢
-    rw [← WithZero.coe_div, ← WithZero.coe_div, ← WithZero.coe_mul]
-    rw [← WithZero.coe_mul, ← WithZero.coe_mul, WithZero.coe_le_coe, WithZero.coe_le_coe] at ans
-    rw [← WithZero.coe_div, WithZero.coe_le_coe, WithZero.coe_le_coe]
-    obtain h | h := ans
-    · left
-      suffices x1'.toAdd - x2'.toAdd ≤ sum.toAdd - (x2'.toAdd + y2'.toAdd) by exact this
-      have h : x1'.toAdd + y2'.toAdd ≤ sum.toAdd := h
-      omega
-    · right
-      suffices y1'.toAdd - y2'.toAdd ≤ sum.toAdd - (x2'.toAdd + y2'.toAdd) by exact this
-      have h : x2'.toAdd + y1'.toAdd ≤ sum.toAdd := h
-      omega
-
-  · exact mul_mem_nonZeroDivisors.mpr ⟨x2.2, hy1⟩
-  · exact mem_nonZeroDivisors_of_ne_zero o
-  · exact mul_mem_nonZeroDivisors.mpr ⟨hx1, y2.2⟩
-  · exact mem_nonZeroDivisors_of_ne_zero o
-
-set_option maxHeartbeats 0
 /--
 In a discrete valuation ring `R` with fraction ring `K`, if `x y : K` and
 `ordFrac R x = ordFrac R y`, then `x` must only differ from `y` by a unit of `R`.
 -/
-theorem associated_of_ordFrac_eq [IsNoetherianRing R] [KrullDimLE 1 R] [IsDiscreteValuationRing R]
-    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K] (x y : K) (hx : x ≠ 0) (hy : y ≠ 0)
+theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K) (hx : x ≠ 0) (hy : y ≠ 0)
     (h : ordFrac R x = ordFrac R y) : ∃ u : Rˣ, u • x = y := by
-  let x1 := (IsLocalization.sec (nonZeroDivisors R) x).1
-  let x2 := (IsLocalization.sec (nonZeroDivisors R) x).2
-  let y1 := (IsLocalization.sec (nonZeroDivisors R) y).1
-  let y2 := (IsLocalization.sec (nonZeroDivisors R) y).2
-
-  have x1nez : x1 ≠ 0 := IsLocalization.sec_fst_ne_zero hx
-  have y1nez : y1 ≠ 0 := IsLocalization.sec_fst_ne_zero hy
-
-  rw[← IsLocalization.mk'_sec (M := nonZeroDivisors R) K x,
-     ← IsLocalization.mk'_sec (M := nonZeroDivisors R) K y] at h ⊢
-  rw[ordFrac_eq_div R ⟨x1, by simp [x1nez]⟩ x2] at h
-  rw[ordFrac_eq_div R ⟨y1, by simp [y1nez]⟩ y2] at h
-  simp [x1nez, y1nez] at h
-
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  obtain ⟨nx1, αx1, hx1⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible x1nez hϖ
-  obtain ⟨nx2, αx2, hx2⟩ :=
-      IsDiscreteValuationRing.eq_unit_mul_pow_irreducible (by aesop : x2.1 ≠ 0) hϖ
-  obtain ⟨ny1, αy1, hy1⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible y1nez hϖ
-  obtain ⟨ny2, αy2, hy2⟩ :=
-      IsDiscreteValuationRing.eq_unit_mul_pow_irreducible (by aesop : y2.1 ≠ 0) hϖ
-
-  suffices ∃ u : Rˣ, u • IsLocalization.mk' K x1 x2 = IsLocalization.mk' K y1 y2 from this
-  have hx2' : αx2 * ϖ ^ nx2 ∈ nonZeroDivisors R := by aesop
-  have hy2' : αy2 * ϖ ^ ny2 ∈ nonZeroDivisors R := by aesop
-
-  have hx2'' : x2 = ⟨αx2 * ϖ ^ nx2, hx2'⟩ := by
-    ext
-    rw[hx2]
-
-  have hy2'' : y2 = ⟨αy2 * ϖ ^ ny2, hy2'⟩ := by
-    ext
-    rw[hy2]
-  rw[hx1, hy1, hx2'', hy2'']
-  rw [hx1, hx2, hy1, hy2, ord_mul', ord_mul', ord_mul', ord_mul',
-      ord_pow, ord_pow, ord_pow, ord_pow] at h
-  · simp only [Units.isUnit, ord_of_isUnit, ord_irreducible ϖ hϖ, nsmul_eq_mul, mul_one,
-    zero_add] at h
-    let u := αx1⁻¹ * αy2⁻¹ * αy1 * αx2
-    use u
-    simp [Units.smul_def, Algebra.smul_def]
-    field_simp
-    rw[div_eq_div_iff]
-    · suffices algebraMap R K (u * αx1 * ϖ ^ nx1 * αy2 * ϖ ^ ny2) =
-               algebraMap R K (αy1 * (ϖ ^ ny1) * αx2 * (ϖ ^ nx2)) by
-        repeat rw [← map_pow]
-        repeat rw [← map_mul]
-        ring_nf at this ⊢
-        exact this
-
-      suffices ↑u * ↑αx1 * ϖ ^ nx1 * ↑αy2 * ϖ ^ ny2 =
-               αy1 * (ϖ ^ ny1) * αx2 * (ϖ ^ nx2) by
-        rw [this]
-      have : ϖ ^ nx1 * ϖ ^ ny2 = ϖ ^ ny1 * ϖ ^ nx2 := by
-        have : nx1 + ny2 = ny1 + nx2 := by
-          rw[div_eq_div_iff] at h
-          · repeat rw[← map_mul] at h
-            have := Nat.cast_withZero_mul_int_injective h
-            have : (nx1 : ℕ∞) + ny2 = ny1 + nx2 := this
-            repeat rw [← ENat.coe_add] at this
-            rwa [ENat.coe_inj] at this
-          all_goals exact Ne.symm (not_eq_of_beq_eq_false rfl)
-        repeat rw [← pow_add]
-        rw [this]
-      simp only [u, Units.val_mul, mul_assoc, Units.inv_mul_eq_iff_eq_mul]
-      grind
-    all_goals aesop
-  all_goals aesop
+  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible hx hϖ
+  obtain ⟨n, β, rfl⟩ := IsDiscreteValuationRing.eq_unit_mul_zpow_irreducible hy hϖ
+  nth_rewrite 2 [mul_comm] at h
+  rw [mul_comm, map_mul, map_mul, map_zpow₀, map_zpow₀] at h
+  simp [ordFrac_irreducible ϖ hϖ, ordFrac_of_isUnit] at h
+  use β * α⁻¹
+  rw[Units.smul_def, Algebra.smul_def]
+  simp only [Units.val_mul, map_mul, map_units_inv, h]
+  field_simp
 
 end ordFrac
