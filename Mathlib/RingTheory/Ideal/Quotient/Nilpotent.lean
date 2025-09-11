@@ -26,7 +26,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
       P (J.map (Ideal.Quotient.mk I)) → P J) :
     P I := by
   obtain ⟨n, hI : I ^ n = ⊥⟩ := hI
-  induction' n using Nat.strong_induction_on with n H generalizing S
+  induction n using Nat.strong_induction_on generalizing S with | _ n H
   by_cases hI' : I = ⊥
   · subst hI'
     apply h₁
