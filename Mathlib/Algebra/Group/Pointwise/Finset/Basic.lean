@@ -795,9 +795,9 @@ variable [Monoid α] {s t : Finset α} {a : α} {m n : ℕ}
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow (s : Finset α) (n : ℕ) : ↑(s ^ n) = (s : Set α) ^ n := by
   change ↑(npowRec n s) = (s : Set α) ^ n
-  induction' n with n ih
-  · rw [npowRec, pow_zero, coe_one]
-  · rw [npowRec, pow_succ, coe_mul, ih]
+  induction n with
+  | zero => rw [npowRec, pow_zero, coe_one]
+  | succ n ih => rw [npowRec, pow_succ, coe_mul, ih]
 
 /-- `Finset α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive /-- `Finset α` is an `AddMonoid` under pointwise operations if `α` is. -/]

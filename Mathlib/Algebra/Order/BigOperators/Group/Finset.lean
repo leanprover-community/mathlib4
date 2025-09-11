@@ -260,7 +260,7 @@ variable [CommMonoid α] [LE α] [MulLeftMono α] {s : Finset ι} {f : ι → α
 @[to_additive (attr := simp)]
 lemma mulLECancellable_prod :
     MulLECancellable (∏ i ∈ s, f i) ↔ ∀ ⦃i⦄, i ∈ s → MulLECancellable (f i) := by
-  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+  induction s using Finset.cons_induction <;> simp [*]
 
 end CommMonoid
 
@@ -601,10 +601,12 @@ namespace Multiset
 
 theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β → Multiset α} :
     i.sum f = i.sup f ↔ ∀ x ∈ i, ∀ y ∈ i, x ≠ y → Disjoint (f x) (f y) := by
-  induction' i using Finset.cons_induction_on with z i hz hr
-  · simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
+  induction i using Finset.cons_induction_on with
+  | empty =>
+    simp only [Finset.notMem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero]
-  · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
+  | cons z i hz hr =>
+    simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
