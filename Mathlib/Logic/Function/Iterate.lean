@@ -241,7 +241,6 @@ namespace Pi
 
 variable {ι : Type*}
 
-/-- adapted from `Prod.map_iterate` -/
 @[simp]
 theorem map_iterate {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
     (Pi.map f)^[n] = Pi.map fun i => (f i)^[n] := by

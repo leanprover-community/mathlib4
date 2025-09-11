@@ -1078,13 +1078,10 @@ namespace Pi
 
 variable {ι : Type*}
 
-/-- adapted from `Prod.map_id` -/
 @[simp] theorem map_id {α : ι → Type*} : Pi.map (fun i => @id (α i)) = id := rfl
 
-/-- adapted from `Prod.map_id'` -/
 @[simp] theorem map_id' {α : ι → Type*} : Pi.map (fun i (a : α i) => a) = fun x ↦ x := rfl
 
-/-- adapted from `Prod.map_comp_map` -/
 theorem map_comp_map {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
     Pi.map g ∘ Pi.map f = Pi.map fun i => g i ∘ f i :=
   rfl
