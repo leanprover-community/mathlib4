@@ -125,7 +125,6 @@ theorem tensorObj_comul (K L : CoalgCat R) :
       = (TensorProduct.tensorTensorTensorComm R K K L L).toLinearMap
       ∘ₗ TensorProduct.map Coalgebra.comul Coalgebra.comul := by
   rw [ofComonObjCoalgebraStruct_comul]
-  dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
     comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe,
     Mon_Class.tensorObj.mul_def, unop_comp, unop_tensorObj, unop_tensorHom,
