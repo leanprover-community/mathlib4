@@ -113,7 +113,8 @@ open Finset
 
 theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) {ε : ℝ≥0}
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω} ≤
-    ENNReal.ofReal (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω},
+    ENNReal.ofReal
+      (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω},
       stoppedValue f (fun ω ↦ (hittingBtwn f {y : ℝ | ↑ε ≤ y} 0 n ω : ℕ)) ω ∂μ) := by
   have hn : Set.Icc 0 n = {k | k ≤ n} := by ext x; simp
   have : ∀ ω, ((ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω) →
