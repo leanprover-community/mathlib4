@@ -168,13 +168,15 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
     [h' : Module.Finite R M] :
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| M ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
-  induction' d with d IH generalizing M
-  · use finZeroElim
+  induction d generalizing M with
+  | zero =>
+    use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
     haveI : Unique M :=
       ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
     exact ⟨0⟩
-  · have : ∀ x : M, Decidable (x = 0) := fun _ => by classical infer_instance
+  | succ d IH =>
+    have : ∀ x : M, Decidable (x = 0) := fun _ => by classical infer_instance
     obtain ⟨j, hj⟩ := exists_isTorsionBy hM d.succ d.succ_ne_zero s hs
     let s' : Fin d → M ⧸ R ∙ s j := Submodule.Quotient.mk ∘ s ∘ j.succAbove
     -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
