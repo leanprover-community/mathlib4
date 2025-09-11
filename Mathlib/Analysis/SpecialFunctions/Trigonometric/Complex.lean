@@ -197,15 +197,6 @@ lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
 
 -- tangent half-angle substitution formulas
 
-/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
-theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
-    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) := by
-  conv_lhs => rw [show x = 2 * (x / 2) by group, sin_two_mul]
-  by_cases h : cos (x / 2) = 0
-  · simp [h, tan_eq_zero_of_cos_eq_zero]
-  · rw [div_one_add_tan_sq_eq_mul_cos_sq h, ← tan_mul_cos h]
-    group
-
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (x : ℂ) (h : cos (x / 2) ≠ 0) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
   conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
@@ -220,6 +211,15 @@ theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠ -1) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
   exact cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (by grind [cos_eq_neg_one_iff])
+
+/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
+theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
+    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) := by
+  conv_lhs => rw [show x = 2 * (x / 2) by group, sin_two_mul]
+  by_cases h : cos (x / 2) = 0
+  · simp [h, tan_eq_zero_of_cos_eq_zero]
+  · rw [div_one_add_tan_sq_eq_mul_cos_sq h, ← tan_mul_cos h]
+    group
 
 theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℂ) :
     tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) := by
