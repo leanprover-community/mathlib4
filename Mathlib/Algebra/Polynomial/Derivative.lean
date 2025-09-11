@@ -403,7 +403,7 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     (derivativeFinsupp p).support ⊆ range n := by
   dsimp [derivativeFinsupp]
-  exact Finsupp.support_onFinset_subset.trans (Finset.range_subset.mpr h)
+  exact Finsupp.support_onFinset_subset.trans (Finset.range_subset_range.mpr h)
 
 @[simp]
 theorem derivativeFinsupp_C (r : R) : derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by

@@ -516,7 +516,7 @@ theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s,
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
     (∏ x ∈ range (n + 1), f x) = f n * ∏ x ∈ range n, f x := by
-  rw [range_succ, prod_insert notMem_range_self]
+  rw [range_add_one, prod_insert notMem_range_self]
 
 @[to_additive]
 theorem prod_range_succ (f : ℕ → M) (n : ℕ) :

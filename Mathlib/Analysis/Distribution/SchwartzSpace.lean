@@ -457,8 +457,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   rw [← Nat.sum_range_choose m.1]
   push_cast
   rw [Finset.sum_mul]
-  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
-    rwa [Finset.range_subset, add_le_add_iff_right]
+  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by grind
   grw [hk']
   gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]

@@ -221,7 +221,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   induction n using Nat.strongRecOn with | ind n ih => ?_
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
-    vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
+    vars_sub_of_disjoint, vars_X, range_add_one, insert_eq]
   on_goal 1 =>
     simp only [true_and, true_or, mem_union, mem_singleton]
     intro i
