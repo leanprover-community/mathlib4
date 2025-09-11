@@ -837,7 +837,7 @@ theorem darts_toProd_eq {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.le
   ext
   · by_cases h' : n = 0
     · simp [h', List.getElem_zero]
-    · have := List.chain'_getElem p.chain'_dartAdj_darts (n - 1) (by omega)
+    · have := p.chain'_dartAdj_darts.getElem (n - 1) (by grind)
       grind [DartAdj, =_ cons_map_snd_darts]
   · simp [← p.cons_map_snd_darts]
 
@@ -1581,3 +1581,5 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700
