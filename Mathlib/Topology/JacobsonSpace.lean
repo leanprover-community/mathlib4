@@ -12,10 +12,10 @@ import Mathlib.Tactic.StacksAttribute
 # Jacobson spaces
 
 ## Main results
-- `JacobsonSpace`: The class of jacobson spaces, i.e.
+- `JacobsonSpace`: The class of Jacobson spaces, i.e.
   spaces such that the set of closed points are dense in every closed subspace.
 - `jacobsonSpace_iff_locallyClosed`:
-  `X` is a jacobson space iff every locally closed subset contains a closed point of `X`.
+  `X` is a Jacobson space iff every locally closed subset contains a closed point of `X`.
 - `JacobsonSpace.discreteTopology`:
   If `X` only has finitely many closed points, then the topology on `X` is discrete.
 
@@ -56,7 +56,7 @@ lemma closedPoints_eq_univ [T1Space X] :
 
 end closedPoints
 
-/-- The class of jacobson spaces, i.e.
+/-- The class of Jacobson spaces, i.e.
 spaces such that the set of closed points are dense in every closed subspace. -/
 @[mk_iff, stacks 005U]
 class JacobsonSpace : Prop where
@@ -171,8 +171,3 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
     rw [Set.eq_empty_iff_forall_notMem]
     intro z (hz : z.1 = y.1)
     exact h (hz ▸ z.2)
-
-@[deprecated IsOpenCover.jacobsonSpace_iff (since := "2025-02-10")]
-lemma jacobsonSpace_iff_of_iSup_eq_top {ι : Type*} {U : ι → Opens X} (hU : iSup U = ⊤) :
-    JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) :=
-  (IsOpenCover.mk hU).jacobsonSpace_iff

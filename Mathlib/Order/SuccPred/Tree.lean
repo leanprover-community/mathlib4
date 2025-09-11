@@ -167,7 +167,7 @@ lemma SubRootedTree.bot_mem_iff {t : RootedTree} (r : SubRootedTree t) :
 
 /--
 All of the immediate subtrees of a given rooted tree, that is subtrees which are rooted at a direct
-child of the root (or, order theoretically, at an atom).
+child of the root (or, order-theoretically, at an atom).
 -/
 def RootedTree.subtrees (t : RootedTree) : Set (SubRootedTree t) :=
   {x | IsAtom x.root}
