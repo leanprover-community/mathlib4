@@ -45,13 +45,22 @@ instance toIsStrictOrderedRing [Semiring R] [PartialOrder R] [IsStrictOrderedRin
   Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
+section nonneg
+
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R]
+
+variable (R) in
 /-- The set of nonnegative elements in an ordered semiring, as a subsemiring. -/
 @[simps]
-def nonneg (R : Type*) [Semiring R] [PartialOrder R] [IsOrderedRing R] : Subsemiring R where
+def nonneg : Subsemiring R where
   carrier := Set.Ici 0
   mul_mem' := mul_nonneg
   one_mem' := zero_le_one
   add_mem' := add_nonneg
   zero_mem' := le_rfl
+
+@[simp] lemma mem_nonneg {x : R} : x ∈ nonneg R ↔ 0 ≤ x := .rfl
+
+end nonneg
 
 end Subsemiring

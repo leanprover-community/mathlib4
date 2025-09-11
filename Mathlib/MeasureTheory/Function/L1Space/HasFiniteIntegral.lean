@@ -33,7 +33,7 @@ open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
-  [TopologicalSpace ε''] [ENormedAddMonoid ε'']
+  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
 
 namespace MeasureTheory
 
@@ -41,9 +41,6 @@ namespace MeasureTheory
 
 lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
-
-@[deprecated (since := "2025-01-20")]
-alias lintegral_nnnorm_eq_lintegral_edist := lintegral_enorm_eq_lintegral_edist
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
@@ -69,16 +66,12 @@ theorem lintegral_enorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStr
 
 theorem lintegral_enorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ := by simp
 
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_zero := lintegral_enorm_zero
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_add_left := lintegral_enorm_add_left
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_add_right := lintegral_enorm_add_right
-@[deprecated (since := "2025-01-21")] alias lintegral_nnnorm_neg := lintegral_enorm_neg
-
 /-! ### The predicate `HasFiniteIntegral` -/
 
 
 /-- `HasFiniteIntegral f μ` means that the integral `∫⁻ a, ‖f a‖ ∂μ` is finite.
   `HasFiniteIntegral f` means `HasFiniteIntegral f volume`. -/
+@[fun_prop]
 def HasFiniteIntegral {_ : MeasurableSpace α} (f : α → ε)
     (μ : Measure α := by volume_tac) : Prop :=
   ∫⁻ a, ‖f a‖ₑ ∂μ < ∞
@@ -88,10 +81,7 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
   Iff.rfl
 
 theorem hasFiniteIntegral_iff_enorm {f : α → ε} : HasFiniteIntegral f μ ↔ ∫⁻ a, ‖f a‖ₑ ∂μ < ∞ := by
-  simp only [HasFiniteIntegral, ofReal_norm_eq_enorm, enorm_eq_nnnorm]
-
-@[deprecated (since := "2025-01-20")]
-alias hasFiniteIntegral_iff_nnnorm := hasFiniteIntegral_iff_enorm
+  simp only [HasFiniteIntegral]
 
 theorem hasFiniteIntegral_iff_norm (f : α → β) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) < ∞ := by
@@ -170,10 +160,12 @@ lemma hasFiniteIntegral_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ :=
   hasFiniteIntegral_const_iff_isFiniteMeasure_enorm (enorm_ne_zero.mpr hc) enorm_ne_top
 
+@[fun_prop]
 theorem hasFiniteIntegral_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     HasFiniteIntegral (fun _ : α ↦ c) μ :=
   (hasFiniteIntegral_const_iff_enorm hc).2 <| .inr ‹_›
 
+@[fun_prop]
 theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
@@ -191,25 +183,33 @@ theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α �
   apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
   filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
 
-theorem hasFiniteIntegral_of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0}
-    (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
-  (hasFiniteIntegral_const_enorm (enorm_ne_top (x := C))).mono'_enorm hC
+theorem HasFiniteIntegral.of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} {C : ℝ≥0∞}
+    (hC' : ‖C‖ₑ ≠ ∞ := by finiteness) (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
+  (hasFiniteIntegral_const_enorm hC').mono'_enorm hC
 
-theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
+@[deprecated (since := "2025-07-26")]
+alias hasFiniteIntegral_of_bounded_enorm := HasFiniteIntegral.of_bounded_enorm
+
+theorem HasFiniteIntegral.of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const C).mono' hC
 
+@[deprecated (since := "2025-07-26")]
+alias hasFiniteIntegral_of_bounded := HasFiniteIntegral.of_bounded
+
 -- TODO: generalise this to f with codomain ε
 -- requires generalising `norm_le_pi_norm` and friends to enorms
+@[simp]
 theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α → β} :
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
-  hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
+  .of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
 theorem HasFiniteIntegral.mono_measure {f : α → ε} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
   lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
 
+@[fun_prop]
 theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f μ)
     (hν : HasFiniteIntegral f ν) : HasFiniteIntegral f (μ + ν) := by
   simp only [HasFiniteIntegral, lintegral_add_measure] at *
@@ -233,17 +233,18 @@ theorem HasFiniteIntegral.smul_measure {f : α → ε} (h : HasFiniteIntegral f 
   simp only [HasFiniteIntegral, lintegral_smul_measure] at *
   exact mul_lt_top hc.lt_top h
 
-@[simp]
+@[fun_prop, simp]
 theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) :
     HasFiniteIntegral f (0 : Measure α) := by
   simp only [HasFiniteIntegral, lintegral_zero_measure, zero_lt_top]
 
 variable (α μ) in
-@[simp]
-theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] :
+@[fun_prop, simp]
+theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] :
     HasFiniteIntegral (fun _ : α => (0 : ε)) μ := by
   simp [hasFiniteIntegral_iff_enorm]
 
+@[fun_prop]
 theorem HasFiniteIntegral.neg {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (-f) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
@@ -251,9 +252,11 @@ theorem HasFiniteIntegral.neg {f : α → β} (hfi : HasFiniteIntegral f μ) :
 theorem hasFiniteIntegral_neg_iff {f : α → β} : HasFiniteIntegral (-f) μ ↔ HasFiniteIntegral f μ :=
   ⟨fun h => neg_neg f ▸ h.neg, HasFiniteIntegral.neg⟩
 
+@[fun_prop]
 theorem HasFiniteIntegral.enorm {f : α → ε} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (‖f ·‖ₑ) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
+@[fun_prop]
 theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
@@ -265,6 +268,20 @@ theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
 
+theorem HasFiniteIntegral.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  .of_finite
+
+theorem HasFiniteIntegral.of_isEmpty [IsEmpty α] {f : α → β} :
+    HasFiniteIntegral f μ :=
+  .of_finite
+
+@[simp]
+theorem HasFiniteIntegral.of_subsingleton_codomain
+    {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [Subsingleton ε] {f : α → ε} :
+    HasFiniteIntegral f μ :=
+  hasFiniteIntegral_zero _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
+
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
   have h x : ‖(f x).toReal‖ₑ = .ofReal (f x).toReal := by
@@ -274,7 +291,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
   by_cases hfx : f x = ∞
   · simp [hfx]
   · lift f x to ℝ≥0 using hfx with fx h
-    simp [← h, ← NNReal.coe_le_coe]
+    simp
 
 lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
@@ -290,7 +307,7 @@ theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteInte
 section DominatedConvergence
 
 variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
-  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {F' : ℕ → α → ε} {f' : α → ε} {bound' : α → ℝ≥0∞}
 
 theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
@@ -405,11 +422,12 @@ section PosPart
 
 /-! Lemmas used for defining the positive part of an `L¹` function -/
 
-
+@[fun_prop]
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => max (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simp [abs_le, le_abs_self]
 
+@[fun_prop]
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simpa [abs_le] using neg_abs_le _
@@ -420,15 +438,29 @@ section NormedSpace
 
 variable {𝕜 : Type*}
 
+@[fun_prop]
 theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
-    (c : 𝕜) {f : α → β} :
-    HasFiniteIntegral f μ → HasFiniteIntegral (c • f) μ := by
-  simp only [HasFiniteIntegral]; intro hfi
+    (c : 𝕜) {f : α → β} (hf : HasFiniteIntegral f μ) :
+    HasFiniteIntegral (c • f) μ := by
+  simp only [HasFiniteIntegral]
   calc
     ∫⁻ a : α, ‖c • f a‖ₑ ∂μ ≤ ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_mono fun i ↦ enorm_smul_le
     _ < ∞ := by
       rw [lintegral_const_mul']
-      exacts [mul_lt_top coe_lt_top hfi, coe_ne_top]
+      exacts [mul_lt_top coe_lt_top hf, coe_ne_top]
+
+-- TODO: weaken the hypothesis to a version of `ENormSMulClass` with `≤`,
+-- once such a typeclass exists.
+-- This will let us unify with `HasFiniteIntegral.smul` above.
+@[fun_prop]
+theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENormSMulClass 𝕜 ε'']
+    (c : 𝕜) {f : α → ε''} (hf : HasFiniteIntegral f μ) : HasFiniteIntegral (c • f) μ := by
+  simp only [HasFiniteIntegral]
+  calc
+    ∫⁻ a : α, ‖c • f a‖ₑ ∂μ = ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_congr fun i ↦ enorm_smul _ _
+    _ < ∞ := by
+      rw [lintegral_const_mul']
+      exacts [mul_lt_top coe_lt_top hf, coe_ne_top]
 
 theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : IsUnit c) (f : α → β) :
@@ -439,10 +471,12 @@ theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     simpa only [smul_smul, Units.inv_mul, one_smul] using h.smul ((c⁻¹ : 𝕜ˣ) : 𝕜)
   exact HasFiniteIntegral.smul _
 
+@[fun_prop]
 theorem HasFiniteIntegral.const_mul [NormedRing 𝕜] {f : α → 𝕜} (h : HasFiniteIntegral f μ) (c : 𝕜) :
     HasFiniteIntegral (fun x => c * f x) μ :=
   h.smul c
 
+@[fun_prop]
 theorem HasFiniteIntegral.mul_const [NormedRing 𝕜] {f : α → 𝕜} (h : HasFiniteIntegral f μ) (c : 𝕜) :
     HasFiniteIntegral (fun x => f x * c) μ :=
   h.smul (MulOpposite.op c)
@@ -455,7 +489,7 @@ variable [MeasurableSingletonClass α]
 -- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
 lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
     HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
-  simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count]
+  simp only [hasFiniteIntegral_iff_enorm, lintegral_count]
 
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
 lemma hasFiniteIntegral_count_iff {f : α → β} :
@@ -469,6 +503,7 @@ section restrict
 
 variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
 
+@[fun_prop]
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
     HasFiniteIntegral f (μ.restrict s) := by
   refine lt_of_le_of_lt ?_ h

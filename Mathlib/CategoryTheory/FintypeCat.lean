@@ -101,8 +101,8 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       invFun := i.inv
       left_inv := congr_fun i.hom_inv_id
       right_inv := congr_fun i.inv_hom_id }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
   inferInstanceAs <| Finite (X → Y)
@@ -236,11 +236,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     uSwitch.map (uSwitch.map f) =
     (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
-      Y.uSwitchEquiv)).inv := by
-  ext x
-  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
-  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
-  rfl
+      Y.uSwitchEquiv)).inv := rfl
 
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

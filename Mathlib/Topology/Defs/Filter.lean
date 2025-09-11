@@ -30,7 +30,7 @@ as well as other definitions that rely on `Filter`s.
   denoted by `𝓝ˢ s` in the `Topology` scope.
   A set `t` is called a neighborhood of `s`, if it includes an open set that includes `s`.
 
-* `exterior s`: The *exterior* of a set is the intersection of all its neighborhoods.
+* `nhdsKer s`: The *neighborhoods kernel* of a set is the intersection of all its neighborhoods.
   In an Alexandrov-discrete space, this is the smallest neighborhood of the set.
 
   Note that this construction is unnamed in the literature.
@@ -155,12 +155,11 @@ def nhdsSet (s : Set X) : Filter X :=
 
 @[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
 
-/-- The *exterior* of a set is the intersection of all its neighborhoods. In an Alexandrov-discrete
-space, this is the smallest neighborhood of the set.
+/-- The *neighborhoods kernel* of a set is the intersection of all its neighborhoods. In an
+Alexandrov-discrete space, this is the smallest neighborhood of the set. -/
+def nhdsKer (s : Set X) : Set X := (𝓝ˢ s).ker
 
-Note that this construction is unnamed in the literature. We choose the name in analogy to
-`interior`. -/
-def exterior (s : Set X) : Set X := (𝓝ˢ s).ker
+@[deprecated (since := "2025-07-09")] alias exterior := nhdsKer
 
 /-- A function between topological spaces is continuous at a point `x₀`
 if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
@@ -259,7 +258,7 @@ def AccPt (x : X) (F : Filter X) : Prop :=
   NeBot (𝓝[≠] x ⊓ F)
 
 /-- A set `s` is compact if for every nontrivial filter `f` that contains `s`,
-    there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/
+there exists `a ∈ s` such that every set of `f` meets every neighborhood of `a`. -/
 def IsCompact (s : Set X) :=
   ∀ ⦃f⦄ [NeBot f], f ≤ 𝓟 s → ∃ x ∈ s, ClusterPt x f
 
@@ -294,7 +293,7 @@ See also `WeaklyLocallyCompactSpace`, a typeclass that only assumes
 that each point has a compact neighborhood. -/
 class LocallyCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a locally compact space,
-    every neighbourhood of every point contains a compact neighbourhood of that same point. -/
+  every neighbourhood of every point contains a compact neighbourhood of that same point. -/
   local_compact_nhds : ∀ (x : X), ∀ n ∈ 𝓝 x, ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s
 
 /-- We say that `X` and `Y` are a locally compact pair of topological spaces,

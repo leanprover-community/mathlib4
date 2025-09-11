@@ -49,7 +49,7 @@ variable (C : Type*) [Category C]
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
 class IsIdempotentComplete : Prop where
   /-- A category is idempotent complete iff all idempotent endomorphisms `p`
-    split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
+  split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
 
@@ -75,7 +75,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
               · intro m hm
                 rw [Fork.ι_ofι] at hm
                 rw [← hm]
-                simp only [← hm, assoc, h₁]
+                simp only [assoc, h₁]
                 exact (comp_id m).symm }⟩
   · intro h
     refine ⟨?_⟩
@@ -84,7 +84,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     refine ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
       equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), ?_, equalizer.lift_ι _ _⟩
     ext
-    simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
+    simp only [assoc, limit.lift_π, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
     rw [← equalizer.condition, comp_id]
 
@@ -123,11 +123,7 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   rcases h with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
   use Y, i ≫ φ.hom, φ.inv ≫ e
-  constructor
-  · slice_lhs 2 3 => rw [φ.hom_inv_id]
-    rw [id_comp, h₁]
-  · slice_lhs 2 3 => rw [h₂]
-    rw [hpp', ← assoc, φ.inv_hom_id, id_comp]
+  grind
 
 theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p') :
@@ -138,9 +134,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
   · apply split_imp_of_iso φ.symm p' p
     rw [← comp_id p, ← φ.hom_inv_id]
     slice_rhs 2 3 => rw [hpp']
-    slice_rhs 1 2 => erw [φ.inv_hom_id]
-    simp only [id_comp]
-    rfl
+    simp
 
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by

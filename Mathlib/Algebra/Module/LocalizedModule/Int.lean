@@ -134,6 +134,6 @@ theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset 
     (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem
       a hx' using 1
   convert ha.symm using 1
-  simp only [Submonoid.coe_subtype, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
+  simp only [Submonoid.smul_def, ← smul_smul]
 
 end IsLocalizedModule

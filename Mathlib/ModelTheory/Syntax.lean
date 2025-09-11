@@ -252,7 +252,7 @@ def substFunc : L.Term α → (∀ {n : ℕ}, L.Functions n → L'.Term (Fin n))
 theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
   induction t
   · rfl
-  · simp only [substFunc, Functions.term, subst, ‹∀_, _›]
+  · simp only [substFunc, Functions.term, subst, ‹∀ _, _›]
 
 end Term
 
@@ -417,10 +417,10 @@ def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.Bounded
 theorem castLE_rfl {n} (h : n ≤ n) (φ : L.BoundedFormula α n) : φ.castLE h = φ := by
   induction φ with
   | falsum => rfl
-  | equal => simp [Fin.castLE_of_eq]
-  | rel => simp [Fin.castLE_of_eq]
-  | imp _ _ ih1 ih2 => simp [Fin.castLE_of_eq, ih1, ih2]
-  | all _ ih3 => simp [Fin.castLE_of_eq, ih3]
+  | equal => simp
+  | rel => simp
+  | imp _ _ ih1 ih2 => simp [ih1, ih2]
+  | all _ ih3 => simp [ih3]
 
 @[simp]
 theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormula α k) :
@@ -431,7 +431,7 @@ theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (φ : L.BoundedFormu
   | equal => simp
   | rel =>
     intros
-    simp only [castLE, eq_self_iff_true, heq_iff_eq]
+    simp only [castLE]
     rw [← Function.comp_assoc, Term.relabel_comp_relabel]
     simp
   | imp _ _ ih1 ih2 => simp [ih1, ih2]
@@ -534,15 +534,11 @@ theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β �
     rcases g x with l | r <;> simp
   · simp [BoundedFormula.relabelAux]
 
-@[deprecated (since := "2025-02-21")] alias sum_elim_comp_relabelAux := sumElim_comp_relabelAux
-
 @[simp]
 theorem relabelAux_sumInl (k : ℕ) :
     relabelAux (Sum.inl : α → α ⊕ (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
   cases x <;> · simp [relabelAux]
-
-@[deprecated (since := "2025-02-21")] alias relabelAux_sum_inl := relabelAux_sumInl
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
@@ -592,8 +588,6 @@ theorem relabel_sumInl (φ : L.BoundedFormula α n) :
   | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
   | imp _ _ ih1 ih2 => simp_all [mapTermRel]
   | all _ ih3 => simp_all [mapTermRel]
-
-@[deprecated (since := "2025-02-21")] alias relabel_sum_inl := relabel_sumInl
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
@@ -667,7 +661,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
-    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
+    simp only [onBoundedFormula, Function.comp_apply, ih1, ih2]
   | all _ ih3 => simp only [ih3, onBoundedFormula, Function.comp_apply]
 
 /-- Maps a formula's symbols along a language map. -/
@@ -896,7 +890,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
     simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
-      mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
+      mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right]
     refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp
     · simp

@@ -47,7 +47,7 @@ variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [Compac
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
     exp 𝕜 f = (⟨exp 𝕜 ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
-  simp only [Function.comp_apply, NormedSpace.exp, FormalMultilinearSeries.sum]
+  simp only [NormedSpace.exp, FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
   simp [NormedSpace.exp_eq_tsum]
