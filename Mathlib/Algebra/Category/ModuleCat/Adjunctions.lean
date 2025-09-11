@@ -60,6 +60,7 @@ noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
 @[simp]
 lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
     freeDesc f (freeMk x) = f x := by
+  dsimp [freeDesc]
   erw [Finsupp.lift_apply, Finsupp.sum_single_index]
   all_goals simp
 
