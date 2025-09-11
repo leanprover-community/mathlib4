@@ -189,7 +189,7 @@ instance {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A] [Algebra 
     CommRing (elemental R x) :=
   StarSubalgebra.commRingTopologicalClosure _ mul_comm
 
-theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
+instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_closure
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A] [StarRing A]
