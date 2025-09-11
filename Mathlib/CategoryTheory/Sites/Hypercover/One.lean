@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.ZeroHypercover
+import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # 1-hypercovers
