@@ -501,6 +501,7 @@
   "Mathlib.Analysis.Real.Pi.Chudnovsky":
   ["Batteries.Data.Rat.Float",
    "Mathlib.Analysis.SpecialFunctions.Integrals.Basic"],
+  "Mathlib.Analysis.Real.OfDigits": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.Normed.Group.AddCircle":
