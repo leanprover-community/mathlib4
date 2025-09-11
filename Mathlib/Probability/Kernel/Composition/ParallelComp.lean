@@ -78,6 +78,10 @@ lemma parallelComp_apply' [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (κ ∥ₖ η) x s = ∫⁻ b, η x.2 (Prod.mk b ⁻¹' s) ∂κ x.1 := by
   rw [parallelComp_apply, Measure.prod_apply hs]
 
+lemma parallelComp_apply_prod [IsSFiniteKernel κ] [IsSFiniteKernel η] (s : Set β) (t : Set δ) :
+    (κ ∥ₖ η) x (s ×ˢ t) = (κ x.1 s) * (η x.2 t) := by
+  rw [parallelComp_apply, Measure.prod_prod]
+
 @[simp]
 lemma parallelComp_apply_univ [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     (κ ∥ₖ η) x Set.univ = κ x.1 Set.univ * η x.2 Set.univ := by
