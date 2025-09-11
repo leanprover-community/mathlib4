@@ -889,6 +889,11 @@ theorem stoppedValue_stoppedProcess {u : ι → Ω → β} {τ σ : Ω → WithT
   simp only [stoppedValue, stoppedProcess, ne_eq, ite_not]
   cases σ ω <;> cases τ ω <;> simp
 
+theorem stoppedValue_stoppedProcess_ae_eq {u : ι → Ω → β} {τ σ : Ω → WithTop ι} {μ : Measure Ω}
+    (hσ : ∀ᵐ ω ∂μ, σ ω ≠ ⊤) :
+    stoppedValue (stoppedProcess u τ) σ =ᵐ[μ] stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) := by
+  filter_upwards [hσ] with ω hσ using by simp [stoppedValue_stoppedProcess, hσ]
+
 theorem stoppedProcess_eq_of_le {u : ι → Ω → β} {τ : Ω → WithTop ι} {i : ι} {ω : Ω} (h : i ≤ τ ω) :
     stoppedProcess u τ i ω = u i ω := by simp [stoppedProcess, min_eq_left h]
 
