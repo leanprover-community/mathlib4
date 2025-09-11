@@ -447,23 +447,25 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
 See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := by
-  induction' n with n hn
-  · simp
-  simp [Nat.succ_div, add_ite, add_zero, Finset.range_add_one, filter_insert, apply_ite card,
-    card_insert_of_notMem, hn]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp [Nat.succ_div, add_ite, add_zero, Finset.range_add_one, filter_insert, apply_ite card,
+      card_insert_of_notMem, hn]
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
 theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n / p := by
-  induction' n with n IH
-  · simp
-  -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
-  have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
-    rcases n.eq_zero_or_pos with (rfl | hn)
-    · simp
-    simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
-      Ico_add_one_right_eq_Icc]
-  simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, IH,
-    Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
+    have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
+      rcases n.eq_zero_or_pos with (rfl | hn)
+      · simp
+      simp_rw [← Ico_add_one_add_one_eq_Ioc, Ico_insert_right (add_le_add_right hn.le 1),
+        Ico_add_one_right_eq_Icc]
+    simp [Nat.succ_div, add_ite, add_zero, h1, filter_insert, apply_ite card, IH,
+      Finset.mem_filter, mem_Ioc, not_le.2 (lt_add_one n)]
 
 /-- There are exactly `⌊N/n⌋` positive multiples of `n` that are `≤ N`.
 See `Nat.card_multiples` for a "shifted-by-one" version. -/

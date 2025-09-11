@@ -77,11 +77,13 @@ theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
 theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     #{x ∈ Ico k (k + n) | a.Coprime x} ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
-  induction' n / a with i ih
-  · rw [← filter_coprime_Ico_eq_totient a k]
+  induction n / a with
+  | zero =>
+    rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
     exact le_of_lt (mod_lt n (pos_iff_ne_zero.mpr a_ne_zero))
+  | succ i ih => ?_
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc

@@ -34,9 +34,10 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
   rw [List.mapIdx_eq_zipIdx_map, List.zipIdx_eq_zip_range', List.map_zip_eq_zipWith,
     ofDigits_eq_foldr, ← List.range_eq_range']
-  induction' L with hd tl hl
-  · simp
-  · simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
+  induction L with
+  | nil => simp
+  | cons hd tl hl =>
+    simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using
       Or.inl hl
 
 /-!
@@ -46,7 +47,7 @@ This section contains various lemmas of properties relating to `digits` and `ofD
 -/
 
 theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length = b.log n + 1 := by
-  induction' n using Nat.strong_induction_on with n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
   · simp [h]
@@ -157,9 +158,10 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :
     (p - 1) * ∑ i ∈ range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
-  · induction' L with hd tl ih
-    · simp [ofDigits]
-    · simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
+  · induction L with
+    | nil => simp [ofDigits]
+    | cons hd tl ih =>
+      simp only [List.length_cons, List.sum_cons, self_div_pow_eq_ofDigits_drop _ _ h,
           digits_ofDigits p h (hd :: tl) h_lt (fun _ => h_ne_zero)]
       simp only [ofDigits]
       rw [sum_range_succ, Nat.cast_id]
@@ -205,15 +207,16 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
 
 
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
-  induction' n using Nat.binaryRecFromOne with b n h ih
-  · simp
-  · simp
-  rw [bits_append_bit _ _ fun hn => absurd hn h]
-  cases b
-  · rw [digits_def' one_lt_two]
-    · simpa [Nat.bit]
-    · simpa [Nat.bit, pos_iff_ne_zero]
-  · simpa [Nat.bit, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
+  induction n using Nat.binaryRecFromOne with
+  | zero => simp
+  | one => simp
+  | bit b n h ih =>
+    rw [bits_append_bit _ _ fun hn => absurd hn h]
+    cases b
+    · rw [digits_def' one_lt_two]
+      · simpa [Nat.bit]
+      · simpa [Nat.bit, pos_iff_ne_zero]
+    · simpa [Nat.bit, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 
 /-! ### Modular Arithmetic -/
 
@@ -221,17 +224,18 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
 -- This is really a theorem about polynomials.
 theorem dvd_ofDigits_sub_ofDigits {α : Type*} [CommRing α] {a b k : α} (h : k ∣ a - b)
     (L : List ℕ) : k ∣ ofDigits a L - ofDigits b L := by
-  induction' L with d L ih
-  · change k ∣ 0 - 0
-    simp
-  · simp only [ofDigits, add_sub_add_left_eq_sub]
+  induction L with
+  | nil => change k ∣ 0 - 0; simp
+  | cons d L ih =>
+    simp only [ofDigits, add_sub_add_left_eq_sub]
     exact dvd_mul_sub_mul h ih
 
 theorem ofDigits_modEq' (b b' : ℕ) (k : ℕ) (h : b ≡ b' [MOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [MOD k] := by
-  induction' L with d L ih
-  · rfl
-  · dsimp [ofDigits]
+  induction L with
+  | nil => rfl
+  | cons d L ih =>
+    dsimp [ofDigits]
     dsimp [Nat.ModEq] at *
     conv_lhs => rw [Nat.add_mod, Nat.mul_mod, h, ih]
     conv_rhs => rw [Nat.add_mod, Nat.mul_mod]
@@ -257,9 +261,10 @@ theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b 
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by
-  induction' L with d L ih
-  · rfl
-  · dsimp [ofDigits]
+  induction L with
+  | nil => rfl
+  | cons d L ih =>
+    dsimp [ofDigits]
     dsimp [Int.ModEq] at *
     conv_lhs => rw [Int.add_emod, Int.mul_emod, h, ih]
     conv_rhs => rw [Int.add_emod, Int.mul_emod]
