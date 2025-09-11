@@ -31,7 +31,7 @@ open PowerSeries Polynomial
 
 variable (k : Type*) [Field k]
 
-/-- We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$ for a field `k`. -/
+/-- We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field `k`. -/
 abbrev A := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
 lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
