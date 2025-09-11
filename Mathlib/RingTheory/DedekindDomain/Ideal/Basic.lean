@@ -223,10 +223,11 @@ theorem exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDomain A] (hNF :
       exact hZP0
 
 namespace FractionalIdeal
+variable [IsDedekindDomain A]
 
 open Ideal
 
-lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
+lemma not_inv_le_one_of_ne_bot {I : Ideal A}
     (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) : ¬(I⁻¹ : FractionalIdeal A⁰ K) ≤ 1 := by
   have hNF : ¬IsField A := fun h ↦ letI := h.toField; (eq_bot_or_eq_top I).elim hI0 hI1
   wlog hM : I.IsMaximal generalizing I
@@ -267,7 +268,7 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I ≠ ⊥)
+theorem mul_inv_cancel_of_le_one {I : Ideal A} (hI0 : I ≠ ⊥)
     (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
@@ -287,8 +288,7 @@ theorem mul_inv_cancel_of_le_one [h : IsDedekindDomain A] {I : Ideal A} (hI0 : I
 We will use this to show that nonzero fractional ideals are invertible,
 and finally conclude that fractional ideals in a Dedekind domain form a group with zero.
 -/
-theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ ⊥) :
-    I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
+theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show `1 ≤ J⁻¹ = (I * I⁻¹)⁻¹ ≤ 1`.
   apply mul_inv_cancel_of_le_one hI0
   by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹ = 0
@@ -322,6 +322,23 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   | succ i ih =>
     change x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
     rw [pow_succ']; exact x_mul_mem _ ih
+
+noncomputable instance instDivisionCommMonoid : CommGroupWithZero (FractionalIdeal A⁰ K) where
+  inv_zero := _
+  div_eq_mul_inv I J := by
+    by_cases hJ : J = 0
+    · rw [hJ, div_zero, inv_zero', mul_zero]
+    rw [inv_eq]
+    refine coeToSubmodule_injective ?_
+    dsimp
+    rw [coe_mul, coe_div hJ, coe_div hJ]
+    simp [← mul_div_assoc]
+    refine le_antisymm ((mul_right_le_iff hJ).mp ?_) ((le_div_iff_mul_le hJ).mpr ?_)
+    · rw [mul_assoc, mul_comm J⁻¹, FractionalIdeal.mul_inv_cancel hJ, mul_one, mul_le]
+      intro x hx y hy
+      rw [mem_div_iff_of_nonzero hJ] at hx
+      exact hx y hy
+    rw [mul_assoc, mul_comm J⁻¹, FractionalIdeal.mul_inv_cancel hJ, mul_one]
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.
 
@@ -378,6 +395,7 @@ instance [IsDedekindDomain A] : PosMulReflectLE (Ideal A) where
 -/
 protected theorem div_eq_mul_inv [IsDedekindDomain A] (I J : FractionalIdeal A⁰ K) :
     I / J = I * J⁻¹ := by
+  exact div_eq_mul_inv I J
   by_cases hJ : J = 0
   · rw [hJ, div_zero, inv_zero', mul_zero]
   refine le_antisymm ((mul_right_le_iff hJ).mp ?_) ((le_div_iff_mul_le hJ).mpr ?_)
@@ -405,14 +423,6 @@ variable [IsDedekindDomain A] [Algebra A K] [IsFractionRing A K]
 open FractionalIdeal
 
 open Ideal
-
-noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal A⁰ K) where
-  __ := coeIdeal_injective.nontrivial
-  inv_zero := inv_zero' _
-  div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
-  mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
 
 #adaptation_note /-- 2025-03-29 for https://github.com/leanprover/lean4/issues/7717 had to add `mul_left_cancel_of_ne_zero` field.
 TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
