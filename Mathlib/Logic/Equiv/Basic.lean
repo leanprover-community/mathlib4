@@ -424,7 +424,7 @@ def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
   right_inv := by
     rintro f
     funext a
-    exact Subtype.ext_val rfl
+    exact Subtype.ext rfl
 
 /-- A sigma of a sigma whose second base does not depend on the first is equivalent
 to a sigma whose base is a product. -/
@@ -595,7 +595,7 @@ def subtypeQuotientEquivQuotientSubtype (p₁ : α → Prop) {s₁ : Setoid α} 
       a.2
   invFun a :=
     Quotient.liftOn a (fun a => (⟨⟦a.1⟧, (hp₂ _).1 a.2⟩ : { x // p₂ x })) fun _ _ hab =>
-      Subtype.ext_val (Quotient.sound ((h _ _).1 hab))
+      Subtype.ext (Quotient.sound ((h _ _).1 hab))
   left_inv := by exact fun ⟨a, ha⟩ => Quotient.inductionOn a (fun b hb => rfl) ha
   right_inv a := by exact Quotient.inductionOn a fun ⟨a, ha⟩ => rfl
 
@@ -890,9 +890,6 @@ theorem piCongrLeft_sumInr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' �
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
 
-@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inl := piCongrLeft_sumInl
-@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inr := piCongrLeft_sumInr
-
 end
 
 section
@@ -995,7 +992,7 @@ theorem Function.Injective.swap_comp
   funext fun _ => hf.swap_apply _ _ _
 
 /-- To give an equivalence between two subsingleton types, it is sufficient to give any two
-    functions between them. -/
+functions between them. -/
 def equivOfSubsingletonOfSubsingleton [Subsingleton α] [Subsingleton β] (f : α → β) (g : β → α) :
     α ≃ β where
   toFun := f

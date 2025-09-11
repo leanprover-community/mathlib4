@@ -112,7 +112,7 @@ instance [K.HasHomology i] [K.HasHomology j] :
 
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (#27382)
+  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
   dsimp [-Fin.reduceFinMk]
   infer_instance
 
@@ -154,7 +154,7 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (#27382)
+    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
     (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
 
 end HomologySequence
@@ -272,7 +272,7 @@ namespace ShortComplex
 
 namespace ShortExact
 
-/-- The connecting homoomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
+/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
 short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 

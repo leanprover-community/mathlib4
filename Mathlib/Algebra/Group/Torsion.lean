@@ -9,31 +9,19 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Torsion-free monoids and groups
 
-This file defines torsion-free monoids as those monoids `M` for which `n • · : M → M` is injective
-for all non-zero natural number `n`.
+This file proves lemmas about torsion-free monoids.
+A monoid `M` is *torsion-free* if `n • · : M → M` is injective for all non-zero natural numbers `n`.
 -/
 
 open Function
 
 variable {M G : Type*}
 
-variable (M) in
-/-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `a : ℕ` is
-injective. -/
-@[mk_iff]
-class IsAddTorsionFree [AddMonoid M] where
-  protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
-
 section Monoid
 variable [Monoid M]
 
-variable (M) in
-/-- A monoid is torsion-free if power by every non-zero element `a : ℕ` is injective. -/
-@[to_additive, mk_iff]
-class IsMulTorsionFree where
-  protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
-
-attribute [to_additive existing] isMulTorsionFree_iff
+instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
+  no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
 
 @[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
   pow_left_injective _ _ := injective_of_subsingleton _
@@ -46,6 +34,10 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n :=
 
 @[to_additive nsmul_right_inj]
 lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
+
+@[to_additive]
+lemma IsMulTorsionFree.pow_eq_one_iff (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
+  ⟨fun h ↦ by rwa [← pow_left_inj hn, one_pow], fun h ↦ by rw [h, one_pow]⟩
 
 end Monoid
 
@@ -63,8 +55,8 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 
 /-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
 `zsmul_lt_zsmul_iff'`. -/
-@[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`."]
+@[to_additive /-- Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'`
+and `zsmul_lt_zsmul_iff'`. -/]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
 end Group

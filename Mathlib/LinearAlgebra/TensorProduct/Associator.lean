@@ -193,8 +193,8 @@ attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
 def rightComm : M ⊗[R] N ⊗[R] P ≃ₗ[R] M ⊗[R] P ⊗[R] N :=
   LinearEquiv.ofLinear
-    (lift (lift (LinearMap.lflip ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
-    (lift (lift (LinearMap.lflip ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
+    (lift (lift (LinearMap.lflip.toLinearMap ∘ₗ (mk _ _ _).compr₂ (mk _ _ _))))
   (by ext; rfl) (by ext; rfl)
 
 @[simp]
@@ -249,7 +249,7 @@ composition of linear maps.
 E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M → P)`, and applying
 `dual_tensor_hom_equiv.symm` to the three hom-modules gives a map
 `(M.dual ⊗ N) ⊗ (N.dual ⊗ P) → (M.dual ⊗ P)`, which agrees with the application of `contractRight`
-on `N ⊗ N.dual` after the suitable rebracketting.
+on `N ⊗ N.dual` after the suitable rebracketing.
 -/
 def tensorTensorTensorAssoc : M ⊗[R] N ⊗[R] (P ⊗[R] Q) ≃ₗ[R] M ⊗[R] (N ⊗[R] P) ⊗[R] Q :=
   (TensorProduct.assoc R (M ⊗[R] N) P Q).symm ≪≫ₗ
@@ -298,5 +298,15 @@ theorem lid_comp_rTensor (f : N →ₗ[R] R) :
 
 lemma rid_comp_lTensor (f : M →ₗ[R] R) :
     (rid R N).comp (lTensor N f) = lift ((lsmul R N).flip.compl₂ f) := ext' fun _ _ ↦ rfl
+
+lemma lTensor_rTensor_comp_assoc (x : M →ₗ[R] N) :
+    lTensor P (rTensor Q x) ∘ₗ TensorProduct.assoc R P M Q
+    = TensorProduct.assoc R P N Q ∘ₗ rTensor Q (lTensor P x) := by
+  simp_rw [rTensor, lTensor, map_map_comp_assoc_eq]
+
+lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
+    rTensor Q (lTensor P x) ∘ₗ (TensorProduct.assoc R P M Q).symm
+    = (TensorProduct.assoc R P N Q).symm ∘ₗ lTensor P (rTensor Q x) := by
+  simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
 
 end LinearMap
