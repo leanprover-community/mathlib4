@@ -468,7 +468,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
       (∀ (β) [Fintype β], Fintype.card β < Fintype.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
-  induction' n using Nat.strong_induction_on with n ih generalizing α
+  induction n using Nat.strong_induction_on generalizing α with | _ n ih
   rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep
