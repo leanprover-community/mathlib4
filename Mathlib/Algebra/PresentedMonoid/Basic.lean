@@ -99,7 +99,7 @@ theorem closure_range_of (rels : FreeMonoid α → FreeMonoid α → Prop) :
     Submonoid.closure (Set.range (PresentedMonoid.of rels)) = ⊤ := by
   rw [Submonoid.eq_top_iff']
   intro x
-  induction' x with a
+  induction x with | _ a
   induction a with
   | one => exact Submonoid.one_mem _
   | of x => exact subset_closure <| by simp [range, of]
