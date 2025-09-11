@@ -524,7 +524,7 @@ theorem count_coe_nonneg (J : Ideal R) : 0 ≤ count K v J := by
 theorem count_mono {I J} (hI : I ≠ 0) (h : I ≤ J) : count K v J ≤ count K v I := by
   by_cases hJ : J = 0
   · exact (hI (FractionalIdeal.le_zero_iff.mp (h.trans hJ.le))).elim
-  have := FractionalIdeal.mul_le_mul_left h J⁻¹
+  have := mul_le_mul_left' h J⁻¹
   rw [inv_mul_cancel₀ hJ, FractionalIdeal.le_one_iff_exists_coeIdeal] at this
   obtain ⟨J', hJ'⟩ := this
   rw [← mul_inv_cancel_left₀ hJ I, ← hJ', count_mul K v hJ, le_add_iff_nonneg_right]
@@ -649,7 +649,7 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     ∃ x : K, a + FractionalIdeal.spanSingleton R⁰ x * b = c := by
   wlog hb' : b = 1
   · obtain ⟨x, e⟩ := this (a := b⁻¹ * a) (b := 1) (c := b⁻¹ * c)
-      (FractionalIdeal.mul_le_mul_left hac _) (by simp [ha, hb]) one_ne_zero rfl
+      (mul_le_mul_left' hac _) (by simp [ha, hb]) one_ne_zero rfl
     use x
     simpa [hb, ← mul_assoc, mul_add, mul_comm b (.spanSingleton _ _)] using congr(b * $e)
   subst hb'
@@ -658,7 +658,7 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton, ←
       FractionalIdeal.den_mul_self_eq_num']
     ring_nf
-    exact FractionalIdeal.mul_le_mul_left hac _
+    exact mul_le_mul_left' hac _
   obtain ⟨x, hx⟩ := exists_sup_span_eq H
     (by simpa using FractionalIdeal.num_eq_zero_iff.not.mpr ha)
   refine ⟨algebraMap R K x / algebraMap R K (a.den.1 * c.den.1), ?_⟩
