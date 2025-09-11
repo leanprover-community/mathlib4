@@ -125,17 +125,18 @@ variable {G : Type*} [Groupoid G] (r : HomRel G)
 
 /-- Inverse of a map in the quotient category of a groupoid. -/
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
-  Quot.liftOn f (fun f' => Quot.mk _ (inv f')) (fun _ _ con => by
+  Quot.liftOn f (fun f' => Quot.mk _ (Groupoid.inv f')) (fun _ _ con => by
     rcases con with ⟨ _, f, g, _, hfg ⟩
-    have := Quot.sound <| CompClosure.intro (inv g) f g (inv f) hfg
-    simp only [IsIso.hom_inv_id, Category.comp_id, IsIso.inv_hom_id_assoc] at this
-    simp only [IsIso.inv_comp, Category.assoc]
+    have := Quot.sound <| CompClosure.intro (Groupoid.inv g) f g (Groupoid.inv f) hfg
+    simp only [Groupoid.inv_eq_inv, IsIso.hom_inv_id, Category.comp_id,
+      IsIso.inv_hom_id_assoc] at this
+    simp only [Groupoid.inv_eq_inv, IsIso.inv_comp, Category.assoc]
     repeat rw [← comp_mk]
     rw [this])
 
 @[simp]
 theorem inv_mk {X Y : Quotient r} (f : X.as ⟶ Y.as) :
-    Quotient.inv r (Quot.mk _ f) = Quot.mk _ (inv f) :=
+    Quotient.inv r (Quot.mk _ f) = Quot.mk _ (Groupoid.inv f) :=
   rfl
 
 /-- The quotient of a groupoid is a groupoid. -/
@@ -179,8 +180,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
-  · intro hfg
-    induction' hfg with m m' hm
+  · rintro ⟨hfg⟩
     exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
   · exact CompClosure.of _ _ _
 
@@ -263,10 +263,8 @@ theorem lift_obj_functor_obj (X : C) :
     (lift r F H).obj ((functor r).obj X) = F.obj X := rfl
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f := by
-  rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp [lift, functor]
-  simp
+    (lift r F H).map ((functor r).map f) = F.map f :=
+  rfl
 
 variable {r}
 
