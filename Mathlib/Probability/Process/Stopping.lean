@@ -5,6 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.Probability.Process.Adapted
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.Topology.Order.WithTop
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -35,32 +36,9 @@ open Filter Order TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 
-namespace WithTopOrderTopology
-
-variable {ι : Type*} [Preorder ι]
-
-scoped instance : TopologicalSpace (WithTop ι) := Preorder.topology _
-
-scoped instance : MeasurableSpace (WithTop ι) := borel _
-
-scoped instance : BorelSpace (WithTop ι) := ⟨rfl⟩
-
-scoped instance : OrderTopology (WithTop ι) := ⟨rfl⟩
-
-scoped instance [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι] :
-    SecondCountableTopology (WithTop ι) :=
-  let b := countableBasis ι
-  have hbc : Set.Countable b := countable_countableBasis ι
-  have hb_basis : IsTopologicalBasis b := isBasis_countableBasis ι
-  sorry
-
-end WithTopOrderTopology
-
 namespace WithTop
 
-open scoped WithTopOrderTopology
-
-variable {ι : Type*}
+variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
 noncomputable
 abbrev _root_.WithTop.ut [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
@@ -70,8 +48,6 @@ lemma ut_coe_enat (n : ℕ) : WithTop.ut (n : ℕ∞) = n := rfl
 
 @[simp]
 lemma ut_coe_ennreal (r : ℝ≥0) : WithTop.ut (r : ℝ≥0∞) = r := rfl
-
-variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
   refine WithTop.coe_strictMono.isEmbedding_of_ordConnected ?_
@@ -136,6 +112,10 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_ut
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
 
+instance : MeasurableSpace (WithTop ι) := borel _
+
+instance : BorelSpace (WithTop ι) := ⟨rfl⟩
+
 variable [MeasurableSpace ι] [BorelSpace ι]
 
 noncomputable
@@ -154,7 +134,7 @@ lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α} 
 lemma measurable_ut [Nonempty ι] : Measurable (WithTop.ut (ι := ι)) :=
   measurable_of_measurable_comp_coe measurable_id
 
-lemma measurable_coe [Nonempty ι] :
+lemma measurable_coe :
     Measurable (fun x : ι ↦ (x : WithTop ι)) := continuous_coe.measurable
 
 @[fun_prop]
@@ -584,7 +564,7 @@ theorem le_measurableSpace_of_const_le (hτ : IsStoppingTime f τ) {i : ι} (hτ
 end Preorder
 
 instance sigmaFinite_stopping_time {ι} [SemilatticeSup ι] [OrderBot ι]
-    [(Filter.atTop : Filter ι).IsCountablyGenerated] {μ : Measure Ω} {f : Filtration ι m}
+    {μ : Measure Ω} {f : Filtration ι m}
     {τ : Ω → WithTop ι} [SigmaFiniteFiltration μ f] (hτ : IsStoppingTime f τ) :
     SigmaFinite (μ.trim hτ.measurableSpace_le) := by
   refine @sigmaFiniteTrim_mono _ _ ?_ _ _ _ ?_ ?_
@@ -694,9 +674,7 @@ protected theorem measurableSet_lt_of_countable' [Countable ι] (hτ : IsStoppin
 
 end Countable
 
-open scoped WithTopOrderTopology
-
-protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
+protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable[hτ.measurableSpace] τ := by
   refine measurable_of_Iic fun i ↦ ?_
@@ -907,8 +885,6 @@ theorem stoppedProcess_eq_of_ge {u : ι → Ω → β} {τ : Ω → WithTop ι} 
     stoppedProcess u τ i ω = u (τ ω).ut ω := by simp [stoppedProcess, min_eq_right h]
 
 section ProgMeasurable
-
-open scoped WithTopOrderTopology
 
 variable [MeasurableSpace ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
   [BorelSpace ι] [TopologicalSpace β] {u : ι → Ω → β} {τ : Ω → WithTop ι} {f : Filtration ι m}
