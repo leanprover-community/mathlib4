@@ -3686,6 +3686,8 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.AnalyticManifold
+import Mathlib.Deprecated.Estimator
+import Mathlib.Deprecated.MLList.BestFirst
 import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
