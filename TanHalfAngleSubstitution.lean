@@ -12,12 +12,9 @@ lemma one_add_tan_sq_mul_cos_sq_eq_one (h : cos x ≠ 0) : (1 + tan x ^ 2) * cos
 
 /-- `tan x` takes the junk value `0` when `cos x = 0` -/
 lemma tan_eq_zero_of_cos_eq_zero (h : cos x = 0) : tan x = 0 := by
-  rw [cos_eq_zero_iff] at h
-  obtain ⟨k, hxk⟩ := h
-  apply tan_eq_zero_iff.mpr
-  use 2 * k + 1
-  push_cast
-  exact hxk.symm
+  obtain ⟨k, hxk⟩ := cos_eq_zero_iff.mp h
+  norm_cast at hxk
+  exact tan_eq_zero_iff.mpr ⟨2 * k + 1, hxk.symm⟩
 
 /-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
 theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq :
