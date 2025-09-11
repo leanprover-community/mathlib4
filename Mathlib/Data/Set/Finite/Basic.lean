@@ -685,9 +685,9 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
       ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
     motive s hs := by
   lift s to Finset α using id hs
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · simpa
-  · simpa using @insert a s ha (Set.toFinite _) (ih _)
+  induction s using Finset.cons_induction_on with
+  | empty => simpa
+  | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)
 
 /-- Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
@@ -732,8 +732,6 @@ end
 
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
-
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
