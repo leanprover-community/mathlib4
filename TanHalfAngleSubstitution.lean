@@ -4,6 +4,8 @@ open Real
 
 variable (x : ℝ)
 
+-- tangent half-angle substitution formulas
+
 lemma one_add_tan_sq_mul_cos_sq_eq_one (h : cos x ≠ 0) : (1 + tan x ^ 2) * cos x ^ 2 = 1 := by
   conv_rhs => rw [← sin_sq_add_cos_sq x, ← tan_mul_cos h]
   ring
