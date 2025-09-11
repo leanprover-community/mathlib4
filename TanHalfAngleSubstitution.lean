@@ -1,14 +1,19 @@
 import Mathlib
 
 open Complex
+open scoped Real
 
 variable (x : ℂ)
 
 -- tangent half-angle substitution formulas
 
-lemma one_add_tan_sq_mul_cos_sq_eq_one (h : cos x ≠ 0) : (1 + tan x ^ 2) * cos x ^ 2 = 1 := by
+lemma one_add_tan_sq_mul_cos_sq_eq_one {x : ℂ} (h : cos x ≠ 0) : (1 + tan x ^ 2) * cos x ^ 2 = 1 := by
   conv_rhs => rw [← sin_sq_add_cos_sq x, ← tan_mul_cos h]
   ring
+
+lemma div_one_add_tan_sq_eq_cos_sq {x y : ℂ} (h : cos x ≠ 0) : y / (1 + tan x ^ 2) = y * cos x ^ 2 := by
+  rw [← mul_div_mul_right _ _ (pow_ne_zero 2 h), one_add_tan_sq_mul_cos_sq_eq_one h]
+  simp
 
 /-- `tan x` takes the junk value `0` when `cos x = 0` -/
 lemma tan_eq_zero_of_cos_eq_zero (h : cos x = 0) : tan x = 0 := by
@@ -21,18 +26,29 @@ theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq :
   conv_lhs => rw [show x = 2 * (x / 2) by group, sin_two_mul]
   by_cases h : cos (x / 2) = 0
   · simp [h, tan_eq_zero_of_cos_eq_zero]
-  . conv_rhs => rw [← mul_div_mul_right _ _ (pow_ne_zero 2 h), one_add_tan_sq_mul_cos_sq_eq_one (x / 2) h]
-    rw [← tan_mul_cos h]
+  . rw [div_one_add_tan_sq_eq_cos_sq h, ← tan_mul_cos h]
     group
 
-theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (h : cos x ≠ -1) :
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (h : cos (x / 2) ≠ 0) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  --apply?
-  sorry
+  conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
+  rw [div_one_add_tan_sq_eq_cos_sq h, ← tan_mul_cos h]
+  ring
 
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  sorry
+  apply cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq''
+  apply cos_ne_zero_iff.mpr
+  grind
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (h : cos x ≠ -1) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
+  apply cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
+  intro k
+  simp [cos_eq_neg_one_iff] at h
+  --specialize h k
+  grind
+
 
 theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq :
     tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) := by
