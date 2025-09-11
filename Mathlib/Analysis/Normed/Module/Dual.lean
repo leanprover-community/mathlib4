@@ -7,8 +7,6 @@ import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # The strong dual of a normed space
