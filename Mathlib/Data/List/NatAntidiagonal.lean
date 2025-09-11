@@ -53,7 +53,14 @@ theorem antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
-  nodup_range.map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i ↦ (i, n - i)) fun _ ↦ rfl)
+  #adaptation_note
+  /--
+  nightly-2025-09-11
+  Unfortunately the implicit arguments of `LeftInverse.injective`
+  were re-ordered during upstreaming.
+  I'll fix this shortly.
+  -/
+  nodup_range.map ((@LeftInverse.injective (ℕ × ℕ) ℕ Prod.fst fun i ↦ (i, n - i)) fun _ ↦ rfl)
 
 @[simp]
 theorem antidiagonal_succ {n : ℕ} :
