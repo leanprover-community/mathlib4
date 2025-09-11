@@ -622,11 +622,12 @@ private theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing'
     {R : Type*} [CommRing R] [IsJacobsonRing R]
     (P : Ideal (MvPolynomial (Fin n) R)) (hP : P.IsMaximal) :
     RingHom.IsIntegral (algebraMap R (MvPolynomial (Fin n) R ⧸ P)) := by
-  induction' n with n IH
-  · apply RingHom.isIntegral_of_surjective
+  induction n with
+  | zero =>
+    apply RingHom.isIntegral_of_surjective
     apply Function.Surjective.comp Quotient.mk_surjective
     exact C_surjective (Fin 0)
-  · apply aux_IH IH (finSuccEquiv R n).symm P hP
+  | succ n IH => apply aux_IH IH (finSuccEquiv R n).symm P hP
 
 theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing {R : Type*} [CommRing R] [IsJacobsonRing R]
     (P : Ideal (MvPolynomial (Fin n) R)) [hP : P.IsMaximal] :
