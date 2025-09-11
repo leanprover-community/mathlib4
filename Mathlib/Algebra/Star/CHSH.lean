@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Real.Star
-import Mathlib.Tactic.Polyrith
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
