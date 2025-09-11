@@ -29,7 +29,11 @@ namespace SimpleGraph
 /-- An explicit form for the constant in the triangle removal lemma.
 
 Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exponential. This means
-`triangleRemovalBound` is in practice absolutely tiny. -/
+`triangleRemovalBound` is in practice absolutely tiny.
+
+This definition is meant to be used for small values of `ε`, and in particular is junk for values
+of `ε` greater than or equal to `1`. The junk value is chosen to be positive, so that
+`0 < ε → 0 < triangleRemovalBound ε` regardless of whether `ε < 1` or not. -/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
   min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - min 1 ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3)
 
@@ -163,7 +167,9 @@ namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq SimpleGraph
 
 /-- Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive
-if `ε` is. -/
+if `ε` is.
+
+This exploits the positiveness of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
 def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with

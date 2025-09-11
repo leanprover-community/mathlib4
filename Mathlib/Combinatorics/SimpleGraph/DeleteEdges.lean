@@ -220,8 +220,8 @@ alias ⟨DeleteFar.le_card_sub_card, _⟩ := deleteFar_iff
 theorem DeleteFar.mono (h : G.DeleteFar p r₂) (hr : r₁ ≤ r₂) : G.DeleteFar p r₁ := fun _ hs hG =>
   hr.trans <| h hs hG
 
-lemma DeleteFar.le_card_edgeFinset [Fintype (Sym2 V)] (h : G.DeleteFar p r) (hp : p ⊥) :
-    r ≤ #G.edgeFinset := h subset_rfl (by simpa)
+lemma DeleteFar.le_card_edgeFinset (h : G.DeleteFar p r) (hp : p ⊥) : r ≤ #G.edgeFinset :=
+  h subset_rfl (by simpa)
 
 end DeleteFar
 
