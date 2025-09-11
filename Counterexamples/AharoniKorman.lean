@@ -153,7 +153,7 @@ instance : PartialOrder Hollom where
   le_trans := «forall₃».2 HollomOrder.trans
   le_antisymm := «forall₂».2 fun
   | _, _, .twice _, .twice _ => by omega
-  | _, (_, _, _), .twice _, .within _ _ => by omega -- see lean4#6416 about the `(_, _, _)`
+  | _, (_, _, _), .twice _, .within _ _ => by omega -- see https://github.com/leanprover/lean4/issues/6416 about the `(_, _, _)`
   | _, _, .twice _, .next_min _ => by omega
   | _, _, .twice _, .next_add _ => by omega
   | _, _, .within _ _, .twice _ => by omega

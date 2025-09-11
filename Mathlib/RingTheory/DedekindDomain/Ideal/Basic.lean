@@ -403,7 +403,7 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal Aâ
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `mul_left_cancel_of_ne_zero` field.
+#adaptation_note /-- 2025-03-29 for https://github.com/leanprover/lean4/issues/7717 had to add `mul_left_cancel_of_ne_zero` field.
 TODO(kmill) There is trouble calculating the type of the `IsLeftCancelMulZero` parent. -/
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.
 
