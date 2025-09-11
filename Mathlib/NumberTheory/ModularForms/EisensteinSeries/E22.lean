@@ -57,16 +57,22 @@ notation3 "∏' " "[" L "]" (...)", "r:67:(scoped f => tprodFilter L f) => r
 @[inherit_doc tsumFilter]
 notation3 "∑' " "[" L "]" (...)", "r:67:(scoped f => tsumFilter L f) => r
 
-variable (L : Filter (Finset β)) (f : β → α) (a : α)
+variable (L : Filter (Finset β)) {f : β → α} {a : α}
 
 @[to_additive]
 theorem HasProdFilter.multipliableFilter (h : HasProdFilter L f a) : MultipliableFilter L f :=
   ⟨a, h⟩
 
 @[to_additive]
-theorem tprod_eq_one_of_not_multipliableFilter (h : ¬MultipliableFilter L f) :
+theorem tprodFilter_eq_one_of_not_multipliableFilter (h : ¬MultipliableFilter L f) :
     ∏'[L] b, f b = 1 := by
   simp [tprodFilter_def, h]
+
+@[to_additive, simp]
+lemma tprod_one_eq_one {β : Type*} (L : Filter (Finset β)) : ∏'[L] b, (1 : α) = 1 := by
+  simp [tprodFilter_def, MultipliableFilter, HasProdFilter]
+  sorry
+
 
 
 @[to_additive]
@@ -84,7 +90,7 @@ variable [T2Space α]
 
 @[to_additive]
 theorem HasProdFilter.tprodFilter_eq (ha : HasProdFilter L f a) [L.NeBot] : ∏'[L] b, f b = a :=
-  (MultipliableFilter.hasProdFilter L f ha.multipliableFilter).unique L f ha
+  (MultipliableFilter.hasProdFilter L ha.multipliableFilter).unique L ha
 
 
 @[to_additive]
@@ -97,6 +103,53 @@ theorem MultipliableFilter.hasProdFilter_iff (h : MultipliableFilter L f) [L.NeB
     have := h.hasProdFilter
     rw [H] at this
     exact this
+
+@[to_additive]
+protected theorem HasProdFilter.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProdFilter L f a) {G}
+    [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    HasProdFilter L (g ∘ f) (g a) := by
+  have : (g ∘ fun s : Finset β ↦ ∏ b ∈ s, f b) = fun s : Finset β ↦ ∏ b ∈ s, (g ∘ f) b :=
+    funext <| map_prod g _
+  unfold HasProdFilter
+  rw [← this]
+  exact (hg.tendsto a).comp hf
+
+variable {γ : Type*} [NonUnitalNonAssocSemiring γ] [TopologicalSpace γ] [IsTopologicalSemiring γ] {f : β → γ}
+[T2Space γ]
+
+theorem HasSumFilter.mul_left (a a₁ : γ) (L : Filter (Finset β)) (h : HasSumFilter L f a₁) :
+      HasSumFilter L (fun i ↦ a * f i) (a * a₁) := by
+  simpa using h.map L (AddMonoidHom.mulLeft a)  (continuous_const.mul continuous_id)
+
+theorem SummableFilter.mul_left (a) (hf : SummableFilter L f) : SummableFilter L fun i ↦ a * f i :=
+  (hf.hasSumFilter.mul_left _).summableFilter
+
+protected theorem SummableFilter.tsumFilter_mul_left {α : Type*} [DivisionSemiring α]
+    [TopologicalSpace α] [T2Space α] [IsTopologicalSemiring α] (a : α) (f : β → α)
+    [L.NeBot] (hf : SummableFilter L f) :
+    ∑'[L] i, a * f i = a * ∑'[L] i, f i :=
+  ((hf.hasSumFilter.mul_left) a).tsumFilter_eq
+
+theorem hasSumFilter_mul_left_iff {α : Type*} [DivisionSemiring α] [TopologicalSpace α] [T2Space α]
+    [L.NeBot] [IsTopologicalSemiring α] {a a₁ : α} (h : a ≠ 0) (f : β → α) :
+      HasSumFilter L (fun i ↦ a * f i) (a * a₁) ↔ HasSumFilter L f a₁ :=
+  ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a⁻¹, HasSumFilter.mul_left _ _ L⟩
+
+theorem summableFilter_mul_left_iff {α : Type*} [DivisionSemiring α] [TopologicalSpace α] [T2Space α]
+    [ L.NeBot] [ IsTopologicalSemiring α] {a : α}  (h : a ≠ 0) (f : β → α) :
+      (SummableFilter L fun i ↦ a * f i) ↔ SummableFilter L f :=
+  ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left L a⁻¹ , fun H ↦ H.mul_left L _⟩
+
+lemma tprodFilter_mul_left {α : Type*} [DivisionSemiring α] [TopologicalSpace α] [T2Space α]
+    [ L.NeBot] [ IsTopologicalSemiring α] (a : α) (f : β → α) :
+    ∑'[L] b, a * f b = a * ∑'[L] b, f b := by
+  classical
+  exact if hf : SummableFilter L f then hf.tsumFilter_mul_left L a
+  else if ha : a = 0 then by simp [ha];  apply tsum_zero_eq_zero
+  else by rw [tsumFilter_eq_zero_of_not_summableFilter L hf,
+              tsumFilter_eq_zero_of_not_summableFilter L
+                (mt (summableFilter_mul_left_iff L ha f).mp hf), mul_zero]
+
 
 omit [T2Space α] in
 @[to_additive]
@@ -127,16 +180,42 @@ lemma hasProd_iff_hasProdFilter_atTop {f : β → α} {a : α} :
 lemma tprod_eq_tproFilter_atTop (f : β → α) : ∏' [atTop] b, f b = ∏' b, f b := by
   by_cases h : MultipliableFilter atTop f
   · have := h.hasProdFilter
-    rw [this.tprodFilter_eq atTop f]
+    rw [this.tprodFilter_eq atTop]
     rw [← mulipliable_iff_multipliableFilter_atTop] at h
     have H := h.hasProd
     rw [← hasProd_iff_hasProdFilter_atTop] at this
     apply HasProd.unique this H
-  · rw [tprod_eq_one_of_not_multipliableFilter atTop f h, tprod_eq_one_of_not_multipliable h]
+  · rw [tprodFilter_eq_one_of_not_multipliableFilter atTop h, tprod_eq_one_of_not_multipliable h]
+
+variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
+
+omit [CommMonoid α] [TopologicalSpace α] [T2Space α] in
+@[to_additive]
+theorem Pi.hasProdFilter {f : β → ∀ x, X x} {g : ∀ x, X x} :
+    HasProdFilter L f g ↔ ∀ x, HasProdFilter L (fun i ↦ f i x) (g x) := by
+  simp only [HasProdFilter, tendsto_pi_nhds, prod_apply]
+
+omit [CommMonoid α] [TopologicalSpace α] [T2Space α] in
+@[to_additive]
+theorem Pi.multipliableFilter {f : β → ∀ x, X x} :
+    MultipliableFilter L f ↔ ∀ x, MultipliableFilter L fun i ↦ f i x := by
+  simp only [MultipliableFilter, Pi.hasProdFilter, Classical.skolem]
+
+omit [CommMonoid α] [TopologicalSpace α] [T2Space α] in
+@[to_additive]
+theorem tprodFilter_apply [∀ x, T2Space (X x)] {f : β → ∀ x, X x} {x : α} [L.NeBot]
+    (hf : MultipliableFilter L f) : (∏'[L] i, f i) x = ∏'[L] i, f i x :=
+  ((Pi.hasProdFilter L).mp hf.hasProdFilter x).tprodFilter_eq.symm
 
 def Icc_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N)
 
 def Ico_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Ico (-(N : ℤ)) N)
+
+instance : NeBot (Icc_filter) := by
+  simp [Icc_filter, Filter.NeBot.map]
+
+instance : NeBot (Ico_filter) := by
+  simp [Ico_filter, Filter.NeBot.map]
 
 @[to_additive]
 lemma prodFilter_int_atTop_eq_Icc_filter {f : ℤ → α}
@@ -162,12 +241,27 @@ lemma prodFilter_int_atTop_eq_Ico_filter {f : ℤ → α}
   simp
 
 @[to_additive] --this needs a hyp, but lets see what the min it needs
-lemma prodFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α]
-  [ContinuousMul α] [T2Space α] (hf : MultipliableFilter Icc_filter f)
-  (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (𝓝 1)) :
-  ∏'[Icc_filter] b, f b  = ∏'[Ico_filter] b, f b := by
+lemma multipliableFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [CommGroup α]
+    [TopologicalSpace α] [ContinuousMul α] [T2Space α] (hf : MultipliableFilter Icc_filter f)
+    (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (𝓝 1)) : MultipliableFilter Ico_filter f := by
   have := (hf.hasProdFilter)
+  apply HasProdFilter.multipliableFilter
+  simp only [Ico_filter] at *
+  simp only [HasProdFilter, tendsto_map'_iff] at *
+  apply Filter.Tendsto_of_div_tendsto_one _ (by apply this)
+  conv =>
+    enter [1, N]
+    simp
+    rw [prod_Icc_eq_prod_Ico_succ _ (by omega)]
+    simp
+  apply hf2
 
+@[to_additive] --this needs a hyp, but lets see what the min it needs
+lemma prodFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α]
+    [ContinuousMul α] [T2Space α] (hf : MultipliableFilter Icc_filter f)
+    (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (𝓝 1)) :
+    ∏'[Icc_filter] b, f b  = ∏'[Ico_filter] b, f b := by
+  have := (hf.hasProdFilter)
   simp only [Ico_filter] at *
   apply symm
   apply HasProdFilter.tprodFilter_eq
@@ -205,7 +299,7 @@ theorem e2Summand_even (z : ℍ) (n : ℤ) : e2Summand n z = e2Summand (-n) z :=
 /-- The Eisenstein series of weight `2` and level `1` defined as the limit as `N` tends to
 infinity of the partial sum of `m` in `[N,N)` of `e2Summand m`. This sum over symmetric
 intervals is handy in showing it is Cauchy. -/
-def G2 : ℍ → ℂ := fun z => limUnder atTop (fun N : ℕ => ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z)
+def G2 : ℍ → ℂ := fun z => ∑'[Icc_filter] m, e2Summand m z
 
 /-- The normalised Eisenstein series of weight `2` and level `1`. -/
 def E2 : ℍ → ℂ := (1 / (2 * riemannZeta 2)) •  G2
@@ -274,23 +368,16 @@ lemma SummableFilter_G2 (z : ℍ) : SummableFilter Icc_filter (fun m : ℤ => e2
   have := cauchySeq_tendsto_of_complete this
   simpa using this
 
-lemma G2_eq_G2' (z : ℍ) : G2 z = G2' z := by
-  rw [G2, G2']
-  have SF1 := SummableFilter_G2 z
-  have SF2 := SF1.hasSumFilter
-  obtain ⟨a, ha⟩ := SF1
-  apply Filter.Tendsto.limUnder_eq
-  simp [HasSumFilter] at *
-  apply SF2
-
 
 
 lemma G2_q_exp (z : ℍ) : G2 z =
     (2 * riemannZeta 2) - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * cexp (2 * π * I * z) ^ (n : ℕ) := by
-  rw [G2, Filter.Tendsto.limUnder_eq, sub_eq_add_neg]
+  rw [G2, sub_eq_add_neg]
+  apply  HasSumFilter.tsumFilter_eq
+  simp only [HasSumFilter, Icc_filter, tendsto_map'_iff]
   conv =>
     enter [1, N]
-    rw [G2_partial_sum_eq z N]
+    simp [G2_partial_sum_eq z N]
   apply Filter.Tendsto.add (by simp) (by simpa using aux_G2_tendsto z)
 
 section transform
@@ -318,16 +405,30 @@ private lemma tendsto_zero_of_cauchySeq_sum_Icc {F : Type*} [NormedRing F] [Norm
   simpa [this, Int.norm_eq_abs] using lt_of_le_of_lt (le_trans H2 (le_abs_self (g N)))
     (hN N (by rfl))
 
-lemma aux_tendsto_Ico (z : ℍ) : Tendsto (fun (N : ℕ) ↦ ∑ m ∈ Ico (-(N : ℤ)) N, e2Summand m z) atTop
-    (𝓝 (G2 z)) := by
-  apply Tendsto_of_sub_tendsto_zero _ (CauchySeq.tendsto_limUnder (G2_cauchy z))
+
+lemma SummableFilter_G2_Ico (z : ℍ) : SummableFilter Ico_filter (fun m : ℤ => e2Summand m z) := by
+  apply summableFilter_int_Icc_eq_Ico_filter (SummableFilter_G2 z)
   have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
-  conv =>
-    enter [1, N]
-    rw [Pi.sub_apply, sum_Icc_eq_sum_Ico_succ _ (by omega), sub_add_cancel_left]
   simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
 
-lemma G2_Ico (z : ℍ) : G2 z = limUnder atTop (fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z) := by
+lemma G2_eq_Ico (z : ℍ) : G2 z = ∑'[Ico_filter] m, e2Summand m z := by
+  rw [G2, sumFilter_int_Icc_eq_Ico_filter (SummableFilter_G2 z) ?_]
+  have h0 := tendsto_zero_of_cauchySeq_sum_Icc (G2_cauchy z) (by apply e2Summand_even)
+  simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
+
+lemma aux_tendsto_Ico (z : ℍ) :
+    Tendsto (fun (N : ℕ) ↦ ∑ m ∈ Ico (-(N : ℤ)) N, e2Summand m z) atTop (𝓝 (G2 z)) := by
+  have := SummableFilter_G2_Ico z
+  obtain ⟨a, ha⟩ := this
+  have HA := ha
+  rw [SummableFilter.hasSumFilter_iff] at ha
+  · rw [G2_eq_Ico z, ha]
+    simp [HasSumFilter, Ico_filter, tendsto_map'_iff] at *
+    apply HA.congr
+    simp
+  · apply SummableFilter_G2_Ico
+
+/- lemma G2_Ico (z : ℍ) : G2 z = limUnder atTop (fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z) := by
   apply symm
   rw [G2, Filter.Tendsto.limUnder_eq]
   apply Tendsto_of_sub_tendsto_zero _ (CauchySeq.tendsto_limUnder (G2_cauchy z))
@@ -335,12 +436,11 @@ lemma G2_Ico (z : ℍ) : G2 z = limUnder atTop (fun N : ℕ ↦ ∑ m ∈ Ico (-
   conv =>
     enter [1, N]
     rw [Pi.sub_apply, sum_Icc_eq_sum_Ico_succ _ (by omega), sub_add_cancel_left]
-  simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop
+  simpa using  (Filter.Tendsto.neg h0).comp tendsto_natCast_atTop_atTop -/
 
 lemma aux_cauchySeq_Ico (z : ℍ) : CauchySeq fun N : ℕ ↦ ∑ m ∈ Ico (-N : ℤ) N, e2Summand m z := by
   apply Filter.Tendsto.cauchySeq
-  apply ((Filter.limUnder_eq_iff (Exists.intro _ (aux_tendsto_Ico z))).mp (G2_Ico z).symm).congr
-  simp
+  apply (aux_tendsto_Ico z)
 
 theorem aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     ((z : ℂ) ^ 2)⁻¹ * (∑ x ∈ Ico (-N : ℤ) N, ∑' (n : ℤ), (((x : ℂ) * (-↑z)⁻¹ + n) ^ 2)⁻¹) =
@@ -356,9 +456,10 @@ theorem aux_sum_Ico_S_indentity (z : ℍ) (N : ℕ) :
     simp
   · exact fun i hi => linear_left_summable (ne_zero z) (i : ℤ) (k := 2) (by omega)
 
-lemma G2_S_act (z : ℍ) : (z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z) = limUnder atTop
-    fun N : ℕ => (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2)) := by
-  rw [modular_S_smul, G2_Ico, limUnder.mul_const (aux_cauchySeq_Ico _)]
+lemma G2_S_act (z : ℍ) :
+    Tendsto (fun N : ℕ => (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
+    (𝓝 ((z.1 ^ 2)⁻¹ * G2 (ModularGroup.S • z))) := by
+  rw [modular_S_smul, G2_eq_Ico]
   congr
   ext N
   simpa [UpperHalfPlane.coe, e2Summand, eisSummand, UpperHalfPlane.mk] using

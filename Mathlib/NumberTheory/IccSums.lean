@@ -40,9 +40,10 @@ lemma sum_Icc_of_even_eq_range {α : Type*} [CommRing α] {f : ℤ → α} (hf :
     ring_nf
     norm_cast
 
-lemma sum_Icc_eq_sum_Ico_succ {α : Type*} [AddCommMonoid α] (f : ℤ → α)
-    {l u : ℤ} (h : l ≤ u) : ∑ m ∈ Icc l u, f m = (∑ m ∈ Finset.Ico l u, f m) + f u := by
-  simp [Finset.Icc_eq_cons_Ico h,Finset.cons_eq_insert, Finset.mem_Ico, lt_self_iff_false, add_comm]
+@[to_additive]
+lemma prod_Icc_eq_prod_Ico_succ {α : Type*} [CommMonoid α] (f : ℤ → α)
+    {l u : ℤ} (h : l ≤ u) : ∏ m ∈ Icc l u, f m = (∏ m ∈ Finset.Ico l u, f m) * f u := by
+  simp [Finset.Icc_eq_cons_Ico h,Finset.cons_eq_insert, Finset.mem_Ico, lt_self_iff_false, mul_comm]
 
 lemma sum_Icc_add_endpoints {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
     (hn : 1 ≤ N) : ∑ m ∈ Icc (-N : ℤ) N, f m =
