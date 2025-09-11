@@ -584,7 +584,7 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
       _ ≤ ∑ k ∈ Finset.range N, (stoppedValue f (upperCrossingTime a b f N (k + 1)) ω -
           stoppedValue f (lowerCrossingTime a b f N k) ω) := by
         refine Finset.sum_le_sum_of_subset_of_nonneg
-          (Finset.range_subset.2 (upcrossingsBefore_le f ω hab)) fun i _ hi => ?_
+          (Finset.range_subset_range.2 (upcrossingsBefore_le f ω hab)) fun i _ hi => ?_
         by_cases hi' : i = upcrossingsBefore a b f N ω
         · subst hi'
           simp only [stoppedValue]
