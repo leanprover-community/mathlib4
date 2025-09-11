@@ -326,12 +326,11 @@ partial def main (goal : Goal) : DataSynthM (Option Result) := do
     return r
 
   -- try custom dispatch
-  let dispatch ← (← goal.getDataSynthDecl).customDispatch.get
-  if let some r ← dispatch goal then
-    return r
-  else
-    return none
-
+  if let .some dispatch ← (← goal.getDataSynthDecl).getCustomDispatch then
+    if let .some r ← dispatch goal then
+      return r
+  
+  return none
 
 def mainCached (goal : Goal) (initialTrace := true) : 
     DataSynthM (Option Result) := do

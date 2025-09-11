@@ -1,188 +1,145 @@
-import Lean 
+import Mathlib.Tactic.DataSynth.FDeriv.Simproc
+import Mathlib.Tactic.DataSynth.FDeriv.Dispatch
 
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.InnerProductSpace.Calculus
+-- import Mathlib.Analysis.Calculus.FDeriv.WithLp
 
-import Mathlib.Tactic.DataSynth.Elab
-import Mathlib.Tactic.DataSynth.Attr
-import Mathlib.Tactic.DataSynth.Tests.FDerivInit
+import Mathlib.Tactic.FieldSimp
 
-section missing
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+set_option autoImplicit true
 
-theorem hasFDerivAt_id' (x : E) :
-    HasFDerivAt (fun x => x) (ContinuousLinearMap.id 𝕜 E) x := hasFDerivAt_id x
+syntax (name:=noFDerivTacStx) "check_no_fderiv" : conv
 
-theorem HasFDerivAt.fun_comp
-    {f : E → F} {f' : E →L[𝕜] F} {g : F → G} {g' : F →L[𝕜] G} {x : E}
-    (hg : HasFDerivAt g g' (f x)) (hf : HasFDerivAt f f' x) : 
-    HasFDerivAt (fun x => g (f x)) (g'.comp f') x :=
-  HasFDerivAtFilter.comp x hg hf hf.continuousAt
+run_meta 
+  Mathlib.Meta.DataSynth.setCustomDispatch ``HasFDerivAt 
+    ``Mathlib.Meta.DataSynth.hasFDerivAtDispatch
 
--- open ContinuousLinearMap in
--- theorem HasFDerivAt.fun_inv {f : E → 𝕜} {f' : E →L[𝕜] 𝕜} {x}
---     (hf : HasFDerivAt f f' x) (ne_zero : f x ≠ 0) :
---     HasFDerivAt (fun x => (f x)⁻¹) (-(f x ^ 2)⁻¹ • f') x := by
---   have h := (hasFDerivAt_inv ne_zero).fun_comp hf
---   apply h.congr_fderiv; ext 
---   simp[mul_comm]
+open Lean Elab Tactic in
+@[tactic noFDerivTacStx]
+def noFDerivTac : Tactic := fun stx => do
+  let goal ← getMainGoal
+  let type ← goal.getType
 
-theorem deriv_eq_fderiv {f : 𝕜 → E} {x : 𝕜} {g : 𝕜 →L[𝕜] E} (h : fderiv 𝕜 f x = g) : 
-    deriv f x = g 1 := by
-  simp[deriv,h]
+  if type.containsConst (·==``fderiv) then
+    throwErrorAt stx m!"goal {type} still contains `fderiv`!"
+  pure ()
 
-end missing
-
-attribute [data_synth out f'] HasFDerivAt
+-------------------------------------------------------------------------------------
 
 attribute [data_synth] 
-  hasFDerivAt_id
-  hasFDerivAt_id'
-  hasFDerivAt_const
-  HasFDerivAt.comp
-  HasFDerivAt.fun_comp
-  HasFDerivAt.fun_add
-  HasFDerivAt.fun_sub
-  HasFDerivAt.fun_mul
-  hasFDerivAt_inv
-  hasFDerivAt_exp
-  HasFDerivAt.exp
-  HasFDerivAt.sin
-  HasFDerivAt.cos
+  HasFDerivAt.pow
+  HasFDerivAt.rpow HasFDerivAt.norm_sq
+  HasFDerivAt.inner
+  HasFDerivAt.fun_smul HasFDerivAt.prodMk
+  HasFDerivAt.clm_comp HasFDerivAt.clm_apply
 
-set_option pp.proofs false 
-variable (x₀ : ℝ)
-  (f : ℝ → ℝ) (f' : ℝ → (ℝ →L[ℝ] ℝ)) (hf : ∀ x, HasFDerivAt f (f' x) x)
-  (g : ℝ → ℝ) (g' : ℝ → (ℝ →L[ℝ] ℝ)) (hg : ∀ x, HasFDerivAt g (g' x) x)
+example (x₀ : ℝ) : fderiv ℝ (fun x : ℝ => x) x₀ 1 = 1 := by 
+  conv_lhs => 
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
 
-#check
- (by data_synth :
-  HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x) _ x₀)
+example (x₀ : ℝ) : fderiv ℝ (fun x : ℝ => x*x) x₀ 1 = x₀ + x₀ := by 
+  conv_lhs => 
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
 
-#check
- (by data_synth (disch:=skip) (norm:=simp [smul_smul,←add_smul]) :
-  HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x*x*x+x) _ x₀)
+example (x₀ : ℝ) (h : x₀ ≠ 0) : fderiv ℝ (fun x : ℝ => x⁻¹) x₀ 1 = -(x₀ ^ 2)⁻¹ := by 
+  conv_lhs => 
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
 
-#check
- (by data_synth (disch:=skip) (norm:=simp) :
-  HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => x*3) _ x₀)
-
-#check
- (by data_synth (disch:=skip) (norm:=simp) :
-  HasFDerivAt (𝕜:=ℝ) (fun x : ℝ => (3:ℝ)*x) _ x₀)
-
-#check
- (by data_synth :
-  HasFDerivAt (𝕜:=ℝ) f _ x₀)
-
-#check
- (by data_synth :
-  HasFDerivAt (𝕜:=ℝ) (fun x => f (f (f x))) _ x₀)
-
-variable (R : Type)
-
-open Lean Meta Mathlib.Meta DataSynth in
-simproc_decl fderiv_at_simproc (fderiv _ _ _) := fun e => do
-
-  -- get arguments
-  let x := e.appArg!
-  let f := e.appFn!.appArg!
-  let R := e.getArg! 0
-
-  -- initialize `HasFDerivAt R f ?f' x`
-  let hasFDerivAt := ← mkConstWithFreshMVarLevels ``HasFDerivAt
-  let (xs,_,_) ← forallMetaTelescope (←inferType hasFDerivAt)
-  xs[0]!.mvarId!.assignIfDefEq R
-  xs[xs.size-3]!.mvarId!.assignIfDefEq f
-  xs[xs.size-1]!.mvarId!.assignIfDefEq x
-  let hasFDerivAt := hasFDerivAt.beta xs
-
-  -- call data_synth
-  let .some g ← isDataSynthGoal? hasFDerivAt | return .continue
-  let cfg ← Simp.getConfig
-  let ctx : DataSynth.Context := { 
-    config := { cfg with norm_simp := true }
-    disch := (← Simp.getMethods).discharge?
-  }
-  let state : IO.Ref DataSynth.State ← 
-    IO.mkRef { theorems := theoremsExt.getState (← getEnv) }
-  let .some r ← dataSynth g ctx state | return .continue
-
-  -- produce simp result
-  let proof ← mkAppM ``HasFDerivAt.fderiv #[r.proof]
-  let f' := r.xs[0]!
-
-  return .visit { expr := f', proof? := proof }
+example (x₀ : ℝ) (h : x₀ ≠ 0) : 
+    fderiv ℝ (fun x : ℝ => (x*x)⁻¹) x₀ 1 
+    = 
+    -(x₀ * ((x₀ * x₀) ^ 2)⁻¹) + -(x₀ * ((x₀ * x₀) ^ 2)⁻¹) := by
+  conv_lhs =>
+    simp (disch:=aesop) only [fderiv_simproc]
+    check_no_fderiv
+    simp
 
 
-open Lean Meta in
-simproc_decl fderiv_simproc (fderiv _ _) := fun e => do
-  
-  let f := e.appArg!
-  let .some (E, _) := (← inferType f).arrow? | return .continue
+example (v t : ℝ) : deriv (fun t : ℝ => 1/2 * v * t^2) t = v * t := by
+  rw [← fderiv_deriv]
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
 
-  -- introduce point where to differentiate
-  withLocalDecl `x default E fun x => do
-
-    -- bind the free variable `x` to the result
-    let fixResult (r : Simp.Result) : MetaM Simp.Result := do
-      return { r with
-        expr := ← mkLambdaFVars #[x] r.expr
-        proof? := ← r.proof?.mapM (fun p => mkLambdaFVars #[x] p >>= (mkAppM ``funext #[·])) 
-      }
+  field_simp [mul_comm, mul_assoc]
     
-    -- call simproc for `fderiv R f x` and bind the free variable `x`
-    match (← fderiv_at_simproc (e.beta #[x])) with
-    | .done r => return .done (← fixResult r)
-    | .visit r => return .visit (← fixResult r)
-    | .continue (some r) => return .continue (some (← fixResult r))
-    | .continue none => return .continue
 
-
-attribute [deriv_simproc] fderiv_at_simproc fderiv_simproc
-
-variable (x : ℝ)
-
-example (x dx : ℝ) : fderiv ℝ (fun x => x*x) x dx = x*dx+x*dx := by simp[deriv_simproc]
-
-open ContinuousLinearMap
-
-example (x : ℝ) : 
-    fderiv ℝ (fun x => x*x) x
-    = 
-    x • id ℝ ℝ + x • id ℝ ℝ := by simp[deriv_simproc]
-
-example (x : ℝ) :
-    fderiv ℝ (fun x : ℝ => x*x)
-    = 
-    fun x => x • id ℝ ℝ + x • id ℝ ℝ := by 
-      simp[deriv_simproc]
-
-example (x : ℝ) (h : x ≠ 0) :
-    fderiv ℝ (fun x => x⁻¹) (x^2)
+open InnerProductSpace
+example (n : ℕ) (x y : EuclideanSpace ℝ (Fin 3)) :
+    fderiv ℝ (fun x => (‖x‖ ^ 2 + 1/(n + 1))^ (-1/2 : ℝ)) x y 
     =
-    smulRight (1:ℝ→L[ℝ]ℝ) (-((x ^ 2) ^ 2)⁻¹) := by
-  simp (disch:=aesop) only [deriv_simproc]
+    - ((‖x‖ ^ 2 + (1 + (n : ℝ))⁻¹) ^ (- 1/2 : ℝ)) ^ 3 * ⟪x, y⟫_ℝ  := by
+  conv_lhs =>
+    simp (disch:=positivity) only [fderiv_simproc]
+    check_no_fderiv
+    simp
 
-example (x : ℝ) (h : x ≠ 0) :
-    fderiv ℝ (fun x => (x*x)⁻¹) x
+  field_simp (disch:=positivity) [← Real.rpow_mul_natCast]
+  norm_num
+  simp +arith only [add_comm, mul_comm, mul_assoc]
+  
+
+lemma wave_dt {d} (c : ℝ) (f₀ : ℝ → EuclideanSpace ℝ (Fin d))
+    {x s : EuclideanSpace ℝ (Fin d)} {f₀' : ℝ → ℝ →L[ℝ] EuclideanSpace ℝ (Fin d)}
+    (h' : ∀ x, HasFDerivAt f₀ (f₀' x) x) (t : ℝ) :
+    fderiv ℝ (fun t => f₀ (inner ℝ x s - c * t)) t 1 =
+    -c • (f₀' (inner ℝ x s - c * t)) 1 := by 
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
+  simp
+
+set_option autoImplicit true in
+lemma wave_dx {u v : Fin d} {s : EuclideanSpace ℝ (Fin d)}
+    {f₀' : ℝ → ℝ →L[ℝ] EuclideanSpace ℝ (Fin d)}
+    (h' : ∀ x, HasFDerivAt f₀ (f₀' x) x) :
+    (fun x' => fderiv ℝ (fun x => (inner ℝ (f₀ (inner ℝ x s - c * t))
+    (EuclideanSpace.single u 1))) x' (EuclideanSpace.single v 1))
     =
-    x⁻¹ • smulRight (1:ℝ→L[ℝ]ℝ) (-(x ^ 2)⁻¹) + x⁻¹ • smulRight (1:ℝ→L[ℝ]ℝ) (-(x ^ 2)⁻¹) := by
-  simp (disch:=aesop) [deriv_simproc]
+    fun x' => (inner ℝ (f₀' (inner ℝ x' s - c * t) (s v))
+    (EuclideanSpace.single u 1)) := by 
+  have h : ⟪EuclideanSpace.single v 1, s⟫_ℝ = s v := sorry
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp [h]
+ 
 
-open Real in
-example (x : ℝ) :
-    fderiv ℝ (fun x => (exp x)⁻¹*sin x) x 1
+open Real
+example (t ω : ℝ) (hω : ω ≠ 0) (x₀ v₀ : EuclideanSpace ℝ (Fin 1)) :
+    (fderiv ℝ (fun t => cos (ω * t) • x₀ + (sin (ω * t) / ω) • v₀) t) 1 =
+    -ω • sin (ω * t) • x₀ + cos (ω * t) • v₀:= by 
+
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
+
+  field_simp [mul_comm, smul_smul]
+
+lemma wave_dx2 {u v : Fin d} {s : EuclideanSpace ℝ (Fin d)}
+    {f₀' : ℝ → ℝ →L[ℝ] EuclideanSpace ℝ (Fin d)}
+    {f₀'' : ℝ → ℝ →L[ℝ] ℝ →L[ℝ] EuclideanSpace ℝ (Fin d)}
+    (h'' : ∀ x, HasFDerivAt (fun x' => f₀' x') (f₀'' x) x) :
+    (fderiv ℝ (fun x' => (inner ℝ ((f₀' (inner ℝ x' s - c * t)) (s u))
+    (EuclideanSpace.single v 1))) x) (EuclideanSpace.single u 1)
     =
-    (rexp x)⁻¹ * cos x + -(sin x * (rexp x * (rexp x ^ 2)⁻¹)) := by
-  simp (disch:=aesop) [deriv_simproc]
+    inner ℝ (f₀'' (⟪x, s⟫_ℝ - c * t) (s u) (s u)) (EuclideanSpace.single v 1) := by 
 
+  have h : ⟪EuclideanSpace.single u 1, s⟫_ℝ = s u := by sorry
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp [h]
 
-
+    

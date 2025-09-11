@@ -30,7 +30,16 @@ initialize dataSynthAttr : Unit ←
                             \n  @[data_syth out x₁ ... xₙ] \
                             \nwhere `xᵢ` are names of output arguments"
          else
-           addTheorem declName attrKind (← getAttrParamOptPrio stx[1])
+           let .some dataSynthDecl ← getDataSynth? b
+             | throwErrorAt stx m!"not generalized transformation {← ppExpr b}"
+
+           -- -- try custom therem registration
+           -- if ← (← dataSynthDecl.customTheoremRegister.get) declName stx attrKind then
+           --   return ()
+           -- else
+             -- add normal data_synth theorem if not registered through custom method
+             addTheorem declName attrKind (← getAttrParamOptPrio stx[1])
+
     erase := fun _declName =>
       throwError "can't remove `data_synth` attribute (not implemented yet)"}
 

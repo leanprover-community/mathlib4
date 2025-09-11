@@ -44,7 +44,7 @@ theorem hasFwdFDeriv_id : HasFwdFDeriv R (fun x : E => x) (fun x dx => (x,dx)) :
 -- @[data_synth]
 theorem hasFwdFDeriv_comp (g : E → F) (f : F → G) {g' f'}
     (hg : HasFwdFDeriv R g g') (hf : HasFwdFDeriv R f f') :
-    HasFwdFDeriv R (fun x => f (g x)) 
+    HasFwdFDeriv R (fun x => f (g x))
       (fun x dx => 
         let ydy := g' x dx
         let zdz := f' ydy.1 ydy.2
@@ -54,7 +54,7 @@ theorem hasFwdFDeriv_comp (g : E → F) (f : F → G) {g' f'}
 -- @[data_synth]
 theorem hasFwdFDeriv_let (g : E → F) (f : F → E → G) {g' f'}
     (hg : HasFwdFDeriv R g g') (hf : HasFwdFDeriv R (fun x : F×E => f x.1 x.2) f') :
-    HasFwdFDeriv R (fun x => let y := g x; f y x) 
+    HasFwdFDeriv R (fun x => let y := g x; f y x)
       (fun x dx => 
         let ydy := g' x dx
         let zdz := f' (ydy.1,x) (ydy.2,dx)
@@ -86,6 +86,16 @@ theorem hasFwdFDeriv_snd (f : E → F×G) {f'} (hf : HasFwdFDeriv R f f') :
         let yzdyz := f' x dx
         let zdz := (yzdyz.1.2,yzdyz.2.2)
         zdz) := sorry
+
+@[data_synth]
+theorem hasFwdFDeriv_sin :
+    HasFwdFDeriv ℝ (fun x => Real.sin x) 
+      (fun x dx => (x.sin, dx*x.cos)) := sorry
+
+@[data_synth]
+theorem hasFwdFDeriv_cos :
+    HasFwdFDeriv ℝ (fun x => Real.cos x) 
+      (fun x dx => (x.cos, -dx*x.sin)) := sorry
 
 open Lean Meta
 
@@ -142,30 +152,81 @@ set_option trace.Meta.Tactic.data_synth true in
 #check (by data_synth (disch:=skip) (norm:=skip) [norm] :
   HasFwdFDeriv ℝ (fun x : ℝ => x * x * x) _)
 
+
+open Mathlib.Meta.FunProp in
+/-- Perform non trivial decomposition of `fn = q(fun _ => _)` into 
+`f` and `g` such that `fn = f∘g`. -/
+def lambdaDecompose (fn : Expr) : MetaM (Option (Expr × Expr)) := do
+  let .lam xname xtype b bi := fn
+    | return none
+
+  b.withApp fun headFn args => do
+
+    if headFn.hasLooseBVars then return none
+
+    let taggedArgs := Array.range args.size |>.zip args
+    let depTaggedArgs := taggedArgs.filter (fun (_, arg) => arg.hasLooseBVar 0)
+
+    if depTaggedArgs.size = 0 then return none
+
+    let gbody ← mkProdElem (depTaggedArgs.map (·.2))
+    let g := Expr.lam xname xtype gbody bi
+    let .some (_, Y) := (← inferType g).arrow? | return none
+
+    let f ← 
+      withLocalDeclD `y Y fun y => do
+        let ys ← mkProdSplitElem y depTaggedArgs.size
+        
+        let mut args' := args
+        for (i, _) in depTaggedArgs, yi in ys do
+          args' := args'.set! i yi
+
+        mkLambdaFVars #[y] (headFn.beta args')
+
+    -- not non-trivial decomposition
+    if ← isDefEq f fn then return none
+
+    return (f, g)
+
 open Mathlib.Meta.DataSynth
 #eval do
   let .some s := (dataSynthDeclsExt.getState (← getEnv)).find? ``HasFwdFDeriv
     | throwError "invalid data_synth decl"
-  s.customDispatch.set (fun g => do
-    let (_,e) ← g.mkFreshProofGoal
-    let f := e.getArg! 8
-    match f with
+  s.customDispatch.set (fun goal => do
+    trace[Meta.Tactic.data_synth] m!"calling custom callback for HasFwdFDeriv"
+    let (_, e) ← goal.mkFreshProofGoal
+    let fn := e.getArg! 8
+    match fn with
     | .lam x xtype (binderInfo:=bi)
         (.letE y ytype yval body _) =>
 
-      let g := Expr.lam x xtype yval bi
       let f := Expr.lam y ytype (.lam x xtype (body.swapBVars 0 1) bi) bi
+      let g := Expr.lam x xtype yval bi
 
-      logInfo m!"calling custom dispatch on {← ppExpr e}!"
-      logInfo m!"g: {← ppExpr g}!"
-      logInfo m!"f: {← ppExpr f}!"
-      return none
+      let letThm ← getTheoremFromConst ``hasFwdFDeriv_let
+      let hints := #[(11, g), (12, f)]
+
+      return ← goal.tryTheorem? letThm hints #[]
+    | .lam _ _ b _ =>
+      match b with
+      | .app .. =>
+        let .some (f, g) ← lambdaDecompose fn | return none
+    
+        let compThm ← getTheoremFromConst ``hasFwdFDeriv_comp
+        let hints := #[(11, g), (12, f)]
+
+        return ← goal.tryTheorem? compThm hints #[]
+      | _ => return none
     | _ => 
       return none)
 
 set_option trace.Meta.Tactic.data_synth true in
 #check (by data_synth -zeta (disch:=skip) (norm:=skip) [norm] :
-  HasFwdFDeriv ℝ (fun x : ℝ => let y := x * x; y * x * x) _)
+  HasFwdFDeriv ℝ (fun x : ℝ => let y := x * x; let z := y * x; z * y * x * x) _)
+
+set_option trace.Meta.Tactic.data_synth true in
+#check (by data_synth -zeta (disch:=skip) (norm:=skip) [norm] :
+  HasFwdFDeriv ℝ (fun x : ℝ => Real.sin (x*x)) _)
   
 
 end theorems

@@ -3,9 +3,10 @@ Copyright (c) 2025 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Tactic.DataSynth.Types
+
+import Qq
 
 /-! Structure and enviroment extension storing `data_synth` declarations.
 
@@ -18,8 +19,12 @@ namespace Mathlib.Meta.DataSynth
 
 initialize emptyDispatch : IO.Ref (Goal → DataSynthM (Option Result)) 
   ← IO.mkRef fun _ => return none
+initialize emptyTheoremsRegister : IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)
+  ← IO.mkRef fun _ _ _ => return false
 
 local instance : Inhabited (IO.Ref (Goal → DataSynthM (Option Result))) := ⟨emptyDispatch⟩
+local instance : Inhabited (IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)) := 
+  ⟨emptyTheoremsRegister⟩
 
 /-- Each type of `data_synth` goal like `HasFDerivAt`, `HasFDerivWithinAt` etc. is
 called `data_synth` declaration and the structure `DataSynthDecl` stores information on which
@@ -37,7 +42,15 @@ structure DataSynthDecl where
   outputArgs : Array Nat := #[]
   /-- If normal call to `data_synth` fails then try this callback. This is used in cases when custom
   unification is needed like application of `HasFDerivAt.comp`. -/
-  customDispatch : IO.Ref (Goal → DataSynthM (Option Result))
+  customDispatchName? : Option Name -- Goal → DataSynthM (Option Result)
+  -- /-- Custom theorem registration, `data_synth` with custom dispatch might want to register certain
+  -- theorems differently. This custom call will be used before registering a theorem as normal 
+  -- `data_synth` theorem. If `true` is returned then the theorem is not registered as normal 
+  -- `data_synth` theorem. 
+    
+  -- For example, `HasFDerivAt` will use this to register `HasFDerivAt.comp/pi/apply` theorems as 
+  -- they need custom unification procedure. -/
+  -- customTheoremRegister : IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)
 deriving Inhabited
 
 /-- Type for the environment extension storing all `data_synth` declarations. -/
@@ -50,6 +63,33 @@ initialize dataSynthDeclsExt : DataSynthDeclsExt ←
     initial := {}
     addEntry := fun d e => d.insert e.name e
   }
+
+open Qq in
+unsafe def DataSynthDecl.getCustomDispatchImpl (decl : DataSynthDecl) : 
+    MetaM (Option (Goal → DataSynthM (Option Result))) := do
+
+  let some name := decl.customDispatchName? | return none
+  let disch ← Meta.evalExpr (Goal → DataSynthM (Option Result)) 
+    q(Goal → DataSynthM (Option Result)) (Expr.const name [])
+  return disch
+
+@[implemented_by DataSynthDecl.getCustomDispatchImpl]
+opaque DataSynthDecl.getCustomDispatch (decl : DataSynthDecl) : 
+    MetaM (Option (Goal → DataSynthM (Option Result)))
+
+open Qq in
+def setCustomDispatch (dataSynthName : Name) (dispatchName : Name) : MetaM Unit := do
+  let info ← getConstInfo dispatchName
+
+  unless (← isDefEq q(Goal → DataSynthM (Option Result)) info.type) do
+    throwError m!"{dispatchName} is not valid data_synth dispatch function!"
+
+  modifyEnv fun e => 
+    dataSynthDeclsExt.modifyState e fun s => 
+      if let some decl := s.find? dataSynthName then
+        s.insert decl.name { decl with customDispatchName? := dispatchName }
+      else
+        s
 
 /-- Get `data_synth` declaration if `e` is a `data_synth` goal. -/
 def getDataSynth? (e : Expr) : MetaM (Option DataSynthDecl) := do
@@ -91,13 +131,13 @@ def addDataSynthDecl (declName : Name) (outArgs : Array Name) :
       pure i)
 
   -- make new reference unique to this `data_synth` declaration
-  let customDispatch ← IO.mkRef fun _ => return none
 
   let decl : DataSynthDecl := {
     name := declName
     nargs := xs.size
     outputArgs := outputArgs
-    customDispatch := customDispatch
+    customDispatchName? := none
+    -- customTheoremRegister := customTheoremRegister
   }
 
   modifyEnv (dataSynthDeclsExt.addEntry · decl)
