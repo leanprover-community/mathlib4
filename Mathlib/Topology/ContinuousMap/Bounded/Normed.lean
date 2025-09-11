@@ -531,8 +531,8 @@ instance instSemilatticeSup : SemilatticeSup (α →ᵇ β) := fast_instance%
 instance instSemilatticeInf : SemilatticeInf (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.semilatticeInf _ coe_inf
 
-instance instLattice : Lattice (α →ᵇ β) :=
-  fast_instance% DFunLike.coe_injective.lattice _ coe_sup coe_inf
+instance instLattice : Lattice (α →ᵇ β) := fast_instance%
+  DFunLike.coe_injective.lattice _ coe_sup coe_inf
 
 @[simp, norm_cast] lemma coe_abs (f : α →ᵇ β) : ⇑|f| = |⇑f| := rfl
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
