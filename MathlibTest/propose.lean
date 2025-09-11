@@ -106,8 +106,9 @@ info: Try this:
 variable {α : Type} [CommMonoidWithZero α] in
 open Prime in
 theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
-  induction' n with n ih
-  · rw [pow_zero] at h
+  induction n with
+  | zero =>
+    rw [pow_zero] at h
     -- In mathlib, we proceed by two `have` statements:
     -- have := isUnit_of_dvd_one h
     -- have := not_unit hp
@@ -117,7 +118,8 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     have?! using hp
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
-  rw [pow_succ'] at h
-  obtain dvd_a | dvd_pow := dvd_or_dvd hp h
-  · assumption
-  exact ih dvd_pow
+  | succ n ih =>
+    rw [pow_succ'] at h
+    obtain dvd_a | dvd_pow := dvd_or_dvd hp h
+    · assumption
+    exact ih dvd_pow
