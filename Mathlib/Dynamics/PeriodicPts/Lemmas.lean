@@ -3,11 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Set.Lattice.Image
@@ -41,12 +38,6 @@ theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
     ← minimalPeriod_eq_one_iff_isFixedPt.not, or_and_right, and_not_self_iff, false_or,
     iff_self_and]
   exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
-
-theorem minimalPeriod_eq_sInf_n_pos_IsPeriodicPt :
-    -- alternative set expression: `{ n | 0 < n ∧ IsPeriodicPt f n x }`
-    minimalPeriod f x = sInf { n > 0 | IsPeriodicPt f n x } := by
-  dsimp [minimalPeriod, periodicPts, sInf]
-  grind -- don't know why `rfl` doesn't work here
 
 /-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
@@ -125,8 +116,6 @@ end Function
 
 namespace Function
 
-section Prod
-
 variable {α β : Type*} {f : α → α} {g : β → β} {x : α × β} {a : α} {b : β} {m n : ℕ}
 
 theorem minimalPeriod_prodMap (f : α → α) (g : β → β) (x : α × β) :
@@ -141,37 +130,5 @@ theorem minimalPeriod_fst_dvd : minimalPeriod f x.1 ∣ minimalPeriod (Prod.map 
 
 theorem minimalPeriod_snd_dvd : minimalPeriod g x.2 ∣ minimalPeriod (Prod.map f g) x := by
   rw [minimalPeriod_prodMap]; exact Nat.dvd_lcm_right _ _
-
-end Prod
-
--- alternative: `namespace Pi`
-section Pi
-
-variable {ι : Type*} {α : ι → Type*} {f : ∀ i, α i → α i} {x : ∀ i, α i}
-
-/-- This `sInf` can be regarded as a generalized version of LCM
-for possibly infinite sets and types. -/
--- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
-theorem minimalPeriod_piMap :
-    -- alternative set expression: `{ n | 0 < n ∧ ∀ i, minimalPeriod (f i) (x i) ∣ n }`
-    minimalPeriod (Pi.map f) x = sInf { n > 0 | ∀ i, minimalPeriod (f i) (x i) ∣ n } := by
-  conv_lhs => simp [minimalPeriod_eq_sInf_n_pos_IsPeriodicPt]
-  simp [← isPeriodicPt_iff_minimalPeriod_dvd]
-
--- TODO: make `f` and `x` explicit similar to `minimalPeriod_prodMap`?
--- alternative name: `minimalPeriod_piMap_fintype`
-theorem fintype_minimalPeriod_piMap [Fintype ι] :
-    minimalPeriod (Pi.map f) x = Finset.univ.lcm (fun i => minimalPeriod (f i) (x i)) :=
-  eq_of_forall_dvd <| by simp [← isPeriodicPt_iff_minimalPeriod_dvd]
-
--- alternative name: `minimalPeriod_single_dvd`
-theorem minimalPeriod_single_dvd_minimalPeriod_piMap (i : ι) :
-    minimalPeriod (f i) (x i) ∣ minimalPeriod (Pi.map f) x := by
-  simp [minimalPeriod_piMap]
-  by_cases h : {n | 0 < n ∧ ∀ (i : ι), minimalPeriod (f i) (x i) ∣ n}.Nonempty
-  · exact (Nat.sInf_mem h).2 i
-  · simp [not_nonempty_iff_eq_empty.mp h]
-
-end Pi
 
 end Function
