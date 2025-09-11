@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Conjugate
 
 /-!
@@ -236,3 +237,15 @@ theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ �
   | a :: l => by rw [length_cons, foldr, foldr_const f b l, iterate_succ_apply']
 
 end List
+
+namespace Pi
+
+variable {ι : Type*}
+
+/-- adapted from `Prod.map_iterate` -/
+@[simp]
+theorem map_iterate {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
+    (Pi.map f)^[n] = Pi.map fun i => (f i)^[n] := by
+  induction n <;> simp [*, map_comp_map]
+
+end Pi
