@@ -318,7 +318,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
 
 theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E]
-    [OrderedSMul ℝ E] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
+    [IsOrderedModule ℝ E] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     0 ≤ condExpInd E hm μ s x := by
   rw [← coeFn_le]
   refine EventuallyLE.trans_eq ?_ (condExpInd_ae_eq_condExpIndSMul hm hs hμs x).symm
@@ -524,8 +524,8 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
 
 theorem condExpL1_mono {E}
     [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
-    [CompleteSpace E] [NormedSpace ℝ E]
-    [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
+    [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
+    (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by
   rw [coeFn_le]
   have h_nonneg : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x : E, 0 ≤ x → 0 ≤ condExpInd E hm μ s x :=
