@@ -393,8 +393,9 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 
 @[simp]
 theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
-  induction' n with n IH generalizing s; · rfl
-  rw [← get?_tail, ← dropn_tail]; apply IH
+  induction n generalizing s with
+  | zero => rfl
+  | succ n IH => rw [← get?_tail, ← dropn_tail]; apply IH
 
 @[simp]
 theorem drop_succ_cons {x : α} {s : Seq α} {n : ℕ} :
@@ -735,7 +736,8 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
+  induction s using recOn with | nil => ?_ | cons x s_1 => ?_ <;>
+  induction S using recOn with | nil => simp | cons x_1 s_2 => ?_
   · obtain ⟨x, t⟩ := x_1
     cases t <;> simp
   · obtain ⟨y, t⟩ := x_1; simp

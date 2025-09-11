@@ -46,8 +46,8 @@ def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } whe
 they have the same infimum and supremum. -/
 theorem inf_eq_inf_and_sup_eq_sup [LinearOrder α] {s t : Sym2 α} :
     s.inf = t.inf ∧ s.sup = t.sup ↔ s = t := by
-  induction' s with a b
-  induction' t with c d
+  induction s with | _ a b
+  induction t with | _ c d
   obtain hab | hba := le_total a b <;> obtain hcd | hdc := le_total c d <;>
     aesop (add unsafe le_antisymm)
 
