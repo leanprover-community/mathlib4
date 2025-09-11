@@ -220,7 +220,7 @@ lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts
   rcases Finite.exists_equiv_fin WalkingPair with ⟨_, ⟨e⟩⟩
   haveI : PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u) :=
     preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) _
-  exact @isSiftedOrEmpty_of_colim_preservesBinaryProducts _ _ this
+  exact isSiftedOrEmpty_of_colim_preservesBinaryProducts
 
 lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
     [PreservesLimitsOfShape (Discrete (Fin 0)) (colim : (C ⥤ Type u) ⥤ Type u)] :
