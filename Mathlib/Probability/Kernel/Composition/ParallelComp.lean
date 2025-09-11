@@ -96,6 +96,14 @@ lemma parallelComp_zero_right (κ : Kernel α β) : κ ∥ₖ (0 : Kernel γ δ)
   · ext; simp [parallelComp_apply]
   · exact parallelComp_of_not_isSFiniteKernel_left _ h
 
+lemma deterministic_parallelComp_deterministic
+    {f : α → γ} {g : β → δ} (hf : Measurable f) (hg : Measurable g) :
+    (deterministic f hf) ∥ₖ (deterministic g hg)
+      = deterministic (Prod.map f g) (hf.prodMap hg) := by
+  ext x : 1
+  rw [parallelComp_apply, deterministic_apply, deterministic_apply, deterministic_apply, Prod.map,
+    Measure.dirac_prod_dirac]
+
 lemma lintegral_parallelComp [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (ac : α × γ) {g : β × δ → ℝ≥0∞} (hg : Measurable g) :
     ∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1 := by
