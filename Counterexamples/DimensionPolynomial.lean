@@ -11,11 +11,10 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 /-!
 # Krull dimension of polynomial ring
 
-We show that not all commutative rings `R` satisfy
-`ringKrullDim (Polynomial R) = ringKrullDim R + 1`,
+We show that not all commutative rings `R` satisfy `ringKrullDim R[X] = ringKrullDim R + 1`,
 following the construction in the reference link.
 
-We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$ for a field $k$, and show that
+We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field $k$, and show that
 `ringKrullDim A = 1` but `ringKrullDim A[X] = 3`.
 
 ## References
@@ -32,7 +31,7 @@ open PowerSeries Polynomial
 variable (k : Type*) [Field k]
 
 /-- We define the commutative ring `A` as `{f ∈ k(t)⟦Y⟧ | f(0) ∈ k}` for a field `k`. -/
-abbrev A := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
+abbrev A : Subring (RatFunc k)⟦X⟧ := (RatFunc.C (K := k)).range.comap PowerSeries.constantCoeff
 
 lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
     [CommRing R] [IsLocalRing R] [IsDomain R] : ringKrullDim R = 1 ↔ ¬ IsField R ∧
