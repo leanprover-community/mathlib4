@@ -26,7 +26,6 @@ theorem totallySeparatedSpace_of_cardinalMk_lt_continuum
     (hγ : Cardinal.mk γ < continuum) :
     TotallySeparatedSpace γ := by
   apply totallySeparatedSpace_of_t0_of_basis_clopen
-  -- letI : CompletelyRegularSpace γ := ((t35Space_iff γ).mp inferInstance).2
   apply CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum hγ
 
 /-- Countable subsets of metric spaces are totally disconnected. -/
