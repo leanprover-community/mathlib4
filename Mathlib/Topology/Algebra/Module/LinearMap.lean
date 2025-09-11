@@ -1232,3 +1232,28 @@ theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
   hp.range_eq_ker ▸ isClosed_ker (1 - p)
 
 end ContinuousLinearMap
+
+section topDualPairing
+
+variable {𝕜 E : Type*} [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
+  [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜]
+
+variable (𝕜 E) in
+/-- The canonical pairing of a vector space and its topological dual. -/
+def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
+  ContinuousLinearMap.coeLM 𝕜
+
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := topDualPairing
+
+@[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
+
+@[simp]
+theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
+    (x : E) : topDualPairing 𝕜 E v x = v x :=
+  rfl
+
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
+
+@[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
+
+end topDualPairing
