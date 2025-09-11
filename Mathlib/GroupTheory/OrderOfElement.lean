@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Finite
