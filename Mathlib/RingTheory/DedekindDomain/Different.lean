@@ -89,6 +89,18 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 lemma restrictScalars_traceDual {I : Submodule B L} :
     Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
+variable (A) in
+/--
+If the module `I` is spanned by the basis `b`, then its `traceDual` module is spanned by
+`b.traceDual`.
+-/
+theorem traceDual_span_of_basis [FiniteDimensional K L] [Algebra.IsSeparable K L]
+    (I : Submodule B L) {ι : Type*} [Finite ι] [DecidableEq ι] (b : Basis ι K L)
+    (hb : I.restrictScalars A = Submodule.span A (Set.range b)) :
+    (traceDual A K I).restrictScalars A = span A (Set.range b.traceDual) := by
+  rw [restrictScalars_traceDual, hb]
+  exact (traceForm K L).dualSubmodule_span_of_basis (traceForm_nondegenerate K L) b
+
 @[simp]
 lemma traceDual_bot :
     (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simp [mem_traceDual, -RingHom.mem_range]

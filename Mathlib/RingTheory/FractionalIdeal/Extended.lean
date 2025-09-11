@@ -193,16 +193,24 @@ abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
   extendedHom L <|
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 
-theorem extendedHomₐ_eq_zero_iff {I : FractionalIdeal A⁰ K} :
+theorem extendedHomₐ_eq_zero_iff :
     extendedHomₐ L B I = 0 ↔ I = 0 :=
   extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _)
 
-theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
-    (I : FractionalIdeal A⁰ K).extendedHomₐ L B =
-      (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
+theorem extendedHomₐ_coeIdeal_eq_map (J : Ideal A) :
+    (J : FractionalIdeal A⁰ K).extendedHomₐ L B =
+      (J.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ J
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
-  [IsIntegrallyClosed A] [IsIntegrallyClosed B] [Algebra.IsIntegral A B]
+  [Algebra.IsIntegral A B]
+
+theorem coe_extendedHomₐ_eq_span :
+    extendedHomₐ L B I = span B (algebraMap K L '' I) := by
+  rw [extendedHom_apply, coe_extended_eq_span,
+    IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
+  rfl
+
+variable [IsIntegrallyClosed A] [IsIntegrallyClosed B]
 
 theorem le_one_of_extendedHomₐ_le_one (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
   contrapose! hI

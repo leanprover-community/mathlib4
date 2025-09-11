@@ -4,6 +4,45 @@ import Mathlib.NumberTheory.NumberField.Basic
 
 open Algebra Module Submodule IntermediateField FractionalIdeal
 
+theorem Algebra.adjoin_trans {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+    [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (s : Set S) (t : Set T) (hS : adjoin R s = ⊤) :
+    (adjoin S t).restrictScalars R = adjoin R ((algebraMap S T '' s) ∪ t) := by
+  have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R S T)) hS
+  rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
+  rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
+
+/--
+Docstring
+-/
+def PowerBasis.ofBasis {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} [Fintype ι]
+    (B : Basis ι R S) {x : S} (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
+    PowerBasis R S := ⟨x, Fintype.card ι, B.reindex e, fun i ↦ by simp [hx]⟩
+
+@[simp]
+theorem PowerBasis.ofBasis_gen {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*}
+    [Fintype ι] (B : Basis ι R S) {x : S} (e : ι ≃ Fin (Fintype.card ι))
+    (hx : ∀ i, B i = x ^ (e i : ℕ)) : (PowerBasis.ofBasis B e hx).gen = x := rfl
+
+
+noncomputable section PowerBasis
+
+variable {R S : Type*} {S : Type*} [CommRing R] [CommRing S] [IsDomain R] [IsDomain S] [Algebra R S]
+  [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
+
+/--
+If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
+-/
+def PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral R x) (hx' : adjoin R {x} = ⊤) :=
+  (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
+
+@[simp]
+theorem PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral R x) (hx' : adjoin R {x} = ⊤) :
+    (PowerBasis.ofAdjoinEqTop hx hx').gen = x := by
+  simp [PowerBasis.ofAdjoinEqTop]
+
+end PowerBasis
+
 open scoped nonZeroDivisors
 
 -- set_option pp.proofs true
@@ -79,8 +118,8 @@ attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_l
 
 variable (A C B₁ B₂) in
 theorem traceDual_eq_span_traceDual [IsDedekindDomain A] [Module.Finite A B₂] [Module.Free A B₂]
-    [NoZeroSMulDivisors A B₂] (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
-    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+    [NoZeroSMulDivisors A B₂] (h₁ : L₁.LinearDisjoint L₂)
+    (h₂ : L₁ ⊔ L₂ = ⊤) (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
       ((differentIdeal A B₂).map (algebraMap B₂ C))) :
     span B₁ (algebraMap L₂ M '' (traceDual A K (1 : Submodule B₂ L₂))) =
       (traceDual B₁ L₁ (1 : Submodule C M)).restrictScalars B₁ := by
@@ -91,10 +130,12 @@ theorem traceDual_eq_span_traceDual [IsDedekindDomain A] [Module.Finite A B₂] 
       rw [← Submodule.span_span_of_tower B₁ C]
       exact Submodule.subset_span
     have := IsIntegralClosure.isLocalization B₂ L₂ M C
-    rw [← coe_dual_one, coeToSet_coeToSubmodule, ← coe_extended_eq_span_algebraMap, ← coe_dual_one,
+    have : Module.Finite B₂ C := by
+        apply IsIntegralClosure.finite B₂ L₂ M
+    rw [← coe_dual_one, coeToSet_coeToSubmodule, ← coe_extendedHomₐ_eq_span, ← coe_dual_one,
       coe_le_coe, ← inv_inv (dual B₁ L₁ 1), ← le_inv_comm (inv_ne_zero (by simp)),
-      ← extended_inv _ (by simp), ← coeIdeal_differentIdeal A K, ← coeIdeal_differentIdeal B₁ L₁,
-      extended_coeIdeal_eq_map_algebraMap L₂ M, coeIdeal_le_coeIdeal' _ le_rfl, ← Ideal.dvd_iff_le]
+      ← map_inv₀, ← coeIdeal_differentIdeal A K, ← coeIdeal_differentIdeal B₁ L₁,
+      extendedHomₐ_coeIdeal_eq_map, coeIdeal_le_coeIdeal' _ le_rfl, ← Ideal.dvd_iff_le]
     · have : Module.Finite A B₁ := by
         apply IsIntegralClosure.finite A K L₁
       have : Module.Finite A C := by
@@ -177,7 +218,10 @@ theorem span_eq_range
     · rw [hb]
   · ext; simp
 
-noncomputable def basis_of_isCoprime_differentIdeal (h₁ : L₁.LinearDisjoint L₂)
+/--
+Docstring.
+-/
+noncomputable def Module.Basis.ofIsCoprimeDifferentIdeal (h₁ : L₁.LinearDisjoint L₂)
     (h₂ : L₁.toSubalgebra ⊔ L₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
       ((differentIdeal A B₂).map (algebraMap B₂ C))) {ι : Type*} (b : Basis ι A B₂) :
@@ -217,13 +261,42 @@ noncomputable def basis_of_isCoprime_differentIdeal (h₁ : L₁.LinearDisjoint 
     · convert b.localizationLocalization_span K A⁰ L₂
       ext; simp
 
+@[simp]
+theorem Module.Basis.ofIsCoprimeDifferentIdeal_apply (h₁ : L₁.LinearDisjoint L₂)
+    (h₂ : L₁.toSubalgebra ⊔ L₂.toSubalgebra = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) {ι : Type*} (b : Basis ι A B₂) (i : ι) :
+    b.ofIsCoprimeDifferentIdeal h₁ h₂ h₃ i = algebraMap B₂ C (b i) := by
+  simp [ofIsCoprimeDifferentIdeal]
+
+theorem Algebra.adjoin_pair_eq_top_of_isCoprime_differentialIdeal [IsScalarTower A B₁ C]
+    (h₁ : L₁.LinearDisjoint L₂)
+    (h₂ : L₁.toSubalgebra ⊔ L₂.toSubalgebra = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) {α : B₁} {β : B₂}
+    (hα : Algebra.adjoin A {α} = ⊤)
+    (hβ : Algebra.adjoin A {β} = ⊤) :
+    Algebra.adjoin A {algebraMap B₁ C α, algebraMap B₂ C β} = ⊤ := by
+  let b := (PowerBasis.ofAdjoinEqTop
+    (IsIntegral.isIntegral β) hβ).basis.ofIsCoprimeDifferentIdeal h₁ h₂ h₃
+  let Pb := PowerBasis.ofBasis b (finCongr (Fintype.card_fin _).symm)
+    (x := algebraMap B₂ C β) (fun i ↦ by simp [b])
+  have := congr_arg (Subalgebra.restrictScalars A) Pb.adjoin_gen_eq_top
+  rw [Subalgebra.restrictScalars_top] at this
+  rw [← this]
+  rw [Algebra.adjoin_trans _ _ hα]
+  simp [Pb, Set.pair_comm]
+
 open NumberField
 
 example {K : Type*} [Field K] [NumberField K] (E F : IntermediateField ℚ K)
-    (h₁ : E.LinearDisjoint F)
+    (h₀ : E.LinearDisjoint F)
+    (h₁ : E ⊔ F = ⊤)
     (h₂ : IsCoprime ((differentIdeal ℤ (𝓞 E)).map (algebraMap (𝓞 E) (𝓞 K)))
       ((differentIdeal ℤ (𝓞 F)).map (algebraMap (𝓞 F) (𝓞 K)))) (α : 𝓞 E) (β : 𝓞 F)
     (hα : Algebra.adjoin ℤ {α} = ⊤)
     (hβ : Algebra.adjoin ℤ {β} = ⊤) :
     Algebra.adjoin ℤ {algebraMap (𝓞 E) (𝓞 K) α, algebraMap (𝓞 F) (𝓞 K) β} = ⊤ := by
-  sorry
+  have h₁' : E.toSubalgebra ⊔ F.toSubalgebra = ⊤ := by
+    rw [← sup_toSubalgebra_of_left, h₁, top_toSubalgebra]
+  exact adjoin_pair_eq_top_of_isCoprime_differentialIdeal h₀ h₁' h₂ hα hβ
