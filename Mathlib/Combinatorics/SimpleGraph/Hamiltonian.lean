@@ -56,8 +56,6 @@ protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
   complete x := List.mem_toFinset.mpr (mem_support hp x)
 
-protected lemma IsHamiltonian.finite (hp : p.IsHamiltonian) : Finite α := hp.fintype.finite
-
 section
 variable [Fintype α]
 
