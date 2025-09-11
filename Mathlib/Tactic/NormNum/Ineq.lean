@@ -95,7 +95,7 @@ theorem isNNRat_lt_true [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] 
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Nat.commute_cast] at h
-    simp? at h says simp only [Nat.cast_mul, mul_invOf_cancel_right'] at h
+    simp only [Nat.cast_mul, mul_invOf_cancel_right'] at h
     rwa [Nat.commute_cast] at h
 
 theorem isNNRat_le_false [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
@@ -131,7 +131,7 @@ theorem isRat_lt_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontr
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
+    simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
 theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]

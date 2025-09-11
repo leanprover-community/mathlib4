@@ -631,17 +631,15 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
         exists_and_left, exists_const, and_imp]
       introv h h₁ h₂ h₃
       exact ⟨le_trans h₂ h, h₁ h₃⟩
-    simp? at h ⊢ says simp only [Option.mem_def] at h ⊢
+    simp only [Option.mem_def] at h ⊢
     induction c generalizing x n <;> rw [evaln] at h ⊢ <;> refine this hl' (fun h => ?_) h
     iterate 4 exact h
     case pair cf cg hf hg _ =>
-      simp? [Seq.seq, Option.bind_eq_some_iff] at h ⊢ says
-        simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some_iff,
-          Option.map_eq_some_iff, exists_exists_and_eq_and] at h ⊢
+      simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some_iff,
+        Option.map_eq_some_iff, exists_exists_and_eq_and] at h ⊢
       exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
     case comp cf cg hf hg _ =>
-      simp? [Bind.bind, Option.bind_eq_some_iff] at h ⊢ says
-        simp only [bind, Option.mem_def, Option.bind_eq_some_iff] at h ⊢
+      simp only [bind, Option.mem_def, Option.bind_eq_some_iff] at h ⊢
       exact h.imp fun a => And.imp (hg _ _) (hf _ _)
     case prec cf cg hf hg _ =>
       revert h
@@ -650,9 +648,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
       · apply hf
       · exact fun y h₁ h₂ => ⟨y, evaln_mono hl' h₁, hg _ _ h₂⟩
     case rfind' cf hf _ =>
-      simp? [Bind.bind, Option.bind_eq_some_iff] at h ⊢ says
-        simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
-          Option.bind_eq_some_iff] at h ⊢
+      simp only [unpaired, bind, pair_unpair, Option.pure_def, Option.mem_def,
+        Option.bind_eq_some_iff] at h ⊢
       refine h.imp fun x => And.imp (hf _ _) ?_
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
@@ -945,7 +942,7 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
       · simp [evaln]
       let k := k' + 1
       simp only
-      simp? [Nat.lt_succ_iff] at nk says simp only [List.mem_range, Nat.lt_succ_iff] at nk
+      simp only [List.mem_range, Nat.lt_succ_iff] at nk
       have hg :
         ∀ {k' c' n},
           Nat.pair k' (encode c') < Nat.pair k (encode c) →

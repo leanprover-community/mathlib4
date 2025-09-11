@@ -923,13 +923,10 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G (q c.length)).toContinuousLinearMap
       (fun i ↦ p (c.partSize i)) i).comp (p (c.partSize i + 1)).curryLeft := by
   ext e v
-  simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
-    simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
-      ContinuousMultilinearMap.curryLeft_apply,
-      FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
-      ContinuousLinearMap.coe_comp', comp_apply,
-      ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
-      compAlongOrderFinpartition_apply]
+  simp only [extend_some, extendMiddle, ContinuousMultilinearMap.curryLeft_apply,
+    FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
+    ContinuousLinearMap.coe_comp', comp_apply, ContinuousMultilinearMap.toContinuousLinearMap_apply,
+    compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply]
   congr
   ext j
   rcases eq_or_ne j i with rfl | hij
