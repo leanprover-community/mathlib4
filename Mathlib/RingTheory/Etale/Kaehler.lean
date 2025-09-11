@@ -292,7 +292,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
   haveI : IsScalarTower P.Ring S T := .of_algebraMap_eq' rfl
   haveI : IsScalarTower P.Ring (Localization M') T :=
     .of_algebraMap_eq fun r ↦ (f.algebraMap_toRingHom r).symm
-  haveI : IsLocalizedModule M' (IsScalarTower.toAlgHom P.Ring S T).toLinearMap := by
+  haveI : IsLocalizedModule M' (IsScalarTower.toAlgHom P.Ring S T : S →ₗ[P.Ring] T) := by
     rw [isLocalizedModule_iff_isLocalization]
     convert ‹IsLocalization M T› using 1
     exact Submonoid.map_comap_eq_of_surjective P.algebraMap_surjective _
@@ -305,7 +305,7 @@ def tensorH1CotangentOfIsLocalization (M : Submonoid S) [IsLocalization M T] :
         (Algebra.linearMap P.Ring (Localization M')) = RingHom.ker fQ := by
       rw [LinearMap.localized'_ker_eq_ker_localizedMap (Localization M') M'
         (Algebra.linearMap P.Ring (Localization M'))
-        (f' := (IsScalarTower.toAlgHom P.Ring S T).toLinearMap)]
+        (f' := (IsScalarTower.toAlgHom P.Ring S T : S →ₗ[P.Ring] T))]
       ext x
       obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective M' x
       simp only [LinearMap.mem_ker, LinearMap.extendScalarsOfIsLocalization_apply', RingHom.mem_ker,

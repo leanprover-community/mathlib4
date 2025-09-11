@@ -151,7 +151,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
   ext x
   change _ = e (x ⊗ₜ[R] 1)
   -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
-  rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
+  rw [h.symm.1.equiv_tmul, Algebra.smul_def, LinearMap.coe_coe, map_one, mul_one]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
