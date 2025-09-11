@@ -71,10 +71,7 @@ theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x)
 
 theorem hasDerivAt_iff_tendsto_slope_left_right [LinearOrder 𝕜] : HasDerivAt f f' x ↔
     Tendsto (slope f x) (𝓝[<] x) (𝓝 f') ∧ Tendsto (slope f x) (𝓝[>] x) (𝓝 f') := by
-  rw [hasDerivAt_iff_tendsto_slope]
-  simp only [tendsto_iff_comap]
-  rw [← Iio_union_Ioi, nhdsWithin_union]
-  exact sup_le_iff
+  simp [hasDerivAt_iff_tendsto_slope, ← Iio_union_Ioi, nhdsWithin_union]
 
 theorem hasDerivAt_iff_tendsto_slope_zero :
     HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
