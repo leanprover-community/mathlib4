@@ -304,4 +304,40 @@ theorem tan_eq_zero_iff' {θ : ℝ} (hθ : cos θ ≠ 0) : tan θ = 0 ↔ ∃ k 
 theorem tan_ne_zero_iff {θ : ℝ} : tan θ ≠ 0 ↔ ∀ k : ℤ, k * π / 2 ≠ θ :=
   mod_cast @Complex.tan_ne_zero_iff θ
 
+lemma one_add_tan_sq_mul_cos_sq_eq_one {x : ℝ} (h : cos x ≠ 0) :
+    (1 + tan x ^ 2) * cos x ^ 2 = 1 :=
+  mod_cast @Complex.one_add_tan_sq_mul_cos_sq_eq_one x (mod_cast h)
+
+lemma div_one_add_tan_sq_eq_mul_cos_sq {x y : ℝ} (h : cos x ≠ 0) :
+    y / (1 + tan x ^ 2) = y * cos x ^ 2 :=
+  mod_cast @Complex.div_one_add_tan_sq_eq_mul_cos_sq x y (mod_cast h)
+
+/-- `tan x` takes the junk value `0` when `cos x = 0` -/
+lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 :=
+  mod_cast @Complex.tan_eq_zero_of_cos_eq_zero x (mod_cast h)
+
+-- tangent half-angle substitution formulas
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (x : ℝ) (h : cos (x / 2) ≠ 0) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' x (mod_cast h)
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'
+    (x : ℝ) (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (mod_cast h)
+
+theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℝ) (h : cos x ≠ -1) :
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq x (mod_cast h)
+
+/-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
+theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℝ) :
+    sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) :=
+  mod_cast @Complex.sin_eq_two_mul_tan_half_div_one_add_tan_half_sq x
+
+theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℝ) :
+    tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) :=
+  mod_cast @Complex.tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq x
+
 end Real
