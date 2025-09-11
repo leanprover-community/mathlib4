@@ -648,8 +648,8 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   induction n with
   | zero => simp
   | succ k hk =>
-    conv_rhs => rw [range_succ]
-    rw [range_succ, image_insert, ← hk, insert_sdiff_of_notMem]
+    conv_rhs => rw [range_add_one]
+    rw [range_add_one, image_insert, ← hk, insert_sdiff_of_notMem]
     simp
 
 end Finset

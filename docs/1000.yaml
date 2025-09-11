@@ -318,6 +318,9 @@ Q284960:
 
 Q285719:
   title: Thales's theorem
+  decl: EuclideanGeometry.Sphere.thales_theorem
+  authors: Li Jiale
+  date: 2025
 
 Q287347:
   title: Gradient theorem
@@ -840,6 +843,11 @@ Q791258:
 
 Q791663:
   title: Beatty's theorem
+  decls:
+    - Irrational.beattySeq_symmDiff_beattySeq_pos
+    - compl_beattySeq
+  authors: Jason Yuen
+  date: 2023
 
 Q794269:
   title: Betti's theorem
@@ -1469,6 +1477,13 @@ Q1227702:
 
 Q1227703:
   title: Dirichlet's approximation theorem
+  decls:
+    - AddCircle.exists_norm_nsmul_le
+    - Real.exists_int_int_abs_mul_sub_le
+    - Real.exists_nat_abs_mul_sub_round_le
+    - Real.exists_rat_abs_sub_le_and_den_le
+  authors: Michael Geißer, Michael Stoll
+  date: 2022
 
 Q1242398:
   title: Doob decomposition theorem
@@ -1620,6 +1635,9 @@ Q1471282:
 
 Q1472120:
   title: Hellinger&ndash;Toeplitz theorem
+  decl: LinearMap.IsSymmetric.continuous
+  authors: Moritz Doll
+  date: 2022
 
 Q1477053:
   title: Arzelà–Ascoli theorem
@@ -2067,7 +2085,12 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
-  # TODO: does mathlib have these?
+  decls:
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain
+    - Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime
+    - Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap
+    - Algebra.HasGoingDown.of_specComap_localRingHom_surjective
+  date: 2025
 
 Q2394548:
   title: Hurewicz theorem
@@ -3361,6 +3384,9 @@ Q6777133:
 
 Q6783821:
   title: Mason–Stothers theorem
+  decl: Polynomial.abc
+  authors: Jineon Baek, Seewoo Lee
+  date: 2024
 
 Q6795637:
   title: Maximal ergodic theorem
@@ -3799,6 +3825,11 @@ Q7996769:
 
 Q7999144:
   title: Wiener–Ikehara theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  url: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+  date: 2024
+  # TODO: cannot display several URLs nicely yet
+  # link: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/655055549f8725b3fd4de577435259932129dc4c/PrimeNumberTheoremAnd/Wiener.lean#L2078
 
 Q7999797:
   title: Beer's theorem
