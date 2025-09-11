@@ -139,7 +139,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     centralBinom n = ∏ p ∈ Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
   refine (Eq.trans ?_ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
-  · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
+  · exact Finset.range_subset_range.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
   rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x

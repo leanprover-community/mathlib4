@@ -449,7 +449,7 @@ See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := by
   induction' n with n hn
   · simp
-  simp [Nat.succ_div, add_ite, add_zero, Finset.range_succ, filter_insert, apply_ite card,
+  simp [Nat.succ_div, add_ite, add_zero, Finset.range_add_one, filter_insert, apply_ite card,
     card_insert_of_notMem, hn]
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
@@ -471,7 +471,7 @@ lemma card_multiples' (N n : ℕ) : #{k ∈ range N.succ | k ≠ 0 ∧ n ∣ k} 
   induction N with
     | zero => simp [Finset.filter_false_of_mem]
     | succ N ih =>
-        rw [Finset.range_succ, Finset.filter_insert]
+        rw [Finset.range_add_one, Finset.filter_insert]
         by_cases h : n ∣ N.succ
         · simp [h, succ_div_of_dvd, ih]
         · simp [h, succ_div_of_not_dvd, ih]

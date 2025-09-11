@@ -549,7 +549,7 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
-  simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
+  simp [expNear, range_add_one, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
     Nat.factorial]
   ac_rfl
 

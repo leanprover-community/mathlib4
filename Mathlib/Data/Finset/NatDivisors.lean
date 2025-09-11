@@ -32,7 +32,7 @@ def Nat.divisorsHom : ℕ →* Finset ℕ where
   map_one' := divisors_one
 
 lemma Nat.Prime.divisors_sq {p : ℕ} (hp : p.Prime) : (p ^ 2).divisors = {p ^ 2, p, 1} := by
-  simp [divisors_prime_pow hp, range_succ]
+  simp [divisors_prime_pow hp, range_add_one]
 
 lemma List.nat_divisors_prod (l : List ℕ) : divisors l.prod = (l.map divisors).prod :=
   map_list_prod Nat.divisorsHom l
