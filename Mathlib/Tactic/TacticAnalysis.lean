@@ -285,9 +285,9 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
   let stx ← `(tactic| $(tacticSeq);*)
   -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
   if let [goal] := i.goalsBefore then
-    let (oldGoals, oldHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal fun goal => do
+    let (oldGoals, oldHeartbeats) ← withHeartbeats <|
       try
-        Lean.Elab.runTactic' goal stx
+        ctxI.runTacticCode i goal stx
       catch e =>
         logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
         return [goal]
