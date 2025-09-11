@@ -145,7 +145,7 @@ lemma FarFromTriangleFree.le_card_cliqueFinset (hG : G.FarFromTriangleFree ε) :
   rw [mul_assoc] at k
   replace k := lt_of_mul_lt_mul_left k zero_le_two
   obtain ⟨t, ht⟩ := hG.cliqueFinset_nonempty' regularityReduced_le k
-  exact triangle_removal_aux hε hP₁ hP₃ ht
+  exact triangle_removal_aux hε hG.lt_one.le hP₁ hP₃ ht
 
 /-- **Triangle Removal Lemma**. If there are not too many triangles (on the order of `(card α)^3`)
 then they can all be removed by removing a few edges (on the order of `(card α)^2`). -/
