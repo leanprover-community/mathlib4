@@ -162,7 +162,7 @@ theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} 
   /--
   A grind bug, fixed in https://github.com/leanprover/lean4/pull/10335,
   prevented this by `grind [cases Option]`.
-  This can be adopted once we are on v4.24.0.
+  This can be adopted once we are on v4.24.0. (Similarly below.)
   (Also: use `attribute [local grind cases] Option` in this file?)
   -/
   rcases x with (_ | _ | x) <;> simp
