@@ -106,8 +106,7 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
-theorem notMem_of_lt_hittingAfter [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)]
-    [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] {k : ι}
+theorem notMem_of_lt_hittingAfter [∀ ω, Decidable (∃ j, n ≤ j ∧ u j ω ∈ s)] {k : ι}
     (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   classical

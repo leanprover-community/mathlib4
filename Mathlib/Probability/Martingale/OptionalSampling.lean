@@ -46,8 +46,7 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
   [FirstCountableTopology ι] {ℱ : Filtration ι m} [SigmaFiniteFiltration μ ℱ] {τ σ : Ω → WithTop ι}
   {f : ι → Ω → E} {i n : ι}
 
-theorem condExp_stopping_time_ae_eq_restrict_eq_const
-    [(Filter.atTop : Filter ι).IsCountablyGenerated] (h : Martingale f ℱ μ)
+theorem condExp_stopping_time_ae_eq_restrict_eq_const (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) [SigmaFinite (μ.trim hτ.measurableSpace_le)] (hin : i ≤ n) :
     μ[f n|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] f i := by
   refine Filter.EventuallyEq.trans ?_ (ae_restrict_of_ae (h.condExp_ae_eq hin))

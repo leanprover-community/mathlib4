@@ -674,7 +674,7 @@ protected theorem measurableSet_lt_of_countable' [Countable ι] (hτ : IsStoppin
 
 end Countable
 
-protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι]
+protected theorem measurable [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable[hτ.measurableSpace] τ := by
   refine measurable_of_Iic fun i ↦ ?_
@@ -682,16 +682,16 @@ protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι]
   | top => simp
   | coe i => exact hτ.measurableSet_le' i
 
-protected theorem measurable' [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
+protected theorem measurable' [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable τ := hτ.measurable.mono (measurableSpace_le hτ) le_rfl
 
-protected lemma measurableSet_eq_top [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
+protected lemma measurableSet_eq_top [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     MeasurableSet {ω | τ ω = ⊤} :=
   (measurableSet_singleton _).preimage hτ.measurable'
 
-protected theorem measurable_of_le [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
+protected theorem measurable_of_le [TopologicalSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) {i : ι}
     (hτ_le : ∀ ω, τ ω ≤ i) : Measurable[f i] τ :=
   hτ.measurable.mono (measurableSpace_le_of_le_const _ hτ_le) le_rfl
@@ -725,7 +725,7 @@ theorem measurableSet_min_const_iff (hτ : IsStoppingTime f τ) (s : Set Ω) {i 
   rw [measurableSpace_min_const hτ]; apply MeasurableSpace.measurableSet_inf
 
 theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι] [OrderTopology ι]
-    [MeasurableSpace ι] [BorelSpace ι] (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π)
+    (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π)
     (s : Set Ω) (hs : MeasurableSet[hτ.measurableSpace] s) :
     MeasurableSet[(hτ.min hπ).measurableSpace] (s ∩ {ω | τ ω ≤ π ω}) := by
   simp_rw [IsStoppingTime.measurableSet] at hs ⊢
@@ -758,7 +758,7 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
   · exact ((hτ.min hπ).min_const i).measurable_of_le fun _ => min_le_right _ _
 
 theorem measurableSet_inter_le_iff [TopologicalSpace ι] [SecondCountableTopology ι]
-    [OrderTopology ι] [MeasurableSpace ι] [BorelSpace ι] (hτ : IsStoppingTime f τ)
+    [OrderTopology ι] (hτ : IsStoppingTime f τ)
     (hπ : IsStoppingTime f π) (s : Set Ω) :
     MeasurableSet[hτ.measurableSpace] (s ∩ {ω | τ ω ≤ π ω}) ↔
       MeasurableSet[(hτ.min hπ).measurableSpace] (s ∩ {ω | τ ω ≤ π ω}) := by
@@ -780,7 +780,7 @@ theorem measurableSet_inter_le_const_iff (hτ : IsStoppingTime f τ) (s : Set Ω
   rwa [Set.inter_assoc, Set.inter_self] at h'
 
 theorem measurableSet_le_stopping_time [TopologicalSpace ι] [SecondCountableTopology ι]
-    [OrderTopology ι] [MeasurableSpace ι] [BorelSpace ι] (hτ : IsStoppingTime f τ)
+    [OrderTopology ι] (hτ : IsStoppingTime f τ)
     (hπ : IsStoppingTime f π) : MeasurableSet[hτ.measurableSpace] {ω | τ ω ≤ π ω} := by
   rw [hτ.measurableSet]
   refine ⟨measurableSet_le hτ.measurable' hπ.measurable', fun j ↦ ?_⟩
@@ -799,21 +799,20 @@ theorem measurableSet_le_stopping_time [TopologicalSpace ι] [SecondCountableTop
   · exact (hπ.min_const j).measurable_of_le fun _ => min_le_right _ _
 
 theorem measurableSet_stopping_time_le_min [TopologicalSpace ι] [SecondCountableTopology ι]
-    [OrderTopology ι] [MeasurableSpace ι] [BorelSpace ι] (hτ : IsStoppingTime f τ)
-    (hπ : IsStoppingTime f π) :
+    [OrderTopology ι] (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
     MeasurableSet[(hτ.min hπ).measurableSpace] {ω | τ ω ≤ π ω} := by
   rw [← Set.univ_inter {ω : Ω | τ ω ≤ π ω}, ← hτ.measurableSet_inter_le_iff hπ, Set.univ_inter]
   exact measurableSet_le_stopping_time hτ hπ
 
 theorem measurableSet_stopping_time_le [TopologicalSpace ι] [SecondCountableTopology ι]
-    [OrderTopology ι] [MeasurableSpace ι] [BorelSpace ι] (hτ : IsStoppingTime f τ)
-    (hπ : IsStoppingTime f π) : MeasurableSet[hπ.measurableSpace] {ω | τ ω ≤ π ω} := by
+    [OrderTopology ι] (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
+    MeasurableSet[hπ.measurableSpace] {ω | τ ω ≤ π ω} := by
   have : MeasurableSet[(hτ.min hπ).measurableSpace] {ω | τ ω ≤ π ω} :=
     measurableSet_stopping_time_le_min hτ hπ
   rw [measurableSet_min_iff hτ hπ] at this; exact (this).2
 
-theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι] [MeasurableSpace ι]
-    [BorelSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
+theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι]
+    [OrderTopology ι] [SecondCountableTopology ι]
     (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
     MeasurableSet[(hτ.min hπ).measurableSpace] {ω | τ ω = π ω} := by
   have : {ω | τ ω = π ω} = {ω | τ ω ≤ π ω} ∩ {ω | π ω ≤ τ ω} := by
@@ -823,8 +822,8 @@ theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι] [MeasurableSpac
   convert (measurableSet_stopping_time_le_min hπ hτ) using 3
   rw [min_comm]
 
-theorem measurableSet_eq_stopping_time [TopologicalSpace ι] [MeasurableSpace ι]
-    [BorelSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
+theorem measurableSet_eq_stopping_time [TopologicalSpace ι] [OrderTopology ι]
+    [SecondCountableTopology ι]
     (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
     MeasurableSet[hτ.measurableSpace] {ω | τ ω = π ω} := by
   have h := measurableSet_eq_stopping_time_min hτ hπ
@@ -1407,8 +1406,8 @@ theorem condExp_stopping_time_ae_eq_restrict_eq [FirstCountableTopology ι]
     (hτ.measurableSet_eq' i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
 
-theorem condExp_min_stopping_time_ae_eq_restrict_le [MeasurableSpace ι] [SecondCountableTopology ι]
-    [BorelSpace ι] (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ)
+theorem condExp_min_stopping_time_ae_eq_restrict_le  [SecondCountableTopology ι]
+    (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ)
     [SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
     μ[f|(hτ.min hσ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}] μ[f|hτ.measurableSpace] := by
   have : SigmaFinite (μ.trim hτ.measurableSpace_le) :=
