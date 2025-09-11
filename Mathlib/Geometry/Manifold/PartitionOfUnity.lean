@@ -548,7 +548,7 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
-  -- porting note(https://github.com/leanprover/std4/issues/116):
+  -- porting note(https://github.com/leanprover-community/batteries/issues/116):
   -- split `rcases` into `have` + `rcases`
   have := BumpCovering.exists_isSubordinate_of_prop (ContMDiff I 𝓘(ℝ) ∞) ?_ hs U ho hU
   · rcases this with ⟨f, hf, hfU⟩
