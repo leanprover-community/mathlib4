@@ -58,4 +58,19 @@ example : 1 + 1 = 2 := by
   have : 1 + 1 < 4 := by omega
   rfl
 
+universe u v
+
+-- This next example used to fail with `unknown universe level 'v'`.
+
+/--
+warning: replace the proof with 'grind': let T : Type max u v := Sigma f;
+  have : 1 + 1 = 2 := rfl;
+  rfl
+-/
+#guard_msgs in
+example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
+  let T : Type max u v := Sigma f
+  have : 1 + 1 = 2 := rfl -- Extra line to ensure the linter picks it up.
+  rfl
+
 end replaceWithGrind
