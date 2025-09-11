@@ -25,7 +25,7 @@ We define the commutative ring `A` as ${f ∈ k(t)⟦Y⟧ | f(0) ∈ k}$ for a f
 
 namespace Counterexample
 
-namespace CounterexampleDimensionPolynomial
+namespace DimensionPolynomial
 
 open PowerSeries Polynomial
 
