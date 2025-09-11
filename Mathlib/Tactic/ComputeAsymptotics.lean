@@ -29,6 +29,14 @@ theorem monomial_rpow_Approximates_inv (basis : Basis) (ms : PreMS basis) (f : �
   ext t
   simp [Real.rpow_neg_one]
 
+-- TODO: move
+theorem Approximates_sqrt_of_pow {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+    (h_approx : ms.Approximates (f ^ (1 / 2 : ℝ))) :
+    ms.Approximates (Real.sqrt ∘ f) := by
+  convert h_approx
+  ext t
+  simp [Real.sqrt_eq_rpow]
+
 /-- Implemetation of `createMS` in `BasisM`. -/
 partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
   if body == x then
@@ -115,6 +123,12 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
     throwError "Cosine is not supported (but will be soon)"
   | (``Real.sin, _) =>
     throwError "Sine is not supported (but will be soon)"
+  | (``Real.sqrt, #[(arg : Q(ℝ))]) =>
+    let res ← createMSImp x q($arg ^ (1 / 2 : ℝ))
+    return {res with
+      f := ← mkLambdaFVars #[x] q(Real.sqrt $arg)
+      h_approx := ← mkAppM ``Approximates_sqrt_of_pow #[res.h_approx]
+    }
   | _ =>
     if body.hasAnyFVar (fun fvarId ↦ fvarId == x.fvarId!) then
       throwError f!"Unsupported body in createMS: {body}"

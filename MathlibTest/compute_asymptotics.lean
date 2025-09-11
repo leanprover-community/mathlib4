@@ -504,6 +504,13 @@ example :
   simp only
   compute_asymptotics
 
+example :
+  let f := fun (x : ℝ) ↦ √x;
+  let g := fun (x : ℝ) ↦ x;
+  f =o[atTop] g := by
+  simp only
+  compute_asymptotics
+
 end ONotation
 
 -- example from the paper. It's used in the proof of Akkra-Bazzi theorem.
