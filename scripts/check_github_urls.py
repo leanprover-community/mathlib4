@@ -6,6 +6,7 @@ Script to find GitHub issue/PR URLs in the codebase and check their status.
 import os
 import re
 import sys
+import argparse
 from pathlib import Path
 from typing import List, Tuple, Dict, Set
 import subprocess
@@ -209,7 +210,74 @@ def update_progress(current: int, total: int, message: str = ""):
     sys.stdout.write(' ' * 20)
     sys.stdout.flush()
 
+def fix_redirects(redirect_items: List[Dict], root_dir: str) -> int:
+    """Fix redirect URLs by updating them to the correct type."""
+    if not redirect_items:
+        return 0
+    
+    fixed_count = 0
+    # Group by file to process each file once
+    files_to_fix = {}
+    
+    for item in redirect_items:
+        file_location = item['file']  # format: "path:line"
+        if ':' in file_location:
+            file_path = file_location.split(':')[0]
+        else:
+            file_path = file_location
+            
+        if file_path not in files_to_fix:
+            files_to_fix[file_path] = []
+        files_to_fix[file_path].append(item)
+    
+    for file_path, items in files_to_fix.items():
+        full_path = os.path.join(root_dir, file_path)
+        if not os.path.exists(full_path):
+            print(f"Warning: File not found: {full_path}")
+            continue
+            
+        try:
+            # Read the file
+            with open(full_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            original_content = content
+            
+            # Fix each URL in this file
+            for item in items:
+                old_url = item['url']
+                # Determine the correct URL
+                if '/pull/' in old_url and item['status'].get('note', '').startswith('URL says PR but'):
+                    new_url = old_url.replace('/pull/', '/issues/')
+                elif '/issues/' in old_url and item['status'].get('note', '').startswith('URL says issue but'):
+                    new_url = old_url.replace('/issues/', '/pull/')
+                else:
+                    continue  # Skip if we can't determine the fix
+                
+                # Replace the URL in the content
+                if old_url in content:
+                    content = content.replace(old_url, new_url)
+                    print(f"Fixed: {old_url} → {new_url} in {file_path}")
+                    fixed_count += 1
+            
+            # Write back if changed
+            if content != original_content:
+                with open(full_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                    
+        except (OSError, IOError) as e:
+            print(f"Error processing {full_path}: {e}")
+    
+    return fixed_count
+
 def main():
+    parser = argparse.ArgumentParser(description='Find and check GitHub issue/PR URLs in the codebase')
+    parser.add_argument('--fix-redirects', action='store_true', 
+                       help='Automatically fix URLs that redirect to the wrong type (e.g., /pull/ → /issues/)')
+    parser.add_argument('--show-open', action='store_true',
+                       help='Show all open issues/PRs (not just first 20)')
+    
+    args = parser.parse_args()
     root_dir = os.getcwd()
     
     # Find all URLs
@@ -318,23 +386,25 @@ def main():
                 print(f"Context: {item['context']}")
             print()
     
-    # Print open items (optional - comment out if too verbose)
-    if open_items and len(open_items) <= 20:  # Only show if not too many
-        print(f"\nOPEN Issues/PRs ({len(open_items)} references):")
-        print("-" * 40)
-        for item in open_items[:20]:  # Limit to first 20
-            print(f"File: {item['file']}")
-            print(f"URL:  {item['url']}")
-            print(f"Title: {item['status'].get('title', 'Unknown')}")
-            if 'note' in item['status']:
-                print(f"Note: {item['status']['note']}")
-            if item.get('context'):
-                print(f"Context: {item['context']}")
-            print()
-        if len(open_items) > 20:
-            print(f"... and {len(open_items) - 20} more open issues/PRs")
-    elif open_items:
-        print(f"\nOPEN Issues/PRs: {len(open_items)} references (use --show-open to display)")
+    # Print open items
+    if open_items:
+        if args.show_open or len(open_items) <= 20:
+            print(f"\nOPEN Issues/PRs ({len(open_items)} references):")
+            print("-" * 40)
+            items_to_show = open_items if args.show_open else open_items[:20]
+            for item in items_to_show:
+                print(f"File: {item['file']}")
+                print(f"URL:  {item['url']}")
+                print(f"Title: {item['status'].get('title', 'Unknown')}")
+                if 'note' in item['status']:
+                    print(f"Note: {item['status']['note']}")
+                if item.get('context'):
+                    print(f"Context: {item['context']}")
+                print()
+            if not args.show_open and len(open_items) > 20:
+                print(f"... and {len(open_items) - 20} more open issues/PRs")
+        else:
+            print(f"\nOPEN Issues/PRs: {len(open_items)} references (use --show-open to display)")
     
     # Print redirects
     if redirect_items:
@@ -386,6 +456,15 @@ def main():
         print(f"\n💡 Found {len(closed_items)} references to closed issues/PRs that could potentially be cleaned up.")
     if redirect_items:
         print(f"🔀 Found {len(redirect_items)} URLs that redirect (wrong URL type - should be fixed).")
+    
+    # Fix redirects if requested
+    if args.fix_redirects and redirect_items:
+        print(f"\n🔧 Fixing {len(redirect_items)} redirect URLs...")
+        fixed_count = fix_redirects(redirect_items, root_dir)
+        if fixed_count > 0:
+            print(f"✅ Fixed {fixed_count} URLs successfully!")
+        else:
+            print("⚠️  No URLs were fixed (check for errors above)")
 
 if __name__ == "__main__":
     main()
