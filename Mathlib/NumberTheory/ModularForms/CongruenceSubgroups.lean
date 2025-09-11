@@ -316,21 +316,20 @@ open Subgroup in
 lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHom ℝ)).FiniteIndex := by
   constructor
   let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
-  let G := MonoidHom.range (mapGL ℝ : SL(2, ℤ) →* _)
-  suffices (t • G ⊓ G).relindex G ≠ 0 by
+  suffices (t • 𝒮ℒ ⊓ 𝒮ℒ).relindex 𝒮ℒ ≠ 0 by
     rwa [conjGL, index_comap, ← inf_relindex_right, ← MonoidHom.range_eq_map]
   obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
   rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
-  suffices Γ(N) ≤ (t • G ⊓ G).comap (mapGL ℝ) by
+  suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
     haveI _ : NeZero N := ⟨hN⟩
     simpa only [index_comap] using (finiteIndex_of_le this).index_ne_zero
   intro k hk
-  simpa [mem_pointwise_smul_iff_inv_smul_mem, G] using
+  simpa [mem_pointwise_smul_iff_inv_smul_mem] using
     hN' <| smul_mem_pointwise_smul _ _ _ ⟨k, hk, rfl⟩
 
 /-- Conjugates of `SL(2, ℤ)` by `GL(2, ℚ)` are arithmetic subgroups. -/
-lemma isArith_conj_SL2Z (g : GL (Fin 2) ℚ) :
-    IsArith ((toConjAct (g.map (Rat.castHom ℝ))) • (mapGL (R := ℤ) ℝ).range) := by
+lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
+    IsArithmetic ((toConjAct (g.map (Rat.castHom ℝ))) • 𝒮ℒ) := by
   constructor
   rw [MonoidHom.range_eq_map]
   constructor
@@ -341,9 +340,10 @@ lemma isArith_conj_SL2Z (g : GL (Fin 2) ℚ) :
     exact (finiteIndex_conjGL g).index_ne_zero
 
 /-- Conjugation by `GL(2, ℚ)` preserves arithmetic subgroups. -/
-lemma IsArith.conj (Γ : Subgroup (GL (Fin 2) ℝ)) [IsArith Γ] (g : GL (Fin 2) ℚ) :
-    IsArith ((toConjAct (g.map (Rat.castHom ℝ))) • Γ) :=
-  ⟨((Commensurable.commensurable_conj _).mp IsArith.is_comm).trans (isArith_conj_SL2Z g).is_comm⟩
+lemma IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] (g : GL (Fin 2) ℚ) :
+    IsArithmetic ((toConjAct (g.map (Rat.castHom ℝ))) • 𝒢) :=
+  ⟨((Commensurable.commensurable_conj _).mp IsArithmetic.is_commensurable).trans
+    (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/
 lemma IsCongruenceSubgroup.conjGL {Γ : Subgroup SL(2, ℤ)} (hΓ : IsCongruenceSubgroup Γ)
