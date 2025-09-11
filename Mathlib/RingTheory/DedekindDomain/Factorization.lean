@@ -375,9 +375,10 @@ theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
 theorem count_prod {ι} (s : Finset ι) (I : ι → FractionalIdeal R⁰ K) (hS : ∀ i ∈ s, I i ≠ 0) :
     count K v (∏ i ∈ s, I i) = ∑ i ∈ s, count K v (I i) := by
   classical
-  induction' s using Finset.induction with i s hi hrec
-  · rw [Finset.prod_empty, Finset.sum_empty, count_one]
-  · have hS' : ∀ i ∈ s, I i ≠ 0 := fun j hj => hS j (Finset.mem_insert_of_mem hj)
+  induction s using Finset.induction with
+  | empty => rw [Finset.prod_empty, Finset.sum_empty, count_one]
+  | insert i s hi hrec =>
+    have hS' : ∀ i ∈ s, I i ≠ 0 := fun j hj => hS j (Finset.mem_insert_of_mem hj)
     have hS0 : ∏ i ∈ s, I i ≠ 0 := Finset.prod_ne_zero_iff.mpr hS'
     have hi0 : I i ≠ 0 := hS i (Finset.mem_insert_self i s)
     rw [Finset.prod_insert hi, Finset.sum_insert hi, count_mul K v hi0 hS0, hrec hS']
@@ -385,9 +386,10 @@ theorem count_prod {ι} (s : Finset ι) (I : ι → FractionalIdeal R⁰ K) (hS 
 /-- For every `n ∈ ℕ` and every ideal `I`, `val_v(I^n) = n*val_v(I)`. -/
 theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
-  induction' n with n h
-  · rw [pow_zero, ofNat_zero, MulZeroClass.zero_mul, count_one]
-  · classical rw [pow_succ, count_mul']
+  induction n with
+  | zero => rw [pow_zero, ofNat_zero, MulZeroClass.zero_mul, count_one]
+  | succ n h =>
+    classical rw [pow_succ, count_mul']
     by_cases hI : I = 0
     · have h_neg : ¬(I ^ n ≠ 0 ∧ I ≠ 0) := by
         rw [not_and', not_not, ne_eq]
