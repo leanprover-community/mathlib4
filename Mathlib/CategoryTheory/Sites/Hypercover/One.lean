@@ -164,13 +164,11 @@ def inter (E F : PreOneHypercover S) [∀ i j, HasPullback (E.f i) (F.f j)]
   p₂ i j k := pullback.map _ _ _ _ (E.p₂ _) (F.p₂ _) (𝟙 S) (by simp [E.w]) (by simp [F.w])
   w := by simp [E.w]
 
-variable (E F : PreOneHypercover S) [∀ i j, HasPullback (E.f i) (F.f j)]
-  [∀ (i j : E.I₀) (k : E.I₁ i j) (a b : F.I₀) (l : F.I₁ a b),
-    HasPullback (E.p₁ k ≫ E.f i) (F.p₁ l ≫ F.f a)]
+variable {E} {F : PreOneHypercover S}
 
 lemma sieve₁_inter [HasPullbacks C] {i j : E.I₀ × F.I₀} {W : C}
-    (p₁ : W ⟶ pullback (E.f i.1) (F.f i.2))
-    (p₂ : W ⟶ pullback (E.f j.1) (F.f j.2))
+    {p₁ : W ⟶ pullback (E.f i.1) (F.f i.2)}
+    {p₂ : W ⟶ pullback (E.f j.1) (F.f j.2)}
     (w : p₁ ≫ pullback.fst _ _ ≫ E.f _ = p₂ ≫ pullback.fst _ _ ≫ E.f _) :
     (inter E F).sieve₁ p₁ p₂ = Sieve.bind
       (E.sieve₁ (p₁ ≫ pullback.fst _ _) (p₂ ≫ pullback.fst _ _))
@@ -435,7 +433,7 @@ def inter [HasPullbacks C] (E F : J.OneHypercover S)
   __ := E.toPreOneHypercover.inter F.toPreOneHypercover
   mem₀ := (E.toZeroHypercover.inter F.toZeroHypercover).mem₀
   mem₁ i₁ i₂ W p₁ p₂ h := by
-    rw [PreOneHypercover.sieve₁_inter _ _ _ _ h]
+    rw [PreOneHypercover.sieve₁_inter h]
     refine J.bind_covering (E.mem₁ _ _ _ _ (by simpa using h)) fun _ _ _ ↦ ?_
     exact J.pullback_stable _
       (F.mem₁ _ _ _ _ (by simpa [Category.assoc, ← pullback.condition]))
