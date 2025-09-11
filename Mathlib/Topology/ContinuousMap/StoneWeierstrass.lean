@@ -637,10 +637,9 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
   exact map_zero f
 
 open NonUnitalStarAlgebra in
-lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [Zero s]
-    (h0 : (0 : s) = (0 : 𝕜)) [CompactSpace s] :
-    elemental 𝕜 (ContinuousMapZero.id h0) = ⊤ :=
-  SetLike.ext'_iff.mpr (adjoin_id_dense h0).closure_eq
+lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [Fact (0 ∈ s)]
+    [CompactSpace s] : elemental 𝕜 (ContinuousMapZero.id s) = ⊤ :=
+  SetLike.ext'_iff.mpr (adjoin_id_dense s).closure_eq
 
 /-- An induction principle for `C(s, 𝕜)₀`. -/
 @[elab_as_elim]
