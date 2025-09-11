@@ -220,7 +220,7 @@ lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts
   rcases Finite.exists_equiv_fin WalkingPair with ⟨_, ⟨e⟩⟩
   haveI : PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u) :=
     preservesLimitsOfShape_of_equiv (Discrete.equivalence e.symm) _
-  exact @isSiftedOrEmpty_of_colimit_preservesBinaryProducts _ _ this
+  exact @isSiftedOrEmpty_of_colim_preservesBinaryProducts _ _ this
 
 lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
     [PreservesLimitsOfShape (Discrete (Fin 0)) (colim : (C ⥤ Type u) ⥤ Type u)] :
@@ -241,15 +241,15 @@ lemma nonempty_of_colim_preservesLimitsOfShapeFinZero
 theorem of_colim_preservesFiniteProducts
     [h : PreservesFiniteProducts (colim : (C ⥤ Type u) ⥤ Type u)] :
     IsSifted C := by
-  have := @isSiftedOrEmpty_of_colimit_preservesFiniteProducts _ _ h
-  have := @nonempty_of_colimit_preservesLimitsOfShapeFinZero _ _ (h.preserves 0)
+  have := @isSiftedOrEmpty_of_colim_preservesFiniteProducts _ _ h
+  have := @nonempty_of_colim_preservesLimitsOfShapeFinZero _ _ (h.preserves 0)
   constructor
 
 /-- Auxiliary version of `IsSifted.of_final_functor_from_sifted` where everything is a
 small category. -/
 theorem of_final_functor_from_sifted'
     {D : Type u} [SmallCategory.{u} D] [IsSifted C] (F : C ⥤ D) [Final F] : IsSifted D := by
-  refine @of_colimit_preservesFiniteProducts _ _ (⟨fun n => ⟨fun {K} ↦ ?_⟩⟩)
+  refine @of_colim_preservesFiniteProducts _ _ (⟨fun n => ⟨fun {K} ↦ ?_⟩⟩)
   let colimCompIso :
       (whiskeringLeft _ _ _).obj F ⋙ colim (J := C) (C := Type _) ≅ colim (J := D) :=
     NatIso.ofComponents
