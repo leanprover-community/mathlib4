@@ -188,25 +188,16 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
-lemma mem_closure_iff_of_isClosed {x : M} {s : Submodule R M} (hs : IsClosed s.carrier) :
-    x ∈ s.closure ↔ x ∈ s := by
-  rw [mem_closure_iff, IsClosed.submodule_topologicalClosure_eq hs]
-
-@[simp]
-lemma closure_toSubmodule_eq {s : ClosedSubmodule R M} : s.toSubmodule.closure = s := by
-  ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
-
-lemma mem_toSubmodule_iff {x : M} {t : ClosedSubmodule R M} :
-    x ∈ t.toSubmodule ↔ x ∈ t.toSubmodule.closure := by
-  simp only [closure_toSubmodule_eq]
-  exact Iff.rfl
-
 end Submodule
 
 namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
+
+@[simp]
+lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
+  ext x
+  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
@@ -285,7 +276,7 @@ instance : CompleteSemilatticeSup (ClosedSubmodule R N) where
   le_sSup s a ha x hx := subset_closure <| Submodule.mem_iSup_of_mem _ <|
     Submodule.mem_iSup_of_mem ha hx
   sSup_le s a h x := by
-    nth_rw 2 [Submodule.mem_toSubmodule_iff]
+    rw [← ClosedSubmodule.closure_toSubmodule_eq (s := a)]
     apply closure_mono
     simp only [Submodule.coe_toAddSubmonoid, coe_toSubmodule]
     intro y hy
