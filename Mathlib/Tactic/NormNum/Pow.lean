@@ -211,7 +211,7 @@ def evalPow : NormNumExt where eval {u α} e := do
   let ⟨nb, pb⟩ ← deriveNat b q(instAddMonoidWithOneNat)
   let sα ← inferSemiring α
   let ra ← derive a
-  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α) (β := ℕ))
   haveI' : $e =Q $a ^ $b := ⟨⟩
   haveI' : $f =Q HPow.hPow := ⟨⟩
   evalPow.core q($e) q($f) q($a) q($b) q($nb) q($pb) q($sα) ra

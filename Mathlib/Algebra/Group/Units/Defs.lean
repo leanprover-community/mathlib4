@@ -222,16 +222,18 @@ theorem inv_mul_eq_iff_eq_mul {b c : α} : ↑a⁻¹ * b = c ↔ b = a * c :=
   ⟨fun h => by rw [← h, mul_inv_cancel_left], fun h => by rw [h, inv_mul_cancel_left]⟩
 
 @[to_additive]
+instance instNPow : NPow αˣ where
+  npow n a := { val := a ^ n
+                inv := a⁻¹ ^ n
+                val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
+                inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
+
+@[to_additive]
 instance instMonoid : Monoid αˣ :=
   { (inferInstance : MulOneClass αˣ) with
-    mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
-    npow := fun n a ↦
-      { val := a ^ n
-        inv := a⁻¹ ^ n
-        val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
-        inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
-    npow_zero := fun a ↦ by ext; simp
-    npow_succ := fun n a ↦ by ext; simp [pow_succ] }
+    mul_assoc _ _ _ := ext <| mul_assoc _ _ _,
+    npow_zero _ := ext <| pow_zero _
+    npow_succ _ _ := ext <| pow_succ _ _ }
 
 /-- Units of a monoid have division -/
 @[to_additive /-- Additive units of an additive monoid have subtraction. -/]
@@ -242,15 +244,18 @@ instance : Div αˣ where
       val_inv := by rw [mul_assoc, inv_mul_cancel_left, mul_inv]
       inv_val := by rw [mul_assoc, inv_mul_cancel_left, mul_inv] }
 
+@[to_additive]
+instance instZPow : ZPow αˣ where
+  zpow n a := match n with
+    | Int.ofNat n => a ^ n
+    | Int.negSucc n => (a ^ n.succ)⁻¹
+
 /-- Units of a monoid form a `DivInvMonoid`. -/
 @[to_additive /-- Additive units of an additive monoid form a `SubNegMonoid`. -/]
 instance instDivInvMonoid : DivInvMonoid αˣ where
-  zpow := fun n a ↦ match n, a with
-    | Int.ofNat n, a => a ^ n
-    | Int.negSucc n, a => (a ^ n.succ)⁻¹
-  zpow_zero' := fun a ↦ by simp
-  zpow_succ' := fun n a ↦ by simp [pow_succ]
-  zpow_neg' := fun n a ↦ by simp
+  zpow_zero' _ := ext <| pow_zero _
+  zpow_succ' _ _ := ext <| pow_succ _ _
+  zpow_neg' _ _ := rfl
 
 /-- Units of a monoid form a group. -/
 @[to_additive /-- Additive units of an additive monoid form an additive group. -/]

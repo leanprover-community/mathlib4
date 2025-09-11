@@ -128,13 +128,17 @@ instance instCancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒ�
   toCommMonoid := instCommMonoid
   __ := instLeftCancelMonoid
 
+@[to_additive]
+instance instZPow [ZPow α] : ZPow αᵐᵒᵖ where
+  zpow n a := op <| unop a ^ n
+
 @[to_additive AddOpposite.instSubNegMonoid]
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   toMonoid := instMonoid
   toInv := instInv
-  zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
+    change unop (op _) = unop (op _ * _)
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
   zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
 

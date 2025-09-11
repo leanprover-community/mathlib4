@@ -264,17 +264,17 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
-instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
+instance Additive.addMonoid [Monoid α] : AddMonoid (Additive α) :=
   { Additive.addZeroClass, Additive.addSemigroup with
-    nsmul := @Monoid.npow α h
-    nsmul_zero := @Monoid.npow_zero α h
-    nsmul_succ := @Monoid.npow_succ α h }
+    nsmul := @NPow.npow α _
+    nsmul_zero := @Monoid.npow_zero α _
+    nsmul_succ := @Monoid.npow_succ α _ }
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
+instance Multiplicative.monoid [AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    npow := @AddMonoid.nsmul α h
-    npow_zero := @AddMonoid.nsmul_zero α h
-    npow_succ := @AddMonoid.nsmul_succ α h }
+    npow := @NSMul.nsmul α _
+    npow_zero := @AddMonoid.nsmul_zero α _
+    npow_succ := @AddMonoid.nsmul_succ α _ }
 
 @[simp]
 theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
@@ -371,7 +371,7 @@ instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multip
 instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
   { Additive.neg, Additive.sub, Additive.addMonoid with
     sub_eq_add_neg := @div_eq_mul_inv α _
-    zsmul := @DivInvMonoid.zpow α _
+    zsmul := @ZPow.zpow α _
     zsmul_zero' := @DivInvMonoid.zpow_zero' α _
     zsmul_succ' := @DivInvMonoid.zpow_succ' α _
     zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
@@ -379,7 +379,7 @@ instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
 instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
   { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
     div_eq_mul_inv := @sub_eq_add_neg α _
-    zpow := @SubNegMonoid.zsmul α _
+    zpow := @ZSMul.zsmul α _
     zpow_zero' := @SubNegMonoid.zsmul_zero' α _
     zpow_succ' := @SubNegMonoid.zsmul_succ' α _
     zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }

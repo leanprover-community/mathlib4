@@ -586,11 +586,11 @@ class NPow (M : Type*) where
   protected npow : ℕ → M → M
 
 /-- An `NPow` gives rise to a `Pow M ℕ` instance. -/
-instance NPow.toPow {M : Type*} [NPow M] : Pow M ℕ where
+instance NPow.toNatPow {M : Type*} [NPow M] : Pow M ℕ where
   pow m n := NPow.npow n m
 
 attribute [to_additive existing] NPow
-attribute [to_additive existing NSMul.toSMul] NPow.toPow
+attribute [to_additive existing NSMul.toSMul] NPow.toNatPow
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
