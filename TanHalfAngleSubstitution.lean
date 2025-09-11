@@ -36,14 +36,12 @@ theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' (h : cos (x / 2) ≠ 0
   ring
 
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' (h : ∀ k : ℤ, x ≠ (2 * k + 1) * π) :
-    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  grind [cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'', cos_ne_zero_iff]
+    cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) :=
+  cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq'' x (by grind [cos_ne_zero_iff])
 
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (h : cos x ≠ -1) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  simp [cos_eq_neg_one_iff] at h
-  grind [cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq']
-
+  exact cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq' x (by grind [cos_eq_neg_one_iff])
 
 theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq :
     tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) := by
