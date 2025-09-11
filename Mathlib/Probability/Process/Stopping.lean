@@ -40,78 +40,6 @@ namespace WithTop
 
 variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
-noncomputable
-abbrev _root_.WithTop.ut [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
-
-@[simp]
-lemma ut_coe_enat (n : ℕ) : WithTop.ut (n : ℕ∞) = n := rfl
-
-@[simp]
-lemma ut_coe_ennreal (r : ℝ≥0) : WithTop.ut (r : ℝ≥0∞) = r := rfl
-
-lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
-  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected ?_
-  rw [WithTop.range_coe]
-  exact Set.ordConnected_Iio
-
-lemma isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : ι → WithTop ι) :=
-  ⟨isEmbedding_coe, by rw [WithTop.range_coe]; exact isOpen_Iio⟩
-
-lemma nhds_coe {r : ι} : 𝓝 (r : WithTop ι) = (𝓝 r).map (↑) :=
-  (isOpenEmbedding_coe.map_nhds_eq r).symm
-
-lemma tendsto_ut [Nonempty ι] {a : WithTop ι} (ha : a ≠ ⊤) :
-    Tendsto WithTop.ut (𝓝 a) (𝓝 a.ut) := by
-  lift a to ι using ha
-  rw [nhds_coe, tendsto_map'_iff]
-  exact tendsto_id
-
-lemma continuousOn_ut [Nonempty ι] : ContinuousOn WithTop.ut { a : WithTop ι | a ≠ ⊤ } :=
-  fun _a ha ↦ ContinuousAt.continuousWithinAt (WithTop.tendsto_ut ha)
-
-@[fun_prop]
-lemma continuous_coe : Continuous ((↑) : ι → WithTop ι) :=
-  isEmbedding_coe.continuous
-
-variable (ι) in
-noncomputable
-def _root_.WithTop.neTopEquiv [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ ι where
-  toFun x := WithTop.ut x
-  invFun x := ⟨x, WithTop.coe_ne_top⟩
-  left_inv := fun x => Subtype.eq <| by
-    lift (x : WithTop ι) to ι using x.2 with y
-    simp
-  right_inv x := by simp
-
-variable (ι) in
-noncomputable
-def neTopHomeomorph [Nonempty ι] : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
-  toEquiv := WithTop.neTopEquiv ι
-  continuous_toFun := continuousOn_iff_continuous_restrict.1 continuousOn_ut
-  continuous_invFun := continuous_coe.subtype_mk _
-
-variable (ι) in
-/-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
-noncomputable
-def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
-  toFun x := if h : x = ⊤ then Sum.inr () else Sum.inl x.ut
-  invFun x := match x with
-    | Sum.inl i => (i : WithTop ι)
-    | Sum.inr () => ⊤
-  left_inv x := by cases x <;> simp
-  right_inv x := by cases x <;> simp
-  continuous_toFun := by
-    have h_fr : frontier ({⊤} : Set (WithTop ι)) = ∅ := by
-      simp only [frontier, Set.finite_singleton, Set.Finite.isClosed, IsClosed.closure_eq]
-      suffices interior ({⊤} : Set (WithTop ι)) = {⊤} by simp [this]
-      rw [interior_eq_iff_isOpen]
-      have : {⊤} = Set.Ioi ((⊤ : ι) : WithTop ι) := by ext; simp
-      rw [this]
-      exact isOpen_Ioi
-    refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
-    exact Continuous.comp_continuousOn (by fun_prop) continuousOn_ut
-  continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
-
 instance : MeasurableSpace (WithTop ι) := borel _
 
 instance : BorelSpace (WithTop ι) := ⟨rfl⟩
@@ -122,14 +50,13 @@ noncomputable
 def MeasurableEquiv.withTopEquiv [Nonempty ι] : { r : WithTop ι | r ≠ ⊤ } ≃ᵐ ι :=
   (WithTop.neTopHomeomorph ι).toMeasurableEquiv
 
-lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α} [Nonempty ι]
+lemma measurable_of_measurable_comp_coe {α : Type*} {mα : MeasurableSpace α}
     {f : WithTop ι → α} (h : Measurable fun p : ι ↦ f p) :
-    Measurable f :=
-  measurable_of_measurable_on_compl_singleton ⊤
-    (MeasurableEquiv.withTopEquiv.symm.measurable_comp_iff.1 h)
-
--- lemma measurable_untopD {d : ι} : Measurable (WithTop.untopD d) :=
---   measurable_of_measurable_comp_coe measurable_id
+    Measurable f := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · sorry
+  · exact measurable_of_measurable_on_compl_singleton ⊤
+      (MeasurableEquiv.withTopEquiv.symm.measurable_comp_iff.1 h)
 
 lemma measurable_ut [Nonempty ι] : Measurable (WithTop.ut (ι := ι)) :=
   measurable_of_measurable_comp_coe measurable_id
