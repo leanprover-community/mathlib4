@@ -99,6 +99,30 @@ def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦
     NatIso.ofComponents (fun _ ↦ Iso.refl _)))
 
+@[simps!]
+def flip₁₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₃ ⥤ C₂ ⥤ C₁ ⥤ E where
+  obj G := {
+    obj H := {
+      obj K := ((F.obj K).obj H).obj G
+      map f := ((F.map f).app _).app _ }
+    map g := { app X := ((F.obj X).map g).app _ } }
+  map h := { app X := { app Y := ((F.obj Y).obj X).map h } }
+
+@[simps!]
+def flip₁₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₃ ⥤ C₂ ⥤ C₁ ⥤ E) where
+  obj F := F.flip₁₃
+  map f := {
+    app X := {
+      app Y := {
+        app Z := ((f.app _).app _).app _
+        naturality _ _ g := by
+          simp [← NatTrans.comp_app] } } }
+
+@[simps!]
+def flip₂₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₁ ⥤ C₃ ⥤ C₂ ⥤ E where
+  obj G := (F.obj G).flip
+  map f := (flipFunctor _ _ _).map (F.map f)
+
 end Functor
 
 end CategoryTheory
