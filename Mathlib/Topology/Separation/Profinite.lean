@@ -19,14 +19,25 @@ variable {X : Type*} {Y : Type*} [TopologicalSpace X]
 
 section Profinite
 
-/-- A T1 space with a clopen basis is totally separated. -/
-theorem totallySeparatedSpace_of_t1_of_basis_clopen [T1Space X]
+/-- A T0 space with a clopen basis is totally separated. -/
+theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X := by
   constructor
   rintro x - y - hxy
-  rcases h.mem_nhds_iff.mp (isOpen_ne.mem_nhds hxy) with ⟨U, hU, hxU, hyU⟩
-  exact ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hxU, fun h => hyU h rfl, (union_compl_self U).superset,
-    disjoint_compl_right⟩
+  choose U hU using exists_isOpen_xor'_mem hxy
+  obtain ⟨hU₀, hU₁⟩ := hU
+  rcases hU₁ with hx | hy
+  · choose V hV using h.isOpen_iff.mp hU₀ x hx.1
+    exact ⟨V, Vᶜ, hV.1.isOpen, hV.1.compl.isOpen, hV.2.1, notMem_subset hV.2.2 hx.2,
+      (union_compl_self V).superset, disjoint_compl_right⟩
+  · choose V hV using h.isOpen_iff.mp hU₀ y hy.1
+    exact ⟨Vᶜ, V, hV.1.compl.isOpen, hV.1.isOpen, notMem_subset hV.2.2 hy.2, hV.2.1,
+      (union_comm _ _ ▸ union_compl_self V).superset, disjoint_compl_left⟩
+
+/-- A T1 space with a clopen basis is totally separated. -/
+theorem totallySeparatedSpace_of_t1_of_basis_clopen [T1Space X]
+    (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X :=
+  totallySeparatedSpace_of_t0_of_basis_clopen h
 
 variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
 
