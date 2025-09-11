@@ -31,16 +31,6 @@ section RCLike
 
 variable (𝕜 : Type*) {A : Type*} {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
 variable [TopologicalSpace A] [StarModule 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
-
--- `Topology.ContinuousMap.StoneWeierstrass`
-open StarAlgebra in
-lemma ContinuousMap.elemental_id_eq_top (s : Set 𝕜) [CompactSpace s] :
-    elemental 𝕜 (ContinuousMap.restrict s (.id 𝕜)) = ⊤ := by
-  rw [StarAlgebra.elemental, ← polynomialFunctions.starClosure_topologicalClosure,
-    polynomialFunctions.starClosure_eq_adjoin_X]
-  congr
-  exact Polynomial.toContinuousMap_X_eq_id.symm
-
 variable [IsTopologicalRing A] [ContinuousStar A]
 
 open StarAlgebra
@@ -184,12 +174,6 @@ variable [TopologicalSpace A] [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 variable [ContinuousConstSMul 𝕜 A] [StarModule 𝕜 A] [IsTopologicalRing A] [ContinuousStar A]
 
 open NonUnitalStarAlgebra
-
--- `Topology.ContinuousMap.StoneWeierstrass`
-lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [Zero s]
-    (h0 : (0 : s) = (0 : 𝕜)) [CompactSpace s] :
-    elemental 𝕜 (ContinuousMapZero.id h0) = ⊤ :=
-  SetLike.ext'_iff.mpr (adjoin_id_dense h0).closure_eq
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom {a : A} (ha : p a) :
