@@ -137,6 +137,6 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
     have h2_val2 : val2 ∉ P1.asIdeal := by simp [P1, val2, g]
     exact ⟨fun x ↦ by simp_all [P1, P2], fun h ↦ h2_val2 (h h1_val2)⟩
 
-end CounterexampleDimensionPolynomial
+end DimensionPolynomial
 
 end Counterexample
