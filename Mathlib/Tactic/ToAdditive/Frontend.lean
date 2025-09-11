@@ -10,7 +10,6 @@ import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.TryThis
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Nat.Notation
-import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
@@ -976,9 +975,9 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     addInstance tgt attr_kind prio |>.run'
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
-def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ)
-    (f : σ → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit := do
-  if f (ext.getState (← getEnv)) src then
+def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
+    (thisAttr attrName src tgt : Name) : CoreM Unit := do
+  if f (← getEnv) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. \
          The preferred method is to use `@[{thisAttr} (attr := {attrName})]` to apply the \
@@ -992,12 +991,12 @@ def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnv
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
 def warnAttr {α β : Type} [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
     (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
-warnExt stx attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src tgt
+  warnAttrCore stx (f <| attr.getState ·) thisAttr attrName src tgt
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
-def warnParametricAttr {β : Type} (stx : Syntax) (attr : ParametricAttribute β)
+def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : ParametricAttribute β)
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
-warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
+  warnAttrCore stx (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
 
 /-- `additivizeLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
@@ -1204,7 +1203,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr thisAttr `simps src tgt
-    warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
+    warnAttrCore stx Term.elabAsElim.hasTag thisAttr `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.
