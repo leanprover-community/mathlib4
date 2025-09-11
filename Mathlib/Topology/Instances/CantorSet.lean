@@ -5,7 +5,7 @@ Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle D
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
-import Mathlib.Data.Real.OfDigits
+import Mathlib.Analysis.Real.OfDigits
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Algebra.GroupWithZero
@@ -140,6 +140,10 @@ lemma isCompact_cantorSet : IsCompact cantorSet :=
 ## The Cantor set as the set of 0–2 numbers in the ternary system.
 -/
 
+section ternary02
+
+open Real
+
 /-- If `x = 0.d₀d₁...` in base-3 (ternary), and none of the digits `dᵢ` is `1`,
 then `x` belongs to the Cantor set. -/
 theorem zero_two_sequence_ofDigits_mem_cantorSet {a : ℕ → Fin 3}
@@ -149,12 +153,12 @@ theorem zero_two_sequence_ofDigits_mem_cantorSet {a : ℕ → Fin 3}
   induction i generalizing a with
   | zero =>
     simp only [preCantorSet_zero, Set.mem_Icc]
-    exact ⟨ofDigits_nonneg, ofDigits_le_one⟩
+    exact ⟨ofDigits_nonneg a, ofDigits_le_one a⟩
   | succ i ih =>
     simp only [preCantorSet, Set.mem_union, Set.mem_image, ← exists_or]
     use ofDigits (fun i ↦ a (i + 1))
     have : (ofDigits fun i ↦ a (i + 1)) ∈ preCantorSet i := ih (by solve_by_elim)
-    simp only [this, ofDigits_eq_partial_sum_add_ofDigits a 1, Finset.range_one, ofDigitsTerm,
+    simp only [this, ofDigits_eq_sum_add_ofDigits a 1, Finset.range_one, ofDigitsTerm,
       Nat.cast_ofNat, Finset.sum_singleton, zero_add, pow_one, true_and]
     field_simp
     norm_cast
@@ -197,8 +201,8 @@ theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
     congr
     rw [h1]
     simpa using hi
-  rw [ofDigits_eq_partial_sum_add_ofDigits a (n1 + 1),
-    ofDigits_eq_partial_sum_add_ofDigits b (n1 + 1), Finset.sum_range_succ,
+  rw [ofDigits_eq_sum_add_ofDigits a (n1 + 1),
+    ofDigits_eq_sum_add_ofDigits b (n1 + 1), Finset.sum_range_succ,
     Finset.sum_range_succ, this] at h
   replace h : ofDigitsTerm a n1 + (3⁻¹ ^ n1 * ofDigits fun i ↦ a (1 + n1 + i)) * (1 / 3) =
       (3⁻¹ ^ n1 * ofDigits fun i ↦ b (1 + n1 + i)) * (1 / 3) + ofDigitsTerm b n1 := by
@@ -238,7 +242,7 @@ theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x
     · rw [← hx] at h
       apply cantorSet_subset_unitInterval at hy
       absurd h
-      simp only [one_div, Set.mem_Icc, not_and] at hy ⊢
+      simp only [one_div, Set.mem_Icc] at hy ⊢
       constructor <;> linarith
     · rw [← hx]
       ring_nf
@@ -324,7 +328,7 @@ theorem ofDigits_cantorToTernary_partial_sum_ge {x : ℝ} (hx : x ∈ cantorSet)
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
   apply And.right at h_mem
-  rw [← mul_le_mul_right (show 0 < (3 : ℝ)^n by positivity), sub_mul, inv_pow,
+  rw [← mul_le_mul_iff_left₀ (show 0 < (3 : ℝ)^n by positivity), sub_mul, inv_pow,
     inv_mul_cancel₀ (by simp)]
   linarith!
 
@@ -335,7 +339,7 @@ theorem ofDigits_cantorToTernary {x : ℝ} (hx : x ∈ cantorSet) :
   rw [hasSum_iff_tendsto_nat_of_summable_norm]
   swap
   · conv => arg 1; ext i; simp; rw [abs_of_nonneg (by simp [ofDigitsTerm])]
-    exact ofDigitsTerm_Summable
+    exact summable_ofDigitsTerm
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le (g := fun n ↦ x - (3⁻¹ : ℝ)^n) (h := fun _ ↦ x)
   · rw [← tendsto_sub_nhds_zero_iff]
     simp only [sub_sub_cancel_left]
@@ -360,3 +364,5 @@ theorem cantorSet_eq_zero_two_ofDigits :
     · apply ofDigits_cantorToTernary h
   · rw [← ha.2]
     exact zero_two_sequence_ofDigits_mem_cantorSet ha.1
+
+end ternary02
