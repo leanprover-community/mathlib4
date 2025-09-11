@@ -5,19 +5,19 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Canonical
 import Mathlib.CategoryTheory.Limits.Presheaf
+import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Dense functors
 
-A functor `F : C ⥤ D` is dense if any `Y : D` is a canonical colimit
-relatively to `F`. When `F` is full, we show that this is equivalent
-to saying that the restricted Yoneda functor
-`D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful.
+A functor `F : C ⥤ D` is dense (`F.IsDense`) if any `Y : D` is a
+canonical colimit relatively to `F`. When `F` is full, we show that this
+is equivalent to saying that the restricted Yoneda functor
+`D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful (see the lemma
+`Functor.isDense_iff_fullyFaithful_restrictedULiftYoneda`).
 
-## Main definitions
-
-* The typeclass `Functor.IsDense`
-* The lemma `Functor.isDense_iff_fullyFaithful_restrictedULiftYoneda`
+We also show that the range of a dense functor is a strong
+generator (see `Functor.isStrongGenerator_range_of_isDense`).
 
 ## References
 
@@ -101,6 +101,14 @@ lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=
   ⟨fun _ ↦ ⟨FullyFaithful.ofFullyFaithful _⟩,
     fun ⟨h⟩ ↦ IsDense.of_fullyFaithful_restrictedULiftYoneda h⟩
+
+lemma isStrongGenerator_range_of_isDense [F.IsDense] :
+    IsStrongGenerator (Set.range F.obj) :=
+  IsStrongGenerator.mk_of_exists_colimitPresentation.{max u₁ u₂ v₁ v₂}
+    (fun Y ↦ ⟨_, _, ColimitPresentation.mk _ _
+      (IsColimit.whiskerEquivalence (canonicalColimitOfIsDense F Y)
+        ((ShrinkHoms.equivalence _).symm.trans ((Shrink.equivalence _)).symm)),
+          fun j ↦ ⟨⟨_, by simp⟩, ⟨Iso.refl _⟩⟩⟩)
 
 end Functor
 
