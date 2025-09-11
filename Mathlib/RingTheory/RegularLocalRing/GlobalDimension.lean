@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.RingTheory.RegularLocalRing.Basic
-import Mathlib.RingTheory.GlobalDimension
 import Mathlib.RingTheory.CohenMacaulay.Maximal
 import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 /-!
@@ -84,15 +83,3 @@ lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [S
   rcases exist_nat_eq R with ⟨m, hm⟩
   apply finite_projectiveDimension_of_isRegularLocalRing_aux R M m
   simpa [hm] using WithBot.coe_le_coe.mpr le_add_self
-
-/- have some universe problem
-lemma projectiveDimension_residueField_eq_ringKrullDim [IsRegularLocalRing R] :
-    projectiveDimension (ModuleCat.of R (ResidueField R)) = ringKrullDim R := by
-  --follows from AB thm and above easily
-  sorry
--/
-
-theorem globalDimension_eq_ringKrullDim [IsRegularLocalRing R] :
-    globalDimension.{u, v} R = ringKrullDim R := by
-
-  sorry
