@@ -103,7 +103,6 @@ theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : 
     (X_pow_sub_C_ne_zero hp.pos a) (this.trans natDegree_X_pow_sub_C.symm).ge).irreducible hg
   -- Suppose `deg g ≠ p`.
   by_contra h
-  have : Fact (Irreducible g) := ⟨hg⟩
   -- Let `r` be a root of `g`, then `N_K(r) ^ p = N_K(r ^ p) = N_K(a) = a ^ (deg g)`.
   have key : (Algebra.norm K (AdjoinRoot.root g)) ^ p = a ^ g.natDegree := by
     have := eval₂_eq_zero_of_dvd_of_eval₂_eq_zero _ _ hg' (AdjoinRoot.eval₂_root g)
