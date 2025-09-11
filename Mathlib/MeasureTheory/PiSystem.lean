@@ -49,9 +49,9 @@ import Mathlib.Order.Disjointed
 
 ## Implementation details
 
-* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the galois
+* `IsPiSystem` is a predicate, not a type. Thus, we don't explicitly define the Galois
   insertion, nor do we define a complete lattice. In theory, we could define a complete
-  lattice and galois insertion on the subtype corresponding to `IsPiSystem`.
+  lattice and Galois insertion on the subtype corresponding to `IsPiSystem`.
 -/
 
 
@@ -319,7 +319,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
         revert h2
         rw [Subtype.val_injective.extend_apply]
         apply id
-  · intros b h_b
+  · intro b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
     obtain ⟨h_b_w, h_b_h⟩ := h_b

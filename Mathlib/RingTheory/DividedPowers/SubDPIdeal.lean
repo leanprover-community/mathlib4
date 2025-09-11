@@ -132,7 +132,7 @@ theorem isSubDPIdeal_inf_iff {A : Type*} [CommRing A] {I : Ideal A} (hI : Divide
     ∀ {n : ℕ} {a b : A} (_ : a ∈ I) (_ : b ∈ I) (_ : a - b ∈ J), hI.dpow n a - hI.dpow n b ∈ J := by
   refine ⟨fun hIJ n a b ha hb hab ↦ ?_, fun hIJ ↦ ?_⟩
   · have hab' : a - b ∈ I := I.sub_mem ha hb
-    rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_succ, sum_insert notMem_range_self,
+    rw [← add_sub_cancel b a, hI.dpow_add' hb hab', range_add_one, sum_insert notMem_range_self,
       tsub_self, hI.dpow_zero hab', mul_one, add_sub_cancel_left]
     exact J.sum_mem (fun i hi ↦  SemilatticeInf.inf_le_left J I ((J ⊓ I).smul_mem _
       (hIJ.dpow_mem _ (ne_of_gt (Nat.sub_pos_of_lt (mem_range.mp hi))) ⟨hab, hab'⟩)))
@@ -280,7 +280,7 @@ instance : LT (SubDPIdeal hI) := ⟨fun J J' ↦ J.carrier < J'.carrier⟩
 
 theorem lt_iff {J J' : SubDPIdeal hI} : J < J' ↔ J.carrier < J'.carrier := Iff.rfl
 
-/-- I is a sub-dp-ideal ot itself. -/
+/-- `I` is a sub-dp-ideal of itself. -/
 instance : Top (SubDPIdeal hI) :=
   ⟨{carrier    := I
     isSubideal := le_refl _
@@ -288,7 +288,7 @@ instance : Top (SubDPIdeal hI) :=
 
 instance inhabited : Inhabited hI.SubDPIdeal := ⟨⊤⟩
 
-/-- `(0)` is a sub-dp-ideal ot the dp-ideal `I`. -/
+/-- `(0)` is a sub-dp-ideal of the dp-ideal `I`. -/
 instance : Bot (SubDPIdeal hI) :=
   ⟨{carrier    := ⊥
     isSubideal := bot_le
