@@ -27,7 +27,7 @@ coinductive Computation (α : Type u) : Type u
   An element of `Computation α` is an infinite sequence of `Option α` such
   that if `f n = some a` for some `n` then it is constantly `some a` after that. -/
 def Computation (α : Type u) : Type u :=
-  { f : Stream' (Option α) // ∀ ⦃n a⦄, f n = some a → f (n + 1) = some a }
+  { f : Stream' (Option α) // ∀ ⦃n : ℕ⦄ ⦃a⦄, f[n] = some a → f[n + 1] = some a }
 
 namespace Computation
 
@@ -78,13 +78,13 @@ instance : Inhabited (Computation α) :=
 
 /-- `runFor c n` evaluates `c` for `n` steps and returns the result, or `none`
   if it did not terminate after `n` steps. -/
-def runFor : Computation α → ℕ → Option α :=
-  Subtype.val
+def runFor (c : Computation α) : ℕ → Option α :=
+  (c.val[·])
 
 /-- `destruct c` is the destructor for `Computation α` as a coinductive type.
   It returns `inl a` if `c = pure a` and `inr c'` if `c = think c'`. -/
 def destruct (c : Computation α) : α ⊕ (Computation α) :=
-  match c.1 0 with
+  match c.1[0] with
   | none => Sum.inr (tail c)
   | some a => Sum.inl a
 
@@ -98,10 +98,10 @@ unsafe def run : Computation α → α
 
 theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a → s = pure a := by
   dsimp [destruct]
-  induction' f0 : s.1 0 with _ <;> intro h
+  induction' f0 : s.1[0] with _ <;> intro h
   · contradiction
   · apply Subtype.eq
-    funext n
+    ext n
     induction' n with n IH
     · injection h with h'
       rwa [h'] at f0
@@ -109,7 +109,7 @@ theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a 
 
 theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' → s = think s' := by
   dsimp [destruct]
-  induction' f0 : s.1 0 with a' <;> intro h
+  induction' f0 : s.1[0] with a' <;> intro h
   · injection h with h'
     rw [← h']
     obtain ⟨f, al⟩ := s
@@ -186,7 +186,7 @@ def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
 def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   refine ⟨Stream'.corec' (Corec.f f) (Sum.inr b), fun n a' h => ?_⟩
   rw [Stream'.corec'_eq]
-  change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
+  change (Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2)[n] = some a'
   revert h; generalize Sum.inr b = o; revert o
   induction' n with n IH <;> intro o
   · change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
@@ -211,9 +211,9 @@ attribute [simp] lmap rmap
 @[simp]
 theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (corec f) (f b) := by
   dsimp [corec, destruct]
-  rw [show Stream'.corec' (Corec.f f) (Sum.inr b) 0 =
+  rw [show (Stream'.corec' (Corec.f f) (Sum.inr b))[0] =
     Sum.rec Option.some (fun _ ↦ none) (f b) by
-    dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
+    dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
     | Sum.inr x => rfl
@@ -280,7 +280,8 @@ protected def Mem (s : Computation α) (a : α) :=
 instance : Membership α (Computation α) :=
   ⟨Computation.Mem⟩
 
-theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
+theorem le_stable (s : Computation α) {a} {m n : ℕ} (h : m ≤ n) :
+    s.1[m] = some a → s.1[n] = some a := by
   obtain ⟨f, al⟩ := s
   induction' h with n _ IH
   exacts [id, fun h2 => al (IH h2)]
@@ -304,10 +305,10 @@ theorem terminates_iff (s : Computation α) : Terminates s ↔ ∃ a, a ∈ s :=
 theorem terminates_of_mem {s : Computation α} {a : α} (h : a ∈ s) : Terminates s :=
   ⟨⟨a, h⟩⟩
 
-theorem terminates_def (s : Computation α) : Terminates s ↔ ∃ n, (s.1 n).isSome :=
+theorem terminates_def (s : Computation α) : Terminates s ↔ ∃ n : ℕ, s.1[n].isSome :=
   ⟨fun ⟨⟨a, n, h⟩⟩ =>
     ⟨n, by
-      dsimp [Stream'.get] at h
+      dsimp at h
       rw [← h]
       exact rfl⟩,
     fun ⟨n, h⟩ => ⟨⟨Option.get _ h, n, (Option.eq_some_of_isSome h).symm⟩⟩⟩
@@ -347,8 +348,8 @@ theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradic
 theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
-  apply Subtype.eq; funext n
-  induction' h : s.val n with _; · rfl
+  apply Subtype.eq; ext n
+  induction' h : s.val[n] with _; · rfl
   refine absurd ?_ H; exact ⟨⟨_, _, h.symm⟩⟩
 
 theorem thinkN_mem {s : Computation α} {a} : ∀ n, a ∈ thinkN s n ↔ a ∈ s
@@ -465,7 +466,7 @@ theorem results_pure (a : α) : Results (pure a) a 0 :=
 theorem length_think (s : Computation α) [h : Terminates s] : length (think s) = length s + 1 := by
   apply le_antisymm
   · exact Nat.find_min' _ (Nat.find_spec ((terminates_def _).1 h))
-  · have : (Option.isSome ((think s).val (length (think s))) : Prop) :=
+  · have : (think s).val[length (think s)].isSome :=
       Nat.find_spec ((terminates_def _).1 s.think_terminates)
     revert this; rcases length (think s) with - | n <;> intro this
     · simp [think, Stream'.cons] at this
@@ -539,8 +540,8 @@ def terminatesRecOn
 def map (f : α → β) : Computation α → Computation β
   | ⟨s, al⟩ =>
     ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
-      dsimp [Stream'.map, Stream'.get]
-      induction' e : s n with a <;> intro h
+      dsimp [Stream'.map]
+      induction' e : s[n] with a <;> intro h
       · contradiction
       · rw [al e]; exact h⟩
 
