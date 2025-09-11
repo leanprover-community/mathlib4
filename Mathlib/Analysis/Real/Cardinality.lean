@@ -113,8 +113,9 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
   have h3 : c < 1 := by
     apply h2.trans
     norm_num
-  induction' n with n ih generalizing f g
-  · let f_max : ℕ → Bool := fun n => Nat.rec false (fun _ _ => true) n
+  induction n generalizing f g with
+  | zero =>
+    let f_max : ℕ → Bool := fun n => Nat.rec false (fun _ _ => true) n
     have hf_max : ∀ n, f n → f_max n := by
       intro n hn
       cases n
@@ -144,11 +145,12 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
         · contradiction
         simp [g_min]
       · exact cantorFunctionAux_zero _
-  rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
-  rw [hn 0 <| zero_lt_succ n]
-  apply add_lt_add_left
-  rw [mul_lt_mul_left h1]
-  exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
+  | succ n ih =>
+    rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
+    rw [hn 0 <| zero_lt_succ n]
+    apply add_lt_add_left
+    rw [mul_lt_mul_left h1]
+    exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
 
 /-- `cantorFunction c` is injective if `0 < c < 1/2`. -/
 theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
