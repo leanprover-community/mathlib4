@@ -1184,8 +1184,6 @@ variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 
 lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
 
-@[deprecated (since := "2025-02-24")] alias coe_ker := ker_coe
-
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
 
