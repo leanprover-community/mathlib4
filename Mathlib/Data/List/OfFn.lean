@@ -51,11 +51,9 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
-  induction' n with n IH
-  · rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
-    rfl
-  · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
-    congr
+  induction n with
+  | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]; rfl
+  | succ n IH => rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]; congr
 
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
@@ -70,9 +68,10 @@ theorem ofFn_mul {m n} (f : Fin (m * n) → α) :
       ↑i * n + j < (i + 1) * n :=
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.add_mul, Nat.one_mul])
       _ ≤ _ := Nat.mul_le_mul_right _ i.prop⟩) := by
-  induction' m with m IH
-  · simp [ofFn_zero, Nat.zero_mul, ofFn_zero]
-  · simp_rw [ofFn_succ', succ_mul]
+  induction m with
+  | zero => simp [ofFn_zero, Nat.zero_mul, ofFn_zero]
+  | succ m IH =>
+    simp_rw [ofFn_succ', succ_mul]
     simp [ofFn_add, IH]
     rfl
 

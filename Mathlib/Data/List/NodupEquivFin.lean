@@ -105,8 +105,9 @@ then `Sublist l l'`.
 -/
 theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     (hf : ∀ ix : ℕ, l[ix]? = l'[f ix]?) : l <+ l' := by
-  induction' l with hd tl IH generalizing l' f
-  · simp
+  induction l generalizing l' f with
+  | nil => simp
+  | cons hd tl IH => ?_
   have : some hd = l'[f 0]? := by simpa using hf 0
   rw [eq_comm, List.getElem?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this

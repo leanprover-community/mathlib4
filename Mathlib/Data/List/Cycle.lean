@@ -55,8 +55,9 @@ theorem nextOr_cons_of_ne (xs : List α) (y x d : α) (h : x ≠ y) :
 /-- `nextOr` does not depend on the default value, if the next value appears. -/
 theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x ∈ xs)
     (x_ne : x ≠ xs.getLast (ne_nil_of_mem x_mem)) : nextOr xs x d = nextOr xs x d' := by
-  induction' xs with y ys IH
-  · cases x_mem
+  induction xs with
+  | nil => cases x_mem
+  | cons y ys IH => ?_
   rcases ys with - | ⟨z, zs⟩
   · simp at x_mem x_ne
     contradiction
@@ -67,8 +68,9 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
     · simpa using x_ne
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
-  induction' xs with y ys IH
-  · simp at h
+  induction xs with
+  | nil => simp at h
+  | cons y ys IH => ?_
   rcases ys with - | ⟨z, zs⟩
   · simp at h
   · by_cases hx : x = y
@@ -77,9 +79,10 @@ theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x
       simpa [hx] using IH h
 
 theorem nextOr_concat {xs : List α} {x : α} (d : α) (h : x ∉ xs) : nextOr (xs ++ [x]) x d = d := by
-  induction' xs with z zs IH
-  · simp
-  · obtain ⟨hz, hzs⟩ := not_or.mp (mt mem_cons.2 h)
+  induction xs with
+  | nil => simp
+  | cons z zs IH =>
+    obtain ⟨hz, hzs⟩ := not_or.mp (mt mem_cons.2 h)
     rw [cons_append, nextOr_cons_of_ne _ _ _ _ hz, IH hzs]
 
 theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈ xs := by
@@ -87,8 +90,9 @@ theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈
   suffices ∀ xs' : List α, (∀ x ∈ xs, x ∈ xs') → d ∈ xs' → nextOr xs x d ∈ xs' by
     exact this xs fun _ => id
   intro xs' hxs' hd
-  induction' xs with y ys ih
-  · exact hd
+  induction xs with
+  | nil => exact hd
+  | cons y ys ih => ?_
   rcases ys with - | ⟨z, zs⟩
   · exact hd
   rw [nextOr]
@@ -222,9 +226,10 @@ theorem next_mem (h : x ∈ l) : l.next x h ∈ l :=
 theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
   rcases l with - | ⟨hd, tl⟩
   · simp at h
-  induction' tl with hd' tl hl generalizing hd
-  · simp
-  · by_cases hx : x = hd
+  induction tl generalizing hd with
+  | nil => simp
+  | cons hd' tl hl =>
+    by_cases hx : x = hd
     · simp only [hx, prev_cons_cons_eq]
       exact mem_cons_of_mem _ (getLast_mem _)
     · rw [prev, dif_neg hx]
@@ -524,7 +529,7 @@ theorem subsingleton_reverse_iff {s : Cycle α} : s.reverse.Subsingleton ↔ s.S
 
 theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
     ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y := by
-  induction' s using Quot.inductionOn with l
+  induction s using Quot.inductionOn with | _ l
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
     length_eq_zero_iff, length_eq_one_iff, Nat.not_lt_zero, false_or] at h
   rcases h with (rfl | ⟨z, rfl⟩) <;> simp
@@ -552,7 +557,7 @@ theorem nontrivial_reverse_iff {s : Cycle α} : s.reverse.Nontrivial ↔ s.Nontr
 
 theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := by
   obtain ⟨x, y, hxy, hx, hy⟩ := h
-  induction' s using Quot.inductionOn with l
+  induction s using Quot.inductionOn with | _ l
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
   · simp at hx
   · simp only [mem_coe_iff, mk_eq_coe, mem_singleton] at hx hy
@@ -576,7 +581,7 @@ theorem nodup_reverse_iff {s : Cycle α} : s.reverse.Nodup ↔ s.Nodup :=
   Quot.inductionOn s fun _ => nodup_reverse
 
 theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
-  induction' s using Quot.inductionOn with l
+  induction s using Quot.inductionOn with | _ l
   obtain - | ⟨hd, tl⟩ := l
   · simp
   · have : tl = [] := by simpa [Subsingleton, length_eq_zero_iff, Nat.succ_le_succ_iff] using h
@@ -673,8 +678,8 @@ instance {s : Cycle α} : Decidable (Nodup s) :=
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
     fun ⟨s, hs⟩ => by
-    induction' s using Quotient.inductionOn' with s hs
-    exact ⟨⟨s, hs⟩, by simp⟩
+    induction s using Quotient.inductionOn' with | _ hs
+    exact ⟨⟨_, hs⟩, by simp⟩
 
 instance fintypeNodupNontrivialCycle [Fintype α] :
     Fintype { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=
@@ -792,10 +797,12 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
         contradiction
       · dsimp only
         obtain ⟨n, hn⟩ := hab
-        induction' n with d hd generalizing a b l m
-        · simp only [rotate_zero, cons.injEq] at hn
+        induction n generalizing a b l m with
+        | zero =>
+          simp only [rotate_zero, cons.injEq] at hn
           rw [hn.1, hn.2]
-        · rcases l with - | ⟨c, s⟩
+        | succ d hd =>
+          rcases l with - | ⟨c, s⟩
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
           · rw [Nat.add_comm, ← rotate_rotate, rotate_cons_succ, rotate_zero, cons_append] at hn
