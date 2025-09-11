@@ -28,22 +28,6 @@ section Nontrivial
 variable [Nontrivial R]
 
 /--
-If `x` is a non zero divisor, `ordMonoidWithZeroHom` is equal to the canonical embedding
-of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
--/
-@[simp]
-theorem ordMonoidWithZeroHom_eq_ord (x : R) (h : x ∈ nonZeroDivisors R) :
-    ordMonoidWithZeroHom R x =
-  WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x) := dif_pos h
-
-/--
-If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
--/
-@[simp]
-theorem ordMonoidWithZeroHom_eq_zero (x : R) (h : x ∉ nonZeroDivisors R) :
-    ordMonoidWithZeroHom R x = 0 := dif_neg h
-
-/--
 The canonical monoid with zero hom from `WithZero (Multiplicative ℕ)` to
 `WithZero (Multiplicative ℤ)` is strictly monotone
 -/
@@ -119,14 +103,6 @@ lemma ord_le_iff (a b : R) (ha : a ∈ nonZeroDivisors R) (hb : b ∈ nonZeroDiv
     rwa [WithZero.coe_le_coe] at this
 
 end NoetherianDimLEOne
-
-/--
-Variation of `ord_mul` where the user has to show the first input is a non
-zero divisor rather than the second.
--/
-lemma ord_mul' (R : Type u_1) [CommRing R] {a b : R} (ha : a ∈ nonZeroDivisors R) :
-    ord R (a * b) = ord R a + ord R b := by
-  rw [mul_comm, ord_mul R ha, add_comm]
 
 /--
 For `x : R` a non zero divisor, `ord R (x^n) = n • ord R x`.
