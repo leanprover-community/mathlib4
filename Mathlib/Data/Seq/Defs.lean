@@ -10,13 +10,13 @@ import Mathlib.Data.Seq.Computation
 # Possibly infinite lists
 
 This file provides `Stream'.Seq α`, a type representing possibly infinite lists (referred here as
-sequences). It is encoded as an infinite stream of options such that if `f n = none`, then
-`f m = none` for all `m ≥ n`.
+sequences). It is encoded as an infinite stream of options such that if `f[n] = none`, then
+`f[m] = none` for all `m ≥ n`.
 
 ## Main definitions
 
 * `Seq α`: The type of possibly infinite lists (sequences) encoded as streams of options. It is
-  encoded as `Stream' (Option α)` such that if `f n = none`, then `f m = none` for all `m ≥ n`.
+  encoded as `Stream' (Option α)` such that if `f[n] = none`, then `f[m] = none` for all `m ≥ n`.
   It has two "constructors": `nil` and `cons`, and a destructor `destruct`.
 * `Seq1 α`: The type of nonempty sequences
 * `Seq.get?`: Extract the nth element of a sequence (if it exists).
@@ -48,11 +48,11 @@ coinductive seq (α : Type u) : Type u
 /-- A stream `s : Option α` is a sequence if `s.get n = none` implies `s.get (n + 1) = none`.
 -/
 def IsSeq {α : Type u} (s : Stream' (Option α)) : Prop :=
-  ∀ {n : ℕ}, s n = none → s (n + 1) = none
+  ∀ {n : ℕ}, s[n] = none → s[n + 1] = none
 
 /-- `Seq α` is the type of possibly infinite lists (referred here as sequences).
-  It is encoded as an infinite stream of options such that if `f n = none`, then
-  `f m = none` for all `m ≥ n`. -/
+  It is encoded as an infinite stream of options such that if `f[n] = none`, then
+  `f[m] = none` for all `m ≥ n`. -/
 def Seq (α : Type u) : Type u :=
   { f : Stream' (Option α) // f.IsSeq }
 
@@ -66,14 +66,14 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 /-- Get the nth element of a sequence (if it exists) -/
 def get? : Seq α → ℕ → Option α :=
-  Subtype.val
+  (fun s n => s.val[n])
 
 @[simp]
-theorem val_eq_get (s : Seq α) (n : ℕ) : s.val n = s.get? n :=
+theorem val_eq_get (s : Seq α) (n : ℕ) : s.val[n] = s.get? n :=
   rfl
 
 @[simp]
-theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
+theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = (f[·]) :=
   rfl
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
@@ -92,7 +92,7 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
 
 @[ext]
 protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
-  Subtype.eq <| funext h
+  Subtype.eq <| Stream'.ext h
 
 /-!
 ### Constructors
@@ -201,7 +201,7 @@ theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   induction' f0 : get? s 0 <;> intro h
   · apply Subtype.eq
-    funext n
+    ext n : 1
     induction' n with n IH
     exacts [f0, s.2 IH]
   · contradiction
@@ -288,7 +288,7 @@ def Corec.f (f : β → Option (α × β)) : Option β → Option α × Option �
 def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => ?_⟩
   rw [Stream'.corec'_eq]
-  change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
+  change (Stream'.corec' (Corec.f f) (Corec.f f (some b)).2)[n] = none
   revert h; generalize some b = o; revert o
   induction' n with n IH <;> intro o
   · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
@@ -306,8 +306,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 @[simp]
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
-  dsimp [corec, destruct, get]
-  rw [show Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 from rfl]
+  dsimp [corec, destruct]
+  rw [show (Stream'.corec' (Corec.f f) (some b))[0] = (Corec.f f (some b)).1 from rfl]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
   obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
@@ -529,7 +529,7 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
 
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
-  obtain ⟨k, e⟩ := M; unfold Stream'.get at e
+  obtain ⟨k, e⟩ := M
   induction' k with k IH generalizing s
   · have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
@@ -541,7 +541,7 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
   cases s with
   | nil => injection e
   | cons b s' =>
-    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' using Subtype.recOn; rfl
+    have h_eq : (cons b s').val[Nat.succ k] = s'.val[k] := by cases s' using Subtype.recOn; rfl
     rw [h_eq] at e
     apply h1 _ _ (Or.inr (IH e))
 
@@ -552,8 +552,8 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
 /-- Embed a list as a sequence -/
 @[coe]
 def ofList (l : List α) : Seq α :=
-  ⟨(l[·]?), fun {n} h => by
-    rw [List.getElem?_eq_none_iff] at h ⊢
+  ⟨.mk (l[·]?), fun {n} h => by
+    rw [get_mk, List.getElem?_eq_none_iff] at h ⊢
     exact Nat.le_succ_of_le h⟩
 
 instance coeList : Coe (List α) (Seq α) :=
@@ -572,7 +572,7 @@ theorem ofList_cons (a : α) (l : List α) : ofList (a::l) = cons a (ofList l) :
   ext1 (_ | n) <;> simp
 
 theorem ofList_injective : Function.Injective (ofList : List α → _) :=
-  fun _ _ h => List.ext_getElem? fun _ => congr_fun (Subtype.ext_iff.1 h) _
+  fun _ _ h => List.ext_getElem? fun i => Seq.ext_iff.1 h i
 
 /-- Embed an infinite stream as a sequence -/
 @[coe]
@@ -623,8 +623,8 @@ def toList (s : Seq α) (h : s.Terminates) : List α :=
   take (length s h) s
 
 /-- Convert a sequence which is known not to terminate into a stream -/
-def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α := fun n =>
-  Option.get _ <| not_terminates_iff.1 h n
+def toStream (s : Seq α) (h : ¬s.Terminates) : Stream' α where
+  get' n := Option.get _ <| not_terminates_iff.1 h n
 
 /-- Convert a sequence into either a list or a stream depending on whether
   it is finite or infinite. (Without decidability of the infiniteness predicate,
@@ -661,8 +661,8 @@ def append (s₁ s₂ : Seq α) : Seq α :=
 def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
     ⟨s.map (Option.map f), fun {n} => by
-      dsimp [Stream'.map, Stream'.get]
-      induction' e : s n with e <;> intro
+      dsimp [Stream'.map]
+      induction' e : s[n] with e <;> intro
       · rw [al e]
         assumption
       · contradiction⟩
@@ -700,7 +700,7 @@ def splitAt : ℕ → Seq α → List α × Seq α
 
 /-- Combine two sequences with a function -/
 def zipWith (f : α → β → γ) (s₁ : Seq α) (s₂ : Seq β) : Seq γ :=
-  ⟨fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
+  ⟨.mk fun n => Option.map₂ f (s₁.get? n) (s₂.get? n), fun {_} hn =>
     Option.map₂_eq_none_iff.2 <| (Option.map₂_eq_none_iff.1 hn).imp s₁.2 s₂.2⟩
 
 /-- Pair two sequences into a sequence of pairs -/
@@ -731,11 +731,11 @@ def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
 /-- Applies `f` to the `n`th element of the sequence, if it exists, replacing that element
 with the result. -/
 def update (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
-  val := Function.update s.val n ((s.val n).map f)
+  val := .mk <| Function.update (s.get? ·) n ((s.get? n).map f)
   property := by
-    have (i : ℕ) : Function.update s.val n ((s.get? n).map f) i = none ↔ s.get? i = none := by
+    have (i : ℕ) : Function.update (s.get? ·) n ((s.get? n).map f) i = none ↔ s.get? i = none := by
       by_cases hi : i = n <;> simp [Function.update, hi]
-    simp only [IsSeq, val_eq_get, this]
+    simp only [IsSeq, this, get_mk]
     exact @s.prop
 
 /-- Sets the value of sequence `s` at index `n` to `a`. If the `n`th element does not exist

@@ -451,7 +451,7 @@ theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
   (mem_cons_iff _ _).2 (Or.inl rfl)
 
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
-  intro h; have := h; obtain ⟨n, e⟩ := h; revert s; simp only [Stream'.get]
+  intro h; have := h; obtain ⟨n, e⟩ := h; revert s
   induction' n with n IH <;> intro s <;> induction' s using WSeq.recOn with x s s <;>
     simp <;> intro m e <;>
     injections

@@ -135,10 +135,13 @@ For example, let `(v : ℚ) := 3.4`. The process goes as follows:
 - `stream v 2 = some ⟨⌊0.5⁻¹⌋, 0.5⁻¹ - ⌊0.5⁻¹⌋⟩ = some ⟨⌊2⌋, 2 - ⌊2⌋⟩ = some ⟨2, 0⟩`
 - `stream v n = none`, for `n ≥ 3`
 -/
-protected def stream (v : K) : Stream' <| Option (IntFractPair K)
+protected def stream (v : K) : Stream' <| Option (IntFractPair K) where
+  get'
+where
+  get'
   | 0 => some (IntFractPair.of v)
   | n + 1 =>
-    (IntFractPair.stream v n).bind fun ap_n =>
+    (get' n).bind fun ap_n =>
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 
 /-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
@@ -146,7 +149,8 @@ position `n`, we also return `none` at `n + 1`.
 -/
 theorem stream_isSeq (v : K) : (IntFractPair.stream v).IsSeq := by
   intro _ hyp
-  simp [IntFractPair.stream, hyp]
+  simp [IntFractPair.stream, IntFractPair.stream.get', hyp]
+  sorry
 
 /--
 Uses `IntFractPair.stream` to create a sequence with head (i.e. `seq1`) of integer and fractional

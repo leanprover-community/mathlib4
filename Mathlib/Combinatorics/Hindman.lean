@@ -231,14 +231,14 @@ theorem FP_drop_subset_FP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : FP (a.dr
     exact _root_.trans (FP.tail _) ih
 
 @[to_additive]
-theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a.get i ∈ FP a := by
+theorem FP.singleton {M} [Semigroup M] (a : Stream' M) (i : ℕ) : a[i] ∈ FP a := by
   induction i generalizing a with
   | zero => exact FP.head _
   | succ i ih => exact FP.tail _ _ (ih _)
 
 @[to_additive]
 theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
-    a.get i * a.get j ∈ FP a := by
+    a[i] * a[j] ∈ FP a := by
   refine FP_drop_subset_FP _ i ?_
   rw [← Stream'.head_drop]
   apply FP.cons
@@ -250,7 +250,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
-    (s.prod fun i => a.get i) ∈ FP a := by
+    (s.prod fun i => a[i]) ∈ FP a := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
   induction s using Finset.eraseInduction with | H s ih => _
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]

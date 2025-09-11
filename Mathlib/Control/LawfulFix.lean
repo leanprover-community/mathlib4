@@ -43,21 +43,21 @@ namespace Fix
 
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
-theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
+theorem approx_mono' {i : ℕ} : (approx f)[i] ≤ (approx f)[succ i] := by
   induction i with
   | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
   | succ _ i_ih => intro; apply f.monotone; apply i_ih
 
-theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
+theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : (approx f)[i] ≤ (approx f)[j] := by
   induction j with
   | zero => cases hij; exact le_rfl
   | succ j ih =>
     cases hij; · exact le_rfl
     exact le_trans (ih ‹_›) (approx_mono' f)
 
-theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx f i a := by
+theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i : ℕ, b ∈ (approx f)[i] a := by
   classical
-  by_cases h₀ : ∃ i : ℕ, (approx f i a).Dom
+  by_cases h₀ : ∃ i : ℕ, ((approx f)[i] a).Dom
   · simp only [Part.fix_def f h₀]
     constructor <;> intro hh
     · exact ⟨_, hh⟩
@@ -78,12 +78,12 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     simp only [dom_iff_mem, not_exists] at h₀
     intro; apply h₀
 
-theorem approx_le_fix (i : ℕ) : approx f i ≤ Part.fix f := fun a b hh ↦ by
+theorem approx_le_fix (i : ℕ) : (approx f)[i] ≤ Part.fix f := fun a b hh ↦ by
   rw [mem_iff f]
   exact ⟨_, hh⟩
 
-theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := by
-  by_cases hh : ∃ i b, b ∈ approx f i x
+theorem exists_fix_le_approx (x : α) : ∃ i : ℕ, Part.fix f x ≤ (approx f)[i] x := by
+  by_cases hh : ∃ i : ℕ, ∃ b, b ∈ (approx f)[i] x
   · rcases hh with ⟨i, b, hb⟩
     exists i
     intro b' h'
@@ -99,14 +99,14 @@ theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := 
 
 /-- The series of approximations of `fix f` (see `approx`) as a `Chain` -/
 def approxChain : Chain ((a : _) → Part <| β a) :=
-  ⟨approx f, approx_mono f⟩
+  ⟨((approx f)[·]), approx_mono f⟩
 
 theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
   simp only [Membership.mem, forall_exists_index]
   rintro i rfl
   apply approx_mono'
 
-theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
+theorem approx_mem_approxChain {i : ℕ} : (approx f)[i] ∈ approxChain f :=
   Stream'.mem_of_get_eq rfl
 
 end Fix
@@ -120,7 +120,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm
   · intro x
     obtain ⟨i, hx⟩ := exists_fix_le_approx f x
-    trans approx f i.succ x
+    trans (approx f)[i.succ] x
     · trans
       · apply hx
       · apply approx_mono' f

@@ -53,7 +53,7 @@ theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Produc
 /-- Given a productive weak sequence, we can collapse all the `think`s to
   produce a sequence. -/
 def toSeq (s : WSeq α) [Productive s] : Seq α :=
-  ⟨fun n => (get? s n).get,
+  ⟨.mk fun n => (get? s n).get,
    fun {n} h => by
     cases e : Computation.get (get? s (n + 1))
     · assumption
@@ -64,7 +64,7 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
     contradiction⟩
 
 theorem toSeq_ofSeq (s : Seq α) : toSeq (ofSeq s) = s := by
-  apply Subtype.eq; funext n
+  apply Subtype.eq; ext n : 1
   dsimp [toSeq]; apply get_eq_of_mem
   rw [get?_ofSeq]; apply ret_mem
 

@@ -101,10 +101,11 @@ theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a 
   induction' f0 : s.1[0] with _ <;> intro h
   · contradiction
   · apply Subtype.eq
-    ext n
+    ext n : 1
     induction' n with n IH
     · injection h with h'
-      rwa [h'] at f0
+      dsimp [pure]
+      rw [f0, h']
     · exact s.2 IH
 
 theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' → s = think s' := by

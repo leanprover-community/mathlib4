@@ -297,13 +297,16 @@ def nextConts (a b : K) (ppred pred : Pair K) : Pair K :=
   ⟨nextNum a b ppred.a pred.a, nextDen a b ppred.b pred.b⟩
 
 /-- Returns the continuants `⟨Aₙ₋₁, Bₙ₋₁⟩` of `g`. -/
-def contsAux (g : GenContFract K) : Stream' (Pair K)
+def contsAux (g : GenContFract K) : Stream' (Pair K) where
+  get'
+where
+  get'
   | 0 => ⟨1, 0⟩
   | 1 => ⟨g.h, 1⟩
   | n + 2 =>
     match g.s.get? n with
-    | none => contsAux g (n + 1)
-    | some gp => nextConts gp.a gp.b (contsAux g n) (contsAux g (n + 1))
+    | none => get' (n + 1)
+    | some gp => nextConts gp.a gp.b (get' n) (get' (n + 1))
 
 /-- Returns the continuants `⟨Aₙ, Bₙ⟩` of `g`. -/
 def conts (g : GenContFract K) : Stream' (Pair K) :=
@@ -318,8 +321,8 @@ def dens (g : GenContFract K) : Stream' K :=
   g.conts.map Pair.b
 
 /-- Returns the convergents `Aₙ / Bₙ` of `g`, where `Aₙ, Bₙ` are the nth continuants of `g`. -/
-def convs (g : GenContFract K) : Stream' K :=
-  fun n : ℕ ↦ g.nums n / g.dens n
+def convs (g : GenContFract K) : Stream' K where
+  get' n := g.nums[n] / g.dens[n]
 
 /--
 Returns the approximation of the fraction described by the given sequence up to a given position n.

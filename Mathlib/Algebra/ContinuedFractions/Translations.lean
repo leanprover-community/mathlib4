@@ -76,65 +76,65 @@ continued fraction.
 
 variable {K : Type*} {g : GenContFract K} {n : ℕ} [DivisionRing K]
 
-theorem nth_cont_eq_succ_nth_contAux : g.conts n = g.contsAux (n + 1) :=
+theorem nth_cont_eq_succ_nth_contAux : g.conts[n] = g.contsAux[n + 1] :=
   rfl
 
-theorem num_eq_conts_a : g.nums n = (g.conts n).a :=
+theorem num_eq_conts_a : g.nums[n] = g.conts[n].a :=
   rfl
 
-theorem den_eq_conts_b : g.dens n = (g.conts n).b :=
+theorem den_eq_conts_b : g.dens[n] = g.conts[n].b :=
   rfl
 
-theorem conv_eq_num_div_den : g.convs n = g.nums n / g.dens n :=
+theorem conv_eq_num_div_den : g.convs[n] = g.nums[n] / g.dens[n] :=
   rfl
 
 theorem conv_eq_conts_a_div_conts_b :
-    g.convs n = (g.conts n).a / (g.conts n).b :=
+    g.convs[n] = g.conts[n].a / g.conts[n].b :=
   rfl
 
-theorem exists_conts_a_of_num {A : K} (nth_num_eq : g.nums n = A) :
-    ∃ conts, g.conts n = conts ∧ conts.a = A := by simpa
+theorem exists_conts_a_of_num {A : K} (nth_num_eq : g.nums[n] = A) :
+    ∃ conts, g.conts[n] = conts ∧ conts.a = A := by simpa
 
-theorem exists_conts_b_of_den {B : K} (nth_denom_eq : g.dens n = B) :
-    ∃ conts, g.conts n = conts ∧ conts.b = B := by simpa
-
-@[simp]
-theorem zeroth_contAux_eq_one_zero : g.contsAux 0 = ⟨1, 0⟩ :=
-  rfl
+theorem exists_conts_b_of_den {B : K} (nth_denom_eq : g.dens[n] = B) :
+    ∃ conts, g.conts[n] = conts ∧ conts.b = B := by simpa
 
 @[simp]
-theorem first_contAux_eq_h_one : g.contsAux 1 = ⟨g.h, 1⟩ :=
+theorem zeroth_contAux_eq_one_zero : g.contsAux[0] = ⟨1, 0⟩ :=
   rfl
 
 @[simp]
-theorem zeroth_cont_eq_h_one : g.conts 0 = ⟨g.h, 1⟩ :=
+theorem first_contAux_eq_h_one : g.contsAux[1] = ⟨g.h, 1⟩ :=
   rfl
 
 @[simp]
-theorem zeroth_num_eq_h : g.nums 0 = g.h :=
+theorem zeroth_cont_eq_h_one : g.conts[0] = ⟨g.h, 1⟩ :=
   rfl
 
 @[simp]
-theorem zeroth_den_eq_one : g.dens 0 = 1 :=
+theorem zeroth_num_eq_h : g.nums[0] = g.h :=
   rfl
 
 @[simp]
-theorem zeroth_conv_eq_h : g.convs 0 = g.h := by
+theorem zeroth_den_eq_one : g.dens[0] = 1 :=
+  rfl
+
+@[simp]
+theorem zeroth_conv_eq_h : g.convs[0] = g.h := by
   simp [conv_eq_num_div_den, num_eq_conts_a, den_eq_conts_b, div_one]
 
 theorem second_contAux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.contsAux 2 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
-  simp [zeroth_s_eq, contsAux, nextConts, nextDen, nextNum]
+    g.contsAux[2] = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
+  simp [zeroth_s_eq, contsAux, contsAux.get', nextConts, nextDen, nextNum]
 
 theorem first_cont_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.conts 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
+    g.conts[1] = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
   simp [nth_cont_eq_succ_nth_contAux, second_contAux_eq zeroth_s_eq]
 
 theorem first_num_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.nums 1 = gp.b * g.h + gp.a := by simp [num_eq_conts_a, first_cont_eq zeroth_s_eq]
+    g.nums[1] = gp.b * g.h + gp.a := by simp [num_eq_conts_a, first_cont_eq zeroth_s_eq]
 
 theorem first_den_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
-    g.dens 1 = gp.b := by simp [den_eq_conts_b, first_cont_eq zeroth_s_eq]
+    g.dens[1] = gp.b := by simp [den_eq_conts_b, first_cont_eq zeroth_s_eq]
 
 @[simp]
 theorem zeroth_conv'Aux_eq_zero {s : Stream'.Seq <| Pair K} :
