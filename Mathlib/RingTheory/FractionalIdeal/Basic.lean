@@ -622,13 +622,17 @@ variable {S P}
 
 section Order
 
-theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' + I ≤ J' + J :=
-  sup_le_sup_left hIJ J'
+instance : AddLeftMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := sup_le_sup_left hIJ _
 
-theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' * I ≤ J' * J :=
-  mul_le.mpr fun _ hk _ hj => mul_mem_mul hk (hIJ hj)
+instance : AddRightMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := sup_le_sup_right hIJ _
+
+instance : MulLeftMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul hk (hIJ hj)
+
+instance : MulRightMono (FractionalIdeal S P) where
+  elim _ _ _ hIJ := mul_le.2 fun _ hk _ hj ↦ mul_mem_mul (hIJ hk) hj
 
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I := by
   convert mul_left_mono I hI
