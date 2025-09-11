@@ -437,7 +437,7 @@ the individual limits on objects. -/
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
   NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
 
-/-- `limitIsoFlipCompLim` is natural in `F`. -/
+/-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
 @[simps!]
 def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
     lim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj lim :=
@@ -445,8 +445,7 @@ def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
     ext k
     apply limit_obj_ext
     intro j
-    simp [comp_evaluation, ← NatTrans.comp_app (limMap η)]
-  ).symm
+    simp [comp_evaluation, ← NatTrans.comp_app (limMap η)]).symm
 
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
@@ -455,7 +454,7 @@ def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.fli
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 
-/-- `limitFlipIsoCompLim` is natural in `F`. -/
+/-- `limitFlipIsoCompLim` is natural with respect to diagrams. -/
 @[simps!]
 def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
     flipFunctor K J C ⋙ lim ≅ (whiskeringRight _ _ _).obj lim :=
@@ -479,15 +478,15 @@ the individual colimits on objects. -/
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
   NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
 
-/-- `colimitIsoFlipCompColim` is natural in `F`. -/
+/-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
 @[simps!]
 def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
     colim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj colim :=
-  (NatIso.ofComponents (colimitIsoFlipCompColim) fun {F G} η ↦ by
+  NatIso.ofComponents colimitIsoFlipCompColim fun {F G} η ↦ by
     ext k
     apply colimit_obj_ext
     intro j
-    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap η)])
+    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap η)]
 
 /-- A variant of `colimitIsoFlipCompColim` where the arguments of `F` are flipped. -/
 @[simps!]
@@ -496,15 +495,15 @@ def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colim
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
 
-/-- `colimitFlipIsoCompColim` is natural in `F`. -/
+/-- `colimitFlipIsoCompColim` is natural with respect to diagrams. -/
 @[simps!]
 def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
     flipFunctor K J C ⋙ colim ≅ (whiskeringRight _ _ _).obj colim :=
-  (NatIso.ofComponents (colimitFlipIsoCompColim) fun {F G} η ↦ by
+  NatIso.ofComponents colimitFlipIsoCompColim fun {F G} η ↦ by
     ext k
     apply colimit_obj_ext
     intro j
-    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap _)])
+    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap _)]
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its colimit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ colim`.
 Note that this does not require `K` to be small.
