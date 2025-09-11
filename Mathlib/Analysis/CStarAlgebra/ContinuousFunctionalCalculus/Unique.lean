@@ -373,7 +373,6 @@ instance NNReal.instContinuousMapZero.UniqueHom
         continuous_toFun := continuous_coe.subtype_map (by simp [s'])
         continuous_invFun := continuous_real_toNNReal.subtype_map (by simp [s']) }
     have : Fact (0 ∈ s') := ⟨0, Fact.out, coe_zero⟩
-    --let _inst₁ : Zero s' := ⟨0, ⟨0, h0 ▸ Subtype.property (0 : s), coe_zero⟩⟩
     have e0 : e 0 = 0 := by ext; simp [e]; rfl
     have e0' : e.symm 0 = 0 := by
       simpa only [Homeomorph.symm_apply_apply] using congr(e.symm $(e0)).symm
