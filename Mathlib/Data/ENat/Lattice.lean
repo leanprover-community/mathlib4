@@ -252,16 +252,21 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i 
   rw [← ENat.sub_sub_cancel ha (h _)]
   exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
 
-lemma withBot_coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℕ∞) :
-    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot ℕ∞) := by
-  rcases hs with ⟨j, hj⟩
-  have : Nonempty ι := Nonempty.intro j
-  refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
-    iSup_le_iff.mpr (fun i ↦ ?_)) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
-      fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
-  by_cases h : i ∈ s
-  · simpa only [iSup_pos h] using by apply le_biSup _ h
-  · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
+lemma withBot_coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
+    {α : Type*} [CompleteLattice α] (f : ι → α) :
+    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
+  have : Nonempty s := nonempty_subtype.mpr hs
+  obtain ⟨j, hj⟩ := id hs
+  refine le_antisymm ?_ (csSup_le ⟨_, j, rfl⟩ ?_)
+  · rw [← iSup_subtype'', WithBot.coe_iSup (OrderTop.bddAbove _)]
+    refine csSup_le ⟨_, ⟨j, hj⟩, rfl⟩ ?_
+    rintro _ ⟨i, rfl⟩
+    exact le_csSup (OrderTop.bddAbove _) ⟨i, by simp⟩
+  · rintro _ ⟨i, rfl⟩
+    by_cases h : i ∈ s
+    · simp only [ciSup_pos h, WithBot.coe_le_coe]
+      exact le_iSup₂_of_le i h le_rfl
+    · simpa only [ciSup_neg h, WithBot.sSup_empty] using bot_le
 
 lemma withBot_coe_biInf {ι : Type*} {s : Set ι} (f : ι → ℕ∞) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot ℕ∞) := by
