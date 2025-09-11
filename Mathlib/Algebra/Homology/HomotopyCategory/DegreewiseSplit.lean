@@ -20,7 +20,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe v
 

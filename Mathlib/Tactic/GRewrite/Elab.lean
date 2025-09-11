@@ -40,7 +40,7 @@ def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : Tac
 def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
     TacticM Unit := withMainContext do
   -- Note: we cannot execute `replace` inside `Term.withSynthesize`.
-  -- See issues #2711 and #2727.
+  -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let goal ← getMainGoal
   let r ← Term.withSynthesize <| withMainContext do
     let e ← elabTerm stx none true

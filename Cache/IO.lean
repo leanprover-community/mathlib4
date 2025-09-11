@@ -484,7 +484,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       IO.println s!"Searching directory {folder} for .lean files"
       if ← folder.pathExists then
         -- (2.) provided "module name" of an existing folder: walk dir
-        -- TODO: will be implemented in #21838
+        -- TODO: will be implemented in https://github.com/leanprover-community/mathlib4/issues/21838
         return .error "Entering a part of a module name \
           (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
           file `Mathlib/Data.lean` exists) is not supported yet!"

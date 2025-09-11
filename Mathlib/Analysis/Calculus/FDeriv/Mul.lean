@@ -753,7 +753,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         f' l[i] <• ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
-  -- After #19108, we have to be optimistic with `:)`s; otherwise Lean decides it need to find
+  -- After https://github.com/leanprover-community/mathlib4/issues/19108, we have to be optimistic with `:)`s; otherwise Lean decides it need to find
   -- `NormedAddCommGroup (List 𝔸)` which is nonsense.
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
     (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (List.getElem_mem ..)) :) ?_

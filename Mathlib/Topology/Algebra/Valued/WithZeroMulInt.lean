@@ -21,7 +21,7 @@ open scoped Topology
 namespace Valued
 variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
 
--- TODO: use ValuativeRel after #26833
+-- TODO: use ValuativeRel after https://github.com/leanprover-community/mathlib4/issues/26833
 lemma tendsto_zero_pow_of_v_lt_one [MulArchimedean Γ₀] [Valued R Γ₀] {x : R} (hx : v x < 1) :
     Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
   simp only [(hasBasis_nhds_zero _ _).tendsto_right_iff, mem_setOf_eq, map_pow, eventually_atTop,
