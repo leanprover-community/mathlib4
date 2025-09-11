@@ -29,7 +29,12 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc
+  { /-
+    #adapation_note nightly-2025-09-11
+    The API for docstrings was changed in https://github.com/leanprover/lean4/pull/10307
+    I have added the `true` flag here without understanding what it means.
+    -/
+    docString? := newDoc.map (·, true)
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
@@ -55,6 +60,12 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
+    /-
+    #adapation_note nightly-2025-09-11
+    The API for docstrings was changed in https://github.com/leanprover/lean4/pull/10307
+    I have added the `Syntax.missing` here without understanding what it means.
+    -/
+    binders := Syntax.missing
     kind := if d.isDef then DefKind.def else DefKind.theorem
     levelParams := d.levelParams
     modifiers := mods
