@@ -115,14 +115,14 @@ namespace Polynomial.Chebyshev
 open Polynomial
 open Real
 
-private theorem node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) :
+private lemma node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) :
   j * π / n ∈ Set.Icc 0 π := by
   constructor
   · positivity
   · calc j * π / n ≤ n * π / n := by gcongr
     _ = π := by rw [mul_div_assoc, mul_div_cancel₀]; convert hn; exact Nat.cast_eq_zero
 
-private theorem node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0 n) :
+private lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0 n) :
   (-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)) > 0 := by
   by_cases n = 0
   case pos hn =>
@@ -178,7 +178,7 @@ private theorem node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc
   replace hj₂ := Finset.mem_Ioc.mp hj₂
   linarith
 
-private theorem convex_combination {n : ℕ} (hn : n ≠ 0)
+private lemma convex_combination {n : ℕ} (hn : n ≠ 0)
   {P : ℝ[X]} (hP : P.degree = n) :
   ∃ (c : ℕ → ℝ),
     (∀ i ∈ Finset.Icc 0 n, 0 < c i) ∧
@@ -227,7 +227,7 @@ theorem bddAbove_poly_interval (P : ℝ[X]) :
   change BddAbove ((fun x => abs (P.eval x)) '' Set.Icc (-1) 1)
   exact IsCompact.bddAbove_image hK hcont
 
-private theorem pointwise_bound (P : ℝ[X]) (n i : ℕ) :
+private lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
   (-1)^i * P.eval (cos (i * π / n)) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
   suffices abs (P.eval (cos (i * π / n))) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } by
     cases neg_one_pow_eq_or ℝ i with

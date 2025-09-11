@@ -13,10 +13,6 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
--- FIX ME:
--- some of the results are available here:
--- Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
-
 /-!
 # Chebyshev polynomials over the reals
 
@@ -28,8 +24,8 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 ## TODO
 
-* Prove orthonormality with respect to appropriate inner product.
-* Prove minimax properties of Chebyshev polynomials.
+* Prove orthogonality with respect to appropriate inner product.
+* Prove more minimax properties of Chebyshev polynomials.
 -/
 
 namespace Polynomial
