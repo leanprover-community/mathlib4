@@ -14,11 +14,11 @@ We define a type class `Finset.HasAntidiagonal A` which contains a function
 `antidiagonal : A → Finset (A × A)` such that `antidiagonal n`
 is the finset of all pairs adding to `n`, as witnessed by `mem_antidiagonal`.
 
-When `A` is a canonically ordered add monoid with locally finite order
+When `A` is a canonically ordered additive monoid with locally finite order
 this typeclass can be instantiated with `Finset.antidiagonalOfLocallyFinite`.
 This applies in particular when `A` is `ℕ`, more generally or `σ →₀ ℕ`,
 or even `ι →₀ A`  under the additional assumption `OrderedSub A`
-that make it a canonically ordered add monoid.
+that make it a canonically ordered additive monoid.
 (In fact, we would just need an `AddMonoid` with a compatible order,
 finite `Iic`, such that if `a + b = n`, then `a, b ≤ n`,
 and any finiteness condition would be OK.)
@@ -181,13 +181,12 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rintro ⟨n, ⟨k, l⟩, h⟩
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
-  right_inv _ := rfl
 
 variable {A : Type*}
   [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
 
-/-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.
+/-- In a canonically ordered additive monoid, the antidiagonal can be construct by filtering.
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/
 abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where

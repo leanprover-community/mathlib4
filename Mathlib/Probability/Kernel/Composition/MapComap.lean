@@ -83,7 +83,7 @@ lemma map_zero : Kernel.map (0 : Kernel α β) f = 0 := by
   ext
   by_cases hf : Measurable f
   · simp [map_apply, hf]
-  · simp [map_of_not_measurable _ hf, map_apply]
+  · simp [map_of_not_measurable _ hf]
 
 @[simp]
 lemma map_id (κ : Kernel α β) : map κ id = κ := by

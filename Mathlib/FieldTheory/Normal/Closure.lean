@@ -160,8 +160,6 @@ namespace normalClosure
 noncomputable def algHomEquiv : (K →ₐ[F] normalClosure F K L) ≃ (K →ₐ[F] L) where
   toFun := (normalClosure F K L).val.comp
   invFun f := f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[stacks 0BMG "(1) normality."]
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by
@@ -264,10 +262,10 @@ noncomputable def closureOperator : ClosureOperator (IntermediateField F L) wher
 variable {K : IntermediateField F L} {F L}
 
 lemma normal_iff_normalClosure_eq : Normal F K ↔ normalClosure F K L = K :=
-⟨@normalClosure_of_normal (K := K), fun h ↦ h ▸ normalClosure.normal F K L⟩
+  ⟨@normalClosure_of_normal (K := K), fun h ↦ h ▸ normalClosure.normal F K L⟩
 
 lemma normal_iff_normalClosure_le : Normal F K ↔ normalClosure F K L ≤ K :=
-normal_iff_normalClosure_eq.trans (le_normalClosure K).le_iff_eq.symm
+  normal_iff_normalClosure_eq.trans (le_normalClosure K).ge_iff_eq'.symm
 
 lemma normal_iff_forall_fieldRange_le : Normal F K ↔ ∀ σ : K →ₐ[F] L, σ.fieldRange ≤ K := by
   rw [normal_iff_normalClosure_le, normalClosure_def, iSup_le_iff]

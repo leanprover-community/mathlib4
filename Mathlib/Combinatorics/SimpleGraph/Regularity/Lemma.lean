@@ -131,16 +131,16 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   -- We gather a few numerical facts.
   have hεl' : 100 ≤ 4 ^ #P.parts * ε ^ 5 :=
     (hundred_lt_pow_initialBound_mul hε l).le.trans
-      (mul_le_mul_of_nonneg_right (pow_right_mono₀ (by norm_num) hP₂) <| by positivity)
+      (mul_le_mul_of_nonneg_right (pow_right_mono₀ (by simp) hP₂) <| by positivity)
   have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
-    rw [div_mul_eq_mul_div, div_le_iff₀ (show (0 : ℝ) < 4 by norm_num)] at hi
+    rw [div_mul_eq_mul_div, div_le_iff₀ (show (0 : ℝ) < 4 by simp)] at hi
     norm_num at hi
     rwa [le_div_iff₀' (pow_pos hε _)]
   have hsize : #P.parts ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : #P.parts * 16 ^ #P.parts ≤ card α :=
-    (Nat.mul_le_mul hsize (Nat.pow_le_pow_right (by norm_num) hsize)).trans hα
+    (Nat.mul_le_mul hsize (Nat.pow_le_pow_right (by simp) hsize)).trans hα
   -- We return the increment equipartition of `P`, which has energy `≥ ε ^ 5 / 4 * (i + 1)`.
   refine ⟨increment hP₁ G ε, increment_isEquipartition hP₁ G ε, ?_, ?_, Or.inr <| le_trans ?_ <|
     energy_increment hP₁ ((seven_le_initialBound ε l).trans hP₂) hεl' hPα huniform hε.le hε₁⟩
@@ -149,4 +149,4 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   · rw [card_increment hPα huniform, iterate_succ_apply']
     exact stepBound_mono hP₃
   · rw [Nat.cast_succ, mul_add, mul_one]
-    exact add_le_add_right hP₄ _
+    gcongr

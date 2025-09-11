@@ -12,7 +12,7 @@ To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we r
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- An exception in the `SimplexAlgorithmM` monad. -/
 inductive SimplexAlgorithmException
@@ -67,7 +67,7 @@ Chooses an entering variable: among the variables with a positive coefficient in
 function, the one with the smallest index (in the initial indexing).
 -/
 def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
-  let mut enterIdxOpt : Option Nat := .none -- index of entering variable in the `free` array
+  let mut enterIdxOpt : Option Nat := none -- index of entering variable in the `free` array
   let mut minIdx := 0
   for i in [:(← get).free.size - 1] do
     if (← get).mat[(0, i)]! > 0 &&
@@ -77,15 +77,15 @@ def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
 
   /- If there is no such variable the solution does not exist for sure. -/
   match enterIdxOpt with
-  | .none => throwThe SimplexAlgorithmException SimplexAlgorithmException.infeasible
-  | .some enterIdx => return enterIdx
+  | none => throwThe SimplexAlgorithmException SimplexAlgorithmException.infeasible
+  | some enterIdx => return enterIdx
 
 /--
 Chooses an exiting variable: the variable imposing the strictest limit on the increase of the
 entering variable, breaking ties by choosing the variable with smallest index.
 -/
 def chooseExitingVar (enterIdx : Nat) : SimplexAlgorithmM matType Nat := do
-  let mut exitIdxOpt : Option Nat := .none -- index of entering variable in the `basic` array
+  let mut exitIdxOpt : Option Nat := none -- index of entering variable in the `basic` array
   let mut minCoef := 0
   let mut minIdx := 0
   for i in [1:(← get).basic.size] do
@@ -120,4 +120,4 @@ def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
     let ⟨exitIdx, enterIdx⟩ ← choosePivots
     doPivotOperation exitIdx enterIdx
 
-end Linarith.SimplexAlgorithm
+end Mathlib.Tactic.Linarith.SimplexAlgorithm
