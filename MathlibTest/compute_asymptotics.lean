@@ -565,3 +565,9 @@ example :
   g =o[atTop] f := by
   simp only
   compute_asymptotics
+
+example :
+  let f := fun (x : ℝ) ↦ x;
+  Tendsto f atTop atTop := by
+  compute_limit (fun x ↦ x) at atTop with h
+  exact h

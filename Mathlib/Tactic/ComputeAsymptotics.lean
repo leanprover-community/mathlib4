@@ -296,4 +296,15 @@ elab "compute_asymptotics" : tactic =>
     | _ =>
       throwError "unsupported goal"
 
+elab (name := computeLimit)
+    "compute_limit " f:(term) " at " source:(term) " with " name:(ident) : tactic => do
+  focus do
+  withMainContext do
+    let f : Q(ℝ → ℝ) ← Term.elabTerm f q(ℝ → ℝ)
+    let source : Q(Filter ℝ) ← Term.elabTerm source q(Filter ℝ)
+    let ⟨limit, h_tendsto⟩ ← computeTendsto f source
+    let goalNew ← (← getMainGoal).assert name.getId q(Tendsto $f $source $limit) h_tendsto
+    let (_, goalNew) ← goalNew.intro1P
+    replaceMainGoal [goalNew]
+
 end ComputeAsymptotics
