@@ -31,17 +31,16 @@ if the tensor product `A ⊗[k] AlgebraicClosure k` is reduced.
 open TensorProduct
 
 noncomputable section
-universe u v w
-variable {k : Type u} {A : Type v} [Field k] [Ring A] [Algebra k A]
+variable {k : Type*} {A : Type*} [Field k] [Ring A] [Algebra k A]
 
 /-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
 @[mk_iff]
-class IsGeometricallyReduced (k : Type u) (A : Type v) [Field k] [Ring A] [Algebra k A] : Prop where
+class IsGeometricallyReduced (k : Type*) (A : Type*) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
-instance geometricallyReduced_indep_of_algebraicClosure (k : Type u) (A : Type v) [Field k] [Ring A]
+instance geometricallyReduced_indep_of_algebraicClosure (k : Type*) (A : Type*) [Field k] [Ring A]
     [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
     [h : IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
   isReduced_of_injective
@@ -50,7 +49,7 @@ instance geometricallyReduced_indep_of_algebraicClosure (k : Type u) (A : Type v
     (Module.Flat.rTensor_preserves_injective_linearMap _
       <| EquivLike.injective (IsAlgClosure.equiv k K (AlgebraicClosure k)))
 
-lemma isGeometricallyReduced_of_injective {B : Type w} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
+lemma isGeometricallyReduced_of_injective {B : Type*} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A :=
   ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
@@ -62,7 +61,7 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem FlatBaseChangeIsReduced.of_FG {k : Type u} {A : Type v} {C : Type w} [CommRing A]
+theorem FlatBaseChangeIsReduced.of_FG {k : Type*} {A : Type*} {C : Type*} [CommRing A]
     [CommRing C] [CommRing k] [Algebra k A] [Algebra k C] [Module.Flat k C]
     (h : ∀ B : Subalgebra k A, B.FG → IsReduced (C ⊗[k] B)) :
     IsReduced (C ⊗[k] A) := by
