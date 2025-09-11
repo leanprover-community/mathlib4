@@ -65,6 +65,12 @@ variable {ι : Type*}
 noncomputable
 abbrev _root_.WithTop.ut [Nonempty ι] : WithTop ι → ι := WithTop.untopD (Classical.arbitrary ι)
 
+@[simp]
+lemma ut_coe_enat (n : ℕ) : WithTop.ut (n : ℕ∞) = n := rfl
+
+@[simp]
+lemma ut_coe_ennreal (r : ℝ≥0) : WithTop.ut (r : ℝ≥0∞) = r := rfl
+
 variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
@@ -1257,18 +1263,18 @@ section Nat
 
 open Filtration
 
-variable {u : ℕ → Ω → β} {τ π : Ω → WithTop ℕ}
+variable {u : ℕ → Ω → β} {τ π : Ω → ℕ∞}
 
-theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
+theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ∞) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.Ico (τ ω).ut (π ω).ut, (u (i + 1) - u i)) ω := by
   ext ω
   have h_le' : (τ ω).ut ≤ (π ω).ut := by
-    have hτ_top : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ ω) (hle ω)
+    have hτ_top : τ ω ≠ ⊤ := ne_top_of_le_ne_top (mod_cast hπ ω) (hle ω)
     specialize hle ω
     lift τ ω to ℕ using hτ_top with t ht
+    simp only [ne_eq, ENat.toENNReal_eq_top] at hπ
     lift π ω to ℕ using hπ ω with b hb
-    simp only [WithTop.untopD_coe, ge_iff_le]
     exact mod_cast hle
   rw [Finset.sum_Ico_eq_sub _ h_le', Finset.sum_range_sub, Finset.sum_range_sub]
   simp [stoppedValue]
@@ -1277,9 +1283,9 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
   have hπ_top ω : π ω ≠ ⊤ := fun h ↦ by specialize hbdd ω; simp [h] at hbdd
-  have hτ_top ω : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hle ω)
+  have hτ_top ω : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (mod_cast hle ω)
   rw [stoppedValue_sub_eq_sum hle]
-  swap; · intro ω h; specialize hbdd ω; simp [h] at hbdd
+  swap; · intro ω; exact mod_cast hπ_top ω
   ext ω
   simp only [Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
   refine Finset.sum_congr ?_ fun _ _ => rfl
@@ -1288,9 +1294,8 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
-  simp only [WithTop.untopD_coe]
-  simp only [ENat.some_eq_coe, Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_coe, Nat.cast_le, Nat.cast_lt, iff_and_self, and_imp]
+  simp only [WithTop.ut_coe_enat, Nat.cast_le, Nat.cast_lt, iff_and_self, and_imp]
+  simp only [Nat.cast_le] at hbdd
   grind
 
 section AddCommMonoid
@@ -1303,7 +1308,7 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   specialize hbdd ω
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
-  simp only [ENat.some_eq_coe, Nat.cast_le] at hbdd
+  simp only [Nat.cast_le] at hbdd
   simp only [ENat.some_eq_coe, Finset.coe_range, Set.mem_image, Set.mem_Iio, Nat.cast_inj,
     exists_eq_right, gt_iff_lt]
   grind
@@ -1327,7 +1332,7 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
         cases τ ω with
         | top => simp
         | coe t =>
-          simp only [ENat.some_eq_coe, Nat.cast_lt]
+          simp only [Nat.cast_lt]
           norm_cast
       rw [this]
       simp_rw [Set.setOf_or]
