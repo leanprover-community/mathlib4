@@ -55,9 +55,10 @@ variable (F F' : I.Filtration M) {I}
 namespace Ideal.Filtration
 
 theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
-  induction' i with _ ih
-  · simp
-  · rw [pow_succ', mul_smul, add_assoc, add_comm 1, ← add_assoc]
+  induction i with
+  | zero => simp
+  | succ _ ih =>
+    rw [pow_succ', mul_smul, add_assoc, add_comm 1, ← add_assoc]
     exact (smul_mono_right _ ih).trans (F.smul_le _)
 
 theorem pow_smul_le_pow_smul (i j k : ℕ) : I ^ (i + k) • F.N j ≤ I ^ k • F.N (i + j) := by
@@ -185,10 +186,9 @@ theorem Stable.exists_pow_smul_eq (h : F.Stable) : ∃ n₀, ∀ k, F.N (n₀ + 
   obtain ⟨n₀, hn⟩ := h
   use n₀
   intro k
-  induction' k with _ ih
-  · simp
-  · rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]
-    omega
+  induction k with
+  | zero => simp
+  | succ _ ih => rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]; omega
 
 theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
     ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
@@ -209,9 +209,10 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   obtain ⟨n₀, hF⟩ := h
   use n₀
   intro n
-  induction' n with n hn
-  · refine (F.antitone ?_).trans e; simp
-  · rw [add_right_comm, ← hF]
+  induction n with
+  | zero => refine (F.antitone ?_).trans e; simp
+  | succ n hn =>
+    rw [add_right_comm, ← hF]
     · exact (smul_mono_right _ hn).trans (F'.smul_le _)
     simp
 
@@ -307,8 +308,9 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
       -- Porting note: need to add hint for `s`
       (Set.subset_iUnion₂ (s := fun i _ => (single R i '' (N F i : Set M))) i hi).trans
         Submodule.subset_span
-    induction' i with j hj
-    · exact this _ (zero_le _)
+    induction i with
+    | zero => exact this _ (zero_le _)
+    | succ j hj => ?_
     by_cases hj' : j.succ ≤ n₀
     · exact this _ hj'
     simp only [not_le, Nat.lt_succ_iff] at hj'
@@ -401,9 +403,10 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
   · rintro ⟨r, eq⟩
     rw [Submodule.mem_iInf]
     intro i
-    induction' i with i hi
-    · simp
-    · rw [add_comm, pow_add, ← smul_smul, pow_one, ← eq]
+    induction i with
+    | zero => simp
+    | succ i hi =>
+      rw [add_comm, pow_add, ← smul_smul, pow_one, ← eq]
       exact Submodule.smul_mem_smul r.prop hi
 
 theorem Ideal.iInf_pow_smul_eq_bot_of_le_jacobson [IsNoetherianRing R]
