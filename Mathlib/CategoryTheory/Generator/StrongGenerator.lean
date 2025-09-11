@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ExtremalEpi
 import Mathlib.CategoryTheory.Generator.Basic
+import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Strong generators
@@ -19,6 +20,9 @@ says that if `S` is `w`-small, `C` is locally `w`-small and
 has coproducts of size `w`, then `S` is a strong generator iff any
 object of `C` is the target of extremal epimorphism from a coproduct of
 objects in `S`. A similar iff lemma for `IsSeparating` is also obtained.
+
+We also show that if any object in `C` is a colimit of objects in `S`,
+then `S` is a strong generator.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -201,5 +205,46 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     (colimit.isColimit (Discrete.functor (coproductOfSet.obj S X))).whiskerEquivalence
       ((Discrete.equivalence (equivShrink.{w} _))).symm, _,
       hS.extremalEpi_coproductOfSetπ X⟩
+
+section
+
+variable (hS : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J)
+  (p : ColimitPresentation J X), ∀ (j : J), ∃ (G : S), Nonempty (p.diag.obj j ≅ G.1))
+
+include hS
+
+lemma IsSeparating.mk_of_exists_colimitPresentation :
+    IsSeparating S := by
+  intro X Y f g h
+  obtain ⟨J, _, p, hp⟩ := hS X
+  choose t ht using hp
+  let e (j : J) := (ht j).some
+  refine p.isColimit.hom_ext (fun j ↦ ?_)
+  rw [← cancel_epi (e j).inv]
+  simpa only [Category.assoc] using h _ (t j).2 ((e j).inv ≫ p.ι.app j)
+
+lemma IsStrongGenerator.mk_of_exists_colimitPresentation :
+    IsStrongGenerator S := by
+  rw [isStrongGenerator_iff]
+  refine ⟨IsSeparating.mk_of_exists_colimitPresentation hS,
+    fun X Y i _ hi ↦ ?_⟩
+  suffices ∃ (r : Y ⟶ X), r ≫ i = 𝟙 Y by
+    obtain ⟨r, fac⟩ := this
+    exact ⟨r, by simp [← cancel_mono i, fac], fac⟩
+  obtain ⟨J, _, p, hp⟩ := hS Y
+  have (j : J) : ∃ (l : p.diag.obj j ⟶ X), l ≫ i = p.ι.app j := by
+    obtain ⟨G, ⟨e⟩⟩ := hp j
+    obtain ⟨l, hl⟩ := hi G (e.inv ≫ p.ι.app j)
+    exact ⟨e.hom ≫ l, by simp [hl]⟩
+  choose φ hφ using this
+  let c : Cocone p.diag := Cocone.mk _
+    { app := φ
+      naturality j₁ j₂ f := by simp [← cancel_mono i, hφ] }
+  refine ⟨p.isColimit.desc c, p.isColimit.hom_ext (fun j ↦ ?_)⟩
+  have := p.isColimit.fac c j
+  dsimp [c] at this ⊢
+  rw [reassoc_of% this, hφ, Category.comp_id]
+
+end
 
 end CategoryTheory
