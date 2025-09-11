@@ -37,12 +37,12 @@ structure IsOka (P : Ideal R → Prop) : Prop where
 
 namespace IsOka
 
-variable {P : Ideal R → Prop}
+variable {P : Ideal R → Prop} (hP : IsOka P)
+include hP
 
 /-- If an ideal is maximal for not satisfying an Oka predicate then it is prime. -/
 @[stacks 05KE]
-theorem isPrime_of_maximal_not (hP : IsOka P) {I : Ideal R}
-    (hI : Maximal (¬P ·) I) : I.IsPrime where
+theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPrime where
   ne_top' hI' := hI.prop (hI' ▸ hP.top)
   mem_or_mem' := by
     by_contra!
@@ -54,11 +54,24 @@ theorem isPrime_of_maximal_not (hP : IsOka P) {I : Ideal R}
 
 /-- If all prime ideals of a ring satisfy an Oka predicate, then all its ideals also satisfy the
 predicate. `hmax` is generally obtained using Zorn's lemma. -/
-theorem forall_of_forall_prime (hP : IsOka P)
-    (hmax : (∃ I, ¬P I) → ∃ I, Maximal (¬P ·) I) (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
+theorem forall_of_forall_prime (hmax : ∀ I, ¬P I → ∃ I, Maximal (¬P ·) I)
+    (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
   by_contra!
-  obtain ⟨I, hI⟩ := hmax this
+  obtain ⟨I, hI⟩ := this
+  obtain ⟨I, hI⟩ := hmax I hI
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not hI)
+
+/-- A variant of `forall_of_forall_prime` using a common technique to obtain `hmax`. -/
+theorem forall_of_forall_prime'
+    (hchain : ∀ C ⊆ {I | ¬P I}, IsChain (· ≤ ·) C → ∀ _ ∈ C, P (sSup C) → ∃ I ∈ C, P I)
+    (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
+  refine forall_of_forall_prime hP (fun I hI ↦ ?_) hprime
+  obtain ⟨M, _, hM⟩ : ∃ M, I ≤ M ∧ Maximal (¬P ·) M := by
+    refine zorn_le_nonempty₀ {I | ¬P I} (fun C hC₁ hC₂ J hJ ↦ ⟨sSup C, ?_, fun _ ↦ le_sSup⟩) I hI
+    intro H
+    obtain ⟨_, h₁, h₂⟩ := hchain C hC₁ hC₂ J hJ H
+    exact hC₁ h₁ h₂
+  exact ⟨M, hM⟩
 
 end IsOka
 
