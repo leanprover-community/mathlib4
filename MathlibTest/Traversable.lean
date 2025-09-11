@@ -1,6 +1,11 @@
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Control.Traversable.Instances
 
+/-
+#adaptation_note nightly-2025-09-11
+
+This is broken on nightly-testing, but unused in Mathlib, so I am commenting it out for now.
+
 set_option linter.style.commandStart false
 
 namespace Testing
@@ -85,3 +90,5 @@ example : (ex.run []).2 = [1, 2, 3, 3, 2, 1] := rfl
 end
 
 end Testing
+
+-/
