@@ -68,13 +68,7 @@ lemma contMDiff_subtype_coe_Icc :
   -- We come back to the definition: we should check that, in each chart, the map is smooth.
   -- There are two charts, and we check things separately in each of them using the
   -- explicit formulas.
-  simp? says
-    simp only [extChartAt, PartialHomeomorph.extend, PartialHomeomorph.refl_partialEquiv,
-      PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe,
-      Icc_chartedSpaceChartAt, PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
-      ModelWithCorners.toPartialEquiv_coe_symm, CompTriple.comp_eq, PartialEquiv.coe_trans,
-      ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe, Function.comp_apply]
+  suffices ContDiffWithinAt ℝ n _ (range ↑(𝓡∂ 1)) _ by simpa
   split_ifs with hz
   · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
       simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
@@ -115,38 +109,28 @@ lemma contMDiffOn_projIcc :
   -- We come back to the definition: we should check that, in each chart, the map is smooth
   -- There are two charts, and we check things separately in each of them using the
   -- explicit formulas.
-  simp? says
-    simp only [extChartAt, PartialHomeomorph.extend, Icc_chartedSpaceChartAt,
-      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-      PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
-      PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-      PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
-      preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
+  suffices ContDiffWithinAt ℝ n _ (Icc x y) z by simpa
   split_ifs with h'z
-  · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace, projIcc] says
-      simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
-        IccLeftChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
-    have : ContDiff ℝ n (fun (w : ℝ) ↦
+  · have : ContDiff ℝ n (fun (w : ℝ) ↦
         (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ w - x)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_left_inj]
+    suffices max x (min y w) - x = w - x by
+      simpa [modelWithCornersEuclideanHalfSpace, IccLeftChart]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
-  · simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace, projIcc] says
-      simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
-        IccRightChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
-    have : ContDiff ℝ n (fun (w : ℝ) ↦
+  · have : ContDiff ℝ n (fun (w : ℝ) ↦
         (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ y - w)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_right_inj]
+    suffices y - max x (min y w) = y - w by
+      simpa [modelWithCornersEuclideanHalfSpace, IccRightChart]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
