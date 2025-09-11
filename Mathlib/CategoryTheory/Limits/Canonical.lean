@@ -53,6 +53,12 @@ when `canonicalCocone F Y` is colimit, i.e. `Y` identifies to the
 colimit of all `F.obj X` for `X : C` and `f : F.obj X ⟶ Y`. -/
 abbrev CanonicalColimit (Y : D) : Type _ := IsColimit (canonicalCocone F Y)
 
+variable {F} in
+lemma CanonicalColimit.hom_ext'
+    {Y : D} (hY : CanonicalColimit F Y) {T : D} {f g : Y ⟶ T}
+    (h : ∀ (X : C) (p : F.obj X ⟶ Y), p ≫ f = p ≫ g) : f = g :=
+  hY.hom_ext (fun _ ↦ h _ _)
+
 end Limits
 
 /-- Given a functor `F : C ⥤ D`, this is the property that an object `Y : D`
@@ -62,10 +68,10 @@ def Functor.isCanonicalColimit : ObjectProperty D :=
   fun Y ↦ Nonempty (CanonicalColimit F Y)
 
 variable {F} in
-lemma Functor.isCanonicalColimit.hom_ext
-    {Y : D} (hY : F.isCanonicalColimit Y)
-    {T : D} {f g : Y ⟶ T}
-    (h : ∀ (X : C) (p : F.obj X ⟶ Y), p ≫ f = p ≫ g) : f = g :=
-  hY.some.hom_ext (fun _ ↦ h _ _)
+/-- When `Y : D` is a canonical colimit relatively to `F`,
+this is a choice of structure `CanonicalColimit F Y`. -/
+noncomputable def Functor.isCanonicalColimit.canonicalColimit
+    {Y : D} (hY : F.isCanonicalColimit Y) :
+    CanonicalColimit F Y := hY.some
 
 end CategoryTheory
