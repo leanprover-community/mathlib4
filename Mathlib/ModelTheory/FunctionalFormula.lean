@@ -91,7 +91,7 @@ def Realize (f : FunctionalFormula T α β) (x : α → M) (y : β → M) : Prop
     intro a b hab
     simpa using hab.realize_formula M (v := Sum.elim x y)) f.toQuotient
 
-/-- A `Formula` corresponding to a `FunctionalFormula`. This is non-unique, so we used the
+/-- A `Formula` corresponding to a `FunctionalFormula`. This is non-unique, so we use the
 axiom of choice to select one. -/
 noncomputable def toFormula (f : FunctionalFormula T α β) : L.Formula (α ⊕ β) := f.1.out.1
 
