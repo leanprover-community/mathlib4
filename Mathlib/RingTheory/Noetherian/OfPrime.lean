@@ -20,14 +20,14 @@ import Mathlib.RingTheory.Ideal.BigOperators
 - [cohen1950]: *Commutative rings with restricted minimum condition*, I. S. Cohen, Theorem 2
 -/
 
-variable {R : Type*}
+variable {R : Type*} [CommRing R]
 
 namespace Ideal
 
 open Set Finset
 
 /-- `Ideal.FG` is an Oka predicate. -/
-theorem isOka_fg [CommRing R] : IsOka (FG (R := R)) where
+theorem isOka_fg : IsOka (FG (R := R)) where
   top := ⟨{1}, by simp⟩
   oka {I a} hsup hcolon := by
     classical
@@ -59,7 +59,7 @@ end Ideal
 open Ideal
 
 /-- If all prime ideals in a commutative ring are finitely generated, so are all other ideals. -/
-theorem IsNoetherianRing.of_prime [CommRing R] (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
+theorem IsNoetherianRing.of_prime (H : ∀ I : Ideal R, I.IsPrime → I.FG) :
     IsNoetherianRing R := by
   refine ⟨isOka_fg.forall_of_forall_prime (fun h ↦ ?_) H⟩
   refine zorn_le₀ { I : Ideal R | ¬I.FG } (fun C hC hC₂ ↦ ?_)
