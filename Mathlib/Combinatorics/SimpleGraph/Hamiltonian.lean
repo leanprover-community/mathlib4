@@ -51,6 +51,11 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
+/-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
+protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
+  elems := p.support.toFinset
+  complete x := List.mem_toFinset.mpr (mem_support hp x)
+
 section
 variable [Fintype α]
 
