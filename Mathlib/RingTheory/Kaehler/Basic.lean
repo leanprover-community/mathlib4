@@ -749,15 +749,16 @@ lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
-    induction' x with r s
-    · simp
-    · obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
+    induction x with
+    | zero => simp
+    | tmul r s =>
+      obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
       induction x using Finsupp.induction_linear
       · simp
       · simp [smul_add, *]
       · simp
-    · rw [map_add]; exact add_mem ‹_› ‹_›
+    | add => rw [map_add]; exact add_mem ‹_› ‹_›
   · convert_to (kerTotal A B).map (Finsupp.linearCombination B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
       congr 1
