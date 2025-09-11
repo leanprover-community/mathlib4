@@ -20,8 +20,8 @@ segment in the disk), and compute its derivative.
 
 ## Main results
 
-* `Complex.IsClosedOn.isExactOn_ball`: **Morera's Theorem**: On a disk, a continuous function whose
-  integrals on rectangles vanish, has primitives.
+* `Complex.IsConservativeOn.isExactOn_ball`: **Morera's Theorem**: On a disk, a continuous function
+  whose integrals on rectangles vanish, has primitives.
 * `DifferentiableOn.isExactOn_ball`: On a disk, a holomorphic function has primitives.
 
 TODO: Extend to holomorphic functions on simply connected domains.
@@ -100,9 +100,9 @@ lemma wedgeIntegral_add_wedgeIntegral_eq (z w : ℂ) (f : ℂ → E) :
     intervalIntegral.integral_symm z.im w.im, smul_neg]
   abel
 
-/-- A function `f` `IsClosedOn` in `U` if, for any rectangle contained in `U`
+/-- A function `f` `IsConservativeOn` in `U` if, for any rectangle contained in `U`
   the integral of `f` over the rectangle is zero. -/
-def IsClosedOn (f : ℂ → E) (U : Set ℂ) : Prop :=
+def IsConservativeOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∀ z w, Rectangle z w ⊆ U → wedgeIntegral z w f = - wedgeIntegral w z f
 
 /-- A function `f` `IsExactOn` in `U` if it is the complex derivative of a function on `U`.
@@ -113,19 +113,19 @@ def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
-theorem _root_.DifferentiableOn.isClosedOn {U : Set ℂ} (hf : DifferentiableOn ℂ f U) :
-    IsClosedOn f U := by
+theorem _root_.DifferentiableOn.IsConservativeOn {U : Set ℂ} (hf : DifferentiableOn ℂ f U) :
+    IsConservativeOn f U := by
   rintro z w hzw
   rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq]
   exact integral_boundary_rect_eq_zero_of_differentiableOn f z w <| hf.mono hzw
 
 variable [CompleteSpace E]
 
-lemma IsExactOn.isClosedOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
-    IsClosedOn f U := by
+lemma IsExactOn.IsConservativeOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
+    IsConservativeOn f U := by
   obtain ⟨g, hg⟩ := hf
   have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
-  apply DifferentiableOn.isClosedOn
+  apply DifferentiableOn.IsConservativeOn
   exact (differentiableOn_congr <| fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
 
 section ContinuousOnBall
@@ -134,9 +134,10 @@ variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
 omit [CompleteSpace E] in
-/-- If a function `f` `IsClosedOn` on a disk of center `c`, then for points `z` in this disk, the
-wedge integral from `c` to `z` is additive under a detour through a nearby point `w`. -/
-lemma IsClosedOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral (hf : IsClosedOn f (ball c r)) :
+/-- If a function `f` `IsConservativeOn` on a disk of center `c`, then for points `z` in this disk,
+the wedge integral from `c` to `z` is additive under a detour through a nearby point `w`. -/
+lemma IsConservativeOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
+    (hf : IsConservativeOn f (ball c r)) :
     ∀ᶠ w in 𝓝 z, wedgeIntegral c w f - wedgeIntegral c z f = wedgeIntegral z w f := by
   refine eventually_nhds_iff_ball.mpr ⟨r - dist z c, by simpa using hz, fun w w_in_z_ball ↦ ?_⟩
   set I₁ :=     ∫ x in c.re..w.re, f (x + c.im * I)
@@ -234,7 +235,7 @@ private lemma hasDerivAt_wedgeIntegral_im_aux :
     _ ≤ ε * ‖w - z‖ := (mul_le_mul_iff_of_pos_left ε_pos).mpr (abs_im_le_norm _)
 
 /-- The `wedgeIntegral` has derivative at `z` equal to `f z`. -/
-theorem IsClosedOn.hasDerivAt_wedgeIntegral (h : IsClosedOn f (ball c r)) :
+theorem IsConservativeOn.hasDerivAt_wedgeIntegral (h : IsConservativeOn f (ball c r)) :
     HasDerivAt (fun w ↦ wedgeIntegral c w f) (f z) z := by
   rw [hasDerivAt_iff_isLittleO]
   calc
@@ -258,13 +259,14 @@ end ContinuousOnBall
 
 /-- **Morera's theorem for a disk** On a disk, a continuous function whose integrals on rectangles
   vanish, has primitives. -/
-theorem IsClosedOn.isExactOn_ball (hf' : ContinuousOn f (ball c r)) (hf : IsClosedOn f (ball c r)) :
+theorem IsConservativeOn.isExactOn_ball (hf' : ContinuousOn f (ball c r))
+    (hf : IsConservativeOn f (ball c r)) :
     IsExactOn f (ball c r) :=
   ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral hf'⟩
 
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
 theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
     IsExactOn f (ball c r) :=
-  hf.isClosedOn.isExactOn_ball hf.continuousOn
+  hf.IsConservativeOn.isExactOn_ball hf.continuousOn
 
 end Complex
