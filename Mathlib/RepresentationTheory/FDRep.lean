@@ -149,13 +149,11 @@ instance : HasForget₂ (FDRep R G) (Rep R G) where
 theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
   ext g v; rfl
 
-instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) := by
-  change PreservesFiniteLimits ((forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G)
-  infer_instance
+instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) :=
+  inferInstanceAs <| PreservesFiniteLimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
 
-instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) := by
-  change PreservesFiniteColimits ((forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G)
-  infer_instance
+instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) :=
+  inferInstanceAs <| PreservesFiniteColimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
 
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FDRep R G) := by infer_instance
@@ -177,14 +175,6 @@ theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [
     finrank k (V ⟶ W) = if Nonempty (V ≅ W) then 1 else 0 :=
   CategoryTheory.finrank_hom_simple_simple k V W
 
-instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
-  dsimp [forget₂, HasForget₂.forget₂]
-  infer_instance
-
-instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
-  dsimp [forget₂, HasForget₂.forget₂]
-  infer_instance
-
 /-- The forgetful functor to `Rep k G` preserves hom-sets and their vector space structure. -/
 def forget₂HomLinearEquiv (X Y : FDRep R G) :
     ((forget₂ (FDRep R G) (Rep R G)).obj X ⟶
@@ -193,6 +183,14 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, f.comm⟩
+
+instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
+
+instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
 
 end FDRep
 
