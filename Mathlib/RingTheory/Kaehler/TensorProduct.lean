@@ -142,11 +142,11 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
       induction b using h.out.inductionOn with
       | zero => rw [map_zero, zero_smul, smul_zero, zero_add, mul_zero, map_zero]
       | tmul =>
-        simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
-          algebraMap_smul, ← map_mul]
-        rw [← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
-          ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq,
-          ← IsScalarTower.toAlgHom_apply R, ← AlgHom.toLinearMap_apply, h.out.lift_eq]
+        simp only [LinearMap.coe_coe, IsScalarTower.coe_toAlgHom', algebraMap_smul, ← map_mul]
+        rw [← IsScalarTower.toAlgHom_apply R, ← LinearMap.coe_semilinearMap (M₃ := B),
+          h.out.lift_eq, ← IsScalarTower.toAlgHom_apply R, ← LinearMap.coe_semilinearMap (M₃ := B),
+          h.out.lift_eq, ← IsScalarTower.toAlgHom_apply R, ← LinearMap.coe_semilinearMap (M₃ := B),
+          h.out.lift_eq]
         simp only [LinearMap.coe_comp, Derivation.coeFn_coe, Function.comp_apply,
           Derivation.leibniz, mk_apply, mulActionBaseChange_smul_tmul, TensorProduct.tmul_add]
       | smul _ _ e =>
@@ -195,7 +195,7 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
       induction y using h.1.inductionOn
       · simp only [map_zero, smul_zero]
-      · simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
+      · simp only [LinearMap.coe_coe, IsScalarTower.coe_toAlgHom',
           derivationTensorProduct_algebraMap, LinearMap.liftBaseChange_tmul,
           LinearMap.coe_restrictScalars, map_D, one_smul]
       · simp only [Derivation.map_smul, LinearMap.map_smul, *, smul_comm x]
@@ -225,7 +225,7 @@ instance isLocalizedModule (p : Submonoid R) [IsLocalization p S]
   (isLocalizedModule_iff_isBaseChange p S _).mpr (isBaseChange R S A B)
 
 instance isLocalizedModule_of_isLocalizedModule (p : Submonoid R) [IsLocalization p S]
-      [IsLocalizedModule p (IsScalarTower.toAlgHom R A B).toLinearMap] :
+      [IsLocalizedModule p (IsScalarTower.toAlgHom R A B : A →ₗ[R] B)] :
     IsLocalizedModule p ((map R S A B).restrictScalars R) :=
   have : IsLocalization (Algebra.algebraMapSubmonoid A p) B :=
     isLocalizedModule_iff_isLocalization.mp inferInstance

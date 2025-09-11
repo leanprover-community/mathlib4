@@ -450,7 +450,7 @@ is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 -/
 @[mk_iff]
 class Algebra.IsPushout : Prop where
-  out : IsBaseChange S (toAlgHom R R' S').toLinearMap
+  out : IsBaseChange S (toAlgHom R R' S' : R' →ₗ[R] S')
 
 /-- The isomorphism `S' ≃ S ⊗[R] R` given `Algebra.IsPushout R S R' S'`. -/
 noncomputable
@@ -579,11 +579,11 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
     [Algebra.IsPushout R S R' S'] :
     Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
-  let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
+  let f : R' →ₗ[R] S' := IsScalarTower.toAlgHom R R' S'
   haveI : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
     rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
-  have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
-      (toAlgHom R R' T').toLinearMap := by
+  have heq : (toAlgHom S S' T' : S' →ₗ[S] T').restrictScalars R ∘ₗ f =
+      (toAlgHom R R' T' : R' →ₗ[R] T') := by
     ext x
     simp [f, ← IsScalarTower.algebraMap_apply]
   rw [isPushout_iff, isPushout_iff, ← heq, IsBaseChange.comp_iff]

@@ -18,7 +18,7 @@ variable [CommSemiring Aₛ] [Algebra A Aₛ] [Algebra R Aₛ] [IsScalarTower R 
 
 variable {S} in
 theorem isLocalizedModule_iff_isLocalization :
-    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap ↔
+    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) ↔
       IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ := by
   rw [isLocalizedModule_iff, isLocalization_iff]
   refine and_congr ?_ (and_congr (forall_congr' fun _ ↦ ?_) (forall₂_congr fun _ _ ↦ ?_))
@@ -28,6 +28,10 @@ theorem isLocalizedModule_iff_isLocalization :
   · simp_rw [Prod.exists, Subtype.exists, Algebra.algebraMapSubmonoid]
     simp [← IsScalarTower.algebraMap_apply, Submonoid.mk_smul, Algebra.smul_def, mul_comm]
   · congr!; simp_rw [Subtype.exists, Algebra.algebraMapSubmonoid]; simp [Algebra.smul_def]
+
+instance [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
+    IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) :=
+  isLocalizedModule_iff_isLocalization.mpr ‹_›
 
 instance [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
     IsLocalizedModule S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap :=
@@ -49,8 +53,8 @@ variable {S A} in
 /-- `IsLocalization.mk'` agrees with `IsLocalizedModule.mk'`. -/
 lemma IsLocalization.mk'_algebraMap_eq_mk' [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ]
     {x : A} {s : S} : IsLocalization.mk' Aₛ x ⟨_, Algebra.mem_algebraMapSubmonoid_of_mem s⟩ =
-      IsLocalizedModule.mk' (IsScalarTower.toAlgHom R A Aₛ).toLinearMap x s := by
-  rw [← IsLocalizedModule.smul_inj (IsScalarTower.toAlgHom R A Aₛ).toLinearMap s,
+      IsLocalizedModule.mk' (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) x s := by
+  rw [← IsLocalizedModule.smul_inj (IsScalarTower.toAlgHom R A Aₛ : A →ₗ[R] Aₛ) s,
     IsLocalizedModule.mk'_cancel', Submonoid.smul_def, ← algebraMap_smul A]
   exact IsLocalization.smul_mk'_self (m := ⟨_, _⟩)
 
