@@ -7,7 +7,8 @@ import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 
 /-! # range of the continuous functional calculus
 
-This file contains results about the range of the continuous functional calculus, and consequences thereof.
+This file contains results about the range of the continuous functional calculus, and
+consequences thereof.
 -/
 
 open Topology
@@ -105,8 +106,8 @@ variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A]
 variable [TopologicalSpace A] [StarModule ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [ContinuousStar A] [IsTopologicalRing A] [T2Space A]
 
-/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction with `star`
-when the base ring is `ℝ`. -/
+/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
+with `star` when the base ring is `ℝ`. -/
 protected theorem Commute.cfc_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
     Commute (cfc f a) b :=
   cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
@@ -116,8 +117,8 @@ protected theorem Commute.cfc_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ
 
 variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
-/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction with `star`
-when the base ring is `ℝ≥0`. -/
+/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
+with `star` when the base ring is `ℝ≥0`. -/
 protected theorem Commute.cfc_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
     Commute (cfc f a) b := by
   by_cases ha : 0 ≤ a
@@ -127,8 +128,8 @@ protected theorem Commute.cfc_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 �
 
 -- can we put this next to `cfc_nnreal_eq_real`?
 omit [StarModule ℝ A] [ContinuousStar A] in
-lemma cfc_real_eq_nnreal (f : ℝ → ℝ) (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x) (ha : 0 ≤ a := by cfc_tac) :
-    cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
+lemma cfc_real_eq_nnreal (f : ℝ → ℝ) (a : A) (hf_nonneg : ∀ x ∈ spectrum ℝ a, 0 ≤ f x)
+    (ha : 0 ≤ a := by cfc_tac) : cfc f a = cfc (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
   rw [cfc_nnreal_eq_real]
   refine cfc_congr fun x hx ↦ ?_
   rw [x.coe_toNNReal (spectrum_nonneg_of_nonneg ha hx), (f x).coe_toNNReal (hf_nonneg x hx)]
@@ -148,7 +149,8 @@ lemma range_cfc_nnreal_eq_image_cfc_real (a : A) (ha : 0 ≤ a) :
 lemma range_cfc_nnreal (a : A) (ha : 0 ≤ a) :
     Set.range (cfc (R := ℝ≥0) · a) = {x | x ∈ StarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   rw [range_cfc_nnreal_eq_image_cfc_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
-    ← range_cfcHom _ ha.isSelfAdjoint, ← range_cfc, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
+    ← range_cfcHom _ ha.isSelfAdjoint, ← range_cfc, Set.inter_comm,
+    ← Set.image_preimage_eq_inter_range]
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfc_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
   simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_image] at hf ⊢
@@ -184,24 +186,15 @@ variable [ContinuousConstSMul 𝕜 A] [StarModule 𝕜 A] [IsTopologicalRing A] 
 open NonUnitalStarAlgebra
 
 -- `Topology.ContinuousMap.StoneWeierstrass`
-lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [Zero s] (h0 : (0 : s) = (0 : 𝕜))
-    [CompactSpace s] : elemental 𝕜 (ContinuousMapZero.id h0) = ⊤ :=
+lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜} [Zero s]
+    (h0 : (0 : s) = (0 : 𝕜)) [CompactSpace s] :
+    elemental 𝕜 (ContinuousMapZero.id h0) = ⊤ :=
   SetLike.ext'_iff.mpr (adjoin_id_dense h0).closure_eq
-
----- REMOVE ME
--- missing lemma
-lemma NonUnitalStarAlgHom.range_eq_map_top {F R A B : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A]
-    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [StarRing A] [StarModule R A]
-    [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
-    [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B] (φ : F) :
-    NonUnitalStarAlgHom.range φ = NonUnitalStarSubalgebra.map φ ⊤ := by
-  aesop
-
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elemental 𝕜 a := by
-  rw [NonUnitalStarAlgHom.range_eq_map_top, ← ContinuousMapZero.elemental_eq_top rfl,
+  rw [← NonUnitalStarAlgebra.map_top, ← ContinuousMapZero.elemental_eq_top rfl,
     NonUnitalStarAlgebra.elemental, ← NonUnitalStarSubalgebra.topologicalClosure_map _
     (cfcₙHom_isClosedEmbedding ha (R := 𝕜)).isClosedMap (cfcₙHom_continuous ha),
     NonUnitalStarAlgHom.map_adjoin]
@@ -237,8 +230,8 @@ protected theorem IsSelfAdjoint.commute_cfcₙHom {a b : A} (ha : p a)
 
 /-- An element commutes with `cfcₙ f a` if it commutes with both `a` and `star a`.
 
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't require
-the `Commute (star a) b` hypothesis. -/
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
+require the `Commute (star a) b` hypothesis. -/
 protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
     (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
     Commute (cfcₙ f a) b :=
@@ -247,8 +240,8 @@ protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
 
 /-- For `a` selfadjoint, an element commutes with `cfcₙ f a` if it commutes with `a`.
 
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't require
-the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfcₙ f a = 0`). -/
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
+require the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfcₙ f a = 0`). -/
 protected theorem IsSelfAdjoint.commute_cfcₙ {a b : A}
     (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
     Commute (cfcₙ f a) b :=
@@ -257,12 +250,13 @@ protected theorem IsSelfAdjoint.commute_cfcₙ {a b : A}
 end RCLike
 
 open scoped NNReal
-variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
-variable [TopologicalSpace A] [StarModule ℝ A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [ContinuousStar A] [IsTopologicalRing A] [T2Space A] [ContinuousConstSMul ℝ A]
+variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A]
+  [SMulCommClass ℝ A A] [TopologicalSpace A] [StarModule ℝ A]
+  [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [ContinuousStar A]
+  [IsTopologicalRing A] [T2Space A] [ContinuousConstSMul ℝ A]
 
-/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any interaction with `star`
-when the base ring is `ℝ`. -/
+/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
+interaction with `star` when the base ring is `ℝ`. -/
 protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
     Commute (cfcₙ f a) b :=
   cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
@@ -272,8 +266,8 @@ protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → 
 
 variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
-/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any interaction with `star`
-when the base ring is `ℝ≥0`. -/
+/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
+interaction with `star` when the base ring is `ℝ≥0`. -/
 protected theorem Commute.cfcₙ_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
     Commute (cfcₙ f a) b := by
   by_cases ha : 0 ≤ a
@@ -288,11 +282,12 @@ lemma cfcₙ_real_eq_nnreal (f : ℝ → ℝ) (a : A) (hf_nonneg : ∀ x ∈ qua
     cfcₙ f a = cfcₙ (fun x : ℝ≥0 ↦ (f x).toNNReal) a := by
   rw [cfcₙ_nnreal_eq_real]
   refine cfcₙ_congr fun x hx ↦ ?_
-  rw [x.coe_toNNReal (quasispectrum_nonneg_of_nonneg _ ha _ hx), (f x).coe_toNNReal (hf_nonneg x hx)]
+  rw [x.coe_toNNReal (quasispectrum_nonneg_of_nonneg _ ha _ hx),
+    (f x).coe_toNNReal (hf_nonneg x hx)]
 
 omit [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A] in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :
-    Set.range (cfcₙ (R := ℝ≥0) · a) = (cfcₙ (R := ℝ) · a) '' {f | ∀ x ∈ quasispectrum ℝ a, 0 ≤ f x}:= by
+    Set.range (cfcₙ (R := ℝ≥0) · a) = (cfcₙ · a) '' {f | ∀ x ∈ quasispectrum ℝ a, 0 ≤ f x} := by
   ext
   constructor
   · rintro ⟨f, rfl⟩
@@ -305,7 +300,8 @@ lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :
 lemma range_cfcₙ_nnreal (a : A) (ha : 0 ≤ a) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
   rw [range_cfcₙ_nnreal_eq_image_cfcₙ_real a ha, Set.setOf_and, SetLike.setOf_mem_eq,
-    ← range_cfcₙHom _ ha.isSelfAdjoint, ← range_cfcₙ, Set.inter_comm, ← Set.image_preimage_eq_inter_range]
+    ← range_cfcₙHom _ ha.isSelfAdjoint, ← range_cfcₙ, Set.inter_comm,
+    ← Set.image_preimage_eq_inter_range]
   refine Set.Subset.antisymm (Set.image_mono (fun _ ↦ cfcₙ_nonneg)) ?_
   rintro _ ⟨f, hf, rfl⟩
   simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq, Set.mem_image] at hf ⊢
@@ -317,3 +313,5 @@ lemma range_cfcₙ_nnreal (a : A) (ha : 0 ≤ a) :
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_continuousOn a h]⟩
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_map_zero a h]⟩
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
+
+end NonUnital
