@@ -243,9 +243,10 @@ The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
 -/
 theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     Δ_[1]^[n] (fun (r : R) ↦ r ^ n) = n ! := by
-  induction' n with n IH
-  · aesop
-  · have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
+  induction n with
+  | zero => aesop
+  | succ n IH =>
+    have : (Δ_[1] fun (r : R) ↦ r ^ (n + 1)) =
       ∑ i ∈ range (n + 1), (n + 1).choose i • fun r ↦ r ^ i := by
       ext x
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
