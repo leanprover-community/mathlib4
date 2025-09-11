@@ -5,7 +5,6 @@ Authors: Vasilii Nesterov
 -/
 import Mathlib.Algebra.Order.Floor.Semifield
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Rify
 
 /-!
