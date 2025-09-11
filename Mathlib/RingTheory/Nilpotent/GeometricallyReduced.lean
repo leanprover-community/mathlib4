@@ -33,16 +33,16 @@ open TensorProduct
 noncomputable section
 variable {k : Type*} {A : Type*} [Field k] [Ring A] [Algebra k A]
 
-/-- The k-algebra A is geometrically reduced iff its basechange to AlgebraicClosure k is reduced -/
+/-- The `k`-algebra `A` is geometrically reduced iff its base change to `AlgebraicClosure k` is
+  reduced -/
 @[mk_iff]
 class IsGeometricallyReduced (k : Type*) (A : Type*) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
-instance geometricallyReduced_indep_of_algebraicClosure (k : Type*) (A : Type*) [Field k] [Ring A]
-    [Algebra k A] (K : Type) [Field K] [Algebra k K] [IsAlgClosure k K]
-    [h : IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
+instance (k : Type*) (A : Type*) [Field k] [Ring A] [Algebra k A] (K : Type) [Field K] [Algebra k K]
+    [IsAlgClosure k K] [IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
   isReduced_of_injective
     (Algebra.TensorProduct.map
       ((↑(IsAlgClosure.equiv k K (AlgebraicClosure k)) : K →ₐ[k] AlgebraicClosure k)) 1)
@@ -72,7 +72,7 @@ theorem FlatBaseChangeIsReduced.of_FG {k : Type*} {A : Type*} {C : Type*} [CommR
       (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) := by
     apply Module.Flat.lTensor_preserves_injective_linearMap
     exact (AlgHom.injective_codRestrict D.val D Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
-  rw [subAlgebra.baseChange, AlgHom.mem_range] at hD
+  rw [Subalgebra.baseChange, AlgHom.mem_range] at hD
   obtain ⟨z, hz⟩ := hD.2
   have h_notReduced : ¬IsReduced (C ⊗[k] D) := by
     rw [isReduced_iff, not_forall]

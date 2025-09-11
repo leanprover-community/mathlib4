@@ -207,9 +207,9 @@ end Ring
 
 open TensorProduct
 
-lemma exists_fg_and_mem_baseChange {k : Type u} {A : Type v} {B : Type w} [CommRing k] [CommRing A]
+lemma exists_fg_and_mem_baseChange {k : Type*} {A : Type*} {B : Type*} [CommRing k] [CommRing A]
     [CommRing B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
-    ∃ C : Subalgebra k B, C.FG ∧ x ∈ subAlgebra.baseChange A C := by
+    ∃ C : Subalgebra k B, C.FG ∧ x ∈ Subalgebra.baseChange A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   classical
   refine ⟨Algebra.adjoin k (S.image fun j ↦ j.2), ?_, ?_⟩
