@@ -207,8 +207,8 @@ end Ring
 
 open TensorProduct
 
-lemma exists_fg_and_mem_baseChange {k : Type*} {A : Type*} {B : Type*} [CommRing k] [CommRing A]
-    [CommRing B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
+lemma exists_fg_and_mem_baseChange {k : Type*} {A : Type*} {B : Type*} [CommSemiring k]
+    [CommSemiring A] [Semiring B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
     ∃ C : Subalgebra k B, C.FG ∧ x ∈ Subalgebra.baseChange A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   classical

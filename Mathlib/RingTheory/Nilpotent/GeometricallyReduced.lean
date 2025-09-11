@@ -36,7 +36,8 @@ variable {k : Type*} {A : Type*} [Field k] [Ring A] [Algebra k A]
 /-- The `k`-algebra `A` is geometrically reduced iff its base change to `AlgebraicClosure k` is
   reduced -/
 @[mk_iff]
-class IsGeometricallyReduced (k : Type*) (A : Type*) [Field k] [Ring A] [Algebra k A] : Prop where
+class IsGeometricallyReduced (k : Type*) (A : Type*) [Field k] [Semiring A] [Algebra k A]
+    : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
@@ -49,7 +50,7 @@ instance (k : Type*) (A : Type*) [Field k] [Ring A] [Algebra k A] (K : Type) [Fi
     (Module.Flat.rTensor_preserves_injective_linearMap _
       <| EquivLike.injective (IsAlgClosure.equiv k K (AlgebraicClosure k)))
 
-lemma isGeometricallyReduced_of_injective {B : Type*} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
+lemma isGeometricallyReduced_of_injective {B : Type*} [Semiring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A :=
   ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
