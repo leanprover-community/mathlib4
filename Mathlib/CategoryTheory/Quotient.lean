@@ -125,17 +125,18 @@ variable {G : Type*} [Groupoid G] (r : HomRel G)
 
 /-- Inverse of a map in the quotient category of a groupoid. -/
 protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
-  Quot.liftOn f (fun f' => Quot.mk _ (inv f')) (fun _ _ con => by
+  Quot.liftOn f (fun f' => Quot.mk _ (Groupoid.inv f')) (fun _ _ con => by
     rcases con with ⟨ _, f, g, _, hfg ⟩
-    have := Quot.sound <| CompClosure.intro (inv g) f g (inv f) hfg
-    simp only [IsIso.hom_inv_id, Category.comp_id, IsIso.inv_hom_id_assoc] at this
-    simp only [IsIso.inv_comp, Category.assoc]
+    have := Quot.sound <| CompClosure.intro (Groupoid.inv g) f g (Groupoid.inv f) hfg
+    simp only [Groupoid.inv_eq_inv, IsIso.hom_inv_id, Category.comp_id,
+      IsIso.inv_hom_id_assoc] at this
+    simp only [Groupoid.inv_eq_inv, IsIso.inv_comp, Category.assoc]
     repeat rw [← comp_mk]
     rw [this])
 
 @[simp]
 theorem inv_mk {X Y : Quotient r} (f : X.as ⟶ Y.as) :
-    Quotient.inv r (Quot.mk _ f) = Quot.mk _ (inv f) :=
+    Quotient.inv r (Quot.mk _ f) = Quot.mk _ (Groupoid.inv f) :=
   rfl
 
 /-- The quotient of a groupoid is a groupoid. -/
