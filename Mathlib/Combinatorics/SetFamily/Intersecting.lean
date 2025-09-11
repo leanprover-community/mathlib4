@@ -13,7 +13,7 @@ This file defines intersecting families and proves their basic properties.
 
 ## Main declarations
 
-* `Set.Intersecting`: Predicate for a set of elements in a generalized boolean algebra to be an
+* `Set.Intersecting`: Predicate for a set of elements in a generalized Boolean algebra to be an
   intersecting family.
 * `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
