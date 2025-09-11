@@ -74,7 +74,7 @@ def subtype (S : L.ElementarySubstructure M) : S ↪ₑ[L] M where
 theorem subtype_apply {S : L.ElementarySubstructure M} {x : S} : subtype S x = x :=
   rfl
 
-theorem subtype_injective (S : L.ElementarySubstructure M): Function.Injective (subtype S) :=
+theorem subtype_injective (S : L.ElementarySubstructure M) : Function.Injective (subtype S) :=
   Subtype.coe_injective
 
 @[simp]

@@ -378,23 +378,11 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     change IsLimit ((F ⋙ (evaluation K C).obj X).mapCone c)
     exact isLimitOfPreserves _ hc⟩⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
-    (H : ∀ k : K, PreservesLimit G (F ⋙ (evaluation K C).obj k : D ⥤ C)) :
-    PreservesLimit G F :=
-  preservesLimit_of_evaluation _ _ H
-
 /-- `F : D ⥤ K ⥤ C` preserves limits of shape `J` if it does for each `k : K`. -/
 lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
     (_ : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfShape J F :=
   ⟨fun {G} => preservesLimit_of_evaluation F G fun _ => PreservesLimitsOfShape.preservesLimit⟩
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitsOfShapeOfEvaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
-    (H : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
-    PreservesLimitsOfShape J F :=
-  preservesLimitsOfShape_of_evaluation _ _ H
 
 /-- `F : D ⥤ K ⥤ C` preserves all limits if it does for each `k : K`. -/
 lemma preservesLimits_of_evaluation (F : D ⥤ K ⥤ C)
@@ -402,12 +390,6 @@ lemma preservesLimits_of_evaluation (F : D ⥤ K ⥤ C)
     PreservesLimitsOfSize.{w', w} F :=
   ⟨fun {L} _ =>
     preservesLimitsOfShape_of_evaluation F L fun _ => PreservesLimitsOfSize.preservesLimitsOfShape⟩
-
-@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
-lemma preservesLimitsOfEvaluation (F : D ⥤ K ⥤ C)
-    (H : ∀ k : K, PreservesLimitsOfSize.{w', w} (F ⋙ (evaluation K C).obj k)) :
-    PreservesLimitsOfSize.{w', w} F :=
-  preservesLimits_of_evaluation _ H
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves limits. -/
 instance preservesLimits_const : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
@@ -427,11 +409,6 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     haveI := H X
     change IsColimit ((F ⋙ (evaluation K C).obj X).mapCocone c)
     exact isColimitOfPreserves _ hc⟩⟩
-
-@[deprecated "No deprecation message was provided."  (since := "2024-11-19")]
-lemma preservesColimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
-    (H : ∀ k, PreservesColimit G (F ⋙ (evaluation K C).obj k)) : PreservesColimit G F :=
-  preservesColimit_of_evaluation _ _ H
 
 /-- `F : D ⥤ K ⥤ C` preserves all colimits of shape `J` if it does for each `k : K`. -/
 lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]

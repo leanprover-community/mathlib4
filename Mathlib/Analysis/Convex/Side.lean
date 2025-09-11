@@ -338,9 +338,9 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   rcases h with ⟨t, ⟨ht0, ht1⟩, rfl⟩
   refine ⟨_, hy, _, hy, ?_⟩
   rcases ht1.lt_or_eq with (ht1' | rfl); swap
-  · rw [lineMap_apply_one]; simp
+  · simp
   rcases ht0.lt_or_eq with (ht0' | rfl); swap
-  · rw [lineMap_apply_zero]; simp
+  · simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
   rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z, vsub_self]
   module

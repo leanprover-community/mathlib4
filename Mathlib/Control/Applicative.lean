@@ -32,7 +32,7 @@ theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α
   simp [functor_norm, Function.comp_def]
 
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
-  ext; simp [functor_norm]
+  simp [functor_norm]
 
 theorem Applicative.ext {F} :
     ∀ {A1 : Applicative F} {A2 : Applicative F} [@LawfulApplicative F A1] [@LawfulApplicative F A2],

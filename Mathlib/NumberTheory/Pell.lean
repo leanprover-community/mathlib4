@@ -38,8 +38,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory*
-   (Section 17.5)][IrelandRosen1990]
+* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
+  [IrelandRosen1990]
 
 ## Tags
 
@@ -375,13 +375,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   · qify [hd₁, hd₂]
     field_simp [hm₀]
     norm_cast
-    conv_rhs =>
-      rw [sq]
-      congr
-      · rw [← h₁]
-      · rw [← h₂]
-    push_cast
-    ring
+    grind
   · qify [hd₂]
     refine div_ne_zero_iff.mpr ⟨?_, hm₀⟩
     exact mod_cast mt sub_eq_zero.mp (mt Rat.eq_iff_mul_eq_mul.mpr hne)
@@ -481,7 +475,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   exact b.prop
 
 /-- The map sending an integer `n` to the `y`-coordinate of `a^n` for a fundamental
-solution `a` is stritcly increasing. -/
+solution `a` is strictly increasing. -/
 theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     StrictMono fun n : ℤ => (a ^ n).y := by
   have H : ∀ n : ℤ, 0 ≤ n → (a ^ n).y < (a ^ (n + 1)).y := by

@@ -97,11 +97,11 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
     have hln' : (permsOfList l).Nodup := nodup_permsOfList hl'
     have hmeml : ∀ {f : Perm α}, f ∈ permsOfList l → f a = a := fun {f} hf =>
       not_not.1 (mt (mem_of_mem_permsOfList hf) (nodup_cons.1 hl).1)
-    rw [permsOfList, List.nodup_append, List.nodup_flatMap, pairwise_iff_getElem]
+    rw [permsOfList, List.nodup_append', List.nodup_flatMap, pairwise_iff_getElem]
     refine ⟨?_, ⟨⟨?_,?_ ⟩, ?_⟩⟩
     · exact hln'
     · exact fun _ _ => hln'.map fun _ _ => mul_left_cancel
-    · intros i j hi hj hij x hx₁ hx₂
+    · intro i j hi hj hij x hx₁ hx₂
       let ⟨f, hf⟩ := List.mem_map.1 hx₁
       let ⟨g, hg⟩ := List.mem_map.1 hx₂
       have hix : x a = l[i] := by
@@ -110,7 +110,7 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
         rw [← hg.2, mul_apply, hmeml hg.1, swap_apply_left]
       have hieqj : i = j := hl'.getElem_inj_iff.1 (hix.symm.trans hiy)
       exact absurd hieqj (_root_.ne_of_lt hij)
-    · intros f hf₁ hf₂
+    · intro f hf₁ hf₂
       let ⟨x, hx, hx'⟩ := List.mem_flatMap.1 hf₂
       let ⟨g, hg⟩ := List.mem_map.1 hx'
       have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
@@ -144,8 +144,6 @@ instance Equiv.instFintype [Fintype α] [Fintype β] : Fintype (α ≃ β) :=
         @Fintype.ofEquiv _ (Perm α) fintypePerm
           (equivCongr (Equiv.refl α) (eα.trans (Eq.recOn h eβ.symm)) : α ≃ α ≃ (α ≃ β))
   else ⟨∅, fun x => False.elim (h (Fintype.card_eq.2 ⟨x.symm⟩))⟩
-
-@[deprecated (since := "2024-11-19")] alias equivFintype := Equiv.instFintype
 
 @[to_additive]
 instance MulEquiv.instFintype

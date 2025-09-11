@@ -82,7 +82,7 @@ theorem taylor_coeff_one : (taylor r f).coeff 1 = f.derivative.eval r := by
 @[simp]
 theorem coeff_taylor_natDegree : (taylor r f).coeff f.natDegree = f.leadingCoeff := by
   by_cases hf : f = 0
-  · rw [hf, map_zero]; rfl
+  · rw [hf, map_zero, coeff_natDegree]
   · rw [taylor_coeff, hasseDeriv_natDegree_eq_C, eval_C]
 
 @[simp]

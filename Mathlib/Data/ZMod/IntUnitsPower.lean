@@ -66,8 +66,7 @@ example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl
 
-@[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) :
-  (r • u).toMul = u.toMul ^ r := rfl
+@[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) : (r • u).toMul = u.toMul ^ r := rfl
 
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change ((n : R) • Additive.ofMul u).toMul = _

@@ -38,7 +38,7 @@ universe u
 
 namespace CategoryTheory
 
-open MonoidalCategory
+open MonoidalCategory Functor
 
 namespace FreeMonoidalCategory
 
@@ -49,7 +49,7 @@ section
 variable (C)
 
 /-- We say an object in the free monoidal category is in normal form if it is of the form
-    `(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
+`(((𝟙_ C) ⊗ X₁) ⊗ X₂) ⊗ ⋯`. -/
 inductive NormalMonoidalObject : Type u
   | unit : NormalMonoidalObject
   | tensor : NormalMonoidalObject → C → NormalMonoidalObject
@@ -110,7 +110,7 @@ section
 open Hom
 
 /-- Auxiliary definition for `normalize`. Here we prove that objects that are related by
-    associators and unitors map to the same normal form. -/
+associators and unitors map to the same normal form. -/
 @[simp]
 def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ normalizeObj' Y)
   | _, _, Hom.id _ => 𝟙 _
@@ -120,7 +120,7 @@ def normalizeMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (normalizeObj' X ⟶ nor
   | _, _, l_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_hom _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
   | _, _, ρ_inv _ => by dsimp; exact Discrete.natTrans (fun _ => 𝟙 _)
-  | _, _, (@comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
+  | _, _, (@Hom.comp _ _ _ _ f g) => normalizeMapAux f ≫ normalizeMapAux g
   | _, _, (@Hom.tensor _ T _ _ W f g) =>
     Discrete.natTrans <| fun ⟨X⟩ => (normalizeMapAux g).app ⟨normalizeObj T X⟩ ≫
       (normalizeObj' W).map ((normalizeMapAux f).app ⟨X⟩)
@@ -136,16 +136,15 @@ section
 variable (C)
 
 /-- Our normalization procedure works by first defining a functor `F C ⥤ (N C ⥤ N C)` (which turns
-    out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
-    `𝟙_ C`. -/
+out to be very easy), and then obtain a functor `F C ⥤ N C` by plugging in the normal object
+`𝟙_ C`. -/
 @[simp]
 def normalize : F C ⥤ N C ⥤ N C where
   obj X := normalizeObj' X
-  map {X Y} := Quotient.lift normalizeMapAux (by aesop_cat)
+  map {X Y} := Quotient.lift normalizeMapAux (by cat_disch)
 
 /-- A variant of the normalization functor where we consider the result as an object in the free
-    monoidal category (rather than an object of the discrete subcategory of objects in normal
-    form). -/
+monoidal category (rather than an object of the discrete subcategory of objects in normal form). -/
 @[simp]
 def normalize' : F C ⥤ N C ⥤ F C :=
   normalize C ⋙ (whiskeringRight _ _ _).obj inclusion
@@ -156,7 +155,7 @@ def fullNormalize : F C ⥤ N C where
   map f := ((normalize C).map f).app ⟨NormalMonoidalObject.unit⟩
 
 /-- Given an object `X` of the free monoidal category and an object `n` in normal form, taking
-    the tensor product `n ⊗ X` in the free monoidal category is functorial in both `X` and `n`. -/
+the tensor product `n ⊗ X` in the free monoidal category is functorial in both `X` and `n`. -/
 @[simp]
 def tensorFunc : F C ⥤ N C ⥤ F C where
   obj X := Discrete.functor fun n => inclusion.obj ⟨n⟩ ⊗ X
@@ -175,7 +174,7 @@ theorem tensorFunc_obj_map (Z : F C) {n n' : N C} (f : n ⟶ n') :
   simp
 
 /-- Auxiliary definition for `normalizeIso`. Here we construct the isomorphism between
-    `n ⊗ X` and `normalize X n`. -/
+`n ⊗ X` and `normalize X n`. -/
 @[simp]
 def normalizeIsoApp :
     ∀ (X : F C) (n : N C), ((tensorFunc C).obj X).obj n ≅ ((normalize' C).obj X).obj n
@@ -269,8 +268,8 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 end
 
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
-    naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
-    of our proof of the coherence theorem. -/
+naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
+of our proof of the coherence theorem. -/
 def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C) <| by
     intro X Y f
@@ -308,7 +307,7 @@ section
 open Hom
 
 /-- Auxiliary construction for showing that the free monoidal category is a groupoid. Do not use
-    this, use `IsIso.inv` instead. -/
+this, use `IsIso.inv` instead. -/
 def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
   | _, _, Hom.id X => id X
   | _, _, α_hom _ _ _ => α_inv _ _ _
@@ -317,7 +316,7 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
   | _, _, ρ_inv _ => ρ_hom _
   | _, _, l_hom _ => l_inv _
   | _, _, l_inv _ => l_hom _
-  | _, _, comp f g => (inverseAux g).comp (inverseAux f)
+  | _, _, Hom.comp f g => (inverseAux g).comp (inverseAux f)
   | _, _, Hom.whiskerLeft X f => (inverseAux f).whiskerLeft X
   | _, _, Hom.whiskerRight f X => (inverseAux f).whiskerRight X
   | _, _, Hom.tensor f g => (inverseAux f).tensor (inverseAux g)
@@ -326,7 +325,7 @@ end
 
 instance : Groupoid.{u} (F C) :=
   { (inferInstance : Category (F C)) with
-    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by aesop_cat) }
+    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by cat_disch) }
 
 end Groupoid
 

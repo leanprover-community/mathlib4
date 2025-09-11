@@ -147,7 +147,7 @@ private def f :
       (fun i : Fin2 (n + 1) => { p_1 // ofRepeat (PredLast' α pp i p_1) }) ⟹ fun i : Fin2 (n + 1) =>
         { p_1 : (α ::: β) i // PredLast α pp p_1 }
   | _, α, Fin2.fs i, x =>
-    ⟨x.val, cast (by simp only [PredLast]; erw [const_iff_true]) x.property⟩
+    ⟨x.val, cast (by grind [PredLast]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
 private def g :

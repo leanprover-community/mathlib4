@@ -240,7 +240,7 @@ variable {J} in
 is a transfinite composition of pushouts of monomorphisms in the
 family `generatingMonomorphisms G`. -/
 noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
-  (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
+    (generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape (Set.Iic j)
     ((functor hG A₀ J).map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ functor hG A₀ J
   isoBot := Iso.refl _
@@ -324,7 +324,7 @@ instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
               refine (?_ : _ ≤ monomorphisms C) _ this
               simp only [pushouts_le_iff, coproducts_le_iff]
               exact generatingMonomorphisms_le_monomorphisms G }
-        have := hf'.mono_map
+        have (j j' : κ.ord.toType) (φ : j ⟶ j') : Mono (hf'.F.map φ) := hf'.mem_map φ
         apply preservesColimit_coyoneda_obj_of_mono (Y := hf'.F) (κ := κ)
         obtain ⟨S⟩ := hi
         exact Subobject.hasCardinalLT_of_mono hκ S.arrow }⟩
@@ -350,7 +350,7 @@ instance : HasFunctorialFactorization (monomorphisms C) (monomorphisms C).rlp :=
 /-- A (functorial) factorization of any morphisms in a Grothendieck abelian category
 as a monomorphism followed by a morphism which has the right lifting property
 with respect to all monomorphisms. -/
-noncomputable abbrev monoMapFactorizationDataRlp {X Y : C} (f : X ⟶ Y):
+noncomputable abbrev monoMapFactorizationDataRlp {X Y : C} (f : X ⟶ Y) :
     MapFactorizationData (monomorphisms C) (monomorphisms C).rlp f :=
   (functorialFactorizationData _ _).factorizationData f
 

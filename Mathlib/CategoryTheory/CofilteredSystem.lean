@@ -105,11 +105,7 @@ To specialize: given a locally finite connected graph, take `Jᵒᵖ` to be `ℕ
 Elements of `F.sections` can be read off as infinite rays in the graph. -/
 theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [IsDirected J (· ≤ ·)]
     (F : Jᵒᵖ ⥤ Type v) [∀ j : Jᵒᵖ, Finite (F.obj j)] [∀ j : Jᵒᵖ, Nonempty (F.obj j)] :
-    F.sections.Nonempty := by
-  cases isEmpty_or_nonempty J
-  · haveI : IsEmpty Jᵒᵖ := ⟨fun j => isEmptyElim j.unop⟩ -- TODO: this should be a global instance
-    exact ⟨isEmptyElim, by apply isEmptyElim⟩
-  · exact nonempty_sections_of_finite_cofiltered_system _
+    F.sections.Nonempty := nonempty_sections_of_finite_cofiltered_system F
 
 end FiniteKonig
 

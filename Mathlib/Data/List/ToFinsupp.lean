@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.List.GetD
 
 /-!
@@ -127,8 +127,5 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
     classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
-
-@[deprecated (since := "2025-01-28")]
-alias toFinsupp_eq_sum_map_enum_single := toFinsupp_eq_sum_mapIdx_single
 
 end List

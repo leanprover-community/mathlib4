@@ -173,7 +173,7 @@ theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     (j : ∀ ⦃Y⦄ (f : Y ⟶ X), ofArrows Z g f → Type*) (W : ∀ ⦃Y⦄ (f : Y ⟶ X) (H), j f H → C)
     (k : ∀ ⦃Y⦄ (f : Y ⟶ X) (H i), W f H i ⟶ Y) :
     ((ofArrows Z g).bind fun _ f H => ofArrows (W f H) (k f H)) =
-      ofArrows (fun i : Σi, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
+      ofArrows (fun i : Σ i, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
         k (g ij.1) _ ij.2 ≫ g ij.1 := by
   funext Y
   ext f
@@ -209,7 +209,7 @@ theorem functorPullback_id (R : Presieve X) : R.functorPullback (𝟭 _) = R :=
   rfl
 
 /-- Given a presieve `R` on `X`, the predicate `R.hasPullbacks` means that for all arrows `f` and
-    `g` in `R`, the pullback of `f` and `g` exists. -/
+`g` in `R`, the pullback of `f` and `g` exists. -/
 class hasPullbacks (R : Presieve X) : Prop where
   /-- For all arrows `f` and `g` in `R`, the pullback of `f` and `g` exists. -/
   has_pullbacks : ∀ {Y Z} {f : Y ⟶ X} (_ : R f) {g : Z ⟶ X} (_ : R g), HasPullback f g
@@ -525,8 +525,7 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
   exact ⟨i, h, hX.hom_ext _ _⟩
 
 /-- Given a morphism `h : Y ⟶ X`, send a sieve S on X to a sieve on Y
-    as the inverse image of S with `_ ≫ h`.
-    That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
+as the inverse image of S with `_ ≫ h`. That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
 def pullback (h : Y ⟶ X) (S : Sieve X) : Sieve Y where
   arrows _ sl := S (sl ≫ h)

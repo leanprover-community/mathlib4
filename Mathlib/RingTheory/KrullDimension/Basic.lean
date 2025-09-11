@@ -5,11 +5,11 @@ Authors: Fangming Li, Jujian Zhang
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Jacobson.Radical
 import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.Order.KrullDimension
 
 /-!
 # Krull dimensions of (commutative) rings
@@ -72,15 +72,21 @@ abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
   FiniteDimensionalOrder (PrimeSpectrum R)
 
 lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
-    ringKrullDim R ≠ ⊤ :=
-  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
+    ringKrullDim R ≠ ⊤ := krullDim_ne_top_of_finiteDimensionalOrder
 
 lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
     ringKrullDim R < ⊤ := ringKrullDim_ne_top.lt_top
 
+lemma ringKrullDim_ne_bot [FiniteRingKrullDim R] :
+    ringKrullDim R ≠ ⊥ := krullDim_ne_bot_of_finiteDimensionalOrder
+
 lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
+
+lemma Nontrivial.of_finiteRingKrullDim [FiniteRingKrullDim R] : Nontrivial R := by
+  rw [← PrimeSpectrum.nonempty_iff_nontrivial]
+  exact LTSeries.nonempty_of_finiteDimensionalOrder _
 
 proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
     [IsNoetherianRing R] (n : ℕ) :
@@ -102,7 +108,7 @@ lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : R
 lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
   Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
 
-/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
+/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for Dedekind domains. -/
 lemma Ideal.IsPrime.isMaximal' [Ring.KrullDimLE 0 R] {I : Ideal R} (hI : I.IsPrime) : I.IsMaximal :=
   I.isMaximal_of_isPrime
 

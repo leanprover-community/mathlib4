@@ -13,8 +13,7 @@ This file concerns modules where the scalars are the natural numbers or the inte
 
 ## Main definitions
 
-* `AddCommGroup.toNatModule`: any `AddCommMonoid` is (uniquely) a module over the naturals.
-  TODO: this name is not right!
+* `AddCommMonoid.toNatModule`: any `AddCommMonoid` is (uniquely) a module over the naturals.
 * `AddCommGroup.toIntModule`: any `AddCommGroup` is a module over the integers.
 
 ## Main results
@@ -38,7 +37,7 @@ section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 
-instance AddCommGroup.toNatModule : Module ℕ M where
+instance AddCommMonoid.toNatModule : Module ℕ M where
   one_smul := one_nsmul
   mul_smul m n a := mul_nsmul' a m n
   smul_add n a b := nsmul_add a b n

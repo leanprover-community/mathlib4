@@ -74,7 +74,7 @@ section Ring
 variable [Ring S] [Module ℚ S]
 
 variable (R) in
-/-- `nnqsmul` is equal to any other module structure via a cast. -/
+/-- `qsmul` is equal to any other module structure via a cast. -/
 lemma cast_smul_eq_qsmul [Module R S] (q : ℚ) (a : S) : (q : R) • a = q • a := by
   refine MulAction.injective₀ (G₀ := ℚ) (Nat.cast_ne_zero.2 q.den_pos.ne') ?_
   dsimp

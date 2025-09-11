@@ -121,19 +121,22 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
 /-- Suppose we have a square of 1-morphisms (where the top and bottom are adjunctions `l₁ ⊣ r₁`
 and `l₂ ⊣ r₂` respectively).
-
+```
       c ↔ d
     g ↓   ↓ h
       e ↔ f
+```
 
 Then we have a bijection between natural transformations `g ≫ l₂ ⟶ l₁ ≫ h` and
 `r₁ ≫ g ⟶ h ≫ r₂`. This can be seen as a bijection of the 2-cells:
 
+```
          l₁                  r₁
       c --→ d             c ←-- d
     g ↓  ↗  ↓ h         g ↓  ↘  ↓ h
       e --→ f             e ←-- f
          L₂                  R₂
+```
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
@@ -391,7 +394,7 @@ def conjugateEquiv : (l₂ ⟶ l₁) ≃ (r₁ ⟶ r₂) :=
 
 theorem conjugateEquiv_apply (α : l₂ ⟶ l₁) :
     conjugateEquiv adj₁ adj₂ α =
-      (ρ_ r₁).inv ≫ mateEquiv adj₁ adj₂ ((λ_ l₂).hom ≫ α ≫ (ρ_ l₁).inv) ≫ (λ_ r₂).hom := by
+      (ρ_ r₁).inv ≫ mateEquiv adj₁ adj₂ ((λ_ l₂).hom ≫ α ≫ (ρ_ l₁).inv) ≫ (λ_ r₂).hom :=
   rfl
 
 theorem conjugateEquiv_apply' (α : l₂ ⟶ l₁) :
@@ -403,7 +406,7 @@ theorem conjugateEquiv_apply' (α : l₂ ⟶ l₁) :
 
 theorem conjugateEquiv_symm_apply (α : r₁ ⟶ r₂) :
     (conjugateEquiv adj₁ adj₂).symm α =
-      (λ_ l₂).inv ≫ (mateEquiv adj₁ adj₂).symm ((ρ_ r₁).hom ≫ α ≫ (λ_ r₂).inv) ≫ (ρ_ l₁).hom := by
+      (λ_ l₂).inv ≫ (mateEquiv adj₁ adj₂).symm ((ρ_ r₁).hom ≫ α ≫ (λ_ r₂).inv) ≫ (ρ_ l₁).hom :=
   rfl
 
 theorem conjugateEquiv_symm_apply' (α : r₁ ⟶ r₂) :
@@ -503,7 +506,7 @@ lemma conjugateEquiv_whiskerRight
 lemma conjugateEquiv_associator_hom
     {a b c d : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
-    {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃):
+    {l₃ : c ⟶ d} {r₃ : d ⟶ c} (adj₃ : l₃ ⊣ r₃) :
     conjugateEquiv (adj₁.comp (adj₂.comp adj₃))
       ((adj₁.comp adj₂).comp adj₃) (α_ _ _ _).hom = (α_ _ _ _).hom := by
   simp [← cancel_epi (ρ_ ((r₃ ≫ r₂) ≫ r₁)).hom, ← cancel_mono (λ_ (r₃ ≫ r₂ ≫ r₁)).inv,
@@ -626,11 +629,13 @@ variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u₁) (adj₄ : f₂ ⊣ u₂)
 
 /-- When all four morphisms in a square are left adjoints, the mates operation can be iterated:
+```
          l₁                  r₁                  r₁
       c --→ d             c ←-- d             c ←-- d
    f₁ ↓  ↗  ↓  f₂      f₁ ↓  ↘  ↓ f₂       u₁ ↑  ↙  ↑ u₂
       a --→ b             a ←-- b             a ←-- b
          l₂                  r₂                  r₂
+```
 In this case the iterated mate equals the conjugate of the original 2-morphism and is thus an
 isomorphism if and only if the original 2-morphism is. This explains why some Beck-Chevalley
 2-morphisms are isomorphisms.
@@ -660,7 +665,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r�
 /-- Composition of a squares between left adjoints with a conjugate square. -/
 def leftAdjointSquareConjugate.vcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : l₃ ⟶ l₂) :
     g ≫ l₃ ⟶ l₁ ≫ h :=
-   g ◁ β ≫ α
+  g ◁ β ≫ α
 
 /-- Composition of a squares between right adjoints with a conjugate square. -/
 def rightAdjointSquareConjugate.vcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₂ ⟶ r₃) :

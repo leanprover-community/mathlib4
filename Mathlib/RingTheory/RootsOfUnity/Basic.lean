@@ -74,7 +74,7 @@ lemma rootsOfUnity_zero (M : Type*) [CommMonoid M] : rootsOfUnity 0 M = ⊤ := b
 
 theorem rootsOfUnity.coe_injective {n : ℕ} :
     Function.Injective (fun x : rootsOfUnity n M ↦ x.val.val) :=
-  Units.ext.comp fun _ _ ↦ Subtype.eq
+  Units.val_injective.comp Subtype.val_injective
 
 /-- Make an element of `rootsOfUnity` from a member of the base ring, and a proof that it has
 a positive power equal to one. -/
@@ -151,7 +151,24 @@ theorem MulEquiv.restrictRootsOfUnity_symm (σ : R ≃* S) :
     (σ.restrictRootsOfUnity k).symm = σ.symm.restrictRootsOfUnity k :=
   rfl
 
+@[simp]
+theorem Units.val_set_image_rootsOfUnity [NeZero k] :
+    ((↑) : Rˣ → _) '' (rootsOfUnity k R) = {z : R | z^k = 1} := by
+  ext x
+  exact ⟨fun ⟨y,hy1,hy2⟩ => by rw [← hy2]; exact (mem_rootsOfUnity' k y).mp hy1,
+    fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
+
+theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
+  ext x
+  simp
+
 end CommMonoid
+
+open Set in
+theorem Units.val_set_image_rootsOfUnity_two [CommRing R] [NoZeroDivisors R] :
+    ((↑) : Rˣ → R) '' (rootsOfUnity 2 R) = {1, -1} := by
+  ext x
+  simp
 
 section IsDomain
 

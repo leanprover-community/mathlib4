@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 
@@ -153,7 +153,7 @@ lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq 
     (R : I → Type*) [∀ i, Semiring (R i)] :
     CompleteOrthogonalIdempotents (Pi.single (M := R) · 1) := by
   refine ⟨⟨by simp [IsIdempotentElem, ← Pi.single_mul], ?_⟩, Finset.univ_sum_single 1⟩
-  intros i j hij
+  intro i j hij
   ext k
   by_cases hi : i = k
   · subst hi; simp [hij]
@@ -312,7 +312,7 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
   obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
-  have (i) : f (e' i) = e i := congr_fun h₂ i
+  have (i : _) : f (e' i) = e i := congr_fun h₂ i
   cases i using Fin.cases with
   | zero => simp [this, Fin.sum_univ_succ, ← he.complete]
   | succ i => simp [this]
@@ -384,7 +384,7 @@ lemma OrthogonalIdempotents.surjective_pi {I : Type*} [Finite I] {e : I → R}
     obtain ⟨x, rfl⟩ := Ideal.quotientInfToPiQuotient_surj this x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     exact ⟨x, by ext i; simp [Ideal.quotientInfToPiQuotient]⟩
-  intros i j hij
+  intro i j hij
   rw [Ideal.isCoprime_span_singleton_iff]
   exact ⟨1, e i, by simp [mul_sub, he.ortho hij]⟩
 
@@ -427,7 +427,7 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   suffices ∀ s : Finset I, (∏ i ∈ s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_
-  intros a s has e'
+  intro a s has e'
   suffices (1 - e a) * x = x by simp [has, mul_assoc, e', this]
   obtain ⟨c, rfl⟩ := hx a
   rw [← mul_assoc, (he.idem a).one_sub.eq]
@@ -445,9 +445,6 @@ lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
 
-@[deprecated (since := "2025-01-05")]
-alias bijective_pi_of_isIdempotentElem := RingHom.pi_bijective_of_isIdempotentElem
-
 lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentElem e)
     (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
     Function.Bijective ((Ideal.Quotient.mk <| Ideal.span {e}).prod
@@ -455,7 +452,7 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
   let o (i : Fin 2) : R := match i with
     | 0 => e
     | 1 => f
-  show Function.Bijective
+  change Function.Bijective
     (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
   rw [(Equiv.bijective _).of_comp_iff']
   apply pi_bijective_of_isIdempotentElem
@@ -508,11 +505,11 @@ lemma mem_corner_iff_mul_right (hc : IsMulCentral e) {r : R} : r ∈ corner e �
 
 lemma mem_corner_iff_mem_range_mul_left (hc : IsMulCentral e) {r : R} :
     r ∈ corner e ↔ r ∈ Set.range (e * ·) := by
-  simp_rw [corner, mem_mk, Set.mem_range, ← hc.comm, ← mul_assoc, idem.eq]
+  simp_rw [corner, mem_mk, Set.mem_range, ← (hc.comm _).eq, ← mul_assoc, idem.eq]
 
 lemma mem_corner_iff_mem_range_mul_right (hc : IsMulCentral e) {r : R} :
     r ∈ corner e ↔ r ∈ Set.range (· * e) := by
-  simp_rw [mem_corner_iff_mem_range_mul_left idem hc, hc.comm]
+  simp_rw [mem_corner_iff_mem_range_mul_left idem hc, (hc.comm _).eq]
 
 /-- The corner associated to an idempotent `e` in a semiring without 1
 is the semiring with `e` as 1 consisting of all element of the form `e * r * e`. -/
@@ -562,7 +559,7 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
   toFun r i := ⟨_, r, rfl⟩
   invFun r := ∑ i, (r i).1
   left_inv r := by
-    simp_rw [(hc _).comm, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
+    simp_rw [((hc _).comm _).eq, mul_assoc, (he.idem _).eq, ← Finset.mul_sum, he.complete, mul_one]
   right_inv r := funext fun i ↦ Subtype.ext <| by
     simp_rw [Finset.mul_sum, Finset.sum_mul]
     rw [Finset.sum_eq_single i _ (by simp at ·)]
@@ -572,7 +569,8 @@ def CompleteOrthogonalIdempotents.ringEquivOfIsMulCentral [Semiring R]
       rw [← eq]; simp_rw [← mul_assoc, he.ortho ne.symm, zero_mul]
   map_mul' r₁ r₂ := funext fun i ↦ Subtype.ext <|
     calc e i * (r₁ * r₂) * e i
-     _ = e i * (r₁ * e i * r₂) * e i := by simp_rw [← (hc i).comm r₁, ← mul_assoc, (he.idem i).eq]
+     _ = e i * (r₁ * e i * r₂) * e i := by
+       simp_rw [← ((hc i).comm r₁).eq, ← mul_assoc, (he.idem i).eq]
      _ = e i * r₁ * e i * (e i * r₂ * e i) := by
       conv in (r₁ * _ * r₂) => rw [← (he.idem i).eq]
       simp_rw [mul_assoc]

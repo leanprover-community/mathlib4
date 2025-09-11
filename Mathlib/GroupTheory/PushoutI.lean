@@ -350,7 +350,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     · intro h
       apply_fun (d.compl i).equiv at h
       simp only [Prod.ext_iff, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
+        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
         Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
       rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
@@ -506,8 +506,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
       convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
-      · ext
-        simp only [Word.cons, NormalWord.cons, map_one, mul_one,
+      · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
@@ -592,7 +591,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, of_smul_eq_smul])
 
@@ -603,7 +602,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
   let _ := fun i => Classical.decEq (G i)
   refine Function.Injective.of_comp
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, base_smul_eq_smul])
 

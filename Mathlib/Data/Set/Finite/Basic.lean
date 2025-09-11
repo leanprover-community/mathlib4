@@ -332,7 +332,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
   simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
 
 /-- This is not an instance so that it does not conflict with the one
-in `Mathlib/Order/LocallyFinite.lean`. -/
+in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
@@ -705,9 +705,6 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
   rw [insert_subset_iff] at haS
   exact insert haS.1 haS.2 has (hCs haS.2)
 
-@[deprecated (since := "2025-01-03")] alias Finite.induction_on' := Finite.induction_on_subset
-@[deprecated (since := "2025-01-03")] alias Finite.dinduction_on := Finite.induction_on
-
 section
 
 attribute [local instance] Nat.fintypeIio
@@ -763,7 +760,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_ofSubsingleton _
+  rfl
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
     Fintype.card s < Fintype.card t :=

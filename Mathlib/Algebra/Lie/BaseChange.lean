@@ -23,8 +23,6 @@ scalars.
 lie ring, lie algebra, extension of scalars, restriction of scalars, base change
 -/
 
-suppress_compilation
-
 open scoped TensorProduct
 
 variable (R A L M : Type*)

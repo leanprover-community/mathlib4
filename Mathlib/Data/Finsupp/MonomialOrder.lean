@@ -90,6 +90,9 @@ instance orderBot : OrderBot (m.syn) where
 @[simp]
 theorem bot_eq_zero : (⊥ : m.syn) = 0 := rfl
 
+@[simp]
+lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
+
 theorem eq_zero_iff {a : m.syn} : a = 0 ↔ a ≤ 0 := eq_bot_iff
 
 lemma toSyn_eq_zero_iff (a : σ →₀ ℕ) :

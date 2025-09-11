@@ -222,11 +222,9 @@ theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤
     f₁ ×ˢ g₁ ≤ f₂ ×ˢ g₂ :=
   inf_le_inf (comap_mono hf) (comap_mono hg)
 
-@[gcongr]
 theorem prod_mono_left (g : Filter β) {f₁ f₂ : Filter α} (hf : f₁ ≤ f₂) : f₁ ×ˢ g ≤ f₂ ×ˢ g :=
   Filter.prod_mono hf rfl.le
 
-@[gcongr]
 theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g₂) : f ×ˢ g₁ ≤ f ×ˢ g₂ :=
   Filter.prod_mono rfl.le hf
 

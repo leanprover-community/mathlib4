@@ -246,12 +246,7 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
   simp_rw [sUnion_eq_iUnion]
   have h_disj : Pairwise (Disjoint on fun i : S ↦ (i : Set γ)) := by
     intro u v huv
-    #adaptation_note /-- nightly-2024-03-16
-    Previously `Function.onFun` unfolded in the following `simp only`,
-    but now needs a `rw`.
-    This may be a bug: a no import minimization may be required.
-    simp only [Finset.coe_sort_coe, Function.onFun] -/
-    rw [Function.onFun]
+    simp only [Function.onFun]
     refine disjoint_countablePartition (hS_subset (by simp)) (hS_subset (by simp)) ?_
     rwa [ne_eq, ← Subtype.ext_iff]
   rw [integral_iUnion, iUnion_prod_const, measureReal_def, measure_iUnion,
@@ -290,8 +285,6 @@ lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
       setIntegral_densityProcess_of_le hκν hij a hs hx]
   · exact StronglyMeasurable.aestronglyMeasurable
       (stronglyMeasurable_countableFiltration_densityProcess κ ν i a hs)
-
-@[deprecated (since := "2025-01-21")] alias condexp_densityProcess := condExp_densityProcess
 
 lemma martingale_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -646,8 +639,7 @@ lemma densityProcess_fst_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
   · simp only [h]
     by_cases h' : κ a (countablePartitionSet n x ×ˢ univ) = 0
     · simp [h']
-    · rw [ENNReal.div_zero h']
-      simp
+    · simp
   · rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     have : countablePartitionSet n x ×ˢ univ = {p : γ × β | p.1 ∈ countablePartitionSet n x} := by
       ext x

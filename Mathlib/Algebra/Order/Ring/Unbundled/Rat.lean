@@ -12,7 +12,7 @@ import Mathlib.Data.Int.Order.Basic
 # The rational numbers possess a linear order
 
 This file constructs the order on `ℚ` and proves various facts relating the order to
-ring structure on `ℚ`. This only uses unbundled type classes, eg `CovariantClass`,
+ring structure on `ℚ`. This only uses unbundled type classes, e.g. `CovariantClass`,
 relating the order structure and algebra structure on `ℚ`.
 For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ring.Rat`.
 
@@ -25,7 +25,7 @@ assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
-variable {a b p q : ℚ}
+variable {a b c p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
   rcases hab : a /. b with ⟨n, d, hd, hnd⟩
@@ -89,15 +89,12 @@ protected theorem not_lt {a b : ℚ} : ¬a < b ↔ b ≤ a := by
 protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
-      show Rat.blt _ _ = true ↔ _
+      change Rat.blt _ _ = true ↔ _
       suffices
         (na < 0 ∧ 0 ≤ nb ∨ if na = 0 then 0 < nb else (na ≤ 0 ∨ 0 < nb) ∧ na * ↑db < nb * da) ↔
         na * db < nb * da by simpa [Rat.blt]
       split_ifs with h
-      · suffices 0 < nb ↔ 0 < nb * da by simpa [h]
-        refine ⟨(Int.mul_pos · (by omega)), ?_⟩
-        contrapose!
-        exact (Int.mul_nonpos_of_nonpos_of_nonneg · (by omega))
+      · simp_all
       · constructor
         · refine (·.elim ?_ And.right)
           rintro ⟨hna, nb0⟩
@@ -129,26 +126,59 @@ protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
 protected lemma le_total : a ≤ b ∨ b ≤ a := by
   simpa only [← Rat.le_iff_sub_nonneg, neg_sub] using Rat.nonneg_total (b - a)
 
+protected lemma le_refl : a ≤ a := by
+  rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
+
+protected lemma le_trans (hab : a ≤ b) (hbc : b ≤ c) : a ≤ c := by
+  rw [Rat.le_iff_sub_nonneg] at hab hbc
+  have := Rat.add_nonneg hab hbc
+  simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
+    add_left_comm (-b) b (-a), add_comm (-b) (-a), add_neg_cancel_comm_assoc,
+    ← sub_eq_add_neg] at this
+  rwa [Rat.le_iff_sub_nonneg]
+
+protected lemma le_antisymm (hab : a ≤ b) (hba : b ≤ a) : a = b := by
+  rw [Rat.le_iff_sub_nonneg] at hab hba
+  rw [sub_eq_add_neg] at hba
+  rw [← neg_sub, sub_eq_add_neg] at hab
+  have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
+  rwa [neg_neg] at this
+
+protected lemma lt_iff_le_not_ge (a b : ℚ) : a < b ↔ a ≤ b ∧ ¬b ≤ a := by
+  rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+
 instance linearOrder : LinearOrder ℚ where
-  le_refl a := by rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
-  le_trans a b c hab hbc := by
-    rw [Rat.le_iff_sub_nonneg] at hab hbc
-    have := Rat.add_nonneg hab hbc
-    simp_rw [sub_eq_add_neg, add_left_comm (b + -a) c (-b), add_comm (b + -a) (-b),
-      add_left_comm (-b) b (-a), add_comm (-b) (-a), add_neg_cancel_comm_assoc,
-      ← sub_eq_add_neg] at this
-    rwa [Rat.le_iff_sub_nonneg]
-  le_antisymm a b hab hba := by
-    rw [Rat.le_iff_sub_nonneg] at hab hba
-    rw [sub_eq_add_neg] at hba
-    rw [← neg_sub, sub_eq_add_neg] at hab
-    have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
-    rwa [neg_neg] at this
+  le_refl _ := Rat.le_refl
+  le_trans _ _ _ := Rat.le_trans
+  le_antisymm _ _ := Rat.le_antisymm
   le_total _ _ := Rat.le_total
   toDecidableEq := inferInstance
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+  lt_iff_le_not_ge := Rat.lt_iff_le_not_ge
+
+theorem mkRat_nonneg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 ≤ mkRat a b ↔ 0 ≤ a :=
+  divInt_nonneg_iff_of_pos_right (show 0 < (b : ℤ) by simpa using Nat.pos_of_ne_zero hb)
+
+theorem mkRat_pos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b ↔ 0 < a := by
+  grind [lt_iff_le_and_ne, mkRat_nonneg_iff, Rat.mkRat_eq_zero]
+
+theorem mkRat_pos {a : ℤ} (ha : 0 < a) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a b :=
+  (mkRat_pos_iff a hb).mpr ha
+
+theorem mkRat_nonpos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b ≤ 0 ↔ a ≤ 0 := by
+  grind [lt_iff_not_ge, mkRat_pos_iff]
+
+theorem mkRat_nonpos {a : ℤ} (ha : a ≤ 0) (b : ℕ) : mkRat a b ≤ 0 := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
+  · exact (mkRat_nonpos_iff a hb).mpr ha
+
+theorem mkRat_neg_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 ↔ a < 0 := by
+  grind [lt_iff_not_ge, mkRat_nonneg_iff]
+
+theorem mkRat_neg {a : ℤ} (ha : a < 0) {b : ℕ} (hb : b ≠ 0) : mkRat a b < 0 :=
+  (mkRat_neg_iff a hb).mpr ha
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -197,8 +227,7 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
-  · apply not_congr
-    simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
+  · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
 

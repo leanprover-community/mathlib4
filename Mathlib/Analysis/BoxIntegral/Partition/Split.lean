@@ -223,7 +223,7 @@ def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
 
 @[simp]
 theorem splitMany_empty (I : Box ι) : splitMany I ∅ = ⊤ :=
-  Finset.inf_empty
+  rfl
 
 open scoped Classical in
 @[simp]

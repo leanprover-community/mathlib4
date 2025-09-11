@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Polynomial.Smeval
 import Mathlib.Algebra.Ring.NegOnePow
@@ -432,14 +433,7 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
 
-theorem choose_eq_nat_choose [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
-  induction n generalizing k with
-  | zero => cases k with
-    | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
-    | succ k => rw [Nat.cast_zero, choose_zero_succ, Nat.choose_zero_succ, Nat.cast_zero]
-  | succ n ih => cases k with
-    | zero => rw [choose_zero_right, Nat.choose_zero_right, Nat.cast_one]
-    | succ k => rw [Nat.cast_succ, choose_succ_succ, ih, ih, Nat.choose_succ_succ, Nat.cast_add]
+@[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
 
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
@@ -459,6 +453,11 @@ theorem choose_add_smul_choose [NatPowAssoc R] (r : R) (n k : ℕ) :
 
 end
 
+theorem choose_eq_smul [Field R] [CharZero R] {a : R} {n : ℕ} :
+    Ring.choose a n = (n.factorial : R)⁻¹ • (descPochhammer ℤ n).smeval a := by
+  rw [Ring.descPochhammer_eq_factorial_smul_choose, ← Nat.cast_smul_eq_nsmul R, inv_smul_smul₀]
+  simpa using Nat.factorial_ne_zero n
+
 open Finset
 
 /-- Pochhammer version of Chu-Vandermonde identity -/
@@ -472,7 +471,7 @@ theorem descPochhammer_smeval_add [Ring R] {r s : R} (k : ℕ) (h : Commute r s)
       fun i j => ((descPochhammer ℤ i).smeval r * (descPochhammer ℤ j).smeval s),
       ← sum_add_distrib, smeval_sub, smeval_X, smeval_natCast, pow_zero, pow_one, ih, mul_sum]
     refine sum_congr rfl ?_
-    intro ij hij -- try to move descPochhammers to right, gather multipliers.
+    intro ij hij -- try to move `descPochhammer`s to right, gather multipliers.
     have hdx : (descPochhammer ℤ ij.1).smeval r * (X - (ij.2 : ℤ[X])).smeval s =
         (X - (ij.2 : ℤ[X])).smeval s * (descPochhammer ℤ ij.1).smeval r := by
       refine (commute_iff_eq ((descPochhammer ℤ ij.1).smeval r)

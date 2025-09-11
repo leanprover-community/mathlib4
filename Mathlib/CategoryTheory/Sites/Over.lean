@@ -108,7 +108,7 @@ lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Siev
     exact S.downward_closed ha _
   · intro hg
     exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
-      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by aesop_cat⟩
+      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by cat_disch⟩
 
 end Sieve
 

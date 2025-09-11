@@ -278,14 +278,13 @@ lemma IsCircuit.eq_fundCircuit_of_subset (hC : M.IsCircuit C) (hI : M.Indep I)
 lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R ⊆ M.E) :
     (M ↾ R).fundCircuit e I = M.fundCircuit e I := by
   simp_rw [fundCircuit, M.restrict_closure_eq (R := R) (X := {e}) (by simpa)]
-  refine subset_antisymm (insert_subset_insert (inter_subset_inter_right _ ?_))
-    (insert_subset_insert (inter_subset_inter_right _ ?_))
-  · refine subset_sInter fun J ⟨hJI, heJ⟩ ↦ sInter_subset_of_mem ⟨hJI, ?_⟩
+  apply subset_antisymm
+  · gcongr 5 with J hJI; intro heJ
     simp only [restrict_closure_eq']
     refine (inter_subset_inter_left _ ?_).trans subset_union_left
     rwa [inter_eq_self_of_subset_left (hJI.trans hIR)]
-  refine subset_sInter fun J ⟨hJI, heJ⟩ ↦ sInter_subset_of_mem
-    ⟨hJI, M.closure_subset_closure_of_subset_closure ?_⟩
+  gcongr 5 with J hJI; intro heJ
+  refine closure_subset_closure_of_subset_closure ?_
   rw [restrict_closure_eq _ (hJI.trans hIR) hR] at heJ
   simp only [subset_inter_iff, inter_subset_right, and_true] at heJ
   exact subset_trans (by simpa [M.mem_closure_of_mem' (mem_singleton e) (hR heR)]) heJ
@@ -717,7 +716,7 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   -- By symmetry and duality, it suffices to show the implication in one direction.
   suffices aux : ∀ {N : Matroid α} {B' : Set α} (hB' : N.IsBase B') {e f},
       e ∈ N.fundCocircuit f B' → f ∈ N.fundCircuit e B' from
-    ⟨fun h ↦ aux hB h , fun h ↦ aux hB.compl_isBase_dual <| by
+    ⟨fun h ↦ aux hB h, fun h ↦ aux hB.compl_isBase_dual <| by
       simpa [fundCocircuit, inter_eq_self_of_subset_right hB.subset_ground]⟩
   clear! B M e f
   intro M B hB e f he

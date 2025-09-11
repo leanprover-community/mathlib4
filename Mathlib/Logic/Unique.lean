@@ -58,17 +58,12 @@ theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ 
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
-@[deprecated (since := "2024-12-17")] alias unique_iff_exists_unique := unique_iff_existsUnique
-
 theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
-
-@[deprecated (since := "2024-12-17")]
-alias unique_subtype_iff_exists_unique := unique_subtype_iff_existsUnique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
@@ -178,7 +173,7 @@ theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Functi
   eq_const_of_subsingleton ..
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
-    HEq f (Function.const α (f default)) :=
+    f ≍ Function.const α (f default) :=
   (Function.hfunext rfl) fun i _ _ ↦ by rw [Subsingleton.elim i default]; rfl
 
 namespace Function

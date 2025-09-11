@@ -33,8 +33,15 @@ theorem mul_lt_mul (ac : a < c) (bd : b < d) : a * b < c * d := WithTop.mul_lt_m
 protected lemma pow_right_strictMono {n : ℕ} (hn : n ≠ 0) : StrictMono fun a : ℝ≥0∞ ↦ a ^ n :=
   WithTop.pow_right_strictMono hn
 
-@[gcongr] protected lemma pow_lt_pow_left (hab : a < b) {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n :=
-  WithTop.pow_lt_pow_left hab hn
+protected lemma pow_le_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (ENNReal.pow_right_strictMono hn).le_iff_le
+
+protected lemma pow_lt_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
+  (ENNReal.pow_right_strictMono hn).lt_iff_lt
+
+@[mono, gcongr] protected lemma pow_le_pow_left {n : ℕ} (h : a ≤ b) : a ^ n ≤ b ^ n :=
+  pow_le_pow_left' h n
+@[mono, gcongr] protected alias ⟨_, pow_lt_pow_left⟩ := ENNReal.pow_lt_pow_left_iff
 
 -- TODO: generalize to `WithTop`
 theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
@@ -57,15 +64,9 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
 protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 
-@[deprecated (since := "2025-01-20")]
-alias mul_eq_mul_left := ENNReal.mul_right_inj
-
 -- TODO: generalize to `WithTop`
 protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
   mul_comm c a ▸ mul_comm c b ▸ ENNReal.mul_right_inj h0 hinf
-
-@[deprecated (since := "2025-01-20")]
-alias mul_eq_mul_right := ENNReal.mul_left_inj
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
@@ -294,7 +295,7 @@ theorem sub_eq_sInf {a b : ℝ≥0∞} : a - b = sInf { d | a ≤ d + b } :=
 @[simp, norm_cast] theorem coe_sub : (↑(r - p) : ℝ≥0∞) = ↑r - ↑p := WithTop.coe_sub
 
 /-- This is a special case of `WithTop.top_sub_coe` in the `ENNReal` namespace -/
-@[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := WithTop.top_sub_coe
+@[simp] theorem top_sub_coe : ∞ - ↑r = ∞ := rfl
 
 @[simp] lemma top_sub (ha : a ≠ ∞) : ∞ - a = ∞ := by lift a to ℝ≥0 using ha; exact top_sub_coe
 
@@ -356,6 +357,19 @@ protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
   simp only [add_assoc, add_comm c b]
   simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
 
+lemma add_sub_add_eq_sub_right (hc : c ≠ ∞ := by finiteness) : (a + c) - (b + c) = a - b := by
+  lift c to ℝ≥0 using hc
+  cases a <;> cases b
+  · simp
+  · simp
+  · simp
+  · norm_cast
+    rw [add_tsub_add_eq_tsub_right]
+
+lemma add_sub_add_eq_sub_left (hc : c ≠ ∞ := by finiteness) : (c + a) - (c + b) = a - b := by
+  simp_rw [add_comm c]
+  exact ENNReal.add_sub_add_eq_sub_right hc
+
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞
   · rw [top_add, lt_top_iff_ne_top]
@@ -376,6 +390,15 @@ protected theorem sub_lt_of_lt_add (hac : c ≤ a) (h : a < b + c) : a - c < b :
 
 protected theorem sub_lt_iff_lt_right (hb : b ≠ ∞) (hab : b ≤ a) : a - b < c ↔ a < c + b :=
   (cancel_of_ne hb).tsub_lt_iff_right hab
+
+protected theorem sub_lt_iff_lt_left (hb : b ≠ ∞) (hab : b ≤ a) : a - b < c ↔ a < b + c :=
+  (cancel_of_ne hb).tsub_lt_iff_left hab
+
+theorem le_sub_iff_add_le_left (hc : c ≠ ∞) (hcb : c ≤ b) : a ≤ b - c ↔ c + a ≤ b :=
+  ⟨fun h ↦ add_le_of_le_tsub_left_of_le hcb h, le_sub_of_add_le_left hc⟩
+
+theorem le_sub_iff_add_le_right (hc : c ≠ ∞) (hcb : c ≤ b) : a ≤ b - c ↔ a + c ≤ b :=
+  ⟨fun h ↦ add_le_of_le_tsub_right_of_le hcb h, le_sub_of_add_le_right hc⟩
 
 protected theorem sub_lt_self (ha : a ≠ ∞) (ha₀ : a ≠ 0) (hb : b ≠ 0) : a - b < a :=
   (cancel_of_ne ha).tsub_lt_self (pos_iff_ne_zero.2 ha₀) (pos_iff_ne_zero.2 hb)
@@ -521,7 +544,7 @@ theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
 theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
   refine eq_of_forall_ge_iff fun c => ?_
   rw [tsub_le_iff_right, add_comm, iInf_add]
-  simp [tsub_le_iff_right, sub_eq_add_neg, add_comm]
+  simp [tsub_le_iff_right, add_comm]
 
 theorem sInf_add {s : Set ℝ≥0∞} : sInf s + a = ⨅ b ∈ s, b + a := by simp [sInf_eq_iInf, iInf_add]
 
@@ -535,6 +558,45 @@ theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + i
     ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
     _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
+
+lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≥ ·)] {f g : ι → ℝ≥0∞}
+    (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
+  iInf_add_iInf fun i j ↦ (exists_le_le i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
+
+lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
+    a + ⨅ (i) (j), f i j = ⨅ (i) (j), a + f i j := by
+  simp [add_iInf]
+
+lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℝ≥0∞) :
+    (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
+  simp only [add_comm, add_iInf₂]
+
+lemma add_sInf {s : Set ℝ≥0∞} : a + sInf s = ⨅ b ∈ s, a + b := by
+  rw [sInf_eq_iInf, add_iInf₂]
+
+variable {κ : Sort*}
+
+lemma le_iInf_add_iInf {g : κ → ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) :
+    a ≤ iInf f + iInf g := by
+  simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
+
+lemma le_iInf₂_add_iInf₂ {q₁ : ι → Sort*} {q₂ : κ → Sort*}
+    {f : (i : ι) → q₁ i → ℝ≥0∞} {g : (k : κ) → q₂ k → ℝ≥0∞}
+    (h : ∀ i pi k qk, a ≤ f i pi + g k qk) :
+    a ≤ (⨅ (i) (qi), f i qi) + ⨅ (k) (qk), g k qk := by
+  simp_rw [iInf₂_add, add_iInf₂]
+  exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
+
+@[simp] lemma iInf_gt_eq_self (a : ℝ≥0∞) : ⨅ b, ⨅ _ : a < b, b = a := by
+  refine le_antisymm ?_ (le_iInf₂ fun b hb ↦ hb.le)
+  refine le_of_forall_gt fun c hac ↦ ?_
+  obtain ⟨d, had, hdc⟩ := exists_between hac
+  exact (iInf₂_le_of_le d had le_rfl).trans_lt hdc
+
+lemma exists_add_lt_of_add_lt {x y z : ℝ≥0∞} (h : y + z < x) :
+    ∃ y' > y, ∃ z' > z, y' + z' < x := by
+  contrapose! h
+  simpa using le_iInf₂_add_iInf₂ h
 
 end iInf
 
@@ -568,9 +630,6 @@ theorem iSup_sub : (⨆ i, f i) - a = ⨆ i, f i - a :=
 @[simp] lemma iSup_eq_zero : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℝ≥0∞) = 0 := by simp
-
-@[deprecated (since := "2024-10-22")]
-alias iSup_zero_eq_zero := iSup_zero
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
   (iSup_eq_top _).2 fun _b hb => ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 hb)

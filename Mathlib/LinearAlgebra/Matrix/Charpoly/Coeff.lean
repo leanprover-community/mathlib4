@@ -79,18 +79,14 @@ theorem charpoly_coeff_eq_prod_coeff_of_le {k : ℕ} (h : Fintype.card n - 1 ≤
   apply lt_of_lt_of_le (charpoly_sub_diagonal_degree_lt M) ?_
   rw [Nat.cast_le]; apply h
 
-theorem det_of_card_zero (h : Fintype.card n = 0) (M : Matrix n n R) : M.det = 1 := by
-  rw [Fintype.card_eq_zero_iff] at h
-  suffices M = 1 by simp [this]
-  ext i
-  exact h.elim i
+@[deprecated (since := "2025-08-14")] alias det_of_card_zero := det_eq_one_of_card_eq_zero
 
 theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.degree = Fintype.card n := by
   by_cases h : Fintype.card n = 0
   · rw [h]
     unfold charpoly
-    rw [det_of_card_zero]
+    rw [det_eq_one_of_card_eq_zero]
     · simp
     · assumption
   rw [← sub_add_cancel M.charpoly (∏ i : n, (X - C (M i i)))]
@@ -106,9 +102,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
   rw [h1]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  omega
 
 @[simp] theorem charpoly_natDegree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     M.charpoly.natDegree = Fintype.card n :=
@@ -117,7 +111,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
 theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   nontriviality R
   by_cases h : Fintype.card n = 0
-  · rw [charpoly, det_of_card_zero h]
+  · rw [charpoly, det_eq_one_of_card_eq_zero h]
     apply monic_one
   have mon : (∏ i : n, (X - C (M i i))).Monic := by
     apply monic_prod_of_monic univ fun i : n => X - C (M i i)
@@ -130,9 +124,7 @@ theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
   rw [degree_neg]
   apply lt_trans (charpoly_sub_diagonal_degree_lt M)
   rw [Nat.cast_lt]
-  rw [← Nat.pred_eq_sub_one]
-  apply Nat.pred_lt
-  apply h
+  omega
 
 /-- See also `Matrix.coeff_charpolyRev_eq_neg_trace`. -/
 theorem trace_eq_neg_charpoly_coeff [Nonempty n] (M : Matrix n n R) :

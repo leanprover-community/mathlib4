@@ -49,7 +49,7 @@ theorem norm_mul_exp_arg_mul_I (x : ℂ) : ‖x‖ * exp (arg x * I) = x := by
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
   · have : ‖x‖ ≠ 0 := norm_ne_zero_iff.mpr hx
-    apply Complex.ext <;> field_simp [sin_arg, cos_arg hx, this, mul_comm ‖x‖]
+    apply Complex.ext <;> simp [sin_arg, cos_arg hx, this, mul_comm ‖x‖]
 
 @[simp]
 theorem norm_mul_cos_add_sin_mul_I (x : ℂ) : (‖x‖ * (cos (arg x) + sin (arg x) * I) : ℂ) = x := by

@@ -3,8 +3,8 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-
 import Mathlib.CategoryTheory.Sites.Sheaf
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 
@@ -47,6 +47,8 @@ the following sources:
 
 namespace CategoryTheory
 
+universe w w'
+
 variable {C D : Type _} [Category C] [Category D]
 
 open Limits
@@ -65,6 +67,12 @@ This is used in the definition of a coverage.
 def FactorsThruAlong {X Y : C} (S : Presieve Y) (T : Presieve X) (f : Y ⟶ X) : Prop :=
   ∀ ⦃Z : C⦄ ⦃g : Z ⟶ Y⦄, S g →
   ∃ (W : C) (i : Z ⟶ W) (e : W ⟶ X), T e ∧ i ≫ e = g ≫ f
+
+lemma FactorsThruAlong.pullbackArrows [HasPullbacks C] {X Y : C} (f : X ⟶ Y)
+    (R : Presieve Y) :
+    (Presieve.pullbackArrows f R).FactorsThruAlong R f := by
+  intro Z g ⟨W, b, hb⟩
+  refine ⟨_, pullback.fst _ _, b, hb, pullback.condition⟩
 
 /--
 Given `S T : Presieve X`, we say that `S` factors through `T` if any morphism in `S`
@@ -146,7 +154,7 @@ structure Coverage where
   /-- The collection of covering presieves for an object `X`. -/
   covering : ∀ (X : C), Set (Presieve X)
   /-- Given any covering sieve `S` on `X` and a morphism `f : Y ⟶ X`, there exists
-    some covering sieve `T` on `Y` such that `T` factors through `S` along `f`. -/
+  some covering sieve `T` on `Y` such that `T` factors through `S` along `f`. -/
   pullback : ∀ ⦃X Y : C⦄ (f : Y ⟶ X) (S : Presieve X) (_ : S ∈ covering X),
     ∃ (T : Presieve Y), T ∈ covering Y ∧ T.FactorsThruAlong S f
 
@@ -312,7 +320,38 @@ theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Siev
     {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C) X :=
   K.saturate_of_superset ((Sieve.generate_le_iff _ _).mpr h) (Coverage.Saturate.of X _ hR)
 
+/-- A coverage is stable under base change if pullbacks of covering presieves
+are covering presieves.
+Note: This is stronger than the analogous requirement for a `Pretopology`, because
+`IsPullback` does not imply equality with the (arbitrarily) chosen pullbacks in `C`. -/
+class IsStableUnderBaseChange (J : Coverage C) : Prop where
+  mem_covering_of_isPullback {ι : Type w} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S)
+    (hR : Presieve.ofArrows X f ∈ J S) {Y : C} (g : Y ⟶ S)
+    {P : ι → C} (p₁ : ∀ i, P i ⟶ Y) (p₂ : ∀ i, P i ⟶ X i)
+    (h : ∀ i, IsPullback (p₁ i) (p₂ i) g (f i)) :
+    .ofArrows P p₁ ∈ J Y
+
+/-- A coverage is stable under composition if the indexed composition
+of coverings is again a covering.
+Note: This is stronger than the analogous requirement for a `Pretopology`, because
+this is in general not equal to a `Presieve.bind`. -/
+class IsStableUnderComposition (J : Coverage C) : Prop where
+  mem_covering_comp {ι : Type w}
+    {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) (hf : Presieve.ofArrows X f ∈ J S)
+    {σ : ι → Type w'} {Y : ∀ (i : ι), σ i → C}
+    (g : ∀ i j, Y i j ⟶ X i) (hg : ∀ i, Presieve.ofArrows (Y i) (g i) ∈ J (X i)) :
+    .ofArrows (fun p : Σ i, σ i ↦ Y _ p.2) (fun _ ↦ g _ _ ≫ f _) ∈ J S
+
+alias mem_covering_of_isPullback := IsStableUnderBaseChange.mem_covering_of_isPullback
+
+alias mem_covering_comp := IsStableUnderComposition.mem_covering_comp
+
 end Coverage
+
+/-- Any pretopology is a coverage. -/
+def Pretopology.toCoverage [HasPullbacks C] (J : Pretopology C) : Coverage C where
+  covering := J
+  pullback _ _ f R hR := ⟨R.pullbackArrows f, J.pullbacks _ _ hR, .pullbackArrows f R⟩
 
 open Coverage
 

@@ -213,29 +213,17 @@ end SplittingFieldAux
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
+deriving Inhabited, CommRing, Algebra K
 
 namespace SplittingField
 
 variable (f : K[X])
 
-instance commRing : CommRing (SplittingField f) :=
-  Ideal.Quotient.commRing _
+variable {S : Type*} [DistribSMul S K] [IsScalarTower S K K] in
+deriving instance SMul S for SplittingField f
 
-instance inhabited : Inhabited (SplittingField f) :=
-  ⟨37⟩
-
-instance {S : Type*} [DistribSMul S K] [IsScalarTower S K K] : SMul S (SplittingField f) :=
-  Submodule.Quotient.instSMul' _
-
-instance algebra : Algebra K (SplittingField f) :=
-  Ideal.Quotient.algebra _
-
-instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
-  Ideal.Quotient.algebra _
-
-instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
-    IsScalarTower R K (SplittingField f) :=
-  Ideal.Quotient.isScalarTower _ _ _
+variable {R : Type*} [CommSemiring R] [Algebra R K] in
+deriving instance Algebra R, IsScalarTower R K for SplittingField f
 
 /-- The algebra equivalence with `SplittingFieldAux`,
 which we will use to construct the field structure. -/
@@ -250,8 +238,8 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
-  __ := commRing _
-  __ := instGroupWithZero _
+  __ := inferInstanceAs <| CommRing (SplittingField f)
+  __ := instGroupWithZero f
   nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q
   nnqsmul := (· • ·)

@@ -5,7 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.Semigroup
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
@@ -46,7 +46,7 @@ open Filter
 
 /-- Multiplication of ultrafilters given by `∀ᶠ m in U*V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m*m')`. -/
 @[to_additive
-      "Addition of ultrafilters given by `∀ᶠ m in U+V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m+m')`."]
+/-- Addition of ultrafilters given by `∀ᶠ m in U+V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m+m')`. -/]
 def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·) <$> U <*> V
 
 attribute [local instance] Ultrafilter.mul Ultrafilter.add
@@ -59,9 +59,8 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
   Iff.rfl
 
 /-- Semigroup structure on `Ultrafilter M` induced by a semigroup structure on `M`. -/
-@[to_additive
-      "Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
-      structure on `M`."]
+@[to_additive /-- Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
+structure on `M`. -/]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
     mul_assoc := fun U V W =>
@@ -96,9 +95,8 @@ inductive FP {M} [Semigroup M] : Stream' M → Set M
 
 /-- If `m` and `m'` are finite products in `M`, then so is `m * m'`, provided that `m'` is obtained
 from a subsequence of `M` starting sufficiently late. -/
-@[to_additive
-      "If `m` and `m'` are finite sums in `M`, then so is `m + m'`, provided that `m'`
-      is obtained from a subsequence of `M` starting sufficiently late."]
+@[to_additive /-- If `m` and `m'` are finite sums in `M`, then so is `m + m'`, provided that `m'`
+is obtained from a subsequence of `M` starting sufficiently late. -/]
 theorem FP.mul {M} [Semigroup M] {a : Stream' M} {m : M} (hm : m ∈ FP a) :
     ∃ n, ∀ m' ∈ FP (a.drop n), m * m' ∈ FP a := by
   induction hm with
@@ -184,9 +182,8 @@ theorem exists_FP_of_large {M} [Semigroup M] (U : Ultrafilter M) (U_idem : U * U
 
 /-- The strong form of **Hindman's theorem**: in any finite cover of an FP-set, one the parts
 contains an FP-set. -/
-@[to_additive FS_partition_regular
-      "The strong form of **Hindman's theorem**: in any finite cover of
-      an FS-set, one the parts contains an FS-set."]
+@[to_additive FS_partition_regular /-- The strong form of **Hindman's theorem**: in any finite
+cover of an FS-set, one the parts contains an FS-set. -/]
 theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M)) (sfin : s.Finite)
     (scov : FP a ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ b : Stream' M, FP b ⊆ c :=
   let ⟨U, idem, aU⟩ := exists_idempotent_ultrafilter_le_FP a
@@ -195,9 +192,8 @@ theorem FP_partition_regular {M} [Semigroup M] (a : Stream' M) (s : Set (Set M))
 
 /-- The weak form of **Hindman's theorem**: in any finite cover of a nonempty semigroup, one of the
 parts contains an FP-set. -/
-@[to_additive exists_FS_of_finite_cover
-      "The weak form of **Hindman's theorem**: in any finite cover
-      of a nonempty additive semigroup, one of the parts contains an FS-set."]
+@[to_additive exists_FS_of_finite_cover /-- The weak form of **Hindman's theorem**: in any finite
+cover of a nonempty additive semigroup, one of the parts contains an FS-set. -/]
 theorem exists_FP_of_finite_cover {M} [Semigroup M] [Nonempty M] (s : Set (Set M)) (sfin : s.Finite)
     (scov : ⊤ ⊆ ⋃₀ s) : ∃ c ∈ s, ∃ a : Stream' M, FP a ⊆ c :=
   let ⟨U, hU⟩ :=
@@ -237,14 +233,14 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
     (s.prod fun i => a.get i) ∈ FP a := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
-  induction s using Finset.strongInduction with | H s ih => _
+  induction s using Finset.eraseInduction with | H s ih => _
   rw [← Finset.mul_prod_erase _ _ (s.min'_mem hs), ← Stream'.head_drop]
   rcases (s.erase (s.min' hs)).eq_empty_or_nonempty with h | h
   · rw [h, Finset.prod_empty, mul_one]
     exact FP.head _
   · apply FP.cons
     rw [Stream'.tail_eq_drop, Stream'.drop_drop, add_comm]
-    refine Set.mem_of_subset_of_mem ?_ (ih _ (Finset.erase_ssubset <| s.min'_mem hs) h)
+    refine Set.mem_of_subset_of_mem ?_ (ih _ (s.min'_mem hs) h)
     have : s.min' hs + 1 ≤ (s.erase (s.min' hs)).min' h :=
       Nat.succ_le_of_lt (Finset.min'_lt_of_mem_erase_min' _ _ <| Finset.min'_mem _ _)
     obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_le this

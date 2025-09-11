@@ -35,7 +35,7 @@ apply them to infinitesimal smooth (or versal) extensions later.
 
 -/
 
-open KaehlerDifferential TensorProduct MvPolynomial
+open KaehlerDifferential Module MvPolynomial TensorProduct
 
 namespace Algebra
 
@@ -62,7 +62,7 @@ def cotangentComplex : P.Cotangent →ₗ[S] P.CotangentSpace :=
 
 @[simp]
 lemma cotangentComplex_mk (x) : P.cotangentComplex (.mk x) = 1 ⊗ₜ .D _ _ x :=
-  kerCotangentToTensor_toCotangent _ _ _ _
+  rfl
 
 universe w' u' v'
 
@@ -436,9 +436,9 @@ end Generators
 -- TODO: generalize to essentially of finite presentation algebras
 open KaehlerDifferential in
 attribute [local instance] Module.finitePresentation_of_projective in
-instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S (Ω[S⁄R]) := by
+instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R] := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := .mvPolynomial _ _
+  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   refine Module.finitePresentation_of_surjective _ P.toExtension.toKaehler_surjective ?_
   rw [LinearMap.exact_iff.mp P.toExtension.exact_cotangentComplex_toKaehler, ← Submodule.map_top]
   exact (Extension.Cotangent.finite P.fg_ker).1.map P.toExtension.cotangentComplex
@@ -482,11 +482,11 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
   { toFun := map R R S S'
     invFun := map R R S' S
     left_inv x := by
-      show ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
+      change ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
     right_inv x := by
-      show ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
+      change ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
     map_add' := LinearMap.map_add (map R R S S')
@@ -501,10 +501,10 @@ abbrev Generators.equivH1Cotangent (P : Generators R S ι) :
   Generators.H1Cotangent.equiv _ _
 
 attribute [local instance] Module.finitePresentation_of_projective in
-instance [FinitePresentation R S] [Module.Projective S (Ω[S⁄R])] :
+instance [FinitePresentation R S] [Module.Projective S Ω[S⁄R]] :
     Module.Finite S (H1Cotangent R S) := by
   let P := Algebra.Presentation.ofFinitePresentation R S
-  have : Algebra.FiniteType R P.toExtension.Ring := FiniteType.mvPolynomial R _
+  have : Algebra.FiniteType R P.toExtension.Ring := by simp [P]; infer_instance
   suffices Module.Finite S P.toExtension.H1Cotangent from
     .of_surjective P.equivH1Cotangent.toLinearMap P.equivH1Cotangent.surjective
   rw [Module.finite_def, Submodule.fg_top, ← LinearMap.ker_rangeRestrict]

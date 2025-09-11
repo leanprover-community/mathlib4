@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
+import Mathlib.Tactic.FunProp.ToBatteries
 
 /-!
 ## `funProp` data structure holding information about a function

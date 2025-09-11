@@ -389,13 +389,13 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
     S.Exact ↔ Epi (kernel.lift S.g S.f S.zero) := by
   rw [exact_iff_epi_toCycles]
   apply (MorphismProperty.epimorphisms C).arrow_mk_iso_iff
-  exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by aesop_cat)
+  exact Arrow.isoMk (Iso.refl _) S.cyclesIsoKernel (by cat_disch)
 
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
   refine (MorphismProperty.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
-  exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
+  exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by cat_disch)
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     [S₁.HasHomology] [S₂.HasHomology] [QuasiIso φ] : S₁.Exact ↔ S₂.Exact := by
@@ -473,11 +473,11 @@ structure Splitting (S : ShortComplex C) where
   /-- a section of `S.g` -/
   s : S.X₃ ⟶ S.X₂
   /-- the condition that `r` is a retraction of `S.f` -/
-  f_r : S.f ≫ r = 𝟙 _ := by aesop_cat
+  f_r : S.f ≫ r = 𝟙 _ := by cat_disch
   /-- the condition that `s` is a section of `S.g` -/
-  s_g : s ≫ S.g = 𝟙 _ := by aesop_cat
+  s_g : s ≫ S.g = 𝟙 _ := by cat_disch
   /-- the compatibility between the given section and retraction -/
-  id : r ≫ S.f + S.g ≫ s = 𝟙 _ := by aesop_cat
+  id : r ≫ S.f + S.g ≫ s = 𝟙 _ := by cat_disch
 
 namespace Splitting
 
@@ -520,20 +520,14 @@ lemma ext_r (s s' : S.Splitting) (h : s.r = s'.r) : s = s' := by
   have eq := s.id
   rw [← s'.id, h, add_right_inj, cancel_epi S.g] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  congr
 
 lemma ext_s (s s' : S.Splitting) (h : s.s = s'.s) : s = s' := by
   have := s.mono_f
   have eq := s.id
   rw [← s'.id, h, add_left_inj, cancel_mono S.f] at eq
   cases s
-  cases s'
-  obtain rfl := eq
-  obtain rfl := h
-  rfl
+  congr
 
 /-- The left homology data on a short complex equipped with a splitting. -/
 @[simps]
@@ -709,7 +703,7 @@ lemma isIso_f' (hS : S.Exact) (h : S.LeftHomologyData) [Mono S.f] :
   have := mono_of_mono_fac h.f'_i
   exact isIso_of_mono_of_epi h.f'
 
-lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology]:
+lemma isIso_toCycles (hS : S.Exact) [Mono S.f] [S.HasLeftHomology] :
     IsIso S.toCycles :=
   hS.isIso_f' _
 
