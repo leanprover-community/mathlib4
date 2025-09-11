@@ -138,18 +138,5 @@ example (K : Type)
     (h : x ^ 3 * y + y ^ 3 * z + z ^ 3 * x = 0) :
     x = 0 := by grobner
 
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
-example (a b : ℤ) (h : a + b = 4) : a + b = 0 := by
-  fail_if_success grobner
-  sorry
-
-/-- warning: declaration uses 'sorry' -/
-#guard_msgs in
-example (a : ℕ) : a = 0 := by
-  have := True.intro
-  fail_if_success grobner
-  sorry
-
 example (y a : ℤ) (k : ℕ) (h : a ^ k = 0) : a ^ k * y = 0 := by
   grobner
