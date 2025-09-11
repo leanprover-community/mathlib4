@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Localization.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Multifunctor
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 /-!
 
@@ -53,12 +54,10 @@ noncomputable instance : Lifting₂ L' L' W W
     ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) where
   iso' := Iso.refl _
 
--- curriedTensorPre F ≅ curriedTensorPost F
 /--
 The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
 -/
-noncomputable def μNatIso : ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) ≅
-    (curriedTensor _ ⋙ (whiskeringRight _ _ _).obj F) := by
+noncomputable def μNatIso : curriedTensorPre F ≅ curriedTensorPost F := by
   refine lift₂NatIso L' L' W W
     ((((whiskeringLeft₂ _).obj (L' ⋙ F)).obj (L' ⋙ F)).obj (curriedTensor E))
     ((curriedTensor C) ⋙ (whiskeringRight C C E).obj (L' ⋙ F))
@@ -115,21 +114,19 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal := by
   refine Functor.CoreMonoidal.ofBifunctor (εIso (L ⋙ F) ≪≫ F.mapIso ε) (μNatIso L W ε F) ?_ ?_ ?_
   · apply natTrans₃_ext (L') (L') (L') W W W
     intro X Y Z
-    have h₁ := (μNatIso L W ε F).hom.naturality ((Functor.LaxMonoidal.μ L' X Y))
-    apply NatTrans.congr_app at h₁
-    specialize h₁ ((L').obj Z)
-    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, Functor.comp_obj,
-      whiskeringRight_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, NatTrans.comp_app,
-      whiskeringLeft₂_obj_obj_obj_map_app, curriedTensor_map_app, Functor.comp_map,
-      whiskeringRight_obj_map, Functor.whiskerRight_app] at h₁
+    have h₁ := NatTrans.congr_app
+      ((μNatIso L W ε F).hom.naturality ((Functor.LaxMonoidal.μ L' X Y))) ((L').obj Z)
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj,
+      Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, NatTrans.comp_app,
+      whiskeringLeft₂_obj_obj_obj_map_app, curriedTensor_map_app] at h₁
     change _ = _ ≫ (F.mapIso ((Functor.mapIso _ (Functor.Monoidal.μIso L' _ _)).app _)).hom at h₁
     rw [← Iso.comp_inv_eq] at h₁
     simp only [Functor.mapIso_inv, Iso.app_inv, Category.assoc] at h₁
     change _ ≫ _ ≫ F.map (_ ▷ (L').obj Z) = _ at h₁
     have h₂ := ((μNatIso L W ε F).hom.app ((L').obj X)).naturality (Functor.LaxMonoidal.μ L' Y Z)
-    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, comp_obj,
-      whiskeringRight_obj_obj, CoreMonoidal.toMonoidal_toLaxMonoidal,
-      whiskeringLeft₂_obj_obj_obj_obj_map, curriedTensor_obj_map, Functor.comp_map] at h₂
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj,
+      CoreMonoidal.toMonoidal_toLaxMonoidal, whiskeringLeft₂_obj_obj_obj_obj_map,
+      curriedTensor_obj_map] at h₂
     change _ = _ ≫ (F.mapIso (Functor.mapIso _ (Functor.Monoidal.μIso L' Y Z))).hom at h₂
     rw [← Iso.comp_inv_eq] at h₂
     simp only [Functor.mapIso_inv, μIso_inv, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
@@ -143,12 +140,11 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal := by
     simp -- squeeze
     change _ = _ ≫ _ ≫ ((μNatIso L W ε F).hom.app unit).app _ ≫ _ ≫ _
     have := NatTrans.congr_app ((μNatIso L W ε F).hom.naturality ε.hom) ((L').obj X)
-    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, comp_obj,
-      whiskeringRight_obj_obj, NatTrans.comp_app, whiskeringLeft₂_obj_obj_obj_map_app,
-      curriedTensor_map_app, Functor.comp_map, whiskeringRight_obj_map, whiskerRight_app] at this
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, NatTrans.comp_app,
+      whiskeringLeft₂_obj_obj_obj_map_app, curriedTensor_map_app] at this
     slice_rhs 2 3 => rw [this]
-    simp only [comp_obj, whiskeringRight_obj_obj, curriedTensor_obj_obj, μNatIso_hom_app_app',
-      CoreMonoidal.toMonoidal_toOplaxMonoidal, Category.assoc]
+    simp only [comp_obj, μNatIso_hom_app_app', CoreMonoidal.toMonoidal_toOplaxMonoidal,
+      Category.assoc]
     change (λ_ ((L' ⋙ F).obj _)).hom = _
     rw [Functor.LaxMonoidal.left_unitality (L' ⋙ F), show LaxMonoidal.ε L' = ε.inv from rfl]
     simp [← Functor.map_comp]
@@ -158,12 +154,11 @@ noncomputable def functorCoremonoidalOfComp : F.CoreMonoidal := by
     simp -- squeeze
     change _ = _ ≫ _ ≫ ((μNatIso L W ε F).hom.app _).app unit ≫ _ ≫ _
     have := ((μNatIso L W ε F).hom.app ((L').obj X)).naturality ε.hom
-    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, comp_obj,
-      whiskeringRight_obj_obj, whiskeringLeft₂_obj_obj_obj_obj_map, curriedTensor_obj_map,
-      Functor.comp_map] at this
+    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj,
+      whiskeringLeft₂_obj_obj_obj_obj_map, curriedTensor_obj_map] at this
     slice_rhs 2 3 => rw [this]
-    simp only [comp_obj, whiskeringRight_obj_obj, curriedTensor_obj_obj, μNatIso_hom_app_app'',
-      CoreMonoidal.toMonoidal_toOplaxMonoidal, Category.assoc]
+    simp only [comp_obj, μNatIso_hom_app_app'', CoreMonoidal.toMonoidal_toOplaxMonoidal,
+      Category.assoc]
     change (ρ_ ((L' ⋙ F).obj _)).hom = _
     rw [Functor.LaxMonoidal.right_unitality (L' ⋙ F), show LaxMonoidal.ε L' = ε.inv from rfl]
     simp [← Functor.map_comp]
