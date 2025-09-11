@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 
 A functor `F : C ⥤ D` is dense if any `Y : D` is a canonical colimit
 relatively to `F`. When `F` is full, we show that this is equivalent
-to saysing that the restricted Yoneda functor
+to saying that the restricted Yoneda functor
 `D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful.
 
 ## Main definitions
