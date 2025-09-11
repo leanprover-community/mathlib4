@@ -471,8 +471,8 @@ same on monoid objects as on objects. -/
   mp := by rintro ⟨N, ⟨e⟩⟩; exact ⟨N.X, ⟨(Mon_.forget _).mapIso e⟩⟩
   mpr := by
     rintro ⟨N, ⟨e⟩⟩
-    let : Mon_Class (F.obj N) := .ofIso e.symm
-    let : Mon_Class N := (FullyFaithful.ofFullyFaithful F).mon_Class N
+    let : MonObj (F.obj N) := .ofIso e.symm
+    let : MonObj N := (FullyFaithful.ofFullyFaithful F).monObj N
     refine ⟨.mk N, ⟨Mon_.mkIso e ?_ ?_⟩⟩ <;> simp
 
 end Monoidal
