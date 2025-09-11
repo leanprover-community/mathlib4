@@ -113,7 +113,7 @@ def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
 
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
-theorem _root_.DifferentiableOn.IsConservativeOn {U : Set ℂ} (hf : DifferentiableOn ℂ f U) :
+theorem _root_.DifferentiableOn.isConservativeOn {U : Set ℂ} (hf : DifferentiableOn ℂ f U) :
     IsConservativeOn f U := by
   rintro z w hzw
   rw [← add_eq_zero_iff_eq_neg, wedgeIntegral_add_wedgeIntegral_eq]
@@ -121,11 +121,11 @@ theorem _root_.DifferentiableOn.IsConservativeOn {U : Set ℂ} (hf : Differentia
 
 variable [CompleteSpace E]
 
-lemma IsExactOn.IsConservativeOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
+lemma IsExactOn.isConservativeOn_of_isOpen {U : Set ℂ} (hU : IsOpen U) (hf : IsExactOn f U) :
     IsConservativeOn f U := by
   obtain ⟨g, hg⟩ := hf
   have hg' : DifferentiableOn ℂ g U := fun z hz ↦ (hg z hz).differentiableAt.differentiableWithinAt
-  apply DifferentiableOn.IsConservativeOn
+  apply DifferentiableOn.isConservativeOn
   exact (differentiableOn_congr <| fun z hz ↦ (hg z hz).deriv).mp <| hg'.deriv hU
 
 section ContinuousOnBall
@@ -267,6 +267,6 @@ theorem IsConservativeOn.isExactOn_ball (hf' : ContinuousOn f (ball c r))
 /-- **Morera's theorem for a disk** On a disk, a holomorphic function has primitives. -/
 theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
     IsExactOn f (ball c r) :=
-  hf.IsConservativeOn.isExactOn_ball hf.continuousOn
+  hf.isConservativeOn.isExactOn_ball hf.continuousOn
 
 end Complex
