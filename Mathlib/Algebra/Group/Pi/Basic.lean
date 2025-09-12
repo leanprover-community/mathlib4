@@ -61,6 +61,7 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   __ := semigroup
   __ := mulOneClass
 
+@[to_additive]
 instance [∀ i, Monoid (f i)] [∀ i, MonoidNPow (f i)] : MonoidNPow (∀ i, f i) where
   npow := fun n x i => x i ^ n
   npow_zero := by intros; ext; exact MonoidNPow.npow_zero _

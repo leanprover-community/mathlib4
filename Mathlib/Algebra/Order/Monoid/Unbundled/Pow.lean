@@ -26,7 +26,7 @@ variable [Preorder M]
 
 namespace Left
 
-variable [MulLeftMono M] {a : M}
+variable [MulLeftMono M] [MonoidNPow M] {a : M}
 
 @[to_additive Left.nsmul_nonneg]
 theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
@@ -52,7 +52,7 @@ end Left
 
 section Left
 
-variable [MulLeftMono M] {a : M} {n : ℕ}
+variable [MulLeftMono M] [MonoidNPow M] {a : M} {n : ℕ}
 
 @[to_additive nsmul_left_monotone]
 theorem pow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
@@ -78,7 +78,7 @@ end Left
 
 section LeftLt
 
-variable [MulLeftStrictMono M] {a : M} {n m : ℕ}
+variable [MonoidNPow M] [MulLeftStrictMono M] {a : M} {n m : ℕ}
 
 @[to_additive nsmul_left_strictMono]
 theorem pow_right_strictMono' (ha : 1 < a) : StrictMono ((a ^ ·) : ℕ → M) :=
@@ -92,7 +92,7 @@ end LeftLt
 
 section Right
 
-variable [MulRightMono M] {x : M}
+variable [MonoidNPow M] [MulRightMono M] {x : M}
 
 @[to_additive Right.nsmul_nonneg]
 theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
@@ -129,7 +129,8 @@ end Right
 
 section CovariantLTSwap
 
-variable [Preorder β] [MulLeftStrictMono M] [MulRightStrictMono M] {f : β → M} {n : ℕ}
+variable [Preorder β] [MonoidNPow M] [MulLeftStrictMono M] [MulRightStrictMono M]
+variable {f : β → M} {n : ℕ}
 
 @[to_additive StrictMono.const_nsmul]
 theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → StrictMono (f · ^ n)
@@ -150,7 +151,7 @@ end CovariantLTSwap
 
 section CovariantLESwap
 
-variable [Preorder β] [MulLeftMono M] [MulRightMono M]
+variable [Preorder β] [MonoidNPow M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
@@ -178,7 +179,7 @@ end CovariantLESwap
 end Preorder
 
 section SemilatticeSup
-variable [SemilatticeSup M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
+variable [SemilatticeSup M] [MonoidNPow M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
 
 lemma le_pow_sup : a ^ n ⊔ b ^ n ≤ (a ⊔ b) ^ n :=
   sup_le (pow_le_pow_left' le_sup_left _) (pow_le_pow_left' le_sup_right _)
@@ -186,7 +187,7 @@ lemma le_pow_sup : a ^ n ⊔ b ^ n ≤ (a ⊔ b) ^ n :=
 end SemilatticeSup
 
 section SemilatticeInf
-variable [SemilatticeInf M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
+variable [SemilatticeInf M] [MonoidNPow M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
 
 lemma pow_inf_le : (a ⊓ b) ^ n ≤ a ^ n ⊓ b ^ n :=
   le_inf (pow_le_pow_left' inf_le_left _) (pow_le_pow_left' inf_le_right _)
@@ -199,7 +200,7 @@ variable [LinearOrder M]
 
 section CovariantLE
 
-variable [MulLeftMono M]
+variable [MonoidNPow M] [MulLeftMono M]
 
 -- This generalises to lattices. See `pow_two_semiclosed`
 @[to_additive nsmul_nonneg_iff]
@@ -227,7 +228,7 @@ end CovariantLE
 
 section CovariantLT
 
-variable [MulLeftStrictMono M] {a : M} {m n : ℕ}
+variable [MonoidNPow M] [MulLeftStrictMono M] {a : M} {m n : ℕ}
 
 @[to_additive nsmul_le_nsmul_iff_left]
 theorem pow_le_pow_iff_right' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
@@ -241,7 +242,7 @@ end CovariantLT
 
 section CovariantLESwap
 
-variable [MulLeftMono M] [MulRightMono M]
+variable [MonoidNPow M] [MulLeftMono M] [MulRightMono M]
 
 @[to_additive lt_of_nsmul_lt_nsmul_right]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
@@ -259,7 +260,7 @@ end CovariantLESwap
 
 section CovariantLTSwap
 
-variable [MulLeftStrictMono M] [MulRightStrictMono M]
+variable [MonoidNPow M] [MulLeftStrictMono M] [MulRightStrictMono M]
 
 @[to_additive le_of_nsmul_le_nsmul_right]
 theorem le_of_pow_le_pow_left' {a b : M} {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n → a ≤ b :=
@@ -274,6 +275,8 @@ theorem le_max_of_sq_le_mul {a b c : M} (h : a ^ 2 ≤ b * c) : a ≤ max b c :=
   simpa using min_le_max_of_mul_le_mul ((pow_two _).symm.trans_le h)
 
 end CovariantLTSwap
+
+variable [MonoidNPow M]
 
 @[to_additive Left.nsmul_neg_iff]
 theorem Left.pow_lt_one_iff' [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n) :
@@ -305,12 +308,14 @@ variable [DivInvMonoid G] [Preorder G] [MulLeftMono G]
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by
   lift n to ℕ using hn
+  let _ := Monoid.monoidNPow G
   rw [zpow_natCast]
   apply one_le_pow_of_one_le' H
 
 @[to_additive zsmul_pos]
 lemma one_lt_zpow {x : G} (hx : 1 < x) {n : ℤ} (hn : 0 < n) : 1 < x ^ n := by
   lift n to ℕ using Int.le_of_lt hn
+  let _ := Monoid.monoidNPow G
   rw [zpow_natCast]
   exact one_lt_pow' hx (Int.natCast_pos.mp hn).ne'
 

@@ -151,15 +151,21 @@ protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
 protected abbrev monoid [Monoid β] : Monoid α := by
   let one := e.one
   let mul := e.mul
-  let pow := e.pow ℕ
   apply e.injective.monoid _ <;> intros <;> exact e.apply_symm_apply _
+
+protected abbrev monoidNPow [Monoid β] [MonoidNPow β] :
+    let _ := e.monoid
+    MonoidNPow α :=
+  let _ := e.one
+  let _ := e.mul
+  let _ := e.pow ℕ
+  e.injective.monoidNPow _ _ _ fun _ _ ↦ e.apply_symm_apply _
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
 @[to_additive /-- Transfer `AddCommMonoid` across an `Equiv` -/]
 protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
-  let pow := e.pow ℕ
   apply e.injective.commMonoid _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Group` across an `Equiv` -/
@@ -169,7 +175,6 @@ protected abbrev group [Group β] : Group α := by
   let mul := e.mul
   let inv := e.Inv
   let div := e.div
-  let npow := e.pow ℕ
   let zpow := e.pow ℤ
   apply e.injective.group _ <;> intros <;> exact e.apply_symm_apply _
 
@@ -180,7 +185,6 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let mul := e.mul
   let inv := e.Inv
   let div := e.div
-  let npow := e.pow ℕ
   let zpow := e.pow ℤ
   apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _
 

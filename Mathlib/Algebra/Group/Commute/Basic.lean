@@ -120,7 +120,7 @@ end Group
 end Commute
 
 section Group
-variable [Group G]
+variable [Group G] [MonoidNPow G]
 
 @[to_additive] lemma pow_inv_comm (a : G) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left.pow_pow _ _

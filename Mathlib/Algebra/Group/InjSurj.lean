@@ -133,6 +133,7 @@ protected abbrev monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (on
     (mul : ∀ x y, f (x * y) = f x * f y) : Monoid M₁ :=
   { hf.mulOneClass f one mul, hf.semigroup f mul with }
 
+@[to_additive]
 protected abbrev monoidNPow [Monoid M₂] [MonoidNPow M₂] [Pow M₁ ℕ] (f : M₁ → M₂) (hf : Injective f)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :

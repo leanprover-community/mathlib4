@@ -25,7 +25,7 @@ variable {G : Type*} {H : Type*}
 variable {F : Type*}
 
 section CommMonoid
-variable [CommMonoid α]
+variable [CommMonoid α] [MonoidNPow α]
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/

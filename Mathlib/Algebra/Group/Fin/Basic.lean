@@ -32,8 +32,10 @@ instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
 instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
-  nsmul := nsmulRec
   __ := Fin.addCommSemigroup n
+
+instance (n : ℕ) [NeZero n] : AddMonoidNSMul (Fin n) where
+  nsmul := nsmulRec
 
 /--
 This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
