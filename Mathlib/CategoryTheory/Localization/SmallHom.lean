@@ -50,7 +50,6 @@ lemma hasSmallLocalizedHom_iff :
     HasSmallLocalizedHom.{w} W X Y ↔ Small.{w} (L.obj X ⟶ L.obj Y) := by
   constructor
   · intro h
-    have := h.small
     exact small_map (homEquiv W W.Q L).symm
   · intro h
     exact ⟨small_map (homEquiv W W.Q L)⟩
@@ -153,7 +152,6 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]
   rw [Equiv.symm_apply_apply]
-  erw [(equivShrink _).symm_apply_apply, (equivShrink _).symm_apply_apply]
   simp only [homEquiv_refl, homEquiv_comp]
 
 section
