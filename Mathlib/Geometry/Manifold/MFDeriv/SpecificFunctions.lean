@@ -559,9 +559,15 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
     (hg : HasMFDerivWithinAt I' J' g t x' dg) :
     HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
       ((mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x')) := by
+  refine ⟨hf.1.prodMap hg.1, ?_⟩
+  -- need to work; the items are not defeq...
+  --apply HasFDerivWithinAt.prodMap
+  -- have aux := hf.2.prodMap hg.2
+  -- have h1 := hf.2
+  -- have h2 := hg.2
+  -- convert h1.prodMk h2
+  -- have aux := h1.prodMk h2
   sorry
-
-#exit
 
 lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivAt I J f x df)
