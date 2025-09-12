@@ -873,7 +873,7 @@ theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_natCast]
 
-instance : WithNontrivialNormMulClassNormedRing ℚ_[p] :=
+instance : NontriviallyNormedField ℚ_[p] :=
   { Padic.normedField p with
     non_trivial :=
       ⟨p⁻¹, by

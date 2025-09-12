@@ -25,8 +25,7 @@ namespace WithAbs
 
 section more_instances
 
-instance instWithNormMulClassNormedRing [Field R] (v : AbsoluteValue R ℝ) :
-    WithNormMulClassNormedRing (WithAbs v) :=
+instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
   v.toNormedField
 
 example [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) := by infer_instance
@@ -51,15 +50,14 @@ theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f := by
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
 induced by `f`. -/
 theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    PseudoMetricSpace.induced f inferInstance =
-      (instWithNormMulClassNormedRing v).toPseudoMetricSpace := by
+    PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
   ext; exact isometry_of_comp h |>.dist_eq _ _
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the uniform structure associated to the absolute value is the same as the uniform structure
 induced by `f`. -/
 theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x) :
-    UniformSpace.comap f inferInstance = (instWithNormMulClassNormedRing v).toUniformSpace := by
+    UniformSpace.comap f inferInstance = (normedField v).toUniformSpace := by
   simp only [← pseudoMetricSpace_induced_of_comp h, PseudoMetricSpace.toUniformSpace]
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then

@@ -53,7 +53,7 @@ local notation "𝓚" => algebraMap ℝ _
 /--
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
-class RCLike (K : semiOutParam Type*) extends Field K, WithDenseNormMulClassNormedRing K,
+class RCLike (K : semiOutParam Type*) extends Field K, DenselyNormedField K,
     StarRing K, Algebra ℝ K, NormSMulClass ℝ K, CompleteSpace K where
   /-- The real part as an additive monoid homomorphism -/
   re : K →+ ℝ
@@ -1217,24 +1217,20 @@ section
 /-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
 To endow such a field with a compatible `RCLike` structure in a proof, use
 `letI := IsRCLikeNormedField.rclike 𝕜`. -/
-class IsRCLikeNormedField (𝕜 : Type*) [hk : Field 𝕜]
-    [h'k : WithNormMulClassNormedRing 𝕜] : Prop where
-  out : ∃ h : RCLike 𝕜, ∃ h' : hk = h.toField, h' ▸ h'k = h.toWithNormMulClassNormedRing
+class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop where
+  out : ∃ h : RCLike 𝕜, hk = h.toNormedField
 
-instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl, rfl⟩⟩
+instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
-noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : Field 𝕜)
-    (h'k : WithNormMulClassNormedRing 𝕜)
-    (h'' : hk = h.toField)
-    (h''' : h'' ▸ h'k = h.toWithNormMulClassNormedRing) : RCLike 𝕜 where
+noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
+    (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
-  __ := h'k
   toPartialOrder := h.toPartialOrder
   toDecidableEq := h.toDecidableEq
-  complete := by subst h''; subst h'''; exact h.complete
-  lt_norm_lt := by subst h''; subst h'''; exact h.lt_norm_lt
+  complete := by subst h''; exact h.complete
+  lt_norm_lt := by subst h''; exact h.lt_norm_lt
   -- star fields
   star := (@StarMul.toInvolutiveStar _ (_) (@StarRing.toStarMul _ (_) h.toStarRing)).star
   star_involutive := by subst h''; exact h.star_involutive
@@ -1250,7 +1246,7 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
     map_add' := by subst h''; exact h.algebraMap.map_add' }
   commutes' := by subst h''; exact h.commutes'
   smul_def' := by subst h''; exact h.smul_def'
-  norm_smul := by subst h''; subst h'''; exact h.norm_smul
+  norm_smul := by subst h''; exact h.norm_smul
   -- RCLike fields
   re := by subst h''; exact h.re
   im := by subst h''; exact h.im
@@ -1265,19 +1261,15 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   conj_re_ax := by subst h''; exact h.conj_re_ax
   conj_im_ax := by subst h''; exact h.conj_im_ax
   conj_I_ax := by subst h''; exact h.conj_I_ax
-  norm_sq_eq_def_ax := by
-    subst h''
-    simp only at h'''
-    subst h'''; exact h.norm_sq_eq_def_ax
+  norm_sq_eq_def_ax := by subst h''; exact h.norm_sq_eq_def_ax
   mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
   le_iff_re_im := by subst h''; exact h.le_iff_re_im
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
-    [hk : Field 𝕜]
-    [h'k : WithNormMulClassNormedRing 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
-  choose p hp h'p using h.out
-  exact p.copy_of_normedField hk h'k hp h'p
+    [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
+  choose p hp using h.out
+  exact p.copy_of_normedField hk hp
 
 end

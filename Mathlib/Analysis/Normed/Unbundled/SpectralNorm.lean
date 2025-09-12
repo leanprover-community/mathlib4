@@ -671,9 +671,7 @@ section NontriviallyNormedField
 
 open IntermediateField
 
-universe u v
-
-variable {K : Type u} [NontriviallyNormedField K] {L : Type v} [Field L] [Algebra K L]
+variable {K : Type*} [_root_.NontriviallyNormedField K] {L : Type*} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
@@ -683,7 +681,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
     f = spectralAlgNorm K L := by
   apply eq_of_powMul_faithful f hf_pm _ spectralAlgNorm_isPowMul
   intro x
-  set E : Type v := id K⟮x⟯
+  set E : Type _ := id K⟮x⟯
   letI hE : Field E := inferInstanceAs (Field K⟮x⟯)
   letI : Algebra K E := inferInstanceAs (Algebra K K⟮x⟯)
   let id1 : K⟮x⟯ →ₗ[K] E := LinearMap.id
@@ -840,16 +838,16 @@ def normedField [CompleteSpace K] : NormedField L := by
   letI := withNormMulClassNormedRing K L
   infer_instance
 
-def withNontrivialNormMulClassNormedRing [CompleteSpace K] :
-    WithNontrivialNormMulClassNormedRing L :=
+def NontriviallyNormedField [CompleteSpace K] :
+    NontriviallyNormedField L :=
   { __ := spectralNorm.withNormMulClassNormedRing K L
     non_trivial :=
-      let ⟨x, hx⟩ := WithNontrivialNormMulClassNormedRing.non_trivial (α := K)
+      let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
       ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩ }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L := by
-  letI := withNontrivialNormMulClassNormedRing K L
+  letI := NontriviallyNormedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `NormedAddCommGroup`. -/

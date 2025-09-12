@@ -371,7 +371,7 @@ variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
   if h : ∃ x : 𝕜, 1 < ‖x‖ then
-    letI : WithNontrivialNormMulClassNormedRing 𝕜 := ⟨h⟩
+    letI : NontriviallyNormedField 𝕜 := ⟨h⟩
     rw [totallyBounded_iff_subset_finite_iUnion_nhds_zero] at hs
     intro U hU
     have h : Filter.Tendsto (fun x : E × E => x.fst + x.snd) (𝓝 0) (𝓝 0) :=

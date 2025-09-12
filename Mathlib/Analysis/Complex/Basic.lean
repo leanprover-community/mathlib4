@@ -48,11 +48,11 @@ variable {z : ℂ}
 
 open ComplexConjugate Topology Filter
 
-instance : WithNormMulClassNormedRing ℂ where
+instance : NormedField ℂ where
   dist_eq _ _ := rfl
   norm_mul := Complex.norm_mul
 
-instance : WithDenseNormMulClassNormedRing ℂ where
+instance : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
