@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Lemma
 
 /-!
 # Nontrivial types
