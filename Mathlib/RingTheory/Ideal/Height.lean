@@ -391,10 +391,9 @@ lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
   apply le_antisymm
   · rw [WithBot.coe_iSup ⟨⊤, fun _ _ => le_top⟩]
     refine iSup_le fun I => ?_
-    by_cases IsEmpty (I ≠ ⊤)
-    · simp [ringKrullDim_nonneg_of_nontrivial]
-    · rw [@WithBot.coe_iSup _ _ _ (not_isEmpty_iff.mp ‹_›) _ _ ⟨⊤, fun _ _ => le_top⟩]
-      exact iSup_le fun hI => height_le_ringKrullDim_of_ne_top hI
+    by_cases h : I = ⊤
+    · simp [h, ringKrullDim_nonneg_of_nontrivial]
+    · simp [h, height_le_ringKrullDim_of_ne_top]
   · refine iSup_le fun p => WithBot.coe_le_coe.mpr (le_trans (b := p.last.asIdeal.height) ?_ ?_)
     · rw [height_eq_primeHeight]
       apply le_trans (b := ⨆ (_ : p.last ≤ p.last), ↑p.length)
