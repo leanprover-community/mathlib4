@@ -152,6 +152,7 @@ def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
 
 /-- derive the `map` definition and declare `Functor` using this. -/
 def deriveFunctor (m : MVarId) : TermElabM Unit := do
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
@@ -167,7 +168,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
     let t' ← mkForallFVars vars.toArray t
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := levels
@@ -208,6 +209,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) : TermElabM Unit := do
   let .inductInfo decl ← getConstInfo n |
     throwError m!"failed to derive '{cls}', '{n}' is not an inductive type"
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let clsDecl ← getConstInfo cls
   let ls := decl.levelParams.map Level.param
   -- incrementally build up target expression `(hp : p) → [cls hp] → ... cls (n.{ls} hp ...)`
@@ -233,7 +235,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     let instN ← m'.withContext do
       let type ← m'.getType >>= instantiateMVars
       mkInstanceNameForTypeExpr type
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := decl.levelParams
@@ -393,6 +395,7 @@ def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
 
 /-- derive the `traverse` definition and declare `Traversable` using this. -/
 def deriveTraversable (m : MVarId) : TermElabM Unit := do
+  let docCtx := (← getLCtx, ← getLocalInstances)
   let levels ← getLevelNames
   let vars ← getFVarsNotImplementationDetails
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
@@ -408,7 +411,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
     let t' ← mkForallFVars vars.toArray t
-    addPreDefinitions
+    addPreDefinitions docCtx
       #[{ ref := .missing
           kind := .def
           levelParams := levels
