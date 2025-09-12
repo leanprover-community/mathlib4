@@ -22,9 +22,9 @@ open Function Module Set
 
 variable {R S : Type*} {x y : R}
 
-theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [Semiring S]
-    [FunLike F R S] [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
-    (RingHom.ker f).IsRadical ↔ IsReduced S := by
+theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S} [CommSemiring R] [Semiring S]
+    {f : R →+* S} (hf : Function.Surjective f) :
+    f.ker.IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl
 
