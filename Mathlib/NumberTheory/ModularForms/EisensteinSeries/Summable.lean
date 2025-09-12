@@ -169,6 +169,16 @@ lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
   exact Or.inr
     (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
 
+lemma linear_isTheta_right' (c e : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d + e)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
+  apply IsTheta.add_isLittleO
+  · refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
+    rw [isLittleO_const_left]
+    exact Or.inr
+      (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
+  · simp only [isLittleO_const_left, Int.cast_eq_zero,
+      tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real, or_true]
+
 lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   apply IsTheta.add_isLittleO
@@ -180,6 +190,10 @@ lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
 lemma linear_inv_isBigO_right (c : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
   (linear_isTheta_right c z).inv.isBigO
+
+lemma linear_inv_isBigO_right' (c e : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d + e)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
+  (linear_isTheta_right' c e z).inv.isBigO
 
 lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
@@ -237,6 +251,12 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ z).mul
     (linear_inv_isBigO_right c₁ z).comp_neg_int
+
+lemma summable_linear_add_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
+    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
+  apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
+  simpa [Real.rpow_two, abs_mul_abs_self, pow_two] using
+    (linear_inv_isBigO_right' c₂ 0 z).mul (linear_inv_isBigO_right' c₁ 1 z)
 
 lemma summable_linear_mul_linear {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
     Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
