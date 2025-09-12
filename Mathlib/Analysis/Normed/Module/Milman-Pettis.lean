@@ -121,6 +121,10 @@ the unit ball in  `E`. Observe that, for any topological `𝕜`-module `M`, `str
 the pairing whose *first* variable is in `M*` and the second is in `M`. -/
 axiom goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
   (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1-- := by sorry
+-- **use**
+-- theorem polar_flip_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
+--     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
+
 
 lemma exists_functional_sub_one_lt {ξ : E**} {δ : ℝ} (hδ₀ : 0 < δ) (hδ₁ : δ < 1) (h : ‖ξ‖ = 1) :
     ∃ φ : StrongDual ℝ E, ‖φ‖ = 1 ∧ |ξ φ - 1| < δ := by
