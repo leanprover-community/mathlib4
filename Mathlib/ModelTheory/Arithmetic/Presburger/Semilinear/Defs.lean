@@ -142,24 +142,30 @@ theorem IsSemilinearSet.iUnion [Finite ι] {s : ι → Set α} (hs : ∀ i, IsSe
   apply sUnion
   simpa
 
-theorem IsSemilinearSet.biUnion {s : Finset ι} {t : ι → Set α}
+theorem IsSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set α}
     (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋃ i ∈ s, t i) := by
   classical
   simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
   apply sUnion
   simpa
 
+theorem IsSemilinearSet.biUnion {s : Set ι} {t : ι → Set α} (hs : s.Finite)
+    (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋃ i ∈ s, t i) := by
+  rw [← hs.coe_toFinset]
+  apply biUnion_finset
+  simpa
+
 theorem IsSemilinearSet.of_finite (hs : s.Finite) : IsSemilinearSet s := by
   rw [← biUnion_of_singleton s, ← hs.coe_toFinset]
   simp_rw [Finset.mem_coe]
-  apply IsSemilinearSet.biUnion
+  apply biUnion_finset
   simp
 
 theorem IsSemilinearSet.vadd (a : α) (hs : IsSemilinearSet s) : IsSemilinearSet (a +ᵥ s) := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [vadd_set_sUnion, Finset.mem_coe]
-  exact biUnion fun s hs => ((hS s hs).vadd a).isSemilinearSet
+  exact biUnion_finset fun s hs => ((hS s hs).vadd a).isSemilinearSet
 
 /-- Semilinear sets are closed under set addition. -/
 theorem IsSemilinearSet.add (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
@@ -167,12 +173,13 @@ theorem IsSemilinearSet.add (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinear
   rcases hs₁ with ⟨S₁, hS₁, rfl⟩
   rcases hs₂ with ⟨S₂, hS₂, rfl⟩
   simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
-  exact biUnion fun s₁ hs₁ => biUnion fun s₂ hs₂ => ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).isSemilinearSet
+  exact biUnion_finset fun s₁ hs₁ => biUnion_finset fun s₂ hs₂ =>
+    ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).isSemilinearSet
 
 theorem IsSemilinearSet.image (hs : IsSemilinearSet s) (f : F) : IsSemilinearSet (f '' s) := by
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
-  exact biUnion fun s hs => ((hS s hs).image f).isSemilinearSet
+  exact biUnion_finset fun s hs => ((hS s hs).image f).isSemilinearSet
 
 theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F α β] [AddEquivClass F α β] (f : F) :
     IsSemilinearSet (f '' s) ↔ IsSemilinearSet s := by
@@ -285,7 +292,7 @@ theorem IsProperSemilinearSet.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, Is
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using hS.1.union (ih hS.2)
 
-theorem IsProperSemilinearSet.biUnion {s : Finset ι} {t : ι → Set α}
+theorem IsProperSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set α}
     (ht : ∀ i ∈ s, IsProperSemilinearSet (t i)) : IsProperSemilinearSet (⋃ i ∈ s, t i) := by
   classical
   simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
@@ -335,7 +342,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd α] (hs : IsLinearSet s) :
           add_mem (nsmul_mem (mem_closure_of_mem (ht' hj)) _)
             ((closure_mono (t.erase_subset j)) hy), ?_⟩
         rw [add_assoc]
-    · exact .biUnion fun j hj => .biUnion fun k hk =>
+    · exact .biUnion_finset fun j hj => .biUnion_finset fun k hk =>
         ih _ (Finset.card_lt_card (Finset.erase_ssubset (ht' hj))) _ _ rfl
 
 /-- The **proper decomposition** of semilinear sets: every semilinear set is a finite union of
@@ -344,4 +351,4 @@ theorem IsSemilinearSet.isProperSemilinearSet [IsCancelAdd α] (hs : IsSemilinea
     IsProperSemilinearSet s := by
   rcases hs with ⟨S, hS, rfl⟩
   simp_rw [sUnion_eq_biUnion, Finset.mem_coe]
-  exact IsProperSemilinearSet.biUnion fun s hs => (hS s hs).isProperSemilinearSet
+  exact IsProperSemilinearSet.biUnion_finset fun s hs => (hS s hs).isProperSemilinearSet
