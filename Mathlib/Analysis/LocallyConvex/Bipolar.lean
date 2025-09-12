@@ -68,17 +68,16 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
-  intro f₁
+  rintro ⟨f₁, hf₁⟩
   have mem_span :
-    ↑f₁ ∈ Submodule.span 𝕜 (⇑(WeakBilin.eval B).toLinearMap₂ '' Set.univ) := by
+    f₁ ∈ Submodule.span 𝕜 (⇑(WeakBilin.eval B).toLinearMap₂ '' Set.univ) := by
       rw [Set.image_univ, mem_span_iff_continuous _]
-      convert f₁.2
-      simp_rw [WeakBilin.instTopologicalSpace, induced_to_pi]
-      rfl
+      convert hf₁
+      simpa [WeakBilin.instTopologicalSpace] using Eq.symm (induced_to_pi ..)
   obtain ⟨l, _, hl2⟩ := (Finsupp.mem_span_image_iff_linearCombination _).mp mem_span
-  use Finsupp.linearCombination 𝕜 (id (M :=F) (R := 𝕜)) l
-  rw [←ContinuousLinearMap.coe_inj, ← hl2, WeakBilin.eval, coe_mk, AddHom.coe_mk]
-  simp [toLinearMap₂, ContinuousLinearMap.coeLMₛₗ, Finsupp.linearCombination_apply, map_finsuppSum]
+  use Finsupp.linearCombination 𝕜 (id (M := F) (R := 𝕜)) l
+  rw [← ContinuousLinearMap.coe_inj, WeakBilin.eval, coe_mk, AddHom.coe_mk]
+  simpa [Finsupp.linearCombination_apply, map_finsuppSum, ← hl2] using (by rfl)
 
 /-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
 weak topology. -/
