@@ -331,7 +331,7 @@ lemma mapEquiv_inf_eq_inf_mapEquiv (f : M ≃L[R] N) {s t : ClosedSubmodule R M}
     (s ⊓ t).mapEquiv f = s.mapEquiv f ⊓ t.mapEquiv f := by
   ext x
   simp only [Submodule.carrier_eq_coe, coe_toSubmodule, SetLike.mem_coe, toSubmodule_inf,
-    Submodule.inf_coe, Set.mem_inter_iff]
+    Submodule.coe_inf, Set.mem_inter_iff]
   simp_rw [mem_mapEquiv_iff']
   simp
 
