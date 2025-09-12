@@ -35,71 +35,6 @@ class IsHomogeneousRelation {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
   is_homogeneous' : ∀ {x y : A}, r x y →
   ∀ i : ι, (Relation.EqvGen r) ((GradedRing.proj 𝒜 i) x) ((GradedRing.proj 𝒜 i) y)
 
-namespace HomogeneousRelation
-
-
-section RingCon
-
-variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
-variable (𝒜 : ι → σ) [GradedRing 𝒜] (rel : A → A → Prop)
-
-open Relation GradedRing
-
-lemma eqvGen_ringQuot_of_eqvGen {a b : A} (h : EqvGen rel a b) :
-    EqvGen (RingQuot.Rel rel) a b := Relation.EqvGen.mono (fun _ _ h' ↦ RingQuot.Rel.of h') h
-
-lemma eqvGen_ringQuot_add_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
-    EqvGen (RingQuot.Rel rel) (a + c) (b + c) := by
-  induction h with
-  | rel x y hxy =>
-    apply EqvGen.rel
-    exact RingQuot.Rel.add_left hxy
-  | refl x =>
-    exact Quot.eqvGen_exact rfl
-  | symm x y h1 h2 =>
-    exact EqvGen.symm (x + c) (y + c) h2
-  | trans x y z _ _ h1 h2 =>
-    exact EqvGen.trans (x + c) (y + c) (z + c) h1 h2
-
-lemma eqvGen_ringQuot_mul_left {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
-    EqvGen (RingQuot.Rel rel) (a * c) (b * c) := by
-  induction h with
-  | rel x y hxy =>
-    apply EqvGen.rel
-    exact RingQuot.Rel.mul_left hxy
-  | refl x =>
-    exact Quot.eqvGen_exact rfl
-  | symm x y h1 h2 =>
-    exact EqvGen.symm (x * c) (y * c) h2
-  | trans x y z _ _ h1 h2 =>
-    exact EqvGen.trans (x * c) (y * c) (z * c) h1 h2
-
-lemma eqvGen_ringQuot_mul_right {a b c : A} (h : EqvGen (RingQuot.Rel rel) a b) :
-    EqvGen (RingQuot.Rel rel) (c * a) (c * b) := by
-  induction h with
-  | rel x y hxy =>
-    apply EqvGen.rel
-    exact RingQuot.Rel.mul_right hxy
-  | refl x =>
-    exact Quot.eqvGen_exact rfl
-  | symm x y h1 h2 =>
-    exact EqvGen.symm (c * x) (c * y) h2
-  | trans x y z _ _ h1 h2 =>
-    exact EqvGen.trans (c * x) (c * y) (c * z) h1 h2
-
-/-- To prove a relation between two products, it suffices to prove that
-the relation is multiplicative and holds on factors. -/
-@[to_additive /-- To prove a relation between two sums, it suffices to prove that
-the relation is additive and holds on summands.-/]
-lemma Finset.relation_prod_induction {α : Type*} {s : Finset α} [DecidableEq α]
-    {M : Type*} [CommMonoid M] (f : α → M) (g : α → M) (r : M → M → Prop)
-    (hom : ∀ (a b c d : M), r a b → r c d → r (a * c) (b * d)) (unit : r 1 1)
-    (base : ∀ x ∈ s, r (f x) (g x)) :
-    r (∏ x ∈ s, f x) (∏ x ∈ s, g x) := by
-  induction s using Finset.induction with
-  | empty => simpa
-  | insert _ _ => simp_all
-
 lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [DecidableEq ι]
     [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
     [(i : ι) → (x : ↥(A i)) → Decidable (x ≠ 0)] (r r' : DirectSum ι fun i ↦ ↥(A i))
@@ -117,51 +52,53 @@ lemma coe_mul_sum_support_subset {ι : Type*} {σ : Type*} {R : Type*} [Decidabl
     · simp [hx h]
   simp [this]
 
+namespace HomogeneousRelation
+
+section RingCon
+
+variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
+variable (𝒜 : ι → σ) [GradedRing 𝒜] (rel : A → A → Prop)
+
+open Relation GradedRing
+
 private noncomputable instance : (i : ι) → (x : ↥(𝒜 i)) → Decidable (x ≠ 0) :=
     fun _ x ↦ Classical.propDecidable (x ≠ 0)
 
 theorem eqvGen_proj_mul_right {a b c : A} (n : ι)
-    (h : ∀ (i : ι), EqvGen (RingQuot.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
-    EqvGen (RingQuot.Rel rel) ((proj 𝒜 n) (a * c)) ((proj 𝒜 n) (b * c)) := by
+    (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
+    (RingConGen.Rel rel) ((proj 𝒜 n) (a * c)) ((proj 𝒜 n) (b * c)) := by
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
   rw [coe_mul_sum_support_subset 𝒜 _ _ Finset.subset_union_left (Set.Subset.refl _),
     coe_mul_sum_support_subset 𝒜 _ _ Finset.subset_union_right (Set.Subset.refl _)]
-  apply Finset.relation_sum_induction
-  · intro _ _ _ _ hab hcd
-    rw [RingQuot.eqvGen_rel_eq] at hab hcd ⊢
-    exact RingConGen.Rel.add hab hcd
-  · rw [RingQuot.eqvGen_rel_eq]
-    exact RingConGen.Rel.refl 0
-  · exact fun x _ => eqvGen_ringQuot_mul_left rel (h x.1)
+  apply (ringConGen rel).toAddCon.finset_sum _ fun i hi ↦ ?_
+  exact RingConGen.Rel.mul (h i.1) (RingConGen.Rel.refl _)
 
 theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
-    (h : ∀ (i : ι), EqvGen (RingQuot.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
-    EqvGen (RingQuot.Rel rel) ((proj 𝒜 n) (c * a)) ((proj 𝒜 n) (c * b)) := by
+    (h : ∀ (i : ι), (RingConGen.Rel rel) ((proj 𝒜 i) a) ((proj 𝒜 i) b)) :
+    (RingConGen.Rel rel) ((proj 𝒜 n) (c * a)) ((proj 𝒜 n) (c * b)) := by
   simp only [proj_apply] at h
   simp only [proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
   rw [coe_mul_sum_support_subset 𝒜 _ _ (Set.Subset.refl _) Finset.subset_union_left,
     coe_mul_sum_support_subset 𝒜 _ _ (Set.Subset.refl _) Finset.subset_union_right]
-  apply Finset.relation_sum_induction
-  · intro _ _ _ _ hab hcd
-    rw [RingQuot.eqvGen_rel_eq] at hab hcd ⊢
-    exact RingConGen.Rel.add hab hcd
-  · rw [RingQuot.eqvGen_rel_eq]
-    exact RingConGen.Rel.refl 0
-  · exact fun x _ => eqvGen_ringQuot_mul_right rel (h x.2)
+  apply (ringConGen rel).toAddCon.finset_sum _ fun i hi ↦ ?_
+  exact RingConGen.Rel.mul (RingConGen.Rel.refl _) (h i.2)
 
-variable [IsHomogeneousRelation 𝒜 rel]
+variable [inst : IsHomogeneousRelation 𝒜 rel]
 
 instance : IsHomogeneousRelation 𝒜 (RingQuot.Rel rel) := by
   apply IsHomogeneousRelation.mk
+  rw [RingQuot.eqvGen_rel_eq]
   intro x y h
   induction h with
   | of h_rel =>
-    exact fun n ↦ eqvGen_ringQuot_of_eqvGen _ (IsHomogeneousRelation.is_homogeneous' h_rel n)
+    intro i
+    rw [← RingQuot.eqvGen_rel_eq]
+    exact Relation.EqvGen.mono (fun _ _ h' ↦ RingQuot.Rel.of h') (inst.is_homogeneous' h_rel i)
   | add_left _ h =>
-    intro n
+    intro i
     rw [map_add, map_add]
-    exact eqvGen_ringQuot_add_right rel (h n)
+    exact RingConGen.Rel.add (h i) (RingConGen.Rel.refl _)
   | mul_left _ h =>
     exact fun n ↦ eqvGen_proj_mul_right 𝒜 rel n h
   | mul_right _ h =>
