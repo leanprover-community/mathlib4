@@ -549,13 +549,13 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
 
 /- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
-    Valued.v f ≤ WithZero.exp (-D : ℤ) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
+    Valued.v f ≤ exp (-D : ℤ) ↔ ∀ n : ℤ, n < D → f.coeff n = 0 := by
   refine ⟨fun hnD n hn => coeff_zero_of_lt_valuation K hnD hn, fun h_val_f => ?_⟩
   let F := powerSeriesPart f
   by_cases ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, neg_neg, mul_comm,
-      ← le_mul_inv_iff₀, WithZero.exp_neg, ← mul_inv, ← exp_add, ← exp_neg]
+      ← le_mul_inv_iff₀, exp_neg, ← mul_inv, ← exp_add, ← exp_neg]
     · by_cases hDs : D + s ≤ 0
       · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
         rwa [← log_le_iff_le_exp one_ne_zero, le_neg, log_one, neg_zero]
@@ -586,7 +586,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     · simp [ne_eq, zero_lt_iff]
 
 theorem valuation_le_iff_coeff_lt_log_eq_zero {D : ℤᵐ⁰} (hD : D ≠ 0) {f : K⸨X⸩} :
-    Valued.v f ≤ D ↔ ∀ n : ℤ, n < -WithZero.log D → f.coeff n = 0 := by
+    Valued.v f ≤ D ↔ ∀ n : ℤ, n < -log D → f.coeff n = 0 := by
   cases D
   · simp_all
   · rename_i D
