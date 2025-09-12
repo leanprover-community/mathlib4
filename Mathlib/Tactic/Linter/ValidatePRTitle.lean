@@ -40,7 +40,7 @@ def validateTitle (title : String) : Array String := Id.run do
   if main.endsWith "." then
     errors := errors.push "error: the PR title should not end with a full stop"
 
-  let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test"]
+  let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"]
   let mut isFine := false
   for kind in knownKinds do
     if type.startsWith kind then isFine := true
