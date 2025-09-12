@@ -54,6 +54,9 @@ instance : Setoid (AbsoluteValue R S) where
 theorem IsEquiv.lt_iff_lt (h : v.IsEquiv w) {x y : R} : v x < v y ↔ w x < w y :=
   lt_iff_lt_of_le_iff_le' (h y x) (h x y)
 
+theorem IsEquiv.eq_iff_eq (h : v.IsEquiv w) {x y : R} : v x = v y ↔ w x = w y := by
+  simp [le_antisymm_iff, h x y, h y x]
+
 variable [IsDomain S] [Nontrivial R]
 
 theorem IsEquiv.lt_one_iff (h : v.IsEquiv w) {x : R} :
@@ -72,17 +75,13 @@ theorem IsEquiv.one_le_iff (h : v.IsEquiv w) {x : R} :
     1 ≤ v x ↔ 1 ≤ w x := by
   simpa only [map_one] using h 1 x
 
-theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) (x : R) : v x = 1 ↔ w x = 1 := by
-  simp only [le_antisymm_iff, h.le_one_iff, h.one_le_iff]
+theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) {x : R} : v x = 1 ↔ w x = 1 := by
+  simpa only [map_one] using h.eq_iff_eq (x := x) (y := 1)
 
-theorem IsEquiv.isNontrivial {w : AbsoluteValue R S} (h : v.IsEquiv w) (hv : w.IsNontrivial) :
-    v.IsNontrivial := by
-  obtain ⟨x, h₀, h₁⟩ := hv
-  have hl := h.one_le_iff (x := x)
-  have hr := h.le_one_iff (x := x)
-  by_cases hw : w x ≤ 1
-  · contrapose! hl; exact .inl ⟨v.not_isNontrivial_iff.1 hl _ h₀ ▸ le_rfl, mt (le_antisymm hw) h₁⟩
-  · contrapose! hr; exact .inl ⟨v.not_isNontrivial_iff.1 hr _ h₀ ▸ le_rfl, hw⟩
+theorem IsEquiv.isNontrivial_iff {w : AbsoluteValue R S} (h : v.IsEquiv w) :
+    v.IsNontrivial ↔ w.IsNontrivial :=
+  not_iff_not.1 <| by aesop (add simp [not_isNontrivial_iff, h.eq_one_iff])
+alias ⟨IsEquiv.isNontrivial, _⟩ := IsEquiv.isNontrivial_iff
 
 end OrderedSemiring
 
@@ -94,10 +93,8 @@ variable {R S : Type*} [Field R] [Semifield S] [LinearOrder S] {v w : AbsoluteVa
 @[simp]
 lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
     [IsStrictOrderedRing S] {f : AbsoluteValue R S} :
-    f.IsEquiv .trivial ↔ f = .trivial := by
-  refine ⟨fun h ↦ ext fun x ↦ ?_, fun h ↦ h ▸ .refl _⟩
-  rcases eq_or_ne x 0 with rfl | hx <;> try simp
-  exact trivial_apply (S := S) hx ▸ (h.eq_one_iff x |>.2 <| trivial_apply hx)
+    f.IsEquiv .trivial ↔ f = .trivial :=
+  ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
 
 @[deprecated (since := "2025-09-10")]
 alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
@@ -146,9 +143,8 @@ theorem exists_one_lt_lt_one_of_not_isEquiv {v w : AbsoluteValue R S} (hv : v.Is
     ∃ a : R, 1 < v a ∧ w a < 1 := by
   let ⟨a, hva, hwa⟩ := exists_lt_one_one_le_of_not_isEquiv hv h
   let ⟨b, hwb, hvb⟩ := exists_lt_one_one_le_of_not_isEquiv hw (mt .symm h)
-  have ha : a ≠ 0 := fun ha ↦ not_lt.2 (map_zero w ▸ ha ▸ hwa) zero_lt_one
-  use b / a
-  simp [ha, one_lt_div, div_lt_one, lt_of_le_of_lt' hvb hva, lt_of_le_of_lt' hwa hwb]
+  exact ⟨b / a, by simp [w.pos_iff.1 (lt_of_lt_of_le zero_lt_one hwa), one_lt_div, div_lt_one,
+    lt_of_le_of_lt' hvb hva, lt_of_le_of_lt' hwa hwb]⟩
 
 end LinearOrderedSemifield
 
@@ -157,17 +153,31 @@ section Real
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
 open Real in
+theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha₁ : w a ≠ 1) :
+    0 < (w a).log / (v a).log := by
+  rcases ha₁.lt_or_gt with hwa | hwa
+  · simpa using div_pos (neg_pos_of_neg <| log_neg (w.pos ha₀) (hwa))
+      (neg_pos_of_neg <| log_neg (v.pos ha₀) (h.lt_one_iff.2 hwa))
+  · exact div_pos (log_pos <| hwa) (log_pos (h.one_lt_iff.2 hwa))
+
+open Real in
 /--
-If $v$ and $w$ are two real absolute values on a field $F$ and $v(x) < 1$ if
-and only if $w(x) < 1$, then $\frac{\log (v(a))}{\log (w(a))}$ is constant for all $a\in F$
-with $1 < v(a)$.
+If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that
+$v(x) \leq v(y)$ if and only if $w(x) \leq w(y)$, then $\frac{\log (v(a))}{\log (w(a))}$ is
+constant for all $0 \neq a\in F$ with $v(a) \neq 1$.
 -/
 theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
-    {a : F} (ha : 1 < v a) {b : F} (hb : 1 < v b) :
+    {a : F} (ha₀ : a ≠ 0) (ha₁ : v a ≠ 1) {b : F} (hb₀ : b ≠ 0) (hb₁ : v b ≠ 1) :
     (v b).log / (w b).log = (v a).log / (w a).log := by
   by_contra! h_ne
+  wlog ha : 1 < v a generalizing a b
+  · apply this (inv_ne_zero ha₀) (by simpa) hb₀ hb₁ (by simpa)
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le (not_lt.1 ha)⟩
+  wlog hb : 1 < v b generalizing a b
+  · apply this ha₀ ha₁ (inv_ne_zero hb₀) (by simpa) (by simpa) ha
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le (not_lt.1 hb)⟩
   wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this hb ha h_ne.symm <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
+  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
   have hwa := h.one_lt_iff.1 ha
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
@@ -183,20 +193,6 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
   exact not_lt_of_gt (h.lt_one_iff.1 hq₁) hq₂
 
 open Real in
-private theorem IsEquiv.exists_rpow_eq_of_one_lt {v w : AbsoluteValue F ℝ} (h : v.IsEquiv w) :
-    ∃ t > (0 : ℝ), ∀ x, 1 < w x → v x ^ t = w x := by
-  by_cases hw : w.IsNontrivial
-  · let ⟨a, ha⟩ := hw.exists_abv_gt_one
-    refine ⟨(w a).log / (v a).log, div_pos (log_pos ha) (log_pos (h.symm.one_lt_iff.1 ha)),
-      fun b hb ↦ ?_⟩
-    have := h.symm.one_lt_iff.1 hb
-    rw [← h.symm.log_div_log_eq_log_div_log ha hb, div_eq_inv_mul, rpow_mul (v.nonneg _),
-      rpow_inv_log (by linarith) (by linarith), exp_one_rpow, exp_log (by linarith)]
-  · refine ⟨1, zero_lt_one, fun x _ ↦ ?_⟩
-    rcases eq_or_ne x 0 with rfl | h₀; · simp
-    simp [not_isNontrivial_apply hw h₀, not_isNontrivial_apply (mt h.symm.isNontrivial hw) h₀]
-
-open Real in
 /--
 If `v` and `w` are two real absolute values on a field `F`, then `v` and `w` are equivalent if
 and only if there exists a positive real constant `c` such that for all `x : R`, `(f x)^c = g x`.
@@ -205,16 +201,15 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
     v.IsEquiv w ↔ ∃ c : ℝ, 0 < c ∧ (v · ^ c) = w := by
   refine ⟨fun h ↦ ?_, fun ⟨t, ht, h⟩ ↦ isEquiv_iff_lt_one_iff.2
     fun x ↦ h ▸ (rpow_lt_one_iff' (v.nonneg x) ht).symm⟩
-  obtain ⟨t, ht₀, ht⟩ := h.exists_rpow_eq_of_one_lt
-  refine ⟨t, ht₀, funext fun x ↦ ?_⟩
-  rcases eq_or_ne (v x) 0 with (h₀ | h₀); · simp [(map_eq_zero v).1 h₀, zero_rpow ht₀.ne.symm]
-  rcases eq_or_ne (w x) 1 with (h₁ | h₁); · simp [h₁, (h.symm.eq_one_iff x).1 h₁]
-  by_cases h₂ : 0 < w x ∧ w x < 1
-  · rw [← inv_inj, ← map_inv₀ w, ← ht _ (map_inv₀ w _ ▸ one_lt_inv_iff₀.2 h₂), map_inv₀,
-      inv_rpow (v.nonneg _)]
-  · have hw_le : (w x)⁻¹ ≤ 1 := not_lt.1 <| one_lt_inv_iff₀.not.2 h₂
-    rw [inv_le_one₀ (w.pos <| v.ne_zero_iff.mp h₀)] at hw_le
-    exact ht _ <| lt_of_le_of_ne hw_le h₁.symm
+  by_cases hw : w.IsNontrivial
+  · let ⟨a, ha₀, ha₁⟩ := hw
+    refine ⟨(w a).log / (v a).log, h.log_div_log_pos ha₀ ha₁, funext fun b ↦ ?_⟩
+    rcases eq_or_ne b 0 with rfl | hb₀; · simp [zero_rpow (by linarith [h.log_div_log_pos ha₀ ha₁])]
+    rcases eq_or_ne (w b) 1 with hb₁ | hb₁; · simp [hb₁, h.eq_one_iff.2 hb₁]
+    rw [← h.symm.log_div_log_eq_log_div_log ha₀ ha₁ hb₀ hb₁, div_eq_inv_mul, rpow_mul (v.nonneg _),
+      rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
+  · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
+      aesop (add simp [h.isNontrivial_iff])⟩
 
 end Real
 
