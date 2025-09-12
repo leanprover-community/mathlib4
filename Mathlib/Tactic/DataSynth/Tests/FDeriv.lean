@@ -12,10 +12,6 @@ set_option autoImplicit true
 
 syntax (name:=noFDerivTacStx) "check_no_fderiv" : conv
 
-run_meta 
-  Mathlib.Meta.DataSynth.setCustomDispatch ``HasFDerivAt 
-    ``Mathlib.Meta.DataSynth.hasFDerivAtDispatch
-
 open Lean Elab Tactic in
 @[tactic noFDerivTacStx]
 def noFDerivTac : Tactic := fun stx => do
@@ -42,7 +38,13 @@ example (x₀ : ℝ) : fderiv ℝ (fun x : ℝ => x) x₀ 1 = 1 := by
     simp
 
 example (x₀ : ℝ) : fderiv ℝ (fun x : ℝ => x*x) x₀ 1 = x₀ + x₀ := by 
-  conv_lhs => 
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
+
+example (x₀ : ℝ) : fderiv ℝ (fun x : ℝ => 2*x) x₀ 1 = 2 := by 
+  conv_lhs =>
     simp only [fderiv_simproc]
     check_no_fderiv
     simp
@@ -85,7 +87,7 @@ example (n : ℕ) (x y : EuclideanSpace ℝ (Fin 3)) :
 
   field_simp (disch:=positivity) [← Real.rpow_mul_natCast]
   norm_num
-  simp +arith only [add_comm, mul_comm, mul_assoc]
+  simp only [add_comm, mul_comm, mul_assoc]
   
 
 lemma wave_dt {d} (c : ℝ) (f₀ : ℝ → EuclideanSpace ℝ (Fin d))
@@ -136,10 +138,12 @@ lemma wave_dx2 {u v : Fin d} {s : EuclideanSpace ℝ (Fin d)}
     =
     inner ℝ (f₀'' (⟪x, s⟫_ℝ - c * t) (s u) (s u)) (EuclideanSpace.single v 1) := by 
 
-  have h : ⟪EuclideanSpace.single u 1, s⟫_ℝ = s u := by sorry
+  have h : ⟪EuclideanSpace.single u 1, s⟫_ℝ = s u := by simp [PiLp.inner_apply]
   conv_lhs =>
     simp only [fderiv_simproc]
     check_no_fderiv
     simp [h]
 
     
+
+

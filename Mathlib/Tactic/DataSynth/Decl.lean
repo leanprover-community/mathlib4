@@ -43,14 +43,14 @@ structure DataSynthDecl where
   /-- If normal call to `data_synth` fails then try this callback. This is used in cases when custom
   unification is needed like application of `HasFDerivAt.comp`. -/
   customDispatchName? : Option Name -- Goal → DataSynthM (Option Result)
-  -- /-- Custom theorem registration, `data_synth` with custom dispatch might want to register certain
-  -- theorems differently. This custom call will be used before registering a theorem as normal 
-  -- `data_synth` theorem. If `true` is returned then the theorem is not registered as normal 
-  -- `data_synth` theorem. 
+  /-- Custom theorem registration, `data_synth` with custom dispatch might want to register certain
+  theorems differently. This custom call will be used before registering a theorem as normal 
+  `data_synth` theorem. If `true` is returned then the theorem is not registered as normal 
+  `data_synth` theorem. 
     
-  -- For example, `HasFDerivAt` will use this to register `HasFDerivAt.comp/pi/apply` theorems as 
-  -- they need custom unification procedure. -/
-  -- customTheoremRegister : IO.Ref (Name → Syntax → AttributeKind → AttrM Bool)
+  For example, `HasFDerivAt` will use this to register `HasFDerivAt.comp/pi/apply` theorems as 
+  they need custom unification procedure. -/
+  customTheoremRegisterName? : Option Name
 deriving Inhabited
 
 /-- Type for the environment extension storing all `data_synth` declarations. -/
@@ -65,7 +65,7 @@ initialize dataSynthDeclsExt : DataSynthDeclsExt ←
   }
 
 open Qq in
-unsafe def DataSynthDecl.getCustomDispatchImpl (decl : DataSynthDecl) : 
+private unsafe def DataSynthDecl.getCustomDispatchImpl (decl : DataSynthDecl) : 
     MetaM (Option (Goal → DataSynthM (Option Result))) := do
 
   let some name := decl.customDispatchName? | return none
@@ -84,13 +84,35 @@ def setCustomDispatch (dataSynthName : Name) (dispatchName : Name) : MetaM Unit 
   unless (← isDefEq q(Goal → DataSynthM (Option Result)) info.type) do
     throwError m!"{dispatchName} is not valid data_synth dispatch function!"
 
-  modifyEnv fun e => 
-    dataSynthDeclsExt.modifyState e fun s => 
-      if let some decl := s.find? dataSynthName then
-        s.insert decl.name { decl with customDispatchName? := dispatchName }
-      else
-        s
+  let s := dataSynthDeclsExt.getState (← getEnv)
+  if let some decl := s.find? dataSynthName then
+    dataSynthDeclsExt.add { decl with customDispatchName? := dispatchName }
 
+open Qq in
+private unsafe def DataSynthDecl.getCustomTheoremRegisterImpl (decl : DataSynthDecl) : 
+    MetaM (Option (Name → Syntax → AttributeKind → AttrM Bool)) := do
+
+  let some name := decl.customTheoremRegisterName? | return none
+  let disch ← Meta.evalExpr (Name → Syntax → AttributeKind → AttrM Bool)
+    q(Name → Syntax → AttributeKind → AttrM Bool) (Expr.const name [])
+  return disch
+
+@[implemented_by DataSynthDecl.getCustomTheoremRegisterImpl]
+opaque DataSynthDecl.getCustomTheoremRegister (decl : DataSynthDecl) : 
+    MetaM (Option (Name → Syntax → AttributeKind → AttrM Bool))
+
+open Qq in
+def setCustomTheoremRegister (dataSynthName : Name) (theoremRegisterName : Name) : MetaM Unit := do
+  let info ← getConstInfo theoremRegisterName
+
+  unless (← isDefEq q(Name → Syntax → AttributeKind → AttrM Bool) info.type) do
+    throwError m!"{theoremRegisterName} is not valid data_synth theorem register function!"
+
+  let s := dataSynthDeclsExt.getState (← getEnv)
+  if let some decl := s.find? dataSynthName then
+    dataSynthDeclsExt.add { decl with customTheoremRegisterName? := theoremRegisterName }
+
+  
 /-- Get `data_synth` declaration if `e` is a `data_synth` goal. -/
 def getDataSynth? (e : Expr) : MetaM (Option DataSynthDecl) := do
 
@@ -137,7 +159,7 @@ def addDataSynthDecl (declName : Name) (outArgs : Array Name) :
     nargs := xs.size
     outputArgs := outputArgs
     customDispatchName? := none
-    -- customTheoremRegister := customTheoremRegister
+    customTheoremRegisterName? := none
   }
 
   modifyEnv (dataSynthDeclsExt.addEntry · decl)

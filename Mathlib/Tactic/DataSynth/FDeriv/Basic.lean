@@ -47,7 +47,6 @@ attribute [data_synth out f'] HasFDerivAt
 attribute [data_synth]
   hasFDerivAt_id
   hasFDerivAt_id'
-  hasFDerivAt_const
   HasFDerivAt.fun_add
   HasFDerivAt.fun_sub
   HasFDerivAt.fun_mul

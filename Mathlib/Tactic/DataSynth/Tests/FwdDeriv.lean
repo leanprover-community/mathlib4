@@ -99,54 +99,13 @@ theorem hasFwdFDeriv_cos :
 
 open Lean Meta
 
-dsimproc_decl hihi (_) := fun e => do
-  match e with 
-  | .letE n t v b nondep => do
-    match ← Simp.dsimp v with 
-    | .fvar id => do
-      trace[Meta.Tactic.data_synth.normalize] m!"remove let\n{e}"
-      return .visit (b.instantiate1 (.fvar id))
-    | .letE m t' v' b' nondep' => do
-      trace[Meta.Tactic.data_synth.normalize] m!"move let out\n{e}"
-      return .visit 
-       (.letE m t' v' (nondep:=nondep') <|
-        .letE n t b' (b.liftLooseBVars 1 1) nondep)
-    | mkApp4 (.const ``Prod.mk lvl) X Y x y => do
-      trace[Meta.Tactic.data_synth.normalize] m!"split constructor\n{e}"
-      withLetDecl (n.appendAfter "₁") X x fun xvar => do
-      withLetDecl (n.appendAfter "₂") Y y fun yvar => do
-      let v' := mkApp4 (.const ``Prod.mk lvl) X Y xvar yvar
-      -- let b ← Simp.dsimp (b.instantiate1 v')
-      return .visit (← mkLambdaFVars #[xvar,yvar] (b.instantiate1 v'))
-    | _ => 
-      trace[Meta.Tactic.data_synth.normalize]  m!"simplify body\n{e}"
-      withLetDecl n t v fun var => do
-      return .continue (← mkLambdaFVars #[var] (← Simp.dsimp (b.instantiate1 var)))
-      -- return .continue
-  | _ =>
-    return .continue
-
-set_option pp.proofs false
-
-attribute [simp] hihi
-
-#eval show MetaM Unit from do
-  let a ← Simp.getSimprocFromDecl ``hihi
-  match a with
-  | .inl _ => logInfo "simproc"
-  | .inr _ => logInfo "dsimproc"
-
-simproc_decl normalize_v1 (_) := fun e => do
-  let e' ← normalizeCore normalizeCache e
-  -- logInfo m!"normalization\n{e}\n==>\n{e'}"
-  return .continue (some { expr := e'})
-
 open Mathlib.Meta
 def norm : DataSynth.Normalize := fun e => do
   let e ← normalizeCore normalizeCache e
   return { expr := e }
 
-set_option pp.funBinderTypes true in
+set_option pp.proofs false
+
 set_option trace.Meta.Tactic.data_synth true in
 -- set_option trace.Meta.Tactic.data_synth.normalize true in
 #check (by data_synth (disch:=skip) (norm:=skip) [norm] :
