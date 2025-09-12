@@ -30,7 +30,7 @@ import Mathlib.RingTheory.Extension.Basic
   ```
   A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
 
-- `Algebra.Generators.Cotangent`: The cotangent space wrt `P = R[X] → S`, i.e. the
+- `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
 ## TODOs
@@ -72,14 +72,14 @@ variable {R S ι}
 variable (P : Generators R S ι)
 
 set_option linter.unusedVariables false in
-/-- The polynomial ring wrt a family of generators. -/
+/-- The polynomial ring w.r.t. a family of generators. -/
 @[nolint unusedArguments]
 protected
 abbrev Ring (P : Generators R S ι) : Type (max w u) := MvPolynomial ι R
 
 instance : Algebra P.Ring S := P.algebra
 
-/-- The designated section of wrt a family of generators. -/
+/-- The designated section of w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
 /-- See Note [custom simps projection] -/

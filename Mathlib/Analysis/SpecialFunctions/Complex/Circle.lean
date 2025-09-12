@@ -158,7 +158,6 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]
   use m
   field_simp at hm
-  rw [← mul_right_inj' Real.two_pi_pos.ne']
   linarith
 
 /-- The homeomorphism between `AddCircle (2 * π)` and `Circle`. -/
@@ -181,7 +180,7 @@ noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ Circle :=
 
 theorem homeomorphCircle_apply (hT : T ≠ 0) (x : AddCircle T) :
     homeomorphCircle hT x = toCircle x := by
-  induction' x using QuotientAddGroup.induction_on with x
+  cases x using QuotientAddGroup.induction_on
   rw [homeomorphCircle, Homeomorph.trans_apply,
     homeomorphAddCircle_apply_mk, homeomorphCircle'_apply_mk, toCircle_apply_mk]
   ring_nf

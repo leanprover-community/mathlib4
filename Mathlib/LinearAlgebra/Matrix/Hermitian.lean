@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.LinearAlgebra.Matrix.ZPow
-import Mathlib.Data.Matrix.ConjTranspose
 
 /-! # Hermitian matrices
 
@@ -280,6 +280,11 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
   · intro h
     ext i j
     simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
+
+theorem IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x : n → α) : RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by
+  classical
+  exact dotProduct_comm _ (star x) ▸ (isHermitian_iff_isSymmetric.mp hA).im_inner_self_apply _
 
 end RCLike
 

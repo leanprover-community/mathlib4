@@ -399,7 +399,6 @@ variable [DecidableEq α]
 @[to_additive]
 theorem IsCyclic.image_range_orderOf (ha : ∀ x : α, x ∈ zpowers a) :
     Finset.image (fun i => a ^ i) (range (orderOf a)) = univ := by
-  simp_rw [← SetLike.mem_coe] at ha
   simp only [_root_.image_range_orderOf, Set.eq_univ_iff_forall.mpr ha, Set.toFinset_univ]
 
 @[to_additive]
@@ -688,10 +687,9 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   orders of `g` are `1`, `p`, or `p ^ 2`. It can't be the former because `g ≠ 1`, and it can't
   the latter because the group isn't cyclic. -/
   have := (Nat.mem_divisors (m := p ^ 2)).mpr ⟨hα ▸ orderOf_dvd_natCard (x := g), by aesop⟩
-  simp? [Nat.divisors_prime_pow hp 2] at this says
-    simp only [Nat.divisors_prime_pow hp 2, Nat.reduceAdd, Finset.mem_map, Finset.mem_range,
-      Function.Embedding.coeFn_mk] at this
-  obtain ⟨a, ha, ha'⟩ := this
+  have : ∃ a < 3, p ^ a = orderOf g := by
+    simpa [Nat.divisors_prime_pow hp 2] using this
+  obtain ⟨a, ha, ha'⟩ := by simpa using this
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
   · simp_all
