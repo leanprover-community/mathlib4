@@ -282,7 +282,8 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     -- Try to show that the product is positive
     let p_pos : Option Q(0 < $e) := ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+      -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+      -- We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulStrictMono $α) | pure none
       let .some _instαnontriv ← trySynthInstanceQ q(Nontrivial $α) | pure none
@@ -292,10 +293,11 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     if let some p_pos := p_pos then return .positive p_pos
     -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
-      let .some pbody := rbody.toNonneg
+      let some pbody := rbody.toNonneg
         | return none -- Fail if the body is not provably nonnegative
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-      -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+      -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+      -- We must name the following, else `assertInstancesCommute` loops.
       let .some _instαzeroone ← trySynthInstanceQ q(ZeroLEOneClass $α) | pure none
       let .some _instαposmul ← trySynthInstanceQ q(PosMulMono $α) | pure none
       assertInstancesCommute
@@ -304,7 +306,8 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     -- Fall back to showing that the product is nonzero
     let pbody ← rbody.toNonzero
     let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
-    -- TODO(quote4#38): We must name the following, else `assertInstancesCommute` loops.
+    -- TODO(https://github.com/leanprover-community/quote4/issues/38):
+    -- We must name the following, else `assertInstancesCommute` loops.
     let _instαnontriv ← synthInstanceQ q(Nontrivial $α)
     let _instαnozerodiv ← synthInstanceQ q(NoZeroDivisors $α)
     assertInstancesCommute

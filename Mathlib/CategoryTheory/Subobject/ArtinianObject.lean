@@ -136,7 +136,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
-  haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
+  have : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 
