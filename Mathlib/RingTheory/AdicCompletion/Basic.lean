@@ -792,6 +792,15 @@ variable {M} in
 theorem coeHom_apply (x : M) : coeHom I M x = (x : AdicCompletion I M) :=
   rfl
 
+@[simp]
+theorem eval_comp_coeHom (n : ℕ) : eval I M n ∘ₗ coeHom I M = (I ^ n • ⊤ : Submodule R M).mkQ :=
+  rfl
+
+@[simp]
+theorem eval_comp_coeHom_apply (n : ℕ) (x : M) :
+    eval I M n (coeHom I M x) = Submodule.Quotient.mk x :=
+  rfl
+
 variable {I M}
 
 theorem coeHom_injective_iff : Function.Injective (coeHom I M) ↔ IsHausdorff I M := by
@@ -816,8 +825,20 @@ theorem coeHom_injective [IsHausdorff I M] : Function.Injective (coeHom I M) :=
 theorem coeHom_surjective_iff : Function.Surjective (coeHom I M) ↔ IsPrecomplete I M := by
   constructor
   · refine fun h ↦ ⟨fun f hmn ↦ ?_⟩
-    sorry
-  · sorry
+    let u : AdicCompletion I M := ⟨fun n ↦ Submodule.Quotient.mk (f n), fun c ↦ (hmn c).symm⟩
+    obtain ⟨x, hx⟩ := h u
+    refine ⟨x, fun n ↦ ?_⟩
+    simp [SModEq, ← eval_comp_coeHom_apply, hx, u]
+  · refine fun h u ↦ ?_
+    choose x hx using (fun n ↦ Submodule.Quotient.mk_surjective (I ^ n • ⊤ : Submodule R M) (u.1 n))
+    obtain ⟨a, ha⟩ := h.prec (f := x) (fun hmn ↦ by
+      #check u.2 hmn
+      simpa? using u.2 hmn)
+    use a
+        -- let ⟨x, hx⟩ := h (fun n ↦ eval I M n u) (fun m n hmn ↦ transitionMap_comp_eval hmn u)
+        -- ⟨x, by
+        --   ext n
+        --   simp [SModEq, ← eval_comp_coeHom_apply, hx, u]⟩
 
 alias ⟨isPrecomplete_of_coeHom_surjective, _⟩ := coeHom_surjective_iff
 
