@@ -188,7 +188,7 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
 
-open TopologicalSpace CompletelyRegularSpace Cardinal in
+open TopologicalSpace Cardinal in
 theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
     [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
     IsTopologicalBasis {s : Set X | IsClopen s} := by
