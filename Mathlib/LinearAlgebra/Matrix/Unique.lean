@@ -3,7 +3,8 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie
 -/
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # One by one matrices

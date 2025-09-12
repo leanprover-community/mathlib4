@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.DualNumber
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices

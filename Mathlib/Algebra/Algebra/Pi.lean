@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
