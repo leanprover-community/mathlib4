@@ -185,10 +185,6 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     carrier := MulAction.fixedPoints M E
     algebraMap_mem' := fun a g => smul_algebraMap g a }
 
-@[simp] lemma FixedPoints.mem_intermediateField_iff
-    {M : Type*} [Monoid M] [MulSemiringAction M E] [SMulCommClass M F E] {x : E} :
-    x ∈ FixedPoints.intermediateField (F := F) M ↔ ∀ m : M, m • x = x := .rfl
-
 namespace IntermediateField
 
 /-- The intermediate field fixed by a subgroup. -/
@@ -537,6 +533,31 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
   tfae_have 4 → 1 := fun ⟨h, hp1, _⟩ ↦ of_separable_splitting_field hp1
   tfae_finish
 
+/--
+If `K/F` is a finite Galois extension then, for any extension `L/F`, the extension `KL/L`
+is also Galois.
+-/
+theorem sup (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K] (h : K ⊔ L = ⊤) :
+    IsGalois L E := by
+  obtain ⟨T, hT₁, hT₂⟩ := IsGalois.is_separable_splitting_field F K
+  let T' := Polynomial.map (algebraMap F L) T
+  have : T'.IsSplittingField L E := by
+    refine isSplittingField_iff_intermediateField.mpr ⟨?_, ?_⟩
+    · rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
+      exact Polynomial.splits_of_algHom hT₂.1 (IsScalarTower.toAlgHom _ _ _)
+    · suffices K = adjoin F (T'.rootSet E) by
+        rw [← restrictScalars_inj F, restrictScalars_adjoin, restrictScalars_top, adjoin_union,
+          adjoin_self, sup_comm, ← h, this]
+      apply eq_adjoin_of_eq_algebra_adjoin
+      convert (congr_arg (Subalgebra.map (IsScalarTower.toAlgHom F K E)) hT₂.2).symm
+      · ext; simp
+      · have : T'.rootSet E = T.rootSet E := by
+          ext
+          rw [Polynomial.mem_rootSet', Polynomial.mem_rootSet', Polynomial.map_map,
+            ← IsScalarTower.algebraMap_eq, Polynomial.aeval_map_algebraMap]
+        rw [← Algebra.adjoin_image, Polynomial.image_rootSet hT₂.1, this]
+  exact IsGalois.of_separable_splitting_field (p := T') <| Polynomial.Separable.map hT₁
+
 end IsGalois
 
 end GaloisEquivalentDefinitions
@@ -560,6 +581,69 @@ instance (priority := 100) IsAlgClosure.isGalois (k K : Type*) [Field k] [Field 
     [IsAlgClosure k K] [CharZero k] : IsGalois k K where
 
 end IsAlgClosure
+
+
+section restrictRestrictAlgEquivMapHom
+
+namespace IntermediateField
+
+variable {F E : Type*} [Field F] [Field E] [Algebra F E] (K L : IntermediateField F E) [Normal F K]
+
+/--
+The map from the `Gal(E/L)` to `Gal(K/F)` where `E/L/F` and `E/K/F` are two towers of
+extensions induced by the restriction to `K`. Note that we do require `K/F` to be normal but not
+`E/L`. If this is the case (and everything is finite dimensional) and `K ∩ L = F` then this
+map is surjective, see `IntermediateField.restrictRestrictMapHom_surjective`.
+This map is injective if the compositum of `K` and `L` is `E`,
+see `IntermediateField.restrictRestrictAlgEquivMapHom_injective`.
+-/
+noncomputable def restrictRestrictAlgEquivMapHom :
+    (E ≃ₐ[L] E) →* (K ≃ₐ[F] K) :=
+  (AlgEquiv.restrictNormalHom K).comp (MulSemiringAction.toAlgAut (E ≃ₐ[L] E) F E)
+
+@[simp]
+theorem restrictRestrictAlgEquivMapHom_apply (φ : E ≃ₐ[L] E) (x : K) :
+    restrictRestrictAlgEquivMapHom K L φ x = φ x := by
+  simp [restrictRestrictAlgEquivMapHom, AlgEquiv.restrictNormalHom_apply]
+
+theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
+    Function.Injective (restrictRestrictAlgEquivMapHom K L) := by
+  refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
+  have : φ ∈ fixingSubgroup ⊤ := by
+    refine (IntermediateField.mem_fixingSubgroup_iff _ _).mpr fun _ hx ↦ ?_
+    rw [← SetLike.mem_coe, ← coe_restrictScalars F, restrictScalars_top, ← h, SetLike.mem_coe,
+      sup_def] at hx
+    induction hx using adjoin_induction F with
+    | mem x hx =>
+      obtain hx | hx := hx
+      · rw [← Subtype.coe_mk x hx, ← restrictRestrictAlgEquivMapHom_apply,
+          congr_arg ((↑) : K → E) (AlgEquiv.congr_fun hφ _), AlgEquiv.one_apply]
+      · rw [← Subtype.coe_mk x hx, ← algebraMap_apply, AlgEquiv.commutes, algebraMap_apply]
+    | algebraMap x => rw [IsScalarTower.algebraMap_apply F L E, AlgEquiv.commutes]
+    | add x y _ _ hx hy => rw [map_add, hx, hy]
+    | inv x _ hx => rw [map_inv₀, hx]
+    | mul x y _ _ hx hy => rw [map_mul, hx, hy]
+  rwa [fixingSubgroup_top, Subgroup.mem_bot] at this
+
+theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [FiniteDimensional L E]
+    [IsGalois L E] (h : K ⊓ L = ⊥) :
+    Function.Surjective (restrictRestrictAlgEquivMapHom K L) := by
+  suffices fixedField (restrictRestrictAlgEquivMapHom K L).range = ⊥ from
+     MonoidHom.range_eq_top.mp <|
+      fixingSubgroup_fixedField (restrictRestrictAlgEquivMapHom K L).range ▸
+        this ▸ fixingSubgroup_bot
+  refine eq_bot_iff.mpr fun ⟨x, hx₁⟩ hx₂ ↦ ?_
+  obtain ⟨⟨y, hy⟩, rfl⟩ : x ∈ Set.range (algebraMap L E) := by
+    refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
+    rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
+    rw [mem_fixedField_iff] at hx₂
+    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom K L φ) ⟨φ, rfl⟩
+  obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
+  exact mem_bot.mp ⟨z, rfl⟩
+
+end IntermediateField
+
+end restrictRestrictAlgEquivMapHom
 
 namespace Algebra
 
