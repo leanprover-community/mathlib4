@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+-- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
 
