@@ -121,22 +121,6 @@ section
 
 variable [ContMDiffMul I n G] {f g : M → G} {s : Set M} {x : M}
 
-theorem ContMDiffWithinAt.add {𝕜 : Type u_1} [inst : NontriviallyNormedField 𝕜]
-    {H : Type u_2} [inst_1 : TopologicalSpace H] {E : Type u_3}
-    [inst_2 : NormedAddCommGroup E] [inst_3 : NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
-    {n : WithTop ℕ∞}
-    {G : Type u_4} [inst_4 : Add G] [inst_5 : TopologicalSpace G] [inst_6 : ChartedSpace H G]
-    {E' : Type u_5}
-    [inst_7 : NormedAddCommGroup E'] [inst_8 : NormedSpace 𝕜 E'] {H' : Type u_6}
-    [inst_9 : TopologicalSpace H']
-    {I' : ModelWithCorners 𝕜 E' H'} {M : Type u_7} [inst_10 : TopologicalSpace M]
-    [inst_11 : ChartedSpace H' M]
-    [ContMDiffAdd I n G] {f g : M → G} {s : Set M} {x : M}
-    (hf : ContMDiffWithinAt I' I n f s x)
-    (hg : ContMDiffWithinAt I' I n g s x) : ContMDiffWithinAt I' I n (f + g) s x :=
-  (contMDiff_add I n).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
-
-@[to_additive existing]
 theorem ContMDiffWithinAt.mul (hf : ContMDiffWithinAt I' I n f s x)
     (hg : ContMDiffWithinAt I' I n g s x) : ContMDiffWithinAt I' I n (f * g) s x :=
   (contMDiff_mul I n).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
@@ -164,6 +148,41 @@ theorem contMDiffAt_mul_right {a b : G} : ContMDiffAt I I n (· * a) b :=
   contMDiff_mul_right.contMDiffAt
 
 end
+
+
+section
+
+variable [Add G] [ContMDiffAdd I n G] {f g : M → G} {s : Set M} {x : M}
+omit [Mul G]
+
+theorem ContMDiffWithinAt.add (hf : ContMDiffWithinAt I' I n f s x)
+    (hg : ContMDiffWithinAt I' I n g s x) : ContMDiffWithinAt I' I n (f + g) s x :=
+  (contMDiff_add I n).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
+
+nonrec theorem ContMDiffAt.add (hf : ContMDiffAt I' I n f x) (hg : ContMDiffAt I' I n g x) :
+    ContMDiffAt I' I n (f + g) x :=
+  hf.add hg
+
+theorem ContMDiffOn.add (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s) :
+    ContMDiffOn I' I n (f + g) s := fun x hx => (hf x hx).add (hg x hx)
+
+theorem ContMDiff.add (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
+    ContMDiff I' I n (f + g) := fun x => (hf x).add (hg x)
+
+theorem contMDiff_add_left {a : G} : ContMDiff I I n (a + ·) :=
+  contMDiff_const.add contMDiff_id
+
+theorem contMDiffAt_add_left {a b : G} : ContMDiffAt I I n (a + ·) b :=
+  contMDiff_add_left.contMDiffAt
+
+theorem contMDiff_add_right {a : G} : ContMDiff I I n (· + a) :=
+  contMDiff_id.add contMDiff_const
+
+theorem contMDiffAt_add_right {a b : G} : ContMDiffAt I I n (· + a) b :=
+  contMDiff_add_right.contMDiffAt
+
+end
+
 
 section
 
@@ -398,6 +417,7 @@ theorem contMDiff_finprod (h : ∀ i, ContMDiff I' I n (f i))
     (hfin : LocallyFinite fun i => mulSupport (f i)) : ContMDiff I' I n fun x => ∏ᶠ i, f i x :=
   fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 
+
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
     ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
@@ -405,6 +425,99 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
 end CommMonoid
+
+section AddCommMonoid
+
+open Function
+
+variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {H : Type*} [TopologicalSpace H]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {G : Type*} [AddCommMonoid G] [TopologicalSpace G] [ChartedSpace H G] [ContMDiffAdd I n G]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
+  {s : Set M} {x x₀ : M} {t : Finset ι} {f : ι → M → G} {p : ι → Prop}
+
+theorem ContMDiffWithinAt.sum (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x₀) :
+    ContMDiffWithinAt I' I n (fun x ↦ ∑ i ∈ t, f i x) s x₀ := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => simp [contMDiffWithinAt_const]
+  | insert i K iK IH =>
+    simp only [iK, Finset.sum_insert, not_false_iff]
+    exact (h _ (Finset.mem_insert_self i K)).add (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
+
+theorem contMDiffWithinAt_finsum (lf : LocallyFinite fun i ↦ support <| f i) {x₀ : M}
+    (h : ∀ i, ContMDiffWithinAt I' I n (f i) s x₀) :
+    ContMDiffWithinAt I' I n (fun x ↦ ∑ᶠ i, f i x) s x₀ :=
+  let ⟨_I, hI⟩ := finsum_eventually_eq_sum lf x₀
+  (ContMDiffWithinAt.sum fun i _hi ↦ h i).congr_of_eventuallyEq
+    (eventually_nhdsWithin_of_eventually_nhds hI) hI.self_of_nhds
+
+theorem contMDiffWithinAt_finset_sum' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
+    ContMDiffWithinAt I' I n (∑ i ∈ t, f i) s x :=
+  Finset.sum_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.add hg)
+    (contMDiffWithinAt_const (c := 0)) h
+
+theorem contMDiffWithinAt_finset_sum (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
+    ContMDiffWithinAt I' I n (fun x => ∑ i ∈ t, f i x) s x := by
+  simp only [← Finset.sum_apply]
+  exact contMDiffWithinAt_finset_sum' h
+
+theorem ContMDiffAt.sum (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x₀) :
+    ContMDiffAt I' I n (fun x ↦ ∑ i ∈ t, f i x) x₀ := by
+  simp only [← contMDiffWithinAt_univ] at *
+  exact ContMDiffWithinAt.sum h
+
+theorem contMDiffAt_finsum
+    (lf : LocallyFinite fun i ↦ support <| f i) (h : ∀ i, ContMDiffAt I' I n (f i) x₀) :
+    ContMDiffAt I' I n (fun x ↦ ∑ᶠ i, f i x) x₀ :=
+  contMDiffWithinAt_finsum lf h
+
+theorem contMDiffAt_finset_sum' (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
+    ContMDiffAt I' I n (∑ i ∈ t, f i) x :=
+  contMDiffWithinAt_finset_sum' h
+
+theorem contMDiffAt_finset_sum (h : ∀ i ∈ t, ContMDiffAt I' I n (f i) x) :
+    ContMDiffAt I' I n (fun x => ∑ i ∈ t, f i x) x :=
+  contMDiffWithinAt_finset_sum h
+
+theorem contMDiffOn_finsum
+    (lf : LocallyFinite fun i ↦ Function.support <| f i) (h : ∀ i, ContMDiffOn I' I n (f i) s) :
+    ContMDiffOn I' I n (fun x ↦ ∑ᶠ i, f i x) s := fun x hx ↦
+  contMDiffWithinAt_finsum lf fun i ↦ h i x hx
+
+theorem contMDiffOn_finset_sum' (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
+    ContMDiffOn I' I n (∑ i ∈ t, f i) s := fun x hx =>
+  contMDiffWithinAt_finset_sum' fun i hi => h i hi x hx
+
+theorem contMDiffOn_finset_sum (h : ∀ i ∈ t, ContMDiffOn I' I n (f i) s) :
+    ContMDiffOn I' I n (fun x => ∑ i ∈ t, f i x) s := fun x hx =>
+  contMDiffWithinAt_finset_sum fun i hi => h i hi x hx
+
+theorem ContMDiff.sum (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+    ContMDiff I' I n fun x ↦ ∑ i ∈ t, f i x :=
+  fun x ↦ ContMDiffAt.sum fun j hj ↦ h j hj x
+
+theorem contMDiff_finset_sum' (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+    ContMDiff I' I n (∑ i ∈ t, f i) := fun x => contMDiffAt_finset_sum' fun i hi => h i hi x
+
+theorem contMDiff_finset_sum (h : ∀ i ∈ t, ContMDiff I' I n (f i)) :
+    ContMDiff I' I n fun x => ∑ i ∈ t, f i x := fun x =>
+  contMDiffAt_finset_sum fun i hi => h i hi x
+
+theorem contMDiff_finsum (h : ∀ i, ContMDiff I' I n (f i))
+    (hfin : LocallyFinite fun i => support (f i)) : ContMDiff I' I n fun x => ∑ᶠ i, f i x :=
+  fun x ↦ contMDiffAt_finsum hfin fun i ↦ h i x
+
+
+theorem contMDiff_finsum_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
+    (hf : LocallyFinite fun i => support (f i)) :
+    ContMDiff I' I n fun x => ∑ᶠ (i) (_ : p i), f i x := by
+  simp only [← finsum_subtype_eq_finsum_cond]
+  exact contMDiff_finsum (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+
+end AddCommMonoid
 
 section
 

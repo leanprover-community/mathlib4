@@ -160,6 +160,36 @@ theorem ContMDiff.div {f g : M → G} (hf : ContMDiff I' I n f) (hg : ContMDiff 
 
 end PointwiseDivision
 
+section PointwiseSubtraction
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} {G : Type*}
+  [TopologicalSpace G] [ChartedSpace H G] [AddGroup G] {E' : Type*}
+  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
+
+variable [LieAddGroup I n G]
+
+theorem ContMDiffWithinAt.sub {f g : M → G} {s : Set M} {x₀ : M}
+    (hf : ContMDiffWithinAt I' I n f s x₀) (hg : ContMDiffWithinAt I' I n g s x₀) :
+    ContMDiffWithinAt I' I n (fun x => f x - g x) s x₀ := by
+  simp_rw [sub_eq_add_neg]; exact hf.add hg.neg
+
+theorem ContMDiffAt.sub {f g : M → G} {x₀ : M} (hf : ContMDiffAt I' I n f x₀)
+    (hg : ContMDiffAt I' I n g x₀) : ContMDiffAt I' I n (fun x => f x - g x) x₀ := by
+  simp_rw [sub_eq_add_neg]; exact hf.add hg.neg
+
+theorem ContMDiffOn.sub {f g : M → G} {s : Set M} (hf : ContMDiffOn I' I n f s)
+    (hg : ContMDiffOn I' I n g s) : ContMDiffOn I' I n (fun x => f x - g x) s :=
+  fun x hx ↦ (hf x hx).sub (hg x hx)
+
+theorem ContMDiff.sub {f g : M → G} (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
+    ContMDiff I' I n fun x => f x - g x := by
+  simp [← contMDiffOn_univ] at hf hg ⊢
+  exact hf.sub hg
+
+end PointwiseSubtraction
+
 /-! Binary product of Lie groups -/
 section Product
 

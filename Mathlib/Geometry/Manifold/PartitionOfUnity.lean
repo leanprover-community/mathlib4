@@ -162,7 +162,7 @@ def toPartitionOfUnity : PartitionOfUnity ι M s :=
   { f with toFun := fun i => f i }
 
 theorem contMDiff_sum : ContMDiff I 𝓘(ℝ) ∞ fun x => ∑ᶠ i, f i x :=
-  sorry
+  contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
 
 theorem le_one (i : ι) (x : M) : f i x ≤ 1 :=
   f.toPartitionOfUnity.le_one i x
@@ -186,18 +186,17 @@ the sum `fun x ↦ ∑ᶠ i, f i x • g i x` is smooth on the whole manifold. -
 theorem contMDiff_finsum_smul {g : ι → M → F}
     (hg : ∀ (i), ∀ x ∈ tsupport (f i), ContMDiffAt I 𝓘(ℝ, F) n (g i) x) :
     ContMDiff I 𝓘(ℝ, F) n fun x => ∑ᶠ i, f i x • g i x :=
-  sorry
+  (contMDiff_finsum fun i => f.contMDiff_smul (hg i)) <|
+    f.locallyFinite.subset fun _ => support_smul_subset_left _ _
 
 theorem contMDiffAt_finsum {x₀ : M} {g : ι → M → F}
     (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContMDiffAt I 𝓘(ℝ, F) n (g i) x₀) :
     ContMDiffAt I 𝓘(ℝ, F) n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
-  sorry
-
-theorem contDiffAt_finsum {s : Set E} (f : SmoothPartitionOfUnity ι 𝓘(ℝ, E) E s) {x₀ : E}
-    {g : ι → E → F} (hφ : ∀ i, x₀ ∈ tsupport (f i) → ContDiffAt ℝ n (g i) x₀) :
-    ContDiffAt ℝ n (fun x ↦ ∑ᶠ i, f i x • g i x) x₀ := by
-  simp only [← contMDiffAt_iff_contDiffAt] at *
-  exact f.contMDiffAt_finsum hφ
+  refine _root_.contMDiffAt_finsum (f.locallyFinite.smul_left _) fun i ↦ ?_
+  by_cases hx : x₀ ∈ tsupport (f i)
+  · exact ContMDiffAt.smul ((f i).contMDiff.of_le (mod_cast le_top)).contMDiffAt (hφ i hx)
+  · exact contMDiffAt_of_notMem (compl_subset_compl.mpr
+      (tsupport_smul_subset_left (f i) (g i)) hx) n
 
 section finsupport
 
@@ -290,7 +289,9 @@ theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [Norme
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, ContMDiff I 𝓘(ℝ) ∞ (f i)) (i : ι) : ContMDiff I 𝓘(ℝ) ∞ (f.toPartitionOfUnity i) :=
-  sorry
+  (hf i).mul <| (contMDiff_finprod_cond fun j _ => contMDiff_const.sub (hf j)) <| by
+    simp only [mulSupport_one_sub]
+    exact f.locallyFinite
 
 variable {s : Set M}
 
@@ -796,7 +797,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
   -- show that `f / (f + g)` is smooth
-  · sorry
+  · exact f_diff.div₀ (f_diff.add g_diff) (fun x ↦ ne_of_gt (A x))
   -- show that the range is included in `[0, 1]`
   · refine range_subset_iff.2 (fun x ↦ ⟨div_nonneg (f_pos x) (A x).le, ?_⟩)
     apply div_le_one_of_le₀ _ (A x).le

@@ -52,17 +52,11 @@ theorem coe_one {G : Type*} [One G] [TopologicalSpace G] [ChartedSpace H' G] :
     ⇑(1 : C^n⟮I, N; I', G⟯) = 1 :=
   rfl
 
-instance instNSMul {G : Type*} [AddMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
-    [ContMDiffAdd I' n G] : SMul ℕ C^n⟮I, N; I', G⟯ where
-  smul n f := ⟨n • (f : N → G), sorry⟩
-
-@[to_additive existing]
 instance instPow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] :
     Pow C^n⟮I, N; I', G⟯ ℕ where
   pow f n := ⟨(f : N → G) ^ n, (contMDiff_pow n).comp f.contMDiff⟩
 
-@[to_additive (attr := simp)]
 theorem coe_pow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] (f : C^n⟮I, N; I', G⟯) (n : ℕ) :
     ⇑(f ^ n) = (f : N → G) ^ n :=
