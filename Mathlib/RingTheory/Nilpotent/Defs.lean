@@ -216,13 +216,9 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
   rw [map_zero]
   exact (hx.map f).eq_zero
 
-lemma exists_isNilpotent_of_not_isReduced {R : Type u} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
+lemma exists_isNilpotent_of_not_isReduced {R : Type*} [Zero R] [Pow R ℕ] (h : ¬IsReduced R) :
     ∃ x : R, x ≠ 0 ∧ IsNilpotent x := by
-  by_contra h_contra
-  simp only [ne_eq, not_exists, not_and] at h_contra
-  simp only [isReduced_iff, not_forall] at h
-  obtain ⟨x, ⟨hNil, hx⟩⟩ := h
-  tauto
+    rw [isReduced_iff, not_forall] at h; tauto
 
 instance (ι) (R : ι → Type*) [∀ i, Zero (R i)] [∀ i, Pow (R i) ℕ]
     [∀ i, IsReduced (R i)] : IsReduced (∀ i, R i) where
