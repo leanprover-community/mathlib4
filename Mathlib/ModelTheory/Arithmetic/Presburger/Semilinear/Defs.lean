@@ -30,6 +30,12 @@ which are linear sets with linearly independent submonoid generators (periods).
 - `IsSemilinearSet.isProperSemilinearSet`: every semilinear set is a finite union of proper linear
   sets.
 
+## Naming convention
+
+`IsSemilinearSet.proj` projects a semilinear set of `ι ⊕ κ → α` to `ι → α` by taking `Sum.inl` on
+the index. It is a special case of `IsSemilinearSet.image`, and is useful in proving semilinearity
+of sets in form `{ x | ∃ y, p x y }`.
+
 ## References
 
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
@@ -188,7 +194,8 @@ theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F α β] [AddEquivClass
     simp [image_image]
   · exact h.image f
 
-/-- Semilinear sets are closed under projection. -/
+/-- Semilinear sets are closed under projection (from `ι ⊕ κ → α` to `ι → α` by taking `Sum.inl` on
+the index). It is a special case of `IsSemilinearSet.image`. -/
 theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → α)} (hs : IsSemilinearSet s) :
     IsSemilinearSet { x | ∃ y, Sum.elim x y ∈ s } := by
   convert hs.image (LinearMap.funLeft ℕ α Sum.inl)
