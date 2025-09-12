@@ -5,6 +5,7 @@ Authors: Anne Baanen, Alex J. Best
 -/
 import Mathlib.RingTheory.DedekindDomain.Instances
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RingTheory.Ideal.Int
 
 /-!
 
@@ -371,6 +372,16 @@ theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
     [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
       I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
   rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
+
+section absNorm
+
+variable [Module.Free ℤ R] [Module.Free ℤ S] [Module.Finite ℤ S]
+
+theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
+    absNorm (relNorm R I) = absNorm I := by
+  sorry
+
+end absNorm
 
 end Ideal
 

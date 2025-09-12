@@ -1,9 +1,52 @@
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.NumberTheory.Cyclotomic.Basic
+import Mathlib.FieldTheory.LinearDisjoint
 
 set_option linter.style.header false
 
+section Arithmetic
+
+theorem Nat.sub_one_dvd_totient_of_mem_primeFactors {n p : ℕ} (hp : p ∈ n.primeFactors) :
+    p - 1 ∣ n.totient := by
+  rw [← Nat.totient_prime (Nat.prime_of_mem_primeFactors hp)]
+  exact Nat.totient_dvd_of_dvd <| Nat.dvd_of_mem_primeFactors hp
+
+theorem Nat.prod_primeFractors_pow_dvd_pow_totient (n : ℕ) :
+    ∏ p ∈ n.primeFactors, p ^ (n.totient / (p - 1)) ∣ n ^ n.totient := by
+  induction n using Nat.recOnPrimeCoprime with
+  | zero => simp
+  | prime_pow q k hq =>
+    by_cases hk : k = 0
+    · simp [hk]
+    have h₁ : 0 < q - 1 := Nat.zero_lt_sub_of_lt <| Nat.Prime.one_lt hq
+    rw [Nat.primeFactors_prime_pow hk hq, Finset.prod_singleton, Nat.totient_prime_pow hq
+      (Nat.zero_lt_of_ne_zero hk), ← pow_mul, Nat.mul_div_left _ h₁]
+    refine Nat.pow_dvd_pow q ?_
+    rw [mul_comm k, mul_assoc]
+    exact Nat.le_mul_of_pos_right _ <| Nat.mul_pos h₁ (Nat.zero_lt_of_ne_zero hk)
+  | coprime a b _ _ h ha hb =>
+    replace ha := pow_dvd_pow_of_dvd ha b.totient
+    replace hb := pow_dvd_pow_of_dvd hb a.totient
+    rw [Nat.totient_mul h, mul_pow, pow_mul, pow_mul, pow_right_comm b]
+    convert mul_dvd_mul ha hb using 1
+    simp_rw +contextual [h.primeFactors_mul, Finset.prod_union h.disjoint_primeFactors,
+        ← Finset.prod_pow, ← pow_mul,
+        Nat.div_mul_right_comm (sub_one_dvd_totient_of_mem_primeFactors _), mul_comm b.totient]
+
+end Arithmetic
+
+open Module
+
+theorem IntermediateField.LinearDisjoint.finrank_left_eq_finrank {F E : Type*} [Field F] [Field E]
+    [Algebra F E] {A B : IntermediateField F E} [Module.Finite F A]
+    (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) : finrank A E = finrank F B := by
+  have := finrank_mul_finrank F A E ▸ finrank_top F E ▸ h₂ ▸ h₁.finrank_sup
+  rwa [mul_right_inj' (finrank_pos.ne')] at this
+
+theorem IntermediateField.LinearDisjoint.finrank_right_eq_finrank {F E : Type*} [Field F] [Field E]
+    [Algebra F E] {A B : IntermediateField F E} [Module.Finite F B]
+    (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) : finrank B E = finrank F A :=
+  h₁.symm.finrank_left_eq_finrank (by rwa [sup_comm])
+
+#exit
 section cyclotomic
 
 open Algebra

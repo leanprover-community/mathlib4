@@ -25,6 +25,7 @@ variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors
 
+variable (K) in
 lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relindex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
@@ -65,7 +66,7 @@ lemma NumberField.discr_mem_differentIdeal : ↑(discr K) ∈ differentIdeal ℤ
   have := (differentIdeal ℤ 𝒪).absNorm_mem
   cases (discr K).natAbs_eq with
   | inl h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, ← h] at this
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, ← h] at this
   | inr h =>
-    rwa [absNorm_differentIdeal (K := K), ← Int.cast_natCast, Int.eq_neg_comm.mp h,
+    rwa [absNorm_differentIdeal K, ← Int.cast_natCast, Int.eq_neg_comm.mp h,
       Int.cast_neg, neg_mem_iff] at this

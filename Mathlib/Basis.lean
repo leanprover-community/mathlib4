@@ -4,6 +4,8 @@ import Mathlib.NumberTheory.NumberField.Basic
 
 open Algebra Module Submodule IntermediateField FractionalIdeal
 
+section misc
+
 theorem Algebra.adjoin_trans {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (s : Set S) (t : Set T) (hS : adjoin R s = ⊤) :
@@ -11,6 +13,23 @@ theorem Algebra.adjoin_trans {R S T : Type*} [CommSemiring R] [CommSemiring S] [
   have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R S T)) hS
   rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
   rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
+
+-- This probably true more generally and already proved somewhere...
+attribute [local instance] FractionRing.liftAlgebra in
+theorem FractionRing.algEquiv_algebraMap_commutes (A B : Type*) [CommRing A] [IsDomain A]
+    [CommRing B] [IsDomain B] (K L : Type*) [Field K]
+    [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
+    [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [FaithfulSMul A B]
+    (x : K) :
+     algebraMap (FractionRing A) (FractionRing B) ((FractionRing.algEquiv A K).symm x) =
+       (FractionRing.algEquiv B L).symm (algebraMap K L x) := by
+  obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+  simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
+    AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+
+end misc
+
+noncomputable section PowerBasis
 
 /--
 Docstring
@@ -23,9 +42,6 @@ def PowerBasis.ofBasis {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : T
 theorem PowerBasis.ofBasis_gen {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*}
     [Fintype ι] (B : Basis ι R S) {x : S} (e : ι ≃ Fin (Fintype.card ι))
     (hx : ∀ i, B i = x ^ (e i : ℕ)) : (PowerBasis.ofBasis B e hx).gen = x := rfl
-
-
-noncomputable section PowerBasis
 
 variable {R S : Type*} {S : Type*} [CommRing R] [CommRing S] [IsDomain R] [IsDomain S] [Algebra R S]
   [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
@@ -43,6 +59,8 @@ theorem PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral R x) (hx' : adjoin
 
 end PowerBasis
 
+section general
+
 open scoped nonZeroDivisors
 
 -- set_option pp.proofs true
@@ -53,19 +71,7 @@ open scoped nonZeroDivisors
 --     --  (IsLocalization.map (Localization A⁰) (RingHom.id A) sorry) a := rfl
 --   have := Localization.algEquiv_symm_apply (R := A) (M := A⁰) K x
 
-attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
-
--- This probably true more generally and already proved somewhere...
-theorem FractionRing.algEquiv_algebraMap_commutes (A B : Type*) [CommRing A] [IsDomain A]
-    [CommRing B] [IsDomain B] (K L : Type*) [Field K]
-    [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
-    [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [FaithfulSMul A B]
-    (x : K) :
-     algebraMap (FractionRing A) (FractionRing B) ((FractionRing.algEquiv A K).symm x) =
-       (FractionRing.algEquiv B L).symm (algebraMap K L x) := by
-  obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-  simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
-    AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+-- attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 
 variable {A K C M : Type*} [CommRing A] [Field K] [CommRing C] [Field M] [Algebra K M]
   [Algebra A K] [IsFractionRing A K] [Algebra C M] [Algebra A M] [IsScalarTower A K M]
@@ -116,7 +122,8 @@ variable [Algebra A B₁] [IsDedekindDomain B₁] [NoZeroSMulDivisors A B₁]
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 
-variable (A C B₁ B₂) in
+variable (A C B₁ B₂)
+
 theorem traceDual_eq_span_traceDual [IsDedekindDomain A] [Module.Finite A B₂] [Module.Free A B₂]
     [NoZeroSMulDivisors A B₂] (h₁ : L₁.LinearDisjoint L₂)
     (h₂ : L₁ ⊔ L₂ = ⊤) (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
@@ -177,10 +184,75 @@ theorem traceDual_eq_span_traceDual [IsDedekindDomain A] [Module.Finite A B₂] 
   · have := IsIntegralClosure.isLocalization A K L₂ B₂
     exact traceDual_le_span_traceDual A C B₁ B₂ h₁ h₂
 
+theorem differentIdeal_eq_map_differentIdeal_of_isCoprime [IsDedekindDomain A] [Module.Finite A B₂]
+    [Module.Free A B₂] [NoZeroSMulDivisors A B₂] (h₁ : L₁.LinearDisjoint L₂)
+    (h₂ : L₁ ⊔ L₂ = ⊤) (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) :
+    differentIdeal B₁ C = Ideal.map (algebraMap B₂ C) (differentIdeal A B₂) := by
+  have : Module.Finite B₂ C := IsIntegralClosure.finite B₂ L₂ M _
+  rw [← coeIdeal_inj (K := M), coeIdeal_differentIdeal B₁ L₁, inv_eq_iff_eq_inv,
+    ← extendedHomₐ_coeIdeal_eq_map (K := L₂), coeIdeal_differentIdeal A K, map_inv₀, inv_inv,
+    ← coeToSubmodule_inj, coe_dual_one, coe_extendedHomₐ_eq_span]
+  have := congr_arg (fun x : Submodule B₁ M ↦ span C (x : Set M)) <|
+    traceDual_eq_span_traceDual A C B₁ B₂ h₁ h₂ h₃
+  simp only [span_span_of_tower] at this
+  rw [← FractionalIdeal.coeToSet_coeToSubmodule, coe_dual_one, this]
+  rw [Submodule.coe_restrictScalars, Submodule.span_eq]
+
+theorem traceDual_eq_traceDual_mul_traceDual_of_isCoprime [IsDedekindDomain A]
+    [NoZeroSMulDivisors A B₂] [Module.Finite A B₂] [Module.Free A B₂] [Algebra.IsIntegral B₂ C]
+    (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) :
+    traceDual A K (1 : Submodule C M) = traceDual B₁ L₁ (1 : Submodule C M) *
+      traceDual B₂ L₂ (1 : Submodule C M) := by
+  have h_main : (traceDual B₁ L₁ (1 : Submodule C M)).restrictScalars B₁ =
+      span B₁ (algebraMap L₂ M '' (traceDual A K (1 : Submodule B₂ L₂))) :=
+    (traceDual_eq_span_traceDual A C B₁ B₂ h₁ h₂ h₃).symm
+  have t₁ := congr_arg (fun x : Submodule B₁ M ↦ span C (x : Set M)) h_main
+  simp only [span_span_of_tower] at t₁
+  have t₂ := dual_eq_dual_mul_dual A K L₂ B₂ C M
+  replace t₂ := congr_arg FractionalIdeal.coeToSubmodule t₂
+  rw [coe_mul, FractionalIdeal.coe_dual, coe_extendedHomₐ_eq_span, coe_dual_one, coe_one] at t₂
+  · have : (dual A K (1 : FractionalIdeal B₂⁰ L₂) : Set L₂)
+      = (traceDual A K (1 : Submodule B₂ L₂) : Set L₂) := by
+      rw [← FractionalIdeal.coeToSet_coeToSubmodule, coe_dual_one]
+    rw [this] at t₂
+    rw [← t₁] at t₂
+    rwa [Submodule.coe_restrictScalars, Submodule.span_eq, mul_comm] at t₂
+  simp
+
+theorem dual_eq_dual_mul_dual_of_isCoprime [IsDedekindDomain A] [NoZeroSMulDivisors A B₂]
+    [Module.Finite A B₂] [Module.Free A B₂] [Algebra.IsIntegral B₂ C]
+    (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) :
+    dual A K (1 : FractionalIdeal C⁰ M) = dual B₁ L₁ (1 : FractionalIdeal C⁰ M) *
+      dual B₂ L₂ (1 : FractionalIdeal C⁰ M) := by
+  have t₁ := traceDual_eq_traceDual_mul_traceDual_of_isCoprime A C B₁ B₂ h₁ h₂ h₃
+  have := coe_dual_one A K M C
+  rw [← this] at t₁
+  have := coe_dual_one B₁ L₁ M C
+  rw [← this] at t₁
+  have := coe_dual_one B₂ L₂ M C
+  rw [← this] at t₁
+  rw [← coe_mul] at t₁
+  rwa [FractionalIdeal.coeToSubmodule_inj] at t₁
+
+theorem differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime [IsDedekindDomain A]
+    [NoZeroSMulDivisors A B₂] [Module.Finite A B₂] [Module.Free A B₂] [Algebra.IsIntegral B₂ C]
+    (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+    (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
+      ((differentIdeal A B₂).map (algebraMap B₂ C))) :
+    differentIdeal A C = differentIdeal B₁ C * differentIdeal B₂ C := by
+  rw [← FractionalIdeal.coeIdeal_inj (K := M), coeIdeal_mul, coeIdeal_differentIdeal A K,
+    coeIdeal_differentIdeal B₁ L₁, coeIdeal_differentIdeal B₂ L₂, inv_eq_iff_eq_inv, mul_inv,
+    inv_inv, inv_inv]
+  exact dual_eq_dual_mul_dual_of_isCoprime A C B₁ B₂ h₁ h₂ h₃
+
 variable [IsDedekindDomain A] [IsScalarTower A L₂ M] [IsScalarTower A B₁ M] [Module.Free A B₂]
   [Module.Finite A B₂] [NoZeroSMulDivisors A B₂]
 
-variable (A C B₁ B₂) in
 theorem span_eq_range
     (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁.toSubalgebra ⊔ L₂.toSubalgebra = ⊤)
     (h₃ : IsCoprime ((differentIdeal A B₁).map (algebraMap B₁ C))
@@ -217,6 +289,9 @@ theorem span_eq_range
         ← Basis.traceDual_def, Basis.traceDual_traceDual]
     · rw [hb]
   · ext; simp
+
+
+variable {A C B₁ B₂}
 
 /--
 Docstring.
@@ -287,16 +362,4 @@ theorem Algebra.adjoin_pair_eq_top_of_isCoprime_differentialIdeal [IsScalarTower
   rw [Algebra.adjoin_trans _ _ hα]
   simp [Pb, Set.pair_comm]
 
-open NumberField
-
-example {K : Type*} [Field K] [NumberField K] (E F : IntermediateField ℚ K)
-    (h₀ : E.LinearDisjoint F)
-    (h₁ : E ⊔ F = ⊤)
-    (h₂ : IsCoprime ((differentIdeal ℤ (𝓞 E)).map (algebraMap (𝓞 E) (𝓞 K)))
-      ((differentIdeal ℤ (𝓞 F)).map (algebraMap (𝓞 F) (𝓞 K)))) (α : 𝓞 E) (β : 𝓞 F)
-    (hα : Algebra.adjoin ℤ {α} = ⊤)
-    (hβ : Algebra.adjoin ℤ {β} = ⊤) :
-    Algebra.adjoin ℤ {algebraMap (𝓞 E) (𝓞 K) α, algebraMap (𝓞 F) (𝓞 K) β} = ⊤ := by
-  have h₁' : E.toSubalgebra ⊔ F.toSubalgebra = ⊤ := by
-    rw [← sup_toSubalgebra_of_left, h₁, top_toSubalgebra]
-  exact adjoin_pair_eq_top_of_isCoprime_differentialIdeal h₀ h₁' h₂ hα hβ
+end general

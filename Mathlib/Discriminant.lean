@@ -4,11 +4,27 @@ import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.FieldTheory.Minpoly.ConjRootClass
 import Mathlib.Cyclotomic
 import Mathlib.Basis
+import Mathlib.RingTheory.Ideal.Norm.RelNorm
+import Mathlib.Misc
 
+attribute [local instance] FractionRing.liftAlgebra in
 theorem Ideal.absNorm_algebraMap (A K L B : Type*) [CommRing A] [IsDedekindDomain A]
-    [Module.Free ℤ A] [CommRing B] [IsDedekindDomain B] [Module.Free ℤ B] [Algebra A B] [Field K]
-    [Algebra A K] [IsFractionRing A K] [Field L] [Algebra B L] [IsFractionRing B L] [Algebra K L]
-    (I : Ideal A) : absNorm (I.map (algebraMap A B)) = absNorm I ^ Module.finrank K L := sorry
+    [Module.Free ℤ A] [CommRing B] [IsDedekindDomain B] [Module.Free ℤ B] [Module.Finite ℤ B]
+    [Algebra A B] [NoZeroSMulDivisors A B] [Field K] [Algebra A K] [IsFractionRing A K] [Field L]
+    [Algebra B L] [Algebra A L] [IsFractionRing B L] [Algebra K L] [IsScalarTower A K L]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    [IsScalarTower A B L]
+    (I : Ideal A) : absNorm (I.map (algebraMap A B)) = absNorm I ^ Module.finrank K L := by
+  have : Module.Finite ℤ A := Module.Finite.left ℤ A B
+  have : Module.Finite A B := Module.Finite.right ℤ A B
+  rw [← absNorm_relNorm ℤ, ← relNorm_relNorm ℤ A, relNorm_algebraMap, absNorm_relNorm, map_pow]
+  let e := FractionRing.algEquiv A K
+  let f := FractionRing.algEquiv B L
+  rw [Algebra.finrank_eq_of_equiv_equiv e.symm.toRingEquiv f.symm.toRingEquiv]
+  ext x
+  simp [e, f]
+  have := FractionRing.algEquiv_algebraMap_commutes A B K L x
+  exact this
 
 open NumberField
 
@@ -18,8 +34,8 @@ theorem NumberField.natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow 
       (discr E).natAbs ^ Module.finrank E F := by
   have := congr_arg Ideal.absNorm
     (differentIdeal_eq_differentIdeal_mul_differentIdeal ℤ (𝓞 E) (𝓞 F))
-  rwa [absNorm_differentIdeal (K := F), map_mul, Ideal.absNorm_algebraMap (𝓞 E) E F (𝓞 F),
-    absNorm_differentIdeal (K := E)] at this
+  rwa [absNorm_differentIdeal F, map_mul, Ideal.absNorm_algebraMap (𝓞 E) E F (𝓞 F),
+    absNorm_differentIdeal E] at this
 
 theorem NumberField.discr_dvd_discr (E F : Type*) [Field E] [Field F] [NumberField E]
     [NumberField F] [Algebra E F] : discr E ∣ discr F := by
@@ -30,14 +46,14 @@ theorem NumberField.discr_dvd_discr (E F : Type*) [Field E] [Field F] [NumberFie
     mul_comm _ (discr E ^ _), mul_assoc]
   exact Int.dvd_mul_right _ _
 
-theorem NumberField.isCoprime_differentIdeal_of_isCoprime_discr {E : Type*} [Field E]
+theorem NumberField.isCoprime_differentIdeal_of_isCoprime_discr (E : Type*) [Field E]
     [NumberField E] {F₁ F₂ : Type*} [Field F₁] [NumberField F₁] [Field F₂] [NumberField F₂]
     [Algebra F₁ E] [Algebra F₂ E]
-    (h₂ : IsCoprime (discr F₁) (discr F₂)) :
+    (h : IsCoprime (discr F₁) (discr F₂)) :
     IsCoprime ((differentIdeal ℤ (𝓞 F₁)).map (algebraMap (𝓞 F₁) (𝓞 E)))
       ((differentIdeal ℤ (𝓞 F₂)).map (algebraMap (𝓞 F₂) (𝓞 E))) := by
   rw [Ideal.isCoprime_iff_exists]
-  obtain ⟨u, v, h⟩ := h₂
+  obtain ⟨u, v, h⟩ := h
   refine ⟨u * discr F₁, ?_, v * discr F₂, ?_, ?_⟩
   · apply Ideal.mul_mem_left
     rw [← map_intCast (algebraMap (𝓞 F₁) (𝓞 E))]
@@ -48,6 +64,21 @@ theorem NumberField.isCoprime_differentIdeal_of_isCoprime_discr {E : Type*} [Fie
   rw [← Int.cast_mul, ← Int.cast_mul, ← Int.cast_add, h, Int.cast_one]
 
 open IntermediateField
+
+theorem NumberField.discr_eq_discr_pow_mul_discr_pow {E : Type*} [Field E] [NumberField E]
+    (L₁ L₂ : IntermediateField ℚ E) (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤)
+    (h₃ : IsCoprime ((differentIdeal ℤ (𝓞 L₁)).map (algebraMap (𝓞 L₁) (𝓞 E)))
+      ((differentIdeal ℤ (𝓞 L₂)).map (algebraMap (𝓞 L₂) (𝓞 E)))) :
+    (discr E).natAbs = (discr L₁).natAbs ^ Module.finrank ℚ L₂ *
+      (discr L₂).natAbs ^ Module.finrank ℚ L₁ := by
+  have := congr_arg Ideal.absNorm <|
+    differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime ℤ (𝓞 E) (𝓞 L₁) (𝓞 L₂) h₁ h₂ h₃
+  rwa [map_mul, absNorm_differentIdeal E, differentIdeal_eq_map_differentIdeal_of_isCoprime ℤ (𝓞 E)
+    (𝓞 L₁) (𝓞 L₂) h₁ h₂ h₃, Ideal.absNorm_algebraMap (𝓞 L₂) L₂ E, absNorm_differentIdeal L₂,
+    differentIdeal_eq_map_differentIdeal_of_isCoprime ℤ (𝓞 E) (𝓞 L₂) (𝓞 L₁) (L₁ := L₂) (L₂ := L₁)
+    (by rwa [linearDisjoint_comm]) (by rwa [sup_comm]) (by rwa [isCoprime_comm]),
+    Ideal.absNorm_algebraMap (𝓞 L₁) L₁ E, absNorm_differentIdeal L₁, mul_comm,
+    h₁.finrank_left_eq_finrank h₂, h₁.finrank_right_eq_finrank h₂] at this
 
 theorem NumberField.LinearDisjoint.of_isGalois_isCoprime_discr {E : Type*} [Field E] [NumberField E]
     (F₁ F₂ : IntermediateField ℚ E) [IsGalois ℚ F₁]
@@ -67,18 +98,124 @@ theorem NumberField.LinearDisjoint.of_isGalois_isCoprime_discr {E : Type*} [Fiel
   let _ : Algebra ↥(F₁ ⊓ F₂) F₂ := RingHom.toAlgebra (inclusion inf_le_right).toRingHom
   exact h.isUnit_of_dvd' (NumberField.discr_dvd_discr _ _) (NumberField.discr_dvd_discr _ _)
 
+---- CYCLOTOMIC FIELDS
+
+theorem IsCyClotomicExtension.Rat.absdiscr (K : Type*) [Field K] [NumberField K] (n : ℕ)
+    [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
+    (discr K).natAbs = n ^ n.totient / ∏ p ∈ n.primeFactors, p ^ (n.totient / (p - 1)) := by
+  induction n using Nat.recOnPrimeCoprime generalizing K hn with
+  | zero => exact (neZero_zero_iff_false.mp hn).elim
+  | prime_pow p k hp =>
+    have : Fact (Nat.Prime p) := ⟨hp⟩
+    rw [IsCyclotomicExtension.Rat.absdiscr_prime_pow p k K]
+    by_cases hk : k = 0
+    · simp [hk]
+    have h₁ : 0 < p - 1 := Nat.zero_lt_sub_of_lt <| Nat.Prime.one_lt hp
+    have h₂ : p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
+      rw [mul_comm k, mul_assoc]
+      exact Nat.le_mul_of_pos_right _ <| Nat.mul_pos h₁ (Nat.zero_lt_of_ne_zero hk)
+    rw [Int.natAbs_mul, Int.natAbs_pow, Int.natAbs_neg, Int.natAbs_one, one_pow, one_mul,
+      Int.natAbs_pow, Int.natAbs_cast, Nat.primeFactors_prime_pow hk hp, Finset.prod_singleton,
+      Nat.totient_prime_pow hp (Nat.zero_lt_of_ne_zero hk), Nat.mul_div_left _ h₁, ← pow_mul,
+      Nat.pow_div h₂ p.pos_of_neZero]
+    simp only [Nat.sub_mul, one_mul, Nat.mul_sub, mul_one]
+    ring_nf
+  | coprime n₁ n₂ hn₁ hn₂ h hK₁ hK₂ =>
+    have : NeZero n₁ := NeZero.of_gt hn₁
+    have : NeZero n₂ := NeZero.of_gt hn₂
+    let ζ := IsCyclotomicExtension.zeta (n₁ * n₂) ℚ K
+    have hζ := IsCyclotomicExtension.zeta_spec (n₁ * n₂) ℚ K
+    have hζ₁ := hζ.pow (NeZero.pos _) (a := n₁) (b := n₂) rfl
+    have := hζ₁.intermediateField_adjoin_isCyclotomicExtension ℚ
+    have hζ₂' : IsPrimitiveRoot (AdjoinSimple.gen ℚ (ζ ^ n₁)) n₂ :=
+      IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ₁
+    replace hK₂ := @hK₂ ℚ⟮ζ ^ n₁⟯ _ _ _ _
+    have hζ₂ := hζ.pow (NeZero.pos _) (a := n₂) (b := n₁) (by rw [mul_comm])
+    have := hζ₂.intermediateField_adjoin_isCyclotomicExtension ℚ
+    have hζ₁' : IsPrimitiveRoot (AdjoinSimple.gen ℚ (ζ ^ n₂)) n₁ :=
+      IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ₂
+    replace hK₁ := @hK₁ ℚ⟮ζ ^ n₂⟯ _ _ _ _
+    have : IsGalois ℚ ℚ⟮ζ ^ n₁⟯ := IsCyclotomicExtension.isGalois {n₂} ℚ ℚ⟮ζ ^ n₁⟯
+    have h₁ : IsCoprime (discr ℚ⟮ζ ^ n₁⟯) (discr ℚ⟮ζ ^ n₂⟯) := by
+      rw [Int.isCoprime_iff_nat_coprime, hK₁, hK₂]
+      apply Nat.Coprime.coprime_div_left
+      apply Nat.Coprime.coprime_div_right
+      apply Nat.Coprime.pow_left
+      apply Nat.Coprime.pow_right
+      exact h.symm
+      exact Nat.prod_primeFractors_pow_dvd_pow_totient n₁
+      exact Nat.prod_primeFractors_pow_dvd_pow_totient n₂
+    have h₂ : ℚ⟮ζ ^ n₁⟯ ⊔ ℚ⟮ζ ^ n₂⟯ = ⊤ := by
+        have : IsCyclotomicExtension {n₁ * n₂} ℚ (⊤ : IntermediateField ℚ K) :=
+          hK.equiv _ _ _ topEquiv.symm
+        have : IsCyclotomicExtension {n₁ * n₂} ℚ ↥(ℚ⟮ζ ^ n₁⟯ ⊔ ℚ⟮ζ ^ n₂⟯) := by
+          rw [mul_comm, ← Nat.Coprime.lcm_eq_mul h.symm]
+          exact IntermediateField.isCyclotomicExtension_lcm_sup ℚ⟮ζ ^ n₁⟯ ℚ⟮ζ ^ n₂⟯
+        exact IntermediateField.isCyclotomicExtension_eq_of_eq _ _ (n₁ * n₂)
+    have := NumberField.discr_eq_discr_pow_mul_discr_pow ℚ⟮ζ ^ n₁⟯ ℚ⟮ζ ^ n₂⟯
+      (LinearDisjoint.of_isGalois_isCoprime_discr _ _ h₁)
+      h₂
+      (isCoprime_differentIdeal_of_isCoprime_discr _ h₁)
+    rw [this, hK₁, hK₂]
+    rw [Nat.div_pow, Nat.div_pow, ← Nat.mul_div_mul_comm,
+      IsCyclotomicExtension.finrank (n := n₁) ℚ⟮ζ ^ n₂⟯,
+      IsCyclotomicExtension.finrank (n := n₂) ℚ⟮ζ ^ n₁⟯, ← pow_mul, ← pow_mul, mul_comm n₂.totient,
+      ← Nat.totient_mul h, ← mul_pow, mul_comm n₁]
+    congr
+    rw [← Finset.prod_pow, ← Finset.prod_pow]
+    simp_rw [← pow_mul]
+    rw [h.symm.primeFactors_mul, Finset.prod_union, Nat.totient_mul h.symm]
+    simp_rw +contextual [Nat.div_mul_right_comm (Nat.sub_one_dvd_totient_of_mem_primeFactors _),
+      mul_comm n₁.totient]
+    exact h.symm.disjoint_primeFactors
+    exact Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
+    exact Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
+    refine (Nat.pow_dvd_pow_iff ?_).mpr ?_
+    exact Module.finrank_pos.ne'
+    exact Nat.prod_primeFractors_pow_dvd_pow_totient n₂
+    refine (Nat.pow_dvd_pow_iff ?_).mpr ?_
+    exact Module.finrank_pos.ne'
+    exact Nat.prod_primeFractors_pow_dvd_pow_totient n₁
+    exact Nat.prod_primeFractors_pow_dvd_pow_totient n₁
+    exact Nat.prod_primeFractors_pow_dvd_pow_totient n₂
+
 theorem step1 (F₁ F₂ : Type*) [Field F₁] [Field F₂] [NumberField F₁] [NumberField F₂] {n₁ n₂ : ℕ}
-    [h₁ : IsCyclotomicExtension {n₁} ℚ F₁] [h₂ : IsCyclotomicExtension {n₂} ℚ F₂]
-    (h : n₁.Coprime n₂) : IsCoprime (discr F₁) (discr F₂) := sorry
+    [NeZero n₁] [NeZero n₂] [h₁ : IsCyclotomicExtension {n₁} ℚ F₁] [h₂ : IsCyclotomicExtension {n₂} ℚ F₂]
+    (h : n₁.Coprime n₂) : IsCoprime (discr F₁) (discr F₂) := by
+  rw [Int.isCoprime_iff_nat_coprime, IsCyClotomicExtension.Rat.absdiscr F₁ n₁,
+    IsCyClotomicExtension.Rat.absdiscr F₂ n₂]
+  apply Nat.Coprime.coprime_div_left
+  apply Nat.Coprime.coprime_div_right
+  apply Nat.Coprime.pow_left
+  apply Nat.Coprime.pow_right
+  exact h
+  exact Nat.prod_primeFractors_pow_dvd_pow_totient n₂
+  exact Nat.prod_primeFractors_pow_dvd_pow_totient n₁
 
 theorem step2 {E : Type*} [Field E] [NumberField E] (F₁ F₂ : IntermediateField ℚ E) {n₁ n₂ : ℕ}
     [NeZero n₁] [NeZero n₂] [IsCyclotomicExtension {n₁} ℚ F₁] [IsCyclotomicExtension {n₂} ℚ F₂]
     {ζ₁ : F₁} (hζ₁ : IsPrimitiveRoot ζ₁ n₁) (h₁ : Algebra.adjoin ℤ {hζ₁.toInteger} = ⊤)
     {ζ₂ : F₂} (hζ₂ : IsPrimitiveRoot ζ₂ n₂) (h₂ : Algebra.adjoin ℤ {hζ₂.toInteger} = ⊤)
-    (h : n₁.Coprime n₂) (ζ : ↥(F₁ ⊔ F₂)) (hζ : IsPrimitiveRoot ζ (n₁ * n₂)) :
+    (h : n₁.Coprime n₂) (htop : F₁ ⊔ F₂ = ⊤) (ζ : E) (hζ : IsPrimitiveRoot ζ (n₁ * n₂)) :
     Algebra.adjoin ℤ {hζ.toInteger} = ⊤ := by
-  have := Algebra.adjoin_pair_eq_top_of_isCoprime_differentialIdeal
-  sorry
+  have : IsGalois ℚ F₁ := IsCyclotomicExtension.isGalois {n₁} ℚ F₁
+  have t₁ := step1 F₁ F₂ h
+  have t₁' := NumberField.isCoprime_differentIdeal_of_isCoprime_discr E <| t₁
+  have t₂ := NumberField.LinearDisjoint.of_isGalois_isCoprime_discr F₁ F₂ t₁
+  have htop' : F₁.toSubalgebra ⊔ F₂.toSubalgebra = ⊤ := by
+    simp [← sup_toSubalgebra_of_left, htop]
+  have t₃ := Algebra.adjoin_pair_eq_top_of_isCoprime_differentialIdeal (A := ℤ) (C := 𝓞 E)
+    (B₁ := 𝓞 F₁) (B₂ := 𝓞 F₂) (L₁ := F₁) (L₂ := F₂) t₂ htop' t₁' h₁ h₂
+  rw [← t₃]
+  replace hζ₁ : IsPrimitiveRoot hζ₁.toInteger n₁ := hζ₁.toInteger_isPrimitiveRoot
+  replace hζ₁ := hζ₁.map_of_injective (FaithfulSMul.algebraMap_injective (𝓞 F₁) (𝓞 E))
+  replace hζ₂ : IsPrimitiveRoot hζ₂.toInteger n₂ := hζ₂.toInteger_isPrimitiveRoot
+  replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective (𝓞 F₂) (𝓞 E))
+  have := IsPrimitiveRoot.adjoin_pair_eq ℤ hζ₁ hζ₂ (NeZero.ne _) (NeZero.ne _) (ζ := hζ.toInteger)
+    ?_
+  · rw [this]
+  · rw [Nat.Coprime.lcm_eq_mul h]
+    exact IsPrimitiveRoot.toInteger_isPrimitiveRoot hζ
 
 theorem step3 {K : Type*} [Field K] [NumberField K] (n : ℕ) [hn : NeZero n]
     [hK : IsCyclotomicExtension {n} ℚ K] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
@@ -108,31 +245,11 @@ theorem step3 {K : Type*} [Field K] [NumberField K] (n : ℕ) [hn : NeZero n]
           rw [← Nat.Coprime.lcm_eq_mul h]
           exact IntermediateField.isCyclotomicExtension_lcm_sup ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯
         exact IntermediateField.isCyclotomicExtension_eq_of_eq _ _ (n₁ * n₂)
-    have := step2 ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ hζ₁' ?_ hζ₂' ?_ h ⟨ζ, ?_⟩ ?_
-    · let f := Subalgebra.map <| IsScalarTower.toAlgHom ℤ (𝓞 ↥(ℚ⟮ζ ^ n₂⟯ ⊔ ℚ⟮ζ ^ n₁⟯)) (𝓞 K)
-      have := congr_arg f this
-      unfold f at this
-      rw [AlgHom.map_adjoin_singleton] at this
-      convert this
-      ext x
-      simp
-      rw [htop]
-      refine ⟨?_, ?_⟩
-      · let f : K →+* (⊤ : IntermediateField ℚ K) := topEquiv.symm.toRingHom
-        let g := RingOfIntegers.mapRingHom f
-        exact g x
-      · rfl
+    have := step2 ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ hζ₁' ?_ hζ₂' ?_ h ?_ ζ hζ -- ⟨ζ, ?_⟩ ?_
+    · exact this
     · exact hK₁
     · exact hK₂
-    · rw [htop]
-      exact trivial
-    · exact IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ
-
-
-
-
-
-
+    · exact htop
 
 #exit
 
