@@ -200,7 +200,7 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
   intro σ _
   congr 1
   by_cases h : i = σ j
-  · -- Everything except `(i , j)` (= `(σ j , j)`) is given by A, and the rest is a single `1`.
+  · -- Everything except `(i, j)` (= `(σ j, j)`) is given by A, and the rest is a single `1`.
     congr
     ext j'
     subst h

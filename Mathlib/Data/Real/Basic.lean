@@ -357,8 +357,8 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
     simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance instIsOrderedRing : IsOrderedRing ℝ :=
@@ -477,7 +477,7 @@ noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
 
-noncomputable instance field : Field ℝ where
+noncomputable instance instField : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]
@@ -503,9 +503,9 @@ noncomputable instance decidableLE (a b : ℝ) : Decidable (a ≤ b) := by infer
 
 noncomputable instance decidableEq (a b : ℝ) : Decidable (a = b) := by infer_instance
 
-/-- Show an underlying cauchy sequence for real numbers.
+/-- Show an underlying Cauchy sequence for real numbers.
 
-The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two Cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where

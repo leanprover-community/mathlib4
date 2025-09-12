@@ -102,7 +102,7 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
             apply pow_pos
             exact zero_lt_one.trans ha
           simp [zero_lt_one.trans ha]
-        _ = cauchyBound p := by field_simp [tsub_add_cancel_of_le]
+        _ = cauchyBound p := by simp [field, tsub_add_cancel_of_le]
   apply le_of_eq at h
   have pld : ‖p.leadingCoeff‖₊ ≠ 0 := by simpa
   calc ‖a‖₊ ^ p.natDegree
@@ -123,6 +123,5 @@ theorem IsRoot.norm_lt_cauchyBound {p : K[X]} (hp : p ≠ 0) {a : K} (h : p.IsRo
     _ = (cauchyBound p - 1) * ∑ x ∈ range p.natDegree, ‖a‖₊ ^ x := by
       simp only [← mul_sum]
       field_simp
-      ring
 
 end Polynomial

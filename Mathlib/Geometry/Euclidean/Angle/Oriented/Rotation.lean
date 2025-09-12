@@ -111,8 +111,6 @@ theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearM
 theorem linearEquiv_det_rotation (θ : Real.Angle) :
     LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
   Units.ext <| by
-    -- Porting note: Lean can't see through `LinearEquiv.coe_det` and needed the rewrite
-    -- in mathlib3 this was just `units.ext <| o.det_rotation θ`
     simpa only [LinearEquiv.coe_det, Units.val_one] using o.det_rotation θ
 
 /-- The inverse of `rotation` is rotation by the negation of the angle. -/
@@ -156,9 +154,6 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.toCircle : ℂ) * o.kahler x y := by
-  -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
-  -- I believe this is because the respective coercions are no longer defeq, and
-  -- `Real.Angle.coe_toCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
     Real.Angle.coe_toCircle, Complex.conj_ofReal, conj_I]

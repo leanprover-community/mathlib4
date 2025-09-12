@@ -23,7 +23,7 @@ section DivisionSemiring
 variable [DivisionSemiring K] [CharZero K]
 
 theorem cast_choose {a b : ℕ} (h : a ≤ b) : (b.choose a : K) = b ! / (a ! * (b - a)!) := by
-  have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := Nat.cast_ne_zero.2 (factorial_ne_zero _)
+  have : ∀ {n : ℕ}, (n ! : K) ≠ 0 := Nat.cast_ne_zero.2 (by positivity)
   rw [eq_div_iff_mul_eq (mul_ne_zero this this)]
   rw_mod_cast [← mul_assoc, choose_mul_factorial_mul_factorial h]
 

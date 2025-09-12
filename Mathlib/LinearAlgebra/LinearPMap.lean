@@ -661,14 +661,10 @@ and sending `p` to `f p.1 + g p.2`. -/
 def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
   domain := f.domain.prod g.domain
   toFun :=
-    -- Porting note: This is just
-    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun +`
-    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun`,
-    HAdd.hAdd
-      (α := f.domain.prod g.domain →ₗ[R] G)
-      (β := f.domain.prod g.domain →ₗ[R] G)
-      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun
-      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun
+    (show f.domain.prod g.domain →ₗ[R] G from
+      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun) +
+    (show f.domain.prod g.domain →ₗ[R] G from
+      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun)
 
 @[simp]
 theorem coprod_apply (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) (x) :

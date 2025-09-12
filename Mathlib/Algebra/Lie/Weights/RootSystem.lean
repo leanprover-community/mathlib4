@@ -369,7 +369,6 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    apply add_left_injective (β (coroot α))
     simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
@@ -424,7 +423,7 @@ instance : (rootSystem H).IsReduced where
 
 section IsSimple
 
--- Note that after #10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
+-- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsSimple K L]
 
 open Weight in

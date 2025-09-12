@@ -39,7 +39,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
     exact h₂.symm
   have key : exp (2 * (arctan z * I)) = (1 + z * I) / (1 - z * I) := by
     rw [arctan, ← mul_rotate, ← mul_assoc,
-      show 2 * (I * (-I / 2)) = 1 by field_simp, one_mul, exp_log]
+      show 2 * (I * (-I / 2)) = 1 by simp [field], one_mul, exp_log]
     · exact div_ne_zero z₁ z₂
   -- multiply top and bottom by `1 - z * I`
   rw [key, ← mul_div_mul_right _ _ z₂, sub_mul, add_mul, div_mul_cancel₀ _ z₂, one_mul,

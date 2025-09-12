@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+-- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
 
@@ -228,7 +229,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
   (`Mathlib.Logic, `Mathlib.Data),
@@ -387,6 +387,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Control, `Mathlib.Topology),
   (`Mathlib.Data, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Data, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Data, `Mathlib.Analysis),
   (`Mathlib.Data, `Mathlib.Computability),
   (`Mathlib.Data, `Mathlib.Condensed),
   (`Mathlib.Data, `Mathlib.Geometry.Euclidean),

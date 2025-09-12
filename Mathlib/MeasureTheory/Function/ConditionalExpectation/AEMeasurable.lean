@@ -152,9 +152,6 @@ theorem memLp_trim_of_mem_lpMeasSubgroup (hm : m ≤ m0) (f : Lp F p μ)
   rw [h_eLpNorm_fg]
   exact Lp.eLpNorm_lt_top f
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_trim_of_mem_lpMeasSubgroup := memLp_trim_of_mem_lpMeasSubgroup
-
 /-- If `f` belongs to `Lp` for the measure `μ.trim hm`, then it belongs to the subgroup
 `lpMeasSubgroup F m p μ`. -/
 theorem mem_lpMeasSubgroup_toLp_of_trim (hm : m ≤ m0) (f : Lp F p (μ.trim hm)) :
@@ -315,10 +312,6 @@ instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
     CompleteSpace (lpMeasSubgroup F m p μ) := by
   rw [(lpMeasSubgroupToLpTrimIso F p μ hm.elim).completeSpace_iff]; infer_instance
 
--- For now just no-lint this; lean4's tree-based logging will make this easier to debug.
--- One possible change might be to generalize `𝕜` from `RCLike` to `NormedField`, as this
--- result may well hold there.
--- Porting note: removed @[nolint fails_quickly]
 instance [hm : Fact (m ≤ m0)] [CompleteSpace F] [hp : Fact (1 ≤ p)] :
     CompleteSpace (lpMeas F 𝕜 m p μ) := by
   rw [(lpMeasSubgroupToLpMeasIso F 𝕜 p μ).symm.completeSpace_iff]; infer_instance
@@ -520,9 +513,6 @@ theorem MemLp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ �
     specialize h_add h_disj hf_mem hg_mem hfm hgm hfP' hgP'
     refine h_ae ?_ (hf_mem.add hg_mem) h_add
     exact (hf_mem.coeFn_toLp.symm.add hg_mem.coeFn_toLp.symm).trans (Lp.coeFn_add _ _).symm
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.induction_stronglyMeasurable := MemLp.induction_stronglyMeasurable
 
 end Induction
 

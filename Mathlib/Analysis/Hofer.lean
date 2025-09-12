@@ -28,7 +28,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   by_contra H
   have reformulation : ∀ (x') (k : ℕ), ε * ϕ x ≤ ε / 2 ^ k * ϕ x' ↔ 2 ^ k * ϕ x ≤ ϕ x' := by
     intro x' k
-    rw [div_mul_eq_mul_div, le_div_iff₀, mul_assoc, mul_le_mul_left ε_pos, mul_comm]
+    rw [div_mul_eq_mul_div, le_div_iff₀, mul_assoc, mul_le_mul_iff_right₀ ε_pos, mul_comm]
     positivity
   -- Now let's specialize to `ε/2^k`
   replace H : ∀ k : ℕ, ∀ x', d x' x ≤ 2 * ε ∧ 2 ^ k * ϕ x ≤ ϕ x' →
@@ -63,6 +63,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
             (sum_le_sum fun i i_in => (IH i <| Nat.lt_succ_iff.mp <| Finset.mem_range.mp i_in).1)
           _ = (∑ i ∈ r, (1 / 2 : ℝ) ^ i) * ε := by
             rw [Finset.sum_mul]
+            simp
             field_simp
           _ ≤ 2 * ε := by gcongr; apply sum_geometric_two_le
       have B : 2 ^ (n + 1) * ϕ x ≤ ϕ (u (n + 1)) := by

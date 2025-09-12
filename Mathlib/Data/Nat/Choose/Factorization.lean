@@ -113,7 +113,7 @@ theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
     = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + (k ! * n !).factorization p := by
     have h2 := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n))
-      (Nat.mul_ne_zero (factorial_ne_zero k) (factorial_ne_zero n)), ← mul_assoc, h2,
+      (by positivity), ← mul_assoc, h2,
       factorization_factorial hp hnb, factorization_mul (factorial_ne_zero k) (factorial_ne_zero n),
       coe_add, Pi.add_apply, factorization_factorial hp ((log_mono_right (le_add_left k n)).trans_lt
       hnb), factorization_factorial hp ((log_mono_right (le_add_left n k)).trans_lt
@@ -144,7 +144,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos hkn)
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
-      (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (zero_ne_add_one k).symm)
+      (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
     rw [← succ_mul_choose_eq]
     exact dvd_mul_right _ _
 
@@ -236,9 +236,11 @@ theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) 
   · rw [two_mul, add_tsub_cancel_left]
 
 theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
-  induction' n with n hn; · simp
-  rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
-    Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [factorial_succ, factorization_mul n.succ_ne_zero n.factorial_ne_zero, Finsupp.coe_add,
+      Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
   by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]

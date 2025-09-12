@@ -208,7 +208,6 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
     have h3 : (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) *
           (μ x ^ (n % m1)) ^ (1 / (n : ℝ)) ≤ L + ε := by
       have heq : L + ε = L + ε / 2 + ε / 2 := by rw [add_assoc, add_halves]
-      have hL0' : 0 < L + ε / 2 := add_pos_of_nonneg_of_pos hL0 (half_pos hε)
       rw [heq, ← tsub_le_iff_left]
       nth_rw 3 [← mul_one (L + ε / 2)]
       rw [mul_assoc, ← mul_sub, mul_comm, ← le_div_iff₀ hL0', div_div]
@@ -226,11 +225,11 @@ theorem tendsto_smoothingFun_of_ne_zero (hμ1 : μ 1 ≤ 1) {x : R} (hx : μ x �
           μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) :=
         (mul_rpow (apply_nonneg μ _) (apply_nonneg μ _))
       _ ≤ (μ (x ^ (m1 : ℕ)) ^ (n / (m1 : ℕ))) ^ (1 / (n : ℝ)) *
-            μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) := ((mul_le_mul_right h4).mpr h)
+            μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) := by gcongr
       _ < (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) *
-            μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) := (mul_lt_mul h1 (le_refl _) h4 (le_of_lt h5))
+            μ (x ^ (n % m1)) ^ (1 / (n : ℝ)) := by gcongr
       _ ≤ (L + ε / 2) * (L + ε / 2) ^ (-(((n % m1 : ℕ) : ℝ) / (n : ℝ))) *
-            (μ x ^ (n % m1)) ^ (1 / (n : ℝ)) := ((mul_le_mul_left h5).mpr h2)
+            (μ x ^ (n % m1)) ^ (1 / (n : ℝ)) := by gcongr
       _ ≤ L + ε := h3
 
 /-- If `μ 1 ≤ 1`, then `smoothingFun μ x` is the limit of `smoothingSeminormSeq μ x`

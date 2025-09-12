@@ -2,7 +2,7 @@ import Mathlib.Tactic.Widget.Calc
 
 /-!
 Note that while the suggestions look incorrectly indented here,
-this is an artifact of the rendering to a string for `guard_msgs` (leanprover/lean4#7191).
+this is an artifact of the rendering to a string for `guard_msgs` (https://github.com/leanprover/lean4/issues/7191).
 
 When used from the widget that appears in VSCode, they insert correctly-indented code.
 -/

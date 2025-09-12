@@ -91,7 +91,7 @@ structure Context where
   constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
-  disch : Expr → MetaM (Option Expr) := fun _ => pure .none
+  disch : Expr → MetaM (Option Expr) := fun _ => pure none
   /-- current transition depth -/
   transitionDepth := 0
 

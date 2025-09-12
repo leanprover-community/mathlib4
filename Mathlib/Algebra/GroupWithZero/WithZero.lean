@@ -23,7 +23,7 @@ formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be
 
 ## Notation
 
-In locale `WithZero`:
+In scope `WithZero`:
 * `Mᵐ⁰` for `WithZero (Multiplicative M)`
 
 ## Main definitions

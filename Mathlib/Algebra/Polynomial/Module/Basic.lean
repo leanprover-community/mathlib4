@@ -121,22 +121,25 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
 @[simp]
 theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : ℕ) :
     (monomial i r • g) n = ite (i ≤ n) (r • g (n - i)) 0 := by
-  induction' g using PolynomialModule.induction_linear with p q hp hq
-  · simp only [smul_zero, zero_apply, ite_self]
-  · simp only [smul_add, add_apply, hp, hq]
+  induction g using PolynomialModule.induction_linear with
+  | zero => simp only [smul_zero, zero_apply, ite_self]
+  | add p q hp hq =>
+    simp only [smul_add, add_apply, hp, hq]
     split_ifs
     exacts [rfl, zero_add 0]
-  · rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
+  | single =>
+    rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
     grind
 
 @[simp]
 theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
     (f • single R i m) n = ite (i ≤ n) (f.coeff (n - i) • m) 0 := by
-  induction' f using Polynomial.induction_on' with p q hp hq
-  · rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
+  induction f using Polynomial.induction_on' with
+  | add p q hp hq =>
+    rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
     split_ifs
     exacts [rfl, zero_add 0]
-  · grind [monomial_smul_single, single_apply, coeff_monomial, zero_smul]
+  | monomial => grind [monomial_smul_single, single_apply, coeff_monomial, zero_smul]
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
@@ -243,6 +246,7 @@ theorem eval_single (r : R) (i : ℕ) (m : M) : eval r (single R i m) = r ^ i �
 theorem eval_lsingle (r : R) (i : ℕ) (m : M) : eval r (lsingle R i m) = r ^ i • m :=
   eval_single r i m
 
+@[simp]
 theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (p • q) = p.eval r • eval r q := by
   induction q using induction_linear with

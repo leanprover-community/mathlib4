@@ -39,7 +39,6 @@ lemma angle_eq_abs_arg (hx : x ≠ 0) (hy : y ≠ 0) : angle x y = |(x / y).arg|
   rw [Real.cos_abs, Complex.cos_arg (div_ne_zero hx hy)]
   simp [div_eq_mul_inv, Complex.normSq_eq_norm_sq]
   field_simp
-  ring
 
 lemma angle_one_left (hy : y ≠ 0) : angle 1 y = |y.arg| := by simp [angle_eq_abs_arg, hy]
 lemma angle_one_right (hx : x ≠ 0) : angle x 1 = |x.arg| := by simp [angle_eq_abs_arg, hx]

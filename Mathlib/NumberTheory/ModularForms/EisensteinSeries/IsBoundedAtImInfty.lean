@@ -50,15 +50,13 @@ lemma norm_le_tsum_norm (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k
     (Summable.tsum_subtype_le (fun (x : Fin 2 → ℤ) ↦ ‖(eisSummand k x z)‖) _ (fun _ ↦ norm_nonneg _)
       (summable_norm_eisSummand hk z))
 
-@[deprecated (since := "2025-02-17")] alias abs_le_tsum_abs := norm_le_tsum_norm
-
 /-- Eisenstein series are bounded at infinity. -/
-theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ+} (a : Fin 2 → ZMod N) {k : ℤ} (hk : 3 ≤ k)
-    (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[k] A) := by
+theorem isBoundedAtImInfty_eisensteinSeries_SIF {N : ℕ} [NeZero N] (a : Fin 2 → ZMod N) {k : ℤ}
+    (hk : 3 ≤ k) (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[k] A) := by
   simp_rw [UpperHalfPlane.isBoundedAtImInfty_iff, eisensteinSeries_SIF] at *
   refine ⟨∑'(x : Fin 2 → ℤ), r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ (-k) * ‖x‖ ^ (-k), 2, ?_⟩
   intro z hz
-  obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z N.2)
+  obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z (NeZero.pos N))
   rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
     ← T_zpow_width_invariant N k n (eisensteinSeries_SIF (a ᵥ* A) k) z]
   apply le_trans (norm_le_tsum_norm N (a ᵥ* A) k hk _)

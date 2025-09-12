@@ -78,7 +78,7 @@ lemma ofJNe0Or1728_Δ : (ofJNe0Or1728 j).Δ = j ^ 2 * (j - 1728) ^ 9 := by
 
 variable (R) [W.IsElliptic]
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 /-- When 3 is a unit, `Y² + Y = X³` is an elliptic curve.
 It is of j-invariant 0 (see `WeierstrassCurve.ofJ0_j`). -/
 instance [hu : Fact (IsUnit (3 : R))] : (ofJ0 R).IsElliptic := by
@@ -86,12 +86,12 @@ instance [hu : Fact (IsUnit (3 : R))] : (ofJ0 R).IsElliptic := by
   convert (hu.out.pow 3).neg
   norm_num1
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 lemma ofJ0_j [Fact (IsUnit (3 : R))] : (ofJ0 R).j = 0 := by
   rw [j, ofJ0_c₄]
   ring1
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 /-- When 2 is a unit, `Y² = X³ + X` is an elliptic curve.
 It is of j-invariant 1728 (see `WeierstrassCurve.ofJ1728_j`). -/
 instance [hu : Fact (IsUnit (2 : R))] : (ofJ1728 R).IsElliptic := by
@@ -99,14 +99,14 @@ instance [hu : Fact (IsUnit (2 : R))] : (ofJ1728 R).IsElliptic := by
   convert (hu.out.pow 6).neg
   norm_num1
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 lemma ofJ1728_j [Fact (IsUnit (2 : R))] : (ofJ1728 R).j = 1728 := by
   rw [j, Units.inv_mul_eq_iff_eq_mul, ofJ1728_c₄, coe_Δ', ofJ1728_Δ]
   norm_num1
 
 variable {R}
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 /-- When j and j - 1728 are both units,
 `Y² + (j - 1728)XY = X³ - 36(j - 1728)³X - (j - 1728)⁵` is an elliptic curve.
 It is of j-invariant j (see `WeierstrassCurve.ofJNe0Or1728_j`). -/
@@ -115,7 +115,7 @@ instance (j : R) [h1 : Fact (IsUnit j)] [h2 : Fact (IsUnit (j - 1728))] :
   rw [isElliptic_iff, ofJNe0Or1728_Δ]
   exact (h1.out.pow 2).mul (h2.out.pow 9)
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 lemma ofJNe0Or1728_j (j : R) [Fact (IsUnit j)] [Fact (IsUnit (j - 1728))] :
     (ofJNe0Or1728 j).j = j := by
   rw [WeierstrassCurve.j, Units.inv_mul_eq_iff_eq_mul, ofJNe0Or1728_c₄, coe_Δ', ofJNe0Or1728_Δ]

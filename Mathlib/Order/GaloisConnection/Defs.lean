@@ -11,7 +11,7 @@ import Mathlib.Util.AssertExists
 /-!
 # Galois connections, insertions and coinsertions
 
-Galois connections are order theoretic adjoints, i.e. a pair of functions `u` and `l`,
+Galois connections are order-theoretic adjoints, i.e. a pair of functions `u` and `l`,
 such that `∀ a b, l a ≤ b ↔ a ≤ u b`.
 
 ## Main definitions

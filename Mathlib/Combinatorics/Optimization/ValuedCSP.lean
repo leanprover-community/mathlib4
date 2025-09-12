@@ -6,7 +6,7 @@ Authors: Martin Dvorak
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 
@@ -73,7 +73,7 @@ def ValuedCSP.Instance.IsOptimumSolution {Γ : ValuedCSP D C} {ι : Type*}
   ∀ y : ι → D, I.evalSolution x ≤ I.evalSolution y
 
 /-- Function `f` has Max-Cut property at labels `a` and `b` when `argmin f` is exactly
-`{ ![a, b] , ![b, a] }`. -/
+`{ ![a, b], ![b, a] }`. -/
 def Function.HasMaxCutPropertyAt (f : (Fin 2 → D) → C) (a b : D) : Prop :=
   f ![a, b] = f ![b, a] ∧
     ∀ x y : D, f ![a, b] ≤ f ![x, y] ∧ (f ![a, b] = f ![x, y] → a = x ∧ b = y ∨ a = y ∧ b = x)

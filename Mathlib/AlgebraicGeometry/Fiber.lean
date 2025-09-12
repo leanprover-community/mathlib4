@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 # Scheme-theoretic fiber
 
 ## Main result
-- `AlgebraicGeometry.Scheme.Hom.fiber`: `f.fiber y` is the scheme theoretic fiber of `f` at `y`.
+- `AlgebraicGeometry.Scheme.Hom.fiber`: `f.fiber y` is the scheme-theoretic fiber of `f` at `y`.
 - `AlgebraicGeometry.Scheme.Hom.fiberHomeo`: `f.fiber y` is homeomorphic to `f ⁻¹' {y}`.
 - `AlgebraicGeometry.Scheme.Hom.finite_preimage`: Finite morphisms have finite fibers.
 - `AlgebraicGeometry.Scheme.Hom.discrete_fiber`: Finite morphisms have discrete fibers.
@@ -28,15 +28,15 @@ namespace AlgebraicGeometry
 
 variable {X Y : Scheme.{u}}
 
-/-- `f.fiber y` is the scheme theoretic fiber of `f` at `y`. -/
+/-- `f.fiber y` is the scheme-theoretic fiber of `f` at `y`. -/
 def Scheme.Hom.fiber (f : X.Hom Y) (y : Y) : Scheme := pullback f (Y.fromSpecResidueField y)
 
-/-- `f.fiberι y : f.fiber y ⟶ X` is the embedding of the scheme theoretic fiber into `X`. -/
+/-- `f.fiberι y : f.fiber y ⟶ X` is the embedding of the scheme-theoretic fiber into `X`. -/
 def Scheme.Hom.fiberι (f : X.Hom Y) (y : Y) : f.fiber y ⟶ X := pullback.fst _ _
 
 instance (f : X.Hom Y) (y : Y) : (f.fiber y).CanonicallyOver X where hom := f.fiberι y
 
-/-- The canonical map from the scheme theoretic fiber to the residue field. -/
+/-- The canonical map from the scheme-theoretic fiber to the residue field. -/
 def Scheme.Hom.fiberToSpecResidueField (f : X.Hom Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
@@ -57,7 +57,7 @@ lemma Scheme.Hom.range_fiberι (f : X.Hom Y) (y : Y) :
 instance (f : X ⟶ Y) (y : Y) : IsPreimmersion (f.fiberι y) :=
   MorphismProperty.pullback_fst _ _ inferInstance
 
-/-- The scheme theoretic fiber of `f` at `y` is homeomorphic to `f ⁻¹' {y}`. -/
+/-- The scheme-theoretic fiber of `f` at `y` is homeomorphic to `f ⁻¹' {y}`. -/
 def Scheme.Hom.fiberHomeo (f : X.Hom Y) (y : Y) : f.fiber y ≃ₜ f.base ⁻¹' {y} :=
   .trans (f.fiberι y).isEmbedding.toHomeomorph (.setCongr (f.range_fiberι y))
 

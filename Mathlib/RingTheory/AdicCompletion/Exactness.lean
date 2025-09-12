@@ -17,7 +17,7 @@ In this file we establish exactness properties of adic completions. In particula
 - `AdicCompletion.map_surjective`: Adic completion preserves surjectivity.
 - `AdicCompletion.map_injective`: Adic completion preserves injectivity
   of maps between finite modules over a Noetherian ring.
-- `AdicCompletion.map_exact`: Over a noetherian ring adic completion is exact on finite
+- `AdicCompletion.map_exact`: Over a Noetherian ring adic completion is exact on finite
   modules.
 
 ## Implementation details
@@ -52,7 +52,7 @@ private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : Adi
     exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
-/- Inductively construct preimage of cauchy sequence. -/
+/- Inductively construct preimage of Cauchy sequence. -/
 private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauchySequence I N) :
     (n : ℕ) → f ⁻¹' {x n}
   | .zero => ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
@@ -145,7 +145,7 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
 open Submodule
 
 include hfg in
-/-- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
+/-- Inductively construct preimage of Cauchy sequence in kernel of `g.adicCompletion I`. -/
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
   | .zero =>

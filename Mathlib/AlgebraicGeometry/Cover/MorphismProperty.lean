@@ -40,7 +40,7 @@ with target `X` all satisfying `P`.
 
 This is merely a coverage in the pretopology defined by `P`, and it would be optimal
 if we could reuse the existing API about pretopologies, However, the definitions of sieves and
-grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
+Grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
 obtain. Also, since such a coverage in the pretopology usually contains a proper class of
 immersions, it is quite hard to glue them, reason about finite covers, etc.
 

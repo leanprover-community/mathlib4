@@ -78,7 +78,7 @@ theorem WellQuasiOrdered.prod [IsPreorder α r] (hr : WellQuasiOrdered r) (hs : 
   obtain ⟨m, n, h, hf⟩ := hs (Prod.snd ∘ f ∘ g)
   exact ⟨g m, g n, g.strictMono h, h₁ _ _ h.le, hf⟩
 
-/-- A typeclass for an order with a well quasi-ordered `≤` relation.
+/-- A typeclass for an order with a well-quasi-ordered `≤` relation.
 
 Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
 @[mk_iff wellQuasiOrderedLE_def]

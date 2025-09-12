@@ -92,7 +92,7 @@ theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α �
   simp_all
 
 /--
-The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
+The left-hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
 -/
 @[simp]
 theorem if_mem_support [DecidableEq α] {N : Type*} [Zero N] (f : α →₀ N) (a : α) :

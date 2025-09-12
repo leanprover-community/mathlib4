@@ -77,10 +77,10 @@ instance instSMul : SMul R (OuterMeasure α) :=
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
-        exact mul_left_mono (m.mono h)
+        exact mul_right_mono (m.mono h)
       iUnion_nat := fun s _ => by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
-        exact mul_left_mono (measure_iUnion_le _) }⟩
+        exact mul_right_mono (measure_iUnion_le _) }⟩
 
 @[simp]
 theorem coe_smul (c : R) (m : OuterMeasure α) : ⇑(c • m) = c • ⇑m :=
