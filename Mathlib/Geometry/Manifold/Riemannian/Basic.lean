@@ -213,21 +213,21 @@ as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
-def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
-    NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
-  inferInstanceAs (NormedAddCommGroup E)
+def withNormedAddGroupTangentSpaceVectorSpace (x : E) :
+    WithNormedAddGroup (TangentSpace 𝓘(ℝ, E) x) :=
+  inferInstanceAs (WithNormedAddGroup E)
 
-attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
+attribute [local instance] withNormedAddGroupTangentSpaceVectorSpace
 
 /-- Register on the tangent space to a normed vector space the same `NormedSpace` structure
 as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
-def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
-  inferInstanceAs (NormedSpace ℝ E)
+def normSMulClassTangentSpaceVectorSpace (x : E) : NormSMulClass ℝ (TangentSpace 𝓘(ℝ, E) x) :=
+  inferInstanceAs (NormSMulClass ℝ E)
 
-attribute [local instance] normedSpaceTangentSpaceVectorSpace
+attribute [local instance] normSMulClassTangentSpaceVectorSpace
 
 variable (I)
 
@@ -261,7 +261,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   rw [TangentBundle.symmL_trivializationAt h'y] at hy
   have A : (extChartAt I x).symm (extChartAt I x y) = y :=
     (extChartAt I x).left_inv (by simpa using h'y)
-  convert hy using 3 <;> congr
+  convert hy using 3 <;> rw [A]
 
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),

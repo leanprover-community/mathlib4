@@ -174,10 +174,10 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
 scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 
-noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
-    CStarAlgebra (Unitization ℂ A) where
+noncomputable example {A : Type*} [NonUnitalCStarAlgebra A] :
+    CStarAlgebra (Unitization ℂ A) := by infer_instance
 
-noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
-    CommCStarAlgebra (Unitization ℂ A) where
+noncomputable example {A : Type*} [NonUnitalCommCStarAlgebra A] :
+    CommCStarAlgebra (Unitization ℂ A) := by infer_instance
 
 end CStarProperty

@@ -328,14 +328,20 @@ private lemma uniformity_eq_seminorm :
     exact le_trans (le_of_opNorm_le_of_le _ hf.le (hε _ hx)) hδ.le
 
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
-  ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
+  ContinuousLinearMap.seminorm.toSeminormedAddGroup.toPseudoMetricSpace uniformity_eq_seminorm
 
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+instance toSeminormedAddCommGroup : WithSeminormedAddGroup (E →SL[σ₁₂] F) where
 
-instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
-    NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
-  ⟨opNorm_smul_le⟩
+instance {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
+    NormSMulClass 𝕜' (E →SL[σ₁₂] F) := by
+  have : IsBoundedSMul 𝕜' (E →SL[σ₁₂] F) := by
+    apply IsBoundedSMul.of_norm_smul_le
+    exact opNorm_smul_le
+  apply NormedDivisionRing.toNormSMulClass
+
+example {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
+    NormSMulClass 𝕜' (E →SL[σ₁₂] F) := by infer_instance
 
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
@@ -344,12 +350,12 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
     exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
-instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
-  { toSeminormedAddCommGroup, ring with norm_mul_le := opNorm_comp_le }
+instance toSeminormedRing : WithSeminormedRing (E →L[𝕜] E) :=
+  { toSeminormedAddCommGroup with norm_mul_le := opNorm_comp_le }
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/
-instance toNormedAlgebra : NormedAlgebra 𝕜 (E →L[𝕜] E) := { toNormedSpace, algebra with }
+example : NormedAlgebra 𝕜 (E →L[𝕜] E) := by infer_instance
 
 end
 

@@ -116,7 +116,7 @@ section Aux
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
-noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
+noncomputable abbrev normedRingAux : WithNormedRing (Unitization 𝕜 A) :=
   NormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
 
 attribute [local instance] Unitization.normedRingAux
@@ -124,7 +124,7 @@ attribute [local instance] Unitization.normedRingAux
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
-noncomputable abbrev normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
+noncomputable abbrev normedAlgebraAux : NormSMulClass 𝕜 (Unitization 𝕜 A) :=
   NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
 attribute [local instance] Unitization.normedAlgebraAux
@@ -234,11 +234,13 @@ noncomputable instance instNormedRing : WithNormedRing (Unitization 𝕜 A) wher
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
-  norm_smul_le k x := by
+instance instNormedAlgebra : NormSMulClass 𝕜 (Unitization 𝕜 A) where
+  norm_smul k x := by
     rw [norm_def, map_smul]
     -- Note: this used to be `rw [norm_smul, ← norm_def]` before https://github.com/leanprover-community/mathlib4/pull/8386
-    exact (norm_smul k (splitMul 𝕜 A x)).le
+    exact norm_smul k (splitMul 𝕜 A x)
+
+example : NormedAlgebra 𝕜 (Unitization 𝕜 A) := by infer_instance
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where
   norm_one := by simpa only [norm_eq_sup, fst_one, norm_one, snd_one, map_one, map_zero,

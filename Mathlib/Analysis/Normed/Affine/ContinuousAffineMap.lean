@@ -181,8 +181,8 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
     _ = max 0 ‖f.contLinear‖ := by rw [h, norm_zero]
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
 
-noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
-  AddGroupNorm.toNormedAddCommGroup
+noncomputable instance : WithNormedAddGroup (V →ᴬ[𝕜] W) :=
+  AddGroupNorm.toNormedAddGroup
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
       map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
       neg' := fun f => by
@@ -205,10 +205,10 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           rw [h₂]
           rfl }
 
-noncomputable instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
-  norm_smul_le t f := by
+noncomputable instance : NormSMulClass 𝕜 (V →ᴬ[𝕜] W) where
+  norm_smul t f := by
     simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,
-      ← mul_max_of_nonneg _ _ (norm_nonneg t), le_refl]
+      ← mul_max_of_nonneg _ _ (norm_nonneg t)]
 
 theorem norm_comp_le (g : W₂ →ᴬ[𝕜] V) : ‖f.comp g‖ ≤ ‖f‖ * ‖g‖ + ‖f 0‖ := by
   rw [norm_def, max_le_iff]

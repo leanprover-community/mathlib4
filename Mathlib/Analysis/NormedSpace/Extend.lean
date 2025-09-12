@@ -131,8 +131,9 @@ theorem norm_extendTo𝕜' (fr : StrongDual ℝ F) : ‖(fr.extendTo𝕜' : Stro
 
 end ContinuousLinearMap
 
-instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) :=
-  inferInstanceAs (NormedSpace 𝕜 F)
+instance : Module 𝕜 (RestrictScalars ℝ 𝕜 F) := inferInstanceAs (Module 𝕜 F)
+
+instance : NormSMulClass 𝕜 (RestrictScalars ℝ 𝕜 F) := inferInstanceAs (NormSMulClass 𝕜 F)
 
 /-- Extend `fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜`. -/
 noncomputable def LinearMap.extendTo𝕜 (fr : RestrictScalars ℝ 𝕜 F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :=

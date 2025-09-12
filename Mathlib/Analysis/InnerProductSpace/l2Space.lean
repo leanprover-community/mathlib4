@@ -107,7 +107,7 @@ theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Then apply Cauchy-Schwarz pointwise
   exact norm_inner_le_norm (𝕜 := 𝕜) _ _
 
-instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
+instance instInnerProductSpace : WithInnerProductSpace 𝕜 (lp G 2) :=
   { lp.normedAddCommGroup (E := G) (p := 2) with
     inner := fun f g => ∑' i, ⟪f i, g i⟫
     norm_sq_eq_re_inner := fun f => by

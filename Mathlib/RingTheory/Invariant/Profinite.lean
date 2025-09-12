@@ -148,25 +148,13 @@ instance (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
   dsimp [stabilizerHomSurjectiveAuxFunctor]
   infer_instance
 
-#check NormedAlgebra.toAlgebra
-
 open Ideal.Quotient in
-set_option synthInstance.maxHeartbeats 200000 in
-/- Something fishy here -/
-set_option maxHeartbeats 300000 in
---set_option trace.Meta.isDefEq true in
-set_option trace.profiler true in
-set_option trace.Meta.synthInstance true in
 instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
     [Algebra.IsInvariant A B G] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) (N : OpenNormalSubgroup G) :
     Nonempty ((stabilizerHomSurjectiveAuxFunctor P Q σ).obj N) := by
   have : IsScalarTower (A ⧸ P) (FixedPoints.subalgebra A B N.1.1 ⧸
       Q.under (FixedPoints.subalgebra A B N.1.1)) (B ⧸ Q) :=
     IsScalarTower.of_algebraMap_eq (Quotient.ind fun x ↦ rfl)
-  sorry
-
-#exit
-
   obtain ⟨σ', hσ'⟩ := Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under (G ⧸ N.1.1) P
     (Q.under (FixedPoints.subalgebra A B N.1.1)) σ
   obtain ⟨τ, rfl⟩ := Ideal.Quotient.stabilizerHom_surjective (G ⧸ N.1.1) P
@@ -175,8 +163,6 @@ instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   exact hσ' x
-
-#exit
 
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
 theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite

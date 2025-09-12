@@ -37,8 +37,8 @@ noncomputable def unitization_addEquiv_prod : WithLp 1 (Unitization 𝕜 A) ≃+
     (addEquiv 𝕜 A).trans (WithLp.linearEquiv 1 𝕜 (𝕜 × A)).symm.toAddEquiv
 
 noncomputable instance instUnitizationNormedAddCommGroup :
-    NormedAddCommGroup (WithLp 1 (Unitization 𝕜 A)) :=
-  NormedAddCommGroup.induced (WithLp 1 (Unitization 𝕜 A)) (WithLp 1 (𝕜 × A))
+    WithNormedAddGroup (WithLp 1 (Unitization 𝕜 A)) :=
+  NormedAddGroup.induced (WithLp 1 (Unitization 𝕜 A)) (WithLp 1 (𝕜 × A))
     (unitization_addEquiv_prod 𝕜 A) (AddEquiv.injective _)
 
 /-- Bundle `WithLp.unitization_addEquiv_prod` as a `UniformEquiv`. -/
@@ -103,7 +103,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   map_add' _ _ := rfl
   commutes' _ := rfl
 
-noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
+noncomputable instance instUnitizationNormedRing : WithNormedRing (WithLp 1 (Unitization 𝕜 A)) where
   dist_eq := dist_eq_norm
   norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
@@ -119,9 +119,8 @@ noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitiza
         · exact norm_mul_le _ _
 
 noncomputable instance instUnitizationNormedAlgebra :
-    NormedAlgebra 𝕜 (WithLp 1 (Unitization 𝕜 A)) where
-  norm_smul_le r x := by
+    NormSMulClass 𝕜 (WithLp 1 (Unitization 𝕜 A)) where
+  norm_smul r x := by
     simp_rw [unitization_norm_def, ofLp_smul, fst_smul, snd_smul, norm_smul, mul_add]
-    exact le_rfl
 
 end WithLp

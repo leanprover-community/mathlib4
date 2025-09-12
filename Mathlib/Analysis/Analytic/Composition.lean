@@ -364,7 +364,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
   ext1 n
   dsimp [FormalMultilinearSeries.comp]
   rw [Finset.sum_eq_single (Composition.ones n)]
-  · show compAlongComposition p (id 𝕜 E x) (Composition.ones n) = p n
+  · change compAlongComposition p (id 𝕜 E x) (Composition.ones n) = p n
     ext v
     rw [compAlongComposition_apply]
     apply p.congr (Composition.ones_length n)
@@ -400,7 +400,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
     exact i.elim0
   · dsimp [FormalMultilinearSeries.comp]
     rw [Finset.sum_eq_single (Composition.single n n_pos)]
-    · show compAlongComposition (id 𝕜 F (p 0 v0)) p (Composition.single n n_pos) = p n
+    · change compAlongComposition (id 𝕜 F (p 0 v0)) p (Composition.single n n_pos) = p n
       ext v
       rw [compAlongComposition_apply, id_apply_one' _ _ _ (Composition.single_length n_pos)]
       dsimp [applyComposition]

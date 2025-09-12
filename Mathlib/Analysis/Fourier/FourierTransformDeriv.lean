@@ -331,6 +331,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
+set_option maxHeartbeats 600000 in
 /-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight
@@ -611,7 +612,7 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
   have I p (hp : p ∈ Finset.range (k + 1) ×ˢ Finset.range (n + 1)) :
       Integrable (fun v ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
     simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
-    exact h'f _ _ (le_trans (by simpa using hp.1) hk) (le_trans (by simpa using hp.2) hn)
+    apply h'f _ _ (le_trans (by simpa using hp.1) hk) (le_trans (by simpa using hp.2) hn)
   rw [← integral_finset_sum _ I, ← integral_const_mul]
   apply integral_mono_of_nonneg
   · filter_upwards with v using norm_nonneg _
@@ -672,20 +673,20 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDim
 `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem hasFDerivAt_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : V) :
-    HasFDerivAt (𝓕 f) (𝓕 (fourierSMulRight (innerSL ℝ) f) x) x :=
-  VectorFourier.hasFDerivAt_fourierIntegral (innerSL ℝ) hf_int hvf_int x
+    HasFDerivAt (𝓕 f) (𝓕 (fourierSMulRight (innerSL ℝ) f) x) x := by
+  apply VectorFourier.hasFDerivAt_fourierIntegral (innerSL ℝ) hf_int hvf_int x
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
 `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem fderiv_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
-    fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
-  VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int
+    fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) := by
+  apply VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int
 
 theorem differentiable_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
-    Differentiable ℝ (𝓕 f) :=
-  VectorFourier.differentiable_fourierIntegral (innerSL ℝ) hf_int hvf_int
+    Differentiable ℝ (𝓕 f) := by
+  apply VectorFourier.differentiable_fourierIntegral (innerSL ℝ) hf_int hvf_int
 
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `2πI ⟪v, w⟫`. -/
@@ -693,21 +694,21 @@ theorem fourierIntegral_fderiv
     (hf : Integrable f) (h'f : Differentiable ℝ f) (hf' : Integrable (fderiv ℝ f)) :
     𝓕 (fderiv ℝ f) = fourierSMulRight (-innerSL ℝ) (𝓕 f) := by
   rw [← innerSL_real_flip V]
-  exact VectorFourier.fourierIntegral_fderiv (innerSL ℝ) hf h'f hf'
+  apply VectorFourier.fourierIntegral_fderiv (innerSL ℝ) hf h'f hf'
 
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the Fourier transform of `f` is `C^n`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖)) :
-    ContDiff ℝ N (𝓕 f) :=
-  VectorFourier.contDiff_fourierIntegral (innerSL ℝ) hf
+    ContDiff ℝ N (𝓕 f) := by
+  apply VectorFourier.contDiff_fourierIntegral (innerSL ℝ) hf
 
 /-- If `‖v‖^n * ‖f v‖` is integrable, then the `n`-th derivative of the Fourier transform of `f` is
   the Fourier transform of `fun v ↦ (-2 * π * I) ^ n ⟪v, ⬝⟫^n f v`. -/
 theorem iteratedFDeriv_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖))
     (h'f : AEStronglyMeasurable f) {n : ℕ} (hn : n ≤ N) :
-    iteratedFDeriv ℝ n (𝓕 f) = 𝓕 (fun v ↦ fourierPowSMulRight (innerSL ℝ) f v n) :=
-  VectorFourier.iteratedFDeriv_fourierIntegral (innerSL ℝ) hf h'f hn
+    iteratedFDeriv ℝ n (𝓕 f) = 𝓕 (fun v ↦ fourierPowSMulRight (innerSL ℝ) f v n) := by
+  apply VectorFourier.iteratedFDeriv_fourierIntegral (innerSL ℝ) hf h'f hn
 
 /-- The Fourier integral of the `n`-th derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `(2πI L w ⬝ )^n`. -/
@@ -716,7 +717,7 @@ theorem fourierIntegral_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
     𝓕 (iteratedFDeriv ℝ n f)
       = (fun w ↦ fourierPowSMulRight (-innerSL ℝ) (𝓕 f) w n) := by
   rw [← innerSL_real_flip V]
-  exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
+  apply VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
 
 /-- One can bound `‖w‖^n * ‖D^k (𝓕 f) w‖` in terms of integrals of the derivatives of `f` (or order
 at most `n`) multiplied by powers of `v` (of order at most `k`). -/
@@ -780,7 +781,7 @@ theorem deriv_fourierIntegral
     {f : ℝ → E} (hf : Integrable f) (hf' : Integrable (fun x : ℝ ↦ x • f x)) :
     deriv (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) • f x) := by
   ext x
-  exact (hasDerivAt_fourierIntegral hf hf' x).deriv
+  apply (hasDerivAt_fourierIntegral hf hf' x).deriv
 
 /-- The Fourier integral of the Fréchet derivative of a function is obtained by multiplying the
 Fourier integral of the original function by `2πI x`. -/

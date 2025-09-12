@@ -61,7 +61,7 @@ theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
-  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+  · simp [deriv_zero_of_not_differentiableAt, differentiableAt_inv_iff]
   · exact (hasDerivAt_inv hne).deriv
 
 @[simp]

@@ -70,9 +70,8 @@ satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
-  letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: StrongDual ℝ p` be the real part of `f`.
   let fr := reCLM.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which

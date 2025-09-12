@@ -580,7 +580,7 @@ lemma scale_diffContOnCl {f : ℂ → E} {l u : ℝ} (hul : l < u)
   unfold scale
   apply DiffContOnCl.comp (s := verticalStrip l u) hd
   · apply DiffContOnCl.const_add
-    apply DiffContOnCl.smul_const
+    apply DiffContOnCl.smul_const (𝕜' := ℂ)
     exact Differentiable.diffContOnCl differentiable_id
   · rw [MapsTo]
     intro z hz

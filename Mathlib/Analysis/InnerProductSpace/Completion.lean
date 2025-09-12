@@ -36,7 +36,7 @@ instance : Inner 𝕜 (SeparationQuotient E) where
 theorem inner_mk_mk (x y : E) :
     ⟪mk x, mk y⟫ = ⟪x, y⟫ := rfl
 
-instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
+instance : WithInnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_re_inner := Quotient.ind norm_sq_eq_re_inner
   conj_inner_symm := Quotient.ind₂ inner_conj_symm
   add_left := Quotient.ind fun x => Quotient.ind₂ <| inner_add_left x
@@ -82,7 +82,7 @@ protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α 
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => ⟪f x, g x⟫) :=
   UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
-instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
+instance innerProductSpace : WithInnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_re_inner x :=
     Completion.induction_on x (isClosed_eq (by fun_prop) (by fun_prop))
       fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]

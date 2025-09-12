@@ -478,27 +478,32 @@ private lemma uniformity_eq_seminorm :
 
 instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap 𝕜 E G) :=
   .replaceUniformity
-    (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddCommGroup.toPseudoMetricSpace
+    (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddGroup.toPseudoMetricSpace
     uniformity_eq_seminorm
 
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
 the operator norm. -/
 instance seminormedAddCommGroup :
-    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
+    WithSeminormedAddGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
 /-- An alias of `ContinuousMultilinearMap.seminormedAddCommGroup` with non-dependent types to help
 typeclass search. -/
 instance seminormedAddCommGroup' :
-    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
+    WithSeminormedAddGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.seminormedAddCommGroup
 
-instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
-  ⟨fun c f => f.opNorm_smul_le c⟩
+instance instNormSMulClass : NormSMulClass 𝕜' (ContinuousMultilinearMap 𝕜 E G) := by
+  have : IsBoundedSMul 𝕜' (ContinuousMultilinearMap 𝕜 E G) := by
+    apply IsBoundedSMul.of_norm_smul_le
+    exact fun c f => f.opNorm_smul_le c
+  apply NormedDivisionRing.toNormSMulClass
 
-/-- An alias of `ContinuousMultilinearMap.normedSpace` with non-dependent types to help typeclass
-search. -/
-instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
-  ContinuousMultilinearMap.normedSpace
+example : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) := by infer_instance
+
+/-- An alias of `ContinuousMultilinearMap.instNormSMulClass` with non-dependent types to help
+typeclass search. -/
+instance instNormSMulClass' : NormSMulClass 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
+  instNormSMulClass
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
@@ -1283,14 +1288,14 @@ theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 �
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
 the operator norm. -/
-instance normedAddCommGroup : NormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
-  NormedAddCommGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
+instance instWithNormedAddGroup : WithNormedAddGroup (ContinuousMultilinearMap 𝕜 E G) :=
+  WithNormedAddGroup.ofSeparation fun _ ↦ opNorm_zero_iff.mp
 
-/-- An alias of `ContinuousMultilinearMap.normedAddCommGroup` with non-dependent types to help
+/-- An alias of `ContinuousMultilinearMap.instWithNormedAddGroup` with non-dependent types to help
 typeclass search. -/
-instance normedAddCommGroup' :
-    NormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
-  ContinuousMultilinearMap.normedAddCommGroup
+instance instWithNormedAddGroup' :
+    WithNormedAddGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
+  instWithNormedAddGroup
 
 variable (𝕜 G)
 

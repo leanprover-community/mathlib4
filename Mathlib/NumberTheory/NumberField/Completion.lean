@@ -66,9 +66,13 @@ abbrev Completion := v.1.Completion
 
 namespace Completion
 
-instance : NormedField v.Completion :=
+instance : Field v.Completion := by
   letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
-  UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
+  infer_instance
+
+instance : WithNormMulClassNormedRing v.Completion :=
+  letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
+  UniformSpace.Completion.instWithNormMulClassNormedRingOfCompletableTopField (WithAbs v.1)
 
 lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=

@@ -451,8 +451,8 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     apply (lp.hasSum_norm hp (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  AddGroupNorm.toNormedAddCommGroup
+instance normedAddCommGroup [hp : Fact (1 ≤ p)] : WithNormedAddGroup (lp E p) := fast_instance%
+  AddGroupNorm.toNormedAddGroup
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -648,8 +648,8 @@ section NormedSpace
 
 variable [NormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (lp E p) where
-  norm_smul_le c f := norm_smul_le c f
+instance instNormedSpace [Fact (1 ≤ p)] : NormSMulClass 𝕜 (lp E p) :=
+  NormedDivisionRing.toNormSMulClass
 
 end NormedSpace
 
@@ -731,15 +731,17 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.normedAddCommGroup, lp.nonUnitalRing with
+set_option synthInstance.maxHeartbeats 100000 in
+-- something wrong here, investigate
+instance nonUnitalNormedRing : WithNormedRing (lp B ∞) :=
+  { lp.normedAddCommGroup with
     norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
       ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
       _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
         (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
-instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
-    NonUnitalNormedCommRing (lp B ∞) where
+instance nonUnitalCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+    NonUnitalCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
@@ -822,17 +824,16 @@ theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : WithNormedRing (lp B ∞) :=
-  { lp.inftyRing, lp.nonUnitalNormedRing with }
-
 end NormedRing
 
 section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+instance inftyCommRing : CommRing (lp B ∞) where
   mul_comm := mul_comm
+
+example : NormedCommRing (lp B ∞) := by infer_instance
 
 end NormedCommRing
 
@@ -841,12 +842,8 @@ section Algebra
 variable {I : Type*} {B : I → Type*}
 variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
-/-- A variant of `Pi.algebra` that lean can't find otherwise. -/
-instance _root_.Pi.algebraOfNormedAlgebra : Algebra 𝕜 (∀ i, B i) :=
-  @Pi.algebra I 𝕜 B _ _ fun _ => NormedAlgebra.toAlgebra
-
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
-  Pi.algebraOfNormedAlgebra
+  inferInstanceAs (Algebra 𝕜 (∀ i, B i))
 
 variable [∀ i, NormOneClass (B i)]
 
@@ -865,8 +862,11 @@ def _root_.lpInftySubalgebra : Subalgebra 𝕜 (PreLp B) :=
 
 variable {𝕜 B}
 
-instance inftyNormedAlgebra : NormedAlgebra 𝕜 (lp B ∞) :=
-  { (lpInftySubalgebra 𝕜 B).algebra, (lp.instNormedSpace : NormedSpace 𝕜 (lp B ∞)) with }
+instance inftyAlgebra : Algebra 𝕜 (lp B ∞) := (lpInftySubalgebra 𝕜 B).algebra
+
+set_option synthInstance.maxHeartbeats 100000 in
+-- something wrong here, investigate
+example : NormedAlgebra 𝕜 (lp B ∞) := by infer_instance
 
 end Algebra
 

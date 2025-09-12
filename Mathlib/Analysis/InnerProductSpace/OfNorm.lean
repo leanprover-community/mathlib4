@@ -226,7 +226,7 @@ open InnerProductSpaceable
 parallelogram identity can be given a compatible inner product. -/
 noncomputable def InnerProductSpace.ofNorm
     (h : ∀ x y : E, ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖)) :
-    InnerProductSpace 𝕜 E :=
+    WithInnerProductSpace 𝕜 E :=
   haveI : InnerProductSpaceable E := ⟨h⟩
   { inner := inner_ 𝕜
     norm_sq_eq_re_inner := inner_.norm_sq
@@ -241,7 +241,7 @@ variable [InnerProductSpaceable E]
 parallelogram identity can be given a compatible inner product. Do
 `casesI nonempty_innerProductSpace 𝕜 E` to locally upgrade `InnerProductSpaceable E` to
 `InnerProductSpace 𝕜 E`. -/
-theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
+theorem nonempty_innerProductSpace : Nonempty (WithInnerProductSpace 𝕜 E) :=
   ⟨{  inner := inner_ 𝕜
       norm_sq_eq_re_inner := inner_.norm_sq
       conj_inner_symm := inner_.conj_symm

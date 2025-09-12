@@ -45,11 +45,11 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 local postfix:90 "†" => starRingEnd _
 
-export InnerProductSpace (norm_sq_eq_re_inner)
+export WithInnerProductSpace (norm_sq_eq_re_inner)
 
 @[simp]
 theorem inner_conj_symm (x y : E) : ⟪y, x⟫† = ⟪x, y⟫ :=
-  InnerProductSpace.conj_inner_symm _ _
+  WithInnerProductSpace.conj_inner_symm _ _
 
 theorem real_inner_comm (x y : F) : ⟪y, x⟫_ℝ = ⟪x, y⟫_ℝ :=
   @inner_conj_symm ℝ _ _ _ _ x y
@@ -65,7 +65,7 @@ instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 w
 theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
 
 theorem inner_add_left (x y z : E) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
-  InnerProductSpace.add_left _ _ _
+  WithInnerProductSpace.add_left _ _ _
 
 theorem inner_add_right (x y z : E) : ⟪x, y + z⟫ = ⟪x, y⟫ + ⟪x, z⟫ := by
   rw [← inner_conj_symm, inner_add_left, RingHom.map_add]
@@ -81,7 +81,7 @@ variable {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] 
 
 /-- See `inner_smul_left` for the common special when `𝕜 = 𝕝`. -/
 lemma inner_smul_left_eq_star_smul (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r† • ⟪x, y⟫ := by
-  rw [← algebraMap_smul 𝕜 r, InnerProductSpace.smul_left, starRingEnd_apply, starRingEnd_apply,
+  rw [← algebraMap_smul 𝕜 r, WithInnerProductSpace.smul_left, starRingEnd_apply, starRingEnd_apply,
     ← algebraMap_star_comm, ← smul_eq_mul, algebraMap_smul]
 
 /-- Special case of `inner_smul_left_eq_star_smul` when the acting ring has a trivial star
@@ -288,7 +288,7 @@ variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-export InnerProductSpace (norm_sq_eq_re_inner)
+export WithInnerProductSpace (norm_sq_eq_re_inner)
 
 @[simp]
 theorem inner_self_eq_zero {x : E} : ⟪x, x⟫ = 0 ↔ x = 0 := by
@@ -821,7 +821,7 @@ section RCLike
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- A field `𝕜` satisfying `RCLike` is itself a `𝕜`-inner product space. -/
-instance RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
+instance RCLike.innerProductSpace : WithInnerProductSpace 𝕜 𝕜 where
   inner x y := y * conj x
   norm_sq_eq_re_inner x := by simp only [mul_conj, ← ofReal_pow, ofReal_re]
   conj_inner_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
@@ -861,10 +861,12 @@ This is not registered as an instance since
 However, it can be used in a proof to obtain a real inner product space structure from a given
 `𝕜`-inner product space structure. -/
 -- See note [reducible non instances]
-abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
+abbrev InnerProductSpace.withInnerProductSpaceReal :
+    letI : Module ℝ E := Module.restrictScalars ℝ 𝕜 E
+    WithInnerProductSpace ℝ E :=
+  letI : Module ℝ E := Module.restrictScalars ℝ 𝕜 E
   { Inner.rclikeToReal 𝕜 E,
-    NormedSpace.restrictScalars ℝ 𝕜
-      E with
+    NormSMulClass.restrictScalars ℝ 𝕜 E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
@@ -873,6 +875,10 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
     smul_left := fun x y r => by
       change re ⟪(r : 𝕜) • x, y⟫ = r * re ⟪x, y⟫
       simp only [inner_smul_left, conj_ofReal, re_ofReal_mul] }
+
+abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
+  @InnerProductSpace.mk _ _ _ _ _ (Module.restrictScalars ℝ 𝕜 E)
+    (InnerProductSpace.withInnerProductSpaceReal 𝕜 E)
 
 variable {E}
 
@@ -888,10 +894,10 @@ theorem real_inner_I_smul_self (x : E) :
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
 def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
-    InnerProductSpace ℝ G :=
-  InnerProductSpace.rclikeToReal ℂ G
+    WithInnerProductSpace ℝ G :=
+  InnerProductSpace.withInnerProductSpaceReal ℂ G
 
-instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
+instance : WithInnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
 
 @[simp]
 protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :=
@@ -900,7 +906,7 @@ protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :
 end RCLikeToReal
 
 /-- An `RCLike` field is a real inner product space. -/
-noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
+noncomputable instance RCLike.toInnerProductSpaceReal : WithInnerProductSpace ℝ 𝕜 where
   __ := Inner.rclikeToReal 𝕜 𝕜
   norm_sq_eq_re_inner := norm_sq_eq_re_inner
   conj_inner_symm x y := inner_re_symm ..
@@ -911,7 +917,7 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
       simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
 
 -- The instance above does not create diamonds for concrete `𝕜`:
-example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
-example :
-    (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
+example : (innerProductSpace : WithInnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
+example : (instWithInnerProductSpaceRealComplex : WithInnerProductSpace ℝ ℂ)
+    = RCLike.toInnerProductSpaceReal :=
   rfl

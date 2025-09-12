@@ -73,7 +73,7 @@ we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2`
 -/
 instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
-    InnerProductSpace 𝕜 (PiLp 2 f) where
+    WithInnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, ⟪x i, y i⟫
   norm_sq_eq_re_inner x := by
     simp only [PiLp.norm_sq_eq_of_L2, map_sum, ← norm_sq_eq_re_inner]

@@ -170,9 +170,9 @@ theorem bound (f : E [⋀^ι]→L[𝕜] F) : ∃ (C : ℝ), 0 < C ∧ (∀ m, �
 /-- Continuous alternating maps form a seminormed additive commutative group.
 We override projection to `PseudoMetricSpace` to ensure that instances commute
 in `with_reducible_and_instances`. -/
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
+instance instSeminormedAddCommGroup : WithSeminormedAddGroup (E [⋀^ι]→L[𝕜] F) where
   toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
-  __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
+  __ := SeminormedAddGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
   norm f := ‖f.toContinuousMultilinearMap‖
 
 @[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
@@ -272,8 +272,11 @@ theorem opNorm_pi {ι' : Type*} [Fintype ι'] {F : ι' → Type*} [∀ i', Semin
   ContinuousMultilinearMap.opNorm_pi fun i ↦ (f i).1
 
 instance instNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
-    NormedSpace 𝕜' (E [⋀^ι]→L[𝕜] F) :=
-  ⟨fun c f ↦ f.1.opNorm_smul_le c⟩
+    NormSMulClass 𝕜' (E [⋀^ι]→L[𝕜] F) := by
+  have : IsBoundedSMul 𝕜' (E [⋀^ι]→L[𝕜] F) := by
+    apply IsBoundedSMul.of_norm_smul_le
+    exact fun c f ↦ f.1.opNorm_smul_le c
+  apply NormedDivisionRing.toNormSMulClass
 
 section
 
@@ -567,8 +570,8 @@ variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
 namespace ContinuousAlternatingMap
 
 /-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
-instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
-  NormedAddCommGroup.ofSeparation fun _f hf ↦
+instance instNormedAddCommGroup : WithNormedAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  WithNormedAddGroup.ofSeparation fun _f hf ↦
     toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
 
 variable (𝕜 F) in

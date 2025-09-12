@@ -936,13 +936,13 @@ variable {h : E → R} {z : E} {S : Set E}
 
 @[fun_prop]
 theorem DifferentiableWithinAt.inverse (hf : DifferentiableWithinAt 𝕜 h S z) (hz : IsUnit (h z)) :
-    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z :=
-  (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
+    DifferentiableWithinAt 𝕜 (fun x => Ring.inverse (h x)) S z := by
+  apply (differentiableAt_inverse hz).comp_differentiableWithinAt z hf
 
 @[simp, fun_prop]
 theorem DifferentiableAt.inverse (hf : DifferentiableAt 𝕜 h z) (hz : IsUnit (h z)) :
-    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z :=
-  (differentiableAt_inverse hz).comp z hf
+    DifferentiableAt 𝕜 (fun x => Ring.inverse (h x)) z := by
+  apply (differentiableAt_inverse hz).comp z hf
 
 @[fun_prop]
 theorem DifferentiableOn.inverse (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, IsUnit (h x)) :
@@ -1015,7 +1015,7 @@ theorem DifferentiableWithinAt.fun_inv (hf : DifferentiableWithinAt 𝕜 h S z) 
 @[fun_prop]
 theorem DifferentiableWithinAt.inv (hf : DifferentiableWithinAt 𝕜 h S z) (hz : h z ≠ 0) :
     DifferentiableWithinAt 𝕜 (h⁻¹) S z :=
-  (differentiableAt_inv hz).comp_differentiableWithinAt z hf
+  DifferentiableWithinAt.fun_inv hf hz
 
 @[simp, fun_prop]
 theorem DifferentiableAt.fun_inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
@@ -1025,7 +1025,7 @@ theorem DifferentiableAt.fun_inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 
 @[simp, fun_prop]
 theorem DifferentiableAt.inv (hf : DifferentiableAt 𝕜 h z) (hz : h z ≠ 0) :
     DifferentiableAt 𝕜 (h⁻¹) z :=
-  (differentiableAt_inv hz).comp z hf
+  DifferentiableAt.fun_inv hf hz
 
 @[fun_prop]
 theorem DifferentiableOn.fun_inv (hf : DifferentiableOn 𝕜 h S) (hz : ∀ x ∈ S, h x ≠ 0) :

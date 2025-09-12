@@ -112,7 +112,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hf' ⊢
   suffices
     TendstoUniformlyOnFilter (fun (n : ι × ι) (z : E) => f n.1 z - f n.2 z - (f n.1 x - f n.2 x)) 0
@@ -176,7 +176,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   rcases le_or_gt r 0 with (hr | hr)
   · simp only [Metric.ball_eq_empty.2 hr, UniformCauchySeqOn, Set.mem_empty_iff_false,
@@ -261,7 +261,7 @@ theorem difference_quotients_converge_uniformly
     (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) :
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
       (fun y : E => (‖y - x‖⁻¹ : 𝕜) • (g y - g x)) l (𝓝 x) := by
-  let A : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   refine
     UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto ?_
       ((hfg.and (eventually_const.mpr hfg.self_of_nhds)).mono fun y hy =>

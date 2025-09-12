@@ -107,9 +107,6 @@ attribute [local simp] ContinuousLinearMap.coe_smul
 -/
 theorem tendsto_normSq_coprime_pair :
     Filter.Tendsto (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * z + p 1)) cofinite atTop := by
-  -- using this instance rather than the automatic `Function.module` makes unification issues in
-  -- `LinearEquiv.isClosedEmbedding_of_injective` less bad later in the proof.
-  letI : Module ℝ (Fin 2 → ℝ) := NormedSpace.toModule
   let π₀ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 0
   let π₁ : (Fin 2 → ℝ) →ₗ[ℝ] ℝ := LinearMap.proj 1
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1

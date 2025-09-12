@@ -28,12 +28,13 @@ open scoped NNReal ENNReal uniformity
 section SeminormedAddCommGroup
 
 /-- A normed space over a normed field is a vector space endowed with a norm which satisfies the
-equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ ‖c‖ ‖x‖` in the definition, then prove
-`‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
+equality `‖c • x‖ = ‖c‖ ‖x‖`. To prove this condition assuming only `‖c • x‖ ≤ ‖c‖ ‖x‖`, use
+` NormedDivisionRing.toNormSMulClass`.
 
 Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGroup`, this
 typeclass can be used for "semi normed spaces" too, just as `Module` can be used for
-"semi modules". -/
+"semi modules".
+-/
 @[class_abbrev]
 structure NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E] where
   [a : Module 𝕜 E]
@@ -44,16 +45,11 @@ attribute [instance] NormedSpace.mk
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
--- see Note [lower instance priority]
---instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
---  haveI : IsBoundedSMul 𝕜 E := .of_norm_smul_le NormedSpace.norm_smul_le
---  NormedDivisionRing.toNormSMulClass
-
 /-- This is a shortcut instance, which was found to help with performance in
 https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Normed.20modules/near/516757412.
 
 It is implied via `NormedSpace.toNormSMulClass`. -/
-example [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E := inferInstance
+instance [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E := inferInstance
 
 example : NormedSpace 𝕜 𝕜 := by infer_instance
 
@@ -155,9 +151,9 @@ domain, using the `SeminormedAddCommGroup.induced` norm.
 See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
-    @NormedSpace 𝕜 E _ (@SeminormedAddCommGroup.mk _ _ (SeminormedAddGroup.induced E G f)) :=
+    @NormSMulClass 𝕜 E _ (SeminormedAddGroup.induced E G f).toNorm _ :=
   let _ := SeminormedAddGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul a (f b)⟩
 
 section NontriviallyNormedSpace
 
@@ -357,52 +353,10 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ = ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul a (f b)⟩
 
-#check SubfieldClass.toNormedField
-
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : WithSeminormedRing S :=
   fast_instance% SeminormedRing.induced S A S.val
 
-#check SubfieldClass.toNormedField
-
-/-
-set_option synthInstance.maxHeartbeats 200000
-
-set_option trace.Meta.isDefEq true
-set_option trace.profiler true
-set_option trace.Meta.synthInstance true
--/
-/-
-lemma foo {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
-    [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) :
-    S.toSubring.toRing = (SubfieldClass.toField (Subalgebra 𝕜 A) S).toDivisionRing.toRing := by
-  sorry
--/
-
-class MyFoo (α : Type*) [Ring α] : Prop where
-
-namespace SubfieldClass
-
-variable {S F : Type*} [SetLike S F]
-
-/--
-If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
-field structure.
--/
-instance toNormedField' [Field F] [SubfieldClass S F] [MyFoo F]
-    (s : S) : MyFoo s where
-
-end SubfieldClass
-
-
-instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [Ring A] [Field 𝕜]
-    [Algebra 𝕜 A] (S : Subalgebra 𝕜 A) : MyFoo S := by
-  infer_instance
-
-
-#exit
-
-set_option synthInstance.maxHeartbeats 200000 in
 instance Subalgebra.toNormedAlgebra' {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormSMulClass 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
@@ -477,9 +431,14 @@ example : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) := by infer_instance
 /-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+def Module.RestrictScalars.normSMulClassOrig (𝕜 : Type*) (𝕜' : Type*) (E : Type*) [NormedField 𝕜']
+    [SeminormedAddCommGroup E] [Module 𝕜' E] [I : NormSMulClass 𝕜' E] :
+    letI := RestrictScalars.moduleOrig 𝕜 𝕜' E
+    NormSMulClass 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
+
+abbrev Module.restrictScalars : Module 𝕜 E :=
+  RestrictScalars.module 𝕜 𝕜' E
 
 /-- Warning: This declaration should be used judiciously.
 Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
@@ -490,8 +449,16 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormedSpace.restrictScalars : NormSMulClass 𝕜 E :=
+abbrev NormSMulClass.restrictScalars :
+    letI := Module.restrictScalars 𝕜 𝕜' E
+    NormSMulClass 𝕜 E :=
   RestrictScalars.normSMulClass _ 𝕜' E
+
+abbrev NormedSpace.restrictScalars :
+    NormedSpace 𝕜 E := by
+  letI := Module.restrictScalars 𝕜 𝕜' E
+  letI := NormSMulClass.restrictScalars 𝕜 𝕜' E
+  infer_instance
 
 end NormedSpace
 
@@ -504,27 +471,6 @@ variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 /-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedAlgebra`. -/
 example : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) := by infer_instance
-
--- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
--- appropriately modified here.
-/-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
-This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
--/
-def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
-
-/-- Warning: This declaration should be used judiciously.
-Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
-
-This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
-rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
-inferred, and because it is likely to create instance diamonds.
-
-See Note [reducible non-instances].
--/
-abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
-  RestrictScalars.normedAlgebra _ 𝕜' _
 
 end NormedAlgebra
 

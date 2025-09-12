@@ -72,12 +72,15 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [
   (h5 : ∀ r x, g (r • x) ≤ |r| * (g x))
 include h1 h2 h3 h4 h5
 
+#check NormedSpace
+
 theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     μ {x : E | g x < 1} =
       .ofReal ((∫ (x : E), Real.exp (-(g x) ^ p) ∂μ) / Real.Gamma (finrank ℝ E / p + 1)) := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
+  letI : AddCommGroup F := inferInstanceAs (AddCommGroup E)
+  letI : WithNormedAddGroup F :=
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
@@ -86,14 +89,16 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
     eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  letI : IsBoundedSMul ℝ F := by
+    apply IsBoundedSMul.of_norm_smul_le
+    exact fun _ _ ↦ h5 _ _
+  letI : NormSMulClass ℝ F := NormedDivisionRing.toNormSMulClass
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
   have : BorelSpace F := { measurable_eq := rfl }
   -- The map between `E` and `F` as a continuous linear equivalence
-  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
+  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
@@ -118,7 +123,9 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     μ {x : E | g x ≤ r} = μ {x : E | g x < r} := by
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
-  letI : NormedAddCommGroup F :=
+  letI F : Type _ := E
+  letI : AddCommGroup F := inferInstanceAs (AddCommGroup E)
+  letI : WithNormedAddGroup F :=
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
@@ -127,14 +134,16 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
     eq_of_dist_eq_zero := by convert fun _ _ h => eq_of_sub_eq_zero (h4 h) }
-  letI : NormedSpace ℝ F :=
-  { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  letI : IsBoundedSMul ℝ F := by
+    apply IsBoundedSMul.of_norm_smul_le
+    exact fun _ _ ↦ h5 _ _
+  letI : NormSMulClass ℝ F := NormedDivisionRing.toNormSMulClass
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
   letI : MeasurableSpace F := borel F
   have : BorelSpace F := { measurable_eq := rfl }
   -- The map between `E` and `F` as a continuous linear equivalence
-  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
+  let φ := @LinearEquiv.toContinuousLinearEquiv ℝ _ _ E _ _ tE _ _ F _ _ _ _ _ _ _ _ _
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E

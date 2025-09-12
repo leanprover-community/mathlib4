@@ -54,7 +54,7 @@ local notation "𝓚" => algebraMap ℝ _
 This typeclass captures properties shared by ℝ and ℂ, with an API that closely matches that of ℂ.
 -/
 class RCLike (K : semiOutParam Type*) extends Field K, WithDenseNormMulClassNormedRing K,
-    StarRing K, NormedAlgebra ℝ K, CompleteSpace K where
+    StarRing K, Algebra ℝ K, NormSMulClass ℝ K, CompleteSpace K where
   /-- The real part as an additive monoid homomorphism -/
   re : K →+ ℝ
   /-- The imaginary part as an additive monoid homomorphism -/
@@ -1241,16 +1241,16 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
   star_mul := by subst h''; exact h.star_mul
   star_add := by subst h''; exact h.star_add
   -- algebra fields
-  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
+  smul := (@Algebra.toSMul _ _ _ (_) h.toAlgebra).smul
   algebraMap :=
-  { toFun := @Algebra.algebraMap _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+  { toFun := @Algebra.algebraMap _ _ _ (_) h.toAlgebra
     map_one' := by subst h''; exact h.algebraMap.map_one'
     map_mul' := by subst h''; exact h.algebraMap.map_mul'
     map_zero' := by subst h''; exact h.algebraMap.map_zero'
     map_add' := by subst h''; exact h.algebraMap.map_add' }
   commutes' := by subst h''; exact h.commutes'
   smul_def' := by subst h''; exact h.smul_def'
-  norm_smul_le := by subst h''; subst h'''; exact h.norm_smul_le
+  norm_smul := by subst h''; subst h'''; exact h.norm_smul
   -- RCLike fields
   re := by subst h''; exact h.re
   im := by subst h''; exact h.im

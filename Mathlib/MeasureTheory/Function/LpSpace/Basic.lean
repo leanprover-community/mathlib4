@@ -379,8 +379,8 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
-  { AddGroupNorm.toNormedAddCommGroup
+instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : WithNormedAddGroup (Lp E p μ) :=
+  { AddGroupNorm.toNormedAddGroup
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
@@ -451,8 +451,8 @@ section NormedSpace
 
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
-instance instNormedSpace [Fact (1 ≤ p)] : NormedSpace 𝕜 (Lp E p μ) where
-  norm_smul_le _ _ := norm_smul_le _ _
+instance instNormedSpace [Fact (1 ≤ p)] : NormSMulClass 𝕜 (Lp E p μ) :=
+  NormedDivisionRing.toNormSMulClass
 
 end NormedSpace
 

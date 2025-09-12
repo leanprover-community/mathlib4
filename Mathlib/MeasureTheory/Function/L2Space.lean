@@ -200,7 +200,7 @@ private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫
   simp only
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
-instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
+instance innerProductSpace : WithInnerProductSpace 𝕜 (α →₂[μ] E) where
   norm_sq_eq_re_inner := norm_sq_eq_re_inner
   conj_inner_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
   add_left := add_left'

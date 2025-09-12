@@ -45,14 +45,13 @@ instance RCLike.instTietzeExtensionTVS {𝕜 : Type v} [RCLike 𝕜] {E : Type w
 instance Set.instTietzeExtensionUnitBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.ball (0 : E) 1) :=
-  have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo Homeomorph.unitBall.symm
 
 instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] :
     TietzeExtension.{u, w} (Metric.closedBall (0 : E) 1) := by
-  have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-  have : IsScalarTower ℝ 𝕜 E := Real.isScalarTower
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   -- I didn't find this retract in Mathlib.
   let g : E → E := fun x ↦ ‖x‖⁻¹ • x
   classical
@@ -75,7 +74,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
 theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.ball (0 : E) r) :=
-  have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo <| show (Metric.ball (0 : E) r) ≃ₜ (Metric.ball (0 : E) 1) from
     PartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
 

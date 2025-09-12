@@ -115,7 +115,8 @@ noncomputable instance instRankOneValuedAdicCompletion :
       rwa [valuation_of_algebraMap, intValuation_lt_one_iff_mem]
 
 /-- The `v`-adic completion of `K` is a normed field. -/
-noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCompletion K v) :=
+noncomputable instance instNormedFieldValuedAdicCompletion :
+    WithNormMulClassNormedRing (adicCompletion K v) :=
   Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
@@ -136,8 +137,9 @@ lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
-  simp [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField, Valued.norm,
-    Valuation.RankOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
+  simp [WithNormMulClassNormedRing.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, Valued.norm, Valuation.RankOne.hom, embedding_apply,
+    ← toNNReal_valued_eq_adicAbv]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/

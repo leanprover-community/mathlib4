@@ -446,12 +446,12 @@ field `𝕜` whenever `β` is as well.
 section NormedSpace
 
 noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup C₀(α, β) :=
-  SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+    WithSeminormedAddGroup C₀(α, β) := fast_instance%
+  SeminormedAddGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
 noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
-    NormedAddCommGroup C₀(α, β) :=
-  NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
+    WithNormedAddGroup C₀(α, β) := fast_instance%
+  NormedAddGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
 variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
@@ -460,29 +460,27 @@ variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSp
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
   rfl
 
-noncomputable instance : NormedSpace 𝕜 C₀(α, β) where
-  norm_smul_le k f := norm_smul_le k f.toBCF
+noncomputable instance : NormSMulClass 𝕜 C₀(α, β) where
+  norm_smul k f := norm_smul k f.toBCF
 
 end NormedSpace
 
 section NormedRing
 
 noncomputable instance instNonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
-    NonUnitalSeminormedRing C₀(α, β) :=
-  { instNonUnitalRing, instSeminormedAddCommGroup with
+    WithSeminormedRing C₀(α, β) :=
+  { instSeminormedAddCommGroup with
     norm_mul_le f g := norm_mul_le f.toBCF g.toBCF }
 
 noncomputable instance instNonUnitalNormedRing [NonUnitalNormedRing β] :
-    NonUnitalNormedRing C₀(α, β) :=
+    WithNormedRing C₀(α, β) :=
   { instNonUnitalSeminormedRing, instNormedAddCommGroup with }
 
-noncomputable instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing β] :
-    NonUnitalSeminormedCommRing C₀(α, β) :=
-  { instNonUnitalSeminormedRing, instNonUnitalCommRing with }
+noncomputable example [NonUnitalSeminormedCommRing β] :
+    NonUnitalSeminormedCommRing C₀(α, β) := by infer_instance
 
-noncomputable instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing β] :
-    NonUnitalNormedCommRing C₀(α, β) :=
-  { instNonUnitalNormedRing, instNonUnitalCommRing with }
+noncomputable example [NonUnitalNormedCommRing β] :
+    NonUnitalNormedCommRing C₀(α, β) := by infer_instance
 
 end NormedRing
 

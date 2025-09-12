@@ -99,8 +99,8 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
-  NormedSpace 𝕜 E, Inner 𝕜 E where
+class WithInnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [WithSeminormedAddGroup E] extends NormSMulClass 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
   /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
@@ -109,6 +109,14 @@ class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddC
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
+
+@[class_abbrev]
+structure InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [AddCommGroup E]
+    [WithSeminormedAddGroup E] where
+  [a : Module 𝕜 E]
+  [b : WithInnerProductSpace 𝕜 E]
+
+attribute [instance] InnerProductSpace.mk
 
 /-!
 ### Constructing a normed space structure from an inner product
@@ -172,24 +180,26 @@ instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
 `PreInnerProductSpace.Core` for `PreInnerProductSpace`s. Note that the `Seminorm` instance provided
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
-def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [Module 𝕜 E]
+    [c : WithInnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E where
   __ := c
-  re_inner_nonneg x := by rw [← InnerProductSpace.norm_sq_eq_re_inner]; apply sq_nonneg
+  re_inner_nonneg x := by rw [← WithInnerProductSpace.norm_sq_eq_re_inner]; apply sq_nonneg
 
 /-- Define `InnerProductSpace.Core` from `InnerProductSpace`. Defined to reuse lemmas about
 `InnerProductSpace.Core` for `InnerProductSpace`s. Note that the `Norm` instance provided by
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
-def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def InnerProductSpace.toCore [NormedAddCommGroup E] [Module 𝕜 E]
+    [c : WithInnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
     re_inner_nonneg := fun x => by
-      rw [← InnerProductSpace.norm_sq_eq_re_inner]
+      rw [← WithInnerProductSpace.norm_sq_eq_re_inner]
       apply sq_nonneg
     definite := fun x hx =>
       norm_eq_zero.1 <| pow_eq_zero (n := 2) <| by
-        rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
+        rw [WithInnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
 
 namespace InnerProductSpace.Core
 
@@ -391,7 +401,7 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
 
 /-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
-def toSeminormedAddCommGroup : WithSeminormedAddGroup F :=
+def toSeminormedAddGroup : WithSeminormedAddGroup F :=
   AddGroupSeminorm.toSeminormedAddGroup
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
@@ -406,12 +416,12 @@ def toSeminormedAddCommGroup : WithSeminormedAddGroup F :=
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this }
 
-attribute [local instance] toSeminormedAddCommGroup
+attribute [local instance] toSeminormedAddGroup
 
 /-- Normed space (which is actually a seminorm in general) structure constructed from a
 `PreInnerProductSpace.Core` structure -/
-def toNormedSpace : NormedSpace 𝕜 F where
-  norm_smul_le r x := by
+def toNormedSpace : NormSMulClass 𝕜 F where
+  norm_smul r x := by
     rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
     rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
       ofReal_re]
@@ -425,7 +435,7 @@ omit c in
 lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_smul c x := by
-    letI : NormedSpace 𝕜 F := toNormedSpace
+    letI : NormSMulClass 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x
   norm_triangle x y := norm_add_le x y
 
@@ -490,7 +500,7 @@ lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 
   norm_nonneg x := norm_nonneg x
   norm_eq_zero_iff x := norm_eq_zero
   norm_smul c x := by
-    letI : NormedSpace 𝕜 F := toNormedSpace
+    letI : NormSMulClass 𝕜 F := toNormedSpace
     exact _root_.norm_smul c x
   norm_triangle x y := norm_add_le x y
 
@@ -503,13 +513,15 @@ lemma topology_eq
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup
-    InnerProductSpace.Core.toNormedSpace
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ cd.toNormedAddCommGroup.toWithSeminormedAddGroup
+    _ InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp
   have : p.ball 0 1 = {v | re (cd.inner v v) < 1} := by
     ext v
+    let : SeminormedAddGroup F :=
+      @SeminormedAddGroup.mk F _ cd.toNormedAddCommGroup.toWithSeminormedAddGroup
     simp only [ball_normSeminorm, Metric.mem_ball, dist_eq_norm, sub_zero, Set.mem_setOf_eq, p]
     change √(re (cd.inner v v)) < 1 ↔ re (cd.inner v v) < 1
     conv_lhs => rw [show (1 : ℝ) = √ 1 by simp]
@@ -529,19 +541,19 @@ topology to make sure it is defeq to an already existing topology. -/
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    NormedAddCommGroup F :=
+    WithNormedAddGroup F :=
   NormedAddCommGroup.ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
 @[reducible] def toNormedSpaceOfTopology
-    [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
-    NormedSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
-  { norm_smul_le r x := by
+    letI : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    NormSMulClass 𝕜 F :=
+  letI : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  { norm_smul r x := by
       rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
       rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
         ofReal_re]
@@ -560,8 +572,8 @@ attribute [local instance] InnerProductSpace.Core.toNormedAddCommGroup
 the space into an inner product space. The `NormedAddCommGroup` structure is expected
 to already be defined with `InnerProductSpace.ofCore.toNormedAddCommGroup`. -/
 def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : InnerProductSpace.Core 𝕜 F) :
-    InnerProductSpace 𝕜 F :=
-  letI : NormedSpace 𝕜 F := InnerProductSpace.Core.toNormedSpace
+    WithInnerProductSpace 𝕜 F :=
+  letI : NormSMulClass 𝕜 F := InnerProductSpace.Core.toNormedSpace
   { cd with
     norm_sq_eq_re_inner := fun x => by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
@@ -578,10 +590,10 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
     (cd : InnerProductSpace.Core 𝕜 F)
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
-    InnerProductSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
-  letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
+    letI : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    WithInnerProductSpace 𝕜 F :=
+  letI : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormSMulClass 𝕜 F := cd.toNormedSpaceOfTopology h h'
   { cd with
     norm_sq_eq_re_inner := fun x => by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl

@@ -26,7 +26,7 @@ variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Normed
 namespace WithLp
 
 noncomputable instance instProdInnerProductSpace :
-    InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
+    WithInnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜
   norm_sq_eq_re_inner x := by
     simp [prod_norm_sq_eq_of_L2, ← norm_sq_eq_re_inner]

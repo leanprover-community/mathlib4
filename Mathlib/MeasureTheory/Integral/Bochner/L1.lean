@@ -586,6 +586,8 @@ theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ 
 theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
   norm_Integral_le_one
 
+set_option synthInstance.maxHeartbeats 100000 in
+-- something fishy here, investigate
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM f‖ := by simp only [integral]

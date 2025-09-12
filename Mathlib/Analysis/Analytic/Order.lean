@@ -79,7 +79,8 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     analyticOrderAt f z₀ = n ↔
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  split_ifs with h
+  -- bug with slpit_ifs and Jovan's bundled classes
+  split_ifs with h' h
   · simp only [ENat.top_ne_coe, false_iff]
     contrapose! h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
@@ -87,6 +88,8 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+  · exact (h' hf).elim
+  · exact (h' hf).elim
 
 @[deprecated (since := "2025-05-03")]
 alias AnalyticAt.order_eq_nat_iff := AnalyticAt.analyticOrderAt_eq_natCast
@@ -160,7 +163,7 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     n ≤ analyticOrderAt f z₀ ↔
       ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  split_ifs with h
+  split_ifs with h' h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
   · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
     obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
@@ -177,6 +180,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
         rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
+  · exact (h' hf).elim
+  · exact (h' hf).elim
 
 @[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_analyticOrderAt
 

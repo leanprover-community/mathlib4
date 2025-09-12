@@ -49,7 +49,7 @@ that produces a concrete bound.
 -/
 theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] Fₗ)
     (h : ∀ z ∈ Metric.ball (0 : E) r, ‖f z‖ ≤ c) : ∃ C, ∀ z : E, ‖f z‖ ≤ C * ‖z‖ := by
-  obtain ⟨k, hk⟩ := @NontriviallyNormedField.non_trivial 𝕜 _
+  obtain ⟨k, hk⟩ := @WithNontrivialNormMulClassNormedRing.non_trivial 𝕜 _ _
   use c * (‖k‖ / r)
   intro z
   refine bound_of_shell _ r_pos hk (fun x hko hxo => ?_) _
@@ -117,13 +117,15 @@ instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 
 /-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
-instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
-  NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
+instance toWithNormedAddGroup [RingHomIsometric σ₁₂] : WithNormedAddGroup (E →SL[σ₁₂] F) :=
+  WithNormedAddGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
+
+instance [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) := by infer_instance
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
 instance toNormedRing : WithNormedRing (E →L[𝕜] E) where
-  __ := toNormedAddCommGroup
   __ := toSeminormedRing
+  __ := toWithNormedAddGroup
 
 variable {f} in
 theorem homothety_norm [RingHomIsometric σ₁₂] [Nontrivial E] (f : E →SL[σ₁₂] F) {a : ℝ}

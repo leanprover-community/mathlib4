@@ -535,9 +535,8 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
 instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
-    SeminormedAddCommGroup (PiLp p β) :=
-  { Pi.addCommGroup with
-    dist_eq := fun x y => by
+    WithSeminormedAddGroup (PiLp p β) :=
+  { dist_eq := fun x y => by
       rcases p.dichotomy with (rfl | h)
       · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, sub_apply]
       · have : p ≠ ∞ := by
@@ -565,7 +564,7 @@ theorem norm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i 
 end
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
+instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : WithNormedAddGroup (PiLp p α) :=
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
@@ -691,9 +690,8 @@ instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
       simp_rw [← NNReal.mul_rpow, smul_apply, nnnorm_smul]
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
-instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
-    [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) where
-  norm_smul_le := norm_smul_le
+example [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, NormedSpace 𝕜 (β i)] : NormedSpace 𝕜 (PiLp p β) := by infer_instance
 
 variable {𝕜 p α}
 variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (β i)]

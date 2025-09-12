@@ -505,12 +505,10 @@ theorem norm_def' (a : 𝓜(𝕜, A)) : ‖a‖ = ‖toProdMulOppositeHom a‖ :
 theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a‖₊ :=
   rfl
 
-noncomputable instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
-  { DoubleCentralizer.instModule with
-    norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite :) }
+noncomputable instance instNormedSpace : NormSMulClass 𝕜 𝓜(𝕜, A) where
+  norm_smul := fun k a => (norm_smul k a.toProdMulOpposite :)
 
-noncomputable instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
-  { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
+example : NormedAlgebra 𝕜 𝓜(𝕜, A) := by infer_instance
 
 theorem isUniformEmbedding_toProdMulOpposite :
     IsUniformEmbedding (toProdMulOpposite (𝕜 := 𝕜) (A := A)) :=

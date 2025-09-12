@@ -25,7 +25,7 @@ theorem hasLineDerivAt (f : QuadraticMap 𝕜 E F) (a b : E) :
     HasLineDerivAt 𝕜 f (polar f a b) a b := by
   simpa [HasLineDerivAt, QuadraticMap.map_add, f.map_smul] using
     ((hasDerivAt_const (0 : 𝕜) (f a)).add <|
-      ((hasDerivAt_id 0).mul (hasDerivAt_id 0)).smul (hasDerivAt_const 0 (f b))).add
+      ((hasDerivAt_id (0 : 𝕜)).mul (hasDerivAt_id 0)).smul (hasDerivAt_const 0 (f b))).add
       ((hasDerivAt_id 0).smul (hasDerivAt_const 0 (polar f a b)))
 
 theorem lineDifferentiableAt (f : QuadraticMap 𝕜 E F) (a b : E) : LineDifferentiableAt 𝕜 f a b :=

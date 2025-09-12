@@ -429,7 +429,7 @@ We use 80 as this is rather specialized, so we want other paths to be tried firs
 As this instance is quite specific and very costly because of higher order unification, we
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
-    NormedAddCommGroup (E b) :=
+    WithNormedAddGroup (E b) :=
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 /-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
@@ -440,8 +440,8 @@ We use 80 as this is rather specialized, so we want other paths to be tried firs
 As this instance is quite specific and very costly because of higher order unification, we
 also scope it to the `Bundle` namespace. -/
 noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
-    InnerProductSpace ℝ (E b) :=
-  .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
+    WithInnerProductSpace ℝ (E b) :=
+  InnerProductSpace.ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 variable (F E) in
 /-- A family of inner product space structures on the fibers of a fiber bundle, defining the same

@@ -28,25 +28,27 @@ structure NonUnitalCStarAlgebra (A : Type*) where
   [c : StarRing A]
   [d : CompleteSpace A]
   [e : CStarRing A]
-  [f : NormedSpace ℂ A]
-  [g : IsScalarTower ℂ A A]
-  [h : SMulCommClass ℂ A A]
-  [i : StarModule ℂ A]
+  [f : Module ℂ A]
+  [g : NormSMulClass ℂ A]
+  [h : IsScalarTower ℂ A A]
+  [i : SMulCommClass ℂ A A]
+  [j : StarModule ℂ A]
 
 attribute [instance] NonUnitalCStarAlgebra.mk
 
 /-- The class of non-unital commutative (complex) C⋆-algebras. -/
 @[class_abbrev]
 structure NonUnitalCommCStarAlgebra (A : Type*) where
-  [a : NonUnitalRing A]
+  [a : NonUnitalCommRing A]
   [b : WithNormedRing A]
   [c : StarRing A]
   [d : CompleteSpace A]
   [e : CStarRing A]
-  [f : NormedSpace ℂ A]
-  [g : IsScalarTower ℂ A A]
-  [h : SMulCommClass ℂ A A]
-  [i : StarModule ℂ A]
+  [f : Module ℂ A]
+  [g : NormSMulClass ℂ A]
+  [h : IsScalarTower ℂ A A]
+  [i : SMulCommClass ℂ A A]
+  [j : StarModule ℂ A]
 
 attribute [instance] NonUnitalCommCStarAlgebra.mk
 
@@ -58,8 +60,9 @@ structure CStarAlgebra (A : Type*) where
   [c : StarRing A]
   [d : CompleteSpace A]
   [e : CStarRing A]
-  [f : NormedAlgebra ℂ A]
-  [g : StarModule ℂ A]
+  [f : Algebra ℂ A]
+  [g : NormSMulClass ℂ A]
+  [h : StarModule ℂ A]
 
 attribute [instance] CStarAlgebra.mk
 
@@ -71,8 +74,9 @@ structure CommCStarAlgebra (A : Type*) where
   [c : StarRing A]
   [d : CompleteSpace A]
   [e : CStarRing A]
-  [f : NormedAlgebra ℂ A]
-  [g : StarModule ℂ A]
+  [f : Algebra ℂ A]
+  [g : NormSMulClass ℂ A]
+  [h : StarModule ℂ A]
 
 attribute [instance] CommCStarAlgebra.mk
 

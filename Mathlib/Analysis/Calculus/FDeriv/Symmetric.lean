@@ -461,8 +461,10 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
     {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y)
     (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v := by
   let _ := IsRCLikeNormedField.rclike 𝕜
-  let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-  let _ : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
+  let _ := Module.restrictScalars ℝ 𝕜 E
+  let _ := NormedSpace.restrictScalars ℝ 𝕜 E
+  let _ := Module.restrictScalars ℝ 𝕜 F
+  let _ := NormedSpace.restrictScalars ℝ 𝕜 F
   let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ

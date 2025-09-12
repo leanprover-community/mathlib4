@@ -663,7 +663,7 @@ variable {F : Type*} (R S : Type*) [FunLike F R S]
 induces a `NonUnitalSeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
-abbrev SeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
+abbrev SeminormedRing.induced [NonUnitalRing R] [NonUnitalRing S] [WithSeminormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) : WithSeminormedRing R :=
   { SeminormedAddGroup.induced R S f  with
     norm_mul_le x y := show ‖f _‖ ≤ _ from (map_mul f x y).symm ▸ norm_mul_le (f x) (f y) }
@@ -672,13 +672,13 @@ abbrev SeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
 `NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
-abbrev NormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
+abbrev NormedRing.induced [NonUnitalRing R] [NonUnitalRing S] [WithNormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : WithNormedRing R :=
   { SeminormedRing.induced R S f, NormedAddGroup.induced R S f hf with }
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
-theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
+theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [Ring S] [WithSeminormedRing S]
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
   let _ : WithSeminormedRing R := SeminormedRing.induced R S f
@@ -686,7 +686,7 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
-theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
+theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [Ring S] [WithSeminormedRing S]
     [NormMulClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormMulClass R (SeminormedRing.induced R S f).toNorm _ :=
   let _ : WithSeminormedRing R := SeminormedRing.induced R S f

@@ -35,8 +35,8 @@ theorem derivWithin_comp_mul_left :
     derivWithin (f <| c * ·) s x = c • derivWithin f (c • s) (c * x) := by
   simp only [← smul_eq_mul]
   rw [← derivWithin_const_smul', derivWithin, derivWithin,
-    fderivWithin_comp_smul_eq_fderivWithin_smul, Pi.smul_def]
+    fderivWithin_comp_smul_eq_fderivWithin_smul (c := c), Pi.smul_def]
 
 variable (c f x) in
 theorem deriv_comp_mul_left : deriv (f <| c * ·) x = c • deriv f (c * x) := by
-  simp only [← smul_eq_mul, deriv, fderiv_comp_smul, ContinuousLinearMap.smul_apply]
+  simp only [← smul_eq_mul, deriv, fderiv_comp_smul (c := c), ContinuousLinearMap.smul_apply]

@@ -32,7 +32,7 @@ open scoped NNReal
 
 section
 
-variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
+variable {K : Type*} [Field K] [hK : WithNormMulClassNormedRing K] [IsUltrametricDist K]
 
 namespace NormedField
 
@@ -98,53 +98,52 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
-def toNormedField : NormedField L :=
-  { (inferInstance : Field L) with
-    norm := norm
-    dist := fun x y => norm (x - y)
-    dist_self := fun x => by
-      simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
-    dist_comm := fun x y => by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
-    dist_triangle := fun x y z => by
-      simp only [← sub_add_sub_cancel x y z]
-      exact le_trans (norm_add_le _ _)
-        (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
-    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
-    dist_eq := fun x y => rfl
-    norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
-    toUniformSpace := Valued.toUniformSpace
-    uniformity_dist := by
-      haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
-      ext U
-      rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
-      · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
-        refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
-        · set δ : ℝ≥0 := hv.hom ε with hδ
-          have hδ_pos : 0 < δ := by
-            rw [hδ, ← map_zero hv.hom]
-            exact hv.strictMono _ (Units.zero_lt ε)
-          use δ, hδ_pos
-          apply subset_trans _ hε
-          intro x hx
-          simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
-          rw [mem_setOf, ← neg_sub, Valuation.map_neg]
-          exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
-        · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
-            ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
-          obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
-          use u
-          apply subset_trans _ hr
-          intro x hx
-          simp only [norm, mem_setOf_eq]
-          apply lt_trans _ hu
-          rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
-          exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
-      · simp only [Directed]
-        intro x y
-        use min x y
-        simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
-        exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
-            lt_of_lt_of_le hab (min_le_right _ _)⟩ }
+def toNormedField : WithNormMulClassNormedRing L where
+  norm := norm
+  dist := fun x y => norm (x - y)
+  dist_self := fun x => by
+    simp only [sub_self, norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
+  dist_comm := fun x y => by simp only [norm]; rw [← neg_sub, Valuation.map_neg]
+  dist_triangle := fun x y z => by
+    simp only [← sub_add_sub_cancel x y z]
+    exact le_trans (norm_add_le _ _)
+      (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
+  eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
+  dist_eq := fun x y => rfl
+  norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
+  toUniformSpace := Valued.toUniformSpace
+  uniformity_dist := by
+    haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
+    ext U
+    rw [hasBasis_iff.mp (Valued.hasBasis_uniformity L Γ₀), iInf_subtype', mem_iInf_of_directed]
+    · simp only [true_and, mem_principal, Subtype.exists, gt_iff_lt, exists_prop]
+      refine ⟨fun ⟨ε, hε⟩ => ?_, fun ⟨r, hr_pos, hr⟩ => ?_⟩
+      · set δ : ℝ≥0 := hv.hom ε with hδ
+        have hδ_pos : 0 < δ := by
+          rw [hδ, ← map_zero hv.hom]
+          exact hv.strictMono _ (Units.zero_lt ε)
+        use δ, hδ_pos
+        apply subset_trans _ hε
+        intro x hx
+        simp only [mem_setOf_eq, norm, hδ, NNReal.coe_lt_coe] at hx
+        rw [mem_setOf, ← neg_sub, Valuation.map_neg]
+        exact (RankOne.strictMono Valued.v).lt_iff_lt.mp hx
+      · haveI : Nontrivial Γ₀ˣ := (nontrivial_iff_exists_ne (1 : Γ₀ˣ)).mpr
+          ⟨RankOne.unit val.v, RankOne.unit_ne_one val.v⟩
+        obtain ⟨u, hu⟩ := Real.exists_lt_of_strictMono hv.strictMono hr_pos
+        use u
+        apply subset_trans _ hr
+        intro x hx
+        simp only [norm, mem_setOf_eq]
+        apply lt_trans _ hu
+        rw [NNReal.coe_lt_coe, ← neg_sub, Valuation.map_neg]
+        exact (RankOne.strictMono Valued.v).lt_iff_lt.mpr hx
+    · simp only [Directed]
+      intro x y
+      use min x y
+      simp only [le_principal_iff, mem_principal, setOf_subset_setOf, Prod.forall]
+      exact ⟨fun a b hab => lt_of_lt_of_le hab (min_le_left _ _), fun a b hab =>
+          lt_of_lt_of_le hab (min_le_right _ _)⟩
 
 -- When a field is valued, one inherits a `NormedField`.
 -- Scoped instance to avoid a typeclass loop or non-defeq topology or norms.
@@ -207,7 +206,7 @@ end toNormedField
 /--
 The nontrivially normed field structure determined by a rank one valuation.
 -/
-def toNontriviallyNormedField : NontriviallyNormedField L := {
+def toNontriviallyNormedField : WithNontrivialNormMulClassNormedRing L := {
   val.toNormedField with
   non_trivial := by
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v

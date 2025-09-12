@@ -28,11 +28,11 @@ instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.
 
 variable [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
-instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
+instance : WithInnerProductSpace 𝕜 Hᵐᵒᵖ where
   norm_sq_eq_re_inner x := (inner_self_eq_norm_sq x.unop).symm
-  conj_inner_symm x y := InnerProductSpace.conj_inner_symm x.unop y.unop
-  add_left x y z := InnerProductSpace.add_left x.unop y.unop z.unop
-  smul_left x y r := InnerProductSpace.smul_left x.unop y.unop r
+  conj_inner_symm x y := WithInnerProductSpace.conj_inner_symm x.unop y.unop
+  add_left x y z := WithInnerProductSpace.add_left x.unop y.unop z.unop
+  smul_left x y r := WithInnerProductSpace.smul_left x.unop y.unop r
 
 theorem _root_.Module.Basis.mulOpposite_is_orthonormal_iff {ι : Type*} (b : Module.Basis ι 𝕜 H) :
     Orthonormal 𝕜 b.mulOpposite ↔ Orthonormal 𝕜 b := Iff.rfl

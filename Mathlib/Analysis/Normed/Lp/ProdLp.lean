@@ -586,7 +586,7 @@ lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
 instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup (WithLp p (α × β)) where
+    WithSeminormedAddGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
     · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
@@ -626,7 +626,7 @@ end
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
 instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
-    NormedAddCommGroup (WithLp p (α × β)) :=
+    WithNormedAddGroup (WithLp p (α × β)) :=
   { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
@@ -891,9 +891,8 @@ end SeminormedAddCommGroup
 section NormedSpace
 
 /-- The product of two normed spaces is a normed space, with the `L^p` norm. -/
-instance instProdNormedSpace [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
-    NormedSpace 𝕜 (WithLp p (α × β)) where
-  norm_smul_le := norm_smul_le
+example [NormedField 𝕜] [NormedSpace 𝕜 α] [NormedSpace 𝕜 β] :
+    NormedSpace 𝕜 (WithLp p (α × β)) := by infer_instance
 
 end NormedSpace
 

@@ -57,22 +57,21 @@ instance : WithDenseNormMulClassNormedRing ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
 
-instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
-  norm_smul_le r x := by
+instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormSMulClass R ℂ where
+  norm_smul r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
 
 -- see Note [lower instance priority]
 /-- The module structure from `Module.complexToReal` is a normed space. -/
-instance (priority := 900) _root_.NormedSpace.complexToReal : NormedSpace ℝ E :=
-  NormedSpace.restrictScalars ℝ ℂ E
+instance (priority := 900) _root_.NormedSpace.complexToReal : NormSMulClass ℝ E :=
+  NormSMulClass.restrictScalars ℝ ℂ E
 
 -- see Note [lower instance priority]
 /-- The algebra structure from `Algebra.complexToReal` is a normed algebra. -/
-instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [SeminormedRing A]
-    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
-  NormedAlgebra.restrictScalars ℝ ℂ A
+example {A : Type*} [SeminormedRing A]
+    [NormedAlgebra ℂ A] : NormedAlgebra ℝ A := by infer_instance
 
 -- This result cannot be moved to `Data/Complex/Norm` since `ℤ` gets its norm from its
 -- normed ring structure and that file does not know about rings

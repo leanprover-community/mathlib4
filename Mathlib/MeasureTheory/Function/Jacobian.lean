@@ -387,6 +387,8 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
   rw [add_zero] at L
   exact ge_of_tendsto L J
 
+set_option maxHeartbeats 400000 in
+-- something fishy here, in the line `apply addHaar_image_le_mul_of_det_lt μ B.symm I`
 /-- Let `f` be a function which is sufficiently close (in the Lipschitz sense) to a given linear
 map `A`. Then it expands the volume of any set by at least `m` for any `m < det A`. -/
 theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
@@ -419,8 +421,8 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
     have :
       ∀ᶠ δ : ℝ≥0 in 𝓝[>] 0,
         ∀ (t : Set E) (g : E → E),
-          ApproximatesLinearOn g (B.symm : E →L[ℝ] E) t δ → μ (g '' t) ≤ ↑m⁻¹ * μ t :=
-      addHaar_image_le_mul_of_det_lt μ B.symm I
+          ApproximatesLinearOn g (B.symm : E →L[ℝ] E) t δ → μ (g '' t) ≤ ↑m⁻¹ * μ t := by
+      apply addHaar_image_le_mul_of_det_lt μ B.symm I
     rcases (this.and self_mem_nhdsWithin).exists with ⟨δ₀, h, h'⟩
     exact ⟨δ₀, h', h⟩
   -- record smallness conditions for `δ` that will be needed to apply `hδ₀` below.

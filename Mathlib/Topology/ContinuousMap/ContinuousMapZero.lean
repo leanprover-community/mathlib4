@@ -459,17 +459,16 @@ noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
 lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
 
-noncomputable instance [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
-  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
+noncomputable instance [NormedAddCommGroup R] : WithNormedAddGroup C(α, R)₀ where
+  dist_eq f g := WithNormedAddGroup.dist_eq (f : C(α, R)) g
 
-noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
-  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
+noncomputable instance [NormedCommRing R] : WithNormedRing C(α, R)₀ where
+  dist_eq f g := WithNormedAddGroup.dist_eq (f : C(α, R)) g
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
-  mul_comm f g := mul_comm f g
 
 noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
-    NormedSpace 𝕜 C(α, R)₀ where
-  norm_smul_le r f := norm_smul_le r (f : C(α, R))
+    NormSMulClass 𝕜 C(α, R)₀ where
+  norm_smul r f := norm_smul r (f : C(α, R))
 
 instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
   norm_mul_self_le f := CStarRing.norm_mul_self_le (f : C(α, R))

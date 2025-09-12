@@ -127,8 +127,10 @@ theorem DifferentiableOn.of_dslope (h : DifferentiableOn 𝕜 (dslope f a) s) :
 theorem differentiableWithinAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableWithinAt 𝕜 (dslope f a) s b ↔ DifferentiableWithinAt 𝕜 f s b := by
   refine ⟨DifferentiableWithinAt.of_dslope, fun hd => ?_⟩
-  refine (((differentiableWithinAt_id.sub_const a).inv (sub_ne_zero.2 h)).smul
-    (hd.sub_const (f a))).congr_of_eventuallyEq ?_ (dslope_of_ne _ h)
+  have : DifferentiableWithinAt 𝕜 (slope f a) s b := by
+    apply DifferentiableWithinAt.smul _ (hd.sub_const (f a))
+    exact (differentiableWithinAt_id.sub_const a).inv (sub_ne_zero.2 h)
+  apply this.congr_of_eventuallyEq ?_ (dslope_of_ne _ h)
   refine (eqOn_dslope_slope _ _).eventuallyEq_of_mem ?_
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 

@@ -172,7 +172,11 @@ lemma altitudeFoot_mem_altitude {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : 
 
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/
-def height {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
+-- bundled classes expanded in this definition so that the positivity extension below works fine.
+def height {V P : Type*} [AddCommGroup V] [WithNormedAddGroup V]
+    [Module ℝ V] [WithInnerProductSpace ℝ V]
+    [MetricSpace P] [NormedAddTorsor V P] {n : ℕ} [NeZero n]
+    (s : Simplex ℝ P n) (i : Fin (n + 1)) : ℝ :=
   dist (s.points i) (s.altitudeFoot i)
 
 @[simp]
@@ -184,7 +188,7 @@ open Qq Mathlib.Meta.Positivity in
 @[positivity height _ _]
 def evalHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $i5 $i6 $n $hn $s $i) =>
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"

@@ -625,6 +625,8 @@ theorem isPowMul_spectralNorm : IsPowMul (spectralNorm K L) := by
   exact isPowMul_spectralNorm_of_finiteDimensional_normal _ _
     ((algebraMap ↥K⟮x⟯ ↥(normalClosure K (↥K⟮x⟯) (AlgebraicClosure ↥K⟮x⟯))) g) hn
 
+set_option synthInstance.maxHeartbeats 300000 in
+-- something fishy here. Investigate
 /-- The spectral norm is nonarchimedean. -/
 theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := by
   intro x y
@@ -637,8 +639,8 @@ theorem isNonarchimedean_spectralNorm : IsNonarchimedean (spectralNorm K L) := b
   have hxy : x + y = (algebraMap K⟮x, y⟯ L) (gx + gy) := rfl
   rw [hxy, ← spectralNorm.eq_of_normalClosure (gx + gy) hxy,
     ← spectralNorm.eq_of_normalClosure gx (IntermediateField.AdjoinPair.algebraMap_gen₁ K x y),
-    ← spectralNorm.eq_of_normalClosure gy (IntermediateField.AdjoinPair.algebraMap_gen₂ K x y),
-    _root_.map_add]
+    ← spectralNorm.eq_of_normalClosure gy (IntermediateField.AdjoinPair.algebraMap_gen₂ K x y)]
+  rw [_root_.map_add]
   apply isNonarchimedean_spectralNorm_of_finiteDimensional_normal
 
 variable (K L) in
@@ -699,16 +701,17 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       eq_zero_of_map_eq_zero' a ha := by
         simpa [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, ← spectralAlgNorm_def,
           map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using ha }
-  letI n1 : NormedRing E := RingNorm.toNormedRing hs_norm
-  letI N1 : NormedSpace K E :=
+  letI n1 : WithNormedRing E := RingNorm.toNormedRing hs_norm
+  letI N1 : Module K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
       smul_zero e  := by simp
       smul_add k e_1 e_ := by simp [smul_add]
       add_smul k1 k2 e := by simp [add_smul]
-      zero_smul e := by simp [zero_smul]
-      norm_smul_le k y := by
-        change (spectralAlgNorm K L (id2 (k • y) : L) : ℝ) ≤
+      zero_smul e := by simp [zero_smul] }
+  letI N1 : NormSMulClass K E :=
+    { norm_smul k y := by
+        change (spectralAlgNorm K L (id2 (k • y) : L) : ℝ) =
           ‖k‖ * spectralAlgNorm K L (id2 y : L)
         rw [map_smul, IntermediateField.coe_smul, map_smul_eq_mul] }
   set hf_norm : RingNorm K⟮x⟯ :=
@@ -719,19 +722,20 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       mul_le' a b := map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
         simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using ha }
-  letI n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
-  letI N2 : NormedSpace K K⟮x⟯ :=
+  letI n2 : WithNormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
+  letI N2 : Module K K⟮x⟯ :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
       smul_zero e := by simp
       smul_add k e1 e2 := by simp [smul_add]
       add_smul k1 k2 e := by simp [add_smul]
-      zero_smul e := by simp [zero_smul]
-      norm_smul_le k y := by
-        change (f ((algebraMap K⟮x⟯ L) (k • y)) : ℝ) ≤ ‖k‖ * f (algebraMap K⟮x⟯ L y)
+      zero_smul e := by simp [zero_smul] }
+  letI N2' : NormSMulClass K K⟮x⟯ :=
+    { norm_smul k y := by
+        change (f ((algebraMap K⟮x⟯ L) (k • y)) : ℝ) = ‖k‖ * f (algebraMap K⟮x⟯ L y)
         have : (algebraMap (↥K⟮x⟯) L) (k • y) = k • algebraMap (↥K⟮x⟯) L y := by
           simp [IntermediateField.algebraMap_apply]
-        rw [this, map_smul_eq_mul] }
+        rw [this, map_smul_eq_mul]  }
   haveI hKx_fin : FiniteDimensional K ↥K⟮x⟯ :=
     IntermediateField.adjoin.finiteDimensional (Algebra.IsAlgebraic.isAlgebraic x).isIntegral
   haveI : FiniteDimensional K E := hKx_fin
@@ -817,49 +821,60 @@ namespace spectralNorm
 
 variable (K L)
 
+def withNormMulClassNormedRing [CompleteSpace K] : WithNormMulClassNormedRing L where
+  norm x := (spectralNorm K L x : ℝ)
+  dist x y := (spectralNorm K L (x - y) : ℝ)
+  dist_self x := by simp [sub_self, spectralNorm_zero]
+  dist_comm x y := by rw [← neg_sub, spectralNorm_neg (Algebra.IsAlgebraic.isAlgebraic _)]
+  dist_triangle x y z :=
+    sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
+  eq_of_dist_eq_zero hxy := by
+    rw [← sub_eq_zero]
+    exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
+  dist_eq x y := rfl
+  norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
+  edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal]
+
 /-- `L` with the spectral norm is a `NormedField`. -/
-def normedField [CompleteSpace K] : NormedField L :=
-  { (inferInstance : Field L) with
-    norm x := (spectralNorm K L x : ℝ)
-    dist x y := (spectralNorm K L (x - y) : ℝ)
-    dist_self x := by simp [sub_self, spectralNorm_zero]
-    dist_comm x y := by rw [← neg_sub, spectralNorm_neg (Algebra.IsAlgebraic.isAlgebraic _)]
-    dist_triangle x y z :=
-      sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
-    eq_of_dist_eq_zero hxy := by
-      rw [← sub_eq_zero]
-      exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
-    dist_eq x y := rfl
-    norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
-    edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
+def normedField [CompleteSpace K] : NormedField L := by
+  letI := withNormMulClassNormedRing K L
+  infer_instance
+
+def withNontrivialNormMulClassNormedRing [CompleteSpace K] :
+    WithNontrivialNormMulClassNormedRing L :=
+  { __ := spectralNorm.withNormMulClassNormedRing K L
+    non_trivial :=
+      let ⟨x, hx⟩ := WithNontrivialNormMulClassNormedRing.non_trivial (α := K)
+      ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩ }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
-def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
-  __ := spectralNorm.normedField K L
-  non_trivial :=
-    let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
-    ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
+def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L := by
+  letI := withNontrivialNormMulClassNormedRing K L
+  infer_instance
 
-/-- `L` with the spectral norm is a `normed_add_comm_group`. -/
+/-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
 def normedAddCommGroup [CompleteSpace K] : NormedAddCommGroup L := by
-  haveI : NormedField L := normedField K L
+  letI := normedField K L
   infer_instance
 
-/-- `L` with the spectral norm is a `seminormed_add_comm_group`. -/
+/-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
 def seminormedAddCommGroup [CompleteSpace K] : SeminormedAddCommGroup L := by
-  have : NormedField L := normedField K L
+  letI := normedField K L
   infer_instance
 
-/-- `L` with the spectral norm is a `normed_space` over `K`. -/
-def normedSpace [CompleteSpace K] : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
+/-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
+def normedSpace [CompleteSpace K] : @NormedSpace K L _ (seminormedAddCommGroup K L) := by
   letI _ := seminormedAddCommGroup K L
-  {(inferInstance : Module K L) with
-    norm_smul_le r x := by
-      change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
-      exact le_of_eq (map_smul_eq_mul _ _ _)}
+  have : NormSMulClass K L :=
+    {(inferInstance : Module K L) with
+      norm_smul r x := by
+        change spectralAlgNorm K L (r • x) = ‖r‖ * spectralAlgNorm K L x
+        exact map_smul_eq_mul _ _ _ }
+  infer_instance
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
-def metricSpace [CompleteSpace K] : MetricSpace L := (normedField K L).toMetricSpace
+def metricSpace [CompleteSpace K] : MetricSpace L :=
+  (normedField K L).b.toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
 def uniformSpace [CompleteSpace K] : UniformSpace L := (metricSpace K L).toUniformSpace
@@ -868,8 +883,8 @@ def uniformSpace [CompleteSpace K] : UniformSpace L := (metricSpace K L).toUnifo
   by the spectral norm. -/
 instance (priority := 100) completeSpace [CompleteSpace K] [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
-  letI := (normedAddCommGroup K L)
-  letI := (normedSpace K L)
+  letI := normedAddCommGroup K L
+  letI := normedSpace K L
   exact FiniteDimensional.complete K L
 
 end spectralNorm

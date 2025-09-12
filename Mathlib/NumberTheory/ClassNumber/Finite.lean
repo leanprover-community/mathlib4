@@ -65,6 +65,8 @@ theorem normBound_pos : 0 < normBound abv bS := by
   refine lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ ?_)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- something wrong here, investigate
 /-- If the `R`-integral element `a : S` has coordinates `≤ y` with respect to some basis `b`,
 its norm is less than `normBound abv b * y ^ dim S`. -/
 theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :

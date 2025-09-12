@@ -29,9 +29,8 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 /-! ### Inner product space structure on subspaces -/
 
 /-- Induced inner product on a submodule. -/
-instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : InnerProductSpace 𝕜 W :=
-  { Submodule.normedSpace W with
-    inner := fun x y => ⟪(x : E), (y : E)⟫
+instance Submodule.innerProductSpace (W : Submodule 𝕜 E) : WithInnerProductSpace 𝕜 W :=
+  { inner := fun x y => ⟪(x : E), (y : E)⟫
     conj_inner_symm := fun _ _ => inner_conj_symm _ _
     norm_sq_eq_re_inner := fun x => norm_sq_eq_re_inner (x : E)
     add_left := fun _ _ _ => inner_add_left _ _ _

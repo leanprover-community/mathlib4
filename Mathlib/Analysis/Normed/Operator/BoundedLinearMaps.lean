@@ -374,7 +374,7 @@ theorem isBoundedBilinearMap_smul {𝕜' : Type*} [NormedField 𝕜'] [NormedAlg
 
 theorem isBoundedBilinearMap_mul : IsBoundedBilinearMap 𝕜 fun p : 𝕜 × 𝕜 => p.1 * p.2 := by
   simp_rw [← smul_eq_mul]
-  exact isBoundedBilinearMap_smul
+  apply isBoundedBilinearMap_smul (𝕜' := 𝕜)
 
 theorem isBoundedBilinearMap_comp :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × (E →L[𝕜] F) => p.1.comp p.2 :=

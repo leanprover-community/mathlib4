@@ -46,7 +46,7 @@ theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
 theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 
-noncomputable instance : NormedAddCommGroup ℍ :=
+noncomputable instance : WithNormedAddGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
       conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
@@ -55,7 +55,7 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, add_re]
       smul_left := fun x y r => by simp [inner_def] }
 
-noncomputable instance : InnerProductSpace ℝ ℍ :=
+noncomputable instance : WithInnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
 theorem normSq_eq_norm_mul_self (a : ℍ) : normSq a = ‖a‖ * ‖a‖ := by
@@ -80,13 +80,11 @@ theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 
-noncomputable instance : NormedDivisionRing ℍ where
+noncomputable instance : WithNormMulClassNormedRing ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
 
-noncomputable instance : NormedAlgebra ℝ ℍ where
-  norm_smul_le := norm_smul_le
-  toAlgebra := Quaternion.algebra
+noncomputable example : NormedAlgebra ℝ ℍ := by infer_instance
 
 instance : CStarRing ℍ where
   norm_mul_self_le x :=

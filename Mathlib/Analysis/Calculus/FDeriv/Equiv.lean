@@ -520,7 +520,7 @@ theorem fderivWithin_const_smul_field {R : Type*} [DivisionRing R] [Module R F]
   · simp
   · lift c to Rˣ using IsUnit.mk0 _ hc
     have : SMulCommClass Rˣ 𝕜 F := .symm _ _ _
-    exact (ContinuousLinearEquiv.smulLeft c).comp_fderivWithin hs
+    exact (ContinuousLinearEquiv.smulLeft c).comp_fderivWithin hs (f := f)
 
 theorem hasFDerivWithinAt_comp_smul_smul_iff {c : 𝕜} :
     HasFDerivWithinAt (f <| c • ·) (c • f') s x ↔ HasFDerivWithinAt f f' (c • s) (c • x) := by

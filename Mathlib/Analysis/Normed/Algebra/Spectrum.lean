@@ -381,7 +381,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
     refine isUnit_one_sub_smul_of_lt_inv_radius (lt_of_le_of_lt (coe_mono ?_) hr)
     simpa only [norm_toNNReal, Real.toNNReal_coe] using
       Real.toNNReal_mono (mem_closedBall_zero_iff.mp z_mem)
-  have H₁ : Differentiable 𝕜 fun w : 𝕜 => 1 - w • a := (differentiable_id.smul_const a).const_sub 1
+  have H₁ : Differentiable 𝕜 fun w : 𝕜 => 1 - w • a := by fun_prop
   exact DifferentiableAt.comp z (differentiableAt_inverse hu) H₁.differentiableAt
 
 end OneSubSMul

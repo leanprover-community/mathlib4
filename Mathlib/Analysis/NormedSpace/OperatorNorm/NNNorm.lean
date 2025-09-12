@@ -192,7 +192,7 @@ theorem sSup_sphere_eq_nnnorm [NormedAlgebra ℝ 𝕜] (f : E →SL[σ₁₂] F)
     sSup ((fun x => ‖f x‖₊) '' Metric.sphere 0 1) = ‖f‖₊ := by
   cases subsingleton_or_nontrivial E
   · simp [sphere_eq_empty_of_subsingleton one_ne_zero]
-  have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  let := NormedSpace.restrictScalars ℝ 𝕜 E
   refine csSup_eq_of_forall_le_of_forall_lt_exists_gt
       ((NormedSpace.sphere_nonempty.mpr zero_le_one).image _) ?_ fun ub hub => ?_
   · rintro - ⟨x, hx, rfl⟩

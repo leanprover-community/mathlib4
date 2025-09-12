@@ -168,7 +168,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
       letI := h.rclike 𝕜
-      letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+      letI := Module.restrictScalars ℝ 𝕜 E
+      letI : NormSMulClass ℝ E := NormSMulClass.restrictScalars ℝ 𝕜 _
       Convex ℝ (range toPartialEquiv)
     else range toPartialEquiv = univ
   nonempty_interior' : (interior (range toPartialEquiv)).Nonempty
@@ -192,7 +193,8 @@ def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜
     simp only [this, htarget, dite_else_true]
     intro h
     letI := h.rclike 𝕜
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    letI := Module.restrictScalars ℝ 𝕜 E
+    letI : NormSMulClass ℝ E := NormSMulClass.restrictScalars ℝ 𝕜 _
     exact convex_univ
   nonempty_interior' := by
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
@@ -301,10 +303,12 @@ spaces to avoid diamond issues when populating the field `convex_range'`. -/
 lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLikeNormedField 𝕜]
     {s : Set E} (hs : Convex ℝ s) :
     letI := h.rclike
-    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    letI := Module.restrictScalars ℝ 𝕜 E
+    letI : NormSMulClass ℝ E := NormSMulClass.restrictScalars ℝ 𝕜 _
     Convex ℝ s := by
   letI := h.rclike
-  letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  letI := Module.restrictScalars ℝ 𝕜 E
+  letI : NormSMulClass ℝ E := NormSMulClass.restrictScalars ℝ 𝕜 E
   simp only [Convex, StarConvex] at hs ⊢
   intro u hu v hv a b ha hb hab
   convert hs hu hv ha hb hab using 2
@@ -503,7 +507,8 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
       rw [this, Set.range_prodMap]
       split_ifs with h
       · letI := h.rclike
-        letI := NormedSpace.restrictScalars ℝ 𝕜 E; letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+        letI := NormedSpace.restrictScalars ℝ 𝕜 E
+        letI := NormedSpace.restrictScalars ℝ 𝕜 E'
         exact I.convex_range.prod I'.convex_range
       · simp [range_eq_univ_of_not_isRCLikeNormedField, h]
     nonempty_interior' := by
@@ -525,6 +530,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     rw [PartialEquiv.pi_apply, Set.range_piMap]
     split_ifs with h
     · letI := h.rclike
+      letI := fun i ↦ Module.restrictScalars ℝ 𝕜 (E i)
       letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i)
       exact convex_pi fun i _hi ↦ (I i).convex_range
     · simp [range_eq_univ_of_not_isRCLikeNormedField, h]

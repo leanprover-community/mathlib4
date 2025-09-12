@@ -63,6 +63,9 @@ instance instRing [Ring R] (v : AbsoluteValue R S) : Ring (WithAbs v) := inferIn
 instance instCommRing [CommRing R] (v : AbsoluteValue R S) : CommRing (WithAbs v) :=
   inferInstanceAs (CommRing R)
 
+instance instField [Field R] (v : AbsoluteValue R S) : Field (WithAbs v) :=
+  inferInstanceAs (Field R)
+
 instance normedRing [Ring R] (v : AbsoluteValue R ℝ) : WithNormedRing (WithAbs v) :=
   v.toNormedRing
 
