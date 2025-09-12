@@ -47,7 +47,7 @@ theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
     ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
 
 theorem Nat.one_mem_closure_iff {s : Set ℕ} : 1 ∈ AddSubmonoid.closure s ↔ 1 ∈ s := by
-  rw [← Submodule.span_nat_eq_addSubmonoid_closure]
+  rw [← Submodule.span_nat_eq_addSubmonoidClosure]
   exact one_mem_span_iff
 
 theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :

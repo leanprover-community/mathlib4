@@ -174,14 +174,14 @@ theorem exists_mem_span_nat_finset_of_ge :
 
 theorem exists_mem_closure_of_ge : ∃ n, ∀ m ≥ n, setGcd s ∣ m → m ∈ AddSubmonoid.closure s :=
   have ⟨_t, n, hts, hn⟩ := exists_mem_span_nat_finset_of_ge s
-  ⟨n, fun m ge dvd ↦ (Submodule.span_nat_eq_addSubmonoid_closure s).le
+  ⟨n, fun m ge dvd ↦ (Submodule.span_nat_eq_addSubmonoidClosure s).le
     (Submodule.span_mono hts (hn m ge dvd))⟩
 
 theorem finite_setOf_setGcd_dvd_and_mem_span :
     {n | setGcd s ∣ n ∧ n ∉ Ideal.span s}.Finite :=
   have ⟨n, hn⟩ := exists_mem_closure_of_ge s
   (Finset.range n).finite_toSet.subset fun m h ↦ Finset.mem_range.mpr <|
-    lt_of_not_ge fun ge ↦ h.2 <| (Submodule.span_nat_eq_addSubmonoid_closure s).ge (hn m ge h.1)
+    lt_of_not_ge fun ge ↦ h.2 <| (Submodule.span_nat_eq_addSubmonoidClosure s).ge (hn m ge h.1)
 
 /-- `ℕ` is a Noetherian `ℕ`-module, i.e., `ℕ` is a Noetherian semiring. -/
 instance : IsNoetherian ℕ ℕ where
@@ -213,7 +213,7 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
     exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
       (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
-        (addSubmonoid_closure_one.ge ⟨⟩)⟩
+        (addSubmonoidClosure_one.ge ⟨⟩)⟩
   mpr h := by
     have ⟨n, hn⟩ := exists_mem_closure_of_ge s
     let P n := n ∉ AddSubmonoid.closure s
@@ -224,4 +224,3 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
     obtain le | le := le_total k n
     · exact of_not_not (findGreatest_is_greatest gt le)
     · exact hn k le (h.1.dvd.trans <| one_dvd k)
-
