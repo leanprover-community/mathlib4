@@ -253,8 +253,8 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
     simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
       toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
       toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add]
-  commutes' x := by
-    simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
+  map_smul' x := by
+    simp [toAlgEquivAux_eq_liftNormal g _ ⊥, AlgEquiv.map_smul]
 
 variable (k K) in
 /-- `algEquivToLimit` as a `MulEquiv`. -/
