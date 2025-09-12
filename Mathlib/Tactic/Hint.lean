@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Batteries.Control.Nondet.Basic
+import Mathlib.Init
 
 /-!
 # The `hint` tactic.
