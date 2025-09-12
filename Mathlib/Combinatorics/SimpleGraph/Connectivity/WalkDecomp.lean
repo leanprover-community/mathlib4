@@ -18,7 +18,7 @@ namespace SimpleGraph.Walk
 
 universe u
 
-variable {V : Type u} {G : SimpleGraph V} {v w u x : V}
+variable {V : Type u} {G : SimpleGraph V} {v w u : V}
 
 /-! ### Walk decompositions -/
 
@@ -187,7 +187,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 
-lemma takeUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
+lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
     (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
   induction p with
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
