@@ -303,7 +303,6 @@ protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p 
     [IsHomLift p g ψ] : IsStronglyCocartesian p g ψ where
   universal_property' := by
     intro c' h τ hτ
-    have h₁ : IsHomLift p (f ≫ g ≫ h) (φ ≫ τ) := by simpa using IsHomLift.comp p f (g ≫ h) φ τ
     /- We get a morphism `π : c ⟶ c'` such that `(φ ≫ ψ) ≫ π = φ ≫ τ` from the universal property
     of `φ ≫ ψ`. This will be the morphism induced by `φ`. -/
     use map p (f ≫ g) (φ ≫ ψ) (f' := f ≫ g ≫ h) (assoc f g h).symm (φ ≫ τ)

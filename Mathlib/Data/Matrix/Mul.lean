@@ -544,12 +544,12 @@ lemma col_vecMulVec [Mul α] (w : m → α) (v : n → α) (j : n) :
 
 theorem vecMulVec_ne_zero [Mul α] [Zero α] [NoZeroDivisors α] {a b : n → α}
     (ha : a ≠ 0) (hb : b ≠ 0) : vecMulVec a b ≠ 0 := by
-  simp only [Ne, ← ext_iff, zero_apply, not_forall, vecMulVec_apply]
-  exact ⟨(Function.ne_iff.mp ha).choose, (Function.ne_iff.mp hb).choose,
-    mul_ne_zero (Function.ne_iff.mp ha).choose_spec (Function.ne_iff.mp hb).choose_spec⟩
+  intro h
+  obtain ⟨i, ha⟩ := Function.ne_iff.mp ha
+  obtain ⟨j, hb⟩ := Function.ne_iff.mp hb
+  exact mul_ne_zero ha hb congr($h i j)
 
-@[simp]
-theorem vecMulVec_eq_zero [MulZeroClass α] [NoZeroDivisors α] {a b : n → α} :
+@[simp] theorem vecMulVec_eq_zero [MulZeroClass α] [NoZeroDivisors α] {a b : n → α} :
     vecMulVec a b = 0 ↔ a = 0 ∨ b = 0 := by
   simp only [← ext_iff, vecMulVec_apply, zero_apply, mul_eq_zero, funext_iff, Pi.zero_apply,
     forall_or_left, forall_or_right]
