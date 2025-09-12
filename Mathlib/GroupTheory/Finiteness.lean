@@ -10,13 +10,16 @@ import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
-# Finitely generated monoids and groups
+# Finitely generated semigroups, monoids and groups
 
-We define finitely generated monoids and groups. See also `Submodule.FG` and `Module.Finite` for
-finitely-generated modules.
+We define finitely generated semigroups, monoids and groups. See also `Submodule.FG`
+and `Module.Finite` for finitely-generated modules.
 
 ## Main definition
 
+* `Subsemigroup.FG S`, `AddSubsemigroup.FG S` : A subsemigroup `S` is finitely generated.
+* `Semigroup.FG M`, `AddSemigroup.FG M` : A typeclass indicating a type `M` is finitely generated
+  as a semigroup.
 * `Submonoid.FG S`, `AddSubmonoid.FG S` : A submonoid `S` is finitely generated.
 * `Monoid.FG M`, `AddMonoid.FG M` : A typeclass indicating a type `M` is finitely generated as a
   monoid.
@@ -104,14 +107,14 @@ section Semigroup
 
 variable [Semigroup M]
 
-/-- An additive monoid is finitely generated if it is finitely generated as an additive submonoid of
-itself. -/
+/-- An additive semigroup is finitely generated if it is finitely generated as an additive
+semigroup of itself. -/
 @[mk_iff]
 class AddSemigroup.FG (M : Type*) [AddSemigroup M] : Prop where
   fg_top : (⊤ : AddSubsemigroup M).FG
 
 variable (M) in
-/-- A monoid is finitely generated if it is finitely generated as a submonoid of itself. -/
+/-- A semigroup is finitely generated if it is finitely generated as a subsemigroup of itself. -/
 @[to_additive]
 class Semigroup.FG : Prop where
   fg_top : (⊤ : Subsemigroup M).FG
@@ -128,8 +131,8 @@ theorem Semigroup.fg_iff :
   ⟨fun _ => (Subsemigroup.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Subsemigroup.fg_iff ⊤).2 h⟩⟩
 
 variable (M) in
-/-- A finitely generated monoid has a minimal generating set. -/
-@[to_additive /-- A finitely generated monoid has a minimal generating set. -/]
+/-- A finitely generated semigroup has a minimal generating set. -/
+@[to_additive /-- A finitely generated semigroup has a minimal generating set. -/]
 lemma Subsemigroup.exists_minimal_closure_eq_top [Semigroup.FG M] :
     ∃ S : Finset M, Minimal (Subsemigroup.closure ·.toSet = ⊤) S :=
   Semigroup.FG.fg_top.exists_minimal_closure_eq
@@ -150,8 +153,6 @@ instance Semigroup.fg_of_addSemigroup_fg {M : Type*} [AddSemigroup M] [AddSemigr
     Semigroup.FG (Multiplicative M) :=
   AddSemigroup.fg_iff_mul_fg.1 ‹_›
 
--- This was previously a global instance,
--- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
 @[to_additive]
 lemma Semigroup.fg_of_finite [Finite M] : Semigroup.FG M := by
   cases nonempty_fintype M
@@ -242,8 +243,8 @@ theorem Submonoid.fg_iff_subsemigroup_fg (P : Submonoid M) : P.FG ↔ P.toSubsem
   constructor
   · rintro ⟨S, rfl⟩
     rw [Subsemigroup.fg_iff]
-    let Q : Submonoid M := ⟨Subsemigroup.closure (S ∪ {1}),
-      Subsemigroup.mem_closure_of_mem <| Set.mem_union_right _ rfl⟩
+    let Q : Submonoid M :=
+      ⟨Subsemigroup.closure (S ∪ {1}), Subsemigroup.mem_closure_of_mem <| Set.mem_union_right _ rfl⟩
     refine ⟨S ∪ {1}, le_antisymm ?_ ?_, S.finite_toSet.union (Set.finite_singleton 1)⟩
     · apply Subsemigroup.closure_le.mpr <| Set.union_subset subset_closure (by simp)
     · change Submonoid.closure S ≤ Q
@@ -662,17 +663,17 @@ end Group
 section Quotient
 
 @[to_additive]
-instance Con.semigroup_fg {M : Type*} [Semigroup M] [Semigroup.FG M] {c : Con M}
-    : Semigroup.FG c.Quotient :=
+instance Con.semigroup_fg {M : Type*} [Semigroup M] [Semigroup.FG M] {c : Con M} :
+    Semigroup.FG c.Quotient :=
   Semigroup.fg_of_surjective c.mkMulHom Quotient.mk''_surjective
 
 @[to_additive]
-instance Con.monoid_fg {M : Type*} [Monoid M] [Monoid.FG M] {c : Con M}
-    : Monoid.FG c.Quotient :=
+instance Con.monoid_fg {M : Type*} [Monoid M] [Monoid.FG M] {c : Con M} : Monoid.FG c.Quotient :=
   Monoid.fg_of_surjective c.mk' c.mk'_surjective
 
 @[to_additive]
-instance QuotientGroup.fg {G : Type*} [Group G] [Group.FG G] (N : Subgroup G) [Subgroup.Normal N] : Group.FG <| G ⧸ N :=
+instance QuotientGroup.fg {G : Type*} [Group G] [Group.FG G] (N : Subgroup G)
+    [Subgroup.Normal N] : Group.FG <| G ⧸ N :=
   Group.fg_of_surjective <| QuotientGroup.mk'_surjective N
 
 end Quotient
