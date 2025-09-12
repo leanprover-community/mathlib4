@@ -103,6 +103,7 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
     ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
     -- These files are transitively imported by `Mathlib.Init`.
     |>.erase `Mathlib.Tactic.DeclarationNames
+    |>.erase `Mathlib.Lean.Elab.Tactic.Meta
     |>.erase `Mathlib.Lean.ContextInfo
     |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
   if mismatch.size > 0 then
