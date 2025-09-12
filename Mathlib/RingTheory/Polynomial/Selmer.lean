@@ -247,20 +247,36 @@ instance {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
   one_smul x := Subtype.ext (one_smul G x.1)
   mul_smul g h x := Subtype.ext (mul_smul g h x.1)
 
-theorem tada
+theorem _root_.Ideal.Quotient.mkₐ_apply (R₁ : Type*)
+    {A : Type*} [CommSemiring R₁] [Ring A] [Algebra R₁ A]
+    (I : Ideal A) [I.IsTwoSided] (x : A) : Ideal.Quotient.mkₐ R₁ I x = Ideal.Quotient.mk I x :=
+  rfl
+
+theorem _root_.Polynomial.Monic.mem_rootSet {T S : Type*} [CommRing T] [CommRing S] [IsDomain S]
+    [Algebra T S] {p : T[X]} (hp : p.Monic) {a : S} : a ∈ p.rootSet S ↔ (aeval a) p = 0 := by
+  simp [Polynomial.mem_rootSet', (hp.map (algebraMap T S)).ne_zero]
+
+theorem tada -- R = ℤ, S = 𝓞 K
     {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S] [NoZeroSMulDivisors R S]
-    (f : R[X]) [DecidableEq (f.rootSet S)]
+    (f : R[X]) (hmon : f.Monic) [DecidableEq (f.rootSet S)]
     (G : Type*) [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
     (m : MaximalSpectrum S)
      -- all roots already present (so no new roots in `S ⧸ m`)
     (hf : (f.map (algebraMap R S)).roots.card = f.natDegree)
     -- at most one collision
     (h : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ m.asIdeal)).ncard + 1) :
-    ∀ σ ∈ AddSubgroup.inertia m.asIdeal.toAddSubgroup G,
-      MulAction.toPermHom G (f.rootSet S) σ = 1 ∨
-        (MulAction.toPermHom G (f.rootSet S) σ).IsSwap := by
-  intro σ hσ
-  sorry
+    ∀ g ∈ AddSubgroup.inertia m.asIdeal.toAddSubgroup G,
+      MulAction.toPermHom G (f.rootSet S) g = 1 ∨
+        (MulAction.toPermHom G (f.rootSet S) g).IsSwap := by
+  intro g hg
+  let π : S →ₐ[R] S ⧸ m.asIdeal := Ideal.Quotient.mkₐ R m.asIdeal
+  have hπ (x : S) (hx : x ∈ f.rootSet S): π x ∈ f.rootSet (S ⧸ m.asIdeal) := by
+    unfold π
+    rw [hmon.mem_rootSet, aeval_algHom_apply, aeval_eq_zero_of_mem_rootSet hx, map_zero]
+  have hπ (x : S) : π (g • x) = π x := (Ideal.Quotient.mk_eq_mk_iff_sub_mem (g • x) x).mpr (hg x)
+  by_cases h₀ : ∃ x y : S, x ∈ f.rootSet S ∧ y ∈ f.rootSet S ∧ x ≠ y ∧ π x = π y; swap
+  · sorry
+  · sorry
 
 theorem tada' {R S : Type*} [CommRing R] [Field S] [Algebra R S] [NoZeroSMulDivisors R S] (f : R[X])
     [Fact (f.Splits (algebraMap R S))] [DecidableEq (f.rootSet S)]
