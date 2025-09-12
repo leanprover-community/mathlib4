@@ -503,11 +503,9 @@ variable {𝕜 𝕜₂ 𝕜₃ : Type*} [Semiring 𝕜] [NormedField 𝕜₂] [N
   {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 /-- Send a bilinear map continuous in the second variable to a bilinear map. -/
+@[simps!]
 def _root_.LinearMap.toLinearMap₂ (L : E →ₛₗ[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L
-
-@[simp] lemma _root_.LinearMap.toLinearMap₂_apply (L : E →ₛₗ[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
-    L.toLinearMap₂ v w = L v w := rfl
 
 variable [TopologicalSpace E]
 
