@@ -8,7 +8,6 @@ import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
-import Batteries.Logic
 
 /-!
 # General operations on functions
