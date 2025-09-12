@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
@@ -32,13 +33,138 @@ assert_not_exists MonoidWithZero
 
 open Pointwise
 
-variable {M N : Type*} [Monoid M]
+section Subsemigroup
+variable {M N : Type*} [Semigroup M] [Semigroup N] {P : Subsemigroup M} {Q : Subsemigroup N}
+
+/-- A subsemigroup of `M` is finitely generated if it is the closure of a finite subset of `M`. -/
+@[to_additive /-- An additive subsemigroup of `M` is finitely generated if it is the closure of a
+finite subset of `M`. -/]
+def Subsemigroup.FG (P : Subsemigroup M) : Prop :=
+  ∃ S : Finset M, Subsemigroup.closure ↑S = P
+
+/-- An equivalent expression of `Subsemigroup.FG` in terms of `Set.Finite` instead of `Finset`. -/
+@[to_additive /-- An equivalent expression of `AddSubsemigroup.FG` in terms of `Set.Finite` instead
+of `Finset`. -/]
+theorem Subsemigroup.fg_iff (P : Subsemigroup M) :
+    Subsemigroup.FG P ↔ ∃ S : Set M, Subsemigroup.closure S = P ∧ S.Finite :=
+  ⟨fun ⟨S, hS⟩ => ⟨S, hS, Finset.finite_toSet S⟩, fun ⟨S, hS, hf⟩ =>
+    ⟨Set.Finite.toFinset hf, by simp [hS]⟩⟩
+
+/-- A finitely generated subsemigroup has a minimal generating set. -/
+@[to_additive /-- A finitely generated subsemigroup has a minimal generating set. -/]
+lemma Subsemigroup.FG.exists_minimal_closure_eq (hP : P.FG) :
+    ∃ S : Finset M, Minimal (closure ·.toSet = P) S := exists_minimal_of_wellFoundedLT _ hP
+
+theorem Subsemigroup.fg_iff_add_fg (P : Subsemigroup M) : P.FG ↔ P.toAddSubsemigroup.FG :=
+  ⟨fun h =>
+    let ⟨S, hS, hf⟩ := (Subsemigroup.fg_iff _).1 h
+    (AddSubsemigroup.fg_iff _).mpr
+      ⟨Additive.toMul ⁻¹' S, by simp [← Subsemigroup.toAddSubsemigroup_closure, hS], hf⟩,
+    fun h =>
+    let ⟨T, hT, hf⟩ := (AddSubsemigroup.fg_iff _).1 h
+    (Subsemigroup.fg_iff _).mpr
+      ⟨Additive.ofMul ⁻¹' T, by simp [← AddSubsemigroup.toSubsemigroup'_closure, hT], hf⟩⟩
+
+theorem AddSubsemigroup.fg_iff_mul_fg {M : Type*} [AddSemigroup M] (P : AddSubsemigroup M) :
+    P.FG ↔ P.toSubsemigroup.FG := by
+  convert (Subsemigroup.fg_iff_add_fg (toSubsemigroup P)).symm
+
+@[to_additive]
+theorem Subsemigroup.FG.bot : FG (⊥ : Subsemigroup M) :=
+  ⟨∅, by simp⟩
+
+@[to_additive]
+theorem Subsemigroup.FG.sup {Q : Subsemigroup M} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
+  classical
+  rcases hP with ⟨s, rfl⟩
+  rcases hQ with ⟨t, rfl⟩
+  exact ⟨s ∪ t, by simp [closure_union]⟩
+
+@[to_additive]
+theorem Subsemigroup.FG.finset_sup {ι : Type*} (s : Finset ι) (P : ι → Subsemigroup M)
+    (hP : ∀ i ∈ s, (P i).FG) : (s.sup P).FG :=
+  Finset.sup_induction bot (fun _ ha _ hb => ha.sup hb) hP
+
+@[to_additive]
+theorem Subsemigroup.FG.biSup {ι : Type*} (s : Finset ι) (P : ι → Subsemigroup M)
+    (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
+  simpa only [Finset.sup_eq_iSup] using finset_sup s P hP
+
+@[to_additive]
+theorem Subsemigroup.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Subsemigroup M) (hP : ∀ i, (P i).FG) :
+    (iSup P).FG := by
+  haveI := Fintype.ofFinite (PLift ι)
+  simpa [iSup_plift_down] using biSup Finset.univ (P ∘ PLift.down) fun i _ => hP i.down
+
+
+end Subsemigroup
+
+section Semigroup
+
+variable {M : Type*} [Semigroup M]
+
+/-- An additive monoid is finitely generated if it is finitely generated as an additive submonoid of
+itself. -/
+@[mk_iff]
+class AddSemigroup.FG (M : Type*) [AddSemigroup M] : Prop where
+  fg_top : (⊤ : AddSubsemigroup M).FG
+
+variable (M) in
+/-- A monoid is finitely generated if it is finitely generated as a submonoid of itself. -/
+@[to_additive]
+class Semigroup.FG : Prop where
+  fg_top : (⊤ : Subsemigroup M).FG
+
+@[to_additive]
+theorem Semigroup.fg_def : Semigroup.FG M ↔ (⊤ : Subsemigroup M).FG :=
+  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+
+/-- An equivalent expression of `Semigroup.FG` in terms of `Set.Finite` instead of `Finset`. -/
+@[to_additive
+/-- An equivalent expression of `AddSemigroup.FG` in terms of `Set.Finite` instead of `Finset`. -/]
+theorem Semigroup.fg_iff :
+    Semigroup.FG M ↔ ∃ S : Set M, Subsemigroup.closure S = (⊤ : Subsemigroup M) ∧ S.Finite :=
+  ⟨fun _ => (Subsemigroup.fg_iff ⊤).1 FG.fg_top, fun h => ⟨(Subsemigroup.fg_iff ⊤).2 h⟩⟩
+
+variable (M) in
+/-- A finitely generated monoid has a minimal generating set. -/
+@[to_additive /-- A finitely generated monoid has a minimal generating set. -/]
+lemma Subsemigroup.exists_minimal_closure_eq_top [Semigroup.FG M] :
+    ∃ S : Finset M, Minimal (Subsemigroup.closure ·.toSet = ⊤) S :=
+  Semigroup.FG.fg_top.exists_minimal_closure_eq
+
+theorem Semigroup.fg_iff_add_fg : Semigroup.FG M ↔ AddSemigroup.FG (Additive M) where
+  mp _ := ⟨(Subsemigroup.fg_iff_add_fg ⊤).1 FG.fg_top⟩
+  mpr h := ⟨(Subsemigroup.fg_iff_add_fg ⊤).2 h.fg_top⟩
+
+theorem AddSemigroup.fg_iff_mul_fg {M : Type*} [AddSemigroup M] :
+    AddSemigroup.FG M ↔ Semigroup.FG (Multiplicative M) where
+  mp _ := ⟨(AddSubsemigroup.fg_iff_mul_fg ⊤).1 FG.fg_top⟩
+  mpr h := ⟨(AddSubsemigroup.fg_iff_mul_fg ⊤).2 h.fg_top⟩
+
+instance AddSemigroup.fg_of_monoid_fg [Semigroup.FG M] : AddSemigroup.FG (Additive M) :=
+  Semigroup.fg_iff_add_fg.1 ‹_›
+
+instance Semigroup.fg_of_addSemigroup_fg {M : Type*} [AddSemigroup M] [AddSemigroup.FG M] :
+    Semigroup.FG (Multiplicative M) :=
+  AddSemigroup.fg_iff_mul_fg.1 ‹_›
+
+-- This was previously a global instance,
+-- but it doesn't appear to be used and has been implicated in slow typeclass resolutions.
+@[to_additive]
+lemma Semigroup.fg_of_finite [Finite M] : Semigroup.FG M := by
+  cases nonempty_fintype M
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Subsemigroup.closure_univ⟩⟩
+
+end Semigroup
+
 
 section Submonoid
-variable [Monoid N] {P : Submonoid M} {Q : Submonoid N}
+
+variable {M N : Type*} [Monoid M] [Monoid N] {P : Submonoid M} {Q : Submonoid N}
 
 /-- A submonoid of `M` is finitely generated if it is the closure of a finite subset of `M`. -/
-@[to_additive /-- An additive submonoid of `N` is finitely generated if it is the closure of a
+@[to_additive /-- An additive submonoid of `M` is finitely generated if it is the closure of a
 finite subset of `M`. -/]
 def Submonoid.FG (P : Submonoid M) : Prop :=
   ∃ S : Finset M, Submonoid.closure ↑S = P
@@ -138,6 +264,8 @@ end Pi
 end Submonoid
 
 section Monoid
+
+variable {M : Type*} [Monoid M]
 
 /-- An additive monoid is finitely generated if it is finitely generated as an additive submonoid of
 itself. -/
