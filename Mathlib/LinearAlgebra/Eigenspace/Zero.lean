@@ -201,7 +201,7 @@ lemma finrank_maxGenEigenspace_zero_eq (φ : Module.End K M) :
 lemma finrank_maxGenEigenspace_eq (φ : Module.End K M) (μ : K) :
     finrank K (φ.maxGenEigenspace μ) = φ.charpoly.rootMultiplicity μ := by
   rw [φ.maxGenEigenspace_eq_maxGenEigenspace_zero, finrank_maxGenEigenspace_zero_eq,
-    Polynomial.rootMultiplicity_eq_natTrailingDegree, LinearMap.charpoly_sub_scalar]
+    Polynomial.rootMultiplicity_eq_natTrailingDegree, LinearMap.charpoly_sub_smul]
 
 lemma finrank_genEigenspace_le (φ : Module.End K M) (μ : K) (k : ℕ) :
     finrank K (φ.genEigenspace μ k) ≤ φ.charpoly.rootMultiplicity μ := by
