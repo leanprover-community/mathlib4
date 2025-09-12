@@ -335,10 +335,10 @@ bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
   Equiv.ofBijective
     ((@Quotient.lift _ (Set.range f) (ker f) fun x => ⟨f x, Set.mem_range_self x⟩) fun _ _ h =>
-      Subtype.ext_val h)
+      Subtype.ext h)
     ⟨fun x y h => ker_lift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
       fun ⟨_, z, hz⟩ =>
-      ⟨@Quotient.mk'' _ (ker f) z, Subtype.ext_iff_val.2 hz⟩⟩
+      ⟨@Quotient.mk'' _ (ker f) z, Subtype.ext_iff.2 hz⟩⟩
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
