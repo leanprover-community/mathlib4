@@ -558,7 +558,9 @@
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Even": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Algebra.Group.Defs":
-  ["Mathlib.Algebra.Notation.Defs", "Mathlib.Tactic.OfNat"],
+  ["Mathlib.Algebra.Notation.Defs",
+   "Mathlib.Logic.Function.Defs",
+   "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
