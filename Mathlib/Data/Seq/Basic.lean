@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Vasilii Nesterov
 -/
 import Mathlib.Data.Seq.Defs
+import Mathlib.Data.ENat.Basic
+import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -19,6 +22,101 @@ namespace Stream'
 namespace Seq
 
 variable {α : Type u} {β : Type v} {γ : Type w}
+
+section length
+
+theorem length'_of_terminates {s : Seq α} (h : s.Terminates) :
+    s.length' = s.length h := by
+  simp [length', h]
+
+theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
+    s.length' = ⊤ := by
+  simp [length', h]
+
+@[simp]
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
+
+@[simp]
+theorem length'_nil : length' (nil : Seq α) = 0 := by
+  simp -implicitDefEqProofs [length']
+
+theorem length_cons {x : α} {s : Seq α} (h : s.Terminates) :
+    (cons x s).length (terminates_cons_iff.mpr h) = s.length h + 1 := by
+  apply Nat.find_comp_succ
+  simp
+
+@[simp]
+theorem length'_cons (x : α) (s : Seq α) :
+    (cons x s).length' = s.length' + 1 := by
+  by_cases h : (cons x s).Terminates <;>  have h' := h <;> rw [terminates_cons_iff] at h'
+  · simp [length'_of_terminates h, length'_of_terminates h', length_cons h']
+  · simp [length'_of_not_terminates h, length'_of_not_terminates h']
+
+@[simp]
+theorem length_eq_zero {s : Seq α} {h : s.Terminates} :
+    s.length h = 0 ↔ s = nil := by
+  simp [length, TerminatedAt]
+
+@[simp]
+theorem length'_eq_zero_iff_nil (s : Seq α) :
+    s.length' = 0 ↔ s = nil := by
+  cases s <;> simp
+
+theorem length'_ne_zero_iff_cons (s : Seq α) :
+    s.length' ≠ 0 ↔ ∃ x s', s = cons x s' := by
+  cases s <;> simp
+
+/-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
+simpler statement of the theorem where the sequence is known to terminate see `length_le_iff` -/
+theorem length_le_iff' {s : Seq α} {n : ℕ} :
+    (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
+  simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
+  refine ⟨?_, ?_⟩
+  · rintro ⟨_, k, hkn, hk⟩
+    exact le_stable s hkn hk
+  · intro hn
+    exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
+
+/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
+statement of the where the sequence is not known to terminate see `length_le_iff'` -/
+theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
+    s.length h ≤ n ↔ s.TerminatedAt n := by
+  rw [← length_le_iff']; simp [h]
+
+theorem length'_le_iff {s : Seq α} {n : ℕ} :
+    s.length' ≤ n ↔ s.TerminatedAt n := by
+  by_cases h : s.Terminates
+  · simpa [length'_of_terminates h] using length_le_iff
+  · simpa [length'_of_not_terminates h] using forall_not_of_not_exists h n
+
+/-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
+simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff` -/
+theorem lt_length_iff' {s : Seq α} {n : ℕ} :
+    (∀ h : s.Terminates, n < s.length h) ↔ ∃ a, a ∈ s.get? n := by
+  simp only [Terminates, TerminatedAt, length, Nat.lt_find_iff, forall_exists_index, Option.mem_def,
+    ← Option.ne_none_iff_exists', ne_eq]
+  refine ⟨?_, ?_⟩
+  · intro h hn
+    exact h n hn n le_rfl hn
+  · intro hn _ _ k hkn hk
+    exact hn <| le_stable s hkn hk
+
+/-- The statement of `length_le_iff` assumes that the sequence terminates. For a
+statement of the where the sequence is not known to terminate see `length_le_iff'` -/
+theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
+    n < s.length h ↔ ∃ a, a ∈ s.get? n := by
+  rw [← lt_length_iff']; simp [h]
+
+theorem lt_length'_iff {s : Seq α} {n : ℕ} :
+    n < s.length' ↔ ∃ a, a ∈ s.get? n := by
+  by_cases h : s.Terminates
+  · simpa [length'_of_terminates h] using lt_length_iff
+  · simp only [length'_of_not_terminates h, ENat.coe_lt_top, Option.mem_def, true_iff]
+    rw [not_terminates_iff] at h
+    rw [← Option.isSome_iff_exists]
+    exact h n
+
+end length
 
 section OfStream
 
@@ -285,6 +383,13 @@ theorem length_map {s : Seq α} {f : α → β} (h : (s.map f).Terminates) :
   ext
   simp
 
+@[simp]
+theorem length'_map {s : Seq α} {f : α → β} :
+    (s.map f).length' = s.length' := by
+  by_cases h : (s.map f).Terminates <;> have h' := h <;> rw [terminates_map_iff] at h'
+  · rw [length'_of_terminates h, length'_of_terminates h', length_map h]
+  · rw [length'_of_not_terminates h, length'_of_not_terminates h']
+
 theorem mem_map (f : α → β) {a : α} : ∀ {s : Seq α}, a ∈ s → f a ∈ map f s
   | ⟨_, _⟩ => Stream'.mem_map (Option.map f)
 
@@ -409,6 +514,21 @@ theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   induction n with
   | zero => simp [drop]
   | succ m ih => simp [← dropn_tail, ih]
+
+@[simp]
+theorem drop_length' {n : ℕ} {s : Seq α} :
+    (s.drop n).length' = s.length' - n := by
+  cases n with
+  | zero => simp
+  | succ n =>
+    cases s with
+    | nil => simp
+    | cons x s =>
+      simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
+      convert drop_length' using 1
+      generalize s.length' = m
+      enat_to_nat
+      omega
 
 theorem take_drop {s : Seq α} {n m : ℕ} :
     (s.take n).drop m = (s.drop m).take (n - m) := by
@@ -613,11 +733,6 @@ theorem all_cons {p : α → Prop} {hd : α} {tl : Seq α} (h_hd : p hd) (h_tl :
   simp only [mem_cons_iff, forall_eq_or_imp] at *
   exact ⟨h_hd, h_tl⟩
 
-@[simp]
-theorem all_cons_iff {p : α → Prop} {hd : α} {tl : Seq α} :
-    (∀ x ∈ cons hd tl, p x) ↔ p hd ∧ ∀ x ∈ tl, p x := by
-  simp
-
 theorem all_get {p : α → Prop} {s : Seq α} (h : ∀ x ∈ s, p x) {n : ℕ} {x : α}
     (hx : s.get? n = .some x) :
     p x := by
@@ -671,7 +786,7 @@ theorem take_all {s : Seq α} {p : α → Prop} (h_all : ∀ x ∈ s, p x) {n : 
     cases s with
     | nil => simp at hx
     | cons hd tl =>
-      simp only [take_succ_cons, List.mem_cons, all_cons_iff] at hx h_all
+      simp only [take_succ_cons, List.mem_cons, mem_cons_iff, forall_eq_or_imp] at hx h_all
       rcases hx with (rfl | hx)
       exacts [h_all.left, ih h_all.right hx]
 
@@ -733,7 +848,7 @@ theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd t
     (h_hd : R hd tl_hd)
     (h_tl : Pairwise R (.cons tl_hd tl_tl)) : Pairwise R (.cons hd (.cons tl_hd tl_tl)) := by
   apply Pairwise.cons _ h_tl
-  rw [all_cons_iff]
+  simp only [mem_cons_iff, forall_eq_or_imp]
   exact ⟨h_hd, fun x hx ↦ Trans.simple h_hd ((cons_elim h_tl).left x hx)⟩
 
 /-- Coinductive principle for `Pairwise`. -/
@@ -788,39 +903,13 @@ theorem Pairwise_drop {R : α → α → Prop} {s : Seq α} (h : s.Pairwise R) {
 
 end Pairwise
 
-section AtLeastAsLongAs
-
-theorem AtLeastAsLongAs.nil {a : Seq α} :
-    a.AtLeastAsLongAs (@nil β) := by
-  simp [AtLeastAsLongAs, terminatedAt_nil]
-
-theorem AtLeastAsLongAs.cons {a_hd : α} {a_tl : Seq α} {b_hd : β} {b_tl : Seq β}
-    (h : a_tl.AtLeastAsLongAs b_tl) :
-    (Seq.cons a_hd a_tl).AtLeastAsLongAs (Seq.cons b_hd b_tl) := by
-  simp only [AtLeastAsLongAs] at *
-  intro n
-  cases n with
-  | zero => simp
-  | succ m => simpa using h m
-
-theorem AtLeastAsLongAs.cons_elim {a : Seq α} {hd : β} {tl : Seq β}
-    (h : a.AtLeastAsLongAs (.cons hd tl)) : ∃ hd' tl', a = .cons hd' tl' := by
-  cases a with
-  | nil =>
-    simp only [AtLeastAsLongAs, terminatedAt_nil, forall_const] at h
-    specialize h 0
-    simp [TerminatedAt] at h
-  | cons hd' tl' => use hd', tl'
-
-/-- Coinductive principle for `AtLeastAsLongAs`. -/
-theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
+/-- Coinductive principle for proving `b.length' ≤ a.length'` for two sequences `a` and `b`. -/
+theorem at_least_as_long_as_coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (base : motive a b)
     (step : ∀ a b, motive a b →
       (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl)) :
-    a.AtLeastAsLongAs b := by
-  simp only [AtLeastAsLongAs, TerminatedAt, ← head_dropn]
-  intro n
-  have (hb : b.drop n ≠ .nil) : motive (a.drop n) (b.drop n) := by
+    b.length' ≤ a.length' := by
+  have (n) (hb : b.drop n ≠ .nil) : motive (a.drop n) (b.drop n) := by
     induction n with
     | zero => simpa
     | succ m ih =>
@@ -832,33 +921,26 @@ theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
         simp only [ne_eq, cons_ne_nil, not_false_eq_true, forall_const] at ih
         obtain ⟨a_hd, a_tl, ha, h_tail⟩ := step (a.drop m) (.cons tb_hd tb_tl) ih _ _ rfl
         simpa [ha]
-  contrapose
-  rw [head_eq_none_iff]
-  generalize b.drop n = tb at *
-  cases tb
-  · simp
-  · intro hb
-    obtain ⟨a_hd, a_tl, ha, _⟩ := step _ _ (this hb) _ _ rfl
-    simp [ha]
-
-@[simp]
-theorem cons_AtLeastAsLongAs_cons_iff {a_hd : α} {a_tl : Seq α} {b_hd : β}
-    {b_tl : Seq β} :
-    (cons a_hd a_tl).AtLeastAsLongAs (cons b_hd b_tl) ↔ a_tl.AtLeastAsLongAs b_tl where
-  mp h := by
-    simp [AtLeastAsLongAs] at *
-    intro n
-    simpa using h (n + 1)
-  mpr := AtLeastAsLongAs.cons
-
-theorem map_AtLeastAsLongAs_self {α : Type v} {γ : Type w} {f : β → γ} {a : Seq α}
-    {b : Seq β} (h : a.AtLeastAsLongAs b) :
-    a.AtLeastAsLongAs (b.map f) := by
-  simp only [AtLeastAsLongAs, terminatedAt_map_iff] at *
-  intro n ha
-  simpa [TerminatedAt] using h n ha
-
-end AtLeastAsLongAs
+  by_cases ha : a.Terminates; swap
+  · simp [length'_of_not_terminates ha]
+  simp [length'_of_terminates ha, length'_le_iff]
+  by_contra! hb
+  have hb_cons : b.drop (a.length ha) ≠ .nil := by
+    intro hb'
+    simp only [← length'_eq_zero_iff_nil, drop_length', tsub_eq_zero_iff_le, length'_le_iff] at hb'
+    contradiction
+  specialize this (a.length ha) hb_cons
+  generalize b.drop (a.length ha) = b' at *
+  cases b' with
+  | nil =>
+    contradiction
+  | cons b_hd b_tl =>
+    obtain ⟨a_hd, a_tl, ha', _⟩ := step _ _ this _ _ rfl
+    apply_fun length' at ha'
+    simp only [drop_length', length'_of_terminates ha, tsub_self, length'_cons] at ha'
+    generalize a_tl.length' = u at ha'
+    enat_to_nat
+    omega
 
 instance : Functor Seq where map := @map
 
