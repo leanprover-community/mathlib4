@@ -39,14 +39,16 @@ def getWorkspaceRoot : IO Lake.Package := do
   return workspace.root
 
 /-- Convert the options that Lake knows into the option that Lean knows. -/
-def toLeanOptions (opts : Array Lake.LeanOption) : Lean.Options :=
-  opts.foldl (init := Lean.Options.empty) fun opts o =>
+def toLeanOptions (opts : Lean.LeanOptions) : Lean.Options := Id.run do
+  let mut out := Lean.Options.empty
+  for ⟨name, value⟩ in opts.values do
     -- Strip off the `weak.` prefix, like Lean does when parsing command line arguments.
-    if o.name.getRoot == `weak
+    if name.getRoot == `weak
     then
-      opts.insert (o.name.replacePrefix `weak Lean.Name.anonymous) o.value.toDataValue
+      out := out.insert (name.replacePrefix `weak Lean.Name.anonymous) value.toDataValue
     else
-      opts.insert o.name o.value.toDataValue
+      out := out.insert name value.toDataValue
+  return out
 
 /-- Determine the `Lean.Options` from the Lakefile of the current project.
 
@@ -68,7 +70,7 @@ def getLakefileLeanOptions : IO Lean.Options := do
       exe.config.leanOptions
     else
       #[]
-  return Lean.LeanOptions.toOptions (rootOpts.appendArray defaultOpts)
+  return toLeanOptions (rootOpts.appendArray defaultOpts)
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
 register_option linter.checkInitImports : Bool := { defValue := false }
@@ -153,8 +155,8 @@ def undocumentedScripts (opts : LinterOptions) : IO Nat := do
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   -- Use the environment declared in Mathlib.Tactic.Linter.TextBased to determine the linter sets.
   Lean.initSearchPath (← Lean.findSysroot)
-  let sets ← unsafe Lean.withImportModules #[{module := `Mathlib.Tactic.Linter.TextBased}] {}
-    fun env => pure <| linterSetsExt.getState env
+  let env ← Lean.importModules #[{module := `Mathlib.Tactic.Linter.TextBased}] {} (leakEnv := true) (loadExts := true)
+  let sets := linterSetsExt.getState env
 
   let opts : LinterOptions := {
     toOptions := ← getLakefileLeanOptions,
