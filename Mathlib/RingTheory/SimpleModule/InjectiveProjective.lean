@@ -21,7 +21,13 @@ theorem injective_of_isSemisimpleRing : Module.Injective R M where
     let ⟨h, comp⟩ := IsSemisimpleModule.extension_property f hf g
     ⟨h, fun _ ↦ by rw [← comp, LinearMap.comp_apply]⟩
 
-theorem surjective_of_isSemisimpleRing : Module.Projective R M :=
-  Module.Projective.of_lifting_property'' (IsSemisimpleModule.lifting_property · · _)
+theorem projective_of_isSemisimpleRing : Module.Projective R M :=
+  .of_lifting_property'' (IsSemisimpleModule.lifting_property · · _)
+
+@[deprecated (since := "2025-09-12")]
+alias injective_of_semisimple_ring := injective_of_isSemisimpleRing
+
+@[deprecated (since := "2025-09-12")]
+alias projective_of_semisimple_ring := projective_of_isSemisimpleRing
 
 end Module

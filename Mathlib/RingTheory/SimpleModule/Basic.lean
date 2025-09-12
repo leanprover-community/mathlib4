@@ -199,7 +199,8 @@ theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
   let e := (Submodule.quotientEquivOfIsCompl _ m compl).symm ≪≫ₗ f.quotKerEquivOfSurjective hf
   refine ⟨Submodule.subtype _ ∘ₗ e.symm.toLinearMap ∘ₗ g, LinearMap.ext fun x ↦ ?_⟩
   obtain ⟨z, eq⟩ := e.surjective (g x)
-  simp [← eq]; rfl
+  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
+  simp [e]
 
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) : N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom, and_comm] using eq_bot_or_exists_atom_le _
