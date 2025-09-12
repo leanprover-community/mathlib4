@@ -423,7 +423,7 @@ instance : (rootSystem H).IsReduced where
 
 section IsSimple
 
--- Note that after #10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
+-- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsSimple K L]
 
 open Weight in

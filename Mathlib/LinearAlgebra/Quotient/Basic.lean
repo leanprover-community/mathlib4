@@ -286,7 +286,7 @@ def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simpa [comap_map_mkQ p]
+  right_inv := fun ⟨q, hq⟩ => Subtype.ext <| by simpa [comap_map_mkQ p]
   map_rel_iff' := comap_le_comap_iff <| range_mkQ _
 
 /-- The ordering on submodules of the quotient of `M` by `p` embeds into the ordering on submodules

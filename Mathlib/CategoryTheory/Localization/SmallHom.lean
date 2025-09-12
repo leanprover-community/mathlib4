@@ -50,7 +50,6 @@ lemma hasSmallLocalizedHom_iff :
     HasSmallLocalizedHom.{w} W X Y ↔ Small.{w} (L.obj X ⟶ L.obj Y) := by
   constructor
   · intro h
-    have := h.small
     exact small_map (homEquiv W W.Q L).symm
   · intro h
     exact ⟨small_map (homEquiv W W.Q L)⟩

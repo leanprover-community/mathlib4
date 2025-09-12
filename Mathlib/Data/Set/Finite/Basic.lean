@@ -685,9 +685,9 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
       ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
     motive s hs := by
   lift s to Finset α using id hs
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · simpa
-  · simpa using @insert a s ha (Set.toFinite _) (ih _)
+  induction s using Finset.cons_induction_on with
+  | empty => simpa
+  | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)
 
 /-- Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.

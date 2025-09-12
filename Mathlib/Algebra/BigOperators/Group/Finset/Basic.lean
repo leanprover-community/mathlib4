@@ -113,7 +113,7 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 @[to_additive (attr := simp)
 /-- In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`. -/]
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
-  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+  induction s using Finset.cons_induction <;> simp [*]
 
 @[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
 
@@ -332,7 +332,6 @@ theorem prod_filter (p : ι → Prop) [DecidablePred p] (f : ι → M) :
 @[to_additive]
 theorem prod_eq_single_of_mem {s : Finset ι} {f : ι → M} (a : ι) (h : a ∈ s)
     (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) : ∏ x ∈ s, f x = f a := by
-  haveI := Classical.decEq ι
   calc
     ∏ x ∈ s, f x = ∏ x ∈ {a}, f x := by
       { refine (prod_subset ?_ ?_).symm
@@ -517,7 +516,7 @@ theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s,
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
     (∏ x ∈ range (n + 1), f x) = f n * ∏ x ∈ range n, f x := by
-  rw [range_succ, prod_insert notMem_range_self]
+  rw [range_add_one, prod_insert notMem_range_self]
 
 @[to_additive]
 theorem prod_range_succ (f : ℕ → M) (n : ℕ) :

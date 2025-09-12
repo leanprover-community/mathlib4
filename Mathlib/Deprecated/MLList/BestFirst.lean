@@ -6,10 +6,12 @@ Authors: Kim Morrison
 import Batteries.Data.MLList.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Set.Finite.Range
-import Mathlib.Order.Estimator
+import Mathlib.Deprecated.Estimator
 
 /-!
 # Best first search
+
+Note: this entire file is deprecated.
 
 We perform best first search of a tree or graph,
 where the neighbours of a vertex are provided by a lazy list `α → MLList m α`.
@@ -77,6 +79,8 @@ With this design, it is okay if we visit nodes with very large edit distances:
 while these would be expensive to compute, we never actually finish the computation
 except in cases where the node arrives at the front of the queue.
 -/
+
+set_option linter.deprecated false
 
 open Std (TreeMap TreeSet)
 
@@ -332,6 +336,8 @@ amongst unvisited neighbours of visited nodes.
 -/
 -- Although the core implementation lazily computes estimates of priorities,
 -- this version does not take advantage of those features.
+@[deprecated "No replacement: this was only used \
+  in the implementation of the removed `rw_search` tactic." (since := "2025-09-11")]
 def bestFirstSearch (f : α → MLList m α) (a : α)
     (maxQueued : Option Nat := none) (maxDepth : Option Nat := none) (removeDuplicates := true) :
     MLList m α :=

@@ -183,7 +183,7 @@ lemma test (n n' : Nat) (h : n = n') (hn : n = n) (hn' : n' = n') :
   exact congr(f $h _) -- with expected type
 
 /-!
-Regression test for #25851. Make sure hcongr doesn't force the final result to be an equality.
+Regression test for https://github.com/leanprover-community/mathlib4/issues/25851. Make sure hcongr doesn't force the final result to be an equality.
 -/
 example (a a' : Nat) (h : a = a') (n : Fin a) (n' : Fin a') (hn : HEq n n') :
     HEq (f n rfl) (f n' rfl) :=

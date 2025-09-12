@@ -357,8 +357,8 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
     simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance instIsOrderedRing : IsOrderedRing ℝ :=

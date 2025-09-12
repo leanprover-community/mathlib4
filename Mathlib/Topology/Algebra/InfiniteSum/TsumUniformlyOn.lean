@@ -93,9 +93,10 @@ theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
     (hf2 : ∀ n k r, k ≤ m → r ∈ s →
       DifferentiableAt E (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
     iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
-  induction' m  with m hm generalizing x
-  · simp
-  · simp_rw [iteratedDerivWithin_succ]
+  induction m generalizing x with
+  | zero => simp
+  | succ m hm =>
+    simp_rw [iteratedDerivWithin_succ]
     rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by omega) hr)]
     · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by omega))
           (fun k r e hr he ↦ hf2 k r e (by omega) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by omega))

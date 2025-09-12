@@ -7,6 +7,7 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Completely regular topological spaces.
@@ -186,6 +187,28 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
     CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
+
+open TopologicalSpace Cardinal in
+theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
+    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
+    IsTopologicalBasis {s : Set X | IsClopen s} := by
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
+  choose f hf using completely_regular_isOpen x s hs hxs
+  obtain ⟨hfc, hf₀, hf₁⟩ := hf
+  let R := Set.range f
+  have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} continuum := by
+    simpa [R] using mk_range_le_lift.trans_lt (lift_strictMono hX)
+  rw [lift_continuum, ← lift_continuum.{u, 0}, lift_lt, ← mk_Icc_real zero_lt_one, ← unitInterval]
+    at hR
+  obtain ⟨r, hr⟩ : ∃ r : I, r ∈ Rᶜ := compl_nonempty_of_mk_lt_mk hR
+  have hr' : ∀ (x : X), f x ≠ r := by simpa [R] using hr
+  have hrclopen : f ⁻¹' Iio r = f ⁻¹' Iic r := by
+    ext; simp [le_iff_lt_or_eq, hr']
+  refine ⟨f ⁻¹' Iio r, ⟨hrclopen ▸ isClosed_Iic.preimage hfc, isOpen_Iio.preimage hfc⟩, ?_, ?_⟩
+  · simp [hf₀, hrclopen]
+  · refine preimage_subset_iff.mpr (fun x ↦ ?_)
+    contrapose!; intro hxs
+    simpa [hf₁ hxs] using le_one'
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]

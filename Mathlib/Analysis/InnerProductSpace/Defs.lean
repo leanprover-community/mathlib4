@@ -103,7 +103,7 @@ class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddC
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
-  /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
+  /-- The inner product is *Hermitian*, taking the `conj` swaps the arguments. -/
   conj_inner_symm : ∀ x y, conj (inner y x) = inner x y
   /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
@@ -131,7 +131,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 /-- A structure requiring that a scalar product is positive semidefinite and symmetric. -/
 structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
-  /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
+  /-- The inner product is *Hermitian*, taking the `conj` swaps the arguments. -/
   conj_inner_symm x y : conj (inner y x) = inner x y
   /-- The inner product is positive (semi)definite. -/
   re_inner_nonneg x : 0 ≤ re (inner x x)

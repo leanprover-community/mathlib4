@@ -77,9 +77,10 @@ theorem antidiagonal_cons (a : α) (s) :
 
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
-  induction' s using Multiset.induction_on with a s hs
-  · simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
-  · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_apply,
+  induction s using Multiset.induction_on with
+  | empty => simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
+  | cons a s hs =>
+    simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_apply,
       id, sub_cons, erase_cons_head]
     rw [add_comm]
     congr 1
