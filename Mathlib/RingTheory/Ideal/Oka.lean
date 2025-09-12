@@ -52,16 +52,18 @@ theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPri
       (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
     exact hI.prop (hP.oka h₁ h₂)
 
-/-- If all prime ideals of a ring satisfy an Oka predicate, then all its ideals also satisfy the
-predicate. `hmax` is generally obtained using Zorn's lemma. -/
+/-- If a ring `R` verify:
+1. All prime ideals of `R` satisfy an Oka predicate `P`.
+2. One ideal not satisfying `P` implies that there is an ideal maximal for not satisfying `P`.
+
+Then all the ideals of `R` satisfy `P`. -/
 theorem forall_of_forall_prime (hmax : ∀ I, ¬P I → ∃ I, Maximal (¬P ·) I)
-    (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
-  by_contra!
-  obtain ⟨I, hI⟩ := this
+    (hprime : ∀ I, I.IsPrime → P I) (I : Ideal R) : P I := by
+  by_contra! hI
   obtain ⟨I, hI⟩ := hmax I hI
   exact hI.prop <| hprime I (hP.isPrime_of_maximal_not hI)
 
-/-- A variant of `forall_of_forall_prime` using a common technique to obtain `hmax`. -/
+/-- A variant of `forall_of_forall_prime` with a different spelling of the condition `hmax`. -/
 theorem forall_of_forall_prime'
     (hchain : ∀ C ⊆ {I | ¬P I}, IsChain (· ≤ ·) C → ∀ _ ∈ C, P (sSup C) → ∃ I ∈ C, P I)
     (hprime : ∀ I, I.IsPrime → P I) : ∀ I, P I := by
