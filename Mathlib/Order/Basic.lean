@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Inhabit
@@ -811,10 +811,10 @@ instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
 instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 
-theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by ext; simp [compl]
-theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by ext; simp [compl]
-theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by ext; simp [compl]
-theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by ext; simp [compl]
+theorem compl_lt [LinearOrder α] : (· < · : α → α → _)ᶜ = (· ≥ ·) := by simp [compl]
+theorem compl_le [LinearOrder α] : (· ≤ · : α → α → _)ᶜ = (· > ·) := by simp [compl]
+theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·) := by simp [compl]
+theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
   convert eq_isEquiv α
@@ -1003,12 +1003,12 @@ abbrev LinearOrder.lift [LinearOrder β] [Max α] [Min α] (f : α → β) (inj 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
@@ -1047,12 +1047,12 @@ abbrev LinearOrder.liftWithOrd [LinearOrder β] [Max α] [Min α] [Ord α] (f : 
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hinf _ _).trans (min_def _ _)
     max_def := by
-      intros x y
+      intro x y
       apply inj
       rw [apply_ite f]
       exact (hsup _ _).trans (max_def _ _)
@@ -1346,7 +1346,7 @@ end PUnit
 
 section «Prop»
 
-/-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
+/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
 instance Prop.le : LE Prop :=
   ⟨(· → ·)⟩
 

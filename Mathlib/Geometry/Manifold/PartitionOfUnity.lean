@@ -455,7 +455,6 @@ theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
         fs i * ∏ j ∈ t with WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
-  -- Porting note: was defeq, now the continuous lemma uses bundled homs
   simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 
 theorem toSmoothPartitionOfUnity_zero_of_zero {i : ι} {x : M} (h : fs i x = 0) :
@@ -549,7 +548,7 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
   haveI : LocallyCompactSpace H := I.locallyCompactSpace
   haveI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
-  -- porting note(https://github.com/leanprover/std4/issues/116):
+  -- porting note(https://github.com/leanprover-community/batteries/issues/116):
   -- split `rcases` into `have` + `rcases`
   have := BumpCovering.exists_isSubordinate_of_prop (ContMDiff I 𝓘(ℝ) ∞) ?_ hs U ho hU
   · rcases this with ⟨f, hf, hfU⟩
@@ -570,43 +569,6 @@ theorem exists_isSubordinate_chartAt_source :
   apply exists_isSubordinate _ isClosed_univ _ (fun i ↦ (chartAt H _).open_source) (fun x _ ↦ ?_)
   exact mem_iUnion_of_mem x (mem_chart_source H x)
 
-/--
-Let `ρ` be a smooth partition of unity subordinate to an open cover `U`.
-Let `s_loc` be a family of local sections, where each `s_loc i` is $C^n$ smooth on `U i`
-(when viewed as a map to the total space of the bundle).
-Then the global section `x ↦ ∑ᶠ i, ρ i x • s_loc i x`, when viewed as a map to the total space,
-is $C^n$ smooth.
--/
-theorem contMDiff_totalSpace_weighted_sum_of_local_sections
-    {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {H : Type uH} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM}
-      [TopologicalSpace M] [ChartedSpace H M]
-    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
-    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-    [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
-    {n : ℕ∞} {ι : Type*} (ρ : SmoothPartitionOfUnity ι I M univ) (s_loc : ι → ((x : M) → V x))
-    (U : ι → Set M) (hU_isOpen : ∀ i, IsOpen (U i)) (hρ_subord : ρ.IsSubordinate U)
-    (h_smooth_s_loc : ∀ i, ContMDiffOn I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ TotalSpace.mk' F_fiber x (s_loc i x)) (U i)) :
-    ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
-      (fun x ↦ TotalSpace.mk' F_fiber x (∑ᶠ (j : ι), (ρ j x) • (s_loc j x))) := by
-  intro x₀
-  apply (Bundle.contMDiffAt_section x₀).mpr
-  let e₀ := trivializationAt F_fiber V x₀
-  apply ContMDiffAt.congr_of_eventuallyEq
-  · apply ρ.contMDiffAt_finsum
-    · intro j hx₀
-      have := h_smooth_s_loc j |>.contMDiffAt <| (hU_isOpen j).mem_nhds <| hρ_subord j hx₀
-      rwa [Bundle.contMDiffAt_section] at this
-  · have h_base : {x : M | x ∈ e₀.baseSet} ∈ 𝓝 x₀ :=
-      e₀.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x₀)
-    filter_upwards [ρ.eventually_fintsupport_subset x₀, h_base] with x _ hx_base
-    have hfin : {i : ι | (ρ i x • s_loc i x) ≠ 0}.Finite := by
-      refine (ρ.locallyFinite.point_finite x).subset fun i hi_smul_ne_zero => ?_
-      have : ρ i x ≠ 0 ∧ s_loc i x ≠ 0 := by simpa using hi_smul_ne_zero
-      exact this.1
-    simpa using e₀.linearEquivAt ℝ x hx_base |>.toAddMonoidHom.map_finsum hfin
-
 end SmoothPartitionOfUnity
 
 variable [SigmaCompactSpace M] [T2Space M] {t : M → Set F} {n : ℕ∞}
@@ -621,7 +583,7 @@ Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯
 -/
 theorem exists_contMDiffOn_section_forall_mem_convex_of_local
     {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
-    (V : M → Type*) [∀ x, NormedAddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+    (V : M → Type*) [∀ x, AddCommGroup (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, Module ℝ (V x)]
     [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
     (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))
     (Hloc :
@@ -644,11 +606,20 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
   -- Define the global section `s` by taking a weighted sum of the local sections.
   let s x : V x := ∑ᶠ j, (ρ j x) • s_loc j x
   -- Prove that `s`, when viewed as a map to the total space, is smooth.
-  have s_smooth : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) :=
-    ρ.contMDiff_totalSpace_weighted_sum_of_local_sections
-      I V s_loc U (fun x ↦ isOpen_interior) hρU fun j ↦ (s_smooth j).mono interior_subset
+  have (j : M) : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n
+      (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
+    refine ContMDiffOn.smul_section_of_tsupport ?_ isOpen_interior (hρU j)
+      ((s_smooth j).mono interior_subset)
+    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+  have hs : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) := by
+    apply ContMDiff.finsum_section_of_locallyFinite ?_ this
+    -- Future: can grind do this?
+    apply ρ.locallyFinite.subset fun i x hx ↦ ?_
+    rw [support]
+    rw [mem_setOf_eq] at hx ⊢
+    exact left_ne_zero_of_smul hx
   -- Construct the smooth section and prove it lies in the convex sets `t x`.
-  refine ⟨⟨s, s_smooth⟩, fun x ↦ ?_⟩
+  refine ⟨⟨s, hs⟩, fun x ↦ ?_⟩
   apply (ht_conv x).finsum_mem (ρ.nonneg · x) (ρ.sum_eq_one (mem_univ x))
   intro j h_ρjx_ne_zero
   have h_x_in_tsupport_ρj : x ∈ tsupport (ρ j) := subset_closure (mem_support.mpr h_ρjx_ne_zero)
@@ -826,8 +797,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
         contrapose! xs
-        simp? at xs says simp only [mem_compl_iff, Decidable.not_not] at xs
-        exact h.trans f_supp.symm.subset xs
+        exact h.trans f_supp.symm.subset (by simpa using xs)
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
   -- show that `f / (f + g)` is smooth

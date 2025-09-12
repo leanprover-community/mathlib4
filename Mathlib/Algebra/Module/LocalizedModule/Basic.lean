@@ -19,9 +19,9 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S`: the localized module by `S`.
 * `LocalizedModule.mk`: the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
-* `LocalizedModule.liftOn`: any well defined function `f : M × S → α` respecting `r` descents to
+* `LocalizedModule.liftOn`: any well-defined function `f : M × S → α` respecting `r` descents to
   a function `LocalizedModule M S → α`
-* `LocalizedModule.liftOn₂`: any well defined function `f : M × S → M × S → α` respecting `r`
+* `LocalizedModule.liftOn₂`: any well-defined function `f : M × S → M × S → α` respecting `r`
   descents to a function `LocalizedModule M S → LocalizedModule M S`
 * `LocalizedModule.mk_add_mk`: in the localized module
   `mk m s + mk m' s' = mk (s' • m + s • m') (s * s')`
@@ -151,9 +151,9 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
   mk_eq.mpr <| ⟨1, rfl⟩
 
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
-  induction' x with mx sx
-  induction' y with my sy
-  induction' z with mz sz
+  induction x with | _ mx sx
+  induction y with | _ my sy
+  induction z with | _ mz sz
   simp only [mk_add_mk, smul_add]
   refine mk_eq.mpr ⟨1, ?_⟩
   rw [one_smul, one_smul]
@@ -330,20 +330,20 @@ theorem mk_smul_mk (r : R) (m : M) (s t : S) :
 variable {T}
 
 private theorem one_smul_aux (p : LocalizedModule S M) : (1 : T) • p = p := by
-  induction' p with m s
+  induction p with | _ m s
   rw [show (1 : T) = IsLocalization.mk' T (1 : R) (1 : S) by rw [IsLocalization.mk'_one, map_one]]
   rw [mk'_smul_mk, one_smul, one_mul]
 
 private theorem mul_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x * y) • p = x • y • p := by
-  induction' p with m s
+  induction p with | _ m s
   rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y]
   simp_rw [← IsLocalization.mk'_mul, mk'_smul_mk, ← mul_smul, mul_assoc]
 
 private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
     x • (p + q) = x • p + x • q := by
-  induction' p with m s
-  induction' q with n t
+  induction p with | _ m s
+  induction q with | _ n t
   rw [smul_def, smul_def, mk_add_mk, mk_add_mk]
   rw [show x • _ =  IsLocalization.mk' T _ _ • _ by rw [IsLocalization.mk'_sec (M := S) T]]
   rw [← IsLocalization.mk'_cancel _ _ (IsLocalization.sec S x).2, mk'_smul_mk]
@@ -356,7 +356,7 @@ private theorem smul_zero_aux (x : T) : x • (0 : LocalizedModule S M) = 0 := b
 
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
-  induction' p with m s
+  induction p with | _ m s
   rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ =  IsLocalization.mk' T _ _ • _ by
     rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y,
       ← IsLocalization.mk'_add, IsLocalization.mk'_cancel _ _ s], mk'_smul_mk, ← smul_assoc,
@@ -366,7 +366,7 @@ private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
   · rw [mul_mul_mul_comm, mul_assoc] -- ring does not work here
 
 private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := by
-  induction' p with m s
+  induction p with | _ m s
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
     mk'_smul_mk, zero_smul, zero_mk]
 
@@ -450,7 +450,7 @@ theorem algebraMap_mk {A : Type*} [Semiring A] [Algebra R A] (a : R) (s : S) :
 
 instance : IsScalarTower R T (LocalizedModule S M) where
   smul_assoc r x p := by
-    induction' p with m s
+    induction p with | _ m s
     rw [← IsLocalization.mk'_sec (M := S) T x, IsLocalization.smul_mk', mk'_smul_mk, mk'_smul_mk,
       smul'_mk, mul_smul]
 
@@ -689,7 +689,7 @@ If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S
 theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (l : LocalizedModule S M →ₗ[R] M'') (hl : l.comp (LocalizedModule.mkLinearMap S M) = g) :
     LocalizedModule.lift S g h = l := by
-  ext x; induction' x with m s
+  ext x; induction x with | _ m s
   rw [LocalizedModule.lift_mk]
   rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← hl, LinearMap.coe_comp,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, ← l.map_smul, LocalizedModule.smul'_mk]
@@ -807,8 +807,8 @@ theorem fromLocalizedModule_mk (m : M) (s : S) :
   rfl
 
 theorem fromLocalizedModule.inj : Function.Injective <| fromLocalizedModule S f := fun x y eq1 => by
-  induction' x with a b
-  induction' y with a' b'
+  induction x with | _ a b
+  induction y with | _ a' b'
   simp only [fromLocalizedModule_mk] at eq1
   rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← LinearMap.map_smul,
     Module.End.algebraMap_isUnit_inv_apply_eq_iff'] at eq1
@@ -1123,7 +1123,7 @@ instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
     obtain ⟨⟨y', s⟩, e⟩ := IsLocalizedModule.surj S₂ f₂ y
     exact ⟨⟨f₁ y', s⟩, by simpa⟩
   exists_of_eq := by
-    intros x₁ x₂ e
+    intro x₁ x₂ e
     obtain ⟨x₁, s₁, rfl⟩ := mk'_surjective S₁ f₁ x₁
     obtain ⟨x₂, s₂, rfl⟩ := mk'_surjective S₁ f₁ x₂
     simp only [Function.uncurry, liftOfLE_mk', mk'_eq_mk'_iff,
@@ -1193,18 +1193,18 @@ lemma map_id : map S f f (.id ) = .id := by
 @[simp]
 theorem map_injective (h : M →ₗ[R] N) (h_inj : Function.Injective h) :
     Function.Injective (map S f g h) := by
-  intros x y
+  intro x y
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f y
   simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_mk'_iff, Subtype.exists,
     Submonoid.mk_smul, exists_prop, forall_exists_index, and_imp]
-  intros c hc e
+  intro c hc e
   exact ⟨c, hc, h_inj (by simpa)⟩
 
 @[simp]
 theorem map_surjective (h : M →ₗ[R] N) (h_surj : Function.Surjective h) :
     Function.Surjective (map S f g h) := by
-  intros x
+  intro x
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S g x
   obtain ⟨x, rfl⟩ := h_surj x
   exact ⟨mk' f x s, by simp⟩
@@ -1281,7 +1281,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommSemiring R] [Ring S] [Ring S'] [Algebr
       refine ⟨((h₁ x x.2).unit⁻¹ :) * a, ?_⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
-  · intros x y
+  · intro x y
     dsimp only [AlgHom.toLinearMap_apply]
     rw [← sub_eq_zero, ← map_sub, h₃]
     simp_rw [smul_sub, sub_eq_zero]

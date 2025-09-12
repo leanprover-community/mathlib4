@@ -272,7 +272,7 @@ I couldn't find a detailed proof in print, but this is discussed in:
 * Proposition 1 of André Joyal and Ross Street,
   "Braided monoidal categories", Macquarie Math Reports 860081 (1986).
 * Proposition 2.1 of André Joyal and Ross Street,
-  "Braided tensor categories" , Adv. Math. 102 (1993), 20–78.
+  "Braided tensor categories", Adv. Math. 102 (1993), 20–78.
 * Exercise 8.1.6 of Etingof, Gelaki, Nikshych, Ostrik,
   "Tensor categories", vol 25, Mathematical Surveys and Monographs (2015), AMS.
 -/

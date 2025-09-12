@@ -12,7 +12,7 @@ import Mathlib.Data.Int.Order.Basic
 # The rational numbers possess a linear order
 
 This file constructs the order on `ℚ` and proves various facts relating the order to
-ring structure on `ℚ`. This only uses unbundled type classes, eg `CovariantClass`,
+ring structure on `ℚ`. This only uses unbundled type classes, e.g. `CovariantClass`,
 relating the order structure and algebra structure on `ℚ`.
 For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ring.Rat`.
 

@@ -412,9 +412,9 @@ lemma ae_eq_zero_of_forall_setIntegral_isCompact_eq_zero
     rw [← Set.iUnion_inter, iUnion_closure_compactCovering, Set.univ_inter]
   rw [B]
   apply tendsto_setIntegral_of_monotone
-  · intros n
+  · intro n
     exact (isClosed_closure.inter hs).measurableSet
-  · intros m n hmn
+  · intro m n hmn
     simp only [t, Set.le_iff_subset]
     gcongr
   · exact hf.integrableOn

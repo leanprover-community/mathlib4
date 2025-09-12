@@ -173,6 +173,7 @@ instance : IsOrderedAddMonoid (Submodule R M) :=
 
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add := fun _a _b => le_sup_left
 
 section
@@ -434,12 +435,12 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
       · refine fun h ↦ h fun r n hr hn ↦ ?_
         rw [mem_set_smul_def, mem_sInf]
         exact fun p hp ↦ hp hr hn
-      · aesop
+      · simp_all
 
 lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     x ∈ sR • N ↔ ∃ (c : R →₀ N), (c.support : Set R) ⊆ sR ∧ x = c.sum fun r m ↦ r • m := by
   fconstructor
-  · intros h
+  · intro h
     rw [set_smul_eq_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩
