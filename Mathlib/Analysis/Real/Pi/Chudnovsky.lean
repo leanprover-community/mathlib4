@@ -59,37 +59,3 @@ noncomputable def chudnovskySum : ℝ :=
 
 /-- **Chudnovsky's formula**: The sum equals `π⁻¹` -/
 proof_wanted chudnovskySum_eq_pi_inv : chudnovskySum = π⁻¹
-
-namespace Summable
-
-open Filter Finset
-open Topology
-
-theorem alternating {f : ℕ → ℝ} (hf : Summable f) :
-    Summable (fun n => (-1) ^ n * f n) :=
-  Summable.of_abs (by simpa [summable_abs_iff])
-
-theorem tendsto_alternating_series_tsum {f : ℕ → ℝ} (hfs : Summable f) :
-    Tendsto (fun n => (∑ i ∈ range n, (-1) ^ i * f i)) atTop (𝓝 (∑' i : ℕ, (-1) ^ i * f i)) :=
-  Summable.tendsto_sum_tsum_nat hfs.alternating
-
-theorem alternating_series_error_bound
-    (f : ℕ → ℝ) (hfa : Antitone f) (hfs : Summable f) (n : ℕ) :
-    |(∑' i : ℕ, (-1) ^ i * f i) - (∑ i ∈ range n, (-1) ^ i * f i)| ≤ f n := by
-  obtain h := hfs.tendsto_alternating_series_tsum
-  have upper := hfa.alternating_series_le_tendsto h
-  have lower := hfa.tendsto_le_alternating_series h
-  obtain (h | h) := even_or_odd n
-  · obtain ⟨n, rfl⟩ := even_iff_exists_two_mul.mp h
-    specialize upper n
-    specialize lower n
-    simp [Finset.sum_range_succ] at lower
-    rw [abs_sub_le_iff]
-    constructor <;> linarith
-  · obtain ⟨n, rfl⟩ := odd_iff_exists_bit1.mp h
-    specialize upper (n + 1)
-    specialize lower n
-    rw [Nat.mul_add, Finset.sum_range_succ,
-      show (-1 : ℝ) ^ (2 * n + 1) = -1 by simp [pow_add]] at upper
-    rw [abs_sub_le_iff]
-    constructor <;> linarith
