@@ -69,7 +69,6 @@
   "Mathlib.Tactic.ByContra",
   "Mathlib.Tactic.CC",
   "Mathlib.Tactic.CancelDenoms",
-  "Mathlib.Tactic.Cases",
   "Mathlib.Tactic.CasesM",
   "Mathlib.Tactic.CategoryTheory.Coherence",
   "Mathlib.Tactic.CategoryTheory.Elementwise",

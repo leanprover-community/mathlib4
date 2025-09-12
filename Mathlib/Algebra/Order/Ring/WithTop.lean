@@ -70,8 +70,8 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.
 lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.untopD 0 := by
   by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, untopD_coe, zero_mul]
   by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, untopD_coe, mul_zero]
-  induction a; · rw [top_mul hb, untopD_top, zero_mul]
-  induction b; · rw [mul_top ha, untopD_top, mul_zero]
+  cases a; · rw [top_mul hb, untopD_top, zero_mul]
+  cases b; · rw [mul_top ha, untopD_top, mul_zero]
   rw [← coe_mul, untopD_coe, untopD_coe, untopD_coe]
 
 theorem mul_ne_top {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b ≠ ⊤ := by
@@ -86,6 +86,30 @@ instance instNoZeroDivisors [NoZeroDivisors α] : NoZeroDivisors (WithTop α) :=
   rw [mul_def, if_neg h₂] at h₁
   rcases Option.mem_map₂_iff.1 h₁ with ⟨a, b, (rfl : _ = _), (rfl : _ = _), hab⟩
   exact h₂ ((eq_zero_or_eq_zero_of_mul_eq_zero hab).imp (congr_arg some) (congr_arg some))
+
+variable [Preorder α]
+
+protected lemma mul_right_strictMono [PosMulStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
+    StrictMono (a * ·) := by
+  lift a to α using hinf
+  rintro b c hbc
+  lift b to α using hbc.ne_top
+  match c with
+  | ⊤ => simp [← coe_mul, mul_top h₀.ne']
+  | (c : α) =>
+  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  exact mul_lt_mul_of_pos_left hbc h₀
+
+protected lemma mul_left_strictMono [MulPosStrictMono α] (h₀ : 0 < a) (hinf : a ≠ ⊤) :
+    StrictMono (· * a) := by
+  lift a to α using hinf
+  rintro b c hbc
+  lift b to α using hbc.ne_top
+  match c with
+  | ⊤ => simp [← coe_mul, top_mul h₀.ne']
+  | (c : α) =>
+  simp only [coe_pos, coe_lt_coe, ← coe_mul, gt_iff_lt] at *
+  exact mul_lt_mul_of_pos_right hbc h₀
 
 end MulZeroClass
 
@@ -113,12 +137,12 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction' x with x
-      · simp [hy, this]
-      induction' y with y
-      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
+      cases x with | top => simp [hy, this] | coe x => ?_
+      cases y with
+      | top =>
+        have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · simp [← coe_mul] }
+      | coe y => simp [← coe_mul] }
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) where
@@ -127,13 +151,14 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
     rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
     rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
-    induction' a with a; · simp [hb, hc]
-    induction' b with b; · simp [mul_top ha, top_mul hc]
-    induction' c with c
-    · rw [mul_top hb, mul_top ha]
+    cases a with | top => simp [hb, hc] | coe a => ?_
+    cases b with | top => simp [mul_top ha, top_mul hc] | coe b => ?_
+    cases c with
+    | top =>
+      rw [mul_top hb, mul_top ha]
       rw [← coe_zero, ne_eq, coe_eq_coe] at ha hb
       simp [ha, hb]
-    simp only [← coe_mul, mul_assoc]
+    | coe c => simp only [← coe_mul, mul_assoc]
 
 section MonoidWithZero
 variable [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] {x : WithTop α} {n : ℕ}
@@ -153,7 +178,7 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
 @[simp] lemma top_pow : ∀ {n : ℕ}, n ≠ 0 → (⊤ : WithTop α) ^ n = ⊤ | _ + 1, _ => rfl
 
 @[simp] lemma pow_eq_top_iff : x ^ n = ⊤ ↔ x = ⊤ ∧ n ≠ 0 := by
-  induction x <;> cases n <;> simp [← coe_pow]
+  cases x <;> cases n <;> simp [← coe_pow]
 
 lemma pow_ne_top_iff : x ^ n ≠ ⊤ ↔ x ≠ ⊤ ∨ n = 0 := by simp [pow_eq_top_iff, or_iff_not_imp_left]
 
@@ -176,16 +201,18 @@ instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring α] [PartialOr
   toAddCommMonoid := WithTop.addCommMonoid
   __ := WithTop.instMulZeroClass
   right_distrib a b c := by
-    induction' c with c
-    · by_cases ha : a = 0 <;> simp [ha]
-    · by_cases hc : c = 0; · simp [hc]
+    cases c with
+    | top => by_cases ha : a = 0 <;> simp [ha]
+    | coe c =>
+      by_cases hc : c = 0; · simp [hc]
       simp only [mul_coe_eq_bind hc]
       cases a <;> cases b <;> try rfl
       exact congr_arg some (add_mul _ _ _)
   left_distrib c a b := by
-    induction' c with c
-    · by_cases ha : a = 0 <;> simp [ha]
-    · by_cases hc : c = 0; · simp [hc]
+    cases c with
+    | top => by_cases ha : a = 0 <;> simp [ha]
+    | coe c =>
+      by_cases hc : c = 0; · simp [hc]
       simp only [coe_mul_eq_bind hc]
       cases a <;> cases b <;> try rfl
       exact congr_arg some (mul_add _ _ _)
@@ -306,8 +333,8 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithBot α) = b.
 lemma unbotD_zero_mul (a b : WithBot α) : (a * b).unbotD 0 = a.unbotD 0 * b.unbotD 0 := by
   by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, unbotD_coe, zero_mul]
   by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, unbotD_coe, mul_zero]
-  induction a; · rw [bot_mul hb, unbotD_bot, zero_mul]
-  induction b; · rw [mul_bot ha, unbotD_bot, mul_zero]
+  cases a; · rw [bot_mul hb, unbotD_bot, zero_mul]
+  cases b; · rw [mul_bot ha, unbotD_bot, mul_zero]
   rw [← coe_mul, unbotD_coe, unbotD_coe, unbotD_coe]
 
 theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
@@ -355,9 +382,9 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
     lift x to α
     · rintro rfl
       exact (WithBot.bot_lt_coe (0 : α)).not_ge x0
-    induction a
+    cases a
     · simp_rw [mul_bot x0', bot_le]
-    induction b
+    cases b
     · exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
@@ -372,9 +399,9 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
     lift x to α
     · rintro rfl
       exact (WithBot.bot_lt_coe (0 : α)).not_ge x0
-    induction a
+    cases a
     · simp_rw [bot_mul x0', bot_le]
-    induction b
+    cases b
     · exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
     norm_cast at x0
@@ -385,9 +412,9 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
     intro ⟨x, x0⟩ a b h
     simp only
     lift x to α using x0.ne_bot
-    induction b
+    cases b
     · exact absurd h not_lt_bot
-    induction a
+    cases a
     · simp_rw [mul_bot x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
@@ -398,9 +425,9 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
     intro ⟨x, x0⟩ a b h
     simp only
     lift x to α using x0.ne_bot
-    induction b
+    cases b
     · exact absurd h not_lt_bot
-    induction a
+    cases a
     · simp_rw [bot_mul x0.ne.symm, ← coe_mul, bot_lt_coe]
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
@@ -415,10 +442,10 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
     lift x to α
     · rintro rfl
       exact (WithBot.bot_lt_coe (0 : α)).not_ge x0
-    induction b
+    cases b
     · rw [mul_bot x0'] at h
       exact absurd h bot_le.not_gt
-    induction a
+    cases a
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
@@ -433,10 +460,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
     lift x to α
     · rintro rfl
       exact (WithBot.bot_lt_coe (0 : α)).not_ge x0
-    induction b
+    cases b
     · rw [bot_mul x0'] at h
       exact absurd h bot_le.not_gt
-    induction a
+    cases a
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
     norm_cast at x0
@@ -447,9 +474,9 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE 
     intro ⟨x, x0⟩ a b h
     simp only at h
     lift x to α using x0.ne_bot
-    induction a
+    cases a
     · exact bot_le
-    induction b
+    cases b
     · rw [mul_bot x0.ne.symm, ← coe_mul] at h
       exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *
@@ -461,9 +488,9 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     intro ⟨x, x0⟩ a b h
     simp only at h
     lift x to α using x0.ne_bot
-    induction a
+    cases a
     · exact bot_le
-    induction b
+    cases b
     · rw [bot_mul x0.ne.symm, ← coe_mul] at h
       exact absurd h (bot_lt_coe _).not_ge
     simp only [← coe_mul, coe_le_coe] at *

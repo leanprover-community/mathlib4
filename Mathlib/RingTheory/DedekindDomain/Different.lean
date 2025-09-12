@@ -682,7 +682,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   replace H := (mul_le_mul_right' H Q).trans_eq hP
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
-  replace H := FractionalIdeal.mul_le_mul_left H (FractionalIdeal.dual A K 1)
+  replace H := mul_le_mul_left' H (FractionalIdeal.dual A K 1)
   simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
     mul_inv_cancel_left₀] at H
   apply hx

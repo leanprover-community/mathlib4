@@ -508,8 +508,8 @@ def idealSetEquiv : idealSet K J ≃
     {a : integerSet K | (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K))} :=
   Equiv.ofBijective (fun a ↦ ⟨idealSetMap K J a, preimage_of_IdealSetMap K J a⟩)
     ⟨fun _ _ h ↦ (by
-        simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
-        rwa [Subtype.ext_iff_val]),
+        simp_rw [Subtype.ext_iff, idealSetMap_apply] at h
+        rwa [Subtype.ext_iff]),
     fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 

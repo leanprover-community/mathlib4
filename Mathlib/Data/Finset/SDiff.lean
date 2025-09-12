@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 ## Main declarations
 
 * `Finset.instSDiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
-* `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a boolean algebra structure
+* `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a Boolean algebra structure
 
 ## Tags
 

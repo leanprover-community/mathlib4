@@ -70,6 +70,33 @@ theorem AddSubmonoid.fg_iff_mul_fg {M : Type*} [AddMonoid M] (P : AddSubmonoid M
     P.FG ↔ P.toSubmonoid.FG := by
   convert (Submonoid.fg_iff_add_fg (toSubmonoid P)).symm
 
+@[to_additive]
+theorem Submonoid.FG.bot : FG (⊥ : Submonoid M) :=
+  ⟨∅, by simp⟩
+
+@[to_additive]
+theorem Submonoid.FG.sup {Q : Submonoid M} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
+  classical
+  rcases hP with ⟨s, rfl⟩
+  rcases hQ with ⟨t, rfl⟩
+  exact ⟨s ∪ t, by simp [closure_union]⟩
+
+@[to_additive]
+theorem Submonoid.FG.finset_sup {ι : Type*} (s : Finset ι) (P : ι → Submonoid M)
+    (hP : ∀ i ∈ s, (P i).FG) : (s.sup P).FG :=
+  Finset.sup_induction bot (fun _ ha _ hb => ha.sup hb) hP
+
+@[to_additive]
+theorem Submonoid.FG.biSup {ι : Type*} (s : Finset ι) (P : ι → Submonoid M)
+    (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
+  simpa only [Finset.sup_eq_iSup] using finset_sup s P hP
+
+@[to_additive]
+theorem Submonoid.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Submonoid M) (hP : ∀ i, (P i).FG) :
+    (iSup P).FG := by
+  haveI := Fintype.ofFinite (PLift ι)
+  simpa [iSup_plift_down] using biSup Finset.univ (P ∘ PLift.down) fun i _ => hP i.down
+
 /-- The product of two finitely generated submonoids is finitely generated. -/
 @[to_additive prod
 /-- The product of two finitely generated additive submonoids is finitely generated. -/]
@@ -270,6 +297,33 @@ theorem Subgroup.fg_iff_add_fg (P : Subgroup G) : P.FG ↔ P.toAddSubgroup.FG :=
 theorem AddSubgroup.fg_iff_mul_fg (P : AddSubgroup H) : P.FG ↔ P.toSubgroup.FG := by
   rw [AddSubgroup.fg_iff_addSubmonoid_fg, Subgroup.fg_iff_submonoid_fg]
   exact AddSubmonoid.fg_iff_mul_fg (AddSubgroup.toAddSubmonoid P)
+
+@[to_additive]
+theorem Subgroup.FG.bot : FG (⊥ : Subgroup G) :=
+  ⟨∅, by simp⟩
+
+@[to_additive]
+theorem Subgroup.FG.sup {P Q : Subgroup G} (hP : P.FG) (hQ : Q.FG) : (P ⊔ Q).FG := by
+  classical
+  rcases hP with ⟨s, rfl⟩
+  rcases hQ with ⟨t, rfl⟩
+  exact ⟨s ∪ t, by simp [closure_union]⟩
+
+@[to_additive]
+theorem Subgroup.FG.finset_sup {ι : Type*} (s : Finset ι) (P : ι → Subgroup G)
+    (hP : ∀ i ∈ s, (P i).FG) : (s.sup P).FG :=
+  Finset.sup_induction bot (fun _ ha _ hb => ha.sup hb) hP
+
+@[to_additive]
+theorem Subgroup.FG.biSup {ι : Type*} (s : Finset ι) (P : ι → Subgroup G)
+    (hP : ∀ i ∈ s, (P i).FG) : (⨆ i ∈ s, P i).FG := by
+  simpa only [Finset.sup_eq_iSup] using finset_sup s P hP
+
+@[to_additive]
+theorem Subgroup.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Subgroup G) (hP : ∀ i, (P i).FG) :
+    (iSup P).FG := by
+  haveI := Fintype.ofFinite (PLift ι)
+  simpa [iSup_plift_down] using biSup Finset.univ (P ∘ PLift.down) fun i _ => hP i.down
 
 /-- The product of two finitely generated subgroups is finitely generated. -/
 @[to_additive prod

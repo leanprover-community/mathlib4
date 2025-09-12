@@ -31,7 +31,7 @@ namespace Coheyting
 variable [CoheytingAlgebra α] {a b : α}
 
 /-- The boundary of an element of a co-Heyting algebra is the intersection of its Heyting negation
-with itself. Note that this is always `⊥` for a boolean algebra. -/
+with itself. Note that this is always `⊥` for a Boolean algebra. -/
 def boundary (a : α) : α :=
   a ⊓ ￢a
 

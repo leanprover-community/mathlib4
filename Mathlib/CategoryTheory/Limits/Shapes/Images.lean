@@ -102,7 +102,7 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   obtain ⟨_, Fm, _, Ffac⟩ := F; obtain ⟨_, Fm', _, Ffac'⟩ := F'
   cases hI
-  simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
+  replace hm : Fm = Fm' := by simpa using hm
   congr
   apply (cancel_mono Fm).1
   rw [Ffac, hm, Ffac']
