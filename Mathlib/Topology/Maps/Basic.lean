@@ -380,6 +380,7 @@ theorem isOpenMap_iff_image_interior : IsOpenMap f ↔ ∀ s, f '' interior s �
 
 @[deprecated (since := "2025-08-30")] alias isOpenMap_iff_interior := isOpenMap_iff_image_interior
 
+/-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed. -/
 lemma isOpenMap_iff_closure_kernImage :
     IsOpenMap f ↔ ∀ {s : Set X}, closure (kernImage f s) ⊆ kernImage f (closure s) := by
   rw [isOpenMap_iff_image_interior, compl_surjective.forall]
@@ -517,7 +518,7 @@ theorem IsClosedMap.comap_nhdsSet_eq (hf : IsClosedMap f) (hf' : Continuous f) (
     (nhdsSet_le.mpr fun x hx ↦ (hf'.tendsto x).le_comap.trans (comap_mono (nhds_le_nhdsSet hx)))
 
 /-- Assume `f` is a closed map. If some property `p` holds around every point in the fiber of `f`
-    at `y₀`, then for any `y` close enough to `y₀` we have that `p` holds on the fiber at `y`. -/
+at `y₀`, then for any `y` close enough to `y₀` we have that `p` holds on the fiber at `y`. -/
 theorem IsClosedMap.eventually_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} (y₀ : Y)
     (H : ∀ x₀ ∈ f ⁻¹' {y₀}, ∀ᶠ x in 𝓝 x₀, p x) :
     ∀ᶠ y in 𝓝 y₀, ∀ x ∈ f ⁻¹' {y}, p x := by
@@ -526,8 +527,8 @@ theorem IsClosedMap.eventually_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} 
   rwa [eventually_comap] at H
 
 /-- Assume `f` is a closed map. If there are points `y` arbitrarily close to `y₀` such that `p`
-    holds for at least some `x ∈ f ⁻¹' {y}`, then one can find `x₀ ∈ f ⁻¹' {y₀}` such that there
-    are points `x` arbitrarily close to `x₀` which satisfy `p`. -/
+holds for at least some `x ∈ f ⁻¹' {y}`, then one can find `x₀ ∈ f ⁻¹' {y₀}` such that there
+are points `x` arbitrarily close to `x₀` which satisfy `p`. -/
 theorem IsClosedMap.frequently_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} (y₀ : Y)
     (H : ∃ᶠ y in 𝓝 y₀, ∃ x ∈ f ⁻¹' {y}, p x) :
     ∃ x₀ ∈ f ⁻¹' {y₀}, ∃ᶠ x in 𝓝 x₀, p x := by
