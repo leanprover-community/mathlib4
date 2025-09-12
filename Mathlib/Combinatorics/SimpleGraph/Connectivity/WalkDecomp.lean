@@ -223,8 +223,7 @@ lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.sup
   have h₁ : n < (p.takeUntil _ h).support.dropLast.length := by simpa
   have : p.getVert n ∈ (p.takeUntil _ h).support.dropLast := by
     simp_rw [p.getVert_takeUntil h hn.le ▸ getVert_eq_support_getElem _ hn.le,
-      ← List.getElem_dropLast h₁]
-    exact List.getElem_mem h₁
+      ← List.getElem_dropLast h₁, List.getElem_mem h₁]
   have := support_eq_concat _ ▸ p.count_support_takeUntil_eq_one h
   grind [List.not_mem_of_count_eq_zero]
 
@@ -284,7 +283,7 @@ theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
 end WalkDecomp
 
 /-- Given a walk `p` and a node in the support, there exists a natural `n`, such that given node
-is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
+is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the walk.
 Due to the definition of `getVert` it would otherwise be legal to return a larger `n` for the last
 node. -/
 theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
