@@ -100,6 +100,7 @@ import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.CommBialgCat
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
@@ -1554,6 +1555,7 @@ import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Complex.HalfPlane
+import Mathlib.Analysis.Complex.HasPrimitives
 import Mathlib.Analysis.Complex.IntegerCompl
 import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Analysis.Complex.Isometry
@@ -1894,6 +1896,7 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.PSeriesComplex
 import Mathlib.Analysis.Polynomial.Basic
 import Mathlib.Analysis.Polynomial.CauchyBound
+import Mathlib.Analysis.Polynomial.Factorization
 import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.RCLike.BoundedContinuous
@@ -3348,7 +3351,6 @@ import Mathlib.Data.List.TakeWhile
 import Mathlib.Data.List.ToFinsupp
 import Mathlib.Data.List.Triplewise
 import Mathlib.Data.List.Zip
-import Mathlib.Data.MLList.BestFirst
 import Mathlib.Data.Matrix.Action
 import Mathlib.Data.Matrix.Auto
 import Mathlib.Data.Matrix.Basic
@@ -3690,6 +3692,8 @@ import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.AnalyticManifold
+import Mathlib.Deprecated.Estimator
+import Mathlib.Deprecated.MLList.BestFirst
 import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
@@ -4993,7 +4997,6 @@ import Mathlib.Order.Directed
 import Mathlib.Order.DirectedInverseSystem
 import Mathlib.Order.Disjoint
 import Mathlib.Order.Disjointed
-import Mathlib.Order.Estimator
 import Mathlib.Order.Extension.Linear
 import Mathlib.Order.Extension.Well
 import Mathlib.Order.Filter.AtTopBot.Archimedean
@@ -6737,6 +6740,7 @@ import Mathlib.Topology.Separation.CountableSeparatingOn
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Separation.Lemmas
 import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Separation.Profinite
