@@ -19,22 +19,6 @@ variable {R : Type*} [CommSemiring R]
 
 namespace Ideal
 
-/-- If a commutative (semi)ring has a non-principal ideal, then it has an ideal which is maximal for
-not being principal. -/
-lemma exists_maximal_not_principal (h : ∃ I : Ideal R, ¬I.IsPrincipal) :
-    ∃ I : Ideal R, Maximal (¬·.IsPrincipal) I := by
-  refine zorn_le₀ { I : Ideal R | ¬I.IsPrincipal } (fun C hC hC₂ ↦ ?_)
-  by_cases H : C.Nonempty
-  · refine ⟨sSup C, ?_, fun _ ↦ le_sSup⟩
-    intro ⟨x, hx⟩
-    have : x ∈ sSup C := hx ▸ mem_span_singleton_self x
-    obtain ⟨I, I_mem_C, x_mem_I⟩ := Submodule.mem_sSup_of_directed H hC₂.directedOn |>.1 this
-    have I_eq_sSup : I = sSup C := le_antisymm (le_sSup I_mem_C)
-      (hx ▸ (span_singleton_le_iff_mem I |>.2 x_mem_I))
-    exact (I_eq_sSup ▸ hC I_mem_C) ⟨x, hx⟩
-  · obtain ⟨I, hI⟩ := h
-    exact ⟨I, hI, by simp [Set.not_nonempty_iff_eq_empty.1 H]⟩
-
 /-- `Submodule.IsPrincipal` is an Oka predicate. -/
 theorem isOka_isPrincipal : IsOka (Submodule.IsPrincipal (R := R)) where
   top := top_isPrincipal
@@ -61,5 +45,10 @@ open Ideal
 
 /-- If all prime ideals in a commutative ring are principal, so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
-    IsPrincipalIdealRing R :=
-  ⟨isOka_isPrincipal.forall_of_forall_prime exists_maximal_not_principal H⟩
+    IsPrincipalIdealRing R := by
+  refine ⟨isOka_isPrincipal.forall_of_forall_prime' (fun C hC₁ hC₂ I hI h ↦ ⟨sSup C, ?_, h⟩) H⟩
+  obtain ⟨x, hx⟩ := h
+  have : x ∈ sSup C := hx ▸ mem_span_singleton_self x
+  obtain ⟨J, J_mem_C, x_mem_J⟩ := Submodule.mem_sSup_of_directed ⟨I, hI⟩ hC₂.directedOn |>.1 this
+  suffices J_eq_sSup : J = sSup C from J_eq_sSup ▸ J_mem_C
+  exact le_antisymm (le_sSup J_mem_C) (hx ▸ (span_singleton_le_iff_mem J |>.2 x_mem_J))
