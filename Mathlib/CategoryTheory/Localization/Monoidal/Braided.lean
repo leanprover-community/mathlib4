@@ -62,17 +62,16 @@ lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y ⊗ (L').obj Z)
       ≫ (Functor.LaxMonoidal.μ (L') Y Z) ▷ (L').obj X =
         (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
-          ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj (Y ⊗ Z)) := by
-  exact (((braidingNatIso L W ε).hom.app ((L').obj X)).naturality
-    ((Functor.LaxMonoidal.μ (L') Y Z))).symm
+          ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj (Y ⊗ Z)) :=
+  (((braidingNatIso L W ε).hom.app ((L').obj X)).naturality ((Functor.LaxMonoidal.μ (L') Y Z))).symm
 
 lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X ⊗ (L').obj Y)).app ((L').obj Z)
       ≫ (L').obj Z ◁ (Functor.LaxMonoidal.μ (L') X Y) =
         (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
-          ((braidingNatIso L W ε).hom.app ((L').obj (X ⊗ Y))).app ((L').obj Z) := by
-  exact (NatTrans.congr_app
-    ((braidingNatIso L W ε).hom.naturality ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
+          ((braidingNatIso L W ε).hom.app ((L').obj (X ⊗ Y))).app ((L').obj Z) :=
+  (NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality
+    ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
 
 lemma map_hexagon_forward (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom ≫
