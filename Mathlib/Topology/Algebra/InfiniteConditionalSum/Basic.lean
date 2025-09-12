@@ -42,8 +42,6 @@ theorem tprodFilter_eq_one_of_not_multipliableFilter (h : ¬MultipliableFilter L
     ∏'[L] b, f b = 1 := by
   simp [tprodFilter_def, h]
 
-
-
 @[to_additive]
 theorem MultipliableFilter.hasProdFilter {L : Filter (Finset β)} (ha : MultipliableFilter L f) :
     HasProdFilter L f (∏'[L] b, f b) := by
