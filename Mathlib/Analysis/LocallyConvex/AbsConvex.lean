@@ -191,7 +191,7 @@ theorem closedAbsConvexHull_closure_eq_closedAbsConvexHull {s : Set E} :
 
 @[simp]
 theorem closedAbsConvexHull_empty : closedAbsConvexHull 𝕜 (∅ : Set E) = ∅ :=
-  subset_eq_empty (closedAbsConvexHull_min (fun ⦃_⦄ a ↦ a) AbsConvex.empty isClosed_empty) rfl
+  subset_eq_empty (closedAbsConvexHull_min (fun _ a ↦ a) AbsConvex.empty isClosed_empty) rfl
 
 end AbsolutelyConvex
 
