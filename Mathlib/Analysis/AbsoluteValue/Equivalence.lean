@@ -38,9 +38,9 @@ theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 theorem IsEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsEquiv w)
     (h₂ : w.IsEquiv u) : v.IsEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
 
-@[deprecated (since := "2025-09-10")] alias isEquiv_refl := IsEquiv.refl
-@[deprecated (since := "2025-09-10")] alias isEquiv_symm := IsEquiv.symm
-@[deprecated (since := "2025-09-10")] alias isEquiv_trans := IsEquiv.trans
+@[deprecated (since := "2025-09-12")] alias isEquiv_refl := IsEquiv.refl
+@[deprecated (since := "2025-09-12")] alias isEquiv_symm := IsEquiv.symm
+@[deprecated (since := "2025-09-12")] alias isEquiv_trans := IsEquiv.trans
 
 instance : Setoid (AbsoluteValue R S) where
   r := IsEquiv
@@ -98,7 +98,7 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
 
-@[deprecated (since := "2025-09-10")]
+@[deprecated (since := "2025-09-12")]
 alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
