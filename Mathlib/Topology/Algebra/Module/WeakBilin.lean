@@ -148,7 +148,8 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 open LinearMap in
 lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
-    Function.Injective (WeakBilin.eval B) := (injective_iff_map_eq_zero _).mpr (fun f hf =>
+    Function.Injective (WeakBilin.eval B) :=
+  (injective_iff_map_eq_zero _).mpr (fun f hf ↦
     (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
 
 end Semiring
