@@ -67,8 +67,8 @@ def land : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => -[m ||| n +1]
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
-  pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+  pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
+  Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
   | (m : ℕ), -[n +1] => m &&& n
@@ -116,7 +116,7 @@ theorem bodd_coe (n : ℕ) : Int.bodd n = Nat.bodd n :=
 @[simp]
 theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd := by
   apply subNatNat_elim m n fun m n i => bodd i = xor m.bodd n.bodd <;>
-  intros i j <;>
+  intro i j <;>
   simp only [Int.bodd, Nat.bodd_add] <;>
   cases Nat.bodd i <;> simp
 
@@ -223,12 +223,9 @@ theorem bitwise_or : bitwise or = lor := by
     congr
     funext x y
     cases x <;> cases y <;> rfl
+  · simp
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_and : bitwise and = land := by
@@ -242,8 +239,7 @@ theorem bitwise_and : bitwise and = land := by
     funext x y
     cases x <;> cases y <;> rfl
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
 
 -- Porting note: Was `bitwise_tac` in mathlib
 theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
@@ -253,11 +249,9 @@ theorem bitwise_diff : (bitwise fun a b => a && not b) = ldiff := by
       cond_false, cond_true, Nat.ldiff, Bool.and_true, negSucc.injEq,
       Bool.and_false, Bool.not_true, ldiff]
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
   · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+    simp
   · rw [Nat.bitwise_swap, Function.swap]
     congr
     funext x y
@@ -270,16 +264,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
     <;> simp only [bitwise, natBitwise, Bool.not_false, Bool.bne_eq_xor,
       cond_false, cond_true, negSucc.injEq, Bool.false_xor,
       Bool.true_xor, Bool.not_true,
-      Int.xor, HXor.hXor, Xor.xor, Nat.xor]
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
-  · congr
-    funext x y
-    cases x <;> cases y <;> rfl
+      Int.xor, HXor.hXor, XorOp.xor, Nat.xor] <;> simp
 
 @[simp]
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
@@ -385,7 +370,7 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
   | (m : ℕ), n, -[k+1] =>
     subNatNat_elim n k.succ (fun n k i => (↑m) <<< i = (Nat.shiftLeft' false m n) >>> k)
       (fun (i n : ℕ) =>
-        by simp [← Nat.shiftLeft_sub _ , Nat.add_sub_cancel_left])
+        by simp [← Nat.shiftLeft_sub _, Nat.add_sub_cancel_left])
       fun i n => by
         dsimp
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,

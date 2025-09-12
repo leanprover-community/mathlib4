@@ -34,7 +34,7 @@ instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} 
   rw [isOpenImmersion_SpecMap_iff_of_surjective _ (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)]
   apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp
   apply (Ideal.cotangent_subsingleton_iff _).mp
-  exact inferInstanceAs <| Subsingleton (Ω[S⁄R])
+  exact inferInstanceAs <| Subsingleton Ω[S⁄R]
 
 namespace AlgebraicGeometry
 

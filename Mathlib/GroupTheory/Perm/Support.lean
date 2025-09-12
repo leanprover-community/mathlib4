@@ -471,7 +471,7 @@ theorem support_swap_mul_swap {x y z : α} (h : List.Nodup [x, y, z]) :
   apply le_antisymm
   · convert support_mul_le (swap x y) (swap y z) using 1
     rw [support_swap h.left.left, support_swap h.right.left]
-    simp [Finset.ext_iff]
+    simp [-Finset.union_singleton]
   · intro
     simp only [mem_insert, mem_singleton]
     rintro (rfl | rfl | rfl | _) <;>
@@ -647,6 +647,8 @@ end support
 theorem support_subtypePerm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
     (f.subtypePerm h : Perm s).support = ({x | f x ≠ x} : Finset s) := by
   ext; simp [Subtype.ext_iff]
+
+@[deprecated (since := "2025-05-19")] alias support_subtype_perm := support_subtypePerm
 
 end Equiv.Perm
 

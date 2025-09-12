@@ -21,7 +21,8 @@ induction functor and hence that the induction functor preserves colimits.
 
 Additionally, we show that the functor `Rep k H ⥤ ModuleCat k` sending `B : Rep k H` to
 `(Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B` to `(A ⊗ Res(φ)(B))_G`. This
-is used to prove Shapiro's lemma in `RepresentationTheory/Homological/GroupHomology/Shapiro.lean`.
+is used to prove Shapiro's lemma in
+`Mathlib/RepresentationTheory/Homological/GroupHomology/Shapiro.lean`.
 
 ## Main definitions
 

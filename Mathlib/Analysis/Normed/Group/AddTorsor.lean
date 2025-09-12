@@ -3,6 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
+import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
@@ -58,6 +59,11 @@ instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
     dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
+
+instance : NormedAddTorsor (V × W) (P × Q) where
+  dist_eq_norm' x y := by
+    simp only [Prod.dist_eq, NormedAddTorsor.dist_eq_norm', Prod.norm_def, Prod.fst_vsub,
+      Prod.snd_vsub]
 
 section
 
@@ -163,13 +169,13 @@ theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
-  norm_cast  -- Porting note: was apply_mod_cast
+  norm_cast
   apply dist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
-  norm_cast  -- Porting note: was apply_mod_cast
+  norm_cast
   apply dist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This

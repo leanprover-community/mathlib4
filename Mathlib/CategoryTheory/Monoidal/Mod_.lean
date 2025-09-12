@@ -34,9 +34,9 @@ class Mod_Class (X : D) where
   /-- The action map -/
   smul : M ⊙ₗ X ⟶ X
   /-- The identity acts trivially. -/
-  one_smul' (X) : η ⊵ₗ X ≫ smul = (λₗ X).hom := by aesop_cat
+  one_smul' (X) : η ⊵ₗ X ≫ smul = (λₗ X).hom := by cat_disch
   /-- The action map is compatible with multiplication. -/
-  mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by aesop_cat
+  mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
 attribute [reassoc] Mod_Class.mul_smul' Mod_Class.one_smul'
 
@@ -95,7 +95,7 @@ variable (A : C) [Mon_Class A]
 /-- A morphism in `D` is a morphism of `A`-module objects if it commutes with
 the action maps -/
 class IsMod_Hom {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N) where
-  smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by aesop_cat
+  smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch
 
 attribute [reassoc (attr := simp)] IsMod_Hom.smul_hom
 
@@ -140,7 +140,7 @@ taking a morphism without a [isMod_Hom] instance, as well as the relevant
 equality to put such an instance. -/
 @[simps!]
 def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
-    (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by aesop_cat) : Hom M N :=
+    (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by cat_disch) : Hom M N :=
   letI : IsMod_Hom A f := ⟨smul_hom⟩
   ⟨f⟩
 
@@ -150,7 +150,7 @@ a `Mod_Class` instance (rather than bundled as `Mod_`),
 as well as the relevant equality to put such an instance. -/
 @[simps!]
 def Hom.mk'' {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N)
-    (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by aesop_cat) :
+    (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch) :
     Hom (.mk (A := A) M) (.mk (A := A) N) :=
   letI : IsMod_Hom A f := ⟨smul_hom⟩
   ⟨f⟩
