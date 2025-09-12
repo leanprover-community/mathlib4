@@ -437,7 +437,8 @@ instance IsSFiniteKernel.fst (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (fst κ)] :
     IsFiniteKernel κ := by
-  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
+  refine ⟨IsFiniteKernel.bound (fst κ), h.bound_lt_top,
+    fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
   rw [fst_apply' _ _ MeasurableSet.univ]
   simp
 
@@ -498,7 +499,8 @@ instance IsSFiniteKernel.snd (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (snd κ)] :
     IsFiniteKernel κ := by
-  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
+  refine ⟨IsFiniteKernel.bound (snd κ), h.bound_lt_top,
+    fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
   rw [snd_apply' _ _ MeasurableSet.univ]
   simp
 
