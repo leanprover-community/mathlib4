@@ -78,8 +78,8 @@ instance : IsLocalization (Submonoid.pos ℤ) ℚ where
 
 /-- `NNRat` is the ring of fractions of `Nat`. -/
 instance NNRat.isFractionRing : IsFractionRing ℕ ℚ≥0 where
-  map_units' y := by simp
-  surj' z := ⟨⟨z.num, ⟨z.den, by simp⟩⟩, by simp⟩
+  map_units y := by simp
+  surj z := ⟨⟨z.num, ⟨z.den, by simp⟩⟩, by simp⟩
   exists_of_eq {x y} h := ⟨1, by simpa using h⟩
 
 namespace IsFractionRing
