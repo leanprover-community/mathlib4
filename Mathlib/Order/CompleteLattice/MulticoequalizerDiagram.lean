@@ -32,7 +32,10 @@ universe u
 
 open CategoryTheory Limits
 
-attribute [local grind] inf_le_left inf_le_right le_sup_left le_sup_right
+local grind_pattern inf_le_left => a ⊓ b
+local grind_pattern inf_le_right => a ⊓ b
+local grind_pattern le_sup_left => a ⊔ b
+local grind_pattern le_sup_right => a ⊔ b
 
 namespace Lattice
 
