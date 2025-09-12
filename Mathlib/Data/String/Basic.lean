@@ -129,7 +129,6 @@ theorem toList_inj {s₁ s₂ : String} : s₁.toList = s₂.toList ↔ s₁ = s
 theorem asString_nil : [].asString = "" :=
   rfl
 
-@[simp]
 theorem toList_empty : "".toList = [] :=
   rfl
 
