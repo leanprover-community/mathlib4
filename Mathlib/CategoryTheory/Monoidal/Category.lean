@@ -279,6 +279,26 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ �
     f ⊗ₘ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
+@[reassoc]
+theorem whiskerLeft_comp_tensorHom {V W X Y Z : C} (f : V ⟶ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
+    (V ◁ g) ≫ (f ⊗ₘ h) = f ⊗ₘ (g ≫ h) := by
+  simp [tensorHom_def']
+
+@[reassoc]
+theorem whiskerRight_comp_tensorHom {V W X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : V ⟶ W) :
+    (f ▷ V) ≫ (g ⊗ₘ h) = (f ≫ g) ⊗ₘ h := by
+  simp [tensorHom_def]
+
+@[reassoc]
+theorem tensorHom_comp_whiskerLeft {V W X Y Z : C} (f : V ⟶ W) (g : X ⟶ Y) (h : Y ⟶ Z) :
+    (f ⊗ₘ g) ≫ (W ◁ h) = f ⊗ₘ (g ≫ h) := by
+  simp [tensorHom_def]
+
+@[reassoc]
+theorem tensorHom_comp_whiskerRight {V W X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : V ⟶ W) :
+    (f ⊗ₘ h) ≫ (g ▷ W) = (f ≫ g) ⊗ₘ h := by
+  simp [tensorHom_def, whisker_exchange]
+
 @[reassoc] lemma leftUnitor_inv_comp_tensorHom {X Y Z : C} (f : 𝟙_ C ⟶ Y) (g : X ⟶ Z) :
     (λ_ X).inv ≫ (f ⊗ₘ g) = g ≫ (λ_ Z).inv ≫ f ▷ Z := by simp [tensorHom_def']
 
@@ -409,7 +429,7 @@ instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso
 @[simp]
 theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
     inv (f ⊗ₘ g) = inv f ⊗ₘ inv g := by
-  simp [tensorHom_def ,whisker_exchange]
+  simp [tensorHom_def, whisker_exchange]
 
 variable {W X Y Z : C}
 
@@ -1021,7 +1041,7 @@ section ObjectProperty
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
 -- See note [reducible non instances]
-noncomputable abbrev MonoidalCategory.fullSubcategory
+abbrev MonoidalCategory.fullSubcategory
     {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
     (tensorUnit : P (𝟙_ C))
     (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :

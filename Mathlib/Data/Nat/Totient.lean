@@ -74,14 +74,16 @@ theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]
   exact periodic_coprime a
 
-theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
+theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     #{x ∈ Ico k (k + n) | a.Coprime x} ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
-  induction' n / a with i ih
-  · rw [← filter_coprime_Ico_eq_totient a k]
+  induction n / a with
+  | zero =>
+    rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
-    exact le_of_lt (mod_lt n a_pos)
+    exact le_of_lt (mod_lt n (pos_iff_ne_zero.mpr a_ne_zero))
+  | succ i ih => ?_
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
@@ -370,3 +372,19 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   simpa [h] using coprime_or_dvd_of_prime hp n
 
 end Nat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for `Nat.totient`. -/
+@[positivity Nat.totient _]
+def evalNatTotient : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.totient $n) =>
+    assumeInstancesCommute
+    match ← core z p n with
+    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.totient"
+
+end Mathlib.Meta.Positivity
