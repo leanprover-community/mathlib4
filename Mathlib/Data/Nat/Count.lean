@@ -38,11 +38,11 @@ theorem count_zero : count p 0 = 0 := by
   rw [count, List.range_zero, List.countP, List.countP.go]
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in scope `count` -/
-def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
-  apply Fintype.ofFinset {x ∈ range n | p x}
-  intro x
-  rw [mem_filter, mem_range]
-  rfl
+def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } :=
+  Fintype.ofFinset {x ∈ range n | p x} <| by
+    intro x
+    rw [mem_filter, mem_range]
+    rfl
 
 scoped[Count] attribute [instance] Nat.CountSet.fintype
 
@@ -55,7 +55,11 @@ theorem count_eq_card_filter_range (n : ℕ) : count p n = #{x ∈ range n | p x
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
 theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
   rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
-  rfl
+  · rfl
+  #adaptation_note /-- 2025-09-12 (kmill) proof is no longer solved for by unification. -/
+  · intro x
+    rw [mem_filter, mem_range]
+    rfl
 
 theorem count_le {n : ℕ} : count p n ≤ n := by
   rw [count_eq_card_filter_range]
