@@ -34,12 +34,21 @@ theorem Nat.mem_maximalIdeal_iff {n : ℕ} : n ∈ maximalIdeal ℕ ↔ n ≠ 1 
 
 theorem Nat.coe_maximalIdeal : (maximalIdeal ℕ : Set ℕ) = {1}ᶜ := by ext; simp
 
-theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = .span {2, 3} := by
+theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = span {2, 3} := by
   refine le_antisymm (fun n h ↦ ?_) (span_le.mpr <| Set.pair_subset (by simp) (by simp))
   obtain lt | lt := (mem_maximalIdeal_iff.mp h).lt_or_gt
   · obtain rfl := lt_one_iff.mp lt; exact zero_mem _
   exact mem_span_pair.mpr <|
     exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le 2 3 n (by simp) (show 2 ≤ n by omega)
+
+theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
+  rw [← SetLike.mem_coe, ← not_iff_not]
+  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm,
+    ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
+
+theorem Nat.one_mem_closure_iff {s : Set ℕ} : 1 ∈ AddSubmonoid.closure s ↔ 1 ∈ s := by
+  rw [← Submodule.span_nat_eq_addSubmonoidClosure]
+  exact one_mem_span_iff
 
 theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
     P.IsPrime ↔ P = ⊥ ∨ P = maximalIdeal ℕ ∨ ∃ p : ℕ, p.Prime ∧ P = span {p} := by
