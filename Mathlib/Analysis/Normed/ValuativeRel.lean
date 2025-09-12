@@ -10,12 +10,18 @@ import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-!
 
-# Nonarchimedean normed fields carry a valuative topology
+# Nonarchimedean normed rings carry a valuative topology
 
 In this file, we provide a helper instance
 for `ValuativeRel R` derived from a `NormedRing R` when `NormMulClass R` and `IsUltrametricDist R`,
 so that downstream files can refer to `ValuativeRel R`,
 to facilitate a refactor.
+
+## Implementation details
+
+The namespace is `NormedField` because we need `‖x * y‖ = ‖x‖ * ‖y‖`, not just submultiplicativity.
+The `NormedCommRing` assumption is not enough because that gives `‖x * y‖ ≤ ‖x‖ * ‖y‖`.
+The associated prop classes of `NormOneClass` and `NormMulClass` give the full multiplicativity.
 
 -/
 
