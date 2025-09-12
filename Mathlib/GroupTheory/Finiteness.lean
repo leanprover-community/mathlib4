@@ -108,7 +108,7 @@ section Semigroup
 variable [Semigroup M]
 
 /-- An additive semigroup is finitely generated if it is finitely generated as an additive
-semigroup of itself. -/
+subsemigroup of itself. -/
 @[mk_iff]
 class AddSemigroup.FG (M : Type*) [AddSemigroup M] : Prop where
   fg_top : (⊤ : AddSubsemigroup M).FG
