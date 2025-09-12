@@ -207,12 +207,12 @@ end Ring
 
 open TensorProduct
 
-lemma exists_fg_and_mem_baseChange {k : Type*} {A : Type*} {B : Type*} [CommSemiring k]
-    [CommSemiring A] [Semiring B] [Algebra k A] [Algebra k B] (x : A ⊗[k] B) :
-    ∃ C : Subalgebra k B, C.FG ∧ x ∈ Subalgebra.baseChange A C := by
+lemma exists_fg_and_mem_baseChange {R A B : Type*} [CommRing R]
+    [CommRing A] [Ring B] [Algebra R A] [Algebra R B] (x : A ⊗[R] B) :
+    ∃ C : Subalgebra R B, C.FG ∧ x ∈ Subalgebra.baseChange A C := by
   obtain ⟨S, hS⟩ := TensorProduct.exists_finset x
   classical
-  refine ⟨Algebra.adjoin k (S.image fun j ↦ j.2), ?_, ?_⟩
+  refine ⟨Algebra.adjoin R (S.image fun j ↦ j.2), ?_, ?_⟩
   · exact Subalgebra.fg_adjoin_finset _
-  · exact hS ▸ Subalgebra.sum_mem _ fun s hs ↦ ⟨s.1 ⊗ₜ[k] ⟨s.2, Algebra.subset_adjoin
+  · exact hS ▸ Subalgebra.sum_mem _ fun s hs ↦ ⟨s.1 ⊗ₜ[R] ⟨s.2, Algebra.subset_adjoin
       (Finset.mem_image_of_mem _ hs)⟩, rfl⟩

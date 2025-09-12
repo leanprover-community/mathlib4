@@ -1406,8 +1406,8 @@ end
 
 /-- Given a subalgebra C of a k-algebra A, and a k-algebra B, the base change of C to a subalgebra
 of A ⊗[k] B -/
-def Subalgebra.baseChange {k : Type*} {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A]
-    (B : Type*) [CommSemiring B] [Algebra k B] (C : Subalgebra k A) : Subalgebra B (B ⊗[k] A) :=
+def Subalgebra.baseChange {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+    (B : Type*) [CommRing B] [Algebra R B] (C : Subalgebra R A) : Subalgebra B (B ⊗[R] A) :=
   AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
 
 variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
