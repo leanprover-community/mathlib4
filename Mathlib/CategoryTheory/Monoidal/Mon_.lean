@@ -58,6 +58,25 @@ variable {M X Y : C} [Mon_Class M]
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
+/-- Transfer `Mon_Class` along an isomorphism. -/
+@[simps]
+def ofIso (e : M ≅ X) : Mon_Class X where
+  one := η[M] ≫ e.hom
+  mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
+  one_mul := by
+    rw [← cancel_epi (λ_ X).inv]
+    simp only [comp_whiskerRight, tensorHom_def, Category.assoc,
+      hom_inv_whiskerRight_assoc]
+    simp [← tensorHom_def_assoc, leftUnitor_inv_comp_tensorHom_assoc]
+  mul_one := by
+    rw [← cancel_epi (ρ_ X).inv]
+    simp only [MonoidalCategory.whiskerLeft_comp, tensorHom_def', Category.assoc,
+      whiskerLeft_hom_inv_assoc, Iso.inv_hom_id]
+    simp [← tensorHom_def'_assoc, rightUnitor_inv_comp_tensorHom_assoc]
+  mul_assoc := by simpa [← id_tensorHom, ← tensorHom_id, ← tensor_comp_assoc,
+      -associator_conjugation, associator_naturality_assoc] using
+      congr(((e.inv ⊗ₘ e.inv) ⊗ₘ e.inv) ≫ $(Mon_Class.mul_assoc M) ≫ e.hom)
+
 @[simps]
 instance : Mon_Class (𝟙_ C) where
   one := 𝟙 _
@@ -128,7 +147,7 @@ lemma mul_assoc_inv (f : X ⟶ M) :
 
 end Mathlib.Tactic.MonTauto
 
-variable {M N O : C} [Mon_Class M] [Mon_Class N] [Mon_Class O]
+variable {M N O X : C} [Mon_Class M] [Mon_Class N] [Mon_Class O]
 
 /-- The property that a morphism between monoid objects is a monoid morphism. -/
 class IsMon_Hom (f : M ⟶ N) : Prop where
@@ -141,9 +160,14 @@ instance : IsMon_Hom (𝟙 M) where
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
-instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] : IsMon_Hom f.inv where
+instance isMon_Hom_ofIso (e : M ≅ X) : letI := Mon_Class.ofIso e; IsMon_Hom e.hom := by
+  letI := Mon_Class.ofIso e; exact { }
+
+instance (f : M ≅ N) [IsMon_Hom f.hom] : IsMon_Hom f.inv where
   one_hom := by simp [Iso.comp_inv_eq]
   mul_hom := by simp [Iso.comp_inv_eq]
+
+instance {f : M ⟶ N} [IsIso f] [IsMon_Hom f] : IsMon_Hom (asIso f).hom := ‹_›
 
 variable (C) in
 /-- A monoid object internal to a monoidal category.
@@ -395,6 +419,7 @@ variable [F.OplaxMonoidal]
 
 open scoped Mon_Class in
 /-- Pullback a monoid object along a fully faithful oplax monoidal functor. -/
+@[simps]
 abbrev FullyFaithful.mon_Class (hF : F.FullyFaithful) (X : C) [Mon_Class (F.obj X)] :
     Mon_Class X where
   one := hF.preimage <| OplaxMonoidal.η F ≫ η[F.obj X]
@@ -432,6 +457,18 @@ faithful too. -/
 @[simps]
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
+
+open Monoidal in
+/-- The essential image of a fully faithful functor between cartesian-monoidal categories is the
+same on monoid objects as on objects. -/
+@[simp] lemma essImage_mapMon [F.Full] [F.Faithful] {M : Mon_ D} :
+    F.mapMon.essImage M ↔ F.essImage M.X where
+  mp := by rintro ⟨N, ⟨e⟩⟩; exact ⟨N.X, ⟨(Mon_.forget _).mapIso e⟩⟩
+  mpr := by
+    rintro ⟨N, ⟨e⟩⟩
+    let : Mon_Class (F.obj N) := .ofIso e.symm
+    let : Mon_Class N := (FullyFaithful.ofFullyFaithful F).mon_Class N
+    refine ⟨.mk N, ⟨Mon_.mkIso e ?_ ?_⟩⟩ <;> simp
 
 end Monoidal
 
@@ -939,6 +976,18 @@ lemma Mon_Class.mul_mul_mul_comm' [IsCommMon M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 end
+
+section SymmetricCategory
+variable [SymmetricCategory C] {M N W X Y Z : C} [Mon_Class M] [Mon_Class N]
+
+instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
+  mul_comm := by
+    simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
+      ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
+      ← tensorHom_def_assoc, -whiskerRight_tensor, -tensor_whiskerLeft, ← tensor_comp,
+      Mon_Class.tensorObj.mul_def, ← whiskerLeft_comp_assoc, -whiskerLeft_comp]
+
+end SymmetricCategory
 
 /-!
 Projects:
