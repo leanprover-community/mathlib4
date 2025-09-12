@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
@@ -100,8 +100,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
-  · use 0
-    simp
+  · simp
   · have hc' : 1 < ‖σ c‖ := by simp only [RingHomIsometric.norm_map, hc]
     rcases rescale_to_shell hc' (half_pos εpos) hy with ⟨d, hd, ydlt, -, dinv⟩
     let δ := ‖d‖ * ‖y‖ / 4
@@ -141,7 +140,6 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
           simp only [δ]
           ring
         _ = ‖y‖ / 2 := by
-          rw [inv_mul_cancel₀, one_mul]
           simp [norm_eq_zero, hd]
         _ = 1 / 2 * ‖y‖ := by ring
     rw [← dist_eq_norm] at J
@@ -242,7 +240,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
   have : x + w ∈ ball x ε :=
     calc
       dist (x + w) x = ‖w‖ := by
-        rw [dist_eq_norm]
         simp
       _ ≤ C * ‖z - y‖ := wnorm
       _ < C * (ε / C) := by
@@ -592,7 +589,7 @@ variable [CompleteSpace F]
 
 lemma _root_.AntilipschitzWith.completeSpace_range_clm {f : E →SL[σ] F} {c : ℝ≥0}
     (hf : AntilipschitzWith c f) : CompleteSpace (LinearMap.range f) :=
-  IsClosed.completeSpace_coe <| hf.isClosed_range f.uniformContinuous
+  IsClosed.completeSpace_coe (hs := hf.isClosed_range f.uniformContinuous)
 
 variable [RingHomInvPair σ' σ] [RingHomIsometric σ] [RingHomIsometric σ']
 

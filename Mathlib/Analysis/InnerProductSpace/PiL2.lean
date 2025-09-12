@@ -239,14 +239,14 @@ variable {ι 𝕜}
 abbrev EuclideanSpace.projₗ (i : ι) : EuclideanSpace 𝕜 ι →ₗ[𝕜] 𝕜 := PiLp.projₗ _ _ i
 
 /-- The projection on the `i`-th coordinate of `EuclideanSpace 𝕜 ι`, as a continuous linear map. -/
-abbrev EuclideanSpace.proj (i : ι) : EuclideanSpace 𝕜 ι →L[𝕜] 𝕜 := PiLp.proj _ _ i
+abbrev EuclideanSpace.proj (i : ι) : StrongDual 𝕜 (EuclideanSpace 𝕜 ι) := PiLp.proj _ _ i
 
 section DecEq
 
 variable [DecidableEq ι]
 
 -- TODO : This should be generalized to `PiLp`.
-/-- The vector given in euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
+/-- The vector given in Euclidean space by being `a : 𝕜` at coordinate `i : ι` and `0 : 𝕜` at
 all other coordinates. -/
 def EuclideanSpace.single (i : ι) (a : 𝕜) : EuclideanSpace 𝕜 ι :=
   toLp _ (Pi.single i a)
@@ -321,7 +321,7 @@ section finAddEquivProd
 `EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
 
 See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
-where the RHS is equipped with the euclidean norm rather than the supremum norm. -/
+where the RHS is equipped with the Euclidean norm rather than the supremum norm. -/
 abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
     EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
   (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
@@ -1200,5 +1200,12 @@ theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
 theorem inner_matrix_col_col [Fintype m] (A B : Matrix m n 𝕜) (i j : n) :
     ⟪Aᵀ i, Bᵀ j⟫ₑ = (Aᴴ * B) i j := by
   simp [PiLp.inner_apply, dotProduct, mul_apply', mul_comm]
+
+/-- The matrix representation of `innerSL 𝕜 x` given by an orthonormal basis `b` and `b₂`
+is equal to `vecMulVec (star b₂) (star (b.repr x))`. -/
+theorem toMatrix_innerSL_apply [Fintype n] [DecidableEq n] [Fintype m]
+    (b : OrthonormalBasis n 𝕜 E) (b₂ : OrthonormalBasis m 𝕜 𝕜) (x : E) :
+    (innerSL 𝕜 x).toMatrix b.toBasis b₂.toBasis = vecMulVec (star b₂) (star (b.repr x)) := by
+  ext; simp [LinearMap.toMatrix_apply, vecMulVec_apply, OrthonormalBasis.repr_apply_apply, mul_comm]
 
 end Matrix

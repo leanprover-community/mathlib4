@@ -380,7 +380,7 @@ theorem zag_of_zag_obj (F : J ⥤ K) [F.Full] {j₁ j₂ : J} (h : Zag (F.obj j�
 /-- Any equivalence relation containing (⟶) holds for all pairs of a connected category. -/
 theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Equivalence r)
     (h : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), r j₁ j₂) : ∀ j₁ j₂ : J, r j₁ j₂ := by
-  intros j₁ j₂
+  intro j₁ j₂
   have z : ∀ j : J, r j₁ j :=
     induct_on_objects {k | r j₁ k} (hr.1 j₁)
       fun f => ⟨fun t => hr.3 t (h f), fun t => hr.3 t (hr.2 (h f))⟩

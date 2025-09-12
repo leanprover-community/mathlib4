@@ -160,9 +160,10 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
     eval₂ f x ps.prod = (ps.map (Polynomial.eval₂ f x)).prod := by
-  induction' ps using List.reverseRecOn with ps p ihp
-  · simp
-  · simp only [List.forall_mem_append, List.forall_mem_singleton] at hf
+  induction ps using List.reverseRecOn with
+  | nil => simp
+  | append_singleton ps p ihp =>
+    simp only [List.forall_mem_append, List.forall_mem_singleton] at hf
     simp [eval₂_mul_noncomm _ _ hf.2, ihp hf.1]
 
 /-- `eval₂` as a `RingHom` for noncommutative rings -/
@@ -214,6 +215,7 @@ theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval�
 theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
+@[gcongr]
 theorem eval₂_dvd : p ∣ q → eval₂ f x p ∣ eval₂ f x q :=
   map_dvd (eval₂RingHom f x)
 
@@ -651,6 +653,7 @@ theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset �
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 
+@[gcongr]
 theorem eval_dvd : p ∣ q → eval x p ∣ eval x q :=
   eval₂_dvd _ _
 
