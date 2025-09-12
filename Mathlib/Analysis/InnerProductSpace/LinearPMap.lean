@@ -51,7 +51,7 @@ Unbounded operators, closed operators
 
 noncomputable section
 
-open IsROrC LinearPMap
+open RCLike LinearPMap
 
 open scoped ComplexConjugate
 
