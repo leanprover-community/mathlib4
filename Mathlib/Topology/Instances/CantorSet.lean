@@ -146,7 +146,7 @@ open Real
 
 /-- If `x = 0.d₀d₁...` in base-3 (ternary), and none of the digits `dᵢ` is `1`,
 then `x` belongs to the Cantor set. -/
-theorem zero_two_sequence_ofDigits_mem_cantorSet {a : ℕ → Fin 3}
+theorem ofDigits_zero_two_sequence_mem_cantorSet {a : ℕ → Fin 3}
     (h : ∀ n, a n ≠ 1) : ofDigits a ∈ cantorSet := by
   simp only [cantorSet, Set.mem_iInter]
   intro i
@@ -169,7 +169,7 @@ theorem zero_two_sequence_ofDigits_mem_cantorSet {a : ℕ → Fin 3}
 /-- If two base-3 representations using only digits `0` and `2` define the same number,
 then the sequences must be equal.
 This uniqueness fails for general base-3 representations (e.g. `0.1000... = 0.0222...`). -/
-theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
+theorem ofDigits_zero_two_sequence_unique {a b : ℕ → Fin 3}
     (ha : ∀ n, a n ≠ 1)
     (hb : ∀ n, b n ≠ 1)
     (h : ofDigits a = ofDigits b) :
@@ -177,11 +177,8 @@ theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
   by_contra! h
   rw [Function.ne_iff] at h
   let n0 := Nat.find h
-  have h1 : ∀ n < n0, a n = b n := by
-    intro n hn
-    simpa using Nat.find_min h hn
-  have h2 : a n0 ≠ b n0 := by
-    simpa using Nat.find_spec h
+  have h1 (n) (hn : n < n0) : a n = b n := by simpa using Nat.find_min h hn
+  have h2 : a n0 ≠ b n0 := by simpa using Nat.find_spec h
   generalize n0 = n1 at h1 h2
   clear h n0
   wlog h3 : a n1 = 0 ∧ b n1 = 2 generalizing a b
@@ -191,7 +188,7 @@ theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
       generalize a n1 = u at *
       generalize b n1 = v at *
       fin_cases u <;> fin_cases v <;> simp at ha hb h2 h3 ⊢
-    exact this hb ha h.symm (by intro n hn; symm; exact h1 n hn) h2.symm (by rwa [and_comm])
+    exact this hb ha h.symm (fun n hn ↦ (h1 n hn).symm) h2.symm (by rwa [and_comm])
   obtain ⟨h3, h4⟩ := h3
   clear h2
   have : ∑ x ∈ Finset.range n1, ofDigitsTerm a x = ∑ x ∈ Finset.range n1, ofDigitsTerm b x := by
@@ -215,8 +212,7 @@ theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
       (ofDigits fun i ↦ b (1 + n1 + i)) * 3⁻¹ + 2 * 3⁻¹ := by
     rw [← mul_right_inj' (show ((3 : ℝ) ^ n1)⁻¹ ≠ 0 by positivity)]
     linarith
-  linarith [ofDigits_nonneg (digits := fun i ↦ b (1 + n1 + i)),
-    ofDigits_le_one (digits := fun i ↦ a (1 + n1 + i))]
+  linarith [ofDigits_nonneg (fun i ↦ b (1 + n1 + i)), ofDigits_le_one (fun i ↦ a (1 + n1 + i))]
 
 /-- Given `x ∈ [0, 1/3] ∪ [2/3, 1]` (i.e. a level of the Cantor set),
 this function rescales the interval containing `x` back to `[0, 1]`.
@@ -229,8 +225,7 @@ noncomputable def cantorStep (x : ℝ) : ℝ :=
 
 theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x ∈ cantorSet := by
   simp only [cantorStep]
-  rw [cantorSet_eq_union_halves] at hx
-  simp only [Set.mem_union, Set.mem_image] at hx
+  rw [cantorSet_eq_union_halves, Set.mem_union, Set.mem_image] at hx
   split_ifs with h
   · rcases hx with ⟨y, hy, hx⟩ | ⟨y, hy, hx⟩
     · rw [← hx]
@@ -254,7 +249,7 @@ theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x
 noncomputable def cantorSequence (x : ℝ) : Stream' ℝ :=
   Stream'.iterate cantorStep x
 
-theorem cantorSequence_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
+theorem cantorSequence_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) (n : ℕ) :
     (cantorSequence x).get n ∈ cantorSet := by
   induction n with
   | zero => simpa [cantorSequence]
@@ -285,12 +280,12 @@ theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n �
   generalize (cantorToBinary x).get n = b at h
   cases b <;> simp at h
 
-theorem partial_diff_eq_cantorSequence {x : ℝ} {n : ℕ} :
-    (x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3^n
-      = (cantorSequence x).get n := by
+theorem cantorSequence_eq_self_sub_sum_cantorToTernary (x : ℝ) (n : ℕ) :
+    (cantorSequence x).get n =
+    (x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3^n := by
   induction n with
   | zero => simp [cantorSequence]
-  | succ n ih => calc
+  | succ n ih => symm; calc
     _ = 3 * (((x - ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x).get i) * 3 ^ n) -
         3^n * ofDigitsTerm (cantorToTernary x).get n) := by
       rw [pow_succ, Finset.sum_range_succ]
@@ -309,23 +304,22 @@ theorem partial_diff_eq_cantorSequence {x : ℝ} {n : ℕ} :
       rw [mul_inv_cancel₀ (by simp [a])]
       ring
 
-theorem ofDigits_cantorToTernary_partial_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
+theorem ofDigits_cantorToTernary_sum_le {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i ≤ x := by
-  have := partial_diff_eq_cantorSequence (x := x) (n := n)
-  have h_mem := cantorSequence_mem_cantorSet hx (n := n)
-  rw [← this] at h_mem
+  have := cantorSequence_eq_self_sub_sum_cantorToTernary x n
+  have h_mem := cantorSequence_mem_cantorSet hx n
+  rw [this] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
   simpa using h_mem.left
 
-theorem ofDigits_cantorToTernary_partial_sum_ge {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
+theorem le_ofDigits_cantorToTernary_sum {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} :
     x - (3⁻¹ : ℝ)^n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (cantorToTernary x) i := by
-  have := partial_diff_eq_cantorSequence (x := x) (n := n)
-  have h_mem := cantorSequence_mem_cantorSet hx (n := n)
-  rw [← this] at h_mem
+  have := cantorSequence_eq_self_sub_sum_cantorToTernary x n
+  have h_mem := cantorSequence_mem_cantorSet hx n
+  rw [this] at h_mem
   apply cantorSet_subset_unitInterval at h_mem
   simp only [Set.mem_Icc] at h_mem
-  apply And.right at h_mem
   rw [← mul_le_mul_iff_left₀ (show 0 < (3 : ℝ)^n by positivity), sub_mul, inv_pow,
     inv_mul_cancel₀ (by simp)]
   linarith!
@@ -336,7 +330,7 @@ theorem ofDigits_cantorToTernary {x : ℝ} (hx : x ∈ cantorSet) :
   rw [HasSum.tsum_eq]
   rw [hasSum_iff_tendsto_nat_of_summable_norm]
   swap
-  · conv => arg 1; ext i; rw [norm_eq_abs, abs_of_nonneg (by simp [ofDigitsTerm])]
+  · conv => arg 1; ext; rw [norm_eq_abs, abs_of_nonneg (by simp [ofDigitsTerm])]
     exact summable_ofDigitsTerm
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le (g := fun n ↦ x - (3⁻¹ : ℝ)^n) (h := fun _ ↦ x)
   · rw [← tendsto_sub_nhds_zero_iff]
@@ -347,10 +341,8 @@ theorem ofDigits_cantorToTernary {x : ℝ} (hx : x ∈ cantorSet) :
     rw [abs_lt]
     constructor <;> norm_num
   · exact tendsto_const_nhds
-  · intro
-    exact ofDigits_cantorToTernary_partial_sum_ge hx
-  · intro
-    exact ofDigits_cantorToTernary_partial_sum_le hx
+  · exact fun _ ↦ le_ofDigits_cantorToTernary_sum hx
+  · exact fun _ ↦ ofDigits_cantorToTernary_sum_le hx
 
 theorem cantorSet_eq_zero_two_ofDigits :
     cantorSet = {x | ∃ a : ℕ → Fin 3, (∀ i, a i ≠ 1) ∧ ofDigits a = x} := by
@@ -360,7 +352,7 @@ theorem cantorSet_eq_zero_two_ofDigits :
     constructor
     · apply cantorToTernary_ne_one
     · apply ofDigits_cantorToTernary h
-  · rw [← ha.2]
-    exact zero_two_sequence_ofDigits_mem_cantorSet ha.1
+  · rw [← ha.right]
+    exact ofDigits_zero_two_sequence_mem_cantorSet ha.left
 
 end ternary02
