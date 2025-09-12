@@ -68,7 +68,7 @@ class LaxMonoidal (F : C ⥤ D) where
       F.map f ▷ F.obj X' ≫ μ Y X' = μ X X' ≫ F.map (f ▷ X') := by
     cat_disch
   μ_natural_right (F) :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       F.obj X' ◁ F.map f ≫ μ X' Y = μ X' X ≫ F.map (X' ◁ f) := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -241,7 +241,7 @@ class OplaxMonoidal (F : C ⥤ D) where
       δ X X' ≫ F.map f ▷ F.obj X' = F.map (f ▷ X') ≫ δ Y X' := by
     cat_disch
   δ_natural_right (F) :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       δ X' X ≫ F.obj X' ◁ F.map f = F.map (X' ◁ f) ≫ δ X' Y := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -494,19 +494,19 @@ theorem map_rightUnitor_inv (X : C) :
 
 /-- The tensorator as a natural isomorphism. -/
 @[simps!]
-noncomputable def μNatIso :
+def μNatIso :
     Functor.prod F F ⋙ tensor D ≅ tensor C ⋙ F :=
   NatIso.ofComponents (fun _ ↦ μIso F _ _)
 
 /-- Monoidal functors commute with left tensoring up to isomorphism -/
 @[simps!]
-noncomputable def commTensorLeft (X : C) :
+def commTensorLeft (X : C) :
     F ⋙ tensorLeft (F.obj X) ≅ tensorLeft X ⋙ F :=
   NatIso.ofComponents (fun Y => μIso F X Y)
 
 /-- Monoidal functors commute with right tensoring up to isomorphism -/
 @[simps!]
-noncomputable def commTensorRight (X : C) :
+def commTensorRight (X : C) :
     F ⋙ tensorRight (F.obj X) ≅ tensorRight X ⋙ F :=
   NatIso.ofComponents (fun Y => μIso F Y X)
 
@@ -566,7 +566,7 @@ structure CoreMonoidal where
       F.map f ▷ F.obj X' ≫ (μIso Y X').hom = (μIso X X').hom ≫ F.map (f ▷ X') := by
     cat_disch
   μIso_hom_natural_right :
-    ∀ {X Y : C} (X' : C) (f : X ⟶ Y) ,
+    ∀ {X Y : C} (X' : C) (f : X ⟶ Y),
       F.obj X' ◁ F.map f ≫ (μIso X' Y).hom = (μIso X' X).hom ≫ F.map (X' ◁ f) := by
     cat_disch
   /-- associativity of the tensorator -/
@@ -1164,5 +1164,56 @@ def of (F : C ⥤ D) [F.LaxMonoidal] : LaxMonoidalFunctor C D where
   toFunctor := F
 
 end LaxMonoidalFunctor
+
+namespace Functor.Monoidal
+
+variable {C D}
+
+/--
+Auxiliary definition for `Functor.Monoidal.transport`
+-/
+def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMonoidal where
+  εIso := εIso F ≪≫ i.app _
+  μIso X Y := tensorIso (i.symm.app _) (i.symm.app _) ≪≫ μIso F X Y ≪≫ i.app _
+  μIso_hom_natural_left _ _ := by simp [NatTrans.whiskerRight_app_tensor_app_assoc]
+  μIso_hom_natural_right _ _ := by simp [NatTrans.whiskerLeft_app_tensor_app_assoc]
+  associativity X Y Z := by
+    simp only [Iso.trans_hom, tensorIso_hom, Iso.app_hom, Iso.symm_hom, μIso_hom, comp_whiskerRight,
+      Category.assoc, MonoidalCategory.whiskerLeft_comp]
+    rw [← i.hom.naturality, map_associator_assoc, Functor.OplaxMonoidal.associativity_assoc,
+      whiskerLeft_δ_μ_assoc, δ_μ_assoc]
+    simp only [← Category.assoc]
+    congr 1
+    slice_lhs 3 4 =>
+      rw [← tensorHom_id, ← tensor_comp]
+      simp only [Iso.hom_inv_id_app, Category.id_comp, id_tensorHom]
+    simp only [Category.assoc]
+    rw [← whisker_exchange_assoc]
+    simp only [tensor_whiskerLeft, Functor.LaxMonoidal.associativity, Category.assoc,
+      Iso.inv_hom_id_assoc]
+    rw [← tensorHom_id, associator_naturality_assoc]
+    simp [← id_tensorHom, -tensorHom_id, -tensor_comp, ← tensor_comp_assoc]
+  left_unitality X := by
+    simp only [Iso.trans_hom, εIso_hom, Iso.app_hom, ← tensorHom_id, tensorIso_hom, Iso.symm_hom,
+      μIso_hom, Category.assoc, ← tensor_comp_assoc, Iso.hom_inv_id_app, Category.comp_id,
+      Category.id_comp]
+    rw [← i.hom.naturality, ← Category.comp_id (i.inv.app X),
+      ← Category.id_comp (Functor.LaxMonoidal.ε F), tensor_comp]
+    simp
+  right_unitality X := by
+    simp only [Iso.trans_hom, εIso_hom, Iso.app_hom, ← id_tensorHom, tensorIso_hom, Iso.symm_hom,
+      μIso_hom, Category.assoc, ← tensor_comp_assoc, Category.id_comp, Iso.hom_inv_id_app,
+      Category.comp_id]
+    rw [← i.hom.naturality, ← Category.comp_id (i.inv.app X),
+      ← Category.id_comp (Functor.LaxMonoidal.ε F), tensor_comp]
+    simp
+
+/--
+Transport the structure of a monoidal functor along a natural isomorphism of functors.
+-/
+def transport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.Monoidal :=
+  (coreMonoidalTransport i).toMonoidal
+
+end Functor.Monoidal
 
 end CategoryTheory

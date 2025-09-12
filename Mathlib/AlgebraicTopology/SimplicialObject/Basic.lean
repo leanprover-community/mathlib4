@@ -105,7 +105,6 @@ def eqToIso {n m : ℕ} (h : n = m) : X _⦋n⦌ ≅ X _⦋m⦌ :=
 
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
-  ext
   simp [eqToIso]
 
 /-- The generic case of the first simplicial identity -/
@@ -569,7 +568,6 @@ def eqToIso {n m : ℕ} (h : n = m) : X ^⦋n⦌ ≅ X ^⦋m⦌ :=
 
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
-  ext
   simp [eqToIso]
 
 /-- The generic case of the first cosimplicial identity -/
