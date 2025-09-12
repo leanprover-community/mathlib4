@@ -360,14 +360,6 @@ noncomputable def rankFactorization {r : Type*} [Fintype r]
     have : A.col j = ∑ i, col_repr j i • basis_V i := by simp only [col_repr, basis_V.sum_repr]
     simpa [mul_comm] using congr_fun this i
 
-theorem rank_rankFactorization {r : Type*} [Fintype r]
-    (P : Matrix m r R) (Q : Matrix r n R) (hPQ : (P * Q).rank = Fintype.card r) :
-    P.rank = Fintype.card r ∧ Q.rank = Fintype.card r := by
-  have := Matrix.rank_mul_le P Q
-  have := Matrix.rank_le_card_width P
-  have := Matrix.rank_le_card_height Q
-  grind
-
 end Field
 
 /-! ### Lemmas about transpose and conjugate transpose
