@@ -559,7 +559,9 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M
+
+class AddMonoidNSMul (M : Type u) [AddMonoid M] where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
@@ -573,7 +575,9 @@ attribute [instance 50] AddZeroClass.toAdd
 
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M
+
+@[to_additive] class MonoidNPow (M : Type u) [Monoid M] where
   /-- Raising to the power of a natural number. -/
   protected npow : ℕ → M → M := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
@@ -581,32 +585,34 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n ↦ Monoid.npow n x⟩
+@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] [MonoidNPow M] : Pow M ℕ :=
+  ⟨fun x n ↦ MonoidNPow.npow n x⟩
 
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
+instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] [AddMonoidNSMul M] : SMul ℕ M :=
+  ⟨AddMonoidNSMul.nsmul⟩
 
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
 
-@[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
-  rfl
-
 @[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
   rw [← one_mul c, ← hba, mul_assoc, hac, mul_one b]
+
+variable [MonoidNPow M]
+
+@[to_additive (attr := simp) nsmul_eq_smul]
+theorem npow_eq_pow (n : ℕ) (x : M) : MonoidNPow.npow n x = x ^ n :=
+  rfl
 
 -- This lemma is higher priority than later `zero_smul` so that the `simpNF` is happy
 @[to_additive (attr := simp high) zero_nsmul]
 theorem pow_zero (a : M) : a ^ 0 = 1 :=
-  Monoid.npow_zero _
+  MonoidNPow.npow_zero _
 
 @[to_additive succ_nsmul]
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
-  Monoid.npow_succ n a
+  MonoidNPow.npow_succ n a
 
 @[to_additive (attr := simp) one_nsmul]
 lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
@@ -665,12 +671,12 @@ end Monoid
 /-- An additive monoid is torsion-free if scalar multiplication by every non-zero element `n : ℕ` is
 injective. -/
 @[mk_iff]
-class IsAddTorsionFree (M : Type*) [AddMonoid M] where
+class IsAddTorsionFree (M : Type*) [AddMonoid M] [AddMonoidNSMul M] where
   protected nsmul_right_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ n • a
 
 /-- A monoid is torsion-free if power by every non-zero element `n : ℕ` is injective. -/
 @[to_additive, mk_iff]
-class IsMulTorsionFree (M : Type*) [Monoid M] where
+class IsMulTorsionFree (M : Type*) [Monoid M] [MonoidNPow M] where
   protected pow_left_injective ⦃n : ℕ⦄ (hn : n ≠ 0) : Injective fun a : M ↦ a ^ n
 
 attribute [to_additive existing] isMulTorsionFree_iff
@@ -934,7 +940,7 @@ variable [DivInvMonoid G]
   DivInvMonoid.zpow_zero' a
 
 @[to_additive (attr := simp, norm_cast) natCast_zsmul]
-theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+theorem zpow_natCast (a : G) [MonoidNPow G] : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a ^ (n : ℤ) * a := DivInvMonoid.zpow_succ' _ _
@@ -943,19 +949,13 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 
 
 @[to_additive ofNat_zsmul]
-lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
+lemma zpow_ofNat (a : G) (n : ℕ) [MonoidNPow G] : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
-theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
+@[to_additive (attr := simp) negSucc_zsmul]
+theorem zpow_negSucc (a : G) (n : ℕ) [MonoidNPow G] : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
-
-theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
-    Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← natCast_zsmul]
-  exact SubNegMonoid.zsmul_neg' n a
-
-attribute [to_additive existing (attr := simp) negSucc_zsmul] zpow_negSucc
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
@@ -980,16 +980,17 @@ theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
 @[to_additive (attr := simp) one_zsmul]
-lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
+lemma zpow_one (a : G) [MonoidNPow G] : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
 
-@[to_additive two_zsmul] lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
+@[to_additive two_zsmul]
+lemma zpow_two (a : G) [MonoidNPow G] : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
 
 @[to_additive neg_one_zsmul]
-lemma zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
+lemma zpow_neg_one (x : G) [MonoidNPow G] : x ^ (-1 : ℤ) = x⁻¹ :=
   (zpow_negSucc x 0).trans <| congr_arg Inv.inv (pow_one x)
 
 @[to_additive]
-lemma zpow_neg_coe_of_pos (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
+lemma zpow_neg_coe_of_pos (a : G) [MonoidNPow G] : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
   | _ + 1, _ => zpow_negSucc _ _
 
 end DivInvMonoid
