@@ -14,7 +14,7 @@ Showing this for the more general case of `TrivSqZeroExt R M` would require an a
 -/
 
 
-variable {R n : Type} [CommSemiring R] [Fintype n] [DecidableEq n]
+variable {R n : Type} [Semiring R] [Fintype n] [DecidableEq n]
 
 open Matrix TrivSqZeroExt
 
@@ -32,8 +32,4 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
       simp only [mul_apply, snd_sum, DualNumber.snd_mul, snd_mk, of_apply, fst_mk, add_apply]
       rw [← Finset.sum_add_distrib]
   map_add' _ _ := TrivSqZeroExt.ext rfl rfl
-  commutes' r := by
-    simp_rw [algebraMap_eq_inl', algebraMap_eq_diagonal, Pi.algebraMap_def,
-      Algebra.algebraMap_self_apply, algebraMap_eq_inl, ← diagonal_map (inl_zero R), map_apply,
-      fst_inl, snd_inl]
-    rfl
+  map_smul' _ _ := rfl
