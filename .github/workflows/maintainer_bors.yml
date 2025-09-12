@@ -22,6 +22,7 @@ jobs:
       COMMENT_EVENT: ${{ github.event.comment.body }}
       COMMENT_REVIEW: ${{ github.event.review.body }}
       PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+      HAS_DELEGATED_LABEL: ${{ contains(github.event.issue.labels.*.name, 'delegated') }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
@@ -35,8 +36,14 @@ jobs:
           # for debugging, we print some information
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
-          m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+          if [ "${AUTHOR}" == 'mathlib-bors[bot]' ] && [ "${HAS_DELEGATED_LABEL}" == 'true' ]
+          then
+            m_or_d="$(printf '%s' "${COMMENT}" |
+              sed -n 's=^Build failed:=delegated=p' | head -1)"
+          else
+            m_or_d="$(printf '%s' "${COMMENT}" |
+              sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+          fi
 
           remove_labels="$(printf '%s' "${COMMENT}" |
             sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
