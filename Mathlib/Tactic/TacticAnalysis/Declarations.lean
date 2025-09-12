@@ -3,7 +3,7 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Tactic.TacticAnalysis.FunProp
+import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
 import Lean.Elab.Tactic.Meta

@@ -145,6 +145,3 @@ register_hint (priority := 1000) decide
 register_hint (priority := 200) omega
 
 end Hint
-
-set_option linter.tacticAnalysis.continuityToFunProp true
-set_option linter.tacticAnalysis.measurabilityToFunProp true

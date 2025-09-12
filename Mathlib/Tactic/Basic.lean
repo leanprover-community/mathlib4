@@ -10,6 +10,9 @@ import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Simproc.ExistsAndEq
+-- This cannot be imported in Mathlib.Init because of cyclic dependencies, so we import it in a
+-- very early place.
+import Mathlib.Tactic.TacticAnalysis.FunProp
 
 /-!
 # Basic tactics and utilities for tactic writing
@@ -126,3 +129,6 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
 attribute [pp_with_univ] ULift PUnit PEmpty
 
 end Mathlib.Tactic
+
+set_option linter.tacticAnalysis.continuityToFunProp true
+set_option linter.tacticAnalysis.measurabilityToFunProp true
