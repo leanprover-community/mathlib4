@@ -63,6 +63,16 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5).le, ← hf x h5]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): the proof was rewritten, because it was too slow
+  -- Original:
+  /-
+  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
+    refine ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _)
+      (convex_Ioi 0.5)).add ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
+      ((2 : ℝ) • LinearMap.id)).subset
+      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_left two_pos).mpr ha)) (convex_Ioi 0.5))).sub
+      ((convex_on_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _))
+    norm_num
+  -/
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     · apply ConcaveOn.add
@@ -129,7 +139,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     centralBinom n = ∏ p ∈ Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
   refine (Eq.trans ?_ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
-  · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
+  · exact Finset.range_subset_range.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
   rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x

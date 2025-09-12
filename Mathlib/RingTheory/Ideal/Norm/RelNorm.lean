@@ -303,20 +303,38 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
+variable {R}
+
+private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDomain T]
+    [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    relNorm R (I.map σ) ≤ relNorm R I :=
+  span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨σ.toRingEquiv.symm x,
+    by rwa [SetLike.mem_coe, Ideal.symm_apply_mem_of_equiv_iff],
+    hx₂ ▸ Algebra.intNorm_map_algEquiv _ x σ.symm⟩
+
+@[simp]
+theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    relNorm R (I.map σ) = relNorm R I := by
+  refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
+  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
+  simp [map_mapₐ]
+
+@[simp]
+theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal T) :
+    relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
+
+variable (R)
+
 open MulSemiringAction Pointwise in
 @[simp]
 theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
-    (I : Ideal S) : relNorm R (g • I) = relNorm R I := by
-  have h (J : Ideal S) (h : G) : relNorm R (h • J) ≤ relNorm R J :=
-    span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨h⁻¹ • x, mem_pointwise_smul_iff_inv_smul_mem.mp hx₁,
-      by simpa [hx₂] using Algebra.intNorm_map_algEquiv x (toAlgEquiv R S h⁻¹)⟩
-  refine le_antisymm (h I g) ?_
-  convert h (g • I) g⁻¹
-  rw [inv_smul_smul]
-
-@[simp]
-theorem relNorm_map_algEquiv (σ : S ≃ₐ[R] S) (I : Ideal S) :
-    relNorm R (I.map σ) = relNorm R I := relNorm_smul R σ I
+    (I : Ideal S) : relNorm R (g • I) = relNorm R I := relNorm_map_algEquiv (toAlgEquiv R S g) I
 
 theorem relNorm_le_comap (I : Ideal S) :
     relNorm R I ≤ comap (algebraMap R S) I := spanNorm_le_comap R I
@@ -504,6 +522,11 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
 theorem relNorm_int (I : Ideal S) :
     relNorm ℤ I = Ideal.span {(absNorm I : ℤ)} := by
   rw [← Int.ideal_span_absNorm_eq_self (relNorm ℤ I), absNorm_relNorm]
+
+theorem absNorm_algebraMap (I : Ideal R) [Module.Finite ℤ R] :
+    absNorm (I.map (algebraMap R S)) =
+      (absNorm I) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← absNorm_relNorm ℤ, ← relNorm_relNorm ℤ R, relNorm_algebraMap, absNorm_relNorm, map_pow]
 
 end absNorm
 

@@ -601,8 +601,8 @@ lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [Decidabl
     (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
     Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
   Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
-    | _, _, .some _, h => (h _ rfl).elim
-    | _, _, .none, _ => rfl) _ _ _
+    | _, _, some _, h => (h _ rfl).elim
+    | _, _, none, _ => rfl) _ _ _
 
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
@@ -807,8 +807,39 @@ theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : Fa
 
 end FactorsThrough
 
+section CurryAndUncurry
+
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl
+
+theorem uncurry_injective {α β γ} : Function.Injective (uncurry : (α → β → γ) → _) :=
+  LeftInverse.injective curry_uncurry
+
+theorem curry_injective {α β γ} : Function.Injective (curry : (α × β → γ) → _) :=
+  LeftInverse.injective uncurry_curry
+
+theorem uncurry_flip {α β γ} (f : α → β → γ) : uncurry (flip f) = uncurry f ∘ Prod.swap :=
+  rfl
+
+theorem flip_curry {α β γ} (f : α × β → γ) : flip (curry f) = curry (f ∘ Prod.swap) :=
+  rfl
+
+theorem curry_update {α α' β : Type*} [DecidableEq α] [DecidableEq α']
+    (f : α × α' → β) (aa' : α × α') (b : β) :
+    curry (Function.update f aa' b) =
+      Function.update (curry f) aa'.1 (Function.update (curry f aa'.1) aa'.2 b) := by
+  ext a a'
+  let ⟨a₂, a₂'⟩ := aa'
+  obtain rfl | ha := eq_or_ne a a₂ <;> obtain rfl | ha' := eq_or_ne a' a₂' <;> simp [*]
+
+theorem uncurry_update_update {α α' β : Type*} [DecidableEq α] [DecidableEq α']
+    (f : α → α' → β) (a : α) (a' : α') (b : β) :
+    uncurry (Function.update f a (Function.update (f a) a' b)) =
+      Function.update (uncurry f) (a, a') b := by
+  apply curry_injective
+  simp [curry_update]
+
+end CurryAndUncurry
 
 section Bicomp
 
@@ -1073,3 +1104,17 @@ instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
     Decidable (curry r a b) :=
   ‹Decidable _›
+
+namespace Pi
+
+variable {ι : Type*}
+
+@[simp] theorem map_id {α : ι → Type*} : Pi.map (fun i => @id (α i)) = id := rfl
+
+@[simp] theorem map_id' {α : ι → Type*} : Pi.map (fun i (a : α i) => a) = fun x ↦ x := rfl
+
+theorem map_comp_map {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
+    Pi.map g ∘ Pi.map f = Pi.map fun i => g i ∘ f i :=
+  rfl
+
+end Pi
