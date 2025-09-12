@@ -225,6 +225,21 @@ theorem HasMFDerivWithinAt.prodMk {f : M → M'} {g : M → M''}
     HasMFDerivWithinAt I (I'.prod I'') (fun y ↦ (f y, g y)) s x (df.prod dg) :=
   ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
+lemma mfderivWithin_prodMk {f : M → M'} {g : M → M''}
+    (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    mfderivWithin I (I'.prod I'') (fun x => (f x, g x)) s x
+      = (mfderivWithin I I' f s x).prod (mfderivWithin I I'' g s x) :=
+  (hf.hasMFDerivWithinAt.prodMk hg.hasMFDerivWithinAt).mfderivWithin hs
+
+lemma mfderiv_prodMk {f : M → M'} {g : M → M''}
+    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt I I'' g x) :
+    mfderiv I (I'.prod I'') (fun x => (f x, g x)) x
+      = (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
+  simp_rw [← mfderivWithin_univ]
+  exact mfderivWithin_prodMk hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
+    (uniqueMDiffWithinAt_univ I)
+
 theorem MDifferentiableAt.prodMk {f : M → M'} {g : M → M''} (hf : MDifferentiableAt I I' f x)
     (hg : MDifferentiableAt I I'' g x) :
     MDifferentiableAt I (I'.prod I'') (fun x => (f x, g x)) x :=
