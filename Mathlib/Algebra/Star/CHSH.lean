@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Real.Star
 import Mathlib.Tactic.Polyrith
@@ -103,11 +102,7 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
     (B₀_inv : B₀ ^ 2 = 1) (B₁_inv : B₁ ^ 2 = 1) :
     (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) =
       4 * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) := by
-  -- polyrith suggests:
-  linear_combination
-    (2 * B₀ * B₁ + 2) * A₀_inv + (B₀ ^ 2 - 2 * B₀ * B₁ + B₁ ^ 2) * A₁_inv +
-        (A₀ ^ 2 + 2 * A₀ * A₁ + 1) * B₀_inv +
-      (A₀ ^ 2 - 2 * A₀ * A₁ + 1) * B₁_inv
+  grind
 
 /-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
@@ -145,15 +140,6 @@ namespace TsirelsonInequality
 Before proving Tsirelson's bound,
 we prepare some easy lemmas about √2.
 -/
-
-
--- This calculation, which we need for Tsirelson's bound,
--- defeated me. Thanks for the rescue from Shing Tak Lam!
-theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4 * ((√2)⁻¹ * 2⁻¹)) := by
-  ring_nf
-  rw [mul_inv_cancel₀ (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by simp)))]
-  convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by simp)) using 1 <;>
-    (try simp only [← pow_mul]) <;> norm_num
 
 theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
   rw [← mul_inv]
@@ -196,11 +182,9 @@ theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrdered
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
     simp only [neg_mul, mul_inv_cancel_of_invertible, add_assoc, add_comm,
-      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat]
-    simp only [← add_assoc, ← add_smul]
-    -- just look at the coefficients now:
-    congr
-    exact mul_left_cancel₀ (by simp) tsirelson_inequality_aux
+      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat, ← add_smul]
+    have : √2 ^ 2 = 2 := by norm_num
+    grind
   have pos : 0 ≤ (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
       simp only [P, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa]
