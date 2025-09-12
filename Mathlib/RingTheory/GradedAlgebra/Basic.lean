@@ -86,6 +86,10 @@ def decomposeRingEquiv : A ≃+* ⨁ i, 𝒜 i :=
       map_mul' := (coeRingHom 𝒜).map_mul }
 
 @[simp]
+lemma decomposeRingEquiv_apply (a : A) :
+    decomposeRingEquiv 𝒜 a = decompose 𝒜 a := rfl
+
+@[simp]
 theorem decompose_one : decompose 𝒜 (1 : A) = 1 :=
   map_one (decomposeRingEquiv 𝒜)
 

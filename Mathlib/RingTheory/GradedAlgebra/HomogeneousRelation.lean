@@ -5,6 +5,7 @@ Authors: Zhixuan Dai, Yiming Fu, Zhenyan Fu, Raphael Douglas Giles, Jiedong Jian
 -/
 import Mathlib.Algebra.RingQuot
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.GroupTheory.Congruence.BigOperators
 
 /-!
 # Homogeneous Relation
@@ -35,6 +36,7 @@ class IsHomogeneousRelation {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A]
   ∀ i : ι, (Relation.EqvGen r) ((GradedRing.proj 𝒜 i) x) ((GradedRing.proj 𝒜 i) y)
 
 namespace HomogeneousRelation
+
 
 section RingCon
 
@@ -155,32 +157,27 @@ instance : IsHomogeneousRelation 𝒜 (RingQuot.Rel rel) := by
   intro x y h
   induction h with
   | of h_rel =>
-    intro n
-    apply eqvGen_ringQuot_of_eqvGen
-    exact IsHomogeneousRelation.is_homogeneous' h_rel n
+    exact fun n ↦ eqvGen_ringQuot_of_eqvGen _ (IsHomogeneousRelation.is_homogeneous' h_rel n)
   | add_left _ h =>
     intro n
     rw [map_add, map_add]
     exact eqvGen_ringQuot_add_right rel (h n)
   | mul_left _ h =>
-    intro n
-    exact eqvGen_proj_mul_right 𝒜 rel n h
+    exact fun n ↦ eqvGen_proj_mul_right 𝒜 rel n h
   | mul_right _ h =>
-    intro n
-    exact eqvGen_proj_mul_left 𝒜 rel n h
+    exact fun n ↦ eqvGen_proj_mul_left 𝒜 rel n h
 
 instance : IsHomogeneousRelation 𝒜 (Relation.EqvGen rel) := by
   apply IsHomogeneousRelation.mk
   rw [Equivalence.eqvGen_eq (Relation.EqvGen.is_equivalence rel)]
   intro x y h
   induction h with
-  | refl => exact fun i ↦ Quot.eqvGen_exact rfl
+  | refl =>
+    exact fun i ↦ Quot.eqvGen_exact rfl
   | symm x y _ h1 =>
     exact fun i ↦ EqvGen.symm ((proj 𝒜 i) x) ((proj 𝒜 i) y) (h1 i)
   | trans j k l _ _ h2 h3 =>
-    exact fun i ↦
-      EqvGen.trans ((proj 𝒜 i) j) ((proj 𝒜 i) k) ((proj 𝒜 i) l)
-        (h2 i) (h3 i)
+    exact (fun i ↦ EqvGen.trans ((proj 𝒜 i) j) ((proj 𝒜 i) k) ((proj 𝒜 i) l) (h2 i) (h3 i))
   | rel _ _ h4 =>
     exact fun i ↦ IsHomogeneousRelation.is_homogeneous' h4 i
 
@@ -200,15 +197,6 @@ instance : SetLike.GradedMonoid ((AddSubmonoid.map (RingQuot.mkRingHom rel)).com
 
 open DirectSum
 
-@[simp]
-lemma decomposeRingEquiv_apply (a : A) :
-    decomposeRingEquiv 𝒜 a = decompose 𝒜 a := rfl
-
-lemma RingEquiv.comp_inj {R S S' : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
-    [NonAssocSemiring S'] (e : R ≃+* S) {f g : S →+* S'}
-    (h : f.comp e.toRingHom = g.comp e.toRingHom) : f = g := RingHom.ext
-    fun x ↦ (by simpa using congr($h (e.symm x)))
-
 variable [IsHomogeneousRelation 𝒜 rel]
 
 noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) := by
@@ -217,15 +205,16 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
       (fun i ↦ (of _ i).comp (RingQuot.mkRingHom rel |>.addSubmonoidMap (𝒜 i)))
         ?_ ?_).comp (decomposeRingEquiv 𝒜), ?_⟩) ?_ ?_
   · simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp]
-    congr 1; ext
-    exact map_one (RingQuot.mkRingHom rel)
+    congr 1
+    exact Subtype.ext <| map_one (RingQuot.mkRingHom rel)
   · intro i j ai aj
     simp only [Function.comp_apply, GradedMonoid.GMul.mul, HMul.hMul, AddMonoidHom.coe_comp,
       Mul.mul, mulHom, toAddMonoid_of, AddMonoidHom.flip_apply, AddMonoidHom.compHom_apply_apply,
       gMulHom_apply_apply]
-    congr 1; ext
-    exact map_mul (RingQuot.mkRingHom rel) _ _
-  · intro x y h; ext j
+    congr 1
+    exact Subtype.ext <| map_mul (RingQuot.mkRingHom rel) _ _
+  · intro x y h
+    ext j
     simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, RingHom.coe_comp,
       RingHom.coe_coe, decomposeRingEquiv_apply, toSemiring_apply, SetLike.coe_eq_coe]
     rw [← map_eq_toAddMonoid]
@@ -276,15 +265,16 @@ instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :
       (fun i ↦ (lof R ι _ i).comp (RingQuot.mkAlgHom R rel |>.toLinearMap.submoduleMap (𝒜 i)))
         ?_ ?_).comp (decomposeAlgEquiv 𝒜), ?_⟩) ?_ ?_
   · simp only [Function.comp_apply, LinearMap.coe_comp, one_def, lof_eq_of]
-    congr 1; ext
-    exact map_one (RingQuot.mkAlgHom R rel)
+    congr 1
+    exact Subtype.ext <| map_one (RingQuot.mkAlgHom R rel)
   · intro i j ai aj
     simp only [Function.comp_apply, GradedMonoid.GMul.mul, HMul.hMul, LinearMap.coe_comp, lof_eq_of,
       Mul.mul, mulHom, toAddMonoid_of, AddMonoidHom.flip_apply, AddMonoidHom.coe_comp,
       AddMonoidHom.compHom_apply_apply, gMulHom_apply_apply]
-    congr 1; ext
-    exact map_mul (RingQuot.mkAlgHom R rel) _ _
-  · intro x y h; ext j
+    congr 1
+    exact Subtype.ext <| map_mul (RingQuot.mkAlgHom R rel) _ _
+  · intro x y h
+    ext j
     simp [LinearMap.coe_addMonoidHom_comp, ← map_eq_toAddMonoid]
     apply Subtype.ext
     change (RingQuot.mkAlgHom R rel) (GradedRing.proj 𝒜 j x) =
