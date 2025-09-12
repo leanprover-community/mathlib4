@@ -465,7 +465,7 @@ def inverse (f : L₁ →ₗ⁅R⁆ L₂) (g : L₂ → L₁) (h₁ : Function.L
     (h₂ : Function.RightInverse g f) : L₂ →ₗ⁅R⁆ L₁ :=
   { LinearMap.inverse f.toLinearMap g h₁ h₂ with
     map_lie' := by
-      intros x y
+      intro x y
       calc
         g ⁅x, y⁆ = g ⁅f (g x), f (g y)⁆ := by conv_lhs => rw [← h₂ x, ← h₂ y]
         _ = g (f ⁅g x, g y⁆) := by rw [map_lie]
@@ -658,7 +658,7 @@ noncomputable def ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Biject
   { LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂)
       h with
     toFun := f
-    map_lie' := by intros x y; exact f.map_lie x y }
+    map_lie' := by intro x y; exact f.map_lie x y }
 
 end LieEquiv
 
@@ -802,7 +802,7 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
     (h₂ : Function.RightInverse g f) : N →ₗ⁅R,L⁆ M :=
   { LinearMap.inverse f.toLinearMap g h₁ h₂ with
     map_lie' := by
-      intros x n
+      intro x n
       calc
         g ⁅x, n⁆ = g ⁅x, f (g n)⁆ := by rw [h₂]
         _ = g (f ⁅x, g n⁆) := by rw [map_lie]

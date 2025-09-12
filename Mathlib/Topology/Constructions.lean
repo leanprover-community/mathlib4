@@ -365,17 +365,71 @@ theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
   hs.isClosedEmbedding_subtypeVal.isClosedMap
 
+theorem IsClosedMap.restrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} (hs : IsClosed s) :
+    IsClosedMap (s.restrict f) :=
+  hf.comp hs.isClosedMap_subtype_val
+
 @[continuity, fun_prop]
 theorem Continuous.subtype_mk {f : Y → X} (h : Continuous f) (hp : ∀ x, p (f x)) :
     Continuous fun x => (⟨f x, hp x⟩ : Subtype p) :=
   continuous_induced_rng.2 h
 
+theorem IsOpenMap.subtype_mk {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
+    IsOpenMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
+  convert (hf u hu).preimage continuous_subtype_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
+
+theorem IsClosedMap.subtype_mk {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
+    IsClosedMap fun x ↦ (⟨f x, hp x⟩ : Subtype p) := fun u hu ↦ by
+  convert (hf u hu).preimage continuous_subtype_val
+  exact Set.ext fun _ ↦ exists_congr fun _ ↦ and_congr_right' Subtype.ext_iff
+
+@[fun_prop]
+theorem Continuous.subtype_coind {f : Y → X} (hf : Continuous f) (hp : ∀ x, p (f x)) :
+    Continuous (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+theorem IsOpenMap.subtype_coind {f : Y → X} (hf : IsOpenMap f) (hp : ∀ x, p (f x)) :
+    IsOpenMap (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+theorem IsClosedMap.subtype_coind {f : Y → X} (hf : IsClosedMap f) (hp : ∀ x, p (f x)) :
+    IsClosedMap (Subtype.coind f hp) :=
+  hf.subtype_mk hp
+
+@[fun_prop]
 theorem Continuous.subtype_map {f : X → Y} (h : Continuous f) {q : Y → Prop}
     (hpq : ∀ x, p x → q (f x)) : Continuous (Subtype.map f hpq) :=
   (h.comp continuous_subtype_val).subtype_mk _
 
+theorem IsOpenMap.subtype_map {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y} (hs : IsOpen s)
+    (hst : ∀ x, s x → t (f x)) : IsOpenMap (Subtype.map f hst) :=
+  (hf.comp hs.isOpenMap_subtype_val).subtype_mk _
+
+theorem IsClosedMap.subtype_map {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+    (hs : IsClosed s) (hst : ∀ x, s x → t (f x)) : IsClosedMap (Subtype.map f hst) :=
+  (hf.comp hs.isClosedMap_subtype_val).subtype_mk _
+
 theorem continuous_inclusion {s t : Set X} (h : s ⊆ t) : Continuous (inclusion h) :=
   continuous_id.subtype_map h
+
+theorem IsOpen.isOpenMap_inclusion {s t : Set X} (hs : IsOpen s) (h : s ⊆ t) :
+    IsOpenMap (inclusion h) :=
+  IsOpenMap.id.subtype_map hs h
+
+theorem IsClosed.isClosedMap_inclusion {s t : Set X} (hs : IsClosed s) (h : s ⊆ t) :
+    IsClosedMap (inclusion h) :=
+  IsClosedMap.id.subtype_map hs h
+
+@[simp]
+theorem continuous_rangeFactorization_iff {f : X → Y} :
+    Continuous (rangeFactorization f) ↔ Continuous f :=
+  IsInducing.subtypeVal.continuous_iff
+
+@[continuity, fun_prop]
+theorem Continuous.rangeFactorization {f : X → Y} (hf : Continuous f) :
+    Continuous (rangeFactorization f) :=
+  continuous_rangeFactorization_iff.mpr hf
 
 theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
@@ -384,6 +438,11 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
   rfl
+
+@[simp]
+theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
+    DenseRange (inclusion hst) ↔ t ⊆ closure s := by
+  rw [DenseRange, Subtype.dense_iff, ← range_comp, val_comp_inclusion, Subtype.range_coe]
 
 theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
@@ -423,10 +482,26 @@ theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 
+theorem IsOpenMap.codRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    IsOpenMap (s.codRestrict f hs) :=
+  hf.subtype_mk hs
+
+theorem IsClosedMap.codRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    IsClosedMap (s.codRestrict f hs) :=
+  hf.subtype_mk hs
+
 @[continuity, fun_prop]
 theorem Continuous.restrict {f : X → Y} {s : Set X} {t : Set Y} (h1 : MapsTo f s t)
     (h2 : Continuous f) : Continuous (h1.restrict f s t) :=
   (h2.comp continuous_subtype_val).codRestrict _
+
+lemma IsOpenMap.mapsToRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} {t : Set Y}
+    (hs : IsOpen s) (ht : MapsTo f s t) : IsOpenMap ht.restrict :=
+  (hf.restrict hs).codRestrict _
+
+lemma IsClosedMap.mapsToRestrict {f : X → Y} (hf : IsClosedMap f) {s : Set X} {t : Set Y}
+    (hs : IsClosed s) (ht : MapsTo f s t) : IsClosedMap ht.restrict :=
+  (hf.restrict hs).codRestrict _
 
 @[continuity, fun_prop]
 theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f) :
@@ -1128,9 +1203,6 @@ theorem continuous_uliftDown [TopologicalSpace X] : Continuous (ULift.down : ULi
 @[continuity, fun_prop]
 theorem continuous_uliftUp [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
-
-@[deprecated (since := "2025-02-10")] alias continuous_uLift_down := continuous_uliftDown
-@[deprecated (since := "2025-02-10")] alias continuous_uLift_up := continuous_uliftUp
 
 @[continuity, fun_prop]
 theorem continuous_uliftMap [TopologicalSpace X] [TopologicalSpace Y]
