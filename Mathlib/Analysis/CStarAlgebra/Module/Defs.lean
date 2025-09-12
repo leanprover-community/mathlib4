@@ -261,14 +261,14 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup : NormedAddCommGroup E :=
+abbrev normedAddCommGroup : WithNormedAddGroup E :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in
 lemma norm_eq_csSup (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
-  let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore (normedSpaceCore A)
-  let instNS : NormedSpace ℂ E := .ofCore (normedSpaceCore A)
+  let instNACG : WithNormedAddGroup E := NormedAddCommGroup.ofCore (normedSpaceCore A)
+  let instNS : NormSMulClass ℂ E := NormedSpace.ofCore (normedSpaceCore A)
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
   · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le₀ le_rfl (by positivity)
   · simp [norm_smul, ← norm_sq_eq, pow_two, ← mul_assoc]

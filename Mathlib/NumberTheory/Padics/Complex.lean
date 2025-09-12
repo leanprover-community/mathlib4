@@ -58,8 +58,8 @@ theorem coe_eq : (Coe.coe : ℚ_[p] → PadicAlgCl p) = algebraMap ℚ_[p] (Padi
 
 /-- `PadicAlgCl p` is a normed field, where the norm is the `p`-adic norm, that is, the
 spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
-instance normedField : WithNormMulClassNormedRing (PadicAlgCl p) :=
-  spectralNorm.withNormMulClassNormedRing ℚ_[p] (PadicAlgCl p)
+instance normedField : NormedField (PadicAlgCl p) :=
+  spectralNorm.normedField ℚ_[p] (PadicAlgCl p)
 
 /-- The norm on `PadicAlgCl p` is nonarchimedean. -/
 theorem isNonarchimedean : IsNonarchimedean (norm : PadicAlgCl p → ℝ) :=

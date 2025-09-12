@@ -671,7 +671,7 @@ section NontriviallyNormedField
 
 open IntermediateField
 
-variable {K : Type*} [_root_.NontriviallyNormedField K] {L : Type*} [Field L] [Algebra K L]
+variable {K : Type*} [NontriviallyNormedField K] {L : Type*} [Field L] [Algebra K L]
   [Algebra.IsAlgebraic K L] [hu : IsUltrametricDist K]
 
 /-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
@@ -819,36 +819,28 @@ namespace spectralNorm
 
 variable (K L)
 
-def withNormMulClassNormedRing [CompleteSpace K] : WithNormMulClassNormedRing L where
-  norm x := (spectralNorm K L x : ℝ)
-  dist x y := (spectralNorm K L (x - y) : ℝ)
-  dist_self x := by simp [sub_self, spectralNorm_zero]
-  dist_comm x y := by rw [← neg_sub, spectralNorm_neg (Algebra.IsAlgebraic.isAlgebraic _)]
-  dist_triangle x y z :=
-    sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
-  eq_of_dist_eq_zero hxy := by
-    rw [← sub_eq_zero]
-    exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
-  dist_eq x y := rfl
-  norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
-  edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal]
-
 /-- `L` with the spectral norm is a `NormedField`. -/
-def normedField [CompleteSpace K] : NormedField L := by
-  letI := withNormMulClassNormedRing K L
-  infer_instance
-
-def NontriviallyNormedField [CompleteSpace K] :
-    NontriviallyNormedField L :=
-  { __ := spectralNorm.withNormMulClassNormedRing K L
-    non_trivial :=
-      let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
-      ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩ }
+def normedField [CompleteSpace K] : NormedField L :=
+  { (inferInstance : Field L) with
+    norm x := (spectralNorm K L x : ℝ)
+    dist x y := (spectralNorm K L (x - y) : ℝ)
+    dist_self x := by simp [sub_self, spectralNorm_zero]
+    dist_comm x y := by rw [← neg_sub, spectralNorm_neg (Algebra.IsAlgebraic.isAlgebraic _)]
+    dist_triangle x y z :=
+      sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
+    eq_of_dist_eq_zero hxy := by
+      rw [← sub_eq_zero]
+      exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
+    dist_eq x y := rfl
+    norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
+    edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
-def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L := by
-  letI := NontriviallyNormedField K L
-  infer_instance
+def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
+  __ := spectralNorm.normedField K L
+  non_trivial :=
+    let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
+    ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
 def normedAddCommGroup [CompleteSpace K] : NormedAddCommGroup L := by
@@ -872,7 +864,7 @@ def normedSpace [CompleteSpace K] : @NormedSpace K L _ (seminormedAddCommGroup K
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def metricSpace [CompleteSpace K] : MetricSpace L :=
-  (normedField K L).b.toMetricSpace
+  (normedField K L).toMetricSpace
 
 /-- The uniform space structure on `L` induced by the spectral norm. -/
 def uniformSpace [CompleteSpace K] : UniformSpace L := (metricSpace K L).toUniformSpace

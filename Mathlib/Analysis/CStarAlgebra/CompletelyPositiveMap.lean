@@ -127,6 +127,9 @@ instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
 instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
   map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
+-- Should not be needed, see what instance is too slow, fishy
+attribute [instance 3000] StarRingHomClass.instOrderHomClass
+
 open CStarMatrix in
 lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M : CStarMatrix n n A₁)
     (hM : 0 ≤ M) : 0 ≤ M.map φ := by
@@ -134,13 +137,13 @@ lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M :
   let e := Fintype.equivFinOfCardEq (rfl : Fintype.card n = k)
   have hmain : 0 ≤ (reindexₐ ℂ A₁ e M).mapₗ (φ : A₁ →ₗ[ℂ] A₂) := by
     simp only [mapₗ, LinearMap.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
-    exact CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (map_nonneg _ hM)
+    apply CompletelyPositiveMapClass.map_cstarMatrix_nonneg' _ k _ (_root_.map_nonneg _ hM)
   rw [← mapₗ_reindexₐ] at hmain
   have hrw :
       reindexₐ ℂ A₂ e.symm ((reindexₐ ℂ A₂ e) (M.map (φ : A₁ → A₂))) = M.map (φ : A₁ → A₂) := by
     simp
   rw [← hrw]
-  exact map_nonneg _ hmain
+  apply map_nonneg _ hmain
 
 end CompletelyPositiveMap
 
@@ -155,6 +158,6 @@ open CStarMatrix CFC in
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where
   map_cstarMatrix_nonneg' φ k M hM := by
     change 0 ≤ (mapₙₐ (φ : A₁ →⋆ₙₐ[ℂ] A₂)) M
-    exact map_nonneg _ hM
+    apply map_nonneg _ hM
 
 end NonUnitalStarAlgHomClass

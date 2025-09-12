@@ -404,10 +404,11 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
       ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe]
       rw [range_comp]
       letI := h.rclike
-      letI := Module.restrictScalars ℝ 𝕜 E
       letI := NormedSpace.restrictScalars ℝ 𝕜 E
-      letI := Module.restrictScalars ℝ 𝕜 E'
       letI := NormedSpace.restrictScalars ℝ 𝕜 E'
+      let A : LinearMap.CompatibleSMul E E' ℝ 𝕜 :=
+        -- this should be found by infer_instance, fishy
+        LinearMap.IsScalarTower.compatibleSMul
       let eR : E →L[ℝ] E' := ContinuousLinearMap.restrictScalars ℝ (e : E →L[𝕜] E')
       change Convex ℝ (⇑eR '' range ↑I)
       apply I.convex_range.linear_image

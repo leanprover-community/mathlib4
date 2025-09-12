@@ -331,7 +331,8 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
-set_option maxHeartbeats 600000 in
+set_option maxHeartbeats 300000 in
+-- something fishy here
 /-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight

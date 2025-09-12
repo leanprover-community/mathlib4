@@ -465,7 +465,7 @@ def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Modul
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable [Fintype m] [NonUnitalCStarAlgebra A]
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
@@ -525,13 +525,6 @@ open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
-open WithCStarModule in
-lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
-    {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
-    a * M i j * star b
-      = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
-  simp [mul_assoc, inner_def]
-
 lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
   classical
   rw [injective_iff_map_eq_zero]
@@ -540,6 +533,15 @@ lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) :=
   rw [Matrix.zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
     ← toCLM_apply_single_apply]
   simp [h]
+
+variable [PartialOrder A] [StarOrderedRing A]
+
+open WithCStarModule in
+lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
+    {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
+    a * M i j * star b
+      = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
+  simp [mul_assoc, inner_def]
 
 variable [Fintype n]
 
@@ -618,13 +620,13 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
-  .ofCore CStarMatrix.normedSpaceCore
+private noncomputable def normedAddCommGroupAux : WithNormedAddGroup (CStarMatrix m n A) :=
+  NormedAddCommGroup.ofCore CStarMatrix.normedSpaceCore
 
 attribute [local instance] normedAddCommGroupAux
 
-private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
-  .ofCore CStarMatrix.normedSpaceCore
+private noncomputable def normedSpaceAux : NormSMulClass ℂ (CStarMatrix m n A) :=
+  NormedSpace.ofCore CStarMatrix.normedSpaceCore
 
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
 which induces a topology that is not defeq with the matrix one, and the elementwise norm on
@@ -721,17 +723,17 @@ instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [Continu
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
 
 noncomputable instance instNormedAddCommGroup :
-    NormedAddCommGroup (CStarMatrix m n A) :=
-  .ofCoreReplaceAll CStarMatrix.normedSpaceCore
+    WithNormedAddGroup (CStarMatrix m n A) :=
+  NormedAddCommGroup.ofCoreReplaceAll CStarMatrix.normedSpaceCore
     CStarMatrix.uniformity_eq_aux.symm
       fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
 
-noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
-  .ofCore CStarMatrix.normedSpaceCore
+noncomputable instance instNormedSpace : NormSMulClass ℂ (CStarMatrix m n A) :=
+  NormedSpace.ofCore CStarMatrix.normedSpaceCore
 
 noncomputable instance instNonUnitalNormedRing :
-    NonUnitalNormedRing (CStarMatrix n n A) where
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
+    WithNormedRing (CStarMatrix n n A) where
+  __ : WithNormedAddGroup (CStarMatrix n n A) := inferInstance
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
@@ -764,11 +766,14 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
 
-/-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
-noncomputable instance instNonUnitalCStarAlgebra :
-    NonUnitalCStarAlgebra (CStarMatrix n n A) where
+instance : SMulCommClass ℂ (CStarMatrix n n A) (CStarMatrix n n A) where
+  smul_comm _ _ _ := (Matrix.mul_smul _ _ _).symm
+
+instance : IsScalarTower ℂ (CStarMatrix n n A) (CStarMatrix n n A) where
   smul_assoc x y z := by simp
-  smul_comm m a b := (Matrix.mul_smul _ _ _).symm
+
+/-- Matrices with entries in a non-unital C⋆-algebra form a non-unital C⋆-algebra. -/
+noncomputable example : NonUnitalCStarAlgebra (CStarMatrix n n A) := by infer_instance
 
 noncomputable instance instPartialOrder :
     PartialOrder (CStarMatrix n n A) := CStarAlgebra.spectralOrder _
@@ -787,8 +792,8 @@ noncomputable instance instNormedRing : WithNormedRing (CStarMatrix n n A) where
   dist_eq _ _ := rfl
   norm_mul_le := norm_mul_le
 
-noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
-  norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
+noncomputable instance instNormedAlgebra : NormSMulClass ℂ (CStarMatrix n n A) where
+  norm_smul r M := by simpa only [norm_def, map_smul] using norm_smul r (toCLM M)
 
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
