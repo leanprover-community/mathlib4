@@ -113,7 +113,7 @@ theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ 
 
 /-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/
 @[to_additive
-"This lemma is useful in non-cancellative monoids, like sets under pointwise operations."]
+/-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/]
 lemma pow_le_pow_mul_of_sq_le_mul [MulLeftMono M] {a b : M} (hab : a ^ 2 ≤ b * a) :
     ∀ {n}, n ≠ 0 → a ^ n ≤ b ^ (n - 1) * a
   | 1, _ => by simp
@@ -289,6 +289,10 @@ theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
   ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+
+@[to_additive]
+instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
+  pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 end LinearOrder
 

@@ -43,7 +43,7 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 `CartesianMonoidalCategory` structure on `A`-valued sheaves. -/
 noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory (Sheaf J A) :=
   .ofChosenFiniteProducts
-   ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
+    ({cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
       isLimit.lift f := ⟨toUnit f.pt.val⟩
       isLimit.fac := by rintro _ ⟨⟨⟩⟩
       isLimit.uniq x f h := Sheaf.hom_ext _ _ (toUnit_unique f.val _) })

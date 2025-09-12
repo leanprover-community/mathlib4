@@ -58,8 +58,6 @@ end CommGroup
 
 namespace Subgroup
 
-open MemRightTransversals
-
 variable {G : Type*} [Group G] {H : Subgroup G} {R S : Set G}
 
 theorem closure_mul_image_mul_eq_top

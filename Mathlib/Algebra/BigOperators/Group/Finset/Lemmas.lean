@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 
 /-!
 # Miscellaneous lemmas on big operators
@@ -25,8 +25,8 @@ theorem MonoidHom.coe_finset_prod [MulOneClass M] [CommMonoid N] (f : ι → M �
 /-- See also `Finset.prod_apply`, with the same conclusion but with the weaker hypothesis
 `f : α → M → N` -/
 @[to_additive (attr := simp)
-  "See also `Finset.sum_apply`, with the same conclusion but with the weaker hypothesis
-  `f : α → M → N`"]
+  /-- See also `Finset.sum_apply`, with the same conclusion but with the weaker hypothesis
+  `f : α → M → N` -/]
 theorem MonoidHom.finset_prod_apply [MulOneClass M] [CommMonoid N] (f : ι → M →* N) (s : Finset ι)
     (b : M) : (∏ x ∈ s, f x) b = ∏ x ∈ s, f x b :=
   map_prod (MonoidHom.eval b) _ _
