@@ -14,7 +14,7 @@ import Mathlib.RingTheory.HahnSeries.Lex
 /-!
 # Hahn embedding theorem on ordered modules
 
-This file proves a variation of Hahn embedding theorem:
+This file proves a variant of the Hahn embedding theorem:
 
 For a linearly ordered module `M` over an Archimedean division ring `K`,
 there exists a strictly monotone linear map to lexicographically ordered
@@ -31,20 +31,20 @@ to a proof of the classic Hahn embedding theorem. (TODO: implement this)
 
 ## Main theorem
 
-* `exists_linearMap_hahnSeries_strictMono_and_archimedeanClassMk_eq`:
+* `hahnEmbedding_isOrderedModule`:
   there exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
   `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
   `HahnEmbedding.Seed K M R` is nonempty.
 
 ## References
 
-* [M. Hausner, J.G. Wendel, *Ordered vector spaces*][mhausnerjgwendel1952]
+* [M. Hausner, J.G. Wendel, *Ordered vector spaces*][hausnerwendel1952]
 -/
 
 /-! ### Step 1: base embedding
 
 We start with `HahnEmbedding.ArchimedeanStrata` that gives a family of Archimedean submodules,
-and "seed" `HahnEmbedding.Seed` that specifies how to embed each
+and a "seed" `HahnEmbedding.Seed` that specifies how to embed each
 `HahnEmbedding.ArchimedeanStrata.stratum` into `R`.
 
 From these, we create a partial map from the direct sum of all `stratum` to `HahnSeries Γ R`.
@@ -57,7 +57,7 @@ open ArchimedeanClass DirectSum
 
 variable {K : Type*} [DivisionRing K] [LinearOrder K] [IsOrderedRing K] [Archimedean K]
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
-variable [Module K M] [PosSMulMono K M]
+variable [Module K M] [IsOrderedModule K M]
 variable {R : Type*} [AddCommGroup R] [LinearOrder R]
 variable [Module K R]
 
@@ -384,7 +384,7 @@ theorem isPartial_baseEmbedding [IsOrderedAddMonoid R] : IsPartial seed seed.bas
 
 end Seed
 
-/-- The type of all partial Hahn embedding. -/
+/-- The type of all partial Hahn embeddings. -/
 abbrev Partial := {f : M →ₗ.[K] Lex (HahnSeries (FiniteArchimedeanClass M) R) // IsPartial seed f}
 
 namespace Partial
@@ -452,8 +452,8 @@ theorem orderTop_eq_iff [IsOrderedAddMonoid R] [Archimedean R] (x y : f.val.doma
   simp_rw [← HahnSeries.archimedeanClassOrderIsoWithTop_apply]
   rw [(HahnSeries.archimedeanClassOrderIsoWithTop (FiniteArchimedeanClass M) R).injective.eq_iff]
 
-/-- Archimedean class of the input is transfered to `HahnSeries.orderTop`. -/
-theorem orderTop_eq_archimedeanClass [IsOrderedAddMonoid R] [Archimedean R] (x : f.val.domain) :
+/-- Archimedean class of the input is transferred to `HahnSeries.orderTop`. -/
+theorem orderTop_eq_archimedeanClassMk [IsOrderedAddMonoid R] [Archimedean R] (x : f.val.domain) :
     FiniteArchimedeanClass.withTopOrderIso M (ofLex (f.val x)).orderTop = mk x.val := by
   by_cases hx0 : x = 0
   · simp [hx0]
@@ -482,10 +482,10 @@ theorem orderTop_eq_finiteArchimedeanClassMk [IsOrderedAddMonoid R] [Archimedean
     {x : f.val.domain} (hx0 : x.val ≠ 0) :
     (ofLex (f.val x)).orderTop = FiniteArchimedeanClass.mk x.val hx0 := by
   apply_fun FiniteArchimedeanClass.withTopOrderIso M
-  simp [orderTop_eq_archimedeanClass]
+  simp [orderTop_eq_archimedeanClassMk]
 
-/-- For `x` within a ball, `f.val x`'coefficient vanishes at position at and before the
-Archimedean class of the ball. -/
+/-- For `x` within a ball of Archimedean class `c`, `f.val x`'coefficient at `d` vanishes
+for `d ≤ c`. -/
 theorem coeff_eq_zero_of_mem [IsOrderedAddMonoid R] [Archimedean R]
     {c : ArchimedeanClass M} {x : f.val.domain} (hx : x.val ∈ ball K c)
     {d : FiniteArchimedeanClass M} (hd : d.val ≤ c) : (ofLex (f.val x)).coeff d = 0 := by
@@ -495,11 +495,11 @@ theorem coeff_eq_zero_of_mem [IsOrderedAddMonoid R] [Archimedean R]
     simp [hx]
   apply HahnSeries.coeff_eq_zero_of_lt_orderTop
   apply_fun FiniteArchimedeanClass.withTopOrderIso _
-  rw [orderTop_eq_archimedeanClass, FiniteArchimedeanClass.withTopOrderIso_apply_coe]
+  rw [orderTop_eq_archimedeanClassMk, FiniteArchimedeanClass.withTopOrderIso_apply_coe]
   apply lt_of_le_of_lt hd
   simpa [hc] using hx
 
-/-- `f.val x` has a non-zero coefficient at position of `x`'s Archimedean class. -/
+/-- `f.val x` has a non-zero coefficient at the position of the Archimedean class of `x`. -/
 theorem coeff_ne_zero [IsOrderedAddMonoid R] [Archimedean R] {x : f.val.domain} (hx0 : x.val ≠ 0) :
     (ofLex (f.val x)).coeff (FiniteArchimedeanClass.mk x.val hx0) ≠ 0 :=
   HahnSeries.coeff_orderTop_ne <| f.orderTop_eq_finiteArchimedeanClassMk hx0
@@ -519,10 +519,10 @@ theorem coeff_eq_of_mem [IsOrderedAddMonoid R] [Archimedean R] (x : M) {y z : f.
   rw [this]
   exact Submodule.sub_mem _ hy hz
 
-/-! ### Step 3: extend embedding
+/-! ### Step 3: extend the embedding
 
-We create larger `HahnEmbedding.Partial` from an existing one by adding a new element to the domain
-and assigning an appropriate output that preserves all `HahnEmbedding.Partial`'s properties.
+We create a larger `HahnEmbedding.Partial` from an existing one by adding a new element to the
+domain and assigning an appropriate output that preserves all `HahnEmbedding.Partial`'s properties.
 -/
 
 /-- Evaluate coefficients of the `HahnSeries` given an arbitrary input that's not necessarily in
@@ -541,7 +541,7 @@ def evalCoeff (x : M) (c : FiniteArchimedeanClass M) : R :=
   else
     0
 
-/-- The coefficient is well-defined regardless which `y` we pick in `evalCoeff`. -/
+/-- The coefficient is well-defined regardless of which `y` we pick in `evalCoeff`. -/
 theorem evalCoeff_eq [IsOrderedAddMonoid R] [Archimedean R] {x : M} {c : FiniteArchimedeanClass M}
     {y : f.val.domain} (hy : y.val - x ∈ ball K c) :
     evalCoeff f x c = (ofLex (f.val y)).coeff c := by
@@ -770,8 +770,7 @@ theorem extendFun_strictMono [IsOrderedAddMonoid R] [Archimedean R] {x : M}
     (hx : x ∉ f.val.domain) : StrictMono (f.extendFun hx) := by
   have hx' {c : K} (hc : c ≠ 0) : -c • x ∉ f.val.domain := by
     contrapose! hx
-    rw [neg_smul, neg_mem_iff, Submodule.smul_mem_iff _ hc] at hx
-    exact hx
+    rwa [neg_smul, neg_mem_iff, Submodule.smul_mem_iff _ hc] at hx
   -- only need to prove `0 < f v` for `0 < v = z - y`
   intro y z hyz
   rw [← sub_pos] at hyz
@@ -978,19 +977,18 @@ end Partial
 
 end HahnEmbedding
 
-/-- **Hahn embedding theorem for ordered module**
+/-- **Hahn embedding theorem for an ordered module**
 
 There exists a strictly monotone `M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R)` that maps
 `ArchimedeanClass M` to `HahnSeries.orderTop` in the expected way, as long as
 `HahnEmbedding.Seed K M R` is nonempty. The `HahnEmbedding.Partial` with maximal domain is the
 desired embedding. -/
-theorem exists_linearMap_hahnSeries_strictMono_and_archimedeanClassMk_eq
-    [IsOrderedAddMonoid R] [Archimedean R]
+theorem hahnEmbedding_isOrderedModule [IsOrderedAddMonoid R] [Archimedean R]
     [h : Nonempty (HahnEmbedding.Seed K M R)] :
     ∃ f : M →ₗ[K] Lex (HahnSeries (FiniteArchimedeanClass M) R), StrictMono f ∧
       ∀ (a : M), mk a = FiniteArchimedeanClass.withTopOrderIso M (ofLex (f a)).orderTop := by
   obtain ⟨e, hdomain⟩ := HahnEmbedding.Partial.exists_domain_eq_top h.some
-  obtain harch := e.orderTop_eq_archimedeanClass
+  obtain harch := e.orderTop_eq_archimedeanClassMk
   obtain ⟨⟨fdomain, f⟩, hpartial⟩ := e
   obtain rfl := hdomain
   refine ⟨f ∘ₗ LinearMap.id.codRestrict ⊤ (by simp), ?_, ?_⟩
