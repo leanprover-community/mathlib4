@@ -164,8 +164,8 @@ instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   exact hσ' x
 
--- short term fix
 set_option maxHeartbeats 400000 in
+-- short term fix
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
 theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
