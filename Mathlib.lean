@@ -2522,6 +2522,10 @@ import Mathlib.CategoryTheory.Localization.StructuredArrow
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.Trifunctor
 import Mathlib.CategoryTheory.LocallyDirected
+import Mathlib.CategoryTheory.MarkovCategory.Basic
+import Mathlib.CategoryTheory.MarkovCategory.Cartesian
+import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Basic
+import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Monoidal
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
