@@ -623,7 +623,8 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 @[simp]
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
-  rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
+  have h' := idxOf_lt_length_iff.2 h
+  rw [getElem?_eq_getElem h', getElem_idxOf h']
 
 @[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
 
