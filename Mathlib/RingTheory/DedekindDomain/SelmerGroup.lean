@@ -127,9 +127,6 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     gcongr
     exact v.intValuation_le_one _
 
--- Porting note: invalid attribute 'semireducible', declaration is in an imported module
--- attribute [local semireducible] MulOpposite
-
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
   -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
