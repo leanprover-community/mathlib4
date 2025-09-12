@@ -8,11 +8,6 @@ import Lean.Elab.Match
 import Lean.Elab.Deriving.Basic
 import Lean.Elab.PreDefinition.Main
 
-/-
-#adaptation_note nightly-2025-09-11
-
-This is broken on nightly-testing, but unused in Mathlib, so I am commenting it out for now.
-
 /-!
 # Deriving handler for `Traversable` instances
 
@@ -499,5 +494,3 @@ def lawfulTraversableDeriveHandler : DerivingHandler :=
 initialize registerDerivingHandler ``LawfulTraversable lawfulTraversableDeriveHandler
 
 end Mathlib.Deriving.Traversable
-
--/
