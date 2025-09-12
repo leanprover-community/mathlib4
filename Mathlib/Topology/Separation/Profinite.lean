@@ -118,7 +118,7 @@ theorem loc_compact_t2_tot_disc_iff_tot_sep :
     TotallyDisconnectedSpace H ↔ TotallySeparatedSpace H := by
   constructor
   · intro h
-    exact totallySeparatedSpace_of_t1_of_basis_clopen loc_compact_Haus_tot_disc_of_zero_dim
+    exact totallySeparatedSpace_of_t0_of_basis_clopen loc_compact_Haus_tot_disc_of_zero_dim
   apply TotallySeparatedSpace.totallyDisconnectedSpace
 
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
