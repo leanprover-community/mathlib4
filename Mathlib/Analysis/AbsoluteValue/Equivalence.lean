@@ -50,6 +50,8 @@ instance : Setoid (AbsoluteValue R S) where
     trans := .trans
   }
 
+theorem IsEquiv.le_iff_le (h : v.IsEquiv w) {x y : R} : v x ≤ v y ↔ w x ≤ w y := h ..
+
 theorem IsEquiv.lt_iff_lt (h : v.IsEquiv w) {x y : R} : v x < v y ↔ w x < w y :=
   lt_iff_lt_of_le_iff_le' (h y x) (h x y)
 
