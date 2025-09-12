@@ -663,6 +663,36 @@ theorem snd_comp_prodAssoc :
 
 end prodAssoc
 
+section SkewSwap
+
+variable (R M N)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+protected def skewSwap : (M × N) ≃ₗ[R] (N × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M N}
+
+@[simp]
+theorem skewSwap_apply (x : M × N) : LinearEquiv.skewSwap R M N x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : N × M) : (LinearEquiv.skewSwap R M N).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
+
 section
 
 variable (R M M₂ M₃ M₄)
