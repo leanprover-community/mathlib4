@@ -167,8 +167,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
         rw [destruct_eq_cons h]
         match n with
         | 0 => simp
-        | n+1 =>
-          simp [List.getElem?_cons_succ, Nat.add_lt_add_iff_right, getElem?_take]
+        | n+1 => simp [List.getElem?_cons_succ, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     (h_get : s.get? m = some x) : x ∈ s.take n := by
@@ -850,6 +849,7 @@ theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd t
   apply Pairwise.cons _ h_tl
   simp only [mem_cons_iff, forall_eq_or_imp]
   exact ⟨h_hd, fun x hx ↦ Trans.simple h_hd ((cons_elim h_tl).left x hx)⟩
+
 
 /-- Coinductive principle for `Pairwise`. -/
 theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
