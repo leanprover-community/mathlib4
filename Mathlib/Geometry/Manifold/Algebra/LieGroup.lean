@@ -86,27 +86,22 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
-@[to_additive]
 protected theorem LieGroup.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
     [h : LieGroup I n G] : LieGroup I m G := by
   have : ContMDiffMul I m G := ContMDiffMul.of_le hmn
   exact ⟨h.contMDiff_inv.of_le hmn⟩
 
-@[to_additive]
 instance {a : WithTop ℕ∞} [LieGroup I ∞ G] [h : ENat.LEInfty a] : LieGroup I a G :=
   LieGroup.of_le h.out
 
-@[to_additive]
 instance {a : WithTop ℕ∞} [LieGroup I ω G] : LieGroup I a G :=
   LieGroup.of_le le_top
 
-@[to_additive]
 instance [IsTopologicalGroup G] : LieGroup I 0 G := by
   constructor
   rw [contMDiff_zero_iff]
   exact continuous_inv
 
-@[to_additive]
 instance [LieGroup I 2 G] : LieGroup I 1 G :=
   LieGroup.of_le one_le_two
 
@@ -124,8 +119,6 @@ theorem contMDiff_inv : ContMDiff I I n fun x : G => x⁻¹ :=
 include I n in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
-for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
@@ -149,23 +142,19 @@ theorem ContMDiffOn.inv {f : M → G} {s : Set M} (hf : ContMDiffOn I' I n f s) 
 theorem ContMDiff.inv {f : M → G} (hf : ContMDiff I' I n f) : ContMDiff I' I n fun x => (f x)⁻¹ :=
   fun x => (hf x).inv
 
-@[to_additive]
 theorem ContMDiffWithinAt.div {f g : M → G} {s : Set M} {x₀ : M}
     (hf : ContMDiffWithinAt I' I n f s x₀) (hg : ContMDiffWithinAt I' I n g s x₀) :
     ContMDiffWithinAt I' I n (fun x => f x / g x) s x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
-@[to_additive]
 theorem ContMDiffAt.div {f g : M → G} {x₀ : M} (hf : ContMDiffAt I' I n f x₀)
     (hg : ContMDiffAt I' I n g x₀) : ContMDiffAt I' I n (fun x => f x / g x) x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
-@[to_additive]
 theorem ContMDiffOn.div {f g : M → G} {s : Set M} (hf : ContMDiffOn I' I n f s)
     (hg : ContMDiffOn I' I n g s) : ContMDiffOn I' I n (fun x => f x / g x) s := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
-@[to_additive]
 theorem ContMDiff.div {f g : M → G} (hf : ContMDiff I' I n f) (hg : ContMDiff I' I n g) :
     ContMDiff I' I n fun x => f x / g x := by simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
@@ -175,7 +164,6 @@ end PointwiseDivision
 section Product
 
 -- Instance of product group
-@[to_additive]
 instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
     {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
