@@ -182,108 +182,59 @@ private theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R}
     (fun _ ↦ le_rfl) |>.congr fun n ↦ (sub_eq_add_neg (v a ^ n) 1).symm
 
 /--
-- $F$: field;
-- $a, b\in F$;
-- $v_1, ..., v_k, w$: absolute values on $F$;
-- $1 < v_i(a)$ and $1 < v_i(b)$;
-- $v_j(a) < 1$ for $j \neq i$;
-- $w(a) = 1$ and $w(b) < 1$.
+- $v_1, ..., v_k, w$: absolute values on a field $F$.
+- $v_i$ is inequivalent to $v_j$ for all $j \neq i$ via the divergent point $a \in F$.
+- $v_i$ is inequivalent to $w$ via the divergent point $b \in F$.
+- $w(a) = 1$.
 
-There is a sequence of values that tends to $\infty$
-under $v_i$, tends to $0$ under $v_j$, and is always $< 1$ under $w$.
-An example sequence is given by $a ^ n \cdot b$.
--/
-private theorem exists_tendsto_zero_tendsto_atTop_tendsto_const
-    {ι : Type*} {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S} {a b : R} {i : ι}
-    (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1) (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
-    ∃ c : ℕ → R,
-      Tendsto (fun n ↦ (v i) (c n)) atTop atTop ∧
-        (∀ j ≠ i, Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0)) ∧
-          (∀ n, w (c n) < 1) := by
-  refine ⟨fun n ↦ a ^ n * b, ?_⟩; simp_rw [map_mul, map_pow, haw, one_pow, one_mul]
-  refine ⟨Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha),
-    fun j hj ↦ ?_, fun _ ↦ hbw⟩
-  rw [← zero_mul <| v j b]
-  exact Tendsto.mul_const _ <| tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj)
-
-/--
-- $F$: field;
-- $a, b\in F$;
-- $v_1, ..., v_k, w$: absolute values on $F$;
-- $1 < v_i(a)$;
-- $v_j(a) < 1$ for $j \neq i$;
-- $1 < w(a)$.
-
-There is a sequence of elements in $F$ that tendsto $v_i b$ under $v_i$, tends to $0$ under
-$v_j$ for $j ≠ i$, and tends to $w b$ under $w$.
-Such a sequence is given by $\frac{1}{1 + a ^ {- n}}$.
--/
-private theorem exists_tendsto_const_tendsto_zero_tendsto_const
-    {ι : Type*} {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S} {a : R} {i : ι}
-    (b : R) (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1) (haw : 1 < w a) :
-    ∃ c : ℕ → R,
-      Tendsto (fun n ↦ (v i) (c n)) atTop (𝓝 ((v i) b)) ∧
-        (∀ j ≠ i, Tendsto (fun n ↦ v j (c n)) atTop (𝓝 0)) ∧
-          Tendsto (fun n ↦ w (c n)) atTop (𝓝 (w b)) := by
-  refine ⟨fun n ↦ (1 / (1 + a⁻¹ ^ n) * b), ?_⟩; simp_rw [map_mul]
-  nth_rw 2 [← one_mul (v i b), ← one_mul (w b)]
-  let hai := map_inv₀ (v i) _ ▸ inv_lt_one_of_one_lt₀ ha
-  replace haw := (map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw)
-  refine ⟨Tendsto.mul_const _ (tendsto_div_one_add_pow_nhds_one hai), fun j hj ↦ ?_,
-      Tendsto.mul_const _ (tendsto_div_one_add_pow_nhds_one haw)⟩
-  replace haj := map_inv₀ (v j) _ ▸
-    (one_lt_inv₀ ((v j).pos (fun h ↦ by linarith [map_zero (v _) ▸ h ▸ ha]))).2 (haj j hj)
-  exact zero_mul (v j b) ▸ Tendsto.mul_const _ (tendsto_pow_div_one_add_pow_zero haj)
-
-/--
-- $F$: field;
-- $a, b\in F$;
-- $v_1, ..., v_k, w$: absolute values on $F$;
-- $1 < v_i(a)$ and $1 < v_i(b)$;
-- $v_j(a) < 1$ for $j \neq i$;
-- $w(a) = 1$ and $w(b) < 1$.
-
-There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
-$j \neq i$ and $w(k) < 1$.
-This is given by taking large enough values of a witness sequence to
-`exists_tendsto_zero_tendsto_atTop_tendsto_const` (for example $a ^ n \cdot b$ works).
+There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all $j \neq i$ and $w(k) < 1$.
 -/
 private theorem exists_one_lt_lt_one_lt_one_of_eq_one
     {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
     {a b : R} {i : ι} (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1) (haw : w a = 1) (hb : 1 < v i b)
     (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
-  let ⟨c, hcᵢ, hcⱼ, hcₙ⟩ := exists_tendsto_zero_tendsto_atTop_tendsto_const ha haj haw hb hbw
+  let c : ℕ → R := fun n ↦ a ^ n * b
+  have hcᵢ : Tendsto (fun n ↦ (v i) (c n)) atTop atTop := by
+    simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
+  have hcⱼ (j : ι) (hj : j ≠ i) : Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0) := by
+    simpa [c] using tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj) |>.mul_const _
   simp_rw [_i.topology_eq_generate_intervals, TopologicalSpace.tendsto_nhds_generateFrom_iff,
     mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
   let r := Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h
-  refine ⟨c r, lt_of_lt_of_le (by linarith) (hr₁ r ?_), fun j hj ↦ ?_, hcₙ r⟩
+  refine ⟨c r, lt_of_lt_of_le (by linarith) (hr₁ r ?_), fun j hj ↦ ?_, by simpa [c, haw]⟩
   · exact Finset.le_sup_dite_pos (p := fun j ↦ j = i) (f := fun _ _ ↦ r₁) (Finset.mem_univ _) rfl
   · simpa using hrₙ j hj _ <| Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
 
 /--
-- $F$: field;
-- $a, b\in F$;
-- $v_1, ..., v_k, w$: absolute values on $F$;
-- $1 < v_i(a)$;
-- $v_j(a) < 1$ for $j \neq i$;
+- $v_1, ..., v_k, w$: absolute values on $F$.
+- $v_i$ is inequivalent to $v_j$ for all $j \neq i$ via the divergent point $a \in F$.
+- $v_i$ is inequivalent to $w$ via the divergent point $b\in F$.
 - $1 < w(a)$.
 
-There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all
-$j ≠ i$ and $w(k) < 1$. This is given by taking large enough values of a witness sequence to
-`exists_tendsto_const_tendsto_zero_tendsto_const` (for example $\frac{1}{1 + a ^ {- n}}$ works).
+There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all $j ≠ i$ and $w(k) < 1$.
 
 Note that this is the result `exists_one_lt_lt_one_lt_one_of_eq_one` replacing the condition
-that $w(a) = 1$ with $1 < w(a)$ and removing the condition on $w(b)$.
+that $w(a) = 1$ with $1 < w(a)$.
 -/
 private theorem exists_one_lt_lt_one_lt_one_of_one_lt
     {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
     {a b : R} {i : ι} (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1) (haw : 1 < w a) (hb : 1 < v i b)
     (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
-  let ⟨c, hcᵢ, hcⱼ, hcₙ⟩ := exists_tendsto_const_tendsto_zero_tendsto_const b ha haj haw
+  let c : ℕ → R := fun n ↦ 1 / (1 + a⁻¹ ^ n) * b
+  have hcᵢ : Tendsto (fun n ↦ v i (c n)) atTop (𝓝 (v i b)) := by
+    have : v i a⁻¹ < 1 := map_inv₀ (v i) a ▸ inv_lt_one_of_one_lt₀ ha
+    simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (v i b)
+  have hcⱼ (j : ι) (hj : j ≠ i) : atTop.Tendsto (fun n ↦ v j (c n)) (𝓝 0) := by
+    have : 1 < v j a⁻¹ := map_inv₀ (v j) _ ▸
+      (one_lt_inv₀ <| (v j).pos fun h ↦ by linarith [map_zero (v _) ▸ h ▸ ha]).2 (haj j hj)
+    simpa [c] using (tendsto_pow_div_one_add_pow_zero this).mul_const _
+  have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
+    have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
+    simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
   simp_rw [_i.topology_eq_generate_intervals, TopologicalSpace.tendsto_nhds_generateFrom_iff,
     mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_const_lt hb hcᵢ
@@ -291,11 +242,11 @@ private theorem exists_one_lt_lt_one_lt_one_of_one_lt
   choose rN hrN using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_lt_const hbw hcₙ
   let r := max (Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h) rN
   refine ⟨c r, hr₁ r ?_, fun j hj ↦ ?_, ?_⟩
-  · exact le_max_iff.2 <| Or.inl <|
+  · exact le_max_iff.2 <| .inl <|
       Finset.le_sup_dite_pos (p := fun j ↦ j = i) (f := fun _ _ ↦ r₁) (Finset.mem_univ _) rfl
   · exact hrₙ j hj _ <| le_max_iff.2 <| Or.inl <|
       Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
-  · exact hrN _ <| le_max_iff.2 (Or.inr le_rfl)
+  · exact hrN _ <| le_max_iff.2 (.inr le_rfl)
 
 /--
 Let $v_1, ..., v_k$ be a collection of at least two non-trivial and pairwise inequivalent
