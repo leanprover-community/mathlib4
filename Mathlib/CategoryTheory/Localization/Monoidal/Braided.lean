@@ -58,36 +58,21 @@ lemma braidingNatIso_hom_app (X Y : C) :
   simp [braidingNatIso, lift₂NatIso]
   rfl
 
-lemma braidingNatIso_hom_μ_left (X Y Z : C) :
+lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y ⊗ (L').obj Z)
       ≫ (Functor.LaxMonoidal.μ (L') Y Z) ▷ (L').obj X =
         (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
           ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj (Y ⊗ Z)) := by
-  erw [← ((braidingNatIso L W ε).hom.app ((L').obj X)).naturality
-    ((Functor.LaxMonoidal.μ (L') Y Z))]
-  rfl
+  exact (((braidingNatIso L W ε).hom.app ((L').obj X)).naturality
+    ((Functor.LaxMonoidal.μ (L') Y Z))).symm
 
-lemma braidingNatIso_hom_μ_right (X Y Z : C) :
+lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X ⊗ (L').obj Y)).app ((L').obj Z)
       ≫ (L').obj Z ◁ (Functor.LaxMonoidal.μ (L') X Y) =
         (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
           ((braidingNatIso L W ε).hom.app ((L').obj (X ⊗ Y))).app ((L').obj Z) := by
-  have := NatTrans.congr_app
-    ((braidingNatIso L W ε).hom.naturality ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)
-  dsimp [Functor.flip] at this
-  erw [← this]
-  rfl
-
-@[reassoc]
-lemma braiding_naturality {X X' Y Y' : LocalizedMonoidal L W ε} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (f ⊗ₘ g) ≫ ((braidingNatIso L W ε).hom.app Y).app Y' =
-      ((braidingNatIso L W ε).hom.app X).app X' ≫ (g ⊗ₘ f) := by
-  rw [← id_comp f, ← comp_id g, tensor_comp, id_tensorHom, tensorHom_id,
-    tensor_comp, id_tensorHom, tensorHom_id, ← assoc]
-  erw [← ((braidingNatIso L W ε).app _).hom.naturality g]
-  simp only [assoc]
-  congr 1
-  exact NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality f) Y'
+  exact (NatTrans.congr_app
+    ((braidingNatIso L W ε).hom.naturality ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
 
 lemma map_hexagon_forward (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom ≫
@@ -101,15 +86,8 @@ lemma map_hexagon_forward (X Y Z : C) :
     simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
       Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, comp_whiskerRight, assoc,
       Functor.Monoidal.whiskerRight_δ_μ_assoc, Functor.LaxMonoidal.μ_natural_left]
-  simp only [assoc]
-  congr 2
-  slice_rhs 3 6 =>
-    simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
-      Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, MonoidalCategory.whiskerLeft_comp,
-      Functor.Monoidal.whiskerLeft_δ_μ_assoc, Functor.OplaxMonoidal.δ_natural_right_assoc]
-  simp only [← assoc]
-  slice_lhs 4 5 =>
-    rw [braidingNatIso_hom_μ_left, braidingNatIso_hom_app]
+  slice_lhs 6 7 =>
+    rw [braidingNatIso_hom_app_naturality_μ_left, braidingNatIso_hom_app]
   simp
 
 lemma map_hexagon_reverse (X Y Z : C) :
@@ -120,35 +98,20 @@ lemma map_hexagon_reverse (X Y Z : C) :
         (α_ ((L').obj X) ((L').obj Z) ((L').obj Y)).inv ≫
         (((braidingNatIso L W ε).app ((L').obj X)).app ((L').obj Z)).hom ▷ ((L').obj Y) := by
   simp only [associator_inv, Iso.app_hom, braidingNatIso_hom_app]
-  slice_rhs 0 3 =>
+  slice_rhs 0 4 =>
     simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
       Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, MonoidalCategory.whiskerLeft_comp, assoc,
       Functor.Monoidal.whiskerLeft_δ_μ, comp_id]
-  simp only [assoc]
-  congr 1
-  slice_rhs 4 7 =>
-    simp only [Functor.flip_obj_obj, Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal,
-      Functor.CoreMonoidal.toMonoidal_toLaxMonoidal, comp_whiskerRight,
-      Functor.Monoidal.whiskerRight_δ_μ_assoc, Functor.OplaxMonoidal.δ_natural_left_assoc]
-  simp only [← assoc]
-  congr 2
-  slice_rhs 0 3 =>
-    simp only [Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
-      Functor.LaxMonoidal.μ_natural_right_assoc]
-  simp only [assoc]
-  congr 1
-  slice_lhs 4 5 =>
-    rw [braidingNatIso_hom_μ_right, braidingNatIso_hom_app]
+  slice_lhs 6 7 =>
+    rw [braidingNatIso_hom_app_naturality_μ_right, braidingNatIso_hom_app]
   simp
 
 noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) := by
   refine .ofBifunctor (braidingNatIso L W ε) ?_ ?_
   · apply natTrans₃_ext (L') (L') (L') W W W
-    intro X Y Z
-    simpa using map_hexagon_forward _ _ _ _ _ _
+    simpa using map_hexagon_forward _ _ _
   · apply natTrans₃_ext (L') (L') (L') W W W
-    intro X Y Z
-    simpa using map_hexagon_reverse _ _ _ _ _ _
+    simpa using map_hexagon_reverse _ _ _
 
 lemma β_hom_app (X Y : C) :
     (β_ ((L').obj X) ((L').obj Y)).hom =
