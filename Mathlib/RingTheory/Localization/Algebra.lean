@@ -23,8 +23,6 @@ as the translation is currently tedious and can be unified easily after the loca
 
 -/
 
-universe u u' v v' w w'
-
 variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
   [CommSemiring Q]
   {M : Submonoid R} {T : Submonoid P}
@@ -84,13 +82,13 @@ section Algebra
 
 open Algebra
 
-variable {R : Type u} [CommRing R] (M : Submonoid R)
-variable {A : Type v} [CommRing A] [Algebra R A]
-variable {B : Type w} [CommRing B] [Algebra R B]
-variable (Rₚ : Type u') [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization M Rₚ]
-variable (Aₚ : Type v') [CommRing Aₚ] [Algebra R Aₚ] [Algebra A Aₚ] [IsScalarTower R A Aₚ]
+variable {R : Type*} [CommSemiring R] (M : Submonoid R)
+variable {A : Type*} [CommSemiring A] [Algebra R A]
+variable {B : Type*} [CommSemiring B] [Algebra R B]
+variable (Rₚ : Type*) [CommSemiring Rₚ] [Algebra R Rₚ] [IsLocalization M Rₚ]
+variable (Aₚ : Type*) [CommSemiring Aₚ] [Algebra R Aₚ] [Algebra A Aₚ] [IsScalarTower R A Aₚ]
   [IsLocalization (Algebra.algebraMapSubmonoid A M) Aₚ]
-variable (Bₚ : Type v') [CommRing Bₚ] [Algebra R Bₚ] [Algebra B Bₚ] [IsScalarTower R B Bₚ]
+variable (Bₚ : Type*) [CommSemiring Bₚ] [Algebra R Bₚ] [Algebra B Bₚ] [IsScalarTower R B Bₚ]
   [IsLocalization (Algebra.algebraMapSubmonoid B M) Bₚ]
 variable [Algebra Rₚ Aₚ] [Algebra Rₚ Bₚ] [IsScalarTower R Rₚ Aₚ] [IsScalarTower R Rₚ Bₚ]
 
