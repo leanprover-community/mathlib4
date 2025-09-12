@@ -795,7 +795,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
     (S ⧸ I.map (algebraMap R S)) ≃ₐ[R]
       Polynomial (R ⧸ I) ⧸
         Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) :=
-  (ofCommutes _
+  (AlgEquiv.ofCommutes _
         (show ∀ x,
             (Ideal.quotientEquiv _ (Ideal.map (AdjoinRoot.of (minpoly R pb.gen)) I)
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
@@ -828,9 +828,8 @@ theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I :
         (g.map (Ideal.Quotient.mk I))) = Ideal.Quotient.mk (I.map (algebraMap R S))
           (aeval pb.gen g) := by
   simp only [quotientEquivQuotientMinpolyMap, toRingEquiv_eq_coe, symm_trans_apply,
-    quotEquivQuotMap_symm_apply_mk, ofCommutes_symm_apply, quotientEquiv_symm_mk,
-    RingEquiv.symm_symm, AdjoinRoot.equiv'_apply, coe_ringEquiv, liftHom_mk,
-    symm_toRingEquiv]
+    quotEquivQuotMap_symm_apply_mk, symm_toRingEquiv]
+  rfl
 
 end PowerBasis
 
