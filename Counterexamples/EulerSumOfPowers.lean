@@ -92,7 +92,7 @@ lemma sumOfPowersConjecture_of_injective {R S : Type*} [Semiring R] [Semiring S]
 The first counterexample was found by Leon J. Lander and Thomas R. Parkin in 1966
 through a computer search, disproving the conjecture.
 https://www.ams.org/journals/bull/1966-72-06/S0002-9904-1966-11654-3/S0002-9904-1966-11654-3.pdf
-This is also the smallest counterexample known for `n = 5`.
+This is also the smallest counterexample for `n = 5`.
 -/
 theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
   intro conj
@@ -103,18 +103,19 @@ theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
   omega
 
 /--
-The first counterexample for `n = 4` was found by Noam D. Elkies in October 1988.
+The first counterexample for `n = 4` was found by Noam D. Elkies in October 1988:
+`a := [2_682_440, 15_365_639, 18_796_760]`, `b := 20_615_673`
 https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf
 In this paper, Elkies constructs infinitely many solutions to `a^4 + b^4 + c^4 = d^4` for coprime
 `a, b, c, d`, which provide infinitely many coprime counterexamples for the case `n = 4`.
-The smallest counterexample known for `n = 4` was found a month later by Roger E. Frye:
-`a := [95_800, 217_519, 414_560]`, `b := 422_481`. https://ieeexplore.ieee.org/document/74138
+Here we use the smallest counterexample for `n = 4`, which was found a month later by Roger E. Frye
+https://ieeexplore.ieee.org/document/74138
 -/
 theorem sumOfPowersConjectureFor_four_false : ¬SumOfPowersConjectureFor 4 := by
   intro conj
   let n := 4
-  let a := [2_682_440, 15_365_639, 18_796_760]
-  let b := 20_615_673
+  let a := [95_800, 217_519, 414_560]
+  let b := 422_481
   have : 4 ≤ 3 := conj a b (by simp [a]) (by simp [a]) (by simp) (by decide)
   omega
 
