@@ -524,14 +524,14 @@ end Unique
 
 instance [hκ : IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (withDensity η (rnDeriv κ η)) := by
-  refine ⟨hκ.bound, hκ.bound_lt_top, fun a ↦ ?_⟩
+  refine ⟨IsFiniteKernel.bound κ, hκ.bound_lt_top, fun a ↦ ?_⟩
   rw [Kernel.withDensity_apply', setLIntegral_univ]
   swap; · exact measurable_rnDeriv κ η
   rw [lintegral_congr_ae rnDeriv_eq_rnDeriv_measure]
   exact Measure.lintegral_rnDeriv_le.trans (measure_le_bound _ _ _)
 
 instance [hκ : IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (singularPart κ η) := by
-  refine ⟨hκ.bound, hκ.bound_lt_top, fun a ↦ ?_⟩
+  refine ⟨IsFiniteKernel.bound κ, hκ.bound_lt_top, fun a ↦ ?_⟩
   have h : withDensity η (rnDeriv κ η) a univ + singularPart κ η a univ = κ a univ := by
     conv_rhs => rw [← rnDeriv_add_singularPart κ η]
     simp
