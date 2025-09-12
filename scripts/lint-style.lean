@@ -38,6 +38,25 @@ def getWorkspaceRoot : IO Lake.Package := do
     | throw <| IO.userError "failed to load Lake workspace"
   return workspace.root
 
+section LinterSetsElab
+
+open Lean
+
+instance [ToExpr α] : ToExpr (NameMap α) where
+  toExpr s := mkApp4 (.const ``Std.TreeMap.ofArray [.zero, .zero])
+    (toTypeExpr Name) (toTypeExpr α)
+    (toExpr s.toArray)
+    (.const ``Lean.Name.quickCmp [])
+  toTypeExpr := .const ``LinterSets []
+
+instance : ToExpr LinterSets := inferInstanceAs <| ToExpr (NameMap _)
+
+/-- Return the linter sets defined at this point of elaborating the current file. -/
+elab "linter_sets%" : term => do
+  return toExpr <| linterSetsExt.getState (← getEnv)
+
+end LinterSetsElab
+
 /-- Convert the options that Lake knows into the option that Lean knows. -/
 def toLeanOptions (opts : Lean.LeanOptions) : Lean.Options := Id.run do
   let mut out := Lean.Options.empty
@@ -153,14 +172,9 @@ def undocumentedScripts (opts : LinterOptions) : IO Nat := do
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  -- Use the environment declared in Mathlib.Tactic.Linter.TextBased to determine the linter sets.
-  Lean.initSearchPath (← Lean.findSysroot)
-  let env ← Lean.importModules #[{module := `Mathlib.Tactic.Linter.TextBased}] {} (leakEnv := true) (loadExts := true)
-  let sets := linterSetsExt.getState env
-
   let opts : LinterOptions := {
     toOptions := ← getLakefileLeanOptions,
-    linterSets := sets,
+    linterSets := linter_sets%,
   }
 
   let style : ErrorFormat := match args.hasFlag "github" with
