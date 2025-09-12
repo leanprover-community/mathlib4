@@ -61,18 +61,18 @@ theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set α) :=
 theorem IsLinearSet.closure_finset (s : Finset α) : IsLinearSet (closure (s : Set α) : Set α) :=
   ⟨0, s, by rw [zero_vadd]⟩
 
-theorem isLinearSet_iff_eq_vadd_addSubmonoid_fg :
+theorem isLinearSet_iff_exists_addSubmonoidFG_eq_vadd :
     IsLinearSet s ↔ ∃ (a : α) (P : AddSubmonoid α), P.FG ∧ s = a +ᵥ (P : Set α) :=
   exists_congr fun a => ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩
 
-theorem isLinearSet_of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) :
+theorem IsLinearSet.of_addSubmonoidFG {P : AddSubmonoid α} (hP : P.FG) :
     IsLinearSet (P : Set α) := by
-  rw [isLinearSet_iff_eq_vadd_addSubmonoid_fg]
+  rw [isLinearSet_iff_exists_addSubmonoidFG_eq_vadd]
   exact ⟨0, P, hP, by rw [zero_vadd]⟩
 
 @[simp]
 protected theorem IsLinearSet.univ [AddMonoid.FG α] : IsLinearSet (univ : Set α) :=
-  isLinearSet_of_addSubmonoid_fg AddMonoid.FG.fg_top
+  of_addSubmonoidFG AddMonoid.FG.fg_top
 
 theorem IsLinearSet.vadd (a : α) (hs : IsLinearSet s) : IsLinearSet (a +ᵥ s) := by
   rcases hs with ⟨b, t, rfl⟩
@@ -111,9 +111,9 @@ theorem IsSemilinearSet.closure_finset (s : Finset α) :
     IsSemilinearSet (closure (s : Set α) : Set α) :=
   (IsLinearSet.closure_finset s).isSemilinearSet
 
-theorem isSemilinearSet_of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) :
+theorem IsSemilinearSet.of_addSubmonoidFG {P : AddSubmonoid α} (hP : P.FG) :
     IsSemilinearSet (P : Set α) :=
-  (isLinearSet_of_addSubmonoid_fg hP).isSemilinearSet
+  (IsLinearSet.of_addSubmonoidFG hP).isSemilinearSet
 
 @[simp]
 protected theorem IsSemilinearSet.univ [AddMonoid.FG α] : IsSemilinearSet (univ : Set α) :=
