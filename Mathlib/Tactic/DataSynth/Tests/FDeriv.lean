@@ -31,6 +31,18 @@ attribute [data_synth]
   HasFDerivAt.fun_smul HasFDerivAt.prodMk
   HasFDerivAt.clm_comp HasFDerivAt.clm_apply
 
+example (g : ℝ → ℝ) (f : ℝ → ℝ → ℝ) (x dx : ℝ) {g' : ℝ →L[ℝ] ℝ} {f' : ℝ × ℝ →L[ℝ] ℝ}
+    (hg : HasFDerivAt g g' x) (hf : HasFDerivAt (fun yx : ℝ×ℝ => f yx.1 yx.2) f' (g x, x)) : 
+    fderiv ℝ (fun x : ℝ => let y := g x; f y x) x dx
+    = 
+    let dy := g' dx
+    let dz := f' (dy,dx)
+    dz := by
+  conv_lhs =>
+    simp only [fderiv_simproc]
+    check_no_fderiv
+    simp
+
 example (x₀ : ℝ) : fderiv ℝ (fun x : ℝ => x) x₀ 1 = 1 := by 
   conv_lhs => 
     simp only [fderiv_simproc]
@@ -145,5 +157,4 @@ lemma wave_dx2 {u v : Fin d} {s : EuclideanSpace ℝ (Fin d)}
     simp [h]
 
     
-
 
