@@ -22,13 +22,15 @@ instance commGroup : CommGroup PUnit where
   one := unit
   inv _ := unit
   div _ _ := unit
-  npow _ _ := unit
   zpow _ _ := unit
   mul_assoc _ _ _ := rfl
   one_mul _ := rfl
   mul_one _ := rfl
   inv_mul_cancel _ := rfl
   mul_comm _ _ := rfl
+
+instance : MonoidNPow PUnit where
+  npow _ _ := unit
 
 -- shortcut instances
 @[to_additive] instance : One PUnit where one := unit

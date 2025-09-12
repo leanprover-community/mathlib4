@@ -191,7 +191,7 @@ theorem two_add_two_eq_four [AddMonoidWithOne R] : 2 + 2 = (4 : R) := by
 
 section nsmul
 
-@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n
+@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] [AddMonoidNSMul A] : ∀ n : ℕ, n • (1 : A) = n
   | 0 => by simp [zero_nsmul]
   | n + 1 => by simp [succ_nsmul, nsmul_one n]
 

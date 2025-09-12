@@ -30,10 +30,12 @@ instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
   zero_add := Nat.zero_add
   add_zero := Nat.add_zero
   add_comm := Nat.add_comm
+  add_left_cancel _ _ _ := Nat.add_left_cancel
+
+instance : AddMonoidNSMul ℕ where
   nsmul m n := m * n
   nsmul_zero := Nat.zero_mul
   nsmul_succ := succ_mul
-  add_left_cancel _ _ _ := Nat.add_left_cancel
 
 instance instCommMonoid : CommMonoid ℕ where
   mul := Nat.mul
@@ -42,6 +44,8 @@ instance instCommMonoid : CommMonoid ℕ where
   one_mul := Nat.one_mul
   mul_one := Nat.mul_one
   mul_comm := Nat.mul_comm
+
+instance : MonoidNPow ℕ where
   npow m n := n ^ m
   npow_zero := Nat.pow_zero
   npow_succ _ _ := rfl

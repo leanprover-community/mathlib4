@@ -25,10 +25,12 @@ instance instCommMonoid : CommMonoid ℤ where
   mul_comm := Int.mul_comm
   mul_one := Int.mul_one
   one_mul := Int.one_mul
+  mul_assoc := Int.mul_assoc
+
+instance : MonoidNPow ℤ where
   npow n x := x ^ n
   npow_zero _ := rfl
   npow_succ _ _ := rfl
-  mul_assoc := Int.mul_assoc
 
 instance instAddCommGroup : AddCommGroup ℤ where
   add_comm := Int.add_comm
@@ -36,17 +38,19 @@ instance instAddCommGroup : AddCommGroup ℤ where
   add_zero := Int.add_zero
   zero_add := Int.zero_add
   neg_add_cancel := Int.add_left_neg
-  nsmul := (·*·)
-  nsmul_zero := Int.zero_mul
-  nsmul_succ n x :=
-    show (n + 1 : ℤ) * x = n * x + x
-    by rw [Int.add_mul, Int.one_mul]
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
     simp only [natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
+
+instance : AddMonoidNSMul ℤ where
+  nsmul := (·*·)
+  nsmul_zero := Int.zero_mul
+  nsmul_succ n x :=
+    show (n + 1 : ℤ) * x = n * x + x
+    by rw [Int.add_mul, Int.one_mul]
 
 /-!
 ### Extra instances to short-circuit type class resolution

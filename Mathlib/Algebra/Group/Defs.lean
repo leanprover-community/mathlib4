@@ -585,6 +585,8 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
   protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 
+@[to_additive] abbrev Monoid.monoidNPow (M) [Monoid M] : MonoidNPow M where
+
 @[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] [MonoidNPow M] : Pow M ℕ :=
   ⟨fun x n ↦ MonoidNPow.npow n x⟩
 
@@ -940,7 +942,7 @@ variable [DivInvMonoid G]
   DivInvMonoid.zpow_zero' a
 
 @[to_additive (attr := simp, norm_cast) natCast_zsmul]
-theorem zpow_natCast (a : G) [MonoidNPow G] : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+theorem zpow_natCast [MonoidNPow G] (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
     a ^ (↑(n + 1) : ℤ) = a ^ (n : ℤ) * a := DivInvMonoid.zpow_succ' _ _
@@ -949,11 +951,11 @@ theorem zpow_natCast (a : G) [MonoidNPow G] : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 
 
 @[to_additive ofNat_zsmul]
-lemma zpow_ofNat (a : G) (n : ℕ) [MonoidNPow G] : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
+lemma zpow_ofNat [MonoidNPow G] (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
 @[to_additive (attr := simp) negSucc_zsmul]
-theorem zpow_negSucc (a : G) (n : ℕ) [MonoidNPow G] : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
+theorem zpow_negSucc [MonoidNPow G] (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
 
@@ -980,17 +982,22 @@ theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
 @[to_additive (attr := simp) one_zsmul]
-lemma zpow_one (a : G) [MonoidNPow G] : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
+lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by
+  let _ := Monoid.monoidNPow G
+  rw [zpow_ofNat, pow_one]
 
 @[to_additive two_zsmul]
-lemma zpow_two (a : G) [MonoidNPow G] : a ^ (2 : ℤ) = a * a := by rw [zpow_ofNat, pow_two]
+lemma zpow_two (a : G) : a ^ (2 : ℤ) = a * a := by
+  let _ := Monoid.monoidNPow G
+  rw [zpow_ofNat, pow_two]
 
 @[to_additive neg_one_zsmul]
-lemma zpow_neg_one (x : G) [MonoidNPow G] : x ^ (-1 : ℤ) = x⁻¹ :=
+lemma zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
+  let _ := Monoid.monoidNPow G
   (zpow_negSucc x 0).trans <| congr_arg Inv.inv (pow_one x)
 
 @[to_additive]
-lemma zpow_neg_coe_of_pos (a : G) [MonoidNPow G] : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
+lemma zpow_neg_coe_of_pos [MonoidNPow G] (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
   | _ + 1, _ => zpow_negSucc _ _
 
 end DivInvMonoid

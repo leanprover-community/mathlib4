@@ -134,7 +134,7 @@ end CommSemigroup
 attribute [local simp] mul_assoc sub_eq_add_neg
 
 section Monoid
-variable [Monoid M] {a b : M} {m n : ℕ}
+variable [Monoid M] [MonoidNPow M] {a b : M} {m n : ℕ}
 
 @[to_additive boole_nsmul]
 lemma pow_boole (P : Prop) [Decidable P] (a : M) :
@@ -209,7 +209,7 @@ variable [CommMonoid M] {x y z : M}
 theorem inv_unique (hy : x * y = 1) (hz : x * z = 1) : y = z :=
   left_inv_eq_right_inv (Trans.trans (mul_comm _ _) hy) hz
 
-@[to_additive nsmul_add] lemma mul_pow (a b : M) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
+@[to_additive nsmul_add] lemma mul_pow [MonoidNPow M] (a b : M) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
   | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
   | n + 1 => by rw [pow_succ', pow_succ', pow_succ', mul_pow, mul_mul_mul_comm]
 
@@ -445,18 +445,22 @@ instance (priority := 100) DivisionMonoid.toDivInvOneMonoid : DivInvOneMonoid α
     inv_one := by simpa only [one_div, inv_inv] using (inv_div (1 : α) 1).symm }
 
 @[to_additive (attr := simp)]
-lemma inv_pow (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
+lemma inv_pow [MonoidNPow α] (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
   | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
 
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
-lemma one_zpow : ∀ n : ℤ, (1 : α) ^ n = 1
+lemma one_zpow (n : ℤ) : (1 : α) ^ n = 1 :=
+  let _ := Monoid.monoidNPow α
+  match n with
   | (n : ℕ) => by rw [zpow_natCast, one_pow]
   | .negSucc n => by rw [zpow_negSucc, one_pow, inv_one]
 
 @[to_additive (attr := simp) neg_zsmul]
-lemma zpow_neg (a : α) : ∀ n : ℤ, a ^ (-n) = (a ^ n)⁻¹
+lemma zpow_neg (a : α) (n : ℤ) : a ^ (-n) = (a ^ n)⁻¹ :=
+  let _ := Monoid.monoidNPow α
+  match n with
   | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
   | 0 => by simp
   | Int.negSucc n => by
@@ -468,7 +472,9 @@ lemma mul_zpow_neg_one (a b : α) : (a * b) ^ (-1 : ℤ) = b ^ (-1 : ℤ) * a ^ 
   simp only [zpow_neg, zpow_one, mul_inv_rev]
 
 @[to_additive zsmul_neg]
-lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
+lemma inv_zpow (a : α) (n : ℤ) : a⁻¹ ^ n = (a ^ n)⁻¹ :=
+  let _ := Monoid.monoidNPow α
+  match n with
   | (n : ℕ) => by rw [zpow_natCast, zpow_natCast, inv_pow]
   | .negSucc n => by rw [zpow_negSucc, zpow_negSucc, inv_pow]
 
@@ -476,7 +482,8 @@ lemma inv_zpow (a : α) : ∀ n : ℤ, a⁻¹ ^ n = (a ^ n)⁻¹
 lemma inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
 
 @[to_additive nsmul_zero_sub]
-lemma one_div_pow (a : α) (n : ℕ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
+lemma one_div_pow [MonoidNPow α] (a : α) (n : ℕ) :
+    (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
 
 @[to_additive zsmul_zero_sub]
 lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
@@ -502,7 +509,9 @@ theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
 -- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
 -- when additivised since their argument order,
 -- and therefore the more "natural" choice of lemma, is reversed.
-@[to_additive mul_zsmul'] lemma zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
+@[to_additive mul_zsmul'] lemma zpow_mul (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ m) ^ n :=
+  let _ := Monoid.monoidNPow α
+  match m, n with
   | (m : ℕ), (n : ℕ) => by
     rw [zpow_natCast, zpow_natCast, ← pow_mul, ← zpow_natCast]
     rfl
@@ -614,12 +623,14 @@ theorem div_mul_div_comm : a / b * (c / d) = a * c / (b * d) := by simp
 @[to_additive]
 theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
 
-@[to_additive zsmul_add] lemma mul_zpow : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
+@[to_additive zsmul_add] lemma mul_zpow (n : ℤ) : (a * b) ^ n = a ^ n * b ^ n :=
+  let _ := Monoid.monoidNPow α
+  match n with
   | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
   | .negSucc n => by simp_rw [zpow_negSucc, ← inv_pow, mul_inv, mul_pow]
 
 @[to_additive nsmul_sub]
-lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
+lemma div_pow [MonoidNPow α] (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 
 @[to_additive zsmul_sub]
@@ -813,18 +824,21 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
   fun x ↦ inv_mul_cancel_left c x
 
 @[to_additive (attr := simp) natAbs_nsmul_eq_zero]
-lemma pow_natAbs_eq_one : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
+lemma pow_natAbs_eq_one [MonoidNPow G] : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
 @[to_additive sub_nsmul]
-lemma pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
+lemma pow_sub [MonoidNPow G] (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
   eq_mul_inv_of_mul_eq <| by rw [← pow_add, Nat.sub_add_cancel h]
 
 @[to_additive sub_nsmul_neg]
-theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
+theorem inv_pow_sub [MonoidNPow G] (a : G) {m n : ℕ} (h : n ≤ m) :
+   a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
   rw [pow_sub a⁻¹ h, inv_pow, inv_pow, inv_inv]
 
 @[to_additive add_one_zsmul]
-lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
+lemma zpow_add_one (a : G) (n : ℤ) : a ^ (n + 1) = a ^ n * a :=
+  let _ := Monoid.monoidNPow G
+  match n with
   | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
   | -1 => by simp [Int.add_left_neg]
   | .negSucc (n + 1) => by
@@ -859,15 +873,16 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
   rw [Int.sub_eq_add_neg, zpow_add, zpow_neg]
 
 @[to_additive natCast_sub_natCast_zsmul]
-lemma zpow_natCast_sub_natCast (a : G) (m n : ℕ) : a ^ (m - n : ℤ) = a ^ m / a ^ n := by
+lemma zpow_natCast_sub_natCast [MonoidNPow G] (a : G) (m n : ℕ) :
+    a ^ (m - n : ℤ) = a ^ m / a ^ n := by
   simpa [div_eq_mul_inv] using zpow_sub a m n
 
 @[to_additive natCast_sub_one_zsmul]
-lemma zpow_natCast_sub_one (a : G) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^ n / a := by
+lemma zpow_natCast_sub_one [MonoidNPow G] (a : G) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^ n / a := by
   simpa [div_eq_mul_inv] using zpow_sub a n 1
 
 @[to_additive one_sub_natCast_zsmul]
-lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
+lemma zpow_one_sub_natCast [MonoidNPow G] (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
   simpa [div_eq_mul_inv] using zpow_sub a 1 n
 
 @[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
@@ -879,7 +894,7 @@ theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
-theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
+theorem zpow_eq_zpow_emod' [MonoidNPow G] {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
 @[to_additive (attr := simp)]
@@ -1068,7 +1083,7 @@ end multiplicative
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
 @[to_additive]
-lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
+lemma hom_coe_pow {F : Type*} [Monoid F] [MonoidNPow F] (c : F → M → M) (h1 : c 1 = id)
     (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by
     rw [pow_zero, h1]
@@ -1083,17 +1098,17 @@ open Lean
 
 variable (α : Type*)
 
-instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] :
+instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] [t : AddMonoidNSMul α] :
     Grind.NatModule α :=
   { s with
-    nsmul := ⟨s.nsmul⟩
-    zero_nsmul := AddMonoid.nsmul_zero
+    nsmul := ⟨t.nsmul⟩
+    zero_nsmul := t.nsmul_zero
     add_one_nsmul n a := by change (n + 1) • a = n • a + a; rw [add_nsmul, one_nsmul] }
 
-instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] :
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] [t : AddMonoidNSMul α] :
     Grind.IntModule α :=
   { s with
-    nsmul := ⟨s.nsmul⟩
+    nsmul := ⟨t.nsmul⟩
     zsmul := ⟨s.zsmul⟩
     zero_zsmul := SubNegMonoid.zsmul_zero'
     one_zsmul := one_zsmul

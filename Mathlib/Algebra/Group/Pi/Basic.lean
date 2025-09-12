@@ -60,9 +60,11 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   __ := semigroup
   __ := mulOneClass
+
+instance [∀ i, Monoid (f i)] [∀ i, MonoidNPow (f i)] : MonoidNPow (∀ i, f i) where
   npow := fun n x i => x i ^ n
-  npow_zero := by intros; ext; exact Monoid.npow_zero _
-  npow_succ := by intros; ext; exact Monoid.npow_succ _ _
+  npow_zero := by intros; ext; exact MonoidNPow.npow_zero _
+  npow_succ := by intros; ext; exact MonoidNPow.npow_succ _ _
 
 @[to_additive]
 instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
