@@ -130,6 +130,8 @@ to learn about it as well!
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `downstream_dashboard.py` inspects the CI infrastructure of each repository in
+  `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`
