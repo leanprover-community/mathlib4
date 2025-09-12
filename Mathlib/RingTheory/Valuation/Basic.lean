@@ -12,7 +12,7 @@ import Mathlib.Tactic.TFAE
 
 # The basics of valuation theory.
 
-The basic theory of valuations (non-archimedean norms) on a commutative ring,
+The basic theory of valuations (non-Archimedean norms) on a commutative ring,
 following T. Wedhorn's unpublished notes “Adic Spaces” ([wedhorn_adic]).
 
 The definition of a valuation we use here is Definition 1.22 of [wedhorn_adic].

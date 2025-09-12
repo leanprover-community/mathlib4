@@ -152,7 +152,7 @@ end OrderBot
 
 section IsUltra
 
-/-- A pseudometric can be nonarchimedean (or ultrametric), with a stronger triangle
+/-- A pseudometric can be non-Archimedean (or ultrametric), with a stronger triangle
 inequality such that `d x z ≤ max (d x y) (d y z)`. -/
 class IsUltra [Zero R] [Add R] [LE R] [Max R] (d : PseudoMetric X R) : Prop where
   /-- Strong triangle inequality of an ultrametric. -/

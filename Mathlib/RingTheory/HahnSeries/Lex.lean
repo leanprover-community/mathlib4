@@ -254,8 +254,8 @@ theorem archimedeanClassMk_eq_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
     exact ⟨.inr ⟨horder, hcoeff.le⟩, .inr ⟨horder.symm, hcoeff.ge⟩⟩
 
 variable (Γ R) in
-/-- Finite archimedean classes of `Lex (HahnSeries Γ R)` decompose into lexicographical pairs
-of `order` and the finite archimedean class of `leadingCoeff`. -/
+/-- Finite Archimedean classes of `Lex (HahnSeries Γ R)` decompose into lexicographical pairs
+of `order` and the finite Archimedean class of `leadingCoeff`. -/
 noncomputable def finiteArchimedeanClassOrderHomLex :
     FiniteArchimedeanClass (Lex (HahnSeries Γ R)) →o Γ ×ₗ FiniteArchimedeanClass R :=
   FiniteArchimedeanClass.liftOrderHom
@@ -289,8 +289,8 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     · exact OrderHom.monotone _ hle
 
 variable (Γ R) in
-/-- The correspondence between finite archimedean classes of `Lex (HahnSeries Γ R)`
-and lexicographical pairs of `HahnSeries.orderTop` and the finite archimedean class of
+/-- The correspondence between finite Archimedean classes of `Lex (HahnSeries Γ R)`
+and lexicographical pairs of `HahnSeries.orderTop` and the finite Archimedean class of
 `HahnSeries.leadingCoeff`. -/
 noncomputable def finiteArchimedeanClassOrderIsoLex :
     FiniteArchimedeanClass (Lex (HahnSeries Γ R)) ≃o Γ ×ₗ FiniteArchimedeanClass R := by
@@ -323,7 +323,7 @@ variable [Archimedean R] [Nontrivial R]
 
 variable (Γ R) in
 /-- For `Archimedean` coefficients, there is a correspondence between finite
-archimedean classes and `HahnSeries.orderTop` without the top element. -/
+Archimedean classes and `HahnSeries.orderTop` without the top element. -/
 noncomputable def finiteArchimedeanClassOrderIso :
     FiniteArchimedeanClass (Lex (HahnSeries Γ R)) ≃o Γ :=
   have : Unique (FiniteArchimedeanClass R) := (nonempty_unique _).some
@@ -336,7 +336,7 @@ theorem finiteArchimedeanClassOrderIso_apply {x : Lex (HahnSeries Γ R)} (h : x 
 
 variable (Γ R) in
 /-- For `Archimedean` coefficients, there is a correspondence between
-archimedean classes (with top) and `HahnSeries.orderTop`. -/
+Archimedean classes (with top) and `HahnSeries.orderTop`. -/
 noncomputable def archimedeanClassOrderIsoWithTop :
     ArchimedeanClass (Lex (HahnSeries Γ R)) ≃o WithTop Γ :=
   (FiniteArchimedeanClass.withTopOrderIso _).symm.trans
