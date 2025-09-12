@@ -172,6 +172,7 @@ def deriveFunctor (m : MVarId) : TermElabM Unit := do
       #[{ ref := .missing
           kind := .def
           levelParams := levels
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe := d.isUnsafe
               attrs :=
@@ -239,6 +240,7 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
       #[{ ref := .missing
           kind := .def
           levelParams := decl.levelParams
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe
               attrs :=
@@ -415,6 +417,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
       #[{ ref := .missing
           kind := .def
           levelParams := levels
+          binders := mkNullNode #[]
           modifiers :=
             { isUnsafe := d.isUnsafe
               isProtected := true }
