@@ -421,22 +421,21 @@ lemma toRingHom_trans {A₁ A₂ A₃ : Type*} [NonAssocSemiring A₁] [NonAssoc
 
 end trans
 
-section arrowCongr
-variable {A₁ A₂ A₃ A₁' A₂' A₃' : Type*} [CommSemiring R]
-variable [Semiring A₁] [Semiring A₂] [Semiring A₃] [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
-variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
-variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
-
 /-- `Equiv.cast (congrArg _ h)` as an algebra equiv.
 
 Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
 to avoid having to deal with an equality of the algebraic structure itself. -/
 @[simps!]
-protected def cast
-    {ι : Type*} {A : ι → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)] {i j : ι} (h : i = j) :
-    A i ≃ₐ[R] A j where
+protected def cast {ι : Type*} {A : ι → Type*} [∀ i, Mul (A i)] [∀ i, Add (A i)] [∀ i, SMul R (A i)]
+    {i j : ι} (h : i = j) : A i ≃ₐ[R] A j where
   __ := RingEquiv.cast h
-  commutes' _ := by cases h; rfl
+  map_smul' _ := by cases h; simp
+
+section arrowCongr
+variable {A₁ A₂ A₃ A₁' A₂' A₃' : Type*} [CommSemiring R]
+variable [Semiring A₁] [Semiring A₂] [Semiring A₃] [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
+variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
+variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
 `A₁ →ₐ[R] A₂` is equivalent to the type of maps `A₁' →ₐ[R] A₂'`. -/
