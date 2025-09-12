@@ -144,8 +144,7 @@ def restrict₀ : A →*₀ ValueGroup₀ f where
   map_zero' := by simp
 
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
-    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
-  by simp [h]
+    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by simp [h]
 
 lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
     restrict₀ f a = 0 := by simp [h]
