@@ -184,7 +184,7 @@ def terminalToGrind : TacticAnalysis.Config where
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
 register_option linter.tacticAnalysis.introMerge : Bool := {
-  defValue := false
+  defValue := true
 }
 
 @[tacticAnalysis linter.tacticAnalysis.introMerge, inherit_doc linter.tacticAnalysis.introMerge]
