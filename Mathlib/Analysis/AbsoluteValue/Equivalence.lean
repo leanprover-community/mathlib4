@@ -77,7 +77,7 @@ theorem IsEquiv.one_le_iff (h : v.IsEquiv w) {x : R} :
 theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) {x : R} : v x = 1 ↔ w x = 1 := by
   simpa only [map_one] using h.eq_iff_eq (x := x) (y := 1)
 
-theorem IsEquiv.isNontrivial_iff {w : AbsoluteValue R S} (h : v.IsEquiv w) :
+theorem IsEquiv.isNontrivial_congr {w : AbsoluteValue R S} (h : v.IsEquiv w) :
     v.IsNontrivial ↔ w.IsNontrivial :=
   not_iff_not.1 <| by aesop (add simp [not_isNontrivial_iff, h.eq_one_iff])
 alias ⟨IsEquiv.isNontrivial, _⟩ := IsEquiv.isNontrivial_iff
