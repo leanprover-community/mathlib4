@@ -794,9 +794,6 @@ def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
 ### Predicates on sequences
 -/
 
-/-- `s.All p` means that the predicate `p` is true on each element of `s`. -/
-def All (s : Seq α) (p : α → Prop) : Prop := ∀ x ∈ s, p x
-
 /--
 `Pairwise R s` means that all the elements with earlier indexes are
 `R`-related to all the elements with later indexes.
@@ -807,7 +804,7 @@ For example if `R = (· ≠ ·)` then it asserts `s` has no duplicates,
 and if `R = (· < ·)` then it asserts that `s` is (strictly) sorted.
 -/
 def Pairwise (R : α → α → Prop) (s : Seq α) : Prop :=
-  ∀ i j x y, i < j → s.get? i = .some x → s.get? j = .some y → R x y
+  ∀ i j, i < j → ∀ x ∈ s.get? i, ∀ y ∈ s.get? j, R x y
 
 /-- `s₁.AtLeastAsLongAs s₂` means that `s₁` has at least as many elements as sequence `s₂`.
 In particular, they both may be infinite. -/
