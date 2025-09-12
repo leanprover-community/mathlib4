@@ -557,8 +557,8 @@ lemma sq_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ 2 = a := by
   rw [pow_two, sqrt_mul_sqrt_self (A := A) a]
 
 theorem _root_.nonneg_iff_eq_star_mul_self {a : A} : 0 ≤ a ↔ ∃ b : A, a = star b * b := by
-  refine ⟨fun h => ⟨CFC.sqrt a, ?_⟩, fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _⟩
-  rw [CFC.sqrt_nonneg _ |>.isSelfAdjoint, ← sq, CFC.sq_sqrt a]
+  refine ⟨fun h => ⟨sqrt a, ?_⟩, fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _⟩
+  rw [sqrt_nonneg _ |>.isSelfAdjoint, ← sq, sq_sqrt a]
 
 @[simp]
 lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap ℝ≥0 A (NNReal.sqrt r) := by
