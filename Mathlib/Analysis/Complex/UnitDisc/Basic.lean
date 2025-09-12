@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.NormedSpace.BallAction
+import Mathlib.Analysis.Normed.Module.Ball.Action
 
 /-!
 # Poincaré disc
