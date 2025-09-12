@@ -554,6 +554,23 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
 @[deprecated (since := "2025-04-18")]
 alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
+-- should be similar
+lemma mfderivWithin_prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableWithinAt I J f s x) (hg : MDifferentiableWithinAt I' J' g t x') :
+    mfderivWithin (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
+      = (mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x') := by
+  sorry
+
+#exit
+
+lemma mfderiv_prodMap {x' : M'} {f : M → N} {g : M' → N'}
+    (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
+    mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
+      = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := by
+  simp_rw [← mfderivWithin_univ]
+  rw [← univ_prod_univ]
+  exact mfderivWithin_prodMap hf.mdifferentiableWithinAt hg.mdifferentiableWithinAt
+
 end prodMap
 
 @[simp, mfld_simps]
