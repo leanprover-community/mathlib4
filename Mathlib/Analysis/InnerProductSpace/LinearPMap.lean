@@ -324,7 +324,6 @@ namespace LinearPMap
 
 variable {T : E →ₗ.[𝕜] F} [CompleteSpace E]
 
--- set_option trace.Meta.isDefEq true in
 theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
