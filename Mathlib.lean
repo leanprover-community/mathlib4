@@ -100,6 +100,7 @@ import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 import Mathlib.Algebra.Category.CommAlgCat.Monoidal
 import Mathlib.Algebra.Category.CommBialgCat
 import Mathlib.Algebra.Category.ContinuousCohomology.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Abelian
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.Algebra.Category.FGModuleCat.EssentiallySmall
@@ -1554,6 +1555,7 @@ import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Complex.HalfPlane
+import Mathlib.Analysis.Complex.HasPrimitives
 import Mathlib.Analysis.Complex.IntegerCompl
 import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Analysis.Complex.Isometry
@@ -1894,6 +1896,7 @@ import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.PSeriesComplex
 import Mathlib.Analysis.Polynomial.Basic
 import Mathlib.Analysis.Polynomial.CauchyBound
+import Mathlib.Analysis.Polynomial.Factorization
 import Mathlib.Analysis.Quaternion
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.RCLike.BoundedContinuous
@@ -6737,6 +6740,7 @@ import Mathlib.Topology.Separation.CountableSeparatingOn
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Separation.Lemmas
 import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Separation.Profinite
