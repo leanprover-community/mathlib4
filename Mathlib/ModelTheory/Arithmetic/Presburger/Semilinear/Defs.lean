@@ -14,13 +14,13 @@ finitely generated additive submonoid, and a semilinear set is a finite union of
 
 We prove that semilinear sets are closed under union, projection, set addition and additive closure.
 We also prove that any semilinear set can be decomposed into a finite union of proper linear sets,
-which are linear sets with linear independent submonoid generators (periods).
+which are linear sets with linearly independent submonoid generators (periods).
 
 ## Main Definitions
 
 - `IsLinearSet`: a set is linear if is a coset of a finitely generated additive submonoid.
 - `IsSemilinearSet`: a set is semilinear if it is a finite union of linear sets.
-- `IsProperLinearSet`: a linear set is proper if its submonoid generators (periods) are linear
+- `IsProperLinearSet`: a linear set is proper if its submonoid generators (periods) are linearly
   independent.
 - `IsProperSemilinearSet`: a semilinear set is proper if it is a finite union of proper linear sets.
 
@@ -45,9 +45,10 @@ variable {α : Type u} {β : Type v} [AddCommMonoid α] [AddCommMonoid β]
 open Set Pointwise AddSubmonoid
 
 /-- A set is linear if is a coset of a finitely generated additive submonoid. -/
-def IsLinearSet (s : Set α) :=
+def IsLinearSet (s : Set α) : Prop :=
   ∃ (a : α) (t : Finset α), s = a +ᵥ (closure (t : Set α) : Set α)
 
+@[simp]
 theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set α) :=
   ⟨a, ∅, by simp⟩
 
@@ -63,7 +64,8 @@ theorem isLinearSet_of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) :
   rw [isLinearSet_iff_eq_vadd_addSubmonoid_fg]
   exact ⟨0, P, hP, by rw [zero_vadd]⟩
 
-theorem IsLinearSet.univ [AddMonoid.FG α] : IsLinearSet (univ : Set α) :=
+@[simp]
+protected theorem IsLinearSet.univ [AddMonoid.FG α] : IsLinearSet (univ : Set α) :=
   isLinearSet_of_addSubmonoid_fg AddMonoid.FG.fg_top
 
 theorem IsLinearSet.vadd (a : α) (hs : IsLinearSet s) : IsLinearSet (a +ᵥ s) := by
@@ -85,15 +87,17 @@ theorem IsLinearSet.image (hs : IsLinearSet s) (f : F) : IsLinearSet (f '' s) :=
   simp [image_vadd_distrib, ← AddMonoidHom.map_mclosure]
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
-def IsSemilinearSet (s : Set α) :=
+def IsSemilinearSet (s : Set α) : Prop :=
   ∃ (S : Finset (Set α)), (∀ t ∈ S, IsLinearSet t) ∧ s = ⋃₀ S
 
 theorem IsLinearSet.isSemilinearSet (h : IsLinearSet s) : IsSemilinearSet s :=
   ⟨{s}, by simp [h], by simp⟩
 
+@[simp]
 theorem IsSemilinearSet.empty : IsSemilinearSet (∅ : Set α) :=
   ⟨∅, by simp, by simp⟩
 
+@[simp]
 theorem IsSemilinearSet.singleton (a) : IsSemilinearSet ({a} : Set α) :=
   (IsLinearSet.singleton a).isSemilinearSet
 
@@ -105,7 +109,8 @@ theorem isSemilinearSet_of_addSubmonoid_fg {P : AddSubmonoid α} (hP : P.FG) :
     IsSemilinearSet (P : Set α) :=
   (isLinearSet_of_addSubmonoid_fg hP).isSemilinearSet
 
-theorem IsSemilinearSet.univ [AddMonoid.FG α] : IsSemilinearSet (univ : Set α) :=
+@[simp]
+protected theorem IsSemilinearSet.univ [AddMonoid.FG α] : IsSemilinearSet (univ : Set α) :=
   IsLinearSet.univ.isSemilinearSet
 
 /-- Semilinear sets are closed under union. -/
@@ -124,7 +129,7 @@ theorem IsSemilinearSet.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, IsSemili
     IsSemilinearSet (⋃₀ (S : Set (Set α))) := by
   classical
   induction S using Finset.induction with
-  | empty => simpa using empty
+  | empty => simp
   | insert s S _ ih =>
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using hS.1.union (ih hS.2)
@@ -144,11 +149,11 @@ theorem IsSemilinearSet.biUnion {s : Finset ι} {t : ι → Set α}
   apply sUnion
   simpa
 
-theorem Finite.isSemilinearSet (hs : s.Finite) : IsSemilinearSet s := by
+theorem IsSemilinearSet.of_finite (hs : s.Finite) : IsSemilinearSet s := by
   rw [← biUnion_of_singleton s, ← hs.coe_toFinset]
   simp_rw [Finset.mem_coe]
   apply IsSemilinearSet.biUnion
-  simp [IsSemilinearSet.singleton]
+  simp
 
 theorem IsSemilinearSet.vadd (a : α) (hs : IsSemilinearSet s) : IsSemilinearSet (a +ᵥ s) := by
   classical
@@ -188,12 +193,12 @@ theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → α)} (hs : IsSemilinearSet 
     refine ⟨y ∘ Sum.inr, ?_⟩
     simpa [LinearMap.funLeft]
 
-/-- An variant of `Semilinear.proj` for backward reasoning. -/
+/-- A variant of `Semilinear.proj` for backward reasoning. -/
 theorem IsSemilinearSet.proj' {p : (ι → α) → (κ → α) → Prop} :
     IsSemilinearSet { x | p (x ∘ Sum.inl) (x ∘ Sum.inr) } → IsSemilinearSet { x | ∃ y, p x y } :=
   proj
 
-lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (closure s : Set α) := by
+protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (closure s : Set α) := by
   classical
   rcases hs with ⟨a, t, rfl⟩
   convert (IsSemilinearSet.singleton 0).union (isSemilinearSet ⟨a, {a} ∪ t, rfl⟩)
@@ -225,17 +230,18 @@ lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (closure s : Se
       exact vadd_mem_vadd_set (zero_mem _)
 
 /-- Semilinear sets are closed under additive closure. -/
-theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) : IsSemilinearSet (closure s : Set α) := by
+protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
+    IsSemilinearSet (closure s : Set α) := by
   classical
   rcases hs with ⟨S, hS, rfl⟩
   induction S using Finset.induction with
-  | empty => simpa using singleton 0
+  | empty => simp
   | insert s S _ ih =>
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa [closure_union, coe_sup] using hS.1.closure.add (ih hS.2)
 
-/-- A linear set is proper if its submonoid generators (periods) are linear independent. -/
-def IsProperLinearSet (s : Set α) :=
+/-- A linear set is proper if its submonoid generators (periods) are linearly independent. -/
+def IsProperLinearSet (s : Set α) : Prop :=
   ∃ (a : α) (t : Finset α), LinearIndepOn ℕ id (t : Set α) ∧ s = a +ᵥ (closure (t : Set α) : Set α)
 
 theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s := by
@@ -243,7 +249,7 @@ theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s
   exact ⟨a, t, rfl⟩
 
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
-def IsProperSemilinearSet (s : Set α) :=
+def IsProperSemilinearSet (s : Set α) : Prop :=
   ∃ (S : Finset (Set α)), (∀ t ∈ S, IsProperLinearSet t) ∧ s = ⋃₀ S
 
 theorem IsProperSemilinearSet.isSemilinearSet (hs : IsProperSemilinearSet s) :
@@ -255,6 +261,7 @@ theorem IsProperLinearSet.isProperSemilinearSet (hs : IsProperLinearSet s) :
     IsProperSemilinearSet s :=
   ⟨{s}, by simp [hs], by simp⟩
 
+@[simp]
 theorem IsProperSemilinearSet.empty : IsProperSemilinearSet (∅ : Set α) :=
   ⟨∅, by simp, by simp⟩
 
@@ -273,7 +280,7 @@ theorem IsProperSemilinearSet.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, Is
     IsProperSemilinearSet (⋃₀ (S : Set (Set α))) := by
   classical
   induction S using Finset.induction with
-  | empty => simpa using empty
+  | empty => simp
   | insert s S _ ih =>
     simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
     simpa using hS.1.union (ih hS.2)
@@ -297,7 +304,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd α] (hs : IsLinearSet s) :
     rcases hindep with ⟨t', ht', f, heq, i, hi, hfi⟩
     simp only [Function.id_def] at heq
     convert_to IsProperSemilinearSet (⋃ j ∈ t', ⋃ k ∈ Finset.range (f j),
-      (a + k • j) +ᵥ (AddSubmonoid.closure (t.erase j : Set α) : Set α))
+      (a + k • j) +ᵥ (closure (t.erase j : Set α) : Set α))
     · ext x
       simp only [mem_vadd_set, SetLike.mem_coe]
       constructor
