@@ -6736,6 +6736,7 @@ import Mathlib.Topology.Separation.CountableSeparatingOn
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Topology.Separation.GDelta
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.Separation.Lemmas
 import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Separation.Profinite
