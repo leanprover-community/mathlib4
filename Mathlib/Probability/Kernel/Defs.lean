@@ -178,6 +178,10 @@ lemma IsFiniteKernel.bound_eq_zero_of_isEmpty [IsEmpty α] (κ : Kernel α β) :
 lemma IsFiniteKernel.bound_eq_zero_of_isEmpty' [IsEmpty β] (κ : Kernel α β) :
     IsFiniteKernel.bound κ = 0 := by simp [bound, Subsingleton.elim _ (0 : Measure β)]
 
+@[simp]
+lemma IsFiniteKernel.bound_zero : IsFiniteKernel.bound (0 : Kernel α β) = 0 := by
+  simp [IsFiniteKernel.bound]
+
 instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
   ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
@@ -225,6 +229,13 @@ instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMark
 @[simp]
 lemma IsMarkovKernel.bound_eq_one [Nonempty α] (κ : Kernel α β) [IsMarkovKernel κ] :
     IsFiniteKernel.bound κ = 1 := by simp [IsFiniteKernel.bound]
+
+@[simp]
+lemma IsZeroOrMarkovKernel.bound_le_one (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsFiniteKernel.bound κ ≤ 1 := by
+  rcases isEmpty_or_nonempty α
+  · simp
+  · rcases eq_zero_or_isMarkovKernel κ with rfl | _ <;> simp
 
 namespace Kernel
 
