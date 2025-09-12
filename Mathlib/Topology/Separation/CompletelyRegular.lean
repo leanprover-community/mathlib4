@@ -197,10 +197,10 @@ theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_conti
   obtain ⟨hfc, hf₀, hf₁⟩ := hf
   let R := Set.range f
   have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} continuum := by
-    simpa [R] using Cardinal.mk_range_le_lift.trans_lt (Cardinal.lift_strictMono hX)
-  rw [Cardinal.lift_continuum, ← Cardinal.lift_continuum.{u, 0}, Cardinal.lift_lt,
-    ← Cardinal.mk_Icc_real zero_lt_one, ← unitInterval] at hR
-  obtain ⟨r, hr⟩ := Cardinal.compl_nonempty_of_mk_lt_mk hR
+    simpa [R] using mk_range_le_lift.trans_lt (lift_strictMono hX)
+  rw [lift_continuum, ← lift_continuum.{u, 0}, lift_lt, ← mk_Icc_real zero_lt_one, ← unitInterval]
+    at hR
+  obtain ⟨r, hr⟩ : ∃ r : I, r ∈ Rᶜ := compl_nonempty_of_mk_lt_mk hR
   have hr' : ∀ (x : X), f x ≠ r := by simpa [R] using hr
   have hrclopen : f ⁻¹' Iio r = f ⁻¹' Iic r := by
     ext; simp [le_iff_lt_or_eq, hr']
