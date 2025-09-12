@@ -187,6 +187,9 @@ section toAlgHom
 variable {A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
+lemma ofCommutes_apply (e : A₁ ≃+* A₂) (h_comm : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r)
+    (x : A₁) : (ofCommutes (R := R) e h_comm : A₁ ≃ₐ[R] A₂) x = e x := rfl
+
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
 This definition is included for symmetry with the other `to*Hom` projections.
