@@ -167,8 +167,8 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
   apply Equiv.ofBijective (Quot.lift f f_respects_relation)
   constructor
   · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
-    induction' q_a using Quotient.ind with a
-    induction' q_b using Quotient.ind with b
+    induction q_a using Quotient.ind with | _ a
+    induction q_b using Quotient.ind with | _ b
     simp only [f, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
     change a ∈ { x | r x b }
