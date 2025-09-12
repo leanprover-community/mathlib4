@@ -29,6 +29,22 @@ theorem Submodule.fg_iff_exists_fin_linearMap {N : Submodule R M} :
   simp_rw [fg_iff_exists_fin_generating_family, ← ((Pi.basisFun R _).constr ℕ).exists_congr_right]
   simp [Basis.constr_range]
 
+theorem AddSubmonoid.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommMonoid M]
+    {S : AddSubmonoid M} : S.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℕ) →+ M), AddMonoidHom.mrange f = S := by
+  rw [← S.toNatSubmodule_toAddSubmonoid, ← Submodule.fg_iff_addSubmonoid_fg,
+    Submodule.fg_iff_exists_fin_linearMap]
+  exact exists_congr fun n => ⟨fun ⟨f, hf⟩ => ⟨f, hf ▸ LinearMap.range_toAddSubmonoid _⟩,
+    fun ⟨f, hf⟩ => ⟨f.toNatLinearMap, Submodule.toAddSubmonoid_inj.mp <|
+      hf ▸ LinearMap.range_toAddSubmonoid _⟩⟩
+
+theorem AddSubgroup.fg_iff_exists_fin_addMonoidHom {M : Type*} [AddCommGroup M]
+    {H : AddSubgroup M} : H.FG ↔ ∃ (n : ℕ) (f : (Fin n → ℤ) →+ M), AddMonoidHom.range f = H := by
+  rw [← H.toIntSubmodule_toAddSubgroup, ← Submodule.fg_iff_addSubgroup_fg,
+    Submodule.fg_iff_exists_fin_linearMap]
+  refine exists_congr fun n => ⟨fun ⟨f, hf⟩ => ⟨f, hf ▸ LinearMap.range_toAddSubgroup _⟩,
+    fun ⟨f, hf⟩ => ⟨f.toIntLinearMap, Submodule.toAddSubmonoid_inj.mp ?_⟩⟩
+  simp [hf]
+
 namespace Module
 
 namespace Finite
