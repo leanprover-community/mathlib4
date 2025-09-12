@@ -408,7 +408,7 @@ equal to the Krull dimension of `R`. -/
 lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) = ringKrullDim R := by
   rw [← sup_height_eq_ringKrullDim, WithBot.coe_inj]
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · exact iSup_mono fun I => iSup_mono' fun hI => ⟨hI.ne_top, by rw [← height_eq_primeHeight]⟩
   · refine iSup_mono' fun I => ?_
     by_cases I_top : I = ⊤
@@ -423,7 +423,7 @@ equal to the Krull dimension of `R`. -/
 lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsMaximal), I.primeHeight) = ringKrullDim R := by
   rw [← Ideal.sup_primeHeight_eq_ringKrullDim, WithBot.coe_inj]
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · exact iSup_mono fun I => iSup_mono' fun hI => ⟨IsMaximal.isPrime hI, le_rfl⟩
   · refine iSup_mono' fun I => ?_
     obtain rfl | I_top := eq_or_ne I ⊤
