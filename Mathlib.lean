@@ -3691,6 +3691,7 @@ import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.AnalyticManifold
 import Mathlib.Deprecated.Order
 import Mathlib.Deprecated.RingHom
+import Mathlib.Deprecated.Tactic.DeriveTraversable
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
@@ -6017,7 +6018,6 @@ import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
 import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
-import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.ENatToNat
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ErwQuestion
