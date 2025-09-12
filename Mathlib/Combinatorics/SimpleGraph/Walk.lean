@@ -1092,11 +1092,11 @@ lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
-  rw [← support_cons, cons_tail_eq _ hp]
+  rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
-  rw [← length_cons, cons_tail_eq _ hp]
+  rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by cases p <;> aesop
 
