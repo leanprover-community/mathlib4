@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Hannah Scholz
+Authors: Floris van Doorn, Hannah Scholz, Robert Maxton
 -/
 
 import Mathlib.Topology.CWComplex.Classical.Finite
@@ -23,7 +23,7 @@ The definintion of subcomplexes is in the file `Topology.CWComplex.Classical.Bas
 
 noncomputable section
 
-open Metric Set
+open Metric Set Set.Notation
 
 namespace Topology
 
@@ -68,10 +68,15 @@ lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComp
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
   exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
 
+lemma RelCWComplex.Subcomplex.cell_mem_of_mem [T2Space X] [RelCWComplex C D] (E : Subcomplex C)
+    {n} {i : cell C n} {x} (hxE : x ∈ E) (hxo : x ∈ openCell n i) : i ∈ E.I n := by
+  by_contra! h!
+  exact disjoint_openCell_subcomplex_of_not_mem E h! |>.notMem_of_mem_left hxo hxE
+
 open Classical in
 /-- A subcomplex is again a CW complex. -/
 @[simps]
-instance RelCWComplex.Subcomplex.instRelCWComplex [T2Space X] [RelCWComplex C D]
+instance RelCWComplex.Subcomplex.toComplex [T2Space X] [𝓔 : RelCWComplex C D]
     (E : Subcomplex C) : RelCWComplex E D where
   cell n := E.I n
   map n i := map (C := C) n i
@@ -157,13 +162,190 @@ instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWC
     [Finite C] (E : Subcomplex C) : Finite (E : Set X) :=
   finite_of_finiteDimensional_finiteType _
 
+/-- A CW complex is coherent with any collection of subcomplexes that span the complex. -/
+lemma RelCWComplex.Subcomplex.isCoherentWith_cover [T2Space X] [𝓔 : RelCWComplex C D]
+    {ι} (𝒮 : ι → Subcomplex C) (h𝒮 : C ⊆ ⋃ i, 𝒮 i) :
+    IsCoherentWith (range (C ↓∩ 𝒮 ·)) := by
+  rcases em (Nonempty ι) with ⟨⟨i⟩⟩ | hι₀
+  · apply 𝓔.isCoherentWith_closedCells.enlarge
+    simp only [mem_insert_iff, mem_range, Sigma.exists, exists_exists_eq_and, forall_eq_or_imp,
+      forall_exists_index]
+    split_ands
+    · use i, preimage_mono (𝒮 i).base_subset
+    · rintro _ n j rfl
+      have := target_eq n j ▸ (map n j).map_source (show 0 ∈ (map n j).source by simp [source_eq])
+      obtain ⟨_, ⟨⟨i, rfl⟩, hi₀⟩⟩ := h𝒮 (openCell_subset_complex n j this)
+      replace hi₀ := (𝒮 i).cell_mem_of_mem hi₀ this
+      use i, preimage_mono <| (𝒮 i).closedCell_subset_of_mem hi₀
+  · rw [not_nonempty_iff] at hι₀
+    simp only [iUnion_of_empty, subset_empty_iff] at h𝒮
+    cases h𝒮; constructor; simp
+
 namespace CWComplex.Subcomplex
 
 export RelCWComplex.Subcomplex (closedCell_subset_of_mem openCell_subset_of_mem
-  cellFrontier_subset_of_mem disjoint_openCell_subcomplex_of_not_mem subset_complex
-  finiteType_subcomplex_of_finiteType finiteDimensional_subcomplex_of_finiteDimensional
-  finite_subcomplex_of_finite)
+  cellFrontier_subset_of_mem subset_complex finiteType_subcomplex_of_finiteType
+  finiteDimensional_subcomplex_of_finiteDimensional finite_subcomplex_of_finite
+  disjoint_openCell_subcomplex_of_not_mem cell_mem_of_mem)
 
 end CWComplex.Subcomplex
+
+section skeleton
+
+/-! In this section we collect results about the `n`-skeleta of CW complexes that depend on their
+being complexes in their own right. -/
+
+namespace RelCWComplex
+open ContinuousMap
+variable [T2Space X] [𝓔 : RelCWComplex C D] {Z} [TopologicalSpace Z]
+variable (C)
+
+/-- A CW complex is coherent with its skeleta. -/
+lemma isCoherentWith_skeletonLT : IsCoherentWith { C ↓∩ skeletonLT C n | n : ℕ } :=
+  Subcomplex.isCoherentWith_cover _ iUnion_skeletonLT_eq_complex.symm.subset
+
+/-- A relative CW complex is coherent with its base and skeleta. -/
+lemma isCoherentWith_skeleton :
+    IsCoherentWith (insert (C ↓∩ D) { C ↓∩ skeleton C n | n : ℕ }) := by
+  fapply 𝓔.isCoherentWith_skeletonLT.enlarge
+  rintro _ ⟨_ | n, rfl⟩
+  · simpa using .inl (preimage_mono skeletonLT_zero_eq_base.subset)
+  · simpa using .inr ⟨n, le_refl _⟩
+
+/-- Descend from a relative CW complex, by providing continuous maps for each skeleton (and the
+base) that agree where they intersect. -/
+def descBySkeletonLT (f : (n : ℕ) → C(skeletonLT C n, Z))
+    (hf : ∀ (n : ℕ) (x : skeletonLT C n),
+      f (n + 1) (ContinuousMap.inclusion (skeletonLT_mono <| ENat.coe_le_coe.mpr <| n.le_succ) x)
+        = f n x) : C(C, Z) := by?
+  fapply isCoherentWith_skeletonLT C |>.liftCover'
+  · simp [← preimage_iUnion, iUnion_skeletonLT_eq_complex.symm.subset]
+  · exact (f · |>.comp preimageValIncl)
+  · intro n m x hx₁ hx₂
+    wlog h : m ≤ n generalizing n m
+    · exact this m n hx₂ hx₁ (le_of_not_ge h) |>.symm
+    induction h with
+    | refl => simp
+    | @step k hk ih =>
+      specialize hf k ⟨x, skeletonLT_mono (ENat.coe_le_coe.mpr hk) hx₂⟩
+      simp [ContinuousMap.inclusion] at hf ih ⊢
+      simp [hf, ih <| skeletonLT_mono (ENat.coe_le_coe.mpr hk) hx₂]
+
+/-- Composing the descent morphism with the canonical inclusions of each skeleton retrieves the
+original maps. -/
+lemma descBySkeletonLT_inclusion {f : (n : ℕ) → C(skeletonLT C n, Z)} {hf} (n : ℕ) :
+    (descBySkeletonLT C f hf).comp
+      (ContinuousMap.inclusion (skeletonLT C n).subset_complex) = f n := by
+  ext x
+  simp only [SetLike.coe_sort_coe, descBySkeletonLT, ContinuousMap.inclusion, comp_apply, mk_apply,
+  Set.inclusion]
+  rw [IsCoherentWith.liftCover'_of_mem (i := n)] <;> simp
+
+/-- Composing the descent morphism with the canonical inclusions of each skeleton retrieves the
+original map. -/
+@[simp]
+lemma descBySkeletonLT_inclusion_apply {f : (n : ℕ) → C(skeletonLT C n, Z)} {hf} (n : ℕ) x :
+    descBySkeletonLT C f hf
+      (Set.inclusion (skeletonLT C n).subset_complex x) = f n x := by
+  rw [← descBySkeletonLT_inclusion (hf := hf)]; rfl
+
+lemma descBySkeletonLT_of_mem {f : (n : ℕ) → C(skeletonLT C n, Z)} {hf}
+    (n : ℕ) {x} (hx : x ∈ skeletonLT C n) :
+    descBySkeletonLT C f hf ⟨x, (skeletonLT C n).subset_complex hx⟩ = f n ⟨x, hx⟩ := by
+  rw [← descBySkeletonLT_inclusion (hf := hf)]; rfl
+
+/-- Descend from a relative CW complex, by providing continuous map from each skeleton and
+(separately) the base which agree where they intersect. -/
+noncomputable def descBySkeleton (d : C(D, Z)) (f : (n : ℕ) → C(skeleton C n, Z))
+    (hd : ∀ (x : D), f 0 (ContinuousMap.inclusion (skeleton C 0).base_subset x) = d x)
+    (hf : ∀ (n : ℕ) (x : skeleton C n),
+      f (n + 1) (ContinuousMap.inclusion (skeleton_mono <| ENat.coe_le_coe.mpr <| n.le_succ) x)
+        = f n x) : C(C, Z) :=
+  descBySkeletonLT C
+    (fun | 0 => d.comp <| .inclusion 𝓔.skeletonLT_zero_eq_base.subset | n + 1 => f n)
+    (fun | 0, x => by simp [← hd]; rfl | n + 1, x => by specialize hf n x; simpa using hf)
+
+/-- Composing the descent morphism with the canonical inclusions of each skeleton retrieves the
+original map. -/
+lemma descBySkeleton_inclusion {d : C(D, Z)} {f : (n : ℕ) → C(skeleton C n, Z)} {hd hf} (n : ℕ) :
+    (descBySkeleton C d f hd hf).comp
+      (ContinuousMap.inclusion (skeleton C n).subset_complex) = f n := by
+  ext x; simpa [descBySkeleton] using descBySkeletonLT_inclusion_apply C (n + 1) x
+
+/-- Composing the descent morphism with the canonical inclusions of each skeleton retrieves the
+original map. -/
+@[simp]
+lemma descBySkeleton_inclusion_apply
+    {d : C(D, Z)} {f : (n : ℕ) → C(skeleton C n, Z)} {hd hf} (n : ℕ) x :
+    descBySkeleton C d f hd hf
+      (Set.inclusion (skeleton C n).subset_complex x) = f n x := by
+  rw [← descBySkeleton_inclusion (hd := hd) (hf := hf)]; rfl
+
+/-- Composing the descent morphism with the canonical inclusions from the base retrieves the
+original map. -/
+lemma descBySkeleton_inclusion_base {d : C(D, Z)} {f : (n : ℕ) → C(skeleton C n, Z)} {hd hf} :
+    (descBySkeleton C d f hd hf).comp (ContinuousMap.inclusion base_subset_complex) = d := by
+  ext x
+  rw [comp_apply, ContinuousMap.coe_inclusion,
+    ← Set.inclusion_comp_inclusion 𝓔.skeletonLT_zero_eq_base.symm.subset
+    (skeletonLT C 0).subset_complex, Function.comp_apply, descBySkeleton,
+    descBySkeletonLT_inclusion_apply]
+  rfl
+
+lemma descBySkeleton_of_mem {d : C(D, Z)} {f : (n : ℕ) → C(skeleton C n, Z)} {hd hf}
+    (n : ℕ) {x} (hx : x ∈ skeleton C n) :
+    descBySkeleton C d f hd hf ⟨x, (skeleton C n).subset_complex hx⟩ = f n ⟨x, hx⟩ := by
+  unfold descBySkeleton; rw [descBySkeletonLT_of_mem C (n + 1) hx]; rfl
+
+lemma descBySkeleton_of_mem_base
+    {d : C(D, Z)} {f : (n : ℕ) → C(skeleton C n, Z)} {hd hf} {x} (hx : x ∈ D) :
+    descBySkeleton C d f hd hf ⟨x, base_subset_complex hx⟩ = d ⟨x, hx⟩ := by
+  unfold descBySkeleton; rw [descBySkeletonLT_of_mem C 0 _]
+  · rfl
+  · rwa [← 𝓔.skeletonLT_zero_eq_base] at hx
+
+end RelCWComplex
+
+namespace CWComplex
+variable [T2Space X] [𝓔 : CWComplex C] {Z} [TopologicalSpace Z]
+variable (C)
+
+/-- A CW complex is coherent with its skeleta. -/
+lemma isCoherentWith_skeleton : IsCoherentWith { C ↓∩ skeleton C n | n : ℕ } := by
+  fapply RelCWComplex.isCoherentWith_skeletonLT C |>.enlarge
+  rintro _ ⟨_ | n, rfl⟩
+  · exists _, ⟨1, rfl⟩; simp [𝓔.skeletonLT_zero_eq_empty]
+  · simpa using ⟨n, le_refl _⟩
+
+/-- Descend from a CW complex by providing continuous maps from each skeleton. -/
+noncomputable def descBySkeleton
+    (f : (n : ℕ) → C(skeleton C n, Z))
+    (hf : ∀ (n : ℕ) (x : skeleton C n),
+      f (n + 1) (ContinuousMap.inclusion (skeleton_mono <| ENat.coe_le_coe.mpr <| n.le_succ) x)
+        = f n x) : C(C, Z) :=
+  RelCWComplex.descBySkeletonLT C
+    (fun | 0 => .empty Z | n + 1 => f n)
+    (fun | 0, x => IsEmpty.elim inferInstance x | n + 1, x => by specialize hf n x; simpa using hf)
+
+/-- Composing the descent morphism with the canonical inclusions of each skeleton retrieves the
+original map. -/
+lemma descBySkeleton_inclusion {f : (n : ℕ) → C(skeleton C n, Z)} {hf} (n : ℕ) :
+    (descBySkeleton C f hf).comp (.inclusion (skeleton C n).subset_complex) = f n := by
+  ext x; simpa [descBySkeleton] using RelCWComplex.descBySkeletonLT_inclusion_apply C (n + 1) x
+
+/-- Composing the descent morphism with the canonical inclusions of each skeleton retrieves the
+original map. -/
+@[simp]
+lemma descBySkeleton_inclusion_apply {f : (n : ℕ) → C(skeleton C n, Z)} {hf} (n : ℕ) x :
+    descBySkeleton C f hf (Set.inclusion (skeleton C n).subset_complex x) = f n x := by
+  simp [descBySkeleton]; rfl
+
+lemma descBySkeleton_of_mem
+    {f : (n : ℕ) → C(skeleton C n, Z)} {hf} (n : ℕ) {x} (hx : x ∈ skeleton C n) :
+    descBySkeleton C f hf ⟨x, (skeleton C n).subset_complex hx⟩ = f n ⟨x, hx⟩ := by
+  unfold descBySkeleton; rw [RelCWComplex.descBySkeletonLT_of_mem C (n + 1) hx]; rfl
+
+end CWComplex
+end skeleton
 
 end Topology

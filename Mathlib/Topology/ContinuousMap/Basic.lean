@@ -170,6 +170,12 @@ def _root_.Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
 lemma mk_apply {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
     (hf : Continuous f) (x : X) : { toFun := f, continuous_toFun := hf : C(X, Y) } x = f x:= by rfl
 
+/-- The unique map from an empty type, as a bundled continuous map. -/
+@[simps]
+def empty {«∅»} X
+    [TopologicalSpace «∅»] [h₀ : IsEmpty «∅»] [TopologicalSpace X] : C(«∅», X) where
+  toFun := h₀.elim
+
 section Prod
 
 variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
