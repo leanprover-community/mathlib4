@@ -196,7 +196,9 @@ def introMerge : TacticAnalysis.Config := .ofComplex {
   ctx := Array (Array Term)
   trigger ctx stx :=
     match stx with
-    | `(tactic| intro $args*) => .continue ((ctx.getD #[]).push args)
+    | `(tactic| intro%$x $args*) => .continue ((ctx.getD #[]).push
+      -- if `intro` is used without arguments, treat it as `intro _`
+      <| if args.size = 0 then #[⟨mkHole x⟩] else args)
     | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
   test ctx goal := do
     let ctxT := ctx.flatten

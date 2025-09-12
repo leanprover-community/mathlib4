@@ -86,6 +86,21 @@ example : ∀ a b : Unit, a = b := by
   intro b
   rfl
 
+/-- warning: Try this: intro _ b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro
+  intro b
+  rfl
+
+/-- warning: Try this: intro a _ -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro _
+  rfl
+
+
 #guard_msgs in
 example : ∀ a b : Unit, a = b := by
   intro a b
