@@ -1178,12 +1178,18 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
+lemma mem_ker (x : A) : x ∈ f.ker ↔ f x = 0 := .rfl
+
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl
 
 lemma comap_ker {C : Type*} [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (RingHom.ker f.toRingHom).comap g = RingHom.ker (f.comp g).toRingHom :=
   RingHom.comap_ker f.toRingHom g.toRingHom
+
+lemma injective_iff_ker_eq_bot {R A B : Type*} [CommSemiring R] [Ring A] [Semiring B]
+    [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) : Function.Injective f ↔ f.ker = ⊥ := by
+  convert RingHom.injective_iff_ker_eq_bot f.toRingHom
 
 end AlgHom
 
