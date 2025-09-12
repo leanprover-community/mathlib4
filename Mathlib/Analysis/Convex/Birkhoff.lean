@@ -6,8 +6,10 @@ Authors: Bhavik Mehta
 
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Extreme
+import Mathlib.Analysis.Convex.Jensen
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Matrix.DoublyStochastic
+import Mathlib.Analysis.Convex.DoublyStochasticMatrix
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -196,3 +198,12 @@ theorem extremePoints_doublyStochastic :
   aesop
 
 end LinearOrderedField
+
+open scoped Matrix.Norms.L2Operator
+
+theorem Matrix.l2_opNorm_le_one_of_mem_doublyStochastic {M : Matrix n n ℝ}
+    (hM : M ∈ doublyStochastic ℝ n) :
+    ‖M‖ ≤ 1 := by
+  rw [← SetLike.mem_coe, doublyStochastic_eq_convexHull_permMatrix] at hM
+  have ⟨_, ⟨σ, rfl⟩, hσ⟩ := convexOn_univ_norm.exists_ge_of_mem_convexHull (by simp) hM
+  exact hσ.trans (permMatrix_l2_opNorm_le _)

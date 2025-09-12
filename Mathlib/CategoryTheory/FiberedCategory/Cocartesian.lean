@@ -303,7 +303,6 @@ protected lemma of_comp [IsStronglyCocartesian p f φ] [IsStronglyCocartesian p 
     [IsHomLift p g ψ] : IsStronglyCocartesian p g ψ where
   universal_property' := by
     intro c' h τ hτ
-    have h₁ : IsHomLift p (f ≫ g ≫ h) (φ ≫ τ) := by simpa using IsHomLift.comp p f (g ≫ h) φ τ
     /- We get a morphism `π : c ⟶ c'` such that `(φ ≫ ψ) ≫ π = φ ≫ τ` from the universal property
     of `φ ≫ ψ`. This will be the morphism induced by `φ`. -/
     use map p (f ≫ g) (φ ≫ ψ) (f' := f ≫ g ≫ h) (assoc f g h).symm (φ ≫ τ)
@@ -357,7 +356,7 @@ noncomputable def codomainIsoOfBaseIso {R S S' : 𝒮} {a b b' : 𝒳} {f : R �
     [IsStronglyCocartesian p f' φ'] : b ≅ b' where
   hom := map p f φ h φ'
   inv := @map _ _ _ _ p _ _ _ _ f' φ' _ _ _ _ _ (congrArg (· ≫ g.inv) h.symm) φ
-    (by simp; infer_instance)
+    (by simp only [assoc, Iso.hom_inv_id, comp_id]; infer_instance)
 
 end IsStronglyCocartesian
 
