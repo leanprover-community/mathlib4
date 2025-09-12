@@ -399,14 +399,14 @@ def orthogonal : ClosedSubmodule 𝕜 E where
   isClosed' := by
     suffices h : { v | ∀ u ∈ K, ⟪u, v⟫ = 0 } = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)) by
       rw [h]
-      simp only [Submodule.iInf_coe]
+      simp only [Submodule.coe_iInf]
       convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
     apply le_antisymm
-    · simp only [Submodule.iInf_coe, Set.le_eq_subset, Set.subset_iInter_iff, Subtype.forall]
+    · simp only [Submodule.coe_iInf, Set.le_eq_subset, Set.subset_iInter_iff, Subtype.forall]
       intro v hv w hw
       simpa using hw _ hv
     · intro v hv w hw
-      simp only [Submodule.iInf_coe, Set.mem_iInter, SetLike.mem_coe, LinearMap.mem_ker,
+      simp only [Submodule.coe_iInf, Set.mem_iInter, SetLike.mem_coe, LinearMap.mem_ker,
         innerSL_apply, Subtype.forall] at hv
       exact hv w hw
 
@@ -553,11 +553,12 @@ lemma orthogonal_closure (K : Submodule 𝕜 E) : K.closureᗮ = Kᗮ.closure :=
     apply hx
     exact subset_closure hy
   · intro x hx
+    have hx' : x ∈ Kᗮ.closure := by exact hx
     apply (Submodule.mem_orthogonal _ x).mpr
     intro y hy
-    rw [← Submodule.mem_closure_iff', Submodule.mem_closure_iff,
-      IsClosed.submodule_topologicalClosure_eq (Submodule.isClosed_orthogonal K)] at hx
-    apply (Submodule.orthogonal_closure' K x).mp (fun y a ↦ hx y a)
+    rw [Submodule.mem_closure_iff,
+      IsClosed.submodule_topologicalClosure_eq (Submodule.isClosed_orthogonal K)] at hx'
+    apply (Submodule.orthogonal_closure' K x).mp (fun y a ↦ hx' y a)
     exact hy
 
 end ClosedSubmodule
