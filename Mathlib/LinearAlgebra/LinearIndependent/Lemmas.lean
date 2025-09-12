@@ -204,6 +204,18 @@ theorem exists_maximal_linearIndepOn' (v : ι → M) :
 
 end Maximal
 
+lemma Submodule.codisjoint_span_image_of_codisjoint (hv : Submodule.span R (Set.range v) = ⊤)
+    {s t : Set ι} (hst : Codisjoint s t) :
+    Codisjoint (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) := by
+  rw [Finsupp.span_image_eq_map_linearCombination, Finsupp.span_image_eq_map_linearCombination]
+  refine Submodule.codisjoint_map ?_ (Finsupp.codisjoint_supported_supported hst)
+  rwa [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
+
+lemma LinearIndependent.isCompl_span_image (h₁ : LinearIndependent R v)
+    (h₂ : Submodule.span R (Set.range v) = ⊤) {s t : Set ι} (hst : IsCompl s t) :
+    IsCompl (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) :=
+  ⟨h₁.disjoint_span_image hst.1, Submodule.codisjoint_span_image_of_codisjoint h₂ hst.2⟩
+
 end Semiring
 
 section Module
@@ -452,6 +464,14 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :
     LinearIndependent K (AlgHom.toLinearMap : (M →ₐ[K] L) → M →ₗ[K] L) :=
   (linearIndependent_algHom_toLinearMap K M L).restrict_scalars' K
+
+lemma LinearMap.bijective_of_linearIndependent_of_span_eq_top {N : Type*} [AddCommGroup N]
+    [Module R N] {f : M →ₗ[R] N} {ι : Type*} {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤)
+    (hli : LinearIndependent R (f ∘ v)) (hsp : Submodule.span R (Set.range <| f ∘ v) = ⊤) :
+    Function.Bijective f := by
+  refine ⟨LinearMap.injective_of_linearIndependent hv hli, ?_⟩
+  rw [Set.range_comp, ← Submodule.map_span, hv, Submodule.map_top] at hsp
+  rwa [← range_eq_top]
 
 end Module
 

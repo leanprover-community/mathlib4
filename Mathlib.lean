@@ -5421,9 +5421,11 @@ import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Extension
 import Mathlib.RingTheory.Extension.Basic
 import Mathlib.RingTheory.Extension.Cotangent.Basic
+import Mathlib.RingTheory.Extension.Cotangent.Free
 import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 import Mathlib.RingTheory.Extension.Generators
 import Mathlib.RingTheory.Extension.Presentation.Basic
+import Mathlib.RingTheory.Extension.Presentation.Submersive
 import Mathlib.RingTheory.FilteredAlgebra.Basic
 import Mathlib.RingTheory.Filtration
 import Mathlib.RingTheory.FiniteLength
