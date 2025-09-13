@@ -6,7 +6,7 @@ Authors: Yuyang Zhao
 import Mathlib.Data.Multiset.Pi
 
 /-!
-# The cartesian product of lists
+# The Cartesian product of lists
 
 ## Main definitions
 

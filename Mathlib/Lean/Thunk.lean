@@ -23,7 +23,7 @@ instance [DecidableEq α] : DecidableEq (Thunk α) := by
   rw [this]
   infer_instance
 
-/-- The cartesian product of two thunks. -/
+/-- The Cartesian product of two thunks. -/
 def prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (a.get, b.get)
 
 @[simp] theorem prod_get_fst {a : Thunk α} {b : Thunk β} : (prod a b).get.1 = a.get := rfl

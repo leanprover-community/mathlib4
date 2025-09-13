@@ -86,7 +86,7 @@ For a discussion of the definitions and their rationale, see the file docstring 
 
 To make sure that the simplifier can prove automatically that functions are differentiable, we tag
 many lemmas with the `simp` attribute, for instance those saying that the sum of differentiable
-functions is differentiable, as well as their product, their cartesian product, and so on. A notable
+functions is differentiable, as well as their product, their Cartesian product, and so on. A notable
 exception is the chain rule: we do not mark as a simp lemma the fact that, if `f` and `g` are
 differentiable, then their composition also is: `simp` would always be able to match this lemma,
 by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `exp`),

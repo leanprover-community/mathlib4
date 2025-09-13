@@ -7,9 +7,9 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
-# Comonoid objects in a cartesian monoidal category.
+# Comonoid objects in a Cartesian monoidal category.
 
-The category of comonoid objects in a cartesian monoidal category is equivalent
+The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 
@@ -24,7 +24,7 @@ variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 attribute [local simp] leftUnitor_hom rightUnitor_hom
 
 /--
-The functor from a cartesian monoidal category to comonoids in that category,
+The functor from a Cartesian monoidal category to comonoids in that category,
 equipping every object with the diagonal map as a comultiplication.
 -/
 def cartesianComon_ : C ⥤ Comon_ C where
@@ -51,7 +51,7 @@ variable {C}
 @[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
 
 /--
-Every comonoid object in a cartesian monoidal category is equivalent to
+Every comonoid object in a Cartesian monoidal category is equivalent to
 the canonical comonoid structure on the underlying object.
 -/
 @[simps] def iso_cartesianComon_ (A : Comon_ C) : A ≅ (cartesianComon_ C).obj A.X :=
@@ -59,7 +59,7 @@ the canonical comonoid structure on the underlying object.
     inv := .mk' (𝟙 _) }
 
 /--
-The category of comonoid objects in a cartesian monoidal category is equivalent
+The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 @[simps] def comonEquiv : Comon_ C ≌ C where

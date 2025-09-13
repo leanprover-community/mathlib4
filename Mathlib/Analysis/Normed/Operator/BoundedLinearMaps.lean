@@ -194,7 +194,7 @@ section
 
 variable {ι : Type*} [Fintype ι]
 
-/-- Taking the cartesian product of two continuous multilinear maps is a bounded linear
+/-- Taking the Cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
 theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :

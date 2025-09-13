@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Mod_
 
 /-!
-# Additional results about module objects in cartesian monoidal categories
+# Additional results about module objects in Cartesian monoidal categories
 -/
 
 open CategoryTheory MonoidalCategory CartesianMonoidalCategory

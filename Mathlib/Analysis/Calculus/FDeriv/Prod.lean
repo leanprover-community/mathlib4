@@ -8,13 +8,13 @@ import Mathlib.Analysis.Calculus.FDeriv.Const
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
-# Derivative of the cartesian product of functions
+# Derivative of the Cartesian product of functions
 
 For detailed documentation of the Fréchet derivative,
 see the module docstring of `Analysis/Calculus/FDeriv/Basic.lean`.
 
 This file contains the usual formulas (and existence assertions) for the derivative of
-cartesian products of functions, and functions into Pi-types.
+Cartesian products of functions, and functions into Pi-types.
 -/
 
 
@@ -38,7 +38,7 @@ variable {L L₁ L₂ : Filter E}
 
 section CartesianProduct
 
-/-! ### Derivative of the cartesian product of two functions -/
+/-! ### Derivative of the Cartesian product of two functions -/
 
 
 section Prod

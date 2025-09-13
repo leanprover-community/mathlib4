@@ -77,7 +77,7 @@ variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 end Sheaf
 
-/-- The inclusion from sheaves to presheaves is monoidal with respect to the cartesian monoidal
+/-- The inclusion from sheaves to presheaves is monoidal with respect to the Cartesian monoidal
 structures. -/
 noncomputable instance sheafToPresheafMonoidal : (sheafToPresheaf J A).Monoidal :=
   Functor.CoreMonoidal.toMonoidal

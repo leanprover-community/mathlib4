@@ -9,9 +9,9 @@ import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 import Mathlib.CategoryTheory.Sites.Sheafification
 /-!
 
-# Sheaf categories are cartesian closed
+# Sheaf categories are Cartesian closed
 
-...if the underlying presheaf category is cartesian closed, the target category has
+...if the underlying presheaf category is Cartesian closed, the target category has
 (chosen) finite products, and there exists a sheafification functor.
 -/
 
