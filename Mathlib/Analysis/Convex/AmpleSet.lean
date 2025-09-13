@@ -29,7 +29,7 @@ differential relations.
 
 A priori, the definition of ample subset asks for a vector space structure and a topology on the
 ambient type without any link between those structures. In practice, we care most about using these
-for finite dimensional vector spaces with their natural topology.
+for finite-dimensional vector spaces with their natural topology.
 
 All vector spaces in the file are real vector spaces. While the definition generalises to other
 connected fields, that is not useful in practice.
