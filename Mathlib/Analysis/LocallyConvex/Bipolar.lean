@@ -84,13 +84,18 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
     (subset_bipolar B s) (polar_AbsConvex _) (polar_isClosed B.flip _)
   simp only [Set.le_eq_subset]
   rw [← Set.compl_subset_compl]
+  -- Let `x` be an element not in `(closedAbsConvexHull 𝕜) s`
   intro x hx
+  -- Use the Geometric Hahn-Banach theorem to obtain a function `f` and a constant `u` separating
+  -- `(closedAbsConvexHull 𝕜) s` and `x`
   obtain ⟨f, ⟨u, ⟨hf₁, hf₂⟩⟩⟩ :=
     RCLike.geometric_hahn_banach_closed_point (𝕜 := 𝕜) (E := WeakBilin B)
       absConvex_convexClosedHull.2 isClosed_closedAbsConvexHull hx
+  -- `0` is in `(closedAbsConvexHull 𝕜) s` so `u` must be strictly positive
   have e3 : RCLike.re (f 0) < u :=
     (hf₁ 0) (absConvexHull_subset_closedAbsConvexHull zero_mem_absConvexHull)
   rw [map_zero, map_zero] at e3
+  -- Rescale `f` as `g` in order that for all `a` in `(closedAbsConvexHull 𝕜) s` `Re (g a) < 1`
   set g := (1/u : ℝ) • f with fg
   have fg2 : u • g = f := by
     rw [fg, one_div, ← smul_assoc, smul_eq_mul, mul_inv_cancel₀ (ne_of_lt e3).symm, one_smul]
@@ -99,7 +104,9 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
     rw [fg, ContinuousLinearMap.coe_smul', Pi.smul_apply, RCLike.smul_re, one_div,
       ← (inv_mul_cancel₀ (lt_iff_le_and_ne.mp e3).2.symm)]
     exact mul_lt_mul_of_pos_left ((hf₁ _) ha) (inv_pos_of_pos e3)
+  -- The dual embedding is surjective, let `f₀` be the element of `F` corresponding to `g`
   obtain ⟨f₀, hf₀⟩ := B.dualEmbedding_surjective g
+  -- Then, by construction, `f₀` is in the polar of `s`
   have hg₃ : f₀ ∈ (B.polar (E := WeakBilin B) s) := by
     simp [← hf₀, WeakBilin.eval] at hg₁
     intro x₂ hx₂
@@ -112,6 +119,7 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
         (subset_closedAbsConvexHull hx₂)
     rwa [CompatibleSMul.map_smul, smul_eq_mul, mul_comm, ← mul_div_assoc, LinearMap.flip_apply,
       RCLike.mul_conj, sq, mul_self_div_self, RCLike.ofReal_re] at i1
+  -- and `1 < Re (B x f₀)`
   have one_lt_x_f₀ : 1 < RCLike.re (B x f₀) := by
     rw [← one_lt_inv_mul₀ e3] at hf₂
     suffices u⁻¹ * RCLike.re (f x) = RCLike.re ((B x) f₀) by exact lt_of_lt_of_eq hf₂ this
@@ -122,6 +130,7 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
     norm_cast
     have unz : u ≠ 0 := (ne_of_lt e3).symm
     aesop
+  -- From which it follows that `x` can't be in the bipolar of `s`
   by_contra hc
   rw [Set.mem_compl_iff, not_not] at hc
   exact ((lt_iff_le_not_ge.mp one_lt_x_f₀).2)
