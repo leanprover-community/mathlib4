@@ -7,6 +7,7 @@ import Mathlib.Lean.Expr.Rat
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.AtLocation
 import Mathlib.Util.Qq
+import Mathlib.Util.Trace
 import Lean.Elab.Tactic.Location
 
 /-!
@@ -75,6 +76,7 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
       { tree := insert kss ext tree, erased := erased.erase n }
   }
 
+
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
 def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
   if e.isRawNatLit then
@@ -88,11 +90,9 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
-          let new ← withReducibleAndInstances <| ext.eval e
-          trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
-          return new
-        catch err =>
-          trace[Tactic.norm_num] "{ext.name} failed {e}: {err.toMessageData}"
+          return ← withTraceNodeApplication (β := Result e)
+            `Tactic.norm_num ext.name (withReducibleAndInstances <| ext.eval ·) e
+        catch _ =>
           s.restore
     throwError "{e}: no norm_nums apply"
 
