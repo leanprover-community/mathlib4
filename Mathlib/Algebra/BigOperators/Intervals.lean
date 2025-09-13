@@ -176,7 +176,10 @@ theorem prod_range_add_one_eq_factorial : ∀ n : ℕ, (∏ x ∈ range n, (x + 
 
 section GaussSum
 
-/-- Gauss' summation formula -/
+/-- Gauss' summation formula
+
+This theorem invokes truncated subtraction at `n = 0`. To avoid this, use
+`Finset.sum_Ico_id_mul_two`. -/
 theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1) :=
   calc
     (∑ i ∈ range n, i) * 2 = (∑ i ∈ range n, i) + ∑ i ∈ range n, (n - 1 - i) := by
@@ -186,7 +189,9 @@ theorem sum_range_id_mul_two (n : ℕ) : (∑ i ∈ range n, i) * 2 = n * (n - 1
       sum_congr rfl fun _ hi => add_tsub_cancel_of_le <| Nat.le_sub_one_of_lt <| mem_range.1 hi
     _ = n * (n - 1) := by rw [sum_const, card_range, Nat.nsmul_eq_mul]
 
-/-- Gauss' summation formula -/
+/-- Gauss' summation formula
+
+This theorem invokes truncated subtraction at `n = 0`. To avoid this, use `Finset.sum_Ico_id`. -/
 theorem sum_range_id (n : ℕ) : ∑ i ∈ range n, i = n * (n - 1) / 2 := by
   rw [← sum_range_id_mul_two n, Nat.mul_div_cancel _ Nat.zero_lt_two]
 
