@@ -47,7 +47,7 @@ theorem prod_add (s t : Multiset M) : prod (s + t) = prod s * prod t :=
   Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
 
 @[to_additive]
-theorem prod_nsmul (m : Multiset M) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
+theorem prod_nsmul [MonoidNPow M] (m : Multiset M) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | 0 => by
     rw [zero_nsmul, pow_zero]
     rfl
@@ -59,13 +59,13 @@ theorem prod_filter_mul_prod_filter_not (p) [DecidablePred p] :
   rw [← prod_add, filter_add_not]
 
 @[to_additive]
-theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
+theorem prod_map_eq_pow_single [MonoidNPow M] [DecidableEq ι] (i : ι)
     (hf : ∀ i' ≠ i, i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
   induction m using Quotient.inductionOn
   simp [List.prod_map_eq_pow_single i f hf]
 
 @[to_additive]
-theorem prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a' ≠ a, a' ∈ s → a' = 1) :
+theorem prod_eq_pow_single [MonoidNPow M] [DecidableEq M] (a : M) (h : ∀ a' ≠ a, a' ∈ s → a' = 1) :
     s.prod = a ^ s.count a := by
   induction s using Quotient.inductionOn; simp [List.prod_eq_pow_single a h]
 
@@ -110,11 +110,11 @@ theorem prod_map_mul : (m.map fun i => f i * g i).prod = (m.map f).prod * (m.map
   m.prod_hom₂ (· * ·) mul_mul_mul_comm (mul_one _) _ _
 
 @[to_additive]
-theorem prod_map_pow {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n :=
+theorem prod_map_pow [MonoidNPow M] {n : ℕ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n :=
   m.prod_hom' (powMonoidHom n : M →* M) f
 
 @[to_additive]
-theorem prod_map_prod_map (m : Multiset ι) (n : Multiset κ) {f : ι → κ → M} :
+theorem prod_map_prod_map [MonoidNPow M] (m : Multiset ι) (n : Multiset κ) {f : ι → κ → M} :
     prod (m.map fun a => prod <| n.map fun b => f a b) =
       prod (n.map fun b => prod <| m.map fun a => f a b) :=
   Multiset.induction_on m (by simp) fun a m ih => by simp [ih]

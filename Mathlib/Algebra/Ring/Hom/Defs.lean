@@ -570,6 +570,8 @@ instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
+
+instance : MonoidNPow (α →+* α) where
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
   npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 

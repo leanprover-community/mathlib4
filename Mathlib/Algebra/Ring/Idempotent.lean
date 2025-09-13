@@ -107,8 +107,8 @@ lemma sub [NonUnitalNonAssocRing R] {a b : R} (ha : IsIdempotentElem a)
   simp_rw [IsIdempotentElem, sub_mul, mul_sub, hab, hba, ha.eq, hb.eq, sub_self, sub_zero]
 
 /-- If idempotent `a` and element `b` anti-commute, then their product is zero. -/
-theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
-    (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : a * b = 0 := by
+theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [AddMonoidNSMul R]
+    [IsAddTorsionFree R] (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : a * b = 0 := by
   have h : a * b * a = 0 := by
     rw [← nsmul_right_inj ((Nat.zero_ne_add_one 1).symm), nsmul_zero]
     have : a * (a * b + b * a) * a = 0 := by rw [hab, mul_zero, zero_mul]
@@ -119,13 +119,13 @@ theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsion
 
 /-- If idempotent `a` and element `b` anti-commute, then they commute.
 So anti-commutativity implies commutativity when one of them is idempotent. -/
-lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
+lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [AddMonoidNSMul R] [IsAddTorsionFree R]
     (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : Commute a b := by
   have := mul_eq_zero_of_anticommute ha hab
   rw [this, zero_add] at hab
   rw [Commute, SemiconjBy, hab, this]
 
-theorem sub_iff [NonUnitalRing R] [IsAddTorsionFree R] {p q : R}
+theorem sub_iff [NonUnitalRing R] [AddMonoidNSMul R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p := by
   refine ⟨fun hqp ↦ ?_, fun ⟨h1, h2⟩ => hp.sub hq h1 h2⟩

@@ -605,10 +605,14 @@ variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
 @[to_additive /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
-protected def monoid : Monoid (Set α) :=
+protected abbrev monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
 
 scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
+
+@[to_additive] abbrev monoidNPow : MonoidNPow (Set α) where
+
+scoped[Pointwise] attribute [instance] Set.monoidNPow
 
 -- `Set.pow_left_monotone` doesn't exist since it would syntactically be a special case of
 -- `pow_left_mono`
@@ -655,14 +659,16 @@ set_option push_neg.use_distrib true in
     exact empty_pow hn
 
 @[to_additive (attr := simp) nsmul_singleton]
-lemma singleton_pow (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
+lemma singleton_pow [MonoidNPow α] (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
   | 0 => by simp [singleton_one]
   | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
-@[to_additive] lemma pow_mem_pow (ha : a ∈ s) : a ^ n ∈ s ^ n := by
+@[to_additive] lemma pow_mem_pow [MonoidNPow α] (ha : a ∈ s) : a ^ n ∈ s ^ n := by
   simpa using pow_subset_pow_left (singleton_subset_iff.2 ha)
 
-@[to_additive] lemma one_mem_pow (hs : 1 ∈ s) : 1 ∈ s ^ n := by simpa using pow_mem_pow hs
+@[to_additive] lemma one_mem_pow (hs : 1 ∈ s) : 1 ∈ s ^ n := by
+  let _ := Monoid.monoidNPow α
+  simpa using pow_mem_pow hs
 
 @[to_additive]
 lemma inter_pow_subset : (s ∩ t) ^ n ⊆ s ^ n ∩ t ^ n := by apply subset_inter <;> gcongr <;> simp
@@ -813,7 +819,9 @@ set_option push_neg.use_distrib true in
     exact empty_zpow hn
 
 @[to_additive (attr := simp) zsmul_singleton]
-lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cases n <;> simp
+lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by
+  let _ := Monoid.monoidNPow α
+  cases n <;> simp
 
 end DivisionMonoid
 

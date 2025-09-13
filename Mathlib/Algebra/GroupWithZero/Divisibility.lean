@@ -155,7 +155,7 @@ theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
 
 end Subsingleton
 
-lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ n ≤ m := by
+lemma pow_dvd_pow_iff [MonoidNPow α] (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ n ≤ m := by
   constructor
   · intro h
     rw [← not_lt]

@@ -39,7 +39,8 @@ theorem Set.preimage_one {α β : Type*} [One β] (s : Set β) [Decidable ((1 : 
 namespace Pi
 
 @[to_additive]
-instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, IsMulTorsionFree (M i)] :
+instance instIsMulTorsionFree [∀ i, Monoid (M i)] [∀ i, MonoidNPow (M i)]
+    [∀ i, IsMulTorsionFree (M i)] :
     IsMulTorsionFree (∀ i, M i) where
   pow_left_injective n hn a b hab := by ext i; exact pow_left_injective hn <| congr_fun hab i
 
@@ -261,7 +262,7 @@ theorem Pi.mulSingle_div [∀ i, Group <| f i] (i : I) (x y : f i) :
   (MonoidHom.mulSingle f i).map_div x y
 
 @[to_additive]
-theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] (i : I) (x : f i) (n : ℕ) :
+theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] [∀ i, MonoidNPow (f i)] (i : I) (x : f i) (n : ℕ) :
     mulSingle i (x ^ n) = mulSingle i x ^ n :=
   (MonoidHom.mulSingle f i).map_pow x n
 

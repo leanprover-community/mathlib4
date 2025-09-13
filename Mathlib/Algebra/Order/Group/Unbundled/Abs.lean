@@ -102,6 +102,7 @@ attribute [gcongr] abs_le_abs_of_nonneg
 variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
+  let _ := Monoid.monoidNPow α
   apply pow_two_semiclosed _
   rw [mabs, pow_two, mul_sup, sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
@@ -140,12 +141,12 @@ lemma mabs_mabs_div_mabs_le (a b : α) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :
   exact one_le_mabs _
 
 @[to_additive two_nsmul_sup_eq_add_add_abs_sub]
-lemma sup_sq_eq_mul_mul_mabs_div (a b : α) : (a ⊔ b) ^ 2 = a * b * |b / a|ₘ := by
+lemma sup_sq_eq_mul_mul_mabs_div [MonoidNPow α] (a b : α) : (a ⊔ b) ^ 2 = a * b * |b / a|ₘ := by
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_mabs_div, div_eq_mul_inv, ← mul_assoc, mul_comm,
      mul_assoc, ← pow_two, inv_mul_cancel_left]
 
 @[to_additive two_nsmul_inf_eq_add_sub_abs_sub]
-lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ := by
+lemma inf_sq_eq_mul_div_mabs_div [MonoidNPow α] (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ := by
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_mabs_div, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev,
     inv_inv, mul_assoc, mul_inv_cancel_comm_assoc, ← pow_two]
 

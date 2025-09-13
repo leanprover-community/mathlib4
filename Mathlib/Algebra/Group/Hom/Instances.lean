@@ -70,6 +70,10 @@ instance OneHom.instMonoid [One M] [Monoid N] : Monoid (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.monoid DFunLike.coe rfl fun _ _ => rfl
 
+@[to_additive] instance [One M] [Monoid N] [MonoidNPow N] : MonoidNPow (OneHom M N) :=
+  fast_instance%
+    DFunLike.coe_injective.monoidNPow DFunLike.coe rfl (fun _ _ => rfl) fun _ _ => rfl
+
 /-- `OneHom M N` is a `CommMonoid` if `N` is commutative. -/
 @[to_additive /-- `ZeroHom M N` is an `AddCommMonoid` if `N` is commutative. -/]
 instance OneHom.instCommMonoid [One M] [CommMonoid N] : CommMonoid (OneHom M N) :=
@@ -82,6 +86,10 @@ instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] :
     CommMonoid (M →* N) :=
   fast_instance%
     DFunLike.coe_injective.commMonoid DFunLike.coe rfl fun _ _ => rfl
+
+@[to_additive] instance [MulOneClass M] [CommMonoid N] [MonoidNPow N] : MonoidNPow (M →* N) :=
+  fast_instance%
+    DFunLike.coe_injective.monoidNPow DFunLike.coe rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance ZeroHom.instIntSMul [Zero M] [AddGroup N] : SMul ℤ (ZeroHom M N) where
   smul a f :=
@@ -165,6 +173,9 @@ section End
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.instAddCommMonoid
+
+instance [AddCommMonoid M] [AddMonoidNSMul M] : AddMonoidNSMul (AddMonoid.End M) :=
+  inferInstanceAs (AddMonoidNSMul <| M →+ M)
 
 @[simp]
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
