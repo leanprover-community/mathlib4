@@ -36,12 +36,12 @@ universe v u
 
 namespace CoalgCat
 
-open CategoryTheory MonoidalCategory Comon_Class
+open CategoryTheory MonoidalCategory ComonObj
 
 variable {R : Type u} [CommRing R]
 
 @[simps counit comul]
-noncomputable instance (X : CoalgCat R) : Comon_Class (ModuleCat.of R X) where
+noncomputable instance (X : CoalgCat R) : ComonObj (ModuleCat.of R X) where
   counit := ModuleCat.ofHom Coalgebra.counit
   comul := ModuleCat.ofHom Coalgebra.comul
   counit_comul := ModuleCat.hom_ext <| by simpa using Coalgebra.rTensor_counit_comp_comul
@@ -66,14 +66,14 @@ def toComon : CoalgCat R ⥤ Comon_ (ModuleCat R) where
 /-- A comonoid object in the category of `R`-modules has a natural comultiplication
 and counit. -/
 @[simps]
-noncomputable instance ofComonObjCoalgebraStruct (X : ModuleCat R) [Comon_Class X] :
+noncomputable instance ofComonObjCoalgebraStruct (X : ModuleCat R) [ComonObj X] :
     CoalgebraStruct R X where
   comul := Δ[X].hom
   counit := ε[X].hom
 
 /-- A comonoid object in the category of `R`-modules has a natural `R`-coalgebra
 structure. -/
-noncomputable def ofComonObj (X : ModuleCat R) [Comon_Class X] : CoalgCat R :=
+noncomputable def ofComonObj (X : ModuleCat R) [ComonObj X] : CoalgCat R :=
   { ModuleCat.of R X with
     instCoalgebra :=
       { ofComonObjCoalgebraStruct X with
@@ -127,7 +127,7 @@ theorem tensorObj_comul (K L : CoalgCat R) :
   rw [ofComonObjCoalgebraStruct_comul]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
     comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe,
-    Mon_Class.tensorObj.mul_def, unop_comp, unop_tensorObj, unop_tensorHom,
+    MonObj.tensorObj.mul_def, unop_comp, unop_tensorObj, unop_tensorHom,
     BraidedCategory.unop_tensorμ, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp,
     ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
   rfl
@@ -151,7 +151,7 @@ theorem rightUnitor_hom_toLinearMap :
 
 open TensorProduct
 
-attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def in
+attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N) := by
@@ -160,7 +160,7 @@ theorem comul_tensorObj :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
-attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def in
+attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_right :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗
       (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
@@ -171,7 +171,7 @@ theorem comul_tensorObj_tensorObj_right :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
-attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def in
+attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_left :
     Coalgebra.comul (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))

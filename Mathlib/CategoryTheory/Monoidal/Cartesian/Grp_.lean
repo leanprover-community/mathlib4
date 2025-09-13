@@ -16,11 +16,11 @@ showing that it is fully faithful and its (essential) image is the representable
 
 assert_not_exists Field
 
-open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
-  {M G H X Y : C} [Mon_Class M] [Grp_Class G] [Grp_Class H]
+  {M G H X Y : C} [MonObj M] [Grp_Class G] [Grp_Class H]
 
 /-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMon_Hom f`
 instance. -/
@@ -31,7 +31,7 @@ variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     Grp_Class X where
-  __ := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ Grp MonCat) α
+  __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ Grp MonCat) α
   inv := α.homEquiv.symm (α.homEquiv (𝟙 _))⁻¹
   left_inv := by
     change lift (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
@@ -60,7 +60,7 @@ abbrev Hom.group : Group (X ⟶ G) where
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-scoped[Mon_Class] attribute [instance] Hom.group
+scoped[MonObj] attribute [instance] Hom.group
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -166,4 +166,4 @@ instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_H
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
 abbrev Hom.commGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
 
-scoped[Mon_Class] attribute [instance] Hom.commGroup
+scoped[MonObj] attribute [instance] Hom.commGroup

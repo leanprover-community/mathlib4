@@ -23,7 +23,7 @@ universe v u
 
 open CategoryTheory
 
-open LinearMap Mon_Class
+open LinearMap MonObj
 
 open scoped TensorProduct
 
@@ -35,7 +35,7 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
-instance Ring_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Ring A :=
+instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
@@ -60,7 +60,7 @@ instance Ring_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Ring A :=
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Algebra R A where
+instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
   algebraMap :=
   { η[A].hom with
     map_zero' := η[A].hom.map_zero
@@ -77,7 +77,7 @@ instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [Mon_Class A] : Algebra R A where
     (LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (one_mul A)) (r ⊗ₜ a)).symm
 
 @[simp]
-theorem algebraMap (A : ModuleCat.{u} R) [Mon_Class A] (r : R) : algebraMap R A r = η[A] r :=
+theorem algebraMap (A : ModuleCat.{u} R) [MonObj A] (r : R) : algebraMap R A r = η[A] r :=
   rfl
 
 /-- Converting a monoid object in `ModuleCat R` to a bundled algebra.
@@ -97,7 +97,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgCat R where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
+def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
   one_mul := by
