@@ -27,9 +27,6 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 ## TODOs/Projects
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
-* Left actions as monoidal functors C ⥤ (D ⥤ D)ᴹᵒᵖ.
-* Right actions as monoidal functors C ⥤ D ⥤ D.
-* (Right) Action of `(C ⥤ C)` on `C`.
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
 * Given a monad `M` on `C`, equivalence between `Algebra M`, and modules in `C`
