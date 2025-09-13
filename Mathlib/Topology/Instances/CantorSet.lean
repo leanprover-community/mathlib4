@@ -25,9 +25,9 @@ This file defines the Cantor ternary set and proves a few properties.
 * `cantorToTernary`: given a number `x` in the Cantor set, returns its ternary representation
   `(d₀, d₁, ...)` consisting only of digits `0` and `2`, such that `x = 0.d₀d₁...`
   (see `ofDigits_cantorToTernary`).
-* `zero_two_sequence_ofDigits_mem_cantorSet`: any such sequence corresponds to a number
+* `ofDigits_zero_two_sequence_mem_cantorSet`: any such sequence corresponds to a number
   in the Cantor set.
-* `zero_two_sequence_ofDigits_unique`: such a representation is unique.
+* `ofDigits_zero_two_sequence_unique`: such a representation is unique.
 -/
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
