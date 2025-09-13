@@ -1252,7 +1252,7 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
 
-/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+/-- If a cardinal `c` is nonzero, then `c.ord.toType` has a least element. -/
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.toType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))

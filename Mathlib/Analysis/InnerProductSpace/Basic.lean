@@ -861,7 +861,7 @@ This is not registered as an instance since
 
 However, it can be used in a proof to obtain a real inner product space structure from a given
 `𝕜`-inner product space structure. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜

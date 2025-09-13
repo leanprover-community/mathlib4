@@ -114,7 +114,7 @@ open Limits in
 finite chosen products. -/
 -- Note: This is not an instance as one might already have a (different) `CartesianMonoidalCategory`
 -- instance on `D` (as for example with sheaves).
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
     CartesianMonoidalCategory D :=
   .ofChosenFiniteProducts
