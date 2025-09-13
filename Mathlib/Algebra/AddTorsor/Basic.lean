@@ -165,6 +165,9 @@ instance instAddTorsor : AddTorsor (∀ i, fg i) (∀ i, fp i) where
 theorem vsub_apply (p q : ∀ i, fp i) (i : I) : (p -ᵥ q) i = p i -ᵥ q i :=
   rfl
 
+theorem vsub_def (p q : ∀ i, fp i) : p -ᵥ q = fun i => p i -ᵥ q i :=
+  rfl
+
 end Pi
 
 namespace Equiv
