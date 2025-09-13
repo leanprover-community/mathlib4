@@ -16,7 +16,7 @@ universe v₁ v₂ u₁ u₂
 
 open CategoryTheory
 
-open CategoryTheory.MonoidalCategory Mon_Class
+open CategoryTheory.MonoidalCategory MonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
@@ -596,7 +596,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   slice_lhs 3 3 => rw [← Iso.inv_hom_id_assoc (α_ R.X R.X P.X) (R.X ◁ P.actLeft)]
   slice_lhs 4 6 => rw [← Category.assoc, ← coequalizer.condition]
   slice_lhs 2 3 => rw [associator_inv_naturality_left]
-  slice_lhs 3 4 => rw [← comp_whiskerRight, Mon_Class.one_mul]
+  slice_lhs 3 4 => rw [← comp_whiskerRight, MonObj.one_mul]
   slice_rhs 1 2 => rw [Category.comp_id]
   monoidal
 
@@ -650,7 +650,7 @@ theorem hom_inv_id : hom P ≫ inv P = 𝟙 _ := by
   slice_lhs 2 3 => rw [← whisker_exchange]
   slice_lhs 3 4 => rw [coequalizer.condition]
   slice_lhs 2 3 => rw [associator_naturality_right]
-  slice_lhs 3 4 => rw [← whiskerLeft_comp, Mon_Class.mul_one]
+  slice_lhs 3 4 => rw [← whiskerLeft_comp, MonObj.mul_one]
   slice_rhs 1 2 => rw [Category.comp_id]
   monoidal
 
@@ -755,7 +755,7 @@ theorem id_whiskerLeft_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 4 4 => rw [← Iso.inv_hom_id_assoc (α_ X.X X.X N.X) (X.X ◁ N.actLeft)]
   slice_rhs 5 7 => rw [← Category.assoc, ← coequalizer.condition]
   slice_rhs 3 4 => rw [associator_inv_naturality_left]
-  slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_Class.one_mul]
+  slice_rhs 4 5 => rw [← comp_whiskerRight, MonObj.one_mul]
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
     monoidal
   grind
@@ -808,7 +808,7 @@ theorem whiskerRight_id_bimod {X Y : Mon_ C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 3 4 => rw [← whisker_exchange]
   slice_rhs 4 5 => rw [coequalizer.condition]
   slice_rhs 3 4 => rw [associator_naturality_right]
-  slice_rhs 4 5 => rw [← whiskerLeft_comp, Mon_Class.mul_one]
+  slice_rhs 4 5 => rw [← whiskerLeft_comp, MonObj.mul_one]
   simp
 
 theorem whiskerRight_comp_bimod {W X Y Z : Mon_ C} {M M' : Bimod W X} (f : M ⟶ M') (N : Bimod X Y)

@@ -24,12 +24,12 @@ open CategoryTheory MonoidalCategory
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
-open scoped Mon_Class Comon_Class
+open scoped MonObj ComonObj
 
 /--
 A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped with an antipode.
 -/
-class Hopf_Class (X : C) extends Bimon_Class X where
+class Hopf_Class (X : C) extends BimonObj X where
   /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
   antipode : X ⟶ X
   antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by cat_disch
@@ -153,7 +153,7 @@ theorem antipode_comul₁ (A : C) [Hopf_Class A] :
     rw [Bimon_.compatibility]
   slice_lhs 1 3 =>
     rw [antipode_left]
-  simp [Mon_Class.tensorObj.one_def]
+  simp [MonObj.tensorObj.one_def]
 
 /--
 Auxiliary calculation for `antipode_comul`.
@@ -217,10 +217,10 @@ theorem antipode_comul₂ (A : C) [Hopf_Class A] :
     rw [← BraidedCategory.hexagon_reverse_assoc, Iso.inv_hom_id_assoc,
       ← BraidedCategory.braiding_naturality_left]
     simp only [whiskerLeft_comp]
-  rw [Comon_Class.comul_assoc_flip_assoc, Iso.inv_hom_id_assoc]
+  rw [ComonObj.comul_assoc_flip_assoc, Iso.inv_hom_id_assoc]
   slice_lhs 2 3 =>
     simp only [← whiskerLeft_comp]
-    rw [Comon_Class.comul_assoc]
+    rw [ComonObj.comul_assoc]
     simp only [whiskerLeft_comp]
   slice_lhs 3 7 =>
     simp only [← whiskerLeft_comp]
@@ -231,7 +231,7 @@ theorem antipode_comul₂ (A : C) [Hopf_Class A] :
     simp only [whiskerLeft_comp]
   slice_lhs 2 3 =>
     simp only [← whiskerLeft_comp]
-    rw [Comon_Class.counit_comul]
+    rw [ComonObj.counit_comul]
     simp only [whiskerLeft_comp]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
@@ -257,14 +257,14 @@ theorem antipode_comul (A : C) [Hopf_Class A] :
     (M := Conv A (A ⊗ A))
     (a := Δ[A])
   · rw [Conv.mul_eq, Conv.one_eq]
-    simp only [comp_whiskerRight, tensor_whiskerLeft, Mon_Class.tensorObj.mul_def, Category.assoc,
-      Mon_Class.tensorObj.one_def]
+    simp only [comp_whiskerRight, tensor_whiskerLeft, MonObj.tensorObj.mul_def, Category.assoc,
+      MonObj.tensorObj.one_def]
     simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₁ A
   · rw [Conv.mul_eq, Conv.one_eq]
     simp only [whiskerLeft_comp, tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc,
-      Mon_Class.tensorObj.mul_def, Mon_Class.tensorObj.one_def]
+      MonObj.tensorObj.mul_def, MonObj.tensorObj.one_def]
     simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₂ A
@@ -336,12 +336,12 @@ theorem mul_antipode₂ (A : C) [Hopf_Class A] :
   slice_lhs 9 10 =>
     rw [← whisker_exchange]
   slice_lhs 11 12 =>
-    rw [Mon_Class.mul_assoc_flip]
+    rw [MonObj.mul_assoc_flip]
   slice_lhs 10 11 =>
     rw [associator_inv_naturality_left]
   slice_lhs 11 12 =>
     simp only [← comp_whiskerRight]
-    rw [Mon_Class.mul_assoc]
+    rw [MonObj.mul_assoc]
     simp only [comp_whiskerRight]
   rw [tensorHom_def]
   rw [tensor_whiskerLeft _ _ (β_ A A).hom]
@@ -354,7 +354,7 @@ theorem mul_antipode₂ (A : C) [Hopf_Class A] :
     rw [← BraidedCategory.hexagon_forward]
     simp only [whiskerLeft_comp]
   simp only [tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc, pentagon_inv_inv_hom_inv_inv,
-    whisker_assoc, Mon_Class.mul_assoc, whiskerLeft_inv_hom_assoc]
+    whisker_assoc, MonObj.mul_assoc, whiskerLeft_inv_hom_assoc]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
     rw [BraidedCategory.braiding_naturality_right]
@@ -378,7 +378,7 @@ theorem mul_antipode₂ (A : C) [Hopf_Class A] :
     simp only [whiskerLeft_comp]
   slice_lhs 6 7 =>
     simp only [← whiskerLeft_comp]
-    rw [Mon_Class.one_mul]
+    rw [MonObj.one_mul]
     simp only [whiskerLeft_comp]
   slice_lhs 3 4 =>
     simp only [← whiskerLeft_comp]
