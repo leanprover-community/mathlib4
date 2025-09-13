@@ -362,7 +362,7 @@ noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
     rw [Prod.mk.injEq]
     contrapose! heq with hne
     rcases eq_or_ne i₁ i₂ with heq | hne
-    · rw [heq, ← Subtype.ext_iff_val.ne]
+    · rw [heq, ← Subtype.ext_iff.ne]
       exact (fᵣ i₂).injective.ne (hne heq)
     · exact (A.Adj hne (fᵣ i₁ x₁).prop (fᵣ i₂ x₂).prop).ne
   use ⟨f, ?_⟩, f.injective
