@@ -73,7 +73,10 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
 
-/- The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely convex hull. -/
+/-
+The Bipolar Theorem: The bipolar of a set coincides with its closed absolutely convex hull.
+[Conway, *A course in functional analysis*, Chapter V. 1.8][conway1990]
+-/
 open scoped ComplexConjugate
 theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
     B.flip.polar (B.polar s) = closedAbsConvexHull (E := WeakBilin B) 𝕜 s := by
