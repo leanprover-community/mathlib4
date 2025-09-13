@@ -694,7 +694,7 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0∞} (r : ℝ≥0∞) :
   refine ⟨HasSum.tendsto_sum_nat, fun h => ?_⟩
   rw [← iSup_eq_of_tendsto _ h, ← ENNReal.tsum_eq_iSup_nat]
   · exact ENNReal.summable.hasSum
-  · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset.2 hst)
+  · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset_range.2 hst)
 
 theorem tendsto_nat_tsum (f : ℕ → ℝ≥0∞) :
     Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 (∑' n, f n)) := by

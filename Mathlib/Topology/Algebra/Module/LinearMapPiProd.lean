@@ -32,7 +32,7 @@ variable
   {M₃ : Type*} [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R M₃]
   {M₄ : Type*} [TopologicalSpace M₄] [AddCommMonoid M₄] [Module R M₄]
 
-/-- The cartesian product of two bounded linear maps, as a bounded linear map. -/
+/-- The Cartesian product of two bounded linear maps, as a bounded linear map. -/
 protected def prod (f₁ : M₁ →L[R] M₂) (f₂ : M₁ →L[R] M₃) :
     M₁ →L[R] M₂ × M₃ :=
   ⟨(f₁ : M₁ →ₗ[R] M₂).prod f₂, f₁.2.prodMk f₂.2⟩

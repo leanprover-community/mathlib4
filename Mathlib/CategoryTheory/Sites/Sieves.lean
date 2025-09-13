@@ -350,7 +350,7 @@ protected def inter (S R : Sieve X) : Sieve X where
     simp [h₁, h₂]
 
 /-- Sieves on an object `X` form a complete lattice.
-We generate this directly rather than using the galois insertion for nicer definitional properties.
+We generate this directly rather than using the Galois insertion for nicer definitional properties.
 -/
 instance : CompleteLattice (Sieve X) where
   le S R := ∀ ⦃Y⦄ (f : Y ⟶ X), S f → R f
@@ -440,7 +440,7 @@ theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R 
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
 
-/-- Show that there is a galois insertion (generate, set_over). -/
+/-- Show that there is a Galois insertion (generate, set_over). -/
 def giGenerate : GaloisInsertion (generate : Presieve X → Sieve X) arrows where
   gc := generate_le_iff
   choice 𝒢 _ := generate 𝒢
@@ -787,7 +787,7 @@ theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨V, f, 𝟙 _, h, by simp⟩
 
-/-- When `F` is essentially surjective and full, the galois connection is a galois insertion. -/
+/-- When `F` is essentially surjective and full, the Galois connection is a Galois insertion. -/
 def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
     GaloisInsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
@@ -796,7 +796,7 @@ def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
   refine ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, ?_⟩
   simpa using hf
 
-/-- When `F` is fully faithful, the galois connection is a galois coinsertion. -/
+/-- When `F` is fully faithful, the Galois connection is a Galois coinsertion. -/
 def fullyFaithfulFunctorGaloisCoinsertion [F.Full] [F.Faithful] (X : C) :
     GaloisCoinsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
@@ -882,7 +882,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
-    simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
+    simpa [Subtype.ext_iff] using congr_fun (NatTrans.congr_app h Y) y⟩
 
 -- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
 /-- A natural transformation to a representable functor induces a sieve. This is the left inverse of

@@ -13,7 +13,7 @@ Show that `C ⥤ Type max w v u` is monoidal closed for `C` a category in `Type 
 `Type v`, and `w` an arbitrary universe.
 
 ## TODO
-It should be shown that `C ⥤ Type max w v u` is cartesian closed.
+It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
 
 -/
 

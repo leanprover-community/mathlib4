@@ -275,7 +275,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
                 rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
               ⟨Nat.pos_of_ne_zero h, hk₅⟩
         ⟨k / (Nat.find hex : ℤ),
-          Subtype.ext_iff_val.2
+          Subtype.ext_iff.2
             (by
               suffices g ^ ((Nat.find hex : ℤ) * (k / Nat.find hex : ℤ)) = x by simpa [zpow_mul]
               rw [Int.mul_ediv_cancel'

@@ -49,7 +49,7 @@ For now, we just turn off the offending simprocs in this file.
 *However*, hopefully it is possible to refactor the material here so that no disabling of
 simprocs is needed.
 
-See issue #27382.
+See issue https://github.com/leanprover-community/mathlib4/issues/27382.
 -/
 attribute [-simp] Fin.reduceFinMk
 

@@ -642,7 +642,7 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@d29fb3b12c1c834450680b3c544f63fe0237a2e2 # 2025-06-20
+      - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
           mode: check
           lint-bib-file: true
