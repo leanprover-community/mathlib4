@@ -5,6 +5,7 @@ Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Order.Archimedean.Class
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.RingTheory.Valuation.Basic
 
 /-!
@@ -114,6 +115,42 @@ noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValua
 
 @[simp] theorem addValuation_apply (a : R) : addValuation R a = mk a := rfl
 
+variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
+
+@[simp]
+theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
+  rw [← mk_one, orderHom_mk]
+
+@[simp]
+theorem mk_eq_zero_of_archimedean [Archimedean S] {x : S} (h : x ≠ 0) : mk x = 0 := by
+  have : Nontrivial S := ⟨_, _, h⟩
+  exact mk_eq_mk_of_archimedean h one_ne_zero
+
+theorem eq_zero_or_top_of_archimedean [Archimedean S] (x : ArchimedeanClass S) : x = 0 ∨ x = ⊤ := by
+  induction x with | mk x
+  obtain rfl | h := eq_or_ne x 0 <;> simp_all
+
+/-- See `mk_map_of_archimedean'` for a version taking `M →+*o R`. -/
+theorem mk_map_of_archimedean [Archimedean S] (f : S →+o R) {x : S} (h : x ≠ 0) :
+    mk (f x) = mk (f 1) := by
+  rw [← orderHom_mk, mk_eq_zero_of_archimedean h, orderHom_zero]
+
+/-- See `mk_map_of_archimedean` for a version taking `M →+o R`. -/
+theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x ≠ 0) :
+    mk (f x) = 0 := by
+  simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
+
+@[simp]
+theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
+  obtain _ | _ := subsingleton_or_nontrivial S
+  · exact Subsingleton.allEq ..
+  · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
+
+@[simp]
+theorem mk_natCast {n : ℕ} (h : n ≠ 0) : mk (n : S) = 0 := by
+  rw [← Int.cast_natCast]
+  exact mk_intCast (mod_cast h)
+
 end IsOrderedRing
 
 section IsStrictOrderedRing
@@ -179,6 +216,11 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
   zsmul_neg' n x := by
     induction x with | mk x
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
+
+@[simp]
+theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
+  have := IsOrderedRing.toIsStrictOrderedRing R
+  simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
 
 end Field
 end ArchimedeanClass
