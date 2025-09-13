@@ -117,7 +117,7 @@ theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
 theorem isNormal_opow {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) := by
   have ha : 0 < a := zero_lt_one.trans h
   refine IsNormal.of_succ_lt ?_ fun hl ↦ ?_
-  · simpa only [mul_one, opow_succ] using fun b ↦ (mul_lt_mul_left (opow_pos b ha)).2 h
+  · simpa only [mul_one, opow_succ] using fun b ↦ mul_lt_mul_of_pos_left h (opow_pos b ha)
   · simp [IsLUB, IsLeast, upperBounds, lowerBounds, ← opow_le_of_isSuccLimit ha.ne' hl]
 
 @[simp]
@@ -186,9 +186,8 @@ theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
-  exact
-    (mul_le_mul_right' (opow_le_opow_left c ab.le) a).trans_lt <|
-      (mul_lt_mul_left (opow_pos c ((Ordinal.zero_le a).trans_lt ab))).2 ab
+  exact (mul_le_mul_right' (opow_le_opow_left c ab.le) a).trans_lt <|
+    mul_lt_mul_of_pos_left ab <| opow_pos c <| (Ordinal.zero_le a).trans_lt ab
 
 theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   rcases eq_or_ne a 0 with (rfl | a0)
@@ -490,7 +489,8 @@ theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y 
 theorem omega0_opow_mul_nat_lt {a b : Ordinal} (h : a < b) (n : ℕ) : ω ^ a * n < ω ^ b := by
   apply lt_of_lt_of_le _ (opow_le_opow_right omega0_pos (succ_le_of_lt h))
   rw [opow_succ]
-  exact (mul_lt_mul_left (opow_pos a omega0_pos)).2 (nat_lt_omega0 n)
+  gcongr
+  exacts [opow_pos a omega0_pos, nat_lt_omega0 n]
 
 theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
     a < ω ^ b ↔ ∃ c < b, ∃ n : ℕ, a < ω ^ c * n := by
