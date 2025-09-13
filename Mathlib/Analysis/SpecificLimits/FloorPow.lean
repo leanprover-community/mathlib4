@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Order.Field.GeomSum
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
@@ -51,8 +52,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        u (c n) - c n * l = (u (c n) / c n - l) * c n := by
-          simp only [cnpos.ne', Ne, Nat.cast_eq_zero, not_false_iff, field_simps]
+        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field_simp
         _ ≤ ε * c n := by
           gcongr
           refine (le_abs_self _).trans ?_
@@ -105,8 +105,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by
-          simp only [cnpos.ne', Ne, Nat.cast_eq_zero, not_false_iff, neg_sub, field_simps]
+        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field_simp; ring
         _ ≤ ε * c n := by
           gcongr
           refine le_trans (neg_le_abs _) ?_
@@ -176,7 +175,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
     calc
       u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
-      _ = (l + ε * (1 + ε + l)) := by field_simp; ring
+      _ = (l + ε * (1 + ε + l)) := by field_simp
       _ < d := hε
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
@@ -208,7 +207,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     simp only [one_mul, div_one] at A
     convert A using 1
     ext1 n
-    field_simp [(zero_lt_one.trans (cone k)).ne', (H n).ne']
+    field_simp [(zero_lt_one.trans (cone k)).ne']
     ring
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff₀ (H n)).1 hn.le
@@ -240,7 +239,6 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       rw [div_lt_iff₀ (Real.log_pos hc), ← Real.log_pow]
       exact Real.log_lt_log hj hi.2
     _ = ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
-      congr 1 with i
       simp [← pow_mul, mul_comm]
     _ ≤ (c⁻¹ ^ 2) ^ ⌊Real.log j / Real.log c⌋₊ / ((1 : ℝ) - c⁻¹ ^ 2) :=
       geom_sum_Ico_le_of_lt_one (sq_nonneg _) C
@@ -256,10 +254,8 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         rw [Real.log_rpow A]
         simp only [one_div, Real.log_inv, Real.log_pow, mul_neg, neg_inj]
         field_simp [(Real.log_pos hc).ne']
-        ring
       rw [Real.rpow_sub A, I]
-      have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
-      field_simp [hj.ne', (zero_lt_one.trans hc).ne']
+      simp
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
 
@@ -303,5 +299,4 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       exact sum_div_pow_sq_le_div_sq N hj hc
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1
-      field_simp [(sub_pos.2 hc).ne']
-      ring!
+      field_simp

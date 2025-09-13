@@ -134,11 +134,11 @@ theorem _root_.Submodule.IsPrincipal.contentIdeal_le_span_iff_dvd
     C r ∣ C h_prin.generator := by
       apply _root_.map_dvd C
       rwa [← span_singleton_le_span_singleton]
-     _   ∣ p := h_prin.contentIdeal_generator_dvd
+     _ ∣ p := h_prin.contentIdeal_generator_dvd
   · rw [← contentIdeal_C r]
     exact fun h ↦ contentIdeal_le_contentIdeal_of_dvd h
 
-/-- If the coefficients of `p` geneate the whole ring, then `p` is primitive. -/
+/-- If the coefficients of `p` generate the whole ring, then `p` is primitive. -/
 theorem isPrimitive_of_contentIdeal_eq_top (h : p.contentIdeal = ⊤) : p.IsPrimitive := by
   have h_prin : p.contentIdeal.IsPrincipal := by
     rw [h]
@@ -212,7 +212,7 @@ section IsBezout
 
 variable {R : Type*} [CommSemiring R] [IsBezout R] (p : R[X])
 
-/-- The polynomial `p` is primitive if and only if the coefficients of `p` geneate the whole ring.
+/-- The polynomial `p` is primitive if and only if the coefficients of `p` generate the whole ring.
 -/
 theorem isPrimitive_iff_contentIdeal_eq_top : p.IsPrimitive ↔ p.contentIdeal = ⊤ :=
   (IsBezout.isPrincipal_of_FG _ p.contentIdeal_FG).isPrimitive_iff_contentIdeal_eq_top

@@ -87,11 +87,7 @@ lemma spec_cfcₙAux (f : C(σₙ 𝕜 a, 𝕜)₀) : σ 𝕜 (cfcₙAux hp₁ a
   rw [cfcₙAux, NonUnitalStarAlgHom.comp_assoc, NonUnitalStarAlgHom.comp_apply]
   simp only [NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_coe]
   rw [cfcHom_map_spectrum (hp₁.mpr ha) (R := 𝕜) _]
-  ext x
-  constructor
-  all_goals rintro ⟨x, rfl⟩
-  · exact ⟨⟨x, (Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a).symm ▸ x.property⟩, rfl⟩
-  · exact ⟨⟨x, Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜 a ▸ x.property⟩, rfl⟩
+  simp
 
 variable [CompleteSpace A]
 
@@ -196,17 +192,8 @@ instance)
 /-- An element in a C⋆-algebra is selfadjoint if and only if it is normal and its spectrum is
 contained in `ℝ`. -/
 lemma isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts {a : A} :
-    IsSelfAdjoint a ↔ IsStarNormal a ∧ SpectrumRestricts a Complex.reCLM := by
-  refine ⟨fun ha ↦ ⟨ha.isStarNormal, .of_rightInvOn Complex.ofReal_re fun x hx ↦ ?_⟩, ?_⟩
-  · have := eqOn_of_cfc_eq_cfc <| (cfc_star (id : ℂ → ℂ) a).symm ▸ (cfc_id ℂ a).symm ▸ ha.star_eq
-    exact Complex.conj_eq_iff_re.mp (by simpa using this hx)
-  · rintro ⟨ha₁, ha₂⟩
-    rw [isSelfAdjoint_iff]
-    nth_rw 2 [← cfc_id ℂ a]
-    rw [← cfc_star_id a (R := ℂ)]
-    refine cfc_congr fun x hx ↦ ?_
-    obtain ⟨x, -, rfl⟩ := ha₂.algebraMap_image.symm ▸ hx
-    exact Complex.conj_ofReal _
+    IsSelfAdjoint a ↔ IsStarNormal a ∧ SpectrumRestricts a Complex.reCLM :=
+  isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 -- TODO: REMOVE (duplicate; see comment on `isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts`)
 lemma IsSelfAdjoint.spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :

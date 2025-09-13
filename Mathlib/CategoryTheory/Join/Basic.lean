@@ -177,9 +177,9 @@ instance inclLeftFull : (inclLeft C D).Full := inclLeftFullyFaithful C D |>.full
 
 instance inclRightFull : (inclRight C D).Full := inclRightFullyFaithful C D |>.full
 
-instance inclLeftFaithFull : (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
+instance inclLeftFaithful : (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
 
-instance inclRightFaithfull : (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
+instance inclRightFaithful : (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
 
 variable {C} in
 /-- A situational lemma to help putting identities in the form `(inclLeft _ _).map _` when using
@@ -291,7 +291,7 @@ def mkNatTrans {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     --   (associator _ _ _).hom ≫ whiskerLeft (Prod.fst C D) αₗ ≫ (associator _ _ _).inv ≫
     --   whiskerRight (edgeTransform C D) F' ≫ (associator _ _ _).hom :=
     --   by aesop_cat)
-    (h : ∀ c d, F.map (edge c d) ≫ αᵣ.app d = αₗ.app c ≫ F'.map (edge c d) := by aesop_cat) :
+    (h : ∀ c d, F.map (edge c d) ≫ αᵣ.app d = αₗ.app c ≫ F'.map (edge c d) := by cat_disch) :
     F ⟶ F' where
   app x := match x with
     | left x => αₗ.app x
@@ -310,7 +310,7 @@ variable {F : C ⋆ D ⥤ E} {F' : C ⋆ D ⥤ E}
     -- (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
     --   whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
     --   by aesop_cat)
-    (h : ∀ c d, F.map (edge c d) ≫ αᵣ.app d = αₗ.app c ≫ F'.map (edge c d) := by aesop_cat)
+    (h : ∀ c d, F.map (edge c d) ≫ αᵣ.app d = αₗ.app c ≫ F'.map (edge c d) := by cat_disch)
 
 @[simp]
 lemma mkNatTrans_app_left (c : C) : (mkNatTrans αₗ αᵣ h).app (left c) = αₗ.app c := rfl
@@ -354,13 +354,13 @@ lemma mkNatTransComp
     -- (h : whiskerRight (edgeTransform C D) F ≫ whiskerLeft (Prod.snd C D) αᵣ =
     --   whiskerLeft (Prod.fst C D) αₗ ≫ whiskerRight (edgeTransform C D) F' :=
     --   by aesop_cat)
-    (h : ∀ c d, F.map (edge c d) ≫ αᵣ.app d = αₗ.app c ≫ F'.map (edge c d) := by aesop_cat)
+    (h : ∀ c d, F.map (edge c d) ≫ αᵣ.app d = αₗ.app c ≫ F'.map (edge c d) := by cat_disch)
     -- (h' : whiskerRight (edgeTransform C D) F' ≫ whiskerLeft (Prod.snd C D) βᵣ =
     --   whiskerLeft (Prod.fst C D) βₗ ≫ whiskerRight (edgeTransform C D) F'' := by aesop_cat) :
-    (h' : ∀ c d, F'.map (edge c d) ≫ βᵣ.app d = βₗ.app c ≫ F''.map (edge c d) := by aesop_cat) :
+    (h' : ∀ c d, F'.map (edge c d) ≫ βᵣ.app d = βₗ.app c ≫ F''.map (edge c d) := by cat_disch) :
     mkNatTrans (αₗ ≫ βₗ) (αᵣ ≫ βᵣ) (by intro c d; simp [← h' c d, reassoc_of% h c d]) =
     mkNatTrans αₗ αᵣ h ≫ mkNatTrans βₗ βᵣ h' := by
-  apply natTrans_ext <;> aesop_cat
+  apply natTrans_ext <;> cat_disch
 
 end
 
@@ -373,7 +373,7 @@ def mkNatIso {F : C ⋆ D ⥤ E} {G : C ⋆ D ⥤ E}
     (eᵣ : inclRight C D ⋙ F ≅ inclRight C D ⋙ G)
 -- (h : whiskerRight (edgeTransform C D) F ≫ (isoWhiskerLeft (Prod.snd C D) eᵣ).hom =
 -- (isoWhiskerLeft (Prod.fst C D) eₗ).hom ≫ whiskerRight (edgeTransform C D) G := by aesop_cat) :
-    (h : ∀ c d, F.map (edge c d) ≫ eᵣ.hom.app d = eₗ.hom.app c ≫ G.map (edge c d) := by aesop_cat) :
+    (h : ∀ c d, F.map (edge c d) ≫ eᵣ.hom.app d = eₗ.hom.app c ≫ G.map (edge c d) := by cat_disch) :
     F ≅ G where
   hom := mkNatTrans eₗ.hom eᵣ.hom (by simpa using h)
   inv := mkNatTrans eₗ.inv eᵣ.inv (by
@@ -508,12 +508,12 @@ def mapWhiskerRight {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} (α : Fₗ ⟶ Gₗ) (H : 
 lemma mapWhiskerRight_comp {Fₗ : C ⥤ E} {Gₗ : C ⥤ E} {Hₗ : C ⥤ E}
     (α : Fₗ ⟶ Gₗ) (β : Gₗ ⟶ Hₗ) (H : D ⥤ E') :
     mapWhiskerRight (α ≫ β) H = mapWhiskerRight α H ≫ mapWhiskerRight β H := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma mapWhiskerRight_id (Fₗ : C ⥤ E) (H : D ⥤ E') :
     mapWhiskerRight (𝟙 Fₗ) H = 𝟙 _ := by
-  aesop_cat
+  cat_disch
 
 /-- A natural transformation `Fᵣ ⟶ Gᵣ` induces a natural transformation
   `mapPair H Fᵣ ⟶ mapPair H Gᵣ` for every `H : C ⥤ E`. -/
@@ -528,12 +528,12 @@ def mapWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ 
 lemma mapWhiskerLeft_comp {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} {Hᵣ : D ⥤ E'}
     (H : C ⥤ E) (α : Fᵣ ⟶ Gᵣ) (β : Gᵣ ⟶ Hᵣ) :
     mapWhiskerLeft H (α ≫ β) = mapWhiskerLeft H α ≫ mapWhiskerLeft H β := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma mapWhiskerLeft_id (H : C ⥤ E) (Fᵣ : D ⥤ E') :
     mapWhiskerLeft H (𝟙 Fᵣ) = 𝟙 _ := by
-  aesop_cat
+  cat_disch
 
 /-- One can exchange `mapWhiskerLeft` and `mapWhiskerRight`. -/
 lemma mapWhisker_exchange (Fₗ : C ⥤ E) (Gₗ : C ⥤ E) (Fᵣ : D ⥤ E') (Gᵣ : D ⥤ E')
@@ -541,7 +541,7 @@ lemma mapWhisker_exchange (Fₗ : C ⥤ E) (Gₗ : C ⥤ E) (Fᵣ : D ⥤ E') (G
     mapWhiskerLeft Fₗ αᵣ ≫ mapWhiskerRight αₗ Gᵣ =
       mapWhiskerRight αₗ Fᵣ ≫ mapWhiskerLeft Gₗ αᵣ := by
   ext
-  aesop_cat
+  cat_disch
 
 /-- A natural isomorphism `Fᵣ ≅ Gᵣ` induces a natural isomorphism
   `mapPair H Fᵣ ≅ mapPair H Gᵣ` for every `H : C ⥤ E`. -/

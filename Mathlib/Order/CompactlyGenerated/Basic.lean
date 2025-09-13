@@ -215,7 +215,7 @@ theorem IsSupFiniteCompact.isSupClosedCompact (h : IsSupFiniteCompact α) :
 theorem IsSupClosedCompact.wellFoundedGT (h : IsSupClosedCompact α) :
     WellFoundedGT α where
   wf := by
-    refine RelEmbedding.wellFounded_iff_no_descending_seq.mpr ⟨fun a => ?_⟩
+    refine RelEmbedding.wellFounded_iff_isEmpty.mpr ⟨fun a => ?_⟩
     suffices sSup (Set.range a) ∈ Set.range a by
       obtain ⟨n, hn⟩ := Set.mem_range.mp this
       have h' : sSup (Set.range a) < a (n + 1) := by
@@ -293,25 +293,15 @@ theorem WellFoundedGT.finite_of_sSupIndep [WellFoundedGT α] {s : Set α}
     rw [← hs, eq_comm, inf_eq_left]
     exact le_sSup hx₀
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.WellFoundedGT.finite_of_setIndependent := WellFoundedGT.finite_of_sSupIndep
-
 theorem WellFoundedGT.finite_ne_bot_of_iSupIndep [WellFoundedGT α]
     {ι : Type*} {t : ι → α} (ht : iSupIndep t) : Set.Finite {i | t i ≠ ⊥} := by
   refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
   exact WellFoundedGT.finite_of_sSupIndep ht.sSupIndep_range
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent :=
-  WellFoundedGT.finite_ne_bot_of_iSupIndep
-
 theorem WellFoundedGT.finite_of_iSupIndep [WellFoundedGT α] {ι : Type*}
     {t : ι → α} (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
   haveI := (WellFoundedGT.finite_of_sSupIndep ht.sSupIndep_range).to_subtype
   Finite.of_injective_finite_range (ht.injective h_ne_bot)
-
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.WellFoundedGT.finite_of_independent := WellFoundedGT.finite_of_iSupIndep
 
 theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
     (hs : sSupIndep s) : s.Finite := by
@@ -322,34 +312,24 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
     iSup₂_le fun i hi ↦ le_iSup₂_of_le i (n.le_succ.trans hi) le_rfl⟩
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
     ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).2.2).trans_le (sup_le n)
-  · exact (RelEmbedding.natGT a lt).not_wellFounded_of_decreasing_seq wellFounded_lt
+  · exact (RelEmbedding.natGT a lt).not_wellFounded wellFounded_lt
   exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_ge <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
-
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.WellFoundedLT.finite_of_setIndependent := WellFoundedLT.finite_of_sSupIndep
 
 theorem WellFoundedLT.finite_ne_bot_of_iSupIndep [WellFoundedLT α]
     {ι : Type*} {t : ι → α} (ht : iSupIndep t) : Set.Finite {i | t i ≠ ⊥} := by
   refine Finite.of_finite_image (Finite.subset ?_ (image_subset_range t _)) ht.injOn
   exact WellFoundedLT.finite_of_sSupIndep ht.sSupIndep_range
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.WellFoundedLT.finite_ne_bot_of_independent :=
-  WellFoundedLT.finite_ne_bot_of_iSupIndep
-
 theorem WellFoundedLT.finite_of_iSupIndep [WellFoundedLT α] {ι : Type*}
     {t : ι → α} (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Finite ι :=
   haveI := (WellFoundedLT.finite_of_sSupIndep ht.sSupIndep_range).to_subtype
   Finite.of_injective_finite_range (ht.injective h_ne_bot)
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.WellFoundedLT.finite_of_independent := WellFoundedLT.finite_of_iSupIndep
-
 /-- A complete lattice is said to be compactly generated if any
 element is the `sSup` of compact elements. -/
 class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
   /-- In a compactly generated complete lattice,
-    every element is the `sSup` of some set of compact elements. -/
+  every element is the `sSup` of some set of compact elements. -/
   exists_sSup_eq : ∀ x : α, ∃ s : Set α, (∀ x ∈ s, CompleteLattice.IsCompactElement x) ∧ sSup s = x
 
 section
@@ -447,9 +427,6 @@ theorem sSupIndep_iff_finite {s : Set α} :
       · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.setIndependent_iff_finite := sSupIndep_iff_finite
-
 lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
     (hf : InjOn f {i | f i ≠ ⊥}) :
     iSupIndep f ↔ ∀ (s : Finset ι), s.SupIndep f := by
@@ -473,9 +450,6 @@ lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
   rw [Finset.supIndep_iff_disjoint_erase] at h
   exact h i (Finset.mem_insert_self i _)
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.independent_iff_supIndep_of_injOn := iSupIndep_iff_supIndep_of_injOn
-
 theorem sSupIndep_iUnion_of_directed {η : Type*} {s : η → Set α}
     (hs : Directed (· ⊆ ·) s) (h : ∀ i, sSupIndep (s i)) :
     sSupIndep (⋃ i, s i) := by
@@ -490,16 +464,10 @@ theorem sSupIndep_iUnion_of_directed {η : Type*} {s : η → Set α}
     exfalso
     exact hη ⟨i⟩
 
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.setIndependent_iUnion_of_directed := sSupIndep_iUnion_of_directed
-
 theorem iSupIndep_sUnion_of_directed {s : Set (Set α)} (hs : DirectedOn (· ⊆ ·) s)
     (h : ∀ a ∈ s, sSupIndep a) : sSupIndep (⋃₀ s) := by
   rw [Set.sUnion_eq_iUnion]
   exact sSupIndep_iUnion_of_directed hs.directed_val (by simpa using h)
-
-@[deprecated (since := "2024-11-24")]
-alias CompleteLattice.independent_sUnion_of_directed := iSupIndep_sUnion_of_directed
 
 end
 
@@ -552,7 +520,6 @@ instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice 
       right
       have hc' := CompleteLattice.Iic_coatomic_of_compact_element hc
       rw [← isAtomic_iff_isCoatomic] at hc'
-      haveI := hc'
       obtain con | ⟨a, ha, hac⟩ := eq_bot_or_exists_atom_le (⟨c, le_refl c⟩ : Set.Iic c)
       · exfalso
         apply hcbot
@@ -581,18 +548,19 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
 
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.
-Most explicitly, every element is the complement of a supremum of indepedendent atoms.
+Most explicitly, every element is the complement of a supremum of independent atoms.
 -/
 
-/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
-element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
-theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
-    ∃ s : Set α, sSupIndep s ∧
-    IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s` relative to a
+given element `c`, where each element of `s` is an atom.
+See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_disjoint_sSup_atoms (b c : α) (hbc : b ≤ c)
+    (h : sSup {a ≤ c | IsAtom a} = c) :
+    ∃ s : Set α, sSupIndep s ∧ Disjoint b (sSup s) ∧ b ⊔ sSup s = c ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
   -- porting note(https://github.com/leanprover-community/mathlib4/issues/5732):
   -- `obtain` chokes on the placeholder.
   have zorn := zorn_subset
-    (S := {s : Set α | sSupIndep s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a})
+    (S := {s : Set α | sSupIndep s ∧ Disjoint b (sSup s) ∧ ∀ a ∈ s, IsAtom a ∧ a ≤ c})
     fun c hc1 hc2 =>
       ⟨⋃₀ c,
         ⟨iSupIndep_sUnion_of_directed hc2.directedOn fun s hs => (hc1 hs).1, ?_,
@@ -606,11 +574,12 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = �
       exact hc2.directedOn.mono @fun s t => sSup_le_sSup
   simp_rw [maximal_subset_iff] at zorn
   obtain ⟨s, ⟨s_ind, b_inf_Sup_s, s_atoms⟩, s_max⟩ := zorn
-  refine ⟨s, s_ind, ⟨b_inf_Sup_s, ?_⟩, s_atoms⟩
-  rw [codisjoint_iff_le_sup, ← h, sSup_le_iff]
+  refine ⟨s, s_ind, b_inf_Sup_s, le_antisymm ?_ ?_, fun a ha ↦ (s_atoms a ha).1⟩
+  · simp_all
+  rw [← h, sSup_le_iff]
   intro a ha
   rw [← inf_eq_left]
-  refine (ha.le_iff.mp inf_le_left).resolve_left fun con => ha.1 ?_
+  refine (ha.2.le_iff.mp inf_le_left).resolve_left fun con => ha.2.1 ?_
   rw [← con, eq_comm, inf_eq_left]
   refine (le_sSup ?_).trans le_sup_right
   rw [← disjoint_iff] at con
@@ -636,25 +605,30 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = �
   · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain hx | rfl := hx
     · exact s_atoms x hx
-    · exact ha
+    · exact ha.symm
 
-@[deprecated (since := "2024-11-24")]
-alias exists_setIndependent_isCompl_sSup_atoms := exists_sSupIndep_isCompl_sSup_atoms
+/-- In an atomic lattice, every element `b` has a complement of the form `sSup s`, where each
+element of `s` is an atom. See also `complementedLattice_of_sSup_atoms_eq_top`. -/
+theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = ⊤) (b : α) :
+    ∃ s : Set α, sSupIndep s ∧ IsCompl b (sSup s) ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a := by
+  simpa [isCompl_iff, codisjoint_iff, and_assoc]
+    using exists_sSupIndep_disjoint_sSup_atoms b ⊤ le_top <| by simpa using h
 
-theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
+theorem exists_sSupIndep_of_sSup_atoms (b : α) (h : sSup {a ≤ b | IsAtom a} = b) :
+    ∃ s : Set α, sSupIndep s ∧ sSup s = b ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
+  let ⟨s, s_ind, _, s_atoms⟩ := exists_sSupIndep_disjoint_sSup_atoms ⊥ b bot_le h
+  ⟨s, s_ind, by simpa using s_atoms⟩
+
+theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup {a : α | IsAtom a} = ⊤) :
     ∃ s : Set α, sSupIndep s ∧ sSup s = ⊤ ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
-  let ⟨s, s_ind, s_top, s_atoms⟩ := exists_sSupIndep_isCompl_sSup_atoms h ⊥
-  ⟨s, s_ind, eq_top_of_isCompl_bot s_top.symm, s_atoms⟩
-
-@[deprecated (since := "2024-11-24")]
-alias exists_setIndependent_of_sSup_atoms_eq_top := exists_sSupIndep_of_sSup_atoms_eq_top
+  exists_sSupIndep_of_sSup_atoms ⊤ (by simpa)
 
 /-- See [Theorem 6.6][calugareanu]. -/
 theorem complementedLattice_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
-    ComplementedLattice α :=
-  ⟨fun b =>
-    let ⟨s, _, s_top, _⟩ := exists_sSupIndep_isCompl_sSup_atoms h b
-    ⟨sSup s, s_top⟩⟩
+    ComplementedLattice α where
+  exists_isCompl b :=
+    let ⟨s, _, hcompl, _⟩ := exists_sSupIndep_isCompl_sSup_atoms (by simpa) b
+    ⟨sSup s, hcompl⟩
 
 /-- See [Theorem 6.6][calugareanu]. -/
 theorem complementedLattice_of_isAtomistic [IsAtomistic α] : ComplementedLattice α :=

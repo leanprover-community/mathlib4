@@ -8,9 +8,9 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # The homology of a restriction
 
-Under extremely favourable circumstrnaces, we may relate the
+Under favourable circumstances, we may relate the
 homology of `K : HomologicalComplex C c'` in degree `j'` and
-that of `K.restriction e` id a degree `j`  when `e : Embedding c c'`
+that of `K.restriction e` in degree `j` when `e : Embedding c c'`
 is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
 

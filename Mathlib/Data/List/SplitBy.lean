@@ -143,12 +143,4 @@ theorem chain'_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
     apply chain'_getLast_head_splitByLoop _ not_mem_nil chain'_nil
     rintro _ ⟨⟩
 
-@[deprecated (since := "2024-10-30")] alias groupBy_nil := splitBy_nil
-@[deprecated (since := "2024-10-30")] alias flatten_groupBy := flatten_splitBy
-@[deprecated (since := "2024-10-30")] alias nil_not_mem_groupBy := nil_notMem_splitBy
-@[deprecated (since := "2024-10-30")] alias ne_nil_of_mem_groupBy := ne_nil_of_mem_splitBy
-@[deprecated (since := "2024-10-30")] alias chain'_of_mem_groupBy := chain'_of_mem_splitBy
-@[deprecated (since := "2024-10-30")]
-alias chain'_getLast_head_groupBy := chain'_getLast_head_splitBy
-
 end List

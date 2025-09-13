@@ -115,7 +115,7 @@ def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) 
          naturality := fun _ _ f => by dsimp; ext; simp }
 
 variable {G} in
-/-- If `c` is a colimit cocone on `G : Grockendieck F ⥤ H`, then the induced cocone on the
+/-- If `c` is a colimit cocone on `G : Grothendieck F ⥤ H`, then the induced cocone on the
 fiberwise colimit on `G` is a colimit cocone, too. -/
 def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     IsColimit (coconeFiberwiseColimitOfCocone c) where

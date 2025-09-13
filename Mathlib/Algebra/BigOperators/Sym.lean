@@ -15,8 +15,8 @@ namespace Finset
 
 open Multiset
 
-theorem sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
-    (s : Finset ι) (p : Sym2 ι → α) :
+theorem sum_sym2_filter_not_isDiag {ι M} [LinearOrder ι] [AddCommMonoid M]
+    (s : Finset ι) (p : Sym2 ι → M) :
     ∑ i ∈ s.sym2 with ¬ i.IsDiag, p i = ∑ i ∈ s.offDiag with i.1 < i.2, p s(i.1, i.2) := by
   rw [Finset.offDiag_filter_lt_eq_filter_le]
   conv_rhs => rw [← Finset.sum_subtype_eq_sum_filter]
@@ -25,8 +25,7 @@ theorem sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
 
 theorem sum_count_of_mem_sym {α} [DecidableEq α] {m : ℕ} {k : Sym α m} {s : Finset α}
     (hk : k ∈ s.sym m) : (∑ i ∈ s, count i k) = m := by
-  simp_rw [← k.prop, ← toFinset_sum_count_eq, eq_comm]
-  refine sum_subset_zero_on_sdiff (fun _ _ ↦ ?_) ?_ (fun _ _ ↦ rfl)
-  all_goals aesop
+  simp_all
 
 end Finset
+
