@@ -1,9 +1,9 @@
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 open CategoryTheory MonoidalCategory
-open scoped Mon_Class
+open scoped MonObj
 
-variable {C : Type*} [Category C] [MonoidalCategory C] {M N : C} [Mon_Class M] [Mon_Class N]
+variable {C : Type*} [Category C] [MonoidalCategory C] {M N : C} [MonObj M] [MonObj N]
 
 example : η ▷ M ≫ μ = (λ_ M).hom := by simp only [mon_tauto]
 example : M ◁ η ≫ μ = (ρ_ M).hom := by simp only [mon_tauto]
