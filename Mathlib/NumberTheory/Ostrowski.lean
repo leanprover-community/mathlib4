@@ -89,11 +89,15 @@ lemma eq_on_nat_iff_eq : (∀ n : ℕ, f n = g n) ↔ f = g := by
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f ≈ g := by
+lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c = g n) ↔ f.IsEquiv g := by
+  rw [isEquiv_iff_exists_rpow_eq]
   refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
     ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]
+
+@[deprecated (since := "2025-09-12")]
+alias equiv_on_nat_iff_equiv := exists_nat_rpow_iff_isEquiv
 
 section Non_archimedean
 
@@ -226,12 +230,12 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :
-    ∃! p, ∃ (_ : Fact p.Prime), f ≈ (padic p) := by
+    ∃! p, ∃ (_ : Fact p.Prime), f.IsEquiv (padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_and_lt_one hf_nontriv bdd
   have hprime := is_prime_of_minimal_nat_zero_lt_and_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact p.Prime := ⟨hprime⟩
   obtain ⟨t, h⟩ := exists_pos_eq_pow_neg hfp.1 hfp.2 hmin
-  simp_rw [← equiv_on_nat_iff_equiv]
+  simp_rw [← exists_nat_rpow_iff_isEquiv]
   refine ⟨p, ⟨hprime_fact, t⁻¹, inv_pos_of_pos h.1, fun n ↦ ?_⟩, fun q ⟨hq_prime, h_equiv⟩ ↦ ?_⟩
   · have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
     rcases eq_or_ne n 0 with rfl | hn -- Separate cases n = 0 and n ≠ 0
@@ -423,12 +427,12 @@ private lemma eq_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) :
 include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
 `ℚ`. -/
-theorem equiv_real_of_unbounded : f ≈ real := by
+theorem equiv_real_of_unbounded : f.IsEquiv real := by
   obtain ⟨m, hm⟩ := Classical.exists_not_of_not_forall notbdd
   have oneltm : 1 < m := by
     contrapose! hm
     rcases le_one_iff_eq_zero_or_eq_one.mp hm with rfl | rfl <;> simp
-  rw [← equiv_on_nat_iff_equiv]
+  rw [← exists_nat_rpow_iff_isEquiv]
   set s := logb m (f m) with hs
   refine ⟨s⁻¹,
     inv_pos.mpr (logb_pos (Nat.one_lt_cast.mpr oneltm) (one_lt_of_not_bounded notbdd oneltm)),
@@ -468,10 +472,14 @@ theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f.IsNontri
   · exact .inl <| equiv_real_of_unbounded bdd
 
 /-- The standard absolute value on `ℚ` is not equivalent to any `p`-adic absolute value. -/
-lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real ≈ (padic p) := by
+lemma not_real_isEquiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.IsEquiv (padic p) := by
+  rw [isEquiv_iff_exists_rpow_eq]
   rintro ⟨c, hc₀, hc⟩
   apply_fun (· 2) at hc
   simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc
   exact ((padic_le_one p 2).trans_lt <| one_lt_rpow one_lt_two hc₀).ne' hc
+
+@[deprecated (since := "2025-09-12")]
+alias not_real_equiv_padic := not_real_isEquiv_padic
 
 end Rat.AbsoluteValue
