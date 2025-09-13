@@ -163,7 +163,7 @@ theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
   partialSups_bot f
 
 theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
-    partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_succ f :=
+    partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_add_one f :=
   eq_of_forall_ge_iff fun _ ↦ by simp [Nat.lt_succ_iff]
 
 theorem partialSups_eq_sup_range [OrderBot α] (f : ℕ → α) (n : ℕ) :

@@ -117,14 +117,12 @@ def mergeWithGrind : TacticAnalysis.Config where
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
       if postI.stx.getKind == ``Lean.Parser.Tactic.grind then
         if let [goal] := preI.goalsBefore then
-          preCtx.runTactic preI goal <| fun goal => do
-            let tac := postI.stx
-            let (goals, _) ← try
-                Lean.Elab.runTactic goal tac
-              catch _e =>
-                pure ([goal], {})
-            if goals.isEmpty then
-              logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
+          let goals ← try
+            preCtx.runTacticCode preI goal postI.stx
+          catch _e =>
+            pure [goal]
+          if goals.isEmpty then
+            logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
 
 /-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {
@@ -153,27 +151,23 @@ def terminalToGrind : TacticAnalysis.Config where
           -- closes the goal like it does in userspace.
           let suffix := ⟨i.stx⟩ :: replaced
           let seq ← `(tactic| $suffix.toArray;*)
-          let (oldGoals, heartbeats) ← withHeartbeats <| ctx.runTactic i goal <| fun goal => do
-            let (goals, _) ←
-              try
-                Lean.Elab.runTactic goal seq
-              catch _e =>
-                pure ([goal], {})
-            return goals
+          let (oldGoals, heartbeats) ← withHeartbeats <|
+            try
+              ctx.runTacticCode i goal seq
+            catch _e =>
+              pure [goal]
           if !oldGoals.isEmpty then
             logWarningAt i.stx m!"Original tactics failed to solve the goal: {seq}"
           oldHeartbeats := heartbeats
 
           -- To check if `grind` can close the goal, run `grind` on the current goal
           -- and verify that no goals remain afterwards.
-          let (newGoals, heartbeats) ← withHeartbeats <| ctx.runTactic i goal <| fun goal => do
-            let tac ← `(tactic| grind)
-            let (goals, _) ←
-              try
-                Lean.Elab.runTactic goal tac
-              catch _e =>
-                pure ([goal], {})
-            return goals
+          let tac ← `(tactic| grind)
+          let (newGoals, heartbeats) ← withHeartbeats <|
+            try
+              ctx.runTacticCode i goal tac
+            catch _e =>
+              pure [goal]
           newHeartbeats := heartbeats
           if newGoals.isEmpty then
             success := true
