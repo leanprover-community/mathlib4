@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Multiset.Bind
 
 /-!
-# The cartesian product of multisets
+# The Cartesian product of multisets
 
 ## Main definitions
 

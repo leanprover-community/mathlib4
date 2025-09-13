@@ -173,7 +173,7 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
 
 section Prod
 
-/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+/-- The Cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
 
 @[default_instance]
