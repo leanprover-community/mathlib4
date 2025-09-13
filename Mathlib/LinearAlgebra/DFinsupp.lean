@@ -35,7 +35,7 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
-variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
+variable {ι ι' ι'' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
 
@@ -104,22 +104,12 @@ theorem lapply_comp_lsingle_of_ne [DecidableEq ι] (i i' : ι) (h : i ≠ i') :
 section Lsum
 
 variable (S)
-variable [DecidableEq ι]
 
 instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
     [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] :
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
-
-/-- `DFinsupp.equivCongrLeft` as a linear equivalence.
-
-This is the `DFinsupp` version of `Finsupp.domLCongr`. -/
-@[simps! apply]
-def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)) where
-  __ := DFinsupp.equivCongrLeft e
-  map_add' _ _ := by ext; rfl
-  map_smul' _ _ := by ext; rfl
 
 /-- `DFinsupp.sigmaCurryEquiv` as a linear equivalence.
 
@@ -140,6 +130,8 @@ def linearEquivFunOnFintype [Fintype ι] : (Π₀ i, M i) ≃ₗ[R] (Π i, M i) 
   __ := equivFunOnFintype
   map_add' _ _ := by ext; rfl
   map_smul' _ _ := by ext; rfl
+
+variable [DecidableEq ι]
 
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 
@@ -309,6 +301,36 @@ lemma range_mapRangeAddMonoidHom
 end AddCommGroup
 
 end mapRange
+
+section domLCongr
+
+/-- `DFinsupp.equivCongrLeft` as a linear equivalence.
+
+This is the `DFinsupp` version of `Finsupp.domLCongr`. -/
+@[simps! apply]
+def domLCongr (e : ι ≃ ι') : (Π₀ i, M i) ≃ₗ[R] (Π₀ i, M (e.symm i)) where
+  __ := DFinsupp.equivCongrLeft e
+  map_add' _ _ := by ext; rfl
+  map_smul' _ _ := by ext; rfl
+
+@[simp]
+theorem domLCongr_refl : domLCongr (Equiv.refl ι) = LinearEquiv.refl R (Π₀ i, M i) := by ext; rfl
+
+@[simp]
+theorem domLCongr_symm (e : ι ≃ ι') :
+    (domLCongr e : (Π₀ i, M i) ≃ₗ[R] _).symm =
+      (domLCongr e.symm : (Π₀ i, M (e.symm i)) ≃ₗ[R] _) ≪≫ₗ
+        (mapRange.linearEquiv fun i => LinearEquiv.cast (e.symm_apply_apply i)) := by
+    ext; simp [domLCongr, equivCongrLeft_symm]
+
+@[simp]
+theorem domLCongr_trans (e : ι ≃ ι') (e' : ι' ≃ ι'') :
+    (domLCongr e : (Π₀ i, M i) ≃ₗ[R] _).trans (domLCongr e' : (Π₀ i, M (e.symm i)) ≃ₗ[R] _) =
+      (domLCongr (e.trans e') : (Π₀ i, M i) ≃ₗ[R] _) ≪≫ₗ
+        (mapRange.linearEquiv fun _ => LinearEquiv.cast (by simp)) := by
+    ext; simp [domLCongr, equivCongrLeft_symm]
+
+end domLCongr
 
 section CoprodMap
 
