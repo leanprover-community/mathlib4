@@ -54,12 +54,8 @@ theorem count_eq_card_filter_range (n : ℕ) : count p n = #{x ∈ range n | p x
 
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
 theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
-  rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
-  · rfl
-  #adaptation_note /-- 2025-09-12 (kmill) proof is no longer solved for by unification. -/
-  · intro x
-    rw [mem_filter, mem_range]
-    rfl
+  rw [count_eq_card_filter_range, Fintype.card_of_subtype]
+  simp
 
 theorem count_le {n : ℕ} : count p n ≤ n := by
   rw [count_eq_card_filter_range]
