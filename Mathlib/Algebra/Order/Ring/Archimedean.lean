@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Order.Archimedean.Class
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Valuation.Basic
 
@@ -34,7 +35,7 @@ reasons:
   one on `Valuation`.
 -/
 
-variable {R S : Type*} [LinearOrder R]
+variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
 namespace ArchimedeanClass
 section Ring
@@ -134,7 +135,7 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
-variable [LinearOrder S] [Ring S] [IsStrictOrderedRing S]
+variable [Ring S] [IsStrictOrderedRing S]
 
 private theorem mk_le_mk_iff_denselyOrdered' [DenselyOrdered R] [Archimedean R] {x y : S}
     (f : R →+* S) (hf : StrictMono f) (h : 0 < y) :
@@ -152,21 +153,17 @@ private theorem mk_le_mk_iff_denselyOrdered' [DenselyOrdered R] [Archimedean R] 
     refine ⟨n, le_of_mul_le_mul_left ?_ hq₀⟩
     have h : 0 ≤ f (n • q) := by
       rw [← f.map_zero]
-      exact f.monotone' (nsmul_nonneg hq₀'.le n)
+      exact hf.monotone (nsmul_nonneg hq₀'.le n)
     simpa [mul_comm, mul_assoc] using mul_le_mul (hf hn).le hq (mul_nonneg hq₀.le (abs_nonneg y)) h
 
 theorem mk_le_mk_iff_denselyOrdered [DenselyOrdered R] [Archimedean R] {x y : S}
-    (f : R →+*o S) (hf : StrictMono f) :
+    (f : R →+* S) (hf : StrictMono f) :
     mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
   obtain hy | rfl | hy := lt_trichotomy y 0
   · simpa using mk_le_mk_iff_denselyOrdered' f hf (neg_pos.2 hy)
   · have : ∃ q, 0 < f q := ⟨1, by simp⟩
     simpa
   · exact mk_le_mk_iff_denselyOrdered' f hf hy
-
-def _root_.Rat.castOrderRingHom [Field R] [IsStrictOrderedRing R] : ℚ →+*o R where
-  monotone' := Rat.cast_mono
-  __ := Rat.castHom _
 
 end IsStrictOrderedRing
 end Ring
@@ -217,7 +214,7 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
 theorem mk_le_mk_iff_ratCast [Field S] [IsOrderedRing S] {x y : S} :
     mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
   have := IsOrderedRing.toIsStrictOrderedRing S
-  simpa using mk_le_mk_iff_denselyOrdered Rat.castOrderRingHom Rat.cast_strictMono (x := x) (y := y)
+  simpa using mk_le_mk_iff_denselyOrdered (Rat.castHom _) Rat.cast_strictMono (x := x)
 
 end Field
 end ArchimedeanClass
