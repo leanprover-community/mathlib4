@@ -36,10 +36,11 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
     change Subsingleton ↑V.V.obj at h
     apply Subsingleton.allEq
   rw[finrank_pos_iff_exists_ne_zero] at finrank_pos
-  obtain ⟨x, ne⟩ := finrank_pos
+  obtain ⟨x, x_nonzero⟩ := finrank_pos
   -- We show that for any nonzero `x : V`, the span of `x` is a subrepresentation.
   -- We have to explicitly show it is a representation since the relationship
   -- between `FDRep` and `Rep` is not developed well enough yet.
+  -- TODO: fix this when made possible by
   let W := ↥ (Submodule.span k {x})
   let rho_endo (g : G) : V ⟶ V := ⟨FGModuleCat.ofHom <| V.ρ g, by
     intro h
@@ -60,15 +61,16 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
   let WMod := FDRep.of w_rho
   -- This subrepresentation induces a monomorphism into `V`, which must be iso since `V` is simple.
   let incl : WMod ⟶ V := ⟨FGModuleCat.ofHom <| Submodule.subtype _, fun _ => rfl⟩
-  have mono_incl := (forget (FDRep k G)).reflectsMonomorphisms_of_faithful.reflects incl (by
-    rw[CategoryTheory.mono_iff_injective]
-    rintro ⟨a,ha⟩ ⟨b,hb⟩ rfl
-    rfl)
+  have mono_incl : Mono incl :=
+    (forget (FDRep k G)).reflectsMonomorphisms_of_faithful.reflects incl (by
+      rw[CategoryTheory.mono_iff_injective]
+      rintro ⟨a,ha⟩ ⟨b,hb⟩ rfl
+      rfl)
   have incl_nz : incl ≠ 0 := by
     intro h
     have mem : x ∈ Submodule.span k {x} := by simp
     have wrong : incl ⟨x,mem⟩ = (0 : WMod ⟶ V) ⟨x,mem⟩ := by rw[h]
-    exact ne wrong
+    exact x_nonzero wrong
   have incl_isIso := isIso_of_mono_of_nonzero incl_nz
   let incl_iso := asIso incl
   let incl' := (forget₂ (FGModuleCat k) (ModuleCat k)).mapIso <|
@@ -76,6 +78,6 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
   -- So `V` must be equal to the span of `x`, hence 1-dimensional.
   let incl_equiv : WMod ≃ₗ[k] V.V := CategoryTheory.Iso.toLinearEquiv <| incl'
   rw[← LinearEquiv.finrank_eq incl_equiv]
-  apply finrank_span_singleton ne
+  apply finrank_span_singleton x_nonzero
 
 end FDRep
