@@ -15,10 +15,10 @@ you're in for some trouble, and if there is another way to approach the problem 
 rely on this equality, it may be worth pursuing.
 
 You have two options:
-1. Use the equality `h` as one normally would in Lean (e.g. using `rw` and `subst`).
-   This may immediately cause difficulties, because in category theory everything is dependently
-   typed, and equations between objects quickly lead to nasty goals with `eq.rec`.
-2. Promote `h` to a morphism using `eqToHom h : X ⟶ Y`, or `eqToIso h : X ≅ Y`.
+1.  Use the equality `h` as one normally would in Lean (e.g. using `rw` and `subst`).
+    This may immediately cause difficulties, because in category theory everything is dependently
+    typed, and equations between objects quickly lead to nasty goals with `eq.rec`.
+2.  Promote `h` to a morphism using `eqToHom h : X ⟶ Y`, or `eqToIso h : X ≅ Y`.
 
 This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!

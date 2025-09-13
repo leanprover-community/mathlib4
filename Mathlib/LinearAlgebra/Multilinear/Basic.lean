@@ -51,10 +51,10 @@ Note that the use of `Function.update` requires a `DecidableEq ι` term to appea
 statement of `MultilinearMap.map_update_add'` and `MultilinearMap.map_update_smul'`.
 Three possible choices are:
 
-1. Requiring `DecidableEq ι` as an argument to `MultilinearMap` (as we did originally).
-2. Using `Classical.decEq ι` in the statement of `map_add'` and `map_smul'`.
-3. Quantifying over all possible `DecidableEq ι` instances in the statement of `map_add'` and
-   `map_smul'`.
+1.  Requiring `DecidableEq ι` as an argument to `MultilinearMap` (as we did originally).
+2.  Using `Classical.decEq ι` in the statement of `map_add'` and `map_smul'`.
+3.  Quantifying over all possible `DecidableEq ι` instances in the statement of `map_add'` and
+    `map_smul'`.
 
 Option 1 works fine, but puts unnecessary constraints on the user
 (the zero map certainly does not need decidability).

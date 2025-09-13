@@ -151,13 +151,13 @@ lemma fermatLastTheoremFor_iff_rat {n : ℕ} : FermatLastTheoremFor n ↔ Fermat
 A relaxed variant of Fermat's Last Theorem over a given commutative semiring with a specific
 exponent, allowing nonzero solutions of units and their common multiples.
 
-1. The variant `FermatLastTheoremWith' R` is weaker than `FermatLastTheoremWith R` in general.
-   In particular, it holds trivially for `[Field R]`.
-2. This variant is equivalent to the original `FermatLastTheoremWith R` for `R = ℕ` or `ℤ`.
-   In general, they are equivalent if there is no solutions of units to the Fermat equation.
-3. For a polynomial ring `R = k[X]`, the original `FermatLastTheoremWith R` is false but the weaker
-   variant `FermatLastTheoremWith' R` is true. This polynomial variant of Fermat's Last Theorem
-   can be shown elementarily using Mason--Stothers theorem.
+1.  The variant `FermatLastTheoremWith' R` is weaker than `FermatLastTheoremWith R` in general.
+    In particular, it holds trivially for `[Field R]`.
+2.  This variant is equivalent to the original `FermatLastTheoremWith R` for `R = ℕ` or `ℤ`.
+    In general, they are equivalent if there is no solutions of units to the Fermat equation.
+3.  For a polynomial ring `R = k[X]`, the original `FermatLastTheoremWith R` is false but the weaker
+    variant `FermatLastTheoremWith' R` is true. This polynomial variant of Fermat's Last Theorem
+    can be shown elementarily using Mason--Stothers theorem.
 -/
 def FermatLastTheoremWith' (R : Type*) [CommSemiring R] (n : ℕ) : Prop :=
   ∀ a b c : R, a ≠ 0 → b ≠ 0 → c ≠ 0 → a ^ n + b ^ n = c ^ n →

@@ -16,37 +16,37 @@ and `a : ZMod q` is invertible, then there are infinitely many prime numbers `p`
 `(p : ZMod q) = a`.
 
 The main steps of the proof are as follows.
-1. Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
-   a function `ℕ → ℝ` taking the value zero when `(n : ℤMod q) ≠ a` and `Λ n` else
-   (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
-   `Λ (p^k) = log p` for prime powers and `Λ n = 0` otherwise.)
-2. Show that this function can be written as a linear combination of functions
-   of the form `χ * Λ` (pointwise product) with Dirichlet characters `χ` mod `q`.
-   See `ArithmeticFunction.vonMangoldt.residueClass_eq`.
-3. This implies that the L-series of `ArithmeticFunction.vonMangoldt.residueClass a`
-   agrees (on `re s > 1`) with the corresponding linear combination of negative logarithmic
-   derivatives of Dirichlet L-functions.
-   See `ArithmeticFunction.vonMangoldt.LSeries_residueClass_eq`.
-4. Define an auxiliary function `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux a` that is
-   this linear combination of negative logarithmic derivatives of L-functions minus
-   `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
-   See `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux` for the statement
-   that the auxiliary function agrees with the L-series of
-   `ArithmeticFunction.vonMangoldt.residueClass` up to the term `(q.totient)⁻¹/(s-1)`.
-5. Show that the auxiliary function is continuous on `re s ≥ 1`;
-   see `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux`.
-   This relies heavily on the non-vanishing of Dirichlet L-functions on the *closed*
-   half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
-   in turn can only be stated since we know that the L-series of a Dirichlet character
-   extends to an entire function (unless the character is trivial; then there is a
-   simple pole at `s = 1`); see `DirichletCharacter.LFunction_eq_LSeries`
-   (contributed by David Loeffler).
-6. Show that the sum of `Λ n / n` over any residue class, but *excluding* the primes, converges.
-   See `ArithmeticFunction.vonMangoldt.summable_residueClass_non_primes_div`.
-7. Combining these ingredients, we can deduce that the sum of `Λ n / n` over
-   the *primes* in a residue class must diverge.
-   See `ArithmeticFunction.vonMangoldt.not_summable_residueClass_prime_div`.
-8. This finally easily implies that there must be infinitely many primes in the residue class.
+1.  Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
+    a function `ℕ → ℝ` taking the value zero when `(n : ℤMod q) ≠ a` and `Λ n` else
+    (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
+    `Λ (p^k) = log p` for prime powers and `Λ n = 0` otherwise.)
+2.  Show that this function can be written as a linear combination of functions
+    of the form `χ * Λ` (pointwise product) with Dirichlet characters `χ` mod `q`.
+    See `ArithmeticFunction.vonMangoldt.residueClass_eq`.
+3.  This implies that the L-series of `ArithmeticFunction.vonMangoldt.residueClass a`
+    agrees (on `re s > 1`) with the corresponding linear combination of negative logarithmic
+    derivatives of Dirichlet L-functions.
+    See `ArithmeticFunction.vonMangoldt.LSeries_residueClass_eq`.
+4.  Define an auxiliary function `ArithmeticFunction.vonMangoldt.LFunctionResidueClassAux a` that is
+    this linear combination of negative logarithmic derivatives of L-functions minus
+    `(q.totient)⁻¹/(s-1)`, which cancels the pole at `s = 1`.
+    See `ArithmeticFunction.vonMangoldt.eqOn_LFunctionResidueClassAux` for the statement
+    that the auxiliary function agrees with the L-series of
+    `ArithmeticFunction.vonMangoldt.residueClass` up to the term `(q.totient)⁻¹/(s-1)`.
+5.  Show that the auxiliary function is continuous on `re s ≥ 1`;
+    see `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux`.
+    This relies heavily on the non-vanishing of Dirichlet L-functions on the *closed*
+    half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
+    in turn can only be stated since we know that the L-series of a Dirichlet character
+    extends to an entire function (unless the character is trivial; then there is a
+    simple pole at `s = 1`); see `DirichletCharacter.LFunction_eq_LSeries`
+    (contributed by David Loeffler).
+6.  Show that the sum of `Λ n / n` over any residue class, but *excluding* the primes, converges.
+    See `ArithmeticFunction.vonMangoldt.summable_residueClass_non_primes_div`.
+7.  Combining these ingredients, we can deduce that the sum of `Λ n / n` over
+    the *primes* in a residue class must diverge.
+    See `ArithmeticFunction.vonMangoldt.not_summable_residueClass_prime_div`.
+8.  This finally easily implies that there must be infinitely many primes in the residue class.
 
 ## Definitions
 
