@@ -22,6 +22,10 @@ The main definition is the type `WeakBilin B`.
 * Given `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, the type `WeakBilin B` is a type synonym for `E`.
 * The instance `WeakBilin.instTopologicalSpace` is the weak topology induced by the bilinear form
   `B`.
+* `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
+  strong dual of `E` with the weak topology.
+* `LinearMap.leftDualEquiv`: When `B` is left-separating, `E` is linearly equivalent to the
+  strong dual of `F` with the weak topology.
 
 ## Main results
 

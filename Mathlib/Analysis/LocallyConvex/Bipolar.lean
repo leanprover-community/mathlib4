@@ -14,13 +14,6 @@ import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 
 # Bipolar Theorem
 
-## Main definitions
-
-- `LinearMap.rightDualEquiv`: When `B` is right-separating, `F` is linearly equivalent to the
-  strong dual of `E` with the weak topology.
-- `LinearMap.leftDualEquiv`: When `B` is left-separating, `E` is linearly equivalent to the
-  strong dual of `F` with the weak topology.
-
 ## Main statements
 
 - `LinearMap.flip_polar_polar_eq`: The Bipolar Theorem: The bipolar of a set coincides with its
