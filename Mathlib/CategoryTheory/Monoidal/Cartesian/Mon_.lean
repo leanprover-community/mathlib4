@@ -52,8 +52,8 @@ attribute [local simp] tensorObj.one_def tensorObj.mul_def
 instance : IsMon_Hom (fst M N) where
 instance : IsMon_Hom (snd M N) where
 
-instance foo {f : M ⟶ N} {g : M ⟶ O} [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (lift f g) where
-  mul_hom := by ext <;> simp [← tensor_comp_assoc]
+instance isMon_Hom_lift {f : M ⟶ N} {g : M ⟶ O} [IsMon_Hom f] [IsMon_Hom g] :
+    IsMon_Hom (lift f g) where
 
 instance [IsCommMon M] : IsMon_Hom μ[M] where
   one_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
