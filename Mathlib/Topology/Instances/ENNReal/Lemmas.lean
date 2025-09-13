@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Data.ENNReal.BigOperators
+import Mathlib.Data.ENNReal.Inv
 import Mathlib.Tactic.Bound
 import Mathlib.Topology.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
@@ -256,6 +257,12 @@ protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → �
 protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} :
     Tendsto f atTop (𝓝 0) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ≤ ε :=
   .trans (atTop_basis.tendsto_iff nhds_zero_basis_Iic) (by simp only [true_and]; rfl)
+
+lemma tendsto_mul_const_zero (c : ℝ≥0∞) (f : ℕ → ℝ≥0∞) (h : Tendsto f atTop (𝓝 0))
+    (hc : c ≠ ⊤) : Tendsto (c * f ·) atTop (𝓝 0) := by
+  rw [ENNReal.tendsto_atTop_zero] at ⊢ h
+  exact fun ε hε ↦ Exists.imp (fun N p n hn => ENNReal.mul_le_of_le_div' (p n hn)) (h (ε / c)
+     (by simp [hc]; exact pos_iff_ne_zero.mp hε))
 
 theorem tendsto_atTop_zero_iff_le_of_antitone {β : Type*} [Nonempty β] [SemilatticeSup β]
     {f : β → ℝ≥0∞} (hf : Antitone f) :
