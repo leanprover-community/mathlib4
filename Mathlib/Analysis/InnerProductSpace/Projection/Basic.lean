@@ -331,6 +331,19 @@ lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
   rw [(isIdempotentElem_starProjection U).ker_eq_range, ← starProjection_orthogonal',
     range_starProjection]
 
+open ContinuousLinearMap in
+/-- Composing `e` with `f` equals zero iff composing `(ker e).starProjection` with `f`
+equals `f`. -/
+theorem _root_.ContinuousLinearMap.comp_eq_zero_iff {F G : Type*} [NormedAddCommGroup F]
+    [NormedAddCommGroup G] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G] {e : E →L[𝕜] F}
+    {f : G →L[𝕜] E} [(LinearMap.ker e).HasOrthogonalProjection] :
+    e ∘L f = 0 ↔ (LinearMap.ker e).starProjection ∘L f = f := by
+  simp only [← coe_inj, coe_comp, LinearMap.IsIdempotentElem.comp_eq_right_iff
+    (LinearMap.ker e).isIdempotentElem_starProjection.toLinearMap f.toLinearMap, LinearMap.ext_iff]
+  change _ ↔ LinearMap.range f ≤ LinearMap.range (LinearMap.ker e).starProjection
+  simp only [range_starProjection]
+  exact ⟨fun hef x ⟨y, hy⟩ => hy ▸ hef y, fun h x => h (LinearMap.mem_range_self _ _)⟩
+
 theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGroup E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] [(p.map f.toLinearMap).HasOrthogonalProjection]
