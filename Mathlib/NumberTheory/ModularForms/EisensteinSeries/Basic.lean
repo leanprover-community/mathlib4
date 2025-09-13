@@ -33,7 +33,7 @@ def eisensteinSeries_MF {k : ℤ} {N : ℕ} [NeZero N] (hk : 3 ≤ k) (a : Fin 2
   slash_action_eq' := (eisensteinSeries_SIF a k).slash_action_eq'
   holo' := eisensteinSeries_SIF_MDifferentiable hk a
   bdd_at_cusps' {c} hc := by
-    rw [IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
+    rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
     rw [OnePoint.isBoundedAt_iff_forall_SL2Z hc]
     exact fun γ hγ ↦ isBoundedAtImInfty_eisensteinSeries_SIF a hk γ
 
