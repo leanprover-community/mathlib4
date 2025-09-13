@@ -65,6 +65,7 @@ which is the natural relation arising from (the equivalence class of) a valuatio
 More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
+@[ext]
 class ValuativeRel (R : Type*) [CommRing R] where
   /-- The relation operator arising from `ValuativeRel`. -/
   rel : R → R → Prop
@@ -682,6 +683,18 @@ lemma valuation_surjective (γ : ValueGroupWithZero R) :
   induction γ using ValueGroupWithZero.ind with | mk a b
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
+
+lemma valuation_surjective_unit (γ : (ValueGroupWithZero R)ˣ) :
+    ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
+  obtain ⟨a, b, hab⟩ := valuation_surjective γ.val
+  refine ⟨⟨a, ?_⟩, b, hab⟩
+  rw [posSubmonoid_def]
+  intro H
+  suffices γ.val * (valuation R) b ≤ 0 by simp at this
+  rw [← hab]
+  simp only [isUnit_iff_ne_zero, ne_eq, Valuation.apply_posSubmonoid_ne_zero,
+    not_false_eq_true, IsUnit.div_mul_cancel]
+  rwa [← map_zero (valuation R), ← Valuation.Compatible.rel_iff_le]
 
 end ValuativeRel
 
